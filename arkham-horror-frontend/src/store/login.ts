@@ -11,7 +11,7 @@ import api from '../api';
 
 const mutations: MutationTree<LoginState> = {
   signIn(state, user) {
-    state.user = user;
+    state.currentUser = user;
   },
 };
 
@@ -36,7 +36,7 @@ const actions: ActionTree<LoginState, RootState> = {
 };
 
 const state: LoginState = {
-  user: undefined,
+  currentUser: undefined,
 };
 
 const store = {

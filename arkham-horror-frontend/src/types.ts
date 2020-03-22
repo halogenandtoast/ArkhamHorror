@@ -18,7 +18,7 @@ export interface Registration {
 }
 
 export interface LoginState {
-  user?: User;
+  currentUser?: User;
 }
 
 export interface RootState {

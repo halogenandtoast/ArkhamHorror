@@ -1,0 +1,11 @@
+database:
+  # NOTE: By design, this setting prevents the PGDATABASE environment variable
+  # from affecting test runs, so that we don't accidentally affect the
+  # production database during testing. If you're not concerned about that and
+  # would like to have environment variable overrides, you could instead use
+  # something like:
+  #
+  #   database: "_env:PGDATABASE:arkham-horror-backend_test"
+  database: arkham-horror-backend_test
+
+auth-dummy-login: true

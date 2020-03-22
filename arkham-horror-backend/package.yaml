@@ -1,0 +1,103 @@
+name:    arkham-horror-backend
+version: "0.0.0"
+
+dependencies:
+
+# Due to a bug in GHC 8.0.1, we block its usage
+# See: https://ghc.haskell.org/trac/ghc/ticket/12130
+- base >=4.8.2.0 && <4.9 || >=4.9.1.0 && <5
+
+- yesod >=1.6 && <1.7
+- yesod-core >=1.6 && <1.7
+- yesod-auth >=1.6 && <1.7
+- yesod-static >=1.6 && <1.7
+- yesod-form >=1.6 && <1.7
+- classy-prelude >=1.4 && <1.5
+- classy-prelude-conduit >=1.4 && <1.5
+- classy-prelude-yesod >=1.4 && <1.5
+- bytestring >=0.9 && <0.11
+- text >=0.11 && <2.0
+- persistent >=2.8 && <2.9
+- persistent-postgresql >=2.8 && <2.9
+- persistent-template >=2.5 && <2.9
+- template-haskell
+- shakespeare >=2.0 && <2.1
+- hjsmin >=0.1 && <0.3
+- monad-control >=0.3 && <1.1
+- wai-extra >=3.0 && <3.1
+- yaml >=0.8 && <0.9
+- http-client-tls >=0.3 && <0.4
+- http-conduit >=2.3 && <2.4
+- directory >=1.1 && <1.4
+- warp >=3.0 && <3.3
+- data-default
+- aeson >=0.6 && <1.4
+- conduit >=1.0 && <2.0
+- monad-logger >=0.3 && <0.4
+- fast-logger >=2.2 && <2.5
+- wai-logger >=2.2 && <2.4
+- file-embed
+- safe
+- unordered-containers
+- containers
+- vector
+- time
+- case-insensitive
+- wai
+- foreign-store
+- regex-posix
+
+# The library contains all of our application code. The executable
+# defined below is just a thin wrapper.
+library:
+  source-dirs: src
+  when:
+  - condition: (flag(dev)) || (flag(library-only))
+    then:
+      ghc-options:
+      - -Wall
+      - -fwarn-tabs
+      - -O0
+      cpp-options: -DDEVELOPMENT
+    else:
+      ghc-options:
+      - -Wall
+      - -fwarn-tabs
+      - -O2
+
+# Runnable executable for our application
+executables:
+  arkham-horror-backend:
+    main: main.hs
+    source-dirs: app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - arkham-horror-backend
+    when:
+    - condition: flag(library-only)
+      buildable: false
+
+# Test suite
+tests:
+  arkham-horror-backend-test:
+    main: Spec.hs
+    source-dirs: test
+    ghc-options: -Wall
+    dependencies:
+    - arkham-horror-backend
+    - hspec >=2.0.0
+    - yesod-test
+
+# Define flags used by "yesod devel" to make compilation faster
+flags:
+  library-only:
+    description: Build for use with "yesod devel"
+    manual: false
+    default: false
+  dev:
+    description: Turn on development settings, like auto-reload templates.
+    manual: false
+    default: false

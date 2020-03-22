@@ -1,0 +1,10 @@
+<div .ui.container>
+
+    <h1>
+      Access granted!
+
+    <p>
+      This page is protected and access is allowed only for authenticated users.
+
+    <p>
+      Your data is protected with us <strong><span class="username">#{userIdent user}</span></strong>!

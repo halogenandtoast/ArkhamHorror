@@ -1,0 +1,7 @@
+User
+    username Text
+    email Text
+    passwordDigest Text
+    UniqueUsername username
+    UniqueEmail email
+    deriving Typeable

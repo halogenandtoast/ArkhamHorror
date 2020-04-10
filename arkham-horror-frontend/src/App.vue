@@ -1,9 +1,6 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+    <Nav />
     <div v-if="currentUser">
       Welcome {{currentUser.username}}
     </div>
@@ -15,8 +12,11 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { State } from 'vuex-class';
 import { User } from './types';
+import Nav from './Nav.vue';
 
-@Component
+@Component({
+  components: { Nav },
+})
 export default class App extends Vue {
   @State currentUser?: User
 }

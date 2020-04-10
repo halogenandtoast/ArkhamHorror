@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import login from './login';
-import game from './game';
+import arkham from './arkham';
 
 Vue.use(Vuex);
 
@@ -15,6 +15,6 @@ export default new Vuex.Store({
   },
   modules: {
     login,
-    game,
+    arkham,
   },
 });

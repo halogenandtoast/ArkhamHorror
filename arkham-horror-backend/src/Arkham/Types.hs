@@ -13,5 +13,22 @@ newtype Scenario = Scenario { getScenario :: Text }
 newtype Cycle = Cycle { getCycle :: Text }
   deriving newtype (Eq, Ord, ToJSON, ToJSONKey)
 
+data GameSettings = GameSettings
+  { cycleId :: ArkhamHorrorCycleId
+  , scenarioId :: ArkhamHorrorScenarioId
+  }
+  deriving stock (Generic)
+  deriving anyclass (ToJSON)
+
+instance FromJSON GameSettings where
+  parseJSON = withObject "GameSettings" $ \v -> GameSettings
+    <$> v .: "cycleId"
+    <*> v .: "scenarioId"
+
 instance FromJSON Cycle where
-  parseJSON = withObject "Cycle" $ \v -> Cycle <$> v .: "name"
+  parseJSON = withObject "Cycle" $ \v -> Cycle
+    <$> v .: "name"
+
+instance FromJSON Scenario where
+  parseJSON = withObject "Scenario" $ \v -> Scenario
+    <$> v .: "name"

@@ -1,9 +1,12 @@
 import { GetterTree, ActionTree, MutationTree } from 'vuex';
 import {
   RootState,
+} from '@/types';
+import {
   GameState,
-} from '../types';
-import api from '../api';
+  Cycle,
+} from '@/arkham/types';
+import api from '@/api';
 
 const mutations: MutationTree<GameState> = {
   setCycles(state, cycles) {
@@ -39,7 +42,7 @@ const actions: ActionTree<GameState, RootState> = {
   },
 
   startGame({ commit }, { cycle, scenario }): Promise<void> {
-    return api.post<string>('arkham/games', { cycle, scenario }).then((game) => {
+    return api.post<string>('arkham/games', { cycleId: cycle.id, scenarioId: scenario.id }).then((game) => {
       commit('setGame', game.data);
     });
   },
@@ -47,7 +50,7 @@ const actions: ActionTree<GameState, RootState> = {
 
 const getters: GetterTree<GameState, RootState> = {
   cycles: (state) => state.cycles,
-  cycleScenarios: (state) => (cycle: string) => state.scenarios[cycle],
+  cycleScenarios: (state) => (cycle: Cycle) => state.scenarios[cycle.id],
 };
 
 const state: GameState = {

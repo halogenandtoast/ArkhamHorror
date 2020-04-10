@@ -13,10 +13,10 @@
   /v1 ApiV1P:
     /authenticate ApiV1AuthenticationR POST
     /whoami ApiV1CurrentUserR GET
-    /games ApiV1GamesP:
-      / ApiV1GamesR POST
     /arkham ApiV1ArkhamP:
       /cycles ApiV1ArkhamCyclesR GET
       /scenarios ApiV1ArkhamScenariosR GET
+      /games ApiV1ArkhamGamesP:
+        / ApiV1ArkhamGamesR POST
 
 

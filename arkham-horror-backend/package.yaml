@@ -52,6 +52,7 @@ dependencies:
 - http-conduit
 - monad-control
 - monad-logger
+- monoidal-containers
 - persistent
 - persistent-postgresql
 - persistent-template

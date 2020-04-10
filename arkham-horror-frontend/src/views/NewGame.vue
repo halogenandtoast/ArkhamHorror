@@ -1,32 +1,37 @@
 <template>
   <div id="new-game">
     <select v-model="cycle">
-      <option :key="option.id" v-for="option in cycles">{{option.name}}</option>
+      <option :key="option.id" v-for="option in cycles" :value="option">{{option.name}}</option>
     </select>
 
     <select v-model="scenario">
-      <option :key="option" v-for="option in scenarios">{{option}}</option>
+      <option
+        v-for="option in scenarios"
+        :key="option.id"
+        :value="option"
+      >{{option.name}}</option>
     </select>
 
-    <button :disabled="notReady" @click="startGame(cycle, scenario)">Start!</button>
+    <button :disabled="notReady" @click="startGame({cycle, scenario})">Start!</button>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { Action, Getter } from 'vuex-class';
+import { Cycle, Scenario } from '@/arkham/types';
 
 @Component
 export default class NewGame extends Vue {
-  private cycle: string | null = null;
-  private scenario: string | null = null;
+  private cycle: Cycle | null = null;
+  private scenario: Scenario | null = null;
 
   @Action fetchCycles!: () => Promise<void>
   @Action fetchScenarios!: () => Promise<void>
-  @Action startGame!: (cycle: string, secenario: string) => Promise<void>
+  @Action startGame!: (cycle: Cycle, secenario: Scenario) => Promise<void>
 
-  @Getter cycles!: string[]
-  @Getter cycleScenarios!: (cycle: string) => string[]
+  @Getter cycles!: Cycle[]
+  @Getter cycleScenarios!: (cycle: Cycle) => Scenario[]
 
   async mounted() {
     await this.fetchCycles();
@@ -37,7 +42,7 @@ export default class NewGame extends Vue {
     return this.cycle === null && this.scenario === null;
   }
 
-  get scenarios(): string[] {
+  get scenarios(): Scenario[] {
     if (this.cycle) {
       return this.cycleScenarios(this.cycle);
     }

@@ -13,4 +13,6 @@
   /v1 ApiV1P:
     /authenticate ApiV1AuthenticationR POST
     /whoami ApiV1CurrentUserR GET
+    /games ApiV1GamesP:
+      / ApiV1GamesR POST
 

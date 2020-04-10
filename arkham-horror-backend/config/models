@@ -1,7 +1,36 @@
-User
+User sql=users
     username Text
     email Text
     passwordDigest Text
     UniqueUsername username
     UniqueEmail email
-    deriving Typeable
+
+ArkhamHorrorCycle sql=arkham_horror_cycles
+    name Text
+
+ArkhamHorrorScenario sql=arkham_horror_scenarios
+    name Text
+    cycle ArkhamHorrorCycle Maybe
+
+ArkhamHorrorCard sql=arkham_horror_cards
+    name Text
+    cycle ArkhamHorrorCycle Maybe
+    scenario ArkhamHorrorScenario Maybe
+    number Int
+
+ArkhamHorrorGame sql=arkham_horror_games
+    name Text
+
+ArkhamHorrorGameCampaign sql=arkham_horror_game_campaigns
+    game ArkhamHorrorGame
+    name Text
+
+ArkhamHorrorGameScenario sql=arkham_horror_game_scenarios
+    game ArkhamHorrorGame
+    scenario ArkhamHorrorScenario
+    name Text
+
+ArkhamHorrorGameInvestigator sql=arkham_horror_game_investigators
+    game ArkhamHorrorGame
+    user User
+    GameUser game user

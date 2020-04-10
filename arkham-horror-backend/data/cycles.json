@@ -1,0 +1,39 @@
+[
+  {
+    "id": "zealot",
+    "name": "Night of the Zealot",
+    "scenarios": [
+      { "name": "The Gathering" },
+      { "name": "The Midnight Masks" },
+      { "name": "The Devourer Below" }
+    ]
+  },
+  {
+    "id": "dunwich",
+    "name": "The Dunwich Legacy",
+    "scenarios": [
+      { "name": "Extracurricular Activity" },
+      { "name": "The House Always Wins" },
+      { "name": "The Miskatonic Museum" },
+      { "name": "The Essex Country Express" },
+      { "name": "Blood on the Altar" },
+      { "name": "Undimensioned and Unseen" },
+      { "name": "Where Doom Awaits" },
+      { "name": "Lost in Time and Space" }
+    ]
+  },
+  {
+    "id": "carcosa",
+    "name": "The Path to Carcosa",
+    "scenarios": [
+      { "name": "Curtain Call" },
+      { "name": "The Last King" },
+      { "name": "Echoes of the Past" },
+      { "name": "The Unspeakable Oath" },
+      { "name": "A Phantom of Truth" },
+      { "name": "The Pallid Mask" },
+      { "name": "Black Stars Rise" },
+      { "name": "Dim Carcosa" }
+    ]
+  }
+]

@@ -1,12 +1,7 @@
-{-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 module Handler.Api.Arkham.Cycles where
 
-import Import
+import           Import
 
-newtype Cycle = Cycle { getCycle :: Text }
-  deriving newtype (ToJSON)
-
-getApiV1ArkhamCyclesR :: Handler [Cycle]
-getApiV1ArkhamCyclesR = pure [ Cycle "Night of the Zealot", Cycle "The Dunwich Legacy" ]
+getApiV1ArkhamCyclesR :: Handler [Entity ArkhamHorrorCycle]
+getApiV1ArkhamCyclesR = runDB $ selectList [] []

@@ -1,52 +1,78 @@
 name:    arkham-horror-backend
 version: "0.0.0"
 
+default-extensions:
+  - BangPatterns
+  - DataKinds
+  - DeriveAnyClass
+  - DeriveFoldable
+  - DeriveFunctor
+  - DeriveGeneric
+  - DeriveLift
+  - DeriveTraversable
+  - DerivingStrategies
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - LambdaCase
+  - MultiParamTypeClasses
+  - NoImplicitPrelude
+  - NoMonomorphismRestriction
+  - OverloadedStrings
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TypeApplications
+  - TypeFamilies
+
 dependencies:
 
 # Due to a bug in GHC 8.0.1, we block its usage
 # See: https://ghc.haskell.org/trac/ghc/ticket/12130
-- base >=4.8.2.0 && <4.9 || >=4.9.1.0 && <5
+- base
 
-- yesod >=1.6 && <1.7
-- yesod-core >=1.6 && <1.7
-- yesod-auth >=1.6 && <1.7
-- yesod-static >=1.6 && <1.7
-- yesod-form >=1.6 && <1.7
-- classy-prelude >=1.4 && <1.5
-- classy-prelude-conduit >=1.4 && <1.5
-- classy-prelude-yesod >=1.4 && <1.5
-- bytestring >=0.9 && <0.11
-- text >=0.11 && <2.0
-- persistent >=2.8 && <2.9
-- persistent-postgresql >=2.8 && <2.9
-- persistent-template >=2.5 && <2.9
-- template-haskell
-- shakespeare >=2.0 && <2.1
-- hjsmin >=0.1 && <0.3
-- monad-control >=0.3 && <1.1
-- wai-extra >=3.0 && <3.1
-- yaml >=0.8 && <0.9
-- http-client-tls >=0.3 && <0.4
-- http-conduit >=2.3 && <2.4
-- directory >=1.1 && <1.4
-- warp >=3.0 && <3.3
-- data-default
-- aeson >=0.6 && <1.4
-- conduit >=1.0 && <2.0
-- monad-logger >=0.3 && <0.4
-- fast-logger >=2.2 && <2.5
-- wai-logger >=2.2 && <2.4
-- file-embed
-- safe
-- unordered-containers
-- containers
-- vector
-- time
+- aeson
+- bytestring
 - case-insensitive
-- wai
+- classy-prelude
+- classy-prelude-conduit
+- classy-prelude-yesod
+- conduit
+- containers
+- data-default
+- directory
+- esqueleto
+- fast-logger
+- file-embed
 - foreign-store
+- hjsmin
+- http-client-tls
+- http-conduit
+- monad-control
+- monad-logger
+- persistent
+- persistent-postgresql
+- persistent-template
 - regex-posix
-
+- safe
+- shakespeare
+- template-haskell
+- text
+- time
+- unordered-containers
+- vector
+- wai
+- wai-extra
+- wai-logger
+- warp
+- yaml
+- yesod
+- yesod-auth
+- yesod-core
+- yesod-form
+- yesod-static
 # The library contains all of our application code. The executable
 # defined below is just a thin wrapper.
 library:

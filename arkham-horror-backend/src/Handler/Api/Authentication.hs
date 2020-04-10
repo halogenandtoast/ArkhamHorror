@@ -1,11 +1,11 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveGeneric      #-}
 {-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE OverloadedStrings  #-}
 
 module Handler.Api.Authentication where
 
-import Data.Text
-import Import
+import           Data.Text
+import           Import
 
 newtype Token = Token { token :: Text }
   deriving stock (Generic)

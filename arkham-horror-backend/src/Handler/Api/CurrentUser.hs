@@ -1,10 +1,10 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveGeneric      #-}
 {-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings  #-}
 
 module Handler.Api.CurrentUser where
 
-import Import
+import           Import
 
 newtype CurrentUser = CurrentUser { username :: Text }
   deriving stock (Generic)

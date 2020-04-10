@@ -4,13 +4,14 @@ User sql=users
     passwordDigest Text
     UniqueUsername username
     UniqueEmail email
+    deriving Show
 
-ArkhamHorrorCycle sql=arkham_horror_cycles
+ArkhamHorrorCycle json sql=arkham_horror_cycles
     name Text
 
 ArkhamHorrorScenario sql=arkham_horror_scenarios
     name Text
-    cycle ArkhamHorrorCycle Maybe
+    cycleId ArkhamHorrorCycleId Maybe
 
 ArkhamHorrorCard sql=arkham_horror_cards
     name Text
@@ -20,6 +21,7 @@ ArkhamHorrorCard sql=arkham_horror_cards
 
 ArkhamHorrorGame sql=arkham_horror_games
     name Text
+    deriving Show
 
 ArkhamHorrorGameCampaign sql=arkham_horror_game_campaigns
     game ArkhamHorrorGame

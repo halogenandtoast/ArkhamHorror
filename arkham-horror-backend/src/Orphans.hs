@@ -1,11 +1,12 @@
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Orphans where
 
-import Yesod.Core.Content
-import Data.Aeson
+import           Data.Aeson
+import           Prelude            ((.))
+import           Yesod.Core.Content
 
 instance {-# OVERLAPPABLE #-} ToJSON a => ToTypedContent a where
   toTypedContent = TypedContent typeJson . toContent

@@ -1,12 +1,14 @@
 <template>
   <div id="new-game">
     <select v-model="cycle">
-      <option :key="option" v-for="option in cycles">{{option}}</option>
+      <option :key="option.id" v-for="option in cycles">{{option.name}}</option>
     </select>
 
     <select v-model="scenario">
       <option :key="option" v-for="option in scenarios">{{option}}</option>
     </select>
+
+    <button :disabled="notReady" @click="startGame(cycle, scenario)">Start!</button>
   </div>
 </template>
 
@@ -21,6 +23,7 @@ export default class NewGame extends Vue {
 
   @Action fetchCycles!: () => Promise<void>
   @Action fetchScenarios!: () => Promise<void>
+  @Action startGame!: (cycle: string, secenario: string) => Promise<void>
 
   @Getter cycles!: string[]
   @Getter cycleScenarios!: (cycle: string) => string[]
@@ -30,7 +33,11 @@ export default class NewGame extends Vue {
     await this.fetchScenarios();
   }
 
-  get scenarios() {
+  get notReady(): boolean {
+    return this.cycle === null && this.scenario === null;
+  }
+
+  get scenarios(): string[] {
     if (this.cycle) {
       return this.cycleScenarios(this.cycle);
     }

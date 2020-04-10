@@ -12,6 +12,9 @@ const mutations: MutationTree<GameState> = {
   setScenarios(state, scenarios) {
     state.scenarios = scenarios;
   },
+  setGame(state, game) {
+    state.game = game;
+  },
 };
 
 const actions: ActionTree<GameState, RootState> = {
@@ -24,6 +27,7 @@ const actions: ActionTree<GameState, RootState> = {
 
     return Promise.resolve();
   },
+
   fetchScenarios({ state, commit }): Promise<void> {
     if (Object.keys(state.scenarios).length === 0) {
       return api.get<string[]>('arkham/scenarios').then((scenarios) => {
@@ -32,6 +36,12 @@ const actions: ActionTree<GameState, RootState> = {
     }
 
     return Promise.resolve();
+  },
+
+  startGame({ commit }, { cycle, scenario }): Promise<void> {
+    return api.post<string>('arkham/games', { cycle, scenario }).then((game) => {
+      commit('setGame', game.data);
+    });
   },
 };
 
@@ -43,6 +53,7 @@ const getters: GetterTree<GameState, RootState> = {
 const state: GameState = {
   cycles: [],
   scenarios: {},
+  game: '',
 };
 
 const store = {

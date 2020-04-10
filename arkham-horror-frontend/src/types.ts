@@ -24,6 +24,7 @@ export interface LoginState {
 export interface GameState {
   cycles: string[];
   scenarios: Record<string, string[]>;
+  game: string;
 }
 
 export interface RootState {

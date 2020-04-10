@@ -1,35 +1,19 @@
-{-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE OverloadedStrings #-}
 module Handler.Api.Arkham.Scenarios where
 
-import Import
-import qualified Data.Map.Strict as Map
-import Data.Aeson.Types (ToJSONKey(..))
+import           Arkham.Types
+import qualified Data.Map.Strict    as Map
+import           Database.Esqueleto
+import           Import             hiding (Value, groupBy, on, (==.))
 
-newtype Scenario = Scenario { getScenario :: Text }
-  deriving newtype (ToJSON)
+unValue2 :: (Value a, Value b) -> (a, b)
+unValue2 (a, b) = (unValue a, unValue b)
 
-newtype Cycle = Cycle { getCycle :: Text }
-  deriving newtype (Eq, Ord, ToJSONKey)
+-- brittany-disable-next-binding
 
 getApiV1ArkhamScenariosR :: Handler (Map Cycle [Scenario])
-getApiV1ArkhamScenariosR = pure $ Map.fromList
-  [ (Cycle "Night of the Zealot"
-    , [ Scenario "The Gathering"
-      , Scenario "The Midnight Masks"
-      , Scenario "The Devourer Below"
-      ]
-    )
-  , (Cycle "The Dunwich Legacy"
-    , [ Scenario "Extracurricular Activity"
-      , Scenario "The House Always Wins"
-      , Scenario "The Miskatonic Museum"
-      , Scenario "The Essex County Express"
-      , Scenario "Blood on the Altar"
-      , Scenario "Undimensioned and Unseen"
-      , Scenario "Where Doom Awaits"
-      , Scenario "Lost in Time and Space"
-      ]
-    )
-  ]
+getApiV1ArkhamScenariosR = do
+  matches <- runDB $ map unValue2 <$> select . from $ \(cycles `InnerJoin` scenarios) -> do
+    on $ just (cycles ^.  ArkhamHorrorCycleId) ==. scenarios ^.  ArkhamHorrorScenarioCycleId
+    groupBy $ cycles ^. ArkhamHorrorCycleId
+    pure (cycles ^. ArkhamHorrorCycleName, scenarios ^. ArkhamHorrorScenarioName)
+  pure $ Map.fromList matches

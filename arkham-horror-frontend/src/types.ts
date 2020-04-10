@@ -21,6 +21,11 @@ export interface LoginState {
   currentUser?: User;
 }
 
+export interface GameState {
+  cycles: string[];
+  scenarios: Record<string, string[]>;
+}
+
 export interface RootState {
   version: string;
 }

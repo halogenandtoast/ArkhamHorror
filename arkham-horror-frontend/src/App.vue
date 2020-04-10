@@ -1,16 +1,13 @@
 <template>
   <div id="app">
     <Nav />
-    <div v-if="currentUser">
-      Welcome {{currentUser.username}}
-    </div>
     <router-view/>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { State } from 'vuex-class';
+import { Getter } from 'vuex-class';
 import { User } from './types';
 import Nav from './Nav.vue';
 
@@ -18,7 +15,7 @@ import Nav from './Nav.vue';
   components: { Nav },
 })
 export default class App extends Vue {
-  @State currentUser?: User
+  @Getter currentUser!: User | undefined;
 }
 </script>
 

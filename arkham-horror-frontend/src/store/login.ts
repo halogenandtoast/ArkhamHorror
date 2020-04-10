@@ -1,4 +1,4 @@
-import { ActionTree, MutationTree } from 'vuex';
+import { GetterTree, ActionTree, MutationTree } from 'vuex';
 import {
   RootState,
   LoginState,
@@ -35,12 +35,17 @@ const actions: ActionTree<LoginState, RootState> = {
   },
 };
 
+const getters: GetterTree<LoginState, RootState> = {
+  currentUser: (state) => state.currentUser,
+};
+
 const state: LoginState = {
   currentUser: undefined,
 };
 
 const store = {
   state,
+  getters,
   actions,
   mutations,
 };

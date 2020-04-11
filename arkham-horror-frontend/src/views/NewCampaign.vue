@@ -1,10 +1,18 @@
 <template>
   <div id="new-game">
-    <select v-model="cycle">
-      <option :key="option.id" v-for="option in cycles" :value="option">{{option.name}}</option>
-    </select>
+    <div>
+      <select v-model="cycle">
+        <option :key="option.id" v-for="option in cycles" :value="option">{{option.name}}</option>
+      </select>
+    </div>
 
-    <button :disabled="notReady" @click="startCampaign({ cycle })">Start!</button>
+    <div>
+      <input type="text" v-model="deckUrl" placeholder="Deck url from arkhamdb.com" />
+    </div>
+
+    <div>
+      <button :disabled="notReady" @click="startCampaign({ cycle, deckUrl })">Start!</button>
+    </div>
   </div>
 </template>
 
@@ -16,6 +24,7 @@ import { Cycle } from '@/arkham/types';
 @Component
 export default class NewCampaign extends Vue {
   private cycle: Cycle | null = null;
+  private deckUrl = '';
 
   @Action fetchCycles!: () => Promise<void>
   @Action startCampaign!: (cycle: Cycle) => Promise<void>
@@ -27,7 +36,7 @@ export default class NewCampaign extends Vue {
   }
 
   get notReady(): boolean {
-    return this.cycle === null;
+    return this.cycle === null || this.deckUrl === '';
   }
 }
 </script>

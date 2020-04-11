@@ -8,8 +8,13 @@ export interface Scenario {
   name: string;
 }
 
+export interface Game {
+  cycle: Cycle;
+  scenario: Scenario;
+}
+
 export interface GameState {
   cycles: Cycle[];
   scenarios: Record<number, Scenario[]>;
-  game: string;
+  game: Game | null;
 }

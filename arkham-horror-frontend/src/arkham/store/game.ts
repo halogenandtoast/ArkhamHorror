@@ -4,6 +4,7 @@ import {
 } from '@/types';
 import {
   GameState,
+  Game,
   Cycle,
 } from '@/arkham/types';
 import api from '@/api';
@@ -15,7 +16,7 @@ const mutations: MutationTree<GameState> = {
   setScenarios(state, scenarios) {
     state.scenarios = scenarios;
   },
-  setGame(state, game) {
+  setGame(state: GameState, game: Game) {
     state.game = game;
   },
 };
@@ -47,8 +48,8 @@ const actions: ActionTree<GameState, RootState> = {
     });
   },
 
-  startCampaign({ commit }, { cycle }): Promise<void> {
-    return api.post<string>('arkham/campaigns', { cycleId: cycle.id }).then((game) => {
+  startCampaign({ commit }, { cycle, deckUrl }): Promise<void> {
+    return api.post<number>('arkham/campaigns', { cycleId: cycle.id, deckUrl }).then((game) => {
       commit('setGame', game.data);
     });
   },
@@ -62,7 +63,7 @@ const getters: GetterTree<GameState, RootState> = {
 const state: GameState = {
   cycles: [],
   scenarios: {},
-  game: '',
+  game: null,
 };
 
 const store = {

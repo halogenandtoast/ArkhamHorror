@@ -1,10 +1,9 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE ViewPatterns #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE NoImplicitPrelude     #-}
+{-# LANGUAGE OverloadedStrings     #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE TemplateHaskell       #-}
+{-# LANGUAGE TypeFamilies          #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Application
     ( getApplicationDev
@@ -20,39 +19,50 @@ module Application
     , db
     ) where
 
-import Control.Monad.Logger                 (liftLoc, runLoggingT)
-import Database.Persist.Postgresql          (createPostgresqlPool, pgConnStr,
-                                             pgPoolSize, runSqlPool)
-import Import hiding (requestHeaders, sendResponse)
-import Data.CaseInsensitive (mk)
-import Language.Haskell.TH.Syntax           (qLocation)
-import Network.HTTP.Client.TLS              (getGlobalManager)
-import Network.Wai (Middleware, requestHeaders, requestMethod, responseLBS)
-import Network.Wai.Middleware.AddHeaders (addHeaders)
-import Network.Wai.Handler.Warp             (Settings, defaultSettings,
-                                             defaultShouldDisplayException,
-                                             runSettings, setHost,
-                                             setOnException, setPort, getPort)
-import Network.Wai.Middleware.RequestLogger (Destination (Logger),
-                                             IPAddrSource (..),
-                                             OutputFormat (..), destination,
-                                             mkRequestLogger, outputFormat)
-import System.Log.FastLogger                (defaultBufSize, newStdoutLoggerSet,
-                                             toLogStr)
-import Text.Regex.Posix ((=~))
+import           Control.Monad.Logger                 (liftLoc, runLoggingT)
+import           Data.CaseInsensitive                 (mk)
+import           Database.Persist.Postgresql          (createPostgresqlPool,
+                                                       pgConnStr, pgPoolSize,
+                                                       runSqlPool)
+import           Import                               hiding (requestHeaders,
+                                                       sendResponse)
+import           Language.Haskell.TH.Syntax           (qLocation)
+import           Network.HTTP.Client.TLS              (getGlobalManager)
+import           Network.Wai                          (Middleware,
+                                                       requestHeaders,
+                                                       requestMethod,
+                                                       responseLBS)
+import           Network.Wai.Handler.Warp             (Settings,
+                                                       defaultSettings,
+                                                       defaultShouldDisplayException,
+                                                       getPort, runSettings,
+                                                       setHost, setOnException,
+                                                       setPort)
+import           Network.Wai.Middleware.AddHeaders    (addHeaders)
+import           Network.Wai.Middleware.RequestLogger (Destination (Logger),
+                                                       IPAddrSource (..),
+                                                       OutputFormat (..),
+                                                       destination,
+                                                       mkRequestLogger,
+                                                       outputFormat)
+import           System.Log.FastLogger                (defaultBufSize,
+                                                       newStdoutLoggerSet,
+                                                       toLogStr)
+import           Text.Regex.Posix                     ((=~))
 
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
-import Handler.Common
-import Handler.Home
+import           Handler.Common
+import           Handler.Home
 
-import Handler.Api.Authentication
-import Handler.Api.CurrentUser
+import           Handler.Api.Authentication
+import           Handler.Api.CurrentUser
+import           Handler.Api.Registration
 
-import Handler.Api.Arkham.Cycles
-import Handler.Api.Arkham.Scenarios
-import Handler.Api.Arkham.Games
-import Handler.Api.Arkham.Campaigns
+import           Handler.Api.Arkham.Campaigns
+import           Handler.Api.Arkham.Cycles
+import           Handler.Api.Arkham.Games
+import           Handler.Api.Arkham.Scenarios
 
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the

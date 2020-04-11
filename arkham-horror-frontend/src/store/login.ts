@@ -13,6 +13,9 @@ const mutations: MutationTree<LoginState> = {
   signIn(state, user) {
     state.currentUser = user;
   },
+  signOut(state) {
+    state.currentUser = undefined;
+  },
 };
 
 const actions: ActionTree<LoginState, RootState> = {
@@ -25,6 +28,11 @@ const actions: ActionTree<LoginState, RootState> = {
     api.post<Authentication>('register', registration).then((authentication) => {
       dispatch('setCurrentUser', authentication.data);
     });
+  },
+  logout({ commit }): void {
+    localStorage.removeItem('token');
+    delete api.defaults.headers.common.Authorization;
+    commit('signOut');
   },
   setCurrentUser({ commit }, authentication: Authentication): void {
     localStorage.setItem('token', authentication.token);

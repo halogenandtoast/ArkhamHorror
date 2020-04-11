@@ -5,7 +5,14 @@ module Arkham.Types where
 
 import           Data.Aeson       (withObject)
 import           Data.Aeson.Types (ToJSONKey)
+import           Data.Text
 import           Import
+
+-- TODO: Move this to a shared types module
+newtype Token = Token { token :: Text }
+  deriving stock (Generic)
+
+instance ToJSON Token
 
 newtype Scenario = Scenario { getScenario :: Text }
   deriving newtype (ToJSON)
@@ -14,11 +21,11 @@ newtype Cycle = Cycle { getCycle :: Text }
   deriving newtype (Eq, Ord, ToJSON, ToJSONKey)
 
 data GameSettings = GameSettings
-  { gameCycleId :: ArkhamHorrorCycleId
-  , gameScenarioId :: ArkhamHorrorScenarioId
-  }
-  deriving stock (Generic)
-  deriving anyclass (ToJSON)
+    { gameCycleId    :: ArkhamHorrorCycleId
+    , gameScenarioId :: ArkhamHorrorScenarioId
+    }
+    deriving stock (Generic)
+    deriving anyclass (ToJSON)
 
 newtype CampaignSettings = CampaignSettings
   { campaignCycleId :: ArkhamHorrorCycleId
@@ -27,18 +34,15 @@ newtype CampaignSettings = CampaignSettings
   deriving anyclass (ToJSON)
 
 instance FromJSON CampaignSettings where
-  parseJSON = withObject "CampaignSettings" $ \v -> CampaignSettings
-    <$> v .: "cycleId"
+  parseJSON =
+    withObject "CampaignSettings" $ \v -> CampaignSettings <$> v .: "cycleId"
 
 instance FromJSON GameSettings where
-  parseJSON = withObject "GameSettings" $ \v -> GameSettings
-    <$> v .: "cycleId"
-    <*> v .: "scenarioId"
+  parseJSON = withObject "GameSettings"
+    $ \v -> GameSettings <$> v .: "cycleId" <*> v .: "scenarioId"
 
 instance FromJSON Cycle where
-  parseJSON = withObject "Cycle" $ \v -> Cycle
-    <$> v .: "name"
+  parseJSON = withObject "Cycle" $ \v -> Cycle <$> v .: "name"
 
 instance FromJSON Scenario where
-  parseJSON = withObject "Scenario" $ \v -> Scenario
-    <$> v .: "name"
+  parseJSON = withObject "Scenario" $ \v -> Scenario <$> v .: "name"

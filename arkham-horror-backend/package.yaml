@@ -34,6 +34,7 @@ dependencies:
 - base
 
 - aeson
+- bcrypt
 - bytestring
 - case-insensitive
 - classy-prelude

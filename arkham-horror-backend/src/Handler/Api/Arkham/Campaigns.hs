@@ -1,19 +1,20 @@
 module Handler.Api.Arkham.Campaigns where
 
-import Import
-import Arkham.Types
+import           Arkham.Types
+import           Import
 
 postApiV1ArkhamCampaignsR :: Handler (Key ArkhamHorrorGame)
 postApiV1ArkhamCampaignsR = do
   mCurrentUserId <- maybeAuthId
   case mCurrentUserId of
-    Nothing -> notAuthenticated
+    Nothing            -> notAuthenticated
     Just currentUserId -> do
       CampaignSettings {..} <- requireCheckJsonBody
       runDB $ do
-        ahgcCampaignId <- insert $ ArkhamHorrorGameCampaign campaignCycleId
-        (Entity scenarioId _) <- getBy404 $  ScenarioCyclePosition campaignCycleId 1
-        ahgsId <- insert $ ArkhamHorrorGameScenario scenarioId
-        ahgId <- insert $ ArkhamHorrorGame ahgcCampaignId ahgsId
-        insert $ ArkhamHorrorGameInvestigator ahgId currentUserId
-        pure ahgId
+        campaignId <- insert $ ArkhamHorrorGameCampaign campaignCycleId
+        (Entity scenarioId _) <- getBy404
+          $ ScenarioCyclePosition campaignCycleId 1
+        gameScenarioId <- insert $ ArkhamHorrorGameScenario scenarioId
+        gameId         <- insert $ ArkhamHorrorGame campaignId gameScenarioId
+        insert_ $ ArkhamHorrorGameInvestigator gameId currentUserId
+        pure gameId

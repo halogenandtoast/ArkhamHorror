@@ -12,6 +12,7 @@
 /api ApiP:
   /v1 ApiV1P:
     /authenticate ApiV1AuthenticationR POST
+    /register ApiV1RegistrationR POST
     /whoami ApiV1CurrentUserR GET
     /arkham ApiV1ArkhamP:
       /cycles ApiV1ArkhamCyclesR GET

@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { Getter } from 'vuex-class';
+import { Action, Getter } from 'vuex-class';
 import { User } from './types';
 import Nav from './Nav.vue';
 
@@ -16,6 +16,11 @@ import Nav from './Nav.vue';
 })
 export default class App extends Vue {
   @Getter currentUser!: User | undefined;
+  @Action loadUserFromStorage!: () => void;
+
+  async mounted() {
+    await this.loadUserFromStorage();
+  }
 }
 </script>
 

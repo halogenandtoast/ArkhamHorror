@@ -2,27 +2,34 @@ module Handler.Api.Arkham.Campaigns where
 
 import           Import
 
-getFirstScenario :: MonadHandler m => ArkhamHorrorCycleId -> SqlPersistT m (Entity ArkhamHorrorScenario)
+getFirstScenario
+  :: MonadHandler m
+  => ArkhamHorrorCycleId
+  -> SqlPersistT m (Entity ArkhamHorrorScenario)
 getFirstScenario = getBy404 . flip ScenarioCyclePosition 1
 
 data CampaignJson = CampaignJson
-  { cycleId :: ArkhamHorrorCycleId
-  , deckUrl :: Text
-  } deriving stock (Generic)
+    { cycleId :: ArkhamHorrorCycleId
+    , deckUrl :: Text
+    }
+    deriving stock (Generic)
 
 instance FromJSON CampaignJson
 
 postApiV1ArkhamCampaignsR :: Handler ArkhamHorrorGameId
 postApiV1ArkhamCampaignsR = do
-  currentUserId <- requireAuthId
+  currentUserId     <- requireAuthId
   CampaignJson {..} <- requireCheckJsonBody
   runDB $ do
-    campaignId <- insert $ ArkhamHorrorGameCampaign cycleId
-    (Entity scenarioId _) <- getFirstScenario cycleId
+    campaignId     <- insert $ ArkhamHorrorGameCampaign cycleId
+    scenarioId     <- entityKey <$> getFirstScenario cycleId
     gameScenarioId <- insert $ ArkhamHorrorGameScenario scenarioId
     gameId         <- insert $ ArkhamHorrorGame campaignId gameScenarioId
-    insert_ $ ArkhamHorrorGameInvestigator gameId currentUserId (object [ "url" .= deckUrl ])
+    insert_ $ ArkhamHorrorGameInvestigator gameId
+                                           currentUserId
+                                           (object ["url" .= deckUrl])
     pure gameId
 
-getApiV1ArkhamCampaignsCampaignR :: ArkhamHorrorGameCampaignId -> Handler ArkhamHorrorGameCampaign
+getApiV1ArkhamCampaignsCampaignR
+  :: ArkhamHorrorGameCampaignId -> Handler ArkhamHorrorGameCampaign
 getApiV1ArkhamCampaignsCampaignR = runDB . get404

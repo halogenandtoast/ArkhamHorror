@@ -1,6 +1,5 @@
 <template>
   <div id="nav">
-    <router-link to="/">Home</router-link> |
     <template v-if="currentUser">
       Welcome {{currentUser.username}}
       <a href="#" @click="logout">Logout</a>

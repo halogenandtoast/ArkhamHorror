@@ -5,6 +5,7 @@ import SignIn from '@/views/SignIn.vue';
 import SignUp from '@/views/SignUp.vue';
 import NewGame from '@/views/NewGame.vue';
 import NewCampaign from '@/views/NewCampaign.vue';
+import Campaign from '@/views/Campaign.vue';
 
 Vue.use(VueRouter);
 
@@ -28,6 +29,11 @@ const routes = [
     path: '/new-campaign',
     name: 'NewCampaign',
     component: NewCampaign,
+  },
+  {
+    path: '/campaign/:id',
+    name: 'Campaign',
+    component: Campaign,
   },
   {
     path: '/new-game',

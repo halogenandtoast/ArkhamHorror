@@ -3,7 +3,7 @@ module Handler.Api.Arkham.Scenarios where
 import           Data.Map.Monoidal  (MonoidalMap)
 import qualified Data.Map.Monoidal  as MonoidalMap
 import           Database.Esqueleto
-import           Import             hiding (Value, groupBy, on, (==.))
+import           Import             hiding (on, (==.))
 
 -- brittany-disable-next-binding
 

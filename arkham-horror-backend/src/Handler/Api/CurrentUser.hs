@@ -1,6 +1,5 @@
 {-# LANGUAGE DeriveGeneric      #-}
 {-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE OverloadedStrings  #-}
 
 module Handler.Api.CurrentUser where
 
@@ -12,4 +11,10 @@ newtype CurrentUser = CurrentUser { username :: Text }
 instance ToJSON CurrentUser
 
 getApiV1CurrentUserR :: Handler CurrentUser
-getApiV1CurrentUserR = pure $ CurrentUser "halogen64"
+getApiV1CurrentUserR = do
+  mUserId <- maybeAuthId
+  case mUserId of
+    Nothing -> notAuthenticated
+    Just userId -> runDB $ do
+      User {..} <- get404 userId
+      pure $ CurrentUser userUsername

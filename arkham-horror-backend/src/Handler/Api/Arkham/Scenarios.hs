@@ -10,7 +10,7 @@ import           Import             hiding (Value, groupBy, on, (==.))
 getApiV1ArkhamScenariosR :: Handler (MonoidalMap Int64 [Entity ArkhamHorrorScenario])
 getApiV1ArkhamScenariosR = do
     groups <- runDB $ (map convert <$>) . select . from $ \(cycles `InnerJoin` scenarios) -> do
-      on $ just (cycles ^.  ArkhamHorrorCycleId) ==. scenarios ^.  ArkhamHorrorScenarioCycleId
+      on $ cycles ^.  ArkhamHorrorCycleId ==. scenarios ^.  ArkhamHorrorScenarioCycleId
       pure (cycles ^. ArkhamHorrorCycleId, scenarios)
     pure $ mconcat $ map (uncurry MonoidalMap.singleton) groups
  where

@@ -46,6 +46,12 @@ const actions: ActionTree<GameState, RootState> = {
       commit('setGame', game.data);
     });
   },
+
+  startCampaign({ commit }, { cycle }): Promise<void> {
+    return api.post<string>('arkham/campaigns', { cycleId: cycle.id }).then((game) => {
+      commit('setGame', game.data);
+    });
+  },
 };
 
 const getters: GetterTree<GameState, RootState> = {

@@ -50,6 +50,7 @@ dependencies:
 - hjsmin
 - http-client-tls
 - http-conduit
+- jwt
 - monad-control
 - monad-logger
 - monoidal-containers

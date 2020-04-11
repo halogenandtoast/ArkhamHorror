@@ -10,17 +10,16 @@
 
 module Foundation where
 
+import qualified Auth.JWT as JWT
 import Import.NoFoundation
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Text.Hamlet          (hamletFile)
 import Text.Jasmine         (minifym)
 import Control.Monad.Logger (LogSource)
+import Data.Aeson (Result(Success), fromJSON)
 
--- Used only when in "auth-dummy-login" setting is enabled.
-import Yesod.Auth.Dummy
+import qualified Yesod.Auth.Message as AuthMsg
 
-import Yesod.Auth.OpenId    (authOpenId, IdentifierType (Claimed))
-import Yesod.Auth.Message (AuthMessage(..))
 import Yesod.Default.Util   (addStaticContentExternal)
 import Yesod.Core.Types     (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
@@ -190,17 +189,16 @@ instance YesodAuth App where
 
     authenticate :: (MonadHandler m, HandlerSite m ~ App)
                  => Creds App -> m (AuthenticationResult App)
-    authenticate creds = liftHandler $ runDB $ do
-        x <- getBy $ UniqueUsername $ credsIdent creds
-        case x of
-            Just (Entity uid _) -> return $ Authenticated uid
-            Nothing -> return $ UserError InvalidEmailPass
+    authenticate _ =  maybe (UserError AuthMsg.InvalidLogin) Authenticated <$> maybeAuthId
+
+    maybeAuthId = do
+      mToken <- JWT.lookupToken
+      liftHandler $ maybe (pure Nothing) tokenToUserId mToken
+
 
     -- You can add other plugins like Google Email, email or OAuth here
     authPlugins :: App -> [AuthPlugin App]
-    authPlugins app = [authOpenId Claimed []] ++ extraAuthPlugins
-        -- Enable authDummy login if enabled.
-        where extraAuthPlugins = [authDummy | appAuthDummyLogin $ appSettings app]
+    authPlugins _ = []
 
 -- | Access function to determine if a user is logged in.
 isAuthenticated :: Handler AuthResult
@@ -235,3 +233,20 @@ unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger
 -- https://github.com/yesodweb/yesod/wiki/Sending-email
 -- https://github.com/yesodweb/yesod/wiki/Serve-static-files-from-a-separate-domain
 -- https://github.com/yesodweb/yesod/wiki/i18n-messages-in-the-scaffolding
+
+userIdToToken :: UserId -> HandlerFor App Text
+userIdToToken userId = do
+  jwtSecret <- getJwtSecret
+  return $ JWT.jsonToToken jwtSecret $ toJSON userId
+
+tokenToUserId :: Text -> Handler (Maybe UserId)
+tokenToUserId token = do
+  jwtSecret <- getJwtSecret
+  let mUserId = fromJSON <$> JWT.tokenToJson jwtSecret token
+  case mUserId of
+    Just (Success userId) -> return $ Just userId
+    _                     -> return Nothing
+
+getJwtSecret :: HandlerFor App Text
+getJwtSecret =
+  getsYesod $ appJwtSecret . appSettings

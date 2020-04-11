@@ -18,5 +18,7 @@
       /scenarios ApiV1ArkhamScenariosR GET
       /games ApiV1ArkhamGamesP:
         / ApiV1ArkhamGamesR POST
+      /campaigns ApiV1ArkhamCampaignsP:
+        / ApiV1ArkhamCampaignsR POST
 
 

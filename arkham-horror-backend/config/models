@@ -11,7 +11,9 @@ ArkhamHorrorCycle json sql=arkham_horror_cycles
 
 ArkhamHorrorScenario json sql=arkham_horror_scenarios
     name Text
-    cycleId ArkhamHorrorCycleId Maybe
+    cycleId ArkhamHorrorCycleId
+    position Int
+    ScenarioCyclePosition cycleId position
 
 ArkhamHorrorCard sql=arkham_horror_cards
     name Text
@@ -20,8 +22,8 @@ ArkhamHorrorCard sql=arkham_horror_cards
     number Int
 
 ArkhamHorrorGame sql=arkham_horror_games
-    gameCampaignId ArkhamHorrorGameCampaignId Maybe
-    gameScenarioID ArkhamHorrorGameScenarioId
+    gameCampaignId ArkhamHorrorGameCampaignId
+    gameScenarioId ArkhamHorrorGameScenarioId
     deriving Show
 
 ArkhamHorrorGameCampaign sql=arkham_horror_game_campaigns
@@ -31,6 +33,6 @@ ArkhamHorrorGameScenario sql=arkham_horror_game_scenarios
     scenarioId ArkhamHorrorScenarioId
 
 ArkhamHorrorGameInvestigator sql=arkham_horror_game_investigators
-    game ArkhamHorrorGame
-    user User
-    GameUser game user
+    gameId ArkhamHorrorGameId
+    userId UserId
+    GameUser gameId userId

@@ -28,7 +28,7 @@ const actions: ActionTree<LoginState, RootState> = {
   },
   setCurrentUser({ commit }, authentication: Authentication): void {
     localStorage.setItem('token', authentication.token);
-    api.defaults.headers.common.Authorization = `Bearer ${authentication.token}`;
+    api.defaults.headers.common.Authorization = `Token ${authentication.token}`;
     api.get<User>('whoami').then((whoami) => {
       commit('signIn', whoami.data);
     });

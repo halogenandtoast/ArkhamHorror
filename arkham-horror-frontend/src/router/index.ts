@@ -1,9 +1,10 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Home from '../views/Home.vue';
-import SignIn from '../views/SignIn.vue';
-import SignUp from '../views/SignUp.vue';
-import NewGame from '../views/NewGame.vue';
+import Home from '@/views/Home.vue';
+import SignIn from '@/views/SignIn.vue';
+import SignUp from '@/views/SignUp.vue';
+import NewGame from '@/views/NewGame.vue';
+import NewCampaign from '@/views/NewCampaign.vue';
 
 Vue.use(VueRouter);
 
@@ -22,6 +23,11 @@ const routes = [
     path: '/sign-up',
     name: 'SignUp',
     component: SignUp,
+  },
+  {
+    path: '/new-campaign',
+    name: 'NewCampaign',
+    component: NewCampaign,
   },
   {
     path: '/new-game',

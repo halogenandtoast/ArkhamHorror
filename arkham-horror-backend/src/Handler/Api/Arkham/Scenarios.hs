@@ -15,3 +15,6 @@ getApiV1ArkhamScenariosR = do
     pure $ mconcat $ map (uncurry MonoidalMap.singleton) groups
  where
    convert = bimap (fromSqlKey . unValue) pure
+
+getApiV1ArkhamScenariosScenarioR :: ArkhamHorrorScenarioId -> Handler ArkhamHorrorScenario
+getApiV1ArkhamScenariosScenarioR scenarioId = runDB $ get404 scenarioId

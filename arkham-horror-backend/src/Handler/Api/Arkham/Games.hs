@@ -4,4 +4,6 @@ import Import
 import Arkham.Types
 
 postApiV1ArkhamGamesR :: Handler GameSettings
-postApiV1ArkhamGamesR = requireCheckJsonBody
+postApiV1ArkhamGamesR = do
+  void requireAuthId
+  requireCheckJsonBody

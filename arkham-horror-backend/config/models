@@ -26,7 +26,7 @@ ArkhamHorrorGame sql=arkham_horror_games
     gameScenarioId ArkhamHorrorGameScenarioId
     deriving Show
 
-ArkhamHorrorGameCampaign sql=arkham_horror_game_campaigns
+ArkhamHorrorGameCampaign json sql=arkham_horror_game_campaigns
     cycleId ArkhamHorrorCycleId
 
 ArkhamHorrorGameScenario sql=arkham_horror_game_scenarios
@@ -35,4 +35,5 @@ ArkhamHorrorGameScenario sql=arkham_horror_game_scenarios
 ArkhamHorrorGameInvestigator sql=arkham_horror_game_investigators
     gameId ArkhamHorrorGameId
     userId UserId
+    deck Value
     GameUser gameId userId

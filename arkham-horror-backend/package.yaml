@@ -108,6 +108,18 @@ executables:
     when:
     - condition: flag(library-only)
       buildable: false
+  arkham-horror-import:
+    main: main.hs
+    source-dirs: import
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - arkham-horror-backend
+    when:
+    - condition: flag(library-only)
+      buildable: false
 
 # Test suite
 tests:

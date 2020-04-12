@@ -1,0 +1,204 @@
+{
+  "id": "theGathering",
+  "name": "The Gathering",
+  "cycle": "nightOfTheZealot",
+  "cards": [
+    { "tag": "card", "cardType": "tokenMeanings", "name": "The Gathering", "setNumber": 1 },
+
+    {
+      "tag": "card",
+      "cardType": "agenda",
+      "front": {
+        "agendaName": "1a",
+        "name": "What's Going On?!",
+        "flavor": "",
+        "threshold": { "tag": "threshold", "type": "doom", "value": { "tag": "value", "type": "static", "amount": 3 }},
+        "reveal": []
+      },
+      "back": {
+        "agendaName": "1b",
+        "name": "A Lapse in Time",
+        "flavor": "",
+        "reveal": [
+          {
+            "tag": "effect",
+            "targets": [{ "tag": "target", "type": "leadInvestigator" }],
+            "type": "chooseOne",
+            "times": 1,
+            "choices": [
+              {
+                "tag": "effect",
+                "targets": [{ "tag": "target", "type": "allInvestigators" }],
+                "type": "randomDiscard",
+                "times": 1
+              },
+              {
+                "tag": "effect",
+                "targets": [{ "tag": "target", "type": "leadInvestigator" }],
+                "type": "takeHorror",
+                "times": 2
+              }
+            ]
+          }
+        ]
+      },
+      "setNumber": 2
+    },
+    {
+      "tag": "card",
+      "cardType": "agenda",
+      "front": {
+        "agendaName": "2a",
+        "name": "Rise of the Ghouls",
+        "flavor": "",
+        "threshold": { "tag": "threshold", "type": "doom", "value": { "tag": "value", "type": "static", "amount": 7 }},
+        "reveal": []
+      },
+      "back": {
+        "agendaName": "2b",
+        "name": "The Thunnels Below",
+        "flavor": "",
+        "reveal": [
+          {
+            "tag": "effect",
+            "type": "shuffleEncounter",
+            "times": 1
+          },
+          {
+            "tag": "effect",
+            "type": "discardEncounterUntil",
+            "match": {
+              "tag": "match",
+              "type": "matchAll",
+              "criteria": [
+                { "tag": "match", "type": "cardType", "value": "enemy" },
+                { "tag": "match", "type": "cardTrait", "value": "ghoul" }
+              ]
+            },
+            "withMatches": [{ "tag": "cardEvent", "type": "draw", "target": "leadInvestigator" }],
+            "times": 1
+          }
+        ]
+      },
+      "setNumber": 3
+    },
+    {
+      "tag": "card",
+      "cardType": "agenda",
+      "front": {
+        "agendaName": "3a",
+        "name": "They're Getting Out!",
+        "flavor": "",
+        "threshold": { "tag": "threshold", "type": "doom", "value": { "tag": "value", "type": "static", "amount": 10 }},
+        "reveal": []
+      },
+      "back": {
+        "agendaName": "3b",
+        "name": "The Ghouls Break Free",
+        "flavor": "",
+        "reveal": [
+          {
+            "tag": "effect",
+            "type": "resolveCondition",
+            "times": 1,
+            "conditions": [
+              { "tag": "resolveCondition", "type": "onAct", "value": "1", "result": { "tag": "result", "type": "resolution", "resolution": "R3" } },
+
+              { "tag": "resolveCondition", "type": "onAct", "value": "2", "result": { "tag": "result", "type": "resolution", "resolution": "R3" } },
+              {
+                "tag": "resolveCondition",
+                "type": "onAct",
+                "value": "3",
+                "result": { "tag": "result", "type": "defeat", "penalty": [{ "tag": "penalty", "type": "physicalTrauma", "value": 1}] }
+              }
+            ]
+          }
+      },
+      "setNumber": 4
+    },
+
+    {
+      "tag": "card",
+      "cardType": "act",
+      "front": {
+        "actName": "1a",
+        "name": "Trapped",
+        "flavor": "",
+        "objective": {
+          "tag": "objective",
+          "type": "foundClues",
+          "threshold": {
+            "tag": "threshold",
+            "type": "clues",
+            "value": { "tag": "value", "type": "perInvestigator", "amount": 2 }
+          }
+          "results": [{ "tag": "objectiveResult", "type": "advance", "target": "1b" }]
+        },
+        "reveal": []
+      },
+      "back": {
+        "actName": "1b",
+        "name": "The Door on the Floor",
+        "flavor": "",
+        "reveal": [
+          {
+            "tag": "effect",
+            "type": "putIntoPlay",
+            "cards": [
+              { "tag": "setCard", "set": "theGathering", "setNumber": 9 },
+              { "tag": "setCard", "set": "theGathering", "setNumber": 10 },
+              { "tag": "setCard", "set": "theGathering", "setNumber": 11 },
+              { "tag": "setCard", "set": "theGathering", "setNumber": 12 }
+            ]
+          },
+          {
+            "tag": "effect",
+            "type": "discardEnemies",
+            "targets": [{ "tag": "target", "type": "location", "name": "Study" }]
+          },
+          {
+            "tag": "effect",
+            "type": "place",
+            "targets": [{ "tag": "target", "type": "allInvestigators" }],
+            "destination": { "tag": "target", "type": "location", "name": "Hallway" }
+          },
+          {
+            "tag": "effect",
+            "type": "removeFromGame",
+            "targets": [{ "tag": "target", "type": "location", "name": "Study" }]
+          }
+        ]
+      },
+      "name": "Trapped",
+      "setNumber": 5
+    },
+    { "tag": "card", "cardType": "act", "name": "The Barrier", "setNumber": 6 },
+    { "tag": "card", "cardType": "act", "name": "What Have You Done?", "setNumber": 7 },
+
+    {
+      "tag": "card",
+      "cardType": "location",
+      "front": {
+        "name": "Study",
+        "flavor": "Some flavor",
+        "icon": "circle"
+      },
+      "back": {
+        "name": "Study",
+        "shroud": 2,
+        "flavor": "The door to your stdy has vanished.",
+        "clues": { "tag": "clues", "type": "perInvestigator", "value": 2 },
+        "connectedIcons": []
+      },
+      "setNumber": 8
+    },
+    { "tag": "card", "cardType": "location", "name": "The Gathering", "setNumber": 9 },
+    { "tag": "card", "cardType": "location", "name": "The Gathering", "setNumber": 10 },
+    { "tag": "card", "cardType": "location", "name": "The Gathering", "setNumber": 11 },
+    { "tag": "card", "cardType": "location", "name": "The Gathering", "setNumber": 12 },
+    { "tag": "card", "cardType": "mythos", "name": "The Gathering", "setNumber": 13 },
+    { "tag": "card", "cardType": "player", "name": "The Gathering", "setNumber": 14 },
+    { "tag": "card", "cardType": "mythos", "name": "The Gathering", "setNumber": 15 },
+    { "tag": "card", "cardType": "mythos", "name": "The Gathering", "setNumber": 16 }
+  ]
+}

@@ -8,6 +8,7 @@ User json sql=users
 
 ArkhamHorrorCycle json sql=arkham_horror_cycles
     name Text
+    UniqueCycle name
 
 ArkhamHorrorScenario json sql=arkham_horror_scenarios
     name Text

@@ -3,25 +3,25 @@ import {
   RootState,
 } from '@/types';
 import {
-  GameState,
-  Game,
-  Cycle,
+  ArkhamHorrorGameState,
+  ArkhamHorrorGame,
+  ArkhamHorrorCycle,
 } from '@/arkham/types';
 import api from '@/api';
 
-const mutations: MutationTree<GameState> = {
+const mutations: MutationTree<ArkhamHorrorGameState> = {
   setCycles(state, cycles) {
     state.cycles = cycles;
   },
   setScenarios(state, scenarios) {
     state.scenarios = scenarios;
   },
-  setGame(state: GameState, game: Game) {
+  setGame(state: ArkhamHorrorGameState, game: ArkhamHorrorGame) {
     state.game = game;
   },
 };
 
-const actions: ActionTree<GameState, RootState> = {
+const actions: ActionTree<ArkhamHorrorGameState, RootState> = {
   fetchCycles({ state, commit }): Promise<void> {
     if (state.cycles.length === 0) {
       return api.get<string[]>('arkham/cycles').then((cycles) => {
@@ -48,19 +48,20 @@ const actions: ActionTree<GameState, RootState> = {
     });
   },
 
-  startCampaign({ commit }, { cycle, deckUrl }): Promise<void> {
-    return api.post<number>('arkham/campaigns', { cycleId: cycle.id, deckUrl }).then((game) => {
+  startCampaign({ commit }, { cycle, difficulty, deckUrl }): Promise<ArkhamHorrorGame> {
+    return api.post<ArkhamHorrorGame>('arkham/campaigns', { cycleId: cycle.id, difficulty, deckUrl }).then((game) => {
       commit('setGame', game.data);
+      return Promise.resolve(game.data);
     });
   },
 };
 
-const getters: GetterTree<GameState, RootState> = {
+const getters: GetterTree<ArkhamHorrorGameState, RootState> = {
   cycles: (state) => state.cycles,
-  cycleScenarios: (state) => (cycle: Cycle) => state.scenarios[cycle.id],
+  cycleScenarios: (state) => (cycle: ArkhamHorrorCycle) => state.scenarios[cycle.id],
 };
 
-const state: GameState = {
+const state: ArkhamHorrorGameState = {
   cycles: [],
   scenarios: {},
   game: null,

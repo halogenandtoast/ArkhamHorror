@@ -1,20 +1,34 @@
-export interface Cycle {
+export type ArkhamHorrorDifficulty = 'Easy' | 'Standard' | 'Hard' | 'Expert';
+
+export interface ArkhamHorrorCycle {
   id: number;
   name: string;
 }
 
-export interface Scenario {
+export interface ArkhamHorrorCampaign {
+  cycle: ArkhamHorrorCycle;
+  difficulty: ArkhamHorrorDifficulty;
+}
+
+export interface ArkhamHorrorSettings {
+  cycle: ArkhamHorrorCycle;
+  difficulty: ArkhamHorrorDifficulty;
+  deckUrl: string;
+}
+
+export interface ArkhamHorrorScenario {
   id: number;
   name: string;
 }
 
-export interface Game {
-  cycle: Cycle;
-  scenario: Scenario;
+export interface ArkhamHorrorGame {
+  cycle: ArkhamHorrorCycle;
+  scenario: ArkhamHorrorScenario;
+  difficulty: ArkhamHorrorDifficulty;
 }
 
-export interface GameState {
-  cycles: Cycle[];
-  scenarios: Record<number, Scenario[]>;
-  game: Game | null;
+export interface ArkhamHorrorGameState {
+  cycles: ArkhamHorrorCycle[];
+  scenarios: Record<number, ArkhamHorrorScenario[]>;
+  game: ArkhamHorrorGame | null;
 }

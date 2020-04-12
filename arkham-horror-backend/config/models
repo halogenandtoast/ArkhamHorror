@@ -29,6 +29,7 @@ ArkhamHorrorGame sql=arkham_horror_games
 
 ArkhamHorrorGameCampaign json sql=arkham_horror_game_campaigns
     cycleId ArkhamHorrorCycleId
+    difficulty Difficulty
 
 ArkhamHorrorGameScenario sql=arkham_horror_game_scenarios
     scenarioId ArkhamHorrorScenarioId

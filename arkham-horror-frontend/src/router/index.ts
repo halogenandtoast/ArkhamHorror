@@ -34,10 +34,11 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/campaign/:id',
+    path: '/campaigns/:campaignId',
     name: 'Campaign',
     component: Campaign,
     meta: { requiresAuth: true },
+    props: true,
   },
   {
     path: '/new-game',

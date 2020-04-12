@@ -1,12 +1,19 @@
 {-# LANGUAGE DerivingStrategies         #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings          #-}
-module Arkham.Types where
+module Arkham.Types (
+  Token(..),
+  Scenario(..),
+  Cycle(..),
+  GameSettings(..),
+  module Arkham.BasicTypes
+) where
 
 import           Data.Aeson       (withObject)
 import           Data.Aeson.Types (ToJSONKey)
 import           Data.Text
 import           Import
+import           Arkham.BasicTypes
 
 -- TODO: Move this to a shared types module
 newtype Token = Token { token :: Text }

@@ -58,6 +58,7 @@ dependencies:
 - persistent
 - persistent-postgresql
 - persistent-template
+- profunctors
 - regex-posix
 - safe
 - shakespeare

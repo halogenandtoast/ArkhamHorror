@@ -1,6 +1,10 @@
 module Arkham.Handler.Api.Campaigns where
 
-import           Import
+import           Import hiding (on, (==.))
+import Arkham.Types
+import Database.Esqueleto
+import Data.Aeson
+import Utility
 
 getFirstScenario
   :: MonadHandler m
@@ -11,6 +15,7 @@ getFirstScenario = getBy404 . flip ScenarioCyclePosition 1
 data CampaignJson = CampaignJson
     { cycleId :: ArkhamHorrorCycleId
     , deckUrl :: Text
+    , difficulty :: Difficulty
     }
     deriving stock (Generic)
 
@@ -21,7 +26,7 @@ postApiV1ArkhamCampaignsR = do
   currentUserId     <- requireAuthId
   CampaignJson {..} <- requireCheckJsonBody
   runDB $ do
-    campaignId     <- insert $ ArkhamHorrorGameCampaign cycleId
+    campaignId     <- insert $ ArkhamHorrorGameCampaign cycleId difficulty
     scenarioId     <- entityKey <$> getFirstScenario cycleId
     gameScenarioId <- insert $ ArkhamHorrorGameScenario scenarioId
     gameId         <- insert $ ArkhamHorrorGame campaignId gameScenarioId
@@ -30,6 +35,23 @@ postApiV1ArkhamCampaignsR = do
                                            (object ["url" .= deckUrl])
     pure gameId
 
+data ArkhamHorrorGameCampaignResponse = ArkhamHorrorGameCampaignResponse
+  { ahgcrCycle :: Entity ArkhamHorrorCycle
+  , ahgcrDifficulty :: Difficulty
+  } deriving stock (Generic)
+
+instance ToJSON ArkhamHorrorGameCampaignResponse where
+  toJSON = genericToJSON $ aesonOptions $ Just "ahgcr"
+
 getApiV1ArkhamCampaignsCampaignR
-  :: ArkhamHorrorGameCampaignId -> Handler ArkhamHorrorGameCampaign
-getApiV1ArkhamCampaignsCampaignR = runDB . get404
+  :: ArkhamHorrorGameCampaignId -> Handler ArkhamHorrorGameCampaignResponse
+getApiV1ArkhamCampaignsCampaignR campaignId = do
+  mresponse <- runDB $ (headMay . map convert <$>) <$> select . from $ \(campaigns `InnerJoin` cycles) -> do
+    on $ campaigns ^. ArkhamHorrorGameCampaignCycleId ==. cycles ^. persistIdField
+    where_ $ campaigns ^. persistIdField ==. val campaignId
+    limit 1
+    pure (cycles, campaigns ^. ArkhamHorrorGameCampaignDifficulty)
+  fromMaybeM notFound mresponse
+ where
+   convert = uncurry ArkhamHorrorGameCampaignResponse . second unValue
+

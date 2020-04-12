@@ -1,4 +1,4 @@
-module Handler.Api.Arkham.Games where
+module Arkham.Handler.Api.Games where
 
 import Import
 import Arkham.Types

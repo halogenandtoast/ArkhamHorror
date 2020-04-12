@@ -1,4 +1,4 @@
-module Handler.Api.Arkham.Scenarios where
+module Arkham.Handler.Api.Scenarios where
 
 import           Data.Map.Monoidal  (MonoidalMap)
 import qualified Data.Map.Monoidal  as MonoidalMap

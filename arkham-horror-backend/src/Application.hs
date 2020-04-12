@@ -60,10 +60,10 @@ import           Handler.Api.Authentication
 import           Handler.Api.CurrentUser
 import           Handler.Api.Registration
 
-import           Handler.Api.Arkham.Campaigns
-import           Handler.Api.Arkham.Cycles
-import           Handler.Api.Arkham.Games
-import           Handler.Api.Arkham.Scenarios
+import           Arkham.Handler.Api.Campaigns
+import           Arkham.Handler.Api.Cycles
+import           Arkham.Handler.Api.Games
+import           Arkham.Handler.Api.Scenarios
 
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the

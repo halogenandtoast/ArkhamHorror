@@ -1,5 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
-module Handler.Api.Arkham.Cycles where
+module Arkham.Handler.Api.Cycles where
 
 import           Import
 

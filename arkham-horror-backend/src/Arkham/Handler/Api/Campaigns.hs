@@ -1,4 +1,4 @@
-module Handler.Api.Arkham.Campaigns where
+module Arkham.Handler.Api.Campaigns where
 
 import           Import
 

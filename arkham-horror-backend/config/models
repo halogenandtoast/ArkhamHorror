@@ -6,36 +6,11 @@ User json sql=users
     UniqueEmail email
     deriving Show
 
-ArkhamHorrorCycle json sql=arkham_horror_cycles
-    name Text
-    UniqueCycle name
+ArkhamHorrorGame json sql=arkham_horror_games
+    cycleId Text
+    scenarioId Text
 
-ArkhamHorrorScenario json sql=arkham_horror_scenarios
-    name Text
-    cycleId ArkhamHorrorCycleId
-    position Int
-    ScenarioCyclePosition cycleId position
-
-ArkhamHorrorCard sql=arkham_horror_cards
-    name Text
-    cycle ArkhamHorrorCycle Maybe
-    scenario ArkhamHorrorScenario Maybe
-    number Int
-
-ArkhamHorrorGame sql=arkham_horror_games
-    gameCampaignId ArkhamHorrorGameCampaignId
-    gameScenarioId ArkhamHorrorGameScenarioId
-    deriving Show
-
-ArkhamHorrorGameCampaign json sql=arkham_horror_game_campaigns
-    cycleId ArkhamHorrorCycleId
-    difficulty Difficulty
-
-ArkhamHorrorGameScenario sql=arkham_horror_game_scenarios
-    scenarioId ArkhamHorrorScenarioId
-
-ArkhamHorrorGameInvestigator sql=arkham_horror_game_investigators
+ArkhamHorrorGamePlayers json sql=arkham_horror_game_players
     gameId ArkhamHorrorGameId
     userId UserId
-    deck Value
-    GameUser gameId userId
+    UniqueArkhamHorrorPlayer gameId userId

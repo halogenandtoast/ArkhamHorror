@@ -1,26 +1,17 @@
 module Handler.Api.Registration where
 
-import           Arkham.Types
 import           Crypto.BCrypt
 import qualified Data.Text.Encoding as TE
+import Types
 import           Import
-
-data Registration = Registration
-    { email    :: Text
-    , username :: Text
-    , password :: Text
-    }
-    deriving stock (Generic)
-
-instance FromJSON Registration
 
 registrationToUser :: Registration -> Handler User
 registrationToUser Registration {..} = do
   mdigest <- liftIO
-    $ hashPasswordUsingPolicy slowerBcryptHashingPolicy (TE.encodeUtf8 password)
+    $ hashPasswordUsingPolicy slowerBcryptHashingPolicy (TE.encodeUtf8 registrationPassword)
   case mdigest of
     Nothing     -> error "could not hash password"
-    Just digest -> pure $ User username email (TE.decodeUtf8 digest)
+    Just digest -> pure $ User registrationUsername registrationEmail (TE.decodeUtf8 digest)
 
 postApiV1RegistrationR :: Handler Token
 postApiV1RegistrationR = do

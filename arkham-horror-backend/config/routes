@@ -15,14 +15,7 @@
     /register ApiV1RegistrationR POST
     /whoami ApiV1CurrentUserR GET
     /arkham ApiV1ArkhamP:
-      /cycles ApiV1ArkhamCyclesR GET
-      /scenarios ApiV1ArkhamScenariosP:
-        / ApiV1ArkhamScenariosR GET
-        /#ArkhamHorrorScenarioId ApiV1ArkhamScenariosScenarioR GET
       /games ApiV1ArkhamGamesP:
-        / ApiV1ArkhamGamesR POST
-      /campaigns ApiV1ArkhamCampaignsP:
-        / ApiV1ArkhamCampaignsR POST
-        /#ArkhamHorrorGameCampaignId ApiV1ArkhamCampaignsCampaignR GET
+        /#ArkhamHorrorGameId ApiV1ArkhamGameR GET
 
 

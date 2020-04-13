@@ -1,25 +1,17 @@
 module Handler.Api.Authentication where
 
-import           Arkham.Types
 import           Crypto.BCrypt
 import qualified Data.Text.Encoding as TE
 import           Import
-
-data Authentication = Authentication
-    { email    :: Text
-    , password :: Text
-    }
-    deriving stock (Generic)
-
-instance FromJSON Authentication
+import Types
 
 authenticationToUser :: Authentication -> Handler (Maybe (Entity User))
 authenticationToUser Authentication {..} = do
-  muser <- runDB $ getBy $ UniqueEmail email
+  muser <- runDB $ getBy $ UniqueEmail authenticationEmail
   case muser of
     Nothing -> pure Nothing
     Just entity@(Entity _ user) ->
-      if validatePassword (p $ userPasswordDigest user) (p password)
+      if validatePassword (p $ userPasswordDigest user) (p authenticationPassword)
         then pure $ Just entity
         else pure Nothing
   where p = TE.encodeUtf8

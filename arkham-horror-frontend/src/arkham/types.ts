@@ -16,9 +16,13 @@ export interface ArkhamHorrorSettings {
   deckUrl: string;
 }
 
+export interface ArkhamHorrorStack {
+  tag: string;
+}
+
 export interface ArkhamHorrorScenario {
-  id: number;
   name: string;
+  stacks: ArkhamHorrorStack[];
 }
 
 export interface ArkhamHorrorGame {

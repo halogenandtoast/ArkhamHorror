@@ -3,8 +3,12 @@
   "name": "The Gathering",
   "cycle": "nightOfTheZealot",
   "cards": [
-    { "tag": "card", "cardType": "tokenMeanings", "name": "The Gathering", "setNumber": 1 },
-
+    {
+      "tag": "card",
+      "cardType": "tokenMeanings",
+      "name": "The Gathering",
+      "setNumber": 1
+    },
     {
       "tag": "card",
       "cardType": "agenda",
@@ -131,7 +135,7 @@
             "tag": "threshold",
             "type": "clues",
             "value": { "tag": "value", "type": "perInvestigator", "amount": 2 }
-          }
+          },
           "results": [{ "tag": "objectiveResult", "type": "advance", "target": "1b" }]
         },
         "reveal": []

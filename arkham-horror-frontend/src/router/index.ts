@@ -6,6 +6,7 @@ import SignUp from '@/views/SignUp.vue';
 import NewGame from '@/views/NewGame.vue';
 import NewCampaign from '@/views/NewCampaign.vue';
 import Campaign from '@/views/Campaign.vue';
+import Game from '@/views/Game.vue';
 
 Vue.use(VueRouter);
 
@@ -37,6 +38,13 @@ const routes = [
     path: '/campaigns/:campaignId',
     name: 'Campaign',
     component: Campaign,
+    meta: { requiresAuth: true },
+    props: true,
+  },
+  {
+    path: '/games/:gameId',
+    name: 'Game',
+    component: Game,
     meta: { requiresAuth: true },
     props: true,
   },

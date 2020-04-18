@@ -1,9 +1,10 @@
+{-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Handler.Api.Games where
 
 import Import
 import Json
-import Data.Aeson.Types
-import qualified Data.HashMap.Strict as HashMap
 
 newtype ArkhamCardFront = ArkhamCardFront { frontUrl :: Text }
   deriving stock (Generic)
@@ -30,16 +31,7 @@ newtype Act = Act { actCurrentCard :: ArkhamCard }
 
 data Stack = StackAgenda Agenda | StackAct Act
   deriving stock (Generic)
-
-instance ToJSON Stack where
-  toJSON (StackAgenda a)
-    = case toJSON a of
-        Object o -> Object (HashMap.insert "tag" "agenda" o)
-        _ -> error "impossible"
-  toJSON (StackAct a)
-    = case toJSON a of
-        Object o -> Object (HashMap.insert "tag" "act" o)
-        _ -> error "impossible"
+  deriving (ToJSON) via TaggedJson Stack
 
 newtype ArkhamHorrorCycle = ArkhamHorrorCycle
   { cycleName :: Text

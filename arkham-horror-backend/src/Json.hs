@@ -1,15 +1,54 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE TypeOperators #-}
 module Json where
 
-import Prelude ((.), String, (<$>), length, drop)
+import Prelude ((.), ($), String, (<$>), length, drop, error)
 import Data.Aeson
 import Data.Aeson.Casing
 import Data.Kind
 import Data.Proxy
 import GHC.Generics
 import GHC.TypeLits
+import qualified Data.HashMap.Strict as HashMap
+
+class InnerJSON f where
+  innerJSON :: f p -> Value
+
+class ConName f where
+  conName' :: f p -> String
+
+taggedToJSON :: (Generic a, InnerJSON (Rep a), ConName (Rep a)) => a -> Value
+taggedToJSON a = case innerJSON r of
+  Object o -> Object (HashMap.insert "tag" (toJSON $ conName' r) o)
+  _        -> error "impossible"
+  where r = from a
+
+newtype TaggedJson a = TaggedJson { unTagged :: a }
+
+instance (Generic a, InnerJSON (Rep a), ConName (Rep a)) => ToJSON (TaggedJson a) where
+  toJSON = taggedToJSON . unTagged
+
+instance (InnerJSON f) => InnerJSON (M1 t c f) where
+  innerJSON = innerJSON . unM1
+
+instance (InnerJSON c1, InnerJSON c2) => InnerJSON (c1 :+: c2) where
+  innerJSON (L1 l) = innerJSON l
+  innerJSON (R1 r) = innerJSON r
+
+instance (ToJSON a) => InnerJSON (K1 R a) where
+  innerJSON = toJSON . unK1
+
+instance (ConName f) => ConName (M1 D c f) where
+  conName' = conName' . unM1
+
+instance (ConName c1, ConName c2) => ConName (c1 :+: c2) where
+  conName' (L1 l) = conName' l
+  conName' (R1 r) = conName' r
+
+instance (Constructor c) => ConName (M1 C c f) where
+  conName' = conName
 
 newtype Codec (tag :: k) (value :: Type) = Codec { unCodec :: value }
 data Drop symbol

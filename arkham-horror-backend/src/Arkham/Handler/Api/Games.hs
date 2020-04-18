@@ -59,4 +59,5 @@ getApiV1ArkhamGameR _ = pure $ GameJson (Just cycle) scenario
     cycle = ArkhamHorrorCycle "Night of the Zealot"
     scenario = ArkhamHorrorScenario "The Gathering"
       [ StackAgenda $ Agenda $ ArkhamCard (ArkhamCardFront "https://arkhamdb.com/bundles/cards/01105.jpg") (ArkhamCardBack "https://arkhamdb.com/bundles/cards/01105b.jpg")
+      , StackAct $ Act $ ArkhamCard (ArkhamCardFront "https://arkhamdb.com/bundles/cards/01108.jpg") (ArkhamCardBack "https://arkhamdb.com/bundles/cards/01108b.jpg")
       ]

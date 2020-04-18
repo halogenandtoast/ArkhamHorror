@@ -16,7 +16,27 @@ export interface ArkhamHorrorSettings {
   deckUrl: string;
 }
 
-export interface ArkhamHorrorStack {
+export type ArkhamHorrorStack = ArkhamHorrorAgendaStack | ArkhamHorrorActStack
+
+export interface ArkhamHorrorAgendaStack {
+  tag: string;
+  currentCard: ArkhamHorrorCard;
+}
+
+export interface ArkhamHorrorCard {
+  front: ArkhamHorrorCardFront;
+  back: ArkhamHorrorCardBack;
+}
+
+export interface ArkhamHorrorCardFront {
+  url: string;
+}
+
+export interface ArkhamHorrorCardBack {
+  url: string;
+}
+
+export interface ArkhamHorrorActStack {
   tag: string;
 }
 

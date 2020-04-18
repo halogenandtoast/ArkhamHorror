@@ -1,6 +1,7 @@
 <template>
   <div id="game" v-if="ready">
-    Game
+    <img :src="game.scenario.stacks[0].currentCard.front.url" />
+    <img :src="game.scenario.stacks[1].currentCard.front.url" />
   </div>
 </template>
 

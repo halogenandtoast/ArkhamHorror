@@ -45,10 +45,17 @@ export interface ArkhamHorrorScenario {
   stacks: ArkhamHorrorStack[];
 }
 
+export interface ArkhamHorrorRevealLocation {
+  index: number;
+}
+
+export type ArkhamHorrorAction = ArkhamHorrorRevealLocation
+
 export interface ArkhamHorrorGame {
   cycle: ArkhamHorrorCycle;
   scenario: ArkhamHorrorScenario;
   difficulty: ArkhamHorrorDifficulty;
+  actions: ArkhamHorrorAction[];
 }
 
 export interface ArkhamHorrorGameState {

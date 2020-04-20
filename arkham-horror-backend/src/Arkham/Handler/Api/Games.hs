@@ -10,6 +10,7 @@ import Arkham.Types
 data GameJson = GameJson
   { gameCycle :: Maybe ArkhamCycle
   , gameScenario :: ArkhamScenario
+  , gameActions :: [ArkhamAction]
   }
   deriving stock (Generic)
   deriving (ToJSON) via Codec (Drop "game") GameJson
@@ -17,7 +18,7 @@ data GameJson = GameJson
 getApiV1ArkhamGameR :: ArkhamHorrorGameId -> Handler GameJson
 getApiV1ArkhamGameR _ = do
   cycle <- liftIO $ decodeFileStrict' "data/arkham/cycles/nightOfTheZealot.json"
-  pure $ GameJson cycle scenario
+  pure $ GameJson cycle scenario [ArkhamActionRevealLocation 0]
   where
     scenario = ArkhamScenario "The Gathering"
       [ StackAgenda
@@ -30,4 +31,8 @@ getApiV1ArkhamGameR _ = do
           $ ArkhamCard
             (ArkhamCardFront "https://arkhamdb.com/bundles/cards/01108.jpg")
             (ArkhamCardBack "https://arkhamdb.com/bundles/cards/01108b.jpg")
+      ]
+      [ ArkhamLocation
+          (ArkhamLocationFront "Study" Circle (ArkhamCardFront "https://arkhamdb.com/bundles/cards/01111b.png"))
+          (ArkhamLocationBack "Study" Circle [] (ArkhamCardBack "https://arkhamdb.com/bundles/cards/01111.png") 2 (ArkhamClueCountPerInvestigator 2))
       ]

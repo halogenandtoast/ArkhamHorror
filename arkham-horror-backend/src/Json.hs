@@ -4,9 +4,8 @@
 {-# LANGUAGE TypeOperators #-}
 module Json ( module X, module Json) where
 
-import Prelude ((.), ($), String, Maybe(..), otherwise, (==), undefined, (<$>), length, drop, error, fmap, fail, pure)
+import Prelude
 import Control.Applicative ((<|>))
-import Control.Monad ((<=<), (>=>))
 import Data.Aeson as X
 import Data.Aeson.Casing
 import Data.Aeson.Types
@@ -35,34 +34,31 @@ class UntaggedParse f where
 class TaggedParseWithKey f where
   taggedParseWithKey :: Value -> Text -> Parser (f p)
 
-taggedToJSON :: (Generic a, TypeName (Rep a), InnerJSON (Rep a), ConName (Rep a)) => a -> Value
-taggedToJSON a = case innerJSON r of
-  Object o -> Object (HashMap.insert "tag" (toJSON tag) $ (HashMap.insert "type" (toJSON $ conName' r) o))
-  _        -> error "impossible"
+taggedToJSON :: (Generic a, TypeName (Rep a), InnerJSON (Rep a), ConName (Rep a)) => String -> a -> Value
+taggedToJSON tag a = case innerJSON r of
+  Object o -> Object (HashMap.insert "tag" (toJSON tag) (HashMap.insert "type" (toJSON name) o))
+  Number n -> object ["value" .= Number n,  "tag" .= toJSON tag, "type" .= toJSON name ]
+  _        -> error "impossible: not an object?"
   where r = from a
-        tag = typeName r
+        name = camelCase $ drop (length cname) (conName' r)
+        cname = typeName r
 
 taggedParseJSON :: (Generic a, TaggedParse (Rep a)) => Value -> Parser a
 taggedParseJSON = fmap to . taggedParse
 
-newtype TaggedJson a = TaggedJson { unTagged :: a }
+newtype TaggedJson tag a = TaggedJson { unTagged :: a }
 
-instance (Generic a, TypeName (Rep a), InnerJSON (Rep a), ConName (Rep a)) => ToJSON (TaggedJson a) where
-  toJSON = taggedToJSON . unTagged
+instance (KnownSymbol tag, Generic a, TypeName (Rep a), InnerJSON (Rep a), ConName (Rep a)) => ToJSON (TaggedJson tag a) where
+  toJSON = taggedToJSON tag . unTagged
+    where tag = symbolVal (Proxy @tag)
 
 instance (Datatype c) => TypeName (M1 D c f) where
   typeName = datatypeName
 
-instance (Generic a, TaggedParse (Rep a)) => FromJSON (TaggedJson a) where
+instance (Generic a, TaggedParse (Rep a)) => FromJSON (TaggedJson tag a) where
   parseJSON = (TaggedJson <$>) . taggedParseJSON
 
-instance (TaggedParse f) => TaggedParse (M1 D c f) where
-  taggedParse = (M1 <$>) . taggedParse
-
-instance (TaggedParse f) => TaggedParse (M1 C c f) where
-  taggedParse = (M1 <$>) . taggedParse
-
-instance (TaggedParse f) => TaggedParse (M1 S c f) where
+instance (TaggedParse f) => TaggedParse (M1 i c f) where
   taggedParse = (M1 <$>) . taggedParse
 
 instance (FromJSON a) => TaggedParse (K1 R a) where
@@ -80,8 +76,14 @@ instance (TaggedParseWithKey c1, TaggedParseWithKey c2) => TaggedParse (c1 :+: c
     key <- v .: "type"
     (L1 <$> taggedParseWithKey obj key) <|>
       (R1 <$> taggedParseWithKey obj key)
+  taggedParse _ = error "impossible"
 
-instance (Constructor c, UntaggedParse f) => TaggedParseWithKey (M1 C c f) where
+instance (TaggedParseWithKey c1, TaggedParseWithKey c2) => TaggedParseWithKey (c1 :+: c2) where
+  taggedParseWithKey obj key =
+    (L1 <$> taggedParseWithKey obj key) <|>
+      (R1 <$> taggedParseWithKey obj key)
+
+instance (Constructor c, UntaggedParse f) => TaggedParseWithKey (M1 i c f) where
   taggedParseWithKey obj key
     | key == name = M1 <$> untaggedParse obj
     | otherwise = fail "Could not parse"

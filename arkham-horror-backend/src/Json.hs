@@ -10,15 +10,14 @@ where
 
 import Control.Applicative ((<|>))
 import Data.Aeson as X
-import Data.Aeson.Casing
-import Data.Aeson.Types
+import Data.Aeson.Casing (camelCase, pascalCase)
+import Data.Aeson.Types (Parser)
 import qualified Data.HashMap.Strict as HashMap
-import Data.Kind
-import Data.Proxy
+import Data.Kind (Type)
+import Data.Proxy (Proxy(..))
 import Data.Text (Text, pack, unpack)
 import GHC.Generics
-import GHC.Stack
-import GHC.TypeLits
+import GHC.TypeLits (KnownSymbol, symbolVal)
 import Prelude
 
 class TypeName f where
@@ -34,7 +33,7 @@ class TaggedParse f where
   taggedParse :: Value -> Parser (f p)
 
 class UntaggedParse f where
-  untaggedParse :: HasCallStack => Value -> Parser (f p)
+  untaggedParse :: Value -> Parser (f p)
 
 class TaggedParseWithKey f where
   taggedParseWithKey :: Value -> Text -> Parser (f p)
@@ -112,12 +111,9 @@ instance (Constructor c, UntaggedParse f) => TaggedParseWithKey (M1 i c f) where
 instance (UntaggedParse f) => UntaggedParse (M1 S c f) where
   untaggedParse = fmap M1 . untaggedParse
 
-instance {-# OVERLAPPING #-} UntaggedParse (K1 R Int) where
-  untaggedParse (Object v) = K1 <$> (v .: "value")
-  untaggedParse _ = fail "not the correct type"
-
 instance (FromJSON a) => UntaggedParse (K1 R a) where
-  untaggedParse = fmap K1 . parseJSON
+  untaggedParse obj@(Object v) = K1 <$> (parseJSON obj <|> v .: "value")
+  untaggedParse _ = fail "not the correct type"
 
 instance UntaggedParse U1 where
   untaggedParse _ = pure U1

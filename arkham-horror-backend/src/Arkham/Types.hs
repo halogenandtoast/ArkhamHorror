@@ -1,10 +1,9 @@
-{-# LANGUAGE OverloadedStrings #-}
 module Arkham.Types where
 
 import Data.Text
 import GHC.Generics
 import Json
-import Prelude (Int, Show, error, fail, pure, ($), (++), (<$>))
+import Prelude (Int, Show)
 
 newtype ArkhamCardFront = ArkhamCardFront { arkhamCardFrontUrl :: Text }
   deriving stock (Show,Generic)
@@ -55,32 +54,7 @@ data ArkhamChaosTokenDifficulties = ArkhamChaosTokenDifficulties
 
 data ArkhamChaosToken = ArkhamChaosTokenNumber Int  | ArkhamChaosTokenSkull | ArkhamChaosTokenHood | ArkhamChaosTokenStone | ArkhamChaosTokenTentacles | ArkhamChaosTokenElderSign
   deriving stock (Generic, Show)
-
-instance ToJSON ArkhamChaosToken where
-  toJSON (ArkhamChaosTokenNumber x) = object
-    ["tag" .= String "token", "type" .= String "number", "value" .= toJSON x]
-  toJSON other = object ["tag" .= String "token", "type" .= String tokenType]
-   where
-    tokenType :: Text
-    tokenType = case other of
-      ArkhamChaosTokenSkull -> "skull"
-      ArkhamChaosTokenHood -> "hood"
-      ArkhamChaosTokenStone -> "stone"
-      ArkhamChaosTokenTentacles -> "tentacles"
-      ArkhamChaosTokenElderSign -> "elderSign"
-      _ -> error "impossible"
-
-instance FromJSON ArkhamChaosToken where
-  parseJSON = withObject "ArkhamChaosToken" $ \v -> do
-    tokenType <- v .: "type"
-    case tokenType of
-      "number" -> ArkhamChaosTokenNumber <$> v .: "value"
-      "skull" -> pure ArkhamChaosTokenSkull
-      "hood" -> pure ArkhamChaosTokenHood
-      "stone" -> pure ArkhamChaosTokenStone
-      "tentacles" -> pure ArkhamChaosTokenTentacles
-      "elderSign" -> pure ArkhamChaosTokenElderSign
-      _ -> fail $ tokenType ++ " is not a valid token type"
+  deriving (ToJSON, FromJSON) via TaggedJson "token" ArkhamChaosToken
 
 data ArkhamLocationSymbol = ArkhamLocationSymbolCircle | ArkhamLocationSymbolSquare | ArkhamLocationSymbolHeart
   deriving stock (Show, Generic)
@@ -119,7 +93,6 @@ data ArkhamLocation = ArkhamLocation
   }
   deriving stock (Generic, Show)
   deriving (FromJSON, ToJSON) via Codec (Drop "arkhamLocation") ArkhamLocation
-
 
 data ArkhamCycle = ArkhamCycle
   { cycleId :: Text

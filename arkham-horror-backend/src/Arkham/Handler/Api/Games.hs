@@ -21,18 +21,18 @@ getApiV1ArkhamGameR _ = do
   pure $ GameJson cycle scenario [ArkhamActionRevealLocation 0]
   where
     scenario = ArkhamScenario "The Gathering"
-      [ StackAgenda
-          $ Agenda
+      [ ArkhamStackAgenda
+          $ ArkhamAgenda
           $ ArkhamCard
             (ArkhamCardFront "https://arkhamdb.com/bundles/cards/01105.jpg")
             (ArkhamCardBack "https://arkhamdb.com/bundles/cards/01105b.jpg")
-      , StackAct
-          $ Act
+      , ArkhamStackAct
+          $ ArkhamAct
           $ ArkhamCard
             (ArkhamCardFront "https://arkhamdb.com/bundles/cards/01108.jpg")
             (ArkhamCardBack "https://arkhamdb.com/bundles/cards/01108b.jpg")
       ]
       [ ArkhamLocation
-          (ArkhamLocationFront "Study" Circle (ArkhamCardFront "https://arkhamdb.com/bundles/cards/01111b.png"))
-          (ArkhamLocationBack "Study" Circle [] (ArkhamCardBack "https://arkhamdb.com/bundles/cards/01111.png") 2 (ArkhamClueCountPerInvestigator 2))
+          (ArkhamLocationFront "Study" ArkhamLocationSymbolCircle (ArkhamCardFront "https://arkhamdb.com/bundles/cards/01111b.png"))
+          (ArkhamLocationBack "Study" ArkhamLocationSymbolCircle [] (ArkhamCardBack "https://arkhamdb.com/bundles/cards/01111.png") 2 (ArkhamClueCountPerInvestigator 2))
       ]

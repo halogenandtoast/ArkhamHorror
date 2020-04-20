@@ -12,6 +12,7 @@ import Data.Aeson.Types
 import Data.Kind
 import Data.Proxy
 import GHC.Generics
+import GHC.Stack
 import GHC.TypeLits
 import Data.Text (pack, Text)
 import qualified Data.HashMap.Strict as HashMap
@@ -29,7 +30,7 @@ class TaggedParse f where
   taggedParse :: Value -> Parser (f p)
 
 class UntaggedParse f where
-  untaggedParse :: Value -> Parser (f p)
+  untaggedParse :: HasCallStack => Value -> Parser (f p)
 
 class TaggedParseWithKey f where
   taggedParseWithKey :: Value -> Text -> Parser (f p)
@@ -37,8 +38,12 @@ class TaggedParseWithKey f where
 taggedToJSON :: (Generic a, TypeName (Rep a), InnerJSON (Rep a), ConName (Rep a)) => String -> a -> Value
 taggedToJSON tag a = case innerJSON r of
   Object o -> Object (HashMap.insert "tag" (toJSON tag) (HashMap.insert "type" (toJSON name) o))
+  Null -> object ["tag" .= toJSON tag, "type" .= toJSON name ]
+  Array ary -> object ["values" .= Array ary,  "tag" .= toJSON tag, "type" .= toJSON name ]
   Number n -> object ["value" .= Number n,  "tag" .= toJSON tag, "type" .= toJSON name ]
-  _        -> error "impossible: not an object?"
+  String s -> object ["value" .= String s,  "tag" .= toJSON tag, "type" .= toJSON name ]
+  Bool b -> object ["value" .= Bool b,  "tag" .= toJSON tag, "type" .= toJSON name ]
+
   where r = from a
         name = camelCase $ drop (length cname) (conName' r)
         cname = typeName r
@@ -71,6 +76,9 @@ instance (InnerJSON c1, InnerJSON c2) => InnerJSON (c1 :+: c2) where
   innerJSON (L1 l) = innerJSON l
   innerJSON (R1 r) = innerJSON r
 
+instance InnerJSON U1 where
+  innerJSON _ = Null
+
 instance (TaggedParseWithKey c1, TaggedParseWithKey c2) => TaggedParse (c1 :+: c2) where
   taggedParse obj@(Object v) = do
     key <- v .: "type"
@@ -95,6 +103,9 @@ instance (UntaggedParse f) => UntaggedParse (M1 S c f) where
 
 instance (FromJSON a) => UntaggedParse (K1 R a) where
   untaggedParse = fmap K1 . parseJSON
+
+instance UntaggedParse U1 where
+  untaggedParse _ = error "Failed"
 
 instance (ToJSON a) => InnerJSON (K1 R a) where
   innerJSON = toJSON . unK1

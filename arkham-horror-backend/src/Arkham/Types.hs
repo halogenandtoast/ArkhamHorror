@@ -6,32 +6,32 @@ import Json
 import GHC.Generics
 import Data.Text
 
-newtype ArkhamCardFront = ArkhamCardFront { frontUrl :: Text }
+newtype ArkhamCardFront = ArkhamCardFront { arkhamCardFrontUrl :: Text }
   deriving stock (Show,Generic)
-  deriving (FromJSON, ToJSON) via Codec (Drop "front") ArkhamCardFront
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamCardFront") ArkhamCardFront
 
-newtype ArkhamCardBack = ArkhamCardBack { backUrl :: Text }
+newtype ArkhamCardBack = ArkhamCardBack { arkhamCardBackUrl :: Text }
   deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via Codec (Drop "back") ArkhamCardBack
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamCardBack") ArkhamCardBack
 
 data ArkhamCard = ArkhamCard
-  { cardFront :: ArkhamCardFront
-  , cardBack :: ArkhamCardBack
+  { arkhamCardFront :: ArkhamCardFront
+  , arkhamCardBack :: ArkhamCardBack
   }
   deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via Codec (Drop "card") ArkhamCard
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamCard") ArkhamCard
 
-newtype Agenda = Agenda { agendaCurrentCard :: ArkhamCard }
+newtype ArkhamAgenda = ArkhamAgenda { arkhamAgendaCurrentCard :: ArkhamCard }
   deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via Codec (Drop "agenda") Agenda
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamAgenda") ArkhamAgenda
 
-newtype Act = Act { actCurrentCard :: ArkhamCard }
+newtype ArkhamAct = ArkhamAct { arkhamActCurrentCard :: ArkhamCard }
   deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via Codec (Drop "act") Act
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamAct") ArkhamAct
 
-data Stack = StackAgenda Agenda | StackAct Act
+data ArkhamStack = ArkhamStackAgenda ArkhamAgenda | ArkhamStackAct ArkhamAct
   deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via TaggedJson "stack" Stack
+  deriving (FromJSON, ToJSON) via TaggedJson "stack" ArkhamStack
 
 newtype ArkhamCycleStep = ArkhamCycleStepScenario ArkhamScenarioData
   deriving stock (Generic, Show)
@@ -82,9 +82,9 @@ instance FromJSON ArkhamChaosToken where
       "elderSign" -> pure ArkhamChaosTokenElderSign
       _ -> fail $ tokenType ++ " is not a valid token type"
 
-data ArkhamLocationSymbol = Circle | Square | Heart
+data ArkhamLocationSymbol = ArkhamLocationSymbolCircle | ArkhamLocationSymbolSquare | ArkhamLocationSymbolHeart
   deriving stock (Generic)
-  deriving anyclass (ToJSON)
+  deriving (ToJSON, FromJSON) via TaggedJson "symbol" ArkhamLocationSymbol
 
 data ArkhamAction = ArkhamActionRevealLocation Int | ArkhamActionInvestigate Int
   deriving stock (Generic)
@@ -103,7 +103,7 @@ data ArkhamLocationFront = ArkhamLocationFront
 
 data ArkhamClueCount = ArkhamClueCountNumber Int | ArkhamClueCountPerInvestigator Int
   deriving stock (Generic)
-  deriving (ToJSON) via TaggedJson "ArkhamClueCount" ArkhamClueCount
+  deriving (ToJSON) via TaggedJson "clueCount" ArkhamClueCount
 
 data ArkhamLocationBack = ArkhamLocationBack
   { arkhamLocationBackName :: Text
@@ -135,7 +135,7 @@ data ArkhamCycle = ArkhamCycle
 
 data ArkhamScenario = ArkhamScenario
   { scenarioName :: Text
-  , scenarioStacks :: [Stack]
+  , scenarioStacks :: [ArkhamStack]
   , scenarioLocations :: [ArkhamLocation]
   }
   deriving stock (Generic)

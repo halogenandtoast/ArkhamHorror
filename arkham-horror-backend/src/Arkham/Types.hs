@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Arkham.Types where
 
-import Prelude(Int, error, Show, (++), ($), fail, pure, (<$>))
-import Json
-import GHC.Generics
 import Data.Text
+import GHC.Generics
+import Json
+import Prelude (Int, Show, error, fail, pure, ($), (++), (<$>))
 
 newtype ArkhamCardFront = ArkhamCardFront { arkhamCardFrontUrl :: Text }
   deriving stock (Show,Generic)
@@ -57,18 +57,18 @@ data ArkhamChaosToken = ArkhamChaosTokenNumber Int  | ArkhamChaosTokenSkull | Ar
   deriving stock (Generic, Show)
 
 instance ToJSON ArkhamChaosToken where
-  toJSON (ArkhamChaosTokenNumber x) = object [ "tag" .= String "token", "type" .= String "number", "value" .= toJSON x ]
-  toJSON other = object [ "tag" .= String "token", "type" .= String tokenType ]
-    where
-      tokenType :: Text
-      tokenType
-        = case other of
-              ArkhamChaosTokenSkull -> "skull"
-              ArkhamChaosTokenHood -> "hood"
-              ArkhamChaosTokenStone -> "stone"
-              ArkhamChaosTokenTentacles -> "tentacles"
-              ArkhamChaosTokenElderSign -> "elderSign"
-              _ -> error "impossible"
+  toJSON (ArkhamChaosTokenNumber x) = object
+    ["tag" .= String "token", "type" .= String "number", "value" .= toJSON x]
+  toJSON other = object ["tag" .= String "token", "type" .= String tokenType]
+   where
+    tokenType :: Text
+    tokenType = case other of
+      ArkhamChaosTokenSkull -> "skull"
+      ArkhamChaosTokenHood -> "hood"
+      ArkhamChaosTokenStone -> "stone"
+      ArkhamChaosTokenTentacles -> "tentacles"
+      ArkhamChaosTokenElderSign -> "elderSign"
+      _ -> error "impossible"
 
 instance FromJSON ArkhamChaosToken where
   parseJSON = withObject "ArkhamChaosToken" $ \v -> do
@@ -83,27 +83,24 @@ instance FromJSON ArkhamChaosToken where
       _ -> fail $ tokenType ++ " is not a valid token type"
 
 data ArkhamLocationSymbol = ArkhamLocationSymbolCircle | ArkhamLocationSymbolSquare | ArkhamLocationSymbolHeart
-  deriving stock (Generic)
+  deriving stock (Show, Generic)
   deriving (ToJSON, FromJSON) via TaggedJson "symbol" ArkhamLocationSymbol
 
 data ArkhamAction = ArkhamActionRevealLocation Int | ArkhamActionInvestigate Int
-  deriving stock (Generic)
-
-instance ToJSON ArkhamAction where
-  toJSON (ArkhamActionRevealLocation n) = object [ "tag" .= String "action", "type" .= String "revealLocation", "target" .= n ]
-  toJSON (ArkhamActionInvestigate n) = object [ "tag" .= String "action", "type" .= String "investigate", "target" .= n ]
+  deriving stock (Generic, Show)
+  deriving (FromJSON, ToJSON) via TaggedJson "action" ArkhamAction
 
 data ArkhamLocationFront = ArkhamLocationFront
   { arkhamLocationFrontName :: Text
   , arkhamLocationFrontSymbol :: ArkhamLocationSymbol
   , arkhamLocationFrontCard :: ArkhamCardFront
   }
-  deriving stock (Generic)
-  deriving (ToJSON) via Codec (Drop "arkhamLocationFront") ArkhamLocationFront
+  deriving stock (Generic, Show)
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamLocationFront") ArkhamLocationFront
 
 data ArkhamClueCount = ArkhamClueCountNumber Int | ArkhamClueCountPerInvestigator Int
-  deriving stock (Generic)
-  deriving (ToJSON) via TaggedJson "clueCount" ArkhamClueCount
+  deriving stock (Generic, Show)
+  deriving (FromJSON, ToJSON) via TaggedJson "clueCount" ArkhamClueCount
 
 data ArkhamLocationBack = ArkhamLocationBack
   { arkhamLocationBackName :: Text
@@ -113,15 +110,15 @@ data ArkhamLocationBack = ArkhamLocationBack
   , arkhamLocationBackShroud :: Int
   , arkhamLocationBackClues :: ArkhamClueCount
   }
-  deriving stock (Generic)
-  deriving (ToJSON) via Codec (Drop "arkhamLocationBack") ArkhamLocationBack
+  deriving stock (Generic, Show)
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamLocationBack") ArkhamLocationBack
 
 data ArkhamLocation = ArkhamLocation
   { arkhamLocationFront :: ArkhamLocationFront
   , arkhamLocationBack :: ArkhamLocationBack
   }
-  deriving stock (Generic)
-  deriving (ToJSON) via Codec (Drop "arkhamLocation") ArkhamLocation
+  deriving stock (Generic, Show)
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamLocation") ArkhamLocation
 
 
 data ArkhamCycle = ArkhamCycle
@@ -138,5 +135,5 @@ data ArkhamScenario = ArkhamScenario
   , scenarioStacks :: [ArkhamStack]
   , scenarioLocations :: [ArkhamLocation]
   }
-  deriving stock (Generic)
-  deriving (ToJSON) via Codec (Drop "scenario") ArkhamScenario
+  deriving stock (Generic, Show)
+  deriving (FromJSON, ToJSON) via Codec (Drop "scenario") ArkhamScenario

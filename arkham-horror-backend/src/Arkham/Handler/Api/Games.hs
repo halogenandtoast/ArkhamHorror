@@ -10,15 +10,27 @@ import Json
 data GameJson = GameJson
   { gameCycle :: Maybe ArkhamCycle
   , gameScenario :: ArkhamScenario
+  , gameInvestigators :: [ArkhamInvestigator]
   , gameActions :: [ArkhamAction]
   }
   deriving stock (Generic, Show)
   deriving (FromJSON, ToJSON) via Codec (Drop "game") GameJson
 
+rolandBanks :: ArkhamInvestigator
+rolandBanks = ArkhamInvestigator
+  { arkhamInvestigatorName = "Roland Banks"
+  , arkhamInvestigatorWillpower = 3
+  , arkhamInvestigatorIntellect = 3
+  , arkhamInvestigatorCombat = 4
+  , arkhamInvestigatorAgility = 2
+  , arkhamInvestigatorHealth = 9
+  , arkhamInvestigatorSanity = 5
+  }
+
 getApiV1ArkhamGameR :: ArkhamHorrorGameId -> Handler GameJson
 getApiV1ArkhamGameR _ = do
   cycle <- liftIO $ decodeFileStrict' "data/arkham/cycles/nightOfTheZealot.json"
-  pure $ GameJson cycle scenario [ArkhamActionRevealLocation 0]
+  pure $ GameJson cycle scenario [rolandBanks] [ArkhamActionRevealLocation 0]
  where
   scenario = ArkhamScenario
     "The Gathering"

@@ -5,6 +5,18 @@ import GHC.Generics
 import Json
 import Prelude (Int, Show)
 
+data ArkhamInvestigator = ArkhamInvestigator
+  { arkhamInvestigatorName :: Text
+  , arkhamInvestigatorWillpower :: Int
+  , arkhamInvestigatorIntellect :: Int
+  , arkhamInvestigatorCombat :: Int
+  , arkhamInvestigatorAgility :: Int
+  , arkhamInvestigatorHealth :: Int
+  , arkhamInvestigatorSanity :: Int
+  }
+  deriving stock (Show,Generic)
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamInvestigator") ArkhamInvestigator
+
 newtype ArkhamCardFront = ArkhamCardFront { arkhamCardFrontUrl :: Text }
   deriving stock (Show,Generic)
   deriving (FromJSON, ToJSON) via Codec (Drop "arkhamCardFront") ArkhamCardFront

@@ -19,19 +19,19 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { Action, Getter } from 'vuex-class';
-import { ArkhamHorrorCycle, ArkhamHorrorScenario } from '@/arkham/types';
+import { ArkhamCycle, ArkhamScenario } from '@/arkham/types';
 
 @Component
 export default class NewGame extends Vue {
-  private cycle: ArkhamHorrorCycle | null = null;
-  private scenario: ArkhamHorrorScenario | null = null;
+  private cycle: ArkhamCycle | null = null;
+  private scenario: ArkhamScenario | null = null;
 
   @Action fetchCycles!: () => Promise<void>
   @Action fetchScenarios!: () => Promise<void>
-  @Action startGame!: (cycle: ArkhamHorrorCycle, secenario: ArkhamHorrorScenario) => Promise<void>
+  @Action startGame!: (cycle: ArkhamCycle, secenario: ArkhamScenario) => Promise<void>
 
-  @Getter cycles!: ArkhamHorrorCycle[]
-  @Getter cycleScenarios!: (cycle: ArkhamHorrorCycle) => ArkhamHorrorScenario[]
+  @Getter cycles!: ArkhamCycle[]
+  @Getter cycleScenarios!: (cycle: ArkhamCycle) => ArkhamScenario[]
 
   async mounted() {
     await this.fetchCycles();
@@ -42,7 +42,7 @@ export default class NewGame extends Vue {
     return this.cycle === null && this.scenario === null;
   }
 
-  get scenarios(): ArkhamHorrorScenario[] {
+  get scenarios(): ArkhamScenario[] {
     if (this.cycle) {
       return this.cycleScenarios(this.cycle);
     }

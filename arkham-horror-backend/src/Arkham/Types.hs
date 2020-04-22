@@ -78,28 +78,28 @@ data ArkhamAction = ArkhamActionRevealLocation Int | ArkhamActionInvestigate Int
   deriving stock (Generic, Show)
   deriving (FromJSON, ToJSON) via TaggedJson "action" ArkhamAction
 
-data ArkhamLocationFront = ArkhamLocationFront
-  { arkhamLocationFrontName :: Text
-  , arkhamLocationFrontSymbol :: ArkhamLocationSymbol
-  , arkhamLocationFrontCard :: ArkhamCardFront
-  }
-  deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamLocationFront") ArkhamLocationFront
-
 data ArkhamClueCount = ArkhamClueCountNumber Int | ArkhamClueCountPerInvestigator Int
   deriving stock (Generic, Show)
   deriving (FromJSON, ToJSON) via TaggedJson "clueCount" ArkhamClueCount
+
+data ArkhamLocationUnrevealedData = ArkhamLocationUnrevealedData
+  { arkhamLocationUnrevealedDataName :: Text
+  , arkhamLocationUnrevealedDataSymbol :: ArkhamLocationSymbol
+  , arkhamLocationUnrevealedDataImageUrl :: Text
+  }
+  deriving stock (Generic, Show)
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamLocationUnrevealedData") ArkhamLocationUnrevealedData
 
 data ArkhamLocationRevealedData = ArkhamLocationRevealedData
   { arkhamLocationRevealedDataName :: Text
   , arkhamLocationRevealedDataSymbol :: ArkhamLocationSymbol
   , arkhamLocationRevealedDataConnections :: [ArkhamLocationSymbol]
-  , arkhamLocationRevealedDataCard :: ArkhamCardBack
   , arkhamLocationRevealedDataShroud :: Int
   , arkhamLocationRevealedDataClues :: ArkhamClueCount
+  , arkhamLocationRevealedDataImageUrl :: Text
   }
   deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamLocationBack") ArkhamLocationBack
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamLocationRevealedData") ArkhamLocationRevealedData
 
 data ArkhamLocation = ArkhamLocationUnrevealed ArkhamLocationUnrevealedData | ArkhamLocationRevealed ArkhamLocationRevealedData
   deriving stock (Generic, Show)

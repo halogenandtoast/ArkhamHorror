@@ -1,65 +1,77 @@
-export type ArkhamHorrorDifficulty = 'Easy' | 'Standard' | 'Hard' | 'Expert';
+export type ArkhamDifficulty = 'Easy' | 'Standard' | 'Hard' | 'Expert';
 
-export interface ArkhamHorrorCycle {
+export interface ArkhamCycle {
   id: number;
   name: string;
 }
 
-export interface ArkhamHorrorCampaign {
-  cycle: ArkhamHorrorCycle;
-  difficulty: ArkhamHorrorDifficulty;
+export interface ArkhamCampaign {
+  cycle: ArkhamCycle;
+  difficulty: ArkhamDifficulty;
 }
 
-export interface ArkhamHorrorSettings {
-  cycle: ArkhamHorrorCycle;
-  difficulty: ArkhamHorrorDifficulty;
+export interface ArkhamSettings {
+  cycle: ArkhamCycle;
+  difficulty: ArkhamDifficulty;
   deckUrl: string;
 }
 
-export type ArkhamHorrorStack = ArkhamHorrorAgendaStack | ArkhamHorrorActStack
+export type ArkhamStack = ArkhamAgendaStack | ArkhamActStack
 
-export interface ArkhamHorrorAgendaStack {
+export interface ArkhamAgendaStack {
   tag: string;
-  currentCard: ArkhamHorrorCard;
+  currentCard: ArkhamCard;
 }
 
-export interface ArkhamHorrorCard {
-  front: ArkhamHorrorCardFront;
-  back: ArkhamHorrorCardBack;
+export interface ArkhamCard {
+  front: ArkhamCardFront;
+  back: ArkhamCardBack;
 }
 
-export interface ArkhamHorrorCardFront {
+export interface ArkhamCardFront {
   url: string;
 }
 
-export interface ArkhamHorrorCardBack {
+export interface ArkhamCardBack {
   url: string;
 }
 
-export interface ArkhamHorrorActStack {
+export interface ArkhamActStack {
   tag: string;
 }
 
-export interface ArkhamHorrorScenario {
+export interface ArkhamScenario {
   name: string;
-  stacks: ArkhamHorrorStack[];
+  stacks: ArkhamStack[];
 }
 
-export interface ArkhamHorrorRevealLocation {
+export interface ArkhamRevealLocation {
   index: number;
 }
 
-export type ArkhamHorrorAction = ArkhamHorrorRevealLocation
+export type ArkhamAction = ArkhamRevealLocation
 
-export interface ArkhamHorrorGame {
-  cycle: ArkhamHorrorCycle;
-  scenario: ArkhamHorrorScenario;
-  difficulty: ArkhamHorrorDifficulty;
-  actions: ArkhamHorrorAction[];
+export type ArkhamLocation = ArkhamLocationUnrevealed | ArkhamLocationRevealed
+
+export interface ArkhamLocationUnrevealed {
+  name: string;
+  type: string;
 }
 
-export interface ArkhamHorrorGameState {
-  cycles: ArkhamHorrorCycle[];
-  scenarios: Record<number, ArkhamHorrorScenario[]>;
-  game: ArkhamHorrorGame | null;
+export interface ArkhamLocationRevealed {
+  name: string;
+  type: string;
+}
+
+export interface ArkhamGame {
+  cycle: ArkhamCycle;
+  scenario: ArkhamScenario;
+  difficulty: ArkhamDifficulty;
+  actions: ArkhamAction[];
+}
+
+export interface ArkhamGameState {
+  cycles: ArkhamCycle[];
+  scenarios: Record<number, ArkhamScenario[]>;
+  game: ArkhamGame | null;
 }

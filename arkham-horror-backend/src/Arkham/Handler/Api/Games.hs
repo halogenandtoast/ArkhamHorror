@@ -43,18 +43,10 @@ getApiV1ArkhamGameR _ = do
       (ArkhamCardFront "https://arkhamdb.com/bundles/cards/01108.jpg")
       (ArkhamCardBack "https://arkhamdb.com/bundles/cards/01108b.jpg")
     ]
-    [ ArkhamLocation
-        (ArkhamLocationFront
-          "Study"
-          ArkhamLocationSymbolCircle
-          (ArkhamCardFront "https://arkhamdb.com/bundles/cards/01111b.png")
-        )
-        (ArkhamLocationBack
-          "Study"
-          ArkhamLocationSymbolCircle
-          []
-          (ArkhamCardBack "https://arkhamdb.com/bundles/cards/01111.png")
-          2
-          (ArkhamClueCountPerInvestigator 2)
-        )
+    [ ArkhamLocationUnrevealed $
+        ArkhamLocationUnrevealedData
+          { arkhamLocationUnrevealedDataName = "Study"
+          , arkhamLocationUnrevealedDataSymbol = ArkhamLocationSymbolCircle
+          , arkhamLocationUnrevealedDataImageUrl = "https://arkhamdb.com/bundles/cards/01111b.png"
+          }
     ]

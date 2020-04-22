@@ -33,23 +33,23 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { Action, Getter } from 'vuex-class';
 import {
-  ArkhamHorrorCycle,
-  ArkhamHorrorDifficulty,
-  ArkhamHorrorGame,
-  ArkhamHorrorSettings,
+  ArkhamCycle,
+  ArkhamDifficulty,
+  ArkhamGame,
+  ArkhamSettings,
 } from '@/arkham/types';
 
 @Component
 export default class NewCampaign extends Vue {
-  private cycle: ArkhamHorrorCycle | null = null;
+  private cycle: ArkhamCycle | null = null;
   private deckUrl = '';
-  private difficulty: ArkhamHorrorDifficulty | null = null;
-  private difficulties: ArkhamHorrorDifficulty[] = ['Easy', 'Standard', 'Hard', 'Expert']
+  private difficulty: ArkhamDifficulty | null = null;
+  private difficulties: ArkhamDifficulty[] = ['Easy', 'Standard', 'Hard', 'Expert']
 
   @Action fetchCycles!: () => Promise<void>
-  @Action startCampaign!: (campaignSettings: ArkhamHorrorSettings) => Promise<ArkhamHorrorGame>
+  @Action startCampaign!: (campaignSettings: ArkhamSettings) => Promise<ArkhamGame>
 
-  @Getter cycles!: ArkhamHorrorCycle[]
+  @Getter cycles!: ArkhamCycle[]
 
   async mounted() {
     await this.fetchCycles();

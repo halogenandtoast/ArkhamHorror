@@ -25,6 +25,8 @@ rolandBanks = ArkhamInvestigator
   , arkhamInvestigatorAgility = 2
   , arkhamInvestigatorHealth = 9
   , arkhamInvestigatorSanity = 5
+  , arkhamInvestigatorFrontImageUrl = "https://arkhamdb.com/bundles/cards/01001.png"
+  , arkhamInvestigatorBackImageUrl = "https://arkhamdb.com/bundles/cards/01001b.png"
   }
 
 getApiV1ArkhamGameR :: ArkhamHorrorGameId -> Handler GameJson

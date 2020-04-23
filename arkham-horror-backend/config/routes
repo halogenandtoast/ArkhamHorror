@@ -16,6 +16,10 @@
     /whoami ApiV1CurrentUserR GET
     /arkham ApiV1ArkhamP:
       /games ApiV1ArkhamGamesP:
-        /#ArkhamHorrorGameId ApiV1ArkhamGameR GET
+        /#ArkhamHorrorGameId ApiV1ArkhamGamesGameP:
+          / ApiV1ArkhamGameR GET
+          /locations ApiV1ArkhamGameLocationsP:
+            /reveal ApiV1ArkhamGameLocationsRevealR POST
+
 
 

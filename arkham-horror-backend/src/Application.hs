@@ -61,6 +61,7 @@ import           Handler.Api.CurrentUser
 import           Handler.Api.Registration
 
 import           Arkham.Handler.Api.Games
+import           Arkham.Handler.Api.Locations
 
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the

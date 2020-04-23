@@ -135,7 +135,8 @@ data ArkhamLocationRevealedData = ArkhamLocationRevealedData
   , arkhamLocationRevealedDataSymbol :: ArkhamLocationSymbol
   , arkhamLocationRevealedDataConnections :: [ArkhamLocationSymbol]
   , arkhamLocationRevealedDataShroud :: Int
-  , arkhamLocationRevealedDataClues :: ArkhamClueCount
+  , arkhamLocationRevealedDataMaxClues :: ArkhamClueCount
+  , arkhamLocationRevealedDataCurrentClues :: Int
   , arkhamLocationRevealedDataImageUrl :: Text
   }
   deriving stock (Generic, Show)
@@ -161,3 +162,34 @@ data ArkhamScenario = ArkhamScenario
   }
   deriving stock (Generic, Show)
   deriving (FromJSON, ToJSON) via Codec (Drop "scenario") ArkhamScenario
+
+data ArkhamSkill
+  = ArkhamSkillWillpower
+  | ArkhamSkillCombat
+  | ArkhamSkillIntellect
+  | ArkhamSkillAgility
+  deriving stock (Generic, Show)
+  deriving (FromJSON, ToJSON) via TaggedJson "skill" ArkhamSkill
+
+data ArkhamSkillCheckTarget
+  = ArkhamSkillCheckTargetLocation ArkhamLocation
+  | ArkhamSkillCheckTargetMythosCard
+  deriving stock (Generic, Show)
+  deriving (FromJSON, ToJSON) via TaggedJson "target" ArkhamSkillCheckTarget
+
+data ArkhamSkillCheck = ArkhamSkillCheck
+  { arkhamSkillCheckBase :: Int
+  , arkhamSkillCheckSkill :: ArkhamSkill
+  , arkhamSkillCheckTarget :: ArkhamSkillCheckTarget
+  }
+  deriving stock (Generic, Show)
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamSkillCheck") ArkhamSkillCheck
+
+data ArkhamSkillCheckResult = ArkhamSkillCheckResult
+  { arkhamSkillCheckResultToken :: ArkhamChaosToken
+  , arkhamSkillCheckResultBase :: Int
+  , arkhamSkillCheckResultSkill :: ArkhamSkill
+  , arkhamSkillCheckResultTarget :: ArkhamSkillCheckTarget
+  }
+  deriving stock (Generic, Show)
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamSkillCheckResult") ArkhamSkillCheckResult

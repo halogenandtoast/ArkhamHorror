@@ -10,6 +10,10 @@
         :class="{ action: canRevealLocation(location) }"
         @click="revealLocation(location)"
         />
+      <template v-else>
+        <img :src="location.imageUrl" />
+        <img v-for="n in location.currentClues" :key="n" src="/img/arkham/clue.png" />
+      </template>
     </div>
 
     <div v-for="investigator in game.investigators" :key="investigator.name">

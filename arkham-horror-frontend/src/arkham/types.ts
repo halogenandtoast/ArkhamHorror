@@ -43,6 +43,7 @@ export interface ArkhamActStack {
 export interface ArkhamScenario {
   name: string;
   stacks: ArkhamStack[];
+  locations: ArkhamLocation[];
 }
 
 export interface ArkhamRevealLocation {
@@ -64,6 +65,7 @@ export interface ArkhamLocationRevealed {
 }
 
 export interface ArkhamGame {
+  id: string;
   cycle: ArkhamCycle;
   scenario: ArkhamScenario;
   difficulty: ArkhamDifficulty;

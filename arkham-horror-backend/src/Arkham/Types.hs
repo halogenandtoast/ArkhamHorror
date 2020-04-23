@@ -34,11 +34,51 @@ data ArkhamCard = ArkhamCard
   deriving stock (Show, Generic)
   deriving (FromJSON, ToJSON) via Codec (Drop "arkhamCard") ArkhamCard
 
-newtype ArkhamAgenda = ArkhamAgenda { arkhamAgendaCurrentCard :: ArkhamCard }
+data ArkhamAgendaCard
+  = ArkhamAgendaCardSideA ArkhamAgendaCardSideAData
+  | ArkhamAgendaCardSideB ArkhamAgendaCardSideBData
+  deriving stock (Generic, Show)
+  deriving (FromJSON, ToJSON) via TaggedJson "agendaCard" ArkhamAgendaCard
+
+data ArkhamAgendaCardSideAData = ArkhamAgendaCardSideAData
+  { arkhamAgendaCardSideADataName :: Text
+  , arkhamAgendaCardSideADataImageUrl :: Text
+  }
+  deriving stock (Show, Generic)
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamAgendaCardSideAData") ArkhamAgendaCardSideAData
+
+data ArkhamAgendaCardSideBData = ArkhamAgendaCardSideBData
+  { arkhamAgendaCardSideBDataName :: Text
+  , arkhamAgendaCardSideBDataImageUrl :: Text
+  }
+  deriving stock (Show, Generic)
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamAgendaCardSideBData") ArkhamAgendaCardSideBData
+
+newtype ArkhamAgenda = ArkhamAgenda { arkhamAgendaCurrentCard :: ArkhamAgendaCard }
   deriving stock (Show, Generic)
   deriving (FromJSON, ToJSON) via Codec (Drop "arkhamAgenda") ArkhamAgenda
 
-newtype ArkhamAct = ArkhamAct { arkhamActCurrentCard :: ArkhamCard }
+data ArkhamActCard
+  = ArkhamActCardSideA ArkhamActCardSideAData
+  | ArkhamActCardSideB ArkhamActCardSideBData
+  deriving stock (Generic, Show)
+  deriving (FromJSON, ToJSON) via TaggedJson "actCard" ArkhamActCard
+
+data ArkhamActCardSideAData = ArkhamActCardSideAData
+  { arkhamActCardSideADataName :: Text
+  , arkhamActCardSideADataImageUrl :: Text
+  }
+  deriving stock (Show, Generic)
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamActCardSideAData") ArkhamActCardSideAData
+
+data ArkhamActCardSideBData = ArkhamActCardSideBData
+  { arkhamActCardSideBDataName :: Text
+  , arkhamActCardSideBDataImageUrl :: Text
+  }
+  deriving stock (Show, Generic)
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamActCardSideBData") ArkhamActCardSideBData
+
+newtype ArkhamAct = ArkhamAct { arkhamActCurrentCard :: ArkhamActCard }
   deriving stock (Show, Generic)
   deriving (FromJSON, ToJSON) via Codec (Drop "arkhamAct") ArkhamAct
 
@@ -116,7 +156,7 @@ data ArkhamCycle = ArkhamCycle
 
 data ArkhamScenario = ArkhamScenario
   { scenarioName :: Text
-  , scenarioStacks :: [ArkhamStack]
+  , scenarioStacks :: [ArkhamStack] -- Should we call these decks
   , scenarioLocations :: [ArkhamLocation]
   }
   deriving stock (Generic, Show)

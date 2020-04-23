@@ -6,6 +6,7 @@ import {
   ArkhamGameState,
   ArkhamGame,
   ArkhamCycle,
+  ArkhamLocationRevealed,
 } from '@/arkham/types';
 import api from '@/api';
 
@@ -19,9 +20,33 @@ const mutations: MutationTree<ArkhamGameState> = {
   setGame(state: ArkhamGameState, game: ArkhamGame) {
     state.game = game;
   },
+  revealLocation(state: ArkhamGameState, location: ArkhamLocationRevealed) {
+    if (state.game) {
+      state.game.scenario.locations = [location];
+    }
+  },
 };
 
 const actions: ActionTree<ArkhamGameState, RootState> = {
+  revealLocation({ state, commit }): Promise<void> {
+    const { game } = state;
+    if (game !== null && game !== undefined) {
+      return api
+        .post<ArkhamLocationRevealed>(`arkham/games/${game.id}/locations/reveal`)
+        .then((newLocation) => {
+          commit('revealLocation', newLocation.data);
+        });
+    }
+
+    return Promise.resolve();
+  },
+
+  fetchGame({ commit }, gameId: string): Promise<void> {
+    return api.get<ArkhamGame>(`arkham/games/${gameId}`).then((game) => {
+      commit('setGame', game.data);
+    });
+  },
+
   fetchCycles({ state, commit }): Promise<void> {
     if (state.cycles.length === 0) {
       return api.get<string[]>('arkham/cycles').then((cycles) => {
@@ -59,6 +84,7 @@ const actions: ActionTree<ArkhamGameState, RootState> = {
 const getters: GetterTree<ArkhamGameState, RootState> = {
   cycles: (state) => state.cycles,
   cycleScenarios: (state) => (cycle: ArkhamCycle) => state.scenarios[cycle.id],
+  game: (state) => state.game,
 };
 
 const state: ArkhamGameState = {

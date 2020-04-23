@@ -1,13 +1,14 @@
 <template>
   <div id="game" v-if="ready">
-    <img :src="game.scenario.stacks[0].currentCard.front.url" />
-    <img :src="game.scenario.stacks[1].currentCard.front.url" />
+    <img :src="game.scenario.stacks[0].currentCard.imageUrl" />
+    <img :src="game.scenario.stacks[1].currentCard.imageUrl" />
 
     <div v-for="location in game.scenario.locations" :key="location.name">
       <img
         v-if="location.type === 'unrevealed'"
         :src="location.imageUrl"
         :class="{ action: canRevealLocation(location) }"
+        @click="revealLocation(location)"
         />
     </div>
 
@@ -19,21 +20,24 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import api from '@/api';
-import { ArkhamGame, ArkhamLocation } from '@/arkham/types';
+import { Getter, Action } from 'vuex-class';
+import {
+  ArkhamGame,
+  ArkhamLocation,
+  ArkhamLocationUnrevealed,
+} from '@/arkham/types';
 
 @Component
 export default class Game extends Vue {
   @Prop(String) readonly gameId!: string;
+  @Getter game!: ArkhamGame | void;
+  @Action revealLocation!: (location: ArkhamLocationUnrevealed) => void
+  @Action fetchGame!: (gameId: string) => void
 
   private ready = false;
-  private game: ArkhamGame | null = null;
-  private revealedLocations: Record<number, boolean> = {}
 
   async mounted() {
-    this.game = await api
-      .get(`arkham/games/${this.gameId}`)
-      .then((response) => Promise.resolve(response.data));
+    await this.fetchGame(this.gameId);
     this.ready = true;
   }
 

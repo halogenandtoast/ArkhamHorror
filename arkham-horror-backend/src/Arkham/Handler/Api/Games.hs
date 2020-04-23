@@ -8,7 +8,8 @@ import Import
 import Json
 
 data GameJson = GameJson
-  { gameCycle :: Maybe ArkhamCycle
+  { gameId :: Text
+  , gameCycle :: Maybe ArkhamCycle
   , gameScenario :: ArkhamScenario
   , gameInvestigators :: [ArkhamInvestigator]
   , gameActions :: [ArkhamAction]
@@ -32,16 +33,18 @@ rolandBanks = ArkhamInvestigator
 getApiV1ArkhamGameR :: ArkhamHorrorGameId -> Handler GameJson
 getApiV1ArkhamGameR _ = do
   cycle <- liftIO $ decodeFileStrict' "data/arkham/cycles/nightOfTheZealot.json"
-  pure $ GameJson cycle scenario [rolandBanks] [ArkhamActionRevealLocation 0]
+  pure $ GameJson "1" cycle scenario [rolandBanks] [ArkhamActionRevealLocation 0]
  where
   scenario = ArkhamScenario
     "The Gathering"
-    [ ArkhamStackAgenda $ ArkhamAgenda $ ArkhamCard
-      (ArkhamCardFront "https://arkhamdb.com/bundles/cards/01105.jpg")
-      (ArkhamCardBack "https://arkhamdb.com/bundles/cards/01105b.jpg")
-    , ArkhamStackAct $ ArkhamAct $ ArkhamCard
-      (ArkhamCardFront "https://arkhamdb.com/bundles/cards/01108.jpg")
-      (ArkhamCardBack "https://arkhamdb.com/bundles/cards/01108b.jpg")
+    [ ArkhamStackAgenda $ ArkhamAgenda $ ArkhamAgendaCardSideA $ ArkhamAgendaCardSideAData
+      { arkhamAgendaCardSideADataName = ""
+      , arkhamAgendaCardSideADataImageUrl = "https://arkhamdb.com/bundles/cards/01105.jpg"
+      }
+    , ArkhamStackAct $ ArkhamAct $ ArkhamActCardSideA $ ArkhamActCardSideAData
+      { arkhamActCardSideADataName = ""
+      , arkhamActCardSideADataImageUrl = "https://arkhamdb.com/bundles/cards/01108.jpg"
+      }
     ]
     [ ArkhamLocationUnrevealed $
         ArkhamLocationUnrevealedData

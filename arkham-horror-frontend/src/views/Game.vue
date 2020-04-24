@@ -11,7 +11,11 @@
         @click="revealLocation(location)"
         />
       <template v-else>
-        <img :src="location.imageUrl" />
+        <img
+          :src="location.imageUrl"
+          :class="{ action: canInvestigate(location) }"
+          @click="investigateLocation(location)"
+          />
         <img v-for="n in location.currentClues" :key="n" src="/img/arkham/clue.png" />
       </template>
     </div>
@@ -36,6 +40,7 @@ export default class Game extends Vue {
   @Prop(String) readonly gameId!: string;
   @Getter game!: ArkhamGame | void;
   @Action revealLocation!: (location: ArkhamLocationUnrevealed) => void
+  @Action investigateLocation!: (location: ArkhamLocationUnrevealed) => void
   @Action fetchGame!: (gameId: string) => void
 
   private ready = false;
@@ -48,6 +53,14 @@ export default class Game extends Vue {
   canRevealLocation(location: ArkhamLocation) {
     if (this.game && this.game.actions !== null) {
       return location.type === 'unrevealed';
+    }
+
+    return false;
+  }
+
+  canInvestigate(location: ArkhamLocation) {
+    if (this.game && this.game.actions !== null) {
+      return location.type === 'revealed';
     }
 
     return false;

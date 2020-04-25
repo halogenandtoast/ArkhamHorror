@@ -1,9 +1,10 @@
 module Arkham.Types where
 
 import Data.Text
+import Data.Aeson.Encoding
 import GHC.Generics
 import Json
-import Prelude (Int, Show)
+import Prelude (Int, Show, pure, ($), fail)
 
 data ArkhamInvestigator = ArkhamInvestigator
   { arkhamInvestigatorName :: Text
@@ -173,25 +174,44 @@ data ArkhamSkill
   deriving stock (Generic, Show)
   deriving (FromJSON, ToJSON) via TaggedJson "skill" ArkhamSkill
 
-data ArkhamSkillCheckTarget
-  = ArkhamSkillCheckTargetLocation ArkhamLocation
-  | ArkhamSkillCheckTargetMythosCard
+data ArkhamSkillTestTarget
+  = ArkhamSkillTestTargetLocation ArkhamLocation
+  | ArkhamSkillTestTargetMythosCard
   deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via TaggedJson "target" ArkhamSkillCheckTarget
+  deriving (FromJSON, ToJSON) via TaggedJson "target" ArkhamSkillTestTarget
 
-data ArkhamSkillCheck = ArkhamSkillCheck
-  { arkhamSkillCheckBase :: Int
-  , arkhamSkillCheckSkill :: ArkhamSkill
-  , arkhamSkillCheckTarget :: ArkhamSkillCheckTarget
+data ArkhamSkillTestResultType
+  = ArkhamSkillTestResultTypeSuccess
+  | ArkhamSkillTestResultTypeFailure
+  deriving stock (Show)
+
+instance ToJSON ArkhamSkillTestResultType where
+  toJSON ArkhamSkillTestResultTypeSuccess = "success"
+  toJSON ArkhamSkillTestResultTypeFailure = "failure"
+  toEncoding ArkhamSkillTestResultTypeSuccess = text "success"
+  toEncoding ArkhamSkillTestResultTypeFailure = text "success"
+
+instance FromJSON ArkhamSkillTestResultType where
+  parseJSON = withText "ArkhamSkillTestResultType" $ \case
+      "success" -> pure ArkhamSkillTestResultTypeSuccess 
+      "failure" -> pure ArkhamSkillTestResultTypeFailure
+      _ -> fail "Not a valid ArkhamSkillTestResultType"
+
+-- TODO: A skill test can be a part of a card
+data ArkhamSkillTest = ArkhamSkillTest
+  { arkhamSkillTestBase :: Int
+  , arkhamSkillTestSkill :: ArkhamSkill
+  , arkhamSkillTestAction :: ArkhamAction
   }
   deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamSkillCheck") ArkhamSkillCheck
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamSkillTest") ArkhamSkillTest
 
-data ArkhamSkillCheckResult = ArkhamSkillCheckResult
-  { arkhamSkillCheckResultToken :: ArkhamChaosToken
-  , arkhamSkillCheckResultBase :: Int
-  , arkhamSkillCheckResultSkill :: ArkhamSkill
-  , arkhamSkillCheckResultTarget :: ArkhamSkillCheckTarget
+data ArkhamSkillTestResult = ArkhamSkillTestResult
+  { arkhamSkillTestResultToken :: ArkhamChaosToken
+  , arkhamSkillTestResultBase :: Int
+  , arkhamSkillTestResultSkill :: ArkhamSkill
+  , arkhamSkillTestResultAction :: ArkhamAction
+  , arkhamSkillTestResultType :: ArkhamSkillTestResultType
   }
   deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamSkillCheckResult") ArkhamSkillCheckResult
+  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamSkillTestResult") ArkhamSkillTestResult

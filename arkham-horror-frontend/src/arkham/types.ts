@@ -54,15 +54,15 @@ export type ArkhamAction = ArkhamRevealLocation
 
 export type ArkhamLocation = ArkhamLocationUnrevealed | ArkhamLocationRevealed
 
-export type ArkhamSkillCheckResultType = 'success' | 'failure'
+export type ArkhamSkillTestResultType = 'success' | 'failure'
 
 export type ArkhamSkill = 'Willpower' | 'Intellect' | 'Combat' | 'Agility'
 
-export interface ArkhamSkillCheckResult {
+export interface ArkhamSkillTestResult {
   skill: ArkhamSkill;
   skillValue: number;
   difficulty: number;
-  type: ArkhamSkillCheckResultType;
+  type: ArkhamSkillTestResultType;
 }
 
 export interface ArkhamLocationUnrevealed {

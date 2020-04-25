@@ -123,7 +123,8 @@ data ArkhamClueCount = ArkhamClueCountNumber Int | ArkhamClueCountPerInvestigato
   deriving (FromJSON, ToJSON) via TaggedJson "clueCount" ArkhamClueCount
 
 data ArkhamLocationUnrevealedData = ArkhamLocationUnrevealedData
-  { arkhamLocationUnrevealedDataName :: Text
+  { arkhamLocationUnrevealedDataId :: Text
+  , arkhamLocationUnrevealedDataName :: Text
   , arkhamLocationUnrevealedDataSymbol :: ArkhamLocationSymbol
   , arkhamLocationUnrevealedDataImageUrl :: Text
   }
@@ -131,7 +132,8 @@ data ArkhamLocationUnrevealedData = ArkhamLocationUnrevealedData
   deriving (FromJSON, ToJSON) via Codec (Drop "arkhamLocationUnrevealedData") ArkhamLocationUnrevealedData
 
 data ArkhamLocationRevealedData = ArkhamLocationRevealedData
-  { arkhamLocationRevealedDataName :: Text
+  { arkhamLocationRevealedDataId :: Text
+  , arkhamLocationRevealedDataName :: Text
   , arkhamLocationRevealedDataSymbol :: ArkhamLocationSymbol
   , arkhamLocationRevealedDataConnections :: [ArkhamLocationSymbol]
   , arkhamLocationRevealedDataShroud :: Int

@@ -6,7 +6,8 @@ import Arkham.Types
 postApiV1ArkhamGameLocationsRevealR :: ArkhamHorrorGameId -> Handler ArkhamLocation
 postApiV1ArkhamGameLocationsRevealR _ = pure $ ArkhamLocationRevealed $
   ArkhamLocationRevealedData
-    { arkhamLocationRevealedDataName = "Study"
+    { arkhamLocationRevealedDataId = "1"
+    , arkhamLocationRevealedDataName = "Study"
     , arkhamLocationRevealedDataSymbol = ArkhamLocationSymbolCircle
     , arkhamLocationRevealedDataConnections = []
     , arkhamLocationRevealedDataShroud = 2

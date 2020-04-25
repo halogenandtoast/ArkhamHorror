@@ -7,6 +7,7 @@ import {
   ArkhamGame,
   ArkhamCycle,
   ArkhamLocationRevealed,
+  ArkhamSkillCheckResult,
 } from '@/arkham/types';
 import api from '@/api';
 
@@ -28,6 +29,22 @@ const mutations: MutationTree<ArkhamGameState> = {
 };
 
 const actions: ActionTree<ArkhamGameState, RootState> = {
+  investigateLocation({ state, commit }, location: ArkhamLocationRevealed): Promise<void> {
+    const { game } = state;
+    if (game !== null && game !== undefined) {
+      return api
+        .post<ArkhamSkillCheckResult>(
+          `arkham/games/${game.id}/locations/${location.id}/investigate`,
+        )
+        .then((response) => {
+          const result = response.data;
+          commit('investigate', { location, result });
+        });
+    }
+
+    return Promise.resolve();
+  },
+
   revealLocation({ state, commit }): Promise<void> {
     const { game } = state;
     if (game !== null && game !== undefined) {

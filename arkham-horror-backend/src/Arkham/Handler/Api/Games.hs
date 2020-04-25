@@ -48,7 +48,8 @@ getApiV1ArkhamGameR _ = do
     ]
     [ ArkhamLocationUnrevealed $
         ArkhamLocationUnrevealedData
-          { arkhamLocationUnrevealedDataName = "Study"
+          { arkhamLocationUnrevealedDataId = "1"
+          , arkhamLocationUnrevealedDataName = "Study"
           , arkhamLocationUnrevealedDataSymbol = ArkhamLocationSymbolCircle
           , arkhamLocationUnrevealedDataImageUrl = "https://arkhamdb.com/bundles/cards/01111b.png"
           }

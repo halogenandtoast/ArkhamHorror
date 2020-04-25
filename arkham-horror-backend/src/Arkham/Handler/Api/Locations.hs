@@ -7,17 +7,17 @@ import Import
 import Prelude ((!!))
 import System.Random
 
-sample :: [a] -> IO a
+sample :: NE.NonEmpty a -> IO a
 sample l = (toList l !!) <$> randomRIO (0, length l - 1)
 
 getRandomToken :: NE.NonEmpty ArkhamChaosToken -> IO ArkhamChaosToken
-getRandomToken = sample . toList
+getRandomToken = sample
 
 tokenPool :: NE.NonEmpty ArkhamChaosToken
 tokenPool = NE.fromList [ArkhamChaosTokenNumber (-1)]
 
-tokenToModifier :: ArkhamChaosToken -> Int
-tokenToModifier _ = -1
+tokenToModifier :: ArkhamScenario -> ArkhamChaosToken -> Int
+tokenToModifier _ _ = -1
 
 investigatorSkillValue :: ArkhamSkill -> ArkhamInvestigator -> Int
 investigatorSkillValue ArkhamSkillWillpower = arkhamInvestigatorWillpower
@@ -42,7 +42,7 @@ postApiV1ArkhamGameLocationsInvestigateR _ _ = case shroudValue study of
     token <- liftIO $ getRandomToken tokenPool
     let skillValue = investigatorSkillValue ArkhamSkillIntellect rolandBanks
     -- TODO: commit skill cards
-    let finalValue = skillValue - difficulty - tokenToModifier token
+    let finalValue = skillValue - difficulty - tokenToModifier (error "unused") token
     let
       result = if finalValue >= 0
         then ArkhamSkillTestResultTypeSuccess

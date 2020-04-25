@@ -6,7 +6,7 @@ User json sql=users
     UniqueEmail email
     deriving Show
 
-ArkhamHorrorGamePlayers json sql=arkham_horror_game_players
+ArkhamGamePlayers json sql=arkham_horror_game_players
     gameId ArkhamHorrorGameId
     userId UserId
     UniqueArkhamHorrorPlayer gameId userId

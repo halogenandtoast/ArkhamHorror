@@ -20,7 +20,8 @@
           / ApiV1ArkhamGameR GET
           /locations ApiV1ArkhamGameLocationsP:
             /reveal ApiV1ArkhamGameLocationsRevealR POST
-            /investigate ApiV1ArkhamGameLocationsInvestigateR POST
+            /#Int ApiV1ArkhamGameLocationsLocationP:
+              /investigate ApiV1ArkhamGameLocationsInvestigateR POST
 
 
 

@@ -7,7 +7,7 @@ import {
   ArkhamGame,
   ArkhamCycle,
   ArkhamLocationRevealed,
-  ArkhamSkillCheckResult,
+  ArkhamSkillTestResult,
 } from '@/arkham/types';
 import api from '@/api';
 
@@ -33,7 +33,7 @@ const actions: ActionTree<ArkhamGameState, RootState> = {
     const { game } = state;
     if (game !== null && game !== undefined) {
       return api
-        .post<ArkhamSkillCheckResult>(
+        .post<ArkhamSkillTestResult>(
           `arkham/games/${game.id}/locations/${location.id}/investigate`,
         )
         .then((response) => {

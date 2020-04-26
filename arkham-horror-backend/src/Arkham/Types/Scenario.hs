@@ -1,24 +1,19 @@
 module Arkham.Types.Scenario where
 
-import Arkham.Types.Location
-import Arkham.Types.Stack
 import Data.Text
+import Database.Persist.Sql
 import GHC.Generics
 import Json
 import Prelude (Show)
 
-data ArkhamScenarioData = ArkhamScenarioData
-  { arkhamScenarioId :: Text
-  , arkhamScenarioName :: Text
-  , arkhamScenarioFlavor :: Text
-  }
+newtype ArkhamEncounterSet = ArkhamEncounterSet Text
   deriving stock (Generic, Show)
-  deriving (ToJSON, FromJSON) via Codec (Drop "arkham") ArkhamScenarioData
+  deriving (ToJSON, FromJSON) via TaggedJson "encounterSet" ArkhamEncounterSet
 
-data ArkhamScenario = ArkhamScenario
-  { scenarioName :: Text
-  , scenarioStacks :: [ArkhamStack] -- Should we call these decks
-  , scenarioLocations :: [ArkhamLocation]
+data ArkhamScenarioJsonData = ArkhamScenarioJsonData
+  { arkhamScenarioDataFlavor :: Text
+  , arkhamScenarioDataEncounterSets :: [ArkhamEncounterSet]
   }
   deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via Codec (Drop "scenario") ArkhamScenario
+  deriving (ToJSON, FromJSON) via Codec (Drop "arkhamScenarioJsonData") ArkhamScenarioJsonData
+  deriving (PersistField, PersistFieldSql) via PersistJson ArkhamScenarioJsonData

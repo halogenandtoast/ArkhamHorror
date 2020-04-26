@@ -5,7 +5,7 @@ import Data.Map.Strict hiding (map)
 import Data.Text (Text)
 import Database.Persist
 import Model
-import Prelude (const, flip, map, ($))
+import Prelude (Int, const, flip, map, uncurry, ($))
 
 
 rolandBanks :: ArkhamInvestigator
@@ -27,14 +27,29 @@ rolandBanks = ArkhamInvestigator
   }
 
 nightOfTheZealot :: ArkhamProductSet
-nightOfTheZealot =
-  ArkhamProductSet { arkhamProductSetTitle = "Night of the Zealot" }
+nightOfTheZealot = ArkhamProductSet
+  { arkhamProductSetTitle = "Night of the Zealot"
+  , arkhamProductSetType = "Cycle"
+  }
 
 nightOfTheZealotEncounters :: [(Text, Int)]
-nightOfTheZealotEncounterTitles =
+nightOfTheZealotEncounters =
   [ ("The Gathering", 16)
   , ("The Midnight Masks", 20)
   , ("The Devourer Below", 18)
+  , ("Cult of Umôrdhoth", 5)
+  , ("Ghouls", 7)
+  , ("Rats", 3)
+  , ("Chilling Cold", 4)
+  , ("Striking Fear", 7)
+  , ("Ancient Evils", 3)
+  , ("Dark Cult", 6)
+  , ("Nightgaunts", 4)
+  , ("Locked Doors", 2)
+  , ("Agents of Cthulhu", 4)
+  , ("Agents of Hastur", 4)
+  , ("Agents of Shub-Niggurath", 4)
+  , ("Agents of Yog-Sothoth", 4)
   ]
 
 allInvestigators :: [ArkhamInvestigator]
@@ -46,7 +61,8 @@ allProductSets = [nightOfTheZealot]
 encounterSets :: Map Text (ArkhamProductSetId -> [ArkhamEncounterSet])
 encounterSets = fromList
   [ ( arkhamProductSetTitle nightOfTheZealot
-    , \id -> map (flip ArkhamEncounterSet id) nightOfTheZealotEncounterTitles
+    , \id ->
+      map (uncurry (flip ArkhamEncounterSet id)) nightOfTheZealotEncounters
     )
   ]
 

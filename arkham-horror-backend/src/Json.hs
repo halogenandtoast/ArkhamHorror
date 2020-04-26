@@ -16,9 +16,26 @@ import qualified Data.HashMap.Strict as HashMap
 import Data.Kind (Type)
 import Data.Proxy (Proxy(..))
 import Data.Text (Text, pack, unpack)
+import Database.Persist.Postgresql.JSON ()
+import Database.Persist.Sql
 import GHC.Generics
 import GHC.TypeLits (KnownSymbol, symbolVal)
 import Prelude
+
+newtype PersistJson a = PersistJson { unPersistJson :: a }
+
+instance (FromJSON a, ToJSON a) => PersistFieldSql (PersistJson a) where
+  sqlType _ = sqlType (Proxy @Value)
+
+instance (FromJSON a, ToJSON a) => PersistField (PersistJson a) where
+  toPersistValue = toPersistValue . toJSON . unPersistJson
+  fromPersistValue p = case fromPersistValue p of
+    Left err -> Left err
+    Right v -> case fromJSON v of
+      Error err -> Left (pack err)
+      Success result -> pure $ PersistJson result
+
+
 
 class TypeName f where
   typeName :: f p -> String

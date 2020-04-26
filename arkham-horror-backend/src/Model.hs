@@ -19,6 +19,8 @@ where
 import ClassyPrelude.Yesod
 
 import Arkham.Model.Game as X
+import Arkham.Model.ProductSet as X
+import Arkham.Model.Scenario as X
 import Arkham.Types.Simple
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.Quasi

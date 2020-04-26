@@ -20,32 +20,12 @@ data GameJson = GameJson
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler GameJson
 getApiV1ArkhamGameR _ = do
   cycle <- liftIO $ decodeFileStrict' "data/arkham/cycles/nightOfTheZealot.json"
-  rolandBanks <- runDB $ entityVal <$> getBy404 (UniqueInvestigatorTitle
-    "Roland Banks")
+  scenario <-
+    liftIO
+    $ decodeFileStrict'
+        "data/arkham/scenarios/nightOfTheZealot/theGathering.json"
+    >>= maybe (throwString "parseFailed") pure
+  rolandBanks <- runDB $ entityVal <$> getBy404
+    (UniqueInvestigatorTitle "Roland Banks")
   pure
     $ GameJson "1" cycle scenario [rolandBanks] [ArkhamActionRevealLocation 0]
- where
-  scenario = ArkhamScenario
-    "The Gathering"
-    [ ArkhamStackAgenda
-    $ ArkhamAgenda
-    $ ArkhamAgendaCardSideA
-    $ ArkhamAgendaCardSideAData
-        { arkhamAgendaCardSideADataName = ""
-        , arkhamAgendaCardSideADataImageUrl =
-          "https://arkhamdb.com/bundles/cards/01105.jpg"
-        }
-    , ArkhamStackAct $ ArkhamAct $ ArkhamActCardSideA $ ArkhamActCardSideAData
-      { arkhamActCardSideADataName = ""
-      , arkhamActCardSideADataImageUrl =
-        "https://arkhamdb.com/bundles/cards/01108.jpg"
-      }
-    ]
-    [ ArkhamLocationUnrevealed $ ArkhamLocationUnrevealedData
-        { arkhamLocationUnrevealedDataId = "1"
-        , arkhamLocationUnrevealedDataName = "Study"
-        , arkhamLocationUnrevealedDataSymbol = ArkhamLocationSymbolCircle
-        , arkhamLocationUnrevealedDataImageUrl =
-          "https://arkhamdb.com/bundles/cards/01111b.png"
-        }
-    ]

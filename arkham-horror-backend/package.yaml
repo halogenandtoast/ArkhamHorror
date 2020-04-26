@@ -68,6 +68,8 @@ dependencies:
 - template-haskell
 - text
 - time
+- transformers
+- unliftio
 - unordered-containers
 - vector
 - wai

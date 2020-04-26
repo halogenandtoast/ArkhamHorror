@@ -6,10 +6,6 @@ User json sql=users
     UniqueEmail email
     deriving Show
 
-ArkhamProductSet sql=arkham_product_sets
-  title Text
-  UniqueProductSet title
-
 ArkhamEncounterSet sql=arkham_encounter_sets
   title Text
   productSetId ArkhamProductSetId

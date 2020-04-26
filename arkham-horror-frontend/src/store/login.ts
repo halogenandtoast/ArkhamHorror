@@ -38,12 +38,17 @@ const actions: ActionTree<LoginState, RootState> = {
     commit('signOut');
     router.push({ path: '/' });
   },
-  setCurrentUser({ commit }, authentication: Authentication): void {
+  setCurrentUser({ commit, dispatch }, authentication: Authentication): void {
     localStorage.setItem('token', authentication.token);
     api.defaults.headers.common.Authorization = `Token ${authentication.token}`;
-    api.get<User>('whoami').then((whoami) => {
-      commit('signIn', whoami.data);
-    });
+    api.get<User>('whoami').then(
+      (whoami) => {
+        commit('signIn', whoami.data);
+      },
+      () => {
+        dispatch('logout');
+      },
+    );
   },
   loadUserFromStorage({ dispatch }): void {
     const token = localStorage.getItem('token');

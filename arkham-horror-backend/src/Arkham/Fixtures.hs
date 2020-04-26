@@ -1,12 +1,19 @@
 module Arkham.Fixtures where
 
 import Arkham.Types
-import Prelude (($))
+import Data.Map.Strict hiding (map)
+import Data.Text (Text)
+import Database.Persist
+import Model
+import Prelude (const, flip, map, ($))
 
 
 rolandBanks :: ArkhamInvestigator
 rolandBanks = ArkhamInvestigator
-  { arkhamInvestigatorName = "Roland Banks"
+  { arkhamInvestigatorTitle = "Roland Banks"
+  , arkhamInvestigatorSubtitle = "The Fed"
+  , arkhamInvestigatorClass = "Guardian"
+  , arkhamInvestigatorTraits = ["Agency", "Detective"]
   , arkhamInvestigatorWillpower = 3
   , arkhamInvestigatorIntellect = 3
   , arkhamInvestigatorCombat = 4
@@ -18,6 +25,31 @@ rolandBanks = ArkhamInvestigator
   , arkhamInvestigatorBackImageUrl =
     "https://arkhamdb.com/bundles/cards/01001b.png"
   }
+
+nightOfTheZealot :: ArkhamProductSet
+nightOfTheZealot =
+  ArkhamProductSet { arkhamProductSetTitle = "Night of the Zealot" }
+
+nightOfTheZealotEncounterTitles :: [Text]
+nightOfTheZealotEncounterTitles =
+  ["The Gathering", "The Midnight Masks", "The Devourer Below"]
+
+allInvestigators :: [ArkhamInvestigator]
+allInvestigators = [rolandBanks]
+
+allProductSets :: [ArkhamProductSet]
+allProductSets = [nightOfTheZealot]
+
+encounterSets :: Map Text (ArkhamProductSetId -> [ArkhamEncounterSet])
+encounterSets = fromList
+  [ ( arkhamProductSetTitle nightOfTheZealot
+    , \id -> map (flip ArkhamEncounterSet id) nightOfTheZealotEncounterTitles
+    )
+  ]
+
+encounterSetsFor :: Entity ArkhamProductSet -> [ArkhamEncounterSet]
+encounterSetsFor (Entity id product) =
+  findWithDefault (const []) (arkhamProductSetTitle product) encounterSets id
 
 study :: ArkhamLocation
 study = ArkhamLocationRevealed $ ArkhamLocationRevealedData

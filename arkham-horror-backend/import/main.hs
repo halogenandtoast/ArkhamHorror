@@ -1,21 +1,18 @@
-import Prelude     (IO, putStrLn, ($), flip)
-import Application (appMain)
-import Model
+import Arkham.Fixtures
 import Control.Monad (forM_)
-import Control.Monad.Logger (runStderrLoggingT)
 import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Logger (runStderrLoggingT)
 import Database.Persist
 import Database.Persist.Postgresql
+import Model
+import Prelude (IO, flip, putStrLn, ($), (.), (=<<))
 
 main :: IO ()
 main =
-  runStderrLoggingT $ withPostgresqlPool "dbname=arkham-horror-backend" 1 $ \pool ->
-    liftIO $ flip runSqlPersistMPool pool $
-      forM_ cycles $ \cycle -> insertUnique cycle
-
-cycles :: [ArkhamHorrorCycle]
-cycles =
-  [ ArkhamHorrorCycle "Night of the Zealot"
-  , ArkhamHorrorCycle "The Dunwhich Legacy"
-  , ArkhamHorrorCycle "The Path to Carcosa"
-  ]
+  runStderrLoggingT
+    $ withPostgresqlPool "dbname=arkham-horror-backend" 1
+    $ \pool -> liftIO $ flip runSqlPersistMPool pool $ do
+        forM_ allInvestigators (`upsert` [])
+        forM_ allProductSets $ \productSet -> do
+          productSetE <- upsert productSet []
+          forM_ (encounterSetsFor productSetE) (`upsert` [])

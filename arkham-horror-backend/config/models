@@ -6,7 +6,82 @@ User json sql=users
     UniqueEmail email
     deriving Show
 
-ArkhamGamePlayers json sql=arkham_horror_game_players
-    gameId ArkhamHorrorGameId
+ArkhamProductSet sql=arkham_product_sets
+  title Text
+  UniqueProductSet title
+
+ArkhamEncounterSet sql=arkham_encounter_sets
+  title Text
+  productSetId ArkhamProductSetId
+  UniqueEncounterSet productSetId title
+
+ArkhamInvestigator sql=arkham_investigators
+  title Text
+  subtitle Text
+  class Text
+  willpower Int
+  intellect Int
+  combat Int
+  agility Int
+  health Int
+  sanity Int
+  traits [Text]
+  frontImageUrl Text
+  backImageUrl Text
+  UniqueInvestigatorTitle title
+  deriving Generic Show
+
+ArkhamScenarioCard sql=arkham_scenario_cards
+  type Text
+  title Text
+  traits [Text]
+  ability Text
+  enemyFightValue Int Maybe
+  enemyHealthValue Int Maybe
+  enemyHealthValuePerInvestigator Bool Maybe
+  enemyEvadeValue Int Maybe
+  enemyDamage Int Maybe
+  enemyHorror Int Maybe
+  locationShroud Int Maybe
+  locationClueValue Int Maybe
+  locationClueValuePerInvestigator Int Maybe
+  locationConnectionSymbols [Text]
+  sequence Int Maybe
+  clueThreshold Int Maybe
+  doomThreshold Int Maybe
+  productSetId ArkhamProductSetId
+  productSetNumber Int
+  encounterSetId ArkhamEncounterSetId Maybe
+  encounterSetNumber Int Maybe
+  image Text
+  reverse ArkhamScenarioCardId Maybe
+
+ArkhamPlayerCard sql=arkham_player_cards
+  cost Int Maybe
+  level Int Maybe
+  type Text
+  class Text
+  title Text
+  subtitle Text
+  traits [Text]
+  ability Text
+  health Int Maybe
+  sanity Int Maybe
+  skillTestIcons [Text]
+  encounterSetId ArkhamEncounterSetId Maybe
+  encounterSetNumber Int Maybe
+  productSetId ArkhamProductSetId
+  productSetNumber Int
+  image Text
+  reverse ArkhamPlayerCardId Maybe
+
+ArkhamGame sql=arkham_games
+    difficulty ArkhamDifficulty
+    tokenPool [ArkhamChaosToken]
+    state Value
+
+ArkhamGamePlayers sql=arkham_game_players
+    gameId ArkhamGameId
     userId UserId
+    investigatorId ArkhamInvestigatorId
     UniqueArkhamHorrorPlayer gameId userId

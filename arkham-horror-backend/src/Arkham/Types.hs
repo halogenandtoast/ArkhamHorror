@@ -1,24 +1,19 @@
-module Arkham.Types where
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+module Arkham.Types
+  ( module X
+  , module Arkham.Types
+  )
+where
 
-import Data.Text
+import Arkham.Types.Simple as X
 import Data.Aeson.Encoding
+import Data.Text
 import GHC.Generics
 import Json
-import Prelude (Int, Show, pure, ($), fail)
+import Model
+import Prelude (Int, Show, fail, pure, ($))
 
-data ArkhamInvestigator = ArkhamInvestigator
-  { arkhamInvestigatorName :: Text
-  , arkhamInvestigatorWillpower :: Int
-  , arkhamInvestigatorIntellect :: Int
-  , arkhamInvestigatorCombat :: Int
-  , arkhamInvestigatorAgility :: Int
-  , arkhamInvestigatorHealth :: Int
-  , arkhamInvestigatorSanity :: Int
-  , arkhamInvestigatorFrontImageUrl :: Text
-  , arkhamInvestigatorBackImageUrl :: Text
-  }
-  deriving stock (Show,Generic)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamInvestigator") ArkhamInvestigator
+deriving via Codec (Drop "arkhamInvestigator") ArkhamInvestigator instance ToJSON ArkhamInvestigator
 
 newtype ArkhamCardFront = ArkhamCardFront { arkhamCardFrontUrl :: Text }
   deriving stock (Show,Generic)
@@ -107,10 +102,6 @@ data ArkhamChaosTokenDifficulties = ArkhamChaosTokenDifficulties
   deriving stock (Generic, Show)
   deriving (FromJSON, ToJSON) via Codec (Drop "arkhamChaosTokenDifficulties") ArkhamChaosTokenDifficulties
 
-data ArkhamChaosToken = ArkhamChaosTokenNumber Int  | ArkhamChaosTokenSkull | ArkhamChaosTokenHood | ArkhamChaosTokenStone | ArkhamChaosTokenTentacles | ArkhamChaosTokenElderSign
-  deriving stock (Generic, Show)
-  deriving (ToJSON, FromJSON) via TaggedJson "token" ArkhamChaosToken
-
 data ArkhamLocationSymbol = ArkhamLocationSymbolCircle | ArkhamLocationSymbolSquare | ArkhamLocationSymbolHeart
   deriving stock (Show, Generic)
   deriving (ToJSON, FromJSON) via TaggedJson "symbol" ArkhamLocationSymbol
@@ -193,9 +184,9 @@ instance ToJSON ArkhamSkillTestResultType where
 
 instance FromJSON ArkhamSkillTestResultType where
   parseJSON = withText "ArkhamSkillTestResultType" $ \case
-      "success" -> pure ArkhamSkillTestResultTypeSuccess 
-      "failure" -> pure ArkhamSkillTestResultTypeFailure
-      _ -> fail "Not a valid ArkhamSkillTestResultType"
+    "success" -> pure ArkhamSkillTestResultTypeSuccess
+    "failure" -> pure ArkhamSkillTestResultTypeFailure
+    _ -> fail "Not a valid ArkhamSkillTestResultType"
 
 -- TODO: A skill test can be a part of a card
 data ArkhamSkillTest = ArkhamSkillTest

@@ -1,224 +1,23 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Arkham.Types
   ( module X
-  , module Arkham.Types
   )
 where
 
+import Arkham.Types.Act as X
+import Arkham.Types.Action as X
+import Arkham.Types.Agenda as X
+import Arkham.Types.Card as X
+import Arkham.Types.ChaosToken as X
+import Arkham.Types.Cycle as X
+import Arkham.Types.Location as X
+import Arkham.Types.Scenario as X
 import Arkham.Types.Simple as X
-import Data.Aeson.Encoding
-import Data.Text
-import GHC.Generics
+import Arkham.Types.Skill as X
+import Arkham.Types.SkillTest as X
+import Arkham.Types.Stack as X
+
 import Json
 import Model
-import Prelude (Int, Show, fail, pure, ($))
 
 deriving via Codec (Drop "arkhamInvestigator") ArkhamInvestigator instance ToJSON ArkhamInvestigator
-
-newtype ArkhamCardFront = ArkhamCardFront { arkhamCardFrontUrl :: Text }
-  deriving stock (Show,Generic)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamCardFront") ArkhamCardFront
-
-newtype ArkhamCardBack = ArkhamCardBack { arkhamCardBackUrl :: Text }
-  deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamCardBack") ArkhamCardBack
-
-data ArkhamCard = ArkhamCard
-  { arkhamCardFront :: ArkhamCardFront
-  , arkhamCardBack :: ArkhamCardBack
-  }
-  deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamCard") ArkhamCard
-
-data ArkhamAgendaCard
-  = ArkhamAgendaCardSideA ArkhamAgendaCardSideAData
-  | ArkhamAgendaCardSideB ArkhamAgendaCardSideBData
-  deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via TaggedJson "agendaCard" ArkhamAgendaCard
-
-data ArkhamAgendaCardSideAData = ArkhamAgendaCardSideAData
-  { arkhamAgendaCardSideADataName :: Text
-  , arkhamAgendaCardSideADataImageUrl :: Text
-  }
-  deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamAgendaCardSideAData") ArkhamAgendaCardSideAData
-
-data ArkhamAgendaCardSideBData = ArkhamAgendaCardSideBData
-  { arkhamAgendaCardSideBDataName :: Text
-  , arkhamAgendaCardSideBDataImageUrl :: Text
-  }
-  deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamAgendaCardSideBData") ArkhamAgendaCardSideBData
-
-newtype ArkhamAgenda = ArkhamAgenda { arkhamAgendaCurrentCard :: ArkhamAgendaCard }
-  deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamAgenda") ArkhamAgenda
-
-data ArkhamActCard
-  = ArkhamActCardSideA ArkhamActCardSideAData
-  | ArkhamActCardSideB ArkhamActCardSideBData
-  deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via TaggedJson "actCard" ArkhamActCard
-
-data ArkhamActCardSideAData = ArkhamActCardSideAData
-  { arkhamActCardSideADataName :: Text
-  , arkhamActCardSideADataImageUrl :: Text
-  }
-  deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamActCardSideAData") ArkhamActCardSideAData
-
-data ArkhamActCardSideBData = ArkhamActCardSideBData
-  { arkhamActCardSideBDataName :: Text
-  , arkhamActCardSideBDataImageUrl :: Text
-  }
-  deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamActCardSideBData") ArkhamActCardSideBData
-
-newtype ArkhamAct = ArkhamAct { arkhamActCurrentCard :: ArkhamActCard }
-  deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamAct") ArkhamAct
-
-data ArkhamStack = ArkhamStackAgenda ArkhamAgenda | ArkhamStackAct ArkhamAct
-  deriving stock (Show, Generic)
-  deriving (FromJSON, ToJSON) via TaggedJson "stack" ArkhamStack
-
-newtype ArkhamCycleStep = ArkhamCycleStepScenario ArkhamScenarioData
-  deriving stock (Generic, Show)
-  deriving (ToJSON, FromJSON) via TaggedJson "step" ArkhamCycleStep
-
-data ArkhamScenarioData = ArkhamScenarioData
-  { arkhamScenarioId :: Text
-  , arkhamScenarioName :: Text
-  }
-  deriving stock (Generic, Show)
-  deriving (ToJSON, FromJSON) via Codec (Drop "arkham") ArkhamScenarioData
-
-data ArkhamChaosTokenDifficulties = ArkhamChaosTokenDifficulties
-  { arkhamChaosTokenDifficultiesEasy :: [ArkhamChaosToken]
-  , arkhamChaosTokenDifficultiesStandard :: [ArkhamChaosToken]
-  , arkhamChaosTokenDifficultiesHard :: [ArkhamChaosToken]
-  , arkhamChaosTokenDifficultiesExpert :: [ArkhamChaosToken]
-  }
-  deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamChaosTokenDifficulties") ArkhamChaosTokenDifficulties
-
-data ArkhamLocationSymbol = ArkhamLocationSymbolCircle | ArkhamLocationSymbolSquare | ArkhamLocationSymbolHeart
-  deriving stock (Show, Generic)
-  deriving (ToJSON, FromJSON) via TaggedJson "symbol" ArkhamLocationSymbol
-
-data ArkhamAction = ArkhamActionRevealLocation Int | ArkhamActionInvestigate Int
-  deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via TaggedJson "action" ArkhamAction
-
-data ArkhamClueCount = ArkhamClueCountNumber Int | ArkhamClueCountPerInvestigator Int
-  deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via TaggedJson "clueCount" ArkhamClueCount
-
-data ArkhamLocationUnrevealedData = ArkhamLocationUnrevealedData
-  { arkhamLocationUnrevealedDataId :: Text
-  , arkhamLocationUnrevealedDataName :: Text
-  , arkhamLocationUnrevealedDataSymbol :: ArkhamLocationSymbol
-  , arkhamLocationUnrevealedDataImageUrl :: Text
-  }
-  deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamLocationUnrevealedData") ArkhamLocationUnrevealedData
-
-data ArkhamLocationRevealedData = ArkhamLocationRevealedData
-  { arkhamLocationRevealedDataId :: Text
-  , arkhamLocationRevealedDataName :: Text
-  , arkhamLocationRevealedDataSymbol :: ArkhamLocationSymbol
-  , arkhamLocationRevealedDataConnections :: [ArkhamLocationSymbol]
-  , arkhamLocationRevealedDataShroud :: Int
-  , arkhamLocationRevealedDataMaxClues :: ArkhamClueCount
-  , arkhamLocationRevealedDataCurrentClues :: Int
-  , arkhamLocationRevealedDataImageUrl :: Text
-  }
-  deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamLocationRevealedData") ArkhamLocationRevealedData
-
-data ArkhamLocation = ArkhamLocationUnrevealed ArkhamLocationUnrevealedData | ArkhamLocationRevealed ArkhamLocationRevealedData
-  deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via TaggedJson "location" ArkhamLocation
-
-data ArkhamCycle = ArkhamCycle
-  { cycleId :: Text
-  , cycleName :: Text
-  , cycleChaosTokens :: ArkhamChaosTokenDifficulties
-  , cycleSteps :: [ArkhamCycleStep]
-  }
-  deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via Codec (Drop "cycle") ArkhamCycle
-
-data ArkhamScenario = ArkhamScenario
-  { scenarioName :: Text
-  , scenarioStacks :: [ArkhamStack] -- Should we call these decks
-  , scenarioLocations :: [ArkhamLocation]
-  }
-  deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via Codec (Drop "scenario") ArkhamScenario
-
-data ArkhamSkill
-  = ArkhamSkillWillpower
-  | ArkhamSkillCombat
-  | ArkhamSkillIntellect
-  | ArkhamSkillAgility
-  deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via TaggedJson "skill" ArkhamSkill
-
-data ArkhamSkillTestTarget
-  = ArkhamSkillTestTargetLocation ArkhamLocation
-  | ArkhamSkillTestTargetMythosCard
-  deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via TaggedJson "target" ArkhamSkillTestTarget
-
-data ArkhamSkillTestResultType
-  = ArkhamSkillTestResultTypeSuccess
-  | ArkhamSkillTestResultTypeFailure
-  deriving stock (Show)
-
-instance ToJSON ArkhamSkillTestResultType where
-  toJSON ArkhamSkillTestResultTypeSuccess = "success"
-  toJSON ArkhamSkillTestResultTypeFailure = "failure"
-  toEncoding ArkhamSkillTestResultTypeSuccess = text "success"
-  toEncoding ArkhamSkillTestResultTypeFailure = text "success"
-
-instance FromJSON ArkhamSkillTestResultType where
-  parseJSON = withText "ArkhamSkillTestResultType" $ \case
-    "success" -> pure ArkhamSkillTestResultTypeSuccess
-    "failure" -> pure ArkhamSkillTestResultTypeFailure
-    _ -> fail "Not a valid ArkhamSkillTestResultType"
-
--- TODO: A skill test can be a part of a card
-data ArkhamSkillTest = ArkhamSkillTest
-  { arkhamSkillTestBase :: Int
-  , arkhamSkillTestSkill :: ArkhamSkill
-  , arkhamSkillTestAction :: ArkhamAction
-  }
-  deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamSkillTest") ArkhamSkillTest
-
--- Arbitrary value based on game state
--- on failure
--- on condition
--- another token
-
--- The Gathering (Easy/Standard)
--- Skull = -X. X is the umber of Ghoul enemies at your location
--- Cultist = -1. If you fail, tke 1 horror.
--- Tablet = -2. If ther eis a ghoul enemy at your location, take 1 damage
---
--- The Gathering (Hard/Expert)
--- Skull = -2. If you fail, after this skill test, searh the encounter deck
---   and discard pile for a Ghoul enemy, and draw it. Shuffle the encounter deck.
--- Cultist = Reveal another token. If you fail, take 2 horror
--- Tablet = -4. If there is a Ghoul enemy at your location, take 1 damage and 1 horror.
-
-data ArkhamSkillTestResult = ArkhamSkillTestResult
-  { arkhamSkillTestResultToken :: ArkhamChaosToken
-  , arkhamSkillTestResultBase :: Int
-  , arkhamSkillTestResultSkill :: ArkhamSkill
-  , arkhamSkillTestResultAction :: ArkhamAction
-  , arkhamSkillTestResultType :: ArkhamSkillTestResultType
-  }
-  deriving stock (Generic, Show)
-  deriving (FromJSON, ToJSON) via Codec (Drop "arkhamSkillTestResult") ArkhamSkillTestResult

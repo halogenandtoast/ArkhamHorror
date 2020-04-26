@@ -22,23 +22,12 @@ tokenToModifier _ ArkhamChaosTokenZero = 0
 tokenToModifier _ ArkhamChaosTokenMinusOne = -1
 tokenToModifier _ ArkhamChaosTokenMinusTwo = -2
 tokenToModifier _ ArkhamChaosTokenMinusThree = -3
-tokenToModifier _ ArkhamChaosTokenMinusOne = -4
-tokenToModifier _ ArkhamChaosTokenMinusOne = -5
-tokenToModifier _ ArkhamChaosTokenMinusOne = -6
-tokenToModifier _ ArkhamChaosTokenMinusOne = -7
-tokenToModifier _ ArkhamChaosTokenMinusOne = -8
+tokenToModifier _ ArkhamChaosTokenMinusFour = -4
+tokenToModifier _ ArkhamChaosTokenMinusFive = -5
+tokenToModifier _ ArkhamChaosTokenMinusSix = -6
+tokenToModifier _ ArkhamChaosTokenMinusSeven = -7
+tokenToModifier _ ArkhamChaosTokenMinusEight = -8
 tokenToModifier _ _ = -1
-
--- The Gathering (Easy/Standard)
--- Skull = -X. X is the umber of Ghoul enemies at your location
--- Cultist = -1. If you fail, tke 1 horror.
--- Tablet = -2. If ther eis a ghoul enemy at your location, take 1 damage
---
--- The Gathering (Hard/Expert)
--- Skull = -2. If you fail, after this skill test, searh the encounter deck
---   and discard pile for a Ghoul enemy, and draw it. Shuffle the encounter deck.
--- Cultist = Reveal another token. If you fail, take 2 horror
--- Tablet = -4. If there is a Ghoul enemy at your location, take 1 damage and 1 horror.
 
 investigatorSkillValue :: ArkhamSkill -> ArkhamInvestigator -> Int
 investigatorSkillValue ArkhamSkillWillpower = arkhamInvestigatorWillpower

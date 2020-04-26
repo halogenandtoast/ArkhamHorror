@@ -1,15 +1,19 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE CPP #-}
-import Database.PostgreSQL.Simple.Migration
-import Database.PostgreSQL.Simple
-import System.FilePath
-import Prelude
 import Control.Monad (void)
+import Database.Persist.Postgresql hiding (runMigration)
+import Database.PostgreSQL.Simple
+import Database.PostgreSQL.Simple.Migration
+import Data.Yaml.Config
+import Prelude
+import System.FilePath
+import Yesod.Default.Config2
+
+import Settings
 
 main :: IO ()
 main = do
-    let url = "host=localhost dbname=arkham-horror-backend user=arkham-horror-backend password=arkham-horror-backend"
-    con <- connectPostgreSQL url
+    settings <-  loadYamlSettings [configSettingsYml] [] useEnv
+    con <- connectPostgreSQL $ pgConnStr $ appDatabaseConf settings
     void $ withTransaction con $ runMigration $ MigrationContext commands True con
  where
    dir = takeDirectory __FILE__ <> "/migrations"

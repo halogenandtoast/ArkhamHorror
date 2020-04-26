@@ -20,8 +20,8 @@ data GameJson = GameJson
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler GameJson
 getApiV1ArkhamGameR _ = do
   cycle <- liftIO $ decodeFileStrict' "data/arkham/cycles/nightOfTheZealot.json"
-  Entity _ rolandBanks <- runDB $ getBy404 $ UniqueInvestigatorTitle
-    "Roland Banks"
+  rolandBanks <- runDB $ entityVal <$> getBy404 (UniqueInvestigatorTitle
+    "Roland Banks")
   pure
     $ GameJson "1" cycle scenario [rolandBanks] [ArkhamActionRevealLocation 0]
  where

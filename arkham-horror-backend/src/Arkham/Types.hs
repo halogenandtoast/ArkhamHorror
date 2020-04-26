@@ -197,6 +197,22 @@ data ArkhamSkillTest = ArkhamSkillTest
   deriving stock (Generic, Show)
   deriving (FromJSON, ToJSON) via Codec (Drop "arkhamSkillTest") ArkhamSkillTest
 
+-- Arbitrary value based on game state
+-- on failure
+-- on condition
+-- another token
+
+-- The Gathering (Easy/Standard)
+-- Skull = -X. X is the umber of Ghoul enemies at your location
+-- Cultist = -1. If you fail, tke 1 horror.
+-- Tablet = -2. If ther eis a ghoul enemy at your location, take 1 damage
+--
+-- The Gathering (Hard/Expert)
+-- Skull = -2. If you fail, after this skill test, searh the encounter deck
+--   and discard pile for a Ghoul enemy, and draw it. Shuffle the encounter deck.
+-- Cultist = Reveal another token. If you fail, take 2 horror
+-- Tablet = -4. If there is a Ghoul enemy at your location, take 1 damage and 1 horror.
+
 data ArkhamSkillTestResult = ArkhamSkillTestResult
   { arkhamSkillTestResultToken :: ArkhamChaosToken
   , arkhamSkillTestResultBase :: Int

@@ -2,14 +2,62 @@
   "id": "theGathering",
   "name": "The Gathering",
   "flavor": "You and your partners have been investigating strange events taking place in your home city of Arkham, Massachusetts.",
-  "sets": [
-    { "tag": "set", "id": "theGathering" },
-    { "tag": "set", "id": "rats" },
-    { "tag": "set", "id": "ghouls" },
-    { "tag": "set", "id": "strikinFeat" },
-    { "tag": "set", "id": "ancientEvils" },
-    { "tag": "set", "id": "chillinCold" }
+  "encounterSets": [
+    { "tag": "encounterSet", "id": "theGathering" },
+    { "tag": "encounterSet", "id": "rats" },
+    { "tag": "encounterSet", "id": "ghouls" },
+    { "tag": "encounterSet", "id": "strikinFeat" },
+    { "tag": "encounterSet", "id": "ancientEvils" },
+    { "tag": "encounterSet", "id": "chillinCold" }
   ],
+  "tokenMeanings": {
+    "easy": {
+      "skull": {
+        "tag": "tokenMeaning",
+        "type": "x",
+        "match": {
+          "tag": "match",
+          "type": "matchAt",
+          "target": "currentLocation",
+          "match": {
+            "type": "matchAll",
+            "criteria": [
+              { "tag": "match", "type": "cardType", "value": "enemy" },
+              { "tag": "match", "type": "cardTrait", "value": "ghoul" }
+            ]
+          }
+        }
+      },
+      "cultist": {
+        "tag": "tokenMeaning",
+        "type": "static",
+        "value": -1,
+        "onFail": [{ "tag": "effect", "type": "penalty", "penaltyType": "horror", "penaltyAmount": 1}]
+      },
+      "tablet": {
+        "tag": "tokenMeaning",
+        "type": "static",
+        "value": -2,
+        "effects": [{
+          "tag": "effect",
+          "type": "penalty",
+          "penaltyType": "damage",
+          "penaltyAmount": 1,
+          "criteria": [
+            {
+              "tag": "match",
+              "type": "matchAt",
+              "targets": [{ "tag": "target", "type": "currentLocation" }],
+              "criteria": [
+                { "tag": "match", "type": "cardType", "value": "enemy" },
+                { "tag": "match", "type": "cardTrait", "value": "ghoul" }
+              ]
+            }
+          ]
+        }]
+      }
+    }
+  },
   "stacks": [
     {
       "tag": "stack",
@@ -18,6 +66,7 @@
         {
           "tag": "setRange",
           "set": "theGathering",
+          "order": "sequential",
           "setNumberStart": 2,
           "setNumberEnd": 4
         }
@@ -30,6 +79,7 @@
         {
           "tag": "setRange",
           "set": "theGathering",
+          "order": "sequential",
           "setNumberStart": 5,
           "setNumberEnd": 7
         }

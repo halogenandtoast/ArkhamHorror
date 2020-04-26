@@ -30,9 +30,12 @@ nightOfTheZealot :: ArkhamProductSet
 nightOfTheZealot =
   ArkhamProductSet { arkhamProductSetTitle = "Night of the Zealot" }
 
-nightOfTheZealotEncounterTitles :: [Text]
+nightOfTheZealotEncounters :: [(Text, Int)]
 nightOfTheZealotEncounterTitles =
-  ["The Gathering", "The Midnight Masks", "The Devourer Below"]
+  [ ("The Gathering", 16)
+  , ("The Midnight Masks", 20)
+  , ("The Devourer Below", 18)
+  ]
 
 allInvestigators :: [ArkhamInvestigator]
 allInvestigators = [rolandBanks]

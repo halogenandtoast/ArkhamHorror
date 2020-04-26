@@ -13,6 +13,7 @@ ArkhamProductSet sql=arkham_product_sets
 ArkhamEncounterSet sql=arkham_encounter_sets
   title Text
   productSetId ArkhamProductSetId
+  cardCount Int
   UniqueEncounterSet productSetId title
 
 ArkhamInvestigator sql=arkham_investigators

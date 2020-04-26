@@ -4,8 +4,7 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Logger (runStderrLoggingT)
 import Database.Persist
 import Database.Persist.Postgresql
-import Model
-import Prelude (IO, flip, putStrLn, ($), (.), (=<<))
+import Prelude (IO, flip, ($))
 
 main :: IO ()
 main =

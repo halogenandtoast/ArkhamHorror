@@ -6,13 +6,13 @@ import GHC.Generics
 import Json
 import Prelude (Show)
 
-newtype ArkhamEncounterSet = ArkhamEncounterSet Text
+newtype ArkhamEncounterSetJson = ArkhamEncounterSetJson Text
   deriving stock (Generic, Show)
-  deriving (ToJSON, FromJSON) via TaggedJson "encounterSet" ArkhamEncounterSet
+  deriving (ToJSON, FromJSON) via TaggedJson "encounterSet" ArkhamEncounterSetJson
 
 data ArkhamScenarioJsonData = ArkhamScenarioJsonData
   { arkhamScenarioDataFlavor :: Text
-  , arkhamScenarioDataEncounterSets :: [ArkhamEncounterSet]
+  , arkhamScenarioDataEncounterSets :: [ArkhamEncounterSetJson]
   }
   deriving stock (Generic, Show)
   deriving (ToJSON, FromJSON) via Codec (Drop "arkhamScenarioJsonData") ArkhamScenarioJsonData

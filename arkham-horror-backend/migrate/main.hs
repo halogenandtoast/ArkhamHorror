@@ -12,7 +12,7 @@ import Settings
 
 main :: IO ()
 main = do
-    settings <-  loadYamlSettings [configSettingsYml] [] useEnv
+    settings <- loadYamlSettings [configSettingsYml] [] useEnv
     con <- connectPostgreSQL $ pgConnStr $ appDatabaseConf settings
     void $ withTransaction con $ runMigration $ MigrationContext commands True con
  where

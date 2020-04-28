@@ -1,10 +1,12 @@
+{-# LANGUAGE InstanceSigs #-}
 module Arkham.Types.Simple where
 
-import Data.Text (pack, unpack)
+import Data.Text (Text, pack, unpack)
+import Data.Aeson.Types
 import Database.Persist.Sql
 import GHC.Generics
-import Json
-import Prelude (Either(..), Show(..), pure, (.))
+import Json hiding (String)
+import Prelude (Eq, Ord, String, MonadFail(..), Either(..), Show(..), pure, (.), ($))
 
 data ArkhamDifficulty = ArkhamDifficultyEasy | ArkhamDifficultyStandard | ArkhamDifficultyHard | ArkhamDifficultyExpert
 
@@ -41,9 +43,10 @@ data ArkhamChaosToken
   | ArkhamChaosTokenSkull
   | ArkhamChaosTokenCultist
   | ArkhamChaosTokenTablet
+  | ArkhamChaosTokenElderThing
   | ArkhamChaosTokenFail
   | ArkhamChaosTokenElderSign
-  deriving stock (Generic)
+  deriving stock (Eq, Ord, Generic)
   deriving (ToJSON, FromJSON) via TaggedJson "token" ArkhamChaosToken
 
 instance Show ArkhamChaosToken where
@@ -60,12 +63,19 @@ instance Show ArkhamChaosToken where
   show ArkhamChaosTokenSkull = "skull"
   show ArkhamChaosTokenCultist = "cultist"
   show ArkhamChaosTokenTablet = "tablet"
+  show ArkhamChaosTokenElderThing = "elderThing"
   show ArkhamChaosTokenFail = "fail"
   show ArkhamChaosTokenElderSign = "elderSign"
 
-instance PersistField ArkhamChaosToken where
-  toPersistValue = PersistText . pack . show
-  fromPersistValue (PersistText t) = case unpack t of
+instance ToJSONKey ArkhamChaosToken where
+  toJSONKey = toJSONKeyText $ pack . show
+
+instance Text ~ err => MonadFail (Either err) where
+  fail :: String -> Either Text a
+  fail = Left . pack
+
+arkhamChaosTokenFromText :: MonadFail m => Text -> m ArkhamChaosToken
+arkhamChaosTokenFromText = \case
     "+1" -> pure ArkhamChaosTokenPlusOne
     "0" -> pure ArkhamChaosTokenZero
     "-1" -> pure ArkhamChaosTokenMinusOne
@@ -81,7 +91,15 @@ instance PersistField ArkhamChaosToken where
     "tablet" -> pure ArkhamChaosTokenTablet
     "fail" -> pure ArkhamChaosTokenFail
     "elderSign" -> pure ArkhamChaosTokenElderSign
-    _ -> Left "invalid difficulty"
+    _ -> fail "invalid difficulty"
+
+
+instance FromJSONKey ArkhamChaosToken where
+  fromJSONKey = FromJSONKeyTextParser arkhamChaosTokenFromText
+
+instance PersistField ArkhamChaosToken where
+  toPersistValue = PersistText . pack . show
+  fromPersistValue (PersistText t) = arkhamChaosTokenFromText t
   fromPersistValue _ = Left "invalid difficulty persist type"
 
 instance PersistFieldSql ArkhamChaosToken where

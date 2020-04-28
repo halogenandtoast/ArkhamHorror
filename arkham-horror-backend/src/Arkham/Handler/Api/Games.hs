@@ -10,7 +10,7 @@ import Json
 data GameJson = GameJson
   { gameId :: Text
   , gameCycle :: Maybe ArkhamCycle
-  , gameScenario :: ArkhamScenario
+  , gameScenario :: ArkhamScenarioJsonData
   , gameInvestigators :: [ArkhamInvestigator]
   , gameActions :: [ArkhamAction]
   }

@@ -109,11 +109,15 @@ instance (TaggedParseWithKeyPrefix f) => TaggedParseWithKeyPrefix (M1 S c f) whe
 instance (FromJSON a) => TaggedParseWithKeyPrefix (K1 R a) where
   taggedParseWithKeyPrefix _ = (K1 <$>) . parseJSON
 
-instance (TaggedParseWithKey c1, TaggedParseWithKey c2) => TaggedParseWithKeyPrefix (c1 :+: c2) where
+instance TaggedParseWithKeyPrefix U1 where
+  taggedParseWithKeyPrefix _ _ = pure U1
+
+instance (ConName c1, TaggedParseWithKey c1, TaggedParseWithKey c2) => TaggedParseWithKeyPrefix (c1 :+: c2) where
   taggedParseWithKeyPrefix prefix obj@(Object v) = do
     key <- (prefix <>) . pack . pascalCase . unpack <$> v .: "type"
     (L1 <$> taggedParseWithKey obj key) <|> (R1 <$> taggedParseWithKey obj key)
-  taggedParseWithKeyPrefix _ _ = error "impossible"
+  taggedParseWithKeyPrefix prefix num@(Number v) = error $ "key: " <> unpack prefix <> ", conName: " <> conName' (undefined :: c1 _p) 
+  taggedParseWithKeyPrefix prefix v = error $ "impossible: " <> unpack prefix <> ": " <> show v
 
 instance (TaggedParseWithKey c1, TaggedParseWithKey c2) => TaggedParseWithKey (c1 :+: c2) where
   taggedParseWithKey obj key =
@@ -135,8 +139,15 @@ instance (FromJSON a) => UntaggedParse (K1 R a) where
 instance UntaggedParse U1 where
   untaggedParse _ = pure U1
 
+instance (UntaggedParse s1, UntaggedParse s2) => UntaggedParse (s1 :*: s2) where
+  untaggedParse obj = (:*:) <$> untaggedParse obj <*> untaggedParse obj
+
 instance (ToJSON a) => InnerJSON (K1 R a) where
   innerJSON = toJSON . unK1
+
+instance (InnerJSON s1, InnerJSON s2) => InnerJSON (s1 :*: s2) where
+  innerJSON (s1 :*: s2) =
+    Object . HashMap.unions . map (\(Object x) -> x) $ [innerJSON s1, innerJSON s2]
 
 instance (ConName f) => ConName (M1 D c f) where
   conName' = conName' . unM1

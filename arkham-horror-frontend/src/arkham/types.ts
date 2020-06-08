@@ -1,92 +1,49 @@
-export type ArkhamDifficulty = 'Easy' | 'Standard' | 'Hard' | 'Expert';
+import { JsonDecoder } from 'ts.data.json';
 
-export interface ArkhamCycle {
-  id: number;
-  name: string;
-}
+export type ArkhamCycle = 'NightOfTheZealot' | 'TheDunwichLegacy';
 
-export interface ArkhamCampaign {
-  cycle: ArkhamCycle;
-  difficulty: ArkhamDifficulty;
-}
+export const arkhamCycleDecoder = JsonDecoder.oneOf<ArkhamCycle>([
+  JsonDecoder.isExactly('NightOfTheZealot'),
+  JsonDecoder.isExactly('TheDunwichLegacy'),
+], 'ArkhamCycle');
 
-export interface ArkhamSettings {
-  cycle: ArkhamCycle;
-  difficulty: ArkhamDifficulty;
-  deckUrl: string;
-}
+export type ArkhamScenario = 'ScenarioOne' | 'ScenarioTwo';
 
-export type ArkhamStack = ArkhamAgendaStack | ArkhamActStack
-
-export interface ArkhamAgendaStack {
-  tag: string;
-  currentCard: ArkhamCard;
-}
+export const arkhamScenarioDecoder = JsonDecoder.oneOf<ArkhamScenario>([
+  JsonDecoder.isExactly('ScenarioOne'),
+  JsonDecoder.isExactly('ScenarioTwo'),
+], 'ArkhamCycle');
 
 export interface ArkhamCard {
-  front: ArkhamCardFront;
-  back: ArkhamCardBack;
+  cost: number;
+  image: string;
 }
 
-export interface ArkhamCardFront {
-  url: string;
+export const arkhamCardDecoder = JsonDecoder.object<ArkhamCard>(
+  {
+    cost: JsonDecoder.number,
+    image: JsonDecoder.string,
+  },
+  'ArkhamCard',
+);
+
+export interface ArkhamPlayer {
+  investigator: string;
+  sanityDamage: number;
+  healthDamage: number;
+  resources: number;
+  hand: ArkhamCard[];
+  inPlay: ArkhamCard[];
 }
 
-export interface ArkhamCardBack {
-  url: string;
-}
-
-export interface ArkhamActStack {
-  tag: string;
-}
-
-export interface ArkhamScenario {
-  name: string;
-  stacks: ArkhamStack[];
-  locations: ArkhamLocation[];
-}
-
-export interface ArkhamRevealLocation {
-  index: number;
-}
-
-export type ArkhamAction = ArkhamRevealLocation
-
-export type ArkhamLocation = ArkhamLocationUnrevealed | ArkhamLocationRevealed
-
-export type ArkhamSkillTestResultType = 'success' | 'failure'
-
-export type ArkhamSkill = 'Willpower' | 'Intellect' | 'Combat' | 'Agility'
-
-export interface ArkhamSkillTestResult {
-  skill: ArkhamSkill;
-  skillValue: number;
-  difficulty: number;
-  type: ArkhamSkillTestResultType;
-}
-
-export interface ArkhamLocationUnrevealed {
-  id: string;
-  name: string;
-  type: string;
-}
-
-export interface ArkhamLocationRevealed {
-  id: string;
-  name: string;
-  type: string;
-}
-
-export interface ArkhamGame {
-  id: string;
-  cycle: ArkhamCycle;
-  scenario: ArkhamScenario;
-  difficulty: ArkhamDifficulty;
-  actions: ArkhamAction[];
-}
-
-export interface ArkhamGameState {
-  cycles: ArkhamCycle[];
-  scenarios: Record<number, ArkhamScenario[]>;
-  game: ArkhamGame | null;
-}
+export const arkhamPlayerDecoder = JsonDecoder.object<ArkhamPlayer>(
+  {
+    investigator: JsonDecoder.string,
+    sanityDamage: JsonDecoder.number,
+    healthDamage: JsonDecoder.number,
+    resources: JsonDecoder.number,
+    hand: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
+    inPlay: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
+  },
+  'ArkhamPlayer',
+);

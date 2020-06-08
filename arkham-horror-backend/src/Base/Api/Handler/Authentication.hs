@@ -1,8 +1,8 @@
-module Handler.Api.Authentication where
+module Base.Api.Handler.Authentication where
 
-import           Crypto.BCrypt
+import Crypto.BCrypt
 import qualified Data.Text.Encoding as TE
-import           Import
+import Import
 import Types
 
 authenticationToUser :: Authentication -> Handler (Maybe (Entity User))
@@ -11,7 +11,9 @@ authenticationToUser Authentication {..} = do
   case muser of
     Nothing -> pure Nothing
     Just entity@(Entity _ user) ->
-      if validatePassword (p $ userPasswordDigest user) (p authenticationPassword)
+      if validatePassword
+          (p $ userPasswordDigest user)
+          (p authenticationPassword)
         then pure $ Just entity
         else pure Nothing
   where p = TE.encodeUtf8
@@ -19,7 +21,7 @@ authenticationToUser Authentication {..} = do
 postApiV1AuthenticationR :: Handler Token
 postApiV1AuthenticationR = do
   authentication <- requireCheckJsonBody
-  muser          <- authenticationToUser authentication
+  muser <- authenticationToUser authentication
   case muser of
-    Nothing                -> notAuthenticated
+    Nothing -> notAuthenticated
     Just (Entity userId _) -> Token <$> userIdToToken userId

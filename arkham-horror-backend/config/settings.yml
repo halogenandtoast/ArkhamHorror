@@ -30,8 +30,8 @@ jwt-secret: "_env:JWT_SECRET:arkham"
 # See https://github.com/yesodweb/yesod/wiki/Configuration#parsing-numeric-values-as-strings
 
 database:
-  user:     "_env:YESOD_PGUSER:arkham-horror-backend"
-  password: "_env:YESOD_PGPASS:arkham-horror-backend"
+  user:     "_env:YESOD_PGUSER:''"
+  password: "_env:YESOD_PGPASS:''"
   host:     "_env:YESOD_PGHOST:localhost"
   port:     "_env:YESOD_PGPORT:5432"
   # See config/test-settings.yml for an override during tests

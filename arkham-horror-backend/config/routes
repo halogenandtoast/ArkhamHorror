@@ -1,14 +1,3 @@
--- By default this file is used by `parseRoutesFile` in Foundation.hs
--- Syntax for this file here: https://www.yesodweb.com/book/routing-and-handlers
-
-/static StaticR Static appStatic
-/auth   AuthR   Auth   getAuth
-
-/favicon.ico FaviconR GET
-/robots.txt RobotsR GET
-
-/ HomeR GET
-
 /api ApiP:
   /v1 ApiV1P:
     /authenticate ApiV1AuthenticationR POST
@@ -16,12 +5,4 @@
     /whoami ApiV1CurrentUserR GET
     /arkham ApiV1ArkhamP:
       /games ApiV1ArkhamGamesP:
-        /#ArkhamGameId ApiV1ArkhamGamesGameP:
-          / ApiV1ArkhamGameR GET
-          /locations ApiV1ArkhamGameLocationsP:
-            /reveal ApiV1ArkhamGameLocationsRevealR POST
-            /#Int ApiV1ArkhamGameLocationsLocationP:
-              /investigate ApiV1ArkhamGameLocationsInvestigateR POST
-
-
-
+        /#Int ApiV1ArkhamGameR GET

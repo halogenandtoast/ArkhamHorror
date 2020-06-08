@@ -1,9 +1,9 @@
-{-# LANGUAGE DeriveGeneric      #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
 
-module Handler.Api.CurrentUser where
+module Base.Api.Handler.CurrentUser where
 
-import           Import
+import Import
 
 newtype CurrentUser = CurrentUser { username :: Text }
   deriving stock (Generic)
@@ -12,7 +12,7 @@ instance ToJSON CurrentUser
 
 getApiV1CurrentUserR :: Handler CurrentUser
 getApiV1CurrentUserR = do
-  mUserId <- maybeAuthId
+  mUserId <- getRequestUserId
   case mUserId of
     Nothing -> notAuthenticated
     Just userId -> runDB $ do

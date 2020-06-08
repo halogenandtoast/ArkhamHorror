@@ -1,67 +1,14 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Home from '@/views/Home.vue';
-import SignIn from '@/views/SignIn.vue';
-import SignUp from '@/views/SignUp.vue';
-import NewGame from '@/views/NewGame.vue';
-import NewCampaign from '@/views/NewCampaign.vue';
-import Campaign from '@/views/Campaign.vue';
-import Game from '@/views/Game.vue';
+
+import baseRoutes from '@/router/routes';
+import arkhamRoutes from '@/arkham/routes';
 
 Vue.use(VueRouter);
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home,
-  },
-  {
-    path: '/sign-in',
-    name: 'SignIn',
-    component: SignIn,
-    meta: { guest: true },
-  },
-  {
-    path: '/sign-up',
-    name: 'SignUp',
-    component: SignUp,
-    meta: { guest: true },
-  },
-  {
-    path: '/new-campaign',
-    name: 'NewCampaign',
-    component: NewCampaign,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/campaigns/:campaignId',
-    name: 'Campaign',
-    component: Campaign,
-    meta: { requiresAuth: true },
-    props: true,
-  },
-  {
-    path: '/games/:gameId',
-    name: 'Game',
-    component: Game,
-    meta: { requiresAuth: true },
-    props: true,
-  },
-  {
-    path: '/new-game',
-    name: 'NewGame',
-    component: NewGame,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
-  },
+  ...baseRoutes,
+  ...arkhamRoutes,
 ];
 
 const router = new VueRouter({

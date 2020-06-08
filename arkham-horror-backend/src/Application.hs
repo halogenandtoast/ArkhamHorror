@@ -1,10 +1,8 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE NoImplicitPrelude     #-}
-{-# LANGUAGE OverloadedStrings     #-}
-{-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE TemplateHaskell       #-}
-{-# LANGUAGE TypeFamilies          #-}
-{-# LANGUAGE ViewPatterns          #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE ViewPatterns #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Application
     ( getApplicationDev
@@ -20,48 +18,43 @@ module Application
     , db
     ) where
 
-import           Control.Monad.Logger                 (liftLoc, runLoggingT)
-import           Data.CaseInsensitive                 (mk)
-import           Database.Persist.Postgresql          (createPostgresqlPool,
-                                                       pgConnStr, pgPoolSize,
-                                                       runSqlPool)
-import           Import                               hiding (requestHeaders,
-                                                       sendResponse)
-import           Language.Haskell.TH.Syntax           (qLocation)
-import           Network.HTTP.Client.TLS              (getGlobalManager)
-import           Network.Wai                          (Middleware,
-                                                       requestHeaders,
-                                                       requestMethod,
-                                                       responseLBS)
-import           Network.Wai.Handler.Warp             (Settings,
-                                                       defaultSettings,
-                                                       defaultShouldDisplayException,
-                                                       getPort, runSettings,
-                                                       setHost, setOnException,
-                                                       setPort)
-import           Network.Wai.Middleware.AddHeaders    (addHeaders)
-import           Network.Wai.Middleware.RequestLogger (Destination (Logger),
-                                                       IPAddrSource (..),
-                                                       OutputFormat (..),
-                                                       destination,
-                                                       mkRequestLogger,
-                                                       outputFormat)
-import           System.Log.FastLogger                (defaultBufSize,
-                                                       newStdoutLoggerSet,
-                                                       toLogStr)
-import           Text.Regex.Posix                     ((=~))
+import Control.Monad.Logger (liftLoc, runLoggingT)
+import Data.CaseInsensitive (mk)
+import Database.Persist.Postgresql
+  (createPostgresqlPool, pgConnStr, pgPoolSize, runSqlPool)
+import Import hiding (requestHeaders, sendResponse)
+import Language.Haskell.TH.Syntax (qLocation)
+import Network.HTTP.Client.TLS (getGlobalManager)
+import Network.Wai (Middleware, requestHeaders, requestMethod, responseLBS)
+import Network.Wai.Handler.Warp
+  ( Settings
+  , defaultSettings
+  , defaultShouldDisplayException
+  , getPort
+  , runSettings
+  , setHost
+  , setOnException
+  , setPort
+  )
+import Network.Wai.Middleware.AddHeaders (addHeaders)
+import Network.Wai.Middleware.RequestLogger
+  ( Destination(Logger)
+  , IPAddrSource(..)
+  , OutputFormat(..)
+  , destination
+  , mkRequestLogger
+  , outputFormat
+  )
+import System.Log.FastLogger (defaultBufSize, newStdoutLoggerSet, toLogStr)
+import Text.Regex.Posix ((=~))
 
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
-import           Handler.Common
-import           Handler.Home
 
-import           Handler.Api.Authentication
-import           Handler.Api.CurrentUser
-import           Handler.Api.Registration
-
-import           Arkham.Handler.Api.Games
-import           Arkham.Handler.Api.Locations
+import Arkham.Api.Handler.Games
+import Base.Api.Handler.Authentication
+import Base.Api.Handler.CurrentUser
+import Base.Api.Handler.Registration
 
 -- This line actually creates our YesodDispatch instance. It is the second half
 -- of the call to mkYesodData which occurs in Foundation.hs. Please see the
@@ -103,7 +96,7 @@ makeFoundation appSettings = do
     runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
 
     -- Return the foundation
-    return $ mkFoundation pool
+    pure $ mkFoundation pool
 
 -- | Convert our foundation to a WAI Application by calling @toWaiAppPlain@ and
 -- applying some additional middlewares.
@@ -185,7 +178,7 @@ getApplicationDev = do
     foundation <- makeFoundation settings
     wsettings <- getDevSettings $ warpSettings foundation
     app <- makeApplication foundation
-    return (wsettings, app)
+    pure (wsettings, app)
 
 getAppSettings :: IO AppSettings
 getAppSettings = loadYamlSettings [configSettingsYml] [] useEnv
@@ -224,10 +217,10 @@ getApplicationRepl = do
     foundation <- makeFoundation settings
     wsettings <- getDevSettings $ warpSettings foundation
     app1 <- makeApplication foundation
-    return (getPort wsettings, foundation, app1)
+    pure (getPort wsettings, foundation, app1)
 
 shutdownApp :: App -> IO ()
-shutdownApp _ = return ()
+shutdownApp _ = pure ()
 
 
 ---------------------------------------------

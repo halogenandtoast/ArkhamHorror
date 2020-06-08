@@ -1,30 +1,26 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ViewPatterns #-}
-{-# LANGUAGE ExplicitForAll #-}
-{-# LANGUAGE RankNTypes #-}
+
 {-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Foundation where
 
 import qualified Auth.JWT as JWT
-import Import.NoFoundation
-import Database.Persist.Sql (ConnectionPool, runSqlPool)
-import Text.Hamlet          (hamletFile)
-import Text.Jasmine         (minifym)
 import Control.Monad.Logger (LogSource)
 import Data.Aeson (Result(Success), fromJSON)
+import Database.Persist.Sql (ConnectionPool, runSqlPool)
+import Import.NoFoundation
+import Text.Hamlet (hamletFile)
 
-import qualified Yesod.Auth.Message as AuthMsg
-
-import Yesod.Default.Util   (addStaticContentExternal)
-import Yesod.Core.Types     (Logger)
-import qualified Yesod.Core.Unsafe as Unsafe
 import qualified Data.CaseInsensitive as CI
 import qualified Data.Text.Encoding as TE
+import Yesod.Core.Types (Logger)
+import qualified Yesod.Core.Unsafe as Unsafe
 
 import Orphans ()
 
@@ -58,170 +54,92 @@ mkYesodData "App" $(parseRoutesFile "config/routes")
 type Form x = Html -> MForm (HandlerFor App) (FormResult x, Widget)
 
 -- | A convenient synonym for database access functions.
-type DB a = forall (m :: * -> *).
-    (MonadIO m) => ReaderT SqlBackend m a
+type DB a = forall (m :: * -> *) . (MonadIO m) => ReaderT SqlBackend m a
 
 -- Please see the documentation for the Yesod typeclass. There are a number
 -- of settings which can be configured by overriding methods here.
 instance Yesod App where
     -- Controls the base of generated URLs. For more information on modifying,
     -- see: https://github.com/yesodweb/yesod/wiki/Overriding-approot
-    approot :: Approot App
-    approot = ApprootRequest $ \app req ->
-        case appRoot $ appSettings app of
-            Nothing -> getApprootText guessApproot app req
-            Just root -> root
+  approot :: Approot App
+  approot = ApprootRequest $ \app req -> case appRoot $ appSettings app of
+    Nothing -> getApprootText guessApproot app req
+    Just root -> root
 
-    -- Store session data on the client in encrypted cookies,
-    -- default session idle timeout is 120 minutes
-    makeSessionBackend :: App -> IO (Maybe SessionBackend)
-    makeSessionBackend _ = Just <$> defaultClientSessionBackend
-        120    -- timeout in minutes
-        "config/client_session_key.aes"
+  -- Store session data on the client in encrypted cookies,
+  -- default session idle timeout is 120 minutes
+  makeSessionBackend :: App -> IO (Maybe SessionBackend)
+  makeSessionBackend _ = Just <$> defaultClientSessionBackend
+    120    -- timeout in minutes
+    "config/client_session_key.aes"
 
-    -- Yesod Middleware allows you to run code before and after each handler function.
-    -- The defaultYesodMiddleware adds the response header "Vary: Accept, Accept-Language" and performs authorization checks.
-    -- Some users may also want to add the defaultCsrfMiddleware, which:
-    --   a) Sets a cookie with a CSRF token in it.
-    --   b) Validates that incoming write requests include that token in either a header or POST parameter.
-    -- To add it, chain it together with the defaultMiddleware: yesodMiddleware = defaultYesodMiddleware . defaultCsrfMiddleware
-    -- For details, see the CSRF documentation in the Yesod.Core.Handler module of the yesod-core package.
-    yesodMiddleware :: ToTypedContent res => Handler res -> Handler res
-    yesodMiddleware = defaultYesodMiddleware
+  -- Yesod Middleware allows you to run code before and after each handler function.
+  -- The defaultYesodMiddleware adds the response header "Vary: Accept, Accept-Language" and performs authorization checks.
+  -- Some users may also want to add the defaultCsrfMiddleware, which:
+  --   a) Sets a cookie with a CSRF token in it.
+  --   b) Validates that incoming write requests include that token in either a header or POST parameter.
+  -- To add it, chain it together with the defaultMiddleware: yesodMiddleware = defaultYesodMiddleware . defaultCsrfMiddleware
+  -- For details, see the CSRF documentation in the Yesod.Core.Handler module of the yesod-core package.
+  yesodMiddleware :: ToTypedContent res => Handler res -> Handler res
+  yesodMiddleware = defaultYesodMiddleware
 
-    defaultLayout :: Widget -> Handler Html
-    defaultLayout widget = do
-        master <- getYesod
-        -- mmsg <- getMessage
+  defaultLayout :: Widget -> Handler Html
+  defaultLayout widget = do
+    master <- getYesod
+    -- mmsg <- getMessage
 
-        -- muser <- maybeAuthPair
-        -- mcurrentRoute <- getCurrentRoute
+    -- muser <- maybeAuthPair
+    -- mcurrentRoute <- getCurrentRoute
 
-        -- We break up the default layout into two components:
-        -- default-layout is the contents of the body tag, and
-        -- default-layout-wrapper is the entire page. Since the final
-        -- value passed to hamletToRepHtml cannot be a widget, this allows
-        -- you to use normal widget features in default-layout.
+    -- We break up the default layout into two components:
+    -- default-layout is the contents of the body tag, and
+    -- default-layout-wrapper is the entire page. Since the final
+    -- value passed to hamletToRepHtml cannot be a widget, this allows
+    -- you to use normal widget features in default-layout.
 
-        pc <- widgetToPageContent $ do
-            addStylesheet $ StaticR css_bootstrap_css
-            $(widgetFile "default-layout")
-        withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
+    pc <- widgetToPageContent
+      $(widgetFile "default-layout")
+    withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
-    -- The page to be redirected to when authentication is required.
-    authRoute
-        :: App
-        -> Maybe (Route App)
-    authRoute _ = Just $ AuthR LoginR
+  isAuthorized
+    :: Route App  -- ^ The route the user is visiting.
+    -> Bool       -- ^ Whether or not this is a "write" request.
+    -> Handler AuthResult
+  -- Routes not requiring authentication.
+  isAuthorized (ApiP _) _ = pure Authorized
 
-    isAuthorized
-        :: Route App  -- ^ The route the user is visiting.
-        -> Bool       -- ^ Whether or not this is a "write" request.
-        -> Handler AuthResult
-    -- Routes not requiring authentication.
-    isAuthorized (AuthR _) _ = return Authorized
-    isAuthorized HomeR _ = return Authorized
-    isAuthorized (ApiP _) _ = return Authorized
-    isAuthorized FaviconR _ = return Authorized
-    isAuthorized RobotsR _ = return Authorized
-    isAuthorized (StaticR _) _ = return Authorized
+  -- What messages should be logged. The following includes all messages when
+  -- in development, and warnings and errors in production.
+  shouldLogIO :: App -> LogSource -> LogLevel -> IO Bool
+  shouldLogIO app _source level =
+    pure
+      $ appShouldLogAll (appSettings app)
+      || level
+      == LevelWarn
+      || level
+      == LevelError
 
-    -- This function creates static content files in the static folder
-    -- and names them based on a hash of their content. This allows
-    -- expiration dates to be set far in the future without worry of
-    -- users receiving stale content.
-    addStaticContent
-        :: Text  -- ^ The file extension
-        -> Text -- ^ The MIME content type
-        -> LByteString -- ^ The contents of the file
-        -> Handler (Maybe (Either Text (Route App, [(Text, Text)])))
-    addStaticContent ext mime content = do
-        master <- getYesod
-        let staticDir = appStaticDir $ appSettings master
-        addStaticContentExternal
-            minifym
-            genFileName
-            staticDir
-            (StaticR . flip StaticRoute [])
-            ext
-            mime
-            content
-      where
-        -- Generate a unique filename based on the content itself
-        genFileName lbs = "autogen-" ++ base64md5 lbs
-
-    -- What messages should be logged. The following includes all messages when
-    -- in development, and warnings and errors in production.
-    shouldLogIO :: App -> LogSource -> LogLevel -> IO Bool
-    shouldLogIO app _source level =
-        return $
-        appShouldLogAll (appSettings app)
-            || level == LevelWarn
-            || level == LevelError
-
-    makeLogger :: App -> IO Logger
-    makeLogger = return . appLogger
+  makeLogger :: App -> IO Logger
+  makeLogger = pure . appLogger
 
 -- How to run database actions.
 instance YesodPersist App where
-    type YesodPersistBackend App = SqlBackend
-    runDB :: SqlPersistT Handler a -> Handler a
-    runDB action = do
-        master <- getYesod
-        runSqlPool action $ appConnPool master
+  type YesodPersistBackend App = SqlBackend
+  runDB :: SqlPersistT Handler a -> Handler a
+  runDB action = do
+    master <- getYesod
+    runSqlPool action $ appConnPool master
 
 instance YesodPersistRunner App where
-    getDBRunner :: Handler (DBRunner App, Handler ())
-    getDBRunner = defaultGetDBRunner appConnPool
-
-instance YesodAuth App where
-    type AuthId App = UserId
-
-    -- Where to send a user after successful login
-    loginDest :: App -> Route App
-    loginDest _ = HomeR
-    -- Where to send a user after logout
-    logoutDest :: App -> Route App
-    logoutDest _ = HomeR
-    -- Override the above two destinations when a Referer: header is present
-    redirectToReferer :: App -> Bool
-    redirectToReferer _ = True
-
-    authenticate :: (MonadHandler m, HandlerSite m ~ App)
-                 => Creds App -> m (AuthenticationResult App)
-    authenticate _ =  maybe (UserError AuthMsg.InvalidLogin) Authenticated <$> maybeAuthId
-
-    maybeAuthId = do
-      mToken <- JWT.lookupToken
-      liftHandler $ maybe (pure Nothing) tokenToUserId mToken
-
-
-    -- You can add other plugins like Google Email, email or OAuth here
-    authPlugins :: App -> [AuthPlugin App]
-    authPlugins _ = []
-
--- | Access function to determine if a user is logged in.
-isAuthenticated :: Handler AuthResult
-isAuthenticated = do
-    muid <- maybeAuthId
-    return $ case muid of
-        Nothing -> Unauthorized "You must login to access this page"
-        Just _ -> Authorized
-
-instance YesodAuthPersist App
-
--- This instance is required to use forms. You can modify renderMessage to
--- achieve customized and internationalized form validation messages.
-instance RenderMessage App FormMessage where
-    renderMessage :: App -> [Lang] -> FormMessage -> Text
-    renderMessage _ _ = defaultFormMessage
+  getDBRunner :: Handler (DBRunner App, Handler ())
+  getDBRunner = defaultGetDBRunner appConnPool
 
 -- Useful when writing code that is re-usable outside of the Handler context.
 -- An example is background jobs that send email.
 -- This can also be useful for writing code that works across multiple Yesod applications.
 instance HasHttpManager App where
-    getHttpManager :: App -> Manager
-    getHttpManager = appHttpManager
+  getHttpManager :: App -> Manager
+  getHttpManager = appHttpManager
 
 unsafeHandler :: App -> Handler a -> IO a
 unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger
@@ -237,16 +155,20 @@ unsafeHandler = Unsafe.fakeHandlerGetLogger appLogger
 userIdToToken :: UserId -> HandlerFor App Text
 userIdToToken userId = do
   jwtSecret <- getJwtSecret
-  return $ JWT.jsonToToken jwtSecret $ toJSON userId
+  pure $ JWT.jsonToToken jwtSecret $ toJSON userId
 
 tokenToUserId :: Text -> Handler (Maybe UserId)
 tokenToUserId token = do
   jwtSecret <- getJwtSecret
   let mUserId = fromJSON <$> JWT.tokenToJson jwtSecret token
   case mUserId of
-    Just (Success userId) -> return $ Just userId
-    _                     -> return Nothing
+    Just (Success userId) -> pure $ Just userId
+    _ -> pure Nothing
 
 getJwtSecret :: HandlerFor App Text
-getJwtSecret =
-  getsYesod $ appJwtSecret . appSettings
+getJwtSecret = getsYesod $ appJwtSecret . appSettings
+
+getRequestUserId :: Handler (Maybe UserId)
+getRequestUserId = do
+  mToken <- JWT.lookupToken
+  liftHandler $ maybe (pure Nothing) tokenToUserId mToken

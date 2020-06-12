@@ -1,5 +1,5 @@
 <template>
-  <div id="game" v-if="ready">
+  <div id="game" class="game" v-if="ready">
     <Scenario :game="game" />
   </div>
 </template>
@@ -30,4 +30,9 @@ export default class Game extends Vue {
 
 <style scoped>
 .action { border: 5px solid #FF00FF; border-radius: 15px; }
+
+.game {
+  width: 100%;
+  height: 100%;
+}
 </style>

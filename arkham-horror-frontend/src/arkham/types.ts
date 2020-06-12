@@ -27,8 +27,21 @@ export const arkhamCardDecoder = JsonDecoder.object<ArkhamCard>(
   'ArkhamCard',
 );
 
+export interface ArkhamInvestigator {
+  investigatorName: string;
+  investigatorImage: string;
+}
+
+export const arkhamInvestigatorDecoder = JsonDecoder.object<ArkhamInvestigator>(
+  {
+    investigatorName: JsonDecoder.string,
+    investigatorImage: JsonDecoder.string,
+  },
+  'ArkhamInvestigator',
+);
+
 export interface ArkhamPlayer {
-  investigator: string;
+  investigator: ArkhamInvestigator;
   sanityDamage: number;
   healthDamage: number;
   resources: number;
@@ -38,7 +51,7 @@ export interface ArkhamPlayer {
 
 export const arkhamPlayerDecoder = JsonDecoder.object<ArkhamPlayer>(
   {
-    investigator: JsonDecoder.string,
+    investigator: arkhamInvestigatorDecoder,
     sanityDamage: JsonDecoder.number,
     healthDamage: JsonDecoder.number,
     resources: JsonDecoder.number,

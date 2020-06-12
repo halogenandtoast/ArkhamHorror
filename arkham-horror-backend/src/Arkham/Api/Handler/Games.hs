@@ -35,17 +35,32 @@ data ArkhamPlayer = ArkhamPlayer
   deriving stock (Generic)
   deriving anyclass (ToJSON)
 
+data ArkhamPhase = Mythos | Investigation | Enemy | Upkeep
+  deriving stock (Generic)
+  deriving anyclass (ToJSON)
+
+data ArkhamGameState = ArkhamGameState
+  { player :: ArkhamPlayer
+  , phase :: ArkhamPhase
+  }
+  deriving stock (Generic)
+  deriving anyclass (ToJSON)
+
 data ArkhamGame = ArkhamGame
   { cycle :: ArkhamCycle
   , scenario :: ArkhamScenario
-  , player :: ArkhamPlayer
+  , gameState :: ArkhamGameState
   }
   deriving stock (Generic)
   deriving anyclass (ToJSON)
 
 getApiV1ArkhamGameR :: Int -> Handler ArkhamGame
-getApiV1ArkhamGameR _ = pure $ ArkhamGame NightOfTheZealot ScenarioOne player
+getApiV1ArkhamGameR _ = pure
+  $ ArkhamGame NightOfTheZealot ScenarioOne gameState
  where
+  gameState = ArkhamGameState player Investigation
   player = ArkhamPlayer rolandBanks 0 0 5 [machete] []
   machete = ArkhamCard (Just 3) "https://arkhamdb.com/bundles/cards/01020.png"
-  rolandBanks = ArkhamInvestigator "Roland Banks" "https://arkhamdb.com/bundles/cards/01001.png"
+  rolandBanks = ArkhamInvestigator
+    "Roland Banks"
+    "https://arkhamdb.com/bundles/cards/01001.png"

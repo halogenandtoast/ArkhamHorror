@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import baseRoutes from '@/router/routes';
+import baseRoutes from '@/routes';
 import arkhamRoutes from '@/arkham/routes';
 
 Vue.use(VueRouter);

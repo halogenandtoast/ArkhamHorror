@@ -2,7 +2,7 @@
   <div id="game" class="game">
     <div>{{game.cycle}} -  {{game.scenario}}</div>
 
-    <Player :player="game.player" />
+    <Player :player="game.gameState.player" />
   </div>
 </template>
 

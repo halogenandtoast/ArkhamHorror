@@ -6,3 +6,4 @@
     /arkham ApiV1ArkhamP:
       /games ApiV1ArkhamGamesP:
         /#Int ApiV1ArkhamGameR GET
+        /#Int/skill-check ApiV1ArkhamGameSkillCheckR GET

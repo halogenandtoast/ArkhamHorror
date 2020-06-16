@@ -1,29 +1,17 @@
-module Arkham.Types where
+module Arkham.Types
+  ( module X
+  , module Arkham.Types
+  )
+where
 
+import Arkham.Types.ChaosToken as X
+import Arkham.Types.Location as X
 import ClassyPrelude
+import Control.Monad.Random
 import Data.Aeson
-import Data.List.NonEmpty
-
-data ArkhamChaosToken
-  = PlusOne
-  | Zero
-  | MinusOne
-  | MinusTwo
-  | MinusThree
-  | MinusFour
-  | MinusFive
-  | MinusSix
-  | MinusSeven
-  | MinusEight
-  | Skull
-  | Cultist
-  | Tablet
-  | ElderThing
-  | Fail
-  | ElderSign
-  deriving stock (Generic)
-  deriving anyclass (ToJSON)
-
+import Data.Aeson.Casing
+import Data.List.NonEmpty (NonEmpty(..))
+import qualified Data.List.NonEmpty as NE
 
 data ArkhamCycle = NightOfTheZealot | TheDunwichLegacy
   deriving stock (Generic)
@@ -52,6 +40,7 @@ data ArkhamPlayer = ArkhamPlayer
   , sanityDamage :: Int
   , healthDamage :: Int
   , resources :: Int
+  , clues :: Int
   , hand :: [ArkhamCard]
   , inPlay :: [ArkhamCard]
   }
@@ -63,17 +52,37 @@ data ArkhamPhase = Mythos | Investigation | Enemy | Upkeep
   deriving anyclass (ToJSON)
 
 data ArkhamGameState = ArkhamGameState
-  { player :: ArkhamPlayer
-  , phase :: ArkhamPhase
-  , chaosBag :: NonEmpty ArkhamChaosToken
+  { agsPlayer :: ArkhamPlayer
+  , agsPhase :: ArkhamPhase
+  , agsChaosBag :: NonEmpty ArkhamChaosToken
+  , agsLocations :: [ArkhamLocation]
   }
   deriving stock (Generic)
-  deriving anyclass (ToJSON)
+
+instance ToJSON ArkhamGameState where
+  toJSON =
+    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
+  toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
+
+class HasChaosBag a where
+  chaosBag :: a -> NonEmpty ArkhamChaosToken
+  drawFromChaosBag :: (MonadRandom m) => a -> m ArkhamChaosToken
+  drawFromChaosBag a = let bag = chaosBag a in (bag NE.!!) <$> getRandomR (0, NE.length bag - 1)
 
 data ArkhamGame = ArkhamGame
-  { cycle :: ArkhamCycle
-  , scenario :: ArkhamScenario
-  , gameState :: ArkhamGameState
+  { agId :: Int
+  , agCycle :: ArkhamCycle
+  , agScenario :: ArkhamScenario
+  , agGameState :: ArkhamGameState
   }
   deriving stock (Generic)
-  deriving anyclass (ToJSON)
+
+instance HasChaosBag ArkhamGame where
+  chaosBag = agsChaosBag . agGameState
+
+instance ToJSON ArkhamGame where
+  toJSON =
+    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }
+  toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }

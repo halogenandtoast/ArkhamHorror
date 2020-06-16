@@ -1,6 +1,13 @@
 <template>
   <div id="game" class="game">
     <div>{{game.cycle}} -  {{game.scenario}}</div>
+    <div>
+      <img
+        v-for="location in game.gameState.locations"
+        :src="location.image"
+        :key="location.name"
+      />
+    </div>
     <div @click="drawToken">Draw Token</div>
     <img v-if="drawnToken" :src="chaosTokenSrc" />
     <Player :player="game.gameState.player" />

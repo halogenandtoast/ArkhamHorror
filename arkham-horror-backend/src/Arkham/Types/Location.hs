@@ -11,6 +11,7 @@ data ArkhamLocationSymbol = Circle | Heart
 data ArkhamUnrevealedLocation = ArkhamUnrevealedLocation
   { aulName :: Text
   , aulLocationSymbols :: [ArkhamLocationSymbol]
+  , aulImage :: Text
   }
   deriving stock (Generic)
 
@@ -24,6 +25,7 @@ data ArkhamRevealedLocation = ArkhamRevealedLocation
   { arlName :: Text
   , arlLocationSymbols :: [ArkhamLocationSymbol]
   , arlShroud :: Int
+  , arlImage :: Text
   }
   deriving stock (Generic)
 

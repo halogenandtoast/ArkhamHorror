@@ -44,12 +44,14 @@ export type ArkhamLocation<T> = {
 export interface ArkhamUnrevealedLocation {
   name: string;
   locationSymbols: ArkhamLocationSymbol[];
+  image: string;
 }
 
 export const arkhamUnrevealedLocationDecoder = JsonDecoder.object<ArkhamUnrevealedLocation>(
   {
     name: JsonDecoder.string,
     locationSymbols: JsonDecoder.array<ArkhamLocationSymbol>(arkhamLocationSymbolDecoder, 'ArkhamLocationSymbol[]'),
+    image: JsonDecoder.string,
   },
   'ArkhamUnrevealedLocation',
 );
@@ -58,6 +60,7 @@ export interface ArkhamRevealedLocation {
   name: string;
   locationSymbols: ArkhamLocationSymbol[];
   shroud: number;
+  image: string;
 }
 
 export const arkhamRevealedLocationDecoder = JsonDecoder.object<ArkhamRevealedLocation>(
@@ -65,6 +68,7 @@ export const arkhamRevealedLocationDecoder = JsonDecoder.object<ArkhamRevealedLo
     name: JsonDecoder.string,
     locationSymbols: JsonDecoder.array<ArkhamLocationSymbol>(arkhamLocationSymbolDecoder, 'ArkhamLocationSymbol[]'),
     shroud: JsonDecoder.number,
+    image: JsonDecoder.string,
   },
   'ArkhamUnrevealedLocation',
 );

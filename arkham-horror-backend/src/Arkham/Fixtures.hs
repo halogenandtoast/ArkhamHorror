@@ -27,11 +27,16 @@ loadGameFixture _ = pure $ ArkhamGame 1 NightOfTheZealot ScenarioOne gameState
     , AutoFail
     , ElderSign
     ]
-  study = ArkhamRevealedLocation "Study" [] 2
+  study = ArkhamRevealedLocation
+    "Study"
+    []
+    2
+    "https://arkhamdb.com/bundles/cards/01111.png"
   player = ArkhamPlayer rolandBanks 0 0 5 0 [machete] []
   machete = ArkhamCard (Just 3) "https://arkhamdb.com/bundles/cards/01020.png"
   rolandBanks = ArkhamInvestigator
     "Roland Banks"
     "https://arkhamdb.com/bundles/cards/01001.png"
+    "/img/arkham/AHC01_1_portrait.jpg"
 
 

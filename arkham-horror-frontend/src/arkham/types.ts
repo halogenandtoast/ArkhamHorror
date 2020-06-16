@@ -1,4 +1,10 @@
 import { JsonDecoder } from 'ts.data.json';
+import {
+  ArkhamCard,
+  ArkhamPlayerCard,
+  ArkhamEncounterCard,
+  arkhamCardDecoder,
+} from '@/arkham/types/card';
 
 export type ArkhamCycle = 'NightOfTheZealot' | 'TheDunwichLegacy';
 
@@ -13,19 +19,6 @@ export const arkhamScenarioDecoder = JsonDecoder.oneOf<ArkhamScenario>([
   JsonDecoder.isExactly('ScenarioOne'),
   JsonDecoder.isExactly('ScenarioTwo'),
 ], 'ArkhamCycle');
-
-export interface ArkhamCard {
-  cost: number;
-  image: string;
-}
-
-export const arkhamCardDecoder = JsonDecoder.object<ArkhamCard>(
-  {
-    cost: JsonDecoder.number,
-    image: JsonDecoder.string,
-  },
-  'ArkhamCard',
-);
 
 export interface ArkhamInvestigator {
   investigatorName: string;
@@ -46,8 +39,8 @@ export interface ArkhamPlayer {
   healthDamage: number;
   resources: number;
   clues: number;
-  hand: ArkhamCard[];
-  inPlay: ArkhamCard[];
+  hand: ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>[];
+  inPlay: ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>[];
 }
 
 export const arkhamPlayerDecoder = JsonDecoder.object<ArkhamPlayer>(
@@ -57,8 +50,8 @@ export const arkhamPlayerDecoder = JsonDecoder.object<ArkhamPlayer>(
     healthDamage: JsonDecoder.number,
     resources: JsonDecoder.number,
     clues: JsonDecoder.number,
-    hand: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
-    inPlay: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
+    hand: JsonDecoder.array<ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>>(arkhamCardDecoder, 'ArkhamCard[]'),
+    inPlay: JsonDecoder.array<ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>>(arkhamCardDecoder, 'ArkhamCard[]'),
   },
   'ArkhamPlayer',
 );

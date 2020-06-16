@@ -7,6 +7,11 @@ import {
   arkhamScenarioDecoder,
   arkhamPlayerDecoder,
 } from '@/arkham/types';
+import {
+  ArkhamRevealedLocation,
+  ArkhamUnrevealedLocation,
+  arkhamLocationDecoder,
+} from '@/arkham/types/location';
 
 export type ArkhamPhase = 'Mythos' | 'Investigation' | 'Enemy' | 'Upkeep';
 
@@ -17,10 +22,23 @@ export interface ArkhamGame {
   gameState: ArkhamGameState;
 }
 
+type AgendaStack = {
+  tag: 'AgendaStack';
+  contents: string;
+};
+
+type ActStack = {
+  tag: 'ActStack';
+  contents: string;
+};
+
+type ArkhamStack = AgendaStack | ActStack;
+
 export interface ArkhamGameState {
   player: ArkhamPlayer;
   phase: ArkhamPhase;
   locations: (ArkhamRevealedLocation | ArkhamUnrevealedLocation)[];
+  stacks: ArkhamStack[];
 }
 
 export const arkhamPhaseDecoder = JsonDecoder.oneOf<ArkhamPhase>([
@@ -29,96 +47,37 @@ export const arkhamPhaseDecoder = JsonDecoder.oneOf<ArkhamPhase>([
   JsonDecoder.isExactly('Upkeep'),
 ], 'ArkhamPhase');
 
-export type ArkhamLocationSymbol = 'Circle' | 'Heart';
-
-export const arkhamLocationSymbolDecoder = JsonDecoder.oneOf<ArkhamLocationSymbol>([
-  JsonDecoder.isExactly('Circle'),
-  JsonDecoder.isExactly('Heart'),
-], 'ArkhamLocationSymbol');
-
-export type ArkhamLocation<T> = {
-  tag: string;
-  contents: T;
-}
-
-export interface ArkhamUnrevealedLocation {
-  name: string;
-  locationSymbols: ArkhamLocationSymbol[];
-  image: string;
-}
-
-export const arkhamUnrevealedLocationDecoder = JsonDecoder.object<ArkhamUnrevealedLocation>(
+export const arkhamStackAgendaStackDecoder = JsonDecoder.object<AgendaStack>(
   {
-    name: JsonDecoder.string,
-    locationSymbols: JsonDecoder.array<ArkhamLocationSymbol>(arkhamLocationSymbolDecoder, 'ArkhamLocationSymbol[]'),
-    image: JsonDecoder.string,
+    tag: JsonDecoder.isExactly('AgendaStack'),
+    contents: JsonDecoder.string,
   },
-  'ArkhamUnrevealedLocation',
+  'AgendaStack',
 );
 
-export interface ArkhamRevealedLocation {
-  name: string;
-  locationSymbols: ArkhamLocationSymbol[];
-  shroud: number;
-  image: string;
-}
 
-export const arkhamRevealedLocationDecoder = JsonDecoder.object<ArkhamRevealedLocation>(
+export const arkhamStackActStackDecoder = JsonDecoder.object<ActStack>(
   {
-    name: JsonDecoder.string,
-    locationSymbols: JsonDecoder.array<ArkhamLocationSymbol>(arkhamLocationSymbolDecoder, 'ArkhamLocationSymbol[]'),
-    shroud: JsonDecoder.number,
-    image: JsonDecoder.string,
+    tag: JsonDecoder.isExactly('ActStack'),
+    contents: JsonDecoder.string,
   },
-  'ArkhamUnrevealedLocation',
+  'ActStack',
 );
 
-export const arkhamLocationRevealedLocationDecoder = JsonDecoder.object<
-    ArkhamLocation<ArkhamRevealedLocation>
-  >(
-    {
-      tag: JsonDecoder.isExactly('RevealedLocation'),
-      contents: arkhamRevealedLocationDecoder,
-    },
-    'ArkhamLocation<ArkhamRevealedLocation>',
-  );
-
-export const arkhamLocationUnrevealedLocationDecoder = JsonDecoder.object<
-    ArkhamLocation<ArkhamUnrevealedLocation>
-  >(
-    {
-      tag: JsonDecoder.isExactly('UnrevealedLocation'),
-      contents: arkhamUnrevealedLocationDecoder,
-    },
-    'ArkhamLocation<ArkhamUnrevealedLocation>',
-  );
-
-export const arkhamLocationDecoder = JsonDecoder.object<
-    ArkhamLocation<ArkhamUnrevealedLocation | ArkhamRevealedLocation>
-  >(
-    {
-      tag: JsonDecoder.string,
-      contents: JsonDecoder.succeed,
-    },
-    'ArkhamLocation',
-  ).then((value) => {
-    switch (value.tag) {
-      case 'RevealedLocation':
-        return arkhamLocationRevealedLocationDecoder;
-      case 'UnrevealedLocation':
-        return arkhamLocationUnrevealedLocationDecoder;
-      default:
-        return JsonDecoder.fail<ArkhamLocation<ArkhamUnrevealedLocation | ArkhamRevealedLocation>>(
-          `<ArkhamLocation> does not support tag ${value.tag}`,
-        );
-    }
-  }).map((value) => value.contents);
+export const arkhamStackDecoder = JsonDecoder.oneOf<ArkhamStack>(
+  [
+    arkhamStackAgendaStackDecoder,
+    arkhamStackActStackDecoder,
+  ],
+  'ArkhamStack',
+);
 
 export const arkhamGameStateDecoder = JsonDecoder.object<ArkhamGameState>(
   {
     player: arkhamPlayerDecoder,
     phase: arkhamPhaseDecoder,
     locations: JsonDecoder.array<ArkhamUnrevealedLocation | ArkhamRevealedLocation>(arkhamLocationDecoder, 'ArkhamLocation[]'),
+    stacks: JsonDecoder.array<ArkhamStack>(arkhamStackDecoder, 'ArkhamStack[]'),
   },
   'ArkhamGameState',
 );

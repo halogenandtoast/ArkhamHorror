@@ -4,7 +4,7 @@
       <section>
         <h2>In play</h2>
         <div v-for="(card, index) in player.inPlay" :key="index">
-          <img :src="card.image" />
+          <img :src="card.contents.image" />
         </div>
       </section>
     </div>
@@ -23,7 +23,7 @@
           <img
             v-if="canPlay(index)"
             class="card playable"
-            :src="card.image"
+            :src="card.contents.image"
             @click="playCard(index)"
           />
           <img v-else class="card" :src="card.image" />
@@ -43,7 +43,9 @@ export default class Player extends Vue {
 
   playCard(index: number) {
     const card = this.player.hand[index];
-    this.player.resources -= card.cost;
+    if ('cost' in card.contents) {
+      this.player.resources -= card.contents.cost;
+    }
     this.player.inPlay.push(card);
     this.player.hand.splice(index, 1);
   }
@@ -59,6 +61,7 @@ export default class Player extends Vue {
 .hand {
   .card {
     width: 150px;
+    border-radius: 7px;
   }
 
   .playable {

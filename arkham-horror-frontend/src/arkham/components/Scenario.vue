@@ -3,6 +3,13 @@
     <div>{{game.cycle}} -  {{game.scenario}}</div>
     <div>
       <img
+        v-for="(stack, index) in game.gameState.stacks"
+        :src="stack.contents"
+        :key="index"
+      />
+    </div>
+    <div>
+      <img
         v-for="location in game.gameState.locations"
         :src="location.image"
         :key="location.name"

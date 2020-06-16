@@ -4,7 +4,9 @@ module Arkham.Types
   )
 where
 
+import Arkham.Types.Card as X
 import Arkham.Types.ChaosToken as X
+import Arkham.Types.Investigator as X
 import Arkham.Types.Location as X
 import ClassyPrelude
 import Control.Monad.Random
@@ -18,21 +20,6 @@ data ArkhamCycle = NightOfTheZealot | TheDunwichLegacy
   deriving anyclass (ToJSON)
 
 data ArkhamScenario = ScenarioOne | ScenarioTwo
-  deriving stock (Generic)
-  deriving anyclass (ToJSON)
-
-data ArkhamInvestigator = ArkhamInvestigator
-  { investigatorName :: Text
-  , investigatorImage :: Text
-  , investigatorPortrait :: Text
-  }
-  deriving stock (Generic)
-  deriving anyclass (ToJSON)
-
-data ArkhamCard = ArkhamCard
-  { cost :: Maybe Int
-  , image :: Text
-  }
   deriving stock (Generic)
   deriving anyclass (ToJSON)
 
@@ -52,11 +39,22 @@ data ArkhamPhase = Mythos | Investigation | Enemy | Upkeep
   deriving stock (Generic)
   deriving anyclass (ToJSON)
 
+newtype ArkhamAct = ArkhamAct { aactImage :: Text }
+  deriving newtype (ToJSON)
+
+newtype ArkhamAgenda = ArkhamAgenda { aagendaImage :: Text }
+  deriving newtype (ToJSON)
+
+data ArkhamStack = ActStack ArkhamAct | AgendaStack ArkhamAgenda
+  deriving stock (Generic)
+  deriving anyclass (ToJSON)
+
 data ArkhamGameState = ArkhamGameState
   { agsPlayer :: ArkhamPlayer
   , agsPhase :: ArkhamPhase
   , agsChaosBag :: NonEmpty ArkhamChaosToken
   , agsLocations :: [ArkhamLocation]
+  , agsStacks :: [ArkhamStack]
   }
   deriving stock (Generic)
 

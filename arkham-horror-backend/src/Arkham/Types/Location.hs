@@ -40,6 +40,19 @@ instance ToJSON ArkhamRevealedLocation where
   toEncoding = genericToEncoding
     $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
 
+class HasLocationId a where
+  getLocationId :: a -> LocationId
+
+instance HasLocationId ArkhamRevealedLocation where
+  getLocationId = arlLocationId
+
+instance HasLocationId ArkhamUnrevealedLocation where
+  getLocationId = aulLocationId
+
+instance HasLocationId ArkhamLocation where
+  getLocationId (UnrevealedLocation l) = getLocationId l
+  getLocationId (RevealedLocation l) = getLocationId l
+
 data ArkhamLocation = UnrevealedLocation ArkhamUnrevealedLocation | RevealedLocation ArkhamRevealedLocation
   deriving stock (Generic)
   deriving anyclass (ToJSON)

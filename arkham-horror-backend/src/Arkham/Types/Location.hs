@@ -4,12 +4,16 @@ import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
 
+newtype LocationId = LocationId { unLocationId :: Text }
+  deriving newtype (ToJSON, ToJSONKey, IsString, Eq, Hashable)
+
 data ArkhamLocationSymbol = Circle | Heart
   deriving stock (Generic)
   deriving anyclass (ToJSON)
 
 data ArkhamUnrevealedLocation = ArkhamUnrevealedLocation
   { aulName :: Text
+  , aulLocationId :: LocationId
   , aulLocationSymbols :: [ArkhamLocationSymbol]
   , aulImage :: Text
   }
@@ -23,6 +27,7 @@ instance ToJSON ArkhamUnrevealedLocation where
 
 data ArkhamRevealedLocation = ArkhamRevealedLocation
   { arlName :: Text
+  , arlLocationId :: LocationId
   , arlLocationSymbols :: [ArkhamLocationSymbol]
   , arlShroud :: Int
   , arlImage :: Text

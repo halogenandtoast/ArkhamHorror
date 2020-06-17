@@ -2,16 +2,23 @@ module Arkham.Fixtures where
 
 import Arkham.Types
 import ClassyPrelude
+import qualified Data.HashMap.Strict as HashMap
 import qualified Data.List.NonEmpty as NE
 
 loadGameFixture :: Int -> IO ArkhamGame
-loadGameFixture _ = pure $ ArkhamGame 1 NightOfTheZealot ScenarioOne gameState
+loadGameFixture _ = pure $ ArkhamGame 1 NightOfTheZealot theGathering gameState
  where
+  theGathering = ArkhamScenario
+    "The Gathering"
+    "https://arkhamdb.com/bundles/cards/01104.jpg"
   gameState = ArkhamGameState
     player
     Investigation
     chaosTokens
     [RevealedLocation study]
+    (HashMap.fromList
+      [("Study", [LocationInvestigator rolandBanks, LocationClues 2])]
+    )
     [agenda, act]
   agenda =
     AgendaStack $ ArkhamAgenda "https://arkhamdb.com/bundles/cards/01105.jpg"
@@ -35,6 +42,7 @@ loadGameFixture _ = pure $ ArkhamGame 1 NightOfTheZealot ScenarioOne gameState
     , ElderSign
     ]
   study = ArkhamRevealedLocation
+    "Study"
     "Study"
     []
     2

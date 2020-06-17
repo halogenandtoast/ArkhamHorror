@@ -1,22 +1,38 @@
 <template>
   <div id="game" class="game">
-    <div>{{game.cycle}} -  {{game.scenario}}</div>
-    <div>
+    <div class="scenario-cards">
+      <img class="card" :src="game.scenario.guide" />
       <img
         v-for="(stack, index) in game.gameState.stacks"
+        class="card card--sideways"
         :src="stack.contents"
         :key="index"
       />
+      <button @click="drawToken">Draw Token</button>
+      <img v-if="drawnToken" :src="chaosTokenSrc" class="token" />
     </div>
-    <div>
-      <img
-        v-for="location in game.gameState.locations"
-        :src="location.image"
-        :key="location.name"
-      />
+    <div class="location-cards">
+      <div v-for="location in game.gameState.locations" class="location" :key="location.name">
+        <img
+          class="card"
+          :src="location.image"
+        />
+        <div
+          v-for="(contents, index) in contentsFor(location)"
+          :key="index"
+        >
+          <img
+            v-if="contents.tag == 'LocationInvestigator'"
+            :src="contents.contents.investigatorPortrait"
+          />
+          <img
+            v-if="contents.tag == 'LocationClues'"
+            src="/img/arkham/clue.png"
+          />
+          <span v-if="contents.tag == 'LocationClues'">{{contents.contents}}</span>
+        </div>
+      </div>
     </div>
-    <div @click="drawToken">Draw Token</div>
-    <img v-if="drawnToken" :src="chaosTokenSrc" />
     <Player :player="game.gameState.player" />
   </div>
 </template>
@@ -24,6 +40,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ArkhamGame } from '@/arkham/types/ArkhamGame';
+import { ArkhamLocation, ArkhamUnrevealedLocation, ArkhamRevealedLocation } from '@/arkham/types/location';
 import { ArkhamChaosToken } from '@/arkham/types';
 import { performSkillCheck } from '@/api';
 import Player from '@/arkham/components/Player.vue';
@@ -41,8 +58,27 @@ export default class Scenario extends Vue {
     });
   }
 
+  contentsFor(location: ArkhamUnrevealedLocation | ArkhamRevealedLocation) {
+    return this.game.gameState.locationContents[location.locationId];
+  }
+
   get chaosTokenSrc() {
     return `/img/arkham/ct_${this.drawnToken}.png`;
   }
 }
 </script>
+
+<style scoped>
+.card {
+  width: 250px;
+}
+.card--sideways {
+  width: auto;
+  height: 250px;
+}
+
+.scenario-cards {
+  display: flex;
+  align-self: center;
+}
+</style>

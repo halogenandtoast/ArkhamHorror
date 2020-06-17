@@ -13,22 +13,27 @@ export const arkhamCycleDecoder = JsonDecoder.oneOf<ArkhamCycle>([
   JsonDecoder.isExactly('TheDunwichLegacy'),
 ], 'ArkhamCycle');
 
-export type ArkhamScenario = 'ScenarioOne' | 'ScenarioTwo';
+export interface ArkhamScenario {
+  name: string;
+  guide: string;
+}
 
-export const arkhamScenarioDecoder = JsonDecoder.oneOf<ArkhamScenario>([
-  JsonDecoder.isExactly('ScenarioOne'),
-  JsonDecoder.isExactly('ScenarioTwo'),
-], 'ArkhamCycle');
+export const arkhamScenarioDecoder = JsonDecoder.object<ArkhamScenario>({
+  name: JsonDecoder.string,
+  guide: JsonDecoder.string,
+}, 'ArkhamCycle');
 
 export interface ArkhamInvestigator {
   investigatorName: string;
   investigatorImage: string;
+  investigatorPortrait: string;
 }
 
 export const arkhamInvestigatorDecoder = JsonDecoder.object<ArkhamInvestigator>(
   {
     investigatorName: JsonDecoder.string,
     investigatorImage: JsonDecoder.string,
+    investigatorPortrait: JsonDecoder.string,
   },
   'ArkhamInvestigator',
 );

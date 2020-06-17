@@ -19,9 +19,17 @@ data ArkhamCycle = NightOfTheZealot | TheDunwichLegacy
   deriving stock (Generic)
   deriving anyclass (ToJSON)
 
-data ArkhamScenario = ScenarioOne | ScenarioTwo
+data ArkhamScenario = ArkhamScenario
+  { asName :: Text
+  , asGuide :: Text
+  }
   deriving stock (Generic)
-  deriving anyclass (ToJSON)
+
+instance ToJSON ArkhamScenario where
+  toJSON =
+    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }
+  toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }
 
 data ArkhamPlayer = ArkhamPlayer
   { investigator :: ArkhamInvestigator
@@ -49,11 +57,16 @@ data ArkhamStack = ActStack ArkhamAct | AgendaStack ArkhamAgenda
   deriving stock (Generic)
   deriving anyclass (ToJSON)
 
+data LocationContent = LocationClues Int | LocationInvestigator ArkhamInvestigator
+  deriving stock (Generic)
+  deriving anyclass (ToJSON)
+
 data ArkhamGameState = ArkhamGameState
   { agsPlayer :: ArkhamPlayer
   , agsPhase :: ArkhamPhase
   , agsChaosBag :: NonEmpty ArkhamChaosToken
   , agsLocations :: [ArkhamLocation]
+  , agsLocationContents :: HashMap LocationId [LocationContent]
   , agsStacks :: [ArkhamStack]
   }
   deriving stock (Generic)

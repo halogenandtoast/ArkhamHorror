@@ -33,7 +33,7 @@ export default class Game extends Vue {
 
 .game {
   width: 100vh;
-  height: 100vh;
+  height: calc(100vh - 40px);
   display: grid;
 }
 </style>

@@ -3,9 +3,11 @@ import {
   ArkhamCycle,
   ArkhamScenario,
   ArkhamPlayer,
+  ArkhamInvestigator,
   arkhamCycleDecoder,
   arkhamScenarioDecoder,
   arkhamPlayerDecoder,
+  arkhamInvestigatorDecoder,
 } from '@/arkham/types';
 import {
   ArkhamRevealedLocation,
@@ -34,10 +36,40 @@ type ActStack = {
 
 type ArkhamStack = AgendaStack | ActStack;
 
+type LocationClues = {
+  tag: 'LocationClues';
+  contents: number;
+}
+
+type LocationInvestigator = {
+  tag: 'LocationInvestigator';
+  contents: ArkhamInvestigator;
+}
+
+type LocationContent = LocationClues | LocationInvestigator;
+
+export const arkhamLocationContentLocationCluesDecoder = JsonDecoder.object<LocationContent>({
+  tag: JsonDecoder.isExactly('LocationClues'),
+  contents: JsonDecoder.number,
+}, 'LocationClues');
+
+export const arkhamLocationContentLocationInvestigatorDecoder = JsonDecoder.object<
+    LocationContent
+  >({
+    tag: JsonDecoder.isExactly('LocationInvestigator'),
+    contents: arkhamInvestigatorDecoder,
+  }, 'LocationInvestigator');
+
+export const arkhamLocationContentDecoder = JsonDecoder.oneOf<LocationContent>([
+  arkhamLocationContentLocationCluesDecoder,
+  arkhamLocationContentLocationInvestigatorDecoder,
+], 'Record<string, LocationContent[]>');
+
 export interface ArkhamGameState {
   player: ArkhamPlayer;
   phase: ArkhamPhase;
   locations: (ArkhamRevealedLocation | ArkhamUnrevealedLocation)[];
+  locationContents: Record<string, LocationContent[]>;
   stacks: ArkhamStack[];
 }
 
@@ -77,6 +109,10 @@ export const arkhamGameStateDecoder = JsonDecoder.object<ArkhamGameState>(
     player: arkhamPlayerDecoder,
     phase: arkhamPhaseDecoder,
     locations: JsonDecoder.array<ArkhamUnrevealedLocation | ArkhamRevealedLocation>(arkhamLocationDecoder, 'ArkhamLocation[]'),
+    locationContents: JsonDecoder.dictionary(
+      JsonDecoder.array<LocationContent>(arkhamLocationContentDecoder, 'LocationContent[]'),
+      'Dict<LocationContent[]>',
+    ),
     stacks: JsonDecoder.array<ArkhamStack>(arkhamStackDecoder, 'ArkhamStack[]'),
   },
   'ArkhamGameState',

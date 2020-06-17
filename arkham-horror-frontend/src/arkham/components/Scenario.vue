@@ -25,7 +25,7 @@
             v-if="contents.tag == 'LocationInvestigator'"
             :src="contents.contents.portrait"
           />
-          <div v-if="contents.tag == 'LocationClues'">
+          <div v-if="contents.tag == 'LocationClues' && location.tag == 'revealed'">
             <img
               class="clue--can-investigate"
               @click="investigate(location)"

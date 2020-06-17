@@ -25,11 +25,14 @@
             v-if="contents.tag == 'LocationInvestigator'"
             :src="contents.contents.investigatorPortrait"
           />
-          <img
-            v-if="contents.tag == 'LocationClues'"
-            src="/img/arkham/clue.png"
-          />
-          <span v-if="contents.tag == 'LocationClues'">{{contents.contents}}</span>
+          <div v-if="contents.tag == 'LocationClues'">
+            <img
+              class="clue--can-investigate"
+              @click="investigate(location)"
+              src="/img/arkham/clue.png"
+            />
+            {{contents.contents}}
+          </div>
         </div>
       </div>
     </div>
@@ -40,7 +43,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ArkhamGame } from '@/arkham/types/ArkhamGame';
-import { ArkhamLocation, ArkhamUnrevealedLocation, ArkhamRevealedLocation } from '@/arkham/types/location';
+import { ArkhamUnrevealedLocation, ArkhamRevealedLocation } from '@/arkham/types/location';
 import { ArkhamChaosToken } from '@/arkham/types';
 import { performSkillCheck } from '@/api';
 import Player from '@/arkham/components/Player.vue';
@@ -80,5 +83,10 @@ export default class Scenario extends Vue {
 .scenario-cards {
   display: flex;
   align-self: center;
+}
+
+.clue--can-investigate {
+  border: 1px solid #ff00ff;
+  border-radius: 100px;
 }
 </style>

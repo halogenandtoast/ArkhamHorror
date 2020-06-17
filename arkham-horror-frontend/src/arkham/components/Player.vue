@@ -26,7 +26,7 @@
             :src="card.contents.image"
             @click="playCard(index)"
           />
-          <img v-else class="card" :src="card.image" />
+          <img v-else class="card" :src="card.contents.image" />
         </div>
       </section>
     </div>

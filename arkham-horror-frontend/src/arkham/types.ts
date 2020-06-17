@@ -24,16 +24,24 @@ export const arkhamScenarioDecoder = JsonDecoder.object<ArkhamScenario>({
 }, 'ArkhamCycle');
 
 export interface ArkhamInvestigator {
-  investigatorName: string;
-  investigatorImage: string;
-  investigatorPortrait: string;
+  name: string;
+  image: string;
+  portrait: string;
+  willpower: number;
+  intellect: number;
+  combat: number;
+  agility: number;
 }
 
 export const arkhamInvestigatorDecoder = JsonDecoder.object<ArkhamInvestigator>(
   {
-    investigatorName: JsonDecoder.string,
-    investigatorImage: JsonDecoder.string,
-    investigatorPortrait: JsonDecoder.string,
+    name: JsonDecoder.string,
+    image: JsonDecoder.string,
+    portrait: JsonDecoder.string,
+    willpower: JsonDecoder.number,
+    intellect: JsonDecoder.number,
+    combat: JsonDecoder.number,
+    agility: JsonDecoder.number,
   },
   'ArkhamInvestigator',
 );

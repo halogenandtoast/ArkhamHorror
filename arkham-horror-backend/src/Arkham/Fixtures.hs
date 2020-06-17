@@ -56,5 +56,7 @@ loadGameFixture _ = pure $ ArkhamGame 1 NightOfTheZealot theGathering gameState
     "Roland Banks"
     "https://arkhamdb.com/bundles/cards/01001.png"
     "/img/arkham/AHC01_1_portrait.jpg"
-
-
+    (ArkhamSkillWillpower 3)
+    (ArkhamSkillIntellect 3)
+    (ArkhamSkillCombat 4)
+    (ArkhamSkillAgility 2)

@@ -10,7 +10,7 @@
     </div>
     <div class="player">
       <img src="/img/arkham/player_back.jpg" width="200px" />
-      <img :src="player.investigator.investigatorImage" />
+      <img :src="player.investigator.image" />
       <div>
         <div class="poolItem"><img src="/img/arkham/resource.png"/> {{player.resources}}</div>
         <div class="poolItem"><img src="/img/arkham/clue.png"/> {{player.clues}}</div>
@@ -43,9 +43,9 @@ export default class Player extends Vue {
 
   playCard(index: number) {
     const card = this.player.hand[index];
-    if ('cost' in card.contents) {
-      this.player.resources -= card.contents.cost;
-    }
+    const cost = 'cost' in card.contents ? card.contents.cost : 0;
+
+    this.player.resources -= cost;
     this.player.inPlay.push(card);
     this.player.hand.splice(index, 1);
   }

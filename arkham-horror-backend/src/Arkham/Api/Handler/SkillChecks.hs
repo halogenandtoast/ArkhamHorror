@@ -16,16 +16,16 @@ data ArkhamSkillCheckResult = Success | Failure
   deriving anyclass (ToJSON)
 
 revealedLocations :: ArkhamGame -> [ArkhamRevealedLocation]
-revealedLocations game = do
-  RevealedLocation l <- agsLocations $ agGameState game
-  pure l
+revealedLocations game =
+  [ location | RevealedLocation location <- agsLocations $ agGameState game ]
 
 postApiV1ArkhamGameInvestigateR :: Int -> Text -> Handler ArkhamSkillCheckResult
 postApiV1ArkhamGameInvestigateR gameId locationIdText = do
   game <- liftIO $ loadGameFixture gameId
   case findRequestLocation game of
-    Just location -> pure Success
+    Just _ -> pure Success
     Nothing -> pure Failure
-  where
-    locationId = LocationId locationIdText
-    findRequestLocation = find ((== locationId) . getLocationId) . revealedLocations
+ where
+  locationId = LocationId locationIdText
+  findRequestLocation =
+    find ((== locationId) . getLocationId) . revealedLocations

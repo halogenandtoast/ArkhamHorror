@@ -54,6 +54,7 @@ dependencies:
 - http-client-tls
 - http-conduit
 - jwt
+- microlens
 - monad-control
 - monad-logger
 - MonadRandom

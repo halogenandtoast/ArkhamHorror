@@ -1,0 +1,17 @@
+module Arkham.Types.Scenario where
+
+import ClassyPrelude
+import Data.Aeson
+import Data.Aeson.Casing
+
+data ArkhamScenario = ArkhamScenario
+  { asName :: Text
+  , asGuide :: Text
+  }
+  deriving stock (Generic)
+
+instance ToJSON ArkhamScenario where
+  toJSON =
+    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }
+  toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }

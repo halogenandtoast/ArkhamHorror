@@ -1,8 +1,13 @@
 module Arkham.Types.Location where
 
+import Arkham.Types.Investigator
 import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
+
+data LocationContent = LocationClues Int | LocationInvestigator ArkhamInvestigator
+  deriving stock (Generic)
+  deriving anyclass (ToJSON)
 
 newtype LocationId = LocationId { unLocationId :: Text }
   deriving newtype (ToJSON, ToJSONKey, IsString, Eq, Hashable)

@@ -17,6 +17,10 @@ instance ToJSON ArkhamPlayerCard where
   toEncoding = genericToEncoding
     $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
 
+instance FromJSON ArkhamPlayerCard where
+  parseJSON = genericParseJSON
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
+
 data ArkhamEncounterCard = ArkhamEncounterCard
   { aecName :: Text
   , aecImage :: Text
@@ -29,7 +33,11 @@ instance ToJSON ArkhamEncounterCard where
   toEncoding = genericToEncoding
     $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
 
+instance FromJSON ArkhamEncounterCard where
+  parseJSON = genericParseJSON
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
+
 data ArkhamCard = PlayerCard ArkhamPlayerCard | EncounterCard ArkhamEncounterCard
   deriving stock (Generic)
-  deriving anyclass (ToJSON)
+  deriving anyclass (ToJSON, FromJSON)
 

@@ -5,6 +5,6 @@
     /whoami ApiV1CurrentUserR GET
     /arkham ApiV1ArkhamP:
       /games ApiV1ArkhamGamesP:
-        /#Int ApiV1ArkhamGameR GET
-        /#Int/skill-check ApiV1ArkhamGameSkillCheckR GET
-        /#Int/locations/#Text/investigate ApiV1ArkhamGameInvestigateR POST
+        /#Int ApiV1ArkhamGameP:
+          / ApiV1ArkhamGameR GET
+          /action ApiV1ArkhamGameActionR POST

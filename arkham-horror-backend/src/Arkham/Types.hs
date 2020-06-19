@@ -18,6 +18,9 @@ import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.List.NonEmpty as NE
 import Lens.Micro
 
+class HasLocations a where
+  locations :: Lens' a [ArkhamLocation]
+
 class HasChaosBag a where
   chaosBag :: Lens' a (NonEmpty ArkhamChaosToken)
   drawFromChaosBag :: (MonadRandom m) => a -> m ArkhamChaosToken
@@ -29,11 +32,31 @@ arkhamGameGameStateLens = lens agGameState $ \m x -> m { agGameState = x }
 arkhamGameStateChaosBagLens :: Lens' ArkhamGameState (NonEmpty ArkhamChaosToken)
 arkhamGameStateChaosBagLens = lens agsChaosBag $ \m x -> m { agsChaosBag = x }
 
-arkhamGameChaosBagLens :: Lens' ArkhamGame (NonEmpty ArkhamChaosToken)
-arkhamGameChaosBagLens = arkhamGameGameStateLens . arkhamGameStateChaosBagLens
+arkhamGameStateLocationsLens :: Lens' ArkhamGameState [ArkhamLocation]
+arkhamGameStateLocationsLens =
+  lens agsLocations $ \m x -> m { agsLocations = x }
 
 instance HasChaosBag ArkhamGameState where
   chaosBag = arkhamGameStateChaosBagLens
 
 instance HasChaosBag ArkhamGame where
-  chaosBag = arkhamGameChaosBagLens
+  chaosBag = arkhamGameGameStateLens . arkhamGameStateChaosBagLens
+
+instance HasLocations ArkhamGameState where
+  locations = arkhamGameStateLocationsLens
+
+instance HasLocations ArkhamGame where
+  locations = arkhamGameGameStateLens . arkhamGameStateLocationsLens
+
+class HasLocationId a where
+  locationId :: Lens' a LocationId
+
+instance HasLocationId ArkhamUnrevealedLocation where
+  locationId = lens aulLocationId $ \m x -> m { aulLocationId = x }
+
+instance HasLocationId ArkhamRevealedLocation where
+  locationId = lens arlLocationId $ \m x -> m { arlLocationId = x }
+
+instance HasLocationId ArkhamLocation where
+  locationId = lens (^. locationId) $ \m x -> m & locationId .~ x
+

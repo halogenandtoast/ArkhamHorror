@@ -10,11 +10,11 @@ data LocationContent = LocationClues Int | LocationInvestigator ArkhamInvestigat
   deriving anyclass (ToJSON)
 
 newtype LocationId = LocationId { unLocationId :: Text }
-  deriving newtype (ToJSON, ToJSONKey, IsString, Eq, Hashable)
+  deriving newtype (ToJSON, ToJSONKey, FromJSON, IsString, Eq, Hashable)
 
 data ArkhamLocationSymbol = Circle | Heart
   deriving stock (Generic)
-  deriving anyclass (ToJSON)
+  deriving anyclass (ToJSON, FromJSON)
 
 data ArkhamUnrevealedLocation = ArkhamUnrevealedLocation
   { aulName :: Text
@@ -28,6 +28,10 @@ instance ToJSON ArkhamUnrevealedLocation where
   toJSON =
     genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
   toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
+
+instance FromJSON ArkhamUnrevealedLocation where
+  parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
 
 data ArkhamRevealedLocation = ArkhamRevealedLocation
@@ -45,20 +49,11 @@ instance ToJSON ArkhamRevealedLocation where
   toEncoding = genericToEncoding
     $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
 
-class HasLocationId a where
-  getLocationId :: a -> LocationId
-
-instance HasLocationId ArkhamRevealedLocation where
-  getLocationId = arlLocationId
-
-instance HasLocationId ArkhamUnrevealedLocation where
-  getLocationId = aulLocationId
-
-instance HasLocationId ArkhamLocation where
-  getLocationId (UnrevealedLocation l) = getLocationId l
-  getLocationId (RevealedLocation l) = getLocationId l
+instance FromJSON ArkhamRevealedLocation where
+  parseJSON = genericParseJSON
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
 
 data ArkhamLocation = UnrevealedLocation ArkhamUnrevealedLocation | RevealedLocation ArkhamRevealedLocation
   deriving stock (Generic)
-  deriving anyclass (ToJSON)
+  deriving anyclass (ToJSON, FromJSON)
 

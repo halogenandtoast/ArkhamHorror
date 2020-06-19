@@ -8,7 +8,6 @@
         :src="stack.contents"
         :key="index"
       />
-      <button @click="drawToken">Draw Token</button>
       <img v-if="drawnToken" :src="chaosTokenSrc" class="token" />
     </div>
     <div class="location-cards">
@@ -45,35 +44,9 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ArkhamGame } from '@/arkham/types/ArkhamGame';
 import { ArkhamUnrevealedLocation, ArkhamRevealedLocation } from '@/arkham/types/location';
 import { ArkhamChaosToken } from '@/arkham/types';
-import { performSkillCheck } from '@/api';
+import { ArkhamAction } from '@/arkham/types/action';
+import { performAction } from '@/api';
 import Player from '@/arkham/components/Player.vue';
-
-function tokenToModifier(token: ArkhamChaosToken): number {
-  switch (token) {
-    case 'autofail':
-      return -10000;
-    case '+1':
-      return 1;
-    case '-1':
-      return -1;
-    case '-2':
-      return -2;
-    case '-3':
-      return -3;
-    case '-4':
-      return -4;
-    case '-5':
-      return -5;
-    case '-6':
-      return -6;
-    case '-7':
-      return -7;
-    case '-8':
-      return -8;
-    default:
-      return 0;
-  }
-}
 
 @Component({
   components: { Player },
@@ -82,24 +55,14 @@ export default class Scenario extends Vue {
   @Prop(Object) readonly game!: ArkhamGame;
   private drawnToken: ArkhamChaosToken | null = null;
 
-  drawToken() {
-    return performSkillCheck(this.game.id).then((token) => {
-      this.drawnToken = token;
-      return Promise.resolve(token);
-    });
-  }
-
   investigate(location: ArkhamRevealedLocation) {
-    const difficulty = location.shroud;
-    const skill = this.game.gameState.player.investigator.intellect;
+    const action: ArkhamAction = {
+      tag: 'InvestigateAction',
+      contents: location.locationId,
+    };
 
-    this.drawToken().then((token) => {
-      const tokenModifier = tokenToModifier(token);
-      const result = skill + tokenModifier - difficulty;
-
-      if (result >= 0) {
-        this.game.gameState.player.clues += 1;
-      }
+    performAction(this.game.id, action).then((state: ArkhamGame) => {
+      console.log(state);
     });
   }
 

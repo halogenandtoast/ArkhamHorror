@@ -2,8 +2,10 @@ module Arkham.Types.GameState where
 
 import Arkham.Types.Player
 
+import Arkham.Types.Action
 import Arkham.Types.ChaosToken
 import Arkham.Types.Location
+import Arkham.Types.Skill
 import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
@@ -13,6 +15,29 @@ data ArkhamPhase = Mythos | Investigation | Enemy | Upkeep
   deriving stock (Generic)
   deriving anyclass (ToJSON)
 
+data ArkhamGameStateStep
+  = ArkhamGameStateStepInvestigatorActionStep
+  | ArkhamGameStateStepSkillCheckStep ArkhamSkillCheckStep
+  deriving stock (Generic)
+  deriving anyclass (ToJSON)
+
+newtype ArkhamTarget = LocationTarget ArkhamLocation
+  deriving stock (Generic)
+  deriving anyclass (ToJSON)
+
+data ArkhamSkillCheckStep = ArkhamSkillCheckStep
+  { ascsType :: ArkhamSkillType
+  , ascsAction :: Maybe ArkhamAction
+  , ascsTarget :: Maybe ArkhamTarget
+  }
+  deriving stock (Generic)
+
+instance ToJSON ArkhamSkillCheckStep where
+  toJSON =
+    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+  toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+
 data ArkhamGameState = ArkhamGameState
   { agsPlayer :: ArkhamPlayer
   , agsPhase :: ArkhamPhase
@@ -20,6 +45,7 @@ data ArkhamGameState = ArkhamGameState
   , agsLocations :: [ArkhamLocation]
   , agsLocationContents :: HashMap LocationId [LocationContent]
   , agsStacks :: [ArkhamStack]
+  , agsStep :: ArkhamGameStateStep
   }
   deriving stock (Generic)
 

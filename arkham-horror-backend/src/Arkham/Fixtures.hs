@@ -23,6 +23,7 @@ gameState = ArkhamGameState
     [("Study", [LocationInvestigator rolandBanks, LocationClues 2])]
   )
   [agenda, act]
+  ArkhamGameStateStepInvestigatorActionStep
 
 agenda :: ArkhamStack
 agenda =
@@ -73,7 +74,7 @@ rolandBanks = ArkhamInvestigator
   "Roland Banks"
   "https://arkhamdb.com/bundles/cards/01001.png"
   "/img/arkham/AHC01_1_portrait.jpg"
-  (ArkhamSkillWillpower 3)
-  (ArkhamSkillIntellect 3)
-  (ArkhamSkillCombat 4)
-  (ArkhamSkillAgility 2)
+  (ArkhamSkill 3)
+  (ArkhamSkill 3)
+  (ArkhamSkill 4)
+  (ArkhamSkill 2)

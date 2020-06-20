@@ -4,6 +4,7 @@ module Arkham.Types
   )
 where
 
+import Arkham.Types.Action as X
 import Arkham.Types.Card as X
 import Arkham.Types.ChaosToken as X
 import Arkham.Types.Game as X
@@ -12,6 +13,7 @@ import Arkham.Types.Investigator as X
 import Arkham.Types.Location as X
 import Arkham.Types.Player as X
 import Arkham.Types.Scenario as X
+import Arkham.Types.Skill as X
 import ClassyPrelude
 import Control.Monad.Random
 import Data.List.NonEmpty (NonEmpty(..))
@@ -40,13 +42,13 @@ instance HasChaosBag ArkhamGameState where
   chaosBag = arkhamGameStateChaosBagLens
 
 instance HasChaosBag ArkhamGame where
-  chaosBag = arkhamGameGameStateLens . arkhamGameStateChaosBagLens
+  chaosBag = arkhamGameGameStateLens . chaosBag
 
 instance HasLocations ArkhamGameState where
   locations = arkhamGameStateLocationsLens
 
 instance HasLocations ArkhamGame where
-  locations = arkhamGameGameStateLens . arkhamGameStateLocationsLens
+  locations = arkhamGameGameStateLens . locations
 
 class HasLocationId a where
   locationId :: Lens' a LocationId
@@ -60,3 +62,11 @@ instance HasLocationId ArkhamRevealedLocation where
 instance HasLocationId ArkhamLocation where
   locationId = lens (^. locationId) $ \m x -> m & locationId .~ x
 
+class HasGameStateStep a where
+  gameStateStep :: Lens' a ArkhamGameStateStep
+
+instance HasGameStateStep ArkhamGame where
+  gameStateStep = arkhamGameGameStateLens . gameStateStep
+
+instance HasGameStateStep ArkhamGameState where
+  gameStateStep = lens agsStep $ \m x -> m { agsStep = x }

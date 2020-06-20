@@ -1,29 +1,18 @@
 module Arkham.Types.Investigator where
 
+import Arkham.Types.Skill
 import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
-
-newtype ArkhamSkillWillpower = ArkhamSkillWillpower { unArkhamSkillWillpower :: Int }
-  deriving newtype (ToJSON)
-
-newtype ArkhamSkillIntellect = ArkhamSkillIntellect { unArkhamSkillIntellect :: Int }
-  deriving newtype (ToJSON)
-
-newtype ArkhamSkillCombat = ArkhamSkillCombat { unArkhamSkillCombat :: Int }
-  deriving newtype (ToJSON)
-
-newtype ArkhamSkillAgility = ArkhamSkillAgility { unArkhamSkillAgility :: Int }
-  deriving newtype (ToJSON)
 
 data ArkhamInvestigator = ArkhamInvestigator
   { aiName :: Text
   , aiImage :: Text
   , aiPortrait :: Text
-  , aiWillpower :: ArkhamSkillWillpower
-  , aiIntellect :: ArkhamSkillIntellect
-  , aiCombat :: ArkhamSkillCombat
-  , aiAgility :: ArkhamSkillAgility
+  , aiWillpower :: ArkhamSkill 'ArkhamSkillWillpower
+  , aiIntellect :: ArkhamSkill 'ArkhamSkillIntellect
+  , aiCombat :: ArkhamSkill 'ArkhamSkillCombat
+  , aiAgility :: ArkhamSkill 'ArkhamSkillAgility
   }
   deriving stock (Generic)
 

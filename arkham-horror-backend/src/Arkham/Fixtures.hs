@@ -7,14 +7,14 @@ import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as NE
 
 loadGameFixture :: Int -> IO ArkhamGame
-loadGameFixture _ = pure $ ArkhamGame 1 NightOfTheZealot theGathering gameState
+loadGameFixture _ = pure $ ArkhamGame 1 NightOfTheZealot theGathering fixtureGameState
 
 theGathering :: ArkhamScenario
 theGathering =
   ArkhamScenario "The Gathering" "https://arkhamdb.com/bundles/cards/01104.jpg"
 
-gameState :: ArkhamGameState
-gameState = ArkhamGameState
+fixtureGameState :: ArkhamGameState
+fixtureGameState = ArkhamGameState
   player
   Investigation
   chaosTokens

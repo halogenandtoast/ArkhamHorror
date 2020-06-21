@@ -6,14 +6,14 @@ import Data.Aeson
 import Data.Aeson.Casing
 
 data LocationContent = LocationClues Int | LocationInvestigator ArkhamInvestigator
-  deriving stock (Generic)
-  deriving anyclass (ToJSON)
+  deriving stock (Generic, Show)
+  deriving anyclass (ToJSON, FromJSON)
 
 newtype LocationId = LocationId { unLocationId :: Text }
-  deriving newtype (ToJSON, ToJSONKey, FromJSON, IsString, Eq, Hashable)
+  deriving newtype (Show, ToJSON, ToJSONKey, FromJSONKey, FromJSON, IsString, Eq, Hashable)
 
 data ArkhamLocationSymbol = Circle | Heart
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 
 data ArkhamUnrevealedLocation = ArkhamUnrevealedLocation
@@ -22,7 +22,7 @@ data ArkhamUnrevealedLocation = ArkhamUnrevealedLocation
   , aulLocationSymbols :: [ArkhamLocationSymbol]
   , aulImage :: Text
   }
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
 
 instance ToJSON ArkhamUnrevealedLocation where
   toJSON =
@@ -41,7 +41,7 @@ data ArkhamRevealedLocation = ArkhamRevealedLocation
   , arlShroud :: Int
   , arlImage :: Text
   }
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
 
 instance ToJSON ArkhamRevealedLocation where
   toJSON =
@@ -54,6 +54,6 @@ instance FromJSON ArkhamRevealedLocation where
     $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
 
 data ArkhamLocation = UnrevealedLocation ArkhamUnrevealedLocation | RevealedLocation ArkhamRevealedLocation
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 

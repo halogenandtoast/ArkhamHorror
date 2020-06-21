@@ -12,30 +12,34 @@ import Data.Aeson.Casing
 import Data.List.NonEmpty (NonEmpty)
 
 data ArkhamPhase = Mythos | Investigation | Enemy | Upkeep
-  deriving stock (Generic)
-  deriving anyclass (ToJSON)
+  deriving stock (Generic, Show)
+  deriving anyclass (ToJSON, FromJSON)
 
 data ArkhamGameStateStep
   = ArkhamGameStateStepInvestigatorActionStep
   | ArkhamGameStateStepSkillCheckStep ArkhamSkillCheckStep
-  deriving stock (Generic)
-  deriving anyclass (ToJSON)
+  deriving stock (Generic, Show)
+  deriving anyclass (ToJSON, FromJSON)
 
 newtype ArkhamTarget = LocationTarget ArkhamLocation
-  deriving stock (Generic)
-  deriving anyclass (ToJSON)
+  deriving stock (Generic, Show)
+  deriving anyclass (ToJSON, FromJSON)
 
 data ArkhamSkillCheckStep = ArkhamSkillCheckStep
   { ascsType :: ArkhamSkillType
   , ascsAction :: Maybe ArkhamAction
   , ascsTarget :: Maybe ArkhamTarget
   }
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
 
 instance ToJSON ArkhamSkillCheckStep where
   toJSON =
     genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
   toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+
+instance FromJSON ArkhamSkillCheckStep where
+  parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
 
 data ArkhamGameState = ArkhamGameState
@@ -47,17 +51,17 @@ data ArkhamGameState = ArkhamGameState
   , agsStacks :: [ArkhamStack]
   , agsStep :: ArkhamGameStateStep
   }
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
 
 newtype ArkhamAct = ArkhamAct { aactImage :: Text }
-  deriving newtype (ToJSON)
+  deriving newtype (Show, ToJSON, FromJSON)
 
 newtype ArkhamAgenda = ArkhamAgenda { aagendaImage :: Text }
-  deriving newtype (ToJSON)
+  deriving newtype (Show, ToJSON, FromJSON)
 
 data ArkhamStack = ActStack ArkhamAct | AgendaStack ArkhamAgenda
-  deriving stock (Generic)
-  deriving anyclass (ToJSON)
+  deriving stock (Generic, Show)
+  deriving anyclass (ToJSON, FromJSON)
 
 instance ToJSON ArkhamGameState where
   toJSON =
@@ -65,3 +69,6 @@ instance ToJSON ArkhamGameState where
   toEncoding = genericToEncoding
     $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
 
+instance FromJSON ArkhamGameState where
+  parseJSON = genericParseJSON
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }

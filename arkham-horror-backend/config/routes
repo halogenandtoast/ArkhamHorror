@@ -8,3 +8,4 @@
         /#Int ApiV1ArkhamGameP:
           / ApiV1ArkhamGameR GET
           /action ApiV1ArkhamGameActionR POST
+          /skill-check ApiV1ArkhamGameSkillCheckR POST

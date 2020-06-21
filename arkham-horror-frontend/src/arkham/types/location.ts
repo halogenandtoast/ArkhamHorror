@@ -7,22 +7,27 @@ export const arkhamLocationSymbolDecoder = JsonDecoder.oneOf<ArkhamLocationSymbo
   JsonDecoder.isExactly('Heart'),
 ], 'ArkhamLocationSymbol');
 
-export type ArkhamLocation<T> = {
-  tag: string;
-  contents: T;
-}
+export type ArkhamLocation = ArkhamRevealedLocation | ArkhamUnrevealedLocation
 
-export interface ArkhamUnrevealedLocation {
-  tag: 'unrevealed';
+export interface ArkhamUnrevealedLocationContent {
   name: string;
   locationSymbols: ArkhamLocationSymbol[];
   image: string;
   locationId: string;
 }
 
-export const arkhamUnrevealedLocationDecoder = JsonDecoder.object<ArkhamUnrevealedLocation>(
+export interface ArkhamRevealedLocation {
+  tag: 'RevealedLocation';
+  contents: ArkhamRevealedLocationContent;
+}
+
+export interface ArkhamUnrevealedLocation {
+  tag: 'UnrevealedLocation';
+  contents: ArkhamUnrevealedLocationContent;
+}
+
+export const arkhamUnrevealedLocationDecoder = JsonDecoder.object<ArkhamUnrevealedLocationContent>(
   {
-    tag: JsonDecoder.constant('unrevealed'),
     name: JsonDecoder.string,
     locationSymbols: JsonDecoder.array<ArkhamLocationSymbol>(arkhamLocationSymbolDecoder, 'ArkhamLocationSymbol[]'),
     image: JsonDecoder.string,
@@ -31,8 +36,7 @@ export const arkhamUnrevealedLocationDecoder = JsonDecoder.object<ArkhamUnreveal
   'ArkhamUnrevealedLocation',
 );
 
-export interface ArkhamRevealedLocation {
-  tag: 'revealed';
+export interface ArkhamRevealedLocationContent {
   name: string;
   locationSymbols: ArkhamLocationSymbol[];
   shroud: number;
@@ -40,9 +44,8 @@ export interface ArkhamRevealedLocation {
   locationId: string;
 }
 
-export const arkhamRevealedLocationDecoder = JsonDecoder.object<ArkhamRevealedLocation>(
+export const arkhamRevealedLocationDecoder = JsonDecoder.object<ArkhamRevealedLocationContent>(
   {
-    tag: JsonDecoder.constant('revealed'),
     name: JsonDecoder.string,
     locationSymbols: JsonDecoder.array<ArkhamLocationSymbol>(arkhamLocationSymbolDecoder, 'ArkhamLocationSymbol[]'),
     shroud: JsonDecoder.number,
@@ -53,7 +56,7 @@ export const arkhamRevealedLocationDecoder = JsonDecoder.object<ArkhamRevealedLo
 );
 
 export const arkhamLocationRevealedLocationDecoder = JsonDecoder.object<
-    ArkhamLocation<ArkhamRevealedLocation>
+    ArkhamLocation
   >(
     {
       tag: JsonDecoder.isExactly('RevealedLocation'),
@@ -63,7 +66,7 @@ export const arkhamLocationRevealedLocationDecoder = JsonDecoder.object<
   );
 
 export const arkhamLocationUnrevealedLocationDecoder = JsonDecoder.object<
-    ArkhamLocation<ArkhamUnrevealedLocation>
+    ArkhamLocation
   >(
     {
       tag: JsonDecoder.isExactly('UnrevealedLocation'),
@@ -72,23 +75,7 @@ export const arkhamLocationUnrevealedLocationDecoder = JsonDecoder.object<
     'ArkhamLocation<ArkhamUnrevealedLocation>',
   );
 
-export const arkhamLocationDecoder = JsonDecoder.object<
-    ArkhamLocation<ArkhamUnrevealedLocation | ArkhamRevealedLocation>
-  >(
-    {
-      tag: JsonDecoder.string,
-      contents: JsonDecoder.succeed,
-    },
-    'ArkhamLocation',
-  ).then((value) => {
-    switch (value.tag) {
-      case 'RevealedLocation':
-        return arkhamLocationRevealedLocationDecoder;
-      case 'UnrevealedLocation':
-        return arkhamLocationUnrevealedLocationDecoder;
-      default:
-        return JsonDecoder.fail<ArkhamLocation<ArkhamUnrevealedLocation | ArkhamRevealedLocation>>(
-          `<ArkhamLocation> does not support tag ${value.tag}`,
-        );
-    }
-  }).map((value) => value.contents);
+export const arkhamLocationDecoder = JsonDecoder.oneOf<ArkhamLocation>([
+  arkhamLocationUnrevealedLocationDecoder,
+  arkhamLocationRevealedLocationDecoder,
+], 'ArkhamLocation');

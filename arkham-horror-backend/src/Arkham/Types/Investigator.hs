@@ -14,10 +14,14 @@ data ArkhamInvestigator = ArkhamInvestigator
   , aiCombat :: ArkhamSkill 'ArkhamSkillCombat
   , aiAgility :: ArkhamSkill 'ArkhamSkillAgility
   }
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
 
 instance ToJSON ArkhamInvestigator where
   toJSON =
     genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }
   toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }
+
+instance FromJSON ArkhamInvestigator where
+  parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }

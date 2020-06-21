@@ -8,10 +8,14 @@ data ArkhamScenario = ArkhamScenario
   { asName :: Text
   , asGuide :: Text
   }
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
 
 instance ToJSON ArkhamScenario where
   toJSON =
     genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }
   toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }
+
+instance FromJSON ArkhamScenario where
+  parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }

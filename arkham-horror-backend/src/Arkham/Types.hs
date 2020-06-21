@@ -20,35 +20,28 @@ import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.List.NonEmpty as NE
 import Lens.Micro
 
-class HasLocations a where
-  locations :: Lens' a [ArkhamLocation]
+gameState :: Lens' ArkhamGame ArkhamGameState
+gameState = lens agGameState $ \m x -> m { agGameState = x }
 
 class HasChaosBag a where
   chaosBag :: Lens' a (NonEmpty ArkhamChaosToken)
-  drawFromChaosBag :: (MonadRandom m) => a -> m ArkhamChaosToken
-  drawFromChaosBag a = let bag = a ^. chaosBag in (bag NE.!!) <$> getRandomR (0, NE.length bag - 1)
-
-arkhamGameGameStateLens :: Lens' ArkhamGame ArkhamGameState
-arkhamGameGameStateLens = lens agGameState $ \m x -> m { agGameState = x }
-
-arkhamGameStateChaosBagLens :: Lens' ArkhamGameState (NonEmpty ArkhamChaosToken)
-arkhamGameStateChaosBagLens = lens agsChaosBag $ \m x -> m { agsChaosBag = x }
-
-arkhamGameStateLocationsLens :: Lens' ArkhamGameState [ArkhamLocation]
-arkhamGameStateLocationsLens =
-  lens agsLocations $ \m x -> m { agsLocations = x }
+  drawChaosToken :: (MonadRandom m) => a -> m ArkhamChaosToken
+  drawChaosToken a = let bag = a ^. chaosBag in (bag NE.!!) <$> getRandomR (0, NE.length bag - 1)
 
 instance HasChaosBag ArkhamGameState where
-  chaosBag = arkhamGameStateChaosBagLens
+  chaosBag = lens agsChaosBag $ \m x -> m { agsChaosBag = x }
 
 instance HasChaosBag ArkhamGame where
-  chaosBag = arkhamGameGameStateLens . chaosBag
+  chaosBag = gameState . chaosBag
+
+class HasLocations a where
+  locations :: Lens' a [ArkhamLocation]
 
 instance HasLocations ArkhamGameState where
-  locations = arkhamGameStateLocationsLens
+  locations = lens agsLocations $ \m x -> m { agsLocations = x }
 
 instance HasLocations ArkhamGame where
-  locations = arkhamGameGameStateLens . locations
+  locations = gameState . locations
 
 class HasLocationId a where
   locationId :: Lens' a LocationId
@@ -66,7 +59,7 @@ class HasGameStateStep a where
   gameStateStep :: Lens' a ArkhamGameStateStep
 
 instance HasGameStateStep ArkhamGame where
-  gameStateStep = arkhamGameGameStateLens . gameStateStep
+  gameStateStep = gameState . gameStateStep
 
 instance HasGameStateStep ArkhamGameState where
   gameStateStep = lens agsStep $ \m x -> m { agsStep = x }

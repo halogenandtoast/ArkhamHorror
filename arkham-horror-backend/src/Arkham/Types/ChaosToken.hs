@@ -20,7 +20,7 @@ data ArkhamChaosToken
   | ElderThing
   | AutoFail
   | ElderSign
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
 
 instance ToJSON ArkhamChaosToken where
   toJSON PlusOne = "+1"
@@ -39,3 +39,24 @@ instance ToJSON ArkhamChaosToken where
   toJSON ElderThing = "elderthing"
   toJSON AutoFail = "autofail"
   toJSON ElderSign = "eldersign"
+
+instance FromJSON ArkhamChaosToken where
+  parseJSON (String x) = case x of
+    "+1" -> pure PlusOne
+    "0" -> pure Zero
+    "-1" -> pure MinusOne
+    "-2" -> pure MinusTwo
+    "-3" -> pure MinusThree
+    "-4" -> pure MinusFour
+    "-5" -> pure MinusFive
+    "-6" -> pure MinusSix
+    "-7" -> pure MinusSeven
+    "-8" -> pure MinusEight
+    "skull" -> pure Skull
+    "cultist" -> pure Cultist
+    "tablet" -> pure Tablet
+    "elderthing" -> pure ElderThing
+    "autofail" -> pure AutoFail
+    "eldersign" -> pure ElderSign
+    _ -> mzero
+  parseJSON _ = mzero

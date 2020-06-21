@@ -14,5 +14,5 @@ data ArkhamPlayer = ArkhamPlayer
   , hand :: [ArkhamCard]
   , inPlay :: [ArkhamCard]
   }
-  deriving stock (Generic)
-  deriving anyclass (ToJSON)
+  deriving stock (Generic, Show)
+  deriving anyclass (ToJSON, FromJSON)

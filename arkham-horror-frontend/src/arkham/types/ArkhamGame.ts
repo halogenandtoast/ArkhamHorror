@@ -14,6 +14,10 @@ import {
   ArkhamUnrevealedLocation,
   arkhamLocationDecoder,
 } from '@/arkham/types/location';
+import {
+  ArkhamChaosToken,
+  arkhamChaosTokenDecoder,
+} from '@/arkham/types/chaostoken';
 
 export type ArkhamPhase = 'Mythos' | 'Investigation' | 'Enemy' | 'Upkeep';
 
@@ -48,6 +52,33 @@ type LocationInvestigator = {
 
 type LocationContent = LocationClues | LocationInvestigator;
 
+interface ArkhamInvestigatorActionStep {
+  tag: 'ArkhamGameStateStepInvestigatorActionStep';
+}
+
+interface ArkhamSkillCheckStep {
+  tag: 'ArkhamGameStateStepSkillCheckStep';
+}
+
+type ArkhamStep = ArkhamInvestigatorActionStep | ArkhamSkillCheckStep;
+
+export const arkhamStepInvestigatorActionStepDecoder = JsonDecoder.object<
+    ArkhamInvestigatorActionStep
+  >({
+    tag: JsonDecoder.isExactly('ArkhamGameStateStepInvestigatorActionStep'),
+  }, 'ArkhamInvestigateStep');
+
+export const arkhamStepSkillCheckStepDecoder = JsonDecoder.object<
+    ArkhamSkillCheckStep
+  >({
+    tag: JsonDecoder.isExactly('ArkhamGameStateStepSkillCheckStep'),
+  }, 'ArkhamSkillCheckStep');
+
+export const arkhamStepDecoder = JsonDecoder.oneOf<ArkhamStep>([
+  arkhamStepInvestigatorActionStepDecoder,
+  arkhamStepSkillCheckStepDecoder,
+], 'ArkhamStep');
+
 export const arkhamLocationContentLocationCluesDecoder = JsonDecoder.object<LocationContent>({
   tag: JsonDecoder.isExactly('LocationClues'),
   contents: JsonDecoder.number,
@@ -71,6 +102,8 @@ export interface ArkhamGameState {
   locations: (ArkhamRevealedLocation | ArkhamUnrevealedLocation)[];
   locationContents: Record<string, LocationContent[]>;
   stacks: ArkhamStack[];
+  step: ArkhamStep;
+  chaosBag: ArkhamChaosToken[];
 }
 
 export const arkhamPhaseDecoder = JsonDecoder.oneOf<ArkhamPhase>([
@@ -114,6 +147,8 @@ export const arkhamGameStateDecoder = JsonDecoder.object<ArkhamGameState>(
       'Dict<LocationContent[]>',
     ),
     stacks: JsonDecoder.array<ArkhamStack>(arkhamStackDecoder, 'ArkhamStack[]'),
+    step: arkhamStepDecoder,
+    chaosBag: JsonDecoder.array<ArkhamChaosToken>(arkhamChaosTokenDecoder, 'ArkhamChaosToken[]'),
   },
   'ArkhamGameState',
 );

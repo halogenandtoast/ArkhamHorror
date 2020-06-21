@@ -1,6 +1,6 @@
 <template>
   <div id="game" class="game" v-if="ready">
-    <Scenario :game="game" />
+    <Scenario :game="game" @update="update" />
   </div>
 </template>
 
@@ -24,6 +24,10 @@ export default class Game extends Vue {
       this.game = game;
       this.ready = true;
     });
+  }
+
+  update(state: ArkhamGame) {
+    this.game = state;
   }
 }
 </script>

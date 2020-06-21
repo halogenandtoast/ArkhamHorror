@@ -7,18 +7,18 @@ import Data.Aeson
 import Data.Aeson.Casing
 
 data ArkhamDrawCardAction = ArkhamDrawCardAction
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 
 data ArkhamTakeResourceAction = ArkhamTakeResourceAction
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype ArkhamPlayCardAction = ArkhamPlayCardAction { apcaCard :: ArkhamCard }
-  deriving newtype (ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON)
 
 data ArkhamCardAbilityAction = ArkhamCardAbilityAction { acaaCard :: ArkhamCard, aacaActionIndex :: Int }
-  deriving stock (Generic)
+  deriving stock (Show, Generic)
 
 instance ToJSON ArkhamCardAbilityAction where
   toJSON =
@@ -31,7 +31,7 @@ instance FromJSON ArkhamCardAbilityAction where
     $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
 
 data ArkhamMoveAction = ArkhamMoveAction { amaFrom :: ArkhamLocation , amaTo :: ArkhamLocation }
-  deriving stock (Generic)
+  deriving stock (Show, Generic)
 
 instance ToJSON ArkhamMoveAction where
   toJSON =
@@ -44,16 +44,16 @@ instance FromJSON ArkhamMoveAction where
     $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
 
 newtype ArkhamInvestigateAction = ArkhamInvestigateAction { aiaLocationId :: LocationId }
-  deriving newtype (ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON)
 
 newtype ArkhamFightEnemyAction = ArkhamFightEnemyAction { afeaEnemy :: ArkhamCard }
-  deriving newtype (ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON)
 
 newtype ArkhamEngageEnemyAction = ArkhamEngageEnemyAction { aeeaEnemy :: ArkhamCard }
-  deriving newtype (ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON)
 
 newtype ArkhamEvadeEnemyAction = ArkhamEvadeEnemyAction { aeveaEnemy :: ArkhamCard }
-  deriving newtype (ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON)
 
 data ArkhamAction
   -- {"tag":"DrawCardAction","contents":[]}
@@ -74,5 +74,5 @@ data ArkhamAction
   | EngageEnemyAction ArkhamEngageEnemyAction
   -- {"tag":"EvadeEnemyAction","contents":{"tag":"EncounterCard","contents":{"image":"","name":"Icy Ghoul"}}}
   | EvadeEnemyAction ArkhamEvadeEnemyAction
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)

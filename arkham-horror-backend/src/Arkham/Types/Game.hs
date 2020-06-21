@@ -7,8 +7,8 @@ import Data.Aeson
 import Data.Aeson.Casing
 
 data ArkhamCycle = NightOfTheZealot | TheDunwichLegacy
-  deriving stock (Generic)
-  deriving anyclass (ToJSON)
+  deriving stock (Generic, Show)
+  deriving anyclass (ToJSON, FromJSON)
 
 data ArkhamGame = ArkhamGame
   { agId :: Int
@@ -16,10 +16,14 @@ data ArkhamGame = ArkhamGame
   , agScenario :: ArkhamScenario
   , agGameState :: ArkhamGameState
   }
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
 
 instance ToJSON ArkhamGame where
   toJSON =
     genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }
   toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }
+
+instance FromJSON ArkhamGame where
+  parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }

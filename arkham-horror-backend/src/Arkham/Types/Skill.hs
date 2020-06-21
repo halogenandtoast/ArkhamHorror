@@ -4,9 +4,8 @@ import ClassyPrelude
 import Data.Aeson
 
 data ArkhamSkillType = ArkhamSkillWillpower | ArkhamSkillIntellect | ArkhamSkillCombat | ArkhamSkillAgility
-  deriving stock (Generic)
-  deriving anyclass (ToJSON)
+  deriving stock (Generic, Show)
+  deriving anyclass (ToJSON, FromJSON)
 
 newtype ArkhamSkill (a :: ArkhamSkillType) = ArkhamSkill { unArkhamSkill :: Int }
-  deriving newtype (ToJSON)
-
+  deriving newtype (ToJSON, FromJSON, Show)

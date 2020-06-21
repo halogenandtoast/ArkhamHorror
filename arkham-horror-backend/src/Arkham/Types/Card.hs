@@ -9,7 +9,7 @@ data ArkhamPlayerCard = ArkhamPlayerCard
   , apcCost :: Maybe Int
   , apcImage :: Text
   }
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
 
 instance ToJSON ArkhamPlayerCard where
   toJSON =
@@ -25,7 +25,7 @@ data ArkhamEncounterCard = ArkhamEncounterCard
   { aecName :: Text
   , aecImage :: Text
   }
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
 
 instance ToJSON ArkhamEncounterCard where
   toJSON =
@@ -38,6 +38,6 @@ instance FromJSON ArkhamEncounterCard where
     $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
 
 data ArkhamCard = PlayerCard ArkhamPlayerCard | EncounterCard ArkhamEncounterCard
-  deriving stock (Generic)
+  deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 

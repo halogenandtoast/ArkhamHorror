@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { arkhamGameDecoder } from '@/arkham/types/ArkhamGame';
+import { ArkhamGame, arkhamGameDecoder } from '@/arkham/types/ArkhamGame';
 import { ArkhamAction } from '@/arkham/types/action';
 
 const api = axios.create({
@@ -14,4 +14,8 @@ export const fetchGame = (gameId: string) => api
 
 export const performAction = (gameId: number, action: ArkhamAction) => api
   .post(`arkham/games/${gameId}/action`, action)
+  .then((resp) => arkhamGameDecoder.decodePromise(resp.data));
+
+export const performDrawToken = (gameId: number, game: ArkhamGame) => api
+  .post(`arkham/games/${gameId}/skill-check`, game)
   .then((resp) => arkhamGameDecoder.decodePromise(resp.data));

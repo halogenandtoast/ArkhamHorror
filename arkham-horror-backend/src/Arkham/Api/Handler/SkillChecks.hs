@@ -12,6 +12,14 @@ applyTokenResult game _token = game
 currentInvestigator :: Handler ArkhamInvestigator
 currentInvestigator = pure rolandBanks
 
+currentSkillValue :: ArkhamInvestigator -> ArkhamSkillType -> Int
+currentSkillValue investigator skillType =
+  case skillType of
+    ArkhamSkillWillpower -> unArkhamSkill $ aiWillpower investigator
+    ArkhamSkillIntellect -> unArkhamSkill $ aiIntellect investigator
+    ArkhamSkillCombat -> unArkhamSkill $ aiCombat investigator
+    ArkhamSkillAgility -> unArkhamSkill $ aiAgility investigator
+
 tokenToValue :: ArkhamChaosToken -> ArkhamGame -> Int
 tokenToValue PlusOne _ = 1
 tokenToValue Zero _ = 0
@@ -46,7 +54,7 @@ postApiV1ArkhamGameSkillCheckR _gameId = do
             Just (LocationTarget (RevealedLocation location)) = ascsTarget step
             difficulty = arlShroud location
             totalDifficulty = difficulty + tokenToValue other game
-            skill = unArkhamSkill $ aiIntellect investigator
+            skill = currentSkillValue investigator (ascsType step)
           if skill > totalDifficulty
             then pure game
             else error "failed skill check"

@@ -101,7 +101,7 @@ export default class Scenario extends Vue {
 
   get drawnToken() {
     if (this.game.gameState.step.tag === ArkhamStepTypes.REVEAL_TOKEN) {
-      return this.game.gameState.step.contents;
+      return this.game.gameState.step.contents.token;
     }
 
     return null;

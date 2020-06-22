@@ -47,6 +47,9 @@ instance HasLocations ArkhamGameState where
 instance HasLocations ArkhamGameData where
   locations = gameState . locations
 
+instance HasLocations ArkhamGame where
+  locations = currentData . locations
+
 class HasLocationId a where
   locationId :: Lens' a LocationId
 

@@ -1,12 +1,15 @@
 module Arkham.Api.Handler.SkillChecks
   ( postApiV1ArkhamGameSkillCheckR
   , postApiV1ArkhamGameSkillCheckApplyResultR
+  , successfulInvestigation
   )
 where
 
 import Arkham.Types
 import Import
 import Lens.Micro
+import Lens.Micro.Platform ()
+import Data.HashMap.Strict
 
 postApiV1ArkhamGameSkillCheckR :: ArkhamGameId -> Handler ArkhamGameData
 postApiV1ArkhamGameSkillCheckR gameId = do
@@ -31,7 +34,7 @@ postApiV1ArkhamGameSkillCheckApplyResultR gameId = do
     Modifier n -> do
       difficulty <- shroudOf game location
       if skillValue (game ^. player . investigator) artsType + n >= difficulty
-        then runDB $ updateGame gameId $ successfulInvestigation game location
+        then runDB $ updateGame gameId $ successfulInvestigation game (location ^. locationId) 1
         else runDB $ updateGame gameId $ failedInvestigation game location
     Failure -> runDB $ updateGame gameId $ failedInvestigation game location
 
@@ -87,8 +90,14 @@ investigateAction (Entity gameId game) = do
 failedInvestigation :: ArkhamGame -> ArkhamLocation -> ArkhamGame
 failedInvestigation g _ = g
 
-successfulInvestigation :: ArkhamGame -> ArkhamLocation -> ArkhamGame
-successfulInvestigation g location = g
+successfulInvestigation :: ArkhamGame -> LocationId -> Int -> ArkhamGame
+successfulInvestigation g !lId clueCount = g
+  & locations %~ adjust (\l -> l & clues -~ clueCount) lId
+  & player . clues +~ clueCount
+  & gameStateStep .~ investigatorStep
+
+investigatorStep :: ArkhamGameStateStep
+investigatorStep = ArkhamGameStateStepInvestigatorActionStep
 
 {-
 :set prompt "> "

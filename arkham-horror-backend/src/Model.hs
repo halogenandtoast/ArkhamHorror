@@ -12,6 +12,7 @@
 
 module Model
   ( module Model
+  , module X
   )
 where
 
@@ -21,9 +22,5 @@ import Database.Persist.Postgresql.JSON ()
 import Database.Persist.Quasi
 import Database.Persist.Sql
 
--- You can define all of your database entities in the entities file.
--- You can find more information on persistent and how to declare entities
--- at:
--- http://www.yesodweb.com/book/persistent/
-share [mkPersist sqlSettings, mkMigrate "migrateAll"]
-    $(persistFileWith lowerCaseSettings "config/models")
+import Entity.User as X
+import Arkham.Entity.ArkhamGame as X

@@ -6,8 +6,8 @@ import qualified Data.HashMap.Strict as HashMap
 import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as NE
 
-loadGameFixture :: Int -> IO ArkhamGame
-loadGameFixture _ = pure $ ArkhamGame 1 NightOfTheZealot theGathering fixtureGameState
+loadGameFixture :: Int -> IO ArkhamGameData
+loadGameFixture _ = pure $ ArkhamGameData 1 NightOfTheZealot theGathering fixtureGameState
 
 theGathering :: ArkhamScenario
 theGathering =

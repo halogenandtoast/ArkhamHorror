@@ -5,7 +5,7 @@ import Arkham.Types
 import Import
 import Lens.Micro
 
-applyTokenResult :: ArkhamGame -> ArkhamChaosToken -> ArkhamGame
+applyTokenResult :: ArkhamGameData -> ArkhamChaosToken -> ArkhamGameData
 applyTokenResult game _token = game
 
 currentInvestigator :: Handler ArkhamInvestigator
@@ -18,7 +18,7 @@ baseSkillValue investigator = \case
   ArkhamSkillCombat -> unArkhamSkill $ aiCombat investigator
   ArkhamSkillAgility -> unArkhamSkill $ aiAgility investigator
 
-tokenToValue :: ArkhamChaosToken -> ArkhamGame -> Int
+tokenToValue :: ArkhamChaosToken -> ArkhamGameData -> Int
 tokenToValue PlusOne _ = 1
 tokenToValue Zero _ = 0
 tokenToValue MinusOne _ = -1

@@ -4,5 +4,5 @@ import Import
 import Arkham.Types
 import Arkham.Fixtures
 
-getApiV1ArkhamGameR :: Int -> Handler ArkhamGame
-getApiV1ArkhamGameR = liftIO . loadGameFixture
+getApiV1ArkhamGameR :: ArkhamGameId -> Handler ArkhamGame
+getApiV1ArkhamGameR = runDB . getBy404

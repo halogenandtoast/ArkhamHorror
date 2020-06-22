@@ -82,8 +82,11 @@ export default class Scenario extends Vue {
   }
 
   drawToken() {
-    performDrawToken(this.game.id, this.game).then((state: ArkhamGame) => {
-      this.$emit('update', state);
+    performDrawToken(this.game.id, this.game).then((game: ArkhamGame) => {
+      if (game.gameState.step.tag === 'ArkhamGameStateStepRevealTokenStep') {
+        this.drawnToken = game.gameState.step.contents;
+      }
+      this.$emit('update', game);
     });
   }
 

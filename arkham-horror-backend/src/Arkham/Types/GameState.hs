@@ -18,10 +18,11 @@ data ArkhamPhase = Mythos | Investigation | Enemy | Upkeep
 data ArkhamGameStateStep
   = ArkhamGameStateStepInvestigatorActionStep
   | ArkhamGameStateStepSkillCheckStep ArkhamSkillCheckStep
+  | ArkhamGameStateStepRevealTokenStep ArkhamChaosToken
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 
-newtype ArkhamTarget = LocationTarget ArkhamLocation
+data ArkhamTarget = LocationTarget ArkhamLocation | OtherTarget ArkhamLocation
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -10,6 +10,7 @@ import {
   arkhamInvestigatorDecoder,
 } from '@/arkham/types';
 import {
+  ArkhamLocation,
   ArkhamRevealedLocation,
   ArkhamUnrevealedLocation,
   arkhamLocationDecoder,
@@ -56,11 +57,65 @@ interface ArkhamInvestigatorActionStep {
   tag: 'ArkhamGameStateStepInvestigatorActionStep';
 }
 
-interface ArkhamSkillCheckStep {
-  tag: 'ArkhamGameStateStepSkillCheckStep';
+interface ArkhamLocationTarget {
+  tag: 'LocationTarget';
+  contents: ArkhamLocation;
 }
 
-type ArkhamStep = ArkhamInvestigatorActionStep | ArkhamSkillCheckStep;
+type ArkhamTarget = ArkhamLocationTarget;
+
+export const arkhamLocationTargetDecoder = JsonDecoder.object<ArkhamLocationTarget>({
+  tag: JsonDecoder.isExactly('LocationTarget'),
+  contents: arkhamLocationDecoder,
+}, 'ArkhamLocationTarget');
+
+export const arkhamTargetDecoder = JsonDecoder.oneOf<ArkhamTarget>([
+  arkhamLocationTargetDecoder,
+], 'ArkhamTarget');
+
+type ArkhamSkillType = string;
+
+interface ArkhamInvestigateAction {
+  tag: 'InvestigateAction';
+  contents: string;
+}
+
+type ArkhamAction = ArkhamInvestigateAction
+
+interface ArkhamSkillCheckStepContents {
+  action: ArkhamAction;
+  target: ArkhamTarget;
+  type: ArkhamSkillType;
+}
+
+export const arkhamActionInvestigateActionDecoder = JsonDecoder.object<ArkhamInvestigateAction>({
+  tag: JsonDecoder.isExactly('InvestigateAction'),
+  contents: JsonDecoder.string,
+}, 'ArkhamInvestigateAction');
+
+export const arkhamActionDecoder = JsonDecoder.oneOf<ArkhamAction>([
+  arkhamActionInvestigateActionDecoder,
+], 'ArkhamAction');
+
+export const arkhamStepSkillCheckStepContentsDecoder = JsonDecoder.object<
+    ArkhamSkillCheckStepContents
+  >({
+    action: arkhamActionDecoder,
+    target: arkhamTargetDecoder,
+    type: JsonDecoder.string,
+  }, 'ArkhamSkillCheckStepContents');
+
+interface ArkhamSkillCheckStep {
+  tag: 'ArkhamGameStateStepSkillCheckStep';
+  contents: ArkhamSkillCheckStepContents;
+}
+
+interface ArkhamRevealTokenStep {
+  tag: 'ArkhamGameStateStepRevealTokenStep';
+  contents: ArkhamChaosToken;
+}
+
+type ArkhamStep = ArkhamInvestigatorActionStep | ArkhamSkillCheckStep | ArkhamRevealTokenStep;
 
 export const arkhamStepInvestigatorActionStepDecoder = JsonDecoder.object<
     ArkhamInvestigatorActionStep
@@ -72,11 +127,20 @@ export const arkhamStepSkillCheckStepDecoder = JsonDecoder.object<
     ArkhamSkillCheckStep
   >({
     tag: JsonDecoder.isExactly('ArkhamGameStateStepSkillCheckStep'),
+    contents: arkhamStepSkillCheckStepContentsDecoder,
   }, 'ArkhamSkillCheckStep');
+
+export const arkhamStepRevealTokenStepDecoder = JsonDecoder.object<
+    ArkhamRevealTokenStep
+  >({
+    tag: JsonDecoder.isExactly('ArkhamGameStateStepRevealTokenStep'),
+    contents: arkhamChaosTokenDecoder,
+  }, 'ArkhamRevealTokenStep');
 
 export const arkhamStepDecoder = JsonDecoder.oneOf<ArkhamStep>([
   arkhamStepInvestigatorActionStepDecoder,
   arkhamStepSkillCheckStepDecoder,
+  arkhamStepRevealTokenStepDecoder,
 ], 'ArkhamStep');
 
 export const arkhamLocationContentLocationCluesDecoder = JsonDecoder.object<LocationContent>({

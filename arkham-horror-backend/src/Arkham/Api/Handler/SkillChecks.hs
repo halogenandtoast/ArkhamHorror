@@ -1,4 +1,3 @@
-{-# LANGUAGE PolyKinds #-}
 module Arkham.Api.Handler.SkillChecks where
 
 import Arkham.Fixtures
@@ -12,13 +11,12 @@ applyTokenResult game _token = game
 currentInvestigator :: Handler ArkhamInvestigator
 currentInvestigator = pure rolandBanks
 
-currentSkillValue :: ArkhamInvestigator -> ArkhamSkillType -> Int
-currentSkillValue investigator skillType =
-  case skillType of
-    ArkhamSkillWillpower -> unArkhamSkill $ aiWillpower investigator
-    ArkhamSkillIntellect -> unArkhamSkill $ aiIntellect investigator
-    ArkhamSkillCombat -> unArkhamSkill $ aiCombat investigator
-    ArkhamSkillAgility -> unArkhamSkill $ aiAgility investigator
+baseSkillValue :: ArkhamInvestigator -> ArkhamSkillType -> Int
+baseSkillValue investigator = \case
+  ArkhamSkillWillpower -> unArkhamSkill $ aiWillpower investigator
+  ArkhamSkillIntellect -> unArkhamSkill $ aiIntellect investigator
+  ArkhamSkillCombat -> unArkhamSkill $ aiCombat investigator
+  ArkhamSkillAgility -> unArkhamSkill $ aiAgility investigator
 
 tokenToValue :: ArkhamChaosToken -> ArkhamGame -> Int
 tokenToValue PlusOne _ = 1
@@ -42,23 +40,23 @@ postApiV1ArkhamGameSkillCheckR :: Int -> Handler ArkhamGame
 postApiV1ArkhamGameSkillCheckR _gameId = do
   game <- requireCheckJsonBody
   let ArkhamGameStateStepSkillCheckStep step = game ^. gameStateStep
-  investigator <- currentInvestigator
+  -- investigator <- currentInvestigator
 
-  _ <- case ascsAction step of
+  case ascsAction step of
     Just (InvestigateAction _) -> do
       token <- liftIO $ drawChaosToken game
-      case token of
-        AutoFail -> pure game
-        other -> do
-          let
-            Just (LocationTarget (RevealedLocation location)) = ascsTarget step
-            difficulty = arlShroud location
-            totalDifficulty = difficulty + tokenToValue other game
-            skill = currentSkillValue investigator (ascsType step)
-          if skill > totalDifficulty
-            then pure game
-            else error "failed skill check"
+      let newStep = ArkhamGameStateStepRevealTokenStep token
+      pure $ game & gameStateStep .~ newStep
+      -- case token of
+      --   AutoFail -> pure game
+      --   other -> do
+      --     let
+      --       Just (LocationTarget (RevealedLocation location)) = ascsTarget step
+      --       difficulty = arlShroud location
+      --       totalDifficulty = difficulty + tokenToValue other game
+      --       skill = baseSkillValue investigator (ascsType step)
+      --     if skill > totalDifficulty
+      --       then pure game
+      --       else error "failed skill check"
 
     _ -> error "fail"
-
-  pure game

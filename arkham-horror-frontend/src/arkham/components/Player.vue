@@ -54,6 +54,12 @@
             :src="card.contents.image"
             @click="playCard(index)"
           />
+          <img
+            v-else-if="canCommit(index)"
+            :class="[card, commitable, { commited: isCommited(index) }]"
+            :src="card.contents.image"
+            @click="commitCard(index)"
+          />
           <img v-else class="card" :src="card.contents.image" />
         </div>
       </section>
@@ -72,6 +78,18 @@ import { performAction } from '@/arkham/api';
 export default class Player extends Vue {
   @Prop(Object) readonly game!: ArkhamGame
   @Prop(Object) readonly player!: ArkhamPlayer
+
+  private cardsForSkillCheck: number[] = []
+
+  commitCard(cardIndex: number) {
+    const index = this.cardsForSkillCheck.indexOf(cardIndex);
+
+    if (index === -1) {
+      this.cardsForSkillCheck.push(index);
+    } else {
+      this.cardsForSkillCheck.splice(index, 1);
+    }
+  }
 
   playCard(index: number) {
     const action: ArkhamAction = {
@@ -99,12 +117,24 @@ export default class Player extends Vue {
     return mcost <= this.player.resources;
   }
 
+  canCommit() {
+    return this.commitWindow;
+  }
+
+  isCommited(cardIndex: number) {
+    return this.cardsForSkillCheck.indexOf(cardIndex) !== -1;
+  }
+
   get canDraw() {
     return this.actionWindow;
   }
 
   get actionWindow() {
     return this.game.gameState.step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION;
+  }
+
+  get commitWindow() {
+    return this.game.gameState.step.tag === ArkhamStepTypes.SKILL_CHECK;
   }
 
   get topOfDiscard() {
@@ -194,5 +224,9 @@ export default class Player extends Vue {
 .deck--can-draw {
   border: 3px solid #FF00FF;
   border-radius: 10px;
+}
+
+.commited {
+  margin-top: -10px;
 }
 </style>

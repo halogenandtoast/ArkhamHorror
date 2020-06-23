@@ -35,6 +35,9 @@ instance HasChaosBag ArkhamGameState where
 instance HasChaosBag ArkhamGameData where
   chaosBag = gameState . chaosBag
 
+instance HasChaosBag ArkhamGame where
+  chaosBag = currentData . chaosBag
+
 class HasLocations a where
   locations :: Lens' a [ArkhamLocation]
 
@@ -56,8 +59,18 @@ instance HasLocationId ArkhamRevealedLocation where
 instance HasLocationId ArkhamLocation where
   locationId = lens (^. locationId) $ \m x -> m & locationId .~ x
 
+class HasCurrentData a where
+  currentData :: Lens' a ArkhamGameData
+
+instance HasCurrentData ArkhamGame where
+  currentData =
+    lens arkhamGameCurrentData (\m x -> m { arkhamGameCurrentData = x })
+
 class HasGameStateStep a where
   gameStateStep :: Lens' a ArkhamGameStateStep
+
+instance HasGameStateStep ArkhamGame where
+  gameStateStep = currentData . gameStateStep
 
 instance HasGameStateStep ArkhamGameData where
   gameStateStep = gameState . gameStateStep
@@ -68,7 +81,7 @@ instance HasGameStateStep ArkhamGameState where
 class HasPlayer a where
   player :: Lens' a ArkhamPlayer
 
-instance HasPlayer ArkhamGame where
+instance HasPlayer ArkhamGameData where
   player = gameState . player
 
 instance HasPlayer ArkhamGameState where

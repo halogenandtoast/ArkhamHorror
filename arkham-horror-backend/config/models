@@ -1,7 +1,0 @@
-User json sql=users
-    username Text
-    email Text
-    passwordDigest Text
-    UniqueUsername username
-    UniqueEmail email
-    deriving Show

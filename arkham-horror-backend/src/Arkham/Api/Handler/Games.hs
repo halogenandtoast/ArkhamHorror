@@ -1,8 +1,7 @@
 module Arkham.Api.Handler.Games where
 
-import Import
 import Arkham.Types
-import Arkham.Fixtures
+import Import
 
-getApiV1ArkhamGameR :: ArkhamGameId -> Handler ArkhamGame
-getApiV1ArkhamGameR = runDB . getBy404
+getApiV1ArkhamGameR :: ArkhamGameId -> Handler ArkhamGameData
+getApiV1ArkhamGameR = runDB . (arkhamGameCurrentData <$>) . get404

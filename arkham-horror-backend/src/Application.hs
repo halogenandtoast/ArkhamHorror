@@ -20,8 +20,7 @@ module Application
 
 import Control.Monad.Logger (liftLoc, runLoggingT)
 import Data.CaseInsensitive (mk)
-import Database.Persist.Postgresql
-  (createPostgresqlPool, pgConnStr, pgPoolSize, runSqlPool)
+import Database.Persist.Postgresql (createPostgresqlPool, pgConnStr, pgPoolSize)
 import Import hiding (requestHeaders, sendResponse)
 import Language.Haskell.TH.Syntax (qLocation)
 import Network.HTTP.Client.TLS (getGlobalManager)
@@ -95,7 +94,7 @@ makeFoundation appSettings = do
         (pgPoolSize $ appDatabaseConf appSettings)
 
     -- Perform database migration using our application's logging settings.
-    runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
+    -- runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
 
     -- Return the foundation
     pure $ mkFoundation pool

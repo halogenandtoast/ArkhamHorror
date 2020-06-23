@@ -1,24 +1,12 @@
+
 module Arkham.Api.Handler.Actions where
 
-import Arkham.Fixtures
 import Arkham.Types
 import Import
 import Lens.Micro
 
-  -- TODO: mark location, initiate intellect skill check against shroud
-  -- skill check timing
-  -- determine skill of test
-  -- player window for fast actions
-  -- Commit cards from hand
-  -- player window
-  -- Reveal token
-  -- resolve token effects
-  -- determine modified skill value
-  -- determine success or failure
-  -- apply results
-  -- skill test ends
-applyAction :: ArkhamGame -> ArkhamAction -> IO ArkhamGame
-applyAction g action@(InvestigateAction investigation) =
+applyAction :: ArkhamAction -> ArkhamGameData -> IO ArkhamGameData
+applyAction action@(InvestigateAction investigation) g =
   pure $ g & gameStateStep .~ newGameStateStep
  where
   newGameStateStep = ArkhamGameStateStepSkillCheckStep $ ArkhamSkillCheckStep
@@ -29,11 +17,13 @@ applyAction g action@(InvestigateAction investigation) =
   mlocation = findLocation $ [ l | RevealedLocation l <- g ^. locations ]
   targetLocationId = aiaLocationId investigation
   findLocation = find ((== targetLocationId) . (^. locationId))
-applyAction g (TakeResourceAction _) = pure $ g & player . resources %~ (+ 1)
-applyAction g _ = pure g
+applyAction (TakeResourceAction _) g = pure $ g & player . resources +~ 1
+applyAction _ g = pure g
 
-postApiV1ArkhamGameActionR :: Int -> Handler ArkhamGame
+postApiV1ArkhamGameActionR :: ArkhamGameId -> Handler ArkhamGameData
 postApiV1ArkhamGameActionR gameId = do
-  game <- liftIO $ loadGameFixture gameId
+  game <- runDB $ get404 gameId
   action <- requireCheckJsonBody
-  liftIO $ applyAction game action
+  newGame <- liftIO $ traverseOf currentData (applyAction action) game
+  runDB $ replace gameId newGame
+  pure $ arkhamGameCurrentData newGame

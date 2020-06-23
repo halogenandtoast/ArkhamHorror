@@ -36,9 +36,9 @@ tokenToValue ElderThing _ = 0
 tokenToValue AutoFail _ = 0
 tokenToValue ElderSign _ = 0
 
-postApiV1ArkhamGameSkillCheckR :: Int -> Handler ArkhamGame
-postApiV1ArkhamGameSkillCheckR _gameId = do
-  game <- requireCheckJsonBody
+postApiV1ArkhamGameSkillCheckR :: ArkhamGameId -> Handler ArkhamGame
+postApiV1ArkhamGameSkillCheckR gameId = do
+  game <- runDB $ get404 gameId
   let ArkhamGameStateStepSkillCheckStep step = game ^. gameStateStep
   -- investigator <- currentInvestigator
 

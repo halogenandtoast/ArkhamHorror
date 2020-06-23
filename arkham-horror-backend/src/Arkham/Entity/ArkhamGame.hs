@@ -16,6 +16,7 @@ import Data.Aeson
 import Data.Aeson.Casing
 import Database.Persist.TH
 import Lens.Micro
+import Data.List.NonEmpty (NonEmpty)
 
 mkPersist sqlSettings [persistLowerCase|
 ArkhamGame sql=arkham_games
@@ -30,7 +31,7 @@ instance ToJSON ArkhamGame where
     $ defaultOptions { fieldLabelModifier = camelCase . drop 10 }
 
 instance HasLock ArkhamGame where
-  type LockKey ArkhamGame = ArkhamGameStateLock
+  type Lock ArkhamGame = NonEmpty ArkhamGameStateLock
   lock = currentData . lock
 
 instance HasCurrentData ArkhamGame where

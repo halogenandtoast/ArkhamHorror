@@ -16,6 +16,7 @@ import Data.Aeson.Types
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.Sql
 import Lens.Micro
+import Data.List.NonEmpty (NonEmpty)
 
 data ArkhamCycle = NightOfTheZealot | TheDunwichLegacy
   deriving stock (Generic, Show)
@@ -34,7 +35,7 @@ gameState :: Lens' ArkhamGameData ArkhamGameState
 gameState = lens agGameState $ \m x -> m { agGameState = x }
 
 instance HasLock ArkhamGameData where
-  type LockKey ArkhamGameData = ArkhamGameStateLock
+  type Lock ArkhamGameData = NonEmpty ArkhamGameStateLock
   lock = gameState . lock
 
 instance ToJSON ArkhamGameData where

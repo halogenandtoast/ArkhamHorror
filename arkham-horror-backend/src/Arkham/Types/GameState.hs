@@ -109,13 +109,17 @@ data ArkhamGameState = ArkhamGameState
   , agsStacks :: HashMap Text ArkhamStack
   , agsEncounterDeck :: [ArkhamEncounterCard]
   , agsStep :: ArkhamGameStateStep
-  , agsLock :: Maybe ArkhamGameStateLock
+  , agsLock :: Maybe (NonEmpty ArkhamGameStateLock)
   }
   deriving stock (Generic, Show)
 
 instance HasLock ArkhamGameState where
-  type LockKey ArkhamGameState = ArkhamGameStateLock
+  type Lock ArkhamGameState = NonEmpty ArkhamGameStateLock
   lock = lens agsLock $ \m x -> m { agsLock = x }
+
+instance Unlock (NonEmpty ArkhamGameStateLock) where
+  type Key (NonEmpty ArkhamGameStateLock) = ArkhamGameStateLock
+  unlocks = (==) . NE.head
 
 data ArkhamStack = ActStack (NonEmpty ArkhamAct) | AgendaStack (NonEmpty ArkhamAgenda)
   deriving stock (Generic, Show)

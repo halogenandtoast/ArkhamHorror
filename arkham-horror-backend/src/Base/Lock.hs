@@ -3,38 +3,42 @@ module Base.Lock where
 import ClassyPrelude
 import Lens.Micro
 
-class HasLock a where
-  type LockKey a
-  lock :: Lens' a (Maybe (LockKey a))
+class Unlock a where
+  type Key a
+  unlocks :: a -> Key a -> Bool
 
-data Lockable a = Locked (LockKey a -> Bool) a | Unlocked a
+class (Unlock (Lock a)) => HasLock a where
+  type Lock a
+  lock :: Lens' a (Maybe (Lock a))
 
-buildLock :: (HasLock a, b ~ LockKey a, Eq b) => a -> Lockable a
+data Lockable a = Locked (Lock a) a | Unlocked a
+
+buildLock :: (HasLock a, b ~ Lock a, Eq b) => a -> Lockable a
 buildLock a = case a ^. lock of
-  Just lock' -> Locked (== lock') a
+  Just lock' -> Locked lock' a
   Nothing -> Unlocked a
 
-addLock :: (HasLock a, b ~ LockKey a, Eq b) => b -> a -> Lockable a
-addLock b a = Locked (== b) $ a & lock ?~ b
+addLock :: (HasLock a, b ~ Lock a, Eq b) => b -> a -> Lockable a
+addLock b a = Locked b $ a & lock ?~ b
 
 runLocked
-  :: (HasLock a, b ~ LockKey a)
+  :: (HasLock a, b ~ Key (Lock a))
   => b
   -> (a -> Lockable a)
   -> Lockable a
   -> Lockable a
 runLocked _ f (Unlocked a) = f a
-runLocked key f (Locked lock' a) | lock' key = f a
+runLocked key f (Locked lock' a) | unlocks lock' key = f a
 runLocked _ _ l = l
 
 runLockedM
-  :: (HasLock a, b ~ LockKey a, Monad m)
+  :: (HasLock a, b ~ Key (Lock a), Monad m)
   => b
   -> (a -> m (Lockable a))
   -> Lockable a
   -> m (Lockable a)
 runLockedM _ f (Unlocked a) = f a
-runLockedM key f (Locked lock' a) | lock' key = f a
+runLockedM key f (Locked lock' a) | unlocks lock' key = f a
 runLockedM _ _ l = pure l
 
 -- |Occasionally we want to be able to adjust state
@@ -52,12 +56,12 @@ runIgnoreLockedM f (Unlocked a) = Unlocked <$> f a
 runIgnoreLockedM f (Locked lock' a) = Locked lock' <$> f a
 
 runOnlyLocked
-  :: (HasLock a, b ~ LockKey a)
+  :: (HasLock a, b ~ Key (Lock a))
   => b
   -> (a -> Lockable a)
   -> Lockable a
   -> Lockable a
-runOnlyLocked key f (Locked lock' a) | lock' key = f a
+runOnlyLocked key f (Locked lock' a) | unlocks lock' key = f a
 runOnlyLocked _ _ l = l
 
 runOnlyUnlocked :: (a -> Lockable a) -> Lockable a -> Lockable a

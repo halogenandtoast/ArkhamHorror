@@ -112,7 +112,7 @@ defaultInvestigationPhase = ArkhamInvestigationPhaseInternal
   , investigationPhaseTakeActions = runLockedM InvestigationTakeActions $ \g ->
     if g ^. player . endedTurn
       then pure $ Unlocked g
-      else pure $ addLock InvestigationTakeActions g
+      else pure $ addLock (pure InvestigationTakeActions) g
   , investigationPhaseOnExit = pure
   }
 

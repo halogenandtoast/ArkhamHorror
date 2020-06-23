@@ -9,7 +9,14 @@
       <div v-if="game.gameState.stacks.Agenda.contents[0].doom">
         <img src="/img/arkham/doom.png"/> {{game.gameState.stacks.Agenda.contents[0].doom}}
       </div>
+
       <img
+        v-if="game.gameState.stacks.Act.contents[0].canProgress"
+        class="card card--sideways act--can-progress"
+        :src="game.gameState.stacks.Act.contents[0].image"
+      />
+      <img
+        v-else
         class="card card--sideways"
         :src="game.gameState.stacks.Act.contents[0].image"
       />
@@ -221,6 +228,11 @@ export default class Scenario extends Vue {
 .token--can-draw {
   border: 5px solid #ff00ff;
   border-radius: 500px;
+}
+
+.act--can-progress {
+  border: 5px solid #ff00ff;
+  border-radius: 20px;
 }
 
 .token {

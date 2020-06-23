@@ -82,6 +82,7 @@ data ArkhamChaosTokenInternal = ArkhamChaosTokenInternal
 
 data ArkhamScenarioInternal = ArkhamScenarioInternal
   { scenarioName :: Text
+  , scenarioSetup :: ArkhamGameState -> ArkhamGameState
   , tokenMap :: HashMap ArkhamChaosToken ArkhamChaosTokenInternal
   , scenarioMythosPhase :: ArkhamMythosPhaseInternal
   , scenarioInvestigationPhase :: ArkhamInvestigationPhaseInternal

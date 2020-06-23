@@ -75,7 +75,6 @@ defaultInvestigationPhase = ArkhamInvestigationPhaseInternal
   , investigationPhaseOnExit = id
   }
 
-
 defaultEnemyPhase :: ArkhamEnemyPhaseInternal
 defaultEnemyPhase = ArkhamEnemyPhaseInternal
   { enemyPhaseOnEnter = id
@@ -130,6 +129,7 @@ defaultScenarioRun g = withoutLock
 theGathering :: ArkhamDifficulty -> ArkhamScenarioInternal
 theGathering difficulty' = ArkhamScenarioInternal
   { scenarioName = "The Gathering"
+  , scenarioSetup = theGatheringSetup
   , scenarioMythosPhase = defaultMythosPhase
   , scenarioInvestigationPhase = defaultInvestigationPhase
   , scenarioEnemyPhase = defaultEnemyPhase
@@ -145,6 +145,33 @@ theGathering difficulty' = ArkhamScenarioInternal
 isEasyStandard :: ArkhamDifficulty -> Bool
 isEasyStandard difficulty' =
   difficulty' == ArkhamEasy || difficulty' == ArkhamStandard
+
+theGatheringSetup :: ArkhamGameState -> ArkhamGameState
+theGatheringSetup game = game & locations .~ locations' & stacks .~ stacks'
+  where
+    investigators = [game ^. player . investigator]
+    locations' = HashMap.fromList $ [(alCardCode study, study { alInvestigators = investigators })]
+    stacks' = HashMap.fromList $ [("Agenda", agenda), ("Act", act)]
+    agenda = AgendaStack $ ArkhamAgenda
+      (ArkhamCardCode "01105")
+      "https://arkhamdb.com/bundles/cards/01105.jpg"
+    act = ActStack $ ArkhamAct
+      (ArkhamCardCode "01108")
+      "https://arkhamdb.com/bundles/cards/01108.jpg"
+      0
+
+
+study :: ArkhamLocation
+study = ArkhamLocation
+  "Study"
+  (ArkhamCardCode "01111")
+  []
+  2
+  "https://arkhamdb.com/bundles/cards/01111.png"
+  []
+  2
+  0
+  Revealed
 
 theGatheringSkullToken :: ArkhamDifficulty -> ArkhamChaosTokenInternal
 theGatheringSkullToken difficulty' = if isEasyStandard difficulty'

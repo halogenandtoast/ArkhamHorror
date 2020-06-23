@@ -9,6 +9,9 @@ import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as NE
 import Network.HTTP.Conduit (simpleHttp)
 import System.Random.Shuffle
+import Arkham.Internal.Scenario
+import Arkham.Internal.Types
+import Lens.Micro
 
 newtype ArkhamDbDeckList = ArkhamDbDeckList { slots :: HashMap Text Int }
   deriving stock (Generic)
@@ -45,19 +48,25 @@ toArkhamCard ArkhamDbCard {..} = PlayerCard $ ArkhamPlayerCard
   (Just 0)
   (maybe False ("Fast." `isInfixOf`) text)
 
-loadGameFixture :: Int -> IO ArkhamGameData
-loadGameFixture 1 =
-  ArkhamGameData 1 NightOfTheZealot theGathering ArkhamEasy
+loadGameFixture :: Int -> IO ArkhamGame
+loadGameFixture n = do
+  fixture <- ArkhamGame <$> loadGameDataFixture n
+  let setup = scenarioSetup (toInternalScenario fixture)
+  pure $ fixture & currentData . gameState %~ setup
+
+loadGameDataFixture :: Int -> IO ArkhamGameData
+loadGameDataFixture 1 =
+  ArkhamGameData 1 NightOfTheZealot theGatheringF ArkhamEasy
     . fixtureGameState 1
     <$> loadDeck "20344"
-loadGameFixture 2 =
-  ArkhamGameData 1 NightOfTheZealot theGathering ArkhamEasy
+loadGameDataFixture 2 =
+  ArkhamGameData 1 NightOfTheZealot theGatheringF ArkhamEasy
     . fixtureGameState 2
     <$> loadDeck "101"
-loadGameFixture _ = throwString "Unknown fixture"
+loadGameDataFixture _ = throwString "Unknown fixture"
 
-theGathering :: ArkhamScenario
-theGathering = ArkhamScenario
+theGatheringF :: ArkhamScenario
+theGatheringF = ArkhamScenario
   (ArkhamScenarioCode "theGathering")
   "The Gathering"
   "https://arkhamdb.com/bundles/cards/01104.jpg"
@@ -67,8 +76,10 @@ fixtureGameState seed deck' = ArkhamGameState
   (playerF seed deck')
   Investigation
   chaosTokens
-  (HashMap.fromList $ map (\l -> (alCardCode l, l)) [study seed])
-  (HashMap.fromList [("Agenda", agenda), ("Act", act)])
+  mempty
+  mempty
+  -- (HashMap.fromList $ map (\l -> (alCardCode l, l)) [study seed])
+  -- (HashMap.fromList [("Agenda", agenda), ("Act", act)])
   ArkhamGameStateStepInvestigatorActionStep
   (Just "investigationTakeActions")
 
@@ -84,17 +95,6 @@ loadDeck deckId = do
         pure $ maybe [] (replicate count) mcard
       )
       (slots cards)
-
-agenda :: ArkhamStack
-agenda = AgendaStack $ ArkhamAgenda
-  (ArkhamCardCode "01105")
-  "https://arkhamdb.com/bundles/cards/01105.jpg"
-
-act :: ArkhamStack
-act = ActStack $ ArkhamAct
-  (ArkhamCardCode "01108")
-  "https://arkhamdb.com/bundles/cards/01108.jpg"
-  0
 
 chaosTokens :: NonEmpty ArkhamChaosToken
 chaosTokens = NE.fromList
@@ -115,18 +115,6 @@ chaosTokens = NE.fromList
   , AutoFail
   , ElderSign
   ]
-
-study :: Int -> ArkhamLocation
-study seed = ArkhamLocation
-  "Study"
-  (ArkhamCardCode "01111")
-  []
-  2
-  "https://arkhamdb.com/bundles/cards/01111.png"
-  [investigatorF seed]
-  2
-  0
-  Revealed
 
 playerF :: Int -> [ArkhamCard] -> ArkhamPlayer
 playerF seed deck' = ArkhamPlayer

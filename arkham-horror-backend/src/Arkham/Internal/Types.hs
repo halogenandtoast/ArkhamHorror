@@ -14,12 +14,10 @@ where
 
 import Arkham.Entity.ArkhamGame
 import Arkham.Types.ChaosToken
-import Arkham.Types.Game
 import Arkham.Types.GameState
 import Arkham.Types.Investigator
 import Base.Lock
 import ClassyPrelude
-import Lens.Micro
 
 data ArkhamCardTrait = Tome | Ghoul
 

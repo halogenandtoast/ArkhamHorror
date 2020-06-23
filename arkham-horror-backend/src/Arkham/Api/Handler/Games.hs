@@ -3,7 +3,6 @@ module Arkham.Api.Handler.Games
   )
 where
 
-import Arkham.Types
 import Arkham.Types.Game
 import Import
 

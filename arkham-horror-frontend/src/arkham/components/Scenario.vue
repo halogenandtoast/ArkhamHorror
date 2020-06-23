@@ -2,16 +2,19 @@
   <div id="game" class="game">
     <div class="scenario-cards">
       <img class="card" :src="game.scenario.guide" />
-      <template v-for="(stack, index) in game.gameState.stacks">
-        <img
-          :key="index"
-          class="card card--sideways"
-          :src="stack.contents.image"
-        />
-        <div v-if="stack.contents.doom" :key="`${index}-doom`">
-          <img src="/img/arkham/doom.png"/> {{stack.contents.doom}}
-        </div>
-      </template>
+      <img
+        :key="index"
+        class="card card--sideways"
+        :src="game.gameState.stacks.Agenda.contents.image"
+      />
+      <div v-if="game.gameState.stacks.Agenda.contents.doom" :key="`${index}-doom`">
+        <img src="/img/arkham/doom.png"/> {{game.gameState.stacks.Agenda.contents.doom}}
+      </div>
+      <img
+        :key="index"
+        class="card card--sideways"
+        :src="game.gameState.stacks.Act.contents.image"
+      />
 
       <img v-if="drawnToken" :src="chaosTokenSrc" class="token" />
       <img

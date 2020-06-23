@@ -150,7 +150,7 @@ theGatheringSetup :: ArkhamGameState -> ArkhamGameState
 theGatheringSetup game = game & locations .~ locations' & stacks .~ stacks'
   where
     investigators = [game ^. player . investigator]
-    locations' = HashMap.fromList $ [(alCardCode study, study { alInvestigators = investigators })]
+    locations' = HashMap.fromList $ [(alCardCode study, study { alInvestigators = investigators, alClues = 2 * length investigators })]
     stacks' = HashMap.fromList $ [("Agenda", agenda), ("Act", act)]
     agenda = AgendaStack $ ArkhamAgenda
       (ArkhamCardCode "01105")
@@ -166,7 +166,7 @@ study = ArkhamLocation
   "Study"
   (ArkhamCardCode "01111")
   []
-  2
+  0
   "https://arkhamdb.com/bundles/cards/01111.png"
   []
   2

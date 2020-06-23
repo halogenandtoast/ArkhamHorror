@@ -10,7 +10,7 @@ import Lens.Micro
 drawCard :: ArkhamGameData -> ArkhamGameData
 drawCard g =
   let (drawn, deck') = splitAt 1 (g ^. player . deck)
-  in g & player . hand %~ (++ drawn) & player . deck .~ deck'
+   in g & player . hand %~ (++ drawn) & player . deck .~ deck'
 
 updateGame
   :: (MonadIO m) => ArkhamGameId -> ArkhamGame -> SqlPersistT m ArkhamGameData

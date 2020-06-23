@@ -50,7 +50,7 @@
         </div>
       </div>
     </div>
-    <Player :player="game.gameState.player" />
+    <Player :game="game" :player="game.gameState.player" @update="update" />
   </div>
 </template>
 
@@ -59,7 +59,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ArkhamGame } from '@/arkham/types/ArkhamGame';
 import { ArkhamUnrevealedLocation, ArkhamRevealedLocation } from '@/arkham/types/location';
 import { ArkhamChaosToken } from '@/arkham/types';
-import { ArkhamAction } from '@/arkham/types/action';
+import { ArkhamAction, ArkhamActionTypes } from '@/arkham/types/action';
 import { performAction, performDrawToken } from '@/api';
 import Player from '@/arkham/components/Player.vue';
 
@@ -72,12 +72,12 @@ export default class Scenario extends Vue {
 
   investigate(location: ArkhamRevealedLocation) {
     const action: ArkhamAction = {
-      tag: 'InvestigateAction',
+      tag: ArkhamActionTypes.INVESTIGATE,
       contents: location.contents.locationId,
     };
 
-    performAction(this.game.id, action).then((state: ArkhamGame) => {
-      this.$emit('update', state);
+    performAction(this.game.id, action).then((game: ArkhamGame) => {
+      this.update(game);
     });
   }
 
@@ -86,8 +86,12 @@ export default class Scenario extends Vue {
       if (game.gameState.step.tag === 'ArkhamGameStateStepRevealTokenStep') {
         this.drawnToken = game.gameState.step.contents;
       }
-      this.$emit('update', game);
+      this.update(game);
     });
+  }
+
+  update(game: ArkhamGame) {
+    this.$emit('update', game);
   }
 
   get canInvestigate() {
@@ -126,5 +130,10 @@ export default class Scenario extends Vue {
 .clue--can-investigate {
   border: 1px solid #ff00ff;
   border-radius: 100px;
+}
+
+.token--can-draw {
+  border: 5px solid #ff00ff;
+  border-radius: 500px;
 }
 </style>

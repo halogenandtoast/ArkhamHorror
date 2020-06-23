@@ -64,3 +64,18 @@ instance HasGameStateStep ArkhamGameData where
 
 instance HasGameStateStep ArkhamGameState where
   gameStateStep = lens agsStep $ \m x -> m { agsStep = x }
+
+class HasPlayer a where
+  player :: Lens' a ArkhamPlayer
+
+instance HasPlayer ArkhamGame where
+  player = gameState . player
+
+instance HasPlayer ArkhamGameState where
+  player = lens agsPlayer $ \m x -> m { agsPlayer = x }
+
+class HasResources a where
+  resources :: Lens' a Int
+
+instance HasResources ArkhamPlayer where
+  resources = lens _resources $ \m x -> m { _resources = x }

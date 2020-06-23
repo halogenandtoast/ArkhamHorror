@@ -4,15 +4,25 @@ import Arkham.Types.Card
 import Arkham.Types.Investigator
 import ClassyPrelude
 import Data.Aeson
+import Data.Aeson.Casing
 
 data ArkhamPlayer = ArkhamPlayer
-  { investigator :: ArkhamInvestigator
-  , sanityDamage :: Int
-  , healthDamage :: Int
-  , resources :: Int
-  , clues :: Int
-  , hand :: [ArkhamCard]
-  , inPlay :: [ArkhamCard]
+  { _investigator :: ArkhamInvestigator
+  , _sanityDamage :: Int
+  , _healthDamage :: Int
+  , _resources :: Int
+  , _clues :: Int
+  , _hand :: [ArkhamCard]
+  , _inPlay :: [ArkhamCard]
   }
   deriving stock (Generic, Show)
-  deriving anyclass (ToJSON, FromJSON)
+
+instance ToJSON ArkhamPlayer where
+  toJSON =
+    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 1 }
+  toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 1 }
+
+instance FromJSON ArkhamPlayer where
+  parseJSON = genericParseJSON
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 1 }

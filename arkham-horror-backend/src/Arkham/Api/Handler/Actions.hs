@@ -29,6 +29,7 @@ applyAction g action@(InvestigateAction investigation) =
   mlocation = findLocation $ [ l | RevealedLocation l <- g ^. locations ]
   targetLocationId = aiaLocationId investigation
   findLocation = find ((== targetLocationId) . (^. locationId))
+applyAction g (TakeResourceAction _) = pure $ g & player . resources %~ (+ 1)
 applyAction g _ = pure g
 
 postApiV1ArkhamGameActionR :: Int -> Handler ArkhamGame

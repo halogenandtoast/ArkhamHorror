@@ -1,6 +1,16 @@
+export enum ArkhamActionTypes {
+  INVESTIGATE = 'InvestigateAction',
+  TAKE_RESOURCE = 'TakeResourceAction',
+}
+
 export interface ArkhamInvestigateAction {
-  tag: 'InvestigateAction';
+  tag: ArkhamActionTypes.INVESTIGATE;
   contents: string;
 }
 
-export type ArkhamAction = ArkhamInvestigateAction
+export interface ArkhamTakeResourceAction {
+  tag: ArkhamActionTypes.TAKE_RESOURCE;
+  contents: [];
+}
+
+export type ArkhamAction = ArkhamInvestigateAction | ArkhamTakeResourceAction

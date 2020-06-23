@@ -12,11 +12,11 @@ currentInvestigator :: Handler ArkhamInvestigator
 currentInvestigator = pure rolandBanks
 
 baseSkillValue :: ArkhamInvestigator -> ArkhamSkillType -> Int
-baseSkillValue investigator = \case
-  ArkhamSkillWillpower -> unArkhamSkill $ aiWillpower investigator
-  ArkhamSkillIntellect -> unArkhamSkill $ aiIntellect investigator
-  ArkhamSkillCombat -> unArkhamSkill $ aiCombat investigator
-  ArkhamSkillAgility -> unArkhamSkill $ aiAgility investigator
+baseSkillValue investigator_ = \case
+  ArkhamSkillWillpower -> unArkhamSkill $ aiWillpower investigator_
+  ArkhamSkillIntellect -> unArkhamSkill $ aiIntellect investigator_
+  ArkhamSkillCombat -> unArkhamSkill $ aiCombat investigator_
+  ArkhamSkillAgility -> unArkhamSkill $ aiAgility investigator_
 
 tokenToValue :: ArkhamChaosToken -> ArkhamGameData -> Int
 tokenToValue PlusOne _ = 1

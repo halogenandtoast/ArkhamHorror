@@ -12,7 +12,17 @@
       <img src="/img/arkham/player_back.jpg" width="200px" />
       <img :src="player.investigator.image" />
       <div>
-        <div class="poolItem"><img src="/img/arkham/resource.png"/> {{player.resources}}</div>
+        <div v-if="actionWindow" class="poolItem poolItem-resource" @click="takeResource">
+          <img
+            class="resource--can-take"
+            src="/img/arkham/resource.png"
+          />
+          {{player.resources}}
+        </div>
+        <div v-else>
+          <img src="/img/arkham/resource.png" />
+          {{player.resources}}
+        </div>
         <div class="poolItem"><img src="/img/arkham/clue.png"/> {{player.clues}}</div>
         <div class="poolItem"><img src="/img/arkham/health.png"/> {{player.healthDamage}}</div>
         <div class="poolItem"><img src="/img/arkham/sanity.png"/> {{player.sanityDamage}}</div>
@@ -36,9 +46,13 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { ArkhamPlayer } from '@/arkham/types';
+import { ArkhamAction, ArkhamActionTypes } from '@/arkham/types/action';
+import { ArkhamGame } from '@/arkham/types/ArkhamGame';
+import { performAction } from '@/api';
 
 @Component
 export default class Player extends Vue {
+  @Prop(Object) readonly game!: ArkhamGame
   @Prop(Object) readonly player!: ArkhamPlayer
 
   playCard(index: number) {
@@ -53,6 +67,21 @@ export default class Player extends Vue {
   canPlay(index: number) {
     console.log(this);
     return true;
+  }
+
+  get actionWindow() {
+    return this.game.gameState.step.tag === 'ArkhamGameStateStepInvestigatorActionStep';
+  }
+
+  takeResource() {
+    const action: ArkhamAction = {
+      tag: ArkhamActionTypes.TAKE_RESOURCE,
+      contents: [],
+    };
+
+    performAction(this.game.id, action).then((game: ArkhamGame) => {
+      this.$emit('update', game);
+    });
   }
 }
 </script>
@@ -94,5 +123,16 @@ export default class Player extends Vue {
     margin: auto;
     z-index: -1;
   }
+}
+
+.poolItem-resource {
+  padding-right:5px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.resource--can-take {
+  padding: 3px;
+  cursor: pointer;
+  background-color: #FF00FF;
 }
 </style>

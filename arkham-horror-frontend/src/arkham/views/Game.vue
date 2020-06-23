@@ -6,8 +6,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ArkhamGame } from '@/arkham/types/ArkhamGame';
-import { fetchGame } from '@/api';
+import { ArkhamGame } from '@/arkham/types/game';
+import { fetchGame } from '@/arkham/api';
 import Scenario from '@/arkham/components/Scenario.vue';
 
 @Component({

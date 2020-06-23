@@ -47,8 +47,8 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { ArkhamPlayer } from '@/arkham/types';
 import { ArkhamAction, ArkhamActionTypes } from '@/arkham/types/action';
-import { ArkhamGame } from '@/arkham/types/ArkhamGame';
-import { performAction } from '@/api';
+import { ArkhamGame, ArkhamStepTypes } from '@/arkham/types/game';
+import { performAction } from '@/arkham/api';
 
 @Component
 export default class Player extends Vue {
@@ -70,7 +70,7 @@ export default class Player extends Vue {
   }
 
   get actionWindow() {
-    return this.game.gameState.step.tag === 'ArkhamGameStateStepInvestigatorActionStep';
+    return this.game.gameState.step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION;
   }
 
   takeResource() {

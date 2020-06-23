@@ -20,7 +20,11 @@
 
     </div>
     <div class="location-cards">
-      <div v-for="location in game.gameState.locations" class="location" :key="location.name">
+      <div
+        v-for="location in game.gameState.locations"
+        class="location"
+        :key="location.contents.name"
+      >
         <img
           class="card"
           :src="location.contents.image"
@@ -56,11 +60,11 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ArkhamGame } from '@/arkham/types/ArkhamGame';
+import { ArkhamGame } from '@/arkham/types/game';
 import { ArkhamUnrevealedLocation, ArkhamRevealedLocation } from '@/arkham/types/location';
 import { ArkhamChaosToken } from '@/arkham/types';
 import { ArkhamAction, ArkhamActionTypes } from '@/arkham/types/action';
-import { performAction, performDrawToken } from '@/api';
+import { performAction, performDrawToken } from '@/arkham/api';
 import Player from '@/arkham/components/Player.vue';
 
 @Component({

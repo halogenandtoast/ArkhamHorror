@@ -53,8 +53,24 @@ type LocationInvestigator = {
 
 type LocationContent = LocationClues | LocationInvestigator;
 
+export enum ArkhamStepTypes {
+  INVESTIGATOR_ACTION = 'ArkhamGameStateStepInvestigatorActionStep',
+  SKILL_CHECK = 'ArkhamGameStateStepSkillCheckStep',
+  REVEAL_TOKEN = 'ArkhamGameStateStepRevealTokenStep',
+}
+
 interface ArkhamInvestigatorActionStep {
-  tag: 'ArkhamGameStateStepInvestigatorActionStep';
+  tag: ArkhamStepTypes.INVESTIGATOR_ACTION;
+}
+
+interface ArkhamSkillCheckStep {
+  tag: ArkhamStepTypes.SKILL_CHECK;
+  contents: ArkhamSkillCheckStepContents;
+}
+
+interface ArkhamRevealTokenStep {
+  tag: ArkhamStepTypes.REVEAL_TOKEN;
+  contents: ArkhamChaosToken;
 }
 
 interface ArkhamLocationTarget {
@@ -105,35 +121,25 @@ export const arkhamStepSkillCheckStepContentsDecoder = JsonDecoder.object<
     type: JsonDecoder.string,
   }, 'ArkhamSkillCheckStepContents');
 
-interface ArkhamSkillCheckStep {
-  tag: 'ArkhamGameStateStepSkillCheckStep';
-  contents: ArkhamSkillCheckStepContents;
-}
-
-interface ArkhamRevealTokenStep {
-  tag: 'ArkhamGameStateStepRevealTokenStep';
-  contents: ArkhamChaosToken;
-}
-
 type ArkhamStep = ArkhamInvestigatorActionStep | ArkhamSkillCheckStep | ArkhamRevealTokenStep;
 
 export const arkhamStepInvestigatorActionStepDecoder = JsonDecoder.object<
     ArkhamInvestigatorActionStep
   >({
-    tag: JsonDecoder.isExactly('ArkhamGameStateStepInvestigatorActionStep'),
+    tag: JsonDecoder.isExactly(ArkhamStepTypes.INVESTIGATOR_ACTION),
   }, 'ArkhamInvestigateStep');
 
 export const arkhamStepSkillCheckStepDecoder = JsonDecoder.object<
     ArkhamSkillCheckStep
   >({
-    tag: JsonDecoder.isExactly('ArkhamGameStateStepSkillCheckStep'),
+    tag: JsonDecoder.isExactly(ArkhamStepTypes.SKILL_CHECK),
     contents: arkhamStepSkillCheckStepContentsDecoder,
   }, 'ArkhamSkillCheckStep');
 
 export const arkhamStepRevealTokenStepDecoder = JsonDecoder.object<
     ArkhamRevealTokenStep
   >({
-    tag: JsonDecoder.isExactly('ArkhamGameStateStepRevealTokenStep'),
+    tag: JsonDecoder.isExactly(ArkhamStepTypes.REVEAL_TOKEN),
     contents: arkhamChaosTokenDecoder,
   }, 'ArkhamRevealTokenStep');
 

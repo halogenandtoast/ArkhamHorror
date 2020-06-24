@@ -15,6 +15,7 @@ data ArkhamPlayer = ArkhamPlayer
   , _hand :: [ArkhamCard]
   , _inPlay :: [ArkhamCard]
   , _deck :: [ArkhamCard]
+  , _discard :: [ArkhamCard]
   }
   deriving stock (Generic, Show)
 

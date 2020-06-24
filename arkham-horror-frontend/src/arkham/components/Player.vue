@@ -5,10 +5,22 @@
         <h2>In play</h2>
         <div v-for="(card, index) in player.inPlay" :key="index">
           <img :src="card.contents.image" />
+          <div
+            v-if="card.contents.uses && card.contents.uses > 0"
+            class="poolItem poolItem-resource"
+          >
+            <img src="/img/arkham/resource.png" />
+            {{card.contents.uses}}
+          </div>
         </div>
       </section>
     </div>
     <div class="player">
+      <img
+        v-if="topOfDiscard"
+        :src="topOfDiscard"
+        width="200px"
+      />
       <img
         v-if="canDraw"
         class="deck--can-draw"
@@ -62,13 +74,14 @@ export default class Player extends Vue {
   @Prop(Object) readonly player!: ArkhamPlayer
 
   playCard(index: number) {
-    const card = this.player.hand[index];
-    const mcost = 'cost' in card.contents ? card.contents.cost : 0;
-    const cost = mcost === null || mcost === undefined ? 0 : mcost;
+    const action: ArkhamAction = {
+      tag: ArkhamActionTypes.PLAY_CARD,
+      contents: index,
+    };
 
-    this.player.resources -= cost;
-    this.player.inPlay.push(card);
-    this.player.hand.splice(index, 1);
+    performAction(this.game.id, action).then((game: ArkhamGame) => {
+      this.$emit('update', game);
+    });
   }
 
   canPlay(index: number) {
@@ -92,6 +105,15 @@ export default class Player extends Vue {
 
   get actionWindow() {
     return this.game.gameState.step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION;
+  }
+
+  get topOfDiscard() {
+    const mcard = this.player.discard[0];
+    if (mcard !== undefined && mcard !== null) {
+      return mcard.contents.image;
+    }
+
+    return null;
   }
 
   takeResource() {

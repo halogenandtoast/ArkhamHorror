@@ -4,10 +4,15 @@ import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
 
+newtype ArkhamCardCode = ArkhamCardCode { unArkhamCardCode :: Text }
+  deriving newtype (Eq, Hashable, Show, ToJSON, FromJSON)
+
 data ArkhamPlayerCard = ArkhamPlayerCard
   { apcName :: Text
   , apcCost :: Maybe Int
+  , apcCode :: ArkhamCardCode
   , apcImage :: Text
+  , apcUses :: Maybe Int
   }
   deriving stock (Generic, Show)
 
@@ -23,6 +28,7 @@ instance FromJSON ArkhamPlayerCard where
 
 data ArkhamEncounterCard = ArkhamEncounterCard
   { aecName :: Text
+  , aecCode :: ArkhamCardCode
   , aecImage :: Text
   }
   deriving stock (Generic, Show)
@@ -40,4 +46,3 @@ instance FromJSON ArkhamEncounterCard where
 data ArkhamCard = PlayerCard ArkhamPlayerCard | EncounterCard ArkhamEncounterCard
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
-

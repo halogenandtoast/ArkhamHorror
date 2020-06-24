@@ -3,7 +3,7 @@ module Arkham.Types.Skill where
 import ClassyPrelude
 import Data.Aeson
 
-data ArkhamSkillType = ArkhamSkillWillpower | ArkhamSkillIntellect | ArkhamSkillCombat | ArkhamSkillAgility
+data ArkhamSkillType = ArkhamSkillWillpower | ArkhamSkillIntellect | ArkhamSkillCombat | ArkhamSkillAgility | ArkhamSkillWild
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 

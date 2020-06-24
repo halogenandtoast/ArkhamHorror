@@ -14,7 +14,7 @@ data ArkhamTakeResourceAction = ArkhamTakeResourceAction
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 
-newtype ArkhamPlayCardAction = ArkhamPlayCardAction { apcaCard :: ArkhamCard }
+newtype ArkhamPlayCardAction = ArkhamPlayCardAction { apcaCardIndex :: Int }
   deriving newtype (Show, ToJSON, FromJSON)
 
 data ArkhamCardAbilityAction = ArkhamCardAbilityAction { acaaCard :: ArkhamCard, aacaActionIndex :: Int }

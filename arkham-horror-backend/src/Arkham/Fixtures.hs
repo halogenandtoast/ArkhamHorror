@@ -27,49 +27,58 @@ cardList :: IO (Either String [ArkhamDbCard])
 cardList = eitherDecode <$> BSL.readFile "data/cards.json"
 
 findCard :: Text -> IO (Maybe ArkhamCard)
-findCard cardCode = do
+findCard cardCode' = do
   cardList' <- cardList
   case cardList' of
     Left err -> throwString err
-    Right cards -> pure $ toArkhamCard <$> find ((== cardCode) . code) cards
+    Right cards -> pure $ toArkhamCard <$> find ((== cardCode') . code) cards
 
 toArkhamCard :: ArkhamDbCard -> ArkhamCard
-toArkhamCard ArkhamDbCard {..} =
-  PlayerCard
-    $ ArkhamPlayerCard name cost
-    $ "https://arkhamdb.com/"
-    <> fromMaybe ("/bundles/cards/" <> code <> ".png") imagesrc
+toArkhamCard ArkhamDbCard {..} = PlayerCard $ ArkhamPlayerCard
+  name
+  cost
+  (ArkhamCardCode code)
+  ("https://arkhamdb.com/"
+  <> fromMaybe ("/bundles/cards/" <> code <> ".png") imagesrc
+  )
+  (Just 0)
 
 loadGameFixture :: Int -> IO ArkhamGameData
-loadGameFixture _ =
-  ArkhamGameData 1 NightOfTheZealot theGathering . fixtureGameState <$> loadDeck
+loadGameFixture 1 =
+  ArkhamGameData 1 NightOfTheZealot theGathering
+    . fixtureGameState 1
+    <$> loadDeck "20344"
+loadGameFixture 2 =
+  ArkhamGameData 1 NightOfTheZealot theGathering
+    . fixtureGameState 2
+    <$> loadDeck "101"
+loadGameFixture _ = throwString "Unknown fixture"
 
 theGathering :: ArkhamScenario
 theGathering =
   ArkhamScenario "The Gathering" "https://arkhamdb.com/bundles/cards/01104.jpg"
 
-fixtureGameState :: [ArkhamCard] -> ArkhamGameState
-fixtureGameState deck' = ArkhamGameState
-  (playerF deck')
+fixtureGameState :: Int -> [ArkhamCard] -> ArkhamGameState
+fixtureGameState seed deck' = ArkhamGameState
+  (playerF seed deck')
   Investigation
   chaosTokens
-  (HashMap.fromList [("Study", RevealedLocation study)])
+  (HashMap.fromList [("Study", RevealedLocation $ study seed)])
   [agenda, act]
   ArkhamGameStateStepInvestigatorActionStep
 
-loadDeck :: IO [ArkhamCard]
-loadDeck = do
+loadDeck :: String -> IO [ArkhamCard]
+loadDeck deckId = do
   deckList <- eitherDecode
-    <$> simpleHttp "https://arkhamdb.com/api/public/decklist/20344"
+    <$> simpleHttp ("https://arkhamdb.com/api/public/decklist/" <> deckId)
   case deckList of
     Left err -> throwString err
-    Right cards ->
-      shuffleM
-        =<< HashMap.foldMapWithKey
-                (\cardId count -> do
-                  mcard <- findCard cardId
-                  pure $ maybe [] (replicate count) mcard
-                ) (slots cards)
+    Right cards -> shuffleM =<< HashMap.foldMapWithKey
+      (\cardId count -> do
+        mcard <- findCard cardId
+        pure $ maybe [] (replicate count) mcard
+      )
+      (slots cards)
 
 agenda :: ArkhamStack
 agenda =
@@ -98,17 +107,22 @@ chaosTokens = NE.fromList
   , ElderSign
   ]
 
-study :: ArkhamRevealedLocation
-study = ArkhamRevealedLocation
+study :: Int -> ArkhamRevealedLocation
+study seed = ArkhamRevealedLocation
   "Study"
   "Study"
   []
   2
   "https://arkhamdb.com/bundles/cards/01111.png"
-  [LocationInvestigator rolandBanks, LocationClues 2]
+  [LocationInvestigator $ investigatorF seed, LocationClues 2]
 
-playerF :: [ArkhamCard] -> ArkhamPlayer
-playerF deck' = ArkhamPlayer rolandBanks 0 0 5 0 [] [] deck'
+playerF :: Int -> [ArkhamCard] -> ArkhamPlayer
+playerF seed deck' = ArkhamPlayer (investigatorF seed) 0 0 5 0 [] [] deck' []
+
+investigatorF :: Int -> ArkhamInvestigator
+investigatorF 2 = daisyWalker
+investigatorF _ = rolandBanks
+
 
 rolandBanks :: ArkhamInvestigator
 rolandBanks = ArkhamInvestigator
@@ -118,4 +132,14 @@ rolandBanks = ArkhamInvestigator
   (ArkhamSkill 3)
   (ArkhamSkill 3)
   (ArkhamSkill 4)
+  (ArkhamSkill 2)
+
+daisyWalker :: ArkhamInvestigator
+daisyWalker = ArkhamInvestigator
+  "Daisy Walker"
+  "https://arkhamdb.com/bundles/cards/01002.png"
+  "/img/arkham/AHC01_2_portrait.jpg"
+  (ArkhamSkill 3)
+  (ArkhamSkill 5)
+  (ArkhamSkill 2)
   (ArkhamSkill 2)

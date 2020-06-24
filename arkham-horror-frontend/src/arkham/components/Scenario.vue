@@ -36,20 +36,24 @@
           <img
             v-if="thing.tag == 'LocationInvestigator'"
             :src="thing.contents.portrait"
+            width="80"
           />
-          <div v-if="thing.tag == 'LocationClues' && location.tag == 'RevealedLocation'">
-            <img
+          <div
+            v-if="thing.tag == 'LocationClues' && location.tag == 'RevealedLocation'"
+          >
+
+            <div
               v-if="canInvestigate"
-              class="clue--can-investigate"
+              class="clue clue--can-investigate"
               @click="investigate(location)"
-              src="/img/arkham/clue.png"
-            />
-            <img
-              v-else
-              class="clue"
-              src="/img/arkham/clue.png"
-            />
-            {{thing.contents}}
+            >
+              <img src="/img/arkham/clue.png" />
+              {{thing.contents}}
+            </div>
+            <div v-else>
+              <img src="/img/arkham/clue.png" />
+              {{thing.contents}}
+            </div>
           </div>
         </div>
       </div>
@@ -126,7 +130,7 @@ export default class Scenario extends Vue {
 
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .card {
   width: 250px;
 }
@@ -142,8 +146,9 @@ export default class Scenario extends Vue {
 }
 
 .clue--can-investigate {
-  border: 1px solid #ff00ff;
+  border: 3px solid #ff00ff;
   border-radius: 100px;
+  cursor: pointer;
 }
 
 .token--can-draw {
@@ -154,5 +159,27 @@ export default class Scenario extends Vue {
 .token {
   width: 150px;
   height: auto;
+}
+
+.clue {
+  position: relative;
+  width: 57px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  font-weight: 900;
+  font-size: 1.5em;
+
+  img {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    z-index: -1;
+  }
 }
 </style>

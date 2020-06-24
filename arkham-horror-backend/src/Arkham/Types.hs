@@ -162,3 +162,43 @@ class HasDeck a where
 
 instance HasDeck ArkhamPlayer where
   deck = lens _deck $ \m x -> m { _deck = x }
+
+class HasUses a where
+  uses :: Lens' a (Maybe Int)
+
+instance HasUses ArkhamCard where
+  uses f = \case
+    PlayerCard c -> PlayerCard <$> uses f c
+    EncounterCard c -> EncounterCard <$> uses f c
+
+instance HasUses ArkhamPlayerCard where
+  uses = lens apcUses $ \m x -> m { apcUses = x }
+
+instance HasUses ArkhamEncounterCard where
+  uses = lens (const Nothing) const
+
+class HasCardCode a where
+  cardCode :: Lens' a ArkhamCardCode
+
+instance HasCardCode ArkhamCard where
+  cardCode f = \case
+    PlayerCard c -> PlayerCard <$> cardCode f c
+    EncounterCard c -> EncounterCard <$> cardCode f c
+
+instance HasCardCode ArkhamPlayerCard where
+  cardCode = lens apcCode $ \m x -> m { apcCode = x }
+
+instance HasCardCode ArkhamEncounterCard where
+  cardCode = lens aecCode $ \m x -> m { aecCode = x }
+
+class HasInPlay a where
+  inPlay :: Lens' a [ArkhamCard]
+
+instance HasInPlay ArkhamPlayer where
+  inPlay = lens _inPlay $ \m x -> m { _inPlay = x }
+
+class HasDiscard a where
+  discard :: Lens' a [ArkhamCard]
+
+instance HasDiscard ArkhamPlayer where
+  discard = lens _discard $ \m x -> m { _discard = x }

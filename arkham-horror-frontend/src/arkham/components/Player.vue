@@ -9,7 +9,14 @@
       </section>
     </div>
     <div class="player">
-      <img src="/img/arkham/player_back.jpg" width="200px" />
+      <img
+        v-if="canDraw"
+        class="deck--can-draw"
+        @click="drawCard"
+        src="/img/arkham/player_back.jpg"
+        width="200px"
+      />
+      <img v-else src="/img/arkham/player_back.jpg" width="200px" />
       <img :src="player.investigator.image" />
       <div>
         <div v-if="actionWindow" class="poolItem poolItem-resource" @click="takeResource">
@@ -28,7 +35,6 @@
         <div class="poolItem"><img src="/img/arkham/sanity.png"/> {{player.sanityDamage}}</div>
       </div>
       <section class="hand">
-        <h2>In hand</h2>
         <div v-for="(card, index) in player.hand" :key="index">
           <img
             v-if="canPlay(index)"
@@ -57,7 +63,8 @@ export default class Player extends Vue {
 
   playCard(index: number) {
     const card = this.player.hand[index];
-    const cost = 'cost' in card.contents ? card.contents.cost : 0;
+    const mcost = 'cost' in card.contents ? card.contents.cost : 0;
+    const cost = mcost === null || mcost === undefined ? 0 : mcost;
 
     this.player.resources -= cost;
     this.player.inPlay.push(card);
@@ -65,8 +72,22 @@ export default class Player extends Vue {
   }
 
   canPlay(index: number) {
-    console.log(this);
-    return true;
+    if (!this.actionWindow) {
+      return false;
+    }
+
+    const card = this.player.hand[index];
+    const mcost = 'cost' in card.contents ? card.contents.cost : 0;
+
+    if (mcost === null || mcost === undefined) {
+      return false;
+    }
+
+    return mcost <= this.player.resources;
+  }
+
+  get canDraw() {
+    return this.actionWindow;
   }
 
   get actionWindow() {
@@ -83,11 +104,23 @@ export default class Player extends Vue {
       this.$emit('update', game);
     });
   }
+
+  drawCard() {
+    const action: ArkhamAction = {
+      tag: ArkhamActionTypes.DRAW_CARD,
+      contents: [],
+    };
+
+    performAction(this.game.id, action).then((game: ArkhamGame) => {
+      this.$emit('update', game);
+    });
+  }
 }
 </script>
 
 <style scoped lang="scss">
 .hand {
+  display: flex;
   .card {
     width: 150px;
     border-radius: 7px;
@@ -134,5 +167,10 @@ export default class Player extends Vue {
   padding: 3px;
   cursor: pointer;
   background-color: #FF00FF;
+}
+
+.deck--can-draw {
+  border: 3px solid #FF00FF;
+  border-radius: 10px;
 }
 </style>

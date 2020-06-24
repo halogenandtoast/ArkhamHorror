@@ -60,7 +60,9 @@ instance HasLocationId ArkhamRevealedLocation where
   locationId = lens arlLocationId $ \m x -> m { arlLocationId = x }
 
 instance HasLocationId ArkhamLocation where
-  locationId = lens (^. locationId) $ \m x -> m & locationId .~ x
+  locationId f = \case
+    RevealedLocation l -> RevealedLocation <$> locationId f l
+    UnrevealedLocation l -> UnrevealedLocation <$> locationId f l
 
 class HasCurrentData a where
   currentData :: Lens' a ArkhamGameData
@@ -148,3 +150,15 @@ instance HasClues a => HasClues (Maybe a) where
   clues f = \case
     Nothing -> Nothing <$ f 0
     Just x -> Just <$> clues f x
+
+class HasHand a where
+  hand :: Lens' a [ArkhamCard]
+
+instance HasHand ArkhamPlayer where
+  hand = lens _hand $ \m x -> m { _hand = x }
+
+class HasDeck a where
+  deck :: Lens' a [ArkhamCard]
+
+instance HasDeck ArkhamPlayer where
+  deck = lens _deck $ \m x -> m { _deck = x }

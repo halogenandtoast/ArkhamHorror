@@ -7,7 +7,7 @@ export type ArkhamCard<T> = {
 
 export interface ArkhamPlayerCard {
   name: string;
-  cost: number;
+  cost: number | null;
   image: string;
 }
 
@@ -19,7 +19,7 @@ export interface ArkhamEncounterCard {
 export const arkhamPlayerCardDecoder = JsonDecoder.object<ArkhamPlayerCard>(
   {
     name: JsonDecoder.string,
-    cost: JsonDecoder.number,
+    cost: JsonDecoder.nullable(JsonDecoder.number),
     image: JsonDecoder.string,
   },
   'ArkhamPlayerCard',

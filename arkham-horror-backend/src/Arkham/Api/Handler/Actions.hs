@@ -17,7 +17,10 @@ applyAction action@(InvestigateAction investigation) g =
   mlocation = lookup targetLocationId $ g ^. locations
   targetLocationId = aiaLocationId investigation
 applyAction (TakeResourceAction _) g = pure $ g & player . resources +~ 1
-applyAction (DrawCardAction _) g = pure $ g & player . resources +~ 1
+applyAction (DrawCardAction _) g = do
+  let (drawn, deck') = splitAt 1 (g ^. player . deck)
+  pure $ g & player . hand %~ (++ drawn) & player . deck .~ deck'
+applyAction (PlayCardAction _) g = pure g
 applyAction _ g = pure g
 
 postApiV1ArkhamGameActionR :: ArkhamGameId -> Handler ArkhamGameData

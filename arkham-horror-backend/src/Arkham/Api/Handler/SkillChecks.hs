@@ -9,7 +9,6 @@ import Arkham.Types
 import Import
 import Lens.Micro
 import Lens.Micro.Platform ()
-import Data.HashMap.Strict
 
 postApiV1ArkhamGameSkillCheckR :: ArkhamGameId -> Handler ArkhamGameData
 postApiV1ArkhamGameSkillCheckR gameId = do
@@ -34,7 +33,10 @@ postApiV1ArkhamGameSkillCheckApplyResultR gameId = do
     Modifier n -> do
       difficulty <- shroudOf game location
       if skillValue (game ^. player . investigator) artsType + n >= difficulty
-        then runDB $ updateGame gameId $ successfulInvestigation game (location ^. locationId) 1
+        then runDB $ updateGame gameId $ successfulInvestigation
+          game
+          (location ^. locationId)
+          1
         else runDB $ updateGame gameId $ failedInvestigation game location
     Failure -> runDB $ updateGame gameId $ failedInvestigation game location
 
@@ -50,7 +52,6 @@ skillValue i skillType = case skillType of
   ArkhamSkillIntellect -> unArkhamSkill $ aiIntellect i
   ArkhamSkillCombat -> unArkhamSkill $ aiCombat i
   ArkhamSkillAgility -> unArkhamSkill $ aiAgility i
-
 
 determineScenarioSpecificTokenResult
   :: MonadIO m => ArkhamGame -> ArkhamChaosToken -> m ArkhamChaosTokenResult
@@ -90,23 +91,12 @@ investigateAction (Entity gameId game) = do
 failedInvestigation :: ArkhamGame -> ArkhamLocation -> ArkhamGame
 failedInvestigation g _ = g
 
+-- brittany-disable-next-binding
 successfulInvestigation :: ArkhamGame -> LocationId -> Int -> ArkhamGame
 successfulInvestigation g !lId clueCount = g
-  & locations %~ adjust (\l -> l & clues -~ clueCount) lId
-  & player . clues +~ clueCount
-  & gameStateStep .~ investigatorStep
+    & locations . at lId . _Just . clues -~ clueCount
+    & player . clues +~ clueCount
+    & gameStateStep .~ investigatorStep
 
 investigatorStep :: ArkhamGameStateStep
 investigatorStep = ArkhamGameStateStepInvestigatorActionStep
-
-{-
-:set prompt "> "
-import Database.Persist.Sql
-import Lens.Micro
-import Lens.Micro.Platform
-loadGameFixture 1 >>= db . replace (toSqlKey 1) . ArkhamGame
-g :: ArkhamGame <- db $ get404 (toSqlKey 1)
-g & currentData . locations . at (LocationId "Study") %~ (clues %~ (subtract 1))
-g & currentData . locations . at (LocationId "Study") %~ (clues %~ (subtract 1)) & player . clues +~ 1
--}
-

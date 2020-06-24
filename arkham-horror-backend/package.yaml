@@ -65,6 +65,7 @@ dependencies:
 - persistent-template
 - profunctors
 - random
+- random-shuffle
 - regex-posix
 - safe
 - shakespeare

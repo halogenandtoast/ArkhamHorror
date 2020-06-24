@@ -43,6 +43,7 @@ packages:
 extra-deps:
 - monoidal-containers-0.6.0.1@sha256:7d776942659eb4d70d8b8da5d734396374a6eda8b4622df9e61e26b24e9c8e40,2501
 - postgresql-simple-migration-0.1.15.0@sha256:0e24e96908430f5caf9c1c1d9ca7c5c108e4e0409a255e2cbd77e8cd252dbb02,3879
+- unordered-containers-0.2.11.0
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

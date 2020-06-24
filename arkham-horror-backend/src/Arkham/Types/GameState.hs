@@ -18,7 +18,7 @@ data ArkhamPhase = Mythos | Investigation | Enemy | Upkeep
 data ArkhamGameStateStep
   = ArkhamGameStateStepInvestigatorActionStep
   | ArkhamGameStateStepSkillCheckStep ArkhamSkillCheckStep
-  | ArkhamGameStateStepRevealTokenStep ArkhamChaosToken
+  | ArkhamGameStateStepRevealTokenStep ArkhamRevealTokenStep
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -43,12 +43,29 @@ instance FromJSON ArkhamSkillCheckStep where
   parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
 
+data ArkhamRevealTokenStep = ArkhamRevealTokenStep
+  { artsType :: ArkhamSkillType
+  , artsAction :: Maybe ArkhamAction
+  , artsTarget :: Maybe ArkhamTarget
+  , artsToken :: ArkhamChaosToken
+  }
+  deriving stock (Generic, Show)
+
+instance ToJSON ArkhamRevealTokenStep where
+  toJSON =
+    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+  toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+
+instance FromJSON ArkhamRevealTokenStep where
+  parseJSON = genericParseJSON
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+
 data ArkhamGameState = ArkhamGameState
   { agsPlayer :: ArkhamPlayer
   , agsPhase :: ArkhamPhase
   , agsChaosBag :: NonEmpty ArkhamChaosToken
-  , agsLocations :: [ArkhamLocation]
-  , agsLocationContents :: HashMap LocationId [LocationContent]
+  , agsLocations :: HashMap LocationId ArkhamLocation
   , agsStacks :: [ArkhamStack]
   , agsStep :: ArkhamGameStateStep
   }

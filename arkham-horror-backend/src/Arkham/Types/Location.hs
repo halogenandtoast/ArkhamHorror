@@ -21,6 +21,7 @@ data ArkhamUnrevealedLocation = ArkhamUnrevealedLocation
   , aulLocationId :: LocationId
   , aulLocationSymbols :: [ArkhamLocationSymbol]
   , aulImage :: Text
+  , aulContents :: [LocationContent]
   }
   deriving stock (Generic, Show)
 
@@ -40,6 +41,7 @@ data ArkhamRevealedLocation = ArkhamRevealedLocation
   , arlLocationSymbols :: [ArkhamLocationSymbol]
   , arlShroud :: Int
   , arlImage :: Text
+  , arlContents :: [LocationContent]
   }
   deriving stock (Generic, Show)
 

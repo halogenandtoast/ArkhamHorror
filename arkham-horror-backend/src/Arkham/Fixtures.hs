@@ -19,10 +19,7 @@ fixtureGameState = ArkhamGameState
   playerF
   Investigation
   chaosTokens
-  [RevealedLocation study]
-  (HashMap.fromList
-    [("Study", [LocationInvestigator rolandBanks, LocationClues 2])]
-  )
+  (HashMap.fromList [("Study", RevealedLocation study)])
   [agenda, act]
   ArkhamGameStateStepInvestigatorActionStep
 
@@ -60,6 +57,7 @@ study = ArkhamRevealedLocation
   []
   2
   "https://arkhamdb.com/bundles/cards/01111.png"
+  [LocationInvestigator rolandBanks, LocationClues 2]
 
 playerF :: ArkhamPlayer
 playerF = ArkhamPlayer rolandBanks 0 0 5 0 [machete] []

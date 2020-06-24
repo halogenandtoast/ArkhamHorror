@@ -39,7 +39,7 @@ instance HasChaosBag ArkhamGame where
   chaosBag = currentData . chaosBag
 
 class HasLocations a where
-  locations :: Lens' a [ArkhamLocation]
+  locations :: Lens' a (HashMap LocationId ArkhamLocation)
 
 instance HasLocations ArkhamGameState where
   locations = lens agsLocations $ \m x -> m { agsLocations = x }
@@ -81,6 +81,9 @@ instance HasGameStateStep ArkhamGameState where
 class HasPlayer a where
   player :: Lens' a ArkhamPlayer
 
+instance HasPlayer ArkhamGame where
+  player = currentData . player
+
 instance HasPlayer ArkhamGameData where
   player = gameState . player
 
@@ -92,3 +95,48 @@ class HasResources a where
 
 instance HasResources ArkhamPlayer where
   resources = lens _resources $ \m x -> m { _resources = x }
+
+class HasInvestigator a where
+  investigator :: Lens' a ArkhamInvestigator
+
+instance HasInvestigator ArkhamPlayer where
+  investigator = lens _investigator $ \m x -> m { _investigator = x }
+
+class HasClues a where
+  clues :: Lens' a Int
+
+isLocationClues :: LocationContent -> Bool
+isLocationClues (LocationClues _) = True
+isLocationClues _ = False
+
+instance HasClues ArkhamRevealedLocation where
+  clues =
+    lens
+        (\m ->
+          fromMaybe 0 $ listToMaybe [ n | LocationClues n <- arlContents m ]
+        )
+      $ \m x -> m
+          { arlContents =
+            LocationClues x
+              : [ c | c <- arlContents m, not (isLocationClues c) ]
+          }
+
+instance HasClues ArkhamUnrevealedLocation where
+  clues =
+    lens
+        (\m ->
+          fromMaybe 0 $ listToMaybe [ n | LocationClues n <- aulContents m ]
+        )
+      $ \m x -> m
+          { aulContents =
+            LocationClues x
+              : [ c | c <- aulContents m, not (isLocationClues c) ]
+          }
+
+instance HasClues ArkhamLocation where
+  clues f = \case
+    RevealedLocation location -> RevealedLocation <$> clues f location
+    UnrevealedLocation location -> UnrevealedLocation <$> clues f location
+
+instance HasClues ArkhamPlayer where
+  clues = lens _clues $ \m x -> m { _clues = x }

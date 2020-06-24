@@ -3,11 +3,9 @@ import {
   ArkhamCycle,
   ArkhamScenario,
   ArkhamPlayer,
-  ArkhamInvestigator,
   arkhamCycleDecoder,
   arkhamScenarioDecoder,
   arkhamPlayerDecoder,
-  arkhamInvestigatorDecoder,
 } from '@/arkham/types';
 import {
   ArkhamLocation,
@@ -40,18 +38,6 @@ type ActStack = {
 };
 
 type ArkhamStack = AgendaStack | ActStack;
-
-type LocationClues = {
-  tag: 'LocationClues';
-  contents: number;
-}
-
-type LocationInvestigator = {
-  tag: 'LocationInvestigator';
-  contents: ArkhamInvestigator;
-}
-
-type LocationContent = LocationClues | LocationInvestigator;
 
 export enum ArkhamStepTypes {
   INVESTIGATOR_ACTION = 'ArkhamGameStateStepInvestigatorActionStep',
@@ -149,28 +135,10 @@ export const arkhamStepDecoder = JsonDecoder.oneOf<ArkhamStep>([
   arkhamStepRevealTokenStepDecoder,
 ], 'ArkhamStep');
 
-export const arkhamLocationContentLocationCluesDecoder = JsonDecoder.object<LocationContent>({
-  tag: JsonDecoder.isExactly('LocationClues'),
-  contents: JsonDecoder.number,
-}, 'LocationClues');
-
-export const arkhamLocationContentLocationInvestigatorDecoder = JsonDecoder.object<
-    LocationContent
-  >({
-    tag: JsonDecoder.isExactly('LocationInvestigator'),
-    contents: arkhamInvestigatorDecoder,
-  }, 'LocationInvestigator');
-
-export const arkhamLocationContentDecoder = JsonDecoder.oneOf<LocationContent>([
-  arkhamLocationContentLocationCluesDecoder,
-  arkhamLocationContentLocationInvestigatorDecoder,
-], 'Record<string, LocationContent[]>');
-
 export interface ArkhamGameState {
   player: ArkhamPlayer;
   phase: ArkhamPhase;
-  locations: (ArkhamRevealedLocation | ArkhamUnrevealedLocation)[];
-  locationContents: Record<string, LocationContent[]>;
+  locations: Record<string, ArkhamRevealedLocation | ArkhamUnrevealedLocation>;
   stacks: ArkhamStack[];
   step: ArkhamStep;
   chaosBag: ArkhamChaosToken[];
@@ -211,10 +179,9 @@ export const arkhamGameStateDecoder = JsonDecoder.object<ArkhamGameState>(
   {
     player: arkhamPlayerDecoder,
     phase: arkhamPhaseDecoder,
-    locations: JsonDecoder.array<ArkhamUnrevealedLocation | ArkhamRevealedLocation>(arkhamLocationDecoder, 'ArkhamLocation[]'),
-    locationContents: JsonDecoder.dictionary(
-      JsonDecoder.array<LocationContent>(arkhamLocationContentDecoder, 'LocationContent[]'),
-      'Dict<LocationContent[]>',
+    locations: JsonDecoder.dictionary(
+      arkhamLocationDecoder,
+      'Dict<LocationId, ArkhamLocation>',
     ),
     stacks: JsonDecoder.array<ArkhamStack>(arkhamStackDecoder, 'ArkhamStack[]'),
     step: arkhamStepDecoder,

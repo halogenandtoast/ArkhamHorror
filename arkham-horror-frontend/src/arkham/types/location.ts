@@ -1,4 +1,8 @@
 import { JsonDecoder } from 'ts.data.json';
+import {
+  ArkhamInvestigator,
+  arkhamInvestigatorDecoder,
+} from '@/arkham/types';
 
 export type ArkhamLocationSymbol = 'Circle' | 'Heart';
 
@@ -9,11 +13,42 @@ export const arkhamLocationSymbolDecoder = JsonDecoder.oneOf<ArkhamLocationSymbo
 
 export type ArkhamLocation = ArkhamRevealedLocation | ArkhamUnrevealedLocation
 
+type LocationClues = {
+  tag: 'LocationClues';
+  contents: number;
+}
+
+type LocationInvestigator = {
+  tag: 'LocationInvestigator';
+  contents: ArkhamInvestigator;
+}
+
+type LocationContent = LocationClues | LocationInvestigator;
+
+export const arkhamLocationContentLocationCluesDecoder = JsonDecoder.object<LocationContent>({
+  tag: JsonDecoder.isExactly('LocationClues'),
+  contents: JsonDecoder.number,
+}, 'LocationClues');
+
+export const arkhamLocationContentLocationInvestigatorDecoder = JsonDecoder.object<
+    LocationContent
+  >({
+    tag: JsonDecoder.isExactly('LocationInvestigator'),
+    contents: arkhamInvestigatorDecoder,
+  }, 'LocationInvestigator');
+
+export const arkhamLocationContentDecoder = JsonDecoder.oneOf<LocationContent>([
+  arkhamLocationContentLocationCluesDecoder,
+  arkhamLocationContentLocationInvestigatorDecoder,
+], 'LocationContent');
+
+
 export interface ArkhamUnrevealedLocationContent {
   name: string;
   locationSymbols: ArkhamLocationSymbol[];
   image: string;
   locationId: string;
+  contents: LocationContent[];
 }
 
 export interface ArkhamRevealedLocation {
@@ -32,6 +67,7 @@ export const arkhamUnrevealedLocationDecoder = JsonDecoder.object<ArkhamUnreveal
     locationSymbols: JsonDecoder.array<ArkhamLocationSymbol>(arkhamLocationSymbolDecoder, 'ArkhamLocationSymbol[]'),
     image: JsonDecoder.string,
     locationId: JsonDecoder.string,
+    contents: JsonDecoder.array<LocationContent>(arkhamLocationContentDecoder, 'LocationContent[]'),
   },
   'ArkhamUnrevealedLocation',
 );
@@ -42,6 +78,7 @@ export interface ArkhamRevealedLocationContent {
   shroud: number;
   image: string;
   locationId: string;
+  contents: LocationContent[];
 }
 
 export const arkhamRevealedLocationDecoder = JsonDecoder.object<ArkhamRevealedLocationContent>(
@@ -51,6 +88,7 @@ export const arkhamRevealedLocationDecoder = JsonDecoder.object<ArkhamRevealedLo
     shroud: JsonDecoder.number,
     image: JsonDecoder.string,
     locationId: JsonDecoder.string,
+    contents: JsonDecoder.array<LocationContent>(arkhamLocationContentDecoder, 'LocationContent[]'),
   },
   'ArkhamUnrevealedLocation',
 );

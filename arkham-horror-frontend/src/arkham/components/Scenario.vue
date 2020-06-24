@@ -12,12 +12,12 @@
       <img v-if="drawnToken" :src="chaosTokenSrc" class="token" />
       <img
         v-else-if="canDrawToken"
-        class="token--can-draw"
+        class="token token--can-draw"
         src="/img/arkham/ct_+1.png"
         @click="drawToken"
       />
       <img v-else class="token" src="/img/arkham/ct_+1.png" />
-
+      <button v-if="canApplyResult" @click="applyTokenResult">Apply Result</button>
     </div>
     <div class="location-cards">
       <div
@@ -30,14 +30,14 @@
           :src="location.contents.image"
         />
         <div
-          v-for="(contents, index) in contentsFor(location)"
+          v-for="(thing, index) in location.contents.contents"
           :key="index"
         >
           <img
-            v-if="contents.tag == 'LocationInvestigator'"
-            :src="contents.contents.portrait"
+            v-if="thing.tag == 'LocationInvestigator'"
+            :src="thing.contents.portrait"
           />
-          <div v-if="contents.tag == 'LocationClues' && location.tag == 'RevealedLocation'">
+          <div v-if="thing.tag == 'LocationClues' && location.tag == 'RevealedLocation'">
             <img
               v-if="canInvestigate"
               class="clue--can-investigate"
@@ -49,7 +49,7 @@
               class="clue"
               src="/img/arkham/clue.png"
             />
-            {{contents.contents}}
+            {{thing.contents}}
           </div>
         </div>
       </div>
@@ -60,11 +60,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ArkhamGame } from '@/arkham/types/game';
+import { ArkhamGame, ArkhamStepTypes } from '@/arkham/types/game';
 import { ArkhamUnrevealedLocation, ArkhamRevealedLocation } from '@/arkham/types/location';
-import { ArkhamChaosToken } from '@/arkham/types';
 import { ArkhamAction, ArkhamActionTypes } from '@/arkham/types/action';
-import { performAction, performDrawToken } from '@/arkham/api';
+import { performAction, performDrawToken, performApplyTokenResult } from '@/arkham/api';
 import Player from '@/arkham/components/Player.vue';
 
 @Component({
@@ -72,7 +71,6 @@ import Player from '@/arkham/components/Player.vue';
 })
 export default class Scenario extends Vue {
   @Prop(Object) readonly game!: ArkhamGame;
-  private drawnToken: ArkhamChaosToken | null = null;
 
   investigate(location: ArkhamRevealedLocation) {
     const action: ArkhamAction = {
@@ -86,10 +84,13 @@ export default class Scenario extends Vue {
   }
 
   drawToken() {
-    performDrawToken(this.game.id, this.game).then((game: ArkhamGame) => {
-      if (game.gameState.step.tag === 'ArkhamGameStateStepRevealTokenStep') {
-        this.drawnToken = game.gameState.step.contents;
-      }
+    performDrawToken(this.game.id).then((game: ArkhamGame) => {
+      this.update(game);
+    });
+  }
+
+  applyTokenResult() {
+    performApplyTokenResult(this.game.id).then((game: ArkhamGame) => {
       this.update(game);
     });
   }
@@ -98,16 +99,24 @@ export default class Scenario extends Vue {
     this.$emit('update', game);
   }
 
+  get drawnToken() {
+    if (this.game.gameState.step.tag === ArkhamStepTypes.REVEAL_TOKEN) {
+      return this.game.gameState.step.contents;
+    }
+
+    return null;
+  }
+
   get canInvestigate() {
-    return this.game.gameState.step.tag === 'ArkhamGameStateStepInvestigatorActionStep';
+    return this.game.gameState.step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION;
   }
 
   get canDrawToken() {
-    return this.game.gameState.step.tag === 'ArkhamGameStateStepSkillCheckStep';
+    return this.game.gameState.step.tag === ArkhamStepTypes.SKILL_CHECK;
   }
 
-  contentsFor(location: ArkhamUnrevealedLocation | ArkhamRevealedLocation) {
-    return this.game.gameState.locationContents[location.contents.locationId];
+  get canApplyResult() {
+    return this.game.gameState.step.tag === ArkhamStepTypes.REVEAL_TOKEN;
   }
 
   get chaosTokenSrc() {
@@ -129,6 +138,7 @@ export default class Scenario extends Vue {
 .scenario-cards {
   display: flex;
   align-self: center;
+  align-items: center;
 }
 
 .clue--can-investigate {
@@ -139,5 +149,10 @@ export default class Scenario extends Vue {
 .token--can-draw {
   border: 5px solid #ff00ff;
   border-radius: 500px;
+}
+
+.token {
+  width: 150px;
+  height: auto;
 }
 </style>

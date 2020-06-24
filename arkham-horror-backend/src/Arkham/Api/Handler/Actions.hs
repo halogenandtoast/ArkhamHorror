@@ -12,11 +12,10 @@ applyAction action@(InvestigateAction investigation) g =
   newGameStateStep = ArkhamGameStateStepSkillCheckStep $ ArkhamSkillCheckStep
     { ascsType = ArkhamSkillIntellect
     , ascsAction = Just action
-    , ascsTarget = LocationTarget . RevealedLocation <$> mlocation
+    , ascsTarget = LocationTarget <$> mlocation
     }
-  mlocation = findLocation $ [ l | RevealedLocation l <- g ^. locations ]
+  mlocation = lookup targetLocationId $ g ^. locations
   targetLocationId = aiaLocationId investigation
-  findLocation = find ((== targetLocationId) . (^. locationId))
 applyAction (TakeResourceAction _) g = pure $ g & player . resources +~ 1
 applyAction (DrawCardAction _) g = pure $ g & player . resources +~ 1
 applyAction _ g = pure g

@@ -89,3 +89,15 @@ failedInvestigation g _ = g
 
 successfulInvestigation :: ArkhamGame -> ArkhamLocation -> ArkhamGame
 successfulInvestigation g location = g
+
+{-
+:set prompt "> "
+import Database.Persist.Sql
+import Lens.Micro
+import Lens.Micro.Platform
+loadGameFixture 1 >>= db . replace (toSqlKey 1) . ArkhamGame
+g :: ArkhamGame <- db $ get404 (toSqlKey 1)
+g & currentData . locations . at (LocationId "Study") %~ (clues %~ (subtract 1))
+g & currentData . locations . at (LocationId "Study") %~ (clues %~ (subtract 1)) & player . clues +~ 1
+-}
+

@@ -1,7 +1,7 @@
 module Arkham.Types.Location where
 
 import Arkham.Types.Investigator
-import ClassyPrelude
+import ClassyPrelude hiding (Index)
 import Data.Aeson
 import Data.Aeson.Casing
 

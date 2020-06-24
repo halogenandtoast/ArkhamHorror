@@ -527,6 +527,7 @@ src.Arkham.Api.Handler.SkillChecks.shroudOf	src/Arkham/Api/Handler/SkillChecks.h
 src.Arkham.Api.Handler.SkillChecks.skillValue	src/Arkham/Api/Handler/SkillChecks.hs	44;"	f
 src.Arkham.Api.Handler.SkillChecks.successfulInvestigation	src/Arkham/Api/Handler/SkillChecks.hs	90;"	f
 src.Arkham.Api.Handler.SkillChecks.updateGame	src/Arkham/Api/Handler/SkillChecks.hs	71;"	f
+src.Arkham.Entity.ArkhamGame	src/Arkham/Entity/ArkhamGame.hs	4;"	m
 src.Arkham.Fixtures	src/Arkham/Fixtures.hs	1;"	m
 src.Arkham.Fixtures.act	src/Arkham/Fixtures.hs	30;"	f
 src.Arkham.Fixtures.agenda	src/Arkham/Fixtures.hs	26;"	f

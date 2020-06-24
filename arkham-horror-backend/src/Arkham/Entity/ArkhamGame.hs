@@ -12,7 +12,7 @@ import Database.Persist.TH
 mkPersist sqlSettings [persistLowerCase|
 ArkhamGame sql=arkham_games
   currentData ArkhamGameData
-  deriving Generic
+  deriving Generic Show
 |]
 
 instance ToJSON ArkhamGame where

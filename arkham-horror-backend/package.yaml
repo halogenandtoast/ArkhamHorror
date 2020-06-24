@@ -55,6 +55,7 @@ dependencies:
 - http-conduit
 - jwt
 - microlens
+- microlens-platform
 - monad-control
 - monad-logger
 - MonadRandom

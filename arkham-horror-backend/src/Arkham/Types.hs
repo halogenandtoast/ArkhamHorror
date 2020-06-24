@@ -140,3 +140,8 @@ instance HasClues ArkhamLocation where
 
 instance HasClues ArkhamPlayer where
   clues = lens _clues $ \m x -> m { _clues = x }
+
+instance HasClues a => HasClues (Maybe a) where
+  clues f = \case
+    Nothing -> Nothing <$ f 0
+    Just x -> Just <$> clues f x

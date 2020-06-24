@@ -18,6 +18,7 @@ applyAction action@(InvestigateAction investigation) g =
   targetLocationId = aiaLocationId investigation
   findLocation = find ((== targetLocationId) . (^. locationId))
 applyAction (TakeResourceAction _) g = pure $ g & player . resources +~ 1
+applyAction (DrawCardAction _) g = pure $ g & player . resources +~ 1
 applyAction _ g = pure g
 
 postApiV1ArkhamGameActionR :: ArkhamGameId -> Handler ArkhamGameData

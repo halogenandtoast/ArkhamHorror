@@ -1,0 +1,28 @@
+cradle:
+  cabal:
+    - path: "src"
+      component: "lib:arkham-horror-backend"
+
+    - path: "app/main.hs"
+      component: "arkham-horror-backend:exe:arkham-horror-backend"
+
+    - path: "app/DevelMain.hs"
+      component: "arkham-horror-backend:exe:arkham-horror-backend"
+
+    - path: "app/Paths_arkham_horror_backend.hs"
+      component: "arkham-horror-backend:exe:arkham-horror-backend"
+
+    - path: "import/main.hs"
+      component: "arkham-horror-backend:exe:arkham-horror-import"
+
+    - path: "import/Paths_arkham_horror_backend.hs"
+      component: "arkham-horror-backend:exe:arkham-horror-import"
+
+    - path: "migrate/main.hs"
+      component: "arkham-horror-backend:exe:arkham-horror-migrate"
+
+    - path: "migrate/Paths_arkham_horror_backend.hs"
+      component: "arkham-horror-backend:exe:arkham-horror-migrate"
+
+    - path: "test"
+      component: "arkham-horror-backend:test:arkham-horror-backend-test"

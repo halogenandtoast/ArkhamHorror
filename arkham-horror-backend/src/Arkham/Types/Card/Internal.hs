@@ -10,15 +10,19 @@ import Arkham.Types hiding (hand)
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro
+import Lens.Micro.Extras
 
 data ArkhamCardType = ArkhamCardTypeAsset | ArkhamCardTypeEvent | ArkhamCardTypeSkill | ArkhamCardTypeTreachery
 data ArkhamSlot = ArkhamSlotHand | ArkhamSlotAlly
+data ArkhamDrawLocation = ArkhamDrawLocationHand
 
 data ArkhamCardInternal = ArkhamCardInternal
   { aciType :: ArkhamCardType
   , aciCost :: Maybe Int
   , aciSlots :: [ArkhamSlot]
   , aciTestIcons :: [ArkhamSkillType]
+  , aciDrawToLocation :: ArkhamGameState -> ArkhamCard -> ArkhamDrawLocation
+  , aciAfterDraw :: ArkhamGameState -> ArkhamGameState
   , aciPlay :: ArkhamGameState -> ArkhamCard -> ArkhamCard
   , aciAfterPlay :: ArkhamGameState -> ArkhamGameState
   , aciActionsAvailable :: ArkhamGameState -> ArkhamCard -> Bool
@@ -31,18 +35,20 @@ data ArkhamCardInternal = ArkhamCardInternal
 
 card :: Int -> ArkhamCardType -> ArkhamCardInternal
 card cost cardType = ArkhamCardInternal
-  cardType
-  (Just cost)
-  []
-  []
-  (flip const)
-  id
-  (\_ _ -> False)
-  []
-  id
-  id
-  Nothing
-  Nothing
+  cardType -- type
+  (Just cost) -- cost
+  [] -- slots
+  [] -- test icons
+  (\_ _ -> ArkhamDrawLocationHand) -- draw to location
+  id -- after draw
+  (flip const) -- play
+  id -- after play
+  (\_ _ -> False) -- actions available
+  [] -- actions
+  id -- assign health damange
+  id -- assign sanity damage
+  Nothing -- health
+  Nothing -- sanity
 
 skill :: [ArkhamSkillType] -> ArkhamCardInternal
 skill testIcons = (card 0 ArkhamCardTypeSkill) { aciTestIcons = testIcons }
@@ -52,6 +58,12 @@ treachery = card 0 ArkhamCardTypeTreachery
 
 asset :: Int -> ArkhamCardInternal
 asset cost = card cost ArkhamCardTypeAsset
+
+withUses :: Int -> ArkhamCardInternal -> ArkhamCardInternal
+withUses uses' c = c
+  { aciPlay = \_state -> uses ?~ uses'
+  , aciActionsAvailable = const hasUsesRemaining
+  }
 
 event :: Int -> ArkhamCardInternal
 event cost = card cost ArkhamCardTypeEvent
@@ -66,12 +78,11 @@ ally cost health sanity = (asset cost)
   , aciSanity = Just sanity
   }
 
+hasUsesRemaining :: HasUses a => a -> Bool
+hasUsesRemaining = view (uses . non 0 . to (> 0))
+
 flashlight :: ArkhamCardInternal
-flashlight = (hand 2)
-  { aciPlay = \_state c -> c & uses ?~ 3
-  , aciActionsAvailable = \_state c -> maybe False (> 0) $ c ^. uses
-  , aciTestIcons = [ArkhamSkillIntellect]
-  }
+flashlight = withUses 3 $ (hand 2) { aciTestIcons = [ArkhamSkillIntellect] }
 
 knife :: ArkhamCardInternal
 knife = (hand 1)
@@ -86,21 +97,15 @@ machete = (hand 3)
   }
 
 fortyFiveAutomatic :: ArkhamCardInternal
-fortyFiveAutomatic = (hand 4)
-  { aciPlay = \_state c -> c & uses ?~ 4
-  , aciActionsAvailable = \_state c -> maybe False (> 0) $ c ^. uses
-  , aciTestIcons = [ArkhamSkillAgility]
-  }
+fortyFiveAutomatic =
+  withUses 4 $ (hand 4) { aciTestIcons = [ArkhamSkillAgility] }
 
 emergencyCache :: ArkhamCardInternal
-emergencyCache =
-  (event 0) { aciAfterPlay = \state -> state & player . resources +~ 3 }
+emergencyCache = (event 0) { aciAfterPlay = player . resources +~ 3 }
 
 rolands38Special :: ArkhamCardInternal
-rolands38Special = (hand 3)
-  { aciPlay = \_state c -> c & uses ?~ 4
-  , aciActionsAvailable = \_state c -> maybe False (> 0) $ c ^. uses
-  , aciTestIcons = [ArkhamSkillCombat, ArkhamSkillAgility, ArkhamSkillWild]
+rolands38Special = withUses 4 $ (hand 3)
+  { aciTestIcons = [ArkhamSkillCombat, ArkhamSkillAgility, ArkhamSkillWild]
   }
 
 guardDog :: ArkhamCardInternal

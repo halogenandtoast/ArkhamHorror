@@ -16,11 +16,12 @@
       </section>
     </div>
     <div class="player">
-      <img
-        v-if="topOfDiscard"
-        :src="topOfDiscard"
-        width="200px"
-      />
+      <div v-if="topOfDiscard" class="discard">
+        <img
+          :src="topOfDiscard"
+          width="200px"
+        />
+      </div>
       <img
         v-if="canDraw"
         class="deck--can-draw"
@@ -56,7 +57,7 @@
           />
           <img
             v-else-if="canCommit(index)"
-            :class="[card, commitable, { commited: isCommited(index) }]"
+            :class="['card', 'commitable', { commited: isCommited(index) }]"
             :src="card.contents.image"
             @click="commitCard(index)"
           />
@@ -78,17 +79,10 @@ import { performAction } from '@/arkham/api';
 export default class Player extends Vue {
   @Prop(Object) readonly game!: ArkhamGame
   @Prop(Object) readonly player!: ArkhamPlayer
-
-  private cardsForSkillCheck: number[] = []
+  @Prop(Array) readonly commitedCards!: number[]
 
   commitCard(cardIndex: number) {
-    const index = this.cardsForSkillCheck.indexOf(cardIndex);
-
-    if (index === -1) {
-      this.cardsForSkillCheck.push(index);
-    } else {
-      this.cardsForSkillCheck.splice(index, 1);
-    }
+    this.$emit('commitCard', cardIndex);
   }
 
   playCard(index: number) {
@@ -122,7 +116,7 @@ export default class Player extends Vue {
   }
 
   isCommited(cardIndex: number) {
-    return this.cardsForSkillCheck.indexOf(cardIndex) !== -1;
+    return this.commitedCards.indexOf(cardIndex) !== -1;
   }
 
   get canDraw() {
@@ -181,6 +175,10 @@ export default class Player extends Vue {
   .playable {
     border: 2px solid #ff00ff;
   }
+
+  .commitable {
+    border: 2px solid #ff00ff;
+  }
 }
 
 .player {
@@ -228,5 +226,21 @@ export default class Player extends Vue {
 
 .commited {
   margin-top: -10px;
+}
+
+.discard {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #FFF;
+    /* background-image: linear-gradient(120deg, #eaee44, #33d0ff); */
+    opacity: .85;
+    mix-blend-mode: saturation;
+  }
 }
 </style>

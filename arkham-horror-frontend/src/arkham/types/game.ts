@@ -94,6 +94,8 @@ interface ArkhamRevealTokenStepContents {
   action: ArkhamAction;
   target: ArkhamTarget;
   type: ArkhamSkillType;
+  difficulty: number;
+  modifiedSkillValue: number;
   token: ArkhamChaosToken;
 }
 
@@ -120,6 +122,8 @@ export const arkhamStepRevealTokenStepContentsDecoder = JsonDecoder.object<
     action: arkhamActionDecoder,
     target: arkhamTargetDecoder,
     type: JsonDecoder.string,
+    difficulty: JsonDecoder.number,
+    modifiedSkillValue: JsonDecoder.number,
     token: arkhamChaosTokenDecoder,
   }, 'ArkhamSkillCheckStepContents');
 

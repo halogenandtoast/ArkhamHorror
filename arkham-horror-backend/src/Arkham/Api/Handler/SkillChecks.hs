@@ -7,6 +7,7 @@ where
 
 import Arkham.Types
 import Arkham.Types.Card.Internal
+import qualified Data.HashMap.Strict as HashMap
 import Import
 import Lens.Micro
 import Lens.Micro.Platform ()
@@ -18,7 +19,11 @@ postApiV1ArkhamGameSkillCheckR gameId = do
   let ArkhamGameStateStepSkillCheckStep step = game ^. gameStateStep
 
   case ascsAction step of
-    Just (InvestigateAction _) -> investigateAction (Entity gameId game) cards
+    Just (InvestigateAction action) -> do
+      let
+        Just location =
+          HashMap.lookup (aiaLocationId action) (game ^. locations)
+      investigateAction (Entity gameId game) ArkhamSkillIntellect location cards
     _ -> error "fail"
 
 postApiV1ArkhamGameSkillCheckApplyResultR
@@ -29,18 +34,18 @@ postApiV1ArkhamGameSkillCheckApplyResultR gameId = do
     ArkhamGameStateStepRevealTokenStep ArkhamRevealTokenStep {..} =
       game ^. gameStateStep
     Just (LocationTarget location) = artsTarget
-    cardContributions = length $ filter (== artsType) $ concatMap
-      (maybe [] aciTestIcons . toInternalCard)
-      artsCards
 
   tokenResult <- liftIO $ determineScenarioSpecificTokenResult game artsToken
   case tokenResult of
     Modifier n -> do
       difficulty <- shroudOf game location
-      if skillValue (game ^. player . investigator) artsType
-          + cardContributions
-          + n
-          >= difficulty
+      let
+        modifiedSkillValue = determineModifiedSkillValue
+          artsType
+          (game ^. player . investigator)
+          artsCards
+          n
+      if modifiedSkillValue >= difficulty
         then runDB $ updateGame gameId $ successfulInvestigation
           game
           (location ^. locationId)
@@ -53,6 +58,15 @@ data ArkhamChaosTokenResult = Modifier Int | Failure
 shroudOf :: MonadIO m => ArkhamGame -> ArkhamLocation -> m Int
 shroudOf _ (RevealedLocation location) = pure $ arlShroud location
 shroudOf _ _ = throwString "Can not get shroud of unrevealed location"
+
+determineModifiedSkillValue
+  :: ArkhamSkillType -> ArkhamInvestigator -> [ArkhamCard] -> Int -> Int
+determineModifiedSkillValue skillType investigator' commitedCards tokenModifier
+  = skillValue investigator' skillType + cardContributions + tokenModifier
+ where
+  cardContributions = length $ filter (== skillType) $ concatMap
+    (maybe [] aciTestIcons . toInternalCard)
+    commitedCards
 
 skillValue :: ArkhamInvestigator -> ArkhamSkillType -> Int
 skillValue i skillType = case skillType of
@@ -81,37 +95,68 @@ determineScenarioSpecificTokenResult _ ElderThing = pure $ Modifier 0
 determineScenarioSpecificTokenResult _ AutoFail = pure Failure
 determineScenarioSpecificTokenResult _ ElderSign = pure $ Modifier 0
 
+determineScenarioSpecificTokenModifier
+  :: MonadIO m => ArkhamGame -> ArkhamChaosToken -> m Int
+determineScenarioSpecificTokenModifier game token = do
+  result <- determineScenarioSpecificTokenResult game token
+  case result of
+    Modifier n -> pure n
+    Failure -> pure 0
+
 updateGame
   :: (MonadIO m) => ArkhamGameId -> ArkhamGame -> SqlPersistT m ArkhamGameData
 updateGame gameId game = replace gameId game $> arkhamGameCurrentData game
 
 revealToken
   :: ArkhamChaosToken
+  -> Int
+  -> Int
   -> [ArkhamCard]
   -> ArkhamGameStateStep
   -> ArkhamGameStateStep
-revealToken token cards (ArkhamGameStateStepSkillCheckStep ArkhamSkillCheckStep {..})
-  = ArkhamGameStateStepRevealTokenStep
-    $ ArkhamRevealTokenStep ascsType ascsAction ascsTarget token cards
-revealToken _ _ s = s
+revealToken token difficulty modifiedSkillValue cards (ArkhamGameStateStepSkillCheckStep ArkhamSkillCheckStep {..})
+  = ArkhamGameStateStepRevealTokenStep $ ArkhamRevealTokenStep
+    ascsType
+    ascsAction
+    ascsTarget
+    token
+    difficulty
+    modifiedSkillValue
+    cards
+revealToken _ _ _ _ s = s
 
-investigateAction :: Entity ArkhamGame -> [Int] -> Handler ArkhamGameData
-investigateAction (Entity gameId game) cardIndexes = do
+investigateAction
+  :: Entity ArkhamGame
+  -> ArkhamSkillType
+  -> ArkhamLocation
+  -> [Int]
+  -> Handler ArkhamGameData
+investigateAction (Entity gameId game) skillType location cardIndexes = do
   token <- liftIO $ drawChaosToken game
+  difficulty <- shroudOf game location
+  tokenModifier <- liftIO $ determineScenarioSpecificTokenModifier game token
+
   let
     hand' = game ^. player . hand
-    (spentCards, remainingCards) =
+    (commitedCards, remainingCards) =
       over both (map snd) $ partition (\(i, _) -> i `elem` cardIndexes) $ zip
         [0 ..]
         hand'
-  let
+    modifiedSkillValue = determineModifiedSkillValue
+      skillType
+      (game ^. player . investigator)
+      commitedCards
+      tokenModifier
     newGame =
       game
         & gameStateStep
-        %~ revealToken token spentCards
+        %~ revealToken token difficulty modifiedSkillValue commitedCards
         & player
         . hand
         .~ remainingCards
+        & player
+        . discard
+        %~ (commitedCards ++)
   runDB $ updateGame gameId newGame
 
 failedInvestigation :: ArkhamGame -> ArkhamLocation -> ArkhamGame
@@ -119,7 +164,7 @@ failedInvestigation g _ = g
 
 -- brittany-disable-next-binding
 successfulInvestigation :: ArkhamGame -> LocationId -> Int -> ArkhamGame
-successfulInvestigation g !lId clueCount = g
+successfulInvestigation g lId clueCount = g
     & locations . at lId . _Just . clues -~ clueCount
     & player . clues +~ clueCount
     & gameStateStep .~ investigatorStep

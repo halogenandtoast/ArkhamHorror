@@ -49,6 +49,8 @@ data ArkhamRevealTokenStep = ArkhamRevealTokenStep
   , artsAction :: Maybe ArkhamAction
   , artsTarget :: Maybe ArkhamTarget
   , artsToken :: ArkhamChaosToken
+  , artsDifficulty :: Int
+  , artsModifiedSkillValue :: Int
   , artsCards :: [ArkhamCard]
   }
   deriving stock (Generic, Show)

@@ -17,7 +17,14 @@
         @click="drawToken"
       />
       <img v-else class="token" src="/img/arkham/ct_+1.png" />
-      <button v-if="canApplyResult" @click="applyTokenResult">Apply Result</button>
+      <div v-if="canApplyResult">
+        <p>
+          Difficulty: {{skillDifficulty}},
+          Modified Skill: {{skillModifiedSkillValue}},
+          Pending Result: {{pendingResult}}
+        </p>
+        <button @click="applyTokenResult">Apply Result</button>
+      </div>
     </div>
     <div class="location-cards">
       <div
@@ -58,7 +65,13 @@
         </div>
       </div>
     </div>
-    <Player :game="game" :player="game.gameState.player" @update="update" />
+    <Player
+      :game="game"
+      :player="game.gameState.player"
+      :commitedCards="commitedCards"
+      @update="update"
+      @commitCard="commitCard"
+    />
   </div>
 </template>
 
@@ -76,6 +89,8 @@ import Player from '@/arkham/components/Player.vue';
 export default class Scenario extends Vue {
   @Prop(Object) readonly game!: ArkhamGame;
 
+  private commitedCards: number[] = []
+
   investigate(location: ArkhamRevealedLocation) {
     const action: ArkhamAction = {
       tag: ArkhamActionTypes.INVESTIGATE,
@@ -88,8 +103,9 @@ export default class Scenario extends Vue {
   }
 
   drawToken() {
-    performDrawToken(this.game.id).then((game: ArkhamGame) => {
+    performDrawToken(this.game.id, this.commitedCards).then((game: ArkhamGame) => {
       this.update(game);
+      this.commitedCards = [];
     });
   }
 
@@ -97,6 +113,16 @@ export default class Scenario extends Vue {
     performApplyTokenResult(this.game.id).then((game: ArkhamGame) => {
       this.update(game);
     });
+  }
+
+  commitCard(cardIndex: number) {
+    const index = this.commitedCards.indexOf(cardIndex);
+
+    if (index === -1) {
+      this.commitedCards.push(cardIndex);
+    } else {
+      this.commitedCards.splice(index, 1);
+    }
   }
 
   update(game: ArkhamGame) {
@@ -125,6 +151,30 @@ export default class Scenario extends Vue {
 
   get chaosTokenSrc() {
     return `/img/arkham/ct_${this.drawnToken}.png`;
+  }
+
+  get skillDifficulty() {
+    if (this.game.gameState.step.tag === ArkhamStepTypes.REVEAL_TOKEN) {
+      return this.game.gameState.step.contents.difficulty;
+    }
+
+    return 0;
+  }
+
+  get skillModifiedSkillValue() {
+    if (this.game.gameState.step.tag === ArkhamStepTypes.REVEAL_TOKEN) {
+      return this.game.gameState.step.contents.modifiedSkillValue;
+    }
+
+    return 0;
+  }
+
+  get pendingResult() {
+    if (this.skillDifficulty > this.skillModifiedSkillValue) {
+      return 'FAILURE';
+    }
+
+    return 'SUCCESS';
   }
 }
 

@@ -1,5 +1,6 @@
 module Arkham.Types.Card.Internal
   ( cardsInternal
+  , toInternalCard
   , ArkhamCardInternal(..)
   , ArkhamCardType(..)
   )
@@ -143,6 +144,9 @@ viciousBlow = skill [ArkhamSkillCombat]
 
 coverUp :: ArkhamCardInternal
 coverUp = treachery
+
+toInternalCard :: ArkhamCard -> Maybe ArkhamCardInternal
+toInternalCard c = HashMap.lookup (c ^. cardCode) cardsInternal
 
 cardsInternal :: HashMap ArkhamCardCode ArkhamCardInternal
 cardsInternal = HashMap.fromList

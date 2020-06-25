@@ -6,6 +6,7 @@ module Arkham.Api.Handler.SkillChecks
 where
 
 import Arkham.Types
+import Arkham.Types.Card.Internal
 import Import
 import Lens.Micro
 import Lens.Micro.Platform ()
@@ -13,10 +14,11 @@ import Lens.Micro.Platform ()
 postApiV1ArkhamGameSkillCheckR :: ArkhamGameId -> Handler ArkhamGameData
 postApiV1ArkhamGameSkillCheckR gameId = do
   game <- runDB $ get404 gameId
+  cards <- requireCheckJsonBody
   let ArkhamGameStateStepSkillCheckStep step = game ^. gameStateStep
 
   case ascsAction step of
-    Just (InvestigateAction _) -> investigateAction (Entity gameId game)
+    Just (InvestigateAction _) -> investigateAction (Entity gameId game) cards
     _ -> error "fail"
 
 postApiV1ArkhamGameSkillCheckApplyResultR
@@ -27,12 +29,18 @@ postApiV1ArkhamGameSkillCheckApplyResultR gameId = do
     ArkhamGameStateStepRevealTokenStep ArkhamRevealTokenStep {..} =
       game ^. gameStateStep
     Just (LocationTarget location) = artsTarget
+    cardContributions = length $ filter (== artsType) $ concatMap
+      (maybe [] aciTestIcons . toInternalCard)
+      artsCards
 
   tokenResult <- liftIO $ determineScenarioSpecificTokenResult game artsToken
   case tokenResult of
     Modifier n -> do
       difficulty <- shroudOf game location
-      if skillValue (game ^. player . investigator) artsType + n >= difficulty
+      if skillValue (game ^. player . investigator) artsType
+          + cardContributions
+          + n
+          >= difficulty
         then runDB $ updateGame gameId $ successfulInvestigation
           game
           (location ^. locationId)
@@ -52,6 +60,7 @@ skillValue i skillType = case skillType of
   ArkhamSkillIntellect -> unArkhamSkill $ aiIntellect i
   ArkhamSkillCombat -> unArkhamSkill $ aiCombat i
   ArkhamSkillAgility -> unArkhamSkill $ aiAgility i
+  ArkhamSkillWild -> error "Not a possible skill"
 
 determineScenarioSpecificTokenResult
   :: MonadIO m => ArkhamGame -> ArkhamChaosToken -> m ArkhamChaosTokenResult
@@ -76,16 +85,33 @@ updateGame
   :: (MonadIO m) => ArkhamGameId -> ArkhamGame -> SqlPersistT m ArkhamGameData
 updateGame gameId game = replace gameId game $> arkhamGameCurrentData game
 
-revealToken :: ArkhamChaosToken -> ArkhamGameStateStep -> ArkhamGameStateStep
-revealToken token (ArkhamGameStateStepSkillCheckStep ArkhamSkillCheckStep {..})
+revealToken
+  :: ArkhamChaosToken
+  -> [ArkhamCard]
+  -> ArkhamGameStateStep
+  -> ArkhamGameStateStep
+revealToken token cards (ArkhamGameStateStepSkillCheckStep ArkhamSkillCheckStep {..})
   = ArkhamGameStateStepRevealTokenStep
-  $ ArkhamRevealTokenStep ascsType ascsAction ascsTarget token
-revealToken _ s = s
+    $ ArkhamRevealTokenStep ascsType ascsAction ascsTarget token cards
+revealToken _ _ s = s
 
-investigateAction :: Entity ArkhamGame -> Handler ArkhamGameData
-investigateAction (Entity gameId game) = do
+investigateAction :: Entity ArkhamGame -> [Int] -> Handler ArkhamGameData
+investigateAction (Entity gameId game) cardIndexes = do
   token <- liftIO $ drawChaosToken game
-  let newGame = game & gameStateStep %~ revealToken token
+  let
+    hand' = game ^. player . hand
+    (spentCards, remainingCards) =
+      over both (map snd) $ partition (\(i, _) -> i `elem` cardIndexes) $ zip
+        [0 ..]
+        hand'
+  let
+    newGame =
+      game
+        & gameStateStep
+        %~ revealToken token spentCards
+        & player
+        . hand
+        .~ remainingCards
   runDB $ updateGame gameId newGame
 
 failedInvestigation :: ArkhamGame -> ArkhamLocation -> ArkhamGame

@@ -3,6 +3,7 @@ module Arkham.Types.GameState where
 import Arkham.Types.Player
 
 import Arkham.Types.Action
+import Arkham.Types.Card
 import Arkham.Types.ChaosToken
 import Arkham.Types.Location
 import Arkham.Types.Skill
@@ -48,6 +49,7 @@ data ArkhamRevealTokenStep = ArkhamRevealTokenStep
   , artsAction :: Maybe ArkhamAction
   , artsTarget :: Maybe ArkhamTarget
   , artsToken :: ArkhamChaosToken
+  , artsCards :: [ArkhamCard]
   }
   deriving stock (Generic, Show)
 

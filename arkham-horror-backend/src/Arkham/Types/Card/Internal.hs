@@ -81,71 +81,81 @@ ally cost health sanity = (asset cost)
 hasUsesRemaining :: HasUses a => a -> Bool
 hasUsesRemaining = view (uses . non 0 . to (> 0))
 
+willpower :: ArkhamSkillType
+willpower = ArkhamSkillWillpower
+
+intellect :: ArkhamSkillType
+intellect = ArkhamSkillIntellect
+
+combat :: ArkhamSkillType
+combat = ArkhamSkillCombat
+
+agility :: ArkhamSkillType
+agility = ArkhamSkillAgility
+
+wild :: ArkhamSkillType
+wild = ArkhamSkillWild
+
 flashlight :: ArkhamCardInternal
-flashlight = withUses 3 $ (hand 2) { aciTestIcons = [ArkhamSkillIntellect] }
+flashlight = withUses 3 $ (hand 2) { aciTestIcons = [intellect] }
 
 knife :: ArkhamCardInternal
 knife = (hand 1)
   { aciActionsAvailable = \_state -> const True
-  , aciTestIcons = [ArkhamSkillCombat]
+  , aciTestIcons = [combat]
   }
 
 machete :: ArkhamCardInternal
 machete = (hand 3)
   { aciActionsAvailable = \_state -> const True
-  , aciTestIcons = [ArkhamSkillCombat]
+  , aciTestIcons = [combat]
   }
 
 fortyFiveAutomatic :: ArkhamCardInternal
-fortyFiveAutomatic =
-  withUses 4 $ (hand 4) { aciTestIcons = [ArkhamSkillAgility] }
+fortyFiveAutomatic = withUses 4 $ (hand 4) { aciTestIcons = [agility] }
 
 emergencyCache :: ArkhamCardInternal
 emergencyCache = (event 0) { aciAfterPlay = player . resources +~ 3 }
 
 rolands38Special :: ArkhamCardInternal
-rolands38Special = withUses 4 $ (hand 3)
-  { aciTestIcons = [ArkhamSkillCombat, ArkhamSkillAgility, ArkhamSkillWild]
-  }
+rolands38Special =
+  withUses 4 $ (hand 3) { aciTestIcons = [combat, agility, wild] }
 
 guardDog :: ArkhamCardInternal
-guardDog = (ally 3 3 1)
-  { aciAssignHealthDamage = id
-  , aciTestIcons = [ArkhamSkillCombat]
-  }
+guardDog = (ally 3 3 1) { aciAssignHealthDamage = id, aciTestIcons = [combat] }
 
 physicalTraining :: ArkhamCardInternal
 physicalTraining = (asset 2)
   { aciActionsAvailable = \_state -> const True
-  , aciTestIcons = [ArkhamSkillWillpower, ArkhamSkillCombat]
+  , aciTestIcons = [willpower, combat]
   }
 
 dodge :: ArkhamCardInternal
-dodge = (event 1) { aciTestIcons = [ArkhamSkillWillpower, ArkhamSkillAgility] }
+dodge = (event 1) { aciTestIcons = [willpower, agility] }
 
 dynamiteBlast :: ArkhamCardInternal
-dynamiteBlast = (event 5) { aciTestIcons = [ArkhamSkillWillpower] }
+dynamiteBlast = (event 5) { aciTestIcons = [willpower] }
 
 evidence :: ArkhamCardInternal
-evidence = (event 1) { aciTestIcons = replicate 2 ArkhamSkillIntellect }
+evidence = (event 1) { aciTestIcons = replicate 2 intellect }
 
 workingAHunch :: ArkhamCardInternal
-workingAHunch = (event 2) { aciTestIcons = replicate 2 ArkhamSkillIntellect }
+workingAHunch = (event 2) { aciTestIcons = replicate 2 intellect }
 
 deduction :: ArkhamCardInternal
-deduction = skill [ArkhamSkillIntellect]
+deduction = skill [intellect]
 
 guts :: ArkhamCardInternal
-guts = skill $ replicate 2 ArkhamSkillWillpower
+guts = skill $ replicate 2 willpower
 
 overpower :: ArkhamCardInternal
-overpower = skill $ replicate 2 ArkhamSkillCombat
+overpower = skill $ replicate 2 combat
 
 unexpectedCourage :: ArkhamCardInternal
-unexpectedCourage = skill $ replicate 2 ArkhamSkillWild
+unexpectedCourage = skill $ replicate 2 wild
 
 viciousBlow :: ArkhamCardInternal
-viciousBlow = skill [ArkhamSkillCombat]
+viciousBlow = skill [combat]
 
 coverUp :: ArkhamCardInternal
 coverUp = treachery
@@ -174,4 +184,3 @@ cardsInternal = HashMap.fromList
   , (ArkhamCardCode "01091", overpower)
   , (ArkhamCardCode "01093", unexpectedCourage)
   ]
-

@@ -202,3 +202,30 @@ class HasDiscard a where
 
 instance HasDiscard ArkhamPlayer where
   discard = lens _discard $ \m x -> m { _discard = x }
+
+class HasLocationContents a where
+  locationContents :: Lens' a [LocationContent]
+
+instance HasLocationContents ArkhamLocation where
+  locationContents f = \case
+    RevealedLocation l -> RevealedLocation <$> locationContents f l
+    UnrevealedLocation l -> UnrevealedLocation <$> locationContents f l
+
+instance HasLocationContents ArkhamRevealedLocation where
+  locationContents = lens arlContents $ \m x -> m { arlContents = x }
+
+instance HasLocationContents ArkhamUnrevealedLocation where
+  locationContents = lens aulContents $ \m x -> m { aulContents = x }
+
+class HasSanityDamage a where
+  sanityDamage :: Lens' a Int
+
+instance HasSanityDamage ArkhamPlayer where
+  sanityDamage = lens _sanityDamage $ \m x -> m { _sanityDamage = x }
+
+-- TODO: should this be combined with sanity to @HasDamage@
+class HasHealthDamage a where
+  healthDamage :: Lens' a Int
+
+instance HasHealthDamage ArkhamPlayer where
+  healthDamage = lens _healthDamage $ \m x -> m { _healthDamage = x }

@@ -133,6 +133,7 @@ rolandBanks = ArkhamInvestigator
   (ArkhamSkill 3)
   (ArkhamSkill 4)
   (ArkhamSkill 2)
+  (ArkhamCardCode "01001")
 
 daisyWalker :: ArkhamInvestigator
 daisyWalker = ArkhamInvestigator
@@ -143,3 +144,4 @@ daisyWalker = ArkhamInvestigator
   (ArkhamSkill 5)
   (ArkhamSkill 2)
   (ArkhamSkill 2)
+  (ArkhamCardCode "01002")

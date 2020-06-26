@@ -1,5 +1,6 @@
 module Arkham.Types.Investigator where
 
+import Arkham.Types.Card
 import Arkham.Types.Skill
 import ClassyPrelude
 import Data.Aeson
@@ -13,8 +14,12 @@ data ArkhamInvestigator = ArkhamInvestigator
   , aiIntellect :: ArkhamSkill 'ArkhamSkillIntellect
   , aiCombat :: ArkhamSkill 'ArkhamSkillCombat
   , aiAgility :: ArkhamSkill 'ArkhamSkillAgility
+  , aiCardCode :: ArkhamCardCode
   }
   deriving stock (Generic, Show)
+
+instance Eq ArkhamInvestigator where
+  a == b = aiCardCode a == aiCardCode b
 
 instance ToJSON ArkhamInvestigator where
   toJSON =

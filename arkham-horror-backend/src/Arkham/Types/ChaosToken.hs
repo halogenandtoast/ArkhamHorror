@@ -20,7 +20,8 @@ data ArkhamChaosToken
   | ElderThing
   | AutoFail
   | ElderSign
-  deriving stock (Generic, Show)
+  deriving stock (Eq, Generic, Show)
+  deriving anyclass (Hashable)
 
 instance ToJSON ArkhamChaosToken where
   toJSON PlusOne = "+1"

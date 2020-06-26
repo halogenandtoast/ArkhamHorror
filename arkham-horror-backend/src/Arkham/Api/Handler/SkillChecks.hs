@@ -5,6 +5,7 @@ module Arkham.Api.Handler.SkillChecks
   )
 where
 
+import Arkham.Internal.Types
 import Arkham.Types
 import Arkham.Types.Card.Internal
 import qualified Data.HashMap.Strict as HashMap
@@ -52,8 +53,6 @@ postApiV1ArkhamGameSkillCheckApplyResultR gameId = do
           1
         else runDB $ updateGame gameId $ failedInvestigation game location
     Failure -> runDB $ updateGame gameId $ failedInvestigation game location
-
-data ArkhamChaosTokenResult = Modifier Int | Failure
 
 shroudOf :: MonadIO m => ArkhamGame -> ArkhamLocation -> m Int
 shroudOf _ (RevealedLocation location) = pure $ arlShroud location

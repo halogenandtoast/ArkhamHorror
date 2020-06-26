@@ -8,6 +8,7 @@ import Arkham.Entity.ArkhamGame as X
 import Arkham.Types.Action as X
 import Arkham.Types.Card as X
 import Arkham.Types.ChaosToken as X
+import Arkham.Types.Difficulty as X
 import Arkham.Types.Game as X
 import Arkham.Types.GameState as X
 import Arkham.Types.Investigator as X
@@ -229,3 +230,21 @@ class HasHealthDamage a where
 
 instance HasHealthDamage ArkhamPlayer where
   healthDamage = lens _healthDamage $ \m x -> m { _healthDamage = x }
+
+class HasScenario a where
+  scenario :: Lens' a ArkhamScenario
+
+instance HasScenario ArkhamGame where
+  scenario = currentData . scenario
+
+instance HasScenario ArkhamGameData where
+  scenario = lens agScenario $ \m x -> m { agScenario = x }
+
+class HasDifficulty a where
+  difficulty :: Lens' a ArkhamDifficulty
+
+instance HasDifficulty ArkhamGame where
+  difficulty = currentData . difficulty
+
+instance HasDifficulty ArkhamGameData where
+  difficulty = lens agDifficulty $ \m x -> m { agDifficulty = x }

@@ -4,8 +4,12 @@ import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
 
+newtype ArkhamScenarioCode = ArkhamScenarioCode { unArkhamScenarioCode :: Text }
+  deriving newtype (Eq, Show, ToJSON, FromJSON, Hashable)
+
 data ArkhamScenario = ArkhamScenario
-  { asName :: Text
+  { asScenarioCode :: ArkhamScenarioCode
+  , asName :: Text
   , asGuide :: Text
   }
   deriving stock (Generic, Show)

@@ -7,8 +7,11 @@ import Arkham.Util
 import ClassyPrelude
 import Lens.Micro
 
+modifier :: Int -> (a -> b -> ArkhamChaosTokenResult)
+modifier = const . const . Modifier
+
 numberToken :: Int -> ArkhamChaosTokenInternal
-numberToken n = token { tokenToResult = const (const (Modifier n)) }
+numberToken n = token { tokenToResult = modifier n }
 
 plusOneToken :: ArkhamChaosTokenInternal
 plusOneToken = numberToken 1

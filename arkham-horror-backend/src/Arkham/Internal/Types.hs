@@ -23,8 +23,6 @@ data ArkhamChaosTokenInternal = ArkhamChaosTokenInternal
   , tokenOnReveal :: ArkhamGameState -> ArkhamInvestigator -> ArkhamGameState
   }
 
-data ArkhamDifficulty = ArkhamEasy | ArkhamStandard | ArkhamHard | ArkhamExpert
-
 data ArkhamScenarioInternal = ArkhamScenarioInternal
   { scenarioName :: Text
   , tokenMap :: HashMap ArkhamChaosToken ArkhamChaosTokenInternal

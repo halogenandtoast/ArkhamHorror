@@ -45,18 +45,20 @@ toArkhamCard ArkhamDbCard {..} = PlayerCard $ ArkhamPlayerCard
 
 loadGameFixture :: Int -> IO ArkhamGameData
 loadGameFixture 1 =
-  ArkhamGameData 1 NightOfTheZealot theGathering
+  ArkhamGameData 1 NightOfTheZealot theGathering ArkhamEasy
     . fixtureGameState 1
     <$> loadDeck "20344"
 loadGameFixture 2 =
-  ArkhamGameData 1 NightOfTheZealot theGathering
+  ArkhamGameData 1 NightOfTheZealot theGathering ArkhamEasy
     . fixtureGameState 2
     <$> loadDeck "101"
 loadGameFixture _ = throwString "Unknown fixture"
 
 theGathering :: ArkhamScenario
-theGathering =
-  ArkhamScenario "The Gathering" "https://arkhamdb.com/bundles/cards/01104.jpg"
+theGathering = ArkhamScenario
+  (ArkhamScenarioCode "theGathering")
+  "The Gathering"
+  "https://arkhamdb.com/bundles/cards/01104.jpg"
 
 fixtureGameState :: Int -> [ArkhamCard] -> ArkhamGameState
 fixtureGameState seed deck' = ArkhamGameState

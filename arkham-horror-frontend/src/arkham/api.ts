@@ -14,6 +14,10 @@ export const performDrawToken = (gameId: number, commitedCards: number[]) => api
   .post(`arkham/games/${gameId}/skill-check`, commitedCards)
   .then((resp) => arkhamGameDecoder.decodePromise(resp.data));
 
+export const performEndTurn = (gameId: number) => api
+  .post(`arkham/games/${gameId}/end-turn`)
+  .then((resp) => arkhamGameDecoder.decodePromise(resp.data));
+
 export const performApplyTokenResult = (gameId: number) => api
   .post(`arkham/games/${gameId}/apply-result`)
   .then((resp) => arkhamGameDecoder.decodePromise(resp.data));

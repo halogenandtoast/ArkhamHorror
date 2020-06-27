@@ -33,7 +33,8 @@
       <img v-else class="card" src="/img/arkham/player_back.jpg" width="200px" />
       <div>
         <img class="card" :src="player.investigator.image" />
-        <p>{{player.actionsRemaining}} actions remaining</p>
+        <p><i class="action" v-for="n in player.actionsRemaining" :key="n"></i></p>
+        <button @click="endTurn">End turn</button>
       </div>
       <div>
         <div v-if="canTakeResources" class="poolItem poolItem-resource" @click="takeResource">
@@ -77,7 +78,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import { ArkhamPlayer } from '@/arkham/types';
 import { ArkhamAction, ArkhamActionTypes } from '@/arkham/types/action';
 import { ArkhamGame, ArkhamStepTypes } from '@/arkham/types/game';
-import { performAction } from '@/arkham/api';
+import { performAction, performEndTurn } from '@/arkham/api';
 
 @Component
 export default class Player extends Vue {
@@ -152,6 +153,18 @@ export default class Player extends Vue {
     }
 
     return null;
+  }
+
+  endTurn() {
+    if (this.player.actionsRemaining > 0) {
+      if (!window.confirm('You still have actions remaining. Continue?')) { // eslint-disable-line
+        return;
+      }
+    }
+
+    performEndTurn(this.game.id).then((game: ArkhamGame) => {
+      this.$emit('update', game);
+    });
   }
 
   takeResource() {
@@ -264,6 +277,23 @@ export default class Player extends Vue {
 
   &.commited {
     margin-top: -10px;
+  }
+}
+
+i.action {
+  font-family: 'Arkham';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+
+  &:before {
+    font-family: "Arkham";
+    content: "\0049";
   }
 }
 </style>

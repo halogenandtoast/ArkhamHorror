@@ -206,3 +206,15 @@ instance HasDoom ArkhamLocation where
 
 actions :: Lens' ArkhamPlayer Int
 actions = lens _actionsRemaining $ \m x -> m { _actionsRemaining = x }
+
+class HasPhase a where
+  phase :: Lens' a ArkhamPhase
+
+instance HasPhase ArkhamGame where
+  phase = currentData . phase
+
+instance HasPhase ArkhamGameData where
+  phase = gameState . phase
+
+instance HasPhase ArkhamGameState where
+  phase = lens agsPhase $ \m x -> m { agsPhase = x }

@@ -25,6 +25,11 @@ export default class App extends Vue {
 </script>
 
 <style lang="scss">
+@font-face {
+  font-family: "Arkham";
+  src: url("/fonts/arkham.ttf");
+}
+
 body {
   margin: 0;
   padding: 0;

@@ -10,3 +10,4 @@
           /action ApiV1ArkhamGameActionR POST
           /skill-check ApiV1ArkhamGameSkillCheckR POST
           /apply-result ApiV1ArkhamGameSkillCheckApplyResultR POST
+          /end-turn ApiV1ArkhamGameEndTurnR POST

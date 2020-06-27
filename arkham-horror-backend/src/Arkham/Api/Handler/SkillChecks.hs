@@ -9,6 +9,7 @@ import Arkham.Conversion
 import Arkham.Internal.Card
 import Arkham.Internal.Types
 import Arkham.Types
+import Arkham.Util
 import qualified Data.HashMap.Strict as HashMap
 import Import
 import Lens.Micro
@@ -80,10 +81,6 @@ skillValue i skillType = case skillType of
   ArkhamSkillAgility -> unArkhamSkill $ aiAgility i
   ArkhamSkillWild -> error "Not a possible skill"
 
-updateGame
-  :: (MonadIO m) => ArkhamGameId -> ArkhamGame -> SqlPersistT m ArkhamGameData
-updateGame gameId game = replace gameId game $> arkhamGameCurrentData game
-
 revealToken
   :: ArkhamChaosToken
   -> Int
@@ -91,12 +88,12 @@ revealToken
   -> [ArkhamCard]
   -> ArkhamGameStateStep
   -> ArkhamGameStateStep
-revealToken token checkDifficulty modifiedSkillValue cards (ArkhamGameStateStepSkillCheckStep ArkhamSkillCheckStep {..})
+revealToken token' checkDifficulty modifiedSkillValue cards (ArkhamGameStateStepSkillCheckStep ArkhamSkillCheckStep {..})
   = ArkhamGameStateStepRevealTokenStep $ ArkhamRevealTokenStep
     ascsType
     ascsAction
     ascsTarget
-    token
+    token'
     checkDifficulty
     modifiedSkillValue
     cards
@@ -109,10 +106,10 @@ investigateAction
   -> [Int]
   -> Handler ArkhamGameData
 investigateAction (Entity gameId game) skillType location cardIndexes = do
-  token <- liftIO $ drawChaosToken game
+  token' <- liftIO $ drawChaosToken game
   checkDifficulty <- shroudOf game location
   let
-    tokenModifier = tokenToModifier game (game ^. player . investigator) token
+    tokenModifier = tokenToModifier game (game ^. player . investigator) token'
 
   let
     hand' = game ^. player . hand
@@ -128,7 +125,7 @@ investigateAction (Entity gameId game) skillType location cardIndexes = do
     newGame =
       game
         & gameStateStep
-        %~ revealToken token checkDifficulty modifiedSkillValue commitedCards
+        %~ revealToken token' checkDifficulty modifiedSkillValue commitedCards
         & player
         . hand
         .~ remainingCards

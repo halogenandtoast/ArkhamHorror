@@ -3,6 +3,7 @@ module Arkham.Api.Handler.Actions where
 
 import Arkham.Internal.Card
 import Arkham.Types
+import Arkham.Util
 import qualified Data.HashMap.Strict as HashMap
 import Import
 import Lens.Micro
@@ -21,9 +22,7 @@ applyAction action@(InvestigateAction investigation) g =
   mlocation = lookup targetLocationId $ g ^. locations
   targetLocationId = aiaLocationId investigation
 applyAction (TakeResourceAction _) g = pure $ g & player . resources +~ 1 & player . actions -~ 1
-applyAction (DrawCardAction _) g = do
-  let (drawn, deck') = splitAt 1 (g ^. player . deck)
-  pure $ g & player . hand %~ (++ drawn) & player . deck .~ deck' & player . actions -~ 1
+applyAction (DrawCardAction _) g = pure $ drawCard g & player . actions -~ 1
 applyAction (PlayCardAction (ArkhamPlayCardAction n)) g = do
   let mcard = g ^? player . hand . ix n
   case mcard of

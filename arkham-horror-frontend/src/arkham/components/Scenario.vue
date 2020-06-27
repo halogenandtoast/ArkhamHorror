@@ -237,6 +237,6 @@ export default class Scenario extends Vue {
 .game {
   background-image: linear-gradient(darken(#E5EAEC, 10), #E5EAEC);
   width: 100%;
-  z-index: -100;
+  z-index: 1;
 }
 </style>

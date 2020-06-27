@@ -52,6 +52,7 @@ export interface ArkhamPlayer {
   healthDamage: number;
   resources: number;
   clues: number;
+  actionsRemaining: number;
   hand: ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>[];
   inPlay: ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>[];
   discard: ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>[];
@@ -64,6 +65,7 @@ export const arkhamPlayerDecoder = JsonDecoder.object<ArkhamPlayer>(
     healthDamage: JsonDecoder.number,
     resources: JsonDecoder.number,
     clues: JsonDecoder.number,
+    actionsRemaining: JsonDecoder.number,
     hand: JsonDecoder.array<ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>>(arkhamCardDecoder, 'ArkhamCard[]'),
     inPlay: JsonDecoder.array<ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>>(arkhamCardDecoder, 'ArkhamCard[]'),
     discard: JsonDecoder.array<ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>>(arkhamCardDecoder, 'ArkhamCard[]'),

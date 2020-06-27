@@ -31,7 +31,10 @@
         width="200px"
       />
       <img v-else class="card" src="/img/arkham/player_back.jpg" width="200px" />
-      <img class="card" :src="player.investigator.image" />
+      <div>
+        <img class="card" :src="player.investigator.image" />
+        <p>{{player.actionsRemaining}} actions remaining</p>
+      </div>
       <div>
         <div v-if="actionWindow" class="poolItem poolItem-resource" @click="takeResource">
           <img
@@ -40,7 +43,7 @@
           />
           {{player.resources}}
         </div>
-        <div v-else>
+        <div v-else class="poolItem poolItem-resource">
           <img src="/img/arkham/resource.png" />
           {{player.resources}}
         </div>
@@ -157,7 +160,6 @@ export default class Player extends Vue {
       tag: ArkhamActionTypes.DRAW_CARD,
       contents: [],
     };
-
     performAction(this.game.id, action).then((game: ArkhamGame) => {
       this.$emit('update', game);
     });
@@ -175,6 +177,7 @@ export default class Player extends Vue {
 
   .playable {
     border: 2px solid #ff00ff;
+    cursor: pointer;
   }
 
   .commitable {
@@ -223,10 +226,7 @@ export default class Player extends Vue {
 .deck--can-draw {
   border: 3px solid #FF00FF;
   border-radius: 10px;
-}
-
-.commited {
-  margin-top: -10px;
+  cursor: pointer;
 }
 
 .discard {
@@ -249,5 +249,9 @@ export default class Player extends Vue {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 13px;
   margin: 2px;
+
+  &.commited {
+    margin-top: -10px;
+  }
 }
 </style>

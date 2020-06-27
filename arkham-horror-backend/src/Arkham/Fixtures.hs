@@ -121,12 +121,23 @@ study seed = ArkhamLocation
   2
   "https://arkhamdb.com/bundles/cards/01111.png"
   [investigatorF seed]
-  0
+  2
   0
   Revealed
 
 playerF :: Int -> [ArkhamCard] -> ArkhamPlayer
-playerF seed deck' = ArkhamPlayer (investigatorF seed) 0 0 5 0 [] [] deck' []
+playerF seed deck' = ArkhamPlayer
+  (investigatorF seed)
+  0
+  0
+  5
+  0
+  hand'
+  []
+  deck''
+  []
+  3
+  where (hand', deck'') = splitAt 5 deck'
 
 investigatorF :: Int -> ArkhamInvestigator
 investigatorF 2 = daisyWalker

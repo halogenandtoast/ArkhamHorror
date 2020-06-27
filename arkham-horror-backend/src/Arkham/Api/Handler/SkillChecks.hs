@@ -6,9 +6,9 @@ module Arkham.Api.Handler.SkillChecks
 where
 
 import Arkham.Conversion
+import Arkham.Internal.Card
 import Arkham.Internal.Types
 import Arkham.Types
-import Arkham.Types.Card.Internal
 import qualified Data.HashMap.Strict as HashMap
 import Import
 import Lens.Micro

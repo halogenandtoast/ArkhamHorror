@@ -1,4 +1,4 @@
-module Arkham.Types.Card.Internal
+module Arkham.Internal.Card
   ( cardsInternal
   , toInternalCard
   , ArkhamCardInternal(..)
@@ -11,6 +11,8 @@ import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro
 import Lens.Micro.Extras
+import Lens.Micro.Platform ()
+import Safe hiding (at)
 
 data ArkhamCardType = ArkhamCardTypeAsset | ArkhamCardTypeEvent | ArkhamCardTypeSkill | ArkhamCardTypeTreachery
 data ArkhamSlot = ArkhamSlotHand | ArkhamSlotAlly
@@ -31,6 +33,7 @@ data ArkhamCardInternal = ArkhamCardInternal
   , aciAssignSanityDamage :: ArkhamGameState -> ArkhamGameState
   , aciHealth :: Maybe Int
   , aciSanity :: Maybe Int
+  , aciActionCost :: ArkhamGameState -> Int
   }
 
 card :: Int -> ArkhamCardType -> ArkhamCardInternal
@@ -49,6 +52,10 @@ card cost cardType = ArkhamCardInternal
   id -- assign sanity damage
   Nothing -- health
   Nothing -- sanity
+  (const 1)
+
+fast :: ArkhamCardInternal -> ArkhamCardInternal
+fast c = c { aciActionCost = const 0 }
 
 skill :: [ArkhamSkillType] -> ArkhamCardInternal
 skill testIcons = (card 0 ArkhamCardTypeSkill) { aciTestIcons = testIcons }
@@ -139,8 +146,24 @@ dynamiteBlast = (event 5) { aciTestIcons = [willpower] }
 evidence :: ArkhamCardInternal
 evidence = (event 1) { aciTestIcons = replicate 2 intellect }
 
+getCurrentLocation :: ArkhamGameState -> ArkhamInvestigator -> ArkhamLocation
+getCurrentLocation g i =
+  fromJustNote "could not find investigator's location"
+    $ find (\l -> i `elem` alInvestigators l)
+    $ HashMap.elems (g ^. locations)
+
+-- brittany-disable-next-binding
 workingAHunch :: ArkhamCardInternal
-workingAHunch = (event 2) { aciTestIcons = replicate 2 intellect }
+workingAHunch = fast $ (event 2)
+  { aciTestIcons = replicate 2 intellect
+  , aciAfterPlay = \g ->
+    let location = getCurrentLocation g (g ^. player . investigator)
+    in
+      if alClues location > 0
+        then g & locations . at (alCardCode location) . _Just . clues -~ 1
+               & player . clues +~ 1
+        else g
+  }
 
 deduction :: ArkhamCardInternal
 deduction = skill [intellect]

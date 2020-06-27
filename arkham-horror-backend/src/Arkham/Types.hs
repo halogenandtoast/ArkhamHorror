@@ -203,3 +203,6 @@ instance HasDoom ArkhamAgenda where
 
 instance HasDoom ArkhamLocation where
   doom = lens alDoom $ \m x -> m { alDoom = x }
+
+actions :: Lens' ArkhamPlayer Int
+actions = lens _actionsRemaining $ \m x -> m { _actionsRemaining = x }

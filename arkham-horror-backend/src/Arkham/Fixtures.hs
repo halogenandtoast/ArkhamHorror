@@ -19,6 +19,7 @@ data ArkhamDbCard = ArkhamDbCard
   , name :: Text
   , cost :: Maybe Int
   , imagesrc :: Maybe Text
+  , text :: Maybe Text
   }
   deriving stock (Generic)
   deriving anyclass (FromJSON)
@@ -42,6 +43,7 @@ toArkhamCard ArkhamDbCard {..} = PlayerCard $ ArkhamPlayerCard
   <> fromMaybe ("/bundles/cards/" <> code <> ".png") imagesrc
   )
   (Just 0)
+  (maybe False ("Fast." `isInfixOf`) text)
 
 loadGameFixture :: Int -> IO ArkhamGameData
 loadGameFixture 1 =

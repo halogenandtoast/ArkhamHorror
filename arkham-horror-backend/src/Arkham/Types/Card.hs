@@ -13,6 +13,7 @@ data ArkhamPlayerCard = ArkhamPlayerCard
   , apcCode :: ArkhamCardCode
   , apcImage :: Text
   , apcUses :: Maybe Int
+  , apcIsFast :: Bool
   }
   deriving stock (Generic, Show)
 

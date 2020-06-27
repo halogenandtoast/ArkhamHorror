@@ -4,7 +4,7 @@
       <section>
         <h2>In play</h2>
         <div v-for="(card, index) in player.inPlay" :key="index">
-          <img :src="card.contents.image" />
+          <img :src="card.contents.image" class="card" />
           <div
             v-if="card.contents.uses && card.contents.uses > 0"
             class="poolItem poolItem-resource"
@@ -36,7 +36,7 @@
         <p>{{player.actionsRemaining}} actions remaining</p>
       </div>
       <div>
-        <div v-if="actionWindow" class="poolItem poolItem-resource" @click="takeResource">
+        <div v-if="canTakeResources" class="poolItem poolItem-resource" @click="takeResource">
           <img
             class="resource--can-take"
             src="/img/arkham/resource.png"
@@ -105,7 +105,13 @@ export default class Player extends Vue {
       return false;
     }
 
+
     const card = this.player.hand[index];
+
+    if (this.player.actionsRemaining === 0 && card.tag === 'PlayerCard' && !card.contents.isFast) {
+      return false;
+    }
+
     const mcost = 'cost' in card.contents ? card.contents.cost : 0;
 
     if (mcost === null || mcost === undefined) {
@@ -124,7 +130,11 @@ export default class Player extends Vue {
   }
 
   get canDraw() {
-    return this.actionWindow;
+    return this.actionWindow && this.player.actionsRemaining > 0;
+  }
+
+  get canTakeResources() {
+    return this.actionWindow && this.player.actionsRemaining > 0;
   }
 
   get actionWindow() {
@@ -188,6 +198,7 @@ export default class Player extends Vue {
 .player {
   display: flex;
   align-self: center;
+  align-items: flex-start;
 }
 
 .poolItem {
@@ -249,6 +260,7 @@ export default class Player extends Vue {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 13px;
   margin: 2px;
+  max-width: 250px;
 
   &.commited {
     margin-top: -10px;

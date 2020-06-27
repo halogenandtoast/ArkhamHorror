@@ -1,36 +1,45 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export type ArkhamCard<T> = {
-  tag: string;
-  contents: T;
-}
+export type ArkhamCard = ArkhamPlayerCard | ArkhamEncounterCard;
 
-export interface ArkhamPlayerCard {
+export interface ArkhamPlayerCardContents {
   name: string;
   cost: number | null;
   code: string;
   image: string;
   uses: number | null;
+  isFast: boolean;
 }
 
-export interface ArkhamEncounterCard {
+export interface ArkhamEncounterCardContents {
   name: string;
   code: string;
   image: string;
 }
 
-export const arkhamPlayerCardDecoder = JsonDecoder.object<ArkhamPlayerCard>(
+export interface ArkhamPlayerCard {
+  tag: 'PlayerCard';
+  contents: ArkhamPlayerCardContents;
+}
+
+export interface ArkhamEncounterCard {
+  tag: 'EncounterCard';
+  contents: ArkhamEncounterCardContents;
+}
+
+export const arkhamPlayerCardContentsDecoder = JsonDecoder.object<ArkhamPlayerCardContents>(
   {
     name: JsonDecoder.string,
     code: JsonDecoder.string,
     cost: JsonDecoder.nullable(JsonDecoder.number),
     uses: JsonDecoder.nullable(JsonDecoder.number),
     image: JsonDecoder.string,
+    isFast: JsonDecoder.boolean,
   },
   'ArkhamPlayerCard',
 );
 
-export const arkhamEncounterCardDecoder = JsonDecoder.object<ArkhamEncounterCard>(
+export const arkhamEncounterCardContentsDecoder = JsonDecoder.object<ArkhamEncounterCardContents>(
   {
     name: JsonDecoder.string,
     code: JsonDecoder.string,
@@ -39,43 +48,26 @@ export const arkhamEncounterCardDecoder = JsonDecoder.object<ArkhamEncounterCard
   'ArkhamEncounterCard',
 );
 
-export const arkhamCardPlayerCardDecoder = JsonDecoder.object<
-    ArkhamCard<ArkhamPlayerCard>
-  >(
-    {
-      tag: JsonDecoder.isExactly('PlayerCard'),
-      contents: arkhamPlayerCardDecoder,
-    },
-    'ArkhamCard<ArkhamPlayerCard>',
-  );
+export const arkhamPlayerCardDecoder = JsonDecoder.object<ArkhamPlayerCard>(
+  {
+    tag: JsonDecoder.isExactly('PlayerCard'),
+    contents: arkhamPlayerCardContentsDecoder,
+  },
+  'ArkhamPlayerCard',
+);
 
-export const arkhamCardEncounterCardDecoder = JsonDecoder.object<
-    ArkhamCard<ArkhamEncounterCard>
-  >(
-    {
-      tag: JsonDecoder.isExactly('EncounterCard'),
-      contents: arkhamEncounterCardDecoder,
-    },
-    'ArkhamCard<ArkhamEncounterCard>',
-  );
+export const arkhamEncounterCardDecoder = JsonDecoder.object<ArkhamEncounterCard>(
+  {
+    tag: JsonDecoder.isExactly('EncounterCard'),
+    contents: arkhamEncounterCardContentsDecoder,
+  },
+  'ArkhamEncounterCard',
+);
 
-export const arkhamCardDecoder = JsonDecoder.object<
-    ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>
-  >(
-    {
-      tag: JsonDecoder.string,
-      contents: JsonDecoder.succeed,
-    },
-    'ArkhamCard',
-  ).then((value) => {
-    switch (value.tag) {
-      case 'PlayerCard':
-        return arkhamCardPlayerCardDecoder;
-      case 'EncounterCard':
-        return arkhamCardEncounterCardDecoder;
-      default:
-        return JsonDecoder.fail<ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>>(
-          `<ArkhamCard> does not support tag ${value.tag}`,
-        );
-    }
-  });
+export const arkhamCardDecoder = JsonDecoder.oneOf<ArkhamCard>(
+  [
+    arkhamPlayerCardDecoder,
+    arkhamEncounterCardDecoder,
+  ],
+  'ArkhamCard',
+);

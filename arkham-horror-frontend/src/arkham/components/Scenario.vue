@@ -135,7 +135,8 @@ export default class Scenario extends Vue {
   }
 
   get canInvestigate() {
-    return this.game.gameState.step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION;
+    return this.game.gameState.step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION
+      && this.game.gameState.player.actionsRemaining > 0;
   }
 
   get canDrawToken() {

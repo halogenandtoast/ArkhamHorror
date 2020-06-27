@@ -1,8 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 import {
   ArkhamCard,
-  ArkhamPlayerCard,
-  ArkhamEncounterCard,
   arkhamCardDecoder,
 } from '@/arkham/types/card';
 
@@ -53,9 +51,9 @@ export interface ArkhamPlayer {
   resources: number;
   clues: number;
   actionsRemaining: number;
-  hand: ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>[];
-  inPlay: ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>[];
-  discard: ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>[];
+  hand: ArkhamCard[];
+  inPlay: ArkhamCard[];
+  discard: ArkhamCard[];
 }
 
 export const arkhamPlayerDecoder = JsonDecoder.object<ArkhamPlayer>(
@@ -66,9 +64,9 @@ export const arkhamPlayerDecoder = JsonDecoder.object<ArkhamPlayer>(
     resources: JsonDecoder.number,
     clues: JsonDecoder.number,
     actionsRemaining: JsonDecoder.number,
-    hand: JsonDecoder.array<ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>>(arkhamCardDecoder, 'ArkhamCard[]'),
-    inPlay: JsonDecoder.array<ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>>(arkhamCardDecoder, 'ArkhamCard[]'),
-    discard: JsonDecoder.array<ArkhamCard<ArkhamPlayerCard | ArkhamEncounterCard>>(arkhamCardDecoder, 'ArkhamCard[]'),
+    hand: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
+    inPlay: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
+    discard: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
   },
   'ArkhamPlayer',
 );

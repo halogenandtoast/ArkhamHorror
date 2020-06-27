@@ -5,7 +5,7 @@
       <img
         v-for="(stack, index) in game.gameState.stacks"
         class="card card--sideways"
-        :src="stack.contents"
+        :src="stack.contents.image"
         :key="index"
       />
 
@@ -30,37 +30,33 @@
       <div
         v-for="location in game.gameState.locations"
         class="location"
-        :key="location.contents.name"
+        :key="location.name"
       >
         <img
           class="card"
-          :src="location.contents.image"
+          :src="location.image"
         />
         <div
-          v-for="(thing, index) in location.contents.contents"
+          v-for="(investigator, index) in location.investigators"
           :key="index"
         >
           <img
-            v-if="thing.tag == 'LocationInvestigator'"
-            :src="thing.contents.portrait"
+            :src="investigator.portrait"
             width="80"
           />
+        </div>
+        <div v-if="location.clues > 0" >
           <div
-            v-if="thing.tag == 'LocationClues' && location.tag == 'RevealedLocation'"
+            v-if="canInvestigate"
+            class="clue clue--can-investigate"
+            @click="investigate(location)"
           >
-
-            <div
-              v-if="canInvestigate"
-              class="clue clue--can-investigate"
-              @click="investigate(location)"
-            >
-              <img src="/img/arkham/clue.png" />
-              {{thing.contents}}
-            </div>
-            <div v-else>
-              <img src="/img/arkham/clue.png" />
-              {{thing.contents}}
-            </div>
+            <img src="/img/arkham/clue.png" />
+            {{location.clues}}
+          </div>
+          <div v-else>
+            <img src="/img/arkham/clue.png" />
+            {{location.clues}}
           </div>
         </div>
       </div>
@@ -78,10 +74,11 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ArkhamGame, ArkhamStepTypes } from '@/arkham/types/game';
-import { ArkhamUnrevealedLocation, ArkhamRevealedLocation } from '@/arkham/types/location';
+import { ArkhamLocation } from '@/arkham/types/location';
 import { ArkhamAction, ArkhamActionTypes } from '@/arkham/types/action';
 import { performAction, performDrawToken, performApplyTokenResult } from '@/arkham/api';
 import Player from '@/arkham/components/Player.vue';
+
 
 @Component({
   components: { Player },
@@ -91,10 +88,10 @@ export default class Scenario extends Vue {
 
   private commitedCards: number[] = []
 
-  investigate(location: ArkhamRevealedLocation) {
+  investigate(location: ArkhamLocation) {
     const action: ArkhamAction = {
       tag: ArkhamActionTypes.INVESTIGATE,
-      contents: location.contents.locationId,
+      contents: location.cardCode,
     };
 
     performAction(this.game.id, action).then((game: ArkhamGame) => {
@@ -183,7 +180,11 @@ export default class Scenario extends Vue {
 <style scoped lang="scss">
 .card {
   width: 250px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
+  border-radius: 13px;
+  margin: 2px;
 }
+
 .card--sideways {
   width: auto;
   height: 250px;
@@ -231,5 +232,11 @@ export default class Scenario extends Vue {
     margin: auto;
     z-index: -1;
   }
+}
+
+.game {
+  background-image: linear-gradient(darken(#E5EAEC, 10), #E5EAEC);
+  width: 100%;
+  z-index: -100;
 }
 </style>

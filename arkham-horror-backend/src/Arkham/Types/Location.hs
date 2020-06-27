@@ -1,61 +1,38 @@
 module Arkham.Types.Location where
 
+import Arkham.Types.Card
 import Arkham.Types.Investigator
 import ClassyPrelude hiding (Index)
 import Data.Aeson
 import Data.Aeson.Casing
 
-data LocationContent = LocationClues Int | LocationInvestigator ArkhamInvestigator
-  deriving stock (Generic, Show)
-  deriving anyclass (ToJSON, FromJSON)
-
-newtype LocationId = LocationId { unLocationId :: Text }
-  deriving newtype (Show, ToJSON, ToJSONKey, FromJSONKey, FromJSON, IsString, Eq, Hashable)
-
 data ArkhamLocationSymbol = Circle | Heart
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 
-data ArkhamUnrevealedLocation = ArkhamUnrevealedLocation
-  { aulName :: Text
-  , aulLocationId :: LocationId
-  , aulLocationSymbols :: [ArkhamLocationSymbol]
-  , aulImage :: Text
-  , aulContents :: [LocationContent]
-  }
-  deriving stock (Generic, Show)
-
-instance ToJSON ArkhamUnrevealedLocation where
-  toJSON =
-    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
-  toEncoding = genericToEncoding
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
-
-instance FromJSON ArkhamUnrevealedLocation where
-  parseJSON = genericParseJSON
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
-
-data ArkhamRevealedLocation = ArkhamRevealedLocation
-  { arlName :: Text
-  , arlLocationId :: LocationId
-  , arlLocationSymbols :: [ArkhamLocationSymbol]
-  , arlShroud :: Int
-  , arlImage :: Text
-  , arlContents :: [LocationContent]
-  }
-  deriving stock (Generic, Show)
-
-instance ToJSON ArkhamRevealedLocation where
-  toJSON =
-    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
-  toEncoding = genericToEncoding
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
-
-instance FromJSON ArkhamRevealedLocation where
-  parseJSON = genericParseJSON
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
-
-data ArkhamLocation = UnrevealedLocation ArkhamUnrevealedLocation | RevealedLocation ArkhamRevealedLocation
-  deriving stock (Generic, Show)
+data ArkhamLocationStatus = Revealed | Unrevealed | OutOfPlay
+  deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+data ArkhamLocation = ArkhamLocation
+  { alName :: Text
+  , alCardCode :: ArkhamCardCode
+  , alLocationSymbols :: [ArkhamLocationSymbol]
+  , alShroud :: Int
+  , alImage :: Text
+  , alInvestigators :: [ArkhamInvestigator]
+  , alClues :: Int
+  , alDoom :: Int
+  , alStatus :: ArkhamLocationStatus
+  }
+  deriving stock (Generic, Show)
+
+instance ToJSON ArkhamLocation where
+  toJSON =
+    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }
+  toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }
+
+instance FromJSON ArkhamLocation where
+  parseJSON = genericParseJSON
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 2 }

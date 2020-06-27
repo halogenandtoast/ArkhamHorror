@@ -69,17 +69,37 @@ data ArkhamGameState = ArkhamGameState
   { agsPlayer :: ArkhamPlayer
   , agsPhase :: ArkhamPhase
   , agsChaosBag :: NonEmpty ArkhamChaosToken
-  , agsLocations :: HashMap LocationId ArkhamLocation
+  , agsLocations :: HashMap ArkhamCardCode ArkhamLocation
   , agsStacks :: [ArkhamStack]
   , agsStep :: ArkhamGameStateStep
   }
   deriving stock (Generic, Show)
 
-newtype ArkhamAct = ArkhamAct { aactImage :: Text }
-  deriving newtype (Show, ToJSON, FromJSON)
+data ArkhamAct = ArkhamAct { aactCardCode :: ArkhamCardCode, aactImage :: Text }
+  deriving stock (Show, Generic)
 
-newtype ArkhamAgenda = ArkhamAgenda { aagendaImage :: Text }
-  deriving newtype (Show, ToJSON, FromJSON)
+instance ToJSON ArkhamAct where
+  toJSON =
+    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+  toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+
+instance FromJSON ArkhamAct where
+  parseJSON = genericParseJSON
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+
+data ArkhamAgenda = ArkhamAgenda { aagendaCardCode :: ArkhamCardCode, aagendaImage :: Text, aagendaDoom :: Int }
+  deriving stock (Show, Generic)
+
+instance ToJSON ArkhamAgenda where
+  toJSON =
+    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 7 }
+  toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 7 }
+
+instance FromJSON ArkhamAgenda where
+  parseJSON = genericParseJSON
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 7 }
 
 data ArkhamStack = ActStack ArkhamAct | AgendaStack ArkhamAgenda
   deriving stock (Generic, Show)

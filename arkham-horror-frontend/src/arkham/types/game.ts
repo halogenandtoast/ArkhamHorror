@@ -9,8 +9,6 @@ import {
 } from '@/arkham/types';
 import {
   ArkhamLocation,
-  ArkhamRevealedLocation,
-  ArkhamUnrevealedLocation,
   arkhamLocationDecoder,
 } from '@/arkham/types/location';
 import {
@@ -27,14 +25,25 @@ export interface ArkhamGame {
   gameState: ArkhamGameState;
 }
 
+type AgendaStackContents = {
+  doom: number;
+  image: string;
+  cardCode: string;
+}
+
+type ActStackContents = {
+  image: string;
+  cardCode: string;
+}
+
 type AgendaStack = {
   tag: 'AgendaStack';
-  contents: string;
+  contents: AgendaStackContents;
 };
 
 type ActStack = {
   tag: 'ActStack';
-  contents: string;
+  contents: ActStackContents;
 };
 
 type ArkhamStack = AgendaStack | ActStack;
@@ -158,7 +167,7 @@ export const arkhamStepDecoder = JsonDecoder.oneOf<ArkhamStep>([
 export interface ArkhamGameState {
   player: ArkhamPlayer;
   phase: ArkhamPhase;
-  locations: Record<string, ArkhamRevealedLocation | ArkhamUnrevealedLocation>;
+  locations: Record<string, ArkhamLocation>;
   stacks: ArkhamStack[];
   step: ArkhamStep;
   chaosBag: ArkhamChaosToken[];
@@ -170,10 +179,27 @@ export const arkhamPhaseDecoder = JsonDecoder.oneOf<ArkhamPhase>([
   JsonDecoder.isExactly('Upkeep'),
 ], 'ArkhamPhase');
 
+const arkhamAgendaContentsDecoder = JsonDecoder.object<AgendaStackContents>(
+  {
+    image: JsonDecoder.string,
+    cardCode: JsonDecoder.string,
+    doom: JsonDecoder.number,
+  },
+  'AgendaStackContents',
+);
+
+const arkhamActContentsDecoder = JsonDecoder.object<ActStackContents>(
+  {
+    image: JsonDecoder.string,
+    cardCode: JsonDecoder.string,
+  },
+  'AgendaStackContents',
+);
+
 export const arkhamStackAgendaStackDecoder = JsonDecoder.object<AgendaStack>(
   {
     tag: JsonDecoder.isExactly('AgendaStack'),
-    contents: JsonDecoder.string,
+    contents: arkhamAgendaContentsDecoder,
   },
   'AgendaStack',
 );
@@ -182,7 +208,7 @@ export const arkhamStackAgendaStackDecoder = JsonDecoder.object<AgendaStack>(
 export const arkhamStackActStackDecoder = JsonDecoder.object<ActStack>(
   {
     tag: JsonDecoder.isExactly('ActStack'),
-    contents: JsonDecoder.string,
+    contents: arkhamActContentsDecoder,
   },
   'ActStack',
 );

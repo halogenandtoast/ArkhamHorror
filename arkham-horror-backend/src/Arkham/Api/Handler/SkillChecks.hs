@@ -55,14 +55,13 @@ postApiV1ArkhamGameSkillCheckApplyResultR gameId = do
         if modifiedSkillValue >= checkDifficulty
           then runDB $ updateGame gameId $ successfulInvestigation
             game
-            (location ^. locationId)
+            location
             1
           else runDB $ updateGame gameId $ failedInvestigation game location
       Failure -> runDB $ updateGame gameId $ failedInvestigation game location
 
 shroudOf :: MonadIO m => ArkhamGame -> ArkhamLocation -> m Int
-shroudOf _ (RevealedLocation location) = pure $ arlShroud location
-shroudOf _ _ = throwString "Can not get shroud of unrevealed location"
+shroudOf _ location = pure $ alShroud location
 
 determineModifiedSkillValue
   :: ArkhamSkillType -> ArkhamInvestigator -> [ArkhamCard] -> Int -> Int
@@ -142,9 +141,9 @@ failedInvestigation :: ArkhamGame -> ArkhamLocation -> ArkhamGame
 failedInvestigation g _ = g
 
 -- brittany-disable-next-binding
-successfulInvestigation :: ArkhamGame -> LocationId -> Int -> ArkhamGame
-successfulInvestigation g lId clueCount = g
-    & locations . at lId . _Just . clues -~ clueCount
+successfulInvestigation :: ArkhamGame -> ArkhamLocation -> Int -> ArkhamGame
+successfulInvestigation g l clueCount = g
+    & locations . at (alCardCode l) . _Just . clues -~ clueCount
     & player . clues +~ clueCount
     & gameStateStep .~ investigatorStep
 

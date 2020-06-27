@@ -40,7 +40,7 @@ instance HasChaosBag ArkhamGame where
   chaosBag = currentData . chaosBag
 
 class HasLocations a where
-  locations :: Lens' a (HashMap LocationId ArkhamLocation)
+  locations :: Lens' a (HashMap ArkhamCardCode ArkhamLocation)
 
 instance HasLocations ArkhamGameState where
   locations = lens agsLocations $ \m x -> m { agsLocations = x }
@@ -50,20 +50,6 @@ instance HasLocations ArkhamGameData where
 
 instance HasLocations ArkhamGame where
   locations = currentData . locations
-
-class HasLocationId a where
-  locationId :: Lens' a LocationId
-
-instance HasLocationId ArkhamUnrevealedLocation where
-  locationId = lens aulLocationId $ \m x -> m { aulLocationId = x }
-
-instance HasLocationId ArkhamRevealedLocation where
-  locationId = lens arlLocationId $ \m x -> m { arlLocationId = x }
-
-instance HasLocationId ArkhamLocation where
-  locationId f = \case
-    RevealedLocation l -> RevealedLocation <$> locationId f l
-    UnrevealedLocation l -> UnrevealedLocation <$> locationId f l
 
 class HasCurrentData a where
   currentData :: Lens' a ArkhamGameData
@@ -111,38 +97,8 @@ instance HasInvestigator ArkhamPlayer where
 class HasClues a where
   clues :: Lens' a Int
 
-isLocationClues :: LocationContent -> Bool
-isLocationClues (LocationClues _) = True
-isLocationClues _ = False
-
-instance HasClues ArkhamRevealedLocation where
-  clues =
-    lens
-        (\m ->
-          fromMaybe 0 $ listToMaybe [ n | LocationClues n <- arlContents m ]
-        )
-      $ \m x -> m
-          { arlContents =
-            LocationClues x
-              : [ c | c <- arlContents m, not (isLocationClues c) ]
-          }
-
-instance HasClues ArkhamUnrevealedLocation where
-  clues =
-    lens
-        (\m ->
-          fromMaybe 0 $ listToMaybe [ n | LocationClues n <- aulContents m ]
-        )
-      $ \m x -> m
-          { aulContents =
-            LocationClues x
-              : [ c | c <- aulContents m, not (isLocationClues c) ]
-          }
-
 instance HasClues ArkhamLocation where
-  clues f = \case
-    RevealedLocation location -> RevealedLocation <$> clues f location
-    UnrevealedLocation location -> UnrevealedLocation <$> clues f location
+  clues = lens alClues $ \m x -> m { alClues = x }
 
 instance HasClues ArkhamPlayer where
   clues = lens _clues $ \m x -> m { _clues = x }
@@ -204,20 +160,6 @@ class HasDiscard a where
 instance HasDiscard ArkhamPlayer where
   discard = lens _discard $ \m x -> m { _discard = x }
 
-class HasLocationContents a where
-  locationContents :: Lens' a [LocationContent]
-
-instance HasLocationContents ArkhamLocation where
-  locationContents f = \case
-    RevealedLocation l -> RevealedLocation <$> locationContents f l
-    UnrevealedLocation l -> UnrevealedLocation <$> locationContents f l
-
-instance HasLocationContents ArkhamRevealedLocation where
-  locationContents = lens arlContents $ \m x -> m { arlContents = x }
-
-instance HasLocationContents ArkhamUnrevealedLocation where
-  locationContents = lens aulContents $ \m x -> m { aulContents = x }
-
 class HasSanityDamage a where
   sanityDamage :: Lens' a Int
 
@@ -248,3 +190,16 @@ instance HasDifficulty ArkhamGame where
 
 instance HasDifficulty ArkhamGameData where
   difficulty = lens agDifficulty $ \m x -> m { agDifficulty = x }
+
+class HasDoom a where
+  doom :: Lens' a Int
+
+instance HasDoom ArkhamStack where
+  doom f (AgendaStack a) = AgendaStack <$> doom f a
+  doom f (ActStack a) = ActStack a <$ f 0
+
+instance HasDoom ArkhamAgenda where
+  doom = lens aagendaDoom $ \m x -> m { aagendaDoom = x }
+
+instance HasDoom ArkhamLocation where
+  doom = lens alDoom $ \m x -> m { alDoom = x }

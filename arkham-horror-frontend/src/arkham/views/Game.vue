@@ -36,7 +36,7 @@ export default class Game extends Vue {
 .action { border: 5px solid #FF00FF; border-radius: 15px; }
 
 .game {
-  width: 100vh;
+  width: 100vw;
   height: calc(100vh - 40px);
   display: grid;
 }

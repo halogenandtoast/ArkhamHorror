@@ -5,7 +5,6 @@ import Arkham.Types
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro
-import Lens.Micro.Extras
 import Safe
 
 token :: ArkhamChaosTokenInternal
@@ -23,12 +22,7 @@ locationFor investigator' g =
     $ HashMap.elems (g ^. locations)
 
 investigatorIsAtLocation :: ArkhamInvestigator -> ArkhamLocation -> Bool
-investigatorIsAtLocation investigator' = any isInvestigator
-  . view locationContents
- where
-  isInvestigator = \case
-    LocationInvestigator li -> li == investigator'
-    _ -> False
+investigatorIsAtLocation investigator' = elem investigator' . alInvestigators
 
 countTraitMatch :: ArkhamCardTrait -> ArkhamLocation -> Int
 countTraitMatch _ _ = 0

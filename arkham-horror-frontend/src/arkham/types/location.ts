@@ -5,115 +5,42 @@ import {
 } from '@/arkham/types';
 
 export type ArkhamLocationSymbol = 'Circle' | 'Heart';
+export type ArkhamLocationStatus = 'Revealed' | 'Unrevealed' | 'OutOfPlay';
 
 export const arkhamLocationSymbolDecoder = JsonDecoder.oneOf<ArkhamLocationSymbol>([
   JsonDecoder.isExactly('Circle'),
   JsonDecoder.isExactly('Heart'),
 ], 'ArkhamLocationSymbol');
 
-export type ArkhamLocation = ArkhamRevealedLocation | ArkhamUnrevealedLocation
+export const arkhamLocationStatusDecoder = JsonDecoder.oneOf<ArkhamLocationStatus>([
+  JsonDecoder.isExactly('Revealed'),
+  JsonDecoder.isExactly('Unrevealed'),
+  JsonDecoder.isExactly('OutOfPlay'),
+], 'ArkhamLocationStatus');
 
-type LocationClues = {
-  tag: 'LocationClues';
-  contents: number;
-}
-
-type LocationInvestigator = {
-  tag: 'LocationInvestigator';
-  contents: ArkhamInvestigator;
-}
-
-type LocationContent = LocationClues | LocationInvestigator;
-
-export const arkhamLocationContentLocationCluesDecoder = JsonDecoder.object<LocationContent>({
-  tag: JsonDecoder.isExactly('LocationClues'),
-  contents: JsonDecoder.number,
-}, 'LocationClues');
-
-export const arkhamLocationContentLocationInvestigatorDecoder = JsonDecoder.object<
-    LocationContent
-  >({
-    tag: JsonDecoder.isExactly('LocationInvestigator'),
-    contents: arkhamInvestigatorDecoder,
-  }, 'LocationInvestigator');
-
-export const arkhamLocationContentDecoder = JsonDecoder.oneOf<LocationContent>([
-  arkhamLocationContentLocationCluesDecoder,
-  arkhamLocationContentLocationInvestigatorDecoder,
-], 'LocationContent');
-
-
-export interface ArkhamUnrevealedLocationContent {
+export interface ArkhamLocation {
   name: string;
-  locationSymbols: ArkhamLocationSymbol[];
-  image: string;
-  locationId: string;
-  contents: LocationContent[];
-}
-
-export interface ArkhamRevealedLocation {
-  tag: 'RevealedLocation';
-  contents: ArkhamRevealedLocationContent;
-}
-
-export interface ArkhamUnrevealedLocation {
-  tag: 'UnrevealedLocation';
-  contents: ArkhamUnrevealedLocationContent;
-}
-
-export const arkhamUnrevealedLocationDecoder = JsonDecoder.object<ArkhamUnrevealedLocationContent>(
-  {
-    name: JsonDecoder.string,
-    locationSymbols: JsonDecoder.array<ArkhamLocationSymbol>(arkhamLocationSymbolDecoder, 'ArkhamLocationSymbol[]'),
-    image: JsonDecoder.string,
-    locationId: JsonDecoder.string,
-    contents: JsonDecoder.array<LocationContent>(arkhamLocationContentDecoder, 'LocationContent[]'),
-  },
-  'ArkhamUnrevealedLocation',
-);
-
-export interface ArkhamRevealedLocationContent {
-  name: string;
+  cardCode: string;
   locationSymbols: ArkhamLocationSymbol[];
   shroud: number;
   image: string;
-  locationId: string;
-  contents: LocationContent[];
+  investigators: ArkhamInvestigator[];
+  clues: number;
+  doom: number;
+  status: ArkhamLocationStatus;
 }
 
-export const arkhamRevealedLocationDecoder = JsonDecoder.object<ArkhamRevealedLocationContent>(
+export const arkhamLocationDecoder = JsonDecoder.object<ArkhamLocation>(
   {
     name: JsonDecoder.string,
+    cardCode: JsonDecoder.string,
     locationSymbols: JsonDecoder.array<ArkhamLocationSymbol>(arkhamLocationSymbolDecoder, 'ArkhamLocationSymbol[]'),
     shroud: JsonDecoder.number,
     image: JsonDecoder.string,
-    locationId: JsonDecoder.string,
-    contents: JsonDecoder.array<LocationContent>(arkhamLocationContentDecoder, 'LocationContent[]'),
+    investigators: JsonDecoder.array<ArkhamInvestigator>(arkhamInvestigatorDecoder, 'ArkhamInvestigator[]'),
+    clues: JsonDecoder.number,
+    doom: JsonDecoder.number,
+    status: arkhamLocationStatusDecoder,
   },
-  'ArkhamUnrevealedLocation',
+  'ArkhamLocation',
 );
-
-export const arkhamLocationRevealedLocationDecoder = JsonDecoder.object<
-    ArkhamLocation
-  >(
-    {
-      tag: JsonDecoder.isExactly('RevealedLocation'),
-      contents: arkhamRevealedLocationDecoder,
-    },
-    'ArkhamLocation<ArkhamRevealedLocation>',
-  );
-
-export const arkhamLocationUnrevealedLocationDecoder = JsonDecoder.object<
-    ArkhamLocation
-  >(
-    {
-      tag: JsonDecoder.isExactly('UnrevealedLocation'),
-      contents: arkhamUnrevealedLocationDecoder,
-    },
-    'ArkhamLocation<ArkhamUnrevealedLocation>',
-  );
-
-export const arkhamLocationDecoder = JsonDecoder.oneOf<ArkhamLocation>([
-  arkhamLocationUnrevealedLocationDecoder,
-  arkhamLocationRevealedLocationDecoder,
-], 'ArkhamLocation');

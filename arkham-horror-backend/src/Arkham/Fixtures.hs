@@ -65,7 +65,7 @@ fixtureGameState seed deck' = ArkhamGameState
   (playerF seed deck')
   Investigation
   chaosTokens
-  (HashMap.fromList [("Study", RevealedLocation $ study seed)])
+  (HashMap.fromList $ map (\l -> (alCardCode l, l)) [study seed])
   [agenda, act]
   ArkhamGameStateStepInvestigatorActionStep
 
@@ -83,11 +83,15 @@ loadDeck deckId = do
       (slots cards)
 
 agenda :: ArkhamStack
-agenda =
-  AgendaStack $ ArkhamAgenda "https://arkhamdb.com/bundles/cards/01105.jpg"
+agenda = AgendaStack $ ArkhamAgenda
+  (ArkhamCardCode "01105")
+  "https://arkhamdb.com/bundles/cards/01105.jpg"
+  0
 
 act :: ArkhamStack
-act = ActStack $ ArkhamAct "https://arkhamdb.com/bundles/cards/01108.jpg"
+act = ActStack $ ArkhamAct
+  (ArkhamCardCode "01108")
+  "https://arkhamdb.com/bundles/cards/01108.jpg"
 
 chaosTokens :: NonEmpty ArkhamChaosToken
 chaosTokens = NE.fromList
@@ -109,14 +113,17 @@ chaosTokens = NE.fromList
   , ElderSign
   ]
 
-study :: Int -> ArkhamRevealedLocation
-study seed = ArkhamRevealedLocation
+study :: Int -> ArkhamLocation
+study seed = ArkhamLocation
   "Study"
-  "Study"
+  (ArkhamCardCode "01111")
   []
   2
   "https://arkhamdb.com/bundles/cards/01111.png"
-  [LocationInvestigator $ investigatorF seed, LocationClues 2]
+  [investigatorF seed]
+  0
+  0
+  Revealed
 
 playerF :: Int -> [ArkhamCard] -> ArkhamPlayer
 playerF seed deck' = ArkhamPlayer (investigatorF seed) 0 0 5 0 [] [] deck' []

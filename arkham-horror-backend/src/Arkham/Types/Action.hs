@@ -43,7 +43,7 @@ instance FromJSON ArkhamMoveAction where
   parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
 
-newtype ArkhamInvestigateAction = ArkhamInvestigateAction { aiaLocationId :: LocationId }
+newtype ArkhamInvestigateAction = ArkhamInvestigateAction { aiaLocationId :: ArkhamCardCode }
   deriving newtype (Show, ToJSON, FromJSON)
 
 newtype ArkhamFightEnemyAction = ArkhamFightEnemyAction { afeaEnemy :: ArkhamCard }

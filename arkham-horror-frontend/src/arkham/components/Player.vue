@@ -19,18 +19,19 @@
       <div v-if="topOfDiscard" class="discard">
         <img
           :src="topOfDiscard"
+          class="card"
           width="200px"
         />
       </div>
       <img
         v-if="canDraw"
-        class="deck--can-draw"
+        class="card deck--can-draw"
         @click="drawCard"
         src="/img/arkham/player_back.jpg"
         width="200px"
       />
-      <img v-else src="/img/arkham/player_back.jpg" width="200px" />
-      <img :src="player.investigator.image" />
+      <img v-else class="card" src="/img/arkham/player_back.jpg" width="200px" />
+      <img class="card" :src="player.investigator.image" />
       <div>
         <div v-if="actionWindow" class="poolItem poolItem-resource" @click="takeResource">
           <img
@@ -242,5 +243,11 @@ export default class Player extends Vue {
     opacity: .85;
     mix-blend-mode: saturation;
   }
+}
+
+.card {
+  box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
+  border-radius: 13px;
+  margin: 2px;
 }
 </style>

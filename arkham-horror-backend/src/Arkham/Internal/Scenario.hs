@@ -42,24 +42,24 @@ buildTokenMapFrom scenarioTokens = HashMap.union scenarioTokens defaultTokenMap
 
 defaultMythosPhase :: ArkhamMythosPhaseInternal
 defaultMythosPhase = ArkhamMythosPhaseInternal
-  { mythosAddDoom = applyLock "addDoom"
+  { mythosAddDoom = runLocked "addDoom"
     $ \g -> Unlocked $ g & stacks . at "Act" . _Just . doom +~ 1
   , mythosCheckAdvance = id
   -- , mythosCheckAdvance = \g -> actCheckAdvance g $ toActInternal (fromJustNote "Unknown act deck" $ g ^. stacks . at "Act")
   , mythosDrawEncounter = id
-  , mythosOnEnd = applyLock "mythosOnEnd"
+  , mythosOnEnd = runLocked "mythosOnEnd"
     $ \g -> Unlocked $ g & phase .~ Investigation
   }
 
 defaultInvestigationPhase :: ArkhamInvestigationPhaseInternal
 defaultInvestigationPhase = ArkhamInvestigationPhaseInternal
-  { investigationPhaseOnEnter = applyLock "investigationOnEnter"
+  { investigationPhaseOnEnter = runLocked "investigationOnEnter"
     $ \g -> Unlocked $ g & player . actions .~ 3
   , investigationPhaseTakeActions =
-    applyLock "investigationTakeActions" $ \g -> if g ^. player . endedTurn
+    runLocked "investigationTakeActions" $ \g -> if g ^. player . endedTurn
       then Unlocked g
-      else Locked (== "investigationTakeActions") g
-  , investigationPhaseOnExit = applyLock "invesigationOnExit"
+      else addLock "investigationTakeActions" g
+  , investigationPhaseOnExit = runLocked "invesigationOnExit"
     $ \g -> Unlocked $ g & phase .~ Enemy & player . endedTurn .~ False
   }
 

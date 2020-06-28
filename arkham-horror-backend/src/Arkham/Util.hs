@@ -20,15 +20,9 @@ updateGame gameId game = replace gameId updatedGame
 
 
 buildLock :: ArkhamGame -> Lockable String ArkhamGame
-buildLock g =
-  if g
-      ^. phase
-      == Investigation
-      && g
-      ^. gameStateStep
-      == ArkhamGameStateStepInvestigatorActionStep
-    then Locked (== "investigationTakeActions") g
-    else Unlocked g
+buildLock g = case g ^. lock of
+  Just lock' -> Locked (== lock') g
+  Nothing -> Unlocked g
 
 -- brittany-disable-next-binding
 runGamePhase :: ArkhamGame -> ArkhamGame
@@ -40,8 +34,8 @@ runGamePhase g = removeLock $ until isLocked go $ go (buildLock g)
         Investigation ->
           let ArkhamInvestigationPhaseInternal {..} = scenarioInvestigationPhase scenario'
            in g' & investigationPhaseOnEnter & investigationPhaseTakeActions & investigationPhaseOnExit
-        Enemy -> g' & applyLock "enemyPhase" (\g'' -> Unlocked $ g'' & phase .~ Upkeep)
-        Upkeep -> g' & applyLock "upkeepPhase" (\g'' -> Unlocked $ g'' & currentData %~ drawCard & player . resources +~ 1 & phase .~ Mythos)
+        Enemy -> g' & runLocked "enemyPhase" (\g'' -> Unlocked $ g'' & phase .~ Upkeep)
+        Upkeep -> g' & runLocked "upkeepPhase" (\g'' -> Unlocked $ g'' & currentData %~ drawCard & player . resources +~ 1 & phase .~ Mythos)
         Mythos ->
           let ArkhamMythosPhaseInternal {..} = scenarioMythosPhase scenario'
            in g' & mythosAddDoom & mythosCheckAdvance & mythosDrawEncounter & mythosOnEnd

@@ -2,19 +2,44 @@ module Arkham.Internal.Types where
 
 import Arkham.Types
 import ClassyPrelude
+import Lens.Micro
+
+class HasLock a where
+  type LockKey a
+  lock :: Lens' a (Maybe (LockKey a))
 
 data Lockable b a = Locked (b -> Bool) a | Unlocked a
 
-applyLock :: b -> (a -> Lockable b a) -> Lockable b a -> Lockable b a
-applyLock _ f (Unlocked a) = f a
-applyLock key f (Locked lock a) | lock key = f a
-applyLock _ _ l = l
+instance HasLock ArkhamGame where
+  type LockKey ArkhamGame = String
+  lock = currentData . lock
 
-removeLock :: Lockable b a -> a
-removeLock (Locked _ a) = a
-removeLock (Unlocked a) = a
+instance HasLock ArkhamGameData where
+  type LockKey ArkhamGameData = String
+  lock = gameState . lock
 
-isLocked :: Lockable b a -> Bool
+instance HasLock ArkhamGameState where
+  type LockKey ArkhamGameState = String
+  lock = lens agsLock $ \m x -> m { agsLock = x }
+
+addLock :: (HasLock a, b ~ LockKey a, Eq b) => b -> a -> Lockable b a
+addLock b a = Locked (== b) $ a & lock ?~ b
+
+runLocked
+  :: (HasLock a, b ~ LockKey a)
+  => b
+  -> (a -> Lockable b a)
+  -> Lockable b a
+  -> Lockable b a
+runLocked _ f (Unlocked a) = f a
+runLocked key f (Locked lock' a) | lock' key = f a
+runLocked _ _ l = l
+
+removeLock :: (HasLock a, b ~ LockKey a) => Lockable b a -> a
+removeLock (Locked _ a) = a & lock .~ Nothing
+removeLock (Unlocked a) = a & lock .~ Nothing
+
+isLocked :: (HasLock a, b ~ LockKey a) => Lockable b a -> Bool
 isLocked (Locked _ _) = True
 isLocked (Unlocked _) = False
 

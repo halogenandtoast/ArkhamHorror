@@ -82,6 +82,7 @@ data ArkhamGameState = ArkhamGameState
   , agsLocations :: HashMap ArkhamCardCode ArkhamLocation
   , agsStacks :: HashMap Text ArkhamStack
   , agsStep :: ArkhamGameStateStep
+  , agsLock :: Maybe String
   }
   deriving stock (Generic, Show)
 

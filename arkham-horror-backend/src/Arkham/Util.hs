@@ -18,12 +18,6 @@ updateGame gameId game = replace gameId updatedGame
   $> arkhamGameCurrentData updatedGame
   where updatedGame = runGamePhase game
 
-
-buildLock :: ArkhamGame -> Lockable String ArkhamGame
-buildLock g = case g ^. lock of
-  Just lock' -> Locked (== lock') g
-  Nothing -> Unlocked g
-
 -- brittany-disable-next-binding
 runGamePhase :: ArkhamGame -> ArkhamGame
 runGamePhase g = removeLock $ until isLocked go $ go (buildLock g)

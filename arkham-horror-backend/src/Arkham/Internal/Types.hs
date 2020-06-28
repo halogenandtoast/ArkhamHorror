@@ -22,6 +22,11 @@ instance HasLock ArkhamGameState where
   type LockKey ArkhamGameState = String
   lock = lens agsLock $ \m x -> m { agsLock = x }
 
+buildLock :: (HasLock a, b ~ LockKey a, Eq b) => a -> Lockable b a
+buildLock a = case a ^. lock of
+  Just lock' -> Locked (== lock') a
+  Nothing -> Unlocked a
+
 addLock :: (HasLock a, b ~ LockKey a, Eq b) => b -> a -> Lockable b a
 addLock b a = Locked (== b) $ a & lock ?~ b
 

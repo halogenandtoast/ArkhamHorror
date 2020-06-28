@@ -68,7 +68,7 @@ fixtureGameState seed deck' = ArkhamGameState
   Investigation
   chaosTokens
   (HashMap.fromList $ map (\l -> (alCardCode l, l)) [study seed])
-  [agenda, act]
+  (HashMap.fromList [("Agenda", agenda), ("Act", act)])
   ArkhamGameStateStepInvestigatorActionStep
 
 loadDeck :: String -> IO [ArkhamCard]
@@ -88,12 +88,12 @@ agenda :: ArkhamStack
 agenda = AgendaStack $ ArkhamAgenda
   (ArkhamCardCode "01105")
   "https://arkhamdb.com/bundles/cards/01105.jpg"
-  0
 
 act :: ArkhamStack
 act = ActStack $ ArkhamAct
   (ArkhamCardCode "01108")
   "https://arkhamdb.com/bundles/cards/01108.jpg"
+  0
 
 chaosTokens :: NonEmpty ArkhamChaosToken
 chaosTokens = NE.fromList
@@ -139,6 +139,7 @@ playerF seed deck' = ArkhamPlayer
   deck''
   []
   3
+  False
   where (hand', deck'') = splitAt 5 deck'
 
 investigatorF :: Int -> ArkhamInvestigator

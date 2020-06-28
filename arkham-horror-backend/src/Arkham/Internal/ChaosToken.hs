@@ -1,9 +1,9 @@
 module Arkham.Internal.ChaosToken where
 
+import Arkham.Constructors
 import Arkham.Internal.Investigator
 import Arkham.Internal.Types
 import Arkham.Types
-import Arkham.Util
 import ClassyPrelude
 import Lens.Micro
 

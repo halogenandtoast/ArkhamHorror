@@ -1,13 +1,11 @@
 module Arkham.Util where
 
+import Arkham.Conversion
 import Arkham.Internal.Types
 import Arkham.Types
 import ClassyPrelude
-import qualified Data.HashMap.Strict as HashMap
 import Database.Persist.Sql
-import GHC.Stack
 import Lens.Micro
-import Safe
 
 drawCard :: ArkhamGameData -> ArkhamGameData
 drawCard g =
@@ -16,24 +14,34 @@ drawCard g =
 
 updateGame
   :: (MonadIO m) => ArkhamGameId -> ArkhamGame -> SqlPersistT m ArkhamGameData
-updateGame gameId game = replace gameId game $> arkhamGameCurrentData game
+updateGame gameId game = replace gameId updatedGame
+  $> arkhamGameCurrentData updatedGame
+  where updatedGame = runGamePhase game
 
-token :: HasCallStack => ArkhamChaosTokenInternal
-token = ArkhamChaosTokenInternal
-  { tokenToResult = error "you must specify a result"
-  , tokenOnFail = const
-  , tokenOnSuccess = const
-  , tokenOnReveal = const
-  }
 
-locationFor :: ArkhamInvestigator -> ArkhamGameState -> ArkhamLocation
-locationFor investigator' g =
-  fromJustNote "the investigator appears to be nowhere"
-    $ find (investigatorIsAtLocation investigator')
-    $ HashMap.elems (g ^. locations)
+buildLock :: ArkhamGame -> Lockable String ArkhamGame
+buildLock g =
+  if g
+      ^. phase
+      == Investigation
+      && g
+      ^. gameStateStep
+      == ArkhamGameStateStepInvestigatorActionStep
+    then Locked (== "investigationTakeActions") g
+    else Unlocked g
 
-investigatorIsAtLocation :: ArkhamInvestigator -> ArkhamLocation -> Bool
-investigatorIsAtLocation investigator' = elem investigator' . alInvestigators
-
-countTraitMatch :: ArkhamCardTrait -> ArkhamLocation -> Int
-countTraitMatch _ _ = 0
+-- brittany-disable-next-binding
+runGamePhase :: ArkhamGame -> ArkhamGame
+runGamePhase g = removeLock $ until isLocked go $ go (buildLock g)
+  where
+    scenario' = toInternalScenario g
+    go g' =
+      case removeLock g' ^. phase of
+        Investigation ->
+          let ArkhamInvestigationPhaseInternal {..} = scenarioInvestigationPhase scenario'
+           in g' & investigationPhaseOnEnter & investigationPhaseTakeActions & investigationPhaseOnExit
+        Enemy -> g' & applyLock "enemyPhase" (\g'' -> Unlocked $ g'' & phase .~ Upkeep)
+        Upkeep -> g' & applyLock "upkeepPhase" (\g'' -> Unlocked $ g'' & currentData %~ drawCard & player . resources +~ 1 & phase .~ Mythos)
+        Mythos ->
+          let ArkhamMythosPhaseInternal {..} = scenarioMythosPhase scenario'
+           in g' & mythosAddDoom & mythosCheckAdvance & mythosDrawEncounter & mythosOnEnd

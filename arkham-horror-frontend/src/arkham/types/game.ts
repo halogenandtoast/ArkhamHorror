@@ -26,12 +26,12 @@ export interface ArkhamGame {
 }
 
 type AgendaStackContents = {
-  doom: number;
   image: string;
   cardCode: string;
 }
 
 type ActStackContents = {
+  doom: number;
   image: string;
   cardCode: string;
 }
@@ -168,7 +168,7 @@ export interface ArkhamGameState {
   player: ArkhamPlayer;
   phase: ArkhamPhase;
   locations: Record<string, ArkhamLocation>;
-  stacks: ArkhamStack[];
+  stacks: Record<string, ArkhamStack>;
   step: ArkhamStep;
   chaosBag: ArkhamChaosToken[];
 }
@@ -183,7 +183,6 @@ const arkhamAgendaContentsDecoder = JsonDecoder.object<AgendaStackContents>(
   {
     image: JsonDecoder.string,
     cardCode: JsonDecoder.string,
-    doom: JsonDecoder.number,
   },
   'AgendaStackContents',
 );
@@ -192,6 +191,7 @@ const arkhamActContentsDecoder = JsonDecoder.object<ActStackContents>(
   {
     image: JsonDecoder.string,
     cardCode: JsonDecoder.string,
+    doom: JsonDecoder.number,
   },
   'AgendaStackContents',
 );
@@ -229,7 +229,7 @@ export const arkhamGameStateDecoder = JsonDecoder.object<ArkhamGameState>(
       arkhamLocationDecoder,
       'Dict<LocationId, ArkhamLocation>',
     ),
-    stacks: JsonDecoder.array<ArkhamStack>(arkhamStackDecoder, 'ArkhamStack[]'),
+    stacks: JsonDecoder.dictionary(arkhamStackDecoder, 'Dict<Text, ArkhamStack>'),
     step: arkhamStepDecoder,
     chaosBag: JsonDecoder.array<ArkhamChaosToken>(arkhamChaosTokenDecoder, 'ArkhamChaosToken[]'),
   },

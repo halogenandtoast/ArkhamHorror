@@ -195,11 +195,11 @@ class HasDoom a where
   doom :: Lens' a Int
 
 instance HasDoom ArkhamStack where
-  doom f (AgendaStack a) = AgendaStack <$> doom f a
-  doom f (ActStack a) = ActStack a <$ f 0
+  doom f (AgendaStack a) = AgendaStack a <$ f 0
+  doom f (ActStack a) = ActStack <$> doom f a
 
-instance HasDoom ArkhamAgenda where
-  doom = lens aagendaDoom $ \m x -> m { aagendaDoom = x }
+instance HasDoom ArkhamAct where
+  doom = lens aactDoom $ \m x -> m { aactDoom = x }
 
 instance HasDoom ArkhamLocation where
   doom = lens alDoom $ \m x -> m { alDoom = x }
@@ -218,3 +218,18 @@ instance HasPhase ArkhamGameData where
 
 instance HasPhase ArkhamGameState where
   phase = lens agsPhase $ \m x -> m { agsPhase = x }
+
+class HasStacks a where
+  stacks :: Lens' a (HashMap Text ArkhamStack)
+
+instance HasStacks ArkhamGame where
+  stacks = currentData . stacks
+
+instance HasStacks ArkhamGameData where
+  stacks = gameState . stacks
+
+instance HasStacks ArkhamGameState where
+  stacks = lens agsStacks $ \m x -> m { agsStacks = x }
+
+endedTurn :: Lens' ArkhamPlayer Bool
+endedTurn = lens _endedTurn $ \m x -> m { _endedTurn = x }

@@ -17,6 +17,7 @@ data ArkhamPlayer = ArkhamPlayer
   , _deck :: [ArkhamCard]
   , _discard :: [ArkhamCard]
   , _actionsRemaining :: Int
+  , _endedTurn :: Bool
   }
   deriving stock (Generic, Show)
 

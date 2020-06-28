@@ -13,7 +13,7 @@ import Data.Aeson.Casing
 import Data.List.NonEmpty (NonEmpty)
 
 data ArkhamPhase = Mythos | Investigation | Enemy | Upkeep
-  deriving stock (Generic, Show)
+  deriving stock (Generic, Show, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
 data ArkhamGameStateStep
@@ -22,6 +22,16 @@ data ArkhamGameStateStep
   | ArkhamGameStateStepRevealTokenStep ArkhamRevealTokenStep
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
+
+instance Eq ArkhamGameStateStep where
+  ArkhamGameStateStepInvestigatorActionStep == ArkhamGameStateStepInvestigatorActionStep
+    = True
+  ArkhamGameStateStepSkillCheckStep _ == ArkhamGameStateStepSkillCheckStep _
+    = True
+  ArkhamGameStateStepRevealTokenStep _ == ArkhamGameStateStepRevealTokenStep _
+    = True
+  _ == _ = False
+
 
 data ArkhamTarget = LocationTarget ArkhamLocation | OtherTarget ArkhamLocation
   deriving stock (Generic, Show)
@@ -70,12 +80,12 @@ data ArkhamGameState = ArkhamGameState
   , agsPhase :: ArkhamPhase
   , agsChaosBag :: NonEmpty ArkhamChaosToken
   , agsLocations :: HashMap ArkhamCardCode ArkhamLocation
-  , agsStacks :: [ArkhamStack]
+  , agsStacks :: HashMap Text ArkhamStack
   , agsStep :: ArkhamGameStateStep
   }
   deriving stock (Generic, Show)
 
-data ArkhamAct = ArkhamAct { aactCardCode :: ArkhamCardCode, aactImage :: Text }
+data ArkhamAct = ArkhamAct { aactCardCode :: ArkhamCardCode, aactImage :: Text, aactDoom :: Int }
   deriving stock (Show, Generic)
 
 instance ToJSON ArkhamAct where
@@ -88,7 +98,7 @@ instance FromJSON ArkhamAct where
   parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
 
-data ArkhamAgenda = ArkhamAgenda { aagendaCardCode :: ArkhamCardCode, aagendaImage :: Text, aagendaDoom :: Int }
+data ArkhamAgenda = ArkhamAgenda { aagendaCardCode :: ArkhamCardCode, aagendaImage :: Text }
   deriving stock (Show, Generic)
 
 instance ToJSON ArkhamAgenda where

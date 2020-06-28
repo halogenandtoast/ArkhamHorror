@@ -1,12 +1,17 @@
 module Arkham.Internal.Scenario where
 
+import Arkham.Constructors
 import Arkham.Internal.ChaosToken
+import Arkham.Internal.Investigator
 import Arkham.Internal.Types
 import Arkham.Types
-import Arkham.Util
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro
+import Lens.Micro.Platform ()
+
+countTraitMatch :: ArkhamCardTrait -> ArkhamLocation -> Int
+countTraitMatch _ _ = 0
 
 allScenarios
   :: HashMap ArkhamScenarioCode (ArkhamDifficulty -> ArkhamScenarioInternal)
@@ -34,9 +39,35 @@ buildTokenMapFrom
   -> HashMap ArkhamChaosToken ArkhamChaosTokenInternal
 buildTokenMapFrom scenarioTokens = HashMap.union scenarioTokens defaultTokenMap
 
+
+defaultMythosPhase :: ArkhamMythosPhaseInternal
+defaultMythosPhase = ArkhamMythosPhaseInternal
+  { mythosAddDoom = applyLock "addDoom"
+    $ \g -> Unlocked $ g & stacks . at "Act" . _Just . doom +~ 1
+  , mythosCheckAdvance = id
+  -- , mythosCheckAdvance = \g -> actCheckAdvance g $ toActInternal (fromJustNote "Unknown act deck" $ g ^. stacks . at "Act")
+  , mythosDrawEncounter = id
+  , mythosOnEnd = applyLock "mythosOnEnd"
+    $ \g -> Unlocked $ g & phase .~ Investigation
+  }
+
+defaultInvestigationPhase :: ArkhamInvestigationPhaseInternal
+defaultInvestigationPhase = ArkhamInvestigationPhaseInternal
+  { investigationPhaseOnEnter = applyLock "investigationOnEnter"
+    $ \g -> Unlocked $ g & player . actions .~ 3
+  , investigationPhaseTakeActions =
+    applyLock "investigationTakeActions" $ \g -> if g ^. player . endedTurn
+      then Unlocked g
+      else Locked (== "investigationTakeActions") g
+  , investigationPhaseOnExit = applyLock "invesigationOnExit"
+    $ \g -> Unlocked $ g & phase .~ Enemy & player . endedTurn .~ False
+  }
+
 theGathering :: ArkhamDifficulty -> ArkhamScenarioInternal
 theGathering difficulty' = ArkhamScenarioInternal
   { scenarioName = "The Gathering"
+  , scenarioMythosPhase = defaultMythosPhase
+  , scenarioInvestigationPhase = defaultInvestigationPhase
   , tokenMap = buildTokenMapFrom $ HashMap.fromList
     [ (Skull, theGatheringSkullToken difficulty')
     , (Cultist, theGatheringCultistToken difficulty')

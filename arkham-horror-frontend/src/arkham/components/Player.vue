@@ -2,7 +2,6 @@
   <div>
     <div class="in-play">
       <section>
-        <h2>In play</h2>
         <div v-for="(card, index) in player.inPlay" :key="index">
           <img :src="card.contents.image" class="card" />
           <div

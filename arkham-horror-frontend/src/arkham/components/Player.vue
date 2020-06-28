@@ -1,19 +1,17 @@
 <template>
   <div>
-    <div class="in-play">
-      <section>
-        <div v-for="(card, index) in player.inPlay" :key="index">
-          <img :src="card.contents.image" class="card" />
-          <div
-            v-if="card.contents.uses && card.contents.uses > 0"
-            class="poolItem poolItem-resource"
-          >
-            <img src="/img/arkham/resource.png" />
-            {{card.contents.uses}}
-          </div>
+    <section class="in-play">
+      <div v-for="(card, index) in player.inPlay" :key="index">
+        <img :src="card.contents.image" class="card" />
+        <div
+          v-if="card.contents.uses && card.contents.uses > 0"
+          class="poolItem poolItem-resource"
+        >
+          <img src="/img/arkham/resource.png" />
+          {{card.contents.uses}}
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
     <div class="player">
       <div v-if="topOfDiscard" class="discard">
         <img
@@ -294,5 +292,9 @@ i.action {
     font-family: "Arkham";
     content: "\0049";
   }
+}
+
+.in-play {
+  display: flex;
 }
 </style>

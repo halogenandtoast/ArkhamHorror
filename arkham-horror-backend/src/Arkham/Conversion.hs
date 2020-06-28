@@ -8,15 +8,6 @@ import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro
 import Safe
 
-toInternalScenario :: ArkhamGame -> ArkhamScenarioInternal
-toInternalScenario g =
-  fromJustNote "missing scenario"
-    $ HashMap.lookup (asScenarioCode scenario') allScenarios
-    <*> pure difficulty'
- where
-  scenario' = g ^. scenario
-  difficulty' = g ^. difficulty
-
 toInternalToken :: ArkhamGame -> ArkhamChaosToken -> ArkhamChaosTokenInternal
 toInternalToken g ct = fromJustNote "token not in scenario"
   $ HashMap.lookup ct tokenMap'

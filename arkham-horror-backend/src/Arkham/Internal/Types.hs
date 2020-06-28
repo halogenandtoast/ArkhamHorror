@@ -50,8 +50,11 @@ runOnlyLocked key f (Locked lock' a) | lock' key = f a
 runOnlyLocked _ _ l = l
 
 removeLock :: (HasLock a, b ~ LockKey a) => Lockable b a -> a
-removeLock (Locked _ a) = a & lock .~ Nothing
-removeLock (Unlocked a) = a & lock .~ Nothing
+removeLock a = withoutLock a & lock .~ Nothing
+
+withoutLock :: (HasLock a, b ~ LockKey a) => Lockable b a -> a
+withoutLock (Locked _ a) = a
+withoutLock (Unlocked a) = a
 
 isLocked :: (HasLock a, b ~ LockKey a) => Lockable b a -> Bool
 isLocked (Locked _ _) = True
@@ -82,17 +85,37 @@ data ArkhamScenarioInternal = ArkhamScenarioInternal
   , tokenMap :: HashMap ArkhamChaosToken ArkhamChaosTokenInternal
   , scenarioMythosPhase :: ArkhamMythosPhaseInternal
   , scenarioInvestigationPhase :: ArkhamInvestigationPhaseInternal
+  , scenarioEnemyPhase :: ArkhamEnemyPhaseInternal
+  , scenarioUpkeepPhase :: ArkhamUpkeepPhaseInternal
+  , scenarioRun :: ArkhamGame -> ArkhamGame
   }
 
 data ArkhamMythosPhaseInternal = ArkhamMythosPhaseInternal
-  { mythosAddDoom :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , mythosCheckAdvance :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , mythosDrawEncounter :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , mythosOnEnd :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  { mythosPhaseOnEnter :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  , mythosPhaseAddDoom :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  , mythosPhaseCheckAdvance :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  , mythosPhaseDrawEncounter :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  , mythosPhaseOnExit :: Lockable String ArkhamGame -> Lockable String ArkhamGame
   }
 
 data ArkhamInvestigationPhaseInternal = ArkhamInvestigationPhaseInternal
   { investigationPhaseOnEnter :: Lockable String ArkhamGame -> Lockable String ArkhamGame
   , investigationPhaseTakeActions :: Lockable String ArkhamGame -> Lockable String ArkhamGame
   , investigationPhaseOnExit :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  }
+
+data ArkhamEnemyPhaseInternal = ArkhamEnemyPhaseInternal
+  { enemyPhaseOnEnter :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  , enemyPhaseResolveHunters :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  , enemyPhaseResolveEnemies :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  , enemyPhaseOnExit :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  }
+
+data ArkhamUpkeepPhaseInternal = ArkhamUpkeepPhaseInternal
+  { upkeepPhaseOnEnter :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  , upkeepPhaseResetActions :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  , upkeepPhaseReadyExhausted :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  , upkeepPhaseDrawCardsAndGainResources :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  , upkeepPhaseCheckHandSize :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  , upkeepPhaseOnExit :: Lockable String ArkhamGame -> Lockable String ArkhamGame
   }

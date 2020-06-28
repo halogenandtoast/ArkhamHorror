@@ -39,7 +39,7 @@ investigator = ArkhamInvestigatorInternal
 
 rolandBanks :: ArkhamInvestigatorInternal
 rolandBanks = investigator
-  { investigatorElderSignToken = token
+  { investigatorElderSignToken = (token ElderSign)
     { tokenToResult = \state investigator' ->
       Modifier $ locationFor investigator' state ^. clues
     }

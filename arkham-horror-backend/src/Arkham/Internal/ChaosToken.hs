@@ -6,18 +6,34 @@ import Arkham.Internal.Types
 import Arkham.Types
 import ClassyPrelude
 import Lens.Micro
+import Safe
 
 modifier :: Int -> (a -> b -> ArkhamChaosTokenResult)
 modifier = const . const . Modifier
 
 numberToken :: Int -> ArkhamChaosTokenInternal
-numberToken n = token { tokenToResult = modifier n }
+numberToken n = (token $ fromJustNote "Not a valid number token" $ tokenType n)
+  { tokenToResult = modifier n
+  }
+ where
+  tokenType 1 = Just PlusOne
+  tokenType 0 = Just Zero
+  tokenType (-1) = Just MinusOne
+  tokenType (-2) = Just MinusTwo
+  tokenType (-3) = Just MinusThree
+  tokenType (-4) = Just MinusFour
+  tokenType (-5) = Just MinusFive
+  tokenType (-6) = Just MinusSix
+  tokenType (-7) = Just MinusSeven
+  tokenType (-8) = Just MinusEight
+  tokenType _ = Nothing
+
 
 plusOneToken :: ArkhamChaosTokenInternal
 plusOneToken = numberToken 1
 
 zeroToken :: ArkhamChaosTokenInternal
-zeroToken = token
+zeroToken = numberToken 0
 
 minusOneToken :: ArkhamChaosTokenInternal
 minusOneToken = numberToken (-1)
@@ -44,7 +60,7 @@ minusEightToken :: ArkhamChaosTokenInternal
 minusEightToken = numberToken (-7)
 
 autoFailToken :: ArkhamChaosTokenInternal
-autoFailToken = token { tokenToResult = const (const Failure) }
+autoFailToken = (token AutoFail) { tokenToResult = const (const Failure) }
 
 playerElderSignToken :: ArkhamGameState -> ArkhamChaosTokenInternal
 playerElderSignToken g = investigatorElderSignToken internalInvestigator

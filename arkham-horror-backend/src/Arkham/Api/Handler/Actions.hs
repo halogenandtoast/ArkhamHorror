@@ -2,8 +2,8 @@
 module Arkham.Api.Handler.Actions where
 
 import Arkham.Internal.Card
+import Arkham.Internal.Scenario
 import Arkham.Types
-import Arkham.Util
 import qualified Data.HashMap.Strict as HashMap
 import Import
 import Lens.Micro

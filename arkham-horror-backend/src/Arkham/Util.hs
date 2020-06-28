@@ -10,7 +10,7 @@ import Lens.Micro
 drawCard :: ArkhamGameData -> ArkhamGameData
 drawCard g =
   let (drawn, deck') = splitAt 1 (g ^. player . deck)
-   in g & player . hand %~ (++ drawn) & player . deck .~ deck'
+  in g & player . hand %~ (++ drawn) & player . deck .~ deck'
 
 updateGame
   :: (MonadIO m) => ArkhamGameId -> ArkhamGame -> SqlPersistT m ArkhamGameData
@@ -23,13 +23,15 @@ runGamePhase :: ArkhamGame -> ArkhamGame
 runGamePhase g = removeLock $ until isLocked go $ go (buildLock g)
   where
     scenario' = toInternalScenario g
-    go g' =
-      case removeLock g' ^. phase of
-        Investigation ->
-          let ArkhamInvestigationPhaseInternal {..} = scenarioInvestigationPhase scenario'
-           in g' & investigationPhaseOnEnter & investigationPhaseTakeActions & investigationPhaseOnExit
-        Enemy -> g' & runLocked "enemyPhase" (\g'' -> Unlocked $ g'' & phase .~ Upkeep)
-        Upkeep -> g' & runLocked "upkeepPhase" (\g'' -> Unlocked $ g'' & currentData %~ drawCard & player . resources +~ 1 & phase .~ Mythos)
-        Mythos ->
-          let ArkhamMythosPhaseInternal {..} = scenarioMythosPhase scenario'
-           in g' & mythosAddDoom & mythosCheckAdvance & mythosDrawEncounter & mythosOnEnd
+    ArkhamInvestigationPhaseInternal {..} = scenarioInvestigationPhase scenario'
+    ArkhamMythosPhaseInternal {..} = scenarioMythosPhase scenario'
+    go g' = g'
+      & mythosAddDoom
+      & mythosCheckAdvance
+      & mythosDrawEncounter
+      & mythosOnEnd
+      & investigationPhaseOnEnter
+      & investigationPhaseTakeActions
+      & investigationPhaseOnExit
+      & runLocked "enemyPhase" (\g'' -> Unlocked $ g'' & phase .~ Upkeep)
+      & runLocked "upkeepPhase" (\g'' -> Unlocked $ g'' & currentData %~ drawCard & player . resources +~ 1 & phase .~ Mythos)

@@ -21,7 +21,8 @@ export const arkhamLocationStatusDecoder = JsonDecoder.oneOf<ArkhamLocationStatu
 export interface ArkhamLocation {
   name: string;
   cardCode: string;
-  locationSymbols: ArkhamLocationSymbol[];
+  locationSymbol: ArkhamLocationSymbol | null;
+  connectedLocationSymbols: ArkhamLocationSymbol[];
   shroud: number;
   image: string;
   investigators: ArkhamInvestigator[];
@@ -34,7 +35,8 @@ export const arkhamLocationDecoder = JsonDecoder.object<ArkhamLocation>(
   {
     name: JsonDecoder.string,
     cardCode: JsonDecoder.string,
-    locationSymbols: JsonDecoder.array<ArkhamLocationSymbol>(arkhamLocationSymbolDecoder, 'ArkhamLocationSymbol[]'),
+    locationSymbol: JsonDecoder.nullable<ArkhamLocationSymbol>(arkhamLocationSymbolDecoder),
+    connectedLocationSymbols: JsonDecoder.array<ArkhamLocationSymbol>(arkhamLocationSymbolDecoder, 'ArkhamLocationSymbol[]'),
     shroud: JsonDecoder.number,
     image: JsonDecoder.string,
     investigators: JsonDecoder.array<ArkhamInvestigator>(arkhamInvestigatorDecoder, 'ArkhamInvestigator[]'),

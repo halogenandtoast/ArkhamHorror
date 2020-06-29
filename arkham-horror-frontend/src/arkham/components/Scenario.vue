@@ -4,14 +4,14 @@
       <img class="card" :src="game.scenario.guide" />
       <img
         class="card card--sideways"
-        :src="game.gameState.stacks.Agenda.contents.image"
+        :src="game.gameState.stacks.Agenda.contents[0].image"
       />
-      <div v-if="game.gameState.stacks.Agenda.contents.doom">
-        <img src="/img/arkham/doom.png"/> {{game.gameState.stacks.Agenda.contents.doom}}
+      <div v-if="game.gameState.stacks.Agenda.contents[0].doom">
+        <img src="/img/arkham/doom.png"/> {{game.gameState.stacks.Agenda.contents[0].doom}}
       </div>
       <img
         class="card card--sideways"
-        :src="game.gameState.stacks.Act.contents.image"
+        :src="game.gameState.stacks.Act.contents[0].image"
       />
 
       <img v-if="drawnToken" :src="chaosTokenSrc" class="token" />

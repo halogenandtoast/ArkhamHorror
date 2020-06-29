@@ -142,7 +142,7 @@ investigateAction (Entity gameId game) skillType location cardIndexes = do
   runDB $ updateGame gameId newGame
 
 failedInvestigation :: ArkhamGame -> ArkhamLocation -> ArkhamGame
-failedInvestigation g _ = g
+failedInvestigation g _ = g & gameStateStep .~ investigatorStep
 
 -- brittany-disable-next-binding
 successfulInvestigation :: ArkhamGame -> ArkhamLocation -> Int -> ArkhamGame

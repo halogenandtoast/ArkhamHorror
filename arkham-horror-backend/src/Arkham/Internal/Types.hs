@@ -18,6 +18,7 @@ import Arkham.Types.GameState
 import Arkham.Types.Investigator
 import Base.Lock
 import ClassyPrelude
+import Control.Monad.Random
 
 data ArkhamCardTrait = Tome | Ghoul
 
@@ -41,7 +42,7 @@ data ArkhamChaosTokenInternal = ArkhamChaosTokenInternal
 
 data ArkhamScenarioInternal = ArkhamScenarioInternal
   { scenarioName :: Text
-  , scenarioSetup :: ArkhamGameState -> ArkhamGameState
+  , scenarioSetup :: forall m. MonadRandom m => ArkhamGameState -> m ArkhamGameState
   , tokenMap :: HashMap ArkhamChaosToken ArkhamChaosTokenInternal
   , scenarioMythosPhase :: ArkhamMythosPhaseInternal
   , scenarioInvestigationPhase :: ArkhamInvestigationPhaseInternal

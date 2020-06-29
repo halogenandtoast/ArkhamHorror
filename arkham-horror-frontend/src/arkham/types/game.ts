@@ -28,22 +28,22 @@ export interface ArkhamGame {
 type AgendaStackContents = {
   image: string;
   cardCode: string;
+  doom: number;
 }
 
 type ActStackContents = {
-  doom: number;
   image: string;
   cardCode: string;
 }
 
 type AgendaStack = {
   tag: 'AgendaStack';
-  contents: AgendaStackContents;
+  contents: AgendaStackContents[];
 };
 
 type ActStack = {
   tag: 'ActStack';
-  contents: ActStackContents;
+  contents: ActStackContents[];
 };
 
 type ArkhamStack = AgendaStack | ActStack;
@@ -183,6 +183,7 @@ const arkhamAgendaContentsDecoder = JsonDecoder.object<AgendaStackContents>(
   {
     image: JsonDecoder.string,
     cardCode: JsonDecoder.string,
+    doom: JsonDecoder.number,
   },
   'AgendaStackContents',
 );
@@ -191,7 +192,6 @@ const arkhamActContentsDecoder = JsonDecoder.object<ActStackContents>(
   {
     image: JsonDecoder.string,
     cardCode: JsonDecoder.string,
-    doom: JsonDecoder.number,
   },
   'AgendaStackContents',
 );
@@ -199,7 +199,7 @@ const arkhamActContentsDecoder = JsonDecoder.object<ActStackContents>(
 export const arkhamStackAgendaStackDecoder = JsonDecoder.object<AgendaStack>(
   {
     tag: JsonDecoder.isExactly('AgendaStack'),
-    contents: arkhamAgendaContentsDecoder,
+    contents: JsonDecoder.array<AgendaStackContents>(arkhamAgendaContentsDecoder, 'AgendaStack[]'),
   },
   'AgendaStack',
 );
@@ -208,7 +208,7 @@ export const arkhamStackAgendaStackDecoder = JsonDecoder.object<AgendaStack>(
 export const arkhamStackActStackDecoder = JsonDecoder.object<ActStack>(
   {
     tag: JsonDecoder.isExactly('ActStack'),
-    contents: arkhamActContentsDecoder,
+    contents: JsonDecoder.array<ActStackContents>(arkhamActContentsDecoder, 'ActStack[]'),
   },
   'ActStack',
 );

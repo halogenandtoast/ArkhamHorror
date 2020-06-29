@@ -20,7 +20,9 @@ import Arkham.Types.Location
 import Arkham.Types.Scenario
 import Base.Lock
 import ClassyPrelude
+import Control.Monad.Random
 import qualified Data.HashMap.Strict as HashMap
+import qualified Data.List.NonEmpty as NE
 import Lens.Micro
 import Lens.Micro.Platform ()
 import Safe hiding (at)
@@ -72,7 +74,7 @@ defaultMythosPhase :: ArkhamMythosPhaseInternal
 defaultMythosPhase = ArkhamMythosPhaseInternal
   { mythosPhaseOnEnter = id
   , mythosPhaseAddDoom = runLocked "addDoom"
-    $ \g -> Unlocked $ g & stacks . at "Act" . _Just . doom +~ 1
+    $ \g -> Unlocked $ g & stacks . at "Agenda" . _Just . doom +~ 1
   , mythosPhaseCheckAdvance = id
   -- , mythosCheckAdvance = \g -> actCheckAdvance g $ toActInternal (fromJustNote "Unknown act deck" $ g ^. stacks . at "Act")
   , mythosPhaseDrawEncounter = id
@@ -163,8 +165,12 @@ isEasyStandard difficulty' =
 reveal :: ArkhamGameState -> ArkhamLocation -> ArkhamLocation
 reveal g l = aliOnReveal (toLocationInternal l) g l
 
-theGatheringSetup :: ArkhamGameState -> ArkhamGameState
-theGatheringSetup game = game & locations .~ locations' & stacks .~ stacks'
+theGatheringSetup :: MonadRandom m => ArkhamGameState -> m ArkhamGameState
+theGatheringSetup game = do
+  agenda <- theGatheringAgenda
+  act <- theGatheringAct
+  let stacks' = HashMap.fromList [("Agenda", agenda), ("Act", act)]
+  pure $ game & locations .~ locations' & stacks .~ stacks'
  where
   investigators = [game ^. player . investigator]
   locations' = HashMap.fromList
@@ -172,14 +178,35 @@ theGatheringSetup game = game & locations .~ locations' & stacks .~ stacks'
       , reveal game $ study { alInvestigators = investigators }
       )
     ]
-  stacks' = HashMap.fromList [("Agenda", agenda), ("Act", act)]
-  agenda = AgendaStack $ ArkhamAgenda
+
+theGatheringAgenda :: MonadRandom m => m ArkhamStack
+theGatheringAgenda = pure $ AgendaStack $ NE.fromList
+  [ ArkhamAgenda
     (ArkhamCardCode "01105")
     "https://arkhamdb.com/bundles/cards/01105.jpg"
-  act = ActStack $ ArkhamAct
+    0
+  , ArkhamAgenda
+    (ArkhamCardCode "01106")
+    "https://arkhamdb.com/bundles/cards/01106.jpg"
+    0
+  , ArkhamAgenda
+    (ArkhamCardCode "01107")
+    "https://arkhamdb.com/bundles/cards/01107.jpg"
+    0
+  ]
+
+theGatheringAct :: MonadRandom m => m ArkhamStack
+theGatheringAct = pure $ ActStack $ NE.fromList
+  [ ArkhamAct
     (ArkhamCardCode "01108")
     "https://arkhamdb.com/bundles/cards/01108.jpg"
-    0
+  , ArkhamAct
+    (ArkhamCardCode "01109")
+    "https://arkhamdb.com/bundles/cards/01109.jpg"
+  , ArkhamAct
+    (ArkhamCardCode "01110")
+    "https://arkhamdb.com/bundles/cards/01110.jpg"
+  ]
 
 unrevealedLocation :: ArkhamLocation
 unrevealedLocation = ArkhamLocation

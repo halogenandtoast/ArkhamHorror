@@ -211,11 +211,17 @@ class HasDoom a where
   doom :: Lens' a Int
 
 instance HasDoom ArkhamStack where
-  doom f (AgendaStack a) = AgendaStack a <$ f 0
-  doom f (ActStack a) = ActStack <$> doom f a
+  doom f (AgendaStack a) = AgendaStack <$> doom f a
+  doom f (ActStack a) = ActStack a <$ f 0
 
-instance HasDoom ArkhamAct where
-  doom = lens aactDoom $ \m x -> m { aactDoom = x }
+_top :: Lens' (NonEmpty a) a
+_top f (a :| as) = (:| as) <$> f a
+
+instance HasDoom (NonEmpty ArkhamAgenda) where
+  doom = _top . doom
+
+instance HasDoom ArkhamAgenda where
+  doom = lens aagendaDoom $ \m x -> m { aagendaDoom = x }
 
 instance HasDoom ArkhamLocation where
   doom = lens alDoom $ \m x -> m { alDoom = x }

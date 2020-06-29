@@ -62,7 +62,7 @@ loadGameFixture :: Int -> IO ArkhamGame
 loadGameFixture n = do
   fixture <- ArkhamGame <$> loadGameDataFixture n
   let setup = scenarioSetup (toInternalScenario fixture)
-  pure $ fixture & currentData . gameState %~ setup
+  traverseOf (currentData . gameState) setup fixture
 
 loadGameDataFixture :: Int -> IO ArkhamGameData
 loadGameDataFixture 1 =

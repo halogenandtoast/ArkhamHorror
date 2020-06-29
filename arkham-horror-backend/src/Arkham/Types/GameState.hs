@@ -97,7 +97,7 @@ data ArkhamGameState = ArkhamGameState
   }
   deriving stock (Generic, Show)
 
-data ArkhamAct = ArkhamAct { aactCardCode :: ArkhamCardCode, aactImage :: Text, aactDoom :: Int }
+data ArkhamAct = ArkhamAct { aactCardCode :: ArkhamCardCode, aactImage :: Text }
   deriving stock (Show, Generic)
 
 instance ToJSON ArkhamAct where
@@ -110,7 +110,7 @@ instance FromJSON ArkhamAct where
   parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
 
-data ArkhamAgenda = ArkhamAgenda { aagendaCardCode :: ArkhamCardCode, aagendaImage :: Text }
+data ArkhamAgenda = ArkhamAgenda { aagendaCardCode :: ArkhamCardCode, aagendaImage :: Text, aagendaDoom :: Int }
   deriving stock (Show, Generic)
 
 instance ToJSON ArkhamAgenda where
@@ -123,7 +123,7 @@ instance FromJSON ArkhamAgenda where
   parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 7 }
 
-data ArkhamStack = ActStack ArkhamAct | AgendaStack ArkhamAgenda
+data ArkhamStack = ActStack (NonEmpty ArkhamAct) | AgendaStack (NonEmpty ArkhamAgenda)
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -1,4 +1,8 @@
-module Arkham.Types.Skill where
+module Arkham.Types.Skill
+  ( ArkhamSkillType(..)
+  , ArkhamSkill(..)
+  )
+where
 
 import ClassyPrelude
 import Data.Aeson

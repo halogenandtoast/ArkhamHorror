@@ -21,6 +21,7 @@ import Control.Monad.Random
 import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.List.NonEmpty as NE
 import Lens.Micro
+import Lens.Micro.Extras
 
 gameState :: Lens' ArkhamGameData ArkhamGameState
 gameState = lens agGameState $ \m x -> m { agGameState = x }
@@ -87,6 +88,12 @@ class HasResources a where
 
 instance HasResources ArkhamPlayer where
   resources = lens _resources $ \m x -> m { _resources = x }
+
+class HasPlayers a where
+  players :: Lens' a [ArkhamInvestigator]
+
+instance HasPlayers ArkhamGameState where
+  players = lens (pure . view (player . investigator)) const
 
 class HasInvestigator a where
   investigator :: Lens' a ArkhamInvestigator

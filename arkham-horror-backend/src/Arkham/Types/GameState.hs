@@ -1,4 +1,15 @@
-module Arkham.Types.GameState where
+module Arkham.Types.GameState
+  ( ArkhamGameState(..)
+  , ArkhamGameStateStep(..)
+  , ArkhamStack(..)
+  , ArkhamPhase(..)
+  , ArkhamAct(..)
+  , ArkhamAgenda(..)
+  , ArkhamSkillCheckStep(..)
+  , ArkhamRevealTokenStep(..)
+  , ArkhamTarget(..)
+  )
+where
 
 import Arkham.Types.Player
 

@@ -1,4 +1,8 @@
-module Arkham.Types.Scenario where
+module Arkham.Types.Scenario
+  ( ArkhamScenarioCode(..)
+  , ArkhamScenario(..)
+  )
+where
 
 import ClassyPrelude
 import Data.Aeson

@@ -1,4 +1,8 @@
-module Arkham.Types.Game where
+module Arkham.Types.Game
+  ( ArkhamGameData(..)
+  , ArkhamCycle(..)
+  )
+where
 
 import Arkham.Types.Difficulty
 import Arkham.Types.GameState

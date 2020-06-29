@@ -1,8 +1,13 @@
-module Arkham.Internal.Scenario where
+module Arkham.Internal.Scenario
+  ( toInternalScenario
+  , drawCard
+  )
+where
 
 import Arkham.Constructors
 import Arkham.Internal.ChaosToken
 import Arkham.Internal.Investigator
+import Arkham.Internal.Location
 import Arkham.Internal.Types
 import Arkham.Types
 import ClassyPrelude
@@ -146,32 +151,49 @@ isEasyStandard :: ArkhamDifficulty -> Bool
 isEasyStandard difficulty' =
   difficulty' == ArkhamEasy || difficulty' == ArkhamStandard
 
+reveal :: ArkhamGameState -> ArkhamLocation -> ArkhamLocation
+reveal g l = aliOnReveal (toLocationInternal l) g l
+
 theGatheringSetup :: ArkhamGameState -> ArkhamGameState
 theGatheringSetup game = game & locations .~ locations' & stacks .~ stacks'
-  where
-    investigators = [game ^. player . investigator]
-    locations' = HashMap.fromList $ [(alCardCode study, study { alInvestigators = investigators, alClues = 2 * length investigators })]
-    stacks' = HashMap.fromList $ [("Agenda", agenda), ("Act", act)]
-    agenda = AgendaStack $ ArkhamAgenda
-      (ArkhamCardCode "01105")
-      "https://arkhamdb.com/bundles/cards/01105.jpg"
-    act = ActStack $ ArkhamAct
-      (ArkhamCardCode "01108")
-      "https://arkhamdb.com/bundles/cards/01108.jpg"
-      0
+ where
+  investigators = [game ^. player . investigator]
+  locations' = HashMap.fromList
+    [ ( alCardCode study
+      , reveal game $ study { alInvestigators = investigators }
+      )
+    ]
+  stacks' = HashMap.fromList [("Agenda", agenda), ("Act", act)]
+  agenda = AgendaStack $ ArkhamAgenda
+    (ArkhamCardCode "01105")
+    "https://arkhamdb.com/bundles/cards/01105.jpg"
+  act = ActStack $ ArkhamAct
+    (ArkhamCardCode "01108")
+    "https://arkhamdb.com/bundles/cards/01108.jpg"
+    0
 
+unrevealedLocation :: ArkhamLocation
+unrevealedLocation = ArkhamLocation
+  { alName = error "Missing location name"
+  , alCardCode = error "Missing card code"
+  , alLocationSymbol = Nothing
+  , alConnectedLocationSymbols = []
+  , alShroud = 0
+  , alImage = error "Missing card image"
+  , alInvestigators = []
+  , alClues = 0
+  , alDoom = 0
+  , alStatus = Unrevealed
+  }
 
 study :: ArkhamLocation
-study = ArkhamLocation
-  "Study"
-  (ArkhamCardCode "01111")
-  []
-  0
-  "https://arkhamdb.com/bundles/cards/01111.png"
-  []
-  2
-  0
-  Revealed
+study = unrevealedLocation
+  { alName = "Study"
+  , alCardCode = ArkhamCardCode "01111"
+  , alLocationSymbol = Just Circle
+  , alShroud = 2
+  , alImage = "https://arkhamdb.com/bundles/cards/01111.png"
+  }
 
 theGatheringSkullToken :: ArkhamDifficulty -> ArkhamChaosTokenInternal
 theGatheringSkullToken difficulty' = if isEasyStandard difficulty'

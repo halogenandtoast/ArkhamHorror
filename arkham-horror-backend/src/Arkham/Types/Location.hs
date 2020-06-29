@@ -1,4 +1,9 @@
-module Arkham.Types.Location where
+module Arkham.Types.Location
+  ( ArkhamLocation(..)
+  , ArkhamLocationStatus(..)
+  , ArkhamLocationSymbol(..)
+  )
+where
 
 import Arkham.Types.Card
 import Arkham.Types.Investigator
@@ -17,7 +22,8 @@ data ArkhamLocationStatus = Revealed | Unrevealed | OutOfPlay
 data ArkhamLocation = ArkhamLocation
   { alName :: Text
   , alCardCode :: ArkhamCardCode
-  , alLocationSymbols :: [ArkhamLocationSymbol]
+  , alLocationSymbol :: Maybe ArkhamLocationSymbol
+  , alConnectedLocationSymbols :: [ArkhamLocationSymbol]
   , alShroud :: Int
   , alImage :: Text
   , alInvestigators :: [ArkhamInvestigator]

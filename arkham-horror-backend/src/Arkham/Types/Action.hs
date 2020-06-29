@@ -1,4 +1,12 @@
-module Arkham.Types.Action where
+module Arkham.Types.Action
+  ( ArkhamAction(..)
+  , ArkhamInvestigateAction(..)
+  , ArkhamPlayCardAction(..)
+  , ArkhamEngageEnemyAction(..)
+  , ArkhamEvadeEnemyAction(..)
+  , ArkhamFightEnemyAction(..)
+  )
+where
 
 import Arkham.Types.Card
 import Arkham.Types.Location

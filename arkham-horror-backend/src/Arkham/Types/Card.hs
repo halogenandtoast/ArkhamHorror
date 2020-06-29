@@ -1,4 +1,10 @@
-module Arkham.Types.Card where
+module Arkham.Types.Card
+  ( ArkhamCardCode(..)
+  , ArkhamCard(..)
+  , ArkhamPlayerCard(..)
+  , ArkhamEncounterCard(..)
+  )
+where
 
 import ClassyPrelude
 import Data.Aeson

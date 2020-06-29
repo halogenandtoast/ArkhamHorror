@@ -1,4 +1,7 @@
-module Arkham.Types.ChaosToken where
+module Arkham.Types.ChaosToken
+  ( ArkhamChaosToken(..)
+  )
+where
 
 import ClassyPrelude
 import Data.Aeson

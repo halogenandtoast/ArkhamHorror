@@ -1,4 +1,7 @@
-module Arkham.Types.Investigator where
+module Arkham.Types.Investigator
+  ( ArkhamInvestigator(..)
+  )
+where
 
 import Arkham.Types.Card
 import Arkham.Types.Skill

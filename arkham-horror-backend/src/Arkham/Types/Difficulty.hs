@@ -1,4 +1,7 @@
-module Arkham.Types.Difficulty where
+module Arkham.Types.Difficulty
+  ( ArkhamDifficulty(..)
+  )
+where
 
 import ClassyPrelude
 import Data.Aeson

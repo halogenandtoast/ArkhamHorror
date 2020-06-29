@@ -3,15 +3,13 @@
     <div class="scenario-cards">
       <img class="card" :src="game.scenario.guide" />
       <img
-        :key="index"
         class="card card--sideways"
         :src="game.gameState.stacks.Agenda.contents.image"
       />
-      <div v-if="game.gameState.stacks.Agenda.contents.doom" :key="`${index}-doom`">
+      <div v-if="game.gameState.stacks.Agenda.contents.doom">
         <img src="/img/arkham/doom.png"/> {{game.gameState.stacks.Agenda.contents.doom}}
       </div>
       <img
-        :key="index"
         class="card card--sideways"
         :src="game.gameState.stacks.Act.contents.image"
       />

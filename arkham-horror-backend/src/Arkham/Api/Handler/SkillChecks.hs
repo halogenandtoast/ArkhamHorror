@@ -1,7 +1,6 @@
 module Arkham.Api.Handler.SkillChecks
   ( postApiV1ArkhamGameSkillCheckR
   , postApiV1ArkhamGameSkillCheckApplyResultR
-  , successfulInvestigation
   )
 where
 
@@ -9,6 +8,14 @@ import Arkham.Conversion
 import Arkham.Internal.Card
 import Arkham.Internal.Types
 import Arkham.Types
+import Arkham.Types.Action
+import Arkham.Types.Card
+import Arkham.Types.ChaosToken
+import Arkham.Types.Game
+import Arkham.Types.GameState
+import Arkham.Types.Investigator
+import Arkham.Types.Location
+import Arkham.Types.Skill
 import Arkham.Util
 import qualified Data.HashMap.Strict as HashMap
 import Import

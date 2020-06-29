@@ -1,9 +1,26 @@
-module Arkham.Internal.ChaosToken where
+module Arkham.Internal.ChaosToken
+  ( modifier
+  , elderSignToken
+  , autoFailToken
+  , plusOneToken
+  , zeroToken
+  , minusOneToken
+  , minusTwoToken
+  , minusThreeToken
+  , minusFourToken
+  , minusFiveToken
+  , minusSixToken
+  , minusSevenToken
+  , minusEightToken
+  )
+where
 
 import Arkham.Constructors
 import Arkham.Internal.Investigator
 import Arkham.Internal.Types
 import Arkham.Types
+import Arkham.Types.ChaosToken
+import Arkham.Types.GameState
 import ClassyPrelude
 import Lens.Micro
 import Safe

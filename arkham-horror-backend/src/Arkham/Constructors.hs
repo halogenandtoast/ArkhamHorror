@@ -1,4 +1,7 @@
-module Arkham.Constructors where
+module Arkham.Constructors
+  ( token
+  )
+where
 
 import Arkham.Internal.Types
 import Arkham.Types.ChaosToken

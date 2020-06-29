@@ -1,6 +1,10 @@
-module Arkham.Api.Handler.Turns where
+module Arkham.Api.Handler.Turns
+  ( postApiV1ArkhamGameEndTurnR
+  )
+where
 
 import Arkham.Types
+import Arkham.Types.Game
 import Arkham.Util
 import Import
 import Lens.Micro

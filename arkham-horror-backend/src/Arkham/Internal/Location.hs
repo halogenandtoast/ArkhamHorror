@@ -6,6 +6,9 @@ module Arkham.Internal.Location
 where
 
 import Arkham.Types
+import Arkham.Types.Card
+import Arkham.Types.GameState
+import Arkham.Types.Location
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro

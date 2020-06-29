@@ -1,8 +1,13 @@
-module Arkham.Util where
+module Arkham.Util
+  ( updateGame
+  )
+where
 
+import Arkham.Entity.ArkhamGame
 import Arkham.Internal.Scenario
 import Arkham.Internal.Types
 import Arkham.Types
+import Arkham.Types.Game
 import ClassyPrelude
 import Database.Persist.Sql
 

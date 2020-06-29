@@ -5,11 +5,20 @@ module Arkham.Internal.Scenario
 where
 
 import Arkham.Constructors
+import Arkham.Entity.ArkhamGame
 import Arkham.Internal.ChaosToken
 import Arkham.Internal.Investigator
 import Arkham.Internal.Location
 import Arkham.Internal.Types
 import Arkham.Types
+import Arkham.Types.Card
+import Arkham.Types.ChaosToken
+import Arkham.Types.Difficulty
+import Arkham.Types.Game
+import Arkham.Types.GameState
+import Arkham.Types.Location
+import Arkham.Types.Scenario
+import Base.Lock
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro

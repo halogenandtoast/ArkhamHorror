@@ -7,6 +7,11 @@ module Arkham.Internal.Card
 where
 
 import Arkham.Types hiding (hand)
+import Arkham.Types.Card
+import Arkham.Types.GameState
+import Arkham.Types.Investigator
+import Arkham.Types.Location
+import Arkham.Types.Skill
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro

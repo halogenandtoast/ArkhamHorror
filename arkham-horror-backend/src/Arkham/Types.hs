@@ -1,21 +1,44 @@
 module Arkham.Types
-  ( module X
-  , module Arkham.Types
+  ( HasClues(..)
+  , HasDeck(..)
+  , HasHand(..)
+  , HasDiscard(..)
+  , HasInPlay(..)
+  , HasPlayer(..)
+  , HasPlayers(..)
+  , HasDoom(..)
+  , HasUses(..)
+  , HasCardCode(..)
+  , HasLocations(..)
+  , HasInvestigator(..)
+  , HasResources(..)
+  , HasStacks(..)
+  , HasPhase(..)
+  , HasDifficulty(..)
+  , HasGameStateStep(..)
+  , HasScenario(..)
+  , HasChaosBag(..)
+  , HasCurrentData(..)
+  , HasSanityDamage(..)
+  , HasHealthDamage(..)
+  , endedTurn
+  , actions
+  , gameState
   )
 where
 
-import Arkham.Entity.ArkhamGame as X
-import Arkham.Types.Action as X
-import Arkham.Types.Card as X
-import Arkham.Types.ChaosToken as X
-import Arkham.Types.Difficulty as X
-import Arkham.Types.Game as X
-import Arkham.Types.GameState as X
-import Arkham.Types.Investigator as X
-import Arkham.Types.Location as X
-import Arkham.Types.Player as X
-import Arkham.Types.Scenario as X
-import Arkham.Types.Skill as X
+import Arkham.Types.Action
+import Arkham.Types.Card
+import Arkham.Types.ChaosToken
+import Arkham.Types.Difficulty
+import Arkham.Types.Game
+import Arkham.Types.GameState
+import Arkham.Types.Investigator
+import Arkham.Types.Location
+import Arkham.Types.Player
+import Arkham.Types.Scenario
+import Arkham.Types.Skill
+import Base.Lock
 import ClassyPrelude
 import Control.Monad.Random
 import Data.List.NonEmpty (NonEmpty(..))
@@ -25,6 +48,14 @@ import Lens.Micro.Extras
 
 gameState :: Lens' ArkhamGameData ArkhamGameState
 gameState = lens agGameState $ \m x -> m { agGameState = x }
+
+instance HasLock ArkhamGameData where
+  type LockKey ArkhamGameData = String
+  lock = gameState . lock
+
+instance HasLock ArkhamGameState where
+  type LockKey ArkhamGameState = String
+  lock = lens agsLock $ \m x -> m { agsLock = x }
 
 class HasChaosBag a where
   chaosBag :: Lens' a (NonEmpty ArkhamChaosToken)
@@ -37,9 +68,6 @@ instance HasChaosBag ArkhamGameState where
 instance HasChaosBag ArkhamGameData where
   chaosBag = gameState . chaosBag
 
-instance HasChaosBag ArkhamGame where
-  chaosBag = currentData . chaosBag
-
 class HasLocations a where
   locations :: Lens' a (HashMap ArkhamCardCode ArkhamLocation)
 
@@ -49,21 +77,11 @@ instance HasLocations ArkhamGameState where
 instance HasLocations ArkhamGameData where
   locations = gameState . locations
 
-instance HasLocations ArkhamGame where
-  locations = currentData . locations
-
 class HasCurrentData a where
   currentData :: Lens' a ArkhamGameData
 
-instance HasCurrentData ArkhamGame where
-  currentData =
-    lens arkhamGameCurrentData (\m x -> m { arkhamGameCurrentData = x })
-
 class HasGameStateStep a where
   gameStateStep :: Lens' a ArkhamGameStateStep
-
-instance HasGameStateStep ArkhamGame where
-  gameStateStep = currentData . gameStateStep
 
 instance HasGameStateStep ArkhamGameData where
   gameStateStep = gameState . gameStateStep
@@ -73,9 +91,6 @@ instance HasGameStateStep ArkhamGameState where
 
 class HasPlayer a where
   player :: Lens' a ArkhamPlayer
-
-instance HasPlayer ArkhamGame where
-  player = currentData . player
 
 instance HasPlayer ArkhamGameData where
   player = gameState . player
@@ -183,17 +198,11 @@ instance HasHealthDamage ArkhamPlayer where
 class HasScenario a where
   scenario :: Lens' a ArkhamScenario
 
-instance HasScenario ArkhamGame where
-  scenario = currentData . scenario
-
 instance HasScenario ArkhamGameData where
   scenario = lens agScenario $ \m x -> m { agScenario = x }
 
 class HasDifficulty a where
   difficulty :: Lens' a ArkhamDifficulty
-
-instance HasDifficulty ArkhamGame where
-  difficulty = currentData . difficulty
 
 instance HasDifficulty ArkhamGameData where
   difficulty = lens agDifficulty $ \m x -> m { agDifficulty = x }
@@ -217,9 +226,6 @@ actions = lens _actionsRemaining $ \m x -> m { _actionsRemaining = x }
 class HasPhase a where
   phase :: Lens' a ArkhamPhase
 
-instance HasPhase ArkhamGame where
-  phase = currentData . phase
-
 instance HasPhase ArkhamGameData where
   phase = gameState . phase
 
@@ -228,9 +234,6 @@ instance HasPhase ArkhamGameState where
 
 class HasStacks a where
   stacks :: Lens' a (HashMap Text ArkhamStack)
-
-instance HasStacks ArkhamGame where
-  stacks = currentData . stacks
 
 instance HasStacks ArkhamGameData where
   stacks = gameState . stacks

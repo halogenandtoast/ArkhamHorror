@@ -1,6 +1,9 @@
-module Arkham.Internal.Agenda where
+module Arkham.Internal.Agenda
+  ()
+where
 
 import Arkham.Types
+import Arkham.Types.GameState
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro.Extras

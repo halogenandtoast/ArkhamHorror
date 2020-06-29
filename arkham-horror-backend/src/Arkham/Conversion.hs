@@ -1,8 +1,15 @@
-module Arkham.Conversion where
+module Arkham.Conversion
+  ( toInternalToken
+  , tokenToModifier
+  )
+where
 
+import Arkham.Entity.ArkhamGame
 import Arkham.Internal.Scenario
 import Arkham.Internal.Types
 import Arkham.Types
+import Arkham.Types.ChaosToken
+import Arkham.Types.Investigator
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro

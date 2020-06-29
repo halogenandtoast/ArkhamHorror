@@ -7,6 +7,11 @@ where
 import Arkham.Constructors
 import Arkham.Internal.Types
 import Arkham.Types hiding (investigator)
+import Arkham.Types.Card
+import Arkham.Types.ChaosToken
+import Arkham.Types.GameState
+import Arkham.Types.Investigator
+import Arkham.Types.Location
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro

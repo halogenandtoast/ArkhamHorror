@@ -1,5 +1,6 @@
 module Arkham.Types.GameState
   ( ArkhamGameState(..)
+  , ArkhamGameStateLock(..)
   , ArkhamGameStateStep(..)
   , ArkhamStack(..)
   , ArkhamPhase(..)
@@ -11,17 +12,18 @@ module Arkham.Types.GameState
   )
 where
 
-import Arkham.Types.Player
-
 import Arkham.Types.Action
 import Arkham.Types.Card
 import Arkham.Types.ChaosToken
 import Arkham.Types.Location
+import Arkham.Types.Player
 import Arkham.Types.Skill
+import Base.Lock
 import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
 import Data.List.NonEmpty (NonEmpty)
+import Lens.Micro
 
 data ArkhamPhase = Mythos | Investigation | Enemy | Upkeep
   deriving stock (Generic, Show, Eq)
@@ -86,6 +88,10 @@ instance FromJSON ArkhamRevealTokenStep where
   parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
 
+data ArkhamGameStateLock = AddDoom | InvestigationTakeActions | UpkeepResetActions | DrawAndGainResources
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
 data ArkhamGameState = ArkhamGameState
   { agsPlayer :: ArkhamPlayer
   , agsPhase :: ArkhamPhase
@@ -93,9 +99,13 @@ data ArkhamGameState = ArkhamGameState
   , agsLocations :: HashMap ArkhamCardCode ArkhamLocation
   , agsStacks :: HashMap Text ArkhamStack
   , agsStep :: ArkhamGameStateStep
-  , agsLock :: Maybe String
+  , agsLock :: Maybe ArkhamGameStateLock
   }
   deriving stock (Generic, Show)
+
+instance HasLock ArkhamGameState where
+  type LockKey ArkhamGameState = ArkhamGameStateLock
+  lock = lens agsLock $ \m x -> m { agsLock = x }
 
 data ArkhamAct = ArkhamAct { aactCardCode :: ArkhamCardCode, aactImage :: Text }
   deriving stock (Show, Generic)

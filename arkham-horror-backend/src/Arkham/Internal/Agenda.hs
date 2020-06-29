@@ -1,5 +1,8 @@
 module Arkham.Internal.Agenda
-  ()
+  ( ArkhamAgendaInternal(..)
+  , totalDoom
+  , whatsGoingOn
+  )
 where
 
 import Arkham.Types

@@ -52,31 +52,31 @@ data ArkhamScenarioInternal = ArkhamScenarioInternal
   }
 
 data ArkhamMythosPhaseInternal = ArkhamMythosPhaseInternal
-  { mythosPhaseOnEnter :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , mythosPhaseAddDoom :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , mythosPhaseCheckAdvance :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , mythosPhaseDrawEncounter :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , mythosPhaseOnExit :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  { mythosPhaseOnEnter :: Lockable ArkhamGame -> Lockable ArkhamGame
+  , mythosPhaseAddDoom :: Lockable ArkhamGame -> Lockable ArkhamGame
+  , mythosPhaseCheckAdvance :: Lockable ArkhamGame -> Lockable ArkhamGame
+  , mythosPhaseDrawEncounter :: Lockable ArkhamGame -> Lockable ArkhamGame
+  , mythosPhaseOnExit :: Lockable ArkhamGame -> Lockable ArkhamGame
   }
 
 data ArkhamInvestigationPhaseInternal = ArkhamInvestigationPhaseInternal
-  { investigationPhaseOnEnter :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , investigationPhaseTakeActions :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , investigationPhaseOnExit :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  { investigationPhaseOnEnter :: Lockable ArkhamGame -> Lockable ArkhamGame
+  , investigationPhaseTakeActions :: Lockable ArkhamGame -> Lockable ArkhamGame
+  , investigationPhaseOnExit :: Lockable ArkhamGame -> Lockable ArkhamGame
   }
 
 data ArkhamEnemyPhaseInternal = ArkhamEnemyPhaseInternal
-  { enemyPhaseOnEnter :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , enemyPhaseResolveHunters :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , enemyPhaseResolveEnemies :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , enemyPhaseOnExit :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  { enemyPhaseOnEnter :: Lockable ArkhamGame -> Lockable ArkhamGame
+  , enemyPhaseResolveHunters :: Lockable ArkhamGame -> Lockable ArkhamGame
+  , enemyPhaseResolveEnemies :: Lockable ArkhamGame -> Lockable ArkhamGame
+  , enemyPhaseOnExit :: Lockable ArkhamGame -> Lockable ArkhamGame
   }
 
 data ArkhamUpkeepPhaseInternal = ArkhamUpkeepPhaseInternal
-  { upkeepPhaseOnEnter :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , upkeepPhaseResetActions :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , upkeepPhaseReadyExhausted :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , upkeepPhaseDrawCardsAndGainResources :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , upkeepPhaseCheckHandSize :: Lockable String ArkhamGame -> Lockable String ArkhamGame
-  , upkeepPhaseOnExit :: Lockable String ArkhamGame -> Lockable String ArkhamGame
+  { upkeepPhaseOnEnter :: Lockable ArkhamGame -> Lockable ArkhamGame
+  , upkeepPhaseResetActions :: Lockable ArkhamGame -> Lockable ArkhamGame
+  , upkeepPhaseReadyExhausted :: Lockable ArkhamGame -> Lockable ArkhamGame
+  , upkeepPhaseDrawCardsAndGainResources :: Lockable ArkhamGame -> Lockable ArkhamGame
+  , upkeepPhaseCheckHandSize :: Lockable ArkhamGame -> Lockable ArkhamGame
+  , upkeepPhaseOnExit :: Lockable ArkhamGame -> Lockable ArkhamGame
   }

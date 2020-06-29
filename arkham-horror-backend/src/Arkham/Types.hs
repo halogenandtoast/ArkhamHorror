@@ -27,7 +27,6 @@ module Arkham.Types
   )
 where
 
-import Arkham.Types.Action
 import Arkham.Types.Card
 import Arkham.Types.ChaosToken
 import Arkham.Types.Difficulty
@@ -37,25 +36,12 @@ import Arkham.Types.Investigator
 import Arkham.Types.Location
 import Arkham.Types.Player
 import Arkham.Types.Scenario
-import Arkham.Types.Skill
-import Base.Lock
 import ClassyPrelude
 import Control.Monad.Random
 import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.List.NonEmpty as NE
 import Lens.Micro
 import Lens.Micro.Extras
-
-gameState :: Lens' ArkhamGameData ArkhamGameState
-gameState = lens agGameState $ \m x -> m { agGameState = x }
-
-instance HasLock ArkhamGameData where
-  type LockKey ArkhamGameData = String
-  lock = gameState . lock
-
-instance HasLock ArkhamGameState where
-  type LockKey ArkhamGameState = String
-  lock = lens agsLock $ \m x -> m { agsLock = x }
 
 class HasChaosBag a where
   chaosBag :: Lens' a (NonEmpty ArkhamChaosToken)

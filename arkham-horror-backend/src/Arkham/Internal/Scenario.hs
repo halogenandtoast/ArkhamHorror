@@ -73,7 +73,7 @@ drawCard g =
 defaultMythosPhase :: ArkhamMythosPhaseInternal
 defaultMythosPhase = ArkhamMythosPhaseInternal
   { mythosPhaseOnEnter = id
-  , mythosPhaseAddDoom = runLocked "addDoom"
+  , mythosPhaseAddDoom = runLocked AddDoom
     $ \g -> Unlocked $ g & stacks . at "Agenda" . _Just . doom +~ 1
   , mythosPhaseCheckAdvance = id
   -- , mythosCheckAdvance = \g -> actCheckAdvance g $ toActInternal (fromJustNote "Unknown act deck" $ g ^. stacks . at "Act")
@@ -84,10 +84,10 @@ defaultMythosPhase = ArkhamMythosPhaseInternal
 defaultInvestigationPhase :: ArkhamInvestigationPhaseInternal
 defaultInvestigationPhase = ArkhamInvestigationPhaseInternal
   { investigationPhaseOnEnter = id
-  , investigationPhaseTakeActions =
-    runLocked "investigationTakeActions" $ \g -> if g ^. player . endedTurn
+  , investigationPhaseTakeActions = runLocked InvestigationTakeActions $ \g ->
+    if g ^. player . endedTurn
       then Unlocked g
-      else addLock "investigationTakeActions" g
+      else addLock InvestigationTakeActions g
   , investigationPhaseOnExit = id
   }
 
@@ -102,10 +102,10 @@ defaultEnemyPhase = ArkhamEnemyPhaseInternal
 defaultUpkeepPhase :: ArkhamUpkeepPhaseInternal
 defaultUpkeepPhase = ArkhamUpkeepPhaseInternal
   { upkeepPhaseOnEnter = id
-  , upkeepPhaseResetActions = runLocked "upkeepResetActions"
+  , upkeepPhaseResetActions = runLocked UpkeepResetActions
     $ \g -> Unlocked $ g & player . actions .~ 3 & player . endedTurn .~ False
   , upkeepPhaseReadyExhausted = id
-  , upkeepPhaseDrawCardsAndGainResources = runLocked "drawAndGainResource"
+  , upkeepPhaseDrawCardsAndGainResources = runLocked DrawAndGainResources
     $ \g -> Unlocked $ g & currentData %~ drawCard & player . resources +~ 1
   , upkeepPhaseCheckHandSize = id
   , upkeepPhaseOnExit = id

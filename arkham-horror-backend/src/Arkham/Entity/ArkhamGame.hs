@@ -9,6 +9,7 @@ where
 
 import Arkham.Types
 import Arkham.Types.Game
+import Arkham.Types.GameState
 import Base.Lock
 import ClassyPrelude
 import Data.Aeson
@@ -29,7 +30,7 @@ instance ToJSON ArkhamGame where
     $ defaultOptions { fieldLabelModifier = camelCase . drop 10 }
 
 instance HasLock ArkhamGame where
-  type LockKey ArkhamGame = String
+  type LockKey ArkhamGame = ArkhamGameStateLock
   lock = currentData . lock
 
 instance HasCurrentData ArkhamGame where

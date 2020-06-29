@@ -1,18 +1,21 @@
 module Arkham.Types.Game
   ( ArkhamGameData(..)
   , ArkhamCycle(..)
+  , gameState
   )
 where
 
 import Arkham.Types.Difficulty
 import Arkham.Types.GameState
 import Arkham.Types.Scenario
+import Base.Lock
 import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
 import Data.Aeson.Types
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.Sql
+import Lens.Micro
 
 data ArkhamCycle = NightOfTheZealot | TheDunwichLegacy
   deriving stock (Generic, Show)
@@ -26,6 +29,13 @@ data ArkhamGameData = ArkhamGameData
   , agGameState :: ArkhamGameState
   }
   deriving stock (Generic, Show)
+
+gameState :: Lens' ArkhamGameData ArkhamGameState
+gameState = lens agGameState $ \m x -> m { agGameState = x }
+
+instance HasLock ArkhamGameData where
+  type LockKey ArkhamGameData = ArkhamGameStateLock
+  lock = gameState . lock
 
 instance ToJSON ArkhamGameData where
   toJSON =

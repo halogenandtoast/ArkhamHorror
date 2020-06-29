@@ -91,7 +91,7 @@ fixtureGameState seed deck' = ArkhamGameState
   -- (HashMap.fromList $ map (\l -> (alCardCode l, l)) [study seed])
   -- (HashMap.fromList [("Agenda", agenda), ("Act", act)])
   ArkhamGameStateStepInvestigatorActionStep
-  (Just "investigationTakeActions")
+  (Just InvestigationTakeActions)
 
 loadDeck :: String -> IO [ArkhamCard]
 loadDeck deckId = do

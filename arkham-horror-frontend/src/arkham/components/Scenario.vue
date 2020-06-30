@@ -50,6 +50,15 @@
             width="80"
           />
         </div>
+        <div
+          v-for="(enemy, index) in location.enemies"
+          :key="index"
+        >
+          <img
+            :src="enemy.image"
+            width="250"
+          />
+        </div>
         <div v-if="location.clues > 0" >
           <div
             v-if="canInvestigate"

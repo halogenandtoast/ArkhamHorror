@@ -21,15 +21,18 @@ module Arkham.Types
   , HasCurrentData(..)
   , HasSanityDamage(..)
   , HasHealthDamage(..)
+  , HasEncounterDeck(..)
   , endedTurn
   , actions
   , gameState
+  , enemies
   )
 where
 
 import Arkham.Types.Card
 import Arkham.Types.ChaosToken
 import Arkham.Types.Difficulty
+import Arkham.Types.Enemy
 import Arkham.Types.Game
 import Arkham.Types.GameState
 import Arkham.Types.Investigator
@@ -233,5 +236,17 @@ instance HasStacks ArkhamGameData where
 instance HasStacks ArkhamGameState where
   stacks = lens agsStacks $ \m x -> m { agsStacks = x }
 
+class HasEncounterDeck a where
+  encounterDeck :: Lens' a [ArkhamEncounterCard]
+
+instance HasEncounterDeck ArkhamGameData where
+  encounterDeck = gameState . encounterDeck
+
+instance HasEncounterDeck ArkhamGameState where
+  encounterDeck = lens agsEncounterDeck $ \m x -> m { agsEncounterDeck = x }
+
 endedTurn :: Lens' ArkhamPlayer Bool
 endedTurn = lens _endedTurn $ \m x -> m { _endedTurn = x }
+
+enemies :: Lens' ArkhamLocation [ArkhamEnemy]
+enemies = lens alEnemies $ \m x -> m { alEnemies = x }

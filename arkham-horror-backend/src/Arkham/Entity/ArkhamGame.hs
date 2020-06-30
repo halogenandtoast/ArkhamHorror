@@ -60,3 +60,6 @@ instance HasPhase ArkhamGame where
 
 instance HasStacks ArkhamGame where
   stacks = currentData . stacks
+
+instance HasEncounterDeck ArkhamGame where
+  encounterDeck = currentData . encounterDeck

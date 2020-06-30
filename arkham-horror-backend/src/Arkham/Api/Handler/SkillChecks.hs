@@ -5,7 +5,7 @@ module Arkham.Api.Handler.SkillChecks
 where
 
 import Arkham.Conversion
-import Arkham.Internal.Card
+import Arkham.Internal.PlayerCard
 import Arkham.Internal.Types
 import Arkham.Types
 import Arkham.Types.Action
@@ -77,7 +77,7 @@ determineModifiedSkillValue skillType investigator' commitedCards tokenModifier
   = skillValue investigator' skillType + cardContributions + tokenModifier
  where
   cardContributions = length $ filter (== skillType) $ concatMap
-    (maybe [] aciTestIcons . toInternalCard)
+    (maybe [] aciTestIcons . toInternalPlayerCard)
     commitedCards
 
 skillValue :: ArkhamInvestigator -> ArkhamSkillType -> Int

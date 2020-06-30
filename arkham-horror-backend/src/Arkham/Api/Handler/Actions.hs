@@ -3,14 +3,13 @@ module Arkham.Api.Handler.Actions
   )
 where
 
-import Arkham.Internal.Card
+import Arkham.Internal.PlayerCard
 import Arkham.Internal.Scenario
 import Arkham.Types
 import Arkham.Types.Action
 import Arkham.Types.Game
 import Arkham.Types.GameState
 import Arkham.Types.Skill
-import qualified Data.HashMap.Strict as HashMap
 import Import
 import Lens.Micro
 
@@ -35,13 +34,13 @@ applyAction (PlayCardAction (ArkhamPlayCardAction n)) g = do
     Nothing -> throwString "No card at that index"
     Just card -> do
       let
-        Just ci = HashMap.lookup (card ^. cardCode) cardsInternal
+        Just ci = toInternalPlayerCard card
         card' = aciPlay ci (g ^. gameState) card
         stateTransform = aciAfterPlay ci
         cardCost = fromMaybe 0 (aciCost ci)
         actionCost = aciActionCost ci (g ^. gameState)
         resolveCard = case aciType ci of
-                        ArkhamCardTypeEvent -> player . discard %~ (card :)
+                        PlayerEvent -> player . discard %~ (card :)
                         _ -> player . inPlay %~ (++ [card'])
       pure $ g & resolveCard & player . hand %~ without n & player . resources -~ cardCost & player . actions -~ actionCost & gameState %~ stateTransform
 applyAction _ g = pure g

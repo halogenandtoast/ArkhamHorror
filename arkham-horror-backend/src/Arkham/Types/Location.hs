@@ -6,6 +6,7 @@ module Arkham.Types.Location
 where
 
 import Arkham.Types.Card
+import Arkham.Types.Enemy
 import Arkham.Types.Investigator
 import ClassyPrelude hiding (Index)
 import Data.Aeson
@@ -27,6 +28,7 @@ data ArkhamLocation = ArkhamLocation
   , alShroud :: Int
   , alImage :: Text
   , alInvestigators :: [ArkhamInvestigator]
+  , alEnemies :: [ArkhamEnemy]
   , alClues :: Int
   , alDoom :: Int
   , alStatus :: ArkhamLocationStatus

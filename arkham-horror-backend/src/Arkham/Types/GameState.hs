@@ -98,6 +98,7 @@ data ArkhamGameState = ArkhamGameState
   , agsChaosBag :: NonEmpty ArkhamChaosToken
   , agsLocations :: HashMap ArkhamCardCode ArkhamLocation
   , agsStacks :: HashMap Text ArkhamStack
+  , agsEncounterDeck :: [ArkhamEncounterCard]
   , agsStep :: ArkhamGameStateStep
   , agsLock :: Maybe ArkhamGameStateLock
   }

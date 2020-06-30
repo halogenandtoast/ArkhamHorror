@@ -91,3 +91,31 @@ export const arkhamChaosTokenDecoder = JsonDecoder.oneOf<ArkhamChaosToken>([
   JsonDecoder.isExactly('autofail'),
   JsonDecoder.isExactly('eldersign'),
 ], 'ArkhamChaosToken');
+
+// ArkhamEnemu
+export interface ArkhamEnemy {
+  combat: number;
+  health: number;
+  agility: number;
+  healthDamage: number;
+  sanityDamage: number;
+  victory: number | null;
+  cardCode: string;
+  isHunter: boolean;
+  image: string;
+}
+
+export const arkhamEnemyDecoder = JsonDecoder.object<ArkhamEnemy>(
+  {
+    combat: JsonDecoder.number,
+    health: JsonDecoder.number,
+    agility: JsonDecoder.number,
+    healthDamage: JsonDecoder.number,
+    sanityDamage: JsonDecoder.number,
+    victory: JsonDecoder.nullable(JsonDecoder.number),
+    cardCode: JsonDecoder.string,
+    isHunter: JsonDecoder.boolean,
+    image: JsonDecoder.string,
+  },
+  'ArkhamEnemy',
+);

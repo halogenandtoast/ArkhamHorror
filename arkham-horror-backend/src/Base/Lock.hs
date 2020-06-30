@@ -36,6 +36,10 @@ runOnlyLocked
 runOnlyLocked key f (Locked lock' a) | lock' key = f a
 runOnlyLocked _ _ l = l
 
+runOnlyUnlocked :: (a -> Lockable a) -> Lockable a -> Lockable a
+runOnlyUnlocked f (Unlocked a) = f a
+runOnlyUnlocked _ l = l
+
 removeLock :: (HasLock a) => Lockable a -> a
 removeLock a = withoutLock a & lock .~ Nothing
 

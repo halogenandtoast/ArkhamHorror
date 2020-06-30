@@ -1,8 +1,8 @@
-module Arkham.Internal.Card
-  ( cardsInternal
-  , toInternalCard
-  , ArkhamCardInternal(..)
-  , ArkhamCardType(..)
+module Arkham.Internal.PlayerCard
+  ( playerCardsInternal
+  , toInternalPlayerCard
+  , ArkhamPlayerCardInternal(..)
+  , ArkhamPlayerCardType(..)
   )
 where
 
@@ -19,12 +19,14 @@ import Lens.Micro.Extras
 import Lens.Micro.Platform ()
 import Safe hiding (at)
 
-data ArkhamCardType = ArkhamCardTypeAsset | ArkhamCardTypeEvent | ArkhamCardTypeSkill | ArkhamCardTypeTreachery
-data ArkhamSlot = ArkhamSlotHand | ArkhamSlotAlly
-data ArkhamDrawLocation = ArkhamDrawLocationHand
+data ArkhamPlayerCardType = PlayerAsset | PlayerEvent | PlayerSkill | PlayerTreachery
+data ArkhamSlot = SlotHand | SlotAlly
+data ArkhamDrawLocation = DrawLocationHand
 
-data ArkhamCardInternal = ArkhamCardInternal
-  { aciType :: ArkhamCardType
+-- Types of mythos cards: Enemy, Treachery,
+
+data ArkhamPlayerCardInternal = ArkhamPlayerCardInternal
+  { aciType :: ArkhamPlayerCardType
   , aciCost :: Maybe Int
   , aciSlots :: [ArkhamSlot]
   , aciTestIcons :: [ArkhamSkillType]
@@ -41,13 +43,13 @@ data ArkhamCardInternal = ArkhamCardInternal
   , aciActionCost :: ArkhamGameState -> Int
   }
 
-card :: Int -> ArkhamCardType -> ArkhamCardInternal
-card cost cardType = ArkhamCardInternal
+card :: Int -> ArkhamPlayerCardType -> ArkhamPlayerCardInternal
+card cost cardType = ArkhamPlayerCardInternal
   cardType -- type
   (Just cost) -- cost
   [] -- slots
   [] -- test icons
-  (\_ _ -> ArkhamDrawLocationHand) -- draw to location
+  (\_ _ -> DrawLocationHand) -- draw to location
   id -- after draw
   (flip const) -- play
   id -- after play
@@ -59,33 +61,33 @@ card cost cardType = ArkhamCardInternal
   Nothing -- sanity
   (const 1)
 
-fast :: ArkhamCardInternal -> ArkhamCardInternal
+fast :: ArkhamPlayerCardInternal -> ArkhamPlayerCardInternal
 fast c = c { aciActionCost = const 0 }
 
-skill :: [ArkhamSkillType] -> ArkhamCardInternal
-skill testIcons = (card 0 ArkhamCardTypeSkill) { aciTestIcons = testIcons }
+skill :: [ArkhamSkillType] -> ArkhamPlayerCardInternal
+skill testIcons = (card 0 PlayerSkill) { aciTestIcons = testIcons }
 
-treachery :: ArkhamCardInternal
-treachery = card 0 ArkhamCardTypeTreachery
+treachery :: ArkhamPlayerCardInternal
+treachery = card 0 PlayerTreachery
 
-asset :: Int -> ArkhamCardInternal
-asset cost = card cost ArkhamCardTypeAsset
+asset :: Int -> ArkhamPlayerCardInternal
+asset cost = card cost PlayerAsset
 
-withUses :: Int -> ArkhamCardInternal -> ArkhamCardInternal
+withUses :: Int -> ArkhamPlayerCardInternal -> ArkhamPlayerCardInternal
 withUses uses' c = c
   { aciPlay = \_state -> uses ?~ uses'
   , aciActionsAvailable = const hasUsesRemaining
   }
 
-event :: Int -> ArkhamCardInternal
-event cost = card cost ArkhamCardTypeEvent
+event :: Int -> ArkhamPlayerCardInternal
+event cost = card cost PlayerEvent
 
-hand :: Int -> ArkhamCardInternal
-hand cost = (asset cost) { aciSlots = [ArkhamSlotHand] }
+hand :: Int -> ArkhamPlayerCardInternal
+hand cost = (asset cost) { aciSlots = [SlotHand] }
 
-ally :: Int -> Int -> Int -> ArkhamCardInternal
+ally :: Int -> Int -> Int -> ArkhamPlayerCardInternal
 ally cost health sanity = (asset cost)
-  { aciSlots = [ArkhamSlotAlly]
+  { aciSlots = [SlotAlly]
   , aciHealth = Just health
   , aciSanity = Just sanity
   }
@@ -108,47 +110,47 @@ agility = ArkhamSkillAgility
 wild :: ArkhamSkillType
 wild = ArkhamSkillWild
 
-flashlight :: ArkhamCardInternal
+flashlight :: ArkhamPlayerCardInternal
 flashlight = withUses 3 $ (hand 2) { aciTestIcons = [intellect] }
 
-knife :: ArkhamCardInternal
+knife :: ArkhamPlayerCardInternal
 knife = (hand 1)
   { aciActionsAvailable = \_state -> const True
   , aciTestIcons = [combat]
   }
 
-machete :: ArkhamCardInternal
+machete :: ArkhamPlayerCardInternal
 machete = (hand 3)
   { aciActionsAvailable = \_state -> const True
   , aciTestIcons = [combat]
   }
 
-fortyFiveAutomatic :: ArkhamCardInternal
+fortyFiveAutomatic :: ArkhamPlayerCardInternal
 fortyFiveAutomatic = withUses 4 $ (hand 4) { aciTestIcons = [agility] }
 
-emergencyCache :: ArkhamCardInternal
+emergencyCache :: ArkhamPlayerCardInternal
 emergencyCache = (event 0) { aciAfterPlay = player . resources +~ 3 }
 
-rolands38Special :: ArkhamCardInternal
+rolands38Special :: ArkhamPlayerCardInternal
 rolands38Special =
   withUses 4 $ (hand 3) { aciTestIcons = [combat, agility, wild] }
 
-guardDog :: ArkhamCardInternal
+guardDog :: ArkhamPlayerCardInternal
 guardDog = (ally 3 3 1) { aciAssignHealthDamage = id, aciTestIcons = [combat] }
 
-physicalTraining :: ArkhamCardInternal
+physicalTraining :: ArkhamPlayerCardInternal
 physicalTraining = (asset 2)
   { aciActionsAvailable = \_state -> const True
   , aciTestIcons = [willpower, combat]
   }
 
-dodge :: ArkhamCardInternal
+dodge :: ArkhamPlayerCardInternal
 dodge = (event 1) { aciTestIcons = [willpower, agility] }
 
-dynamiteBlast :: ArkhamCardInternal
+dynamiteBlast :: ArkhamPlayerCardInternal
 dynamiteBlast = (event 5) { aciTestIcons = [willpower] }
 
-evidence :: ArkhamCardInternal
+evidence :: ArkhamPlayerCardInternal
 evidence = (event 1) { aciTestIcons = replicate 2 intellect }
 
 getCurrentLocation :: ArkhamGameState -> ArkhamInvestigator -> ArkhamLocation
@@ -158,7 +160,7 @@ getCurrentLocation g i =
     $ HashMap.elems (g ^. locations)
 
 -- brittany-disable-next-binding
-workingAHunch :: ArkhamCardInternal
+workingAHunch :: ArkhamPlayerCardInternal
 workingAHunch = fast $ (event 2)
   { aciTestIcons = replicate 2 intellect
   , aciAfterPlay = \g ->
@@ -170,29 +172,29 @@ workingAHunch = fast $ (event 2)
         else g
   }
 
-deduction :: ArkhamCardInternal
+deduction :: ArkhamPlayerCardInternal
 deduction = skill [intellect]
 
-guts :: ArkhamCardInternal
+guts :: ArkhamPlayerCardInternal
 guts = skill $ replicate 2 willpower
 
-overpower :: ArkhamCardInternal
+overpower :: ArkhamPlayerCardInternal
 overpower = skill $ replicate 2 combat
 
-unexpectedCourage :: ArkhamCardInternal
+unexpectedCourage :: ArkhamPlayerCardInternal
 unexpectedCourage = skill $ replicate 2 wild
 
-viciousBlow :: ArkhamCardInternal
+viciousBlow :: ArkhamPlayerCardInternal
 viciousBlow = skill [combat]
 
-coverUp :: ArkhamCardInternal
+coverUp :: ArkhamPlayerCardInternal
 coverUp = treachery
 
-toInternalCard :: ArkhamCard -> Maybe ArkhamCardInternal
-toInternalCard c = HashMap.lookup (c ^. cardCode) cardsInternal
+toInternalPlayerCard :: ArkhamCard -> Maybe ArkhamPlayerCardInternal
+toInternalPlayerCard c = HashMap.lookup (c ^. cardCode) playerCardsInternal
 
-cardsInternal :: HashMap ArkhamCardCode ArkhamCardInternal
-cardsInternal = HashMap.fromList
+playerCardsInternal :: HashMap ArkhamCardCode ArkhamPlayerCardInternal
+playerCardsInternal = HashMap.fromList
   [ (ArkhamCardCode "01006", rolands38Special)
   , (ArkhamCardCode "01007", coverUp)
   , (ArkhamCardCode "01016", fortyFiveAutomatic)

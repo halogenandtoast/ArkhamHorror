@@ -90,6 +90,12 @@ fixtureGameState seed deck' = ArkhamGameState
   mempty
   -- (HashMap.fromList $ map (\l -> (alCardCode l, l)) [study seed])
   -- (HashMap.fromList [("Agenda", agenda), ("Act", act)])
+  (replicate 3 $ ArkhamEncounterCard
+    "Swarm of Rats"
+    (ArkhamCardCode "01159")
+    "https://arkhamdb.com/bundles/cards/01159.png"
+  )
+
   ArkhamGameStateStepInvestigatorActionStep
   (Just InvestigationTakeActions)
 

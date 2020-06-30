@@ -7,6 +7,7 @@ where
 import Arkham.Constructors
 import Arkham.Entity.ArkhamGame
 import Arkham.Internal.ChaosToken
+import Arkham.Internal.EncounterCard
 import Arkham.Internal.Investigator
 import Arkham.Internal.Location
 import Arkham.Internal.Types
@@ -77,7 +78,16 @@ defaultMythosPhase = ArkhamMythosPhaseInternal
     $ \g -> Unlocked $ g & stacks . at "Agenda" . _Just . doom +~ 1
   , mythosPhaseCheckAdvance = id
   -- , mythosCheckAdvance = \g -> actCheckAdvance g $ toActInternal (fromJustNote "Unknown act deck" $ g ^. stacks . at "Act")
-  , mythosPhaseDrawEncounter = id
+  , mythosPhaseDrawEncounter = runOnlyUnlocked $ \g ->
+    let (card : deck') = g ^. encounterDeck
+    in
+      Unlocked
+      $ g
+      & encounterDeck
+      .~ deck'
+      & currentData
+      . gameState
+      %~ aeiResolve (toInternalEncounterCard card) (g ^. player . investigator)
   , mythosPhaseOnExit = id
   }
 
@@ -217,6 +227,7 @@ unrevealedLocation = ArkhamLocation
   , alShroud = 0
   , alImage = error "Missing card image"
   , alInvestigators = []
+  , alEnemies = []
   , alClues = 0
   , alDoom = 0
   , alStatus = Unrevealed

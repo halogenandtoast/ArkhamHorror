@@ -2,8 +2,6 @@ import { JsonDecoder } from 'ts.data.json';
 import {
   ArkhamInvestigator,
   arkhamInvestigatorDecoder,
-  ArkhamEnemy,
-  arkhamEnemyDecoder,
 } from '@/arkham/types';
 
 export type ArkhamLocationSymbol = 'Circle' | 'Heart';
@@ -28,7 +26,7 @@ export interface ArkhamLocation {
   shroud: number;
   image: string;
   investigators: ArkhamInvestigator[];
-  enemies: ArkhamEnemy[];
+  enemies: string[];
   clues: number;
   doom: number;
   status: ArkhamLocationStatus;
@@ -43,7 +41,7 @@ export const arkhamLocationDecoder = JsonDecoder.object<ArkhamLocation>(
     shroud: JsonDecoder.number,
     image: JsonDecoder.string,
     investigators: JsonDecoder.array<ArkhamInvestigator>(arkhamInvestigatorDecoder, 'ArkhamInvestigator[]'),
-    enemies: JsonDecoder.array<ArkhamEnemy>(arkhamEnemyDecoder, 'ArkhamEnemy[]'),
+    enemies: JsonDecoder.array<string>(JsonDecoder.string, 'UUID[]'),
     clues: JsonDecoder.number,
     doom: JsonDecoder.number,
     status: arkhamLocationStatusDecoder,

@@ -6,6 +6,8 @@ import {
   arkhamCycleDecoder,
   arkhamScenarioDecoder,
   arkhamPlayerDecoder,
+  ArkhamEnemy,
+  arkhamEnemyDecoder,
 } from '@/arkham/types';
 import {
   ArkhamLocation,
@@ -168,6 +170,7 @@ export interface ArkhamGameState {
   player: ArkhamPlayer;
   phase: ArkhamPhase;
   locations: Record<string, ArkhamLocation>;
+  enemies: Record<string, ArkhamEnemy>;
   stacks: Record<string, ArkhamStack>;
   step: ArkhamStep;
   chaosBag: ArkhamChaosToken[];
@@ -225,6 +228,10 @@ export const arkhamGameStateDecoder = JsonDecoder.object<ArkhamGameState>(
   {
     player: arkhamPlayerDecoder,
     phase: arkhamPhaseDecoder,
+    enemies: JsonDecoder.dictionary(
+      arkhamEnemyDecoder,
+      'Dict<UUID, ArkhamEnemy>',
+    ),
     locations: JsonDecoder.dictionary(
       arkhamLocationDecoder,
       'Dict<LocationId, ArkhamLocation>',

@@ -15,6 +15,7 @@ where
 import Arkham.Types.Action
 import Arkham.Types.Card
 import Arkham.Types.ChaosToken
+import Arkham.Types.Enemy
 import Arkham.Types.Location
 import Arkham.Types.Player
 import Arkham.Types.Skill
@@ -23,6 +24,7 @@ import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
 import Data.List.NonEmpty (NonEmpty)
+import Data.UUID
 import Lens.Micro
 
 data ArkhamPhase = Mythos | Investigation | Enemy | Upkeep
@@ -97,6 +99,7 @@ data ArkhamGameState = ArkhamGameState
   , agsPhase :: ArkhamPhase
   , agsChaosBag :: NonEmpty ArkhamChaosToken
   , agsLocations :: HashMap ArkhamCardCode ArkhamLocation
+  , agsEnemies :: HashMap UUID ArkhamEnemy
   , agsStacks :: HashMap Text ArkhamStack
   , agsEncounterDeck :: [ArkhamEncounterCard]
   , agsStep :: ArkhamGameStateStep

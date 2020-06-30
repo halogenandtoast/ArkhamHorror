@@ -94,6 +94,7 @@ export const arkhamChaosTokenDecoder = JsonDecoder.oneOf<ArkhamChaosToken>([
 
 // ArkhamEnemu
 export interface ArkhamEnemy {
+  id: string;
   combat: number;
   health: number;
   agility: number;
@@ -107,6 +108,7 @@ export interface ArkhamEnemy {
 
 export const arkhamEnemyDecoder = JsonDecoder.object<ArkhamEnemy>(
   {
+    id: JsonDecoder.string,
     combat: JsonDecoder.number,
     health: JsonDecoder.number,
     agility: JsonDecoder.number,

@@ -12,8 +12,7 @@ import Database.Persist.Sql
 
 updateGame
   :: (MonadIO m) => ArkhamGameId -> ArkhamGame -> SqlPersistT m ArkhamGameData
-updateGame gameId game = replace gameId updatedGame
-  $> arkhamGameCurrentData updatedGame
- where
-  scenario' = toInternalScenario game
-  updatedGame = scenarioRun scenario' game
+updateGame gameId game = do
+  let scenario' = toInternalScenario game
+  updatedGame <- liftIO $ scenarioRun scenario' game
+  replace gameId updatedGame $> arkhamGameCurrentData updatedGame

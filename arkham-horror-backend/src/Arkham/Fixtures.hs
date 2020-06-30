@@ -83,21 +83,21 @@ theGatheringF = ArkhamScenario
 
 fixtureGameState :: Int -> [ArkhamCard] -> ArkhamGameState
 fixtureGameState seed deck' = ArkhamGameState
-  (playerF seed deck')
-  Investigation
-  chaosTokens
-  mempty
-  mempty
+  (playerF seed deck') -- Player
+  Investigation -- Phase
+  chaosTokens -- Chaos Tokens
+  mempty -- Locations
+  mempty -- Enemies
+  mempty -- Stacks
   -- (HashMap.fromList $ map (\l -> (alCardCode l, l)) [study seed])
   -- (HashMap.fromList [("Agenda", agenda), ("Act", act)])
   (replicate 3 $ ArkhamEncounterCard
     "Swarm of Rats"
     (ArkhamCardCode "01159")
     "https://arkhamdb.com/bundles/cards/01159.png"
-  )
-
-  ArkhamGameStateStepInvestigatorActionStep
-  (Just InvestigationTakeActions)
+  ) -- Encounter Deck
+  ArkhamGameStateStepInvestigatorActionStep -- Step
+  (Just InvestigationTakeActions) -- Lock
 
 loadDeck :: String -> IO [ArkhamCard]
 loadDeck deckId = do

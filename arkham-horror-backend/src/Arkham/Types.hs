@@ -26,6 +26,7 @@ module Arkham.Types
   , actions
   , gameState
   , enemies
+  , enemyIds
   )
 where
 
@@ -43,6 +44,7 @@ import ClassyPrelude
 import Control.Monad.Random
 import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.List.NonEmpty as NE
+import Data.UUID
 import Lens.Micro
 import Lens.Micro.Extras
 
@@ -248,5 +250,8 @@ instance HasEncounterDeck ArkhamGameState where
 endedTurn :: Lens' ArkhamPlayer Bool
 endedTurn = lens _endedTurn $ \m x -> m { _endedTurn = x }
 
-enemies :: Lens' ArkhamLocation [ArkhamEnemy]
-enemies = lens alEnemies $ \m x -> m { alEnemies = x }
+enemies :: Lens' ArkhamGameState (HashMap UUID ArkhamEnemy)
+enemies = lens agsEnemies $ \m x -> m { agsEnemies = x }
+
+enemyIds :: Lens' ArkhamLocation [UUID]
+enemyIds = lens alEnemies $ \m x -> m { alEnemies = x }

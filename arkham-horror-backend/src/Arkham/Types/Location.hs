@@ -6,11 +6,11 @@ module Arkham.Types.Location
 where
 
 import Arkham.Types.Card
-import Arkham.Types.Enemy
 import Arkham.Types.Investigator
 import ClassyPrelude hiding (Index)
 import Data.Aeson
 import Data.Aeson.Casing
+import Data.UUID
 
 data ArkhamLocationSymbol = Circle | Heart
   deriving stock (Generic, Show)
@@ -28,7 +28,7 @@ data ArkhamLocation = ArkhamLocation
   , alShroud :: Int
   , alImage :: Text
   , alInvestigators :: [ArkhamInvestigator]
-  , alEnemies :: [ArkhamEnemy]
+  , alEnemies :: [UUID]
   , alClues :: Int
   , alDoom :: Int
   , alStatus :: ArkhamLocationStatus

@@ -51,11 +51,11 @@
           />
         </div>
         <div
-          v-for="(enemy, index) in location.enemies"
-          :key="index"
+          v-for="enemyId in location.enemies"
+          :key="enemyId"
         >
           <img
-            :src="enemy.image"
+            :src="game.gameState.enemies[enemyId].image"
             width="250"
           />
         </div>

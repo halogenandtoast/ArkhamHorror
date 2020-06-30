@@ -55,6 +55,7 @@
           :key="enemyId"
         >
           <img
+            v-if="!game.gameState.enemies[enemyId].isEngaged"
             :src="game.gameState.enemies[enemyId].image"
             width="250"
           />

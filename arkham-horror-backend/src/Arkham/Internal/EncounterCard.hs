@@ -60,6 +60,7 @@ toEnemy ArkhamEnemyInternal {..} _ = do
     , _enemyVictory = enemyVictory
     , _enemyCardCode = enemyCardCode
     , _enemyIsHunter = enemyIsHunter
+    , _enemyIsEngaged = False
     , _enemyImage =
       "https://arkhamdb.com/bundles/cards/"
       <> unpack (unArkhamCardCode enemyCardCode)
@@ -77,19 +78,20 @@ spawnAt l e g = do
   let
     investigators =
       g ^. locations . at (alCardCode l) . _Just . to alInvestigators
-  let
-    engage = if null investigators
-      then id
-      else \g' -> g' & player . enemyIds %~ (_enemyId enemy' :)
+    willEngage = not (null investigators)
+    enemy'' = if willEngage then enemy' { _enemyIsEngaged = True } else enemy'
+    engage = if willEngage
+      then \g' -> g' & player . enemyIds %~ (_enemyId enemy'' :)
+      else id
   pure
     $ g
     & enemies
-    %~ HashMap.insert (_enemyId enemy') enemy'
+    %~ HashMap.insert (_enemyId enemy'') enemy''
     & locations
     . at (alCardCode l)
     . _Just
     . enemyIds
-    %~ (_enemyId enemy' :)
+    %~ (_enemyId enemy'' :)
     & engage
 
 encounterCardsInternal :: HashMap ArkhamCardCode ArkhamEncounterCardInternal

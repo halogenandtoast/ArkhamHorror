@@ -16,6 +16,7 @@ data ArkhamEnemy = ArkhamEnemy
   , _enemyVictory :: Maybe Int
   , _enemyCardCode :: ArkhamCardCode
   , _enemyIsHunter :: Bool
+  , _enemyIsEngaged :: Bool
   , _enemyImage :: String
   }
   deriving stock (Show, Generic)

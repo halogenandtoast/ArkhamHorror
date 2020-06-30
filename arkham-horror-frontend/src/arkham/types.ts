@@ -105,6 +105,7 @@ export interface ArkhamEnemy {
   victory: number | null;
   cardCode: string;
   isHunter: boolean;
+  isEngaged: boolean;
   image: string;
 }
 
@@ -119,6 +120,7 @@ export const arkhamEnemyDecoder = JsonDecoder.object<ArkhamEnemy>(
     victory: JsonDecoder.nullable(JsonDecoder.number),
     cardCode: JsonDecoder.string,
     isHunter: JsonDecoder.boolean,
+    isEngaged: JsonDecoder.boolean,
     image: JsonDecoder.string,
   },
   'ArkhamEnemy',

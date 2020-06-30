@@ -74,6 +74,13 @@ spawnAt
   -> m ArkhamGameState
 spawnAt l e g = do
   enemy' <- toEnemy e g
+  let
+    investigators =
+      g ^. locations . at (alCardCode l) . _Just . to alInvestigators
+  let
+    engage = if null investigators
+      then id
+      else \g' -> g' & player . enemyIds %~ (_enemyId enemy' :)
   pure
     $ g
     & enemies
@@ -83,6 +90,7 @@ spawnAt l e g = do
     . _Just
     . enemyIds
     %~ (_enemyId enemy' :)
+    & engage
 
 encounterCardsInternal :: HashMap ArkhamCardCode ArkhamEncounterCardInternal
 encounterCardsInternal = HashMap.map enemy enemiesInternal

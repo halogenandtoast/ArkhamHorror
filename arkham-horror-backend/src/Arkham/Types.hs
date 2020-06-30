@@ -253,5 +253,11 @@ endedTurn = lens _endedTurn $ \m x -> m { _endedTurn = x }
 enemies :: Lens' ArkhamGameState (HashMap UUID ArkhamEnemy)
 enemies = lens agsEnemies $ \m x -> m { agsEnemies = x }
 
-enemyIds :: Lens' ArkhamLocation [UUID]
-enemyIds = lens alEnemies $ \m x -> m { alEnemies = x }
+class HasEnemyIds a where
+  enemyIds :: Lens' a [UUID]
+
+instance HasEnemyIds ArkhamLocation where
+  enemyIds = lens alEnemies $ \m x -> m { alEnemies = x }
+
+instance HasEnemyIds ArkhamPlayer where
+  enemyIds = lens _enemies $ \m x -> m { _enemies = x }

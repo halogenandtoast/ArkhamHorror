@@ -8,6 +8,7 @@ import Arkham.Types.Investigator
 import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
+import Data.UUID
 
 data ArkhamPlayer = ArkhamPlayer
   { _investigator :: ArkhamInvestigator
@@ -19,6 +20,7 @@ data ArkhamPlayer = ArkhamPlayer
   , _inPlay :: [ArkhamCard]
   , _deck :: [ArkhamCard]
   , _discard :: [ArkhamCard]
+  , _enemies :: [UUID]
   , _actionsRemaining :: Int
   , _endedTurn :: Bool
   }

@@ -143,6 +143,7 @@ playerF seed deck' = ArkhamPlayer
   []
   deck''
   []
+  []
   3
   False
   where (hand', deck'') = splitAt 5 deck'

@@ -53,6 +53,7 @@ export interface ArkhamPlayer {
   actionsRemaining: number;
   hand: ArkhamCard[];
   inPlay: ArkhamCard[];
+  enemies: string[];
   discard: ArkhamCard[];
 }
 
@@ -66,6 +67,7 @@ export const arkhamPlayerDecoder = JsonDecoder.object<ArkhamPlayer>(
     actionsRemaining: JsonDecoder.number,
     hand: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
     inPlay: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
+    enemies: JsonDecoder.array<string>(JsonDecoder.string, 'UUID[]'),
     discard: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
   },
   'ArkhamPlayer',

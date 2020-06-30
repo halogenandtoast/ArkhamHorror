@@ -11,6 +11,10 @@
           {{card.contents.uses}}
         </div>
       </div>
+
+      <div v-for="enemyId in player.enemies" :key="enemyId">
+        <img :src="game.gameState.enemies[enemyId].image" class="card" />
+      </div>
     </section>
     <div class="player">
       <div v-if="topOfDiscard" class="discard">
@@ -65,6 +69,7 @@
           />
           <img v-else class="card" :src="card.contents.image" />
         </div>
+
       </section>
     </div>
   </div>

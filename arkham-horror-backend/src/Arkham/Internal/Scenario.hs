@@ -134,26 +134,25 @@ defaultScenarioRun g = do
   ArkhamInvestigationPhaseInternal {..} = scenarioInvestigationPhase scenario'
   ArkhamEnemyPhaseInternal {..} = scenarioEnemyPhase scenario'
   ArkhamUpkeepPhaseInternal {..} = scenarioUpkeepPhase scenario'
-  go g' =
-    pure g'
-      >>= mythosPhaseOnEnter
-      >>= mythosPhaseAddDoom
-      >>= mythosPhaseCheckAdvance
-      >>= mythosPhaseDrawEncounter
-      >>= mythosPhaseOnExit
-      >>= investigationPhaseOnEnter
-      >>= investigationPhaseTakeActions
-      >>= investigationPhaseOnExit
-      >>= enemyPhaseOnEnter
-      >>= enemyPhaseResolveHunters
-      >>= enemyPhaseResolveEnemies
-      >>= enemyPhaseOnExit
-      >>= upkeepPhaseOnEnter
-      >>= upkeepPhaseResetActions
-      >>= upkeepPhaseReadyExhausted
-      >>= upkeepPhaseDrawCardsAndGainResources
-      >>= upkeepPhaseCheckHandSize
-      >>= upkeepPhaseOnExit
+  go =
+    mythosPhaseOnEnter
+      >=> mythosPhaseAddDoom
+      >=> mythosPhaseCheckAdvance
+      >=> mythosPhaseDrawEncounter
+      >=> mythosPhaseOnExit
+      >=> investigationPhaseOnEnter
+      >=> investigationPhaseTakeActions
+      >=> investigationPhaseOnExit
+      >=> enemyPhaseOnEnter
+      >=> enemyPhaseResolveHunters
+      >=> enemyPhaseResolveEnemies
+      >=> enemyPhaseOnExit
+      >=> upkeepPhaseOnEnter
+      >=> upkeepPhaseResetActions
+      >=> upkeepPhaseReadyExhausted
+      >=> upkeepPhaseDrawCardsAndGainResources
+      >=> upkeepPhaseCheckHandSize
+      >=> upkeepPhaseOnExit
 
 theGathering :: ArkhamDifficulty -> ArkhamScenarioInternal
 theGathering difficulty' = ArkhamScenarioInternal

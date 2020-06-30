@@ -78,16 +78,16 @@ defaultMythosPhase = ArkhamMythosPhaseInternal
     $ \g -> Unlocked $ g & stacks . at "Agenda" . _Just . doom +~ 1
   , mythosPhaseCheckAdvance = id
   -- , mythosCheckAdvance = \g -> actCheckAdvance g $ toActInternal (fromJustNote "Unknown act deck" $ g ^. stacks . at "Act")
-  , mythosPhaseDrawEncounter = runOnlyUnlocked $ \g ->
+  , mythosPhaseDrawEncounter = runOnlyUnlockedM $ \g -> do
     let (card : deck') = g ^. encounterDeck
-    in
-      Unlocked
-      $ g
-      & encounterDeck
-      .~ deck'
-      & currentData
-      . gameState
-      %~ aeiResolve (toInternalEncounterCard card) (g ^. player . investigator)
+    Unlocked
+      <$> (g & encounterDeck .~ deck' & traverseOf
+            (currentData . gameState)
+            (aeiResolve
+              (toInternalEncounterCard card)
+              (g ^. player . investigator)
+            )
+          )
   , mythosPhaseOnExit = id
   }
 
@@ -121,9 +121,12 @@ defaultUpkeepPhase = ArkhamUpkeepPhaseInternal
   , upkeepPhaseOnExit = id
   }
 
-defaultScenarioRun :: ArkhamGame -> ArkhamGame
-defaultScenarioRun g = withoutLock
-  $ if isLocked firstPass then firstPass else go firstPass
+defaultScenarioRun :: ArkhamGame -> IO ArkhamGame
+defaultScenarioRun g = do
+  result <- firstPass
+  if isLocked result
+    then pure (withoutLock result)
+    else withoutLock <$> go result
  where
   firstPass = go (buildLock g)
   scenario' = toInternalScenario g
@@ -131,26 +134,28 @@ defaultScenarioRun g = withoutLock
   ArkhamInvestigationPhaseInternal {..} = scenarioInvestigationPhase scenario'
   ArkhamEnemyPhaseInternal {..} = scenarioEnemyPhase scenario'
   ArkhamUpkeepPhaseInternal {..} = scenarioUpkeepPhase scenario'
-  go g' =
-    g'
-      & mythosPhaseOnEnter
-      & mythosPhaseAddDoom
-      & mythosPhaseCheckAdvance
-      & mythosPhaseDrawEncounter
-      & mythosPhaseOnExit
-      & investigationPhaseOnEnter
-      & investigationPhaseTakeActions
-      & investigationPhaseOnExit
-      & enemyPhaseOnEnter
-      & enemyPhaseResolveHunters
-      & enemyPhaseResolveEnemies
-      & enemyPhaseOnExit
-      & upkeepPhaseOnEnter
-      & upkeepPhaseResetActions
-      & upkeepPhaseReadyExhausted
-      & upkeepPhaseDrawCardsAndGainResources
-      & upkeepPhaseCheckHandSize
-      & upkeepPhaseOnExit
+  go :: Lockable ArkhamGame -> IO (Lockable ArkhamGame)
+  go g' = g'
+      -- >>= mythosPhaseDrawEncounter
+      -- <&> mythosPhaseOnEnter
+      -- <&> mythosPhaseAddDoom
+      -- <&> mythosPhaseCheckAdvance
+      -- >>= mythosPhaseDrawEncounter
+      -- <&> (mythosPhaseOnExit
+      --     & investigationPhaseOnEnter
+      --     & investigationPhaseTakeActions
+      --     & investigationPhaseOnExit
+      --     & enemyPhaseOnEnter
+      --     & enemyPhaseResolveHunters
+      --     & enemyPhaseResolveEnemies
+      --     & enemyPhaseOnExit
+      --     & upkeepPhaseOnEnter
+      --     & upkeepPhaseResetActions
+      --     & upkeepPhaseReadyExhausted
+      --     & upkeepPhaseDrawCardsAndGainResources
+      --     & upkeepPhaseCheckHandSize
+      --     & upkeepPhaseOnExit
+      --     )
 
 theGathering :: ArkhamDifficulty -> ArkhamScenarioInternal
 theGathering difficulty' = ArkhamScenarioInternal

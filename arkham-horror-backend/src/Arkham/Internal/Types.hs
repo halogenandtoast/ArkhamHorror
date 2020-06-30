@@ -48,14 +48,14 @@ data ArkhamScenarioInternal = ArkhamScenarioInternal
   , scenarioInvestigationPhase :: ArkhamInvestigationPhaseInternal
   , scenarioEnemyPhase :: ArkhamEnemyPhaseInternal
   , scenarioUpkeepPhase :: ArkhamUpkeepPhaseInternal
-  , scenarioRun :: ArkhamGame -> ArkhamGame
+  , scenarioRun :: ArkhamGame -> IO ArkhamGame
   }
 
 data ArkhamMythosPhaseInternal = ArkhamMythosPhaseInternal
   { mythosPhaseOnEnter :: Lockable ArkhamGame -> Lockable ArkhamGame
   , mythosPhaseAddDoom :: Lockable ArkhamGame -> Lockable ArkhamGame
   , mythosPhaseCheckAdvance :: Lockable ArkhamGame -> Lockable ArkhamGame
-  , mythosPhaseDrawEncounter :: Lockable ArkhamGame -> Lockable ArkhamGame
+  , mythosPhaseDrawEncounter :: forall m. MonadIO m => Lockable ArkhamGame -> m (Lockable ArkhamGame)
   , mythosPhaseOnExit :: Lockable ArkhamGame -> Lockable ArkhamGame
   }
 

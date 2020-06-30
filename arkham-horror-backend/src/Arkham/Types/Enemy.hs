@@ -4,9 +4,11 @@ import Arkham.Types.Card
 import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
+import Data.UUID
 
 data ArkhamEnemy = ArkhamEnemy
-  { _enemyCombat :: Int
+  { _enemyId :: UUID
+  , _enemyCombat :: Int
   , _enemyHealth :: Int
   , _enemyAgility :: Int
   , _enemyHealthDamage :: Int

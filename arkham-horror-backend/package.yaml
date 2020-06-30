@@ -75,6 +75,7 @@ dependencies:
 - transformers
 - unliftio
 - unordered-containers
+- uuid
 - vector
 - wai
 - wai-extra

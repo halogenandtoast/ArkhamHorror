@@ -40,12 +40,21 @@ runOnlyUnlocked :: (a -> Lockable a) -> Lockable a -> Lockable a
 runOnlyUnlocked f (Unlocked a) = f a
 runOnlyUnlocked _ l = l
 
+runOnlyUnlockedM
+  :: Monad m => (a -> m (Lockable a)) -> Lockable a -> m (Lockable a)
+runOnlyUnlockedM f (Unlocked a) = f a
+runOnlyUnlockedM _ l = pure l
+
 removeLock :: (HasLock a) => Lockable a -> a
 removeLock a = withoutLock a & lock .~ Nothing
 
 withoutLock :: (HasLock a) => Lockable a -> a
 withoutLock (Locked _ a) = a
 withoutLock (Unlocked a) = a
+
+withoutLockM :: (Monad m, HasLock a) => Lockable a -> m a
+withoutLockM (Locked _ a) = pure a
+withoutLockM (Unlocked a) = pure a
 
 isLocked :: (HasLock a) => Lockable a -> Bool
 isLocked (Locked _ _) = True

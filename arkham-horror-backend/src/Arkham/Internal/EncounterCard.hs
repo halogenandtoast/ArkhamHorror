@@ -9,6 +9,7 @@ import Arkham.Types.Investigator
 import Arkham.Types.Location
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
+import Data.UUID.V4
 import Lens.Micro
 import Lens.Micro.Platform ()
 import Safe (fromJustNote)
@@ -17,7 +18,7 @@ data ArkhamEncounterCardType = EncounterEnemy | EncounterTreachery
 
 data ArkhamEncounterCardInternal = ArkhamEncounterCardInternal
   { aeiType :: ArkhamEncounterCardType
-  , aeiResolve :: ArkhamInvestigator -> ArkhamGameState -> ArkhamGameState
+  , aeiResolve :: forall m. MonadIO m => ArkhamInvestigator -> ArkhamGameState -> m ArkhamGameState
   , aeiCardCode :: ArkhamCardCode
   }
 
@@ -46,26 +47,34 @@ toInternalEnemy e =
     $ HashMap.lookup ccode enemiesInternal
   where ccode = _enemyCardCode e
 
-toEnemy :: ArkhamEnemyInternal -> ArkhamGameState -> ArkhamEnemy
-toEnemy ArkhamEnemyInternal {..} _ = ArkhamEnemy
-  { _enemyCombat = enemyCombat 1
-  , _enemyHealth = enemyHealth 1
-  , _enemyAgility = enemyAgility 1
-  , _enemyHealthDamage = enemyHealthDamage
-  , _enemySanityDamage = enemySanityDamage
-  , _enemyVictory = enemyVictory
-  , _enemyCardCode = enemyCardCode
-  , _enemyIsHunter = enemyIsHunter
-  , _enemyImage =
-    "https://arkhamdb.com/bundles/cards/"
-    <> unpack (unArkhamCardCode enemyCardCode)
-    <> ".png"
-  }
+toEnemy :: MonadIO m => ArkhamEnemyInternal -> ArkhamGameState -> m ArkhamEnemy
+toEnemy ArkhamEnemyInternal {..} _ = do
+  enemyId <- liftIO nextRandom
+  pure ArkhamEnemy
+    { _enemyId = enemyId
+    , _enemyCombat = enemyCombat 1
+    , _enemyHealth = enemyHealth 1
+    , _enemyAgility = enemyAgility 1
+    , _enemyHealthDamage = enemyHealthDamage
+    , _enemySanityDamage = enemySanityDamage
+    , _enemyVictory = enemyVictory
+    , _enemyCardCode = enemyCardCode
+    , _enemyIsHunter = enemyIsHunter
+    , _enemyImage =
+      "https://arkhamdb.com/bundles/cards/"
+      <> unpack (unArkhamCardCode enemyCardCode)
+      <> ".png"
+    }
 
 spawnAt
-  :: ArkhamLocation -> ArkhamEnemyInternal -> ArkhamGameState -> ArkhamGameState
-spawnAt l e g =
-  g & locations . at (alCardCode l) . _Just . enemies %~ (toEnemy e g :)
+  :: MonadIO m
+  => ArkhamLocation
+  -> ArkhamEnemyInternal
+  -> ArkhamGameState
+  -> m ArkhamGameState
+spawnAt l e g = do
+  enemy' <- toEnemy e g
+  pure $ g & locations . at (alCardCode l) . _Just . enemies %~ (enemy' :)
 
 encounterCardsInternal :: HashMap ArkhamCardCode ArkhamEncounterCardInternal
 encounterCardsInternal = HashMap.map enemy enemiesInternal

@@ -27,6 +27,16 @@ runLocked _ f (Unlocked a) = f a
 runLocked key f (Locked lock' a) | lock' key = f a
 runLocked _ _ l = l
 
+runLockedM
+  :: (HasLock a, b ~ LockKey a, Monad m)
+  => b
+  -> (a -> m (Lockable a))
+  -> Lockable a
+  -> m (Lockable a)
+runLockedM _ f (Unlocked a) = f a
+runLockedM key f (Locked lock' a) | lock' key = f a
+runLockedM _ _ l = pure l
+
 runOnlyLocked
   :: (HasLock a, b ~ LockKey a)
   => b

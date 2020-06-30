@@ -80,9 +80,8 @@ spawnAt l e g = do
       g ^. locations . at (alCardCode l) . _Just . to alInvestigators
     willEngage = not (null investigators)
     enemy'' = if willEngage then enemy' { _enemyIsEngaged = True } else enemy'
-    engage = if willEngage
-      then \g' -> g' & player . enemyIds %~ (_enemyId enemy'' :)
-      else id
+    engage =
+      if willEngage then player . enemyIds %~ (_enemyId enemy'' :) else id
   pure
     $ g
     & enemies

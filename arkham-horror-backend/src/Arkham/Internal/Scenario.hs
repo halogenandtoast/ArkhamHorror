@@ -73,11 +73,10 @@ drawCard g =
 
 defaultMythosPhase :: ArkhamMythosPhaseInternal
 defaultMythosPhase = ArkhamMythosPhaseInternal
-  { mythosPhaseOnEnter = id
-  , mythosPhaseAddDoom = runLocked AddDoom
-    $ \g -> Unlocked $ g & stacks . at "Agenda" . _Just . doom +~ 1
-  , mythosPhaseCheckAdvance = id
-  -- , mythosCheckAdvance = \g -> actCheckAdvance g $ toActInternal (fromJustNote "Unknown act deck" $ g ^. stacks . at "Act")
+  { mythosPhaseOnEnter = pure
+  , mythosPhaseAddDoom = runLockedM AddDoom
+    $ \g -> pure . Unlocked $ g & stacks . at "Agenda" . _Just . doom +~ 1
+  , mythosPhaseCheckAdvance = pure
   , mythosPhaseDrawEncounter = runOnlyUnlockedM $ \g -> do
     let (card : deck') = g ^. encounterDeck
     Unlocked
@@ -88,40 +87,41 @@ defaultMythosPhase = ArkhamMythosPhaseInternal
               (g ^. player . investigator)
             )
           )
-  , mythosPhaseOnExit = id
+  , mythosPhaseOnExit = pure
   }
 
 defaultInvestigationPhase :: ArkhamInvestigationPhaseInternal
 defaultInvestigationPhase = ArkhamInvestigationPhaseInternal
-  { investigationPhaseOnEnter = id
-  , investigationPhaseTakeActions = runLocked InvestigationTakeActions $ \g ->
+  { investigationPhaseOnEnter = pure
+  , investigationPhaseTakeActions = runLockedM InvestigationTakeActions $ \g ->
     if g ^. player . endedTurn
-      then Unlocked g
-      else addLock InvestigationTakeActions g
-  , investigationPhaseOnExit = id
+      then pure $ Unlocked g
+      else pure $ addLock InvestigationTakeActions g
+  , investigationPhaseOnExit = pure
   }
 
 defaultEnemyPhase :: ArkhamEnemyPhaseInternal
 defaultEnemyPhase = ArkhamEnemyPhaseInternal
-  { enemyPhaseOnEnter = id
-  , enemyPhaseResolveHunters = id
-  , enemyPhaseResolveEnemies = id
-  , enemyPhaseOnExit = id
+  { enemyPhaseOnEnter = pure
+  , enemyPhaseResolveHunters = pure
+  , enemyPhaseResolveEnemies = pure
+  , enemyPhaseOnExit = pure
   }
 
 defaultUpkeepPhase :: ArkhamUpkeepPhaseInternal
 defaultUpkeepPhase = ArkhamUpkeepPhaseInternal
-  { upkeepPhaseOnEnter = id
-  , upkeepPhaseResetActions = runLocked UpkeepResetActions
-    $ \g -> Unlocked $ g & player . actions .~ 3 & player . endedTurn .~ False
-  , upkeepPhaseReadyExhausted = id
-  , upkeepPhaseDrawCardsAndGainResources = runLocked DrawAndGainResources
-    $ \g -> Unlocked $ g & currentData %~ drawCard & player . resources +~ 1
-  , upkeepPhaseCheckHandSize = id
-  , upkeepPhaseOnExit = id
+  { upkeepPhaseOnEnter = pure
+  , upkeepPhaseResetActions = runLockedM UpkeepResetActions $ \g ->
+    pure . Unlocked $ g & player . actions .~ 3 & player . endedTurn .~ False
+  , upkeepPhaseReadyExhausted = pure
+  , upkeepPhaseDrawCardsAndGainResources =
+    runLockedM DrawAndGainResources $ \g ->
+      pure . Unlocked $ g & currentData %~ drawCard & player . resources +~ 1
+  , upkeepPhaseCheckHandSize = pure
+  , upkeepPhaseOnExit = pure
   }
 
-defaultScenarioRun :: ArkhamGame -> IO ArkhamGame
+defaultScenarioRun :: MonadIO m => ArkhamGame -> m ArkhamGame
 defaultScenarioRun g = do
   result <- firstPass
   if isLocked result
@@ -134,28 +134,26 @@ defaultScenarioRun g = do
   ArkhamInvestigationPhaseInternal {..} = scenarioInvestigationPhase scenario'
   ArkhamEnemyPhaseInternal {..} = scenarioEnemyPhase scenario'
   ArkhamUpkeepPhaseInternal {..} = scenarioUpkeepPhase scenario'
-  go :: Lockable ArkhamGame -> IO (Lockable ArkhamGame)
   go g' =
-    (pure g'
-      <&> mythosPhaseOnEnter
-      <&> mythosPhaseAddDoom
-      <&> mythosPhaseCheckAdvance
-      )
+    pure g'
+      >>= mythosPhaseOnEnter
+      >>= mythosPhaseAddDoom
+      >>= mythosPhaseCheckAdvance
       >>= mythosPhaseDrawEncounter
-      <&> mythosPhaseOnExit
-      <&> investigationPhaseOnEnter
-      <&> investigationPhaseTakeActions
-      <&> investigationPhaseOnExit
-      <&> enemyPhaseOnEnter
-      <&> enemyPhaseResolveHunters
-      <&> enemyPhaseResolveEnemies
-      <&> enemyPhaseOnExit
-      <&> upkeepPhaseOnEnter
-      <&> upkeepPhaseResetActions
-      <&> upkeepPhaseReadyExhausted
-      <&> upkeepPhaseDrawCardsAndGainResources
-      <&> upkeepPhaseCheckHandSize
-      <&> upkeepPhaseOnExit
+      >>= mythosPhaseOnExit
+      >>= investigationPhaseOnEnter
+      >>= investigationPhaseTakeActions
+      >>= investigationPhaseOnExit
+      >>= enemyPhaseOnEnter
+      >>= enemyPhaseResolveHunters
+      >>= enemyPhaseResolveEnemies
+      >>= enemyPhaseOnExit
+      >>= upkeepPhaseOnEnter
+      >>= upkeepPhaseResetActions
+      >>= upkeepPhaseReadyExhausted
+      >>= upkeepPhaseDrawCardsAndGainResources
+      >>= upkeepPhaseCheckHandSize
+      >>= upkeepPhaseOnExit
 
 theGathering :: ArkhamDifficulty -> ArkhamScenarioInternal
 theGathering difficulty' = ArkhamScenarioInternal

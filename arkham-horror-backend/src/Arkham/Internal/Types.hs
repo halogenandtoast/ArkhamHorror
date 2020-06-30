@@ -52,31 +52,34 @@ data ArkhamScenarioInternal = ArkhamScenarioInternal
   }
 
 data ArkhamMythosPhaseInternal = ArkhamMythosPhaseInternal
-  { mythosPhaseOnEnter :: Lockable ArkhamGame -> Lockable ArkhamGame
-  , mythosPhaseAddDoom :: Lockable ArkhamGame -> Lockable ArkhamGame
-  , mythosPhaseCheckAdvance :: Lockable ArkhamGame -> Lockable ArkhamGame
-  , mythosPhaseDrawEncounter :: forall m. MonadIO m => Lockable ArkhamGame -> m (Lockable ArkhamGame)
-  , mythosPhaseOnExit :: Lockable ArkhamGame -> Lockable ArkhamGame
+  { mythosPhaseOnEnter :: PhaseStep
+  , mythosPhaseAddDoom :: PhaseStep
+  , mythosPhaseCheckAdvance :: PhaseStep
+  , mythosPhaseDrawEncounter :: PhaseStep
+  , mythosPhaseOnExit :: PhaseStep
   }
 
+type PhaseStep
+  = forall m . MonadIO m => Lockable ArkhamGame -> m (Lockable ArkhamGame)
+
 data ArkhamInvestigationPhaseInternal = ArkhamInvestigationPhaseInternal
-  { investigationPhaseOnEnter :: Lockable ArkhamGame -> Lockable ArkhamGame
-  , investigationPhaseTakeActions :: Lockable ArkhamGame -> Lockable ArkhamGame
-  , investigationPhaseOnExit :: Lockable ArkhamGame -> Lockable ArkhamGame
+  { investigationPhaseOnEnter :: PhaseStep
+  , investigationPhaseTakeActions :: PhaseStep
+  , investigationPhaseOnExit :: PhaseStep
   }
 
 data ArkhamEnemyPhaseInternal = ArkhamEnemyPhaseInternal
-  { enemyPhaseOnEnter :: Lockable ArkhamGame -> Lockable ArkhamGame
-  , enemyPhaseResolveHunters :: Lockable ArkhamGame -> Lockable ArkhamGame
-  , enemyPhaseResolveEnemies :: Lockable ArkhamGame -> Lockable ArkhamGame
-  , enemyPhaseOnExit :: Lockable ArkhamGame -> Lockable ArkhamGame
+  { enemyPhaseOnEnter :: PhaseStep
+  , enemyPhaseResolveHunters :: PhaseStep
+  , enemyPhaseResolveEnemies :: PhaseStep
+  , enemyPhaseOnExit :: PhaseStep
   }
 
 data ArkhamUpkeepPhaseInternal = ArkhamUpkeepPhaseInternal
-  { upkeepPhaseOnEnter :: Lockable ArkhamGame -> Lockable ArkhamGame
-  , upkeepPhaseResetActions :: Lockable ArkhamGame -> Lockable ArkhamGame
-  , upkeepPhaseReadyExhausted :: Lockable ArkhamGame -> Lockable ArkhamGame
-  , upkeepPhaseDrawCardsAndGainResources :: Lockable ArkhamGame -> Lockable ArkhamGame
-  , upkeepPhaseCheckHandSize :: Lockable ArkhamGame -> Lockable ArkhamGame
-  , upkeepPhaseOnExit :: Lockable ArkhamGame -> Lockable ArkhamGame
+  { upkeepPhaseOnEnter :: PhaseStep
+  , upkeepPhaseResetActions :: PhaseStep
+  , upkeepPhaseReadyExhausted :: PhaseStep
+  , upkeepPhaseDrawCardsAndGainResources :: PhaseStep
+  , upkeepPhaseCheckHandSize :: PhaseStep
+  , upkeepPhaseOnExit :: PhaseStep
   }

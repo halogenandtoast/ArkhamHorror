@@ -41,6 +41,7 @@ cardList :: IO (Either String [ArkhamDbCard])
 cardList = eitherDecode <$> BSL.readFile "data/cards.json"
 
 findCard :: Text -> IO (Maybe ArkhamCard)
+findCard "01000" = findCard "01097"
 findCard cardCode' = do
   cardList' <- cardList
   case cardList' of
@@ -89,8 +90,6 @@ fixtureGameState seed deck' = ArkhamGameState
   mempty -- Locations
   mempty -- Enemies
   mempty -- Stacks
-  -- (HashMap.fromList $ map (\l -> (alCardCode l, l)) [study seed])
-  -- (HashMap.fromList [("Agenda", agenda), ("Act", act)])
   (replicate 3 $ ArkhamEncounterCard
     "Swarm of Rats"
     (ArkhamCardCode "01159")

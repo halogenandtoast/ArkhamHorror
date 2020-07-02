@@ -53,6 +53,7 @@ dependencies:
 - hjsmin
 - http-client-tls
 - http-conduit
+- http-types
 - jwt
 - microlens
 - microlens-platform

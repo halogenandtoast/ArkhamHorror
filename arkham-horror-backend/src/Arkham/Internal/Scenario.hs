@@ -170,6 +170,17 @@ defaultScenarioRun g = do
       >=> upkeepPhaseCheckHandSize
       >=> upkeepPhaseOnExit
 
+-- TODO: validate card code
+defaultScenarioFindAct :: ArkhamCardCode -> ArkhamGame -> ArkhamAct
+defaultScenarioFindAct code' game' =
+  fromJustNote ("Could not find act in scenario with id " <> tcode)
+    $ game'
+    ^? stacks
+    . ix "Act"
+    . _ActStack
+    . _TopOfStack
+  where tcode = unpack $ unArkhamCardCode code'
+
 theGathering :: ArkhamDifficulty -> ArkhamScenarioInternal
 theGathering difficulty' = ArkhamScenarioInternal
   { scenarioName = "The Gathering"
@@ -180,6 +191,7 @@ theGathering difficulty' = ArkhamScenarioInternal
   , scenarioEnemyPhase = defaultEnemyPhase
   , scenarioUpkeepPhase = defaultUpkeepPhase
   , scenarioRun = defaultScenarioRun
+  , scenarioFindAct = defaultScenarioFindAct
   , tokenMap = buildTokenMapFrom $ HashMap.fromList
     [ (Skull, theGatheringSkullToken difficulty')
     , (Cultist, theGatheringCultistToken difficulty')

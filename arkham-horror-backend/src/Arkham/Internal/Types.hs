@@ -13,6 +13,7 @@ module Arkham.Internal.Types
 where
 
 import Arkham.Entity.ArkhamGame
+import Arkham.Types.Card
 import Arkham.Types.ChaosToken
 import Arkham.Types.GameState
 import Arkham.Types.Investigator
@@ -50,6 +51,7 @@ data ArkhamScenarioInternal = ArkhamScenarioInternal
   , scenarioEnemyPhase :: ArkhamEnemyPhaseInternal
   , scenarioUpkeepPhase :: ArkhamUpkeepPhaseInternal
   , scenarioRun :: ArkhamGame -> IO ArkhamGame
+  , scenarioFindAct :: ArkhamCardCode -> ArkhamGame -> ArkhamAct
   }
 
 data ArkhamMythosPhaseInternal = ArkhamMythosPhaseInternal

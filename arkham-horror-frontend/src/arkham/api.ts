@@ -21,3 +21,7 @@ export const performEndTurn = (gameId: number) => api
 export const performApplyTokenResult = (gameId: number) => api
   .post(`arkham/games/${gameId}/apply-result`)
   .then((resp) => arkhamGameDecoder.decodePromise(resp.data));
+
+export const performProgressAct = (gameId: number, actCardCode: string) => api
+  .post(`arkham/games/${gameId}/progress-act`, { actCardCode })
+  .then((resp) => arkhamGameDecoder.decodePromise(resp.data));

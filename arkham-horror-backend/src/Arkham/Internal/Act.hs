@@ -19,7 +19,7 @@ data ArkhamActInternal = ArkhamActInternal
   { actSequence :: Text
   , actCardCode :: ArkhamCardCode
   , actCanProgress :: ArkhamGameState -> Bool
-  , actOnProgress :: ArkhamGameState -> ArkhamGameState
+  , actOnProgress :: forall m. MonadIO m => ArkhamGameState -> m ArkhamGameState
   }
 
 toInternalAct :: ArkhamAct -> ArkhamActInternal
@@ -40,5 +40,10 @@ trapped = ArkhamActInternal
   , actCardCode = ArkhamCardCode "01108"
   , actCanProgress = \g ->
     getSum (foldMap (Sum . view clues) [g ^. player]) >= 2
-  , actOnProgress = id
+  , actOnProgress = \g -> pure $ g & locations <>~ HashMap.fromList
+    [ ("hallway", hallway)
+    , ("cellar", cellar)
+    , ("attic", attic)
+    , ("parlor", parlor)
+    ]
   }

@@ -13,6 +13,7 @@
       <img
         v-if="game.gameState.stacks.Act.contents[0].canProgress"
         class="card card--sideways act--can-progress"
+        @click="progressAct"
         :src="game.gameState.stacks.Act.contents[0].image"
       />
       <img
@@ -98,7 +99,12 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ArkhamGame, ArkhamStepTypes } from '@/arkham/types/game';
 import { ArkhamLocation } from '@/arkham/types/location';
 import { ArkhamAction, ArkhamActionTypes } from '@/arkham/types/action';
-import { performAction, performDrawToken, performApplyTokenResult } from '@/arkham/api';
+import {
+  performAction,
+  performDrawToken,
+  performApplyTokenResult,
+  performProgressAct,
+} from '@/arkham/api';
 import Player from '@/arkham/components/Player.vue';
 
 
@@ -130,6 +136,14 @@ export default class Scenario extends Vue {
 
   applyTokenResult() {
     performApplyTokenResult(this.game.id).then((game: ArkhamGame) => {
+      this.update(game);
+    });
+  }
+
+  progressAct() {
+    const { cardCode } = this.game.gameState.stacks.Act.contents[0];
+
+    performProgressAct(this.game.id, cardCode).then((game: ArkhamGame) => {
       this.update(game);
     });
   }

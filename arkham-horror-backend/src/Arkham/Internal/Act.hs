@@ -1,4 +1,9 @@
-module Arkham.Internal.Act where
+module Arkham.Internal.Act
+  ( ArkhamActInternal(..)
+  , toInternalAct
+  , lookupAct
+  )
+where
 
 import Arkham.Types
 import Arkham.Types.Card
@@ -18,12 +23,13 @@ data ArkhamActInternal = ArkhamActInternal
   }
 
 toInternalAct :: ArkhamAct -> ArkhamActInternal
-toInternalAct ArkhamAct {..} =
+toInternalAct ArkhamAct {..} = lookupAct aactCardCode
+
+lookupAct :: ArkhamCardCode -> ArkhamActInternal
+lookupAct c =
   fromJustNote
-      ("Could not find act for card code "
-      <> unpack (unArkhamCardCode aactCardCode)
-      )
-    $ HashMap.lookup aactCardCode allActs
+      ("Could not find act for card code " <> unpack (unArkhamCardCode c))
+    $ HashMap.lookup c allActs
 
 allActs :: HashMap ArkhamCardCode ArkhamActInternal
 allActs = HashMap.fromList $ map (\a -> (actCardCode a, a)) [trapped]

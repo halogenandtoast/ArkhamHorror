@@ -6,6 +6,8 @@ where
 
 import Arkham.Constructors
 import Arkham.Entity.ArkhamGame
+import Arkham.Internal.Act
+import Arkham.Internal.Agenda
 import Arkham.Internal.ChaosToken
 import Arkham.Internal.EncounterCard
 import Arkham.Internal.Investigator
@@ -71,6 +73,15 @@ drawCard g =
   let (drawn, deck') = splitAt 1 (g ^. player . deck)
   in g & player . hand %~ (++ drawn) & player . deck .~ deck'
 
+defaultUpdateObjectives
+  :: MonadIO m => Lockable ArkhamGame -> m (Lockable ArkhamGame)
+defaultUpdateObjectives = runIgnoreLockedM $ \g ->
+  let
+    Just actCard = lookupAct . topOfStackCardCode <$> g ^. stacks . at "Act"
+    Just agendaCard =
+      lookupAgenda . topOfStackCardCode <$> g ^. stacks . at "Agenda"
+  in pure g
+
 defaultMythosPhase :: ArkhamMythosPhaseInternal
 defaultMythosPhase = ArkhamMythosPhaseInternal
   { mythosPhaseOnEnter = pure
@@ -135,7 +146,8 @@ defaultScenarioRun g = do
   ArkhamEnemyPhaseInternal {..} = scenarioEnemyPhase scenario'
   ArkhamUpkeepPhaseInternal {..} = scenarioUpkeepPhase scenario'
   go =
-    mythosPhaseOnEnter
+    scenarioUpdateObjectives scenario'
+      >=> mythosPhaseOnEnter
       >=> mythosPhaseAddDoom
       >=> mythosPhaseCheckAdvance
       >=> mythosPhaseDrawEncounter
@@ -158,6 +170,7 @@ theGathering :: ArkhamDifficulty -> ArkhamScenarioInternal
 theGathering difficulty' = ArkhamScenarioInternal
   { scenarioName = "The Gathering"
   , scenarioSetup = theGatheringSetup
+  , scenarioUpdateObjectives = defaultUpdateObjectives
   , scenarioMythosPhase = defaultMythosPhase
   , scenarioInvestigationPhase = defaultInvestigationPhase
   , scenarioEnemyPhase = defaultEnemyPhase

@@ -44,6 +44,7 @@ data ArkhamScenarioInternal = ArkhamScenarioInternal
   { scenarioName :: Text
   , scenarioSetup :: forall m. MonadRandom m => ArkhamGameState -> m ArkhamGameState
   , tokenMap :: HashMap ArkhamChaosToken ArkhamChaosTokenInternal
+  , scenarioUpdateObjectives :: PhaseStep
   , scenarioMythosPhase :: ArkhamMythosPhaseInternal
   , scenarioInvestigationPhase :: ArkhamInvestigationPhaseInternal
   , scenarioEnemyPhase :: ArkhamEnemyPhaseInternal

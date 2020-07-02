@@ -9,10 +9,14 @@ module Arkham.Types.GameState
   , ArkhamSkillCheckStep(..)
   , ArkhamRevealTokenStep(..)
   , ArkhamTarget(..)
+  , topOfStackCardCode
+  , _ActStack
   )
 where
 
+import Arkham.Types.Act
 import Arkham.Types.Action
+import Arkham.Types.Agenda
 import Arkham.Types.Card
 import Arkham.Types.ChaosToken
 import Arkham.Types.Enemy
@@ -24,6 +28,7 @@ import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
 import Data.List.NonEmpty (NonEmpty)
+import qualified Data.List.NonEmpty as NE
 import Data.UUID
 import Lens.Micro
 
@@ -46,7 +51,6 @@ instance Eq ArkhamGameStateStep where
   ArkhamGameStateStepRevealTokenStep _ == ArkhamGameStateStepRevealTokenStep _
     = True
   _ == _ = False
-
 
 data ArkhamTarget = LocationTarget ArkhamLocation | OtherTarget ArkhamLocation
   deriving stock (Generic, Show)
@@ -111,35 +115,17 @@ instance HasLock ArkhamGameState where
   type LockKey ArkhamGameState = ArkhamGameStateLock
   lock = lens agsLock $ \m x -> m { agsLock = x }
 
-data ArkhamAct = ArkhamAct { aactCardCode :: ArkhamCardCode, aactImage :: Text }
-  deriving stock (Show, Generic)
-
-instance ToJSON ArkhamAct where
-  toJSON =
-    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
-  toEncoding = genericToEncoding
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
-
-instance FromJSON ArkhamAct where
-  parseJSON = genericParseJSON
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
-
-data ArkhamAgenda = ArkhamAgenda { aagendaCardCode :: ArkhamCardCode, aagendaImage :: Text, aagendaDoom :: Int }
-  deriving stock (Show, Generic)
-
-instance ToJSON ArkhamAgenda where
-  toJSON =
-    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 7 }
-  toEncoding = genericToEncoding
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 7 }
-
-instance FromJSON ArkhamAgenda where
-  parseJSON = genericParseJSON
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 7 }
-
 data ArkhamStack = ActStack (NonEmpty ArkhamAct) | AgendaStack (NonEmpty ArkhamAgenda)
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
+
+_ActStack :: Traversal' ArkhamStack (NonEmpty ArkhamAct)
+_ActStack f (ActStack a) = ActStack <$> f a
+_ActStack _ (AgendaStack a) = pure $ AgendaStack a
+
+topOfStackCardCode :: ArkhamStack -> ArkhamCardCode
+topOfStackCardCode (ActStack act) = aactCardCode $ NE.head act
+topOfStackCardCode (AgendaStack agenda) = aagendaCardCode $ NE.head agenda
 
 instance ToJSON ArkhamGameState where
   toJSON =

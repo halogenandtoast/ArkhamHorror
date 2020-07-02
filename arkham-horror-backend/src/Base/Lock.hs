@@ -37,6 +37,20 @@ runLockedM _ f (Unlocked a) = f a
 runLockedM key f (Locked lock' a) | lock' key = f a
 runLockedM _ _ l = pure l
 
+-- |Occasionally we want to be able to adjust state
+-- |independent of the lock, but such an operation
+-- |should retain the original Lockable state,
+-- |therefore we use a function from (a -> a) instead
+-- |of the usual (a -> Locked a).
+runIgnoreLocked :: (HasLock a) => (a -> a) -> Lockable a -> Lockable a
+runIgnoreLocked f (Unlocked a) = Unlocked (f a)
+runIgnoreLocked f (Locked lock' a) = Locked lock' (f a)
+
+runIgnoreLockedM
+  :: (HasLock a, Functor m) => (a -> m a) -> Lockable a -> m (Lockable a)
+runIgnoreLockedM f (Unlocked a) = Unlocked <$> f a
+runIgnoreLockedM f (Locked lock' a) = Locked lock' <$> f a
+
 runOnlyLocked
   :: (HasLock a, b ~ LockKey a)
   => b

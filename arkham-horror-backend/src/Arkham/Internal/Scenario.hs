@@ -14,6 +14,7 @@ import Arkham.Internal.Investigator
 import Arkham.Internal.Location
 import Arkham.Internal.Types
 import Arkham.Types
+import Arkham.Types.Act
 import Arkham.Types.Card
 import Arkham.Types.ChaosToken
 import Arkham.Types.Difficulty
@@ -77,10 +78,14 @@ defaultUpdateObjectives
   :: MonadIO m => Lockable ArkhamGame -> m (Lockable ArkhamGame)
 defaultUpdateObjectives = runIgnoreLockedM $ \g ->
   let
-    Just actCard = lookupAct . topOfStackCardCode <$> g ^. stacks . at "Act"
-    Just agendaCard =
-      lookupAgenda . topOfStackCardCode <$> g ^. stacks . at "Agenda"
-  in pure g
+    Just actCard = stackAct =<< g ^. stacks . at "Act"
+    Just agendaCard = stackAgenda =<< g ^. stacks . at "Agenda"
+    internalAct = toInternalAct actCard
+    internalAgenda = toInternalAgenda agendaCard
+    actCard' = if actCanProgress internalAct (g ^. currentData . gameState)
+      then actCard { aactCanProgress = True }
+      else actCard
+  in pure $ g & stacks . ix "Act" . _ActStack . _TopOfStack .~ actCard'
 
 defaultMythosPhase :: ArkhamMythosPhaseInternal
 defaultMythosPhase = ArkhamMythosPhaseInternal
@@ -225,12 +230,15 @@ theGatheringAct = pure $ ActStack $ NE.fromList
   [ ArkhamAct
     (ArkhamCardCode "01108")
     "https://arkhamdb.com/bundles/cards/01108.jpg"
+    False
   , ArkhamAct
     (ArkhamCardCode "01109")
     "https://arkhamdb.com/bundles/cards/01109.jpg"
+    False
   , ArkhamAct
     (ArkhamCardCode "01110")
     "https://arkhamdb.com/bundles/cards/01110.jpg"
+    False
   ]
 
 unrevealedLocation :: ArkhamLocation

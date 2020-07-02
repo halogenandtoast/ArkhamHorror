@@ -8,7 +8,7 @@ import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
 
-data ArkhamAct = ArkhamAct { aactCardCode :: ArkhamCardCode, aactImage :: Text }
+data ArkhamAct = ArkhamAct { aactCardCode :: ArkhamCardCode, aactImage :: Text, aactCanProgress :: Bool }
   deriving stock (Show, Generic)
 
 instance ToJSON ArkhamAct where

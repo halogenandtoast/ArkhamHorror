@@ -9,8 +9,10 @@ module Arkham.Types.GameState
   , ArkhamSkillCheckStep(..)
   , ArkhamRevealTokenStep(..)
   , ArkhamTarget(..)
-  , topOfStackCardCode
+  , stackAgenda
+  , stackAct
   , _ActStack
+  , _TopOfStack
   )
 where
 
@@ -119,13 +121,20 @@ data ArkhamStack = ActStack (NonEmpty ArkhamAct) | AgendaStack (NonEmpty ArkhamA
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 
+stackAct :: ArkhamStack -> Maybe ArkhamAct
+stackAct (ActStack acts) = Just $ NE.head acts
+stackAct _ = Nothing
+
+stackAgenda :: ArkhamStack -> Maybe ArkhamAgenda
+stackAgenda (AgendaStack agendas) = Just $ NE.head agendas
+stackAgenda _ = Nothing
+
 _ActStack :: Traversal' ArkhamStack (NonEmpty ArkhamAct)
 _ActStack f (ActStack a) = ActStack <$> f a
 _ActStack _ (AgendaStack a) = pure $ AgendaStack a
 
-topOfStackCardCode :: ArkhamStack -> ArkhamCardCode
-topOfStackCardCode (ActStack act) = aactCardCode $ NE.head act
-topOfStackCardCode (AgendaStack agenda) = aagendaCardCode $ NE.head agenda
+_TopOfStack :: Lens' (NonEmpty a) a
+_TopOfStack = lens NE.head $ \(_ NE.:| as) x -> x NE.:| as
 
 instance ToJSON ArkhamGameState where
   toJSON =

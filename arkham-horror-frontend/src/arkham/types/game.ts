@@ -36,6 +36,7 @@ type AgendaStackContents = {
 type ActStackContents = {
   image: string;
   cardCode: string;
+  canProgress: boolean;
 }
 
 type AgendaStack = {
@@ -195,6 +196,7 @@ const arkhamActContentsDecoder = JsonDecoder.object<ActStackContents>(
   {
     image: JsonDecoder.string,
     cardCode: JsonDecoder.string,
+    canProgress: JsonDecoder.boolean,
   },
   'AgendaStackContents',
 );

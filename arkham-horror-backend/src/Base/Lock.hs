@@ -41,6 +41,26 @@ runLockedM _ f (Unlocked a) = f a
 runLockedM key f (Locked lock' a) | unlocks lock' key = f a
 runLockedM _ _ l = pure l
 
+runLockedWithLock
+  :: (HasLock a, b ~ Key (Lock a))
+  => b
+  -> (a -> Maybe (Lock a) -> Lockable a)
+  -> Lockable a
+  -> Lockable a
+runLockedWithLock _ f (Unlocked a) = f a Nothing
+runLockedWithLock key f (Locked lock' a) | unlocks lock' key = f a (Just lock')
+runLockedWithLock _ _ l = l
+
+runLockedWithLockM
+  :: (HasLock a, b ~ Key (Lock a), Monad m)
+  => b
+  -> (a -> Maybe (Lock a) -> m (Lockable a))
+  -> Lockable a
+  -> m (Lockable a)
+runLockedWithLockM _ f (Unlocked a) = f a Nothing
+runLockedWithLockM key f (Locked lock' a) | unlocks lock' key = f a (Just lock')
+runLockedWithLockM _ _ l = pure l
+
 -- |Occasionally we want to be able to adjust state
 -- |independent of the lock, but such an operation
 -- |should retain the original Lockable state,

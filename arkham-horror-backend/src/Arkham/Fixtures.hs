@@ -96,7 +96,7 @@ fixtureGameState seed deck' = ArkhamGameState
     "https://arkhamdb.com/bundles/cards/01159.png"
   ) -- Encounter Deck
   ArkhamGameStateStepInvestigatorActionStep -- Step
-  (Just InvestigationTakeActions) -- Lock
+  (Just $ pure InvestigationTakeActions) -- Lock
 
 loadDeck :: String -> IO [ArkhamCard]
 loadDeck deckId = do

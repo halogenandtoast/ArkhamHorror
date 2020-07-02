@@ -12,6 +12,7 @@ module Arkham.Types.GameState
   , stackAgenda
   , stackAct
   , _ActStack
+  , _AgendaStack
   , _TopOfStack
   )
 where
@@ -29,7 +30,7 @@ import Base.Lock
 import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
-import Data.List.NonEmpty (NonEmpty)
+import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.List.NonEmpty as NE
 import Data.UUID
 import Lens.Micro
@@ -137,8 +138,12 @@ _ActStack :: Traversal' ArkhamStack (NonEmpty ArkhamAct)
 _ActStack f (ActStack a) = ActStack <$> f a
 _ActStack _ (AgendaStack a) = pure $ AgendaStack a
 
+_AgendaStack :: Traversal' ArkhamStack (NonEmpty ArkhamAgenda)
+_AgendaStack f (AgendaStack a) = AgendaStack <$> f a
+_AgendaStack _ (ActStack a) = pure $ ActStack a
+
 _TopOfStack :: Lens' (NonEmpty a) a
-_TopOfStack = lens NE.head $ \(_ NE.:| as) x -> x NE.:| as
+_TopOfStack = lens NE.head $ \(_ :| as) x -> x :| as
 
 instance ToJSON ArkhamGameState where
   toJSON =

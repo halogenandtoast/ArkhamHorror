@@ -1,3 +1,4 @@
+{-# LANGUAGE NamedFieldPuns #-}
 module Arkham.Internal.Scenario
   ( toInternalScenario
   , drawCard
@@ -7,7 +8,6 @@ where
 import Arkham.Constructors
 import Arkham.Entity.ArkhamGame
 import Arkham.Internal.Act
-import Arkham.Internal.Agenda
 import Arkham.Internal.ChaosToken
 import Arkham.Internal.EncounterCard
 import Arkham.Internal.Investigator
@@ -78,14 +78,13 @@ defaultUpdateObjectives
   :: MonadIO m => Lockable ArkhamGame -> m (Lockable ArkhamGame)
 defaultUpdateObjectives = runIgnoreLockedM $ \g ->
   let
-    Just actCard = stackAct =<< g ^. stacks . at "Act"
-    Just agendaCard = stackAgenda =<< g ^. stacks . at "Agenda"
-    internalAct = toInternalAct actCard
-    internalAgenda = toInternalAgenda agendaCard
-    actCard' = if actCanProgress internalAct (g ^. currentData . gameState)
-      then actCard { aactCanProgress = True }
-      else actCard
-  in pure $ g & stacks . ix "Act" . _ActStack . _TopOfStack .~ actCard'
+    actCard = fromJustNote "Could not find Act" (g ^? topActCardLens)
+    ArkhamActInternal { actCanProgress } = toInternalAct actCard
+    actCard' = actCard
+      { aactCanProgress = actCanProgress (g ^. currentData . gameState)
+      }
+  in pure $ g & topActCardLens .~ actCard'
+  where topActCardLens = stacks . ix "Act" . _ActStack . _TopOfStack
 
 defaultMythosPhase :: ArkhamMythosPhaseInternal
 defaultMythosPhase = ArkhamMythosPhaseInternal

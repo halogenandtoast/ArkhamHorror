@@ -33,7 +33,9 @@ import Data.Aeson.Casing
 import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.List.NonEmpty as NE
 import Data.UUID
+import Entity.User
 import Lens.Micro
+import Orphans ()
 
 data ArkhamPhase = Mythos | Investigation | Enemy | Upkeep
   deriving stock (Generic, Show, Eq)
@@ -102,7 +104,7 @@ data ArkhamGameStateLock = AddDoom | InvestigationTakeActions | UpkeepResetActio
   deriving anyclass (FromJSON, ToJSON)
 
 data ArkhamGameState = ArkhamGameState
-  { agsPlayer :: ArkhamPlayer
+  { agsPlayers :: HashMap UserId ArkhamPlayer
   , agsPhase :: ArkhamPhase
   , agsChaosBag :: NonEmpty ArkhamChaosToken
   , agsLocations :: HashMap ArkhamCardCode ArkhamLocation

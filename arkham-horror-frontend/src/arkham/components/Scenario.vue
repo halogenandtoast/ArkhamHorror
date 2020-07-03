@@ -86,7 +86,7 @@
     </div>
     <Player
       :game="game"
-      :player="game.gameState.player"
+      :player="player"
       :commitedCards="commitedCards"
       @update="update"
       @commitCard="commitCard"
@@ -162,6 +162,12 @@ export default class Scenario extends Vue {
     this.$emit('update', game);
   }
 
+  get player() {
+    const { players, activeUser } = this.game.gameState;
+
+    return players[activeUser];
+  }
+
   get drawnToken() {
     if (this.game.gameState.step.tag === ArkhamStepTypes.REVEAL_TOKEN) {
       return this.game.gameState.step.contents.token;
@@ -171,8 +177,10 @@ export default class Scenario extends Vue {
   }
 
   get canInvestigate() {
-    return this.game.gameState.step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION
-      && this.game.gameState.player.actionsRemaining > 0;
+    const { players, activeUser, step } = this.game.gameState;
+
+    return step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION
+      && players[activeUser].actionsRemaining > 0;
   }
 
   get canDrawToken() {

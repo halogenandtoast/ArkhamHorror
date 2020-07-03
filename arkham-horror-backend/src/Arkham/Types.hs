@@ -11,6 +11,7 @@ module Arkham.Types
   , HasCardCode(..)
   , HasLocations(..)
   , HasInvestigator(..)
+  , HasInvestigators(..)
   , HasResources(..)
   , HasStacks(..)
   , HasPhase(..)
@@ -116,6 +117,12 @@ class HasInvestigator a where
 
 instance HasInvestigator ArkhamPlayer where
   investigator = lens _investigator $ \m x -> m { _investigator = x }
+
+class HasInvestigators a where
+  investigators :: Lens' a [ArkhamInvestigator]
+
+instance HasInvestigators ArkhamLocation where
+  investigators = lens alInvestigators $ \m x -> m { alInvestigators = x }
 
 class HasClues a where
   clues :: Lens' a Int

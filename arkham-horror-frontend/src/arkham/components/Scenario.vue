@@ -289,4 +289,8 @@ export default class Scenario extends Vue {
   width: 100%;
   z-index: 1;
 }
+
+.location-cards {
+  display: flex;
+}
 </style>

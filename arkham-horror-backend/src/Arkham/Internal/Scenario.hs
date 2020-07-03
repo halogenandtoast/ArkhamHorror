@@ -213,10 +213,10 @@ theGatheringSetup game = do
   let stacks' = HashMap.fromList [("Agenda", agenda), ("Act", act)]
   pure $ game & locations .~ locations' & stacks .~ stacks'
  where
-  investigators = [game ^. activePlayer . investigator]
+  investigators' = [game ^. activePlayer . investigator]
   locations' = HashMap.fromList
     [ ( alCardCode study
-      , reveal game $ study { alInvestigators = investigators }
+      , reveal game $ study & investigators .~ investigators'
       )
     ]
 

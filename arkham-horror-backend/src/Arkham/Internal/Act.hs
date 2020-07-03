@@ -14,6 +14,7 @@ import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Data.Monoid
 import Lens.Micro
+import Lens.Micro.Platform ()
 import Lens.Micro.Extras (view)
 import Safe (fromJustNote)
 
@@ -42,12 +43,14 @@ trapped = ArkhamActInternal
   , actCardCode = ArkhamCardCode "01108"
   , actCanProgress = \g ->
     getSum (foldMap (Sum . view clues) (g ^. players)) >= 2
-  , actOnProgress = \g -> pure $ g & locations <>~ toLocations
+  , actOnProgress = \g ->
+      let investigators' = fromMaybe [] (g ^? locations . ix (ArkhamCardCode "01111") . investigators)
+      in pure $ g & locations .~ toLocations
       [ ArkhamCardCode "01112"
       , ArkhamCardCode "01114"
       , ArkhamCardCode "01113"
       , ArkhamCardCode "01115"
-      ]
+      ] & locations . at (ArkhamCardCode "01112") . _Just . investigators .~ investigators'
   }
   where
     toLocations :: [ArkhamCardCode] -> HashMap ArkhamCardCode ArkhamLocation

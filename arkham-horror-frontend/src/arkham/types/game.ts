@@ -168,6 +168,7 @@ export const arkhamStepDecoder = JsonDecoder.oneOf<ArkhamStep>([
 ], 'ArkhamStep');
 
 export interface ArkhamGameState {
+  users: Record<string, string>;
   players: Record<string, ArkhamPlayer>;
   phase: ArkhamPhase;
   locations: Record<string, ArkhamLocation>;
@@ -229,7 +230,8 @@ export const arkhamStackDecoder = JsonDecoder.oneOf<ArkhamStack>(
 
 export const arkhamGameStateDecoder = JsonDecoder.object<ArkhamGameState>(
   {
-    players: JsonDecoder.dictionary(arkhamPlayerDecoder, 'Dict<UserId, ArkhamPlayer>'),
+    users: JsonDecoder.dictionary(JsonDecoder.string, 'Dict<UserId, UUID>'),
+    players: JsonDecoder.dictionary(arkhamPlayerDecoder, 'Dict<UUID, ArkhamPlayer>'),
     phase: arkhamPhaseDecoder,
     enemies: JsonDecoder.dictionary(
       arkhamEnemyDecoder,

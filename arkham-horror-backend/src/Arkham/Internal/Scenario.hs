@@ -10,7 +10,6 @@ import Arkham.Entity.ArkhamGame
 import Arkham.Internal.Act
 import Arkham.Internal.ChaosToken
 import Arkham.Internal.EncounterCard
-import Arkham.Internal.Investigator
 import Arkham.Internal.Location
 import Arkham.Internal.Types
 import Arkham.Types
@@ -97,10 +96,7 @@ defaultMythosPhase = ArkhamMythosPhaseInternal
     Unlocked
       <$> (g & encounterDeck .~ deck' & traverseOf
             (currentData . gameState)
-            (aeiResolve
-              (toInternalEncounterCard card)
-              (g ^. activePlayer . investigator)
-            )
+            (aeiResolve (toInternalEncounterCard card) (g ^. activePlayer))
           )
   , mythosPhaseOnExit = pure
   }
@@ -127,11 +123,26 @@ defaultUpkeepPhase :: ArkhamUpkeepPhaseInternal
 defaultUpkeepPhase = ArkhamUpkeepPhaseInternal
   { upkeepPhaseOnEnter = pure
   , upkeepPhaseResetActions = runLockedM UpkeepResetActions $ \g ->
-    pure . Unlocked $ g & activePlayer . actions .~ 3 & activePlayer . endedTurn .~ False
+    pure
+      . Unlocked
+      $ g
+      & activePlayer
+      . actions
+      .~ 3
+      & activePlayer
+      . endedTurn
+      .~ False
   , upkeepPhaseReadyExhausted = pure
   , upkeepPhaseDrawCardsAndGainResources =
     runLockedM DrawAndGainResources $ \g ->
-      pure . Unlocked $ g & currentData %~ drawCard & activePlayer . resources +~ 1
+      pure
+        . Unlocked
+        $ g
+        & currentData
+        %~ drawCard
+        & activePlayer
+        . resources
+        +~ 1
   , upkeepPhaseCheckHandSize = pure
   , upkeepPhaseOnExit = pure
   }
@@ -213,12 +224,9 @@ theGatheringSetup game = do
   let stacks' = HashMap.fromList [("Agenda", agenda), ("Act", act)]
   pure $ game & locations .~ locations' & stacks .~ stacks'
  where
-  investigators' = [game ^. activePlayer . investigator]
+  investigators' = HashMap.elems (agsUsers game)
   locations' = HashMap.fromList
-    [ ( alCardCode study
-      , reveal game $ study & investigators .~ investigators'
-      )
-    ]
+    [(alCardCode study, reveal game $ study & investigators .~ investigators')]
 
 theGatheringAgenda :: MonadRandom m => m ArkhamStack
 theGatheringAgenda = pure $ AgendaStack $ NE.fromList
@@ -308,6 +316,7 @@ theGatheringTabletToken difficulty' = if isEasyStandard difficulty'
   else (token Tablet)
     { tokenToResult = modifier (-4)
     , tokenOnReveal = \g i -> if countTraitMatch Ghoul (locationFor i g) > 0
-      then g & activePlayer . healthDamage +~ 1 & activePlayer . sanityDamage +~ 1
+      then
+        g & activePlayer . healthDamage +~ 1 & activePlayer . sanityDamage +~ 1
       else g
     }

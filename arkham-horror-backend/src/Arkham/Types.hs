@@ -10,8 +10,6 @@ module Arkham.Types
   , HasUses(..)
   , HasCardCode(..)
   , HasLocations(..)
-  , HasInvestigator(..)
-  , HasInvestigators(..)
   , HasResources(..)
   , HasStacks(..)
   , HasPhase(..)
@@ -28,27 +26,27 @@ module Arkham.Types
   , gameState
   , enemies
   , enemyIds
+  , investigators
   )
 where
 
-import Entity.User
 import Arkham.Types.Card
 import Arkham.Types.ChaosToken
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy
 import Arkham.Types.Game
 import Arkham.Types.GameState
-import Arkham.Types.Investigator
 import Arkham.Types.Location
 import Arkham.Types.Player
 import Arkham.Types.Scenario
 import ClassyPrelude
 import Control.Monad.Random
+import qualified Data.HashMap.Strict as HashMap
 import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.List.NonEmpty as NE
 import Data.UUID
+import Entity.User
 import Lens.Micro
-import qualified Data.HashMap.Strict as HashMap
 import Safe (fromJustNote)
 
 class HasChaosBag a where
@@ -84,7 +82,7 @@ instance HasGameStateStep ArkhamGameState where
   gameStateStep = lens agsStep $ \m x -> m { agsStep = x }
 
 class HasPlayers a where
-  players :: Lens' a (HashMap UserId ArkhamPlayer)
+  players :: Lens' a (HashMap UUID ArkhamPlayer)
 
 instance HasPlayers ArkhamGameData where
   players = gameState . players
@@ -96,33 +94,31 @@ class HasActivePlayer a where
   activePlayer :: Lens' a ArkhamPlayer
 
 findUserPlayer :: UserId -> ArkhamGameState -> ArkhamPlayer
-findUserPlayer uid g = fromJustNote "Could not find player in game"
-  $ HashMap.lookup uid (agsPlayers g)
+findUserPlayer uid g =
+  fromJustNote "Could not find player in game"
+    $ HashMap.lookup uuid (agsPlayers g)
+ where
+  uuid =
+    fromJustNote "Could not find user uuid" $ HashMap.lookup uid (agsUsers g)
 
 instance HasActivePlayer ArkhamGameData where
   activePlayer = gameState . activePlayer
 
 instance HasActivePlayer ArkhamGameState where
-  activePlayer = lens (findUserPlayer =<< agsActiveUser) $ \m x -> 
-    m & players %~ HashMap.insert (agsActiveUser m) x
+  activePlayer = lens (findUserPlayer =<< agsActiveUser) $ \m x ->
+    m
+      & players
+      %~ HashMap.insert
+           (fromJustNote "User not in game"
+           $ HashMap.lookup (agsActiveUser m) (agsUsers m)
+           )
+           x
 
 class HasResources a where
   resources :: Lens' a Int
 
 instance HasResources ArkhamPlayer where
   resources = lens _resources $ \m x -> m { _resources = x }
-
-class HasInvestigator a where
-  investigator :: Lens' a ArkhamInvestigator
-
-instance HasInvestigator ArkhamPlayer where
-  investigator = lens _investigator $ \m x -> m { _investigator = x }
-
-class HasInvestigators a where
-  investigators :: Lens' a [ArkhamInvestigator]
-
-instance HasInvestigators ArkhamLocation where
-  investigators = lens alInvestigators $ \m x -> m { alInvestigators = x }
 
 class HasClues a where
   clues :: Lens' a Int
@@ -278,3 +274,6 @@ instance HasEnemyIds ArkhamLocation where
 
 instance HasEnemyIds ArkhamPlayer where
   enemyIds = lens _enemies $ \m x -> m { _enemies = x }
+
+investigators :: Lens' ArkhamLocation [UUID]
+investigators = lens alInvestigators $ \m x -> m { alInvestigators = x }

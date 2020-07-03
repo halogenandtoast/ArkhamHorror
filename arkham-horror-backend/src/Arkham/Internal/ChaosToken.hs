@@ -18,12 +18,10 @@ where
 import Arkham.Constructors
 import Arkham.Internal.Investigator
 import Arkham.Internal.Types
-import Arkham.Types
 import Arkham.Types.ChaosToken
-import Arkham.Types.GameState
+import Arkham.Types.Player
 import ClassyPrelude
-import Lens.Micro
-import Safe
+import Safe (fromJustNote)
 
 modifier :: Int -> (a -> b -> ArkhamChaosTokenResult)
 modifier = const . const . Modifier
@@ -79,16 +77,13 @@ minusEightToken = numberToken (-7)
 autoFailToken :: ArkhamChaosTokenInternal
 autoFailToken = (token AutoFail) { tokenToResult = const (const Failure) }
 
-playerElderSignToken :: ArkhamGameState -> ArkhamChaosTokenInternal
-playerElderSignToken g = investigatorElderSignToken internalInvestigator
- where
-  internalInvestigator = toInternalInvestigator arkhamInvestigator
-  arkhamInvestigator = g ^. activePlayer . investigator
+playerElderSignToken :: ArkhamPlayer -> ArkhamChaosTokenInternal
+playerElderSignToken = investigatorElderSignToken . toInternalInvestigator
 
 elderSignToken :: ArkhamChaosTokenInternal
 elderSignToken = ArkhamChaosTokenInternal
-  { tokenToResult = tokenToResult =<< playerElderSignToken
-  , tokenOnFail = tokenOnFail =<< playerElderSignToken
-  , tokenOnSuccess = tokenOnSuccess =<< playerElderSignToken
-  , tokenOnReveal = tokenOnReveal =<< playerElderSignToken
+  { tokenToResult = \g p -> tokenToResult (playerElderSignToken p) g p
+  , tokenOnFail = \g p -> tokenOnFail (playerElderSignToken p) g p
+  , tokenOnSuccess = \g p -> tokenOnSuccess (playerElderSignToken p) g p
+  , tokenOnReveal = \g p -> tokenOnReveal (playerElderSignToken p) g p
   }

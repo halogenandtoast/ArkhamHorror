@@ -23,8 +23,13 @@ data ArkhamPlayer = ArkhamPlayer
   , _enemies :: [UUID]
   , _actionsRemaining :: Int
   , _endedTurn :: Bool
+  , _canMove :: Bool
+  , _playerId :: UUID
   }
   deriving stock (Generic, Show)
+
+instance Eq ArkhamPlayer where
+  p1 == p2 = _playerId p1 == _playerId p2
 
 instance ToJSON ArkhamPlayer where
   toJSON =

@@ -1,12 +1,12 @@
 module Arkham.Internal.EncounterCard where
 
-import Arkham.Internal.Investigator
+import Arkham.Internal.Location
 import Arkham.Types
 import Arkham.Types.Card
 import Arkham.Types.Enemy
 import Arkham.Types.GameState
-import Arkham.Types.Investigator
 import Arkham.Types.Location
+import Arkham.Types.Player
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Data.UUID.V4
@@ -18,7 +18,7 @@ data ArkhamEncounterCardType = EncounterEnemy | EncounterTreachery
 
 data ArkhamEncounterCardInternal = ArkhamEncounterCardInternal
   { aeiType :: ArkhamEncounterCardType
-  , aeiResolve :: forall m. MonadIO m => ArkhamInvestigator -> ArkhamGameState -> m ArkhamGameState
+  , aeiResolve :: forall m. MonadIO m => ArkhamPlayer -> ArkhamGameState -> m ArkhamGameState
   , aeiCardCode :: ArkhamCardCode
   }
 
@@ -76,9 +76,9 @@ spawnAt
 spawnAt l e g = do
   enemy' <- toEnemy e g
   let
-    investigators =
+    investigators' =
       g ^. locations . at (alCardCode l) . _Just . to alInvestigators
-    willEngage = not (null investigators)
+    willEngage = not (null investigators')
     enemy'' = if willEngage then enemy' { _enemyIsEngaged = True } else enemy'
     engage =
       if willEngage then activePlayer . enemyIds %~ (_enemyId enemy'' :) else id
@@ -103,7 +103,7 @@ enemiesInternal = HashMap.fromList
 enemy :: ArkhamEnemyInternal -> ArkhamEncounterCardInternal
 enemy it = ArkhamEncounterCardInternal
   { aeiType = EncounterEnemy
-  , aeiResolve = \i g -> spawnAt (locationFor i g) it g
+  , aeiResolve = \p g -> spawnAt (locationFor p g) it g
   , aeiCardCode = enemyCardCode it
   }
 

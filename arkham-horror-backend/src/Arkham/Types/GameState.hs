@@ -104,7 +104,8 @@ data ArkhamGameStateLock = AddDoom | InvestigationTakeActions | UpkeepResetActio
   deriving anyclass (FromJSON, ToJSON)
 
 data ArkhamGameState = ArkhamGameState
-  { agsPlayers :: HashMap UserId ArkhamPlayer
+  { agsUsers :: HashMap UserId UUID
+  , agsPlayers :: HashMap UUID ArkhamPlayer
   , agsPhase :: ArkhamPhase
   , agsChaosBag :: NonEmpty ArkhamChaosToken
   , agsLocations :: HashMap ArkhamCardCode ArkhamLocation

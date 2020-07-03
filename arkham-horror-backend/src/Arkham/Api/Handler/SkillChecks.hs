@@ -15,6 +15,7 @@ import Arkham.Types.Game
 import Arkham.Types.GameState
 import Arkham.Types.Investigator
 import Arkham.Types.Location
+import Arkham.Types.Player
 import Arkham.Types.Skill
 import Arkham.Util
 import qualified Data.HashMap.Strict as HashMap
@@ -50,14 +51,14 @@ postApiV1ArkhamGameSkillCheckApplyResultR gameId = do
       tokenToResult
         tokenInternal
         (game ^. currentData . gameState)
-        (game ^. activePlayer . investigator)
+        (game ^. activePlayer)
     of
       Modifier n -> do
         checkDifficulty <- shroudOf game location
         let
           modifiedSkillValue = determineModifiedSkillValue
             artsType
-            (game ^. activePlayer . investigator)
+            (game ^. activePlayer)
             artsCards
             n
         if modifiedSkillValue >= checkDifficulty
@@ -72,20 +73,20 @@ shroudOf :: MonadIO m => ArkhamGame -> ArkhamLocation -> m Int
 shroudOf _ location = pure $ alShroud location
 
 determineModifiedSkillValue
-  :: ArkhamSkillType -> ArkhamInvestigator -> [ArkhamCard] -> Int -> Int
-determineModifiedSkillValue skillType investigator' commitedCards tokenModifier
-  = skillValue investigator' skillType + cardContributions + tokenModifier
+  :: ArkhamSkillType -> ArkhamPlayer -> [ArkhamCard] -> Int -> Int
+determineModifiedSkillValue skillType player' commitedCards tokenModifier =
+  skillValue player' skillType + cardContributions + tokenModifier
  where
   cardContributions = length $ filter (== skillType) $ concatMap
     (maybe [] aciTestIcons . toInternalPlayerCard)
     commitedCards
 
-skillValue :: ArkhamInvestigator -> ArkhamSkillType -> Int
-skillValue i skillType = case skillType of
-  ArkhamSkillWillpower -> unArkhamSkill $ aiWillpower i
-  ArkhamSkillIntellect -> unArkhamSkill $ aiIntellect i
-  ArkhamSkillCombat -> unArkhamSkill $ aiCombat i
-  ArkhamSkillAgility -> unArkhamSkill $ aiAgility i
+skillValue :: ArkhamPlayer -> ArkhamSkillType -> Int
+skillValue p skillType = case skillType of
+  ArkhamSkillWillpower -> unArkhamSkill $ aiWillpower $ _investigator p
+  ArkhamSkillIntellect -> unArkhamSkill $ aiIntellect $ _investigator p
+  ArkhamSkillCombat -> unArkhamSkill $ aiCombat $ _investigator p
+  ArkhamSkillAgility -> unArkhamSkill $ aiAgility $ _investigator p
   ArkhamSkillWild -> error "Not a possible skill"
 
 revealToken
@@ -115,8 +116,7 @@ investigateAction
 investigateAction (Entity gameId game) skillType location cardIndexes = do
   token' <- liftIO $ drawChaosToken game
   checkDifficulty <- shroudOf game location
-  let
-    tokenModifier = tokenToModifier game (game ^. activePlayer . investigator) token'
+  let tokenModifier = tokenToModifier game (game ^. activePlayer) token'
 
   let
     hand' = game ^. activePlayer . hand
@@ -126,7 +126,7 @@ investigateAction (Entity gameId game) skillType location cardIndexes = do
         hand'
     modifiedSkillValue = determineModifiedSkillValue
       skillType
-      (game ^. activePlayer . investigator)
+      (game ^. activePlayer)
       commitedCards
       tokenModifier
     newGame =

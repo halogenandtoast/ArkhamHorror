@@ -1,39 +1,29 @@
 module Arkham.Internal.Investigator
   ( toInternalInvestigator
-  , locationFor
   )
 where
 
 import Arkham.Constructors
+import Arkham.Internal.Location
 import Arkham.Internal.Types
-import Arkham.Types hiding (investigator)
+import Arkham.Types
 import Arkham.Types.Card
 import Arkham.Types.ChaosToken
-import Arkham.Types.GameState
 import Arkham.Types.Investigator
-import Arkham.Types.Location
+import Arkham.Types.Player
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro
 import Safe
 
-locationFor :: ArkhamInvestigator -> ArkhamGameState -> ArkhamLocation
-locationFor investigator' g =
-  fromJustNote "the investigator appears to be nowhere"
-    $ find (investigatorIsAtLocation investigator')
-    $ HashMap.elems (g ^. locations)
-
-investigatorIsAtLocation :: ArkhamInvestigator -> ArkhamLocation -> Bool
-investigatorIsAtLocation investigator' = elem investigator' . alInvestigators
-
 allInvestigators :: HashMap ArkhamCardCode ArkhamInvestigatorInternal
 allInvestigators = HashMap.fromList
   [(ArkhamCardCode "01001", rolandBanks), (ArkhamCardCode "01002", daisyWalker)]
 
-toInternalInvestigator :: ArkhamInvestigator -> ArkhamInvestigatorInternal
-toInternalInvestigator ArkhamInvestigator {..} =
+toInternalInvestigator :: ArkhamPlayer -> ArkhamInvestigatorInternal
+toInternalInvestigator p =
   fromJustNote "Missing internal investigator"
-    $ HashMap.lookup aiCardCode allInvestigators
+    $ HashMap.lookup (aiCardCode $ _investigator p) allInvestigators
 
 investigator :: ArkhamInvestigatorInternal
 investigator = ArkhamInvestigatorInternal

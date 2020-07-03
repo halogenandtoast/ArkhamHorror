@@ -19,10 +19,12 @@ import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HashMap
 import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as NE
+import Data.UUID
+import Data.UUID.V4
+import Database.Persist.Sql
 import Lens.Micro
 import Network.HTTP.Conduit (simpleHttp)
 import System.Random.Shuffle
-import Database.Persist.Sql
 
 newtype ArkhamDbDeckList = ArkhamDbDeckList { slots :: HashMap Text Int }
   deriving stock (Generic)
@@ -69,12 +71,10 @@ loadGameFixture n = do
 loadGameDataFixture :: Int -> IO ArkhamGameData
 loadGameDataFixture 1 =
   ArkhamGameData 1 NightOfTheZealot theGatheringF ArkhamEasy
-    . fixtureGameState 1
-    <$> loadDeck "20344"
+    <$> (loadDeck "20344" >>= fixtureGameState 1)
 loadGameDataFixture 2 =
   ArkhamGameData 1 NightOfTheZealot theGatheringF ArkhamEasy
-    . fixtureGameState 2
-    <$> loadDeck "101"
+    <$> (loadDeck "101" >>= fixtureGameState 2)
 loadGameDataFixture _ = throwString "Unknown fixture"
 
 theGatheringF :: ArkhamScenario
@@ -83,22 +83,25 @@ theGatheringF = ArkhamScenario
   "The Gathering"
   "https://arkhamdb.com/bundles/cards/01104.jpg"
 
-fixtureGameState :: Int -> [ArkhamCard] -> ArkhamGameState
-fixtureGameState seed deck' = ArkhamGameState
-  (HashMap.fromList [(toSqlKey 1, playerF seed deck')]) -- Players
-  Investigation -- Phase
-  chaosTokens -- Chaos Tokens
-  mempty -- Locations
-  mempty -- Enemies
-  mempty -- Stacks
-  (replicate 3 $ ArkhamEncounterCard
-    "Swarm of Rats"
-    (ArkhamCardCode "01159")
-    "https://arkhamdb.com/bundles/cards/01159.png"
-  ) -- Encounter Deck
-  ArkhamGameStateStepInvestigatorActionStep -- Step
-  (Just $ pure InvestigationTakeActions) -- Lock
-  (toSqlKey 1) -- ActivePlayer
+fixtureGameState :: Int -> [ArkhamCard] -> IO ArkhamGameState
+fixtureGameState seed deck' = do
+  uuid <- nextRandom
+  pure $ ArkhamGameState
+    (HashMap.fromList [(toSqlKey 1, uuid)]) -- Users
+    (HashMap.fromList [(uuid, playerF seed uuid deck')]) -- Players
+    Investigation -- Phase
+    chaosTokens -- Chaos Tokens
+    mempty -- Locations
+    mempty -- Enemies
+    mempty -- Stacks
+    (replicate 3 $ ArkhamEncounterCard
+      "Swarm of Rats"
+      (ArkhamCardCode "01159")
+      "https://arkhamdb.com/bundles/cards/01159.png"
+    ) -- Encounter Deck
+    ArkhamGameStateStepInvestigatorActionStep -- Step
+    (Just $ pure InvestigationTakeActions) -- Lock
+    (toSqlKey 1) -- ActivePlayer
 
 loadDeck :: String -> IO [ArkhamCard]
 loadDeck deckId = do
@@ -133,20 +136,22 @@ chaosTokens = NE.fromList
   , ElderSign
   ]
 
-playerF :: Int -> [ArkhamCard] -> ArkhamPlayer
-playerF seed deck' = ArkhamPlayer
-  (investigatorF seed)
-  0
-  0
-  5
-  0
-  hand'
-  []
-  deck''
-  []
-  []
-  3
-  False
+playerF :: Int -> UUID -> [ArkhamCard] -> ArkhamPlayer
+playerF seed uuid deck' = ArkhamPlayer
+  (investigatorF seed) -- investigator
+  0 -- sanityDamage
+  0 -- healthDamage
+  5 -- resources
+  0 -- clues
+  hand' -- hand
+  [] -- in play
+  deck'' -- deck
+  [] -- discard
+  [] -- enemies
+  3 -- actionsRemaining
+  False -- endedTurn
+  True -- canMove
+  uuid -- playerId
   where (hand', deck'') = splitAt 5 deck'
 
 investigatorF :: Int -> ArkhamInvestigator

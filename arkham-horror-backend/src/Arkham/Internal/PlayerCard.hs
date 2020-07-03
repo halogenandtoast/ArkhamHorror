@@ -9,8 +9,8 @@ where
 import Arkham.Types hiding (hand)
 import Arkham.Types.Card
 import Arkham.Types.GameState
-import Arkham.Types.Investigator
 import Arkham.Types.Location
+import Arkham.Types.Player
 import Arkham.Types.Skill
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
@@ -153,10 +153,10 @@ dynamiteBlast = (event 5) { aciTestIcons = [willpower] }
 evidence :: ArkhamPlayerCardInternal
 evidence = (event 1) { aciTestIcons = replicate 2 intellect }
 
-getCurrentLocation :: ArkhamGameState -> ArkhamInvestigator -> ArkhamLocation
-getCurrentLocation g i =
+getCurrentLocation :: ArkhamGameState -> ArkhamPlayer -> ArkhamLocation
+getCurrentLocation g p =
   fromJustNote "could not find investigator's location"
-    $ find (\l -> i `elem` alInvestigators l)
+    $ find (\l -> _playerId p `elem` (l ^. investigators))
     $ HashMap.elems (g ^. locations)
 
 -- brittany-disable-next-binding
@@ -164,7 +164,7 @@ workingAHunch :: ArkhamPlayerCardInternal
 workingAHunch = fast $ (event 2)
   { aciTestIcons = replicate 2 intellect
   , aciAfterPlay = \g ->
-    let location = getCurrentLocation g (g ^. activePlayer . investigator)
+    let location = getCurrentLocation g (g ^. activePlayer)
     in
       if alClues location > 0
         then g & locations . at (alCardCode location) . _Just . clues -~ 1

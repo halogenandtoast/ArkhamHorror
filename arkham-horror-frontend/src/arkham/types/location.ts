@@ -25,7 +25,7 @@ export interface ArkhamLocation {
   connectedLocationSymbols: ArkhamLocationSymbol[];
   shroud: number;
   image: string;
-  investigators: ArkhamInvestigator[];
+  investigators: string[];
   enemies: string[];
   clues: number;
   doom: number;
@@ -40,7 +40,7 @@ export const arkhamLocationDecoder = JsonDecoder.object<ArkhamLocation>(
     connectedLocationSymbols: JsonDecoder.array<ArkhamLocationSymbol>(arkhamLocationSymbolDecoder, 'ArkhamLocationSymbol[]'),
     shroud: JsonDecoder.number,
     image: JsonDecoder.string,
-    investigators: JsonDecoder.array<ArkhamInvestigator>(arkhamInvestigatorDecoder, 'ArkhamInvestigator[]'),
+    investigators: JsonDecoder.array<string>(JsonDecoder.string, 'UUID[]'),
     enemies: JsonDecoder.array<string>(JsonDecoder.string, 'UUID[]'),
     clues: JsonDecoder.number,
     doom: JsonDecoder.number,

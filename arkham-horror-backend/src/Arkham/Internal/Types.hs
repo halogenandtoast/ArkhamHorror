@@ -16,7 +16,7 @@ import Arkham.Entity.ArkhamGame
 import Arkham.Types.Card
 import Arkham.Types.ChaosToken
 import Arkham.Types.GameState
-import Arkham.Types.Investigator
+import Arkham.Types.Player
 import Base.Lock
 import ClassyPrelude
 import Control.Monad.Random
@@ -35,10 +35,10 @@ data ArkhamInvestigatorInternal = ArkhamInvestigatorInternal
 data ArkhamChaosTokenResult = Modifier Int | Failure
 
 data ArkhamChaosTokenInternal = ArkhamChaosTokenInternal
-  { tokenToResult :: ArkhamGameState -> ArkhamInvestigator -> ArkhamChaosTokenResult
-  , tokenOnFail :: ArkhamGameState -> ArkhamInvestigator -> ArkhamGameState
-  , tokenOnSuccess :: ArkhamGameState -> ArkhamInvestigator -> ArkhamGameState
-  , tokenOnReveal :: ArkhamGameState -> ArkhamInvestigator -> ArkhamGameState
+  { tokenToResult :: ArkhamGameState -> ArkhamPlayer -> ArkhamChaosTokenResult
+  , tokenOnFail :: ArkhamGameState -> ArkhamPlayer -> ArkhamGameState
+  , tokenOnSuccess :: ArkhamGameState -> ArkhamPlayer -> ArkhamGameState
+  , tokenOnReveal :: ArkhamGameState -> ArkhamPlayer -> ArkhamGameState
   }
 
 data ArkhamScenarioInternal = ArkhamScenarioInternal

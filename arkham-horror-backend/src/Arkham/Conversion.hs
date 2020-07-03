@@ -9,7 +9,7 @@ import Arkham.Internal.Scenario
 import Arkham.Internal.Types
 import Arkham.Types
 import Arkham.Types.ChaosToken
-import Arkham.Types.Investigator
+import Arkham.Types.Player
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro
@@ -22,12 +22,12 @@ toInternalToken g ct = fromJustNote "token not in scenario"
   scenario' = toInternalScenario g
   tokenMap' = tokenMap scenario'
 
-tokenToModifier :: ArkhamGame -> ArkhamInvestigator -> ArkhamChaosToken -> Int
-tokenToModifier game' investigator' token' = case result of
+tokenToModifier :: ArkhamGame -> ArkhamPlayer -> ArkhamChaosToken -> Int
+tokenToModifier game' player' token' = case result of
   Modifier n -> n
   Failure -> 0
  where
   result = tokenToResult
     (toInternalToken game' token')
     (game' ^. currentData . gameState)
-    investigator'
+    player'

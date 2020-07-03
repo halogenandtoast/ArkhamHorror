@@ -4,6 +4,7 @@ module Arkham.Internal.Location
   , lookupLocationInternal
   , ArkhamLocationInternal(..)
   , toLocationInternal
+  , locationFor
   )
 where
 
@@ -16,6 +17,15 @@ import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro
 import Safe (fromJustNote)
+
+locationFor :: ArkhamPlayer -> ArkhamGameState -> ArkhamLocation
+locationFor p g =
+  fromJustNote "the investigator appears to be nowhere"
+    $ find (playerIsAtLocation p)
+    $ HashMap.elems (g ^. locations)
+
+playerIsAtLocation :: ArkhamPlayer -> ArkhamLocation -> Bool
+playerIsAtLocation p = elem (_playerId p) . alInvestigators
 
 data ClueValue = PerInvestigator Int | Static Int
 
@@ -72,10 +82,10 @@ locationImage :: ArkhamCardCode -> ArkhamLocationStatus -> Text
 locationImage code' status' =
   "https://arkhamdb.com/bundles/cards/" <> unArkhamCardCode code' <> side
  where
-  side = case status' of
-    Unrevealed -> "b.png"
-    Revealed -> ".jpg"
-    OutOfPlay -> "b.png"
+  side = case (status', code') of
+    (Revealed, ArkhamCardCode "01111") -> ".png"
+    (Revealed, _) -> ".jpg"
+    _ -> "b.png"
 
 defaultLocation :: ArkhamCardCode -> Text -> ClueValue -> ArkhamLocationInternal
 defaultLocation code' name cv = ArkhamLocationInternal

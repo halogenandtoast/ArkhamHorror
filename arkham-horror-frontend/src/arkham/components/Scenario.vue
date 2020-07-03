@@ -50,11 +50,12 @@
           :src="location.image"
         />
         <div
-          v-for="(investigator, index) in location.investigators"
+          v-for="(uuid, index) in location.investigators"
           :key="index"
         >
           <img
-            :src="investigator.portrait"
+            :src="game.gameState.players[uuid].investigator.portrait"
+            class="portrait"
             width="80"
           />
         </div>
@@ -163,9 +164,9 @@ export default class Scenario extends Vue {
   }
 
   get player() {
-    const { players, activeUser } = this.game.gameState;
+    const { users, players, activeUser } = this.game.gameState;
 
-    return players[activeUser];
+    return players[users[activeUser]];
   }
 
   get drawnToken() {
@@ -177,10 +178,10 @@ export default class Scenario extends Vue {
   }
 
   get canInvestigate() {
-    const { players, activeUser, step } = this.game.gameState;
+    const { step } = this.game.gameState;
 
     return step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION
-      && players[activeUser].actionsRemaining > 0;
+      && this.player.actionsRemaining > 0;
   }
 
   get canDrawToken() {
@@ -292,5 +293,9 @@ export default class Scenario extends Vue {
 
 .location-cards {
   display: flex;
+}
+
+.portrait {
+  border-radius: 3px;
 }
 </style>

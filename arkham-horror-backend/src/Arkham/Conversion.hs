@@ -20,7 +20,7 @@ toInternalToken g ct = fromJustNote "token not in scenario"
   $ HashMap.lookup ct tokenMap'
  where
   scenario' = toInternalScenario g
-  tokenMap' = tokenMap scenario'
+  tokenMap' = scenarioTokenMap scenario'
 
 tokenToModifier :: ArkhamGame -> ArkhamPlayer -> ArkhamChaosToken -> Int
 tokenToModifier game' player' token' = case result of

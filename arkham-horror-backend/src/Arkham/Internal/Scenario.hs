@@ -229,7 +229,7 @@ theGathering difficulty' = ArkhamScenarioInternal
   , scenarioUpkeepPhase = defaultUpkeepPhase
   , scenarioRun = defaultScenarioRun
   , scenarioFindAct = defaultScenarioFindAct
-  , tokenMap = buildTokenMapFrom $ HashMap.fromList
+  , scenarioTokenMap = buildTokenMapFrom $ HashMap.fromList
     [ (Skull, theGatheringSkullToken difficulty')
     , (Cultist, theGatheringCultistToken difficulty')
     , (Tablet, theGatheringTabletToken difficulty')

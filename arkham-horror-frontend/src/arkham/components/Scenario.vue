@@ -183,7 +183,9 @@ export default class Scenario extends Vue {
   canMove(uuid: string) {
     const { users, activeUser } = this.game.gameState;
 
-    return users[activeUser] === uuid && this.player.accessibleLocations.length > 0;
+    return users[activeUser] === uuid
+      && this.player.actionsRemaining > 0
+      && this.player.accessibleLocations.length > 0;
   }
 
   startMove(uuid: string) {

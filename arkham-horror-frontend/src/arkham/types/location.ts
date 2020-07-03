@@ -4,12 +4,18 @@ import {
   arkhamInvestigatorDecoder,
 } from '@/arkham/types';
 
-export type ArkhamLocationSymbol = 'Circle' | 'Heart';
+
+export type ArkhamLocationSymbol = 'Circle' | 'Heart' | 'Square' | 'Triangle' | 'Plus' | 'Diamond' | 'Moon';
 export type ArkhamLocationStatus = 'Revealed' | 'Unrevealed' | 'OutOfPlay';
 
 export const arkhamLocationSymbolDecoder = JsonDecoder.oneOf<ArkhamLocationSymbol>([
   JsonDecoder.isExactly('Circle'),
   JsonDecoder.isExactly('Heart'),
+  JsonDecoder.isExactly('Square'),
+  JsonDecoder.isExactly('Triangle'),
+  JsonDecoder.isExactly('Plus'),
+  JsonDecoder.isExactly('Diamond'),
+  JsonDecoder.isExactly('Moon'),
 ], 'ArkhamLocationSymbol');
 
 export const arkhamLocationStatusDecoder = JsonDecoder.oneOf<ArkhamLocationStatus>([

@@ -1,5 +1,6 @@
 module Arkham.Types.Action
   ( ArkhamAction(..)
+  , ArkhamMoveAction(..)
   , ArkhamInvestigateAction(..)
   , ArkhamPlayCardAction(..)
   , ArkhamEngageEnemyAction(..)
@@ -9,7 +10,6 @@ module Arkham.Types.Action
 where
 
 import Arkham.Types.Card
-import Arkham.Types.Location
 import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
@@ -38,18 +38,8 @@ instance FromJSON ArkhamCardAbilityAction where
   parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
 
-data ArkhamMoveAction = ArkhamMoveAction { amaFrom :: ArkhamLocation , amaTo :: ArkhamLocation }
-  deriving stock (Show, Generic)
-
-instance ToJSON ArkhamMoveAction where
-  toJSON =
-    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
-  toEncoding = genericToEncoding
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
-
-instance FromJSON ArkhamMoveAction where
-  parseJSON = genericParseJSON
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
+newtype ArkhamMoveAction = ArkhamMoveAction { amaTo :: ArkhamCardCode }
+  deriving newtype (Show, ToJSON, FromJSON)
 
 newtype ArkhamInvestigateAction = ArkhamInvestigateAction { aiaLocationId :: ArkhamCardCode }
   deriving newtype (Show, ToJSON, FromJSON)

@@ -23,7 +23,7 @@ data ArkhamPlayer = ArkhamPlayer
   , _enemies :: [UUID]
   , _actionsRemaining :: Int
   , _endedTurn :: Bool
-  , _canMove :: Bool
+  , _accessibleLocations :: [ArkhamCardCode]
   , _playerId :: UUID
   }
   deriving stock (Generic, Show)

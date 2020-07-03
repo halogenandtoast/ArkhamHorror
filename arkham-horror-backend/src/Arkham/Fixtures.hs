@@ -150,7 +150,7 @@ playerF seed uuid deck' = ArkhamPlayer
   [] -- enemies
   3 -- actionsRemaining
   False -- endedTurn
-  True -- canMove
+  [] -- accessibleLocations
   uuid -- playerId
   where (hand', deck'') = splitAt 5 deck'
 

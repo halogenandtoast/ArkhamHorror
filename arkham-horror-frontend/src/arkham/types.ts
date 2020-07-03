@@ -55,7 +55,7 @@ export interface ArkhamPlayer {
   inPlay: ArkhamCard[];
   enemies: string[];
   discard: ArkhamCard[];
-  canMove: boolean;
+  accessibleLocations: string[];
 }
 
 export const arkhamPlayerDecoder = JsonDecoder.object<ArkhamPlayer>(
@@ -70,7 +70,7 @@ export const arkhamPlayerDecoder = JsonDecoder.object<ArkhamPlayer>(
     inPlay: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
     enemies: JsonDecoder.array<string>(JsonDecoder.string, 'UUID[]'),
     discard: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
-    canMove: JsonDecoder.boolean,
+    accessibleLocations: JsonDecoder.array<string>(JsonDecoder.string, 'ArkhamCardCode[]'),
   },
   'ArkhamPlayer',
 );

@@ -3,18 +3,35 @@ module Arkham.Api.Handler.Actions
   )
 where
 
+import Arkham.Internal.Location
 import Arkham.Internal.PlayerCard
 import Arkham.Internal.Scenario
 import Arkham.Types
 import Arkham.Types.Action
 import Arkham.Types.Game
 import Arkham.Types.GameState
+import Arkham.Types.Location
+import Arkham.Types.Player
 import Arkham.Types.Skill
 import Import
 import Lens.Micro
+import Safe (fromJustNote)
 
 -- brittany-disable-next-binding
 applyAction :: ArkhamAction -> ArkhamGameData -> IO ArkhamGameData
+applyAction (MoveAction move) g = do
+  let cardCode' = amaTo move
+      currentPlayer = g ^. activePlayer
+      currentLocation = locationFor currentPlayer (g ^. gameState)
+      currentLocationId = alCardCode currentLocation
+      currentLocation' = currentLocation & investigators %~ filter (/= _playerId currentPlayer)
+      newLocation = fromJustNote "No known location" (g ^? locations . ix cardCode')
+      newLocationInternal = lookupLocationInternal cardCode'
+      revealLocation = if alStatus newLocation == Unrevealed then aliOnReveal newLocationInternal (g ^. gameState) else id
+      location' = revealLocation newLocation & investigators .~ [_playerId currentPlayer]
+      g' = g & locations . at cardCode' ?~ location' & locations . at currentLocationId ?~ currentLocation'
+  (s, p) <- aliOnEnter newLocationInternal (g' ^. gameState) currentPlayer
+  pure $ g' & gameState .~ s & activePlayer .~ (p & actions -~ 1)
 applyAction action@(InvestigateAction investigation) g =
   -- TODO: Look at timing for when the action is spent, may need to finish action first
   pure $ g & gameStateStep .~ newGameStateStep & activePlayer . actions -~ 1

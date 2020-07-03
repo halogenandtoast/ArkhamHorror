@@ -11,8 +11,8 @@ import Data.Aeson
 import Data.Aeson.Casing
 import Data.UUID
 
-data ArkhamLocationSymbol = Circle | Heart
-  deriving stock (Generic, Show)
+data ArkhamLocationSymbol = Circle | Heart | Square | Triangle | Plus | Diamond | Moon
+  deriving stock (Generic, Show, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
 data ArkhamLocationStatus = Revealed | Unrevealed | OutOfPlay

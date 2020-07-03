@@ -29,7 +29,7 @@
         src="/img/arkham/ct_+1.png"
         @click="drawToken"
       />
-      <img v-else class="token" src="/img/arkham/ct_+1.png" />
+      <img v-else class="token" src="/img/arkham/ct_blank.png" />
       <div v-if="canApplyResult">
         <p>
           Difficulty: {{skillDifficulty}},
@@ -46,6 +46,13 @@
         :key="location.name"
       >
         <img
+          v-if="accessible(location)"
+          @click="moveTo(location)"
+          class="card location--can-move-to"
+          :src="location.image"
+        />
+        <img
+          v-else
           class="card"
           :src="location.image"
         />
@@ -53,7 +60,16 @@
           v-for="(uuid, index) in location.investigators"
           :key="index"
         >
+
           <img
+            v-if="canMove(uuid) && !moving"
+            @click="startMove(uuid)"
+            :src="game.gameState.players[uuid].investigator.portrait"
+            class="portrait portrait--can-move"
+            width="80"
+          />
+          <img
+            v-else
             :src="game.gameState.players[uuid].investigator.portrait"
             class="portrait"
             width="80"
@@ -116,6 +132,7 @@ export default class Scenario extends Vue {
   @Prop(Object) readonly game!: ArkhamGame;
 
   private commitedCards: number[] = []
+  private moving = false
 
   investigate(location: ArkhamLocation) {
     const action: ArkhamAction = {
@@ -161,6 +178,42 @@ export default class Scenario extends Vue {
 
   update(game: ArkhamGame) {
     this.$emit('update', game);
+  }
+
+  canMove(uuid: string) {
+    const { users, activeUser } = this.game.gameState;
+
+    return users[activeUser] === uuid && this.player.accessibleLocations.length > 0;
+  }
+
+  startMove(uuid: string) {
+    if (this.canMove(uuid)) {
+      this.moving = true;
+    }
+  }
+
+  moveTo(location: ArkhamLocation) {
+    const action: ArkhamAction = {
+      tag: ArkhamActionTypes.MOVE,
+      contents: location.cardCode,
+    };
+
+    performAction(this.game.id, action).then((game: ArkhamGame) => {
+      this.moving = false;
+      this.update(game);
+    });
+  }
+
+  accessible(location: ArkhamLocation) {
+    return this.accessibleLocations.includes(location.cardCode);
+  }
+
+  get accessibleLocations() {
+    if (this.moving) {
+      return this.player.accessibleLocations;
+    }
+
+    return [];
   }
 
   get player() {
@@ -297,5 +350,15 @@ export default class Scenario extends Vue {
 
 .portrait {
   border-radius: 3px;
+}
+
+.portrait--can-move {
+  cursor: pointer;
+  border: 3px solid #FF00FF;
+}
+
+.location--can-move-to {
+  border: 3px solid #FF00FF;
+  cursor: pointer;
 }
 </style>

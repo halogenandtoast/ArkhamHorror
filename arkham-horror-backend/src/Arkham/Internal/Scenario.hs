@@ -20,6 +20,7 @@ import Arkham.Types.Difficulty
 import Arkham.Types.Game
 import Arkham.Types.GameState
 import Arkham.Types.Location
+import Arkham.Types.Player
 import Arkham.Types.Scenario
 import Base.Lock
 import ClassyPrelude
@@ -84,6 +85,28 @@ defaultUpdateObjectives = runIgnoreLockedM $ \g ->
       }
   in pure $ g & topActCardLens .~ actCard'
   where topActCardLens = stacks . ix "Act" . _ActStack . _TopOfStack
+
+defaultUpdateAccessibleLocationsOnPlayers
+  :: MonadIO m => Lockable ArkhamGame -> m (Lockable ArkhamGame)
+defaultUpdateAccessibleLocationsOnPlayers = runIgnoreLockedM
+  $ \g -> pure $ g & players . mapped %~ updateAccessibleLocations g
+
+updateAccessibleLocations :: ArkhamGame -> ArkhamPlayer -> ArkhamPlayer
+updateAccessibleLocations g p = p
+  { _accessibleLocations = map alCardCode accessibleLocations
+  }
+ where
+  matchingSymbols =
+    alConnectedLocationSymbols $ locationFor p (g ^. currentData . gameState)
+  currentLocations = HashMap.elems (g ^. locations)
+  accessibleLocations =
+    filter
+        (\l -> aliCanEnter (toLocationInternal l) (g ^. currentData . gameState)
+        )
+      $ filter
+          (maybe False (`elem` matchingSymbols) . alLocationSymbol)
+          currentLocations
+    -- HashMap CardCode ArkhamLocation
 
 defaultMythosPhase :: ArkhamMythosPhaseInternal
 defaultMythosPhase = ArkhamMythosPhaseInternal
@@ -162,6 +185,7 @@ defaultScenarioRun g = do
   ArkhamUpkeepPhaseInternal {..} = scenarioUpkeepPhase scenario'
   go =
     scenarioUpdateObjectives scenario'
+      >=> scenarioUpdateAccessibleLocationsOnPlayers scenario'
       >=> mythosPhaseOnEnter
       >=> mythosPhaseAddDoom
       >=> mythosPhaseCheckAdvance
@@ -197,6 +221,8 @@ theGathering difficulty' = ArkhamScenarioInternal
   { scenarioName = "The Gathering"
   , scenarioSetup = theGatheringSetup
   , scenarioUpdateObjectives = defaultUpdateObjectives
+  , scenarioUpdateAccessibleLocationsOnPlayers =
+    defaultUpdateAccessibleLocationsOnPlayers
   , scenarioMythosPhase = defaultMythosPhase
   , scenarioInvestigationPhase = defaultInvestigationPhase
   , scenarioEnemyPhase = defaultEnemyPhase
@@ -287,7 +313,7 @@ study = unrevealedLocation
 theGatheringSkullToken :: ArkhamDifficulty -> ArkhamChaosTokenInternal
 theGatheringSkullToken difficulty' = if isEasyStandard difficulty'
   then (token Skull)
-    { tokenToResult = \g i -> Modifier . countTraitMatch Ghoul $ locationFor i g
+    { tokenToResult = \g p -> Modifier . countTraitMatch Ghoul $ locationFor p g
     }
   else (token Skull)
     { tokenToResult = modifier (-2)
@@ -309,13 +335,13 @@ theGatheringTabletToken :: ArkhamDifficulty -> ArkhamChaosTokenInternal
 theGatheringTabletToken difficulty' = if isEasyStandard difficulty'
   then (token Tablet)
     { tokenToResult = modifier (-2)
-    , tokenOnReveal = \g i -> if countTraitMatch Ghoul (locationFor i g) > 0
+    , tokenOnReveal = \g p -> if countTraitMatch Ghoul (locationFor p g) > 0
       then g & activePlayer . healthDamage +~ 1
       else g
     }
   else (token Tablet)
     { tokenToResult = modifier (-4)
-    , tokenOnReveal = \g i -> if countTraitMatch Ghoul (locationFor i g) > 0
+    , tokenOnReveal = \g p -> if countTraitMatch Ghoul (locationFor p g) > 0
       then
         g & activePlayer . healthDamage +~ 1 & activePlayer . sanityDamage +~ 1
       else g

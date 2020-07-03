@@ -3,6 +3,7 @@ export enum ArkhamActionTypes {
   TAKE_RESOURCE = 'TakeResourceAction',
   DRAW_CARD = 'DrawCardAction',
   PLAY_CARD = 'PlayCardAction',
+  MOVE = 'MoveAction',
 }
 
 export interface ArkhamInvestigateAction {
@@ -25,8 +26,14 @@ export interface ArkhamPlayCardAction {
   contents: number;
 }
 
+export interface ArkhamMoveAction {
+  tag: ArkhamActionTypes.MOVE;
+  contents: string;
+}
+
 export type ArkhamAction
   = ArkhamInvestigateAction
   | ArkhamTakeResourceAction
   | ArkhamDrawCardAction
-  | ArkhamPlayCardAction;
+  | ArkhamPlayCardAction
+  | ArkhamMoveAction;

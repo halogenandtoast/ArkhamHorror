@@ -87,12 +87,18 @@ locationImage code' status' =
     (Revealed, _) -> ".jpg"
     _ -> "b.png"
 
-defaultLocation :: ArkhamCardCode -> Text -> ClueValue -> ArkhamLocationInternal
-defaultLocation code' name cv = ArkhamLocationInternal
+defaultLocation
+  :: ArkhamCardCode
+  -> Text
+  -> ClueValue
+  -> Maybe ArkhamLocationSymbol
+  -> [ArkhamLocationSymbol]
+  -> ArkhamLocationInternal
+defaultLocation code' name cv msym syms = ArkhamLocationInternal
   { aliName = name
   , aliCardCode = code'
-  , aliLocationSymbol = Nothing
-  , aliConnectedLocationSymbols = []
+  , aliLocationSymbol = msym
+  , aliConnectedLocationSymbols = syms
   , aliCanEnter = const True
   , aliOnReveal = \g l ->
     l { alStatus = Revealed, alImage = locationImage code' Revealed }
@@ -100,28 +106,55 @@ defaultLocation code' name cv = ArkhamLocationInternal
       .~ cluesFor cv (length $ g ^. players)
   , aliOnEnter = curry pure
   , aliBaseShroud = 0
-  , aliUnrevealedLocationSymbol = Nothing
-  , aliUnrevealedConnectedLocationSymbols = []
+  , aliUnrevealedLocationSymbol = msym
+  , aliUnrevealedConnectedLocationSymbols = syms
   }
 
 study :: ArkhamLocationInternal
-study = defaultLocation (ArkhamCardCode "01111") "Study" (PerInvestigator 2)
+study = defaultLocation
+  (ArkhamCardCode "01111")
+  "Study"
+  (PerInvestigator 2)
+  (Just Circle)
+  []
 
 hallway :: ArkhamLocationInternal
-hallway = defaultLocation (ArkhamCardCode "01112") "Hallway" (Static 0)
+hallway = defaultLocation
+  (ArkhamCardCode "01112")
+  "Hallway"
+  (Static 0)
+  (Just Square)
+  [Triangle, Plus, Diamond]
 
 cellar :: ArkhamLocationInternal
-cellar = (defaultLocation (ArkhamCardCode "01114") "Cellar" (PerInvestigator 2)
+cellar = (defaultLocation
+           (ArkhamCardCode "01114")
+           "Cellar"
+           (PerInvestigator 2)
+           (Just Plus)
+           [Square]
          )
   { aliOnEnter = \g i -> pure (g, i & healthDamage +~ 1)
   }
 
 attic :: ArkhamLocationInternal
-attic = (defaultLocation (ArkhamCardCode "01113") "Attic" (PerInvestigator 2))
+attic = (defaultLocation
+          (ArkhamCardCode "01113")
+          "Attic"
+          (PerInvestigator 2)
+          (Just Triangle)
+          [Square]
+        )
   { aliOnEnter = \g i -> pure (g, i & sanityDamage +~ 1)
   }
 
 parlor :: ArkhamLocationInternal
-parlor = (defaultLocation (ArkhamCardCode "01115") "Parloc" (Static 0))
+parlor = (defaultLocation
+           (ArkhamCardCode "01115")
+           "Parloc"
+           (Static 0)
+           (Just Diamond)
+           [Square]
+         )
   { aliCanEnter = const False
   }

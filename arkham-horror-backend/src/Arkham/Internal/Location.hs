@@ -10,8 +10,8 @@ where
 import Arkham.Types
 import Arkham.Types.Card
 import Arkham.Types.GameState
-import Arkham.Types.Player
 import Arkham.Types.Location
+import Arkham.Types.Player
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro
@@ -37,20 +37,23 @@ data ArkhamLocationInternal = ArkhamLocationInternal
   }
 
 initLocation :: ArkhamCardCode -> ArkhamLocation
-initLocation code' = let internal = lookupLocationInternal code'
-  in ArkhamLocation
-    { alName = aliName internal
-    , alCardCode = code'
-    , alLocationSymbol = aliUnrevealedLocationSymbol internal
-    , alConnectedLocationSymbols = aliUnrevealedConnectedLocationSymbols internal
-    , alShroud = aliBaseShroud internal
-    , alImage = "https://arkhamdb.com/bundles/cards/" <> unArkhamCardCode code' <> "b.png"
-    , alInvestigators = []
-    , alEnemies = []
-    , alClues = 0
-    , alDoom = 0
-    , alStatus = Unrevealed
-    }
+initLocation code' =
+  let internal = lookupLocationInternal code'
+  in
+    ArkhamLocation
+      { alName = aliName internal
+      , alCardCode = code'
+      , alLocationSymbol = aliUnrevealedLocationSymbol internal
+      , alConnectedLocationSymbols = aliUnrevealedConnectedLocationSymbols
+        internal
+      , alShroud = aliBaseShroud internal
+      , alImage = locationImage code' Unrevealed
+      , alInvestigators = []
+      , alEnemies = []
+      , alClues = 0
+      , alDoom = 0
+      , alStatus = Unrevealed
+      }
 
 toLocationInternal :: ArkhamLocation -> ArkhamLocationInternal
 toLocationInternal l =
@@ -58,17 +61,21 @@ toLocationInternal l =
     $ HashMap.lookup (alCardCode l) allLocations
 
 lookupLocationInternal :: ArkhamCardCode -> ArkhamLocationInternal
-lookupLocationInternal = fromJustNote "Could not find location"
-  . flip HashMap.lookup allLocations 
+lookupLocationInternal =
+  fromJustNote "Could not find location" . flip HashMap.lookup allLocations
 
 allLocations :: HashMap ArkhamCardCode ArkhamLocationInternal
-allLocations = HashMap.fromList $ map (\l -> (aliCardCode l, l))
-  [ study
-  , hallway
-  , cellar
-  , attic
-  , parlor
-  ]
+allLocations = HashMap.fromList
+  $ map (\l -> (aliCardCode l, l)) [study, hallway, cellar, attic, parlor]
+
+locationImage :: ArkhamCardCode -> ArkhamLocationStatus -> Text
+locationImage code' status' =
+  "https://arkhamdb.com/bundles/cards/" <> unArkhamCardCode code' <> side
+ where
+  side = case status' of
+    Unrevealed -> "b.png"
+    Revealed -> ".jpg"
+    OutOfPlay -> "b.png"
 
 defaultLocation :: ArkhamCardCode -> Text -> ClueValue -> ArkhamLocationInternal
 defaultLocation code' name cv = ArkhamLocationInternal
@@ -77,7 +84,10 @@ defaultLocation code' name cv = ArkhamLocationInternal
   , aliLocationSymbol = Nothing
   , aliConnectedLocationSymbols = []
   , aliCanEnter = const True
-  , aliOnReveal = \g l -> l { alStatus = Revealed } & clues .~ cluesFor cv (length $ g ^. players)
+  , aliOnReveal = \g l ->
+    l { alStatus = Revealed, alImage = locationImage code' Revealed }
+      & clues
+      .~ cluesFor cv (length $ g ^. players)
   , aliOnEnter = curry pure
   , aliBaseShroud = 0
   , aliUnrevealedLocationSymbol = Nothing
@@ -91,7 +101,8 @@ hallway :: ArkhamLocationInternal
 hallway = defaultLocation (ArkhamCardCode "01112") "Hallway" (Static 0)
 
 cellar :: ArkhamLocationInternal
-cellar = (defaultLocation (ArkhamCardCode "01114") "Cellar" (PerInvestigator 2))
+cellar = (defaultLocation (ArkhamCardCode "01114") "Cellar" (PerInvestigator 2)
+         )
   { aliOnEnter = \g i -> pure (g, i & healthDamage +~ 1)
   }
 

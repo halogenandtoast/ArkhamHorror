@@ -47,8 +47,8 @@ instance HasLocations ArkhamGame where
 instance HasGameStateStep ArkhamGame where
   gameStateStep = currentData . gameStateStep
 
-instance HasPlayer ArkhamGame where
-  player = currentData . player
+instance HasPlayers ArkhamGame where
+  players = currentData . players
 
 instance HasScenario ArkhamGame where
   scenario = currentData . scenario
@@ -64,3 +64,6 @@ instance HasStacks ArkhamGame where
 
 instance HasEncounterDeck ArkhamGame where
   encounterDeck = currentData . encounterDeck
+
+instance HasActivePlayer ArkhamGame where
+  activePlayer = currentData . activePlayer

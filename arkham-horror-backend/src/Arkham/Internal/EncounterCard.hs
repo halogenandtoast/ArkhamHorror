@@ -81,7 +81,7 @@ spawnAt l e g = do
     willEngage = not (null investigators)
     enemy'' = if willEngage then enemy' { _enemyIsEngaged = True } else enemy'
     engage =
-      if willEngage then player . enemyIds %~ (_enemyId enemy'' :) else id
+      if willEngage then activePlayer . enemyIds %~ (_enemyId enemy'' :) else id
   pure
     $ g
     & enemies

@@ -17,7 +17,7 @@ import Lens.Micro
 applyAction :: ArkhamAction -> ArkhamGameData -> IO ArkhamGameData
 applyAction action@(InvestigateAction investigation) g =
   -- TODO: Look at timing for when the action is spent, may need to finish action first
-  pure $ g & gameStateStep .~ newGameStateStep & player . actions -~ 1
+  pure $ g & gameStateStep .~ newGameStateStep & activePlayer . actions -~ 1
  where
   newGameStateStep = ArkhamGameStateStepSkillCheckStep $ ArkhamSkillCheckStep
     { ascsType = ArkhamSkillIntellect
@@ -26,10 +26,10 @@ applyAction action@(InvestigateAction investigation) g =
     }
   mlocation = lookup targetLocationId $ g ^. locations
   targetLocationId = aiaLocationId investigation
-applyAction (TakeResourceAction _) g = pure $ g & player . resources +~ 1 & player . actions -~ 1
-applyAction (DrawCardAction _) g = pure $ drawCard g & player . actions -~ 1
+applyAction (TakeResourceAction _) g = pure $ g & activePlayer . resources +~ 1 & activePlayer . actions -~ 1
+applyAction (DrawCardAction _) g = pure $ drawCard g & activePlayer . actions -~ 1
 applyAction (PlayCardAction (ArkhamPlayCardAction n)) g = do
-  let mcard = g ^? player . hand . ix n
+  let mcard = g ^? activePlayer . hand . ix n
   case mcard of
     Nothing -> throwString "No card at that index"
     Just card -> do
@@ -40,9 +40,14 @@ applyAction (PlayCardAction (ArkhamPlayCardAction n)) g = do
         cardCost = fromMaybe 0 (aciCost ci)
         actionCost = aciActionCost ci (g ^. gameState)
         resolveCard = case aciType ci of
-                        PlayerEvent -> player . discard %~ (card :)
-                        _ -> player . inPlay %~ (++ [card'])
-      pure $ g & resolveCard & player . hand %~ without n & player . resources -~ cardCost & player . actions -~ actionCost & gameState %~ stateTransform
+                        PlayerEvent -> activePlayer . discard %~ (card :)
+                        _ -> activePlayer . inPlay %~ (++ [card'])
+      pure $ g
+        & resolveCard
+        & activePlayer . hand %~ without n
+        & activePlayer . resources -~ cardCost
+        & activePlayer . actions -~ actionCost
+        & gameState %~ stateTransform
 applyAction _ g = pure g
 
 without :: Int -> [a] -> [a]

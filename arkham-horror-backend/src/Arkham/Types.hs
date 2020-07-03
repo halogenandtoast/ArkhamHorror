@@ -4,8 +4,8 @@ module Arkham.Types
   , HasHand(..)
   , HasDiscard(..)
   , HasInPlay(..)
-  , HasPlayer(..)
   , HasPlayers(..)
+  , HasActivePlayer(..)
   , HasDoom(..)
   , HasUses(..)
   , HasCardCode(..)
@@ -30,6 +30,7 @@ module Arkham.Types
   )
 where
 
+import Entity.User
 import Arkham.Types.Card
 import Arkham.Types.ChaosToken
 import Arkham.Types.Difficulty
@@ -46,7 +47,8 @@ import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.List.NonEmpty as NE
 import Data.UUID
 import Lens.Micro
-import Lens.Micro.Extras
+import qualified Data.HashMap.Strict as HashMap
+import Safe (fromJustNote)
 
 class HasChaosBag a where
   chaosBag :: Lens' a (NonEmpty ArkhamChaosToken)
@@ -80,26 +82,34 @@ instance HasGameStateStep ArkhamGameData where
 instance HasGameStateStep ArkhamGameState where
   gameStateStep = lens agsStep $ \m x -> m { agsStep = x }
 
-class HasPlayer a where
-  player :: Lens' a ArkhamPlayer
+class HasPlayers a where
+  players :: Lens' a (HashMap UserId ArkhamPlayer)
 
-instance HasPlayer ArkhamGameData where
-  player = gameState . player
+instance HasPlayers ArkhamGameData where
+  players = gameState . players
 
-instance HasPlayer ArkhamGameState where
-  player = lens agsPlayer $ \m x -> m { agsPlayer = x }
+instance HasPlayers ArkhamGameState where
+  players = lens agsPlayers $ \m x -> m { agsPlayers = x }
+
+class HasActivePlayer a where
+  activePlayer :: Lens' a ArkhamPlayer
+
+findUserPlayer :: UserId -> ArkhamGameState -> ArkhamPlayer
+findUserPlayer uid g = fromJustNote "Could not find player in game"
+  $ HashMap.lookup uid (agsPlayers g)
+
+instance HasActivePlayer ArkhamGameData where
+  activePlayer = gameState . activePlayer
+
+instance HasActivePlayer ArkhamGameState where
+  activePlayer = lens (findUserPlayer =<< agsActiveUser) $ \m x -> 
+    m & players %~ HashMap.insert (agsActiveUser m) x
 
 class HasResources a where
   resources :: Lens' a Int
 
 instance HasResources ArkhamPlayer where
   resources = lens _resources $ \m x -> m { _resources = x }
-
-class HasPlayers a where
-  players :: Lens' a [ArkhamInvestigator]
-
-instance HasPlayers ArkhamGameState where
-  players = lens (pure . view (player . investigator)) const
 
 class HasInvestigator a where
   investigator :: Lens' a ArkhamInvestigator

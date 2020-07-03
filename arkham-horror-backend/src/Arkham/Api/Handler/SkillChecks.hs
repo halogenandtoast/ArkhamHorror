@@ -50,14 +50,14 @@ postApiV1ArkhamGameSkillCheckApplyResultR gameId = do
       tokenToResult
         tokenInternal
         (game ^. currentData . gameState)
-        (game ^. player . investigator)
+        (game ^. activePlayer . investigator)
     of
       Modifier n -> do
         checkDifficulty <- shroudOf game location
         let
           modifiedSkillValue = determineModifiedSkillValue
             artsType
-            (game ^. player . investigator)
+            (game ^. activePlayer . investigator)
             artsCards
             n
         if modifiedSkillValue >= checkDifficulty
@@ -116,27 +116,27 @@ investigateAction (Entity gameId game) skillType location cardIndexes = do
   token' <- liftIO $ drawChaosToken game
   checkDifficulty <- shroudOf game location
   let
-    tokenModifier = tokenToModifier game (game ^. player . investigator) token'
+    tokenModifier = tokenToModifier game (game ^. activePlayer . investigator) token'
 
   let
-    hand' = game ^. player . hand
+    hand' = game ^. activePlayer . hand
     (commitedCards, remainingCards) =
       over both (map snd) $ partition (\(i, _) -> i `elem` cardIndexes) $ zip
         [0 ..]
         hand'
     modifiedSkillValue = determineModifiedSkillValue
       skillType
-      (game ^. player . investigator)
+      (game ^. activePlayer . investigator)
       commitedCards
       tokenModifier
     newGame =
       game
         & gameStateStep
         %~ revealToken token' checkDifficulty modifiedSkillValue commitedCards
-        & player
+        & activePlayer
         . hand
         .~ remainingCards
-        & player
+        & activePlayer
         . discard
         %~ (commitedCards ++)
   runDB $ updateGame gameId newGame
@@ -148,7 +148,7 @@ failedInvestigation g _ = g & gameStateStep .~ investigatorStep
 successfulInvestigation :: ArkhamGame -> ArkhamLocation -> Int -> ArkhamGame
 successfulInvestigation g l clueCount = g
     & locations . at (alCardCode l) . _Just . clues -~ clueCount
-    & player . clues +~ clueCount
+    & activePlayer . clues +~ clueCount
     & gameStateStep .~ investigatorStep
 
 investigatorStep :: ArkhamGameStateStep

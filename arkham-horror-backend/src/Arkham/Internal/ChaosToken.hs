@@ -83,7 +83,7 @@ playerElderSignToken :: ArkhamGameState -> ArkhamChaosTokenInternal
 playerElderSignToken g = investigatorElderSignToken internalInvestigator
  where
   internalInvestigator = toInternalInvestigator arkhamInvestigator
-  arkhamInvestigator = g ^. player . investigator
+  arkhamInvestigator = g ^. activePlayer . investigator
 
 elderSignToken :: ArkhamChaosTokenInternal
 elderSignToken = ArkhamChaosTokenInternal

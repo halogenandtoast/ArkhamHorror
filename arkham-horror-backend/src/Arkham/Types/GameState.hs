@@ -113,6 +113,7 @@ data ArkhamGameState = ArkhamGameState
   , agsEncounterDeck :: [ArkhamEncounterCard]
   , agsStep :: ArkhamGameStateStep
   , agsLock :: Maybe (NonEmpty ArkhamGameStateLock)
+  , agsActiveUser :: UserId
   }
   deriving stock (Generic, Show)
 

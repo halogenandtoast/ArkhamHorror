@@ -71,8 +71,8 @@ buildTokenMapFrom scenarioTokens = HashMap.union scenarioTokens defaultTokenMap
 
 drawCard :: ArkhamGameData -> ArkhamGameData
 drawCard g =
-  let (drawn, deck') = splitAt 1 (g ^. player . deck)
-  in g & player . hand %~ (++ drawn) & player . deck .~ deck'
+  let (drawn, deck') = splitAt 1 (g ^. activePlayer . deck)
+  in g & activePlayer . hand %~ (++ drawn) & activePlayer . deck .~ deck'
 
 defaultUpdateObjectives
   :: MonadIO m => Lockable ArkhamGame -> m (Lockable ArkhamGame)
@@ -99,7 +99,7 @@ defaultMythosPhase = ArkhamMythosPhaseInternal
             (currentData . gameState)
             (aeiResolve
               (toInternalEncounterCard card)
-              (g ^. player . investigator)
+              (g ^. activePlayer . investigator)
             )
           )
   , mythosPhaseOnExit = pure
@@ -109,7 +109,7 @@ defaultInvestigationPhase :: ArkhamInvestigationPhaseInternal
 defaultInvestigationPhase = ArkhamInvestigationPhaseInternal
   { investigationPhaseOnEnter = pure
   , investigationPhaseTakeActions = runLockedM InvestigationTakeActions $ \g ->
-    if g ^. player . endedTurn
+    if g ^. activePlayer . endedTurn
       then pure $ Unlocked g
       else pure $ addLock (pure InvestigationTakeActions) g
   , investigationPhaseOnExit = pure
@@ -127,11 +127,11 @@ defaultUpkeepPhase :: ArkhamUpkeepPhaseInternal
 defaultUpkeepPhase = ArkhamUpkeepPhaseInternal
   { upkeepPhaseOnEnter = pure
   , upkeepPhaseResetActions = runLockedM UpkeepResetActions $ \g ->
-    pure . Unlocked $ g & player . actions .~ 3 & player . endedTurn .~ False
+    pure . Unlocked $ g & activePlayer . actions .~ 3 & activePlayer . endedTurn .~ False
   , upkeepPhaseReadyExhausted = pure
   , upkeepPhaseDrawCardsAndGainResources =
     runLockedM DrawAndGainResources $ \g ->
-      pure . Unlocked $ g & currentData %~ drawCard & player . resources +~ 1
+      pure . Unlocked $ g & currentData %~ drawCard & activePlayer . resources +~ 1
   , upkeepPhaseCheckHandSize = pure
   , upkeepPhaseOnExit = pure
   }
@@ -213,7 +213,7 @@ theGatheringSetup game = do
   let stacks' = HashMap.fromList [("Agenda", agenda), ("Act", act)]
   pure $ game & locations .~ locations' & stacks .~ stacks'
  where
-  investigators = [game ^. player . investigator]
+  investigators = [game ^. activePlayer . investigator]
   locations' = HashMap.fromList
     [ ( alCardCode study
       , reveal game $ study { alInvestigators = investigators }
@@ -290,11 +290,11 @@ theGatheringCultistToken :: ArkhamDifficulty -> ArkhamChaosTokenInternal
 theGatheringCultistToken difficulty' = if isEasyStandard difficulty'
   then (token Cultist)
     { tokenToResult = modifier (-1)
-    , tokenOnFail = \g _ -> g & player . sanityDamage +~ 1
+    , tokenOnFail = \g _ -> g & activePlayer . sanityDamage +~ 1
     }
   else (token Cultist)
     { tokenOnReveal = \_ _ -> error "TODO: Reveal another"
-    , tokenOnFail = \g _ -> g & player . sanityDamage +~ 2
+    , tokenOnFail = \g _ -> g & activePlayer . sanityDamage +~ 2
     }
 
 theGatheringTabletToken :: ArkhamDifficulty -> ArkhamChaosTokenInternal
@@ -302,12 +302,12 @@ theGatheringTabletToken difficulty' = if isEasyStandard difficulty'
   then (token Tablet)
     { tokenToResult = modifier (-2)
     , tokenOnReveal = \g i -> if countTraitMatch Ghoul (locationFor i g) > 0
-      then g & player . healthDamage +~ 1
+      then g & activePlayer . healthDamage +~ 1
       else g
     }
   else (token Tablet)
     { tokenToResult = modifier (-4)
     , tokenOnReveal = \g i -> if countTraitMatch Ghoul (locationFor i g) > 0
-      then g & player . healthDamage +~ 1 & player . sanityDamage +~ 1
+      then g & activePlayer . healthDamage +~ 1 & activePlayer . sanityDamage +~ 1
       else g
     }

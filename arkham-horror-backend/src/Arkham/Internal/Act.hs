@@ -8,6 +8,8 @@ where
 import Arkham.Types
 import Arkham.Types.Card
 import Arkham.Types.GameState
+import Arkham.Types.Location
+import Arkham.Internal.Location
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Data.Monoid
@@ -39,11 +41,14 @@ trapped = ArkhamActInternal
   { actSequence = "Act 1a"
   , actCardCode = ArkhamCardCode "01108"
   , actCanProgress = \g ->
-    getSum (foldMap (Sum . view clues) [g ^. player]) >= 2
-  , actOnProgress = \g -> pure $ g & locations <>~ HashMap.fromList
-    [ ("hallway", hallway)
-    , ("cellar", cellar)
-    , ("attic", attic)
-    , ("parlor", parlor)
-    ]
+    getSum (foldMap (Sum . view clues) (g ^. players)) >= 2
+  , actOnProgress = \g -> pure $ g & locations <>~ toLocations
+      [ ArkhamCardCode "01112"
+      , ArkhamCardCode "01114"
+      , ArkhamCardCode "01113"
+      , ArkhamCardCode "01115"
+      ]
   }
+  where
+    toLocations :: [ArkhamCardCode] -> HashMap ArkhamCardCode ArkhamLocation
+    toLocations = HashMap.fromList . map (\c -> (c, initLocation c))

@@ -129,7 +129,7 @@ fortyFiveAutomatic :: ArkhamPlayerCardInternal
 fortyFiveAutomatic = withUses 4 $ (hand 4) { aciTestIcons = [agility] }
 
 emergencyCache :: ArkhamPlayerCardInternal
-emergencyCache = (event 0) { aciAfterPlay = player . resources +~ 3 }
+emergencyCache = (event 0) { aciAfterPlay = activePlayer . resources +~ 3 }
 
 rolands38Special :: ArkhamPlayerCardInternal
 rolands38Special =
@@ -164,11 +164,11 @@ workingAHunch :: ArkhamPlayerCardInternal
 workingAHunch = fast $ (event 2)
   { aciTestIcons = replicate 2 intellect
   , aciAfterPlay = \g ->
-    let location = getCurrentLocation g (g ^. player . investigator)
+    let location = getCurrentLocation g (g ^. activePlayer . investigator)
     in
       if alClues location > 0
         then g & locations . at (alCardCode location) . _Just . clues -~ 1
-               & player . clues +~ 1
+               & activePlayer . clues +~ 1
         else g
   }
 

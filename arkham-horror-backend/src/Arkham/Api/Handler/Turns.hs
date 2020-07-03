@@ -12,4 +12,4 @@ import Lens.Micro
 postApiV1ArkhamGameEndTurnR :: ArkhamGameId -> Handler ArkhamGameData
 postApiV1ArkhamGameEndTurnR gameId = do
   g <- runDB $ get404 gameId
-  runDB $ updateGame gameId $ g & player . endedTurn .~ True
+  runDB $ updateGame gameId $ g & activePlayer . endedTurn .~ True

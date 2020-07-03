@@ -22,6 +22,7 @@ import qualified Data.List.NonEmpty as NE
 import Lens.Micro
 import Network.HTTP.Conduit (simpleHttp)
 import System.Random.Shuffle
+import Database.Persist.Sql
 
 newtype ArkhamDbDeckList = ArkhamDbDeckList { slots :: HashMap Text Int }
   deriving stock (Generic)
@@ -84,7 +85,7 @@ theGatheringF = ArkhamScenario
 
 fixtureGameState :: Int -> [ArkhamCard] -> ArkhamGameState
 fixtureGameState seed deck' = ArkhamGameState
-  (playerF seed deck') -- Player
+  (HashMap.fromList [(toSqlKey 1, playerF seed deck')]) -- Players
   Investigation -- Phase
   chaosTokens -- Chaos Tokens
   mempty -- Locations
@@ -97,6 +98,7 @@ fixtureGameState seed deck' = ArkhamGameState
   ) -- Encounter Deck
   ArkhamGameStateStepInvestigatorActionStep -- Step
   (Just $ pure InvestigationTakeActions) -- Lock
+  (toSqlKey 1) -- ActivePlayer
 
 loadDeck :: String -> IO [ArkhamCard]
 loadDeck deckId = do
@@ -105,9 +107,9 @@ loadDeck deckId = do
   case deckList of
     Left err -> throwString err
     Right cards -> shuffleM =<< HashMap.foldMapWithKey
-      (\cardId count -> do
+      (\cardId count' -> do
         mcard <- findCard cardId
-        pure $ maybe [] (replicate count) mcard
+        pure $ maybe [] (replicate count') mcard
       )
       (slots cards)
 

@@ -263,8 +263,14 @@ instance HasEncounterDeck ArkhamGameState where
 endedTurn :: Lens' ArkhamPlayer Bool
 endedTurn = lens _endedTurn $ \m x -> m { _endedTurn = x }
 
-enemies :: Lens' ArkhamGameState (HashMap UUID ArkhamEnemy)
-enemies = lens agsEnemies $ \m x -> m { agsEnemies = x }
+class HasEnemies a where
+  enemies :: Lens' a (HashMap UUID ArkhamEnemy)
+
+instance HasEnemies ArkhamGameData where
+  enemies = gameState . enemies
+
+instance HasEnemies ArkhamGameState where
+  enemies = lens agsEnemies $ \m x -> m { agsEnemies = x }
 
 class HasEnemyIds a where
   enemyIds :: Lens' a [UUID]

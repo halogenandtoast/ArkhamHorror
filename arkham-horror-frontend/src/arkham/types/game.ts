@@ -76,15 +76,26 @@ interface ArkhamLocationTarget {
   contents: ArkhamLocation;
 }
 
-type ArkhamTarget = ArkhamLocationTarget;
+interface ArkhamEnemyTarget {
+  tag: 'EnemyTarget';
+  contents: string;
+}
+
+type ArkhamTarget = ArkhamLocationTarget | ArkhamEnemyTarget;
 
 export const arkhamLocationTargetDecoder = JsonDecoder.object<ArkhamLocationTarget>({
   tag: JsonDecoder.isExactly('LocationTarget'),
   contents: arkhamLocationDecoder,
 }, 'ArkhamLocationTarget');
 
+export const arkhamEnemyTargetDecoder = JsonDecoder.object<ArkhamEnemyTarget>({
+  tag: JsonDecoder.isExactly('EnemyTarget'),
+  contents: JsonDecoder.string,
+}, 'ArkhamEnemyTarget');
+
 export const arkhamTargetDecoder = JsonDecoder.oneOf<ArkhamTarget>([
   arkhamLocationTargetDecoder,
+  arkhamEnemyTargetDecoder,
 ], 'ArkhamTarget');
 
 type ArkhamSkillType = string;
@@ -94,7 +105,12 @@ interface ArkhamInvestigateAction {
   contents: string;
 }
 
-type ArkhamAction = ArkhamInvestigateAction
+interface ArkhamFightEnemyAction {
+  tag: 'FightEnemyAction';
+  contents: string;
+}
+
+type ArkhamAction = ArkhamInvestigateAction | ArkhamFightEnemyAction;
 
 interface ArkhamSkillCheckStepContents {
   action: ArkhamAction;
@@ -116,8 +132,14 @@ export const arkhamActionInvestigateActionDecoder = JsonDecoder.object<ArkhamInv
   contents: JsonDecoder.string,
 }, 'ArkhamInvestigateAction');
 
+export const arkhamActionFightEnemyActionDecoder = JsonDecoder.object<ArkhamFightEnemyAction>({
+  tag: JsonDecoder.isExactly('FightEnemyAction'),
+  contents: JsonDecoder.string,
+}, 'ArkhamFightEnemyAction');
+
 export const arkhamActionDecoder = JsonDecoder.oneOf<ArkhamAction>([
   arkhamActionInvestigateActionDecoder,
+  arkhamActionFightEnemyActionDecoder,
 ], 'ArkhamAction');
 
 export const arkhamStepSkillCheckStepContentsDecoder = JsonDecoder.object<

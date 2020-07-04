@@ -19,6 +19,7 @@ import Arkham.Types.Player
 import Arkham.Types.Skill
 import Arkham.Util
 import qualified Data.HashMap.Strict as HashMap
+import Data.UUID
 import Import
 import Lens.Micro
 import Lens.Micro.Platform ()
@@ -30,6 +31,8 @@ postApiV1ArkhamGameSkillCheckR gameId = do
   let ArkhamGameStateStepSkillCheckStep step = game ^. gameStateStep
 
   case ascsAction step of
+    Just (FightEnemyAction action) ->
+      fightAction (afeaEnemyUUID action) (game ^. currentData)
     Just (InvestigateAction action) -> do
       let
         Just location =
@@ -153,3 +156,6 @@ successfulInvestigation g l clueCount = g
 
 investigatorStep :: ArkhamGameStateStep
 investigatorStep = ArkhamGameStateStepInvestigatorActionStep
+
+fightAction :: UUID -> ArkhamGameData -> Handler ArkhamGameData
+fightAction _ g = pure g

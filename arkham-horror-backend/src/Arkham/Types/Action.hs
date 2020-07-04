@@ -13,6 +13,7 @@ import Arkham.Types.Card
 import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
+import Data.UUID
 
 data ArkhamDrawCardAction = ArkhamDrawCardAction
   deriving stock (Generic, Show)
@@ -44,13 +45,13 @@ newtype ArkhamMoveAction = ArkhamMoveAction { amaTo :: ArkhamCardCode }
 newtype ArkhamInvestigateAction = ArkhamInvestigateAction { aiaLocationId :: ArkhamCardCode }
   deriving newtype (Show, ToJSON, FromJSON)
 
-newtype ArkhamFightEnemyAction = ArkhamFightEnemyAction { afeaEnemy :: ArkhamCard }
+newtype ArkhamFightEnemyAction = ArkhamFightEnemyAction { afeaEnemyUUID :: UUID }
   deriving newtype (Show, ToJSON, FromJSON)
 
-newtype ArkhamEngageEnemyAction = ArkhamEngageEnemyAction { aeeaEnemy :: ArkhamCard }
+newtype ArkhamEngageEnemyAction = ArkhamEngageEnemyAction { aeeaEnemyUUID :: UUID }
   deriving newtype (Show, ToJSON, FromJSON)
 
-newtype ArkhamEvadeEnemyAction = ArkhamEvadeEnemyAction { aeveaEnemy :: ArkhamCard }
+newtype ArkhamEvadeEnemyAction = ArkhamEvadeEnemyAction { aeveaEnemyUUID :: UUID }
   deriving newtype (Show, ToJSON, FromJSON)
 
 data ArkhamAction

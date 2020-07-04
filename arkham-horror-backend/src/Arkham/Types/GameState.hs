@@ -57,7 +57,7 @@ instance Eq ArkhamGameStateStep where
     = True
   _ == _ = False
 
-data ArkhamTarget = LocationTarget ArkhamLocation | OtherTarget ArkhamLocation
+data ArkhamTarget = LocationTarget ArkhamLocation | EnemyTarget UUID
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 

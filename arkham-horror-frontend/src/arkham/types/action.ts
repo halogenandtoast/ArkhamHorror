@@ -1,9 +1,13 @@
 export enum ArkhamActionTypes {
-  INVESTIGATE = 'InvestigateAction',
-  TAKE_RESOURCE = 'TakeResourceAction',
   DRAW_CARD = 'DrawCardAction',
+  TAKE_RESOURCE = 'TakeResourceAction',
   PLAY_CARD = 'PlayCardAction',
+  // Activate a card ability
   MOVE = 'MoveAction',
+  INVESTIGATE = 'InvestigateAction',
+  FIGHT_ENEMY = 'FightEnemyAction',
+  ENGAGE_ENEMY = 'EngageEnemyAction',
+  EVADE_ENEMY = 'EvadeEnemyAction',
 }
 
 export interface ArkhamInvestigateAction {
@@ -31,9 +35,27 @@ export interface ArkhamMoveAction {
   contents: string;
 }
 
+export interface ArkhamFightEnemyAction {
+  tag: ArkhamActionTypes.FIGHT_ENEMY;
+  contents: string;
+}
+
+export interface ArkhamEvadeEnemyAction {
+  tag: ArkhamActionTypes.EVADE_ENEMY;
+  contents: string;
+}
+
+export interface ArkhamEngageEnemyAction {
+  tag: ArkhamActionTypes.ENGAGE_ENEMY;
+  contents: string;
+}
+
 export type ArkhamAction
   = ArkhamInvestigateAction
   | ArkhamTakeResourceAction
   | ArkhamDrawCardAction
   | ArkhamPlayCardAction
-  | ArkhamMoveAction;
+  | ArkhamMoveAction
+  | ArkhamFightEnemyAction
+  | ArkhamEvadeEnemyAction
+  | ArkhamEngageEnemyAction;

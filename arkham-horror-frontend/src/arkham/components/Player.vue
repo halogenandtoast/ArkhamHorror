@@ -13,7 +13,13 @@
       </div>
 
       <div v-for="enemyId in player.enemies" :key="enemyId">
-        <img :src="game.gameState.enemies[enemyId].image" class="card" />
+        <img
+          v-if="canFight(enemyId)"
+          @click="fightEnemy(enemyId)"
+          :src="game.gameState.enemies[enemyId].image"
+          class="card enemy--can-fight"
+        />
+        <img v-else :src="game.gameState.enemies[enemyId].image" class="card" />
       </div>
     </section>
     <div class="player">
@@ -180,6 +186,23 @@ export default class Player extends Vue {
     });
   }
 
+  canFight(enemyId: string) {
+    // TODO: logically we can fight any enemy at the same location
+    // so we need to update this accordingly
+    return this.player.actionsRemaining > 0 && this.player.enemies.includes(enemyId);
+  }
+
+  fightEnemy(enemyId: string) {
+    const action: ArkhamAction = {
+      tag: ArkhamActionTypes.FIGHT_ENEMY,
+      contents: enemyId,
+    };
+
+    performAction(this.game.id, action).then((game: ArkhamGame) => {
+      this.$emit('update', game);
+    });
+  }
+
   drawCard() {
     const action: ArkhamAction = {
       tag: ArkhamActionTypes.DRAW_CARD,
@@ -301,5 +324,10 @@ i.action {
 
 .in-play {
   display: flex;
+}
+
+.enemy--can-fight {
+  border: 3px solid #FF00FF;
+  cursor: pointer;
 }
 </style>

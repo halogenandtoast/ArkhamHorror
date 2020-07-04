@@ -19,6 +19,14 @@ import Safe (fromJustNote)
 
 -- brittany-disable-next-binding
 applyAction :: ArkhamAction -> ArkhamGameData -> IO ArkhamGameData
+applyAction action@(FightEnemyAction fight) g =
+  pure $ g & gameStateStep .~ newGameStateStep & activePlayer . actions -~ 1
+    where
+      newGameStateStep = ArkhamGameStateStepSkillCheckStep $ ArkhamSkillCheckStep
+        { ascsType = ArkhamSkillCombat
+        , ascsAction = Just action
+        , ascsTarget = Just $ EnemyTarget (afeaEnemyUUID fight)
+        }
 applyAction (MoveAction move) g = do
   let cardCode' = amaTo move
       currentPlayer = g ^. activePlayer

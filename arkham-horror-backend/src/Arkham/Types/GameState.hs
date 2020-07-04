@@ -112,6 +112,7 @@ data ArkhamGameState = ArkhamGameState
   , agsEnemies :: HashMap UUID ArkhamEnemy
   , agsStacks :: HashMap Text ArkhamStack
   , agsEncounterDeck :: [ArkhamEncounterCard]
+  , agsEncounterDiscard :: [ArkhamEncounterCard]
   , agsStep :: ArkhamGameStateStep
   , agsLock :: Maybe (NonEmpty ArkhamGameStateLock)
   , agsActiveUser :: UserId

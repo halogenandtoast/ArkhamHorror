@@ -7,6 +7,7 @@ import Arkham.Types.Enemy
 import Arkham.Types.GameState
 import Arkham.Types.Location
 import Arkham.Types.Player
+import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Data.UUID.V4
@@ -33,6 +34,7 @@ data ArkhamEnemyInternal = ArkhamEnemyInternal
   , enemyVictory :: Maybe Int
   , enemyCardCode :: ArkhamCardCode
   , enemyIsHunter :: Bool
+  , enemyTraits :: [ArkhamTrait]
   }
 
 toInternalEncounterCard :: ArkhamEncounterCard -> ArkhamEncounterCardInternal
@@ -65,6 +67,7 @@ toEnemy ArkhamEnemyInternal {..} _ = do
       "https://arkhamdb.com/bundles/cards/"
       <> unpack (unArkhamCardCode enemyCardCode)
       <> ".png"
+    , _enemyTraits = enemyTraits
     }
 
 spawnAt
@@ -117,6 +120,7 @@ defaultEnemy ccode = ArkhamEnemyInternal
   , enemyVictory = Nothing
   , enemyCardCode = ccode
   , enemyIsHunter = False
+  , enemyTraits = []
   }
 
 fleshEater :: ArkhamEnemyInternal
@@ -126,6 +130,7 @@ fleshEater = (defaultEnemy $ ArkhamCardCode "01118")
   , enemyHealthDamage = 1
   , enemySanityDamage = 2
   , enemyVictory = Just 1
+  , enemyTraits = [Humanoid, Monster, Ghoul]
   }
 
 icyGhoul :: ArkhamEnemyInternal
@@ -136,6 +141,7 @@ icyGhoul = (defaultEnemy $ ArkhamCardCode "01119")
   , enemyHealthDamage = 2
   , enemySanityDamage = 1
   , enemyVictory = Just 1
+  , enemyTraits = [Humanoid, Monster, Ghoul]
   }
 
 swarmOfRats :: ArkhamEnemyInternal
@@ -143,4 +149,5 @@ swarmOfRats = (defaultEnemy $ ArkhamCardCode "01159")
   { enemyAgility = const 3
   , enemyHealthDamage = 1
   , enemyIsHunter = True
+  , enemyTraits = [Creature]
   }

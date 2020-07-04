@@ -99,6 +99,7 @@ fixtureGameState seed deck' = do
       (ArkhamCardCode "01159")
       "https://arkhamdb.com/bundles/cards/01159.png"
     ) -- Encounter Deck
+    mempty -- Encounter Discard
     ArkhamGameStateStepInvestigatorActionStep -- Step
     (Just $ pure InvestigationTakeActions) -- Lock
     (toSqlKey 1) -- ActivePlayer

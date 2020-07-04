@@ -17,6 +17,10 @@ import {
   ArkhamChaosToken,
   arkhamChaosTokenDecoder,
 } from '@/arkham/types/chaostoken';
+import {
+  ArkhamEncounterCardContents,
+  arkhamEncounterCardContentsDecoder,
+} from '@/arkham/types/card';
 
 export type ArkhamPhase = 'Mythos' | 'Investigation' | 'Enemy' | 'Upkeep';
 
@@ -196,10 +200,12 @@ export interface ArkhamGameState {
   locations: Record<string, ArkhamLocation>;
   enemies: Record<string, ArkhamEnemy>;
   stacks: Record<string, ArkhamStack>;
+  encounterDiscard: ArkhamEncounterCardContents[];
   step: ArkhamStep;
   chaosBag: ArkhamChaosToken[];
   activeUser: number;
 }
+
 
 export const arkhamPhaseDecoder = JsonDecoder.oneOf<ArkhamPhase>([
   JsonDecoder.isExactly('Mythos'),
@@ -263,6 +269,7 @@ export const arkhamGameStateDecoder = JsonDecoder.object<ArkhamGameState>(
       arkhamLocationDecoder,
       'Dict<LocationId, ArkhamLocation>',
     ),
+    encounterDiscard: JsonDecoder.array<ArkhamEncounterCardContents>(arkhamEncounterCardContentsDecoder, 'ArkhamEncounterCardContents[]'),
     stacks: JsonDecoder.dictionary(arkhamStackDecoder, 'Dict<Text, ArkhamStack>'),
     step: arkhamStepDecoder,
     chaosBag: JsonDecoder.array<ArkhamChaosToken>(arkhamChaosTokenDecoder, 'ArkhamChaosToken[]'),

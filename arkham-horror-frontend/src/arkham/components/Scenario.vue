@@ -1,6 +1,14 @@
 <template>
   <div id="game" class="game">
     <div class="scenario-cards">
+      <div v-if="topOfEncounterDiscard" class="discard">
+        <img
+          :src="topOfEncounterDiscard"
+          class="card"
+          width="200px"
+        />
+      </div>
+      <img class="card" src="/img/arkham/back.png" />
       <img class="card" :src="game.scenario.guide" />
       <img
         class="card card--sideways"
@@ -273,6 +281,15 @@ export default class Scenario extends Vue {
     }
 
     return 'SUCCESS';
+  }
+
+  get topOfEncounterDiscard() {
+    const mcard = this.game.gameState.encounterDiscard[0];
+    if (mcard !== undefined && mcard !== null) {
+      return mcard.image;
+    }
+
+    return null;
   }
 }
 

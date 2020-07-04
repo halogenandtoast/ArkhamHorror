@@ -17,11 +17,13 @@ import Arkham.Types.Act
 import Arkham.Types.Card
 import Arkham.Types.ChaosToken
 import Arkham.Types.Difficulty
+import Arkham.Types.Enemy
 import Arkham.Types.Game
 import Arkham.Types.GameState
 import Arkham.Types.Location
 import Arkham.Types.Player
 import Arkham.Types.Scenario
+import Arkham.Types.Trait
 import Base.Lock
 import ClassyPrelude
 import Control.Monad.Random
@@ -31,8 +33,11 @@ import Lens.Micro
 import Lens.Micro.Platform ()
 import Safe hiding (at)
 
-countTraitMatch :: ArkhamCardTrait -> ArkhamLocation -> Int
-countTraitMatch _ _ = 0
+locationEnemies :: HasEnemies a => a -> ArkhamLocation -> [ArkhamEnemy]
+locationEnemies g l = map (fromJustNote "could not lookup enemy" . flip HashMap.lookup (g ^. enemies)) (l ^. enemyIds)
+
+countTraitMatch :: HasTraits a => ArkhamTrait -> [a] -> Int
+countTraitMatch trait' cards' = length . filter (trait' `elem`) $ cards' ^.. each . traits
 
 toInternalScenario :: ArkhamGame -> ArkhamScenarioInternal
 toInternalScenario g =
@@ -313,7 +318,7 @@ study = unrevealedLocation
 theGatheringSkullToken :: ArkhamDifficulty -> ArkhamChaosTokenInternal
 theGatheringSkullToken difficulty' = if isEasyStandard difficulty'
   then (token Skull)
-    { tokenToResult = \g p -> Modifier . countTraitMatch Ghoul $ locationFor p g
+    { tokenToResult = \g p -> Modifier . countTraitMatch Ghoul . locationEnemies g $ locationFor p g
     }
   else (token Skull)
     { tokenToResult = modifier (-2)
@@ -335,13 +340,13 @@ theGatheringTabletToken :: ArkhamDifficulty -> ArkhamChaosTokenInternal
 theGatheringTabletToken difficulty' = if isEasyStandard difficulty'
   then (token Tablet)
     { tokenToResult = modifier (-2)
-    , tokenOnReveal = \g p -> if countTraitMatch Ghoul (locationFor p g) > 0
+    , tokenOnReveal = \g p -> if countTraitMatch Ghoul (locationEnemies g (locationFor p g)) > 0
       then g & activePlayer . healthDamage +~ 1
       else g
     }
   else (token Tablet)
     { tokenToResult = modifier (-4)
-    , tokenOnReveal = \g p -> if countTraitMatch Ghoul (locationFor p g) > 0
+    , tokenOnReveal = \g p -> if countTraitMatch Ghoul (locationEnemies g (locationFor p g)) > 0
       then
         g & activePlayer . healthDamage +~ 1 & activePlayer . sanityDamage +~ 1
       else g

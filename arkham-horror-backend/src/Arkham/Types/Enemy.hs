@@ -1,6 +1,7 @@
 module Arkham.Types.Enemy where
 
 import Arkham.Types.Card
+import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
@@ -18,6 +19,7 @@ data ArkhamEnemy = ArkhamEnemy
   , _enemyIsHunter :: Bool
   , _enemyIsEngaged :: Bool
   , _enemyImage :: String
+  , _enemyTraits :: [ArkhamTrait]
   }
   deriving stock (Show, Generic)
 

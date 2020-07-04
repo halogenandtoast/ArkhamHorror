@@ -6,6 +6,7 @@ module Arkham.Types
   , HasInPlay(..)
   , HasPlayers(..)
   , HasActivePlayer(..)
+  , HasEnemies(..)
   , HasDoom(..)
   , HasUses(..)
   , HasCardCode(..)
@@ -21,10 +22,10 @@ module Arkham.Types
   , HasSanityDamage(..)
   , HasHealthDamage(..)
   , HasEncounterDeck(..)
+  , HasTraits(..)
   , endedTurn
   , actions
   , gameState
-  , enemies
   , enemyIds
   , investigators
   )
@@ -39,6 +40,7 @@ import Arkham.Types.GameState
 import Arkham.Types.Location
 import Arkham.Types.Player
 import Arkham.Types.Scenario
+import Arkham.Types.Trait
 import ClassyPrelude
 import Control.Monad.Random
 import qualified Data.HashMap.Strict as HashMap
@@ -283,3 +285,9 @@ instance HasEnemyIds ArkhamPlayer where
 
 investigators :: Lens' ArkhamLocation [UUID]
 investigators = lens alInvestigators $ \m x -> m { alInvestigators = x }
+
+class HasTraits a where
+  traits :: Lens' a [ArkhamTrait]
+
+instance HasTraits ArkhamEnemy where
+  traits = lens _enemyTraits $ \m x -> m { _enemyTraits = x }

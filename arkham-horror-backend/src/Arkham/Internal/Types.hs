@@ -8,7 +8,6 @@ module Arkham.Internal.Types
   , ArkhamEnemyPhaseInternal(..)
   , ArkhamMythosPhaseInternal(..)
   , ArkhamInvestigationPhaseInternal(..)
-  , ArkhamCardTrait(..)
   )
 where
 
@@ -17,13 +16,12 @@ import Arkham.Types.Card
 import Arkham.Types.ChaosToken
 import Arkham.Types.GameState
 import Arkham.Types.Player
+import Arkham.Types.Trait
 import Base.Lock
 import ClassyPrelude
 import Control.Monad.Random
 
-data ArkhamCardTrait = Tome | Ghoul
-
-data ArkhamActionType = AnyAction | TraitRestrictedAction ArkhamCardTrait
+data ArkhamActionType = AnyAction | TraitRestrictedAction ArkhamTrait
 
 -- TODO: Should this be a reader with access to the investigator... probably
 data ArkhamInvestigatorInternal = ArkhamInvestigatorInternal

@@ -45,13 +45,13 @@ newtype ArkhamMoveAction = ArkhamMoveAction { amaTo :: ArkhamCardCode }
 newtype ArkhamInvestigateAction = ArkhamInvestigateAction { aiaLocationId :: ArkhamCardCode }
   deriving newtype (Show, ToJSON, FromJSON)
 
-newtype ArkhamFightEnemyAction = ArkhamFightEnemyAction { afeaEnemyUUID :: UUID }
+newtype ArkhamFightEnemyAction = ArkhamFightEnemyAction { afeaEnemyId :: UUID }
   deriving newtype (Show, ToJSON, FromJSON)
 
-newtype ArkhamEngageEnemyAction = ArkhamEngageEnemyAction { aeeaEnemyUUID :: UUID }
+newtype ArkhamEngageEnemyAction = ArkhamEngageEnemyAction { aeeaEnemyId :: UUID }
   deriving newtype (Show, ToJSON, FromJSON)
 
-newtype ArkhamEvadeEnemyAction = ArkhamEvadeEnemyAction { aeveaEnemyUUID :: UUID }
+newtype ArkhamEvadeEnemyAction = ArkhamEvadeEnemyAction { aeveaEnemyId :: UUID }
   deriving newtype (Show, ToJSON, FromJSON)
 
 data ArkhamAction

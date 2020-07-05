@@ -11,6 +11,7 @@ data ArkhamEnemy = ArkhamEnemy
   { _enemyId :: UUID
   , _enemyCombat :: Int
   , _enemyHealth :: Int
+  , _enemyDamage :: Int
   , _enemyAgility :: Int
   , _enemyHealthDamage :: Int
   , _enemySanityDamage :: Int

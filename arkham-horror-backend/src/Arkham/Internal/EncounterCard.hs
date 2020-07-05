@@ -10,6 +10,7 @@ import Arkham.Types.Player
 import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
+import qualified Data.HashSet as HashSet
 import Data.UUID.V4
 import Lens.Micro
 import Lens.Micro.Platform ()
@@ -21,6 +22,7 @@ data ArkhamEncounterCardInternal = ArkhamEncounterCardInternal
   { aeiType :: ArkhamEncounterCardType
   , aeiResolve :: forall m. MonadIO m => ArkhamPlayer -> ArkhamGameState -> m ArkhamGameState
   , aeiCardCode :: ArkhamCardCode
+  , aeiName :: Text
   }
 
 type PlayerCount = Int
@@ -35,6 +37,7 @@ data ArkhamEnemyInternal = ArkhamEnemyInternal
   , enemyCardCode :: ArkhamCardCode
   , enemyIsHunter :: Bool
   , enemyTraits :: [ArkhamTrait]
+  , enemyName :: Text
   }
 
 toInternalEncounterCard :: ArkhamEncounterCard -> ArkhamEncounterCardInternal
@@ -49,6 +52,20 @@ toInternalEnemy e =
     $ HashMap.lookup ccode enemiesInternal
   where ccode = _enemyCardCode e
 
+lookupEncounterCard :: MonadIO m => ArkhamCardCode -> m ArkhamEncounterCard
+lookupEncounterCard ccode' =  toEncounterCard . fromJustNote "Could not find encounter card" $ HashMap.lookup ccode' encounterCardsInternal
+
+toEncounterCard :: MonadIO m => ArkhamEncounterCardInternal -> m ArkhamEncounterCard
+toEncounterCard ArkhamEncounterCardInternal {..} = do
+  pure ArkhamEncounterCard
+    { aecName = aeiName
+    , aecCode = aeiCardCode
+    , aecImage = 
+      "https://arkhamdb.com/bundles/cards/"
+      <> (unArkhamCardCode aeiCardCode)
+      <> ".png"
+    }
+
 toEnemy :: MonadIO m => ArkhamEnemyInternal -> ArkhamGameState -> m ArkhamEnemy
 toEnemy ArkhamEnemyInternal {..} _ = do
   enemyId <- liftIO nextRandom
@@ -56,6 +73,7 @@ toEnemy ArkhamEnemyInternal {..} _ = do
     { _enemyId = enemyId
     , _enemyCombat = enemyCombat 1
     , _enemyHealth = enemyHealth 1
+    , _enemyDamage = 0
     , _enemyAgility = enemyAgility 1
     , _enemyHealthDamage = enemyHealthDamage
     , _enemySanityDamage = enemySanityDamage
@@ -84,7 +102,7 @@ spawnAt l e g = do
     willEngage = not (null investigators')
     enemy'' = if willEngage then enemy' { _enemyIsEngaged = True } else enemy'
     engage =
-      if willEngage then activePlayer . enemyIds %~ (_enemyId enemy'' :) else id
+      if willEngage then activePlayer . enemyIds %~ (HashSet.insert (_enemyId enemy'')) else id
   pure
     $ g
     & enemies
@@ -93,7 +111,7 @@ spawnAt l e g = do
     . at (alCardCode l)
     . _Just
     . enemyIds
-    %~ (_enemyId enemy'' :)
+    %~ HashSet.insert (_enemyId enemy'')
     & engage
 
 encounterCardsInternal :: HashMap ArkhamCardCode ArkhamEncounterCardInternal
@@ -108,10 +126,11 @@ enemy it = ArkhamEncounterCardInternal
   { aeiType = EncounterEnemy
   , aeiResolve = \p g -> spawnAt (locationFor p g) it g
   , aeiCardCode = enemyCardCode it
+  , aeiName = enemyName it
   }
 
-defaultEnemy :: ArkhamCardCode -> ArkhamEnemyInternal
-defaultEnemy ccode = ArkhamEnemyInternal
+defaultEnemy :: ArkhamCardCode -> Text -> ArkhamEnemyInternal
+defaultEnemy ccode name = ArkhamEnemyInternal
   { enemyCombat = const 1
   , enemyHealth = const 1
   , enemyAgility = const 1
@@ -121,10 +140,11 @@ defaultEnemy ccode = ArkhamEnemyInternal
   , enemyCardCode = ccode
   , enemyIsHunter = False
   , enemyTraits = []
+  , enemyName = name
   }
 
 fleshEater :: ArkhamEnemyInternal
-fleshEater = (defaultEnemy $ ArkhamCardCode "01118")
+fleshEater = (defaultEnemy (ArkhamCardCode "01118") "Flesh-Eater")
   { enemyCombat = const 4
   , enemyHealth = const 4
   , enemyHealthDamage = 1
@@ -134,7 +154,7 @@ fleshEater = (defaultEnemy $ ArkhamCardCode "01118")
   }
 
 icyGhoul :: ArkhamEnemyInternal
-icyGhoul = (defaultEnemy $ ArkhamCardCode "01119")
+icyGhoul = (defaultEnemy (ArkhamCardCode "01119") "Icy Ghoul")
   { enemyCombat = const 3
   , enemyHealth = const 4
   , enemyAgility = const 4
@@ -145,7 +165,7 @@ icyGhoul = (defaultEnemy $ ArkhamCardCode "01119")
   }
 
 swarmOfRats :: ArkhamEnemyInternal
-swarmOfRats = (defaultEnemy $ ArkhamCardCode "01159")
+swarmOfRats = (defaultEnemy (ArkhamCardCode "01159") "Swarm of Rats")
   { enemyAgility = const 3
   , enemyHealthDamage = 1
   , enemyIsHunter = True

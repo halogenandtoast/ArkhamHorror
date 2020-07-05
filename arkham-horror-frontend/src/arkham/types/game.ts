@@ -114,17 +114,20 @@ interface ArkhamFightEnemyAction {
   contents: string;
 }
 
-type ArkhamAction = ArkhamInvestigateAction | ArkhamFightEnemyAction;
+interface ArkhamEvadeEnemyAction {
+  tag: 'EvadeEnemyAction';
+  contents: string;
+}
+
+type ArkhamAction = ArkhamInvestigateAction | ArkhamFightEnemyAction | ArkhamEvadeEnemyAction;
 
 interface ArkhamSkillCheckStepContents {
   action: ArkhamAction;
-  target: ArkhamTarget;
   type: ArkhamSkillType;
 }
 
 interface ArkhamRevealTokenStepContents {
   action: ArkhamAction;
-  target: ArkhamTarget;
   type: ArkhamSkillType;
   difficulty: number;
   modifiedSkillValue: number;
@@ -141,16 +144,21 @@ export const arkhamActionFightEnemyActionDecoder = JsonDecoder.object<ArkhamFigh
   contents: JsonDecoder.string,
 }, 'ArkhamFightEnemyAction');
 
+export const arkhamActionEvadeEnemyActionDecoder = JsonDecoder.object<ArkhamEvadeEnemyAction>({
+  tag: JsonDecoder.isExactly('EvadeEnemyAction'),
+  contents: JsonDecoder.string,
+}, 'ArkhamEvadeEnemyAction');
+
 export const arkhamActionDecoder = JsonDecoder.oneOf<ArkhamAction>([
   arkhamActionInvestigateActionDecoder,
   arkhamActionFightEnemyActionDecoder,
+  arkhamActionEvadeEnemyActionDecoder,
 ], 'ArkhamAction');
 
 export const arkhamStepSkillCheckStepContentsDecoder = JsonDecoder.object<
     ArkhamSkillCheckStepContents
   >({
     action: arkhamActionDecoder,
-    target: arkhamTargetDecoder,
     type: JsonDecoder.string,
   }, 'ArkhamSkillCheckStepContents');
 
@@ -158,7 +166,6 @@ export const arkhamStepRevealTokenStepContentsDecoder = JsonDecoder.object<
     ArkhamRevealTokenStepContents
   >({
     action: arkhamActionDecoder,
-    target: arkhamTargetDecoder,
     type: JsonDecoder.string,
     difficulty: JsonDecoder.number,
     modifiedSkillValue: JsonDecoder.number,

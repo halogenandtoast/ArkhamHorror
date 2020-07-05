@@ -63,8 +63,7 @@ data ArkhamTarget = LocationTarget ArkhamLocation | EnemyTarget UUID
 
 data ArkhamSkillCheckStep = ArkhamSkillCheckStep
   { ascsType :: ArkhamSkillType
-  , ascsAction :: Maybe ArkhamAction
-  , ascsTarget :: Maybe ArkhamTarget
+  , ascsAction :: ArkhamAction
   }
   deriving stock (Generic, Show)
 
@@ -80,8 +79,7 @@ instance FromJSON ArkhamSkillCheckStep where
 
 data ArkhamRevealTokenStep = ArkhamRevealTokenStep
   { artsType :: ArkhamSkillType
-  , artsAction :: Maybe ArkhamAction
-  , artsTarget :: Maybe ArkhamTarget
+  , artsAction :: ArkhamAction
   , artsToken :: ArkhamChaosToken
   , artsDifficulty :: Int
   , artsModifiedSkillValue :: Int
@@ -99,7 +97,7 @@ instance FromJSON ArkhamRevealTokenStep where
   parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
 
-data ArkhamGameStateLock = AddDoom | InvestigationTakeActions | UpkeepResetActions | DrawAndGainResources
+data ArkhamGameStateLock = AddDoom | InvestigationTakeActions | UpkeepResetActions | DrawAndGainResources | ResolveEnemies
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 

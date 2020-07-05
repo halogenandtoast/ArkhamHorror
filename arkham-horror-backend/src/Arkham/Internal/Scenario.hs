@@ -28,13 +28,14 @@ import Base.Lock
 import ClassyPrelude
 import Control.Monad.Random
 import qualified Data.HashMap.Strict as HashMap
+import qualified Data.HashSet as HashSet
 import qualified Data.List.NonEmpty as NE
 import Lens.Micro
 import Lens.Micro.Platform ()
 import Safe hiding (at)
 
 locationEnemies :: HasEnemies a => a -> ArkhamLocation -> [ArkhamEnemy]
-locationEnemies g l = map (fromJustNote "could not lookup enemy" . flip HashMap.lookup (g ^. enemies)) (l ^. enemyIds)
+locationEnemies g l = map (fromJustNote "could not lookup enemy" . flip HashMap.lookup (g ^. enemies)) (HashSet.toList $ l ^. enemyIds)
 
 countTraitMatch :: HasTraits a => ArkhamTrait -> [a] -> Int
 countTraitMatch trait' cards' = length . filter (trait' `elem`) $ cards' ^.. each . traits
@@ -143,7 +144,10 @@ defaultEnemyPhase :: ArkhamEnemyPhaseInternal
 defaultEnemyPhase = ArkhamEnemyPhaseInternal
   { enemyPhaseOnEnter = pure
   , enemyPhaseResolveHunters = pure
-  , enemyPhaseResolveEnemies = pure
+  , enemyPhaseResolveEnemies = runLockedM ResolveEnemies $ \g -> do
+    pure . Unlocked $ g & players . each %~ \p ->
+       let enemies' = HashMap.filterWithKey (\k _ -> k `elem` (p ^. enemyIds)) (g ^. enemies)
+       in foldl' (\p' e -> p' & healthDamage +~ _enemyHealthDamage e & sanityDamage +~ _enemySanityDamage e) p enemies'
   , enemyPhaseOnExit = pure
   }
 
@@ -255,7 +259,7 @@ theGatheringSetup game = do
   let stacks' = HashMap.fromList [("Agenda", agenda), ("Act", act)]
   pure $ game & locations .~ locations' & stacks .~ stacks'
  where
-  investigators' = HashMap.elems (agsUsers game)
+  investigators' = HashMap.keysSet (agsPlayers game)
   locations' = HashMap.fromList
     [(alCardCode study, reveal game $ study & investigators .~ investigators')]
 
@@ -299,8 +303,8 @@ unrevealedLocation = ArkhamLocation
   , alConnectedLocationSymbols = []
   , alShroud = 0
   , alImage = error "Missing card image"
-  , alInvestigators = []
-  , alEnemies = []
+  , alInvestigators = mempty
+  , alEnemies = mempty
   , alClues = 0
   , alDoom = 0
   , alStatus = Unrevealed

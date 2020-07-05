@@ -26,8 +26,8 @@ data ArkhamLocation = ArkhamLocation
   , alConnectedLocationSymbols :: [ArkhamLocationSymbol]
   , alShroud :: Int
   , alImage :: Text
-  , alInvestigators :: [UUID]
-  , alEnemies :: [UUID]
+  , alInvestigators :: HashSet UUID
+  , alEnemies :: HashSet UUID
   , alClues :: Int
   , alDoom :: Int
   , alStatus :: ArkhamLocationStatus

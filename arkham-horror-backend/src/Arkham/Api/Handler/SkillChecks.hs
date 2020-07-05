@@ -5,6 +5,7 @@ module Arkham.Api.Handler.SkillChecks
 where
 
 import Arkham.Conversion
+import Arkham.Internal.EncounterCard
 import Arkham.Internal.PlayerCard
 import Arkham.Internal.Types
 import Arkham.Types
@@ -20,11 +21,16 @@ import Arkham.Types.Player
 import Arkham.Types.Skill
 import Arkham.Util
 import qualified Data.HashMap.Strict as HashMap
+import qualified Data.HashSet as HashSet
 import Data.UUID
 import Import
 import Lens.Micro
 import Lens.Micro.Platform ()
 import Safe (fromJustNote)
+import GHC.Stack
+
+getLocation :: HasLocations a => a -> ArkhamCardCode -> ArkhamLocation
+getLocation g locationId = fromJustNote "could not find location" $ g ^? locations . ix locationId
 
 postApiV1ArkhamGameSkillCheckR :: ArkhamGameId -> Handler ArkhamGameData
 postApiV1ArkhamGameSkillCheckR gameId = do
@@ -33,20 +39,23 @@ postApiV1ArkhamGameSkillCheckR gameId = do
   let ArkhamGameStateStepSkillCheckStep step = game ^. gameStateStep
 
   case ascsAction step of
-    Just (FightEnemyAction action) ->
-      fightAction (Entity gameId game) ArkhamSkillCombat (afeaEnemyUUID action) cards
-    Just (InvestigateAction action) -> do
+    (EvadeEnemyAction action) ->
+      evadeAction (Entity gameId game) ArkhamSkillAgility (aeveaEnemyId action) cards
+    (FightEnemyAction action) ->
+      fightAction (Entity gameId game) ArkhamSkillCombat (afeaEnemyId action) cards
+    (InvestigateAction action) -> do
       let
         Just location =
           HashMap.lookup (aiaLocationId action) (game ^. locations)
       investigateAction (Entity gameId game) ArkhamSkillIntellect location cards
     _ -> error "fail"
 
-getDifficulty :: MonadIO m => ArkhamGame -> Maybe ArkhamTarget -> m Int
-getDifficulty g target = case target of
-  Just (LocationTarget location) -> shroudOf g location
-  Just (EnemyTarget uuid) -> fightOf g uuid 
-  _ -> error "can not determine difficulty"
+getDifficulty :: MonadIO m => ArkhamGame -> ArkhamAction -> m Int
+getDifficulty g action = case action of
+  (FightEnemyAction a) -> fightOf g (afeaEnemyId a)
+  (EvadeEnemyAction a) -> evadeOf g (aeveaEnemyId a)
+  (InvestigateAction a) -> shroudOf g $ getLocation g (aiaLocationId a)
+  _ -> error "Can not get difficulty for action"
 
 
 postApiV1ArkhamGameSkillCheckApplyResultR
@@ -65,28 +74,26 @@ postApiV1ArkhamGameSkillCheckApplyResultR gameId = do
         (game ^. activePlayer)
     of
       Modifier n -> do
-        checkDifficulty <- getDifficulty game artsTarget
-        let
-          modifiedSkillValue = determineModifiedSkillValue
+        checkDifficulty <- getDifficulty game artsAction
+        modifiedSkillValue <- determineModifiedSkillValue
             artsType
             (game ^. activePlayer)
             artsCards
             n
         if modifiedSkillValue >= checkDifficulty
-          then runDB $ updateGame gameId $ successfulCheck
+          then runDB $ updateGame gameId =<< successfulCheck
             game
             artsAction
-            artsTarget
-          else runDB $ updateGame gameId $ failedCheck game artsAction artsTarget
-      Failure -> runDB $ updateGame gameId $ failedCheck game artsAction artsTarget
+          else runDB $ updateGame gameId $ failedCheck game artsAction
+      Failure -> runDB $ updateGame gameId $ failedCheck game artsAction
 
 shroudOf :: MonadIO m => ArkhamGame -> ArkhamLocation -> m Int
 shroudOf _ location = pure $ alShroud location
 
 determineModifiedSkillValue
-  :: ArkhamSkillType -> ArkhamPlayer -> [ArkhamCard] -> Int -> Int
+  :: MonadIO m => ArkhamSkillType -> ArkhamPlayer -> [ArkhamCard] -> Int -> m Int
 determineModifiedSkillValue skillType player' commitedCards tokenModifier =
-  skillValue player' skillType + cardContributions + tokenModifier
+  pure $ skillValue player' skillType + cardContributions + tokenModifier
  where
   cardContributions = length $ filter (== skillType) $ concatMap
     (maybe [] aciTestIcons . toInternalPlayerCard)
@@ -111,7 +118,6 @@ revealToken token' checkDifficulty modifiedSkillValue cards (ArkhamGameStateStep
   = ArkhamGameStateStepRevealTokenStep $ ArkhamRevealTokenStep
     ascsType
     ascsAction
-    ascsTarget
     token'
     checkDifficulty
     modifiedSkillValue
@@ -128,20 +134,17 @@ investigateAction (Entity gameId game) skillType location cardIndexes = do
   token' <- liftIO $ drawChaosToken game
   checkDifficulty <- shroudOf game location
   let tokenModifier = tokenToModifier game (game ^. activePlayer) token'
-
-  let
-    hand' = game ^. activePlayer . hand
-    (commitedCards, remainingCards) =
-      over both (map snd) $ partition (\(i, _) -> i `elem` cardIndexes) $ zip
-        [0 ..]
-        hand'
-    modifiedSkillValue = determineModifiedSkillValue
-      skillType
-      (game ^. activePlayer)
-      commitedCards
-      tokenModifier
-    newGame =
-      game
+      hand' = game ^. activePlayer . hand
+      (commitedCards, remainingCards) =
+        over both (map snd) $ partition (\(i, _) -> i `elem` cardIndexes) $ zip
+          [0 ..]
+          hand'
+  modifiedSkillValue <- determineModifiedSkillValue
+    skillType
+    (game ^. activePlayer)
+    commitedCards
+    tokenModifier
+  let newGame = game
         & gameStateStep
         %~ revealToken token' checkDifficulty modifiedSkillValue commitedCards
         & activePlayer
@@ -152,15 +155,36 @@ investigateAction (Entity gameId game) skillType location cardIndexes = do
         %~ (commitedCards ++)
   runDB $ updateGame gameId newGame
 
-failedCheck :: ArkhamGame -> ArkhamAction -> ArkhamTarget -> ArkhamGame
-failedCheck g _ _ = g & gameStateStep .~ investigatorStep
+failedCheck :: ArkhamGame -> ArkhamAction -> ArkhamGame
+failedCheck g _ = g & gameStateStep .~ investigatorStep
+
+successfulCheck :: (HasCallStack, MonadIO m) => ArkhamGame -> ArkhamAction -> m ArkhamGame
+successfulCheck g action = case action of
+  (InvestigateAction a) -> successfulInvestigation g (getLocation g (aiaLocationId a)) 1
+  (FightEnemyAction a) -> successfulFight g (afeaEnemyId a) 1
+  _ -> error "Unknown check"
 
 -- brittany-disable-next-binding
-successfulInvestigation :: ArkhamGame -> ArkhamLocation -> Int -> ArkhamGame
-successfulInvestigation g l clueCount = g
-    & locations . at (alCardCode l) . _Just . clues -~ clueCount
-    & activePlayer . clues +~ clueCount
-    & gameStateStep .~ investigatorStep
+successfulInvestigation :: MonadIO m => ArkhamGame -> ArkhamLocation -> Int -> m ArkhamGame
+successfulInvestigation g l clueCount = pure $ g
+  & locations . at (alCardCode l) . _Just . clues -~ clueCount
+  & activePlayer . clues +~ clueCount
+  & gameStateStep .~ investigatorStep
+
+successfulFight :: MonadIO m => ArkhamGame -> UUID -> Int -> m ArkhamGame
+successfulFight g enemyId damage' =
+  if _enemyDamage enemy'' >= _enemyHealth enemy''
+    then do
+      encounterCard' <- lookupEncounterCard (_enemyCardCode enemy')
+      pure $ g & enemies %~ HashMap.delete enemyId
+        & locations . each . enemyIds %~ HashSet.delete enemyId
+        & players . each . enemyIds %~ HashSet.delete enemyId
+        & encounterDiscard %~ (encounterCard' :)
+        & gameStateStep .~ investigatorStep
+    else pure $ g & enemies . at enemyId ?~ enemy'' & gameStateStep .~ investigatorStep
+  where
+    enemy' = fromJustNote "could not find enemy" $ g ^? enemies . ix enemyId
+    enemy'' = enemy' & damage +~ damage'
 
 investigatorStep :: ArkhamGameStateStep
 investigatorStep = ArkhamGameStateStepInvestigatorActionStep
@@ -169,10 +193,40 @@ fightOf :: (MonadIO m, HasEnemies a ) => a -> UUID -> m Int
 fightOf g uuid = pure $ _enemyCombat enemy'
   where enemy' = fromJustNote "could not find enemy" $ g ^? enemies . ix uuid
 
+evadeOf :: (MonadIO m, HasEnemies a ) => a -> UUID -> m Int
+evadeOf g uuid = pure $ _enemyAgility enemy'
+  where enemy' = fromJustNote "could not find enemy" $ g ^? enemies . ix uuid
+
 fightAction :: Entity ArkhamGame -> ArkhamSkillType -> UUID -> [Int] -> Handler ArkhamGameData
 fightAction (Entity gameId game) skillType enemyId cardIndexes = do
   token' <- liftIO $ drawChaosToken game
   checkDifficulty <-  fightOf game enemyId
+  let tokenModifier = tokenToModifier game (game ^. activePlayer) token'
+      hand' = game ^. activePlayer . hand
+      (commitedCards, remainingCards) =
+        over both (map snd) $ partition (\(i, _) -> i `elem` cardIndexes) $ zip
+          [0 ..]
+          hand'
+  modifiedSkillValue <- determineModifiedSkillValue
+    skillType
+    (game ^. activePlayer)
+    commitedCards
+    tokenModifier
+  let newGame = game
+        & gameStateStep
+        %~ revealToken token' checkDifficulty modifiedSkillValue commitedCards
+        & activePlayer
+        . hand
+        .~ remainingCards
+        & activePlayer
+        . discard
+        %~ (commitedCards ++)
+  runDB $ updateGame gameId newGame
+
+evadeAction :: Entity ArkhamGame -> ArkhamSkillType -> UUID -> [Int] -> Handler ArkhamGameData
+evadeAction (Entity gameId game) skillType enemyId cardIndexes = do
+  token' <- liftIO $ drawChaosToken game
+  checkDifficulty <-  evadeOf game enemyId
   let tokenModifier = tokenToModifier game (game ^. activePlayer) token'
 
   let
@@ -181,11 +235,12 @@ fightAction (Entity gameId game) skillType enemyId cardIndexes = do
       over both (map snd) $ partition (\(i, _) -> i `elem` cardIndexes) $ zip
         [0 ..]
         hand'
-    modifiedSkillValue = determineModifiedSkillValue
-      skillType
-      (game ^. activePlayer)
-      commitedCards
-      tokenModifier
+  modifiedSkillValue <- determineModifiedSkillValue
+    skillType
+    (game ^. activePlayer)
+    commitedCards
+    tokenModifier
+  let
     newGame =
       game
         & gameStateStep

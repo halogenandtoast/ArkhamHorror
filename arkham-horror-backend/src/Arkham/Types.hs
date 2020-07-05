@@ -22,12 +22,14 @@ module Arkham.Types
   , HasSanityDamage(..)
   , HasHealthDamage(..)
   , HasEncounterDeck(..)
+  , HasEncounterDiscard(..)
   , HasTraits(..)
   , endedTurn
   , actions
   , gameState
   , enemyIds
   , investigators
+  , damage
   )
 where
 
@@ -275,7 +277,7 @@ instance HasEnemies ArkhamGameState where
   enemies = lens agsEnemies $ \m x -> m { agsEnemies = x }
 
 class HasEnemyIds a where
-  enemyIds :: Lens' a [UUID]
+  enemyIds :: Lens' a (HashSet UUID)
 
 instance HasEnemyIds ArkhamLocation where
   enemyIds = lens alEnemies $ \m x -> m { alEnemies = x }
@@ -283,7 +285,7 @@ instance HasEnemyIds ArkhamLocation where
 instance HasEnemyIds ArkhamPlayer where
   enemyIds = lens _enemies $ \m x -> m { _enemies = x }
 
-investigators :: Lens' ArkhamLocation [UUID]
+investigators :: Lens' ArkhamLocation (HashSet UUID)
 investigators = lens alInvestigators $ \m x -> m { alInvestigators = x }
 
 class HasTraits a where
@@ -291,3 +293,15 @@ class HasTraits a where
 
 instance HasTraits ArkhamEnemy where
   traits = lens _enemyTraits $ \m x -> m { _enemyTraits = x }
+
+damage :: Lens' ArkhamEnemy Int
+damage = lens _enemyDamage $ \m x -> m { _enemyDamage = x }
+
+class HasEncounterDiscard a where
+  encounterDiscard :: Lens' a [ArkhamEncounterCard]
+
+instance HasEncounterDiscard ArkhamGameData where
+  encounterDiscard = gameState . encounterDiscard
+
+instance HasEncounterDiscard ArkhamGameState where
+  encounterDiscard = lens agsEncounterDiscard $ \m x -> m { agsEncounterDiscard = x }

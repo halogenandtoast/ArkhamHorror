@@ -20,7 +20,7 @@ data ArkhamPlayer = ArkhamPlayer
   , _inPlay :: [ArkhamCard]
   , _deck :: [ArkhamCard]
   , _discard :: [ArkhamCard]
-  , _enemies :: [UUID]
+  , _enemies :: HashSet UUID
   , _actionsRemaining :: Int
   , _endedTurn :: Bool
   , _accessibleLocations :: [ArkhamCardCode]

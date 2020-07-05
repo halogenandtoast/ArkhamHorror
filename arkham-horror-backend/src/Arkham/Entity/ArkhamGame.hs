@@ -71,3 +71,6 @@ instance HasActivePlayer ArkhamGame where
 instance HasEnemies ArkhamGame where
   enemies = currentData . enemies
 
+instance HasEncounterDiscard ArkhamGame where
+  encounterDiscard = currentData . encounterDiscard
+

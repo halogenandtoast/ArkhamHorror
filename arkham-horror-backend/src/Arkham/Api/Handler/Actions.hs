@@ -16,41 +16,45 @@ import Arkham.Types.Skill
 import Import
 import Lens.Micro
 import Safe (fromJustNote)
+import qualified Data.HashSet as HashSet
 
 -- brittany-disable-next-binding
 applyAction :: ArkhamAction -> ArkhamGameData -> IO ArkhamGameData
-applyAction action@(FightEnemyAction fight) g =
+applyAction action@(EvadeEnemyAction _) g =
+  pure $ g & gameStateStep .~ newGameStateStep & activePlayer . actions -~ 1
+    where
+      newGameStateStep = ArkhamGameStateStepSkillCheckStep $ ArkhamSkillCheckStep
+        { ascsType = ArkhamSkillAgility
+        , ascsAction = action
+        }
+applyAction action@(FightEnemyAction _) g =
   pure $ g & gameStateStep .~ newGameStateStep & activePlayer . actions -~ 1
     where
       newGameStateStep = ArkhamGameStateStepSkillCheckStep $ ArkhamSkillCheckStep
         { ascsType = ArkhamSkillCombat
-        , ascsAction = Just action
-        , ascsTarget = Just $ EnemyTarget (afeaEnemyUUID fight)
+        , ascsAction = action
         }
 applyAction (MoveAction move) g = do
   let cardCode' = amaTo move
       currentPlayer = g ^. activePlayer
       currentLocation = locationFor currentPlayer (g ^. gameState)
       currentLocationId = alCardCode currentLocation
-      currentLocation' = currentLocation & investigators %~ filter (/= _playerId currentPlayer)
+      currentLocation' = currentLocation & investigators %~ HashSet.delete (_playerId currentPlayer)
       newLocation = fromJustNote "No known location" (g ^? locations . ix cardCode')
       newLocationInternal = lookupLocationInternal cardCode'
       revealLocation = if alStatus newLocation == Unrevealed then aliOnReveal newLocationInternal (g ^. gameState) else id
-      location' = revealLocation newLocation & investigators .~ [_playerId currentPlayer]
+      location' = revealLocation newLocation & investigators .~ HashSet.singleton (_playerId currentPlayer)
       g' = g & locations . at cardCode' ?~ location' & locations . at currentLocationId ?~ currentLocation'
   (s, p) <- aliOnEnter newLocationInternal (g' ^. gameState) currentPlayer
   pure $ g' & gameState .~ s & activePlayer .~ (p & actions -~ 1)
-applyAction action@(InvestigateAction investigation) g =
+applyAction action@(InvestigateAction _) g =
   -- TODO: Look at timing for when the action is spent, may need to finish action first
   pure $ g & gameStateStep .~ newGameStateStep & activePlayer . actions -~ 1
  where
   newGameStateStep = ArkhamGameStateStepSkillCheckStep $ ArkhamSkillCheckStep
     { ascsType = ArkhamSkillIntellect
-    , ascsAction = Just action
-    , ascsTarget = LocationTarget <$> mlocation
+    , ascsAction = action
     }
-  mlocation = lookup targetLocationId $ g ^. locations
-  targetLocationId = aiaLocationId investigation
 applyAction (TakeResourceAction _) g = pure $ g & activePlayer . resources +~ 1 & activePlayer . actions -~ 1
 applyAction (DrawCardAction _) g = pure $ drawCard g & activePlayer . actions -~ 1
 applyAction (PlayCardAction (ArkhamPlayCardAction n)) g = do

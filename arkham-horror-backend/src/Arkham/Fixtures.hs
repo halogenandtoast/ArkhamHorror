@@ -148,7 +148,7 @@ playerF seed uuid deck' = ArkhamPlayer
   [] -- in play
   deck'' -- deck
   [] -- discard
-  [] -- enemies
+  mempty -- enemies
   3 -- actionsRemaining
   False -- endedTurn
   [] -- accessibleLocations

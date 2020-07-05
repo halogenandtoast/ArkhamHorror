@@ -58,8 +58,8 @@ initLocation code' =
         internal
       , alShroud = aliBaseShroud internal
       , alImage = locationImage code' Unrevealed
-      , alInvestigators = []
-      , alEnemies = []
+      , alInvestigators = mempty
+      , alEnemies = mempty
       , alClues = 0
       , alDoom = 0
       , alStatus = Unrevealed

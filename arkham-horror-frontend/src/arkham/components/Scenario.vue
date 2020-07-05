@@ -10,25 +10,30 @@
       </div>
       <img class="card" src="/img/arkham/back.png" />
       <img class="card" :src="game.scenario.guide" />
-      <img
-        class="card card--sideways"
-        :src="game.gameState.stacks.Agenda.contents[0].image"
-      />
-      <div v-if="game.gameState.stacks.Agenda.contents[0].doom">
-        <img src="/img/arkham/doom.png"/> {{game.gameState.stacks.Agenda.contents[0].doom}}
+
+      <div class="agenda-container">
+        <img
+          class="card card--sideways"
+          :src="game.gameState.stacks.Agenda.contents[0].image"
+        />
+        <div v-if="game.gameState.stacks.Agenda.contents[0].doom">
+          <img src="/img/arkham/doom.png"/> {{game.gameState.stacks.Agenda.contents[0].doom}}
+        </div>
       </div>
 
-      <img
-        v-if="game.gameState.stacks.Act.contents[0].canProgress"
-        class="card card--sideways act--can-progress"
-        @click="progressAct"
-        :src="game.gameState.stacks.Act.contents[0].image"
-      />
-      <img
-        v-else
-        class="card card--sideways"
-        :src="game.gameState.stacks.Act.contents[0].image"
-      />
+      <div class="act-container">
+        <img
+          v-if="game.gameState.stacks.Act.contents[0].canProgress"
+          class="card card--sideways act--can-progress"
+          @click="progressAct"
+          :src="game.gameState.stacks.Act.contents[0].image"
+        />
+        <img
+          v-else
+          class="card card--sideways"
+          :src="game.gameState.stacks.Act.contents[0].image"
+        />
+      </div>
 
       <img v-if="drawnToken" :src="chaosTokenSrc" class="token" />
       <img
@@ -379,5 +384,25 @@ export default class Scenario extends Vue {
 .location--can-move-to {
   border: 3px solid #FF00FF;
   cursor: pointer;
+}
+
+.agenda-container, .act-container {
+  align-self: flex-start;
+}
+
+.discard {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #FFF;
+    /* background-image: linear-gradient(120deg, #eaee44, #33d0ff); */
+    opacity: .85;
+    mix-blend-mode: saturation;
+  }
 }
 </style>

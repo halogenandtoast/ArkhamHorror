@@ -64,7 +64,7 @@ trapped = (act (ArkhamCardCode "01108") "Act 1a" clueThreshold')
   { actOnProgress = \g ->
     let
       investigators' = fromMaybe
-        []
+        mempty
         (g ^? locations . ix (ArkhamCardCode "01111") . investigators)
       g' =
         g

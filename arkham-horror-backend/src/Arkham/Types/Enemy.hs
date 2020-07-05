@@ -21,6 +21,7 @@ data ArkhamEnemy = ArkhamEnemy
   , _enemyIsEngaged :: Bool
   , _enemyImage :: String
   , _enemyTraits :: [ArkhamTrait]
+  , _enemyFinishedAttacking :: Bool
   }
   deriving stock (Show, Generic)
 

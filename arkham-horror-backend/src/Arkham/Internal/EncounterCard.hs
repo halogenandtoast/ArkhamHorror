@@ -86,6 +86,7 @@ toEnemy ArkhamEnemyInternal {..} _ = do
       <> unpack (unArkhamCardCode enemyCardCode)
       <> ".png"
     , _enemyTraits = enemyTraits
+    , _enemyFinishedAttacking = False
     }
 
 spawnAt

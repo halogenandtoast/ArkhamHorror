@@ -140,14 +140,18 @@ defaultInvestigationPhase = ArkhamInvestigationPhaseInternal
   , investigationPhaseOnExit = pure
   }
 
+-- TODO: add bool to enemy for if it has attacked
+-- Lock phase until every enemy has attacked as we
+-- need to resolve each attack
 defaultEnemyPhase :: ArkhamEnemyPhaseInternal
 defaultEnemyPhase = ArkhamEnemyPhaseInternal
   { enemyPhaseOnEnter = pure
   , enemyPhaseResolveHunters = pure
   , enemyPhaseResolveEnemies = runLockedM ResolveEnemies $ \g -> do
-    pure . Unlocked $ g & players . each %~ \p ->
-       let enemies' = HashMap.filterWithKey (\k _ -> k `elem` (p ^. enemyIds)) (g ^. enemies)
-       in foldl' (\p' e -> p' & healthDamage +~ _enemyHealthDamage e & sanityDamage +~ _enemySanityDamage e) p enemies'
+      let enemyIds' = HashMap.keysSet $ HashMap.filter (not . _enemyFinishedAttacking) (g ^. enemies)
+      if null enemyIds'
+        then pure . Unlocked $ g
+        else pure . addLock (pure ResolveEnemies) $ g & gameStateStep .~ (ArkhamGameStateStepResolveEnemiesStep $ ArkhamResolveEnemiesStep enemyIds')
   , enemyPhaseOnExit = pure
   }
 

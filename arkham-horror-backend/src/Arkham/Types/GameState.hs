@@ -8,6 +8,7 @@ module Arkham.Types.GameState
   , ArkhamAgenda(..)
   , ArkhamSkillCheckStep(..)
   , ArkhamRevealTokenStep(..)
+  , ArkhamResolveEnemiesStep(..)
   , ArkhamTarget(..)
   , stackAgenda
   , stackAct
@@ -45,6 +46,7 @@ data ArkhamGameStateStep
   = ArkhamGameStateStepInvestigatorActionStep
   | ArkhamGameStateStepSkillCheckStep ArkhamSkillCheckStep
   | ArkhamGameStateStepRevealTokenStep ArkhamRevealTokenStep
+  | ArkhamGameStateStepResolveEnemiesStep ArkhamResolveEnemiesStep
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -94,6 +96,20 @@ instance ToJSON ArkhamRevealTokenStep where
     $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
 
 instance FromJSON ArkhamRevealTokenStep where
+  parseJSON = genericParseJSON
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+
+data ArkhamResolveEnemiesStep = ArkhamResolveEnemiesStep
+  { aresEnemyIds :: HashSet UUID }
+  deriving stock (Generic, Show)
+
+instance ToJSON ArkhamResolveEnemiesStep where
+  toJSON =
+    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+  toEncoding = genericToEncoding
+    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+
+instance FromJSON ArkhamResolveEnemiesStep where
   parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
 

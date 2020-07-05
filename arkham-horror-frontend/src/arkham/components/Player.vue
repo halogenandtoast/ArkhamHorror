@@ -13,19 +13,13 @@
       </div>
 
       <div v-for="enemyId in player.enemies" :key="enemyId">
-        <div class="enemy">
-          <img
-            v-if="canInteract(enemyId)"
-            @click="chooseEnemy(enemyId)"
-            :src="game.gameState.enemies[enemyId].image"
-            class="card enemy--can-fight"
-          />
-          <img v-else :src="game.gameState.enemies[enemyId].image" class="card" />
-          <div v-if="focusedEnemy == enemyId" class="enemy-interactions">
-            <button class="fight-button" @click="fightEnemy(enemyId)">Fight</button>
-            <button class="evade-button" @click="evadeEnemy(enemyId)">Evade</button>
-          </div>
-        </div>
+        <Enemy
+          :enemyId="enemyId"
+          :game="game"
+          :focused="focusedEnemy === enemyId"
+          @focusEnemy="focusedEnemy = $event"
+          @update="$emit('update', $event)"
+        />
       </div>
     </section>
     <div class="player">
@@ -93,8 +87,11 @@ import { ArkhamPlayer } from '@/arkham/types';
 import { ArkhamAction, ArkhamActionTypes } from '@/arkham/types/action';
 import { ArkhamGame, ArkhamStepTypes } from '@/arkham/types/game';
 import { performAction, performEndTurn } from '@/arkham/api';
+import Enemy from '@/arkham/components/Enemy.vue';
 
-@Component
+@Component({
+  components: { Enemy },
+})
 export default class Player extends Vue {
   @Prop(Object) readonly game!: ArkhamGame
   @Prop(Object) readonly player!: ArkhamPlayer
@@ -199,48 +196,6 @@ export default class Player extends Vue {
 
     performAction(this.game.id, action).then((game: ArkhamGame) => {
       this.$emit('update', game);
-    });
-  }
-
-  chooseEnemy(enemyId: string) {
-    this.focusedEnemy = enemyId;
-  }
-
-  canInteract(enemyId: string) {
-    if (this.focusedEnemy) {
-      return false;
-    }
-
-    return this.canFight(enemyId);
-  }
-
-  canFight(enemyId: string) {
-    // TODO: logically we can fight any enemy at the same location
-    // so we need to update this accordingly
-    return this.player.actionsRemaining > 0 && this.player.enemies.includes(enemyId);
-  }
-
-  fightEnemy(enemyId: string) {
-    const action: ArkhamAction = {
-      tag: ArkhamActionTypes.FIGHT_ENEMY,
-      contents: enemyId,
-    };
-
-    performAction(this.game.id, action).then((game: ArkhamGame) => {
-      this.$emit('update', game);
-      this.focusedEnemy = null;
-    });
-  }
-
-  evadeEnemy(enemyId: string) {
-    const action: ArkhamAction = {
-      tag: ArkhamActionTypes.EVADE_ENEMY,
-      contents: enemyId,
-    };
-
-    performAction(this.game.id, action).then((game: ArkhamGame) => {
-      this.$emit('update', game);
-      this.focusedEnemy = null;
     });
   }
 
@@ -365,60 +320,5 @@ i.action {
 
 .in-play {
   display: flex;
-}
-
-.enemy--can-fight {
-  border: 3px solid #FF00FF;
-  cursor: pointer;
-}
-
-.enemy {
-  position: relative;
-  display: inline-block;
-}
-
-.enemy-interactions {
-  position: absolute;
-  box-sizing: border-box;
-  bottom: 58px;
-  left: 9px;
-  width: calc(100% - 20px);
-  display: flex;
-  button {
-    cursor: pointer;
-    flex: 1;
-    text-transform: uppercase;
-    font-weight: bold;
-    padding: 5px 0px;
-  }
-}
-
-.fight-button {
-  border: 0;
-  color: #FFF;
-  background-color: #8F5B41;
-  border-top-left-radius: 7px;
-  border-bottom-left-radius: 7px;
-  border: 3px solid #FF00FF;
-  &:before {
-    font-family: "Arkham";
-    content: "\0044";
-    margin-right: 5px;
-  }
-}
-
-.evade-button {
-  border: 0;
-  color: #FFF;
-  background-color: #576345;
-  border-top-right-radius: 7px;
-  border-bottom-right-radius: 7px;
-  border: 3px solid #FF00FF;
-  border-left: 0;
-  &:before {
-    font-family: "Arkham";
-    content: "\0053";
-    margin-right: 5px;
-  }
 }
 </style>

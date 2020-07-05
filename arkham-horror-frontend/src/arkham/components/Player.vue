@@ -1,16 +1,7 @@
 <template>
   <div>
     <section class="in-play">
-      <div v-for="(card, index) in player.inPlay" :key="index">
-        <img :src="card.contents.image" class="card" />
-        <div
-          v-if="card.contents.uses && card.contents.uses > 0"
-          class="poolItem poolItem-resource"
-        >
-          <img src="/img/arkham/resource.png" />
-          {{card.contents.uses}}
-        </div>
-      </div>
+      <PlayerCard v-for="(card, index) in player.inPlay" :card="card" :game="game" :key="index" />
 
       <Enemy
         v-for="enemyId in player.enemies"
@@ -38,44 +29,22 @@
         width="200px"
       />
       <img v-else class="card" src="/img/arkham/player_back.jpg" width="200px" />
-      <div>
-        <img class="card" :src="player.investigator.image" />
-        <p><i class="action" v-for="n in player.actionsRemaining" :key="n"></i></p>
-        <button @click="endTurn">End turn</button>
-      </div>
-      <div>
-        <div v-if="canTakeResources" class="poolItem poolItem-resource" @click="takeResource">
-          <img
-            class="resource--can-take"
-            src="/img/arkham/resource.png"
-          />
-          {{player.resources}}
-        </div>
-        <div v-else class="poolItem poolItem-resource">
-          <img src="/img/arkham/resource.png" />
-          {{player.resources}}
-        </div>
-        <div class="poolItem"><img src="/img/arkham/clue.png"/> {{player.clues}}</div>
-        <div class="poolItem"><img src="/img/arkham/health.png"/> {{player.healthDamage}}</div>
-        <div class="poolItem"><img src="/img/arkham/sanity.png"/> {{player.sanityDamage}}</div>
-      </div>
+      <Investigator
+        :player="player"
+        :canTakeResources="canTakeResources"
+        @endTurn="endTurn"
+        @takeResource="takeResource"
+      />
       <section class="hand">
-        <div v-for="(card, index) in player.hand" :key="index">
-          <img
-            v-if="canPlay(index)"
-            class="card playable"
-            :src="card.contents.image"
-            @click="playCard(index)"
-          />
-          <img
-            v-else-if="canCommit(index)"
-            :class="['card', 'commitable', { commited: isCommited(index) }]"
-            :src="card.contents.image"
-            @click="commitCard(index)"
-          />
-          <img v-else class="card" :src="card.contents.image" />
-        </div>
-
+        <HandCard
+          v-for="(card, index) in player.hand"
+          :card="card"
+          :canPlay="canPlay(index)"
+          :canCommit="canCommit()"
+          :isCommited="isCommited(index)"
+          :key="index"
+          @playCard="$emit('playCard', index)"
+        />
       </section>
     </div>
   </div>
@@ -88,9 +57,17 @@ import { ArkhamAction, ArkhamActionTypes } from '@/arkham/types/action';
 import { ArkhamGame, ArkhamStepTypes } from '@/arkham/types/game';
 import { performAction, performEndTurn } from '@/arkham/api';
 import Enemy from '@/arkham/components/Enemy.vue';
+import PlayerCard from '@/arkham/components/PlayerCard.vue';
+import HandCard from '@/arkham/components/HandCard.vue';
+import Investigator from '@/arkham/components/Investigator.vue';
 
 @Component({
-  components: { Enemy },
+  components: {
+    Enemy,
+    PlayerCard,
+    HandCard,
+    Investigator,
+  },
 })
 export default class Player extends Vue {
   @Prop(Object) readonly game!: ArkhamGame
@@ -214,58 +191,12 @@ export default class Player extends Vue {
 <style scoped lang="scss">
 .hand {
   display: flex;
-  .card {
-    width: 150px;
-    border-radius: 7px;
-  }
-
-  .playable {
-    border: 2px solid #ff00ff;
-    cursor: pointer;
-  }
-
-  .commitable {
-    border: 2px solid #ff00ff;
-  }
 }
 
 .player {
   display: flex;
   align-self: center;
   align-items: flex-start;
-}
-
-.poolItem {
-  position: relative;
-  width: 57px;
-  height: 73px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: black;
-  font-weight: 900;
-  font-size: 1.5em;
-
-  img {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-    z-index: -1;
-  }
-}
-
-.poolItem-resource {
-  padding-right:5px;
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-}
-
-.resource--can-take {
-  padding: 3px;
-  cursor: pointer;
-  background-color: #FF00FF;
 }
 
 .deck--can-draw {
@@ -295,27 +226,6 @@ export default class Player extends Vue {
   border-radius: 13px;
   margin: 2px;
   max-width: 250px;
-
-  &.commited {
-    margin-top: -10px;
-  }
-}
-
-i.action {
-  font-family: 'Arkham';
-  speak: none;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  position: relative;
-
-  &:before {
-    font-family: "Arkham";
-    content: "\0049";
-  }
 }
 
 .in-play {

@@ -12,15 +12,15 @@
         </div>
       </div>
 
-      <div v-for="enemyId in player.enemies" :key="enemyId">
-        <Enemy
-          :enemyId="enemyId"
-          :game="game"
-          :focused="focusedEnemy === enemyId"
-          @focusEnemy="focusedEnemy = $event"
-          @update="$emit('update', $event)"
-        />
-      </div>
+      <Enemy
+        v-for="enemyId in player.enemies"
+        :key="enemyId"
+        :enemyId="enemyId"
+        :game="game"
+        :focused="focusedEnemy === enemyId"
+        @focusEnemy="focusedEnemy = $event"
+        @update="$emit('update', $event)"
+      />
     </section>
     <div class="player">
       <div v-if="topOfDiscard" class="discard">

@@ -43,17 +43,17 @@ type ActStackContents = {
   canProgress: boolean;
 }
 
-type AgendaStack = {
+export type AgendaStack = {
   tag: 'AgendaStack';
   contents: AgendaStackContents[];
 };
 
-type ActStack = {
+export type ActStack = {
   tag: 'ActStack';
   contents: ActStackContents[];
 };
 
-type ArkhamStack = AgendaStack | ActStack;
+export type ArkhamStack = AgendaStack | ActStack;
 
 export enum ArkhamStepTypes {
   INVESTIGATOR_ACTION = 'ArkhamGameStateStepInvestigatorActionStep',

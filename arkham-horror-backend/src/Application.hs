@@ -52,6 +52,7 @@ import Text.Regex.Posix ((=~))
 
 import Arkham.Api.Handler.Actions
 import Arkham.Api.Handler.Acts
+import Arkham.Api.Handler.Enemies
 import Arkham.Api.Handler.Games
 import Arkham.Api.Handler.SkillChecks
 import Arkham.Api.Handler.Turns

@@ -25,3 +25,7 @@ export const performApplyTokenResult = (gameId: number) => api
 export const performProgressAct = (gameId: number, actCardCode: string) => api
   .post(`arkham/games/${gameId}/progress-act`, { actCardCode })
   .then((resp) => arkhamGameDecoder.decodePromise(resp.data));
+
+export const performSelectEnemy = (gameId: number, enemyId: string) => api
+  .post(`arkham/games/${gameId}/select-enemy`, { enemyId })
+  .then((resp) => arkhamGameDecoder.decodePromise(resp.data));

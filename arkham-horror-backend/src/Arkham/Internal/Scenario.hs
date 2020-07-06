@@ -35,10 +35,13 @@ import Lens.Micro.Platform ()
 import Safe hiding (at)
 
 locationEnemies :: HasEnemies a => a -> ArkhamLocation -> [ArkhamEnemy]
-locationEnemies g l = map (fromJustNote "could not lookup enemy" . flip HashMap.lookup (g ^. enemies)) (HashSet.toList $ l ^. enemyIds)
+locationEnemies g l = map
+  (fromJustNote "could not lookup enemy" . flip HashMap.lookup (g ^. enemies))
+  (HashSet.toList $ l ^. enemyIds)
 
 countTraitMatch :: HasTraits a => ArkhamTrait -> [a] -> Int
-countTraitMatch trait' cards' = length . filter (trait' `elem`) $ cards' ^.. each . traits
+countTraitMatch trait' cards' =
+  length . filter (trait' `elem`) $ cards' ^.. each . traits
 
 toInternalScenario :: ArkhamGame -> ArkhamScenarioInternal
 toInternalScenario g =
@@ -148,11 +151,20 @@ defaultEnemyPhase = ArkhamEnemyPhaseInternal
   { enemyPhaseOnEnter = pure
   , enemyPhaseResolveHunters = pure
   , enemyPhaseResolveEnemies = runLockedM ResolveEnemies $ \g -> do
-      let enemyIds' = HashMap.keysSet $ HashMap.filter (not . _enemyFinishedAttacking) (g ^. enemies)
-      if null enemyIds'
-        then pure . Unlocked $ g
-        else pure . addLock (pure ResolveEnemies) $ g & gameStateStep .~ (ArkhamGameStateStepResolveEnemiesStep $ ArkhamResolveEnemiesStep enemyIds')
-  , enemyPhaseOnExit = pure
+    let
+      enemyIds' = HashMap.keysSet
+        $ HashMap.filter (not . _enemyFinishedAttacking) (g ^. enemies)
+    if null enemyIds'
+      then pure . Unlocked $ g
+      else
+        pure
+        . addLock (pure ResolveEnemies)
+        $ g
+        & gameStateStep
+        .~ ArkhamGameStateStepResolveEnemiesStep (ArkhamResolveEnemiesStep enemyIds')
+  , enemyPhaseOnExit = runOnlyUnlockedM $ \g ->
+    pure . Unlocked $ g & enemies %~ HashMap.map
+      (\e -> e { _enemyFinishedAttacking = False })
   }
 
 defaultUpkeepPhase :: ArkhamUpkeepPhaseInternal
@@ -326,7 +338,8 @@ study = unrevealedLocation
 theGatheringSkullToken :: ArkhamDifficulty -> ArkhamChaosTokenInternal
 theGatheringSkullToken difficulty' = if isEasyStandard difficulty'
   then (token Skull)
-    { tokenToResult = \g p -> Modifier . countTraitMatch Ghoul . locationEnemies g $ locationFor p g
+    { tokenToResult = \g p ->
+      Modifier . countTraitMatch Ghoul . locationEnemies g $ locationFor p g
     }
   else (token Skull)
     { tokenToResult = modifier (-2)
@@ -348,14 +361,22 @@ theGatheringTabletToken :: ArkhamDifficulty -> ArkhamChaosTokenInternal
 theGatheringTabletToken difficulty' = if isEasyStandard difficulty'
   then (token Tablet)
     { tokenToResult = modifier (-2)
-    , tokenOnReveal = \g p -> if countTraitMatch Ghoul (locationEnemies g (locationFor p g)) > 0
-      then g & activePlayer . healthDamage +~ 1
-      else g
+    , tokenOnReveal = \g p ->
+      if countTraitMatch Ghoul (locationEnemies g (locationFor p g)) > 0
+        then g & activePlayer . healthDamage +~ 1
+        else g
     }
   else (token Tablet)
     { tokenToResult = modifier (-4)
-    , tokenOnReveal = \g p -> if countTraitMatch Ghoul (locationEnemies g (locationFor p g)) > 0
-      then
-        g & activePlayer . healthDamage +~ 1 & activePlayer . sanityDamage +~ 1
-      else g
+    , tokenOnReveal = \g p ->
+      if countTraitMatch Ghoul (locationEnemies g (locationFor p g)) > 0
+        then
+          g
+          & activePlayer
+          . healthDamage
+          +~ 1
+          & activePlayer
+          . sanityDamage
+          +~ 1
+        else g
     }

@@ -2,7 +2,7 @@
   <div class="enemy">
     <img
       v-if="canInteract"
-      @click="chooseEnemy"
+      @click="interact"
       :src="enemy.image"
       class="card enemy--can-fight"
     />
@@ -18,7 +18,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { ArkhamAction, ArkhamActionTypes } from '@/arkham/types/action';
 import { ArkhamGame, ArkhamStepTypes } from '@/arkham/types/game';
-import { performAction } from '@/arkham/api';
+import { performAction, performSelectEnemy } from '@/arkham/api';
 
 @Component
 export default class Enemy extends Vue {
@@ -30,20 +30,37 @@ export default class Enemy extends Vue {
     return this.game.gameState.enemies[this.enemyId];
   }
 
-  chooseEnemy() {
-    this.$emit('focusEnemy', this.enemyId);
-  }
-
-  canInteract() {
+  get canInteract() {
     if (this.focused) {
       return false;
     }
 
-    return this.canFight;
+    return this.canFight || this.shouldResolve;
   }
 
-  canFight() {
+  get canFight() {
     return this.game.gameState.step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION;
+  }
+
+  get canEvade() {
+    return this.game.gameState.step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION;
+  }
+
+  get shouldResolve() {
+    return this.game.gameState.step.tag === ArkhamStepTypes.RESOLVE_ENEMIES
+      && this.game.gameState.step.contents.enemyIds.includes(this.enemyId);
+  }
+
+  interact() {
+    if (this.canFight || this.canEvade) {
+      this.$emit('focusEnemy', this.enemyId);
+    }
+
+    if (this.shouldResolve) {
+      performSelectEnemy(this.game.id, this.enemyId).then((game: ArkhamGame) => {
+        this.$emit('update', game);
+      });
+    }
   }
 
   fightEnemy() {
@@ -75,6 +92,7 @@ export default class Enemy extends Vue {
 <style scoped lang="scss">
 .enemy--can-fight {
   border: 3px solid #FF00FF;
+  border-radius: 15px;
   cursor: pointer;
 }
 

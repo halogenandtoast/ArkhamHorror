@@ -99,7 +99,7 @@ instance FromJSON ArkhamRevealTokenStep where
   parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
 
-data ArkhamResolveEnemiesStep = ArkhamResolveEnemiesStep
+newtype ArkhamResolveEnemiesStep = ArkhamResolveEnemiesStep
   { aresEnemyIds :: HashSet UUID }
   deriving stock (Generic, Show)
 

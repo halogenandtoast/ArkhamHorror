@@ -12,3 +12,4 @@
           /apply-result ApiV1ArkhamGameSkillCheckApplyResultR POST
           /end-turn ApiV1ArkhamGameEndTurnR POST
           /progress-act ApiV1ArkhamGameProgressActR POST
+          /select-enemy ApiV1ArkhamGameSelectEnemyR POST

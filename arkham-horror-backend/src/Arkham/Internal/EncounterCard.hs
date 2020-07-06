@@ -53,18 +53,21 @@ toInternalEnemy e =
   where ccode = _enemyCardCode e
 
 lookupEncounterCard :: MonadIO m => ArkhamCardCode -> m ArkhamEncounterCard
-lookupEncounterCard ccode' =  toEncounterCard . fromJustNote "Could not find encounter card" $ HashMap.lookup ccode' encounterCardsInternal
+lookupEncounterCard ccode' =
+  toEncounterCard
+    . fromJustNote "Could not find encounter card"
+    $ HashMap.lookup ccode' encounterCardsInternal
 
-toEncounterCard :: MonadIO m => ArkhamEncounterCardInternal -> m ArkhamEncounterCard
-toEncounterCard ArkhamEncounterCardInternal {..} = do
-  pure ArkhamEncounterCard
-    { aecName = aeiName
-    , aecCode = aeiCardCode
-    , aecImage = 
-      "https://arkhamdb.com/bundles/cards/"
-      <> (unArkhamCardCode aeiCardCode)
-      <> ".png"
-    }
+toEncounterCard
+  :: MonadIO m => ArkhamEncounterCardInternal -> m ArkhamEncounterCard
+toEncounterCard ArkhamEncounterCardInternal {..} = pure ArkhamEncounterCard
+  { aecName = aeiName
+  , aecCode = aeiCardCode
+  , aecImage =
+    "https://arkhamdb.com/bundles/cards/"
+    <> unArkhamCardCode aeiCardCode
+    <> ".png"
+  }
 
 toEnemy :: MonadIO m => ArkhamEnemyInternal -> ArkhamGameState -> m ArkhamEnemy
 toEnemy ArkhamEnemyInternal {..} _ = do
@@ -102,8 +105,9 @@ spawnAt l e g = do
       g ^. locations . at (alCardCode l) . _Just . to alInvestigators
     willEngage = not (null investigators')
     enemy'' = if willEngage then enemy' { _enemyIsEngaged = True } else enemy'
-    engage =
-      if willEngage then activePlayer . enemyIds %~ (HashSet.insert (_enemyId enemy'')) else id
+    engage = if willEngage
+      then activePlayer . enemyIds %~ (HashSet.insert (_enemyId enemy''))
+      else id
   pure
     $ g
     & enemies

@@ -6,6 +6,7 @@ module Arkham.Internal.Act
 where
 
 import Arkham.Internal.Location
+import Arkham.Internal.Util
 import Arkham.Types
 import Arkham.Types.Card
 import Arkham.Types.GameState
@@ -62,31 +63,33 @@ act code' sequence' clueThreshold' = ArkhamActInternal
 -- TODO: discard enemies
 trapped :: ArkhamActInternal
 trapped = (act (ArkhamCardCode "01108") "Act 1a" clueThreshold')
-  { actOnProgress = \g ->
+  { actOnProgress = \g -> do
     let
       investigators' = fromMaybe
         mempty
         (g ^? locations . ix (ArkhamCardCode "01111") . investigators)
-      g' =
+    g' <-
+      foldM
+        discardEnemy
         g
-          & locations
-          .~ toLocations
-               [ ArkhamCardCode "01112"
-               , ArkhamCardCode "01114"
-               , ArkhamCardCode "01113"
-               , ArkhamCardCode "01115"
-               ]
-          & locations
-          . at (ArkhamCardCode "01112")
-          . _Just
-          . investigators
-          .~ investigators'
-          & activePlayer
-          . clues
-          -~ clueThreshold clueThreshold' g
-    in
-      pure
+        (g ^? locations . ix (ArkhamCardCode "01108") . enemyIds)
+      <&> locations
+      .~ toLocations
+           [ ArkhamCardCode "01112"
+           , ArkhamCardCode "01114"
+           , ArkhamCardCode "01113"
+           , ArkhamCardCode "01115"
+           ]
+      <&> locations
+      . at (ArkhamCardCode "01112")
+      . _Just
+      . investigators
+      .~ investigators'
+    pure
       $ g'
+      & activePlayer
+      . clues
+      -~ clueThreshold clueThreshold' g
       & locations
       . at (ArkhamCardCode "01112")
       . mapped

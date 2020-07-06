@@ -11,7 +11,7 @@
       <img class="card" src="/img/arkham/back.png" />
 
       <Agenda :agenda="game.gameState.stacks.Agenda" />
-      <Act :act="game.gameState.stacks.Act" />
+      <Act :act="game.gameState.stacks.Act" @progressAct="progressAct" />
       <img class="card" :src="game.scenario.guide" />
       <ChaosBag
         :drawnToken="drawnToken"
@@ -21,6 +21,7 @@
         :skillModifiedSkillValue="skillModifiedSkillValue"
         :pendingResult="pendingResult"
         @applyTokenResult="applyTokenResult"
+        @drawToken="drawToken"
       />
 
     </div>

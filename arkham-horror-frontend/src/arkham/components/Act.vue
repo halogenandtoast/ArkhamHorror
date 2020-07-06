@@ -3,7 +3,7 @@
     <img
       v-if="act.contents[0].canProgress"
       class="card card--sideways act--can-progress"
-      @click="progressAct"
+      @click="$emit('progressAct')"
       :src="act.contents[0].image"
     />
     <img

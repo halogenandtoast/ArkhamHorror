@@ -44,6 +44,7 @@
           :isCommited="isCommited(index)"
           :key="index"
           @playCard="$emit('playCard', index)"
+          @commitCard="$emit('commitCard', index)"
         />
       </section>
     </div>
@@ -75,10 +76,6 @@ export default class Player extends Vue {
   @Prop(Array) readonly commitedCards!: number[]
 
   private focusedEnemy: string | null = null;
-
-  commitCard(cardIndex: number) {
-    this.$emit('commitCard', cardIndex);
-  }
 
   playCard(index: number) {
     const action: ArkhamAction = {

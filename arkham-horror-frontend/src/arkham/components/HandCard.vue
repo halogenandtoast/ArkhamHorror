@@ -10,7 +10,7 @@
       v-else-if="canCommit"
       :class="['card', 'commitable', { commited: isCommited }]"
       :src="card.contents.image"
-      @click="commitCard"
+      @click="$emit('commitCard')"
     />
     <img v-else class="card" :src="card.contents.image" />
   </div>

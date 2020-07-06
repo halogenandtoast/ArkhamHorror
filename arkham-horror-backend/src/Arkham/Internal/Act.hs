@@ -59,6 +59,7 @@ act code' sequence' clueThreshold' = ArkhamActInternal
   , actOnProgress = pure
   }
 
+-- TODO: discard enemies
 trapped :: ArkhamActInternal
 trapped = (act (ArkhamCardCode "01108") "Act 1a" clueThreshold')
   { actOnProgress = \g ->

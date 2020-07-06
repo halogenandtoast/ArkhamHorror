@@ -1,5 +1,7 @@
 module Arkham.Types
-  ( HasClues(..)
+  ( ArkhamValue(..)
+  , valueToInt
+  , HasClues(..)
   , HasDeck(..)
   , HasHand(..)
   , HasDiscard(..)
@@ -52,6 +54,13 @@ import Data.UUID
 import Entity.User
 import Lens.Micro
 import Safe (fromJustNote)
+
+data ArkhamValue = Static Int | PerInvestigator Int | Blank
+
+valueToInt :: ArkhamValue -> Int -> Int
+valueToInt (Static n) _ = n
+valueToInt (PerInvestigator n) m = n * m
+valueToInt Blank _ = 0
 
 class HasChaosBag a where
   chaosBag :: Lens' a (NonEmpty ArkhamChaosToken)
@@ -304,4 +313,5 @@ instance HasEncounterDiscard ArkhamGameData where
   encounterDiscard = gameState . encounterDiscard
 
 instance HasEncounterDiscard ArkhamGameState where
-  encounterDiscard = lens agsEncounterDiscard $ \m x -> m { agsEncounterDiscard = x }
+  encounterDiscard =
+    lens agsEncounterDiscard $ \m x -> m { agsEncounterDiscard = x }

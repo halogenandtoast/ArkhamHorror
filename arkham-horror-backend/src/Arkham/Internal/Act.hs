@@ -41,18 +41,16 @@ allActs =
 totalClues :: ArkhamGameState -> Int
 totalClues = getSum . foldMap (Sum . view clues) . view players
 
-data ClueThreshold = Static Int | PerInvestigator Int | Blank
-
 meetsOrExceeds
-  :: ClueThreshold -> (ArkhamGameState -> Int) -> ArkhamGameState -> Bool
+  :: ArkhamValue -> (ArkhamGameState -> Int) -> ArkhamGameState -> Bool
 meetsOrExceeds ct f g = let t = clueThreshold ct g in t > -1 && f g >= t
 
-clueThreshold :: ClueThreshold -> ArkhamGameState -> Int
+clueThreshold :: ArkhamValue -> ArkhamGameState -> Int
 clueThreshold (Static n) _ = n
 clueThreshold (PerInvestigator n) g = n * length (g ^. players)
 clueThreshold Blank _ = -1
 
-act :: ArkhamCardCode -> Text -> ClueThreshold -> ArkhamActInternal
+act :: ArkhamCardCode -> Text -> ArkhamValue -> ArkhamActInternal
 act code' sequence' clueThreshold' = ArkhamActInternal
   { actSequence = sequence'
   , actCardCode = code'

@@ -28,9 +28,9 @@ data ArkhamEncounterCardInternal = ArkhamEncounterCardInternal
 type PlayerCount = Int
 
 data ArkhamEnemyInternal = ArkhamEnemyInternal
-  { enemyCombat :: PlayerCount -> Int
-  , enemyHealth :: PlayerCount -> Int
-  , enemyAgility :: PlayerCount -> Int
+  { enemyCombat :: ArkhamValue
+  , enemyHealth :: ArkhamValue
+  , enemyAgility :: ArkhamValue
   , enemyHealthDamage :: Int
   , enemySanityDamage :: Int
   , enemyVictory :: Maybe Int
@@ -70,16 +70,17 @@ toEncounterCard ArkhamEncounterCardInternal {..} = pure ArkhamEncounterCard
   }
 
 toEnemy :: MonadIO m => ArkhamEnemyInternal -> ArkhamGameState -> m ArkhamEnemy
-toEnemy ArkhamEnemyInternal {..} _ = do
+toEnemy ArkhamEnemyInternal {..} g = do
   enemyId <- liftIO nextRandom
+  let playerCount = length (g ^. players)
   pure ArkhamEnemy
     { _enemyId = enemyId
-    , _enemyCombat = enemyCombat 1
-    , _enemyHealth = enemyHealth 1
-    , _enemyDamage = 0
-    , _enemyAgility = enemyAgility 1
+    , _enemyCombat = valueToInt enemyCombat playerCount
+    , _enemyHealth = valueToInt enemyHealth playerCount
+    , _enemyAgility = valueToInt enemyAgility playerCount
     , _enemyHealthDamage = enemyHealthDamage
     , _enemySanityDamage = enemySanityDamage
+    , _enemyDamage = 0
     , _enemyVictory = enemyVictory
     , _enemyCardCode = enemyCardCode
     , _enemyIsHunter = enemyIsHunter
@@ -136,9 +137,9 @@ enemy it = ArkhamEncounterCardInternal
 
 defaultEnemy :: ArkhamCardCode -> Text -> ArkhamEnemyInternal
 defaultEnemy ccode name = ArkhamEnemyInternal
-  { enemyCombat = const 1
-  , enemyHealth = const 1
-  , enemyAgility = const 1
+  { enemyCombat = Static 1
+  , enemyHealth = Static 1
+  , enemyAgility = Static 1
   , enemyHealthDamage = 0
   , enemySanityDamage = 0
   , enemyVictory = Nothing
@@ -150,8 +151,8 @@ defaultEnemy ccode name = ArkhamEnemyInternal
 
 fleshEater :: ArkhamEnemyInternal
 fleshEater = (defaultEnemy "01118" "Flesh-Eater")
-  { enemyCombat = const 4
-  , enemyHealth = const 4
+  { enemyCombat = Static 4
+  , enemyHealth = Static 4
   , enemyHealthDamage = 1
   , enemySanityDamage = 2
   , enemyVictory = Just 1
@@ -160,9 +161,9 @@ fleshEater = (defaultEnemy "01118" "Flesh-Eater")
 
 icyGhoul :: ArkhamEnemyInternal
 icyGhoul = (defaultEnemy "01119" "Icy Ghoul")
-  { enemyCombat = const 3
-  , enemyHealth = const 4
-  , enemyAgility = const 4
+  { enemyCombat = Static 3
+  , enemyHealth = Static 4
+  , enemyAgility = Static 4
   , enemyHealthDamage = 2
   , enemySanityDamage = 1
   , enemyVictory = Just 1
@@ -171,8 +172,18 @@ icyGhoul = (defaultEnemy "01119" "Icy Ghoul")
 
 swarmOfRats :: ArkhamEnemyInternal
 swarmOfRats = (defaultEnemy "01159" "Swarm of Rats")
-  { enemyAgility = const 3
+  { enemyAgility = Static 3
   , enemyHealthDamage = 1
   , enemyIsHunter = True
   , enemyTraits = [Creature]
+  }
+
+ghoulMinion :: ArkhamEnemyInternal
+ghoulMinion = (defaultEnemy "01160" "GhoulMinion")
+  { enemyCombat = Static 2
+  , enemyHealth = Static 2
+  , enemyAgility = Static 2
+  , enemyHealthDamage = 1
+  , enemySanityDamage = 1
+  , enemyTraits = [Humanoid, Monster, Ghoul]
   }

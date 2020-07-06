@@ -27,11 +27,8 @@ locationFor p g =
 playerIsAtLocation :: ArkhamPlayer -> ArkhamLocation -> Bool
 playerIsAtLocation p = elem (_playerId p) . alInvestigators
 
-data ClueValue = PerInvestigator Int | Static Int
-
-cluesFor :: ClueValue -> Int -> Int
-cluesFor (Static n) _ = n
-cluesFor (PerInvestigator n) m = n * m
+cluesFor :: ArkhamValue -> Int -> Int
+cluesFor = valueToInt
 
 data ArkhamLocationInternal = ArkhamLocationInternal
   { aliCardCode :: ArkhamCardCode
@@ -90,7 +87,7 @@ locationImage code' status' =
 defaultLocation
   :: ArkhamCardCode
   -> Text
-  -> ClueValue
+  -> ArkhamValue
   -> Maybe ArkhamLocationSymbol
   -> [ArkhamLocationSymbol]
   -> ArkhamLocationInternal

@@ -13,10 +13,11 @@ import Arkham.Types.GameState
 import Arkham.Types.Location
 import Arkham.Types.Player
 import Arkham.Types.Skill
+import Arkham.Util
+import qualified Data.HashSet as HashSet
 import Import
 import Lens.Micro
 import Safe (fromJustNote)
-import qualified Data.HashSet as HashSet
 
 -- brittany-disable-next-binding
 applyAction :: ArkhamAction -> ArkhamGameData -> IO ArkhamGameData
@@ -87,5 +88,4 @@ postApiV1ArkhamGameActionR gameId = do
   game <- runDB $ get404 gameId
   action <- requireCheckJsonBody
   newGame <- liftIO $ traverseOf currentData (applyAction action) game
-  runDB $ replace gameId newGame
-  pure $ arkhamGameCurrentData newGame
+  runDB $ updateGame gameId newGame

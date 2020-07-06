@@ -105,17 +105,17 @@ updateAccessibleLocations g p = p
   { _accessibleLocations = map alCardCode accessibleLocations
   }
  where
-  matchingSymbols =
-    alConnectedLocationSymbols $ locationFor p (g ^. currentData . gameState)
+  scenario' = toInternalScenario g
+  investigatorLocationId =
+    alCardCode $ locationFor p (g ^. currentData . gameState)
+  accessibleLocationIds =
+    scenarioLocationGraph scenario' g investigatorLocationId
   currentLocations = HashMap.elems (g ^. locations)
   accessibleLocations =
     filter
         (\l -> aliCanEnter (toLocationInternal l) (g ^. currentData . gameState)
         )
-      $ filter
-          (maybe False (`elem` matchingSymbols) . alLocationSymbol)
-          currentLocations
-    -- HashMap CardCode ArkhamLocation
+      $ filter ((`elem` accessibleLocationIds) . alCardCode) currentLocations
 
 defaultMythosPhase :: ArkhamMythosPhaseInternal
 defaultMythosPhase = ArkhamMythosPhaseInternal
@@ -242,10 +242,21 @@ defaultScenarioFindAct code' game' =
     . _TopOfStack
   where tcode = unpack $ unArkhamCardCode code'
 
-theGathering :: ArkhamDifficulty -> ArkhamScenarioInternal
-theGathering difficulty' = ArkhamScenarioInternal
-  { scenarioName = "The Gathering"
-  , scenarioSetup = theGatheringSetup
+defaultLocationGraph :: ArkhamGame -> ArkhamCardCode -> [ArkhamCardCode]
+defaultLocationGraph g k =
+  [ alCardCode l
+  | l <- HashMap.elems (g ^. locations)
+  , maybe False (`elem` connectedLocationSymbols) (alLocationSymbol l)
+  ]
+ where
+  connectedLocationSymbols =
+    maybe [] alConnectedLocationSymbols (g ^. locations . at k)
+
+
+defaultScenario :: Text -> ArkhamScenarioInternal
+defaultScenario name = ArkhamScenarioInternal
+  { scenarioName = name
+  , scenarioSetup = error "you must set the setup step for scenarios"
   , scenarioUpdateObjectives = defaultUpdateObjectives
   , scenarioUpdateAccessibleLocationsOnPlayers =
     defaultUpdateAccessibleLocationsOnPlayers
@@ -255,6 +266,13 @@ theGathering difficulty' = ArkhamScenarioInternal
   , scenarioUpkeepPhase = defaultUpkeepPhase
   , scenarioRun = defaultScenarioRun
   , scenarioFindAct = defaultScenarioFindAct
+  , scenarioTokenMap = buildTokenMapFrom mempty
+  , scenarioLocationGraph = defaultLocationGraph
+  }
+
+theGathering :: ArkhamDifficulty -> ArkhamScenarioInternal
+theGathering difficulty' = (defaultScenario "TheGathering")
+  { scenarioSetup = theGatheringSetup
   , scenarioTokenMap = buildTokenMapFrom $ HashMap.fromList
     [ (Skull, theGatheringSkullToken difficulty')
     , (Cultist, theGatheringCultistToken difficulty')

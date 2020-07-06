@@ -51,6 +51,7 @@ data ArkhamScenarioInternal = ArkhamScenarioInternal
   , scenarioUpkeepPhase :: ArkhamUpkeepPhaseInternal
   , scenarioRun :: ArkhamGame -> IO ArkhamGame
   , scenarioFindAct :: ArkhamCardCode -> ArkhamGame -> ArkhamAct
+  , scenarioLocationGraph :: ArkhamGame -> ArkhamCardCode -> [ArkhamCardCode]
   }
 
 data ArkhamMythosPhaseInternal = ArkhamMythosPhaseInternal

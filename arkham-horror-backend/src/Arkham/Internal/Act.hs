@@ -72,7 +72,7 @@ trapped = (act (ArkhamCardCode "01108") "Act 1a" clueThreshold')
       foldM
         discardEnemy
         g
-        (g ^? locations . ix (ArkhamCardCode "01108") . enemyIds)
+        (g ^. locations . ix (ArkhamCardCode "01108") . enemyIds)
       <&> locations
       .~ toLocations
            [ ArkhamCardCode "01112"

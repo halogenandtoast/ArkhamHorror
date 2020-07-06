@@ -4,7 +4,6 @@ module Arkham.Internal.Util
   )
 where
 
-import Arkham.Entity.ArkhamGame
 import Arkham.Internal.EncounterCard
 import Arkham.Types
 import Arkham.Types.Enemy

@@ -101,4 +101,8 @@ i.action {
   background-color: #FF00FF;
 }
 
+.card {
+  width: auto;
+  height: 250px;
+}
 </style>

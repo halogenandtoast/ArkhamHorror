@@ -1,26 +1,22 @@
 <template>
-  <div class="act-container">
+  <div class="agenda-container">
     <img
-      v-if="act.contents[0].canProgress"
-      class="card card--sideways act--can-progress"
-      @click="progressAct"
-      :src="act.contents[0].image"
-    />
-    <img
-      v-else
       class="card card--sideways"
-      :src="act.contents[0].image"
+      :src="agenda.contents[0].image"
     />
+    <div v-if="agenda.contents[0].doom">
+      <img src="/img/arkham/doom.png"/> {{agenda.contents[0].doom}}
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ActStack } from '@/arkham/types/game';
+import { AgendaStack } from '@/arkham/types/game';
 
 @Component
-export default class Act extends Vue {
-  @Prop(Object) readonly act!: ActStack;
+export default class Agenda extends Vue {
+  @Prop(Object) readonly agenda!: AgendaStack;
 }
 </script>
 
@@ -36,11 +32,6 @@ export default class Act extends Vue {
 .card--sideways {
   width: auto;
   height: 250px;
-}
-
-.act--can-progress {
-  border: 5px solid #ff00ff;
-  border-radius: 20px;
 }
 
 </style>

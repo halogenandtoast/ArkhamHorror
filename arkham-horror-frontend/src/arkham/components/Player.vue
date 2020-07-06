@@ -14,6 +14,12 @@
       />
     </section>
     <div class="player">
+      <Investigator
+        :player="player"
+        :canTakeResources="canTakeResources"
+        @endTurn="endTurn"
+        @takeResource="takeResource"
+      />
       <div v-if="topOfDiscard" class="discard">
         <img
           :src="topOfDiscard"
@@ -26,15 +32,9 @@
         class="card deck--can-draw"
         @click="drawCard"
         src="/img/arkham/player_back.jpg"
-        width="200px"
+        width="150px"
       />
-      <img v-else class="card" src="/img/arkham/player_back.jpg" width="200px" />
-      <Investigator
-        :player="player"
-        :canTakeResources="canTakeResources"
-        @endTurn="endTurn"
-        @takeResource="takeResource"
-      />
+      <img v-else class="card" src="/img/arkham/player_back.jpg" width="150px" />
       <section class="hand">
         <HandCard
           v-for="(card, index) in player.hand"

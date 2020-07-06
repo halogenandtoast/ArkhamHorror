@@ -9,48 +9,20 @@
         />
       </div>
       <img class="card" src="/img/arkham/back.png" />
+
+      <Agenda :agenda="game.gameState.stacks.Agenda" />
+      <Act :act="game.gameState.stacks.Act" />
       <img class="card" :src="game.scenario.guide" />
-
-      <div class="agenda-container">
-        <img
-          class="card card--sideways"
-          :src="game.gameState.stacks.Agenda.contents[0].image"
-        />
-        <div v-if="game.gameState.stacks.Agenda.contents[0].doom">
-          <img src="/img/arkham/doom.png"/> {{game.gameState.stacks.Agenda.contents[0].doom}}
-        </div>
-      </div>
-
-      <div class="act-container">
-        <img
-          v-if="game.gameState.stacks.Act.contents[0].canProgress"
-          class="card card--sideways act--can-progress"
-          @click="progressAct"
-          :src="game.gameState.stacks.Act.contents[0].image"
-        />
-        <img
-          v-else
-          class="card card--sideways"
-          :src="game.gameState.stacks.Act.contents[0].image"
-        />
-      </div>
-
-      <img v-if="drawnToken" :src="chaosTokenSrc" class="token" />
-      <img
-        v-else-if="canDrawToken"
-        class="token token--can-draw"
-        src="/img/arkham/ct_+1.png"
-        @click="drawToken"
+      <ChaosBag
+        :drawnToken="drawnToken"
+        :canDrawToken="canDrawToken"
+        :canApplyResult="canApplyResult"
+        :skillDifficulty="skillDifficulty"
+        :skillModifiedSkillValue="skillModifiedSkillValue"
+        :pendingResult="pendingResult"
+        @applyTokenResult="applyTokenResult"
       />
-      <img v-else class="token" src="/img/arkham/ct_blank.png" />
-      <div v-if="canApplyResult">
-        <p>
-          Difficulty: {{skillDifficulty}},
-          Modified Skill: {{skillModifiedSkillValue}},
-          Pending Result: {{pendingResult}}
-        </p>
-        <button @click="applyTokenResult">Apply Result</button>
-      </div>
+
     </div>
     <div class="location-cards">
       <div
@@ -136,10 +108,18 @@ import {
   performProgressAct,
 } from '@/arkham/api';
 import Player from '@/arkham/components/Player.vue';
+import Act from '@/arkham/components/Act.vue';
+import Agenda from '@/arkham/components/Agenda.vue';
+import ChaosBag from '@/arkham/components/ChaosBag.vue';
 
 
 @Component({
-  components: { Player },
+  components: {
+    Player,
+    Act,
+    Agenda,
+    ChaosBag,
+  },
 })
 export default class Scenario extends Vue {
   @Prop(Object) readonly game!: ArkhamGame;
@@ -260,10 +240,6 @@ export default class Scenario extends Vue {
     return this.game.gameState.step.tag === ArkhamStepTypes.REVEAL_TOKEN;
   }
 
-  get chaosTokenSrc() {
-    return `/img/arkham/ct_${this.drawnToken}.png`;
-  }
-
   get skillDifficulty() {
     if (this.game.gameState.step.tag === ArkhamStepTypes.REVEAL_TOKEN) {
       return this.game.gameState.step.contents.difficulty;
@@ -323,21 +299,6 @@ export default class Scenario extends Vue {
   border: 3px solid #ff00ff;
   border-radius: 100px;
   cursor: pointer;
-}
-
-.token--can-draw {
-  border: 5px solid #ff00ff;
-  border-radius: 500px;
-}
-
-.act--can-progress {
-  border: 5px solid #ff00ff;
-  border-radius: 20px;
-}
-
-.token {
-  width: 150px;
-  height: auto;
 }
 
 .clue {

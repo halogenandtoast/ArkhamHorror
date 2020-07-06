@@ -43,7 +43,7 @@
           :canCommit="canCommit()"
           :isCommited="isCommited(index)"
           :key="index"
-          @playCard="$emit('playCard', index)"
+          @playCard="playCard(index)"
           @commitCard="$emit('commitCard', index)"
         />
       </section>

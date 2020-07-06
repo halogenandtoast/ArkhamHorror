@@ -11,7 +11,7 @@ import Data.Aeson
 import Data.Aeson.Casing
 
 newtype ArkhamCardCode = ArkhamCardCode { unArkhamCardCode :: Text }
-  deriving newtype (Eq, Hashable, Show, ToJSON, FromJSON, ToJSONKey, FromJSONKey)
+  deriving newtype (Eq, Hashable, Show, ToJSON, FromJSON, ToJSONKey, FromJSONKey, IsString)
 
 data ArkhamPlayerCard = ArkhamPlayerCard
   { apcName :: Text

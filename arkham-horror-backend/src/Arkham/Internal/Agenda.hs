@@ -45,5 +45,5 @@ whatsGoingOn = ArkhamAgendaInternal
   { agendaSequence = "1a"
   , agendaWillProgress = \g -> totalDoom g > 3
   , agendaOnProgress = id
-  , agendaCardCode = ArkhamCardCode "01105"
+  , agendaCardCode = "01105"
   }

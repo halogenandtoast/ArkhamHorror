@@ -161,7 +161,8 @@ defaultEnemyPhase = ArkhamEnemyPhaseInternal
         . addLock (pure ResolveEnemies)
         $ g
         & gameStateStep
-        .~ ArkhamGameStateStepResolveEnemiesStep (ArkhamResolveEnemiesStep enemyIds')
+        .~ ArkhamGameStateStepResolveEnemiesStep
+             (ArkhamResolveEnemiesStep enemyIds')
   , enemyPhaseOnExit = runOnlyUnlockedM $ \g ->
     pure . Unlocked $ g & enemies %~ HashMap.map
       (\e -> e { _enemyFinishedAttacking = False })
@@ -281,34 +282,16 @@ theGatheringSetup game = do
 
 theGatheringAgenda :: MonadRandom m => m ArkhamStack
 theGatheringAgenda = pure $ AgendaStack $ NE.fromList
-  [ ArkhamAgenda
-    (ArkhamCardCode "01105")
-    "https://arkhamdb.com/bundles/cards/01105.jpg"
-    0
-  , ArkhamAgenda
-    (ArkhamCardCode "01106")
-    "https://arkhamdb.com/bundles/cards/01106.jpg"
-    0
-  , ArkhamAgenda
-    (ArkhamCardCode "01107")
-    "https://arkhamdb.com/bundles/cards/01107.jpg"
-    0
+  [ ArkhamAgenda "01105" "https://arkhamdb.com/bundles/cards/01105.jpg" 0
+  , ArkhamAgenda "01106" "https://arkhamdb.com/bundles/cards/01106.jpg" 0
+  , ArkhamAgenda "01107" "https://arkhamdb.com/bundles/cards/01107.jpg" 0
   ]
 
 theGatheringAct :: MonadRandom m => m ArkhamStack
 theGatheringAct = pure $ ActStack $ NE.fromList
-  [ ArkhamAct
-    (ArkhamCardCode "01108")
-    "https://arkhamdb.com/bundles/cards/01108.jpg"
-    False
-  , ArkhamAct
-    (ArkhamCardCode "01109")
-    "https://arkhamdb.com/bundles/cards/01109.jpg"
-    False
-  , ArkhamAct
-    (ArkhamCardCode "01110")
-    "https://arkhamdb.com/bundles/cards/01110.jpg"
-    False
+  [ ArkhamAct "01108" "https://arkhamdb.com/bundles/cards/01108.jpg" False
+  , ArkhamAct "01109" "https://arkhamdb.com/bundles/cards/01109.jpg" False
+  , ArkhamAct "01110" "https://arkhamdb.com/bundles/cards/01110.jpg" False
   ]
 
 unrevealedLocation :: ArkhamLocation
@@ -329,7 +312,7 @@ unrevealedLocation = ArkhamLocation
 study :: ArkhamLocation
 study = unrevealedLocation
   { alName = "Study"
-  , alCardCode = ArkhamCardCode "01111"
+  , alCardCode = "01111"
   , alLocationSymbol = Just Circle
   , alShroud = 2
   , alImage = "https://arkhamdb.com/bundles/cards/01111.png"

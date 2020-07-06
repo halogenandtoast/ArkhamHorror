@@ -17,8 +17,8 @@ import Lens.Micro
 import Safe
 
 allInvestigators :: HashMap ArkhamCardCode ArkhamInvestigatorInternal
-allInvestigators = HashMap.fromList
-  [(ArkhamCardCode "01001", rolandBanks), (ArkhamCardCode "01002", daisyWalker)]
+allInvestigators =
+  HashMap.fromList [("01001", rolandBanks), ("01002", daisyWalker)]
 
 toInternalInvestigator :: ArkhamPlayer -> ArkhamInvestigatorInternal
 toInternalInvestigator p =

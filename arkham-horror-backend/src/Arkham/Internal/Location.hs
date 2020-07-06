@@ -83,7 +83,7 @@ locationImage code' status' =
   "https://arkhamdb.com/bundles/cards/" <> unArkhamCardCode code' <> side
  where
   side = case (status', code') of
-    (Revealed, ArkhamCardCode "01111") -> ".png"
+    (Revealed, "01111") -> ".png"
     (Revealed, _) -> ".jpg"
     _ -> "b.png"
 
@@ -111,50 +111,29 @@ defaultLocation code' name cv msym syms = ArkhamLocationInternal
   }
 
 study :: ArkhamLocationInternal
-study = defaultLocation
-  (ArkhamCardCode "01111")
-  "Study"
-  (PerInvestigator 2)
-  (Just Circle)
-  []
+study = defaultLocation "01111" "Study" (PerInvestigator 2) (Just Circle) []
 
 hallway :: ArkhamLocationInternal
 hallway = defaultLocation
-  (ArkhamCardCode "01112")
+  "01112"
   "Hallway"
   (Static 0)
   (Just Square)
   [Triangle, Plus, Diamond]
 
 cellar :: ArkhamLocationInternal
-cellar = (defaultLocation
-           (ArkhamCardCode "01114")
-           "Cellar"
-           (PerInvestigator 2)
-           (Just Plus)
-           [Square]
-         )
-  { aliOnEnter = \g i -> pure (g, i & healthDamage +~ 1)
-  }
+cellar =
+  (defaultLocation "01114" "Cellar" (PerInvestigator 2) (Just Plus) [Square])
+    { aliOnEnter = \g i -> pure (g, i & healthDamage +~ 1)
+    }
 
 attic :: ArkhamLocationInternal
-attic = (defaultLocation
-          (ArkhamCardCode "01113")
-          "Attic"
-          (PerInvestigator 2)
-          (Just Triangle)
-          [Square]
-        )
-  { aliOnEnter = \g i -> pure (g, i & sanityDamage +~ 1)
-  }
+attic =
+  (defaultLocation "01113" "Attic" (PerInvestigator 2) (Just Triangle) [Square])
+    { aliOnEnter = \g i -> pure (g, i & sanityDamage +~ 1)
+    }
 
 parlor :: ArkhamLocationInternal
-parlor = (defaultLocation
-           (ArkhamCardCode "01115")
-           "Parloc"
-           (Static 0)
-           (Just Diamond)
-           [Square]
-         )
+parlor = (defaultLocation "01115" "Parloc" (Static 0) (Just Diamond) [Square])
   { aliCanEnter = const False
   }

@@ -96,7 +96,7 @@ fixtureGameState seed deck' = do
     mempty -- Stacks
     (replicate 3 $ ArkhamEncounterCard
       "Swarm of Rats"
-      (ArkhamCardCode "01159")
+      "01159"
       "https://arkhamdb.com/bundles/cards/01159.png"
     ) -- Encounter Deck
     mempty -- Encounter Discard
@@ -169,7 +169,7 @@ rolandBanks = ArkhamInvestigator
   (ArkhamSkill 3)
   (ArkhamSkill 4)
   (ArkhamSkill 2)
-  (ArkhamCardCode "01001")
+  "01001"
 
 daisyWalker :: ArkhamInvestigator
 daisyWalker = ArkhamInvestigator
@@ -180,4 +180,4 @@ daisyWalker = ArkhamInvestigator
   (ArkhamSkill 5)
   (ArkhamSkill 2)
   (ArkhamSkill 2)
-  (ArkhamCardCode "01002")
+  "01002"

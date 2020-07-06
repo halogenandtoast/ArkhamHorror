@@ -60,46 +60,24 @@ act code' sequence' clueThreshold' = ArkhamActInternal
   , actOnProgress = pure
   }
 
--- TODO: discard enemies
+-- brittany-disable-next-binding
+
 trapped :: ArkhamActInternal
 trapped = (act (ArkhamCardCode "01108") "Act 1a" clueThreshold')
   { actOnProgress = \g -> do
-    let
-      investigators' = fromMaybe
-        mempty
-        (g ^? locations . ix (ArkhamCardCode "01111") . investigators)
-    g' <-
-      foldM
-        discardEnemy
-        g
-        (g ^. locations . ix (ArkhamCardCode "01111") . enemyIds)
-      <&> locations
-      .~ toLocations
-           [ ArkhamCardCode "01112"
-           , ArkhamCardCode "01114"
-           , ArkhamCardCode "01113"
-           , ArkhamCardCode "01115"
-           ]
-      <&> locations
-      . at (ArkhamCardCode "01112")
-      . _Just
-      . investigators
-      .~ investigators'
-    pure
-      $ g'
-      & activePlayer
-      . clues
-      -~ clueThreshold clueThreshold' g
-      & locations
-      . at (ArkhamCardCode "01112")
-      . mapped
-      %~ aliOnReveal hallway g'
+    let investigators' = g ^. locations . ix "01111" . investigators
+        clueCount = clueThreshold clueThreshold' g
+    foldM discardEnemy g (g ^. locations . ix "01111" . enemyIds)
+      <&> locations .~ toLocations [ "01112" , "01114" , "01113" , "01115" ]
+      <&> locations . ix "01112" . investigators .~ investigators'
+      <&> activePlayer . clues -~ clueCount -- TODO: players can spend clues however they want
+      <&> (over (locations . ix "01112") =<< aliOnReveal hallway)
   }
  where
   clueThreshold' = PerInvestigator 2
   toLocations = HashMap.fromList . map (\c -> (c, initLocation c))
-  hallway = lookupLocationInternal $ ArkhamCardCode "01112"
+  hallway = lookupLocationInternal "01112"
 
 theBarrier :: ArkhamActInternal
-theBarrier = act (ArkhamCardCode "01109") "Act 2a" (PerInvestigator 3)
+theBarrier = act "01109" "Act 2a" (PerInvestigator 3)
 

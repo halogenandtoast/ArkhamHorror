@@ -149,7 +149,7 @@ defaultEnemy ccode name = ArkhamEnemyInternal
   }
 
 fleshEater :: ArkhamEnemyInternal
-fleshEater = (defaultEnemy (ArkhamCardCode "01118") "Flesh-Eater")
+fleshEater = (defaultEnemy "01118" "Flesh-Eater")
   { enemyCombat = const 4
   , enemyHealth = const 4
   , enemyHealthDamage = 1
@@ -159,7 +159,7 @@ fleshEater = (defaultEnemy (ArkhamCardCode "01118") "Flesh-Eater")
   }
 
 icyGhoul :: ArkhamEnemyInternal
-icyGhoul = (defaultEnemy (ArkhamCardCode "01119") "Icy Ghoul")
+icyGhoul = (defaultEnemy "01119" "Icy Ghoul")
   { enemyCombat = const 3
   , enemyHealth = const 4
   , enemyAgility = const 4
@@ -170,7 +170,7 @@ icyGhoul = (defaultEnemy (ArkhamCardCode "01119") "Icy Ghoul")
   }
 
 swarmOfRats :: ArkhamEnemyInternal
-swarmOfRats = (defaultEnemy (ArkhamCardCode "01159") "Swarm of Rats")
+swarmOfRats = (defaultEnemy "01159" "Swarm of Rats")
   { enemyAgility = const 3
   , enemyHealthDamage = 1
   , enemyIsHunter = True

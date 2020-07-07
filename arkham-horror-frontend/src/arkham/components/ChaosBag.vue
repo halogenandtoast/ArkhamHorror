@@ -4,7 +4,7 @@
     <img
       v-else-if="canDrawToken"
       class="token token--can-draw"
-      src="/img/arkham/ct_+1.png"
+      src="/img/arkham/ct_blank.png"
       @click="$emit('drawToken')"
     />
     <img v-else class="token" src="/img/arkham/ct_blank.png" />

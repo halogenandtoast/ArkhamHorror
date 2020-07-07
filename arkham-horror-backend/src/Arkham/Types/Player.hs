@@ -3,6 +3,7 @@ module Arkham.Types.Player
   )
 where
 
+import Arkham.Types.Asset
 import Arkham.Types.Card
 import Arkham.Types.Investigator
 import ClassyPrelude
@@ -17,7 +18,7 @@ data ArkhamPlayer = ArkhamPlayer
   , _resources :: Int
   , _clues :: Int
   , _hand :: [ArkhamCard]
-  , _inPlay :: [ArkhamCard]
+  , _assets :: HashMap UUID ArkhamAsset
   , _deck :: [ArkhamCard]
   , _discard :: [ArkhamCard]
   , _enemies :: HashSet UUID

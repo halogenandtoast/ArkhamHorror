@@ -53,14 +53,14 @@ findCard cardCode' = do
 
 toArkhamCard :: ArkhamDbCard -> ArkhamCard
 toArkhamCard ArkhamDbCard {..} = PlayerCard $ ArkhamPlayerCard
-  name
-  cost
-  (ArkhamCardCode code)
-  ("https://arkhamdb.com/"
-  <> fromMaybe ("/bundles/cards/" <> code <> ".png") imagesrc
-  )
-  (Just 0)
-  (maybe False ("Fast." `isInfixOf`) text)
+  { apcName = name
+  , apcCost = cost
+  , apcCode = ArkhamCardCode code
+  , apcImage =
+    "https://arkhamdb.com/"
+      <> fromMaybe ("/bundles/cards/" <> code <> ".png") imagesrc
+  , apcIsFast = maybe False ("Fast." `isInfixOf`) text
+  }
 
 loadGameFixture :: Int -> IO ArkhamGame
 loadGameFixture n = do

@@ -5,12 +5,10 @@ module Arkham.Types
   , HasDeck(..)
   , HasHand(..)
   , HasDiscard(..)
-  , HasInPlay(..)
   , HasPlayers(..)
   , HasActivePlayer(..)
   , HasEnemies(..)
   , HasDoom(..)
-  , HasUses(..)
   , HasCardCode(..)
   , HasLocations(..)
   , HasResources(..)
@@ -32,9 +30,12 @@ module Arkham.Types
   , enemyIds
   , investigators
   , damage
+  , uses
+  , assets
   )
 where
 
+import Arkham.Types.Asset
 import Arkham.Types.Card
 import Arkham.Types.ChaosToken
 import Arkham.Types.Difficulty
@@ -159,19 +160,8 @@ class HasDeck a where
 instance HasDeck ArkhamPlayer where
   deck = lens _deck $ \m x -> m { _deck = x }
 
-class HasUses a where
-  uses :: Lens' a (Maybe Int)
-
-instance HasUses ArkhamCard where
-  uses f = \case
-    PlayerCard c -> PlayerCard <$> uses f c
-    EncounterCard c -> EncounterCard <$> uses f c
-
-instance HasUses ArkhamPlayerCard where
-  uses = lens apcUses $ \m x -> m { apcUses = x }
-
-instance HasUses ArkhamEncounterCard where
-  uses = lens (const Nothing) const
+uses :: Lens' ArkhamAsset (Maybe Int)
+uses = lens aasUses $ \m x -> m { aasUses = x }
 
 class HasCardCode a where
   cardCode :: Lens' a ArkhamCardCode
@@ -187,11 +177,8 @@ instance HasCardCode ArkhamPlayerCard where
 instance HasCardCode ArkhamEncounterCard where
   cardCode = lens aecCode $ \m x -> m { aecCode = x }
 
-class HasInPlay a where
-  inPlay :: Lens' a [ArkhamCard]
-
-instance HasInPlay ArkhamPlayer where
-  inPlay = lens _inPlay $ \m x -> m { _inPlay = x }
+assets :: Lens' ArkhamPlayer (HashMap UUID ArkhamAsset)
+assets = lens _assets $ \m x -> m { _assets = x }
 
 class HasDiscard a where
   discard :: Lens' a [ArkhamCard]

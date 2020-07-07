@@ -8,6 +8,7 @@ where
 
 import Arkham.Internal.Asset
 import Arkham.Internal.Event
+import Arkham.Internal.Skill
 import Arkham.Types hiding (hand)
 import Arkham.Types.Asset
 import Arkham.Types.Card
@@ -21,10 +22,13 @@ import Lens.Micro
 import Lens.Micro.Platform ()
 
 data ArkhamPlayerCardType = PlayerAsset | PlayerEvent | PlayerSkill | PlayerTreachery
+  deriving stock (Show, Eq)
 
 playerCardsInternal :: HashMap ArkhamCardCode ArkhamPlayerCardInternal
 playerCardsInternal =
-  HashMap.map asset allAssets <> HashMap.map event allEvents
+  HashMap.map asset allAssets
+    <> HashMap.map event allEvents
+    <> HashMap.map skill allSkills
 
 asset :: ArkhamAssetInternal -> ArkhamPlayerCardInternal
 asset card@ArkhamAssetInternal {..} = ArkhamPlayerCardInternal
@@ -50,6 +54,16 @@ event card@ArkhamEventInternal {..} = ArkhamPlayerCardInternal
       . discard
       %~ (PlayerCard (eventToPlayerCard card) :)
   , aciActionCost = eventActionCost
+  }
+
+skill :: ArkhamSkillInternal -> ArkhamPlayerCardInternal
+skill card@ArkhamSkillInternal {..} = ArkhamPlayerCardInternal
+  { aciType = PlayerSkill
+  , aciCost = Nothing
+  , aciTraits = skillTraits
+  , aciTestIcons = skillTestIcons
+  , aciPlay = \g _ -> pure g
+  , aciActionCost = const (const (pure 0))
   }
 
 data ArkhamPlayerCardInternal = ArkhamPlayerCardInternal

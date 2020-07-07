@@ -12,15 +12,24 @@
           class="resource--can-take"
           src="/img/arkham/resource.png"
         />
-        {{player.resources}}
+        <span>{{player.resources}}</span>
       </div>
       <div v-else class="poolItem poolItem-resource">
         <img src="/img/arkham/resource.png" />
-        {{player.resources}}
+        <span>{{player.resources}}</span>
       </div>
-      <div class="poolItem"><img src="/img/arkham/clue.png"/> {{player.clues}}</div>
-      <div class="poolItem"><img src="/img/arkham/health.png"/> {{player.healthDamage}}</div>
-      <div class="poolItem"><img src="/img/arkham/sanity.png"/> {{player.sanityDamage}}</div>
+      <div class="poolItem">
+        <img src="/img/arkham/clue.png"/>
+        <span>{{player.clues}}</span>
+      </div>
+      <div class="poolItem">
+        <img src="/img/arkham/health.png"/>
+        <span>{{player.healthDamage}}</span>
+      </div>
+      <div class="poolItem">
+        <img src="/img/arkham/sanity.png"/>
+        <span>{{player.sanityDamage}}</span>
+      </div>
       <p><i class="action" v-for="n in player.actionsRemaining" :key="n"></i></p>
       <button @click="$emit('endTurn')">End turn</button>
     </div>
@@ -65,7 +74,7 @@ i.action {
   justify-content: center;
   color: black;
   font-weight: 900;
-  font-size: 1.5em;
+  font-size: 1.7em;
 
   img {
     position: absolute;
@@ -74,7 +83,18 @@ i.action {
     left: 0;
     right: 0;
     margin: auto;
-    z-index: -1;
+  }
+
+  span {
+    font-family: "Arkham";
+    display: flex;
+    position: relative;
+    background: rgba(255,255,255,0.5);
+    border-radius: 20px;
+    width: 1.25em;
+    height: 1.25em;
+    align-items: center;
+    justify-content: center;
   }
 }
 

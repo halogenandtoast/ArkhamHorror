@@ -22,3 +22,9 @@ export default class Asset extends Vue {
   @Prop(Object) readonly asset!: ArkhamAsset
 }
 </script>
+
+<style lang="scss" scoped>
+.card {
+  width: 200px;
+}
+</style>

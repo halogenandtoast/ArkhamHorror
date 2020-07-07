@@ -3,6 +3,6 @@ module Arkham.Types.Trait where
 import ClassyPrelude
 import Data.Aeson
 
-data ArkhamTrait = Tome | Ghoul | Creature | Monster | Humanoid
+data ArkhamTrait = Tome | Ghoul | Creature | Monster | Humanoid | Item | Tool
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON, Hashable)

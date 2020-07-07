@@ -4,6 +4,7 @@ module Arkham.Types.Asset
 where
 
 import Arkham.Types.Card
+import Arkham.Types.Trait
 import ClassyPrelude
 import Data.UUID
 import Json
@@ -16,6 +17,7 @@ data ArkhamAsset = ArkhamAsset
   , _assetUses :: Maybe Int
   , _assetHasActionsAvailable :: Bool
   , _assetId :: UUID
+  , _assetTraits :: HashSet ArkhamTrait
   }
   deriving stock (Show, Generic)
 

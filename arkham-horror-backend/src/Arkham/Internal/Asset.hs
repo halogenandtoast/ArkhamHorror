@@ -54,6 +54,7 @@ toAsset ArkhamAssetInternal {..} = do
     , _assetUses = assetUses
     , _assetHasActionsAvailable = False
     , _assetId = assetId
+    , _assetTraits = assetTraits
     }
 
 asset :: Text -> ArkhamCardCode -> Int -> ArkhamAssetInternal
@@ -107,8 +108,10 @@ physicalTraining = (asset "Physical Training" "01017" 2)
   }
 
 flashlight :: ArkhamAssetInternal
-flashlight = withUses 3
-  $ (hand "Flashlight" "01087" 2) { assetTestIcons = [ArkhamSkillIntellect] }
+flashlight = withUses 3 $ (hand "Flashlight" "01087" 2)
+  { assetTestIcons = [ArkhamSkillIntellect]
+  , assetTraits = HashSet.fromList [Item, Tool]
+  }
 
 knife :: ArkhamAssetInternal
 knife = (hand "Knife" "01086" 1) { assetTestIcons = [ArkhamSkillCombat] }

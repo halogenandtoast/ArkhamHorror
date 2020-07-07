@@ -9,19 +9,19 @@ import Data.UUID
 import Json
 
 data ArkhamAsset = ArkhamAsset
-  { aasName :: Text
-  , aasCost :: Maybe Int
-  , aasCode :: ArkhamCardCode
-  , aasImage :: Text
-  , aasUses :: Maybe Int
-  , aasHasActionsAvailable :: Bool
-  , aasAssetId :: UUID
+  { _assetName :: Text
+  , _assetCost :: Int
+  , _assetCode :: ArkhamCardCode
+  , _assetImage :: Text
+  , _assetUses :: Maybe Int
+  , _assetHasActionsAvailable :: Bool
+  , _assetId :: UUID
   }
   deriving stock (Show, Generic)
 
 instance FromJSON ArkhamAsset where
-  parseJSON = genericParseJSON . aesonOptions $ Just "aas"
+  parseJSON = genericParseJSON . aesonOptions $ Just "_asset"
 
 instance ToJSON ArkhamAsset where
-  toJSON = genericToJSON . aesonOptions $ Just "aas"
-  toEncoding = genericToEncoding . aesonOptions $ Just "aas"
+  toJSON = genericToJSON . aesonOptions $ Just "_asset"
+  toEncoding = genericToEncoding . aesonOptions $ Just "_asset"

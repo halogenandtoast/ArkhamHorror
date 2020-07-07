@@ -6,33 +6,50 @@ module Arkham.Internal.PlayerCard
   )
 where
 
-import Arkham.Internal.Location
+import Arkham.Internal.Asset
+import Arkham.Internal.Event
 import Arkham.Types hiding (hand)
+import Arkham.Types.Asset
 import Arkham.Types.Card
 import Arkham.Types.GameState
-import Arkham.Types.Location
+import Arkham.Types.Player
 import Arkham.Types.Skill
+import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro
-import Lens.Micro.Extras
 import Lens.Micro.Platform ()
 
 data ArkhamPlayerCardType = PlayerAsset | PlayerEvent | PlayerSkill | PlayerTreachery
 
 playerCardsInternal :: HashMap ArkhamCardCode ArkhamPlayerCardInternal
-playerCardsInternal = HashMap.map asset allAssets
+playerCardsInternal =
+  HashMap.map asset allAssets <> HashMap.map event allEvents
 
 asset :: ArkhamAssetInternal -> ArkhamPlayerCardInternal
 asset card@ArkhamAssetInternal {..} = ArkhamPlayerCardInternal
   { aciType = PlayerAsset
-  , aciCost = assetCost
+  , aciCost = Just assetCost
   , aciTraits = assetTraits
   , aciTestIcons = assetTestIcons
-  , aciPlay = \g p -> do
-    assetId <- liftIO nextRandom
-    g ^. activePlayer . assets %~ HashMap.insert assetId (toAsset card)
+  , aciPlay = \g _ -> do
+    asset' <- toAsset card
+    pure $ g & activePlayer . assets %~ HashMap.insert (_assetId asset') asset'
   , aciActionCost = assetActionCost
+  }
+
+event :: ArkhamEventInternal -> ArkhamPlayerCardInternal
+event card@ArkhamEventInternal {..} = ArkhamPlayerCardInternal
+  { aciType = PlayerEvent
+  , aciCost = Just eventCost
+  , aciTraits = eventTraits
+  , aciTestIcons = eventTestIcons
+  , aciPlay = \g p ->
+    eventAfterPlay g p
+      <&> activePlayer
+      . discard
+      %~ (PlayerCard (eventToPlayerCard card) :)
+  , aciActionCost = eventActionCost
   }
 
 data ArkhamPlayerCardInternal = ArkhamPlayerCardInternal
@@ -40,45 +57,18 @@ data ArkhamPlayerCardInternal = ArkhamPlayerCardInternal
   , aciCost :: Maybe Int
   , aciTraits :: HashSet ArkhamTrait
   , aciTestIcons :: [ArkhamSkillType]
-  , aciPlay :: ArkhamGameState -> ArkhamCard -> ArkhamCard
-  , aciActionCost :: ArkhamGameState -> Int
+  , aciPlay :: forall m. MonadIO m => ArkhamGameState -> ArkhamPlayer -> m ArkhamGameState
+  , aciActionCost :: forall m. MonadIO m => ArkhamGameState -> ArkhamPlayer -> m Int
   }
-
-card :: Int -> ArkhamPlayerCardType -> ArkhamPlayerCardInternal
-card cost cardType = ArkhamPlayerCardInternal
-  { aciType = cardType
-  , aciCost = Just cost
-  , aciTraits = mempty
-  , aciSlots = []
-  , aciTestIcons = []
-  , aciPlay = flip const
-  , aciActionCost = const 1
-  }
-
-fast :: ArkhamPlayerCardInternal -> ArkhamPlayerCardInternal
-fast c = c { aciActionCost = const 0 }
 
 toInternalPlayerCard :: ArkhamCard -> Maybe ArkhamPlayerCardInternal
 toInternalPlayerCard c = HashMap.lookup (c ^. cardCode) playerCardsInternal
 
-playerCardsInternal :: HashMap ArkhamCardCode ArkhamPlayerCardInternal
-playerCardsInternal = HashMap.fromList
-  [ ("01006", rolands38Special)
-  , ("01007", coverUp)
-  , ("01016", fortyFiveAutomatic)
-  , ("01017", physicalTraining)
-  , ("01020", machete)
-  , ("01021", guardDog)
-  , ("01022", evidence)
-  , ("01023", dodge)
-  , ("01025", viciousBlow)
-  , ("01023", dynamiteBlast)
-  , ("01037", workingAHunch)
-  , ("01039", deduction)
-  , ("01086", knife)
-  , ("01087", flashlight)
-  , ("01088", emergencyCache)
-  , ("01089", guts)
-  , ("01091", overpower)
-  , ("01093", unexpectedCourage)
-  ]
+eventToPlayerCard :: ArkhamEventInternal -> ArkhamPlayerCard
+eventToPlayerCard ArkhamEventInternal {..} = ArkhamPlayerCard
+  { apcName = eventName
+  , apcCost = Just eventCost
+  , apcCode = eventCode
+  , apcImage = eventImage
+  , apcIsFast = eventIsFast
+  }

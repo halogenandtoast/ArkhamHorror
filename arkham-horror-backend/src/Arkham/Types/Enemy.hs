@@ -19,7 +19,7 @@ data ArkhamEnemy = ArkhamEnemy
   , _enemyCardCode :: ArkhamCardCode
   , _enemyIsHunter :: Bool
   , _enemyIsEngaged :: Bool
-  , _enemyImage :: String
+  , _enemyImage :: Text
   , _enemyTraits :: [ArkhamTrait]
   , _enemyFinishedAttacking :: Bool
   }

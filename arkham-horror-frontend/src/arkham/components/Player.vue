@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class="in-play">
-      <PlayerCard v-for="(card, index) in player.inPlay" :card="card" :game="game" :key="index" />
+      <Asset v-for="(asset, index) in player.assets" :asset="asset" :game="game" :key="index" />
 
       <Enemy
         v-for="enemyId in player.enemies"
@@ -58,14 +58,14 @@ import { ArkhamAction, ArkhamActionTypes } from '@/arkham/types/action';
 import { ArkhamGame, ArkhamStepTypes } from '@/arkham/types/game';
 import { performAction, performEndTurn } from '@/arkham/api';
 import Enemy from '@/arkham/components/Enemy.vue';
-import PlayerCard from '@/arkham/components/PlayerCard.vue';
+import Asset from '@/arkham/components/Asset.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 
 @Component({
   components: {
     Enemy,
-    PlayerCard,
+    Asset,
     HandCard,
     Investigator,
   },

@@ -139,20 +139,21 @@ chaosTokens = NE.fromList
 
 playerF :: Int -> UUID -> [ArkhamCard] -> ArkhamPlayer
 playerF seed uuid deck' = ArkhamPlayer
-  (investigatorF seed) -- investigator
-  0 -- sanityDamage
-  0 -- healthDamage
-  5 -- resources
-  0 -- clues
-  hand' -- hand
-  [] -- in play
-  deck'' -- deck
-  [] -- discard
-  mempty -- enemies
-  3 -- actionsRemaining
-  False -- endedTurn
-  [] -- accessibleLocations
-  uuid -- playerId
+  { _investigator = investigatorF seed
+  , _sanityDamage = 0
+  , _healthDamage = 0
+  , _resources = 5
+  , _clues = 0
+  , _hand = hand'
+  , _assets = mempty
+  , _deck = deck''
+  , _discard = []
+  , _enemies = mempty
+  , _actionsRemaining = 3
+  , _endedTurn = False
+  , _accessibleLocations = []
+  , _playerId = uuid
+  }
   where (hand', deck'') = splitAt 5 deck'
 
 investigatorF :: Int -> ArkhamInvestigator

@@ -87,7 +87,7 @@ toEnemy ArkhamEnemyInternal {..} g = do
     , _enemyIsEngaged = False
     , _enemyImage =
       "https://arkhamdb.com/bundles/cards/"
-      <> unpack (unArkhamCardCode enemyCardCode)
+      <> unArkhamCardCode enemyCardCode
       <> ".png"
     , _enemyTraits = enemyTraits
     , _enemyFinishedAttacking = False

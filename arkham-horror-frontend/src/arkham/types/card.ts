@@ -7,7 +7,7 @@ export interface ArkhamPlayerCardContents {
   cost: number | null;
   code: string;
   image: string;
-  uses: number | null;
+  uses?: number;
   isFast: boolean;
 }
 
@@ -32,7 +32,7 @@ export const arkhamPlayerCardContentsDecoder = JsonDecoder.object<ArkhamPlayerCa
     name: JsonDecoder.string,
     code: JsonDecoder.string,
     cost: JsonDecoder.nullable(JsonDecoder.number),
-    uses: JsonDecoder.nullable(JsonDecoder.number),
+    uses: JsonDecoder.optional(JsonDecoder.number),
     image: JsonDecoder.string,
     isFast: JsonDecoder.boolean,
   },

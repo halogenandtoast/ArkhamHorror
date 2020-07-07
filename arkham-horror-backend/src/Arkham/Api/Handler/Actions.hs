@@ -64,20 +64,15 @@ applyAction (PlayCardAction (ArkhamPlayCardAction n)) g = do
     Nothing -> throwString "No card at that index"
     Just card -> do
       let
-        Just ci = toInternalPlayerCard card
-        card' = aciPlay ci (g ^. gameState) card
-        stateTransform = aciAfterPlay ci
-        cardCost = fromMaybe 0 (aciCost ci)
-        actionCost = aciActionCost ci (g ^. gameState)
-        resolveCard = case aciType ci of
-                        PlayerEvent -> activePlayer . discard %~ (card :)
-                        _ -> activePlayer . inPlay %~ (++ [card'])
-      pure $ g
-        & resolveCard
-        & activePlayer . hand %~ without n
-        & activePlayer . resources -~ cardCost
-        & activePlayer . actions -~ actionCost
-        & gameState %~ stateTransform
+        ci = fromJustNote "could not convert to internal card" $ toInternalPlayerCard card
+        cardCost = fromMaybe 0 $ aciCost ci
+      actionCost <- aciActionCost ci (g ^. gameState) (g ^. activePlayer)
+      let
+        g' = g
+          & activePlayer . hand %~ without n
+          & activePlayer . resources -~ cardCost
+          & activePlayer . actions -~ actionCost
+      traverseOf gameState (\gs -> aciPlay ci gs (g' ^. activePlayer)) g'
 applyAction _ g = pure g
 
 without :: Int -> [a] -> [a]

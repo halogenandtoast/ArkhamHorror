@@ -52,11 +52,34 @@ export interface ArkhamPlayer {
   clues: number;
   actionsRemaining: number;
   hand: ArkhamCard[];
-  inPlay: ArkhamCard[];
+  assets: Record<string, ArkhamAsset>;
   enemies: string[];
   discard: ArkhamCard[];
   accessibleLocations: string[];
 }
+
+export interface ArkhamAsset {
+  name: string;
+  cost: number;
+  code: string;
+  image: string;
+  uses: number | null;
+  hasActionsAvailable: boolean;
+  id: string;
+}
+
+export const arkhamAssetDecoder = JsonDecoder.object<ArkhamAsset>(
+  {
+    name: JsonDecoder.string,
+    cost: JsonDecoder.number,
+    code: JsonDecoder.string,
+    image: JsonDecoder.string,
+    uses: JsonDecoder.nullable(JsonDecoder.number),
+    hasActionsAvailable: JsonDecoder.boolean,
+    id: JsonDecoder.string,
+  },
+  'ArkhamAsset',
+);
 
 export const arkhamPlayerDecoder = JsonDecoder.object<ArkhamPlayer>(
   {
@@ -67,7 +90,7 @@ export const arkhamPlayerDecoder = JsonDecoder.object<ArkhamPlayer>(
     clues: JsonDecoder.number,
     actionsRemaining: JsonDecoder.number,
     hand: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
-    inPlay: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
+    assets: JsonDecoder.dictionary<ArkhamAsset>(arkhamAssetDecoder, 'Dict<UUID, ArkhamAsset>'),
     enemies: JsonDecoder.array<string>(JsonDecoder.string, 'UUID[]'),
     discard: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
     accessibleLocations: JsonDecoder.array<string>(JsonDecoder.string, 'ArkhamCardCode[]'),

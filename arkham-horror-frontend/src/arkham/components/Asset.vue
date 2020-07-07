@@ -1,12 +1,12 @@
 <template>
   <div>
-    <img :src="card.contents.image" class="card" />
+    <img :src="asset.image" class="card" />
     <div
-      v-if="card.contents.uses && card.contents.uses > 0"
+      v-if="asset.uses && asset.uses > 0"
       class="poolItem poolItem-resource"
     >
       <img src="/img/arkham/resource.png" />
-      {{card.contents.uses}}
+      {{asset.uses}}
     </div>
   </div>
 </template>
@@ -14,11 +14,11 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { ArkhamGame } from '@/arkham/types/game';
-import { ArkhamCard } from '@/arkham/types/card';
+import { ArkhamAsset } from '@/arkham/types';
 
 @Component
-export default class PlayerCard extends Vue {
+export default class Asset extends Vue {
   @Prop(Object) readonly game!: ArkhamGame
-  @Prop(Object) readonly card!: ArkhamCard
+  @Prop(Object) readonly asset!: ArkhamAsset
 }
 </script>

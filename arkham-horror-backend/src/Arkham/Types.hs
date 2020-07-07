@@ -161,7 +161,7 @@ instance HasDeck ArkhamPlayer where
   deck = lens _deck $ \m x -> m { _deck = x }
 
 uses :: Lens' ArkhamAsset (Maybe Int)
-uses = lens aasUses $ \m x -> m { aasUses = x }
+uses = lens _assetUses $ \m x -> m { _assetUses = x }
 
 class HasCardCode a where
   cardCode :: Lens' a ArkhamCardCode

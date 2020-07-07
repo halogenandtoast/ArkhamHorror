@@ -1,6 +1,15 @@
 import { JsonDecoder } from 'ts.data.json';
 
 export type ArkhamCard = ArkhamPlayerCard | ArkhamEncounterCard;
+export type ArkhamSkillType = 'ArkhamSkillWillpower' | 'ArkhamSkillIntellect' | 'ArkhamSkillCombat' | 'ArkhamSkillAgility' | 'ArkhamSkillWild';
+
+export const arkhamSkillTypeDecoder = JsonDecoder.oneOf<ArkhamSkillType>([
+  JsonDecoder.isExactly('ArkhamSkillWillpower'),
+  JsonDecoder.isExactly('ArkhamSkillIntellect'),
+  JsonDecoder.isExactly('ArkhamSkillCombat'),
+  JsonDecoder.isExactly('ArkhamSkillAgility'),
+  JsonDecoder.isExactly('ArkhamSkillWild'),
+], 'ArkhamSkillType');
 
 export interface ArkhamPlayerCardContents {
   name: string;
@@ -9,6 +18,7 @@ export interface ArkhamPlayerCardContents {
   image: string;
   uses?: number;
   isFast: boolean;
+  testIcons: ArkhamSkillType[];
 }
 
 export interface ArkhamEncounterCardContents {
@@ -35,6 +45,7 @@ export const arkhamPlayerCardContentsDecoder = JsonDecoder.object<ArkhamPlayerCa
     uses: JsonDecoder.optional(JsonDecoder.number),
     image: JsonDecoder.string,
     isFast: JsonDecoder.boolean,
+    testIcons: JsonDecoder.array<ArkhamSkillType>(arkhamSkillTypeDecoder, 'ArkhamSkillType[]'),
   },
   'ArkhamPlayerCard',
 );

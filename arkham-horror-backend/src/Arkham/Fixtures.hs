@@ -36,6 +36,11 @@ data ArkhamDbCard = ArkhamDbCard
   , cost :: Maybe Int
   , imagesrc :: Maybe Text
   , text :: Maybe Text
+  , skill_willpower :: Maybe Int
+  , skill_intellect :: Maybe Int
+  , skill_combat :: Maybe Int
+  , skill_agility :: Maybe Int
+  , skill_wild :: Maybe Int
   }
   deriving stock (Generic)
   deriving anyclass (FromJSON)
@@ -60,6 +65,12 @@ toArkhamCard ArkhamDbCard {..} = PlayerCard $ ArkhamPlayerCard
     "https://arkhamdb.com/"
       <> fromMaybe ("/bundles/cards/" <> code <> ".png") imagesrc
   , apcIsFast = maybe False ("Fast." `isInfixOf`) text
+  , apcTestIcons =
+    replicate (fromMaybe 0 skill_willpower) ArkhamSkillWillpower
+    <> replicate (fromMaybe 0 skill_intellect) ArkhamSkillIntellect
+    <> replicate (fromMaybe 0 skill_combat) ArkhamSkillCombat
+    <> replicate (fromMaybe 0 skill_agility) ArkhamSkillAgility
+    <> replicate (fromMaybe 0 skill_wild) ArkhamSkillWild
   }
 
 loadGameFixture :: Int -> IO ArkhamGame

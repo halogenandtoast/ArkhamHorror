@@ -18,6 +18,8 @@ import {
   arkhamChaosTokenDecoder,
 } from '@/arkham/types/chaostoken';
 import {
+  ArkhamCard,
+  arkhamCardDecoder,
   ArkhamEncounterCardContents,
   arkhamEncounterCardContentsDecoder,
 } from '@/arkham/types/card';
@@ -137,6 +139,7 @@ interface ArkhamRevealTokenStepContents {
   type: ArkhamSkillType;
   difficulty: number;
   modifiedSkillValue: number;
+  cards: ArkhamCard[];
   token: ArkhamChaosToken;
 }
 
@@ -179,6 +182,7 @@ export const arkhamStepRevealTokenStepContentsDecoder = JsonDecoder.object<
     type: JsonDecoder.string,
     difficulty: JsonDecoder.number,
     modifiedSkillValue: JsonDecoder.number,
+    cards: JsonDecoder.array<ArkhamCard>(arkhamCardDecoder, 'ArkhamCard[]'),
     token: arkhamChaosTokenDecoder,
   }, 'ArkhamSkillCheckStepContents');
 

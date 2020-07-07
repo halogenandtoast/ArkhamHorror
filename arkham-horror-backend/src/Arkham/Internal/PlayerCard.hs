@@ -71,4 +71,5 @@ eventToPlayerCard ArkhamEventInternal {..} = ArkhamPlayerCard
   , apcCode = eventCode
   , apcImage = eventImage
   , apcIsFast = eventIsFast
+  , apcTestIcons = eventTestIcons
   }

@@ -6,6 +6,7 @@ module Arkham.Types.Card
   )
 where
 
+import Arkham.Types.Skill
 import ClassyPrelude
 import Json
 
@@ -18,6 +19,7 @@ data ArkhamPlayerCard = ArkhamPlayerCard
   , apcCode :: ArkhamCardCode
   , apcImage :: Text
   , apcIsFast :: Bool
+  , apcTestIcons :: [ArkhamSkillType]
   }
   deriving stock (Generic, Show)
 

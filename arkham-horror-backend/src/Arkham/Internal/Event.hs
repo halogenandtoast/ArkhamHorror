@@ -53,7 +53,7 @@ fast c = c { eventIsFast = True }
 
 emergencyCache :: ArkhamEventInternal
 emergencyCache = (event "Emergency Cache" "01088" 0)
-  { eventAfterPlay = \g _ -> pure $ g & activePlayer . resources +~ 3
+  { eventAfterPlay = \g p -> pure g <&> player (_playerId p) . resources +~ 3
   , eventImage = "https://arkhamdb.com/bundles/cards/01088.jpg"
   }
 
@@ -75,11 +75,12 @@ evidence = (event "Evidence!" "01022" 1)
 workingAHunch :: ArkhamEventInternal
 workingAHunch = fast $ (event "Working a Hunch" "01037" 2)
   { eventTestIcons = replicate 2 ArkhamSkillIntellect
-  , eventAfterPlay = \g _ ->
-    let location = locationFor (g ^. activePlayer) g
-    in
-      if alClues location > 0
-        then pure $ g & locations . at (alCardCode location) . _Just . clues -~ 1
-               & activePlayer . clues +~ 1
-        else pure g
+  , eventAfterPlay = \g p -> do
+    let location = locationFor p g
+    if alClues location > 0
+      then
+        pure g
+        <&> locations . at (alCardCode location) . _Just . clues -~ 1
+        <&> player (_playerId p) . clues +~ 1
+      else pure g
   }

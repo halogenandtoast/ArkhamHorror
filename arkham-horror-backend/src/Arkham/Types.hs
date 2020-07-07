@@ -32,6 +32,7 @@ module Arkham.Types
   , damage
   , uses
   , assets
+  , player
   )
 where
 
@@ -54,6 +55,7 @@ import qualified Data.List.NonEmpty as NE
 import Data.UUID
 import Entity.User
 import Lens.Micro
+import Lens.Micro.Platform ()
 import Safe (fromJustNote)
 
 data ArkhamValue = Static Int | PerInvestigator Int | Blank
@@ -104,6 +106,9 @@ instance HasPlayers ArkhamGameData where
 instance HasPlayers ArkhamGameState where
   players = lens agsPlayers $ \m x -> m { agsPlayers = x }
 
+player :: HasPlayers a => UUID -> Lens' a (Maybe ArkhamPlayer)
+player playerId = players . at playerId
+
 class HasActivePlayer a where
   activePlayer :: Lens' a ArkhamPlayer
 
@@ -133,6 +138,12 @@ class HasResources a where
 
 instance HasResources ArkhamPlayer where
   resources = lens _resources $ \m x -> m { _resources = x }
+
+-- TODO: This is probably very bad...
+instance HasResources a => HasResources (Maybe a) where
+  resources f = \case
+    Nothing -> Nothing <$ f 0
+    Just x -> Just <$> resources f x
 
 class HasClues a where
   clues :: Lens' a Int

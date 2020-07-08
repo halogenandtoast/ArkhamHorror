@@ -94,7 +94,6 @@ export default class Player extends Vue {
       return false;
     }
 
-
     const card = this.player.hand[index];
 
     if (this.player.actionsRemaining === 0 && card.tag === 'PlayerCard' && !card.contents.isFast) {

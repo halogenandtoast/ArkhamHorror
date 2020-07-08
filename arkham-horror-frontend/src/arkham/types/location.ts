@@ -1,9 +1,4 @@
 import { JsonDecoder } from 'ts.data.json';
-import {
-  ArkhamInvestigator,
-  arkhamInvestigatorDecoder,
-} from '@/arkham/types';
-
 
 export type ArkhamLocationSymbol = 'Circle' | 'Heart' | 'Square' | 'Triangle' | 'Plus' | 'Diamond' | 'Moon';
 export type ArkhamLocationStatus = 'Revealed' | 'Unrevealed' | 'OutOfPlay';

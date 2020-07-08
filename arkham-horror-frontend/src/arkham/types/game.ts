@@ -244,7 +244,6 @@ export interface ArkhamGameState {
   activeUser: number;
 }
 
-
 export const arkhamPhaseDecoder = JsonDecoder.oneOf<ArkhamPhase>([
   JsonDecoder.isExactly('Mythos'),
   JsonDecoder.isExactly('Investigation'), JsonDecoder.isExactly('Enemy'),
@@ -276,7 +275,6 @@ export const arkhamStackAgendaStackDecoder = JsonDecoder.object<AgendaStack>(
   },
   'AgendaStack',
 );
-
 
 export const arkhamStackActStackDecoder = JsonDecoder.object<ActStack>(
   {

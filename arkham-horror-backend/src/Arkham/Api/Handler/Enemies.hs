@@ -12,7 +12,6 @@ import Arkham.Util
 import Data.Aeson
 import Data.Aeson.Casing
 import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
 import Data.UUID
 import Import
 import Lens.Micro
@@ -37,19 +36,17 @@ postApiV1ArkhamGameSelectEnemyR gameId = do
       game ^. gameStateStep
   runDB
     $ updateGame gameId
-    $ game & enemies . at enemyId ?~ enemy' { _enemyFinishedAttacking = True }
+    $ game & enemies . ix enemyId . finishedAttacking .~ True
            & players .~ players'
 
--- TODO: massive
+-- TODO: massive enemies
+-- brittany-disable-next-binding
 performAttackIfEngaged :: ArkhamEnemy -> ArkhamPlayer -> ArkhamPlayer
-performAttackIfEngaged enemy' player' =
-  if _enemyId enemy' `elem` _enemies player'
+performAttackIfEngaged ArkhamEnemy {..} player' =
+  if _enemyId `elem` _enemies player'
     then
-      player'
-      & healthDamage
-      +~ _enemyHealthDamage enemy'
-      & sanityDamage
-      +~ _enemySanityDamage enemy'
+      player' & healthDamage +~ _enemyHealthDamage
+              & sanityDamage +~ _enemySanityDamage
     else player'
 
 findEnemy :: ArkhamGame -> UUID -> ArkhamEnemy

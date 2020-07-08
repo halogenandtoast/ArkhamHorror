@@ -33,6 +33,7 @@ module Arkham.Types
   , uses
   , assets
   , player
+  , finishedAttacking
   )
 where
 
@@ -313,3 +314,7 @@ instance HasEncounterDiscard ArkhamGameData where
 instance HasEncounterDiscard ArkhamGameState where
   encounterDiscard =
     lens agsEncounterDiscard $ \m x -> m { agsEncounterDiscard = x }
+
+finishedAttacking :: Lens' ArkhamEnemy Bool
+finishedAttacking =
+  lens _enemyFinishedAttacking $ \m x -> m { _enemyFinishedAttacking = x }

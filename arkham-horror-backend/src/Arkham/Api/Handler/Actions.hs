@@ -57,7 +57,7 @@ applyAction action@(InvestigateAction _) g =
     , ascsAction = action
     }
 applyAction (TakeResourceAction _) g = pure $ g & activePlayer . resources +~ 1 & activePlayer . actions -~ 1
-applyAction (DrawCardAction _) g = pure $ drawCard g & activePlayer . actions -~ 1
+applyAction (DrawCardAction _) g = pure $ g & activePlayer %~ drawCard & activePlayer . actions -~ 1
 applyAction (PlayCardAction (ArkhamPlayCardAction n)) g = do
   let mcard = g ^? activePlayer . hand . ix n
   case mcard of

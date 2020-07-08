@@ -18,7 +18,6 @@ import Arkham.Types.Card
 import Arkham.Types.ChaosToken
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy
-import Arkham.Types.Game
 import Arkham.Types.GameState
 import Arkham.Types.Location
 import Arkham.Types.Player
@@ -78,10 +77,10 @@ buildTokenMapFrom
   -> HashMap ArkhamChaosToken ArkhamChaosTokenInternal
 buildTokenMapFrom scenarioTokens = HashMap.union scenarioTokens defaultTokenMap
 
-drawCard :: ArkhamGameData -> ArkhamGameData
-drawCard g =
-  let (drawn, deck') = splitAt 1 (g ^. activePlayer . deck)
-  in g & activePlayer . hand %~ (++ drawn) & activePlayer . deck .~ deck'
+drawCard :: ArkhamPlayer -> ArkhamPlayer
+drawCard p =
+  let (drawn, deck') = splitAt 1 (p ^. deck)
+  in p & hand %~ (++ drawn) & deck .~ deck'
 
 defaultUpdateObjectives
   :: MonadIO m => Lockable ArkhamGame -> m (Lockable ArkhamGame)
@@ -135,7 +134,12 @@ defaultMythosPhase = ArkhamMythosPhaseInternal
 
 defaultInvestigationPhase :: ArkhamInvestigationPhaseInternal
 defaultInvestigationPhase = ArkhamInvestigationPhaseInternal
-  { investigationPhaseOnEnter = pure
+  { investigationPhaseOnEnter = runOnlyUnlockedM $ \g ->
+    pure
+      . Unlocked
+      $ g
+      & gameStateStep
+      .~ ArkhamGameStateStepInvestigatorActionStep
   , investigationPhaseTakeActions = runLockedM InvestigationTakeActions $ \g ->
     if and (g ^.. players . each . endedTurn)
       then pure $ Unlocked g
@@ -143,9 +147,6 @@ defaultInvestigationPhase = ArkhamInvestigationPhaseInternal
   , investigationPhaseOnExit = pure
   }
 
--- TODO: add bool to enemy for if it has attacked
--- Lock phase until every enemy has attacked as we
--- need to resolve each attack
 defaultEnemyPhase :: ArkhamEnemyPhaseInternal
 defaultEnemyPhase = ArkhamEnemyPhaseInternal
   { enemyPhaseOnEnter = pure
@@ -155,23 +156,18 @@ defaultEnemyPhase = ArkhamEnemyPhaseInternal
       enemyIds' = HashMap.keysSet
         $ HashMap.filter (not . _enemyFinishedAttacking) (g ^. enemies)
     if null enemyIds'
-      then
-        pure
-        . Unlocked
-        $ g
-        & gameStateStep
-        .~ ArkhamGameStateStepInvestigatorActionStep
+      then pure . Unlocked $ g
       else
         pure
         . addLock (pure ResolveEnemies)
         $ g
-        & gameStateStep
-        .~ ArkhamGameStateStepResolveEnemiesStep
-             (ArkhamResolveEnemiesStep enemyIds')
-  , enemyPhaseOnExit = runOnlyUnlockedM $ \g ->
-    pure . Unlocked $ g & enemies %~ HashMap.map
-      (\e -> e { _enemyFinishedAttacking = False })
+        & (gameStateStep .~ resolveEnemies enemyIds')
+  , enemyPhaseOnExit = runOnlyUnlockedM
+    (pure . Unlocked . (enemies . mapped . finishedAttacking .~ False))
   }
+ where
+  resolveEnemies =
+    ArkhamGameStateStepResolveEnemiesStep . ArkhamResolveEnemiesStep
 
 defaultUpkeepPhase :: ArkhamUpkeepPhaseInternal
 defaultUpkeepPhase = ArkhamUpkeepPhaseInternal
@@ -180,23 +176,16 @@ defaultUpkeepPhase = ArkhamUpkeepPhaseInternal
     pure
       . Unlocked
       $ g
-      & activePlayer
-      . actions
-      .~ 3
-      & activePlayer
-      . endedTurn
-      .~ False
+      & (players . each . actions .~ 3)
+      & (players . each . endedTurn .~ False)
   , upkeepPhaseReadyExhausted = pure
   , upkeepPhaseDrawCardsAndGainResources =
     runLockedM DrawAndGainResources $ \g ->
       pure
         . Unlocked
         $ g
-        & currentData
-        %~ drawCard
-        & activePlayer
-        . resources
-        +~ 1
+        & (players . mapped %~ drawCard)
+        & (players . each . resources +~ 1)
   , upkeepPhaseCheckHandSize = pure
   , upkeepPhaseOnExit = pure
   }

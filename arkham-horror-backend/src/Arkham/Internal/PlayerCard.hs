@@ -36,7 +36,7 @@ asset card@ArkhamAssetInternal {..} = ArkhamPlayerCardInternal
   , aciCost = Just assetCost
   , aciTraits = assetTraits
   , aciTestIcons = assetTestIcons
-  , aciPlay = \g _ -> do
+  , aciPlay = \_ g -> do
     asset' <- toAsset card
     pure $ g & activePlayer . assets %~ HashMap.insert (_assetId asset') asset'
   , aciActionCost = assetActionCost
@@ -48,7 +48,7 @@ event card@ArkhamEventInternal {..} = ArkhamPlayerCardInternal
   , aciCost = Just eventCost
   , aciTraits = eventTraits
   , aciTestIcons = eventTestIcons
-  , aciPlay = \g p ->
+  , aciPlay = \p g ->
     eventAfterPlay g p
       <&> activePlayer
       . discard
@@ -62,7 +62,7 @@ skill card@ArkhamSkillInternal {..} = ArkhamPlayerCardInternal
   , aciCost = Nothing
   , aciTraits = skillTraits
   , aciTestIcons = skillTestIcons
-  , aciPlay = \g _ -> pure g
+  , aciPlay = \_ g -> pure g
   , aciActionCost = const (const (pure 0))
   }
 
@@ -71,7 +71,7 @@ data ArkhamPlayerCardInternal = ArkhamPlayerCardInternal
   , aciCost :: Maybe Int
   , aciTraits :: HashSet ArkhamTrait
   , aciTestIcons :: [ArkhamSkillType]
-  , aciPlay :: forall m. MonadIO m => ArkhamGameState -> ArkhamPlayer -> m ArkhamGameState
+  , aciPlay :: forall m. MonadIO m => ArkhamPlayer -> ArkhamGameState -> m ArkhamGameState
   , aciActionCost :: forall m. MonadIO m => ArkhamGameState -> ArkhamPlayer -> m Int
   }
 

@@ -13,6 +13,7 @@ import Arkham.Types.Skill
 import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
+import qualified Data.HashSet as HashSet
 import Data.UUID.V4
 
 data SlotType = Accessory | Body | Hand | Arcane | Ally | DoubleHand | DoubleArcane

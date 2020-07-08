@@ -32,24 +32,9 @@ postApiV1ArkhamGameSkillCheckR gameId = do
   game <- runDB $ get404 gameId
   cards <- requireCheckJsonBody
   let ArkhamGameStateStepSkillCheckStep step = game ^. gameStateStep
-
-  case ascsAction step of
-    (EvadeEnemyAction action) -> evadeAction
-      (Entity gameId game)
-      ArkhamSkillAgility
-      (aeveaEnemyId action)
-      cards
-    (FightEnemyAction action) -> fightAction
-      (Entity gameId game)
-      ArkhamSkillCombat
-      (afeaEnemyId action)
-      cards
-    (InvestigateAction action) -> investigateAction
-      (Entity gameId game)
-      ArkhamSkillIntellect
-      (getLocation game $ aiaLocationId action)
-      cards
-    _ -> error "fail"
+  checkDifficulty <- getDifficulty game (ascsAction step)
+  checkSkill <- getSkill game (ascsAction step)
+  runAction (Entity gameId game) checkSkill cards checkDifficulty
 
 postApiV1ArkhamGameSkillCheckApplyResultR
   :: ArkhamGameId -> Handler ArkhamGameData
@@ -86,6 +71,13 @@ getDifficulty g action = case action of
   (FightEnemyAction a) -> fightOf g (afeaEnemyId a)
   (EvadeEnemyAction a) -> evadeOf g (aeveaEnemyId a)
   (InvestigateAction a) -> shroudOf g $ getLocation g (aiaLocationId a)
+  _ -> error "Can not get difficulty for action"
+
+getSkill :: MonadIO m => ArkhamGame -> ArkhamAction -> m ArkhamSkillType
+getSkill _ action = case action of
+  (FightEnemyAction _) -> pure ArkhamSkillCombat
+  (EvadeEnemyAction _) -> pure ArkhamSkillAgility
+  (InvestigateAction _) -> pure ArkhamSkillIntellect
   _ -> error "Can not get difficulty for action"
 
 shroudOf :: MonadIO m => ArkhamGame -> ArkhamLocation -> m Int
@@ -176,33 +168,6 @@ commitCards cardIndexes hand' =
   over both (map snd) $ partition (\(i, _) -> i `elem` cardIndexes) $ zip
     [0 ..]
     hand'
-
-fightAction
-  :: Entity ArkhamGame
-  -> ArkhamSkillType
-  -> UUID
-  -> [Int]
-  -> Handler ArkhamGameData
-fightAction entity@(Entity _ game) skillType enemyId cardIndexes =
-  fightOf game enemyId >>= runAction entity skillType cardIndexes
-
-evadeAction
-  :: Entity ArkhamGame
-  -> ArkhamSkillType
-  -> UUID
-  -> [Int]
-  -> Handler ArkhamGameData
-evadeAction entity@(Entity _ game) skillType enemyId cardIndexes =
-  evadeOf game enemyId >>= runAction entity skillType cardIndexes
-
-investigateAction
-  :: Entity ArkhamGame
-  -> ArkhamSkillType
-  -> ArkhamLocation
-  -> [Int]
-  -> Handler ArkhamGameData
-investigateAction entity@(Entity _ game) skillType location cardIndexes =
-  shroudOf game location >>= runAction entity skillType cardIndexes
 
 runAction
   :: Entity ArkhamGame

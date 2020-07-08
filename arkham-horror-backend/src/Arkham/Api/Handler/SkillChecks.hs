@@ -74,9 +74,9 @@ postApiV1ArkhamGameSkillCheckApplyResultR gameId = do
           artsCards
           n
         if modifiedSkillValue >= checkDifficulty
-          then runDB $ updateGame gameId =<< successfulCheck game artsAction
-          else runDB $ updateGame gameId $ failedCheck game artsAction
-      Failure -> runDB $ updateGame gameId $ failedCheck game artsAction
+          then runDB $ successfulCheck game artsAction >>= updateGame gameId
+          else runDB $ failedCheck game artsAction >>= updateGame gameId
+      Failure -> runDB $ failedCheck game artsAction >>= updateGame gameId
 
 getLocation :: HasLocations a => a -> ArkhamCardCode -> ArkhamLocation
 getLocation g locationId = g ^?! locations . ix locationId
@@ -130,8 +130,8 @@ revealToken token' checkDifficulty modifiedSkillValue cards (ArkhamGameStateStep
     cards
 revealToken _ _ _ _ s = s
 
-failedCheck :: ArkhamGame -> ArkhamAction -> ArkhamGame
-failedCheck g _ = g & gameStateStep .~ investigatorStep
+failedCheck :: (MonadIO m) => ArkhamGame -> ArkhamAction -> m ArkhamGame
+failedCheck g _ = pure g <&> gameStateStep .~ investigatorStep
 
 successfulCheck
   :: (HasCallStack, MonadIO m) => ArkhamGame -> ArkhamAction -> m ArkhamGame

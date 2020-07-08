@@ -3,12 +3,14 @@ module Arkham.Types.Card
   , ArkhamCard(..)
   , ArkhamPlayerCard(..)
   , ArkhamEncounterCard(..)
+  , _PlayerCard
   )
 where
 
 import Arkham.Types.Skill
 import ClassyPrelude
 import Json
+import Lens.Micro
 
 newtype ArkhamCardCode = ArkhamCardCode { unArkhamCardCode :: Text }
   deriving newtype (Eq, Hashable, Show, ToJSON, FromJSON, ToJSONKey, FromJSONKey, IsString)
@@ -47,3 +49,7 @@ instance FromJSON ArkhamEncounterCard where
 data ArkhamCard = PlayerCard ArkhamPlayerCard | EncounterCard ArkhamEncounterCard
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
+
+_PlayerCard :: Traversal' ArkhamCard ArkhamPlayerCard
+_PlayerCard f (PlayerCard c) = PlayerCard <$> f c
+_PlayerCard f (EncounterCard c) = pure $ EncounterCard c

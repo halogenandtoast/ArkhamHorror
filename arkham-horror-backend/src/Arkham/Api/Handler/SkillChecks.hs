@@ -103,7 +103,7 @@ skillValue p skillType = case skillType of
   ArkhamSkillIntellect -> unArkhamSkill $ aiIntellect $ _investigator p
   ArkhamSkillCombat -> unArkhamSkill $ aiCombat $ _investigator p
   ArkhamSkillAgility -> unArkhamSkill $ aiAgility $ _investigator p
-  ArkhamSkillWild -> error "Not a possible skill"
+  ArkhamSkillWild -> 0
 
 revealToken
   :: ArkhamChaosToken

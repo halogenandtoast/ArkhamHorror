@@ -33,8 +33,7 @@ postApiV1ArkhamGameSelectEnemyR gameId = do
   game <- runDB $ get404 gameId
   enemyId <- sepEnemyId <$> requireCheckJsonBody
   let
-    enemy' =
-      fromJustNote "Unknown enemy" $ HashMap.lookup enemyId (game ^. enemies)
+    enemy' = findEnemy game enemyId
     players' = HashMap.map (performAttackIfEngaged enemy') (game ^. players)
     ArkhamGameStateStepResolveEnemiesStep ArkhamResolveEnemiesStep {..} =
       game ^. gameStateStep
@@ -61,3 +60,7 @@ performAttackIfEngaged enemy' player' =
       & sanityDamage
       +~ _enemySanityDamage enemy'
     else player'
+
+findEnemy :: ArkhamGame -> UUID -> ArkhamEnemy
+findEnemy game enemyId =
+  fromJustNote "Unknown enemy" $ game ^. enemies . at enemyId

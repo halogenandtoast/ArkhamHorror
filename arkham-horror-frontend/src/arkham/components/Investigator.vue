@@ -4,7 +4,7 @@
 
     <div class="resources">
       <div
-        v-if="canTakeResources"
+        v-if="canTakeActions"
         class="poolItem poolItem-resource"
         @click="$emit('takeResource')"
       >
@@ -31,7 +31,7 @@
         <span>{{player.sanityDamage}}</span>
       </div>
       <p><i class="action" v-for="n in player.actionsRemaining" :key="n"></i></p>
-      <button @click="$emit('endTurn')">End turn</button>
+      <button :disabled="!canEndTurn" @click="$emit('endTurn')">End turn</button>
     </div>
   </div>
 </template>
@@ -43,7 +43,12 @@ import { ArkhamPlayer } from '@/arkham/types';
 @Component
 export default class Investigator extends Vue {
   @Prop(Object) readonly player!: ArkhamPlayer
-  @Prop(Boolean) readonly canTakeResources!: boolean
+  @Prop(Boolean) readonly canTakeActions!: boolean
+  @Prop(Boolean) readonly inActionWindow!: boolean
+
+  get canEndTurn() {
+    return this.inActionWindow && !this.player.endedTurn;
+  }
 }
 </script>
 

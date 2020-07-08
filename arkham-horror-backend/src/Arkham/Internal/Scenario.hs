@@ -137,7 +137,7 @@ defaultInvestigationPhase :: ArkhamInvestigationPhaseInternal
 defaultInvestigationPhase = ArkhamInvestigationPhaseInternal
   { investigationPhaseOnEnter = pure
   , investigationPhaseTakeActions = runLockedM InvestigationTakeActions $ \g ->
-    if g ^. activePlayer . endedTurn
+    if and (g ^.. players . each . endedTurn)
       then pure $ Unlocked g
       else pure $ addLock (pure InvestigationTakeActions) g
   , investigationPhaseOnExit = pure
@@ -155,7 +155,12 @@ defaultEnemyPhase = ArkhamEnemyPhaseInternal
       enemyIds' = HashMap.keysSet
         $ HashMap.filter (not . _enemyFinishedAttacking) (g ^. enemies)
     if null enemyIds'
-      then pure . Unlocked $ g
+      then
+        pure
+        . Unlocked
+        $ g
+        & gameStateStep
+        .~ ArkhamGameStateStepInvestigatorActionStep
       else
         pure
         . addLock (pure ResolveEnemies)

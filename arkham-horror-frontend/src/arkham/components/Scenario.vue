@@ -91,9 +91,11 @@
       :game="game"
       :player="player"
       :commitedCards="commitedCards"
+      :canTakeActions="canTakeActions"
       @update="update"
       @commitCard="commitCard"
     />
+    <StatusBar :game="game" />
   </div>
 </template>
 
@@ -112,7 +114,7 @@ import Player from '@/arkham/components/Player.vue';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
-
+import StatusBar from '@/arkham/components/StatusBar.vue';
 
 @Component({
   components: {
@@ -120,6 +122,7 @@ import ChaosBag from '@/arkham/components/ChaosBag.vue';
     Act,
     Agenda,
     ChaosBag,
+    StatusBar,
   },
 })
 export default class Scenario extends Vue {
@@ -178,6 +181,7 @@ export default class Scenario extends Vue {
     const { users, activeUser } = this.game.gameState;
 
     return users[activeUser] === uuid
+      && this.canTakeActions
       && this.player.actionsRemaining > 0
       && this.player.accessibleLocations.length > 0;
   }
@@ -227,10 +231,13 @@ export default class Scenario extends Vue {
   }
 
   get canInvestigate() {
+    return this.canTakeActions && this.player.actionsRemaining > 0;
+  }
+
+  get canTakeActions() {
     const { step } = this.game.gameState;
 
-    return step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION
-      && this.player.actionsRemaining > 0;
+    return step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION;
   }
 
   get canDrawToken() {

@@ -16,7 +16,8 @@
     <div class="player">
       <Investigator
         :player="player"
-        :canTakeResources="canTakeResources"
+        :canTakeActions="canTakeActions"
+        :inActionWindow="inActionWindow"
         @endTurn="endTurn"
         @takeResource="takeResource"
       />
@@ -89,7 +90,7 @@ export default class Player extends Vue {
   }
 
   canPlay(index: number) {
-    if (!this.actionWindow || this.focusedEnemy) {
+    if (!this.inActionWindow || this.focusedEnemy) {
       return false;
     }
 
@@ -122,18 +123,18 @@ export default class Player extends Vue {
       return false;
     }
 
-    return this.actionWindow && this.player.actionsRemaining > 0;
+    return this.inActionWindow && this.player.actionsRemaining > 0;
   }
 
-  get canTakeResources() {
+  get canTakeActions() {
     if (this.focusedEnemy) {
       return false;
     }
 
-    return this.actionWindow && this.player.actionsRemaining > 0;
+    return this.inActionWindow && this.player.actionsRemaining > 0;
   }
 
-  get actionWindow() {
+  get inActionWindow() {
     return this.game.gameState.step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION;
   }
 

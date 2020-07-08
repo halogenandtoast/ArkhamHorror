@@ -25,9 +25,7 @@ instance FromJSON SelectEnemyPost where
   parseJSON = genericParseJSON
     $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
 
--- , _enemyHealthDamage :: Int
--- , _enemySanityDamage :: Int
--- , _enemyFinishedAttacking :: Bool
+-- brittany-disable-next-binding
 postApiV1ArkhamGameSelectEnemyR :: ArkhamGameId -> Handler ArkhamGameData
 postApiV1ArkhamGameSelectEnemyR gameId = do
   game <- runDB $ get404 gameId
@@ -39,15 +37,8 @@ postApiV1ArkhamGameSelectEnemyR gameId = do
       game ^. gameStateStep
   runDB
     $ updateGame gameId
-    $ game
-    & enemies
-    . at enemyId
-    ?~ enemy' { _enemyFinishedAttacking = True }
-    & players
-    .~ players'
-    & gameStateStep
-    .~ ArkhamGameStateStepResolveEnemiesStep
-         (ArkhamResolveEnemiesStep $ HashSet.delete enemyId aresEnemyIds)
+    $ game & enemies . at enemyId ?~ enemy' { _enemyFinishedAttacking = True }
+           & players .~ players'
 
 -- TODO: massive
 performAttackIfEngaged :: ArkhamEnemy -> ArkhamPlayer -> ArkhamPlayer

@@ -45,6 +45,7 @@ data ArkhamScenarioInternal = ArkhamScenarioInternal
   , scenarioTokenMap :: HashMap ArkhamChaosToken ArkhamChaosTokenInternal
   , scenarioUpdateObjectives :: PhaseStep
   , scenarioUpdateAccessibleLocationsOnPlayers :: PhaseStep
+  , scenarioResolveAttacksOfOpportunity :: PhaseStep
   , scenarioMythosPhase :: ArkhamMythosPhaseInternal
   , scenarioInvestigationPhase :: ArkhamInvestigationPhaseInternal
   , scenarioEnemyPhase :: ArkhamEnemyPhaseInternal

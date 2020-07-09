@@ -84,6 +84,33 @@ runOnlyLocked
 runOnlyLocked key f (Locked lock' a) | unlocks lock' key = f a
 runOnlyLocked _ _ l = l
 
+runOnlyLockedM
+  :: (HasLock a, b ~ Key (Lock a), Monad m)
+  => b
+  -> (a -> m (Lockable a))
+  -> Lockable a
+  -> m (Lockable a)
+runOnlyLockedM key f (Locked lock' a) | unlocks lock' key = f a
+runOnlyLockedM _ _ l = pure l
+
+runOnlyLockedWithLock
+  :: (HasLock a, b ~ Key (Lock a))
+  => b
+  -> (a -> Lock a -> Lockable a)
+  -> Lockable a
+  -> Lockable a
+runOnlyLockedWithLock key f (Locked lock' a) | unlocks lock' key = f a lock'
+runOnlyLockedWithLock _ _ l = l
+
+runOnlyLockedWithLockM
+  :: (HasLock a, b ~ Key (Lock a), Monad m)
+  => b
+  -> (a -> Lock a -> m (Lockable a))
+  -> Lockable a
+  -> m (Lockable a)
+runOnlyLockedWithLockM key f (Locked lock' a) | unlocks lock' key = f a lock'
+runOnlyLockedWithLockM _ _ l = pure l
+
 runOnlyUnlocked :: (a -> Lockable a) -> Lockable a -> Lockable a
 runOnlyUnlocked f (Unlocked a) = f a
 runOnlyUnlocked _ l = l

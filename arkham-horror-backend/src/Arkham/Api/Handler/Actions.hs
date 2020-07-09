@@ -3,21 +3,23 @@ module Arkham.Api.Handler.Actions
   )
 where
 
-import           Arkham.Internal.Location
-import           Arkham.Internal.PlayerCard
-import           Arkham.Internal.Scenario
-import           Arkham.Types
-import           Arkham.Types.Action
-import           Arkham.Types.Game
-import           Arkham.Types.GameState
-import           Arkham.Types.Location
-import           Arkham.Types.Player
-import           Arkham.Types.Skill
-import           Arkham.Util
-import qualified Data.HashSet               as HashSet
-import           Import
-import           Lens.Micro
-import           Safe                       (fromJustNote)
+import Arkham.Internal.Location
+import Arkham.Internal.PlayerCard
+import Arkham.Internal.Scenario
+import Arkham.Types
+import Arkham.Types.Action
+import Arkham.Types.Game
+import Arkham.Types.GameState
+import Arkham.Types.Location
+import Arkham.Types.Player
+import Arkham.Types.Skill
+import Arkham.Util
+import Base.Lock
+import qualified Data.HashSet as HashSet
+import qualified Data.List.NonEmpty as NE
+import Import
+import Lens.Micro
+import Safe (fromJustNote)
 
 applyAction :: ArkhamAction -> ArkhamGameData -> IO ArkhamGameData
 applyAction action@(EvadeEnemyAction _) g =
@@ -58,8 +60,9 @@ applyAction (MoveAction move) g = do
   (s, p) <- aliOnEnter newLocationInternal (g' ^. gameState) currentPlayer
   pure $ g' & gameState .~ s & activePlayer .~ (p & actions -~ 1)
 applyAction action@(InvestigateAction _) g =
-  -- TODO: Look at timing for when the action is spent, may need to finish action first
-  pure $ g & gameStateStep .~ newGameStateStep & activePlayer . actions -~ 1
+  pure g
+    <&> checkAttacksOfOpportunity (g ^. activePlayer) newGameStateStep
+    <&> (activePlayer . actions -~ 1)
  where
   newGameStateStep = ArkhamGameStateStepSkillCheckStep $ ArkhamSkillCheckStep
     { ascsType = ArkhamSkillIntellect
@@ -88,3 +91,24 @@ postApiV1ArkhamGameActionR gameId = do
   action <- requireCheckJsonBody
   newGame <- liftIO $ traverseOf currentData (applyAction action) game
   runDB $ updateGame gameId newGame
+
+checkAttacksOfOpportunity
+  :: ArkhamPlayer -> ArkhamGameStateStep -> ArkhamGameData -> ArkhamGameData
+checkAttacksOfOpportunity p s g =
+  g & (lock %~ lockFunc) & (gameStateStep .~ nextStep)
+ where
+  hasAttacksOfOpportunity = not . null $ p ^. enemyIds
+  lockFunc = if hasAttacksOfOpportunity
+    then Just . maybe
+      (pure ResolveAttacksOfOpportunity)
+      (NE.cons ResolveAttacksOfOpportunity)
+    else id
+  nextStep = if hasAttacksOfOpportunity
+    then
+      ArkhamGameStateStepAttackOfOpportunityStep $ ArkhamAttackOfOpportunityStep
+        { aoosEnemyIds = p ^. enemyIds
+        , aoosPlayerId = _playerId p
+        , aoosNextStateStep = s
+        }
+    else s
+

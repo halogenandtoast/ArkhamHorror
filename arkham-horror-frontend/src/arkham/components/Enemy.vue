@@ -47,8 +47,11 @@ export default class Enemy extends Vue {
   }
 
   get shouldResolve() {
-    return this.game.gameState.step.tag === ArkhamStepTypes.RESOLVE_ENEMIES
-      && this.game.gameState.step.contents.enemyIds.includes(this.enemyId);
+    return (
+      this.game.gameState.step.tag === ArkhamStepTypes.RESOLVE_ENEMIES
+      || this.game.gameState.step.tag === ArkhamStepTypes.RESOLVE_ATTACKS_OF_OPPORTUNITY
+    )
+    && this.game.gameState.step.contents.enemyIds.includes(this.enemyId);
   }
 
   interact() {

@@ -28,6 +28,7 @@ import ClassyPrelude
 import Control.Monad.Random
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
+import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.List.NonEmpty as NE
 import Lens.Micro
 import Lens.Micro.Platform ()
@@ -93,6 +94,36 @@ defaultUpdateObjectives = runIgnoreLockedM $ \g ->
       }
   in pure $ g & topActCardLens .~ actCard'
   where topActCardLens = stacks . ix "Act" . _ActStack . _TopOfStack
+
+defaultResolveAttacksOfOpportunity
+  :: MonadIO m => Lockable ArkhamGame -> m (Lockable ArkhamGame)
+defaultResolveAttacksOfOpportunity =
+  runOnlyLockedWithLockM ResolveAttacksOfOpportunity
+    $ \g currentLock@(_ :| remainingLocks) -> do
+        let
+          ArkhamGameStateStepAttackOfOpportunityStep step@ArkhamAttackOfOpportunityStep {..}
+            = g ^. gameStateStep
+          enemies' =
+            HashMap.filter ((`elem` aoosEnemyIds) . _enemyId) (g ^. enemies)
+          enemyIds' = HashMap.keysSet
+            $ HashMap.filter (not . _enemyFinishedAttacking) enemies'
+          lockConstructor =
+            maybe Unlocked Locked (NE.nonEmpty remainingLocks)
+        if null enemyIds'
+          then
+            pure
+            . lockConstructor
+            $ g
+            & (lock .~ NE.nonEmpty remainingLocks)
+            & (gameStateStep .~ aoosNextStateStep)
+            & (enemies . mapped . finishedAttacking .~ False)
+          else
+            pure
+            . addLock currentLock
+            $ g
+            & (gameStateStep .~ ArkhamGameStateStepAttackOfOpportunityStep
+                (step { aoosEnemyIds = enemyIds' })
+              )
 
 defaultUpdateAccessibleLocationsOnPlayers
   :: MonadIO m => Lockable ArkhamGame -> m (Lockable ArkhamGame)
@@ -206,6 +237,7 @@ defaultScenarioRun g = do
   go =
     scenarioUpdateObjectives scenario'
       >=> scenarioUpdateAccessibleLocationsOnPlayers scenario'
+      >=> scenarioResolveAttacksOfOpportunity scenario'
       >=> mythosPhaseOnEnter
       >=> mythosPhaseAddDoom
       >=> mythosPhaseCheckAdvance
@@ -254,6 +286,7 @@ defaultScenario name = ArkhamScenarioInternal
   , scenarioUpdateObjectives = defaultUpdateObjectives
   , scenarioUpdateAccessibleLocationsOnPlayers =
     defaultUpdateAccessibleLocationsOnPlayers
+  , scenarioResolveAttacksOfOpportunity = defaultResolveAttacksOfOpportunity
   , scenarioMythosPhase = defaultMythosPhase
   , scenarioInvestigationPhase = defaultInvestigationPhase
   , scenarioEnemyPhase = defaultEnemyPhase

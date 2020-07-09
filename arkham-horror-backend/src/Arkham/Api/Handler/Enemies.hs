@@ -29,15 +29,19 @@ postApiV1ArkhamGameSelectEnemyR :: ArkhamGameId -> Handler ArkhamGameData
 postApiV1ArkhamGameSelectEnemyR gameId = do
   game <- runDB $ get404 gameId
   enemyId <- sepEnemyId <$> requireCheckJsonBody
-  let
-    enemy' = findEnemy game enemyId
-    players' = HashMap.map (performAttackIfEngaged enemy') (game ^. players)
-    ArkhamGameStateStepResolveEnemiesStep ArkhamResolveEnemiesStep {..} =
-      game ^. gameStateStep
-  runDB
-    $ updateGame gameId
-    $ game & enemies . ix enemyId . finishedAttacking .~ True
-           & players .~ players'
+  let enemy' = findEnemy game enemyId
+  case game ^. gameStateStep of
+    ArkhamGameStateStepResolveEnemiesStep _ ->
+      runDB
+        $ updateGame gameId
+        $ game & enemies . ix enemyId . finishedAttacking .~ True
+               & players %~ HashMap.map (performAttackIfEngaged enemy')
+    ArkhamGameStateStepAttackOfOpportunityStep ArkhamAttackOfOpportunityStep {..} ->
+      runDB
+        $ updateGame gameId
+        $ game & enemies . ix enemyId . finishedAttacking .~ True
+               & players . ix aoosPlayerId %~ performAttackIfEngaged enemy'
+    _ -> throwString "What do?"
 
 -- TODO: massive enemies
 -- brittany-disable-next-binding

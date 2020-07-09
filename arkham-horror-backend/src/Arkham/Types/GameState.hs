@@ -9,6 +9,7 @@ module Arkham.Types.GameState
   , ArkhamSkillCheckStep(..)
   , ArkhamRevealTokenStep(..)
   , ArkhamResolveEnemiesStep(..)
+  , ArkhamAttackOfOpportunityStep(..)
   , ArkhamTarget(..)
   , stackAgenda
   , stackAct
@@ -29,12 +30,11 @@ import Arkham.Types.Player
 import Arkham.Types.Skill
 import Base.Lock
 import ClassyPrelude
-import Data.Aeson
-import Data.Aeson.Casing
 import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.List.NonEmpty as NE
 import Data.UUID
 import Entity.User
+import Json
 import Lens.Micro
 import Orphans ()
 
@@ -47,6 +47,7 @@ data ArkhamGameStateStep
   | ArkhamGameStateStepSkillCheckStep ArkhamSkillCheckStep
   | ArkhamGameStateStepRevealTokenStep ArkhamRevealTokenStep
   | ArkhamGameStateStepResolveEnemiesStep ArkhamResolveEnemiesStep
+  | ArkhamGameStateStepAttackOfOpportunityStep ArkhamAttackOfOpportunityStep
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -63,6 +64,20 @@ data ArkhamTarget = LocationTarget ArkhamLocation | EnemyTarget UUID
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 
+data ArkhamAttackOfOpportunityStep = ArkhamAttackOfOpportunityStep
+  { aoosEnemyIds :: HashSet UUID
+  , aoosPlayerId :: UUID
+  , aoosNextStateStep :: ArkhamGameStateStep
+  }
+  deriving stock (Generic, Show)
+
+instance ToJSON ArkhamAttackOfOpportunityStep where
+  toJSON = genericToJSON $ aesonOptions $ Just "aoos"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "aoos"
+
+instance FromJSON ArkhamAttackOfOpportunityStep where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "aoos"
+
 data ArkhamSkillCheckStep = ArkhamSkillCheckStep
   { ascsType :: ArkhamSkillType
   , ascsAction :: ArkhamAction
@@ -70,14 +85,11 @@ data ArkhamSkillCheckStep = ArkhamSkillCheckStep
   deriving stock (Generic, Show)
 
 instance ToJSON ArkhamSkillCheckStep where
-  toJSON =
-    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
-  toEncoding = genericToEncoding
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+  toJSON = genericToJSON $ aesonOptions $ Just "ascs"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "ascs"
 
 instance FromJSON ArkhamSkillCheckStep where
-  parseJSON = genericParseJSON
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+  parseJSON = genericParseJSON $ aesonOptions $ Just "ascs"
 
 data ArkhamRevealTokenStep = ArkhamRevealTokenStep
   { artsType :: ArkhamSkillType
@@ -90,30 +102,24 @@ data ArkhamRevealTokenStep = ArkhamRevealTokenStep
   deriving stock (Generic, Show)
 
 instance ToJSON ArkhamRevealTokenStep where
-  toJSON =
-    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
-  toEncoding = genericToEncoding
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+  toJSON = genericToJSON $ aesonOptions $ Just "arts"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "arts"
 
 instance FromJSON ArkhamRevealTokenStep where
-  parseJSON = genericParseJSON
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+  parseJSON = genericParseJSON $ aesonOptions $ Just "arts"
 
 newtype ArkhamResolveEnemiesStep = ArkhamResolveEnemiesStep
   { aresEnemyIds :: HashSet UUID }
   deriving stock (Generic, Show)
 
 instance ToJSON ArkhamResolveEnemiesStep where
-  toJSON =
-    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
-  toEncoding = genericToEncoding
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+  toJSON = genericToJSON $ aesonOptions $ Just "ares"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "ares"
 
 instance FromJSON ArkhamResolveEnemiesStep where
-  parseJSON = genericParseJSON
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 4 }
+  parseJSON = genericParseJSON $ aesonOptions $ Just "ares"
 
-data ArkhamGameStateLock = AddDoom | InvestigationTakeActions | UpkeepResetActions | DrawAndGainResources | ResolveEnemies
+data ArkhamGameStateLock = AddDoom | InvestigationTakeActions | UpkeepResetActions | DrawAndGainResources | ResolveEnemies | ResolveAttacksOfOpportunity
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
@@ -165,11 +171,8 @@ _TopOfStack :: Lens' (NonEmpty a) a
 _TopOfStack = lens NE.head $ \(_ :| as) x -> x :| as
 
 instance ToJSON ArkhamGameState where
-  toJSON =
-    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
-  toEncoding = genericToEncoding
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
+  toJSON = genericToJSON $ aesonOptions $ Just "ags"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "ags"
 
 instance FromJSON ArkhamGameState where
-  parseJSON = genericParseJSON
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
+  parseJSON = genericParseJSON $ aesonOptions $ Just "ags"

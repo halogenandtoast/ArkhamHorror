@@ -13,7 +13,7 @@ class (Unlock (Lock a)) => HasLock a where
 
 data Lockable a = Locked (Lock a) a | Unlocked a
 
-buildLock :: (HasLock a, b ~ Lock a, Eq b) => a -> Lockable a
+buildLock :: (HasLock a, b ~ Lock a) => a -> Lockable a
 buildLock a = case a ^. lock of
   Just lock' -> Locked lock' a
   Nothing -> Unlocked a

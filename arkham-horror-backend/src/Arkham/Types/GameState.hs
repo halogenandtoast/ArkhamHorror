@@ -10,6 +10,7 @@ module Arkham.Types.GameState
   , ArkhamRevealTokenStep(..)
   , ArkhamResolveEnemiesStep(..)
   , ArkhamAttackOfOpportunityStep(..)
+  , ArkhamChooseOneStep(..)
   , ArkhamTarget(..)
   , stackAgenda
   , stackAct
@@ -48,6 +49,7 @@ data ArkhamGameStateStep
   | ArkhamGameStateStepRevealTokenStep ArkhamRevealTokenStep
   | ArkhamGameStateStepResolveEnemiesStep ArkhamResolveEnemiesStep
   | ArkhamGameStateStepAttackOfOpportunityStep ArkhamAttackOfOpportunityStep
+  | ArkhamGameStateStepChooseOneStep ArkhamChooseOneStep
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -60,7 +62,7 @@ instance Eq ArkhamGameStateStep where
     = True
   _ == _ = False
 
-data ArkhamTarget = LocationTarget ArkhamLocation | EnemyTarget UUID
+data ArkhamTarget = LocationTarget ArkhamLocation | EnemyTarget UUID | AgendaTarget ArkhamAgenda
   deriving stock (Generic, Show)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -77,6 +79,20 @@ instance ToJSON ArkhamAttackOfOpportunityStep where
 
 instance FromJSON ArkhamAttackOfOpportunityStep where
   parseJSON = genericParseJSON $ aesonOptions $ Just "aoos"
+
+data ArkhamChooseOneStep = ArkhamChooseOneStep
+  { acosPlayerId :: UUID
+  , acosChoices :: [String]
+  , acosChoiceTarget :: ArkhamTarget
+  }
+  deriving stock (Generic, Show)
+
+instance ToJSON ArkhamChooseOneStep where
+  toJSON = genericToJSON $ aesonOptions $ Just "acos"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "acos"
+
+instance FromJSON ArkhamChooseOneStep where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "acos"
 
 data ArkhamSkillCheckStep = ArkhamSkillCheckStep
   { ascsType :: ArkhamSkillType
@@ -119,7 +135,14 @@ instance ToJSON ArkhamResolveEnemiesStep where
 instance FromJSON ArkhamResolveEnemiesStep where
   parseJSON = genericParseJSON $ aesonOptions $ Just "ares"
 
-data ArkhamGameStateLock = AddDoom | InvestigationTakeActions | UpkeepResetActions | DrawAndGainResources | ResolveEnemies | ResolveAttacksOfOpportunity
+data ArkhamGameStateLock
+  = AddDoom
+  | DrawEncounter
+  | InvestigationTakeActions
+  | UpkeepResetActions
+  | DrawAndGainResources
+  | ResolveEnemies
+  | ResolveAttacksOfOpportunity
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 

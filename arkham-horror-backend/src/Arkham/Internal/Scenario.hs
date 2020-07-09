@@ -107,8 +107,7 @@ defaultResolveAttacksOfOpportunity =
             HashMap.filter ((`elem` aoosEnemyIds) . _enemyId) (g ^. enemies)
           enemyIds' = HashMap.keysSet
             $ HashMap.filter (not . _enemyFinishedAttacking) enemies'
-          lockConstructor =
-            maybe Unlocked Locked (NE.nonEmpty remainingLocks)
+          lockConstructor = maybe Unlocked Locked (NE.nonEmpty remainingLocks)
         if null enemyIds'
           then
             pure
@@ -153,7 +152,7 @@ defaultMythosPhase = ArkhamMythosPhaseInternal
   , mythosPhaseAddDoom = runLockedM AddDoom
     $ \g -> pure . Unlocked $ g & stacks . at "Agenda" . _Just . doom +~ 1
   , mythosPhaseCheckAdvance = pure
-  , mythosPhaseDrawEncounter = runOnlyUnlockedM $ \g -> do
+  , mythosPhaseDrawEncounter = runLockedM DrawEncounter $ \g -> do
     let (card : deck') = g ^. encounterDeck
     Unlocked
       <$> (g & encounterDeck .~ deck' & traverseOf

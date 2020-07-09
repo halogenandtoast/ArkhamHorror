@@ -75,6 +75,7 @@ export default class Player extends Vue {
   @Prop(Object) readonly game!: ArkhamGame
   @Prop(Object) readonly player!: ArkhamPlayer
   @Prop(Array) readonly commitedCards!: number[]
+  @Prop(Boolean) readonly canTakeActions!: boolean
 
   private focusedEnemy: string | null = null;
 
@@ -90,7 +91,7 @@ export default class Player extends Vue {
   }
 
   canPlay(index: number) {
-    if (!this.inActionWindow || this.focusedEnemy) {
+    if (!this.canTakeActions) {
       return false;
     }
 
@@ -118,14 +119,6 @@ export default class Player extends Vue {
   }
 
   get canDraw() {
-    if (this.focusedEnemy) {
-      return false;
-    }
-
-    return this.inActionWindow && this.player.actionsRemaining > 0;
-  }
-
-  get canTakeActions() {
     if (this.focusedEnemy) {
       return false;
     }

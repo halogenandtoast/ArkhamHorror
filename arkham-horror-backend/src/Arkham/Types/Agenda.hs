@@ -5,18 +5,14 @@ where
 
 import Arkham.Types.Card
 import ClassyPrelude
-import Data.Aeson
-import Data.Aeson.Casing
+import Json
 
-data ArkhamAgenda = ArkhamAgenda { aagendaCardCode :: ArkhamCardCode, aagendaImage :: Text, aagendaDoom :: Int }
+data ArkhamAgenda = ArkhamAgenda { aagendaCardCode :: ArkhamCardCode, aagendaImage :: Text, aagendaImageBack :: Text, aagendaDoom :: Int }
   deriving stock (Show, Generic)
 
 instance ToJSON ArkhamAgenda where
-  toJSON =
-    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 7 }
-  toEncoding = genericToEncoding
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 7 }
+  toJSON = genericToJSON $ aesonOptions $ Just "aagenda"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "aagenda"
 
 instance FromJSON ArkhamAgenda where
-  parseJSON = genericParseJSON
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 7 }
+  parseJSON = genericParseJSON $ aesonOptions $ Just "aagenda"

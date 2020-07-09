@@ -78,4 +78,3 @@ trapped = (act (ArkhamCardCode "01108") "Act 1a" clueThreshold')
 
 theBarrier :: ArkhamActInternal
 theBarrier = act "01109" "Act 2a" (PerInvestigator 3)
-

@@ -15,6 +15,7 @@ import Arkham.Types.Player
 import Arkham.Types.Skill
 import Arkham.Util
 import Base.Lock
+import Base.Util
 import qualified Data.HashSet as HashSet
 import qualified Data.List.NonEmpty as NE
 import Import

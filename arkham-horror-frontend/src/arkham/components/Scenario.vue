@@ -96,6 +96,7 @@
       @commitCard="commitCard"
     />
     <StatusBar :game="game" />
+    <ChoiceModal v-if="shouldMakeChoice" :game="game" @choose="makeChoice" />
   </div>
 </template>
 
@@ -109,12 +110,14 @@ import {
   performDrawToken,
   performApplyTokenResult,
   performProgressAct,
+  performMakeChoice,
 } from '@/arkham/api';
 import Player from '@/arkham/components/Player.vue';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
+import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 
 @Component({
   components: {
@@ -123,6 +126,7 @@ import StatusBar from '@/arkham/components/StatusBar.vue';
     Agenda,
     ChaosBag,
     StatusBar,
+    ChoiceModal,
   },
 })
 export default class Scenario extends Vue {
@@ -204,6 +208,12 @@ export default class Scenario extends Vue {
     });
   }
 
+  makeChoice(index: number) {
+    performMakeChoice(this.game.id, index).then((game: ArkhamGame) => {
+      this.update(game);
+    });
+  }
+
   accessible(location: ArkhamLocation) {
     return this.accessibleLocations.includes(location.cardCode);
   }
@@ -220,6 +230,10 @@ export default class Scenario extends Vue {
     const { users, players, activeUser } = this.game.gameState;
 
     return players[users[activeUser]];
+  }
+
+  get shouldMakeChoice() {
+    return this.game.gameState.step.tag === ArkhamStepTypes.CHOOSE_ONE;
   }
 
   get drawnToken() {

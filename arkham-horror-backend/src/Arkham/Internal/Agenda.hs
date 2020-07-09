@@ -10,9 +10,11 @@ import Arkham.Types
 import Arkham.Types.Card
 import Arkham.Types.GameState
 import Arkham.Types.Player
-import Arkham.Util
+import Base.Lock
+import Base.Util
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
+import Data.List.NonEmpty (NonEmpty(..))
 import Lens.Micro
 import Lens.Micro.Extras
 import Safe (fromJustNote)
@@ -20,10 +22,12 @@ import System.Random
 
 data ArkhamAgendaInternal = ArkhamAgendaInternal
   { agendaSequence :: Text
+  , agendaName :: Text
   , agendaCardCode :: ArkhamCardCode
   , agendaWillProgress :: ArkhamGameState -> Bool
-  , agendaOnProgress :: forall m. MonadIO m => ArkhamGameState -> ArkhamAgenda -> m ArkhamGameState
-  , agendaOnChoice :: forall m. MonadIO m => ArkhamGameState -> Int -> m ArkhamGameState
+  , agendaOnProgress :: forall m. MonadIO m => ArkhamAgenda -> ArkhamGameState -> m ArkhamGameState
+  , agendaOnProgressLock :: Maybe (Lock ArkhamGameState)
+  , agendaOnChoice :: forall m. MonadIO m => Int -> ArkhamGameState -> m ArkhamGameState
   }
 
 toInternalAgenda :: ArkhamAgenda -> ArkhamAgendaInternal
@@ -46,11 +50,20 @@ totalDoom g = doomOnStacks + doomOnLocations
   doomOnStacks = sum $ map (view doom) $ agsStacks g
   doomOnLocations = sum $ map (view doom) $ HashMap.elems $ agsLocations g
 
+agenda :: Text -> Text -> ArkhamCardCode -> Int -> ArkhamAgendaInternal
+agenda name sequence' code' doom' = ArkhamAgendaInternal
+  { agendaSequence = sequence'
+  , agendaName = name
+  , agendaWillProgress = \g -> totalDoom g >= doom'
+  , agendaOnProgress = const pure
+  , agendaOnProgressLock = Nothing
+  , agendaCardCode = code'
+  , agendaOnChoice = const pure
+  }
+
 whatsGoingOn :: ArkhamAgendaInternal
-whatsGoingOn = ArkhamAgendaInternal
-  { agendaSequence = "1a"
-  , agendaWillProgress = \g -> totalDoom g > 3
-  , agendaOnProgress = \g a ->
+whatsGoingOn = (agenda "What's going on" "1a" "01105" 3)
+  { agendaOnProgress = \a g ->
     pure $ g & gameStateStep .~ ArkhamGameStateStepChooseOneStep
       (ArkhamChooseOneStep
         { acosPlayerId = _playerId $ g ^. activePlayer
@@ -61,11 +74,14 @@ whatsGoingOn = ArkhamAgendaInternal
         , acosChoiceTarget = AgendaTarget a
         }
       )
-  , agendaCardCode = "01105"
-  , agendaOnChoice = \g c -> case c of
+  , agendaOnProgressLock = Just (ChooseOne :| [])
+  , agendaOnChoice = \c g -> case c of
     1 -> traverseOf
-      (players . each . hand)
-      (\h -> without <$> liftIO (randomRIO (0, length h - 1)) <*> pure h)
+      (players . each)
+      (\p -> do
+        n <- liftIO $ randomRIO (0, length (p ^. hand) - 1)
+        pure $ p & hand %~ without n & discard %~ ((p ^?! hand . ix n) :)
+      )
       g
     2 -> pure $ g & leadInvestigator . sanityDamage +~ 2
     _ -> error "what have you done"
@@ -75,19 +91,7 @@ leadInvestigator :: HasActivePlayer a => Lens' a ArkhamPlayer
 leadInvestigator = activePlayer
 
 riseOfTheGhouls :: ArkhamAgendaInternal
-riseOfTheGhouls = ArkhamAgendaInternal
-  { agendaSequence = "2a"
-  , agendaWillProgress = \g -> totalDoom g > 7
-  , agendaOnProgress = const . pure
-  , agendaCardCode = "01106"
-  , agendaOnChoice = \g _ -> pure g
-  }
+riseOfTheGhouls = agenda "Rise of the Ghouls" "2a" "01106" 7
 
 theyreGettingOut :: ArkhamAgendaInternal
-theyreGettingOut = ArkhamAgendaInternal
-  { agendaSequence = "3a"
-  , agendaWillProgress = \g -> totalDoom g > 10
-  , agendaOnProgress = const . pure
-  , agendaCardCode = "01107"
-  , agendaOnChoice = \g _ -> pure g
-  }
+theyreGettingOut = agenda "They're getting out" "3a" "01107" 10

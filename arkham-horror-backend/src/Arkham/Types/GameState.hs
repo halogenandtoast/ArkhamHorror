@@ -143,6 +143,7 @@ data ArkhamGameStateLock
   | DrawAndGainResources
   | ResolveEnemies
   | ResolveAttacksOfOpportunity
+  | ChooseOne
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 

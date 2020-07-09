@@ -8,6 +8,7 @@ where
 import Arkham.Constructors
 import Arkham.Entity.ArkhamGame
 import Arkham.Internal.Act
+import Arkham.Internal.Agenda
 import Arkham.Internal.ChaosToken
 import Arkham.Internal.EncounterCard
 import Arkham.Internal.Location
@@ -150,8 +151,28 @@ defaultMythosPhase :: ArkhamMythosPhaseInternal
 defaultMythosPhase = ArkhamMythosPhaseInternal
   { mythosPhaseOnEnter = pure
   , mythosPhaseAddDoom = runLockedM AddDoom
-    $ \g -> pure . Unlocked $ g & stacks . at "Agenda" . _Just . doom +~ 1
-  , mythosPhaseCheckAdvance = pure
+    $ \g -> pure . Unlocked $ g & stacks . ix "Agenda" . doom +~ 1
+  , mythosPhaseCheckAdvance = runOnlyUnlockedM $ \g -> do
+    let
+      agenda' = g ^?! stacks . ix "Agenda" . _AgendaStack . to NE.head
+      ArkhamAgendaInternal {..} = toInternalAgenda agenda'
+      willProgress = agendaWillProgress (g ^. currentData . gameState)
+      gameStateUpdate = if willProgress then agendaOnProgress agenda' else pure
+      agendaStackUpdate = if willProgress then NE.fromList . NE.tail else id
+      lockUpdate = if willProgress
+        then (<>) <$> agendaOnProgressLock <*> pure (pure DrawEncounter)
+        else Nothing
+      lockConstructor = maybe Unlocked Locked lockUpdate
+    lockConstructor
+      <$> (g
+          & stacks
+          . ix "Agenda"
+          . _AgendaStack
+          %~ agendaStackUpdate
+          & lock
+          .~ lockUpdate
+          & traverseOf (currentData . gameState) gameStateUpdate
+          )
   , mythosPhaseDrawEncounter = runLockedM DrawEncounter $ \g -> do
     let (card : deck') = g ^. encounterDeck
     Unlocked
@@ -326,9 +347,21 @@ theGatheringSetup game = do
 
 theGatheringAgenda :: MonadRandom m => m ArkhamStack
 theGatheringAgenda = pure $ AgendaStack $ NE.fromList
-  [ ArkhamAgenda "01105" "https://arkhamdb.com/bundles/cards/01105.jpg" 0
-  , ArkhamAgenda "01106" "https://arkhamdb.com/bundles/cards/01106.jpg" 0
-  , ArkhamAgenda "01107" "https://arkhamdb.com/bundles/cards/01107.jpg" 0
+  [ ArkhamAgenda
+    "01105"
+    "https://arkhamdb.com/bundles/cards/01105.jpg"
+    "https://arkhamdb.com/bundles/cards/01105b.jpg"
+    0
+  , ArkhamAgenda
+    "01106"
+    "https://arkhamdb.com/bundles/cards/01106.jpg"
+    "https://arkhamdb.com/bundles/cards/01106b.jpg"
+    0
+  , ArkhamAgenda
+    "01107"
+    "https://arkhamdb.com/bundles/cards/01107.jpg"
+    "https://arkhamdb.com/bundles/cards/01107b.jpg"
+    0
   ]
 
 theGatheringAct :: MonadRandom m => m ArkhamStack

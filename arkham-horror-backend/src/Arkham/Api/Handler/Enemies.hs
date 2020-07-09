@@ -9,11 +9,10 @@ import Arkham.Types.Game
 import Arkham.Types.GameState
 import Arkham.Types.Player
 import Arkham.Util
-import Data.Aeson
-import Data.Aeson.Casing
 import qualified Data.HashMap.Strict as HashMap
 import Data.UUID
 import Import
+import Json
 import Lens.Micro
 import Safe (fromJustNote)
 
@@ -21,8 +20,7 @@ newtype SelectEnemyPost = SelectEnemyPost { sepEnemyId :: UUID }
   deriving stock (Generic, Show)
 
 instance FromJSON SelectEnemyPost where
-  parseJSON = genericParseJSON
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 3 }
+  parseJSON = genericParseJSON $ aesonOptions $ Just "sep"
 
 -- brittany-disable-next-binding
 postApiV1ArkhamGameSelectEnemyR :: ArkhamGameId -> Handler ArkhamGameData

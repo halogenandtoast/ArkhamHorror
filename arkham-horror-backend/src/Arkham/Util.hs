@@ -1,6 +1,5 @@
 module Arkham.Util
   ( updateGame
-  , without
   )
 where
 
@@ -17,6 +16,3 @@ updateGame gameId game = do
   let scenario' = toInternalScenario game
   updatedGame <- liftIO $ scenarioRun scenario' game
   replace gameId updatedGame $> arkhamGameCurrentData updatedGame
-
-without :: Int -> [a] -> [a]
-without n as = [ a | (i, a) <- zip [0 ..] as, i /= n ]

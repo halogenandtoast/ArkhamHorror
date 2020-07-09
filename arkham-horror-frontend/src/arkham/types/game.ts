@@ -33,11 +33,22 @@ export interface ArkhamGame {
   gameState: ArkhamGameState;
 }
 
-type AgendaStackContents = {
+type ArkhamAgenda = {
   image: string;
+  imageBack: string;
   cardCode: string;
   doom: number;
 }
+
+const arkhamAgendaDecoder = JsonDecoder.object<ArkhamAgenda>(
+  {
+    image: JsonDecoder.string,
+    imageBack: JsonDecoder.string,
+    cardCode: JsonDecoder.string,
+    doom: JsonDecoder.number,
+  },
+  'ArkhamAgenda',
+);
 
 type ActStackContents = {
   image: string;
@@ -47,7 +58,7 @@ type ActStackContents = {
 
 export type AgendaStack = {
   tag: 'AgendaStack';
-  contents: AgendaStackContents[];
+  contents: ArkhamAgenda[];
 };
 
 export type ActStack = {
@@ -63,6 +74,7 @@ export enum ArkhamStepTypes {
   REVEAL_TOKEN = 'ArkhamGameStateStepRevealTokenStep',
   RESOLVE_ENEMIES = 'ArkhamGameStateStepResolveEnemiesStep',
   RESOLVE_ATTACKS_OF_OPPORTUNITY = 'ArkhamGameStateStepAttackOfOpportunityStep',
+  CHOOSE_ONE = 'ArkhamGameStateStepChooseOneStep',
 }
 
 interface ArkhamInvestigatorActionStep {
@@ -89,6 +101,11 @@ interface ArkhamAttackOfOpportunityStep {
   contents: ArkhamResolveAttacksOfOpportunityStepContents;
 }
 
+interface ArkhamChooseOneStep {
+  tag: ArkhamStepTypes.CHOOSE_ONE;
+  contents: ArkhamChooseOneStepContents;
+}
+
 interface ArkhamLocationTarget {
   tag: 'LocationTarget';
   contents: ArkhamLocation;
@@ -99,7 +116,12 @@ interface ArkhamEnemyTarget {
   contents: string;
 }
 
-type ArkhamTarget = ArkhamLocationTarget | ArkhamEnemyTarget;
+interface ArkhamAgendaTarget {
+  tag: 'AgendaTarget';
+  contents: ArkhamAgenda;
+}
+
+type ArkhamTarget = ArkhamLocationTarget | ArkhamEnemyTarget | ArkhamAgendaTarget;
 
 export const arkhamLocationTargetDecoder = JsonDecoder.object<ArkhamLocationTarget>({
   tag: JsonDecoder.isExactly('LocationTarget'),
@@ -111,9 +133,15 @@ export const arkhamEnemyTargetDecoder = JsonDecoder.object<ArkhamEnemyTarget>({
   contents: JsonDecoder.string,
 }, 'ArkhamEnemyTarget');
 
+export const arkhamAgendaTargetDecoder = JsonDecoder.object<ArkhamAgendaTarget>({
+  tag: JsonDecoder.isExactly('AgendaTarget'),
+  contents: arkhamAgendaDecoder,
+}, 'ArkhamAgendaTarget');
+
 export const arkhamTargetDecoder = JsonDecoder.oneOf<ArkhamTarget>([
   arkhamLocationTargetDecoder,
   arkhamEnemyTargetDecoder,
+  arkhamAgendaTargetDecoder,
 ], 'ArkhamTarget');
 
 type ArkhamSkillType = string;
@@ -156,6 +184,12 @@ interface ArkhamResolveEnemiesStepContents {
 interface ArkhamResolveAttacksOfOpportunityStepContents {
   enemyIds: string[];
   playerId: string;
+}
+
+interface ArkhamChooseOneStepContents {
+  playerId: string;
+  choices: string[];
+  choiceTarget: ArkhamTarget;
 }
 
 export const arkhamActionInvestigateActionDecoder = JsonDecoder.object<ArkhamInvestigateAction>({
@@ -210,11 +244,20 @@ export const arkhamStepResolveAttacksOfOpportunityContentsDecoder = JsonDecoder.
     playerId: JsonDecoder.string,
   }, 'ArkhamResolveAttacksOfOpportunityStepContents');
 
+export const arkhamStepChooseOneContentsDecoder = JsonDecoder.object<
+    ArkhamChooseOneStepContents
+  >({
+    choices: JsonDecoder.array<string>(JsonDecoder.string, 'choices[]'),
+    playerId: JsonDecoder.string,
+    choiceTarget: arkhamTargetDecoder,
+  }, 'ArkhamChooseOneStepContents');
+
 type ArkhamStep = ArkhamInvestigatorActionStep
   | ArkhamSkillCheckStep
   | ArkhamRevealTokenStep
   | ArkhamResolveEnemiesStep
-  | ArkhamAttackOfOpportunityStep;
+  | ArkhamAttackOfOpportunityStep
+  | ArkhamChooseOneStep;
 
 export const arkhamStepInvestigatorActionStepDecoder = JsonDecoder.object<
     ArkhamInvestigatorActionStep
@@ -250,12 +293,20 @@ export const arkhamStepAttackOfOpportunityStepDecoder = JsonDecoder.object<
     contents: arkhamStepResolveAttacksOfOpportunityContentsDecoder,
   }, 'ArkhamResolveAttacksOfOpportunityStep');
 
+export const arkhamStepChooseOneStepDecoder = JsonDecoder.object<
+    ArkhamChooseOneStep
+  >({
+    tag: JsonDecoder.isExactly(ArkhamStepTypes.CHOOSE_ONE),
+    contents: arkhamStepChooseOneContentsDecoder,
+  }, 'ArkhamChooseOneStep');
+
 export const arkhamStepDecoder = JsonDecoder.oneOf<ArkhamStep>([
   arkhamStepInvestigatorActionStepDecoder,
   arkhamStepSkillCheckStepDecoder,
   arkhamStepRevealTokenStepDecoder,
   arkhamStepResolveEnemiesStepDecoder,
   arkhamStepAttackOfOpportunityStepDecoder,
+  arkhamStepChooseOneStepDecoder,
 ], 'ArkhamStep');
 
 export interface ArkhamGameState {
@@ -277,15 +328,6 @@ export const arkhamPhaseDecoder = JsonDecoder.oneOf<ArkhamPhase>([
   JsonDecoder.isExactly('Upkeep'),
 ], 'ArkhamPhase');
 
-const arkhamAgendaContentsDecoder = JsonDecoder.object<AgendaStackContents>(
-  {
-    image: JsonDecoder.string,
-    cardCode: JsonDecoder.string,
-    doom: JsonDecoder.number,
-  },
-  'AgendaStackContents',
-);
-
 const arkhamActContentsDecoder = JsonDecoder.object<ActStackContents>(
   {
     image: JsonDecoder.string,
@@ -298,7 +340,7 @@ const arkhamActContentsDecoder = JsonDecoder.object<ActStackContents>(
 export const arkhamStackAgendaStackDecoder = JsonDecoder.object<AgendaStack>(
   {
     tag: JsonDecoder.isExactly('AgendaStack'),
-    contents: JsonDecoder.array<AgendaStackContents>(arkhamAgendaContentsDecoder, 'AgendaStack[]'),
+    contents: JsonDecoder.array<ArkhamAgenda>(arkhamAgendaDecoder, 'Agenda[]'),
   },
   'AgendaStack',
 );

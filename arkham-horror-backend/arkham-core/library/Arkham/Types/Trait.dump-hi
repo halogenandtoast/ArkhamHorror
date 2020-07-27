@@ -1,0 +1,1273 @@
+
+==================== FINAL INTERFACE ====================
+2020-07-27 00:49:50.57281 UTC
+
+interface main:Arkham.Types.Trait [family instance module] 8083
+  interface hash: ebf40393ac105eab3f6dbf6c84130360
+  ABI hash: 99e8dd17e97d505e408325dfdd31201a
+  export-list hash: 2997f587150c6d8f6aa9a9bb5331c08b
+  orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
+  flag hash: 2537e095408284b80630f80e3aab794d
+  opt_hash: ff890cfbbf202d76cd277f9540e9a33e
+  hpc_hash: 93b885adfe0da089cdf634904fd59f71
+  plugin_hash: ad164012d6b1e14942349d58b1132007
+  sig of: Nothing
+  used TH splices: False
+  where
+exports:
+  Arkham.Types.Trait.Trait{Arkham.Types.Trait.Agency Arkham.Types.Trait.Ally Arkham.Types.Trait.Armor Arkham.Types.Trait.Artist Arkham.Types.Trait.Assistant Arkham.Types.Trait.Augury Arkham.Types.Trait.Avatar Arkham.Types.Trait.Believer Arkham.Types.Trait.Blessed Arkham.Types.Trait.Blunder Arkham.Types.Trait.Bold Arkham.Types.Trait.Boon Arkham.Types.Trait.Charm Arkham.Types.Trait.Chosen Arkham.Types.Trait.Civic Arkham.Types.Trait.Clairvoyant Arkham.Types.Trait.Clothing Arkham.Types.Trait.Composure Arkham.Types.Trait.Condition Arkham.Types.Trait.Connection Arkham.Types.Trait.Conspirator Arkham.Types.Trait.Creature Arkham.Types.Trait.Criminal Arkham.Types.Trait.Cultist Arkham.Types.Trait.Curse Arkham.Types.Trait.Cursed Arkham.Types.Trait.DarkYoung Arkham.Types.Trait.DeepOne Arkham.Types.Trait.Desperate Arkham.Types.Trait.Detective Arkham.Types.Trait.Developed Arkham.Types.Trait.Dreamer Arkham.Types.Trait.Dreamlands Arkham.Types.Trait.Drifter Arkham.Types.Trait.Elite Arkham.Types.Trait.Endtimes Arkham.Types.Trait.Evidence Arkham.Types.Trait.Expert Arkham.Types.Trait.Extradimensional Arkham.Types.Trait.Fated Arkham.Types.Trait.Favor Arkham.Types.Trait.Firearm Arkham.Types.Trait.Flaw Arkham.Types.Trait.Footwear Arkham.Types.Trait.Fortune Arkham.Types.Trait.Gambit Arkham.Types.Trait.Geist Arkham.Types.Trait.Ghoul Arkham.Types.Trait.Grant Arkham.Types.Trait.Hazard Arkham.Types.Trait.Humanoid Arkham.Types.Trait.Hunter Arkham.Types.Trait.Illicit Arkham.Types.Trait.Improvised Arkham.Types.Trait.Injury Arkham.Types.Trait.Innate Arkham.Types.Trait.Insight Arkham.Types.Trait.Instrument Arkham.Types.Trait.Item Arkham.Types.Trait.Job Arkham.Types.Trait.Lunatic Arkham.Types.Trait.Madness Arkham.Types.Trait.Medic Arkham.Types.Trait.Melee Arkham.Types.Trait.Miskatonic Arkham.Types.Trait.Monster Arkham.Types.Trait.Mystery Arkham.Types.Trait.Occult Arkham.Types.Trait.Omen Arkham.Types.Trait.Pact Arkham.Types.Trait.Paradox Arkham.Types.Trait.Patron Arkham.Types.Trait.Performer Arkham.Types.Trait.Police Arkham.Types.Trait.Practiced Arkham.Types.Trait.Ranged Arkham.Types.Trait.Relic Arkham.Types.Trait.Reporter Arkham.Types.Trait.Research Arkham.Types.Trait.Ritual Arkham.Types.Trait.Scholar Arkham.Types.Trait.Science Arkham.Types.Trait.Serpent Arkham.Types.Trait.Service Arkham.Types.Trait.SilverTwilight Arkham.Types.Trait.Socialite Arkham.Types.Trait.Song Arkham.Types.Trait.Sorcerer Arkham.Types.Trait.Spell Arkham.Types.Trait.Spirit Arkham.Types.Trait.Summon Arkham.Types.Trait.Supply Arkham.Types.Trait.Syndicate Arkham.Types.Trait.Tactic Arkham.Types.Trait.Talent Arkham.Types.Trait.Tarot Arkham.Types.Trait.Task Arkham.Types.Trait.Terror Arkham.Types.Trait.Tindalos Arkham.Types.Trait.Tome Arkham.Types.Trait.Tool Arkham.Types.Trait.Trap Arkham.Types.Trait.Trick Arkham.Types.Trait.Upgrade Arkham.Types.Trait.Veteran Arkham.Types.Trait.Warden Arkham.Types.Trait.Wayfarer Arkham.Types.Trait.Weapon Arkham.Types.Trait.Witch}
+module dependencies:
+package dependencies: adjunctions-4.4 aeson-1.4.7.1 array-0.5.4.0
+                      async-2.2.2 attoparsec-0.13.2.4 base-4.13.0.0 base-compat-0.11.1
+                      base-compat-batteries-0.11.1 base-orphans-0.8.2 basic-prelude-0.7.0
+                      bifunctors-5.5.7 binary-0.8.7.0 bytestring-0.10.10.0
+                      chunked-data-0.3.1 classy-prelude-1.5.0 comonad-5.0.6
+                      containers-0.6.2.1 data-default-class-0.1.2.0 deepseq-1.4.4.0
+                      directory-1.3.6.0 distributive-0.6.2 dlist-0.8.0.8
+                      dlist-instances-0.1.1.1 exceptions-0.10.4 filepath-1.4.2.1
+                      free-5.1.3 ghc-boot-th-8.8.3 ghc-prim-0.5.3 hashable-1.3.0.0
+                      integer-logarithms-1.0.3 integer-gmp-1.0.2.0 kan-extensions-5.2
+                      keys-3.12.3 mono-traversable-1.0.15.1
+                      mono-traversable-instances-0.1.0.0 mtl-2.2.2
+                      mutable-containers-0.3.4 pointed-5.0.1 pretty-1.1.3.6
+                      primitive-0.7.0.1 profunctors-5.5.2 random-1.1 say-0.1.0.1
+                      scientific-0.3.6.2 semigroupoids-5.3.4 split-0.2.3.4 stm-2.5.0.0
+                      stm-chans-3.0.0.4 tagged-0.8.6 template-haskell-2.15.0.0
+                      text-1.2.4.0 time-1.9.3 time-compat-1.9.3 transformers-0.5.6.2
+                      transformers-base-0.4.5.2 transformers-compat-0.6.5 unix-2.7.2.2
+                      unliftio-0.2.12.1 unliftio-core-0.1.2.0
+                      unordered-containers-0.2.11.0 uuid-types-1.0.3 vector-0.12.1.2
+                      vector-algorithms-0.8.0.3 vector-instances-3.4
+orphans: mono-traversable-instances-0.1.0.0:Data.MonoTraversable.Instances
+         vector-instances-3.4:Data.Vector.Instances
+         stm-2.5.0.0:Control.Monad.STM
+         attoparsec-0.13.2.4:Data.Attoparsec.Text.Internal
+         attoparsec-0.13.2.4:Data.Attoparsec.ByteString.Char8
+         vector-0.12.1.2:Data.Vector.Unboxed base-orphans-0.8.2:Data.Orphans
+         time-1.9.3:Data.Time.Clock.TAI
+         time-1.9.3:Data.Time.Format.Format.Instances
+         time-1.9.3:Data.Time.Format.Parse
+         time-1.9.3:Data.Time.Format.Parse.Instances
+         time-1.9.3:Data.Time.LocalTime.Internal.ZonedTime
+         time-1.9.3:Data.Time.LocalTime.Internal.LocalTime
+         time-1.9.3:Data.Time.Calendar.Gregorian
+         hashable-1.3.0.0:Data.Hashable.Generic.Instances
+         text-1.2.4.0:Data.Text.Lazy text-1.2.4.0:Data.Text
+         binary-0.8.7.0:Data.Binary.Generic
+         bytestring-0.10.10.0:Data.ByteString.Builder
+         text-1.2.4.0:Data.Text.Show
+         vector-0.12.1.2:Data.Vector.Fusion.Bundle
+         transformers-0.5.6.2:Control.Monad.Trans.Error
+         base-4.13.0.0:GHC.Float base-4.13.0.0:GHC.Base
+family instance modules: adjunctions-4.4:Data.Functor.Rep
+                         aeson-1.4.7.1:Data.Aeson.Types.Internal
+                         attoparsec-0.13.2.4:Data.Attoparsec.Internal.Types
+                         base-4.13.0.0:Control.Applicative base-4.13.0.0:Data.Complex
+                         base-4.13.0.0:Data.Functor.Compose base-4.13.0.0:Data.Functor.Const
+                         base-4.13.0.0:Data.Functor.Identity
+                         base-4.13.0.0:Data.Functor.Product base-4.13.0.0:Data.Functor.Sum
+                         base-4.13.0.0:Data.Monoid base-4.13.0.0:Data.Semigroup
+                         base-4.13.0.0:Data.Semigroup.Internal base-4.13.0.0:Data.Version
+                         base-4.13.0.0:Data.Void base-4.13.0.0:GHC.Exts
+                         base-4.13.0.0:GHC.Generics base-4.13.0.0:GHC.IO.Exception
+                         base-orphans-0.8.2:Data.Orphans
+                         bifunctors-5.5.7:Data.Bifunctor.Biff
+                         bifunctors-5.5.7:Data.Bifunctor.Clown
+                         bifunctors-5.5.7:Data.Bifunctor.Flip
+                         bifunctors-5.5.7:Data.Bifunctor.Join
+                         bifunctors-5.5.7:Data.Bifunctor.Joker
+                         bifunctors-5.5.7:Data.Bifunctor.Product
+                         bifunctors-5.5.7:Data.Bifunctor.Sum
+                         bifunctors-5.5.7:Data.Bifunctor.Tannen
+                         bifunctors-5.5.7:Data.Bifunctor.Wrapped
+                         containers-0.6.2.1:Data.IntMap.Internal
+                         containers-0.6.2.1:Data.IntSet.Internal
+                         containers-0.6.2.1:Data.Map.Internal
+                         containers-0.6.2.1:Data.Sequence.Internal
+                         containers-0.6.2.1:Data.Set.Internal containers-0.6.2.1:Data.Tree
+                         dlist-0.8.0.8:Data.DList free-5.1.3:Control.Comonad.Cofree
+                         free-5.1.3:Control.Monad.Free free-5.1.3:Control.Monad.Trans.Free
+                         ghc-boot-th-8.8.3:GHC.ForeignSrcLang.Type
+                         ghc-boot-th-8.8.3:GHC.LanguageExtensions.Type
+                         hashable-1.3.0.0:Data.Hashable.Class
+                         kan-extensions-5.2:Data.Functor.Day keys-3.12.3:Data.Key
+                         mono-traversable-1.0.15.1:Data.Containers
+                         mono-traversable-1.0.15.1:Data.MonoTraversable
+                         mono-traversable-1.0.15.1:Data.NonNull
+                         mono-traversable-1.0.15.1:Data.Sequences
+                         mono-traversable-instances-0.1.0.0:Data.MonoTraversable.Instances
+                         mutable-containers-0.3.4:Data.Mutable.BRef
+                         mutable-containers-0.3.4:Data.Mutable.Class
+                         mutable-containers-0.3.4:Data.Mutable.DLList
+                         mutable-containers-0.3.4:Data.Mutable.Deque
+                         mutable-containers-0.3.4:Data.Mutable.PRef
+                         mutable-containers-0.3.4:Data.Mutable.SRef
+                         mutable-containers-0.3.4:Data.Mutable.URef
+                         pretty-1.1.3.6:Text.PrettyPrint.Annotated.HughesPJ
+                         pretty-1.1.3.6:Text.PrettyPrint.HughesPJ
+                         primitive-0.7.0.1:Control.Monad.Primitive
+                         primitive-0.7.0.1:Data.Primitive.Array
+                         primitive-0.7.0.1:Data.Primitive.ByteArray
+                         primitive-0.7.0.1:Data.Primitive.PrimArray
+                         primitive-0.7.0.1:Data.Primitive.SmallArray
+                         profunctors-5.5.2:Data.Profunctor.Composition
+                         profunctors-5.5.2:Data.Profunctor.Rep tagged-0.8.6:Data.Tagged
+                         template-haskell-2.15.0.0:Language.Haskell.TH.Syntax
+                         text-1.2.4.0:Data.Text text-1.2.4.0:Data.Text.Lazy
+                         unliftio-0.2.12.1:UnliftIO.Internals.Async
+                         unordered-containers-0.2.11.0:Data.HashMap.Base
+                         unordered-containers-0.2.11.0:Data.HashSet.Base
+                         uuid-types-1.0.3:Data.UUID.Types.Internal
+                         uuid-types-1.0.3:Data.UUID.Types.Internal.Builder
+                         vector-0.12.1.2:Data.Vector vector-0.12.1.2:Data.Vector.Primitive
+                         vector-0.12.1.2:Data.Vector.Storable
+                         vector-0.12.1.2:Data.Vector.Unboxed
+                         vector-0.12.1.2:Data.Vector.Unboxed.Base
+                         vector-instances-3.4:Data.Vector.Instances
+import  -/  aeson-1.4.7.1:Data.Aeson 2842187dc6e173b16c252c93903ed5fa
+import  -/  aeson-1.4.7.1:Data.Aeson.Types.FromJSON 1f521185f960f75b0cb0e24801fd2676
+import  -/  aeson-1.4.7.1:Data.Aeson.Types.ToJSON 502f6fa4e9068bc7e479ba08a2c37032
+import  -/  base-4.13.0.0:GHC.Base fd5922a33821d3c11bad0dbf62d73a9d
+import  -/  base-4.13.0.0:GHC.Generics 135d5c54a1b6b2263a6c706f1fa68eea
+import  -/  base-4.13.0.0:GHC.Show c560a9443c6efcf432bce7d80e5ab605
+import  -/  classy-prelude-1.5.0:ClassyPrelude 72b2e292205be968f69152ed8b8fde45
+import  -/  ghc-prim-0.5.3:GHC.Classes 57aaac09c8c10c320d66b437bdfe1f40
+import  -/  hashable-1.3.0.0:Data.Hashable.Class cd4b3801a1c01a2cc9e0f096d63dee0f
+8d18e63a19613f21c5a7298d1adb3631
+  $fEqTrait :: GHC.Classes.Eq Arkham.Types.Trait.Trait
+  DFunId
+  {- Inline: CONLIKE, Never levity-polymorphic -}
+8d18e63a19613f21c5a7298d1adb3631
+  $fFromJSONTrait ::
+    Data.Aeson.Types.FromJSON.FromJSON Arkham.Types.Trait.Trait
+  DFunId
+  {- Inline: CONLIKE, Never levity-polymorphic -}
+8d18e63a19613f21c5a7298d1adb3631
+  $fGenericTrait :: GHC.Generics.Generic Arkham.Types.Trait.Trait
+  DFunId
+  {- Inline: CONLIKE, Never levity-polymorphic -}
+8d18e63a19613f21c5a7298d1adb3631
+  $fHashableTrait ::
+    Data.Hashable.Class.Hashable Arkham.Types.Trait.Trait
+  DFunId
+  {- Inline: CONLIKE, Never levity-polymorphic -}
+8d18e63a19613f21c5a7298d1adb3631
+  $fShowTrait :: GHC.Show.Show Arkham.Types.Trait.Trait
+  DFunId
+  {- Inline: CONLIKE, Never levity-polymorphic -}
+8d18e63a19613f21c5a7298d1adb3631
+  $fToJSONTrait ::
+    Data.Aeson.Types.ToJSON.ToJSON Arkham.Types.Trait.Trait
+  DFunId
+  {- Inline: CONLIKE, Never levity-polymorphic -}
+4f602c1663d7bcc6183183b7c1ae0a22
+  $tc'Agency :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+751f06760548b9ced5c1c937c86f8dd1
+  $tc'Ally :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+fb40417835990d9fc5916b5955891032
+  $tc'Armor :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+d5c93ae19b572e87fd20b99ebde32b56
+  $tc'Artist :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+401164a6eb97fa20e318e12f501989e2
+  $tc'Assistant :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+5a0ffa4dcf7ad1be49f2cd7c1c75d088
+  $tc'Augury :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+d152e21d37ecf2dcb1b4090d13278e9c
+  $tc'Avatar :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+757b6228731a323fded9daecc84a3147
+  $tc'Believer :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+655e6ce75c0ccfb1a27617b4b04c81df
+  $tc'Blessed :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+e80c8e0f91e219b8286f20dd21081087
+  $tc'Blunder :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+aa2bb5ac4addb0648262ab44d08e8f55
+  $tc'Bold :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+4aa0c466c11772e60f0d2a338678bdb0
+  $tc'Boon :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+b62cd98307979af4e1ba2cc43cf91bd2
+  $tc'Charm :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+305594951c4879f7747778cec265d3f2
+  $tc'Chosen :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+b366b6c633a48b4301a9340ac000af3b
+  $tc'Civic :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+cb635212a381ddfa37405f418dd7c0b3
+  $tc'Clairvoyant :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+d7af50f1c750ae119b5c690276a918a8
+  $tc'Clothing :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+eb23fb8706394bec781441cc11985819
+  $tc'Composure :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+b634d9a915473651538a7abaec63e439
+  $tc'Condition :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+7e08a4c668876ac6a8761b1bfb328c27
+  $tc'Connection :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+8cb1fbccf647e02d6c94ff1c21ea4f93
+  $tc'Conspirator :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+065a2fced27aedf1545cc7bc6cf8bf55
+  $tc'Creature :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+5e1f015d0eb878d66d41c4d98edf4a85
+  $tc'Criminal :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+8c04eea95bcf79b2d2b4d35fcfaf8cb6
+  $tc'Cultist :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+6b2482ce454e95e683a3bff110fff2bc
+  $tc'Curse :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+eb3b51ea0dcc7fd19d99c02e23958b56
+  $tc'Cursed :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+f608f9e2a913237f0bb219f914bc02ff
+  $tc'DarkYoung :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+e10566c5e419c8ff5f5508a3112d9a5f
+  $tc'DeepOne :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+eff12b89d4b89b1f30a1cf7a4047e5f6
+  $tc'Desperate :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+b8bfee69b92bf7365942c8b395a30f38
+  $tc'Detective :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+a7d041cb243aa87c4c971bbf63f5afdd
+  $tc'Developed :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+10c68a51ad0b993e306ded9d99149631
+  $tc'Dreamer :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+56a2f906d447956835d852a74163bd8a
+  $tc'Dreamlands :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+9523068575c920be8453947b154568de
+  $tc'Drifter :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+8650376e3e4b8c41c908f29a61f71378
+  $tc'Elite :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+050f3b6168aebed83a63cb2ecb99067c
+  $tc'Endtimes :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+2f0b99fa759d19f5e21a6b4efb9d27b4
+  $tc'Evidence :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+68255366877ed25b38f238e69b9be1a4
+  $tc'Expert :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+c21be16ac8ee78f5c944294299933297
+  $tc'Extradimensional :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+523d2b7a68c9147ab8ac46fb5741fafc
+  $tc'Fated :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+da75b7249a4f17c0618779225292ee54
+  $tc'Favor :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+6aeffabecfec5f3e7cec4b550b211afb
+  $tc'Firearm :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+3cebec80b31bce9f39399b9d94b08bf2
+  $tc'Flaw :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+2f9fefe5598c7d052130c8cc33f45fc2
+  $tc'Footwear :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+06a1d6e33d965204d40e8c25fe829993
+  $tc'Fortune :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+04197dab778a8823482a60632ae3c9fe
+  $tc'Gambit :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+1f62c8a9077915cf52f1fea92e070b66
+  $tc'Geist :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+d61eaed9ae45c0ec577e0a417e6d8e0d
+  $tc'Ghoul :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+af66c5a528d0122aae4a531f1aab73dd
+  $tc'Grant :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+d6180e1c0830719533bb2af43e5a5c00
+  $tc'Hazard :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+3fa5977d44a2472aef14a296337ded9e
+  $tc'Humanoid :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+575bc7903b368c4e869cd50d3049c9d6
+  $tc'Hunter :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+c30584f1e90451f27d4c27b63bac8630
+  $tc'Illicit :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+d09aeff4fb9d3dddeff6e75822d7811e
+  $tc'Improvised :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+992ec89e56fc5036e6f633287740af4d
+  $tc'Injury :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+70994c4452223c8cafecc9516cc90960
+  $tc'Innate :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+dee421fc87e936e5933aed80c726d3e0
+  $tc'Insight :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+0386c61bc8e687851d106d39857719d4
+  $tc'Instrument :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+89e5386468c266302240c87f3487e0f0
+  $tc'Item :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+13598c15dbb64ce4743f24bde95681ff
+  $tc'Job :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+8e5c4e9d9bdb9f0dda57fb92fd60ec63
+  $tc'Lunatic :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+243fc126dda2a7e0f083cb3cde879ad8
+  $tc'Madness :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+d172ec85b17c669c44686eb268baa3fa
+  $tc'Medic :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+84f904ff7e6615642f3182fc57f14ec1
+  $tc'Melee :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+49bff2d8c7456a8a05efee57563099da
+  $tc'Miskatonic :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+385e799484b7c1877cc4960921adec4f
+  $tc'Monster :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+3820384378a4fc73ee740499fdf9e242
+  $tc'Mystery :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+439fd233fd354c6ecae5198826f24d47
+  $tc'Occult :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+f03bc50c061a95f4da957f935d089845
+  $tc'Omen :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+c07ced8e803fcdd6af73acc3ce4e7c8f
+  $tc'Pact :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+acfabbd0a9ac337fd1ad94a86270ce34
+  $tc'Paradox :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+43b95f14cc90bf6a740d4a6fb926fe66
+  $tc'Patron :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+76e5122f9c12ce9f91c05ab8b2956e0c
+  $tc'Performer :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+cc26fd160907ba9a4b84dbb0ddc8565f
+  $tc'Police :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+32e32e85b05236bd2cd1a22490bb79bc
+  $tc'Practiced :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+cbefcd935311e17482d39f6c37083c92
+  $tc'Ranged :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+005c05678bfec5c1679526ec6c6c340d
+  $tc'Relic :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+ec532ede4ae471cc008096d7238021a2
+  $tc'Reporter :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+f6965f100af87cbc429f4fe610e8fb5b
+  $tc'Research :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+e1a54b845520df6b3ce99a4ec3a6c6cb
+  $tc'Ritual :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+fe5db3d158ec6dfca0b4de567d91fb0a
+  $tc'Scholar :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+22cc99846e97f807fcdf85a8ee3ebb49
+  $tc'Science :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+2350e245697b63f3a8c0cc4ebaae7968
+  $tc'Serpent :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+22843c42158cfa768b55d90fcbc7162e
+  $tc'Service :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+814d7531167262594ea1d031ca339805
+  $tc'SilverTwilight :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+a2221a8f4bb6a9912eba7a4eb9216644
+  $tc'Socialite :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+e84e638d57c2df1010903e505ae879f1
+  $tc'Song :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+0017c72997e88c239cf310b74f464407
+  $tc'Sorcerer :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+6f37cb2747ab909ad99e855f462d5314
+  $tc'Spell :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+36140920162720fea1b1753617a329fe
+  $tc'Spirit :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+ff241af368cbe3f1e78a4c2374b2dc85
+  $tc'Summon :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+aad374e8dafb944938e74de5da38d1ce
+  $tc'Supply :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+60cbd50e03dbd1a8fe26f9163dca4c06
+  $tc'Syndicate :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+16aa537e4b88bdc2245ee901d04dabff
+  $tc'Tactic :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+8d879fa6d0ef44dc8fda868772a2cdcf
+  $tc'Talent :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+6f00bd5dd6e409d1b7b2e00e410d670a
+  $tc'Tarot :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+2cd1393da82eead8f42aebb1b9ea82e0
+  $tc'Task :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+f8647cea606fffbbc3b2c67d7dc9e6a0
+  $tc'Terror :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+740c7cde76c6072379da45b264140573
+  $tc'Tindalos :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+e6c73b1f2705a441261ee0cc5c12d73a
+  $tc'Tome :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+c2251cb37635eeb5cd88757735aa11f1
+  $tc'Tool :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+ff1d0187967eb3525b54508418841298
+  $tc'Trap :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+c867282c65a96d6e251970a2335e7831
+  $tc'Trick :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+c0e7f0e44221b65585f7e0a863c616a4
+  $tc'Upgrade :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+1e2d3e8e00d89d952822a960d8950496
+  $tc'Veteran :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+a4d3fdc358ba7e20b262917aa8254353
+  $tc'Warden :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+ed043409c1e196cc959312c33fd4fb7c
+  $tc'Wayfarer :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+3aebd234bc9be1ea1eb983584e48f991
+  $tc'Weapon :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+e679fae17295a2c82e284c10c0908b61
+  $tc'Witch :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+7ca90d2cac72c162b18a407b23c6c0de
+  $tcTrait :: GHC.Types.TyCon
+  {- Never levity-polymorphic -}
+bc295724bba595a8b3a3fd8a21b1f298
+  $trModule :: GHC.Types.Module
+  {- Never levity-polymorphic -}
+8d18e63a19613f21c5a7298d1adb3631
+  axiom Arkham.Types.Trait.Rep_Trait ::
+      GHC.Generics.Rep Arkham.Types.Trait.Trait
+        = GHC.Generics.D1
+            ('GHC.Generics.MetaData
+               "Trait" "Arkham.Types.Trait" "main" 'GHC.Types.False)
+            ((((((GHC.Generics.C1
+                    ('GHC.Generics.MetaCons
+                       "Agency" 'GHC.Generics.PrefixI 'GHC.Types.False)
+                    GHC.Generics.U1
+                  GHC.Generics.:+: (GHC.Generics.C1
+                                      ('GHC.Generics.MetaCons
+                                         "Ally" 'GHC.Generics.PrefixI 'GHC.Types.False)
+                                      GHC.Generics.U1
+                                    GHC.Generics.:+: GHC.Generics.C1
+                                                       ('GHC.Generics.MetaCons
+                                                          "Armor"
+                                                          'GHC.Generics.PrefixI
+                                                          'GHC.Types.False)
+                                                       GHC.Generics.U1))
+                 GHC.Generics.:+: (GHC.Generics.C1
+                                     ('GHC.Generics.MetaCons
+                                        "Artist" 'GHC.Generics.PrefixI 'GHC.Types.False)
+                                     GHC.Generics.U1
+                                   GHC.Generics.:+: (GHC.Generics.C1
+                                                       ('GHC.Generics.MetaCons
+                                                          "Assistant"
+                                                          'GHC.Generics.PrefixI
+                                                          'GHC.Types.False)
+                                                       GHC.Generics.U1
+                                                     GHC.Generics.:+: GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Augury"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1)))
+                GHC.Generics.:+: ((GHC.Generics.C1
+                                     ('GHC.Generics.MetaCons
+                                        "Avatar" 'GHC.Generics.PrefixI 'GHC.Types.False)
+                                     GHC.Generics.U1
+                                   GHC.Generics.:+: (GHC.Generics.C1
+                                                       ('GHC.Generics.MetaCons
+                                                          "Believer"
+                                                          'GHC.Generics.PrefixI
+                                                          'GHC.Types.False)
+                                                       GHC.Generics.U1
+                                                     GHC.Generics.:+: GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Blessed"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1))
+                                  GHC.Generics.:+: ((GHC.Generics.C1
+                                                       ('GHC.Generics.MetaCons
+                                                          "Blunder"
+                                                          'GHC.Generics.PrefixI
+                                                          'GHC.Types.False)
+                                                       GHC.Generics.U1
+                                                     GHC.Generics.:+: GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Bold"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1)
+                                                    GHC.Generics.:+: (GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Boon"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Charm"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1))))
+               GHC.Generics.:+: (((GHC.Generics.C1
+                                     ('GHC.Generics.MetaCons
+                                        "Chosen" 'GHC.Generics.PrefixI 'GHC.Types.False)
+                                     GHC.Generics.U1
+                                   GHC.Generics.:+: (GHC.Generics.C1
+                                                       ('GHC.Generics.MetaCons
+                                                          "Civic"
+                                                          'GHC.Generics.PrefixI
+                                                          'GHC.Types.False)
+                                                       GHC.Generics.U1
+                                                     GHC.Generics.:+: GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Clairvoyant"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1))
+                                  GHC.Generics.:+: ((GHC.Generics.C1
+                                                       ('GHC.Generics.MetaCons
+                                                          "Clothing"
+                                                          'GHC.Generics.PrefixI
+                                                          'GHC.Types.False)
+                                                       GHC.Generics.U1
+                                                     GHC.Generics.:+: GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Composure"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1)
+                                                    GHC.Generics.:+: (GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Condition"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Connection"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1)))
+                                 GHC.Generics.:+: ((GHC.Generics.C1
+                                                      ('GHC.Generics.MetaCons
+                                                         "Conspirator"
+                                                         'GHC.Generics.PrefixI
+                                                         'GHC.Types.False)
+                                                      GHC.Generics.U1
+                                                    GHC.Generics.:+: (GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Creature"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Criminal"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1))
+                                                   GHC.Generics.:+: ((GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Cultist"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Curse"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1)
+                                                                     GHC.Generics.:+: (GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Cursed"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1
+                                                                                       GHC.Generics.:+: GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "DarkYoung"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1)))))
+              GHC.Generics.:+: ((((GHC.Generics.C1
+                                     ('GHC.Generics.MetaCons
+                                        "DeepOne" 'GHC.Generics.PrefixI 'GHC.Types.False)
+                                     GHC.Generics.U1
+                                   GHC.Generics.:+: (GHC.Generics.C1
+                                                       ('GHC.Generics.MetaCons
+                                                          "Desperate"
+                                                          'GHC.Generics.PrefixI
+                                                          'GHC.Types.False)
+                                                       GHC.Generics.U1
+                                                     GHC.Generics.:+: GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Detective"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1))
+                                  GHC.Generics.:+: (GHC.Generics.C1
+                                                      ('GHC.Generics.MetaCons
+                                                         "Developed"
+                                                         'GHC.Generics.PrefixI
+                                                         'GHC.Types.False)
+                                                      GHC.Generics.U1
+                                                    GHC.Generics.:+: (GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Dreamer"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Dreamlands"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1)))
+                                 GHC.Generics.:+: ((GHC.Generics.C1
+                                                      ('GHC.Generics.MetaCons
+                                                         "Drifter"
+                                                         'GHC.Generics.PrefixI
+                                                         'GHC.Types.False)
+                                                      GHC.Generics.U1
+                                                    GHC.Generics.:+: (GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Elite"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Endtimes"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1))
+                                                   GHC.Generics.:+: ((GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Evidence"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Expert"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1)
+                                                                     GHC.Generics.:+: (GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Extradimensional"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1
+                                                                                       GHC.Generics.:+: GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Fated"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1))))
+                                GHC.Generics.:+: (((GHC.Generics.C1
+                                                      ('GHC.Generics.MetaCons
+                                                         "Favor"
+                                                         'GHC.Generics.PrefixI
+                                                         'GHC.Types.False)
+                                                      GHC.Generics.U1
+                                                    GHC.Generics.:+: (GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Firearm"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Flaw"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1))
+                                                   GHC.Generics.:+: ((GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Footwear"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Fortune"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1)
+                                                                     GHC.Generics.:+: (GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Gambit"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1
+                                                                                       GHC.Generics.:+: GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Geist"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1)))
+                                                  GHC.Generics.:+: ((GHC.Generics.C1
+                                                                       ('GHC.Generics.MetaCons
+                                                                          "Ghoul"
+                                                                          'GHC.Generics.PrefixI
+                                                                          'GHC.Types.False)
+                                                                       GHC.Generics.U1
+                                                                     GHC.Generics.:+: (GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Grant"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1
+                                                                                       GHC.Generics.:+: GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Hazard"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1))
+                                                                    GHC.Generics.:+: ((GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Humanoid"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1
+                                                                                       GHC.Generics.:+: GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Hunter"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1)
+                                                                                      GHC.Generics.:+: (GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Illicit"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1
+                                                                                                        GHC.Generics.:+: GHC.Generics.C1
+                                                                                                                           ('GHC.Generics.MetaCons
+                                                                                                                              "Improvised"
+                                                                                                                              'GHC.Generics.PrefixI
+                                                                                                                              'GHC.Types.False)
+                                                                                                                           GHC.Generics.U1))))))
+             GHC.Generics.:+: (((((GHC.Generics.C1
+                                     ('GHC.Generics.MetaCons
+                                        "Injury" 'GHC.Generics.PrefixI 'GHC.Types.False)
+                                     GHC.Generics.U1
+                                   GHC.Generics.:+: (GHC.Generics.C1
+                                                       ('GHC.Generics.MetaCons
+                                                          "Innate"
+                                                          'GHC.Generics.PrefixI
+                                                          'GHC.Types.False)
+                                                       GHC.Generics.U1
+                                                     GHC.Generics.:+: GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Insight"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1))
+                                  GHC.Generics.:+: (GHC.Generics.C1
+                                                      ('GHC.Generics.MetaCons
+                                                         "Instrument"
+                                                         'GHC.Generics.PrefixI
+                                                         'GHC.Types.False)
+                                                      GHC.Generics.U1
+                                                    GHC.Generics.:+: (GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Item"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Job"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1)))
+                                 GHC.Generics.:+: ((GHC.Generics.C1
+                                                      ('GHC.Generics.MetaCons
+                                                         "Lunatic"
+                                                         'GHC.Generics.PrefixI
+                                                         'GHC.Types.False)
+                                                      GHC.Generics.U1
+                                                    GHC.Generics.:+: (GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Madness"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Medic"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1))
+                                                   GHC.Generics.:+: ((GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Melee"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Miskatonic"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1)
+                                                                     GHC.Generics.:+: (GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Monster"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1
+                                                                                       GHC.Generics.:+: GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Mystery"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1))))
+                                GHC.Generics.:+: (((GHC.Generics.C1
+                                                      ('GHC.Generics.MetaCons
+                                                         "Occult"
+                                                         'GHC.Generics.PrefixI
+                                                         'GHC.Types.False)
+                                                      GHC.Generics.U1
+                                                    GHC.Generics.:+: (GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Omen"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Pact"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1))
+                                                   GHC.Generics.:+: ((GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Paradox"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Patron"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1)
+                                                                     GHC.Generics.:+: (GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Performer"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1
+                                                                                       GHC.Generics.:+: GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Police"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1)))
+                                                  GHC.Generics.:+: ((GHC.Generics.C1
+                                                                       ('GHC.Generics.MetaCons
+                                                                          "Practiced"
+                                                                          'GHC.Generics.PrefixI
+                                                                          'GHC.Types.False)
+                                                                       GHC.Generics.U1
+                                                                     GHC.Generics.:+: (GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Ranged"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1
+                                                                                       GHC.Generics.:+: GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Relic"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1))
+                                                                    GHC.Generics.:+: ((GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Reporter"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1
+                                                                                       GHC.Generics.:+: GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Research"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1)
+                                                                                      GHC.Generics.:+: (GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Ritual"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1
+                                                                                                        GHC.Generics.:+: GHC.Generics.C1
+                                                                                                                           ('GHC.Generics.MetaCons
+                                                                                                                              "Scholar"
+                                                                                                                              'GHC.Generics.PrefixI
+                                                                                                                              'GHC.Types.False)
+                                                                                                                           GHC.Generics.U1)))))
+                               GHC.Generics.:+: ((((GHC.Generics.C1
+                                                      ('GHC.Generics.MetaCons
+                                                         "Science"
+                                                         'GHC.Generics.PrefixI
+                                                         'GHC.Types.False)
+                                                      GHC.Generics.U1
+                                                    GHC.Generics.:+: (GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "Serpent"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Service"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1))
+                                                   GHC.Generics.:+: ((GHC.Generics.C1
+                                                                        ('GHC.Generics.MetaCons
+                                                                           "SilverTwilight"
+                                                                           'GHC.Generics.PrefixI
+                                                                           'GHC.Types.False)
+                                                                        GHC.Generics.U1
+                                                                      GHC.Generics.:+: GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Socialite"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1)
+                                                                     GHC.Generics.:+: (GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Song"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1
+                                                                                       GHC.Generics.:+: GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Sorcerer"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1)))
+                                                  GHC.Generics.:+: ((GHC.Generics.C1
+                                                                       ('GHC.Generics.MetaCons
+                                                                          "Spell"
+                                                                          'GHC.Generics.PrefixI
+                                                                          'GHC.Types.False)
+                                                                       GHC.Generics.U1
+                                                                     GHC.Generics.:+: (GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Spirit"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1
+                                                                                       GHC.Generics.:+: GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Summon"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1))
+                                                                    GHC.Generics.:+: ((GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Supply"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1
+                                                                                       GHC.Generics.:+: GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Syndicate"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1)
+                                                                                      GHC.Generics.:+: (GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Tactic"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1
+                                                                                                        GHC.Generics.:+: GHC.Generics.C1
+                                                                                                                           ('GHC.Generics.MetaCons
+                                                                                                                              "Talent"
+                                                                                                                              'GHC.Generics.PrefixI
+                                                                                                                              'GHC.Types.False)
+                                                                                                                           GHC.Generics.U1))))
+                                                 GHC.Generics.:+: (((GHC.Generics.C1
+                                                                       ('GHC.Generics.MetaCons
+                                                                          "Tarot"
+                                                                          'GHC.Generics.PrefixI
+                                                                          'GHC.Types.False)
+                                                                       GHC.Generics.U1
+                                                                     GHC.Generics.:+: (GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Task"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1
+                                                                                       GHC.Generics.:+: GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Terror"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1))
+                                                                    GHC.Generics.:+: ((GHC.Generics.C1
+                                                                                         ('GHC.Generics.MetaCons
+                                                                                            "Tindalos"
+                                                                                            'GHC.Generics.PrefixI
+                                                                                            'GHC.Types.False)
+                                                                                         GHC.Generics.U1
+                                                                                       GHC.Generics.:+: GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Tome"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1)
+                                                                                      GHC.Generics.:+: (GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Tool"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1
+                                                                                                        GHC.Generics.:+: GHC.Generics.C1
+                                                                                                                           ('GHC.Generics.MetaCons
+                                                                                                                              "Trap"
+                                                                                                                              'GHC.Generics.PrefixI
+                                                                                                                              'GHC.Types.False)
+                                                                                                                           GHC.Generics.U1)))
+                                                                   GHC.Generics.:+: ((GHC.Generics.C1
+                                                                                        ('GHC.Generics.MetaCons
+                                                                                           "Trick"
+                                                                                           'GHC.Generics.PrefixI
+                                                                                           'GHC.Types.False)
+                                                                                        GHC.Generics.U1
+                                                                                      GHC.Generics.:+: (GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Upgrade"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1
+                                                                                                        GHC.Generics.:+: GHC.Generics.C1
+                                                                                                                           ('GHC.Generics.MetaCons
+                                                                                                                              "Veteran"
+                                                                                                                              'GHC.Generics.PrefixI
+                                                                                                                              'GHC.Types.False)
+                                                                                                                           GHC.Generics.U1))
+                                                                                     GHC.Generics.:+: ((GHC.Generics.C1
+                                                                                                          ('GHC.Generics.MetaCons
+                                                                                                             "Warden"
+                                                                                                             'GHC.Generics.PrefixI
+                                                                                                             'GHC.Types.False)
+                                                                                                          GHC.Generics.U1
+                                                                                                        GHC.Generics.:+: GHC.Generics.C1
+                                                                                                                           ('GHC.Generics.MetaCons
+                                                                                                                              "Wayfarer"
+                                                                                                                              'GHC.Generics.PrefixI
+                                                                                                                              'GHC.Types.False)
+                                                                                                                           GHC.Generics.U1)
+                                                                                                       GHC.Generics.:+: (GHC.Generics.C1
+                                                                                                                           ('GHC.Generics.MetaCons
+                                                                                                                              "Weapon"
+                                                                                                                              'GHC.Generics.PrefixI
+                                                                                                                              'GHC.Types.False)
+                                                                                                                           GHC.Generics.U1
+                                                                                                                         GHC.Generics.:+: GHC.Generics.C1
+                                                                                                                                            ('GHC.Generics.MetaCons
+                                                                                                                                               "Witch"
+                                                                                                                                               'GHC.Generics.PrefixI
+                                                                                                                                               'GHC.Types.False)
+                                                                                                                                            GHC.Generics.U1)))))))
+8d18e63a19613f21c5a7298d1adb3631
+  data Trait
+    = Agency
+    | Ally
+    | Armor
+    | Artist
+    | Assistant
+    | Augury
+    | Avatar
+    | Believer
+    | Blessed
+    | Blunder
+    | Bold
+    | Boon
+    | Charm
+    | Chosen
+    | Civic
+    | Clairvoyant
+    | Clothing
+    | Composure
+    | Condition
+    | Connection
+    | Conspirator
+    | Creature
+    | Criminal
+    | Cultist
+    | Curse
+    | Cursed
+    | DarkYoung
+    | DeepOne
+    | Desperate
+    | Detective
+    | Developed
+    | Dreamer
+    | Dreamlands
+    | Drifter
+    | Elite
+    | Endtimes
+    | Evidence
+    | Expert
+    | Extradimensional
+    | Fated
+    | Favor
+    | Firearm
+    | Flaw
+    | Footwear
+    | Fortune
+    | Gambit
+    | Geist
+    | Ghoul
+    | Grant
+    | Hazard
+    | Humanoid
+    | Hunter
+    | Illicit
+    | Improvised
+    | Injury
+    | Innate
+    | Insight
+    | Instrument
+    | Item
+    | Job
+    | Lunatic
+    | Madness
+    | Medic
+    | Melee
+    | Miskatonic
+    | Monster
+    | Mystery
+    | Occult
+    | Omen
+    | Pact
+    | Paradox
+    | Patron
+    | Performer
+    | Police
+    | Practiced
+    | Ranged
+    | Relic
+    | Reporter
+    | Research
+    | Ritual
+    | Scholar
+    | Science
+    | Serpent
+    | Service
+    | SilverTwilight
+    | Socialite
+    | Song
+    | Sorcerer
+    | Spell
+    | Spirit
+    | Summon
+    | Supply
+    | Syndicate
+    | Tactic
+    | Talent
+    | Tarot
+    | Task
+    | Terror
+    | Tindalos
+    | Tome
+    | Tool
+    | Trap
+    | Trick
+    | Upgrade
+    | Veteran
+    | Warden
+    | Wayfarer
+    | Weapon
+    | Witch
+instance GHC.Classes.Eq [Arkham.Types.Trait.Trait]
+  = Arkham.Types.Trait.$fEqTrait
+instance Data.Aeson.Types.FromJSON.FromJSON [Arkham.Types.Trait.Trait]
+  = Arkham.Types.Trait.$fFromJSONTrait
+instance GHC.Generics.Generic [Arkham.Types.Trait.Trait]
+  = Arkham.Types.Trait.$fGenericTrait
+instance Data.Hashable.Class.Hashable [Arkham.Types.Trait.Trait]
+  = Arkham.Types.Trait.$fHashableTrait
+instance GHC.Show.Show [Arkham.Types.Trait.Trait]
+  = Arkham.Types.Trait.$fShowTrait
+instance Data.Aeson.Types.ToJSON.ToJSON [Arkham.Types.Trait.Trait]
+  = Arkham.Types.Trait.$fToJSONTrait
+family instance GHC.Generics.Rep [Arkham.Types.Trait.Trait]
+  = Arkham.Types.Trait.Rep_Trait
+trusted: none
+require own pkg trusted: False
+module header:
+  Nothing
+declaration docs:
+arg docs:
+

@@ -1,0 +1,42 @@
+name: arkham-core
+
+dependencies:
+- base >= 4.7 && < 5
+
+default-extensions:
+- NoImplicitPrelude
+- RecordWildCards
+- DerivingStrategies
+- DeriveGeneric
+- DeriveAnyClass
+- LambdaCase
+- FlexibleInstances
+- MultiParamTypeClasses
+- GeneralizedNewtypeDeriving
+- OverloadedStrings
+- TypeApplications
+- TupleSections
+- FlexibleContexts
+- ConstraintKinds
+- StandaloneDeriving
+- DerivingVia
+
+library:
+  source-dirs: library
+  dependencies:
+    - aeson
+    - mtl
+    - microlens
+    - microlens-platform
+    - unordered-containers >= 0.2.11.0
+    - hashable
+    - safe
+    - classy-prelude
+    - bytestring
+    - aeson-pretty
+    - pretty-simple
+    - uuid
+    - random
+    - random-shuffle
+    - containers
+    - http-conduit

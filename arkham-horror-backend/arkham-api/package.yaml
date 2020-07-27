@@ -1,0 +1,130 @@
+name:    arkham-api
+version: "0.0.0"
+
+default-extensions:
+  - BangPatterns
+  - DataKinds
+  - DeriveAnyClass
+  - DeriveFoldable
+  - DeriveFunctor
+  - DeriveGeneric
+  - DeriveLift
+  - DeriveTraversable
+  - DerivingStrategies
+  - DerivingVia
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - LambdaCase
+  - MultiParamTypeClasses
+  - NoImplicitPrelude
+  - NoMonomorphismRestriction
+  - OverloadedStrings
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TypeApplications
+  - TypeFamilies
+
+dependencies:
+  - base
+
+library:
+  source-dirs: library
+  when:
+    - condition: (flag(dev)) || (flag(library-only))
+      then:
+        ghc-options:
+        - -Wall
+        - -fwarn-tabs
+        - -O0
+        cpp-options: -DDEVELOPMENT
+      else:
+        ghc-options:
+        - -Wall
+        - -fwarn-tabs
+        - -O2
+  dependencies:
+    - arkham-core
+    - aeson
+    - aeson-casing
+    - bcrypt
+    - bytestring
+    - case-insensitive
+    - classy-prelude
+    - classy-prelude-conduit
+    - classy-prelude-yesod
+    - conduit
+    - containers
+    - data-default
+    - directory
+    - esqueleto
+    - fast-logger
+    - file-embed
+    - foreign-store
+    - hjsmin
+    - http-client-tls
+    - http-conduit
+    - http-types
+    - jwt
+    - microlens
+    - microlens-platform
+    - monad-control
+    - monad-logger
+    - MonadRandom
+    - monoidal-containers
+    - persistent
+    - persistent-postgresql
+    - persistent-template
+    - profunctors
+    - random
+    - random-shuffle
+    - regex-posix
+    - safe
+    - shakespeare
+    - template-haskell
+    - text
+    - time
+    - transformers
+    - unliftio
+    - unordered-containers
+    - uuid
+    - vector
+    - wai
+    - wai-extra
+    - wai-logger
+    - warp
+    - yaml
+    - yesod
+    - yesod-auth
+    - yesod-core
+    - yesod-form
+    - yesod-static
+
+executables:
+  arkham-api:
+    main: main.hs
+    source-dirs: app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+      - foreign-store
+      - warp
+      - arkham-api
+    when:
+      - condition: flag(library-only)
+        buildable: false
+
+flags:
+  library-only:
+    description: Build for use with "yesod devel"
+    manual: false
+    default: false
+  dev:
+    description: Turn on development settings, like auto-reload templates.
+    manual: false
+    default: false

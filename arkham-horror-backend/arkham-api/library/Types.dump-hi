@@ -1,0 +1,244 @@
+
+==================== FINAL INTERFACE ====================
+2020-07-27 00:49:50.020062 UTC
+
+interface main:Types [family instance module] 8083
+  interface hash: f3f6bc1fd1ca19cc5d605b23b97e5bb8
+  ABI hash: 02251ec90946d9b587c1d2298308a9a9
+  export-list hash: 21a79ffa04d848ea75ff126bd6a0bb09
+  orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
+  flag hash: d6aa782c3185a46b43dd8473a5cd49f5
+  opt_hash: ff890cfbbf202d76cd277f9540e9a33e
+  hpc_hash: 93b885adfe0da089cdf634904fd59f71
+  plugin_hash: ad164012d6b1e14942349d58b1132007
+  sig of: Nothing
+  used TH splices: False
+  where
+exports:
+  Types.Authentication{Types.Authentication authenticationEmail authenticationPassword}
+  Types.Registration{Types.Registration registrationEmail registrationPassword registrationUsername}
+  Types.Token{Types.Token getToken}
+module dependencies: Utility
+package dependencies: aeson-1.4.7.1 array-0.5.4.0
+                      attoparsec-0.13.2.4 base-4.13.0.0 base-compat-0.11.1
+                      base-compat-batteries-0.11.1 base-orphans-0.8.2 binary-0.8.7.0
+                      bytestring-0.10.10.0 containers-0.6.2.1 deepseq-1.4.4.0
+                      dlist-0.8.0.8 ghc-boot-th-8.8.3 ghc-prim-0.5.3 hashable-1.3.0.0
+                      integer-logarithms-1.0.3 integer-gmp-1.0.2.0 primitive-0.7.0.1
+                      random-1.1 scientific-0.3.6.2 tagged-0.8.6
+                      template-haskell-2.15.0.0 text-1.2.4.0 time-1.9.3 time-compat-1.9.3
+                      transformers-0.5.6.2 unordered-containers-0.2.11.0 uuid-types-1.0.3
+                      vector-0.12.1.2
+orphans: attoparsec-0.13.2.4:Data.Attoparsec.Text.Internal
+         attoparsec-0.13.2.4:Data.Attoparsec.ByteString.Char8
+         vector-0.12.1.2:Data.Vector.Unboxed base-orphans-0.8.2:Data.Orphans
+         time-1.9.3:Data.Time.Clock.TAI
+         time-1.9.3:Data.Time.Format.Format.Instances
+         time-1.9.3:Data.Time.Format.Parse
+         time-1.9.3:Data.Time.Format.Parse.Instances
+         time-1.9.3:Data.Time.LocalTime.Internal.ZonedTime
+         time-1.9.3:Data.Time.LocalTime.Internal.LocalTime
+         time-1.9.3:Data.Time.Calendar.Gregorian
+         hashable-1.3.0.0:Data.Hashable.Generic.Instances
+         text-1.2.4.0:Data.Text.Lazy text-1.2.4.0:Data.Text
+         binary-0.8.7.0:Data.Binary.Generic
+         bytestring-0.10.10.0:Data.ByteString.Builder
+         text-1.2.4.0:Data.Text.Show
+         vector-0.12.1.2:Data.Vector.Fusion.Bundle
+         transformers-0.5.6.2:Control.Monad.Trans.Error
+         base-4.13.0.0:GHC.Float base-4.13.0.0:GHC.Base
+family instance modules: aeson-1.4.7.1:Data.Aeson.Types.Internal
+                         attoparsec-0.13.2.4:Data.Attoparsec.Internal.Types
+                         base-4.13.0.0:Control.Applicative base-4.13.0.0:Data.Complex
+                         base-4.13.0.0:Data.Functor.Compose base-4.13.0.0:Data.Functor.Const
+                         base-4.13.0.0:Data.Functor.Identity
+                         base-4.13.0.0:Data.Functor.Product base-4.13.0.0:Data.Functor.Sum
+                         base-4.13.0.0:Data.Monoid base-4.13.0.0:Data.Semigroup
+                         base-4.13.0.0:Data.Semigroup.Internal base-4.13.0.0:Data.Version
+                         base-4.13.0.0:Data.Void base-4.13.0.0:GHC.Exts
+                         base-4.13.0.0:GHC.Generics base-4.13.0.0:GHC.IO.Exception
+                         base-orphans-0.8.2:Data.Orphans
+                         containers-0.6.2.1:Data.IntMap.Internal
+                         containers-0.6.2.1:Data.IntSet.Internal
+                         containers-0.6.2.1:Data.Map.Internal
+                         containers-0.6.2.1:Data.Sequence.Internal
+                         containers-0.6.2.1:Data.Set.Internal containers-0.6.2.1:Data.Tree
+                         dlist-0.8.0.8:Data.DList ghc-boot-th-8.8.3:GHC.ForeignSrcLang.Type
+                         ghc-boot-th-8.8.3:GHC.LanguageExtensions.Type
+                         hashable-1.3.0.0:Data.Hashable.Class
+                         primitive-0.7.0.1:Control.Monad.Primitive
+                         primitive-0.7.0.1:Data.Primitive.Array
+                         primitive-0.7.0.1:Data.Primitive.ByteArray
+                         primitive-0.7.0.1:Data.Primitive.PrimArray
+                         primitive-0.7.0.1:Data.Primitive.SmallArray
+                         tagged-0.8.6:Data.Tagged
+                         template-haskell-2.15.0.0:Language.Haskell.TH.Syntax
+                         text-1.2.4.0:Data.Text text-1.2.4.0:Data.Text.Lazy
+                         unordered-containers-0.2.11.0:Data.HashMap.Base
+                         unordered-containers-0.2.11.0:Data.HashSet.Base
+                         uuid-types-1.0.3:Data.UUID.Types.Internal
+                         uuid-types-1.0.3:Data.UUID.Types.Internal.Builder
+                         vector-0.12.1.2:Data.Vector vector-0.12.1.2:Data.Vector.Primitive
+                         vector-0.12.1.2:Data.Vector.Storable
+                         vector-0.12.1.2:Data.Vector.Unboxed
+                         vector-0.12.1.2:Data.Vector.Unboxed.Base
+import  -/  aeson-1.4.7.1:Data.Aeson 2842187dc6e173b16c252c93903ed5fa
+import  -/  aeson-1.4.7.1:Data.Aeson.Encoding.Internal dcc00d4529cea10861992def9b7bff6f
+import  -/  aeson-1.4.7.1:Data.Aeson.Types.FromJSON 1f521185f960f75b0cb0e24801fd2676
+import  -/  aeson-1.4.7.1:Data.Aeson.Types.Internal b754660449e8fa6baf2baa3df6819608
+import  -/  aeson-1.4.7.1:Data.Aeson.Types.ToJSON 502f6fa4e9068bc7e479ba08a2c37032
+import  -/  base-4.13.0.0:GHC.Base fd5922a33821d3c11bad0dbf62d73a9d
+import  -/  base-4.13.0.0:GHC.Generics 135d5c54a1b6b2263a6c706f1fa68eea
+import  -/  base-4.13.0.0:Prelude da95a9c2922bf32d9c5d41a7d791ffaa
+import  -/  Utility 0a2611c184c6fa1bdbfc62fd73a6bd09
+  exports: 905cfa1f3bc189a11c475168dace31bf
+  Codec 5440ca883c6fadd91d6d2c6e706b37ec
+  Drop dbfd420bea69b10fbd32556c1ce0317f
+  aesonOptions b3a5832d8069e86f4da5615f672e1f8c
+import  -/  text-1.2.4.0:Data.Text a553210d9851484827d0a583688a46f4
+import  -/  text-1.2.4.0:Data.Text.Internal b9d761f9483709588b8cad40f1c5e09a
+f70e35e5c33903720fcececf6654fe67
+  $fFromJSONAuthentication ::
+    Data.Aeson.Types.FromJSON.FromJSON Types.Authentication
+  DFunId
+51a0bb6677032725ae83735f83cb5a4d
+  $fFromJSONRegistration ::
+    Data.Aeson.Types.FromJSON.FromJSON Types.Registration
+  DFunId
+f70e35e5c33903720fcececf6654fe67
+  $fGenericAuthentication ::
+    GHC.Generics.Generic Types.Authentication
+  DFunId
+51a0bb6677032725ae83735f83cb5a4d
+  $fGenericRegistration :: GHC.Generics.Generic Types.Registration
+  DFunId
+51a0bb6677032725ae83735f83cb5a4d
+  $fToJSONRegistration ::
+    Data.Aeson.Types.ToJSON.ToJSON Types.Registration
+  DFunId
+aed3b8bf923226785e2c6b5749ca7e59
+  $fToJSONToken :: Data.Aeson.Types.ToJSON.ToJSON Types.Token
+  DFunId
+1114d27f1eb8e92be1a08003d944958b
+  $tc'Authentication :: GHC.Types.TyCon
+3594f90d408d3869d5b7052cbf6f05cc
+  $tc'Registration :: GHC.Types.TyCon
+461206057b8e92f69452156eda7f8ee8
+  $tc'Token :: GHC.Types.TyCon
+ad107136035745eafd68a02577d30136
+  $tcAuthentication :: GHC.Types.TyCon
+b095dea4061556de4584b61c96ec9388
+  $tcRegistration :: GHC.Types.TyCon
+91c29df2d53452d22e0562639735c6a3
+  $tcToken :: GHC.Types.TyCon
+9e7c0cd8560ba334fe68d6f42e3c8c7c
+  $trModule :: GHC.Types.Module
+f70e35e5c33903720fcececf6654fe67
+  data Authentication
+    = Authentication {authenticationEmail :: Data.Text.Internal.Text,
+                      authenticationPassword :: Data.Text.Internal.Text}
+51a0bb6677032725ae83735f83cb5a4d
+  data Registration
+    = Registration {registrationEmail :: Data.Text.Internal.Text,
+                    registrationUsername :: Data.Text.Internal.Text,
+                    registrationPassword :: Data.Text.Internal.Text}
+f70e35e5c33903720fcececf6654fe67
+  axiom Types.Rep_Authentication ::
+      GHC.Generics.Rep Types.Authentication
+        = GHC.Generics.D1
+            ('GHC.Generics.MetaData
+               "Authentication" "Types" "main" 'GHC.Types.False)
+            (GHC.Generics.C1
+               ('GHC.Generics.MetaCons
+                  "Authentication" 'GHC.Generics.PrefixI 'GHC.Types.True)
+               (GHC.Generics.S1
+                  ('GHC.Generics.MetaSel
+                     ('GHC.Maybe.Just "authenticationEmail")
+                     'GHC.Generics.NoSourceUnpackedness
+                     'GHC.Generics.NoSourceStrictness
+                     'GHC.Generics.DecidedLazy)
+                  (GHC.Generics.Rec0 Data.Text.Internal.Text)
+                GHC.Generics.:*: GHC.Generics.S1
+                                   ('GHC.Generics.MetaSel
+                                      ('GHC.Maybe.Just "authenticationPassword")
+                                      'GHC.Generics.NoSourceUnpackedness
+                                      'GHC.Generics.NoSourceStrictness
+                                      'GHC.Generics.DecidedLazy)
+                                   (GHC.Generics.Rec0 Data.Text.Internal.Text)))
+51a0bb6677032725ae83735f83cb5a4d
+  axiom Types.Rep_Registration ::
+      GHC.Generics.Rep Types.Registration
+        = GHC.Generics.D1
+            ('GHC.Generics.MetaData
+               "Registration" "Types" "main" 'GHC.Types.False)
+            (GHC.Generics.C1
+               ('GHC.Generics.MetaCons
+                  "Registration" 'GHC.Generics.PrefixI 'GHC.Types.True)
+               (GHC.Generics.S1
+                  ('GHC.Generics.MetaSel
+                     ('GHC.Maybe.Just "registrationEmail")
+                     'GHC.Generics.NoSourceUnpackedness
+                     'GHC.Generics.NoSourceStrictness
+                     'GHC.Generics.DecidedLazy)
+                  (GHC.Generics.Rec0 Data.Text.Internal.Text)
+                GHC.Generics.:*: (GHC.Generics.S1
+                                    ('GHC.Generics.MetaSel
+                                       ('GHC.Maybe.Just "registrationUsername")
+                                       'GHC.Generics.NoSourceUnpackedness
+                                       'GHC.Generics.NoSourceStrictness
+                                       'GHC.Generics.DecidedLazy)
+                                    (GHC.Generics.Rec0 Data.Text.Internal.Text)
+                                  GHC.Generics.:*: GHC.Generics.S1
+                                                     ('GHC.Generics.MetaSel
+                                                        ('GHC.Maybe.Just "registrationPassword")
+                                                        'GHC.Generics.NoSourceUnpackedness
+                                                        'GHC.Generics.NoSourceStrictness
+                                                        'GHC.Generics.DecidedLazy)
+                                                     (GHC.Generics.Rec0 Data.Text.Internal.Text))))
+aed3b8bf923226785e2c6b5749ca7e59
+  newtype Token = Token {getToken :: Data.Text.Internal.Text}
+f70e35e5c33903720fcececf6654fe67
+  authenticationEmail ::
+    Types.Authentication -> Data.Text.Internal.Text
+  RecSel Left Types.Authentication
+f70e35e5c33903720fcececf6654fe67
+  authenticationPassword ::
+    Types.Authentication -> Data.Text.Internal.Text
+  RecSel Left Types.Authentication
+aed3b8bf923226785e2c6b5749ca7e59
+  getToken :: Types.Token -> Data.Text.Internal.Text
+  RecSel Left Types.Token
+51a0bb6677032725ae83735f83cb5a4d
+  registrationEmail :: Types.Registration -> Data.Text.Internal.Text
+  RecSel Left Types.Registration
+51a0bb6677032725ae83735f83cb5a4d
+  registrationPassword ::
+    Types.Registration -> Data.Text.Internal.Text
+  RecSel Left Types.Registration
+51a0bb6677032725ae83735f83cb5a4d
+  registrationUsername ::
+    Types.Registration -> Data.Text.Internal.Text
+  RecSel Left Types.Registration
+instance Data.Aeson.Types.FromJSON.FromJSON [Types.Authentication]
+  = Types.$fFromJSONAuthentication
+instance Data.Aeson.Types.FromJSON.FromJSON [Types.Registration]
+  = Types.$fFromJSONRegistration
+instance GHC.Generics.Generic [Types.Authentication]
+  = Types.$fGenericAuthentication
+instance GHC.Generics.Generic [Types.Registration]
+  = Types.$fGenericRegistration
+instance Data.Aeson.Types.ToJSON.ToJSON [Types.Registration]
+  = Types.$fToJSONRegistration
+instance Data.Aeson.Types.ToJSON.ToJSON [Types.Token]
+  = Types.$fToJSONToken
+family instance GHC.Generics.Rep [Types.Authentication]
+  = Types.Rep_Authentication
+family instance GHC.Generics.Rep [Types.Registration]
+  = Types.Rep_Registration
+trusted: none
+require own pkg trusted: False
+module header:
+  Nothing
+declaration docs:
+arg docs:
+

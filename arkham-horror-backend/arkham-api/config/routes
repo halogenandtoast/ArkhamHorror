@@ -1,0 +1,10 @@
+/api ApiP:
+  /v1 ApiV1P:
+    /authenticate ApiV1AuthenticationR POST
+    /register ApiV1RegistrationR POST
+    /whoami ApiV1CurrentUserR GET
+    /arkham ApiV1ArkhamP:
+      /games ApiV1ArkhamGamesP:
+        / ApiV1ArkhamCreateGameR POST
+        /#ArkhamGameId ApiV1ArkhamGameP:
+          / ApiV1ArkhamGameR GET PUT

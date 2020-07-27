@@ -1,0 +1,132 @@
+
+==================== FINAL INTERFACE ====================
+2020-07-27 00:49:49.87605 UTC
+
+interface main:Base.Util 8083
+  interface hash: e234e77c55c371b19c1c3a3e098d0f23
+  ABI hash: 975bc02c7d3a70e14f9688b83db42808
+  export-list hash: 215cebe41f4742527b79ea67c7c44f82
+  orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
+  flag hash: 23d54d155a072ddfdcbe291374369b8f
+  opt_hash: ff890cfbbf202d76cd277f9540e9a33e
+  hpc_hash: 93b885adfe0da089cdf634904fd59f71
+  plugin_hash: ad164012d6b1e14942349d58b1132007
+  sig of: Nothing
+  used TH splices: False
+  where
+exports:
+  Base.Util.without
+module dependencies:
+package dependencies: adjunctions-4.4 array-0.5.4.0 async-2.2.2
+                      base-4.13.0.0 base-orphans-0.8.2 basic-prelude-0.7.0
+                      bifunctors-5.5.7 binary-0.8.7.0 bytestring-0.10.10.0
+                      chunked-data-0.3.1 classy-prelude-1.5.0 comonad-5.0.6
+                      containers-0.6.2.1 data-default-class-0.1.2.0 deepseq-1.4.4.0
+                      directory-1.3.6.0 distributive-0.6.2 dlist-0.8.0.8
+                      dlist-instances-0.1.1.1 exceptions-0.10.4 filepath-1.4.2.1
+                      free-5.1.3 ghc-boot-th-8.8.3 ghc-prim-0.5.3 hashable-1.3.0.0
+                      integer-gmp-1.0.2.0 kan-extensions-5.2 keys-3.12.3
+                      mono-traversable-1.0.15.1 mono-traversable-instances-0.1.0.0
+                      mtl-2.2.2 mutable-containers-0.3.4 pointed-5.0.1 pretty-1.1.3.6
+                      primitive-0.7.0.1 profunctors-5.5.2 say-0.1.0.1 semigroupoids-5.3.4
+                      split-0.2.3.4 stm-2.5.0.0 stm-chans-3.0.0.4 tagged-0.8.6
+                      template-haskell-2.15.0.0 text-1.2.4.0 time-1.9.3
+                      transformers-0.5.6.2 transformers-base-0.4.5.2
+                      transformers-compat-0.6.5 unix-2.7.2.2 unliftio-0.2.12.1
+                      unliftio-core-0.1.2.0 unordered-containers-0.2.11.0 vector-0.12.1.2
+                      vector-algorithms-0.8.0.3 vector-instances-3.4
+orphans: mono-traversable-instances-0.1.0.0:Data.MonoTraversable.Instances
+         vector-instances-3.4:Data.Vector.Instances
+         base-orphans-0.8.2:Data.Orphans vector-0.12.1.2:Data.Vector.Unboxed
+         vector-0.12.1.2:Data.Vector.Fusion.Bundle
+         time-1.9.3:Data.Time.Format.Format.Instances
+         time-1.9.3:Data.Time.Format.Parse
+         time-1.9.3:Data.Time.Format.Parse.Instances
+         time-1.9.3:Data.Time.LocalTime.Internal.ZonedTime
+         time-1.9.3:Data.Time.LocalTime.Internal.LocalTime
+         time-1.9.3:Data.Time.Calendar.Gregorian
+         hashable-1.3.0.0:Data.Hashable.Generic.Instances
+         text-1.2.4.0:Data.Text.Lazy
+         transformers-0.5.6.2:Control.Monad.Trans.Error
+         text-1.2.4.0:Data.Text binary-0.8.7.0:Data.Binary.Generic
+         text-1.2.4.0:Data.Text.Show
+         bytestring-0.10.10.0:Data.ByteString.Builder
+         stm-2.5.0.0:Control.Monad.STM base-4.13.0.0:GHC.Float
+         base-4.13.0.0:GHC.Base
+family instance modules: adjunctions-4.4:Data.Functor.Rep
+                         base-4.13.0.0:Control.Applicative base-4.13.0.0:Data.Complex
+                         base-4.13.0.0:Data.Functor.Compose base-4.13.0.0:Data.Functor.Const
+                         base-4.13.0.0:Data.Functor.Identity
+                         base-4.13.0.0:Data.Functor.Product base-4.13.0.0:Data.Functor.Sum
+                         base-4.13.0.0:Data.Monoid base-4.13.0.0:Data.Semigroup
+                         base-4.13.0.0:Data.Semigroup.Internal base-4.13.0.0:Data.Version
+                         base-4.13.0.0:Data.Void base-4.13.0.0:GHC.Exts
+                         base-4.13.0.0:GHC.Generics base-4.13.0.0:GHC.IO.Exception
+                         base-orphans-0.8.2:Data.Orphans
+                         bifunctors-5.5.7:Data.Bifunctor.Biff
+                         bifunctors-5.5.7:Data.Bifunctor.Clown
+                         bifunctors-5.5.7:Data.Bifunctor.Flip
+                         bifunctors-5.5.7:Data.Bifunctor.Join
+                         bifunctors-5.5.7:Data.Bifunctor.Joker
+                         bifunctors-5.5.7:Data.Bifunctor.Product
+                         bifunctors-5.5.7:Data.Bifunctor.Sum
+                         bifunctors-5.5.7:Data.Bifunctor.Tannen
+                         bifunctors-5.5.7:Data.Bifunctor.Wrapped
+                         containers-0.6.2.1:Data.IntMap.Internal
+                         containers-0.6.2.1:Data.IntSet.Internal
+                         containers-0.6.2.1:Data.Map.Internal
+                         containers-0.6.2.1:Data.Sequence.Internal
+                         containers-0.6.2.1:Data.Set.Internal containers-0.6.2.1:Data.Tree
+                         dlist-0.8.0.8:Data.DList free-5.1.3:Control.Comonad.Cofree
+                         free-5.1.3:Control.Monad.Free free-5.1.3:Control.Monad.Trans.Free
+                         ghc-boot-th-8.8.3:GHC.ForeignSrcLang.Type
+                         ghc-boot-th-8.8.3:GHC.LanguageExtensions.Type
+                         hashable-1.3.0.0:Data.Hashable.Class
+                         kan-extensions-5.2:Data.Functor.Day keys-3.12.3:Data.Key
+                         mono-traversable-1.0.15.1:Data.Containers
+                         mono-traversable-1.0.15.1:Data.MonoTraversable
+                         mono-traversable-1.0.15.1:Data.NonNull
+                         mono-traversable-1.0.15.1:Data.Sequences
+                         mono-traversable-instances-0.1.0.0:Data.MonoTraversable.Instances
+                         mutable-containers-0.3.4:Data.Mutable.BRef
+                         mutable-containers-0.3.4:Data.Mutable.Class
+                         mutable-containers-0.3.4:Data.Mutable.DLList
+                         mutable-containers-0.3.4:Data.Mutable.Deque
+                         mutable-containers-0.3.4:Data.Mutable.PRef
+                         mutable-containers-0.3.4:Data.Mutable.SRef
+                         mutable-containers-0.3.4:Data.Mutable.URef
+                         pretty-1.1.3.6:Text.PrettyPrint.Annotated.HughesPJ
+                         pretty-1.1.3.6:Text.PrettyPrint.HughesPJ
+                         primitive-0.7.0.1:Control.Monad.Primitive
+                         primitive-0.7.0.1:Data.Primitive.Array
+                         primitive-0.7.0.1:Data.Primitive.ByteArray
+                         primitive-0.7.0.1:Data.Primitive.PrimArray
+                         primitive-0.7.0.1:Data.Primitive.SmallArray
+                         profunctors-5.5.2:Data.Profunctor.Composition
+                         profunctors-5.5.2:Data.Profunctor.Rep tagged-0.8.6:Data.Tagged
+                         template-haskell-2.15.0.0:Language.Haskell.TH.Syntax
+                         text-1.2.4.0:Data.Text text-1.2.4.0:Data.Text.Lazy
+                         unliftio-0.2.12.1:UnliftIO.Internals.Async
+                         unordered-containers-0.2.11.0:Data.HashMap.Base
+                         unordered-containers-0.2.11.0:Data.HashSet.Base
+                         vector-0.12.1.2:Data.Vector vector-0.12.1.2:Data.Vector.Primitive
+                         vector-0.12.1.2:Data.Vector.Storable
+                         vector-0.12.1.2:Data.Vector.Unboxed
+                         vector-0.12.1.2:Data.Vector.Unboxed.Base
+                         vector-instances-3.4:Data.Vector.Instances
+import  -/  chunked-data-0.3.1:Data.ChunkedZip 3cc895feeebf20c407ef1be898907fb7
+import  -/  classy-prelude-1.5.0:ClassyPrelude 72b2e292205be968f69152ed8b8fde45
+import  -/  ghc-prim-0.5.3:GHC.Classes 57aaac09c8c10c320d66b437bdfe1f40
+c348d0c316361db43e01684148b49009
+  $trModule :: GHC.Types.Module
+  {- Never levity-polymorphic -}
+f211368eb6932c50d3b3ba5ca427aba3
+  without :: GHC.Types.Int -> [a] -> [a]
+  {- Never levity-polymorphic -}
+trusted: none
+require own pkg trusted: False
+module header:
+  Nothing
+declaration docs:
+arg docs:
+

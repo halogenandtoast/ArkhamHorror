@@ -1,0 +1,132 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 12dd9e55a4b05256652835eb18487796fcaefa848d1aa349b5d9ad214350982b
+
+name:           arkham-core
+version:        0.0.0
+build-type:     Simple
+
+library
+  exposed-modules:
+      Arkham.Types.Ability
+      Arkham.Types.Act
+      Arkham.Types.ActId
+      Arkham.Types.Action
+      Arkham.Types.Agenda
+      Arkham.Types.AgendaId
+      Arkham.Types.Asset
+      Arkham.Types.Asset.Uses
+      Arkham.Types.AssetId
+      Arkham.Types.Card
+      Arkham.Types.Card.CardCode
+      Arkham.Types.Card.Class
+      Arkham.Types.Card.EncounterCard
+      Arkham.Types.Card.PlayerCard
+      Arkham.Types.Classes
+      Arkham.Types.Difficulty
+      Arkham.Types.EncounterSet
+      Arkham.Types.Enemy
+      Arkham.Types.EnemyId
+      Arkham.Types.Event
+      Arkham.Types.FastWindow
+      Arkham.Types.Game
+      Arkham.Types.GameJson
+      Arkham.Types.GameRunner
+      Arkham.Types.GameValue
+      Arkham.Types.Helpers
+      Arkham.Types.Investigator
+      Arkham.Types.Investigator.Attrs
+      Arkham.Types.Investigator.Cards.AgnesBaker
+      Arkham.Types.Investigator.Cards.AkachiOnyele
+      Arkham.Types.Investigator.Cards.AmandaSharpe
+      Arkham.Types.Investigator.Cards.AshcanPete
+      Arkham.Types.Investigator.Cards.CalvinWright
+      Arkham.Types.Investigator.Cards.CarolynFern
+      Arkham.Types.Investigator.Cards.DaisyWalker
+      Arkham.Types.Investigator.Cards.DexterDrake
+      Arkham.Types.Investigator.Cards.DianaStanley
+      Arkham.Types.Investigator.Cards.FatherMateo
+      Arkham.Types.Investigator.Cards.FinnEdwards
+      Arkham.Types.Investigator.Cards.HarveyWalters
+      Arkham.Types.Investigator.Cards.JacquelineFine
+      Arkham.Types.Investigator.Cards.JennyBarnes
+      Arkham.Types.Investigator.Cards.JimCulver
+      Arkham.Types.Investigator.Cards.JoeDiamond
+      Arkham.Types.Investigator.Cards.LeoAnderson
+      Arkham.Types.Investigator.Cards.LolaHayes
+      Arkham.Types.Investigator.Cards.LukeRobinson
+      Arkham.Types.Investigator.Cards.MandyThompson
+      Arkham.Types.Investigator.Cards.MarieLambeau
+      Arkham.Types.Investigator.Cards.MarkHarrigan
+      Arkham.Types.Investigator.Cards.MinhThiPhan
+      Arkham.Types.Investigator.Cards.NathanielCho
+      Arkham.Types.Investigator.Cards.NormanWithers
+      Arkham.Types.Investigator.Cards.PatriceHathaway
+      Arkham.Types.Investigator.Cards.PrestonFairmont
+      Arkham.Types.Investigator.Cards.RexMurphy
+      Arkham.Types.Investigator.Cards.RitaYoung
+      Arkham.Types.Investigator.Cards.RolandBanks
+      Arkham.Types.Investigator.Cards.SefinaRousseau
+      Arkham.Types.Investigator.Cards.SilasMarsh
+      Arkham.Types.Investigator.Cards.SisterMary
+      Arkham.Types.Investigator.Cards.SkidsOToole
+      Arkham.Types.Investigator.Cards.StellaClark
+      Arkham.Types.Investigator.Cards.TommyMuldoon
+      Arkham.Types.Investigator.Cards.TonyMorgan
+      Arkham.Types.Investigator.Cards.UrsulaDowns
+      Arkham.Types.Investigator.Cards.WendyAdams
+      Arkham.Types.Investigator.Cards.WilliamYorick
+      Arkham.Types.Investigator.Cards.WinifredHabbamock
+      Arkham.Types.Investigator.Cards.ZoeySamaras
+      Arkham.Types.Investigator.Runner
+      Arkham.Types.InvestigatorId
+      Arkham.Types.Keyword
+      Arkham.Types.Location
+      Arkham.Types.LocationId
+      Arkham.Types.LocationSymbol
+      Arkham.Types.Message
+      Arkham.Types.Modifier
+      Arkham.Types.Phase
+      Arkham.Types.PlayerTreachery
+      Arkham.Types.Prey
+      Arkham.Types.Query
+      Arkham.Types.Scenario
+      Arkham.Types.ScenarioId
+      Arkham.Types.Skill
+      Arkham.Types.SkillTest
+      Arkham.Types.SkillTestResult
+      Arkham.Types.SkillType
+      Arkham.Types.Source
+      Arkham.Types.Stats
+      Arkham.Types.Token
+      Arkham.Types.Trait
+      Arkham.Types.Treachery
+      Arkham.Types.TreacheryId
+  other-modules:
+      Paths_arkham_core
+  hs-source-dirs:
+      library
+  default-extensions: NoImplicitPrelude RecordWildCards DerivingStrategies DeriveGeneric DeriveAnyClass LambdaCase FlexibleInstances MultiParamTypeClasses GeneralizedNewtypeDeriving OverloadedStrings TypeApplications TupleSections FlexibleContexts ConstraintKinds StandaloneDeriving DerivingVia
+  build-depends:
+      aeson
+    , aeson-pretty
+    , base >=4.7 && <5
+    , bytestring
+    , classy-prelude
+    , containers
+    , hashable
+    , http-conduit
+    , microlens
+    , microlens-platform
+    , mtl
+    , pretty-simple
+    , random
+    , random-shuffle
+    , safe
+    , unordered-containers >=0.2.11.0
+    , uuid
+  default-language: Haskell2010

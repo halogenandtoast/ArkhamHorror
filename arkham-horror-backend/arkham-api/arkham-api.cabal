@@ -1,0 +1,129 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: f8a94d92837bd6a475323db1f631e079d740b99c2027b9def2eed227c31a0da7
+
+name:           arkham-api
+version:        0.0.0
+build-type:     Simple
+
+flag dev
+  description: Turn on development settings, like auto-reload templates.
+  manual: False
+  default: False
+
+flag library-only
+  description: Build for use with "yesod devel"
+  manual: False
+  default: False
+
+library
+  exposed-modules:
+      Api.Handler.Arkham.Games
+      Application
+      Auth.JWT
+      Base.Api.Handler.Authentication
+      Base.Api.Handler.CurrentUser
+      Base.Api.Handler.Registration
+      Base.Util
+      Entity.Arkham.Game
+      Entity.User
+      Foundation
+      Import
+      Import.NoFoundation
+      Json
+      Model
+      Orphans
+      Settings
+      Settings.StaticFiles
+      Types
+      Utility
+  other-modules:
+      Paths_arkham_api
+  hs-source-dirs:
+      library
+  default-extensions: BangPatterns DataKinds DeriveAnyClass DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies DerivingVia FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NoMonomorphismRestriction OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TypeApplications TypeFamilies
+  build-depends:
+      MonadRandom
+    , aeson
+    , aeson-casing
+    , arkham-core
+    , base
+    , bcrypt
+    , bytestring
+    , case-insensitive
+    , classy-prelude
+    , classy-prelude-conduit
+    , classy-prelude-yesod
+    , conduit
+    , containers
+    , data-default
+    , directory
+    , esqueleto
+    , fast-logger
+    , file-embed
+    , foreign-store
+    , hjsmin
+    , http-client-tls
+    , http-conduit
+    , http-types
+    , jwt
+    , microlens
+    , microlens-platform
+    , monad-control
+    , monad-logger
+    , monoidal-containers
+    , persistent
+    , persistent-postgresql
+    , persistent-template
+    , profunctors
+    , random
+    , random-shuffle
+    , regex-posix
+    , safe
+    , shakespeare
+    , template-haskell
+    , text
+    , time
+    , transformers
+    , unliftio
+    , unordered-containers
+    , uuid
+    , vector
+    , wai
+    , wai-extra
+    , wai-logger
+    , warp
+    , yaml
+    , yesod
+    , yesod-auth
+    , yesod-core
+    , yesod-form
+    , yesod-static
+  if (flag(dev)) || (flag(library-only))
+    ghc-options: -Wall -fwarn-tabs -O0
+    cpp-options: -DDEVELOPMENT
+  else
+    ghc-options: -Wall -fwarn-tabs -O2
+  default-language: Haskell2010
+
+executable arkham-api
+  main-is: main.hs
+  other-modules:
+      DevelMain
+      Paths_arkham_api
+  hs-source-dirs:
+      app
+  default-extensions: BangPatterns DataKinds DeriveAnyClass DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies DerivingVia FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NoMonomorphismRestriction OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TypeApplications TypeFamilies
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      arkham-api
+    , base
+    , foreign-store
+    , warp
+  if flag(library-only)
+    buildable: False
+  default-language: Haskell2010

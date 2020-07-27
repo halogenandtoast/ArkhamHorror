@@ -16,32 +16,6 @@ import { ArkhamGame, ArkhamStepTypes } from '@/arkham/types/game';
 @Component
 export default class ChoiceModal extends Vue {
   @Prop(Object) readonly game!: ArkhamGame;
-
-  get choices() {
-    if (this.game.gameState.step.tag === ArkhamStepTypes.CHOOSE_ONE) {
-      return this.game.gameState.step.contents.choices;
-    }
-
-    return [];
-  }
-
-  get targetImage() {
-    if (this.game.gameState.step.tag === ArkhamStepTypes.CHOOSE_ONE) {
-      const { choiceTarget } = this.game.gameState.step.contents;
-      switch (choiceTarget.tag) {
-        case 'AgendaTarget': return choiceTarget.contents.imageBack;
-        case 'LocationTarget': return choiceTarget.contents.image;
-        case 'EnemyTarget': return this.game.gameState.enemies[choiceTarget.contents].image;
-        default:
-        {
-          const _exhaustiveCheck: never = choiceTarget; // eslint-disable-line
-          throw new Error('Not handlig target type');
-        }
-      }
-    }
-
-    return null;
-  }
 }
 </script>
 

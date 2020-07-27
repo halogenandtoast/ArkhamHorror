@@ -28,9 +28,7 @@ export type ArkhamPhase = 'Mythos' | 'Investigation' | 'Enemy' | 'Upkeep';
 
 export interface ArkhamGame {
   id: number;
-  cycle: ArkhamCycle;
-  scenario: ArkhamScenario;
-  gameState: ArkhamGameState;
+  currentData: ArkhamGameState;
 }
 
 type ArkhamAgenda = {
@@ -310,16 +308,7 @@ export const arkhamStepDecoder = JsonDecoder.oneOf<ArkhamStep>([
 ], 'ArkhamStep');
 
 export interface ArkhamGameState {
-  users: Record<string, string>;
-  players: Record<string, ArkhamPlayer>;
-  phase: ArkhamPhase;
-  locations: Record<string, ArkhamLocation>;
-  enemies: Record<string, ArkhamEnemy>;
-  stacks: Record<string, ArkhamStack>;
-  encounterDiscard: ArkhamEncounterCardContents[];
-  step: ArkhamStep;
   chaosBag: ArkhamChaosToken[];
-  activeUser: number;
 }
 
 export const arkhamPhaseDecoder = JsonDecoder.oneOf<ArkhamPhase>([
@@ -363,22 +352,7 @@ export const arkhamStackDecoder = JsonDecoder.oneOf<ArkhamStack>(
 
 export const arkhamGameStateDecoder = JsonDecoder.object<ArkhamGameState>(
   {
-    users: JsonDecoder.dictionary(JsonDecoder.string, 'Dict<UserId, UUID>'),
-    players: JsonDecoder.dictionary(arkhamPlayerDecoder, 'Dict<UUID, ArkhamPlayer>'),
-    phase: arkhamPhaseDecoder,
-    enemies: JsonDecoder.dictionary(
-      arkhamEnemyDecoder,
-      'Dict<UUID, ArkhamEnemy>',
-    ),
-    locations: JsonDecoder.dictionary(
-      arkhamLocationDecoder,
-      'Dict<LocationId, ArkhamLocation>',
-    ),
-    encounterDiscard: JsonDecoder.array<ArkhamEncounterCardContents>(arkhamEncounterCardContentsDecoder, 'ArkhamEncounterCardContents[]'),
-    stacks: JsonDecoder.dictionary(arkhamStackDecoder, 'Dict<Text, ArkhamStack>'),
-    step: arkhamStepDecoder,
     chaosBag: JsonDecoder.array<ArkhamChaosToken>(arkhamChaosTokenDecoder, 'ArkhamChaosToken[]'),
-    activeUser: JsonDecoder.number,
   },
   'ArkhamGameState',
 );
@@ -386,9 +360,7 @@ export const arkhamGameStateDecoder = JsonDecoder.object<ArkhamGameState>(
 export const arkhamGameDecoder = JsonDecoder.object<ArkhamGame>(
   {
     id: JsonDecoder.number,
-    cycle: arkhamCycleDecoder,
-    scenario: arkhamScenarioDecoder,
-    gameState: arkhamGameStateDecoder,
+    currentData: arkhamGameStateDecoder,
   },
   'ArkhamGame',
 );

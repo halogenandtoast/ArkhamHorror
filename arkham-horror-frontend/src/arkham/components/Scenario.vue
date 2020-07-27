@@ -159,14 +159,6 @@ export default class Scenario extends Vue {
     });
   }
 
-  progressAct() {
-    const { cardCode } = this.game.gameState.stacks.Act.contents[0];
-
-    performProgressAct(this.game.id, cardCode).then((game: ArkhamGame) => {
-      this.update(game);
-    });
-  }
-
   commitCard(cardIndex: number) {
     const index = this.commitedCards.indexOf(cardIndex);
 
@@ -179,21 +171,6 @@ export default class Scenario extends Vue {
 
   update(game: ArkhamGame) {
     this.$emit('update', game);
-  }
-
-  canMove(uuid: string) {
-    const { users, activeUser } = this.game.gameState;
-
-    return users[activeUser] === uuid
-      && this.canTakeActions
-      && this.player.actionsRemaining > 0
-      && this.player.accessibleLocations.length > 0;
-  }
-
-  startMove(uuid: string) {
-    if (this.canMove(uuid)) {
-      this.moving = true;
-    }
   }
 
   moveTo(location: ArkhamLocation) {
@@ -212,87 +189,6 @@ export default class Scenario extends Vue {
     performMakeChoice(this.game.id, index).then((game: ArkhamGame) => {
       this.update(game);
     });
-  }
-
-  accessible(location: ArkhamLocation) {
-    return this.accessibleLocations.includes(location.cardCode);
-  }
-
-  get accessibleLocations() {
-    if (this.moving) {
-      return this.player.accessibleLocations;
-    }
-
-    return [];
-  }
-
-  get player() {
-    const { users, players, activeUser } = this.game.gameState;
-
-    return players[users[activeUser]];
-  }
-
-  get shouldMakeChoice() {
-    return this.game.gameState.step.tag === ArkhamStepTypes.CHOOSE_ONE;
-  }
-
-  get drawnToken() {
-    if (this.game.gameState.step.tag === ArkhamStepTypes.REVEAL_TOKEN) {
-      return this.game.gameState.step.contents.token;
-    }
-
-    return null;
-  }
-
-  get canInvestigate() {
-    return this.canTakeActions && this.player.actionsRemaining > 0;
-  }
-
-  get canTakeActions() {
-    const { step } = this.game.gameState;
-
-    return step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION;
-  }
-
-  get canDrawToken() {
-    return this.game.gameState.step.tag === ArkhamStepTypes.SKILL_CHECK;
-  }
-
-  get canApplyResult() {
-    return this.game.gameState.step.tag === ArkhamStepTypes.REVEAL_TOKEN;
-  }
-
-  get skillDifficulty() {
-    if (this.game.gameState.step.tag === ArkhamStepTypes.REVEAL_TOKEN) {
-      return this.game.gameState.step.contents.difficulty;
-    }
-
-    return 0;
-  }
-
-  get skillModifiedSkillValue() {
-    if (this.game.gameState.step.tag === ArkhamStepTypes.REVEAL_TOKEN) {
-      return this.game.gameState.step.contents.modifiedSkillValue;
-    }
-
-    return 0;
-  }
-
-  get pendingResult() {
-    if (this.skillDifficulty > this.skillModifiedSkillValue) {
-      return 'FAILURE';
-    }
-
-    return 'SUCCESS';
-  }
-
-  get topOfEncounterDiscard() {
-    const mcard = this.game.gameState.encounterDiscard[0];
-    if (mcard !== undefined && mcard !== null) {
-      return mcard.image;
-    }
-
-    return null;
   }
 }
 

@@ -24,6 +24,7 @@ import Arkham.Types.Treachery
 import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Data.Aeson
+import Data.Aeson.Casing
 
 data GameJson = GameJson
   { gMessages :: [Message]
@@ -48,4 +49,12 @@ data GameJson = GameJson
   , gQuestion :: Maybe Question
   }
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+
+instance ToJSON GameJson where
+  toJSON = genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 1 }
+  toEncoding = genericToEncoding $ defaultOptions { fieldLabelModifier = camelCase . drop 1 }
+
+instance FromJSON GameJson where
+  parseJSON = genericParseJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 1 }
+
+

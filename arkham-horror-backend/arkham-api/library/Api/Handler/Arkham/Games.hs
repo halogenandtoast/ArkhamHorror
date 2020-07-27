@@ -14,8 +14,10 @@ import qualified Data.HashMap.Strict as HashMap
 import Import
 import Network.HTTP.Conduit (simpleHttp)
 
-getApiV1ArkhamGameR :: ArkhamGameId -> Handler GameJson
-getApiV1ArkhamGameR = runDB . (arkhamGameCurrentData <$>) . get404
+getApiV1ArkhamGameR :: ArkhamGameId -> Handler (Entity ArkhamGame)
+getApiV1ArkhamGameR gameId = do
+  ge <- runDB $ get404 gameId
+  pure (Entity gameId ge)
 
 postApiV1ArkhamCreateGameR :: Handler (Entity ArkhamGame)
 postApiV1ArkhamCreateGameR = do

@@ -26,46 +26,6 @@ export default class Enemy extends Vue {
   @Prop(String) readonly enemyId!: string
   @Prop(Boolean) readonly focused!: boolean
 
-  get enemy() {
-    return this.game.gameState.enemies[this.enemyId];
-  }
-
-  get canInteract() {
-    if (this.focused) {
-      return false;
-    }
-
-    return this.canFight || this.shouldResolve;
-  }
-
-  get canFight() {
-    return this.game.gameState.step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION;
-  }
-
-  get canEvade() {
-    return this.game.gameState.step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION;
-  }
-
-  get shouldResolve() {
-    return (
-      this.game.gameState.step.tag === ArkhamStepTypes.RESOLVE_ENEMIES
-      || this.game.gameState.step.tag === ArkhamStepTypes.RESOLVE_ATTACKS_OF_OPPORTUNITY
-    )
-    && this.game.gameState.step.contents.enemyIds.includes(this.enemyId);
-  }
-
-  interact() {
-    if (this.canFight || this.canEvade) {
-      this.$emit('focusEnemy', this.enemyId);
-    }
-
-    if (this.shouldResolve) {
-      performSelectEnemy(this.game.id, this.enemyId).then((game: ArkhamGame) => {
-        this.$emit('update', game);
-      });
-    }
-  }
-
   fightEnemy() {
     const action: ArkhamAction = {
       tag: ArkhamActionTypes.FIGHT_ENEMY,

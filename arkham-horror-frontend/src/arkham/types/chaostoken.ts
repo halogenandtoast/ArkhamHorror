@@ -1,22 +1,22 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export type ArkhamChaosToken = '+1' | '0' | '-1' | '-2' | '-3' | '-4' | '-5' | '-6' | '-7' | '-8' | 'skull' | 'cultist' | 'tablet' | 'elderthing' | 'autofail' | 'eldersign'
+export type ArkhamChaosToken = 'PlusOne' | 'Zero' | 'MinusOne' | 'MinusTwo' | 'MinusThree' | 'MinusFour' | 'MinusFive' | 'MinusSix' | 'MinusSeven' | 'MinusEight' | 'Skull' | 'Cultist' | 'Tablet' | 'ElderThing' | 'AutoFail' | 'ElderSign'
 
 export const arkhamChaosTokenDecoder = JsonDecoder.oneOf<ArkhamChaosToken>([
-  JsonDecoder.isExactly('+1'),
-  JsonDecoder.isExactly('0'),
-  JsonDecoder.isExactly('-1'),
-  JsonDecoder.isExactly('-2'),
-  JsonDecoder.isExactly('-3'),
-  JsonDecoder.isExactly('-4'),
-  JsonDecoder.isExactly('-5'),
-  JsonDecoder.isExactly('-6'),
-  JsonDecoder.isExactly('-7'),
-  JsonDecoder.isExactly('-8'),
-  JsonDecoder.isExactly('skull'),
-  JsonDecoder.isExactly('cultist'),
-  JsonDecoder.isExactly('tablet'),
-  JsonDecoder.isExactly('elderthing'),
-  JsonDecoder.isExactly('autofail'),
-  JsonDecoder.isExactly('eldersign'),
+  JsonDecoder.isExactly('PlusOne'),
+  JsonDecoder.isExactly('Zero'),
+  JsonDecoder.isExactly('MinusOne'),
+  JsonDecoder.isExactly('MinusTwo'),
+  JsonDecoder.isExactly('MinusThree'),
+  JsonDecoder.isExactly('MinusFour'),
+  JsonDecoder.isExactly('MinusFive'),
+  JsonDecoder.isExactly('MinusSix'),
+  JsonDecoder.isExactly('MinusSeven'),
+  JsonDecoder.isExactly('MinusEight'),
+  JsonDecoder.isExactly('Skull'),
+  JsonDecoder.isExactly('Cultist'),
+  JsonDecoder.isExactly('Tablet'),
+  JsonDecoder.isExactly('ElderThing'),
+  JsonDecoder.isExactly('AutoFail'),
+  JsonDecoder.isExactly('ElderSign'),
 ], 'ArkhamChaosToken');

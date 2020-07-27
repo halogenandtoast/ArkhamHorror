@@ -25,6 +25,7 @@ library:
   source-dirs: library
   dependencies:
     - aeson
+    - aeson-casing
     - mtl
     - microlens
     - microlens-platform

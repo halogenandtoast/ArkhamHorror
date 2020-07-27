@@ -110,28 +110,8 @@ export default class Player extends Vue {
     return mcost <= this.player.resources;
   }
 
-  canCommit() {
-    return this.commitWindow;
-  }
-
   isCommited(cardIndex: number) {
     return this.commitedCards.indexOf(cardIndex) !== -1;
-  }
-
-  get canDraw() {
-    if (this.focusedEnemy) {
-      return false;
-    }
-
-    return this.inActionWindow && this.player.actionsRemaining > 0;
-  }
-
-  get inActionWindow() {
-    return this.game.gameState.step.tag === ArkhamStepTypes.INVESTIGATOR_ACTION;
-  }
-
-  get commitWindow() {
-    return this.game.gameState.step.tag === ArkhamStepTypes.SKILL_CHECK;
   }
 
   get topOfDiscard() {

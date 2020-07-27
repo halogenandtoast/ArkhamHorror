@@ -11,11 +11,11 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
-import { ArkhamGame, ArkhamStepTypes } from '@/arkham/types/game';
+import { Game } from '@/arkham/types/Game';
 
 @Component
 export default class ChoiceModal extends Vue {
-  @Prop(Object) readonly game!: ArkhamGame;
+  @Prop(Object) readonly game!: Game;
 }
 </script>
 

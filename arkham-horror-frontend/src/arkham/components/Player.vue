@@ -54,10 +54,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { ArkhamPlayer } from '@/arkham/types';
-import { ArkhamAction, ArkhamActionTypes } from '@/arkham/types/action';
-import { ArkhamGame, ArkhamStepTypes } from '@/arkham/types/game';
-import { performAction, performEndTurn } from '@/arkham/api';
+import { Game } from '@/arkham/types/Game';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
@@ -72,89 +69,11 @@ import Investigator from '@/arkham/components/Investigator.vue';
   },
 })
 export default class Player extends Vue {
-  @Prop(Object) readonly game!: ArkhamGame
-  @Prop(Object) readonly player!: ArkhamPlayer
+  @Prop(Object) readonly game!: Game
   @Prop(Array) readonly commitedCards!: number[]
   @Prop(Boolean) readonly canTakeActions!: boolean
 
   private focusedEnemy: string | null = null;
-
-  playCard(index: number) {
-    const action: ArkhamAction = {
-      tag: ArkhamActionTypes.PLAY_CARD,
-      contents: index,
-    };
-
-    performAction(this.game.id, action).then((game: ArkhamGame) => {
-      this.$emit('update', game);
-    });
-  }
-
-  canPlay(index: number) {
-    if (!this.canTakeActions) {
-      return false;
-    }
-
-    const card = this.player.hand[index];
-
-    if (this.player.actionsRemaining === 0 && card.tag === 'PlayerCard' && !card.contents.isFast) {
-      return false;
-    }
-
-    const mcost = 'cost' in card.contents ? card.contents.cost : 0;
-
-    if (mcost === null || mcost === undefined) {
-      return false;
-    }
-
-    return mcost <= this.player.resources;
-  }
-
-  isCommited(cardIndex: number) {
-    return this.commitedCards.indexOf(cardIndex) !== -1;
-  }
-
-  get topOfDiscard() {
-    const mcard = this.player.discard[0];
-    if (mcard !== undefined && mcard !== null) {
-      return mcard.contents.image;
-    }
-
-    return null;
-  }
-
-  endTurn() {
-    if (this.player.actionsRemaining > 0) {
-      if (!window.confirm('You still have actions remaining. Continue?')) { // eslint-disable-line
-        return;
-      }
-    }
-
-    performEndTurn(this.game.id).then((game: ArkhamGame) => {
-      this.$emit('update', game);
-    });
-  }
-
-  takeResource() {
-    const action: ArkhamAction = {
-      tag: ArkhamActionTypes.TAKE_RESOURCE,
-      contents: [],
-    };
-
-    performAction(this.game.id, action).then((game: ArkhamGame) => {
-      this.$emit('update', game);
-    });
-  }
-
-  drawCard() {
-    const action: ArkhamAction = {
-      tag: ArkhamActionTypes.DRAW_CARD,
-      contents: [],
-    };
-    performAction(this.game.id, action).then((game: ArkhamGame) => {
-      this.$emit('update', game);
-    });
-  }
 }
 </script>
 

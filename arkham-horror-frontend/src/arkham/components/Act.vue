@@ -16,11 +16,11 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ActStack } from '@/arkham/types/game';
+import * as Arkham from '@/arkham/types/Act';
 
 @Component
 export default class Act extends Vue {
-  @Prop(Object) readonly act!: ActStack;
+  @Prop(Object) readonly act!: Arkham.Act;
 }
 </script>
 

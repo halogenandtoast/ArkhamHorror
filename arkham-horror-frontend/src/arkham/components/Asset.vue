@@ -13,13 +13,13 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { ArkhamGame } from '@/arkham/types/game';
-import { ArkhamAsset } from '@/arkham/types';
+import { Game } from '@/arkham/types/Game';
+// import { Asset } from '@/arkham/types/asset';
 
 @Component
 export default class Asset extends Vue {
-  @Prop(Object) readonly game!: ArkhamGame
-  @Prop(Object) readonly asset!: ArkhamAsset
+  @Prop(Object) readonly game!: Game
+  // @Prop(Object) readonly asset!: ArkhamAsset
 }
 </script>
 

@@ -12,11 +12,11 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { AgendaStack } from '@/arkham/types/game';
+import * as Arkham from '@/arkham/types/Agenda';
 
 @Component
 export default class Agenda extends Vue {
-  @Prop(Object) readonly agenda!: AgendaStack;
+  @Prop(Object) readonly agenda!: Arkham.Agenda;
 }
 </script>
 

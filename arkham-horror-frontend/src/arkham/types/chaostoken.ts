@@ -1,8 +1,8 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export type ArkhamChaosToken = 'PlusOne' | 'Zero' | 'MinusOne' | 'MinusTwo' | 'MinusThree' | 'MinusFour' | 'MinusFive' | 'MinusSix' | 'MinusSeven' | 'MinusEight' | 'Skull' | 'Cultist' | 'Tablet' | 'ElderThing' | 'AutoFail' | 'ElderSign'
+export type ChaosToken = 'PlusOne' | 'Zero' | 'MinusOne' | 'MinusTwo' | 'MinusThree' | 'MinusFour' | 'MinusFive' | 'MinusSix' | 'MinusSeven' | 'MinusEight' | 'Skull' | 'Cultist' | 'Tablet' | 'ElderThing' | 'AutoFail' | 'ElderSign'
 
-export const arkhamChaosTokenDecoder = JsonDecoder.oneOf<ArkhamChaosToken>([
+export const chaosTokenDecoder = JsonDecoder.oneOf<ChaosToken>([
   JsonDecoder.isExactly('PlusOne'),
   JsonDecoder.isExactly('Zero'),
   JsonDecoder.isExactly('MinusOne'),
@@ -19,4 +19,4 @@ export const arkhamChaosTokenDecoder = JsonDecoder.oneOf<ArkhamChaosToken>([
   JsonDecoder.isExactly('ElderThing'),
   JsonDecoder.isExactly('AutoFail'),
   JsonDecoder.isExactly('ElderSign'),
-], 'ArkhamChaosToken');
+], 'ChaosToken');

@@ -102,16 +102,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ArkhamGame, ArkhamStepTypes } from '@/arkham/types/game';
-import { ArkhamLocation } from '@/arkham/types/location';
-import { ArkhamAction, ArkhamActionTypes } from '@/arkham/types/action';
-import {
-  performAction,
-  performDrawToken,
-  performApplyTokenResult,
-  performProgressAct,
-  performMakeChoice,
-} from '@/arkham/api';
+import { Game } from '@/arkham/types/Game';
+import { Location } from '@/arkham/types/Location';
 import Player from '@/arkham/components/Player.vue';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
@@ -130,34 +122,10 @@ import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
   },
 })
 export default class Scenario extends Vue {
-  @Prop(Object) readonly game!: ArkhamGame;
+  @Prop(Object) readonly game!: Game;
 
   private commitedCards: number[] = []
   private moving = false
-
-  investigate(location: ArkhamLocation) {
-    const action: ArkhamAction = {
-      tag: ArkhamActionTypes.INVESTIGATE,
-      contents: location.cardCode,
-    };
-
-    performAction(this.game.id, action).then((game: ArkhamGame) => {
-      this.update(game);
-    });
-  }
-
-  drawToken() {
-    performDrawToken(this.game.id, this.commitedCards).then((game: ArkhamGame) => {
-      this.update(game);
-      this.commitedCards = [];
-    });
-  }
-
-  applyTokenResult() {
-    performApplyTokenResult(this.game.id).then((game: ArkhamGame) => {
-      this.update(game);
-    });
-  }
 
   commitCard(cardIndex: number) {
     const index = this.commitedCards.indexOf(cardIndex);
@@ -169,26 +137,8 @@ export default class Scenario extends Vue {
     }
   }
 
-  update(game: ArkhamGame) {
+  update(game: Game) {
     this.$emit('update', game);
-  }
-
-  moveTo(location: ArkhamLocation) {
-    const action: ArkhamAction = {
-      tag: ArkhamActionTypes.MOVE,
-      contents: location.cardCode,
-    };
-
-    performAction(this.game.id, action).then((game: ArkhamGame) => {
-      this.moving = false;
-      this.update(game);
-    });
-  }
-
-  makeChoice(index: number) {
-    performMakeChoice(this.game.id, index).then((game: ArkhamGame) => {
-      this.update(game);
-    });
   }
 }
 

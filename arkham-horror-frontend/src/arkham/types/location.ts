@@ -1,51 +1,48 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export type ArkhamLocationSymbol = 'Circle' | 'Heart' | 'Square' | 'Triangle' | 'Plus' | 'Diamond' | 'Moon';
-export type ArkhamLocationStatus = 'Revealed' | 'Unrevealed' | 'OutOfPlay';
-
-export const arkhamLocationSymbolDecoder = JsonDecoder.oneOf<ArkhamLocationSymbol>([
-  JsonDecoder.isExactly('Circle'),
-  JsonDecoder.isExactly('Heart'),
-  JsonDecoder.isExactly('Square'),
-  JsonDecoder.isExactly('Triangle'),
-  JsonDecoder.isExactly('Plus'),
-  JsonDecoder.isExactly('Diamond'),
-  JsonDecoder.isExactly('Moon'),
-], 'ArkhamLocationSymbol');
-
-export const arkhamLocationStatusDecoder = JsonDecoder.oneOf<ArkhamLocationStatus>([
-  JsonDecoder.isExactly('Revealed'),
-  JsonDecoder.isExactly('Unrevealed'),
-  JsonDecoder.isExactly('OutOfPlay'),
-], 'ArkhamLocationStatus');
-
-export interface ArkhamLocation {
-  name: string;
-  cardCode: string;
-  locationSymbol: ArkhamLocationSymbol | null;
-  connectedLocationSymbols: ArkhamLocationSymbol[];
-  shroud: number;
-  image: string;
-  investigators: string[];
-  enemies: string[];
-  clues: number;
-  doom: number;
-  status: ArkhamLocationStatus;
+export interface Location {
+  tag: string;
+  contents: LocationContents;
 }
 
-export const arkhamLocationDecoder = JsonDecoder.object<ArkhamLocation>(
+export interface LocationContents {
+  name: string;
+  id: string;
+  clues: number;
+  shroud: number;
+  revealed: boolean;
+  blocked: boolean;
+  investigators: string[];
+  enemies: string[];
+  victory: number | null;
+  // symbol: LocationSymbol;
+  // connectedSymbols: HashSet LocationSymbol;
+  connectedLocations: string[];
+  treacheries: string[];
+  assets: string[];
+}
+
+export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
   {
     name: JsonDecoder.string,
-    cardCode: JsonDecoder.string,
-    locationSymbol: JsonDecoder.nullable<ArkhamLocationSymbol>(arkhamLocationSymbolDecoder),
-    connectedLocationSymbols: JsonDecoder.array<ArkhamLocationSymbol>(arkhamLocationSymbolDecoder, 'ArkhamLocationSymbol[]'),
-    shroud: JsonDecoder.number,
-    image: JsonDecoder.string,
-    investigators: JsonDecoder.array<string>(JsonDecoder.string, 'UUID[]'),
-    enemies: JsonDecoder.array<string>(JsonDecoder.string, 'UUID[]'),
+    id: JsonDecoder.string,
     clues: JsonDecoder.number,
-    doom: JsonDecoder.number,
-    status: arkhamLocationStatusDecoder,
+    shroud: JsonDecoder.number,
+    revealed: JsonDecoder.boolean,
+    blocked: JsonDecoder.boolean,
+    investigators: JsonDecoder.array<string>(JsonDecoder.string, 'InvestigatorId[]'),
+    enemies: JsonDecoder.array<string>(JsonDecoder.string, 'EnemyId[]'),
+    victory: JsonDecoder.nullable(JsonDecoder.number),
+    // symbol: LocationSymbol,
+    // connectedSymbols: HashSet LocationSymbol,
+    connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
+    treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
+    assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
   },
-  'ArkhamLocation',
+  'Attrs',
 );
+
+export const locationDecoder = JsonDecoder.object<Location>({
+  tag: JsonDecoder.string,
+  contents: locationContentsDecoder,
+}, 'Location');

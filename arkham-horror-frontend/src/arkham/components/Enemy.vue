@@ -16,39 +16,13 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { ArkhamAction, ArkhamActionTypes } from '@/arkham/types/action';
-import { ArkhamGame, ArkhamStepTypes } from '@/arkham/types/game';
-import { performAction, performSelectEnemy } from '@/arkham/api';
+import { Game } from '@/arkham/types/Game';
 
 @Component
 export default class Enemy extends Vue {
-  @Prop(Object) readonly game!: ArkhamGame
+  @Prop(Object) readonly game!: Game
   @Prop(String) readonly enemyId!: string
   @Prop(Boolean) readonly focused!: boolean
-
-  fightEnemy() {
-    const action: ArkhamAction = {
-      tag: ArkhamActionTypes.FIGHT_ENEMY,
-      contents: this.enemyId,
-    };
-
-    performAction(this.game.id, action).then((game: ArkhamGame) => {
-      this.$emit('update', game);
-      this.$emit('focusedEnemy', null);
-    });
-  }
-
-  evadeEnemy() {
-    const action: ArkhamAction = {
-      tag: ArkhamActionTypes.EVADE_ENEMY,
-      contents: this.enemyId,
-    };
-
-    performAction(this.game.id, action).then((game: ArkhamGame) => {
-      this.$emit('update', game);
-      this.$emit('focusedEnemy', null);
-    });
-  }
 }
 </script>
 

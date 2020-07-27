@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ArkhamGame } from '@/arkham/types/game';
+import * as Arkham from '@/arkham/types/Game';
 import { fetchGame } from '@/arkham/api';
 import Scenario from '@/arkham/components/Scenario.vue';
 
@@ -17,7 +17,7 @@ export default class Game extends Vue {
   @Prop(String) readonly gameId!: string;
 
   private ready = false;
-  private game: ArkhamGame | null = null;
+  private game: Arkham.Game | null = null;
 
   async mounted() {
     fetchGame(this.gameId).then((game) => {
@@ -26,7 +26,7 @@ export default class Game extends Vue {
     });
   }
 
-  update(state: ArkhamGame) {
+  update(state: Arkham.Game) {
     this.game = state;
   }
 }

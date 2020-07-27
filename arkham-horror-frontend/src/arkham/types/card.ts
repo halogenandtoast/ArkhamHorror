@@ -1,84 +1,63 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export type ArkhamCard = ArkhamPlayerCard | ArkhamEncounterCard;
-export type ArkhamSkillType = 'ArkhamSkillWillpower' | 'ArkhamSkillIntellect' | 'ArkhamSkillCombat' | 'ArkhamSkillAgility' | 'ArkhamSkillWild';
+export type Card = PlayerCard | EncounterCard;
 
-export const arkhamSkillTypeDecoder = JsonDecoder.oneOf<ArkhamSkillType>([
-  JsonDecoder.isExactly('ArkhamSkillWillpower'),
-  JsonDecoder.isExactly('ArkhamSkillIntellect'),
-  JsonDecoder.isExactly('ArkhamSkillCombat'),
-  JsonDecoder.isExactly('ArkhamSkillAgility'),
-  JsonDecoder.isExactly('ArkhamSkillWild'),
-], 'ArkhamSkillType');
-
-export interface ArkhamPlayerCardContents {
+export interface PlayerCardContents {
   name: string;
-  cost: number | null;
-  code: string;
-  image: string;
-  uses?: number;
-  isFast: boolean;
-  testIcons: ArkhamSkillType[];
+  cardCode: string;
 }
 
-export interface ArkhamEncounterCardContents {
+export interface EncounterCardContents {
   name: string;
-  code: string;
-  image: string;
+  cardCode: string;
 }
 
-export interface ArkhamPlayerCard {
+export interface PlayerCard {
   tag: 'PlayerCard';
-  contents: ArkhamPlayerCardContents;
+  contents: PlayerCardContents;
 }
 
-export interface ArkhamEncounterCard {
+export interface EncounterCard {
   tag: 'EncounterCard';
-  contents: ArkhamEncounterCardContents;
+  contents: EncounterCardContents;
 }
 
-export const arkhamPlayerCardContentsDecoder = JsonDecoder.object<ArkhamPlayerCardContents>(
+export const playerCardContentsDecoder = JsonDecoder.object<PlayerCardContents>(
   {
     name: JsonDecoder.string,
-    code: JsonDecoder.string,
-    cost: JsonDecoder.nullable(JsonDecoder.number),
-    uses: JsonDecoder.optional(JsonDecoder.number),
-    image: JsonDecoder.string,
-    isFast: JsonDecoder.boolean,
-    testIcons: JsonDecoder.array<ArkhamSkillType>(arkhamSkillTypeDecoder, 'ArkhamSkillType[]'),
+    cardCode: JsonDecoder.string,
   },
-  'ArkhamPlayerCard',
+  'PlayerCard',
 );
 
-export const arkhamEncounterCardContentsDecoder = JsonDecoder.object<ArkhamEncounterCardContents>(
+export const encounterCardContentsDecoder = JsonDecoder.object<EncounterCardContents>(
   {
     name: JsonDecoder.string,
-    code: JsonDecoder.string,
-    image: JsonDecoder.string,
+    cardCode: JsonDecoder.string,
   },
-  'ArkhamEncounterCard',
+  'EncounterCard',
 );
 
-export const arkhamPlayerCardDecoder = JsonDecoder.object<ArkhamPlayerCard>(
+export const playerCardDecoder = JsonDecoder.object<PlayerCard>(
   {
     tag: JsonDecoder.isExactly('PlayerCard'),
-    contents: arkhamPlayerCardContentsDecoder,
+    contents: playerCardContentsDecoder,
   },
-  'ArkhamPlayerCard',
+  'PlayerCard',
 );
 
-export const arkhamEncounterCardDecoder = JsonDecoder.object<ArkhamEncounterCard>(
+export const encounterCardDecoder = JsonDecoder.object<EncounterCard>(
   {
     tag: JsonDecoder.isExactly('EncounterCard'),
-    contents: arkhamEncounterCardContentsDecoder,
+    contents: encounterCardContentsDecoder,
   },
-  'ArkhamEncounterCard',
+  'EncounterCard',
 );
 
-export const arkhamCardDecoder = JsonDecoder.oneOf<ArkhamCard>(
+export const cardDecoder = JsonDecoder.oneOf<Card>(
   [
-    arkhamPlayerCardDecoder,
-    arkhamEncounterCardDecoder,
+    playerCardDecoder,
+    encounterCardDecoder,
   ],
-  'ArkhamCard',
+  'Card',
 );

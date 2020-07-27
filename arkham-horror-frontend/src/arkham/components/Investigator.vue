@@ -38,17 +38,11 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { ArkhamPlayer } from '@/arkham/types';
 
 @Component
 export default class Investigator extends Vue {
-  @Prop(Object) readonly player!: ArkhamPlayer
   @Prop(Boolean) readonly canTakeActions!: boolean
   @Prop(Boolean) readonly inActionWindow!: boolean
-
-  get canEndTurn() {
-    return this.inActionWindow && !this.player.endedTurn;
-  }
 }
 </script>
 

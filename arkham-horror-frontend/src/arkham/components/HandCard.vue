@@ -18,11 +18,11 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { ArkhamCard } from '@/arkham/types/card';
+import { Card } from '@/arkham/types/Card';
 
 @Component
 export default class HandCard extends Vue {
-  @Prop(Object) readonly card!: ArkhamCard
+  @Prop(Object) readonly card!: Card
   @Prop(Boolean) readonly canPlay!: boolean
   @Prop(Boolean) readonly canCommit!: boolean
   @Prop(Boolean) readonly isCommited!: boolean

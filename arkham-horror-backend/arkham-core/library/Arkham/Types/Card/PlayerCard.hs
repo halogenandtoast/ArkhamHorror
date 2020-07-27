@@ -92,6 +92,19 @@ allPlayerCards = HashMap.fromList $ map
     , pcFastWindows = mempty
     }
   , MkPlayerCard
+    { pcCardCode = "01008"
+    , pcName = "Daisy's Tote Bag"
+    , pcCost = 2
+    , pcLevel = 0
+    , pcCardType = AssetType
+    , pcWeakness = False
+    , pcClassSymbol = Neutral
+    , pcSkills = [SkillWillpower, SkillIntellect, SkillWild]
+    , pcTraits = [Item]
+    , pcFast = False
+    , pcFastWindows = mempty
+    }
+  , MkPlayerCard
     { pcCardCode = "01016"
     , pcName = ".45 Automatic"
     , pcCost = 4

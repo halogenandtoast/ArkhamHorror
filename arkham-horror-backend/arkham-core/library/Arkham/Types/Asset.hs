@@ -37,6 +37,7 @@ lookupAsset = fromJustNote "Unkown asset" . flip HashMap.lookup allAssets
 allAssets :: HashMap CardCode (AssetId -> Asset)
 allAssets = HashMap.fromList
   [ ("01006", rolands38Special)
+  , ("01008", daisysToteBag)
   , ("01016", fortyFiveAutomatic)
   , ("01017", physicalTraining)
   , ("01020", machete)
@@ -84,6 +85,7 @@ defeated Attrs {..} =
 
 data Asset
   = Rolands38Special Rolands38SpecialI
+  | DaisysToteBag DaisysToteBagI
   | FortyFiveAutomatic FortyFiveAutomaticI
   | PhysicalTraining PhysicalTrainingI
   | Machete MacheteI
@@ -97,6 +99,7 @@ data Asset
 assetAttrs :: Asset -> Attrs
 assetAttrs = \case
   Rolands38Special attrs -> coerce attrs
+  DaisysToteBag attrs -> coerce attrs
   FortyFiveAutomatic attrs -> coerce attrs
   PhysicalTraining attrs -> coerce attrs
   Machete attrs -> coerce attrs
@@ -153,9 +156,15 @@ newtype Rolands38SpecialI = Rolands38SpecialI Attrs
 
 rolands38Special :: AssetId -> Asset
 rolands38Special uuid =
-  Rolands38Special $ Rolands38SpecialI $ (baseAttrs uuid "01016")
+  Rolands38Special $ Rolands38SpecialI $ (baseAttrs uuid "01006")
     { assetSlots = [HandSlot]
     }
+
+newtype DaisysToteBagI = DaisysToteBagI Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+daisysToteBag :: AssetId -> Asset
+daisysToteBag uuid = DaisysToteBag $ DaisysToteBagI $ baseAttrs uuid "01008"
 
 newtype FortyFiveAutomaticI = FortyFiveAutomaticI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -242,6 +251,7 @@ type AssetRunner env
 instance (AssetRunner env) => RunMessage env Asset where
   runMessage msg = \case
     Rolands38Special x -> Rolands38Special <$> runMessage msg x
+    DaisysToteBag x -> DaisysToteBag <$> runMessage msg x
     FortyFiveAutomatic x -> FortyFiveAutomatic <$> runMessage msg x
     PhysicalTraining x -> PhysicalTraining <$> runMessage msg x
     Machete x -> Machete <$> runMessage msg x
@@ -280,6 +290,18 @@ instance (AssetRunner env) => RunMessage env Rolands38SpecialI where
           pure $ Rolands38SpecialI $ attrs & uses .~ Uses Resource.Ammo (n - 1)
         _ -> pure a
     _ -> Rolands38SpecialI <$> runMessage msg attrs
+
+instance (AssetRunner env) => RunMessage env DaisysToteBagI where
+  runMessage msg a@(DaisysToteBagI attrs@Attrs {..}) = case msg of
+    InvestigatorPlayAsset _ aid | aid == assetId -> a <$ unshiftMessages
+      [ InvestigatorAddModifier
+        (fromJustNote "Must be owned" assetInvestigator)
+        (AddSlot TomeSlot (AssetSource aid))
+      , InvestigatorAddModifier
+        (fromJustNote "Must be owned" assetInvestigator)
+        (AddSlot TomeSlot (AssetSource aid))
+      ]
+    _ -> DaisysToteBagI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env FortyFiveAutomaticI where
   runMessage msg a@(FortyFiveAutomaticI attrs@Attrs {..}) = case msg of

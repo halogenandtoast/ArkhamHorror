@@ -1,12 +1,12 @@
 module Arkham.Types.Card.PlayerCard where
 
+import Arkham.Json
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
 import Arkham.Types.FastWindow
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import ClassyPrelude
-import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Safe (fromJustNote)
@@ -36,14 +36,20 @@ data PlayerCard = MkPlayerCard
   , pcLevel :: Int
   , pcCardType :: PlayerCardType
   , pcWeakness :: Bool
-  , pcClassSybol :: ClassSymbol
+  , pcClassSymbol :: ClassSymbol
   , pcSkills :: [SkillType]
   , pcTraits :: [Trait]
   , pcFast :: Bool
   , pcFastWindows :: HashSet FastWindow
   }
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+
+instance ToJSON PlayerCard where
+  toJSON = genericToJSON $ aesonOptions $ Just "pc"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "pc"
+
+instance FromJSON PlayerCard where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "pc"
 
 instance HasCardCode PlayerCard where
   getCardCode = pcCardCode
@@ -66,7 +72,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = AssetType
     , pcWeakness = False
-    , pcClassSybol = Neutral
+    , pcClassSymbol = Neutral
     , pcSkills = [SkillCombat, SkillAgility, SkillWild]
     , pcTraits = [Item, Weapon, Firearm]
     , pcFast = False
@@ -79,7 +85,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = PlayerTreacheryType
     , pcWeakness = True
-    , pcClassSybol = Neutral
+    , pcClassSymbol = Neutral
     , pcSkills = []
     , pcTraits = [Task]
     , pcFast = False
@@ -92,7 +98,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = AssetType
     , pcWeakness = False
-    , pcClassSybol = Guardian
+    , pcClassSymbol = Guardian
     , pcSkills = [SkillAgility]
     , pcTraits = [Item, Weapon, Firearm]
     , pcFast = False
@@ -105,7 +111,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = AssetType
     , pcWeakness = False
-    , pcClassSybol = Guardian
+    , pcClassSymbol = Guardian
     , pcSkills = [SkillIntellect, SkillCombat]
     , pcTraits = [Talent]
     , pcFast = False
@@ -118,7 +124,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = AssetType
     , pcWeakness = False
-    , pcClassSybol = Guardian
+    , pcClassSymbol = Guardian
     , pcSkills = [SkillCombat]
     , pcTraits = [Item, Weapon, Melee]
     , pcFast = False
@@ -131,7 +137,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = AssetType
     , pcWeakness = False
-    , pcClassSybol = Guardian
+    , pcClassSymbol = Guardian
     , pcSkills = [SkillCombat]
     , pcTraits = [Ally, Creature]
     , pcFast = False
@@ -144,7 +150,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = EventType
     , pcWeakness = False
-    , pcClassSybol = Guardian
+    , pcClassSymbol = Guardian
     , pcSkills = [SkillIntellect, SkillIntellect]
     , pcTraits = [Insight]
     , pcFast = True
@@ -157,7 +163,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = EventType
     , pcWeakness = False
-    , pcClassSybol = Guardian
+    , pcClassSymbol = Guardian
     , pcSkills = [SkillIntellect, SkillAgility]
     , pcTraits = [Tactic]
     , pcFast = True
@@ -171,7 +177,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = EventType
     , pcWeakness = False
-    , pcClassSybol = Guardian
+    , pcClassSymbol = Guardian
     , pcSkills = [SkillIntellect]
     , pcTraits = [Tactic]
     , pcFast = False
@@ -184,7 +190,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = SkillType
     , pcWeakness = False
-    , pcClassSybol = Guardian
+    , pcClassSymbol = Guardian
     , pcSkills = [SkillCombat]
     , pcTraits = [Practiced]
     , pcFast = False
@@ -197,7 +203,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = EventType
     , pcWeakness = False
-    , pcClassSybol = Seeker
+    , pcClassSymbol = Seeker
     , pcSkills = [SkillIntellect, SkillIntellect]
     , pcTraits = [Insight]
     , pcFast = True
@@ -210,7 +216,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = SkillType
     , pcWeakness = False
-    , pcClassSybol = Seeker
+    , pcClassSymbol = Seeker
     , pcSkills = [SkillIntellect]
     , pcTraits = [Practiced]
     , pcFast = False
@@ -223,7 +229,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = AssetType
     , pcWeakness = False
-    , pcClassSybol = Neutral
+    , pcClassSymbol = Neutral
     , pcSkills = [SkillCombat]
     , pcTraits = [Item, Weapon, Melee]
     , pcFast = False
@@ -236,7 +242,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = AssetType
     , pcWeakness = False
-    , pcClassSybol = Neutral
+    , pcClassSymbol = Neutral
     , pcSkills = [SkillIntellect]
     , pcTraits = [Item, Tool]
     , pcFast = False
@@ -249,7 +255,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = EventType
     , pcWeakness = False
-    , pcClassSybol = Neutral
+    , pcClassSymbol = Neutral
     , pcSkills = []
     , pcTraits = [Supply]
     , pcFast = False
@@ -262,7 +268,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = SkillType
     , pcWeakness = False
-    , pcClassSybol = Neutral
+    , pcClassSymbol = Neutral
     , pcSkills = [SkillWillpower, SkillWillpower]
     , pcTraits = [Innate]
     , pcFast = False
@@ -275,7 +281,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = SkillType
     , pcWeakness = False
-    , pcClassSybol = Neutral
+    , pcClassSymbol = Neutral
     , pcSkills = [SkillCombat, SkillCombat]
     , pcTraits = [Practiced]
     , pcFast = False
@@ -288,7 +294,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = SkillType
     , pcWeakness = False
-    , pcClassSybol = Neutral
+    , pcClassSymbol = Neutral
     , pcSkills = [SkillWild, SkillWild]
     , pcTraits = [Innate]
     , pcFast = False
@@ -301,7 +307,7 @@ allPlayerCards = HashMap.fromList $ map
     , pcLevel = 0
     , pcCardType = AssetType
     , pcWeakness = False
-    , pcClassSybol = Neutral
+    , pcClassSymbol = Neutral
     , pcSkills = []
     , pcTraits = [Ally]
     , pcFast = False

@@ -8,10 +8,12 @@ import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Query
+import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 
 type InvestigatorRunner env
   = ( HasCount ClueCount LocationId env
+    , HasCount AssetCount (InvestigatorId, [Trait]) env
     , HasSet DamageableAssetId InvestigatorId env
     , HasQueue env
     , HasSet AdvanceableActId () env

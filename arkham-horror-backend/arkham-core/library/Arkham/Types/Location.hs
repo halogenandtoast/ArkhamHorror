@@ -7,6 +7,7 @@ module Arkham.Types.Location
   )
 where
 
+import Arkham.Json
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
@@ -26,7 +27,6 @@ import Arkham.Types.Stats (Stats)
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude
-import Data.Aeson
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
@@ -66,7 +66,13 @@ data Attrs = Attrs
   , locationAbilities :: [Ability]
   }
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+
+instance ToJSON Attrs where
+  toJSON = genericToJSON $ aesonOptions $ Just "location"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "location"
+
+instance FromJSON Attrs where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "location"
 
 instance HasAbilities Location where
   getAbilities = locationAbilities . locationAttrs

@@ -1,12 +1,12 @@
 module Arkham.Types.Card.EncounterCard where
 
+import Arkham.Json
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait
 import ClassyPrelude
-import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap
 
 data EncounterCardType
@@ -24,7 +24,13 @@ data EncounterCard = MkEncounterCard
   , ecKeywords   :: [Keyword]
   }
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+
+instance ToJSON EncounterCard where
+  toJSON = genericToJSON $ aesonOptions $ Just "ec"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "ec"
+
+instance FromJSON EncounterCard where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "ec"
 
 instance HasCardCode EncounterCard where
   getCardCode = ecCardCode

@@ -5,6 +5,7 @@ module Arkham.Types.Agenda
   )
 where
 
+import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.ActId
 import Arkham.Types.AgendaId
@@ -18,7 +19,6 @@ import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Trait
 import ClassyPrelude
-import Data.Aeson
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
@@ -42,7 +42,13 @@ data Attrs = Attrs
   , agendaAbilities :: [Ability]
   }
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+
+instance ToJSON Attrs where
+  toJSON = genericToJSON $ aesonOptions $ Just "agenda"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "agenda"
+
+instance FromJSON Attrs where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "agenda"
 
 instance HasAbilities Agenda where
   getAbilities = agendaAbilities . agendaAttrs

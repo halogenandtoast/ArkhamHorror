@@ -7,6 +7,7 @@ module Arkham.Types.Act
   )
 where
 
+import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.ActId
 import Arkham.Types.Classes
@@ -17,7 +18,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Query
 import ClassyPrelude
-import Data.Aeson
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
@@ -39,7 +39,13 @@ data Attrs = Attrs
   , actAbilities :: [Ability]
   }
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+
+instance ToJSON Attrs where
+  toJSON = genericToJSON $ aesonOptions $ Just "act"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "act"
+
+instance FromJSON Attrs where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "act"
 
 canAdvance :: Lens' Attrs Bool
 canAdvance = lens actCanAdvance $ \m x -> m { actCanAdvance = x }

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 46b5d58dff6de8e2a99b7cefc4ba4b5cf892286eafa631fdf0e91dacb99cb1de
+-- hash: 1a9465fa9cddbbf84a4dfe69279b3f9b5a076c7b944d0597c3c45e149a6e56b5
 
 name:           arkham-core
 version:        0.0.0
@@ -12,6 +12,7 @@ build-type:     Simple
 
 library
   exposed-modules:
+      Arkham.Json
       Arkham.Types.Ability
       Arkham.Types.Act
       Arkham.Types.ActId
@@ -100,6 +101,7 @@ library
       Arkham.Types.SkillTest
       Arkham.Types.SkillTestResult
       Arkham.Types.SkillType
+      Arkham.Types.Slot
       Arkham.Types.Source
       Arkham.Types.Stats
       Arkham.Types.Token

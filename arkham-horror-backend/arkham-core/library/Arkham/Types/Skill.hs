@@ -65,9 +65,5 @@ overpower iid = \case
   SucceededBy _ -> unshiftMessage (AddOnSuccess (DrawCards iid 1))
   _ -> pure ()
 
-unexpectedCourage
-  :: (MonadReader env m, GameRunner env, MonadIO m)
-  => InvestigatorId
-  -> SkillTestResult
-  -> m ()
+unexpectedCourage :: (MonadIO m) => InvestigatorId -> SkillTestResult -> m ()
 unexpectedCourage _ _ = pure ()

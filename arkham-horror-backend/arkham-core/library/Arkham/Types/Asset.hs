@@ -20,6 +20,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
+import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Trait
 import ClassyPrelude
@@ -51,15 +52,11 @@ instance HasCardCode Asset where
 instance HasAbilities Asset where
   getAbilities = assetAbilities . assetAttrs
 
+instance HasTraits Asset where
+  getTraits = assetTraits . assetAttrs
+
 instance HasId (Maybe OwnerId) () Asset where
   getId _ = (OwnerId <$>) . assetInvestigator . assetAttrs
-
-
-data Slot
-  = HandSlot
-  | AllySlot
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
 
 data Attrs = Attrs
   { assetName :: Text

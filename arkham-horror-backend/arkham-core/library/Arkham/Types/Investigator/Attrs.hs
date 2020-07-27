@@ -1,6 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Attrs where
 
+import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.ActId
 import Arkham.Types.Action (Action)
@@ -22,7 +23,6 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude
-import Data.Aeson
 import Data.Coerce
 import qualified Data.HashSet as HashSet
 import Lens.Micro
@@ -62,7 +62,13 @@ data Attrs = Attrs
   , investigatorResigned :: Bool
   }
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+
+instance ToJSON Attrs where
+  toJSON = genericToJSON $ aesonOptions $ Just "investigator"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "investigator"
+
+instance FromJSON Attrs where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "investigator"
 
 locationId :: Lens' Attrs LocationId
 locationId = lens investigatorLocation $ \m x -> m { investigatorLocation = x }

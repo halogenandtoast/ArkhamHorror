@@ -3,6 +3,7 @@ module Arkham.Types.Query
   , PlayerCount(..)
   , ResourceCount(..)
   , EnemyCount(..)
+  , AssetCount(..)
   , RemainingHealth(..)
   , InvestigatorLocation(..)
   , LeadInvestigatorId(..)
@@ -13,6 +14,8 @@ where
 import Arkham.Types.InvestigatorId
 import ClassyPrelude
 
+
+newtype AssetCount = AssetCount { unAssetCount :: Int }
 newtype EnemyCount = EnemyCount { unEnemyCount :: Int }
 newtype ClueCount = ClueCount { unClueCount :: Int }
 newtype ResourceCount = ResourceCount { unResourceCount :: Int }

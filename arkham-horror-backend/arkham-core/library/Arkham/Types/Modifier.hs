@@ -9,6 +9,7 @@ where
 import Arkham.Types.Action
 import Arkham.Types.Card
 import Arkham.Types.SkillType
+import Arkham.Types.Slot
 import Arkham.Types.Source
 import ClassyPrelude
 import Data.Aeson
@@ -22,6 +23,7 @@ sourceOfModifier (DamageDealt _ s) = s
 sourceOfModifier (ShroudModifier _ s) = s
 sourceOfModifier (DiscoveredClues _ s) = s
 sourceOfModifier (SufferTrauma _ _ s) = s
+sourceOfModifier (AddSlot _ s) = s
 
 replaceModifierSource :: Source -> Modifier -> Modifier
 replaceModifierSource s (ActionCostOf a b _) = ActionCostOf a b s
@@ -32,11 +34,13 @@ replaceModifierSource s (DamageDealt a _) = DamageDealt a s
 replaceModifierSource s (ShroudModifier a _) = ShroudModifier a s
 replaceModifierSource s (DiscoveredClues a _) = DiscoveredClues a s
 replaceModifierSource s (SufferTrauma a b _) = SufferTrauma a b s
+replaceModifierSource s (AddSlot a _) = AddSlot a s
 
 data Modifier
   = ActionCostOf ActionTarget Int Source
   | CannotPlay [PlayerCardType] Source
   | SkillModifier SkillType Int Source
+  | AddSlot Slot Source
   | DamageDealt Int Source
   | DamageTaken Int Source
   | ShroudModifier Int Source

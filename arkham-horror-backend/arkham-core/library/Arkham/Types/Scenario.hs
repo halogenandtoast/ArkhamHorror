@@ -5,6 +5,7 @@ module Arkham.Types.Scenario
   )
 where
 
+import Arkham.Json
 import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.Card
@@ -19,11 +20,9 @@ import Arkham.Types.Source
 import qualified Arkham.Types.Token as Token
 import Arkham.Types.Trait
 import ClassyPrelude
-import Data.Aeson
-import System.Random.Shuffle
--- import           Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import Safe (fromJustNote)
+import System.Random.Shuffle
 
 lookupScenario :: ScenarioId -> Difficulty -> Scenario
 lookupScenario =
@@ -42,7 +41,13 @@ data Attrs = Attrs
   , scenarioActStack    :: [(Int, [ActId])]
   }
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+
+instance ToJSON Attrs where
+  toJSON = genericToJSON $ aesonOptions $ Just "scenario"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "scenario"
+
+instance FromJSON Attrs where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "scenario"
 
 data Scenario
   = TheGathering TheGatheringI

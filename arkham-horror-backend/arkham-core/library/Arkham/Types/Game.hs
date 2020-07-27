@@ -262,6 +262,15 @@ instance HasCount PlayerCount () Game where
 instance HasCount EnemyCount InvestigatorId Game where
   getCount iid = getCount () . getInvestigator iid
 
+instance HasCount AssetCount (InvestigatorId, [Trait]) Game where
+  getCount (iid, traits) g@Game {..} =
+    let investigatorAssets = getSet () investigator
+    in AssetCount . length $ HashSet.filter assetMatcher investigatorAssets
+   where
+    investigator = getInvestigator iid g
+    assetMatcher aid =
+      all (`HashSet.member` (getTraits $ getAsset aid g)) traits
+
 instance HasCount EnemyCount (LocationId, [Trait]) Game where
   getCount (lid, traits) g@Game {..} = case mlocation of
     Just location ->

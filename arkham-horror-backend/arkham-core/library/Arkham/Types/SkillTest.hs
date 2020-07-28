@@ -15,6 +15,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillTestResult
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Token
 import ClassyPrelude
 import Data.Aeson
@@ -120,7 +121,8 @@ instance (HasQueue env) => RunMessage env SkillTest where
       )
     SkillTestCommitCard iid (_, card) ->
       pure $ s & committedCards %~ ((iid, card) :)
-    SkillTestAddModifier modifier -> pure $ s & modifiers %~ (modifier :)
+    AddModifier SkillTestTarget modifier ->
+      pure $ s & modifiers %~ (modifier :)
     SkillTestEnds -> s <$ unshiftMessages
       [ InvestigatorRemoveAllModifiersFromSource
         skillTestInvestigator
@@ -144,7 +146,7 @@ instance (HasQueue env) => RunMessage env SkillTest where
         Unrun -> pure ()
 
       unshiftMessages $ map
-        (InvestigatorAddModifier skillTestInvestigator
+        (AddModifier (InvestigatorTarget skillTestInvestigator)
         . replaceModifierSource SkillTestSource
         )
         skillTestModifiers

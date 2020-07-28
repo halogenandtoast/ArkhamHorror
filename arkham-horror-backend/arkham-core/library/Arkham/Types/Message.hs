@@ -50,6 +50,7 @@ data Message
   | ReadyExhausted
   | AllDrawCardAndResource
   | AllCheckHandSize
+  | AddDoom Target
   | PlaceDoomOnAgenda
   | AdvanceAgendaIfThresholdSatisfied
   | AdvanceAgenda AgendaId
@@ -168,9 +169,7 @@ data Message
   | LocationIncreaseShroud LocationId Int
   | LocationDecreaseShroud LocationId Int
   | AttachTreacheryToInvestigator TreacheryId InvestigatorId
-  | InvestigatorAddModifier InvestigatorId Modifier
-  | SkillTestAddModifier Modifier
-  | EnemyAddModifier EnemyId Modifier
+  | AddModifier Target Modifier
   | InvestigatorRemoveAllModifiersFromSource InvestigatorId Source
   | EnemyRemoveAllModifiersFromSource EnemyId Source
   | RequestedEncounterCard Source (Maybe EncounterCard)

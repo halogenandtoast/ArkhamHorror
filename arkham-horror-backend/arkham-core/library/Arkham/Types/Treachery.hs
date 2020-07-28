@@ -17,6 +17,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude
@@ -215,7 +216,9 @@ instance (TreacheryRunner env) => RunMessage env CoverUpI where
       unshiftMessages
         [ RemoveCardFromHand iid "01007"
         , AttachTreacheryToInvestigator tid iid
-        , InvestigatorAddModifier iid (SufferTrauma 0 1 (TreacherySource tid))
+        , AddModifier
+          (InvestigatorTarget iid)
+          (SufferTrauma 0 1 (TreacherySource tid))
         ]
       pure $ CoverUpI (attrs & attachedInvestigator ?~ iid) n
     UseCardAbility iid (TreacherySource tid, 1, _, _) | tid == treacheryId -> do
@@ -275,8 +278,8 @@ instance (TreacheryRunner env) => RunMessage env FrozenInFearI where
     RunTreachery iid tid | tid == treacheryId -> do
       unshiftMessages
         [ AttachTreacheryToInvestigator tid iid
-        , InvestigatorAddModifier
-          iid
+        , AddModifier
+          (InvestigatorTarget iid)
           (ActionCostOf
             (FirstOneOf [Action.Move, Action.Fight, Action.Evade])
             1
@@ -303,8 +306,8 @@ instance (TreacheryRunner env) => RunMessage env DissonantVoicesI where
     RunTreachery iid tid | tid == treacheryId -> do
       unshiftMessages
         [ AttachTreacheryToInvestigator tid iid
-        , InvestigatorAddModifier
-          iid
+        , AddModifier
+          (InvestigatorTarget iid)
           (CannotPlay [AssetType, EventType] (TreacherySource tid))
         ]
       pure $ DissonantVoicesI $ attrs & attachedInvestigator ?~ iid

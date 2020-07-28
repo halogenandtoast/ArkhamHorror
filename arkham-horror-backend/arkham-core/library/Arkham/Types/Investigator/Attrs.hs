@@ -543,9 +543,6 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         & (endedTurn .~ False)
         & (remainingActions .~ 3)
         & (actionsTaken .~ mempty)
-    ChooseDrawCardAction iid | iid == investigatorId -> do
-      unshiftMessages [CheckAttackOfOpportunity iid, DrawCards iid 1]
-      pure $ takeAction Action.Draw a
     DrawCards iid n | iid == investigatorId -> if null (unDeck investigatorDeck)
       then if null investigatorDiscard
         then pure a
@@ -559,9 +556,6 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
             $ unshiftMessage (DrewPlayerTreachery iid pcCardCode)
           Nothing -> pure ()
         pure $ a & hand %~ handUpdate & deck .~ Deck deck'
-    ChooseTakeResourceAction iid | iid == investigatorId -> do
-      unshiftMessages [CheckAttackOfOpportunity iid, TakeResources iid 1]
-      pure $ takeAction Action.Resource a
     ChoosePlayCardAction iid | iid == investigatorId -> do
       unshiftMessage
         (Ask $ ChooseOne $ map
@@ -580,7 +574,13 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       pure $ a & clues -~ n
     SpendResources iid n | iid == investigatorId ->
       pure $ a & resources -~ n & resources %~ max 0
-    TakeResources iid n | iid == investigatorId -> pure $ a & resources +~ n
+    TakeResources iid n True | iid == investigatorId -> a <$ unshiftMessages
+      [ TakeAction iid (actionCost a Action.Resource) Action.Resource
+      , CheckAttackOfOpportunity iid
+      , TakeResources iid n False
+      ]
+    TakeResources iid n False | iid == investigatorId ->
+      pure $ a & resources +~ n
     EmptyDeck iid | iid == investigatorId -> a <$ unshiftMessages
       [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
     AllDrawEncounterCard ->
@@ -680,6 +680,12 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           <> [ChoiceResults []]
           )
         else pure a
+
+    TakeAction iid actionCost' action | iid == investigatorId ->
+      pure
+        $ a
+        & (remainingActions -~ actionCost')
+        & (actionsTaken %~ (<> [action]))
     PlayerWindow iid | iid == investigatorId -> do
       advanceableActIds <-
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())
@@ -687,8 +693,14 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       a <$ unshiftMessage
         (Ask $ ChooseOne $ map
           ChoiceResult
-          ([ ChooseTakeResourceAction iid | Action.Resource `elem` canDos ]
-          <> [ ChooseDrawCardAction iid | Action.Draw `elem` canDos ]
+          ([ TakeResources iid 1 True | Action.Resource `elem` canDos ]
+          <> [ Run
+                 [ TakeAction iid (actionCost a Action.Draw) Action.Draw
+                 , CheckAttackOfOpportunity iid
+                 , DrawCards iid 1
+                 ]
+             | Action.Draw `elem` canDos
+             ]
           <> [ ChooseActivateCardAbilityAction iid
              | Action.Ability `elem` canDos
              ]

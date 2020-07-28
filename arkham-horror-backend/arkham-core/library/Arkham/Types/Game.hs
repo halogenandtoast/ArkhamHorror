@@ -513,6 +513,7 @@ broadcastFastWindow builder currentInvestigatorId g =
 runGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game
 runGameMessage msg g = case msg of
+  Run msgs -> g <$ unshiftMessages msgs
   InvestigatorDefeated _ ->
     if all
         (\i -> hasResigned i || isDefeated i)
@@ -919,7 +920,6 @@ runGame g = do
   messages <- maybe (pure []) (handleQuestion gameJson) mQuestion
   modifyIORef' ref (messages <>)
   messages' <- readIORef ref
-  pPrint messages'
   if null messages'
     then pure gameJson
     else runGame $ toInternalGame' ref gameJson

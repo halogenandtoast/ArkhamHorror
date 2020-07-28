@@ -33,6 +33,7 @@ instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
   runMessage msg i@(DaisyWalkerI attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid skillValue | iid == investigatorId -> do
       tomeCount <- unAssetCount <$> asks (getCount (iid, [Tome]))
-      unshiftMessage (AddOnSuccess (DrawCards iid tomeCount))
+      unshiftMessage
+        (AddOnSuccess (Ask $ ChooseTo $ DrawCards iid tomeCount False))
       i <$ runTest skillValue
     _ -> DaisyWalkerI <$> runMessage msg attrs

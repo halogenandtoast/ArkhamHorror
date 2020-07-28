@@ -543,19 +543,27 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         & (endedTurn .~ False)
         & (remainingActions .~ 3)
         & (actionsTaken .~ mempty)
-    DrawCards iid n | iid == investigatorId -> if null (unDeck investigatorDeck)
-      then if null investigatorDiscard
-        then pure a
-        else a <$ unshiftMessages [ShuffleDiscardBackIn iid, DrawCards iid n]
-      else do
-        let
-          (mcard, deck') = drawCard (coerce investigatorDeck)
-          handUpdate = maybe id ((:) . PlayerCard) mcard
-        case mcard of
-          Just MkPlayerCard {..} -> when (pcCardType == PlayerTreacheryType)
-            $ unshiftMessage (DrewPlayerTreachery iid pcCardCode)
-          Nothing -> pure ()
-        pure $ a & hand %~ handUpdate & deck .~ Deck deck'
+    DrawCards iid n True | iid == investigatorId -> a <$ unshiftMessages
+      [ TakeAction iid (actionCost a Action.Draw) Action.Draw
+      , CheckAttackOfOpportunity iid
+      , DrawCards iid n False
+      ]
+    DrawCards iid n False | iid == investigatorId ->
+      if null (unDeck investigatorDeck)
+        then if null investigatorDiscard
+          then pure a
+          else
+            a <$ unshiftMessages
+              [ShuffleDiscardBackIn iid, DrawCards iid n False]
+        else do
+          let
+            (mcard, deck') = drawCard (coerce investigatorDeck)
+            handUpdate = maybe id ((:) . PlayerCard) mcard
+          case mcard of
+            Just MkPlayerCard {..} -> when (pcCardType == PlayerTreacheryType)
+              $ unshiftMessage (DrewPlayerTreachery iid pcCardCode)
+            Nothing -> pure ()
+          pure $ a & hand %~ handUpdate & deck .~ Deck deck'
     ChoosePlayCardAction iid | iid == investigatorId -> do
       unshiftMessage
         (Ask $ ChooseOne $ map
@@ -694,13 +702,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         (Ask $ ChooseOne $ map
           ChoiceResult
           ([ TakeResources iid 1 True | Action.Resource `elem` canDos ]
-          <> [ Run
-                 [ TakeAction iid (actionCost a Action.Draw) Action.Draw
-                 , CheckAttackOfOpportunity iid
-                 , DrawCards iid 1
-                 ]
-             | Action.Draw `elem` canDos
-             ]
+          <> [ DrawCards iid 1 True | Action.Draw `elem` canDos ]
           <> [ ChooseActivateCardAbilityAction iid
              | Action.Ability `elem` canDos
              ]

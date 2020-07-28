@@ -66,7 +66,7 @@ guts
   -> SkillTestResult
   -> m ()
 guts iid = \case
-  SucceededBy _ -> unshiftMessage (AddOnSuccess (DrawCards iid 1))
+  SucceededBy _ -> unshiftMessage (AddOnSuccess (DrawCards iid 1 False))
   _ -> pure ()
 
 overpower
@@ -75,7 +75,7 @@ overpower
   -> SkillTestResult
   -> m ()
 overpower iid = \case
-  SucceededBy _ -> unshiftMessage (AddOnSuccess (DrawCards iid 1))
+  SucceededBy _ -> unshiftMessage (AddOnSuccess (DrawCards iid 1 False))
   _ -> pure ()
 
 manualDexterity
@@ -84,7 +84,7 @@ manualDexterity
   -> SkillTestResult
   -> m ()
 manualDexterity iid = \case
-  SucceededBy _ -> unshiftMessage (AddOnSuccess (DrawCards iid 1))
+  SucceededBy _ -> unshiftMessage (AddOnSuccess (DrawCards iid 1 False))
   _ -> pure ()
 
 unexpectedCourage :: (MonadIO m) => InvestigatorId -> SkillTestResult -> m ()

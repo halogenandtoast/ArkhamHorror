@@ -305,12 +305,13 @@ instance (AssetRunner env) => RunMessage env Rolands38SpecialI where
           clueCount <- unClueCount <$> asks (getCount locationId)
           let skillModifier = if clueCount == 0 then 1 else 3
           unshiftMessage
-            (ChooseFightEnemyAction
+            (ChooseFightEnemy
               iid
               SkillCombat
               [ DamageDealt 1 (AssetSource aid)
               , SkillModifier SkillCombat skillModifier (AssetSource aid)
               ]
+              True
             )
           pure $ Rolands38SpecialI $ attrs & uses .~ Uses Resource.Ammo (n - 1)
         _ -> pure a
@@ -347,12 +348,13 @@ instance (AssetRunner env) => RunMessage env FortyFiveAutomaticI where
             (n == 1)
             (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
           unshiftMessage
-            (ChooseFightEnemyAction
+            (ChooseFightEnemy
               iid
               SkillCombat
               [ DamageDealt 1 (AssetSource aid)
               , SkillModifier SkillCombat 1 (AssetSource aid)
               ]
+              True
             )
           pure $ FortyFiveAutomaticI $ attrs & uses .~ Uses
             Resource.Ammo
@@ -415,12 +417,13 @@ instance (AssetRunner env) => RunMessage env MacheteI where
           then [DamageDealt 1 (AssetSource aid)]
           else []
       unshiftMessage
-        (ChooseFightEnemyAction
+        (ChooseFightEnemy
           iid
           SkillCombat
           (damageDealtModifiers
           <> [SkillModifier SkillCombat 1 (AssetSource aid)]
           )
+          True
         )
       pure a
     _ -> MacheteI <$> runMessage msg attrs
@@ -429,21 +432,23 @@ instance (AssetRunner env) => RunMessage env KnifeI where
   runMessage msg a@(KnifeI attrs@Attrs {..}) = case msg of
     UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
       unshiftMessage
-        (ChooseFightEnemyAction
+        (ChooseFightEnemy
           iid
           SkillCombat
           [SkillModifier SkillCombat 1 (AssetSource aid)]
+          True
         )
       pure a
     UseCardAbility iid ((AssetSource aid), 2, _, _) | aid == assetId -> do
       unshiftMessages
         [ DiscardAsset aid
-        , ChooseFightEnemyAction
+        , ChooseFightEnemy
           iid
           SkillCombat
           [ SkillModifier SkillCombat 2 (AssetSource aid)
           , DamageDealt 1 (AssetSource aid)
           ]
+          True
         ]
       pure a
     _ -> KnifeI <$> runMessage msg attrs

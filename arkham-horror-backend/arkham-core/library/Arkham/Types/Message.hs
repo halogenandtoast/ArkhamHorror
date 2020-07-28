@@ -80,8 +80,8 @@ data Message
   | UseCardAbility InvestigatorId Ability
   | ResolveToken Token InvestigatorId Int
   | Investigate InvestigatorId LocationId SkillType Bool
-  | ChooseFightEnemyAction InvestigatorId SkillType [Modifier]
-  | ChooseEvadeEnemyAction InvestigatorId
+  | ChooseFightEnemy InvestigatorId SkillType [Modifier] Bool
+  | ChooseEvadeEnemy InvestigatorId SkillType Bool
   | ChooseEngageEnemyAction InvestigatorId
   | ChooseEndTurn InvestigatorId
   | CheckAttackOfOpportunity InvestigatorId
@@ -158,12 +158,13 @@ data Message
   | SetEncounterDeck [EncounterCard]
   | TreacheryFailure InvestigatorId TreacheryId -- TODO: better name
   | ChooseAndDiscardAsset InvestigatorId
-  | FightEnemy InvestigatorId EnemyId SkillType [Modifier]
+  | FightEnemy InvestigatorId EnemyId SkillType [Modifier] Bool
   | WhenAttackEnemy InvestigatorId EnemyId
   | AttackEnemy InvestigatorId EnemyId SkillType Int
   | AfterAttackEnemy InvestigatorId EnemyId
   | WhenEvadeEnemy InvestigatorId EnemyId
-  | EvadeEnemy InvestigatorId EnemyId SkillType
+  | EvadeEnemy InvestigatorId EnemyId SkillType Bool
+  | TryEvadeEnemy InvestigatorId EnemyId SkillType
   | EnemyEvaded InvestigatorId EnemyId
   | AfterEvadeEnemy InvestigatorId EnemyId
   | SuccessfulInvestigation LocationId

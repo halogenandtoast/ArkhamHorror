@@ -564,7 +564,7 @@ runGameMessage msg g = case msg of
   AddAgenda aid -> pure $ g & agendas . at aid ?~ lookupAgenda aid
   SkillTestEnds -> pure $ g & skillTest .~ Nothing
   ReturnTokens tokens -> pure $ g & chaosBag %~ (tokens <>)
-  InvestigatorPlayCard iid cardCode _ -> do
+  PlayCard iid cardCode _ False -> do
     let
       card =
         fromJustNote "Could not find card" $ HashMap.lookup cardCode allCards

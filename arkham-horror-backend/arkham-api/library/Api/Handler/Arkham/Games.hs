@@ -7,6 +7,8 @@ where
 
 import Arkham.Types.Card
 import Arkham.Types.Game
+import Arkham.Types.Message
+import Arkham.Types.Helpers
 import Arkham.Types.GameJson
 import Arkham.Types.Investigator
 import Data.Aeson
@@ -28,8 +30,27 @@ postApiV1ArkhamCreateGameR = do
   key <- runDB $ insert $ ArkhamGame ge
   pure (Entity key (ArkhamGame ge))
 
+newtype QuestionReponse = QuestionResponse { choice :: Int }
+  deriving stock (Generic)
+  deriving anyclass (FromJSON)
+
+
 putApiV1ArkhamGameR :: ArkhamGameId -> Handler GameJson
-putApiV1ArkhamGameR = runDB . (arkhamGameCurrentData <$>) . get404
+putApiV1ArkhamGameR gameId = do
+  game <- runDB $ get404 gameId
+  response <- requireCheckJsonBody
+  let gameJson@GameJson{..} = arkhamGameCurrentData game
+      messages =
+        case gQuestion of
+          Just (ChooseOne qs) -> do
+            maybeToList $ Ask <$> qs !!? (choice response)
+          _ -> []
+  (_, ge) <- liftIO $ runMessages =<< toInternalGame (gameJson { gMessages = messages <> gMessages })
+  ge <$ runDB (replace gameId (ArkhamGame ge))
+
+  
+
+  
 
 newtype ArkhamDBDecklist = ArkhamDBDecklist
   { slots :: HashMap CardCode Int }

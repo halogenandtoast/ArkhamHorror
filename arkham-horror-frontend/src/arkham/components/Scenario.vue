@@ -36,6 +36,7 @@
     <Player
       :game="game"
       :player="player"
+      @choose="$emit('choose', $event)"
     />
     <StatusBar :game="game" />
   </div>

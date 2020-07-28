@@ -4,17 +4,10 @@
 
     <div class="resources">
       <div
-        v-if="canTakeActions"
+        :class="{ 'resource--can-take': canTakeResource }"
         class="poolItem poolItem-resource"
-        @click="$emit('takeResource')"
+        @click="takeResource"
       >
-        <img
-          class="resource--can-take"
-          src="/img/arkham/resource.png"
-        />
-        <span>{{player.contents.resources}}</span>
-      </div>
-      <div v-else class="poolItem poolItem-resource">
         <img src="/img/arkham/resource.png" />
         <span>{{player.contents.resources}}</span>
       </div>
@@ -38,12 +31,56 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as Arkham from '@/arkham/types/Investigator';
+import { Game } from '@/arkham/types/Game';
+import { Question } from '@/arkham/types/Question';
+import { ChooseTakeResourceAction } from '@/arkham/types/Message';
 
 @Component
 export default class Investigator extends Vue {
   @Prop(Object) readonly player!: Arkham.Investigator
-  @Prop(Boolean) readonly canTakeActions!: boolean
-  @Prop(Boolean) readonly inActionWindow!: boolean
+  @Prop(Object) readonly game!: Game
+
+  indexForAction = (actionTag: string, question: Question): number => {
+    switch (question.tag) {
+      case 'ChooseOne':
+        return question
+          .contents
+          .findIndex((choice: Question) => this.canTakeAction(actionTag, choice));
+      default:
+        return 1000;
+    }
+  }
+
+  canTakeAction = (actionTag: string, question: Question): boolean => {
+    switch (question.tag) {
+      case 'ChooseOne':
+        return question.contents.some((choice: Question) => this.canTakeAction(actionTag, choice));
+      case 'ChoiceResult':
+        if ((question.contents as ChooseTakeResourceAction).tag) {
+          return question.contents.tag === actionTag;
+        }
+
+        return false;
+      default:
+        return false;
+    }
+  }
+
+  get canTakeResource() {
+    return this.canTakeAction('ChooseTakeResourceAction', this.game.currentData.question);
+  }
+
+  takeResource() {
+    if (this.canTakeResource) {
+      this.$emit(
+        'choose',
+        this.indexForAction(
+          'ChooseTakeResourceAction',
+          this.game.currentData.question,
+        ),
+      );
+    }
+  }
 
   get image() {
     const { id } = this.player.contents;

@@ -1,13 +1,13 @@
 <template>
   <div id="game" class="game" v-if="ready">
-    <Scenario :game="game" @update="update" />
+    <Scenario :game="game" @choose="choose" @update="update" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import * as Arkham from '@/arkham/types/Game';
-import { fetchGame } from '@/arkham/api';
+import { fetchGame, updateGame } from '@/arkham/api';
 import Scenario from '@/arkham/components/Scenario.vue';
 
 @Component({
@@ -24,6 +24,10 @@ export default class Game extends Vue {
       this.game = game;
       this.ready = true;
     });
+  }
+
+  async choose(idx: number) {
+    updateGame(this.gameId, idx);
   }
 
   update(state: Arkham.Game) {

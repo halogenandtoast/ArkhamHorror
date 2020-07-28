@@ -5,6 +5,7 @@ module Arkham.Types.Game
   ( runGame
   , runMessages
   , newGame
+  , toInternalGame
   , Game(..)
   )
 where
@@ -808,6 +809,11 @@ toExternalGame Game {..} mq = do
     , gUsedAbilities = giUsedAbilities
     , gQuestion = mq
     }
+
+toInternalGame :: MonadIO m => GameJson -> m Game
+toInternalGame gj@GameJson {..} = do
+  ref <- newIORef gMessages
+  pure $ toInternalGame' ref gj
 
 toInternalGame' :: IORef [Message] -> GameJson -> Game
 toInternalGame' ref GameJson {..} = Game

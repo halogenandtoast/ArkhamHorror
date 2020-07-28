@@ -16,6 +16,8 @@
     <div class="player">
       <Investigator
         :player="player"
+        :game="game"
+        @choose="$emit('choose', $event)"
       />
       <div v-if="topOfDiscard" class="discard">
         <img

@@ -13,5 +13,6 @@ data Target
   = AssetTarget AssetId
   | EnemyTarget EnemyId
   | InvestigatorTarget InvestigatorId
+  | SkillTestTarget
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

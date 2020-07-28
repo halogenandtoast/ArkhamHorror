@@ -11,7 +11,7 @@ data AbilityWindow = SkillTestWindow SkillType
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
-data AbilityType = FreeAbility AbilityWindow | ReactionAbility FastWindow | ActionAbility Action
+data AbilityType = FreeAbility AbilityWindow | ReactionAbility FastWindow | ActionAbility Int Action
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 

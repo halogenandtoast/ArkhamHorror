@@ -223,7 +223,7 @@ parlor =
   Parlor $ ParlorI $ (baseAttrs "01115" "Parlor" 2 (Static 0) Diamond [Square])
     { locationBlocked = True
     , locationAbilities =
-      [(LocationSource "01115", 1, ActionAbility Action.Resign, NoLimit)]
+      [(LocationSource "01115", 1, ActionAbility 1 Action.Resign, NoLimit)]
     }
 
 type LocationRunner env
@@ -277,7 +277,11 @@ instance (LocationRunner env) => RunMessage env ParlorI where
           [ RemoveAbilitiesFrom (LocationSource locationId)
           , AddAbility
             (AssetSource aid)
-            (LocationSource locationId, 2, ActionAbility Action.Parley, NoLimit)
+            ( LocationSource locationId
+            , 2
+            , ActionAbility 1 Action.Parley
+            , NoLimit
+            )
           ]
     UseCardAbility iid ((LocationSource lid), 1, _, _)
       | lid == locationId && locationRevealed -> l

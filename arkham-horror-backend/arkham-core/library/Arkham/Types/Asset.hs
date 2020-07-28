@@ -22,6 +22,7 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
@@ -203,7 +204,7 @@ machete :: AssetId -> Asset
 machete uuid = Machete $ MacheteI $ (baseAttrs uuid "01020")
   { assetSlots = [HandSlot]
   , assetAbilities =
-    [(AssetSource uuid, 1, ActionAbility Action.Fight, NoLimit)]
+    [(AssetSource uuid, 1, ActionAbility 1 Action.Fight, NoLimit)]
   }
 
 newtype GuardDogI = GuardDogI Attrs
@@ -275,14 +276,15 @@ instance (AssetRunner env) => RunMessage env Asset where
 
 instance (AssetRunner env) => RunMessage env Rolands38SpecialI where
   runMessage msg a@(Rolands38SpecialI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset _ aid | aid == assetId ->
-      pure
-        $ Rolands38SpecialI
-        $ attrs
-        & (uses .~ Uses Resource.Ammo 4)
-        & (abilities
-          .~ [(AssetSource aid, 1, ActionAbility Action.Fight, NoLimit)]
-          )
+    InvestigatorPlayAsset _ aid | aid == assetId -> do
+      let
+        attrs' =
+          attrs
+            & (uses .~ Uses Resource.Ammo 4)
+            & (abilities
+              .~ [(AssetSource aid, 1, ActionAbility 1 Action.Fight, NoLimit)]
+              )
+      Rolands38SpecialI <$> runMessage msg attrs'
     UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
       case assetUses of
         Uses Resource.Ammo n -> do
@@ -305,15 +307,17 @@ instance (AssetRunner env) => RunMessage env Rolands38SpecialI where
     _ -> Rolands38SpecialI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env DaisysToteBagI where
-  runMessage msg a@(DaisysToteBagI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset _ aid | aid == assetId -> a <$ unshiftMessages
-      [ InvestigatorAddModifier
-        (fromJustNote "Must be owned" assetInvestigator)
-        (AddSlot TomeSlot (AssetSource aid))
-      , InvestigatorAddModifier
-        (fromJustNote "Must be owned" assetInvestigator)
-        (AddSlot TomeSlot (AssetSource aid))
-      ]
+  runMessage msg (DaisysToteBagI attrs@Attrs {..}) = case msg of
+    InvestigatorPlayAsset iid aid | aid == assetId -> do
+      unshiftMessages
+        [ AddModifier
+          (InvestigatorTarget iid)
+          (AddSlot TomeSlot (AssetSource aid))
+        , AddModifier
+          (InvestigatorTarget iid)
+          (AddSlot TomeSlot (AssetSource aid))
+        ]
+      DaisysToteBagI <$> runMessage msg attrs
     _ -> DaisysToteBagI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env FortyFiveAutomaticI where
@@ -324,7 +328,7 @@ instance (AssetRunner env) => RunMessage env FortyFiveAutomaticI where
         $ attrs
         & (uses .~ Uses Resource.Ammo 4)
         & (abilities
-          .~ [(AssetSource aid, 1, ActionAbility Action.Fight, NoLimit)]
+          .~ [(AssetSource aid, 1, ActionAbility 1 Action.Fight, NoLimit)]
           )
     UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
       case assetUses of
@@ -352,7 +356,8 @@ instance (AssetRunner env) => RunMessage env PhysicalTrainingI where
       resources <- unResourceCount <$> asks (getCount iid)
       when (resources > 0) $ unshiftMessages
         [ SpendResources iid 1
-        , SkillTestAddModifier
+        , AddModifier
+          SkillTestTarget
           (SkillModifier SkillWillpower 1 (AssetSource aid))
         ]
       pure a
@@ -360,7 +365,9 @@ instance (AssetRunner env) => RunMessage env PhysicalTrainingI where
       resources <- unResourceCount <$> asks (getCount iid)
       when (resources > 0) $ unshiftMessages
         [ SpendResources iid 1
-        , SkillTestAddModifier (SkillModifier SkillCombat 1 (AssetSource aid))
+        , AddModifier
+          SkillTestTarget
+          (SkillModifier SkillCombat 1 (AssetSource aid))
         ]
       pure a
     _ -> PhysicalTrainingI <$> runMessage msg attrs
@@ -382,8 +389,8 @@ instance (AssetRunner env) => RunMessage env HolyRosaryI where
   runMessage msg (HolyRosaryI attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid | aid == assetId -> do
       unshiftMessage
-        (InvestigatorAddModifier
-          iid
+        (AddModifier
+          (InvestigatorTarget iid)
           (SkillModifier SkillWillpower 1 (AssetSource aid))
         )
       HolyRosaryI <$> runMessage msg attrs
@@ -439,7 +446,12 @@ instance (AssetRunner env) => RunMessage env FlashlightI where
         $ attrs
         & (uses .~ Uses Resource.Supply 3)
         & (abilities
-          .~ [(AssetSource aid, 1, ActionAbility Action.Investigate, NoLimit)]
+          .~ [ ( AssetSource aid
+               , 1
+               , ActionAbility 1 Action.Investigate
+               , NoLimit
+               )
+             ]
           )
     UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
       case assetUses of
@@ -465,8 +477,12 @@ instance (AssetRunner env) => RunMessage env LitaChantlerI where
         locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
         if iid `elem` locationInvestigatorIds
           then a <$ unshiftMessage
-            (Ask $ ChooseTo
-              (EnemyAddModifier eid (DamageTaken 1 (AssetSource assetId)))
+            (Ask
+            $ ChooseTo
+                (AddModifier
+                  (EnemyTarget eid)
+                  (DamageTaken 1 (AssetSource assetId))
+                )
             )
           else pure a
       _ -> pure a
@@ -479,9 +495,10 @@ instance (AssetRunner env) => RunMessage env LitaChantlerI where
           locationId <- asks (getId @LocationId ownerId)
           locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
           unshiftMessages $ map
-            (\iid -> InvestigatorAddModifier
-              iid
-              (SkillModifier SkillCombat 1 (AssetSource assetId))
+            (flip
+                AddModifier
+                (SkillModifier SkillCombat 1 (AssetSource assetId))
+            . InvestigatorTarget
             )
             locationInvestigatorIds
         _ -> pure ()

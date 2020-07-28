@@ -21,6 +21,7 @@ import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
@@ -290,11 +291,16 @@ instance (EnemyRunner env) => RunMessage env RavenousGhoulI where
 instance (EnemyRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     EnemySpawn lid eid | eid == enemyId -> pure $ a & location .~ lid
-    ReadyExhausted ->  do
+    ReadyExhausted -> do
       miid <- headMay . HashSet.toList <$> asks (getSet enemyLocation)
       case miid of
-        Just iid -> when (null enemyEngagedInvestigators || Keyword.Massive `elem` enemyKeywords) $
-          unshiftMessage (EnemyEngageInvestigator enemyId iid)
+        Just iid ->
+          when
+              (null enemyEngagedInvestigators
+              || Keyword.Massive
+              `elem` enemyKeywords
+              )
+            $ unshiftMessage (EnemyEngageInvestigator enemyId iid)
         Nothing -> pure ()
       pure $ a & exhausted .~ False
     HuntersMove
@@ -351,15 +357,19 @@ instance (EnemyRunner env) => RunMessage env Attrs where
         (a ^. damage + amount' >= a ^. health . to (`fromGameValue` playerCount)
         )
         (unshiftMessage (EnemyDefeated eid iid enemyCardCode source))
-    EnemyAddModifier eid modifier | eid == enemyId ->
+    AddModifier (EnemyTarget eid) modifier | eid == enemyId ->
       pure $ a & modifiers %~ (modifier :)
     EnemyRemoveAllModifiersFromSource eid source | eid == enemyId ->
       pure $ a & modifiers %~ filter ((source /=) . sourceOfModifier)
     EnemyEngageInvestigator eid iid | eid == enemyId ->
       pure $ a & engagedInvestigators %~ HashSet.insert iid
     AfterEnterLocation iid lid | lid == enemyLocation -> do
-      when (null enemyEngagedInvestigators || Keyword.Massive `elem` enemyKeywords) $
-        unshiftMessage (EnemyEngageInvestigator enemyId iid)
+      when
+          (null enemyEngagedInvestigators
+          || Keyword.Massive
+          `elem` enemyKeywords
+          )
+        $ unshiftMessage (EnemyEngageInvestigator enemyId iid)
       pure a
     CheckAttackOfOpportunity iid
       | iid `elem` enemyEngagedInvestigators && not enemyExhausted -> a

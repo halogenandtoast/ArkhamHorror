@@ -36,8 +36,8 @@ viciousBlow
   -> SkillTestResult
   -> m ()
 viciousBlow _ = \case
-  SucceededBy _ ->
-    unshiftMessage (SkillTestAddModifier (DamageDealt 1 (SkillSource "01025")))
+  SucceededBy _ -> unshiftMessage
+    (AddModifier SkillTestTarget (DamageDealt 1 (SkillSource "01025")))
   _ -> pure ()
 
 deduction
@@ -47,7 +47,7 @@ deduction
   -> m ()
 deduction _ = \case
   SucceededBy _ -> unshiftMessage
-    (SkillTestAddModifier (DiscoveredClues 1 (SkillSource "01039")))
+    (AddModifier SkillTestTarget (DiscoveredClues 1 (SkillSource "01039")))
   _ -> pure ()
 
 fearless

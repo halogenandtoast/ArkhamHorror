@@ -20,6 +20,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Stats
+import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude
@@ -264,7 +265,7 @@ canPerform a@Attrs {..} Action.Play = do
 canPerform a@Attrs {..} Action.Ability = do
   availableAbilities <- getAvailableAbilities a
   filteredAbilities <- flip filterM availableAbilities $ \case
-    (_, _, ActionAbility action, _) -> canPerform a action
+    (_, _, ActionAbility _ action, _) -> canPerform a action -- TODO: we need to calculate the total cost
     (_, _, FreeAbility (SkillTestWindow _), _) -> pure False
     (_, _, ReactionAbility _, _) -> pure False
 
@@ -322,7 +323,7 @@ getAvailableAbilities a@Attrs {..} = do
     , actAndAgendaAbilities
     ]
  where
-  canPerformAbility (_, _, ActionAbility actionType, _) =
+  canPerformAbility (_, _, ActionAbility _ actionType, _) =
     canAfford a actionType
   canPerformAbility (_, _, FreeAbility (SkillTestWindow _), _) = False
   canPerformAbility (_, _, ReactionAbility _, _) = False
@@ -530,7 +531,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         $ a
         & (connectedLocations %~ HashSet.insert lid1)
         & (connectedLocations %~ HashSet.insert lid2)
-    InvestigatorAddModifier iid modifier | iid == investigatorId ->
+    AddModifier (InvestigatorTarget iid) modifier | iid == investigatorId ->
       pure $ a & modifiers %~ (modifier :)
     InvestigatorRemoveAllModifiersFromSource iid source
       | iid == investigatorId -> pure $ a & modifiers %~ filter
@@ -591,7 +592,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       | iid == investigatorId -> do
         unshiftMessage (UseCardAbility iid ability) -- We should check action type when added for aoo
         case abilityType of
-          ActionAbility actionType ->
+          ActionAbility _ actionType ->
             if actionType
                 `notElem` [ Action.Fight
                           , Action.Evade

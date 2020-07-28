@@ -7,10 +7,10 @@ where
 
 import Arkham.Types.Card
 import Arkham.Types.Game
-import Arkham.Types.Message
-import Arkham.Types.Helpers
 import Arkham.Types.GameJson
+import Arkham.Types.Helpers
 import Arkham.Types.Investigator
+import Arkham.Types.Message
 import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap
 import Import
@@ -35,22 +35,19 @@ newtype QuestionReponse = QuestionResponse { choice :: Int }
   deriving anyclass (FromJSON)
 
 
-putApiV1ArkhamGameR :: ArkhamGameId -> Handler GameJson
+putApiV1ArkhamGameR :: ArkhamGameId -> Handler (Entity ArkhamGame)
 putApiV1ArkhamGameR gameId = do
   game <- runDB $ get404 gameId
   response <- requireCheckJsonBody
-  let gameJson@GameJson{..} = arkhamGameCurrentData game
-      messages =
-        case gQuestion of
-          Just (ChooseOne qs) -> do
-            maybeToList $ Ask <$> qs !!? (choice response)
-          _ -> []
-  (_, ge) <- liftIO $ runMessages =<< toInternalGame (gameJson { gMessages = messages <> gMessages })
-  ge <$ runDB (replace gameId (ArkhamGame ge))
-
-  
-
-  
+  let
+    gameJson@GameJson {..} = arkhamGameCurrentData game
+    messages = case gQuestion of
+      Just (ChooseOne qs) ->
+        maybeToList $ Ask <$> qs !!? (choice response)
+      _ -> []
+  (_, ge) <- liftIO $ runMessages =<< toInternalGame
+    (gameJson { gMessages = messages <> gMessages })
+  Entity gameId (ArkhamGame ge) <$ runDB (replace gameId (ArkhamGame ge))
 
 newtype ArkhamDBDecklist = ArkhamDBDecklist
   { slots :: HashMap CardCode Int }

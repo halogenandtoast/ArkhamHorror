@@ -5,6 +5,8 @@ export type Message
   | ChooseDrawCardAction
   | ChoosePlayCardAction
   | ChooseInvestigateAction
+  | SkillTestCommitCard
+  | StartSkillTest
   | ChooseEndTurn;
 
 export interface ChooseTakeResourceAction {
@@ -62,10 +64,34 @@ export const chooseEndTurnDecoder = JsonDecoder.object<ChooseEndTurn>(
   'ChooseEndTurn',
 );
 
+export interface SkillTestCommitCard {
+  tag: 'SkillTestCommitCard';
+}
+
+export const skillTestCommitCardDecoder = JsonDecoder.object<SkillTestCommitCard>(
+  {
+    tag: JsonDecoder.isExactly('SkillTestCommitCard'),
+  },
+  'SkillTestCommitCard',
+);
+
+export interface StartSkillTest {
+  tag: 'StartSkillTest';
+}
+
+export const startSkillTestDecoder = JsonDecoder.object<StartSkillTest>(
+  {
+    tag: JsonDecoder.isExactly('StartSkillTest'),
+  },
+  'StartSkillTest',
+);
+
 export const messageDecoder = JsonDecoder.oneOf<Message>([
   chooseTakeResourceActionDecoder,
   chooseDrawCardActionDecoder,
   choosePlayCardActionDecoder,
   chooseInvestigateActionDecoder,
   chooseEndTurnDecoder,
+  skillTestCommitCardDecoder,
+  startSkillTestDecoder,
 ], 'Message');

@@ -24,6 +24,7 @@
         <span>{{player.contents.sanityDamage}}</span>
       </div>
       <p><i class="action" v-for="n in player.contents.remainingActions" :key="n"></i></p>
+      <button :disabled="!canEndTurn" @click="endTurn">End turn</button>
     </div>
   </div>
 </template>
@@ -72,13 +73,25 @@ export default class Investigator extends Vue {
 
   takeResource() {
     if (this.canTakeResource) {
-      this.$emit(
-        'choose',
-        this.indexForAction(
-          'ChooseTakeResourceAction',
-          this.game.currentData.question,
-        ),
-      );
+      const action = 'ChooseTakeResourceAction';
+      const { question } = this.game.currentData;
+      const idx = this.indexForAction(action, question);
+
+      this.$emit('choose', idx);
+    }
+  }
+
+  get canEndTurn() {
+    return this.canTakeAction('ChooseEndTurn', this.game.currentData.question);
+  }
+
+  endTurn() {
+    if (this.canEndTurn) {
+      const action = 'ChooseEndTurn';
+      const { question } = this.game.currentData;
+      const idx = this.indexForAction(action, question);
+
+      this.$emit('choose', idx);
     }
   }
 

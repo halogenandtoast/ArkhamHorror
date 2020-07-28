@@ -12,10 +12,8 @@ import { Question, questionDecoder } from '@/arkham/types/Question';
 // import { Treachery, treacheryDecoder } from '@/arkham/types/Treachery';
 import { SkillTest, skillTestDecoder } from '@/arkham/types/SkillTest';
 import {
-  Card,
-  cardDecoder,
-  EncounterCard,
-  encounterCardDecoder,
+  EncounterCardContents,
+  encounterCardContentsDecoder,
 } from '@/arkham/types/Card';
 
 export interface Game {
@@ -29,7 +27,7 @@ export interface GameState {
   agendas: Record<string, Agenda>;
   // assets: Record<string, Asset>;
   chaosBag: ChaosToken[];
-  discard: EncounterCard[];
+  discard: EncounterCardContents[];
   // enemies: Record<string, Enemy>;
   gameOver: boolean;
   investigators: Record<string, Investigator>;
@@ -38,7 +36,7 @@ export interface GameState {
   phase: Phase;
   question: Question;
   scenario: Scenario;
-  skillTest: SkillTest | null;
+  // skillTest: SkillTest | null;
   // treacheries: Record<string, Treachery>;
 }
 
@@ -49,7 +47,7 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     agendas: JsonDecoder.dictionary<Agenda>(agendaDecoder, 'Dict<UUID, Agenda>'),
     // assets: JsonDecoder.dictionary<Asset>(assetDecoder, 'Dict<UUID, Asset>'),
     chaosBag: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
-    discard: JsonDecoder.array<EncounterCard>(encounterCardDecoder, 'EncounterCard[]'),
+    discard: JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]'),
     // enemies: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
     gameOver: JsonDecoder.boolean,
     investigators: JsonDecoder.dictionary<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
@@ -58,7 +56,7 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     phase: phaseDecoder,
     question: questionDecoder,
     scenario: scenarioDecoder,
-    skillTest: JsonDecoder.nullable(skillTestDecoder),
+    // skillTest: JsonDecoder.nullable(skillTestDecoder),
     // treacheries: JsonDecoder.dictionary<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),
   },
   'GameState',

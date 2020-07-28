@@ -36,3 +36,4 @@ executables:
       - pretty-simple
       - http-conduit
       - arkham-core
+      - postgresql-simple

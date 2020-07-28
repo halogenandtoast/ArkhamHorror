@@ -662,12 +662,14 @@ runGameMessage msg g = case msg of
     pure $ g & usedAbilities %~ filter
       (\(_, _, _, limit) -> limit == OncePerGame)
   BeginRound -> g <$ pushMessage BeginMythos
-  BeginMythos -> g <$ pushMessages
-    [ PlaceDoomOnAgenda
-    , AdvanceAgendaIfThresholdSatisfied
-    , AllDrawEncounterCard
-    , EndMythos
-    ]
+  BeginMythos -> do
+    pushMessages
+      [ PlaceDoomOnAgenda
+      , AdvanceAgendaIfThresholdSatisfied
+      , AllDrawEncounterCard
+      , EndMythos
+      ]
+    pure $ g & phase .~ MythosPhase
   EndMythos -> g <$ pushMessage BeginInvestigation
   UseCardAbility _ (_, _, _, NoLimit) -> pure g
   UseCardAbility _ ability -> pure $ g & usedAbilities %~ (ability :)
@@ -860,6 +862,10 @@ runMessages g = if g ^. gameOver
                 ]
               >> runMessages g
       Just msg -> case msg of
+        Ask (ChoiceResult m) ->
+          liftIO (modifyIORef' (giMessages g) ([m] <>)) >> runMessages g
+        Ask (ChoiceResults ms) ->
+          liftIO (modifyIORef' (giMessages g) (ms <>)) >> runMessages g
         Ask q -> (Just q, ) <$> toExternalGame g (Just q)
         _ -> runMessage msg g >>= runMessages
 

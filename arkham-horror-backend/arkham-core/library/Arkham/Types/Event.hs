@@ -32,7 +32,7 @@ dodge _ = unshiftMessage CancelNextAttack
 
 emergencyCache
   :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
-emergencyCache iid = unshiftMessage (TakeResources iid 3)
+emergencyCache iid = unshiftMessage (TakeResources iid 3 False)
 
 dynamiteBlast
   :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()

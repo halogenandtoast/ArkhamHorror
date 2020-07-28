@@ -7,6 +7,7 @@ where
 
 import Arkham.Types.Ability
 import Arkham.Types.ActId
+import Arkham.Types.Action
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
 import Arkham.Types.Card
@@ -71,8 +72,7 @@ data Message
   | PostPlayerWindow
   | PlayerWindow InvestigatorId
   | Ask Question
-  | ChooseTakeResourceAction InvestigatorId
-  | ChooseDrawCardAction InvestigatorId
+  | TakeAction InvestigatorId Int Action
   | ChoosePlayCardAction InvestigatorId
   | ChooseActivateCardAbilityAction InvestigatorId
   | ActivateCardAbilityAction InvestigatorId Ability
@@ -86,7 +86,7 @@ data Message
   | ChooseEngageEnemyAction InvestigatorId
   | ChooseEndTurn InvestigatorId
   | CheckAttackOfOpportunity InvestigatorId
-  | TakeResources InvestigatorId Int
+  | TakeResources InvestigatorId Int Bool
   | SpendResources InvestigatorId Int
   | EnemyWillAttack InvestigatorId EnemyId
   | EnemyAttacks [Message]
@@ -191,6 +191,7 @@ data Message
   | InvestigatorResigned InvestigatorId
   | CheckFastWindow InvestigatorId [FastWindow]
   | CancelNextAttack
+  | Run [Message]
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

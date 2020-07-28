@@ -49,7 +49,7 @@ export default class Location extends Vue {
     const { id, revealed } = this.location.contents;
     const suffix = revealed ? '' : 'b';
 
-    return `/img/arkham/cards/${id}${suffix}.png`;
+    return `/img/arkham/cards/${id}${suffix}.jpg`;
   }
 }
 </script>

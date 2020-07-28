@@ -47,7 +47,7 @@ export default class Investigator extends Vue {
 
   get image() {
     const { id } = this.player.contents;
-    return `/img/arkham/cards/${id}.png`;
+    return `/img/arkham/cards/${id}.jpg`;
   }
 }
 </script>

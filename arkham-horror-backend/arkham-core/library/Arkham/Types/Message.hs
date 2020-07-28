@@ -79,8 +79,7 @@ data Message
   | UseCardAbility InvestigatorId Ability
   | ResolveToken Token InvestigatorId Int
   | ChooseMoveAction InvestigatorId
-  | ChooseInvestigateAction InvestigatorId SkillType [Modifier]
-  | Investigate SkillType InvestigatorId LocationId [Modifier]
+  | Investigate InvestigatorId LocationId SkillType Bool
   | ChooseFightEnemyAction InvestigatorId SkillType [Modifier]
   | ChooseEvadeEnemyAction InvestigatorId
   | ChooseEngageEnemyAction InvestigatorId
@@ -166,12 +165,9 @@ data Message
   | AfterEvadeEnemy InvestigatorId EnemyId
   | SuccessfulInvestigation LocationId
   | AttachTreacheryToLocation TreacheryId LocationId
-  | LocationIncreaseShroud LocationId Int
-  | LocationDecreaseShroud LocationId Int
   | AttachTreacheryToInvestigator TreacheryId InvestigatorId
   | AddModifier Target Modifier
-  | InvestigatorRemoveAllModifiersFromSource InvestigatorId Source
-  | EnemyRemoveAllModifiersFromSource EnemyId Source
+  | RemoveAllModifiersOnTargetFrom Target Source
   | RequestedEncounterCard Source (Maybe EncounterCard)
   | ShuffleEncounterDiscardBackIn
   | ShuffleDiscardBackIn InvestigatorId

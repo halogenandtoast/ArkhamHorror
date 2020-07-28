@@ -24,6 +24,7 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Stats (Stats)
+import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude
@@ -64,6 +65,7 @@ data Attrs = Attrs
   , locationTreacheries :: HashSet TreacheryId
   , locationAssets :: HashSet AssetId
   , locationAbilities :: [Ability]
+  , locationModifiers :: [Modifier]
   }
   deriving stock (Show, Generic)
 
@@ -113,6 +115,9 @@ connectedLocations =
 blocked :: Lens' Attrs Bool
 blocked = lens locationBlocked $ \m x -> m { locationBlocked = x }
 
+modifiers :: Lens' Attrs [Modifier]
+modifiers = lens locationModifiers $ \m x -> m { locationModifiers = x }
+
 baseAttrs
   :: LocationId
   -> Text
@@ -139,13 +144,11 @@ baseAttrs lid name shroud' revealClues symbol' connectedSymbols' = Attrs
   , locationTreacheries = mempty
   , locationAssets = mempty
   , locationAbilities = mempty
+  , locationModifiers = mempty
   }
 
 clues :: Lens' Attrs Int
 clues = lens locationClues $ \m x -> m { locationClues = x }
-
-shroud :: Lens' Attrs Int
-shroud = lens locationShroud $ \m x -> m { locationShroud = x }
 
 revealed :: Lens' Attrs Bool
 revealed = lens locationRevealed $ \m x -> m { locationRevealed = x }
@@ -153,11 +156,11 @@ revealed = lens locationRevealed $ \m x -> m { locationRevealed = x }
 enemies :: Lens' Attrs (HashSet EnemyId)
 enemies = lens locationEnemies $ \m x -> m { locationEnemies = x }
 
-shroudValueFor :: [Modifier] -> Attrs -> Int
-shroudValueFor modifiers Attrs {..} = foldr
+shroudValueFor :: Attrs -> Int
+shroudValueFor Attrs {..} = foldr
   applyModifier
   locationShroud
-  modifiers
+  locationModifiers
  where
   applyModifier (ShroudModifier m _) n = max 0 (n + m)
   applyModifier _ n = n
@@ -295,23 +298,27 @@ instance (LocationRunner env) => RunMessage env ParlorI where
 
 instance (LocationRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
-    Investigate skillType iid lid tempModifiers | lid == locationId ->
+    Investigate iid lid skillType False | lid == locationId ->
       a <$ unshiftMessage
         (BeginSkillTest
           iid
           skillType
-          (shroudValueFor tempModifiers a)
+          (shroudValueFor a)
           [SuccessfulInvestigation lid, InvestigatorDiscoverClues iid lid 1]
           []
         )
+    AddModifier (LocationTarget lid) modifier | lid == locationId ->
+      pure $ a & modifiers %~ (modifier :)
+    RemoveAllModifiersOnTargetFrom (LocationTarget lid) source
+      | lid == locationId -> pure $ a & modifiers %~ filter
+        ((source /=) . sourceOfModifier)
     PlacedLocation lid | lid == locationId ->
       a <$ unshiftMessage (AddConnection lid locationSymbol)
     AttachTreacheryToLocation tid lid | lid == locationId ->
       pure $ a & treacheries %~ HashSet.insert tid
+    DiscardTreachery tid -> pure $ a & treacheries %~ HashSet.delete tid
     AddAssetAt aid lid | lid == locationId ->
       pure $ a & assets %~ HashSet.insert aid
-    LocationIncreaseShroud lid n | lid == locationId -> pure $ a & shroud +~ n
-    LocationDecreaseShroud lid n | lid == locationId -> pure $ a & shroud -~ n
     AddConnection lid symbol' | symbol' `elem` locationConnectedSymbols -> do
       unshiftMessages
         [ AddConnectionBack locationId locationSymbol

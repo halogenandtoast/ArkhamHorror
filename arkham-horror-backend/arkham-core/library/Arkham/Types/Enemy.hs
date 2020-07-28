@@ -359,7 +359,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
         (unshiftMessage (EnemyDefeated eid iid enemyCardCode source))
     AddModifier (EnemyTarget eid) modifier | eid == enemyId ->
       pure $ a & modifiers %~ (modifier :)
-    EnemyRemoveAllModifiersFromSource eid source | eid == enemyId ->
+    RemoveAllModifiersOnTargetFrom (EnemyTarget eid) source | eid == enemyId ->
       pure $ a & modifiers %~ filter ((source /=) . sourceOfModifier)
     EnemyEngageInvestigator eid iid | eid == enemyId ->
       pure $ a & engagedInvestigators %~ HashSet.insert iid

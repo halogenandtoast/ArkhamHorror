@@ -124,8 +124,8 @@ instance (HasQueue env) => RunMessage env SkillTest where
     AddModifier SkillTestTarget modifier ->
       pure $ s & modifiers %~ (modifier :)
     SkillTestEnds -> s <$ unshiftMessages
-      [ InvestigatorRemoveAllModifiersFromSource
-        skillTestInvestigator
+      [ RemoveAllModifiersOnTargetFrom
+        (InvestigatorTarget skillTestInvestigator)
         SkillTestSource
       , ReturnTokens skillTestSetAsideTokens
       ]

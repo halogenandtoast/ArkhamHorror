@@ -459,12 +459,16 @@ instance (AssetRunner env) => RunMessage env FlashlightI where
           when
             (n == 1)
             (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
-          unshiftMessage
-            (ChooseInvestigateAction
-              iid
-              SkillIntellect
-              [ShroudModifier (-2) (AssetSource aid)]
-            )
+          lid <- asks (getId iid)
+          unshiftMessages
+            [ AddModifier
+              (LocationTarget lid)
+              (ShroudModifier (-2) (AssetSource aid))
+            , Investigate iid lid SkillIntellect False
+            , RemoveAllModifiersOnTargetFrom
+              (LocationTarget lid)
+              (AssetSource aid)
+            ]
           pure $ FlashlightI $ attrs & uses .~ Uses Resource.Supply (n - 1)
         _ -> pure a
     _ -> FlashlightI <$> runMessage msg attrs
@@ -487,7 +491,7 @@ instance (AssetRunner env) => RunMessage env LitaChantlerI where
           else pure a
       _ -> pure a
     AfterAttackEnemy _ eid -> a <$ unshiftMessage
-      (EnemyRemoveAllModifiersFromSource eid (AssetSource assetId))
+      (RemoveAllModifiersOnTargetFrom (EnemyTarget eid) (AssetSource assetId))
     PostPlayerWindow -> do
       allInvestigatorIds <- HashSet.toList <$> asks (getSet ())
       case assetInvestigator of
@@ -503,8 +507,9 @@ instance (AssetRunner env) => RunMessage env LitaChantlerI where
             locationInvestigatorIds
         _ -> pure ()
       unshiftMessages $ map
-        (\iid ->
-          InvestigatorRemoveAllModifiersFromSource iid (AssetSource assetId)
+        (\iid -> RemoveAllModifiersOnTargetFrom
+          (InvestigatorTarget iid)
+          (AssetSource assetId)
         )
         allInvestigatorIds
       pure a

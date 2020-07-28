@@ -24,18 +24,10 @@
         width="250"
       />
     </div>
-    <div v-if="location.clues > 0" >
-      <div
-        v-if="canInvestigate"
-        class="clue clue--can-investigate"
-        @click="investigate(location)"
-      >
+    <div v-if="location.contents.clues > 0" >
+      <div>
         <img src="/img/arkham/clue.png" />
-        {{location.clues}}
-      </div>
-      <div v-else>
-        <img src="/img/arkham/clue.png" />
-        {{location.clues}}
+        {{location.contents.clues}}
       </div>
     </div>
   </div>

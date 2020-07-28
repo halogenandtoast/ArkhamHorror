@@ -6,7 +6,6 @@ where
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameRunner
-import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -56,8 +55,9 @@ fearless
   => InvestigatorId
   -> SkillTestResult
   -> m ()
-fearless _ = \case
-  SucceededBy _ -> unshiftMessage (AddOnSuccess (HealHorror (Investigator iid) 1))
+fearless iid = \case
+  SucceededBy _ ->
+    unshiftMessage (AddOnSuccess (HealHorror (InvestigatorTarget iid) 1))
   _ -> pure ()
 
 guts

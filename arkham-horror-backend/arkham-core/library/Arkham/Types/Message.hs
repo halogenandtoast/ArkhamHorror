@@ -19,6 +19,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillTestResult
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId

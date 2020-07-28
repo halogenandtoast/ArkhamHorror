@@ -216,7 +216,7 @@ guardDog uuid = GuardDog $ GuardDogI $ (baseAttrs uuid "01021")
   , assetSanity = Just 1
   }
 
-newtype HolyRosary = HolyRosaryI Attrs
+newtype HolyRosaryI = HolyRosaryI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 holyRosary :: AssetId -> Asset
@@ -379,15 +379,15 @@ instance (AssetRunner env) => RunMessage env GuardDogI where
     _ -> GuardDogI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env HolyRosaryI where
-  runMessage msg a@(HolyRosaryI attrs@Attrs {..}) = case msg of
+  runMessage msg (HolyRosaryI attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid | aid == assetId -> do
       unshiftMessage
-       (InvestigatorAddModifier
-         iid
-         (SkillModifier SkillWillpower 1 (AssetSource aid))
-       )
+        (InvestigatorAddModifier
+          iid
+          (SkillModifier SkillWillpower 1 (AssetSource aid))
+        )
       HolyRosaryI <$> runMessage msg attrs
-      _ -> HolyRosaryI <$> runMessage msg attrs
+    _ -> HolyRosaryI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env MacheteI where
   runMessage msg a@(MacheteI attrs@Attrs {..}) = case msg of

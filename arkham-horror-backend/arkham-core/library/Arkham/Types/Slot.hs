@@ -7,5 +7,6 @@ data Slot
   = HandSlot
   | TomeSlot
   | AllySlot
+  | AccessorySlot
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

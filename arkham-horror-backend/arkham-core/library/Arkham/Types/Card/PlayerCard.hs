@@ -236,6 +236,19 @@ allPlayerCards = HashMap.fromList $ map
     , pcFastWindows = mempty
     }
   , MkPlayerCard
+    { pcCardCode = "01059"
+    , pcName = "Holy Rosary"
+    , pcCost = 2
+    , pcLevel = 0
+    , pcCardType = AssetType
+    , pcWeakness = False
+    , pcClassSymbol = Mystic
+    , pcSkills = [SkillWillpower]
+    , pcTraits = [Item, Charm]
+    , pcFast = False
+    , pcFastWindows = mempty
+    }
+  , MkPlayerCard
     { pcCardCode = "01086"
     , pcName = "Knife"
     , pcCost = 1

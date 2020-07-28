@@ -132,6 +132,7 @@ data Message
   | DrawToken Token
   | EmptyDeck InvestigatorId
   | DrawCards InvestigatorId Int
+  | HealHorror Target Int
   | DrewPlayerTreachery InvestigatorId CardCode
   | RemoveCardFromHand InvestigatorId CardCode
   | DrewTreachery InvestigatorId CardCode

@@ -6,11 +6,13 @@ where
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.GameRunner
+import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillTestResult
 import Arkham.Types.Source
+import Arkham.Types.Target
 import ClassyPrelude
 
 allSkills
@@ -21,6 +23,7 @@ allSkills
   -> m ()
 allSkills "01025" = viciousBlow
 allSkills "01039" = deduction
+allSkills "01067" = fearless
 allSkills "01089" = guts
 allSkills "01091" = overpower
 allSkills "01092" = manualDexterity
@@ -46,6 +49,15 @@ deduction
 deduction _ = \case
   SucceededBy _ -> unshiftMessage
     (SkillTestAddModifier (DiscoveredClues 1 (SkillSource "01039")))
+  _ -> pure ()
+
+fearless
+  :: (MonadReader env m, GameRunner env, MonadIO m)
+  => InvestigatorId
+  -> SkillTestResult
+  -> m ()
+fearless _ = \case
+  SucceededBy _ -> unshiftMessage (AddOnSuccess (HealHorror (Investigator iid) 1))
   _ -> pure ()
 
 guts

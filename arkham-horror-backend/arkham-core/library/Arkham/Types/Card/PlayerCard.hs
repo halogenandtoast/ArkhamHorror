@@ -249,6 +249,19 @@ allPlayerCards = HashMap.fromList $ map
     , pcFastWindows = mempty
     }
   , MkPlayerCard
+    { pcCardCode = "01067"
+    , pcName = "Fearless"
+    , pcCost = 0
+    , pcLevel = 0
+    , pcCardType = SkillType
+    , pcWeakness = False
+    , pcClassSymbol = Mystic
+    , pcSkills = [SkillWillpower]
+    , pcTraits = [Innate]
+    , pcFast = False
+    , pcFastWindows = mempty
+    }
+  , MkPlayerCard
     { pcCardCode = "01086"
     , pcName = "Knife"
     , pcCost = 1

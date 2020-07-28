@@ -476,13 +476,11 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
               allDamageableAssets
           )
         )
-    ChooseInvestigateAction iid skillType tempModifiers
-      | iid == investigatorId -> do
-        unshiftMessages
-          [ CheckAttackOfOpportunity iid
-          , Investigate skillType iid investigatorLocation tempModifiers
-          ]
-        pure $ takeAction Action.Investigate a
+    Investigate iid lid skillType True -> a <$ unshiftMessages
+      [ TakeAction iid (actionCost a Action.Investigate) Action.Investigate
+      , CheckAttackOfOpportunity iid
+      , Investigate iid lid skillType False
+      ]
     InvestigatorDiscoverClues iid lid n | iid == investigatorId ->
       a <$ unshiftMessage
         (DiscoverCluesAtLocation iid lid (cluesToDiscover a n))
@@ -539,7 +537,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         & (connectedLocations %~ HashSet.insert lid2)
     AddModifier (InvestigatorTarget iid) modifier | iid == investigatorId ->
       pure $ a & modifiers %~ (modifier :)
-    InvestigatorRemoveAllModifiersFromSource iid source
+    RemoveAllModifiersOnTargetFrom (InvestigatorTarget iid) source
       | iid == investigatorId -> pure $ a & modifiers %~ filter
         ((source /=) . sourceOfModifier)
     ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurn .~ True
@@ -704,7 +702,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
              , isPlayable a [DuringTurn You] c
              ]
           <> [ ChooseMoveAction iid | Action.Move `elem` canDos ]
-          <> [ ChooseInvestigateAction iid SkillIntellect []
+          <> [ Investigate iid investigatorLocation SkillIntellect True
              | Action.Investigate `elem` canDos
              ]
           <> [ ChooseFightEnemyAction iid SkillCombat []

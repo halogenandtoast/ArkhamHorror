@@ -238,7 +238,10 @@ instance (TreacheryRunner env) => RunMessage env CoverUpI where
       if remainingClues == 0
         then do
           unshiftMessage
-            (InvestigatorRemoveAllModifiersFromSource iid (TreacherySource tid))
+            (RemoveAllModifiersOnTargetFrom
+              (InvestigatorTarget iid)
+              (TreacherySource tid)
+            )
           pure $ CoverUpI (attrs & abilities .~ []) remainingClues
         else pure $ CoverUpI attrs remainingClues
     _ -> CoverUpI <$> runMessage msg attrs <*> pure n
@@ -292,8 +295,8 @@ instance (TreacheryRunner env) => RunMessage env FrozenInFearI where
         iid
         SkillWillpower
         3
-        [ InvestigatorRemoveAllModifiersFromSource
-          iid
+        [ RemoveAllModifiersOnTargetFrom
+          (InvestigatorTarget iid)
           (TreacherySource treacheryId)
         , DiscardTreachery treacheryId
         ]
@@ -313,8 +316,8 @@ instance (TreacheryRunner env) => RunMessage env DissonantVoicesI where
       pure $ DissonantVoicesI $ attrs & attachedInvestigator ?~ iid
     EndRound -> case treacheryAttachedInvestigator of
       Just iid -> t <$ unshiftMessages
-        [ InvestigatorRemoveAllModifiersFromSource
-          iid
+        [ RemoveAllModifiersOnTargetFrom
+          (InvestigatorTarget iid)
           (TreacherySource treacheryId)
         , DiscardTreachery treacheryId
         ]
@@ -342,12 +345,18 @@ instance (TreacheryRunner env) => RunMessage env ObscuringFogI where
       currentLocationId <- asks (getId iid)
       unshiftMessages
         [ AttachTreacheryToLocation tid currentLocationId
-        , LocationIncreaseShroud currentLocationId 2
+        , AddModifier
+          (LocationTarget currentLocationId)
+          (ShroudModifier 2 (TreacherySource tid))
         ]
       pure $ ObscuringFogI $ attrs & attachedLocation ?~ currentLocationId
     SuccessfulInvestigation lid | Just lid == treacheryAttachedLocation ->
       t <$ unshiftMessages
-        [LocationDecreaseShroud lid 2, DiscardTreachery treacheryId]
+        [ RemoveAllModifiersOnTargetFrom
+          (LocationTarget lid)
+          (TreacherySource treacheryId)
+        , DiscardTreachery treacheryId
+        ]
     _ -> ObscuringFogI <$> runMessage msg attrs
 
 instance (TreacheryRunner env) => RunMessage env Attrs where

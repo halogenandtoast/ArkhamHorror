@@ -433,15 +433,20 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           (ActivateCardAbilityAction iid)
           availableAbilities
         )
-    ChooseFightEnemyAction iid skillType tempModifiers
+    ChooseFightEnemy iid skillType tempModifiers isAction
       | iid == investigatorId -> do
         unshiftMessage
           (Ask $ ChooseOne $ map
-            (\eid -> FightEnemy iid eid skillType tempModifiers)
+            (\eid -> FightEnemy iid eid skillType tempModifiers isAction)
             (HashSet.toList investigatorEngagedEnemies)
           )
         pure $ takeAction Action.Fight a
-    FightEnemy iid eid skillType tempModifiers | iid == investigatorId -> do
+    FightEnemy iid eid skillType tempModifiers True | iid == investigatorId ->
+        a <$ unshiftMessages
+          [ TakeAction iid (actionCost a Action.Fight) Action.Fight
+          , FightEnemy iid eid skillType tempModifiers False
+          ]
+    FightEnemy iid eid skillType tempModifiers False | iid == investigatorId -> do
       unshiftMessages
         [ WhenAttackEnemy iid eid
         , AttackEnemy iid eid skillType (damageValueFor tempModifiers a)
@@ -450,18 +455,24 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       pure a
     EnemyEvaded iid eid | iid == investigatorId ->
       pure $ a & engagedEnemies %~ HashSet.delete eid
-    ChooseEvadeEnemyAction iid | iid == investigatorId -> do
+    ChooseEvadeEnemy iid skillType isAction | iid == investigatorId -> do
       unshiftMessage
         (Ask $ ChooseOne $ map
-          (\eid -> Run
-            [ WhenEvadeEnemy iid eid
-            , EvadeEnemy iid eid SkillAgility
-            , AfterEvadeEnemy iid eid
-            ]
-          )
+          (\eid -> EvadeEnemy iid eid skillType isAction)
           (HashSet.toList investigatorEngagedEnemies)
         )
       pure $ takeAction Action.Fight a
+    EvadeEnemy iid eid skillType True | iid == investigatorId -> do
+      a <$ unshiftMessages
+        [ TakeAction iid (actionCost a Action.Evade) Action.Evade
+        , EvadeEnemy iid eid skillType False
+        ]
+    EvadeEnemy iid eid skillType False | iid == investigatorId -> do
+      a <$ unshiftMessages
+        [ WhenEvadeEnemy iid eid
+        , TryEvadeEnemy iid eid skillType
+        , AfterEvadeEnemy iid eid
+        ]
     MoveAction iid lid True -> a <$ unshiftMessages
       [ TakeAction iid (actionCost a Action.Move) Action.Move
       , CheckAttackOfOpportunity iid
@@ -733,11 +744,12 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           <> [ Investigate iid investigatorLocation SkillIntellect True
              | Action.Investigate `elem` canDos
              ]
-          <> [ ChooseFightEnemyAction iid SkillCombat []
+          <> [ FightEnemy iid eid SkillCombat [] True
              | Action.Fight `elem` canDos
+             , eid <- HashSet.toList investigatorEngagedEnemies
              ]
           <> [ ChooseEngageEnemyAction iid | Action.Engage `elem` canDos ]
-          <> [ ChooseEvadeEnemyAction iid | Action.Evade `elem` canDos ]
+          <> [ EvadeEnemy iid eid SkillAgility True | Action.Evade `elem` canDos, eid <- HashSet.toList investigatorEngagedEnemies ]
           <> map AdvanceAct advanceableActIds
           <> [ChooseEndTurn iid]
           )

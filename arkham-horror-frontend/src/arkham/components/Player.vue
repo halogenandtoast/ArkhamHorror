@@ -16,10 +16,6 @@
     <div class="player">
       <Investigator
         :player="player"
-        :canTakeActions="canTakeActions"
-        :inActionWindow="inActionWindow"
-        @endTurn="endTurn"
-        @takeResource="takeResource"
       />
       <div v-if="topOfDiscard" class="discard">
         <img
@@ -28,24 +24,12 @@
           width="200px"
         />
       </div>
-      <img
-        v-if="canDraw"
-        class="card deck--can-draw"
-        @click="drawCard"
-        src="/img/arkham/player_back.jpg"
-        width="150px"
-      />
-      <img v-else class="card" src="/img/arkham/player_back.jpg" width="150px" />
+      <img class="card" src="/img/arkham/player_back.jpg" width="150px" />
       <section class="hand">
         <HandCard
-          v-for="(card, index) in player.hand"
+          v-for="(card, index) in player.contents.hand"
           :card="card"
-          :canPlay="canPlay(index)"
-          :canCommit="canCommit()"
-          :isCommited="isCommited(index)"
           :key="index"
-          @playCard="playCard(index)"
-          @commitCard="$emit('commitCard', index)"
         />
       </section>
     </div>
@@ -59,6 +43,7 @@ import Enemy from '@/arkham/components/Enemy.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
+import * as Arkham from '@/arkham/types/Investigator';
 
 @Component({
   components: {
@@ -70,10 +55,15 @@ import Investigator from '@/arkham/components/Investigator.vue';
 })
 export default class Player extends Vue {
   @Prop(Object) readonly game!: Game
+  @Prop(Object) readonly player!: Arkham.Investigator
   @Prop(Array) readonly commitedCards!: number[]
   @Prop(Boolean) readonly canTakeActions!: boolean
 
   private focusedEnemy: string | null = null;
+
+  get topOfDiscard() {
+    return this.player.contents.discard[0];
+  }
 }
 </script>
 

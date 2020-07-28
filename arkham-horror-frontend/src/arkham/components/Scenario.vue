@@ -10,115 +10,53 @@
       </div>
       <img class="card" src="/img/arkham/back.png" />
 
-      <Agenda :agenda="game.gameState.stacks.Agenda" />
-      <Act :act="game.gameState.stacks.Act" @progressAct="progressAct" />
-      <img class="card" :src="game.scenario.guide" />
-      <ChaosBag
-        :drawnToken="drawnToken"
-        :canDrawToken="canDrawToken"
-        :canApplyResult="canApplyResult"
-        :skillDifficulty="skillDifficulty"
-        :skillModifiedSkillValue="skillModifiedSkillValue"
-        :pendingResult="pendingResult"
-        @applyTokenResult="applyTokenResult"
-        @drawToken="drawToken"
+      <Agenda
+        v-for="(agenda, key) in game.currentData.agendas"
+        :key="key"
+        :agenda="agenda"
       />
-
+      <Act
+        v-for="(act, key) in game.currentData.acts"
+        :key="key"
+        :act="act"
+      />
+      <img
+        class="card"
+        :src="'/img/arkham/cards/' + game.currentData.scenario.contents.id + '.jpg'"
+      />
     </div>
     <div class="location-cards">
-      <div
-        v-for="location in game.gameState.locations"
+      <Location
+        v-for="(location, key) in game.currentData.locations"
         class="location"
-        :key="location.name"
-      >
-        <img
-          v-if="accessible(location)"
-          @click="moveTo(location)"
-          class="card location--can-move-to"
-          :src="location.image"
-        />
-        <img
-          v-else
-          class="card"
-          :src="location.image"
-        />
-        <div
-          v-for="(uuid, index) in location.investigators"
-          :key="index"
-        >
-
-          <img
-            v-if="canMove(uuid) && !moving"
-            @click="startMove(uuid)"
-            :src="game.gameState.players[uuid].investigator.portrait"
-            class="portrait portrait--can-move"
-            width="80"
-          />
-          <img
-            v-else
-            :src="game.gameState.players[uuid].investigator.portrait"
-            class="portrait"
-            width="80"
-          />
-        </div>
-        <div
-          v-for="enemyId in location.enemies"
-          :key="enemyId"
-        >
-          <img
-            v-if="!game.gameState.enemies[enemyId].isEngaged"
-            :src="game.gameState.enemies[enemyId].image"
-            width="250"
-          />
-        </div>
-        <div v-if="location.clues > 0" >
-          <div
-            v-if="canInvestigate"
-            class="clue clue--can-investigate"
-            @click="investigate(location)"
-          >
-            <img src="/img/arkham/clue.png" />
-            {{location.clues}}
-          </div>
-          <div v-else>
-            <img src="/img/arkham/clue.png" />
-            {{location.clues}}
-          </div>
-        </div>
-      </div>
+        :key="key"
+        :location="location"
+      />
     </div>
     <Player
       :game="game"
       :player="player"
-      :commitedCards="commitedCards"
-      :canTakeActions="canTakeActions"
-      @update="update"
-      @commitCard="commitCard"
     />
     <StatusBar :game="game" />
-    <ChoiceModal v-if="shouldMakeChoice" :game="game" @choose="makeChoice" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Game } from '@/arkham/types/Game';
-import { Location } from '@/arkham/types/Location';
 import Player from '@/arkham/components/Player.vue';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
-import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
-import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
+import Location from '@/arkham/components/Location.vue';
 
 @Component({
   components: {
     Player,
     Act,
     Agenda,
-    ChaosBag,
+    Location,
     StatusBar,
-    ChoiceModal,
   },
 })
 export default class Scenario extends Vue {
@@ -126,6 +64,14 @@ export default class Scenario extends Vue {
 
   private commitedCards: number[] = []
   private moving = false
+
+  get player() {
+    return Object.values(this.game.currentData.investigators)[0];
+  }
+
+  get topOfEncounterDiscard() {
+    return this.game.currentData.discard[0];
+  }
 
   commitCard(cardIndex: number) {
     const index = this.commitedCards.indexOf(cardIndex);

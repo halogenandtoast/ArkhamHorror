@@ -13,6 +13,7 @@ module Foundation where
 import qualified Auth.JWT as JWT
 import Control.Monad.Logger (LogSource)
 import Data.Aeson (Result(Success), fromJSON)
+import Data.Kind
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Import.NoFoundation
 import Text.Hamlet (hamletFile)
@@ -54,7 +55,7 @@ mkYesodData "App" $(parseRoutesFile "config/routes")
 type Form x = Html -> MForm (HandlerFor App) (FormResult x, Widget)
 
 -- | A convenient synonym for database access functions.
-type DB a = forall (m :: * -> *) . (MonadIO m) => ReaderT SqlBackend m a
+type DB a = forall (m :: Type -> Type) . (MonadIO m) => ReaderT SqlBackend m a
 
 -- Please see the documentation for the Yesod typeclass. There are a number
 -- of settings which can be configured by overriding methods here.

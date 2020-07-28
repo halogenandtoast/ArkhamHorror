@@ -1,18 +1,6 @@
 <template>
   <div>
-    <img
-      v-if="canPlay"
-      class="card playable"
-      :src="card.contents.image"
-      @click="$emit('playCard')"
-    />
-    <img
-      v-else-if="canCommit"
-      :class="['card', 'commitable', { commited: isCommited }]"
-      :src="card.contents.image"
-      @click="$emit('commitCard')"
-    />
-    <img v-else class="card" :src="card.contents.image" />
+    <img class="card" :src="image" />
   </div>
 </template>
 
@@ -26,6 +14,20 @@ export default class HandCard extends Vue {
   @Prop(Boolean) readonly canPlay!: boolean
   @Prop(Boolean) readonly canCommit!: boolean
   @Prop(Boolean) readonly isCommited!: boolean
+
+  imageExists = (imageUrl: string) => {
+    const http = new XMLHttpRequest();
+
+    http.open('HEAD', imageUrl, false);
+    http.send();
+
+    return http.status !== 404;
+  }
+
+  get image() {
+    const { cardCode } = this.card.contents;
+    return `/img/arkham/cards/${cardCode}.jpg`;
+  }
 }
 </script>
 

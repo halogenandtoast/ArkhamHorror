@@ -2,10 +2,10 @@
   <div class="agenda-container">
     <img
       class="card card--sideways"
-      :src="agenda.contents[0].image"
+      :src="image"
     />
-    <div v-if="agenda.contents[0].doom">
-      <img src="/img/arkham/doom.png"/> {{agenda.contents[0].doom}}
+    <div v-if="agenda.contents.doom">
+      <img src="/img/arkham/doom.png"/> {{agenda.contents.doom}}
     </div>
   </div>
 </template>
@@ -17,6 +17,11 @@ import * as Arkham from '@/arkham/types/Agenda';
 @Component
 export default class Agenda extends Vue {
   @Prop(Object) readonly agenda!: Arkham.Agenda;
+
+  get image() {
+    const { id } = this.agenda.contents;
+    return `/img/arkham/cards/${id}.jpg`;
+  }
 }
 </script>
 

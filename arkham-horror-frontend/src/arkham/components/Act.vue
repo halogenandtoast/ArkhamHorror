@@ -1,15 +1,15 @@
 <template>
   <div class="act-container">
     <img
-      v-if="act.contents[0].canProgress"
+      v-if="act.contents.canAdvance"
       class="card card--sideways act--can-progress"
       @click="$emit('progressAct')"
-      :src="act.contents[0].image"
+      :src="image"
     />
     <img
       v-else
       class="card card--sideways"
-      :src="act.contents[0].image"
+      :src="image"
     />
   </div>
 </template>
@@ -21,6 +21,11 @@ import * as Arkham from '@/arkham/types/Act';
 @Component
 export default class Act extends Vue {
   @Prop(Object) readonly act!: Arkham.Act;
+
+  get image() {
+    const { id } = this.act.contents;
+    return `/img/arkham/cards/${id}.jpg`;
+  }
 }
 </script>
 

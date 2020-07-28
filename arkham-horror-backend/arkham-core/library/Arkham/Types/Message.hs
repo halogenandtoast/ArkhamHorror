@@ -99,7 +99,7 @@ data Message
   | EnemyEngageInvestigator EnemyId InvestigatorId
   | EnemyDamage EnemyId InvestigatorId Source Int
   | EnemyDefeated EnemyId InvestigatorId CardCode Source
-  | InvestigatorPlayCard InvestigatorId CardCode Int
+  | PlayCard InvestigatorId CardCode Int Bool
   | InvestigatorAssignDamage InvestigatorId EnemyId Int Int
   | AssetDamage AssetId EnemyId Int Int
   | AssetDefeated AssetId

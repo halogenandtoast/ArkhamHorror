@@ -505,7 +505,13 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     PayCardCost iid _ n | iid == investigatorId -> do
       let cost = getCost $ a ^?! hand . ix n
       pure $ a & resources -~ cost
-    InvestigatorPlayCard iid _ n | iid == investigatorId ->
+    PlayCard iid cardCode n True -> a <$ unshiftMessages
+      [ TakeAction iid (actionCost a Action.Play) Action.Play
+      , PayCardCost iid cardCode n
+      , CheckAttackOfOpportunity iid
+      , PlayCard iid cardCode n False
+      ]
+    PlayCard iid _ n False | iid == investigatorId ->
       pure $ a & hand %~ without n
     SkillTestCommitCard iid (n, _) | iid == investigatorId ->
       pure $ a & hand %~ without n
@@ -564,20 +570,6 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
               $ unshiftMessage (DrewPlayerTreachery iid pcCardCode)
             Nothing -> pure ()
           pure $ a & hand %~ handUpdate & deck .~ Deck deck'
-    ChoosePlayCardAction iid | iid == investigatorId -> do
-      unshiftMessage
-        (Ask $ ChooseOne $ map
-          (\(i, c) -> ChoiceResults
-            [ PayCardCost iid (getCardCode c) i
-            , CheckAttackOfOpportunity iid
-            , InvestigatorPlayCard iid (getCardCode c) i
-            ]
-          )
-          (filter (isPlayable a [DuringTurn You] . snd)
-          $ zip [0 ..] investigatorHand
-          )
-        )
-      pure $ takeAction Action.Play a
     InvestigatorSpendClues iid n | iid == investigatorId ->
       pure $ a & clues -~ n
     SpendResources iid n | iid == investigatorId ->
@@ -673,7 +665,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           $ map
               (\(i, c) -> ChoiceResults
                 [ PayCardCost iid (getCardCode c) i
-                , InvestigatorPlayCard iid (getCardCode c) i
+                , PlayCard iid (getCardCode c) i False
                 , CheckFastWindow iid windows
                 ]
               )
@@ -706,7 +698,11 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           <> [ ChooseActivateCardAbilityAction iid
              | Action.Ability `elem` canDos
              ]
-          <> [ ChoosePlayCardAction iid | Action.Play `elem` canDos ]
+          <> [ PlayCard iid (getCardCode c) i True
+             | Action.Play `elem` canDos
+             , (i, c) <- zip [0 ..] investigatorHand
+             , isPlayable a [DuringTurn You] c
+             ]
           <> [ ChooseMoveAction iid | Action.Move `elem` canDos ]
           <> [ ChooseInvestigateAction iid SkillIntellect []
              | Action.Investigate `elem` canDos

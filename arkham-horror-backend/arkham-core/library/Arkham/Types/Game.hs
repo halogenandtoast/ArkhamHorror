@@ -863,7 +863,7 @@ runMessages g = if g ^. gameOver
               >> runMessages g
       Just msg -> case msg of
         Ask (ChoiceResult m) ->
-          liftIO (modifyIORef' (giMessages g) ([m] <>)) >> runMessages g
+          liftIO (modifyIORef' (giMessages g) (m :)) >> runMessages g
         Ask (ChoiceResults ms) ->
           liftIO (modifyIORef' (giMessages g) (ms <>)) >> runMessages g
         Ask q -> (Just q, ) <$> toExternalGame g (Just q)

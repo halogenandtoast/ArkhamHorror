@@ -301,6 +301,19 @@ allPlayerCards = HashMap.fromList $ map
     , pcFastWindows = mempty
     }
   , MkPlayerCard
+    { pcCardCode = "01092"
+    , pcName = "Manual Dexterity"
+    , pcCost = 0
+    , pcLevel = 0
+    , pcCardType = SkillType
+    , pcWeakness = False
+    , pcClassSymbol = Neutral
+    , pcSkills = [SkillAgility, SkillAgility]
+    , pcTraits = [Innate]
+    , pcFast = False
+    , pcFastWindows = mempty
+    }
+  , MkPlayerCard
     { pcCardCode = "01093"
     , pcName = "Unexpected Courage"
     , pcCost = 0

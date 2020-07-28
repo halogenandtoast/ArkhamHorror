@@ -23,6 +23,7 @@ allSkills "01025" = viciousBlow
 allSkills "01039" = deduction
 allSkills "01089" = guts
 allSkills "01091" = overpower
+allSkills "01092" = manualDexterity
 allSkills "01093" = unexpectedCourage
 allSkills skid =
   const (const (throwString $ "No event with id: " <> show skid))
@@ -62,6 +63,15 @@ overpower
   -> SkillTestResult
   -> m ()
 overpower iid = \case
+  SucceededBy _ -> unshiftMessage (AddOnSuccess (DrawCards iid 1))
+  _ -> pure ()
+
+manualDexterity
+  :: (MonadReader env m, GameRunner env, MonadIO m)
+  => InvestigatorId
+  -> SkillTestResult
+  -> m ()
+manualDexterity iid = \case
   SucceededBy _ -> unshiftMessage (AddOnSuccess (DrawCards iid 1))
   _ -> pure ()
 

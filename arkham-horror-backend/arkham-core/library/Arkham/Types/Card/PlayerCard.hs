@@ -236,6 +236,32 @@ allPlayerCards = HashMap.fromList $ map
     , pcFastWindows = mempty
     }
   , MkPlayerCard
+    { pcCardCode = "01059"
+    , pcName = "Holy Rosary"
+    , pcCost = 2
+    , pcLevel = 0
+    , pcCardType = AssetType
+    , pcWeakness = False
+    , pcClassSymbol = Mystic
+    , pcSkills = [SkillWillpower]
+    , pcTraits = [Item, Charm]
+    , pcFast = False
+    , pcFastWindows = mempty
+    }
+  , MkPlayerCard
+    { pcCardCode = "01067"
+    , pcName = "Fearless"
+    , pcCost = 0
+    , pcLevel = 0
+    , pcCardType = SkillType
+    , pcWeakness = False
+    , pcClassSymbol = Mystic
+    , pcSkills = [SkillWillpower]
+    , pcTraits = [Innate]
+    , pcFast = False
+    , pcFastWindows = mempty
+    }
+  , MkPlayerCard
     { pcCardCode = "01086"
     , pcName = "Knife"
     , pcCost = 1
@@ -297,6 +323,19 @@ allPlayerCards = HashMap.fromList $ map
     , pcClassSymbol = Neutral
     , pcSkills = [SkillCombat, SkillCombat]
     , pcTraits = [Practiced]
+    , pcFast = False
+    , pcFastWindows = mempty
+    }
+  , MkPlayerCard
+    { pcCardCode = "01092"
+    , pcName = "Manual Dexterity"
+    , pcCost = 0
+    , pcLevel = 0
+    , pcCardType = SkillType
+    , pcWeakness = False
+    , pcClassSymbol = Neutral
+    , pcSkills = [SkillAgility, SkillAgility]
+    , pcTraits = [Innate]
     , pcFast = False
     , pcFastWindows = mempty
     }

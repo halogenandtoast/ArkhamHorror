@@ -42,6 +42,7 @@ allAssets = HashMap.fromList
   , ("01017", physicalTraining)
   , ("01020", machete)
   , ("01021", guardDog)
+  , ("01059", holyRosary)
   , ("01086", knife)
   , ("01087", flashlight)
   , ("01117", litaChantler)
@@ -90,6 +91,7 @@ data Asset
   | PhysicalTraining PhysicalTrainingI
   | Machete MacheteI
   | GuardDog GuardDogI
+  | HolyRosary HolyRosaryI
   | Knife KnifeI
   | Flashlight FlashlightI
   | LitaChantler LitaChantlerI
@@ -104,6 +106,7 @@ assetAttrs = \case
   PhysicalTraining attrs -> coerce attrs
   Machete attrs -> coerce attrs
   GuardDog attrs -> coerce attrs
+  HolyRosary attrs -> coerce attrs
   Knife attrs -> coerce attrs
   Flashlight attrs -> coerce attrs
   LitaChantler attrs -> coerce attrs
@@ -213,6 +216,15 @@ guardDog uuid = GuardDog $ GuardDogI $ (baseAttrs uuid "01021")
   , assetSanity = Just 1
   }
 
+newtype HolyRosaryI = HolyRosaryI Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+holyRosary :: AssetId -> Asset
+holyRosary uuid = HolyRosary $ HolyRosaryI $ (baseAttrs uuid "01059")
+  { assetSlots = [AccessorySlot]
+  , assetSanity = Just 2
+  }
+
 newtype KnifeI = KnifeI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
@@ -256,6 +268,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     PhysicalTraining x -> PhysicalTraining <$> runMessage msg x
     Machete x -> Machete <$> runMessage msg x
     GuardDog x -> GuardDog <$> runMessage msg x
+    HolyRosary x -> HolyRosary <$> runMessage msg x
     Knife x -> Knife <$> runMessage msg x
     Flashlight x -> Flashlight <$> runMessage msg x
     LitaChantler x -> LitaChantler <$> runMessage msg x
@@ -364,6 +377,17 @@ instance (AssetRunner env) => RunMessage env GuardDogI where
         (Ask $ ChooseTo (EnemyDamage eid ownerId (AssetSource aid) 1))
       pure $ GuardDogI result
     _ -> GuardDogI <$> runMessage msg attrs
+
+instance (AssetRunner env) => RunMessage env HolyRosaryI where
+  runMessage msg (HolyRosaryI attrs@Attrs {..}) = case msg of
+    InvestigatorPlayAsset iid aid | aid == assetId -> do
+      unshiftMessage
+        (InvestigatorAddModifier
+          iid
+          (SkillModifier SkillWillpower 1 (AssetSource aid))
+        )
+      HolyRosaryI <$> runMessage msg attrs
+    _ -> HolyRosaryI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env MacheteI where
   runMessage msg a@(MacheteI attrs@Attrs {..}) = case msg of

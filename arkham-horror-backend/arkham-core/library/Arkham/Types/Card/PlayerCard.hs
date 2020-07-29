@@ -219,6 +219,12 @@ deduction cardId = (skill cardId "01039" "Deduction" [SkillIntellect] Seeker)
   { pcTraits = [Practiced]
   }
 
+shrivelling :: CardId -> PlayerCard
+shrivelling cardId = (asset cardId "01060" "Shrivelling" 3 Mystic)
+  { pcSkills = [SkillIntellect]
+  , pcTraits = [Spell]
+  }
+
 holyRosary :: CardId -> PlayerCard
 holyRosary cardId = (asset cardId "01059" "Holy Rosary" 2 Mystic)
   { pcSkills = [SkillWillpower]

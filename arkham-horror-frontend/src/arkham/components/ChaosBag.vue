@@ -1,38 +1,41 @@
 <template>
   <div>
-    <img v-if="drawnToken" :src="chaosTokenSrc" class="token" />
     <img
-      v-else-if="canDrawToken"
-      class="token token--can-draw"
-      src="/img/arkham/ct_blank.png"
-      @click="$emit('drawToken')"
+      :class="{ 'token--can-draw': drawTokenAction !== -1 }"
+      class="token"
+      :src="image"
+      @click="$emit('choose', drawTokenAction)"
     />
-    <img v-else class="token" src="/img/arkham/ct_blank.png" />
-    <div v-if="canApplyResult">
-      <p>
-        Difficulty: {{skillDifficulty}},
-        Modified Skill: {{skillModifiedSkillValue}},
-        Pending Result: {{pendingResult}}
-      </p>
-      <button @click="$emit('applyTokenResult')">Apply Result</button>
-    </div>
   </div>
 </template>
 
 <script lang="ts">
+import { Game } from '@/arkham/types/Game';
+import { MessageType } from '@/arkham/types/Message';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class ChaosBag extends Vue {
-  @Prop(String) readonly drawnToken!: string;
-  @Prop(Boolean) readonly canDrawToken!: boolean;
-  @Prop(Boolean) readonly canApplyResult!: boolean;
-  @Prop(Number) readonly skillDifficulty!: number;
-  @Prop(Number) readonly skillModifiedSkillValue!: number;
-  @Prop(String) readonly pendingResult!: string;
+  @Prop(Object) readonly game!: Game;
 
-  get chaosTokenSrc() {
+  get image() {
     return `/img/arkham/ct_${this.drawnToken}.png`;
+  }
+
+  get drawnToken() {
+    if (this.game.currentData.skillTest === null) {
+      return 'blank';
+    }
+
+    return 'blank';
+  }
+
+  get choices() {
+    return this.game.currentData.question.contents;
+  }
+
+  get drawTokenAction() {
+    return this.choices.findIndex((c) => c.tag === MessageType.START_SKILL_TEST);
   }
 }
 </script>
@@ -41,6 +44,7 @@ export default class ChaosBag extends Vue {
 .token--can-draw {
   border: 5px solid #ff00ff;
   border-radius: 500px;
+  cursor: pointer;
 }
 
 .token {

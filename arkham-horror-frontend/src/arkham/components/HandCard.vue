@@ -1,10 +1,10 @@
 <template>
   <div>
     <img
-      :class="{ 'card--can-play': playCardAction !== -1 }"
+      :class="classObject"
       class="card"
       :src="image"
-      @click="$emit('choose', playCardAction)"
+      @click="$emit('choose', cardAction)"
     />
 
   </div>
@@ -14,15 +14,20 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { Card } from '@/arkham/types/Card';
 import { Game } from '@/arkham/types/Game';
-import { MessageType } from '@/arkham/types/Message';
+import { Message, MessageType } from '@/arkham/types/Message';
 
 @Component
 export default class HandCard extends Vue {
   @Prop(Object) readonly card!: Card
   @Prop(Object) readonly game!: Game
-  @Prop(Boolean) readonly canPlay!: boolean
-  @Prop(Boolean) readonly canCommit!: boolean
   @Prop(Boolean) readonly isCommited!: boolean
+
+  get classObject() {
+    return {
+      'card--can-play': this.playCardAction !== -1,
+      'card--can-commit': this.commitCardAction !== -1,
+    };
+  }
 
   get image() {
     const { cardCode } = this.card.contents;
@@ -42,6 +47,30 @@ export default class HandCard extends Vue {
       .choices
       .findIndex((c) => c.tag === MessageType.PLAY_CARD && c.contents[1] === this.id);
   }
+
+  get commitCardAction() {
+    return this.choices.findIndex(this.canCommit);
+  }
+
+  get cardAction() {
+    if (this.playCardAction !== -1) {
+      return this.playCardAction;
+    }
+
+    return this.commitCardAction;
+  }
+
+  canCommit(c: Message): boolean {
+    switch (c.tag) {
+      case MessageType.COMMIT_CARD:
+        return c.contents[1] === this.id;
+      case MessageType.RUN:
+        // debugger // eslint-disable-line
+        return c.contents.some((c1: Message) => this.canCommit(c1));
+      default:
+        return false;
+    }
+  }
 }
 </script>
 
@@ -58,19 +87,13 @@ export default class HandCard extends Vue {
     margin-top: -10px;
   }
 
-  &.playable {
-    border: 2px solid #ff00ff;
-    cursor: pointer;
-  }
-
-  &.commitable {
-    border: 2px solid #ff00ff;
-    cursor: pointer;
-  }
-
   &--can-play {
-    border: 3px solid #FF00FF;
-    border-radius: 10px;
+    border: 2px solid #FF00FF;
+    cursor: pointer;
+  }
+
+  &--can-commit {
+    border: 2px solid #FF00FF;
     cursor: pointer;
   }
 }

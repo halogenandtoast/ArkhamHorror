@@ -1,7 +1,12 @@
 <template>
   <div>
     <section class="in-play">
-      <Asset v-for="(asset, index) in player.assets" :asset="asset" :game="game" :key="index" />
+      <Asset
+        v-for="asset in player.contents.assets"
+        :asset="game.currentData.assets[asset]"
+        :game="game"
+        :key="asset"
+      />
 
       <Enemy
         v-for="enemyId in player.enemies"

@@ -7,6 +7,7 @@ module Arkham.Types.Asset
   )
 where
 
+import Arkham.Json
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Uses (Uses(..))
@@ -26,7 +27,6 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import ClassyPrelude
-import Data.Aeson
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
@@ -79,7 +79,13 @@ data Attrs = Attrs
   , assetUses :: Uses
   }
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+
+instance ToJSON Attrs where
+  toJSON = genericToJSON $ aesonOptions $ Just "asset"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "asset"
+
+instance FromJSON Attrs where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "asset"
 
 defeated :: Attrs -> Bool
 defeated Attrs {..} =

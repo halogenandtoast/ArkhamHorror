@@ -8,6 +8,7 @@ module Arkham.Types.SkillTest
   )
 where
 
+import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
@@ -19,7 +20,6 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
 import ClassyPrelude
-import Data.Aeson
 import Lens.Micro
 
 data DrawStrategy
@@ -48,7 +48,13 @@ data SkillTest = SkillTest
   , skillTestCommittedCards :: [(InvestigatorId, Card)]
   }
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+
+instance ToJSON SkillTest where
+  toJSON = genericToJSON $ aesonOptions $ Just "skillTest"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "skillTest"
+
+instance FromJSON SkillTest where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "skillTest"
 
 initSkillTest
   :: InvestigatorId -> SkillType -> Int -> [Message] -> [Message] -> SkillTest

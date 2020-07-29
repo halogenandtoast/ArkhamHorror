@@ -1,8 +1,10 @@
 <template>
   <div>
     <img
+      :class="{ 'location--can-investigate': investigateAction !== -1 }"
       class="card"
       :src="image"
+      @click="$emit('choose', investigateAction)"
     />
     <div
       v-for="cardCode in location.contents.investigators"
@@ -36,6 +38,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Game } from '@/arkham/types/Game';
+import { MessageType } from '@/arkham/types/Message';
 import * as Arkham from '@/arkham/types/Location';
 
 @Component
@@ -51,5 +54,26 @@ export default class Location extends Vue {
 
     return `/img/arkham/cards/${id}${suffix}.jpg`;
   }
+
+  get id() {
+    return this.location.contents.id;
+  }
+
+  get choices() {
+    return this.game.currentData.question.contents;
+  }
+
+  get investigateAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.INVESTIGATE && c.contents[1] === this.id);
+  }
 }
 </script>
+
+<style scoped lang="scss">
+.location--can-investigate {
+  border: 3px solid #FF00FF;
+  cursor: pointer;
+}
+</style>

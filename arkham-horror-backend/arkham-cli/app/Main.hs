@@ -2,12 +2,14 @@
 module Main where
 
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Game
 import Arkham.Types.GameJson
 import Arkham.Types.Investigator
 import ClassyPrelude
 import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap
+import Data.UUID.V4
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.FromField
 import Network.HTTP.Conduit (simpleHttp)
@@ -31,13 +33,15 @@ loadDeck :: String -> IO [PlayerCard]
 loadDeck deckId = do
   edecklist <- eitherDecode @ArkhamDBDecklist
     <$> simpleHttp ("https://arkhamdb.com/api/public/decklist/" <> deckId)
+  pPrint edecklist
   case edecklist of
     Left err -> throwString $ "Parsing failed with: " <> err
     Right decklist ->
-      pure $ flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count ->
-        do
-          guard $ cardCode /= "01000"
-          replicate count (lookupPlayerCard cardCode)
+      flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count ->
+        if cardCode /= "01000"
+          then
+            replicate count . lookupPlayerCard cardCode . CardId <$> nextRandom
+          else pure []
 
 newtype ArkhamDBDecklist = ArkhamDBDecklist
   { slots :: HashMap CardCode Int }
@@ -50,6 +54,7 @@ main = do
   case readMaybe @Int =<< mdbid of
     Nothing -> do
       deck <- loadDeck "20344"
+      pPrint deck
       ge <- runGame =<< newGame "01104" [(lookupInvestigator "01001", deck)]
       pPrint ge
     Just gid -> do

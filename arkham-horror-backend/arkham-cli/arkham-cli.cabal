@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4134cee21d2728b9f3fed22ea8754df0e39f3ec954e32fbe737cc9c81699f0cf
+-- hash: 3a16039d1a1cfd0574f6c5d70b2f4a2c08d54696c59751729d7647f8f47421fc
 
 name:           arkham-cli
 version:        0.0.0
@@ -27,4 +27,5 @@ executable arkham-cli
     , postgresql-simple
     , pretty-simple
     , unordered-containers >=0.2.11.0
+    , uuid
   default-language: Haskell2010

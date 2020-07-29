@@ -7,6 +7,7 @@ module Arkham.Types.Investigator
   , isDefeated
   , remainingHealth
   , lookupInvestigator
+  , handOf
   , GetInvestigatorId(..)
   , Investigator
   )
@@ -319,6 +320,9 @@ isPrey LowestHealth env i =
       100
       (minimumMay . map unRemainingHealth . HashSet.toList $ getSet () env)
     == remainingHealth i
+
+handOf :: Investigator -> [Card]
+handOf = view hand . investigatorAttrs
 
 hasEndedTurn :: Investigator -> Bool
 hasEndedTurn = view endedTurn . investigatorAttrs

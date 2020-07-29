@@ -1,0 +1,8 @@
+module Arkham.Types.Card.Id where
+
+import ClassyPrelude
+import Data.Aeson
+import Data.UUID
+
+newtype CardId = CardId { unCardId :: UUID }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

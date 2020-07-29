@@ -99,7 +99,7 @@ instance (ScenarioRunner env) => RunMessage env Scenario where
 instance (ScenarioRunner env) => RunMessage env TheGatheringI where
   runMessage msg s@(TheGatheringI attrs@Attrs {..}) = case msg of
     Setup -> do
-      encounterDeck <- liftIO $ shuffleM $ foldMap
+      encounterDeck <- liftIO $ shuffleM . concat =<< traverse
         gatherEncounterSet
         [ EncounterSet.TheGathering
         , EncounterSet.Rats

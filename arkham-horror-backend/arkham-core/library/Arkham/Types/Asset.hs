@@ -13,6 +13,7 @@ import Arkham.Types.Asset.Uses (Uses(..))
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
@@ -118,14 +119,17 @@ isDamageable a =
     || (isJust . assetHealth . assetAttrs $ a)
 
 baseAttrs :: AssetId -> CardCode -> Attrs
-baseAttrs eid cardCode =
+baseAttrs aid cardCode =
   let
-    MkPlayerCard {..} = fromJustNote "missing player card"
-      $ HashMap.lookup cardCode allPlayerCards
+    MkPlayerCard {..} =
+      fromJustNote
+          "missing player card"
+          (HashMap.lookup cardCode allPlayerCards)
+        $ CardId (unAssetId aid)
   in
     Attrs
       { assetName = pcName
-      , assetId = eid
+      , assetId = aid
       , assetCardCode = cardCode
       , assetCost = pcCost
       , assetInvestigator = Nothing

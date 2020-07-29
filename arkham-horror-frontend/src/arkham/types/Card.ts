@@ -3,11 +3,13 @@ import { JsonDecoder } from 'ts.data.json';
 export type Card = PlayerCard | EncounterCard;
 
 export interface PlayerCardContents {
+  id: string;
   name: string;
   cardCode: string;
 }
 
 export interface EncounterCardContents {
+  id: string;
   name: string;
   cardCode: string;
 }
@@ -24,6 +26,7 @@ export interface EncounterCard {
 
 export const playerCardContentsDecoder = JsonDecoder.object<PlayerCardContents>(
   {
+    id: JsonDecoder.string,
     name: JsonDecoder.string,
     cardCode: JsonDecoder.string,
   },
@@ -32,6 +35,7 @@ export const playerCardContentsDecoder = JsonDecoder.object<PlayerCardContents>(
 
 export const encounterCardContentsDecoder = JsonDecoder.object<EncounterCardContents>(
   {
+    id: JsonDecoder.string,
     name: JsonDecoder.string,
     cardCode: JsonDecoder.string,
   },

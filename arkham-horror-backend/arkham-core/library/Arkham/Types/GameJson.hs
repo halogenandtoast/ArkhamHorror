@@ -31,6 +31,7 @@ data GameJson = GameJson
   , gScenario :: Scenario
   , gLocations :: HashMap LocationId Location
   , gInvestigators :: HashMap InvestigatorId Investigator
+  , gPlayers :: HashMap Int InvestigatorId
   , gEnemies :: HashMap EnemyId Enemy
   , gAssets :: HashMap AssetId Asset
   , gActiveInvestigatorId :: InvestigatorId

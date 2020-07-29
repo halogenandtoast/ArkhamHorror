@@ -4,9 +4,9 @@
 
     <div class="resources">
       <div
-        :class="{ 'resource--can-take': canTakeResource }"
+        :class="{ 'resource--can-take': takeResourceAction !== -1 }"
         class="poolItem poolItem-resource"
-        @click="takeResource"
+        @click="$emit('choose', takeResourceAction)"
       >
         <img src="/img/arkham/resource.png" />
         <span>{{player.contents.resources}}</span>
@@ -24,7 +24,10 @@
         <span>{{player.contents.sanityDamage}}</span>
       </div>
       <p><i class="action" v-for="n in player.contents.remainingActions" :key="n"></i></p>
-      <button :disabled="!canEndTurn" @click="endTurn">End turn</button>
+      <button
+        :disabled="endTurnAction === -1"
+        @click="$emit('choose', endTurnAction)"
+      >End turn</button>
     </div>
   </div>
 </template>
@@ -33,66 +36,23 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as Arkham from '@/arkham/types/Investigator';
 import { Game } from '@/arkham/types/Game';
-import { Question } from '@/arkham/types/Question';
-import { ChooseTakeResourceAction } from '@/arkham/types/Message';
+import { MessageType } from '@/arkham/types/Message';
 
 @Component
 export default class Investigator extends Vue {
   @Prop(Object) readonly player!: Arkham.Investigator
   @Prop(Object) readonly game!: Game
 
-  indexForAction = (actionTag: string, question: Question): number => {
-    switch (question.tag) {
-      case 'ChooseOne':
-        return question
-          .contents
-          .findIndex((choice: Question) => this.canTakeAction(actionTag, choice));
-      default:
-        return 1000;
-    }
+  get choices() {
+    return this.game.currentData.question.contents;
   }
 
-  canTakeAction = (actionTag: string, question: Question): boolean => {
-    switch (question.tag) {
-      case 'ChooseOne':
-        return question.contents.some((choice: Question) => this.canTakeAction(actionTag, choice));
-      case 'ChoiceResult':
-        if ((question.contents as ChooseTakeResourceAction).tag) {
-          return question.contents.tag === actionTag;
-        }
-
-        return false;
-      default:
-        return false;
-    }
+  get takeResourceAction() {
+    return this.choices.findIndex((choice) => choice.tag === MessageType.TAKE_RESOURCES);
   }
 
-  get canTakeResource() {
-    return this.canTakeAction('ChooseTakeResourceAction', this.game.currentData.question);
-  }
-
-  takeResource() {
-    if (this.canTakeResource) {
-      const action = 'ChooseTakeResourceAction';
-      const { question } = this.game.currentData;
-      const idx = this.indexForAction(action, question);
-
-      this.$emit('choose', idx);
-    }
-  }
-
-  get canEndTurn() {
-    return this.canTakeAction('ChooseEndTurn', this.game.currentData.question);
-  }
-
-  endTurn() {
-    if (this.canEndTurn) {
-      const action = 'ChooseEndTurn';
-      const { question } = this.game.currentData;
-      const idx = this.indexForAction(action, question);
-
-      this.$emit('choose', idx);
-    }
+  get endTurnAction() {
+    return this.choices.findIndex((choice) => choice.tag === MessageType.END_TURN);
   }
 
   get image() {

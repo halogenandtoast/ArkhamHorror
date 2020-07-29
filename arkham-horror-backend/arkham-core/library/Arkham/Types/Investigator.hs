@@ -263,6 +263,13 @@ lookupInvestigator iid =
   fromJustNote ("Unkown investigator: " <> show iid)
     $ HashMap.lookup iid allInvestigators
 
+instance HasCard () Investigator where
+  getCard _ cardId =
+    fromJustNote "player does not have this card"
+      . find ((== cardId) . getCardId)
+      . investigatorHand
+      . investigatorAttrs
+
 instance HasCardCode Investigator where
   getCardCode = getCardCode . investigatorAttrs
 

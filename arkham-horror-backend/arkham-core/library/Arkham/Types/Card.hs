@@ -9,6 +9,7 @@ module Arkham.Types.Card
   , HasCardCode(..)
   , HasCardId(..)
   , HasCost(..)
+  , HasCard(..)
   , allCards
   , allPlayerCards
   , lookupPlayerCard
@@ -31,6 +32,9 @@ data Card
   | EncounterCard EncounterCard
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+class HasCard b a where
+  getCard :: b -> CardId -> a -> Card
 
 instance HasCardCode Card where
   getCardCode (PlayerCard card) = getCardCode card

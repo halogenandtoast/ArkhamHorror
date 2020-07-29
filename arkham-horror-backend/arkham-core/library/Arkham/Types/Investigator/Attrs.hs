@@ -516,8 +516,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       ]
     PlayedCard iid cardId | iid == investigatorId ->
       pure $ a & hand %~ filter ((/= cardId) . getCardId)
-    SkillTestCommitCard iid (n, _) | iid == investigatorId ->
-      pure $ a & hand %~ without n
+    SkillTestCommitedCard iid cardId | iid == investigatorId ->
+      pure $ a & hand %~ filter ((/= cardId) . getCardId)
     InvestigatorPlayAsset iid aid | iid == investigatorId ->
       pure $ a & assets %~ HashSet.insert aid
     InvestigatorDamage iid _ health sanity | iid == investigatorId -> do
@@ -623,11 +623,10 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           _ -> False
         triggerMessage = StartSkillTest
         beginMessage = BeforeSkillTest iid skillType
-        committableCards =
-          flip filter (zip [0 ..] investigatorHand) $ \(_, c) -> case c of
-            PlayerCard MkPlayerCard {..} ->
-              SkillWild `elem` pcSkills || skillType `elem` pcSkills
-            _ -> False
+        committableCards = flip filter investigatorHand $ \case
+          PlayerCard MkPlayerCard {..} ->
+            SkillWild `elem` pcSkills || skillType `elem` pcSkills
+          _ -> False
       if not (null filteredAbilities) || not (null committableCards)
         then unshiftMessage
           (Ask $ ChooseOne
@@ -637,8 +636,9 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
                 )
                 filteredAbilities
             <> map
-                 (\card -> ChoiceResults
-                   [SkillTestCommitCard iid card, beginMessage]
+                 (\card ->
+                   ChoiceResults
+                     [SkillTestCommitCard iid (getCardId card), beginMessage]
                  )
                  committableCards
             <> [ChoiceResult triggerMessage]

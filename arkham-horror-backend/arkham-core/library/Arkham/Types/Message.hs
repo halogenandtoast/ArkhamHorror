@@ -122,13 +122,14 @@ data Message
   | SkillTestResults
   | SkillTestApplyResults
   | RunSkill InvestigatorId CardCode SkillTestResult
-  | SkillTestCommitCard InvestigatorId (Int, Card)
+  | SkillTestCommitCard InvestigatorId CardId
+  | SkillTestCommitedCard InvestigatorId CardId
   | AddOnFailure Message
   | AddOnSuccess Message
   | FailSkillTest
   | FindAndDrawEncounterCard InvestigatorId
                          (EncounterCardType, Trait)
-  | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource (Int, EncounterCard)
+  | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
   | DrawAnotherToken InvestigatorId Int Token
   | SkillTestEnds
   | ReturnTokens [Token]

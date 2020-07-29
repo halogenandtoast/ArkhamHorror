@@ -1,3 +1,4 @@
+{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.SkillTest
   ( SkillTest(..)
   , DrawStrategy(..)
@@ -96,7 +97,9 @@ skillIconCount SkillTest {..} = length . filter matches $ concatMap
   matches s = s == skillTestSkillType
 
 
-instance (HasQueue env) => RunMessage env SkillTest where
+type SkillTestRunner env = (HasQueue env, HasCard InvestigatorId env)
+
+instance (SkillTestRunner env) => RunMessage env SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
     AddOnFailure m -> pure $ s & onFailure %~ (m :)
     AddOnSuccess m -> pure $ s & onSuccess %~ (m :)
@@ -119,7 +122,9 @@ instance (HasQueue env) => RunMessage env SkillTest where
         skillTestSkillType
         skillTestModifiers
       )
-    SkillTestCommitCard iid (_, card) ->
+    SkillTestCommitCard iid cardId -> do
+      unshiftMessage (SkillTestCommitedCard iid cardId)
+      card <- asks (getCard iid cardId)
       pure $ s & committedCards %~ ((iid, card) :)
     AddModifier SkillTestTarget modifier ->
       pure $ s & modifiers %~ (modifier :)

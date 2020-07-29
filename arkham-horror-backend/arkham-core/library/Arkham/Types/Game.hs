@@ -224,6 +224,9 @@ newGame scenarioId investigatorsList = do
   investigatorsMap = HashMap.fromList
     $ map (\(i, _) -> (getInvestigatorId i, i)) investigatorsList
 
+instance HasCard InvestigatorId Game where
+  getCard iid cardId g = getCard () cardId (getInvestigator iid g)
+
 instance HasId LeadInvestigatorId () Game where
   getId _ = LeadInvestigatorId . view leadInvestigatorId
 
@@ -718,13 +721,10 @@ runGameMessage msg g = case msg of
     unshiftMessage (EnemySpawn lid enemyId')
     pure $ g & enemies . at enemyId' ?~ enemy'
   FindAndDrawEncounterCard iid matcher -> do
+    let matchingDiscards = filter (encounterCardMatch matcher) (g ^. discard)
     let
-      matchingDiscards =
-        filter (encounterCardMatch matcher . snd) (zip [1 ..] (g ^. discard))
-    let
-      matchingDeckCards = filter
-        (encounterCardMatch matcher . snd)
-        (zip [1 ..] (g ^. encounterDeck))
+      matchingDeckCards =
+        filter (encounterCardMatch matcher) (g ^. encounterDeck)
     g <$ unshiftMessage
       (Ask
       $ ChooseOne
@@ -735,13 +735,15 @@ runGameMessage msg g = case msg of
            (ChoiceResult . FoundAndDrewEncounterCard iid FromEncounterDeck)
            matchingDeckCards
       )
-  FoundAndDrewEncounterCard iid cardSource (n, card) -> do
+  FoundAndDrewEncounterCard iid cardSource card -> do
     let
+      cardId = getCardId card
       discard' = case cardSource of
-        FromDiscard -> without n (g ^. discard)
+        FromDiscard -> filter ((/= cardId) . getCardId) (g ^. discard)
         _ -> g ^. discard
       encounterDeck' = case cardSource of
-        FromEncounterDeck -> without n (g ^. encounterDeck)
+        FromEncounterDeck ->
+          filter ((/= cardId) . getCardId) (g ^. encounterDeck)
         _ -> g ^. encounterDeck
     shuffled <- liftIO $ shuffleM encounterDeck'
     unshiftMessage (InvestigatorDrewEncounterCard iid card)

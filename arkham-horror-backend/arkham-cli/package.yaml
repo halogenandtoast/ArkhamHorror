@@ -37,3 +37,4 @@ executables:
       - http-conduit
       - arkham-core
       - postgresql-simple
+      - uuid

@@ -5,17 +5,23 @@ module Arkham.Types.EncounterSet
 where
 
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
+import Data.UUID.V4
 import Safe (fromJustNote)
 
 data EncounterSet = TheGathering | Rats | Ghouls | StrikingFear | ChillingCold
 
-gatherEncounterSet :: EncounterSet -> [EncounterCard]
+gatherEncounterSet :: MonadIO m => EncounterSet -> m [EncounterCard]
 gatherEncounterSet =
-  map
-      (\cid -> fromJustNote ("missing card" <> show cid)
-        $ HashMap.lookup cid allEncounterCards
+  traverse
+      (\cid ->
+        fromJustNote
+            ("missing card" <> show cid)
+            (HashMap.lookup cid allEncounterCards)
+          . CardId
+          <$> liftIO nextRandom
       )
     . setCards
 

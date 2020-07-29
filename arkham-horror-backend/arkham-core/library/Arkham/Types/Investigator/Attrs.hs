@@ -8,6 +8,7 @@ import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.FastWindow
@@ -27,6 +28,7 @@ import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashSet as HashSet
 import Lens.Micro
+import Safe (fromJustNote)
 import System.Random.Shuffle
 
 instance HasCardCode Attrs where
@@ -413,7 +415,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       pure
         $ a
         & (assets %~ HashSet.delete aid)
-        & (discard %~ (lookupPlayerCard cardCode :))
+        & (discard %~ (lookupPlayerCard cardCode (CardId $ unAssetId aid) :))
     ChooseActivateCardAbilityAction iid | iid == investigatorId -> do
       availableAbilities <- getAvailableAbilities a
       a <$ unshiftMessage
@@ -500,17 +502,20 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         <> [ChoiceResult (AfterDiscoverClues iid lid n)]
         )
     AfterDiscoverClues iid _ n | iid == investigatorId -> pure $ a & clues +~ n
-    PayCardCost iid _ n | iid == investigatorId -> do
-      let cost = getCost $ a ^?! hand . ix n
+    PayCardCost iid cardId | iid == investigatorId -> do
+      let
+        card = fromJustNote "not in hand"
+          $ find ((== cardId) . getCardId) (a ^. hand)
+        cost = getCost card
       pure $ a & resources -~ cost
-    PlayCard iid cardCode n True -> a <$ unshiftMessages
+    PlayCard iid cardId True -> a <$ unshiftMessages
       [ TakeAction iid (actionCost a Action.Play) Action.Play
-      , PayCardCost iid cardCode n
+      , PayCardCost iid cardId
       , CheckAttackOfOpportunity iid
-      , PlayCard iid cardCode n False
+      , PlayCard iid cardId False
       ]
-    PlayCard iid _ n False | iid == investigatorId ->
-      pure $ a & hand %~ without n
+    PlayedCard iid cardId | iid == investigatorId ->
+      pure $ a & hand %~ filter ((/= cardId) . getCardId)
     SkillTestCommitCard iid (n, _) | iid == investigatorId ->
       pure $ a & hand %~ without n
     InvestigatorPlayAsset iid aid | iid == investigatorId ->
@@ -650,9 +655,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         )
     CheckFastWindow iid windows | iid == investigatorId -> do
       availableAbilities <- getAvailableAbilities a
-      let
-        playableCards =
-          filter (fastIsPlayable a windows . snd) (zip [0 ..] investigatorHand)
+      let playableCards = filter (fastIsPlayable a windows) investigatorHand
       filteredAbilities <- filterM
         (flip (abilityInWindows windows) a)
         availableAbilities
@@ -661,9 +664,9 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           (Ask
           $ ChooseOne
           $ map
-              (\(i, c) -> ChoiceResults
-                [ PayCardCost iid (getCardCode c) i
-                , PlayCard iid (getCardCode c) i False
+              (\c -> ChoiceResults
+                [ PayCardCost iid (getCardId c)
+                , PlayCard iid (getCardId c) False
                 , CheckFastWindow iid windows
                 ]
               )
@@ -696,9 +699,9 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           <> [ ChooseActivateCardAbilityAction iid
              | Action.Ability `elem` canDos
              ]
-          <> [ PlayCard iid (getCardCode c) i True
+          <> [ PlayCard iid (getCardId c) True
              | Action.Play `elem` canDos
-             , (i, c) <- zip [0 ..] investigatorHand
+             , c <- investigatorHand
              , isPlayable a [DuringTurn You] c
              ]
           <> [ ChooseMoveAction iid | Action.Move `elem` canDos ]

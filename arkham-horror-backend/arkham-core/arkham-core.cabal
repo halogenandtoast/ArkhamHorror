@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e690b8da3214cd6eee2457bee059281e80ea5b52643df7fb5864f9129b66c317
+-- hash: 9e7d77c9d06d1149143c9a6f9282d6c9aa3d0654c11bc009383d7727500e5e75
 
 name:           arkham-core
 version:        0.0.0
@@ -26,6 +26,7 @@ library
       Arkham.Types.Card.CardCode
       Arkham.Types.Card.Class
       Arkham.Types.Card.EncounterCard
+      Arkham.Types.Card.Id
       Arkham.Types.Card.PlayerCard
       Arkham.Types.Classes
       Arkham.Types.Difficulty

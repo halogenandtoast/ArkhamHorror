@@ -9,6 +9,7 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.FastWindow
 import Arkham.Types.InvestigatorId
@@ -103,8 +104,10 @@ baseAttrs :: TreacheryId -> CardCode -> Attrs
 baseAttrs tid cardCode =
   let
     MkEncounterCard {..} =
-      fromJustNote "missing encounter card"
-        $ HashMap.lookup cardCode allEncounterCards
+      fromJustNote
+          "missing encounter card"
+          (HashMap.lookup cardCode allEncounterCards)
+        $ CardId (unTreacheryId tid)
   in
     Attrs
       { treacheryName = ecName
@@ -119,8 +122,11 @@ baseAttrs tid cardCode =
 weaknessAttrs :: TreacheryId -> CardCode -> Attrs
 weaknessAttrs tid cardCode =
   let
-    MkPlayerCard {..} = fromJustNote "missing weakness card"
-      $ HashMap.lookup cardCode allPlayerCards
+    MkPlayerCard {..} =
+      fromJustNote
+          "missing weakness card"
+          (HashMap.lookup cardCode allPlayerCards)
+        $ CardId (unTreacheryId tid)
   in
     Attrs
       { treacheryName = pcName

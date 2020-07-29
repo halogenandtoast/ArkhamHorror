@@ -8,6 +8,7 @@ where
 
 import Arkham.Types.Ability
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
@@ -127,8 +128,10 @@ baseAttrs :: EnemyId -> CardCode -> Attrs
 baseAttrs eid cardCode =
   let
     MkEncounterCard {..} =
-      fromJustNote "missing encounter card"
-        $ HashMap.lookup cardCode allEncounterCards
+      fromJustNote
+          "missing encounter card"
+          (HashMap.lookup cardCode allEncounterCards)
+        $ CardId (unEnemyId eid)
   in
     Attrs
       { enemyName = ecName

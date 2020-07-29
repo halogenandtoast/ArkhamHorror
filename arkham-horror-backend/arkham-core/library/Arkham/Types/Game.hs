@@ -18,6 +18,7 @@ import Arkham.Types.AgendaId
 import Arkham.Types.Asset
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy
@@ -564,21 +565,25 @@ runGameMessage msg g = case msg of
   AddAgenda aid -> pure $ g & agendas . at aid ?~ lookupAgenda aid
   SkillTestEnds -> pure $ g & skillTest .~ Nothing
   ReturnTokens tokens -> pure $ g & chaosBag %~ (tokens <>)
-  PlayCard iid cardCode _ False -> do
+  PlayCard iid cardId False -> do
     let
-      card =
-        fromJustNote "Could not find card" $ HashMap.lookup cardCode allCards
+      investigator = getInvestigator iid g
+      card = fromJustNote "could not fin card in hand"
+        $ find ((== cardId) . getCardId) (handOf investigator)
     case card of
       PlayerCard pc -> case pcCardType pc of
         AssetType -> do
           let
-            builder = fromJustNote "could not find asset"
-              $ HashMap.lookup cardCode allAssets
-          aid <- liftIO $ AssetId <$> nextRandom
-          unshiftMessage (InvestigatorPlayAsset iid aid)
-          pure $ g & assets %~ HashMap.insert aid (builder aid)
+            aid = AssetId $ unCardId cardId
+            asset = fromJustNote
+              "could not find asset"
+              (HashMap.lookup (pcCardCode pc) allAssets)
+              aid
+          unshiftMessages [InvestigatorPlayAsset iid aid, PlayedCard iid cardId]
+          pure $ g & assets %~ HashMap.insert aid asset
         EventType -> do
-          void $ allEvents cardCode iid
+          void $ allEvents (pcCardCode pc) iid
+          unshiftMessage (PlayedCard iid cardId)
           pure g
         _ -> pure g
       EncounterCard _ -> pure g
@@ -643,8 +648,11 @@ runGameMessage msg g = case msg of
   EnemyDefeated eid iid _ _ -> do
     let
       enemy = g ^?! enemies . ix eid
-      encounterCard = fromJustNote "missing"
-        $ HashMap.lookup (getCardCode enemy) allEncounterCards
+      encounterCard =
+        fromJustNote
+            "missing"
+            (HashMap.lookup (getCardCode enemy) allEncounterCards)
+          $ CardId (unEnemyId eid)
     broadcastFastWindow Fast.WhenEnemyDefeated iid g
     pure $ g & (enemies %~ HashMap.delete eid) & (discard %~ (encounterCard :))
   BeginInvestigation -> pure $ g & phase .~ InvestigationPhase
@@ -769,8 +777,10 @@ runGameMessage msg g = case msg of
   DiscardTreachery tid ->
     let
       treachery = getTreachery tid g
-      card = fromJustNote "missing card"
-        $ HashMap.lookup (getCardCode treachery) allEncounterCards
+      card = fromJustNote
+        "missing card"
+        (HashMap.lookup (getCardCode treachery) allEncounterCards)
+        (CardId $ unTreacheryId tid)
     in pure $ g & treacheries %~ HashMap.delete tid & discard %~ (card :)
   _ -> pure g
 

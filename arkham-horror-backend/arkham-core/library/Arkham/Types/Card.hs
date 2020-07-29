@@ -7,6 +7,7 @@ module Arkham.Types.Card
   , EncounterCardType(..)
   , ClassSymbol(..)
   , HasCardCode(..)
+  , HasCardId(..)
   , HasCost(..)
   , allCards
   , allPlayerCards
@@ -19,6 +20,7 @@ where
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
 import Arkham.Types.Card.EncounterCard
+import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import ClassyPrelude
 import Data.Aeson
@@ -34,11 +36,15 @@ instance HasCardCode Card where
   getCardCode (PlayerCard card) = getCardCode card
   getCardCode (EncounterCard card) = getCardCode card
 
+instance HasCardId Card where
+  getCardId (PlayerCard card) = getCardId card
+  getCardId (EncounterCard card) = getCardId card
+
 instance HasCost Card where
   getCost (PlayerCard card) = getCost card
   getCost _ = 0
 
-allCards :: HashMap CardCode Card
+allCards :: HashMap CardCode (CardId -> Card)
 allCards =
-  HashMap.map PlayerCard allPlayerCards
-    <> HashMap.map EncounterCard allEncounterCards
+  HashMap.map (PlayerCard .) allPlayerCards
+    <> HashMap.map (EncounterCard .) allEncounterCards

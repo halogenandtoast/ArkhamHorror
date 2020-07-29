@@ -11,6 +11,7 @@ import Arkham.Types.Action
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.FastWindow
 import Arkham.Types.InvestigatorId
@@ -98,7 +99,8 @@ data Message
   | EnemyEngageInvestigator EnemyId InvestigatorId
   | EnemyDamage EnemyId InvestigatorId Source Int
   | EnemyDefeated EnemyId InvestigatorId CardCode Source
-  | PlayCard InvestigatorId CardCode Int Bool
+  | PlayCard InvestigatorId CardId Bool
+  | PlayedCard InvestigatorId CardId
   | InvestigatorAssignDamage InvestigatorId EnemyId Int Int
   | AssetDamage AssetId EnemyId Int Int
   | AssetDefeated AssetId
@@ -137,7 +139,7 @@ data Message
   | DrewPlayerTreachery InvestigatorId CardCode
   | RemoveCardFromHand InvestigatorId CardCode
   | DrewTreachery InvestigatorId CardCode
-  | PayCardCost InvestigatorId CardCode Int
+  | PayCardCost InvestigatorId CardId
   | AddAct ActId
   | AddAgenda AgendaId
   | AllRandomDiscard

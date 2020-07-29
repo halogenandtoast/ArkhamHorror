@@ -8,5 +8,6 @@ data Slot
   | TomeSlot
   | AllySlot
   | AccessorySlot
+  | ArcaneSlot
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

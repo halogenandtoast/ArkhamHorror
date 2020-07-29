@@ -27,9 +27,11 @@ export default class Game extends Vue {
   }
 
   async choose(idx: number) {
-    updateGame(this.gameId, idx).then((game) => {
-      this.game = game;
-    });
+    if (idx !== -1) {
+      updateGame(this.gameId, idx).then((game) => {
+        this.game = game;
+      });
+    }
   }
 
   update(state: Arkham.Game) {

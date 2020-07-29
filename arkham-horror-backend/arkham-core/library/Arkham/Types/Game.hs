@@ -73,6 +73,7 @@ data Game = Game
   , giScenario :: Scenario
   , giLocations :: HashMap LocationId Location
   , giInvestigators :: HashMap InvestigatorId Investigator
+  , giPlayers :: HashMap Int InvestigatorId
   , giEnemies :: HashMap EnemyId Enemy
   , giAssets :: HashMap AssetId Asset
   , giActiveInvestigatorId :: InvestigatorId
@@ -168,11 +169,17 @@ skillTest = lens giSkillTest $ \m x -> m { giSkillTest = x }
 activeInvestigator :: Game -> Investigator
 activeInvestigator g = getInvestigator (g ^. activeInvestigatorId) g
 
-newGame :: MonadIO m => ScenarioId -> [(Investigator, [PlayerCard])] -> m Game
+newGame
+  :: MonadIO m
+  => ScenarioId
+  -> HashMap Int (Investigator, [PlayerCard])
+  -> m Game
 newGame scenarioId investigatorsList = do
   ref <-
     newIORef
-    $ map (\(i, d) -> LoadDeck (getInvestigatorId i) d) investigatorsList
+    $ map
+        (\(i, d) -> LoadDeck (getInvestigatorId i) d)
+        (HashMap.elems investigatorsList)
     <> [Setup]
   mseed <- liftIO $ lookupEnv "SEED"
   seed <- maybe
@@ -188,6 +195,7 @@ newGame scenarioId investigatorsList = do
     , giEnemies = mempty
     , giAssets = mempty
     , giInvestigators = investigatorsMap
+    , giPlayers = playersMap
     , giActiveInvestigatorId = initialInvestigatorId
     , giLeadInvestigatorId = initialInvestigatorId
     , giPhase = InvestigationPhase
@@ -221,8 +229,10 @@ newGame scenarioId investigatorsList = do
  where
   initialInvestigatorId =
     fromJustNote "No investigators" . headMay . HashMap.keys $ investigatorsMap
-  investigatorsMap = HashMap.fromList
-    $ map (\(i, _) -> (getInvestigatorId i, i)) investigatorsList
+  playersMap = HashMap.map (getInvestigatorId . fst) investigatorsList
+  investigatorsMap = HashMap.fromList $ map
+    (\(i, _) -> (getInvestigatorId i, i))
+    (HashMap.elems investigatorsList)
 
 instance HasCard InvestigatorId Game where
   getCard iid cardId g = getCard () cardId (getInvestigator iid g)
@@ -804,6 +814,7 @@ toExternalGame Game {..} mq = do
     , gScenario = giScenario
     , gLocations = giLocations
     , gInvestigators = giInvestigators
+    , gPlayers = giPlayers
     , gEnemies = giEnemies
     , gAssets = giAssets
     , gActiveInvestigatorId = giActiveInvestigatorId
@@ -833,6 +844,7 @@ toInternalGame' ref GameJson {..} = Game
   , giScenario = gScenario
   , giLocations = gLocations
   , giInvestigators = gInvestigators
+  , giPlayers = gPlayers
   , giEnemies = gEnemies
   , giAssets = gAssets
   , giActiveInvestigatorId = gActiveInvestigatorId

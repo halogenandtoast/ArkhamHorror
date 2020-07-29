@@ -6,6 +6,7 @@ module Api.Handler.Arkham.Games
 where
 
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Game
 import Arkham.Types.GameJson
 import Arkham.Types.Helpers
@@ -13,6 +14,8 @@ import Arkham.Types.Investigator
 import Arkham.Types.Message
 import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap
+import Data.UUID.V4
+import GHC.Stack
 import Import
 import Network.HTTP.Conduit (simpleHttp)
 
@@ -26,7 +29,7 @@ postApiV1ArkhamCreateGameR = do
   deck <- liftIO $ loadDeck "20344"
   (_, ge) <- liftIO $ runMessages =<< newGame
     "01104"
-    [(lookupInvestigator "01001", deck)]
+    (HashMap.fromList [(1, (lookupInvestigator "01001", deck))])
   key <- runDB $ insert $ ArkhamGame ge
   pure (Entity key (ArkhamGame ge))
 
@@ -42,8 +45,7 @@ putApiV1ArkhamGameR gameId = do
   let
     gameJson@GameJson {..} = arkhamGameCurrentData game
     messages = case gQuestion of
-      Just (ChooseOne qs) ->
-        maybeToList $ Ask <$> qs !!? (choice response)
+      Just (ChooseOne qs) -> maybeToList (qs !!? choice response)
       _ -> []
   (_, ge) <- liftIO $ runMessages =<< toInternalGame
     (gameJson { gMessages = messages <> gMessages })
@@ -54,14 +56,16 @@ newtype ArkhamDBDecklist = ArkhamDBDecklist
   deriving stock (Generic, Show)
   deriving anyclass (FromJSON)
 
-loadDeck :: String -> IO [PlayerCard]
+loadDeck :: HasCallStack => String -> IO [PlayerCard]
 loadDeck deckId = do
   edecklist <- eitherDecode @ArkhamDBDecklist
     <$> simpleHttp ("https://arkhamdb.com/api/public/decklist/" <> deckId)
   case edecklist of
     Left err -> throwString $ "Parsing failed with: " <> err
     Right decklist ->
-      pure $ flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count' ->
-        do
-          guard $ cardCode /= "01000"
-          replicate count' (lookupPlayerCard cardCode)
+      flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count' ->
+        if cardCode /= "01000"
+          then replicateM
+            count'
+            ((<$> (CardId <$> nextRandom)) (lookupPlayerCard cardCode))
+          else pure []

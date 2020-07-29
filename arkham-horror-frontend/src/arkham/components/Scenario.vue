@@ -24,13 +24,19 @@
         class="card"
         :src="'/img/arkham/cards/' + game.currentData.scenario.contents.id + '.jpg'"
       />
+      <ChaosBag
+        :game="game"
+        @choose="$emit('choose', $event)"
+      />
     </div>
     <div class="location-cards">
       <Location
         v-for="(location, key) in game.currentData.locations"
         class="location"
         :key="key"
+        :game="game"
         :location="location"
+        @choose="$emit('choose', $event)"
       />
     </div>
     <Player
@@ -38,7 +44,7 @@
       :player="player"
       @choose="$emit('choose', $event)"
     />
-    <StatusBar :game="game" />
+    <StatusBar :game="game" @choose="$emit('choose', $event)" />
   </div>
 </template>
 
@@ -49,6 +55,7 @@ import Player from '@/arkham/components/Player.vue';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
+import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import Location from '@/arkham/components/Location.vue';
 
 @Component({
@@ -58,6 +65,7 @@ import Location from '@/arkham/components/Location.vue';
     Agenda,
     Location,
     StatusBar,
+    ChaosBag,
   },
 })
 export default class Scenario extends Vue {

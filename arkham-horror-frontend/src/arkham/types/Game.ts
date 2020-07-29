@@ -7,7 +7,7 @@ import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Act, actDecoder } from '@/arkham/types/Act';
 import { Agenda, agendaDecoder } from '@/arkham/types/Agenda';
 import { Phase, phaseDecoder } from '@/arkham/types/Phase';
-// import { Asset, assetDecoder } from '@/arkham/types/Asset';
+import { Asset, assetDecoder } from '@/arkham/types/Asset';
 import { Question, questionDecoder } from '@/arkham/types/Question';
 // import { Treachery, treacheryDecoder } from '@/arkham/types/Treachery';
 import { SkillTest, skillTestDecoder } from '@/arkham/types/SkillTest';
@@ -25,7 +25,7 @@ export interface GameState {
   activeInvestigatorId: string;
   acts: Record<string, Act>;
   agendas: Record<string, Agenda>;
-  // assets: Record<string, Asset>;
+  assets: Record<string, Asset>;
   chaosBag: ChaosToken[];
   discard: EncounterCardContents[];
   // enemies: Record<string, Enemy>;
@@ -36,7 +36,7 @@ export interface GameState {
   phase: Phase;
   question: Question;
   scenario: Scenario;
-  // skillTest: SkillTest | null;
+  skillTest: SkillTest | null;
   // treacheries: Record<string, Treachery>;
 }
 
@@ -45,7 +45,7 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     activeInvestigatorId: JsonDecoder.string,
     acts: JsonDecoder.dictionary<Act>(actDecoder, 'Dict<UUID, Act>'),
     agendas: JsonDecoder.dictionary<Agenda>(agendaDecoder, 'Dict<UUID, Agenda>'),
-    // assets: JsonDecoder.dictionary<Asset>(assetDecoder, 'Dict<UUID, Asset>'),
+    assets: JsonDecoder.dictionary<Asset>(assetDecoder, 'Dict<UUID, Asset>'),
     chaosBag: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     discard: JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]'),
     // enemies: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
@@ -56,7 +56,7 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     phase: phaseDecoder,
     question: questionDecoder,
     scenario: scenarioDecoder,
-    // skillTest: JsonDecoder.nullable(skillTestDecoder),
+    skillTest: JsonDecoder.nullable(skillTestDecoder),
     // treacheries: JsonDecoder.dictionary<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),
   },
   'GameState',

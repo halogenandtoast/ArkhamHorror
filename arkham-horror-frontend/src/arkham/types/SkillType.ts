@@ -1,6 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 
-export type SkillType = 'SkillWillpower' | 'SkillIntellect' | 'SkillCombat' | 'SkillAgility' | 'SkillWild'
+export type SkillType = 'SkillWillpower' | 'SkillIntellect' | 'SkillCombat' | 'SkillAgility' | 'SkillWild';
 
 export const skillTypeDecoder = JsonDecoder.oneOf<SkillType>([
   JsonDecoder.isExactly('SkillWillpower'),

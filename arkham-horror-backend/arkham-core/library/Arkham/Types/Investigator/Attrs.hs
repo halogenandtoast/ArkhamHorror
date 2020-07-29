@@ -404,6 +404,19 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       (Ask $ ChooseOne $ map DiscardAsset (HashSet.toList $ a ^. assets))
     AttachTreacheryToInvestigator tid iid | iid == investigatorId ->
       pure $ a & treacheries %~ HashSet.insert tid
+    DiscardCard iid cardId | iid == investigatorId -> do
+      let
+        card = fromJustNote "must be in hand"
+          $ find ((== cardId) . getCardId) investigatorHand
+      case card of
+        PlayerCard pc ->
+          pure
+            $ a
+            & hand
+            %~ filter ((/= cardId) . getCardId)
+            & discard
+            %~ (pc :)
+        EncounterCard _ -> pure $ a & hand %~ filter ((/= cardId) . getCardId) -- TODO: This should discard to the encounter discard
     RemoveCardFromHand iid cardCode | iid == investigatorId ->
       pure $ a & hand %~ filter ((/= cardCode) . getCardCode)
     DiscardTreachery tid | tid `elem` investigatorTreacheries ->
@@ -509,8 +522,6 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       ]
     PlayedCard iid cardId | iid == investigatorId ->
       pure $ a & hand %~ filter ((/= cardId) . getCardId)
-    SkillTestCommitedCard iid cardId | iid == investigatorId ->
-      pure $ a & hand %~ filter ((/= cardId) . getCardId)
     InvestigatorPlayAsset iid aid | iid == investigatorId ->
       pure $ a & assets %~ HashSet.insert aid
     InvestigatorDamage iid _ health sanity | iid == investigatorId -> do
@@ -609,6 +620,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       shuffled <- liftIO $ shuffleM deck'
       pure $ a & deck .~ Deck shuffled
     BeforeSkillTest iid skillType | iid == investigatorId -> do
+      commitedCardIds <- map unCommitedCardId . HashSet.toList <$> asks
+        (getSet iid)
       availableAbilities <- getAvailableAbilities a
       let
         filteredAbilities = flip filter availableAbilities $ \case
@@ -618,10 +631,14 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         beginMessage = BeforeSkillTest iid skillType
         committableCards = flip filter investigatorHand $ \case
           PlayerCard MkPlayerCard {..} ->
-            SkillWild `elem` pcSkills || skillType `elem` pcSkills
+            pcId
+              `notElem` commitedCardIds
+              && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
           _ -> False
-      if not (null filteredAbilities) || not (null committableCards)
-        then unshiftMessage
+      if not (null filteredAbilities) || not (null committableCards) || not
+        (null commitedCardIds)
+      then
+        unshiftMessage
           (Ask $ ChooseOne
             (map
                 (\ability -> Run [UseCardAbility iid ability, beginMessage])
@@ -632,10 +649,16 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
                      [SkillTestCommitCard iid (getCardId card), beginMessage]
                  )
                  committableCards
+            <> map
+                 (\cardId ->
+                   Run [SkillTestUncommitCard iid cardId, beginMessage]
+                 )
+                 commitedCardIds
             <> [triggerMessage]
             )
           )
-        else unshiftMessage triggerMessage
+      else
+        unshiftMessage triggerMessage
       pure a
     InvestigatorStartSkillTest iid skillType tempModifiers ->
       a <$ unshiftMessage

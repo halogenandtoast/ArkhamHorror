@@ -123,7 +123,7 @@ data Message
   | SkillTestApplyResults
   | RunSkill InvestigatorId CardCode SkillTestResult
   | SkillTestCommitCard InvestigatorId CardId
-  | SkillTestCommitedCard InvestigatorId CardId
+  | SkillTestUncommitCard InvestigatorId CardId
   | AddOnFailure Message
   | AddOnSuccess Message
   | FailSkillTest
@@ -139,6 +139,7 @@ data Message
   | HealHorror Target Int
   | DrewPlayerTreachery InvestigatorId CardCode
   | RemoveCardFromHand InvestigatorId CardCode
+  | DiscardCard InvestigatorId CardId
   | DrewTreachery InvestigatorId CardCode
   | PayCardCost InvestigatorId CardId
   | AddAct ActId

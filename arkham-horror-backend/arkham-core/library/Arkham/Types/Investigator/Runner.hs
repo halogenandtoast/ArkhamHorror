@@ -3,6 +3,7 @@ module Arkham.Types.Investigator.Runner where
 import Arkham.Types.Ability
 import Arkham.Types.ActId
 import Arkham.Types.AssetId
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
@@ -15,6 +16,7 @@ type InvestigatorRunner env
   = ( HasCount ClueCount LocationId env
     , HasCount AssetCount (InvestigatorId, [Trait]) env
     , HasSet DamageableAssetId InvestigatorId env
+    , HasSet CommitedCardId InvestigatorId env
     , HasQueue env
     , HasSet AdvanceableActId () env
     , HasSet ConnectedLocationId LocationId env

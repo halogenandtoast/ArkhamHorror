@@ -49,7 +49,7 @@ dynamiteBlast iid = do
       <> map
            (\iid' -> InvestigatorDamage iid' (EventSource "01023") 3 0)
            investigatorIds
-  unshiftMessage (Ask $ ChooseOne $ map ChoiceResults choices)
+  unshiftMessage (Ask $ ChooseOne $ concat choices)
 
 workingAHunch
   :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()

@@ -195,10 +195,8 @@ data Message
   deriving anyclass (ToJSON, FromJSON)
 
 data Question
-  = ChooseOne [Question]
-  | ChooseOneAtATime [Question]
-  | ChoiceResult Message
-  | ChoiceResults [Message]
+  = ChooseOne [Message]
+  | ChooseOneAtATime [Message]
   | ChooseTo Message
   | ChooseToDoAll [Message]
   deriving stock (Show, Generic)

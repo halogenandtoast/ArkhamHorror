@@ -173,10 +173,8 @@ instance (ActRunner env) => RunMessage env TheBarrierI where
 
 instance (ActRunner env) => RunMessage env WhatHaveYouDoneI where
   runMessage msg a@(WhatHaveYouDoneI attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId -> a <$ unshiftMessage
-      (Ask
-      $ ChooseOne [ChoiceResult $ Resolution 1, ChoiceResult $ Resolution 2]
-      )
+    AdvanceAct aid | aid == actId ->
+      a <$ unshiftMessage (Ask $ ChooseOne [Resolution 1, Resolution 2])
     EnemyDefeated _ _ "01116" _ -> a <$ unshiftMessage (AdvanceAct actId)
     _ -> WhatHaveYouDoneI <$> runMessage msg attrs
 

@@ -137,9 +137,8 @@ instance (AgendaRunner env) => RunMessage env WhatsGoingOnI where
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
       a <$ unshiftMessages
         [ Ask $ ChooseOne
-          [ ChoiceResult AllRandomDiscard
-          , ChoiceResult
-            (InvestigatorDamage leadInvestigatorId (AgendaSource aid) 0 2)
+          [ AllRandomDiscard
+          , InvestigatorDamage leadInvestigatorId (AgendaSource aid) 0 2
           ]
         , NextAgenda aid "01106"
         ]
@@ -184,10 +183,9 @@ instance (AgendaRunner env) => RunMessage env TheyreGettingOutI where
             (getSet (locationId, LocationId "01115"))
         case closestLocationIds of
           [] -> pure Nothing
-          [x] -> pure $ Just $ ChoiceResult (EnemyMove eid locationId x)
-          xs -> pure $ Just $ ChooseOne $ map
-            (ChoiceResult . EnemyMove eid locationId)
-            xs
+          [x] -> pure $ Just $ EnemyMove eid locationId x
+          xs ->
+            pure $ Just $ Ask $ ChooseOne $ map (EnemyMove eid locationId) xs
       a <$ unshiftMessage (Ask $ ChooseOneAtATime (catMaybes messages))
     EndRoundWindow -> do
       parlorGhoulsCount <- unEnemyCount

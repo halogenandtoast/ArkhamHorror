@@ -551,9 +551,7 @@ runGameMessage msg g = case msg of
       [] -> error "someone needed to spend some clues"
       [x] -> g <$ unshiftMessage (InvestigatorSpendClues x n)
       xs -> g <$ unshiftMessages
-        [ Ask $ ChooseOne $ map
-          (ChoiceResult . flip InvestigatorSpendClues 1)
-          xs
+        [ Ask $ ChooseOne $ map (flip InvestigatorSpendClues 1) xs
         , SpendClues (n - 1) investigatorsWithClues
         ]
   NextAgenda aid1 aid2 ->
@@ -638,7 +636,7 @@ runGameMessage msg g = case msg of
       Just (EnemyWillAttack iid2 eid2) -> do
         _ <- popMessage
         unshiftMessage (EnemyAttacks (EnemyAttack iid2 eid2 : as))
-      _ -> unshiftMessage (Ask . ChooseOneAtATime $ map ChoiceResult as)
+      _ -> unshiftMessage (Ask $ ChooseOneAtATime as)
     pure g
   DiscardAsset aid -> do
     let asset = g ^?! assets . ix aid
@@ -728,11 +726,9 @@ runGameMessage msg g = case msg of
     g <$ unshiftMessage
       (Ask
       $ ChooseOne
-      $ map
-          (ChoiceResult . FoundAndDrewEncounterCard iid FromDiscard)
-          matchingDiscards
+      $ map (FoundAndDrewEncounterCard iid FromDiscard) matchingDiscards
       <> map
-           (ChoiceResult . FoundAndDrewEncounterCard iid FromEncounterDeck)
+           (FoundAndDrewEncounterCard iid FromEncounterDeck)
            matchingDeckCards
       )
   FoundAndDrewEncounterCard iid cardSource card -> do
@@ -875,10 +871,6 @@ runMessages g = if g ^. gameOver
                 ]
               >> runMessages g
       Just msg -> case msg of
-        Ask (ChoiceResult m) ->
-          liftIO (modifyIORef' (giMessages g) (m :)) >> runMessages g
-        Ask (ChoiceResults ms) ->
-          liftIO (modifyIORef' (giMessages g) (ms <>)) >> runMessages g
         Ask q -> (Just q, ) <$> toExternalGame g (Just q)
         _ -> runMessage msg g >>= runMessages
 
@@ -897,8 +889,6 @@ extract n xs =
 
 handleQuestion :: MonadIO m => GameJson -> Question -> m [Message]
 handleQuestion _ = \case
-  ChoiceResult msg -> pure [msg]
-  ChoiceResults msgs -> pure msgs
   q@(ChooseToDoAll msgs) -> do
     putStr $ pack $ show q
     liftIO $ hFlush stdout
@@ -910,18 +900,19 @@ handleQuestion _ = \case
     resp <- getLine
     if "n" `isPrefixOf` toLower resp then pure [] else pure [msg]
   ChooseOne [] -> pure []
-  ChooseOne qs -> do
+  ChooseOne msgs -> do
     i <- keepAsking @Int
-      ("Choose one:\n\n" <> unlines (map show $ zip @_ @Int [1 ..] qs))
-    pure $ maybeToList $ Ask <$> qs !!? (i - 1)
+      ("Choose one:\n\n" <> unlines (map show $ zip @_ @Int [1 ..] msgs))
+    pure . maybeToList $ msgs !!? (i - 1)
   ChooseOneAtATime [] -> pure []
-  ChooseOneAtATime qs -> do
+  ChooseOneAtATime msgs -> do
     i <- keepAsking @Int
-      ("Choose one at a time:\n\n" <> unlines (map show $ zip @_ @Int [1 ..] qs)
+      ("Choose one at a time:\n\n"
+      <> unlines (map show $ zip @_ @Int [1 ..] msgs)
       )
-    let (mq, qs') = extract i qs
-    case mq of
-      Just q' -> pure [Ask q', Ask $ ChooseOneAtATime qs']
+    let (mm, msgs') = extract i msgs
+    case mm of
+      Just m' -> pure [m', Ask $ ChooseOneAtATime msgs']
       Nothing -> pure []
 
 runGame :: MonadIO m => Game -> m GameJson

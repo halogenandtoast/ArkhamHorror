@@ -45,6 +45,7 @@ allAssets = HashMap.fromList
   , ("01020", machete)
   , ("01021", guardDog)
   , ("01059", holyRosary)
+  , ("01060", shrivelling)
   , ("01086", knife)
   , ("01087", flashlight)
   , ("01117", litaChantler)
@@ -100,6 +101,7 @@ data Asset
   | Machete MacheteI
   | GuardDog GuardDogI
   | HolyRosary HolyRosaryI
+  | Shrivelling ShrivellingI
   | Knife KnifeI
   | Flashlight FlashlightI
   | LitaChantler LitaChantlerI
@@ -115,6 +117,7 @@ assetAttrs = \case
   Machete attrs -> coerce attrs
   GuardDog attrs -> coerce attrs
   HolyRosary attrs -> coerce attrs
+  Shrivelling attrs -> coerce attrs
   Knife attrs -> coerce attrs
   Flashlight attrs -> coerce attrs
   LitaChantler attrs -> coerce attrs
@@ -236,6 +239,13 @@ holyRosary uuid = HolyRosary $ HolyRosaryI $ (baseAttrs uuid "01059")
   , assetSanity = Just 2
   }
 
+newtype ShrivellingI = ShrivellingI Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+shrivelling :: AssetId -> Asset
+shrivelling uuid =
+  Shrivelling $ ShrivellingI $ (baseAttrs uuid "01060") { assetSlots = [ArcaneSlot] }
+
 newtype KnifeI = KnifeI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
@@ -280,6 +290,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     Machete x -> Machete <$> runMessage msg x
     GuardDog x -> GuardDog <$> runMessage msg x
     HolyRosary x -> HolyRosary <$> runMessage msg x
+    Shrivelling x -> Shrivelling <$> runMessage msg x
     Knife x -> Knife <$> runMessage msg x
     Flashlight x -> Flashlight <$> runMessage msg x
     LitaChantler x -> LitaChantler <$> runMessage msg x
@@ -427,6 +438,19 @@ instance (AssetRunner env) => RunMessage env MacheteI where
         )
       pure a
     _ -> MacheteI <$> runMessage msg attrs
+
+instance (AssetRunner env) => RunMessage env ShrivellingI where
+  runMessage msg a@(ShrivellingI attrs@Attrs {..}) = case msg of
+    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
+      unshiftMessage
+        (ChooseFightEnemyAction
+          iid
+          SkillWillpower
+          [DamageModifier 1 (AssetSource aid), BadStuffForSpecialTokens]
+        )
+      pure a
+    _ -> ShrivellingI <$> runMessage msg attrs
+
 
 instance (AssetRunner env) => RunMessage env KnifeI where
   runMessage msg a@(KnifeI attrs@Attrs {..}) = case msg of

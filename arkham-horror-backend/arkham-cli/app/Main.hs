@@ -55,7 +55,9 @@ main = do
     Nothing -> do
       deck <- loadDeck "20344"
       pPrint deck
-      ge <- runGame =<< newGame "01104" [(lookupInvestigator "01001", deck)]
+      ge <- runGame =<< newGame
+        "01104"
+        (HashMap.fromList [(1, (lookupInvestigator "01001", deck))])
       pPrint ge
     Just gid -> do
       gj <- loadFromDB gid

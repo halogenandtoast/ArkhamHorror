@@ -10,6 +10,7 @@ where
 
 import Arkham.Json
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
@@ -20,6 +21,8 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
 import ClassyPrelude
+import qualified Data.HashMap.Strict as HashMap
+import qualified Data.HashSet as HashSet
 import Lens.Micro
 
 data DrawStrategy
@@ -45,7 +48,7 @@ data SkillTest = SkillTest
   , skillTestSetAsideTokens  :: [Token]
   , skillTestResult :: SkillTestResult
   , skillTestModifiers :: [Modifier]
-  , skillTestCommittedCards :: [(InvestigatorId, Card)]
+  , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
   }
   deriving stock (Show, Generic)
 
@@ -55,6 +58,13 @@ instance ToJSON SkillTest where
 
 instance FromJSON SkillTest where
   parseJSON = genericParseJSON $ aesonOptions $ Just "skillTest"
+
+instance HasSet CommitedCardId InvestigatorId SkillTest where
+  getSet iid =
+    HashSet.map CommitedCardId
+      . HashMap.keysSet
+      . HashMap.filter ((== iid) . fst)
+      . skillTestCommittedCards
 
 initSkillTest
   :: InvestigatorId -> SkillType -> Int -> [Message] -> [Message] -> SkillTest
@@ -79,7 +89,7 @@ setAsideTokens :: Lens' SkillTest [Token]
 setAsideTokens =
   lens skillTestSetAsideTokens $ \m x -> m { skillTestSetAsideTokens = x }
 
-committedCards :: Lens' SkillTest [(InvestigatorId, Card)]
+committedCards :: Lens' SkillTest (HashMap CardId (InvestigatorId, Card))
 committedCards =
   lens skillTestCommittedCards $ \m x -> m { skillTestCommittedCards = x }
 
@@ -95,7 +105,7 @@ onSuccess = lens skillTestOnSuccess $ \m x -> m { skillTestOnSuccess = x }
 skillIconCount :: SkillTest -> Int
 skillIconCount SkillTest {..} = length . filter matches $ concatMap
   (iconsForCard . snd)
-  skillTestCommittedCards
+  (HashMap.elems skillTestCommittedCards)
  where
   iconsForCard (PlayerCard MkPlayerCard {..}) = pcSkills
   iconsForCard _ = []
@@ -122,16 +132,21 @@ instance (SkillTestRunner env) => RunMessage env SkillTest where
       unshiftMessage SkillTestEnds
       unshiftMessages skillTestOnFailure
       pure $ s & result .~ FailedBy skillTestDifficulty
-    StartSkillTest -> s <$ unshiftMessage
-      (InvestigatorStartSkillTest
-        skillTestInvestigator
-        skillTestSkillType
-        skillTestModifiers
+    StartSkillTest -> s <$ unshiftMessages
+      (HashMap.foldMapWithKey
+          (\k (i, _) -> [DiscardCard i k])
+          skillTestCommittedCards
+      <> [ InvestigatorStartSkillTest
+             skillTestInvestigator
+             skillTestSkillType
+             skillTestModifiers
+         ]
       )
     SkillTestCommitCard iid cardId -> do
-      unshiftMessage (SkillTestCommitedCard iid cardId)
       card <- asks (getCard iid cardId)
-      pure $ s & committedCards %~ ((iid, card) :)
+      pure $ s & committedCards %~ HashMap.insert cardId (iid, card)
+    SkillTestUncommitCard _ cardId ->
+      pure $ s & committedCards %~ HashMap.delete cardId
     AddModifier SkillTestTarget modifier ->
       pure $ s & modifiers %~ (modifier :)
     SkillTestEnds -> s <$ unshiftMessages

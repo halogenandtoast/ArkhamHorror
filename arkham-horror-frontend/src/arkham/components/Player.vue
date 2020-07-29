@@ -78,7 +78,12 @@ export default class Player extends Vue {
   private focusedEnemy: string | null = null;
 
   get topOfDiscard() {
-    return this.player.contents.discard[0];
+    if (this.player.contents.discard[0]) {
+      const { cardCode } = this.player.contents.discard[0];
+      return `/img/arkham/cards/${cardCode}.jpg`;
+    }
+
+    return null;
   }
 
   get choices() {

@@ -1,8 +1,8 @@
 import { JsonDecoder } from 'ts.data.json';
 import {
   Card,
-  PlayerCard,
-  playerCardDecoder,
+  PlayerCardContents,
+  playerCardContentsDecoder,
   cardDecoder,
 } from '@/arkham/types/Card';
 
@@ -30,7 +30,7 @@ export interface InvestigatorContents {
   engagedEnemies: string[];
   assets: string[];
   // deck: Deck PlayerCard;
-  discard: PlayerCard[];
+  discard: PlayerCardContents[];
   hand: Card[];
   connectedLocations: string[];
   // traits: HashSet Trait;
@@ -58,7 +58,7 @@ export const investigatorContentsDecoder = JsonDecoder.object<InvestigatorConten
   engagedEnemies: JsonDecoder.array<string>(JsonDecoder.string, 'EnemyId[]'),
   assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
   // deck: Deck PlayerCard,
-  discard: JsonDecoder.array<PlayerCard>(playerCardDecoder, 'PlayerCard[]'),
+  discard: JsonDecoder.array<PlayerCardContents>(playerCardContentsDecoder, 'PlayerCardContents[]'),
   hand: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
   // traits: HashSet Trait,

@@ -350,6 +350,9 @@ instance HasSet EnemyId Trait Game where
   getSet trait =
     HashMap.keysSet . HashMap.filter ((trait `elem`) . getTraits) . view enemies
 
+instance HasSet CommitedCardId InvestigatorId Game where
+  getSet iid = maybe mempty (getSet iid) . view skillTest
+
 instance HasSet BlockedLocationId () Game where
   getSet _ =
     HashSet.map BlockedLocationId

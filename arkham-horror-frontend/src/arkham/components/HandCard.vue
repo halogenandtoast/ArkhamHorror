@@ -26,6 +26,8 @@ export default class HandCard extends Vue {
     return {
       'card--can-play': this.playCardAction !== -1,
       'card--can-commit': this.commitCardAction !== -1,
+      'card--can-uncommit': this.uncommitCardAction !== -1,
+      'card--committed': this.uncommitCardAction !== -1,
     };
   }
 
@@ -52,9 +54,17 @@ export default class HandCard extends Vue {
     return this.choices.findIndex(this.canCommit);
   }
 
+  get uncommitCardAction() {
+    return this.choices.findIndex(this.canUncommit);
+  }
+
   get cardAction() {
     if (this.playCardAction !== -1) {
       return this.playCardAction;
+    }
+
+    if (this.uncommitCardAction !== -1) {
+      return this.uncommitCardAction;
     }
 
     return this.commitCardAction;
@@ -65,8 +75,18 @@ export default class HandCard extends Vue {
       case MessageType.COMMIT_CARD:
         return c.contents[1] === this.id;
       case MessageType.RUN:
-        // debugger // eslint-disable-line
         return c.contents.some((c1: Message) => this.canCommit(c1));
+      default:
+        return false;
+    }
+  }
+
+  canUncommit(c: Message): boolean {
+    switch (c.tag) {
+      case MessageType.UNCOMMIT_CARD:
+        return c.contents[1] === this.id;
+      case MessageType.RUN:
+        return c.contents.some((c1: Message) => this.canUncommit(c1));
       default:
         return false;
     }
@@ -83,18 +103,13 @@ export default class HandCard extends Vue {
   border-radius: 13px;
   margin: 2px;
 
-  &.commited {
+  &--can-play, &--can-commit, &--can-uncommit {
+    border: 2px solid #FF00FF;
+    cursor: pointer;
+  }
+
+  &--can-uncommit {
     margin-top: -10px;
-  }
-
-  &--can-play {
-    border: 2px solid #FF00FF;
-    cursor: pointer;
-  }
-
-  &--can-commit {
-    border: 2px solid #FF00FF;
-    cursor: pointer;
   }
 }
 </style>

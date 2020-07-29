@@ -401,10 +401,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     TakeControlOfAsset iid aid | iid == investigatorId ->
       pure $ a & assets %~ HashSet.insert aid
     ChooseAndDiscardAsset iid | iid == investigatorId -> a <$ unshiftMessage
-      (Ask $ ChooseOne $ map
-        (ChoiceResult . DiscardAsset)
-        (HashSet.toList $ a ^. assets)
-      )
+      (Ask $ ChooseOne $ map DiscardAsset (HashSet.toList $ a ^. assets))
     AttachTreacheryToInvestigator tid iid | iid == investigatorId ->
       pure $ a & treacheries %~ HashSet.insert tid
     RemoveCardFromHand iid cardCode | iid == investigatorId ->
@@ -420,14 +417,14 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       availableAbilities <- getAvailableAbilities a
       a <$ unshiftMessage
         (Ask $ ChooseOne $ map
-          (ChoiceResult . ActivateCardAbilityAction iid)
+          (ActivateCardAbilityAction iid)
           availableAbilities
         )
     ChooseFightEnemyAction iid skillType tempModifiers
       | iid == investigatorId -> do
         unshiftMessage
           (Ask $ ChooseOne $ map
-            (\eid -> ChoiceResult $ FightEnemy iid eid skillType tempModifiers)
+            (\eid -> FightEnemy iid eid skillType tempModifiers)
             (HashSet.toList investigatorEngagedEnemies)
           )
         pure $ takeAction Action.Fight a
@@ -443,7 +440,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     ChooseEvadeEnemyAction iid | iid == investigatorId -> do
       unshiftMessage
         (Ask $ ChooseOne $ map
-          (\eid -> ChoiceResults
+          (\eid -> Run
             [ WhenEvadeEnemy iid eid
             , EvadeEnemy iid eid SkillAgility
             , AfterEvadeEnemy iid eid
@@ -459,7 +456,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           investigatorConnectedLocations `difference` blockedLocationIds
       a <$ unshiftMessage
         (Ask $ ChooseOne $ map
-          (\l -> ChoiceResults [CheckAttackOfOpportunity iid, MoveAction iid l])
+          (\l -> Run [CheckAttackOfOpportunity iid, MoveAction iid l])
           (HashSet.toList accessibleLocations)
         )
     MoveAction iid l | iid == investigatorId -> do
@@ -470,12 +467,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         HashSet.toList . HashSet.map unDamageableAssetId <$> asks (getSet iid)
       a <$ unshiftMessage
         (Ask $ ChooseOne
-          (ChoiceResult
-              (InvestigatorDamage investigatorId (EnemySource eid) health sanity
-              )
-          : map
-              (\k -> ChoiceResult $ AssetDamage k eid health sanity)
-              allDamageableAssets
+          (InvestigatorDamage investigatorId (EnemySource eid) health sanity
+          : map (\k -> AssetDamage k eid health sanity) allDamageableAssets
           )
         )
     Investigate iid lid skillType True -> a <$ unshiftMessages
@@ -495,11 +488,11 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         (Ask
         $ ChooseOne
         $ map
-            (\ability -> ChoiceResults
-              [UseCardAbility iid ability, DiscoverClues iid lid n]
+            (\ability ->
+              Run [UseCardAbility iid ability, DiscoverClues iid lid n]
             )
             filteredAbilities
-        <> [ChoiceResult (AfterDiscoverClues iid lid n)]
+        <> [AfterDiscoverClues iid lid n]
         )
     AfterDiscoverClues iid _ n | iid == investigatorId -> pure $ a & clues +~ n
     PayCardCost iid cardId | iid == investigatorId -> do
@@ -631,17 +624,15 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         then unshiftMessage
           (Ask $ ChooseOne
             (map
-                (\ability ->
-                  ChoiceResults [UseCardAbility iid ability, beginMessage]
-                )
+                (\ability -> Run [UseCardAbility iid ability, beginMessage])
                 filteredAbilities
             <> map
                  (\card ->
-                   ChoiceResults
+                   Run
                      [SkillTestCommitCard iid (getCardId card), beginMessage]
                  )
                  committableCards
-            <> [ChoiceResult triggerMessage]
+            <> [triggerMessage]
             )
           )
         else unshiftMessage triggerMessage
@@ -664,7 +655,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           (Ask
           $ ChooseOne
           $ map
-              (\c -> ChoiceResults
+              (\c -> Run
                 [ PayCardCost iid (getCardId c)
                 , PlayCard iid (getCardId c) False
                 , CheckFastWindow iid windows
@@ -672,13 +663,14 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
               )
               playableCards
           <> map
-               (\ability -> ChoiceResults
-                 [ UseCardAbility investigatorId ability
-                 , CheckFastWindow iid windows
-                 ]
+               (\ability ->
+                 Run
+                   [ UseCardAbility investigatorId ability
+                   , CheckFastWindow iid windows
+                   ]
                )
                filteredAbilities
-          <> [ChoiceResults []]
+          <> [Run []]
           )
         else pure a
 
@@ -692,8 +684,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())
       canDos <- filterM (canPerform a) Action.allActions
       a <$ unshiftMessage
-        (Ask $ ChooseOne $ map
-          ChoiceResult
+        (Ask $ ChooseOne
           ([ TakeResources iid 1 True | Action.Resource `elem` canDos ]
           <> [ DrawCards iid 1 True | Action.Draw `elem` canDos ]
           <> [ ChooseActivateCardAbilityAction iid

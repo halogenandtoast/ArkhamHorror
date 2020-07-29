@@ -319,10 +319,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
           [] -> pure a
           [lid] -> a <$ unshiftMessage (EnemyMove enemyId enemyLocation lid)
           ls -> a <$ unshiftMessage
-            (Ask $ ChooseOne $ map
-              (ChoiceResult . EnemyMove enemyId enemyLocation)
-              ls
-            )
+            (Ask $ ChooseOne $ map (EnemyMove enemyId enemyLocation) ls)
     EnemiesAttack
       | not (null enemyEngagedInvestigators) && not enemyExhausted -> do
         unshiftMessages $ map (flip EnemyWillAttack enemyId) $ HashSet.toList

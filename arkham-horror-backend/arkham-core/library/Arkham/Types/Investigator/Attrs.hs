@@ -491,9 +491,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       , CheckAttackOfOpportunity iid
       , MoveAction iid lid False
       ]
-    MoveAction iid lid False | iid == investigatorId -> do
-      unshiftMessage (MoveTo iid lid)
-      pure $ takeAction Action.Move a
+    MoveAction iid lid False | iid == investigatorId ->
+      a <$ unshiftMessage (MoveTo iid lid)
     InvestigatorAssignDamage iid eid health sanity | iid == investigatorId -> do
       allDamageableAssets <-
         HashSet.toList . HashSet.map unDamageableAssetId <$> asks (getSet iid)

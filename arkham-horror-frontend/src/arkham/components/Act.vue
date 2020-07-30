@@ -20,9 +20,12 @@ export default class Act extends Vue {
   @Prop(Object) readonly act!: Arkham.Act;
   @Prop(Object) readonly game!: Game;
 
+  get id() {
+    return this.act.contents.id;
+  }
+
   get image() {
-    const { id } = this.act.contents;
-    return `/img/arkham/cards/${id}.jpg`;
+    return `/img/arkham/cards/${this.id}.jpg`;
   }
 
   get choices() {

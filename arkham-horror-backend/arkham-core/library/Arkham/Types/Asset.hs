@@ -432,16 +432,30 @@ instance (AssetRunner env) => RunMessage env MacheteI where
 
 instance (AssetRunner env) => RunMessage env ShrivellingI where
   runMessage msg a@(ShrivellingI attrs@Attrs {..}) = case msg of
+    InvestigatorPlayAsset _ aid | aid == assetId -> do
+      let
+        attrs' =
+          attrs
+            & (uses .~ Uses Resource.Charges 4)
+            & (abilities
+              .~ [(AssetSource aid, 1, ActionAbility 1 Action.Fight, NoLimit)]
+              )
+      ShrivellingI <$> runMessage msg attrs'
     UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
-      unshiftMessage
-        (ChooseFightEnemyAction
-          iid
-          SkillWillpower
-          [DamageModifier 1 (AssetSource aid), BadStuffForSpecialTokens]
-        )
-      pure a
+    case assetUses of
+      Uses Resource.Ammo n -> do
+        when
+          (n == 1)
+          (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
+        unshiftMessage
+          (ChooseFightEnemyAction
+             iid
+             SkillWillpower
+             [DamageModifier 1 (AssetSource aid), BadStuffForSpecialTokens]
+          )
+        pure $ ShrivellingI $ attrs & uses .~ Uses Resource.Charges (n - 1)
+      _ -> pure a
     _ -> ShrivellingI <$> runMessage msg attrs
-
 
 instance (AssetRunner env) => RunMessage env KnifeI where
   runMessage msg a@(KnifeI attrs@Attrs {..}) = case msg of

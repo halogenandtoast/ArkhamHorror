@@ -272,6 +272,7 @@ modifiedDamageAmount attrs baseAmount = foldr
   applyModifier (DamageTaken m _) n = max 0 (n + m)
   applyModifier _ n = n
 
+
 instance (EnemyRunner env) => RunMessage env GhoulPriestI where
   runMessage msg (GhoulPriestI attrs) = GhoulPriestI <$> runMessage msg attrs
 
@@ -331,7 +332,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
         unshiftMessages $ map (flip EnemyWillAttack enemyId) $ HashSet.toList
           enemyEngagedInvestigators
         pure a
-    AttackEnemy iid eid skillType damageAmount | eid == enemyId -> do
+    AttackEnemy iid eid skillType tempModifiers | eid == enemyId -> do
       let
         onFailure = if Keyword.Retaliate `elem` enemyKeywords
           then [EnemyAttack iid eid]
@@ -342,8 +343,9 @@ instance (EnemyRunner env) => RunMessage env Attrs where
           (EnemySource eid)
           skillType
           enemyFight
-          [EnemyDamage eid iid (InvestigatorSource iid) damageAmount]
+          [InvestigatorDamageEnemy iid eid]
           onFailure
+          tempModifiers
         )
     EnemyEvaded iid eid | eid == enemyId ->
       pure $ a & engagedInvestigators %~ HashSet.delete iid & exhausted .~ True
@@ -360,6 +362,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
           enemyEvade
           [EnemyEvaded iid eid]
           onFailure
+          []
         )
     PerformEnemyAttack iid eid | eid == enemyId -> a <$ unshiftMessage
       (InvestigatorAssignDamage iid enemyId enemyHealthDamage enemySanityDamage)

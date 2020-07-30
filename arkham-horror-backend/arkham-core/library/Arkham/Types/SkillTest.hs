@@ -74,9 +74,10 @@ initSkillTest
   -> Int
   -> [Message]
   -> [Message]
+  -> [Modifier]
   -> SkillTest
-initSkillTest iid source skillType' difficulty' onSuccess' onFailure' =
-  SkillTest
+initSkillTest iid source skillType' difficulty' onSuccess' onFailure' modifiers'
+  = SkillTest
     { skillTestInvestigator = iid
     , skillTestSkillType = skillType'
     , skillTestDifficulty = difficulty'
@@ -86,7 +87,7 @@ initSkillTest iid source skillType' difficulty' onSuccess' onFailure' =
     , skillTestResolveStrategy = ResolveAll
     , skillTestSetAsideTokens = mempty
     , skillTestResult = Unrun
-    , skillTestModifiers = mempty
+    , skillTestModifiers = modifiers'
     , skillTestCommittedCards = mempty
     , skillTestSource = source
     }

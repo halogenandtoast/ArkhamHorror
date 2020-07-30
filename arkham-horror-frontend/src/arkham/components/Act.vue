@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Game } from '@/arkham/types/Game';
+import { choices, Game } from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
 import * as Arkham from '@/arkham/types/Act';
 
@@ -26,7 +26,7 @@ export default class Act extends Vue {
   }
 
   get choices() {
-    return this.game.currentData.question.contents;
+    return choices(this.game);
   }
 
   get advanceActAction() {

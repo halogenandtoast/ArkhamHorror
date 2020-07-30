@@ -136,11 +136,17 @@ instance (AgendaRunner env) => RunMessage env WhatsGoingOnI where
     AdvanceAgenda aid | aid == agendaId -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
       a <$ unshiftMessages
-        [ Ask $ ChooseOneFromSource
-          (AgendaSource aid)
-          [ AllRandomDiscard
-          , InvestigatorDamage leadInvestigatorId (AgendaSource aid) 0 2
-          ]
+        [ Ask $ ChooseOneFromSource $ MkChooseOneFromSource
+          { chooseOneSource = AgendaSource aid
+          , chooseOneChoices =
+            [ label
+              "Each investigator discards 1 card at random from his or her hand"
+              AllRandomDiscard
+            , label
+              "The lead investigator takes 2 horror"
+              (InvestigatorDamage leadInvestigatorId (AgendaSource aid) 0 2)
+            ]
+          }
         , NextAgenda aid "01106"
         ]
     _ -> WhatsGoingOnI <$> runMessage msg attrs

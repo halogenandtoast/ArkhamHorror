@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { Game } from '@/arkham/types/Game';
+import { choices, Game } from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
 import * as Arkham from '@/arkham/types/Enemy';
 
@@ -47,7 +47,7 @@ export default class Enemy extends Vue {
   }
 
   get choices() {
-    return this.game.currentData.question.contents;
+    return choices(this.game);
   }
 
   get fightAction() {

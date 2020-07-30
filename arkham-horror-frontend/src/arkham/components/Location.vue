@@ -50,7 +50,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Game } from '@/arkham/types/Game';
+import { choices, Game } from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
@@ -77,7 +77,7 @@ export default class Location extends Vue {
   }
 
   get choices() {
-    return this.game.currentData.question.contents;
+    return choices(this.game);
   }
 
   get cardAction() {

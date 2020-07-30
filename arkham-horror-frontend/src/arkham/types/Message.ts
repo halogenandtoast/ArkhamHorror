@@ -17,10 +17,12 @@ export enum MessageType {
   EVADE_ENEMY = 'EvadeEnemy',
   CONTINUE = 'Continue',
   INVESTIGATOR_DAMAGE = 'InvestigatorDamage',
+  LABEL = 'Label',
 }
 
 export interface Message {
   tag: MessageType;
+  label: string | null;
   contents: any; // eslint-disable-line
 }
 
@@ -46,10 +48,29 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
   'MessageType',
 );
 
-export const messageDecoder = JsonDecoder.object<Message>(
+export const unlabeledMessageDecoder = JsonDecoder.object<Message>(
   {
     tag: messageTypeDecoder,
+    label: JsonDecoder.constant(''),
     contents: JsonDecoder.succeed,
   },
   'Message',
 );
+
+export const labeledMessageDecoder = JsonDecoder.object<Message>(
+  {
+    tag: JsonDecoder.constant(MessageType.LABEL),
+    label: JsonDecoder.string,
+    contents: JsonDecoder.succeed,
+  },
+  'Message',
+  {
+    label: 'labelFor',
+    contents: 'unlabel',
+  },
+);
+
+export const messageDecoder = JsonDecoder.oneOf<Message>([
+  unlabeledMessageDecoder,
+  labeledMessageDecoder,
+], 'Message');

@@ -46,6 +46,8 @@ putApiV1ArkhamGameR gameId = do
     gameJson@GameJson {..} = arkhamGameCurrentData game
     messages = case gQuestion of
       Just (ChooseOne qs) -> maybeToList (qs !!? choice response)
+      Just (ChooseOneFromSource MkChooseOneFromSource {..}) ->
+        maybeToList (map unlabel chooseOneChoices !!? choice response)
       _ -> []
   (_, ge) <- liftIO $ runMessages =<< toInternalGame
     (gameJson { gMessages = messages <> gMessages })

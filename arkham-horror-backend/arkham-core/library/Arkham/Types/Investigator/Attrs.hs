@@ -29,6 +29,7 @@ import Data.Coerce
 import qualified Data.HashSet as HashSet
 import Lens.Micro
 import Safe (fromJustNote)
+import System.Random
 import System.Random.Shuffle
 
 instance HasCardCode Attrs where
@@ -372,6 +373,12 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         & (discard .~ discard')
         & (hand .~ hand')
         & (deck .~ Deck deck')
+    AllRandomDiscard -> do
+      n <- liftIO $ randomRIO (0, length investigatorHand - 1)
+      case investigatorHand !!? n of
+        Nothing -> pure a
+        Just c ->
+          a <$ unshiftMessage (DiscardCard investigatorId (getCardId c))
     ShuffleDiscardBackIn iid | iid == investigatorId ->
       if not (null investigatorDiscard)
         then do

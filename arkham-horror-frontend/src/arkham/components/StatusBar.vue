@@ -13,7 +13,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Game } from '@/arkham/types/Game';
+import { choices, Game } from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
 
 @Component
@@ -21,7 +21,7 @@ export default class StatusBar extends Vue {
   @Prop(Object) readonly game!: Game
 
   get choices() {
-    return this.game.currentData.question.contents;
+    return choices(this.game);
   }
 
   get afterDiscoverCluesAction() {

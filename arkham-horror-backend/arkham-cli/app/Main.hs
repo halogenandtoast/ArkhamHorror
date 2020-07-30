@@ -37,10 +37,11 @@ loadDeck deckId = do
   case edecklist of
     Left err -> throwString $ "Parsing failed with: " <> err
     Right decklist ->
-      flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count ->
+      flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count' ->
         if cardCode /= "01000"
-          then
-            replicate count . lookupPlayerCard cardCode . CardId <$> nextRandom
+          then replicateM
+            count'
+            ((<$> (CardId <$> nextRandom)) (lookupPlayerCard cardCode))
           else pure []
 
 newtype ArkhamDBDecklist = ArkhamDBDecklist

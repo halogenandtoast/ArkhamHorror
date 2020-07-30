@@ -4,6 +4,16 @@ import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 // import { SkillTestResult, skillTestResultDecoder } from '@/arkham/types/SkillTestResult';
 // import { Card, cardDecoder } from '@/arkham/types/Card';
 
+export interface Source {
+  tag: string;
+  contents: any; // eslint-disable-line
+}
+
+export const sourceDecoder = JsonDecoder.object<Source>({
+  tag: JsonDecoder.string,
+  contents: JsonDecoder.succeed,
+}, 'Source');
+
 export interface SkillTest {
   investigator: string;
   skillType: SkillType;
@@ -11,6 +21,7 @@ export interface SkillTest {
   setAsideTokens: ChaosToken[];
   // result: SkillTestResult;
   // committedCards: Card[];
+  source: Source;
 }
 
 export const skillTestDecoder = JsonDecoder.object<SkillTest>(
@@ -21,6 +32,7 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     setAsideTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     // result: skillTestResultDecoder,
     // committedCards: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
+    source: sourceDecoder,
   },
   'SkillTest',
 );

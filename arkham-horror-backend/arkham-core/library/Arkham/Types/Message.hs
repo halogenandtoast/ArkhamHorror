@@ -67,7 +67,7 @@ data Message
   | RemoveLocation LocationId
   | RemoveEnemy EnemyId
   | MoveAllTo LocationId
-  | MoveAction InvestigatorId LocationId
+  | MoveAction InvestigatorId LocationId Bool
   | MoveTo InvestigatorId LocationId
   | PrePlayerWindow
   | PostPlayerWindow
@@ -79,7 +79,6 @@ data Message
   | ActivateCardAbilityAction InvestigatorId Ability
   | UseCardAbility InvestigatorId Ability
   | ResolveToken Token InvestigatorId Int
-  | ChooseMoveAction InvestigatorId
   | Investigate InvestigatorId LocationId SkillType Bool
   | ChooseFightEnemyAction InvestigatorId SkillType [Modifier]
   | ChooseEvadeEnemyAction InvestigatorId
@@ -112,7 +111,7 @@ data Message
   | InvestigatorDiscoverClues InvestigatorId LocationId Int
   | DiscoverClues InvestigatorId LocationId Int
   | AfterDiscoverClues InvestigatorId LocationId Int
-  | BeginSkillTest InvestigatorId SkillType Int [Message]
+  | BeginSkillTest InvestigatorId Source SkillType Int [Message]
                 [Message]
   | StartSkillTest
   | InvestigatorStartSkillTest InvestigatorId SkillType [Modifier]
@@ -152,7 +151,7 @@ data Message
   | EnemyMove EnemyId LocationId LocationId
   | CreateEnemyAt CardCode LocationId
   | RunTreachery InvestigatorId TreacheryId
-  | RevelationSkillTest InvestigatorId SkillType Int [Message] [Message]
+  | RevelationSkillTest InvestigatorId Source SkillType Int [Message] [Message]
   | DamagePerPointOfFailure InvestigatorId
   | HorrorPerPointOfFailure InvestigatorId
   | DiscardTreachery TreacheryId

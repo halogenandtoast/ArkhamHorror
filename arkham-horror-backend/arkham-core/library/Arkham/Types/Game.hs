@@ -696,11 +696,12 @@ runGameMessage msg g = case msg of
   EndMythos -> g <$ pushMessage BeginInvestigation
   UseCardAbility _ (_, _, _, NoLimit) -> pure g
   UseCardAbility _ ability -> pure $ g & usedAbilities %~ (ability :)
-  BeginSkillTest iid skillType difficulty onSuccess onFailure -> do
+  BeginSkillTest iid source skillType difficulty onSuccess onFailure -> do
     unshiftMessage (BeforeSkillTest iid skillType)
     pure
       $ g
-      & (skillTest ?~ initSkillTest iid skillType difficulty onSuccess onFailure
+      & (skillTest
+        ?~ initSkillTest iid source skillType difficulty onSuccess onFailure
         )
   TriggerSkillTest iid _ skillValue -> do
     (token, chaosBag') <- drawToken g

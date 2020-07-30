@@ -293,7 +293,14 @@ instance (LocationRunner env) => RunMessage env ParlorI where
       | lid == locationId && locationRevealed -> do
         aid <- unStoryAssetId <$> asks (getId (CardCode "01117"))
         l <$ unshiftMessage
-          (BeginSkillTest iid SkillIntellect 4 [TakeControlOfAsset iid aid] [])
+          (BeginSkillTest
+            iid
+            (LocationSource lid)
+            SkillIntellect
+            4
+            [TakeControlOfAsset iid aid]
+            []
+          )
     _ -> ParlorI <$> runMessage msg attrs
 
 instance (LocationRunner env) => RunMessage env Attrs where
@@ -302,6 +309,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
       a <$ unshiftMessage
         (BeginSkillTest
           iid
+          (LocationSource lid)
           skillType
           (shroudValueFor a)
           [SuccessfulInvestigation lid, InvestigatorDiscoverClues iid lid 1]
@@ -333,6 +341,9 @@ instance (LocationRunner env) => RunMessage env Attrs where
       let discoveredClues = min n locationClues
       a <$ unshiftMessage (DiscoverClues iid lid discoveredClues)
     AfterDiscoverClues _ lid n | lid == locationId -> pure $ a & clues -~ n
+    WhenEnterLocation iid lid
+      | lid /= locationId && iid `elem` locationInvestigators
+      -> pure $ a & investigators %~ HashSet.delete iid -- TODO: should we broadcast leaving the location
     WhenEnterLocation iid lid | lid == locationId -> do
       unless locationRevealed $ unshiftMessage (RevealLocation lid)
       pure $ a & investigators %~ HashSet.insert iid

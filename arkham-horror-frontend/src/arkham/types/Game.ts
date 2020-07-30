@@ -9,7 +9,7 @@ import { Agenda, agendaDecoder } from '@/arkham/types/Agenda';
 import { Phase, phaseDecoder } from '@/arkham/types/Phase';
 import { Asset, assetDecoder } from '@/arkham/types/Asset';
 import { Question, questionDecoder } from '@/arkham/types/Question';
-// import { Treachery, treacheryDecoder } from '@/arkham/types/Treachery';
+import { Treachery, treacheryDecoder } from '@/arkham/types/Treachery';
 import { SkillTest, skillTestDecoder } from '@/arkham/types/SkillTest';
 import {
   EncounterCardContents,
@@ -37,7 +37,7 @@ export interface GameState {
   question: Question;
   scenario: Scenario;
   skillTest: SkillTest | null;
-  // treacheries: Record<string, Treachery>;
+  treacheries: Record<string, Treachery>;
 }
 
 export const gameStateDecoder = JsonDecoder.object<GameState>(
@@ -57,7 +57,7 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     question: questionDecoder,
     scenario: scenarioDecoder,
     skillTest: JsonDecoder.nullable(skillTestDecoder),
-    // treacheries: JsonDecoder.dictionary<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),
+    treacheries: JsonDecoder.dictionary<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),
   },
   'GameState',
 );

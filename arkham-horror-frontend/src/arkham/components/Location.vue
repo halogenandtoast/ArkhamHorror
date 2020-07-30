@@ -1,10 +1,10 @@
 <template>
   <div>
     <img
-      :class="{ 'location--can-investigate': investigateAction !== -1 }"
+      :class="{ 'location--can-interact': cardAction !== -1 }"
       class="card"
       :src="image"
-      @click="$emit('choose', investigateAction)"
+      @click="$emit('choose', cardAction)"
     />
     <div
       v-for="cardCode in location.contents.investigators"
@@ -63,16 +63,30 @@ export default class Location extends Vue {
     return this.game.currentData.question.contents;
   }
 
+  get cardAction() {
+    if (this.investigateAction !== -1) {
+      return this.investigateAction;
+    }
+
+    return this.moveAction;
+  }
+
   get investigateAction() {
     return this
       .choices
       .findIndex((c) => c.tag === MessageType.INVESTIGATE && c.contents[1] === this.id);
   }
+
+  get moveAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.MOVE && c.contents[1] === this.id);
+  }
 }
 </script>
 
 <style scoped lang="scss">
-.location--can-investigate {
+.location--can-interact {
   border: 3px solid #FF00FF;
   cursor: pointer;
 }

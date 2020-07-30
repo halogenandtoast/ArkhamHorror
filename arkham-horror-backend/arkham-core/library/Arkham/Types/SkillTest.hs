@@ -49,6 +49,7 @@ data SkillTest = SkillTest
   , skillTestResult :: SkillTestResult
   , skillTestModifiers :: [Modifier]
   , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
+  , skillTestSource :: Source
   }
   deriving stock (Show, Generic)
 
@@ -67,20 +68,28 @@ instance HasSet CommitedCardId InvestigatorId SkillTest where
       . skillTestCommittedCards
 
 initSkillTest
-  :: InvestigatorId -> SkillType -> Int -> [Message] -> [Message] -> SkillTest
-initSkillTest iid skillType' difficulty' onSuccess' onFailure' = SkillTest
-  { skillTestInvestigator = iid
-  , skillTestSkillType = skillType'
-  , skillTestDifficulty = difficulty'
-  , skillTestOnSuccess = onSuccess'
-  , skillTestOnFailure = onFailure'
-  , skillTestDrawStrategy = DrawOne
-  , skillTestResolveStrategy = ResolveAll
-  , skillTestSetAsideTokens = mempty
-  , skillTestResult = Unrun
-  , skillTestModifiers = mempty
-  , skillTestCommittedCards = mempty
-  }
+  :: InvestigatorId
+  -> Source
+  -> SkillType
+  -> Int
+  -> [Message]
+  -> [Message]
+  -> SkillTest
+initSkillTest iid source skillType' difficulty' onSuccess' onFailure' =
+  SkillTest
+    { skillTestInvestigator = iid
+    , skillTestSkillType = skillType'
+    , skillTestDifficulty = difficulty'
+    , skillTestOnSuccess = onSuccess'
+    , skillTestOnFailure = onFailure'
+    , skillTestDrawStrategy = DrawOne
+    , skillTestResolveStrategy = ResolveAll
+    , skillTestSetAsideTokens = mempty
+    , skillTestResult = Unrun
+    , skillTestModifiers = mempty
+    , skillTestCommittedCards = mempty
+    , skillTestSource = source
+    }
 
 modifiers :: Lens' SkillTest [Modifier]
 modifiers = lens skillTestModifiers $ \m x -> m { skillTestModifiers = x }

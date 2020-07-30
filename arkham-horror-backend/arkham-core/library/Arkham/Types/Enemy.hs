@@ -226,7 +226,7 @@ newtype RavenousGhoulI = RavenousGhoulI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 ravenousGhoul :: EnemyId -> Enemy
-ravenousGhoul uuid = RavenousGhoul $ RavenousGhoulI $ (baseAttrs uuid "01160")
+ravenousGhoul uuid = RavenousGhoul $ RavenousGhoulI $ (baseAttrs uuid "01161")
   { enemyHealthDamage = 1
   , enemySanityDamage = 1
   , enemyFight = 3

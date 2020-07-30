@@ -6,6 +6,19 @@
       :src="image"
       @click="$emit('choose', cardAction)"
     />
+    <Enemy
+      v-for="enemyId in enemies"
+      :key="enemyId"
+      :enemy="game.currentData.enemies[enemyId]"
+      :game="game"
+    />
+    <Treachery
+      v-for="treacheryId in location.contents.treacheries"
+      :key="treacheryId"
+      :treachery="game.currentData.treacheries[treacheryId]"
+      :game="game"
+      @choose="$emit('choose', $event)"
+    />
     <div
       v-for="cardCode in location.contents.investigators"
       :key="cardCode"
@@ -39,9 +52,13 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Game } from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
+import Enemy from '@/arkham/components/Enemy.vue';
+import Treachery from '@/arkham/components/Treachery.vue';
 import * as Arkham from '@/arkham/types/Location';
 
-@Component
+@Component({
+  components: { Enemy, Treachery },
+})
 export default class Location extends Vue {
   @Prop(Object) readonly game!: Game;
   @Prop(Object) readonly location!: Arkham.Location;
@@ -81,6 +98,12 @@ export default class Location extends Vue {
     return this
       .choices
       .findIndex((c) => c.tag === MessageType.MOVE && c.contents[1] === this.id);
+  }
+
+  get enemies() {
+    const enemyIds = this.location.contents.enemies;
+    return enemyIds
+      .filter((e) => this.game.currentData.enemies[e].contents.engagedInvestigators.length === 0);
   }
 }
 </script>

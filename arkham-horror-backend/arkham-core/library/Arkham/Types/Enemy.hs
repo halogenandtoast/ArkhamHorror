@@ -6,6 +6,7 @@ module Arkham.Types.Enemy
   )
 where
 
+import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
@@ -25,7 +26,6 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import ClassyPrelude
-import Data.Aeson
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
@@ -84,7 +84,13 @@ data Attrs = Attrs
   , enemyExhausted :: Bool
   }
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+
+instance ToJSON Attrs where
+  toJSON = genericToJSON $ aesonOptions $ Just "enemy"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "enemy"
+
+instance FromJSON Attrs where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "enemy"
 
 engagedInvestigators :: Lens' Attrs (HashSet InvestigatorId)
 engagedInvestigators =
@@ -255,7 +261,7 @@ spawnAt lid eid = do
   locations <- asks (getSet ())
   if lid `elem` locations
     then unshiftMessage (EnemySpawn lid eid)
-    else unshiftMessage (RemoveEnemy eid)
+    else unshiftMessage (Discard (EnemyTarget eid))
 
 modifiedDamageAmount :: Attrs -> Int -> Int
 modifiedDamageAmount attrs baseAmount = foldr

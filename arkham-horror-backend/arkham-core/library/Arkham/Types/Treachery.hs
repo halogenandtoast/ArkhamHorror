@@ -268,7 +268,7 @@ instance (TreacheryRunner env) => RunMessage env GraspingHandsI where
         3
         []
         [DamagePerPointOfFailure iid]
-      , DiscardTreachery tid
+      , Discard (TreacheryTarget tid)
       ]
     _ -> GraspingHandsI <$> runMessage msg attrs
 
@@ -277,7 +277,7 @@ instance (TreacheryRunner env) => RunMessage env AncientEvilsI where
     RunTreachery _ tid | tid == treacheryId -> t <$ unshiftMessages
       [ PlaceDoomOnAgenda
       , AdvanceAgendaIfThresholdSatisfied
-      , DiscardTreachery tid
+      , Discard (TreacheryTarget tid)
       ]
     _ -> AncientEvilsI <$> runMessage msg attrs
 
@@ -291,7 +291,7 @@ instance (TreacheryRunner env) => RunMessage env RottingRemainsI where
         3
         []
         [HorrorPerPointOfFailure iid]
-      , DiscardTreachery tid
+      , Discard (TreacheryTarget tid)
       ]
     _ -> RottingRemainsI <$> runMessage msg attrs
 
@@ -318,7 +318,7 @@ instance (TreacheryRunner env) => RunMessage env FrozenInFearI where
         [ RemoveAllModifiersOnTargetFrom
           (InvestigatorTarget iid)
           (TreacherySource treacheryId)
-        , DiscardTreachery treacheryId
+        , Discard (TreacheryTarget treacheryId)
         ]
         []
       )
@@ -339,7 +339,7 @@ instance (TreacheryRunner env) => RunMessage env DissonantVoicesI where
         [ RemoveAllModifiersOnTargetFrom
           (InvestigatorTarget iid)
           (TreacherySource treacheryId)
-        , DiscardTreachery treacheryId
+        , Discard (TreacheryTarget treacheryId)
         ]
       Nothing -> pure t -- Note: This assumes the treachery never attached for some reason
     _ -> DissonantVoicesI <$> runMessage msg attrs
@@ -354,7 +354,7 @@ instance (TreacheryRunner env) => RunMessage env CryptChillI where
         4
         []
         [TreacheryFailure iid tid]
-      , DiscardTreachery tid
+      , Discard (TreacheryTarget tid)
       ]
     TreacheryFailure iid tid | tid == treacheryId -> do
       assetCount <- HashSet.size <$> asks (getSet @AssetId iid)
@@ -381,7 +381,7 @@ instance (TreacheryRunner env) => RunMessage env ObscuringFogI where
         [ RemoveAllModifiersOnTargetFrom
           (LocationTarget lid)
           (TreacherySource treacheryId)
-        , DiscardTreachery treacheryId
+        , Discard (TreacheryTarget treacheryId)
         ]
     _ -> ObscuringFogI <$> runMessage msg attrs
 

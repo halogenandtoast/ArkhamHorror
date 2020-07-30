@@ -419,8 +419,10 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         EncounterCard _ -> pure $ a & hand %~ filter ((/= cardId) . getCardId) -- TODO: This should discard to the encounter discard
     RemoveCardFromHand iid cardCode | iid == investigatorId ->
       pure $ a & hand %~ filter ((/= cardCode) . getCardCode)
-    DiscardTreachery tid | tid `elem` investigatorTreacheries ->
+    Discard (TreacheryTarget tid) ->
       pure $ a & treacheries %~ HashSet.delete tid
+    Discard (EnemyTarget eid) ->
+      pure $ a & engagedEnemies %~ HashSet.delete eid
     AssetDiscarded aid cardCode | aid `elem` investigatorAssets ->
       pure
         $ a
@@ -442,17 +444,18 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           )
         pure $ takeAction Action.Fight a
     FightEnemy iid eid skillType tempModifiers True | iid == investigatorId ->
-        a <$ unshiftMessages
-          [ TakeAction iid (actionCost a Action.Fight) Action.Fight
-          , FightEnemy iid eid skillType tempModifiers False
-          ]
-    FightEnemy iid eid skillType tempModifiers False | iid == investigatorId -> do
-      unshiftMessages
-        [ WhenAttackEnemy iid eid
-        , AttackEnemy iid eid skillType (damageValueFor tempModifiers a)
-        , AfterAttackEnemy iid eid
+      a <$ unshiftMessages
+        [ TakeAction iid (actionCost a Action.Fight) Action.Fight
+        , FightEnemy iid eid skillType tempModifiers False
         ]
-      pure a
+    FightEnemy iid eid skillType tempModifiers False | iid == investigatorId ->
+      do
+        unshiftMessages
+          [ WhenAttackEnemy iid eid
+          , AttackEnemy iid eid skillType (damageValueFor tempModifiers a)
+          , AfterAttackEnemy iid eid
+          ]
+        pure a
     EnemyEvaded iid eid | iid == investigatorId ->
       pure $ a & engagedEnemies %~ HashSet.delete eid
     ChooseEvadeEnemy iid skillType isAction | iid == investigatorId -> do
@@ -706,7 +709,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
                    ]
                )
                filteredAbilities
-          <> [Run []]
+          <> [Continue "Skip playing fast cards"]
           )
         else pure a
 
@@ -749,7 +752,10 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
              , eid <- HashSet.toList investigatorEngagedEnemies
              ]
           <> [ ChooseEngageEnemyAction iid | Action.Engage `elem` canDos ]
-          <> [ EvadeEnemy iid eid SkillAgility True | Action.Evade `elem` canDos, eid <- HashSet.toList investigatorEngagedEnemies ]
+          <> [ EvadeEnemy iid eid SkillAgility True
+             | Action.Evade `elem` canDos
+             , eid <- HashSet.toList investigatorEngagedEnemies
+             ]
           <> map AdvanceAct advanceableActIds
           <> [ChooseEndTurn iid]
           )

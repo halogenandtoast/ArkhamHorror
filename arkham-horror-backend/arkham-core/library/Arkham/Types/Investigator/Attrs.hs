@@ -293,7 +293,7 @@ isPlayable a@Attrs {..} windows c@(PlayerCard MkPlayerCard {..}) =
 takeAction :: Action -> Attrs -> Attrs
 takeAction action a =
   a
-    & (remainingActions -~ actionCost a action)
+    & (remainingActions %~ max 0 . subtract (actionCost a action))
     & (actionsTaken %~ (<> [action]))
 
 getAvailableAbilities
@@ -462,18 +462,13 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           (HashSet.toList investigatorEngagedEnemies)
         )
       pure $ takeAction Action.Fight a
-    ChooseMoveAction iid | iid == investigatorId -> do
-      blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
-      let
-        accessibleLocations =
-          investigatorConnectedLocations `difference` blockedLocationIds
-      a <$ unshiftMessage
-        (Ask $ ChooseOne $ map
-          (\l -> Run [CheckAttackOfOpportunity iid, MoveAction iid l])
-          (HashSet.toList accessibleLocations)
-        )
-    MoveAction iid l | iid == investigatorId -> do
-      unshiftMessage (MoveTo iid l)
+    MoveAction iid lid True -> a <$ unshiftMessages
+      [ TakeAction iid (actionCost a Action.Move) Action.Move
+      , CheckAttackOfOpportunity iid
+      , MoveAction iid lid False
+      ]
+    MoveAction iid lid False | iid == investigatorId -> do
+      unshiftMessage (MoveTo iid lid)
       pure $ takeAction Action.Move a
     InvestigatorAssignDamage iid eid health sanity | iid == investigatorId -> do
       allDamageableAssets <-
@@ -514,12 +509,19 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           $ find ((== cardId) . getCardId) (a ^. hand)
         cost = getCost card
       pure $ a & resources -~ cost
-    PlayCard iid cardId True -> a <$ unshiftMessages
-      [ TakeAction iid (actionCost a Action.Play) Action.Play
-      , PayCardCost iid cardId
-      , CheckAttackOfOpportunity iid
-      , PlayCard iid cardId False
-      ]
+    PlayCard iid cardId True -> do
+      let
+        card = fromJustNote "not in hand"
+          $ find ((== cardId) . getCardId) investigatorHand
+        actionCost' = case card of
+          PlayerCard pc -> if pcFast pc then 0 else actionCost a Action.Play
+          _ -> actionCost a Action.Play
+      a <$ unshiftMessages
+        [ TakeAction iid actionCost' Action.Play
+        , PayCardCost iid cardId
+        , CheckAttackOfOpportunity iid
+        , PlayCard iid cardId False
+        ]
     PlayedCard iid cardId | iid == investigatorId ->
       pure $ a & hand %~ filter ((/= cardId) . getCardId)
     InvestigatorPlayAsset iid aid | iid == investigatorId ->
@@ -592,9 +594,9 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
     AllDrawEncounterCard ->
       a <$ unshiftMessage (InvestigatorDrawEncounterCard investigatorId)
-    RevelationSkillTest iid skillType difficulty onSuccess onFailure ->
+    RevelationSkillTest iid source skillType difficulty onSuccess onFailure ->
       a <$ unshiftMessage
-        (BeginSkillTest iid skillType difficulty onSuccess onFailure)
+        (BeginSkillTest iid source skillType difficulty onSuccess onFailure)
     ActivateCardAbilityAction iid ability@(_, _, abilityType, _)
       | iid == investigatorId -> do
         unshiftMessage (UseCardAbility iid ability) -- We should check action type when added for aoo
@@ -700,12 +702,16 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     TakeAction iid actionCost' action | iid == investigatorId ->
       pure
         $ a
-        & (remainingActions -~ actionCost')
+        & (remainingActions %~ max 0 . subtract actionCost')
         & (actionsTaken %~ (<> [action]))
     PlayerWindow iid | iid == investigatorId -> do
       advanceableActIds <-
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())
       canDos <- filterM (canPerform a) Action.allActions
+      blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
+      let
+        accessibleLocations =
+          investigatorConnectedLocations `difference` blockedLocationIds
       a <$ unshiftMessage
         (Ask $ ChooseOne
           ([ TakeResources iid 1 True | Action.Resource `elem` canDos ]
@@ -714,11 +720,16 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
              | Action.Ability `elem` canDos
              ]
           <> [ PlayCard iid (getCardId c) True
-             | Action.Play `elem` canDos
-             , c <- investigatorHand
+             | c <- investigatorHand
+             , Action.Play
+               `elem` canDos
+               || fastIsPlayable a [DuringTurn You] c
              , isPlayable a [DuringTurn You] c
              ]
-          <> [ ChooseMoveAction iid | Action.Move `elem` canDos ]
+          <> [ MoveAction iid lid True
+             | Action.Move `elem` canDos
+             , lid <- HashSet.toList accessibleLocations
+             ]
           <> [ Investigate iid investigatorLocation SkillIntellect True
              | Action.Investigate `elem` canDos
              ]

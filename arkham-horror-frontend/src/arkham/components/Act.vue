@@ -1,14 +1,9 @@
 <template>
   <div class="act-container">
     <img
-      v-if="act.contents.canAdvance"
-      class="card card--sideways act--can-progress"
-      @click="$emit('progressAct')"
-      :src="image"
-    />
-    <img
-      v-else
+      :class="{ 'act--can-progress': advanceActAction !== -1 }"
       class="card card--sideways"
+      @click="$emit('choose', advanceActAction)"
       :src="image"
     />
   </div>
@@ -16,15 +11,26 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Game } from '@/arkham/types/Game';
+import { MessageType } from '@/arkham/types/Message';
 import * as Arkham from '@/arkham/types/Act';
 
 @Component
 export default class Act extends Vue {
   @Prop(Object) readonly act!: Arkham.Act;
+  @Prop(Object) readonly game!: Game;
 
   get image() {
     const { id } = this.act.contents;
     return `/img/arkham/cards/${id}.jpg`;
+  }
+
+  get choices() {
+    return this.game.currentData.question.contents;
+  }
+
+  get advanceActAction() {
+    return this.choices.findIndex((c) => c.tag === MessageType.ADVANCE_ACT);
   }
 }
 </script>
@@ -44,8 +50,9 @@ export default class Act extends Vue {
 }
 
 .act--can-progress {
-  border: 5px solid #ff00ff;
+  border: 3px solid #ff00ff;
   border-radius: 20px;
+  cursor: pointer;
 }
 
 </style>

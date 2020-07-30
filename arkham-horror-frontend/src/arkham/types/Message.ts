@@ -12,6 +12,7 @@ export enum MessageType {
   UNCOMMIT_CARD = 'SkillTestUncommitCard',
   AFTER_DISCOVER_CLUES = 'AfterDiscoverClues',
   ADVANCE_ACT = 'AdvanceAct',
+  MOVE = 'MoveAction',
 }
 
 export interface Message {
@@ -32,6 +33,7 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('SkillTestUncommitCard').then(() => JsonDecoder.constant(MessageType.UNCOMMIT_CARD)),
     JsonDecoder.isExactly('AfterDiscoverClues').then(() => JsonDecoder.constant(MessageType.AFTER_DISCOVER_CLUES)),
     JsonDecoder.isExactly('AdvanceAct').then(() => JsonDecoder.constant(MessageType.ADVANCE_ACT)),
+    JsonDecoder.isExactly('MoveAction').then(() => JsonDecoder.constant(MessageType.MOVE)),
   ],
   'MessageType',
 );

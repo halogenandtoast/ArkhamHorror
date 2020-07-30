@@ -5,6 +5,7 @@ module Arkham.Types.Treachery
   )
 where
 
+import Arkham.Json
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
@@ -22,7 +23,6 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude
-import Data.Aeson
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
@@ -64,7 +64,13 @@ data Attrs = Attrs
   , treacheryAbilities :: [Ability]
   }
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+
+instance ToJSON Attrs where
+  toJSON = genericToJSON $ aesonOptions $ Just "treachery"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "treachery"
+
+instance FromJSON Attrs where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "treachery"
 
 abilities :: Lens' Attrs [Ability]
 abilities = lens treacheryAbilities $ \m x -> m { treacheryAbilities = x }
@@ -255,7 +261,13 @@ instance (TreacheryRunner env) => RunMessage env CoverUpI where
 instance (TreacheryRunner env) => RunMessage env GraspingHandsI where
   runMessage msg t@(GraspingHandsI attrs@Attrs {..}) = case msg of
     RunTreachery iid tid | tid == treacheryId -> t <$ unshiftMessages
-      [ RevelationSkillTest iid SkillAgility 3 [] [DamagePerPointOfFailure iid]
+      [ RevelationSkillTest
+        iid
+        (TreacherySource treacheryId)
+        SkillAgility
+        3
+        []
+        [DamagePerPointOfFailure iid]
       , DiscardTreachery tid
       ]
     _ -> GraspingHandsI <$> runMessage msg attrs
@@ -274,6 +286,7 @@ instance (TreacheryRunner env) => RunMessage env RottingRemainsI where
     RunTreachery iid tid | tid == treacheryId -> t <$ unshiftMessages
       [ RevelationSkillTest
         iid
+        (TreacherySource treacheryId)
         SkillWillpower
         3
         []
@@ -299,6 +312,7 @@ instance (TreacheryRunner env) => RunMessage env FrozenInFearI where
     ChooseEndTurn iid -> t <$ unshiftMessage
       (RevelationSkillTest
         iid
+        (TreacherySource treacheryId)
         SkillWillpower
         3
         [ RemoveAllModifiersOnTargetFrom
@@ -333,7 +347,13 @@ instance (TreacheryRunner env) => RunMessage env DissonantVoicesI where
 instance (TreacheryRunner env) => RunMessage env CryptChillI where
   runMessage msg t@(CryptChillI attrs@Attrs {..}) = case msg of
     RunTreachery iid tid | tid == treacheryId -> t <$ unshiftMessages
-      [ RevelationSkillTest iid SkillWillpower 4 [] [TreacheryFailure iid tid]
+      [ RevelationSkillTest
+        iid
+        (TreacherySource tid)
+        SkillWillpower
+        4
+        []
+        [TreacheryFailure iid tid]
       , DiscardTreachery tid
       ]
     TreacheryFailure iid tid | tid == treacheryId -> do

@@ -333,6 +333,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
       a <$ unshiftMessage
         (BeginSkillTest
           iid
+          (EnemySource eid)
           skillType
           enemyFight
           [EnemyDamage eid iid (InvestigatorSource iid) damageAmount]
@@ -346,7 +347,13 @@ instance (EnemyRunner env) => RunMessage env Attrs where
           then [EnemyAttack iid eid]
           else []
       a <$ unshiftMessage
-        (BeginSkillTest iid skillType enemyEvade [EnemyEvaded iid eid] onFailure
+        (BeginSkillTest
+          iid
+          (EnemySource eid)
+          skillType
+          enemyEvade
+          [EnemyEvaded iid eid]
+          onFailure
         )
     PerformEnemyAttack iid eid | eid == enemyId -> a <$ unshiftMessage
       (InvestigatorAssignDamage iid enemyId enemyHealthDamage enemySanityDamage)

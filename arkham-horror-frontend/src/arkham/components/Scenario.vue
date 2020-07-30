@@ -19,6 +19,8 @@
         v-for="(act, key) in game.currentData.acts"
         :key="key"
         :act="act"
+        :game="game"
+        @choose="$emit('choose', $event)"
       />
       <img
         class="card"
@@ -26,6 +28,7 @@
       />
       <ChaosBag
         :game="game"
+        :skillTest="game.currentData.skillTest"
         @choose="$emit('choose', $event)"
       />
     </div>

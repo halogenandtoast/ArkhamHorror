@@ -300,6 +300,7 @@ instance (LocationRunner env) => RunMessage env ParlorI where
             4
             [TakeControlOfAsset iid aid]
             []
+            []
           )
     _ -> ParlorI <$> runMessage msg attrs
 
@@ -313,6 +314,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
           skillType
           (shroudValueFor a)
           [SuccessfulInvestigation lid, InvestigatorDiscoverClues iid lid 1]
+          []
           []
         )
     AddModifier (LocationTarget lid) modifier | lid == locationId ->

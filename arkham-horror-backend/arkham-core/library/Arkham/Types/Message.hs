@@ -96,6 +96,7 @@ data Message
   | InvestigatorDrawEnemy InvestigatorId LocationId EnemyId
   | EnemySpawn LocationId EnemyId
   | EnemyEngageInvestigator EnemyId InvestigatorId
+  | InvestigatorDamageEnemy InvestigatorId EnemyId
   | EnemyDamage EnemyId InvestigatorId Source Int
   | EnemyDefeated EnemyId InvestigatorId CardCode Source
   | PlayCard InvestigatorId CardId Bool
@@ -112,7 +113,7 @@ data Message
   | DiscoverClues InvestigatorId LocationId Int
   | AfterDiscoverClues InvestigatorId LocationId Int
   | BeginSkillTest InvestigatorId Source SkillType Int [Message]
-                [Message]
+                [Message] [Modifier]
   | StartSkillTest
   | InvestigatorStartSkillTest InvestigatorId SkillType [Modifier]
   | BeforeSkillTest InvestigatorId SkillType
@@ -160,7 +161,7 @@ data Message
   | ChooseAndDiscardAsset InvestigatorId
   | FightEnemy InvestigatorId EnemyId SkillType [Modifier] Bool
   | WhenAttackEnemy InvestigatorId EnemyId
-  | AttackEnemy InvestigatorId EnemyId SkillType Int
+  | AttackEnemy InvestigatorId EnemyId SkillType [Modifier]
   | AfterAttackEnemy InvestigatorId EnemyId
   | WhenEvadeEnemy InvestigatorId EnemyId
   | EvadeEnemy InvestigatorId EnemyId SkillType Bool

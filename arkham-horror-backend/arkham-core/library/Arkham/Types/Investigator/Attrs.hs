@@ -160,11 +160,11 @@ skillValueFor skill tempModifiers attrs = foldr
     SkillAgility -> investigatorAgility attrs
     SkillWild -> error "investigators do not have wild skills"
 
-damageValueFor :: [Modifier] -> Attrs -> Int
-damageValueFor tempModifiers attrs = foldr
+damageValueFor :: Int -> Attrs -> Int
+damageValueFor baseValue attrs = foldr
   applyModifier
-  1
-  (investigatorModifiers attrs <> tempModifiers)
+  baseValue
+  (investigatorModifiers attrs)
  where
   applyModifier (DamageDealt m _) n = max 0 (n + m)
   applyModifier _ n = n
@@ -452,10 +452,13 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       do
         unshiftMessages
           [ WhenAttackEnemy iid eid
-          , AttackEnemy iid eid skillType (damageValueFor tempModifiers a)
+          , AttackEnemy iid eid skillType tempModifiers
           , AfterAttackEnemy iid eid
           ]
         pure a
+    InvestigatorDamageEnemy iid eid | iid == investigatorId -> do
+      let damage = damageValueFor 1 a
+      a <$ unshiftMessage (EnemyDamage eid iid (InvestigatorSource iid) damage)
     EnemyEvaded iid eid | iid == investigatorId ->
       pure $ a & engagedEnemies %~ HashSet.delete eid
     ChooseEvadeEnemy iid skillType isAction | iid == investigatorId -> do
@@ -465,12 +468,12 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           (HashSet.toList investigatorEngagedEnemies)
         )
       pure $ takeAction Action.Fight a
-    EvadeEnemy iid eid skillType True | iid == investigatorId -> do
+    EvadeEnemy iid eid skillType True | iid == investigatorId ->
       a <$ unshiftMessages
         [ TakeAction iid (actionCost a Action.Evade) Action.Evade
         , EvadeEnemy iid eid skillType False
         ]
-    EvadeEnemy iid eid skillType False | iid == investigatorId -> do
+    EvadeEnemy iid eid skillType False | iid == investigatorId ->
       a <$ unshiftMessages
         [ WhenEvadeEnemy iid eid
         , TryEvadeEnemy iid eid skillType
@@ -610,7 +613,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       a <$ unshiftMessage (InvestigatorDrawEncounterCard investigatorId)
     RevelationSkillTest iid source skillType difficulty onSuccess onFailure ->
       a <$ unshiftMessage
-        (BeginSkillTest iid source skillType difficulty onSuccess onFailure)
+        (BeginSkillTest iid source skillType difficulty onSuccess onFailure [])
     ActivateCardAbilityAction iid ability@(_, _, abilityType, _)
       | iid == investigatorId -> do
         unshiftMessage (UseCardAbility iid ability) -- We should check action type when added for aoo

@@ -136,7 +136,8 @@ instance (AgendaRunner env) => RunMessage env WhatsGoingOnI where
     AdvanceAgenda aid | aid == agendaId -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
       a <$ unshiftMessages
-        [ Ask $ ChooseOne
+        [ Ask $ ChooseOneFromSource
+          (AgendaSource aid)
           [ AllRandomDiscard
           , InvestigatorDamage leadInvestigatorId (AgendaSource aid) 0 2
           ]

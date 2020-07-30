@@ -920,6 +920,11 @@ handleQuestion _ = \case
     i <- keepAsking @Int
       ("Choose one:\n\n" <> unlines (map show $ zip @_ @Int [1 ..] msgs))
     pure . maybeToList $ msgs !!? (i - 1)
+  ChooseOneFromSource _ [] -> pure []
+  ChooseOneFromSource _ msgs -> do
+    i <- keepAsking @Int
+      ("Choose one:\n\n" <> unlines (map show $ zip @_ @Int [1 ..] msgs))
+    pure . maybeToList $ msgs !!? (i - 1)
   ChooseOneAtATime [] -> pure []
   ChooseOneAtATime msgs -> do
     i <- keepAsking @Int

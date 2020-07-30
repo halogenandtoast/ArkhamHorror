@@ -196,6 +196,7 @@ data Message
 
 data Question
   = ChooseOne [Message]
+  | ChooseOneFromSource Source [Message]
   | ChooseOneAtATime [Message]
   | ChooseTo Message
   | ChooseToDoAll [Message]

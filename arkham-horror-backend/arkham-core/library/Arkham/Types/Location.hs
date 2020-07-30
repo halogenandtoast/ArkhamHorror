@@ -324,7 +324,9 @@ instance (LocationRunner env) => RunMessage env Attrs where
       a <$ unshiftMessage (AddConnection lid locationSymbol)
     AttachTreacheryToLocation tid lid | lid == locationId ->
       pure $ a & treacheries %~ HashSet.insert tid
-    DiscardTreachery tid -> pure $ a & treacheries %~ HashSet.delete tid
+    Discard (TreacheryTarget tid) ->
+      pure $ a & treacheries %~ HashSet.delete tid
+    Discard (EnemyTarget eid) -> pure $ a & enemies %~ HashSet.delete eid
     AddAssetAt aid lid | lid == locationId ->
       pure $ a & assets %~ HashSet.insert aid
     AddConnection lid symbol' | symbol' `elem` locationConnectedSymbols -> do

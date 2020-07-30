@@ -1,6 +1,11 @@
 <template>
   <div>
-    <img class="card" :src="image" />
+    <img
+      :class="{ 'investigator--can-interact': takeDamageAction !== -1 }"
+      class="card"
+      :src="image"
+      @click="$emit('choose', takeDamageAction)"
+    />
 
     <div class="resources">
       <div
@@ -45,6 +50,10 @@ export default class Investigator extends Vue {
 
   get choices() {
     return this.game.currentData.question.contents;
+  }
+
+  get takeDamageAction() {
+    return this.choices.findIndex((choice) => choice.tag === MessageType.INVESTIGATOR_DAMAGE);
   }
 
   get takeResourceAction() {
@@ -134,6 +143,11 @@ i.action {
   padding: 3px;
   cursor: pointer;
   background-color: #FF00FF;
+}
+
+.investigator--can-interact {
+  border: 2px solid #FF00FF;
+  cursor: pointer;
 }
 
 .card {

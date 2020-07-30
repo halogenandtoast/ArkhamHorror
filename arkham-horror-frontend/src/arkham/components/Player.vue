@@ -6,13 +6,15 @@
         :asset="game.currentData.assets[asset]"
         :game="game"
         :key="asset"
+        @choose="$emit('choose', $event)"
       />
 
       <Enemy
-        v-for="enemyId in player.contents.enemies"
+        v-for="enemyId in player.contents.engagedEnemies"
         :key="enemyId"
         :enemy="game.currentData.enemies[enemyId]"
         :game="game"
+        @choose="$emit('choose', $event)"
       />
 
       <Treachery
@@ -20,6 +22,7 @@
         :key="treacheryId"
         :treachery="game.currentData.treacheries[treacheryId]"
         :game="game"
+        @choose="$emit('choose', $event)"
       />
     </section>
     <div class="player">

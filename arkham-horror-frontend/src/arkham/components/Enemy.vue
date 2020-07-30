@@ -1,15 +1,23 @@
 <template>
   <div class="enemy">
-    <img
-      v-if="canInteract"
-      @click="interact"
-      :src="enemy.image"
-      class="card enemy--can-fight"
+    <img :src="image"
+      class="card"
     />
-    <img v-else :src="enemy.image" class="card" />
-    <div v-if="focused" class="enemy-interactions">
-      <button class="fight-button" @click="fightEnemy">Fight</button>
-      <button class="evade-button" @click="evadeEnemy">Evade</button>
+    <div v-if="canInteract" class="enemy-interactions">
+      <button
+        v-if="fightAction !== -1"
+        class="fight-button"
+        @click="$emit('choose', fightAction)"
+      >Fight</button>
+      <button
+        v-if="evadeAction !== -1"
+        class="evade-button"
+        @click="$emit('choose', evadeAction)"
+      >Evade</button>
+    </div>
+    <div v-if="enemy.contents.damage > 0" class="poolItem">
+      <img src="/img/arkham/health.png"/>
+      <span>{{enemy.contents.damage}}</span>
     </div>
   </div>
 </template>
@@ -17,12 +25,42 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { Game } from '@/arkham/types/Game';
+import { MessageType } from '@/arkham/types/Message';
+import * as Arkham from '@/arkham/types/Enemy';
 
 @Component
 export default class Enemy extends Vue {
   @Prop(Object) readonly game!: Game
-  @Prop(String) readonly enemyId!: string
-  @Prop(Boolean) readonly focused!: boolean
+  @Prop(Object) readonly enemy!: Arkham.Enemy
+
+  get image() {
+    const { cardCode } = this.enemy.contents;
+    return `/img/arkham/cards/${cardCode}.jpg`;
+  }
+
+  get id() {
+    return this.enemy.contents.id;
+  }
+
+  get canInteract() {
+    return this.fightAction !== -1 || this.evadeAction !== -1;
+  }
+
+  get choices() {
+    return this.game.currentData.question.contents;
+  }
+
+  get fightAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.FIGHT_ENEMY && c.contents[1] === this.id);
+  }
+
+  get evadeAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.EVADE_ENEMY && c.contents[1] === this.id);
+  }
 }
 </script>
 

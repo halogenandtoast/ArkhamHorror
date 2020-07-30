@@ -154,7 +154,7 @@ data Message
   | RevelationSkillTest InvestigatorId Source SkillType Int [Message] [Message]
   | DamagePerPointOfFailure InvestigatorId
   | HorrorPerPointOfFailure InvestigatorId
-  | DiscardTreachery TreacheryId
+  | Discard Target
   | SetEncounterDeck [EncounterCard]
   | TreacheryFailure InvestigatorId TreacheryId -- TODO: better name
   | ChooseAndDiscardAsset InvestigatorId
@@ -192,6 +192,7 @@ data Message
   | CheckFastWindow InvestigatorId [FastWindow]
   | CancelNextAttack
   | Run [Message]
+  | Continue Text
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -4,6 +4,10 @@
       <p>You got some clues</p>
       <button @click="$emit('choose', afterDiscoverCluesAction)">Continue</button>
     </div>
+
+    <div v-if="continueAction !== -1">
+      <button @click="$emit('choose', continueAction)">{{continueLabel}}</button>
+    </div>
   </footer>
 </template>
 
@@ -22,6 +26,18 @@ export default class StatusBar extends Vue {
 
   get afterDiscoverCluesAction() {
     return this.choices.findIndex((c) => c.tag === MessageType.AFTER_DISCOVER_CLUES);
+  }
+
+  get continueAction() {
+    return this.choices.findIndex((c) => c.tag === MessageType.CONTINUE);
+  }
+
+  get continueLabel() {
+    if (this.continueAction !== -1) {
+      return this.choices[this.continueAction].contents;
+    }
+
+    return '';
   }
 }
 </script>

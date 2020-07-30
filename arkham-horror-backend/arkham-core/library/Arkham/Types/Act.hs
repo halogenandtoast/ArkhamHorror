@@ -17,6 +17,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Query
+import Arkham.Types.Target
 import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
@@ -129,7 +130,7 @@ instance (ActRunner env) => RunMessage env TrappedI where
          , PlaceLocation "01113"
          , PlaceLocation "01115"
          ]
-        <> map RemoveEnemy enemyIds
+        <> map (Discard . EnemyTarget) enemyIds
         <> [ RevealLocation "01112"
            , MoveAllTo "01112"
            , RemoveLocation "01111"

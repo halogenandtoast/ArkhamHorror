@@ -7,6 +7,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Data.Aeson
 
@@ -16,5 +17,6 @@ data Target
   | InvestigatorTarget InvestigatorId
   | LocationTarget LocationId
   | SkillTestTarget
+  | TreacheryTarget TreacheryId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

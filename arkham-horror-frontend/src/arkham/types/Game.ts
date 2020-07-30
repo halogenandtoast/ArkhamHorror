@@ -1,6 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 import { Investigator, investigatorDecoder } from '@/arkham/types/Investigator';
-// import { Enemy, enemyDecoder } from '@/arkham/types/enemy';
+import { Enemy, enemyDecoder } from '@/arkham/types/Enemy';
 import { Location, locationDecoder } from '@/arkham/types/Location';
 import { Scenario, scenarioDecoder } from '@/arkham/types/Scenario';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
@@ -28,7 +28,7 @@ export interface GameState {
   assets: Record<string, Asset>;
   chaosBag: ChaosToken[];
   discard: EncounterCardContents[];
-  // enemies: Record<string, Enemy>;
+  enemies: Record<string, Enemy>;
   gameOver: boolean;
   investigators: Record<string, Investigator>;
   leadInvestigatorId: string;
@@ -48,7 +48,7 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     assets: JsonDecoder.dictionary<Asset>(assetDecoder, 'Dict<UUID, Asset>'),
     chaosBag: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     discard: JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]'),
-    // enemies: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
+    enemies: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
     gameOver: JsonDecoder.boolean,
     investigators: JsonDecoder.dictionary<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
     leadInvestigatorId: JsonDecoder.string,

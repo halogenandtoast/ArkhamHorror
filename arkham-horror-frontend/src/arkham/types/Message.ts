@@ -15,6 +15,8 @@ export enum MessageType {
   MOVE = 'MoveAction',
   FIGHT_ENEMY = 'FightEnemy',
   EVADE_ENEMY = 'EvadeEnemy',
+  CONTINUE = 'Continue',
+  INVESTIGATOR_DAMAGE = 'InvestigatorDamage',
 }
 
 export interface Message {
@@ -38,6 +40,8 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('MoveAction').then(() => JsonDecoder.constant(MessageType.MOVE)),
     JsonDecoder.isExactly('FightEnemy').then(() => JsonDecoder.constant(MessageType.FIGHT_ENEMY)),
     JsonDecoder.isExactly('EvadeEnemy').then(() => JsonDecoder.constant(MessageType.EVADE_ENEMY)),
+    JsonDecoder.isExactly('Continue').then(() => JsonDecoder.constant(MessageType.CONTINUE)),
+    JsonDecoder.isExactly('InvestigatorDamage').then(() => JsonDecoder.constant(MessageType.INVESTIGATOR_DAMAGE)),
   ],
   'MessageType',
 );

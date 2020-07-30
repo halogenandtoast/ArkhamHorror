@@ -45,6 +45,7 @@ import Arkham.Types.Skill
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Stats
+import Arkham.Types.Target
 import Arkham.Types.Token (Token)
 import qualified Arkham.Types.Token as Token
 import Arkham.Types.Trait
@@ -531,6 +532,7 @@ runGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game
 runGameMessage msg g = case msg of
   Run msgs -> g <$ unshiftMessages msgs
+  Continue _ -> pure g
   InvestigatorDefeated _ ->
     if all
         (\i -> hasResigned i || isDefeated i)
@@ -786,7 +788,15 @@ runGameMessage msg g = case msg of
     (treacheryId', treachery') <- createTreachery cardCode
     unshiftMessage (RunTreachery iid treacheryId')
     pure $ g & (treacheries . at treacheryId' ?~ treachery')
-  DiscardTreachery tid ->
+  Discard (EnemyTarget eid) ->
+    let
+      enemy = getEnemy eid g
+      card = fromJustNote
+        "missing card"
+        (HashMap.lookup (getCardCode enemy) allEncounterCards)
+        (CardId $ unEnemyId eid)
+    in pure $ g & enemies %~ HashMap.delete eid & discard %~ (card :)
+  Discard (TreacheryTarget tid) ->
     let
       treachery = getTreachery tid g
       card = fromJustNote

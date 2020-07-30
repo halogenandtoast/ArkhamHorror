@@ -29,11 +29,9 @@ export interface InvestigatorContents {
   endedTurn: boolean;
   engagedEnemies: string[];
   assets: string[];
-  // deck: Deck PlayerCard;
   discard: PlayerCardContents[];
   hand: Card[];
   connectedLocations: string[];
-  // traits: HashSet Trait;
   treacheries: string[];
   defeated: boolean;
   resigned: boolean;

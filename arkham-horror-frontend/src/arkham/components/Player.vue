@@ -9,13 +9,17 @@
       />
 
       <Enemy
-        v-for="enemyId in player.enemies"
+        v-for="enemyId in player.contents.enemies"
         :key="enemyId"
-        :enemyId="enemyId"
+        :enemy="game.currentData.enemies[enemyId]"
         :game="game"
-        :focused="focusedEnemy === enemyId"
-        @focusEnemy="focusedEnemy = $event"
-        @update="$emit('update', $event)"
+      />
+
+      <Treachery
+        v-for="treacheryId in player.contents.treacheries"
+        :key="treacheryId"
+        :treachery="game.currentData.treacheries[treacheryId]"
+        :game="game"
       />
     </section>
     <div class="player">
@@ -56,6 +60,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import { Game } from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
 import Enemy from '@/arkham/components/Enemy.vue';
+import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
@@ -64,6 +69,7 @@ import * as Arkham from '@/arkham/types/Investigator';
 @Component({
   components: {
     Enemy,
+    Treachery,
     Asset,
     HandCard,
     Investigator,

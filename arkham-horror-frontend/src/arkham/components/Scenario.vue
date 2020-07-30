@@ -82,7 +82,13 @@ export default class Scenario extends Vue {
   }
 
   get topOfEncounterDiscard() {
-    return this.game.currentData.discard[0];
+    if (this.game.currentData.discard[0]) {
+      const { cardCode } = this.game.currentData.discard[0];
+
+      return `/img/arkham/cards/${cardCode}.jpg`;
+    }
+
+    return null;
   }
 
   commitCard(cardIndex: number) {

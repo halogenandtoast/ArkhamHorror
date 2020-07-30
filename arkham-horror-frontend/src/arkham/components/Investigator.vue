@@ -40,7 +40,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as Arkham from '@/arkham/types/Investigator';
-import { Game } from '@/arkham/types/Game';
+import { choices, Game } from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
 
 @Component
@@ -49,7 +49,7 @@ export default class Investigator extends Vue {
   @Prop(Object) readonly game!: Game
 
   get choices() {
-    return this.game.currentData.question.contents;
+    return choices(this.game);
   }
 
   get takeDamageAction() {

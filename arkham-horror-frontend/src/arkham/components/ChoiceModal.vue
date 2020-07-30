@@ -1,9 +1,9 @@
 <template>
-  <div class="modal">
+  <div v-if="source" class="modal">
     <div class="modal-contents">
-      <img :src="targetImage" />
-      <button v-for="(choice, index) in choices" :key="index" @click="$emit('choose', index + 1)">
-        {{choice}}
+      <img :src="image" />
+      <button v-for="(choice, index) in choices" :key="index" @click="$emit('choose', index)">
+        {{choice.label}}
       </button>
     </div>
   </div>
@@ -11,11 +11,46 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
-import { Game } from '@/arkham/types/Game';
+import { choicesSource, choices, Game } from '@/arkham/types/Game';
 
 @Component
 export default class ChoiceModal extends Vue {
   @Prop(Object) readonly game!: Game;
+
+  get choices() {
+    return choices(this.game);
+  }
+
+  get source() {
+    return choicesSource(this.game);
+  }
+
+  get cardCode() {
+    if (!this.source) {
+      return null;
+    }
+
+    const { tag, contents } = this.source;
+
+    if (!contents) {
+      return null;
+    }
+
+    switch (tag) {
+      case 'AgendaSource':
+        return `${this.game.currentData.agendas[contents].contents.id}b`;
+      default:
+        return null;
+    }
+  }
+
+  get image() {
+    if (this.cardCode) {
+      return `/img/arkham/cards/${this.cardCode}.jpg`;
+    }
+
+    return null;
+  }
 }
 </script>
 

@@ -21,6 +21,28 @@ export interface Game {
   currentData: GameState;
 }
 
+export function choices(game: Game) {
+  switch (game.currentData.question.tag) {
+    case 'ChooseOne':
+      return game.currentData.question.contents;
+    case 'ChooseOneFromSource':
+      return game.currentData.question.contents.choices;
+    default:
+      return [];
+  }
+}
+
+export function choicesSource(game: Game) {
+  switch (game.currentData.question.tag) {
+    case 'ChooseOne':
+      return null;
+    case 'ChooseOneFromSource':
+      return game.currentData.question.contents.source;
+    default:
+      return null;
+  }
+}
+
 export interface GameState {
   activeInvestigatorId: string;
   acts: Record<string, Act>;

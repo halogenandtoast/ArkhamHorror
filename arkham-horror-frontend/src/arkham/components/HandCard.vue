@@ -13,7 +13,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { Card } from '@/arkham/types/Card';
-import { Game } from '@/arkham/types/Game';
+import { choices, Game } from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
 
 @Component
@@ -41,7 +41,7 @@ export default class HandCard extends Vue {
   }
 
   get choices() {
-    return this.game.currentData.question.contents;
+    return choices(this.game);
   }
 
   get playCardAction() {

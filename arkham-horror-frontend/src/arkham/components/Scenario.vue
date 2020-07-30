@@ -48,6 +48,7 @@
       @choose="$emit('choose', $event)"
     />
     <StatusBar :game="game" @choose="$emit('choose', $event)" />
+    <ChoiceModal :game="game" @choose="$emit('choose', $event)" />
   </div>
 </template>
 
@@ -59,6 +60,7 @@ import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
+import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import Location from '@/arkham/components/Location.vue';
 
 @Component({
@@ -69,6 +71,7 @@ import Location from '@/arkham/components/Location.vue';
     Location,
     StatusBar,
     ChaosBag,
+    ChoiceModal,
   },
 })
 export default class Scenario extends Vue {

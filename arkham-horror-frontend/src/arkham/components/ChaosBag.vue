@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { Game } from '@/arkham/types/Game';
+import { choices, Game } from '@/arkham/types/Game';
 import { SkillTest } from '@/arkham/types/SkillTest';
 import { MessageType } from '@/arkham/types/Message';
 import { Component, Prop, Vue } from 'vue-property-decorator';
@@ -55,7 +55,7 @@ export default class ChaosBag extends Vue {
   }
 
   get choices() {
-    return this.game.currentData.question.contents;
+    return choices(this.game);
   }
 
   get drawTokenAction() {

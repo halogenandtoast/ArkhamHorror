@@ -2,9 +2,13 @@ module Arkham.Types.Message
   ( Message(..)
   , Question(..)
   , EncounterCardSource(..)
+  , ChooseOneFromSource(..)
+  , Labeled(..)
+  , label
   )
 where
 
+import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.ActId
 import Arkham.Types.Action
@@ -26,7 +30,6 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude
-import Data.Aeson
 
 data EncounterCardSource = FromDiscard | FromEncounterDeck
   deriving stock (Show, Generic)
@@ -197,9 +200,29 @@ data Message
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+data Labeled a = Labeled
+  { labelFor :: Text
+  , unlabel :: a
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+label :: Text -> a -> Labeled a
+label t a = Labeled { labelFor = t, unlabel = a }
+
+data ChooseOneFromSource = MkChooseOneFromSource { chooseOneSource :: Source, chooseOneChoices :: [Labeled Message] }
+  deriving stock (Show, Generic)
+
+instance ToJSON ChooseOneFromSource where
+  toJSON = genericToJSON $ aesonOptions $ Just "chooseOne"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "chooseOne"
+
+instance FromJSON ChooseOneFromSource where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "chooseOne"
+
 data Question
   = ChooseOne [Message]
-  | ChooseOneFromSource Source [Message]
+  | ChooseOneFromSource ChooseOneFromSource
   | ChooseOneAtATime [Message]
   | ChooseTo Message
   | ChooseToDoAll [Message]

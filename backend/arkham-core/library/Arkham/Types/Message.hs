@@ -225,6 +225,5 @@ data Question
   | ChooseOneFromSource ChooseOneFromSource
   | ChooseOneAtATime [Message]
   | ChooseTo Message
-  | ChooseToDoAll [Message]
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)

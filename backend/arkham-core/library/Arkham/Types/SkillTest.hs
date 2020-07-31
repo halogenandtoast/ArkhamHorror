@@ -166,7 +166,7 @@ instance (SkillTestRunner env) => RunMessage env SkillTest where
       , ReturnTokens skillTestSetAsideTokens
       ]
     SkillTestResults -> do
-      unshiftMessage SkillTestApplyResults
+      unshiftMessage (Ask $ ChooseOne [SkillTestApplyResults])
       for_ skillTestCommittedCards $ \(iid, card) -> case card of
         PlayerCard MkPlayerCard {..} -> when
           (pcCardType == SkillType)

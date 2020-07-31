@@ -6,6 +6,13 @@
       :src="image"
       @click="$emit('choose', cardAction)"
     />
+    <Asset
+      v-for="assetId in location.contents.assets"
+      :asset="game.currentData.assets[assetId]"
+      :game="game"
+      :key="assetId"
+      @choose="$emit('choose', $event)"
+    />
     <Enemy
       v-for="enemyId in enemies"
       :key="enemyId"
@@ -53,11 +60,12 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { choices, Game } from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
 import Enemy from '@/arkham/components/Enemy.vue';
+import Asset from '@/arkham/components/Asset.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import * as Arkham from '@/arkham/types/Location';
 
 @Component({
-  components: { Enemy, Treachery },
+  components: { Enemy, Treachery, Asset },
 })
 export default class Location extends Vue {
   @Prop(Object) readonly game!: Game;

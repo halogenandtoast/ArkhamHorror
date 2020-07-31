@@ -1,8 +1,8 @@
-{-# LANGUAGE CPP               #-}
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards   #-}
-{-# LANGUAGE TemplateHaskell   #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TemplateHaskell #-}
 -- | Settings are centralized, as much as possible, into this file. This
 -- includes database connection settings, static file locations, etc.
 -- In addition, you can configure a number of different aspects of Yesod
@@ -10,19 +10,52 @@
 -- declared in the Foundation.hs file.
 module Settings where
 
-import           ClassyPrelude.Yesod
-import qualified Control.Exception           as Exception
-import           Data.Aeson                  (Result (..), fromJSON, withObject,
-                                              (.!=), (.:?))
-import           Data.FileEmbed              (embedFile)
-import           Data.Yaml                   (decodeEither')
-import           Database.Persist.Postgresql (PostgresConf)
-import           Language.Haskell.TH.Syntax  (Exp, Name, Q)
-import           Network.Wai.Handler.Warp    (HostPreference)
-import           Yesod.Default.Config2       (applyEnvValue, configSettingsYml)
-import           Yesod.Default.Util          (WidgetFileSettings,
-                                              widgetFileNoReload,
-                                              widgetFileReload)
+import ClassyPrelude.Yesod
+import qualified Control.Exception as Exception
+import Control.Monad.Fail (MonadFail, fail)
+import Data.Aeson (Result(..), fromJSON, withObject, (.!=), (.:?))
+import qualified Data.ByteString.Char8 as BS8
+import Data.FileEmbed (embedFile)
+import Data.String.Conversions.Monomorphic (toStrictByteString)
+import Data.Yaml (decodeEither')
+import Database.Persist.Postgresql (PostgresConf(..))
+import Language.Haskell.TH.Syntax (Exp, Name, Q)
+import Network.Wai.Handler.Warp (HostPreference)
+import URI.ByteString
+  ( Authority(..)
+  , Host(..)
+  , Port(..)
+  , Scheme(..)
+  , URIRef(..)
+  , UserInfo(..)
+  , parseURI
+  , strictURIParserOptions
+  )
+import Yesod.Default.Config2 (applyEnvValue, configSettingsYml)
+import Yesod.Default.Util
+  (WidgetFileSettings, widgetFileNoReload, widgetFileReload)
+
+abortLeft :: (MonadFail m, Show e) => Either e b -> m b
+abortLeft = either (fail . ("DATABASE_URL failed to parse: " <>) . show) pure
+
+abortNothing :: MonadFail m => String -> Maybe a -> m a
+abortNothing s = maybe (fail $ "DATABASE_URL is missing " <> s) pure
+
+fromDatabaseUrl :: (MonadFail m) => Int -> Text -> m PostgresConf
+fromDatabaseUrl size url = do
+  uri <- abortLeft $ parseURI strictURIParserOptions $ toStrictByteString url
+  auth <- abortNothing "authority" $ uriAuthority uri
+  port <- abortNothing "port" $ authorityPort auth
+  dbName <- abortNothing "path" $ snd <$> uncons (uriPath uri)
+  unless (schemeBS (uriScheme uri) == "postgres") $ fail "DATABASE_URL has unknown scheme"
+  pure PostgresConf
+    { pgConnStr =
+        maybe "" (\info -> "user=" <> uiUsername info <> " password=" <> uiPassword info) (authorityUserInfo auth)
+        <> " host=" <> hostBS (authorityHost auth)
+        <> " port=" <> BS8.pack (show $ portNumber port)
+        <> " dbname=" <> dbName
+    , pgPoolSize = size
+    }
 
 -- | Runtime settings to configure this application. These settings can be
 -- loaded from various sources: defaults, environment variables, config files,
@@ -53,15 +86,6 @@ data AppSettings = AppSettings
     -- ^ Assume that files in the static dir may change after compilation
     , appSkipCombining          :: Bool
     -- ^ Perform no stylesheet/script combining
-
-    -- Example app-specific configuration values.
-    , appCopyright              :: Text
-    -- ^ Copyright text to appear in the footer of the page
-    , appAnalytics              :: Maybe Text
-    -- ^ Google Analytics code
-
-    , appAuthDummyLogin         :: Bool
-    -- ^ Indicate if auth dummy login should be enabled.
     , appJwtSecret :: Text
     }
 
@@ -74,7 +98,8 @@ instance FromJSON AppSettings where
                 False
 #endif
         appStaticDir              <- o .: "static-dir"
-        appDatabaseConf           <- o .: "database"
+        poolSize                  <- o .: "database-pool-size"
+        appDatabaseConf           <- fromDatabaseUrl poolSize =<< (o .: "database-url")
         appRoot                   <- o .:? "approot"
         appHost                   <- fromString <$> o .: "host"
         appPort                   <- o .: "port"
@@ -87,14 +112,9 @@ instance FromJSON AppSettings where
         appReloadTemplates        <- o .:? "reload-templates" .!= dev
         appMutableStatic          <- o .:? "mutable-static"   .!= dev
         appSkipCombining          <- o .:? "skip-combining"   .!= dev
-
-        appCopyright              <- o .:  "copyright"
-        appAnalytics              <- o .:? "analytics"
-
-        appAuthDummyLogin         <- o .:? "auth-dummy-login"      .!= dev
         appJwtSecret <- o .: "jwt-secret"
 
-        return AppSettings {..}
+        pure AppSettings {..}
 
 -- | Settings for 'widgetFile', such as which template languages to support and
 -- default Hamlet settings.
@@ -149,3 +169,6 @@ combineScripts :: Name -> [Route Static] -> Q Exp
 combineScripts = combineScripts'
     (appSkipCombining compileTimeAppSettings)
     combineSettings
+
+
+

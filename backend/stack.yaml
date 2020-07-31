@@ -31,6 +31,7 @@ ghc-options:
     -Wno-deriving-typeable
     -Wno-missing-monadfail-instances
     -fignore-optim-changes
+    -fwrite-ide-info
 
 packages:
   - arkham-core

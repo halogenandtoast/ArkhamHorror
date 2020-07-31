@@ -11,9 +11,7 @@ import Arkham.Types.GameJson
 import ClassyPrelude
 import Data.Aeson
 import Data.Aeson.Casing
-import Data.List.NonEmpty (NonEmpty)
 import Database.Persist.TH
-import Lens.Micro
 import Orphans ()
 
 mkPersist sqlSettings [persistLowerCase|

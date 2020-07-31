@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9e7d77c9d06d1149143c9a6f9282d6c9aa3d0654c11bc009383d7727500e5e75
+-- hash: ba8fe35608ef3b5f25d501a1b7e56974969d7f5658a53c7d3d36b30ec745786f
 
 name:           arkham-core
 version:        0.0.0
@@ -118,13 +118,10 @@ library
   build-depends:
       aeson
     , aeson-casing
-    , aeson-pretty
     , base >=4.7 && <5
-    , bytestring
     , classy-prelude
     , containers
     , hashable
-    , http-conduit
     , microlens
     , microlens-platform
     , mtl

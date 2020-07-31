@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f8a94d92837bd6a475323db1f631e079d740b99c2027b9def2eed227c31a0da7
+-- hash: f7d343ad290896698afb2126f16ccb5d1fbeb33d32a099800aca1d29c23ce328
 
 name:           arkham-api
 version:        0.0.0
@@ -40,15 +40,13 @@ library
       Settings
       Settings.StaticFiles
       Types
-      Utility
   other-modules:
       Paths_arkham_api
   hs-source-dirs:
       library
   default-extensions: BangPatterns DataKinds DeriveAnyClass DeriveFoldable DeriveFunctor DeriveGeneric DeriveLift DeriveTraversable DerivingStrategies DerivingVia FlexibleContexts FlexibleInstances GADTs GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NoImplicitPrelude NoMonomorphismRestriction OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TypeApplications TypeFamilies
   build-depends:
-      MonadRandom
-    , aeson
+      aeson
     , aeson-casing
     , arkham-core
     , base
@@ -56,41 +54,28 @@ library
     , bytestring
     , case-insensitive
     , classy-prelude
-    , classy-prelude-conduit
     , classy-prelude-yesod
     , conduit
     , containers
-    , data-default
-    , directory
-    , esqueleto
     , fast-logger
     , file-embed
-    , foreign-store
-    , hjsmin
     , http-client-tls
     , http-conduit
     , http-types
     , jwt
-    , microlens
-    , microlens-platform
-    , monad-control
     , monad-logger
-    , monoidal-containers
     , persistent
     , persistent-postgresql
     , persistent-template
-    , profunctors
-    , random
-    , random-shuffle
     , regex-posix
-    , safe
-    , shakespeare
+    , string-conversions
     , template-haskell
     , text
     , time
     , transformers
     , unliftio
     , unordered-containers
+    , uri-bytestring
     , uuid
     , vector
     , wai
@@ -99,9 +84,7 @@ library
     , warp
     , yaml
     , yesod
-    , yesod-auth
     , yesod-core
-    , yesod-form
     , yesod-static
   if (flag(dev)) || (flag(library-only))
     ghc-options: -Wall -fwarn-tabs -O0

@@ -149,14 +149,19 @@ instance (ActRunner env) => RunMessage env TrappedI where
 
 instance (ActRunner env) => RunMessage env TheBarrierI where
   runMessage msg a@(TheBarrierI attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId -> a <$ unshiftMessages
-      [ RevealLocation "01115"
-      , CreateStoryAssetAt "01117" "01115"
-      , CreateEnemyAt "01116" "01112"
-      , NextAct aid "01110"
-      ]
-    EndRoundWindow -> do
+    AdvanceAct aid | aid == actId -> do
       investigatorIds <- asks (getSet (LocationId "01112"))
+      playerCount <- unPlayerCount <$> asks (getCount ())
+      let requiredClueCount = fromGameValue (PerPlayer 3) playerCount
+      a <$ unshiftMessages
+        [ SpendClues requiredClueCount (HashSet.toList investigatorIds)
+        , RevealLocation "01115"
+        , CreateStoryAssetAt "01117" "01115"
+        , CreateEnemyAt "01116" "01112"
+        , NextAct aid "01110"
+        ]
+    EndRoundWindow -> do
+      investigatorIds <- asks (getSet @InvestigatorId (LocationId "01112"))
       clueCount <- unClueCount . mconcat <$> traverse
         (asks . getCount @ClueCount)
         (HashSet.toList investigatorIds)
@@ -164,10 +169,8 @@ instance (ActRunner env) => RunMessage env TheBarrierI where
       let requiredClueCount = fromGameValue (PerPlayer 3) playerCount
       if clueCount >= requiredClueCount
         then a <$ unshiftMessage
-          (Ask $ ChooseToDoAll
-            [ SpendClues requiredClueCount (HashSet.toList investigatorIds)
-            , AdvanceAct actId
-            ]
+          (Ask $ ChooseOne
+            [AdvanceAct actId, Continue "Continue without advancing act"]
           )
         else pure a
     _ -> TheBarrierI <$> runMessage msg attrs

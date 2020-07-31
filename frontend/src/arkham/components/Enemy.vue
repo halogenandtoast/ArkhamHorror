@@ -1,7 +1,9 @@
 <template>
   <div class="enemy">
     <img :src="image"
+      :class="{'enemy--can-attack': attackAction !== -1 }"
       class="card"
+      @click="$emit('choose', attackAction)"
     />
     <div v-if="canInteract" class="enemy-interactions">
       <button
@@ -50,6 +52,12 @@ export default class Enemy extends Vue {
     return choices(this.game);
   }
 
+  get attackAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.ENEMY_ATTACK && c.contents[1] === this.id);
+  }
+
   get fightAction() {
     return this
       .choices
@@ -65,7 +73,7 @@ export default class Enemy extends Vue {
 </script>
 
 <style scoped lang="scss">
-.enemy--can-fight {
+.enemy--can-attack {
   border: 3px solid #FF00FF;
   border-radius: 15px;
   cursor: pointer;

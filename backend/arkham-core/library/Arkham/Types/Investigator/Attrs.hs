@@ -435,13 +435,6 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         $ a
         & (assets %~ HashSet.delete aid)
         & (discard %~ (lookupPlayerCard cardCode (CardId $ unAssetId aid) :))
-    ChooseActivateCardAbilityAction iid | iid == investigatorId -> do
-      availableAbilities <- getAvailableAbilities a
-      a <$ unshiftMessage
-        (Ask $ ChooseOne $ map
-          (ActivateCardAbilityAction iid)
-          availableAbilities
-        )
     ChooseFightEnemy iid skillType tempModifiers isAction
       | iid == investigatorId -> do
         unshiftMessage
@@ -732,6 +725,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())
       canDos <- filterM (canPerform a) Action.allActions
       blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
+      availableAbilities <- getAvailableAbilities a
       let
         accessibleLocations =
           investigatorConnectedLocations `difference` blockedLocationIds
@@ -739,8 +733,9 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         (Ask $ ChooseOne
           ([ TakeResources iid 1 True | Action.Resource `elem` canDos ]
           <> [ DrawCards iid 1 True | Action.Draw `elem` canDos ]
-          <> [ ChooseActivateCardAbilityAction iid
+          <> [ ActivateCardAbilityAction iid ability
              | Action.Ability `elem` canDos
+             , ability <- availableAbilities
              ]
           <> [ PlayCard iid (getCardId c) True
              | c <- investigatorHand

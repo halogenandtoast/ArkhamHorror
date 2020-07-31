@@ -1,5 +1,5 @@
 <template>
-  <div id="game" class="game">
+  <div v-if="!game.currentData.gameOver" id="game" class="game">
     <div class="scenario-cards">
       <div v-if="topOfEncounterDiscard" class="discard">
         <img

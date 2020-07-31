@@ -1,11 +1,23 @@
 <template>
   <div>
     <img
-      :class="{ 'token--can-draw': drawTokenAction !== -1 }"
+      v-for="(revealedToken, index) in revealedTokens"
       class="token"
-      :src="image"
+      :key="index"
+      :src="imageFor(revealedToken)"
+    />
+    <img
+      v-if="drawTokenAction !== -1"
+      class="token token--can-draw"
+      src="/img/arkham/ct_blank.png"
       @click="$emit('choose', drawTokenAction)"
     />
+    <div>
+      <button
+        v-if="applyResultsAction !== -1"
+        @click="$emit('choose', applyResultsAction)"
+      >Apply Results</button>
+    </div>
     <img
       v-if="currentCard"
       :src="currentCard"
@@ -19,14 +31,51 @@ import { SkillTest } from '@/arkham/types/SkillTest';
 import { MessageType } from '@/arkham/types/Message';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
+function imageFor(token: string) {
+  switch (token) {
+    case 'PlusOne':
+      return '/img/arkham/ct_+1.png';
+    case 'Zero':
+      return '/img/arkham/ct_0.png';
+    case 'MinusOne':
+      return '/img/arkham/ct_-1.png';
+    case 'MinusTwo':
+      return '/img/arkham/ct_-2.png';
+    case 'MinusThree':
+      return '/img/arkham/ct_-3.png';
+    case 'MinusFour':
+      return '/img/arkham/ct_-4.png';
+    case 'MinusFive':
+      return '/img/arkham/ct_-5.png';
+    case 'MinusSix':
+      return '/img/arkham/ct_-6.png';
+    case 'MinusSeven':
+      return '/img/arkham/ct_-7.png';
+    case 'MinusEight':
+      return '/img/arkham/ct_-8.png';
+    case 'AutoFail':
+      return '/img/arkham/ct_autofail.png';
+    case 'ElderSign':
+      return '/img/arkham/ct_eldersign.png';
+    case 'Skull':
+      return '/img/arkham/ct_skull.png';
+    case 'Cultist':
+      return '/img/arkham/ct_cultist.png';
+    case 'Tablet':
+      return '/img/arkham/ct_tablet.png';
+    case 'ElderThing':
+      return '/img/arkham/ct_elderthing.png';
+    default:
+      return '/img/arkham/ct_blank.png';
+  }
+}
+
 @Component
 export default class ChaosBag extends Vue {
   @Prop(Object) readonly game!: Game;
   @Prop(Object) readonly skillTest?: SkillTest;
 
-  get image() {
-    return `/img/arkham/ct_${this.drawnToken}.png`;
-  }
+  imageFor = imageFor.bind(this);
 
   get currentCard() {
     if (!this.skillTest) {
@@ -46,12 +95,12 @@ export default class ChaosBag extends Vue {
     }
   }
 
-  get drawnToken() {
-    if (this.game.currentData.skillTest === null) {
-      return 'blank';
+  get revealedTokens() {
+    if (this.game.currentData.skillTest !== null) {
+      return this.game.currentData.skillTest.setAsideTokens;
     }
 
-    return 'blank';
+    return [];
   }
 
   get choices() {
@@ -60,6 +109,10 @@ export default class ChaosBag extends Vue {
 
   get drawTokenAction() {
     return this.choices.findIndex((c) => c.tag === MessageType.START_SKILL_TEST);
+  }
+
+  get applyResultsAction() {
+    return this.choices.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);
   }
 }
 </script>

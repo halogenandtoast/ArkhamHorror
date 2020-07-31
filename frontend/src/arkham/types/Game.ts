@@ -22,8 +22,14 @@ export interface Game {
 }
 
 export function choices(game: Game) {
+  if (!game.currentData.question) {
+    return [];
+  }
+
   switch (game.currentData.question.tag) {
     case 'ChooseOne':
+      return game.currentData.question.contents;
+    case 'ChooseOneAtATime':
       return game.currentData.question.contents;
     case 'ChooseOneFromSource':
       return game.currentData.question.contents.choices;
@@ -33,8 +39,14 @@ export function choices(game: Game) {
 }
 
 export function choicesSource(game: Game) {
+  if (!game.currentData.question) {
+    return null;
+  }
+
   switch (game.currentData.question.tag) {
     case 'ChooseOne':
+      return null;
+    case 'ChooseOneAtATime':
       return null;
     case 'ChooseOneFromSource':
       return game.currentData.question.contents.source;
@@ -56,7 +68,7 @@ export interface GameState {
   leadInvestigatorId: string;
   locations: Record<string, Location>;
   phase: Phase;
-  question: Question;
+  question: Question | null;
   scenario: Scenario;
   skillTest: SkillTest | null;
   treacheries: Record<string, Treachery>;
@@ -76,7 +88,7 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     leadInvestigatorId: JsonDecoder.string,
     locations: JsonDecoder.dictionary<Location>(locationDecoder, 'Dict<UUID, Location>'),
     phase: phaseDecoder,
-    question: questionDecoder,
+    question: JsonDecoder.nullable(questionDecoder),
     scenario: scenarioDecoder,
     skillTest: JsonDecoder.nullable(skillTestDecoder),
     treacheries: JsonDecoder.dictionary<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),

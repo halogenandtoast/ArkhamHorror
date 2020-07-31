@@ -1,6 +1,9 @@
 <template>
   <div id="game" class="game" v-if="ready">
-    <Scenario :game="game" @choose="choose" @update="update" />
+    <Scenario v-if="!game.currentData.gameOver" :game="game" @choose="choose" @update="update" />
+    <p v-if="game.currentData.gameOver">
+      Game over
+    </p>
   </div>
 </template>
 

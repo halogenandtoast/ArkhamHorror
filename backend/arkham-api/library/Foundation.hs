@@ -16,7 +16,6 @@ import Data.Aeson (Result(Success), fromJSON)
 import Data.Kind
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Import.NoFoundation
-import Text.Hamlet (hamletFile)
 
 import qualified Data.CaseInsensitive as CI
 import qualified Data.Text.Encoding as TE
@@ -85,28 +84,14 @@ instance Yesod App where
   yesodMiddleware = defaultYesodMiddleware
 
   defaultLayout :: Widget -> Handler Html
-  defaultLayout widget = do
-    master <- getYesod
-    -- mmsg <- getMessage
-
-    -- muser <- maybeAuthPair
-    -- mcurrentRoute <- getCurrentRoute
-
-    -- We break up the default layout into two components:
-    -- default-layout is the contents of the body tag, and
-    -- default-layout-wrapper is the entire page. Since the final
-    -- value passed to hamletToRepHtml cannot be a widget, this allows
-    -- you to use normal widget features in default-layout.
-
-    pc <- widgetToPageContent
-      $(widgetFile "default-layout")
-    withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
+  defaultLayout _ = pure ""
 
   isAuthorized
     :: Route App  -- ^ The route the user is visiting.
     -> Bool       -- ^ Whether or not this is a "write" request.
     -> Handler AuthResult
   -- Routes not requiring authentication.
+  isAuthorized (StaticR _) _ = pure Authorized
   isAuthorized (ApiP _) _ = pure Authorized
 
   -- What messages should be logged. The following includes all messages when

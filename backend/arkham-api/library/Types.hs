@@ -1,16 +1,15 @@
 {-# LANGUAGE DerivingVia #-}
 module Types where
 
-import Data.Aeson
-import GHC.Generics
 import Data.Text
-import Prelude (($), Maybe(Just))
-import Utility
+import GHC.Generics
+import Json
+import Prelude (Maybe(Just), ($))
 
 newtype Token = Token { getToken :: Text }
 
 instance ToJSON Token where
-  toJSON token = object [ "token" .= getToken token ]
+  toJSON token = object ["token" .= getToken token]
 
 data Registration = Registration
     { registrationEmail    :: Text
@@ -18,7 +17,10 @@ data Registration = Registration
     , registrationPassword :: Text
     }
     deriving stock (Generic)
-    deriving ToJSON via Codec (Drop "registration") Registration
+
+instance ToJSON Registration where
+  toJSON = genericToJSON $ aesonOptions $ Just "registration"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "registration"
 
 instance FromJSON Registration where
   parseJSON = genericParseJSON $ aesonOptions $ Just "registration"

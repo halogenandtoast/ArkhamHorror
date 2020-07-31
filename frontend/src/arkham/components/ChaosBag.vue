@@ -34,25 +34,25 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 function imageFor(token: string) {
   switch (token) {
     case 'PlusOne':
-      return '/img/arkham/ct_+1.png';
+      return '/img/arkham/ct_plus1.png';
     case 'Zero':
       return '/img/arkham/ct_0.png';
     case 'MinusOne':
-      return '/img/arkham/ct_-1.png';
+      return '/img/arkham/ct_minus1.png';
     case 'MinusTwo':
-      return '/img/arkham/ct_-2.png';
+      return '/img/arkham/ct_minus2.png';
     case 'MinusThree':
-      return '/img/arkham/ct_-3.png';
+      return '/img/arkham/ct_minus3.png';
     case 'MinusFour':
-      return '/img/arkham/ct_-4.png';
+      return '/img/arkham/ct_minus4.png';
     case 'MinusFive':
-      return '/img/arkham/ct_-5.png';
+      return '/img/arkham/ct_minus5.png';
     case 'MinusSix':
-      return '/img/arkham/ct_-6.png';
+      return '/img/arkham/ct_minus6.png';
     case 'MinusSeven':
-      return '/img/arkham/ct_-7.png';
+      return '/img/arkham/ct_minus7.png';
     case 'MinusEight':
-      return '/img/arkham/ct_-8.png';
+      return '/img/arkham/ct_minus8.png';
     case 'AutoFail':
       return '/img/arkham/ct_autofail.png';
     case 'ElderSign':

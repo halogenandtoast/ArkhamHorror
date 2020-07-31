@@ -54,42 +54,28 @@ library:
     - bytestring
     - case-insensitive
     - classy-prelude
-    - classy-prelude-conduit
     - classy-prelude-yesod
     - conduit
     - containers
-    - data-default
-    - directory
-    - esqueleto
     - fast-logger
     - file-embed
-    - foreign-store
-    - hjsmin
     - http-client-tls
     - http-conduit
     - http-types
     - jwt
-    - microlens
-    - microlens-platform
-    - monad-control
     - monad-logger
-    - MonadRandom
-    - monoidal-containers
     - persistent
     - persistent-postgresql
     - persistent-template
-    - profunctors
-    - random
-    - random-shuffle
     - regex-posix
-    - safe
-    - shakespeare
+    - string-conversions
     - template-haskell
     - text
     - time
     - transformers
     - unliftio
     - unordered-containers
+    - uri-bytestring
     - uuid
     - vector
     - wai
@@ -98,9 +84,7 @@ library:
     - warp
     - yaml
     - yesod
-    - yesod-auth
     - yesod-core
-    - yesod-form
     - yesod-static
 
 executables:

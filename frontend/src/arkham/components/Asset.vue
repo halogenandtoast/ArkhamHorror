@@ -45,11 +45,21 @@ export default class Asset extends Vue {
       return this.activateAbilityAction;
     }
 
+    if (this.useAbilityAction !== -1) {
+      return this.useAbilityAction;
+    }
+
     return this.discardAssetAction;
   }
 
   get choices() {
     return choices(this.game);
+  }
+
+  get useAbilityAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.USE_CARD_ABILITY && this.isIn(c.contents));
   }
 
   get activateAbilityAction() {

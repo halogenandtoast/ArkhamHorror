@@ -1,6 +1,7 @@
 module Arkham.Types.Card
   ( CardCode(..)
   , Card(..)
+  , DeckCard(..)
   , PlayerCard(..)
   , EncounterCard(..)
   , PlayerCardType(..)
@@ -32,6 +33,10 @@ data Card
   | EncounterCard EncounterCard
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+newtype DeckCard = DeckCard { unDeckCard ::PlayerCard }
+  deriving stock (Show, Generic)
+  deriving newtype (ToJSON, FromJSON)
 
 class HasCard b a where
   getCard :: b -> CardId -> a -> Card

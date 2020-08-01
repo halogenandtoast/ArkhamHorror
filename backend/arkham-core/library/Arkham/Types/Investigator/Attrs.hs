@@ -720,6 +720,11 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         $ a
         & (remainingActions %~ max 0 . subtract actionCost')
         & (actionsTaken %~ (<> [action]))
+    AddToHandFromDeck iid cardId | iid == investigatorId -> do
+      let card = fromJustNote "card did not exist" $ find ((== cardId) . getCardId) (unDeck investigatorDeck)
+      deck' <- liftIO $ shuffleM $ filter ((/= cardId) . getCardId) (unDeck investigatorDeck)
+      pure $ a & deck .~ Deck deck' & hand %~ (PlayerCard card:)
+
     PlayerWindow iid | iid == investigatorId -> do
       advanceableActIds <-
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())

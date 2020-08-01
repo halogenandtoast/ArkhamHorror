@@ -2,9 +2,21 @@
   <div v-if="source" class="modal">
     <div class="modal-contents">
       <img :src="image" />
-      <button v-for="(choice, index) in choices" :key="index" @click="$emit('choose', index)">
-        {{choice.label}}
-      </button>
+      <template v-if="choiceUI === 'label'">
+        <button v-for="(choice, index) in choices" :key="index" @click="$emit('choose', index)">
+          {{choice.label}}
+        </button>
+      </template>
+      <template v-if="choiceUI === 'image'">
+        <div class="images">
+          <img
+            v-for="(choice, index) in choices"
+            :key="index"
+            :src="`/img/arkham/cards/${choice.label}.jpg`"
+            @click="$emit('choose', index)"
+          />
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -19,6 +31,21 @@ export default class ChoiceModal extends Vue {
 
   get choices() {
     return choices(this.game);
+  }
+
+  get choiceUI() {
+    if (!this.source) {
+      return null;
+    }
+
+    const { tag } = this.source;
+
+    switch (tag) {
+      case 'DeckSource':
+        return 'image';
+      default:
+        return 'label';
+    }
   }
 
   get source() {
@@ -76,5 +103,12 @@ export default class ChoiceModal extends Vue {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+}
+
+.images img {
+  width: 150px;
+  margin: 2px;
+  border: 3px solid #FF00FF;
+  cursor: pointer;
 }
 </style>

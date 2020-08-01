@@ -8,6 +8,7 @@ module Arkham.Types.Investigator
   , remainingHealth
   , lookupInvestigator
   , handOf
+  , deckOf
   , GetInvestigatorId(..)
   , Investigator
   )
@@ -62,6 +63,7 @@ import Arkham.Types.Investigator.Cards.WinifredHabbamock
 import Arkham.Types.Investigator.Cards.ZoeySamaras
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Helpers
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.SkillType
@@ -330,6 +332,9 @@ isPrey LowestHealth env i =
 
 handOf :: Investigator -> [Card]
 handOf = view hand . investigatorAttrs
+
+deckOf :: Investigator -> Deck PlayerCard
+deckOf = view deck . investigatorAttrs
 
 hasEndedTurn :: Investigator -> Bool
 hasEndedTurn = view endedTurn . investigatorAttrs

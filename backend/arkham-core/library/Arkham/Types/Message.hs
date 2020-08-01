@@ -198,6 +198,7 @@ data Message
   | CancelNextAttack
   | Run [Message]
   | Continue Text
+  | AddToHandFromDeck InvestigatorId CardId
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

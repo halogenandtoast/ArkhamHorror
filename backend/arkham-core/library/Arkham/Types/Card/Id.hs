@@ -9,3 +9,6 @@ newtype CardId = CardId { unCardId :: UUID }
 
 newtype CommitedCardId = CommitedCardId { unCommitedCardId :: CardId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
+newtype DeckCardId = DeckCardId { unDeckCardId :: CardId }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

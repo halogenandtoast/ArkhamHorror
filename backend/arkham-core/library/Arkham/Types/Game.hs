@@ -354,6 +354,12 @@ instance HasSet EnemyId Trait Game where
 instance HasSet CommitedCardId InvestigatorId Game where
   getSet iid = maybe mempty (getSet iid) . view skillTest
 
+instance HasList DeckCard (InvestigatorId, Trait) Game where
+  getList (iid, trait) g =
+    let investigator = getInvestigator iid g
+        deck = unDeck $ deckOf investigator
+     in map DeckCard $ filter ((trait `elem`) . pcTraits) deck
+
 instance HasSet BlockedLocationId () Game where
   getSet _ =
     HashSet.map BlockedLocationId

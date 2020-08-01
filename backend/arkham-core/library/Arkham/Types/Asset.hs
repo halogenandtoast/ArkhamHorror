@@ -25,6 +25,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.FastWindow as Fast
 import qualified Arkham.Types.Token as Token
 import Arkham.Types.Trait
 import ClassyPrelude hiding (unpack)
@@ -48,6 +49,7 @@ allAssets = HashMap.fromList
   , ("01017", physicalTraining)
   , ("01020", machete)
   , ("01021", guardDog)
+  , ("01032", researchLibrarian)
   , ("01059", holyRosary)
   , ("01060", shrivelling)
   , ("01086", knife)
@@ -129,6 +131,7 @@ data Asset
   | PhysicalTraining PhysicalTrainingI
   | Machete MacheteI
   | GuardDog GuardDogI
+  | ResearchLibrarian ResearchLibrarianI
   | HolyRosary HolyRosaryI
   | Shrivelling ShrivellingI
   | Knife KnifeI
@@ -145,6 +148,7 @@ assetAttrs = \case
   PhysicalTraining attrs -> coerce attrs
   Machete attrs -> coerce attrs
   GuardDog attrs -> coerce attrs
+  ResearchLibrarian attrs -> coerce attrs
   HolyRosary attrs -> coerce attrs
   Shrivelling (ShrivellingI AttrsWithMetadata {..}) -> attrs
   Knife attrs -> coerce attrs
@@ -262,6 +266,16 @@ guardDog uuid = GuardDog $ GuardDogI $ (baseAttrs uuid "01021")
   , assetSanity = Just 1
   }
 
+newtype ResearchLibrarianI = ResearchLibrarianI Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+researchLibrarian :: AssetId -> Asset
+researchLibrarian uuid = ResearchLibrarian $ ResearchLibrarianI $ (baseAttrs uuid "01032")
+  { assetSlots = [AllySlot]
+  , assetHealth = Just 1
+  , assetSanity = Just 1
+  }
+
 newtype HolyRosaryI = HolyRosaryI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
@@ -319,6 +333,7 @@ type AssetRunner env
     , HasCount EnemyCount InvestigatorId env
     , HasCount ClueCount LocationId env
     , HasCount ResourceCount InvestigatorId env
+    , HasList DeckCard (InvestigatorId, Trait) env
     )
 
 instance (AssetRunner env) => RunMessage env Asset where
@@ -329,6 +344,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     PhysicalTraining x -> PhysicalTraining <$> runMessage msg x
     Machete x -> Machete <$> runMessage msg x
     GuardDog x -> GuardDog <$> runMessage msg x
+    ResearchLibrarian x -> ResearchLibrarian <$> runMessage msg x
     HolyRosary x -> HolyRosary <$> runMessage msg x
     Shrivelling x -> Shrivelling <$> runMessage msg x
     Knife x -> Knife <$> runMessage msg x
@@ -448,6 +464,19 @@ instance (AssetRunner env) => RunMessage env GuardDogI where
         )
       pure $ GuardDogI result
     _ -> GuardDogI <$> runMessage msg attrs
+
+instance (AssetRunner env) => RunMessage env ResearchLibrarianI where
+  runMessage msg a@(ResearchLibrarianI attrs@Attrs {..}) = case msg of
+    InvestigatorPlayAsset iid aid | aid == assetId -> do
+      unshiftMessage (Ask $ ChooseOne [UseCardAbility iid (AssetSource assetId, 1, ReactionAbility Fast.Now, NoLimit), Continue "Do not use ability"])
+      ResearchLibrarianI <$> runMessage msg attrs
+    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
+      tomes <- map unDeckCard <$> asks (getList (iid, Tome))
+      a <$ unshiftMessage (Ask $ ChooseOneFromSource $ MkChooseOneFromSource
+        { chooseOneSource = DeckSource
+        , chooseOneChoices = map (\tome -> label (unCardCode $ pcCardCode tome) (AddToHandFromDeck iid (pcId tome))) tomes
+        })
+    _ -> ResearchLibrarianI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env HolyRosaryI where
   runMessage msg (HolyRosaryI attrs@Attrs {..}) = case msg of

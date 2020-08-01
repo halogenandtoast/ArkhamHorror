@@ -26,5 +26,6 @@ data Source
   | EventSource CardCode
   | SkillSource CardCode
   | EmptyDeckSource
+  | DeckSource
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

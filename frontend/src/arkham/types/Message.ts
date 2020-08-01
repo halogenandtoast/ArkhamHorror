@@ -19,8 +19,10 @@ export enum MessageType {
   INVESTIGATOR_DAMAGE = 'InvestigatorDamage',
   ENEMY_ATTACK = 'EnemyAttack',
   ACTIVATE_ABILITY = 'ActivateCardAbilityAction',
+  USE_CARD_ABILITY = 'UseCardAbility',
   SKILL_TEST_RESULTS = 'SkillTestApplyResults',
   DISCARD_ASSET = 'DiscardAsset',
+  ADD_TO_HAND_FROM_DECK = 'AddToHandFromDeck',
   LABEL = 'Label',
 }
 
@@ -50,8 +52,10 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('InvestigatorDamage').then(() => JsonDecoder.constant(MessageType.INVESTIGATOR_DAMAGE)),
     JsonDecoder.isExactly('EnemyAttack').then(() => JsonDecoder.constant(MessageType.ENEMY_ATTACK)),
     JsonDecoder.isExactly('ActivateCardAbilityAction').then(() => JsonDecoder.constant(MessageType.ACTIVATE_ABILITY)),
+    JsonDecoder.isExactly('UseCardAbility').then(() => JsonDecoder.constant(MessageType.USE_CARD_ABILITY)),
     JsonDecoder.isExactly('SkillTestApplyResults').then(() => JsonDecoder.constant(MessageType.SKILL_TEST_RESULTS)),
     JsonDecoder.isExactly('DiscardAsset').then(() => JsonDecoder.constant(MessageType.DISCARD_ASSET)),
+    JsonDecoder.isExactly('AddToHandFromDeck').then(() => JsonDecoder.constant(MessageType.ADD_TO_HAND_FROM_DECK)),
   ],
   'MessageType',
 );

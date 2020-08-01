@@ -296,6 +296,7 @@ instance (LocationRunner env) => RunMessage env ParlorI where
           (BeginSkillTest
             iid
             (LocationSource lid)
+            (Just Action.Parley)
             SkillIntellect
             4
             [TakeControlOfAsset iid aid]
@@ -311,6 +312,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
         (BeginSkillTest
           iid
           (LocationSource lid)
+          (Just Action.Investigate)
           skillType
           (shroudValueFor a)
           [SuccessfulInvestigation lid, InvestigatorDiscoverClues iid lid 1]

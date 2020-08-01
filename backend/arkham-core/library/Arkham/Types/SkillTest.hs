@@ -9,6 +9,7 @@ module Arkham.Types.SkillTest
 where
 
 import Arkham.Json
+import Arkham.Types.Action (Action)
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
@@ -50,6 +51,7 @@ data SkillTest = SkillTest
   , skillTestModifiers :: [Modifier]
   , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
   , skillTestSource :: Source
+  , skillTestAction :: Maybe Action
   }
   deriving stock (Show, Generic)
 
@@ -70,13 +72,14 @@ instance HasSet CommitedCardId InvestigatorId SkillTest where
 initSkillTest
   :: InvestigatorId
   -> Source
+  -> Maybe Action
   -> SkillType
   -> Int
   -> [Message]
   -> [Message]
   -> [Modifier]
   -> SkillTest
-initSkillTest iid source skillType' difficulty' onSuccess' onFailure' modifiers'
+initSkillTest iid source maction skillType' difficulty' onSuccess' onFailure' modifiers'
   = SkillTest
     { skillTestInvestigator = iid
     , skillTestSkillType = skillType'
@@ -90,6 +93,7 @@ initSkillTest iid source skillType' difficulty' onSuccess' onFailure' modifiers'
     , skillTestModifiers = modifiers'
     , skillTestCommittedCards = mempty
     , skillTestSource = source
+    , skillTestAction = maction
     }
 
 modifiers :: Lens' SkillTest [Modifier]
@@ -148,6 +152,7 @@ instance (SkillTestRunner env) => RunMessage env SkillTest where
           skillTestCommittedCards
       <> [ InvestigatorStartSkillTest
              skillTestInvestigator
+             skillTestAction
              skillTestSkillType
              skillTestModifiers
          ]

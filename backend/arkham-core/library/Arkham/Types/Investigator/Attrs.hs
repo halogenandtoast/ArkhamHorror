@@ -145,14 +145,16 @@ facingDefeat Attrs {..} =
     || investigatorSanityDamage
     >= investigatorSanity
 
-skillValueFor :: SkillType -> [Modifier] -> Attrs -> Int
-skillValueFor skill tempModifiers attrs = foldr
+skillValueFor :: SkillType -> Maybe Action -> [Modifier] -> Attrs -> Int
+skillValueFor skill maction tempModifiers attrs = foldr
   applyModifier
   baseSkillValue
   (investigatorModifiers attrs <> tempModifiers)
  where
   applyModifier (SkillModifier skillType m _) n =
     if skillType == skill then max 0 (n + m) else n
+  applyModifier (ActionSkillModifier action skillType m _) n =
+    if skillType == skill && Just action == maction then max 0 (n + m) else n
   applyModifier _ n = n
   baseSkillValue = case skill of
     SkillWillpower -> investigatorWillpower attrs
@@ -612,7 +614,16 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       a <$ unshiftMessage (InvestigatorDrawEncounterCard investigatorId)
     RevelationSkillTest iid source skillType difficulty onSuccess onFailure ->
       a <$ unshiftMessage
-        (BeginSkillTest iid source skillType difficulty onSuccess onFailure [])
+        (BeginSkillTest
+          iid
+          source
+          Nothing
+          skillType
+          difficulty
+          onSuccess
+          onFailure
+          []
+        )
     ActivateCardAbilityAction iid ability@(_, _, abilityType, _)
       | iid == investigatorId -> do
         unshiftMessage (UseCardAbility iid ability) -- We should check action type when added for aoo
@@ -678,12 +689,12 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       else
         unshiftMessage triggerMessage
       pure a
-    InvestigatorStartSkillTest iid skillType tempModifiers ->
+    InvestigatorStartSkillTest iid maction skillType tempModifiers ->
       a <$ unshiftMessage
         (TriggerSkillTest
           iid
           skillType
-          (skillValueFor skillType tempModifiers a)
+          (skillValueFor skillType maction tempModifiers a)
         )
     CheckFastWindow iid windows | iid == investigatorId -> do
       availableAbilities <- getAvailableAbilities a
@@ -721,9 +732,13 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         & (remainingActions %~ max 0 . subtract actionCost')
         & (actionsTaken %~ (<> [action]))
     AddToHandFromDeck iid cardId | iid == investigatorId -> do
-      let card = fromJustNote "card did not exist" $ find ((== cardId) . getCardId) (unDeck investigatorDeck)
-      deck' <- liftIO $ shuffleM $ filter ((/= cardId) . getCardId) (unDeck investigatorDeck)
-      pure $ a & deck .~ Deck deck' & hand %~ (PlayerCard card:)
+      let
+        card = fromJustNote "card did not exist"
+          $ find ((== cardId) . getCardId) (unDeck investigatorDeck)
+      deck' <- liftIO $ shuffleM $ filter
+        ((/= cardId) . getCardId)
+        (unDeck investigatorDeck)
+      pure $ a & deck .~ Deck deck' & hand %~ (PlayerCard card :)
 
     PlayerWindow iid | iid == investigatorId -> do
       advanceableActIds <-

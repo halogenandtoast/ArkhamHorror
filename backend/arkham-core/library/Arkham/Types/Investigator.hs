@@ -18,6 +18,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
+import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Cards.AgnesBaker
 import Arkham.Types.Investigator.Cards.AkachiOnyele
@@ -63,7 +64,6 @@ import Arkham.Types.Investigator.Cards.WinifredHabbamock
 import Arkham.Types.Investigator.Cards.ZoeySamaras
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.InvestigatorId
-import Arkham.Types.Helpers
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.SkillType
@@ -279,10 +279,10 @@ instance HasInvestigatorStats Stats () Investigator where
   getStats _ i = Stats
     { health = investigatorHealth - investigatorHealthDamage
     , sanity = investigatorSanity - investigatorSanityDamage
-    , willpower = skillValueFor SkillWillpower [] a
-    , intellect = skillValueFor SkillIntellect [] a
-    , combat = skillValueFor SkillCombat [] a
-    , agility = skillValueFor SkillAgility [] a
+    , willpower = skillValueFor SkillWillpower Nothing [] a
+    , intellect = skillValueFor SkillIntellect Nothing [] a
+    , combat = skillValueFor SkillCombat Nothing [] a
+    , agility = skillValueFor SkillAgility Nothing [] a
     }
     where a@Attrs {..} = investigatorAttrs i
 
@@ -306,7 +306,7 @@ instance HasLocation Investigator where
 
 
 instance HasSkill Investigator where
-  getSkill skillType = skillValueFor skillType [] . investigatorAttrs
+  getSkill skillType = skillValueFor skillType Nothing [] . investigatorAttrs
 
 class GetInvestigatorId a where
   getInvestigatorId :: a -> InvestigatorId
@@ -323,7 +323,7 @@ isPrey
 isPrey AnyPrey _ _ = True
 isPrey (HighestSkill skillType) env i =
   fromMaybe 0 (maximumMay . HashSet.toList $ getSet skillType env)
-    == skillValueFor skillType [] (investigatorAttrs i)
+    == skillValueFor skillType Nothing [] (investigatorAttrs i)
 isPrey LowestHealth env i =
   fromMaybe
       100

@@ -8,6 +8,7 @@ where
 
 import Arkham.Json
 import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
@@ -341,6 +342,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
         (BeginSkillTest
           iid
           (EnemySource eid)
+          (Just Action.Fight)
           skillType
           enemyFight
           [InvestigatorDamageEnemy iid eid]
@@ -358,6 +360,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
         (BeginSkillTest
           iid
           (EnemySource eid)
+          (Just Action.Evade)
           skillType
           enemyEvade
           [EnemyEvaded iid eid]

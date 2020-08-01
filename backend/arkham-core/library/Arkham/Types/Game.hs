@@ -356,9 +356,10 @@ instance HasSet CommitedCardId InvestigatorId Game where
 
 instance HasList DeckCard (InvestigatorId, Trait) Game where
   getList (iid, trait) g =
-    let investigator = getInvestigator iid g
-        deck = unDeck $ deckOf investigator
-     in map DeckCard $ filter ((trait `elem`) . pcTraits) deck
+    let
+      investigator = getInvestigator iid g
+      deck = unDeck $ deckOf investigator
+    in map DeckCard $ filter ((trait `elem`) . pcTraits) deck
 
 instance HasSet BlockedLocationId () Game where
   getSet _ =
@@ -704,7 +705,7 @@ runGameMessage msg g = case msg of
   EndMythos -> g <$ pushMessage BeginInvestigation
   UseCardAbility _ (_, _, _, NoLimit) -> pure g
   UseCardAbility _ ability -> pure $ g & usedAbilities %~ (ability :)
-  BeginSkillTest iid source skillType difficulty onSuccess onFailure skillTestModifiers
+  BeginSkillTest iid source maction skillType difficulty onSuccess onFailure skillTestModifiers
     -> do
       unshiftMessage (BeforeSkillTest iid skillType)
       pure
@@ -713,6 +714,7 @@ runGameMessage msg g = case msg of
           ?~ initSkillTest
                iid
                source
+               maction
                skillType
                difficulty
                onSuccess

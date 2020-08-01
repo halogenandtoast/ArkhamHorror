@@ -135,6 +135,7 @@ data Message
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
   | DrawAnotherToken InvestigatorId Int Token
   | SkillTestEnds
+  | SkillTestEnded SkillTestResult [Token]
   | ReturnTokens [Token]
   | DrawToken Token
   | EmptyDeck InvestigatorId

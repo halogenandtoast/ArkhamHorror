@@ -25,12 +25,14 @@ import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Token as Token
 import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Lens.Micro
+import Lens.Micro.Extras
 import Safe (fromJustNote)
 
 lookupAsset :: CardCode -> (AssetId -> Asset)
@@ -78,6 +80,7 @@ data Attrs = Attrs
   , assetTraits :: HashSet Trait
   , assetAbilities :: [Ability]
   , assetUses :: Uses
+  , assetSubscribedToSkillTestResults :: Bool
   }
   deriving stock (Show, Generic)
 
@@ -151,13 +154,21 @@ baseAttrs aid cardCode =
       , assetTraits = HashSet.fromList pcTraits
       , assetAbilities = mempty
       , assetUses = NoUses
+      , assetSubscribedToSkillTestResults = False
       }
+
+subscribedToSkillTestResults :: Lens' Attrs Bool
+subscribedToSkillTestResults = lens assetSubscribedToSkillTestResults
+  $ \m x -> m { assetSubscribedToSkillTestResults = x }
 
 uses :: Lens' Attrs Uses
 uses = lens assetUses $ \m x -> m { assetUses = x }
 
 investigator :: Lens' Attrs (Maybe InvestigatorId)
 investigator = lens assetInvestigator $ \m x -> m { assetInvestigator = x }
+
+getInvestigator :: Attrs -> InvestigatorId
+getInvestigator = fromJustNote "asset must be owned" . view investigator
 
 healthDamage :: Lens' Attrs Int
 healthDamage = lens assetHealthDamage $ \m x -> m { assetHealthDamage = x }
@@ -243,8 +254,9 @@ newtype ShrivellingI = ShrivellingI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 shrivelling :: AssetId -> Asset
-shrivelling uuid =
-  Shrivelling $ ShrivellingI $ (baseAttrs uuid "01060") { assetSlots = [ArcaneSlot] }
+shrivelling uuid = Shrivelling $ ShrivellingI $ (baseAttrs uuid "01060")
+  { assetSlots = [ArcaneSlot]
+  }
 
 newtype KnifeI = KnifeI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -401,10 +413,11 @@ instance (AssetRunner env) => RunMessage env GuardDogI where
       -- we must unshift the asset destroyed first before unshifting the question
       -- this is necessary to keep the asset as a valid investigator source of damage
       -- for any additional effects, such as triggering Roland's ability.
-      let ownerId = fromJustNote "This must be owned" assetInvestigator
       result <- runMessage msg attrs
       unshiftMessage
-        (Ask $ ChooseTo (EnemyDamage eid ownerId (AssetSource aid) 1))
+        (Ask $ ChooseTo
+          (EnemyDamage eid (getInvestigator attrs) (AssetSource aid) 1)
+        )
       pure $ GuardDogI result
     _ -> GuardDogI <$> runMessage msg attrs
 
@@ -445,25 +458,52 @@ instance (AssetRunner env) => RunMessage env ShrivellingI where
       let
         attrs' =
           attrs
-            & (uses .~ Uses Resource.Charges 4)
+            & (uses .~ Uses Resource.Charge 4)
             & (abilities
               .~ [(AssetSource aid, 1, ActionAbility 1 Action.Fight, NoLimit)]
               )
       ShrivellingI <$> runMessage msg attrs'
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
-    case assetUses of
-      Uses Resource.Ammo n -> do
-        when
-          (n == 1)
-          (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
-        unshiftMessage
-          (ChooseFightEnemyAction
-             iid
-             SkillWillpower
-             [DamageModifier 1 (AssetSource aid), BadStuffForSpecialTokens]
+    SkillTestEnded _ tokens | assetSubscribedToSkillTestResults -> do
+      when
+          (any
+            (`elem` [ Token.Skull
+                    , Token.Cultist
+                    , Token.Tablet
+                    , Token.ElderThing
+                    , Token.AutoFail
+                    ]
+            )
+            tokens
           )
-        pure $ ShrivellingI $ attrs & uses .~ Uses Resource.Charges (n - 1)
-      _ -> pure a
+        $ unshiftMessage
+            (InvestigatorDamage
+              (getInvestigator attrs)
+              (AssetSource assetId)
+              0
+              1
+            )
+      pure $ ShrivellingI $ attrs & subscribedToSkillTestResults .~ False
+    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
+      case assetUses of
+        Uses Resource.Charge n -> do
+          when
+            (n == 1)
+            (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
+          unshiftMessage
+            (ChooseFightEnemy
+              iid
+              SkillWillpower
+              [DamageDealt 1 (AssetSource aid)]
+              True
+            )
+          pure
+            $ ShrivellingI
+            $ attrs
+            & uses
+            .~ Uses Resource.Charge (n - 1)
+            & subscribedToSkillTestResults
+            .~ True
+        _ -> pure a
     _ -> ShrivellingI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env KnifeI where

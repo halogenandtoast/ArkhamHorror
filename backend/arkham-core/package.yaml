@@ -38,3 +38,4 @@ library:
     - random
     - random-shuffle
     - containers
+    - text

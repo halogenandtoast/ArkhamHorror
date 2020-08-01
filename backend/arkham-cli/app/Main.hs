@@ -52,9 +52,10 @@ newtype ArkhamDBDecklist = ArkhamDBDecklist
 main :: IO ()
 main = do
   mdbid <- lookupEnv "GAME_ID"
+  deckId <- fromMaybe "20344" <$> lookupEnv "DECK_ID"
   case readMaybe @Int =<< mdbid of
     Nothing -> do
-      deck <- loadDeck "20344"
+      deck <- loadDeck deckId
       pPrint deck
       ge <- runGame =<< newGame
         "01104"

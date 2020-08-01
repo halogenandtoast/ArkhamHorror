@@ -17,6 +17,7 @@ data PlayerCardType
   | EventType
   | SkillType
   | PlayerTreacheryType
+  | PlayerEnemyType
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -110,11 +111,18 @@ treachery cardId cardCode name cost =
     { pcWeakness = True
     }
 
+enemy :: CardId -> CardCode -> Text -> Int -> PlayerCard
+enemy cardId cardCode name cost =
+  (basePlayerCard cardId cardCode name cost PlayerEnemyType Neutral)
+    { pcWeakness = True
+    }
+
 allPlayerCards :: HashMap CardCode (CardId -> PlayerCard)
 allPlayerCards = HashMap.fromList
   [ ("01006", rolands38Special)
   , ("01007", coverUp)
   , ("01008", daisysToteBag)
+  , ("01009", theNecronomicon)
   , ("01016", fortyFiveAutomatic)
   , ("01017", physicalTraining)
   , ("01020", machete)
@@ -123,9 +131,19 @@ allPlayerCards = HashMap.fromList
   , ("01023", dodge)
   , ("01024", dynamiteBlast)
   , ("01025", viciousBlow)
+  , ("01030", magnifyingGlass)
+  , ("01031", oldBookOfLore)
+  , ("01032", researchLibrarian)
+  , ("01033", drMilanChristopher)
+  , ("01035", medicalTexts)
+  , ("01036", mindOverMatter)
   , ("01037", workingAHunch)
   , ("01039", deduction)
   , ("01059", holyRosary)
+  , ("01060", shrivelling)
+  , ("01061", scrying)
+  , ("01065", wardOfProtection)
+  , ("01066", blindingLight)
   , ("01067", fearless)
   , ("01086", knife)
   , ("01087", flashlight)
@@ -134,6 +152,7 @@ allPlayerCards = HashMap.fromList
   , ("01091", overpower)
   , ("01092", manualDexterity)
   , ("01093", unexpectedCourage)
+  , ("01102", silverTwilightAcolyte)
   , ("01117", litaChantler)
   ]
 
@@ -151,6 +170,12 @@ daisysToteBag :: CardId -> PlayerCard
 daisysToteBag cardId = (asset cardId "01008" "Daisy's Tote Bag" 2 Neutral)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillWild]
   , pcTraits = [Item]
+  }
+
+theNecronomicon :: CardId -> PlayerCard
+theNecronomicon cardId = (asset cardId "01009" "The Necronomicon" 0 Neutral)
+  { pcTraits = [Item, Tome]
+  , pcWeakness = True
   }
 
 fortyFiveAutomatic :: CardId -> PlayerCard
@@ -206,6 +231,45 @@ viciousBlow cardId =
     { pcTraits = [Practiced]
     }
 
+magnifyingGlass :: CardId -> PlayerCard
+magnifyingGlass cardId = (asset cardId "01030" "Magnifying Glass" 1 Seeker)
+  { pcSkills = [SkillIntellect]
+  , pcTraits = [Item, Tool]
+  }
+
+oldBookOfLore :: CardId -> PlayerCard
+oldBookOfLore cardId = (asset cardId "01031" "Old Book of Lore" 3 Seeker)
+  { pcSkills = [SkillWillpower]
+  , pcTraits = [Item, Tome]
+  }
+
+researchLibrarian :: CardId -> PlayerCard
+researchLibrarian cardId = (asset cardId "01032" "Research Librarian" 2 Seeker)
+  { pcSkills = [SkillAgility]
+  , pcTraits = [Ally, Miskatonic]
+  }
+
+drMilanChristopher :: CardId -> PlayerCard
+drMilanChristopher cardId =
+  (asset cardId "01033" "Dr. Milan Christopher" 4 Seeker)
+    { pcSkills = [SkillIntellect]
+    , pcTraits = [Ally, Miskatonic]
+    }
+
+medicalTexts :: CardId -> PlayerCard
+medicalTexts cardId = (asset cardId "01035" "Medical Texts" 2 Seeker)
+  { pcSkills = [SkillCombat]
+  , pcTraits = [Item, Tome]
+  }
+
+mindOverMatter :: CardId -> PlayerCard
+mindOverMatter cardId = (event cardId "01036" "Mind over Matter" 1 Seeker)
+  { pcSkills = [SkillCombat, SkillAgility]
+  , pcTraits = [Insight]
+  , pcFast = True
+  , pcFastWindows = HashSet.fromList [DuringTurn You]
+  }
+
 workingAHunch :: CardId -> PlayerCard
 workingAHunch cardId = (event cardId "01037" "Working a Hunch" 2 Seeker)
   { pcSkills = [SkillIntellect, SkillIntellect]
@@ -229,6 +293,24 @@ holyRosary :: CardId -> PlayerCard
 holyRosary cardId = (asset cardId "01059" "Holy Rosary" 2 Mystic)
   { pcSkills = [SkillWillpower]
   , pcTraits = [Item, Charm]
+  }
+
+scrying :: CardId -> PlayerCard
+scrying cardId = (event cardId "01061" "Scrying" 1 Mystic)
+  { pcSkills = [SkillIntellect]
+  , pcTraits = [Spell]
+  }
+
+wardOfProtection :: CardId -> PlayerCard
+wardOfProtection cardId = (event cardId "01065" "Ward of Protection" 1 Mystic)
+  { pcSkills = [SkillWild]
+  , pcTraits = [Spell, Spirit]
+  }
+
+blindingLight :: CardId -> PlayerCard
+blindingLight cardId = (event cardId "01066" "Blinding Light" 2 Mystic)
+  { pcSkills = [SkillWillpower, SkillAgility]
+  , pcTraits = [Spell]
   }
 
 fearless :: CardId -> PlayerCard
@@ -274,6 +356,12 @@ unexpectedCourage :: CardId -> PlayerCard
 unexpectedCourage cardId =
   (skill cardId "01093" "Unexpected Courage" [SkillWild, SkillWild] Neutral)
     { pcTraits = [Innate]
+    }
+
+silverTwilightAcolyte :: CardId -> PlayerCard
+silverTwilightAcolyte cardId =
+  (enemy cardId "01102" "Silver Twilight Acolyte" 0)
+    { pcTraits = [Humanoid, Cultist, SilverTwilight]
     }
 
 litaChantler :: CardId -> PlayerCard

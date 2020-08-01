@@ -1,5 +1,13 @@
 import { JsonDecoder } from 'ts.data.json';
 
+export interface Uses {
+  amount: number; // eslint-disable-line
+}
+
+export const usesDecoder = JsonDecoder.object<Uses>({
+  amount: JsonDecoder.number,
+}, 'Uses');
+
 export interface AssetContents {
   id: string;
   cardCode: string;
@@ -8,6 +16,7 @@ export interface AssetContents {
   healthDamage: number;
   sanity: number | null;
   sanityDamage: number;
+  uses: Uses | null;
 }
 
 export const assetContentsDecoder = JsonDecoder.object<AssetContents>({
@@ -18,6 +27,7 @@ export const assetContentsDecoder = JsonDecoder.object<AssetContents>({
   healthDamage: JsonDecoder.number,
   sanity: JsonDecoder.nullable(JsonDecoder.number),
   sanityDamage: JsonDecoder.number,
+  uses: JsonDecoder.nullable(usesDecoder),
 }, 'AssetContents');
 
 export interface Asset {

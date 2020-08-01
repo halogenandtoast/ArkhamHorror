@@ -7,11 +7,11 @@
       @click="$emit('choose', availableAction)"
     />
     <div
-      v-if="asset.uses && asset.uses > 0"
+      v-if="asset.contents.uses && asset.contents.uses.amount > 0"
       class="poolItem poolItem-resource"
     >
       <img src="/img/arkham/resource.png" />
-      {{asset.uses}}
+      {{asset.contents.uses.amount}}
     </div>
   </div>
 </template>

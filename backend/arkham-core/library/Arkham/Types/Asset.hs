@@ -49,6 +49,7 @@ allAssets = HashMap.fromList
   , ("01017", physicalTraining)
   , ("01020", machete)
   , ("01021", guardDog)
+  , ("01030", magnifyingGlass)
   , ("01032", researchLibrarian)
   , ("01059", holyRosary)
   , ("01060", shrivelling)
@@ -131,6 +132,7 @@ data Asset
   | PhysicalTraining PhysicalTrainingI
   | Machete MacheteI
   | GuardDog GuardDogI
+  | MagnifyingGlass MagnifyingGlassI
   | ResearchLibrarian ResearchLibrarianI
   | HolyRosary HolyRosaryI
   | Shrivelling ShrivellingI
@@ -148,6 +150,7 @@ assetAttrs = \case
   PhysicalTraining attrs -> coerce attrs
   Machete attrs -> coerce attrs
   GuardDog attrs -> coerce attrs
+  MagnifyingGlass attrs -> coerce attrs
   ResearchLibrarian attrs -> coerce attrs
   HolyRosary attrs -> coerce attrs
   Shrivelling (ShrivellingI AttrsWithMetadata {..}) -> attrs
@@ -266,6 +269,14 @@ guardDog uuid = GuardDog $ GuardDogI $ (baseAttrs uuid "01021")
   , assetSanity = Just 1
   }
 
+newtype MagnifyingGlassI = MagnifyingGlassI Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+magnifyingGlass :: AssetId -> Asset
+magnifyingGlass uuid = MagnifyingGlass $ MagnifyingGlassI $ (baseAttrs uuid "01030")
+  { assetSlots = [HandSlot]
+  }
+
 newtype ResearchLibrarianI = ResearchLibrarianI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
@@ -344,6 +355,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     PhysicalTraining x -> PhysicalTraining <$> runMessage msg x
     Machete x -> Machete <$> runMessage msg x
     GuardDog x -> GuardDog <$> runMessage msg x
+    MagnifyingGlass x -> MagnifyingGlass <$> runMessage msg x
     ResearchLibrarian x -> ResearchLibrarian <$> runMessage msg x
     HolyRosary x -> HolyRosary <$> runMessage msg x
     Shrivelling x -> Shrivelling <$> runMessage msg x
@@ -464,6 +476,13 @@ instance (AssetRunner env) => RunMessage env GuardDogI where
         )
       pure $ GuardDogI result
     _ -> GuardDogI <$> runMessage msg attrs
+
+instance (AssetRunner env) => RunMessage env MagnifyingGlassI where
+  runMessage msg (MagnifyingGlassI attrs@Attrs {..}) = case msg of
+    InvestigatorPlayAsset iid aid | aid == assetId -> do
+      unshiftMessage (AddModifier (InvestigatorTarget iid) (ActionSkillModifier Action.Investigate SkillIntellect 1 (AssetSource aid)))
+      MagnifyingGlassI <$> runMessage msg attrs
+    _ -> MagnifyingGlassI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env ResearchLibrarianI where
   runMessage msg a@(ResearchLibrarianI attrs@Attrs {..}) = case msg of
@@ -683,6 +702,10 @@ instance (AssetRunner env) => RunMessage env Attrs where
       let a' = a & healthDamage +~ health & sanityDamage +~ sanity
       when (defeated a') (unshiftMessage (AssetDefeated aid))
       pure a'
+    AssetDiscarded aid _ | aid == assetId ->
+      case assetInvestigator of
+        Nothing -> pure a
+        Just iid -> a <$ unshiftMessage (RemoveAllModifiersOnTargetFrom (InvestigatorTarget iid) (AssetSource aid))
     InvestigatorPlayAsset iid aid | aid == assetId ->
       pure $ a & investigator ?~ iid
     TakeControlOfAsset iid aid | aid == assetId ->

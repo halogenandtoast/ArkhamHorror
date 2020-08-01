@@ -27,10 +27,12 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Token as Token
 import Arkham.Types.Trait
-import ClassyPrelude
+import ClassyPrelude hiding (unpack)
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
+import Data.Text.Lazy (unpack)
+import Data.Text.Lazy.Builder
 import Lens.Micro
 import Lens.Micro.Extras
 import Safe (fromJustNote)
@@ -80,7 +82,6 @@ data Attrs = Attrs
   , assetTraits :: HashSet Trait
   , assetAbilities :: [Ability]
   , assetUses :: Uses
-  , assetSubscribedToSkillTestResults :: Bool
   }
   deriving stock (Show, Generic)
 
@@ -90,6 +91,31 @@ instance ToJSON Attrs where
 
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "asset"
+
+data AttrsWithMetadata a = AttrsWithMetadata { attrs :: Attrs, metadata :: a }
+  deriving stock (Show, Generic)
+
+instance (ToJSON a) => ToJSON (AttrsWithMetadata a) where
+  toJSON AttrsWithMetadata {..} = case (toJSON attrs, toJSON metadata) of
+    (Object o, Object m) -> Object $ HashMap.union m o
+    (a, b) -> metadataError a b
+   where
+    metadataError a b =
+      error
+        . unpack
+        . toLazyText
+        $ "AttrsWithMetadata failed to serialize to object: "
+        <> "\nattrs: "
+        <> encodeToTextBuilder a
+        <> "\nmetadata: "
+        <> encodeToTextBuilder b
+
+instance (FromJSON a) => FromJSON (AttrsWithMetadata a) where
+  parseJSON = withObject "AttrsWithMetadata" $ \o ->
+    AttrsWithMetadata <$> parseJSON (Object o) <*> parseJSON (Object o)
+
+with :: Attrs -> a -> AttrsWithMetadata a
+with attrs a = AttrsWithMetadata attrs a
 
 defeated :: Attrs -> Bool
 defeated Attrs {..} =
@@ -120,7 +146,7 @@ assetAttrs = \case
   Machete attrs -> coerce attrs
   GuardDog attrs -> coerce attrs
   HolyRosary attrs -> coerce attrs
-  Shrivelling attrs -> coerce attrs
+  Shrivelling (ShrivellingI AttrsWithMetadata {..}) -> attrs
   Knife attrs -> coerce attrs
   Flashlight attrs -> coerce attrs
   LitaChantler attrs -> coerce attrs
@@ -154,12 +180,7 @@ baseAttrs aid cardCode =
       , assetTraits = HashSet.fromList pcTraits
       , assetAbilities = mempty
       , assetUses = NoUses
-      , assetSubscribedToSkillTestResults = False
       }
-
-subscribedToSkillTestResults :: Lens' Attrs Bool
-subscribedToSkillTestResults = lens assetSubscribedToSkillTestResults
-  $ \m x -> m { assetSubscribedToSkillTestResults = x }
 
 uses :: Lens' Attrs Uses
 uses = lens assetUses $ \m x -> m { assetUses = x }
@@ -250,13 +271,20 @@ holyRosary uuid = HolyRosary $ HolyRosaryI $ (baseAttrs uuid "01059")
   , assetSanity = Just 2
   }
 
-newtype ShrivellingI = ShrivellingI Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+newtype ShrivellingMetadata = ShrivellingMetadata { inUse :: Bool }
+  deriving stock (Show, Generic)
+  deriving anyclass (ToJSON, FromJSON) -- must parse to object
+
+newtype ShrivellingI = ShrivellingI (AttrsWithMetadata ShrivellingMetadata)
+  deriving stock (Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 shrivelling :: AssetId -> Asset
-shrivelling uuid = Shrivelling $ ShrivellingI $ (baseAttrs uuid "01060")
-  { assetSlots = [ArcaneSlot]
-  }
+shrivelling uuid =
+  Shrivelling
+    $ ShrivellingI
+    $ ((baseAttrs uuid "01060") { assetSlots = [ArcaneSlot] })
+    `with` ShrivellingMetadata False
 
 newtype KnifeI = KnifeI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -453,58 +481,63 @@ instance (AssetRunner env) => RunMessage env MacheteI where
     _ -> MacheteI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env ShrivellingI where
-  runMessage msg a@(ShrivellingI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset _ aid | aid == assetId -> do
-      let
-        attrs' =
-          attrs
-            & (uses .~ Uses Resource.Charge 4)
-            & (abilities
-              .~ [(AssetSource aid, 1, ActionAbility 1 Action.Fight, NoLimit)]
+  runMessage msg a@(ShrivellingI (AttrsWithMetadata attrs@Attrs {..} metadata@ShrivellingMetadata {..}))
+    = case msg of
+      InvestigatorPlayAsset _ aid | aid == assetId -> do
+        let
+          attrs' =
+            attrs
+              & (uses .~ Uses Resource.Charge 4)
+              & (abilities
+                .~ [ ( AssetSource aid
+                     , 1
+                     , ActionAbility 1 Action.Fight
+                     , NoLimit
+                     )
+                   ]
+                )
+        ShrivellingI . (`with` metadata) <$> runMessage msg attrs'
+      SkillTestEnded _ tokens | inUse -> do
+        when
+            (any
+              (`elem` [ Token.Skull
+                      , Token.Cultist
+                      , Token.Tablet
+                      , Token.ElderThing
+                      , Token.AutoFail
+                      ]
               )
-      ShrivellingI <$> runMessage msg attrs'
-    SkillTestEnded _ tokens | assetSubscribedToSkillTestResults -> do
-      when
-          (any
-            (`elem` [ Token.Skull
-                    , Token.Cultist
-                    , Token.Tablet
-                    , Token.ElderThing
-                    , Token.AutoFail
-                    ]
+              tokens
             )
-            tokens
-          )
-        $ unshiftMessage
-            (InvestigatorDamage
-              (getInvestigator attrs)
-              (AssetSource assetId)
-              0
-              1
-            )
-      pure $ ShrivellingI $ attrs & subscribedToSkillTestResults .~ False
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
-      case assetUses of
-        Uses Resource.Charge n -> do
-          when
-            (n == 1)
-            (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
-          unshiftMessage
-            (ChooseFightEnemy
-              iid
-              SkillWillpower
-              [DamageDealt 1 (AssetSource aid)]
-              True
-            )
-          pure
-            $ ShrivellingI
-            $ attrs
-            & uses
-            .~ Uses Resource.Charge (n - 1)
-            & subscribedToSkillTestResults
-            .~ True
-        _ -> pure a
-    _ -> ShrivellingI <$> runMessage msg attrs
+          $ unshiftMessage
+              (InvestigatorDamage
+                (getInvestigator attrs)
+                (AssetSource assetId)
+                0
+                1
+              )
+        pure $ ShrivellingI (attrs `with` ShrivellingMetadata False)
+      UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
+        case assetUses of
+          Uses Resource.Charge n -> do
+            when
+              (n == 1)
+              (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
+            unshiftMessage
+              (ChooseFightEnemy
+                iid
+                SkillWillpower
+                [DamageDealt 1 (AssetSource aid)]
+                True
+              )
+            pure
+              $ ShrivellingI
+              . (`with` ShrivellingMetadata True)
+              $ attrs
+              & uses
+              .~ Uses Resource.Charge (n - 1)
+          _ -> pure a
+      _ -> ShrivellingI . (`with` metadata) <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env KnifeI where
   runMessage msg a@(KnifeI attrs@Attrs {..}) = case msg of

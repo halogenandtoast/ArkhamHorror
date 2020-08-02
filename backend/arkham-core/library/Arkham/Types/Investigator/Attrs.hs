@@ -364,6 +364,16 @@ abilityInWindows windows ability _ = case ability of
   (_, _, ReactionAbility window, _) -> pure $ window `elem` windows
   _ -> pure False
 
+possibleSkillTypeChoices :: SkillType -> Attrs -> [SkillType]
+possibleSkillTypeChoices skillType attrs = foldr
+  applyModifier
+  [skillType]
+  (investigatorModifiers attrs)
+ where
+  applyModifier (UseSkillInPlaceOf toReplace toUse _) skills
+    | toReplace == skillType = toUse : skills
+  applyModifier _ skills = skills
+
 instance (InvestigatorRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     Setup -> do
@@ -483,7 +493,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         ]
     MoveAction iid lid True -> a <$ unshiftMessages
       [ TakeAction iid (actionCost a Action.Move) Action.Move
-      , CheckAttackOfOpportunity iid
+      , CheckAttackOfOpportunity iid False
       , MoveAction iid lid False
       ]
     MoveAction iid lid False | iid == investigatorId ->
@@ -499,7 +509,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         )
     Investigate iid lid skillType True -> a <$ unshiftMessages
       [ TakeAction iid (actionCost a Action.Investigate) Action.Investigate
-      , CheckAttackOfOpportunity iid
+      , CheckAttackOfOpportunity iid False
       , Investigate iid lid skillType False
       ]
     InvestigatorDiscoverClues iid lid n | iid == investigatorId ->
@@ -531,13 +541,14 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       let
         card = fromJustNote "not in hand"
           $ find ((== cardId) . getCardId) investigatorHand
-        actionCost' = case card of
-          PlayerCard pc -> if pcFast pc then 0 else actionCost a Action.Play
-          _ -> actionCost a Action.Play
+        isFast = case card of
+          PlayerCard pc -> pcFast pc
+          _ -> False
+        actionCost' = if isFast then 0 else actionCost a Action.Play
       a <$ unshiftMessages
         [ TakeAction iid actionCost' Action.Play
         , PayCardCost iid cardId
-        , CheckAttackOfOpportunity iid
+        , CheckAttackOfOpportunity iid isFast
         , PlayCard iid cardId False
         ]
     PlayedCard iid cardId | iid == investigatorId ->
@@ -578,7 +589,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         & (actionsTaken .~ mempty)
     DrawCards iid n True | iid == investigatorId -> a <$ unshiftMessages
       [ TakeAction iid (actionCost a Action.Draw) Action.Draw
-      , CheckAttackOfOpportunity iid
+      , CheckAttackOfOpportunity iid False
       , DrawCards iid n False
       ]
     DrawCards iid n False | iid == investigatorId ->
@@ -603,7 +614,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       pure $ a & resources -~ n & resources %~ max 0
     TakeResources iid n True | iid == investigatorId -> a <$ unshiftMessages
       [ TakeAction iid (actionCost a Action.Resource) Action.Resource
-      , CheckAttackOfOpportunity iid
+      , CheckAttackOfOpportunity iid False
       , TakeResources iid n False
       ]
     TakeResources iid n False | iid == investigatorId ->
@@ -635,7 +646,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
                           , Action.Resign
                           , Action.Parley
                           ]
-              then unshiftMessage (CheckAttackOfOpportunity iid)
+              then unshiftMessage (CheckAttackOfOpportunity iid False)
               else pure ()
           _ -> pure ()
         pure a
@@ -725,7 +736,6 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           <> [Continue "Skip playing fast cards"]
           )
         else pure a
-
     TakeAction iid actionCost' action | iid == investigatorId ->
       pure
         $ a

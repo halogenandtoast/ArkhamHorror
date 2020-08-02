@@ -9,8 +9,11 @@ import Arkham.Types.GameRunner
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Query
+import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Target
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
 
@@ -22,6 +25,7 @@ allEvents
 allEvents "01022" = evidence
 allEvents "01023" = dodge
 allEvents "01024" = dynamiteBlast
+allEvents "01036" = mindOverMatter
 allEvents "01037" = workingAHunch
 allEvents "01088" = emergencyCache
 allEvents evid = const (throwString $ "No event with id: " <> show evid)
@@ -50,6 +54,18 @@ dynamiteBlast iid = do
            (\iid' -> InvestigatorDamage iid' (EventSource "01023") 3 0)
            investigatorIds
   unshiftMessage (Ask $ ChooseOne $ concat choices)
+
+
+mindOverMatter
+  :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
+mindOverMatter iid = unshiftMessages
+  [ AddModifier
+    (InvestigatorTarget iid)
+    (UseSkillInPlaceOf SkillCombat SkillIntellect (EventSource "01036"))
+  , AddModifier
+    (InvestigatorTarget iid)
+    (UseSkillInPlaceOf SkillAgility SkillIntellect (EventSource "01036"))
+  ]
 
 workingAHunch
   :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()

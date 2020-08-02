@@ -9,6 +9,7 @@ module Arkham.Types.Investigator
   , lookupInvestigator
   , handOf
   , deckOf
+  , availableSkillsFor
   , GetInvestigatorId(..)
   , Investigator
   )
@@ -335,6 +336,9 @@ handOf = view hand . investigatorAttrs
 
 deckOf :: Investigator -> Deck PlayerCard
 deckOf = view deck . investigatorAttrs
+
+availableSkillsFor :: Investigator -> SkillType -> [SkillType]
+availableSkillsFor i s = possibleSkillTypeChoices s (investigatorAttrs i)
 
 hasEndedTurn :: Investigator -> Bool
 hasEndedTurn = view endedTurn . investigatorAttrs

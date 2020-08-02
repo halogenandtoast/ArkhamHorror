@@ -390,9 +390,9 @@ instance (EnemyRunner env) => RunMessage env Attrs where
           )
         $ unshiftMessage (EnemyEngageInvestigator enemyId iid)
       pure a
-    CheckAttackOfOpportunity iid
-      | iid `elem` enemyEngagedInvestigators && not enemyExhausted -> a
-      <$ unshiftMessage (EnemyWillAttack iid enemyId)
+    CheckAttackOfOpportunity iid isFast
+      | not isFast && iid `elem` enemyEngagedInvestigators && not enemyExhausted
+      -> a <$ unshiftMessage (EnemyWillAttack iid enemyId)
     InvestigatorDrawEnemy _ lid eid | eid == enemyId -> do
       unshiftMessage (EnemySpawn lid eid)
       pure $ a & location .~ lid

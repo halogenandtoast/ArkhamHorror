@@ -149,6 +149,7 @@ data Message
   | EmptyDeck InvestigatorId
   | DrawCards InvestigatorId Int Bool
   | HealHorror Target Int
+  | HealDamage Target Int
   | DrewRevelation InvestigatorId CardCode CardId
   | RemoveCardFromHand InvestigatorId CardCode
   | DiscardCard InvestigatorId CardId

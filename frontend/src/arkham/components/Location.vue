@@ -121,4 +121,8 @@ export default class Location extends Vue {
   border: 3px solid #FF00FF;
   cursor: pointer;
 }
+
+.card {
+  width: 200px;
+}
 </style>

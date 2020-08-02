@@ -151,9 +151,13 @@ export default class Player extends Vue {
 
 .player-cards {
   width: 100vw;
-  overflow-x: scroll;
   box-sizing: border-box;
   background: #888;
   padding: 10px;
+}
+
+.hand {
+  overflow-x: scroll;
+  height: 100%;
 }
 </style>

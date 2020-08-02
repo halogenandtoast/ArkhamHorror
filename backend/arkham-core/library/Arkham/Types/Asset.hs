@@ -287,7 +287,7 @@ beatCop uuid = BeatCop $ BeatCopI $ (baseAttrs uuid "01018")
   { assetSlots = [AllySlot]
   , assetHealth = Just 2
   , assetSanity = Just 2
-  , (AssetSource uuid, 1, FreeAbility AnyWindow, NoLimit)
+  , assetAbilities = [(AssetSource uuid, 1, FreeAbility AnyWindow, NoLimit)]
   }
 
 newtype MacheteI = MacheteI Attrs

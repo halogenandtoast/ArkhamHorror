@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="player-cards">
     <section class="in-play">
       <Asset
         v-for="asset in player.contents.assets"
@@ -35,7 +35,7 @@
         <img
           :src="topOfDiscard"
           class="card"
-          width="200px"
+          width="150px"
         />
       </div>
       <img
@@ -147,5 +147,13 @@ export default class Player extends Vue {
 
 .in-play {
   display: flex;
+}
+
+.player-cards {
+  width: 100vw;
+  overflow-x: scroll;
+  box-sizing: border-box;
+  background: #888;
+  padding: 10px;
 }
 </style>

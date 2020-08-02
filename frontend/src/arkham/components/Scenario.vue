@@ -6,7 +6,6 @@
         <img
           :src="topOfEncounterDiscard"
           class="card"
-          width="200px"
         />
       </div>
       <img class="card" src="/img/arkham/back.png" />
@@ -33,6 +32,7 @@
         @choose="$emit('choose', $event)"
       />
     </div>
+
     <div class="location-cards">
       <Location
         v-for="(location, key) in game.currentData.locations"
@@ -43,6 +43,7 @@
         @choose="$emit('choose', $event)"
       />
     </div>
+
     <Player
       :game="game"
       :player="player"
@@ -113,10 +114,10 @@ export default class Scenario extends Vue {
 
 <style scoped lang="scss">
 .card {
-  width: 250px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 13px;
   margin: 2px;
+  width: 200px;
 }
 
 .card--sideways {
@@ -128,6 +129,7 @@ export default class Scenario extends Vue {
   display: flex;
   align-self: center;
   align-items: center;
+  justify-content: center;
 }
 
 .clue--can-investigate {
@@ -187,6 +189,7 @@ export default class Scenario extends Vue {
 }
 
 .discard {
+  height: 100%;
   position: relative;
   &::after {
     content: "";

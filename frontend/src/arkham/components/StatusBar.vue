@@ -1,14 +1,24 @@
 <template>
-  <footer>
-    <div v-if="afterDiscoverCluesAction !== -1">
-      <p>You got some clues</p>
-      <button @click="$emit('choose', afterDiscoverCluesAction)">Continue</button>
-    </div>
+  <section v-if="shouldShow">
+    <div class="choices" v-for="(choice, index) in choices" :key="index">
+      <div v-if="choice.tag === MessageType.AFTER_DISCOVER_CLUES">
+        <p>You got some clues</p>
+        <button @click="$emit('choose', index)">Continue</button>
+      </div>
 
-    <div v-if="continueAction !== -1">
-      <button @click="$emit('choose', continueAction)">{{continueLabel}}</button>
+      <div v-if="choice.tag === MessageType.CONTINUE">
+        <button @click="$emit('choose', index)">{{choice.contents}}</button>
+      </div>
+
+      <a
+        v-if="choice.tag === MessageType.BEGIN_SKILL_TEST_AFTER_FAST"
+        class="button"
+        @click="$emit('choose', index)"
+      >
+        Use <i :class="`icon${choice.contents[3]}`"></i>
+      </a>
     </div>
-  </footer>
+  </section>
 </template>
 
 <script lang="ts">
@@ -20,24 +30,90 @@ import { MessageType } from '@/arkham/types/Message';
 export default class StatusBar extends Vue {
   @Prop(Object) readonly game!: Game
 
+  MessageType: any = MessageType // eslint-disable-line
+
   get choices() {
     return choices(this.game);
   }
 
-  get afterDiscoverCluesAction() {
-    return this.choices.findIndex((c) => c.tag === MessageType.AFTER_DISCOVER_CLUES);
-  }
+  get shouldShow() {
+    const validMessageTags = [
+      MessageType.CONTINUE,
+      MessageType.AFTER_DISCOVER_CLUES,
+      MessageType.BEGIN_SKILL_TEST_AFTER_FAST,
+    ];
 
-  get continueAction() {
-    return this.choices.findIndex((c) => c.tag === MessageType.CONTINUE);
-  }
-
-  get continueLabel() {
-    if (this.continueAction !== -1) {
-      return this.choices[this.continueAction].contents;
-    }
-
-    return '';
+    return this.choices.some((choice) => validMessageTags.includes(choice.tag));
   }
 }
 </script>
+
+<style scoped lang="scss">
+i {
+  font-family: 'Arkham';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+
+}
+
+i.iconSkillWillpower {
+  &:before {
+    font-family: "Arkham";
+    content: "\0041";
+  }
+}
+
+i.iconSkillIntellect {
+  &:before {
+    font-family: "Arkham";
+    content: "\0046";
+  }
+}
+
+i.iconSkillCombat {
+  &:before {
+    font-family: "Arkham";
+    content: "\0044";
+  }
+}
+
+i.iconSkillAgility {
+  &:before {
+    font-family: "Arkham";
+    content: "\0042";
+  }
+}
+
+section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  background: #2D6153;
+}
+
+.button {
+  display: inline-block;
+  padding: 5px 10px;
+  margin: 2px;
+  background-color: #333;
+  color: white;
+  border: 1px solid #666;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #111;
+  }
+
+  &:active {
+    background-color: #666;
+    border-color: #111;
+  }
+}
+</style>

@@ -17,6 +17,7 @@ import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import qualified Arkham.Types.FastWindow as Fast
+import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
@@ -28,12 +29,10 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Token as Token
 import Arkham.Types.Trait
-import ClassyPrelude hiding (unpack)
+import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
-import Data.Text.Lazy (unpack)
-import Data.Text.Lazy.Builder
 import Lens.Micro
 import Lens.Micro.Extras
 import Safe (fromJustNote)
@@ -99,31 +98,6 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "asset"
 
-data AttrsWithMetadata a = AttrsWithMetadata { attrs :: Attrs, metadata :: a }
-  deriving stock (Show, Generic)
-
-instance (ToJSON a) => ToJSON (AttrsWithMetadata a) where
-  toJSON AttrsWithMetadata {..} = case (toJSON attrs, toJSON metadata) of
-    (Object o, Object m) -> Object $ HashMap.union m o
-    (a, b) -> metadataError a b
-   where
-    metadataError a b =
-      error
-        . unpack
-        . toLazyText
-        $ "AttrsWithMetadata failed to serialize to object: "
-        <> "\nattrs: "
-        <> encodeToTextBuilder a
-        <> "\nmetadata: "
-        <> encodeToTextBuilder b
-
-instance (FromJSON a) => FromJSON (AttrsWithMetadata a) where
-  parseJSON = withObject "AttrsWithMetadata" $ \o ->
-    AttrsWithMetadata <$> parseJSON (Object o) <*> parseJSON (Object o)
-
-with :: Attrs -> a -> AttrsWithMetadata a
-with attrs a = AttrsWithMetadata attrs a
-
 defeated :: Attrs -> Bool
 defeated Attrs {..} =
   maybe False (assetHealthDamage >=) assetHealth
@@ -159,7 +133,7 @@ assetAttrs = \case
   OldBookOfLore attrs -> coerce attrs
   ResearchLibrarian attrs -> coerce attrs
   HolyRosary attrs -> coerce attrs
-  Shrivelling (ShrivellingI AttrsWithMetadata {..}) -> attrs
+  Shrivelling (ShrivellingI (attrs `With` _)) -> attrs
   Knife attrs -> coerce attrs
   Flashlight attrs -> coerce attrs
   LitaChantler attrs -> coerce attrs
@@ -321,7 +295,7 @@ newtype ShrivellingMetadata = ShrivellingMetadata { inUse :: Bool }
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON) -- must parse to object
 
-newtype ShrivellingI = ShrivellingI (AttrsWithMetadata ShrivellingMetadata)
+newtype ShrivellingI = ShrivellingI (Attrs `With` ShrivellingMetadata)
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -599,7 +573,7 @@ instance (AssetRunner env) => RunMessage env MacheteI where
     _ -> MacheteI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env ShrivellingI where
-  runMessage msg a@(ShrivellingI (AttrsWithMetadata attrs@Attrs {..} metadata@ShrivellingMetadata {..}))
+  runMessage msg a@(ShrivellingI (attrs@Attrs {..} `With` metadata@ShrivellingMetadata {..}))
     = case msg of
       InvestigatorPlayAsset _ aid | aid == assetId -> do
         let

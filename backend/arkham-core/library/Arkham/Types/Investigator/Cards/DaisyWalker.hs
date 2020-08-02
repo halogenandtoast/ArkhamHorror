@@ -5,6 +5,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
+import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Stats
@@ -18,7 +19,7 @@ newtype DaisyWalkerMetadata = DaisyWalkerMetadata { tomeActions :: Int }
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON) -- must parse to object
 
-newtype DaisyWalkerI = DaisyWalkerI (AttrsWithMetadata DaisyWalkerMetadata)
+newtype DaisyWalkerI = DaisyWalkerI (Attrs `With` DaisyWalkerMetadata)
   deriving newtype (Show, ToJSON, FromJSON)
 
 daisyWalker :: DaisyWalkerI
@@ -34,7 +35,7 @@ daisyWalker = DaisyWalkerI $ (baseAttrs "01002" "Daisy Walker" stats [Miskatonic
       }
 
 instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
-  runMessage msg i@(DaisyWalkerI (AttrsWithMetadata attrs@Attrs {..} metadata@DaisyWalkerMetadata {..})) = case msg of
+  runMessage msg i@(DaisyWalkerI (attrs@Attrs {..} `With` metadata@DaisyWalkerMetadata {..})) = case msg of
     ActivateCardAbilityAction iid (AssetSource aid, abilityIndex, abilityType, abilityLimit) | iid == investigatorId-> do
       traits <- asks (getSet aid)
       if Tome `elem` traits && tomeActions > 0

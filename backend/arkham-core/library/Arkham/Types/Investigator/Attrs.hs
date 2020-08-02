@@ -26,11 +26,8 @@ import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude hiding (unpack)
 import Data.Coerce
-import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Lens.Micro
-import Data.Text.Lazy (unpack)
-import Data.Text.Lazy.Builder
 import Safe (fromJustNote)
 import System.Random
 import System.Random.Shuffle
@@ -76,31 +73,6 @@ instance ToJSON Attrs where
 
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "investigator"
-
-data AttrsWithMetadata a = AttrsWithMetadata { attrs :: Attrs, metadata :: a }
-  deriving stock (Show, Generic)
-
-instance (ToJSON a) => ToJSON (AttrsWithMetadata a) where
-  toJSON AttrsWithMetadata {..} = case (toJSON attrs, toJSON metadata) of
-    (Object o, Object m) -> Object $ HashMap.union m o
-    (a, b) -> metadataError a b
-   where
-    metadataError a b =
-      error
-        . unpack
-        . toLazyText
-        $ "AttrsWithMetadata failed to serialize to object: "
-        <> "\nattrs: "
-        <> encodeToTextBuilder a
-        <> "\nmetadata: "
-        <> encodeToTextBuilder b
-
-instance (FromJSON a) => FromJSON (AttrsWithMetadata a) where
-  parseJSON = withObject "AttrsWithMetadata" $ \o ->
-    AttrsWithMetadata <$> parseJSON (Object o) <*> parseJSON (Object o)
-
-with :: Attrs -> a -> AttrsWithMetadata a
-with attrs a = AttrsWithMetadata attrs a
 
 locationId :: Lens' Attrs LocationId
 locationId = lens investigatorLocation $ \m x -> m { investigatorLocation = x }

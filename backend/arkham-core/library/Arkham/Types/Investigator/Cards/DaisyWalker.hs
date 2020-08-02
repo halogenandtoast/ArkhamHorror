@@ -48,8 +48,8 @@ instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
          else DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
     ResolveToken ElderSign iid skillValue | iid == investigatorId -> do
       tomeCount <- unAssetCount <$> asks (getCount (iid, [Tome]))
-      unshiftMessage
-        (AddOnSuccess (Ask $ ChooseTo $ DrawCards iid tomeCount False))
-      i <$ runTest skillValue
+      runTest skillValue -- Because this unshifts we need to call this before the on success is added
+      i <$ unshiftMessage
+        (AddOnSuccess (Ask $ ChooseOne [DrawCards iid tomeCount False, Continue "Do not use Daisy's ability"]))
     BeginRound -> DaisyWalkerI . (`with` DaisyWalkerMetadata 1) <$> runMessage msg attrs
     _ -> DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs

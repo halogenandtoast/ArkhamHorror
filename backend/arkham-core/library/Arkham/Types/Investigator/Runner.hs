@@ -31,4 +31,5 @@ type InvestigatorRunner env
     , HasList Ability TreacheryId env
     , HasList Ability () env
     , HasList UsedAbility () env
+    , HasSet Trait AssetId env
     )

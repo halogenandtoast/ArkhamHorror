@@ -327,6 +327,9 @@ instance HasList Ability LocationId Game where
 instance HasList Ability AssetId Game where
   getList aid = getAbilities . getAsset aid
 
+instance HasSet Trait AssetId Game where
+  getSet aid = getTraits . getAsset aid
+
 instance HasSet RemainingHealth () Game where
   getSet _ =
     HashSet.fromList

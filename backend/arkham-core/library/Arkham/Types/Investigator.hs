@@ -133,7 +133,7 @@ investigatorAttrs = \case
   AshcanPete attrs -> coerce attrs
   CalvinWright attrs -> coerce attrs
   CarolynFern attrs -> coerce attrs
-  DaisyWalker attrs -> coerce attrs
+  DaisyWalker (DaisyWalkerI (AttrsWithMetadata attrs _)) -> attrs
   DexterDrake attrs -> coerce attrs
   DianaStanley attrs -> coerce attrs
   FatherMateo attrs -> coerce attrs

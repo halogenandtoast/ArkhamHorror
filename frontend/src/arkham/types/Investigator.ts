@@ -35,6 +35,7 @@ export interface InvestigatorContents {
   treacheries: string[];
   defeated: boolean;
   resigned: boolean;
+  tomeActions?: number;
 }
 
 export const investigatorContentsDecoder = JsonDecoder.object<InvestigatorContents>({
@@ -63,6 +64,7 @@ export const investigatorContentsDecoder = JsonDecoder.object<InvestigatorConten
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
   defeated: JsonDecoder.boolean,
   resigned: JsonDecoder.boolean,
+  tomeActions: JsonDecoder.optional(JsonDecoder.number),
 }, 'Attrs');
 
 export const investigatorDecoder = JsonDecoder.object<Investigator>({

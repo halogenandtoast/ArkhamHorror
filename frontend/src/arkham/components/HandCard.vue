@@ -114,8 +114,18 @@ export default class HandCard extends Vue {
   margin: 2px;
   display: inline-block;
 
-  img {
+  .card {
     width: 150px;
+    border-radius: 6px;
+
+    &--can-play, &--can-commit, &--can-uncommit {
+      border: 2px solid #FF00FF;
+      cursor: pointer;
+    }
+
+    &--can-uncommit {
+      margin-top: -10px;
+    }
   }
 
   &:hover {
@@ -125,13 +135,5 @@ export default class HandCard extends Vue {
     }
   }
 
-  &--can-play, &--can-commit, &--can-uncommit {
-    border: 2px solid #FF00FF;
-    cursor: pointer;
-  }
-
-  &--can-uncommit {
-    margin-top: -10px;
-  }
 }
 </style>

@@ -12,6 +12,14 @@
     </div>
     <div>
       <img
+        v-if="investigateAction !== -1 && clues === 0"
+        :class="{ 'location--can-interact': cardAction !== -1 }"
+        class="card"
+        :src="image"
+        @click="warnAction('There are no clues left, are you sure?', investigateAction)"
+      />
+      <img
+        v-else
         :class="{ 'location--can-interact': cardAction !== -1 }"
         class="card"
         :src="image"
@@ -67,6 +75,10 @@ export default class Location extends Vue {
 
   portrait = (cardCode: string) => `/img/arkham/portraits/${cardCode}.jpg`
 
+  get clues() {
+    return this.location.contents.clues;
+  }
+
   get image() {
     const { id, revealed } = this.location.contents;
     const suffix = revealed ? '' : 'b';
@@ -106,6 +118,12 @@ export default class Location extends Vue {
     const enemyIds = this.location.contents.enemies;
     return enemyIds
       .filter((e) => this.game.currentData.enemies[e].contents.engagedInvestigators.length === 0);
+  }
+
+  warnAction(msg: string, action: number) {
+    if (window.confirm(msg)) { // eslint-disable-line
+      this.$emit('choose', action);
+    }
   }
 }
 </script>

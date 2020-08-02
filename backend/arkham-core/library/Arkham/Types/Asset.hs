@@ -49,6 +49,7 @@ allAssets = HashMap.fromList
   , ("01009", theNecronomicon)
   , ("01016", fortyFiveAutomatic)
   , ("01017", physicalTraining)
+  , ("01018", beatCop)
   , ("01020", machete)
   , ("01021", guardDog)
   , ("01030", magnifyingGlass)
@@ -118,6 +119,7 @@ data Asset
   | TheNecronomicon TheNecronomiconI
   | FortyFiveAutomatic FortyFiveAutomaticI
   | PhysicalTraining PhysicalTrainingI
+  | BeatCop BeatCopI
   | Machete MacheteI
   | GuardDog GuardDogI
   | MagnifyingGlass MagnifyingGlassI
@@ -141,6 +143,7 @@ assetAttrs = \case
   TheNecronomicon (TheNecronomiconI (attrs `With` _)) -> attrs
   FortyFiveAutomatic attrs -> coerce attrs
   PhysicalTraining attrs -> coerce attrs
+  BeatCop attrs -> coerce attrs
   Machete attrs -> coerce attrs
   GuardDog attrs -> coerce attrs
   MagnifyingGlass attrs -> coerce attrs
@@ -274,6 +277,17 @@ physicalTraining uuid = PhysicalTraining $ PhysicalTrainingI $ (baseAttrs
       )
     , (AssetSource uuid, 2, FreeAbility (SkillTestWindow SkillCombat), NoLimit)
     ]
+  }
+
+newtype BeatCopI = BeatCopI Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+beatCop :: AssetId -> Asset
+beatCop uuid = BeatCop $ BeatCopI $ (baseAttrs uuid "01018")
+  { assetSlots = [AllySlot]
+  , assetHealth = Just 2
+  , assetSanity = Just 2
+  , (AssetSource uuid, 1, FreeAbility AnyWindow, NoLimit)
   }
 
 newtype MacheteI = MacheteI Attrs
@@ -425,6 +439,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     TheNecronomicon x -> TheNecronomicon <$> runMessage msg x
     FortyFiveAutomatic x -> FortyFiveAutomatic <$> runMessage msg x
     PhysicalTraining x -> PhysicalTraining <$> runMessage msg x
+    BeatCop x -> BeatCop <$> runMessage msg x
     Machete x -> Machete <$> runMessage msg x
     GuardDog x -> GuardDog <$> runMessage msg x
     MagnifyingGlass x -> MagnifyingGlass <$> runMessage msg x
@@ -570,6 +585,25 @@ instance (AssetRunner env) => RunMessage env PhysicalTrainingI where
         ]
       pure a
     _ -> PhysicalTrainingI <$> runMessage msg attrs
+
+instance (AssetRunner env) => RunMessage env BeatCopI where
+  runMessage msg (BeatCopI attrs@Attrs {..}) = case msg of
+    InvestigatorPlayAsset iid aid | aid == assetId -> do
+      unshiftMessage (AddModifier
+        (InvestigatorTarget iid)
+        (SkillModifier SkillCombat 1 (AssetSource aid)))
+      pure a
+    UseCardAbility iid ((AssetSource aid), 2, _, _) | aid == assetId -> do
+      locationId <- asks (getId @LocationId ownerId)
+      locationEnemyIds <- HashSet.toList <$> asks (getSet locationId)
+      unshiftMessages
+        [ DiscardAsset aid
+        , (Ask $ ChooseOne
+            [EnemyDamage eid iid (AssetSource assetId) 1
+            | eid <- locationEnemyIds])
+        ]
+      pure a
+    _ -> BeatCopI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env GuardDogI where
   runMessage msg (GuardDogI attrs@Attrs {..}) = case msg of

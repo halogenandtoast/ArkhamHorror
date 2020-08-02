@@ -139,6 +139,7 @@ allPlayerCards = HashMap.fromList
   , ("01009", theNecronomicon)
   , ("01016", fortyFiveAutomatic)
   , ("01017", physicalTraining)
+  , ("01018", beatCop)
   , ("01020", machete)
   , ("01021", guardDog)
   , ("01022", evidence)
@@ -206,6 +207,12 @@ physicalTraining :: CardId -> PlayerCard
 physicalTraining cardId = (asset cardId "01017" "Physical Training" 2 Guardian)
   { pcSkills = [SkillIntellect, SkillCombat]
   , pcTraits = [Talent]
+  }
+
+beatCop :: CardId -> PlayerCard
+beatCop cardId = (asset cardId "01018" "Beat Cop" 4 Guardian)
+  { pcSkills = [SkillCombat]
+  , pcTraits = [Ally, Police]
   }
 
 machete :: CardId -> PlayerCard

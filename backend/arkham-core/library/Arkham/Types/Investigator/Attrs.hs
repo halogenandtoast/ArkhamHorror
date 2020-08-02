@@ -288,6 +288,7 @@ isPlayable a@Attrs {..} windows c@(PlayerCard MkPlayerCard {..}) =
     && (pcCost <= investigatorResources)
     && none prevents investigatorModifiers
     && (not pcFast || (pcFast && cardInWindows windows c a))
+    && (pcAction `notElem` [Just Action.Evade] || not (null investigatorEngagedEnemies))
  where
   none f = not . any f
   prevents (CannotPlay types _) = pcCardType `elem` types

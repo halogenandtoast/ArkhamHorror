@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 41e46c88d2cab31fddb329d2f239628d542af15124d4fad7b055d27ce6884049
+-- hash: 9b69a4b82bd64eec18f626fd8e3df8a82fade72006f6238deeda7c9a60487737
 
 name:           arkham-core
 version:        0.0.0
@@ -114,7 +114,7 @@ library
       Paths_arkham_core
   hs-source-dirs:
       library
-  default-extensions: NoImplicitPrelude RecordWildCards DerivingStrategies DeriveGeneric DeriveAnyClass LambdaCase FlexibleInstances MultiParamTypeClasses GeneralizedNewtypeDeriving OverloadedStrings TypeApplications TupleSections FlexibleContexts ConstraintKinds StandaloneDeriving DerivingVia
+  default-extensions: NoImplicitPrelude RecordWildCards DerivingStrategies DeriveGeneric DeriveAnyClass LambdaCase FlexibleInstances MultiParamTypeClasses GeneralizedNewtypeDeriving OverloadedStrings TypeApplications TypeOperators TupleSections FlexibleContexts ConstraintKinds StandaloneDeriving DerivingVia
   build-depends:
       aeson
     , aeson-casing

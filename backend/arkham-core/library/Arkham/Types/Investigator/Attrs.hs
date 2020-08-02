@@ -551,8 +551,14 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         , CheckAttackOfOpportunity iid isFast
         , PlayCard iid cardId False
         ]
-    PlayedCard iid cardId | iid == investigatorId ->
-      pure $ a & hand %~ filter ((/= cardId) . getCardId)
+    PlayedCard iid cardId discarded | iid == investigatorId -> do
+      let
+        card = fromJustNote "not in hand... spooky"
+          $ find ((== cardId) . getCardId) investigatorHand
+        discardUpdate = case card of
+          PlayerCard pc -> if discarded then discard %~ (pc :) else id
+          _ -> error "We should decide what happens here"
+      pure $ a & hand %~ filter ((/= cardId) . getCardId) & discardUpdate
     InvestigatorPlayAsset iid aid | iid == investigatorId ->
       pure $ a & assets %~ HashSet.insert aid
     InvestigatorDamage iid _ health sanity | iid == investigatorId -> do

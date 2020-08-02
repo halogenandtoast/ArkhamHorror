@@ -103,7 +103,7 @@ data Message
   | EnemyDamage EnemyId InvestigatorId Source Int
   | EnemyDefeated EnemyId InvestigatorId CardCode Source
   | PlayCard InvestigatorId CardId Bool
-  | PlayedCard InvestigatorId CardId
+  | PlayedCard InvestigatorId CardId Bool
   | InvestigatorAssignDamage InvestigatorId EnemyId Int Int
   | AssetDamage AssetId EnemyId Int Int
   | AssetDefeated AssetId

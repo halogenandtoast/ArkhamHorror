@@ -602,11 +602,12 @@ runGameMessage msg g = case msg of
               "could not find asset"
               (HashMap.lookup (pcCardCode pc) allAssets)
               aid
-          unshiftMessages [InvestigatorPlayAsset iid aid, PlayedCard iid cardId]
+          unshiftMessages
+            [InvestigatorPlayAsset iid aid, PlayedCard iid cardId False]
           pure $ g & assets %~ HashMap.insert aid asset
         EventType -> do
           void $ allEvents (pcCardCode pc) iid
-          unshiftMessage (PlayedCard iid cardId)
+          unshiftMessage (PlayedCard iid cardId True)
           pure g
         _ -> pure g
       EncounterCard _ -> pure g

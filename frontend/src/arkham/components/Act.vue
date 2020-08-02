@@ -49,7 +49,7 @@ export default class Act extends Vue {
 
 .card--sideways {
   width: auto;
-  height: 250px;
+  height: 200px;
 }
 
 .act--can-progress {

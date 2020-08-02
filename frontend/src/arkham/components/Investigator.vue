@@ -1,10 +1,10 @@
 <template>
   <div>
     <img
-      :class="{ 'investigator--can-interact': takeDamageAction !== -1 }"
+      :class="{ 'investigator--can-interact': investigatorAction !== -1 }"
       class="card"
       :src="image"
-      @click="$emit('choose', takeDamageAction)"
+      @click="$emit('choose', investigatorAction)"
     />
 
     <div class="resources">
@@ -28,7 +28,7 @@
         <img src="/img/arkham/sanity.png"/>
         <span>{{player.contents.sanityDamage}}</span>
       </div>
-      <p><i class="action" v-for="n in player.contents.remainingActions" :key="n"></i></p>
+      <span><i class="action" v-for="n in player.contents.remainingActions" :key="n"></i></span>
       <button
         :disabled="endTurnAction === -1"
         @click="$emit('choose', endTurnAction)"
@@ -50,6 +50,24 @@ export default class Investigator extends Vue {
 
   get choices() {
     return choices(this.game);
+  }
+
+  get id() {
+    return this.player.contents.id;
+  }
+
+  get investigatorAction() {
+    if (this.searchTopOfDeckAction !== -1) {
+      return this.searchTopOfDeckAction;
+    }
+
+    return this.takeDamageAction;
+  }
+
+  get searchTopOfDeckAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.SEARCH_TOP_OF_DECK && c.contents[0] === this.id);
   }
 
   get takeDamageAction() {
@@ -91,8 +109,8 @@ i.action {
 
 .poolItem {
   position: relative;
-  width: 57px;
-  height: 73px;
+  width: 30px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,6 +119,7 @@ i.action {
   font-size: 1.7em;
 
   img {
+    width: 100%;
     position: absolute;
     top: 0;
     bottom: 0;
@@ -115,8 +134,9 @@ i.action {
     position: relative;
     background: rgba(255,255,255,0.5);
     border-radius: 20px;
-    width: 1.25em;
-    height: 1.25em;
+    font-size: 0.8em;
+    width: 1.05em;
+    height: 1.05em;
     align-items: center;
     justify-content: center;
   }
@@ -135,12 +155,12 @@ i.action {
 }
 
 .poolItem-resource {
-  padding-right:5px;
+  padding-right:8px;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
 
 .resource--can-take {
-  padding: 3px;
+  padding: 0px;
   cursor: pointer;
   background-color: #FF00FF;
 }
@@ -152,6 +172,6 @@ i.action {
 
 .card {
   width: auto;
-  height: 250px;
+  height: 200px;
 }
 </style>

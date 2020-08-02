@@ -16,6 +16,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
+import qualified Arkham.Types.FastWindow as Fast
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
@@ -25,7 +26,6 @@ import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
-import qualified Arkham.Types.FastWindow as Fast
 import qualified Arkham.Types.Token as Token
 import Arkham.Types.Trait
 import ClassyPrelude hiding (unpack)
@@ -50,6 +50,7 @@ allAssets = HashMap.fromList
   , ("01020", machete)
   , ("01021", guardDog)
   , ("01030", magnifyingGlass)
+  , ("01031", oldBookOfLore)
   , ("01032", researchLibrarian)
   , ("01059", holyRosary)
   , ("01060", shrivelling)
@@ -62,7 +63,9 @@ instance HasCardCode Asset where
   getCardCode = assetCardCode . assetAttrs
 
 instance HasAbilities Asset where
-  getAbilities = assetAbilities . assetAttrs
+  getAbilities a =
+    let attrs = assetAttrs a
+    in if assetExhausted attrs then [] else assetAbilities attrs
 
 instance HasTraits Asset where
   getTraits = assetTraits . assetAttrs
@@ -85,6 +88,7 @@ data Attrs = Attrs
   , assetTraits :: HashSet Trait
   , assetAbilities :: [Ability]
   , assetUses :: Uses
+  , assetExhausted :: Bool
   }
   deriving stock (Show, Generic)
 
@@ -133,6 +137,7 @@ data Asset
   | Machete MacheteI
   | GuardDog GuardDogI
   | MagnifyingGlass MagnifyingGlassI
+  | OldBookOfLore OldBookOfLoreI
   | ResearchLibrarian ResearchLibrarianI
   | HolyRosary HolyRosaryI
   | Shrivelling ShrivellingI
@@ -151,6 +156,7 @@ assetAttrs = \case
   Machete attrs -> coerce attrs
   GuardDog attrs -> coerce attrs
   MagnifyingGlass attrs -> coerce attrs
+  OldBookOfLore attrs -> coerce attrs
   ResearchLibrarian attrs -> coerce attrs
   HolyRosary attrs -> coerce attrs
   Shrivelling (ShrivellingI AttrsWithMetadata {..}) -> attrs
@@ -187,7 +193,11 @@ baseAttrs aid cardCode =
       , assetTraits = HashSet.fromList pcTraits
       , assetAbilities = mempty
       , assetUses = NoUses
+      , assetExhausted = False
       }
+
+exhausted :: Lens' Attrs Bool
+exhausted = lens assetExhausted $ \m x -> m { assetExhausted = x }
 
 uses :: Lens' Attrs Uses
 uses = lens assetUses $ \m x -> m { assetUses = x }
@@ -256,7 +266,7 @@ machete :: AssetId -> Asset
 machete uuid = Machete $ MacheteI $ (baseAttrs uuid "01020")
   { assetSlots = [HandSlot]
   , assetAbilities =
-    [(AssetSource uuid, 1, ActionAbility 1 Action.Fight, NoLimit)]
+    [(AssetSource uuid, 1, ActionAbility 1 (Just Action.Fight), NoLimit)]
   }
 
 newtype GuardDogI = GuardDogI Attrs
@@ -273,19 +283,30 @@ newtype MagnifyingGlassI = MagnifyingGlassI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 magnifyingGlass :: AssetId -> Asset
-magnifyingGlass uuid = MagnifyingGlass $ MagnifyingGlassI $ (baseAttrs uuid "01030")
+magnifyingGlass uuid =
+  MagnifyingGlass $ MagnifyingGlassI $ (baseAttrs uuid "01030")
+    { assetSlots = [HandSlot]
+    }
+
+newtype OldBookOfLoreI = OldBookOfLoreI Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+oldBookOfLore :: AssetId -> Asset
+oldBookOfLore uuid = OldBookOfLore $ OldBookOfLoreI $ (baseAttrs uuid "01031")
   { assetSlots = [HandSlot]
+  , assetAbilities = [(AssetSource uuid, 1, ActionAbility 1 Nothing, NoLimit)]
   }
 
 newtype ResearchLibrarianI = ResearchLibrarianI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 researchLibrarian :: AssetId -> Asset
-researchLibrarian uuid = ResearchLibrarian $ ResearchLibrarianI $ (baseAttrs uuid "01032")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 1
-  , assetSanity = Just 1
-  }
+researchLibrarian uuid =
+  ResearchLibrarian $ ResearchLibrarianI $ (baseAttrs uuid "01032")
+    { assetSlots = [AllySlot]
+    , assetHealth = Just 1
+    , assetSanity = Just 1
+    }
 
 newtype HolyRosaryI = HolyRosaryI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -356,6 +377,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     Machete x -> Machete <$> runMessage msg x
     GuardDog x -> GuardDog <$> runMessage msg x
     MagnifyingGlass x -> MagnifyingGlass <$> runMessage msg x
+    OldBookOfLore x -> OldBookOfLore <$> runMessage msg x
     ResearchLibrarian x -> ResearchLibrarian <$> runMessage msg x
     HolyRosary x -> HolyRosary <$> runMessage msg x
     Shrivelling x -> Shrivelling <$> runMessage msg x
@@ -371,7 +393,12 @@ instance (AssetRunner env) => RunMessage env Rolands38SpecialI where
           attrs
             & (uses .~ Uses Resource.Ammo 4)
             & (abilities
-              .~ [(AssetSource aid, 1, ActionAbility 1 Action.Fight, NoLimit)]
+              .~ [ ( AssetSource aid
+                   , 1
+                   , ActionAbility 1 (Just Action.Fight)
+                   , NoLimit
+                   )
+                 ]
               )
       Rolands38SpecialI <$> runMessage msg attrs'
     UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
@@ -418,7 +445,12 @@ instance (AssetRunner env) => RunMessage env FortyFiveAutomaticI where
         $ attrs
         & (uses .~ Uses Resource.Ammo 4)
         & (abilities
-          .~ [(AssetSource aid, 1, ActionAbility 1 Action.Fight, NoLimit)]
+          .~ [ ( AssetSource aid
+               , 1
+               , ActionAbility 1 (Just Action.Fight)
+               , NoLimit
+               )
+             ]
           )
     UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
       case assetUses of
@@ -477,24 +509,62 @@ instance (AssetRunner env) => RunMessage env GuardDogI where
       pure $ GuardDogI result
     _ -> GuardDogI <$> runMessage msg attrs
 
+instance (AssetRunner env) => RunMessage env OldBookOfLoreI where
+  runMessage msg (OldBookOfLoreI attrs@Attrs {..}) = case msg of
+    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
+      locationId <- asks (getId @LocationId iid)
+      investigatorIds <- HashSet.toList <$> asks (getSet locationId)
+      unshiftMessage
+        (Ask
+        $ ChooseOne
+            [ SearchTopOfDeck iid' 3 [] ShuffleBackIn
+            | iid' <- investigatorIds
+            ]
+        )
+      pure $ OldBookOfLoreI $ attrs & exhausted .~ True
+    _ -> OldBookOfLoreI <$> runMessage msg attrs
+
 instance (AssetRunner env) => RunMessage env MagnifyingGlassI where
   runMessage msg (MagnifyingGlassI attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid | aid == assetId -> do
-      unshiftMessage (AddModifier (InvestigatorTarget iid) (ActionSkillModifier Action.Investigate SkillIntellect 1 (AssetSource aid)))
+      unshiftMessage
+        (AddModifier
+          (InvestigatorTarget iid)
+          (ActionSkillModifier
+            Action.Investigate
+            SkillIntellect
+            1
+            (AssetSource aid)
+          )
+        )
       MagnifyingGlassI <$> runMessage msg attrs
     _ -> MagnifyingGlassI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env ResearchLibrarianI where
   runMessage msg a@(ResearchLibrarianI attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid | aid == assetId -> do
-      unshiftMessage (Ask $ ChooseOne [UseCardAbility iid (AssetSource assetId, 1, ReactionAbility Fast.Now, NoLimit), Continue "Do not use ability"])
+      unshiftMessage
+        (Ask $ ChooseOne
+          [ UseCardAbility
+            iid
+            (AssetSource assetId, 1, ReactionAbility Fast.Now, NoLimit)
+          , Continue "Do not use ability"
+          ]
+        )
       ResearchLibrarianI <$> runMessage msg attrs
     UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
       tomes <- map unDeckCard <$> asks (getList (iid, Tome))
-      a <$ unshiftMessage (Ask $ ChooseOneFromSource $ MkChooseOneFromSource
-        { chooseOneSource = DeckSource
-        , chooseOneChoices = map (\tome -> label (unCardCode $ pcCardCode tome) (AddToHandFromDeck iid (pcId tome))) tomes
-        })
+      a <$ unshiftMessage
+        (Ask $ ChooseOneFromSource $ MkChooseOneFromSource
+          { chooseOneSource = DeckSource
+          , chooseOneChoices = map
+            (\tome -> label
+              (unCardCode $ pcCardCode tome)
+              (AddToHandFromDeck iid (pcId tome))
+            )
+            tomes
+          }
+        )
     _ -> ResearchLibrarianI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env HolyRosaryI where
@@ -539,7 +609,7 @@ instance (AssetRunner env) => RunMessage env ShrivellingI where
               & (abilities
                 .~ [ ( AssetSource aid
                      , 1
-                     , ActionAbility 1 Action.Fight
+                     , ActionAbility 1 (Just Action.Fight)
                      , NoLimit
                      )
                    ]
@@ -622,7 +692,7 @@ instance (AssetRunner env) => RunMessage env FlashlightI where
         & (abilities
           .~ [ ( AssetSource aid
                , 1
-               , ActionAbility 1 Action.Investigate
+               , ActionAbility 1 (Just Action.Investigate)
                , NoLimit
                )
              ]
@@ -691,6 +761,7 @@ instance (AssetRunner env) => RunMessage env LitaChantlerI where
 
 instance (AssetRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
+    ReadyExhausted -> pure $ a & exhausted .~ False
     AddAbility (AssetSource aid) ability | aid == assetId ->
       pure $ a & abilities %~ (<> [ability])
     RemoveAbilitiesFrom source -> do
@@ -702,10 +773,13 @@ instance (AssetRunner env) => RunMessage env Attrs where
       let a' = a & healthDamage +~ health & sanityDamage +~ sanity
       when (defeated a') (unshiftMessage (AssetDefeated aid))
       pure a'
-    AssetDiscarded aid _ | aid == assetId ->
-      case assetInvestigator of
-        Nothing -> pure a
-        Just iid -> a <$ unshiftMessage (RemoveAllModifiersOnTargetFrom (InvestigatorTarget iid) (AssetSource aid))
+    AssetDiscarded aid _ | aid == assetId -> case assetInvestigator of
+      Nothing -> pure a
+      Just iid -> a <$ unshiftMessage
+        (RemoveAllModifiersOnTargetFrom
+          (InvestigatorTarget iid)
+          (AssetSource aid)
+        )
     InvestigatorPlayAsset iid aid | aid == assetId ->
       pure $ a & investigator ?~ iid
     TakeControlOfAsset iid aid | aid == assetId ->

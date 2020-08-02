@@ -17,6 +17,7 @@ export interface AssetContents {
   sanity: number | null;
   sanityDamage: number;
   uses: Uses | null;
+  exhausted: boolean;
 }
 
 export const assetContentsDecoder = JsonDecoder.object<AssetContents>({
@@ -28,6 +29,7 @@ export const assetContentsDecoder = JsonDecoder.object<AssetContents>({
   sanity: JsonDecoder.nullable(JsonDecoder.number),
   sanityDamage: JsonDecoder.number,
   uses: JsonDecoder.nullable(usesDecoder),
+  exhausted: JsonDecoder.boolean,
 }, 'AssetContents');
 
 export interface Asset {

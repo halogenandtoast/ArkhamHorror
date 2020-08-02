@@ -226,7 +226,12 @@ parlor =
   Parlor $ ParlorI $ (baseAttrs "01115" "Parlor" 2 (Static 0) Diamond [Square])
     { locationBlocked = True
     , locationAbilities =
-      [(LocationSource "01115", 1, ActionAbility 1 Action.Resign, NoLimit)]
+      [ ( LocationSource "01115"
+        , 1
+        , ActionAbility 1 (Just Action.Resign)
+        , NoLimit
+        )
+      ]
     }
 
 type LocationRunner env
@@ -282,7 +287,7 @@ instance (LocationRunner env) => RunMessage env ParlorI where
             (AssetSource aid)
             ( LocationSource locationId
             , 2
-            , ActionAbility 1 Action.Parley
+            , ActionAbility 1 (Just Action.Parley)
             , NoLimit
             )
           ]

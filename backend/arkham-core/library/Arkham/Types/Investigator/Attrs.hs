@@ -270,7 +270,9 @@ canPerform a@Attrs {..} Action.Play = do
 canPerform a@Attrs {..} Action.Ability = do
   availableAbilities <- getAvailableAbilities a
   filteredAbilities <- flip filterM availableAbilities $ \case
-    (_, _, ActionAbility _ action, _) -> canPerform a action -- TODO: we need to calculate the total cost
+    (_, _, ActionAbility _ (Just action), _) -> canPerform a action -- TODO: we need to calculate the total cost
+    (_, _, ActionAbility _ Nothing, _) -> pure True -- e.g. Old Book of Lore
+    (_, _, FreeAbility AnyWindow, _) -> pure True
     (_, _, FreeAbility (SkillTestWindow _), _) -> pure False
     (_, _, ReactionAbility _, _) -> pure False
 
@@ -331,8 +333,10 @@ getAvailableAbilities a@Attrs {..} = do
     , actAndAgendaAbilities
     ]
  where
-  canPerformAbility (_, _, ActionAbility _ actionType, _) =
+  canPerformAbility (_, _, ActionAbility _ (Just actionType), _) =
     canAfford a actionType
+  canPerformAbility (_, _, ActionAbility _ Nothing, _) = True -- e.g. Old Book of Lore
+  canPerformAbility (_, _, FreeAbility AnyWindow, _) = True
   canPerformAbility (_, _, FreeAbility (SkillTestWindow _), _) = False
   canPerformAbility (_, _, ReactionAbility _, _) = False
 
@@ -460,7 +464,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         pure $ takeAction Action.Fight a
     FightEnemy iid eid skillType tempModifiers True | iid == investigatorId ->
       a <$ unshiftMessages
-        [ TakeAction iid (actionCost a Action.Fight) Action.Fight
+        [ TakeAction iid (actionCost a Action.Fight) (Just Action.Fight)
         , FightEnemy iid eid skillType tempModifiers False
         ]
     FightEnemy iid eid skillType tempModifiers False | iid == investigatorId ->
@@ -485,7 +489,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       pure $ takeAction Action.Fight a
     EvadeEnemy iid eid skillType True | iid == investigatorId ->
       a <$ unshiftMessages
-        [ TakeAction iid (actionCost a Action.Evade) Action.Evade
+        [ TakeAction iid (actionCost a Action.Evade) (Just Action.Evade)
         , EvadeEnemy iid eid skillType False
         ]
     EvadeEnemy iid eid skillType False | iid == investigatorId ->
@@ -495,7 +499,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         , AfterEvadeEnemy iid eid
         ]
     MoveAction iid lid True -> a <$ unshiftMessages
-      [ TakeAction iid (actionCost a Action.Move) Action.Move
+      [ TakeAction iid (actionCost a Action.Move) (Just Action.Move)
       , CheckAttackOfOpportunity iid False
       , MoveAction iid lid False
       ]
@@ -511,7 +515,10 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           )
         )
     Investigate iid lid skillType True -> a <$ unshiftMessages
-      [ TakeAction iid (actionCost a Action.Investigate) Action.Investigate
+      [ TakeAction
+        iid
+        (actionCost a Action.Investigate)
+        (Just Action.Investigate)
       , CheckAttackOfOpportunity iid False
       , Investigate iid lid skillType False
       ]
@@ -549,7 +556,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           _ -> False
         actionCost' = if isFast then 0 else actionCost a Action.Play
       a <$ unshiftMessages
-        [ TakeAction iid actionCost' Action.Play
+        [ TakeAction iid actionCost' (Just Action.Play)
         , PayCardCost iid cardId
         , CheckAttackOfOpportunity iid isFast
         , PlayCard iid cardId False
@@ -599,7 +606,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     EndRound ->
       pure $ a & modifiers %~ filter (not . sourceIsEvent . sourceOfModifier)
     DrawCards iid n True | iid == investigatorId -> a <$ unshiftMessages
-      [ TakeAction iid (actionCost a Action.Draw) Action.Draw
+      [ TakeAction iid (actionCost a Action.Draw) (Just Action.Draw)
       , CheckAttackOfOpportunity iid False
       , DrawCards iid n False
       ]
@@ -624,7 +631,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     SpendResources iid n | iid == investigatorId ->
       pure $ a & resources -~ n & resources %~ max 0
     TakeResources iid n True | iid == investigatorId -> a <$ unshiftMessages
-      [ TakeAction iid (actionCost a Action.Resource) Action.Resource
+      [ TakeAction iid (actionCost a Action.Resource) (Just Action.Resource)
       , CheckAttackOfOpportunity iid False
       , TakeResources iid n False
       ]
@@ -650,16 +657,20 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       | iid == investigatorId -> do
         unshiftMessage (UseCardAbility iid ability) -- We should check action type when added for aoo
         case abilityType of
-          ActionAbility _ actionType ->
+          FreeAbility _ -> pure ()
+          ReactionAbility _ -> pure ()
+          ActionAbility n actionType ->
             if actionType
-                `notElem` [ Action.Fight
-                          , Action.Evade
-                          , Action.Resign
-                          , Action.Parley
+                `notElem` [ Just Action.Fight
+                          , Just Action.Evade
+                          , Just Action.Resign
+                          , Just Action.Parley
                           ]
-              then unshiftMessage (CheckAttackOfOpportunity iid False)
-              else pure ()
-          _ -> pure ()
+              then unshiftMessages
+                [ TakeAction iid n actionType
+                , CheckAttackOfOpportunity iid False
+                ]
+              else unshiftMessage (TakeAction iid n actionType)
         pure a
     AllDrawCardAndResource -> do
       let
@@ -747,11 +758,15 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           <> [Continue "Skip playing fast cards"]
           )
         else pure a
-    TakeAction iid actionCost' action | iid == investigatorId ->
+    TakeAction iid actionCost' maction | iid == investigatorId -> do
+      let
+        actionsTakenUpdate = case maction of
+          Nothing -> id
+          Just action -> (<> [action])
       pure
         $ a
         & (remainingActions %~ max 0 . subtract actionCost')
-        & (actionsTaken %~ (<> [action]))
+        & (actionsTaken %~ actionsTakenUpdate)
     AddToHandFromDeck iid cardId | iid == investigatorId -> do
       let
         card = fromJustNote "card did not exist"
@@ -760,7 +775,26 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         ((/= cardId) . getCardId)
         (unDeck investigatorDeck)
       pure $ a & deck .~ Deck deck' & hand %~ (PlayerCard card :)
-
+    SearchTopOfDeck iid n traits strategy -> do
+      let
+        cards = take n $ unDeck investigatorDeck
+        traits' = HashSet.fromList traits
+      case strategy of
+        ShuffleBackIn -> a <$ unshiftMessage
+          (Ask $ ChooseOneFromSource $ MkChooseOneFromSource
+            { chooseOneSource = DeckSource
+            , chooseOneChoices =
+              [ label
+                  (unCardCode $ pcCardCode card)
+                  (AddToHandFromDeck iid (getCardId card))
+              | card <- cards
+              , null traits'
+                || traits'
+                `intersection` HashSet.fromList (pcTraits card)
+                == traits'
+              ]
+            }
+          )
     PlayerWindow iid | iid == investigatorId -> do
       advanceableActIds <-
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())

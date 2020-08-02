@@ -105,35 +105,22 @@ export default class HandCard extends Vue {
 
 <style scoped lang="scss">
 
-.card-container {
-  width: 150px;
-  min-width: 150px;
+.card {
+  width: 120px;
+  min-width: 120px;
   border-radius: 7px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 13px;
   margin: 2px;
   display: inline-block;
 
-  .card {
-    width: 150px;
-    border-radius: 6px;
-
-    &--can-play, &--can-commit, &--can-uncommit {
-      border: 2px solid #FF00FF;
-      cursor: pointer;
-    }
-
-    &--can-uncommit {
-      margin-top: -10px;
-    }
+  &--can-play, &--can-commit, &--can-uncommit {
+    border: 2px solid #FF00FF;
+    cursor: pointer;
   }
 
-  &:hover {
-    img {
-      position: absolute;
-      transform: scale(2.0);
-    }
+  &--can-uncommit {
+    margin-top: -10px;
   }
-
 }
 </style>

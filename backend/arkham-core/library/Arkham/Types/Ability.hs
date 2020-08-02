@@ -7,11 +7,11 @@ import Arkham.Types.Source
 import ClassyPrelude
 import Data.Aeson
 
-data AbilityWindow = SkillTestWindow SkillType
+data AbilityWindow = SkillTestWindow SkillType | AnyWindow
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
-data AbilityType = FreeAbility AbilityWindow | ReactionAbility FastWindow | ActionAbility Int Action
+data AbilityType = FreeAbility AbilityWindow | ReactionAbility FastWindow | ActionAbility Int (Maybe Action)
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 

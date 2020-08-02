@@ -29,6 +29,9 @@
         <span>{{player.contents.sanityDamage}}</span>
       </div>
       <span><i class="action" v-for="n in player.contents.remainingActions" :key="n"></i></span>
+      <span v-if="player.contents.tomeActions && player.contents.tomeActions > 0">
+        <i class="action tomeAction" v-for="n in player.contents.tomeActions" :key="n"></i>
+      </span>
       <button
         :disabled="endTurnAction === -1"
         @click="$emit('choose', endTurnAction)"
@@ -173,5 +176,9 @@ i.action {
 .card {
   width: auto;
   height: 200px;
+}
+
+.tomeAction {
+  color: orange;
 }
 </style>

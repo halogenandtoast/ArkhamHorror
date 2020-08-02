@@ -20,5 +20,6 @@ data AbilityLimit = NoLimit | OncePerRound | OncePerGame
   deriving anyclass (ToJSON, FromJSON)
 
 type Ability = (Source, Int, AbilityType, AbilityLimit)
+--                      ^ index of ability
 
 newtype UsedAbility = UsedAbility { unUsedAbility :: Ability }

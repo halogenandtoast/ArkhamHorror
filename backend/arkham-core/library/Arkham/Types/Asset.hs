@@ -52,6 +52,7 @@ allAssets = HashMap.fromList
   , ("01030", magnifyingGlass)
   , ("01031", oldBookOfLore)
   , ("01032", researchLibrarian)
+  , ("01035", medicalTexts)
   , ("01059", holyRosary)
   , ("01060", shrivelling)
   , ("01086", knife)
@@ -114,6 +115,7 @@ data Asset
   | GuardDog GuardDogI
   | MagnifyingGlass MagnifyingGlassI
   | OldBookOfLore OldBookOfLoreI
+  | MedicalTexts MedicalTextsI
   | ResearchLibrarian ResearchLibrarianI
   | HolyRosary HolyRosaryI
   | Shrivelling ShrivellingI
@@ -134,6 +136,7 @@ assetAttrs = \case
   GuardDog attrs -> coerce attrs
   MagnifyingGlass attrs -> coerce attrs
   OldBookOfLore attrs -> coerce attrs
+  MedicalTexts attrs -> coerce attrs
   ResearchLibrarian attrs -> coerce attrs
   HolyRosary attrs -> coerce attrs
   Shrivelling (ShrivellingI (attrs `With` _)) -> attrs
@@ -230,7 +233,12 @@ theNecronomicon :: AssetId -> Asset
 theNecronomicon uuid =
   TheNecronomicon
     $ TheNecronomiconI
-    $ ((baseAttrs uuid "01009") { assetSlots = [HandSlot], assetAbilities = [(AssetSource uuid, 1, ActionAbility 1 Nothing, NoLimit)] })
+    $ ((baseAttrs uuid "01009")
+        { assetSlots = [HandSlot]
+        , assetAbilities =
+          [(AssetSource uuid, 1, ActionAbility 1 Nothing, NoLimit)]
+        }
+      )
     `with` TheNecronomiconMetadata 3
 
 fortyFiveAutomatic :: AssetId -> Asset
@@ -306,6 +314,14 @@ researchLibrarian uuid =
     , assetSanity = Just 1
     }
 
+newtype MedicalTextsI = MedicalTextsI Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+medicalTexts :: AssetId -> Asset
+medicalTexts uuid = MedicalTexts $ MedicalTexts $ (baseAttrs uuid "01035")
+  { assetSlots = [HandSlot]
+  }
+
 newtype HolyRosaryI = HolyRosaryI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
@@ -377,6 +393,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     GuardDog x -> GuardDog <$> runMessage msg x
     MagnifyingGlass x -> MagnifyingGlass <$> runMessage msg x
     OldBookOfLore x -> OldBookOfLore <$> runMessage msg x
+    MedicalTexts x -> MedicalTexts <$> runMessage msg x
     ResearchLibrarian x -> ResearchLibrarian <$> runMessage msg x
     HolyRosary x -> HolyRosary <$> runMessage msg x
     Shrivelling x -> Shrivelling <$> runMessage msg x
@@ -437,19 +454,22 @@ instance (AssetRunner env) => RunMessage env DaisysToteBagI where
     _ -> DaisysToteBagI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env TheNecronomiconI where
-  runMessage msg a@(TheNecronomiconI (attrs@Attrs {..} `With` metadata@TheNecronomiconMetadata {..})) = case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId -> do
-      unshiftMessage
-        (AddModifier
-          (InvestigatorTarget iid)
-          (ForcedTokenChange Token.ElderSign Token.AutoFail (AssetSource aid)))
-      TheNecronomiconI . (`with` metadata) <$> runMessage msg attrs
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
-      unshiftMessage (InvestigatorDamage iid (AssetSource aid) 0 1)
-      if theNecronomiconHorror == 1
-         then a <$ unshiftMessage (DiscardAsset aid)
-         else pure $ TheNecronomiconI (attrs `with` TheNecronomiconMetadata (theNecronomiconHorror - 1))
-    _ -> TheNecronomiconI . (`with` metadata) <$> runMessage msg attrs
+  runMessage msg a@(TheNecronomiconI (attrs@Attrs {..} `With` metadata@TheNecronomiconMetadata {..}))
+    = case msg of
+      InvestigatorPlayAsset iid aid | aid == assetId -> do
+        unshiftMessage
+          (AddModifier
+            (InvestigatorTarget iid)
+            (ForcedTokenChange Token.ElderSign Token.AutoFail (AssetSource aid))
+          )
+        TheNecronomiconI . (`with` metadata) <$> runMessage msg attrs
+      UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
+        unshiftMessage (InvestigatorDamage iid (AssetSource aid) 0 1)
+        if theNecronomiconHorror == 1
+          then a <$ unshiftMessage (DiscardAsset aid)
+          else pure $ TheNecronomiconI
+            (attrs `with` TheNecronomiconMetadata (theNecronomiconHorror - 1))
+      _ -> TheNecronomiconI . (`with` metadata) <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env FortyFiveAutomaticI where
   runMessage msg a@(FortyFiveAutomaticI attrs@Attrs {..}) = case msg of
@@ -580,6 +600,27 @@ instance (AssetRunner env) => RunMessage env ResearchLibrarianI where
           }
         )
     _ -> ResearchLibrarianI <$> runMessage msg attrs
+
+instance (AssetRunner env) => RunMessage env MedicalTextsI where
+  runMessage msg (MedicalTextsI attrs@Attrs {..}) = case msg of
+    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
+      locationId <- asks (getId @LocationId ownerId)
+      locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
+      unshiftMessage
+        -- Should be a choice then a test
+        ( BeginSkillTest
+          iid
+          (AssetSource aid)
+          Nothing
+          SkillIntellect
+          2
+          [HealDamage (ChooseInvestigatorTarget locationInvestigatorIds) 1]
+          -- obviously this doesn't exist
+        , OnFailure
+          [DealDamage (ChooseInvestigatorTarget locationInvestigatorIds) 1]
+        )
+      MedicalTextsI <$> runMessage msg attrs
+    _ -> MedicalTextsI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env HolyRosaryI where
   runMessage msg (HolyRosaryI attrs@Attrs {..}) = case msg of

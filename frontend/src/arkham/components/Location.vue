@@ -1,31 +1,5 @@
 <template>
-  <div>
-    <img
-      :class="{ 'location--can-interact': cardAction !== -1 }"
-      class="card"
-      :src="image"
-      @click="$emit('choose', cardAction)"
-    />
-    <Asset
-      v-for="assetId in location.contents.assets"
-      :asset="game.currentData.assets[assetId]"
-      :game="game"
-      :key="assetId"
-      @choose="$emit('choose', $event)"
-    />
-    <Enemy
-      v-for="enemyId in enemies"
-      :key="enemyId"
-      :enemy="game.currentData.enemies[enemyId]"
-      :game="game"
-    />
-    <Treachery
-      v-for="treacheryId in location.contents.treacheries"
-      :key="treacheryId"
-      :treachery="game.currentData.treacheries[treacheryId]"
-      :game="game"
-      @choose="$emit('choose', $event)"
-    />
+  <div class="location-container">
     <div
       v-for="cardCode in location.contents.investigators"
       :key="cardCode"
@@ -36,21 +10,41 @@
         width="80"
       />
     </div>
-    <div
-      v-for="enemyId in location.enemies"
-      :key="enemyId"
-    >
+    <div>
       <img
-        v-if="!game.gameState.enemies[enemyId].isEngaged"
-        :src="game.gameState.enemies[enemyId].image"
-        width="250"
+        :class="{ 'location--can-interact': cardAction !== -1 }"
+        class="card"
+        :src="image"
+        @click="$emit('choose', cardAction)"
       />
-    </div>
-    <div v-if="location.contents.clues > 0" >
-      <div>
-        <img src="/img/arkham/clue.png" />
-        {{location.contents.clues}}
+      <Treachery
+        v-for="treacheryId in location.contents.treacheries"
+        :key="treacheryId"
+        :treachery="game.currentData.treacheries[treacheryId]"
+        :game="game"
+        @choose="$emit('choose', $event)"
+      />
+      <div v-if="location.contents.clues > 0" >
+        <div class="poolItem">
+          <img src="/img/arkham/clue.png" />
+          <span>{{location.contents.clues}}</span>
+        </div>
       </div>
+    </div>
+    <div>
+      <Asset
+        v-for="assetId in location.contents.assets"
+        :asset="game.currentData.assets[assetId]"
+        :game="game"
+        :key="assetId"
+        @choose="$emit('choose', $event)"
+      />
+      <Enemy
+        v-for="enemyId in enemies"
+        :key="enemyId"
+        :enemy="game.currentData.enemies[enemyId]"
+        :game="game"
+      />
     </div>
   </div>
 </template>
@@ -123,6 +117,61 @@ export default class Location extends Vue {
 }
 
 .card {
-  width: 200px;
+  width: 150px;
+  border-radius: 10px;
+}
+
+/deep/ .enemy {
+  width: 100px;
+}
+
+/deep/ .treachery {
+  object-fit: cover;
+  object-position: 0 -104px;
+  height: 104px;
+}
+
+.poolItem {
+  position: relative;
+  width: 30px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  font-weight: 900;
+  font-size: 1.7em;
+
+  img {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+  }
+
+  span {
+    font-family: "Arkham";
+    display: flex;
+    position: relative;
+    background: rgba(255,255,255,0.5);
+    border-radius: 20px;
+    font-size: 0.8em;
+    width: 1.05em;
+    height: 1.05em;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.portrait {
+  border-radius: 3px;
+}
+
+.location-container {
+  display: flex;
+  margin: 0 5px;
 }
 </style>

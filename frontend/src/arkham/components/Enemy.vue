@@ -2,7 +2,7 @@
   <div class="enemy">
     <img :src="image"
       :class="{'enemy--can-attack': attackAction !== -1 }"
-      class="card"
+      class="card enemy"
       @click="$emit('choose', attackAction)"
     />
     <div v-if="canInteract" class="enemy-interactions">

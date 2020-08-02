@@ -117,18 +117,18 @@ export default class Scenario extends Vue {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 13px;
   margin: 2px;
-  width: 200px;
+  width: 130px;
 }
 
 .card--sideways {
   width: auto;
-  height: 250px;
+  height: 200px;
 }
 
 .scenario-cards {
   display: flex;
   align-self: center;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
 
@@ -168,9 +168,8 @@ export default class Scenario extends Vue {
 
 .location-cards {
   display: flex;
-  align-self: center;
-  align-items: center;
   justify-content: center;
+  overflow: scroll;
 }
 
 .portrait {

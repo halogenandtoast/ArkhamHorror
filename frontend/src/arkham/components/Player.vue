@@ -114,6 +114,8 @@ export default class Player extends Vue {
   display: flex;
   align-self: center;
   align-items: flex-start;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .deck--can-draw {
@@ -142,18 +144,23 @@ export default class Player extends Vue {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 13px;
   margin: 2px;
-  max-width: 250px;
+  max-width: 130px;
 }
 
 .in-play {
   display: flex;
+  background: #999;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/deep/ .in-play .card {
+  width: 130px;
 }
 
 .player-cards {
   width: 100vw;
   box-sizing: border-box;
-  background: #888;
-  padding: 10px;
 }
 
 .hand {

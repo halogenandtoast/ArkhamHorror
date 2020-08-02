@@ -24,6 +24,7 @@ export enum MessageType {
   DISCARD_ASSET = 'DiscardAsset',
   ADD_TO_HAND_FROM_DECK = 'AddToHandFromDeck',
   BEGIN_SKILL_TEST_AFTER_FAST = 'BeginSkillTestAfterFast',
+  SEARCH_TOP_OF_DECK = 'SearchTopOfDeck',
   LABEL = 'Label',
 }
 
@@ -58,6 +59,7 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('DiscardAsset').then(() => JsonDecoder.constant(MessageType.DISCARD_ASSET)),
     JsonDecoder.isExactly('AddToHandFromDeck').then(() => JsonDecoder.constant(MessageType.ADD_TO_HAND_FROM_DECK)),
     JsonDecoder.isExactly('BeginSkillTestAfterFast').then(() => JsonDecoder.constant(MessageType.BEGIN_SKILL_TEST_AFTER_FAST)),
+    JsonDecoder.isExactly('SearchTopOfDeck').then(() => JsonDecoder.constant(MessageType.SEARCH_TOP_OF_DECK)),
   ],
   'MessageType',
 );

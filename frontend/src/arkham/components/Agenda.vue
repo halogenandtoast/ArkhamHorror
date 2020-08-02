@@ -36,7 +36,7 @@ export default class Agenda extends Vue {
 
 .card--sideways {
   width: auto;
-  height: 250px;
+  height: 200px;
 }
 
 </style>

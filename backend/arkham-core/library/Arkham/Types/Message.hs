@@ -3,6 +3,7 @@ module Arkham.Types.Message
   , Question(..)
   , EncounterCardSource(..)
   , ChooseOneFromSource(..)
+  , LeftoverCardStrategy(..)
   , Labeled(..)
   , label
   )
@@ -35,8 +36,13 @@ data EncounterCardSource = FromDiscard | FromEncounterDeck
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+data LeftoverCardStrategy = ShuffleBackIn
+  deriving stock (Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data Message
   = Setup
+  | SearchTopOfDeck InvestigatorId Int [Trait] LeftoverCardStrategy
   | RunEvent InvestigatorId CardCode
   | LoadDeck InvestigatorId [PlayerCard]
   | BeginRound
@@ -76,7 +82,7 @@ data Message
   | PostPlayerWindow
   | PlayerWindow InvestigatorId
   | Ask Question
-  | TakeAction InvestigatorId Int Action
+  | TakeAction InvestigatorId Int (Maybe Action)
   | ChoosePlayCardAction InvestigatorId
   | ChooseActivateCardAbilityAction InvestigatorId
   | ActivateCardAbilityAction InvestigatorId Ability

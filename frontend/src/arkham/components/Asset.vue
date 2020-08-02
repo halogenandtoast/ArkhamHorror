@@ -2,7 +2,7 @@
   <div>
     <img
       :src="image"
-      :class="{ 'asset--can-interact': availableAction !== -1}"
+      :class="{ 'asset--can-interact': availableAction !== -1, exhausted}"
       class="card"
       @click="$emit('choose', availableAction)"
     />
@@ -29,6 +29,10 @@ export default class Asset extends Vue {
 
   get id() {
     return this.asset.contents.id;
+  }
+
+  get exhausted() {
+    return this.asset.contents.exhausted;
   }
 
   get cardCode() {
@@ -81,7 +85,13 @@ export default class Asset extends Vue {
 
 <style lang="scss" scoped>
 .card {
-  width: 200px;
+  width: 130px;
+  border-radius: 5px;
+}
+
+.exhausted {
+  transform: rotate(90deg);
+  padding: 0 30px;
 }
 
 .asset--can-interact {

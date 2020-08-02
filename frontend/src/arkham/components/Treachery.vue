@@ -1,6 +1,6 @@
 <template>
   <div>
-    <img :src="image" class="card" />
+    <img :src="image" class="card treachery" />
   </div>
 </template>
 
@@ -22,6 +22,7 @@ export default class Asset extends Vue {
 
 <style lang="scss" scoped>
 .card {
-  width: 200px;
+  width: 150px;
+  border-radius: 5px;
 }
 </style>

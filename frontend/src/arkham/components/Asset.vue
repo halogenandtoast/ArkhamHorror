@@ -21,7 +21,6 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import { choices, Game } from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
 import * as Arkham from '@/arkham/types/Asset';
-// import { Asset } from '@/arkham/types/asset';
 
 @Component
 export default class Asset extends Vue {

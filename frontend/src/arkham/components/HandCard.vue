@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="card-container">
     <img
       :class="classObject"
       class="card"
@@ -105,12 +105,25 @@ export default class HandCard extends Vue {
 
 <style scoped lang="scss">
 
-.card {
+.card-container {
   width: 150px;
+  min-width: 150px;
   border-radius: 7px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 13px;
   margin: 2px;
+  display: inline-block;
+
+  img {
+    width: 150px;
+  }
+
+  &:hover {
+    img {
+      position: absolute;
+      transform: scale(2.0);
+    }
+  }
 
   &--can-play, &--can-commit, &--can-uncommit {
     border: 2px solid #FF00FF;

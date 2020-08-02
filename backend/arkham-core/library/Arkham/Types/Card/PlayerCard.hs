@@ -235,6 +235,8 @@ magnifyingGlass :: CardId -> PlayerCard
 magnifyingGlass cardId = (asset cardId "01030" "Magnifying Glass" 1 Seeker)
   { pcSkills = [SkillIntellect]
   , pcTraits = [Item, Tool]
+  , pcFast = True
+  , pcFastWindows = HashSet.fromList [DuringTurn You]
   }
 
 oldBookOfLore :: CardId -> PlayerCard

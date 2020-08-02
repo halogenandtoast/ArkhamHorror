@@ -87,7 +87,7 @@ data Message
   | ChooseEvadeEnemy InvestigatorId SkillType Bool
   | ChooseEngageEnemyAction InvestigatorId
   | ChooseEndTurn InvestigatorId
-  | CheckAttackOfOpportunity InvestigatorId
+  | CheckAttackOfOpportunity InvestigatorId Bool
   | TakeResources InvestigatorId Int Bool
   | SpendResources InvestigatorId Int
   | EnemyWillAttack InvestigatorId EnemyId
@@ -116,6 +116,8 @@ data Message
   | DiscoverClues InvestigatorId LocationId Int
   | AfterDiscoverClues InvestigatorId LocationId Int
   | BeginSkillTest InvestigatorId Source (Maybe Action) SkillType Int [Message]
+                [Message] [Modifier]
+  | BeginSkillTestAfterFast InvestigatorId Source (Maybe Action) SkillType Int [Message]
                 [Message] [Modifier]
   | StartSkillTest
   | InvestigatorStartSkillTest InvestigatorId (Maybe Action) SkillType [Modifier]

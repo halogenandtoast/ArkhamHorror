@@ -635,7 +635,7 @@ runGameMessage msg g = case msg of
       Just (EnemyAttacks as) -> do
         _ <- popMessage
         unshiftMessage (EnemyAttacks (EnemyAttack iid eid : as))
-      Just aoo@(CheckAttackOfOpportunity _) -> do
+      Just aoo@(CheckAttackOfOpportunity _ _) -> do
         _ <- popMessage
         unshiftMessage msg
         unshiftMessage aoo
@@ -651,7 +651,7 @@ runGameMessage msg g = case msg of
       Just (EnemyAttacks as2) -> do
         _ <- popMessage
         unshiftMessage (EnemyAttacks $ as ++ as2)
-      Just aoo@(CheckAttackOfOpportunity _) -> do
+      Just aoo@(CheckAttackOfOpportunity _ _) -> do
         _ <- popMessage
         unshiftMessage msg
         unshiftMessage aoo
@@ -706,6 +706,47 @@ runGameMessage msg g = case msg of
   UseCardAbility _ (_, _, _, NoLimit) -> pure g
   UseCardAbility _ ability -> pure $ g & usedAbilities %~ (ability :)
   BeginSkillTest iid source maction skillType difficulty onSuccess onFailure skillTestModifiers
+    -> do
+      let
+        availableSkills = availableSkillsFor (getInvestigator iid g) skillType
+      case availableSkills of
+        [] -> g <$ unshiftMessage
+          (BeginSkillTestAfterFast
+            iid
+            source
+            maction
+            skillType
+            difficulty
+            onSuccess
+            onFailure
+            skillTestModifiers
+          )
+        [_] -> g <$ unshiftMessage
+          (BeginSkillTestAfterFast
+            iid
+            source
+            maction
+            skillType
+            difficulty
+            onSuccess
+            onFailure
+            skillTestModifiers
+          )
+        xs -> g <$ unshiftMessage
+          (Ask $ ChooseOne
+            [ BeginSkillTestAfterFast
+                iid
+                source
+                maction
+                skillType'
+                difficulty
+                onSuccess
+                onFailure
+                skillTestModifiers
+            | skillType' <- xs
+            ]
+          )
+  BeginSkillTestAfterFast iid source maction skillType difficulty onSuccess onFailure skillTestModifiers
     -> do
       unshiftMessage (BeforeSkillTest iid skillType)
       pure

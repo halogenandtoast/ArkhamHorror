@@ -25,6 +25,7 @@ sourceOfModifier (ShroudModifier _ s) = s
 sourceOfModifier (DiscoveredClues _ s) = s
 sourceOfModifier (SufferTrauma _ _ s) = s
 sourceOfModifier (AddSlot _ s) = s
+sourceOfModifier (UseSkillInPlaceOf _ _ s) = s
 
 replaceModifierSource :: Source -> Modifier -> Modifier
 replaceModifierSource s (ActionCostOf a b _) = ActionCostOf a b s
@@ -38,6 +39,7 @@ replaceModifierSource s (ShroudModifier a _) = ShroudModifier a s
 replaceModifierSource s (DiscoveredClues a _) = DiscoveredClues a s
 replaceModifierSource s (SufferTrauma a b _) = SufferTrauma a b s
 replaceModifierSource s (AddSlot a _) = AddSlot a s
+replaceModifierSource s (UseSkillInPlaceOf a b _) = UseSkillInPlaceOf a b s
 
 data Modifier
   = ActionCostOf ActionTarget Int Source
@@ -50,6 +52,7 @@ data Modifier
   | ShroudModifier Int Source
   | DiscoveredClues Int Source
   | SufferTrauma Int Int Source
+  | UseSkillInPlaceOf SkillType SkillType Source
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
 

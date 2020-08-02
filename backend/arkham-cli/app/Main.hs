@@ -6,6 +6,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Game
 import Arkham.Types.GameJson
 import Arkham.Types.Investigator
+import Arkham.Types.InvestigatorId
 import ClassyPrelude
 import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap
@@ -53,13 +54,15 @@ main :: IO ()
 main = do
   mdbid <- lookupEnv "GAME_ID"
   deckId <- fromMaybe "20344" <$> lookupEnv "DECK_ID"
+  investigatorId <- maybe "01001" (InvestigatorId . CardCode . pack)
+    <$> lookupEnv "INVESTIGATOR_ID"
   case readMaybe @Int =<< mdbid of
     Nothing -> do
       deck <- loadDeck deckId
       pPrint deck
       ge <- runGame =<< newGame
         "01104"
-        (HashMap.fromList [(1, (lookupInvestigator "01001", deck))])
+        (HashMap.fromList [(1, (lookupInvestigator investigatorId, deck))])
       pPrint ge
     Just gid -> do
       gj <- loadFromDB gid

@@ -1,6 +1,8 @@
 module Arkham.Types.Card.PlayerCard where
 
 import Arkham.Json
+import Arkham.Types.Action (Action)
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
 import Arkham.Types.Card.Id
@@ -44,6 +46,7 @@ data PlayerCard = MkPlayerCard
   , pcFast :: Bool
   , pcFastWindows :: HashSet FastWindow
   , pcId :: CardId
+  , pcAction :: Maybe Action
   }
   deriving stock (Show, Generic)
 
@@ -89,6 +92,7 @@ basePlayerCard cardId cardCode name cost cardType classSymbol = MkPlayerCard
   , pcFast = False
   , pcFastWindows = mempty
   , pcId = cardId
+  , pcAction = Nothing
   }
 
 asset :: CardId -> CardCode -> Text -> Int -> ClassSymbol -> PlayerCard
@@ -313,6 +317,7 @@ blindingLight :: CardId -> PlayerCard
 blindingLight cardId = (event cardId "01066" "Blinding Light" 2 Mystic)
   { pcSkills = [SkillWillpower, SkillAgility]
   , pcTraits = [Spell]
+  , pcAction = Just Action.Evade
   }
 
 fearless :: CardId -> PlayerCard

@@ -2,8 +2,7 @@
   <section v-if="shouldShow">
     <div class="choices" v-for="(choice, index) in choices" :key="index">
       <div v-if="choice.tag === MessageType.AFTER_DISCOVER_CLUES">
-        <p>You got some clues</p>
-        <button @click="$emit('choose', index)">Continue</button>
+        <span>You got some clues</span> <button @click="$emit('choose', index)">Continue</button>
       </div>
 
       <div v-if="choice.tag === MessageType.CONTINUE">

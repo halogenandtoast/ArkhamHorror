@@ -168,6 +168,9 @@ export default class Scenario extends Vue {
 
 .location-cards {
   display: flex;
+  align-self: center;
+  align-items: center;
+  justify-content: center;
 }
 
 .portrait {

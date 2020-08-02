@@ -1,5 +1,6 @@
 <template>
   <div v-if="!game.currentData.gameOver" id="game" class="game">
+    <StatusBar :game="game" @choose="$emit('choose', $event)" />
     <div class="scenario-cards">
       <div v-if="topOfEncounterDiscard" class="discard">
         <img
@@ -47,7 +48,6 @@
       :player="player"
       @choose="$emit('choose', $event)"
     />
-    <StatusBar :game="game" @choose="$emit('choose', $event)" />
     <ChoiceModal :game="game" @choose="$emit('choose', $event)" />
   </div>
 </template>

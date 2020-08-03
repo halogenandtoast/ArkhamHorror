@@ -394,7 +394,7 @@ instance (TreacheryRunner env) => RunMessage env ObscuringFogI where
           (ShroudModifier 2 (TreacherySource tid))
         ]
       pure $ ObscuringFogI $ attrs & attachedLocation ?~ currentLocationId
-    SuccessfulInvestigation lid | Just lid == treacheryAttachedLocation ->
+    SuccessfulInvestigation _ lid | Just lid == treacheryAttachedLocation ->
       t <$ unshiftMessages
         [ RemoveAllModifiersOnTargetFrom
           (LocationTarget lid)

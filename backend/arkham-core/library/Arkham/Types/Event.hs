@@ -85,30 +85,11 @@ workingAHunch iid = do
 
 wardOfProtection
   :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
-wardOfProtection iid = do
-  unshiftMessages
-  [ CancelRevelationEffect cid
-  , InvestigatorDamage iid assetId 0 1
-  ]
+wardOfProtection iid = unshiftMessages
+  [CancelNextRevelationEffect, InvestigatorDamage iid (EventSource "01065") 0 1]
 
-blindingLight
-  :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
-blindingLight iid = do
-  unshiftMessages( ChooseEvadeEnemy iid SkillWillpower False)
-  SkillTestEnded _ tokens | inUse -> do
-      when
-          (any
-            (`elem` [ Token.Skull
-                    , Token.Cultist
-                    , Token.Tablet
-                    , Token.ElderThing
-                    , Token.AutoFail
-                    ]
-            )
-            tokens
-          )
-        $ unshiftMessage
-            (LoseAction (getInvestigator attrs) (EventSource eventId))
+blindingLight :: InvestigatorId -> m ()
+blindingLight _ = error "not yet implemented"
 
 emergencyCache
   :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()

@@ -114,7 +114,8 @@ exhausted :: Lens' Attrs Bool
 exhausted = lens enemyExhausted $ \m x -> m { enemyExhausted = x }
 
 data Enemy
-  = GhoulPriest GhoulPriestI
+  = SilverTwilightAcolyte SilverTwilightAcolyteI
+  | GhoulPriest GhoulPriestI
   | FleshEater FleshEaterI
   | IcyGhoul IcyGhoulI
   | SwarmOfRats SwarmOfRatsI
@@ -167,14 +168,15 @@ newtype SilverTwilightAcolyteI = SilverTwilightAcolyteI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 silverTwilightAcolyte :: EnemyId -> Enemy
-silverTwilightAcolyte  uuid = SilverTwilightAcolyte $ SilverTwilightAcolyteI $ (baseAttrs uuid "01102")
-  { enemyHealthDamage = 1
-  , enemySanityDamage = 0
-  , enemyFight = 2
-  , enemyHealth = 3
-  , enemyEvade = 3
-  , enemyPrey = Bearer
-  }
+silverTwilightAcolyte uuid =
+  SilverTwilightAcolyte $ SilverTwilightAcolyteI $ (baseAttrs uuid "01102")
+    { enemyHealthDamage = 1
+    , enemySanityDamage = 0
+    , enemyFight = 2
+    , enemyHealth = Static 3
+    , enemyEvade = 3
+    , enemyPrey = Bearer
+    }
 
 newtype GhoulPriestI = GhoulPriestI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -261,6 +263,7 @@ type EnemyRunner env
 
 instance (EnemyRunner env) => RunMessage env Enemy where
   runMessage msg = \case
+    SilverTwilightAcolyte x -> SilverTwilightAcolyte <$> runMessage msg x
     GhoulPriest x -> GhoulPriest <$> runMessage msg x
     FleshEater x -> FleshEater <$> runMessage msg x
     IcyGhoul x -> IcyGhoul <$> runMessage msg x
@@ -290,8 +293,8 @@ modifiedDamageAmount attrs baseAmount = foldr
 
 instance (EnemyRunner env) => RunMessage env SilverTwilightAcolyteI where
   runMessage msg e@(SilverTwilightAcolyteI attrs@Attrs {..}) = case msg of
-    AfterEnemyAttack eid _ | eid == enemyId ->
-      unshiftMessage PlaceDoomOnAgenda
+    AfterEnemyAttacks eid _ | eid == enemyId ->
+      e <$ unshiftMessage PlaceDoomOnAgenda
     _ -> SilverTwilightAcolyteI <$> runMessage msg attrs
 
 instance (EnemyRunner env) => RunMessage env GhoulPriestI where

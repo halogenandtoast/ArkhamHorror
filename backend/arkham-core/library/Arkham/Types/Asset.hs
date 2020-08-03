@@ -325,7 +325,7 @@ newtype DrMilanChristopherI = DrMilanChristopherI Attrs
 
 drMilanChristopher :: AssetId -> Asset
 drMilanChristopher uuid =
-  DrMilanChristopherI $ DrMilanChristopherI $ (baseAttrs uuid "01033")
+  DrMilanChristopher $ DrMilanChristopherI $ (baseAttrs uuid "01033")
     { assetSlots = [AllySlot]
     , assetHealth = Just 1
     , assetSanity = Just 2
@@ -625,16 +625,23 @@ instance (AssetRunner env) => RunMessage env ResearchLibrarianI where
 
 instance (AssetRunner env) => RunMessage env DrMilanChristopherI where
   runMessage msg a@(DrMilanChristopherI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId -> do
-      unshiftMessage
-        (AddModifier
-          (InvestigatorTarget iid)
-          (SkillModifier SkillWillpower 1 (AssetSource aid))
+    InvestigatorPlayAsset iid aid | aid == assetId -> a <$ unshiftMessage
+      (AddModifier
+        (InvestigatorTarget iid)
+        (SkillModifier SkillWillpower 1 (AssetSource aid))
+      )
+    SuccessfulInvestigation iid _ | iid == getInvestigator attrs ->
+      a <$ unshiftMessage
+        (Ask $ ChooseOne
+          [ UseCardAbility
+            iid
+            (AssetSource assetId, 1, ReactionAbility Fast.Now, NoLimit)
+          , Continue "Do not use ability"
+          ]
         )
-      SuccessfulInvestigation iid _ | iid == assetOwner do ->
-        unshiftMessage(TakeResources iid 1 True)
-      DrMilanChristopherI <$> runMessage msg attrs
-    _ -> DrMilanChristopherI  <$> runMessage msg attrs
+    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
+      a <$ unshiftMessage (TakeResources iid 1 False)
+    _ -> DrMilanChristopherI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env MedicalTextsI where
   runMessage msg (MedicalTextsI attrs@Attrs {..}) = case msg of

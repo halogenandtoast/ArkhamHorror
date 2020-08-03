@@ -182,7 +182,7 @@ data Message
   | TryEvadeEnemy InvestigatorId EnemyId SkillType
   | EnemyEvaded InvestigatorId EnemyId
   | AfterEvadeEnemy InvestigatorId EnemyId
-  | SuccessfulInvestigation LocationId
+  | SuccessfulInvestigation InvestigatorId LocationId
   | AttachTreacheryToLocation TreacheryId LocationId
   | AttachTreacheryToInvestigator TreacheryId InvestigatorId
   | AddModifier Target Modifier

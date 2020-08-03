@@ -123,7 +123,6 @@ i.action {
 .poolItem {
   position: relative;
   width: 30px;
-  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -168,7 +167,12 @@ i.action {
 }
 
 .poolItem-resource {
-  padding-right:8px;
+  img {
+    width: 30px;
+    margin: 4px 0 0 2px;
+  }
+  height: 40px;
+  width: 34px;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
 

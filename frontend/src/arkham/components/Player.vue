@@ -156,6 +156,7 @@ export default class Player extends Vue {
 
 /deep/ .in-play .card {
   width: 130px;
+  margin: 0 2px;
 }
 
 .player-cards {

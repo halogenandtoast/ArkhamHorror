@@ -59,6 +59,10 @@ export default class Asset extends Vue {
       return this.useAbilityAction;
     }
 
+    if (this.damageAction !== -1) {
+      return this.damageAction;
+    }
+
     return this.discardAssetAction;
   }
 
@@ -78,8 +82,14 @@ export default class Asset extends Vue {
       .findIndex((c) => c.tag === MessageType.ACTIVATE_ABILITY && this.isIn(c.contents));
   }
 
+  get damageAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.ASSET_DAMAGE && this.isIn(c.contents));
+  }
+
   isIn(contents: any) {
-    return contents[1][0].contents === this.id;
+    return contents[1][0].contents === this.id || contents[0] === this.id;
   }
 
   get discardAssetAction() {

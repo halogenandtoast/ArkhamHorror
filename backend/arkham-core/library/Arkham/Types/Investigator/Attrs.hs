@@ -771,6 +771,9 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       deck' <- liftIO $ shuffleM $ filter
         ((/= cardId) . getCardId)
         (unDeck investigatorDeck)
+      case card of
+        MkPlayerCard {..} -> when pcRevelation
+          $ unshiftMessage (DrewRevelation iid pcCardCode pcId)
       pure $ a & deck .~ Deck deck' & hand %~ (PlayerCard card :)
     SearchTopOfDeck iid n traits strategy -> do
       let

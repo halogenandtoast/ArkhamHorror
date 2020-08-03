@@ -305,7 +305,7 @@ holyRosary cardId = (asset cardId "01059" "Holy Rosary" 2 Mystic)
   }
 
 scrying :: CardId -> PlayerCard
-scrying cardId = (event cardId "01061" "Scrying" 1 Mystic)
+scrying cardId = (asset cardId "01061" "Scrying" 1 Mystic)
   { pcSkills = [SkillIntellect]
   , pcTraits = [Spell]
   }

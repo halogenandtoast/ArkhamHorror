@@ -37,6 +37,9 @@ newtype QuestionReponse = QuestionResponse { choice :: Int }
   deriving stock (Generic)
   deriving anyclass (FromJSON)
 
+extract :: Int -> [a] -> (Maybe a, [a])
+extract n xs =
+  let a = xs !!? n in (a, [ x | (i, x) <- zip [0 ..] xs, i /= n ])
 
 putApiV1ArkhamGameR :: ArkhamGameId -> Handler (Entity ArkhamGame)
 putApiV1ArkhamGameR gameId = do
@@ -46,6 +49,12 @@ putApiV1ArkhamGameR gameId = do
     gameJson@GameJson {..} = arkhamGameCurrentData game
     messages = case gQuestion of
       Just (ChooseOne qs) -> maybeToList (qs !!? choice response)
+      Just (ChooseOneAtATime msgs) -> do
+        let (mm, msgs') = extract (choice response) msgs
+        case (mm, msgs') of
+          (Just m', []) -> [m']
+          (Just m', msgs'') -> [m', Ask $ ChooseOneAtATime msgs'']
+          (Nothing, msgs'') -> [Ask $ ChooseOneAtATime msgs'']
       Just (ChooseOneFromSource MkChooseOneFromSource {..}) ->
         maybeToList (map unlabel chooseOneChoices !!? choice response)
       _ -> []

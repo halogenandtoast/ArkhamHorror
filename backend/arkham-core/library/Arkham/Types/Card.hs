@@ -16,6 +16,7 @@ module Arkham.Types.Card
   , lookupPlayerCard
   , allEncounterCards
   , encounterCardMatch
+  , toPlayerCard
   )
 where
 
@@ -52,6 +53,10 @@ instance HasCardId Card where
 instance HasCost Card where
   getCost (PlayerCard card) = getCost card
   getCost _ = 0
+
+toPlayerCard :: Card -> Maybe PlayerCard
+toPlayerCard (PlayerCard pc) = Just pc
+toPlayerCard _ = Nothing
 
 allCards :: HashMap CardCode (CardId -> Card)
 allCards =

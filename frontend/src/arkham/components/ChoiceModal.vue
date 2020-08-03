@@ -19,18 +19,38 @@
       </template>
     </div>
   </div>
+  <div v-else-if="focusedCards.length > 0" class="modal">
+    <div class="modal-contents focused-cards">
+      <FocusedCard
+        v-for="(card, index) in focusedCards"
+        :card="card"
+        :game="game"
+        :key="index"
+        @choose="$emit('choose', $event)"
+      />
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import { choicesSource, choices, Game } from '@/arkham/types/Game';
+import FocusedCard from '@/arkham/components/FocusedCard.vue';
 
-@Component
+@Component({
+  components: {
+    FocusedCard,
+  },
+})
 export default class ChoiceModal extends Vue {
   @Prop(Object) readonly game!: Game;
 
   get choices() {
     return choices(this.game);
+  }
+
+  get focusedCards() {
+    return this.game.currentData.focusedCards;
   }
 
   get choiceUI() {
@@ -103,6 +123,10 @@ export default class ChoiceModal extends Vue {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+}
+
+.focused-cards {
+  flex-direction: row;
 }
 
 .images img {

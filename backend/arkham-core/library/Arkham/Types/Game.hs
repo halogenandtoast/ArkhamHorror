@@ -89,6 +89,7 @@ data Game = Game
   , giTreacheries :: HashMap TreacheryId Treachery
   , giGameOver :: Bool
   , giUsedAbilities :: [Ability]
+  , giFocusedCards :: [Card]
   }
 
 getInvestigator :: InvestigatorId -> Game -> Investigator
@@ -112,6 +113,9 @@ getAsset aid g =
 getTreachery :: TreacheryId -> Game -> Treachery
 getTreachery tid g =
   fromJustNote ("No such treachery: " <> show tid) $ g ^? (treacheries . ix tid)
+
+focusedCards :: Lens' Game [Card]
+focusedCards = lens giFocusedCards $ \m x -> m { giFocusedCards = x }
 
 gameOver :: Lens' Game Bool
 gameOver = lens giGameOver $ \m x -> m { giGameOver = x }
@@ -226,6 +230,7 @@ newGame scenarioId investigatorsList = do
       ]
     , giGameOver = False
     , giUsedAbilities = mempty
+    , giFocusedCards = mempty
     }
  where
   initialInvestigatorId =
@@ -543,6 +548,21 @@ runGameMessage
 runGameMessage msg g = case msg of
   Run msgs -> g <$ unshiftMessages msgs
   Continue _ -> pure g
+  FocusCards cards -> pure $ g & focusedCards .~ cards
+  ShuffleAllFocusedIntoDeck iid -> do
+    let cards = catMaybes $ map toPlayerCard (g ^. focusedCards)
+    unshiftMessage (ShuffleCardsIntoDeck iid cards)
+    pure $ g & focusedCards .~ []
+  AddFocusedToTopOfDeck iid cardId -> do
+    let card = fromJustNote "missing card" $ find ((== cardId) . getCardId) (g ^. focusedCards) >>= toPlayerCard
+        focusedCards' = filter ((/= cardId) . getCardId) (g ^. focusedCards)
+    unshiftMessage (PutOnTopOfDeck iid card)
+    pure $ g & focusedCards .~ focusedCards'
+  AddFocusedToHand iid cardId -> do
+    let card = fromJustNote "missing card" $ find ((== cardId) . getCardId) (g ^. focusedCards)
+        focusedCards' = filter ((/= cardId) . getCardId) (g ^. focusedCards)
+    unshiftMessage (AddToHand iid card)
+    pure $ g & focusedCards .~ focusedCards'
   InvestigatorDefeated _ ->
     if all
         (\i -> hasResigned i || isDefeated i)
@@ -905,6 +925,7 @@ toExternalGame Game {..} mq = do
     , gGameOver = giGameOver
     , gUsedAbilities = giUsedAbilities
     , gQuestion = mq
+    , gFocusedCards  = giFocusedCards
     }
 
 toInternalGame :: MonadIO m => GameJson -> m Game
@@ -934,6 +955,7 @@ toInternalGame' ref GameJson {..} = Game
   , giActs = gActs
   , giGameOver = gGameOver
   , giUsedAbilities = gUsedAbilities
+  , giFocusedCards = gFocusedCards
   }
 
 runMessages :: MonadIO m => Game -> m (Maybe Question, GameJson)

@@ -55,6 +55,7 @@ allAssets = HashMap.fromList
   , ("01035", medicalTexts)
   , ("01059", holyRosary)
   , ("01060", shrivelling)
+  , ("01061", scrying)
   , ("01086", knife)
   , ("01087", flashlight)
   , ("01117", litaChantler)
@@ -119,6 +120,7 @@ data Asset
   | ResearchLibrarian ResearchLibrarianI
   | HolyRosary HolyRosaryI
   | Shrivelling ShrivellingI
+  | Scrying ScryingI
   | Knife KnifeI
   | Flashlight FlashlightI
   | LitaChantler LitaChantlerI
@@ -140,6 +142,7 @@ assetAttrs = \case
   ResearchLibrarian attrs -> coerce attrs
   HolyRosary attrs -> coerce attrs
   Shrivelling (ShrivellingI (attrs `With` _)) -> attrs
+  Scrying attrs -> coerce attrs
   Knife attrs -> coerce attrs
   Flashlight attrs -> coerce attrs
   LitaChantler attrs -> coerce attrs
@@ -347,6 +350,16 @@ shrivelling uuid =
     $ ((baseAttrs uuid "01060") { assetSlots = [ArcaneSlot] })
     `with` ShrivellingMetadata False
 
+newtype ScryingI = ScryingI Attrs
+  deriving stock (Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+scrying :: AssetId -> Asset
+scrying uuid =
+  Scrying
+    $ ScryingI
+    $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
+
 newtype KnifeI = KnifeI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
@@ -398,6 +411,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     ResearchLibrarian x -> ResearchLibrarian <$> runMessage msg x
     HolyRosary x -> HolyRosary <$> runMessage msg x
     Shrivelling x -> Shrivelling <$> runMessage msg x
+    Scrying x -> Scrying <$> runMessage msg x
     Knife x -> Knife <$> runMessage msg x
     Flashlight x -> Flashlight <$> runMessage msg x
     LitaChantler x -> LitaChantler <$> runMessage msg x
@@ -713,6 +727,39 @@ instance (AssetRunner env) => RunMessage env ShrivellingI where
               .~ Uses Resource.Charge (n - 1)
           _ -> pure a
       _ -> ShrivellingI . (`with` metadata) <$> runMessage msg attrs
+
+
+instance (AssetRunner env) => RunMessage env ScryingI where
+  runMessage msg a@(ScryingI attrs@Attrs {..}) = case msg of
+    InvestigatorPlayAsset _ aid | aid == assetId -> do
+      let
+        attrs' =
+          attrs
+            & (uses .~ Uses Resource.Charge 3)
+            & (abilities
+              .~ [ ( AssetSource aid
+                   , 1
+                   , ActionAbility 1 Nothing
+                   , NoLimit
+                   )
+                 ]
+              )
+      ScryingI <$> runMessage msg attrs'
+    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
+      case assetUses of
+        Uses Resource.Charge n -> do
+          when
+            (n == 1)
+            (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
+          unshiftMessage (SearchTopOfDeck iid 3 [] PutBackInAnyOrder)
+          pure
+            $ ScryingI
+            $ attrs
+            & uses
+            .~ Uses Resource.Charge (n - 1)
+        _ -> pure a
+    _ -> ScryingI <$> runMessage msg attrs
+
 
 instance (AssetRunner env) => RunMessage env KnifeI where
   runMessage msg a@(KnifeI attrs@Attrs {..}) = case msg of

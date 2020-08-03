@@ -36,7 +36,7 @@ data EncounterCardSource = FromDiscard | FromEncounterDeck
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data LeftoverCardStrategy = ShuffleBackIn
+data LeftoverCardStrategy = ShuffleBackIn | PutBackInAnyOrder
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -208,6 +208,13 @@ data Message
   | Run [Message]
   | Continue Text
   | AddToHandFromDeck InvestigatorId CardId
+  | FocusCards [Card]
+  | AddFocusedToHand InvestigatorId CardId
+  | AddFocusedToTopOfDeck InvestigatorId CardId
+  | ShuffleAllFocusedIntoDeck InvestigatorId
+  | ShuffleCardsIntoDeck InvestigatorId [PlayerCard]
+  | PutOnTopOfDeck InvestigatorId PlayerCard
+  | AddToHand InvestigatorId Card
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -13,6 +13,7 @@ import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.FastWindow
+import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
@@ -97,7 +98,7 @@ data Treachery
 
 treacheryAttrs :: Treachery -> Attrs
 treacheryAttrs = \case
-  CoverUp (CoverUpI attrs _) -> attrs
+  CoverUp (CoverUpI (attrs `With` _)) -> attrs
   GraspingHands attrs -> coerce attrs
   AncientEvils attrs -> coerce attrs
   RottingRemains attrs -> coerce attrs
@@ -144,23 +145,35 @@ weaknessAttrs tid cardCode =
       , treacheryAbilities = mempty
       }
 
-data CoverUpI = CoverUpI Attrs Int
+newtype CoverUpMetadata = CoverUpMetadata { coverUpClues :: Int }
+  deriving stock (Show, Generic)
+
+instance ToJSON CoverUpMetadata where
+  toJSON = genericToJSON $ aesonOptions $ Just "coverUp"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "coverUp"
+
+instance FromJSON CoverUpMetadata where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "coverUp"
+
+newtype CoverUpI = CoverUpI (Attrs `With` CoverUpMetadata)
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 coverUp :: TreacheryId -> Treachery
-coverUp uuid = CoverUp $ CoverUpI
-  ((weaknessAttrs uuid "01007")
-    { treacheryAbilities =
-      [ ( TreacherySource uuid
-        , 1
-        , ReactionAbility (WhenDiscoverClues You YourLocation)
-        , NoLimit
-        )
-      ]
-    }
-  )
-  3
+coverUp uuid =
+  CoverUp
+    $ CoverUpI
+    $ ((weaknessAttrs uuid "01007")
+        { treacheryAbilities =
+          [ ( TreacherySource uuid
+            , 1
+            , ReactionAbility (WhenDiscoverClues You YourLocation)
+            , NoLimit
+            )
+          ]
+        }
+      )
+    `With` CoverUpMetadata 3
 
 newtype GraspingHandsI = GraspingHandsI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -223,40 +236,45 @@ instance (TreacheryRunner env) => RunMessage env Treachery where
     ObscuringFog x -> ObscuringFog <$> runMessage msg x
 
 instance (TreacheryRunner env) => RunMessage env CoverUpI where
-  runMessage msg (CoverUpI attrs@Attrs {..} n) = case msg of
-    RunTreachery iid tid | tid == treacheryId -> do
-      unshiftMessages
-        [ RemoveCardFromHand iid "01007"
-        , AttachTreacheryToInvestigator tid iid
-        , AddModifier
-          (InvestigatorTarget iid)
-          (SufferTrauma 0 1 (TreacherySource tid))
-        ]
-      pure $ CoverUpI (attrs & attachedInvestigator ?~ iid) n
-    UseCardAbility iid (TreacherySource tid, 1, _, _) | tid == treacheryId -> do
-      cluesToRemove <- withQueue $ \queue -> do
-        let
-          (before, after) = flip break queue $ \case
-            DiscoverClues{} -> True
-            _ -> False
-          (DiscoverClues _ _ m) = case after of
-            [] -> error "DiscoverClues has to be present"
-            (x : _) -> x
-          remaining = case after of
-            [] -> []
-            (_ : xs) -> xs
-        (before <> remaining, m)
-      let remainingClues = max 0 (n - cluesToRemove)
-      if remainingClues == 0
-        then do
-          unshiftMessage
-            (RemoveAllModifiersOnTargetFrom
-              (InvestigatorTarget iid)
-              (TreacherySource tid)
-            )
-          pure $ CoverUpI (attrs & abilities .~ []) remainingClues
-        else pure $ CoverUpI attrs remainingClues
-    _ -> CoverUpI <$> runMessage msg attrs <*> pure n
+  runMessage msg (CoverUpI (attrs@Attrs {..} `With` metadata@CoverUpMetadata {..}))
+    = case msg of
+      RunTreachery iid tid | tid == treacheryId -> do
+        unshiftMessages
+          [ RemoveCardFromHand iid "01007"
+          , AttachTreacheryToInvestigator tid iid
+          , AddModifier
+            (InvestigatorTarget iid)
+            (SufferTrauma 0 1 (TreacherySource tid))
+          ]
+        pure $ CoverUpI $ (attrs & attachedInvestigator ?~ iid) `with` metadata
+      UseCardAbility iid (TreacherySource tid, 1, _, _) | tid == treacheryId ->
+        do
+          cluesToRemove <- withQueue $ \queue -> do
+            let
+              (before, after) = flip break queue $ \case
+                DiscoverClues{} -> True
+                _ -> False
+              (DiscoverClues _ _ m) = case after of
+                [] -> error "DiscoverClues has to be present"
+                (x : _) -> x
+              remaining = case after of
+                [] -> []
+                (_ : xs) -> xs
+            (before <> remaining, m)
+          let remainingClues = max 0 (coverUpClues - cluesToRemove)
+          if remainingClues == 0
+            then do
+              unshiftMessage
+                (RemoveAllModifiersOnTargetFrom
+                  (InvestigatorTarget iid)
+                  (TreacherySource tid)
+                )
+              pure
+                $ CoverUpI
+                $ (attrs & abilities .~ [])
+                `with` CoverUpMetadata remainingClues
+            else pure $ CoverUpI (attrs `with` CoverUpMetadata remainingClues)
+      _ -> CoverUpI . (`with` metadata) <$> runMessage msg attrs
 
 instance (TreacheryRunner env) => RunMessage env GraspingHandsI where
   runMessage msg t@(GraspingHandsI attrs@Attrs {..}) = case msg of

@@ -106,10 +106,6 @@ export default class Player extends Vue {
 </script>
 
 <style scoped lang="scss">
-.hand {
-  display: flex;
-}
-
 .player {
   display: flex;
   align-self: center;
@@ -167,5 +163,7 @@ export default class Player extends Vue {
 .hand {
   overflow-x: scroll;
   height: 100%;
+  display: flex;
+  padding-top: 10px;
 }
 </style>

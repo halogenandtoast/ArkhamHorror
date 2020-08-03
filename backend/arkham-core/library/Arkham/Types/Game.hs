@@ -554,13 +554,19 @@ runGameMessage msg g = case msg of
     unshiftMessage (ShuffleCardsIntoDeck iid cards)
     pure $ g & focusedCards .~ []
   AddFocusedToTopOfDeck iid cardId -> do
-    let card = fromJustNote "missing card" $ find ((== cardId) . getCardId) (g ^. focusedCards) >>= toPlayerCard
-        focusedCards' = filter ((/= cardId) . getCardId) (g ^. focusedCards)
+    let
+      card =
+        fromJustNote "missing card"
+          $ find ((== cardId) . getCardId) (g ^. focusedCards)
+          >>= toPlayerCard
+      focusedCards' = filter ((/= cardId) . getCardId) (g ^. focusedCards)
     unshiftMessage (PutOnTopOfDeck iid card)
     pure $ g & focusedCards .~ focusedCards'
   AddFocusedToHand iid cardId -> do
-    let card = fromJustNote "missing card" $ find ((== cardId) . getCardId) (g ^. focusedCards)
-        focusedCards' = filter ((/= cardId) . getCardId) (g ^. focusedCards)
+    let
+      card = fromJustNote "missing card"
+        $ find ((== cardId) . getCardId) (g ^. focusedCards)
+      focusedCards' = filter ((/= cardId) . getCardId) (g ^. focusedCards)
     unshiftMessage (AddToHand iid card)
     pure $ g & focusedCards .~ focusedCards'
   InvestigatorDefeated _ ->
@@ -618,6 +624,12 @@ runGameMessage msg g = case msg of
         $ find ((== cardId) . getCardId) (handOf investigator)
     case card of
       PlayerCard pc -> case pcCardType pc of
+        PlayerTreacheryType -> do
+          let
+            tid = TreacheryId $ unCardId cardId
+            treachery = lookupTreachery (pcCardCode pc) tid
+          unshiftMessages [RunTreachery iid tid]
+          pure $ g & treacheries %~ HashMap.insert tid treachery
         AssetType -> do
           let
             aid = AssetId $ unCardId cardId
@@ -925,7 +937,7 @@ toExternalGame Game {..} mq = do
     , gGameOver = giGameOver
     , gUsedAbilities = giUsedAbilities
     , gQuestion = mq
-    , gFocusedCards  = giFocusedCards
+    , gFocusedCards = giFocusedCards
     }
 
 toInternalGame :: MonadIO m => GameJson -> m Game

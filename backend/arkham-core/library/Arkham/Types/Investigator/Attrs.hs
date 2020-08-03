@@ -454,22 +454,24 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         $ a
         & (assets %~ HashSet.delete aid)
         & (discard %~ (lookupPlayerCard cardCode (CardId $ unAssetId aid) :))
-    ChooseFightEnemy iid skillType tempModifiers isAction
+    ChooseFightEnemy iid skillType tempModifiers tokenResponses isAction
       | iid == investigatorId -> a <$ unshiftMessage
         (Ask $ ChooseOne $ map
-          (\eid -> FightEnemy iid eid skillType tempModifiers isAction)
+          (\eid ->
+            FightEnemy iid eid skillType tempModifiers tokenResponses isAction
+          )
           (HashSet.toList investigatorEngagedEnemies)
         )
-    FightEnemy iid eid skillType tempModifiers True | iid == investigatorId ->
-      a <$ unshiftMessages
+    FightEnemy iid eid skillType tempModifiers tokenResponses True
+      | iid == investigatorId -> a <$ unshiftMessages
         [ TakeAction iid (actionCost a Action.Fight) (Just Action.Fight)
-        , FightEnemy iid eid skillType tempModifiers False
+        , FightEnemy iid eid skillType tempModifiers tokenResponses False
         ]
-    FightEnemy iid eid skillType tempModifiers False | iid == investigatorId ->
-      do
+    FightEnemy iid eid skillType tempModifiers tokenResponses False
+      | iid == investigatorId -> do
         unshiftMessages
           [ WhenAttackEnemy iid eid
-          , AttackEnemy iid eid skillType tempModifiers
+          , AttackEnemy iid eid skillType tempModifiers tokenResponses
           , AfterAttackEnemy iid eid
           ]
         pure a
@@ -478,22 +480,31 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       a <$ unshiftMessage (EnemyDamage eid iid (InvestigatorSource iid) damage)
     EnemyEvaded iid eid | iid == investigatorId ->
       pure $ a & engagedEnemies %~ HashSet.delete eid
-    ChooseEvadeEnemy iid skillType isAction | iid == investigatorId -> do
-      unshiftMessage
-        (Ask $ ChooseOne $ map
-          (\eid -> EvadeEnemy iid eid skillType isAction)
-          (HashSet.toList investigatorEngagedEnemies)
-        )
-      pure $ takeAction Action.Fight a
-    EvadeEnemy iid eid skillType True | iid == investigatorId ->
-      a <$ unshiftMessages
+    ChooseEvadeEnemy iid skillType onSuccess onFailure tokenResponses isAction
+      | iid == investigatorId -> do
+        unshiftMessage
+          (Ask $ ChooseOne $ map
+            (\eid -> EvadeEnemy
+              iid
+              eid
+              skillType
+              onSuccess
+              onFailure
+              tokenResponses
+              isAction
+            )
+            (HashSet.toList investigatorEngagedEnemies)
+          )
+        pure $ takeAction Action.Fight a
+    EvadeEnemy iid eid skillType onSuccess onFailure tokenResponses True
+      | iid == investigatorId -> a <$ unshiftMessages
         [ TakeAction iid (actionCost a Action.Evade) (Just Action.Evade)
-        , EvadeEnemy iid eid skillType False
+        , EvadeEnemy iid eid skillType onSuccess onFailure tokenResponses False
         ]
-    EvadeEnemy iid eid skillType False | iid == investigatorId ->
-      a <$ unshiftMessages
+    EvadeEnemy iid eid skillType onSuccess onFailure tokenResponses False
+      | iid == investigatorId -> a <$ unshiftMessages
         [ WhenEvadeEnemy iid eid
-        , TryEvadeEnemy iid eid skillType
+        , TryEvadeEnemy iid eid skillType onSuccess onFailure tokenResponses
         , AfterEvadeEnemy iid eid
         ]
     MoveAction iid lid True -> a <$ unshiftMessages
@@ -512,13 +523,13 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           : map (\k -> AssetDamage k eid health sanity) allDamageableAssets
           )
         )
-    Investigate iid lid skillType True -> a <$ unshiftMessages
+    Investigate iid lid skillType tokenResponses True -> a <$ unshiftMessages
       [ TakeAction
         iid
         (actionCost a Action.Investigate)
         (Just Action.Investigate)
       , CheckAttackOfOpportunity iid False
-      , Investigate iid lid skillType False
+      , Investigate iid lid skillType tokenResponses False
       ]
     InvestigatorDiscoverClues iid lid n | iid == investigatorId ->
       a <$ unshiftMessage
@@ -552,13 +563,24 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         isFast = case card of
           PlayerCard pc -> pcFast pc
           _ -> False
-        actionCost' = if isFast then 0 else actionCost a Action.Play
+        maction = case card of
+          PlayerCard pc -> pcAction pc
+          _ -> Nothing
+        actionCost' = if isFast then 0 else maybe 1 (actionCost a) maction
+        aooMessage =
+          if maction
+              `notElem` [ Just Action.Evade
+                        , Just Action.Parley
+                        , Just Action.Resign
+                        , Just Action.Fight
+                        ]
+            then [CheckAttackOfOpportunity iid isFast]
+            else []
       a <$ unshiftMessages
-        [ TakeAction iid actionCost' (Just Action.Play)
-        , PayCardCost iid cardId
-        , CheckAttackOfOpportunity iid isFast
-        , PlayCard iid cardId False
-        ]
+        ([TakeAction iid actionCost' (Just Action.Play), PayCardCost iid cardId]
+        <> aooMessage
+        <> [PlayCard iid cardId False]
+        )
     PlayedCard iid cardId discarded | iid == investigatorId -> do
       let
         card = fromJustNote "not in hand... spooky"
@@ -657,6 +679,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           onSuccess
           onFailure
           []
+          mempty
         )
     ActivateCardAbilityAction iid ability@(_, _, abilityType, _)
       | iid == investigatorId -> do
@@ -763,6 +786,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           <> [Continue "Skip playing fast cards"]
           )
         else pure a
+    LoseAction iid _ | iid == investigatorId ->
+      pure $ a & remainingActions %~ max 0 . subtract 1
     TakeAction iid actionCost' maction | iid == investigatorId -> do
       let
         actionsTakenUpdate = case maction of
@@ -857,15 +882,15 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
              | Action.Move `elem` canDos
              , lid <- HashSet.toList accessibleLocations
              ]
-          <> [ Investigate iid investigatorLocation SkillIntellect True
+          <> [ Investigate iid investigatorLocation SkillIntellect mempty True
              | Action.Investigate `elem` canDos
              ]
-          <> [ FightEnemy iid eid SkillCombat [] True
+          <> [ FightEnemy iid eid SkillCombat [] mempty True
              | Action.Fight `elem` canDos
              , eid <- HashSet.toList investigatorEngagedEnemies
              ]
           <> [ ChooseEngageEnemyAction iid | Action.Engage `elem` canDos ]
-          <> [ EvadeEnemy iid eid SkillAgility True
+          <> [ EvadeEnemy iid eid SkillAgility mempty mempty mempty True
              | Action.Evade `elem` canDos
              , eid <- HashSet.toList investigatorEngagedEnemies
              ]

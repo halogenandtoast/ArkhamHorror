@@ -4,12 +4,14 @@ export interface TreacheryContents {
   id: string;
   cardCode: string;
   name: string;
+  clues?: number;
 }
 
 export const treacheryContentsDecoder = JsonDecoder.object<TreacheryContents>({
   id: JsonDecoder.string,
   cardCode: JsonDecoder.string,
   name: JsonDecoder.string,
+  clues: JsonDecoder.optional(JsonDecoder.number),
 }, 'TreacheryContents');
 
 export interface Treachery {

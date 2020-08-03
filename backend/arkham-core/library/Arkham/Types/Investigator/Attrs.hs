@@ -455,13 +455,11 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         & (assets %~ HashSet.delete aid)
         & (discard %~ (lookupPlayerCard cardCode (CardId $ unAssetId aid) :))
     ChooseFightEnemy iid skillType tempModifiers isAction
-      | iid == investigatorId -> do
-        unshiftMessage
-          (Ask $ ChooseOne $ map
-            (\eid -> FightEnemy iid eid skillType tempModifiers isAction)
-            (HashSet.toList investigatorEngagedEnemies)
-          )
-        pure $ takeAction Action.Fight a
+      | iid == investigatorId -> a <$ unshiftMessage
+        (Ask $ ChooseOne $ map
+          (\eid -> FightEnemy iid eid skillType tempModifiers isAction)
+          (HashSet.toList investigatorEngagedEnemies)
+        )
     FightEnemy iid eid skillType tempModifiers True | iid == investigatorId ->
       a <$ unshiftMessages
         [ TakeAction iid (actionCost a Action.Fight) (Just Action.Fight)

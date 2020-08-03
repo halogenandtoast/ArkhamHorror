@@ -362,8 +362,13 @@ newtype KnifeI = KnifeI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 knife :: AssetId -> Asset
-knife uuid =
-  Knife $ KnifeI $ (baseAttrs uuid "01086") { assetSlots = [HandSlot] }
+knife uuid = Knife $ KnifeI $ (baseAttrs uuid "01086")
+  { assetSlots = [HandSlot]
+  , assetAbilities =
+    [ (AssetSource uuid, 1, ActionAbility 1 (Just Action.Fight), NoLimit)
+    , (AssetSource uuid, 2, ActionAbility 1 (Just Action.Fight), NoLimit)
+    ]
+  }
 
 newtype FlashlightI = FlashlightI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -446,7 +451,7 @@ instance (AssetRunner env) => RunMessage env Rolands38SpecialI where
               [ DamageDealt 1 (AssetSource aid)
               , SkillModifier SkillCombat skillModifier (AssetSource aid)
               ]
-              True
+              False
             )
           pure $ Rolands38SpecialI $ attrs & uses .~ Uses Resource.Ammo (n - 1)
         _ -> pure a
@@ -512,7 +517,7 @@ instance (AssetRunner env) => RunMessage env FortyFiveAutomaticI where
               [ DamageDealt 1 (AssetSource aid)
               , SkillModifier SkillCombat 1 (AssetSource aid)
               ]
-              True
+              False
             )
           pure $ FortyFiveAutomaticI $ attrs & uses .~ Uses
             Resource.Ammo
@@ -651,7 +656,7 @@ instance (AssetRunner env) => RunMessage env MacheteI where
           (damageDealtModifiers
           <> [SkillModifier SkillCombat 1 (AssetSource aid)]
           )
-          True
+          False
         )
       pure a
     _ -> MacheteI <$> runMessage msg attrs
@@ -704,7 +709,7 @@ instance (AssetRunner env) => RunMessage env ShrivellingI where
                 iid
                 SkillWillpower
                 [DamageDealt 1 (AssetSource aid)]
-                True
+                False
               )
             pure
               $ ShrivellingI
@@ -747,7 +752,7 @@ instance (AssetRunner env) => RunMessage env KnifeI where
           iid
           SkillCombat
           [SkillModifier SkillCombat 1 (AssetSource aid)]
-          True
+          False
         )
       pure a
     UseCardAbility iid ((AssetSource aid), 2, _, _) | aid == assetId -> do
@@ -759,7 +764,7 @@ instance (AssetRunner env) => RunMessage env KnifeI where
           [ SkillModifier SkillCombat 2 (AssetSource aid)
           , DamageDealt 1 (AssetSource aid)
           ]
-          True
+          False
         ]
       pure a
     _ -> KnifeI <$> runMessage msg attrs

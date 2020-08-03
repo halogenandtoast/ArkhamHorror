@@ -14,6 +14,8 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Token as Token
+import Arkham.Types.TokenResponse
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
 
@@ -88,8 +90,25 @@ wardOfProtection
 wardOfProtection iid = unshiftMessages
   [CancelNextRevelationEffect, InvestigatorDamage iid (EventSource "01065") 0 1]
 
-blindingLight :: InvestigatorId -> m ()
-blindingLight _ = error "not yet implemented"
+blindingLight
+  :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
+blindingLight iid = unshiftMessage
+  (ChooseEvadeEnemy
+    iid
+    SkillWillpower
+    []
+    []
+    [ OnAnyToken
+        [ Token.Skull
+        , Token.Cultist
+        , Token.Tablet
+        , Token.ElderThing
+        , Token.AutoFail
+        ]
+        [LoseAction iid (EventSource "01066")]
+    ]
+    False
+  )
 
 emergencyCache
   :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()

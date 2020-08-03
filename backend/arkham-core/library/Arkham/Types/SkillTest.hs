@@ -4,6 +4,7 @@ module Arkham.Types.SkillTest
   , DrawStrategy(..)
   , ResolveStrategy(..)
   , SkillTestResult(..)
+  , TokenResponse(..)
   , initSkillTest
   )
 where
@@ -21,6 +22,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
+import Arkham.Types.TokenResponse
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
@@ -44,6 +46,7 @@ data SkillTest = SkillTest
   , skillTestDifficulty      :: Int
   , skillTestOnSuccess       :: [Message]
   , skillTestOnFailure       :: [Message]
+  , skillTestOnTokenResponses :: [TokenResponse Message]
   , skillTestDrawStrategy    :: DrawStrategy
   , skillTestResolveStrategy :: ResolveStrategy
   , skillTestSetAsideTokens  :: [Token]
@@ -78,14 +81,16 @@ initSkillTest
   -> [Message]
   -> [Message]
   -> [Modifier]
+  -> [TokenResponse Message]
   -> SkillTest
-initSkillTest iid source maction skillType' difficulty' onSuccess' onFailure' modifiers'
+initSkillTest iid source maction skillType' difficulty' onSuccess' onFailure' modifiers' tokenResponses'
   = SkillTest
     { skillTestInvestigator = iid
     , skillTestSkillType = skillType'
     , skillTestDifficulty = difficulty'
     , skillTestOnSuccess = onSuccess'
     , skillTestOnFailure = onFailure'
+    , skillTestOnTokenResponses = tokenResponses'
     , skillTestDrawStrategy = DrawOne
     , skillTestResolveStrategy = ResolveAll
     , skillTestSetAsideTokens = mempty
@@ -187,6 +192,16 @@ instance (SkillTestRunner env) => RunMessage env SkillTest where
         SucceededBy _ -> unshiftMessages skillTestOnSuccess
         FailedBy _ -> unshiftMessages skillTestOnFailure
         Unrun -> pure ()
+
+      for_ skillTestOnTokenResponses $ \case
+        OnAnyToken tokens messages
+          | not
+            (null
+            $ HashSet.fromList skillTestSetAsideTokens
+            `intersect` HashSet.fromList tokens
+            )
+          -> unshiftMessages messages
+        _ -> pure ()
 
       unshiftMessages $ map
         (AddModifier (InvestigatorTarget skillTestInvestigator)

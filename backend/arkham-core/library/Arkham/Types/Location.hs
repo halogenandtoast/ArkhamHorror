@@ -307,12 +307,13 @@ instance (LocationRunner env) => RunMessage env ParlorI where
             [TakeControlOfAsset iid aid]
             []
             []
+            mempty
           )
     _ -> ParlorI <$> runMessage msg attrs
 
 instance (LocationRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
-    Investigate iid lid skillType False | lid == locationId ->
+    Investigate iid lid skillType tokenResponses False | lid == locationId ->
       a <$ unshiftMessage
         (BeginSkillTest
           iid
@@ -323,6 +324,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
           [SuccessfulInvestigation iid lid, InvestigatorDiscoverClues iid lid 1]
           []
           []
+          tokenResponses
         )
     AddModifier (LocationTarget lid) modifier | lid == locationId ->
       pure $ a & modifiers %~ (modifier :)

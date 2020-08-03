@@ -392,40 +392,44 @@ instance (EnemyRunner env) => RunMessage env Attrs where
         unshiftMessages $ map (flip EnemyWillAttack enemyId) $ HashSet.toList
           enemyEngagedInvestigators
         pure a
-    AttackEnemy iid eid skillType tempModifiers | eid == enemyId -> do
-      let
-        onFailure = if Keyword.Retaliate `elem` enemyKeywords
-          then [EnemyAttack iid eid]
-          else []
-      a <$ unshiftMessage
-        (BeginSkillTest
-          iid
-          (EnemySource eid)
-          (Just Action.Fight)
-          skillType
-          enemyFight
-          [InvestigatorDamageEnemy iid eid]
-          onFailure
-          tempModifiers
-        )
+    AttackEnemy iid eid skillType tempModifiers tokenResponses
+      | eid == enemyId -> do
+        let
+          onFailure = if Keyword.Retaliate `elem` enemyKeywords
+            then [EnemyAttack iid eid]
+            else []
+        a <$ unshiftMessage
+          (BeginSkillTest
+            iid
+            (EnemySource eid)
+            (Just Action.Fight)
+            skillType
+            enemyFight
+            [InvestigatorDamageEnemy iid eid]
+            onFailure
+            tempModifiers
+            tokenResponses
+          )
     EnemyEvaded iid eid | eid == enemyId ->
       pure $ a & engagedInvestigators %~ HashSet.delete iid & exhausted .~ True
-    TryEvadeEnemy iid eid skillType | eid == enemyId -> do
-      let
-        onFailure = if Keyword.Alert `elem` enemyKeywords
-          then [EnemyAttack iid eid]
-          else []
-      a <$ unshiftMessage
-        (BeginSkillTest
-          iid
-          (EnemySource eid)
-          (Just Action.Evade)
-          skillType
-          enemyEvade
-          [EnemyEvaded iid eid]
-          onFailure
-          []
-        )
+    TryEvadeEnemy iid eid skillType onSuccess onFailure tokenResponses
+      | eid == enemyId -> do
+        let
+          onFailure' = if Keyword.Alert `elem` enemyKeywords
+            then EnemyAttack iid eid : onFailure
+            else onFailure
+        a <$ unshiftMessage
+          (BeginSkillTest
+            iid
+            (EnemySource eid)
+            (Just Action.Evade)
+            skillType
+            enemyEvade
+            (EnemyEvaded iid eid : onSuccess)
+            onFailure'
+            []
+            tokenResponses
+          )
     PerformEnemyAttack iid eid | eid == enemyId -> a <$ unshiftMessage
       (InvestigatorAssignDamage iid enemyId enemyHealthDamage enemySanityDamage)
     EnemyDamage eid iid source amount | eid == enemyId -> do

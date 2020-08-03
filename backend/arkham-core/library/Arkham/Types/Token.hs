@@ -21,4 +21,4 @@ data Token
   | AutoFail
   | ElderSign
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (Hashable, ToJSON, FromJSON)

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 92a9c16abe61bccd1b442054360f9ecd4851a553b7845d2d62b3bd754b54ff03
+-- hash: b039514abac16ac71c395191ecb48d132df0f9a63179fc1b024c121b4bfc7c69
 
 name:           arkham-core
 version:        0.0.0
@@ -107,6 +107,7 @@ library
       Arkham.Types.Stats
       Arkham.Types.Target
       Arkham.Types.Token
+      Arkham.Types.TokenResponse
       Arkham.Types.Trait
       Arkham.Types.Treachery
       Arkham.Types.TreacheryId

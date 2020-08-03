@@ -28,6 +28,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
+import Arkham.Types.TokenResponse
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude
@@ -90,9 +91,9 @@ data Message
   | ActivateCardAbilityAction InvestigatorId Ability
   | UseCardAbility InvestigatorId Ability
   | ResolveToken Token InvestigatorId Int
-  | Investigate InvestigatorId LocationId SkillType Bool
-  | ChooseFightEnemy InvestigatorId SkillType [Modifier] Bool
-  | ChooseEvadeEnemy InvestigatorId SkillType Bool
+  | Investigate InvestigatorId LocationId SkillType [TokenResponse Message] Bool
+  | ChooseFightEnemy InvestigatorId SkillType [Modifier] [TokenResponse Message] Bool
+  | ChooseEvadeEnemy InvestigatorId SkillType [Message] [Message] [TokenResponse Message] Bool
   | ChooseEngageEnemyAction InvestigatorId
   | ChooseEndTurn InvestigatorId
   | CheckAttackOfOpportunity InvestigatorId Bool
@@ -124,9 +125,9 @@ data Message
   | DiscoverClues InvestigatorId LocationId Int
   | AfterDiscoverClues InvestigatorId LocationId Int
   | BeginSkillTest InvestigatorId Source (Maybe Action) SkillType Int [Message]
-                [Message] [Modifier]
+                [Message] [Modifier] [TokenResponse Message]
   | BeginSkillTestAfterFast InvestigatorId Source (Maybe Action) SkillType Int [Message]
-                [Message] [Modifier]
+                [Message] [Modifier] [TokenResponse Message]
   | StartSkillTest
   | InvestigatorStartSkillTest InvestigatorId (Maybe Action) SkillType [Modifier]
   | BeforeSkillTest InvestigatorId SkillType
@@ -175,14 +176,14 @@ data Message
   | SetEncounterDeck [EncounterCard]
   | TreacheryFailure InvestigatorId TreacheryId -- TODO: better name
   | ChooseAndDiscardAsset InvestigatorId
-  | FightEnemy InvestigatorId EnemyId SkillType [Modifier] Bool
+  | FightEnemy InvestigatorId EnemyId SkillType [Modifier] [TokenResponse Message] Bool
   | WhenAttackEnemy InvestigatorId EnemyId
-  | AttackEnemy InvestigatorId EnemyId SkillType [Modifier]
+  | AttackEnemy InvestigatorId EnemyId SkillType [Modifier] [TokenResponse Message]
   | AfterAttackEnemy InvestigatorId EnemyId
   | AfterEnemyAttacks EnemyId Target
   | WhenEvadeEnemy InvestigatorId EnemyId
-  | EvadeEnemy InvestigatorId EnemyId SkillType Bool
-  | TryEvadeEnemy InvestigatorId EnemyId SkillType
+  | EvadeEnemy InvestigatorId EnemyId SkillType [Message] [Message] [TokenResponse Message] Bool
+  | TryEvadeEnemy InvestigatorId EnemyId SkillType [Message] [Message] [TokenResponse Message]
   | EnemyEvaded InvestigatorId EnemyId
   | AfterEvadeEnemy InvestigatorId EnemyId
   | SuccessfulInvestigation InvestigatorId LocationId

@@ -756,7 +756,7 @@ runGameMessage msg g = case msg of
   EndMythos -> g <$ pushMessage BeginInvestigation
   UseCardAbility _ (_, _, _, NoLimit) -> pure g
   UseCardAbility _ ability -> pure $ g & usedAbilities %~ (ability :)
-  BeginSkillTest iid source maction skillType difficulty onSuccess onFailure skillTestModifiers
+  BeginSkillTest iid source maction skillType difficulty onSuccess onFailure skillTestModifiers tokenResponses
     -> do
       let
         availableSkills = availableSkillsFor (getInvestigator iid g) skillType
@@ -771,6 +771,7 @@ runGameMessage msg g = case msg of
             onSuccess
             onFailure
             skillTestModifiers
+            tokenResponses
           )
         [_] -> g <$ unshiftMessage
           (BeginSkillTestAfterFast
@@ -782,6 +783,7 @@ runGameMessage msg g = case msg of
             onSuccess
             onFailure
             skillTestModifiers
+            tokenResponses
           )
         xs -> g <$ unshiftMessage
           (Ask $ ChooseOne
@@ -794,10 +796,11 @@ runGameMessage msg g = case msg of
                 onSuccess
                 onFailure
                 skillTestModifiers
+                tokenResponses
             | skillType' <- xs
             ]
           )
-  BeginSkillTestAfterFast iid source maction skillType difficulty onSuccess onFailure skillTestModifiers
+  BeginSkillTestAfterFast iid source maction skillType difficulty onSuccess onFailure skillTestModifiers tokenResponses
     -> do
       unshiftMessage (BeforeSkillTest iid skillType)
       pure
@@ -812,6 +815,7 @@ runGameMessage msg g = case msg of
                onSuccess
                onFailure
                skillTestModifiers
+               tokenResponses
           )
   TriggerSkillTest iid _ skillValue -> do
     (token, chaosBag') <- drawToken g

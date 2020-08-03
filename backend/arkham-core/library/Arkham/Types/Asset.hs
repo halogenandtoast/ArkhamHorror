@@ -466,6 +466,7 @@ instance (AssetRunner env) => RunMessage env Rolands38SpecialI where
               [ DamageDealt 1 (AssetSource aid)
               , SkillModifier SkillCombat skillModifier (AssetSource aid)
               ]
+              mempty
               False
             )
           pure $ Rolands38SpecialI $ attrs & uses .~ Uses Resource.Ammo (n - 1)
@@ -532,6 +533,7 @@ instance (AssetRunner env) => RunMessage env FortyFiveAutomaticI where
               [ DamageDealt 1 (AssetSource aid)
               , SkillModifier SkillCombat 1 (AssetSource aid)
               ]
+              mempty
               False
             )
           pure $ FortyFiveAutomaticI $ attrs & uses .~ Uses
@@ -659,6 +661,7 @@ instance (AssetRunner env) => RunMessage env MedicalTextsI where
               [HealDamage (InvestigatorTarget iid') 1]
               [InvestigatorDamage iid' (AssetSource aid) 1 0]
               []
+              mempty
           | iid' <- locationInvestigatorIds
           ]
         )
@@ -691,6 +694,7 @@ instance (AssetRunner env) => RunMessage env MacheteI where
           (damageDealtModifiers
           <> [SkillModifier SkillCombat 1 (AssetSource aid)]
           )
+          mempty
           False
         )
       pure a
@@ -744,6 +748,7 @@ instance (AssetRunner env) => RunMessage env ShrivellingI where
                 iid
                 SkillWillpower
                 [DamageDealt 1 (AssetSource aid)]
+                mempty -- TODO: Add metadata response here
                 False
               )
             pure
@@ -787,6 +792,7 @@ instance (AssetRunner env) => RunMessage env KnifeI where
           iid
           SkillCombat
           [SkillModifier SkillCombat 1 (AssetSource aid)]
+          mempty
           False
         )
       pure a
@@ -799,6 +805,7 @@ instance (AssetRunner env) => RunMessage env KnifeI where
           [ SkillModifier SkillCombat 2 (AssetSource aid)
           , DamageDealt 1 (AssetSource aid)
           ]
+          mempty
           False
         ]
       pure a
@@ -830,7 +837,7 @@ instance (AssetRunner env) => RunMessage env FlashlightI where
             [ AddModifier
               (LocationTarget lid)
               (ShroudModifier (-2) (AssetSource aid))
-            , Investigate iid lid SkillIntellect False
+            , Investigate iid lid SkillIntellect mempty False
             , RemoveAllModifiersOnTargetFrom
               (LocationTarget lid)
               (AssetSource aid)

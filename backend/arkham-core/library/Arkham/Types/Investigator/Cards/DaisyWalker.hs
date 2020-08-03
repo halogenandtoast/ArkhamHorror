@@ -3,18 +3,19 @@ module Arkham.Types.Investigator.Cards.DaisyWalker where
 
 import Arkham.Types.Ability
 import Arkham.Types.Classes
+import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
+import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Token
-import Arkham.Types.Source
 import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
+import qualified Data.HashSet as HashSet
 
 newtype DaisyWalkerMetadata = DaisyWalkerMetadata { tomeActions :: Int }
   deriving stock (Show, Generic)
@@ -24,39 +25,92 @@ newtype DaisyWalkerI = DaisyWalkerI (Attrs `With` DaisyWalkerMetadata)
   deriving newtype (Show, ToJSON, FromJSON)
 
 daisyWalker :: DaisyWalkerI
-daisyWalker = DaisyWalkerI $ (baseAttrs "01002" "Daisy Walker" stats [Miskatonic]) `with` DaisyWalkerMetadata 1
-  where
-    stats = Stats
-      { health = 5
-      , sanity = 9
-      , willpower = 3
-      , intellect = 5
-      , combat = 2
-      , agility = 2
-      }
+daisyWalker =
+  DaisyWalkerI
+    $ baseAttrs "01002" "Daisy Walker" stats [Miskatonic]
+    `with` DaisyWalkerMetadata 1
+ where
+  stats = Stats
+    { health = 5
+    , sanity = 9
+    , willpower = 3
+    , intellect = 5
+    , combat = 2
+    , agility = 2
+    }
 
 becomesFailure :: Token -> Modifier -> Bool
-becomesFailure token (ForcedTokenChange fromToken AutoFail _) = token == fromToken
+becomesFailure token (ForcedTokenChange fromToken AutoFail _) =
+  token == fromToken
 becomesFailure _ _ = False
 
 instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
-  runMessage msg i@(DaisyWalkerI (attrs@Attrs {..} `With` metadata@DaisyWalkerMetadata {..})) = case msg of
-    ActivateCardAbilityAction iid (AssetSource aid, abilityIndex, abilityType, abilityLimit) | iid == investigatorId-> do
-      traits <- asks (getSet aid)
-      if Tome `elem` traits && tomeActions > 0
-         then case abilityType of
-          FreeAbility _ -> DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
-          ReactionAbility _ -> DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
-          ActionAbility n actionType -> if n > 0
-            then DaisyWalkerI . (`with` DaisyWalkerMetadata (tomeActions - 1)) <$> runMessage (ActivateCardAbilityAction iid (AssetSource aid, abilityIndex, (ActionAbility (n - 1) actionType), abilityLimit)) attrs
+  runMessage msg i@(DaisyWalkerI (attrs@Attrs {..} `With` metadata@DaisyWalkerMetadata {..}))
+    = case msg of
+      ActivateCardAbilityAction iid (AssetSource aid, abilityIndex, abilityType, abilityLimit)
+        | iid == investigatorId
+        -> do
+          traits <- asks (getSet aid)
+          if Tome `elem` traits && tomeActions > 0
+            then case abilityType of
+              FreeAbility _ ->
+                DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
+              ReactionAbility _ ->
+                DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
+              ActionAbility n actionType -> if n > 0
+                then
+                  DaisyWalkerI
+                  . (`with` DaisyWalkerMetadata (tomeActions - 1))
+                  <$> runMessage
+                        (ActivateCardAbilityAction
+                          iid
+                          ( AssetSource aid
+                          , abilityIndex
+                          , ActionAbility (n - 1) actionType
+                          , abilityLimit
+                          )
+                        )
+                        attrs
+                else DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
             else DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
-         else DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
-    ResolveToken ElderSign iid skillValue | iid == investigatorId -> do
-      if any (becomesFailure ElderSign) investigatorModifiers
-         then i <$ unshiftMessage (ResolveToken AutoFail iid skillValue)
-         else do
-           tomeCount <- unAssetCount <$> asks (getCount (iid, [Tome]))
-           runTest skillValue -- Because this unshifts we need to call this before the on success is added
-           i <$ unshiftMessage (AddOnSuccess (Ask $ ChooseOne [DrawCards iid tomeCount False, Continue "Do not use Daisy's ability"]))
-    BeginRound -> DaisyWalkerI . (`with` DaisyWalkerMetadata 1) <$> runMessage msg attrs
-    _ -> DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
+      PlayerWindow iid additionalActions | iid == investigatorId ->
+        if investigatorRemainingActions == 0 && tomeActions > 0
+          then do
+            let assetIds = HashSet.toList investigatorAssets
+            tomeAssets <-
+              map fst
+              . filter ((Tome `elem`) . snd)
+              . zip assetIds
+              <$> traverse (asks . getSet) assetIds
+            tomeAbilities <- mconcat <$> traverse (asks . getList) tomeAssets
+            DaisyWalkerI
+              . (`with` metadata)
+              <$> runMessage
+                    (PlayerWindow
+                      iid
+                      (additionalActions
+                      <> [ ActivateCardAbilityAction iid ability
+                         | ability <- tomeAbilities
+                         ]
+                      )
+                    )
+                    attrs
+          else DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
+      ResolveToken ElderSign iid skillValue | iid == investigatorId ->
+        if any (becomesFailure ElderSign) investigatorModifiers
+          then i <$ unshiftMessage (ResolveToken AutoFail iid skillValue)
+          else do
+            tomeCount <- unAssetCount <$> asks (getCount (iid, [Tome]))
+            runTest skillValue -- Because this unshifts we need to call this before the on success is added
+            i <$ unshiftMessage
+              (AddOnSuccess
+                (Ask
+                $ ChooseOne
+                    [ DrawCards iid tomeCount False
+                    , Continue "Do not use Daisy's ability"
+                    ]
+                )
+              )
+      BeginRound ->
+        DaisyWalkerI . (`with` DaisyWalkerMetadata 1) <$> runMessage msg attrs
+      _ -> DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs

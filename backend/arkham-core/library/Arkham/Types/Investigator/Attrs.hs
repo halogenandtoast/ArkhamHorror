@@ -795,7 +795,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
               ]
             }
           )
-    PlayerWindow iid | iid == investigatorId -> do
+    PlayerWindow iid additionalActions | iid == investigatorId -> do
       advanceableActIds <-
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())
       canDos <- filterM (canPerform a) Action.allActions
@@ -806,7 +806,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           investigatorConnectedLocations `difference` blockedLocationIds
       a <$ unshiftMessage
         (Ask $ ChooseOne
-          ([ TakeResources iid 1 True | Action.Resource `elem` canDos ]
+          (additionalActions
+          <> [ TakeResources iid 1 True | Action.Resource `elem` canDos ]
           <> [ DrawCards iid 1 True | Action.Draw `elem` canDos ]
           <> [ ActivateCardAbilityAction iid ability
              | Action.Ability `elem` canDos

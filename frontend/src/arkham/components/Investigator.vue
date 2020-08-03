@@ -64,7 +64,17 @@ export default class Investigator extends Vue {
       return this.searchTopOfDeckAction;
     }
 
+    if (this.runSkillTestAction !== -1) {
+      return this.runSkillTestAction;
+    }
+
     return this.takeDamageAction;
+  }
+
+  get runSkillTestAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.BEGIN_SKILL_TEST && c.contents[0] === this.id);
   }
 
   get searchTopOfDeckAction() {

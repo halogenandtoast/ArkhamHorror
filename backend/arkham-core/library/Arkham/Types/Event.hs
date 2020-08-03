@@ -27,6 +27,8 @@ allEvents "01023" = dodge
 allEvents "01024" = dynamiteBlast
 allEvents "01036" = mindOverMatter
 allEvents "01037" = workingAHunch
+allEvents "01065" = wardOfProtection
+allEvents "01066" = blindingLight
 allEvents "01088" = emergencyCache
 allEvents evid = const (throwString $ "No event with id: " <> show evid)
 
@@ -80,6 +82,14 @@ workingAHunch iid = do
   if clueCount > 0
     then unshiftMessage (DiscoverCluesAtLocation iid currentLocationId 1)
     else pure ()
+
+wardOfProtection
+  :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
+wardOfProtection iid = do
+  unshiftMessages
+  [ CancelRevelationEffect cid
+  , InvestigatorDamage iid assetId 0 1
+  ]
 
 blindingLight
   :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()

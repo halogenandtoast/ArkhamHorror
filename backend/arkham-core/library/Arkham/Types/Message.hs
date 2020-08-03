@@ -150,6 +150,7 @@ data Message
   | DrawToken Token
   | EmptyDeck InvestigatorId
   | DrawCards InvestigatorId Int Bool
+  | WhenDrawCard InvestigatorId CardCoad
   | HealHorror Target Int
   | HealDamage Target Int
   | DrewRevelation InvestigatorId CardCode CardId

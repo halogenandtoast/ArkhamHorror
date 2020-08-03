@@ -52,6 +52,7 @@ allAssets = HashMap.fromList
   , ("01030", magnifyingGlass)
   , ("01031", oldBookOfLore)
   , ("01032", researchLibrarian)
+  , ("01033", drMilanChristopher)
   , ("01035", medicalTexts)
   , ("01059", holyRosary)
   , ("01060", shrivelling)
@@ -118,6 +119,7 @@ data Asset
   | OldBookOfLore OldBookOfLoreI
   | MedicalTexts MedicalTextsI
   | ResearchLibrarian ResearchLibrarianI
+  | DrMilanChristopher DrMilanChristopherI
   | HolyRosary HolyRosaryI
   | Shrivelling ShrivellingI
   | Scrying ScryingI
@@ -140,6 +142,7 @@ assetAttrs = \case
   OldBookOfLore attrs -> coerce attrs
   MedicalTexts attrs -> coerce attrs
   ResearchLibrarian attrs -> coerce attrs
+  DrMilanChristopher attrs -> coerce attrs
   HolyRosary attrs -> coerce attrs
   Shrivelling (ShrivellingI (attrs `With` _)) -> attrs
   Scrying attrs -> coerce attrs
@@ -317,6 +320,17 @@ researchLibrarian uuid =
     , assetSanity = Just 1
     }
 
+newtype DrMilanChristopherI = DrMilanChristopherI Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+drMilanChristopher :: AssetId -> Asset
+drMilanChristopher uuid =
+  DrMilanChristopherI $ DrMilanChristopherI $ (baseAttrs uuid "01033")
+    { assetSlots = [AllySlot]
+    , assetHealth = Just 1
+    , assetSanity = Just 2
+    }
+
 newtype MedicalTextsI = MedicalTextsI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
@@ -412,6 +426,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     OldBookOfLore x -> OldBookOfLore <$> runMessage msg x
     MedicalTexts x -> MedicalTexts <$> runMessage msg x
     ResearchLibrarian x -> ResearchLibrarian <$> runMessage msg x
+    DrMilanChristopher x -> DrMilanChristopher <$> runMessage msg x
     HolyRosary x -> HolyRosary <$> runMessage msg x
     Shrivelling x -> Shrivelling <$> runMessage msg x
     Scrying x -> Scrying <$> runMessage msg x
@@ -607,6 +622,19 @@ instance (AssetRunner env) => RunMessage env ResearchLibrarianI where
     UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
       a <$ unshiftMessage (SearchDeckForTraits iid [Tome])
     _ -> ResearchLibrarianI <$> runMessage msg attrs
+
+instance (AssetRunner env) => RunMessage env DrMilanChristopherI where
+  runMessage msg a@(DrMilanChristopherI attrs@Attrs {..}) = case msg of
+    InvestigatorPlayAsset iid aid | aid == assetId -> do
+      unshiftMessage
+        (AddModifier
+          (InvestigatorTarget iid)
+          (SkillModifier SkillWillpower 1 (AssetSource aid))
+        )
+      SuccessfulInvestigation iid _ | iid == assetOwner do ->
+        unshiftMessage(TakeResources iid 1 True)
+      DrMilanChristopherI <$> runMessage msg attrs
+    _ -> DrMilanChristopherI  <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env MedicalTextsI where
   runMessage msg (MedicalTextsI attrs@Attrs {..}) = case msg of

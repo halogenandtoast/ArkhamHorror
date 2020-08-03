@@ -320,7 +320,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
           (Just Action.Investigate)
           skillType
           (shroudValueFor a)
-          [SuccessfulInvestigation lid, InvestigatorDiscoverClues iid lid 1]
+          [SuccessfulInvestigation iid lid, InvestigatorDiscoverClues iid lid 1]
           []
           []
         )

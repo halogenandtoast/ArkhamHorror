@@ -94,6 +94,9 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "enemy"
 
+prey :: Lens' Attrs Prey
+prey = lens enemyPrey $ \m x -> m { enemyPrey = x }
+
 engagedInvestigators :: Lens' Attrs (HashSet InvestigatorId)
 engagedInvestigators =
   lens enemyEngagedInvestigators $ \m x -> m { enemyEngagedInvestigators = x }
@@ -139,7 +142,7 @@ baseAttrs eid cardCode =
   let
     MkEncounterCard {..} =
       fromJustNote
-          "missing encounter card"
+          ("missing enemy encounter card: " <> show cardCode)
           (HashMap.lookup cardCode allEncounterCards)
         $ CardId (unEnemyId eid)
   in
@@ -164,19 +167,51 @@ baseAttrs eid cardCode =
       , enemyExhausted = False
       }
 
+weaknessBaseAttrs :: EnemyId -> CardCode -> Attrs
+weaknessBaseAttrs eid cardCode =
+  let
+    MkPlayerCard {..} =
+      fromJustNote
+          ("missing player enemy weakness card: " <> show cardCode)
+          (HashMap.lookup cardCode allPlayerCards)
+        $ CardId (unEnemyId eid)
+  in
+    Attrs
+      { enemyName = pcName
+      , enemyId = eid
+      , enemyCardCode = cardCode
+      , enemyEngagedInvestigators = mempty
+      , enemyLocation = "00000" -- no known location
+      , enemyFight = 1
+      , enemyHealth = Static 1
+      , enemyEvade = 1
+      , enemyDamage = 0
+      , enemyHealthDamage = 0
+      , enemySanityDamage = 0
+      , enemyTraits = HashSet.fromList pcTraits
+      , enemyVictory = Nothing
+      , enemyKeywords = HashSet.fromList pcKeywords
+      , enemyPrey = AnyPrey
+      , enemyModifiers = mempty
+      , enemyAbilities = mempty
+      , enemyExhausted = False
+      }
+
 newtype SilverTwilightAcolyteI = SilverTwilightAcolyteI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 silverTwilightAcolyte :: EnemyId -> Enemy
 silverTwilightAcolyte uuid =
-  SilverTwilightAcolyte $ SilverTwilightAcolyteI $ (baseAttrs uuid "01102")
-    { enemyHealthDamage = 1
-    , enemySanityDamage = 0
-    , enemyFight = 2
-    , enemyHealth = Static 3
-    , enemyEvade = 3
-    , enemyPrey = Bearer
-    }
+  SilverTwilightAcolyte
+    $ SilverTwilightAcolyteI
+    $ (weaknessBaseAttrs uuid "01102")
+        { enemyHealthDamage = 1
+        , enemySanityDamage = 0
+        , enemyFight = 2
+        , enemyHealth = Static 3
+        , enemyEvade = 3
+        , enemyPrey = SetToBearer
+        }
 
 newtype GhoulPriestI = GhoulPriestI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -292,9 +327,10 @@ modifiedDamageAmount attrs baseAmount = foldr
   applyModifier _ n = n
 
 instance (EnemyRunner env) => RunMessage env SilverTwilightAcolyteI where
-  runMessage msg e@(SilverTwilightAcolyteI attrs@Attrs {..}) = case msg of
-    AfterEnemyAttacks eid _ | eid == enemyId ->
-      e <$ unshiftMessage PlaceDoomOnAgenda
+  runMessage msg (SilverTwilightAcolyteI attrs@Attrs {..}) = case msg of
+    EnemyAttack _ eid | eid == enemyId -> do
+      unshiftMessage PlaceDoomOnAgenda
+      SilverTwilightAcolyteI <$> runMessage msg attrs
     _ -> SilverTwilightAcolyteI <$> runMessage msg attrs
 
 instance (EnemyRunner env) => RunMessage env GhoulPriestI where
@@ -345,7 +381,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
       -> do
         closestLocationIds <-
           HashSet.toList . HashSet.map unClosestLocationId <$> asks
-            (getSet (enemyLocation, AnyPrey))
+            (getSet (enemyLocation, enemyPrey))
         case closestLocationIds of
           [] -> pure a
           [lid] -> a <$ unshiftMessage (EnemyMove enemyId enemyLocation lid)
@@ -419,4 +455,5 @@ instance (EnemyRunner env) => RunMessage env Attrs where
     InvestigatorDrawEnemy _ lid eid | eid == enemyId -> do
       unshiftMessage (EnemySpawn lid eid)
       pure $ a & location .~ lid
+    EnemySetBearer eid bid | eid == enemyId -> pure $ a & prey .~ Bearer bid
     _ -> pure a

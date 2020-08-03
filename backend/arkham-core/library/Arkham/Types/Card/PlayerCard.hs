@@ -7,6 +7,7 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
 import Arkham.Types.Card.Id
 import Arkham.Types.FastWindow
+import Arkham.Types.Keyword
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import ClassyPrelude
@@ -33,6 +34,9 @@ data ClassSymbol
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+newtype BearerId = BearerId { unBearerId :: CardCode }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
+
 data PlayerCard = MkPlayerCard
   { pcCardCode :: CardCode
   , pcName :: Text
@@ -40,9 +44,11 @@ data PlayerCard = MkPlayerCard
   , pcLevel :: Int
   , pcCardType :: PlayerCardType
   , pcWeakness :: Bool
+  , pcBearer :: Maybe BearerId
   , pcClassSymbol :: ClassSymbol
   , pcSkills :: [SkillType]
   , pcTraits :: [Trait]
+  , pcKeywords :: [Keyword]
   , pcFast :: Bool
   , pcFastWindows :: HashSet FastWindow
   , pcId :: CardId
@@ -87,9 +93,11 @@ basePlayerCard cardId cardCode name cost cardType classSymbol = MkPlayerCard
   , pcLevel = 0
   , pcCardType = cardType
   , pcWeakness = False
+  , pcBearer = Nothing
   , pcClassSymbol = classSymbol
   , pcSkills = mempty
   , pcTraits = mempty
+  , pcKeywords = mempty
   , pcFast = False
   , pcFastWindows = mempty
   , pcId = cardId

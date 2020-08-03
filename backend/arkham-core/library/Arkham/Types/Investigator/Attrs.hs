@@ -624,8 +624,11 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
             (mcard, deck') = drawCard (coerce investigatorDeck)
             handUpdate = maybe id ((:) . PlayerCard) mcard
           case mcard of
-            Just MkPlayerCard {..} -> when pcRevelation
-              $ unshiftMessage (DrewRevelation iid pcCardCode pcId)
+            Just MkPlayerCard {..} -> do
+              when pcRevelation
+                $ unshiftMessage (DrewRevelation iid pcCardCode pcId)
+              when (pcCardType == PlayerEnemyType)
+                $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
             Nothing -> pure ()
           pure $ a & hand %~ handUpdate & deck .~ Deck deck'
     InvestigatorSpendClues iid n | iid == investigatorId ->
@@ -678,7 +681,10 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       unshiftMessage (DrawCards investigatorId 1 False)
       pure $ a & resources +~ 1
     LoadDeck iid deck' | iid == investigatorId -> do
-      shuffled <- liftIO $ shuffleM deck'
+      shuffled <- liftIO $ shuffleM $ flip map deck' $ \card ->
+        if pcWeakness card
+          then card { pcBearer = Just $ BearerId $ unInvestigatorId iid }
+          else card
       pure $ a & deck .~ Deck shuffled
     BeforeSkillTest iid skillType | iid == investigatorId -> do
       commitedCardIds <- map unCommitedCardId . HashSet.toList <$> asks
@@ -780,8 +786,11 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         ((/= cardId) . getCardId)
         (unDeck investigatorDeck)
       case card of
-        MkPlayerCard {..} -> when pcRevelation
-          $ unshiftMessage (DrewRevelation iid pcCardCode pcId)
+        MkPlayerCard {..} -> do
+          when pcRevelation
+            $ unshiftMessage (DrewRevelation iid pcCardCode pcId)
+          when (pcCardType == PlayerEnemyType)
+            $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
       pure $ a & deck .~ Deck deck' & hand %~ (PlayerCard card :)
     SearchDeckForTraits iid traits -> runMessage
       (SearchTopOfDeck

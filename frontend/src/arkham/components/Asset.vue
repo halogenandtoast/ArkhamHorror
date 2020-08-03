@@ -2,9 +2,9 @@
   <div>
     <img
       :src="image"
-      :class="{ 'asset--can-interact': availableAction !== -1, exhausted}"
+      :class="{ 'asset--can-interact': cardAction !== -1, exhausted}"
       class="card"
-      @click="$emit('choose', availableAction)"
+      @click="$emit('choose', cardAction)"
     />
     <div
       v-if="asset.contents.uses && asset.contents.uses.amount > 0"
@@ -50,52 +50,29 @@ export default class Asset extends Vue {
     return `/img/arkham/cards/${this.cardCode}.jpg`;
   }
 
-  get availableAction() {
-    if (this.activateAbilityAction !== -1) {
-      return this.activateAbilityAction;
-    }
-
-    if (this.useAbilityAction !== -1) {
-      return this.useAbilityAction;
-    }
-
-    if (this.damageAction !== -1) {
-      return this.damageAction;
-    }
-
-    return this.discardAssetAction;
-  }
-
   get choices() {
     return choices(this.game);
   }
 
-  get useAbilityAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.USE_CARD_ABILITY && this.isIn(c.contents));
+  get cardAction() {
+    return this.choices.findIndex(this.canInteract);
   }
 
-  get activateAbilityAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.ACTIVATE_ABILITY && this.isIn(c.contents));
-  }
-
-  get damageAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.ASSET_DAMAGE && this.isIn(c.contents));
-  }
-
-  isIn(contents: any) {
-    return contents[1][0].contents === this.id || contents[0] === this.id;
-  }
-
-  get discardAssetAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.DISCARD_ASSET && c.contents === this.id);
+  canInteract(c: Message): boolean {
+    switch (c.tag) {
+      case MessageType.DISCARD_ASSET:
+        return c.contents === this.id;
+      case MessageType.ASSET_DAMAGE:
+        return c.contents[0] === this.id;
+      case MessageType.ACTIVATE_ABILITY:
+        return c.contents[1][0].contents === this.id;
+      case MessageType.USE_CARD_ABILITY:
+        return c.contents[1][0].contents === this.id;
+      case MessageType.RUN:
+        return c.contents.some((c1: Message) => this.canInteract(c1));
+      default:
+        return false;
+    }
   }
 }
 </script>

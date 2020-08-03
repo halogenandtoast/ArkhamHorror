@@ -80,7 +80,7 @@ data Message
   | MoveTo InvestigatorId LocationId
   | PrePlayerWindow
   | PostPlayerWindow
-  | PlayerWindow InvestigatorId
+  | PlayerWindow InvestigatorId [Message]
   | Ask Question
   | TakeAction InvestigatorId Int (Maybe Action)
   | ChoosePlayCardAction InvestigatorId

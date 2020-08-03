@@ -614,7 +614,8 @@ runGameMessage msg g = case msg of
           pure g
         _ -> pure g
       EncounterCard _ -> pure g
-  DrewRevelation iid cardCode cardId -> g <$ allPlayerRevelations cardCode iid cardId
+  DrewRevelation iid cardCode cardId ->
+    g <$ allPlayerRevelations cardCode iid cardId
   RunSkill iid cardCode result -> do
     void $ allSkills cardCode iid result
     pure g
@@ -952,7 +953,7 @@ runMessages g = if g ^. gameOver
           else
             pushMessages
                 [ PrePlayerWindow
-                , PlayerWindow $ g ^. activeInvestigatorId
+                , PlayerWindow (g ^. activeInvestigatorId) []
                 , PostPlayerWindow
                 ]
               >> runMessages g

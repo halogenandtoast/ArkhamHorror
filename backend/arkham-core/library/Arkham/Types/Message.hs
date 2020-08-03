@@ -150,7 +150,6 @@ data Message
   | DrawToken Token
   | EmptyDeck InvestigatorId
   | DrawCards InvestigatorId Int Bool
-  | WhenDrawCard InvestigatorId CardCoad
   | HealHorror Target Int
   | HealDamage Target Int
   | DrewRevelation InvestigatorId CardCode CardId
@@ -219,6 +218,7 @@ data Message
   | ShuffleCardsIntoDeck InvestigatorId [PlayerCard]
   | PutOnTopOfDeck InvestigatorId PlayerCard
   | AddToHand InvestigatorId Card
+  | CancelNextRevelationEffect
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

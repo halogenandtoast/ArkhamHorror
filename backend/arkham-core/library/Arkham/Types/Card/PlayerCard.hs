@@ -170,7 +170,10 @@ rolands38Special cardId =
     }
 
 coverUp :: CardId -> PlayerCard
-coverUp cardId = (treachery cardId "01007" "Cover Up" 0) { pcTraits = [Task], pcRevelation = True }
+coverUp cardId = (treachery cardId "01007" "Cover Up" 0)
+  { pcTraits = [Task]
+  , pcRevelation = True
+  }
 
 daisysToteBag :: CardId -> PlayerCard
 daisysToteBag cardId = (asset cardId "01008" "Daisy's Tote Bag" 2 Neutral)
@@ -315,8 +318,7 @@ wardOfProtection cardId = (event cardId "01065" "Ward of Protection" 1 Mystic)
   { pcSkills = [SkillWild]
   , pcTraits = [Spell, Spirit]
   , pcFast = True
-  , pcFastWindows = HashSet.fromList
-    [WhenDrawCard iid TreacherySource | notElem Weakness card.pcTraits]
+  , pcFastWindows = HashSet.fromList [WhenDrawTreachery You]
   }
 
 blindingLight :: CardId -> PlayerCard

@@ -36,7 +36,7 @@ import Arkham.Types.Location
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Phase
-import Arkham.Types.PlayerTreachery
+import Arkham.Types.PlayerRevelation
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.Scenario
@@ -614,7 +614,7 @@ runGameMessage msg g = case msg of
           pure g
         _ -> pure g
       EncounterCard _ -> pure g
-  DrewPlayerTreachery iid cardCode -> g <$ allPlayerTreacheries cardCode iid
+  DrewRevelation iid cardCode cardId -> g <$ allPlayerRevelations cardCode iid cardId
   RunSkill iid cardCode result -> do
     void $ allSkills cardCode iid result
     pure g

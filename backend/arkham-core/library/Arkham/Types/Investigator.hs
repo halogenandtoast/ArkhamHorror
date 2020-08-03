@@ -330,7 +330,9 @@ isPrey LowestHealth env i =
       100
       (minimumMay . map unRemainingHealth . HashSet.toList $ getSet () env)
     == remainingHealth i
-isPrey Bearer _ _ = error "not implemented"
+isPrey (Bearer bid) _ i =
+  unBearerId bid == unInvestigatorId (investigatorId $ investigatorAttrs i)
+isPrey SetToBearer _ _ = error "The bearer was not correctly set"
 
 handOf :: Investigator -> [Card]
 handOf = view hand . investigatorAttrs

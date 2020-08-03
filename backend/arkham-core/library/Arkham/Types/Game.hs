@@ -447,7 +447,6 @@ instance HasSet PreyId (Prey, LocationId) Game where
     investigators' = getSet () location
     matcher iid = isPrey preyType g (getInvestigator iid g)
 
-
 instance HasSet AdvanceableActId () Game where
   getSet _ g = HashSet.map AdvanceableActId . HashMap.keysSet $ acts'
     where acts' = HashMap.filter isAdvanceable (g ^. acts)
@@ -620,7 +619,7 @@ runGameMessage msg g = case msg of
   PlayCard iid cardId False -> do
     let
       investigator = getInvestigator iid g
-      card = fromJustNote "could not fin card in hand"
+      card = fromJustNote "could not find card in hand"
         $ find ((== cardId) . getCardId) (handOf investigator)
     case card of
       PlayerCard pc -> case pcCardType pc of
@@ -648,6 +647,21 @@ runGameMessage msg g = case msg of
       EncounterCard _ -> pure g
   DrewRevelation iid cardCode cardId ->
     g <$ allPlayerRevelations cardCode iid cardId
+  DrewPlayerEnemy iid cardCode cardId -> do
+    let
+      investigator = getInvestigator iid g
+      card = fromJustNote "could not find card in hand"
+        $ find ((== cardId) . getCardId) (handOf investigator)
+      lid = locationFor iid g
+    (eid, enemy) <- createEnemy cardCode
+    case card of
+      PlayerCard MkPlayerCard {..} -> case pcBearer of
+        Just bid -> unshiftMessage (EnemySetBearer eid bid)
+        Nothing -> error "The bearer was not set for a player enemy"
+      _ -> error "this should definitely be a player card"
+    unshiftMessages
+      [RemoveCardFromHand iid cardCode, InvestigatorDrawEnemy iid lid eid]
+    pure $ g & enemies %~ HashMap.insert eid enemy
   RunSkill iid cardCode result -> do
     void $ allSkills cardCode iid result
     pure g

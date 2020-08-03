@@ -11,6 +11,7 @@ module Arkham.Types.Card
   , HasCardId(..)
   , HasCost(..)
   , HasCard(..)
+  , BearerId(..)
   , allCards
   , allPlayerCards
   , lookupPlayerCard

@@ -153,6 +153,7 @@ data Message
   | HealHorror Target Int
   | HealDamage Target Int
   | DrewRevelation InvestigatorId CardCode CardId
+  | DrewPlayerEnemy InvestigatorId CardCode CardId
   | RemoveCardFromHand InvestigatorId CardCode
   | DiscardCard InvestigatorId CardId
   | DrewTreachery InvestigatorId CardCode
@@ -219,6 +220,7 @@ data Message
   | PutOnTopOfDeck InvestigatorId PlayerCard
   | AddToHand InvestigatorId Card
   | CancelNextRevelationEffect
+  | EnemySetBearer EnemyId BearerId
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

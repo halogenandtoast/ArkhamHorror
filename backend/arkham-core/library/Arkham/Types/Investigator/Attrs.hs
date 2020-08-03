@@ -622,8 +622,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
             (mcard, deck') = drawCard (coerce investigatorDeck)
             handUpdate = maybe id ((:) . PlayerCard) mcard
           case mcard of
-            Just MkPlayerCard {..} -> when (pcCardType == PlayerTreacheryType)
-              $ unshiftMessage (DrewPlayerTreachery iid pcCardCode)
+            Just MkPlayerCard {..} -> when pcRevelation
+              $ unshiftMessage (DrewRevelation iid pcCardCode pcId)
             Nothing -> pure ()
           pure $ a & hand %~ handUpdate & deck .~ Deck deck'
     InvestigatorSpendClues iid n | iid == investigatorId ->
@@ -673,11 +673,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
               else unshiftMessage (TakeAction iid n actionType)
         pure a
     AllDrawCardAndResource -> do
-      let
-        (mcard, deck') = drawCard (coerce investigatorDeck)
-        handUpdate = maybe id ((:) . PlayerCard) mcard
-      when (null deck') $ unshiftMessage (EmptyDeck investigatorId)
-      pure $ a & resources +~ 1 & hand %~ handUpdate & deck .~ Deck deck'
+      unshiftMessage (DrawCards investigatorId 1 False)
+      pure $ a & resources +~ 1
     LoadDeck iid deck' | iid == investigatorId -> do
       shuffled <- liftIO $ shuffleM deck'
       pure $ a & deck .~ Deck shuffled

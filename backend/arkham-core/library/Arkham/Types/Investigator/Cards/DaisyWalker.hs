@@ -7,6 +7,7 @@ import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Helpers
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Stats
 import Arkham.Types.Token
@@ -34,6 +35,10 @@ daisyWalker = DaisyWalkerI $ (baseAttrs "01002" "Daisy Walker" stats [Miskatonic
       , agility = 2
       }
 
+becomesFailure :: Token -> Modifier -> Bool
+becomesFailure token (ForcedTokenChange fromToken AutoFail _) = token == fromToken
+becomesFailure _ _ = False
+
 instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
   runMessage msg i@(DaisyWalkerI (attrs@Attrs {..} `With` metadata@DaisyWalkerMetadata {..})) = case msg of
     ActivateCardAbilityAction iid (AssetSource aid, abilityIndex, abilityType, abilityLimit) | iid == investigatorId-> do
@@ -47,9 +52,11 @@ instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
             else DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
          else DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
     ResolveToken ElderSign iid skillValue | iid == investigatorId -> do
-      tomeCount <- unAssetCount <$> asks (getCount (iid, [Tome]))
-      runTest skillValue -- Because this unshifts we need to call this before the on success is added
-      i <$ unshiftMessage
-        (AddOnSuccess (Ask $ ChooseOne [DrawCards iid tomeCount False, Continue "Do not use Daisy's ability"]))
+      if any (becomesFailure ElderSign) investigatorModifiers
+         then i <$ unshiftMessage (ResolveToken AutoFail iid skillValue)
+         else do
+           tomeCount <- unAssetCount <$> asks (getCount (iid, [Tome]))
+           runTest skillValue -- Because this unshifts we need to call this before the on success is added
+           i <$ unshiftMessage (AddOnSuccess (Ask $ ChooseOne [DrawCards iid tomeCount False, Continue "Do not use Daisy's ability"]))
     BeginRound -> DaisyWalkerI . (`with` DaisyWalkerMetadata 1) <$> runMessage msg attrs
     _ -> DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs

@@ -44,6 +44,7 @@ allAssets :: HashMap CardCode (AssetId -> Asset)
 allAssets = HashMap.fromList
   [ ("01006", rolands38Special)
   , ("01008", daisysToteBag)
+  , ("01009", theNecronomicon)
   , ("01016", fortyFiveAutomatic)
   , ("01017", physicalTraining)
   , ("01020", machete)
@@ -106,6 +107,7 @@ defeated Attrs {..} =
 data Asset
   = Rolands38Special Rolands38SpecialI
   | DaisysToteBag DaisysToteBagI
+  | TheNecronomicon TheNecronomiconI
   | FortyFiveAutomatic FortyFiveAutomaticI
   | PhysicalTraining PhysicalTrainingI
   | Machete MacheteI
@@ -125,6 +127,7 @@ assetAttrs :: Asset -> Attrs
 assetAttrs = \case
   Rolands38Special attrs -> coerce attrs
   DaisysToteBag attrs -> coerce attrs
+  TheNecronomicon (TheNecronomiconI (attrs `With` _)) -> attrs
   FortyFiveAutomatic attrs -> coerce attrs
   PhysicalTraining attrs -> coerce attrs
   Machete attrs -> coerce attrs
@@ -208,6 +211,27 @@ daisysToteBag uuid = DaisysToteBag $ DaisysToteBagI $ baseAttrs uuid "01008"
 
 newtype FortyFiveAutomaticI = FortyFiveAutomaticI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
+
+newtype TheNecronomiconMetadata = TheNecronomiconMetadata { theNecronomiconHorror :: Int }
+  deriving stock (Show, Generic)
+
+instance ToJSON TheNecronomiconMetadata where
+  toJSON = genericToJSON $ aesonOptions $ Just "theNecronomicon"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "theNecronomicon"
+
+instance FromJSON TheNecronomiconMetadata where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "theNecronomicon"
+
+newtype TheNecronomiconI = TheNecronomiconI (Attrs `With` TheNecronomiconMetadata)
+  deriving stock (Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+theNecronomicon :: AssetId -> Asset
+theNecronomicon uuid =
+  TheNecronomicon
+    $ TheNecronomiconI
+    $ ((baseAttrs uuid "01009") { assetSlots = [HandSlot], assetAbilities = [(AssetSource uuid, 1, ActionAbility 1 Nothing, NoLimit)] })
+    `with` TheNecronomiconMetadata 3
 
 fortyFiveAutomatic :: AssetId -> Asset
 fortyFiveAutomatic uuid =
@@ -346,6 +370,7 @@ instance (AssetRunner env) => RunMessage env Asset where
   runMessage msg = \case
     Rolands38Special x -> Rolands38Special <$> runMessage msg x
     DaisysToteBag x -> DaisysToteBag <$> runMessage msg x
+    TheNecronomicon x -> TheNecronomicon <$> runMessage msg x
     FortyFiveAutomatic x -> FortyFiveAutomatic <$> runMessage msg x
     PhysicalTraining x -> PhysicalTraining <$> runMessage msg x
     Machete x -> Machete <$> runMessage msg x
@@ -410,6 +435,21 @@ instance (AssetRunner env) => RunMessage env DaisysToteBagI where
         ]
       DaisysToteBagI <$> runMessage msg attrs
     _ -> DaisysToteBagI <$> runMessage msg attrs
+
+instance (AssetRunner env) => RunMessage env TheNecronomiconI where
+  runMessage msg a@(TheNecronomiconI (attrs@Attrs {..} `With` metadata@TheNecronomiconMetadata {..})) = case msg of
+    InvestigatorPlayAsset iid aid | aid == assetId -> do
+      unshiftMessage
+        (AddModifier
+          (InvestigatorTarget iid)
+          (ForcedTokenChange Token.ElderSign Token.AutoFail (AssetSource aid)))
+      TheNecronomiconI . (`with` metadata) <$> runMessage msg attrs
+    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
+      unshiftMessage (InvestigatorDamage iid (AssetSource aid) 0 1)
+      if theNecronomiconHorror == 1
+         then a <$ unshiftMessage (DiscardAsset aid)
+         else pure $ TheNecronomiconI (attrs `with` TheNecronomiconMetadata (theNecronomiconHorror - 1))
+    _ -> TheNecronomiconI . (`with` metadata) <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env FortyFiveAutomaticI where
   runMessage msg a@(FortyFiveAutomaticI attrs@Attrs {..}) = case msg of

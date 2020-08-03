@@ -47,6 +47,7 @@ data PlayerCard = MkPlayerCard
   , pcFastWindows :: HashSet FastWindow
   , pcId :: CardId
   , pcAction :: Maybe Action
+  , pcRevelation :: Bool
   }
   deriving stock (Show, Generic)
 
@@ -93,6 +94,7 @@ basePlayerCard cardId cardCode name cost cardType classSymbol = MkPlayerCard
   , pcFastWindows = mempty
   , pcId = cardId
   , pcAction = Nothing
+  , pcRevelation = False
   }
 
 asset :: CardId -> CardCode -> Text -> Int -> ClassSymbol -> PlayerCard
@@ -168,7 +170,7 @@ rolands38Special cardId =
     }
 
 coverUp :: CardId -> PlayerCard
-coverUp cardId = (treachery cardId "01007" "Cover Up" 0) { pcTraits = [Task] }
+coverUp cardId = (treachery cardId "01007" "Cover Up" 0) { pcTraits = [Task], pcRevelation = True }
 
 daisysToteBag :: CardId -> PlayerCard
 daisysToteBag cardId = (asset cardId "01008" "Daisy's Tote Bag" 2 Neutral)
@@ -180,6 +182,7 @@ theNecronomicon :: CardId -> PlayerCard
 theNecronomicon cardId = (asset cardId "01009" "The Necronomicon" 0 Neutral)
   { pcTraits = [Item, Tome]
   , pcWeakness = True
+  , pcRevelation = True
   }
 
 fortyFiveAutomatic :: CardId -> PlayerCard

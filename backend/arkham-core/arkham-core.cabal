@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9b69a4b82bd64eec18f626fd8e3df8a82fade72006f6238deeda7c9a60487737
+-- hash: 92a9c16abe61bccd1b442054360f9ecd4851a553b7845d2d62b3bd754b54ff03
 
 name:           arkham-core
 version:        0.0.0
@@ -93,7 +93,7 @@ library
       Arkham.Types.Message
       Arkham.Types.Modifier
       Arkham.Types.Phase
-      Arkham.Types.PlayerTreachery
+      Arkham.Types.PlayerRevelation
       Arkham.Types.Prey
       Arkham.Types.Query
       Arkham.Types.Scenario

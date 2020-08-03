@@ -130,6 +130,7 @@ export default class Scenario extends Vue {
   align-self: center;
   align-items: flex-start;
   justify-content: center;
+  padding-bottom: 10px;
 }
 
 .clue--can-investigate {

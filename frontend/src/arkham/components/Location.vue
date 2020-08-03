@@ -152,7 +152,6 @@ export default class Location extends Vue {
 .poolItem {
   position: relative;
   width: 30px;
-  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -96,7 +96,6 @@ export default class Asset extends Vue {
 .poolItem {
   position: relative;
   width: 30px;
-  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;

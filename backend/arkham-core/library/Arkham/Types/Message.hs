@@ -84,6 +84,7 @@ data Message
   | PlayerWindow InvestigatorId [Message]
   | Ask Question
   | TakeAction InvestigatorId Int (Maybe Action)
+  | LoseAction InvestigatorId Source
   | ChoosePlayCardAction InvestigatorId
   | ChooseActivateCardAbilityAction InvestigatorId
   | ActivateCardAbilityAction InvestigatorId Ability

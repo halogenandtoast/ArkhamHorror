@@ -356,9 +356,7 @@ newtype ScryingI = ScryingI Attrs
 
 scrying :: AssetId -> Asset
 scrying uuid =
-  Scrying
-    $ ScryingI
-    $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
+  Scrying $ ScryingI $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
 
 newtype KnifeI = KnifeI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -601,19 +599,8 @@ instance (AssetRunner env) => RunMessage env ResearchLibrarianI where
           ]
         )
       ResearchLibrarianI <$> runMessage msg attrs
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
-      tomes <- map unDeckCard <$> asks (getList (iid, Tome))
-      a <$ unshiftMessage
-        (Ask $ ChooseOneFromSource $ MkChooseOneFromSource
-          { chooseOneSource = DeckSource
-          , chooseOneChoices = map
-            (\tome -> label
-              (unCardCode $ pcCardCode tome)
-              (AddToHandFromDeck iid (pcId tome))
-            )
-            tomes
-          }
-        )
+    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
+      a <$ unshiftMessage (SearchDeckForTraits iid [Tome])
     _ -> ResearchLibrarianI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env MedicalTextsI where
@@ -737,26 +724,17 @@ instance (AssetRunner env) => RunMessage env ScryingI where
           attrs
             & (uses .~ Uses Resource.Charge 3)
             & (abilities
-              .~ [ ( AssetSource aid
-                   , 1
-                   , ActionAbility 1 Nothing
-                   , NoLimit
-                   )
-                 ]
+              .~ [(AssetSource aid, 1, ActionAbility 1 Nothing, NoLimit)]
               )
       ScryingI <$> runMessage msg attrs'
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
+    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
       case assetUses of
         Uses Resource.Charge n -> do
           when
             (n == 1)
             (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
           unshiftMessage (SearchTopOfDeck iid 3 [] PutBackInAnyOrder)
-          pure
-            $ ScryingI
-            $ attrs
-            & uses
-            .~ Uses Resource.Charge (n - 1)
+          pure $ ScryingI $ attrs & uses .~ Uses Resource.Charge (n - 1)
         _ -> pure a
     _ -> ScryingI <$> runMessage msg attrs
 

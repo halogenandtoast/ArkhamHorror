@@ -42,6 +42,7 @@ data LeftoverCardStrategy = ShuffleBackIn | PutBackInAnyOrder
 
 data Message
   = Setup
+  | SearchDeckForTraits InvestigatorId [Trait]
   | SearchTopOfDeck InvestigatorId Int [Trait] LeftoverCardStrategy
   | RunEvent InvestigatorId CardCode
   | LoadDeck InvestigatorId [PlayerCard]

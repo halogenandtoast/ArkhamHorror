@@ -1,5 +1,5 @@
 <template>
-  <div class="card-container">
+  <div class="card-container" v-if="cardAction !== -1">
     <img
       :class="{'card--can-interact': cardAction !== -1}"
       class="card"

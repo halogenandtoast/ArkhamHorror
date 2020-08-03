@@ -273,7 +273,7 @@ canPerform a@Attrs {..} Action.Ability = do
     (_, _, ActionAbility _ (Just action), _) -> canPerform a action -- TODO: we need to calculate the total cost
     (_, _, ActionAbility _ Nothing, _) -> pure True -- e.g. Old Book of Lore
     (_, _, FreeAbility AnyWindow, _) -> pure True
-    (_, _, FreeAbility (SkillTestWindow _), _) -> pure False
+    (_, _, FreeAbility (SkillTestWindow _), _) -> pure True -- must be filtered out later
     (_, _, ReactionAbility _, _) -> pure False
 
   pure $ canAfford a Action.Ability && not (null filteredAbilities)
@@ -337,7 +337,7 @@ getAvailableAbilities a@Attrs {..} = do
     canAfford a actionType
   canPerformAbility (_, _, ActionAbility _ Nothing, _) = True -- e.g. Old Book of Lore
   canPerformAbility (_, _, FreeAbility AnyWindow, _) = True
-  canPerformAbility (_, _, FreeAbility (SkillTestWindow _), _) = False
+  canPerformAbility (_, _, FreeAbility (SkillTestWindow _), _) = True
   canPerformAbility (_, _, ReactionAbility _, _) = False
 
 drawOpeningHand :: Attrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
@@ -822,10 +822,13 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())
       canDos <- filterM (canPerform a) Action.allActions
       blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
-      availableAbilities <- getAvailableAbilities a
+      allAbilities <- getAvailableAbilities a
       let
         accessibleLocations =
           investigatorConnectedLocations `difference` blockedLocationIds
+        availableAbilities = flip filter allAbilities $ \case
+          (_, _, FreeAbility AnyWindow, _) -> True
+          _ -> False
       a <$ unshiftMessage
         (Ask $ ChooseOne
           (additionalActions

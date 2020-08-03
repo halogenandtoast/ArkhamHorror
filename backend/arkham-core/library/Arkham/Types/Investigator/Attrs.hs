@@ -338,7 +338,7 @@ getAvailableAbilities a@Attrs {..} = do
   canPerformAbility (_, _, ActionAbility _ Nothing, _) = True -- e.g. Old Book of Lore
   canPerformAbility (_, _, FreeAbility AnyWindow, _) = True
   canPerformAbility (_, _, FreeAbility (SkillTestWindow _), _) = True
-  canPerformAbility (_, _, ReactionAbility _, _) = False
+  canPerformAbility (_, _, ReactionAbility _, _) = True
 
 drawOpeningHand :: Attrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
 drawOpeningHand a n = go n (a ^. discard, a ^. hand, coerce (a ^. deck))

@@ -38,7 +38,8 @@ lookupEnemy = fromJustNote "Unkown enemy" . flip HashMap.lookup allEnemies
 
 allEnemies :: HashMap CardCode (EnemyId -> Enemy)
 allEnemies = HashMap.fromList
-  [ ("01116", ghoulPriest)
+  [ ("01102", silverTwilightAcolyte)
+  , ("01116", ghoulPriest)
   , ("01118", fleshEater)
   , ("01119", icyGhoul)
   , ("01159", swarmOfRats)
@@ -124,6 +125,7 @@ data Enemy
 
 enemyAttrs :: Enemy -> Attrs
 enemyAttrs = \case
+  SilverTwilightAcolyte attrs -> coerce attrs
   GhoulPriest attrs -> coerce attrs
   FleshEater attrs -> coerce attrs
   IcyGhoul attrs -> coerce attrs
@@ -160,6 +162,19 @@ baseAttrs eid cardCode =
       , enemyAbilities = mempty
       , enemyExhausted = False
       }
+
+newtype SilverTwilightAcolyteI = SilverTwilightAcolyteI Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+silverTwilightAcolyte :: EnemyId -> Enemy
+silverTwilightAcolyte  uuid = SilverTwilightAcolyte $ SilverTwilightAcolyteI $ (baseAttrs uuid "01102")
+  { enemyHealthDamage = 1
+  , enemySanityDamage = 0
+  , enemyFight = 2
+  , enemyHealth = 3
+  , enemyEvade = 3
+  , enemyPrey = Bearer
+  }
 
 newtype GhoulPriestI = GhoulPriestI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -273,6 +288,11 @@ modifiedDamageAmount attrs baseAmount = foldr
   applyModifier (DamageTaken m _) n = max 0 (n + m)
   applyModifier _ n = n
 
+instance (EnemyRunner env) => RunMessage env SilverTwilightAcolyteI where
+  runMessage msg e@(SilverTwilightAcolyteI attrs@Attrs {..}) = case msg of
+    AfterEnemyAttack eid _ | eid == enemyId ->
+      unshiftMessage PlaceDoomOnAgenda
+    _ -> SilverTwilightAcolyteI <$> runMessage msg attrs
 
 instance (EnemyRunner env) => RunMessage env GhoulPriestI where
   runMessage msg (GhoulPriestI attrs) = GhoulPriestI <$> runMessage msg attrs

@@ -179,6 +179,7 @@ data Message
   | WhenAttackEnemy InvestigatorId EnemyId
   | AttackEnemy InvestigatorId EnemyId SkillType [Modifier]
   | AfterAttackEnemy InvestigatorId EnemyId
+  | AfterEnemyAttacks EnemyId Target
   | WhenEvadeEnemy InvestigatorId EnemyId
   | EvadeEnemy InvestigatorId EnemyId SkillType Bool
   | TryEvadeEnemy InvestigatorId EnemyId SkillType

@@ -47,6 +47,7 @@ data GameJson = GameJson
   , gGameOver :: Bool
   , gUsedAbilities :: [Ability]
   , gQuestion :: Maybe Question
+  , gFocusedCards :: [Card]
   }
   deriving stock (Show, Generic)
 

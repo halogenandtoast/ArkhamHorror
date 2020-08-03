@@ -12,6 +12,8 @@ import { Question, questionDecoder } from '@/arkham/types/Question';
 import { Treachery, treacheryDecoder } from '@/arkham/types/Treachery';
 import { SkillTest, skillTestDecoder } from '@/arkham/types/SkillTest';
 import {
+  Card,
+  cardDecoder,
   EncounterCardContents,
   encounterCardContentsDecoder,
 } from '@/arkham/types/Card';
@@ -72,6 +74,7 @@ export interface GameState {
   scenario: Scenario;
   skillTest: SkillTest | null;
   treacheries: Record<string, Treachery>;
+  focusedCards: Card[];
 }
 
 export const gameStateDecoder = JsonDecoder.object<GameState>(
@@ -92,6 +95,7 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     scenario: scenarioDecoder,
     skillTest: JsonDecoder.nullable(skillTestDecoder),
     treacheries: JsonDecoder.dictionary<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),
+    focusedCards: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   },
   'GameState',
 );

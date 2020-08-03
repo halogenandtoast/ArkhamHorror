@@ -768,6 +768,13 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         $ a
         & (remainingActions %~ max 0 . subtract actionCost')
         & (actionsTaken %~ actionsTakenUpdate)
+    PutOnTopOfDeck iid card | iid == investigatorId ->
+      pure $ a & deck %~ Deck . (card:) . unDeck
+    AddToHand iid card | iid == investigatorId ->
+      pure $ a & hand %~ (card:)
+    ShuffleCardsIntoDeck iid cards | iid == investigatorId -> do
+      deck' <- liftIO $ shuffleM (cards <> unDeck investigatorDeck)
+      pure $ a & deck .~ Deck deck'
     AddToHandFromDeck iid cardId | iid == investigatorId -> do
       let
         card = fromJustNote "card did not exist"
@@ -781,24 +788,15 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       pure $ a & deck .~ Deck deck' & hand %~ (PlayerCard card :)
     SearchTopOfDeck iid n traits strategy -> do
       let
-        cards = take n $ unDeck investigatorDeck
+        (cards, deck') = splitAt n $ unDeck investigatorDeck
         traits' = HashSet.fromList traits
       case strategy of
-        ShuffleBackIn -> a <$ unshiftMessage
-          (Ask $ ChooseOneFromSource $ MkChooseOneFromSource
-            { chooseOneSource = DeckSource
-            , chooseOneChoices =
-              [ label
-                  (unCardCode $ pcCardCode card)
-                  (AddToHandFromDeck iid (getCardId card))
-              | card <- cards
-              , null traits'
-                || traits'
-                `intersection` HashSet.fromList (pcTraits card)
-                == traits'
-              ]
-            }
-          )
+        PutBackInAnyOrder -> unshiftMessage
+          (Ask $ ChooseOneAtATime [AddFocusedToTopOfDeck iid (getCardId card) | card <- cards])
+        ShuffleBackIn -> unshiftMessage
+          (Ask $ ChooseOne [Run [AddFocusedToHand iid (getCardId card), ShuffleAllFocusedIntoDeck iid] | card <- cards , null traits' || traits' `intersection` HashSet.fromList (pcTraits card) == traits'])
+      unshiftMessage (FocusCards $ map PlayerCard cards)
+      pure $ a & deck .~ Deck deck'
     PlayerWindow iid additionalActions | iid == investigatorId -> do
       advanceableActIds <-
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())

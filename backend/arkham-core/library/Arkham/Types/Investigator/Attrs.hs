@@ -576,6 +576,10 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       if facingDefeat a'
         then a' <$ unshiftMessage (InvestigatorWhenDefeated iid)
         else pure a'
+    HealDamage (InvestigatorTarget iid) amount | iid == investigatorId ->
+      pure $ a & healthDamage %~ max 0 . subtract amount
+    HealHorror (InvestigatorTarget iid) amount | iid == investigatorId ->
+      pure $ a & sanityDamage %~ max 0 . subtract amount
     InvestigatorWhenDefeated iid | iid == investigatorId -> do
       unshiftMessage (InvestigatorDefeated iid)
       pure $ a & defeated .~ True

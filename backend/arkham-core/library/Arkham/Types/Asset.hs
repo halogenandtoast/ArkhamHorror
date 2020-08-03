@@ -318,8 +318,9 @@ newtype MedicalTextsI = MedicalTextsI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 medicalTexts :: AssetId -> Asset
-medicalTexts uuid = MedicalTexts $ MedicalTexts $ (baseAttrs uuid "01035")
+medicalTexts uuid = MedicalTexts $ MedicalTextsI $ (baseAttrs uuid "01035")
   { assetSlots = [HandSlot]
+  , assetAbilities = [(AssetSource uuid, 1, ActionAbility 1 Nothing, NoLimit)]
   }
 
 newtype HolyRosaryI = HolyRosaryI Attrs
@@ -604,20 +605,21 @@ instance (AssetRunner env) => RunMessage env ResearchLibrarianI where
 instance (AssetRunner env) => RunMessage env MedicalTextsI where
   runMessage msg (MedicalTextsI attrs@Attrs {..}) = case msg of
     UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
-      locationId <- asks (getId @LocationId ownerId)
+      locationId <- asks (getId @LocationId (getInvestigator attrs))
       locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessage
-        -- Should be a choice then a test
-        ( BeginSkillTest
-          iid
-          (AssetSource aid)
-          Nothing
-          SkillIntellect
-          2
-          [HealDamage (ChooseInvestigatorTarget locationInvestigatorIds) 1]
-          -- obviously this doesn't exist
-        , OnFailure
-          [DealDamage (ChooseInvestigatorTarget locationInvestigatorIds) 1]
+        (Ask $ ChooseOne
+          [ BeginSkillTest
+              iid
+              (AssetSource aid)
+              Nothing
+              SkillIntellect
+              2
+              [HealDamage (InvestigatorTarget iid') 1]
+              [InvestigatorDamage iid' (AssetSource aid) 1 0]
+              []
+          | iid' <- locationInvestigatorIds
+          ]
         )
       MedicalTextsI <$> runMessage msg attrs
     _ -> MedicalTextsI <$> runMessage msg attrs

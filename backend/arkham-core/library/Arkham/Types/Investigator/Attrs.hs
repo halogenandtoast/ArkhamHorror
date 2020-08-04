@@ -481,8 +481,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     EnemyEvaded iid eid | iid == investigatorId ->
       pure $ a & engagedEnemies %~ HashSet.delete eid
     ChooseEvadeEnemy iid skillType onSuccess onFailure tokenResponses isAction
-      | iid == investigatorId -> do
-        unshiftMessage
+      | iid == investigatorId ->
+        a <$ unshiftMessage
           (Ask $ ChooseOne $ map
             (\eid -> EvadeEnemy
               iid
@@ -495,7 +495,6 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
             )
             (HashSet.toList investigatorEngagedEnemies)
           )
-        pure $ takeAction Action.Fight a
     EvadeEnemy iid eid skillType onSuccess onFailure tokenResponses True
       | iid == investigatorId -> a <$ unshiftMessages
         [ TakeAction iid (actionCost a Action.Evade) (Just Action.Evade)

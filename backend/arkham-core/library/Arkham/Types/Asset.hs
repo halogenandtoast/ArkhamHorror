@@ -36,6 +36,7 @@ import qualified Data.HashSet as HashSet
 import Lens.Micro
 import Lens.Micro.Extras
 import Safe (fromJustNote)
+import GHC.Stack
 
 lookupAsset :: CardCode -> (AssetId -> Asset)
 lookupAsset = fromJustNote "Unkown asset" . flip HashMap.lookup allAssets
@@ -191,7 +192,7 @@ uses = lens assetUses $ \m x -> m { assetUses = x }
 investigator :: Lens' Attrs (Maybe InvestigatorId)
 investigator = lens assetInvestigator $ \m x -> m { assetInvestigator = x }
 
-getInvestigator :: Attrs -> InvestigatorId
+getInvestigator :: HasCallStack => Attrs -> InvestigatorId
 getInvestigator = fromJustNote "asset must be owned" . view investigator
 
 healthDamage :: Lens' Attrs Int
@@ -627,11 +628,13 @@ instance (AssetRunner env) => RunMessage env ResearchLibrarianI where
 
 instance (AssetRunner env) => RunMessage env DrMilanChristopherI where
   runMessage msg a@(DrMilanChristopherI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId -> a <$ unshiftMessage
-      (AddModifier
-        (InvestigatorTarget iid)
-        (SkillModifier SkillWillpower 1 (AssetSource aid))
-      )
+    InvestigatorPlayAsset iid aid | aid == assetId -> do
+      unshiftMessage
+        (AddModifier
+          (InvestigatorTarget iid)
+          (SkillModifier SkillWillpower 1 (AssetSource aid))
+        )
+      DrMilanChristopherI <$> runMessage msg attrs
     SuccessfulInvestigation iid _ | iid == getInvestigator attrs ->
       a <$ unshiftMessage
         (Ask $ ChooseOne

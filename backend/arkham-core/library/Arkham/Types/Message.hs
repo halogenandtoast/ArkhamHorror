@@ -94,7 +94,7 @@ data Message
   | Investigate InvestigatorId LocationId SkillType [TokenResponse Message] Bool
   | ChooseFightEnemy InvestigatorId SkillType [Modifier] [TokenResponse Message] Bool
   | ChooseEvadeEnemy InvestigatorId SkillType [Message] [Message] [TokenResponse Message] Bool
-  | ChooseEngageEnemyAction InvestigatorId
+  | EngageEnemy InvestigatorId EnemyId Bool
   | ChooseEndTurn InvestigatorId
   | CheckAttackOfOpportunity InvestigatorId Bool
   | TakeResources InvestigatorId Int Bool

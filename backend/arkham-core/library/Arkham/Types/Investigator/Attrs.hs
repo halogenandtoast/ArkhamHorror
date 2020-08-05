@@ -30,6 +30,7 @@ import Data.Coerce
 import qualified Data.HashSet as HashSet
 import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro
+import Lens.Micro.Platform ()
 import Safe (fromJustNote)
 import System.Random
 import System.Random.Shuffle
@@ -182,7 +183,13 @@ hasEmptySlot :: SlotType -> Attrs -> Bool
 hasEmptySlot slotType a =
   case HashMap.lookup slotType (a ^. slots) of
     Nothing -> False
-    Just slots -> any isEmptySlot slots
+    Just slots' -> any isEmptySlot slots'
+
+placeInAvailableSlot :: AssetId -> [Slot] -> [Slot]
+placeInAvailableSlot _ [] = error "could not find empty slot"
+placeInAvailableSlot aid (x:xs) = if isEmptySlot x
+                                     then putIntoSlot aid x : xs
+                                     else x : placeInAvailableSlot aid xs
 
 baseAttrs :: InvestigatorId -> Text -> Stats -> [Trait] -> Attrs
 baseAttrs iid name Stats {..} traits = Attrs
@@ -218,10 +225,8 @@ baseAttrs iid name Stats {..} traits = Attrs
     [ (AccessorySlot, [Slot Nothing])
     , (BodySlot, [Slot Nothing])
     , (AllySlot, [Slot Nothing])
-    , (HandSlot, [Slot Nothing])
-    , (HandSlot, [Slot Nothing])
-    , (ArcaneSlot, [Slot Nothing])
-    , (ArcaneSlot, [Slot Nothing])
+    , (HandSlot, [Slot Nothing, Slot Nothing])
+    , (ArcaneSlot, [Slot Nothing, Slot Nothing])
     ]
   }
 
@@ -616,12 +621,12 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           PlayerCard pc -> if discarded then discard %~ (pc :) else id
           _ -> error "We should decide what happens here"
       pure $ a & hand %~ filter ((/= cardId) . getCardId) & discardUpdate
-    InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
+    InvestigatorPlayAsset iid aid slotTypes _traits | iid == investigatorId -> do
       let assetsUpdate = (assets %~ HashSet.insert aid)
       if not (null slotTypes)
          then case slotTypes of
                 [slotType] ->  if hasEmptySlot slotType a
-                                  then pure $ a & assetsUpdate & slots . at slotType %~ placeInAvailableSlot aid
+                                  then pure $ a & assetsUpdate & slots . ix slotType %~ placeInAvailableSlot aid
                                   else error "No empty slot"
                 _ -> error "multi-slot items not handled yet"
          else pure $ a & assetsUpdate

@@ -462,6 +462,14 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           )
           (HashSet.toList investigatorEngagedEnemies)
         )
+    EngageEnemy iid eid True
+      | iid == investigatorId -> a <$ unshiftMessages
+        [ TakeAction iid (actionCost a Action.Fight) (Just Action.Fight)
+        , EngageEnemy iid eid True
+        ]
+    EngageEnemy iid eid False
+      | iid == investigatorId ->
+        pure $ a & engagedEnemies %~ HashSet.insert eid
     FightEnemy iid eid skillType tempModifiers tokenResponses True
       | iid == investigatorId -> a <$ unshiftMessages
         [ TakeAction iid (actionCost a Action.Fight) (Just Action.Fight)
@@ -854,7 +862,9 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       canDos <- filterM (canPerform a) Action.allActions
       blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
       allAbilities <- getAvailableAbilities a
+      enemyIds <- asks (getSet investigatorLocation)
       let
+        unengagedEnemyIds = enemyIds `difference` investigatorEngagedEnemies
         accessibleLocations =
           investigatorConnectedLocations `difference` blockedLocationIds
         availableAbilities = flip filter allAbilities $ \case
@@ -888,7 +898,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
              | Action.Fight `elem` canDos
              , eid <- HashSet.toList investigatorEngagedEnemies
              ]
-          <> [ ChooseEngageEnemyAction iid | Action.Engage `elem` canDos ]
+          <> [ EngageEnemy iid eid True | Action.Engage `elem` canDos, eid <- HashSet.toList unengagedEnemyIds ]
           <> [ EvadeEnemy iid eid SkillAgility mempty mempty mempty True
              | Action.Evade `elem` canDos
              , eid <- HashSet.toList investigatorEngagedEnemies

@@ -27,8 +27,8 @@ import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude hiding (unpack)
 import Data.Coerce
-import qualified Data.HashSet as HashSet
 import qualified Data.HashMap.Strict as HashMap
+import qualified Data.HashSet as HashSet
 import Lens.Micro
 import Lens.Micro.Platform ()
 import Safe (fromJustNote)
@@ -179,17 +179,25 @@ damageValueFor baseValue attrs = foldr
   applyModifier (DamageDealt m _) n = max 0 (n + m)
   applyModifier _ n = n
 
+removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
+
 hasEmptySlot :: SlotType -> Attrs -> Bool
-hasEmptySlot slotType a =
-  case HashMap.lookup slotType (a ^. slots) of
-    Nothing -> False
-    Just slots' -> any isEmptySlot slots'
+hasEmptySlot slotType a = case HashMap.lookup slotType (a ^. slots) of
+  Nothing -> False
+  Just slots' -> any isEmptySlot slots'
 
 placeInAvailableSlot :: AssetId -> [Slot] -> [Slot]
 placeInAvailableSlot _ [] = error "could not find empty slot"
-placeInAvailableSlot aid (x:xs) = if isEmptySlot x
-                                     then putIntoSlot aid x : xs
-                                     else x : placeInAvailableSlot aid xs
+placeInAvailableSlot aid (x : xs) = if isEmptySlot x
+  then putIntoSlot aid x : xs
+  else x : placeInAvailableSlot aid xs
+
+discardableAssets :: SlotType -> Attrs -> [AssetId]
+discardableAssets slotType a = case HashMap.lookup slotType (a ^. slots) of
+  Nothing -> []
+  Just slots' -> mapMaybe slotItem slots'
+
 
 baseAttrs :: InvestigatorId -> Text -> Stats -> [Trait] -> Attrs
 baseAttrs iid name Stats {..} traits = Attrs
@@ -480,6 +488,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         $ a
         & (assets %~ HashSet.delete aid)
         & (discard %~ (lookupPlayerCard cardCode (CardId $ unAssetId aid) :))
+        & (slots %~ removeFromSlots aid)
     ChooseFightEnemy iid skillType tempModifiers tokenResponses isAction
       | iid == investigatorId -> a <$ unshiftMessage
         (Ask $ ChooseOne $ map
@@ -488,14 +497,12 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           )
           (HashSet.toList investigatorEngagedEnemies)
         )
-    EngageEnemy iid eid True
-      | iid == investigatorId -> a <$ unshiftMessages
-        [ TakeAction iid (actionCost a Action.Fight) (Just Action.Fight)
-        , EngageEnemy iid eid True
-        ]
-    EngageEnemy iid eid False
-      | iid == investigatorId ->
-        pure $ a & engagedEnemies %~ HashSet.insert eid
+    EngageEnemy iid eid True | iid == investigatorId -> a <$ unshiftMessages
+      [ TakeAction iid (actionCost a Action.Fight) (Just Action.Fight)
+      , EngageEnemy iid eid True
+      ]
+    EngageEnemy iid eid False | iid == investigatorId ->
+      pure $ a & engagedEnemies %~ HashSet.insert eid
     FightEnemy iid eid skillType tempModifiers tokenResponses True
       | iid == investigatorId -> a <$ unshiftMessages
         [ TakeAction iid (actionCost a Action.Fight) (Just Action.Fight)
@@ -621,15 +628,31 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           PlayerCard pc -> if discarded then discard %~ (pc :) else id
           _ -> error "We should decide what happens here"
       pure $ a & hand %~ filter ((/= cardId) . getCardId) & discardUpdate
-    InvestigatorPlayAsset iid aid slotTypes _traits | iid == investigatorId -> do
-      let assetsUpdate = (assets %~ HashSet.insert aid)
+    InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
+      let assetsUpdate = assets %~ HashSet.insert aid
       if not (null slotTypes)
-         then case slotTypes of
-                [slotType] ->  if hasEmptySlot slotType a
-                                  then pure $ a & assetsUpdate & slots . ix slotType %~ placeInAvailableSlot aid
-                                  else error "No empty slot"
-                _ -> error "multi-slot items not handled yet"
-         else pure $ a & assetsUpdate
+        then case slotTypes of
+          [slotType] -> if hasEmptySlot slotType a
+            then
+              pure
+              $ a
+              & assetsUpdate
+              & slots
+              . ix slotType
+              %~ placeInAvailableSlot aid
+            else if not (null $ discardableAssets slotType a)
+              then a <$ unshiftMessage
+                (Ask $ ChooseOne
+                  [ Run
+                      [ DiscardAsset aid'
+                      , InvestigatorPlayAsset iid aid slotTypes traits
+                      ]
+                  | aid' <- discardableAssets slotType a
+                  ]
+                )
+              else error "could not find asset to discard"
+          _ -> error "multi-slot items not handled yet"
+        else pure $ a & assetsUpdate
     InvestigatorDamage iid _ health sanity | iid == investigatorId -> do
       let a' = a & healthDamage +~ health & sanityDamage +~ sanity
       if facingDefeat a'
@@ -930,7 +953,10 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
              | Action.Fight `elem` canDos
              , eid <- HashSet.toList investigatorEngagedEnemies
              ]
-          <> [ EngageEnemy iid eid True | Action.Engage `elem` canDos, eid <- HashSet.toList unengagedEnemyIds ]
+          <> [ EngageEnemy iid eid True
+             | Action.Engage `elem` canDos
+             , eid <- HashSet.toList unengagedEnemyIds
+             ]
           <> [ EvadeEnemy iid eid SkillAgility mempty mempty mempty True
              | Action.Evade `elem` canDos
              , eid <- HashSet.toList investigatorEngagedEnemies

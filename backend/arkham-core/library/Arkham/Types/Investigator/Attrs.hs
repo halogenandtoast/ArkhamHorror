@@ -28,6 +28,7 @@ import Arkham.Types.TreacheryId
 import ClassyPrelude hiding (unpack)
 import Data.Coerce
 import qualified Data.HashSet as HashSet
+import qualified Data.HashMap.Strict as HashMap
 import Lens.Micro
 import Safe (fromJustNote)
 import System.Random
@@ -65,7 +66,7 @@ data Attrs = Attrs
   , investigatorAbilities :: [Ability]
   , investigatorDefeated :: Bool
   , investigatorResigned :: Bool
-  , investigatorSlots :: HashMap SlotType Slot
+  , investigatorSlots :: HashMap SlotType [Slot]
   }
   deriving stock (Show, Generic)
 
@@ -103,6 +104,9 @@ resources =
 
 clues :: Lens' Attrs Int
 clues = lens investigatorClues $ \m x -> m { investigatorClues = x }
+
+slots :: Lens' Attrs (HashMap SlotType [Slot])
+slots = lens investigatorSlots $ \m x -> m { investigatorSlots = x }
 
 remainingActions :: Lens' Attrs Int
 remainingActions = lens investigatorRemainingActions
@@ -174,6 +178,12 @@ damageValueFor baseValue attrs = foldr
   applyModifier (DamageDealt m _) n = max 0 (n + m)
   applyModifier _ n = n
 
+hasEmptySlot :: SlotType -> Attrs -> Bool
+hasEmptySlot slotType a =
+  case HashMap.lookup slotType (a ^. slots) of
+    Nothing -> False
+    Just slots -> any isEmptySlot slots
+
 baseAttrs :: InvestigatorId -> Text -> Stats -> [Trait] -> Attrs
 baseAttrs iid name Stats {..} traits = Attrs
   { investigatorName = name
@@ -205,13 +215,13 @@ baseAttrs iid name Stats {..} traits = Attrs
   , investigatorDefeated = False
   , investigatorResigned = False
   , investigatorSlots = HashMap.fromList
-    [ (AccessorySlot, Slot Nothing)
-    , (BodySlot, Slot Nothing)
-    , (AllySlot, Slot Nothing)
-    , (HandSlot, Slot Nothing)
-    , (HandSlot, Slot Nothing)
-    , (ArcaneSlot, Slot Nothing)
-    , (ArcaneSlot, Slot Nothing)
+    [ (AccessorySlot, [Slot Nothing])
+    , (BodySlot, [Slot Nothing])
+    , (AllySlot, [Slot Nothing])
+    , (HandSlot, [Slot Nothing])
+    , (HandSlot, [Slot Nothing])
+    , (ArcaneSlot, [Slot Nothing])
+    , (ArcaneSlot, [Slot Nothing])
     ]
   }
 
@@ -606,11 +616,13 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           PlayerCard pc -> if discarded then discard %~ (pc :) else id
           _ -> error "We should decide what happens here"
       pure $ a & hand %~ filter ((/= cardId) . getCardId) & discardUpdate
-    InvestigatorPlayAsset iid aid slots traits | iid == investigatorId -> do
+    InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
       let assetsUpdate = (assets %~ HashSet.insert aid)
-      if not (null slots)
-         then case slots of
-                [slot] -> 
+      if not (null slotTypes)
+         then case slotTypes of
+                [slotType] ->  if hasEmptySlot slotType a
+                                  then pure $ a & assetsUpdate & slots . at slotType %~ placeInAvailableSlot aid
+                                  else error "No empty slot"
                 _ -> error "multi-slot items not handled yet"
          else pure $ a & assetsUpdate
     InvestigatorDamage iid _ health sanity | iid == investigatorId -> do

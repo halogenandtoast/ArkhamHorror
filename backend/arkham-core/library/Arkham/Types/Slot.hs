@@ -5,15 +5,11 @@ import Arkham.Types.AssetId
 import Arkham.Types.Trait
 import ClassyPrelude
 
-newtype SlotRestriction = TraitSlotRestriction Trait
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+isEmptySlot :: Slot -> Bool
+isEmptySlot (Slot masset) = isNothing masset
+isEmptySlot (TraitRestrictedSlot _ masset) = isNothing masset
 
-data SlotContents = AssetSlotContents AssetId [Trait]
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-data Slot = Slot (Maybe SlotContents) | TraitRestrictedSlot Trait (Maybe SlotContents)
+data Slot = Slot (Maybe AssetId) | TraitRestrictedSlot Trait (Maybe AssetId)
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

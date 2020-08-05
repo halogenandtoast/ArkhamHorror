@@ -84,7 +84,7 @@ data Attrs = Attrs
   , assetCost :: Int
   , assetInvestigator :: Maybe InvestigatorId
   , assetActions :: [Message]
-  , assetSlots :: [Slot]
+  , assetSlots :: [SlotType]
   , assetHealth :: Maybe Int
   , assetSanity :: Maybe Int
   , assetHealthDamage :: Int
@@ -437,7 +437,7 @@ instance (AssetRunner env) => RunMessage env Asset where
 
 instance (AssetRunner env) => RunMessage env Rolands38SpecialI where
   runMessage msg a@(Rolands38SpecialI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset _ aid | aid == assetId -> do
+    InvestigatorPlayAsset _ aid _ _ | aid == assetId -> do
       let
         attrs' =
           attrs
@@ -476,14 +476,20 @@ instance (AssetRunner env) => RunMessage env Rolands38SpecialI where
 
 instance (AssetRunner env) => RunMessage env DaisysToteBagI where
   runMessage msg (DaisysToteBagI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId -> do
+    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessages
         [ AddModifier
           (InvestigatorTarget iid)
-          (AddSlot (TraitRestrictedSlot HandSlot Tome) (AssetSource aid))
+          (AddSlot
+            (Slot HandSlot (Just $ TraitSlotRestriction Tome) Nothing)
+            (AssetSource aid)
+          )
         , AddModifier
           (InvestigatorTarget iid)
-          (AddSlot (TraitRestrictedSlot HandSlot Tome) (AssetSource aid))
+          (AddSlot
+            (Slot HandSlot (Just $ TraitSlotRestriction Tome) Nothing)
+            (AssetSource aid)
+          )
         ]
       DaisysToteBagI <$> runMessage msg attrs
     _ -> DaisysToteBagI <$> runMessage msg attrs
@@ -491,7 +497,7 @@ instance (AssetRunner env) => RunMessage env DaisysToteBagI where
 instance (AssetRunner env) => RunMessage env TheNecronomiconI where
   runMessage msg a@(TheNecronomiconI (attrs@Attrs {..} `With` metadata@TheNecronomiconMetadata {..}))
     = case msg of
-      InvestigatorPlayAsset iid aid | aid == assetId -> do
+      InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
         unshiftMessage
           (AddModifier
             (InvestigatorTarget iid)
@@ -508,7 +514,7 @@ instance (AssetRunner env) => RunMessage env TheNecronomiconI where
 
 instance (AssetRunner env) => RunMessage env FortyFiveAutomaticI where
   runMessage msg a@(FortyFiveAutomaticI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset _ aid | aid == assetId ->
+    InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       pure
         $ FortyFiveAutomaticI
         $ attrs
@@ -596,7 +602,7 @@ instance (AssetRunner env) => RunMessage env OldBookOfLoreI where
 
 instance (AssetRunner env) => RunMessage env MagnifyingGlassI where
   runMessage msg (MagnifyingGlassI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId -> do
+    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage
         (AddModifier
           (InvestigatorTarget iid)
@@ -612,7 +618,7 @@ instance (AssetRunner env) => RunMessage env MagnifyingGlassI where
 
 instance (AssetRunner env) => RunMessage env ResearchLibrarianI where
   runMessage msg a@(ResearchLibrarianI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId -> do
+    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage
         (Ask $ ChooseOne
           [ UseCardAbility
@@ -628,7 +634,7 @@ instance (AssetRunner env) => RunMessage env ResearchLibrarianI where
 
 instance (AssetRunner env) => RunMessage env DrMilanChristopherI where
   runMessage msg a@(DrMilanChristopherI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId -> do
+    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage
         (AddModifier
           (InvestigatorTarget iid)
@@ -673,7 +679,7 @@ instance (AssetRunner env) => RunMessage env MedicalTextsI where
 
 instance (AssetRunner env) => RunMessage env HolyRosaryI where
   runMessage msg (HolyRosaryI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId -> do
+    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage
         (AddModifier
           (InvestigatorTarget iid)
@@ -706,7 +712,7 @@ instance (AssetRunner env) => RunMessage env MacheteI where
 instance (AssetRunner env) => RunMessage env ShrivellingI where
   runMessage msg a@(ShrivellingI (attrs@Attrs {..} `With` metadata@ShrivellingMetadata {..}))
     = case msg of
-      InvestigatorPlayAsset _ aid | aid == assetId -> do
+      InvestigatorPlayAsset _ aid _ _ | aid == assetId -> do
         let
           attrs' =
             attrs
@@ -766,7 +772,7 @@ instance (AssetRunner env) => RunMessage env ShrivellingI where
 
 instance (AssetRunner env) => RunMessage env ScryingI where
   runMessage msg a@(ScryingI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset _ aid | aid == assetId -> do
+    InvestigatorPlayAsset _ aid _ _ | aid == assetId -> do
       let
         attrs' =
           attrs
@@ -816,7 +822,7 @@ instance (AssetRunner env) => RunMessage env KnifeI where
 
 instance (AssetRunner env) => RunMessage env FlashlightI where
   runMessage msg a@(FlashlightI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset _ aid | aid == assetId ->
+    InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       pure
         $ FlashlightI
         $ attrs
@@ -912,7 +918,7 @@ instance (AssetRunner env) => RunMessage env Attrs where
           (InvestigatorTarget iid)
           (AssetSource aid)
         )
-    InvestigatorPlayAsset iid aid | aid == assetId ->
+    InvestigatorPlayAsset iid aid _ _ | aid == assetId ->
       pure $ a & investigator ?~ iid
     TakeControlOfAsset iid aid | aid == assetId ->
       pure $ a & investigator ?~ iid

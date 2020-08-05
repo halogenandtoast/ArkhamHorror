@@ -120,7 +120,7 @@ data Message
   | DiscardAsset AssetId
   | AssetDiscarded AssetId CardCode
   | InvestigatorDamage InvestigatorId Source Int Int
-  | InvestigatorPlayAsset InvestigatorId AssetId (Maybe Slot)
+  | InvestigatorPlayAsset InvestigatorId AssetId (Maybe Slot) [Trait]
   | DiscoverCluesAtLocation InvestigatorId LocationId Int
   | InvestigatorDiscoverClues InvestigatorId LocationId Int
   | DiscoverClues InvestigatorId LocationId Int

@@ -205,13 +205,13 @@ baseAttrs iid name Stats {..} traits = Attrs
   , investigatorDefeated = False
   , investigatorResigned = False
   , investigatorSlots =
-    [ AccessorySlot
-    , BodySlot
-    , AllySlot
-    , HandSlot
-    , HandSlot
-    , ArcaneSlot
-    , ArcaneSlot
+    [ Slot AccessorySlot Nothing Nothing
+    , Slot BodySlot Nothing Nothing
+    , Slot AllySlot Nothing Nothing
+    , Slot HandSlot Nothing Nothing
+    , Slot HandSlot Nothing Nothing
+    , Slot ArcaneSlot Nothing Nothing
+    , Slot ArcaneSlot Nothing Nothing
     ]
   }
 
@@ -606,7 +606,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           PlayerCard pc -> if discarded then discard %~ (pc :) else id
           _ -> error "We should decide what happens here"
       pure $ a & hand %~ filter ((/= cardId) . getCardId) & discardUpdate
-    InvestigatorPlayAsset iid aid | iid == investigatorId ->
+    InvestigatorPlayAsset iid aid _ _ | iid == investigatorId ->
       pure $ a & assets %~ HashSet.insert aid
     InvestigatorDamage iid _ health sanity | iid == investigatorId -> do
       let a' = a & healthDamage +~ health & sanityDamage +~ sanity

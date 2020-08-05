@@ -13,7 +13,7 @@ data SlotContents = AssetSlotContents AssetId [Trait]
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data Slot = Slot SlotType (Maybe SlotRestriction) (Maybe SlotContents)
+data Slot = Slot (Maybe SlotContents) | TraitRestrictedSlot Trait (Maybe SlotContents)
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

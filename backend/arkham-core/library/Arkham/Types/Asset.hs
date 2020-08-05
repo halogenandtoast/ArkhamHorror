@@ -3,6 +3,7 @@ module Arkham.Types.Asset
   ( lookupAsset
   , allAssets
   , isDamageable
+  , slotsOf
   , Asset
   )
 where
@@ -76,6 +77,9 @@ instance HasTraits Asset where
 
 instance HasId (Maybe OwnerId) () Asset where
   getId _ = (OwnerId <$>) . assetInvestigator . assetAttrs
+
+slotsOf :: Asset -> [SlotType]
+slotsOf = assetSlots . assetAttrs
 
 data Attrs = Attrs
   { assetName :: Text
@@ -480,15 +484,11 @@ instance (AssetRunner env) => RunMessage env DaisysToteBagI where
       unshiftMessages
         [ AddModifier
           (InvestigatorTarget iid)
-          (AddSlot
-            (Slot HandSlot (Just $ TraitSlotRestriction Tome) Nothing)
-            (AssetSource aid)
+          (AddSlot HandSlot (TraitRestrictedSlot Tome Nothing) (AssetSource aid)
           )
         , AddModifier
           (InvestigatorTarget iid)
-          (AddSlot
-            (Slot HandSlot (Just $ TraitSlotRestriction Tome) Nothing)
-            (AssetSource aid)
+          (AddSlot HandSlot (TraitRestrictedSlot Tome Nothing) (AssetSource aid)
           )
         ]
       DaisysToteBagI <$> runMessage msg attrs

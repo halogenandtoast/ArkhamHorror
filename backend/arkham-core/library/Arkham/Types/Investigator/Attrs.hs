@@ -65,7 +65,7 @@ data Attrs = Attrs
   , investigatorAbilities :: [Ability]
   , investigatorDefeated :: Bool
   , investigatorResigned :: Bool
-  , investigatorSlots :: [Slot]
+  , investigatorSlots :: HashMap SlotType Slot
   }
   deriving stock (Show, Generic)
 
@@ -204,14 +204,14 @@ baseAttrs iid name Stats {..} traits = Attrs
   , investigatorAbilities = mempty
   , investigatorDefeated = False
   , investigatorResigned = False
-  , investigatorSlots =
-    [ Slot AccessorySlot Nothing Nothing
-    , Slot BodySlot Nothing Nothing
-    , Slot AllySlot Nothing Nothing
-    , Slot HandSlot Nothing Nothing
-    , Slot HandSlot Nothing Nothing
-    , Slot ArcaneSlot Nothing Nothing
-    , Slot ArcaneSlot Nothing Nothing
+  , investigatorSlots = HashMap.fromList
+    [ (AccessorySlot, Slot Nothing)
+    , (BodySlot, Slot Nothing)
+    , (AllySlot, Slot Nothing)
+    , (HandSlot, Slot Nothing)
+    , (HandSlot, Slot Nothing)
+    , (ArcaneSlot, Slot Nothing)
+    , (ArcaneSlot, Slot Nothing)
     ]
   }
 
@@ -606,8 +606,13 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           PlayerCard pc -> if discarded then discard %~ (pc :) else id
           _ -> error "We should decide what happens here"
       pure $ a & hand %~ filter ((/= cardId) . getCardId) & discardUpdate
-    InvestigatorPlayAsset iid aid _ _ | iid == investigatorId ->
-      pure $ a & assets %~ HashSet.insert aid
+    InvestigatorPlayAsset iid aid slots traits | iid == investigatorId -> do
+      let assetsUpdate = (assets %~ HashSet.insert aid)
+      if not (null slots)
+         then case slots of
+                [slot] -> 
+                _ -> error "multi-slot items not handled yet"
+         else pure $ a & assetsUpdate
     InvestigatorDamage iid _ health sanity | iid == investigatorId -> do
       let a' = a & healthDamage +~ health & sanityDamage +~ sanity
       if facingDefeat a'

@@ -25,7 +25,7 @@ sourceOfModifier (DamageDealt _ s) = s
 sourceOfModifier (ShroudModifier _ s) = s
 sourceOfModifier (DiscoveredClues _ s) = s
 sourceOfModifier (SufferTrauma _ _ s) = s
-sourceOfModifier (AddSlot _ s) = s
+sourceOfModifier (AddSlot _ _ s) = s
 sourceOfModifier (UseSkillInPlaceOf _ _ s) = s
 sourceOfModifier (ForcedTokenChange _ _ s) = s
 
@@ -40,7 +40,7 @@ replaceModifierSource s (DamageDealt a _) = DamageDealt a s
 replaceModifierSource s (ShroudModifier a _) = ShroudModifier a s
 replaceModifierSource s (DiscoveredClues a _) = DiscoveredClues a s
 replaceModifierSource s (SufferTrauma a b _) = SufferTrauma a b s
-replaceModifierSource s (AddSlot a _) = AddSlot a s
+replaceModifierSource s (AddSlot a b _) = AddSlot a b s
 replaceModifierSource s (UseSkillInPlaceOf a b _) = UseSkillInPlaceOf a b s
 replaceModifierSource s (ForcedTokenChange a b _) = ForcedTokenChange a b s
 
@@ -49,7 +49,7 @@ data Modifier
   | CannotPlay [PlayerCardType] Source
   | SkillModifier SkillType Int Source
   | ActionSkillModifier Action SkillType Int Source
-  | AddSlot Slot Source
+  | AddSlot SlotType Slot Source
   | DamageDealt Int Source
   | DamageTaken Int Source
   | ShroudModifier Int Source

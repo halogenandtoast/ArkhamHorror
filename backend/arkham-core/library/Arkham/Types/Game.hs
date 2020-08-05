@@ -637,7 +637,13 @@ runGameMessage msg g = case msg of
               (HashMap.lookup (pcCardCode pc) allAssets)
               aid
           unshiftMessages
-            [InvestigatorPlayAsset iid aid Nothing [], PlayedCard iid cardId False] -- TODO: slot specifics
+            [ InvestigatorPlayAsset
+              iid
+              aid
+              (slotsOf asset)
+              (HashSet.toList $ getTraits asset)
+            , PlayedCard iid cardId False
+            ]
           pure $ g & assets %~ HashMap.insert aid asset
         EventType -> do
           void $ allEvents (pcCardCode pc) iid

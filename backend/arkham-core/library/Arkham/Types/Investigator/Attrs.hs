@@ -19,6 +19,7 @@ import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
+import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
@@ -64,6 +65,7 @@ data Attrs = Attrs
   , investigatorAbilities :: [Ability]
   , investigatorDefeated :: Bool
   , investigatorResigned :: Bool
+  , investigatorSlots :: [Slot]
   }
   deriving stock (Show, Generic)
 
@@ -202,6 +204,15 @@ baseAttrs iid name Stats {..} traits = Attrs
   , investigatorAbilities = mempty
   , investigatorDefeated = False
   , investigatorResigned = False
+  , investigatorSlots =
+    [ AccessorySlot
+    , BodySlot
+    , AllySlot
+    , HandSlot
+    , HandSlot
+    , ArcaneSlot
+    , ArcaneSlot
+    ]
   }
 
 sourceIsInvestigator :: Source -> Attrs -> Bool
@@ -489,20 +500,19 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     EnemyEvaded iid eid | iid == investigatorId ->
       pure $ a & engagedEnemies %~ HashSet.delete eid
     ChooseEvadeEnemy iid skillType onSuccess onFailure tokenResponses isAction
-      | iid == investigatorId ->
-        a <$ unshiftMessage
-          (Ask $ ChooseOne $ map
-            (\eid -> EvadeEnemy
-              iid
-              eid
-              skillType
-              onSuccess
-              onFailure
-              tokenResponses
-              isAction
-            )
-            (HashSet.toList investigatorEngagedEnemies)
+      | iid == investigatorId -> a <$ unshiftMessage
+        (Ask $ ChooseOne $ map
+          (\eid -> EvadeEnemy
+            iid
+            eid
+            skillType
+            onSuccess
+            onFailure
+            tokenResponses
+            isAction
           )
+          (HashSet.toList investigatorEngagedEnemies)
+        )
     EvadeEnemy iid eid skillType onSuccess onFailure tokenResponses True
       | iid == investigatorId -> a <$ unshiftMessages
         [ TakeAction iid (actionCost a Action.Evade) (Just Action.Evade)

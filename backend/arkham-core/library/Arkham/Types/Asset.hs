@@ -33,10 +33,10 @@ import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
+import GHC.Stack
 import Lens.Micro
 import Lens.Micro.Extras
 import Safe (fromJustNote)
-import GHC.Stack
 
 lookupAsset :: CardCode -> (AssetId -> Asset)
 lookupAsset = fromJustNote "Unkown asset" . flip HashMap.lookup allAssets
@@ -480,10 +480,10 @@ instance (AssetRunner env) => RunMessage env DaisysToteBagI where
       unshiftMessages
         [ AddModifier
           (InvestigatorTarget iid)
-          (AddSlot TomeSlot (AssetSource aid))
+          (AddSlot (TraitRestrictedSlot HandSlot Tome) (AssetSource aid))
         , AddModifier
           (InvestigatorTarget iid)
-          (AddSlot TomeSlot (AssetSource aid))
+          (AddSlot (TraitRestrictedSlot HandSlot Tome) (AssetSource aid))
         ]
       DaisysToteBagI <$> runMessage msg attrs
     _ -> DaisysToteBagI <$> runMessage msg attrs

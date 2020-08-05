@@ -25,6 +25,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.SkillTestResult
 import Arkham.Types.SkillType
+import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
@@ -119,7 +120,7 @@ data Message
   | DiscardAsset AssetId
   | AssetDiscarded AssetId CardCode
   | InvestigatorDamage InvestigatorId Source Int Int
-  | InvestigatorPlayAsset InvestigatorId AssetId
+  | InvestigatorPlayAsset InvestigatorId AssetId (Maybe Slot)
   | DiscoverCluesAtLocation InvestigatorId LocationId Int
   | InvestigatorDiscoverClues InvestigatorId LocationId Int
   | DiscoverClues InvestigatorId LocationId Int

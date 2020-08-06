@@ -911,7 +911,7 @@ instance (AssetRunner env) => RunMessage env Attrs where
       let a' = a & healthDamage +~ health & sanityDamage +~ sanity
       when (defeated a') (unshiftMessage (AssetDefeated aid))
       pure a'
-    AssetDiscarded aid _ | aid == assetId -> case assetInvestigator of
+    DiscardAsset aid | aid == assetId -> case assetInvestigator of
       Nothing -> pure a
       Just iid -> a <$ unshiftMessage
         (RemoveAllModifiersOnTargetFrom

@@ -136,7 +136,7 @@ export default class HandCard extends Vue {
     cursor: pointer;
   }
 
-  &--can-uncommit {
+  &--committed {
     margin-top: -10px;
   }
 }

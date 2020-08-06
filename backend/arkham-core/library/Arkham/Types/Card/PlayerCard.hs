@@ -160,6 +160,7 @@ allPlayerCards = HashMap.fromList
   , ("01065", wardOfProtection)
   , ("01066", blindingLight)
   , ("01067", fearless)
+  , ("01072", leatherCoat)
   , ("01086", knife)
   , ("01087", flashlight)
   , ("01088", emergencyCache)
@@ -347,6 +348,14 @@ fearless :: CardId -> PlayerCard
 fearless cardId = (skill cardId "01067" "Fearless" [SkillWillpower] Mystic)
   { pcTraits = [Innate]
   }
+
+
+leatherCoat :: CardId -> PlayerCard
+leatherCoat cardId = 
+  (asset cardId "01072" "Survivor" 0 Survivor)
+    { pcSkills = [SkillCombat, SkillAgility, SkillWild]
+    , pcTraits = [Item, Armor]
+    }
 
 knife :: CardId -> PlayerCard
 knife cardId = (asset cardId "01086" "Knife" 1 Neutral)

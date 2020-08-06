@@ -17,9 +17,8 @@
         @click="$emit('choose', evadeAction)"
       >Evade</button>
     </div>
-    <div v-if="enemy.contents.damage > 0" class="poolItem">
-      <img src="/img/arkham/health.png"/>
-      <span>{{enemy.contents.damage}}</span>
+    <div class="pool">
+      <PoolItem type="health" :amount="enemy.contents.damage" />
     </div>
   </div>
 </template>
@@ -28,9 +27,12 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { choices, Game } from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
+import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Enemy';
 
-@Component
+@Component({
+  components: { PoolItem },
+})
 export default class Enemy extends Vue {
   @Prop(Object) readonly game!: Game
   @Prop(Object) readonly enemy!: Arkham.Enemy
@@ -133,40 +135,4 @@ export default class Enemy extends Vue {
   width: 200px;
   border-radius: 5px;
 }
-
-.poolItem {
-  position: relative;
-  width: 30px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: black;
-  font-weight: 900;
-  font-size: 1.7em;
-
-  img {
-    width: 100%;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-  }
-
-  span {
-    font-family: "Arkham";
-    display: flex;
-    position: relative;
-    background: rgba(255,255,255,0.5);
-    border-radius: 20px;
-    font-size: 0.8em;
-    width: 1.05em;
-    height: 1.05em;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
 </style>

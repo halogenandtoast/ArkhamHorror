@@ -7,41 +7,26 @@
       @click="$emit('choose', cardAction)"
     />
     <div v-if="hasPool" class="pool">
-      <div
+      <PoolItem
         v-if="asset.contents.uses && asset.contents.uses.amount > 0"
-        class="poolItem poolItem-resource"
-      >
-        <img src="/img/arkham/resource.png" />
-        <span>{{asset.contents.uses.amount}}</span>
-      </div>
-      <div
+        type="resource"
+        :amount="asset.contents.uses.amount"
+      />
+      <PoolItem
         v-if="asset.contents.horror"
-        class="poolItem poolItem-horror"
-      >
-        <img src="/img/arkham/sanity.png" />
-        <span>{{asset.contents.horror}}</span>
-      </div>
-      <div
+        type="sanity"
+        :amount="asset.contents.horror"
+      />
+      <PoolItem
         v-if="asset.contents.sanity"
-        class="poolItem poolItem-sanity"
-      >
-        <img src="/img/arkham/sanity.png" />
-        <span>{{asset.contents.sanityDamage}}</span>
-      </div>
-      <div
-        v-if="asset.contents.sanity"
-        class="poolItem poolItem-sanity"
-      >
-        <img src="/img/arkham/sanity.png" />
-        <span>{{asset.contents.sanityDamage}}</span>
-      </div>
-      <div
+        type="sanity"
+        :amount="asset.contents.sanityDamage"
+      />
+      <PoolItem
         v-if="asset.contents.health"
-        class="poolItem poolItem-health"
-      >
-        <img src="/img/arkham/health.png" />
-        <span>{{asset.contents.healthDamage}}</span>
-      </div>
+        type="health"
+        :amount="asset.contents.healthDamage"
+      />
     </div>
   </div>
 </template>
@@ -50,9 +35,12 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { choices, Game } from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
+import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Asset';
 
-@Component
+@Component({
+  components: { PoolItem },
+})
 export default class Asset extends Vue {
   @Prop(Object) readonly game!: Game
   @Prop(Object) readonly asset!: Arkham.Asset
@@ -129,39 +117,5 @@ export default class Asset extends Vue {
 .pool {
   display: flex;
   flex-direction: row;
-}
-
-.poolItem {
-  position: relative;
-  width: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: black;
-  font-weight: 900;
-  font-size: 1.7em;
-
-  img {
-    width: 100%;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-  }
-
-  span {
-    font-family: "Arkham";
-    display: flex;
-    position: relative;
-    background: rgba(255,255,255,0.5);
-    border-radius: 20px;
-    font-size: 0.8em;
-    width: 1.05em;
-    height: 1.05em;
-    align-items: center;
-    justify-content: center;
-  }
 }
 </style>

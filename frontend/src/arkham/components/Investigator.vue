@@ -8,26 +8,24 @@
     />
 
     <div class="resources">
-      <div
+      <PoolItem
+        type="resource"
+        :amount="player.contents.resources"
         :class="{ 'resource--can-take': takeResourceAction !== -1 }"
-        class="poolItem poolItem-resource"
         @click="$emit('choose', takeResourceAction)"
-      >
-        <img src="/img/arkham/resource.png" />
-        <span>{{player.contents.resources}}</span>
-      </div>
-      <div class="poolItem">
-        <img src="/img/arkham/clue.png"/>
-        <span>{{player.contents.clues}}</span>
-      </div>
-      <div class="poolItem">
-        <img src="/img/arkham/health.png"/>
-        <span>{{player.contents.healthDamage}}</span>
-      </div>
-      <div class="poolItem">
-        <img src="/img/arkham/sanity.png"/>
-        <span>{{player.contents.sanityDamage}}</span>
-      </div>
+      />
+      <PoolItem
+        type="clue"
+        :amount="player.contents.clues"
+      />
+      <PoolItem
+        type="health"
+        :amount="player.contents.healthDamage"
+      />
+      <PoolItem
+        type="sanity"
+        :amount="player.contents.sanityDamage"
+      />
       <span><i class="action" v-for="n in player.contents.remainingActions" :key="n"></i></span>
       <span v-if="player.contents.tomeActions && player.contents.tomeActions > 0">
         <i class="action tomeAction" v-for="n in player.contents.tomeActions" :key="n"></i>
@@ -45,8 +43,11 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as Arkham from '@/arkham/types/Investigator';
 import { choices, Game } from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
+import PoolItem from '@/arkham/components/PoolItem.vue';
 
-@Component
+@Component({
+  components: { PoolItem },
+})
 export default class Investigator extends Vue {
   @Prop(Object) readonly player!: Arkham.Investigator
   @Prop(Object) readonly game!: Game
@@ -120,40 +121,6 @@ i.action {
   }
 }
 
-.poolItem {
-  position: relative;
-  width: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: black;
-  font-weight: 900;
-  font-size: 1.7em;
-
-  img {
-    width: 100%;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-  }
-
-  span {
-    font-family: "Arkham";
-    display: flex;
-    position: relative;
-    background: rgba(255,255,255,0.5);
-    border-radius: 20px;
-    font-size: 0.8em;
-    width: 1.05em;
-    height: 1.05em;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
 .resources {
   display: flex;
   align-self: center;
@@ -164,22 +131,6 @@ i.action {
   display: flex;
   align-self: center;
   align-items: center;
-}
-
-.poolItem-resource {
-  img {
-    width: 30px;
-    margin: 4px 0 0 2px;
-  }
-  height: 40px;
-  width: 34px;
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-}
-
-.resource--can-take {
-  padding: 0px;
-  cursor: pointer;
-  background-color: #FF00FF;
 }
 
 .investigator--can-interact {

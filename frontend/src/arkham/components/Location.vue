@@ -36,10 +36,7 @@
         @choose="$emit('choose', $event)"
       />
       <div v-if="location.contents.clues > 0" class="pool">
-        <div class="poolItem">
-          <img src="/img/arkham/clue.png" />
-          <span>{{location.contents.clues}}</span>
-        </div>
+        <PoolItem type="clue" :amount="location.contents.clues" />
       </div>
     </div>
     <div>
@@ -67,10 +64,16 @@ import { MessageType } from '@/arkham/types/Message';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
+import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Location';
 
 @Component({
-  components: { Enemy, Treachery, Asset },
+  components: {
+    Enemy,
+    Treachery,
+    Asset,
+    PoolItem,
+  },
 })
 export default class Location extends Vue {
   @Prop(Object) readonly game!: Game;
@@ -170,40 +173,6 @@ export default class Location extends Vue {
   object-fit: cover;
   object-position: 0 -104px;
   height: 104px;
-}
-
-.poolItem {
-  position: relative;
-  width: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: black;
-  font-weight: 900;
-  font-size: 1.7em;
-
-  img {
-    width: 100%;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-  }
-
-  span {
-    font-family: "Arkham";
-    display: flex;
-    position: relative;
-    background: rgba(255,255,255,0.5);
-    border-radius: 20px;
-    font-size: 0.8em;
-    width: 1.05em;
-    height: 1.05em;
-    align-items: center;
-    justify-content: center;
-  }
 }
 
 .portrait {

@@ -6,23 +6,37 @@
       class="card"
       @click="$emit('choose', cardAction)"
     />
-    <div
-      v-if="asset.contents.uses && asset.contents.uses.amount > 0"
-      class="poolItem poolItem-resource"
-    >
-      <img src="/img/arkham/resource.png" />
-      <span>{{asset.contents.uses.amount}}</span>
-    </div>
-    <div v-if="hasAnyDamage" class="pool">
+    <div v-if="hasPool" class="pool">
       <div
-        v-if="asset.contents.sanityDamage && asset.contents.sanityDamage > 0"
+        v-if="asset.contents.uses && asset.contents.uses.amount > 0"
+        class="poolItem poolItem-resource"
+      >
+        <img src="/img/arkham/resource.png" />
+        <span>{{asset.contents.uses.amount}}</span>
+      </div>
+      <div
+        v-if="asset.contents.horror"
+        class="poolItem poolItem-horror"
+      >
+        <img src="/img/arkham/sanity.png" />
+        <span>{{asset.contents.horror}}</span>
+      </div>
+      <div
+        v-if="asset.contents.sanity"
         class="poolItem poolItem-sanity"
       >
         <img src="/img/arkham/sanity.png" />
         <span>{{asset.contents.sanityDamage}}</span>
       </div>
       <div
-        v-if="asset.contents.healthDamage && asset.contents.healthDamage > 0"
+        v-if="asset.contents.sanity"
+        class="poolItem poolItem-sanity"
+      >
+        <img src="/img/arkham/sanity.png" />
+        <span>{{asset.contents.sanityDamage}}</span>
+      </div>
+      <div
+        v-if="asset.contents.health"
         class="poolItem poolItem-health"
       >
         <img src="/img/arkham/health.png" />
@@ -47,9 +61,14 @@ export default class Asset extends Vue {
     return this.asset.contents.id;
   }
 
-  get hasAnyDamage() {
-    const { sanityDamage, healthDamage } = this.asset.contents;
-    return (sanityDamage && sanityDamage > 0) || (healthDamage && healthDamage > 0);
+  get hasPool() {
+    const {
+      sanity,
+      health,
+      horror,
+      uses,
+    } = this.asset.contents;
+    return sanity || health || horror || uses;
   }
 
   get exhausted() {

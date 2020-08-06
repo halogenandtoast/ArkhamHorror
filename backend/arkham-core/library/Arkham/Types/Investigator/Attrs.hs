@@ -464,6 +464,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       (Ask $ ChooseOne $ map DiscardAsset (HashSet.toList $ a ^. assets))
     AttachTreacheryToInvestigator tid iid | iid == investigatorId ->
       pure $ a & treacheries %~ HashSet.insert tid
+    AddToDiscard iid pc | iid == investigatorId -> pure $ a & discard %~ (pc :)
     DiscardCard iid cardId | iid == investigatorId -> do
       let
         card = fromJustNote "must be in hand"

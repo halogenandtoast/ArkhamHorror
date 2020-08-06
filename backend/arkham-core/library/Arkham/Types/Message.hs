@@ -157,6 +157,7 @@ data Message
   | DrewRevelation InvestigatorId CardCode CardId
   | DrewPlayerEnemy InvestigatorId CardCode CardId
   | RemoveCardFromHand InvestigatorId CardCode
+  | AddToDiscard InvestigatorId PlayerCard
   | DiscardCard InvestigatorId CardId
   | DrewTreachery InvestigatorId CardCode
   | PayCardCost InvestigatorId CardId

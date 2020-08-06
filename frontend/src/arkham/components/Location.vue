@@ -10,21 +10,24 @@
         width="80"
       />
     </div>
-    <div>
+    <div class="location-column">
       <img
-        v-if="investigateAction !== -1 && clues === 0"
-        :class="{ 'location--can-interact': cardAction !== -1 }"
-        class="card"
-        :src="image"
-        @click="warnAction('There are no clues left, are you sure?', investigateAction)"
-      />
-      <img
-        v-else
         :class="{ 'location--can-interact': cardAction !== -1 }"
         class="card"
         :src="image"
         @click="$emit('choose', cardAction)"
       />
+      <button
+        v-if="investigateAction !== -1"
+        class="investigate-button"
+        @click="doInvestigate"
+      >Investigate</button>
+      <button
+        v-for="ability in abilities"
+        :key="ability"
+        class="ability-button"
+        @click="$emit('choose', ability)"
+        >{{abilityLabel(ability)}}</button>
       <Treachery
         v-for="treacheryId in location.contents.treacheries"
         :key="treacheryId"
@@ -95,10 +98,6 @@ export default class Location extends Vue {
   }
 
   get cardAction() {
-    if (this.investigateAction !== -1) {
-      return this.investigateAction;
-    }
-
     return this.moveAction;
   }
 
@@ -114,10 +113,34 @@ export default class Location extends Vue {
       .findIndex((c) => c.tag === MessageType.MOVE && c.contents[1] === this.id);
   }
 
+  abilityLabel(idx: number) {
+    return this.choices[idx].contents[1][2].contents[1];
+  }
+
+  get abilities() {
+    return this
+      .choices
+      .reduce<number[]>((acc, v, i) => {
+        if (v.tag === 'ActivateCardAbilityAction' && v.contents[1][0].tag === 'LocationSource' && v.contents[1][0].contents === this.id) {
+          return [i, ...acc];
+        }
+
+        return acc;
+      }, []);
+  }
+
   get enemies() {
     const enemyIds = this.location.contents.enemies;
     return enemyIds
       .filter((e) => this.game.currentData.enemies[e].contents.engagedInvestigators.length === 0);
+  }
+
+  doInvestigate() {
+    if (this.clues === 0) {
+      this.warnAction('There are no clues left, are you sure?', this.investigateAction);
+    } else {
+      this.$emit('choose', this.investigateAction);
+    }
   }
 
   warnAction(msg: string, action: number) {
@@ -190,5 +213,38 @@ export default class Location extends Vue {
 .location-container {
   display: flex;
   margin: 0 5px;
+}
+
+.investigate-button {
+  margin-top: 2px;
+  border: 0;
+  color: #fff;
+  background-color: #40263A;
+  border-radius: 4px;
+  border: 1px solid #ff00ff;
+  &:before {
+    font-family: "arkham";
+    content: "\0046";
+    margin-right: 5px;
+  }
+}
+
+.ability-button {
+  margin-top: 2px;
+  border: 0;
+  color: #fff;
+  background-color: #555;
+  border-radius: 4px;
+  border: 1px solid #ff00ff;
+  &:before {
+    font-family: "arkham";
+    content: "\0049";
+    margin-right: 5px;
+  }
+}
+
+.location-column {
+  display: flex;
+  flex-direction: column;
 }
 </style>

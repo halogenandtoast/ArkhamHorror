@@ -728,13 +728,21 @@ runGameMessage msg g = case msg of
   EnemyDefeated eid iid _ _ -> do
     let
       enemy = g ^?! enemies . ix eid
-      encounterCard =
-        fromJustNote
-            "missing"
-            (HashMap.lookup (getCardCode enemy) allEncounterCards)
-          $ CardId (unEnemyId eid)
+      cardId = CardId (unEnemyId eid)
+      encounterCard = do
+        f <- HashMap.lookup (getCardCode enemy) allEncounterCards
+        pure $ EncounterCard $ f cardId
+      playerCard = do
+        f <- HashMap.lookup (getCardCode enemy) allPlayerCards
+        pure $ PlayerCard $ f cardId
     broadcastFastWindow Fast.WhenEnemyDefeated iid g
-    pure $ g & (enemies %~ HashMap.delete eid) & (discard %~ (encounterCard :))
+    case encounterCard <|> playerCard of
+      Nothing -> error "missing"
+      Just (PlayerCard pc) -> do
+        unshiftMessage (AddToDiscard iid pc)
+        pure $ g & enemies %~ HashMap.delete eid
+      Just (EncounterCard ec) ->
+        pure $ g & (enemies %~ HashMap.delete eid) & (discard %~ (ec :))
   BeginInvestigation -> pure $ g & phase .~ InvestigationPhase
   EndInvestigation -> g <$ pushMessage BeginEnemy
   BeginEnemy -> do

@@ -35,7 +35,7 @@
         :game="game"
         @choose="$emit('choose', $event)"
       />
-      <div v-if="location.contents.clues > 0" >
+      <div v-if="location.contents.clues > 0" class="pool">
         <div class="poolItem">
           <img src="/img/arkham/clue.png" />
           <span>{{location.contents.clues}}</span>
@@ -246,5 +246,11 @@ export default class Location extends Vue {
 .location-column {
   display: flex;
   flex-direction: column;
+}
+
+.pool {
+  display: flex;
+  flex-direction: row;
+  height: 2em;
 }
 </style>

@@ -13,12 +13,21 @@
       <img src="/img/arkham/resource.png" />
       <span>{{asset.contents.uses.amount}}</span>
     </div>
-    <div
-      v-if="asset.contents.horror && asset.contents.horror > 0"
-      class="poolItem poolItem-sanity"
-    >
-      <img src="/img/arkham/sanity.png" />
-      <span>{{asset.contents.horror}}</span>
+    <div v-if="hasAnyDamage" class="pool">
+      <div
+        v-if="asset.contents.sanityDamage && asset.contents.sanityDamage > 0"
+        class="poolItem poolItem-sanity"
+      >
+        <img src="/img/arkham/sanity.png" />
+        <span>{{asset.contents.sanityDamage}}</span>
+      </div>
+      <div
+        v-if="asset.contents.healthDamage && asset.contents.healthDamage > 0"
+        class="poolItem poolItem-health"
+      >
+        <img src="/img/arkham/health.png" />
+        <span>{{asset.contents.healthDamage}}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -36,6 +45,11 @@ export default class Asset extends Vue {
 
   get id() {
     return this.asset.contents.id;
+  }
+
+  get hasAnyDamage() {
+    const { sanityDamage, healthDamage } = this.asset.contents;
+    return (sanityDamage && sanityDamage > 0) || (healthDamage && healthDamage > 0);
   }
 
   get exhausted() {
@@ -91,6 +105,11 @@ export default class Asset extends Vue {
 .asset--can-interact {
   border: 2px solid #FF00FF;
   cursor:pointer;
+}
+
+.pool {
+  display: flex;
+  flex-direction: row;
 }
 
 .poolItem {

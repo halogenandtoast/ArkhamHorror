@@ -647,7 +647,7 @@ instance (AssetRunner env) => RunMessage env DrMilanChristopherI where
           [ UseCardAbility
             iid
             (AssetSource assetId, 1, ReactionAbility Fast.Now, NoLimit)
-          , Continue "Do not use ability"
+          , Continue "Do not use Dr. Christopher Milan's ability"
           ]
         )
     UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->

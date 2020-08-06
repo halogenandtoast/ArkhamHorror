@@ -352,8 +352,9 @@ fearless cardId = (skill cardId "01067" "Fearless" [SkillWillpower] Mystic)
 
 leatherCoat :: CardId -> PlayerCard
 leatherCoat cardId = 
-  (asset cardId "01072" "Survivor" 0 Survivor)
-    { pcSkills = [SkillCombat, SkillAgility, SkillWild]
+  (asset cardId "01072" "Leather Coat" 0 Survivor)
+    { 
+    pcSkills = [SkillCombat]
     , pcTraits = [Item, Armor]
     }
 

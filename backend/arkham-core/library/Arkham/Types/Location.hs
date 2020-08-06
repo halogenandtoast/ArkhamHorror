@@ -364,6 +364,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
       pure $ a & enemies %~ HashSet.insert eid
     RemoveEnemy eid -> pure $ a & enemies %~ HashSet.delete eid
     EnemyDefeated eid _ _ _ -> pure $ a & enemies %~ HashSet.delete eid
+    TakeControlOfAsset _ aid -> pure $ a & assets %~ HashSet.delete aid
     RevealLocation lid | lid == locationId -> do
       clueCount <- fromGameValue locationRevealClues . unPlayerCount <$> asks
         (getCount ())

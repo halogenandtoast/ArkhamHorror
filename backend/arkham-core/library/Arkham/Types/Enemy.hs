@@ -405,7 +405,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
             (Just Action.Fight)
             skillType
             enemyFight
-            [InvestigatorDamageEnemy iid eid]
+            [SuccessfulAttackEnemy iid eid, InvestigatorDamageEnemy iid eid]
             onFailure
             tempModifiers
             tokenResponses

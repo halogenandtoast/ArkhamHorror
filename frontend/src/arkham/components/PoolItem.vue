@@ -1,5 +1,5 @@
 <template>
-  <div class="poolItem" :class="`poolItem-${type}`">
+  <div class="poolItem" :class="`poolItem-${type}`" @click="$emit('choose')">
     <img :src="image" />
     <span>{{amount}}</span>
   </div>

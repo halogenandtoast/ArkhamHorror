@@ -857,18 +857,23 @@ instance (AssetRunner env) => RunMessage env FlashlightI where
 
 instance (AssetRunner env) => RunMessage env LitaChantlerI where
   runMessage msg a@(LitaChantlerI attrs@Attrs {..}) = case msg of
-    WhenAttackEnemy iid eid -> case assetInvestigator of
+    SuccessfulAttackEnemy iid eid -> case assetInvestigator of
       Just ownerId -> do
         locationId <- asks (getId @LocationId ownerId)
         locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
         if iid `elem` locationInvestigatorIds
           then a <$ unshiftMessage
-            (Ask
-            $ ChooseTo
-                (AddModifier
+            (Ask $ ChooseOne
+              [ Run
+                [ UseCardAbility
+                  iid
+                  (AssetSource assetId, 1, ReactionAbility Fast.Now, NoLimit)
+                , AddModifier
                   (EnemyTarget eid)
                   (DamageTaken 1 (AssetSource assetId))
-                )
+                ]
+              , Continue "Do not use Lita Chantler's ability"
+              ]
             )
           else pure a
       _ -> pure a

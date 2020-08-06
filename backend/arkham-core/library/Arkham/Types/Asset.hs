@@ -17,6 +17,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
+import Arkham.Types.EnemyId
 import qualified Arkham.Types.FastWindow as Fast
 import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
@@ -425,6 +426,7 @@ type AssetRunner env
   = ( HasQueue env
     , HasSet InvestigatorId () env
     , HasSet InvestigatorId LocationId env
+    , HasSet EnemyId LocationId env
     , HasId LocationId InvestigatorId env
     , HasCount EnemyCount InvestigatorId env
     , HasCount ClueCount LocationId env
@@ -587,20 +589,23 @@ instance (AssetRunner env) => RunMessage env PhysicalTrainingI where
     _ -> PhysicalTrainingI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env BeatCopI where
-  runMessage msg (BeatCopI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid | aid == assetId -> do
-      unshiftMessage (AddModifier
-        (InvestigatorTarget iid)
-        (SkillModifier SkillCombat 1 (AssetSource aid)))
+  runMessage msg a@(BeatCopI attrs@Attrs {..}) = case msg of
+    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
+      unshiftMessage
+        (AddModifier
+          (InvestigatorTarget iid)
+          (SkillModifier SkillCombat 1 (AssetSource aid))
+        )
       pure a
     UseCardAbility iid ((AssetSource aid), 2, _, _) | aid == assetId -> do
-      locationId <- asks (getId @LocationId ownerId)
+      locationId <- asks (getId @LocationId (getInvestigator attrs))
       locationEnemyIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessages
         [ DiscardAsset aid
-        , (Ask $ ChooseOne
-            [EnemyDamage eid iid (AssetSource assetId) 1
-            | eid <- locationEnemyIds])
+        , Ask $ ChooseOne
+          [ EnemyDamage eid iid (AssetSource assetId) 1
+          | eid <- locationEnemyIds
+          ]
         ]
       pure a
     _ -> BeatCopI <$> runMessage msg attrs

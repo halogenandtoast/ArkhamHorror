@@ -464,6 +464,18 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       (Ask $ ChooseOne $ map DiscardAsset (HashSet.toList $ a ^. assets))
     AttachTreacheryToInvestigator tid iid | iid == investigatorId ->
       pure $ a & treacheries %~ HashSet.insert tid
+    AllCheckHandSize -> do
+      when (length investigatorHand > 8)
+        $ unshiftMessage (CheckHandSize investigatorId)
+      pure a
+    CheckHandSize iid | iid == investigatorId -> do
+      when (length investigatorHand > 8) $ unshiftMessage
+        (Ask $ ChooseOne
+          [ Run [DiscardCard iid (getCardId card), CheckHandSize iid]
+          | card <- investigatorHand
+          ]
+        )
+      pure a
     AddToDiscard iid pc | iid == investigatorId -> pure $ a & discard %~ (pc :)
     DiscardCard iid cardId | iid == investigatorId -> do
       let

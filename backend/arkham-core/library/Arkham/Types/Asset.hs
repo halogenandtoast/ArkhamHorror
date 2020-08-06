@@ -845,27 +845,7 @@ instance (AssetRunner env) => RunMessage env ScryingI where
 
 
 instance (AssetRunner env) => RunMessage env LeatherCoatI where
-  runMessage msg a@(LeatherCoatI attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId -> do
-      let
-        attrs' =
-          attrs
-            & (uses .~ Uses Resource.Charge 3)
-            & (abilities
-              .~ [(AssetSource aid, 1, ActionAbility 1 Nothing, NoLimit)]
-              )
-      LeatherCoatI <$> runMessage msg attrs'
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
-      case assetUses of
-        Uses Resource.Charge n -> do
-          when
-            (n == 1)
-            (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
-          unshiftMessage (SearchTopOfDeck iid 3 [] PutBackInAnyOrder)
-          pure $ LeatherCoatI $ attrs & uses .~ Uses Resource.Charge (n - 1)
-        _ -> pure a
-    _ -> LeatherCoatI <$> runMessage msg attrs
-
+  runMessage msg (LeatherCoatI attrs) = LeatherCoatI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env KnifeI where
   runMessage msg a@(KnifeI attrs@Attrs {..}) = case msg of

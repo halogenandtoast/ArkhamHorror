@@ -12,7 +12,7 @@
         type="resource"
         :amount="player.contents.resources"
         :class="{ 'resource--can-take': takeResourceAction !== -1 }"
-        @click="$emit('choose', takeResourceAction)"
+        @choose="$emit('choose', takeResourceAction)"
       />
       <PoolItem
         type="clue"

@@ -190,6 +190,7 @@ data Message
   | EnemyEvaded InvestigatorId EnemyId
   | AfterEvadeEnemy InvestigatorId EnemyId
   | SuccessfulInvestigation InvestigatorId LocationId
+  | SuccessfulAttackEnemy InvestigatorId EnemyId
   | AttachTreacheryToLocation TreacheryId LocationId
   | AttachTreacheryToInvestigator TreacheryId InvestigatorId
   | AddModifier Target Modifier

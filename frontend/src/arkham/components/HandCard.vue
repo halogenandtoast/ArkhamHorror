@@ -24,9 +24,7 @@ export default class HandCard extends Vue {
 
   get classObject() {
     return {
-      'card--can-play': this.playCardAction !== -1,
-      'card--can-commit': this.commitCardAction !== -1,
-      'card--can-uncommit': this.uncommitCardAction !== -1,
+      'card--can-interact': this.cardAction !== -1,
       'card--committed': this.uncommitCardAction !== -1,
     };
   }
@@ -42,6 +40,10 @@ export default class HandCard extends Vue {
 
   get choices() {
     return choices(this.game);
+  }
+
+  get discardCardAction() {
+    return this.choices.findIndex(this.mustDiscard);
   }
 
   get playCardAction() {
@@ -65,6 +67,10 @@ export default class HandCard extends Vue {
       return this.uncommitCardAction;
     }
 
+    if (this.discardCardAction !== -1) {
+      return this.discardCardAction;
+    }
+
     return this.commitCardAction;
   }
 
@@ -74,6 +80,17 @@ export default class HandCard extends Vue {
         return c.contents[1] === this.id;
       case MessageType.RUN:
         return c.contents.some((c1: Message) => this.canPlay(c1));
+      default:
+        return false;
+    }
+  }
+
+  mustDiscard(c: Message): boolean {
+    switch (c.tag) {
+      case MessageType.DISCARD_CARD:
+        return c.contents[1] === this.id;
+      case MessageType.RUN:
+        return c.contents.some((c1: Message) => this.mustDiscard(c1));
       default:
         return false;
     }
@@ -114,7 +131,7 @@ export default class HandCard extends Vue {
   margin: 2px;
   display: inline-block;
 
-  &--can-play, &--can-commit, &--can-uncommit {
+  &--can-interact {
     border: 2px solid #FF00FF;
     cursor: pointer;
   }

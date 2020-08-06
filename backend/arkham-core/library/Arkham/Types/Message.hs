@@ -64,6 +64,7 @@ data Message
   | ReadyExhausted
   | AllDrawCardAndResource
   | AllCheckHandSize
+  | CheckHandSize InvestigatorId
   | AddDoom Target
   | PlaceDoomOnAgenda
   | AdvanceAgendaIfThresholdSatisfied

@@ -4,7 +4,8 @@
       <li v-for='(tab, index) in tabs'
         :key='tab.title'
         @click='selectTab(index)'
-        :class='{"tab__selected": (index == selectedIndex)}'>
+        :class='{"tab__selected": (index == selectedIndex), "tab__active-player": tab.activePlayer}'
+      >
         {{ tab.title }}
       </li>
     </ul>
@@ -60,5 +61,14 @@ ul.tabs__header > li {
 ul.tabs__header > li.tab__selected {
   background: #336699;
   font-weight: bold;
+}
+
+.tab__active-player {
+  &:before {
+    font-weight: normal;
+    font-family: "Arkham";
+    content: "\0058";
+    margin-right: 5px;
+  }
 }
 </style>

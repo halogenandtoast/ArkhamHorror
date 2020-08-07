@@ -442,12 +442,6 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     Resign iid | iid == investigatorId -> do
       unshiftMessage (InvestigatorResigned iid)
       pure $ a & resigned .~ True
-    EnemySpawn lid eid | lid == investigatorLocation -> do
-      aloofEnemyIds <- HashSet.map unAloofEnemyId
-        <$> asks (getSet investigatorLocation)
-      when (eid `notElem` aloofEnemyIds)
-        $ unshiftMessage (EnemyEngageInvestigator eid investigatorId)
-      pure a
     EnemyMove eid _ lid | lid == investigatorLocation -> do
       aloofEnemyIds <- HashSet.map unAloofEnemyId
         <$> asks (getSet investigatorLocation)

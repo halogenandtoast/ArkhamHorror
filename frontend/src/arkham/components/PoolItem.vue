@@ -31,6 +31,15 @@ export default class PoolItem extends Vue {
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
 
+.poolItem.poolItem-clue {
+  img {
+    width: 30px;
+  }
+  height: 35px;
+  width: 35px;
+  border-radius: 35px;
+}
+
 .poolItem {
   position: relative;
   width: 30px;
@@ -65,7 +74,7 @@ export default class PoolItem extends Vue {
   }
 }
 
-.resource--can-take {
+.resource--can-take, .resource--can-spend {
   padding: 0px;
   cursor: pointer;
   background-color: #FF00FF;

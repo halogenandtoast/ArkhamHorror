@@ -294,6 +294,7 @@ type EnemyRunner env
     , HasCount PlayerCount () env
     , HasQueue env
     , HasSet ClosestLocationId (LocationId, Prey) env
+    , HasSet PreyId (Prey, LocationId) env
     )
 
 instance (EnemyRunner env) => RunMessage env Enemy where
@@ -360,7 +361,27 @@ instance (EnemyRunner env) => RunMessage env RavenousGhoulI where
 
 instance (EnemyRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
-    EnemySpawn lid eid | eid == enemyId -> pure $ a & location .~ lid
+    EnemySpawn lid eid | eid == enemyId -> do
+      when
+          (Keyword.Aloof
+          `notElem` enemyKeywords
+          && Keyword.Massive
+          `notElem` enemyKeywords
+          )
+        $ do
+            preyIds <- map unPreyId . HashSet.toList <$> asks
+              (getSet (enemyPrey, lid))
+            investigatorIds <- if null preyIds
+              then HashSet.toList <$> asks (getSet lid)
+              else pure []
+            case preyIds <> investigatorIds of
+              [] -> pure ()
+              [iid] -> unshiftMessage (EnemyEngageInvestigator eid iid)
+              iids -> unshiftMessage
+                (Ask $ ChooseOne
+                  [ EnemyEngageInvestigator eid iid | iid <- iids ]
+                )
+      pure $ a & location .~ lid
     ReadyExhausted -> do
       miid <- headMay . HashSet.toList <$> asks (getSet enemyLocation)
       case miid of

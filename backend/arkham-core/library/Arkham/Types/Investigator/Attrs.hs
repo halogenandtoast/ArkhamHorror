@@ -304,11 +304,11 @@ canPerform a@Attrs {..} Action.Play = do
 canPerform a@Attrs {..} Action.Ability = do
   availableAbilities <- getAvailableAbilities a
   filteredAbilities <- flip filterM availableAbilities $ \case
-    (_, _, ActionAbility _ (Just action), _) -> canPerform a action -- TODO: we need to calculate the total cost
-    (_, _, ActionAbility _ Nothing, _) -> pure True -- e.g. Old Book of Lore
-    (_, _, FreeAbility AnyWindow, _) -> pure True
-    (_, _, FreeAbility (SkillTestWindow _), _) -> pure True -- must be filtered out later
-    (_, _, ReactionAbility _, _) -> pure False
+    (_, _, _, ActionAbility _ (Just action), _) -> canPerform a action -- TODO: we need to calculate the total cost
+    (_, _, _, ActionAbility _ Nothing, _) -> pure True -- e.g. Old Book of Lore
+    (_, _, _, FreeAbility AnyWindow, _) -> pure True
+    (_, _, _, FreeAbility (SkillTestWindow _), _) -> pure True -- must be filtered out later
+    (_, _, _, ReactionAbility _, _) -> pure False
 
   pure $ canAfford a Action.Ability && not (null filteredAbilities)
 
@@ -367,12 +367,12 @@ getAvailableAbilities a@Attrs {..} = do
     , actAndAgendaAbilities
     ]
  where
-  canPerformAbility (_, _, ActionAbility _ (Just actionType), _) =
+  canPerformAbility (_, _, _, ActionAbility _ (Just actionType), _) =
     canAfford a actionType
-  canPerformAbility (_, _, ActionAbility _ Nothing, _) = True -- e.g. Old Book of Lore
-  canPerformAbility (_, _, FreeAbility AnyWindow, _) = True
-  canPerformAbility (_, _, FreeAbility (SkillTestWindow _), _) = True
-  canPerformAbility (_, _, ReactionAbility _, _) = True
+  canPerformAbility (_, _, _, ActionAbility _ Nothing, _) = True -- e.g. Old Book of Lore
+  canPerformAbility (_, _, _, FreeAbility AnyWindow, _) = True
+  canPerformAbility (_, _, _, FreeAbility (SkillTestWindow _), _) = True
+  canPerformAbility (_, _, _, ReactionAbility _, _) = True
 
 drawOpeningHand :: Attrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
 drawOpeningHand a n = go n (a ^. discard, a ^. hand, coerce (a ^. deck))
@@ -397,12 +397,12 @@ abilityInWindows
   -> Attrs
   -> m Bool
 abilityInWindows windows ability _ = case ability of
-  (_, _, ReactionAbility window, OncePerRound) -> if window `elem` windows
+  (_, _, _, ReactionAbility window, OncePerRound) -> if window `elem` windows
     then do
       usedAbilities <- map unUsedAbility <$> asks (getList ())
       pure $ ability `notElem` usedAbilities
     else pure False
-  (_, _, ReactionAbility window, _) -> pure $ window `elem` windows
+  (_, _, _, ReactionAbility window, _) -> pure $ window `elem` windows
   _ -> pure False
 
 possibleSkillTypeChoices :: SkillType -> Attrs -> [SkillType]
@@ -756,7 +756,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           []
           mempty
         )
-    ActivateCardAbilityAction iid ability@(_, _, abilityType, _)
+    ActivateCardAbilityAction iid ability@(_, _, _, abilityType, _)
       | iid == investigatorId -> do
         unshiftMessage (UseCardAbility iid ability) -- We should check action type when added for aoo
         case abilityType of
@@ -790,7 +790,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       availableAbilities <- getAvailableAbilities a
       let
         filteredAbilities = flip filter availableAbilities $ \case
-          (_, _, FreeAbility (SkillTestWindow st), _) | st == skillType -> True
+          (_, _, _, FreeAbility (SkillTestWindow st), _) | st == skillType -> True
           _ -> False
         triggerMessage = StartSkillTest
         beginMessage = BeforeSkillTest iid skillType
@@ -936,8 +936,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         accessibleLocations =
           investigatorConnectedLocations `difference` blockedLocationIds
         availableAbilities = flip filter allAbilities $ \case
-          (_, _, FreeAbility AnyWindow, _) -> True
-          (_, _, ActionAbility _ _, _) -> True -- pre-filtered based on action
+          (_, _, _, FreeAbility AnyWindow, _) -> True
+          (_, _, _, ActionAbility _ _, _) -> True -- pre-filtered based on action
           _ -> False
       a <$ unshiftMessage
         (Ask $ ChooseOne

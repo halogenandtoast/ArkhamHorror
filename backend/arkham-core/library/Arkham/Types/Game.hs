@@ -757,7 +757,7 @@ runGameMessage msg g = case msg of
   EndRound -> do
     pushMessage BeginRound
     pure $ g & usedAbilities %~ filter
-      (\(_, _, _, limit) -> limit == OncePerGame)
+      (\(_, _, _, _, limit) -> limit == OncePerGame)
   BeginRound -> g <$ pushMessage BeginMythos
   BeginMythos -> do
     pushMessages
@@ -768,7 +768,7 @@ runGameMessage msg g = case msg of
       ]
     pure $ g & phase .~ MythosPhase
   EndMythos -> g <$ pushMessage BeginInvestigation
-  UseCardAbility _ (_, _, _, NoLimit) -> pure g
+  UseCardAbility _ (_, _, _, _, NoLimit) -> pure g
   UseCardAbility _ ability -> pure $ g & usedAbilities %~ (ability :)
   BeginSkillTest iid source maction skillType difficulty onSuccess onFailure skillTestModifiers tokenResponses
     -> do

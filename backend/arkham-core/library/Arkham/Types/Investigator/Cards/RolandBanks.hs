@@ -28,6 +28,7 @@ rolandBanks = RolandBanksI $ (baseAttrs
                              )
   { investigatorAbilities =
     [ ( InvestigatorSource "01001"
+      , Nothing
       , 1
       , ReactionAbility (Fast.WhenEnemyDefeated You)
       , OncePerRound
@@ -46,7 +47,7 @@ rolandBanks = RolandBanksI $ (baseAttrs
 
 instance (InvestigatorRunner env) => RunMessage env RolandBanksI where
   runMessage msg rb@(RolandBanksI attrs@Attrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid, 1, _, _)
+    UseCardAbility _ (InvestigatorSource iid, _, 1, _, _)
       | iid == investigatorId -> rb <$ unshiftMessage
         (DiscoverCluesAtLocation investigatorId investigatorLocation 1)
     ResolveToken ElderSign iid skillValue | iid == investigatorId -> do

@@ -254,7 +254,7 @@ theNecronomicon uuid =
     $ ((baseAttrs uuid "01009")
         { assetSlots = [HandSlot]
         , assetAbilities =
-          [(AssetSource uuid, 1, ActionAbility 1 Nothing, NoLimit)]
+          [(AssetSource uuid, Nothing, 1, ActionAbility 1 Nothing, NoLimit)]
         }
       )
     `with` TheNecronomiconMetadata 3
@@ -275,11 +275,12 @@ physicalTraining uuid = PhysicalTraining $ PhysicalTrainingI $ (baseAttrs
                                                                )
   { assetAbilities =
     [ ( AssetSource uuid
+      , Nothing
       , 1
       , FreeAbility (SkillTestWindow SkillWillpower)
       , NoLimit
       )
-    , (AssetSource uuid, 2, FreeAbility (SkillTestWindow SkillCombat), NoLimit)
+    , (AssetSource uuid, Nothing, 2, FreeAbility (SkillTestWindow SkillCombat), NoLimit)
     ]
   }
 
@@ -291,7 +292,7 @@ beatCop uuid = BeatCop $ BeatCopI $ (baseAttrs uuid "01018")
   { assetSlots = [AllySlot]
   , assetHealth = Just 2
   , assetSanity = Just 2
-  , assetAbilities = [(AssetSource uuid, 1, FreeAbility AnyWindow, NoLimit)]
+  , assetAbilities = [(AssetSource uuid, Nothing, 1, FreeAbility AnyWindow, NoLimit)]
   }
 
 newtype MacheteI = MacheteI Attrs
@@ -301,7 +302,7 @@ machete :: AssetId -> Asset
 machete uuid = Machete $ MacheteI $ (baseAttrs uuid "01020")
   { assetSlots = [HandSlot]
   , assetAbilities =
-    [(AssetSource uuid, 1, ActionAbility 1 (Just Action.Fight), NoLimit)]
+    [(AssetSource uuid, Nothing, 1, ActionAbility 1 (Just Action.Fight), NoLimit)]
   }
 
 newtype GuardDogI = GuardDogI Attrs
@@ -329,7 +330,7 @@ newtype OldBookOfLoreI = OldBookOfLoreI Attrs
 oldBookOfLore :: AssetId -> Asset
 oldBookOfLore uuid = OldBookOfLore $ OldBookOfLoreI $ (baseAttrs uuid "01031")
   { assetSlots = [HandSlot]
-  , assetAbilities = [(AssetSource uuid, 1, ActionAbility 1 Nothing, NoLimit)]
+  , assetAbilities = [(AssetSource uuid, Nothing, 1, ActionAbility 1 Nothing, NoLimit)]
   }
 
 newtype ResearchLibrarianI = ResearchLibrarianI Attrs
@@ -360,7 +361,7 @@ newtype MedicalTextsI = MedicalTextsI Attrs
 medicalTexts :: AssetId -> Asset
 medicalTexts uuid = MedicalTexts $ MedicalTextsI $ (baseAttrs uuid "01035")
   { assetSlots = [HandSlot]
-  , assetAbilities = [(AssetSource uuid, 1, ActionAbility 1 Nothing, NoLimit)]
+  , assetAbilities = [(AssetSource uuid, Nothing, 1, ActionAbility 1 Nothing, NoLimit)]
   }
 
 newtype HolyRosaryI = HolyRosaryI Attrs
@@ -413,8 +414,8 @@ knife :: AssetId -> Asset
 knife uuid = Knife $ KnifeI $ (baseAttrs uuid "01086")
   { assetSlots = [HandSlot]
   , assetAbilities =
-    [ (AssetSource uuid, 1, ActionAbility 1 (Just Action.Fight), NoLimit)
-    , (AssetSource uuid, 2, ActionAbility 1 (Just Action.Fight), NoLimit)
+    [ (AssetSource uuid, Nothing, 1, ActionAbility 1 (Just Action.Fight), NoLimit)
+    , (AssetSource uuid, Nothing, 2, ActionAbility 1 (Just Action.Fight), NoLimit)
     ]
   }
 
@@ -480,6 +481,7 @@ instance (AssetRunner env) => RunMessage env Rolands38SpecialI where
             & (uses .~ Uses Resource.Ammo 4)
             & (abilities
               .~ [ ( AssetSource aid
+                   , Nothing
                    , 1
                    , ActionAbility 1 (Just Action.Fight)
                    , NoLimit
@@ -487,7 +489,7 @@ instance (AssetRunner env) => RunMessage env Rolands38SpecialI where
                  ]
               )
       Rolands38SpecialI <$> runMessage msg attrs'
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
+    UseCardAbility iid (AssetSource aid, Nothing, 1, _, _) | aid == assetId ->
       case assetUses of
         Uses Resource.Ammo n -> do
           when
@@ -536,7 +538,7 @@ instance (AssetRunner env) => RunMessage env TheNecronomiconI where
             (ForcedTokenChange Token.ElderSign Token.AutoFail (AssetSource aid))
           )
         TheNecronomiconI . (`with` metadata) <$> runMessage msg attrs
-      UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
+      UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
         unshiftMessage (InvestigatorDamage iid (AssetSource aid) 0 1)
         if theNecronomiconHorror == 1
           then a <$ unshiftMessage (DiscardAsset aid)
@@ -553,13 +555,14 @@ instance (AssetRunner env) => RunMessage env FortyFiveAutomaticI where
         & (uses .~ Uses Resource.Ammo 4)
         & (abilities
           .~ [ ( AssetSource aid
+               , Nothing
                , 1
                , ActionAbility 1 (Just Action.Fight)
                , NoLimit
                )
              ]
           )
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
+    UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId ->
       case assetUses of
         Uses Resource.Ammo n -> do
           when
@@ -583,7 +586,7 @@ instance (AssetRunner env) => RunMessage env FortyFiveAutomaticI where
 
 instance (AssetRunner env) => RunMessage env PhysicalTrainingI where
   runMessage msg a@(PhysicalTrainingI attrs@Attrs {..}) = case msg of
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
+    UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
       resources <- unResourceCount <$> asks (getCount iid)
       when (resources > 0) $ unshiftMessages
         [ SpendResources iid 1
@@ -592,7 +595,7 @@ instance (AssetRunner env) => RunMessage env PhysicalTrainingI where
           (SkillModifier SkillWillpower 1 (AssetSource aid))
         ]
       pure a
-    UseCardAbility iid ((AssetSource aid), 2, _, _) | aid == assetId -> do
+    UseCardAbility iid ((AssetSource aid), _, 2, _, _) | aid == assetId -> do
       resources <- unResourceCount <$> asks (getCount iid)
       when (resources > 0) $ unshiftMessages
         [ SpendResources iid 1
@@ -612,7 +615,7 @@ instance (AssetRunner env) => RunMessage env BeatCopI where
           (SkillModifier SkillCombat 1 (AssetSource aid))
         )
       pure a
-    UseCardAbility iid ((AssetSource aid), 2, _, _) | aid == assetId -> do
+    UseCardAbility iid ((AssetSource aid), _, 1, _, _) | aid == assetId -> do
       locationId <- asks (getId @LocationId (getInvestigator attrs))
       locationEnemyIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessages
@@ -641,7 +644,7 @@ instance (AssetRunner env) => RunMessage env GuardDogI where
 
 instance (AssetRunner env) => RunMessage env OldBookOfLoreI where
   runMessage msg (OldBookOfLoreI attrs@Attrs {..}) = case msg of
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
+    UseCardAbility iid ((AssetSource aid), _, 1, _, _) | aid == assetId -> do
       locationId <- asks (getId @LocationId iid)
       investigatorIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessage
@@ -677,12 +680,12 @@ instance (AssetRunner env) => RunMessage env ResearchLibrarianI where
         (Ask $ ChooseOne
           [ UseCardAbility
             iid
-            (AssetSource assetId, 1, ReactionAbility Fast.Now, NoLimit)
+            (AssetSource assetId, Nothing, 1, ReactionAbility Fast.Now, NoLimit)
           , Continue "Do not use ability"
           ]
         )
       ResearchLibrarianI <$> runMessage msg attrs
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
+    UseCardAbility iid ((AssetSource aid), _, 1, _, _) | aid == assetId ->
       a <$ unshiftMessage (SearchDeckForTraits iid [Tome])
     _ -> ResearchLibrarianI <$> runMessage msg attrs
 
@@ -700,17 +703,17 @@ instance (AssetRunner env) => RunMessage env DrMilanChristopherI where
         (Ask $ ChooseOne
           [ UseCardAbility
             iid
-            (AssetSource assetId, 1, ReactionAbility Fast.Now, NoLimit)
+            (AssetSource assetId, Nothing, 1, ReactionAbility Fast.Now, NoLimit)
           , Continue "Do not use Dr. Christopher Milan's ability"
           ]
         )
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
+    UseCardAbility iid ((AssetSource aid), _, 1, _, _) | aid == assetId ->
       a <$ unshiftMessage (TakeResources iid 1 False)
     _ -> DrMilanChristopherI <$> runMessage msg attrs
 
 instance (AssetRunner env) => RunMessage env MedicalTextsI where
   runMessage msg (MedicalTextsI attrs@Attrs {..}) = case msg of
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
+    UseCardAbility iid ((AssetSource aid), _, 1, _, _) | aid == assetId -> do
       locationId <- asks (getId @LocationId (getInvestigator attrs))
       locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessage
@@ -744,7 +747,7 @@ instance (AssetRunner env) => RunMessage env HolyRosaryI where
 
 instance (AssetRunner env) => RunMessage env MacheteI where
   runMessage msg a@(MacheteI attrs@Attrs {..}) = case msg of
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
+    UseCardAbility iid ((AssetSource aid), _, 1, _, _) | aid == assetId -> do
       engagedEnemiesCount <- unEnemyCount <$> asks (getCount iid)
       let
         damageDealtModifiers = if engagedEnemiesCount == 1
@@ -773,6 +776,7 @@ instance (AssetRunner env) => RunMessage env ShrivellingI where
               & (uses .~ Uses Resource.Charge 4)
               & (abilities
                 .~ [ ( AssetSource aid
+                     , Nothing
                      , 1
                      , ActionAbility 1 (Just Action.Fight)
                      , NoLimit
@@ -800,7 +804,7 @@ instance (AssetRunner env) => RunMessage env ShrivellingI where
                 1
               )
         pure $ ShrivellingI (attrs `with` ShrivellingMetadata False)
-      UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
+      UseCardAbility iid ((AssetSource aid), _, 1, _, _) | aid == assetId ->
         case assetUses of
           Uses Resource.Charge n -> do
             when
@@ -832,10 +836,10 @@ instance (AssetRunner env) => RunMessage env ScryingI where
           attrs
             & (uses .~ Uses Resource.Charge 3)
             & (abilities
-              .~ [(AssetSource aid, 1, ActionAbility 1 Nothing, NoLimit)]
+              .~ [(AssetSource aid, Nothing, 1, ActionAbility 1 Nothing, NoLimit)]
               )
       ScryingI <$> runMessage msg attrs'
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
+    UseCardAbility iid ((AssetSource aid), _, 1, _, _) | aid == assetId ->
       case assetUses of
         Uses Resource.Charge n -> do
           when
@@ -852,7 +856,7 @@ instance (AssetRunner env) => RunMessage env LeatherCoatI where
 
 instance (AssetRunner env) => RunMessage env KnifeI where
   runMessage msg a@(KnifeI attrs@Attrs {..}) = case msg of
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId -> do
+    UseCardAbility iid ((AssetSource aid), _, 1, _, _) | aid == assetId -> do
       unshiftMessage
         (ChooseFightEnemy
           iid
@@ -862,7 +866,7 @@ instance (AssetRunner env) => RunMessage env KnifeI where
           False
         )
       pure a
-    UseCardAbility iid ((AssetSource aid), 2, _, _) | aid == assetId -> do
+    UseCardAbility iid ((AssetSource aid), _, 2, _, _) | aid == assetId -> do
       unshiftMessages
         [ DiscardAsset aid
         , ChooseFightEnemy
@@ -886,13 +890,14 @@ instance (AssetRunner env) => RunMessage env FlashlightI where
         & (uses .~ Uses Resource.Supply 3)
         & (abilities
           .~ [ ( AssetSource aid
+               , Nothing
                , 1
                , ActionAbility 1 (Just Action.Investigate)
                , NoLimit
                )
              ]
           )
-    UseCardAbility iid ((AssetSource aid), 1, _, _) | aid == assetId ->
+    UseCardAbility iid ((AssetSource aid), _, 1, _, _) | aid == assetId ->
       case assetUses of
         Uses Resource.Supply n -> do
           when
@@ -924,7 +929,7 @@ instance (AssetRunner env) => RunMessage env LitaChantlerI where
               [ Run
                 [ UseCardAbility
                   iid
-                  (AssetSource assetId, 1, ReactionAbility Fast.Now, NoLimit)
+                  (AssetSource assetId, Nothing, 1, ReactionAbility Fast.Now, NoLimit)
                 , AddModifier
                   (EnemyTarget eid)
                   (DamageTaken 1 (AssetSource assetId))
@@ -967,7 +972,7 @@ instance (AssetRunner env) => RunMessage env Attrs where
     RemoveAbilitiesFrom source -> do
       let
         abilities' =
-          filter (\(source', _, _, _) -> source /= source') assetAbilities
+          filter (\(source', _, _, _, _) -> source /= source') assetAbilities
       pure $ a & abilities .~ abilities'
     AssetDamage aid _ health sanity | aid == assetId -> do
       let a' = a & healthDamage +~ health & sanityDamage +~ sanity

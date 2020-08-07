@@ -166,6 +166,7 @@ coverUp uuid =
     $ ((weaknessAttrs uuid "01007")
         { treacheryAbilities =
           [ ( TreacherySource uuid
+            , Nothing
             , 1
             , ReactionAbility (WhenDiscoverClues You YourLocation)
             , NoLimit
@@ -247,7 +248,7 @@ instance (TreacheryRunner env) => RunMessage env CoverUpI where
             (SufferTrauma 0 1 (TreacherySource tid))
           ]
         pure $ CoverUpI $ (attrs & attachedInvestigator ?~ iid) `with` metadata
-      UseCardAbility iid (TreacherySource tid, 1, _, _) | tid == treacheryId ->
+      UseCardAbility iid (TreacherySource tid, _, 1, _, _) | tid == treacheryId ->
         do
           cluesToRemove <- withQueue $ \queue -> do
             let

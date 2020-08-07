@@ -381,6 +381,10 @@ instance (EnemyRunner env) => RunMessage env Attrs where
                 (Ask $ ChooseOne
                   [ EnemyEngageInvestigator eid iid | iid <- iids ]
                 )
+      when (Keyword.Massive `elem` enemyKeywords) $ do
+        investigatorIds <- HashSet.toList <$> asks (getSet lid)
+        unshiftMessages
+          [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
       pure $ a & location .~ lid
     ReadyExhausted -> do
       miid <- headMay . HashSet.toList <$> asks (getSet enemyLocation)

@@ -45,6 +45,8 @@
     </div>
 
     <Player
+      v-for="(player, index) in players"
+      :key="index"
       :game="game"
       :player="player"
       @choose="$emit('choose', $event)"
@@ -81,8 +83,8 @@ export default class Scenario extends Vue {
   private commitedCards: number[] = []
   private moving = false
 
-  get player() {
-    return Object.values(this.game.currentData.investigators)[0];
+  get players() {
+    return this.game.currentData.investigators;
   }
 
   get topOfEncounterDiscard() {

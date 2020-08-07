@@ -1,12 +1,16 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 module Main where
 
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Game
 import Arkham.Types.GameJson
+import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
 import ClassyPrelude
 import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap
@@ -49,6 +53,57 @@ newtype ArkhamDBDecklist = ArkhamDBDecklist
   { slots :: HashMap CardCode Int }
   deriving stock (Generic, Show)
   deriving anyclass (FromJSON)
+
+keepAsking :: forall a m . (Show a, Read a, MonadIO m) => String -> m a
+keepAsking s = do
+  putStr $ pack s
+  liftIO $ hFlush stdout
+  mresult <- readMaybe @a . unpack <$> getLine
+  case mresult of
+    Nothing -> keepAsking s
+    Just a -> pure a
+
+extract :: Int -> [a] -> (Maybe a, [a])
+extract n xs =
+  let a = xs !!? (n - 1) in (a, [ x | (i, x) <- zip [1 ..] xs, i /= n ])
+
+handleQuestion :: MonadIO m => GameJson -> Question -> m [Message]
+handleQuestion _ = \case
+  ChooseOne [] -> pure []
+  ChooseOne msgs -> do
+    i <- keepAsking @Int
+      ("Choose one:\n\n" <> unlines (map show $ zip @_ @Int [1 ..] msgs))
+    pure . maybeToList $ msgs !!? (i - 1)
+  ChooseOneFromSource cofs -> case chooseOneChoices cofs of
+    [] -> pure []
+    msgs -> do
+      i <- keepAsking @Int
+        ("Choose one:\n\n"
+        <> unlines (map show $ zip @_ @Int [1 ..] (map unlabel msgs))
+        )
+      pure . maybeToList $ map unlabel msgs !!? (i - 1)
+  ChooseOneAtATime [] -> pure []
+  ChooseOneAtATime msgs -> do
+    i <- keepAsking @Int
+      ("Choose one at a time:\n\n"
+      <> unlines (map show $ zip @_ @Int [1 ..] msgs)
+      )
+    let (mm, msgs') = extract i msgs
+    case mm of
+      Just m' -> pure [m', Ask $ ChooseOneAtATime msgs']
+      Nothing -> pure []
+
+runGame :: MonadIO m => Game -> m GameJson
+runGame g = do
+  let ref = giMessages g
+  (mQuestion, gameJson) <- runMessages g
+  pPrint gameJson
+  messages <- maybe (pure []) (handleQuestion gameJson) mQuestion
+  modifyIORef' ref (messages <>)
+  messages' <- readIORef ref
+  if null messages'
+    then pure gameJson
+    else runGame $ toInternalGame' ref gameJson
 
 main :: IO ()
 main = do

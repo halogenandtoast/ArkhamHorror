@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b039514abac16ac71c395191ecb48d132df0f9a63179fc1b024c121b4bfc7c69
+-- hash: 6240ff7f8d84b91e988edbb7b09b0671894a647360292f7186d3ce4c5b19feb4
 
 name:           arkham-core
 version:        0.0.0
@@ -20,6 +20,28 @@ library
       Arkham.Types.Agenda
       Arkham.Types.AgendaId
       Arkham.Types.Asset
+      Arkham.Types.Asset.Attrs
+      Arkham.Types.Asset.Cards.BeatCop
+      Arkham.Types.Asset.Cards.DaisysToteBag
+      Arkham.Types.Asset.Cards.DrMilanChristopher
+      Arkham.Types.Asset.Cards.Flashlight
+      Arkham.Types.Asset.Cards.FortyFiveAutomatic
+      Arkham.Types.Asset.Cards.GuardDog
+      Arkham.Types.Asset.Cards.HolyRosary
+      Arkham.Types.Asset.Cards.Knife
+      Arkham.Types.Asset.Cards.LeatherCoat
+      Arkham.Types.Asset.Cards.LitaChantler
+      Arkham.Types.Asset.Cards.Machete
+      Arkham.Types.Asset.Cards.MagnifyingGlass
+      Arkham.Types.Asset.Cards.MedicalTexts
+      Arkham.Types.Asset.Cards.OldBookOfLore
+      Arkham.Types.Asset.Cards.PhysicalTraining
+      Arkham.Types.Asset.Cards.ResearchLibrarian
+      Arkham.Types.Asset.Cards.Rolands38Special
+      Arkham.Types.Asset.Cards.Scrying
+      Arkham.Types.Asset.Cards.Shrivelling
+      Arkham.Types.Asset.Cards.TheNecronomicon
+      Arkham.Types.Asset.Runner
       Arkham.Types.Asset.Uses
       Arkham.Types.AssetId
       Arkham.Types.Card

@@ -248,8 +248,8 @@ instance (TreacheryRunner env) => RunMessage env CoverUpI where
             (SufferTrauma 0 1 (TreacherySource tid))
           ]
         pure $ CoverUpI $ (attrs & attachedInvestigator ?~ iid) `with` metadata
-      UseCardAbility iid (TreacherySource tid, _, 1, _, _) | tid == treacheryId ->
-        do
+      UseCardAbility iid (TreacherySource tid, _, 1, _, _)
+        | tid == treacheryId -> do
           cluesToRemove <- withQueue $ \queue -> do
             let
               (before, after) = flip break queue $ \case
@@ -328,19 +328,20 @@ instance (TreacheryRunner env) => RunMessage env FrozenInFearI where
           )
         ]
       pure $ FrozenInFearI $ attrs & attachedInvestigator ?~ iid
-    ChooseEndTurn iid -> t <$ unshiftMessage
-      (RevelationSkillTest
-        iid
-        (TreacherySource treacheryId)
-        SkillWillpower
-        3
-        [ RemoveAllModifiersOnTargetFrom
-          (InvestigatorTarget iid)
+    ChooseEndTurn iid | Just iid == treacheryAttachedInvestigator ->
+      t <$ unshiftMessage
+        (RevelationSkillTest
+          iid
           (TreacherySource treacheryId)
-        , Discard (TreacheryTarget treacheryId)
-        ]
-        []
-      )
+          SkillWillpower
+          3
+          [ RemoveAllModifiersOnTargetFrom
+            (InvestigatorTarget iid)
+            (TreacherySource treacheryId)
+          , Discard (TreacheryTarget treacheryId)
+          ]
+          []
+        )
     _ -> FrozenInFearI <$> runMessage msg attrs
 
 instance (TreacheryRunner env) => RunMessage env DissonantVoicesI where

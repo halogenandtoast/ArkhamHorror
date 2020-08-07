@@ -11,11 +11,11 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
-newtype AmandaSharpeI = AmandaSharpeI Attrs
+newtype AmandaSharpe = AmandaSharpe Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-amandaSharpe :: AmandaSharpeI
-amandaSharpe = AmandaSharpeI $ baseAttrs
+amandaSharpe :: AmandaSharpe
+amandaSharpe = AmandaSharpe $ baseAttrs
   "07002"
   "Amanda Sharpe"
   Stats
@@ -28,7 +28,7 @@ amandaSharpe = AmandaSharpeI $ baseAttrs
     }
   [Miskatonic, Scholar]
 
-instance (InvestigatorRunner env) => RunMessage env AmandaSharpeI where
-  runMessage msg i@(AmandaSharpeI attrs@Attrs {..}) = case msg of
+instance (InvestigatorRunner env) => RunMessage env AmandaSharpe where
+  runMessage msg i@(AmandaSharpe attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
-    _ -> AmandaSharpeI <$> runMessage msg attrs
+    _ -> AmandaSharpe <$> runMessage msg attrs

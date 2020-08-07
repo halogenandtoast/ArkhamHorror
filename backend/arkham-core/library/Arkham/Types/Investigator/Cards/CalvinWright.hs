@@ -11,11 +11,11 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
-newtype CalvinWrightI = CalvinWrightI Attrs
+newtype CalvinWright = CalvinWright Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-calvinWright :: CalvinWrightI
-calvinWright = CalvinWrightI $ baseAttrs
+calvinWright :: CalvinWright
+calvinWright = CalvinWright $ baseAttrs
   "04005"
   "Calvin Wright"
   Stats
@@ -28,7 +28,7 @@ calvinWright = CalvinWrightI $ baseAttrs
     }
   [Cursed, Drifter]
 
-instance (InvestigatorRunner env) => RunMessage env CalvinWrightI where
-  runMessage msg i@(CalvinWrightI attrs@Attrs {..}) = case msg of
+instance (InvestigatorRunner env) => RunMessage env CalvinWright where
+  runMessage msg i@(CalvinWright attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
-    _ -> CalvinWrightI <$> runMessage msg attrs
+    _ -> CalvinWright <$> runMessage msg attrs

@@ -11,11 +11,11 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
-newtype FatherMateoI = FatherMateoI Attrs
+newtype FatherMateo = FatherMateo Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-fatherMateo :: FatherMateoI
-fatherMateo = FatherMateoI $ baseAttrs
+fatherMateo :: FatherMateo
+fatherMateo = FatherMateo $ baseAttrs
   "04004"
   "Father Mateo"
   Stats
@@ -28,7 +28,7 @@ fatherMateo = FatherMateoI $ baseAttrs
     }
   [Believer, Warden]
 
-instance (InvestigatorRunner env) => RunMessage env FatherMateoI where
-  runMessage msg i@(FatherMateoI attrs@Attrs {..}) = case msg of
+instance (InvestigatorRunner env) => RunMessage env FatherMateo where
+  runMessage msg i@(FatherMateo attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
-    _ -> FatherMateoI <$> runMessage msg attrs
+    _ -> FatherMateo <$> runMessage msg attrs

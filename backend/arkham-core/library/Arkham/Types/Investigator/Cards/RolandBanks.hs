@@ -16,11 +16,11 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
-newtype RolandBanksI = RolandBanksI Attrs
+newtype RolandBanks = RolandBanks Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-rolandBanks :: RolandBanksI
-rolandBanks = RolandBanksI $ (baseAttrs
+rolandBanks :: RolandBanks
+rolandBanks = RolandBanks $ (baseAttrs
                                "01001"
                                "Roland Banks"
                                stats
@@ -45,12 +45,12 @@ rolandBanks = RolandBanksI $ (baseAttrs
     , agility = 2
     }
 
-instance (InvestigatorRunner env) => RunMessage env RolandBanksI where
-  runMessage msg rb@(RolandBanksI attrs@Attrs {..}) = case msg of
+instance (InvestigatorRunner env) => RunMessage env RolandBanks where
+  runMessage msg rb@(RolandBanks attrs@Attrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid, _, 1, _, _)
       | iid == investigatorId -> rb <$ unshiftMessage
         (DiscoverCluesAtLocation investigatorId investigatorLocation 1)
     ResolveToken ElderSign iid skillValue | iid == investigatorId -> do
       clueCount <- unClueCount <$> asks (getCount investigatorLocation)
       rb <$ runTest (skillValue + clueCount)
-    _ -> RolandBanksI <$> runMessage msg attrs
+    _ -> RolandBanks <$> runMessage msg attrs

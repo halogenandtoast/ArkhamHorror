@@ -11,11 +11,11 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
-newtype PrestonFairmontI = PrestonFairmontI Attrs
+newtype PrestonFairmont = PrestonFairmont Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-prestonFairmont :: PrestonFairmontI
-prestonFairmont = PrestonFairmontI $ baseAttrs
+prestonFairmont :: PrestonFairmont
+prestonFairmont = PrestonFairmont $ baseAttrs
   "05003"
   "Preston Fairmont"
   Stats
@@ -28,7 +28,7 @@ prestonFairmont = PrestonFairmontI $ baseAttrs
     }
   [SilverTwilight, Socialite]
 
-instance (InvestigatorRunner env) => RunMessage env PrestonFairmontI where
-  runMessage msg i@(PrestonFairmontI attrs@Attrs {..}) = case msg of
+instance (InvestigatorRunner env) => RunMessage env PrestonFairmont where
+  runMessage msg i@(PrestonFairmont attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
-    _ -> PrestonFairmontI <$> runMessage msg attrs
+    _ -> PrestonFairmont <$> runMessage msg attrs

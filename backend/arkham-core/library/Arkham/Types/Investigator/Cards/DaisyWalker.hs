@@ -21,12 +21,12 @@ newtype DaisyWalkerMetadata = DaisyWalkerMetadata { tomeActions :: Int }
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON) -- must parse to object
 
-newtype DaisyWalkerI = DaisyWalkerI (Attrs `With` DaisyWalkerMetadata)
+newtype DaisyWalker = DaisyWalker (Attrs `With` DaisyWalkerMetadata)
   deriving newtype (Show, ToJSON, FromJSON)
 
-daisyWalker :: DaisyWalkerI
+daisyWalker :: DaisyWalker
 daisyWalker =
-  DaisyWalkerI
+  DaisyWalker
     $ baseAttrs "01002" "Daisy Walker" stats [Miskatonic]
     `with` DaisyWalkerMetadata 1
  where
@@ -44,8 +44,8 @@ becomesFailure token (ForcedTokenChange fromToken AutoFail _) =
   token == fromToken
 becomesFailure _ _ = False
 
-instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
-  runMessage msg i@(DaisyWalkerI (attrs@Attrs {..} `With` metadata@DaisyWalkerMetadata {..}))
+instance (InvestigatorRunner env) => RunMessage env DaisyWalker where
+  runMessage msg i@(DaisyWalker (attrs@Attrs {..} `With` metadata@DaisyWalkerMetadata {..}))
     = case msg of
       ActivateCardAbilityAction iid (AssetSource aid, msource, abilityIndex, abilityType, abilityLimit)
         | iid == investigatorId
@@ -54,12 +54,12 @@ instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
           if Tome `elem` traits && tomeActions > 0
             then case abilityType of
               FreeAbility _ ->
-                DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
+                DaisyWalker . (`with` metadata) <$> runMessage msg attrs
               ReactionAbility _ ->
-                DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
+                DaisyWalker . (`with` metadata) <$> runMessage msg attrs
               ActionAbility n actionType -> if n > 0
                 then
-                  DaisyWalkerI
+                  DaisyWalker
                   . (`with` DaisyWalkerMetadata (tomeActions - 1))
                   <$> runMessage
                         (ActivateCardAbilityAction
@@ -72,8 +72,8 @@ instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
                           )
                         )
                         attrs
-                else DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
-            else DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
+                else DaisyWalker . (`with` metadata) <$> runMessage msg attrs
+            else DaisyWalker . (`with` metadata) <$> runMessage msg attrs
       PlayerWindow iid additionalActions | iid == investigatorId ->
         if investigatorRemainingActions == 0 && tomeActions > 0
           then do
@@ -84,7 +84,7 @@ instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
               . zip assetIds
               <$> traverse (asks . getSet) assetIds
             tomeAbilities <- mconcat <$> traverse (asks . getList) tomeAssets
-            DaisyWalkerI
+            DaisyWalker
               . (`with` metadata)
               <$> runMessage
                     (PlayerWindow
@@ -96,7 +96,7 @@ instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
                       )
                     )
                     attrs
-          else DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
+          else DaisyWalker . (`with` metadata) <$> runMessage msg attrs
       ResolveToken ElderSign iid skillValue | iid == investigatorId ->
         if any (becomesFailure ElderSign) investigatorModifiers
           then i <$ unshiftMessage (ResolveToken AutoFail iid skillValue)
@@ -114,5 +114,5 @@ instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
               )
             pure i
       BeginRound ->
-        DaisyWalkerI . (`with` DaisyWalkerMetadata 1) <$> runMessage msg attrs
-      _ -> DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs
+        DaisyWalker . (`with` DaisyWalkerMetadata 1) <$> runMessage msg attrs
+      _ -> DaisyWalker . (`with` metadata) <$> runMessage msg attrs

@@ -470,6 +470,8 @@ instance (EnemyRunner env) => RunMessage env Attrs where
       pure $ a & modifiers %~ filter ((source /=) . sourceOfModifier)
     EnemyEngageInvestigator eid iid | eid == enemyId ->
       pure $ a & engagedInvestigators %~ HashSet.insert iid
+    EngageEnemy iid eid False | eid == enemyId ->
+      pure $ a & engagedInvestigators .~ HashSet.singleton iid
     AfterEnterLocation iid lid | lid == enemyLocation -> do
       when
           (null enemyEngagedInvestigators

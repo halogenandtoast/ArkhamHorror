@@ -148,12 +148,9 @@ instance (SkillTestRunner env) => RunMessage env SkillTest where
       _ -> error "Should not be called when not failed"
     DrawToken token -> pure $ s & setAsideTokens %~ (token :)
     FailSkillTest -> do
-      unshiftMessages
-        $ [Ask $ ChooseOne [SkillTestApplyResults]]
-        <> skillTestOnFailure
-        <> [SkillTestEnds]
+      unshiftMessages [Ask $ ChooseOne [SkillTestApplyResults], SkillTestEnds]
       pure $ s & result .~ FailedBy skillTestDifficulty
-    StartSkillTest -> s <$ unshiftMessages
+    StartSkillTest _ -> s <$ unshiftMessages
       (HashMap.foldMapWithKey
           (\k (i, _) -> [DiscardCard i k])
           skillTestCommittedCards

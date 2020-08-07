@@ -81,185 +81,185 @@ import Safe (fromJustNote)
 allInvestigators :: HashMap InvestigatorId Investigator
 allInvestigators = HashMap.fromList $ map
   (\s -> (investigatorId . investigatorAttrs $ s, s))
-  [ AgnesBaker agnesBaker
-  , AkachiOnyele akachiOnyele
-  , AmandaSharpe amandaSharpe
-  , AshcanPete ashcanPete
-  , CalvinWright calvinWright
-  , CarolynFern carolynFern
-  , DaisyWalker daisyWalker
-  , DexterDrake dexterDrake
-  , DianaStanley dianaStanley
-  , FatherMateo fatherMateo
-  , FinnEdwards finnEdwards
-  , HarveyWalters harveyWalters
-  , JacquelineFine jacquelineFine
-  , JennyBarnes jennyBarnes
-  , JimCulver jimCulver
-  , JoeDiamond joeDiamond
-  , LeoAnderson leoAnderson
-  , LolaHayes lolaHayes
-  , LukeRobinson lukeRobinson
-  , MandyThompson mandyThompson
-  , MarieLambeau marieLambeau
-  , MarkHarrigan markHarrigan
-  , MinhThiPhan minhThiPhan
-  , NathanielCho nathanielCho
-  , NormanWithers normanWithers
-  , PatriceHathaway patriceHathaway
-  , PrestonFairmont prestonFairmont
-  , RexMurphy rexMurphy
-  , RitaYoung ritaYoung
-  , RolandBanks rolandBanks
-  , SefinaRousseau sefinaRousseau
-  , SilasMarsh silasMarsh
-  , SisterMary sisterMary
-  , SkidsOToole skidsOToole
-  , StellaClark stellaClark
-  , TommyMuldoon tommyMuldoon
-  , TonyMorgan tonyMorgan
-  , UrsulaDowns ursulaDowns
-  , WendyAdams wendyAdams
-  , WilliamYorick williamYorick
-  , WinifredHabbamock winifredHabbamock
-  , ZoeySamaras zoeySamaras
+  [ AgnesBaker' agnesBaker
+  , AkachiOnyele' akachiOnyele
+  , AmandaSharpe' amandaSharpe
+  , AshcanPete' ashcanPete
+  , CalvinWright' calvinWright
+  , CarolynFern' carolynFern
+  , DaisyWalker' daisyWalker
+  , DexterDrake' dexterDrake
+  , DianaStanley' dianaStanley
+  , FatherMateo' fatherMateo
+  , FinnEdwards' finnEdwards
+  , HarveyWalters' harveyWalters
+  , JacquelineFine' jacquelineFine
+  , JennyBarnes' jennyBarnes
+  , JimCulver' jimCulver
+  , JoeDiamond' joeDiamond
+  , LeoAnderson' leoAnderson
+  , LolaHayes' lolaHayes
+  , LukeRobinson' lukeRobinson
+  , MandyThompson' mandyThompson
+  , MarieLambeau' marieLambeau
+  , MarkHarrigan' markHarrigan
+  , MinhThiPhan' minhThiPhan
+  , NathanielCho' nathanielCho
+  , NormanWithers' normanWithers
+  , PatriceHathaway' patriceHathaway
+  , PrestonFairmont' prestonFairmont
+  , RexMurphy' rexMurphy
+  , RitaYoung' ritaYoung
+  , RolandBanks' rolandBanks
+  , SefinaRousseau' sefinaRousseau
+  , SilasMarsh' silasMarsh
+  , SisterMary' sisterMary
+  , SkidsOToole' skidsOToole
+  , StellaClark' stellaClark
+  , TommyMuldoon' tommyMuldoon
+  , TonyMorgan' tonyMorgan
+  , UrsulaDowns' ursulaDowns
+  , WendyAdams' wendyAdams
+  , WilliamYorick' williamYorick
+  , WinifredHabbamock' winifredHabbamock
+  , ZoeySamaras' zoeySamaras
   ]
 
 investigatorAttrs :: Investigator -> Attrs
 investigatorAttrs = \case
-  AgnesBaker attrs -> coerce attrs
-  AkachiOnyele attrs -> coerce attrs
-  AmandaSharpe attrs -> coerce attrs
-  AshcanPete attrs -> coerce attrs
-  CalvinWright attrs -> coerce attrs
-  CarolynFern attrs -> coerce attrs
-  DaisyWalker (DaisyWalkerI (With attrs _)) -> attrs
-  DexterDrake attrs -> coerce attrs
-  DianaStanley attrs -> coerce attrs
-  FatherMateo attrs -> coerce attrs
-  FinnEdwards attrs -> coerce attrs
-  HarveyWalters attrs -> coerce attrs
-  JacquelineFine attrs -> coerce attrs
-  JennyBarnes attrs -> coerce attrs
-  JimCulver attrs -> coerce attrs
-  JoeDiamond attrs -> coerce attrs
-  LeoAnderson attrs -> coerce attrs
-  LolaHayes attrs -> coerce attrs
-  LukeRobinson attrs -> coerce attrs
-  MandyThompson attrs -> coerce attrs
-  MarieLambeau attrs -> coerce attrs
-  MarkHarrigan attrs -> coerce attrs
-  MinhThiPhan attrs -> coerce attrs
-  NathanielCho attrs -> coerce attrs
-  NormanWithers attrs -> coerce attrs
-  PatriceHathaway attrs -> coerce attrs
-  PrestonFairmont attrs -> coerce attrs
-  RexMurphy attrs -> coerce attrs
-  RitaYoung attrs -> coerce attrs
-  RolandBanks attrs -> coerce attrs
-  SefinaRousseau attrs -> coerce attrs
-  SilasMarsh attrs -> coerce attrs
-  SisterMary attrs -> coerce attrs
-  SkidsOToole attrs -> coerce attrs
-  StellaClark attrs -> coerce attrs
-  TommyMuldoon attrs -> coerce attrs
-  TonyMorgan attrs -> coerce attrs
-  UrsulaDowns attrs -> coerce attrs
-  WendyAdams attrs -> coerce attrs
-  WilliamYorick attrs -> coerce attrs
-  WinifredHabbamock attrs -> coerce attrs
-  ZoeySamaras attrs -> coerce attrs
+  AgnesBaker' attrs -> coerce attrs
+  AkachiOnyele' attrs -> coerce attrs
+  AmandaSharpe' attrs -> coerce attrs
+  AshcanPete' attrs -> coerce attrs
+  CalvinWright' attrs -> coerce attrs
+  CarolynFern' attrs -> coerce attrs
+  DaisyWalker' (DaisyWalker (With attrs _)) -> attrs
+  DexterDrake' attrs -> coerce attrs
+  DianaStanley' attrs -> coerce attrs
+  FatherMateo' attrs -> coerce attrs
+  FinnEdwards' attrs -> coerce attrs
+  HarveyWalters' attrs -> coerce attrs
+  JacquelineFine' attrs -> coerce attrs
+  JennyBarnes' attrs -> coerce attrs
+  JimCulver' attrs -> coerce attrs
+  JoeDiamond' attrs -> coerce attrs
+  LeoAnderson' attrs -> coerce attrs
+  LolaHayes' attrs -> coerce attrs
+  LukeRobinson' attrs -> coerce attrs
+  MandyThompson' attrs -> coerce attrs
+  MarieLambeau' attrs -> coerce attrs
+  MarkHarrigan' attrs -> coerce attrs
+  MinhThiPhan' attrs -> coerce attrs
+  NathanielCho' attrs -> coerce attrs
+  NormanWithers' attrs -> coerce attrs
+  PatriceHathaway' attrs -> coerce attrs
+  PrestonFairmont' attrs -> coerce attrs
+  RexMurphy' attrs -> coerce attrs
+  RitaYoung' attrs -> coerce attrs
+  RolandBanks' attrs -> coerce attrs
+  SefinaRousseau' attrs -> coerce attrs
+  SilasMarsh' attrs -> coerce attrs
+  SisterMary' attrs -> coerce attrs
+  SkidsOToole' attrs -> coerce attrs
+  StellaClark' attrs -> coerce attrs
+  TommyMuldoon' attrs -> coerce attrs
+  TonyMorgan' attrs -> coerce attrs
+  UrsulaDowns' attrs -> coerce attrs
+  WendyAdams' attrs -> coerce attrs
+  WilliamYorick' attrs -> coerce attrs
+  WinifredHabbamock' attrs -> coerce attrs
+  ZoeySamaras' attrs -> coerce attrs
 
 data Investigator
-  = AgnesBaker AgnesBakerI
-  | AkachiOnyele AkachiOnyeleI
-  | AmandaSharpe AmandaSharpeI
-  | AshcanPete AshcanPeteI
-  | CalvinWright CalvinWrightI
-  | CarolynFern CarolynFernI
-  | DaisyWalker DaisyWalkerI
-  | DexterDrake DexterDrakeI
-  | DianaStanley DianaStanleyI
-  | FatherMateo FatherMateoI
-  | FinnEdwards FinnEdwardsI
-  | HarveyWalters HarveyWaltersI
-  | JacquelineFine JacquelineFineI
-  | JennyBarnes JennyBarnesI
-  | JimCulver JimCulverI
-  | JoeDiamond JoeDiamondI
-  | LeoAnderson LeoAndersonI
-  | LolaHayes LolaHayesI
-  | LukeRobinson LukeRobinsonI
-  | MandyThompson MandyThompsonI
-  | MarieLambeau MarieLambeauI
-  | MarkHarrigan MarkHarriganI
-  | MinhThiPhan MinhThiPhanI
-  | NathanielCho NathanielChoI
-  | NormanWithers NormanWithersI
-  | PatriceHathaway PatriceHathawayI
-  | PrestonFairmont PrestonFairmontI
-  | RexMurphy RexMurphyI
-  | RitaYoung RitaYoungI
-  | RolandBanks RolandBanksI
-  | SefinaRousseau SefinaRousseauI
-  | SilasMarsh SilasMarshI
-  | SisterMary SisterMaryI
-  | SkidsOToole SkidsOTooleI
-  | StellaClark StellaClarkI
-  | TommyMuldoon TommyMuldoonI
-  | TonyMorgan TonyMorganI
-  | UrsulaDowns UrsulaDownsI
-  | WendyAdams WendyAdamsI
-  | WilliamYorick WilliamYorickI
-  | WinifredHabbamock WinifredHabbamockI
-  | ZoeySamaras ZoeySamarasI
+  = AgnesBaker' AgnesBaker
+  | AkachiOnyele' AkachiOnyele
+  | AmandaSharpe' AmandaSharpe
+  | AshcanPete' AshcanPete
+  | CalvinWright' CalvinWright
+  | CarolynFern' CarolynFern
+  | DaisyWalker' DaisyWalker
+  | DexterDrake' DexterDrake
+  | DianaStanley' DianaStanley
+  | FatherMateo' FatherMateo
+  | FinnEdwards' FinnEdwards
+  | HarveyWalters' HarveyWalters
+  | JacquelineFine' JacquelineFine
+  | JennyBarnes' JennyBarnes
+  | JimCulver' JimCulver
+  | JoeDiamond' JoeDiamond
+  | LeoAnderson' LeoAnderson
+  | LolaHayes' LolaHayes
+  | LukeRobinson' LukeRobinson
+  | MandyThompson' MandyThompson
+  | MarieLambeau' MarieLambeau
+  | MarkHarrigan' MarkHarrigan
+  | MinhThiPhan' MinhThiPhan
+  | NathanielCho' NathanielCho
+  | NormanWithers' NormanWithers
+  | PatriceHathaway' PatriceHathaway
+  | PrestonFairmont' PrestonFairmont
+  | RexMurphy' RexMurphy
+  | RitaYoung' RitaYoung
+  | RolandBanks' RolandBanks
+  | SefinaRousseau' SefinaRousseau
+  | SilasMarsh' SilasMarsh
+  | SisterMary' SisterMary
+  | SkidsOToole' SkidsOToole
+  | StellaClark' StellaClark
+  | TommyMuldoon' TommyMuldoon
+  | TonyMorgan' TonyMorgan
+  | UrsulaDowns' UrsulaDowns
+  | WendyAdams' WendyAdams
+  | WilliamYorick' WilliamYorick
+  | WinifredHabbamock' WinifredHabbamock
+  | ZoeySamaras' ZoeySamaras
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 instance (InvestigatorRunner env) => RunMessage env Investigator where
   runMessage msg = \case
-    AgnesBaker x -> AgnesBaker <$> runMessage msg x
-    AkachiOnyele x -> AkachiOnyele <$> runMessage msg x
-    AmandaSharpe x -> AmandaSharpe <$> runMessage msg x
-    AshcanPete x -> AshcanPete <$> runMessage msg x
-    CalvinWright x -> CalvinWright <$> runMessage msg x
-    CarolynFern x -> CarolynFern <$> runMessage msg x
-    DaisyWalker x -> DaisyWalker <$> runMessage msg x
-    DexterDrake x -> DexterDrake <$> runMessage msg x
-    DianaStanley x -> DianaStanley <$> runMessage msg x
-    FatherMateo x -> FatherMateo <$> runMessage msg x
-    FinnEdwards x -> FinnEdwards <$> runMessage msg x
-    HarveyWalters x -> HarveyWalters <$> runMessage msg x
-    JacquelineFine x -> JacquelineFine <$> runMessage msg x
-    JennyBarnes x -> JennyBarnes <$> runMessage msg x
-    JimCulver x -> JimCulver <$> runMessage msg x
-    JoeDiamond x -> JoeDiamond <$> runMessage msg x
-    LeoAnderson x -> LeoAnderson <$> runMessage msg x
-    LolaHayes x -> LolaHayes <$> runMessage msg x
-    LukeRobinson x -> LukeRobinson <$> runMessage msg x
-    MandyThompson x -> MandyThompson <$> runMessage msg x
-    MarieLambeau x -> MarieLambeau <$> runMessage msg x
-    MarkHarrigan x -> MarkHarrigan <$> runMessage msg x
-    MinhThiPhan x -> MinhThiPhan <$> runMessage msg x
-    NathanielCho x -> NathanielCho <$> runMessage msg x
-    NormanWithers x -> NormanWithers <$> runMessage msg x
-    PatriceHathaway x -> PatriceHathaway <$> runMessage msg x
-    PrestonFairmont x -> PrestonFairmont <$> runMessage msg x
-    RexMurphy x -> RexMurphy <$> runMessage msg x
-    RitaYoung x -> RitaYoung <$> runMessage msg x
-    RolandBanks x -> RolandBanks <$> runMessage msg x
-    SefinaRousseau x -> SefinaRousseau <$> runMessage msg x
-    SilasMarsh x -> SilasMarsh <$> runMessage msg x
-    SisterMary x -> SisterMary <$> runMessage msg x
-    SkidsOToole x -> SkidsOToole <$> runMessage msg x
-    StellaClark x -> StellaClark <$> runMessage msg x
-    TommyMuldoon x -> TommyMuldoon <$> runMessage msg x
-    TonyMorgan x -> TonyMorgan <$> runMessage msg x
-    UrsulaDowns x -> UrsulaDowns <$> runMessage msg x
-    WendyAdams x -> WendyAdams <$> runMessage msg x
-    WilliamYorick x -> WilliamYorick <$> runMessage msg x
-    WinifredHabbamock x -> WinifredHabbamock <$> runMessage msg x
-    ZoeySamaras x -> ZoeySamaras <$> runMessage msg x
+    AgnesBaker' x -> AgnesBaker' <$> runMessage msg x
+    AkachiOnyele' x -> AkachiOnyele' <$> runMessage msg x
+    AmandaSharpe' x -> AmandaSharpe' <$> runMessage msg x
+    AshcanPete' x -> AshcanPete' <$> runMessage msg x
+    CalvinWright' x -> CalvinWright' <$> runMessage msg x
+    CarolynFern' x -> CarolynFern' <$> runMessage msg x
+    DaisyWalker' x -> DaisyWalker' <$> runMessage msg x
+    DexterDrake' x -> DexterDrake' <$> runMessage msg x
+    DianaStanley' x -> DianaStanley' <$> runMessage msg x
+    FatherMateo' x -> FatherMateo' <$> runMessage msg x
+    FinnEdwards' x -> FinnEdwards' <$> runMessage msg x
+    HarveyWalters' x -> HarveyWalters' <$> runMessage msg x
+    JacquelineFine' x -> JacquelineFine' <$> runMessage msg x
+    JennyBarnes' x -> JennyBarnes' <$> runMessage msg x
+    JimCulver' x -> JimCulver' <$> runMessage msg x
+    JoeDiamond' x -> JoeDiamond' <$> runMessage msg x
+    LeoAnderson' x -> LeoAnderson' <$> runMessage msg x
+    LolaHayes' x -> LolaHayes' <$> runMessage msg x
+    LukeRobinson' x -> LukeRobinson' <$> runMessage msg x
+    MandyThompson' x -> MandyThompson' <$> runMessage msg x
+    MarieLambeau' x -> MarieLambeau' <$> runMessage msg x
+    MarkHarrigan' x -> MarkHarrigan' <$> runMessage msg x
+    MinhThiPhan' x -> MinhThiPhan' <$> runMessage msg x
+    NathanielCho' x -> NathanielCho' <$> runMessage msg x
+    NormanWithers' x -> NormanWithers' <$> runMessage msg x
+    PatriceHathaway' x -> PatriceHathaway' <$> runMessage msg x
+    PrestonFairmont' x -> PrestonFairmont' <$> runMessage msg x
+    RexMurphy' x -> RexMurphy' <$> runMessage msg x
+    RitaYoung' x -> RitaYoung' <$> runMessage msg x
+    RolandBanks' x -> RolandBanks' <$> runMessage msg x
+    SefinaRousseau' x -> SefinaRousseau' <$> runMessage msg x
+    SilasMarsh' x -> SilasMarsh' <$> runMessage msg x
+    SisterMary' x -> SisterMary' <$> runMessage msg x
+    SkidsOToole' x -> SkidsOToole' <$> runMessage msg x
+    StellaClark' x -> StellaClark' <$> runMessage msg x
+    TommyMuldoon' x -> TommyMuldoon' <$> runMessage msg x
+    TonyMorgan' x -> TonyMorgan' <$> runMessage msg x
+    UrsulaDowns' x -> UrsulaDowns' <$> runMessage msg x
+    WendyAdams' x -> WendyAdams' <$> runMessage msg x
+    WilliamYorick' x -> WilliamYorick' <$> runMessage msg x
+    WinifredHabbamock' x -> WinifredHabbamock' <$> runMessage msg x
+    ZoeySamaras' x -> ZoeySamaras' <$> runMessage msg x
 
 lookupInvestigator :: InvestigatorId -> Investigator
 lookupInvestigator iid =

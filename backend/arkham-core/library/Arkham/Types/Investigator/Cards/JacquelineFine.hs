@@ -11,11 +11,11 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
-newtype JacquelineFineI = JacquelineFineI Attrs
+newtype JacquelineFine = JacquelineFine Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-jacquelineFine :: JacquelineFineI
-jacquelineFine = JacquelineFineI $ baseAttrs
+jacquelineFine :: JacquelineFine
+jacquelineFine = JacquelineFine $ baseAttrs
   "60401"
   "Jacqueline Fine"
   Stats
@@ -28,7 +28,7 @@ jacquelineFine = JacquelineFineI $ baseAttrs
     }
   [Clairvoyant]
 
-instance (InvestigatorRunner env) => RunMessage env JacquelineFineI where
-  runMessage msg i@(JacquelineFineI attrs@Attrs {..}) = case msg of
+instance (InvestigatorRunner env) => RunMessage env JacquelineFine where
+  runMessage msg i@(JacquelineFine attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
-    _ -> JacquelineFineI <$> runMessage msg attrs
+    _ -> JacquelineFine <$> runMessage msg attrs

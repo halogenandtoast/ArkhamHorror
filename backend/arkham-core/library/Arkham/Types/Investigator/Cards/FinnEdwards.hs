@@ -11,11 +11,11 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
-newtype FinnEdwardsI = FinnEdwardsI Attrs
+newtype FinnEdwards = FinnEdwards Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-finnEdwards :: FinnEdwardsI
-finnEdwards = FinnEdwardsI $ baseAttrs
+finnEdwards :: FinnEdwards
+finnEdwards = FinnEdwards $ baseAttrs
   "04003"
   "Finn Edwards"
   Stats
@@ -28,7 +28,7 @@ finnEdwards = FinnEdwardsI $ baseAttrs
     }
   [Criminal]
 
-instance (InvestigatorRunner env) => RunMessage env FinnEdwardsI where
-  runMessage msg i@(FinnEdwardsI attrs@Attrs {..}) = case msg of
+instance (InvestigatorRunner env) => RunMessage env FinnEdwards where
+  runMessage msg i@(FinnEdwards attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
-    _ -> FinnEdwardsI <$> runMessage msg attrs
+    _ -> FinnEdwards <$> runMessage msg attrs

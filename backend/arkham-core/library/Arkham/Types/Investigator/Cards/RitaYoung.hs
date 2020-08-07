@@ -11,11 +11,11 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
-newtype RitaYoungI = RitaYoungI Attrs
+newtype RitaYoung = RitaYoung Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-ritaYoung :: RitaYoungI
-ritaYoung = RitaYoungI $ baseAttrs
+ritaYoung :: RitaYoung
+ritaYoung = RitaYoung $ baseAttrs
   "05005"
   "Rita Young"
   Stats
@@ -28,7 +28,7 @@ ritaYoung = RitaYoungI $ baseAttrs
     }
   [Miskatonic]
 
-instance (InvestigatorRunner env) => RunMessage env RitaYoungI where
-  runMessage msg i@(RitaYoungI attrs@Attrs {..}) = case msg of
+instance (InvestigatorRunner env) => RunMessage env RitaYoung where
+  runMessage msg i@(RitaYoung attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
-    _ -> RitaYoungI <$> runMessage msg attrs
+    _ -> RitaYoung <$> runMessage msg attrs

@@ -11,11 +11,11 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
-newtype WinifredHabbamockI = WinifredHabbamockI Attrs
+newtype WinifredHabbamock = WinifredHabbamock Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-winifredHabbamock :: WinifredHabbamockI
-winifredHabbamock = WinifredHabbamockI $ baseAttrs
+winifredHabbamock :: WinifredHabbamock
+winifredHabbamock = WinifredHabbamock $ baseAttrs
   "60301"
   "Winifred Habbamock"
   Stats
@@ -28,7 +28,7 @@ winifredHabbamock = WinifredHabbamockI $ baseAttrs
     }
   [Criminal]
 
-instance (InvestigatorRunner env) => RunMessage env WinifredHabbamockI where
-  runMessage msg i@(WinifredHabbamockI attrs@Attrs {..}) = case msg of
+instance (InvestigatorRunner env) => RunMessage env WinifredHabbamock where
+  runMessage msg i@(WinifredHabbamock attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
-    _ -> WinifredHabbamockI <$> runMessage msg attrs
+    _ -> WinifredHabbamock <$> runMessage msg attrs

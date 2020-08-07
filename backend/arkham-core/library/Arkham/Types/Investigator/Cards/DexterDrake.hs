@@ -11,11 +11,11 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
-newtype DexterDrakeI = DexterDrakeI Attrs
+newtype DexterDrake = DexterDrake Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-dexterDrake :: DexterDrakeI
-dexterDrake = DexterDrakeI $ baseAttrs
+dexterDrake :: DexterDrake
+dexterDrake = DexterDrake $ baseAttrs
   "98016"
   "Dexter Drake"
   Stats
@@ -28,7 +28,7 @@ dexterDrake = DexterDrakeI $ baseAttrs
     }
   [Sorcerer, Veteran]
 
-instance (InvestigatorRunner env) => RunMessage env DexterDrakeI where
-  runMessage msg i@(DexterDrakeI attrs@Attrs {..}) = case msg of
+instance (InvestigatorRunner env) => RunMessage env DexterDrake where
+  runMessage msg i@(DexterDrake attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
-    _ -> DexterDrakeI <$> runMessage msg attrs
+    _ -> DexterDrake <$> runMessage msg attrs

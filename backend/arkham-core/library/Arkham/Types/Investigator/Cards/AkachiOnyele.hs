@@ -11,11 +11,11 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
-newtype AkachiOnyeleI = AkachiOnyeleI Attrs
+newtype AkachiOnyele = AkachiOnyele Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-akachiOnyele :: AkachiOnyeleI
-akachiOnyele = AkachiOnyeleI $ baseAttrs
+akachiOnyele :: AkachiOnyele
+akachiOnyele = AkachiOnyele $ baseAttrs
   "03004"
   "Akachi Onyele"
   Stats
@@ -28,7 +28,7 @@ akachiOnyele = AkachiOnyeleI $ baseAttrs
     }
   [Sorcerer]
 
-instance (InvestigatorRunner env) => RunMessage env AkachiOnyeleI where
-  runMessage msg i@(AkachiOnyeleI attrs@Attrs {..}) = case msg of
+instance (InvestigatorRunner env) => RunMessage env AkachiOnyele where
+  runMessage msg i@(AkachiOnyele attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
-    _ -> AkachiOnyeleI <$> runMessage msg attrs
+    _ -> AkachiOnyele <$> runMessage msg attrs

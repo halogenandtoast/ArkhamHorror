@@ -11,11 +11,11 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
-newtype RexMurphyI = RexMurphyI Attrs
+newtype RexMurphy = RexMurphy Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-rexMurphy :: RexMurphyI
-rexMurphy = RexMurphyI $ baseAttrs
+rexMurphy :: RexMurphy
+rexMurphy = RexMurphy $ baseAttrs
   "02002"
   "Rex Murphy"
   Stats
@@ -28,7 +28,7 @@ rexMurphy = RexMurphyI $ baseAttrs
     }
   [Reporter]
 
-instance (InvestigatorRunner env) => RunMessage env RexMurphyI where
-  runMessage msg i@(RexMurphyI attrs@Attrs {..}) = case msg of
+instance (InvestigatorRunner env) => RunMessage env RexMurphy where
+  runMessage msg i@(RexMurphy attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
-    _ -> RexMurphyI <$> runMessage msg attrs
+    _ -> RexMurphy <$> runMessage msg attrs

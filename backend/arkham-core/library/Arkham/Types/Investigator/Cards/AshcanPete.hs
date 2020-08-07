@@ -11,11 +11,11 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
-newtype AshcanPeteI = AshcanPeteI Attrs
+newtype AshcanPete = AshcanPete Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-ashcanPete :: AshcanPeteI
-ashcanPete = AshcanPeteI $ baseAttrs
+ashcanPete :: AshcanPete
+ashcanPete = AshcanPete $ baseAttrs
   "02005"
   "\"Ashcan\" Pete"
   Stats
@@ -28,7 +28,7 @@ ashcanPete = AshcanPeteI $ baseAttrs
     }
   [Drifter]
 
-instance (InvestigatorRunner env) => RunMessage env AshcanPeteI where
-  runMessage msg i@(AshcanPeteI attrs@Attrs {..}) = case msg of
+instance (InvestigatorRunner env) => RunMessage env AshcanPete where
+  runMessage msg i@(AshcanPete attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
-    _ -> AshcanPeteI <$> runMessage msg attrs
+    _ -> AshcanPete <$> runMessage msg attrs

@@ -246,7 +246,7 @@ sourceIsInvestigator source Attrs {..} = case source of
 
 matchTarget :: Attrs -> ActionTarget -> Action -> Bool
 matchTarget attrs (FirstOneOf as) action =
-  action `elem` as && action `notElem` investigatorActionsTaken attrs
+  action `elem` as && all (`notElem` investigatorActionsTaken attrs) as
 matchTarget _ (IsAction a) action = action == a
 
 actionCost :: Attrs -> Action -> Int
@@ -790,7 +790,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       availableAbilities <- getAvailableAbilities a
       let
         filteredAbilities = flip filter availableAbilities $ \case
-          (_, _, _, FreeAbility (SkillTestWindow st), _) | st == skillType -> True
+          (_, _, _, FreeAbility (SkillTestWindow st), _) | st == skillType ->
+            True
           _ -> False
         triggerMessage = StartSkillTest
         beginMessage = BeforeSkillTest iid skillType

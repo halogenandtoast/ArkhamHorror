@@ -506,10 +506,12 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         )
     EngageEnemy iid eid True | iid == investigatorId -> a <$ unshiftMessages
       [ TakeAction iid (actionCost a Action.Fight) (Just Action.Fight)
-      , EngageEnemy iid eid True
+      , EngageEnemy iid eid False
       ]
     EngageEnemy iid eid False | iid == investigatorId ->
       pure $ a & engagedEnemies %~ HashSet.insert eid
+    EngageEnemy iid eid False | iid /= investigatorId ->
+      pure $ a & engagedEnemies %~ HashSet.delete eid
     FightEnemy iid eid skillType tempModifiers tokenResponses True
       | iid == investigatorId -> a <$ unshiftMessages
         [ TakeAction iid (actionCost a Action.Fight) (Just Action.Fight)

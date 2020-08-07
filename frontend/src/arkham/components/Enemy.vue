@@ -15,6 +15,11 @@
       class="button evade-button"
       @click="$emit('choose', evadeAction)"
     >Evade</button>
+    <button
+      v-if="engageAction !== -1"
+      class="button engage-button"
+      @click="$emit('choose', engageAction)"
+    >Engage</button>
     <div class="pool">
       <PoolItem type="health" :amount="enemy.contents.damage" />
     </div>
@@ -83,6 +88,12 @@ export default class Enemy extends Vue {
       .choices
       .findIndex((c) => c.tag === MessageType.EVADE_ENEMY && c.contents[1] === this.id);
   }
+
+  get engageAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.ENGAGE_ENEMY && c.contents[1] === this.id);
+  }
 }
 </script>
 
@@ -120,6 +131,15 @@ export default class Enemy extends Vue {
   &:before {
     font-family: "Arkham";
     content: "\0053";
+    margin-right: 5px;
+  }
+}
+
+.engage-button {
+  background-color: #555;
+  &:before {
+    font-family: "Arkham";
+    content: "\0048";
     margin-right: 5px;
   }
 }

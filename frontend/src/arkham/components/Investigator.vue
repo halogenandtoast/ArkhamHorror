@@ -17,6 +17,8 @@
       <PoolItem
         type="clue"
         :amount="player.contents.clues"
+        :class="{ 'resource--can-spend': spendCluesAction !== -1 }"
+        @choose="$emit('choose', spendCluesAction)"
       />
       <PoolItem
         type="health"
@@ -69,6 +71,10 @@ export default class Investigator extends Vue {
       return this.runSkillTestAction;
     }
 
+    if (this.enemyEngageInvestigatorAction !== -1) {
+      return this.enemyEngageInvestigatorAction;
+    }
+
     return this.takeDamageAction;
   }
 
@@ -76,6 +82,13 @@ export default class Investigator extends Vue {
     return this
       .choices
       .findIndex((c) => c.tag === MessageType.BEGIN_SKILL_TEST && c.contents[0] === this.id);
+  }
+
+  get enemyEngageInvestigatorAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.ENEMY_ENGAGE_INVESTIGATOR
+        && c.contents[1] === this.id);
   }
 
   get searchTopOfDeckAction() {
@@ -92,6 +105,13 @@ export default class Investigator extends Vue {
     return this
       .choices
       .findIndex((c) => c.tag === MessageType.TAKE_RESOURCES && c.contents[0] === this.id);
+  }
+
+  get spendCluesAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.INVESTIGATOR_SPEND_CLUES
+        && c.contents[0] === this.id);
   }
 
   get endTurnAction() {

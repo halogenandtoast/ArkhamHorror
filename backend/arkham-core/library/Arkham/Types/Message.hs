@@ -253,6 +253,5 @@ data Question
   = ChooseOne [Message]
   | ChooseOneFromSource ChooseOneFromSource
   | ChooseOneAtATime [Message]
-  | ChooseTo Message
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)

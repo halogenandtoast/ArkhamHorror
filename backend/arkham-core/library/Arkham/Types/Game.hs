@@ -1042,11 +1042,6 @@ extract n xs =
 
 handleQuestion :: MonadIO m => GameJson -> Question -> m [Message]
 handleQuestion _ = \case
-  q@(ChooseTo msg) -> do
-    putStr $ pack $ show q
-    liftIO $ hFlush stdout
-    resp <- getLine
-    if "n" `isPrefixOf` toLower resp then pure [] else pure [msg]
   ChooseOne [] -> pure []
   ChooseOne msgs -> do
     i <- keepAsking @Int

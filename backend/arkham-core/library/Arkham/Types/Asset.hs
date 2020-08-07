@@ -280,7 +280,12 @@ physicalTraining uuid = PhysicalTraining $ PhysicalTrainingI $ (baseAttrs
       , FreeAbility (SkillTestWindow SkillWillpower)
       , NoLimit
       )
-    , (AssetSource uuid, Nothing, 2, FreeAbility (SkillTestWindow SkillCombat), NoLimit)
+    , ( AssetSource uuid
+      , Nothing
+      , 2
+      , FreeAbility (SkillTestWindow SkillCombat)
+      , NoLimit
+      )
     ]
   }
 
@@ -292,7 +297,8 @@ beatCop uuid = BeatCop $ BeatCopI $ (baseAttrs uuid "01018")
   { assetSlots = [AllySlot]
   , assetHealth = Just 2
   , assetSanity = Just 2
-  , assetAbilities = [(AssetSource uuid, Nothing, 1, FreeAbility AnyWindow, NoLimit)]
+  , assetAbilities =
+    [(AssetSource uuid, Nothing, 1, FreeAbility AnyWindow, NoLimit)]
   }
 
 newtype MacheteI = MacheteI Attrs
@@ -302,7 +308,13 @@ machete :: AssetId -> Asset
 machete uuid = Machete $ MacheteI $ (baseAttrs uuid "01020")
   { assetSlots = [HandSlot]
   , assetAbilities =
-    [(AssetSource uuid, Nothing, 1, ActionAbility 1 (Just Action.Fight), NoLimit)]
+    [ ( AssetSource uuid
+      , Nothing
+      , 1
+      , ActionAbility 1 (Just Action.Fight)
+      , NoLimit
+      )
+    ]
   }
 
 newtype GuardDogI = GuardDogI Attrs
@@ -330,7 +342,8 @@ newtype OldBookOfLoreI = OldBookOfLoreI Attrs
 oldBookOfLore :: AssetId -> Asset
 oldBookOfLore uuid = OldBookOfLore $ OldBookOfLoreI $ (baseAttrs uuid "01031")
   { assetSlots = [HandSlot]
-  , assetAbilities = [(AssetSource uuid, Nothing, 1, ActionAbility 1 Nothing, NoLimit)]
+  , assetAbilities =
+    [(AssetSource uuid, Nothing, 1, ActionAbility 1 Nothing, NoLimit)]
   }
 
 newtype ResearchLibrarianI = ResearchLibrarianI Attrs
@@ -361,7 +374,8 @@ newtype MedicalTextsI = MedicalTextsI Attrs
 medicalTexts :: AssetId -> Asset
 medicalTexts uuid = MedicalTexts $ MedicalTextsI $ (baseAttrs uuid "01035")
   { assetSlots = [HandSlot]
-  , assetAbilities = [(AssetSource uuid, Nothing, 1, ActionAbility 1 Nothing, NoLimit)]
+  , assetAbilities =
+    [(AssetSource uuid, Nothing, 1, ActionAbility 1 Nothing, NoLimit)]
   }
 
 newtype HolyRosaryI = HolyRosaryI Attrs
@@ -401,11 +415,10 @@ newtype LeatherCoatI = LeatherCoatI Attrs
   deriving anyclass (ToJSON, FromJSON)
 
 leatherCoat :: AssetId -> Asset
-leatherCoat uuid =
-  LeatherCoat $ LeatherCoatI $ (baseAttrs uuid "01072")
-    { assetSlots = [BodySlot]
-    , assetHealth = Just 2
-    }
+leatherCoat uuid = LeatherCoat $ LeatherCoatI $ (baseAttrs uuid "01072")
+  { assetSlots = [BodySlot]
+  , assetHealth = Just 2
+  }
 
 newtype KnifeI = KnifeI Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -414,8 +427,18 @@ knife :: AssetId -> Asset
 knife uuid = Knife $ KnifeI $ (baseAttrs uuid "01086")
   { assetSlots = [HandSlot]
   , assetAbilities =
-    [ (AssetSource uuid, Nothing, 1, ActionAbility 1 (Just Action.Fight), NoLimit)
-    , (AssetSource uuid, Nothing, 2, ActionAbility 1 (Just Action.Fight), NoLimit)
+    [ ( AssetSource uuid
+      , Nothing
+      , 1
+      , ActionAbility 1 (Just Action.Fight)
+      , NoLimit
+      )
+    , ( AssetSource uuid
+      , Nothing
+      , 2
+      , ActionAbility 1 (Just Action.Fight)
+      , NoLimit
+      )
     ]
   }
 
@@ -636,8 +659,10 @@ instance (AssetRunner env) => RunMessage env GuardDogI where
       -- for any additional effects, such as triggering Roland's ability.
       result <- runMessage msg attrs
       unshiftMessage
-        (Ask $ ChooseTo
-          (EnemyDamage eid (getInvestigator attrs) (AssetSource aid) 1)
+        (Ask $ ChooseOne
+          [ EnemyDamage eid (getInvestigator attrs) (AssetSource aid) 1
+          , Continue "Do not use Guard Dog's ability"
+          ]
         )
       pure $ GuardDogI result
     _ -> GuardDogI <$> runMessage msg attrs
@@ -836,7 +861,13 @@ instance (AssetRunner env) => RunMessage env ScryingI where
           attrs
             & (uses .~ Uses Resource.Charge 3)
             & (abilities
-              .~ [(AssetSource aid, Nothing, 1, ActionAbility 1 Nothing, NoLimit)]
+              .~ [ ( AssetSource aid
+                   , Nothing
+                   , 1
+                   , ActionAbility 1 Nothing
+                   , NoLimit
+                   )
+                 ]
               )
       ScryingI <$> runMessage msg attrs'
     UseCardAbility iid ((AssetSource aid), _, 1, _, _) | aid == assetId ->
@@ -929,7 +960,12 @@ instance (AssetRunner env) => RunMessage env LitaChantlerI where
               [ Run
                 [ UseCardAbility
                   iid
-                  (AssetSource assetId, Nothing, 1, ReactionAbility Fast.Now, NoLimit)
+                  ( AssetSource assetId
+                  , Nothing
+                  , 1
+                  , ReactionAbility Fast.Now
+                  , NoLimit
+                  )
                 , AddModifier
                   (EnemyTarget eid)
                   (DamageTaken 1 (AssetSource assetId))
@@ -971,8 +1007,9 @@ instance (AssetRunner env) => RunMessage env Attrs where
       pure $ a & abilities %~ (<> [ability])
     RemoveAbilitiesFrom source -> do
       let
-        abilities' =
-          filter (\(source', _, _, _, _) -> source /= source') assetAbilities
+        abilities' = filter
+          (\(_, source', _, _, _) -> Just source /= source')
+          assetAbilities
       pure $ a & abilities .~ abilities'
     AssetDamage aid _ health sanity | aid == assetId -> do
       let a' = a & healthDamage +~ health & sanityDamage +~ sanity

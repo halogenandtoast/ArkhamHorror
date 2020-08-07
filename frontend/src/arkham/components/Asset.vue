@@ -1,11 +1,17 @@
 <template>
-  <div>
+  <div class="asset">
     <img
       :src="image"
       :class="{ 'asset--can-interact': cardAction !== -1, exhausted}"
       class="card"
       @click="$emit('choose', cardAction)"
     />
+    <button
+      v-for="ability in abilities"
+      :key="ability"
+      class="button ability-button"
+      @click="$emit('choose', ability)"
+      >{{abilityLabel(ability)}}</button>
     <div v-if="hasPool" class="pool">
       <PoolItem
         v-if="asset.contents.uses && asset.contents.uses.amount > 0"
@@ -85,15 +91,27 @@ export default class Asset extends Vue {
         return c.contents === this.id;
       case MessageType.ASSET_DAMAGE:
         return c.contents[0] === this.id;
-      case MessageType.ACTIVATE_ABILITY:
-        return c.contents[1][0].contents === this.id;
-      case MessageType.USE_CARD_ABILITY:
-        return c.contents[1][0].contents === this.id;
       case MessageType.RUN:
         return c.contents.some((c1: Message) => this.canInteract(c1));
       default:
         return false;
     }
+  }
+
+  abilityLabel(idx: number) {
+    return this.choices[idx].contents[1][3].contents[1];
+  }
+
+  get abilities() {
+    return this
+      .choices
+      .reduce<number[]>((acc, v, i) => {
+        if (v.tag === 'ActivateCardAbilityAction' && v.contents[1][0].tag === 'AssetSource' && v.contents[1][0].contents === this.id) {
+          return [i, ...acc];
+        }
+
+        return acc;
+      }, []);
   }
 }
 </script>
@@ -102,6 +120,11 @@ export default class Asset extends Vue {
 .card {
   width: 130px;
   border-radius: 5px;
+}
+
+.asset {
+  display: flex;
+  flex-direction: column;
 }
 
 .exhausted {
@@ -117,5 +140,24 @@ export default class Asset extends Vue {
 .pool {
   display: flex;
   flex-direction: row;
+  height: 2em;
 }
+
+.button{
+  margin-top: 2px;
+  border: 0;
+  color: #fff;
+  border-radius: 4px;
+  border: 1px solid #ff00ff;
+}
+
+.ability-button {
+  background-color: #555;
+  &:before {
+    font-family: "arkham";
+    content: "\0049";
+    margin-right: 5px;
+  }
+}
+
 </style>

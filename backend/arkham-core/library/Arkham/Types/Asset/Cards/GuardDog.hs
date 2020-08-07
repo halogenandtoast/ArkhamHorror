@@ -1,0 +1,38 @@
+{-# LANGUAGE UndecidableInstances #-}
+module Arkham.Types.Asset.Cards.GuardDog where
+
+import Arkham.Json
+import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
+import Arkham.Types.AssetId
+import Arkham.Types.Classes
+import Arkham.Types.Message
+import Arkham.Types.Slot
+import Arkham.Types.Source
+import ClassyPrelude
+
+newtype GuardDogI = GuardDogI Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+guardDog :: AssetId -> GuardDogI
+guardDog uuid = GuardDogI $ (baseAttrs uuid "01021")
+  { assetSlots = [AllySlot]
+  , assetHealth = Just 3
+  , assetSanity = Just 1
+  }
+
+instance (AssetRunner env) => RunMessage env GuardDogI where
+  runMessage msg (GuardDogI attrs@Attrs {..}) = case msg of
+    AssetDamage aid eid _ _ | aid == assetId -> do
+      -- we must unshift the asset destroyed first before unshifting the question
+      -- this is necessary to keep the asset as a valid investigator source of damage
+      -- for any additional effects, such as triggering Roland's ability.
+      result <- runMessage msg attrs
+      unshiftMessage
+        (Ask $ ChooseOne
+          [ EnemyDamage eid (getInvestigator attrs) (AssetSource aid) 1
+          , Continue "Do not use Guard Dog's ability"
+          ]
+        )
+      pure $ GuardDogI result
+    _ -> GuardDogI <$> runMessage msg attrs

@@ -45,7 +45,12 @@
     </div>
 
     <PlayerTabs>
-      <Tab v-for="(player, index) in players" :key="index" :title="player.contents.name">
+      <Tab
+        v-for="(player, index) in players"
+        :key="index"
+        :title="player.contents.name"
+        :activePlayer="isActivePlayer(player)"
+      >
         <Player
           :game="game"
           :player="player"
@@ -60,6 +65,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Game } from '@/arkham/types/Game';
+import { Investigator } from '@/arkham/types/Investigator';
 import Player from '@/arkham/components/Player.vue';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
@@ -103,14 +109,8 @@ export default class Scenario extends Vue {
     return null;
   }
 
-  commitCard(cardIndex: number) {
-    const index = this.commitedCards.indexOf(cardIndex);
-
-    if (index === -1) {
-      this.commitedCards.push(cardIndex);
-    } else {
-      this.commitedCards.splice(index, 1);
-    }
+  isActivePlayer(player: Investigator) {
+    return player.contents.id === this.game.currentData.activeInvestigatorId;
   }
 
   update(game: Game) {

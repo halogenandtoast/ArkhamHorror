@@ -559,7 +559,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         , TryEvadeEnemy iid eid skillType onSuccess onFailure tokenResponses
         , AfterEvadeEnemy iid eid
         ]
-    MoveAction iid lid True -> a <$ unshiftMessages
+    MoveAction iid lid True | iid == investigatorId -> a <$ unshiftMessages
       [ TakeAction iid (actionCost a Action.Move) (Just Action.Move)
       , CheckAttackOfOpportunity iid False
       , MoveAction iid lid False
@@ -575,14 +575,15 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           : map (\k -> AssetDamage k eid health sanity) allDamageableAssets
           )
         )
-    Investigate iid lid skillType tokenResponses True -> a <$ unshiftMessages
-      [ TakeAction
-        iid
-        (actionCost a Action.Investigate)
-        (Just Action.Investigate)
-      , CheckAttackOfOpportunity iid False
-      , Investigate iid lid skillType tokenResponses False
-      ]
+    Investigate iid lid skillType tokenResponses True | iid == investigatorId ->
+      a <$ unshiftMessages
+        [ TakeAction
+          iid
+          (actionCost a Action.Investigate)
+          (Just Action.Investigate)
+        , CheckAttackOfOpportunity iid False
+        , Investigate iid lid skillType tokenResponses False
+        ]
     InvestigatorDiscoverClues iid lid n | iid == investigatorId ->
       a <$ unshiftMessage
         (DiscoverCluesAtLocation iid lid (cluesToDiscover a n))
@@ -743,8 +744,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
     AllDrawEncounterCard ->
       a <$ unshiftMessage (InvestigatorDrawEncounterCard investigatorId)
-    RevelationSkillTest iid source skillType difficulty onSuccess onFailure ->
-      a <$ unshiftMessage
+    RevelationSkillTest iid source skillType difficulty onSuccess onFailure
+      | iid == investigatorId -> a <$ unshiftMessage
         (BeginSkillTest
           iid
           source
@@ -826,8 +827,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       else
         unshiftMessage triggerMessage
       pure a
-    InvestigatorStartSkillTest iid maction skillType tempModifiers ->
-      a <$ unshiftMessage
+    InvestigatorStartSkillTest iid maction skillType tempModifiers
+      | iid == investigatorId -> a <$ unshiftMessage
         (TriggerSkillTest
           iid
           skillType
@@ -893,7 +894,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           when (pcCardType == PlayerEnemyType)
             $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
       pure $ a & deck .~ Deck deck' & hand %~ (PlayerCard card :)
-    SearchDeckForTraits iid traits -> runMessage
+    SearchDeckForTraits iid traits | iid == investigatorId -> runMessage
       (SearchTopOfDeck
         iid
         (length $ unDeck investigatorDeck)
@@ -901,7 +902,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         ShuffleBackIn
       )
       a
-    SearchTopOfDeck iid n traits strategy -> do
+    SearchTopOfDeck iid n traits strategy | iid == investigatorId -> do
       let
         (cards, deck') = splitAt n $ unDeck investigatorDeck
         traits' = HashSet.fromList traits

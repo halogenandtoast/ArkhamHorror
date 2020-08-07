@@ -44,13 +44,15 @@
       />
     </div>
 
-    <Player
-      v-for="(player, index) in players"
-      :key="index"
-      :game="game"
-      :player="player"
-      @choose="$emit('choose', $event)"
-    />
+    <PlayerTabs>
+      <Tab v-for="(player, index) in players" :key="index" :title="player.contents.name">
+        <Player
+          :game="game"
+          :player="player"
+          @choose="$emit('choose', $event)"
+        />
+      </Tab>
+    </PlayerTabs>
     <ChoiceModal :game="game" @choose="$emit('choose', $event)" />
   </div>
 </template>
@@ -64,6 +66,8 @@ import Agenda from '@/arkham/components/Agenda.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
+import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
+import Tab from '@/arkham/components/Tab.vue';
 import Location from '@/arkham/components/Location.vue';
 
 @Component({
@@ -75,6 +79,8 @@ import Location from '@/arkham/components/Location.vue';
     StatusBar,
     ChaosBag,
     ChoiceModal,
+    PlayerTabs,
+    Tab,
   },
 })
 export default class Scenario extends Vue {
@@ -172,7 +178,7 @@ export default class Scenario extends Vue {
 .location-cards {
   display: flex;
   justify-content: center;
-  overflow: scroll;
+  overflow: auto;
 }
 
 .portrait {

@@ -15,15 +15,15 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import ClassyPrelude
 
-newtype MagnifyingGlassI = MagnifyingGlassI Attrs
+newtype MagnifyingGlass = MagnifyingGlass Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-magnifyingGlass :: AssetId -> MagnifyingGlassI
+magnifyingGlass :: AssetId -> MagnifyingGlass
 magnifyingGlass uuid =
-  MagnifyingGlassI $ (baseAttrs uuid "01030") { assetSlots = [HandSlot] }
+  MagnifyingGlass $ (baseAttrs uuid "01030") { assetSlots = [HandSlot] }
 
-instance (AssetRunner env) => RunMessage env MagnifyingGlassI where
-  runMessage msg (MagnifyingGlassI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env MagnifyingGlass where
+  runMessage msg (MagnifyingGlass attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage
         (AddModifier
@@ -35,5 +35,5 @@ instance (AssetRunner env) => RunMessage env MagnifyingGlassI where
             (AssetSource aid)
           )
         )
-      MagnifyingGlassI <$> runMessage msg attrs
-    _ -> MagnifyingGlassI <$> runMessage msg attrs
+      MagnifyingGlass <$> runMessage msg attrs
+    _ -> MagnifyingGlass <$> runMessage msg attrs

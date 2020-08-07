@@ -17,11 +17,11 @@ import Arkham.Types.Target
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
 
-newtype BeatCopI = BeatCopI Attrs
+newtype BeatCop = BeatCop Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-beatCop :: AssetId -> BeatCopI
-beatCop uuid = BeatCopI $ (baseAttrs uuid "01018")
+beatCop :: AssetId -> BeatCop
+beatCop uuid = BeatCop $ (baseAttrs uuid "01018")
   { assetSlots = [AllySlot]
   , assetHealth = Just 2
   , assetSanity = Just 2
@@ -29,8 +29,8 @@ beatCop uuid = BeatCopI $ (baseAttrs uuid "01018")
     [(AssetSource uuid, Nothing, 1, FreeAbility AnyWindow, NoLimit)]
   }
 
-instance (AssetRunner env) => RunMessage env BeatCopI where
-  runMessage msg a@(BeatCopI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env BeatCop where
+  runMessage msg a@(BeatCop attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage
         (AddModifier
@@ -49,4 +49,4 @@ instance (AssetRunner env) => RunMessage env BeatCopI where
           ]
         ]
       pure a
-    _ -> BeatCopI <$> runMessage msg attrs
+    _ -> BeatCop <$> runMessage msg attrs

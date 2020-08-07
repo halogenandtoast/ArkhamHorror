@@ -16,11 +16,11 @@ import Arkham.Types.Slot
 import Arkham.Types.Source
 import ClassyPrelude
 
-newtype MacheteI = MacheteI Attrs
+newtype Machete = Machete Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-machete :: AssetId -> MacheteI
-machete uuid = MacheteI $ (baseAttrs uuid "01020")
+machete :: AssetId -> Machete
+machete uuid = Machete $ (baseAttrs uuid "01020")
   { assetSlots = [HandSlot]
   , assetAbilities =
     [ ( AssetSource uuid
@@ -32,8 +32,8 @@ machete uuid = MacheteI $ (baseAttrs uuid "01020")
     ]
   }
 
-instance (AssetRunner env) => RunMessage env MacheteI where
-  runMessage msg a@(MacheteI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env Machete where
+  runMessage msg a@(Machete attrs@Attrs {..}) = case msg of
     UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
       engagedEnemiesCount <- unEnemyCount <$> asks (getCount iid)
       let
@@ -51,4 +51,4 @@ instance (AssetRunner env) => RunMessage env MacheteI where
           False
         )
       pure a
-    _ -> MacheteI <$> runMessage msg attrs
+    _ -> Machete <$> runMessage msg attrs

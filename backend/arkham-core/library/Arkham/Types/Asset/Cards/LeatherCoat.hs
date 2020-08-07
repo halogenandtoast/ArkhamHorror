@@ -9,13 +9,13 @@ import Arkham.Types.Classes
 import Arkham.Types.Slot
 import ClassyPrelude
 
-newtype LeatherCoatI = LeatherCoatI Attrs
+newtype LeatherCoat = LeatherCoat Attrs
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-leatherCoat :: AssetId -> LeatherCoatI
-leatherCoat uuid = LeatherCoatI
+leatherCoat :: AssetId -> LeatherCoat
+leatherCoat uuid = LeatherCoat
   $ (baseAttrs uuid "01072") { assetSlots = [BodySlot], assetHealth = Just 2 }
 
-instance (AssetRunner env) => RunMessage env LeatherCoatI where
-  runMessage msg (LeatherCoatI attrs) = LeatherCoatI <$> runMessage msg attrs
+instance (AssetRunner env) => RunMessage env LeatherCoat where
+  runMessage msg (LeatherCoat attrs) = LeatherCoat <$> runMessage msg attrs

@@ -18,18 +18,18 @@ import Arkham.Types.Target
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
 
-newtype LitaChantlerI = LitaChantlerI Attrs
+newtype LitaChantler = LitaChantler Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-litaChantler :: AssetId -> LitaChantlerI
-litaChantler uuid = LitaChantlerI $ (baseAttrs uuid "01117")
+litaChantler :: AssetId -> LitaChantler
+litaChantler uuid = LitaChantler $ (baseAttrs uuid "01117")
   { assetSlots = [AllySlot]
   , assetHealth = Just 3
   , assetSanity = Just 3
   }
 
-instance (AssetRunner env) => RunMessage env LitaChantlerI where
-  runMessage msg a@(LitaChantlerI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env LitaChantler where
+  runMessage msg a@(LitaChantler attrs@Attrs {..}) = case msg of
     SuccessfulAttackEnemy iid eid -> case assetInvestigator of
       Just ownerId -> do
         locationId <- asks (getId @LocationId ownerId)
@@ -78,5 +78,5 @@ instance (AssetRunner env) => RunMessage env LitaChantlerI where
         )
         allInvestigatorIds
       pure a
-    _ -> LitaChantlerI <$> runMessage msg attrs
+    _ -> LitaChantler <$> runMessage msg attrs
 

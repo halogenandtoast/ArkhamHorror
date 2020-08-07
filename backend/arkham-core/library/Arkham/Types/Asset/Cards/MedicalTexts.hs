@@ -16,18 +16,18 @@ import Arkham.Types.Target
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
 
-newtype MedicalTextsI = MedicalTextsI Attrs
+newtype MedicalTexts = MedicalTexts Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-medicalTexts :: AssetId -> MedicalTextsI
-medicalTexts uuid = MedicalTextsI $ (baseAttrs uuid "01035")
+medicalTexts :: AssetId -> MedicalTexts
+medicalTexts uuid = MedicalTexts $ (baseAttrs uuid "01035")
   { assetSlots = [HandSlot]
   , assetAbilities =
     [(AssetSource uuid, Nothing, 1, ActionAbility 1 Nothing, NoLimit)]
   }
 
-instance (AssetRunner env) => RunMessage env MedicalTextsI where
-  runMessage msg (MedicalTextsI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env MedicalTexts where
+  runMessage msg (MedicalTexts attrs@Attrs {..}) = case msg of
     UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
       locationId <- asks (getId @LocationId (getInvestigator attrs))
       locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
@@ -46,5 +46,5 @@ instance (AssetRunner env) => RunMessage env MedicalTextsI where
           | iid' <- locationInvestigatorIds
           ]
         )
-      MedicalTextsI <$> runMessage msg attrs
-    _ -> MedicalTextsI <$> runMessage msg attrs
+      MedicalTexts <$> runMessage msg attrs
+    _ -> MedicalTexts <$> runMessage msg attrs

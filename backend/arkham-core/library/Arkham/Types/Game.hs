@@ -660,13 +660,16 @@ runGameMessage msg g = case msg of
         $ find ((== cardId) . getCardId) (handOf investigator)
       lid = locationFor iid g
     (eid, enemy) <- createEnemy cardCode
-    case card of
-      PlayerCard MkPlayerCard {..} -> case pcBearer of
-        Just bid -> unshiftMessage (EnemySetBearer eid bid)
-        Nothing -> error "The bearer was not set for a player enemy"
-      _ -> error "this should definitely be a player card"
+    let
+      bearerMessage = case card of
+        PlayerCard MkPlayerCard {..} -> case pcBearer of
+          Just bid -> EnemySetBearer eid bid
+          Nothing -> error "The bearer was not set for a player enemy"
+        _ -> error "this should definitely be a player card"
     unshiftMessages
-      [RemoveCardFromHand iid cardCode, InvestigatorDrawEnemy iid lid eid]
+      (bearerMessage
+      : [RemoveCardFromHand iid cardCode, InvestigatorDrawEnemy iid lid eid]
+      )
     pure $ g & enemies %~ HashMap.insert eid enemy
   RunSkill iid cardCode result -> do
     void $ allSkills cardCode iid result

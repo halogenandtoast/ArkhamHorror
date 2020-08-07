@@ -206,7 +206,7 @@ fortyFiveAutomatic cardId = (asset cardId "01016" ".45 Automatic" 4 Guardian)
 
 physicalTraining :: CardId -> PlayerCard
 physicalTraining cardId = (asset cardId "01017" "Physical Training" 2 Guardian)
-  { pcSkills = [SkillIntellect, SkillCombat]
+  { pcSkills = [SkillWillpower, SkillCombat]
   , pcTraits = [Talent]
   }
 
@@ -351,12 +351,10 @@ fearless cardId = (skill cardId "01067" "Fearless" [SkillWillpower] Mystic)
 
 
 leatherCoat :: CardId -> PlayerCard
-leatherCoat cardId = 
-  (asset cardId "01072" "Leather Coat" 0 Survivor)
-    { 
-    pcSkills = [SkillCombat]
-    , pcTraits = [Item, Armor]
-    }
+leatherCoat cardId = (asset cardId "01072" "Leather Coat" 0 Survivor)
+  { pcSkills = [SkillCombat]
+  , pcTraits = [Item, Armor]
+  }
 
 knife :: CardId -> PlayerCard
 knife cardId = (asset cardId "01086" "Knife" 1 Neutral)

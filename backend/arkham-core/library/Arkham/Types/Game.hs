@@ -1018,16 +1018,19 @@ runMessages g = if g ^. gameOver
         EnemyPhase -> (Nothing, ) <$> toExternalGame g Nothing
         UpkeepPhase -> (Nothing, ) <$> toExternalGame g Nothing
         InvestigationPhase -> if hasEndedTurn (activeInvestigator g)
-          then if all hasEndedTurn (HashMap.elems $ g ^. investigators)
-            then pushMessage EndInvestigation >> runMessages g
-            else
-              runMessages
-              $ g
-              & activeInvestigatorId
-              .~ (fst . fromJustNote "invalid state" $ find
-                   (not . hasEndedTurn . snd)
-                   (HashMap.toList $ g ^. investigators)
-                 )
+          then
+            if all
+                (\i -> hasEndedTurn i || hasResigned i || isDefeated i)
+                (HashMap.elems $ g ^. investigators)
+              then pushMessage EndInvestigation >> runMessages g
+              else
+                runMessages
+                $ g
+                & activeInvestigatorId
+                .~ (fst . fromJustNote "invalid state" $ find
+                     (not . hasEndedTurn . snd)
+                     (HashMap.toList $ g ^. investigators)
+                   )
           else
             pushMessages
                 [ PrePlayerWindow

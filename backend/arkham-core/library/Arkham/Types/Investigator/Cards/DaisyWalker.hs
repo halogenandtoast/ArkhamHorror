@@ -47,7 +47,7 @@ becomesFailure _ _ = False
 instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
   runMessage msg i@(DaisyWalkerI (attrs@Attrs {..} `With` metadata@DaisyWalkerMetadata {..}))
     = case msg of
-      ActivateCardAbilityAction iid (AssetSource aid, abilityIndex, abilityType, abilityLimit)
+      ActivateCardAbilityAction iid (AssetSource aid, msource, abilityIndex, abilityType, abilityLimit)
         | iid == investigatorId
         -> do
           traits <- asks (getSet aid)
@@ -65,6 +65,7 @@ instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
                         (ActivateCardAbilityAction
                           iid
                           ( AssetSource aid
+                          , msource
                           , abilityIndex
                           , ActionAbility (n - 1) actionType
                           , abilityLimit

@@ -227,6 +227,7 @@ parlor =
     { locationBlocked = True
     , locationAbilities =
       [ ( LocationSource "01115"
+        , Nothing
         , 1
         , ActionAbility 1 (Just Action.Resign)
         , NoLimit
@@ -285,16 +286,17 @@ instance (LocationRunner env) => RunMessage env ParlorI where
           [ RemoveAbilitiesFrom (LocationSource locationId)
           , AddAbility
             (AssetSource aid)
-            ( LocationSource locationId
+            ( AssetSource aid
+            , Just (LocationSource locationId)
             , 2
             , ActionAbility 1 (Just Action.Parley)
             , NoLimit
             )
           ]
-    UseCardAbility iid ((LocationSource lid), 1, _, _)
+    UseCardAbility iid (LocationSource lid, _, 1, _, _)
       | lid == locationId && locationRevealed -> l
       <$ unshiftMessage (Resign iid)
-    UseCardAbility iid ((LocationSource lid), 2, _, _)
+    UseCardAbility iid (_, Just (LocationSource lid), 2, _, _)
       | lid == locationId && locationRevealed -> do
         aid <- unStoryAssetId <$> asks (getId (CardCode "01117"))
         l <$ unshiftMessage

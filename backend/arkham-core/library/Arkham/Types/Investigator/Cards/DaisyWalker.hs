@@ -103,7 +103,7 @@ instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
           else do
             tomeCount <- unAssetCount <$> asks (getCount (iid, [Tome]))
             runTest skillValue -- Because this unshifts we need to call this before the on success is added
-            i <$ unshiftMessage
+            when (tomeCount > 0) $ unshiftMessage
               (AddOnSuccess
                 (Ask
                 $ ChooseOne
@@ -112,6 +112,7 @@ instance (InvestigatorRunner env) => RunMessage env DaisyWalkerI where
                     ]
                 )
               )
+            pure i
       BeginRound ->
         DaisyWalkerI . (`with` DaisyWalkerMetadata 1) <$> runMessage msg attrs
       _ -> DaisyWalkerI . (`with` metadata) <$> runMessage msg attrs

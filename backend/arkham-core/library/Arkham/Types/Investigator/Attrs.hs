@@ -497,13 +497,20 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         & (discard %~ (lookupPlayerCard cardCode (CardId $ unAssetId aid) :))
         & (slots %~ removeFromSlots aid)
     ChooseFightEnemy iid skillType tempModifiers tokenResponses isAction
-      | iid == investigatorId -> a <$ unshiftMessage
-        (Ask $ ChooseOne $ map
-          (\eid ->
-            FightEnemy iid eid skillType tempModifiers tokenResponses isAction
+      | iid == investigatorId -> do
+        enemyIds <- asks (getSet investigatorLocation)
+        aloofEnemyIds <- HashSet.map unAloofEnemyId
+          <$> asks (getSet investigatorLocation)
+        let
+          fightableEnemyIds =
+            investigatorEngagedEnemies
+              `union` (enemyIds `difference` aloofEnemyIds)
+        a <$ unshiftMessage
+          (Ask $ ChooseOne
+            [ FightEnemy iid eid skillType tempModifiers tokenResponses isAction
+            | eid <- HashSet.toList fightableEnemyIds
+            ]
           )
-          (HashSet.toList investigatorEngagedEnemies)
-        )
     EngageEnemy iid eid True | iid == investigatorId -> a <$ unshiftMessages
       [ TakeAction iid (actionCost a Action.Fight) (Just Action.Fight)
       , EngageEnemy iid eid False
@@ -929,7 +936,12 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
       allAbilities <- getAvailableAbilities a
       enemyIds <- asks (getSet investigatorLocation)
+      aloofEnemyIds <- HashSet.map unAloofEnemyId
+        <$> asks (getSet investigatorLocation)
       let
+        fightableEnemyIds =
+          investigatorEngagedEnemies
+            `union` (enemyIds `difference` aloofEnemyIds)
         unengagedEnemyIds = enemyIds `difference` investigatorEngagedEnemies
         accessibleLocations =
           investigatorConnectedLocations `difference` blockedLocationIds
@@ -962,7 +974,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
              ]
           <> [ FightEnemy iid eid SkillCombat [] mempty True
              | Action.Fight `elem` canDos
-             , eid <- HashSet.toList investigatorEngagedEnemies
+             , eid <- HashSet.toList fightableEnemyIds
              ]
           <> [ EngageEnemy iid eid True
              | Action.Engage `elem` canDos

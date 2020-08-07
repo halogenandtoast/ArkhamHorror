@@ -238,7 +238,7 @@ evidence cardId = (event cardId "01022" "Evidence!" 1 Guardian)
 
 dodge :: CardId -> PlayerCard
 dodge cardId = (event cardId "01023" "Dodge" 1 Guardian)
-  { pcSkills = [SkillIntellect, SkillAgility]
+  { pcSkills = [SkillWillpower, SkillAgility]
   , pcTraits = [Tactic]
   , pcFast = True
   , pcFastWindows = HashSet.fromList
@@ -247,7 +247,7 @@ dodge cardId = (event cardId "01023" "Dodge" 1 Guardian)
 
 dynamiteBlast :: CardId -> PlayerCard
 dynamiteBlast cardId = (event cardId "01024" "Dynamite Blast" 5 Guardian)
-  { pcSkills = [SkillIntellect]
+  { pcSkills = [SkillWillpower]
   , pcTraits = [Tactic]
   }
 
@@ -311,16 +311,16 @@ deduction cardId = (skill cardId "01039" "Deduction" [SkillIntellect] Seeker)
   { pcTraits = [Practiced]
   }
 
-shrivelling :: CardId -> PlayerCard
-shrivelling cardId = (asset cardId "01060" "Shrivelling" 3 Mystic)
-  { pcSkills = [SkillIntellect]
-  , pcTraits = [Spell]
-  }
-
 holyRosary :: CardId -> PlayerCard
 holyRosary cardId = (asset cardId "01059" "Holy Rosary" 2 Mystic)
   { pcSkills = [SkillWillpower]
   , pcTraits = [Item, Charm]
+  }
+
+shrivelling :: CardId -> PlayerCard
+shrivelling cardId = (asset cardId "01060" "Shrivelling" 3 Mystic)
+  { pcSkills = [SkillCombat]
+  , pcTraits = [Spell]
   }
 
 scrying :: CardId -> PlayerCard
@@ -348,7 +348,6 @@ fearless :: CardId -> PlayerCard
 fearless cardId = (skill cardId "01067" "Fearless" [SkillWillpower] Mystic)
   { pcTraits = [Innate]
   }
-
 
 leatherCoat :: CardId -> PlayerCard
 leatherCoat cardId = (asset cardId "01072" "Leather Coat" 0 Survivor)

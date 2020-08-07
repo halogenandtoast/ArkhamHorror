@@ -85,15 +85,19 @@ export default class Investigator extends Vue {
   }
 
   get takeDamageAction() {
-    return this.choices.findIndex((choice) => choice.tag === MessageType.INVESTIGATOR_DAMAGE);
+    return this.choices.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DAMAGE);
   }
 
   get takeResourceAction() {
-    return this.choices.findIndex((choice) => choice.tag === MessageType.TAKE_RESOURCES);
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.TAKE_RESOURCES && c.contents[0] === this.id);
   }
 
   get endTurnAction() {
-    return this.choices.findIndex((choice) => choice.tag === MessageType.END_TURN);
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.END_TURN && c.contents === this.id);
   }
 
   get image() {

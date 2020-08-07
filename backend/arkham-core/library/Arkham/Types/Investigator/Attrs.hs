@@ -608,7 +608,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           $ find ((== cardId) . getCardId) (a ^. hand)
         cost = getCost card
       pure $ a & resources -~ cost
-    PlayCard iid cardId True -> do
+    PlayCard iid cardId True | iid == investigatorId -> do
       let
         card = fromJustNote "not in hand"
           $ find ((== cardId) . getCardId) investigatorHand

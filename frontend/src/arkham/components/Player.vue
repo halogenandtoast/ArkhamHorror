@@ -95,12 +95,18 @@ export default class Player extends Vue {
     return null;
   }
 
+  get id() {
+    return this.player.contents.id;
+  }
+
   get choices() {
     return choices(this.game);
   }
 
   get drawCardsAction() {
-    return this.choices.findIndex((choice) => choice.tag === MessageType.DRAW_CARDS);
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.DRAW_CARDS && c.contents[0] === this.id);
   }
 }
 </script>

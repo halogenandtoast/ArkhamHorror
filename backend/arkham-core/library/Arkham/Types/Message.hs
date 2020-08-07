@@ -130,7 +130,7 @@ data Message
                 [Message] [Modifier] [TokenResponse Message]
   | BeginSkillTestAfterFast InvestigatorId Source (Maybe Action) SkillType Int [Message]
                 [Message] [Modifier] [TokenResponse Message]
-  | StartSkillTest
+  | StartSkillTest InvestigatorId
   | InvestigatorStartSkillTest InvestigatorId (Maybe Action) SkillType [Modifier]
   | BeforeSkillTest InvestigatorId SkillType
   | TriggerSkillTest InvestigatorId SkillType Int

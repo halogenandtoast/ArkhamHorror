@@ -797,7 +797,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           (_, _, _, FreeAbility (SkillTestWindow st), _) | st == skillType ->
             True
           _ -> False
-        triggerMessage = StartSkillTest
+        triggerMessage = StartSkillTest investigatorId
         beginMessage = BeforeSkillTest iid skillType
         committableCards = flip filter investigatorHand $ \case
           PlayerCard MkPlayerCard {..} ->
@@ -828,7 +828,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
             )
           )
       else
-        unshiftMessage triggerMessage
+        unshiftMessage (Ask $ ChooseOne [triggerMessage])
       pure a
     InvestigatorStartSkillTest iid maction skillType tempModifiers
       | iid == investigatorId -> a <$ unshiftMessage

@@ -1,6 +1,11 @@
 <template>
   <div>
     <img
+      v-if="investigatorPortrait"
+      class="portrait"
+      :src="investigatorPortrait"
+    />
+    <img
       v-for="(revealedToken, index) in revealedTokens"
       class="token"
       :key="index"
@@ -111,6 +116,19 @@ export default class ChaosBag extends Vue {
     return this.choices.findIndex((c) => c.tag === MessageType.START_SKILL_TEST);
   }
 
+  get investigatorPortrait() {
+    const choice = this.choices.find((c) => c.tag === MessageType.START_SKILL_TEST);
+    if (choice) {
+      return `/img/arkham/portraits/${choice.contents}.jpg`;
+    }
+
+    if (this.skillTest) {
+      return `/img/arkham/portraits/${this.skillTest.investigator}.jpg`;
+    }
+
+    return null;
+  }
+
   get applyResultsAction() {
     return this.choices.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);
   }
@@ -129,4 +147,7 @@ export default class ChaosBag extends Vue {
   height: auto;
 }
 
+.portrait {
+  width: 100px;
+}
 </style>

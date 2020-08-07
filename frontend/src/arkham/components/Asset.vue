@@ -91,6 +91,8 @@ export default class Asset extends Vue {
         return c.contents === this.id;
       case MessageType.ASSET_DAMAGE:
         return c.contents[0] === this.id;
+      case MessageType.USE_CARD_ABILITY:
+        return c.contents[1][0].contents === this.id;
       case MessageType.RUN:
         return c.contents.some((c1: Message) => this.canInteract(c1));
       default:

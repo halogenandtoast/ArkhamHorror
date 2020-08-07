@@ -18,18 +18,18 @@ import Arkham.Types.Source
 import ClassyPrelude
 import Lens.Micro
 
-newtype FortyFiveAutomaticI = FortyFiveAutomaticI Attrs
+newtype FortyFiveAutomatic = FortyFiveAutomatic Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-fortyFiveAutomatic :: AssetId -> FortyFiveAutomaticI
+fortyFiveAutomatic :: AssetId -> FortyFiveAutomatic
 fortyFiveAutomatic uuid =
-  FortyFiveAutomaticI $ (baseAttrs uuid "01016") { assetSlots = [HandSlot] }
+  FortyFiveAutomatic $ (baseAttrs uuid "01016") { assetSlots = [HandSlot] }
 
-instance (AssetRunner env) => RunMessage env FortyFiveAutomaticI where
-  runMessage msg a@(FortyFiveAutomaticI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env FortyFiveAutomatic where
+  runMessage msg a@(FortyFiveAutomatic attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       pure
-        $ FortyFiveAutomaticI
+        $ FortyFiveAutomatic
         $ attrs
         & (uses .~ Uses Resource.Ammo 4)
         & (abilities
@@ -57,8 +57,8 @@ instance (AssetRunner env) => RunMessage env FortyFiveAutomaticI where
               mempty
               False
             )
-          pure $ FortyFiveAutomaticI $ attrs & uses .~ Uses
+          pure $ FortyFiveAutomatic $ attrs & uses .~ Uses
             Resource.Ammo
             (n - 1)
         _ -> pure a
-    _ -> FortyFiveAutomaticI <$> runMessage msg attrs
+    _ -> FortyFiveAutomatic <$> runMessage msg attrs

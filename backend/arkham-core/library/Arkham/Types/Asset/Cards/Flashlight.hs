@@ -19,18 +19,18 @@ import Arkham.Types.Target
 import ClassyPrelude
 import Lens.Micro
 
-newtype FlashlightI = FlashlightI Attrs
+newtype Flashlight = Flashlight Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-flashlight :: AssetId -> FlashlightI
+flashlight :: AssetId -> Flashlight
 flashlight uuid =
-  FlashlightI $ (baseAttrs uuid "01087") { assetSlots = [HandSlot] }
+  Flashlight $ (baseAttrs uuid "01087") { assetSlots = [HandSlot] }
 
-instance (AssetRunner env) => RunMessage env FlashlightI where
-  runMessage msg a@(FlashlightI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env Flashlight where
+  runMessage msg a@(Flashlight attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       pure
-        $ FlashlightI
+        $ Flashlight
         $ attrs
         & (uses .~ Uses Resource.Supply 3)
         & (abilities
@@ -58,6 +58,6 @@ instance (AssetRunner env) => RunMessage env FlashlightI where
               (LocationTarget lid)
               (AssetSource aid)
             ]
-          pure $ FlashlightI $ attrs & uses .~ Uses Resource.Supply (n - 1)
+          pure $ Flashlight $ attrs & uses .~ Uses Resource.Supply (n - 1)
         _ -> pure a
-    _ -> FlashlightI <$> runMessage msg attrs
+    _ -> Flashlight <$> runMessage msg attrs

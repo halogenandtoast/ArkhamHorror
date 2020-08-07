@@ -14,14 +14,14 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import ClassyPrelude
 
-newtype DaisysToteBagI = DaisysToteBagI Attrs
+newtype DaisysToteBag = DaisysToteBag Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-daisysToteBag :: AssetId -> DaisysToteBagI
-daisysToteBag uuid = DaisysToteBagI $ baseAttrs uuid "01008"
+daisysToteBag :: AssetId -> DaisysToteBag
+daisysToteBag uuid = DaisysToteBag $ baseAttrs uuid "01008"
 
-instance (AssetRunner env) => RunMessage env DaisysToteBagI where
-  runMessage msg (DaisysToteBagI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env DaisysToteBag where
+  runMessage msg (DaisysToteBag attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessages
         [ AddModifier
@@ -33,5 +33,5 @@ instance (AssetRunner env) => RunMessage env DaisysToteBagI where
           (AddSlot HandSlot (TraitRestrictedSlot Tome Nothing) (AssetSource aid)
           )
         ]
-      DaisysToteBagI <$> runMessage msg attrs
-    _ -> DaisysToteBagI <$> runMessage msg attrs
+      DaisysToteBag <$> runMessage msg attrs
+    _ -> DaisysToteBag <$> runMessage msg attrs

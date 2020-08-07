@@ -15,11 +15,11 @@ import Arkham.Types.Slot
 import Arkham.Types.Source
 import ClassyPrelude
 
-newtype KnifeI = KnifeI Attrs
+newtype Knife = Knife Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-knife :: AssetId -> KnifeI
-knife uuid = KnifeI $ (baseAttrs uuid "01086")
+knife :: AssetId -> Knife
+knife uuid = Knife $ (baseAttrs uuid "01086")
   { assetSlots = [HandSlot]
   , assetAbilities =
     [ ( AssetSource uuid
@@ -37,8 +37,8 @@ knife uuid = KnifeI $ (baseAttrs uuid "01086")
     ]
   }
 
-instance (AssetRunner env) => RunMessage env KnifeI where
-  runMessage msg a@(KnifeI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env Knife where
+  runMessage msg a@(Knife attrs@Attrs {..}) = case msg of
     UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
       unshiftMessage
         (ChooseFightEnemy
@@ -62,4 +62,4 @@ instance (AssetRunner env) => RunMessage env KnifeI where
           False
         ]
       pure a
-    _ -> KnifeI <$> runMessage msg attrs
+    _ -> Knife <$> runMessage msg attrs

@@ -17,25 +17,25 @@ import Arkham.Types.Target
 import ClassyPrelude
 
 
-newtype DrMilanChristopherI = DrMilanChristopherI Attrs
+newtype DrMilanChristopher = DrMilanChristopher Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-drMilanChristopher :: AssetId -> DrMilanChristopherI
-drMilanChristopher uuid = DrMilanChristopherI $ (baseAttrs uuid "01033")
+drMilanChristopher :: AssetId -> DrMilanChristopher
+drMilanChristopher uuid = DrMilanChristopher $ (baseAttrs uuid "01033")
   { assetSlots = [AllySlot]
   , assetHealth = Just 1
   , assetSanity = Just 2
   }
 
-instance (AssetRunner env) => RunMessage env DrMilanChristopherI where
-  runMessage msg a@(DrMilanChristopherI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env DrMilanChristopher where
+  runMessage msg a@(DrMilanChristopher attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage
         (AddModifier
           (InvestigatorTarget iid)
           (SkillModifier SkillWillpower 1 (AssetSource aid))
         )
-      DrMilanChristopherI <$> runMessage msg attrs
+      DrMilanChristopher <$> runMessage msg attrs
     SuccessfulInvestigation iid _ | iid == getInvestigator attrs ->
       a <$ unshiftMessage
         (Ask $ ChooseOne
@@ -47,4 +47,4 @@ instance (AssetRunner env) => RunMessage env DrMilanChristopherI where
         )
     UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId ->
       a <$ unshiftMessage (TakeResources iid 1 False)
-    _ -> DrMilanChristopherI <$> runMessage msg attrs
+    _ -> DrMilanChristopher <$> runMessage msg attrs

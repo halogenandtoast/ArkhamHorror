@@ -15,11 +15,11 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import ClassyPrelude
 
-newtype PhysicalTrainingI = PhysicalTrainingI Attrs
+newtype PhysicalTraining = PhysicalTraining Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-physicalTraining :: AssetId -> PhysicalTrainingI
-physicalTraining uuid = PhysicalTrainingI $ (baseAttrs uuid "01017")
+physicalTraining :: AssetId -> PhysicalTraining
+physicalTraining uuid = PhysicalTraining $ (baseAttrs uuid "01017")
   { assetAbilities =
     [ ( AssetSource uuid
       , Nothing
@@ -37,8 +37,8 @@ physicalTraining uuid = PhysicalTrainingI $ (baseAttrs uuid "01017")
   }
 
 
-instance (AssetRunner env) => RunMessage env PhysicalTrainingI where
-  runMessage msg a@(PhysicalTrainingI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env PhysicalTraining where
+  runMessage msg a@(PhysicalTraining attrs@Attrs {..}) = case msg of
     UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
       resources <- unResourceCount <$> asks (getCount iid)
       when (resources > 0) $ unshiftMessages
@@ -57,4 +57,4 @@ instance (AssetRunner env) => RunMessage env PhysicalTrainingI where
           (SkillModifier SkillCombat 1 (AssetSource aid))
         ]
       pure a
-    _ -> PhysicalTrainingI <$> runMessage msg attrs
+    _ -> PhysicalTraining <$> runMessage msg attrs

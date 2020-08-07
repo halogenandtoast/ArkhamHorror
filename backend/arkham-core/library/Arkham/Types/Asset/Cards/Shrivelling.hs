@@ -24,18 +24,18 @@ newtype ShrivellingMetadata = ShrivellingMetadata { inUse :: Bool }
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON) -- must parse to object
 
-newtype ShrivellingI = ShrivellingI (Attrs `With` ShrivellingMetadata)
+newtype Shrivelling = Shrivelling (Attrs `With` ShrivellingMetadata)
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-shrivelling :: AssetId -> ShrivellingI
+shrivelling :: AssetId -> Shrivelling
 shrivelling uuid =
-  ShrivellingI
+  Shrivelling
     $ ((baseAttrs uuid "01060") { assetSlots = [ArcaneSlot] })
     `with` ShrivellingMetadata False
 
-instance (AssetRunner env) => RunMessage env ShrivellingI where
-  runMessage msg a@(ShrivellingI (attrs@Attrs {..} `With` metadata@ShrivellingMetadata {..}))
+instance (AssetRunner env) => RunMessage env Shrivelling where
+  runMessage msg a@(Shrivelling (attrs@Attrs {..} `With` metadata@ShrivellingMetadata {..}))
     = case msg of
       InvestigatorPlayAsset _ aid _ _ | aid == assetId -> do
         let
@@ -51,7 +51,7 @@ instance (AssetRunner env) => RunMessage env ShrivellingI where
                      )
                    ]
                 )
-        ShrivellingI . (`with` metadata) <$> runMessage msg attrs'
+        Shrivelling . (`with` metadata) <$> runMessage msg attrs'
       SkillTestEnded _ tokens | inUse -> do
         when
             (any
@@ -71,7 +71,7 @@ instance (AssetRunner env) => RunMessage env ShrivellingI where
                 0
                 1
               )
-        pure $ ShrivellingI (attrs `with` ShrivellingMetadata False)
+        pure $ Shrivelling (attrs `with` ShrivellingMetadata False)
       UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId ->
         case assetUses of
           Uses Resource.Charge n -> do
@@ -87,10 +87,10 @@ instance (AssetRunner env) => RunMessage env ShrivellingI where
                 False
               )
             pure
-              $ ShrivellingI
+              $ Shrivelling
               . (`with` ShrivellingMetadata True)
               $ attrs
               & uses
               .~ Uses Resource.Charge (n - 1)
           _ -> pure a
-      _ -> ShrivellingI . (`with` metadata) <$> runMessage msg attrs
+      _ -> Shrivelling . (`with` metadata) <$> runMessage msg attrs

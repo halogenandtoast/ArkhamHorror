@@ -14,22 +14,22 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import ClassyPrelude
 
-newtype HolyRosaryI = HolyRosaryI Attrs
+newtype HolyRosary = HolyRosary Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-holyRosary :: AssetId -> HolyRosaryI
-holyRosary uuid = HolyRosaryI $ (baseAttrs uuid "01059")
+holyRosary :: AssetId -> HolyRosary
+holyRosary uuid = HolyRosary $ (baseAttrs uuid "01059")
   { assetSlots = [AccessorySlot]
   , assetSanity = Just 2
   }
 
-instance (AssetRunner env) => RunMessage env HolyRosaryI where
-  runMessage msg (HolyRosaryI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env HolyRosary where
+  runMessage msg (HolyRosary attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage
         (AddModifier
           (InvestigatorTarget iid)
           (SkillModifier SkillWillpower 1 (AssetSource aid))
         )
-      HolyRosaryI <$> runMessage msg attrs
-    _ -> HolyRosaryI <$> runMessage msg attrs
+      HolyRosary <$> runMessage msg attrs
+    _ -> HolyRosary <$> runMessage msg attrs

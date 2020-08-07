@@ -14,18 +14,18 @@ import Arkham.Types.Source
 import Arkham.Types.Trait
 import ClassyPrelude
 
-newtype ResearchLibrarianI = ResearchLibrarianI Attrs
+newtype ResearchLibrarian = ResearchLibrarian Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-researchLibrarian :: AssetId -> ResearchLibrarianI
-researchLibrarian uuid = ResearchLibrarianI $ (baseAttrs uuid "01032")
+researchLibrarian :: AssetId -> ResearchLibrarian
+researchLibrarian uuid = ResearchLibrarian $ (baseAttrs uuid "01032")
   { assetSlots = [AllySlot]
   , assetHealth = Just 1
   , assetSanity = Just 1
   }
 
-instance (AssetRunner env) => RunMessage env ResearchLibrarianI where
-  runMessage msg a@(ResearchLibrarianI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env ResearchLibrarian where
+  runMessage msg a@(ResearchLibrarian attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage
         (Ask $ ChooseOne
@@ -35,7 +35,7 @@ instance (AssetRunner env) => RunMessage env ResearchLibrarianI where
           , Continue "Do not use ability"
           ]
         )
-      ResearchLibrarianI <$> runMessage msg attrs
+      ResearchLibrarian <$> runMessage msg attrs
     UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId ->
       a <$ unshiftMessage (SearchDeckForTraits iid [Tome])
-    _ -> ResearchLibrarianI <$> runMessage msg attrs
+    _ -> ResearchLibrarian <$> runMessage msg attrs

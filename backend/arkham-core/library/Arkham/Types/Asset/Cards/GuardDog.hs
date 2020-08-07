@@ -11,18 +11,18 @@ import Arkham.Types.Slot
 import Arkham.Types.Source
 import ClassyPrelude
 
-newtype GuardDogI = GuardDogI Attrs
+newtype GuardDog = GuardDog Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-guardDog :: AssetId -> GuardDogI
-guardDog uuid = GuardDogI $ (baseAttrs uuid "01021")
+guardDog :: AssetId -> GuardDog
+guardDog uuid = GuardDog $ (baseAttrs uuid "01021")
   { assetSlots = [AllySlot]
   , assetHealth = Just 3
   , assetSanity = Just 1
   }
 
-instance (AssetRunner env) => RunMessage env GuardDogI where
-  runMessage msg (GuardDogI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env GuardDog where
+  runMessage msg (GuardDog attrs@Attrs {..}) = case msg of
     AssetDamage aid eid _ _ | aid == assetId -> do
       -- we must unshift the asset destroyed first before unshifting the question
       -- this is necessary to keep the asset as a valid investigator source of damage
@@ -34,5 +34,5 @@ instance (AssetRunner env) => RunMessage env GuardDogI where
           , Continue "Do not use Guard Dog's ability"
           ]
         )
-      pure $ GuardDogI result
-    _ -> GuardDogI <$> runMessage msg attrs
+      pure $ GuardDog result
+    _ -> GuardDog <$> runMessage msg attrs

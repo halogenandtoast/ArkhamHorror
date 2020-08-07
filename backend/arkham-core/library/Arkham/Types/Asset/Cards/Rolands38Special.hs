@@ -20,15 +20,15 @@ import Arkham.Types.Source
 import ClassyPrelude
 import Lens.Micro
 
-newtype Rolands38SpecialI = Rolands38SpecialI Attrs
+newtype Rolands38Special = Rolands38Special Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-rolands38Special :: AssetId -> Rolands38SpecialI
+rolands38Special :: AssetId -> Rolands38Special
 rolands38Special uuid =
-  Rolands38SpecialI $ (baseAttrs uuid "01006") { assetSlots = [HandSlot] }
+  Rolands38Special $ (baseAttrs uuid "01006") { assetSlots = [HandSlot] }
 
-instance (AssetRunner env) => RunMessage env Rolands38SpecialI where
-  runMessage msg a@(Rolands38SpecialI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env Rolands38Special where
+  runMessage msg a@(Rolands38Special attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId -> do
       let
         attrs' =
@@ -43,7 +43,7 @@ instance (AssetRunner env) => RunMessage env Rolands38SpecialI where
                    )
                  ]
               )
-      Rolands38SpecialI <$> runMessage msg attrs'
+      Rolands38Special <$> runMessage msg attrs'
     UseCardAbility iid (AssetSource aid, Nothing, 1, _, _) | aid == assetId ->
       case assetUses of
         Uses Resource.Ammo n -> do
@@ -63,6 +63,6 @@ instance (AssetRunner env) => RunMessage env Rolands38SpecialI where
               mempty
               False
             )
-          pure $ Rolands38SpecialI $ attrs & uses .~ Uses Resource.Ammo (n - 1)
+          pure $ Rolands38Special $ attrs & uses .~ Uses Resource.Ammo (n - 1)
         _ -> pure a
-    _ -> Rolands38SpecialI <$> runMessage msg attrs
+    _ -> Rolands38Special <$> runMessage msg attrs

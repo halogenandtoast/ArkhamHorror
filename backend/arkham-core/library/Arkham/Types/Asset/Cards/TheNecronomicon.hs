@@ -26,13 +26,13 @@ instance ToJSON TheNecronomiconMetadata where
 instance FromJSON TheNecronomiconMetadata where
   parseJSON = genericParseJSON $ aesonOptions $ Just "theNecronomicon"
 
-newtype TheNecronomiconI = TheNecronomiconI (Attrs `With` TheNecronomiconMetadata)
+newtype TheNecronomicon = TheNecronomicon (Attrs `With` TheNecronomiconMetadata)
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-theNecronomicon :: AssetId -> TheNecronomiconI
+theNecronomicon :: AssetId -> TheNecronomicon
 theNecronomicon uuid =
-  TheNecronomiconI
+  TheNecronomicon
     $ ((baseAttrs uuid "01009")
         { assetSlots = [HandSlot]
         , assetAbilities =
@@ -42,8 +42,8 @@ theNecronomicon uuid =
     `with` TheNecronomiconMetadata 3
 
 
-instance (AssetRunner env) => RunMessage env TheNecronomiconI where
-  runMessage msg a@(TheNecronomiconI (attrs@Attrs {..} `With` metadata@TheNecronomiconMetadata {..}))
+instance (AssetRunner env) => RunMessage env TheNecronomicon where
+  runMessage msg a@(TheNecronomicon (attrs@Attrs {..} `With` metadata@TheNecronomiconMetadata {..}))
     = case msg of
       InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
         unshiftMessage
@@ -51,11 +51,11 @@ instance (AssetRunner env) => RunMessage env TheNecronomiconI where
             (InvestigatorTarget iid)
             (ForcedTokenChange Token.ElderSign Token.AutoFail (AssetSource aid))
           )
-        TheNecronomiconI . (`with` metadata) <$> runMessage msg attrs
+        TheNecronomicon . (`with` metadata) <$> runMessage msg attrs
       UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
         unshiftMessage (InvestigatorDamage iid (AssetSource aid) 0 1)
         if theNecronomiconHorror == 1
           then a <$ unshiftMessage (DiscardAsset aid)
-          else pure $ TheNecronomiconI
+          else pure $ TheNecronomicon
             (attrs `with` TheNecronomiconMetadata (theNecronomiconHorror - 1))
-      _ -> TheNecronomiconI . (`with` metadata) <$> runMessage msg attrs
+      _ -> TheNecronomicon . (`with` metadata) <$> runMessage msg attrs

@@ -15,16 +15,16 @@ import Arkham.Types.Source
 import ClassyPrelude
 import Lens.Micro
 
-newtype ScryingI = ScryingI Attrs
+newtype Scrying = Scrying Attrs
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-scrying :: AssetId -> ScryingI
+scrying :: AssetId -> Scrying
 scrying uuid =
-  ScryingI $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
+  Scrying $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
 
-instance (AssetRunner env) => RunMessage env ScryingI where
-  runMessage msg a@(ScryingI attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env Scrying where
+  runMessage msg a@(Scrying attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId -> do
       let
         attrs' =
@@ -39,7 +39,7 @@ instance (AssetRunner env) => RunMessage env ScryingI where
                    )
                  ]
               )
-      ScryingI <$> runMessage msg attrs'
+      Scrying <$> runMessage msg attrs'
     UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId ->
       case assetUses of
         Uses Resource.Charge n -> do
@@ -47,6 +47,6 @@ instance (AssetRunner env) => RunMessage env ScryingI where
             (n == 1)
             (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
           unshiftMessage (SearchTopOfDeck iid 3 [] PutBackInAnyOrder)
-          pure $ ScryingI $ attrs & uses .~ Uses Resource.Charge (n - 1)
+          pure $ Scrying $ attrs & uses .~ Uses Resource.Charge (n - 1)
         _ -> pure a
-    _ -> ScryingI <$> runMessage msg attrs
+    _ -> Scrying <$> runMessage msg attrs

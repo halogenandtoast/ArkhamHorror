@@ -19,13 +19,13 @@
       />
       <button
         v-if="investigateAction !== -1"
-        class="investigate-button"
+        class="button investigate-button"
         @click="doInvestigate"
       >Investigate</button>
       <button
         v-for="ability in abilities"
         :key="ability"
-        class="ability-button"
+        class="butotn ability-button"
         @click="$emit('choose', ability)"
         >{{abilityLabel(ability)}}</button>
       <Treachery
@@ -184,13 +184,16 @@ export default class Location extends Vue {
   margin: 0 5px;
 }
 
-.investigate-button {
+.button{
   margin-top: 2px;
   border: 0;
   color: #fff;
-  background-color: #40263A;
   border-radius: 4px;
   border: 1px solid #ff00ff;
+}
+
+.investigate-button {
+  background-color: #40263A;
   &:before {
     font-family: "arkham";
     content: "\0046";
@@ -199,12 +202,7 @@ export default class Location extends Vue {
 }
 
 .ability-button {
-  margin-top: 2px;
-  border: 0;
-  color: #fff;
   background-color: #555;
-  border-radius: 4px;
-  border: 1px solid #ff00ff;
   &:before {
     font-family: "arkham";
     content: "\0049";

@@ -5,18 +5,16 @@
       class="card enemy"
       @click="$emit('choose', attackAction)"
     />
-    <div v-if="canInteract" class="enemy-interactions">
-      <button
-        v-if="fightAction !== -1"
-        class="fight-button"
-        @click="$emit('choose', fightAction)"
-      >Fight</button>
-      <button
-        v-if="evadeAction !== -1"
-        class="evade-button"
-        @click="$emit('choose', evadeAction)"
-      >Evade</button>
-    </div>
+    <button
+      v-if="fightAction !== -1"
+      class="button fight-button"
+      @click="$emit('choose', fightAction)"
+    >Fight</button>
+    <button
+      v-if="evadeAction !== -1"
+      class="button evade-button"
+      @click="$emit('choose', evadeAction)"
+    >Evade</button>
     <div class="pool">
       <PoolItem type="health" :amount="enemy.contents.damage" />
     </div>
@@ -82,33 +80,20 @@ export default class Enemy extends Vue {
 }
 
 .enemy {
-  position: relative;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
 }
 
-.enemy-interactions {
-  position: absolute;
-  box-sizing: border-box;
-  bottom: 58px;
-  left: 9px;
-  width: calc(100% - 20px);
-  display: flex;
-  button {
-    cursor: pointer;
-    flex: 1;
-    text-transform: uppercase;
-    font-size: 0.7em;
-    padding: 5px 0px;
-  }
+.button{
+  margin-top: 2px;
+  border: 0;
+  color: #fff;
+  border-radius: 4px;
+  border: 1px solid #ff00ff;
 }
 
 .fight-button {
-  border: 0;
-  color: #FFF;
   background-color: #8F5B41;
-  border-top-left-radius: 7px;
-  border-bottom-left-radius: 7px;
-  border: 1px solid #FF00FF;
   &:before {
     font-family: "Arkham";
     content: "\0044";
@@ -117,13 +102,7 @@ export default class Enemy extends Vue {
 }
 
 .evade-button {
-  border: 0;
-  color: #FFF;
   background-color: #576345;
-  border-top-right-radius: 7px;
-  border-bottom-right-radius: 7px;
-  border: 1px solid #FF00FF;
-  border-left: 0;
   &:before {
     font-family: "Arkham";
     content: "\0053";
@@ -134,5 +113,11 @@ export default class Enemy extends Vue {
 .card {
   width: 200px;
   border-radius: 5px;
+}
+
+.pool {
+  display: flex;
+  flex-direction: row;
+  height: 2em;
 }
 </style>

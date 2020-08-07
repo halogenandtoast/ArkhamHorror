@@ -401,7 +401,10 @@ newtype LeatherCoatI = LeatherCoatI Attrs
 
 leatherCoat :: AssetId -> Asset
 leatherCoat uuid =
-  LeatherCoat $ LeatherCoatI $ (baseAttrs uuid "01072") { assetSlots = [ArcaneSlot] }
+  LeatherCoat $ LeatherCoatI $ (baseAttrs uuid "01072")
+    { assetSlots = [BodySlot]
+    , assetHealth = Just 2
+    }
 
 newtype KnifeI = KnifeI Attrs
   deriving newtype (Show, ToJSON, FromJSON)

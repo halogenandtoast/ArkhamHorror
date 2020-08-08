@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a418e27831d3875b1f856faedb07a69fe2a803276578b1dfd7919aea82cd4c12
+-- hash: e180712a65203dd461ab26eacd1863edb0ba820e372ea698022c306cb5ff2ddf
 
 name:           arkham-core
 version:        0.0.0
@@ -119,6 +119,13 @@ library
       Arkham.Types.InvestigatorId
       Arkham.Types.Keyword
       Arkham.Types.Location
+      Arkham.Types.Location.Attrs
+      Arkham.Types.Location.Cards.Attic
+      Arkham.Types.Location.Cards.Cellar
+      Arkham.Types.Location.Cards.Hallway
+      Arkham.Types.Location.Cards.Parlor
+      Arkham.Types.Location.Cards.Study
+      Arkham.Types.Location.Runner
       Arkham.Types.LocationId
       Arkham.Types.LocationSymbol
       Arkham.Types.Message

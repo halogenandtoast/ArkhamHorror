@@ -835,12 +835,14 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         (getSet investigatorId)
       let
         beginMessage = BeforeSkillTest iid skillType
-        committableCards = flip filter investigatorHand $ \case
-          PlayerCard MkPlayerCard {..} ->
-            pcId
-              `notElem` commitedCardIds
-              && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
-          _ -> False
+        committableCards = if not (null commitedCardIds)
+          then []
+          else flip filter investigatorHand $ \case
+            PlayerCard MkPlayerCard {..} ->
+              pcId
+                `notElem` commitedCardIds
+                && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
+            _ -> False
       when (not (null committableCards) || not (null commitedCardIds))
         $ unshiftMessage
             (SkillTestAsk $ Ask $ ChooseOne

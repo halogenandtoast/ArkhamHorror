@@ -52,26 +52,24 @@ instance (AssetRunner env) => RunMessage env Shrivelling where
                    ]
                 )
         Shrivelling . (`with` metadata) <$> runMessage msg attrs'
-      SkillTestEnded _ tokens | inUse -> do
-        when
-            (any
-              (`elem` [ Token.Skull
-                      , Token.Cultist
-                      , Token.Tablet
-                      , Token.ElderThing
-                      , Token.AutoFail
-                      ]
-              )
-              tokens
+      DrawToken token
+        | inUse
+          && token
+          `elem` [ Token.Skull
+                 , Token.Cultist
+                 , Token.Tablet
+                 , Token.ElderThing
+                 , Token.AutoFail
+                 ]
+        -> do
+          unshiftMessage
+            (InvestigatorDamage
+              (getInvestigator attrs)
+              (AssetSource assetId)
+              0
+              1
             )
-          $ unshiftMessage
-              (InvestigatorDamage
-                (getInvestigator attrs)
-                (AssetSource assetId)
-                0
-                1
-              )
-        pure $ Shrivelling (attrs `with` ShrivellingMetadata False)
+          pure $ Shrivelling (attrs `with` ShrivellingMetadata False)
       UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId ->
         case assetUses of
           Uses Resource.Charge n -> do

@@ -121,6 +121,10 @@ onFailure = lens skillTestOnFailure $ \m x -> m { skillTestOnFailure = x }
 onSuccess :: Lens' SkillTest [Message]
 onSuccess = lens skillTestOnSuccess $ \m x -> m { skillTestOnSuccess = x }
 
+onTokenResponses :: Lens' SkillTest [TokenResponse Message]
+onTokenResponses =
+  lens skillTestOnTokenResponses $ \m x -> m { skillTestOnTokenResponses = x }
+
 skillIconCount :: SkillTest -> Int
 skillIconCount SkillTest {..} = length . filter matches $ concatMap
   (iconsForCard . snd)
@@ -146,7 +150,21 @@ instance (SkillTestRunner env) => RunMessage env SkillTest where
       FailedBy n ->
         s <$ unshiftMessage (InvestigatorDamage iid SkillTestSource n 0)
       _ -> error "Should not be called when not failed"
-    DrawToken token -> pure $ s & setAsideTokens %~ (token :)
+    DrawToken token -> do
+      onTokenResponses' <-
+        (catMaybes <$>) . for skillTestOnTokenResponses $ \case
+          OnAnyToken tokens messages
+            | not
+              (null
+              $ HashSet.fromList skillTestSetAsideTokens
+              `intersect` HashSet.fromList tokens
+              )
+            -> Nothing <$ unshiftMessages messages
+          response -> pure (Just response)
+      pure
+        $ s
+        & (setAsideTokens %~ (token :))
+        & (onTokenResponses .~ onTokenResponses')
     FailSkillTest -> do
       unshiftMessages [Ask $ ChooseOne [SkillTestApplyResults], SkillTestEnds]
       pure $ s & result .~ FailedBy skillTestDifficulty
@@ -189,16 +207,6 @@ instance (SkillTestRunner env) => RunMessage env SkillTest where
         SucceededBy _ -> unshiftMessages skillTestOnSuccess
         FailedBy _ -> unshiftMessages skillTestOnFailure
         Unrun -> pure ()
-
-      for_ skillTestOnTokenResponses $ \case
-        OnAnyToken tokens messages
-          | not
-            (null
-            $ HashSet.fromList skillTestSetAsideTokens
-            `intersect` HashSet.fromList tokens
-            )
-          -> unshiftMessages messages
-        _ -> pure ()
 
       unshiftMessages $ map
         (AddModifier (InvestigatorTarget skillTestInvestigator)

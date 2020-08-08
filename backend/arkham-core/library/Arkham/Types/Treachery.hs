@@ -6,28 +6,23 @@ module Arkham.Types.Treachery
 where
 
 import Arkham.Json
-import Arkham.Types.Ability
-import qualified Arkham.Types.Action as Action
-import Arkham.Types.AssetId
 import Arkham.Types.Card
-import Arkham.Types.Card.Id
 import Arkham.Types.Classes
-import Arkham.Types.FastWindow
 import Arkham.Types.Helpers
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Arkham.Types.Trait
+import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Cards.AncientEvils
+import Arkham.Types.Treachery.Cards.CoverUp
+import Arkham.Types.Treachery.Cards.CryptChill
+import Arkham.Types.Treachery.Cards.DissonantVoices
+import Arkham.Types.Treachery.Cards.FrozenInFear
+import Arkham.Types.Treachery.Cards.GraspingHands
+import Arkham.Types.Treachery.Cards.ObscuringFog
+import Arkham.Types.Treachery.Cards.RottingRemains
+import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
-import Lens.Micro
 import Safe (fromJustNote)
 
 lookupTreachery :: CardCode -> (TreacheryId -> Treachery)
@@ -36,14 +31,14 @@ lookupTreachery =
 
 allTreacheries :: HashMap CardCode (TreacheryId -> Treachery)
 allTreacheries = HashMap.fromList
-  [ ("01007", coverUp)
-  , ("01162", graspingHands)
-  , ("01166", ancientEvils)
-  , ("01163", rottingRemains)
-  , ("01164", frozenInFear)
-  , ("01165", dissonantVoices)
-  , ("01167", cryptChill)
-  , ("01168", obscuringFog)
+  [ ("01007", CoverUp' . coverUp)
+  , ("01162", GraspingHands' . graspingHands)
+  , ("01166", AncientEvils' . ancientEvils)
+  , ("01163", RottingRemains' . rottingRemains)
+  , ("01164", FrozenInFear' . frozenInFear)
+  , ("01165", DissonantVoices' . dissonantVoices)
+  , ("01167", CryptChill' . cryptChill)
+  , ("01168", ObscuringFog' . obscuringFog)
   ]
 
 instance HasCardCode Treachery where
@@ -55,355 +50,36 @@ instance HasAbilities Treachery where
 instance HasTraits Treachery where
   getTraits = treacheryTraits . treacheryAttrs
 
-data Attrs = Attrs
-  { treacheryName :: Text
-  , treacheryId :: TreacheryId
-  , treacheryCardCode :: CardCode
-  , treacheryTraits :: HashSet Trait
-  , treacheryAttachedLocation :: Maybe LocationId
-  , treacheryAttachedInvestigator :: Maybe InvestigatorId
-  , treacheryAbilities :: [Ability]
-  }
-  deriving stock (Show, Generic)
-
-instance ToJSON Attrs where
-  toJSON = genericToJSON $ aesonOptions $ Just "treachery"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "treachery"
-
-instance FromJSON Attrs where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "treachery"
-
-abilities :: Lens' Attrs [Ability]
-abilities = lens treacheryAbilities $ \m x -> m { treacheryAbilities = x }
-
-attachedLocation :: Lens' Attrs (Maybe LocationId)
-attachedLocation =
-  lens treacheryAttachedLocation $ \m x -> m { treacheryAttachedLocation = x }
-
-attachedInvestigator :: Lens' Attrs (Maybe InvestigatorId)
-attachedInvestigator = lens treacheryAttachedInvestigator
-  $ \m x -> m { treacheryAttachedInvestigator = x }
-
 data Treachery
-  = CoverUp CoverUpI
-  | GraspingHands GraspingHandsI
-  | AncientEvils AncientEvilsI
-  | RottingRemains RottingRemainsI
-  | FrozenInFear FrozenInFearI
-  | DissonantVoices DissonantVoicesI
-  | CryptChill CryptChillI
-  | ObscuringFog ObscuringFogI
+  = CoverUp' CoverUp
+  | GraspingHands' GraspingHands
+  | AncientEvils' AncientEvils
+  | RottingRemains' RottingRemains
+  | FrozenInFear' FrozenInFear
+  | DissonantVoices' DissonantVoices
+  | CryptChill' CryptChill
+  | ObscuringFog' ObscuringFog
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 treacheryAttrs :: Treachery -> Attrs
 treacheryAttrs = \case
-  CoverUp (CoverUpI (attrs `With` _)) -> attrs
-  GraspingHands attrs -> coerce attrs
-  AncientEvils attrs -> coerce attrs
-  RottingRemains attrs -> coerce attrs
-  FrozenInFear attrs -> coerce attrs
-  DissonantVoices attrs -> coerce attrs
-  CryptChill attrs -> coerce attrs
-  ObscuringFog attrs -> coerce attrs
-
-baseAttrs :: TreacheryId -> CardCode -> Attrs
-baseAttrs tid cardCode =
-  let
-    MkEncounterCard {..} =
-      fromJustNote
-          "missing encounter card"
-          (HashMap.lookup cardCode allEncounterCards)
-        $ CardId (unTreacheryId tid)
-  in
-    Attrs
-      { treacheryName = ecName
-      , treacheryId = tid
-      , treacheryCardCode = ecCardCode
-      , treacheryTraits = HashSet.fromList ecTraits
-      , treacheryAttachedLocation = Nothing
-      , treacheryAttachedInvestigator = Nothing
-      , treacheryAbilities = mempty
-      }
-
-weaknessAttrs :: TreacheryId -> CardCode -> Attrs
-weaknessAttrs tid cardCode =
-  let
-    MkPlayerCard {..} =
-      fromJustNote
-          "missing weakness card"
-          (HashMap.lookup cardCode allPlayerCards)
-        $ CardId (unTreacheryId tid)
-  in
-    Attrs
-      { treacheryName = pcName
-      , treacheryId = tid
-      , treacheryCardCode = pcCardCode
-      , treacheryTraits = HashSet.fromList pcTraits
-      , treacheryAttachedLocation = Nothing
-      , treacheryAttachedInvestigator = Nothing
-      , treacheryAbilities = mempty
-      }
-
-newtype CoverUpMetadata = CoverUpMetadata { coverUpClues :: Int }
-  deriving stock (Show, Generic)
-
-instance ToJSON CoverUpMetadata where
-  toJSON = genericToJSON $ aesonOptions $ Just "coverUp"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "coverUp"
-
-instance FromJSON CoverUpMetadata where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "coverUp"
-
-newtype CoverUpI = CoverUpI (Attrs `With` CoverUpMetadata)
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-coverUp :: TreacheryId -> Treachery
-coverUp uuid =
-  CoverUp
-    $ CoverUpI
-    $ ((weaknessAttrs uuid "01007")
-        { treacheryAbilities =
-          [ ( TreacherySource uuid
-            , Nothing
-            , 1
-            , ReactionAbility (WhenDiscoverClues You YourLocation)
-            , NoLimit
-            )
-          ]
-        }
-      )
-    `With` CoverUpMetadata 3
-
-newtype GraspingHandsI = GraspingHandsI Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
-
-graspingHands :: TreacheryId -> Treachery
-graspingHands uuid = GraspingHands $ GraspingHandsI $ baseAttrs uuid "01162"
-
-newtype AncientEvilsI = AncientEvilsI Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
-
-ancientEvils :: TreacheryId -> Treachery
-ancientEvils uuid = AncientEvils $ AncientEvilsI $ baseAttrs uuid "01166"
-
-newtype RottingRemainsI = RottingRemainsI Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
-
-rottingRemains :: TreacheryId -> Treachery
-rottingRemains uuid = RottingRemains $ RottingRemainsI $ baseAttrs uuid "01163"
-
-newtype FrozenInFearI = FrozenInFearI Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
-
-frozenInFear :: TreacheryId -> Treachery
-frozenInFear uuid = FrozenInFear $ FrozenInFearI $ baseAttrs uuid "01164"
-
-newtype DissonantVoicesI= DissonantVoicesI Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
-
-dissonantVoices :: TreacheryId -> Treachery
-dissonantVoices uuid =
-  DissonantVoices $ DissonantVoicesI $ baseAttrs uuid "01165"
-
-newtype CryptChillI = CryptChillI Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
-
-cryptChill :: TreacheryId -> Treachery
-cryptChill uuid = CryptChill $ CryptChillI $ baseAttrs uuid "01167"
-
-newtype ObscuringFogI = ObscuringFogI Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
-
-obscuringFog :: TreacheryId -> Treachery
-obscuringFog uuid = ObscuringFog $ ObscuringFogI $ baseAttrs uuid "01168"
-
-type TreacheryRunner env
-  = ( HasQueue env
-    , HasSet AssetId InvestigatorId env
-    , HasId LocationId InvestigatorId env
-    )
+  CoverUp' (CoverUp (attrs `With` _)) -> attrs
+  GraspingHands' attrs -> coerce attrs
+  AncientEvils' attrs -> coerce attrs
+  RottingRemains' attrs -> coerce attrs
+  FrozenInFear' attrs -> coerce attrs
+  DissonantVoices' attrs -> coerce attrs
+  CryptChill' attrs -> coerce attrs
+  ObscuringFog' attrs -> coerce attrs
 
 instance (TreacheryRunner env) => RunMessage env Treachery where
   runMessage msg = \case
-    CoverUp x -> CoverUp <$> runMessage msg x
-    GraspingHands x -> GraspingHands <$> runMessage msg x
-    AncientEvils x -> AncientEvils <$> runMessage msg x
-    RottingRemains x -> RottingRemains <$> runMessage msg x
-    FrozenInFear x -> FrozenInFear <$> runMessage msg x
-    DissonantVoices x -> DissonantVoices <$> runMessage msg x
-    CryptChill x -> CryptChill <$> runMessage msg x
-    ObscuringFog x -> ObscuringFog <$> runMessage msg x
-
-instance (TreacheryRunner env) => RunMessage env CoverUpI where
-  runMessage msg (CoverUpI (attrs@Attrs {..} `With` metadata@CoverUpMetadata {..}))
-    = case msg of
-      RunTreachery iid tid | tid == treacheryId -> do
-        unshiftMessages
-          [ RemoveCardFromHand iid "01007"
-          , AttachTreacheryToInvestigator tid iid
-          , AddModifier
-            (InvestigatorTarget iid)
-            (SufferTrauma 0 1 (TreacherySource tid))
-          ]
-        pure $ CoverUpI $ (attrs & attachedInvestigator ?~ iid) `with` metadata
-      UseCardAbility iid (TreacherySource tid, _, 1, _, _)
-        | tid == treacheryId -> do
-          cluesToRemove <- withQueue $ \queue -> do
-            let
-              (before, after) = flip break queue $ \case
-                DiscoverClues{} -> True
-                _ -> False
-              (DiscoverClues _ _ m) = case after of
-                [] -> error "DiscoverClues has to be present"
-                (x : _) -> x
-              remaining = case after of
-                [] -> []
-                (_ : xs) -> xs
-            (before <> remaining, m)
-          let remainingClues = max 0 (coverUpClues - cluesToRemove)
-          if remainingClues == 0
-            then do
-              unshiftMessage
-                (RemoveAllModifiersOnTargetFrom
-                  (InvestigatorTarget iid)
-                  (TreacherySource tid)
-                )
-              pure
-                $ CoverUpI
-                $ (attrs & abilities .~ [])
-                `with` CoverUpMetadata remainingClues
-            else pure $ CoverUpI (attrs `with` CoverUpMetadata remainingClues)
-      _ -> CoverUpI . (`with` metadata) <$> runMessage msg attrs
-
-instance (TreacheryRunner env) => RunMessage env GraspingHandsI where
-  runMessage msg t@(GraspingHandsI attrs@Attrs {..}) = case msg of
-    RunTreachery iid tid | tid == treacheryId -> t <$ unshiftMessages
-      [ RevelationSkillTest
-        iid
-        (TreacherySource treacheryId)
-        SkillAgility
-        3
-        []
-        [DamagePerPointOfFailure iid]
-      , Discard (TreacheryTarget tid)
-      ]
-    _ -> GraspingHandsI <$> runMessage msg attrs
-
-instance (TreacheryRunner env) => RunMessage env AncientEvilsI where
-  runMessage msg t@(AncientEvilsI attrs@Attrs {..}) = case msg of
-    RunTreachery _ tid | tid == treacheryId -> t <$ unshiftMessages
-      [ PlaceDoomOnAgenda
-      , AdvanceAgendaIfThresholdSatisfied
-      , Discard (TreacheryTarget tid)
-      ]
-    _ -> AncientEvilsI <$> runMessage msg attrs
-
-instance (TreacheryRunner env) => RunMessage env RottingRemainsI where
-  runMessage msg t@(RottingRemainsI attrs@Attrs {..}) = case msg of
-    RunTreachery iid tid | tid == treacheryId -> t <$ unshiftMessages
-      [ RevelationSkillTest
-        iid
-        (TreacherySource treacheryId)
-        SkillWillpower
-        3
-        []
-        [HorrorPerPointOfFailure iid]
-      , Discard (TreacheryTarget tid)
-      ]
-    _ -> RottingRemainsI <$> runMessage msg attrs
-
-instance (TreacheryRunner env) => RunMessage env FrozenInFearI where
-  runMessage msg t@(FrozenInFearI attrs@Attrs {..}) = case msg of
-    RunTreachery iid tid | tid == treacheryId -> do
-      unshiftMessages
-        [ AttachTreacheryToInvestigator tid iid
-        , AddModifier
-          (InvestigatorTarget iid)
-          (ActionCostOf
-            (FirstOneOf [Action.Move, Action.Fight, Action.Evade])
-            1
-            (TreacherySource tid)
-          )
-        ]
-      pure $ FrozenInFearI $ attrs & attachedInvestigator ?~ iid
-    ChooseEndTurn iid | Just iid == treacheryAttachedInvestigator ->
-      t <$ unshiftMessage
-        (RevelationSkillTest
-          iid
-          (TreacherySource treacheryId)
-          SkillWillpower
-          3
-          [ RemoveAllModifiersOnTargetFrom
-            (InvestigatorTarget iid)
-            (TreacherySource treacheryId)
-          , Discard (TreacheryTarget treacheryId)
-          ]
-          []
-        )
-    _ -> FrozenInFearI <$> runMessage msg attrs
-
-instance (TreacheryRunner env) => RunMessage env DissonantVoicesI where
-  runMessage msg t@(DissonantVoicesI attrs@Attrs {..}) = case msg of
-    RunTreachery iid tid | tid == treacheryId -> do
-      unshiftMessages
-        [ AttachTreacheryToInvestigator tid iid
-        , AddModifier
-          (InvestigatorTarget iid)
-          (CannotPlay [AssetType, EventType] (TreacherySource tid))
-        ]
-      pure $ DissonantVoicesI $ attrs & attachedInvestigator ?~ iid
-    EndRound -> case treacheryAttachedInvestigator of
-      Just iid -> t <$ unshiftMessages
-        [ RemoveAllModifiersOnTargetFrom
-          (InvestigatorTarget iid)
-          (TreacherySource treacheryId)
-        , Discard (TreacheryTarget treacheryId)
-        ]
-      Nothing -> pure t -- Note: This assumes the treachery never attached for some reason
-    _ -> DissonantVoicesI <$> runMessage msg attrs
-
-instance (TreacheryRunner env) => RunMessage env CryptChillI where
-  runMessage msg t@(CryptChillI attrs@Attrs {..}) = case msg of
-    RunTreachery iid tid | tid == treacheryId -> t <$ unshiftMessages
-      [ RevelationSkillTest
-        iid
-        (TreacherySource tid)
-        SkillWillpower
-        4
-        []
-        [TreacheryFailure iid tid]
-      , Discard (TreacheryTarget tid)
-      ]
-    TreacheryFailure iid tid | tid == treacheryId -> do
-      assetCount <- HashSet.size <$> asks (getSet @AssetId iid)
-      if assetCount > 0
-        then t <$ unshiftMessage (ChooseAndDiscardAsset iid)
-        else
-          t <$ unshiftMessage
-            (InvestigatorDamage iid (TreacherySource treacheryId) 2 0)
-    _ -> CryptChillI <$> runMessage msg attrs
-
-instance (TreacheryRunner env) => RunMessage env ObscuringFogI where
-  runMessage msg t@(ObscuringFogI attrs@Attrs {..}) = case msg of
-    RunTreachery iid tid | tid == treacheryId -> do
-      currentLocationId <- asks (getId iid)
-      unshiftMessages
-        [ AttachTreacheryToLocation tid currentLocationId
-        , AddModifier
-          (LocationTarget currentLocationId)
-          (ShroudModifier 2 (TreacherySource tid))
-        ]
-      pure $ ObscuringFogI $ attrs & attachedLocation ?~ currentLocationId
-    SuccessfulInvestigation _ lid | Just lid == treacheryAttachedLocation ->
-      t <$ unshiftMessages
-        [ RemoveAllModifiersOnTargetFrom
-          (LocationTarget lid)
-          (TreacherySource treacheryId)
-        , Discard (TreacheryTarget treacheryId)
-        ]
-    _ -> ObscuringFogI <$> runMessage msg attrs
-
-instance (TreacheryRunner env) => RunMessage env Attrs where
-  runMessage _msg a@Attrs {..} = pure a
+    CoverUp' x -> CoverUp' <$> runMessage msg x
+    GraspingHands' x -> GraspingHands' <$> runMessage msg x
+    AncientEvils' x -> AncientEvils' <$> runMessage msg x
+    RottingRemains' x -> RottingRemains' <$> runMessage msg x
+    FrozenInFear' x -> FrozenInFear' <$> runMessage msg x
+    DissonantVoices' x -> DissonantVoices' <$> runMessage msg x
+    CryptChill' x -> CryptChill' <$> runMessage msg x
+    ObscuringFog' x -> ObscuringFog' <$> runMessage msg x

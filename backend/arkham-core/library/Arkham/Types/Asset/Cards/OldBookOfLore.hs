@@ -11,6 +11,7 @@ import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Slot
 import Arkham.Types.Source
+import Arkham.Types.Target
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
 import Lens.Micro
@@ -31,11 +32,10 @@ instance (AssetRunner env) => RunMessage env OldBookOfLore where
       locationId <- asks (getId @LocationId iid)
       investigatorIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessage
-        (Ask
-        $ ChooseOne
-            [ SearchTopOfDeck iid' 3 [] ShuffleBackIn
-            | iid' <- investigatorIds
-            ]
+        (Ask $ ChooseOne
+          [ SearchTopOfDeck iid (InvestigatorTarget iid') 3 [] ShuffleBackIn
+          | iid' <- investigatorIds
+          ]
         )
       pure $ OldBookOfLore $ attrs & exhausted .~ True
     _ -> OldBookOfLore <$> runMessage msg attrs

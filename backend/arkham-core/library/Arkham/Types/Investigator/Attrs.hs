@@ -932,38 +932,49 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           when (pcCardType == PlayerEnemyType)
             $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
       pure $ a & deck .~ Deck deck' & hand %~ (PlayerCard card :)
-    SearchDeckForTraits iid traits | iid == investigatorId -> runMessage
-      (SearchTopOfDeck
-        iid
-        (length $ unDeck investigatorDeck)
-        traits
-        ShuffleBackIn
-      )
-      a
-    SearchTopOfDeck iid n traits strategy | iid == investigatorId -> do
-      let
-        (cards, deck') = splitAt n $ unDeck investigatorDeck
-        traits' = HashSet.fromList traits
-      case strategy of
-        PutBackInAnyOrder -> unshiftMessage
-          (Ask $ ChooseOneAtATime
-            [ AddFocusedToTopOfDeck iid (getCardId card) | card <- cards ]
-          )
-        ShuffleBackIn -> unshiftMessage
-          (Ask $ ChooseOne
-            [ Run
-                [ AddFocusedToHand iid (getCardId card)
-                , ShuffleAllFocusedIntoDeck iid
-                ]
-            | card <- cards
-            , null traits'
-              || traits'
-              `intersection` HashSet.fromList (pcTraits card)
-              == traits'
-            ]
-          )
-      unshiftMessage (FocusCards $ map PlayerCard cards)
-      pure $ a & deck .~ Deck deck'
+    SearchDeckForTraits iid (InvestigatorTarget iid') traits
+      | iid' == investigatorId -> runMessage
+        (SearchTopOfDeck
+          iid
+          (InvestigatorTarget iid')
+          (length $ unDeck investigatorDeck)
+          traits
+          ShuffleBackIn
+        )
+        a
+    SearchTopOfDeck iid (InvestigatorTarget iid') n traits strategy
+      | iid' == investigatorId -> do
+        let
+          (cards, deck') = splitAt n $ unDeck investigatorDeck
+          traits' = HashSet.fromList traits
+        case strategy of
+          PutBackInAnyOrder -> unshiftMessage
+            (Ask $ ChooseOneAtATime
+              [ AddFocusedToTopOfDeck
+                  iid
+                  (InvestigatorTarget iid')
+                  (getCardId card)
+              | card <- cards
+              ]
+            )
+          ShuffleBackIn -> unshiftMessage
+            (Ask $ ChooseOne
+              [ Run
+                  [ AddFocusedToHand
+                    iid
+                    (InvestigatorTarget iid')
+                    (getCardId card)
+                  , ShuffleAllFocusedIntoDeck iid (InvestigatorTarget iid')
+                  ]
+              | card <- cards
+              , null traits'
+                || traits'
+                `intersection` HashSet.fromList (pcTraits card)
+                == traits'
+              ]
+            )
+        unshiftMessage (FocusCards $ map PlayerCard cards)
+        pure $ a & deck .~ Deck deck'
     PlayerWindow iid additionalActions | iid == investigatorId -> do
       advanceableActIds <-
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())

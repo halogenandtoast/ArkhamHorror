@@ -13,6 +13,7 @@ import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Slot
 import Arkham.Types.Source
+import Arkham.Types.Target
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
 import Lens.Micro
@@ -52,8 +53,13 @@ instance (AssetRunner env) => RunMessage env Scrying where
           unshiftMessage
             (Ask
             $ ChooseOne
-            $ SearchTopOfEncounterDeck iid 3 [] PutBackInAnyOrder
-            : [ SearchTopOfDeck iid' 3 [] PutBackInAnyOrder
+            $ SearchTopOfDeck iid EncounterDeckTarget 3 [] PutBackInAnyOrder
+            : [ SearchTopOfDeck
+                  iid
+                  (InvestigatorTarget iid')
+                  3
+                  []
+                  PutBackInAnyOrder
               | iid' <- investigatorIds
               ]
             )

@@ -18,5 +18,6 @@ data Target
   | LocationTarget LocationId
   | SkillTestTarget
   | TreacheryTarget TreacheryId
+  | EncounterDeckTarget
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

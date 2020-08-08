@@ -8,7 +8,8 @@
           class="card"
         />
       </div>
-      <img class="card" src="/img/arkham/back.png" />
+
+      <EncounterDeck :game="game" @choose="$emit('choose', $event)"/>
 
       <Agenda
         v-for="(agenda, key) in game.currentData.agendas"
@@ -74,6 +75,7 @@ import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
 import Tab from '@/arkham/components/Tab.vue';
+import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import Location from '@/arkham/components/Location.vue';
 
 @Component({
@@ -87,6 +89,7 @@ import Location from '@/arkham/components/Location.vue';
     ChoiceModal,
     PlayerTabs,
     Tab,
+    EncounterDeck,
   },
 })
 export default class Scenario extends Vue {
@@ -179,6 +182,7 @@ export default class Scenario extends Vue {
   display: flex;
   justify-content: center;
   overflow: auto;
+  min-height: 300px;
 }
 
 .portrait {

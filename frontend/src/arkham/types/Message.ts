@@ -34,6 +34,7 @@ export enum MessageType {
   ADD_FOCUSED_TO_HAND = 'AddFocusedToHand',
   ADD_FOCUSED_TO_TOP_OF_DECK = 'AddFocusedToTopOfDeck',
   ENGAGE_ENEMY = 'EngageEnemy',
+  INVESTIGATOR_DRAW_ENCOUNTER_CARD = 'InvestigatorDrawEncounterCard',
   LABEL = 'Label',
 }
 
@@ -78,6 +79,7 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('AddFocusedToHand').then(() => JsonDecoder.constant(MessageType.ADD_FOCUSED_TO_HAND)),
     JsonDecoder.isExactly('AddFocusedToTopOfDeck').then(() => JsonDecoder.constant(MessageType.ADD_FOCUSED_TO_TOP_OF_DECK)),
     JsonDecoder.isExactly('EngageEnemy').then(() => JsonDecoder.constant(MessageType.ENGAGE_ENEMY)),
+    JsonDecoder.isExactly('InvestigatorDrawEncounterCard').then(() => JsonDecoder.constant(MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD)),
   ],
   'MessageType',
 );

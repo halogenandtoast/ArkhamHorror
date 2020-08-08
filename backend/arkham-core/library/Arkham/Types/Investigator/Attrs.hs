@@ -746,7 +746,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     EmptyDeck iid | iid == investigatorId -> a <$ unshiftMessages
       [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
     AllDrawEncounterCard ->
-      a <$ unshiftMessage (InvestigatorDrawEncounterCard investigatorId)
+      a <$ unshiftMessage (Ask $ ChooseOne [InvestigatorDrawEncounterCard investigatorId])
     RevelationSkillTest iid source skillType difficulty onSuccess onFailure
       | iid == investigatorId -> a <$ unshiftMessage
         (BeginSkillTest

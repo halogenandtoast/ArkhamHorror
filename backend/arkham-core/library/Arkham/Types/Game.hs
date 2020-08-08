@@ -621,7 +621,12 @@ runGameMessage msg g = case msg of
     pure $ g & locations . at lid ?~ lookupLocation lid
   SetEncounterDeck encounterDeck' -> pure $ g & encounterDeck .~ encounterDeck'
   RemoveEnemy eid -> pure $ g & enemies %~ HashMap.delete eid
-  RemoveLocation lid -> pure $ g & locations %~ HashMap.delete lid
+  RemoveLocation lid -> do
+    treacheryIds <- HashSet.toList <$> asks (getSet lid)
+    unshiftMessages [ Discard (TreacheryTarget tid) | tid <- treacheryIds ]
+    enemyIds <- HashSet.toList <$> asks (getSet lid)
+    unshiftMessages [ Discard (EnemyTarget eid) | eid <- enemyIds ]
+    pure $ g & locations %~ HashMap.delete lid
   SpendClues n iids -> do
     let
       investigatorsWithClues = HashMap.keys $ HashMap.filterWithKey

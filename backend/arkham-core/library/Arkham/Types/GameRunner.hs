@@ -5,6 +5,7 @@ import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Query
+import Arkham.Types.TreacheryId
 
 type GameRunner env
   = ( HasQueue env
@@ -12,5 +13,6 @@ type GameRunner env
     , HasSet ConnectedLocationId LocationId env
     , HasSet EnemyId LocationId env
     , HasSet InvestigatorId LocationId env
+    , HasSet TreacheryId LocationId env
     , HasCount ClueCount LocationId env
     )

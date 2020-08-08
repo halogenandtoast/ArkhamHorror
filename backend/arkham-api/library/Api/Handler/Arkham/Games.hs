@@ -54,7 +54,9 @@ putApiV1ArkhamGameR gameId = do
   let
     gameJson@GameJson {..} = arkhamGameCurrentData game
     messages = case gQuestion of
-      Just (ChooseOne qs) -> maybeToList (qs !!? choice response)
+      Just (ChooseOne qs) -> case (qs !!? choice response) of
+                               Nothing -> [Ask $ ChooseOne qs]
+                               Just msg -> [msg]
       Just (ChooseOneAtATime msgs) -> do
         let (mm, msgs') = extract (choice response) msgs
         case (mm, msgs') of

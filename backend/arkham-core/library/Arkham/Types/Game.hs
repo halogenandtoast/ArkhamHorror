@@ -689,6 +689,15 @@ runGameMessage msg g = case msg of
     unshiftMessage (PerformEnemyAttack iid eid)
     broadcastFastWindow Fast.WhenEnemyAttacks iid g
     pure g
+
+  SkillTestAsk (Ask (ChooseOne c1)) -> do
+    mNextMessage <- peekMessage
+    case mNextMessage of
+      Just (SkillTestAsk (Ask (ChooseOne c2))) -> do
+        _ <- popMessage
+        unshiftMessage (SkillTestAsk (Ask $ ChooseOne $ c1 <> c2))
+      _ -> unshiftMessage (Ask $ ChooseOne c1)
+    pure g
   EnemyWillAttack iid eid -> do
     mNextMessage <- peekMessage
     case mNextMessage of

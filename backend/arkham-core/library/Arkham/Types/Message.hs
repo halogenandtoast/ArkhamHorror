@@ -139,6 +139,7 @@ data Message
   | SkillTestApplyResults
   | RunSkill InvestigatorId CardCode SkillTestResult
   | SkillTestCommitCard InvestigatorId CardId
+  | SkillTestAsk Message
   | SkillTestUncommitCard InvestigatorId CardId
   | AddOnFailure Message
   | AddOnSuccess Message

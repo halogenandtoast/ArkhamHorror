@@ -809,7 +809,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         (null commitedCardIds)
       then
         unshiftMessage
-          (Ask $ ChooseOne
+          (SkillTestAsk $ Ask $ ChooseOne
             (map
                 (\ability -> Run [UseCardAbility iid ability, beginMessage])
                 filteredAbilities
@@ -829,6 +829,34 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           )
       else
         unshiftMessage (Ask $ ChooseOne [triggerMessage])
+      pure a
+    BeforeSkillTest iid skillType | iid /= investigatorId -> do
+      commitedCardIds <- map unCommitedCardId . HashSet.toList <$> asks
+        (getSet iid)
+      let
+        beginMessage = BeforeSkillTest iid skillType
+        committableCards = flip filter investigatorHand $ \case
+          PlayerCard MkPlayerCard {..} ->
+            pcId
+              `notElem` commitedCardIds
+              && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
+          _ -> False
+      when (not (null committableCards) || not (null commitedCardIds)) $
+        unshiftMessage
+          (SkillTestAsk $ Ask $ ChooseOne
+            (map
+                 (\card ->
+                   Run
+                     [SkillTestCommitCard investigatorId (getCardId card), beginMessage]
+                 )
+                 committableCards
+            <> map
+                 (\cardId ->
+                   Run [SkillTestUncommitCard investigatorId cardId, beginMessage]
+                 )
+                 commitedCardIds
+            )
+          )
       pure a
     InvestigatorStartSkillTest iid maction skillType tempModifiers
       | iid == investigatorId -> a <$ unshiftMessage

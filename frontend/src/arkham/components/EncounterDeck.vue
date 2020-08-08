@@ -8,8 +8,8 @@
     <img
       class="card"
       src="/img/arkham/back.png"
-      :class="{ 'can-draw': drawEncounterCardAction !== -1 }"
-      @click="$emit('choose', drawEncounterCardAction)"
+      :class="{ 'can-interact': deckAction !== -1 }"
+      @click="$emit('choose', deckAction)"
     />
   </div>
 </template>
@@ -31,13 +31,31 @@ export default class EncounterDeck extends Vue {
     return this.choices.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD);
   }
 
-  get investigatorPortrait() {
-    const choice = this.choices.find((c) => c.tag === MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD);
-    if (choice) {
-      return `/img/arkham/portraits/${choice.contents}.jpg`;
+  get searchTopOfEncounterCardAction() {
+    return this.choices.findIndex((c) => c.tag === MessageType.SEARCH_TOP_OF_ENCOUNTER_DECK);
+  }
+
+  get deckAction() {
+    if (this.drawEncounterCardAction !== -1) {
+      return this.drawEncounterCardAction;
     }
 
-    return null;
+    return this.searchTopOfEncounterCardAction;
+  }
+
+  get investigatorPortrait() {
+    const choice = this.choices[this.deckAction];
+
+    if (!choice) {
+      return null;
+    }
+
+    switch (choice.tag) {
+      case MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD:
+        return `/img/arkham/portraits/${choice.contents}.jpg`;
+      default:
+        return `/img/arkham/portraits/${choice.contents[0]}.jpg`;
+    }
   }
 }
 </script>
@@ -52,7 +70,7 @@ export default class EncounterDeck extends Vue {
 .portrait {
   width: 100px;
 }
-.can-draw {
+.can-interact {
   border: 3px solid #FF00FF;
   cursor: pointer;
 }

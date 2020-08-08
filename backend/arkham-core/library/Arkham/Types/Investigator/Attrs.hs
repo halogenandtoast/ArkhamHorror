@@ -828,7 +828,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
             )
           )
       else
-        unshiftMessage (Ask $ ChooseOne [triggerMessage])
+        unshiftMessage (SkillTestAsk $ Ask $ ChooseOne [triggerMessage])
       pure a
     BeforeSkillTest iid skillType | iid /= investigatorId -> do
       commitedCardIds <- map unCommitedCardId . HashSet.toList <$> asks

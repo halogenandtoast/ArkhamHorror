@@ -46,6 +46,7 @@ data Message
   = Setup
   | SearchDeckForTraits InvestigatorId [Trait]
   | SearchTopOfDeck InvestigatorId Int [Trait] LeftoverCardStrategy
+  | SearchTopOfEncounterDeck InvestigatorId Int [Trait] LeftoverCardStrategy
   | RunEvent InvestigatorId CardCode
   | LoadDeck InvestigatorId [PlayerCard]
   | BeginRound
@@ -221,9 +222,11 @@ data Message
   | FocusCards [Card]
   | AddFocusedToHand InvestigatorId CardId
   | AddFocusedToTopOfDeck InvestigatorId CardId
+  | AddFocusedToTopOfEncounterDeck InvestigatorId CardId
   | ShuffleAllFocusedIntoDeck InvestigatorId
   | ShuffleCardsIntoDeck InvestigatorId [PlayerCard]
   | PutOnTopOfDeck InvestigatorId PlayerCard
+  | PutOnTopOfEncounterDeck InvestigatorId EncounterCard
   | AddToHand InvestigatorId Card
   | CancelNextRevelationEffect
   | EnemySetBearer EnemyId BearerId

@@ -9,10 +9,12 @@ import Arkham.Types.Asset.Uses (Uses(..))
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
+import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import ClassyPrelude
+import qualified Data.HashSet as HashSet
 import Lens.Micro
 
 newtype Scrying = Scrying Attrs
@@ -20,8 +22,7 @@ newtype Scrying = Scrying Attrs
   deriving anyclass (ToJSON, FromJSON)
 
 scrying :: AssetId -> Scrying
-scrying uuid =
-  Scrying $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
+scrying uuid = Scrying $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
 
 instance (AssetRunner env) => RunMessage env Scrying where
   runMessage msg a@(Scrying attrs@Attrs {..}) = case msg of
@@ -40,13 +41,22 @@ instance (AssetRunner env) => RunMessage env Scrying where
                  ]
               )
       Scrying <$> runMessage msg attrs'
-    UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId ->
+    UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
+      locationId <- asks (getId @LocationId iid)
+      investigatorIds <- HashSet.toList <$> asks (getSet locationId)
       case assetUses of
         Uses Resource.Charge n -> do
           when
             (n == 1)
             (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
-          unshiftMessage (SearchTopOfDeck iid 3 [] PutBackInAnyOrder)
+          unshiftMessage
+            (Ask
+            $ ChooseOne
+            $ SearchTopOfEncounterDeck iid 3 [] PutBackInAnyOrder
+            : [ SearchTopOfDeck iid' 3 [] PutBackInAnyOrder
+              | iid' <- investigatorIds
+              ]
+            )
           pure $ Scrying $ attrs & uses .~ Uses Resource.Charge (n - 1)
         _ -> pure a
     _ -> Scrying <$> runMessage msg attrs

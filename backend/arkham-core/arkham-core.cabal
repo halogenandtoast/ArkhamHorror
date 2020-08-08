@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e180712a65203dd461ab26eacd1863edb0ba820e372ea698022c306cb5ff2ddf
+-- hash: 722a561ba78f27f5d7084efdbe901af80d9551377e0dddfaef3234969fd5f054
 
 name:           arkham-core
 version:        0.0.0
@@ -148,6 +148,16 @@ library
       Arkham.Types.TokenResponse
       Arkham.Types.Trait
       Arkham.Types.Treachery
+      Arkham.Types.Treachery.Attrs
+      Arkham.Types.Treachery.Cards.AncientEvils
+      Arkham.Types.Treachery.Cards.CoverUp
+      Arkham.Types.Treachery.Cards.CryptChill
+      Arkham.Types.Treachery.Cards.DissonantVoices
+      Arkham.Types.Treachery.Cards.FrozenInFear
+      Arkham.Types.Treachery.Cards.GraspingHands
+      Arkham.Types.Treachery.Cards.ObscuringFog
+      Arkham.Types.Treachery.Cards.RottingRemains
+      Arkham.Types.Treachery.Runner
       Arkham.Types.TreacheryId
   other-modules:
       Paths_arkham_core

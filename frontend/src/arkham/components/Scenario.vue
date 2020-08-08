@@ -182,7 +182,7 @@ export default class Scenario extends Vue {
   display: flex;
   justify-content: center;
   overflow: auto;
-  min-height: 300px;
+  min-height: 350px;
 }
 
 .portrait {

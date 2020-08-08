@@ -4,20 +4,17 @@ module Arkham.Types.Event
 where
 
 import Arkham.Types.Card
-import Arkham.Types.Classes
 import Arkham.Types.GameRunner
 import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Query
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
-import qualified Arkham.Types.Token as Token
-import Arkham.Types.TokenResponse
+import Arkham.Types.Event.Cards.EmergencyCache
+import Arkham.Types.Event.Cards.Evidence
+import Arkham.Types.Event.Cards.Dodge
+import Arkham.Types.Event.Cards.DynamiteBlast
+import Arkham.Types.Event.Cards.MindOverMatter
+import Arkham.Types.Event.Cards.WorkingAHunch
+import Arkham.Types.Event.Cards.WardOfProtection
+import Arkham.Types.Event.Cards.BlindingLight
 import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 allEvents
   :: (MonadReader env m, GameRunner env, MonadIO m)
@@ -33,83 +30,3 @@ allEvents "01065" = wardOfProtection
 allEvents "01066" = blindingLight
 allEvents "01088" = emergencyCache
 allEvents evid = const (throwString $ "No event with id: " <> show evid)
-
-evidence
-  :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
-evidence iid = do
-  currentLocationId <- asks (getId @LocationId iid)
-  clueCount <- unClueCount <$> asks (getCount currentLocationId)
-  if clueCount > 0
-    then unshiftMessage (DiscoverCluesAtLocation iid currentLocationId 1)
-    else pure ()
-
-dodge
-  :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
-dodge _ = unshiftMessage CancelNextAttack
-
-dynamiteBlast
-  :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
-dynamiteBlast iid = do
-  currentLocationId <- asks (getId @LocationId iid)
-  connectedLocationIds <-
-    HashSet.toList . HashSet.map unConnectedLocationId <$> asks
-      (getSet currentLocationId)
-  choices <- for (currentLocationId : connectedLocationIds) $ \lid -> do
-    enemyIds <- HashSet.toList <$> asks (getSet lid)
-    investigatorIds <- HashSet.toList <$> asks (getSet @InvestigatorId lid)
-    pure
-      $ map (\eid -> EnemyDamage eid iid (EventSource "01023") 3) enemyIds
-      <> map
-           (\iid' -> InvestigatorDamage iid' (EventSource "01023") 3 0)
-           investigatorIds
-  unshiftMessage (Ask $ ChooseOne $ concat choices)
-
-
-mindOverMatter
-  :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
-mindOverMatter iid = unshiftMessages
-  [ AddModifier
-    (InvestigatorTarget iid)
-    (UseSkillInPlaceOf SkillCombat SkillIntellect (EventSource "01036"))
-  , AddModifier
-    (InvestigatorTarget iid)
-    (UseSkillInPlaceOf SkillAgility SkillIntellect (EventSource "01036"))
-  ]
-
-workingAHunch
-  :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
-workingAHunch iid = do
-  currentLocationId <- asks (getId @LocationId iid)
-  clueCount <- unClueCount <$> asks (getCount currentLocationId)
-  if clueCount > 0
-    then unshiftMessage (DiscoverCluesAtLocation iid currentLocationId 1)
-    else pure ()
-
-wardOfProtection
-  :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
-wardOfProtection iid = unshiftMessages
-  [CancelNextRevelationEffect, InvestigatorDamage iid (EventSource "01065") 0 1]
-
-blindingLight
-  :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
-blindingLight iid = unshiftMessage
-  (ChooseEvadeEnemy
-    iid
-    SkillWillpower
-    []
-    []
-    [ OnAnyToken
-        [ Token.Skull
-        , Token.Cultist
-        , Token.Tablet
-        , Token.ElderThing
-        , Token.AutoFail
-        ]
-        [LoseAction iid (EventSource "01066")]
-    ]
-    False
-  )
-
-emergencyCache
-  :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
-emergencyCache iid = unshiftMessage (TakeResources iid 3 False)

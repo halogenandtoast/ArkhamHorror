@@ -153,13 +153,8 @@ instance (SkillTestRunner env) => RunMessage env SkillTest where
     DrawToken token -> do
       onTokenResponses' <-
         (catMaybes <$>) . for skillTestOnTokenResponses $ \case
-          OnAnyToken tokens messages
-            | not
-              (null
-              $ HashSet.fromList skillTestSetAsideTokens
-              `intersect` HashSet.fromList tokens
-              )
-            -> Nothing <$ unshiftMessages messages
+          OnAnyToken tokens messages | token `elem` tokens ->
+            Nothing <$ unshiftMessages messages
           response -> pure (Just response)
       pure
         $ s

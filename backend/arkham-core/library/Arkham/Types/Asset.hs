@@ -126,7 +126,7 @@ assetAttrs = \case
   ResearchLibrarian' attrs -> coerce attrs
   DrMilanChristopher' attrs -> coerce attrs
   HolyRosary' attrs -> coerce attrs
-  Shrivelling' (Shrivelling (attrs `With` _)) -> attrs
+  Shrivelling' attrs -> coerce attrs
   Scrying' attrs -> coerce attrs
   LeatherCoat' attrs -> coerce attrs
   Knife' attrs -> coerce attrs

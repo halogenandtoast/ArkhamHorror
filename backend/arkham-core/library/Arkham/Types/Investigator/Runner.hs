@@ -22,6 +22,7 @@ type InvestigatorRunner env
     , HasSet ConnectedLocationId LocationId env
     , HasSet BlockedLocationId () env
     , HasSet EnemyId LocationId env
+    , HasSet InvestigatorId EnemyId env
     , HasSet TreacheryId LocationId env
     , HasSet AloofEnemyId LocationId env
     , HasSet AssetId LocationId env

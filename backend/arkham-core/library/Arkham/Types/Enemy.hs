@@ -2,6 +2,7 @@
 module Arkham.Types.Enemy
   ( lookupEnemy
   , isEngaged
+  , getEngagedInvestigators
   , Enemy
   )
 where
@@ -19,6 +20,7 @@ import Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
 import Arkham.Types.Enemy.Cards.SwarmOfRats
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
+import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import ClassyPrelude
 import Data.Coerce
@@ -41,6 +43,9 @@ allEnemies = HashMap.fromList
 
 isEngaged :: Enemy -> Bool
 isEngaged = not . null . enemyEngagedInvestigators . enemyAttrs
+
+getEngagedInvestigators :: Enemy -> HashSet InvestigatorId
+getEngagedInvestigators = enemyEngagedInvestigators . enemyAttrs
 
 instance HasId LocationId () Enemy where
   getId _ = enemyLocation . enemyAttrs

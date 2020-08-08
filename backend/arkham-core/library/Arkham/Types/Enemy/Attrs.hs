@@ -221,8 +221,8 @@ instance (EnemyRunner env) => RunMessage env Attrs where
       | eid == enemyId -> do
         let
           onFailure = if Keyword.Retaliate `elem` enemyKeywords
-            then [EnemyAttack iid eid]
-            else []
+            then [EnemyAttack iid eid, FailedAttackEnemy iid eid]
+            else [FailedAttackEnemy iid eid]
         a <$ unshiftMessage
           (BeginSkillTest
             iid

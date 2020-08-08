@@ -5,6 +5,7 @@ import Arkham.Json
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
@@ -23,13 +24,18 @@ instance (TreacheryRunner env) => RunMessage env ObscuringFog where
   runMessage msg t@(ObscuringFog attrs@Attrs {..}) = case msg of
     RunTreachery iid tid | tid == treacheryId -> do
       currentLocationId <- asks (getId iid)
-      unshiftMessages
-        [ AttachTreacheryToLocation tid currentLocationId
-        , AddModifier
-          (LocationTarget currentLocationId)
-          (ShroudModifier 2 (TreacherySource tid))
-        ]
-      pure $ ObscuringFog $ attrs & attachedLocation ?~ currentLocationId
+      obscuringFogCount <- unTreacheryCount
+        <$> asks (getCount (currentLocationId, treacheryCardCode))
+      if obscuringFogCount > 0
+        then t <$ unshiftMessage (Discard (TreacheryTarget tid))
+        else do
+          unshiftMessages
+            [ AttachTreacheryToLocation tid currentLocationId
+            , AddModifier
+              (LocationTarget currentLocationId)
+              (ShroudModifier 2 (TreacherySource tid))
+            ]
+          pure $ ObscuringFog $ attrs & attachedLocation ?~ currentLocationId
     SuccessfulInvestigation _ lid | Just lid == treacheryAttachedLocation ->
       t <$ unshiftMessages
         [ RemoveAllModifiersOnTargetFrom

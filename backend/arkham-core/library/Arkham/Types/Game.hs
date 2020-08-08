@@ -264,6 +264,16 @@ instance HasId LocationId InvestigatorId Game where
 instance HasId LocationId EnemyId Game where
   getId eid = getId () . getEnemy eid
 
+instance HasCount TreacheryCount (LocationId, CardCode) Game where
+  getCount (lid, cardCode) g = TreacheryCount
+    (length (filter (== cardCode) cardCodes))
+   where
+    location = getLocation lid g
+    treacheries' = HashSet.toList $ getSet () location
+    cardCodes = mapMaybe
+      (\k -> getCardCode <$> HashMap.lookup k (g ^. treacheries))
+      treacheries'
+
 instance HasCount ClueCount LocationId Game where
   getCount lid = getCount () . getLocation lid
 

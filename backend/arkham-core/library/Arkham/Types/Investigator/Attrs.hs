@@ -745,8 +745,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       pure $ a & resources +~ n
     EmptyDeck iid | iid == investigatorId -> a <$ unshiftMessages
       [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
-    AllDrawEncounterCard ->
-      a <$ unshiftMessage (Ask $ ChooseOne [InvestigatorDrawEncounterCard investigatorId])
+    AllDrawEncounterCard -> a <$ unshiftMessage
+      (Ask $ ChooseOne [InvestigatorDrawEncounterCard investigatorId])
     RevelationSkillTest iid source skillType difficulty onSuccess onFailure
       | iid == investigatorId -> a <$ unshiftMessage
         (BeginSkillTest
@@ -832,7 +832,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       pure a
     BeforeSkillTest iid skillType | iid /= investigatorId -> do
       commitedCardIds <- map unCommitedCardId . HashSet.toList <$> asks
-        (getSet iid)
+        (getSet investigatorId)
       let
         beginMessage = BeforeSkillTest iid skillType
         committableCards = flip filter investigatorHand $ \case
@@ -841,22 +841,27 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
               `notElem` commitedCardIds
               && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
           _ -> False
-      when (not (null committableCards) || not (null commitedCardIds)) $
-        unshiftMessage
-          (SkillTestAsk $ Ask $ ChooseOne
-            (map
-                 (\card ->
-                   Run
-                     [SkillTestCommitCard investigatorId (getCardId card), beginMessage]
-                 )
-                 committableCards
-            <> map
-                 (\cardId ->
-                   Run [SkillTestUncommitCard investigatorId cardId, beginMessage]
-                 )
-                 commitedCardIds
+      when (not (null committableCards) || not (null commitedCardIds))
+        $ unshiftMessage
+            (SkillTestAsk $ Ask $ ChooseOne
+              (map
+                  (\card ->
+                    Run
+                      [ SkillTestCommitCard investigatorId (getCardId card)
+                      , beginMessage
+                      ]
+                  )
+                  committableCards
+              <> map
+                   (\cardId ->
+                     Run
+                       [ SkillTestUncommitCard investigatorId cardId
+                       , beginMessage
+                       ]
+                   )
+                   commitedCardIds
+              )
             )
-          )
       pure a
     InvestigatorStartSkillTest iid maction skillType tempModifiers
       | iid == investigatorId -> a <$ unshiftMessage

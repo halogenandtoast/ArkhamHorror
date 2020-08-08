@@ -32,7 +32,7 @@ export default class EncounterDeck extends Vue {
   }
 
   get searchTopOfEncounterCardAction() {
-    return this.choices.findIndex((c) => c.tag === MessageType.SEARCH_TOP_OF_ENCOUNTER_DECK);
+    return this.choices.findIndex((c) => c.tag === MessageType.SEARCH_TOP_OF_DECK && c.contents[1].tag === 'EncounterDeckTarget');
   }
 
   get deckAction() {

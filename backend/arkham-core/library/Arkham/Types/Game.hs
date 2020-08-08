@@ -558,23 +558,23 @@ runGameMessage msg g = case msg of
   Run msgs -> g <$ unshiftMessages msgs
   Continue _ -> pure g
   FocusCards cards -> pure $ g & focusedCards .~ cards
-  SearchTopOfEncounterDeck iid n _traits strategy -> do
+  SearchTopOfDeck iid EncounterDeckTarget n _traits strategy -> do
     let (cards, encounterDeck') = splitAt n $ unDeck (giEncounterDeck g)
     case strategy of
       PutBackInAnyOrder -> unshiftMessage
         (Ask $ ChooseOneAtATime
-          [ AddFocusedToTopOfEncounterDeck iid (getCardId card)
+          [ AddFocusedToTopOfDeck iid EncounterDeckTarget (getCardId card)
           | card <- cards
           ]
         )
       ShuffleBackIn -> error "this is not handled yet"
     unshiftMessage (FocusCards $ map EncounterCard cards)
     pure $ g & encounterDeck .~ encounterDeck'
-  ShuffleAllFocusedIntoDeck iid -> do
+  ShuffleAllFocusedIntoDeck _ (InvestigatorTarget iid') -> do
     let cards = mapMaybe toPlayerCard (g ^. focusedCards)
-    unshiftMessage (ShuffleCardsIntoDeck iid cards)
+    unshiftMessage (ShuffleCardsIntoDeck iid' cards)
     pure $ g & focusedCards .~ []
-  AddFocusedToTopOfEncounterDeck iid cardId -> do
+  AddFocusedToTopOfDeck _ EncounterDeckTarget cardId -> do
     let
       card =
         fromJustNote "missing card"
@@ -582,21 +582,21 @@ runGameMessage msg g = case msg of
           >>= toEncounterCard
       focusedCards' = filter ((/= cardId) . getCardId) (g ^. focusedCards)
     pure $ g & (focusedCards .~ focusedCards') & (encounterDeck %~ (card :))
-  AddFocusedToTopOfDeck iid cardId -> do
+  AddFocusedToTopOfDeck _ (InvestigatorTarget iid') cardId -> do
     let
       card =
         fromJustNote "missing card"
           $ find ((== cardId) . getCardId) (g ^. focusedCards)
           >>= toPlayerCard
       focusedCards' = filter ((/= cardId) . getCardId) (g ^. focusedCards)
-    unshiftMessage (PutOnTopOfDeck iid card)
+    unshiftMessage (PutOnTopOfDeck iid' card)
     pure $ g & focusedCards .~ focusedCards'
-  AddFocusedToHand iid cardId -> do
+  AddFocusedToHand _ (InvestigatorTarget iid') cardId -> do
     let
       card = fromJustNote "missing card"
         $ find ((== cardId) . getCardId) (g ^. focusedCards)
       focusedCards' = filter ((/= cardId) . getCardId) (g ^. focusedCards)
-    unshiftMessage (AddToHand iid card)
+    unshiftMessage (AddToHand iid' card)
     pure $ g & focusedCards .~ focusedCards'
   InvestigatorDefeated _ ->
     if all

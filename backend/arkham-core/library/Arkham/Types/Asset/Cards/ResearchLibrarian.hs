@@ -11,6 +11,7 @@ import qualified Arkham.Types.FastWindow as Fast
 import Arkham.Types.Message
 import Arkham.Types.Slot
 import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Trait
 import ClassyPrelude
 
@@ -37,5 +38,6 @@ instance (AssetRunner env) => RunMessage env ResearchLibrarian where
         )
       ResearchLibrarian <$> runMessage msg attrs
     UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId ->
-      a <$ unshiftMessage (SearchDeckForTraits iid [Tome])
+      a <$ unshiftMessage
+        (SearchDeckForTraits iid (InvestigatorTarget iid) [Tome])
     _ -> ResearchLibrarian <$> runMessage msg attrs

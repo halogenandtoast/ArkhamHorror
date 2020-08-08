@@ -44,9 +44,8 @@ data LeftoverCardStrategy = ShuffleBackIn | PutBackInAnyOrder
 
 data Message
   = Setup
-  | SearchDeckForTraits InvestigatorId [Trait]
-  | SearchTopOfDeck InvestigatorId Int [Trait] LeftoverCardStrategy
-  | SearchTopOfEncounterDeck InvestigatorId Int [Trait] LeftoverCardStrategy
+  | SearchDeckForTraits InvestigatorId Target [Trait]
+  | SearchTopOfDeck InvestigatorId Target Int [Trait] LeftoverCardStrategy
   | RunEvent InvestigatorId CardCode
   | LoadDeck InvestigatorId [PlayerCard]
   | BeginRound
@@ -220,10 +219,9 @@ data Message
   | Continue Text
   | AddToHandFromDeck InvestigatorId CardId
   | FocusCards [Card]
-  | AddFocusedToHand InvestigatorId CardId
-  | AddFocusedToTopOfDeck InvestigatorId CardId
-  | AddFocusedToTopOfEncounterDeck InvestigatorId CardId
-  | ShuffleAllFocusedIntoDeck InvestigatorId
+  | AddFocusedToHand InvestigatorId Target CardId
+  | AddFocusedToTopOfDeck InvestigatorId Target CardId
+  | ShuffleAllFocusedIntoDeck InvestigatorId Target
   | ShuffleCardsIntoDeck InvestigatorId [PlayerCard]
   | PutOnTopOfDeck InvestigatorId PlayerCard
   | PutOnTopOfEncounterDeck InvestigatorId EncounterCard

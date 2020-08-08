@@ -94,7 +94,8 @@ export default class Investigator extends Vue {
   get searchTopOfDeckAction() {
     return this
       .choices
-      .findIndex((c) => c.tag === MessageType.SEARCH_TOP_OF_DECK && c.contents[0] === this.id);
+      .findIndex((c) => c.tag === MessageType.SEARCH_TOP_OF_DECK
+        && c.contents[1].contents === this.id);
   }
 
   get takeDamageAction() {

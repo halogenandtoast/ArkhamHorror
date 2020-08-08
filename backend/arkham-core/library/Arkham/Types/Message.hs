@@ -111,6 +111,7 @@ data Message
   | EnemySpawn LocationId EnemyId
   | EnemyEngageInvestigator EnemyId InvestigatorId
   | InvestigatorDamageEnemy InvestigatorId EnemyId
+  | InvestigatorDamageInvestigator InvestigatorId InvestigatorId
   | EnemyDamage EnemyId InvestigatorId Source Int
   | EnemyDefeated EnemyId InvestigatorId CardCode Source
   | PlayCard InvestigatorId CardId Bool
@@ -192,6 +193,7 @@ data Message
   | AfterEvadeEnemy InvestigatorId EnemyId
   | SuccessfulInvestigation InvestigatorId LocationId
   | SuccessfulAttackEnemy InvestigatorId EnemyId
+  | FailedAttackEnemy InvestigatorId EnemyId
   | AttachTreacheryToLocation TreacheryId LocationId
   | AttachTreacheryToInvestigator TreacheryId InvestigatorId
   | AddModifier Target Modifier

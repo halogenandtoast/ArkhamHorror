@@ -532,6 +532,16 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           , AfterAttackEnemy iid eid
           ]
         pure a
+    FailedAttackEnemy iid eid | iid == investigatorId -> do
+      investigatorIds <- HashSet.toList <$> asks (getSet eid)
+      case investigatorIds of
+        [x] | x /= iid -> unshiftMessage (InvestigatorDamageInvestigator iid x)
+        _ -> pure ()
+      pure a
+    InvestigatorDamageInvestigator iid xid | iid == investigatorId -> do
+      let damage = damageValueFor 1 a
+      a <$ unshiftMessage
+        (InvestigatorDamage xid (InvestigatorSource iid) damage 0)
     InvestigatorDamageEnemy iid eid | iid == investigatorId -> do
       let damage = damageValueFor 1 a
       a <$ unshiftMessage (EnemyDamage eid iid (InvestigatorSource iid) damage)

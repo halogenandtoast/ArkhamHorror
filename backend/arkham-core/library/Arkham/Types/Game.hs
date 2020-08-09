@@ -79,6 +79,7 @@ data Game = Game
   , giAssets :: HashMap AssetId Asset
   , giActiveInvestigatorId :: InvestigatorId
   , giLeadInvestigatorId :: InvestigatorId
+  , giPlayerOrder :: [InvestigatorId]
   , giPhase :: Phase
   , giEncounterDeck :: Deck EncounterCard
   , giDiscard :: [EncounterCard]
@@ -116,6 +117,9 @@ getTreachery tid g =
 
 focusedCards :: Lens' Game [Card]
 focusedCards = lens giFocusedCards $ \m x -> m { giFocusedCards = x }
+
+playerOrder :: Lens' Game [InvestigatorId]
+playerOrder = lens giPlayerOrder $ \m x -> m { giPlayerOrder = x }
 
 gameOver :: Lens' Game Bool
 gameOver = lens giGameOver $ \m x -> m { giGameOver = x }
@@ -231,6 +235,7 @@ newGame scenarioId investigatorsList = do
     , giGameOver = False
     , giUsedAbilities = mempty
     , giFocusedCards = mempty
+    , giPlayerOrder = map (getInvestigatorId . fst) (HashMap.elems investigatorsList)
     }
  where
   initialInvestigatorId =
@@ -801,7 +806,18 @@ runGameMessage msg g = case msg of
         pure $ g & enemies %~ HashMap.delete eid
       Just (EncounterCard ec) ->
         pure $ g & (enemies %~ HashMap.delete eid) & (discard %~ (ec :))
-  BeginInvestigation -> pure $ g & phase .~ InvestigationPhase
+  BeginInvestigation -> do
+    unshiftMessage (ChoosePlayerOrder (giPlayerOrder g) [])
+    pure $ g & phase .~ InvestigationPhase
+  ChoosePlayerOrder [] (x:xs) ->
+    pure $ g & playerOrder .~ (x:xs) & activeInvestigatorId .~ x
+  ChoosePlayerOrder [y] (x:xs) ->
+    pure $ g & playerOrder .~ (x : (xs <> [y])) & activeInvestigatorId .~ x
+  ChoosePlayerOrder investigatorIds orderedInvestigatorIds -> do
+    unshiftMessage
+      $ Ask
+      $ ChooseOne [ChoosePlayerOrder (filter (/= iid) investigatorIds) (orderedInvestigatorIds <> [iid]) | iid <- investigatorIds]
+    pure g
   EndInvestigation -> g <$ pushMessage BeginEnemy
   BeginEnemy -> do
     pushMessages [HuntersMove, EnemiesAttack, EndEnemy]
@@ -1028,6 +1044,7 @@ toExternalGame Game {..} mq = do
     , gUsedAbilities = giUsedAbilities
     , gQuestion = mq
     , gFocusedCards = giFocusedCards
+    , gPlayerOrder = giPlayerOrder
     }
 
 toInternalGame :: MonadIO m => GameJson -> m Game
@@ -1058,6 +1075,7 @@ toInternalGame' ref GameJson {..} = Game
   , giGameOver = gGameOver
   , giUsedAbilities = gUsedAbilities
   , giFocusedCards = gFocusedCards
+  , giPlayerOrder = gPlayerOrder
   }
 
 runMessages :: MonadIO m => Game -> m (Maybe Question, GameJson)
@@ -1074,18 +1092,15 @@ runMessages g = if g ^. gameOver
         UpkeepPhase -> (Nothing, ) <$> toExternalGame g Nothing
         InvestigationPhase -> if hasEndedTurn (activeInvestigator g)
           then
-            if all
-                (\i -> hasEndedTurn i || hasResigned i || isDefeated i)
-                (HashMap.elems $ g ^. investigators)
-              then pushMessage EndInvestigation >> runMessages g
-              else
+            case filter
+                (not . (\i -> hasEndedTurn i || hasResigned i || isDefeated i) . flip getInvestigator g)
+                (giPlayerOrder g) of
+              [] -> pushMessage EndInvestigation >> runMessages g
+              (x:_) ->
                 runMessages
-                $ g
-                & activeInvestigatorId
-                .~ (fst . fromJustNote "invalid state" $ find
-                     (not . hasEndedTurn . snd)
-                     (HashMap.toList $ g ^. investigators)
-                   )
+                  $ g
+                  & activeInvestigatorId
+                  .~ x
           else
             pushMessages
                 [ PrePlayerWindow

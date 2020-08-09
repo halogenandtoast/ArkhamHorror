@@ -48,6 +48,7 @@ data GameJson = GameJson
   , gUsedAbilities :: [Ability]
   , gQuestion :: Maybe Question
   , gFocusedCards :: [Card]
+  , gPlayerOrder :: [InvestigatorId]
   }
   deriving stock (Show, Generic)
 

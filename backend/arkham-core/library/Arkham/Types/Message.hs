@@ -44,6 +44,10 @@ data LeftoverCardStrategy = ShuffleBackIn | PutBackInAnyOrder
 
 data Message
   = Setup
+  | SetupInvestigators
+  | InvestigatorMulligan InvestigatorId
+  | MulliganCard InvestigatorId CardId
+  | FinishedWithMulligan InvestigatorId
   | SearchDeckForTraits InvestigatorId Target [Trait]
   | SearchTopOfDeck InvestigatorId Target Int [Trait] LeftoverCardStrategy
   | RunEvent InvestigatorId CardCode

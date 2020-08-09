@@ -420,21 +420,45 @@ possibleSkillTypeChoices skillType attrs = foldr
 
 instance (InvestigatorRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
-    Setup -> do
+    SetupInvestigators -> do
       let (discard', hand', deck') = drawOpeningHand a 5
-      unshiftMessage (ShuffleDiscardBackIn investigatorId)
       pure
         $ a
         & (resources .~ 5)
         & (discard .~ discard')
         & (hand .~ hand')
         & (deck .~ Deck deck')
+    InvestigatorMulligan iid | iid == investigatorId -> if null investigatorHand
+      then a <$ unshiftMessage (ShuffleDiscardBackIn investigatorId)
+      else a <$ unshiftMessage
+        (Ask
+        $ ChooseOne
+        $ Run
+            [ Continue "Done With Mulligan"
+            , FinishedWithMulligan investigatorId
+            ]
+        : [ Run [DiscardCard iid (getCardId card), InvestigatorMulligan iid]
+          | card <- investigatorHand
+          ]
+        )
     AllRandomDiscard -> do
       n <- liftIO $ randomRIO (0, length investigatorHand - 1)
       case investigatorHand !!? n of
         Nothing -> pure a
         Just c ->
           a <$ unshiftMessage (DiscardCard investigatorId (getCardId c))
+
+    FinishedWithMulligan iid | iid == investigatorId -> do
+      let
+        (discard', hand', deck') =
+          drawOpeningHand a (5 - length investigatorHand)
+      unshiftMessage (ShuffleDiscardBackIn iid)
+      pure
+        $ a
+        & (resources .~ 5)
+        & (discard .~ discard')
+        & (hand .~ hand')
+        & (deck .~ Deck deck')
     ShuffleDiscardBackIn iid | iid == investigatorId ->
       if not (null investigatorDiscard)
         then do

@@ -189,6 +189,10 @@ newGame scenarioId investigatorsList = do
     $ map
         (\(i, d) -> LoadDeck (getInvestigatorId i) d)
         (HashMap.elems investigatorsList)
+    <> [SetupInvestigators]
+    <> [ InvestigatorMulligan (getInvestigatorId i)
+       | (i, _) <- HashMap.elems investigatorsList
+       ]
     <> [Setup]
   mseed <- liftIO $ lookupEnv "SEED"
   seed <- maybe
@@ -235,7 +239,9 @@ newGame scenarioId investigatorsList = do
     , giGameOver = False
     , giUsedAbilities = mempty
     , giFocusedCards = mempty
-    , giPlayerOrder = map (getInvestigatorId . fst) (HashMap.elems investigatorsList)
+    , giPlayerOrder = map
+      (getInvestigatorId . fst)
+      (HashMap.elems investigatorsList)
     }
  where
   initialInvestigatorId =
@@ -482,7 +488,8 @@ instance HasSet TreacheryId LocationId Game where
   getSet lid = getSet () . getLocation lid
 
 instance HasSet HealthDamageableAssetId InvestigatorId Game where
-  getSet iid g = HashSet.map HealthDamageableAssetId . HashMap.keysSet $ assets'
+  getSet iid g =
+    HashSet.map HealthDamageableAssetId . HashMap.keysSet $ assets'
    where
     assetIds = getSet iid g
     assets' = HashMap.filterWithKey
@@ -490,7 +497,8 @@ instance HasSet HealthDamageableAssetId InvestigatorId Game where
       (g ^. assets)
 
 instance HasSet SanityDamageableAssetId InvestigatorId Game where
-  getSet iid g = HashSet.map SanityDamageableAssetId . HashMap.keysSet $ assets'
+  getSet iid g =
+    HashSet.map SanityDamageableAssetId . HashMap.keysSet $ assets'
    where
     assetIds = getSet iid g
     assets' = HashMap.filterWithKey
@@ -809,14 +817,17 @@ runGameMessage msg g = case msg of
   BeginInvestigation -> do
     unshiftMessage (ChoosePlayerOrder (giPlayerOrder g) [])
     pure $ g & phase .~ InvestigationPhase
-  ChoosePlayerOrder [] (x:xs) ->
-    pure $ g & playerOrder .~ (x:xs) & activeInvestigatorId .~ x
-  ChoosePlayerOrder [y] (x:xs) ->
+  ChoosePlayerOrder [] (x : xs) ->
+    pure $ g & playerOrder .~ (x : xs) & activeInvestigatorId .~ x
+  ChoosePlayerOrder [y] (x : xs) ->
     pure $ g & playerOrder .~ (x : (xs <> [y])) & activeInvestigatorId .~ x
   ChoosePlayerOrder investigatorIds orderedInvestigatorIds -> do
-    unshiftMessage
-      $ Ask
-      $ ChooseOne [ChoosePlayerOrder (filter (/= iid) investigatorIds) (orderedInvestigatorIds <> [iid]) | iid <- investigatorIds]
+    unshiftMessage $ Ask $ ChooseOne
+      [ ChoosePlayerOrder
+          (filter (/= iid) investigatorIds)
+          (orderedInvestigatorIds <> [iid])
+      | iid <- investigatorIds
+      ]
     pure g
   EndInvestigation -> g <$ pushMessage BeginEnemy
   BeginEnemy -> do
@@ -1092,15 +1103,16 @@ runMessages g = if g ^. gameOver
         UpkeepPhase -> (Nothing, ) <$> toExternalGame g Nothing
         InvestigationPhase -> if hasEndedTurn (activeInvestigator g)
           then
-            case filter
-                (not . (\i -> hasEndedTurn i || hasResigned i || isDefeated i) . flip getInvestigator g)
-                (giPlayerOrder g) of
+            case
+              filter
+                (not
+                . (\i -> hasEndedTurn i || hasResigned i || isDefeated i)
+                . flip getInvestigator g
+                )
+                (giPlayerOrder g)
+            of
               [] -> pushMessage EndInvestigation >> runMessages g
-              (x:_) ->
-                runMessages
-                  $ g
-                  & activeInvestigatorId
-                  .~ x
+              (x : _) -> runMessages $ g & activeInvestigatorId .~ x
           else
             pushMessages
                 [ PrePlayerWindow

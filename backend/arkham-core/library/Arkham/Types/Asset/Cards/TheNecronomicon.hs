@@ -53,7 +53,7 @@ instance (AssetRunner env) => RunMessage env TheNecronomicon where
           )
         TheNecronomicon . (`with` metadata) <$> runMessage msg attrs
       UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
-        unshiftMessage $ InvestigatorAssignDamage iid (AssetSource aid) 0 1
+        unshiftMessage $ InvestigatorDamage iid (AssetSource aid) 0 1
         if theNecronomiconHorror == 1
           then a <$ unshiftMessage (DiscardAsset aid)
           else pure $ TheNecronomicon

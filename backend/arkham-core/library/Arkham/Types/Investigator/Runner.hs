@@ -34,4 +34,5 @@ type InvestigatorRunner env
     , HasList Ability () env
     , HasList UsedAbility () env
     , HasSet Trait AssetId env
+    , HasId LocationId InvestigatorId env
     )

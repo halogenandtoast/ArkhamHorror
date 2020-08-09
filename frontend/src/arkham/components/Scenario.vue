@@ -134,7 +134,7 @@ export default class Scenario extends Vue {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 13px;
   margin: 2px;
-  width: 130px;
+  width: 100px;
 }
 
 .card--sideways {
@@ -187,6 +187,7 @@ export default class Scenario extends Vue {
 .location-cards {
   display: flex;
   justify-content: center;
+  align-items: center;
   overflow: auto;
   min-height: 350px;
 }

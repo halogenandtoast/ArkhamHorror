@@ -2,7 +2,7 @@
   <div>
     <img
       :class="{ 'investigator--can-interact': investigatorAction !== -1 }"
-      class="card"
+      class="card portrait"
       :src="image"
       @click="$emit('choose', investigatorAction)"
     />
@@ -199,7 +199,7 @@ i.action {
 
 .card {
   width: auto;
-  height: 200px;
+  height: 100px;
 }
 
 .tomeAction {

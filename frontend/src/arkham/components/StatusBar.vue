@@ -9,6 +9,10 @@
         <button @click="$emit('choose', index)">{{choice.contents}}</button>
       </div>
 
+      <div v-if="choice.tag === MessageType.RUN && choice.contents[0].tag === MessageType.CONTINUE">
+        <button @click="$emit('choose', index)">{{choice.contents[0].contents}}</button>
+      </div>
+
       <a
         v-if="choice.tag === MessageType.BEGIN_SKILL_TEST_AFTER_FAST"
         class="button"
@@ -23,7 +27,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { choices, Game } from '@/arkham/types/Game';
-import { MessageType } from '@/arkham/types/Message';
+import { Message, MessageType } from '@/arkham/types/Message';
 
 @Component
 export default class StatusBar extends Vue {
@@ -36,13 +40,22 @@ export default class StatusBar extends Vue {
   }
 
   get shouldShow() {
+    return this.choices.some(this.isStatusBarMessage);
+  }
+
+  isStatusBarMessage(c: Message): boolean {
     const validMessageTags = [
       MessageType.CONTINUE,
       MessageType.AFTER_DISCOVER_CLUES,
       MessageType.BEGIN_SKILL_TEST_AFTER_FAST,
     ];
 
-    return this.choices.some((choice) => validMessageTags.includes(choice.tag));
+    switch (c.tag) {
+      case MessageType.RUN:
+        return this.isStatusBarMessage(c.contents[0]);
+      default:
+        return validMessageTags.includes(c.tag);
+    }
   }
 }
 </script>

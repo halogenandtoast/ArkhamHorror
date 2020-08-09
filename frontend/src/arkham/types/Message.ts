@@ -2,6 +2,7 @@ import { JsonDecoder } from 'ts.data.json';
 
 export enum MessageType {
   RUN = 'Run',
+  MULLIGAN_CARD = 'MulliganCard',
   CHOOSE_PLAYER_ORDER = 'ChoosePlayerOrder',
   TAKE_RESOURCES = 'TakeResources',
   DRAW_CARDS = 'DrawCards',
@@ -48,6 +49,7 @@ export interface Message {
 export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
   [
     JsonDecoder.isExactly('Run').then(() => JsonDecoder.constant(MessageType.RUN)),
+    JsonDecoder.isExactly('MulliganCard').then(() => JsonDecoder.constant(MessageType.MULLIGAN_CARD)),
     JsonDecoder.isExactly('ChoosePlayerOrder').then(() => JsonDecoder.constant(MessageType.CHOOSE_PLAYER_ORDER)),
     JsonDecoder.isExactly('TakeResources').then(() => JsonDecoder.constant(MessageType.TAKE_RESOURCES)),
     JsonDecoder.isExactly('DrawCards').then(() => JsonDecoder.constant(MessageType.DRAW_CARDS)),

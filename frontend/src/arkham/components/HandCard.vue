@@ -43,7 +43,7 @@ export default class HandCard extends Vue {
   }
 
   get discardCardAction() {
-    return this.choices.findIndex(this.mustDiscard);
+    return this.choices.findIndex(this.canDiscard);
   }
 
   get playCardAction() {
@@ -85,12 +85,12 @@ export default class HandCard extends Vue {
     }
   }
 
-  mustDiscard(c: Message): boolean {
+  canDiscard(c: Message): boolean {
     switch (c.tag) {
       case MessageType.DISCARD_CARD:
         return c.contents[1] === this.id;
       case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.mustDiscard(c1));
+        return c.contents.some((c1: Message) => this.canDiscard(c1));
       default:
         return false;
     }

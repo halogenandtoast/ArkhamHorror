@@ -30,6 +30,11 @@ export default class App extends Vue {
   src: url("/fonts/arkham.ttf");
 }
 
+@font-face {
+  font-family: "Teutonic";
+  src: url("/fonts/teutonic.ttf");
+}
+
 body {
   margin: 0;
   padding: 0;

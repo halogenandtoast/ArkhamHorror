@@ -45,6 +45,7 @@ data LeftoverCardStrategy = ShuffleBackIn | PutBackInAnyOrder
 data Message
   = Setup
   | SetupInvestigators
+  | FlavorText (Maybe Text) Text
   | InvestigatorMulligan InvestigatorId
   | MulliganCard InvestigatorId CardId
   | FinishedWithMulligan InvestigatorId
@@ -215,6 +216,7 @@ data Message
   | CreateStoryAssetAt CardCode LocationId
   | AddAssetAt AssetId LocationId
   | Resolution Int
+  | GameOver
   | NoResolution
   | Resign InvestigatorId
   | InvestigatorWhenDefeated InvestigatorId

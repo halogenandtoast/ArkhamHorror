@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.FinnEdwards where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ finnEdwards :: FinnEdwards
 finnEdwards = FinnEdwards $ baseAttrs
   "04003"
   "Finn Edwards"
+  Rogue
   Stats
     { health = 7
     , sanity = 7

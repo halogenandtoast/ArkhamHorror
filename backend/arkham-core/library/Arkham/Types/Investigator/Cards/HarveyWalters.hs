@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.HarveyWalters where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ harveyWalters :: HarveyWalters
 harveyWalters = HarveyWalters $ baseAttrs
   "60201"
   "Harvey Walters"
+  Seeker
   Stats
     { health = 7
     , sanity = 8

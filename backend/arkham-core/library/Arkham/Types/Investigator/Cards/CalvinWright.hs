@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.CalvinWright where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ calvinWright :: CalvinWright
 calvinWright = CalvinWright $ baseAttrs
   "04005"
   "Calvin Wright"
+  Survivor
   Stats
     { health = 6
     , sanity = 6

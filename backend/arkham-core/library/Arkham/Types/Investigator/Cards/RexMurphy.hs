@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.RexMurphy where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ rexMurphy :: RexMurphy
 rexMurphy = RexMurphy $ baseAttrs
   "02002"
   "Rex Murphy"
+  Seeker
   Stats
     { health = 6
     , sanity = 9

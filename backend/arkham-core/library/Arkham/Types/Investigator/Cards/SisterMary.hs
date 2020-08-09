@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.SisterMary where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ sisterMary :: SisterMary
 sisterMary = SisterMary $ baseAttrs
   "07001"
   "Sister Mary"
+  Guardian
   Stats
     { health = 5
     , sanity = 9

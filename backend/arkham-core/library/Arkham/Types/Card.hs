@@ -6,7 +6,6 @@ module Arkham.Types.Card
   , EncounterCard(..)
   , PlayerCardType(..)
   , EncounterCardType(..)
-  , ClassSymbol(..)
   , HasCardCode(..)
   , HasCardId(..)
   , HasCost(..)

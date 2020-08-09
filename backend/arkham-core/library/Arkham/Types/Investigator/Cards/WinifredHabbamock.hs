@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.WinifredHabbamock where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ winifredHabbamock :: WinifredHabbamock
 winifredHabbamock = WinifredHabbamock $ baseAttrs
   "60301"
   "Winifred Habbamock"
+  Rogue
   Stats
     { health = 8
     , sanity = 7

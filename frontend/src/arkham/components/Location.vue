@@ -172,11 +172,13 @@ export default class Location extends Vue {
   object-fit: cover;
   object-position: 0 -74px;
   height: 68px;
+  margin-top: 2px;
 }
 
 .portrait {
   border-radius: 3px;
   width: 60px;
+  margin-right: 2px;
 }
 
 .location-container {

@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.RitaYoung where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ ritaYoung :: RitaYoung
 ritaYoung = RitaYoung $ baseAttrs
   "05005"
   "Rita Young"
+  Survivor
   Stats
     { health = 9
     , sanity = 5

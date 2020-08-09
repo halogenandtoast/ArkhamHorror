@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.SkidsOToole where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ skidsOToole :: SkidsOToole
 skidsOToole = SkidsOToole $ baseAttrs
   "01003"
   "\"Skids\" O'Toole"
+  Rogue
   Stats
     { health = 8
     , sanity = 6

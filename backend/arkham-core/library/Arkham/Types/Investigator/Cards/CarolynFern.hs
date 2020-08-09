@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.CarolynFern where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ carolynFern :: CarolynFern
 carolynFern = CarolynFern $ baseAttrs
   "05001"
   "Carolyn Fern"
+  Guardian
   Stats
     { health = 6
     , sanity = 9

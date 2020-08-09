@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.FatherMateo where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ fatherMateo :: FatherMateo
 fatherMateo = FatherMateo $ baseAttrs
   "04004"
   "Father Mateo"
+  Mystic
   Stats
     { health = 6
     , sanity = 8

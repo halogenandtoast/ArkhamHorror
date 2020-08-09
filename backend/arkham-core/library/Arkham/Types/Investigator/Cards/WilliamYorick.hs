@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.WilliamYorick where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ williamYorick :: WilliamYorick
 williamYorick = WilliamYorick $ baseAttrs
   "03005"
   "William Yorick"
+  Survivor
   Stats
     { health = 8
     , sanity = 6

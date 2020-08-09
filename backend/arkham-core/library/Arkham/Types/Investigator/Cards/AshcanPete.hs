@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.AshcanPete where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ ashcanPete :: AshcanPete
 ashcanPete = AshcanPete $ baseAttrs
   "02005"
   "\"Ashcan\" Pete"
+  Survivor
   Stats
     { health = 6
     , sanity = 5

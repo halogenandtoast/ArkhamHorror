@@ -11,9 +11,21 @@ export interface Investigator {
   contents: InvestigatorContents;
 }
 
+type ClassSymbol = 'Guardian' | 'Seeker' | 'Rogue' | 'Mystic' | 'Survivor' | 'Neutral';
+
+export const classSymbolDecoder = JsonDecoder.oneOf<ClassSymbol>([
+  JsonDecoder.isExactly('Guardian'),
+  JsonDecoder.isExactly('Seeker'),
+  JsonDecoder.isExactly('Rogue'),
+  JsonDecoder.isExactly('Mystic'),
+  JsonDecoder.isExactly('Survivor'),
+  JsonDecoder.isExactly('Neutral'),
+], 'ClassSymbol');
+
 export interface InvestigatorContents {
   name: string;
   id: string;
+  class: ClassSymbol;
   health: number;
   sanity: number;
   willpower: number;
@@ -41,6 +53,7 @@ export interface InvestigatorContents {
 export const investigatorContentsDecoder = JsonDecoder.object<InvestigatorContents>({
   name: JsonDecoder.string,
   id: JsonDecoder.string,
+  class: classSymbolDecoder,
   health: JsonDecoder.number,
   sanity: JsonDecoder.number,
   willpower: JsonDecoder.number,

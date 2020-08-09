@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.LukeRobinson where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ lukeRobinson :: LukeRobinson
 lukeRobinson = LukeRobinson $ baseAttrs
   "06004"
   "Luke Robinson"
+  Mystic
   Stats
     { health = 5
     , sanity = 9

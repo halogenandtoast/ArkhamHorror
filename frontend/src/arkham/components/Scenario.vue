@@ -51,6 +51,7 @@
       <Tab
         v-for="(player, index) in players"
         :key="index"
+        :playerClass="player.contents.class"
         :title="player.contents.name"
         :activePlayer="isActivePlayer(player)"
       >

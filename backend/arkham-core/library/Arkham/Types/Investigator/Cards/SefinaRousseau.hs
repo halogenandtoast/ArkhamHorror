@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.SefinaRousseau where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ sefinaRousseau :: SefinaRousseau
 sefinaRousseau = SefinaRousseau $ baseAttrs
   "03003"
   "Sefina Rousseau"
+  Rogue
   Stats
     { health = 5
     , sanity = 9

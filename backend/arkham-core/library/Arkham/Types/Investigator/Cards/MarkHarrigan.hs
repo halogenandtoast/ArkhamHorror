@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.MarkHarrigan where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ markHarrigan :: MarkHarrigan
 markHarrigan = MarkHarrigan $ baseAttrs
   "03001"
   "Mark Harrigan"
+  Guardian
   Stats
     { health = 9
     , sanity = 5

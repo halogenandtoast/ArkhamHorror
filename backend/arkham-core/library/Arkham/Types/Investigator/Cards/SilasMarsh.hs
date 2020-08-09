@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.SilasMarsh where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ silasMarsh :: SilasMarsh
 silasMarsh = SilasMarsh $ baseAttrs
   "98013"
   "Silas Marsh"
+  Survivor
   Stats
     { health = 9
     , sanity = 5

@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.UrsulaDowns where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ ursulaDowns :: UrsulaDowns
 ursulaDowns = UrsulaDowns $ baseAttrs
   "04002"
   "Ursula Downs"
+  Seeker
   Stats
     { health = 7
     , sanity = 7

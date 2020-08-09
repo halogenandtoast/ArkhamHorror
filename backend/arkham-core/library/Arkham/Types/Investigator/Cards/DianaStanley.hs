@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.DianaStanley where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ dianaStanley :: DianaStanley
 dianaStanley = DianaStanley $ baseAttrs
   "05004"
   "Diana Stanley"
+  Mystic
   Stats
     { health = 7
     , sanity = 7
@@ -30,5 +32,6 @@ dianaStanley = DianaStanley $ baseAttrs
 
 instance (InvestigatorRunner env) => RunMessage env DianaStanley where
   runMessage msg i@(DianaStanley attrs@Attrs {..}) = case msg of
-    ResolveToken Token.ElderSign iid _skillValue | iid == investigatorId -> pure i
+    ResolveToken Token.ElderSign iid _skillValue | iid == investigatorId ->
+      pure i
     _ -> DianaStanley <$> runMessage msg attrs

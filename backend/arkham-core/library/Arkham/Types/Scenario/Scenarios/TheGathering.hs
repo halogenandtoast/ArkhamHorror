@@ -57,7 +57,6 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
               \ newspapers have stated that wild animals are responsible, but you believe\
               \ there is something else going on. You are gathered together at the lead\
               \ investigator’s home to discuss these bizarre events."
-              , GameOver
               ]
           ]
         ]

@@ -256,7 +256,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
             tokenResponses
           )
     PerformEnemyAttack iid eid | eid == enemyId -> a <$ unshiftMessage
-      (InvestigatorAssignDamage iid enemyId enemyHealthDamage enemySanityDamage)
+      (InvestigatorAssignDamage iid (EnemySource enemyId) enemyHealthDamage enemySanityDamage)
     EnemyDamage eid iid source amount | eid == enemyId -> do
       let amount' = modifiedDamageAmount a amount
       playerCount <- unPlayerCount <$> asks (getCount ())

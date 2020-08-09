@@ -40,7 +40,7 @@ instance (AssetRunner env) => RunMessage env MedicalTexts where
               SkillIntellect
               2
               [HealDamage (InvestigatorTarget iid') 1]
-              [InvestigatorDamage iid' (AssetSource aid) 1 0]
+              [InvestigatorAssignDamage iid' (AssetSource aid) 1 0]
               []
               mempty
           | iid' <- locationInvestigatorIds

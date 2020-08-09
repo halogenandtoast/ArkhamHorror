@@ -22,6 +22,6 @@ dynamiteBlast iid = do
     pure
       $ map (\eid -> EnemyDamage eid iid (EventSource "01023") 3) enemyIds
       <> map
-           (\iid' -> InvestigatorDamage iid' (EventSource "01023") 3 0)
+           (\iid' -> InvestigatorAssignDamage iid' (EventSource "01023") 3 0)
            investigatorIds
   unshiftMessage (Ask $ ChooseOne $ concat choices)

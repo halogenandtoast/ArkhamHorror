@@ -10,5 +10,5 @@ import ClassyPrelude
 wardOfProtection
   :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
 wardOfProtection iid = unshiftMessages
-  [CancelNextRevelationEffect, InvestigatorDamage iid (EventSource "01065") 0 1]
+  [CancelNextRevelationEffect, InvestigatorAssignDamage iid (EventSource "01065") 0 1]
 

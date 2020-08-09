@@ -116,8 +116,11 @@ data Message
   | EnemyDefeated EnemyId InvestigatorId CardCode Source
   | PlayCard InvestigatorId CardId Bool
   | PlayedCard InvestigatorId CardId Bool
-  | InvestigatorAssignDamage InvestigatorId EnemyId Int Int
-  | AssetDamage AssetId EnemyId Int Int
+  | InvestigatorAssignDamage InvestigatorId Source Int Int
+  -- ^ uses the internal method and then checks defeat
+  | InvestigatorDoAssignDamage InvestigatorId Source Int Int
+  -- ^ meant to be used internally by investigators
+  | AssetDamage AssetId Source Int Int
   | AssetDefeated AssetId
   | DiscardAsset AssetId
   | AssetDiscarded AssetId CardCode
@@ -230,6 +233,7 @@ data Message
   | AddToHand InvestigatorId Card
   | CancelNextRevelationEffect
   | EnemySetBearer EnemyId BearerId
+  | CheckDefeated
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -22,6 +22,6 @@ attic = Attic $ (baseAttrs "01113" "Attic" 1 (PerPlayer 2) Triangle [Square])
 instance (LocationRunner env) => RunMessage env Attic where
   runMessage msg a@(Attic attrs@Attrs {..}) = case msg of
     AfterEnterLocation iid lid | lid == locationId -> do
-      unshiftMessage (InvestigatorDamage iid (LocationSource locationId) 0 1)
+      unshiftMessage $ InvestigatorAssignDamage iid (LocationSource locationId) 0 1
       pure a
     _ -> Attic <$> runMessage msg attrs

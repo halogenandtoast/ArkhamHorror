@@ -113,10 +113,10 @@ instance (AssetRunner env) => RunMessage env Attrs where
           (\(_, source', _, _, _) -> Just source /= source')
           assetAbilities
       pure $ a & abilities .~ abilities'
-    AssetDamage aid _ health sanity | aid == assetId -> do
-      let a' = a & healthDamage +~ health & sanityDamage +~ sanity
-      when (defeated a') (unshiftMessage (AssetDefeated aid))
-      pure a'
+    CheckDefeated ->
+      a <$ when (defeated a) (unshiftMessage (AssetDefeated assetId))
+    AssetDamage aid _ health sanity | aid == assetId ->
+      pure $ a & healthDamage +~ health & sanityDamage +~ sanity
     DiscardAsset aid | aid == assetId -> case assetInvestigator of
       Nothing -> pure a
       Just iid -> a <$ unshiftMessage

@@ -2,7 +2,8 @@
 module Arkham.Types.Asset
   ( lookupAsset
   , allAssets
-  , isDamageable
+  , isHealthDamageable
+  , isSanityDamageable
   , slotsOf
   , Asset
   )
@@ -133,10 +134,11 @@ assetAttrs = \case
   Flashlight' attrs -> coerce attrs
   LitaChantler' attrs -> coerce attrs
 
-isDamageable :: Asset -> Bool
-isDamageable a =
-  (isJust . assetHealth . assetAttrs $ a)
-    || (isJust . assetHealth . assetAttrs $ a)
+isHealthDamageable :: Asset -> Bool
+isHealthDamageable = isJust . assetHealth . assetAttrs
+
+isSanityDamageable :: Asset -> Bool
+isSanityDamageable = isJust . assetSanity . assetAttrs
 
 instance (AssetRunner env) => RunMessage env Asset where
   runMessage msg = \case

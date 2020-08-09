@@ -23,6 +23,6 @@ cellar = Cellar $ (baseAttrs "01114" "Cellar" 4 (PerPlayer 2) Plus [Square])
 instance (LocationRunner env) => RunMessage env Cellar where
   runMessage msg a@(Cellar attrs@Attrs {..}) = case msg of
     AfterEnterLocation iid lid | lid == locationId -> do
-      unshiftMessage (InvestigatorDamage iid (LocationSource locationId) 1 0)
+      unshiftMessage $ InvestigatorAssignDamage iid (LocationSource locationId) 1 0
       pure a
     _ -> Cellar <$> runMessage msg attrs

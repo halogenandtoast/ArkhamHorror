@@ -541,7 +541,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     InvestigatorDamageInvestigator iid xid | iid == investigatorId -> do
       let damage = damageValueFor 1 a
       a <$ unshiftMessage
-        (InvestigatorDamage xid (InvestigatorSource iid) damage 0)
+        (InvestigatorAssignDamage xid (InvestigatorSource iid) damage 0)
     InvestigatorDamageEnemy iid eid | iid == investigatorId -> do
       let damage = damageValueFor 1 a
       a <$ unshiftMessage (EnemyDamage eid iid (InvestigatorSource iid) damage)
@@ -579,15 +579,31 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       ]
     MoveAction iid lid False | iid == investigatorId ->
       a <$ unshiftMessage (MoveTo iid lid)
-    InvestigatorAssignDamage iid eid health sanity | iid == investigatorId -> do
-      allDamageableAssets <-
-        HashSet.toList . HashSet.map unDamageableAssetId <$> asks (getSet iid)
-      a <$ unshiftMessage
-        (Ask $ ChooseOne
-          (InvestigatorDamage investigatorId (EnemySource eid) health sanity
-          : map (\k -> AssetDamage k eid health sanity) allDamageableAssets
-          )
-        )
+    InvestigatorAssignDamage iid source health sanity | iid == investigatorId ->
+      a <$ unshiftMessages [InvestigatorDoAssignDamage iid source health sanity, CheckDefeated]
+    InvestigatorDoAssignDamage iid _ 0 0 | iid == investigatorId -> pure a
+    InvestigatorDoAssignDamage iid source health sanity | iid == investigatorId -> do
+      healthDamageMessages <- if health > 0
+        then do
+          let assignRestOfHealthDamage = InvestigatorDoAssignDamage investigatorId source (health - 1) sanity
+          healthDamageableAssets <- map unHealthDamageableAssetId . HashSet.toList <$> asks (getSet iid)
+          pure
+            $ Run [ InvestigatorDamage investigatorId source 1 0 , assignRestOfHealthDamage]
+            : [ Run [AssetDamage aid source 1 0, assignRestOfHealthDamage]  | aid <- healthDamageableAssets]
+        else pure []
+
+      sanityDamageMessages <- if sanity > 0
+        then do
+          let assignRestOfSanityDamage = InvestigatorDoAssignDamage investigatorId source health (sanity - 1)
+          sanityDamageableAssets <- map unSanityDamageableAssetId . HashSet.toList <$> asks (getSet iid)
+          pure
+            $ Run [ InvestigatorDamage investigatorId source 0 1 , assignRestOfSanityDamage]
+            : [ Run [AssetDamage aid source 0 1, assignRestOfSanityDamage]  | aid <- sanityDamageableAssets]
+        else pure []
+
+      case (healthDamageMessages, sanityDamageMessages) of
+        ([x], [y]) -> a <$ unshiftMessages [x, y]
+        (xs, ys) -> a <$ unshiftMessage (Ask $ ChooseOne $ xs <> ys)
     Investigate iid lid skillType tokenResponses True | iid == investigatorId ->
       a <$ unshiftMessages
         [ TakeAction
@@ -680,11 +696,10 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
               else error "could not find asset to discard"
           _ -> error "multi-slot items not handled yet"
         else pure $ a & assetsUpdate
-    InvestigatorDamage iid _ health sanity | iid == investigatorId -> do
-      let a' = a & healthDamage +~ health & sanityDamage +~ sanity
-      if facingDefeat a'
-        then a' <$ unshiftMessage (InvestigatorWhenDefeated iid)
-        else pure a'
+    InvestigatorDamage iid _ health sanity | iid == investigatorId ->
+      pure $ a & healthDamage +~ health & sanityDamage +~ sanity
+    CheckDefeated ->
+      a <$ when (facingDefeat a) (unshiftMessage (InvestigatorWhenDefeated investigatorId))
     HealDamage (InvestigatorTarget iid) amount | iid == investigatorId ->
       pure $ a & healthDamage %~ max 0 . subtract amount
     HealHorror (InvestigatorTarget iid) amount | iid == investigatorId ->

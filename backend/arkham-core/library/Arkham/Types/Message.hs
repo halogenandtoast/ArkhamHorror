@@ -54,6 +54,7 @@ data Message
   | BeginMythos
   | EndMythos
   | BeginInvestigation
+  | ChoosePlayerOrder [InvestigatorId] [InvestigatorId]
   | EndInvestigation
   | BeginEnemy
   | EndEnemy

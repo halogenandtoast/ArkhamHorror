@@ -40,7 +40,7 @@
       </div>
       <img
         :class="{ 'deck--can-draw': drawCardsAction !== -1 }"
-        class="card"
+        class="deck"
         src="/img/arkham/player_back.jpg"
         width="150px"
         @click="$emit('choose', drawCardsAction)"
@@ -142,7 +142,7 @@ export default class Player extends Vue {
   }
 }
 
-.card {
+.deck, .card {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 13px;
   margin: 2px;

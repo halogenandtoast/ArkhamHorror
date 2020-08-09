@@ -1,6 +1,8 @@
 <template>
   <div v-if="!game.currentData.gameOver" id="game" class="game">
+    <CardOverlay />
     <StatusBar :game="game" @choose="$emit('choose', $event)" />
+    <PlayerOrder :game="game" @choose="$emit('choose', $event)" />
     <div class="scenario-cards">
       <div v-if="topOfEncounterDiscard" class="discard">
         <img
@@ -74,8 +76,10 @@ import StatusBar from '@/arkham/components/StatusBar.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
+import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
 import Tab from '@/arkham/components/Tab.vue';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
+import CardOverlay from '@/arkham/components/CardOverlay.vue';
 import Location from '@/arkham/components/Location.vue';
 
 @Component({
@@ -90,6 +94,8 @@ import Location from '@/arkham/components/Location.vue';
     PlayerTabs,
     Tab,
     EncounterDeck,
+    PlayerOrder,
+    CardOverlay,
   },
 })
 export default class Scenario extends Vue {

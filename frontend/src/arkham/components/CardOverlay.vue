@@ -1,0 +1,39 @@
+<template>
+  <div v-if="card" class="card-overlay">
+    <img :src="card" />
+  </div>
+</template>
+
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+
+@Component
+export default class CardOverlay extends Vue {
+  card: string | null = null
+
+  mounted() {
+    document.addEventListener('mouseover', (event) => {
+      if (event.target instanceof HTMLImageElement) {
+        if (event.target.classList.contains('card')) {
+          this.card = event.target.src;
+        } else {
+          this.card = null;
+        }
+      } else {
+        this.card = null;
+      }
+    });
+  }
+}
+</script>
+
+<style lang="scss">
+.card-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  img {
+    border-radius: 20px;
+  }
+}
+</style>

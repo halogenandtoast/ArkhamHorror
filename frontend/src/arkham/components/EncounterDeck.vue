@@ -6,7 +6,7 @@
       :src="investigatorPortrait"
     />
     <img
-      class="card"
+      class="deck"
       src="/img/arkham/back.png"
       :class="{ 'can-interact': deckAction !== -1 }"
       @click="$emit('choose', deckAction)"
@@ -61,7 +61,7 @@ export default class EncounterDeck extends Vue {
 </script>
 
 <style scoped lang="scss">
-.card {
+.deck {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 13px;
   margin: 2px;

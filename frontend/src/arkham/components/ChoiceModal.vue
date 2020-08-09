@@ -30,29 +30,12 @@
       />
     </div>
   </div>
-  <div v-else-if="playerOrderChoices.length > 0" class="modal">
-    <div class="modal-contents choose-player-order">
-      <p>Choose Player Order</p>
-      <div class="choose-player-order-portraits">
-        <div
-          v-for="{ choice, idx } in playerOrderChoices"
-          :key="idx"
-          @click="$emit('choose', idx)"
-        >
-          <img
-            class="portrait"
-            :src="investigatorPortrait(choice)"
-          />
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import { choicesSource, choices, Game } from '@/arkham/types/Game';
-import { Message, MessageType } from '@/arkham/types/Message';
+import { Message } from '@/arkham/types/Message';
 import FocusedCard from '@/arkham/components/FocusedCard.vue';
 
 @Component({
@@ -65,18 +48,6 @@ export default class ChoiceModal extends Vue {
 
   get choices(): Message[] {
     return choices(this.game);
-  }
-
-  get playerOrderChoices() {
-    return this
-      .choices
-      .map((choice, idx) => ({ choice, idx }))
-      .filter(({ choice }) => choice.tag === MessageType.CHOOSE_PLAYER_ORDER);
-  }
-
-  investigatorPortrait = (choice: Message) => {
-    const iid = choice.contents[1].slice(-1);
-    return `/img/arkham/portraits/${iid}.jpg`;
   }
 
   get focusedCards() {
@@ -164,16 +135,5 @@ export default class ChoiceModal extends Vue {
   margin: 2px;
   border: 3px solid #FF00FF;
   cursor: pointer;
-}
-
-.portrait {
-  margin: 0 5px;
-  border: 3px solid #FF00FF;
-  cursor: pointer;
-}
-
-.choose-player-order-portraits {
-  display: flex;
-  flex-direction: row;
 }
 </style>

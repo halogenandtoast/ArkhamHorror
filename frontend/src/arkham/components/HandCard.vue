@@ -123,8 +123,8 @@ export default class HandCard extends Vue {
 <style scoped lang="scss">
 
 .card {
-  width: 120px;
-  min-width: 120px;
+  width: 100px;
+  min-width: 100px;
   border-radius: 7px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 13px;

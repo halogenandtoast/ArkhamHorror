@@ -40,7 +40,7 @@ export default class Act extends Vue {
 
 <style scoped lang="scss">
 .card {
-  width: 250px;
+  width: 100px;
   -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23), 0 3px 6px rgba(0, 0, 0, 0.53);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.23), 0 3px 6px rgba(0, 0, 0, 0.53);
   border-radius: 13px;
@@ -49,7 +49,7 @@ export default class Act extends Vue {
 
 .card--sideways {
   width: auto;
-  height: 200px;
+  height: 100px;
 }
 
 .act--can-progress {

@@ -65,7 +65,7 @@ export default class EncounterDeck extends Vue {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 13px;
   margin: 2px;
-  width: 130px;
+  width: 100px;
 }
 .portrait {
   width: 100px;

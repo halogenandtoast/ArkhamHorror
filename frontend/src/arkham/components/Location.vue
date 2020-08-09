@@ -7,7 +7,6 @@
       <img
         :src="portrait(cardCode)"
         class="portrait"
-        width="80"
       />
     </div>
     <div class="location-column">
@@ -161,12 +160,12 @@ export default class Location extends Vue {
 }
 
 .card {
-  width: 150px;
+  width: 100px;
   border-radius: 10px;
 }
 
 /deep/ .enemy {
-  width: 100px;
+  width: 80px;
 }
 
 /deep/ .treachery {
@@ -177,6 +176,7 @@ export default class Location extends Vue {
 
 .portrait {
   border-radius: 3px;
+  width: 60px;
 }
 
 .location-container {

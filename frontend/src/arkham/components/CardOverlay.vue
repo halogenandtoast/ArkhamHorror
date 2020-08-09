@@ -30,7 +30,7 @@ export default class CardOverlay extends Vue {
 <style lang="scss">
 .card-overlay {
   position: absolute;
-  top: 10px;
+  top: 50px;
   right: 10px;
   img {
     border-radius: 20px;

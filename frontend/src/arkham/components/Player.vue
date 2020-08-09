@@ -146,7 +146,11 @@ export default class Player extends Vue {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 13px;
   margin: 2px;
-  max-width: 130px;
+  max-width: 100px;
+}
+
+.deck {
+  margin-top: 10px;
 }
 
 .in-play {

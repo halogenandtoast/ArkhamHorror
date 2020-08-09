@@ -214,6 +214,7 @@ export default class Scenario extends Vue {
   height: 100%;
   position: relative;
   &::after {
+    pointer-events: none;
     content: "";
     position: absolute;
     top: 0;

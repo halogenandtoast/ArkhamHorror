@@ -65,7 +65,8 @@ export default class Treachery extends Vue {
 
 <style lang="scss" scoped>
 .card {
-  width: 150px;
+  width: 100px;
+  max-width: 100px;
   border-radius: 5px;
 }
 

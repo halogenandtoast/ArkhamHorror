@@ -127,8 +127,10 @@ export default class Player extends Vue {
 }
 
 .discard {
+  margin-top: 10px;
   position: relative;
   &::after {
+    pointer-events: none;
     content: "";
     position: absolute;
     top: 0;

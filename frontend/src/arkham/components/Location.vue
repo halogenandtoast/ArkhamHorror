@@ -170,8 +170,8 @@ export default class Location extends Vue {
 
 /deep/ .treachery {
   object-fit: cover;
-  object-position: 0 -104px;
-  height: 104px;
+  object-position: 0 -74px;
+  height: 68px;
 }
 
 .portrait {

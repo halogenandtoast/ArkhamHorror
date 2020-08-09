@@ -152,7 +152,8 @@ export default class Asset extends Vue {
 
 <style lang="scss" scoped>
 .card {
-  width: 130px;
+  width: 100px;
+  max-width: 100px;
   border-radius: 5px;
 }
 
@@ -175,6 +176,7 @@ export default class Asset extends Vue {
   display: flex;
   flex-direction: row;
   height: 2em;
+  justify-content: center;
 }
 
 .button{

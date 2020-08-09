@@ -145,7 +145,8 @@ export default class Enemy extends Vue {
 }
 
 .card {
-  width: 200px;
+  width: 100px;
+  max-width: 100px;
   border-radius: 5px;
 }
 

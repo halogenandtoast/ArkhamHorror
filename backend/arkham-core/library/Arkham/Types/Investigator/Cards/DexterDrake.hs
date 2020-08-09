@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.DexterDrake where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ dexterDrake :: DexterDrake
 dexterDrake = DexterDrake $ baseAttrs
   "98016"
   "Dexter Drake"
+  Mystic
   Stats
     { health = 6
     , sanity = 8

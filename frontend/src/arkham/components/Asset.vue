@@ -141,7 +141,7 @@ export default class Asset extends Vue {
       .choices
       .reduce<number[]>((acc, v, i) => {
         if (v.tag === 'ActivateCardAbilityAction' && v.contents[1][0].tag === 'AssetSource' && v.contents[1][0].contents === this.id) {
-          return [i, ...acc];
+          return [...acc, i];
         }
 
         return acc;

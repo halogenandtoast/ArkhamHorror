@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.JimCulver where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ jimCulver :: JimCulver
 jimCulver = JimCulver $ baseAttrs
   "02004"
   "Jim Culver"
+  Mystic
   Stats
     { health = 7
     , sanity = 8

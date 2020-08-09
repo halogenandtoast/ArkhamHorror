@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.MinhThiPhan where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ minhThiPhan :: MinhThiPhan
 minhThiPhan = MinhThiPhan $ baseAttrs
   "03002"
   "Minh Thi Phan"
+  Seeker
   Stats
     { health = 7
     , sanity = 7

@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.JoeDiamond where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ joeDiamond :: JoeDiamond
 joeDiamond = JoeDiamond $ baseAttrs
   "05002"
   "Joe Diamond"
+  Seeker
   Stats
     { health = 8
     , sanity = 6

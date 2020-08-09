@@ -3,6 +3,7 @@ module Arkham.Types.Investigator.Cards.RolandBanks where
 
 import Arkham.Types.Ability
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.FastWindow (Who(..))
 import qualified Arkham.Types.FastWindow as Fast
 import Arkham.Types.Investigator.Attrs
@@ -21,11 +22,12 @@ newtype RolandBanks = RolandBanks Attrs
 
 rolandBanks :: RolandBanks
 rolandBanks = RolandBanks $ (baseAttrs
-                               "01001"
-                               "Roland Banks"
-                               stats
-                               [Agency, Detective]
-                             )
+                              "01001"
+                              "Roland Banks"
+                              Guardian
+                              stats
+                              [Agency, Detective]
+                            )
   { investigatorAbilities =
     [ ( InvestigatorSource "01001"
       , Nothing

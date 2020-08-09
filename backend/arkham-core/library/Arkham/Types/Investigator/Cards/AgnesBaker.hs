@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.AgnesBaker where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ agnesBaker :: AgnesBaker
 agnesBaker = AgnesBaker $ baseAttrs
   "01004"
   "Agnes Baker"
+  Mystic
   Stats
     { health = 6
     , sanity = 8

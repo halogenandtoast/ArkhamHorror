@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.WendyAdams where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ wendyAdams :: WendyAdams
 wendyAdams = WendyAdams $ baseAttrs
   "01005"
   "Wendy Adams"
+  Survivor
   Stats
     { health = 7
     , sanity = 7

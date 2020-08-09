@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.LolaHayes where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ lolaHayes :: LolaHayes
 lolaHayes = LolaHayes $ baseAttrs
   "03006"
   "Lola Hayes"
+  Neutral
   Stats
     { health = 6
     , sanity = 6

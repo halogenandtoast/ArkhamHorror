@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.JennyBarnes where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ jennyBarnes :: JennyBarnes
 jennyBarnes = JennyBarnes $ baseAttrs
   "02003"
   "Jenny Barnes"
+  Rogue
   Stats
     { health = 8
     , sanity = 7

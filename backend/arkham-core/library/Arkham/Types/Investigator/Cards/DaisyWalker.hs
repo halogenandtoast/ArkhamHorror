@@ -3,6 +3,7 @@ module Arkham.Types.Investigator.Cards.DaisyWalker where
 
 import Arkham.Types.Ability
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
@@ -27,7 +28,7 @@ newtype DaisyWalker = DaisyWalker (Attrs `With` DaisyWalkerMetadata)
 daisyWalker :: DaisyWalker
 daisyWalker =
   DaisyWalker
-    $ baseAttrs "01002" "Daisy Walker" stats [Miskatonic]
+    $ baseAttrs "01002" "Daisy Walker" Seeker stats [Miskatonic]
     `with` DaisyWalkerMetadata 1
  where
   stats = Stats

@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.TommyMuldoon where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ tommyMuldoon :: TommyMuldoon
 tommyMuldoon = TommyMuldoon $ baseAttrs
   "06001"
   "Tommy Muldoon"
+  Guardian
   Stats
     { health = 8
     , sanity = 6

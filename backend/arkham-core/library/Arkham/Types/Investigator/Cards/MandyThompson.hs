@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.MandyThompson where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ mandyThompson :: MandyThompson
 mandyThompson = MandyThompson $ baseAttrs
   "06002"
   "Mandy Thompson"
+  Seeker
   Stats
     { health = 6
     , sanity = 8

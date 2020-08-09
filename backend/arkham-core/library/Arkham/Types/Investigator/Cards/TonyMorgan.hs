@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.TonyMorgan where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ tonyMorgan :: TonyMorgan
 tonyMorgan = TonyMorgan $ baseAttrs
   "06003"
   "Tony Morgan"
+  Rogue
   Stats
     { health = 9
     , sanity = 5

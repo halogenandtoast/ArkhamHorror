@@ -10,6 +10,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.EnemyId
 import Arkham.Types.FastWindow
 import Arkham.Types.Helpers
@@ -40,6 +41,7 @@ instance HasCardCode Attrs where
 
 data Attrs = Attrs
   { investigatorName :: Text
+  , investigatorClass :: ClassSymbol
   , investigatorId :: InvestigatorId
   , investigatorHealth :: Int
   , investigatorSanity :: Int
@@ -199,10 +201,11 @@ discardableAssets slotType a = case HashMap.lookup slotType (a ^. slots) of
   Just slots' -> mapMaybe slotItem slots'
 
 
-baseAttrs :: InvestigatorId -> Text -> Stats -> [Trait] -> Attrs
-baseAttrs iid name Stats {..} traits = Attrs
+baseAttrs :: InvestigatorId -> Text -> ClassSymbol -> Stats -> [Trait] -> Attrs
+baseAttrs iid name classSymbol Stats {..} traits = Attrs
   { investigatorName = name
   , investigatorId = iid
+  , investigatorClass = classSymbol
   , investigatorHealth = health
   , investigatorSanity = sanity
   , investigatorWillpower = willpower
@@ -580,30 +583,56 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     MoveAction iid lid False | iid == investigatorId ->
       a <$ unshiftMessage (MoveTo iid lid)
     InvestigatorAssignDamage iid source health sanity | iid == investigatorId ->
-      a <$ unshiftMessages [InvestigatorDoAssignDamage iid source health sanity, CheckDefeated]
+      a <$ unshiftMessages
+        [InvestigatorDoAssignDamage iid source health sanity, CheckDefeated]
     InvestigatorDoAssignDamage iid _ 0 0 | iid == investigatorId -> pure a
-    InvestigatorDoAssignDamage iid source health sanity | iid == investigatorId -> do
-      healthDamageMessages <- if health > 0
-        then do
-          let assignRestOfHealthDamage = InvestigatorDoAssignDamage investigatorId source (health - 1) sanity
-          healthDamageableAssets <- map unHealthDamageableAssetId . HashSet.toList <$> asks (getSet iid)
-          pure
-            $ Run [ InvestigatorDamage investigatorId source 1 0 , assignRestOfHealthDamage]
-            : [ Run [AssetDamage aid source 1 0, assignRestOfHealthDamage]  | aid <- healthDamageableAssets]
-        else pure []
+    InvestigatorDoAssignDamage iid source health sanity
+      | iid == investigatorId -> do
+        healthDamageMessages <- if health > 0
+          then do
+            let
+              assignRestOfHealthDamage = InvestigatorDoAssignDamage
+                investigatorId
+                source
+                (health - 1)
+                sanity
+            healthDamageableAssets <-
+              map unHealthDamageableAssetId . HashSet.toList <$> asks
+                (getSet iid)
+            pure
+              $ Run
+                  [ InvestigatorDamage investigatorId source 1 0
+                  , assignRestOfHealthDamage
+                  ]
+              : [ Run [AssetDamage aid source 1 0, assignRestOfHealthDamage]
+                | aid <- healthDamageableAssets
+                ]
+          else pure []
 
-      sanityDamageMessages <- if sanity > 0
-        then do
-          let assignRestOfSanityDamage = InvestigatorDoAssignDamage investigatorId source health (sanity - 1)
-          sanityDamageableAssets <- map unSanityDamageableAssetId . HashSet.toList <$> asks (getSet iid)
-          pure
-            $ Run [ InvestigatorDamage investigatorId source 0 1 , assignRestOfSanityDamage]
-            : [ Run [AssetDamage aid source 0 1, assignRestOfSanityDamage]  | aid <- sanityDamageableAssets]
-        else pure []
+        sanityDamageMessages <- if sanity > 0
+          then do
+            let
+              assignRestOfSanityDamage = InvestigatorDoAssignDamage
+                investigatorId
+                source
+                health
+                (sanity - 1)
+            sanityDamageableAssets <-
+              map unSanityDamageableAssetId . HashSet.toList <$> asks
+                (getSet iid)
+            pure
+              $ Run
+                  [ InvestigatorDamage investigatorId source 0 1
+                  , assignRestOfSanityDamage
+                  ]
+              : [ Run [AssetDamage aid source 0 1, assignRestOfSanityDamage]
+                | aid <- sanityDamageableAssets
+                ]
+          else pure []
 
-      case (healthDamageMessages, sanityDamageMessages) of
-        ([x], [y]) -> a <$ unshiftMessages [x, y]
-        (xs, ys) -> a <$ unshiftMessage (Ask $ ChooseOne $ xs <> ys)
+        case (healthDamageMessages, sanityDamageMessages) of
+          ([x], [y]) -> a <$ unshiftMessages [x, y]
+          (xs, ys) -> a <$ unshiftMessage (Ask $ ChooseOne $ xs <> ys)
     Investigate iid lid skillType tokenResponses True | iid == investigatorId ->
       a <$ unshiftMessages
         [ TakeAction
@@ -698,8 +727,9 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         else pure $ a & assetsUpdate
     InvestigatorDamage iid _ health sanity | iid == investigatorId ->
       pure $ a & healthDamage +~ health & sanityDamage +~ sanity
-    CheckDefeated ->
-      a <$ when (facingDefeat a) (unshiftMessage (InvestigatorWhenDefeated investigatorId))
+    CheckDefeated -> a <$ when
+      (facingDefeat a)
+      (unshiftMessage (InvestigatorWhenDefeated investigatorId))
     HealDamage (InvestigatorTarget iid) amount | iid == investigatorId ->
       pure $ a & healthDamage %~ max 0 . subtract amount
     HealHorror (InvestigatorTarget iid) amount | iid == investigatorId ->

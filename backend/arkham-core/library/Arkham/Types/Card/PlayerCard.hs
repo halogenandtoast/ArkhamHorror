@@ -6,6 +6,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
 import Arkham.Types.Card.Id
+import Arkham.Types.ClassSymbol
 import Arkham.Types.FastWindow
 import Arkham.Types.Keyword
 import Arkham.Types.SkillType
@@ -22,16 +23,6 @@ data PlayerCardType
   | PlayerTreacheryType
   | PlayerEnemyType
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-data ClassSymbol
-  = Guardian
-  | Seeker
-  | Survivor
-  | Rogue
-  | Mystic
-  | Neutral
-  deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype BearerId = BearerId { unBearerId :: CardCode }

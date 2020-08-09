@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.NormanWithers where
 
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -18,6 +19,7 @@ normanWithers :: NormanWithers
 normanWithers = NormanWithers $ baseAttrs
   "98007"
   "Norman Withers"
+  Seeker
   Stats
     { health = 6
     , sanity = 8

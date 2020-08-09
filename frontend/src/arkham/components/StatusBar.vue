@@ -10,7 +10,7 @@
       </div>
 
       <div v-if="choice.tag === MessageType.RUN && choice.contents[0].tag === MessageType.CONTINUE">
-        <div v-if="choice.contents[1].tag === MessageType.INTRO_TEXT" class="intro-text">
+        <div v-if="choice.contents[1].tag === MessageType.FLAVOR_TEXT" class="intro-text">
           <h1 v-if="choice.contents[1].contents[0]">{{choice.contents[1].contents[0]}}</h1>
           <p>{{choice.contents[1].contents[1]}}</p>
         </div>

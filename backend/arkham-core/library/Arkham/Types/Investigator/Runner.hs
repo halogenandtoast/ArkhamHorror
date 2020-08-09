@@ -15,7 +15,8 @@ import Arkham.Types.TreacheryId
 type InvestigatorRunner env
   = ( HasCount ClueCount LocationId env
     , HasCount AssetCount (InvestigatorId, [Trait]) env
-    , HasSet DamageableAssetId InvestigatorId env
+    , HasSet HealthDamageableAssetId InvestigatorId env
+    , HasSet SanityDamageableAssetId InvestigatorId env
     , HasSet CommitedCardId InvestigatorId env
     , HasQueue env
     , HasSet AdvanceableActId () env

@@ -10,5 +10,8 @@ newtype AssetId = AssetId { unAssetId :: UUID }
 newtype StoryAssetId = StoryAssetId { unStoryAssetId :: AssetId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 
-newtype DamageableAssetId = DamageableAssetId { unDamageableAssetId :: AssetId }
+newtype HealthDamageableAssetId = HealthDamageableAssetId { unHealthDamageableAssetId :: AssetId }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
+newtype SanityDamageableAssetId = SanityDamageableAssetId { unSanityDamageableAssetId :: AssetId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

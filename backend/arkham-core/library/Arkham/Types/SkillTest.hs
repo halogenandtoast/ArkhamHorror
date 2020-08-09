@@ -144,11 +144,11 @@ instance (SkillTestRunner env) => RunMessage env SkillTest where
     AddOnSuccess m -> pure $ s & onSuccess %~ (m :)
     HorrorPerPointOfFailure iid -> case skillTestResult of
       FailedBy n ->
-        s <$ unshiftMessage (InvestigatorDamage iid SkillTestSource 0 n)
+        s <$ unshiftMessage (InvestigatorAssignDamage iid SkillTestSource 0 n)
       _ -> error "Should not be called when not failed"
     DamagePerPointOfFailure iid -> case skillTestResult of
       FailedBy n ->
-        s <$ unshiftMessage (InvestigatorDamage iid SkillTestSource n 0)
+        s <$ unshiftMessage (InvestigatorAssignDamage iid SkillTestSource n 0)
       _ -> error "Should not be called when not failed"
     DrawToken token -> do
       onTokenResponses' <-

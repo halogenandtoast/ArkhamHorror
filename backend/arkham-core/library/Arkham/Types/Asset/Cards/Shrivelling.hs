@@ -63,7 +63,7 @@ instance (AssetRunner env) => RunMessage env Shrivelling where
                   , Token.ElderThing
                   , Token.AutoFail
                   ]
-                  [ InvestigatorDamage
+                  [ InvestigatorAssignDamage
                       (getInvestigator attrs)
                       (AssetSource assetId)
                       0

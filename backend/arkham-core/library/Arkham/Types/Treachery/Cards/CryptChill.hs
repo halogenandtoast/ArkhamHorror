@@ -38,5 +38,5 @@ instance (TreacheryRunner env) => RunMessage env CryptChill where
         then t <$ unshiftMessage (ChooseAndDiscardAsset iid)
         else
           t <$ unshiftMessage
-            (InvestigatorDamage iid (TreacherySource treacheryId) 2 0)
+            (InvestigatorAssignDamage iid (TreacherySource treacheryId) 2 0)
     _ -> CryptChill <$> runMessage msg attrs

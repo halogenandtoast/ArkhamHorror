@@ -23,10 +23,14 @@
       <PoolItem
         type="health"
         :amount="player.contents.healthDamage"
+        :class="{ 'health--can-interact': healthAction !== -1 }"
+        @choose="$emit('choose', healthAction)"
       />
       <PoolItem
         type="sanity"
         :amount="player.contents.sanityDamage"
+        :class="{ 'sanity--can-interact': sanityAction !== -1 }"
+        @choose="$emit('choose', sanityAction)"
       />
       <span><i class="action" v-for="n in player.contents.remainingActions" :key="n"></i></span>
       <span v-if="player.contents.tomeActions && player.contents.tomeActions > 0">
@@ -44,7 +48,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import * as Arkham from '@/arkham/types/Investigator';
 import { choices, Game } from '@/arkham/types/Game';
-import { MessageType } from '@/arkham/types/Message';
+import { Message, MessageType } from '@/arkham/types/Message';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 
 @Component({
@@ -100,6 +104,36 @@ export default class Investigator extends Vue {
 
   get takeDamageAction() {
     return this.choices.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DAMAGE);
+  }
+
+  get healthAction() {
+    return this.choices.findIndex(this.canAdjustHealth);
+  }
+
+  get sanityAction() {
+    return this.choices.findIndex(this.canAdjustSanity);
+  }
+
+  canAdjustHealth(c: Message): boolean {
+    switch (c.tag) {
+      case MessageType.INVESTIGATOR_DAMAGE:
+        return c.contents[0] === this.id && c.contents[2] > 0;
+      case MessageType.RUN:
+        return c.contents.some((c1: Message) => this.canAdjustHealth(c1));
+      default:
+        return false;
+    }
+  }
+
+  canAdjustSanity(c: Message): boolean {
+    switch (c.tag) {
+      case MessageType.INVESTIGATOR_DAMAGE:
+        return c.contents[0] === this.id && c.contents[3] > 0;
+      case MessageType.RUN:
+        return c.contents.some((c1: Message) => this.canAdjustSanity(c1));
+      default:
+        return false;
+    }
   }
 
   get takeResourceAction() {

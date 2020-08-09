@@ -79,4 +79,12 @@ export default class PoolItem extends Vue {
   cursor: pointer;
   background-color: #FF00FF;
 }
+
+.health--can-interact, .sanity--can-interact {
+  > span {
+    padding: 0px;
+    cursor: pointer;
+    border: 2px solid #FF00FF;
+  }
+}
 </style>

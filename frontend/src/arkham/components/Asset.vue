@@ -24,14 +24,18 @@
         :amount="asset.contents.horror"
       />
       <PoolItem
-        v-if="asset.contents.sanity"
-        type="sanity"
-        :amount="asset.contents.sanityDamage"
-      />
-      <PoolItem
         v-if="asset.contents.health"
         type="health"
         :amount="asset.contents.healthDamage"
+        :class="{ 'health--can-interact': healthAction !== -1 }"
+        @choose="$emit('choose', healthAction)"
+      />
+      <PoolItem
+        v-if="asset.contents.sanity"
+        type="sanity"
+        :amount="asset.contents.sanityDamage"
+        :class="{ 'sanity--can-interact': sanityAction !== -1 }"
+        @choose="$emit('choose', sanityAction)"
       />
     </div>
   </div>
@@ -89,12 +93,40 @@ export default class Asset extends Vue {
     switch (c.tag) {
       case MessageType.DISCARD_ASSET:
         return c.contents === this.id;
-      case MessageType.ASSET_DAMAGE:
-        return c.contents[0] === this.id;
       case MessageType.USE_CARD_ABILITY:
         return c.contents[1][0].contents === this.id;
       case MessageType.RUN:
         return c.contents.some((c1: Message) => this.canInteract(c1));
+      default:
+        return false;
+    }
+  }
+
+  get healthAction() {
+    return this.choices.findIndex(this.canAdjustHealth);
+  }
+
+  get sanityAction() {
+    return this.choices.findIndex(this.canAdjustSanity);
+  }
+
+  canAdjustHealth(c: Message): boolean {
+    switch (c.tag) {
+      case MessageType.ASSET_DAMAGE:
+        return c.contents[0] === this.id && c.contents[2] > 0;
+      case MessageType.RUN:
+        return c.contents.some((c1: Message) => this.canAdjustHealth(c1));
+      default:
+        return false;
+    }
+  }
+
+  canAdjustSanity(c: Message): boolean {
+    switch (c.tag) {
+      case MessageType.ASSET_DAMAGE:
+        return c.contents[0] === this.id && c.contents[3] > 0;
+      case MessageType.RUN:
+        return c.contents.some((c1: Message) => this.canAdjustSanity(c1));
       default:
         return false;
     }

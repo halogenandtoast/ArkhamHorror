@@ -131,14 +131,14 @@ instance (ScenarioRunner env) => RunMessage env TheGatheringI where
         then do
           unshiftMessage
             (AddOnFailure
-            $ InvestigatorDamage iid (TokenSource Token.Cultist) 0 1
+            $ InvestigatorAssignDamage iid (TokenSource Token.Cultist) 0 1
             )
           s <$ runTest (skillValue - 1)
         else do
           unshiftMessage (DrawAnotherToken iid skillValue Token.Cultist)
           unshiftMessage
             (AddOnFailure
-            $ InvestigatorDamage iid (TokenSource Token.Cultist) 0 2
+            $ InvestigatorAssignDamage iid (TokenSource Token.Cultist) 0 2
             )
           pure s
     ResolveToken Token.Tablet iid skillValue -> do
@@ -147,11 +147,11 @@ instance (ScenarioRunner env) => RunMessage env TheGatheringI where
       if scenarioDifficulty `elem` [Easy, Standard]
         then do
           when (ghoulCount > 0) $ unshiftMessage
-            (InvestigatorDamage iid (TokenSource Token.Tablet) 1 0)
+            (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 0)
           s <$ runTest (skillValue - 2)
         else do
           when (ghoulCount > 0) $ unshiftMessage
-            (InvestigatorDamage iid (TokenSource Token.Tablet) 1 1)
+            (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 1)
           s <$ runTest (skillValue - 4)
     _ -> pure s
 

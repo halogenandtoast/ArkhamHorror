@@ -476,12 +476,20 @@ instance HasSet AssetId LocationId Game where
 instance HasSet TreacheryId LocationId Game where
   getSet lid = getSet () . getLocation lid
 
-instance HasSet DamageableAssetId InvestigatorId Game where
-  getSet iid g = HashSet.map DamageableAssetId . HashMap.keysSet $ assets'
+instance HasSet HealthDamageableAssetId InvestigatorId Game where
+  getSet iid g = HashSet.map HealthDamageableAssetId . HashMap.keysSet $ assets'
    where
     assetIds = getSet iid g
     assets' = HashMap.filterWithKey
-      (\k v -> k `elem` assetIds && isDamageable v)
+      (\k v -> k `elem` assetIds && isHealthDamageable v)
+      (g ^. assets)
+
+instance HasSet SanityDamageableAssetId InvestigatorId Game where
+  getSet iid g = HashSet.map SanityDamageableAssetId . HashMap.keysSet $ assets'
+   where
+    assetIds = getSet iid g
+    assets' = HashMap.filterWithKey
+      (\k v -> k `elem` assetIds && isSanityDamageable v)
       (g ^. assets)
 
 instance HasSet EnemyId LocationId Game where

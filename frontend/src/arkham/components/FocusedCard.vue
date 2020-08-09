@@ -40,7 +40,7 @@ export default class FocusedCard extends Vue {
   canInteract(c: Message): boolean {
     switch (c.tag) {
       case MessageType.ADD_FOCUSED_TO_HAND:
-        return c.contents[1] === this.id;
+        return c.contents[2] === this.id;
       case MessageType.ADD_FOCUSED_TO_TOP_OF_DECK:
         return c.contents[2] === this.id;
       case MessageType.RUN:

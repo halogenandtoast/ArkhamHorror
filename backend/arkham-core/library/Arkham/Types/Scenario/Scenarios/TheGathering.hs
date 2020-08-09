@@ -51,12 +51,12 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
               , FlavorText
                 (Just "Part I: The Gathering")
                 "You and your partners have been investigating strange events taking place\
-              \ in your home city of Arkham, Massachusetts. Over the past few weeks,\
-              \ several townspeople have mysteriously gone missing. Recently, their\
-              \ corpses turned up in the woods, savaged and half - eaten. The police and\
-              \ newspapers have stated that wild animals are responsible, but you believe\
-              \ there is something else going on. You are gathered together at the lead\
-              \ investigator’s home to discuss these bizarre events."
+                \ in your home city of Arkham, Massachusetts. Over the past few weeks,\
+                \ several townspeople have mysteriously gone missing. Recently, their\
+                \ corpses turned up in the woods, savaged and half - eaten. The police and\
+                \ newspapers have stated that wild animals are responsible, but you believe\
+                \ there is something else going on. You are gathered together at the lead\
+                \ investigator’s home to discuss these bizarre events."
               ]
           ]
         ]

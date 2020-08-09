@@ -429,7 +429,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         & (hand .~ hand')
         & (deck .~ Deck deck')
     InvestigatorMulligan iid | iid == investigatorId -> if null investigatorHand
-      then a <$ unshiftMessage (ShuffleDiscardBackIn investigatorId)
+      then a <$ unshiftMessage (FinishedWithMulligan investigatorId)
       else a <$ unshiftMessage
         (Ask
         $ ChooseOne
@@ -652,10 +652,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
                 | aid <- sanityDamageableAssets
                 ]
           else pure []
-
-        case (healthDamageMessages, sanityDamageMessages) of
-          ([x], [y]) -> a <$ unshiftMessages [x, y]
-          (xs, ys) -> a <$ unshiftMessage (Ask $ ChooseOne $ xs <> ys)
+        a <$ unshiftMessage (Ask $ ChooseOne $ healthDamageMessages <> sanityDamageMessages)
     Investigate iid lid skillType tokenResponses True | iid == investigatorId ->
       a <$ unshiftMessages
         [ TakeAction
@@ -909,39 +906,41 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         unshiftMessage (SkillTestAsk $ Ask $ ChooseOne [triggerMessage])
       pure a
     BeforeSkillTest iid skillType | iid /= investigatorId -> do
-      commitedCardIds <- map unCommitedCardId . HashSet.toList <$> asks
-        (getSet investigatorId)
-      let
-        beginMessage = BeforeSkillTest iid skillType
-        committableCards = if not (null commitedCardIds)
-          then []
-          else flip filter investigatorHand $ \case
-            PlayerCard MkPlayerCard {..} ->
-              pcId
-                `notElem` commitedCardIds
-                && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
-            _ -> False
-      when (not (null committableCards) || not (null commitedCardIds))
-        $ unshiftMessage
-            (SkillTestAsk $ Ask $ ChooseOne
-              (map
-                  (\card ->
-                    Run
-                      [ SkillTestCommitCard investigatorId (getCardId card)
-                      , beginMessage
-                      ]
-                  )
-                  committableCards
-              <> map
-                   (\cardId ->
-                     Run
-                       [ SkillTestUncommitCard investigatorId cardId
-                       , beginMessage
-                       ]
-                   )
-                   commitedCardIds
+      locationId' <- asks (getId iid)
+      when (locationId' == investigatorLocation) $ do
+        commitedCardIds <- map unCommitedCardId . HashSet.toList <$> asks
+          (getSet investigatorId)
+        let
+          beginMessage = BeforeSkillTest iid skillType
+          committableCards = if not (null commitedCardIds)
+            then []
+            else flip filter investigatorHand $ \case
+              PlayerCard MkPlayerCard {..} ->
+                pcId
+                  `notElem` commitedCardIds
+                  && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
+              _ -> False
+        when (not (null committableCards) || not (null commitedCardIds))
+          $ unshiftMessage
+              (SkillTestAsk $ Ask $ ChooseOne
+                (map
+                    (\card ->
+                      Run
+                        [ SkillTestCommitCard investigatorId (getCardId card)
+                        , beginMessage
+                        ]
+                    )
+                    committableCards
+                <> map
+                     (\cardId ->
+                       Run
+                         [ SkillTestUncommitCard investigatorId cardId
+                         , beginMessage
+                         ]
+                     )
+                     commitedCardIds
+                )
               )
-            )
       pure a
     InvestigatorStartSkillTest iid maction skillType tempModifiers
       | iid == investigatorId -> a <$ unshiftMessage

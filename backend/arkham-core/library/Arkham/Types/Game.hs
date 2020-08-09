@@ -372,6 +372,13 @@ instance HasSet LocationId () Game where
 instance HasSet ActId () Game where
   getSet _ = HashMap.keysSet . view acts
 
+instance HasSet InScenarioInvestigatorId () Game where
+  getSet _ =
+    HashSet.map InScenarioInvestigatorId
+      . HashMap.keysSet
+      . HashMap.filter (not . (\i -> hasResigned i || isDefeated i))
+      . view investigators
+
 instance HasSet UnengagedEnemyId () Game where
   getSet _ =
     HashSet.map UnengagedEnemyId
@@ -622,22 +629,7 @@ runGameMessage msg g = case msg of
       focusedCards' = filter ((/= cardId) . getCardId) (g ^. focusedCards)
     unshiftMessage (AddToHand iid' card)
     pure $ g & focusedCards .~ focusedCards'
-  InvestigatorDefeated _ ->
-    if all
-        (\i -> hasResigned i || isDefeated i)
-        (HashMap.elems $ g ^. investigators)
-      then g <$ unshiftMessage NoResolution
-      else pure g
-  InvestigatorResigned _ ->
-    if all
-        (\i -> hasResigned i || isDefeated i)
-        (HashMap.elems $ g ^. investigators)
-      then g <$ unshiftMessage NoResolution
-      else pure g
-  Resolution _ -> do
-    clearQueue
-    pure $ g & gameOver .~ True
-  NoResolution -> do
+  GameOver -> do
     clearQueue
     pure $ g & gameOver .~ True
   PlaceLocation lid -> do

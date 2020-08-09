@@ -10,6 +10,10 @@
       </div>
 
       <div v-if="choice.tag === MessageType.RUN && choice.contents[0].tag === MessageType.CONTINUE">
+        <div v-if="choice.contents[1].tag === MessageType.INTRO_TEXT" class="intro-text">
+          <h1 v-if="choice.contents[1].contents[0]">{{choice.contents[1].contents[0]}}</h1>
+          <p>{{choice.contents[1].contents[1]}}</p>
+        </div>
         <button @click="$emit('choose', index)">{{choice.contents[0].contents}}</button>
       </div>
 
@@ -126,6 +130,32 @@ section {
   &:active {
     background-color: #666;
     border-color: #111;
+  }
+}
+
+.intro-text {
+  background-color: #DFDAD8;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 2px;
+  h1 {
+    font-family: "Teutonic";
+    font-weight: 500;
+    color: #38615F;
+    margin: 0;
+    padding-bottom: 2px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #38615f;
+    &::after {
+      display: block;
+      content: " ";
+      margin-top: 2px;
+      border-bottom: 1px solid #38615f;
+    }
+  }
+
+  p {
+    margin: 0;
   }
 }
 </style>

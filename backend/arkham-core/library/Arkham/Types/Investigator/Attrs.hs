@@ -447,7 +447,6 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         Nothing -> pure a
         Just c ->
           a <$ unshiftMessage (DiscardCard investigatorId (getCardId c))
-
     FinishedWithMulligan iid | iid == investigatorId -> do
       let
         (discard', hand', deck') =

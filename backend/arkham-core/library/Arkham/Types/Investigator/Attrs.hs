@@ -441,7 +441,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           | card <- investigatorHand
           ]
         )
-    AllRandomDiscard -> do
+    AllRandomDiscard | not (a ^. defeated || a ^. resigned) -> do
       n <- liftIO $ randomRIO (0, length investigatorHand - 1)
       case investigatorHand !!? n of
         Nothing -> pure a
@@ -484,7 +484,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       (Ask $ ChooseOne $ map DiscardAsset (HashSet.toList $ a ^. assets))
     AttachTreacheryToInvestigator tid iid | iid == investigatorId ->
       pure $ a & treacheries %~ HashSet.insert tid
-    AllCheckHandSize -> do
+    AllCheckHandSize | not (a ^. defeated || a ^. resigned) -> do
       when (length investigatorHand > 8)
         $ unshiftMessage (CheckHandSize investigatorId)
       pure a
@@ -652,7 +652,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
                 | aid <- sanityDamageableAssets
                 ]
           else pure []
-        a <$ unshiftMessage (Ask $ ChooseOne $ healthDamageMessages <> sanityDamageMessages)
+        a <$ unshiftMessage
+          (Ask $ ChooseOne $ healthDamageMessages <> sanityDamageMessages)
     Investigate iid lid skillType tokenResponses True | iid == investigatorId ->
       a <$ unshiftMessages
         [ TakeAction
@@ -756,8 +757,9 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       pure $ a & sanityDamage %~ max 0 . subtract amount
     InvestigatorWhenDefeated iid | iid == investigatorId -> do
       unshiftMessage (InvestigatorDefeated iid)
-      pure $ a & defeated .~ True
-    MoveAllTo lid -> a <$ unshiftMessage (MoveTo investigatorId lid)
+      pure $ a & defeated .~ True & endedTurn .~ True
+    MoveAllTo lid | not (a ^. defeated || a ^. resigned) ->
+      a <$ unshiftMessage (MoveTo investigatorId lid)
     MoveTo iid lid | iid == investigatorId -> do
       connectedLocations' <- HashSet.map unConnectedLocationId
         <$> asks (getSet lid)
@@ -820,8 +822,9 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       pure $ a & resources +~ n
     EmptyDeck iid | iid == investigatorId -> a <$ unshiftMessages
       [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
-    AllDrawEncounterCard -> a <$ unshiftMessage
-      (Ask $ ChooseOne [InvestigatorDrawEncounterCard investigatorId])
+    AllDrawEncounterCard | not (a ^. defeated || a ^. resigned) ->
+      a <$ unshiftMessage
+        (Ask $ ChooseOne [InvestigatorDrawEncounterCard investigatorId])
     RevelationSkillTest iid source skillType difficulty onSuccess onFailure
       | iid == investigatorId -> a <$ unshiftMessage
         (BeginSkillTest
@@ -854,7 +857,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
                 ]
               else unshiftMessage (TakeAction iid n actionType)
         pure a
-    AllDrawCardAndResource -> do
+    AllDrawCardAndResource | not (a ^. defeated || a ^. resigned) -> do
       unshiftMessage (DrawCards investigatorId 1 False)
       pure $ a & resources +~ 1
     LoadDeck iid deck' | iid == investigatorId -> do

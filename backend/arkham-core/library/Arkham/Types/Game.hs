@@ -643,6 +643,7 @@ runGameMessage msg g = case msg of
     enemyIds <- HashSet.toList <$> asks (getSet lid)
     unshiftMessages [ Discard (EnemyTarget eid) | eid <- enemyIds ]
     pure $ g & locations %~ HashMap.delete lid
+  SpendClues 0 _ -> pure g
   SpendClues n iids -> do
     let
       investigatorsWithClues = HashMap.keys $ HashMap.filterWithKey

@@ -4,6 +4,7 @@
     <StatusBar :game="game" @choose="$emit('choose', $event)" />
     <PlayerOrder :game="game" @choose="$emit('choose', $event)" />
     <div class="scenario-cards">
+      <VictoryPile :game="game" />
       <div v-if="topOfEncounterDiscard" class="discard">
         <img
           :src="topOfEncounterDiscard"
@@ -81,6 +82,7 @@ import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
 import Tab from '@/arkham/components/Tab.vue';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
+import VictoryPile from '@/arkham/components/VictoryPile.vue';
 import Location from '@/arkham/components/Location.vue';
 
 @Component({
@@ -97,6 +99,7 @@ import Location from '@/arkham/components/Location.vue';
     EncounterDeck,
     PlayerOrder,
     CardOverlay,
+    VictoryPile,
   },
 })
 export default class Scenario extends Vue {
@@ -133,7 +136,7 @@ export default class Scenario extends Vue {
 <style scoped lang="scss">
 .card {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
-  border-radius: 13px;
+  border-radius: 6px;
   margin: 2px;
   width: 100px;
 }

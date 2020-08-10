@@ -91,6 +91,7 @@ data Game = Game
   , giGameOver :: Bool
   , giUsedAbilities :: [Ability]
   , giFocusedCards :: [Card]
+  , giVictory :: [Card]
   }
 
 getInvestigator :: InvestigatorId -> Game -> Investigator
@@ -242,6 +243,7 @@ newGame scenarioId investigatorsList = do
     , giPlayerOrder = map
       (getInvestigatorId . fst)
       (HashMap.elems investigatorsList)
+    , giVictory = mempty
     }
  where
   initialInvestigatorId =
@@ -1049,6 +1051,7 @@ toExternalGame Game {..} mq = do
     , gQuestion = mq
     , gFocusedCards = giFocusedCards
     , gPlayerOrder = giPlayerOrder
+    , gVictory = giVictory
     }
 
 toInternalGame :: MonadIO m => GameJson -> m Game
@@ -1080,6 +1083,7 @@ toInternalGame' ref GameJson {..} = Game
   , giUsedAbilities = gUsedAbilities
   , giFocusedCards = gFocusedCards
   , giPlayerOrder = gPlayerOrder
+  , giVictory = gVictory
   }
 
 runMessages :: MonadIO m => Game -> m (Maybe Question, GameJson)

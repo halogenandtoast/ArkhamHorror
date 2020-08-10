@@ -17,6 +17,7 @@ import Data.Kind
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Import.NoFoundation
 
+import qualified Data.ByteString.Lazy as BSL
 import qualified Data.CaseInsensitive as CI
 import qualified Data.Text.Encoding as TE
 import Yesod.Core.Types (Logger)
@@ -34,6 +35,7 @@ data App = App
     , appConnPool    :: ConnectionPool -- ^ Database connection pool.
     , appHttpManager :: Manager
     , appLogger      :: Logger
+    , appBroadcastChannel :: TChan BSL.ByteString
     }
 
 -- This is where we define all of the routes in our application. For a full

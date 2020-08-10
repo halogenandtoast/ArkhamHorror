@@ -11,6 +11,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import * as Arkham from '@/arkham/types/Game';
 import { fetchGame, updateGame } from '@/arkham/api';
+import api from '@/api';
 import Scenario from '@/arkham/components/Scenario.vue';
 
 @Component({
@@ -20,20 +21,24 @@ export default class Game extends Vue {
   @Prop(String) readonly gameId!: string;
 
   private ready = false;
+  private socket: WebSocket | null = null;
   private game: Arkham.Game | null = null;
 
   async mounted() {
     fetchGame(this.gameId).then((game) => {
       this.game = game;
+      this.socket = new WebSocket(`${api.defaults.baseURL}/arkham/games/${this.gameId}`.replace(/https?/, 'ws'));
+      this.socket.addEventListener('message', (event) => {
+        Arkham.gameDecoder.decodePromise(JSON.parse(event.data))
+          .then((updatedGame) => { this.game = updatedGame; });
+      });
       this.ready = true;
     });
   }
 
   async choose(idx: number) {
     if (idx !== -1) {
-      updateGame(this.gameId, idx).then((game) => {
-        this.game = game;
-      });
+      updateGame(this.gameId, idx);
     }
   }
 

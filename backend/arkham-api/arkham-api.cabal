@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f7d343ad290896698afb2126f16ccb5d1fbeb33d32a099800aca1d29c23ce328
+-- hash: 134ca196f10c1f1eb019f317ba271842ff6e9d2ff8196ee624f6ca9b1b66b084
 
 name:           arkham-api
 version:        0.0.0
@@ -86,6 +86,7 @@ library
     , yesod
     , yesod-core
     , yesod-static
+    , yesod-websockets
   if (flag(dev)) || (flag(library-only))
     ghc-options: -Wall -fwarn-tabs -O0
     cpp-options: -DDEVELOPMENT

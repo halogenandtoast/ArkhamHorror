@@ -86,6 +86,7 @@ library:
     - yesod
     - yesod-core
     - yesod-static
+    - yesod-websockets
 
 executables:
   arkham-api:

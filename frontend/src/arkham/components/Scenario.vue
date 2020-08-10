@@ -35,6 +35,11 @@
         :skillTest="game.currentData.skillTest"
         @choose="$emit('choose', $event)"
       />
+      <img
+        v-if="activeCard"
+        :src="activeCard"
+        class="card"
+      />
     </div>
 
     <div class="location-cards">
@@ -107,6 +112,15 @@ export default class Scenario extends Vue {
 
   private commitedCards: number[] = []
   private moving = false
+
+  get activeCard() {
+    if (this.game.currentData.activeCard) {
+      const { cardCode } = this.game.currentData.activeCard.contents;
+      return `/img/arkham/cards/${cardCode}.jpg`;
+    }
+
+    return null;
+  }
 
   get players() {
     return this.game.currentData.investigators;

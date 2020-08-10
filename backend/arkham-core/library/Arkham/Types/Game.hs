@@ -91,6 +91,7 @@ data Game = Game
   , giGameOver :: Bool
   , giUsedAbilities :: [Ability]
   , giFocusedCards :: [Card]
+  , giActiveCard :: Maybe Card
   , giVictory :: [Card]
   }
 
@@ -118,6 +119,9 @@ getTreachery tid g =
 
 focusedCards :: Lens' Game [Card]
 focusedCards = lens giFocusedCards $ \m x -> m { giFocusedCards = x }
+
+activeCard :: Lens' Game (Maybe Card)
+activeCard = lens giActiveCard $ \m x -> m { giActiveCard = x }
 
 victory :: Lens' Game [Card]
 victory = lens giVictory $ \m x -> m { giVictory = x }
@@ -243,6 +247,7 @@ newGame scenarioId investigatorsList = do
     , giGameOver = False
     , giUsedAbilities = mempty
     , giFocusedCards = mempty
+    , giActiveCard = Nothing
     , giPlayerOrder = map
       (getInvestigatorId . fst)
       (HashMap.elems investigatorsList)
@@ -1002,7 +1007,13 @@ runGameMessage msg g = case msg of
       , Revelation iid treacheryId'
       , AfterRevelation iid treacheryId'
       ]
-    pure $ g & (treacheries . at treacheryId' ?~ treachery')
+    pure
+      $ g
+      & (treacheries . at treacheryId' ?~ treachery')
+      & (activeCard ?~ EncounterCard
+          (lookupEncounterCard cardCode (CardId $ unTreacheryId treacheryId'))
+        )
+  AfterRevelation{} -> pure $ g & activeCard .~ Nothing
   Discard (EnemyTarget eid) ->
     let
       enemy = getEnemy eid g
@@ -1060,6 +1071,7 @@ toExternalGame Game {..} mq = do
     , gUsedAbilities = giUsedAbilities
     , gQuestion = mq
     , gFocusedCards = giFocusedCards
+    , gActiveCard = giActiveCard
     , gPlayerOrder = giPlayerOrder
     , gVictory = giVictory
     }
@@ -1092,6 +1104,7 @@ toInternalGame' ref GameJson {..} = Game
   , giGameOver = gGameOver
   , giUsedAbilities = gUsedAbilities
   , giFocusedCards = gFocusedCards
+  , giActiveCard = gActiveCard
   , giPlayerOrder = gPlayerOrder
   , giVictory = gVictory
   }

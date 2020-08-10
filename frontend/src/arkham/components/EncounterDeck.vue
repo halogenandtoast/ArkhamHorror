@@ -63,7 +63,7 @@ export default class EncounterDeck extends Vue {
 <style scoped lang="scss">
 .deck {
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
-  border-radius: 13px;
+  border-radius: 6px;
   margin: 2px;
   width: 100px;
 }

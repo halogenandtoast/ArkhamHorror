@@ -1073,7 +1073,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           investigatorConnectedLocations `difference` blockedLocationIds
         availableAbilities = flip filter allAbilities $ \case
           (_, _, _, FreeAbility AnyWindow, _) -> True
-          (_, _, _, ActionAbility _ _, _) -> True -- pre-filtered based on action
+          (_, _, _, ActionAbility _ Nothing, _) -> True
+          (_, _, _, ActionAbility _ (Just action), _) -> action `elem` canDos
           _ -> False
       a <$ unshiftMessage
         (Ask $ ChooseOne

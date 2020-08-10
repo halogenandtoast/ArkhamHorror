@@ -19,15 +19,17 @@ rottingRemains :: TreacheryId -> RottingRemains
 rottingRemains uuid = RottingRemains $ baseAttrs uuid "01163"
 
 instance (TreacheryRunner env) => RunMessage env RottingRemains where
-  runMessage msg t@(RottingRemains attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> t <$ unshiftMessages
-      [ RevelationSkillTest
-        iid
-        (TreacherySource treacheryId)
-        SkillWillpower
-        3
-        []
-        [HorrorPerPointOfFailure iid]
-      , Discard (TreacheryTarget tid)
-      ]
+  runMessage msg (RottingRemains attrs@Attrs {..}) = case msg of
+    Revelation iid tid | tid == treacheryId -> do
+      unshiftMessages
+        [ RevelationSkillTest
+          iid
+          (TreacherySource treacheryId)
+          SkillWillpower
+          3
+          []
+          [HorrorPerPointOfFailure iid]
+        , Discard (TreacheryTarget tid)
+        ]
+      RottingRemains <$> runMessage msg attrs
     _ -> RottingRemains <$> runMessage msg attrs

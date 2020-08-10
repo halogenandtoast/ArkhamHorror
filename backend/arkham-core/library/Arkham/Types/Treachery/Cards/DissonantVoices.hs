@@ -29,7 +29,7 @@ instance (TreacheryRunner env) => RunMessage env DissonantVoices where
           (InvestigatorTarget iid)
           (CannotPlay [AssetType, EventType] (TreacherySource tid))
         ]
-      pure $ DissonantVoices $ attrs & attachedInvestigator ?~ iid
+      DissonantVoices <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     EndRound -> case treacheryAttachedInvestigator of
       Just iid -> t <$ unshiftMessages
         [ RemoveAllModifiersOnTargetFrom

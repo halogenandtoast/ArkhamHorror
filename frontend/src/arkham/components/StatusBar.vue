@@ -138,6 +138,7 @@ section {
   padding: 10px;
   margin: 10px;
   border-radius: 2px;
+  box-sizing: border-box;
   h1 {
     font-family: "Teutonic";
     font-weight: 500;

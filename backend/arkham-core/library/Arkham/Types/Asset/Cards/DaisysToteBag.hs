@@ -7,10 +7,8 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Message
-import Arkham.Types.Modifier
 import Arkham.Types.Slot
 import Arkham.Types.Source
-import Arkham.Types.Target
 import Arkham.Types.Trait
 import ClassyPrelude
 
@@ -24,14 +22,14 @@ instance (AssetRunner env) => RunMessage env DaisysToteBag where
   runMessage msg (DaisysToteBag attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessages
-        [ AddModifier
-          (InvestigatorTarget iid)
-          (AddSlot HandSlot (TraitRestrictedSlot Tome Nothing) (AssetSource aid)
-          )
-        , AddModifier
-          (InvestigatorTarget iid)
-          (AddSlot HandSlot (TraitRestrictedSlot Tome Nothing) (AssetSource aid)
-          )
+        [ AddSlot
+          iid
+          HandSlot
+          (TraitRestrictedSlot (AssetSource aid) Tome Nothing)
+        , AddSlot
+          iid
+          HandSlot
+          (TraitRestrictedSlot (AssetSource aid) Tome Nothing)
         ]
       DaisysToteBag <$> runMessage msg attrs
     _ -> DaisysToteBag <$> runMessage msg attrs

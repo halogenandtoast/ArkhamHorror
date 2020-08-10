@@ -27,7 +27,7 @@ instance (TreacheryRunner env) => RunMessage env ObscuringFog where
       obscuringFogCount <- unTreacheryCount
         <$> asks (getCount (currentLocationId, treacheryCardCode))
       if obscuringFogCount > 0
-        then t <$ unshiftMessage (Discard (TreacheryTarget tid))
+        then pure t -- Revelation did not run
         else do
           unshiftMessages
             [ AttachTreacheryToLocation tid currentLocationId
@@ -35,7 +35,8 @@ instance (TreacheryRunner env) => RunMessage env ObscuringFog where
               (LocationTarget currentLocationId)
               (ShroudModifier 2 (TreacherySource tid))
             ]
-          pure $ ObscuringFog $ attrs & attachedLocation ?~ currentLocationId
+          ObscuringFog
+            <$> runMessage msg (attrs & attachedLocation ?~ currentLocationId)
     SuccessfulInvestigation _ lid | Just lid == treacheryAttachedLocation ->
       t <$ unshiftMessages
         [ RemoveAllModifiersOnTargetFrom

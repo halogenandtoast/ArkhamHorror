@@ -36,7 +36,13 @@ theNecronomicon uuid =
     $ ((baseAttrs uuid "01009")
         { assetSlots = [HandSlot]
         , assetAbilities =
-          [(AssetSource uuid, Nothing, 1, ActionAbility 1 Nothing, NoLimit)]
+          [ ( AssetSource uuid
+            , AssetSource uuid
+            , 1
+            , ActionAbility 1 Nothing
+            , NoLimit
+            )
+          ]
         }
       )
     `with` TheNecronomiconMetadata 3

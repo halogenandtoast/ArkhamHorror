@@ -32,7 +32,12 @@ instance (AssetRunner env) => RunMessage env ResearchLibrarian where
         (Ask $ ChooseOne
           [ UseCardAbility
             iid
-            (AssetSource assetId, Nothing, 1, ReactionAbility Fast.Now, NoLimit)
+            ( AssetSource assetId
+            , AssetSource assetId
+            , 1
+            , ReactionAbility Fast.Now
+            , NoLimit
+            )
           , Continue "Do not use ability"
           ]
         )

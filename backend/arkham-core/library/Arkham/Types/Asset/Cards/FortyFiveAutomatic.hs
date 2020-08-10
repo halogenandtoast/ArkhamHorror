@@ -34,7 +34,7 @@ instance (AssetRunner env) => RunMessage env FortyFiveAutomatic where
         & (uses .~ Uses Resource.Ammo 4)
         & (abilities
           .~ [ ( AssetSource aid
-               , Nothing
+               , AssetSource aid
                , 1
                , ActionAbility 1 (Just Action.Fight)
                , NoLimit
@@ -57,8 +57,6 @@ instance (AssetRunner env) => RunMessage env FortyFiveAutomatic where
               mempty
               False
             )
-          pure $ FortyFiveAutomatic $ attrs & uses .~ Uses
-            Resource.Ammo
-            (n - 1)
+          pure $ FortyFiveAutomatic $ attrs & uses .~ Uses Resource.Ammo (n - 1)
         _ -> pure a
     _ -> FortyFiveAutomatic <$> runMessage msg attrs

@@ -23,7 +23,7 @@ oldBookOfLore :: AssetId -> OldBookOfLore
 oldBookOfLore uuid = OldBookOfLore $ (baseAttrs uuid "01031")
   { assetSlots = [HandSlot]
   , assetAbilities =
-    [(AssetSource uuid, Nothing, 1, ActionAbility 1 Nothing, NoLimit)]
+    [(AssetSource uuid, AssetSource uuid, 1, ActionAbility 1 Nothing, NoLimit)]
   }
 
 instance (AssetRunner env) => RunMessage env OldBookOfLore where

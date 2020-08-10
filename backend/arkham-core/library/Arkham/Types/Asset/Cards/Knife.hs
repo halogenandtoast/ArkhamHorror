@@ -23,13 +23,13 @@ knife uuid = Knife $ (baseAttrs uuid "01086")
   { assetSlots = [HandSlot]
   , assetAbilities =
     [ ( AssetSource uuid
-      , Nothing
+      , AssetSource uuid
       , 1
       , ActionAbility 1 (Just Action.Fight)
       , NoLimit
       )
     , ( AssetSource uuid
-      , Nothing
+      , AssetSource uuid
       , 2
       , ActionAbility 1 (Just Action.Fight)
       , NoLimit

@@ -34,7 +34,7 @@ instance (AssetRunner env) => RunMessage env Scrying where
             & (uses .~ Uses Resource.Charge 3)
             & (abilities
               .~ [ ( AssetSource aid
-                   , Nothing
+                   , AssetSource aid
                    , 1
                    , ActionAbility 1 Nothing
                    , NoLimit

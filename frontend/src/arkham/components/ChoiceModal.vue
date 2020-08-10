@@ -30,12 +30,23 @@
       />
     </div>
   </div>
+  <div v-else-if="resolutions.length > 0" class="modal">
+    <div class="modal-contents">
+      <button
+        v-for="{ choice, idx } in resolutions"
+        :key="idx"
+        @click="$emit('choose', idx)"
+      >
+        Resolution {{choice.contents}}
+      </button>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import { choicesSource, choices, Game } from '@/arkham/types/Game';
-import { Message } from '@/arkham/types/Message';
+import { MessageType, Message } from '@/arkham/types/Message';
 import FocusedCard from '@/arkham/components/FocusedCard.vue';
 
 @Component({
@@ -71,6 +82,13 @@ export default class ChoiceModal extends Vue {
 
   get source() {
     return choicesSource(this.game);
+  }
+
+  get resolutions() {
+    return this
+      .choices
+      .map((choice, idx) => ({ choice, idx }))
+      .filter(({ choice }) => choice.tag === MessageType.RESOLUTION);
   }
 
   get cardCode() {

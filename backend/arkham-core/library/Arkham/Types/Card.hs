@@ -14,6 +14,7 @@ module Arkham.Types.Card
   , allCards
   , allPlayerCards
   , lookupPlayerCard
+  , lookupEncounterCard
   , allEncounterCards
   , encounterCardMatch
   , toPlayerCard

@@ -23,10 +23,6 @@
         @click="$emit('choose', applyResultsAction)"
       >Apply Results</button>
     </div>
-    <img
-      v-if="currentCard"
-      :src="currentCard"
-    />
   </div>
 </template>
 
@@ -81,24 +77,6 @@ export default class ChaosBag extends Vue {
   @Prop(Object) readonly skillTest?: SkillTest;
 
   imageFor = imageFor.bind(this);
-
-  get currentCard() {
-    if (!this.skillTest) {
-      return null;
-    }
-
-    const { tag, contents } = this.skillTest.source;
-
-    switch (tag) {
-      case 'TreacherySource':
-      {
-        const { cardCode } = this.game.currentData.treacheries[contents].contents;
-        return `/img/arkham/cards/${cardCode}.jpg`;
-      }
-      default:
-        return null;
-    }
-  }
 
   get revealedTokens() {
     if (this.game.currentData.skillTest !== null) {

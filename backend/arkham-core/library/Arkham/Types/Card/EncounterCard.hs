@@ -9,6 +9,7 @@ import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
+import Safe (fromJustNote)
 
 data EncounterCardType
   = TreacheryType
@@ -26,6 +27,11 @@ data EncounterCard = MkEncounterCard
   , ecId :: CardId
   }
   deriving stock (Show, Generic)
+
+lookupEncounterCard :: CardCode -> (CardId -> EncounterCard)
+lookupEncounterCard cardCode =
+  fromJustNote ("Unknown card: " <> show cardCode)
+    $ HashMap.lookup cardCode allEncounterCards
 
 baseEncounterCard
   :: CardId -> CardCode -> Text -> EncounterCardType -> EncounterCard

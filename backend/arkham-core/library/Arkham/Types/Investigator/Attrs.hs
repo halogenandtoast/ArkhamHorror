@@ -786,21 +786,46 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         slots' = HashMap.findWithDefault [] slotType investigatorSlots
         assetIds = mapMaybe slotItem slots'
         emptiedSlots = sort $ slot : map emptySlot slots'
+      unshiftMessage (RefillSlots iid slotType assetIds)
+      pure $ a & slots %~ HashMap.insert slotType emptiedSlots
+    RefillSlots iid slotType assetIds | iid == investigatorId -> do
+      let
+        slots' = HashMap.findWithDefault [] slotType investigatorSlots
+        emptiedSlots = sort $ map emptySlot slots'
       assetsWithTraits <- for assetIds $ \assetId -> do
         traits <- HashSet.toList <$> asks (getSet assetId)
         pure (assetId, traits)
       let
         updatedSlots = foldl'
-          (\s (aid, ts) -> placeInAvailableSlot aid ts s)
+          (\s (aid, ts) -> if any (canPutIntoSlot ts) s
+            then placeInAvailableSlot aid ts s
+            else s
+          )
           emptiedSlots
           assetsWithTraits
-      pure $ a & slots %~ HashMap.insert slotType updatedSlots
+      if length (mapMaybe slotItem updatedSlots) == length assetIds
+        then pure $ a & slots %~ HashMap.insert slotType updatedSlots
+        else do
+          unshiftMessage
+            (Ask $ ChooseOne
+              [ Run
+                  [ DiscardAsset aid'
+                  , RefillSlots iid slotType (filter (/= aid') assetIds)
+                  ]
+              | aid' <- assetIds
+              ]
+            )
+          pure a
     RemoveAllModifiersOnTargetFrom (InvestigatorTarget iid) source
-      | iid == investigatorId
-      -> pure
-        $ a
-        & (modifiers %~ filter ((source /=) . sourceOfModifier))
-        & (slots %~ HashMap.map (filter ((source /=) . sourceOfSlot)))
+      | iid == investigatorId -> do
+        unshiftMessages
+          [ RefillSlots iid slotType (mapMaybe slotItem slots')
+          | (slotType, slots') <- HashMap.toList investigatorSlots
+          ]
+        pure
+          $ a
+          & (modifiers %~ filter ((source /=) . sourceOfModifier))
+          & (slots %~ HashMap.map (filter ((source /=) . sourceOfSlot)))
     ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurn .~ True
     BeginRound ->
       pure

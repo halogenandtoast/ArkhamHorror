@@ -218,6 +218,7 @@ data Message
   | AttachTreacheryToLocation TreacheryId LocationId
   | AttachTreacheryToInvestigator TreacheryId InvestigatorId
   | AddModifier Target Modifier
+  | AddSlot InvestigatorId SlotType Slot
   | RemoveAllModifiersOnTargetFrom Target Source
   | RequestedEncounterCard Source (Maybe EncounterCard)
   | ShuffleEncounterDiscardBackIn

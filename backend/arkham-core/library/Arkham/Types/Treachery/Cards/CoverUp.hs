@@ -58,7 +58,9 @@ instance (TreacheryRunner env) => RunMessage env CoverUp where
             (InvestigatorTarget iid)
             (SufferTrauma 0 1 (TreacherySource tid))
           ]
-        pure $ CoverUp $ (attrs & attachedInvestigator ?~ iid) `with` metadata
+        CoverUp . (`with` metadata) <$> runMessage
+          msg
+          (attrs & attachedInvestigator ?~ iid)
       UseCardAbility iid (TreacherySource tid, _, 1, _, _)
         | tid == treacheryId -> do
           cluesToRemove <- withQueue $ \queue -> do

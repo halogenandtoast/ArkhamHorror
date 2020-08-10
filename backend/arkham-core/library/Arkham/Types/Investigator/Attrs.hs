@@ -184,16 +184,16 @@ damageValueFor baseValue attrs = foldr
 removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
 
-hasEmptySlot :: SlotType -> Attrs -> Bool
-hasEmptySlot slotType a = case HashMap.lookup slotType (a ^. slots) of
+hasEmptySlot :: SlotType -> [Trait] -> Attrs -> Bool
+hasEmptySlot slotType traits a = case HashMap.lookup slotType (a ^. slots) of
   Nothing -> False
-  Just slots' -> any isEmptySlot slots'
+  Just slots' -> any (canPutIntoSlot traits) slots'
 
-placeInAvailableSlot :: AssetId -> [Slot] -> [Slot]
-placeInAvailableSlot _ [] = error "could not find empty slot"
-placeInAvailableSlot aid (x : xs) = if isEmptySlot x
+placeInAvailableSlot :: AssetId -> [Trait] -> [Slot] -> [Slot]
+placeInAvailableSlot _ _ [] = error "could not find empty slot"
+placeInAvailableSlot aid traits (x : xs) = if canPutIntoSlot traits x
   then putIntoSlot aid x : xs
-  else x : placeInAvailableSlot aid xs
+  else x : placeInAvailableSlot aid traits xs
 
 discardableAssets :: SlotType -> Attrs -> [AssetId]
 discardableAssets slotType a = case HashMap.lookup slotType (a ^. slots) of
@@ -233,11 +233,19 @@ baseAttrs iid name classSymbol Stats {..} traits = Attrs
   , investigatorDefeated = False
   , investigatorResigned = False
   , investigatorSlots = HashMap.fromList
-    [ (AccessorySlot, [Slot Nothing])
-    , (BodySlot, [Slot Nothing])
-    , (AllySlot, [Slot Nothing])
-    , (HandSlot, [Slot Nothing, Slot Nothing])
-    , (ArcaneSlot, [Slot Nothing, Slot Nothing])
+    [ (AccessorySlot, [Slot (InvestigatorSource iid) Nothing])
+    , (BodySlot, [Slot (InvestigatorSource iid) Nothing])
+    , (AllySlot, [Slot (InvestigatorSource iid) Nothing])
+    , ( HandSlot
+      , [ Slot (InvestigatorSource iid) Nothing
+        , Slot (InvestigatorSource iid) Nothing
+        ]
+      )
+    , ( ArcaneSlot
+      , [ Slot (InvestigatorSource iid) Nothing
+        , Slot (InvestigatorSource iid) Nothing
+        ]
+      )
     ]
   }
 
@@ -725,14 +733,14 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       let assetsUpdate = assets %~ HashSet.insert aid
       if not (null slotTypes)
         then case slotTypes of
-          [slotType] -> if hasEmptySlot slotType a
+          [slotType] -> if hasEmptySlot slotType traits a
             then
               pure
               $ a
               & assetsUpdate
               & slots
               . ix slotType
-              %~ placeInAvailableSlot aid
+              %~ placeInAvailableSlot aid traits
             else if not (null $ discardableAssets slotType a)
               then a <$ unshiftMessage
                 (Ask $ ChooseOne
@@ -773,9 +781,26 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         & (connectedLocations %~ HashSet.insert lid2)
     AddModifier (InvestigatorTarget iid) modifier | iid == investigatorId ->
       pure $ a & modifiers %~ (modifier :)
+    AddSlot iid slotType slot | iid == investigatorId -> do
+      let
+        slots' = HashMap.findWithDefault [] slotType investigatorSlots
+        assetIds = mapMaybe slotItem slots'
+        emptiedSlots = sort $ slot : map emptySlot slots'
+      assetsWithTraits <- for assetIds $ \assetId -> do
+        traits <- HashSet.toList <$> asks (getSet assetId)
+        pure (assetId, traits)
+      let
+        updatedSlots = foldl'
+          (\s (aid, ts) -> placeInAvailableSlot aid ts s)
+          emptiedSlots
+          assetsWithTraits
+      pure $ a & slots %~ HashMap.insert slotType updatedSlots
     RemoveAllModifiersOnTargetFrom (InvestigatorTarget iid) source
-      | iid == investigatorId -> pure $ a & modifiers %~ filter
-        ((source /=) . sourceOfModifier)
+      | iid == investigatorId
+      -> pure
+        $ a
+        & (modifiers %~ filter ((source /=) . sourceOfModifier))
+        & (slots %~ HashMap.map (filter ((source /=) . sourceOfSlot)))
     ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurn .~ True
     BeginRound ->
       pure

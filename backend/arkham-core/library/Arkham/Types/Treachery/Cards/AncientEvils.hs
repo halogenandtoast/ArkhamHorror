@@ -17,10 +17,12 @@ ancientEvils :: TreacheryId -> AncientEvils
 ancientEvils uuid = AncientEvils $ baseAttrs uuid "01166"
 
 instance (TreacheryRunner env) => RunMessage env AncientEvils where
-  runMessage msg t@(AncientEvils attrs@Attrs {..}) = case msg of
-    Revelation _ tid | tid == treacheryId -> t <$ unshiftMessages
-      [ PlaceDoomOnAgenda
-      , AdvanceAgendaIfThresholdSatisfied
-      , Discard (TreacheryTarget tid)
-      ]
+  runMessage msg (AncientEvils attrs@Attrs {..}) = case msg of
+    Revelation _ tid | tid == treacheryId -> do
+      unshiftMessages
+        [ PlaceDoomOnAgenda
+        , AdvanceAgendaIfThresholdSatisfied
+        , Discard (TreacheryTarget tid)
+        ]
+      AncientEvils <$> runMessage msg attrs
     _ -> AncientEvils <$> runMessage msg attrs

@@ -2,33 +2,60 @@ module Arkham.Types.Slot where
 
 import Arkham.Json
 import Arkham.Types.AssetId
+import Arkham.Types.Source
 import Arkham.Types.Trait
 import ClassyPrelude
 
 isEmptySlot :: Slot -> Bool
-isEmptySlot (Slot masset) = isNothing masset
-isEmptySlot (TraitRestrictedSlot _ masset) = isNothing masset
+isEmptySlot = isNothing . slotItem
+
+canPutIntoSlot :: [Trait] -> Slot -> Bool
+canPutIntoSlot traits = \case
+  slot@Slot{} -> isEmptySlot slot
+  tslot@(TraitRestrictedSlot _ t _) -> isEmptySlot tslot && t `elem` traits
 
 putIntoSlot :: AssetId -> Slot -> Slot
 putIntoSlot aid = \case
-  Slot _ -> Slot (Just aid)
-  TraitRestrictedSlot t _ -> TraitRestrictedSlot t (Just aid)
+  Slot source _ -> Slot source (Just aid)
+  TraitRestrictedSlot source t _ -> TraitRestrictedSlot source t (Just aid)
+
+emptySlot :: Slot -> Slot
+emptySlot = \case
+  Slot source _ -> Slot source Nothing
+  TraitRestrictedSlot source t _ -> TraitRestrictedSlot source t Nothing
 
 slotItem :: Slot -> Maybe AssetId
 slotItem = \case
-  Slot masset -> masset
-  TraitRestrictedSlot _ masset -> masset
+  Slot _ masset -> masset
+  TraitRestrictedSlot _ _ masset -> masset
+
+sourceOfSlot :: Slot -> Source
+sourceOfSlot = \case
+  Slot source _ -> source
+  TraitRestrictedSlot source _ _ -> source
 
 removeIfMatches :: AssetId -> Slot -> Slot
 removeIfMatches aid = \case
-  Slot masset -> if masset == Just aid then Slot Nothing else Slot masset
-  TraitRestrictedSlot trait masset -> if masset == Just aid
-    then TraitRestrictedSlot trait Nothing
-    else TraitRestrictedSlot trait masset
+  Slot source masset ->
+    if masset == Just aid then Slot source Nothing else Slot source masset
+  TraitRestrictedSlot source trait masset -> if masset == Just aid
+    then TraitRestrictedSlot source trait Nothing
+    else TraitRestrictedSlot source trait masset
 
-data Slot = Slot (Maybe AssetId) | TraitRestrictedSlot Trait (Maybe AssetId)
+data Slot = Slot Source (Maybe AssetId) | TraitRestrictedSlot Source Trait (Maybe AssetId)
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+instance Eq Slot where
+  TraitRestrictedSlot{} == TraitRestrictedSlot{} = True
+  Slot{} == Slot{} = True
+  _ == _ = False
+
+-- We want slots sorted by most restrictive, so assets take up the best match
+instance Ord Slot where
+  TraitRestrictedSlot{} <= _ = True
+  Slot{} <= Slot{} = True
+  Slot{} <= _ = False
 
 data SlotType
   = HandSlot

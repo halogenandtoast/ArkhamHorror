@@ -22,16 +22,18 @@ cryptChill uuid = CryptChill $ baseAttrs uuid "01167"
 
 instance (TreacheryRunner env) => RunMessage env CryptChill where
   runMessage msg t@(CryptChill attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> t <$ unshiftMessages
-      [ RevelationSkillTest
-        iid
-        (TreacherySource tid)
-        SkillWillpower
-        4
-        []
-        [TreacheryFailure iid tid]
-      , Discard (TreacheryTarget tid)
-      ]
+    Revelation iid tid | tid == treacheryId -> do
+      unshiftMessages
+        [ RevelationSkillTest
+          iid
+          (TreacherySource tid)
+          SkillWillpower
+          4
+          []
+          [TreacheryFailure iid tid]
+        , Discard (TreacheryTarget tid)
+        ]
+      CryptChill <$> runMessage msg attrs
     TreacheryFailure iid tid | tid == treacheryId -> do
       assetCount <- HashSet.size <$> asks (getSet @AssetId iid)
       if assetCount > 0

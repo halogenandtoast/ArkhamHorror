@@ -34,7 +34,7 @@ instance (TreacheryRunner env) => RunMessage env FrozenInFear where
             (TreacherySource tid)
           )
         ]
-      pure $ FrozenInFear $ attrs & attachedInvestigator ?~ iid
+      FrozenInFear <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     ChooseEndTurn iid | Just iid == treacheryAttachedInvestigator ->
       t <$ unshiftMessage
         (RevelationSkillTest

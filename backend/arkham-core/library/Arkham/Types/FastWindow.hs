@@ -11,7 +11,8 @@ data Who = You | InvestigatorAtYourLocation
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data FastWindow = WhenDrawTreachery Who | WhenEnemyAttacks Who | WhenEnemyDefeated Who | DuringTurn Who | WhenDiscoverClues Who Where | Now
+data FastWindow = WhenDrawTreachery Who Bool | WhenEnemyAttacks Who | WhenEnemyDefeated Who | DuringTurn Who | WhenDiscoverClues Who Where | Now
+  --                                    ^ is weakness
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

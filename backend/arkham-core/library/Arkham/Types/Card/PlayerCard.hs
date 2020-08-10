@@ -325,7 +325,7 @@ wardOfProtection cardId = (event cardId "01065" "Ward of Protection" 1 Mystic)
   { pcSkills = [SkillWild]
   , pcTraits = [Spell, Spirit]
   , pcFast = True
-  , pcFastWindows = HashSet.fromList [WhenDrawTreachery You]
+  , pcFastWindows = HashSet.fromList [WhenDrawTreachery You False]
   }
 
 blindingLight :: CardId -> PlayerCard

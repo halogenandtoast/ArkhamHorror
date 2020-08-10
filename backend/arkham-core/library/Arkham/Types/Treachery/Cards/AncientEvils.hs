@@ -18,7 +18,7 @@ ancientEvils uuid = AncientEvils $ baseAttrs uuid "01166"
 
 instance (TreacheryRunner env) => RunMessage env AncientEvils where
   runMessage msg t@(AncientEvils attrs@Attrs {..}) = case msg of
-    RunTreachery _ tid | tid == treacheryId -> t <$ unshiftMessages
+    Revelation _ tid | tid == treacheryId -> t <$ unshiftMessages
       [ PlaceDoomOnAgenda
       , AdvanceAgendaIfThresholdSatisfied
       , Discard (TreacheryTarget tid)

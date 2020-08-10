@@ -22,7 +22,7 @@ dissonantVoices uuid = DissonantVoices $ baseAttrs uuid "01165"
 
 instance (TreacheryRunner env) => RunMessage env DissonantVoices where
   runMessage msg t@(DissonantVoices attrs@Attrs {..}) = case msg of
-    RunTreachery iid tid | tid == treacheryId -> do
+    Revelation iid tid | tid == treacheryId -> do
       unshiftMessages
         [ AttachTreacheryToInvestigator tid iid
         , AddModifier

@@ -2,6 +2,7 @@
 module Arkham.Types.Treachery
   ( lookupTreachery
   , Treachery(..)
+  , isWeakness
   )
 where
 
@@ -72,6 +73,9 @@ treacheryAttrs = \case
   DissonantVoices' attrs -> coerce attrs
   CryptChill' attrs -> coerce attrs
   ObscuringFog' attrs -> coerce attrs
+
+isWeakness :: Treachery -> Bool
+isWeakness = treacheryWeakness . treacheryAttrs
 
 instance (TreacheryRunner env) => RunMessage env Treachery where
   runMessage msg = \case

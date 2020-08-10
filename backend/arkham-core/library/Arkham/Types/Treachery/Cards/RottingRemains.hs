@@ -20,7 +20,7 @@ rottingRemains uuid = RottingRemains $ baseAttrs uuid "01163"
 
 instance (TreacheryRunner env) => RunMessage env RottingRemains where
   runMessage msg t@(RottingRemains attrs@Attrs {..}) = case msg of
-    RunTreachery iid tid | tid == treacheryId -> t <$ unshiftMessages
+    Revelation iid tid | tid == treacheryId -> t <$ unshiftMessages
       [ RevelationSkillTest
         iid
         (TreacherySource treacheryId)

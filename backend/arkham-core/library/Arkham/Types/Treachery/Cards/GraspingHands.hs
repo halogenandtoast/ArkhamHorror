@@ -20,7 +20,7 @@ graspingHands uuid = GraspingHands $ baseAttrs uuid "01162"
 
 instance (TreacheryRunner env) => RunMessage env GraspingHands where
   runMessage msg t@(GraspingHands attrs@Attrs {..}) = case msg of
-    RunTreachery iid tid | tid == treacheryId -> t <$ unshiftMessages
+    Revelation iid tid | tid == treacheryId -> t <$ unshiftMessages
       [ RevelationSkillTest
         iid
         (TreacherySource treacheryId)

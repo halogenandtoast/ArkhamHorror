@@ -23,7 +23,7 @@ frozenInFear uuid = FrozenInFear $ baseAttrs uuid "01164"
 
 instance (TreacheryRunner env) => RunMessage env FrozenInFear where
   runMessage msg t@(FrozenInFear attrs@Attrs {..}) = case msg of
-    RunTreachery iid tid | tid == treacheryId -> do
+    Revelation iid tid | tid == treacheryId -> do
       unshiftMessages
         [ AttachTreacheryToInvestigator tid iid
         , AddModifier

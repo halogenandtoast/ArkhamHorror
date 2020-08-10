@@ -684,7 +684,7 @@ runGameMessage msg g = case msg of
           let
             tid = TreacheryId $ unCardId cardId
             treachery = lookupTreachery (pcCardCode pc) tid
-          unshiftMessages [RunTreachery iid tid]
+          unshiftMessages [Revelation iid tid]
           pure $ g & treacheries %~ HashMap.insert tid treachery
         AssetType -> do
           let
@@ -731,12 +731,10 @@ runGameMessage msg g = case msg of
   RunSkill iid cardCode result -> do
     void $ allSkills cardCode iid result
     pure g
-  CancelNextAttack -> do
+  CancelNext msgType -> do
     void $ withQueue $ \queue -> do
       let
-        (before, after) = flip break queue $ \case
-          (PerformEnemyAttack _ _) -> True
-          _ -> False
+        (before, after) = break ((== Just msgType) . messageType) queue
         remaining = case after of
           [] -> []
           (_ : xs) -> xs
@@ -999,7 +997,11 @@ runGameMessage msg g = case msg of
     LocationType -> pure g
   DrewTreachery iid cardCode -> do
     (treacheryId', treachery') <- createTreachery cardCode
-    unshiftMessage (RunTreachery iid treacheryId')
+    unshiftMessages
+      [ CheckFastWindow iid [Fast.WhenDrawTreachery You (isWeakness treachery')]
+      , Revelation iid treacheryId'
+      , AfterRevelation iid treacheryId'
+      ]
     pure $ g & (treacheries . at treacheryId' ?~ treachery')
   Discard (EnemyTarget eid) ->
     let

@@ -4,8 +4,10 @@ module Arkham.Types.Message
   , EncounterCardSource(..)
   , ChooseOneFromSource(..)
   , LeftoverCardStrategy(..)
+  , MessageType(..)
   , Labeled(..)
   , label
+  , messageType
   )
 where
 
@@ -33,6 +35,15 @@ import Arkham.Types.TokenResponse
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude
+
+data MessageType = RevelationMessage | AttackMessage
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+messageType :: Message -> Maybe MessageType
+messageType PerformEnemyAttack{} = Just AttackMessage
+messageType Revelation{} = Just RevelationMessage
+messageType _ = Nothing
 
 data EncounterCardSource = FromDiscard | FromEncounterDeck
   deriving stock (Show, Generic)
@@ -182,7 +193,8 @@ data Message
   | AfterEnterLocation InvestigatorId LocationId
   | EnemyMove EnemyId LocationId LocationId
   | CreateEnemyAt CardCode LocationId
-  | RunTreachery InvestigatorId TreacheryId
+  | Revelation InvestigatorId TreacheryId
+  | AfterRevelation InvestigatorId TreacheryId
   | RevelationSkillTest InvestigatorId Source SkillType Int [Message] [Message]
   | DamagePerPointOfFailure InvestigatorId
   | HorrorPerPointOfFailure InvestigatorId
@@ -226,7 +238,7 @@ data Message
   | TakeControlOfAsset InvestigatorId AssetId
   | InvestigatorResigned InvestigatorId
   | CheckFastWindow InvestigatorId [FastWindow]
-  | CancelNextAttack
+  | CancelNext MessageType
   | Run [Message]
   | Continue Text
   | AddToHandFromDeck InvestigatorId CardId
@@ -238,7 +250,6 @@ data Message
   | PutOnTopOfDeck InvestigatorId PlayerCard
   | PutOnTopOfEncounterDeck InvestigatorId EncounterCard
   | AddToHand InvestigatorId Card
-  | CancelNextRevelationEffect
   | EnemySetBearer EnemyId BearerId
   | CheckDefeated
   deriving stock (Show, Generic)

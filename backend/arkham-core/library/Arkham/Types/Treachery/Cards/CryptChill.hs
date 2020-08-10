@@ -22,7 +22,7 @@ cryptChill uuid = CryptChill $ baseAttrs uuid "01167"
 
 instance (TreacheryRunner env) => RunMessage env CryptChill where
   runMessage msg t@(CryptChill attrs@Attrs {..}) = case msg of
-    RunTreachery iid tid | tid == treacheryId -> t <$ unshiftMessages
+    Revelation iid tid | tid == treacheryId -> t <$ unshiftMessages
       [ RevelationSkillTest
         iid
         (TreacherySource tid)
@@ -36,7 +36,6 @@ instance (TreacheryRunner env) => RunMessage env CryptChill where
       assetCount <- HashSet.size <$> asks (getSet @AssetId iid)
       if assetCount > 0
         then t <$ unshiftMessage (ChooseAndDiscardAsset iid)
-        else
-          t <$ unshiftMessage
-            (InvestigatorAssignDamage iid (TreacherySource treacheryId) 2 0)
+        else t <$ unshiftMessage
+          (InvestigatorAssignDamage iid (TreacherySource treacheryId) 2 0)
     _ -> CryptChill <$> runMessage msg attrs

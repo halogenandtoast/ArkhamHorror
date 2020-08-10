@@ -50,7 +50,7 @@ coverUp uuid =
 instance (TreacheryRunner env) => RunMessage env CoverUp where
   runMessage msg (CoverUp (attrs@Attrs {..} `With` metadata@CoverUpMetadata {..}))
     = case msg of
-      RunTreachery iid tid | tid == treacheryId -> do
+      Revelation iid tid | tid == treacheryId -> do
         unshiftMessages
           [ RemoveCardFromHand iid "01007"
           , AttachTreacheryToInvestigator tid iid

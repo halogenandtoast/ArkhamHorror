@@ -8,6 +8,8 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
@@ -25,6 +27,8 @@ data Attrs = Attrs
   , treacheryAttachedLocation :: Maybe LocationId
   , treacheryAttachedInvestigator :: Maybe InvestigatorId
   , treacheryAbilities :: [Ability]
+  , treacheryWeakness :: Bool
+  , treacheryResolved :: Bool
   }
   deriving stock (Show, Generic)
 
@@ -34,6 +38,9 @@ instance ToJSON Attrs where
 
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "treachery"
+
+resolved :: Lens' Attrs Bool
+resolved = lens treacheryResolved $ \m x -> m { treacheryResolved = x }
 
 abilities :: Lens' Attrs [Ability]
 abilities = lens treacheryAbilities $ \m x -> m { treacheryAbilities = x }
@@ -64,6 +71,8 @@ baseAttrs tid cardCode =
       , treacheryAttachedLocation = Nothing
       , treacheryAttachedInvestigator = Nothing
       , treacheryAbilities = mempty
+      , treacheryWeakness = False
+      , treacheryResolved = False
       }
 
 weaknessAttrs :: TreacheryId -> CardCode -> Attrs
@@ -83,7 +92,14 @@ weaknessAttrs tid cardCode =
       , treacheryAttachedLocation = Nothing
       , treacheryAttachedInvestigator = Nothing
       , treacheryAbilities = mempty
+      , treacheryWeakness = True
+      , treacheryResolved = False
       }
 
 instance (TreacheryRunner env) => RunMessage env Attrs where
-  runMessage _msg a@Attrs {..} = pure a
+  runMessage msg a@Attrs {..} = case msg of
+    Revelation{} -> pure $ a & resolved .~ True
+    AfterRevelation{} -> a <$ unless
+      treacheryResolved
+      (unshiftMessage (Discard (TreacheryTarget treacheryId)))
+    _ -> pure a

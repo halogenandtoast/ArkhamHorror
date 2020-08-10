@@ -22,7 +22,7 @@ obscuringFog uuid = ObscuringFog $ baseAttrs uuid "01168"
 
 instance (TreacheryRunner env) => RunMessage env ObscuringFog where
   runMessage msg t@(ObscuringFog attrs@Attrs {..}) = case msg of
-    RunTreachery iid tid | tid == treacheryId -> do
+    Revelation iid tid | tid == treacheryId -> do
       currentLocationId <- asks (getId iid)
       obscuringFogCount <- unTreacheryCount
         <$> asks (getCount (currentLocationId, treacheryCardCode))

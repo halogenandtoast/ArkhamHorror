@@ -19,10 +19,20 @@ import Data.UUID.V4
 import GHC.Stack
 import Import
 import Network.HTTP.Conduit (simpleHttp)
+import Yesod.WebSockets
+
+gameStream :: ArkhamGameId -> WebSocketsT Handler ()
+gameStream _ = do
+  App { appBroadcastChannel = writeChannel } <- getYesod
+  readChannel <- atomically $ dupTChan writeChannel
+  race_
+    (forever $ atomically (readTChan readChannel) >>= sendTextData)
+    (sourceWS $$ mapM_C (atomically . writeTChan writeChannel))
 
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler (Entity ArkhamGame)
 getApiV1ArkhamGameR gameId = do
   ge <- runDB $ get404 gameId
+  webSockets (gameStream gameId)
   pure (Entity gameId ge)
 
 postApiV1ArkhamCreateGameR :: Handler (Entity ArkhamGame)
@@ -54,9 +64,9 @@ putApiV1ArkhamGameR gameId = do
   let
     gameJson@GameJson {..} = arkhamGameCurrentData game
     messages = case gQuestion of
-      Just (ChooseOne qs) -> case (qs !!? choice response) of
-                               Nothing -> [Ask $ ChooseOne qs]
-                               Just msg -> [msg]
+      Just (ChooseOne qs) -> case qs !!? choice response of
+        Nothing -> [Ask $ ChooseOne qs]
+        Just msg -> [msg]
       Just (ChooseOneAtATime msgs) -> do
         let (mm, msgs') = extract (choice response) msgs
         case (mm, msgs') of
@@ -68,6 +78,11 @@ putApiV1ArkhamGameR gameId = do
       _ -> []
   (_, ge) <- liftIO $ runMessages =<< toInternalGame
     (gameJson { gMessages = messages <> gMessages })
+
+  App { appBroadcastChannel = writeChannel } <- getYesod
+  liftIO $ atomically $ writeTChan
+    writeChannel
+    (encode (Entity gameId (ArkhamGame ge)))
   Entity gameId (ArkhamGame ge) <$ runDB (replace gameId (ArkhamGame ge))
 
 data ArkhamDBDecklist = ArkhamDBDecklist

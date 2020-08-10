@@ -811,7 +811,9 @@ runGameMessage msg g = case msg of
     case encounterCard <|> playerCard of
       Nothing -> error "missing"
       Just (PlayerCard pc) -> do
-        unshiftMessage (AddToDiscard iid pc)
+        case getBearer enemy of
+          Nothing -> error "No bearer recorded"
+          Just iid' -> unshiftMessage (AddToDiscard iid' pc)
         pure $ g & enemies %~ HashMap.delete eid
       Just (EncounterCard ec) -> if isJust (getVictoryPoints enemy)
         then

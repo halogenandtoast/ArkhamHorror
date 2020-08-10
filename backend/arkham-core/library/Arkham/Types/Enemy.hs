@@ -3,6 +3,7 @@ module Arkham.Types.Enemy
   ( lookupEnemy
   , isEngaged
   , getEngagedInvestigators
+  , getBearer
   , Enemy
   )
 where
@@ -22,6 +23,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.Prey
 import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
@@ -46,6 +48,11 @@ isEngaged = not . null . enemyEngagedInvestigators . enemyAttrs
 
 getEngagedInvestigators :: Enemy -> HashSet InvestigatorId
 getEngagedInvestigators = enemyEngagedInvestigators . enemyAttrs
+
+getBearer :: Enemy -> Maybe InvestigatorId
+getBearer enemy = case enemyPrey (enemyAttrs enemy) of
+  Bearer iid -> Just (InvestigatorId $ unBearerId iid)
+  _ -> Nothing
 
 instance HasVictoryPoints Enemy where
   getVictoryPoints = enemyVictory . enemyAttrs

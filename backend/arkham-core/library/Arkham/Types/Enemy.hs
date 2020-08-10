@@ -47,6 +47,9 @@ isEngaged = not . null . enemyEngagedInvestigators . enemyAttrs
 getEngagedInvestigators :: Enemy -> HashSet InvestigatorId
 getEngagedInvestigators = enemyEngagedInvestigators . enemyAttrs
 
+instance HasVictoryPoints Enemy where
+  getVictoryPoints = enemyVictory . enemyAttrs
+
 instance HasId LocationId () Enemy where
   getId _ = enemyLocation . enemyAttrs
 

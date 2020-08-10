@@ -90,3 +90,6 @@ class HasKeywords a where
 
 class HasAbilities a where
   getAbilities :: a -> [Ability]
+
+class HasVictoryPoints a where
+  getVictoryPoints :: a -> Maybe Int

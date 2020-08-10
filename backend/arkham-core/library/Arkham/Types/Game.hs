@@ -119,6 +119,9 @@ getTreachery tid g =
 focusedCards :: Lens' Game [Card]
 focusedCards = lens giFocusedCards $ \m x -> m { giFocusedCards = x }
 
+victory :: Lens' Game [Card]
+victory = lens giVictory $ \m x -> m { giVictory = x }
+
 playerOrder :: Lens' Game [InvestigatorId]
 playerOrder = lens giPlayerOrder $ \m x -> m { giPlayerOrder = x }
 
@@ -807,8 +810,13 @@ runGameMessage msg g = case msg of
       Just (PlayerCard pc) -> do
         unshiftMessage (AddToDiscard iid pc)
         pure $ g & enemies %~ HashMap.delete eid
-      Just (EncounterCard ec) ->
-        pure $ g & (enemies %~ HashMap.delete eid) & (discard %~ (ec :))
+      Just (EncounterCard ec) -> if isJust (getVictoryPoints enemy)
+        then
+          pure
+          $ g
+          & (enemies %~ HashMap.delete eid)
+          & (victory %~ (EncounterCard ec :))
+        else pure $ g & (enemies %~ HashMap.delete eid) & (discard %~ (ec :))
   BeginInvestigation -> do
     unshiftMessage (ChoosePlayerOrder (giPlayerOrder g) [])
     pure $ g & phase .~ InvestigationPhase

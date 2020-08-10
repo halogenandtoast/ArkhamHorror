@@ -26,7 +26,7 @@ beatCop uuid = BeatCop $ (baseAttrs uuid "01018")
   , assetHealth = Just 2
   , assetSanity = Just 2
   , assetAbilities =
-    [(AssetSource uuid, Nothing, 1, FreeAbility AnyWindow, NoLimit)]
+    [(AssetSource uuid, AssetSource uuid, 1, FreeAbility AnyWindow, NoLimit)]
   }
 
 instance (AssetRunner env) => RunMessage env BeatCop where

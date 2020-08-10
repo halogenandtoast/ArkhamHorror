@@ -24,7 +24,7 @@ machete uuid = Machete $ (baseAttrs uuid "01020")
   { assetSlots = [HandSlot]
   , assetAbilities =
     [ ( AssetSource uuid
-      , Nothing
+      , AssetSource uuid
       , 1
       , ActionAbility 1 (Just Action.Fight)
       , NoLimit

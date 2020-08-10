@@ -36,7 +36,7 @@ instance (AssetRunner env) => RunMessage env Rolands38Special where
             & (uses .~ Uses Resource.Ammo 4)
             & (abilities
               .~ [ ( AssetSource aid
-                   , Nothing
+                   , AssetSource aid
                    , 1
                    , ActionAbility 1 (Just Action.Fight)
                    , NoLimit
@@ -44,7 +44,7 @@ instance (AssetRunner env) => RunMessage env Rolands38Special where
                  ]
               )
       Rolands38Special <$> runMessage msg attrs'
-    UseCardAbility iid (AssetSource aid, Nothing, 1, _, _) | aid == assetId ->
+    UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId ->
       case assetUses of
         Uses Resource.Ammo n -> do
           when

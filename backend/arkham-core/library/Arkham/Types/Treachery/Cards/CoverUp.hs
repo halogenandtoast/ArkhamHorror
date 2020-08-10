@@ -36,7 +36,7 @@ coverUp uuid =
     $ ((weaknessAttrs uuid "01007")
         { treacheryAbilities =
           [ ( TreacherySource uuid
-            , Nothing
+            , TreacherySource uuid
             , 1
             , ReactionAbility (WhenDiscoverClues You YourLocation)
             , NoLimit

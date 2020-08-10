@@ -23,7 +23,7 @@ medicalTexts :: AssetId -> MedicalTexts
 medicalTexts uuid = MedicalTexts $ (baseAttrs uuid "01035")
   { assetSlots = [HandSlot]
   , assetAbilities =
-    [(AssetSource uuid, Nothing, 1, ActionAbility 1 Nothing, NoLimit)]
+    [(AssetSource uuid, AssetSource uuid, 1, ActionAbility 1 Nothing, NoLimit)]
   }
 
 instance (AssetRunner env) => RunMessage env MedicalTexts where

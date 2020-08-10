@@ -30,7 +30,7 @@ rolandBanks = RolandBanks $ (baseAttrs
                             )
   { investigatorAbilities =
     [ ( InvestigatorSource "01001"
-      , Nothing
+      , InvestigatorSource "01001"
       , 1
       , ReactionAbility (Fast.WhenEnemyDefeated You)
       , OncePerRound

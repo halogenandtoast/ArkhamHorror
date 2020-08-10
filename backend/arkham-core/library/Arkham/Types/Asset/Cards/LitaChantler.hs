@@ -41,7 +41,7 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
                 [ UseCardAbility
                   iid
                   ( AssetSource assetId
-                  , Nothing
+                  , AssetSource assetId
                   , 1
                   , ReactionAbility Fast.Now
                   , NoLimit

@@ -19,9 +19,9 @@ data AbilityLimit = NoLimit | OncePerRound | OncePerGame
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
-type Ability = (Source, Maybe Source, Int, AbilityType, AbilityLimit)
---              ^ source of ability
---                      ^ cards give abilities to other cards this tracks that
+type Ability = (Source, Source, Int, AbilityType, AbilityLimit)
+--              ^ card that can trigger ability
+--                      ^ card that provided ability
 --                                    ^ index of ability
 
 newtype UsedAbility = UsedAbility { unUsedAbility :: Ability }

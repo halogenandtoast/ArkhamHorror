@@ -35,7 +35,7 @@ instance (AssetRunner env) => RunMessage env Flashlight where
         & (uses .~ Uses Resource.Supply 3)
         & (abilities
           .~ [ ( AssetSource aid
-               , Nothing
+               , AssetSource aid
                , 1
                , ActionAbility 1 (Just Action.Investigate)
                , NoLimit

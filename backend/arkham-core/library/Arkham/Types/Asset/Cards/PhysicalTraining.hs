@@ -22,13 +22,13 @@ physicalTraining :: AssetId -> PhysicalTraining
 physicalTraining uuid = PhysicalTraining $ (baseAttrs uuid "01017")
   { assetAbilities =
     [ ( AssetSource uuid
-      , Nothing
+      , AssetSource uuid
       , 1
       , FreeAbility (SkillTestWindow SkillWillpower)
       , NoLimit
       )
     , ( AssetSource uuid
-      , Nothing
+      , AssetSource uuid
       , 2
       , FreeAbility (SkillTestWindow SkillCombat)
       , NoLimit

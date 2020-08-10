@@ -37,7 +37,7 @@ instance (AssetRunner env) => RunMessage env Shrivelling where
             & (uses .~ Uses Resource.Charge 4)
             & (abilities
               .~ [ ( AssetSource aid
-                   , Nothing
+                   , AssetSource aid
                    , 1
                    , ActionAbility 1 (Just Action.Fight)
                    , NoLimit

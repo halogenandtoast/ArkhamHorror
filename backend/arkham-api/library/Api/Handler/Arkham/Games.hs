@@ -27,7 +27,7 @@ gameStream _ = do
   readChannel <- atomically $ dupTChan writeChannel
   race_
     (forever $ atomically (readTChan readChannel) >>= sendTextData)
-    (sourceWS $$ mapM_C (atomically . writeTChan writeChannel))
+    (runConduit $ sourceWS .| mapM_C (atomically . writeTChan writeChannel))
 
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler (Entity ArkhamGame)
 getApiV1ArkhamGameR gameId = do

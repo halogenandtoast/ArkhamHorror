@@ -67,8 +67,8 @@ extract :: Int -> [a] -> (Maybe a, [a])
 extract n xs =
   let a = xs !!? (n - 1) in (a, [ x | (i, x) <- zip [1 ..] xs, i /= n ])
 
-handleQuestion :: MonadIO m => GameJson -> Question -> m [Message]
-handleQuestion _ = \case
+handleQuestion :: MonadIO m => InvestigatorId -> Question -> m [Message]
+handleQuestion iid = \case
   ChooseOne [] -> pure []
   ChooseOne msgs -> do
     i <- keepAsking @Int
@@ -90,20 +90,23 @@ handleQuestion _ = \case
       )
     let (mm, msgs') = extract i msgs
     case mm of
-      Just m' -> pure [m', Ask $ ChooseOneAtATime msgs']
+      Just m' -> pure [m', Ask iid $ ChooseOneAtATime msgs']
       Nothing -> pure []
 
 runGame :: MonadIO m => Game -> m GameJson
 runGame g = do
   let ref = giMessages g
-  (mQuestion, gameJson) <- runMessages g
+  gameJson <- runMessages g
   pPrint gameJson
-  messages <- maybe (pure []) (handleQuestion gameJson) mQuestion
-  modifyIORef' ref (messages <>)
-  messages' <- readIORef ref
-  if null messages'
-    then pure gameJson
-    else runGame $ toInternalGame' ref gameJson
+  case HashMap.toList (gQuestion gameJson) of
+    [(investigatorId, question)] -> do
+      messages <- handleQuestion investigatorId question
+      modifyIORef' ref (messages <>)
+      messages' <- readIORef ref
+      if null messages'
+        then pure gameJson
+        else runGame $ toInternalGame' ref gameJson
+    _ -> pure gameJson
 
 main :: IO ()
 main = do

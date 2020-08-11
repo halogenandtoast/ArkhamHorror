@@ -847,6 +847,8 @@ runGameMessage msg g = case msg of
   BeginInvestigation -> do
     unshiftMessage (ChoosePlayerOrder (giPlayerOrder g) [])
     pure $ g & phase .~ InvestigationPhase
+  ChoosePlayerOrder [x] [] ->
+    pure $ g & playerOrder .~ [x] & activeInvestigatorId .~ x
   ChoosePlayerOrder [] (x : xs) ->
     pure $ g & playerOrder .~ (x : xs) & activeInvestigatorId .~ x
   ChoosePlayerOrder [y] (x : xs) ->

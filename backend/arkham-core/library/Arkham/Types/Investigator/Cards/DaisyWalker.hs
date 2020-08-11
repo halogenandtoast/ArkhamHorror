@@ -106,7 +106,7 @@ instance (InvestigatorRunner env) => RunMessage env DaisyWalker where
             runTest skillValue -- Because this unshifts we need to call this before the on success is added
             when (tomeCount > 0) $ unshiftMessage
               (AddOnSuccess
-                (Ask
+                (Ask iid
                 $ ChooseOne
                     [ DrawCards iid tomeCount False
                     , Continue "Do not use Daisy's ability"

@@ -51,7 +51,7 @@ instance (AssetRunner env) => RunMessage env Scrying where
             (n == 1)
             (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
           unshiftMessage
-            (Ask
+            (Ask iid
             $ ChooseOne
             $ SearchTopOfDeck iid EncounterDeckTarget 3 [] PutBackInAnyOrder
             : [ SearchTopOfDeck

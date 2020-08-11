@@ -19,6 +19,7 @@ import * as Arkham from '@/arkham/types/Act';
 export default class Act extends Vue {
   @Prop(Object) readonly act!: Arkham.Act;
   @Prop(Object) readonly game!: Game;
+  @Prop(String) readonly investigatorId!: string;
 
   get id() {
     return this.act.contents.id;
@@ -29,7 +30,7 @@ export default class Act extends Vue {
   }
 
   get choices() {
-    return choices(this.game);
+    return choices(this.game, this.investigatorId);
   }
 
   get advanceActAction() {

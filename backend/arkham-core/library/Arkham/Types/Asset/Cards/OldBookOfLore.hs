@@ -32,7 +32,7 @@ instance (AssetRunner env) => RunMessage env OldBookOfLore where
       locationId <- asks (getId @LocationId iid)
       investigatorIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessage
-        (Ask $ ChooseOne
+        (Ask iid $ ChooseOne
           [ SearchTopOfDeck iid (InvestigatorTarget iid') 3 [] ShuffleBackIn
           | iid' <- investigatorIds
           ]

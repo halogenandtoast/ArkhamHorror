@@ -53,6 +53,7 @@ import * as Arkham from '@/arkham/types/Asset';
 })
 export default class Asset extends Vue {
   @Prop(Object) readonly game!: Game
+  @Prop(String) readonly investigatorId!: string
   @Prop(Object) readonly asset!: Arkham.Asset
 
   get id() {
@@ -82,7 +83,7 @@ export default class Asset extends Vue {
   }
 
   get choices() {
-    return choices(this.game);
+    return choices(this.game, this.investigatorId);
   }
 
   get cardAction() {

@@ -36,7 +36,7 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
         locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
         if iid `elem` locationInvestigatorIds
           then a <$ unshiftMessage
-            (Ask $ ChooseOne
+            (Ask iid $ ChooseOne
               [ Run
                 [ UseCardAbility
                   iid

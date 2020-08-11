@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 134ca196f10c1f1eb019f317ba271842ff6e9d2ff8196ee624f6ca9b1b66b084
+-- hash: 0e5ab69d8c02db267aad42797343b1e4e76c63d08e45ed027fd96288f44115ca
 
 name:           arkham-api
 version:        0.0.0
@@ -68,6 +68,7 @@ library
     , persistent-postgresql
     , persistent-template
     , regex-posix
+    , safe
     , string-conversions
     , template-haskell
     , text

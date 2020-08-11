@@ -19,6 +19,7 @@ import { Message, MessageType } from '@/arkham/types/Message';
 export default class FocusedCard extends Vue {
   @Prop(Object) readonly card!: Card
   @Prop(Object) readonly game!: Game
+  @Prop(String) readonly investigatorId!: string
 
   get image() {
     const { cardCode } = this.card.contents;
@@ -30,7 +31,7 @@ export default class FocusedCard extends Vue {
   }
 
   get choices() {
-    return choices(this.game);
+    return choices(this.game, this.investigatorId);
   }
 
   get cardAction() {

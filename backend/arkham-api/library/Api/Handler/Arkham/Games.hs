@@ -16,9 +16,11 @@ import Arkham.Types.Message
 import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap
 import Data.UUID.V4
+import Database.Persist.Sql
 import GHC.Stack
 import Import
 import Network.HTTP.Conduit (simpleHttp)
+import Safe (fromJustNote)
 import Yesod.WebSockets
 
 gameStream :: ArkhamGameId -> WebSocketsT Handler ()
@@ -29,11 +31,20 @@ gameStream _ = do
     (forever $ atomically (readTChan readChannel) >>= sendTextData)
     (runConduit $ sourceWS .| mapM_C (atomically . writeTChan writeChannel))
 
-getApiV1ArkhamGameR :: ArkhamGameId -> Handler (Entity ArkhamGame)
+data GetGameJson = GetGameJson { investigatorId :: InvestigatorId, game :: Entity ArkhamGame }
+  deriving stock (Show, Generic)
+  deriving anyclass (ToJSON)
+
+getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameR gameId = do
+  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   ge <- runDB $ get404 gameId
   webSockets (gameStream gameId)
-  pure (Entity gameId ge)
+  let
+    GameJson {..} = arkhamGameCurrentData ge
+    investigatorId = fromJustNote "not in game"
+      $ HashMap.lookup (fromIntegral $ fromSqlKey userId) gPlayers
+  pure $ GetGameJson investigatorId (Entity gameId ge)
 
 postApiV1ArkhamCreateGameR :: Handler (Entity ArkhamGame)
 postApiV1ArkhamCreateGameR = do
@@ -59,20 +70,24 @@ extract n xs =
 
 putApiV1ArkhamGameR :: ArkhamGameId -> Handler (Entity ArkhamGame)
 putApiV1ArkhamGameR gameId = do
+  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   game <- runDB $ get404 gameId
   response <- requireCheckJsonBody
   let
     gameJson@GameJson {..} = arkhamGameCurrentData game
-    messages = case gQuestion of
+    investigatorId = fromJustNote "not in game"
+      $ HashMap.lookup (fromIntegral $ fromSqlKey userId) gPlayers
+    messages = case HashMap.lookup investigatorId gQuestion of
       Just (ChooseOne qs) -> case qs !!? choice response of
-        Nothing -> [Ask $ ChooseOne qs]
+        Nothing -> [Ask investigatorId $ ChooseOne qs]
         Just msg -> [msg]
       Just (ChooseOneAtATime msgs) -> do
         let (mm, msgs') = extract (choice response) msgs
         case (mm, msgs') of
           (Just m', []) -> [m']
-          (Just m', msgs'') -> [m', Ask $ ChooseOneAtATime msgs'']
-          (Nothing, msgs'') -> [Ask $ ChooseOneAtATime msgs'']
+          (Just m', msgs'') ->
+            [m', Ask investigatorId $ ChooseOneAtATime msgs'']
+          (Nothing, msgs'') -> [Ask investigatorId $ ChooseOneAtATime msgs'']
       Just (ChooseOneFromSource MkChooseOneFromSource {..}) ->
         maybeToList (map unlabel chooseOneChoices !!? choice response)
       _ -> []

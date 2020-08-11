@@ -5,6 +5,7 @@
         v-for="asset in player.contents.assets"
         :asset="game.currentData.assets[asset]"
         :game="game"
+        :investigatorId="investigatorId"
         :key="asset"
         @choose="$emit('choose', $event)"
       />
@@ -14,6 +15,7 @@
         :key="enemyId"
         :enemy="game.currentData.enemies[enemyId]"
         :game="game"
+        :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />
 
@@ -22,6 +24,7 @@
         :key="treacheryId"
         :treachery="game.currentData.treacheries[treacheryId]"
         :game="game"
+        :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />
     </section>
@@ -29,6 +32,7 @@
       <Investigator
         :player="player"
         :game="game"
+        :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />
       <div v-if="topOfDiscard" class="discard">
@@ -50,6 +54,7 @@
           v-for="(card, index) in player.contents.hand"
           :card="card"
           :game="game"
+          :investigatorId="investigatorId"
           :key="index"
           @choose="$emit('choose', $event)"
         />
@@ -80,6 +85,7 @@ import * as Arkham from '@/arkham/types/Investigator';
 })
 export default class Player extends Vue {
   @Prop(Object) readonly game!: Game
+  @Prop(String) readonly investigatorId!: string
   @Prop(Object) readonly player!: Arkham.Investigator
   @Prop(Array) readonly commitedCards!: number[]
   @Prop(Boolean) readonly canTakeActions!: boolean
@@ -100,7 +106,7 @@ export default class Player extends Vue {
   }
 
   get choices() {
-    return choices(this.game);
+    return choices(this.game, this.investigatorId);
   }
 
   get drawCardsAction() {

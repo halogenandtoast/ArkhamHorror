@@ -1,8 +1,8 @@
 <template>
   <div v-if="!game.currentData.gameOver" id="game" class="game">
     <CardOverlay />
-    <StatusBar :game="game" @choose="$emit('choose', $event)" />
-    <PlayerOrder :game="game" @choose="$emit('choose', $event)" />
+    <StatusBar :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
+    <PlayerOrder :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
     <div class="scenario-cards">
       <VictoryPile :game="game" />
       <div v-if="topOfEncounterDiscard" class="discard">
@@ -12,7 +12,11 @@
         />
       </div>
 
-      <EncounterDeck :game="game" @choose="$emit('choose', $event)"/>
+      <EncounterDeck
+        :game="game"
+        :investigatorId="investigatorId"
+        @choose="$emit('choose', $event)"
+      />
 
       <Agenda
         v-for="(agenda, key) in game.currentData.agendas"
@@ -24,6 +28,7 @@
         :key="key"
         :act="act"
         :game="game"
+        :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />
       <img
@@ -33,6 +38,7 @@
       <ChaosBag
         :game="game"
         :skillTest="game.currentData.skillTest"
+        :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />
       <img
@@ -48,27 +54,34 @@
         class="location"
         :key="key"
         :game="game"
+        :investigatorId="investigatorId"
         :location="location"
         @choose="$emit('choose', $event)"
       />
     </div>
 
-    <PlayerTabs>
+    <PlayerTabs :investigatorId="investigatorId">
       <Tab
         v-for="(player, index) in players"
         :key="index"
         :playerClass="player.contents.class"
         :title="player.contents.name"
+        :investigatorId="index"
         :activePlayer="isActivePlayer(player)"
       >
         <Player
           :game="game"
+          :investigatorId="investigatorId"
           :player="player"
           @choose="$emit('choose', $event)"
         />
       </Tab>
     </PlayerTabs>
-    <ChoiceModal :game="game" @choose="$emit('choose', $event)" />
+    <ChoiceModal
+      :game="game"
+      :investigatorId="investigatorId"
+      @choose="$emit('choose', $event)"
+    />
   </div>
 </template>
 
@@ -109,6 +122,7 @@ import Location from '@/arkham/components/Location.vue';
 })
 export default class Scenario extends Vue {
   @Prop(Object) readonly game!: Game;
+  @Prop(String) readonly investigatorId!: string;
 
   private commitedCards: number[] = []
   private moving = false

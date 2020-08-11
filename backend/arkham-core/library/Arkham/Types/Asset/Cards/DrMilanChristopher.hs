@@ -38,7 +38,7 @@ instance (AssetRunner env) => RunMessage env DrMilanChristopher where
       DrMilanChristopher <$> runMessage msg attrs
     SuccessfulInvestigation iid _ | iid == getInvestigator attrs ->
       a <$ unshiftMessage
-        (Ask $ ChooseOne
+        (Ask iid $ ChooseOne
           [ UseCardAbility
             iid
             ( AssetSource assetId

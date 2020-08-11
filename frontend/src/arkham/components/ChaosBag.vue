@@ -74,6 +74,7 @@ function imageFor(token: string) {
 @Component
 export default class ChaosBag extends Vue {
   @Prop(Object) readonly game!: Game;
+  @Prop(String) readonly investigatorId!: string
   @Prop(Object) readonly skillTest?: SkillTest;
 
   imageFor = imageFor.bind(this);
@@ -87,7 +88,7 @@ export default class ChaosBag extends Vue {
   }
 
   get choices() {
-    return choices(this.game);
+    return choices(this.game, this.investigatorId);
   }
 
   get drawTokenAction() {

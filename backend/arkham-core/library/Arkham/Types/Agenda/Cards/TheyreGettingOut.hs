@@ -2,28 +2,25 @@
 module Arkham.Types.Agenda.Cards.TheyreGettingOut where
 
 import Arkham.Json
-import Arkham.Types.Message
-import Arkham.Types.Classes
 import Arkham.Types.ActId
-import Arkham.Types.Trait
-import Arkham.Types.LocationId
-import Arkham.Types.GameValue
-import Arkham.Types.Query
-import Arkham.Types.EnemyId
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
-import qualified Data.HashSet as HashSet
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.GameValue
+import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Query
+import Arkham.Types.Trait
 import ClassyPrelude
+import qualified Data.HashSet as HashSet
 
 newtype TheyreGettingOut = TheyreGettingOut Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 theyreGettingOut :: TheyreGettingOut
-theyreGettingOut = TheyreGettingOut $ baseAttrs
-  "01107"
-  "They're Getting Out!"
-  "Agenda 3a"
-  (Static 10)
+theyreGettingOut = TheyreGettingOut
+  $ baseAttrs "01107" "They're Getting Out!" "Agenda 3a" (Static 10)
 
 instance (AgendaRunner env) => RunMessage env TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs@Attrs {..}) = case msg of
@@ -33,6 +30,7 @@ instance (AgendaRunner env) => RunMessage env TheyreGettingOut where
         then a <$ unshiftMessage (Resolution 3)
         else a <$ unshiftMessage NoResolution -- TODO: defeated and suffer trauma
     EndEnemy -> do
+      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
       unengagedEnemyIds <- HashSet.map unUnengagedEnemyId <$> asks (getSet ())
       ghoulEnemyIds <- asks (getSet Ghoul)
       parlorEnemyIds <- asks (getSet (LocationId "01115"))
@@ -48,9 +46,11 @@ instance (AgendaRunner env) => RunMessage env TheyreGettingOut where
         case closestLocationIds of
           [] -> pure Nothing
           [x] -> pure $ Just $ EnemyMove eid locationId x
-          xs ->
-            pure $ Just $ Ask $ ChooseOne $ map (EnemyMove eid locationId) xs
-      a <$ unshiftMessage (Ask $ ChooseOneAtATime (catMaybes messages))
+          xs -> pure $ Just $ Ask leadInvestigatorId $ ChooseOne $ map
+            (EnemyMove eid locationId)
+            xs
+      a <$ unshiftMessage
+        (Ask leadInvestigatorId $ ChooseOneAtATime (catMaybes messages))
     EndRoundWindow -> do
       parlorGhoulsCount <- unEnemyCount
         <$> asks (getCount (LocationId "01115", [Ghoul]))

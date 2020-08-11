@@ -1,6 +1,12 @@
 <template>
   <div id="game" class="game" v-if="ready">
-    <Scenario v-if="!game.currentData.gameOver" :game="game" @choose="choose" @update="update" />
+    <Scenario
+      v-if="!game.currentData.gameOver"
+      :game="game"
+      :investigatorId="investigatorId"
+      @choose="choose"
+      @update="update"
+    />
     <p v-if="game.currentData.gameOver">
       Game over
     </p>
@@ -23,10 +29,12 @@ export default class Game extends Vue {
   private ready = false;
   private socket: WebSocket | null = null;
   private game: Arkham.Game | null = null;
+  private investigatorId: string | null = null;
 
   async mounted() {
-    fetchGame(this.gameId).then((game) => {
+    fetchGame(this.gameId).then(({ game, investigatorId }) => {
       this.game = game;
+      this.investigatorId = investigatorId;
       this.socket = new WebSocket(`${api.defaults.baseURL}/arkham/games/${this.gameId}`.replace(/https?/, 'ws'));
       this.socket.addEventListener('message', (event) => {
         Arkham.gameDecoder.decodePromise(JSON.parse(event.data))

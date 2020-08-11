@@ -57,9 +57,10 @@ import PoolItem from '@/arkham/components/PoolItem.vue';
 export default class Investigator extends Vue {
   @Prop(Object) readonly player!: Arkham.Investigator
   @Prop(Object) readonly game!: Game
+  @Prop(String) readonly investigatorId!: string
 
   get choices() {
-    return choices(this.game);
+    return choices(this.game, this.investigatorId);
   }
 
   get id() {

@@ -1,13 +1,13 @@
 module Arkham.Types.Event.Cards.DynamiteBlast where
 
+import Arkham.Types.Classes
+import Arkham.Types.GameRunner
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
-import Arkham.Types.Classes
-import Arkham.Types.Source
 import Arkham.Types.Message
-import Arkham.Types.GameRunner
-import qualified Data.HashSet as HashSet
+import Arkham.Types.Source
 import ClassyPrelude
+import qualified Data.HashSet as HashSet
 
 dynamiteBlast
   :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> m ()
@@ -24,4 +24,4 @@ dynamiteBlast iid = do
       <> map
            (\iid' -> InvestigatorAssignDamage iid' (EventSource "01023") 3 0)
            investigatorIds
-  unshiftMessage (Ask $ ChooseOne $ concat choices)
+  unshiftMessage (Ask iid $ ChooseOne $ concat choices)

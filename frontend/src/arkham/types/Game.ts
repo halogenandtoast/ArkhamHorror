@@ -23,35 +23,45 @@ export interface Game {
   currentData: GameState;
 }
 
-export function choices(game: Game) {
-  if (!game.currentData.question) {
+export function choices(game: Game, investigatorId: string) {
+  if (!game.currentData.question[investigatorId]) {
     return [];
   }
 
-  switch (game.currentData.question.tag) {
+  const question = game.currentData.question[investigatorId];
+
+  switch (question.tag) {
     case 'ChooseOne':
-      return game.currentData.question.contents;
+      return question.contents;
     case 'ChooseOneAtATime':
-      return game.currentData.question.contents;
+      return question.contents;
     case 'ChooseOneFromSource':
-      return game.currentData.question.contents.choices;
+    {
+      const { choices: sourceChoices } = question.contents;
+      return sourceChoices;
+    }
     default:
       return [];
   }
 }
 
-export function choicesSource(game: Game) {
-  if (!game.currentData.question) {
+export function choicesSource(game: Game, investigatorId: string) {
+  if (!game.currentData.question[investigatorId]) {
     return null;
   }
 
-  switch (game.currentData.question.tag) {
+  const question = game.currentData.question[investigatorId];
+
+  switch (question.tag) {
     case 'ChooseOne':
       return null;
     case 'ChooseOneAtATime':
       return null;
     case 'ChooseOneFromSource':
-      return game.currentData.question.contents.source;
+    {
+      const { source } = question.contents;
+      return source;
+    }
     default:
       return null;
   }
@@ -70,7 +80,7 @@ export interface GameState {
   leadInvestigatorId: string;
   locations: Record<string, Location>;
   phase: Phase;
-  question: Question | null;
+  question: Record<string, Question>;
   scenario: Scenario;
   skillTest: SkillTest | null;
   treacheries: Record<string, Treachery>;
@@ -93,7 +103,7 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     leadInvestigatorId: JsonDecoder.string,
     locations: JsonDecoder.dictionary<Location>(locationDecoder, 'Dict<UUID, Location>'),
     phase: phaseDecoder,
-    question: JsonDecoder.nullable(questionDecoder),
+    question: JsonDecoder.dictionary<Question>(questionDecoder, 'Dict<InvestigatorId, Question>'),
     scenario: scenarioDecoder,
     skillTest: JsonDecoder.nullable(skillTestDecoder),
     treacheries: JsonDecoder.dictionary<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),

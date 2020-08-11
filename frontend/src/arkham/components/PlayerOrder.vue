@@ -26,9 +26,10 @@ import { Message, MessageType } from '@/arkham/types/Message';
 @Component
 export default class PlayerOrder extends Vue {
   @Prop(Object) readonly game!: Game;
+  @Prop(String) readonly investigatorId!: string;
 
   get choices(): Message[] {
-    return choices(this.game);
+    return choices(this.game, this.investigatorId);
   }
 
   get ordinal() {

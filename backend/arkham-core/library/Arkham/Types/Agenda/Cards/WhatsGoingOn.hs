@@ -2,31 +2,28 @@
 module Arkham.Types.Agenda.Cards.WhatsGoingOn where
 
 import Arkham.Json
-import Arkham.Types.Message
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
-import Arkham.Types.Query
-import Arkham.Types.Source
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
+import Arkham.Types.Classes
+import Arkham.Types.GameValue
+import Arkham.Types.Message
+import Arkham.Types.Query
+import Arkham.Types.Source
 import ClassyPrelude
 
 newtype WhatsGoingOn = WhatsGoingOn Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 whatsGoingOn :: WhatsGoingOn
-whatsGoingOn = WhatsGoingOn $ baseAttrs
-  "01105"
-  "What's Going On?!"
-  "Agenda 1a"
-  (Static 3)
+whatsGoingOn =
+  WhatsGoingOn $ baseAttrs "01105" "What's Going On?!" "Agenda 1a" (Static 3)
 
 instance (AgendaRunner env) => RunMessage env WhatsGoingOn where
   runMessage msg a@(WhatsGoingOn attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
       a <$ unshiftMessages
-        [ Ask $ ChooseOneFromSource $ MkChooseOneFromSource
+        [ Ask leadInvestigatorId $ ChooseOneFromSource $ MkChooseOneFromSource
           { chooseOneSource = AgendaSource aid
           , chooseOneChoices =
             [ label

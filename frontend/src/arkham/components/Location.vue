@@ -32,6 +32,7 @@
         :key="treacheryId"
         :treachery="game.currentData.treacheries[treacheryId]"
         :game="game"
+        :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />
       <div v-if="location.contents.clues > 0" class="pool">
@@ -43,6 +44,7 @@
         v-for="assetId in location.contents.assets"
         :asset="game.currentData.assets[assetId]"
         :game="game"
+        :investigatorId="investigatorId"
         :key="assetId"
         @choose="$emit('choose', $event)"
       />
@@ -51,6 +53,8 @@
         :key="enemyId"
         :enemy="game.currentData.enemies[enemyId]"
         :game="game"
+        :investigatorId="investigatorId"
+        @choose="$emit('choose', $event)"
       />
     </div>
   </div>
@@ -76,9 +80,8 @@ import * as Arkham from '@/arkham/types/Location';
 })
 export default class Location extends Vue {
   @Prop(Object) readonly game!: Game;
+  @Prop(String) readonly investigatorId!: string;
   @Prop(Object) readonly location!: Arkham.Location;
-
-  portrait = (cardCode: string) => `/img/arkham/portraits/${cardCode}.jpg`
 
   get clues() {
     return this.location.contents.clues;
@@ -96,7 +99,7 @@ export default class Location extends Vue {
   }
 
   get choices() {
-    return choices(this.game);
+    return choices(this.game, this.investigatorId);
   }
 
   get cardAction() {
@@ -150,6 +153,8 @@ export default class Location extends Vue {
       this.$emit('choose', action);
     }
   }
+
+  portrait = (cardCode: string) => `/img/arkham/portraits/${cardCode}.jpg`
 }
 </script>
 

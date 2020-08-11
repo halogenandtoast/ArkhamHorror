@@ -439,7 +439,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     InvestigatorMulligan iid | iid == investigatorId -> if null investigatorHand
       then a <$ unshiftMessage (FinishedWithMulligan investigatorId)
       else a <$ unshiftMessage
-        (Ask
+        (Ask iid
         $ ChooseOne
         $ Run
             [ Continue "Done With Mulligan"
@@ -489,7 +489,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     TakeControlOfAsset iid aid | iid == investigatorId ->
       pure $ a & assets %~ HashSet.insert aid
     ChooseAndDiscardAsset iid | iid == investigatorId -> a <$ unshiftMessage
-      (Ask $ ChooseOne $ map DiscardAsset (HashSet.toList $ a ^. assets))
+      (Ask iid $ ChooseOne $ map DiscardAsset (HashSet.toList $ a ^. assets))
     AttachTreacheryToInvestigator tid iid | iid == investigatorId ->
       pure $ a & treacheries %~ HashSet.insert tid
     AllCheckHandSize | not (a ^. defeated || a ^. resigned) -> do
@@ -498,7 +498,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       pure a
     CheckHandSize iid | iid == investigatorId -> do
       when (length investigatorHand > 8) $ unshiftMessage
-        (Ask $ ChooseOne
+        (Ask iid $ ChooseOne
           [ Run [DiscardCard iid (getCardId card), CheckHandSize iid]
           | card <- investigatorHand
           ]
@@ -540,7 +540,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
             investigatorEngagedEnemies
               `union` (enemyIds `difference` aloofEnemyIds)
         a <$ unshiftMessage
-          (Ask $ ChooseOne
+          (Ask iid $ ChooseOne
             [ FightEnemy iid eid skillType tempModifiers tokenResponses isAction
             | eid <- HashSet.toList fightableEnemyIds
             ]
@@ -583,7 +583,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       pure $ a & engagedEnemies %~ HashSet.delete eid
     ChooseEvadeEnemy iid skillType onSuccess onFailure tokenResponses isAction
       | iid == investigatorId -> a <$ unshiftMessage
-        (Ask $ ChooseOne $ map
+        (Ask iid $ ChooseOne $ map
           (\eid -> EvadeEnemy
             iid
             eid
@@ -661,7 +661,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
                 ]
           else pure []
         a <$ unshiftMessage
-          (Ask $ ChooseOne $ healthDamageMessages <> sanityDamageMessages)
+          (Ask iid $ ChooseOne $ healthDamageMessages <> sanityDamageMessages)
     Investigate iid lid skillType tokenResponses True | iid == investigatorId ->
       a <$ unshiftMessages
         [ TakeAction
@@ -680,7 +680,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         (flip (abilityInWindows [WhenDiscoverClues You YourLocation]) a)
         availableAbilities
       a <$ unshiftMessage
-        (Ask
+        (Ask iid
         $ ChooseOne
         $ map
             (\ability ->
@@ -743,7 +743,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
               %~ placeInAvailableSlot aid traits
             else if not (null $ discardableAssets slotType a)
               then a <$ unshiftMessage
-                (Ask $ ChooseOne
+                (Ask iid $ ChooseOne
                   [ Run
                       [ DiscardAsset aid'
                       , InvestigatorPlayAsset iid aid slotTypes traits
@@ -807,7 +807,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         then pure $ a & slots %~ HashMap.insert slotType updatedSlots
         else do
           unshiftMessage
-            (Ask $ ChooseOne
+            (Ask iid $ ChooseOne
               [ Run
                   [ DiscardAsset aid'
                   , RefillSlots iid slotType (filter (/= aid') assetIds)
@@ -874,7 +874,9 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
     AllDrawEncounterCard | not (a ^. defeated || a ^. resigned) ->
       a <$ unshiftMessage
-        (Ask $ ChooseOne [InvestigatorDrawEncounterCard investigatorId])
+        (Ask investigatorId
+        $ ChooseOne [InvestigatorDrawEncounterCard investigatorId]
+        )
     RevelationSkillTest iid source skillType difficulty onSuccess onFailure
       | iid == investigatorId -> a <$ unshiftMessage
         (BeginSkillTest
@@ -937,7 +939,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         (null commitedCardIds)
       then
         unshiftMessage
-          (SkillTestAsk $ Ask $ ChooseOne
+          (SkillTestAsk $ Ask iid $ ChooseOne
             (map
                 (\ability -> Run [UseCardAbility iid ability, beginMessage])
                 filteredAbilities
@@ -956,7 +958,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
             )
           )
       else
-        unshiftMessage (SkillTestAsk $ Ask $ ChooseOne [triggerMessage])
+        unshiftMessage (SkillTestAsk $ Ask iid $ ChooseOne [triggerMessage])
       pure a
     BeforeSkillTest iid skillType | iid /= investigatorId -> do
       locationId' <- asks (getId iid)
@@ -975,7 +977,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
               _ -> False
         when (not (null committableCards) || not (null commitedCardIds))
           $ unshiftMessage
-              (SkillTestAsk $ Ask $ ChooseOne
+              (SkillTestAsk $ Ask investigatorId $ ChooseOne
                 (map
                     (\card ->
                       Run
@@ -1010,7 +1012,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         availableAbilities
       if not (null playableCards)
         then a <$ unshiftMessage
-          (Ask
+          (Ask iid
           $ ChooseOne
           $ map
               (\c -> Run
@@ -1079,7 +1081,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           traits' = HashSet.fromList traits
         case strategy of
           PutBackInAnyOrder -> unshiftMessage
-            (Ask $ ChooseOneAtATime
+            (Ask iid $ ChooseOneAtATime
               [ AddFocusedToTopOfDeck
                   iid
                   (InvestigatorTarget iid')
@@ -1088,7 +1090,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
               ]
             )
           ShuffleBackIn -> unshiftMessage
-            (Ask $ ChooseOne
+            (Ask iid $ ChooseOne
               [ Run
                   [ AddFocusedToHand
                     iid
@@ -1127,7 +1129,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           (_, _, _, ActionAbility _ (Just action), _) -> action `elem` canDos
           _ -> False
       a <$ unshiftMessage
-        (Ask $ ChooseOne
+        (Ask iid $ ChooseOne
           (additionalActions
           <> [ TakeResources iid 1 True | Action.Resource `elem` canDos ]
           <> [ DrawCards iid 1 True | Action.Draw `elem` canDos ]

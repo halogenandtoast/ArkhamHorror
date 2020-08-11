@@ -29,7 +29,7 @@ instance (AssetRunner env) => RunMessage env GuardDog where
       -- for any additional effects, such as triggering Roland's ability.
       result <- runMessage msg attrs
       unshiftMessage
-        (Ask $ ChooseOne
+        (Ask (getInvestigator attrs) $ ChooseOne
           [ EnemyDamage eid (getInvestigator attrs) (AssetSource aid) 1
           , Continue "Do not use Guard Dog's ability"
           ]

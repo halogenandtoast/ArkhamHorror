@@ -174,11 +174,12 @@ instance (EnemyRunner env) => RunMessage env Attrs where
             investigatorIds <- if null preyIds
               then HashSet.toList <$> asks (getSet lid)
               else pure []
+            leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
             case preyIds <> investigatorIds of
               [] -> pure ()
               [iid] -> unshiftMessage (EnemyEngageInvestigator eid iid)
               iids -> unshiftMessage
-                (Ask $ ChooseOne
+                (Ask leadInvestigatorId $ ChooseOne
                   [ EnemyEngageInvestigator eid iid | iid <- iids ]
                 )
       when (Keyword.Massive `elem` enemyKeywords) $ do
@@ -207,11 +208,15 @@ instance (EnemyRunner env) => RunMessage env Attrs where
         closestLocationIds <-
           HashSet.toList . HashSet.map unClosestLocationId <$> asks
             (getSet (enemyLocation, enemyPrey))
+        leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
         case closestLocationIds of
           [] -> pure a
           [lid] -> a <$ unshiftMessage (EnemyMove enemyId enemyLocation lid)
           ls -> a <$ unshiftMessage
-            (Ask $ ChooseOne $ map (EnemyMove enemyId enemyLocation) ls)
+            (Ask leadInvestigatorId $ ChooseOne $ map
+              (EnemyMove enemyId enemyLocation)
+              ls
+            )
     EnemiesAttack
       | not (null enemyEngagedInvestigators) && not enemyExhausted -> do
         unshiftMessages $ map (flip EnemyWillAttack enemyId) $ HashSet.toList
@@ -256,7 +261,12 @@ instance (EnemyRunner env) => RunMessage env Attrs where
             tokenResponses
           )
     PerformEnemyAttack iid eid | eid == enemyId -> a <$ unshiftMessage
-      (InvestigatorAssignDamage iid (EnemySource enemyId) enemyHealthDamage enemySanityDamage)
+      (InvestigatorAssignDamage
+        iid
+        (EnemySource enemyId)
+        enemyHealthDamage
+        enemySanityDamage
+      )
     EnemyDamage eid iid source amount | eid == enemyId -> do
       let amount' = modifiedDamageAmount a amount
       playerCount <- unPlayerCount <$> asks (getCount ())

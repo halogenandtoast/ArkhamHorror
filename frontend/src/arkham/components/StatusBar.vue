@@ -36,11 +36,12 @@ import { Message, MessageType } from '@/arkham/types/Message';
 @Component
 export default class StatusBar extends Vue {
   @Prop(Object) readonly game!: Game
+  @Prop(String) readonly investigatorId!: string
 
   MessageType: any = MessageType // eslint-disable-line
 
   get choices() {
-    return choices(this.game);
+    return choices(this.game, this.investigatorId);
   }
 
   get shouldShow() {

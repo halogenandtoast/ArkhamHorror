@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" v-if="ready">
     <Nav />
     <router-view/>
   </div>
@@ -18,8 +18,11 @@ export default class App extends Vue {
   @Getter currentUser!: User | undefined;
   @Action loadUserFromStorage!: () => void;
 
+  ready = false
+
   async mounted() {
     await this.loadUserFromStorage();
+    this.ready = true;
   }
 }
 </script>

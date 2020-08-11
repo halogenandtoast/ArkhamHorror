@@ -14,11 +14,13 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Prop, Component } from 'vue-property-decorator';
 import Tab from '@/arkham/components/Tab.vue';
 
 @Component
 export default class PlayerTabs extends Vue {
+  @Prop(String) readonly investigatorId!: string
+
   selectedIndex = 0
   tabs: Tab[] = []
 
@@ -37,7 +39,10 @@ export default class PlayerTabs extends Vue {
   }
 
   mounted() {
-    this.selectTab(0);
+    const idx = this
+      .tabs
+      .findIndex((tab) => tab.$props.investigatorId === this.investigatorId);
+    this.selectTab(idx === -1 ? 0 : idx);
   }
 
   selectTab(i: number) {

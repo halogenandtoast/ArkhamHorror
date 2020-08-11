@@ -603,7 +603,7 @@ runGameMessage msg g = case msg of
     let (cards, encounterDeck') = splitAt n $ unDeck (giEncounterDeck g)
     case strategy of
       PutBackInAnyOrder -> unshiftMessage
-        (Ask $ ChooseOneAtATime
+        (Ask iid $ ChooseOneAtATime
           [ AddFocusedToTopOfDeck iid EncounterDeckTarget (getCardId card)
           | card <- cards
           ]
@@ -663,7 +663,9 @@ runGameMessage msg g = case msg of
       [] -> error "someone needed to spend some clues"
       [x] -> g <$ unshiftMessage (InvestigatorSpendClues x n)
       xs -> g <$ unshiftMessages
-        [ Ask $ ChooseOne $ map (flip InvestigatorSpendClues 1) xs
+        [ Ask (giLeadInvestigatorId g) $ ChooseOne $ map
+          (flip InvestigatorSpendClues 1)
+          xs
         , SpendClues (n - 1) investigatorsWithClues
         ]
   NextAgenda aid1 aid2 ->
@@ -749,14 +751,34 @@ runGameMessage msg g = case msg of
     unshiftMessage (PerformEnemyAttack iid eid)
     broadcastFastWindow Fast.WhenEnemyAttacks iid g
     pure g
-
-  SkillTestAsk (Ask (ChooseOne c1)) -> do
+  SkillTestAsk (Ask iid1 (ChooseOne c1)) -> do
     mNextMessage <- peekMessage
     case mNextMessage of
-      Just (SkillTestAsk (Ask (ChooseOne c2))) -> do
+      Just (SkillTestAsk (Ask iid2 (ChooseOne c2))) -> do
         _ <- popMessage
-        unshiftMessage (SkillTestAsk (Ask $ ChooseOne $ c1 <> c2))
-      _ -> unshiftMessage (Ask $ ChooseOne c1)
+        unshiftMessage
+          (SkillTestAsk
+            (AskMap
+            $ HashMap.fromList [(iid1, ChooseOne c1), (iid2, ChooseOne c2)]
+            )
+          )
+      _ -> unshiftMessage (Ask iid1 $ ChooseOne c1)
+    pure g
+  SkillTestAsk (AskMap askMap) -> do
+    mNextMessage <- peekMessage
+    case mNextMessage of
+      Just (SkillTestAsk (Ask iid2 (ChooseOne c2))) -> do
+        _ <- popMessage
+        unshiftMessage
+          (SkillTestAsk
+            (AskMap $ HashMap.insertWith
+              (\(ChooseOne m) (ChooseOne n) -> ChooseOne $ m <> n)
+              iid2
+              (ChooseOne c2)
+              askMap
+            )
+          )
+      _ -> unshiftMessage (AskMap askMap)
     pure g
   EnemyWillAttack iid eid -> do
     mNextMessage <- peekMessage
@@ -787,7 +809,7 @@ runGameMessage msg g = case msg of
       Just (EnemyWillAttack iid2 eid2) -> do
         _ <- popMessage
         unshiftMessage (EnemyAttacks (EnemyAttack iid2 eid2 : as))
-      _ -> unshiftMessage (Ask $ ChooseOneAtATime as)
+      _ -> unshiftMessage (Ask (giLeadInvestigatorId g) $ ChooseOneAtATime as)
     pure g
   DiscardAsset aid -> do
     let asset = g ^?! assets . ix aid
@@ -830,7 +852,7 @@ runGameMessage msg g = case msg of
   ChoosePlayerOrder [y] (x : xs) ->
     pure $ g & playerOrder .~ (x : (xs <> [y])) & activeInvestigatorId .~ x
   ChoosePlayerOrder investigatorIds orderedInvestigatorIds -> do
-    unshiftMessage $ Ask $ ChooseOne
+    unshiftMessage $ Ask (giLeadInvestigatorId g) $ ChooseOne
       [ ChoosePlayerOrder
           (filter (/= iid) investigatorIds)
           (orderedInvestigatorIds <> [iid])
@@ -893,7 +915,7 @@ runGameMessage msg g = case msg of
             tokenResponses
           )
         xs -> g <$ unshiftMessage
-          (Ask $ ChooseOne
+          (Ask iid $ ChooseOne
             [ BeginSkillTestAfterFast
                 iid
                 source
@@ -958,7 +980,7 @@ runGameMessage msg g = case msg of
       matchingDeckCards =
         filter (encounterCardMatch matcher) (g ^. encounterDeck)
     g <$ unshiftMessage
-      (Ask
+      (Ask iid
       $ ChooseOne
       $ map (FoundAndDrewEncounterCard iid FromDiscard) matchingDiscards
       <> map
@@ -1047,7 +1069,8 @@ instance RunMessage Game Game where
       >>= traverseOf (investigators . traverse) (runMessage msg)
       >>= runGameMessage msg
 
-toExternalGame :: MonadIO m => Game -> Maybe Question -> m GameJson
+toExternalGame
+  :: MonadIO m => Game -> HashMap InvestigatorId Question -> m GameJson
 toExternalGame Game {..} mq = do
   queue <- liftIO $ readIORef giMessages
   pure $ GameJson
@@ -1111,18 +1134,19 @@ toInternalGame' ref GameJson {..} = Game
   , giVictory = gVictory
   }
 
-runMessages :: MonadIO m => Game -> m (Maybe Question, GameJson)
+runMessages
+  :: MonadIO m => Game -> m (HashMap InvestigatorId Question, GameJson)
 runMessages g = if g ^. gameOver
-  then (Nothing, ) <$> toExternalGame g Nothing
+  then (mempty, ) <$> toExternalGame g mempty
   else flip runReaderT g $ do
     liftIO $ readIORef (giMessages g) >>= pPrint
     mmsg <- popMessage
     case mmsg of
       Nothing -> case giPhase g of
-        ResolutionPhase -> (Nothing, ) <$> toExternalGame g Nothing
-        MythosPhase -> (Nothing, ) <$> toExternalGame g Nothing
-        EnemyPhase -> (Nothing, ) <$> toExternalGame g Nothing
-        UpkeepPhase -> (Nothing, ) <$> toExternalGame g Nothing
+        ResolutionPhase -> (mempty, ) <$> toExternalGame g mempty
+        MythosPhase -> (mempty, ) <$> toExternalGame g mempty
+        EnemyPhase -> (mempty, ) <$> toExternalGame g mempty
+        UpkeepPhase -> (mempty, ) <$> toExternalGame g mempty
         InvestigationPhase -> if hasEndedTurn (activeInvestigator g)
           then
             case
@@ -1143,5 +1167,7 @@ runMessages g = if g ^. gameOver
                 ]
               >> runMessages g
       Just msg -> case msg of
-        Ask q -> (Just q, ) <$> toExternalGame g (Just q)
+        Ask iid q -> (HashMap.singleton iid q, )
+          <$> toExternalGame g (HashMap.singleton iid q)
+        AskMap askMap -> (askMap, ) <$> toExternalGame g askMap
         _ -> runMessage msg g >>= runMessages

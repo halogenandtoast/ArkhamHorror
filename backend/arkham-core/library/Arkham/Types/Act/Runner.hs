@@ -14,5 +14,5 @@ type ActRunner env
     , HasSet InvestigatorId LocationId env
     , HasCount PlayerCount () env
     , HasSet InvestigatorId () env
+    , HasId LeadInvestigatorId () env
     )
-

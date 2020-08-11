@@ -56,9 +56,10 @@ import FocusedCard from '@/arkham/components/FocusedCard.vue';
 })
 export default class ChoiceModal extends Vue {
   @Prop(Object) readonly game!: Game;
+  @Prop(String) readonly investigatorId!: string
 
   get choices(): Message[] {
-    return choices(this.game);
+    return choices(this.game, this.investigatorId);
   }
 
   get focusedCards() {
@@ -81,7 +82,7 @@ export default class ChoiceModal extends Vue {
   }
 
   get source() {
-    return choicesSource(this.game);
+    return choicesSource(this.game, this.investigatorId);
   }
 
   get resolutions() {

@@ -46,7 +46,7 @@ data GameJson = GameJson
   , gActs :: HashMap ActId Act
   , gGameOver :: Bool
   , gUsedAbilities :: [Ability]
-  , gQuestion :: Maybe Question
+  , gQuestion :: HashMap InvestigatorId Question
   , gFocusedCards :: [Card]
   , gActiveCard :: Maybe Card
   , gPlayerOrder :: [InvestigatorId]

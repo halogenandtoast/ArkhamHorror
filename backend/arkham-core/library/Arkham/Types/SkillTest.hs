@@ -161,7 +161,10 @@ instance (SkillTestRunner env) => RunMessage env SkillTest where
         & (setAsideTokens %~ (token :))
         & (onTokenResponses .~ onTokenResponses')
     FailSkillTest -> do
-      unshiftMessages [Ask $ ChooseOne [SkillTestApplyResults], SkillTestEnds]
+      unshiftMessages
+        [ Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
+        , SkillTestEnds
+        ]
       pure $ s & result .~ FailedBy skillTestDifficulty
     StartSkillTest _ -> s <$ unshiftMessages
       (HashMap.foldMapWithKey
@@ -188,7 +191,8 @@ instance (SkillTestRunner env) => RunMessage env SkillTest where
       , ReturnTokens skillTestSetAsideTokens
       ]
     SkillTestResults -> do
-      unshiftMessage (Ask $ ChooseOne [SkillTestApplyResults])
+      unshiftMessage
+        (Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults])
       for_ skillTestCommittedCards $ \(iid, card) -> case card of
         PlayerCard MkPlayerCard {..} -> when
           (pcCardType == SkillType)

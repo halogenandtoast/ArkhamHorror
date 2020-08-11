@@ -26,6 +26,7 @@ import * as Arkham from '@/arkham/types/Treachery';
 })
 export default class Treachery extends Vue {
   @Prop(Object) readonly game!: Game
+  @Prop(String) readonly investigatorId!: string
   @Prop(Object) readonly treachery!: Arkham.Treachery
 
   get image() {
@@ -37,7 +38,7 @@ export default class Treachery extends Vue {
   }
 
   get choices() {
-    return choices(this.game);
+    return choices(this.game, this.investigatorId);
   }
 
   get cardAction() {

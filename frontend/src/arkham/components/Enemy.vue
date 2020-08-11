@@ -38,6 +38,7 @@ import * as Arkham from '@/arkham/types/Enemy';
 })
 export default class Enemy extends Vue {
   @Prop(Object) readonly game!: Game
+  @Prop(String) readonly investigatorId!: string
   @Prop(Object) readonly enemy!: Arkham.Enemy
 
   get image() {
@@ -62,7 +63,7 @@ export default class Enemy extends Vue {
   }
 
   get choices() {
-    return choices(this.game);
+    return choices(this.game, this.investigatorId);
   }
 
   get attackAction() {

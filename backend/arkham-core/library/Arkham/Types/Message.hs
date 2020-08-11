@@ -102,7 +102,8 @@ data Message
   | PrePlayerWindow
   | PostPlayerWindow
   | PlayerWindow InvestigatorId [Message]
-  | Ask Question
+  | Ask InvestigatorId Question
+  | AskMap (HashMap InvestigatorId Question)
   | TakeAction InvestigatorId Int (Maybe Action)
   | LoseAction InvestigatorId Source
   | ChoosePlayCardAction InvestigatorId

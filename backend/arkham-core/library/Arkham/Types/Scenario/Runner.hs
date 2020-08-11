@@ -9,5 +9,7 @@ type ScenarioRunner env
   = ( HasCount EnemyCount (InvestigatorLocation, [Trait]) env
     , HasQueue env
     , HasSet InScenarioInvestigatorId () env
+    , HasId LeadInvestigatorId () env
+    , HasSet InvestigatorId () env
     )
 

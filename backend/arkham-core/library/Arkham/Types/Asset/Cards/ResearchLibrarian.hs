@@ -29,7 +29,7 @@ instance (AssetRunner env) => RunMessage env ResearchLibrarian where
   runMessage msg a@(ResearchLibrarian attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage
-        (Ask $ ChooseOne
+        (Ask iid $ ChooseOne
           [ UseCardAbility
             iid
             ( AssetSource assetId

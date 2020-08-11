@@ -22,9 +22,10 @@ import { MessageType } from '@/arkham/types/Message';
 @Component
 export default class EncounterDeck extends Vue {
   @Prop(Object) readonly game!: Game;
+  @Prop(String) readonly investigatorId!: string
 
   get choices() {
-    return choices(this.game);
+    return choices(this.game, this.investigatorId);
   }
 
   get drawEncounterCardAction() {

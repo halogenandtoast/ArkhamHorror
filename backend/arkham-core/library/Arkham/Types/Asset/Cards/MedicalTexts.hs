@@ -32,7 +32,7 @@ instance (AssetRunner env) => RunMessage env MedicalTexts where
       locationId <- asks (getId @LocationId (getInvestigator attrs))
       locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessage
-        (Ask $ ChooseOne
+        (Ask iid $ ChooseOne
           [ BeginSkillTest
               iid
               (AssetSource aid)

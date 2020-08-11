@@ -43,7 +43,7 @@ instance (AssetRunner env) => RunMessage env BeatCop where
       locationEnemyIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessages
         [ DiscardAsset aid
-        , Ask $ ChooseOne
+        , Ask iid $ ChooseOne
           [ EnemyDamage eid iid (AssetSource assetId) 1
           | eid <- locationEnemyIds
           ]

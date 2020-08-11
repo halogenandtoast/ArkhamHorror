@@ -50,7 +50,7 @@ postApiV1ArkhamCreateGameR :: Handler (Entity ArkhamGame)
 postApiV1ArkhamCreateGameR = do
   (iid1, deck1) <- liftIO $ loadDeck "20344"
   (iid2, deck2) <- liftIO $ loadDeck "101"
-  (_, ge) <- liftIO $ runMessages =<< newGame
+  ge <- liftIO $ runMessages =<< newGame
     "01104"
     (HashMap.fromList
       [ (1, (lookupInvestigator iid1, deck1))
@@ -91,7 +91,7 @@ putApiV1ArkhamGameR gameId = do
       Just (ChooseOneFromSource MkChooseOneFromSource {..}) ->
         maybeToList (map unlabel chooseOneChoices !!? choice response)
       _ -> []
-  (_, ge) <- liftIO $ runMessages =<< toInternalGame
+  ge <- liftIO $ runMessages =<< toInternalGame
     (gameJson { gMessages = messages <> gMessages })
 
   App { appBroadcastChannel = writeChannel } <- getYesod

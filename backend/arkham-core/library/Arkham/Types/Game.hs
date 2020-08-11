@@ -1134,19 +1134,18 @@ toInternalGame' ref GameJson {..} = Game
   , giVictory = gVictory
   }
 
-runMessages
-  :: MonadIO m => Game -> m (HashMap InvestigatorId Question, GameJson)
+runMessages :: MonadIO m => Game -> m GameJson
 runMessages g = if g ^. gameOver
-  then (mempty, ) <$> toExternalGame g mempty
+  then toExternalGame g mempty
   else flip runReaderT g $ do
     liftIO $ readIORef (giMessages g) >>= pPrint
     mmsg <- popMessage
     case mmsg of
       Nothing -> case giPhase g of
-        ResolutionPhase -> (mempty, ) <$> toExternalGame g mempty
-        MythosPhase -> (mempty, ) <$> toExternalGame g mempty
-        EnemyPhase -> (mempty, ) <$> toExternalGame g mempty
-        UpkeepPhase -> (mempty, ) <$> toExternalGame g mempty
+        ResolutionPhase -> toExternalGame g mempty
+        MythosPhase -> toExternalGame g mempty
+        EnemyPhase -> toExternalGame g mempty
+        UpkeepPhase -> toExternalGame g mempty
         InvestigationPhase -> if hasEndedTurn (activeInvestigator g)
           then
             case
@@ -1167,7 +1166,6 @@ runMessages g = if g ^. gameOver
                 ]
               >> runMessages g
       Just msg -> case msg of
-        Ask iid q -> (HashMap.singleton iid q, )
-          <$> toExternalGame g (HashMap.singleton iid q)
-        AskMap askMap -> (askMap, ) <$> toExternalGame g askMap
+        Ask iid q -> toExternalGame g (HashMap.singleton iid q)
+        AskMap askMap -> toExternalGame g askMap
         _ -> runMessage msg g >>= runMessages

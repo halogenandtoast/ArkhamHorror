@@ -12,9 +12,9 @@ import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Trait
-import Lens.Micro
 import ClassyPrelude hiding (sequence)
 import qualified Data.HashSet as HashSet
+import Lens.Micro
 
 newtype TheyreGettingOut = TheyreGettingOut Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -28,7 +28,13 @@ instance (AgendaRunner env) => RunMessage env TheyreGettingOut where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3a" -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
       unshiftMessage $ Ask leadInvestigatorId (ChooseOne [AdvanceAgenda aid])
-      pure $ TheyreGettingOut $ attrs & sequence .~ "Agenda 3b" & flipped .~ True
+      pure
+        $ TheyreGettingOut
+        $ attrs
+        & sequence
+        .~ "Agenda 3b"
+        & flipped
+        .~ True
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3b" -> do
       actIds <- asks (getSet @ActId ())
       if ActId "01108" `elem` actIds || ActId "01109" `elem` actIds
@@ -54,8 +60,11 @@ instance (AgendaRunner env) => RunMessage env TheyreGettingOut where
           xs -> pure $ Just $ Ask leadInvestigatorId $ ChooseOne $ map
             (EnemyMove eid locationId)
             xs
-      a <$ unshiftMessage
-        (Ask leadInvestigatorId $ ChooseOneAtATime (catMaybes messages))
+      a <$ unless
+        (null enemiesToMove)
+        (unshiftMessage
+          (Ask leadInvestigatorId $ ChooseOneAtATime (catMaybes messages))
+        )
     EndRoundWindow -> do
       parlorGhoulsCount <- unEnemyCount
         <$> asks (getCount (LocationId "01115", [Ghoul]))

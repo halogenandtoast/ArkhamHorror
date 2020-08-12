@@ -24,15 +24,16 @@ instance (ActRunner env) => RunMessage env Trapped where
   runMessage msg a@(Trapped attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && actSequence == "Act 1a" -> do
       investigatorIds <- HashSet.toList <$> asks (getSet ())
-      unshiftMessages [Ask iid $ ChooseOne [AdvanceAct aid] | iid <- investigatorIds]
+      playerCount <- unPlayerCount <$> asks (getCount ())
+      unshiftMessages
+        (SpendClues (fromGameValue (PerPlayer 2) playerCount) investigatorIds
+        : [ Ask iid $ ChooseOne [AdvanceAct aid] | iid <- investigatorIds ]
+        )
       pure $ Trapped $ attrs & sequence .~ "Act 1b" & flipped .~ True
     AdvanceAct aid | aid == actId && actSequence == "Act 1b" -> do
       enemyIds <- HashSet.toList <$> asks (getSet (LocationId "01111"))
-      playerCount <- unPlayerCount <$> asks (getCount ())
-      investigatorIds <- HashSet.toList <$> asks (getSet ())
       a <$ unshiftMessages
-        ([ SpendClues (fromGameValue (PerPlayer 2) playerCount) investigatorIds
-         , PlaceLocation "01112"
+        ([ PlaceLocation "01112"
          , PlaceLocation "01114"
          , PlaceLocation "01113"
          , PlaceLocation "01115"

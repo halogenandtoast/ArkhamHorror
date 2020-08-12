@@ -23,10 +23,6 @@ instance (AgendaRunner env) => RunMessage env WhatsGoingOn where
   runMessage msg (WhatsGoingOn attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1a" -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
-      unshiftMessage $ Ask leadInvestigatorId (ChooseOne [AdvanceAgenda aid])
-      pure $ WhatsGoingOn $ attrs & sequence .~ "Agenda 1b" & flipped .~ True
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1b" -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
       unshiftMessage
         (Ask leadInvestigatorId $ ChooseOne
           [ Label

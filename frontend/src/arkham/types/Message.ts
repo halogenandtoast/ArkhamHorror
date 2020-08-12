@@ -1,6 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 
 export enum MessageType {
+  ASK = 'Ask',
   RUN = 'Run',
   FLAVOR_TEXT = 'FlavorText',
   RESOLUTION = 'Resolution',
@@ -21,6 +22,7 @@ export enum MessageType {
   FIGHT_ENEMY = 'FightEnemy',
   EVADE_ENEMY = 'EvadeEnemy',
   ENEMY_DAMAGE = 'EnemyDamage',
+  ENEMY_MOVE = 'EnemyMove',
   CONTINUE = 'Continue',
   INVESTIGATOR_DAMAGE = 'InvestigatorDamage',
   INVESTIGATOR_SPEND_CLUES = 'InvestigatorSpendClues',
@@ -51,6 +53,7 @@ export interface Message {
 
 export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
   [
+    JsonDecoder.isExactly('Ask').then(() => JsonDecoder.constant(MessageType.ASK)),
     JsonDecoder.isExactly('Run').then(() => JsonDecoder.constant(MessageType.RUN)),
     JsonDecoder.isExactly('Label').then(() => JsonDecoder.constant(MessageType.LABEL)),
     JsonDecoder.isExactly('FlavorText').then(() => JsonDecoder.constant(MessageType.FLAVOR_TEXT)),
@@ -72,6 +75,7 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('FightEnemy').then(() => JsonDecoder.constant(MessageType.FIGHT_ENEMY)),
     JsonDecoder.isExactly('EvadeEnemy').then(() => JsonDecoder.constant(MessageType.EVADE_ENEMY)),
     JsonDecoder.isExactly('EnemyDamage').then(() => JsonDecoder.constant(MessageType.ENEMY_DAMAGE)),
+    JsonDecoder.isExactly('EnemyMove').then(() => JsonDecoder.constant(MessageType.ENEMY_MOVE)),
     JsonDecoder.isExactly('Continue').then(() => JsonDecoder.constant(MessageType.CONTINUE)),
     JsonDecoder.isExactly('InvestigatorDamage').then(() => JsonDecoder.constant(MessageType.INVESTIGATOR_DAMAGE)),
     JsonDecoder.isExactly('InvestigatorSpendClues').then(() => JsonDecoder.constant(MessageType.INVESTIGATOR_SPEND_CLUES)),

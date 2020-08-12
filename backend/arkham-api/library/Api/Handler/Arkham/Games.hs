@@ -107,11 +107,16 @@ putApiV1ArkhamGameRawR gameId = do
   void $ fromJustNote "Not authenticated" <$> getRequestUserId
   void $ runDB $ get404 gameId
   response <- requireCheckJsonBody
+  ge <- liftIO $ runMessages =<< toInternalGame
+    ((gameJson response)
+      { gMessages = Continue "edited" : gMessages (gameJson response)
+      }
+    )
   App { appBroadcastChannel = writeChannel } <- getYesod
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode (Entity gameId (ArkhamGame $ gameJson response)))
-  runDB (replace gameId (ArkhamGame $ gameJson response))
+    (encode (Entity gameId (ArkhamGame ge)))
+  runDB (replace gameId (ArkhamGame ge))
 
 data ArkhamDBDecklist = ArkhamDBDecklist
   { slots :: HashMap CardCode Int, investigator_code :: InvestigatorId }

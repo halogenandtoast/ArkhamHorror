@@ -1,6 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 
 export enum MessageType {
+  ASK = 'Ask',
   RUN = 'Run',
   FLAVOR_TEXT = 'FlavorText',
   RESOLUTION = 'Resolution',
@@ -16,10 +17,12 @@ export enum MessageType {
   UNCOMMIT_CARD = 'SkillTestUncommitCard',
   AFTER_DISCOVER_CLUES = 'AfterDiscoverClues',
   ADVANCE_ACT = 'AdvanceAct',
+  ADVANCE_AGENDA = 'AdvanceAgenda',
   MOVE = 'MoveAction',
   FIGHT_ENEMY = 'FightEnemy',
   EVADE_ENEMY = 'EvadeEnemy',
   ENEMY_DAMAGE = 'EnemyDamage',
+  ENEMY_MOVE = 'EnemyMove',
   CONTINUE = 'Continue',
   INVESTIGATOR_DAMAGE = 'InvestigatorDamage',
   INVESTIGATOR_SPEND_CLUES = 'InvestigatorSpendClues',
@@ -50,7 +53,9 @@ export interface Message {
 
 export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
   [
+    JsonDecoder.isExactly('Ask').then(() => JsonDecoder.constant(MessageType.ASK)),
     JsonDecoder.isExactly('Run').then(() => JsonDecoder.constant(MessageType.RUN)),
+    JsonDecoder.isExactly('Label').then(() => JsonDecoder.constant(MessageType.LABEL)),
     JsonDecoder.isExactly('FlavorText').then(() => JsonDecoder.constant(MessageType.FLAVOR_TEXT)),
     JsonDecoder.isExactly('Resolution').then(() => JsonDecoder.constant(MessageType.RESOLUTION)),
     JsonDecoder.isExactly('MulliganCard').then(() => JsonDecoder.constant(MessageType.MULLIGAN_CARD)),
@@ -65,10 +70,12 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('SkillTestUncommitCard').then(() => JsonDecoder.constant(MessageType.UNCOMMIT_CARD)),
     JsonDecoder.isExactly('AfterDiscoverClues').then(() => JsonDecoder.constant(MessageType.AFTER_DISCOVER_CLUES)),
     JsonDecoder.isExactly('AdvanceAct').then(() => JsonDecoder.constant(MessageType.ADVANCE_ACT)),
+    JsonDecoder.isExactly('AdvanceAgenda').then(() => JsonDecoder.constant(MessageType.ADVANCE_AGENDA)),
     JsonDecoder.isExactly('MoveAction').then(() => JsonDecoder.constant(MessageType.MOVE)),
     JsonDecoder.isExactly('FightEnemy').then(() => JsonDecoder.constant(MessageType.FIGHT_ENEMY)),
     JsonDecoder.isExactly('EvadeEnemy').then(() => JsonDecoder.constant(MessageType.EVADE_ENEMY)),
     JsonDecoder.isExactly('EnemyDamage').then(() => JsonDecoder.constant(MessageType.ENEMY_DAMAGE)),
+    JsonDecoder.isExactly('EnemyMove').then(() => JsonDecoder.constant(MessageType.ENEMY_MOVE)),
     JsonDecoder.isExactly('Continue').then(() => JsonDecoder.constant(MessageType.CONTINUE)),
     JsonDecoder.isExactly('InvestigatorDamage').then(() => JsonDecoder.constant(MessageType.INVESTIGATOR_DAMAGE)),
     JsonDecoder.isExactly('InvestigatorSpendClues').then(() => JsonDecoder.constant(MessageType.INVESTIGATOR_SPEND_CLUES)),
@@ -92,7 +99,7 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
   'MessageType',
 );
 
-export const unlabeledMessageDecoder = JsonDecoder.object<Message>(
+export const messageDecoder = JsonDecoder.object<Message>(
   {
     tag: messageTypeDecoder,
     label: JsonDecoder.constant(''),
@@ -100,21 +107,3 @@ export const unlabeledMessageDecoder = JsonDecoder.object<Message>(
   },
   'Message',
 );
-
-export const labeledMessageDecoder = JsonDecoder.object<Message>(
-  {
-    tag: JsonDecoder.constant(MessageType.LABEL),
-    label: JsonDecoder.string,
-    contents: JsonDecoder.succeed,
-  },
-  'Message',
-  {
-    label: 'labelFor',
-    contents: 'unlabel',
-  },
-);
-
-export const messageDecoder = JsonDecoder.oneOf<Message>([
-  unlabeledMessageDecoder,
-  labeledMessageDecoder,
-], 'Message');

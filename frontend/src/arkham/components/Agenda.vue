@@ -1,7 +1,9 @@
 <template>
   <div class="agenda-container">
     <img
+      :class="{ 'agenda--can-progress': advanceAgendaAction !== -1 }"
       class="card card--sideways"
+      @click="$emit('choose', advanceAgendaAction)"
       :src="image"
     />
     <PoolItem
@@ -13,6 +15,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { choices, Game } from '@/arkham/types/Game';
+import { MessageType } from '@/arkham/types/Message';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Agenda';
 
@@ -21,10 +25,27 @@ import * as Arkham from '@/arkham/types/Agenda';
 })
 export default class Agenda extends Vue {
   @Prop(Object) readonly agenda!: Arkham.Agenda;
+  @Prop(Object) readonly game!: Game;
+  @Prop(String) readonly investigatorId!: string;
+
+  get id() {
+    return this.agenda.contents.id;
+  }
 
   get image() {
-    const { id } = this.agenda.contents;
-    return `/img/arkham/cards/${id}.jpg`;
+    if (this.agenda.contents.flipped) {
+      return `/img/arkham/cards/${this.id}b.jpg`;
+    }
+
+    return `/img/arkham/cards/${this.id}.jpg`;
+  }
+
+  get choices() {
+    return choices(this.game, this.investigatorId);
+  }
+
+  get advanceAgendaAction() {
+    return this.choices.findIndex((c) => c.tag === MessageType.ADVANCE_AGENDA);
   }
 }
 </script>
@@ -41,5 +62,11 @@ export default class Agenda extends Vue {
 .card--sideways {
   width: auto;
   height: 100px;
+}
+
+.agenda--can-progress {
+  border: 3px solid #ff00ff;
+  border-radius: 8px;
+  cursor: pointer;
 }
 </style>

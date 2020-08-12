@@ -169,6 +169,10 @@ instance (LocationRunner env) => RunMessage env Attrs where
     WhenEnterLocation iid lid | lid == locationId -> do
       unless locationRevealed $ unshiftMessage (RevealLocation lid)
       pure $ a & investigators %~ HashSet.insert iid
+    EnemyMove eid lid _ | lid == locationId ->
+      pure $ a & enemies %~ HashSet.delete eid
+    EnemyMove eid _ lid | lid == locationId ->
+      pure $ a & enemies %~ HashSet.insert eid
     EnemySpawn lid eid | lid == locationId ->
       pure $ a & enemies %~ HashSet.insert eid
     RemoveEnemy eid -> pure $ a & enemies %~ HashSet.delete eid

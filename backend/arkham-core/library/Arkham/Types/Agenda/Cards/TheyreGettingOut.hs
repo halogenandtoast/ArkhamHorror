@@ -12,7 +12,8 @@ import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Trait
-import ClassyPrelude
+import Lens.Micro
+import ClassyPrelude hiding (sequence)
 import qualified Data.HashSet as HashSet
 
 newtype TheyreGettingOut = TheyreGettingOut Attrs
@@ -24,7 +25,11 @@ theyreGettingOut = TheyreGettingOut
 
 instance (AgendaRunner env) => RunMessage env TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3a" -> do
+      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      unshiftMessage $ Ask leadInvestigatorId (ChooseOne [AdvanceAgenda aid])
+      pure $ TheyreGettingOut $ attrs & sequence .~ "Agenda 3b" & flipped .~ True
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3b" -> do
       actIds <- asks (getSet @ActId ())
       if ActId "01108" `elem` actIds || ActId "01109" `elem` actIds
         then a <$ unshiftMessage (Resolution 3)

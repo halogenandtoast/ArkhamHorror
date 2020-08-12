@@ -421,39 +421,64 @@ data BFSState = BFSState
   { _bfsSearchQueue       :: Seq LocationId
   , _bfsVisistedLocations :: HashSet LocationId
   , _bfsParents           :: HashMap LocationId LocationId
+  , _bfsFoundAtDepth      :: Bool
   }
 
 getShortestPath :: Game -> LocationId -> (LocationId -> Bool) -> [LocationId]
 getShortestPath game initialLocation target = evalState
   (bfs game initialLocation target)
-  (BFSState (pure initialLocation) (HashSet.singleton initialLocation) mempty)
+  (BFSState
+    (pure initialLocation)
+    (HashSet.singleton initialLocation)
+    mempty
+    False
+  )
 
 bfs :: Game -> LocationId -> (LocationId -> Bool) -> State BFSState [LocationId]
 bfs game initialLocation target = do
-  BFSState searchQueue visitedSet parentsMap <- get
+  BFSState searchQueue visitedSet parentsMap hasFoundAtDepth <- get
   if Seq.null searchQueue
     then pure []
     else do
       let nextLoc = Seq.index searchQueue 0
       if target nextLoc
-        then pure (unwindPath parentsMap [nextLoc])
-        else do
+        then do
           let
-            adjacentCells =
-              HashSet.toList . HashSet.map unConnectedLocationId $ getSet
-                nextLoc
-                game
-            unvisitedNextCells =
-              filter (\loc -> not (HashSet.member loc visitedSet)) adjacentCells
             newVisitedSet = HashSet.insert nextLoc visitedSet
-            newSearchQueue = foldr
-              (flip (Seq.|>))
-              (Seq.drop 1 searchQueue)
-              unvisitedNextCells
-            newParentsMap =
-              foldr (`HashMap.insert` nextLoc) parentsMap unvisitedNextCells
-          put (BFSState newSearchQueue newVisitedSet newParentsMap)
-          bfs game initialLocation target
+            newSearchQueue = Seq.drop 1 searchQueue
+          put (BFSState newSearchQueue newVisitedSet parentsMap True)
+          others <- bfs game initialLocation target
+          pure
+            $ [ fromJustNote "bfs broke" $ headMay $ unwindPath
+                  parentsMap
+                  [nextLoc]
+              ]
+            <> others
+        else if hasFoundAtDepth
+          then do
+            let
+              newVisitedSet = HashSet.insert nextLoc visitedSet
+              newSearchQueue = Seq.drop 1 searchQueue
+            put (BFSState newSearchQueue newVisitedSet parentsMap True)
+            bfs game initialLocation target
+          else do
+            let
+              adjacentCells =
+                HashSet.toList . HashSet.map unConnectedLocationId $ getSet
+                  nextLoc
+                  game
+              unvisitedNextCells = filter
+                (\loc -> not (HashSet.member loc visitedSet))
+                adjacentCells
+              newVisitedSet = HashSet.insert nextLoc visitedSet
+              newSearchQueue = foldr
+                (flip (Seq.|>))
+                (Seq.drop 1 searchQueue)
+                unvisitedNextCells
+              newParentsMap =
+                foldr (`HashMap.insert` nextLoc) parentsMap unvisitedNextCells
+            put (BFSState newSearchQueue newVisitedSet newParentsMap False)
+            bfs game initialLocation target
  where
   unwindPath parentsMap currentPath =
     case

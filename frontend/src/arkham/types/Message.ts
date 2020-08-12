@@ -52,6 +52,7 @@ export interface Message {
 export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
   [
     JsonDecoder.isExactly('Run').then(() => JsonDecoder.constant(MessageType.RUN)),
+    JsonDecoder.isExactly('Label').then(() => JsonDecoder.constant(MessageType.LABEL)),
     JsonDecoder.isExactly('FlavorText').then(() => JsonDecoder.constant(MessageType.FLAVOR_TEXT)),
     JsonDecoder.isExactly('Resolution').then(() => JsonDecoder.constant(MessageType.RESOLUTION)),
     JsonDecoder.isExactly('MulliganCard').then(() => JsonDecoder.constant(MessageType.MULLIGAN_CARD)),
@@ -94,7 +95,7 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
   'MessageType',
 );
 
-export const unlabeledMessageDecoder = JsonDecoder.object<Message>(
+export const messageDecoder = JsonDecoder.object<Message>(
   {
     tag: messageTypeDecoder,
     label: JsonDecoder.constant(''),
@@ -102,21 +103,3 @@ export const unlabeledMessageDecoder = JsonDecoder.object<Message>(
   },
   'Message',
 );
-
-export const labeledMessageDecoder = JsonDecoder.object<Message>(
-  {
-    tag: JsonDecoder.constant(MessageType.LABEL),
-    label: JsonDecoder.string,
-    contents: JsonDecoder.succeed,
-  },
-  'Message',
-  {
-    label: 'labelFor',
-    contents: 'unlabel',
-  },
-);
-
-export const messageDecoder = JsonDecoder.oneOf<Message>([
-  unlabeledMessageDecoder,
-  labeledMessageDecoder,
-], 'Message');

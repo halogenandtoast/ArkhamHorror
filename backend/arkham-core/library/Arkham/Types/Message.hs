@@ -2,11 +2,8 @@ module Arkham.Types.Message
   ( Message(..)
   , Question(..)
   , EncounterCardSource(..)
-  , ChooseOneFromSource(..)
   , LeftoverCardStrategy(..)
   , MessageType(..)
-  , Labeled(..)
-  , label
   , messageType
   )
 where
@@ -255,32 +252,12 @@ data Message
   | AddToHand InvestigatorId Card
   | EnemySetBearer EnemyId BearerId
   | CheckDefeated
+  | Label Text [Message]
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
-
-data Labeled a = Labeled
-  { labelFor :: Text
-  , unlabel :: a
-  }
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-label :: Text -> a -> Labeled a
-label t a = Labeled { labelFor = t, unlabel = a }
-
-data ChooseOneFromSource = MkChooseOneFromSource { chooseOneSource :: Source, chooseOneChoices :: [Labeled Message] }
-  deriving stock (Show, Generic)
-
-instance ToJSON ChooseOneFromSource where
-  toJSON = genericToJSON $ aesonOptions $ Just "chooseOne"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "chooseOne"
-
-instance FromJSON ChooseOneFromSource where
-  parseJSON = genericParseJSON $ aesonOptions $ Just "chooseOne"
 
 data Question
   = ChooseOne [Message]
-  | ChooseOneFromSource ChooseOneFromSource
   | ChooseOneAtATime [Message]
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)

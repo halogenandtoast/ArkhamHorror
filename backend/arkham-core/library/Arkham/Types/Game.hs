@@ -597,6 +597,7 @@ runGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game
 runGameMessage msg g = case msg of
   Run msgs -> g <$ unshiftMessages msgs
+  Label _ msgs -> g <$ unshiftMessages msgs
   Continue _ -> pure g
   FocusCards cards -> pure $ g & focusedCards .~ cards
   SearchTopOfDeck iid EncounterDeckTarget n _traits strategy -> do

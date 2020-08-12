@@ -53,11 +53,9 @@ postApiV1ArkhamCreateGameR = do
   -- (iid2, deck2) <- liftIO $ loadDeck "101"
   ge <- liftIO $ runMessages =<< newGame
     "01104"
-    (HashMap.fromList
-      [ (1, (lookupInvestigator iid1, deck1))
+    (HashMap.fromList [(1, (lookupInvestigator iid1, deck1))
       -- , (2, (lookupInvestigator iid2, deck2))
-      ]
-    )
+                                                            ])
   key <- runDB $ insert $ ArkhamGame ge
   pure (Entity key (ArkhamGame ge))
 
@@ -89,8 +87,6 @@ putApiV1ArkhamGameR gameId = do
           (Just m', msgs'') ->
             [m', Ask investigatorId $ ChooseOneAtATime msgs'']
           (Nothing, msgs'') -> [Ask investigatorId $ ChooseOneAtATime msgs'']
-      Just (ChooseOneFromSource MkChooseOneFromSource {..}) ->
-        maybeToList (map unlabel chooseOneChoices !!? choice response)
       _ -> []
   ge <- liftIO $ runMessages =<< toInternalGame
     (gameJson { gMessages = messages <> gMessages })

@@ -2,6 +2,7 @@ module Api.Handler.Arkham.Games
   ( getApiV1ArkhamGameR
   , postApiV1ArkhamCreateGameR
   , putApiV1ArkhamGameR
+  , putApiV1ArkhamGameRawR
   )
 where
 
@@ -99,6 +100,22 @@ putApiV1ArkhamGameR gameId = do
     writeChannel
     (encode (Entity gameId (ArkhamGame ge)))
   Entity gameId (ArkhamGame ge) <$ runDB (replace gameId (ArkhamGame ge))
+
+
+newtype PutRawGameJson = PutRawGameJson { gameJson :: GameJson }
+  deriving stock (Show, Generic)
+  deriving anyclass (FromJSON)
+
+putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()
+putApiV1ArkhamGameRawR gameId = do
+  void $ fromJustNote "Not authenticated" <$> getRequestUserId
+  void $ runDB $ get404 gameId
+  response <- requireCheckJsonBody
+  App { appBroadcastChannel = writeChannel } <- getYesod
+  liftIO $ atomically $ writeTChan
+    writeChannel
+    (encode (Entity gameId (ArkhamGame $ gameJson response)))
+  runDB (replace gameId (ArkhamGame $ gameJson response))
 
 data ArkhamDBDecklist = ArkhamDBDecklist
   { slots :: HashMap CardCode Int, investigator_code :: InvestigatorId }

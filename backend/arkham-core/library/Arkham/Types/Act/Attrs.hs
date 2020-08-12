@@ -12,6 +12,7 @@ data Attrs = Attrs
   , actId         :: ActId
   , actName       :: Text
   , actSequence   :: Text
+  , actFlipped :: Bool
   , actAbilities :: [Ability]
   }
   deriving stock (Show, Generic)
@@ -26,6 +27,12 @@ instance FromJSON Attrs where
 canAdvance :: Lens' Attrs Bool
 canAdvance = lens actCanAdvance $ \m x -> m { actCanAdvance = x }
 
+sequence :: Lens' Attrs Text
+sequence = lens actSequence $ \m x -> m { actSequence = x }
+
+flipped :: Lens' Attrs Bool
+flipped = lens actFlipped $ \m x -> m { actFlipped = x }
+
 baseAttrs :: ActId -> Text -> Text -> Attrs
 baseAttrs aid name seq' = Attrs
   { actCanAdvance = False
@@ -33,6 +40,7 @@ baseAttrs aid name seq' = Attrs
   , actName = name
   , actSequence = seq'
   , actAbilities = mempty
+  , actFlipped = False
   }
 
 instance (HasQueue env) => RunMessage env Attrs where

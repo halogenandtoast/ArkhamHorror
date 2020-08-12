@@ -9,7 +9,9 @@ import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Source
-import ClassyPrelude
+import ClassyPrelude hiding (sequence)
+import Lens.Micro
+import qualified Data.HashSet as HashSet
 
 newtype WhatsGoingOn = WhatsGoingOn Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -20,7 +22,11 @@ whatsGoingOn =
 
 instance (AgendaRunner env) => RunMessage env WhatsGoingOn where
   runMessage msg a@(WhatsGoingOn attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1a" -> do
+      investigatorIds <- HashSet.toList <$> asks (getSet ())
+      unshiftMessages [Ask iid $ ChooseOne [AdvanceAgenda aid] | iid <- investigatorIds]
+      pure $ WhatsGoingOn $ attrs & sequence .~ "Agenda 1b" & flipped .~ True
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1b" -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
       a <$ unshiftMessages
         [ Ask leadInvestigatorId $ ChooseOneFromSource $ MkChooseOneFromSource

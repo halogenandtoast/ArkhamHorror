@@ -7,6 +7,7 @@ export interface Act {
 
 export interface ActContents {
   canAdvance: boolean;
+  flipped: boolean;
   id: string;
   name: string;
   sequence: string;
@@ -14,6 +15,7 @@ export interface ActContents {
 
 export const actContentsDecoder = JsonDecoder.object<ActContents>({
   canAdvance: JsonDecoder.boolean,
+  flipped: JsonDecoder.boolean,
   id: JsonDecoder.string,
   name: JsonDecoder.string,
   sequence: JsonDecoder.string,

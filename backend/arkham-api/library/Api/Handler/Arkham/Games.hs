@@ -50,12 +50,12 @@ getApiV1ArkhamGameR gameId = do
 postApiV1ArkhamCreateGameR :: Handler (Entity ArkhamGame)
 postApiV1ArkhamCreateGameR = do
   (iid1, deck1) <- liftIO $ loadDeck "20344"
-  (iid2, deck2) <- liftIO $ loadDeck "101"
+  -- (iid2, deck2) <- liftIO $ loadDeck "101"
   ge <- liftIO $ runMessages =<< newGame
     "01104"
     (HashMap.fromList
       [ (1, (lookupInvestigator iid1, deck1))
-      , (2, (lookupInvestigator iid2, deck2))
+      -- , (2, (lookupInvestigator iid2, deck2))
       ]
     )
   key <- runDB $ insert $ ArkhamGame ge

@@ -1,6 +1,7 @@
 module Arkham.Types.Agenda.Runner where
 
 import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.EnemyId
 import Arkham.Types.ActId
@@ -18,5 +19,6 @@ type AgendaRunner env
     , HasId LocationId EnemyId env
     , HasCount EnemyCount (LocationId, [Trait]) env
     , HasSet ActId () env
+    , HasSet InvestigatorId () env
     )
 

@@ -10,7 +10,7 @@ import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
-import ClassyPrelude
+import ClassyPrelude hiding (sequence)
 import qualified Data.HashSet as HashSet
 import Lens.Micro
 
@@ -22,7 +22,11 @@ trapped = Trapped $ baseAttrs "01108" "Trapped" "Act 1a"
 
 instance (ActRunner env) => RunMessage env Trapped where
   runMessage msg a@(Trapped attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId -> do
+    AdvanceAct aid | aid == actId && actSequence == "Act 1a" -> do
+      investigatorIds <- HashSet.toList <$> asks (getSet ())
+      unshiftMessages [Ask iid $ ChooseOne [AdvanceAct aid] | iid <- investigatorIds]
+      pure $ Trapped $ attrs & sequence .~ "Act 1b" & flipped .~ True
+    AdvanceAct aid | aid == actId && actSequence == "Act 1b" -> do
       enemyIds <- HashSet.toList <$> asks (getSet (LocationId "01111"))
       playerCount <- unPlayerCount <$> asks (getCount ())
       investigatorIds <- HashSet.toList <$> asks (getSet ())

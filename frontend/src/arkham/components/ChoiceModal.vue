@@ -1,25 +1,5 @@
 <template>
-  <div v-if="source" class="modal">
-    <div class="modal-contents">
-      <img :src="image" />
-      <template v-if="choiceUI === 'label'">
-        <button v-for="(choice, index) in choices" :key="index" @click="$emit('choose', index)">
-          {{choice.label}}
-        </button>
-      </template>
-      <template v-if="choiceUI === 'image'">
-        <div class="images">
-          <img
-            v-for="(choice, index) in choices"
-            :key="index"
-            :src="`/img/arkham/cards/${choice.label}.jpg`"
-            @click="$emit('choose', index)"
-          />
-        </div>
-      </template>
-    </div>
-  </div>
-  <div v-else-if="focusedCards.length > 0" class="modal">
+  <div v-if="focusedCards.length > 0" class="modal">
     <div class="modal-contents focused-cards">
       <FocusedCard
         v-for="(card, index) in focusedCards"
@@ -45,7 +25,7 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
-import { choicesSource, choices, Game } from '@/arkham/types/Game';
+import { choices, Game } from '@/arkham/types/Game';
 import { MessageType, Message } from '@/arkham/types/Message';
 import FocusedCard from '@/arkham/components/FocusedCard.vue';
 
@@ -66,57 +46,11 @@ export default class ChoiceModal extends Vue {
     return this.game.currentData.focusedCards;
   }
 
-  get choiceUI() {
-    if (!this.source) {
-      return null;
-    }
-
-    const { tag } = this.source;
-
-    switch (tag) {
-      case 'DeckSource':
-        return 'image';
-      default:
-        return 'label';
-    }
-  }
-
-  get source() {
-    return choicesSource(this.game, this.investigatorId);
-  }
-
   get resolutions() {
     return this
       .choices
       .map((choice, idx) => ({ choice, idx }))
       .filter(({ choice }) => choice.tag === MessageType.RESOLUTION);
-  }
-
-  get cardCode() {
-    if (!this.source) {
-      return null;
-    }
-
-    const { tag, contents } = this.source;
-
-    if (!contents) {
-      return null;
-    }
-
-    switch (tag) {
-      case 'AgendaSource':
-        return `${this.game.currentData.agendas[contents].contents.id}b`;
-      default:
-        return null;
-    }
-  }
-
-  get image() {
-    if (this.cardCode) {
-      return `/img/arkham/cards/${this.cardCode}.jpg`;
-    }
-
-    return null;
   }
 }
 </script>

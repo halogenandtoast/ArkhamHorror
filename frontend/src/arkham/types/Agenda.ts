@@ -11,6 +11,7 @@ export interface AgendaContents {
   id: string;
   name: string;
   sequence: string;
+  flipped: boolean;
 }
 
 export const agendaContentsDecoder = JsonDecoder.object<AgendaContents>({
@@ -19,6 +20,7 @@ export const agendaContentsDecoder = JsonDecoder.object<AgendaContents>({
   id: JsonDecoder.string,
   name: JsonDecoder.string,
   sequence: JsonDecoder.string,
+  flipped: JsonDecoder.boolean,
 }, 'Attrs');
 
 export const agendaDecoder = JsonDecoder.object<Agenda>({

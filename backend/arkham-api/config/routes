@@ -8,5 +8,6 @@
         / ApiV1ArkhamCreateGameR POST
         /#ArkhamGameId ApiV1ArkhamGameP:
           / ApiV1ArkhamGameR GET PUT
+          /raw ApiV1ArkhamGameRawR PUT
 
 !/ StaticR Static appStatic

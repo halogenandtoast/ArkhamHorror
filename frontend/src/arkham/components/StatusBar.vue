@@ -17,6 +17,10 @@
         <button @click="$emit('choose', index)">{{choice.contents[0].contents}}</button>
       </div>
 
+      <div v-if="choice.tag === MessageType.LABEL">
+        <button @click="$emit('choose', index)">{{choice.contents[0]}}</button>
+      </div>
+
       <a
         v-if="choice.tag === MessageType.BEGIN_SKILL_TEST_AFTER_FAST"
         class="button"
@@ -53,6 +57,7 @@ export default class StatusBar extends Vue {
       MessageType.CONTINUE,
       MessageType.AFTER_DISCOVER_CLUES,
       MessageType.BEGIN_SKILL_TEST_AFTER_FAST,
+      MessageType.LABEL,
     ];
 
     switch (c.tag) {

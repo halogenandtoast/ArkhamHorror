@@ -10,8 +10,9 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Query
-import ClassyPrelude
+import ClassyPrelude hiding (sequence)
 import qualified Data.HashSet as HashSet
+import Lens.Micro
 
 newtype TheBarrier = TheBarrier Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -21,13 +22,18 @@ theBarrier = TheBarrier $ baseAttrs "01109" "The Barrier" "Act 2a"
 
 instance (ActRunner env) => RunMessage env TheBarrier where
   runMessage msg a@(TheBarrier attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId -> do
-      investigatorIds <- asks (getSet (LocationId "01112"))
+    AdvanceAct aid | aid == actId && actSequence == "Act 2a" -> do
+      investigatorIds <- HashSet.toList <$> asks (getSet (LocationId "01112"))
       playerCount <- unPlayerCount <$> asks (getCount ())
       let requiredClueCount = fromGameValue (PerPlayer 3) playerCount
+      unshiftMessages
+        (SpendClues requiredClueCount investigatorIds
+        : [ Ask iid $ ChooseOne [AdvanceAct aid] | iid <- investigatorIds ]
+        )
+      pure $ TheBarrier $ attrs & sequence .~ "Act 2b" & flipped .~ True
+    AdvanceAct aid | aid == actId && actSequence == "Act 2b" ->
       a <$ unshiftMessages
-        [ SpendClues requiredClueCount (HashSet.toList investigatorIds)
-        , RevealLocation "01115"
+        [ RevealLocation "01115"
         , CreateStoryAssetAt "01117" "01115"
         , CreateEnemyAt "01116" "01112"
         , NextAct aid "01110"

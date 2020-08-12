@@ -19,6 +19,7 @@ data Attrs = Attrs
   , agendaName          :: Text
   , agendaSequence      :: Text
   , agendaAbilities :: [Ability]
+  , agendaFlipped :: Bool
   }
   deriving stock (Show, Generic)
 
@@ -32,6 +33,12 @@ instance FromJSON Attrs where
 doom :: Lens' Attrs Int
 doom = lens agendaDoom $ \m x -> m { agendaDoom = x }
 
+sequence :: Lens' Attrs Text
+sequence = lens agendaSequence $ \m x -> m { agendaSequence = x }
+
+flipped :: Lens' Attrs Bool
+flipped = lens agendaFlipped $ \m x -> m { agendaFlipped = x }
+
 doomThreshold :: Lens' Attrs GameValue
 doomThreshold =
   lens agendaDoomThreshold $ \m x -> m { agendaDoomThreshold = x }
@@ -44,6 +51,7 @@ baseAttrs aid name seq' threshold = Attrs
   , agendaName = name
   , agendaSequence = seq'
   , agendaAbilities = mempty
+  , agendaFlipped = False
   }
 
 instance (AgendaRunner env) => RunMessage env Attrs where

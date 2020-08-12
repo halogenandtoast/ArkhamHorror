@@ -50,13 +50,13 @@ export default class Enemy extends Vue {
     return this.enemy.contents.id;
   }
 
-  get canInteract() {
-    return this.attackAction !== -1 || this.damageAction !== -1;
-  }
-
   get cardAction() {
     if (this.attackAction !== -1) {
       return this.attackAction;
+    }
+
+    if (this.moveAction !== -1) {
+      return this.moveAction;
     }
 
     return this.damageAction;
@@ -70,6 +70,12 @@ export default class Enemy extends Vue {
     return this
       .choices
       .findIndex((c) => c.tag === MessageType.ENEMY_ATTACK && c.contents[1] === this.id);
+  }
+
+  get moveAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.ENEMY_MOVE && c.contents[0] === this.id);
   }
 
   get damageAction() {

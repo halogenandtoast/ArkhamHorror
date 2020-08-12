@@ -50,14 +50,12 @@ getApiV1ArkhamGameR gameId = do
 postApiV1ArkhamCreateGameR :: Handler (Entity ArkhamGame)
 postApiV1ArkhamCreateGameR = do
   (iid1, deck1) <- liftIO $ loadDeck "20344"
-  (iid2, deck2) <- liftIO $ loadDeck "101"
+  -- (iid2, deck2) <- liftIO $ loadDeck "101"
   ge <- liftIO $ runMessages =<< newGame
     "01104"
-    (HashMap.fromList
-      [ (1, (lookupInvestigator iid1, deck1))
-      , (2, (lookupInvestigator iid2, deck2))
-      ]
-    )
+    (HashMap.fromList [(1, (lookupInvestigator iid1, deck1))
+      -- , (2, (lookupInvestigator iid2, deck2))
+                                                            ])
   key <- runDB $ insert $ ArkhamGame ge
   pure (Entity key (ArkhamGame ge))
 
@@ -89,8 +87,6 @@ putApiV1ArkhamGameR gameId = do
           (Just m', msgs'') ->
             [m', Ask investigatorId $ ChooseOneAtATime msgs'']
           (Nothing, msgs'') -> [Ask investigatorId $ ChooseOneAtATime msgs'']
-      Just (ChooseOneFromSource MkChooseOneFromSource {..}) ->
-        maybeToList (map unlabel chooseOneChoices !!? choice response)
       _ -> []
   ge <- liftIO $ runMessages =<< toInternalGame
     (gameJson { gMessages = messages <> gMessages })
@@ -111,11 +107,16 @@ putApiV1ArkhamGameRawR gameId = do
   void $ fromJustNote "Not authenticated" <$> getRequestUserId
   void $ runDB $ get404 gameId
   response <- requireCheckJsonBody
+  ge <- liftIO $ runMessages =<< toInternalGame
+    ((gameJson response)
+      { gMessages = Continue "edited" : gMessages (gameJson response)
+      }
+    )
   App { appBroadcastChannel = writeChannel } <- getYesod
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode (Entity gameId (ArkhamGame $ gameJson response)))
-  runDB (replace gameId (ArkhamGame $ gameJson response))
+    (encode (Entity gameId (ArkhamGame ge)))
+  runDB (replace gameId (ArkhamGame ge))
 
 data ArkhamDBDecklist = ArkhamDBDecklist
   { slots :: HashMap CardCode Int, investigator_code :: InvestigatorId }

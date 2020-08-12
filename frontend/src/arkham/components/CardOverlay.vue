@@ -12,7 +12,7 @@ export default class CardOverlay extends Vue {
   card: string | null = null
 
   mounted() {
-    document.addEventListener('mouseover', (event) => {
+    document.addEventListener('mousemove', (event) => {
       if (event.target instanceof HTMLImageElement) {
         if (event.target.classList.contains('card')) {
           this.card = event.target.src;

@@ -26,6 +26,10 @@ export default class Act extends Vue {
   }
 
   get image() {
+    if (this.act.contents.flipped) {
+      return `/img/arkham/cards/${this.id}b.jpg`;
+    }
+
     return `/img/arkham/cards/${this.id}.jpg`;
   }
 
@@ -55,8 +59,7 @@ export default class Act extends Vue {
 
 .act--can-progress {
   border: 3px solid #ff00ff;
-  border-radius: 20px;
+  border-radius: 8px;
   cursor: pointer;
 }
-
 </style>

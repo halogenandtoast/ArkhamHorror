@@ -22,7 +22,11 @@
         v-for="(agenda, key) in game.currentData.agendas"
         :key="key"
         :agenda="agenda"
+        :game="game"
+        :investigatorId="investigatorId"
+        @choose="$emit('choose', $event)"
       />
+
       <Act
         v-for="(act, key) in game.currentData.acts"
         :key="key"

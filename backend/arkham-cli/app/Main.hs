@@ -74,14 +74,6 @@ handleQuestion iid = \case
     i <- keepAsking @Int
       ("Choose one:\n\n" <> unlines (map show $ zip @_ @Int [1 ..] msgs))
     pure . maybeToList $ msgs !!? (i - 1)
-  ChooseOneFromSource cofs -> case chooseOneChoices cofs of
-    [] -> pure []
-    msgs -> do
-      i <- keepAsking @Int
-        ("Choose one:\n\n"
-        <> unlines (map show $ zip @_ @Int [1 ..] (map unlabel msgs))
-        )
-      pure . maybeToList $ map unlabel msgs !!? (i - 1)
   ChooseOneAtATime [] -> pure []
   ChooseOneAtATime msgs -> do
     i <- keepAsking @Int

@@ -266,6 +266,9 @@ lookupInvestigator iid =
   fromJustNote ("Unkown investigator: " <> show iid)
     $ HashMap.lookup iid allInvestigators
 
+instance HasName Investigator where
+  getName = investigatorName . investigatorAttrs
+
 instance HasCard () Investigator where
   getCard _ cardId =
     fromJustNote "player does not have this card"
@@ -353,7 +356,7 @@ isDefeated :: Investigator -> Bool
 isDefeated = view defeated . investigatorAttrs
 
 hasClues :: Investigator -> Bool
-hasClues i = (investigatorAttrs i) ^. clues > 0
+hasClues i = investigatorAttrs i ^. clues > 0
 
 remainingHealth :: Investigator -> Int
 remainingHealth i = investigatorHealth attrs - investigatorHealthDamage attrs

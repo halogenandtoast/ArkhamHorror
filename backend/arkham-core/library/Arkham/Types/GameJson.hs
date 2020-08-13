@@ -11,6 +11,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
+import Arkham.Types.GameLogEntry
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
@@ -24,10 +25,12 @@ import Arkham.Types.Token
 import Arkham.Types.Treachery
 import Arkham.Types.TreacheryId
 import ClassyPrelude
+import Lens.Micro
 
 data GameJson = GameJson
   { gMessages :: [Message]
   , gSeed :: Int
+  , gLog :: [GameLogEntry]
   , gScenario :: Scenario
   , gLocations :: HashMap LocationId Location
   , gInvestigators :: HashMap InvestigatorId Investigator
@@ -61,4 +64,5 @@ instance ToJSON GameJson where
 instance FromJSON GameJson where
   parseJSON = genericParseJSON $ aesonOptions $ Just "g"
 
-
+gameLog :: Lens' GameJson [GameLogEntry]
+gameLog = lens gLog $ \m x -> m { gLog = x }

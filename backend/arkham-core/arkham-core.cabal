@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 08ac8d21c4ecb31dbc289a94f48bfb3b25154cee2852ed9a9b08f492494a14f9
+-- hash: 2e9851e7e6884548d950f114377afb49a29ef4d4695f0a57be0c1cf0869f87a9
 
 name:           arkham-core
 version:        0.0.0
@@ -87,6 +87,7 @@ library
       Arkham.Types.FastWindow
       Arkham.Types.Game
       Arkham.Types.GameJson
+      Arkham.Types.GameLogEntry
       Arkham.Types.GameRunner
       Arkham.Types.GameValue
       Arkham.Types.Helpers

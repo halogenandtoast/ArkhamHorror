@@ -27,6 +27,7 @@ import Arkham.Types.Event
 import Arkham.Types.FastWindow (Who(..))
 import qualified Arkham.Types.FastWindow as Fast
 import Arkham.Types.GameJson
+import Arkham.Types.GameLogEntry
 import Arkham.Types.GameRunner
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator
@@ -53,6 +54,7 @@ import Arkham.Types.Treachery
 import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Control.Monad.State
+import Control.Monad.Writer
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
@@ -71,6 +73,7 @@ import Text.Read hiding (get)
 data Game = Game
   { giMessages :: IORef [Message]
   , giSeed :: Int
+  , giLog :: [GameLogEntry]
   , giScenario :: Scenario
   , giLocations :: HashMap LocationId Location
   , giInvestigators :: HashMap InvestigatorId Investigator
@@ -198,9 +201,12 @@ newGame scenarioId investigatorsList = do
         (\(i, d) -> LoadDeck (getInvestigatorId i) d)
         (HashMap.elems investigatorsList)
     <> [SetupInvestigators]
-    <> [ InvestigatorMulligan (getInvestigatorId i)
-       | (i, _) <- HashMap.elems investigatorsList
-       ]
+    <> concat
+         [ [ Log $ getName i <> " can mulligan"
+           , InvestigatorMulligan (getInvestigatorId i)
+           ]
+         | (i, _) <- HashMap.elems investigatorsList
+         ]
     <> [Setup]
   mseed <- liftIO $ lookupEnv "SEED"
   seed <- maybe
@@ -211,6 +217,7 @@ newGame scenarioId investigatorsList = do
   pure $ Game
     { giMessages = ref
     , giSeed = seed
+    , giLog = mempty
     , giScenario = lookupScenario scenarioId Easy
     , giLocations = mempty
     , giEnemies = mempty
@@ -619,9 +626,17 @@ broadcastFastWindow builder currentInvestigatorId g =
           )
 
 runGameMessage
-  :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game
+  :: ( GameRunner env
+     , MonadWriter [GameLogEntry] m
+     , MonadReader env m
+     , MonadIO m
+     )
+  => Message
+  -> Game
+  -> m Game
 runGameMessage msg g = case msg of
   Run msgs -> g <$ unshiftMessages msgs
+  Log logMsg -> g <$ glog logMsg
   Label _ msgs -> g <$ unshiftMessages msgs
   Continue _ -> pure g
   FocusCards cards -> pure $ g & focusedCards .~ cards
@@ -871,6 +886,7 @@ runGameMessage msg g = case msg of
           & (victory %~ (EncounterCard ec :))
         else pure $ g & (enemies %~ HashMap.delete eid) & (discard %~ (ec :))
   BeginInvestigation -> do
+    glog "Begin Investigation Phase"
     unshiftMessage (ChoosePlayerOrder (giPlayerOrder g) [])
     pure $ g & phase .~ InvestigationPhase
   ChoosePlayerOrder [x] [] ->
@@ -1104,6 +1120,7 @@ toExternalGame Game {..} mq = do
   pure $ GameJson
     { gMessages = queue
     , gSeed = giSeed
+    , gLog = giLog
     , gScenario = giScenario
     , gLocations = giLocations
     , gInvestigators = giInvestigators
@@ -1138,6 +1155,7 @@ toInternalGame' :: IORef [Message] -> GameJson -> Game
 toInternalGame' ref GameJson {..} = Game
   { giMessages = ref
   , giSeed = gSeed
+  , giLog = gLog
   , giScenario = gScenario
   , giLocations = gLocations
   , giInvestigators = gInvestigators
@@ -1163,37 +1181,43 @@ toInternalGame' ref GameJson {..} = Game
   }
 
 runMessages :: MonadIO m => Game -> m GameJson
-runMessages g = if g ^. gameOver
-  then toExternalGame g mempty
-  else flip runReaderT g $ do
-    liftIO $ readIORef (giMessages g) >>= pPrint
-    mmsg <- popMessage
-    case mmsg of
-      Nothing -> case giPhase g of
-        ResolutionPhase -> toExternalGame g mempty
-        MythosPhase -> toExternalGame g mempty
-        EnemyPhase -> toExternalGame g mempty
-        UpkeepPhase -> toExternalGame g mempty
-        InvestigationPhase -> if hasEndedTurn (activeInvestigator g)
-          then
-            case
-              filter
-                (not
-                . (\i -> hasEndedTurn i || hasResigned i || isDefeated i)
-                . flip getInvestigator g
-                )
-                (giPlayerOrder g)
-            of
-              [] -> pushMessage EndInvestigation >> runMessages g
-              (x : _) -> runMessages $ g & activeInvestigatorId .~ x
-          else
-            pushMessages
-                [ PrePlayerWindow
-                , PlayerWindow (g ^. activeInvestigatorId) []
-                , PostPlayerWindow
-                ]
-              >> runMessages g
-      Just msg -> case msg of
-        Ask iid q -> toExternalGame g (HashMap.singleton iid q)
-        AskMap askMap -> toExternalGame g askMap
-        _ -> runMessage msg g >>= runMessages
+runMessages g = do
+  (gj, gameLog') <- runWriterT $ runGame g
+  pure $ gj & gameLog %~ (<> gameLog')
+
+runGame :: (MonadWriter [GameLogEntry] m, MonadIO m) => Game -> m GameJson
+runGame g = flip runReaderT g $ do
+  if g ^. gameOver
+    then toExternalGame g mempty
+    else do
+      liftIO $ readIORef (giMessages g) >>= pPrint
+      mmsg <- popMessage
+      case mmsg of
+        Nothing -> case giPhase g of
+          ResolutionPhase -> toExternalGame g mempty
+          MythosPhase -> toExternalGame g mempty
+          EnemyPhase -> toExternalGame g mempty
+          UpkeepPhase -> toExternalGame g mempty
+          InvestigationPhase -> if hasEndedTurn (activeInvestigator g)
+            then
+              case
+                filter
+                  (not
+                  . (\i -> hasEndedTurn i || hasResigned i || isDefeated i)
+                  . flip getInvestigator g
+                  )
+                  (giPlayerOrder g)
+              of
+                [] -> pushMessage EndInvestigation >> runMessages g
+                (x : _) -> runMessages $ g & activeInvestigatorId .~ x
+            else
+              pushMessages
+                  [ PrePlayerWindow
+                  , PlayerWindow (g ^. activeInvestigatorId) []
+                  , PostPlayerWindow
+                  ]
+                >> runMessages g
+        Just msg -> case msg of
+          Ask iid q -> toExternalGame g (HashMap.singleton iid q)
+          AskMap askMap -> toExternalGame g askMap
+          _ -> runMessage msg g >>= runMessages

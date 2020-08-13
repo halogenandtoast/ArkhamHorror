@@ -3,12 +3,14 @@
 module Arkham.Types.Classes where
 
 import Arkham.Types.Ability
+import Arkham.Types.GameLogEntry
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import ClassyPrelude
+import Control.Monad.Writer
 import GHC.Stack
 import Lens.Micro
 import Lens.Micro.Extras
@@ -17,7 +19,10 @@ class HasQueue a where
   messageQueue :: Lens' a (IORef [Message])
 
 class (HasQueue env) => RunMessage env a where
-  runMessage :: (MonadIO m, MonadReader env m) => Message -> a -> m a
+  runMessage :: (MonadIO m, MonadWriter [GameLogEntry] m, MonadReader env m) => Message -> a -> m a
+
+glog :: (MonadWriter [GameLogEntry] m) => Text -> m ()
+glog msg = tell [GameLogEntry msg]
 
 withQueue
   :: (MonadIO m, MonadReader env m, HasQueue env)
@@ -78,6 +83,9 @@ class HasInvestigatorStats c b a where
 
 class HasTraits a where
   getTraits :: a -> HashSet Trait
+
+class HasName a where
+  getName :: a -> Text
 
 class IsAdvanceable a where
   isAdvanceable :: a -> Bool

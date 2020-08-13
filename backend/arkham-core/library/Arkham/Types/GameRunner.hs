@@ -9,6 +9,7 @@ import Arkham.Types.TreacheryId
 
 type GameRunner env
   = ( HasQueue env
+    , HasLog env
     , HasId LocationId InvestigatorId env
     , HasSet ConnectedLocationId LocationId env
     , HasSet EnemyId LocationId env

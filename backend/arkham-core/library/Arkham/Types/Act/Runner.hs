@@ -8,6 +8,7 @@ import Arkham.Types.Query
 
 type ActRunner env
   = ( HasQueue env
+    , HasLog env
     , HasCount ClueCount AllInvestigators env
     , HasCount ClueCount InvestigatorId env
     , HasSet EnemyId LocationId env

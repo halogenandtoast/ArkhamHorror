@@ -9,6 +9,7 @@ import Arkham.Types.Query
 
 type TreacheryRunner env
   = ( HasQueue env
+    , HasLog env
     , HasSet AssetId InvestigatorId env
     , HasId LocationId InvestigatorId env
     , HasCount TreacheryCount (LocationId, CardCode) env

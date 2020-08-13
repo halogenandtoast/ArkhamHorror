@@ -136,7 +136,8 @@ skillIconCount SkillTest {..} = length . filter matches $ concatMap
   matches s = s == skillTestSkillType
 
 
-type SkillTestRunner env = (HasQueue env, HasCard InvestigatorId env)
+type SkillTestRunner env
+  = (HasQueue env, HasLog env, HasCard InvestigatorId env)
 
 instance (SkillTestRunner env) => RunMessage env SkillTest where
   runMessage msg s@SkillTest {..} = case msg of

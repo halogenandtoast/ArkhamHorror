@@ -79,6 +79,7 @@ export interface GameState {
   investigators: Record<string, Investigator>;
   leadInvestigatorId: string;
   locations: Record<string, Location>;
+  gameLog: string[];
   phase: Phase;
   question: Record<string, Question>;
   scenario: Scenario;
@@ -102,6 +103,7 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     investigators: JsonDecoder.dictionary<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
     leadInvestigatorId: JsonDecoder.string,
     locations: JsonDecoder.dictionary<Location>(locationDecoder, 'Dict<UUID, Location>'),
+    gameLog: JsonDecoder.array<string>(JsonDecoder.string, 'GameLogEntry[]'),
     phase: phaseDecoder,
     question: JsonDecoder.dictionary<Question>(questionDecoder, 'Dict<InvestigatorId, Question>'),
     scenario: scenarioDecoder,

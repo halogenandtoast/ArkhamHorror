@@ -3,6 +3,7 @@
 module Arkham.Types.Classes where
 
 import Arkham.Types.Ability
+import Arkham.Types.GameLogEntry
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.Message
@@ -16,8 +17,22 @@ import Lens.Micro.Extras
 class HasQueue a where
   messageQueue :: Lens' a (IORef [Message])
 
-class (HasQueue env) => RunMessage env a where
+class HasLog a where
+  gameLog :: Lens' a (IORef [GameLogEntry])
+
+class (HasQueue env, HasLog env) => RunMessage env a where
   runMessage :: (MonadIO m, MonadReader env m) => Message -> a -> m a
+
+withLog
+  :: (MonadIO m, MonadReader env m, HasLog env)
+  => ([GameLogEntry] -> ([GameLogEntry], r))
+  -> m r
+withLog body = do
+  ref <- asks $ view gameLog
+  liftIO $ atomicModifyIORef' ref body
+
+gLog :: (MonadIO m, MonadReader env m, HasLog env) => Text -> m ()
+gLog entry = withLog $ \entries -> (entries <> [GameLogEntry entry], ())
 
 withQueue
   :: (MonadIO m, MonadReader env m, HasQueue env)

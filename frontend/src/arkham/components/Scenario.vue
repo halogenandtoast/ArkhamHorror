@@ -53,15 +53,18 @@
     </div>
 
     <div class="location-cards">
-      <Location
-        v-for="(location, key) in game.currentData.locations"
-        class="location"
-        :key="key"
-        :game="game"
-        :investigatorId="investigatorId"
-        :location="location"
-        @choose="$emit('choose', $event)"
-      />
+      <GameLog :game="game" />
+      <div class="locations">
+        <Location
+          v-for="(location, key) in game.currentData.locations"
+          class="location"
+          :key="key"
+          :game="game"
+          :investigatorId="investigatorId"
+          :location="location"
+          @choose="$emit('choose', $event)"
+        />
+      </div>
     </div>
 
     <PlayerTabs :investigatorId="investigatorId">
@@ -105,6 +108,7 @@ import Tab from '@/arkham/components/Tab.vue';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
 import VictoryPile from '@/arkham/components/VictoryPile.vue';
+import GameLog from '@/arkham/components/GameLog.vue';
 import Location from '@/arkham/components/Location.vue';
 
 @Component({
@@ -122,6 +126,7 @@ import Location from '@/arkham/components/Location.vue';
     PlayerOrder,
     CardOverlay,
     VictoryPile,
+    GameLog,
   },
 })
 export default class Scenario extends Vue {
@@ -226,6 +231,7 @@ export default class Scenario extends Vue {
   align-items: center;
   overflow: auto;
   min-height: 350px;
+  position: relative;
 }
 
 .portrait {
@@ -262,5 +268,13 @@ export default class Scenario extends Vue {
     opacity: .85;
     mix-blend-mode: saturation;
   }
+}
+
+.locations {
+  box-sizing: border-box;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-self: center;
 }
 </style>

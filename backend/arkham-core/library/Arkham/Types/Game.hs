@@ -27,6 +27,7 @@ import Arkham.Types.Event
 import Arkham.Types.FastWindow (Who(..))
 import qualified Arkham.Types.FastWindow as Fast
 import Arkham.Types.GameJson
+import Arkham.Types.GameLogEntry
 import Arkham.Types.GameRunner
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator
@@ -70,6 +71,7 @@ import Text.Read hiding (get)
 
 data Game = Game
   { giMessages :: IORef [Message]
+  , giGameLog :: IORef [GameLogEntry]
   , giSeed :: Int
   , giScenario :: Scenario
   , giLocations :: HashMap LocationId Location
@@ -192,7 +194,7 @@ newGame
   -> HashMap Int (Investigator, [PlayerCard])
   -> m Game
 newGame scenarioId investigatorsList = do
-  ref <-
+  messages <-
     newIORef
     $ map
         (\(i, d) -> LoadDeck (getInvestigatorId i) d)
@@ -202,6 +204,7 @@ newGame scenarioId investigatorsList = do
        | (i, _) <- HashMap.elems investigatorsList
        ]
     <> [Setup]
+  gameLog' <- newIORef []
   mseed <- liftIO $ lookupEnv "SEED"
   seed <- maybe
     (liftIO $ randomIO @Int)
@@ -209,8 +212,9 @@ newGame scenarioId investigatorsList = do
     mseed
   liftIO $ setStdGen (mkStdGen seed)
   pure $ Game
-    { giMessages = ref
+    { giMessages = messages
     , giSeed = seed
+    , giGameLog = gameLog'
     , giScenario = lookupScenario scenarioId Easy
     , giLocations = mempty
     , giEnemies = mempty
@@ -567,6 +571,9 @@ instance HasSet InvestigatorId LocationId Game where
 instance HasQueue Game where
   messageQueue = lens giMessages $ \m x -> m { giMessages = x }
 
+instance HasLog Game where
+  gameLog = lens giGameLog $ \m x -> m { giGameLog = x }
+
 createEnemy :: MonadIO m => CardCode -> m (EnemyId, Enemy)
 createEnemy cardCode = do
   eid <- liftIO $ EnemyId <$> nextRandom
@@ -622,6 +629,7 @@ runGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game
 runGameMessage msg g = case msg of
   Run msgs -> g <$ unshiftMessages msgs
+  Log entry -> g <$ gLog entry
   Label _ msgs -> g <$ unshiftMessages msgs
   Continue _ -> pure g
   FocusCards cards -> pure $ g & focusedCards .~ cards
@@ -871,6 +879,7 @@ runGameMessage msg g = case msg of
           & (victory %~ (EncounterCard ec :))
         else pure $ g & (enemies %~ HashMap.delete eid) & (discard %~ (ec :))
   BeginInvestigation -> do
+    gLog "Begin Investigation Phase"
     unshiftMessage (ChoosePlayerOrder (giPlayerOrder g) [])
     pure $ g & phase .~ InvestigationPhase
   ChoosePlayerOrder [x] [] ->
@@ -1101,9 +1110,11 @@ toExternalGame
   :: MonadIO m => Game -> HashMap InvestigatorId Question -> m GameJson
 toExternalGame Game {..} mq = do
   queue <- liftIO $ readIORef giMessages
+  gameLog' <- liftIO $ readIORef giGameLog
   pure $ GameJson
     { gMessages = queue
     , gSeed = giSeed
+    , gGameLog = gameLog'
     , gScenario = giScenario
     , gLocations = giLocations
     , gInvestigators = giInvestigators
@@ -1131,13 +1142,15 @@ toExternalGame Game {..} mq = do
 
 toInternalGame :: MonadIO m => GameJson -> m Game
 toInternalGame gj@GameJson {..} = do
-  ref <- newIORef gMessages
-  pure $ toInternalGame' ref gj
+  messages <- newIORef gMessages
+  gameLog' <- newIORef gGameLog
+  pure $ toInternalGame' messages gameLog' gj
 
-toInternalGame' :: IORef [Message] -> GameJson -> Game
-toInternalGame' ref GameJson {..} = Game
-  { giMessages = ref
+toInternalGame' :: IORef [Message] -> IORef [GameLogEntry] -> GameJson -> Game
+toInternalGame' messages gameLog' GameJson {..} = Game
+  { giMessages = messages
   , giSeed = gSeed
+  , giGameLog = gameLog'
   , giScenario = gScenario
   , giLocations = gLocations
   , giInvestigators = gInvestigators

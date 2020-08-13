@@ -43,5 +43,5 @@ baseAttrs aid name seq' = Attrs
   , actFlipped = False
   }
 
-instance (HasQueue env) => RunMessage env Attrs where
+instance (HasLog env, HasQueue env) => RunMessage env Attrs where
   runMessage _msg a@Attrs {..} = pure a

@@ -11,6 +11,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
+import Arkham.Types.GameLogEntry
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
@@ -28,6 +29,7 @@ import ClassyPrelude
 data GameJson = GameJson
   { gMessages :: [Message]
   , gSeed :: Int
+  , gGameLog :: [GameLogEntry]
   , gScenario :: Scenario
   , gLocations :: HashMap LocationId Location
   , gInvestigators :: HashMap InvestigatorId Investigator

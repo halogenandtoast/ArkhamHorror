@@ -1,10 +1,10 @@
 module Arkham.Types.Agenda.Runner where
 
+import Arkham.Types.ActId
 import Arkham.Types.Classes
+import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
-import Arkham.Types.EnemyId
-import Arkham.Types.ActId
 import Arkham.Types.Query
 import Arkham.Types.Trait
 
@@ -12,6 +12,7 @@ type AgendaRunner env
   = ( HasId LeadInvestigatorId () env
     , HasCount PlayerCount () env
     , HasQueue env
+    , HasLog env
     , HasSet UnengagedEnemyId () env
     , HasSet EnemyId Trait env
     , HasSet EnemyId LocationId env

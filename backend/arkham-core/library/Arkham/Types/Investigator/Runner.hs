@@ -19,6 +19,7 @@ type InvestigatorRunner env
     , HasSet SanityDamageableAssetId InvestigatorId env
     , HasSet CommitedCardId InvestigatorId env
     , HasQueue env
+    , HasLog env
     , HasSet AdvanceableActId () env
     , HasSet ConnectedLocationId LocationId env
     , HasSet BlockedLocationId () env

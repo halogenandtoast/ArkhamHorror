@@ -10,6 +10,7 @@ import Arkham.Types.Trait
 
 type AssetRunner env
   = ( HasQueue env
+    , HasLog env
     , HasSet InvestigatorId () env
     , HasSet InvestigatorId LocationId env
     , HasSet EnemyId LocationId env

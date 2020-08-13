@@ -52,6 +52,7 @@ data LeftoverCardStrategy = ShuffleBackIn | PutBackInAnyOrder
 
 data Message
   = Setup
+  | Log Text
   | SetupInvestigators
   | FlavorText (Maybe Text) Text
   | InvestigatorMulligan InvestigatorId

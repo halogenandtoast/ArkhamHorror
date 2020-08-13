@@ -11,6 +11,7 @@ type EnemyRunner env
     , HasSet InvestigatorId LocationId env
     , HasCount PlayerCount () env
     , HasQueue env
+    , HasLog env
     , HasSet ClosestLocationId (LocationId, Prey) env
     , HasSet PreyId (Prey, LocationId) env
     , HasId LeadInvestigatorId () env

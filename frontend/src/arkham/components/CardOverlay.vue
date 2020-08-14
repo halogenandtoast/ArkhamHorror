@@ -36,5 +36,6 @@ export default class CardOverlay extends Vue {
     border-radius: 20px;
   }
   pointer-events: none;
+  z-index: 10000;
 }
 </style>

@@ -1,10 +1,11 @@
 <template>
-  <div v-if="focusedCards.length > 0" class="modal">
+  <div v-if="focusedCards.length > 0 && choices.length > 0" class="modal">
     <div class="modal-contents focused-cards">
       <FocusedCard
         v-for="(card, index) in focusedCards"
         :card="card"
         :game="game"
+        :investigatorId="investigatorId"
         :key="index"
         @choose="$emit('choose', $event)"
       />

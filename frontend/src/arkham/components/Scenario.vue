@@ -57,7 +57,7 @@
       />
     </div>
 
-    <div class="location-cards">
+    <div class="location-cards" :style="locationStyles">
       <Location
         v-for="(location, key) in game.currentData.locations"
         class="location"
@@ -65,6 +65,7 @@
         :game="game"
         :investigatorId="investigatorId"
         :location="location"
+        :style="{ 'grid-area': camelize(location.contents.name), 'justify-self': 'center' }"
         @choose="$emit('choose', $event)"
       />
     </div>
@@ -96,6 +97,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import * as _ from 'lodash';
 import { Game } from '@/arkham/types/Game';
 import { Investigator } from '@/arkham/types/Investigator';
 import Player from '@/arkham/components/Player.vue';
@@ -138,6 +140,21 @@ export default class Scenario extends Vue {
   private commitedCards: number[] = []
   private moving = false
 
+  get locationStyles() {
+    const { scenario } = this.game.currentData;
+    if (!scenario) {
+      return null;
+    }
+    const { locationLayout } = scenario.contents;
+    if (locationLayout) {
+      return {
+        display: 'grid',
+        'grid-template-areas': locationLayout.map((row) => `'${row}'`).join(' '),
+      };
+    }
+    return null;
+  }
+
   get activeCard() {
     if (this.game.currentData.activeCard) {
       const { cardCode } = this.game.currentData.activeCard.contents;
@@ -168,6 +185,8 @@ export default class Scenario extends Vue {
   update(game: Game) {
     this.$emit('update', game);
   }
+
+  camelize = (str: string) => _.camelCase(str)
 }
 
 </script>

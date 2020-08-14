@@ -13,6 +13,9 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.ScenarioId
 import ClassyPrelude
 
+newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
+  deriving newtype (Show, IsString, ToJSON, FromJSON)
+
 data Attrs = Attrs
   { scenarioName        :: Text
   , scenarioId          :: ScenarioId
@@ -20,6 +23,7 @@ data Attrs = Attrs
   -- These types are to handle complex scenarios with multiple stacks
   , scenarioAgendaStack :: [(Int, [AgendaId])] -- These types are to handle complex scenarios with multiple stacks
   , scenarioActStack    :: [(Int, [ActId])]
+  , scenarioLocationLayout :: Maybe [GridTemplateRow]
   }
   deriving stock (Show, Generic)
 
@@ -37,6 +41,7 @@ baseAttrs cardCode name agendaStack actStack difficulty = Attrs
   , scenarioDifficulty = difficulty
   , scenarioAgendaStack = [(1, agendaStack)]
   , scenarioActStack = [(1, actStack)]
+  , scenarioLocationLayout = Nothing
   }
 
 instance (ScenarioRunner env) => RunMessage env Attrs where

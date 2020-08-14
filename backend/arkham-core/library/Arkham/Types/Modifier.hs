@@ -23,7 +23,6 @@ sourceOfModifier (DamageTaken _ s) = s
 sourceOfModifier (DamageDealt _ s) = s
 sourceOfModifier (ShroudModifier _ s) = s
 sourceOfModifier (DiscoveredClues _ s) = s
-sourceOfModifier (SufferTrauma _ _ s) = s
 sourceOfModifier (UseSkillInPlaceOf _ _ s) = s
 sourceOfModifier (ForcedTokenChange _ _ s) = s
 
@@ -37,7 +36,6 @@ replaceModifierSource s (DamageTaken a _) = DamageTaken a s
 replaceModifierSource s (DamageDealt a _) = DamageDealt a s
 replaceModifierSource s (ShroudModifier a _) = ShroudModifier a s
 replaceModifierSource s (DiscoveredClues a _) = DiscoveredClues a s
-replaceModifierSource s (SufferTrauma a b _) = SufferTrauma a b s
 replaceModifierSource s (UseSkillInPlaceOf a b _) = UseSkillInPlaceOf a b s
 replaceModifierSource s (ForcedTokenChange a b _) = ForcedTokenChange a b s
 
@@ -50,7 +48,6 @@ data Modifier
   | DamageTaken Int Source
   | ShroudModifier Int Source
   | DiscoveredClues Int Source
-  | SufferTrauma Int Int Source
   | UseSkillInPlaceOf SkillType SkillType Source
   | ForcedTokenChange Token Token Source
   deriving stock (Show, Generic)

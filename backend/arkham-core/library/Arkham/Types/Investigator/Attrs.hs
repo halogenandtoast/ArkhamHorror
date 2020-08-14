@@ -70,6 +70,9 @@ data Attrs = Attrs
   , investigatorDefeated :: Bool
   , investigatorResigned :: Bool
   , investigatorSlots :: HashMap SlotType [Slot]
+  , investigatorXP :: Int
+  , investigatorPhysicalTrauma :: Int
+  , investigatorMentalTrauma :: Int
   }
   deriving stock (Show, Generic)
 
@@ -82,6 +85,15 @@ instance FromJSON Attrs where
 
 locationId :: Lens' Attrs LocationId
 locationId = lens investigatorLocation $ \m x -> m { investigatorLocation = x }
+
+xp :: Lens' Attrs Int
+xp = lens investigatorXP $ \m x -> m { investigatorXP = x }
+
+physicalTrauma :: Lens' Attrs Int
+physicalTrauma = lens investigatorPhysicalTrauma $ \m x -> m { investigatorPhysicalTrauma = x }
+
+mentalTrauma :: Lens' Attrs Int
+mentalTrauma = lens investigatorMentalTrauma $ \m x -> m { investigatorMentalTrauma = x }
 
 modifiers :: Lens' Attrs [Modifier]
 modifiers =
@@ -247,6 +259,9 @@ baseAttrs iid name classSymbol Stats {..} traits = Attrs
         ]
       )
     ]
+  , investigatorXP = 0
+  , investigatorPhysicalTrauma = 0
+  , investigatorMentalTrauma = 0
   }
 
 sourceIsInvestigator :: Source -> Attrs -> Bool
@@ -1114,6 +1129,10 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
             )
         unshiftMessage (FocusCards $ map PlayerCard cards)
         pure $ a & deck .~ Deck deck'
+    SufferTrauma iid physical mental | iid == investigatorId ->
+      pure $ a & physicalTrauma +~ physical & mentalTrauma +~ mental
+    GainXP iid amount | iid == investigatorId ->
+      pure $ a & xp +~ amount
     PlayerWindow iid additionalActions | iid == investigatorId -> do
       advanceableActIds <-
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())

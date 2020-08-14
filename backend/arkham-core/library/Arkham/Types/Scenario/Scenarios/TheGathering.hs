@@ -130,7 +130,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
                 ]
               , Record YourHouseIsStillStanding
               , Record GhoulPriestIsStillAlive
-              , GameOver
+              , EndOfGame
               ]
           ]
         )
@@ -151,7 +151,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
                   \ Alone, we are surely doomed…but together, we can stop it.”"
                 ]
               , Record YourHouseHasBurnedToTheGround
-              , GameOver
+              , EndOfGame
               ]
           ]
         )
@@ -173,7 +173,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
                   \ events…but she doesn’t seem to trust you very much."
                 ]
               , Record YourHouseIsStillStanding
-              , GameOver
+              , EndOfGame
               ]
           ]
         )
@@ -193,7 +193,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
               , Record LitaWasForcedToFindOthersToHelpHerCause
               , Record YourHouseIsStillStanding
               , Record GhoulPriestIsStillAlive
-              , GameOver
+              , EndOfGame
               ]
           ]
         )

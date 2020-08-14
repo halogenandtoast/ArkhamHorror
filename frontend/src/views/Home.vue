@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div v-if="currentUser">
-      <router-link to="/new-campaign">New Campaign</router-link>
+      <router-link to="/campaigns/new">New Campaign</router-link>
     </div>
   </div>
 </template>

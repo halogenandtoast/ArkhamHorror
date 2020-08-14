@@ -1,13 +1,27 @@
 <template>
   <div v-if="!game.currentData.gameOver" id="game" class="game">
-    <CardOverlay />
-    <StatusBar :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
-    <PlayerOrder :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
-    <PlayerSelector
+    <Scenario
+      v-if="game.currentData.scenario"
+
       :game="game"
       :investigatorId="investigatorId"
       @choose="$emit('choose', $event)"
+      @update="update"
     />
+    <template v-else>
+      <CardOverlay />
+      <StatusBar :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
+      <PlayerOrder
+        :game="game"
+        :investigatorId="investigatorId"
+        @choose="$emit('choose', $event)"
+      />
+      <PlayerSelector
+        :game="game"
+        :investigatorId="investigatorId"
+        @choose="$emit('choose', $event)"
+      />
+    </template>
   </div>
 </template>
 
@@ -15,37 +29,19 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Game } from '@/arkham/types/Game';
 import { Investigator } from '@/arkham/types/Investigator';
-import Player from '@/arkham/components/Player.vue';
-import Act from '@/arkham/components/Act.vue';
-import Agenda from '@/arkham/components/Agenda.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
-import ChaosBag from '@/arkham/components/ChaosBag.vue';
-import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
-import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
 import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
+import Scenario from '@/arkham/components/Scenario.vue';
 import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
-import Tab from '@/arkham/components/Tab.vue';
-import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
-import VictoryPile from '@/arkham/components/VictoryPile.vue';
-import Location from '@/arkham/components/Location.vue';
 
 @Component({
   components: {
-    Player,
-    Act,
-    Agenda,
-    Location,
     StatusBar,
-    ChaosBag,
-    ChoiceModal,
-    PlayerTabs,
-    Tab,
-    EncounterDeck,
     PlayerOrder,
     PlayerSelector,
     CardOverlay,
-    VictoryPile,
+    Scenario,
   },
 })
 export default class Campaign extends Vue {

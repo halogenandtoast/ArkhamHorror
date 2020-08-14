@@ -201,7 +201,11 @@ newCampaign
   -> m Game
 newCampaign campaignId investigatorsList difficulty' = do
   let campaign' = lookupCampaign campaignId difficulty'
-  ref <- newIORef [StartCampaign]
+  ref <- newIORef
+    $ map
+        (\(i, d) -> LoadDeck (getInvestigatorId i) d)
+        (HashMap.elems investigatorsList)
+    <> [StartCampaign]
   mseed <- liftIO $ lookupEnv "SEED"
   seed <- maybe
     (liftIO $ randomIO @Int)
@@ -692,13 +696,10 @@ runGameMessage msg g = case msg of
       difficulty' = difficultyOf campaign'
       chaosBag' = chaosBagOf campaign'
 
-    unshiftMessage
-      $ map
-          (\(i, d) -> LoadDeck (getInvestigatorId i) d)
-          (HashMap.elems investigatorsList)
-      <> [ChooseLeadInvestigator, SetupInvestigators]
-      <> [ InvestigatorMulligan (getInvestigatorId i)
-         | (i, _) <- HashMap.elems investigatorsList
+    unshiftMessages
+      $ [ChooseLeadInvestigator, SetupInvestigators]
+      <> [ InvestigatorMulligan iid
+         | iid <- HashMap.keys $ g ^. investigators
          ]
       <> [Setup]
     pure

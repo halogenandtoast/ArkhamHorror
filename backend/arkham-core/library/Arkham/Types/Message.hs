@@ -16,6 +16,7 @@ import Arkham.Types.Action
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
 import Arkham.Types.CampaignStep
+import Arkham.Types.CampaignLog
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
@@ -58,6 +59,8 @@ data Message
   | StartCampaign
   | CampaignStep (Maybe CampaignStep)
   | NextCampaignStep
+  | Record CampaignLogKey
+  | RecordCount CampaignLogKey Int
   | StartScenario ScenarioId
   | SetupInvestigators
   | FlavorText (Maybe Text) [Text]

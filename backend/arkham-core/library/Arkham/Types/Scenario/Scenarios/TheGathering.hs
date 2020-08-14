@@ -4,6 +4,7 @@ module Arkham.Types.Scenario.Scenarios.TheGathering where
 import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.CampaignLog
 import Arkham.Types.Difficulty
 import Arkham.Types.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Types.EncounterSet as EncounterSet
@@ -127,6 +128,8 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
                   \ to argue. Nodding, you follow the woman as she runs from\
                   \ your front porch out into the rainy street, toward Rivertown."
                 ]
+              , Record YourHouseIsStillStanding
+              , Record GhoulPriestIsStillAlive
               , GameOver
               ]
           ]
@@ -147,6 +150,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
                   \ woman says. “You must be told of the threat that lurks below.\
                   \ Alone, we are surely doomed…but together, we can stop it.”"
                 ]
+              , Record YourHouseHasBurnedToTheGround
               , GameOver
               ]
           ]
@@ -168,6 +172,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
                   \ woman out. Perhaps she can shed some light on these bizarre\
                   \ events…but she doesn’t seem to trust you very much."
                 ]
+              , Record YourHouseIsStillStanding
               , GameOver
               ]
           ]
@@ -185,6 +190,9 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
                   \ path. Trapped, the horde of feral creatures that have invaded\
                   \ your home close in, and you have nowhere to run."
                 ]
+              , Record LitaWasForcedToFindOthersToHelpHerCause
+              , Record YourHouseIsStillStanding
+              , Record GhoulPriestIsStillAlive
               , GameOver
               ]
           ]

@@ -7,11 +7,13 @@ import Arkham.Types.CampaignId
 import Arkham.Types.CampaignLog
 import Arkham.Types.CampaignStep
 import Arkham.Types.Classes
+import Arkham.Types.Message
 import Arkham.Types.Difficulty
-import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.Token
-import ClassyPrelude
+import qualified Data.HashSet as HashSet
+import qualified Data.HashMap.Strict as HashMap
+import ClassyPrelude hiding (log)
 import Lens.Micro
 
 data Attrs = Attrs
@@ -29,6 +31,9 @@ data Attrs = Attrs
 step :: Lens' Attrs Int
 step = lens campaignStep $ \m x -> m { campaignStep = x }
 
+log :: Lens' Attrs CampaignLog
+log = lens campaignLog $ \m x -> m { campaignLog = x }
+
 instance ToJSON Attrs where
   toJSON = genericToJSON $ aesonOptions $ Just "campaign"
   toEncoding = genericToEncoding $ aesonOptions $ Just "campaign"
@@ -37,7 +42,10 @@ instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "campaign"
 
 instance (CampaignRunner env) => RunMessage env Attrs where
-  runMessage _ = pure
+  runMessage msg a@(Attrs {..}) = case msg of
+    Record key -> pure $ a & log . recorded %~ HashSet.insert key
+    RecordCount key int -> pure $ a & log . recordedCounts %~ HashMap.insert key int
+    _ -> pure a
 
 baseAttrs :: CampaignId -> Text -> Difficulty -> [Token] -> Attrs
 baseAttrs campaignId' name difficulty chaosBagContents = Attrs

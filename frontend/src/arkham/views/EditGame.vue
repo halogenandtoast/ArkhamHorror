@@ -25,7 +25,7 @@ export default class EditGame extends Vue {
     fetchGameRaw(this.gameId).then(({ game }) => {
       this.json = game.currentData;
       this.ready = true;
-      this.socket = new WebSocket(`${api.defaults.baseURL}/arkham/games/${this.gameId}`.replace(/https?/, 'ws'));
+      this.socket = new WebSocket(`${api.defaults.baseURL}/arkham/games/${this.gameId}`.replace(/https/, 'wss').replace(/http/, 'ws'));
       this.socket.addEventListener('message', (event) => {
         this.json = JSON.parse(event.data).currentData;
       });

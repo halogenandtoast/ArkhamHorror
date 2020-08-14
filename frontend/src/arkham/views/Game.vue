@@ -35,7 +35,7 @@ export default class Game extends Vue {
     fetchGame(this.gameId).then(({ game, investigatorId }) => {
       this.game = game;
       this.investigatorId = investigatorId;
-      this.socket = new WebSocket(`${api.defaults.baseURL}/arkham/games/${this.gameId}`.replace(/https?/, 'ws'));
+      this.socket = new WebSocket(`${api.defaults.baseURL}/arkham/games/${this.gameId}`.replace(/https/, 'wss').replace(/http/, 'ws'));
       this.socket.addEventListener('message', (event) => {
         Arkham.gameDecoder.decodePromise(JSON.parse(event.data))
           .then((updatedGame) => { this.game = updatedGame; });

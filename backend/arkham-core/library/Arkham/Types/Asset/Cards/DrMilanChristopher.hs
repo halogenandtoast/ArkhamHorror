@@ -33,7 +33,7 @@ instance (AssetRunner env) => RunMessage env DrMilanChristopher where
       unshiftMessage
         (AddModifier
           (InvestigatorTarget iid)
-          (SkillModifier SkillWillpower 1 (AssetSource aid))
+          (SkillModifier SkillIntellect 1 (AssetSource aid))
         )
       DrMilanChristopher <$> runMessage msg attrs
     SuccessfulInvestigation iid _ | iid == getInvestigator attrs ->

@@ -10,6 +10,7 @@
       />
     </div>
     <div class="location-column">
+      <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
       <img
         :class="{ 'location--can-interact': cardAction !== -1 }"
         class="card"
@@ -140,6 +141,10 @@ export default class Location extends Vue {
       .filter((e) => this.game.currentData.enemies[e].contents.engagedInvestigators.length === 0);
   }
 
+  get blocked() {
+    return this.location.contents.blocked;
+  }
+
   doInvestigate() {
     if (this.clues === 0) {
       this.warnAction('There are no clues left, are you sure?', this.investigateAction);
@@ -220,11 +225,22 @@ export default class Location extends Vue {
 .location-column {
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .pool {
   display: flex;
   flex-direction: row;
   height: 2em;
+}
+
+.status-icon {
+  align-self: center;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 1.5em;
+  font-size: 2.6em;
+  color: rgba(0, 0, 0, 0.8);
+  position: absolute;
+  top: 19px;
 }
 </style>

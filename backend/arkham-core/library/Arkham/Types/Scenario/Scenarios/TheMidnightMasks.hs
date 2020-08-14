@@ -24,8 +24,9 @@ newtype TheMidnightMasks = TheMidnightMasks Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 theMidnightMasks :: Difficulty -> TheMidnightMasks
-theMidnightMasks =
-  TheMidnightMasks . baseAttrs "01120" "The Midnight Masks" [] []
+theMidnightMasks difficulty =
+  TheMidnightMasks $ (baseAttrs "01120" "The Midnight Masks" [] [] difficulty)
+     { scenarioLocationLayout = Just [ "northside downtown easttown", "miskatonicUniversity rivertown graveyard", "stMarysHospital southside yourHouse"] }
 
 instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs) = case msg of

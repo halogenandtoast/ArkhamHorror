@@ -116,6 +116,8 @@ instance (AssetRunner env) => RunMessage env Attrs where
       a <$ when (defeated a) (unshiftMessage (AssetDefeated assetId))
     AssetDamage aid _ health sanity | aid == assetId ->
       pure $ a & healthDamage +~ health & sanityDamage +~ sanity
+    InvestigatorEliminated iid | assetInvestigator == Just iid ->
+      a <$ unshiftMessage (DiscardAsset assetId)
     DiscardAsset aid | aid == assetId -> case assetInvestigator of
       Nothing -> pure a
       Just iid -> a <$ unshiftMessage

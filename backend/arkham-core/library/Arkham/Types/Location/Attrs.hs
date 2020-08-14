@@ -163,6 +163,8 @@ instance (LocationRunner env) => RunMessage env Attrs where
       let discoveredClues = min n locationClues
       a <$ unshiftMessage (DiscoverClues iid lid discoveredClues)
     AfterDiscoverClues _ lid n | lid == locationId -> pure $ a & clues -~ n
+    InvestigatorEliminated iid ->
+      pure $ a & investigators %~ HashSet.delete iid
     WhenEnterLocation iid lid
       | lid /= locationId && iid `elem` locationInvestigators
       -> pure $ a & investigators %~ HashSet.delete iid -- TODO: should we broadcast leaving the location
@@ -178,6 +180,8 @@ instance (LocationRunner env) => RunMessage env Attrs where
     RemoveEnemy eid -> pure $ a & enemies %~ HashSet.delete eid
     EnemyDefeated eid _ _ _ -> pure $ a & enemies %~ HashSet.delete eid
     TakeControlOfAsset _ aid -> pure $ a & assets %~ HashSet.delete aid
+    PlaceClues (LocationTarget lid) n | lid == locationId ->
+      pure $ a & clues +~ n
     RevealLocation lid | lid == locationId -> do
       clueCount <- fromGameValue locationRevealClues . unPlayerCount <$> asks
         (getCount ())

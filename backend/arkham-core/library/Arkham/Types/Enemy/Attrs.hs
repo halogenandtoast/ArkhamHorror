@@ -296,5 +296,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
     InvestigatorDrawEnemy _ lid eid | eid == enemyId -> do
       unshiftMessage (EnemySpawn lid eid)
       pure $ a & location .~ lid
+    InvestigatorEliminated iid ->
+      pure $ a & engagedInvestigators %~ HashSet.delete iid
     EnemySetBearer eid bid | eid == enemyId -> pure $ a & prey .~ Bearer bid
     _ -> pure a

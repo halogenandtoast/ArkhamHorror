@@ -9,6 +9,7 @@ where
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Game
+import Arkham.Types.ScenarioId
 import Arkham.Types.GameJson
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator
@@ -47,17 +48,20 @@ getApiV1ArkhamGameR gameId = do
       $ HashMap.lookup (fromIntegral $ fromSqlKey userId) gPlayers
   pure $ GetGameJson investigatorId (Entity gameId ge)
 
+data CreateGamePost = CreateGamePost
+  { deckIds :: [String]
+  , scenarioId :: ScenarioId
+  }
+  deriving stock (Show, Generic)
+  deriving anyclass (FromJSON)
+
 postApiV1ArkhamCreateGameR :: Handler (Entity ArkhamGame)
 postApiV1ArkhamCreateGameR = do
-  (iid1, deck1) <- liftIO $ loadDeck "20344"
-  (iid2, deck2) <- liftIO $ loadDeck "101"
-  ge <- liftIO $ runMessages =<< newGame
-    "01104"
-    (HashMap.fromList
-      [ (1, (lookupInvestigator iid1, deck1))
-      , (2, (lookupInvestigator iid2, deck2))
-      ]
-    )
+  CreateGamePost {..} <- requireCheckJsonBody
+  investigators <- (HashMap.fromList <$>) $ for (zip [1..] deckIds) $ \(userId, deckId) -> do
+    (iid, deck) <- liftIO $ loadDeck deckId
+    pure (userId, (lookupInvestigator iid, deck))
+  ge <- liftIO $ runMessages =<< newGame scenarioId investigators
   key <- runDB $ insert $ ArkhamGame ge
   pure (Entity key (ArkhamGame ge))
 

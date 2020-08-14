@@ -2,6 +2,8 @@ FROM heroku/heroku:18 as frontend
 
 # Frontend
 
+ENV LC_ALL=en_US.UTF-8
+
 RUN apt-get update
 RUN apt-get upgrade -y --assume-yes
 
@@ -31,6 +33,8 @@ FROM heroku/heroku:18 as dependencies
 
 # Yesod
 
+ENV LC_ALL=en_US.UTF-8
+
 RUN apt-get update
 RUN apt-get upgrade -y --assume-yes
 RUN apt-get install -y --assume-yes g++ gcc libc6-dev libffi-dev libgmp-dev make xz-utils zlib1g-dev git gnupg
@@ -57,7 +61,6 @@ COPY ./backend/arkham-core/package.yaml /opt/arkham/src/backend/arkham-core/pack
 COPY ./backend/arkham-cli/package.yaml /opt/arkham/src/backend/arkham-cli/package.yaml
 RUN stack --no-terminal setup
 
-ENV LC_ALL=en_US.UTF-8
 WORKDIR /opt/arkham/src/backend/arkham-api
 RUN sed -i '/arkham-core/d' package.yaml
 RUN stack install yesod-bin --install-ghc --ghc-options '-j4 +RTS -A64m -n2m -RTS'
@@ -66,6 +69,8 @@ RUN stack --no-terminal test --only-dependencies --ghc-options '-j4 +RTS -A64m -
 FROM heroku/heroku:18 as api
 
 # API
+
+ENV LC_ALL=en_US.UTF-8
 
 RUN apt-get update
 RUN apt-get upgrade -y --assume-yes
@@ -95,6 +100,8 @@ FROM heroku/heroku:18
 
 # App
 
+ENV LC_ALL=en_US.UTF-8
+
 RUN mkdir -p /opt/arkham/bin
 RUN mkdir -p /opt/arkham/src/backend/arkham-api
 RUN mkdir -p /opt/arkham/src/frontend
@@ -107,7 +114,6 @@ RUN useradd -ms /bin/bash yesod
 RUN chown -R yesod:yesod /opt/arkham
 USER yesod
 ENV PATH "$PATH:/opt/stack/bin:/opt/arkham/bin"
-ENV LC_ALL=en_US.UTF-8
 
 EXPOSE 3000
 

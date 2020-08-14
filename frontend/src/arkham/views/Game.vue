@@ -17,7 +17,6 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import * as Arkham from '@/arkham/types/Game';
 import { fetchGame, updateGame } from '@/arkham/api';
-import api from '@/api';
 import Scenario from '@/arkham/components/Scenario.vue';
 
 @Component({
@@ -35,7 +34,7 @@ export default class Game extends Vue {
     fetchGame(this.gameId).then(({ game, investigatorId }) => {
       this.game = game;
       this.investigatorId = investigatorId;
-      this.socket = new WebSocket(`${api.defaults.baseURL}/arkham/games/${this.gameId}`.replace(/https/, 'wss').replace(/http/, 'ws'));
+      this.socket = new WebSocket(`${window.location.protocol}//${window.location.hostname}/api/v1/arkham/games/${this.gameId}`.replace(/https/, 'wss').replace(/http/, 'ws'));
       this.socket.addEventListener('message', (event) => {
         Arkham.gameDecoder.decodePromise(JSON.parse(event.data))
           .then((updatedGame) => { this.game = updatedGame; });

@@ -335,9 +335,7 @@ isPlayable a@Attrs {..} windows c@(PlayerCard MkPlayerCard {..}) =
     && (pcCost <= investigatorResources)
     && none prevents investigatorModifiers
     && (not pcFast || (pcFast && cardInWindows windows c a))
-    && (pcAction `notElem` [Just Action.Evade] || not
-         (null investigatorEngagedEnemies)
-       )
+    && (pcAction /= Just Action.Evade || not (null investigatorEngagedEnemies))
  where
   none f = not . any f
   prevents (CannotPlay types _) = pcCardType `elem` types
@@ -391,7 +389,7 @@ drawOpeningHand a n = go n (a ^. discard, a ^. hand, coerce (a ^. deck))
   go 0 (d, h, cs) = (d, h, cs)
   go _ (_, _, []) =
     error "this should never happen, it means the deck was empty during drawing"
-  go m (d, h, (c : cs)) = if pcWeakness c
+  go m (d, h, c : cs) = if pcWeakness c
     then go m (c : d, h, cs)
     else go (m - 1) (d, PlayerCard c : h, cs)
 
@@ -476,6 +474,15 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     Resign iid | iid == investigatorId -> do
       unshiftMessage (InvestigatorResigned iid)
       pure $ a & resigned .~ True
+    InvestigatorDefeated iid | iid == investigatorId ->
+      a <$ unshiftMessage (InvestigatorWhenEliminated iid)
+    InvestigatorResigned iid | iid == investigatorId ->
+      a <$ unshiftMessage (InvestigatorWhenEliminated iid)
+    -- InvestigatorWhenEliminated is handled by the scenario
+    InvestigatorEliminated iid | iid == investigatorId -> do
+      unshiftMessage
+        (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
+      pure $ a & clues .~ 0 & resources .~ 0
     EnemyMove eid _ lid | lid == investigatorLocation -> do
       aloofEnemyIds <- HashSet.map unAloofEnemyId
         <$> asks (getSet investigatorLocation)

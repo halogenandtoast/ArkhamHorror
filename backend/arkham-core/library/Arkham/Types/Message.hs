@@ -142,6 +142,7 @@ data Message
   | InvestigatorDamage InvestigatorId Source Int Int
   | InvestigatorPlayAsset InvestigatorId AssetId [SlotType] [Trait]
   | DiscoverCluesAtLocation InvestigatorId LocationId Int
+  | PlaceClues Target Int
   | InvestigatorDiscoverClues InvestigatorId LocationId Int
   | DiscoverClues InvestigatorId LocationId Int
   | AfterDiscoverClues InvestigatorId LocationId Int
@@ -237,6 +238,8 @@ data Message
   | RemoveAbilitiesFrom Source
   | TakeControlOfAsset InvestigatorId AssetId
   | InvestigatorResigned InvestigatorId
+  | InvestigatorWhenEliminated InvestigatorId
+  | InvestigatorEliminated InvestigatorId
   | CheckFastWindow InvestigatorId [FastWindow]
   | CancelNext MessageType
   | Run [Message]

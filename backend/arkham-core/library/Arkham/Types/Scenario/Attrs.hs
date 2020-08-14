@@ -48,6 +48,8 @@ instance (ScenarioRunner env) => RunMessage env Attrs where
     InvestigatorResigned _ -> do
       investigatorIds <- asks (getSet @InScenarioInvestigatorId ())
       if null investigatorIds then a <$ unshiftMessage NoResolution else pure a
+    InvestigatorWhenEliminated iid -> do
+      a <$ unshiftMessage (InvestigatorEliminated iid)
     NoResolution ->
       error "The scenario should specify what to do for no resolution"
     Resolution _ ->

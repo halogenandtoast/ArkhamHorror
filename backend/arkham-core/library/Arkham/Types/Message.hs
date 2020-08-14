@@ -3,6 +3,7 @@ module Arkham.Types.Message
   , Question(..)
   , EncounterCardSource(..)
   , LeftoverCardStrategy(..)
+  , ChoosePlayerChoice(..)
   , MessageType(..)
   , messageType
   )
@@ -255,6 +256,8 @@ data Message
   | AddToHand InvestigatorId Card
   | EnemySetBearer EnemyId BearerId
   | CheckDefeated
+  | ChooseLeadInvestigator
+  | ChoosePlayer InvestigatorId ChoosePlayerChoice
   | Label Text [Message]
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -262,5 +265,10 @@ data Message
 data Question
   = ChooseOne [Message]
   | ChooseOneAtATime [Message]
+  deriving stock (Show, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
+data ChoosePlayerChoice
+  = SetLeadInvestigator
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)

@@ -197,7 +197,7 @@ newGame scenarioId investigatorsList = do
     $ map
         (\(i, d) -> LoadDeck (getInvestigatorId i) d)
         (HashMap.elems investigatorsList)
-    <> [SetupInvestigators]
+    <> [ChooseLeadInvestigator, SetupInvestigators]
     <> [ InvestigatorMulligan (getInvestigatorId i)
        | (i, _) <- HashMap.elems investigatorsList
        ]
@@ -625,6 +625,15 @@ runGameMessage msg g = case msg of
   Label _ msgs -> g <$ unshiftMessages msgs
   Continue _ -> pure g
   FocusCards cards -> pure $ g & focusedCards .~ cards
+  ChooseLeadInvestigator ->
+    if HashMap.size (g ^. investigators) == 1
+      then pure g
+      else g <$ unshiftMessage
+        ( Ask (g ^.leadInvestigatorId) $ ChooseOne
+          [ChoosePlayer iid SetLeadInvestigator | iid <- g ^. investigators . to HashMap.keys]
+        )
+  ChoosePlayer iid SetLeadInvestigator ->
+    pure $ g & leadInvestigatorId .~ iid
   SearchTopOfDeck iid EncounterDeckTarget n _traits strategy -> do
     let (cards, encounterDeck') = splitAt n $ unDeck (giEncounterDeck g)
     case strategy of

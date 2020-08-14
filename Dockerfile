@@ -15,6 +15,8 @@ RUN yarn global add @vue/cli
 
 RUN mkdir -p /opt/arkham/src/frontend
 
+ENV VUE_APP_API_HOST "https://arkham-horror-lcg.herokuapp.com"
+
 WORKDIR /opt/arkham/src/frontend
 COPY ./frontend/package.json /opt/arkham/src/frontend/package.json
 COPY ./frontend/babel.config.js /opt/arkham/src/frontend/babel.config.js
@@ -105,6 +107,7 @@ RUN useradd -ms /bin/bash yesod
 RUN chown -R yesod:yesod /opt/arkham
 USER yesod
 ENV PATH "$PATH:/opt/stack/bin:/opt/arkham/bin"
+ENV LC_ALL=en_US.UTF-8
 
 EXPOSE 3000
 

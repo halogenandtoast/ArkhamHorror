@@ -23,8 +23,9 @@ const actions: ActionTree<LoginState, RootState> = {
   authenticate({ dispatch }, credentials: Credentials): void {
     api.post<Authentication>('authenticate', credentials).then((authentication) => {
       dispatch('setCurrentUser', authentication.data);
-      if (router.currentRoute.query.nextUrl) {
-        router.push({ path: router.currentRoute.query.nextUrl });
+      const { nextUrl } = router.currentRoute.query;
+      if (nextUrl) {
+        router.push({ path: nextUrl as string });
       } else {
         router.push({ path: '/' });
       }

@@ -3,6 +3,11 @@
     <CardOverlay />
     <StatusBar :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
     <PlayerOrder :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
+    <PlayerSelector
+      :game="game"
+      :investigatorId="investigatorId"
+      @choose="$emit('choose', $event)"
+    />
     <div class="scenario-cards">
       <VictoryPile :game="game" />
       <div v-if="topOfEncounterDiscard" class="discard">
@@ -101,6 +106,7 @@ import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
 import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
+import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
 import Tab from '@/arkham/components/Tab.vue';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
@@ -120,6 +126,7 @@ import Location from '@/arkham/components/Location.vue';
     Tab,
     EncounterDeck,
     PlayerOrder,
+    PlayerSelector,
     CardOverlay,
     VictoryPile,
   },

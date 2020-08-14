@@ -22,6 +22,6 @@ export const fetchGameRaw = (gameId: string) => api
 export const updateGameRaw = (gameId: string, gameJson: string) => api
   .put(`arkham/games/${gameId}/raw`, { gameJson });
 
-export const newGame = (deckIds: string[], scenarioId: string, difficulty: Difficulty) => api
-  .post('arkham/games', { deckIds, scenarioId, difficulty })
+export const newGame = (deckIds: string[], campaignId: string, difficulty: Difficulty) => api
+  .post('arkham/games', { deckIds, campaignId, difficulty })
   .then((resp) => gameDecoder.decodePromise(resp.data));

@@ -690,6 +690,7 @@ runGameMessage msg g = case msg of
   Run msgs -> g <$ unshiftMessages msgs
   Label _ msgs -> g <$ unshiftMessages msgs
   Continue _ -> pure g
+  EndOfGame -> g <$ pushMessage NextCampaignStep
   StartScenario sid -> do
     let
       campaign' = fromJustNote "not a campaign" (g ^. campaign)

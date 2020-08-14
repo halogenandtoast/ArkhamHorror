@@ -7,7 +7,6 @@ import Arkham.Types.Classes
 import Arkham.Types.FastWindow
 import Arkham.Types.Helpers
 import Arkham.Types.Message
-import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
@@ -15,6 +14,7 @@ import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Lens.Micro
+import Safe (fromJustNote)
 
 newtype CoverUpMetadata = CoverUpMetadata { coverUpClues :: Int }
   deriving stock (Show, Generic)
@@ -46,21 +46,20 @@ coverUp uuid =
       )
     `With` CoverUpMetadata 3
 
-
 instance (TreacheryRunner env) => RunMessage env CoverUp where
-  runMessage msg (CoverUp (attrs@Attrs {..} `With` metadata@CoverUpMetadata {..}))
+  runMessage msg t@(CoverUp (attrs@Attrs {..} `With` metadata@CoverUpMetadata {..}))
     = case msg of
       Revelation iid tid | tid == treacheryId -> do
         unshiftMessages
           [ RemoveCardFromHand iid "01007"
           , AttachTreacheryToInvestigator tid iid
-          , AddModifier
-            (InvestigatorTarget iid)
-            (SufferTrauma 0 1 (TreacherySource tid))
           ]
         CoverUp . (`with` metadata) <$> runMessage
           msg
           (attrs & attachedInvestigator ?~ iid)
+      EndOfGame | coverUpClues > 0  ->
+        let investigator = fromJustNote "missing investigator" treacheryAttachedInvestigator
+         in t <$ unshiftMessage (SufferTrauma investigator 0 1)
       UseCardAbility iid (TreacherySource tid, _, 1, _, _)
         | tid == treacheryId -> do
           cluesToRemove <- withQueue $ \queue -> do

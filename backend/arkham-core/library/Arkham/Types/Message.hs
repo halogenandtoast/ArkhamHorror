@@ -56,6 +56,7 @@ data LeftoverCardStrategy = ShuffleBackIn | PutBackInAnyOrder
 
 data Message
   = Setup
+  | EndOfGame
   | StartCampaign
   | CampaignStep (Maybe CampaignStep)
   | NextCampaignStep
@@ -145,6 +146,8 @@ data Message
   -- ^ uses the internal method and then checks defeat
   | InvestigatorDoAssignDamage InvestigatorId Source Int Int
   -- ^ meant to be used internally by investigators
+  | GainXP InvestigatorId Int
+  | SufferTrauma InvestigatorId Int Int
   | AssetDamage AssetId Source Int Int
   | AssetDefeated AssetId
   | DiscardAsset AssetId

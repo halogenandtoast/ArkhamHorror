@@ -8,6 +8,7 @@ where
 
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
+import Arkham.Types.Difficulty
 import Arkham.Types.Game
 import Arkham.Types.ScenarioId
 import Arkham.Types.GameJson
@@ -51,6 +52,7 @@ getApiV1ArkhamGameR gameId = do
 data CreateGamePost = CreateGamePost
   { deckIds :: [String]
   , scenarioId :: ScenarioId
+  , difficulty :: Difficulty
   }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
@@ -61,7 +63,7 @@ postApiV1ArkhamCreateGameR = do
   investigators <- (HashMap.fromList <$>) $ for (zip [1..] deckIds) $ \(userId, deckId) -> do
     (iid, deck) <- liftIO $ loadDeck deckId
     pure (userId, (lookupInvestigator iid, deck))
-  ge <- liftIO $ runMessages =<< newGame scenarioId investigators
+  ge <- liftIO $ runMessages =<< newGame scenarioId investigators difficulty
   key <- runDB $ insert $ ArkhamGame ge
   pure (Entity key (ArkhamGame ge))
 

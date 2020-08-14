@@ -190,8 +190,9 @@ newGame
   :: MonadIO m
   => ScenarioId
   -> HashMap Int (Investigator, [PlayerCard])
+  -> Difficulty
   -> m Game
-newGame scenarioId investigatorsList = do
+newGame scenarioId investigatorsList difficulty' = do
   ref <-
     newIORef
     $ map
@@ -211,7 +212,7 @@ newGame scenarioId investigatorsList = do
   pure $ Game
     { giMessages = ref
     , giSeed = seed
-    , giScenario = lookupScenario scenarioId Easy
+    , giScenario = lookupScenario scenarioId difficulty'
     , giLocations = mempty
     , giEnemies = mempty
     , giAssets = mempty

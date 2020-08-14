@@ -11,6 +11,10 @@
     "lint:template": "vue-type-check --workspace ./ --srcDir ./src"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.30",
+    "@fortawesome/free-brands-svg-icons": "^5.14.0",
+    "@fortawesome/free-solid-svg-icons": "^5.14.0",
+    "@fortawesome/vue-fontawesome": "^0.1.10",
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "register-service-worker": "^1.6.2",

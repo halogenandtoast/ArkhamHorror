@@ -57,22 +57,18 @@ export default class NewCampaign extends Vue {
     {
       id: '01',
       name: 'Night of the Zealot',
-      scenarioId: '01104',
     },
     {
       id: '02',
       name: 'The Dunwich Legacy',
-      scenarioId: '01104',
     },
     {
       id: '03',
       name: 'The Path to Carcosa',
-      scenarioId: '01104',
     },
     {
       id: '04',
       name: 'The Forgotten Age',
-      scenarioId: '01104',
     },
   ]
 
@@ -105,7 +101,7 @@ export default class NewCampaign extends Vue {
   start() {
     const mcampaign = this.campaigns.find((campaign) => campaign.id === this.selectedCampaign);
     if (mcampaign) {
-      newGame(this.deckIds, mcampaign.scenarioId, this.selectedDifficulty)
+      newGame(this.deckIds, mcampaign.id, this.selectedDifficulty)
         .then((game) => this.$router.push(`/games/${game.id}`));
     }
   }

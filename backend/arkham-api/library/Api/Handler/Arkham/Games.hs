@@ -10,7 +10,7 @@ import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Difficulty
 import Arkham.Types.Game
-import Arkham.Types.ScenarioId
+import Arkham.Types.CampaignId
 import Arkham.Types.GameJson
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator
@@ -51,7 +51,7 @@ getApiV1ArkhamGameR gameId = do
 
 data CreateGamePost = CreateGamePost
   { deckIds :: [String]
-  , scenarioId :: ScenarioId
+  , campaignId :: CampaignId
   , difficulty :: Difficulty
   }
   deriving stock (Show, Generic)
@@ -63,7 +63,7 @@ postApiV1ArkhamCreateGameR = do
   investigators <- (HashMap.fromList <$>) $ for (zip [1..] deckIds) $ \(userId, deckId) -> do
     (iid, deck) <- liftIO $ loadDeck deckId
     pure (userId, (lookupInvestigator iid, deck))
-  ge <- liftIO $ runMessages =<< newGame scenarioId investigators difficulty
+  ge <- liftIO $ runMessages =<< newCampaign campaignId investigators difficulty
   key <- runDB $ insert $ ArkhamGame ge
   pure (Entity key (ArkhamGame ge))
 

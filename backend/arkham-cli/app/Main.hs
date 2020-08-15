@@ -5,6 +5,7 @@ module Main where
 
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
+import Arkham.Types.Difficulty
 import Arkham.Types.Game
 import Arkham.Types.GameJson
 import Arkham.Types.Helpers
@@ -110,9 +111,14 @@ main = do
     Nothing -> do
       deck <- loadDeck deckId
       pPrint deck
-      ge <- runGame =<< newGame
-        "01104"
-        (HashMap.fromList [(1, (lookupInvestigator investigatorId, deck))])
+      ge <-
+        runGame
+          =<< newGame
+                "01104"
+                (HashMap.fromList
+                  [(1, (lookupInvestigator investigatorId, deck))]
+                )
+                Easy
       pPrint ge
     Just gid -> do
       gj <- loadFromDB gid

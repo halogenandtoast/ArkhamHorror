@@ -60,6 +60,7 @@ ul.tabs__header {
   display: block;
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 ul.tabs__header > li {
@@ -70,7 +71,7 @@ ul.tabs__header > li {
   color: white;
   padding: 5px 10px;
   filter: contrast(50%);
-  border-radius: 5px;
+  border-radius: 5px 5px 0 0;
 }
 
 ul.tabs__header > li.tab--selected {

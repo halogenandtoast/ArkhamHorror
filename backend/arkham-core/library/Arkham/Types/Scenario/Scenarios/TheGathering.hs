@@ -2,9 +2,9 @@
 module Arkham.Types.Scenario.Scenarios.TheGathering where
 
 import Arkham.Json
+import Arkham.Types.CampaignLog
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.CampaignLog
 import Arkham.Types.Difficulty
 import Arkham.Types.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Types.EncounterSet as EncounterSet
@@ -151,6 +151,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
                   \ Alone, we are surely doomed…but together, we can stop it.”"
                 ]
               , Record YourHouseHasBurnedToTheGround
+              , SufferTrauma leadInvestigatorId 0 1
               , EndOfGame
               ]
           ]
@@ -173,6 +174,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
                   \ events…but she doesn’t seem to trust you very much."
                 ]
               , Record YourHouseIsStillStanding
+              , GainXP leadInvestigatorId 1
               , EndOfGame
               ]
           ]

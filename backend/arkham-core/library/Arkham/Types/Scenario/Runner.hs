@@ -11,5 +11,7 @@ type ScenarioRunner env
     , HasSet InScenarioInvestigatorId () env
     , HasId LeadInvestigatorId () env
     , HasSet InvestigatorId () env
+    , HasRecord env
+    , HasCount PlayerCount () env
     )
 

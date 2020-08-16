@@ -1,8 +1,13 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
-module Arkham.Types.Classes where
+module Arkham.Types.Classes
+  ( module Arkham.Types.Classes
+  , module Arkham.Types.Classes.HasRecord
+  )
+where
 
 import Arkham.Types.Ability
+import Arkham.Types.Classes.HasRecord
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.Message

@@ -38,6 +38,9 @@ data Campaign
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+instance HasRecord Campaign where
+  hasRecord key = hasRecord key . campaignLog . campaignAttrs
+
 instance (CampaignRunner env) => RunMessage env Campaign where
   runMessage msg = \case
     NightOfTheZealot' x -> NightOfTheZealot' <$> runMessage msg x

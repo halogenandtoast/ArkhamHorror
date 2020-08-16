@@ -41,3 +41,4 @@ library:
     - containers
     - text
     - vector
+    - MonadRandom

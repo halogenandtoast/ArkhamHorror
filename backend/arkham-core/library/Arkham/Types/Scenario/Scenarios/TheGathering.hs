@@ -2,7 +2,7 @@
 module Arkham.Types.Scenario.Scenarios.TheGathering where
 
 import Arkham.Json
-import Arkham.Types.CampaignLog
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty

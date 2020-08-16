@@ -73,6 +73,13 @@ allEncounterCards = HashMap.fromList
   [ ("01116", ghoulPriest)
   , ("01118", fleshEater)
   , ("01119", icyGhoul)
+  , ("01135", huntingShadow)
+  , ("01136", falseLead)
+  , ("01137", wolfManDrew)
+  , ("01138", hermanCollins)
+  , ("01139", peterWarren)
+  , ("01140", victoriaDevereux)
+  , ("01141", ruthTurner)
   , ("01159", swarmOfRats)
   , ("01160", ghoulMinion)
   , ("01161", ravenousGhoul)
@@ -83,6 +90,12 @@ allEncounterCards = HashMap.fromList
   , ("01166", ancientEvils)
   , ("01167", cryptChill)
   , ("01168", obscuringFog)
+  , ("01169", acolyte)
+  , ("01170", wizardOfTheOrder)
+  , ("01171", mysteriousChanting)
+  , ("01172", huntingNightgaunt)
+  , ("01173", onWingsOfDarkness)
+  , ("01174", lockedDoor)
   ]
 
 ghoulPriest :: CardId -> EncounterCard
@@ -98,6 +111,35 @@ fleshEater cardId =
 icyGhoul :: CardId -> EncounterCard
 icyGhoul cardId =
   (enemy cardId "01119" "Icy Ghoul") { ecTraits = [Humanoid, Monster, Ghoul] }
+
+huntingShadow :: CardId -> EncounterCard
+huntingShadow cardId = (treachery cardId "01135" "Hunting Shadow")
+  { ecTraits = [Curse]
+  , ecKeywords = [Keyword.Peril]
+  }
+
+falseLead :: CardId -> EncounterCard
+falseLead cardId = treachery cardId "01136" "False Lead"
+
+wolfManDrew :: CardId -> EncounterCard
+wolfManDrew cardId =
+  (enemy cardId "01137" "\"Wolf-Man\" Drew") { ecTraits = [Humanoid, Cultist] }
+
+hermanCollins :: CardId -> EncounterCard
+hermanCollins cardId =
+  (enemy cardId "01138" "Herman Collins") { ecTraits = [Humanoid, Cultist] }
+
+peterWarren :: CardId -> EncounterCard
+peterWarren cardId =
+  (enemy cardId "01139" "Peter Warren") { ecTraits = [Humanoid, Cultist] }
+
+victoriaDevereux :: CardId -> EncounterCard
+victoriaDevereux cardId =
+  (enemy cardId "01140" "Victoria Devereux") { ecTraits = [Humanoid, Cultist] }
+
+ruthTurner :: CardId -> EncounterCard
+ruthTurner cardId =
+  (enemy cardId "01141" "Ruth Turner") { ecTraits = [Humanoid, Cultist] }
 
 swarmOfRats :: CardId -> EncounterCard
 swarmOfRats cardId = (enemy cardId "01159" "Swarm of Rats")
@@ -142,3 +184,30 @@ cryptChill cardId =
 obscuringFog :: CardId -> EncounterCard
 obscuringFog cardId =
   (treachery cardId "01168" "Obscuring Fog") { ecTraits = [Hazard] }
+
+acolyte :: CardId -> EncounterCard
+acolyte cardId =
+  (enemy cardId "01169" "Acolyte") { ecTraits = [Humanoid, Cultist] }
+
+wizardOfTheOrder :: CardId -> EncounterCard
+wizardOfTheOrder cardId = (enemy cardId "01170" "Wizard of the Order")
+  { ecTraits = [Humanoid, Cultist]
+  , ecKeywords = [Keyword.Retaliate]
+  }
+
+mysteriousChanting :: CardId -> EncounterCard
+mysteriousChanting cardId =
+  (treachery cardId "01171" "Mysterious Chanting") { ecTraits = [Hex] }
+
+huntingNightgaunt :: CardId -> EncounterCard
+huntingNightgaunt cardId = (enemy cardId "01172" "Hunting Nightgaunt")
+  { ecTraits = [Monster, Nightgaunt]
+  , ecKeywords = [Keyword.Hunter]
+  }
+
+onWingsOfDarkness :: CardId -> EncounterCard
+onWingsOfDarkness cardId = treachery cardId "01173" "On Wings of Darkness"
+
+lockedDoor :: CardId -> EncounterCard
+lockedDoor cardId =
+  (treachery cardId "01174" "Locked Door") { ecTraits = [Obstacle] }

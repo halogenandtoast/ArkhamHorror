@@ -328,6 +328,11 @@ newGame scenarioId investigatorsList difficulty' = do
     (\(i, _) -> (getInvestigatorId i, i))
     (HashMap.elems investigatorsList)
 
+instance HasRecord Game where
+  hasRecord key g = case g ^. campaign of
+    Nothing -> False
+    Just c -> hasRecord key c
+
 instance HasCard InvestigatorId Game where
   getCard iid cardId g = getCard () cardId (getInvestigator iid g)
 

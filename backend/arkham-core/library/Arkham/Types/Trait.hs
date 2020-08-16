@@ -57,6 +57,7 @@ data Trait
   | Ghoul
   | Grant
   | Hazard
+  | Hex
   | Humanoid
   | Hunter
   | Illicit
@@ -74,6 +75,8 @@ data Trait
   | Miskatonic
   | Monster
   | Mystery
+  | Nightgaunt
+  | Obstacle
   | Occult
   | Omen
   | Pact

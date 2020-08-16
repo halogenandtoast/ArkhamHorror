@@ -42,7 +42,7 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
         liftIO $ lookupEncounterCard "01116" . CardId <$> nextRandom
       let
         startingLocationMessages = if houseBurnedDown
-          then [RevealLocation "01125", MoveAllTo "01124"]
+          then [RevealLocation "01125", MoveAllTo "01125"]
           else
             [PlaceLocation "01124", RevealLocation "01124", MoveAllTo "01124"]
         ghoulPriestMessages =

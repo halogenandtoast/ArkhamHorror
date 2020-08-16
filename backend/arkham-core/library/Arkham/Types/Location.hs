@@ -15,9 +15,20 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Cards.Attic
 import Arkham.Types.Location.Cards.Cellar
+import Arkham.Types.Location.Cards.DowntownArkhamAsylum
+import Arkham.Types.Location.Cards.DowntownFirstBankOfArkham
+import Arkham.Types.Location.Cards.Easttown
+import Arkham.Types.Location.Cards.Graveyard
 import Arkham.Types.Location.Cards.Hallway
+import Arkham.Types.Location.Cards.MiskatonicUniversity
+import Arkham.Types.Location.Cards.Northside
 import Arkham.Types.Location.Cards.Parlor
+import Arkham.Types.Location.Cards.Rivertown
+import Arkham.Types.Location.Cards.SouthsideHistoricalSociety
+import Arkham.Types.Location.Cards.SouthsideMasBoardingHouse
+import Arkham.Types.Location.Cards.StMarysHospital
 import Arkham.Types.Location.Cards.Study
+import Arkham.Types.Location.Cards.YourHouse
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.Query
@@ -39,7 +50,23 @@ isBlocked = locationBlocked . locationAttrs
 allLocations :: HashMap LocationId Location
 allLocations = HashMap.fromList $ map
   (\s -> (locationId . locationAttrs $ s, s))
-  [Study' study, Hallway' hallway, Attic' attic, Cellar' cellar, Parlor' parlor]
+  [ Study' study
+  , Hallway' hallway
+  , Attic' attic
+  , Cellar' cellar
+  , Parlor' parlor
+  , YourHouse' yourHouse
+  , Rivertown' rivertown
+  , SouthsideHistoricalSociety' southsideHistoricalSociety
+  , SouthsideMasBoardingHouse' southsideMasBoardingHouse
+  , StMarysHospital' stMarysHospital
+  , MiskatonicUniversity' miskatonicUniversity
+  , DowntownFirstBankOfArkham' downtownFirstBankOfArkham
+  , DowntownArkhamAsylum' downtownArkhamAsylum
+  , Easttown' easttown
+  , Graveyard' graveyard
+  , Northside' northside
+  ]
 
 instance HasAbilities Location where
   getAbilities = locationAbilities . locationAttrs
@@ -69,6 +96,17 @@ data Location
   | Attic' Attic
   | Cellar' Cellar
   | Parlor' Parlor
+  | YourHouse' YourHouse
+  | Rivertown' Rivertown
+  | SouthsideHistoricalSociety' SouthsideHistoricalSociety
+  | SouthsideMasBoardingHouse' SouthsideMasBoardingHouse
+  | StMarysHospital' StMarysHospital
+  | MiskatonicUniversity' MiskatonicUniversity
+  | DowntownFirstBankOfArkham' DowntownFirstBankOfArkham
+  | DowntownArkhamAsylum' DowntownArkhamAsylum
+  | Easttown' Easttown
+  | Graveyard' Graveyard
+  | Northside' Northside
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -79,6 +117,17 @@ locationAttrs = \case
   Attic' attrs -> coerce attrs
   Cellar' attrs -> coerce attrs
   Parlor' attrs -> coerce attrs
+  YourHouse' attrs -> coerce attrs
+  Rivertown' attrs -> coerce attrs
+  SouthsideHistoricalSociety' attrs -> coerce attrs
+  SouthsideMasBoardingHouse' attrs -> coerce attrs
+  StMarysHospital' attrs -> coerce attrs
+  MiskatonicUniversity' attrs -> coerce attrs
+  DowntownFirstBankOfArkham' attrs -> coerce attrs
+  DowntownArkhamAsylum' attrs -> coerce attrs
+  Easttown' attrs -> coerce attrs
+  Graveyard' attrs -> coerce attrs
+  Northside' attrs -> coerce attrs
 
 instance (LocationRunner env) => RunMessage env Location where
   runMessage msg = \case
@@ -87,3 +136,17 @@ instance (LocationRunner env) => RunMessage env Location where
     Attic' x -> Attic' <$> runMessage msg x
     Cellar' x -> Cellar' <$> runMessage msg x
     Parlor' x -> Parlor' <$> runMessage msg x
+    YourHouse' x -> YourHouse' <$> runMessage msg x
+    Rivertown' x -> Rivertown' <$> runMessage msg x
+    SouthsideHistoricalSociety' x ->
+      SouthsideHistoricalSociety' <$> runMessage msg x
+    SouthsideMasBoardingHouse' x ->
+      SouthsideMasBoardingHouse' <$> runMessage msg x
+    StMarysHospital' x -> StMarysHospital' <$> runMessage msg x
+    MiskatonicUniversity' x -> MiskatonicUniversity' <$> runMessage msg x
+    DowntownFirstBankOfArkham' x ->
+      DowntownFirstBankOfArkham' <$> runMessage msg x
+    DowntownArkhamAsylum' x -> DowntownArkhamAsylum' <$> runMessage msg x
+    Easttown' x -> Easttown' <$> runMessage msg x
+    Graveyard' x -> Graveyard' <$> runMessage msg x
+    Northside' x -> Northside' <$> runMessage msg x

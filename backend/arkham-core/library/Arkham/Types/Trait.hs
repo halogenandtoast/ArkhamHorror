@@ -9,6 +9,7 @@ import Data.Aeson
 data Trait
   = Agency
   | Ally
+  | Arkham
   | Armor
   | Artist
   | Assistant
@@ -19,6 +20,7 @@ data Trait
   | Blunder
   | Bold
   | Boon
+  | Central
   | Charm
   | Chosen
   | Civic

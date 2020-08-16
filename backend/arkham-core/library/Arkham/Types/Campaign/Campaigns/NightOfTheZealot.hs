@@ -10,10 +10,10 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Message
 import qualified Arkham.Types.Token as Token
-import Arkham.Types.TokenPool
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
+import Data.Vector ((!?))
 import Lens.Micro
 
 newtype NightOfTheZealot = NightOfTheZealot Attrs
@@ -22,7 +22,12 @@ newtype NightOfTheZealot = NightOfTheZealot Attrs
 nightOfTheZealot :: Difficulty -> NightOfTheZealot
 nightOfTheZealot difficulty =
   NightOfTheZealot
-    $ (baseAttrs (CampaignId "01") "Night of the Zealot" difficulty tokenPool)
+    $ (baseAttrs
+        (CampaignId "01")
+        "Night of the Zealot"
+        difficulty
+        chaosBagContents
+      )
         { campaignSteps = fromList
           [ PrologueStep
           , ScenarioStep "01104"
@@ -31,7 +36,7 @@ nightOfTheZealot difficulty =
           ]
         }
  where
-  tokenPool = TokenPool $ case difficulty of
+  chaosBagContents = case difficulty of
     Easy ->
       [ Token.PlusOne
       , Token.PlusOne
@@ -110,7 +115,10 @@ nightOfTheZealot difficulty =
 
 instance (CampaignRunner env) => RunMessage env NightOfTheZealot where
   runMessage msg c@(NightOfTheZealot attrs@Attrs {..}) = case msg of
-    StartCampaign -> do
+    StartCampaign ->
+      c <$ unshiftMessage (CampaignStep $ campaignSteps !? campaignStep)
+    CampaignStep Nothing -> c <$ unshiftMessage GameOver -- TODO: move to generic
+    CampaignStep (Just PrologueStep) -> do
       investigatorIds <- HashSet.toList <$> asks (getSet ())
       c <$ unshiftMessages
         [ AskMap
@@ -119,15 +127,32 @@ instance (CampaignRunner env) => RunMessage env NightOfTheZealot where
             , ChooseOne
               [ Run
                   [ Continue "Continue"
-                  , FlavorText (Just "The Ghouls Hunger...") ""
+                  , FlavorText
+                    (Just "The Ghouls Hunger...")
+                    [ "Friday, September 18, 1925. Arkham, Massachusetts. It is\
+                      \ the end of a long and abnormally hot summer. The first hints\
+                      \ of autumn beckon, but a heavy heat persists, relentless. A\
+                      \ silent, unspoken anger grips the town. Tempers are short, and\
+                      \ in the last week alone there have been numerous reports of\
+                      \ townspeople coming to heated, violent blows with one another\
+                      \ over simple misunderstandings."
+                    , "And now, a call from James Hankerson. He claims to have\
+                      \ found a dismembered body in his barn."
+                    , "Blaming the weather would be too easy. There is something\
+                      \ wrong with this town, and not a whole lot this old soothsayer\
+                      \ can do to stop the slide. My auguries indicate a small group of\
+                      \ investigators will soon take note of these strange happenings\
+                      \ and set forth to make things right. I’ll be watching their\
+                      \ progress…but I won’t be holding my breath."
+                    ]
                   ]
               ]
             )
           | iid <- investigatorIds
           ]
-        , StepCampaign
+        , NextCampaignStep
         ]
-    StepCampaign -> if length campaignSteps > campaignStep - 1
-      then c <$ unshiftMessage GameOver
-      else pure $ NightOfTheZealot $ attrs & step +~ 1
+    CampaignStep (Just (ScenarioStep sid)) -> do
+      c <$ unshiftMessage (StartScenario sid)
+    NextCampaignStep -> pure $ NightOfTheZealot $ attrs & step +~ 1
     _ -> NightOfTheZealot <$> runMessage msg attrs

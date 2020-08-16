@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8d07f5b59a840f883577dfe9e805dbdc9060b90dd697324ed3a6899fe6ad6d7d
+-- hash: be4322a18f12048c07419fd3b2ccce3f22e931cb945545842a6db5f3b6551268
 
 name:           arkham-core
 version:        0.0.0
@@ -176,7 +176,6 @@ library
       Arkham.Types.Stats
       Arkham.Types.Target
       Arkham.Types.Token
-      Arkham.Types.TokenPool
       Arkham.Types.TokenResponse
       Arkham.Types.Trait
       Arkham.Types.Treachery
@@ -213,4 +212,5 @@ library
     , text
     , unordered-containers >=0.2.11.0
     , uuid
+    , vector
   default-language: Haskell2010

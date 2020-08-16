@@ -1,7 +1,14 @@
 <template>
   <div id="game" class="game" v-if="ready">
+    <Campaign
+      v-if="game.currentData.campaign"
+      :game="game"
+      :investigatorId="investigatorId"
+      @choose="choose"
+      @update="update"
+    />
     <Scenario
-      v-if="!game.currentData.gameOver"
+      v-else-if="!game.currentData.gameOver"
       :game="game"
       :investigatorId="investigatorId"
       @choose="choose"
@@ -18,9 +25,10 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import * as Arkham from '@/arkham/types/Game';
 import { fetchGame, updateGame } from '@/arkham/api';
 import Scenario from '@/arkham/components/Scenario.vue';
+import Campaign from '@/arkham/components/Campaign.vue';
 
 @Component({
-  components: { Scenario },
+  components: { Scenario, Campaign },
 })
 export default class Game extends Vue {
   @Prop(String) readonly gameId!: string;

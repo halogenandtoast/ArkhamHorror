@@ -40,3 +40,4 @@ library:
     - random-shuffle
     - containers
     - text
+    - vector

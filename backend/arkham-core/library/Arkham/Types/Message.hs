@@ -15,6 +15,7 @@ import Arkham.Types.ActId
 import Arkham.Types.Action
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
+import Arkham.Types.CampaignStep
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
@@ -23,6 +24,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
+import Arkham.Types.ScenarioId
 import Arkham.Types.SkillTestResult
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
@@ -54,9 +56,11 @@ data LeftoverCardStrategy = ShuffleBackIn | PutBackInAnyOrder
 data Message
   = Setup
   | StartCampaign
-  | StepCampaign
+  | CampaignStep (Maybe CampaignStep)
+  | NextCampaignStep
+  | StartScenario ScenarioId
   | SetupInvestigators
-  | FlavorText (Maybe Text) Text
+  | FlavorText (Maybe Text) [Text]
   | InvestigatorMulligan InvestigatorId
   | MulliganCard InvestigatorId CardId
   | FinishedWithMulligan InvestigatorId

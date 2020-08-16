@@ -3,6 +3,7 @@ import { Investigator, investigatorDecoder } from '@/arkham/types/Investigator';
 import { Enemy, enemyDecoder } from '@/arkham/types/Enemy';
 import { Location, locationDecoder } from '@/arkham/types/Location';
 import { Scenario, scenarioDecoder } from '@/arkham/types/Scenario';
+import { Campaign, campaignDecoder } from '@/arkham/types/Campaign';
 import { ChaosToken, chaosTokenDecoder } from '@/arkham/types/ChaosToken';
 import { Act, actDecoder } from '@/arkham/types/Act';
 import { Agenda, agendaDecoder } from '@/arkham/types/Agenda';
@@ -81,7 +82,8 @@ export interface GameState {
   locations: Record<string, Location>;
   phase: Phase;
   question: Record<string, Question>;
-  scenario: Scenario;
+  scenario: Scenario | null;
+  campaign: Campaign | null;
   skillTest: SkillTest | null;
   treacheries: Record<string, Treachery>;
   focusedCards: Card[];
@@ -104,7 +106,8 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     locations: JsonDecoder.dictionary<Location>(locationDecoder, 'Dict<UUID, Location>'),
     phase: phaseDecoder,
     question: JsonDecoder.dictionary<Question>(questionDecoder, 'Dict<InvestigatorId, Question>'),
-    scenario: scenarioDecoder,
+    scenario: JsonDecoder.nullable(scenarioDecoder),
+    campaign: JsonDecoder.nullable(campaignDecoder),
     skillTest: JsonDecoder.nullable(skillTestDecoder),
     treacheries: JsonDecoder.dictionary<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),
     focusedCards: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),

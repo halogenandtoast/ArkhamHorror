@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 08ac8d21c4ecb31dbc289a94f48bfb3b25154cee2852ed9a9b08f492494a14f9
+-- hash: 8d07f5b59a840f883577dfe9e805dbdc9060b90dd697324ed3a6899fe6ad6d7d
 
 name:           arkham-core
 version:        0.0.0
@@ -54,6 +54,14 @@ library
       Arkham.Types.Asset.Runner
       Arkham.Types.Asset.Uses
       Arkham.Types.AssetId
+      Arkham.Types.Campaign
+      Arkham.Types.Campaign.Attrs
+      Arkham.Types.Campaign.Campaigns.NightOfTheZealot
+      Arkham.Types.Campaign.Campaigns.TheDunwichLegacy
+      Arkham.Types.Campaign.Runner
+      Arkham.Types.CampaignId
+      Arkham.Types.CampaignLog
+      Arkham.Types.CampaignStep
       Arkham.Types.Card
       Arkham.Types.Card.CardCode
       Arkham.Types.Card.Class
@@ -168,6 +176,7 @@ library
       Arkham.Types.Stats
       Arkham.Types.Target
       Arkham.Types.Token
+      Arkham.Types.TokenPool
       Arkham.Types.TokenResponse
       Arkham.Types.Trait
       Arkham.Types.Treachery

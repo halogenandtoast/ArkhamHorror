@@ -5,6 +5,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Act
 import Arkham.Types.ActId
 import Arkham.Types.Agenda
+import Arkham.Types.Campaign
 import Arkham.Types.AgendaId
 import Arkham.Types.Asset
 import Arkham.Types.AssetId
@@ -28,7 +29,8 @@ import ClassyPrelude
 data GameJson = GameJson
   { gMessages :: [Message]
   , gSeed :: Int
-  , gScenario :: Scenario
+  , gCampaign :: Maybe Campaign
+  , gScenario :: Maybe Scenario
   , gLocations :: HashMap LocationId Location
   , gInvestigators :: HashMap InvestigatorId Investigator
   , gPlayers :: HashMap Int InvestigatorId

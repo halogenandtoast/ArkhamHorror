@@ -305,7 +305,6 @@ instance HasSet AssetId () Investigator where
 instance HasLocation Investigator where
   locationOf = investigatorLocation . investigatorAttrs
 
-
 instance HasSkill Investigator where
   getSkill skillType = skillValueFor skillType Nothing [] . investigatorAttrs
 
@@ -353,7 +352,7 @@ isDefeated :: Investigator -> Bool
 isDefeated = view defeated . investigatorAttrs
 
 hasClues :: Investigator -> Bool
-hasClues i = (investigatorAttrs i) ^. clues > 0
+hasClues i = investigatorAttrs i ^. clues > 0
 
 remainingHealth :: Investigator -> Int
 remainingHealth i = investigatorHealth attrs - investigatorHealthDamage attrs

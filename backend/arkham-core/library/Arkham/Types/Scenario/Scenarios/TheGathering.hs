@@ -184,4 +184,4 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
               ]
           ]
         )
-    _ -> pure s
+    _ -> TheGathering <$> runMessage msg attrs

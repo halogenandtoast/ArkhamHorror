@@ -4,6 +4,7 @@
 module Arkham.Types.Game
   ( runMessages
   , newGame
+  , newCampaign
   , toInternalGame
   , toInternalGame'
   , Game(..)
@@ -17,6 +18,8 @@ import Arkham.Types.Agenda
 import Arkham.Types.AgendaId
 import Arkham.Types.Asset
 import Arkham.Types.AssetId
+import Arkham.Types.Campaign
+import Arkham.Types.CampaignId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
@@ -71,7 +74,8 @@ import Text.Read hiding (get)
 data Game = Game
   { giMessages :: IORef [Message]
   , giSeed :: Int
-  , giScenario :: Scenario
+  , giCampaign :: Maybe Campaign
+  , giScenario :: Maybe Scenario
   , giLocations :: HashMap LocationId Location
   , giInvestigators :: HashMap InvestigatorId Investigator
   , giPlayers :: HashMap Int InvestigatorId
@@ -177,14 +181,70 @@ activeInvestigatorId :: Lens' Game InvestigatorId
 activeInvestigatorId =
   lens giActiveInvestigatorId $ \m x -> m { giActiveInvestigatorId = x }
 
-scenario :: Lens' Game Scenario
+scenario :: Lens' Game (Maybe Scenario)
 scenario = lens giScenario $ \m x -> m { giScenario = x }
+
+campaign :: Lens' Game (Maybe Campaign)
+campaign = lens giCampaign $ \m x -> m { giCampaign = x }
 
 skillTest :: Lens' Game (Maybe SkillTest)
 skillTest = lens giSkillTest $ \m x -> m { giSkillTest = x }
 
 activeInvestigator :: Game -> Investigator
 activeInvestigator g = getInvestigator (g ^. activeInvestigatorId) g
+
+newCampaign
+  :: MonadIO m
+  => CampaignId
+  -> HashMap Int (Investigator, [PlayerCard])
+  -> Difficulty
+  -> m Game
+newCampaign campaignId investigatorsList difficulty' = do
+  let campaign' = lookupCampaign campaignId difficulty'
+  ref <- newIORef [StartCampaign]
+  mseed <- liftIO $ lookupEnv "SEED"
+  seed <- maybe
+    (liftIO $ randomIO @Int)
+    (pure . fromJustNote "invalid seed" . readMaybe)
+    mseed
+  liftIO $ setStdGen (mkStdGen seed)
+  pure $ Game
+    { giMessages = ref
+    , giSeed = seed
+    , giCampaign = Just campaign'
+    , giScenario = Nothing
+    , giLocations = mempty
+    , giEnemies = mempty
+    , giAssets = mempty
+    , giInvestigators = investigatorsMap
+    , giPlayers = playersMap
+    , giActiveInvestigatorId = initialInvestigatorId
+    , giLeadInvestigatorId = initialInvestigatorId
+    , giPhase = InvestigationPhase
+    , giEncounterDeck = mempty
+    , giDiscard = mempty
+    , giSkillTest = Nothing
+    , giAgendas = mempty
+    , giTreacheries = mempty
+    , giActs = mempty
+    , giChaosBag = Bag []
+    , giGameOver = False
+    , giUsedAbilities = mempty
+    , giFocusedCards = mempty
+    , giActiveCard = Nothing
+    , giPlayerOrder = map
+      (getInvestigatorId . fst)
+      (HashMap.elems investigatorsList)
+    , giVictory = mempty
+    }
+ where
+  initialInvestigatorId =
+    fromJustNote "No investigators" . headMay . HashMap.keys $ investigatorsMap
+  playersMap = HashMap.map (getInvestigatorId . fst) investigatorsList
+  investigatorsMap = HashMap.fromList $ map
+    (\(i, _) -> (getInvestigatorId i, i))
+    (HashMap.elems investigatorsList)
+
 
 newGame
   :: MonadIO m
@@ -212,7 +272,8 @@ newGame scenarioId investigatorsList difficulty' = do
   pure $ Game
     { giMessages = ref
     , giSeed = seed
-    , giScenario = lookupScenario scenarioId difficulty'
+    , giCampaign = Nothing
+    , giScenario = Just (lookupScenario scenarioId difficulty')
     , giLocations = mempty
     , giEnemies = mempty
     , giAssets = mempty
@@ -626,15 +687,15 @@ runGameMessage msg g = case msg of
   Label _ msgs -> g <$ unshiftMessages msgs
   Continue _ -> pure g
   FocusCards cards -> pure $ g & focusedCards .~ cards
-  ChooseLeadInvestigator ->
-    if HashMap.size (g ^. investigators) == 1
-      then pure g
-      else g <$ unshiftMessage
-        ( Ask (g ^.leadInvestigatorId) $ ChooseOne
-          [ChoosePlayer iid SetLeadInvestigator | iid <- g ^. investigators . to HashMap.keys]
-        )
-  ChoosePlayer iid SetLeadInvestigator ->
-    pure $ g & leadInvestigatorId .~ iid
+  ChooseLeadInvestigator -> if HashMap.size (g ^. investigators) == 1
+    then pure g
+    else g <$ unshiftMessage
+      (Ask (g ^. leadInvestigatorId) $ ChooseOne
+        [ ChoosePlayer iid SetLeadInvestigator
+        | iid <- g ^. investigators . to HashMap.keys
+        ]
+      )
+  ChoosePlayer iid SetLeadInvestigator -> pure $ g & leadInvestigatorId .~ iid
   SearchTopOfDeck iid EncounterDeckTarget n _traits strategy -> do
     let (cards, encounterDeck') = splitAt n $ unDeck (giEncounterDeck g)
     case strategy of
@@ -1094,9 +1155,14 @@ runGameMessage msg g = case msg of
     in pure $ g & treacheries %~ HashMap.delete tid & discard %~ (card :)
   _ -> pure g
 
+instance (RunMessage Game a) => RunMessage Game (Maybe a) where
+  runMessage _ Nothing = pure Nothing
+  runMessage msg (Just a) = Just <$> runMessage msg a
+
 instance RunMessage Game Game where
   runMessage msg g =
-    traverseOf scenario (runMessage msg) g
+    traverseOf campaign (runMessage msg) g
+      >>= traverseOf scenario (runMessage msg)
       >>= traverseOf (acts . traverse) (runMessage msg)
       >>= traverseOf (agendas . traverse) (runMessage msg)
       >>= traverseOf (treacheries . traverse) (runMessage msg)
@@ -1114,6 +1180,7 @@ toExternalGame Game {..} mq = do
   pure $ GameJson
     { gMessages = queue
     , gSeed = giSeed
+    , gCampaign = giCampaign
     , gScenario = giScenario
     , gLocations = giLocations
     , gInvestigators = giInvestigators
@@ -1148,6 +1215,7 @@ toInternalGame' :: IORef [Message] -> GameJson -> Game
 toInternalGame' ref GameJson {..} = Game
   { giMessages = ref
   , giSeed = gSeed
+  , giCampaign = gCampaign
   , giScenario = gScenario
   , giLocations = gLocations
   , giInvestigators = gInvestigators

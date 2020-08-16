@@ -53,6 +53,8 @@ data LeftoverCardStrategy = ShuffleBackIn | PutBackInAnyOrder
 
 data Message
   = Setup
+  | StartCampaign
+  | StepCampaign
   | SetupInvestigators
   | FlavorText (Maybe Text) Text
   | InvestigatorMulligan InvestigatorId

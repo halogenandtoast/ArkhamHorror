@@ -90,10 +90,12 @@ xp :: Lens' Attrs Int
 xp = lens investigatorXP $ \m x -> m { investigatorXP = x }
 
 physicalTrauma :: Lens' Attrs Int
-physicalTrauma = lens investigatorPhysicalTrauma $ \m x -> m { investigatorPhysicalTrauma = x }
+physicalTrauma =
+  lens investigatorPhysicalTrauma $ \m x -> m { investigatorPhysicalTrauma = x }
 
 mentalTrauma :: Lens' Attrs Int
-mentalTrauma = lens investigatorMentalTrauma $ \m x -> m { investigatorMentalTrauma = x }
+mentalTrauma =
+  lens investigatorMentalTrauma $ \m x -> m { investigatorMentalTrauma = x }
 
 modifiers :: Lens' Attrs [Modifier]
 modifiers =
@@ -212,6 +214,15 @@ discardableAssets slotType a = case HashMap.lookup slotType (a ^. slots) of
   Nothing -> []
   Just slots' -> mapMaybe slotItem slots'
 
+getAttrStats :: Attrs -> Stats
+getAttrStats Attrs {..} = Stats
+  { health = investigatorHealth
+  , sanity = investigatorSanity
+  , willpower = investigatorWillpower
+  , intellect = investigatorIntellect
+  , combat = investigatorCombat
+  , agility = investigatorAgility
+  }
 
 baseAttrs :: InvestigatorId -> Text -> ClassSymbol -> Stats -> [Trait] -> Attrs
 baseAttrs iid name classSymbol Stats {..} traits = Attrs
@@ -441,6 +452,17 @@ possibleSkillTypeChoices skillType attrs = foldr
 
 instance (InvestigatorRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
+    ResetGame -> pure $ (baseAttrs
+                                   investigatorId
+                                   investigatorName
+                                   investigatorClass
+                                   (getAttrStats a)
+                                   (HashSet.toList investigatorTraits)
+                                 )
+      { investigatorXP = investigatorXP
+      , investigatorPhysicalTrauma = investigatorPhysicalTrauma
+      , investigatorMentalTrauma = investigatorMentalTrauma
+      }
     SetupInvestigators -> do
       let (discard', hand', deck') = drawOpeningHand a 5
       pure
@@ -1131,8 +1153,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         pure $ a & deck .~ Deck deck'
     SufferTrauma iid physical mental | iid == investigatorId ->
       pure $ a & physicalTrauma +~ physical & mentalTrauma +~ mental
-    GainXP iid amount | iid == investigatorId ->
-      pure $ a & xp +~ amount
+    GainXP iid amount | iid == investigatorId -> pure $ a & xp +~ amount
     PlayerWindow iid additionalActions | iid == investigatorId -> do
       advanceableActIds <-
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())

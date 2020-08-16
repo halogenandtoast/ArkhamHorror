@@ -8,8 +8,9 @@ import Arkham.Types.CampaignLog
 import Arkham.Types.CampaignStep
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
+import Arkham.Types.Helpers
 import Arkham.Types.Investigator
-import Arkham.Types.TokenPool
+import Arkham.Types.Token
 import ClassyPrelude
 import Lens.Micro
 
@@ -18,7 +19,7 @@ data Attrs = Attrs
   , campaignName :: Text
   , campaignInvestigators :: HashMap Int Investigator
   , campaignDifficulty :: Difficulty
-  , campaignTokenPool :: TokenPool
+  , campaignChaosBag :: [Token]
   , campaignLog :: CampaignLog
   , campaignSteps :: Vector CampaignStep
   , campaignStep :: Int
@@ -38,13 +39,13 @@ instance FromJSON Attrs where
 instance (CampaignRunner env) => RunMessage env Attrs where
   runMessage _ = pure
 
-baseAttrs :: CampaignId -> Text -> Difficulty -> TokenPool -> Attrs
-baseAttrs campaignId' name difficulty tokenPool = Attrs
+baseAttrs :: CampaignId -> Text -> Difficulty -> [Token] -> Attrs
+baseAttrs campaignId' name difficulty chaosBagContents = Attrs
   { campaignId = campaignId'
   , campaignName = name
   , campaignInvestigators = mempty
   , campaignDifficulty = difficulty
-  , campaignTokenPool = tokenPool
+  , campaignChaosBag = chaosBagContents
   , campaignLog = mkCampaignLog
   , campaignSteps = mempty
   , campaignStep = 0

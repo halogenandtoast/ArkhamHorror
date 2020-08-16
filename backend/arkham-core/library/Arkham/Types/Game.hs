@@ -220,7 +220,7 @@ newCampaign campaignId investigatorsList difficulty' = do
     , giPlayers = playersMap
     , giActiveInvestigatorId = initialInvestigatorId
     , giLeadInvestigatorId = initialInvestigatorId
-    , giPhase = InvestigationPhase
+    , giPhase = CampaignPhase
     , giEncounterDeck = mempty
     , giDiscard = mempty
     , giSkillTest = Nothing
@@ -686,6 +686,26 @@ runGameMessage msg g = case msg of
   Run msgs -> g <$ unshiftMessages msgs
   Label _ msgs -> g <$ unshiftMessages msgs
   Continue _ -> pure g
+  StartScenario sid -> do
+    let
+      campaign' = fromJustNote "not a campaign" (g ^. campaign)
+      difficulty' = difficultyOf campaign'
+      chaosBag' = chaosBagOf campaign'
+
+    unshiftMessage
+      $ map
+          (\(i, d) -> LoadDeck (getInvestigatorId i) d)
+          (HashMap.elems investigatorsList)
+      <> [ChooseLeadInvestigator, SetupInvestigators]
+      <> [ InvestigatorMulligan (getInvestigatorId i)
+         | (i, _) <- HashMap.elems investigatorsList
+         ]
+      <> [Setup]
+    pure
+      $ g
+      & (scenario ?~ lookupScenario sid difficulty')
+      & (chaosBag .~ chaosBag')
+      & (phase .~ InvestigationPhase)
   FocusCards cards -> pure $ g & focusedCards .~ cards
   ChooseLeadInvestigator -> if HashMap.size (g ^. investigators) == 1
     then pure g
@@ -1248,6 +1268,7 @@ runMessages g = if g ^. gameOver
     mmsg <- popMessage
     case mmsg of
       Nothing -> case giPhase g of
+        CampaignPhase -> toExternalGame g mempty
         ResolutionPhase -> toExternalGame g mempty
         MythosPhase -> toExternalGame g mempty
         EnemyPhase -> toExternalGame g mempty

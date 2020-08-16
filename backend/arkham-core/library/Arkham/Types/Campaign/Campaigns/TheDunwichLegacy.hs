@@ -8,7 +8,6 @@ import Arkham.Types.CampaignId
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.Token as Token
-import Arkham.Types.TokenPool
 import ClassyPrelude
 
 newtype TheDunwichLegacy = TheDunwichLegacy Attrs
@@ -16,9 +15,9 @@ newtype TheDunwichLegacy = TheDunwichLegacy Attrs
 
 theDunwichLegacy :: Difficulty -> TheDunwichLegacy
 theDunwichLegacy difficulty = TheDunwichLegacy
-  $ baseAttrs (CampaignId "02") "The Dunwich Legacy" difficulty tokenPool
+  $ baseAttrs (CampaignId "02") "The Dunwich Legacy" difficulty chaosBagContents
  where
-  tokenPool = TokenPool $ case difficulty of
+  chaosBagContents = case difficulty of
     Easy ->
       [ Token.PlusOne
       , Token.PlusOne

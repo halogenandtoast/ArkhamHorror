@@ -9,10 +9,17 @@ import Arkham.Types.Campaign.Runner
 import Arkham.Types.CampaignId
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
+import Arkham.Types.Token
 import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import Safe (fromJustNote)
+
+difficultyOf :: Campaign -> Difficulty
+difficultyOf = campaignDifficulty . campaignAttrs
+
+chaosBagOf :: Campaign -> [Token]
+chaosBagOf = campaignChaosBag . campaignAttrs
 
 allCampaigns :: HashMap CampaignId (Difficulty -> Campaign)
 allCampaigns = HashMap.fromList

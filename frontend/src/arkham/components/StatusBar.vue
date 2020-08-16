@@ -12,7 +12,10 @@
       <div v-if="choice.tag === MessageType.RUN && choice.contents[0].tag === MessageType.CONTINUE">
         <div v-if="choice.contents[1].tag === MessageType.FLAVOR_TEXT" class="intro-text">
           <h1 v-if="choice.contents[1].contents[0]">{{choice.contents[1].contents[0]}}</h1>
-          <p>{{choice.contents[1].contents[1]}}</p>
+          <p
+            v-for="(paragraph, index) in choice.contents[1].contents[1]"
+            :key="index"
+          >{{paragraph}}</p>
         </div>
         <button @click="$emit('choose', index)">{{choice.contents[0].contents}}</button>
       </div>

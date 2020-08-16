@@ -12,5 +12,6 @@ data Phase
   | EnemyPhase
   | UpkeepPhase
   | ResolutionPhase
+  | CampaignPhase
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

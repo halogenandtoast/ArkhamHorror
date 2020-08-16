@@ -2,9 +2,17 @@ module Arkham.Types.Helpers where
 
 import Arkham.Json
 import ClassyPrelude hiding (unpack)
+import Control.Monad.Random
 import qualified Data.HashMap.Strict as HashMap
+import Data.List.NonEmpty (NonEmpty)
+import qualified Data.List.NonEmpty as NE
 import Data.Text.Lazy (unpack)
 import Data.Text.Lazy.Builder
+
+sample :: MonadRandom m => NonEmpty a -> m a
+sample xs = do
+  idx <- getRandomR (0, NE.length xs - 1)
+  pure $ xs NE.!! idx
 
 without :: Int -> [a] -> [a]
 without n as = [ a | (i, a) <- zip [0 ..] as, i /= n ]

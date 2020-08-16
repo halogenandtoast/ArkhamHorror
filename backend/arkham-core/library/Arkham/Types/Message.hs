@@ -15,7 +15,7 @@ import Arkham.Types.ActId
 import Arkham.Types.Action
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
-import Arkham.Types.CampaignLog
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.CampaignStep
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
@@ -182,6 +182,7 @@ data Message
   | FindAndDrawEncounterCard InvestigatorId
                          (EncounterCardType, Trait)
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
+  | AddToEncounterDeck EncounterCard
   | DrawAnotherToken InvestigatorId Int Token
   | SkillTestEnds
   | SkillTestEnded SkillTestResult [Token]

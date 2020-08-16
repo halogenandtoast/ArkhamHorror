@@ -15,8 +15,8 @@ import Arkham.Types.ActId
 import Arkham.Types.Action
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
-import Arkham.Types.CampaignStep
 import Arkham.Types.CampaignLog
+import Arkham.Types.CampaignStep
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
@@ -58,6 +58,7 @@ data Message
   = Setup
   | EndOfGame
   | StartCampaign
+  | ResetGame
   | CampaignStep (Maybe CampaignStep)
   | NextCampaignStep
   | Record CampaignLogKey
@@ -71,6 +72,7 @@ data Message
   | SearchDeckForTraits InvestigatorId Target [Trait]
   | SearchTopOfDeck InvestigatorId Target Int [Trait] LeftoverCardStrategy
   | RunEvent InvestigatorId CardCode
+  | InitDeck InvestigatorId [PlayerCard]
   | LoadDeck InvestigatorId [PlayerCard]
   | BeginRound
   | EndRoundWindow

@@ -200,18 +200,19 @@ newCampaign
   -> Difficulty
   -> m Game
 newCampaign campaignId investigatorsList difficulty' = do
-  let campaign' = lookupCampaign campaignId difficulty'
-  ref <- newIORef
-    $ map
-        (\(i, d) -> LoadDeck (getInvestigatorId i) d)
-        (HashMap.elems investigatorsList)
-    <> [StartCampaign]
   mseed <- liftIO $ lookupEnv "SEED"
   seed <- maybe
     (liftIO $ randomIO @Int)
     (pure . fromJustNote "invalid seed" . readMaybe)
     mseed
   liftIO $ setStdGen (mkStdGen seed)
+  let campaign' = lookupCampaign campaignId difficulty'
+  ref <-
+    newIORef
+    $ map
+        (\(i, d) -> InitDeck (getInvestigatorId i) d)
+        (HashMap.elems investigatorsList)
+    <> [StartCampaign]
   pure $ Game
     { giMessages = ref
     , giSeed = seed
@@ -691,6 +692,24 @@ runGameMessage msg g = case msg of
   Label _ msgs -> g <$ unshiftMessages msgs
   Continue _ -> pure g
   EndOfGame -> g <$ pushMessage NextCampaignStep
+  ResetGame ->
+    pure
+      $ g
+      & (locations .~ mempty)
+      & (enemies .~ mempty)
+      & (assets .~ mempty)
+      & (encounterDeck .~ mempty)
+      & (discard .~ mempty)
+      & (chaosBag .~ mempty)
+      & (skillTest .~ Nothing)
+      & (acts .~ mempty)
+      & (agendas .~ mempty)
+      & (treacheries .~ mempty)
+      & (gameOver .~ False)
+      & (usedAbilities .~ mempty)
+      & (focusedCards .~ mempty)
+      & (activeCard .~ Nothing)
+      & (victory .~ mempty)
   StartScenario sid -> do
     let
       campaign' = fromJustNote "not a campaign" (g ^. campaign)
@@ -699,9 +718,7 @@ runGameMessage msg g = case msg of
 
     unshiftMessages
       $ [ChooseLeadInvestigator, SetupInvestigators]
-      <> [ InvestigatorMulligan iid
-         | iid <- HashMap.keys $ g ^. investigators
-         ]
+      <> [ InvestigatorMulligan iid | iid <- HashMap.keys $ g ^. investigators ]
       <> [Setup]
     pure
       $ g

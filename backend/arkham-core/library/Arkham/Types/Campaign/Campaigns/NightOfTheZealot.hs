@@ -153,7 +153,7 @@ instance (CampaignRunner env) => RunMessage env NightOfTheZealot where
         , NextCampaignStep
         ]
     CampaignStep (Just (ScenarioStep sid)) -> do
-      c <$ unshiftMessage (StartScenario sid)
+      c <$ unshiftMessages [ResetGame, StartScenario sid]
     NextCampaignStep -> do
       clearQueue
       unshiftMessage (CampaignStep $ campaignSteps !? (campaignStep + 1))

@@ -9,5 +9,9 @@ data LocationSymbol
   | Triangle
   | Plus
   | Diamond
+  | Squiggle
+  | Moon
+  | Hourglass
+  | T
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

@@ -248,8 +248,9 @@ instance (EnemyRunner env) => RunMessage env Attrs where
           )
     EnemyEvaded iid eid | eid == enemyId ->
       pure $ a & engagedInvestigators %~ HashSet.delete iid & exhausted .~ True
-    TryEvadeEnemy iid eid skillType onSuccess onFailure tokenResponses
-      | eid == enemyId -> do
+    TryEvadeEnemy iid eid skillType onSuccess onFailure skillTestModifiers tokenResponses
+      | eid == enemyId
+      -> do
         let
           onFailure' = if Keyword.Alert `elem` enemyKeywords
             then EnemyAttack iid eid : onFailure
@@ -263,7 +264,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
             enemyEvade
             (EnemyEvaded iid eid : onSuccess)
             onFailure'
-            []
+            skillTestModifiers
             tokenResponses
           )
     PerformEnemyAttack iid eid | eid == enemyId -> a <$ unshiftMessage

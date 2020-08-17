@@ -26,6 +26,7 @@ sourceOfModifier (ShroudModifier _ s) = s
 sourceOfModifier (DiscoveredClues _ s) = s
 sourceOfModifier (UseSkillInPlaceOf _ _ s) = s
 sourceOfModifier (ForcedTokenChange _ _ s) = s
+sourceOfModifier (DoubleNegativeModifiersOnTokens s) = s
 
 replaceModifierSource :: Source -> Modifier -> Modifier
 replaceModifierSource s (ActionCostOf a b _) = ActionCostOf a b s
@@ -40,6 +41,8 @@ replaceModifierSource s (ShroudModifier a _) = ShroudModifier a s
 replaceModifierSource s (DiscoveredClues a _) = DiscoveredClues a s
 replaceModifierSource s (UseSkillInPlaceOf a b _) = UseSkillInPlaceOf a b s
 replaceModifierSource s (ForcedTokenChange a b _) = ForcedTokenChange a b s
+replaceModifierSource s (DoubleNegativeModifiersOnTokens _) =
+  DoubleNegativeModifiersOnTokens s
 
 data Modifier
   = ActionCostOf ActionTarget Int Source
@@ -53,6 +56,7 @@ data Modifier
   | DiscoveredClues Int Source
   | UseSkillInPlaceOf SkillType SkillType Source
   | ForcedTokenChange Token Token Source
+  | DoubleNegativeModifiersOnTokens Source
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
 

@@ -170,7 +170,7 @@ data Message
   | InvestigatorStartSkillTest InvestigatorId (Maybe Action) SkillType [Modifier]
   | BeforeSkillTest InvestigatorId SkillType
   | TriggerSkillTest InvestigatorId SkillType Int
-  | RunSkillTest Int
+  | RunSkillTest Int Int
   | SkillTestResults
   | SkillTestApplyResults
   | RunSkill InvestigatorId CardCode SkillTestResult
@@ -227,7 +227,7 @@ data Message
   | AfterEnemyAttacks EnemyId Target
   | WhenEvadeEnemy InvestigatorId EnemyId
   | EvadeEnemy InvestigatorId EnemyId SkillType [Message] [Message] [TokenResponse Message] Bool
-  | TryEvadeEnemy InvestigatorId EnemyId SkillType [Message] [Message] [TokenResponse Message]
+  | TryEvadeEnemy InvestigatorId EnemyId SkillType [Message] [Message] [Modifier] [TokenResponse Message]
   | EnemyEvaded InvestigatorId EnemyId
   | AfterEvadeEnemy InvestigatorId EnemyId
   | SuccessfulInvestigation InvestigatorId LocationId

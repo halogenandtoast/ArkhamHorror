@@ -1138,16 +1138,16 @@ runGameMessage msg g = case msg of
     unshiftMessage (ResolveToken token iid skillValue)
     unshiftMessage (DrawToken token)
     pure $ g & chaosBag .~ chaosBag'
-  ResolveToken Token.PlusOne _ skillValue -> g <$ runTest (skillValue + 1)
-  ResolveToken Token.Zero _ skillValue -> g <$ runTest skillValue
-  ResolveToken Token.MinusOne _ skillValue -> g <$ runTest (skillValue - 1)
-  ResolveToken Token.MinusTwo _ skillValue -> g <$ runTest (skillValue - 2)
-  ResolveToken Token.MinusThree _ skillValue -> g <$ runTest (skillValue - 3)
-  ResolveToken Token.MinusFour _ skillValue -> g <$ runTest (skillValue - 4)
-  ResolveToken Token.MinusFive _ skillValue -> g <$ runTest (skillValue - 5)
-  ResolveToken Token.MinusSix _ skillValue -> g <$ runTest (skillValue - 6)
-  ResolveToken Token.MinusSeven _ skillValue -> g <$ runTest (skillValue - 7)
-  ResolveToken Token.MinusEight _ skillValue -> g <$ runTest (skillValue - 8)
+  ResolveToken Token.PlusOne _ skillValue -> g <$ runTest skillValue 1
+  ResolveToken Token.Zero _ skillValue -> g <$ runTest skillValue 0
+  ResolveToken Token.MinusOne _ skillValue -> g <$ runTest skillValue (-1)
+  ResolveToken Token.MinusTwo _ skillValue -> g <$ runTest skillValue (-2)
+  ResolveToken Token.MinusThree _ skillValue -> g <$ runTest skillValue (-3)
+  ResolveToken Token.MinusFour _ skillValue -> g <$ runTest skillValue (-4)
+  ResolveToken Token.MinusFive _ skillValue -> g <$ runTest skillValue (-5)
+  ResolveToken Token.MinusSix _ skillValue -> g <$ runTest skillValue (-6)
+  ResolveToken Token.MinusSeven _ skillValue -> g <$ runTest skillValue (-7)
+  ResolveToken Token.MinusEight _ skillValue -> g <$ runTest skillValue (-8)
   ResolveToken Token.AutoFail _ _ -> g <$ unshiftMessage FailSkillTest
   CreateStoryAssetAt cardCode lid -> do
     (assetId', asset') <- createAsset cardCode

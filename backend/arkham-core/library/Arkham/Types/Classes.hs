@@ -60,8 +60,9 @@ unshiftMessages
   :: (MonadIO m, MonadReader env m, HasQueue env) => [Message] -> m ()
 unshiftMessages msgs = withQueue $ \queue -> (msgs <> queue, ())
 
-runTest :: (HasQueue env, MonadReader env m, MonadIO m) => Int -> m ()
-runTest modifiedSkillValue = unshiftMessage (RunSkillTest modifiedSkillValue)
+runTest :: (HasQueue env, MonadReader env m, MonadIO m) => Int -> Int -> m ()
+runTest skillValue tokenValue =
+  unshiftMessage (RunSkillTest skillValue tokenValue)
 
 class HasSet c b a where
   getSet :: b -> a -> HashSet c

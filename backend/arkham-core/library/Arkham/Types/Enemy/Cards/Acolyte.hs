@@ -6,11 +6,8 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
-import Arkham.Types.LocationId
 import Arkham.Types.Message
-import Arkham.Types.Target
 import ClassyPrelude
-import qualified Data.HashSet as HashSet
 import Lens.Micro
 
 newtype Acolyte = Acolyte Attrs
@@ -25,14 +22,8 @@ acolyte uuid = Acolyte $ (baseAttrs uuid "01169")
 
 instance (EnemyRunner env) => RunMessage env Acolyte where
   runMessage msg e@(Acolyte attrs@Attrs {..}) = case msg of
-    InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
-      emptyLocations <- map unEmptyLocationId . HashSet.toList <$> asks
-        (getSet ())
-      e <$ case emptyLocations of
-        [] -> unshiftMessage (Discard (EnemyTarget eid))
-        [lid] -> unshiftMessage (EnemySpawn lid eid)
-        lids -> unshiftMessage
-          (Ask iid $ ChooseOne [ EnemySpawn lid eid | lid <- lids ])
+    InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
+      e <$ spawnAtEmptyLocation iid eid
     EnemySpawn _ eid | eid == enemyId ->
       Acolyte <$> runMessage msg (attrs & doom +~ 1)
     _ -> Acolyte <$> runMessage msg attrs

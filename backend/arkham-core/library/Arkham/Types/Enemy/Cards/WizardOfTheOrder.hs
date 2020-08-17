@@ -7,7 +7,9 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
+import Arkham.Types.Message
 import ClassyPrelude
+import Lens.Micro
 
 newtype WizardOfTheOrder = WizardOfTheOrder Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -21,5 +23,8 @@ wizardOfTheOrder uuid = WizardOfTheOrder $ (baseAttrs uuid "01170")
   }
 
 instance (EnemyRunner env) => RunMessage env WizardOfTheOrder where
-  runMessage msg (WizardOfTheOrder attrs) =
-    WizardOfTheOrder <$> runMessage msg attrs
+  runMessage msg e@(WizardOfTheOrder attrs@Attrs {..}) = case msg of
+    InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
+      e <$ spawnAtEmptyLocation iid eid
+    EndMythos -> pure $ WizardOfTheOrder $ attrs & doom +~ 1
+    _ -> WizardOfTheOrder <$> runMessage msg attrs

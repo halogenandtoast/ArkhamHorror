@@ -144,6 +144,18 @@ weaknessBaseAttrs eid cardCode =
       , enemyDoom = 0
       }
 
+spawnAtEmptyLocation
+  :: (MonadIO m, HasSet EmptyLocationId () env, MonadReader env m, HasQueue env)
+  => InvestigatorId
+  -> EnemyId
+  -> m ()
+spawnAtEmptyLocation iid eid = do
+  emptyLocations <- map unEmptyLocationId . HashSet.toList <$> asks (getSet ())
+  case emptyLocations of
+    [] -> unshiftMessage (Discard (EnemyTarget eid))
+    [lid] -> unshiftMessage (EnemySpawn lid eid)
+    lids ->
+      unshiftMessage (Ask iid $ ChooseOne [ EnemySpawn lid eid | lid <- lids ])
 
 spawnAt
   :: (MonadIO m, HasSet LocationId () env, MonadReader env m, HasQueue env)

@@ -29,12 +29,13 @@ rolandBanks = RolandBanks $ (baseAttrs
                               [Agency, Detective]
                             )
   { investigatorAbilities =
-    [ ( InvestigatorSource "01001"
-      , InvestigatorSource "01001"
-      , 1
-      , ReactionAbility (Fast.WhenEnemyDefeated You)
-      , OncePerRound
+    [ (mkAbility
+        (InvestigatorSource "01001")
+        1
+        (ReactionAbility (Fast.WhenEnemyDefeated You))
       )
+        { abilityLimit = OncePerRound
+        }
     ]
   }
  where
@@ -49,8 +50,8 @@ rolandBanks = RolandBanks $ (baseAttrs
 
 instance (InvestigatorRunner env) => RunMessage env RolandBanks where
   runMessage msg rb@(RolandBanks attrs@Attrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid, _, 1, _, _)
-      | iid == investigatorId -> rb <$ unshiftMessage
+    UseCardAbility _ _ (InvestigatorSource iid) 1 | iid == investigatorId ->
+      rb <$ unshiftMessage
         (DiscoverCluesAtLocation investigatorId investigatorLocation 1)
     ResolveToken ElderSign iid skillValue | iid == investigatorId -> do
       clueCount <- unClueCount <$> asks (getCount investigatorLocation)

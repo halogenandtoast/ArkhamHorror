@@ -25,12 +25,10 @@ parlor :: Parlor
 parlor = Parlor $ (baseAttrs "01115" "Parlor" 2 (Static 0) Diamond [Square])
   { locationBlocked = True
   , locationAbilities =
-    [ ( LocationSource "01115"
-      , LocationSource "01115"
-      , 1
-      , ActionAbility 1 (Just Action.Resign)
-      , NoLimit
-      )
+    [ mkAbility
+        (LocationSource "01115")
+        1
+        (ActionAbility 1 (Just Action.Resign))
     ]
   }
 
@@ -50,17 +48,19 @@ instance (LocationRunner env) => RunMessage env Parlor where
           [ RemoveAbilitiesFrom (LocationSource locationId)
           , AddAbility
             (AssetSource aid)
-            ( AssetSource aid
-            , LocationSource locationId
-            , 2
-            , ActionAbility 1 (Just Action.Parley)
-            , NoLimit
+            ((mkAbility
+               (AssetSource aid)
+               2
+               (ActionAbility 1 (Just Action.Parley))
+             )
+              { abilityProvider = LocationSource locationId
+              }
             )
           ]
-    UseCardAbility iid (LocationSource lid, _, 1, _, _)
+    UseCardAbility iid _ (LocationSource lid) 1
       | lid == locationId && locationRevealed -> l
       <$ unshiftMessage (Resign iid)
-    UseCardAbility iid (_, LocationSource lid, 2, _, _)
+    UseCardAbility iid _ (LocationSource lid) 2
       | lid == locationId && locationRevealed -> do
         aid <- unStoryAssetId <$> asks (getId (CardCode "01117"))
         l <$ unshiftMessage

@@ -1,6 +1,7 @@
 module Arkham.Types.Source
   ( Source(..)
   , sourceIsEvent
+  , sourceIsAsset
   )
 where
 
@@ -18,6 +19,10 @@ import Data.Aeson
 sourceIsEvent :: Source -> Bool
 sourceIsEvent (EventSource _) = True
 sourceIsEvent _ = False
+
+sourceIsAsset :: Source -> Bool
+sourceIsAsset (AssetSource _) = True
+sourceIsAsset _ = False
 
 data Source
   = AssetSource AssetId

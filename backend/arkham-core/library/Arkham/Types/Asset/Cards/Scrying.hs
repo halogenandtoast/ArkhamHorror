@@ -33,16 +33,10 @@ instance (AssetRunner env) => RunMessage env Scrying where
           attrs
             & (uses .~ Uses Resource.Charge 3)
             & (abilities
-              .~ [ ( AssetSource aid
-                   , AssetSource aid
-                   , 1
-                   , ActionAbility 1 Nothing
-                   , NoLimit
-                   )
-                 ]
+              .~ [mkAbility (AssetSource aid) 1 (ActionAbility 1 Nothing)]
               )
       Scrying <$> runMessage msg attrs'
-    UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
       locationId <- asks (getId @LocationId iid)
       investigatorIds <- HashSet.toList <$> asks (getSet locationId)
       case assetUses of

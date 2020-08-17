@@ -159,14 +159,28 @@ spawnAtEmptyLocation iid eid = do
 
 spawnAt
   :: (MonadIO m, HasSet LocationId () env, MonadReader env m, HasQueue env)
-  => LocationId
-  -> EnemyId
+  => EnemyId
+  -> LocationId
   -> m ()
-spawnAt lid eid = do
-  locations <- asks (getSet ())
-  if lid `elem` locations
+spawnAt eid lid = do
+  locations' <- asks (getSet ())
+  if lid `elem` locations'
     then unshiftMessage (EnemySpawn lid eid)
     else unshiftMessage (Discard (EnemyTarget eid))
+
+spawnAtOneOf
+  :: (MonadIO m, HasSet LocationId () env, MonadReader env m, HasQueue env)
+  => InvestigatorId
+  -> EnemyId
+  -> [LocationId]
+  -> m ()
+spawnAtOneOf iid eid targetLids = do
+  locations' <- asks (getSet ())
+  case HashSet.toList (HashSet.fromList targetLids `intersection` locations') of
+    [] -> unshiftMessage (Discard (EnemyTarget eid))
+    [lid] -> unshiftMessage (EnemySpawn lid eid)
+    lids ->
+      unshiftMessage (Ask iid $ ChooseOne [ EnemySpawn lid eid | lid <- lids ])
 
 modifiedDamageAmount :: Attrs -> Int -> Int
 modifiedDamageAmount attrs baseAmount = foldr

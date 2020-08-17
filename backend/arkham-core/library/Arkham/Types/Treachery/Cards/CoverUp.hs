@@ -35,12 +35,10 @@ coverUp uuid =
   CoverUp
     $ ((weaknessAttrs uuid "01007")
         { treacheryAbilities =
-          [ ( TreacherySource uuid
-            , TreacherySource uuid
-            , 1
-            , ReactionAbility (WhenDiscoverClues You YourLocation)
-            , NoLimit
-            )
+          [ mkAbility
+              (TreacherySource uuid)
+              1
+              (ReactionAbility (WhenDiscoverClues You YourLocation))
           ]
         }
       )
@@ -57,34 +55,35 @@ instance (TreacheryRunner env) => RunMessage env CoverUp where
         CoverUp . (`with` metadata) <$> runMessage
           msg
           (attrs & attachedInvestigator ?~ iid)
-      EndOfGame | coverUpClues > 0  ->
-        let investigator = fromJustNote "missing investigator" treacheryAttachedInvestigator
-         in t <$ unshiftMessage (SufferTrauma investigator 0 1)
-      UseCardAbility iid (TreacherySource tid, _, 1, _, _)
-        | tid == treacheryId -> do
-          cluesToRemove <- withQueue $ \queue -> do
-            let
-              (before, after) = flip break queue $ \case
-                DiscoverClues{} -> True
-                _ -> False
-              (DiscoverClues _ _ m) = case after of
-                [] -> error "DiscoverClues has to be present"
-                (x : _) -> x
-              remaining = case after of
-                [] -> []
-                (_ : xs) -> xs
-            (before <> remaining, m)
-          let remainingClues = max 0 (coverUpClues - cluesToRemove)
-          if remainingClues == 0
-            then do
-              unshiftMessage
-                (RemoveAllModifiersOnTargetFrom
-                  (InvestigatorTarget iid)
-                  (TreacherySource tid)
-                )
-              pure
-                $ CoverUp
-                $ (attrs & abilities .~ [])
-                `with` CoverUpMetadata remainingClues
-            else pure $ CoverUp (attrs `with` CoverUpMetadata remainingClues)
+      EndOfGame | coverUpClues > 0 ->
+        let
+          investigator =
+            fromJustNote "missing investigator" treacheryAttachedInvestigator
+        in t <$ unshiftMessage (SufferTrauma investigator 0 1)
+      UseCardAbility iid _ (TreacherySource tid) 1 | tid == treacheryId -> do
+        cluesToRemove <- withQueue $ \queue -> do
+          let
+            (before, after) = flip break queue $ \case
+              DiscoverClues{} -> True
+              _ -> False
+            (DiscoverClues _ _ m) = case after of
+              [] -> error "DiscoverClues has to be present"
+              (x : _) -> x
+            remaining = case after of
+              [] -> []
+              (_ : xs) -> xs
+          (before <> remaining, m)
+        let remainingClues = max 0 (coverUpClues - cluesToRemove)
+        if remainingClues == 0
+          then do
+            unshiftMessage
+              (RemoveAllModifiersOnTargetFrom
+                (InvestigatorTarget iid)
+                (TreacherySource treacheryId)
+              )
+            pure
+              $ CoverUp
+              $ (attrs & abilities .~ [])
+              `with` CoverUpMetadata remainingClues
+          else pure $ CoverUp (attrs `with` CoverUpMetadata remainingClues)
       _ -> CoverUp . (`with` metadata) <$> runMessage msg attrs

@@ -119,7 +119,7 @@ data Message
   | ChoosePlayCardAction InvestigatorId
   | ChooseActivateCardAbilityAction InvestigatorId
   | ActivateCardAbilityAction InvestigatorId Ability
-  | UseCardAbility InvestigatorId Ability
+  | UseCardAbility InvestigatorId Source Source Int
   | ResolveToken Token InvestigatorId Int
   | Investigate InvestigatorId LocationId SkillType [TokenResponse Message] Bool
   | ChooseFightEnemy InvestigatorId SkillType [Modifier] [TokenResponse Message] Bool
@@ -143,6 +143,7 @@ data Message
   | InvestigatorDamageInvestigator InvestigatorId InvestigatorId
   | EnemyDamage EnemyId InvestigatorId Source Int
   | EnemyDefeated EnemyId InvestigatorId CardCode Source
+  | AddToVictory Target
   | PlayCard InvestigatorId CardId Bool
   | PlayedCard InvestigatorId CardId Bool
   | InvestigatorAssignDamage InvestigatorId Source Int Int

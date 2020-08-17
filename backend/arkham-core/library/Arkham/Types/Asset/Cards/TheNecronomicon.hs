@@ -36,13 +36,7 @@ theNecronomicon uuid =
     $ ((baseAttrs uuid "01009")
         { assetSlots = [HandSlot]
         , assetAbilities =
-          [ ( AssetSource uuid
-            , AssetSource uuid
-            , 1
-            , ActionAbility 1 Nothing
-            , NoLimit
-            )
-          ]
+          [mkAbility (AssetSource uuid) 1 (ActionAbility 1 Nothing)]
         }
       )
     `with` TheNecronomiconMetadata 3
@@ -58,7 +52,7 @@ instance (AssetRunner env) => RunMessage env TheNecronomicon where
             (ForcedTokenChange Token.ElderSign Token.AutoFail (AssetSource aid))
           )
         TheNecronomicon . (`with` metadata) <$> runMessage msg attrs
-      UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
+      UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
         unshiftMessage $ InvestigatorDamage iid (AssetSource aid) 0 1
         if theNecronomiconHorror == 1
           then a <$ unshiftMessage (DiscardAsset aid)

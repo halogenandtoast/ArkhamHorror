@@ -26,5 +26,5 @@ fleshEater uuid = FleshEater $ (baseAttrs uuid "01118")
 instance (EnemyRunner env) => RunMessage env FleshEater where
   runMessage msg e@(FleshEater attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == enemyId ->
-      e <$ spawnAt "01113" enemyId
+      e <$ spawnAt enemyId "01113"
     _ -> FleshEater <$> runMessage msg attrs

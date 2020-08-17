@@ -26,13 +26,7 @@ newtype LockedDoor = LockedDoor Attrs
 lockedDoor :: TreacheryId -> LockedDoor
 lockedDoor uuid = LockedDoor $ (baseAttrs uuid "01174")
   { treacheryAbilities =
-    [ ( TreacherySource uuid
-      , TreacherySource uuid
-      , 1
-      , ActionAbility 1 Nothing
-      , NoLimit
-      )
-    ]
+    [mkAbility (TreacherySource uuid) 1 (ActionAbility 1 Nothing)]
   }
 
 instance (TreacheryRunner env) => RunMessage env LockedDoor where
@@ -68,32 +62,31 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
           (CannotInvestigate (TreacherySource tid))
         )
       pure . LockedDoor $ attrs & attachedLocation ?~ lid
-    UseCardAbility iid (TreacherySource tid, _, 1, _, _) | tid == treacheryId ->
-      do
-        t <$ unshiftMessage
-          (Ask iid $ ChooseOne
-            [ BeginSkillTest
-              iid
-              (TreacherySource tid)
-              Nothing
-              SkillCombat
-              4
-              [Discard (TreacheryTarget tid)]
-              mempty
-              mempty
-              mempty
-            , BeginSkillTest
-              iid
-              (TreacherySource tid)
-              Nothing
-              SkillAgility
-              4
-              [Discard (TreacheryTarget tid)]
-              mempty
-              mempty
-              mempty
-            ]
-          )
+    UseCardAbility iid _ (TreacherySource tid) 1 | tid == treacheryId -> do
+      t <$ unshiftMessage
+        (Ask iid $ ChooseOne
+          [ BeginSkillTest
+            iid
+            (TreacherySource treacheryId)
+            Nothing
+            SkillCombat
+            4
+            [Discard (TreacheryTarget treacheryId)]
+            mempty
+            mempty
+            mempty
+          , BeginSkillTest
+            iid
+            (TreacherySource treacheryId)
+            Nothing
+            SkillAgility
+            4
+            [Discard (TreacheryTarget treacheryId)]
+            mempty
+            mempty
+            mempty
+          ]
+        )
     Discard (TreacheryTarget tid) | tid == treacheryId -> do
       unshiftMessages
         [ RemoveAllModifiersOnTargetFrom

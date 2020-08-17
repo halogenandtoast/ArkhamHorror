@@ -21,25 +21,17 @@ newtype PhysicalTraining = PhysicalTraining Attrs
 physicalTraining :: AssetId -> PhysicalTraining
 physicalTraining uuid = PhysicalTraining $ (baseAttrs uuid "01017")
   { assetAbilities =
-    [ ( AssetSource uuid
-      , AssetSource uuid
-      , 1
-      , FreeAbility (SkillTestWindow SkillWillpower)
-      , NoLimit
-      )
-    , ( AssetSource uuid
-      , AssetSource uuid
-      , 2
-      , FreeAbility (SkillTestWindow SkillCombat)
-      , NoLimit
-      )
+    [ mkAbility
+      (AssetSource uuid)
+      1
+      (FreeAbility (SkillTestWindow SkillWillpower))
+    , mkAbility (AssetSource uuid) 2 (FreeAbility (SkillTestWindow SkillCombat))
     ]
   }
 
-
 instance (AssetRunner env) => RunMessage env PhysicalTraining where
   runMessage msg a@(PhysicalTraining attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
       resources <- unResourceCount <$> asks (getCount iid)
       when (resources > 0) $ unshiftMessages
         [ SpendResources iid 1
@@ -48,7 +40,7 @@ instance (AssetRunner env) => RunMessage env PhysicalTraining where
           (SkillModifier SkillWillpower 1 (AssetSource aid))
         ]
       pure a
-    UseCardAbility iid (AssetSource aid, _, 2, _, _) | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) 2 | aid == assetId -> do
       resources <- unResourceCount <$> asks (getCount iid)
       when (resources > 0) $ unshiftMessages
         [ SpendResources iid 1

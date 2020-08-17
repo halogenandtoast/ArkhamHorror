@@ -22,13 +22,12 @@ newtype OldBookOfLore = OldBookOfLore Attrs
 oldBookOfLore :: AssetId -> OldBookOfLore
 oldBookOfLore uuid = OldBookOfLore $ (baseAttrs uuid "01031")
   { assetSlots = [HandSlot]
-  , assetAbilities =
-    [(AssetSource uuid, AssetSource uuid, 1, ActionAbility 1 Nothing, NoLimit)]
+  , assetAbilities = [mkAbility (AssetSource uuid) 1 (ActionAbility 1 Nothing)]
   }
 
 instance (AssetRunner env) => RunMessage env OldBookOfLore where
   runMessage msg (OldBookOfLore attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
       locationId <- asks (getId @LocationId iid)
       investigatorIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessage

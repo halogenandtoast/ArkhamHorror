@@ -340,12 +340,13 @@ canPerform a@Attrs {..} Action.Play = do
   pure $ canAfford a Action.Play && not (null playableCards)
 canPerform a@Attrs {..} Action.Ability = do
   availableAbilities <- getAvailableAbilities a
-  filteredAbilities <- flip filterM availableAbilities $ \case
-    (_, _, _, ActionAbility _ (Just action), _) -> canPerform a action -- TODO: we need to calculate the total cost
-    (_, _, _, ActionAbility _ Nothing, _) -> pure True -- e.g. Old Book of Lore
-    (_, _, _, FreeAbility AnyWindow, _) -> pure True
-    (_, _, _, FreeAbility (SkillTestWindow _), _) -> pure True -- must be filtered out later
-    (_, _, _, ReactionAbility _, _) -> pure False
+  filteredAbilities <- flip filterM availableAbilities $ \Ability {..} ->
+    case abilityType of
+      ActionAbility _ (Just action) -> canPerform a action -- TODO: we need to calculate the total cost
+      ActionAbility _ Nothing -> pure True -- e.g. Old Book of Lore
+      FreeAbility AnyWindow -> pure True
+      FreeAbility (SkillTestWindow _) -> pure True -- must be filtered out later
+      ReactionAbility _ -> pure False
 
   pure $ canAfford a Action.Ability && not (null filteredAbilities)
 
@@ -402,12 +403,12 @@ getAvailableAbilities a@Attrs {..} = do
     , actAndAgendaAbilities
     ]
  where
-  canPerformAbility (_, _, _, ActionAbility _ (Just actionType), _) =
-    canAfford a actionType
-  canPerformAbility (_, _, _, ActionAbility _ Nothing, _) = True -- e.g. Old Book of Lore
-  canPerformAbility (_, _, _, FreeAbility AnyWindow, _) = True
-  canPerformAbility (_, _, _, FreeAbility (SkillTestWindow _), _) = True
-  canPerformAbility (_, _, _, ReactionAbility _, _) = True
+  canPerformAbility Ability {..} = case abilityType of
+    ActionAbility _ (Just actionType) -> canAfford a actionType
+    ActionAbility _ Nothing -> True -- e.g. Old Book of Lore
+    FreeAbility AnyWindow -> True
+    FreeAbility (SkillTestWindow _) -> True
+    ReactionAbility _ -> True
 
 drawOpeningHand :: Attrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
 drawOpeningHand a n = go n (a ^. discard, a ^. hand, coerce (a ^. deck))
@@ -431,14 +432,15 @@ abilityInWindows
   -> Ability
   -> Attrs
   -> m Bool
-abilityInWindows windows ability _ = case ability of
-  (_, _, _, ReactionAbility window, OncePerRound) -> if window `elem` windows
-    then do
-      usedAbilities <- map unUsedAbility <$> asks (getList ())
-      pure $ ability `notElem` usedAbilities
-    else pure False
-  (_, _, _, ReactionAbility window, _) -> pure $ window `elem` windows
-  _ -> pure False
+abilityInWindows windows ability@Ability {..} _ =
+  case (abilityType, abilityLimit) of
+    (ReactionAbility window, OncePerRound) -> if window `elem` windows
+      then do
+        usedAbilities <- map unUsedAbility <$> asks (getList ())
+        pure $ ability `notElem` usedAbilities
+      else pure False
+    (ReactionAbility window, _) -> pure $ window `elem` windows
+    _ -> pure False
 
 possibleSkillTypeChoices :: SkillType -> Attrs -> [SkillType]
 possibleSkillTypeChoices skillType attrs = foldr
@@ -629,6 +631,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       a <$ unshiftMessage (EnemyDamage eid iid (InvestigatorSource iid) damage)
     EnemyEvaded iid eid | iid == investigatorId ->
       pure $ a & engagedEnemies %~ HashSet.delete eid
+    AddToVictory (EnemyTarget eid) ->
+      pure $ a & engagedEnemies %~ HashSet.delete eid
     ChooseEvadeEnemy iid skillType onSuccess onFailure tokenResponses isAction
       | iid == investigatorId -> a <$ unshiftMessage
         (Ask iid $ ChooseOne $ map
@@ -730,8 +734,10 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         (Ask iid
         $ ChooseOne
         $ map
-            (\ability ->
-              Run [UseCardAbility iid ability, DiscoverClues iid lid n]
+            (\Ability {..} -> Run
+              [ UseCardAbility iid abilitySource abilityProvider abilityIndex
+              , DiscoverClues iid lid n
+              ]
             )
             filteredAbilities
         <> [AfterDiscoverClues iid lid n]
@@ -909,7 +915,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     InvestigatorSpendClues iid n | iid == investigatorId ->
       pure $ a & clues -~ n
     SpendResources iid n | iid == investigatorId ->
-      pure $ a & resources -~ n & resources %~ max 0
+      pure $ a & resources %~ max 0 . subtract n
     TakeResources iid n True | iid == investigatorId -> a <$ unshiftMessages
       [ TakeAction iid (actionCost a Action.Resource) (Just Action.Resource)
       , CheckAttackOfOpportunity iid False
@@ -937,25 +943,23 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           []
           mempty
         )
-    ActivateCardAbilityAction iid ability@(_, _, _, abilityType, _)
-      | iid == investigatorId -> do
-        unshiftMessage (UseCardAbility iid ability) -- We should check action type when added for aoo
-        case abilityType of
-          FreeAbility _ -> pure ()
-          ReactionAbility _ -> pure ()
-          ActionAbility n actionType ->
-            if actionType
-                `notElem` [ Just Action.Fight
-                          , Just Action.Evade
-                          , Just Action.Resign
-                          , Just Action.Parley
-                          ]
-              then unshiftMessages
-                [ TakeAction iid n actionType
-                , CheckAttackOfOpportunity iid False
-                ]
-              else unshiftMessage (TakeAction iid n actionType)
-        pure a
+    ActivateCardAbilityAction iid Ability {..} | iid == investigatorId -> do
+      unshiftMessage
+        (UseCardAbility iid abilitySource abilityProvider abilityIndex) -- We should check action type when added for aoo
+      case abilityType of
+        FreeAbility _ -> pure ()
+        ReactionAbility _ -> pure ()
+        ActionAbility n actionType ->
+          if actionType
+              `notElem` [ Just Action.Fight
+                        , Just Action.Evade
+                        , Just Action.Resign
+                        , Just Action.Parley
+                        ]
+            then unshiftMessages
+              [TakeAction iid n actionType, CheckAttackOfOpportunity iid False]
+            else unshiftMessage (TakeAction iid n actionType)
+      pure a
     AllDrawCardAndResource | not (a ^. defeated || a ^. resigned) -> do
       unshiftMessage (DrawCards investigatorId 1 False)
       pure $ a & resources +~ 1
@@ -970,10 +974,10 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         (getSet iid)
       availableAbilities <- getAvailableAbilities a
       let
-        filteredAbilities = flip filter availableAbilities $ \case
-          (_, _, _, FreeAbility (SkillTestWindow st), _) | st == skillType ->
-            True
-          _ -> False
+        filteredAbilities = flip filter availableAbilities $ \Ability {..} ->
+          case abilityType of
+            FreeAbility (SkillTestWindow st) | st == skillType -> True
+            _ -> False
         triggerMessage = StartSkillTest investigatorId
         beginMessage = BeforeSkillTest iid skillType
         committableCards = flip filter investigatorHand $ \case
@@ -988,7 +992,15 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         unshiftMessage
           (SkillTestAsk $ Ask iid $ ChooseOne
             (map
-                (\ability -> Run [UseCardAbility iid ability, beginMessage])
+                (\Ability {..} -> Run
+                  [ UseCardAbility
+                    iid
+                    abilitySource
+                    abilityProvider
+                    abilityIndex
+                  , beginMessage
+                  ]
+                )
                 filteredAbilities
             <> map
                  (\card ->
@@ -1070,11 +1082,14 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
               )
               playableCards
           <> map
-               (\ability ->
-                 Run
-                   [ UseCardAbility investigatorId ability
-                   , CheckFastWindow iid windows
-                   ]
+               (\Ability {..} -> Run
+                 [ UseCardAbility
+                   investigatorId
+                   abilitySource
+                   abilityProvider
+                   abilityIndex
+                 , CheckFastWindow iid windows
+                 ]
                )
                filteredAbilities
           <> [Continue "Skip playing fast cards"]
@@ -1175,11 +1190,12 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         unengagedEnemyIds = enemyIds `difference` investigatorEngagedEnemies
         accessibleLocations =
           investigatorConnectedLocations `difference` blockedLocationIds
-        availableAbilities = flip filter allAbilities $ \case
-          (_, _, _, FreeAbility AnyWindow, _) -> True
-          (_, _, _, ActionAbility _ Nothing, _) -> True
-          (_, _, _, ActionAbility _ (Just action), _) -> action `elem` canDos
-          _ -> False
+        availableAbilities = flip filter allAbilities $ \Ability {..} ->
+          case abilityType of
+            FreeAbility AnyWindow -> True
+            ActionAbility _ Nothing -> True
+            ActionAbility _ (Just action) -> action `elem` canDos
+            _ -> False
       a <$ unshiftMessage
         (Ask iid $ ChooseOne
           (additionalActions

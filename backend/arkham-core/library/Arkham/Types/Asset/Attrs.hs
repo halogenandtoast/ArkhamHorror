@@ -108,9 +108,7 @@ instance (AssetRunner env) => RunMessage env Attrs where
     AddAbility (AssetSource aid) ability | aid == assetId ->
       pure $ a & abilities %~ (<> [ability])
     RemoveAbilitiesFrom source -> do
-      let
-        abilities' =
-          filter (\(_, source', _, _, _) -> source /= source') assetAbilities
+      let abilities' = filter ((source /=) . abilitySource) assetAbilities
       pure $ a & abilities .~ abilities'
     CheckDefeated ->
       a <$ when (defeated a) (unshiftMessage (AssetDefeated assetId))

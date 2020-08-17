@@ -5,10 +5,10 @@ import Arkham.Types.Ability
 import Arkham.Types.Act
 import Arkham.Types.ActId
 import Arkham.Types.Agenda
-import Arkham.Types.Campaign
 import Arkham.Types.AgendaId
 import Arkham.Types.Asset
 import Arkham.Types.AssetId
+import Arkham.Types.Campaign
 import Arkham.Types.Card
 import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
@@ -41,7 +41,7 @@ data GameJson = GameJson
   , gPhase :: Phase
   , gEncounterDeck :: Deck EncounterCard
   , gDiscard :: [EncounterCard]
-  , gSkillTest :: Maybe SkillTest
+  , gSkillTest :: Maybe (SkillTest Message)
   , gChaosBag :: Bag Token
   , gAgendas :: HashMap AgendaId Agenda
   , gTreacheries :: HashMap TreacheryId Treachery

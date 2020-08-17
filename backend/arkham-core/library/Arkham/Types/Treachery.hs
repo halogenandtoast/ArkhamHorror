@@ -3,6 +3,7 @@ module Arkham.Types.Treachery
   ( lookupTreachery
   , Treachery(..)
   , isWeakness
+  , treacheryLocation
   )
 where
 
@@ -10,14 +11,20 @@ import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Helpers
+import Arkham.Types.LocationId
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Cards.AncientEvils
 import Arkham.Types.Treachery.Cards.CoverUp
 import Arkham.Types.Treachery.Cards.CryptChill
 import Arkham.Types.Treachery.Cards.DissonantVoices
+import Arkham.Types.Treachery.Cards.FalseLead
 import Arkham.Types.Treachery.Cards.FrozenInFear
 import Arkham.Types.Treachery.Cards.GraspingHands
+import Arkham.Types.Treachery.Cards.HuntingShadow
+import Arkham.Types.Treachery.Cards.LockedDoor
+import Arkham.Types.Treachery.Cards.MysteriousChanting
 import Arkham.Types.Treachery.Cards.ObscuringFog
+import Arkham.Types.Treachery.Cards.OnWingsOfDarkness
 import Arkham.Types.Treachery.Cards.RottingRemains
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
@@ -33,6 +40,8 @@ lookupTreachery =
 allTreacheries :: HashMap CardCode (TreacheryId -> Treachery)
 allTreacheries = HashMap.fromList
   [ ("01007", CoverUp' . coverUp)
+  , ("01135", HuntingShadow' . huntingShadow)
+  , ("01136", FalseLead' . falseLead)
   , ("01162", GraspingHands' . graspingHands)
   , ("01166", AncientEvils' . ancientEvils)
   , ("01163", RottingRemains' . rottingRemains)
@@ -40,6 +49,9 @@ allTreacheries = HashMap.fromList
   , ("01165", DissonantVoices' . dissonantVoices)
   , ("01167", CryptChill' . cryptChill)
   , ("01168", ObscuringFog' . obscuringFog)
+  , ("01171", MysteriousChanting' . mysteriousChanting)
+  , ("01173", OnWingsOfDarkness' . onWingsOfDarkness)
+  , ("01174", LockedDoor' . lockedDoor)
   ]
 
 instance HasCardCode Treachery where
@@ -53,6 +65,8 @@ instance HasTraits Treachery where
 
 data Treachery
   = CoverUp' CoverUp
+  | HuntingShadow' HuntingShadow
+  | FalseLead' FalseLead
   | GraspingHands' GraspingHands
   | AncientEvils' AncientEvils
   | RottingRemains' RottingRemains
@@ -60,12 +74,17 @@ data Treachery
   | DissonantVoices' DissonantVoices
   | CryptChill' CryptChill
   | ObscuringFog' ObscuringFog
+  | MysteriousChanting' MysteriousChanting
+  | OnWingsOfDarkness' OnWingsOfDarkness
+  | LockedDoor' LockedDoor
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 treacheryAttrs :: Treachery -> Attrs
 treacheryAttrs = \case
   CoverUp' (CoverUp (attrs `With` _)) -> attrs
+  HuntingShadow' attrs -> coerce attrs
+  FalseLead' attrs -> coerce attrs
   GraspingHands' attrs -> coerce attrs
   AncientEvils' attrs -> coerce attrs
   RottingRemains' attrs -> coerce attrs
@@ -73,13 +92,21 @@ treacheryAttrs = \case
   DissonantVoices' attrs -> coerce attrs
   CryptChill' attrs -> coerce attrs
   ObscuringFog' attrs -> coerce attrs
+  MysteriousChanting' attrs -> coerce attrs
+  OnWingsOfDarkness' attrs -> coerce attrs
+  LockedDoor' attrs -> coerce attrs
 
 isWeakness :: Treachery -> Bool
 isWeakness = treacheryWeakness . treacheryAttrs
 
+treacheryLocation :: Treachery -> Maybe LocationId
+treacheryLocation = treacheryAttachedLocation . treacheryAttrs
+
 instance (TreacheryRunner env) => RunMessage env Treachery where
   runMessage msg = \case
     CoverUp' x -> CoverUp' <$> runMessage msg x
+    HuntingShadow' x -> HuntingShadow' <$> runMessage msg x
+    FalseLead' x -> FalseLead' <$> runMessage msg x
     GraspingHands' x -> GraspingHands' <$> runMessage msg x
     AncientEvils' x -> AncientEvils' <$> runMessage msg x
     RottingRemains' x -> RottingRemains' <$> runMessage msg x
@@ -87,3 +114,6 @@ instance (TreacheryRunner env) => RunMessage env Treachery where
     DissonantVoices' x -> DissonantVoices' <$> runMessage msg x
     CryptChill' x -> CryptChill' <$> runMessage msg x
     ObscuringFog' x -> ObscuringFog' <$> runMessage msg x
+    MysteriousChanting' x -> MysteriousChanting' <$> runMessage msg x
+    OnWingsOfDarkness' x -> OnWingsOfDarkness' <$> runMessage msg x
+    LockedDoor' x -> LockedDoor' <$> runMessage msg x

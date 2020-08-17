@@ -46,6 +46,7 @@ data Attrs = Attrs
   , enemyModifiers :: [Modifier]
   , enemyAbilities :: [Ability]
   , enemyExhausted :: Bool
+  , enemyDoom :: Int
   }
   deriving stock (Show, Generic)
 
@@ -55,6 +56,9 @@ instance ToJSON Attrs where
 
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "enemy"
+
+doom :: Lens' Attrs Int
+doom = lens enemyDoom $ \m x -> m { enemyDoom = x }
 
 prey :: Lens' Attrs Prey
 prey = lens enemyPrey $ \m x -> m { enemyPrey = x }
@@ -106,6 +110,7 @@ baseAttrs eid cardCode =
       , enemyModifiers = mempty
       , enemyAbilities = mempty
       , enemyExhausted = False
+      , enemyDoom = 0
       }
 
 weaknessBaseAttrs :: EnemyId -> CardCode -> Attrs
@@ -136,6 +141,7 @@ weaknessBaseAttrs eid cardCode =
       , enemyModifiers = mempty
       , enemyAbilities = mempty
       , enemyExhausted = False
+      , enemyDoom = 0
       }
 
 
@@ -298,5 +304,13 @@ instance (EnemyRunner env) => RunMessage env Attrs where
       pure $ a & location .~ lid
     InvestigatorEliminated iid ->
       pure $ a & engagedInvestigators %~ HashSet.delete iid
+    UnengageNonMatching iid traits
+      | iid `elem` enemyEngagedInvestigators && null
+        (HashSet.fromList traits `intersection` enemyTraits)
+      -> a <$ unshiftMessage (UnengageEnemy iid enemyId)
+    UnengageEnemy iid eid | eid == enemyId -> do
+      pure $ a & engagedInvestigators %~ HashSet.delete iid
     EnemySetBearer eid bid | eid == enemyId -> pure $ a & prey .~ Bearer bid
+    PlaceDoom (EnemyTarget eid) amount | eid == enemyId ->
+      pure $ a & doom +~ amount
     _ -> pure a

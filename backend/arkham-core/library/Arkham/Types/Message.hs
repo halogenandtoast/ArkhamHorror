@@ -125,6 +125,7 @@ data Message
   | ChooseFightEnemy InvestigatorId SkillType [Modifier] [TokenResponse Message] Bool
   | ChooseEvadeEnemy InvestigatorId SkillType [Message] [Message] [TokenResponse Message] Bool
   | EngageEnemy InvestigatorId EnemyId Bool
+  | UnengageEnemy InvestigatorId EnemyId
   | ChooseEndTurn InvestigatorId
   | CheckAttackOfOpportunity InvestigatorId Bool
   | TakeResources InvestigatorId Int Bool
@@ -213,6 +214,8 @@ data Message
   | RevelationSkillTest InvestigatorId Source SkillType Int [Message] [Message]
   | DamagePerPointOfFailure InvestigatorId
   | HorrorPerPointOfFailure InvestigatorId
+  | PlaceCluePerPointOfFailureOnLocation InvestigatorId
+  | PlaceCluesOnLocation InvestigatorId Int
   | Discard Target
   | SetEncounterDeck [EncounterCard]
   | TreacheryFailure InvestigatorId TreacheryId -- TODO: better name
@@ -274,6 +277,9 @@ data Message
   | ChooseLeadInvestigator
   | ChoosePlayer InvestigatorId ChoosePlayerChoice
   | Label Text [Message]
+  | UnengageNonMatching InvestigatorId [Trait]
+  | PlaceDoom Target Int
+  | Surge InvestigatorId
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

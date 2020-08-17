@@ -68,6 +68,9 @@ allLocations = HashMap.fromList $ map
   , Northside' northside
   ]
 
+instance HasTraits Location where
+  getTraits = locationTraits . locationAttrs
+
 instance HasAbilities Location where
   getAbilities = locationAbilities . locationAttrs
 

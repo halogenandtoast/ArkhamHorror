@@ -17,6 +17,7 @@ import Data.Aeson
 sourceOfModifier :: Modifier -> Source
 sourceOfModifier (ActionCostOf _ _ s) = s
 sourceOfModifier (CannotPlay _ s) = s
+sourceOfModifier (CannotInvestigate s) = s
 sourceOfModifier (SkillModifier _ _ s) = s
 sourceOfModifier (ActionSkillModifier _ _ _ s) = s
 sourceOfModifier (DamageTaken _ s) = s
@@ -29,6 +30,7 @@ sourceOfModifier (ForcedTokenChange _ _ s) = s
 replaceModifierSource :: Source -> Modifier -> Modifier
 replaceModifierSource s (ActionCostOf a b _) = ActionCostOf a b s
 replaceModifierSource s (CannotPlay a _) = CannotPlay a s
+replaceModifierSource s (CannotInvestigate _) = CannotInvestigate s
 replaceModifierSource s (SkillModifier a b _) = SkillModifier a b s
 replaceModifierSource s (ActionSkillModifier a b c _) =
   ActionSkillModifier a b c s
@@ -42,6 +44,7 @@ replaceModifierSource s (ForcedTokenChange a b _) = ForcedTokenChange a b s
 data Modifier
   = ActionCostOf ActionTarget Int Source
   | CannotPlay [PlayerCardType] Source
+  | CannotInvestigate Source
   | SkillModifier SkillType Int Source
   | ActionSkillModifier Action SkillType Int Source
   | DamageDealt Int Source

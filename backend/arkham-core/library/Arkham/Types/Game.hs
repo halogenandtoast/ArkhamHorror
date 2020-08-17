@@ -21,6 +21,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Campaign
 import Arkham.Types.CampaignId
 import Arkham.Types.Card
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
@@ -451,6 +452,22 @@ instance HasSet RemainingHealth () Game where
 instance HasSet LocationId () Game where
   getSet _ = HashMap.keysSet . view locations
 
+instance HasSet LocationId TreacheryCardCode Game where
+  getSet (TreacheryCardCode cc) =
+    HashSet.fromList
+      . catMaybes
+      . HashMap.elems
+      . HashMap.map treacheryLocation
+      . HashMap.filter ((== cc) . getCardCode)
+      . view treacheries
+
+instance HasSet LocationId [Trait] Game where
+  getSet traits =
+    HashMap.keysSet . HashMap.filter hasMatchingTrait . view locations
+   where
+    hasMatchingTrait =
+      not . null . (HashSet.fromList traits `intersection`) . getTraits
+
 instance HasSet ActId () Game where
   getSet _ = HashMap.keysSet . view acts
 
@@ -566,6 +583,17 @@ instance HasSet ClosestLocationId (LocationId, Prey) Game where
     HashSet.fromList . map ClosestLocationId $ getShortestPath g start matcher
     where matcher lid = not . null $ getSet @PreyId (prey, lid) g
 
+instance HasSet ClosestEnemyId (LocationId, [Trait]) Game where
+  getSet (start, traits) g =
+    let locations' = map ClosestLocationId $ getShortestPath g start matcher
+    in
+      HashSet.unions $ map
+        (\lid -> HashSet.map ClosestEnemyId
+          $ getSet (traits, unClosestLocationId lid) g
+        )
+        locations'
+    where matcher lid = not . null $ getSet @EnemyId (traits, lid) g
+
 instance HasSet ClosestLocationId (LocationId, LocationId) Game where
   getSet (start, destination) g =
     HashSet.fromList . map ClosestLocationId $ getShortestPath
@@ -621,6 +649,18 @@ instance HasSet SanityDamageableAssetId InvestigatorId Game where
 
 instance HasSet EnemyId LocationId Game where
   getSet lid = getSet () . getLocation lid
+
+instance HasSet EnemyId ([Trait], LocationId) Game where
+  getSet (traits, lid) g =
+    HashSet.filter
+        (not
+        . null
+        . (HashSet.fromList traits `intersection`)
+        . getTraits
+        . flip getEnemy g
+        )
+      . getSet ()
+      $ getLocation lid g
 
 instance HasSet AloofEnemyId LocationId Game where
   getSet lid g = HashSet.map AloofEnemyId . HashMap.keysSet $ enemies'

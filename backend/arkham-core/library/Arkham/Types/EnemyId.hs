@@ -7,6 +7,9 @@ import Data.UUID
 newtype EnemyId = EnemyId { unEnemyId :: UUID }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 
+newtype ClosestEnemyId = ClosestEnemyId { unClosestEnemyId :: EnemyId }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
 newtype AloofEnemyId = AloofEnemyId { unAloofEnemyId :: EnemyId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 

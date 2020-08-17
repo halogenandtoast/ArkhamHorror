@@ -134,14 +134,14 @@ export default class Asset extends Vue {
   }
 
   abilityLabel(idx: number) {
-    return this.choices[idx].contents[1][3].contents[1];
+    return this.choices[idx].contents[1].type.contents[1];
   }
 
   get abilities() {
     return this
       .choices
       .reduce<number[]>((acc, v, i) => {
-        if (v.tag === 'ActivateCardAbilityAction' && v.contents[1][0].tag === 'AssetSource' && v.contents[1][0].contents === this.id) {
+        if (v.tag === 'ActivateCardAbilityAction' && v.contents[1].source.tag === 'AssetSource' && v.contents[1].source.contents === this.id) {
           return [...acc, i];
         }
 

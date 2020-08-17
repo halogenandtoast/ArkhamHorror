@@ -14,4 +14,5 @@ type EnemyRunner env
     , HasSet ClosestLocationId (LocationId, Prey) env
     , HasSet PreyId (Prey, LocationId) env
     , HasId LeadInvestigatorId () env
+    , HasSet EmptyLocationId () env
     )

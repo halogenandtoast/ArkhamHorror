@@ -7,6 +7,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
+import qualified Arkham.Types.FastWindow as Fast
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -25,7 +26,8 @@ beatCop uuid = BeatCop $ (baseAttrs uuid "01018")
   { assetSlots = [AllySlot]
   , assetHealth = Just 2
   , assetSanity = Just 2
-  , assetAbilities = [mkAbility (AssetSource uuid) 1 (FreeAbility AnyWindow)]
+  , assetAbilities =
+    [mkAbility (AssetSource uuid) 1 (FastAbility Fast.AnyWindow)]
   }
 
 instance (AssetRunner env) => RunMessage env BeatCop where

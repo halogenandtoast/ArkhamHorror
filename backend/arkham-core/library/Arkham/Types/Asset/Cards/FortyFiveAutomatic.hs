@@ -33,15 +33,13 @@ instance (AssetRunner env) => RunMessage env FortyFiveAutomatic where
         $ attrs
         & (uses .~ Uses Resource.Ammo 4)
         & (abilities
-          .~ [ ( AssetSource aid
-               , AssetSource aid
-               , 1
-               , ActionAbility 1 (Just Action.Fight)
-               , NoLimit
-               )
+          .~ [ mkAbility
+                 (AssetSource aid)
+                 1
+                 (ActionAbility 1 (Just Action.Fight))
              ]
           )
-    UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId ->
+    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
       case assetUses of
         Uses Resource.Ammo n -> do
           when

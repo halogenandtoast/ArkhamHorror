@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cb07aee5a31f9ddc661fd4ce55bfa02a0ab753a6f5ecf743b2930e6a94fef18d
+-- hash: bf87d9e360d5c20c838c4594410c9efa13a9507d7ea91f0e28e4de8abd6b5ba5
 
 name:           arkham-core
 version:        0.0.0
@@ -83,12 +83,17 @@ library
       Arkham.Types.Enemy.Cards.FleshEater
       Arkham.Types.Enemy.Cards.GhoulMinion
       Arkham.Types.Enemy.Cards.GhoulPriest
+      Arkham.Types.Enemy.Cards.HermanCollins
       Arkham.Types.Enemy.Cards.HuntingNightgaunt
       Arkham.Types.Enemy.Cards.IcyGhoul
+      Arkham.Types.Enemy.Cards.PeterWarren
       Arkham.Types.Enemy.Cards.RavenousGhoul
+      Arkham.Types.Enemy.Cards.RuthTurner
       Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
       Arkham.Types.Enemy.Cards.SwarmOfRats
+      Arkham.Types.Enemy.Cards.VictoriaDevereux
       Arkham.Types.Enemy.Cards.WizardOfTheOrder
+      Arkham.Types.Enemy.Cards.WolfManDrew
       Arkham.Types.Enemy.Runner
       Arkham.Types.EnemyId
       Arkham.Types.Event

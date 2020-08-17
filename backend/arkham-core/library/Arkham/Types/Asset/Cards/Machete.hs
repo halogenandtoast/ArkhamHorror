@@ -23,18 +23,12 @@ machete :: AssetId -> Machete
 machete uuid = Machete $ (baseAttrs uuid "01020")
   { assetSlots = [HandSlot]
   , assetAbilities =
-    [ ( AssetSource uuid
-      , AssetSource uuid
-      , 1
-      , ActionAbility 1 (Just Action.Fight)
-      , NoLimit
-      )
-    ]
+    [mkAbility (AssetSource uuid) 1 (ActionAbility 1 (Just Action.Fight))]
   }
 
 instance (AssetRunner env) => RunMessage env Machete where
   runMessage msg a@(Machete attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
       engagedEnemiesCount <- unEnemyCount <$> asks (getCount iid)
       let
         damageDealtModifiers = if engagedEnemiesCount == 1

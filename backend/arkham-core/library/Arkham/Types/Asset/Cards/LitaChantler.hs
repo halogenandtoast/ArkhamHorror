@@ -2,12 +2,10 @@
 module Arkham.Types.Asset.Cards.LitaChantler where
 
 import Arkham.Json
-import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
-import qualified Arkham.Types.FastWindow as Fast
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -40,12 +38,9 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
               [ Run
                 [ UseCardAbility
                   iid
-                  ( AssetSource assetId
-                  , AssetSource assetId
-                  , 1
-                  , ReactionAbility Fast.Now
-                  , NoLimit
-                  )
+                  (AssetSource assetId)
+                  (AssetSource assetId)
+                  1
                 , AddModifier
                   (EnemyTarget eid)
                   (DamageTaken 1 (AssetSource assetId))

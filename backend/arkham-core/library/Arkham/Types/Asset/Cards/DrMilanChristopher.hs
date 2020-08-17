@@ -2,12 +2,10 @@
 module Arkham.Types.Asset.Cards.DrMilanChristopher where
 
 import Arkham.Json
-import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
-import qualified Arkham.Types.FastWindow as Fast
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -39,17 +37,10 @@ instance (AssetRunner env) => RunMessage env DrMilanChristopher where
     SuccessfulInvestigation iid _ | iid == getInvestigator attrs ->
       a <$ unshiftMessage
         (Ask iid $ ChooseOne
-          [ UseCardAbility
-            iid
-            ( AssetSource assetId
-            , AssetSource assetId
-            , 1
-            , ReactionAbility Fast.Now
-            , NoLimit
-            )
+          [ UseCardAbility iid (AssetSource assetId) (AssetSource assetId) 1
           , Continue "Do not use Dr. Christopher Milan's ability"
           ]
         )
-    UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId ->
+    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
       a <$ unshiftMessage (TakeResources iid 1 False)
     _ -> DrMilanChristopher <$> runMessage msg attrs

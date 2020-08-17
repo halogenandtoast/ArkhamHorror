@@ -25,8 +25,7 @@ beatCop uuid = BeatCop $ (baseAttrs uuid "01018")
   { assetSlots = [AllySlot]
   , assetHealth = Just 2
   , assetSanity = Just 2
-  , assetAbilities =
-    [(AssetSource uuid, AssetSource uuid, 1, FreeAbility AnyWindow, NoLimit)]
+  , assetAbilities = [mkAbility (AssetSource uuid) 1 (FreeAbility AnyWindow)]
   }
 
 instance (AssetRunner env) => RunMessage env BeatCop where
@@ -38,7 +37,7 @@ instance (AssetRunner env) => RunMessage env BeatCop where
           (SkillModifier SkillCombat 1 (AssetSource aid))
         )
       pure a
-    UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
       locationId <- asks (getId @LocationId (getInvestigator attrs))
       locationEnemyIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessages

@@ -22,24 +22,14 @@ knife :: AssetId -> Knife
 knife uuid = Knife $ (baseAttrs uuid "01086")
   { assetSlots = [HandSlot]
   , assetAbilities =
-    [ ( AssetSource uuid
-      , AssetSource uuid
-      , 1
-      , ActionAbility 1 (Just Action.Fight)
-      , NoLimit
-      )
-    , ( AssetSource uuid
-      , AssetSource uuid
-      , 2
-      , ActionAbility 1 (Just Action.Fight)
-      , NoLimit
-      )
+    [ mkAbility (AssetSource uuid) 1 (ActionAbility 1 (Just Action.Fight))
+    , mkAbility (AssetSource uuid) 2 (ActionAbility 1 (Just Action.Fight))
     ]
   }
 
 instance (AssetRunner env) => RunMessage env Knife where
   runMessage msg a@(Knife attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
       unshiftMessage
         (ChooseFightEnemy
           iid
@@ -49,7 +39,7 @@ instance (AssetRunner env) => RunMessage env Knife where
           False
         )
       pure a
-    UseCardAbility iid (AssetSource aid, _, 2, _, _) | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) 2 | aid == assetId -> do
       unshiftMessages
         [ DiscardAsset aid
         , ChooseFightEnemy

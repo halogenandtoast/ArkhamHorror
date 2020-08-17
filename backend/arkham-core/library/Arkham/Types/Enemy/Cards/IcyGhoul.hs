@@ -26,5 +26,5 @@ icyGhoul uuid = IcyGhoul $ (baseAttrs uuid "01119")
 instance (EnemyRunner env) => RunMessage env IcyGhoul where
   runMessage msg e@(IcyGhoul attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == enemyId ->
-      e <$ spawnAt "01114" enemyId
+      e <$ spawnAt enemyId "01114"
     _ -> IcyGhoul <$> runMessage msg attrs

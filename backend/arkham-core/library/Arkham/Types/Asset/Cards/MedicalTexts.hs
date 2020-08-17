@@ -22,13 +22,12 @@ newtype MedicalTexts = MedicalTexts Attrs
 medicalTexts :: AssetId -> MedicalTexts
 medicalTexts uuid = MedicalTexts $ (baseAttrs uuid "01035")
   { assetSlots = [HandSlot]
-  , assetAbilities =
-    [(AssetSource uuid, AssetSource uuid, 1, ActionAbility 1 Nothing, NoLimit)]
+  , assetAbilities = [mkAbility (AssetSource uuid) 1 (ActionAbility 1 Nothing)]
   }
 
 instance (AssetRunner env) => RunMessage env MedicalTexts where
   runMessage msg (MedicalTexts attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (AssetSource aid, _, 1, _, _) | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
       locationId <- asks (getId @LocationId (getInvestigator attrs))
       locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessage

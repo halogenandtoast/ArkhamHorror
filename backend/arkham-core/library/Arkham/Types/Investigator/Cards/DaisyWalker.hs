@@ -48,9 +48,9 @@ becomesFailure _ _ = False
 instance (InvestigatorRunner env) => RunMessage env DaisyWalker where
   runMessage msg i@(DaisyWalker (attrs@Attrs {..} `With` metadata@DaisyWalkerMetadata {..}))
     = case msg of
-      ActivateCardAbilityAction iid (AssetSource aid, msource, abilityIndex, abilityType, abilityLimit)
-        | iid == investigatorId
-        -> do
+      ActivateCardAbilityAction iid ability@Ability {..}
+        | iid == investigatorId && sourceIsAsset abilitySource -> do
+          let (AssetSource aid) = abilitySource
           traits <- asks (getSet aid)
           if Tome `elem` traits && tomeActions > 0
             then case abilityType of
@@ -65,11 +65,9 @@ instance (InvestigatorRunner env) => RunMessage env DaisyWalker where
                   <$> runMessage
                         (ActivateCardAbilityAction
                           iid
-                          ( AssetSource aid
-                          , msource
-                          , abilityIndex
-                          , ActionAbility (n - 1) actionType
-                          , abilityLimit
+                          (ability
+                            { abilityType = ActionAbility (n - 1) actionType
+                            }
                           )
                         )
                         attrs

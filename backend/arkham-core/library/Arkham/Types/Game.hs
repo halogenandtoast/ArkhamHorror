@@ -1032,6 +1032,21 @@ runGameMessage msg g = case msg of
           & (enemies %~ HashMap.delete eid)
           & (victory %~ (EncounterCard ec :))
         else pure $ g & (enemies %~ HashMap.delete eid) & (discard %~ (ec :))
+  AddToVictory (EnemyTarget eid) -> do
+    let
+      enemy = g ^?! enemies . ix eid
+      cardId = CardId (unEnemyId eid)
+      encounterCard = do
+        f <- HashMap.lookup (getCardCode enemy) allEncounterCards
+        pure $ EncounterCard $ f cardId
+    case encounterCard of
+      Nothing -> error "missing"
+      Just (PlayerCard _) -> error "can not be player card"
+      Just (EncounterCard ec) ->
+        pure
+          $ g
+          & (enemies %~ HashMap.delete eid)
+          & (victory %~ (EncounterCard ec :))
   BeginInvestigation -> do
     unshiftMessage (ChoosePlayerOrder (giPlayerOrder g) [])
     pure $ g & phase .~ InvestigationPhase
@@ -1062,7 +1077,7 @@ runGameMessage msg g = case msg of
   EndRound -> do
     pushMessage BeginRound
     pure $ g & usedAbilities %~ filter
-      (\(_, _, _, _, limit) -> limit == OncePerGame)
+      (\Ability {..} -> abilityLimit == OncePerGame)
   BeginRound -> g <$ pushMessage BeginMythos
   BeginMythos -> do
     pushMessages
@@ -1073,8 +1088,6 @@ runGameMessage msg g = case msg of
       ]
     pure $ g & phase .~ MythosPhase
   EndMythos -> g <$ pushMessage BeginInvestigation
-  UseCardAbility _ (_, _, _, _, NoLimit) -> pure g
-  UseCardAbility _ ability -> pure $ g & usedAbilities %~ (ability :)
   BeginSkillTest iid source maction skillType difficulty onSuccess onFailure skillTestModifiers tokenResponses
     -> do
       let

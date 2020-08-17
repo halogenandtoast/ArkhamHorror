@@ -32,5 +32,13 @@ skidsOToole = SkidsOToole $ baseAttrs
 
 instance (InvestigatorRunner env) => RunMessage env SkidsOToole where
   runMessage msg i@(SkidsOToole attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
+    UseCardAbility _ _ (InvestigatorSource iid) 1 | iid == investigatorId ->
+      resources <- unResourceCount <$> asks (getCount iid)
+      when (resources >= 2) $ unshiftMessages
+        [ SpendResources iid 2
+        , AddAction iid (InvestigatorSource iid)
+        ]
+    ResolveToken ElderSign iid skillValue | iid == investigatorId ->
+      runTest skillValue 2
+      i <$ unshiftMessage (AddOnSuccess (TakeResources iid 2 false))
     _ -> SkidsOToole <$> runMessage msg attrs

@@ -3,6 +3,7 @@
 module Arkham.Types.Location
   ( lookupLocation
   , isBlocked
+  , isEmptyLocation
   , Location(..)
   )
 where
@@ -46,6 +47,12 @@ lookupLocation lid =
 
 isBlocked :: Location -> Bool
 isBlocked = locationBlocked . locationAttrs
+
+isEmptyLocation :: Location -> Bool
+isEmptyLocation l = null enemies' && null investigators'
+ where
+  enemies' = locationEnemies $ locationAttrs l
+  investigators' = locationInvestigators $ locationAttrs l
 
 allLocations :: HashMap LocationId Location
 allLocations = HashMap.fromList $ map

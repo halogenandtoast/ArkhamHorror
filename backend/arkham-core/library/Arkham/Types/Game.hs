@@ -452,6 +452,13 @@ instance HasSet RemainingHealth () Game where
 instance HasSet LocationId () Game where
   getSet _ = HashMap.keysSet . view locations
 
+instance HasSet EmptyLocationId () Game where
+  getSet _ =
+    HashSet.map EmptyLocationId
+      . HashMap.keysSet
+      . HashMap.filter isEmptyLocation
+      . view locations
+
 instance HasSet LocationId TreacheryCardCode Game where
   getSet (TreacheryCardCode cc) =
     HashSet.fromList

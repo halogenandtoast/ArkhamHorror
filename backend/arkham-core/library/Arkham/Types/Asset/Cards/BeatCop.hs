@@ -26,8 +26,7 @@ beatCop uuid = BeatCop $ (baseAttrs uuid "01018")
   { assetSlots = [AllySlot]
   , assetHealth = Just 2
   , assetSanity = Just 2
-  , assetAbilities =
-    [mkAbility (AssetSource uuid) 1 (FastAbility Fast.AnyWindow)]
+  , assetAbilities = [mkAbility (AssetSource uuid) 1 (FastAbility Fast.Any)]
   }
 
 instance (AssetRunner env) => RunMessage env BeatCop where

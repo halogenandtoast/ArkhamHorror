@@ -405,7 +405,7 @@ getAvailableAbilities a@Attrs {..} = do
   canPerformAbility Ability {..} = case abilityType of
     ActionAbility _ (Just actionType) -> canAfford a actionType
     ActionAbility _ Nothing -> True -- e.g. Old Book of Lore
-    FastAbility AnyWindow -> True
+    FastAbility Any -> True
     FastAbility _ -> True -- must be filtered out later
     ReactionAbility _ -> True
 
@@ -1192,7 +1192,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           investigatorConnectedLocations `difference` blockedLocationIds
         availableAbilities = flip filter allAbilities $ \Ability {..} ->
           case abilityType of
-            FastAbility AnyWindow -> True
+            FastAbility Any -> True
             ActionAbility _ Nothing -> True
             ActionAbility _ (Just action) -> action `elem` canDos
             _ -> False

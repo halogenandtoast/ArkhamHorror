@@ -1097,6 +1097,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         else pure a
     LoseAction iid _ | iid == investigatorId ->
       pure $ a & remainingActions %~ max 0 . subtract 1
+    GainAction iid _ | iid == investigatorId ->
+      pure $ a & remainingActions +~ 1
     TakeAction iid actionCost' maction | iid == investigatorId -> do
       let
         actionsTakenUpdate = case maction of

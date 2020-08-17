@@ -116,6 +116,7 @@ data Message
   | AskMap (HashMap InvestigatorId Question)
   | TakeAction InvestigatorId Int (Maybe Action)
   | LoseAction InvestigatorId Source
+  | GainAction InvestigatorId Source
   | ChoosePlayCardAction InvestigatorId
   | ChooseActivateCardAbilityAction InvestigatorId
   | ActivateCardAbilityAction InvestigatorId Ability

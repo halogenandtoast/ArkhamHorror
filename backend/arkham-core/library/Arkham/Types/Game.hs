@@ -89,7 +89,7 @@ data Game = Game
   , giEncounterDeck :: Deck EncounterCard
   , giDiscard :: [EncounterCard]
   , giChaosBag :: Bag Token
-  , giSkillTest :: Maybe SkillTest
+  , giSkillTest :: Maybe (SkillTest Message)
   , giActs :: HashMap ActId Act
   , giAgendas :: HashMap AgendaId Agenda
   , giTreacheries :: HashMap TreacheryId Treachery
@@ -188,7 +188,7 @@ scenario = lens giScenario $ \m x -> m { giScenario = x }
 campaign :: Lens' Game (Maybe Campaign)
 campaign = lens giCampaign $ \m x -> m { giCampaign = x }
 
-skillTest :: Lens' Game (Maybe SkillTest)
+skillTest :: Lens' Game (Maybe (SkillTest Message))
 skillTest = lens giSkillTest $ \m x -> m { giSkillTest = x }
 
 activeInvestigator :: Game -> Investigator

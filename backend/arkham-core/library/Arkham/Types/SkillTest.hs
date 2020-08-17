@@ -40,13 +40,13 @@ data ResolveStrategy
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data SkillTest = SkillTest
+data SkillTest a = SkillTest
   { skillTestInvestigator    :: InvestigatorId
   , skillTestSkillType :: SkillType
   , skillTestDifficulty      :: Int
-  , skillTestOnSuccess       :: [Message]
-  , skillTestOnFailure       :: [Message]
-  , skillTestOnTokenResponses :: [TokenResponse Message]
+  , skillTestOnSuccess       :: [a]
+  , skillTestOnFailure       :: [a]
+  , skillTestOnTokenResponses :: [TokenResponse a]
   , skillTestDrawStrategy    :: DrawStrategy
   , skillTestResolveStrategy :: ResolveStrategy
   , skillTestSetAsideTokens  :: [Token]
@@ -58,14 +58,14 @@ data SkillTest = SkillTest
   }
   deriving stock (Show, Generic)
 
-instance ToJSON SkillTest where
+instance ToJSON a => ToJSON (SkillTest a) where
   toJSON = genericToJSON $ aesonOptions $ Just "skillTest"
   toEncoding = genericToEncoding $ aesonOptions $ Just "skillTest"
 
-instance FromJSON SkillTest where
+instance FromJSON a => FromJSON (SkillTest a) where
   parseJSON = genericParseJSON $ aesonOptions $ Just "skillTest"
 
-instance HasSet CommitedCardId InvestigatorId SkillTest where
+instance HasSet CommitedCardId InvestigatorId (SkillTest a) where
   getSet iid =
     HashSet.map CommitedCardId
       . HashMap.keysSet
@@ -82,7 +82,7 @@ initSkillTest
   -> [Message]
   -> [Modifier]
   -> [TokenResponse Message]
-  -> SkillTest
+  -> SkillTest Message
 initSkillTest iid source maction skillType' difficulty' onSuccess' onFailure' modifiers' tokenResponses'
   = SkillTest
     { skillTestInvestigator = iid
@@ -101,31 +101,31 @@ initSkillTest iid source maction skillType' difficulty' onSuccess' onFailure' mo
     , skillTestAction = maction
     }
 
-modifiers :: Lens' SkillTest [Modifier]
+modifiers :: Lens' (SkillTest a) [Modifier]
 modifiers = lens skillTestModifiers $ \m x -> m { skillTestModifiers = x }
 
-setAsideTokens :: Lens' SkillTest [Token]
+setAsideTokens :: Lens' (SkillTest a) [Token]
 setAsideTokens =
   lens skillTestSetAsideTokens $ \m x -> m { skillTestSetAsideTokens = x }
 
-committedCards :: Lens' SkillTest (HashMap CardId (InvestigatorId, Card))
+committedCards :: Lens' (SkillTest a) (HashMap CardId (InvestigatorId, Card))
 committedCards =
   lens skillTestCommittedCards $ \m x -> m { skillTestCommittedCards = x }
 
-result :: Lens' SkillTest SkillTestResult
+result :: Lens' (SkillTest a) SkillTestResult
 result = lens skillTestResult $ \m x -> m { skillTestResult = x }
 
-onFailure :: Lens' SkillTest [Message]
+onFailure :: Lens' (SkillTest a) [a]
 onFailure = lens skillTestOnFailure $ \m x -> m { skillTestOnFailure = x }
 
-onSuccess :: Lens' SkillTest [Message]
+onSuccess :: Lens' (SkillTest a) [a]
 onSuccess = lens skillTestOnSuccess $ \m x -> m { skillTestOnSuccess = x }
 
-onTokenResponses :: Lens' SkillTest [TokenResponse Message]
+onTokenResponses :: Lens' (SkillTest a) [TokenResponse a]
 onTokenResponses =
   lens skillTestOnTokenResponses $ \m x -> m { skillTestOnTokenResponses = x }
 
-skillIconCount :: SkillTest -> Int
+skillIconCount :: SkillTest a -> Int
 skillIconCount SkillTest {..} = length . filter matches $ concatMap
   (iconsForCard . snd)
   (HashMap.elems skillTestCommittedCards)
@@ -135,7 +135,7 @@ skillIconCount SkillTest {..} = length . filter matches $ concatMap
   matches SkillWild = True
   matches s = s == skillTestSkillType
 
-modifiedTokenValue :: Int -> SkillTest -> Int
+modifiedTokenValue :: Int -> SkillTest a -> Int
 modifiedTokenValue baseValue SkillTest {..} = foldr
   applyModifier
   baseValue
@@ -147,7 +147,7 @@ modifiedTokenValue baseValue SkillTest {..} = foldr
 
 type SkillTestRunner env = (HasQueue env, HasCard InvestigatorId env)
 
-instance (SkillTestRunner env) => RunMessage env SkillTest where
+instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
   runMessage msg s@SkillTest {..} = case msg of
     AddOnFailure m -> pure $ s & onFailure %~ (m :)
     AddOnSuccess m -> pure $ s & onSuccess %~ (m :)

@@ -7,6 +7,9 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Source
 import ClassyPrelude
 
 newtype HuntingNightgaunt = HuntingNightgaunt Attrs
@@ -22,5 +25,21 @@ huntingNightgaunt uuid = HuntingNightgaunt $ (baseAttrs uuid "01172")
   }
 
 instance (EnemyRunner env) => RunMessage env HuntingNightgaunt where
-  runMessage msg (HuntingNightgaunt attrs) =
-    HuntingNightgaunt <$> runMessage msg attrs
+  runMessage msg (HuntingNightgaunt attrs@Attrs {..}) = case msg of
+    TryEvadeEnemy iid eid skillType onSuccess onFailure skillTestModifiers tokenResponses
+      | eid == enemyId
+      -> HuntingNightgaunt
+        <$> runMessage
+              (TryEvadeEnemy
+                iid
+                eid
+                skillType
+                onSuccess
+                onFailure
+                (DoubleNegativeModifiersOnTokens (EnemySource eid)
+                : skillTestModifiers
+                )
+                tokenResponses
+              )
+              attrs
+    _ -> HuntingNightgaunt <$> runMessage msg attrs

@@ -651,7 +651,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     EvadeEnemy iid eid skillType onSuccess onFailure tokenResponses False
       | iid == investigatorId -> a <$ unshiftMessages
         [ WhenEvadeEnemy iid eid
-        , TryEvadeEnemy iid eid skillType onSuccess onFailure tokenResponses
+        , TryEvadeEnemy iid eid skillType onSuccess onFailure [] tokenResponses
         , AfterEvadeEnemy iid eid
         ]
     MoveAction iid lid True | iid == investigatorId -> a <$ unshiftMessages

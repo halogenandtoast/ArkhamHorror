@@ -135,6 +135,15 @@ skillIconCount SkillTest {..} = length . filter matches $ concatMap
   matches SkillWild = True
   matches s = s == skillTestSkillType
 
+modifiedTokenValue :: Int -> SkillTest -> Int
+modifiedTokenValue baseValue SkillTest {..} = foldr
+  applyModifier
+  baseValue
+  skillTestModifiers
+ where
+  applyModifier (DoubleNegativeModifiersOnTokens _) n =
+    if baseValue < 0 then n + baseValue else n
+  applyModifier _ n = n
 
 type SkillTestRunner env = (HasQueue env, HasCard InvestigatorId env)
 
@@ -217,8 +226,9 @@ instance (SkillTestRunner env) => RunMessage env SkillTest where
         skillTestModifiers
 
       pure s
-    RunSkillTest modifiedSkillValue -> do
-      let modifiedSkillValue' = modifiedSkillValue + skillIconCount s
+    RunSkillTest skillValue tokenValue -> do
+      let tokenValue' = modifiedTokenValue tokenValue s
+      let modifiedSkillValue' = skillValue + tokenValue' + skillIconCount s
       unshiftMessage SkillTestResults
       putStrLn
         . pack

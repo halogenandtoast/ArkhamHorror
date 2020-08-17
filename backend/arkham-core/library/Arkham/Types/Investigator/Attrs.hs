@@ -452,13 +452,17 @@ possibleSkillTypeChoices skillType attrs = foldr
 
 instance (InvestigatorRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
+    PlaceCluesOnLocation iid n | iid == investigatorId -> do
+      let m = min n investigatorClues
+      unshiftMessage (PlaceClues (LocationTarget investigatorLocation) m)
+      pure $ a & clues -~ m
     ResetGame -> pure $ (baseAttrs
-                                   investigatorId
-                                   investigatorName
-                                   investigatorClass
-                                   (getAttrStats a)
-                                   (HashSet.toList investigatorTraits)
-                                 )
+                          investigatorId
+                          investigatorName
+                          investigatorClass
+                          (getAttrStats a)
+                          (HashSet.toList investigatorTraits)
+                        )
       { investigatorXP = investigatorXP
       , investigatorPhysicalTrauma = investigatorPhysicalTrauma
       , investigatorMentalTrauma = investigatorMentalTrauma
@@ -683,7 +687,6 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
                 | aid <- healthDamageableAssets
                 ]
           else pure []
-
         sanityDamageMessages <- if sanity > 0
           then do
             let
@@ -1108,6 +1111,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           when (pcCardType == PlayerEnemyType)
             $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
       pure $ a & deck .~ Deck deck' & hand %~ (PlayerCard card :)
+    UnengageEnemy iid eid | iid == investigatorId -> do
+      pure $ a & engagedEnemies %~ HashSet.delete eid
     SearchDeckForTraits iid (InvestigatorTarget iid') traits
       | iid' == investigatorId -> runMessage
         (SearchTopOfDeck

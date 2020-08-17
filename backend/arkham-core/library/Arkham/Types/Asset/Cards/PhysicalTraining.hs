@@ -7,6 +7,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
+import qualified Arkham.Types.FastWindow as Fast
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
@@ -24,8 +25,11 @@ physicalTraining uuid = PhysicalTraining $ (baseAttrs uuid "01017")
     [ mkAbility
       (AssetSource uuid)
       1
-      (FreeAbility (SkillTestWindow SkillWillpower))
-    , mkAbility (AssetSource uuid) 2 (FreeAbility (SkillTestWindow SkillCombat))
+      (FastAbility (Fast.WhenSkillTest SkillWillpower))
+    , mkAbility
+      (AssetSource uuid)
+      2
+      (FastAbility (Fast.WhenSkillTest SkillCombat))
     ]
   }
 

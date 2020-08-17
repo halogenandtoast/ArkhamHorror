@@ -3,15 +3,10 @@ module Arkham.Types.Ability where
 import Arkham.Json
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.FastWindow
-import Arkham.Types.SkillType
 import Arkham.Types.Source
 import ClassyPrelude
 
-data AbilityWindow = SkillTestWindow SkillType | AnyWindow
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON)
-
-data AbilityType = FreeAbility AbilityWindow | ReactionAbility FastWindow | ActionAbility Int (Maybe Action)
+data AbilityType = FastAbility FastWindow | ReactionAbility FastWindow | ActionAbility Int (Maybe Action)
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -54,7 +54,7 @@ instance (InvestigatorRunner env) => RunMessage env DaisyWalker where
           traits <- asks (getSet aid)
           if Tome `elem` traits && tomeActions > 0
             then case abilityType of
-              FreeAbility _ ->
+              FastAbility _ ->
                 DaisyWalker . (`with` metadata) <$> runMessage msg attrs
               ReactionAbility _ ->
                 DaisyWalker . (`with` metadata) <$> runMessage msg attrs

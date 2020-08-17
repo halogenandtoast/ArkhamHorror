@@ -344,8 +344,7 @@ canPerform a@Attrs {..} Action.Ability = do
     case abilityType of
       ActionAbility _ (Just action) -> canPerform a action -- TODO: we need to calculate the total cost
       ActionAbility _ Nothing -> pure True -- e.g. Old Book of Lore
-      FreeAbility AnyWindow -> pure True
-      FreeAbility (SkillTestWindow _) -> pure True -- must be filtered out later
+      FastAbility _ -> pure True -- must be filtered out later
       ReactionAbility _ -> pure False
 
   pure $ canAfford a Action.Ability && not (null filteredAbilities)
@@ -406,8 +405,8 @@ getAvailableAbilities a@Attrs {..} = do
   canPerformAbility Ability {..} = case abilityType of
     ActionAbility _ (Just actionType) -> canAfford a actionType
     ActionAbility _ Nothing -> True -- e.g. Old Book of Lore
-    FreeAbility AnyWindow -> True
-    FreeAbility (SkillTestWindow _) -> True
+    FastAbility AnyWindow -> True
+    FastAbility _ -> True -- must be filtered out later
     ReactionAbility _ -> True
 
 drawOpeningHand :: Attrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
@@ -947,7 +946,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       unshiftMessage
         (UseCardAbility iid abilitySource abilityProvider abilityIndex) -- We should check action type when added for aoo
       case abilityType of
-        FreeAbility _ -> pure ()
+        FastAbility _ -> pure ()
         ReactionAbility _ -> pure ()
         ActionAbility n actionType ->
           if actionType
@@ -976,7 +975,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       let
         filteredAbilities = flip filter availableAbilities $ \Ability {..} ->
           case abilityType of
-            FreeAbility (SkillTestWindow st) | st == skillType -> True
+            FastAbility (WhenSkillTest st) | st == skillType -> True
             _ -> False
         triggerMessage = StartSkillTest investigatorId
         beginMessage = BeforeSkillTest iid skillType
@@ -1097,8 +1096,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         else pure a
     LoseAction iid _ | iid == investigatorId ->
       pure $ a & remainingActions %~ max 0 . subtract 1
-    GainAction iid _ | iid == investigatorId ->
-      pure $ a & remainingActions +~ 1
+    GainAction iid _ | iid == investigatorId -> pure $ a & remainingActions +~ 1
     TakeAction iid actionCost' maction | iid == investigatorId -> do
       let
         actionsTakenUpdate = case maction of
@@ -1194,7 +1192,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           investigatorConnectedLocations `difference` blockedLocationIds
         availableAbilities = flip filter allAbilities $ \Ability {..} ->
           case abilityType of
-            FreeAbility AnyWindow -> True
+            FastAbility AnyWindow -> True
             ActionAbility _ Nothing -> True
             ActionAbility _ (Just action) -> action `elem` canDos
             _ -> False

@@ -1,4 +1,5 @@
 import { JsonDecoder } from 'ts.data.json';
+import { SkillType, skillTypeDecoder } from '@/arkham/types/SkillType';
 
 export type Card = PlayerCard | EncounterCard;
 
@@ -6,6 +7,7 @@ export interface PlayerCardContents {
   id: string;
   name: string;
   cardCode: string;
+  skills: SkillType[];
 }
 
 export interface EncounterCardContents {
@@ -29,6 +31,7 @@ export const playerCardContentsDecoder = JsonDecoder.object<PlayerCardContents>(
     id: JsonDecoder.string,
     name: JsonDecoder.string,
     cardCode: JsonDecoder.string,
+    skills: JsonDecoder.array<SkillType>(skillTypeDecoder, 'SkillType[]'),
   },
   'PlayerCard',
 );

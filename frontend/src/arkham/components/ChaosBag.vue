@@ -18,6 +18,15 @@
       @click="$emit('choose', drawTokenAction)"
     />
     <div>
+      <table>
+        <tr><th>Source</th><th>Modifier</th></tr>
+        <tr><td>Test Difficulty</td><td>{{skillTest.difficulty}}</td></tr>
+        <tr><td>{{skillTest.investigator}}</td><td></td></tr>
+        <tr
+          v-for="(committedCard, index) in committedCards"
+          :key="index"
+        ><td>{{committedCard.name}}</td><td></td></tr>
+      </table>
       <button
         v-if="applyResultsAction !== -1"
         @click="$emit('choose', applyResultsAction)"
@@ -110,6 +119,10 @@ export default class ChaosBag extends Vue {
 
   get applyResultsAction() {
     return this.choices.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);
+  }
+
+  get skillTest() {
+    return this.game.currentData.focusedCards;
   }
 }
 </script>

@@ -19,8 +19,7 @@ export interface SkillTest {
   skillType: SkillType;
   difficulty: number;
   setAsideTokens: ChaosToken[];
-  // result: SkillTestResult;
-  // committedCards: Card[];
+  committedCards: Record<string, string[]>;
   source: Source;
 }
 
@@ -30,8 +29,7 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     skillType: skillTypeDecoder,
     difficulty: JsonDecoder.number,
     setAsideTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
-    // result: skillTestResultDecoder,
-    // committedCards: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
+    committedCards: JsonDecoder.dictionary<string[]>(JsonDecoder.array(JsonDecoder.string, 'string[]'), 'Dict<string, string[]>'),
     source: sourceDecoder,
   },
   'SkillTest',

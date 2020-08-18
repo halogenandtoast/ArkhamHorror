@@ -4,8 +4,10 @@ module Arkham.Types.Location.Cards.MiskatonicUniversity where
 import Arkham.Json
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
+import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Trait
 import ClassyPrelude
@@ -26,6 +28,9 @@ miskatonicUniversity = MiskatonicUniversity $ (baseAttrs
   { locationTraits = HashSet.fromList [Arkham]
   , locationVictory = Just 1
   }
+
+instance (CanInvestigate LocationId investigator, HasId InvestigatorId () investigator) => HasActions investigator MiskatonicUniversity where
+  getActions i (MiskatonicUniversity attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env MiskatonicUniversity where
   runMessage msg (MiskatonicUniversity attrs) =

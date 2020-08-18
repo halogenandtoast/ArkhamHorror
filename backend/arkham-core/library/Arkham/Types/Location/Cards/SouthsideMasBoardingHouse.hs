@@ -4,8 +4,10 @@ module Arkham.Types.Location.Cards.SouthsideMasBoardingHouse where
 import Arkham.Json
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
+import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Trait
 import ClassyPrelude
@@ -27,6 +29,9 @@ southsideMasBoardingHouse =
       )
         { locationTraits = HashSet.fromList [Arkham]
         }
+
+instance (CanInvestigate LocationId investigator, HasId InvestigatorId () investigator) => HasActions investigator SouthsideMasBoardingHouse where
+  getActions i (SouthsideMasBoardingHouse attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env SouthsideMasBoardingHouse where
   runMessage msg (SouthsideMasBoardingHouse attrs) =

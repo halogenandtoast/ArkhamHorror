@@ -139,6 +139,25 @@ locationAttrs = \case
   Graveyard' attrs -> coerce attrs
   Northside' attrs -> coerce attrs
 
+instance (CanInvestigate LocationId investigator, HasId InvestigatorId () investigator) => HasActions investigator Location where
+  getActions i = \case
+    Study' l -> getActions i l
+    Hallway' l -> getActions i l
+    Attic' l -> getActions i l
+    Cellar' l -> getActions i l
+    Parlor' l -> getActions i l
+    YourHouse' l -> getActions i l
+    Rivertown' l -> getActions i l
+    SouthsideHistoricalSociety' l -> getActions i l
+    SouthsideMasBoardingHouse' l -> getActions i l
+    StMarysHospital' l -> getActions i l
+    MiskatonicUniversity' l -> getActions i l
+    DowntownFirstBankOfArkham' l -> getActions i l
+    DowntownArkhamAsylum' l -> getActions i l
+    Easttown' l -> getActions i l
+    Graveyard' l -> getActions i l
+    Northside' l -> getActions i l
+
 instance (LocationRunner env) => RunMessage env Location where
   runMessage msg = \case
     Study' x -> Study' <$> runMessage msg x

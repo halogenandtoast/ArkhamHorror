@@ -37,5 +37,7 @@ instance (EnemyRunner env) => RunMessage env HermanCollins where
     InvestigatorDrawEnemy _ _ eid | eid == enemyId -> e <$ spawnAt eid "01134"
     UseCardAbility iid _ (EnemySource eid) 1 | eid == enemyId ->
       e <$ unshiftMessages
-        [SpendClues 2 [iid], AddToVictory (EnemyTarget enemyId)]
+        (replicate 4 (ChooseAndDiscardCard iid)
+        <> [AddToVictory (EnemyTarget enemyId)]
+        )
     _ -> HermanCollins <$> runMessage msg attrs

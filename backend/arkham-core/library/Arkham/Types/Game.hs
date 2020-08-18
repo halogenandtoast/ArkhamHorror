@@ -419,6 +419,9 @@ instance HasInvestigatorStats Stats InvestigatorId Game where
 instance HasList UsedAbility () Game where
   getList _ = map UsedAbility . view usedAbilities
 
+instance HasList Location () Game where
+  getList _ = HashMap.elems . view locations
+
 instance HasList Ability () Game where
   getList _ g =
     (g ^. acts . traverse . to getAbilities)

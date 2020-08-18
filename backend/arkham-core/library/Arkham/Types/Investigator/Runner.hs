@@ -1,17 +1,18 @@
 module Arkham.Types.Investigator.Runner where
 
-import Arkham.Types.Ability
-import Arkham.Types.ActId
-import Arkham.Types.AssetId
-import Arkham.Types.Card.Id
-import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Location
-import Arkham.Types.LocationId
-import Arkham.Types.Query
-import Arkham.Types.Trait
-import Arkham.Types.TreacheryId
+import           Arkham.Types.Ability
+import           Arkham.Types.ActId
+import           Arkham.Types.AssetId
+import           Arkham.Types.Card.Id
+import           Arkham.Types.Classes
+import           Arkham.Types.Enemy
+import           Arkham.Types.EnemyId
+import           Arkham.Types.InvestigatorId
+import           Arkham.Types.Location
+import           Arkham.Types.LocationId
+import           Arkham.Types.Query
+import           Arkham.Types.Trait
+import           Arkham.Types.TreacheryId
 
 type InvestigatorRunner env
   = ( HasCount ClueCount LocationId env
@@ -37,4 +38,5 @@ type InvestigatorRunner env
     , HasSet Trait AssetId env
     , HasId LocationId InvestigatorId env
     , HasList Location () env
+    , HasList Enemy () env
     )

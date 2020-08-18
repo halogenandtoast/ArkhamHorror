@@ -125,6 +125,9 @@ enemyAttrs = \case
   WizardOfTheOrder' attrs -> coerce attrs
   HuntingNightgaunt' attrs -> coerce attrs
 
+instance (EnemyActionRunner investigator) => HasActions investigator Enemy where
+  getActions i e = pure []
+
 instance (EnemyRunner env) => RunMessage env Enemy where
   runMessage msg = \case
     SilverTwilightAcolyte' x -> SilverTwilightAcolyte' <$> runMessage msg x

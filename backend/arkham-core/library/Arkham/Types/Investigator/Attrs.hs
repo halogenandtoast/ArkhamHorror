@@ -16,6 +16,7 @@ import Arkham.Types.FastWindow
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Location
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -1191,6 +1192,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())
       canDos <- filterM (canPerform a) Action.allActions
       blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
+      locationActions <- concatMap (getActions a)
+        <$> asks (getList @Location ())
       allAbilities <- getAvailableAbilities a
       enemyIds <- asks (getSet investigatorLocation)
       aloofEnemyIds <- HashSet.map unAloofEnemyId

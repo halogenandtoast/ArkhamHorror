@@ -7,6 +7,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Location
 import Arkham.Types.LocationId
 import Arkham.Types.Query
 import Arkham.Types.Trait
@@ -35,4 +36,5 @@ type InvestigatorRunner env
     , HasList UsedAbility () env
     , HasSet Trait AssetId env
     , HasId LocationId InvestigatorId env
+    , HasList Location () env
     )

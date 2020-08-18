@@ -99,3 +99,7 @@ class HasAbilities a where
 
 class HasVictoryPoints a where
   getVictoryPoints :: a -> Maybe Int
+
+class HasActions b a where
+  getActions :: b -> a -> [Message]
+

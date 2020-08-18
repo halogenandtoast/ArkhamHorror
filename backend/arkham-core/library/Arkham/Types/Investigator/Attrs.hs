@@ -12,6 +12,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
 import Arkham.Types.EnemyId
+import Arkham.Types.Enemy
 import Arkham.Types.FastWindow
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Runner
@@ -1202,8 +1203,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       advanceableActIds <-
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())
       canDos <- filterM (canPerform a) Action.allActions
-      locationActions <- concatMap (getActions a)
-        <$> asks (getList @Location ())
+      locationActions <- concat <$> asks (traverse (getActions a) =<< getList @Location ())
+      enemyActions <- concat <$> asks (traverse (getActions a) =<< getList @Enemy ())
       allAbilities <- getAvailableAbilities a
       enemyIds <- asks (getSet investigatorLocation)
       aloofEnemyIds <- HashSet.map unAloofEnemyId

@@ -1,5 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE RankNTypes #-}
 module Arkham.Types.Classes
   ( module Arkham.Types.Classes
   , module Arkham.Types.Classes.HasRecord
@@ -101,7 +102,7 @@ class HasVictoryPoints a where
   getVictoryPoints :: a -> Maybe Int
 
 class HasActions b a where
-  getActions :: b -> a -> [Message]
+  getActions :: forall env m. MonadReader env m => b -> a -> m [Message]
 
 class CanInvestigate b a where
   canInvestigate :: b -> a -> Bool

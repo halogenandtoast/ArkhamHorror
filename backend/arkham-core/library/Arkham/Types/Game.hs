@@ -422,6 +422,9 @@ instance HasList UsedAbility () Game where
 instance HasList Location () Game where
   getList _ = HashMap.elems . view locations
 
+instance HasList Enemy () Game where
+  getList _ = HashMap.elems . view enemies
+
 instance HasList Ability () Game where
   getList _ g =
     (g ^. acts . traverse . to getAbilities)

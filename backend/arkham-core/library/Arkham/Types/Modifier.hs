@@ -49,7 +49,7 @@ data Modifier
   | CannotPlay [PlayerCardType] Source
   | CannotInvestigate Source
   | SkillModifier SkillType Int Source
-  | ActionSkillModifier Action SkillType Int Source
+  | ActionSkillModifier ActionType SkillType Int Source
   | DamageDealt Int Source
   | DamageTaken Int Source
   | ShroudModifier Int Source
@@ -61,7 +61,7 @@ data Modifier
   deriving anyclass (FromJSON, ToJSON)
 
 data ActionTarget
-  = FirstOneOf [Action]
-  | IsAction Action
+  = FirstOneOf [ActionType]
+  | IsAction ActionType
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)

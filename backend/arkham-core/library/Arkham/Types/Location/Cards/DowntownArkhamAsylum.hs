@@ -22,6 +22,9 @@ downtownArkhamAsylum =
         , locationVictory = Just 1
         }
 
+instance HasActions DowntownArkhamAsylum where
+  getActions (DowntownArkhamAsylum attrs) iid = getActions attrs iid
+
 instance (LocationRunner env) => RunMessage env DowntownArkhamAsylum where
   runMessage msg (DowntownArkhamAsylum attrs) =
     DowntownArkhamAsylum <$> runMessage msg attrs

@@ -114,7 +114,7 @@ data Message
   | PlayerWindow InvestigatorId [Message]
   | Ask InvestigatorId Question
   | AskMap (HashMap InvestigatorId Question)
-  | TakeAction InvestigatorId Int (Maybe Action)
+  | TakeAction InvestigatorId Int (Maybe ActionType)
   | LoseAction InvestigatorId Source
   | GainAction InvestigatorId Source
   | ChoosePlayCardAction InvestigatorId
@@ -164,12 +164,12 @@ data Message
   | InvestigatorDiscoverClues InvestigatorId LocationId Int
   | DiscoverClues InvestigatorId LocationId Int
   | AfterDiscoverClues InvestigatorId LocationId Int
-  | BeginSkillTest InvestigatorId Source (Maybe Action) SkillType Int [Message]
+  | BeginSkillTest InvestigatorId Source (Maybe ActionType) SkillType Int [Message]
                 [Message] [Modifier] [TokenResponse Message]
-  | BeginSkillTestAfterFast InvestigatorId Source (Maybe Action) SkillType Int [Message]
+  | BeginSkillTestAfterFast InvestigatorId Source (Maybe ActionType) SkillType Int [Message]
                 [Message] [Modifier] [TokenResponse Message]
   | StartSkillTest InvestigatorId
-  | InvestigatorStartSkillTest InvestigatorId (Maybe Action) SkillType [Modifier]
+  | InvestigatorStartSkillTest InvestigatorId (Maybe ActionType) SkillType [Modifier]
   | BeforeSkillTest InvestigatorId SkillType
   | TriggerSkillTest InvestigatorId SkillType Int
   | RunSkillTest Int Int

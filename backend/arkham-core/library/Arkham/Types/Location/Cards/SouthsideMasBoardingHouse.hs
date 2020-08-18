@@ -28,6 +28,9 @@ southsideMasBoardingHouse =
         { locationTraits = HashSet.fromList [Arkham]
         }
 
+instance HasActions SouthsideMasBoardingHouse where
+  getActions (SouthsideMasBoardingHouse attrs) iid = getActions attrs iid
+
 instance (LocationRunner env) => RunMessage env SouthsideMasBoardingHouse where
   runMessage msg (SouthsideMasBoardingHouse attrs) =
     SouthsideMasBoardingHouse <$> runMessage msg attrs

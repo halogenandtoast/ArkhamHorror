@@ -10,7 +10,7 @@ module Arkham.Types.SkillTest
 where
 
 import Arkham.Json
-import Arkham.Types.Action (Action)
+import Arkham.Types.Action (ActionType)
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
@@ -54,7 +54,7 @@ data SkillTest a = SkillTest
   , skillTestModifiers :: [Modifier]
   , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
   , skillTestSource :: Source
-  , skillTestAction :: Maybe Action
+  , skillTestAction :: Maybe ActionType
   }
   deriving stock (Show, Generic)
 
@@ -75,7 +75,7 @@ instance HasSet CommitedCardId InvestigatorId (SkillTest a) where
 initSkillTest
   :: InvestigatorId
   -> Source
-  -> Maybe Action
+  -> Maybe ActionType
   -> SkillType
   -> Int
   -> [Message]

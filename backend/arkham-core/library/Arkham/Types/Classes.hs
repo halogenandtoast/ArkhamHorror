@@ -11,6 +11,7 @@ import Arkham.Types.Classes.HasRecord
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.Message
+import Arkham.Types.InvestigatorId
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import ClassyPrelude
@@ -93,6 +94,9 @@ class HasSkill a where
 
 class HasKeywords a where
   getKeywords :: a -> HashSet Keyword
+
+class HasActions a where
+  getActions :: a -> InvestigatorId -> [Message]
 
 class HasAbilities a where
   getAbilities :: a -> [Ability]

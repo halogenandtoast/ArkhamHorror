@@ -32,6 +32,8 @@ parlor = Parlor $ (baseAttrs "01115" "Parlor" 2 (Static 0) Diamond [Square])
     ]
   }
 
+instance HasActions Parlor where
+  getActions (Parlor attrs) iid = getActions attrs iid
 
 instance (LocationRunner env) => RunMessage env Parlor where
   runMessage msg l@(Parlor attrs@Attrs {..}) = case msg of

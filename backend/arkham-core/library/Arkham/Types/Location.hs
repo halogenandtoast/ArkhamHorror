@@ -81,6 +81,25 @@ instance HasTraits Location where
 instance HasAbilities Location where
   getAbilities = locationAbilities . locationAttrs
 
+instance HasActions Location where
+  getActions location iid = case location of
+    Study' l -> getActions l iid
+    Hallway' l -> getActions l iid
+    Attic' l -> getActions l iid
+    Cellar' l -> getActions l iid
+    Parlor' l -> getActions l iid
+    YourHouse' l -> getActions l iid
+    Rivertown' l -> getActions l iid
+    SouthsideHistoricalSociety' l -> getActions l iid
+    SouthsideMasBoardingHouse' l -> getActions l iid
+    StMarysHospital' l -> getActions l iid
+    MiskatonicUniversity' l -> getActions l iid
+    DowntownFirstBankOfArkham' l -> getActions l iid
+    DowntownArkhamAsylum' l -> getActions l iid
+    Easttown' l -> getActions l iid
+    Graveyard' l -> getActions l iid
+    Northside' l -> getActions l iid
+
 instance HasCount ClueCount () Location where
   getCount _ = ClueCount . locationClues . locationAttrs
 

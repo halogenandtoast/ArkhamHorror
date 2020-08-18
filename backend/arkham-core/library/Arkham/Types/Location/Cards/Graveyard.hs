@@ -21,5 +21,8 @@ graveyard =
     , locationVictory = Just 1
     }
 
+instance HasActions Graveyard where
+  getActions (Graveyard attrs) iid = getActions attrs iid
+
 instance (LocationRunner env) => RunMessage env Graveyard where
   runMessage msg (Graveyard attrs) = Graveyard <$> runMessage msg attrs

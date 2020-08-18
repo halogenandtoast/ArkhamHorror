@@ -20,5 +20,8 @@ yourHouse =
     { locationTraits = HashSet.fromList [Arkham]
     }
 
+instance HasActions YourHouse where
+  getActions (YourHouse attrs) iid = getActions attrs iid
+
 instance (LocationRunner env) => RunMessage env YourHouse where
   runMessage msg (YourHouse attrs) = YourHouse <$> runMessage msg attrs

@@ -416,6 +416,9 @@ instance HasCount EnemyCount (InvestigatorLocation, [Trait]) Game where
 instance HasInvestigatorStats Stats InvestigatorId Game where
   getStats iid = getStats () . getInvestigator iid
 
+instance HasList Message (LocationId, InvestigatorId) Game where
+  getList (lid, iid) g = getActions (getLocation lid g) iid
+
 instance HasList UsedAbility () Game where
   getList _ = map UsedAbility . view usedAbilities
 

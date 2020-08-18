@@ -6,7 +6,7 @@ import Arkham.Types.FastWindow
 import Arkham.Types.Source
 import ClassyPrelude
 
-data AbilityType = FastAbility FastWindow | ReactionAbility FastWindow | ActionAbility Int (Maybe Action)
+data AbilityType = FastAbility FastWindow | ReactionAbility FastWindow | ActionAbility Int (Maybe ActionType)
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 

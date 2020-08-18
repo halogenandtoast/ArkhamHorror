@@ -1,7 +1,7 @@
 module Arkham.Types.Card.PlayerCard where
 
 import Arkham.Json
-import Arkham.Types.Action (Action)
+import Arkham.Types.Action (ActionType)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
@@ -43,7 +43,7 @@ data PlayerCard = MkPlayerCard
   , pcFast :: Bool
   , pcFastWindows :: HashSet FastWindow
   , pcId :: CardId
-  , pcAction :: Maybe Action
+  , pcAction :: Maybe ActionType
   , pcRevelation :: Bool
   }
   deriving stock (Show, Generic)

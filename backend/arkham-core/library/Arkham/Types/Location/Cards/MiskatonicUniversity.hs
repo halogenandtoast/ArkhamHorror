@@ -27,6 +27,9 @@ miskatonicUniversity = MiskatonicUniversity $ (baseAttrs
   , locationVictory = Just 1
   }
 
+instance HasActions MiskatonicUniversity where
+  getActions (MiskatonicUniversity attrs) iid = getActions attrs iid
+
 instance (LocationRunner env) => RunMessage env MiskatonicUniversity where
   runMessage msg (MiskatonicUniversity attrs) =
     MiskatonicUniversity <$> runMessage msg attrs

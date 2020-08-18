@@ -15,6 +15,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
+import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -51,7 +52,6 @@ instance ToJSON Attrs where
 
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "location"
-
 
 investigators :: Lens' Attrs (HashSet InvestigatorId)
 investigators =
@@ -119,6 +119,15 @@ shroudValueFor Attrs {..} = foldr
  where
   applyModifier (ShroudModifier m _) n = max 0 (n + m)
   applyModifier _ n = n
+
+instance HasActions Attrs where
+  getActions Attrs {..}  iid = abilityActions <> defaultActions
+    where
+      defaultActions = [ Investigate iid locationId SkillIntellect mempty True ]
+      abilityActions =
+          [ ActivateCardAbilityAction iid ability
+          | ability <- locationAbilities
+          ]
 
 instance (LocationRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of

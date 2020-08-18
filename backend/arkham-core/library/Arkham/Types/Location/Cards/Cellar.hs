@@ -19,6 +19,8 @@ cellar = Cellar $ (baseAttrs "01114" "Cellar" 4 (PerPlayer 2) Plus [Square])
   { locationVictory = Just 1
   }
 
+instance HasActions Cellar where
+  getActions (Cellar attrs) iid = getActions attrs iid
 
 instance (LocationRunner env) => RunMessage env Cellar where
   runMessage msg a@(Cellar attrs@Attrs {..}) = case msg of

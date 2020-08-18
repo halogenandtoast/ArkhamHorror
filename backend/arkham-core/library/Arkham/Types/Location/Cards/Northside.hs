@@ -22,5 +22,8 @@ northside =
         , locationVictory = Just 1
         }
 
+instance HasActions Northside where
+  getActions (Northside attrs) iid = getActions attrs iid
+
 instance (LocationRunner env) => RunMessage env Northside where
   runMessage msg (Northside attrs) = Northside <$> runMessage msg attrs

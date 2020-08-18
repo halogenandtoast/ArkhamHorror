@@ -10,6 +10,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Query
 import Arkham.Types.Trait
+import Arkham.Types.Message
 import Arkham.Types.TreacheryId
 
 type InvestigatorRunner env
@@ -35,4 +36,5 @@ type InvestigatorRunner env
     , HasList UsedAbility () env
     , HasSet Trait AssetId env
     , HasId LocationId InvestigatorId env
+    , HasList Message (LocationId, InvestigatorId) env
     )

@@ -28,6 +28,9 @@ stMarysHospital =
         { locationTraits = HashSet.fromList [Arkham]
         }
 
+instance HasActions StMarysHospital where
+  getActions (StMarysHospital attrs) iid = getActions attrs iid
+
 instance (LocationRunner env) => RunMessage env StMarysHospital where
   runMessage msg (StMarysHospital attrs) =
     StMarysHospital <$> runMessage msg attrs

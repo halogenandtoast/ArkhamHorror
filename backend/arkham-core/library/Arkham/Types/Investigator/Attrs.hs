@@ -4,7 +4,7 @@ module Arkham.Types.Investigator.Attrs where
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.ActId
-import Arkham.Types.Action (Action)
+import Arkham.Types.Action (ActionType)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
@@ -54,7 +54,7 @@ data Attrs = Attrs
   , investigatorClues :: Int
   , investigatorResources :: Int
   , investigatorLocation :: LocationId
-  , investigatorActionsTaken :: [Action]
+  , investigatorActionsTaken :: [ActionType]
   , investigatorRemainingActions :: Int
   , investigatorEndedTurn :: Bool
   , investigatorEngagedEnemies :: HashSet EnemyId
@@ -129,7 +129,7 @@ remainingActions :: Lens' Attrs Int
 remainingActions = lens investigatorRemainingActions
   $ \m x -> m { investigatorRemainingActions = x }
 
-actionsTaken :: Lens' Attrs [Action]
+actionsTaken :: Lens' Attrs [ActionType]
 actionsTaken =
   lens investigatorActionsTaken $ \m x -> m { investigatorActionsTaken = x }
 
@@ -168,7 +168,7 @@ facingDefeat Attrs {..} =
     || investigatorSanityDamage
     >= investigatorSanity
 
-skillValueFor :: SkillType -> Maybe Action -> [Modifier] -> Attrs -> Int
+skillValueFor :: SkillType -> Maybe ActionType -> [Modifier] -> Attrs -> Int
 skillValueFor skill maction tempModifiers attrs = foldr
   applyModifier
   baseSkillValue
@@ -281,12 +281,12 @@ sourceIsInvestigator source Attrs {..} = case source of
   AssetSource sourceId -> sourceId `elem` investigatorAssets
   _ -> False
 
-matchTarget :: Attrs -> ActionTarget -> Action -> Bool
+matchTarget :: Attrs -> ActionTarget -> ActionType -> Bool
 matchTarget attrs (FirstOneOf as) action =
   action `elem` as && all (`notElem` investigatorActionsTaken attrs) as
 matchTarget _ (IsAction a) action = action == a
 
-actionCost :: Attrs -> Action -> Int
+actionCost :: Attrs -> ActionType -> Int
 actionCost attrs a = foldr applyModifier 1 (investigatorModifiers attrs)
  where
   applyModifier (ActionCostOf match m _) n =
@@ -302,7 +302,7 @@ cluesToDiscover attrs startValue = foldr
   applyModifier (DiscoveredClues m _) n = n + m
   applyModifier _ n = n
 
-canAfford :: Attrs -> Action -> Bool
+canAfford :: Attrs -> ActionType -> Bool
 canAfford a@Attrs {..} actionType =
   actionCost a actionType <= investigatorRemainingActions
 
@@ -314,7 +314,7 @@ canPayAbilityCost (Just cost) Attrs {..} = case cost of
   CardCost n -> length investigatorHand >= n
 
 canPerform
-  :: (MonadReader env m, InvestigatorRunner env) => Attrs -> Action -> m Bool
+  :: (MonadReader env m, InvestigatorRunner env) => Attrs -> ActionType -> m Bool
 canPerform a@Attrs {..} Action.Move = do
   blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
   let
@@ -374,7 +374,7 @@ isPlayable a@Attrs {..} windows c@(PlayerCard MkPlayerCard {..}) =
   prevents (CannotPlay types _) = pcCardType `elem` types
   prevents _ = False
 
-takeAction :: Action -> Attrs -> Attrs
+takeAction :: ActionType -> Attrs -> Attrs
 takeAction action a =
   a
     & (remainingActions %~ max 0 . subtract (actionCost a action))
@@ -1189,7 +1189,8 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
     PlayerWindow iid additionalActions | iid == investigatorId -> do
       advanceableActIds <-
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())
-      canDos <- filterM (canPerform a) Action.allActions
+      canDos <- filterM (canPerform a) Action.allActionTypes
+      locationActions <- asks (getList (investigatorLocation, investigatorId))
       blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
       allAbilities <- getAvailableAbilities a
       enemyIds <- asks (getSet investigatorLocation)
@@ -1229,9 +1230,6 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
              | Action.Move `elem` canDos
              , lid <- HashSet.toList accessibleLocations
              ]
-          <> [ Investigate iid investigatorLocation SkillIntellect mempty True
-             | Action.Investigate `elem` canDos
-             ]
           <> [ FightEnemy iid eid SkillCombat [] mempty True
              | Action.Fight `elem` canDos
              , eid <- HashSet.toList fightableEnemyIds
@@ -1245,6 +1243,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
              , eid <- HashSet.toList investigatorEngagedEnemies
              ]
           <> map AdvanceAct advanceableActIds
+          <> locationActions
           <> [ChooseEndTurn iid]
           )
         )

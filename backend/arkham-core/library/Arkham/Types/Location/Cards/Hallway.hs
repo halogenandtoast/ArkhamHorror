@@ -16,5 +16,8 @@ hallway :: Hallway
 hallway = Hallway
   $ baseAttrs "01112" "Hallway" 1 (Static 0) Square [Triangle, Plus, Diamond]
 
+instance HasActions Hallway where
+  getActions (Hallway attrs) iid = getActions attrs iid
+
 instance (LocationRunner env) => RunMessage env Hallway where
   runMessage msg (Hallway attrs) = Hallway <$> runMessage msg attrs

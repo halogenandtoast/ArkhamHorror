@@ -21,5 +21,8 @@ easttown =
         { locationTraits = HashSet.fromList [Arkham]
         }
 
+instance HasActions Easttown where
+  getActions (Easttown attrs) iid = getActions attrs iid
+
 instance (LocationRunner env) => RunMessage env Easttown where
   runMessage msg (Easttown attrs) = Easttown <$> runMessage msg attrs

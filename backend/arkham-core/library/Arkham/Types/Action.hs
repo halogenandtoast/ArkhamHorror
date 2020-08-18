@@ -3,7 +3,7 @@ module Arkham.Types.Action where
 import ClassyPrelude
 import Data.Aeson
 
-data Action
+data ActionType
   = Ability
   | Draw
   | Engage
@@ -18,5 +18,5 @@ data Action
   deriving stock (Show, Eq, Ord, Enum, Bounded, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-allActions :: [Action]
-allActions = [minBound .. maxBound]
+allActionTypes :: [ActionType]
+allActionTypes = [minBound .. maxBound]

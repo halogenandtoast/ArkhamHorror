@@ -19,6 +19,9 @@ attic = Attic $ (baseAttrs "01113" "Attic" 1 (PerPlayer 2) Triangle [Square])
   { locationVictory = Just 1
   }
 
+instance HasActions Attic where
+  getActions (Attic attrs) iid = getActions attrs iid
+
 instance (LocationRunner env) => RunMessage env Attic where
   runMessage msg a@(Attic attrs@Attrs {..}) = case msg of
     AfterEnterLocation iid lid | lid == locationId -> do

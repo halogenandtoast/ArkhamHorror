@@ -15,5 +15,8 @@ newtype Study = Study Attrs
 study :: Study
 study = Study $ baseAttrs "01111" "Study" 2 (PerPlayer 2) Circle []
 
+instance HasActions Study where
+  getActions (Study attrs) iid = getActions attrs iid
+
 instance (LocationRunner env) => RunMessage env Study where
   runMessage msg (Study attrs) = Study <$> runMessage msg attrs

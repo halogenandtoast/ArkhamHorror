@@ -22,7 +22,7 @@ downtownArkhamAsylum =
         , locationVictory = Just 1
         }
 
-instance (LocationActionRunner investigator) => HasActions investigator DowntownArkhamAsylum where
+instance (IsInvestigator investigator) => HasActions investigator DowntownArkhamAsylum where
   getActions i (DowntownArkhamAsylum attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env DowntownArkhamAsylum where

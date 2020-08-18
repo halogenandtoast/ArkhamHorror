@@ -28,7 +28,7 @@ southsideMasBoardingHouse =
         { locationTraits = HashSet.fromList [Arkham]
         }
 
-instance (LocationActionRunner investigator) => HasActions investigator SouthsideMasBoardingHouse where
+instance (IsInvestigator investigator) => HasActions investigator SouthsideMasBoardingHouse where
   getActions i (SouthsideMasBoardingHouse attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env SouthsideMasBoardingHouse where

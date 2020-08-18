@@ -2,7 +2,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location
   ( lookupLocation
-  , isBlocked
   , isEmptyLocation
   , Location(..)
   )
@@ -45,8 +44,11 @@ lookupLocation lid =
   fromJustNote ("Unkown location: " <> show lid)
     $ HashMap.lookup lid allLocations
 
-isBlocked :: Location -> Bool
-isBlocked = locationBlocked . locationAttrs
+instance HasId LocationId () Location where
+  getId _ = locationId . locationAttrs
+
+instance IsLocation Location where
+  isBlocked = isBlocked . locationAttrs
 
 isEmptyLocation :: Location -> Bool
 isEmptyLocation l = null enemies' && null investigators'
@@ -139,7 +141,7 @@ locationAttrs = \case
   Graveyard' attrs -> coerce attrs
   Northside' attrs -> coerce attrs
 
-instance (LocationActionRunner investigator) => HasActions investigator Location where
+instance (IsInvestigator investigator) => HasActions investigator Location where
   getActions i = \case
     Study' l -> getActions i l
     Hallway' l -> getActions i l

@@ -25,6 +25,9 @@ silverTwilightAcolyte uuid =
     , enemyPrey = SetToBearer
     }
 
+instance (IsInvestigator investigator) => HasActions investigator SilverTwilightAcolyte where
+  getActions i (SilverTwilightAcolyte attrs) = getActions i attrs
+
 instance (EnemyRunner env) => RunMessage env SilverTwilightAcolyte where
   runMessage msg (SilverTwilightAcolyte attrs@Attrs {..}) = case msg of
     EnemyAttack _ eid | eid == enemyId -> do

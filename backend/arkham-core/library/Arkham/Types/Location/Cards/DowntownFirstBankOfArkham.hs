@@ -21,7 +21,7 @@ downtownFirstBankOfArkham =
         { locationTraits = HashSet.fromList [Arkham]
         }
 
-instance (LocationActionRunner investigator) => HasActions investigator DowntownFirstBankOfArkham where
+instance (IsInvestigator investigator) => HasActions investigator DowntownFirstBankOfArkham where
   getActions i (DowntownFirstBankOfArkham attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env DowntownFirstBankOfArkham where

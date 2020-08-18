@@ -23,6 +23,9 @@ icyGhoul uuid = IcyGhoul $ (baseAttrs uuid "01119")
   , enemyVictory = Just 1
   }
 
+instance (IsInvestigator investigator) => HasActions investigator IcyGhoul where
+  getActions i (IcyGhoul attrs) = getActions i attrs
+
 instance (EnemyRunner env) => RunMessage env IcyGhoul where
   runMessage msg e@(IcyGhoul attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == enemyId ->

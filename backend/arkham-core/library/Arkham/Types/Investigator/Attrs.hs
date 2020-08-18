@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Attrs where
 
@@ -6,13 +7,14 @@ import Arkham.Types.Ability
 import Arkham.Types.ActId
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
+import Arkham.Types.Asset
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
-import Arkham.Types.EnemyId
 import Arkham.Types.Enemy
+import Arkham.Types.EnemyId
 import Arkham.Types.FastWindow
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Runner
@@ -460,13 +462,21 @@ possibleSkillTypeChoices skillType attrs = foldr
     | toReplace == skillType = toUse : skills
   applyModifier _ skills = skills
 
-instance CanInvestigate LocationId Attrs where
-  canInvestigate lid a@Attrs {..} =
-    canAfford a Action.Investigate && lid == investigatorLocation
-
-instance CanMoveTo LocationId Attrs where
-  canMoveTo lid a@Attrs {..} =
-    canAfford a Action.Move && lid `elem` investigatorConnectedLocations
+instance IsInvestigator Attrs where
+  locationOf Attrs {..} = investigatorLocation
+  canInvestigate location a@Attrs {..} =
+    canAfford a Action.Investigate && getId () location == investigatorLocation
+  canMoveTo location a@Attrs {..} =
+    canAfford a Action.Move
+      && getId () location
+      `elem` investigatorConnectedLocations
+  canEvade enemy a@Attrs {..} =
+    canAfford a Action.Evade && getId () enemy `elem` investigatorEngagedEnemies
+  canFight _ a@Attrs {..} = canAfford a Action.Fight
+  canEngage enemy a@Attrs {..} =
+    canAfford a Action.Engage
+      && getId () enemy
+      `notElem` investigatorEngagedEnemies
 
 instance HasId InvestigatorId () Attrs where
   getId _ Attrs {..} = investigatorId
@@ -1203,33 +1213,12 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       advanceableActIds <-
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())
       canDos <- filterM (canPerform a) Action.allActions
-      locationActions <- concat <$> asks (traverse (getActions a) =<< getList @Location ())
-      enemyActions <- concat <$> asks (traverse (getActions a) =<< getList @Enemy ())
-      allAbilities <- getAvailableAbilities a
-      enemyIds <- asks (getSet investigatorLocation)
-      aloofEnemyIds <- HashSet.map unAloofEnemyId
-        <$> asks (getSet investigatorLocation)
-      let
-        fightableEnemyIds =
-          investigatorEngagedEnemies
-            `union` (enemyIds `difference` aloofEnemyIds)
-        unengagedEnemyIds = enemyIds `difference` investigatorEngagedEnemies
-        availableAbilities = flip filter allAbilities $ \Ability {..} ->
-          case abilityType of
-            FastAbility Any -> canPayAbilityCost abilityCost a
-            ActionAbility _ Nothing -> canPayAbilityCost abilityCost a
-            ActionAbility _ (Just action) ->
-              action `elem` canDos && canPayAbilityCost abilityCost a
-            _ -> False
+      actions <- asks (getActions a)
       a <$ unshiftMessage
         (Ask iid $ ChooseOne
           (additionalActions
           <> [ TakeResources iid 1 True | Action.Resource `elem` canDos ]
           <> [ DrawCards iid 1 True | Action.Draw `elem` canDos ]
-          <> [ ActivateCardAbilityAction iid ability
-             | Action.Ability `elem` canDos
-             , ability <- availableAbilities
-             ]
           <> [ PlayCard iid (getCardId c) True
              | c <- investigatorHand
              , Action.Play
@@ -1237,21 +1226,9 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
                || fastIsPlayable a [DuringTurn You] c
              , isPlayable a [DuringTurn You] c
              ]
-          <> locationActions
-          <> [ FightEnemy iid eid SkillCombat [] mempty True
-             | Action.Fight `elem` canDos
-             , eid <- HashSet.toList fightableEnemyIds
-             ]
-          <> [ EngageEnemy iid eid True
-             | Action.Engage `elem` canDos
-             , eid <- HashSet.toList unengagedEnemyIds
-             ]
-          <> [ EvadeEnemy iid eid SkillAgility mempty mempty mempty True
-             | Action.Evade `elem` canDos
-             , eid <- HashSet.toList investigatorEngagedEnemies
-             ]
           <> map AdvanceAct advanceableActIds
           <> [ChooseEndTurn iid]
+          <> actions
           )
         )
     _ -> pure a

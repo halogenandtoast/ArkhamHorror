@@ -15,5 +15,8 @@ swarmOfRats :: EnemyId -> SwarmOfRats
 swarmOfRats uuid = SwarmOfRats
   $ (baseAttrs uuid "01159") { enemyHealthDamage = 1, enemyEvade = 3 }
 
+instance (IsInvestigator investigator) => HasActions investigator SwarmOfRats where
+  getActions i (SwarmOfRats attrs) = getActions i attrs
+
 instance (EnemyRunner env) => RunMessage env SwarmOfRats where
   runMessage msg (SwarmOfRats attrs) = SwarmOfRats <$> runMessage msg attrs

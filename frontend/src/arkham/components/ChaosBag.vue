@@ -38,6 +38,7 @@
 <script lang="ts">
 import { choices, Game } from '@/arkham/types/Game';
 import { SkillTest } from '@/arkham/types/SkillTest';
+import { PlayerCard } from '@/arkham/types/Card';
 import { MessageType } from '@/arkham/types/Message';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
@@ -121,8 +122,14 @@ export default class ChaosBag extends Vue {
     return this.choices.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);
   }
 
-  get skillTest() {
-    return this.game.currentData.focusedCards;
+  get committedCards() {
+    if (this.skillTest) {
+      return Object
+        .values(this.skillTest.committedCards)
+        .map((value) => (value as [string, PlayerCard])[1].contents);
+    }
+
+    return [];
   }
 }
 </script>

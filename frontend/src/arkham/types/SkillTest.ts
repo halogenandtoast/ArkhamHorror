@@ -29,7 +29,7 @@ export const skillTestDecoder = JsonDecoder.object<SkillTest>(
     skillType: skillTypeDecoder,
     difficulty: JsonDecoder.number,
     setAsideTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
-    committedCards: JsonDecoder.dictionary<string[]>(JsonDecoder.array(JsonDecoder.string, 'string[]'), 'Dict<string, string[]>'),
+    committedCards: JsonDecoder.dictionary<any[]>(JsonDecoder.array(JsonDecoder.succeed, 'any[]'), 'Dict<string, any[]>'), // eslint-disable-line
     source: sourceDecoder,
   },
   'SkillTest',

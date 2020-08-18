@@ -105,3 +105,6 @@ class HasActions b a where
 
 class CanInvestigate b a where
   canInvestigate :: b -> a -> Bool
+
+class CanMoveTo b a where
+  canMoveTo :: b -> a -> Bool

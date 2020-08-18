@@ -4,10 +4,8 @@ module Arkham.Types.Location.Cards.Study where
 import Arkham.Json
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import ClassyPrelude
 
@@ -17,7 +15,7 @@ newtype Study = Study Attrs
 study :: Study
 study = Study $ baseAttrs "01111" "Study" 2 (PerPlayer 2) Circle []
 
-instance (CanInvestigate LocationId investigator, HasId InvestigatorId () investigator) => HasActions investigator Study where
+instance (LocationActionRunner investigator) => HasActions investigator Study where
   getActions i (Study attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env Study where

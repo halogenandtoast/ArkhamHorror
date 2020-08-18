@@ -4,10 +4,8 @@ module Arkham.Types.Location.Cards.Attic where
 import Arkham.Json
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -21,7 +19,7 @@ attic = Attic $ (baseAttrs "01113" "Attic" 1 (PerPlayer 2) Triangle [Square])
   { locationVictory = Just 1
   }
 
-instance (CanInvestigate LocationId investigator, HasId InvestigatorId () investigator) => HasActions investigator Attic where
+instance (LocationActionRunner investigator) => HasActions investigator Attic where
   getActions i (Attic attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env Attic where

@@ -139,7 +139,7 @@ locationAttrs = \case
   Graveyard' attrs -> coerce attrs
   Northside' attrs -> coerce attrs
 
-instance (CanInvestigate LocationId investigator, HasId InvestigatorId () investigator) => HasActions investigator Location where
+instance (LocationActionRunner investigator) => HasActions investigator Location where
   getActions i = \case
     Study' l -> getActions i l
     Hallway' l -> getActions i l

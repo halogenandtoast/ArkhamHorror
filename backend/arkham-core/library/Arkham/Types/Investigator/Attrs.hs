@@ -459,6 +459,13 @@ possibleSkillTypeChoices skillType attrs = foldr
     | toReplace == skillType = toUse : skills
   applyModifier _ skills = skills
 
+instance CanInvestigate LocationId Attrs where
+  canInvestigate lid a@Attrs {..} =
+    canAfford a Action.Investigate && lid == investigatorLocation
+
+instance HasId InvestigatorId () Attrs where
+  getId _ Attrs {..} = investigatorId
+
 instance (InvestigatorRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     PlaceCluesOnLocation iid n | iid == investigatorId -> do
@@ -1232,9 +1239,7 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
              | Action.Move `elem` canDos
              , lid <- HashSet.toList accessibleLocations
              ]
-          <> [ Investigate iid investigatorLocation SkillIntellect mempty True
-             | Action.Investigate `elem` canDos
-             ]
+          <> locationActions
           <> [ FightEnemy iid eid SkillCombat [] mempty True
              | Action.Fight `elem` canDos
              , eid <- HashSet.toList fightableEnemyIds

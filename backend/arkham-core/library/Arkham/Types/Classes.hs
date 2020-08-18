@@ -103,3 +103,5 @@ class HasVictoryPoints a where
 class HasActions b a where
   getActions :: b -> a -> [Message]
 
+class CanInvestigate b a where
+  canInvestigate :: b -> a -> Bool

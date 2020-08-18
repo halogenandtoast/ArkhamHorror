@@ -4,8 +4,10 @@ module Arkham.Types.Location.Cards.YourHouse where
 import Arkham.Json
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
+import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Trait
 import ClassyPrelude
@@ -19,6 +21,9 @@ yourHouse =
   YourHouse $ (baseAttrs "01124" "Your House" 2 (PerPlayer 1) Squiggle [Circle])
     { locationTraits = HashSet.fromList [Arkham]
     }
+
+instance (CanInvestigate LocationId investigator, HasId InvestigatorId () investigator) => HasActions investigator YourHouse where
+  getActions i (YourHouse attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env YourHouse where
   runMessage msg (YourHouse attrs) = YourHouse <$> runMessage msg attrs

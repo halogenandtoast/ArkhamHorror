@@ -15,6 +15,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
+import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -119,6 +120,11 @@ shroudValueFor Attrs {..} = foldr
  where
   applyModifier (ShroudModifier m _) n = max 0 (n + m)
   applyModifier _ n = n
+
+instance (CanInvestigate LocationId investigator, HasId InvestigatorId () investigator) => HasActions investigator Attrs where
+  getActions i Attrs {..} = if canInvestigate locationId i
+    then [Investigate (getId () i) locationId SkillIntellect mempty True]
+    else []
 
 instance (LocationRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of

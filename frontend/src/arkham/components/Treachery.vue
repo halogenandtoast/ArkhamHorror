@@ -52,7 +52,7 @@ export default class Treachery extends Vue {
       case MessageType.ASSET_DAMAGE:
         return c.contents[0] === this.id;
       case MessageType.ACTIVATE_ABILITY:
-        return c.contents[1][0].contents === this.id;
+        return c.contents[1].source.contents === this.id;
       case MessageType.USE_CARD_ABILITY:
         return c.contents[1][0].contents === this.id;
       case MessageType.RUN:

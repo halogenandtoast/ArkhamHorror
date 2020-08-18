@@ -23,6 +23,9 @@ ruthTurner uuid = RuthTurner $ (baseAttrs uuid "01141")
   , enemyVictory = Just 1
   }
 
+instance (IsInvestigator investigator) => HasActions investigator RuthTurner where
+  getActions i (RuthTurner attrs) = getActions i attrs
+
 instance (EnemyRunner env) => RunMessage env RuthTurner where
   runMessage msg e@(RuthTurner attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == enemyId -> e <$ spawnAt eid "01128"

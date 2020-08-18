@@ -26,7 +26,7 @@ rivertown = Rivertown $ (baseAttrs
   { locationTraits = HashSet.fromList [Arkham, Central]
   }
 
-instance (LocationActionRunner investigator) => HasActions investigator Rivertown where
+instance (IsInvestigator investigator) => HasActions investigator Rivertown where
   getActions i (Rivertown attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env Rivertown where

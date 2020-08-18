@@ -18,6 +18,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Prey
 import Arkham.Types.Query
+import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -190,6 +191,40 @@ modifiedDamageAmount attrs baseAmount = foldr
  where
   applyModifier (DamageTaken m _) n = max 0 (n + m)
   applyModifier _ n = n
+
+instance HasId EnemyId () Attrs where
+  getId _ Attrs {..} = enemyId
+
+instance IsEnemy Attrs where
+  isAloof Attrs {..} = Keyword.Aloof `elem` enemyKeywords
+
+instance (IsInvestigator investigator) => HasActions investigator Attrs where
+  getActions i enemy@Attrs {..} =
+    pure
+      $ fightEnemyActions
+      <> engageEnemyActions
+      <> evadeEnemyActions
+      <> abilityActions
+   where
+    investigatorId = getId () i
+    locationId = locationOf i
+    abilityActions =
+      [ ActivateCardAbilityAction investigatorId ability
+      | locationId == enemyLocation
+      , ability <- enemyAbilities
+      ]
+    fightEnemyActions =
+      [ FightEnemy investigatorId enemyId SkillCombat [] mempty True
+      | enemyLocation == locationId && canFight enemy i
+      ]
+    engageEnemyActions =
+      [ EngageEnemy investigatorId enemyId True
+      | enemyLocation == locationId && canEngage enemy i
+      ]
+    evadeEnemyActions =
+      [ EvadeEnemy investigatorId enemyId SkillAgility mempty mempty mempty True
+      | canEvade enemy i
+      ]
 
 instance (EnemyRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of

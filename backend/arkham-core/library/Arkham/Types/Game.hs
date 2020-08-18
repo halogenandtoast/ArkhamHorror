@@ -708,7 +708,7 @@ createTreachery cardCode = do
   pure (tid, lookupTreachery cardCode tid)
 
 locationFor :: InvestigatorId -> Game -> LocationId
-locationFor iid = locationOf . getInvestigator iid
+locationFor iid = locationOf . investigatorAttrs . getInvestigator iid
 
 drawToken :: MonadIO m => Game -> m (Token, [Token])
 drawToken Game {..} = do
@@ -742,6 +742,13 @@ broadcastFastWindow builder currentInvestigatorId g =
             , builder InvestigatorAtYourLocation
             ]
           )
+
+instance (IsInvestigator investigator) => HasActions investigator Game where
+  getActions i g = do
+    a <- traverse (getActions i) (view locations g)
+    b <- traverse (getActions i) (view enemies g)
+    c <- traverse (getActions i) (view assets g)
+    pure . concat $ a <> b <> c
 
 runGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game

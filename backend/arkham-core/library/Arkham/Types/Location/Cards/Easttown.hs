@@ -21,7 +21,7 @@ easttown =
         { locationTraits = HashSet.fromList [Arkham]
         }
 
-instance (LocationActionRunner investigator) => HasActions investigator Easttown where
+instance (IsInvestigator investigator) => HasActions investigator Easttown where
   getActions i (Easttown attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env Easttown where

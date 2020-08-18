@@ -28,7 +28,7 @@ stMarysHospital =
         { locationTraits = HashSet.fromList [Arkham]
         }
 
-instance (LocationActionRunner investigator) => HasActions investigator StMarysHospital where
+instance (IsInvestigator investigator) => HasActions investigator StMarysHospital where
   getActions i (StMarysHospital attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env StMarysHospital where

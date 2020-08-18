@@ -1,6 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator
   ( isPrey
+  , investigatorAttrs
   , hasEndedTurn
   , hasResigned
   , hasClues
@@ -301,9 +302,6 @@ instance HasCount ClueCount () Investigator where
 
 instance HasSet AssetId () Investigator where
   getSet _ = investigatorAssets . investigatorAttrs
-
-instance HasLocation Investigator where
-  locationOf = investigatorLocation . investigatorAttrs
 
 instance HasSkill Investigator where
   getSkill skillType = skillValueFor skillType Nothing [] . investigatorAttrs

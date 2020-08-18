@@ -32,6 +32,9 @@ hermanCollins uuid = HermanCollins $ (baseAttrs uuid "01138")
     ]
   }
 
+instance (IsInvestigator investigator) => HasActions investigator HermanCollins where
+  getActions i (HermanCollins attrs) = getActions i attrs
+
 instance (EnemyRunner env) => RunMessage env HermanCollins where
   runMessage msg e@(HermanCollins attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == enemyId -> e <$ spawnAt eid "01134"

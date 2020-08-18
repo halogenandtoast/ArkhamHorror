@@ -21,5 +21,8 @@ ghoulMinion uuid = GhoulMinion $ (baseAttrs uuid "01160")
   , enemyEvade = 2
   }
 
+instance (IsInvestigator investigator) => HasActions investigator GhoulMinion where
+  getActions i (GhoulMinion attrs) = getActions i attrs
+
 instance (EnemyRunner env) => RunMessage env GhoulMinion where
   runMessage msg (GhoulMinion attrs) = GhoulMinion <$> runMessage msg attrs

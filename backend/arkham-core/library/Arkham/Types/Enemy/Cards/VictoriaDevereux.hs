@@ -31,6 +31,9 @@ victoriaDevereux uuid = VictoriaDevereux $ (baseAttrs uuid "01140")
     ]
   }
 
+instance (IsInvestigator investigator) => HasActions investigator VictoriaDevereux where
+  getActions i (VictoriaDevereux attrs) = getActions i attrs
+
 instance (EnemyRunner env) => RunMessage env VictoriaDevereux where
   runMessage msg e@(VictoriaDevereux attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == enemyId -> e <$ spawnAt eid "01134"

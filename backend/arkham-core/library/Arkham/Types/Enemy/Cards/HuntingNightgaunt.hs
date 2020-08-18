@@ -24,6 +24,9 @@ huntingNightgaunt uuid = HuntingNightgaunt $ (baseAttrs uuid "01172")
   , enemyEvade = 1
   }
 
+instance (IsInvestigator investigator) => HasActions investigator HuntingNightgaunt where
+  getActions i (HuntingNightgaunt attrs) = getActions i attrs
+
 instance (EnemyRunner env) => RunMessage env HuntingNightgaunt where
   runMessage msg (HuntingNightgaunt attrs@Attrs {..}) = case msg of
     TryEvadeEnemy iid eid skillType onSuccess onFailure skillTestModifiers tokenResponses

@@ -23,6 +23,9 @@ wolfManDrew uuid = WolfManDrew $ (baseAttrs uuid "01137")
   , enemyVictory = Just 1
   }
 
+instance (IsInvestigator investigator) => HasActions investigator WolfManDrew where
+  getActions i (WolfManDrew attrs) = getActions i attrs
+
 instance (EnemyRunner env) => RunMessage env WolfManDrew where
   runMessage msg e@(WolfManDrew attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->

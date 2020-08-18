@@ -1,6 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE TypeFamilies #-}
 module Arkham.Types.Classes
   ( module Arkham.Types.Classes
   , module Arkham.Types.Classes.HasRecord
@@ -9,6 +9,8 @@ where
 
 import Arkham.Types.Ability
 import Arkham.Types.Classes.HasRecord
+import Arkham.Types.EnemyId
+import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.Message
@@ -74,8 +76,6 @@ class HasList c b a where
 class HasId c b a where
   getId :: HasCallStack => b -> a -> c
 
-class HasLocation a where
-  locationOf :: a -> LocationId
 
 class HasCount c b a where
   getCount :: b -> a -> c
@@ -104,8 +104,16 @@ class HasVictoryPoints a where
 class HasActions b a where
   getActions :: forall env m. MonadReader env m => b -> a -> m [Message]
 
-class CanInvestigate b a where
-  canInvestigate :: b -> a -> Bool
+class (HasId LocationId () location) => IsLocation location where
+  isBlocked :: location -> Bool
 
-class CanMoveTo b a where
-  canMoveTo :: b -> a -> Bool
+class (HasId EnemyId () enemy) => IsEnemy enemy where
+  isAloof :: enemy -> Bool
+
+class (HasId InvestigatorId () investigator) => IsInvestigator investigator where
+  locationOf :: investigator -> LocationId
+  canInvestigate :: (IsLocation location) => location -> investigator -> Bool
+  canMoveTo :: (IsLocation location) => location -> investigator -> Bool
+  canFight :: (IsEnemy enemy) => enemy -> investigator -> Bool
+  canEngage :: (IsEnemy enemy) => enemy -> investigator -> Bool
+  canEvade :: (IsEnemy enemy) => enemy -> investigator -> Bool

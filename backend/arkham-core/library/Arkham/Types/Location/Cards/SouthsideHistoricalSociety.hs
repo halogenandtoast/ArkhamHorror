@@ -28,7 +28,7 @@ southsideHistoricalSociety =
         { locationTraits = HashSet.fromList [Arkham]
         }
 
-instance (LocationActionRunner investigator) => HasActions investigator SouthsideHistoricalSociety where
+instance (IsInvestigator investigator) => HasActions investigator SouthsideHistoricalSociety where
   getActions i (SouthsideHistoricalSociety attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env SouthsideHistoricalSociety where

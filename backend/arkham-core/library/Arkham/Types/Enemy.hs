@@ -125,8 +125,23 @@ enemyAttrs = \case
   WizardOfTheOrder' attrs -> coerce attrs
   HuntingNightgaunt' attrs -> coerce attrs
 
-instance (EnemyActionRunner investigator) => HasActions investigator Enemy where
-  getActions i e = pure []
+instance (IsInvestigator investigator) => HasActions investigator Enemy where
+  getActions i = \case
+    SilverTwilightAcolyte' x -> getActions i x
+    GhoulPriest' x -> getActions i x
+    FleshEater' x -> getActions i x
+    IcyGhoul' x -> getActions i x
+    WolfManDrew' x -> getActions i x
+    HermanCollins' x -> getActions i x
+    PeterWarren' x -> getActions i x
+    VictoriaDevereux' x -> getActions i x
+    RuthTurner' x -> getActions i x
+    SwarmOfRats' x -> getActions i x
+    GhoulMinion' x -> getActions i x
+    RavenousGhoul' x -> getActions i x
+    Acolyte' x -> getActions i x
+    WizardOfTheOrder' x -> getActions i x
+    HuntingNightgaunt' x -> getActions i x
 
 instance (EnemyRunner env) => RunMessage env Enemy where
   runMessage msg = \case

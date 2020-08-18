@@ -1,28 +1,28 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Attrs where
 
-import           Arkham.Json
-import           Arkham.Types.Ability
-import qualified Arkham.Types.Action           as Action
-import           Arkham.Types.AssetId
-import           Arkham.Types.Classes
-import           Arkham.Types.EnemyId
-import           Arkham.Types.GameValue
-import           Arkham.Types.InvestigatorId
-import           Arkham.Types.Location.Runner
-import           Arkham.Types.LocationId
-import           Arkham.Types.LocationSymbol
-import           Arkham.Types.Message
-import           Arkham.Types.Modifier
-import           Arkham.Types.Query
-import           Arkham.Types.SkillType
-import           Arkham.Types.Source
-import           Arkham.Types.Target
-import           Arkham.Types.Trait
-import           Arkham.Types.TreacheryId
-import           ClassyPrelude
-import qualified Data.HashSet                  as HashSet
-import           Lens.Micro
+import Arkham.Json
+import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.AssetId
+import Arkham.Types.Classes
+import Arkham.Types.EnemyId
+import Arkham.Types.GameValue
+import Arkham.Types.InvestigatorId
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationId
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Query
+import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.Target
+import Arkham.Types.Trait
+import Arkham.Types.TreacheryId
+import ClassyPrelude
+import qualified Data.HashSet as HashSet
+import Lens.Micro
 
 data Attrs = Attrs
   { locationName               :: Text
@@ -47,7 +47,7 @@ data Attrs = Attrs
   deriving stock (Show, Generic)
 
 instance ToJSON Attrs where
-  toJSON     = genericToJSON $ aesonOptions $ Just "location"
+  toJSON = genericToJSON $ aesonOptions $ Just "location"
   toEncoding = genericToEncoding $ aesonOptions $ Just "location"
 
 instance FromJSON Attrs where
@@ -83,24 +83,24 @@ baseAttrs
   -> [LocationSymbol]
   -> Attrs
 baseAttrs lid name shroud' revealClues symbol' connectedSymbols' = Attrs
-  { locationName               = name
-  , locationId                 = lid
-  , locationRevealClues        = revealClues
-  , locationClues              = 0
-  , locationShroud             = shroud'
-  , locationRevealed           = False
-  , locationBlocked            = False
-  , locationInvestigators      = mempty
-  , locationEnemies            = mempty
-  , locationVictory            = Nothing
-  , locationSymbol             = symbol'
-  , locationConnectedSymbols   = HashSet.fromList connectedSymbols'
+  { locationName = name
+  , locationId = lid
+  , locationRevealClues = revealClues
+  , locationClues = 0
+  , locationShroud = shroud'
+  , locationRevealed = False
+  , locationBlocked = False
+  , locationInvestigators = mempty
+  , locationEnemies = mempty
+  , locationVictory = Nothing
+  , locationSymbol = symbol'
+  , locationConnectedSymbols = HashSet.fromList connectedSymbols'
   , locationConnectedLocations = mempty
-  , locationTraits             = mempty
-  , locationTreacheries        = mempty
-  , locationAssets             = mempty
-  , locationAbilities          = mempty
-  , locationModifiers          = mempty
+  , locationTraits = mempty
+  , locationTreacheries = mempty
+  , locationAssets = mempty
+  , locationAbilities = mempty
+  , locationModifiers = mempty
   }
 
 clues :: Lens' Attrs Int
@@ -113,23 +113,30 @@ enemies :: Lens' Attrs (HashSet EnemyId)
 enemies = lens locationEnemies $ \m x -> m { locationEnemies = x }
 
 shroudValueFor :: Attrs -> Int
-shroudValueFor Attrs {..} = foldr applyModifier
-                                  locationShroud
-                                  locationModifiers
+shroudValueFor Attrs {..} = foldr
+  applyModifier
+  locationShroud
+  locationModifiers
  where
   applyModifier (ShroudModifier m _) n = max 0 (n + m)
-  applyModifier _                    n = n
+  applyModifier _ n = n
 
-instance (LocationActionRunner investigator) => HasActions investigator Attrs where
-  getActions i Attrs {..} = pure $ moveActions <> investigateActions
+instance HasId LocationId () Attrs where
+  getId _ Attrs {..} = locationId
+
+instance IsLocation Attrs where
+  isBlocked Attrs {..} = locationBlocked
+
+instance (IsInvestigator investigator) => HasActions investigator Attrs where
+  getActions i location@Attrs {..} = pure $ moveActions <> investigateActions
    where
     investigateActions =
       [ Investigate (getId () i) locationId SkillIntellect mempty True
-      | canInvestigate locationId i
+      | canInvestigate location i
       ]
     moveActions =
       [ MoveAction (getId () i) locationId True
-      | canMoveTo locationId i && not locationBlocked
+      | canMoveTo location i && not locationBlocked
       ]
 
 instance (LocationRunner env) => RunMessage env Attrs where
@@ -190,8 +197,8 @@ instance (LocationRunner env) => RunMessage env Attrs where
       pure $ a & enemies %~ HashSet.insert eid
     EnemySpawn lid eid | lid == locationId ->
       pure $ a & enemies %~ HashSet.insert eid
-    RemoveEnemy eid          -> pure $ a & enemies %~ HashSet.delete eid
-    EnemyDefeated eid _ _ _  -> pure $ a & enemies %~ HashSet.delete eid
+    RemoveEnemy eid -> pure $ a & enemies %~ HashSet.delete eid
+    EnemyDefeated eid _ _ _ -> pure $ a & enemies %~ HashSet.delete eid
     TakeControlOfAsset _ aid -> pure $ a & assets %~ HashSet.delete aid
     PlaceClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & clues +~ n

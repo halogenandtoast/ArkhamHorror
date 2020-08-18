@@ -11,7 +11,6 @@ import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
@@ -33,7 +32,7 @@ parlor = Parlor $ (baseAttrs "01115" "Parlor" 2 (Static 0) Diamond [Square])
     ]
   }
 
-instance (CanInvestigate LocationId investigator, HasId InvestigatorId () investigator) => HasActions investigator Parlor where
+instance (LocationActionRunner investigator) => HasActions investigator Parlor where
   getActions i (Parlor attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env Parlor where

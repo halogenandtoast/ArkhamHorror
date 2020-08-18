@@ -463,6 +463,10 @@ instance CanInvestigate LocationId Attrs where
   canInvestigate lid a@Attrs {..} =
     canAfford a Action.Investigate && lid == investigatorLocation
 
+instance CanMoveTo LocationId Attrs where
+  canMoveTo lid a@Attrs {..} =
+    canAfford a Action.Move && lid `elem` investigatorConnectedLocations
+
 instance HasId InvestigatorId () Attrs where
   getId _ Attrs {..} = investigatorId
 
@@ -1198,7 +1202,6 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       advanceableActIds <-
         HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())
       canDos <- filterM (canPerform a) Action.allActions
-      blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
       locationActions <- concatMap (getActions a)
         <$> asks (getList @Location ())
       allAbilities <- getAvailableAbilities a
@@ -1210,8 +1213,6 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           investigatorEngagedEnemies
             `union` (enemyIds `difference` aloofEnemyIds)
         unengagedEnemyIds = enemyIds `difference` investigatorEngagedEnemies
-        accessibleLocations =
-          investigatorConnectedLocations `difference` blockedLocationIds
         availableAbilities = flip filter allAbilities $ \Ability {..} ->
           case abilityType of
             FastAbility Any -> canPayAbilityCost abilityCost a
@@ -1234,10 +1235,6 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
                `elem` canDos
                || fastIsPlayable a [DuringTurn You] c
              , isPlayable a [DuringTurn You] c
-             ]
-          <> [ MoveAction iid lid True
-             | Action.Move `elem` canDos
-             , lid <- HashSet.toList accessibleLocations
              ]
           <> locationActions
           <> [ FightEnemy iid eid SkillCombat [] mempty True

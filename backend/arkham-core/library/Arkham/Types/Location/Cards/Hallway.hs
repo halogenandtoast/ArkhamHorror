@@ -4,10 +4,8 @@ module Arkham.Types.Location.Cards.Hallway where
 import Arkham.Json
 import Arkham.Types.Classes
 import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import ClassyPrelude
 
@@ -18,7 +16,7 @@ hallway :: Hallway
 hallway = Hallway
   $ baseAttrs "01112" "Hallway" 1 (Static 0) Square [Triangle, Plus, Diamond]
 
-instance (CanInvestigate LocationId investigator, HasId InvestigatorId () investigator) => HasActions investigator Hallway where
+instance (LocationActionRunner investigator) => HasActions investigator Hallway where
   getActions i (Hallway attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env Hallway where

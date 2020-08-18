@@ -121,10 +121,15 @@ shroudValueFor Attrs {..} = foldr
   applyModifier (ShroudModifier m _) n = max 0 (n + m)
   applyModifier _ n = n
 
-instance (CanInvestigate LocationId investigator, HasId InvestigatorId () investigator) => HasActions investigator Attrs where
-  getActions i Attrs {..} = if canInvestigate locationId i
-    then [Investigate (getId () i) locationId SkillIntellect mempty True]
-    else []
+instance (CanInvestigate LocationId investigator, CanMoveTo LocationId investigator, HasId InvestigatorId () investigator) => HasActions investigator Attrs where
+  getActions i Attrs {..} = moveActions <> investigateActions
+   where
+    investigateActions = if canInvestigate locationId i
+      then [Investigate (getId () i) locationId SkillIntellect mempty True]
+      else []
+    moveActions = if canMoveTo locationId i && not locationBlocked
+      then [MoveAction (getId () i) locationId True]
+      else []
 
 instance (LocationRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of

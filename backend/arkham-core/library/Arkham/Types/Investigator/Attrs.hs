@@ -306,6 +306,13 @@ canAfford :: Attrs -> Action -> Bool
 canAfford a@Attrs {..} actionType =
   actionCost a actionType <= investigatorRemainingActions
 
+canPayAbilityCost :: Maybe AbilityCost -> Attrs -> Bool
+canPayAbilityCost Nothing _ = True
+canPayAbilityCost (Just cost) Attrs {..} = case cost of
+  ResourceCost n -> investigatorResources >= n
+  ClueCost n -> investigatorClues >= n
+  CardCost n -> length investigatorHand >= n
+
 canPerform
   :: (MonadReader env m, InvestigatorRunner env) => Attrs -> Action -> m Bool
 canPerform a@Attrs {..} Action.Move = do
@@ -554,6 +561,11 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
         )
       pure a
     AddToDiscard iid pc | iid == investigatorId -> pure $ a & discard %~ (pc :)
+    ChooseAndDiscardCard iid | iid == investigatorId -> a <$ unshiftMessage
+      (Ask iid
+      $ ChooseOne
+      $ [ DiscardCard iid (getCardId card) | card <- investigatorHand ]
+      )
     DiscardCard iid cardId | iid == investigatorId -> do
       let
         card = fromJustNote "must be in hand"
@@ -1192,9 +1204,10 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
           investigatorConnectedLocations `difference` blockedLocationIds
         availableAbilities = flip filter allAbilities $ \Ability {..} ->
           case abilityType of
-            FastAbility Any -> True
-            ActionAbility _ Nothing -> True
-            ActionAbility _ (Just action) -> action `elem` canDos
+            FastAbility Any -> canPayAbilityCost abilityCost a
+            ActionAbility _ Nothing -> canPayAbilityCost abilityCost a
+            ActionAbility _ (Just action) ->
+              action `elem` canDos && canPayAbilityCost abilityCost a
             _ -> False
       a <$ unshiftMessage
         (Ask iid $ ChooseOne

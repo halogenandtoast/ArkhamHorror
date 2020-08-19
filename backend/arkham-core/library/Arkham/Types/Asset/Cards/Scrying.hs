@@ -27,12 +27,13 @@ scrying :: AssetId -> Scrying
 scrying uuid = Scrying $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
 
 instance (ActionRunner env investigator) => HasActions env investigator Scrying where
-  getActions i (DuringTurn You) (Scrying Attrs {..}) = pure
-    [ ActivateCardAbilityAction
-        (getId () i)
-        (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
-    | useCount assetUses > 0
-    ]
+  getActions i (DuringTurn You) (Scrying Attrs {..})
+    | Just (getId () i) == assetInvestigator = pure
+      [ ActivateCardAbilityAction
+          (getId () i)
+          (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
+      | useCount assetUses > 0
+      ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Scrying where

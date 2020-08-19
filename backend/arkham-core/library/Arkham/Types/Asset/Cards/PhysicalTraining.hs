@@ -22,7 +22,7 @@ physicalTraining uuid = PhysicalTraining $ baseAttrs uuid "01017"
 
 instance (IsInvestigator investigator) => HasActions env investigator PhysicalTraining where
   getActions i (Fast.WhenSkillTest SkillWillpower) (PhysicalTraining Attrs {..})
-    = pure
+    | Just (getId () i) == assetInvestigator = pure
       [ UseCardAbility
           (getId () i)
           (AssetSource assetId)
@@ -30,8 +30,8 @@ instance (IsInvestigator investigator) => HasActions env investigator PhysicalTr
           1
       | resourceCount i > 0
       ]
-  getActions i (Fast.WhenSkillTest SkillCombat) (PhysicalTraining Attrs {..}) =
-    pure
+  getActions i (Fast.WhenSkillTest SkillCombat) (PhysicalTraining Attrs {..})
+    | Just (getId () i) == assetInvestigator = pure
       [ UseCardAbility
           (getId () i)
           (AssetSource assetId)

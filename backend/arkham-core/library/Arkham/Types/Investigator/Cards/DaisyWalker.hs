@@ -2,6 +2,7 @@
 module Arkham.Types.Investigator.Cards.DaisyWalker where
 
 import Arkham.Types.Ability
+import Arkham.Types.FastWindow
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Helpers
@@ -16,7 +17,6 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
-import qualified Data.HashSet as HashSet
 
 newtype DaisyWalkerMetadata = DaisyWalkerMetadata { tomeActions :: Int }
   deriving stock (Show, Generic)
@@ -76,24 +76,16 @@ instance (InvestigatorRunner Attrs env) => RunMessage env DaisyWalker where
       PlayerWindow iid additionalActions | iid == investigatorId ->
         if investigatorRemainingActions == 0 && tomeActions > 0
           then do
-            let assetIds = HashSet.toList investigatorAssets
-            tomeAssets <-
-              map fst
-              . filter ((Tome `elem`) . snd)
-              . zip assetIds
-              <$> traverse (asks . getSet) assetIds
-            tomeAbilities <- mconcat <$> traverse (asks . getList) tomeAssets
+            tomeActions' <-
+              asks
+                (join
+                $ getActions attrs (DuringTurn You)
+                . (AssetActionType, Tome, )
+                )
             DaisyWalker
               . (`with` metadata)
               <$> runMessage
-                    (PlayerWindow
-                      iid
-                      (additionalActions
-                      <> [ ActivateCardAbilityAction iid ability
-                         | ability <- tomeAbilities
-                         ]
-                      )
-                    )
+                    (PlayerWindow iid (additionalActions <> tomeActions'))
                     attrs
           else DaisyWalker . (`with` metadata) <$> runMessage msg attrs
       ResolveToken ElderSign iid skillValue | iid == investigatorId ->

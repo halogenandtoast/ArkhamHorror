@@ -3,7 +3,6 @@
 module Arkham.Types.Asset.Attrs where
 
 import Arkham.Json
-import Arkham.Types.Ability
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
@@ -37,7 +36,6 @@ data Attrs = Attrs
   , assetHealthDamage :: Int
   , assetSanityDamage :: Int
   , assetTraits :: HashSet Trait
-  , assetAbilities :: [Ability]
   , assetUses :: Uses
   , assetExhausted :: Bool
   }
@@ -72,7 +70,6 @@ baseAttrs aid cardCode =
       , assetHealthDamage = 0
       , assetSanityDamage = 0
       , assetTraits = HashSet.fromList pcTraits
-      , assetAbilities = mempty
       , assetUses = NoUses
       , assetExhausted = False
       }
@@ -95,9 +92,6 @@ healthDamage = lens assetHealthDamage $ \m x -> m { assetHealthDamage = x }
 sanityDamage :: Lens' Attrs Int
 sanityDamage = lens assetSanityDamage $ \m x -> m { assetSanityDamage = x }
 
-abilities :: Lens' Attrs [Ability]
-abilities = lens assetAbilities $ \m x -> m { assetAbilities = x }
-
 defeated :: Attrs -> Bool
 defeated Attrs {..} =
   maybe False (assetHealthDamage >=) assetHealth
@@ -109,11 +103,6 @@ instance HasActions env investigator Attrs where
 instance (AssetRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     ReadyExhausted -> pure $ a & exhausted .~ False
-    AddAbility (AssetSource aid) ability | aid == assetId ->
-      pure $ a & abilities %~ (<> [ability])
-    RemoveAbilitiesFrom source -> do
-      let abilities' = filter ((source /=) . abilitySource) assetAbilities
-      pure $ a & abilities .~ abilities'
     CheckDefeated ->
       a <$ when (defeated a) (unshiftMessage (AssetDefeated assetId))
     AssetDamage aid _ health sanity | aid == assetId ->

@@ -10,6 +10,7 @@ import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location
 import Arkham.Types.LocationId
+import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
@@ -29,7 +30,6 @@ type InvestigatorRunner investigator env
     , HasSet TreacheryId LocationId env
     , HasSet AloofEnemyId LocationId env
     , HasSet AssetId LocationId env
-    , HasList Ability AssetId env
     , HasList Ability LocationId env
     , HasList Ability EnemyId env
     , HasList Ability TreacheryId env
@@ -40,4 +40,5 @@ type InvestigatorRunner investigator env
     , HasList Location () env
     , HasList Enemy () env
     , HasActions env investigator env
+    , HasActions env investigator (ActionType, Trait, env)
     )

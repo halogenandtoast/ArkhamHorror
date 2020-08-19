@@ -440,9 +440,6 @@ instance HasList Ability EnemyId Game where
 instance HasList Ability LocationId Game where
   getList lid = getAbilities . getLocation lid
 
-instance HasList Ability AssetId Game where
-  getList aid = getAbilities . getAsset aid
-
 instance HasSet Trait AssetId Game where
   getSet aid = getTraits . getAsset aid
 
@@ -749,6 +746,19 @@ instance (IsInvestigator investigator) => HasActions Game investigator (ActionTy
     concat <$> traverse (getActions i window) (HashMap.elems $ view enemies g)
   getActions i window (LocationActionType, g) =
     concat <$> traverse (getActions i window) (HashMap.elems $ view locations g)
+  getActions i window (AssetActionType, g) =
+    concat <$> traverse (getActions i window) (HashMap.elems $ view assets g)
+
+instance (IsInvestigator investigator) => HasActions Game investigator (ActionType, Trait, Game) where
+  getActions i window (EnemyActionType, trait, g) = concat <$> traverse
+    (getActions i window)
+    (filter ((trait `elem`) . getTraits) $ HashMap.elems $ view enemies g)
+  getActions i window (LocationActionType, trait, g) = concat <$> traverse
+    (getActions i window)
+    (filter ((trait `elem`) . getTraits) $ HashMap.elems $ view locations g)
+  getActions i window (AssetActionType, trait, g) = concat <$> traverse
+    (getActions i window)
+    (filter ((trait `elem`) . getTraits) $ HashMap.elems $ view assets g)
 
 instance
   ( IsInvestigator investigator

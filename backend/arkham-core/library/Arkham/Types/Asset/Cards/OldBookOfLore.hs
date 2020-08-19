@@ -25,12 +25,13 @@ oldBookOfLore uuid =
   OldBookOfLore $ (baseAttrs uuid "01031") { assetSlots = [HandSlot] }
 
 instance (IsInvestigator investigator) => HasActions env investigator OldBookOfLore where
-  getActions i (DuringTurn You) (OldBookOfLore Attrs {..}) = pure
-    [ ActivateCardAbilityAction
-        (getId () i)
-        (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
-    | not assetExhausted
-    ]
+  getActions i (DuringTurn You) (OldBookOfLore Attrs {..})
+    | Just (getId () i) == assetInvestigator = pure
+      [ ActivateCardAbilityAction
+          (getId () i)
+          (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
+      | not assetExhausted
+      ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env OldBookOfLore where

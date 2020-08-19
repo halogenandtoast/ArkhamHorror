@@ -39,6 +39,7 @@ theNecronomicon uuid =
 
 instance (IsInvestigator investigator) => HasActions env investigator TheNecronomicon where
   getActions i (DuringTurn You) (TheNecronomicon (Attrs {..} `With` TheNecronomiconMetadata {..}))
+    | Just (getId () i) == assetInvestigator
     = pure
       [ ActivateCardAbilityAction
           (getId () i)

@@ -35,7 +35,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Machete 
               1
               (ActionAbility 1 (Just Action.Fight))
             )
-        | fightAvailable && canDo Action.Fight i
+        | fightAvailable
         ]
   getActions _ _ _ = pure []
 

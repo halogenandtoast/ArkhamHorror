@@ -388,7 +388,6 @@ getAvailableAbilities
 getAvailableAbilities a@Attrs {..} = do
   treacheryAbilities <- mconcat
     <$> traverse (asks . getList) (HashSet.toList investigatorTreacheries)
-  locationAbilities <- asks (getList investigatorLocation)
   locationEnemyIds <- asks (getSet @EnemyId investigatorLocation)
   locationEnemyAbilities <- mconcat
     <$> traverse (asks . getList) (HashSet.toList locationEnemyIds)
@@ -399,7 +398,6 @@ getAvailableAbilities a@Attrs {..} = do
   pure $ filter canPerformAbility $ mconcat
     [ investigatorAbilities
     , treacheryAbilities
-    , locationAbilities
     , locationEnemyAbilities
     , locationTreacheryAbilities
     , actAndAgendaAbilities

@@ -437,9 +437,6 @@ instance HasList Ability TreacheryId Game where
 instance HasList Ability EnemyId Game where
   getList eid = getAbilities . getEnemy eid
 
-instance HasList Ability LocationId Game where
-  getList lid = getAbilities . getLocation lid
-
 instance HasSet Trait AssetId Game where
   getSet aid = getTraits . getAsset aid
 
@@ -761,20 +758,14 @@ instance (IsInvestigator investigator) => HasActions Game investigator (ActionTy
     (filter ((trait `elem`) . getTraits) $ HashMap.elems $ view assets g)
 
 instance
-  ( IsInvestigator investigator
-  , HasActions env investigator (ActionType, Game)
-  , HasActions env investigator (ActionType, env)
-  )
+  (HasActions env investigator (ActionType, Game))
   => HasActions env investigator Game where
   getActions i window g = do
     locationActions <- getActions i window (LocationActionType, g)
     enemyActions <- getActions i window (EnemyActionType, g)
-    assetActions <- traverse
-      (getActions i window)
-      (HashMap.elems $ view assets g)
+    assetActions <- getActions i window (AssetActionType, g)
     actActions <- traverse (getActions i window) (HashMap.elems $ view acts g)
-    pure $ enemyActions <> locationActions <> concat
-      (assetActions <> actActions)
+    pure $ enemyActions <> locationActions <> assetActions <> concat actActions
 
 runGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game

@@ -24,41 +24,42 @@ newtype Parlor = Parlor Attrs
 parlor :: Parlor
 parlor = Parlor $ (baseAttrs "01115" "Parlor" 2 (Static 0) Diamond [Square])
   { locationBlocked = True
-  , locationAbilities =
-    [ mkAbility
-        (LocationSource "01115")
-        1
-        (ActionAbility 1 (Just Action.Resign))
-    ]
   }
 
-instance (IsInvestigator investigator) => HasActions env investigator Parlor where
-  getActions i window (Parlor attrs) = getActions i window attrs
+instance (ActionRunner env investigator) => HasActions env investigator Parlor where
+  getActions i window (Parlor attrs@Attrs {..}) = do
+    baseActions <- getActions i window attrs
+    aid <- unStoryAssetId <$> asks (getId (CardCode "01117"))
+    miid <- fmap unOwnerId <$> asks (getId aid)
+    pure
+      $ baseActions
+      <> [ ActivateCardAbilityAction
+             (getId () i)
+             (mkAbility
+               (LocationSource "01115")
+               1
+               (ActionAbility 1 (Just Action.Resign))
+             )
+         | getId () i `elem` locationInvestigators
+         ]
+      <> [ ActivateCardAbilityAction
+             (getId () i)
+             ((mkAbility
+                (AssetSource aid)
+                1
+                (ActionAbility 1 (Just Action.Parley))
+              )
+               { abilityProvider = LocationSource "01115"
+               }
+             )
+         | isNothing miid
+         ]
 
 instance (LocationRunner env) => RunMessage env Parlor where
   runMessage msg l@(Parlor attrs@Attrs {..}) = case msg of
     RevealLocation lid | lid == locationId -> do
       attrs' <- runMessage msg attrs
       pure $ Parlor $ attrs' & blocked .~ False
-    PrePlayerWindow | locationRevealed -> do
-      aid <- unStoryAssetId <$> asks (getId (CardCode "01117"))
-      miid <- fmap unOwnerId <$> asks (getId aid)
-      case miid of
-        Just _ ->
-          l <$ unshiftMessage (RemoveAbilitiesFrom (LocationSource locationId))
-        Nothing -> l <$ unshiftMessages
-          [ RemoveAbilitiesFrom (LocationSource locationId)
-          , AddAbility
-            (AssetSource aid)
-            ((mkAbility
-               (AssetSource aid)
-               2
-               (ActionAbility 1 (Just Action.Parley))
-             )
-              { abilityProvider = LocationSource locationId
-              }
-            )
-          ]
     UseCardAbility iid _ (LocationSource lid) 1
       | lid == locationId && locationRevealed -> l
       <$ unshiftMessage (Resign iid)

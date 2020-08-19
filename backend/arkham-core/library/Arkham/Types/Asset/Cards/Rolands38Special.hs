@@ -29,40 +29,28 @@ rolands38Special uuid =
   Rolands38Special $ (baseAttrs uuid "01006") { assetSlots = [HandSlot] }
 
 instance (ActionRunner env investigator) => HasActions env investigator Rolands38Special where
-  getActions i window (Rolands38Special Attrs {..}) = do
-    fightAvailable <- hasFightActions i window
-    pure
-      [ ActivateCardAbilityAction
-          (getId () i)
-          (mkAbility
-            (AssetSource assetId)
-            1
-            (ActionAbility 1 (Just Action.Fight))
-          )
-      | useCount assetUses > 0 && fightAvailable
-      ]
+  getActions i window (Rolands38Special Attrs {..})
+    | Just (getId () i) == assetInvestigator = do
+      fightAvailable <- hasFightActions i window
+      pure
+        [ ActivateCardAbilityAction
+            (getId () i)
+            (mkAbility
+              (AssetSource assetId)
+              1
+              (ActionAbility 1 (Just Action.Fight))
+            )
+        | useCount assetUses > 0 && fightAvailable
+        ]
+  getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Rolands38Special where
   runMessage msg a@(Rolands38Special attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId -> do
-      let
-        attrs' =
-          attrs
-            & (uses .~ Uses Resource.Ammo 4)
-            & (abilities
-              .~ [ mkAbility
-                     (AssetSource aid)
-                     1
-                     (ActionAbility 1 (Just Action.Fight))
-                 ]
-              )
-      Rolands38Special <$> runMessage msg attrs'
+    InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
+      Rolands38Special <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo 4)
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
       case assetUses of
         Uses Resource.Ammo n -> do
-          when
-            (n == 1)
-            (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
           locationId <- asks (getId @LocationId iid)
           clueCount <- unClueCount <$> asks (getCount locationId)
           let skillModifier = if clueCount == 0 then 1 else 3

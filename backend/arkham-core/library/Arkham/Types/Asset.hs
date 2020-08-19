@@ -74,11 +74,6 @@ allAssets = HashMap.fromList
 instance HasCardCode Asset where
   getCardCode = assetCardCode . assetAttrs
 
-instance HasAbilities Asset where
-  getAbilities a =
-    let attrs = assetAttrs a
-    in if assetExhausted attrs then [] else assetAbilities attrs
-
 instance HasTraits Asset where
   getTraits = assetTraits . assetAttrs
 

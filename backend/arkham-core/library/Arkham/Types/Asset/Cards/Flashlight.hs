@@ -28,18 +28,20 @@ flashlight uuid =
   Flashlight $ (baseAttrs uuid "01087") { assetSlots = [HandSlot] }
 
 instance (ActionRunner env investigator) => HasActions env investigator Flashlight where
-  getActions i window (Flashlight Attrs {..}) = do
-    investigateAvailable <- hasInvestigateActions i window
-    pure
-      [ ActivateCardAbilityAction
-          (getId () i)
-          (mkAbility
-            (AssetSource assetId)
-            1
-            (ActionAbility 1 (Just Action.Investigate))
-          )
-      | useCount assetUses > 0 && investigateAvailable
-      ]
+  getActions i window (Flashlight Attrs {..})
+    | Just (getId () i) == assetInvestigator = do
+      investigateAvailable <- hasInvestigateActions i window
+      pure
+        [ ActivateCardAbilityAction
+            (getId () i)
+            (mkAbility
+              (AssetSource assetId)
+              1
+              (ActionAbility 1 (Just Action.Investigate))
+            )
+        | useCount assetUses > 0 && investigateAvailable
+        ]
+  getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Flashlight where
   runMessage msg a@(Flashlight attrs@Attrs {..}) = case msg of

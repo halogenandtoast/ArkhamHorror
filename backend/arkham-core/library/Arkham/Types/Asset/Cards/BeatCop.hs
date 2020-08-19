@@ -27,7 +27,7 @@ beatCop uuid = BeatCop $ (baseAttrs uuid "01018")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator BeatCop where
-  getActions i _ (BeatCop Attrs {..}) =
+  getActions i _ (BeatCop Attrs {..}) | Just (getId () i) == assetInvestigator =
     pure
       [ UseCardAbility
           (getId () i)
@@ -35,6 +35,7 @@ instance (IsInvestigator investigator) => HasActions env investigator BeatCop wh
           (AssetSource assetId)
           1
       ]
+  getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env BeatCop where
   runMessage msg a@(BeatCop attrs@Attrs {..}) = case msg of

@@ -23,27 +23,29 @@ knife :: AssetId -> Knife
 knife uuid = Knife $ (baseAttrs uuid "01086") { assetSlots = [HandSlot] }
 
 instance (ActionRunner env investigator) => HasActions env investigator Knife where
-  getActions i window (Knife Attrs {..}) = do
-    fightAvailable <- hasFightActions i window
-    pure
-      $ [ ActivateCardAbilityAction
-            (getId () i)
-            (mkAbility
-              (AssetSource assetId)
-              1
-              (ActionAbility 1 (Just Action.Fight))
-            )
-        | fightAvailable
-        ]
-      <> [ ActivateCardAbilityAction
-             (getId () i)
-             (mkAbility
-               (AssetSource assetId)
-               1
-               (ActionAbility 2 (Just Action.Fight))
-             )
-         | fightAvailable
-         ]
+  getActions i window (Knife Attrs {..})
+    | Just (getId () i) == assetInvestigator = do
+      fightAvailable <- hasFightActions i window
+      pure
+        $ [ ActivateCardAbilityAction
+              (getId () i)
+              (mkAbility
+                (AssetSource assetId)
+                1
+                (ActionAbility 1 (Just Action.Fight))
+              )
+          | fightAvailable
+          ]
+        <> [ ActivateCardAbilityAction
+               (getId () i)
+               (mkAbility
+                 (AssetSource assetId)
+                 1
+                 (ActionAbility 2 (Just Action.Fight))
+               )
+           | fightAvailable
+           ]
+  getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Knife where
   runMessage msg a@(Knife attrs@Attrs {..}) = case msg of

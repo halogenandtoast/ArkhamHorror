@@ -24,18 +24,20 @@ machete :: AssetId -> Machete
 machete uuid = Machete $ (baseAttrs uuid "01020") { assetSlots = [HandSlot] }
 
 instance (ActionRunner env investigator) => HasActions env investigator Machete where
-  getActions i window (Machete Attrs {..}) = do
-    fightAvailable <- hasFightActions i window
-    pure
-      [ ActivateCardAbilityAction
-          (getId () i)
-          (mkAbility
-            (AssetSource assetId)
-            1
-            (ActionAbility 1 (Just Action.Fight))
-          )
-      | fightAvailable
-      ]
+  getActions i window (Machete Attrs {..})
+    | Just (getId () i) == assetInvestigator = do
+      fightAvailable <- hasFightActions i window
+      pure
+        [ ActivateCardAbilityAction
+            (getId () i)
+            (mkAbility
+              (AssetSource assetId)
+              1
+              (ActionAbility 1 (Just Action.Fight))
+            )
+        | fightAvailable
+        ]
+  getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Machete where
   runMessage msg a@(Machete attrs@Attrs {..}) = case msg of

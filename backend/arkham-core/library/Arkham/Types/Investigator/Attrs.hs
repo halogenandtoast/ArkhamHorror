@@ -386,28 +386,21 @@ takeAction action a =
 getAvailableAbilities
   :: (InvestigatorRunner Attrs env, MonadReader env m) => Attrs -> m [Ability]
 getAvailableAbilities a@Attrs {..} = do
-  assetAbilities <- mconcat
-    <$> traverse (asks . getList) (HashSet.toList investigatorAssets)
   treacheryAbilities <- mconcat
     <$> traverse (asks . getList) (HashSet.toList investigatorTreacheries)
   locationAbilities <- asks (getList investigatorLocation)
   locationEnemyIds <- asks (getSet @EnemyId investigatorLocation)
   locationEnemyAbilities <- mconcat
     <$> traverse (asks . getList) (HashSet.toList locationEnemyIds)
-  locationAssets <- asks (getSet @AssetId investigatorLocation)
-  locationAssetAbilities <- mconcat
-    <$> traverse (asks . getList) (HashSet.toList locationAssets)
   locationTreacheries <- asks (getSet @TreacheryId investigatorLocation)
   locationTreacheryAbilities <- mconcat
     <$> traverse (asks . getList) (HashSet.toList locationTreacheries)
   actAndAgendaAbilities <- asks (getList ())
   pure $ filter canPerformAbility $ mconcat
     [ investigatorAbilities
-    , assetAbilities
     , treacheryAbilities
     , locationAbilities
     , locationEnemyAbilities
-    , locationAssetAbilities
     , locationTreacheryAbilities
     , actAndAgendaAbilities
     ]

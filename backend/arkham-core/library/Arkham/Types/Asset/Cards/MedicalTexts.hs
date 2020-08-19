@@ -25,11 +25,12 @@ medicalTexts uuid =
   MedicalTexts $ (baseAttrs uuid "01035") { assetSlots = [HandSlot] }
 
 instance (IsInvestigator investigator) => HasActions env investigator MedicalTexts where
-  getActions i (DuringTurn You) (MedicalTexts Attrs {..}) = pure
-    [ ActivateCardAbilityAction
-        (getId () i)
-        (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
-    ]
+  getActions i (DuringTurn You) (MedicalTexts Attrs {..})
+    | Just (getId () i) == assetInvestigator = pure
+      [ ActivateCardAbilityAction
+          (getId () i)
+          (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
+      ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env MedicalTexts where

@@ -27,8 +27,8 @@ fortyFiveAutomatic uuid =
   FortyFiveAutomatic $ (baseAttrs uuid "01016") { assetSlots = [HandSlot] }
 
 instance (AssetRunner env, IsInvestigator investigator) => HasActions env investigator FortyFiveAutomatic where
-  getActions i (FortyFiveAutomatic Attrs {..}) = do
-    fightAvailable <- hasFightActions i
+  getActions i window (FortyFiveAutomatic Attrs {..}) = do
+    fightAvailable <- hasFightActions i window
     pure
       [ ActivateCardAbilityAction
           (getId () i)

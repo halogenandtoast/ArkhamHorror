@@ -21,7 +21,7 @@ yourHouse =
     }
 
 instance (IsInvestigator investigator) => HasActions env investigator YourHouse where
-  getActions i (YourHouse attrs) = getActions i attrs
+  getActions i window (YourHouse attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env YourHouse where
   runMessage msg (YourHouse attrs) = YourHouse <$> runMessage msg attrs

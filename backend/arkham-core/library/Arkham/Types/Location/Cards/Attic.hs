@@ -20,7 +20,7 @@ attic = Attic $ (baseAttrs "01113" "Attic" 1 (PerPlayer 2) Triangle [Square])
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator Attic where
-  getActions i (Attic attrs) = getActions i attrs
+  getActions i window (Attic attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Attic where
   runMessage msg a@(Attic attrs@Attrs {..}) = case msg of

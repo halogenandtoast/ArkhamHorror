@@ -22,7 +22,7 @@ graveyard =
     }
 
 instance (IsInvestigator investigator) => HasActions env investigator Graveyard where
-  getActions i (Graveyard attrs) = getActions i attrs
+  getActions i window (Graveyard attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Graveyard where
   runMessage msg (Graveyard attrs) = Graveyard <$> runMessage msg attrs

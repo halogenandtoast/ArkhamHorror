@@ -27,7 +27,7 @@ flashlight uuid =
   Flashlight $ (baseAttrs uuid "01087") { assetSlots = [HandSlot] }
 
 instance (IsInvestigator investigator) => HasActions env investigator Flashlight where
-  getActions i (Flashlight x) = getActions i x
+  getActions i window (Flashlight x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env Flashlight where
   runMessage msg a@(Flashlight attrs@Attrs {..}) = case msg of

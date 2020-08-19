@@ -26,7 +26,7 @@ scrying :: AssetId -> Scrying
 scrying uuid = Scrying $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
 
 instance (IsInvestigator investigator) => HasActions env investigator Scrying where
-  getActions i (Scrying x) = getActions i x
+  getActions i window (Scrying x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env Scrying where
   runMessage msg a@(Scrying attrs@Attrs {..}) = case msg of

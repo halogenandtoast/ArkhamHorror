@@ -33,7 +33,7 @@ parlor = Parlor $ (baseAttrs "01115" "Parlor" 2 (Static 0) Diamond [Square])
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator Parlor where
-  getActions i (Parlor attrs) = getActions i attrs
+  getActions i window (Parlor attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Parlor where
   runMessage msg l@(Parlor attrs@Attrs {..}) = case msg of

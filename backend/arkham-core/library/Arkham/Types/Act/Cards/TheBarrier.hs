@@ -20,6 +20,9 @@ newtype TheBarrier = TheBarrier Attrs
 theBarrier :: TheBarrier
 theBarrier = TheBarrier $ baseAttrs "01109" "The Barrier" "Act 2a"
 
+instance HasActions env investigator TheBarrier where
+  getActions i window (TheBarrier x) = getActions i window x
+
 instance (ActRunner env) => RunMessage env TheBarrier where
   runMessage msg a@(TheBarrier attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && actSequence == "Act 2a" -> do

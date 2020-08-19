@@ -142,23 +142,23 @@ locationAttrs = \case
   Northside' attrs -> coerce attrs
 
 instance (IsInvestigator investigator) => HasActions env investigator Location where
-  getActions i = \case
-    Study' l -> getActions i l
-    Hallway' l -> getActions i l
-    Attic' l -> getActions i l
-    Cellar' l -> getActions i l
-    Parlor' l -> getActions i l
-    YourHouse' l -> getActions i l
-    Rivertown' l -> getActions i l
-    SouthsideHistoricalSociety' l -> getActions i l
-    SouthsideMasBoardingHouse' l -> getActions i l
-    StMarysHospital' l -> getActions i l
-    MiskatonicUniversity' l -> getActions i l
-    DowntownFirstBankOfArkham' l -> getActions i l
-    DowntownArkhamAsylum' l -> getActions i l
-    Easttown' l -> getActions i l
-    Graveyard' l -> getActions i l
-    Northside' l -> getActions i l
+  getActions i window = \case
+    Study' l -> getActions i window l
+    Hallway' l -> getActions i window l
+    Attic' l -> getActions i window l
+    Cellar' l -> getActions i window l
+    Parlor' l -> getActions i window l
+    YourHouse' l -> getActions i window l
+    Rivertown' l -> getActions i window l
+    SouthsideHistoricalSociety' l -> getActions i window l
+    SouthsideMasBoardingHouse' l -> getActions i window l
+    StMarysHospital' l -> getActions i window l
+    MiskatonicUniversity' l -> getActions i window l
+    DowntownFirstBankOfArkham' l -> getActions i window l
+    DowntownArkhamAsylum' l -> getActions i window l
+    Easttown' l -> getActions i window l
+    Graveyard' l -> getActions i window l
+    Northside' l -> getActions i window l
 
 instance (LocationRunner env) => RunMessage env Location where
   runMessage msg = \case

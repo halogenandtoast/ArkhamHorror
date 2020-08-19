@@ -199,7 +199,7 @@ instance IsEnemy Attrs where
   isAloof Attrs {..} = Keyword.Aloof `elem` enemyKeywords
 
 instance (IsInvestigator investigator) => HasActions env investigator Attrs where
-  getActions i enemy@Attrs {..} =
+  getActions i _ enemy@Attrs {..} =
     pure
       $ fightEnemyActions
       <> engageEnemyActions

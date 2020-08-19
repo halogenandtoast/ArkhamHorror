@@ -28,7 +28,7 @@ knife uuid = Knife $ (baseAttrs uuid "01086")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator Knife where
-  getActions i (Knife x) = getActions i x
+  getActions i window (Knife x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env Knife where
   runMessage msg a@(Knife attrs@Attrs {..}) = case msg of

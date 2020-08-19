@@ -26,7 +26,7 @@ medicalTexts uuid = MedicalTexts $ (baseAttrs uuid "01035")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator MedicalTexts where
-  getActions i (MedicalTexts x) = getActions i x
+  getActions i window (MedicalTexts x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env MedicalTexts where
   runMessage msg (MedicalTexts attrs@Attrs {..}) = case msg of

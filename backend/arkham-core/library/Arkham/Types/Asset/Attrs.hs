@@ -103,7 +103,7 @@ defeated Attrs {..} =
     || maybe False (assetSanityDamage >=) assetSanity
 
 instance (IsInvestigator investigator) => HasActions env investigator Attrs where
-  getActions i Attrs {..} =
+  getActions i window Attrs {..} =
     pure
       $ [ ActivateCardAbilityAction (getId () i) ability
         | ability <- assetAbilities

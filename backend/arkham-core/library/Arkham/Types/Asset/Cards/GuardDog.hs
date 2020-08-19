@@ -22,7 +22,7 @@ guardDog uuid = GuardDog $ (baseAttrs uuid "01021")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator GuardDog where
-  getActions i (GuardDog x) = getActions i x
+  getActions i window (GuardDog x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env GuardDog where
   runMessage msg (GuardDog attrs@Attrs {..}) = case msg of

@@ -34,7 +34,7 @@ physicalTraining uuid = PhysicalTraining $ (baseAttrs uuid "01017")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator PhysicalTraining where
-  getActions i (PhysicalTraining x) = getActions i x
+  getActions i window (PhysicalTraining x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env PhysicalTraining where
   runMessage msg a@(PhysicalTraining attrs@Attrs {..}) = case msg of

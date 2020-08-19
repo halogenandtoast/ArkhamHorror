@@ -24,7 +24,7 @@ researchLibrarian uuid = ResearchLibrarian $ (baseAttrs uuid "01032")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator ResearchLibrarian where
-  getActions i (ResearchLibrarian x) = getActions i x
+  getActions i window (ResearchLibrarian x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env ResearchLibrarian where
   runMessage msg a@(ResearchLibrarian attrs@Attrs {..}) = case msg of

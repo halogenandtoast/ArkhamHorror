@@ -29,7 +29,7 @@ southsideHistoricalSociety =
         }
 
 instance (IsInvestigator investigator) => HasActions env investigator SouthsideHistoricalSociety where
-  getActions i (SouthsideHistoricalSociety attrs) = getActions i attrs
+  getActions i window (SouthsideHistoricalSociety attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env SouthsideHistoricalSociety where
   runMessage msg (SouthsideHistoricalSociety attrs) =

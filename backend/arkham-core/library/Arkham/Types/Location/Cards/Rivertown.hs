@@ -27,7 +27,7 @@ rivertown = Rivertown $ (baseAttrs
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator Rivertown where
-  getActions i (Rivertown attrs) = getActions i attrs
+  getActions i window (Rivertown attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Rivertown where
   runMessage msg (Rivertown attrs) = Rivertown <$> runMessage msg attrs

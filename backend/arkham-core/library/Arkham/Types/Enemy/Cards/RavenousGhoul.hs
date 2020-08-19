@@ -24,7 +24,7 @@ ravenousGhoul uuid = RavenousGhoul $ (baseAttrs uuid "01161")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator RavenousGhoul where
-  getActions i (RavenousGhoul attrs) = getActions i attrs
+  getActions i window (RavenousGhoul attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env RavenousGhoul where
   runMessage msg (RavenousGhoul attrs) = RavenousGhoul <$> runMessage msg attrs

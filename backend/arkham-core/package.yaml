@@ -42,3 +42,4 @@ library:
     - text
     - vector
     - MonadRandom
+    - extra

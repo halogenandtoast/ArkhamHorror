@@ -5,12 +5,12 @@ import Arkham.Json
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
-import Arkham.Types.Enemy
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -28,7 +28,7 @@ fortyFiveAutomatic uuid =
 
 instance (AssetRunner env, IsInvestigator investigator) => HasActions env investigator FortyFiveAutomatic where
   getActions i (FortyFiveAutomatic Attrs {..}) = do
-    enemies <- asks (getList @Enemy ())
+    fightAvailable <- hasFightActions i
     pure
       [ ActivateCardAbilityAction
           (getId () i)
@@ -37,7 +37,7 @@ instance (AssetRunner env, IsInvestigator investigator) => HasActions env invest
             1
             (ActionAbility 1 (Just Action.Fight))
           )
-      | useCount assetUses > 0 && any (`canFight` i) enemies
+      | useCount assetUses > 0 && fightAvailable
       ]
 
 instance (AssetRunner env) => RunMessage env FortyFiveAutomatic where

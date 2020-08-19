@@ -8,12 +8,14 @@ export interface Scenario {
 export interface ScenarioContents {
   name: string;
   id: string;
+  difficulty: string;
   locationLayout: string[] | null;
 }
 
 export const scenarioContentsDecoder = JsonDecoder.object<ScenarioContents>({
   name: JsonDecoder.string,
   id: JsonDecoder.string,
+  difficulty: JsonDecoder.string,
   locationLayout: JsonDecoder.nullable(JsonDecoder.array<string>(JsonDecoder.string, 'GridLayout[]')),
 }, 'ScenarioContents');
 

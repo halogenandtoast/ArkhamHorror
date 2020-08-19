@@ -13,8 +13,8 @@ hasFightActions
   => investigator
   -> FastWindow
   -> m Bool
-hasFightActions i window@(DuringTurn You) = do
-  enemyActions <- asks (join $ getActions i window . (EnemyActionType, ))
+hasFightActions i NonFast = do
+  enemyActions <- asks (join $ getActions i NonFast . (EnemyActionType, ))
   pure $ or [ True | FightEnemy{} <- enemyActions ]
 hasFightActions _ _ = pure False
 
@@ -24,7 +24,7 @@ hasInvestigateActions
   => investigator
   -> FastWindow
   -> m Bool
-hasInvestigateActions i window@(DuringTurn You) = do
-  locationActions <- asks (join $ getActions i window . (LocationActionType, ))
+hasInvestigateActions i NonFast = do
+  locationActions <- asks (join $ getActions i NonFast . (LocationActionType, ))
   pure $ or [ True | Investigate{} <- locationActions ]
 hasInvestigateActions _ _ = pure False

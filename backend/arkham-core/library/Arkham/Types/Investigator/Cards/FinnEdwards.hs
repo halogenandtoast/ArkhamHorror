@@ -30,6 +30,9 @@ finnEdwards = FinnEdwards $ baseAttrs
     }
   [Criminal]
 
+instance HasActions env investigator FinnEdwards where
+  getActions i window (FinnEdwards attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env FinnEdwards where
   runMessage msg i@(FinnEdwards attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

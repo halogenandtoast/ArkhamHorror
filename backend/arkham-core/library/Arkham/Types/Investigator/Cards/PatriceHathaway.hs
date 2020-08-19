@@ -30,6 +30,9 @@ patriceHathaway = PatriceHathaway $ baseAttrs
     }
   [Performer, Cursed]
 
+instance HasActions env investigator PatriceHathaway where
+  getActions i window (PatriceHathaway attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env PatriceHathaway where
   runMessage msg i@(PatriceHathaway attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

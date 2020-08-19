@@ -28,7 +28,7 @@ lockedDoor :: TreacheryId -> LockedDoor
 lockedDoor uuid = LockedDoor $ baseAttrs uuid "01174"
 
 instance (IsInvestigator investigator) => HasActions env investigator LockedDoor where
-  getActions i (DuringTurn You) (LockedDoor Attrs {..}) = pure
+  getActions i NonFast (LockedDoor Attrs {..}) = pure
     [ ActivateCardAbilityAction
         (getId () i)
         (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 1 Nothing))

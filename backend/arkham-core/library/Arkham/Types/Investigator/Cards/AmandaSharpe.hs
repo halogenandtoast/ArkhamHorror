@@ -30,6 +30,9 @@ amandaSharpe = AmandaSharpe $ baseAttrs
     }
   [Miskatonic, Scholar]
 
+instance HasActions env investigator AmandaSharpe where
+  getActions i window (AmandaSharpe attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env AmandaSharpe where
   runMessage msg i@(AmandaSharpe attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

@@ -30,6 +30,9 @@ ashcanPete = AshcanPete $ baseAttrs
     }
   [Drifter]
 
+instance HasActions env investigator AshcanPete where
+  getActions i window (AshcanPete attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env AshcanPete where
   runMessage msg i@(AshcanPete attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

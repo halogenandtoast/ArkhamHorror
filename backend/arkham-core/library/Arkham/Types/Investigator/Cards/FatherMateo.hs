@@ -30,6 +30,9 @@ fatherMateo = FatherMateo $ baseAttrs
     }
   [Believer, Warden]
 
+instance HasActions env investigator FatherMateo where
+  getActions i window (FatherMateo attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env FatherMateo where
   runMessage msg i@(FatherMateo attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

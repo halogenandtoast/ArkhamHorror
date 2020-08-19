@@ -30,6 +30,9 @@ lolaHayes = LolaHayes $ baseAttrs
     }
   [Performer]
 
+instance HasActions env investigator LolaHayes where
+  getActions i window (LolaHayes attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env LolaHayes where
   runMessage msg i@(LolaHayes attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

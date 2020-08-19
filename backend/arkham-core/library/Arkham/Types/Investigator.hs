@@ -217,6 +217,51 @@ data Investigator
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+instance (IsInvestigator investigator) => HasActions env investigator Investigator where
+  getActions i window = \case
+    AgnesBaker' x -> getActions i window x
+    AkachiOnyele' x -> getActions i window x
+    AmandaSharpe' x -> getActions i window x
+    AshcanPete' x -> getActions i window x
+    CalvinWright' x -> getActions i window x
+    CarolynFern' x -> getActions i window x
+    DaisyWalker' x -> getActions i window x
+    DexterDrake' x -> getActions i window x
+    DianaStanley' x -> getActions i window x
+    FatherMateo' x -> getActions i window x
+    FinnEdwards' x -> getActions i window x
+    HarveyWalters' x -> getActions i window x
+    JacquelineFine' x -> getActions i window x
+    JennyBarnes' x -> getActions i window x
+    JimCulver' x -> getActions i window x
+    JoeDiamond' x -> getActions i window x
+    LeoAnderson' x -> getActions i window x
+    LolaHayes' x -> getActions i window x
+    LukeRobinson' x -> getActions i window x
+    MandyThompson' x -> getActions i window x
+    MarieLambeau' x -> getActions i window x
+    MarkHarrigan' x -> getActions i window x
+    MinhThiPhan' x -> getActions i window x
+    NathanielCho' x -> getActions i window x
+    NormanWithers' x -> getActions i window x
+    PatriceHathaway' x -> getActions i window x
+    PrestonFairmont' x -> getActions i window x
+    RexMurphy' x -> getActions i window x
+    RitaYoung' x -> getActions i window x
+    RolandBanks' x -> getActions i window x
+    SefinaRousseau' x -> getActions i window x
+    SilasMarsh' x -> getActions i window x
+    SisterMary' x -> getActions i window x
+    SkidsOToole' x -> getActions i window x
+    StellaClark' x -> getActions i window x
+    TommyMuldoon' x -> getActions i window x
+    TonyMorgan' x -> getActions i window x
+    UrsulaDowns' x -> getActions i window x
+    WendyAdams' x -> getActions i window x
+    WilliamYorick' x -> getActions i window x
+    WinifredHabbamock' x -> getActions i window x
+    ZoeySamaras' x -> getActions i window x
+
 instance (InvestigatorRunner Attrs env) => RunMessage env Investigator where
   runMessage msg = \case
     AgnesBaker' x -> AgnesBaker' <$> runMessage msg x

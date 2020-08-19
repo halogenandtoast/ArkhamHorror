@@ -21,7 +21,7 @@ predatorOrPrey =
   PredatorOrPrey $ baseAttrs "01121" "Predator or Prey?" "Agenda 1a" (Static 6)
 
 instance (ActionRunner env investigator) => HasActions env investigator PredatorOrPrey where
-  getActions i (DuringTurn You) (PredatorOrPrey _) = pure
+  getActions i NonFast (PredatorOrPrey _) = pure
     [ ActivateCardAbilityAction
         (getId () i)
         (mkAbility

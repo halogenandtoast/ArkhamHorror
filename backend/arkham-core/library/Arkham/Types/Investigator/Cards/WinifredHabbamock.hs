@@ -30,6 +30,9 @@ winifredHabbamock = WinifredHabbamock $ baseAttrs
     }
   [Criminal]
 
+instance HasActions env investigator WinifredHabbamock where
+  getActions i window (WinifredHabbamock attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env WinifredHabbamock where
   runMessage msg i@(WinifredHabbamock attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

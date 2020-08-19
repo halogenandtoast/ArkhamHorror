@@ -741,6 +741,8 @@ instance (IsInvestigator investigator) => HasActions Game investigator (ActionTy
     concat <$> traverse (getActions i window) (HashMap.elems $ view acts g)
   getActions i window (AgendaActionType, g) =
     concat <$> traverse (getActions i window) (HashMap.elems $ view agendas g)
+  getActions i window (InvestigatorActionType, g) = concat
+    <$> traverse (getActions i window) (HashMap.elems $ view investigators g)
 
 instance (IsInvestigator investigator) => HasActions Game investigator (ActionType, Trait, Game) where
   getActions i window (EnemyActionType, trait, g) = concat <$> traverse
@@ -755,6 +757,7 @@ instance (IsInvestigator investigator) => HasActions Game investigator (ActionTy
   getActions i window (TreacheryActionType, trait, g) = concat <$> traverse
     (getActions i window)
     (filter ((trait `elem`) . getTraits) $ HashMap.elems $ view treacheries g)
+  getActions _ _ (InvestigatorActionType, _, _) = pure [] -- is this a thing?
   getActions _ _ (ActActionType, _, _) = pure [] -- acts do not have traits
   getActions _ _ (AgendaActionType, _, _) = pure [] -- agendas do not have traits
 
@@ -768,6 +771,7 @@ instance
     treacheryActions <- getActions i window (TreacheryActionType, g)
     actActions <- getActions i window (ActActionType, g)
     agendaActions <- getActions i window (AgendaActionType, g)
+    investigatorActions <- getActions i window (InvestigatorActionType, g)
     pure
       $ enemyActions
       <> locationActions
@@ -775,6 +779,7 @@ instance
       <> treacheryActions
       <> actActions
       <> agendaActions
+      <> investigatorActions
 
 runGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game

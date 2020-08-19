@@ -25,7 +25,7 @@ oldBookOfLore uuid =
   OldBookOfLore $ (baseAttrs uuid "01031") { assetSlots = [HandSlot] }
 
 instance (IsInvestigator investigator) => HasActions env investigator OldBookOfLore where
-  getActions i (DuringTurn You) (OldBookOfLore Attrs {..})
+  getActions i NonFast (OldBookOfLore Attrs {..})
     | Just (getId () i) == assetInvestigator = pure
       [ ActivateCardAbilityAction
           (getId () i)

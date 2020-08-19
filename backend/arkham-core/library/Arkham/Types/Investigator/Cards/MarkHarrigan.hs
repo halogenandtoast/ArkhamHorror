@@ -30,6 +30,9 @@ markHarrigan = MarkHarrigan $ baseAttrs
     }
   [Veteran]
 
+instance HasActions env investigator MarkHarrigan where
+  getActions i window (MarkHarrigan attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env MarkHarrigan where
   runMessage msg i@(MarkHarrigan attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

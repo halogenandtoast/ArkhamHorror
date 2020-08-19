@@ -4,7 +4,7 @@ module Arkham.Types.Investigator.Cards.SkidsOToole where
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
-import Arkham.Types.FastWindow (Who(..))
+import Arkham.Types.FastWindow
 import qualified Arkham.Types.FastWindow as Fast
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
@@ -21,30 +21,33 @@ newtype SkidsOToole = SkidsOToole Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 skidsOToole :: SkidsOToole
-skidsOToole = SkidsOToole $ (baseAttrs
-                              "01003"
-                              "\"Skids\" O'Toole"
-                              Rogue
-                              Stats
-                                { health = 8
-                                , sanity = 6
-                                , willpower = 2
-                                , intellect = 3
-                                , combat = 3
-                                , agility = 4
-                                }
-                              [Criminal]
-                            )
-  { investigatorAbilities =
-    [ (mkAbility
-        (InvestigatorSource "01003")
-        1
-        (FastAbility (Fast.DuringTurn You))
-      )
-        { abilityCost = Just $ ResourceCost 2
-        }
-    ]
-  }
+skidsOToole = SkidsOToole $ baseAttrs
+  "01003"
+  "\"Skids\" O'Toole"
+  Rogue
+  Stats
+    { health = 8
+    , sanity = 6
+    , willpower = 2
+    , intellect = 3
+    , combat = 3
+    , agility = 4
+    }
+  [Criminal]
+
+instance (IsInvestigator investigator) => HasActions env investigator SkidsOToole where
+  getActions i (DuringTurn You) (SkidsOToole Attrs {..})
+    | getId () i == investigatorId = pure
+      [ ActivateCardAbilityAction
+          investigatorId
+          (mkAbility
+            (InvestigatorSource "01003")
+            1
+            (FastAbility (Fast.DuringTurn You))
+          )
+      | resourceCount i >= 2
+      ] -- TODO: ONCE PER TURN
+  getActions _ _ _ = pure []
 
 instance (InvestigatorRunner Attrs env) => RunMessage env SkidsOToole where
   runMessage msg i@(SkidsOToole attrs@Attrs {..}) = case msg of

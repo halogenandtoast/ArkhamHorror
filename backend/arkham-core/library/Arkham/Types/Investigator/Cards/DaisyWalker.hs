@@ -45,6 +45,10 @@ becomesFailure token (ForcedTokenChange fromToken AutoFail _) =
   token == fromToken
 becomesFailure _ _ = False
 
+instance HasActions env investigator DaisyWalker where
+  getActions i window (DaisyWalker (attrs `With` _)) =
+    getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env DaisyWalker where
   runMessage msg i@(DaisyWalker (attrs@Attrs {..} `With` metadata@DaisyWalkerMetadata {..}))
     = case msg of
@@ -76,12 +80,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env DaisyWalker where
       PlayerWindow iid additionalActions | iid == investigatorId ->
         if investigatorRemainingActions == 0 && tomeActions > 0
           then do
-            tomeActions' <-
-              asks
-                (join
-                $ getActions attrs (DuringTurn You)
-                . (AssetActionType, Tome, )
-                )
+            tomeActions' <- asks
+              (join $ getActions attrs NonFast . (AssetActionType, Tome, ))
             DaisyWalker
               . (`with` metadata)
               <$> runMessage

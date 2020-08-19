@@ -30,6 +30,9 @@ jacquelineFine = JacquelineFine $ baseAttrs
     }
   [Clairvoyant]
 
+instance HasActions env investigator JacquelineFine where
+  getActions i window (JacquelineFine attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env JacquelineFine where
   runMessage msg i@(JacquelineFine attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

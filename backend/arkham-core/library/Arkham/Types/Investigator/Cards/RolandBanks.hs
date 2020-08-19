@@ -21,23 +21,8 @@ newtype RolandBanks = RolandBanks Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 rolandBanks :: RolandBanks
-rolandBanks = RolandBanks $ (baseAttrs
-                              "01001"
-                              "Roland Banks"
-                              Guardian
-                              stats
-                              [Agency, Detective]
-                            )
-  { investigatorAbilities =
-    [ (mkAbility
-        (InvestigatorSource "01001")
-        1
-        (ReactionAbility (Fast.WhenEnemyDefeated You))
-      )
-        { abilityLimit = OncePerRound
-        }
-    ]
-  }
+rolandBanks = RolandBanks
+  $ baseAttrs "01001" "Roland Banks" Guardian stats [Agency, Detective]
  where
   stats = Stats
     { health = 9
@@ -47,6 +32,19 @@ rolandBanks = RolandBanks $ (baseAttrs
     , combat = 4
     , agility = 2
     }
+
+instance (IsInvestigator investigator) => HasActions env investigator RolandBanks where
+  getActions i (Fast.WhenEnemyDefeated You) (RolandBanks Attrs {..})
+    | getId () i == investigatorId = pure
+      [ ActivateCardAbilityAction
+          investigatorId
+          (mkAbility
+            (InvestigatorSource investigatorId)
+            1
+            (ReactionAbility (Fast.WhenEnemyDefeated You))
+          )
+      ] -- TODO: ONCE PER ROUND
+  getActions _ _ _ = pure []
 
 instance (InvestigatorRunner Attrs env) => RunMessage env RolandBanks where
   runMessage msg rb@(RolandBanks attrs@Attrs {..}) = case msg of

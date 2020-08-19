@@ -30,6 +30,9 @@ agnesBaker = AgnesBaker $ baseAttrs
     }
   [Sorcerer]
 
+instance HasActions env investigator AgnesBaker where
+  getActions i window (AgnesBaker attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env AgnesBaker where
   runMessage msg i@(AgnesBaker attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

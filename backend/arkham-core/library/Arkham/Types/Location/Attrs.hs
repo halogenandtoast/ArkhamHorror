@@ -126,7 +126,7 @@ instance IsLocation Attrs where
   isBlocked Attrs {..} = locationBlocked
 
 instance (IsInvestigator investigator) => HasActions env investigator Attrs where
-  getActions i (DuringTurn You) location@Attrs {..} =
+  getActions i NonFast location@Attrs {..} =
     pure $ moveActions <> investigateActions
    where
     investigateActions =

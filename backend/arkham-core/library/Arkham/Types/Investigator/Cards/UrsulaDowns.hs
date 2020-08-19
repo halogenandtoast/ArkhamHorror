@@ -30,6 +30,9 @@ ursulaDowns = UrsulaDowns $ baseAttrs
     }
   [Wayfarer]
 
+instance HasActions env investigator UrsulaDowns where
+  getActions i window (UrsulaDowns attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env UrsulaDowns where
   runMessage msg i@(UrsulaDowns attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

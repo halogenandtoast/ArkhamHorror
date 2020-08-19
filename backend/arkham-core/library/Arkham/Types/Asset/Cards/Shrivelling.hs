@@ -29,7 +29,7 @@ shrivelling :: AssetId -> Shrivelling
 shrivelling uuid =
   Shrivelling $ (baseAttrs uuid "01060") { assetSlots = [ArcaneSlot] }
 
-instance (AssetRunner env, IsInvestigator investigator) => HasActions env investigator Shrivelling where
+instance (ActionRunner env investigator) => HasActions env investigator Shrivelling where
   getActions i window (Shrivelling Attrs {..}) = do
     fightAvailable <- hasFightActions i window
     pure

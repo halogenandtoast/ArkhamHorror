@@ -1,4 +1,3 @@
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.Rolands38Special where
 
@@ -29,7 +28,7 @@ rolands38Special :: AssetId -> Rolands38Special
 rolands38Special uuid =
   Rolands38Special $ (baseAttrs uuid "01006") { assetSlots = [HandSlot] }
 
-instance (AssetRunner env, IsInvestigator investigator) => HasActions env investigator Rolands38Special where
+instance (ActionRunner env investigator) => HasActions env investigator Rolands38Special where
   getActions i window (Rolands38Special Attrs {..}) = do
     fightAvailable <- hasFightActions i window
     pure

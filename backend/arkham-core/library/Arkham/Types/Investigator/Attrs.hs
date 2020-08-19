@@ -1209,7 +1209,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       pure $ a & physicalTrauma +~ physical & mentalTrauma +~ mental
     GainXP iid amount | iid == investigatorId -> pure $ a & xp +~ amount
     PlayerWindow iid additionalActions | iid == investigatorId -> do
-      actions <- asks (join (getActions a))
+      actions <- asks (join (getActions a (DuringTurn You)))
       a <$ unshiftMessage
         (Ask iid $ ChooseOne
           (additionalActions

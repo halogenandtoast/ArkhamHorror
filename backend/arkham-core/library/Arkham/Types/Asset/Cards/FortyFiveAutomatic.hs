@@ -26,7 +26,7 @@ fortyFiveAutomatic :: AssetId -> FortyFiveAutomatic
 fortyFiveAutomatic uuid =
   FortyFiveAutomatic $ (baseAttrs uuid "01016") { assetSlots = [HandSlot] }
 
-instance (AssetRunner env, IsInvestigator investigator) => HasActions env investigator FortyFiveAutomatic where
+instance (ActionRunner env investigator) => HasActions env investigator FortyFiveAutomatic where
   getActions i window (FortyFiveAutomatic Attrs {..}) = do
     fightAvailable <- hasFightActions i window
     pure

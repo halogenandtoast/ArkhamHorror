@@ -6,6 +6,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
+import Arkham.Types.FastWindow
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Runner
@@ -125,7 +126,8 @@ instance IsLocation Attrs where
   isBlocked Attrs {..} = locationBlocked
 
 instance (IsInvestigator investigator) => HasActions env investigator Attrs where
-  getActions i _ location@Attrs {..} = pure $ moveActions <> investigateActions
+  getActions i (DuringTurn You) location@Attrs {..} =
+    pure $ moveActions <> investigateActions
    where
     investigateActions =
       [ Investigate (getId () i) locationId SkillIntellect mempty True
@@ -135,6 +137,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Attrs wher
       [ MoveAction (getId () i) locationId True
       | canMoveTo location i && not locationBlocked
       ]
+  getActions _ _ _ = pure []
 
 instance (LocationRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
@@ -177,7 +180,10 @@ instance (LocationRunner env) => RunMessage env Attrs where
         pure $ a & connectedLocations %~ HashSet.insert lid
     DiscoverCluesAtLocation iid lid n | lid == locationId -> do
       let discoveredClues = min n locationClues
-      a <$ unshiftMessage (DiscoverClues iid lid discoveredClues)
+      a <$ unshiftMessages
+        [ CheckFastWindow iid [WhenDiscoverClues You YourLocation]
+        , DiscoverClues iid lid discoveredClues
+        ]
     AfterDiscoverClues _ lid n | lid == locationId -> pure $ a & clues -~ n
     InvestigatorEliminated iid ->
       pure $ a & investigators %~ HashSet.delete iid

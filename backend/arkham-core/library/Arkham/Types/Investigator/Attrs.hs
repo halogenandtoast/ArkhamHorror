@@ -293,6 +293,17 @@ actionCost attrs a = foldr applyModifier 1 (investigatorModifiers attrs)
     if matchTarget attrs match a then n + m else n
   applyModifier _ n = n
 
+actionCostModifier :: Attrs -> Maybe Action -> Int
+actionCostModifier _ Nothing = 0
+actionCostModifier attrs (Just a) = foldr
+  applyModifier
+  0
+  (investigatorModifiers attrs)
+ where
+  applyModifier (ActionCostOf match m _) n =
+    if matchTarget attrs match a then n + m else n
+  applyModifier _ n = n
+
 cluesToDiscover :: Attrs -> Int -> Int
 cluesToDiscover attrs startValue = foldr
   applyModifier
@@ -606,16 +617,14 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
             ]
           )
     EngageEnemy iid eid True | iid == investigatorId -> a <$ unshiftMessages
-      [ TakeAction iid (actionCost a Action.Fight) (Just Action.Fight)
-      , EngageEnemy iid eid False
-      ]
+      [TakeAction iid 1 (Just Action.Fight), EngageEnemy iid eid False]
     EngageEnemy iid eid False | iid == investigatorId ->
       pure $ a & engagedEnemies %~ HashSet.insert eid
     EngageEnemy iid eid False | iid /= investigatorId ->
       pure $ a & engagedEnemies %~ HashSet.delete eid
     FightEnemy iid eid skillType tempModifiers tokenResponses True
       | iid == investigatorId -> a <$ unshiftMessages
-        [ TakeAction iid (actionCost a Action.Fight) (Just Action.Fight)
+        [ TakeAction iid 1 (Just Action.Fight)
         , FightEnemy iid eid skillType tempModifiers tokenResponses False
         ]
     FightEnemy iid eid skillType tempModifiers tokenResponses False
@@ -659,7 +668,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         )
     EvadeEnemy iid eid skillType onSuccess onFailure tokenResponses True
       | iid == investigatorId -> a <$ unshiftMessages
-        [ TakeAction iid (actionCost a Action.Evade) (Just Action.Evade)
+        [ TakeAction iid 1 (Just Action.Evade)
         , EvadeEnemy iid eid skillType onSuccess onFailure tokenResponses False
         ]
     EvadeEnemy iid eid skillType onSuccess onFailure tokenResponses False
@@ -669,7 +678,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         , AfterEvadeEnemy iid eid
         ]
     MoveAction iid lid True | iid == investigatorId -> a <$ unshiftMessages
-      [ TakeAction iid (actionCost a Action.Move) (Just Action.Move)
+      [ TakeAction iid 1 (Just Action.Move)
       , CheckAttackOfOpportunity iid False
       , MoveAction iid lid False
       ]
@@ -725,10 +734,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           (Ask iid $ ChooseOne $ healthDamageMessages <> sanityDamageMessages)
     Investigate iid lid skillType tokenResponses True | iid == investigatorId ->
       a <$ unshiftMessages
-        [ TakeAction
-          iid
-          (actionCost a Action.Investigate)
-          (Just Action.Investigate)
+        [ TakeAction iid 1 (Just Action.Investigate)
         , CheckAttackOfOpportunity iid False
         , Investigate iid lid skillType tokenResponses False
         ]
@@ -899,7 +905,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
     EndRound ->
       pure $ a & modifiers %~ filter (not . sourceIsEvent . sourceOfModifier)
     DrawCards iid n True | iid == investigatorId -> a <$ unshiftMessages
-      [ TakeAction iid (actionCost a Action.Draw) (Just Action.Draw)
+      [ TakeAction iid 1 (Just Action.Draw)
       , CheckAttackOfOpportunity iid False
       , DrawCards iid n False
       ]
@@ -927,7 +933,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
     SpendResources iid n | iid == investigatorId ->
       pure $ a & resources %~ max 0 . subtract n
     TakeResources iid n True | iid == investigatorId -> a <$ unshiftMessages
-      [ TakeAction iid (actionCost a Action.Resource) (Just Action.Resource)
+      [ TakeAction iid 1 (Just Action.Resource)
       , CheckAttackOfOpportunity iid False
       , TakeResources iid n False
       ]
@@ -1079,11 +1085,13 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         )
     CheckFastWindow iid windows | iid == investigatorId -> do
       availableAbilities <- getAvailableAbilities a
+      actions <- for windows $ \window -> do
+        asks (join (getActions a window))
       let playableCards = filter (fastIsPlayable a windows) investigatorHand
       filteredAbilities <- filterM
         (flip (abilityInWindows windows) a)
         availableAbilities
-      if not (null playableCards)
+      if not (null playableCards) || not (null actions)
         then a <$ unshiftMessage
           (Ask iid
           $ ChooseOne
@@ -1106,7 +1114,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
                  ]
                )
                filteredAbilities
-          <> [Continue "Skip playing fast cards"]
+          <> concat actions
+          <> [Continue "Skip playing fast cards or using reactions"]
           )
         else pure a
     LoseAction iid _ | iid == investigatorId ->
@@ -1114,12 +1123,14 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
     GainAction iid _ | iid == investigatorId -> pure $ a & remainingActions +~ 1
     TakeAction iid actionCost' maction | iid == investigatorId -> do
       let
+        costModifier = actionCostModifier a maction
+        modifiedActionCost = max 0 (actionCost' + costModifier)
         actionsTakenUpdate = case maction of
           Nothing -> id
           Just action -> (<> [action])
       pure
         $ a
-        & (remainingActions %~ max 0 . subtract actionCost')
+        & (remainingActions %~ max 0 . subtract modifiedActionCost)
         & (actionsTaken %~ actionsTakenUpdate)
     PutOnTopOfDeck iid card | iid == investigatorId ->
       pure $ a & deck %~ Deck . (card :) . unDeck

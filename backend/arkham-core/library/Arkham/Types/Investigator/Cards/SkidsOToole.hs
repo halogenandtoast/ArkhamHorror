@@ -35,18 +35,22 @@ skidsOToole = SkidsOToole $ baseAttrs
     }
   [Criminal]
 
-instance (IsInvestigator investigator) => HasActions env investigator SkidsOToole where
+instance (ActionRunner env investigator) => HasActions env investigator SkidsOToole where
   getActions i (DuringTurn You) (SkidsOToole Attrs {..})
-    | getId () i == investigatorId = pure
-      [ ActivateCardAbilityAction
-          investigatorId
-          (mkAbility
-            (InvestigatorSource "01003")
-            1
-            (FastAbility (Fast.DuringTurn You))
-          )
-      | resourceCount i >= 2
-      ] -- TODO: ONCE PER TURN
+    | getId () i == investigatorId = do
+      let
+        ability = mkAbility
+          (InvestigatorSource "01003")
+          1
+          (FastAbility (Fast.DuringTurn You))
+      usedAbilities <- map unUsedAbility <$> asks (getList ())
+      pure
+        [ ActivateCardAbilityAction investigatorId ability
+        | resourceCount i
+          >= 2
+          && (investigatorId, ability)
+          `notElem` usedAbilities
+        ]
   getActions _ _ _ = pure []
 
 instance (InvestigatorRunner Attrs env) => RunMessage env SkidsOToole where

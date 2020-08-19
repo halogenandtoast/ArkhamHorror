@@ -24,4 +24,4 @@ dynamiteBlast iid = do
       <> map
            (\iid' -> InvestigatorAssignDamage iid' (EventSource "01023") 3 0)
            investigatorIds
-  unshiftMessage (Ask iid $ ChooseOne $ concat choices)
+  unshiftMessage (Ask iid $ ChooseOne $ map Run choices)

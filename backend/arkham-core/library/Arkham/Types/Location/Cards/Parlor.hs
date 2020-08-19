@@ -27,7 +27,7 @@ parlor = Parlor $ (baseAttrs "01115" "Parlor" 2 (Static 0) Diamond [Square])
   }
 
 instance (ActionRunner env investigator) => HasActions env investigator Parlor where
-  getActions i window (Parlor attrs@Attrs {..}) = do
+  getActions i window (Parlor attrs@Attrs {..}) | locationRevealed = do
     baseActions <- getActions i window attrs
     aid <- unStoryAssetId <$> asks (getId (CardCode "01117"))
     miid <- fmap unOwnerId <$> asks (getId aid)
@@ -54,6 +54,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Parlor w
              )
          | isNothing miid
          ]
+  getActions _ _ _ = pure []
 
 instance (LocationRunner env) => RunMessage env Parlor where
   runMessage msg l@(Parlor attrs@Attrs {..}) = case msg of

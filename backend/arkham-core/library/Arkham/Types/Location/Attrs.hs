@@ -2,7 +2,6 @@
 module Arkham.Types.Location.Attrs where
 
 import Arkham.Json
-import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
@@ -41,7 +40,6 @@ data Attrs = Attrs
   , locationTraits             :: HashSet Trait
   , locationTreacheries :: HashSet TreacheryId
   , locationAssets :: HashSet AssetId
-  , locationAbilities :: [Ability]
   , locationModifiers :: [Modifier]
   }
   deriving stock (Show, Generic)
@@ -99,7 +97,6 @@ baseAttrs lid name shroud' revealClues symbol' connectedSymbols' = Attrs
   , locationTraits = mempty
   , locationTreacheries = mempty
   , locationAssets = mempty
-  , locationAbilities = mempty
   , locationModifiers = mempty
   }
 

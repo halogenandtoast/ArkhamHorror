@@ -80,9 +80,6 @@ allLocations = HashMap.fromList $ map
 instance HasTraits Location where
   getTraits = locationTraits . locationAttrs
 
-instance HasAbilities Location where
-  getAbilities = locationAbilities . locationAttrs
-
 instance HasCount ClueCount () Location where
   getCount _ = ClueCount . locationClues . locationAttrs
 
@@ -141,7 +138,7 @@ locationAttrs = \case
   Graveyard' attrs -> coerce attrs
   Northside' attrs -> coerce attrs
 
-instance (IsInvestigator investigator) => HasActions env investigator Location where
+instance (ActionRunner env investigator) => HasActions env investigator Location where
   getActions i window = \case
     Study' l -> getActions i window l
     Hallway' l -> getActions i window l

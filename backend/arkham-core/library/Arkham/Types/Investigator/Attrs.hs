@@ -1084,13 +1084,9 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           (skillValueFor skillType maction tempModifiers a)
         )
     CheckFastWindow iid windows | iid == investigatorId -> do
-      availableAbilities <- getAvailableAbilities a
-      actions <- for windows $ \window -> do
+      actions <- fmap concat <$> for windows $ \window -> do
         asks (join (getActions a window))
       let playableCards = filter (fastIsPlayable a windows) investigatorHand
-      filteredAbilities <- filterM
-        (flip (abilityInWindows windows) a)
-        availableAbilities
       if not (null playableCards) || not (null actions)
         then a <$ unshiftMessage
           (Ask iid
@@ -1103,18 +1099,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
                 ]
               )
               playableCards
-          <> map
-               (\Ability {..} -> Run
-                 [ UseCardAbility
-                   investigatorId
-                   abilitySource
-                   abilityProvider
-                   abilityIndex
-                 , CheckFastWindow iid windows
-                 ]
-               )
-               filteredAbilities
-          <> concat actions
+          <> map (Run . (: [CheckFastWindow iid windows])) actions
           <> [Continue "Skip playing fast cards or using reactions"]
           )
         else pure a

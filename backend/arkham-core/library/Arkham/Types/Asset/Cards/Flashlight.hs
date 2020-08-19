@@ -46,7 +46,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Flashlig
 instance (AssetRunner env) => RunMessage env Flashlight where
   runMessage msg a@(Flashlight attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
-      pure $ Flashlight $ attrs & (uses .~ Uses Resource.Supply 3)
+      Flashlight <$> runMessage msg (attrs & uses .~ Uses Resource.Supply 3)
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
       case assetUses of
         Uses Resource.Supply n -> do

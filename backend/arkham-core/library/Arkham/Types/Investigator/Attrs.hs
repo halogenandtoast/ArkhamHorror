@@ -386,18 +386,9 @@ takeAction action a =
 getAvailableAbilities
   :: (InvestigatorRunner Attrs env, MonadReader env m) => Attrs -> m [Ability]
 getAvailableAbilities a@Attrs {..} = do
-  treacheryAbilities <- mconcat
-    <$> traverse (asks . getList) (HashSet.toList investigatorTreacheries)
-  locationTreacheries <- asks (getSet @TreacheryId investigatorLocation)
-  locationTreacheryAbilities <- mconcat
-    <$> traverse (asks . getList) (HashSet.toList locationTreacheries)
   actAndAgendaAbilities <- asks (getList ())
   pure $ filter canPerformAbility $ mconcat
-    [ investigatorAbilities
-    , treacheryAbilities
-    , locationTreacheryAbilities
-    , actAndAgendaAbilities
-    ]
+    [investigatorAbilities, actAndAgendaAbilities]
  where
   canPerformAbility Ability {..} = case abilityType of
     ActionAbility _ (Just actionType) -> canAfford a actionType

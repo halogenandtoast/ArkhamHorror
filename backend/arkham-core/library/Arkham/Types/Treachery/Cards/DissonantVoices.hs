@@ -20,6 +20,9 @@ newtype DissonantVoices= DissonantVoices Attrs
 dissonantVoices :: TreacheryId -> DissonantVoices
 dissonantVoices uuid = DissonantVoices $ baseAttrs uuid "01165"
 
+instance HasActions env investigator DissonantVoices where
+  getActions i window (DissonantVoices attrs) = getActions i window attrs
+
 instance (TreacheryRunner env) => RunMessage env DissonantVoices where
   runMessage msg t@(DissonantVoices attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do

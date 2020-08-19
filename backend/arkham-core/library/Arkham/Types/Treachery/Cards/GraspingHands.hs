@@ -18,6 +18,9 @@ newtype GraspingHands = GraspingHands Attrs
 graspingHands :: TreacheryId -> GraspingHands
 graspingHands uuid = GraspingHands $ baseAttrs uuid "01162"
 
+instance HasActions env investigator GraspingHands where
+  getActions i window (GraspingHands attrs) = getActions i window attrs
+
 instance (TreacheryRunner env) => RunMessage env GraspingHands where
   runMessage msg (GraspingHands attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do

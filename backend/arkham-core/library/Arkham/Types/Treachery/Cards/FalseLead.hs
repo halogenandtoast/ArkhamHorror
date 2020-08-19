@@ -19,11 +19,14 @@ newtype FalseLead = FalseLead Attrs
 falseLead :: TreacheryId -> FalseLead
 falseLead uuid = FalseLead $ baseAttrs uuid "01136"
 
+instance HasActions env investigator FalseLead where
+  getActions i window (FalseLead attrs) = getActions i window attrs
+
 instance (TreacheryRunner env) => RunMessage env FalseLead where
   runMessage msg (FalseLead attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
-      clueCount <- unClueCount <$> asks (getCount iid)
-      if clueCount == 0
+      playerClueCount <- unClueCount <$> asks (getCount iid)
+      if playerClueCount == 0
         then unshiftMessage (Surge iid)
         else unshiftMessages
           [ RevelationSkillTest

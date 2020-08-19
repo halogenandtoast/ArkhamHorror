@@ -431,9 +431,6 @@ instance HasList Ability () Game where
     (g ^. acts . traverse . to getAbilities)
       <> (g ^. agendas . traverse . to getAbilities)
 
-instance HasList Ability TreacheryId Game where
-  getList tid = getAbilities . getTreachery tid
-
 instance HasSet Trait AssetId Game where
   getSet aid = getTraits . getAsset aid
 
@@ -742,6 +739,8 @@ instance (IsInvestigator investigator) => HasActions Game investigator (ActionTy
     concat <$> traverse (getActions i window) (HashMap.elems $ view locations g)
   getActions i window (AssetActionType, g) =
     concat <$> traverse (getActions i window) (HashMap.elems $ view assets g)
+  getActions i window (TreacheryActionType, g) = concat
+    <$> traverse (getActions i window) (HashMap.elems $ view treacheries g)
 
 instance (IsInvestigator investigator) => HasActions Game investigator (ActionType, Trait, Game) where
   getActions i window (EnemyActionType, trait, g) = concat <$> traverse
@@ -753,6 +752,9 @@ instance (IsInvestigator investigator) => HasActions Game investigator (ActionTy
   getActions i window (AssetActionType, trait, g) = concat <$> traverse
     (getActions i window)
     (filter ((trait `elem`) . getTraits) $ HashMap.elems $ view assets g)
+  getActions i window (TreacheryActionType, trait, g) = concat <$> traverse
+    (getActions i window)
+    (filter ((trait `elem`) . getTraits) $ HashMap.elems $ view treacheries g)
 
 instance
   (HasActions env investigator (ActionType, Game))
@@ -761,8 +763,14 @@ instance
     locationActions <- getActions i window (LocationActionType, g)
     enemyActions <- getActions i window (EnemyActionType, g)
     assetActions <- getActions i window (AssetActionType, g)
+    treacheryActions <- getActions i window (TreacheryActionType, g)
     actActions <- traverse (getActions i window) (HashMap.elems $ view acts g)
-    pure $ enemyActions <> locationActions <> assetActions <> concat actActions
+    pure
+      $ enemyActions
+      <> locationActions
+      <> assetActions
+      <> treacheryActions
+      <> concat actActions
 
 runGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game

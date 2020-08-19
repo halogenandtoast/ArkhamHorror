@@ -17,11 +17,14 @@ newtype HuntingShadow = HuntingShadow Attrs
 huntingShadow :: TreacheryId -> HuntingShadow
 huntingShadow uuid = HuntingShadow $ baseAttrs uuid "01135"
 
+instance HasActions env investigator HuntingShadow where
+  getActions i window (HuntingShadow attrs) = getActions i window attrs
+
 instance (TreacheryRunner env) => RunMessage env HuntingShadow where
   runMessage msg (HuntingShadow attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
-      clueCount <- unClueCount <$> asks (getCount iid)
-      if clueCount > 0
+      playerClueCount <- unClueCount <$> asks (getCount iid)
+      if playerClueCount > 0
         then unshiftMessage
           (Ask iid $ ChooseOne
             [ SpendClues 1 [iid]

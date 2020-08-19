@@ -55,7 +55,7 @@ data LeftoverCardStrategy = ShuffleBackIn | PutBackInAnyOrder
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data ActionType = EnemyActionType | LocationActionType | AssetActionType
+data ActionType = EnemyActionType | LocationActionType | AssetActionType | TreacheryActionType
 
 data Message
   = Setup

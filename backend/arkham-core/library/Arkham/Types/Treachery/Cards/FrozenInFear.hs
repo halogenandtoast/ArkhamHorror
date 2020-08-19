@@ -21,6 +21,9 @@ newtype FrozenInFear = FrozenInFear Attrs
 frozenInFear :: TreacheryId -> FrozenInFear
 frozenInFear uuid = FrozenInFear $ baseAttrs uuid "01164"
 
+instance HasActions env investigator FrozenInFear where
+  getActions i window (FrozenInFear attrs) = getActions i window attrs
+
 instance (TreacheryRunner env) => RunMessage env FrozenInFear where
   runMessage msg t@(FrozenInFear attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do

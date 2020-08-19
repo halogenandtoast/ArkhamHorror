@@ -57,9 +57,6 @@ allTreacheries = HashMap.fromList
 instance HasCardCode Treachery where
   getCardCode = treacheryCardCode . treacheryAttrs
 
-instance HasAbilities Treachery where
-  getAbilities = treacheryAbilities . treacheryAttrs
-
 instance HasTraits Treachery where
   getTraits = treacheryTraits . treacheryAttrs
 
@@ -95,6 +92,22 @@ treacheryAttrs = \case
   MysteriousChanting' attrs -> coerce attrs
   OnWingsOfDarkness' attrs -> coerce attrs
   LockedDoor' attrs -> coerce attrs
+
+instance (ActionRunner env investigator) => HasActions env investigator Treachery where
+  getActions i window = \case
+    CoverUp' x -> getActions i window x
+    HuntingShadow' x -> getActions i window x
+    FalseLead' x -> getActions i window x
+    GraspingHands' x -> getActions i window x
+    AncientEvils' x -> getActions i window x
+    RottingRemains' x -> getActions i window x
+    FrozenInFear' x -> getActions i window x
+    DissonantVoices' x -> getActions i window x
+    CryptChill' x -> getActions i window x
+    ObscuringFog' x -> getActions i window x
+    MysteriousChanting' x -> getActions i window x
+    OnWingsOfDarkness' x -> getActions i window x
+    LockedDoor' x -> getActions i window x
 
 isWeakness :: Treachery -> Bool
 isWeakness = treacheryWeakness . treacheryAttrs

@@ -45,7 +45,8 @@ instance (ActionRunner env investigator) => HasActions env investigator FortyFiv
 instance (AssetRunner env) => RunMessage env FortyFiveAutomatic where
   runMessage msg a@(FortyFiveAutomatic attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
-      pure $ FortyFiveAutomatic $ attrs & (uses .~ Uses Resource.Ammo 4)
+      FortyFiveAutomatic
+        <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo 4)
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
       case assetUses of
         Uses Resource.Ammo n -> do

@@ -32,7 +32,7 @@ peterWarren uuid = PeterWarren $ (baseAttrs uuid "01139")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator PeterWarren where
-  getActions i (PeterWarren attrs) = getActions i attrs
+  getActions i window (PeterWarren attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env PeterWarren where
   runMessage msg e@(PeterWarren attrs@Attrs {..}) = case msg of

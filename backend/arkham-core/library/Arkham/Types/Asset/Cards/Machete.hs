@@ -24,8 +24,8 @@ machete :: AssetId -> Machete
 machete uuid = Machete $ (baseAttrs uuid "01020") { assetSlots = [HandSlot] }
 
 instance (AssetRunner env, IsInvestigator investigator) => HasActions env investigator Machete where
-  getActions i (Machete Attrs {..}) = do
-    fightAvailable <- hasFightActions i
+  getActions i window (Machete Attrs {..}) = do
+    fightAvailable <- hasFightActions i window
     pure
       [ ActivateCardAbilityAction
           (getId () i)

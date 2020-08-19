@@ -22,7 +22,7 @@ easttown =
         }
 
 instance (IsInvestigator investigator) => HasActions env investigator Easttown where
-  getActions i (Easttown attrs) = getActions i attrs
+  getActions i window (Easttown attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Easttown where
   runMessage msg (Easttown attrs) = Easttown <$> runMessage msg attrs

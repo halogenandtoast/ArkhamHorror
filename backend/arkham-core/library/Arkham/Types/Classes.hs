@@ -7,6 +7,7 @@ module Arkham.Types.Classes
   )
 where
 
+import Arkham.Types.FastWindow (FastWindow)
 import Arkham.Types.Ability
 import Arkham.Types.Classes.HasRecord
 import Arkham.Types.EnemyId
@@ -101,8 +102,8 @@ class HasAbilities a where
 class HasVictoryPoints a where
   getVictoryPoints :: a -> Maybe Int
 
-class HasActions env b a where
-  getActions :: forall m. MonadReader env m => b -> a -> m [Message]
+class HasActions env investigator a where
+  getActions :: forall m. MonadReader env m => investigator -> FastWindow -> a -> m [Message]
 
 class (HasId LocationId () location) => IsLocation location where
   isBlocked :: location -> Bool

@@ -24,7 +24,7 @@ fleshEater uuid = FleshEater $ (baseAttrs uuid "01118")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator FleshEater where
-  getActions i (FleshEater attrs) = getActions i attrs
+  getActions i window (FleshEater attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env FleshEater where
   runMessage msg e@(FleshEater attrs@Attrs {..}) = case msg of

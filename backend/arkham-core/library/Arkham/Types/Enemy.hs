@@ -132,22 +132,22 @@ instance IsEnemy Enemy where
   isAloof = isAloof . enemyAttrs
 
 instance (IsInvestigator investigator) => HasActions env investigator Enemy where
-  getActions i = \case
-    SilverTwilightAcolyte' x -> getActions i x
-    GhoulPriest' x -> getActions i x
-    FleshEater' x -> getActions i x
-    IcyGhoul' x -> getActions i x
-    WolfManDrew' x -> getActions i x
-    HermanCollins' x -> getActions i x
-    PeterWarren' x -> getActions i x
-    VictoriaDevereux' x -> getActions i x
-    RuthTurner' x -> getActions i x
-    SwarmOfRats' x -> getActions i x
-    GhoulMinion' x -> getActions i x
-    RavenousGhoul' x -> getActions i x
-    Acolyte' x -> getActions i x
-    WizardOfTheOrder' x -> getActions i x
-    HuntingNightgaunt' x -> getActions i x
+  getActions i window = \case
+    SilverTwilightAcolyte' x -> getActions i window x
+    GhoulPriest' x -> getActions i window x
+    FleshEater' x -> getActions i window x
+    IcyGhoul' x -> getActions i window x
+    WolfManDrew' x -> getActions i window x
+    HermanCollins' x -> getActions i window x
+    PeterWarren' x -> getActions i window x
+    VictoriaDevereux' x -> getActions i window x
+    RuthTurner' x -> getActions i window x
+    SwarmOfRats' x -> getActions i window x
+    GhoulMinion' x -> getActions i window x
+    RavenousGhoul' x -> getActions i window x
+    Acolyte' x -> getActions i window x
+    WizardOfTheOrder' x -> getActions i window x
+    HuntingNightgaunt' x -> getActions i window x
 
 instance (EnemyRunner env) => RunMessage env Enemy where
   runMessage msg = \case

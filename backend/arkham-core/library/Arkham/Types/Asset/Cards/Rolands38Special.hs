@@ -30,8 +30,8 @@ rolands38Special uuid =
   Rolands38Special $ (baseAttrs uuid "01006") { assetSlots = [HandSlot] }
 
 instance (AssetRunner env, IsInvestigator investigator) => HasActions env investigator Rolands38Special where
-  getActions i (Rolands38Special Attrs {..}) = do
-    fightAvailable <- hasFightActions i
+  getActions i window (Rolands38Special Attrs {..}) = do
+    fightAvailable <- hasFightActions i window
     pure
       [ ActivateCardAbilityAction
           (getId () i)

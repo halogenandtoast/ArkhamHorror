@@ -20,6 +20,9 @@ newtype Trapped = Trapped Attrs
 trapped :: Trapped
 trapped = Trapped $ baseAttrs "01108" "Trapped" "Act 1a"
 
+instance HasActions env investigator Trapped where
+  getActions i window (Trapped x) = getActions i window x
+
 instance (ActRunner env) => RunMessage env Trapped where
   runMessage msg a@(Trapped attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && actSequence == "Act 1a" -> do

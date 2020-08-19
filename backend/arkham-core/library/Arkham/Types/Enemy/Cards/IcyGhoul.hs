@@ -24,7 +24,7 @@ icyGhoul uuid = IcyGhoul $ (baseAttrs uuid "01119")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator IcyGhoul where
-  getActions i (IcyGhoul attrs) = getActions i attrs
+  getActions i window (IcyGhoul attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env IcyGhoul where
   runMessage msg e@(IcyGhoul attrs@Attrs {..}) = case msg of

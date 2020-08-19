@@ -24,7 +24,7 @@ ruthTurner uuid = RuthTurner $ (baseAttrs uuid "01141")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator RuthTurner where
-  getActions i (RuthTurner attrs) = getActions i attrs
+  getActions i window (RuthTurner attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env RuthTurner where
   runMessage msg e@(RuthTurner attrs@Attrs {..}) = case msg of

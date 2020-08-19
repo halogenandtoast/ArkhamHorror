@@ -23,7 +23,7 @@ northside =
         }
 
 instance (IsInvestigator investigator) => HasActions env investigator Northside where
-  getActions i (Northside attrs) = getActions i attrs
+  getActions i window (Northside attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Northside where
   runMessage msg (Northside attrs) = Northside <$> runMessage msg attrs

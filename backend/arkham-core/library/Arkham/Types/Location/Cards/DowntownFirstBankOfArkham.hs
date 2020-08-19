@@ -22,7 +22,7 @@ downtownFirstBankOfArkham =
         }
 
 instance (IsInvestigator investigator) => HasActions env investigator DowntownFirstBankOfArkham where
-  getActions i (DowntownFirstBankOfArkham attrs) = getActions i attrs
+  getActions i window (DowntownFirstBankOfArkham attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env DowntownFirstBankOfArkham where
   runMessage msg (DowntownFirstBankOfArkham attrs) =

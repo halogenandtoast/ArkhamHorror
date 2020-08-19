@@ -141,27 +141,27 @@ isSanityDamageable :: Asset -> Bool
 isSanityDamageable = isJust . assetSanity . assetAttrs
 
 instance (AssetRunner env, IsInvestigator investigator) => HasActions env investigator Asset where
-  getActions i = \case
-    Rolands38Special' x -> getActions i x
-    DaisysToteBag' x -> getActions i x
-    TheNecronomicon' x -> getActions i x
-    FortyFiveAutomatic' x -> getActions i x
-    PhysicalTraining' x -> getActions i x
-    BeatCop' x -> getActions i x
-    Machete' x -> getActions i x
-    GuardDog' x -> getActions i x
-    MagnifyingGlass' x -> getActions i x
-    OldBookOfLore' x -> getActions i x
-    MedicalTexts' x -> getActions i x
-    ResearchLibrarian' x -> getActions i x
-    DrMilanChristopher' x -> getActions i x
-    HolyRosary' x -> getActions i x
-    Shrivelling' x -> getActions i x
-    Scrying' x -> getActions i x
-    LeatherCoat' x -> getActions i x
-    Knife' x -> getActions i x
-    Flashlight' x -> getActions i x
-    LitaChantler' x -> getActions i x
+  getActions i window = \case
+    Rolands38Special' x -> getActions i window x
+    DaisysToteBag' x -> getActions i window x
+    TheNecronomicon' x -> getActions i window x
+    FortyFiveAutomatic' x -> getActions i window x
+    PhysicalTraining' x -> getActions i window x
+    BeatCop' x -> getActions i window x
+    Machete' x -> getActions i window x
+    GuardDog' x -> getActions i window x
+    MagnifyingGlass' x -> getActions i window x
+    OldBookOfLore' x -> getActions i window x
+    MedicalTexts' x -> getActions i window x
+    ResearchLibrarian' x -> getActions i window x
+    DrMilanChristopher' x -> getActions i window x
+    HolyRosary' x -> getActions i window x
+    Shrivelling' x -> getActions i window x
+    Scrying' x -> getActions i window x
+    LeatherCoat' x -> getActions i window x
+    Knife' x -> getActions i window x
+    Flashlight' x -> getActions i window x
+    LitaChantler' x -> getActions i window x
 
 instance (AssetRunner env) => RunMessage env Asset where
   runMessage msg = \case

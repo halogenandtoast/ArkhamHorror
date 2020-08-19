@@ -26,7 +26,7 @@ oldBookOfLore uuid = OldBookOfLore $ (baseAttrs uuid "01031")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator OldBookOfLore where
-  getActions i (OldBookOfLore x) = getActions i x
+  getActions i window (OldBookOfLore x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env OldBookOfLore where
   runMessage msg (OldBookOfLore attrs@Attrs {..}) = case msg of

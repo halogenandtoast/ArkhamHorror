@@ -17,6 +17,9 @@ whatHaveYouDone :: WhatHaveYouDone
 whatHaveYouDone =
   WhatHaveYouDone $ baseAttrs "01110" "What Have You Done?" "Act 3a"
 
+instance HasActions env investigator WhatHaveYouDone where
+  getActions i window (WhatHaveYouDone x) = getActions i window x
+
 instance (ActRunner env) => RunMessage env WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId -> do

@@ -23,7 +23,7 @@ wizardOfTheOrder uuid = WizardOfTheOrder $ (baseAttrs uuid "01170")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator WizardOfTheOrder where
-  getActions i (WizardOfTheOrder attrs) = getActions i attrs
+  getActions i window (WizardOfTheOrder attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env WizardOfTheOrder where
   runMessage msg e@(WizardOfTheOrder attrs@Attrs {..}) = case msg of

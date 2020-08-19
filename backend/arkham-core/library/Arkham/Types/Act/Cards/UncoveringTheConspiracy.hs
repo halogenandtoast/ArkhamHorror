@@ -16,6 +16,9 @@ uncoveringTheConspiracy :: UncoveringTheConspiracy
 uncoveringTheConspiracy = UncoveringTheConspiracy
   $ baseAttrs "01123" "Uncovering the Conspiracy" "Act 1a"
 
+instance HasActions env investigator UncoveringTheConspiracy where
+  getActions i window (UncoveringTheConspiracy x) = getActions i window x
+
 instance (ActRunner env) => RunMessage env UncoveringTheConspiracy where
   runMessage msg (UncoveringTheConspiracy attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && actSequence == "Act 1a" -> do

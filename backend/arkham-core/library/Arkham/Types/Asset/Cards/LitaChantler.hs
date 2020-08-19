@@ -27,7 +27,7 @@ litaChantler uuid = LitaChantler $ (baseAttrs uuid "01117")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator LitaChantler where
-  getActions i (LitaChantler x) = getActions i x
+  getActions i window (LitaChantler x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env LitaChantler where
   runMessage msg a@(LitaChantler attrs@Attrs {..}) = case msg of

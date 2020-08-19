@@ -30,7 +30,7 @@ beatCop uuid = BeatCop $ (baseAttrs uuid "01018")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator BeatCop where
-  getActions i (BeatCop x) = getActions i x
+  getActions i window (BeatCop x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env BeatCop where
   runMessage msg a@(BeatCop attrs@Attrs {..}) = case msg of

@@ -26,7 +26,7 @@ silverTwilightAcolyte uuid =
     }
 
 instance (IsInvestigator investigator) => HasActions env investigator SilverTwilightAcolyte where
-  getActions i (SilverTwilightAcolyte attrs) = getActions i attrs
+  getActions i window (SilverTwilightAcolyte attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env SilverTwilightAcolyte where
   runMessage msg (SilverTwilightAcolyte attrs@Attrs {..}) = case msg of

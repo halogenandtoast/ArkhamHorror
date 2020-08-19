@@ -28,7 +28,7 @@ miskatonicUniversity = MiskatonicUniversity $ (baseAttrs
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator MiskatonicUniversity where
-  getActions i (MiskatonicUniversity attrs) = getActions i attrs
+  getActions i window (MiskatonicUniversity attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env MiskatonicUniversity where
   runMessage msg (MiskatonicUniversity attrs) =

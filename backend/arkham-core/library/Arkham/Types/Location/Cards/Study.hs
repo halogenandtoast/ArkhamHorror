@@ -16,7 +16,7 @@ study :: Study
 study = Study $ baseAttrs "01111" "Study" 2 (PerPlayer 2) Circle []
 
 instance (IsInvestigator investigator) => HasActions env investigator Study where
-  getActions i (Study attrs) = getActions i attrs
+  getActions i window (Study attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Study where
   runMessage msg (Study attrs) = Study <$> runMessage msg attrs

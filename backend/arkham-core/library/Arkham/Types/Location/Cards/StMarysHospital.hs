@@ -29,7 +29,7 @@ stMarysHospital =
         }
 
 instance (IsInvestigator investigator) => HasActions env investigator StMarysHospital where
-  getActions i (StMarysHospital attrs) = getActions i attrs
+  getActions i window (StMarysHospital attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env StMarysHospital where
   runMessage msg (StMarysHospital attrs) =

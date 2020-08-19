@@ -54,6 +54,13 @@ actAttrs = \case
   WhatHaveYouDone' attrs -> coerce attrs
   UncoveringTheConspiracy' attrs -> coerce attrs
 
+instance HasActions env investigator Act where
+  getActions i window = \case
+    Trapped' x -> getActions i window x
+    TheBarrier' x -> getActions i window x
+    WhatHaveYouDone' x -> getActions i window x
+    UncoveringTheConspiracy' x -> getActions i window x
+
 instance (ActRunner env) => RunMessage env Act where
   runMessage msg = \case
     Trapped' x -> Trapped' <$> runMessage msg x

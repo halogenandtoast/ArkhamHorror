@@ -23,7 +23,7 @@ downtownArkhamAsylum =
         }
 
 instance (IsInvestigator investigator) => HasActions env investigator DowntownArkhamAsylum where
-  getActions i (DowntownArkhamAsylum attrs) = getActions i attrs
+  getActions i window (DowntownArkhamAsylum attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env DowntownArkhamAsylum where
   runMessage msg (DowntownArkhamAsylum attrs) =

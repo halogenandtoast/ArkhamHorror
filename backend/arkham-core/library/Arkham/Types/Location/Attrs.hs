@@ -128,7 +128,7 @@ instance IsLocation Attrs where
   isBlocked Attrs {..} = locationBlocked
 
 instance (IsInvestigator investigator) => HasActions env investigator Attrs where
-  getActions i location@Attrs {..} = pure $ moveActions <> investigateActions
+  getActions i window location@Attrs {..} = pure $ moveActions <> investigateActions
    where
     investigateActions =
       [ Investigate (getId () i) locationId SkillIntellect mempty True

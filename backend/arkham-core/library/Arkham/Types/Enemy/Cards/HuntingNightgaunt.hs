@@ -25,7 +25,7 @@ huntingNightgaunt uuid = HuntingNightgaunt $ (baseAttrs uuid "01172")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator HuntingNightgaunt where
-  getActions i (HuntingNightgaunt attrs) = getActions i attrs
+  getActions i window (HuntingNightgaunt attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env HuntingNightgaunt where
   runMessage msg (HuntingNightgaunt attrs@Attrs {..}) = case msg of

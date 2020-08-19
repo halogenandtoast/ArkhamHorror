@@ -21,7 +21,7 @@ acolyte uuid = Acolyte $ (baseAttrs uuid "01169")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator Acolyte where
-  getActions i (Acolyte attrs) = getActions i attrs
+  getActions i window (Acolyte attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env Acolyte where
   runMessage msg e@(Acolyte attrs@Attrs {..}) = case msg of

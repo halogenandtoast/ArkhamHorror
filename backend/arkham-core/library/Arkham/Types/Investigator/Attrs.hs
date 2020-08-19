@@ -463,6 +463,7 @@ possibleSkillTypeChoices skillType attrs = foldr
 
 instance IsInvestigator Attrs where
   locationOf Attrs {..} = investigatorLocation
+  resourceCount Attrs {..} = investigatorResources
   canInvestigate location a@Attrs {..} =
     canAfford a Action.Investigate && getId () location == investigatorLocation
   canMoveTo location a@Attrs {..} =
@@ -1005,6 +1006,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
     BeforeSkillTest iid skillType | iid == investigatorId -> do
       commitedCardIds <- map unCommitedCardId . HashSet.toList <$> asks
         (getSet iid)
+      actions <- asks (join $ getActions a (WhenSkillTest skillType))
       availableAbilities <- getAvailableAbilities a
       let
         filteredAbilities = flip filter availableAbilities $ \Ability {..} ->
@@ -1019,8 +1021,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
               `notElem` commitedCardIds
               && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
           _ -> False
-      if not (null filteredAbilities) || not (null committableCards) || not
-        (null commitedCardIds)
+      if not (null filteredAbilities)
+        || not (null committableCards)
+        || not (null commitedCardIds)
+        || not (null actions)
       then
         unshiftMessage
           (SkillTestAsk $ Ask iid $ ChooseOne
@@ -1046,6 +1050,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
                    Run [SkillTestUncommitCard iid cardId, beginMessage]
                  )
                  commitedCardIds
+            <> map (\action -> Run [action, beginMessage]) actions
             <> [triggerMessage]
             )
           )

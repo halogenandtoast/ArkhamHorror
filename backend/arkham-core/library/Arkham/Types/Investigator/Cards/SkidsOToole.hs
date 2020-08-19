@@ -46,7 +46,7 @@ skidsOToole = SkidsOToole $ (baseAttrs
     ]
   }
 
-instance (InvestigatorRunner env) => RunMessage env SkidsOToole where
+instance (InvestigatorRunner Attrs env) => RunMessage env SkidsOToole where
   runMessage msg i@(SkidsOToole attrs@Attrs {..}) = case msg of
     UseCardAbility _ _ (InvestigatorSource iid) 1 | iid == investigatorId -> do
       pure . SkidsOToole $ attrs & resources -~ 2 & remainingActions +~ 1

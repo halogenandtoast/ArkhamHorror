@@ -30,7 +30,7 @@ stellaClark = StellaClark $ baseAttrs
     }
   [Chosen, Civic]
 
-instance (InvestigatorRunner env) => RunMessage env StellaClark where
+instance (InvestigatorRunner Attrs env) => RunMessage env StellaClark where
   runMessage msg i@(StellaClark attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
     _ -> StellaClark <$> runMessage msg attrs

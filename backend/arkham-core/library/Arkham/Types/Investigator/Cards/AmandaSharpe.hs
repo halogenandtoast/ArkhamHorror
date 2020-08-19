@@ -30,7 +30,7 @@ amandaSharpe = AmandaSharpe $ baseAttrs
     }
   [Miskatonic, Scholar]
 
-instance (InvestigatorRunner env) => RunMessage env AmandaSharpe where
+instance (InvestigatorRunner Attrs env) => RunMessage env AmandaSharpe where
   runMessage msg i@(AmandaSharpe attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
     _ -> AmandaSharpe <$> runMessage msg attrs

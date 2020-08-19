@@ -30,7 +30,7 @@ rexMurphy = RexMurphy $ baseAttrs
     }
   [Reporter]
 
-instance (InvestigatorRunner env) => RunMessage env RexMurphy where
+instance (InvestigatorRunner Attrs env) => RunMessage env RexMurphy where
   runMessage msg i@(RexMurphy attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
     _ -> RexMurphy <$> runMessage msg attrs

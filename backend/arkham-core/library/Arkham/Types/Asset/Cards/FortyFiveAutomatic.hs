@@ -25,6 +25,9 @@ fortyFiveAutomatic :: AssetId -> FortyFiveAutomatic
 fortyFiveAutomatic uuid =
   FortyFiveAutomatic $ (baseAttrs uuid "01016") { assetSlots = [HandSlot] }
 
+instance (IsInvestigator investigator) => HasActions investigator FortyFiveAutomatic where
+  getActions i (FortyFiveAutomatic x) = getActions i x
+
 instance (AssetRunner env) => RunMessage env FortyFiveAutomatic where
   runMessage msg a@(FortyFiveAutomatic attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->

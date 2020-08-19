@@ -30,7 +30,7 @@ marieLambeau = MarieLambeau $ baseAttrs
     }
   [Performer, Sorcerer]
 
-instance (InvestigatorRunner env) => RunMessage env MarieLambeau where
+instance (InvestigatorRunner Attrs env) => RunMessage env MarieLambeau where
   runMessage msg i@(MarieLambeau attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
     _ -> MarieLambeau <$> runMessage msg attrs

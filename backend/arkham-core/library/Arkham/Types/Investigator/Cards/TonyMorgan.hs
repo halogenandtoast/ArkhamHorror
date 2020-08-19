@@ -30,7 +30,7 @@ tonyMorgan = TonyMorgan $ baseAttrs
     }
   [Criminal, Hunter]
 
-instance (InvestigatorRunner env) => RunMessage env TonyMorgan where
+instance (InvestigatorRunner Attrs env) => RunMessage env TonyMorgan where
   runMessage msg i@(TonyMorgan attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
     _ -> TonyMorgan <$> runMessage msg attrs

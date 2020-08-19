@@ -27,6 +27,9 @@ knife uuid = Knife $ (baseAttrs uuid "01086")
     ]
   }
 
+instance (IsInvestigator investigator) => HasActions investigator Knife where
+  getActions i (Knife x) = getActions i x
+
 instance (AssetRunner env) => RunMessage env Knife where
   runMessage msg a@(Knife attrs@Attrs {..}) = case msg of
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do

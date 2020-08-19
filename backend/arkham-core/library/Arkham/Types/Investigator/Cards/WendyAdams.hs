@@ -30,7 +30,7 @@ wendyAdams = WendyAdams $ baseAttrs
     }
   [Drifter]
 
-instance (InvestigatorRunner env) => RunMessage env WendyAdams where
+instance (InvestigatorRunner Attrs env) => RunMessage env WendyAdams where
   runMessage msg i@(WendyAdams attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
     _ -> WendyAdams <$> runMessage msg attrs

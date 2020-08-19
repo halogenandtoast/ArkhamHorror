@@ -745,10 +745,12 @@ broadcastFastWindow builder currentInvestigatorId g =
 
 instance (IsInvestigator investigator) => HasActions investigator Game where
   getActions i g = do
-    a <- traverse (getActions i) (view locations g)
-    b <- traverse (getActions i) (view enemies g)
-    c <- traverse (getActions i) (view assets g)
-    pure . concat $ a <> b <> c
+    locationActions <- traverse
+      (getActions i)
+      (HashMap.elems $ view locations g)
+    enemyActions <- traverse (getActions i) (HashMap.elems $ view enemies g)
+    assetActions <- traverse (getActions i) (HashMap.elems $ view assets g)
+    pure . concat $ locationActions <> enemyActions <> assetActions
 
 runGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game

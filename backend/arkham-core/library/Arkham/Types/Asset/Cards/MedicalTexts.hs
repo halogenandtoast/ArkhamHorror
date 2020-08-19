@@ -25,6 +25,9 @@ medicalTexts uuid = MedicalTexts $ (baseAttrs uuid "01035")
   , assetAbilities = [mkAbility (AssetSource uuid) 1 (ActionAbility 1 Nothing)]
   }
 
+instance (IsInvestigator investigator) => HasActions investigator MedicalTexts where
+  getActions i (MedicalTexts x) = getActions i x
+
 instance (AssetRunner env) => RunMessage env MedicalTexts where
   runMessage msg (MedicalTexts attrs@Attrs {..}) = case msg of
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do

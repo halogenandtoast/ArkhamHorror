@@ -25,6 +25,9 @@ drMilanChristopher uuid = DrMilanChristopher $ (baseAttrs uuid "01033")
   , assetSanity = Just 2
   }
 
+instance (IsInvestigator investigator) => HasActions investigator DrMilanChristopher where
+  getActions i (DrMilanChristopher x) = getActions i x
+
 instance (AssetRunner env) => RunMessage env DrMilanChristopher where
   runMessage msg a@(DrMilanChristopher attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do

@@ -217,7 +217,7 @@ data Investigator
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-instance (InvestigatorRunner env) => RunMessage env Investigator where
+instance (InvestigatorRunner Attrs env) => RunMessage env Investigator where
   runMessage msg = \case
     AgnesBaker' x -> AgnesBaker' <$> runMessage msg x
     AkachiOnyele' x -> AkachiOnyele' <$> runMessage msg x

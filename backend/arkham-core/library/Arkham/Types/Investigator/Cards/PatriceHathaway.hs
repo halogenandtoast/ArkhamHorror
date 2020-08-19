@@ -30,7 +30,7 @@ patriceHathaway = PatriceHathaway $ baseAttrs
     }
   [Performer, Cursed]
 
-instance (InvestigatorRunner env) => RunMessage env PatriceHathaway where
+instance (InvestigatorRunner Attrs env) => RunMessage env PatriceHathaway where
   runMessage msg i@(PatriceHathaway attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
     _ -> PatriceHathaway <$> runMessage msg attrs

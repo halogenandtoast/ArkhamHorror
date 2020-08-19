@@ -27,6 +27,9 @@ rolands38Special :: AssetId -> Rolands38Special
 rolands38Special uuid =
   Rolands38Special $ (baseAttrs uuid "01006") { assetSlots = [HandSlot] }
 
+instance (IsInvestigator investigator) => HasActions investigator Rolands38Special where
+  getActions i (Rolands38Special x) = getActions i x
+
 instance (AssetRunner env) => RunMessage env Rolands38Special where
   runMessage msg a@(Rolands38Special attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId -> do

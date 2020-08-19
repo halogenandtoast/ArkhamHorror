@@ -18,6 +18,9 @@ newtype DaisysToteBag = DaisysToteBag Attrs
 daisysToteBag :: AssetId -> DaisysToteBag
 daisysToteBag uuid = DaisysToteBag $ baseAttrs uuid "01008"
 
+instance (IsInvestigator investigator) => HasActions investigator DaisysToteBag where
+  getActions i (DaisysToteBag x) = getActions i x
+
 instance (AssetRunner env) => RunMessage env DaisysToteBag where
   runMessage msg (DaisysToteBag attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do

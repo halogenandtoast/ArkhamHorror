@@ -22,7 +22,7 @@ northside =
         , locationVictory = Just 1
         }
 
-instance (IsInvestigator investigator) => HasActions investigator Northside where
+instance (IsInvestigator investigator) => HasActions env investigator Northside where
   getActions i (Northside attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env Northside where

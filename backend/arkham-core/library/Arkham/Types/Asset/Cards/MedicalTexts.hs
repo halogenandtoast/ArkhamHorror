@@ -25,7 +25,7 @@ medicalTexts uuid = MedicalTexts $ (baseAttrs uuid "01035")
   , assetAbilities = [mkAbility (AssetSource uuid) 1 (ActionAbility 1 Nothing)]
   }
 
-instance (IsInvestigator investigator) => HasActions investigator MedicalTexts where
+instance (IsInvestigator investigator) => HasActions env investigator MedicalTexts where
   getActions i (MedicalTexts x) = getActions i x
 
 instance (AssetRunner env) => RunMessage env MedicalTexts where

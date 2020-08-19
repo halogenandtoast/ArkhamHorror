@@ -23,7 +23,7 @@ ruthTurner uuid = RuthTurner $ (baseAttrs uuid "01141")
   , enemyVictory = Just 1
   }
 
-instance (IsInvestigator investigator) => HasActions investigator RuthTurner where
+instance (IsInvestigator investigator) => HasActions env investigator RuthTurner where
   getActions i (RuthTurner attrs) = getActions i attrs
 
 instance (EnemyRunner env) => RunMessage env RuthTurner where

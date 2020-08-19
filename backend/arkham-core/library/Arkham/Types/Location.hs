@@ -141,7 +141,7 @@ locationAttrs = \case
   Graveyard' attrs -> coerce attrs
   Northside' attrs -> coerce attrs
 
-instance (IsInvestigator investigator) => HasActions investigator Location where
+instance (IsInvestigator investigator) => HasActions env investigator Location where
   getActions i = \case
     Study' l -> getActions i l
     Hallway' l -> getActions i l

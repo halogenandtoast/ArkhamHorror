@@ -27,7 +27,7 @@ knife uuid = Knife $ (baseAttrs uuid "01086")
     ]
   }
 
-instance (IsInvestigator investigator) => HasActions investigator Knife where
+instance (IsInvestigator investigator) => HasActions env investigator Knife where
   getActions i (Knife x) = getActions i x
 
 instance (AssetRunner env) => RunMessage env Knife where

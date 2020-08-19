@@ -26,7 +26,7 @@ machete uuid = Machete $ (baseAttrs uuid "01020")
     [mkAbility (AssetSource uuid) 1 (ActionAbility 1 (Just Action.Fight))]
   }
 
-instance (IsInvestigator investigator) => HasActions investigator Machete where
+instance (IsInvestigator investigator) => HasActions env investigator Machete where
   getActions i (Machete x) = getActions i x
 
 instance (AssetRunner env) => RunMessage env Machete where

@@ -32,7 +32,7 @@ hermanCollins uuid = HermanCollins $ (baseAttrs uuid "01138")
     ]
   }
 
-instance (IsInvestigator investigator) => HasActions investigator HermanCollins where
+instance (IsInvestigator investigator) => HasActions env investigator HermanCollins where
   getActions i (HermanCollins attrs) = getActions i attrs
 
 instance (EnemyRunner env) => RunMessage env HermanCollins where

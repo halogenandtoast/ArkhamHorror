@@ -23,7 +23,7 @@ researchLibrarian uuid = ResearchLibrarian $ (baseAttrs uuid "01032")
   , assetSanity = Just 1
   }
 
-instance (IsInvestigator investigator) => HasActions investigator ResearchLibrarian where
+instance (IsInvestigator investigator) => HasActions env investigator ResearchLibrarian where
   getActions i (ResearchLibrarian x) = getActions i x
 
 instance (AssetRunner env) => RunMessage env ResearchLibrarian where

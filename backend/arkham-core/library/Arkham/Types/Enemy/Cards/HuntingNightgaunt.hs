@@ -24,7 +24,7 @@ huntingNightgaunt uuid = HuntingNightgaunt $ (baseAttrs uuid "01172")
   , enemyEvade = 1
   }
 
-instance (IsInvestigator investigator) => HasActions investigator HuntingNightgaunt where
+instance (IsInvestigator investigator) => HasActions env investigator HuntingNightgaunt where
   getActions i (HuntingNightgaunt attrs) = getActions i attrs
 
 instance (EnemyRunner env) => RunMessage env HuntingNightgaunt where

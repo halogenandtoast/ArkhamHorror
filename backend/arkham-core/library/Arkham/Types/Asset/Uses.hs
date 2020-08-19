@@ -10,6 +10,10 @@ data UseType = Ammo | Supply | Secret | Charge | Try | Bounty | Whistle | Resour
 data Uses = NoUses | Uses UseType Int
   deriving stock (Show, Eq, Generic)
 
+useCount :: Uses -> Int
+useCount NoUses = 0
+useCount (Uses _ n) = n
+
 instance ToJSON Uses where
   toJSON NoUses = Null
   toJSON (Uses t n) = object ["type" .= toJSON t, "amount" .= toJSON n]

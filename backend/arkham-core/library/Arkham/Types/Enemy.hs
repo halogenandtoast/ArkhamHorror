@@ -125,7 +125,13 @@ enemyAttrs = \case
   WizardOfTheOrder' attrs -> coerce attrs
   HuntingNightgaunt' attrs -> coerce attrs
 
-instance (IsInvestigator investigator) => HasActions investigator Enemy where
+instance HasId EnemyId () Enemy where
+  getId _ = enemyId . enemyAttrs
+
+instance IsEnemy Enemy where
+  isAloof = isAloof . enemyAttrs
+
+instance (IsInvestigator investigator) => HasActions env investigator Enemy where
   getActions i = \case
     SilverTwilightAcolyte' x -> getActions i x
     GhoulPriest' x -> getActions i x

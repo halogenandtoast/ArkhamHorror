@@ -1,6 +1,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Game
   ( runMessages
   , newGame
@@ -743,7 +744,7 @@ broadcastFastWindow builder currentInvestigatorId g =
             ]
           )
 
-instance (IsInvestigator investigator) => HasActions investigator Game where
+instance (GameRunner env, IsInvestigator investigator) => HasActions env investigator Game where
   getActions i g = do
     locationActions <- traverse
       (getActions i)

@@ -19,7 +19,7 @@ cellar = Cellar $ (baseAttrs "01114" "Cellar" 4 (PerPlayer 2) Plus [Square])
   { locationVictory = Just 1
   }
 
-instance (IsInvestigator investigator) => HasActions investigator Cellar where
+instance (IsInvestigator investigator) => HasActions env investigator Cellar where
   getActions i (Cellar attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env Cellar where

@@ -25,7 +25,7 @@ ghoulPriest uuid = GhoulPriest $ (baseAttrs uuid "01116")
   , enemyPrey = HighestSkill SkillCombat
   }
 
-instance (IsInvestigator investigator) => HasActions investigator GhoulPriest where
+instance (IsInvestigator investigator) => HasActions env investigator GhoulPriest where
   getActions i (GhoulPriest attrs) = getActions i attrs
 
 instance (EnemyRunner env) => RunMessage env GhoulPriest where

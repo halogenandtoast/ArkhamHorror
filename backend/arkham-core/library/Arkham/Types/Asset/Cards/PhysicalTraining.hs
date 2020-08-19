@@ -33,7 +33,7 @@ physicalTraining uuid = PhysicalTraining $ (baseAttrs uuid "01017")
     ]
   }
 
-instance (IsInvestigator investigator) => HasActions investigator PhysicalTraining where
+instance (IsInvestigator investigator) => HasActions env investigator PhysicalTraining where
   getActions i (PhysicalTraining x) = getActions i x
 
 instance (AssetRunner env) => RunMessage env PhysicalTraining where

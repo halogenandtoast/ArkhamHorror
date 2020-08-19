@@ -140,7 +140,7 @@ isHealthDamageable = isJust . assetHealth . assetAttrs
 isSanityDamageable :: Asset -> Bool
 isSanityDamageable = isJust . assetSanity . assetAttrs
 
-instance (IsInvestigator investigator) => HasActions investigator Asset where
+instance (AssetRunner env, IsInvestigator investigator) => HasActions env investigator Asset where
   getActions i = \case
     Rolands38Special' x -> getActions i x
     DaisysToteBag' x -> getActions i x

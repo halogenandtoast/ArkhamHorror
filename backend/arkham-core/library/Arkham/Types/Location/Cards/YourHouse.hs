@@ -20,7 +20,7 @@ yourHouse =
     { locationTraits = HashSet.fromList [Arkham]
     }
 
-instance (IsInvestigator investigator) => HasActions investigator YourHouse where
+instance (IsInvestigator investigator) => HasActions env investigator YourHouse where
   getActions i (YourHouse attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env YourHouse where

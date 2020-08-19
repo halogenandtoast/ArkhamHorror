@@ -102,7 +102,7 @@ defeated Attrs {..} =
   maybe False (assetHealthDamage >=) assetHealth
     || maybe False (assetSanityDamage >=) assetSanity
 
-instance (IsInvestigator investigator) => HasActions investigator Attrs where
+instance (IsInvestigator investigator) => HasActions env investigator Attrs where
   getActions i Attrs {..} =
     pure
       $ [ ActivateCardAbilityAction (getId () i) ability

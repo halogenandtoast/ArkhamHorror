@@ -31,7 +31,7 @@ victoriaDevereux uuid = VictoriaDevereux $ (baseAttrs uuid "01140")
     ]
   }
 
-instance (IsInvestigator investigator) => HasActions investigator VictoriaDevereux where
+instance (IsInvestigator investigator) => HasActions env investigator VictoriaDevereux where
   getActions i (VictoriaDevereux attrs) = getActions i attrs
 
 instance (EnemyRunner env) => RunMessage env VictoriaDevereux where

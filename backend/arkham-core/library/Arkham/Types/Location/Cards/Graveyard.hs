@@ -21,7 +21,7 @@ graveyard =
     , locationVictory = Just 1
     }
 
-instance (IsInvestigator investigator) => HasActions investigator Graveyard where
+instance (IsInvestigator investigator) => HasActions env investigator Graveyard where
   getActions i (Graveyard attrs) = getActions i attrs
 
 instance (LocationRunner env) => RunMessage env Graveyard where

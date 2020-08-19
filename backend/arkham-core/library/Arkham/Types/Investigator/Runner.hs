@@ -39,5 +39,5 @@ type InvestigatorRunner investigator env
     , HasId LocationId InvestigatorId env
     , HasList Location () env
     , HasList Enemy () env
-    , HasActions investigator env
+    , HasActions env investigator env
     )

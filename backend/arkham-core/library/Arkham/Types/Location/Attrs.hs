@@ -127,7 +127,7 @@ instance HasId LocationId () Attrs where
 instance IsLocation Attrs where
   isBlocked Attrs {..} = locationBlocked
 
-instance (IsInvestigator investigator) => HasActions investigator Attrs where
+instance (IsInvestigator investigator) => HasActions env investigator Attrs where
   getActions i location@Attrs {..} = pure $ moveActions <> investigateActions
    where
     investigateActions =

@@ -21,7 +21,7 @@ guardDog uuid = GuardDog $ (baseAttrs uuid "01021")
   , assetSanity = Just 1
   }
 
-instance (IsInvestigator investigator) => HasActions investigator GuardDog where
+instance (IsInvestigator investigator) => HasActions env investigator GuardDog where
   getActions i (GuardDog x) = getActions i x
 
 instance (AssetRunner env) => RunMessage env GuardDog where

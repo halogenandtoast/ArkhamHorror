@@ -17,7 +17,7 @@ leatherCoat :: AssetId -> LeatherCoat
 leatherCoat uuid = LeatherCoat
   $ (baseAttrs uuid "01072") { assetSlots = [BodySlot], assetHealth = Just 2 }
 
-instance (IsInvestigator investigator) => HasActions investigator LeatherCoat where
+instance (IsInvestigator investigator) => HasActions env investigator LeatherCoat where
   getActions i (LeatherCoat x) = getActions i x
 
 instance (AssetRunner env) => RunMessage env LeatherCoat where

@@ -41,7 +41,7 @@ theNecronomicon uuid =
       )
     `with` TheNecronomiconMetadata 3
 
-instance (IsInvestigator investigator) => HasActions investigator TheNecronomicon where
+instance (IsInvestigator investigator) => HasActions env investigator TheNecronomicon where
   getActions i (TheNecronomicon (x `With` _)) = getActions i x
 
 instance (AssetRunner env) => RunMessage env TheNecronomicon where

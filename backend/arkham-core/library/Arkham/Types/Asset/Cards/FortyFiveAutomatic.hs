@@ -6,10 +6,11 @@ import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses (Uses(..))
+import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
+import Arkham.Types.Enemy
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -25,29 +26,27 @@ fortyFiveAutomatic :: AssetId -> FortyFiveAutomatic
 fortyFiveAutomatic uuid =
   FortyFiveAutomatic $ (baseAttrs uuid "01016") { assetSlots = [HandSlot] }
 
-instance (IsInvestigator investigator) => HasActions investigator FortyFiveAutomatic where
-  getActions i (FortyFiveAutomatic x) = getActions i x
+instance (AssetRunner env, IsInvestigator investigator) => HasActions env investigator FortyFiveAutomatic where
+  getActions i (FortyFiveAutomatic Attrs {..}) = do
+    enemies <- asks (getList @Enemy ())
+    pure
+      [ ActivateCardAbilityAction
+          (getId () i)
+          (mkAbility
+            (AssetSource assetId)
+            1
+            (ActionAbility 1 (Just Action.Fight))
+          )
+      | useCount assetUses > 0 && any (`canFight` i) enemies
+      ]
 
 instance (AssetRunner env) => RunMessage env FortyFiveAutomatic where
   runMessage msg a@(FortyFiveAutomatic attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
-      pure
-        $ FortyFiveAutomatic
-        $ attrs
-        & (uses .~ Uses Resource.Ammo 4)
-        & (abilities
-          .~ [ mkAbility
-                 (AssetSource aid)
-                 1
-                 (ActionAbility 1 (Just Action.Fight))
-             ]
-          )
+      pure $ FortyFiveAutomatic $ attrs & (uses .~ Uses Resource.Ammo 4)
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
       case assetUses of
         Uses Resource.Ammo n -> do
-          when
-            (n == 1)
-            (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
           unshiftMessage
             (ChooseFightEnemy
               iid

@@ -101,8 +101,8 @@ class HasAbilities a where
 class HasVictoryPoints a where
   getVictoryPoints :: a -> Maybe Int
 
-class HasActions b a where
-  getActions :: forall env m. MonadReader env m => b -> a -> m [Message]
+class HasActions env b a where
+  getActions :: forall m. MonadReader env m => b -> a -> m [Message]
 
 class (HasId LocationId () location) => IsLocation location where
   isBlocked :: location -> Bool

@@ -22,7 +22,7 @@ wizardOfTheOrder uuid = WizardOfTheOrder $ (baseAttrs uuid "01170")
   , enemyEvade = 2
   }
 
-instance (IsInvestigator investigator) => HasActions investigator WizardOfTheOrder where
+instance (IsInvestigator investigator) => HasActions env investigator WizardOfTheOrder where
   getActions i (WizardOfTheOrder attrs) = getActions i attrs
 
 instance (EnemyRunner env) => RunMessage env WizardOfTheOrder where

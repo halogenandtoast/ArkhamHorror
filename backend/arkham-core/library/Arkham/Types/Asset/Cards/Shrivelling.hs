@@ -28,7 +28,7 @@ shrivelling :: AssetId -> Shrivelling
 shrivelling uuid =
   Shrivelling $ (baseAttrs uuid "01060") { assetSlots = [ArcaneSlot] }
 
-instance (IsInvestigator investigator) => HasActions investigator Shrivelling where
+instance (IsInvestigator investigator) => HasActions env investigator Shrivelling where
   getActions i (Shrivelling x) = getActions i x
 
 instance (AssetRunner env) => RunMessage env Shrivelling where

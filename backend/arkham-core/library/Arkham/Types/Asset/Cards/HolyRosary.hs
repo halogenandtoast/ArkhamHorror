@@ -23,7 +23,7 @@ holyRosary uuid = HolyRosary $ (baseAttrs uuid "01059")
   , assetSanity = Just 2
   }
 
-instance (IsInvestigator investigator) => HasActions investigator HolyRosary where
+instance (IsInvestigator investigator) => HasActions env investigator HolyRosary where
   getActions i (HolyRosary x) = getActions i x
 
 instance (AssetRunner env) => RunMessage env HolyRosary where

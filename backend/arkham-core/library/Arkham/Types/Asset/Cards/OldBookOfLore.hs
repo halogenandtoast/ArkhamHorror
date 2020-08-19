@@ -25,7 +25,7 @@ oldBookOfLore uuid = OldBookOfLore $ (baseAttrs uuid "01031")
   , assetAbilities = [mkAbility (AssetSource uuid) 1 (ActionAbility 1 Nothing)]
   }
 
-instance (IsInvestigator investigator) => HasActions investigator OldBookOfLore where
+instance (IsInvestigator investigator) => HasActions env investigator OldBookOfLore where
   getActions i (OldBookOfLore x) = getActions i x
 
 instance (AssetRunner env) => RunMessage env OldBookOfLore where

@@ -30,7 +30,7 @@ fatherMateo = FatherMateo $ baseAttrs
     }
   [Believer, Warden]
 
-instance (InvestigatorRunner env) => RunMessage env FatherMateo where
+instance (InvestigatorRunner Attrs env) => RunMessage env FatherMateo where
   runMessage msg i@(FatherMateo attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
     _ -> FatherMateo <$> runMessage msg attrs

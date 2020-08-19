@@ -45,7 +45,7 @@ becomesFailure token (ForcedTokenChange fromToken AutoFail _) =
   token == fromToken
 becomesFailure _ _ = False
 
-instance (InvestigatorRunner env) => RunMessage env DaisyWalker where
+instance (InvestigatorRunner Attrs env) => RunMessage env DaisyWalker where
   runMessage msg i@(DaisyWalker (attrs@Attrs {..} `With` metadata@DaisyWalkerMetadata {..}))
     = case msg of
       ActivateCardAbilityAction iid ability@Ability {..}

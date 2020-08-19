@@ -30,7 +30,7 @@ dianaStanley = DianaStanley $ baseAttrs
     }
   [Cultist, SilverTwilight]
 
-instance (InvestigatorRunner env) => RunMessage env DianaStanley where
+instance (InvestigatorRunner Attrs env) => RunMessage env DianaStanley where
   runMessage msg i@(DianaStanley attrs@Attrs {..}) = case msg of
     ResolveToken Token.ElderSign iid _skillValue | iid == investigatorId ->
       pure i

@@ -29,6 +29,9 @@ beatCop uuid = BeatCop $ (baseAttrs uuid "01018")
   , assetAbilities = [mkAbility (AssetSource uuid) 1 (FastAbility Fast.Any)]
   }
 
+instance (IsInvestigator investigator) => HasActions investigator BeatCop where
+  getActions i (BeatCop x) = getActions i x
+
 instance (AssetRunner env) => RunMessage env BeatCop where
   runMessage msg a@(BeatCop attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do

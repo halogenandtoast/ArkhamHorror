@@ -30,7 +30,7 @@ zoeySamaras = ZoeySamaras $ baseAttrs
     }
   [Believer, Hunter]
 
-instance (InvestigatorRunner env) => RunMessage env ZoeySamaras where
+instance (InvestigatorRunner Attrs env) => RunMessage env ZoeySamaras where
   runMessage msg i@(ZoeySamaras attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
     _ -> ZoeySamaras <$> runMessage msg attrs

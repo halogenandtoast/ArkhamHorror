@@ -4,22 +4,18 @@ module Arkham.Types.Investigator.Attrs where
 
 import Arkham.Json
 import Arkham.Types.Ability
-import Arkham.Types.ActId
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.Asset
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
-import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
 import Arkham.Types.FastWindow
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.InvestigatorId
-import Arkham.Types.Location
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -318,7 +314,10 @@ canPayAbilityCost (Just cost) Attrs {..} = case cost of
   CardCost n -> length investigatorHand >= n
 
 canPerform
-  :: (MonadReader env m, InvestigatorRunner env) => Attrs -> Action -> m Bool
+  :: (MonadReader env m, InvestigatorRunner Attrs env)
+  => Attrs
+  -> Action
+  -> m Bool
 canPerform a@Attrs {..} Action.Move = do
   blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
   let
@@ -385,7 +384,7 @@ takeAction action a =
     & (actionsTaken %~ (<> [action]))
 
 getAvailableAbilities
-  :: (InvestigatorRunner env, MonadReader env m) => Attrs -> m [Ability]
+  :: (InvestigatorRunner Attrs env, MonadReader env m) => Attrs -> m [Ability]
 getAvailableAbilities a@Attrs {..} = do
   assetAbilities <- mconcat
     <$> traverse (asks . getList) (HashSet.toList investigatorAssets)
@@ -437,7 +436,7 @@ cardInWindows windows c _ = case c of
   _ -> False
 
 abilityInWindows
-  :: (MonadReader env m, InvestigatorRunner env)
+  :: (MonadReader env m, InvestigatorRunner Attrs env)
   => [FastWindow]
   -> Ability
   -> Attrs
@@ -481,7 +480,7 @@ instance IsInvestigator Attrs where
 instance HasId InvestigatorId () Attrs where
   getId _ Attrs {..} = investigatorId
 
-instance (InvestigatorRunner env) => RunMessage env Attrs where
+instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     PlaceCluesOnLocation iid n | iid == investigatorId -> do
       let m = min n investigatorClues
@@ -1210,23 +1209,17 @@ instance (InvestigatorRunner env) => RunMessage env Attrs where
       pure $ a & physicalTrauma +~ physical & mentalTrauma +~ mental
     GainXP iid amount | iid == investigatorId -> pure $ a & xp +~ amount
     PlayerWindow iid additionalActions | iid == investigatorId -> do
-      advanceableActIds <-
-        HashSet.toList . HashSet.map unAdvanceableActId <$> asks (getSet ())
-      canDos <- filterM (canPerform a) Action.allActions
-      actions <- asks (getActions a)
+      actions <- asks (join (getActions a))
       a <$ unshiftMessage
         (Ask iid $ ChooseOne
           (additionalActions
-          <> [ TakeResources iid 1 True | Action.Resource `elem` canDos ]
-          <> [ DrawCards iid 1 True | Action.Draw `elem` canDos ]
+          <> [ TakeResources iid 1 True | canAfford a Action.Resource ]
+          <> [ DrawCards iid 1 True | canAfford a Action.Draw ]
           <> [ PlayCard iid (getCardId c) True
              | c <- investigatorHand
-             , Action.Play
-               `elem` canDos
-               || fastIsPlayable a [DuringTurn You] c
+             , canAfford a Action.Play || fastIsPlayable a [DuringTurn You] c
              , isPlayable a [DuringTurn You] c
              ]
-          <> map AdvanceAct advanceableActIds
           <> [ChooseEndTurn iid]
           <> actions
           )

@@ -26,6 +26,9 @@ litaChantler uuid = LitaChantler $ (baseAttrs uuid "01117")
   , assetSanity = Just 3
   }
 
+instance (IsInvestigator investigator) => HasActions investigator LitaChantler where
+  getActions i (LitaChantler x) = getActions i x
+
 instance (AssetRunner env) => RunMessage env LitaChantler where
   runMessage msg a@(LitaChantler attrs@Attrs {..}) = case msg of
     SuccessfulAttackEnemy iid eid -> case assetInvestigator of

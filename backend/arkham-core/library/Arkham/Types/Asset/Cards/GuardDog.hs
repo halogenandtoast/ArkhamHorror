@@ -21,6 +21,9 @@ guardDog uuid = GuardDog $ (baseAttrs uuid "01021")
   , assetSanity = Just 1
   }
 
+instance (IsInvestigator investigator) => HasActions investigator GuardDog where
+  getActions i (GuardDog x) = getActions i x
+
 instance (AssetRunner env) => RunMessage env GuardDog where
   runMessage msg (GuardDog attrs@Attrs {..}) = case msg of
     AssetDamage aid (EnemySource eid) _ _ | aid == assetId -> do

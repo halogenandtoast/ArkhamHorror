@@ -140,6 +140,29 @@ isHealthDamageable = isJust . assetHealth . assetAttrs
 isSanityDamageable :: Asset -> Bool
 isSanityDamageable = isJust . assetSanity . assetAttrs
 
+instance (IsInvestigator investigator) => HasActions investigator Asset where
+  getActions i = \case
+    Rolands38Special' x -> getActions i x
+    DaisysToteBag' x -> getActions i x
+    TheNecronomicon' x -> getActions i x
+    FortyFiveAutomatic' x -> getActions i x
+    PhysicalTraining' x -> getActions i x
+    BeatCop' x -> getActions i x
+    Machete' x -> getActions i x
+    GuardDog' x -> getActions i x
+    MagnifyingGlass' x -> getActions i x
+    OldBookOfLore' x -> getActions i x
+    MedicalTexts' x -> getActions i x
+    ResearchLibrarian' x -> getActions i x
+    DrMilanChristopher' x -> getActions i x
+    HolyRosary' x -> getActions i x
+    Shrivelling' x -> getActions i x
+    Scrying' x -> getActions i x
+    LeatherCoat' x -> getActions i x
+    Knife' x -> getActions i x
+    Flashlight' x -> getActions i x
+    LitaChantler' x -> getActions i x
+
 instance (AssetRunner env) => RunMessage env Asset where
   runMessage msg = \case
     Rolands38Special' x -> Rolands38Special' <$> runMessage msg x

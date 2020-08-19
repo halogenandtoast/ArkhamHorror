@@ -30,7 +30,7 @@ minhThiPhan = MinhThiPhan $ baseAttrs
     }
   [Assistant]
 
-instance (InvestigatorRunner env) => RunMessage env MinhThiPhan where
+instance (InvestigatorRunner Attrs env) => RunMessage env MinhThiPhan where
   runMessage msg i@(MinhThiPhan attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
     _ -> MinhThiPhan <$> runMessage msg attrs

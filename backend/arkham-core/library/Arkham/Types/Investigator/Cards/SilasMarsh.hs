@@ -30,7 +30,7 @@ silasMarsh = SilasMarsh $ baseAttrs
     }
   [Drifter]
 
-instance (InvestigatorRunner env) => RunMessage env SilasMarsh where
+instance (InvestigatorRunner Attrs env) => RunMessage env SilasMarsh where
   runMessage msg i@(SilasMarsh attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
     _ -> SilasMarsh <$> runMessage msg attrs

@@ -102,6 +102,13 @@ defeated Attrs {..} =
   maybe False (assetHealthDamage >=) assetHealth
     || maybe False (assetSanityDamage >=) assetSanity
 
+instance (IsInvestigator investigator) => HasActions investigator Attrs where
+  getActions i Attrs {..} =
+    pure
+      $ [ ActivateCardAbilityAction (getId () i) ability
+        | ability <- assetAbilities
+        ]
+
 instance (AssetRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     ReadyExhausted -> pure $ a & exhausted .~ False

@@ -30,7 +30,7 @@ lolaHayes = LolaHayes $ baseAttrs
     }
   [Performer]
 
-instance (InvestigatorRunner env) => RunMessage env LolaHayes where
+instance (InvestigatorRunner Attrs env) => RunMessage env LolaHayes where
   runMessage msg i@(LolaHayes attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
     _ -> LolaHayes <$> runMessage msg attrs

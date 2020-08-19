@@ -48,7 +48,7 @@ rolandBanks = RolandBanks $ (baseAttrs
     , agility = 2
     }
 
-instance (InvestigatorRunner env) => RunMessage env RolandBanks where
+instance (InvestigatorRunner Attrs env) => RunMessage env RolandBanks where
   runMessage msg rb@(RolandBanks attrs@Attrs {..}) = case msg of
     UseCardAbility _ _ (InvestigatorSource iid) 1 | iid == investigatorId ->
       rb <$ unshiftMessage

@@ -33,6 +33,9 @@ physicalTraining uuid = PhysicalTraining $ (baseAttrs uuid "01017")
     ]
   }
 
+instance (IsInvestigator investigator) => HasActions investigator PhysicalTraining where
+  getActions i (PhysicalTraining x) = getActions i x
+
 instance (AssetRunner env) => RunMessage env PhysicalTraining where
   runMessage msg a@(PhysicalTraining attrs@Attrs {..}) = case msg of
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do

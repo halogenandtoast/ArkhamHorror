@@ -42,7 +42,7 @@
       />
       <img
         class="card"
-        :src="'/img/arkham/cards/' + game.currentData.scenario.contents.id + '.jpg'"
+        :src="scenarioGuide"
       />
       <ChaosBag
         :game="game"
@@ -139,6 +139,20 @@ export default class Scenario extends Vue {
 
   private commitedCards: number[] = []
   private moving = false
+
+  get scenarioGuide() {
+    const { scenario } = this.game.currentData;
+    if (!scenario) {
+      return '';
+    }
+
+    const { id, difficulty } = scenario.contents;
+    const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert'
+      ? 'b'
+      : '';
+
+    return `/img/arkham/cards/${id}${difficultySuffix}.jpg`;
+  }
 
   get locationStyles() {
     const { scenario } = this.game.currentData;

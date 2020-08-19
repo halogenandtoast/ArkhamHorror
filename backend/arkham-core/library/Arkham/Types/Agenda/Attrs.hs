@@ -2,13 +2,13 @@
 module Arkham.Types.Agenda.Attrs where
 
 import Arkham.Json
-import Arkham.Types.Classes
 import Arkham.Types.Ability
+import Arkham.Types.Agenda.Runner
 import Arkham.Types.AgendaId
+import Arkham.Types.Classes
+import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.GameValue
-import Arkham.Types.Agenda.Runner
 import ClassyPrelude
 import Lens.Micro
 
@@ -53,6 +53,9 @@ baseAttrs aid name seq' threshold = Attrs
   , agendaAbilities = mempty
   , agendaFlipped = False
   }
+
+instance HasActions env investigator Attrs where
+  getActions _ _ _ = pure []
 
 instance (AgendaRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of

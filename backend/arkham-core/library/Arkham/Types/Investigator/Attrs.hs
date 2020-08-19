@@ -383,12 +383,9 @@ takeAction action a =
     & (remainingActions %~ max 0 . subtract (actionCost a action))
     & (actionsTaken %~ (<> [action]))
 
-getAvailableAbilities
-  :: (InvestigatorRunner Attrs env, MonadReader env m) => Attrs -> m [Ability]
+getAvailableAbilities :: (MonadReader env m) => Attrs -> m [Ability]
 getAvailableAbilities a@Attrs {..} = do
-  actAndAgendaAbilities <- asks (getList ())
-  pure $ filter canPerformAbility $ mconcat
-    [investigatorAbilities, actAndAgendaAbilities]
+  pure $ filter canPerformAbility investigatorAbilities
  where
   canPerformAbility Ability {..} = case abilityType of
     ActionAbility _ (Just actionType) -> canAfford a actionType
@@ -442,21 +439,20 @@ possibleSkillTypeChoices skillType attrs = foldr
 instance IsInvestigator Attrs where
   locationOf Attrs {..} = investigatorLocation
   resourceCount Attrs {..} = investigatorResources
+  canDo action a@Attrs {..} = canAfford a action
   clueCount Attrs {..} = investigatorClues
   cardCount Attrs {..} = length investigatorHand
   canInvestigate location a@Attrs {..} =
-    canAfford a Action.Investigate && getId () location == investigatorLocation
+    canDo Action.Investigate a && getId () location == investigatorLocation
   canMoveTo location a@Attrs {..} =
-    canAfford a Action.Move
+    canDo Action.Move a
       && getId () location
       `elem` investigatorConnectedLocations
   canEvade enemy a@Attrs {..} =
-    canAfford a Action.Evade && getId () enemy `elem` investigatorEngagedEnemies
-  canFight _ a@Attrs {..} = canAfford a Action.Fight
+    canDo Action.Evade a && getId () enemy `elem` investigatorEngagedEnemies
+  canFight _ a@Attrs {..} = canDo Action.Fight a
   canEngage enemy a@Attrs {..} =
-    canAfford a Action.Engage
-      && getId () enemy
-      `notElem` investigatorEngagedEnemies
+    canDo Action.Engage a && getId () enemy `notElem` investigatorEngagedEnemies
 
 instance HasId InvestigatorId () Attrs where
   getId _ Attrs {..} = investigatorId

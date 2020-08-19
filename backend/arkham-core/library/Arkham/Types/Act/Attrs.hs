@@ -1,7 +1,6 @@
 module Arkham.Types.Act.Attrs where
 
 import Arkham.Json
-import Arkham.Types.Ability
 import Arkham.Types.ActId
 import Arkham.Types.Classes
 import Arkham.Types.Message
@@ -14,7 +13,6 @@ data Attrs = Attrs
   , actName       :: Text
   , actSequence   :: Text
   , actFlipped :: Bool
-  , actAbilities :: [Ability]
   }
   deriving stock (Show, Generic)
 
@@ -40,7 +38,6 @@ baseAttrs aid name seq' = Attrs
   , actId = aid
   , actName = name
   , actSequence = seq'
-  , actAbilities = mempty
   , actFlipped = False
   }
 

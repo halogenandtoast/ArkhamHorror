@@ -427,9 +427,7 @@ instance HasList Enemy () Game where
   getList _ = HashMap.elems . view enemies
 
 instance HasList Ability () Game where
-  getList _ g =
-    (g ^. acts . traverse . to getAbilities)
-      <> (g ^. agendas . traverse . to getAbilities)
+  getList _ g = g ^. agendas . traverse . to getAbilities
 
 instance HasSet Trait AssetId Game where
   getSet aid = getTraits . getAsset aid
@@ -741,6 +739,10 @@ instance (IsInvestigator investigator) => HasActions Game investigator (ActionTy
     concat <$> traverse (getActions i window) (HashMap.elems $ view assets g)
   getActions i window (TreacheryActionType, g) = concat
     <$> traverse (getActions i window) (HashMap.elems $ view treacheries g)
+  getActions i window (ActActionType, g) =
+    concat <$> traverse (getActions i window) (HashMap.elems $ view acts g)
+  getActions i window (AgendaActionType, g) =
+    concat <$> traverse (getActions i window) (HashMap.elems $ view agendas g)
 
 instance (IsInvestigator investigator) => HasActions Game investigator (ActionType, Trait, Game) where
   getActions i window (EnemyActionType, trait, g) = concat <$> traverse
@@ -755,6 +757,8 @@ instance (IsInvestigator investigator) => HasActions Game investigator (ActionTy
   getActions i window (TreacheryActionType, trait, g) = concat <$> traverse
     (getActions i window)
     (filter ((trait `elem`) . getTraits) $ HashMap.elems $ view treacheries g)
+  getActions _ _ (ActActionType, _, _) = pure [] -- acts do not have traits
+  getActions _ _ (AgendaActionType, _, _) = pure [] -- agendas do not have traits
 
 instance
   (HasActions env investigator (ActionType, Game))
@@ -764,13 +768,15 @@ instance
     enemyActions <- getActions i window (EnemyActionType, g)
     assetActions <- getActions i window (AssetActionType, g)
     treacheryActions <- getActions i window (TreacheryActionType, g)
-    actActions <- traverse (getActions i window) (HashMap.elems $ view acts g)
+    actActions <- getActions i window (ActActionType, g)
+    agendaActions <- getActions i window (AgendaActionType, g)
     pure
       $ enemyActions
       <> locationActions
       <> assetActions
       <> treacheryActions
-      <> concat actActions
+      <> actActions
+      <> agendaActions
 
 runGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m) => Message -> Game -> m Game

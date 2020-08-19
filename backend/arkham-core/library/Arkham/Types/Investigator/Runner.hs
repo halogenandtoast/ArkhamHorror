@@ -30,7 +30,6 @@ type InvestigatorRunner investigator env
     , HasSet TreacheryId LocationId env
     , HasSet AloofEnemyId LocationId env
     , HasSet AssetId LocationId env
-    , HasList Ability () env
     , HasList UsedAbility () env
     , HasSet Trait AssetId env
     , HasId LocationId InvestigatorId env

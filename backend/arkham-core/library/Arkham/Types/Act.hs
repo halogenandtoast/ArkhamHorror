@@ -33,9 +33,6 @@ allActs = HashMap.fromList $ map
   , UncoveringTheConspiracy' uncoveringTheConspiracy
   ]
 
-instance HasAbilities Act where
-  getAbilities = actAbilities . actAttrs
-
 instance IsAdvanceable Act where
   isAdvanceable = actCanAdvance . actAttrs
 

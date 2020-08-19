@@ -7,6 +7,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
+import Arkham.Types.FastWindow
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -16,15 +17,20 @@ newtype PredatorOrPrey = PredatorOrPrey Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 predatorOrPrey :: PredatorOrPrey
-predatorOrPrey = PredatorOrPrey $ (baseAttrs
-                                    "01121"
-                                    "Predator or Prey?"
-                                    "Agenda 1a"
-                                    (Static 6)
-                                  )
-  { agendaAbilities =
-    [mkAbility (AgendaSource "01121") 1 (ActionAbility 1 (Just Action.Resign))]
-  }
+predatorOrPrey =
+  PredatorOrPrey $ baseAttrs "01121" "Predator or Prey?" "Agenda 1a" (Static 6)
+
+instance (ActionRunner env investigator) => HasActions env investigator PredatorOrPrey where
+  getActions i (DuringTurn You) (PredatorOrPrey _) = pure
+    [ ActivateCardAbilityAction
+        (getId () i)
+        (mkAbility
+          (AgendaSource "01121")
+          1
+          (ActionAbility 1 (Just Action.Resign))
+        )
+    ]
+  getActions _ _ _ = pure []
 
 instance (AgendaRunner env) => RunMessage env PredatorOrPrey where
   runMessage msg a@(PredatorOrPrey attrs@Attrs {..}) = case msg of

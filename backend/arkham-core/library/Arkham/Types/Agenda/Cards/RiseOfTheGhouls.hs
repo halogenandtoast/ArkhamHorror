@@ -21,6 +21,9 @@ riseOfTheGhouls :: RiseOfTheGhouls
 riseOfTheGhouls = RiseOfTheGhouls
   $ baseAttrs "01106" "Rise of the Ghouls" "Agenda 2a" (Static 7)
 
+instance HasActions env investigator RiseOfTheGhouls where
+  getActions i window (RiseOfTheGhouls x) = getActions i window x
+
 instance (AgendaRunner env) => RunMessage env RiseOfTheGhouls where
   runMessage msg a@(RiseOfTheGhouls attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do

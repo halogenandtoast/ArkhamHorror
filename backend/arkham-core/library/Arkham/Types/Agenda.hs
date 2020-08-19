@@ -53,6 +53,14 @@ agendaAttrs = \case
   PredatorOrPrey' attrs -> coerce attrs
   TimeIsRunningShort' attrs -> coerce attrs
 
+instance (ActionRunner env investigator) => HasActions env investigator Agenda where
+  getActions i window = \case
+    WhatsGoingOn' x -> getActions i window x
+    RiseOfTheGhouls' x -> getActions i window x
+    TheyreGettingOut' x -> getActions i window x
+    PredatorOrPrey' x -> getActions i window x
+    TimeIsRunningShort' x -> getActions i window x
+
 instance (AgendaRunner env) => RunMessage env Agenda where
   runMessage msg = \case
     WhatsGoingOn' x -> WhatsGoingOn' <$> runMessage msg x

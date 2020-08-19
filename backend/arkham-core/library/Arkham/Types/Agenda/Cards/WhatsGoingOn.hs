@@ -19,6 +19,9 @@ whatsGoingOn :: WhatsGoingOn
 whatsGoingOn =
   WhatsGoingOn $ baseAttrs "01105" "What's Going On?!" "Agenda 1a" (Static 3)
 
+instance HasActions env investigator WhatsGoingOn where
+  getActions i window (WhatsGoingOn x) = getActions i window x
+
 instance (AgendaRunner env) => RunMessage env WhatsGoingOn where
   runMessage msg (WhatsGoingOn attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1a" -> do

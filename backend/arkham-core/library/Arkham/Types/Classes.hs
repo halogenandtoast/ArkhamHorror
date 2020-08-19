@@ -8,6 +8,7 @@ module Arkham.Types.Classes
 where
 
 import Arkham.Types.Ability
+import Arkham.Types.Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes.HasRecord
@@ -130,3 +131,4 @@ class (HasId InvestigatorId () investigator) => IsInvestigator investigator wher
   resourceCount :: investigator -> Int
   clueCount :: investigator -> Int
   cardCount :: investigator -> Int
+  canDo :: Action -> investigator -> Bool

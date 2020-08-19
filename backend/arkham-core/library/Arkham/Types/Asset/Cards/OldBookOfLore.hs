@@ -7,6 +7,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
+import Arkham.Types.FastWindow
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Slot
@@ -20,13 +21,17 @@ newtype OldBookOfLore = OldBookOfLore Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 oldBookOfLore :: AssetId -> OldBookOfLore
-oldBookOfLore uuid = OldBookOfLore $ (baseAttrs uuid "01031")
-  { assetSlots = [HandSlot]
-  , assetAbilities = [mkAbility (AssetSource uuid) 1 (ActionAbility 1 Nothing)]
-  }
+oldBookOfLore uuid =
+  OldBookOfLore $ (baseAttrs uuid "01031") { assetSlots = [HandSlot] }
 
 instance (IsInvestigator investigator) => HasActions env investigator OldBookOfLore where
-  getActions i window (OldBookOfLore x) = getActions i window x
+  getActions i (DuringTurn You) (OldBookOfLore Attrs {..}) = pure
+    [ ActivateCardAbilityAction
+        (getId () i)
+        (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
+    | not assetExhausted
+    ]
+  getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env OldBookOfLore where
   runMessage msg (OldBookOfLore attrs@Attrs {..}) = case msg of

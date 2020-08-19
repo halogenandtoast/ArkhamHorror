@@ -2,12 +2,10 @@
 module Arkham.Types.Asset.Cards.BeatCop where
 
 import Arkham.Json
-import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
-import qualified Arkham.Types.FastWindow as Fast
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -26,11 +24,17 @@ beatCop uuid = BeatCop $ (baseAttrs uuid "01018")
   { assetSlots = [AllySlot]
   , assetHealth = Just 2
   , assetSanity = Just 2
-  , assetAbilities = [mkAbility (AssetSource uuid) 1 (FastAbility Fast.Any)]
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator BeatCop where
-  getActions i window (BeatCop x) = getActions i window x
+  getActions i _ (BeatCop Attrs {..}) =
+    pure
+      [ UseCardAbility
+          (getId () i)
+          (AssetSource assetId)
+          (AssetSource assetId)
+          1
+      ]
 
 instance (AssetRunner env) => RunMessage env BeatCop where
   runMessage msg a@(BeatCop attrs@Attrs {..}) = case msg of

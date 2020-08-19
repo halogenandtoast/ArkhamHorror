@@ -5,6 +5,7 @@ import Arkham.Json
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
@@ -19,16 +20,30 @@ newtype Knife = Knife Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 knife :: AssetId -> Knife
-knife uuid = Knife $ (baseAttrs uuid "01086")
-  { assetSlots = [HandSlot]
-  , assetAbilities =
-    [ mkAbility (AssetSource uuid) 1 (ActionAbility 1 (Just Action.Fight))
-    , mkAbility (AssetSource uuid) 2 (ActionAbility 1 (Just Action.Fight))
-    ]
-  }
+knife uuid = Knife $ (baseAttrs uuid "01086") { assetSlots = [HandSlot] }
 
-instance (IsInvestigator investigator) => HasActions env investigator Knife where
-  getActions i window (Knife x) = getActions i window x
+instance (ActionRunner env investigator) => HasActions env investigator Knife where
+  getActions i window (Knife Attrs {..}) = do
+    fightAvailable <- hasFightActions i window
+    pure
+      $ [ ActivateCardAbilityAction
+            (getId () i)
+            (mkAbility
+              (AssetSource assetId)
+              1
+              (ActionAbility 1 (Just Action.Fight))
+            )
+        | fightAvailable
+        ]
+      <> [ ActivateCardAbilityAction
+             (getId () i)
+             (mkAbility
+               (AssetSource assetId)
+               1
+               (ActionAbility 2 (Just Action.Fight))
+             )
+         | fightAvailable
+         ]
 
 instance (AssetRunner env) => RunMessage env Knife where
   runMessage msg a@(Knife attrs@Attrs {..}) = case msg of

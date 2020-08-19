@@ -7,6 +7,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
+import Arkham.Types.FastWindow
 import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -33,16 +34,18 @@ newtype TheNecronomicon = TheNecronomicon (Attrs `With` TheNecronomiconMetadata)
 theNecronomicon :: AssetId -> TheNecronomicon
 theNecronomicon uuid =
   TheNecronomicon
-    $ ((baseAttrs uuid "01009")
-        { assetSlots = [HandSlot]
-        , assetAbilities =
-          [mkAbility (AssetSource uuid) 1 (ActionAbility 1 Nothing)]
-        }
-      )
+    $ ((baseAttrs uuid "01009") { assetSlots = [HandSlot] })
     `with` TheNecronomiconMetadata 3
 
 instance (IsInvestigator investigator) => HasActions env investigator TheNecronomicon where
-  getActions i window (TheNecronomicon (x `With` _)) = getActions i window x
+  getActions i (DuringTurn You) (TheNecronomicon (Attrs {..} `With` TheNecronomiconMetadata {..}))
+    = pure
+      [ ActivateCardAbilityAction
+          (getId () i)
+          (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
+      | theNecronomiconHorror > 0
+      ]
+  getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env TheNecronomicon where
   runMessage msg a@(TheNecronomicon (attrs@Attrs {..} `With` metadata@TheNecronomiconMetadata {..}))

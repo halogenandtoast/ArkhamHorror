@@ -7,6 +7,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
+import Arkham.Types.FastWindow
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.SkillType
@@ -20,13 +21,16 @@ newtype MedicalTexts = MedicalTexts Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 medicalTexts :: AssetId -> MedicalTexts
-medicalTexts uuid = MedicalTexts $ (baseAttrs uuid "01035")
-  { assetSlots = [HandSlot]
-  , assetAbilities = [mkAbility (AssetSource uuid) 1 (ActionAbility 1 Nothing)]
-  }
+medicalTexts uuid =
+  MedicalTexts $ (baseAttrs uuid "01035") { assetSlots = [HandSlot] }
 
 instance (IsInvestigator investigator) => HasActions env investigator MedicalTexts where
-  getActions i window (MedicalTexts x) = getActions i window x
+  getActions i (DuringTurn You) (MedicalTexts Attrs {..}) = pure
+    [ ActivateCardAbilityAction
+        (getId () i)
+        (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
+    ]
+  getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env MedicalTexts where
   runMessage msg (MedicalTexts attrs@Attrs {..}) = case msg of

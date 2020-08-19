@@ -121,3 +121,4 @@ class (HasId InvestigatorId () investigator) => IsInvestigator investigator wher
   canFight :: (IsEnemy enemy) => enemy -> investigator -> Bool
   canEngage :: (IsEnemy enemy) => enemy -> investigator -> Bool
   canEvade :: (IsEnemy enemy) => enemy -> investigator -> Bool
+  resourceCount :: investigator -> Int

@@ -125,13 +125,19 @@ instance HasId LocationId () Attrs where
 instance IsLocation Attrs where
   isBlocked Attrs {..} = locationBlocked
 
+investigateAllowed :: Attrs -> Bool
+investigateAllowed Attrs {..} = not (any isCannotInvestigate locationModifiers)
+ where
+  isCannotInvestigate CannotInvestigate{} = True
+  isCannotInvestigate _ = False
+
 instance (IsInvestigator investigator) => HasActions env investigator Attrs where
   getActions i NonFast location@Attrs {..} =
     pure $ moveActions <> investigateActions
    where
     investigateActions =
       [ Investigate (getId () i) locationId SkillIntellect mempty True
-      | canInvestigate location i
+      | canInvestigate location i && investigateAllowed location
       ]
     moveActions =
       [ MoveAction (getId () i) locationId True

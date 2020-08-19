@@ -23,7 +23,7 @@ newtype Machete = Machete Attrs
 machete :: AssetId -> Machete
 machete uuid = Machete $ (baseAttrs uuid "01020") { assetSlots = [HandSlot] }
 
-instance (AssetRunner env, IsInvestigator investigator) => HasActions env investigator Machete where
+instance (ActionRunner env investigator) => HasActions env investigator Machete where
   getActions i window (Machete Attrs {..}) = do
     fightAvailable <- hasFightActions i window
     pure

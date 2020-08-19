@@ -3,8 +3,8 @@ module Arkham.Types.Act.Attrs where
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.ActId
-import Arkham.Types.Message
 import Arkham.Types.Classes
+import Arkham.Types.Message
 import ClassyPrelude
 import Lens.Micro
 
@@ -45,7 +45,7 @@ baseAttrs aid name seq' = Attrs
   }
 
 instance HasActions env investigator Attrs where
-  getActions _ Attrs {..} = pure [AdvanceAct actId | actCanAdvance]
+  getActions _ _ Attrs {..} = pure [ AdvanceAct actId | actCanAdvance ]
 
 instance (HasQueue env) => RunMessage env Attrs where
   runMessage _msg a@Attrs {..} = pure a

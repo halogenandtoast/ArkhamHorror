@@ -1,3 +1,4 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset
   ( lookupAsset
@@ -140,7 +141,7 @@ isHealthDamageable = isJust . assetHealth . assetAttrs
 isSanityDamageable :: Asset -> Bool
 isSanityDamageable = isJust . assetSanity . assetAttrs
 
-instance (AssetRunner env, IsInvestigator investigator) => HasActions env investigator Asset where
+instance (ActionRunner env investigator) => HasActions env investigator Asset where
   getActions i window = \case
     Rolands38Special' x -> getActions i window x
     DaisysToteBag' x -> getActions i window x

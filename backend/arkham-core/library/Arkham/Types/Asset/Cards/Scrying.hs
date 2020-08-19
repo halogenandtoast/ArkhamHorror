@@ -25,7 +25,7 @@ newtype Scrying = Scrying Attrs
 scrying :: AssetId -> Scrying
 scrying uuid = Scrying $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
 
-instance (IsInvestigator investigator) => HasActions env investigator Scrying where
+instance HasActions env investigator Scrying where
   getActions i window (Scrying x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env Scrying where

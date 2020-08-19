@@ -1,3 +1,4 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Attrs where
 
@@ -102,12 +103,8 @@ defeated Attrs {..} =
   maybe False (assetHealthDamage >=) assetHealth
     || maybe False (assetSanityDamage >=) assetSanity
 
-instance (IsInvestigator investigator) => HasActions env investigator Attrs where
-  getActions i window Attrs {..} =
-    pure
-      $ [ ActivateCardAbilityAction (getId () i) ability
-        | ability <- assetAbilities
-        ]
+instance HasActions env investigator Attrs where
+  getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of

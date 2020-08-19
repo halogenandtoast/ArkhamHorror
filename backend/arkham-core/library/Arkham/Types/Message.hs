@@ -5,6 +5,7 @@ module Arkham.Types.Message
   , LeftoverCardStrategy(..)
   , ChoosePlayerChoice(..)
   , MessageType(..)
+  , ActionType(..)
   , messageType
   )
 where
@@ -53,6 +54,8 @@ data EncounterCardSource = FromDiscard | FromEncounterDeck
 data LeftoverCardStrategy = ShuffleBackIn | PutBackInAnyOrder
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+data ActionType = EnemyActionType
 
 data Message
   = Setup

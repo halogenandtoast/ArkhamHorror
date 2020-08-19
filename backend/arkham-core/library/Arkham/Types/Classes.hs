@@ -108,7 +108,7 @@ class HasVictoryPoints a where
 type ActionRunner env investigator
   = ( IsInvestigator investigator
     , HasActions env investigator (ActionType, env)
-    , HasId StoryAssetId CardCode env
+    , HasId (Maybe StoryAssetId) CardCode env
     , HasId (Maybe OwnerId) AssetId env
     )
 

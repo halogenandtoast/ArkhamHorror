@@ -11,7 +11,7 @@ import ClassyPrelude
 type LocationRunner env
   = ( HasCount PlayerCount () env
     , HasQueue env
-    , HasId StoryAssetId CardCode env
+    , HasId (Maybe StoryAssetId) CardCode env
     , HasInvestigatorStats Stats InvestigatorId env
     , HasId (Maybe OwnerId) AssetId env
     )

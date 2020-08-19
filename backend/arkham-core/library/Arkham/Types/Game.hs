@@ -344,11 +344,9 @@ instance HasId LeadInvestigatorId () Game where
 instance HasId (Maybe OwnerId) AssetId Game where
   getId aid = getId () . getAsset aid
 
-instance HasId StoryAssetId CardCode Game where
+instance HasId (Maybe StoryAssetId) CardCode Game where
   getId cardCode =
-    StoryAssetId
-      . fst
-      . fromJustNote "Asset not in game"
+    (StoryAssetId . fst <$>)
       . find ((cardCode ==) . getCardCode . snd)
       . HashMap.toList
       . view assets

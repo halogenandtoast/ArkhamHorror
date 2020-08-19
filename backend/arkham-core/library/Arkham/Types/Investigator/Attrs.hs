@@ -388,9 +388,6 @@ getAvailableAbilities
 getAvailableAbilities a@Attrs {..} = do
   treacheryAbilities <- mconcat
     <$> traverse (asks . getList) (HashSet.toList investigatorTreacheries)
-  locationEnemyIds <- asks (getSet @EnemyId investigatorLocation)
-  locationEnemyAbilities <- mconcat
-    <$> traverse (asks . getList) (HashSet.toList locationEnemyIds)
   locationTreacheries <- asks (getSet @TreacheryId investigatorLocation)
   locationTreacheryAbilities <- mconcat
     <$> traverse (asks . getList) (HashSet.toList locationTreacheries)
@@ -398,7 +395,6 @@ getAvailableAbilities a@Attrs {..} = do
   pure $ filter canPerformAbility $ mconcat
     [ investigatorAbilities
     , treacheryAbilities
-    , locationEnemyAbilities
     , locationTreacheryAbilities
     , actAndAgendaAbilities
     ]
@@ -455,6 +451,8 @@ possibleSkillTypeChoices skillType attrs = foldr
 instance IsInvestigator Attrs where
   locationOf Attrs {..} = investigatorLocation
   resourceCount Attrs {..} = investigatorResources
+  clueCount Attrs {..} = investigatorClues
+  cardCount Attrs {..} = length investigatorHand
   canInvestigate location a@Attrs {..} =
     canAfford a Action.Investigate && getId () location == investigatorLocation
   canMoveTo location a@Attrs {..} =

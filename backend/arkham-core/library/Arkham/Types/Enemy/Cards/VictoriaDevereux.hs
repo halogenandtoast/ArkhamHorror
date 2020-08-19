@@ -24,15 +24,18 @@ victoriaDevereux uuid = VictoriaDevereux $ (baseAttrs uuid "01140")
   , enemyHealth = Static 3
   , enemyEvade = 2
   , enemyVictory = Just 1
-  , enemyAbilities =
-    [ (mkAbility (EnemySource uuid) 1 (ActionAbility 1 (Just Parley)))
-        { abilityCost = Just $ ResourceCost 5
-        }
-    ]
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator VictoriaDevereux where
-  getActions i window (VictoriaDevereux attrs) = getActions i window attrs
+  getActions i window (VictoriaDevereux attrs@Attrs {..}) = do
+    baseActions <- getActions i window attrs
+    pure
+      $ baseActions
+      <> [ ActivateCardAbilityAction
+             (getId () i)
+             (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 (Just Parley)))
+         | resourceCount i >= 5 && locationOf i == enemyLocation
+         ]
 
 instance (EnemyRunner env) => RunMessage env VictoriaDevereux where
   runMessage msg e@(VictoriaDevereux attrs@Attrs {..}) = case msg of

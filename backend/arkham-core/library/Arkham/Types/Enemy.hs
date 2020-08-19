@@ -79,9 +79,6 @@ instance HasId LocationId () Enemy where
 instance HasCardCode Enemy where
   getCardCode = enemyCardCode . enemyAttrs
 
-instance HasAbilities Enemy where
-  getAbilities = enemyAbilities . enemyAttrs
-
 instance HasTraits Enemy where
   getTraits = enemyTraits . enemyAttrs
 

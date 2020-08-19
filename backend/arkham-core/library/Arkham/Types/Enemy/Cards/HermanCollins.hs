@@ -25,15 +25,18 @@ hermanCollins uuid = HermanCollins $ (baseAttrs uuid "01138")
   , enemyHealth = Static 4
   , enemyEvade = 4
   , enemyVictory = Just 1
-  , enemyAbilities =
-    [ (mkAbility (EnemySource uuid) 1 (ActionAbility 1 (Just Parley)))
-        { abilityCost = Just $ CardCost 4
-        }
-    ]
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator HermanCollins where
-  getActions i window (HermanCollins attrs) = getActions i window attrs
+  getActions i window (HermanCollins attrs@Attrs {..}) = do
+    baseActions <- getActions i window attrs
+    pure
+      $ baseActions
+      <> [ ActivateCardAbilityAction
+             (getId () i)
+             (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 (Just Parley)))
+         | cardCount i >= 4 && locationOf i == enemyLocation
+         ]
 
 instance (EnemyRunner env) => RunMessage env HermanCollins where
   runMessage msg e@(HermanCollins attrs@Attrs {..}) = case msg of

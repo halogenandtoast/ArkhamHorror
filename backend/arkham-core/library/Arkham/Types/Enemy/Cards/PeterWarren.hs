@@ -24,15 +24,18 @@ peterWarren uuid = PeterWarren $ (baseAttrs uuid "01139")
   , enemyHealth = Static 3
   , enemyEvade = 3
   , enemyVictory = Just 1
-  , enemyAbilities =
-    [ (mkAbility (EnemySource uuid) 1 (ActionAbility 1 (Just Parley)))
-        { abilityCost = Just $ ClueCost 2
-        }
-    ]
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator PeterWarren where
-  getActions i window (PeterWarren attrs) = getActions i window attrs
+  getActions i window (PeterWarren attrs@Attrs {..}) = do
+    baseActions <- getActions i window attrs
+    pure
+      $ baseActions
+      <> [ ActivateCardAbilityAction
+             (getId () i)
+             (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 (Just Parley)))
+         | clueCount i >= 2 && locationOf i == enemyLocation
+         ]
 
 instance (EnemyRunner env) => RunMessage env PeterWarren where
   runMessage msg e@(PeterWarren attrs@Attrs {..}) = case msg of

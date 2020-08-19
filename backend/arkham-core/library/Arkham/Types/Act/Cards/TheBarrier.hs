@@ -44,12 +44,12 @@ instance (ActRunner env) => RunMessage env TheBarrier where
     EndRoundWindow -> do
       investigatorIds <- asks (getSet @InvestigatorId (LocationId "01112"))
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
-      clueCount <- unClueCount . mconcat <$> traverse
+      totalClueCount <- unClueCount . mconcat <$> traverse
         (asks . getCount @ClueCount)
         (HashSet.toList investigatorIds)
       playerCount <- unPlayerCount <$> asks (getCount ())
       let requiredClueCount = fromGameValue (PerPlayer 3) playerCount
-      if clueCount >= requiredClueCount
+      if totalClueCount >= requiredClueCount
         then a <$ unshiftMessage
           (Ask leadInvestigatorId $ ChooseOne
             [AdvanceAct actId, Continue "Continue without advancing act"]

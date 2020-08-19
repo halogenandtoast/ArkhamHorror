@@ -434,9 +434,6 @@ instance HasList Ability () Game where
 instance HasList Ability TreacheryId Game where
   getList tid = getAbilities . getTreachery tid
 
-instance HasList Ability EnemyId Game where
-  getList eid = getAbilities . getEnemy eid
-
 instance HasSet Trait AssetId Game where
   getSet aid = getTraits . getAsset aid
 

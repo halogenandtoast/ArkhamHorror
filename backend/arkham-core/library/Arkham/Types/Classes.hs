@@ -128,3 +128,5 @@ class (HasId InvestigatorId () investigator) => IsInvestigator investigator wher
   canEngage :: (IsEnemy enemy) => enemy -> investigator -> Bool
   canEvade :: (IsEnemy enemy) => enemy -> investigator -> Bool
   resourceCount :: investigator -> Int
+  clueCount :: investigator -> Int
+  cardCount :: investigator -> Int

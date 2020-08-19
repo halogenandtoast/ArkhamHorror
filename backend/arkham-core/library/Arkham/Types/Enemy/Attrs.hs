@@ -2,7 +2,6 @@
 module Arkham.Types.Enemy.Attrs where
 
 import Arkham.Json
-import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
@@ -45,7 +44,6 @@ data Attrs = Attrs
   , enemyKeywords :: HashSet Keyword
   , enemyPrey :: Prey
   , enemyModifiers :: [Modifier]
-  , enemyAbilities :: [Ability]
   , enemyExhausted :: Bool
   , enemyDoom :: Int
   }
@@ -109,7 +107,6 @@ baseAttrs eid cardCode =
       , enemyKeywords = HashSet.fromList ecKeywords
       , enemyPrey = AnyPrey
       , enemyModifiers = mempty
-      , enemyAbilities = mempty
       , enemyExhausted = False
       , enemyDoom = 0
       }
@@ -140,7 +137,6 @@ weaknessBaseAttrs eid cardCode =
       , enemyKeywords = HashSet.fromList pcKeywords
       , enemyPrey = AnyPrey
       , enemyModifiers = mempty
-      , enemyAbilities = mempty
       , enemyExhausted = False
       , enemyDoom = 0
       }
@@ -200,19 +196,10 @@ instance IsEnemy Attrs where
 
 instance (IsInvestigator investigator) => HasActions env investigator Attrs where
   getActions i _ enemy@Attrs {..} =
-    pure
-      $ fightEnemyActions
-      <> engageEnemyActions
-      <> evadeEnemyActions
-      <> abilityActions
+    pure $ fightEnemyActions <> engageEnemyActions <> evadeEnemyActions
    where
     investigatorId = getId () i
     locationId = locationOf i
-    abilityActions =
-      [ ActivateCardAbilityAction investigatorId ability
-      | locationId == enemyLocation
-      , ability <- enemyAbilities
-      ]
     fightEnemyActions =
       [ FightEnemy investigatorId enemyId SkillCombat [] mempty True
       | enemyLocation == locationId && canFight enemy i

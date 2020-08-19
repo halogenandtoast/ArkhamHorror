@@ -25,7 +25,7 @@ drMilanChristopher uuid = DrMilanChristopher $ (baseAttrs uuid "01033")
   , assetSanity = Just 2
   }
 
-instance (IsInvestigator investigator) => HasActions env investigator DrMilanChristopher where
+instance HasActions env investigator DrMilanChristopher where
   getActions i window (DrMilanChristopher x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env DrMilanChristopher where

@@ -200,7 +200,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
     PlaceClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & clues +~ n
     RevealLocation lid | lid == locationId -> do
-      clueCount <- fromGameValue locationRevealClues . unPlayerCount <$> asks
-        (getCount ())
-      pure $ a & clues .~ clueCount & revealed .~ True
+      locationClueCount <-
+        fromGameValue locationRevealClues . unPlayerCount <$> asks (getCount ())
+      pure $ a & clues .~ locationClueCount & revealed .~ True
     _ -> pure a

@@ -52,8 +52,8 @@ instance (AssetRunner env) => RunMessage env Rolands38Special where
       case assetUses of
         Uses Resource.Ammo n -> do
           locationId <- asks (getId @LocationId iid)
-          clueCount <- unClueCount <$> asks (getCount locationId)
-          let skillModifier = if clueCount == 0 then 1 else 3
+          locationClueCount <- unClueCount <$> asks (getCount locationId)
+          let skillModifier = if locationClueCount == 0 then 1 else 3
           unshiftMessage
             (ChooseFightEnemy
               iid

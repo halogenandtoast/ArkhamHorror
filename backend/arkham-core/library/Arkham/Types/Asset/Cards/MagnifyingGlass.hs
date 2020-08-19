@@ -22,7 +22,7 @@ magnifyingGlass :: AssetId -> MagnifyingGlass
 magnifyingGlass uuid =
   MagnifyingGlass $ (baseAttrs uuid "01030") { assetSlots = [HandSlot] }
 
-instance (IsInvestigator investigator) => HasActions env investigator MagnifyingGlass where
+instance HasActions env investigator MagnifyingGlass where
   getActions i window (MagnifyingGlass x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env MagnifyingGlass where

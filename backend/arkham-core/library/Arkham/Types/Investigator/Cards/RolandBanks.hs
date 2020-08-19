@@ -54,6 +54,6 @@ instance (InvestigatorRunner Attrs env) => RunMessage env RolandBanks where
       rb <$ unshiftMessage
         (DiscoverCluesAtLocation investigatorId investigatorLocation 1)
     ResolveToken ElderSign iid skillValue | iid == investigatorId -> do
-      clueCount <- unClueCount <$> asks (getCount investigatorLocation)
-      rb <$ runTest skillValue clueCount
+      locationClueCount <- unClueCount <$> asks (getCount investigatorLocation)
+      rb <$ runTest skillValue locationClueCount
     _ -> RolandBanks <$> runMessage msg attrs

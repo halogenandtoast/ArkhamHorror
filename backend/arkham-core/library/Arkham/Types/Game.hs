@@ -95,7 +95,7 @@ data Game = Game
   , giAgendas :: HashMap AgendaId Agenda
   , giTreacheries :: HashMap TreacheryId Treachery
   , giGameOver :: Bool
-  , giUsedAbilities :: [Ability]
+  , giUsedAbilities :: [(InvestigatorId, Ability)]
   , giFocusedCards :: [Card]
   , giActiveCard :: Maybe Card
   , giVictory :: [Card]
@@ -169,7 +169,7 @@ encounterDeck =
 discard :: Lens' Game [EncounterCard]
 discard = lens giDiscard $ \m x -> m { giDiscard = x }
 
-usedAbilities :: Lens' Game [Ability]
+usedAbilities :: Lens' Game [(InvestigatorId, Ability)]
 usedAbilities = lens giUsedAbilities $ \m x -> m { giUsedAbilities = x }
 
 chaosBag :: Lens' Game [Token]
@@ -415,11 +415,11 @@ instance HasCount EnemyCount (InvestigatorLocation, [Trait]) Game where
 instance HasInvestigatorStats Stats InvestigatorId Game where
   getStats iid = getStats () . getInvestigator iid
 
-instance HasList UsedAbility () Game where
-  getList _ = map UsedAbility . view usedAbilities
-
 instance HasList Location () Game where
   getList _ = HashMap.elems . view locations
+
+instance HasList UsedAbility () Game where
+  getList _ = map UsedAbility . view usedAbilities
 
 instance HasList Enemy () Game where
   getList _ = HashMap.elems . view enemies
@@ -947,6 +947,8 @@ runGameMessage msg g = case msg of
           pure g
         _ -> pure g
       EncounterCard _ -> pure g
+  ActivateCardAbilityAction iid ability ->
+    pure $ g & usedAbilities %~ ((iid, ability) :)
   DrewRevelation iid cardCode cardId ->
     g <$ allPlayerRevelations cardCode iid cardId
   DrewPlayerEnemy iid cardCode cardId -> do
@@ -1108,6 +1110,8 @@ runGameMessage msg g = case msg of
       | iid <- investigatorIds
       ]
     pure g
+  ChooseEndTurn iid -> pure $ g & usedAbilities %~ filter
+    (\(iid', Ability {..}) -> iid' /= iid && abilityLimit /= OncePerTurn)
   EndInvestigation -> g <$ pushMessage BeginEnemy
   BeginEnemy -> do
     pushMessages [HuntersMove, EnemiesAttack, EndEnemy]
@@ -1121,7 +1125,7 @@ runGameMessage msg g = case msg of
   EndRound -> do
     pushMessage BeginRound
     pure $ g & usedAbilities %~ filter
-      (\Ability {..} -> abilityLimit == OncePerGame)
+      (\(_, Ability {..}) -> abilityLimit /= OncePerRound)
   BeginRound -> g <$ pushMessage BeginMythos
   BeginMythos -> do
     pushMessages

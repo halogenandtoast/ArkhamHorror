@@ -47,7 +47,7 @@ data GameJson = GameJson
   , gTreacheries :: HashMap TreacheryId Treachery
   , gActs :: HashMap ActId Act
   , gGameOver :: Bool
-  , gUsedAbilities :: [Ability]
+  , gUsedAbilities :: [(InvestigatorId, Ability)]
   , gQuestion :: HashMap InvestigatorId Question
   , gFocusedCards :: [Card]
   , gActiveCard :: Maybe Card

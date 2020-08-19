@@ -3,6 +3,7 @@ module Arkham.Types.Ability where
 import Arkham.Json
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.FastWindow
+import Arkham.Types.InvestigatorId
 import Arkham.Types.Source
 import ClassyPrelude
 
@@ -10,7 +11,7 @@ data AbilityType = FastAbility FastWindow | ReactionAbility FastWindow | ActionA
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
-data AbilityLimit = NoLimit | OncePerRound | OncePerGame
+data AbilityLimit = NoLimit | OncePerRound | OncePerGame | OncePerTurn
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -50,4 +51,4 @@ instance ToJSON Ability where
 instance FromJSON Ability where
   parseJSON = genericParseJSON $ aesonOptions $ Just "ability"
 
-newtype UsedAbility = UsedAbility { unUsedAbility :: Ability }
+newtype UsedAbility = UsedAbility { unUsedAbility :: (InvestigatorId, Ability) }

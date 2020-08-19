@@ -110,6 +110,7 @@ type ActionRunner env investigator
     , HasActions env investigator (ActionType, env)
     , HasId (Maybe StoryAssetId) CardCode env
     , HasId (Maybe OwnerId) AssetId env
+    , HasList UsedAbility () env
     )
 
 class HasActions env investigator a where

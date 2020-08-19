@@ -217,7 +217,7 @@ data Investigator
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-instance (IsInvestigator investigator) => HasActions env investigator Investigator where
+instance (ActionRunner env investigator) => HasActions env investigator Investigator where
   getActions i window = \case
     AgnesBaker' x -> getActions i window x
     AkachiOnyele' x -> getActions i window x

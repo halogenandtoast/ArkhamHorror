@@ -33,17 +33,19 @@ rolandBanks = RolandBanks
     , agility = 2
     }
 
-instance (IsInvestigator investigator) => HasActions env investigator RolandBanks where
+instance (ActionRunner env investigator) => HasActions env investigator RolandBanks where
   getActions i (Fast.WhenEnemyDefeated You) (RolandBanks Attrs {..})
-    | getId () i == investigatorId = pure
-      [ ActivateCardAbilityAction
-          investigatorId
-          (mkAbility
-            (InvestigatorSource investigatorId)
-            1
-            (ReactionAbility (Fast.WhenEnemyDefeated You))
-          )
-      ] -- TODO: ONCE PER ROUND
+    | getId () i == investigatorId = do
+      let
+        ability = mkAbility
+          (InvestigatorSource investigatorId)
+          1
+          (ReactionAbility (Fast.WhenEnemyDefeated You))
+      usedAbilities <- map unUsedAbility <$> asks (getList ())
+      pure
+        [ ActivateCardAbilityAction investigatorId ability
+        | (investigatorId, ability) `notElem` usedAbilities
+        ]
   getActions _ _ _ = pure []
 
 instance (InvestigatorRunner Attrs env) => RunMessage env RolandBanks where

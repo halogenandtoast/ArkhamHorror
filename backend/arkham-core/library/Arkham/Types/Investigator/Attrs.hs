@@ -395,22 +395,6 @@ cardInWindows windows c _ = case c of
     not . null $ pcFastWindows pc `intersect` HashSet.fromList windows
   _ -> False
 
-abilityInWindows
-  :: (MonadReader env m, InvestigatorRunner Attrs env)
-  => [FastWindow]
-  -> Ability
-  -> Attrs
-  -> m Bool
-abilityInWindows windows ability@Ability {..} _ =
-  case (abilityType, abilityLimit) of
-    (ReactionAbility window, OncePerRound) -> if window `elem` windows
-      then do
-        usedAbilities <- map unUsedAbility <$> asks (getList ())
-        pure $ ability `notElem` usedAbilities
-      else pure False
-    (ReactionAbility window, _) -> pure $ window `elem` windows
-    _ -> pure False
-
 possibleSkillTypeChoices :: SkillType -> Attrs -> [SkillType]
 possibleSkillTypeChoices skillType attrs = foldr
   applyModifier

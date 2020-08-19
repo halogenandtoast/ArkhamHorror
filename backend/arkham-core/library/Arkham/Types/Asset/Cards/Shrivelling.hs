@@ -5,8 +5,9 @@ import Arkham.Json
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses (Uses(..))
+import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
@@ -28,30 +29,28 @@ shrivelling :: AssetId -> Shrivelling
 shrivelling uuid =
   Shrivelling $ (baseAttrs uuid "01060") { assetSlots = [ArcaneSlot] }
 
-instance (IsInvestigator investigator) => HasActions env investigator Shrivelling where
-  getActions i (Shrivelling x) = getActions i x
+instance (AssetRunner env, IsInvestigator investigator) => HasActions env investigator Shrivelling where
+  getActions i (Shrivelling Attrs {..}) = do
+    fightAvailable <- hasFightActions i
+    pure
+      [ ActivateCardAbilityAction
+          (getId () i)
+          (mkAbility
+            (AssetSource assetId)
+            1
+            (ActionAbility 1 (Just Action.Fight))
+          )
+      | useCount assetUses > 0 && fightAvailable
+      ]
+
 
 instance (AssetRunner env) => RunMessage env Shrivelling where
   runMessage msg a@(Shrivelling attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId -> do
-      let
-        attrs' =
-          attrs
-            & (uses .~ Uses Resource.Charge 4)
-            & (abilities
-              .~ [ mkAbility
-                     (AssetSource aid)
-                     1
-                     (ActionAbility 1 (Just Action.Fight))
-                 ]
-              )
-      Shrivelling <$> runMessage msg attrs'
+    InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
+      Shrivelling <$> runMessage msg (attrs & uses .~ Uses Resource.Charge 4)
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
       case assetUses of
         Uses Resource.Charge n -> do
-          when
-            (n == 1)
-            (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
           unshiftMessage
             (ChooseFightEnemy
               iid

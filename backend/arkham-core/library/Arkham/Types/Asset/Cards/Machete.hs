@@ -5,6 +5,7 @@ import Arkham.Json
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
@@ -20,14 +21,21 @@ newtype Machete = Machete Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 machete :: AssetId -> Machete
-machete uuid = Machete $ (baseAttrs uuid "01020")
-  { assetSlots = [HandSlot]
-  , assetAbilities =
-    [mkAbility (AssetSource uuid) 1 (ActionAbility 1 (Just Action.Fight))]
-  }
+machete uuid = Machete $ (baseAttrs uuid "01020") { assetSlots = [HandSlot] }
 
-instance (IsInvestigator investigator) => HasActions env investigator Machete where
-  getActions i (Machete x) = getActions i x
+instance (AssetRunner env, IsInvestigator investigator) => HasActions env investigator Machete where
+  getActions i (Machete Attrs {..}) = do
+    fightAvailable <- hasFightActions i
+    pure
+      [ ActivateCardAbilityAction
+          (getId () i)
+          (mkAbility
+            (AssetSource assetId)
+            1
+            (ActionAbility 1 (Just Action.Fight))
+          )
+      | fightAvailable
+      ]
 
 instance (AssetRunner env) => RunMessage env Machete where
   runMessage msg a@(Machete attrs@Attrs {..}) = case msg of

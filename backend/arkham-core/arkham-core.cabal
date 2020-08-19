@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bf87d9e360d5c20c838c4594410c9efa13a9507d7ea91f0e28e4de8abd6b5ba5
+-- hash: 8c6725144cac4ea062516c21a338fdf07e240f38bfae99cf4cd0af48bbc2be01
 
 name:           arkham-core
 version:        0.0.0
@@ -54,6 +54,7 @@ library
       Arkham.Types.Asset.Cards.Scrying
       Arkham.Types.Asset.Cards.Shrivelling
       Arkham.Types.Asset.Cards.TheNecronomicon
+      Arkham.Types.Asset.Helpers
       Arkham.Types.Asset.Runner
       Arkham.Types.Asset.Uses
       Arkham.Types.AssetId
@@ -231,6 +232,7 @@ library
     , base >=4.7 && <5
     , classy-prelude
     , containers
+    , extra
     , hashable
     , microlens
     , microlens-platform

@@ -6,12 +6,12 @@ import Arkham.Json
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses (Uses(..))
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
-import Arkham.Types.Enemy
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -30,21 +30,18 @@ rolands38Special uuid =
   Rolands38Special $ (baseAttrs uuid "01006") { assetSlots = [HandSlot] }
 
 instance (AssetRunner env, IsInvestigator investigator) => HasActions env investigator Rolands38Special where
-  getActions i (Rolands38Special x@Attrs {..}) = do
-    baseActions <- getActions i x
-    enemies :: [Enemy] <- asks (getList ())
-    let
-      uniqueActions =
-        [ ActivateCardAbilityAction
-            (getId () i)
-            (mkAbility
-              (AssetSource assetId)
-              1
-              (ActionAbility 1 (Just Action.Fight))
-            )
-        | any (`canFight` i) enemies
-        ]
-    pure $ baseActions <> uniqueActions
+  getActions i (Rolands38Special Attrs {..}) = do
+    fightAvailable <- hasFightActions i
+    pure
+      [ ActivateCardAbilityAction
+          (getId () i)
+          (mkAbility
+            (AssetSource assetId)
+            1
+            (ActionAbility 1 (Just Action.Fight))
+          )
+      | fightAvailable
+      ]
 
 instance (AssetRunner env) => RunMessage env Rolands38Special where
   runMessage msg a@(Rolands38Special attrs@Attrs {..}) = case msg of

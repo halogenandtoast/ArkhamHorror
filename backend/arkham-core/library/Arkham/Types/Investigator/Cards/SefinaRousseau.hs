@@ -30,6 +30,9 @@ sefinaRousseau = SefinaRousseau $ baseAttrs
     }
   [Artist]
 
+instance HasActions env investigator SefinaRousseau where
+  getActions i window (SefinaRousseau attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env SefinaRousseau where
   runMessage msg i@(SefinaRousseau attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

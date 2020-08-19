@@ -30,6 +30,9 @@ akachiOnyele = AkachiOnyele $ baseAttrs
     }
   [Sorcerer]
 
+instance HasActions env investigator AkachiOnyele where
+  getActions i window (AkachiOnyele attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env AkachiOnyele where
   runMessage msg i@(AkachiOnyele attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

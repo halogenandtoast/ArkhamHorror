@@ -30,6 +30,9 @@ minhThiPhan = MinhThiPhan $ baseAttrs
     }
   [Assistant]
 
+instance HasActions env investigator MinhThiPhan where
+  getActions i window (MinhThiPhan attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env MinhThiPhan where
   runMessage msg i@(MinhThiPhan attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

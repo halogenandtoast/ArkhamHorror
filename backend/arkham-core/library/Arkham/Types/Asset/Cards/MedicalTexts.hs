@@ -25,7 +25,7 @@ medicalTexts uuid =
   MedicalTexts $ (baseAttrs uuid "01035") { assetSlots = [HandSlot] }
 
 instance (IsInvestigator investigator) => HasActions env investigator MedicalTexts where
-  getActions i (DuringTurn You) (MedicalTexts Attrs {..})
+  getActions i NonFast (MedicalTexts Attrs {..})
     | Just (getId () i) == assetInvestigator = pure
       [ ActivateCardAbilityAction
           (getId () i)

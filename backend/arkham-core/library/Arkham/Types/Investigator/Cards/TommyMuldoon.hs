@@ -30,6 +30,9 @@ tommyMuldoon = TommyMuldoon $ baseAttrs
     }
   [Police, Warden]
 
+instance HasActions env investigator TommyMuldoon where
+  getActions i window (TommyMuldoon attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env TommyMuldoon where
   runMessage msg i@(TommyMuldoon attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

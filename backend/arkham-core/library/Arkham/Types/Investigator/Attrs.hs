@@ -66,7 +66,6 @@ data Attrs = Attrs
   , investigatorTraits :: HashSet Trait
   , investigatorTreacheries :: HashSet TreacheryId
   , investigatorModifiers :: [Modifier]
-  , investigatorAbilities :: [Ability]
   , investigatorDefeated :: Bool
   , investigatorResigned :: Bool
   , investigatorSlots :: HashMap SlotType [Slot]
@@ -252,7 +251,6 @@ baseAttrs iid name classSymbol Stats {..} traits = Attrs
   , investigatorTraits = HashSet.fromList traits
   , investigatorTreacheries = mempty
   , investigatorModifiers = mempty
-  , investigatorAbilities = mempty
   , investigatorDefeated = False
   , investigatorResigned = False
   , investigatorSlots = HashMap.fromList
@@ -357,18 +355,11 @@ canPerform a Action.Resign = pure $ canAfford a Action.Resign
 canPerform a Action.Resource = pure $ canAfford a Action.Resource
 canPerform a Action.Parley = pure $ canAfford a Action.Parley
 canPerform a@Attrs {..} Action.Play = do
-  let playableCards = filter (isPlayable a [DuringTurn You]) investigatorHand
+  let
+    playableCards =
+      filter (isPlayable a [DuringTurn You, NonFast]) investigatorHand
   pure $ canAfford a Action.Play && not (null playableCards)
-canPerform a@Attrs {..} Action.Ability = do
-  availableAbilities <- getAvailableAbilities a
-  filteredAbilities <- flip filterM availableAbilities $ \Ability {..} ->
-    case abilityType of
-      ActionAbility _ (Just action) -> canPerform a action -- TODO: we need to calculate the total cost
-      ActionAbility _ Nothing -> pure True -- e.g. Old Book of Lore
-      FastAbility _ -> pure True -- must be filtered out later
-      ReactionAbility _ -> pure False
-
-  pure $ canAfford a Action.Ability && not (null filteredAbilities)
+canPerform Attrs {..} Action.Ability = pure $ investigatorRemainingActions > 0
 
 fastIsPlayable :: Attrs -> [FastWindow] -> Card -> Bool
 fastIsPlayable _ _ (EncounterCard _) = False -- TODO: there might be some playable ones?
@@ -387,23 +378,6 @@ isPlayable a@Attrs {..} windows c@(PlayerCard MkPlayerCard {..}) =
   none f = not . any f
   prevents (CannotPlay types _) = pcCardType `elem` types
   prevents _ = False
-
-takeAction :: Action -> Attrs -> Attrs
-takeAction action a =
-  a
-    & (remainingActions %~ max 0 . subtract (actionCost a action))
-    & (actionsTaken %~ (<> [action]))
-
-getAvailableAbilities :: (MonadReader env m) => Attrs -> m [Ability]
-getAvailableAbilities a@Attrs {..} = do
-  pure $ filter canPerformAbility investigatorAbilities
- where
-  canPerformAbility Ability {..} = case abilityType of
-    ActionAbility _ (Just actionType) -> canAfford a actionType
-    ActionAbility _ Nothing -> True -- e.g. Old Book of Lore
-    FastAbility Any -> True
-    FastAbility _ -> True -- must be filtered out later
-    ReactionAbility _ -> True
 
 drawOpeningHand :: Attrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
 drawOpeningHand a n = go n (a ^. discard, a ^. hand, coerce (a ^. deck))
@@ -467,6 +441,9 @@ instance IsInvestigator Attrs where
 
 instance HasId InvestigatorId () Attrs where
   getId _ Attrs {..} = investigatorId
+
+instance HasActions env investigator Attrs where
+  getActions _ _ _ = pure []
 
 instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
@@ -742,22 +719,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       a <$ unshiftMessage
         (DiscoverCluesAtLocation iid lid (cluesToDiscover a n))
     DiscoverClues iid lid n | iid == investigatorId -> do
-      availableAbilities <- getAvailableAbilities a
-      filteredAbilities <- filterM
-        (flip (abilityInWindows [WhenDiscoverClues You YourLocation]) a)
-        availableAbilities
-      a <$ unshiftMessage
-        (Ask iid
-        $ ChooseOne
-        $ map
-            (\Ability {..} -> Run
-              [ UseCardAbility iid abilitySource abilityProvider abilityIndex
-              , DiscoverClues iid lid n
-              ]
-            )
-            filteredAbilities
-        <> [AfterDiscoverClues iid lid n]
-        )
+      a <$ unshiftMessage (AfterDiscoverClues iid lid n)
     AfterDiscoverClues iid _ n | iid == investigatorId -> pure $ a & clues +~ n
     PayCardCost iid cardId | iid == investigatorId -> do
       let
@@ -989,12 +951,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       commitedCardIds <- map unCommitedCardId . HashSet.toList <$> asks
         (getSet iid)
       actions <- asks (join $ getActions a (WhenSkillTest skillType))
-      availableAbilities <- getAvailableAbilities a
       let
-        filteredAbilities = flip filter availableAbilities $ \Ability {..} ->
-          case abilityType of
-            FastAbility (WhenSkillTest st) | st == skillType -> True
-            _ -> False
         triggerMessage = StartSkillTest investigatorId
         beginMessage = BeforeSkillTest iid skillType
         committableCards = flip filter investigatorHand $ \case
@@ -1003,30 +960,16 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
               `notElem` commitedCardIds
               && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
           _ -> False
-      if not (null filteredAbilities)
-        || not (null committableCards)
-        || not (null commitedCardIds)
-        || not (null actions)
+      if not (null committableCards) || not (null commitedCardIds) || not
+        (null actions)
       then
         unshiftMessage
           (SkillTestAsk $ Ask iid $ ChooseOne
             (map
-                (\Ability {..} -> Run
-                  [ UseCardAbility
-                    iid
-                    abilitySource
-                    abilityProvider
-                    abilityIndex
-                  , beginMessage
-                  ]
+                (\card ->
+                  Run [SkillTestCommitCard iid (getCardId card), beginMessage]
                 )
-                filteredAbilities
-            <> map
-                 (\card ->
-                   Run
-                     [SkillTestCommitCard iid (getCardId card), beginMessage]
-                 )
-                 committableCards
+                committableCards
             <> map
                  (\cardId ->
                    Run [SkillTestUncommitCard iid cardId, beginMessage]
@@ -1186,7 +1129,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       pure $ a & physicalTrauma +~ physical & mentalTrauma +~ mental
     GainXP iid amount | iid == investigatorId -> pure $ a & xp +~ amount
     PlayerWindow iid additionalActions | iid == investigatorId -> do
-      actions <- asks (join (getActions a (DuringTurn You)))
+      actions <- asks (join (getActions a NonFast))
+      fastActions <- asks (join (getActions a (DuringTurn You)))
       a <$ unshiftMessage
         (Ask iid $ ChooseOne
           (additionalActions
@@ -1199,6 +1143,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
              ]
           <> [ChooseEndTurn iid]
           <> actions
+          <> fastActions
           )
         )
     _ -> pure a

@@ -30,6 +30,9 @@ silasMarsh = SilasMarsh $ baseAttrs
     }
   [Drifter]
 
+instance HasActions env investigator SilasMarsh where
+  getActions i window (SilasMarsh attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env SilasMarsh where
   runMessage msg i@(SilasMarsh attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

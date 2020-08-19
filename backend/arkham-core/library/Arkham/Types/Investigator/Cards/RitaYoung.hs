@@ -30,6 +30,9 @@ ritaYoung = RitaYoung $ baseAttrs
     }
   [Miskatonic]
 
+instance HasActions env investigator RitaYoung where
+  getActions i window (RitaYoung attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env RitaYoung where
   runMessage msg i@(RitaYoung attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

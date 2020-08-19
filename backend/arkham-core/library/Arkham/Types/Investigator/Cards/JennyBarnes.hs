@@ -30,6 +30,9 @@ jennyBarnes = JennyBarnes $ baseAttrs
     }
   [Drifter]
 
+instance HasActions env investigator JennyBarnes where
+  getActions i window (JennyBarnes attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env JennyBarnes where
   runMessage msg i@(JennyBarnes attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

@@ -30,6 +30,9 @@ calvinWright = CalvinWright $ baseAttrs
     }
   [Cursed, Drifter]
 
+instance HasActions env investigator CalvinWright where
+  getActions i window (CalvinWright attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env CalvinWright where
   runMessage msg i@(CalvinWright attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

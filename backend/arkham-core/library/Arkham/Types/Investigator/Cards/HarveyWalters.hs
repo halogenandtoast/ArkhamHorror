@@ -30,6 +30,9 @@ harveyWalters = HarveyWalters $ baseAttrs
     }
   [Miskatonic]
 
+instance HasActions env investigator HarveyWalters where
+  getActions i window (HarveyWalters attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env HarveyWalters where
   runMessage msg i@(HarveyWalters attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

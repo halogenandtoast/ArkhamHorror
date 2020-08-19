@@ -30,6 +30,9 @@ prestonFairmont = PrestonFairmont $ baseAttrs
     }
   [SilverTwilight, Socialite]
 
+instance HasActions env investigator PrestonFairmont where
+  getActions i window (PrestonFairmont attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env PrestonFairmont where
   runMessage msg i@(PrestonFairmont attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

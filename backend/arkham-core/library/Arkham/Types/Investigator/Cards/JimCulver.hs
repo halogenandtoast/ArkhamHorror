@@ -30,6 +30,9 @@ jimCulver = JimCulver $ baseAttrs
     }
   [Performer]
 
+instance HasActions env investigator JimCulver where
+  getActions i window (JimCulver attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env JimCulver where
   runMessage msg i@(JimCulver attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

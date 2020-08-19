@@ -30,6 +30,9 @@ nathanielCho = NathanielCho $ baseAttrs
     }
   [Criminal, Warden]
 
+instance HasActions env investigator NathanielCho where
+  getActions i window (NathanielCho attrs) = getActions i window attrs
+
 instance (InvestigatorRunner Attrs env) => RunMessage env NathanielCho where
   runMessage msg i@(NathanielCho attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i

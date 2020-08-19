@@ -80,6 +80,10 @@ export default class Investigator extends Vue {
       return this.enemyEngageInvestigatorAction;
     }
 
+    if (this.activateAbilityAction !== -1) {
+      return this.activateAbilityAction;
+    }
+
     return this.takeDamageAction;
   }
 
@@ -113,6 +117,21 @@ export default class Investigator extends Vue {
 
   get sanityAction() {
     return this.choices.findIndex(this.canAdjustSanity);
+  }
+
+  get activateAbilityAction() {
+    return this.choices.findIndex(this.canActivateAbility);
+  }
+
+  canActivateAbility(c: Message): boolean {
+    switch (c.tag) {
+      case MessageType.ACTIVATE_ABILITY:
+        return c.contents[0] === this.id;
+      case MessageType.RUN:
+        return c.contents.some((c1: Message) => this.canActivateAbility(c1));
+      default:
+        return false;
+    }
   }
 
   canAdjustHealth(c: Message): boolean {

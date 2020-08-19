@@ -4,6 +4,7 @@ module Arkham.Types.Treachery.Cards.LockedDoor where
 import Arkham.Json
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Ability
+import Arkham.Types.FastWindow
 import Arkham.Types.LocationId
 import Arkham.Types.Classes
 import Arkham.Types.Message
@@ -24,10 +25,16 @@ newtype LockedDoor = LockedDoor Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 lockedDoor :: TreacheryId -> LockedDoor
-lockedDoor uuid = LockedDoor $ (baseAttrs uuid "01174")
-  { treacheryAbilities =
-    [mkAbility (TreacherySource uuid) 1 (ActionAbility 1 Nothing)]
-  }
+lockedDoor uuid = LockedDoor $ baseAttrs uuid "01174"
+
+instance (IsInvestigator investigator) => HasActions env investigator LockedDoor where
+  getActions i (DuringTurn You) (LockedDoor Attrs {..}) = pure
+    [ ActivateCardAbilityAction
+        (getId () i)
+        (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 1 Nothing))
+    | Just (locationOf i) == treacheryAttachedLocation
+    ]
+  getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env LockedDoor where
   runMessage msg t@(LockedDoor attrs@Attrs {..}) = case msg of

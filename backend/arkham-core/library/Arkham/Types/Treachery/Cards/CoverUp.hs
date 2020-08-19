@@ -31,18 +31,17 @@ newtype CoverUp = CoverUp (Attrs `With` CoverUpMetadata)
   deriving anyclass (ToJSON, FromJSON)
 
 coverUp :: TreacheryId -> CoverUp
-coverUp uuid =
-  CoverUp
-    $ ((weaknessAttrs uuid "01007")
-        { treacheryAbilities =
-          [ mkAbility
-              (TreacherySource uuid)
-              1
-              (ReactionAbility (WhenDiscoverClues You YourLocation))
-          ]
-        }
-      )
-    `With` CoverUpMetadata 3
+coverUp uuid = CoverUp $ weaknessAttrs uuid "01007" `With` CoverUpMetadata 3
+
+instance (IsInvestigator investigator) => HasActions env investigator CoverUp where
+  getActions i window@(WhenDiscoverClues You YourLocation) (CoverUp (Attrs {..} `With` CoverUpMetadata {..}))
+    = pure
+      [ ActivateCardAbilityAction
+          (getId () i)
+          (mkAbility (TreacherySource treacheryId) 1 (ReactionAbility window))
+      | coverUpClues > 0 && Just (getId () i) == treacheryAttachedInvestigator
+      ]
+  getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env CoverUp where
   runMessage msg t@(CoverUp (attrs@Attrs {..} `With` metadata@CoverUpMetadata {..}))
@@ -81,9 +80,6 @@ instance (TreacheryRunner env) => RunMessage env CoverUp where
                 (InvestigatorTarget iid)
                 (TreacherySource treacheryId)
               )
-            pure
-              $ CoverUp
-              $ (attrs & abilities .~ [])
-              `with` CoverUpMetadata remainingClues
+            pure $ CoverUp $ attrs `with` CoverUpMetadata remainingClues
           else pure $ CoverUp (attrs `with` CoverUpMetadata remainingClues)
       _ -> CoverUp . (`with` metadata) <$> runMessage msg attrs

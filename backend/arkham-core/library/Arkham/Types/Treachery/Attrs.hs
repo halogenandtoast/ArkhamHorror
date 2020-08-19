@@ -2,7 +2,6 @@
 module Arkham.Types.Treachery.Attrs where
 
 import Arkham.Json
-import Arkham.Types.Ability
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
@@ -26,7 +25,6 @@ data Attrs = Attrs
   , treacheryTraits :: HashSet Trait
   , treacheryAttachedLocation :: Maybe LocationId
   , treacheryAttachedInvestigator :: Maybe InvestigatorId
-  , treacheryAbilities :: [Ability]
   , treacheryWeakness :: Bool
   , treacheryResolved :: Bool
   }
@@ -41,9 +39,6 @@ instance FromJSON Attrs where
 
 resolved :: Lens' Attrs Bool
 resolved = lens treacheryResolved $ \m x -> m { treacheryResolved = x }
-
-abilities :: Lens' Attrs [Ability]
-abilities = lens treacheryAbilities $ \m x -> m { treacheryAbilities = x }
 
 attachedLocation :: Lens' Attrs (Maybe LocationId)
 attachedLocation =
@@ -70,7 +65,6 @@ baseAttrs tid cardCode =
       , treacheryTraits = HashSet.fromList ecTraits
       , treacheryAttachedLocation = Nothing
       , treacheryAttachedInvestigator = Nothing
-      , treacheryAbilities = mempty
       , treacheryWeakness = False
       , treacheryResolved = False
       }
@@ -91,10 +85,12 @@ weaknessAttrs tid cardCode =
       , treacheryTraits = HashSet.fromList pcTraits
       , treacheryAttachedLocation = Nothing
       , treacheryAttachedInvestigator = Nothing
-      , treacheryAbilities = mempty
       , treacheryWeakness = True
       , treacheryResolved = False
       }
+
+instance HasActions env investigator Attrs where
+  getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of

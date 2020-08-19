@@ -18,6 +18,9 @@ newtype RottingRemains = RottingRemains Attrs
 rottingRemains :: TreacheryId -> RottingRemains
 rottingRemains uuid = RottingRemains $ baseAttrs uuid "01163"
 
+instance HasActions env investigator RottingRemains where
+  getActions i window (RottingRemains attrs) = getActions i window attrs
+
 instance (TreacheryRunner env) => RunMessage env RottingRemains where
   runMessage msg (RottingRemains attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do

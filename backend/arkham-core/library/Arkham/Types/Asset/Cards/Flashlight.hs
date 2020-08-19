@@ -5,8 +5,9 @@ import Arkham.Json
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses (Uses(..))
+import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
@@ -26,29 +27,27 @@ flashlight :: AssetId -> Flashlight
 flashlight uuid =
   Flashlight $ (baseAttrs uuid "01087") { assetSlots = [HandSlot] }
 
-instance (IsInvestigator investigator) => HasActions env investigator Flashlight where
-  getActions i window (Flashlight x) = getActions i window x
+instance (ActionRunner env investigator) => HasActions env investigator Flashlight where
+  getActions i window (Flashlight Attrs {..}) = do
+    investigateAvailable <- hasInvestigateActions i window
+    pure
+      [ ActivateCardAbilityAction
+          (getId () i)
+          (mkAbility
+            (AssetSource assetId)
+            1
+            (ActionAbility 1 (Just Action.Investigate))
+          )
+      | useCount assetUses > 0 && investigateAvailable
+      ]
 
 instance (AssetRunner env) => RunMessage env Flashlight where
   runMessage msg a@(Flashlight attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
-      pure
-        $ Flashlight
-        $ attrs
-        & (uses .~ Uses Resource.Supply 3)
-        & (abilities
-          .~ [ mkAbility
-                 (AssetSource aid)
-                 1
-                 (ActionAbility 1 (Just Action.Investigate))
-             ]
-          )
+      pure $ Flashlight $ attrs & (uses .~ Uses Resource.Supply 3)
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
       case assetUses of
         Uses Resource.Supply n -> do
-          when
-            (n == 1)
-            (unshiftMessage (RemoveAbilitiesFrom (AssetSource assetId)))
           lid <- asks (getId iid)
           unshiftMessages
             [ AddModifier

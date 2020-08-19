@@ -7,7 +7,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses (Uses(..))
+import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
@@ -39,7 +39,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Rolands3
             1
             (ActionAbility 1 (Just Action.Fight))
           )
-      | fightAvailable
+      | useCount assetUses > 0 && fightAvailable
       ]
 
 instance (AssetRunner env) => RunMessage env Rolands38Special where

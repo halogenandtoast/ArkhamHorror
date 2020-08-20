@@ -186,6 +186,7 @@ data Message
   | AddOnFailure Message
   | AddOnSuccess Message
   | FailSkillTest
+  | InvestigatorPlaceCluesOnLocation InvestigatorId Int
   | FindAndDrawEncounterCard InvestigatorId
                          (EncounterCardType, Trait)
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard

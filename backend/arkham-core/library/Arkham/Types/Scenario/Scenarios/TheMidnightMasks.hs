@@ -10,12 +10,17 @@ import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.EnemyId
 import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Runner
+import Arkham.Types.Target
+import qualified Arkham.Types.Token as Token
+import Arkham.Types.Trait
 import ClassyPrelude
+import qualified Data.HashSet as HashSet
 import Data.List.NonEmpty (NonEmpty(..))
 import Data.UUID.V4
 import System.Random.Shuffle
@@ -77,4 +82,19 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
         <> ghoulPriestMessages
         <> spawnAcolyteMessages
         )
+    ResolveToken Token.Skull iid skillValue -> do
+      cultists <- HashSet.toList <$> asks (getSet @EnemyId Cultist)
+      doomCounts <- map unDoomCount <$> traverse (\c -> asks (getCount c)) cultists
+      s <$ runTest skillValue (-(maximum $ ncons 0 doomCounts))
+    ResolveToken Token.Cultist iid skillValue -> do
+      closestCultitsts <- map unClosestEnemyId . HashSet.toList
+        <$> asks (getSet (iid, [Cultist]))
+      case closestCultitsts of
+        [] -> pure ()
+        [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
+        xs -> unshiftMessage (Ask iid $ ChooseOne [PlaceDoom (EnemyTarget x) 1 | x <- xs])
+      s <$ runTest skillValue (-2)
+    ResolveToken Token.Tablet iid skillValue -> do
+      unshiftMessage (AddOnFailure $ InvestigatorPlaceCluesOnLocation iid 1)
+      s <$ runTest skillValue (-3)
     _ -> TheMidnightMasks <$> runMessage msg attrs

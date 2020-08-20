@@ -32,6 +32,7 @@ import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Prey
+import Arkham.Types.Query
 import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
@@ -72,6 +73,9 @@ getBearer enemy = case enemyPrey (enemyAttrs enemy) of
 
 instance HasVictoryPoints Enemy where
   getVictoryPoints = enemyVictory . enemyAttrs
+
+instance HasCount DoomCount () Enemy where
+  getCount _ = DoomCount . enemyDoom . enemyAttrs
 
 instance HasId LocationId () Enemy where
   getId _ = enemyLocation . enemyAttrs

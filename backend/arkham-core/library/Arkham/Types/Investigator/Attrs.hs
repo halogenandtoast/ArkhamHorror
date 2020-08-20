@@ -1113,6 +1113,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
     SufferTrauma iid physical mental | iid == investigatorId ->
       pure $ a & physicalTrauma +~ physical & mentalTrauma +~ mental
     GainXP iid amount | iid == investigatorId -> pure $ a & xp +~ amount
+    InvestigatorPlaceCluesOnLocation iid n | iid == investigatorId -> do
+      let cluesToPlace = min n investigatorClues
+      unshiftMessage (PlaceClues (LocationTarget investigatorLocation) cluesToPlace)
+      pure $ a & clues -~ cluesToPlace
     PlayerWindow iid additionalActions | iid == investigatorId -> do
       actions <- asks (join (getActions a NonFast))
       fastActions <- asks (join (getActions a (DuringTurn You)))

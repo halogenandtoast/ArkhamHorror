@@ -1117,6 +1117,9 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       let cluesToPlace = min n investigatorClues
       unshiftMessage (PlaceClues (LocationTarget investigatorLocation) cluesToPlace)
       pure $ a & clues -~ cluesToPlace
+    InvestigatorPlaceAllCluesOnLocation iid | iid == investigatorId -> do
+      unshiftMessage (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
+      pure $ a & clues .~ 0
     PlayerWindow iid additionalActions | iid == investigatorId -> do
       actions <- asks (join (getActions a NonFast))
       fastActions <- asks (join (getActions a (DuringTurn You)))

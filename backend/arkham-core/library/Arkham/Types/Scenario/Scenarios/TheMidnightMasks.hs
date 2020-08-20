@@ -117,7 +117,12 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
             unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
             s <$ runTest skillValue (-2)
 
-    ResolveToken Token.Tablet iid skillValue -> do
-      unshiftMessage (AddOnFailure $ InvestigatorPlaceCluesOnLocation iid 1)
-      s <$ runTest skillValue (-3)
+    ResolveToken Token.Tablet iid skillValue
+      | scenarioDifficulty `elem` [Easy, Standard] -> do
+        unshiftMessage (AddOnFailure $ InvestigatorPlaceCluesOnLocation iid 1)
+        s <$ runTest skillValue (-3)
+    ResolveToken Token.Tablet iid skillValue
+      | scenarioDifficulty `elem` [Hard, Expert] -> do
+        unshiftMessage (AddOnFailure $ InvestigatorPlaceAllCluesOnLocation iid)
+        s <$ runTest skillValue (-4)
     _ -> TheMidnightMasks <$> runMessage msg attrs

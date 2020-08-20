@@ -371,7 +371,10 @@ instance HasCount DoomCount EnemyId Game where
   getCount eid = getCount () . getEnemy eid
 
 instance HasCount XPCount () Game where
-  getCount _ = XPCount . sum . mapMaybe getVictoryPoints . view victoryDisplay
+  getCount _ g =
+    XPCount
+      $ (sum . mapMaybe getVictoryPoints $ view victoryDisplay g)
+      + (sum . mapMaybe getVictoryPoints . HashMap.elems $ view locations g)
 
 instance HasCount DoomCount () Game where
   getCount _ g =

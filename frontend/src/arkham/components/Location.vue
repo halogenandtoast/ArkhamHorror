@@ -242,5 +242,6 @@ export default class Location extends Vue {
   color: rgba(0, 0, 0, 0.8);
   position: absolute;
   top: 19px;
+  pointer-events: none;
 }
 </style>

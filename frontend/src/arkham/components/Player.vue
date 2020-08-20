@@ -35,11 +35,11 @@
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />
-      <div v-if="topOfDiscard" class="discard">
+      <div class="discard">
         <img
+          v-if="topOfDiscard"
           :src="topOfDiscard"
           class="card"
-          width="150px"
         />
       </div>
       <img
@@ -133,6 +133,7 @@ export default class Player extends Vue {
 }
 
 .discard {
+  width: 110px;
   margin-top: 10px;
   position: relative;
   &::after {

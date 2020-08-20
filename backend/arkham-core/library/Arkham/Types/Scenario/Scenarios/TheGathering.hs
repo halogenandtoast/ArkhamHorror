@@ -91,7 +91,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
             )
           s <$ runTest skillValue (-1)
         else do
-          unshiftMessage (DrawAnotherToken iid skillValue Token.Cultist)
+          unshiftMessage (DrawAnotherToken iid skillValue Token.Cultist 0)
           unshiftMessage
             (AddOnFailure
             $ InvestigatorAssignDamage iid (TokenSource Token.Cultist) 0 2

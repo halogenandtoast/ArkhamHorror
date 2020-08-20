@@ -50,6 +50,7 @@ data SkillTest a = SkillTest
   , skillTestDrawStrategy    :: DrawStrategy
   , skillTestResolveStrategy :: ResolveStrategy
   , skillTestSetAsideTokens  :: [Token]
+  , skillTestValueModifier :: Int
   , skillTestResult :: SkillTestResult
   , skillTestModifiers :: [Modifier]
   , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
@@ -94,6 +95,7 @@ initSkillTest iid source maction skillType' difficulty' onSuccess' onFailure' mo
     , skillTestDrawStrategy = DrawOne
     , skillTestResolveStrategy = ResolveAll
     , skillTestSetAsideTokens = mempty
+    , skillTestValueModifier = 0
     , skillTestResult = Unrun
     , skillTestModifiers = modifiers'
     , skillTestCommittedCards = mempty
@@ -103,6 +105,10 @@ initSkillTest iid source maction skillType' difficulty' onSuccess' onFailure' mo
 
 modifiers :: Lens' (SkillTest a) [Modifier]
 modifiers = lens skillTestModifiers $ \m x -> m { skillTestModifiers = x }
+
+valueModifier :: Lens' (SkillTest a) Int
+valueModifier =
+  lens skillTestValueModifier $ \m x -> m { skillTestValueModifier = x }
 
 setAsideTokens :: Lens' (SkillTest a) [Token]
 setAsideTokens =
@@ -172,6 +178,8 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         $ s
         & (setAsideTokens %~ (token :))
         & (onTokenResponses .~ onTokenResponses')
+    DrawAnotherToken _ _ _ valueModifier' ->
+      pure $ s & valueModifier +~ valueModifier'
     FailSkillTest -> do
       unshiftMessages
         [ Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
@@ -227,8 +235,12 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
 
       pure s
     RunSkillTest skillValue tokenValue -> do
-      let tokenValue' = modifiedTokenValue tokenValue s
-      let modifiedSkillValue' = skillValue + tokenValue' + skillIconCount s
+      let
+        totaledTokenValues =
+          modifiedTokenValue tokenValue s + skillTestValueModifier
+      let
+        modifiedSkillValue' =
+          skillValue + totaledTokenValues + skillIconCount s
       unshiftMessage SkillTestResults
       putStrLn
         . pack

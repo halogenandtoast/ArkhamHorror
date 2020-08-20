@@ -20,4 +20,4 @@ data Target
   | TreacheryTarget TreacheryId
   | EncounterDeckTarget
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)

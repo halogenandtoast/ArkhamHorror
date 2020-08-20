@@ -131,10 +131,14 @@ assetAttrs = \case
   LitaChantler' attrs -> coerce attrs
 
 isHealthDamageable :: Asset -> Bool
-isHealthDamageable = isJust . assetHealth . assetAttrs
+isHealthDamageable a = case assetHealth (assetAttrs a) of
+                         Nothing -> False
+                         Just n ->  n > assetHealthDamage (assetAttrs a)
 
 isSanityDamageable :: Asset -> Bool
-isSanityDamageable = isJust . assetSanity . assetAttrs
+isSanityDamageable a = case assetSanity (assetAttrs a) of
+                       Nothing -> False
+                       Just n -> n > assetSanityDamage (assetAttrs a)
 
 instance (ActionRunner env investigator) => HasActions env investigator Asset where
   getActions i window = \case

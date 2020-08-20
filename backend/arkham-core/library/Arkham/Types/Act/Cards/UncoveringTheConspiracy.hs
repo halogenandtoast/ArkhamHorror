@@ -22,16 +22,17 @@ uncoveringTheConspiracy = UncoveringTheConspiracy
   $ baseAttrs "01123" "Uncovering the Conspiracy" "Act 1a"
 
 instance (ActionRunner env investigator) => HasActions env investigator UncoveringTheConspiracy where
-  getActions i NonFast (UncoveringTheConspiracy x@Attrs {..}) = do
-    totalSpendableClueCount <- unSpendableClueCount
-      <$> asks (getCount AllInvestigators)
-    if totalSpendableClueCount >= 2
-      then pure
-        [ ActivateCardAbilityAction
-            (getId () i)
-            (mkAbility (ActSource actId) 1 (ActionAbility 1 Nothing))
-        ]
-      else getActions i NonFast x
+  getActions i NonFast (UncoveringTheConspiracy x@Attrs {..})
+    | hasActionsRemaining i = do
+      totalSpendableClueCount <- unSpendableClueCount
+        <$> asks (getCount AllInvestigators)
+      if totalSpendableClueCount >= 2
+        then pure
+          [ ActivateCardAbilityAction
+              (getId () i)
+              (mkAbility (ActSource actId) 1 (ActionAbility 1 Nothing))
+          ]
+        else getActions i NonFast x
   getActions i window (UncoveringTheConspiracy attrs) =
     getActions i window attrs
 

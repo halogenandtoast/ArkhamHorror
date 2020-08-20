@@ -436,6 +436,7 @@ instance IsInvestigator Attrs where
   canFight _ a@Attrs {..} = canDo Action.Fight a
   canEngage enemy a@Attrs {..} =
     canDo Action.Engage a && getId () enemy `notElem` investigatorEngagedEnemies
+  hasActionsRemaining Attrs {..} = investigatorRemainingActions > 0
 
 instance HasId InvestigatorId () Attrs where
   getId _ Attrs {..} = investigatorId

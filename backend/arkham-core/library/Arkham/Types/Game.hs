@@ -832,7 +832,9 @@ runGameMessage msg g = case msg of
   Run msgs -> g <$ unshiftMessages msgs
   Label _ msgs -> g <$ unshiftMessages msgs
   Continue _ -> pure g
-  EndOfGame -> g <$ pushMessage NextCampaignStep
+  EndOfGame -> do
+    clearQueue
+    g <$ pushMessage NextCampaignStep
   ResetGame ->
     pure
       $ g
@@ -1312,10 +1314,18 @@ runGameMessage msg g = case msg of
       (x : xs) -> do
         unshiftMessage (RequestedEncounterCard source (Just x))
         pure $ g & encounterDeck .~ xs & discard %~ (reverse discards <>)
-  InvestigatorDrawEncounterCard iid -> do
-    let (card : encounterDeck') = g ^. encounterDeck
-    unshiftMessage (InvestigatorDrewEncounterCard iid card)
-    pure $ g & encounterDeck .~ encounterDeck'
+  InvestigatorDrawEncounterCard iid -> if null (g ^. encounterDeck)
+    then g <$ unshiftMessages
+      [ShuffleEncounterDiscardBackIn, InvestigatorDrawEncounterCard iid]
+      -- This case should not happen but this safeguards against it
+    else do
+      let (card : encounterDeck') = g ^. encounterDeck
+      when (null encounterDeck') (unshiftMessage ShuffleEncounterDiscardBackIn)
+      unshiftMessage (InvestigatorDrewEncounterCard iid card)
+      pure $ g & encounterDeck .~ encounterDeck'
+  ShuffleEncounterDiscardBackIn -> do
+    encounterDeck' <- liftIO . shuffleM $ view encounterDeck g <> view discard g
+    pure $ g & encounterDeck .~ encounterDeck' & discard .~ mempty
   InvestigatorDrewEncounterCard iid card -> case ecCardType card of
     EnemyType -> do
       (enemyId', enemy') <- createEnemy (ecCardCode card)

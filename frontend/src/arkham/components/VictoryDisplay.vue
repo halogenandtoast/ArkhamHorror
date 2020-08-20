@@ -1,7 +1,7 @@
 <template>
-  <div v-if="topOfVictoryPile" class="victory-pile">
+  <div v-if="topOfVictoryDisplay" class="victory-display">
     <img
-      :src="topOfVictoryPile"
+      :src="topOfVictoryDisplay"
       class="card"
     />
   </div>
@@ -12,16 +12,16 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Game } from '@/arkham/types/Game';
 
 @Component
-export default class VictoryPile extends Vue {
+export default class VictoryDisplay extends Vue {
   @Prop(Object) readonly game!: Game
 
-  get victoryPile() {
-    return this.game.currentData.victory;
+  get victoryDisplay() {
+    return this.game.currentData.victoryDisplay;
   }
 
-  get topOfVictoryPile() {
-    if (this.victoryPile[0]) {
-      const { cardCode } = this.victoryPile[0].contents;
+  get topOfVictoryDisplay() {
+    if (this.victoryDisplay[0]) {
+      const { cardCode } = this.victoryDisplay[0].contents;
       return `/img/arkham/cards/${cardCode}.jpg`;
     }
 
@@ -36,7 +36,7 @@ export default class VictoryPile extends Vue {
   border-radius: 6px;
 }
 
-.victory-pile {
+.victory-display {
   height: 100%;
   position: relative;
   &::after {

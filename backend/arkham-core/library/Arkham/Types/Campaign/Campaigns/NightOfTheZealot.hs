@@ -155,7 +155,6 @@ instance (CampaignRunner env) => RunMessage env NightOfTheZealot where
     CampaignStep (Just (ScenarioStep sid)) -> do
       c <$ unshiftMessages [ResetGame, StartScenario sid]
     NextCampaignStep -> do
-      clearQueue
       unshiftMessage (CampaignStep $ campaignSteps !? (campaignStep + 1))
       pure $ NightOfTheZealot $ attrs & step +~ 1
     _ -> NightOfTheZealot <$> runMessage msg attrs

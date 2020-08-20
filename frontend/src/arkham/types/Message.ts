@@ -20,6 +20,7 @@ export enum MessageType {
   ADVANCE_ACT = 'AdvanceAct',
   ADVANCE_AGENDA = 'AdvanceAgenda',
   MOVE = 'MoveAction',
+  MOVE_TO = 'MoveTo',
   FIGHT_ENEMY = 'FightEnemy',
   EVADE_ENEMY = 'EvadeEnemy',
   ENEMY_DAMAGE = 'EnemyDamage',
@@ -46,6 +47,7 @@ export enum MessageType {
   ENGAGE_ENEMY = 'EngageEnemy',
   INVESTIGATOR_DRAW_ENCOUNTER_CARD = 'InvestigatorDrawEncounterCard',
   ATTACH_TREACHERY_TO_LOCATION = 'AttachTreacheryToLocation',
+  PLACE_DOOM = 'PlaceDoom',
   LABEL = 'Label',
 }
 
@@ -77,6 +79,7 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('AdvanceAct').then(() => JsonDecoder.constant(MessageType.ADVANCE_ACT)),
     JsonDecoder.isExactly('AdvanceAgenda').then(() => JsonDecoder.constant(MessageType.ADVANCE_AGENDA)),
     JsonDecoder.isExactly('MoveAction').then(() => JsonDecoder.constant(MessageType.MOVE)),
+    JsonDecoder.isExactly('MoveTo').then(() => JsonDecoder.constant(MessageType.MOVE_TO)),
     JsonDecoder.isExactly('FightEnemy').then(() => JsonDecoder.constant(MessageType.FIGHT_ENEMY)),
     JsonDecoder.isExactly('EvadeEnemy').then(() => JsonDecoder.constant(MessageType.EVADE_ENEMY)),
     JsonDecoder.isExactly('EnemyDamage').then(() => JsonDecoder.constant(MessageType.ENEMY_DAMAGE)),
@@ -103,6 +106,7 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('EngageEnemy').then(() => JsonDecoder.constant(MessageType.ENGAGE_ENEMY)),
     JsonDecoder.isExactly('AttachTreacheryToLocation').then(() => JsonDecoder.constant(MessageType.ATTACH_TREACHERY_TO_LOCATION)),
     JsonDecoder.isExactly('InvestigatorDrawEncounterCard').then(() => JsonDecoder.constant(MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD)),
+    JsonDecoder.isExactly('PlaceDoom').then(() => JsonDecoder.constant(MessageType.PLACE_DOOM)),
   ],
   'MessageType',
 );

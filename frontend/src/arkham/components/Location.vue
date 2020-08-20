@@ -112,6 +112,10 @@ export default class Location extends Vue {
       return this.enemySpawnAction;
     }
 
+    if (this.moveToAction !== -1) {
+      return this.moveToAction;
+    }
+
     return this.moveAction;
   }
 
@@ -125,6 +129,12 @@ export default class Location extends Vue {
     return this
       .choices
       .findIndex((c) => c.tag === MessageType.MOVE && c.contents[1] === this.id);
+  }
+
+  get moveToAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.MOVE_TO && c.contents[1] === this.id);
   }
 
   get attachTreacheryToLocationAction() {

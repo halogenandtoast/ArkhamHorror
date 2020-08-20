@@ -22,6 +22,7 @@
     >Engage</button>
     <div class="pool">
       <PoolItem type="health" :amount="enemy.contents.damage" />
+      <PoolItem v-if="enemy.contents.doom > 0" type="doom" :amount="enemy.contents.doom" />
     </div>
   </div>
 </template>
@@ -59,6 +60,10 @@ export default class Enemy extends Vue {
       return this.moveAction;
     }
 
+    if (this.placeDoomAction !== -1) {
+      return this.placeDoomAction;
+    }
+
     return this.damageAction;
   }
 
@@ -76,6 +81,12 @@ export default class Enemy extends Vue {
     return this
       .choices
       .findIndex((c) => c.tag === MessageType.ENEMY_MOVE && c.contents[0] === this.id);
+  }
+
+  get placeDoomAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.PLACE_DOOM && c.contents[0].contents === this.id);
   }
 
   get damageAction() {

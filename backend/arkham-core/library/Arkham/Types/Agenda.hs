@@ -15,6 +15,7 @@ import Arkham.Types.Agenda.Cards.WhatsGoingOn
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.AgendaId
 import Arkham.Types.Classes
+import Arkham.Types.Query
 import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
@@ -35,6 +36,9 @@ allAgendas = HashMap.fromList $ map
 
 instance HasAbilities Agenda where
   getAbilities = agendaAbilities . agendaAttrs
+
+instance HasCount DoomCount () Agenda where
+  getCount _ = DoomCount . agendaDoom . agendaAttrs
 
 data Agenda
   = WhatsGoingOn' WhatsGoingOn

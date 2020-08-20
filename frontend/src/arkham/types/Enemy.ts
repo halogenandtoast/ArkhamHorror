@@ -5,6 +5,7 @@ export interface EnemyContents {
   cardCode: string;
   name: string;
   damage: number;
+  doom: number;
   engagedInvestigators: string[];
 }
 
@@ -13,6 +14,7 @@ export const enemyContentsDecoder = JsonDecoder.object<EnemyContents>({
   cardCode: JsonDecoder.string,
   name: JsonDecoder.string,
   damage: JsonDecoder.number,
+  doom: JsonDecoder.number,
   engagedInvestigators: JsonDecoder.array<string>(JsonDecoder.string, 'InvestigatorIds[]'),
 }, 'EnemyContents');
 

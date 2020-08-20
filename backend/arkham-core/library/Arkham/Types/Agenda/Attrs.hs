@@ -62,8 +62,9 @@ instance (AgendaRunner env) => RunMessage env Attrs where
     PlaceDoomOnAgenda -> pure $ a & doom +~ 1
     AdvanceAgendaIfThresholdSatisfied -> do
       pc <- unPlayerCount <$> asks (getCount ())
+      totalDoom <- unDoomCount <$> asks (getCount ())
       when
-        (a ^. doom + 1 > fromGameValue (a ^. doomThreshold) pc)
+        (totalDoom >= fromGameValue (a ^. doomThreshold) pc)
         (unshiftMessage (AdvanceAgenda agendaId))
       pure a
     _ -> pure a

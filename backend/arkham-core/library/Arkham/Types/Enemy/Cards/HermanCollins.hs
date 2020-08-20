@@ -24,7 +24,6 @@ hermanCollins uuid = HermanCollins $ (baseAttrs uuid "01138")
   , enemyFight = 3
   , enemyHealth = Static 4
   , enemyEvade = 4
-  , enemyVictory = Just 1
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator HermanCollins where

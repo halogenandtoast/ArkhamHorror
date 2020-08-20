@@ -10,7 +10,7 @@ where
 import Arkham.Types.Ability
 import Arkham.Types.Action
 import Arkham.Types.AssetId
-import Arkham.Types.Card.CardCode
+import Arkham.Types.Card
 import Arkham.Types.Classes.HasRecord
 import Arkham.Types.EnemyId
 import Arkham.Types.FastWindow (FastWindow)
@@ -104,6 +104,16 @@ class HasAbilities a where
 
 class HasVictoryPoints a where
   getVictoryPoints :: a -> Maybe Int
+
+instance HasVictoryPoints Card where
+  getVictoryPoints (PlayerCard card) = getVictoryPoints card
+  getVictoryPoints (EncounterCard card) = getVictoryPoints card
+
+instance HasVictoryPoints EncounterCard where
+  getVictoryPoints MkEncounterCard {..} = ecVictoryPoints
+
+instance HasVictoryPoints PlayerCard where
+  getVictoryPoints MkPlayerCard {..} = pcVictoryPoints
 
 type ActionRunner env investigator
   = ( IsInvestigator investigator

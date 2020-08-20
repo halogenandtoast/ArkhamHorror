@@ -6,6 +6,7 @@ module Arkham.Types.Query
   , EnemyCount(..)
   , DoomCount(..)
   , AssetCount(..)
+  , XPCount(..)
   , TreacheryCount(..)
   , RemainingHealth(..)
   , InvestigatorLocation(..)
@@ -21,6 +22,7 @@ import ClassyPrelude
 newtype AssetCount = AssetCount { unAssetCount :: Int }
 newtype TreacheryCount = TreacheryCount { unTreacheryCount :: Int }
 newtype EnemyCount = EnemyCount { unEnemyCount :: Int }
+newtype XPCount = XPCount { unXPCount :: Int }
 newtype ClueCount = ClueCount { unClueCount :: Int }
   deriving newtype (Eq, Hashable)
 newtype SpendableClueCount = SpendableClueCount { unSpendableClueCount :: Int }

@@ -20,7 +20,6 @@ wolfManDrew uuid = WolfManDrew $ (baseAttrs uuid "01137")
   , enemyFight = 4
   , enemyHealth = Static 4
   , enemyEvade = 2
-  , enemyVictory = Just 1
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator WolfManDrew where

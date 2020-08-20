@@ -23,7 +23,6 @@ victoriaDevereux uuid = VictoriaDevereux $ (baseAttrs uuid "01140")
   , enemyFight = 3
   , enemyHealth = Static 3
   , enemyEvade = 2
-  , enemyVictory = Just 1
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator VictoriaDevereux where

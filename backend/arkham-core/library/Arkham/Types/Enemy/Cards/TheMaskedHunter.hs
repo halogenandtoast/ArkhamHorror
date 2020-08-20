@@ -26,7 +26,6 @@ theMaskedHunter uuid = TheMaskedHunter $ (baseAttrs uuid "01121b")
   , enemyFight = 4
   , enemyHealth = Static 4
   , enemyEvade = 2
-  , enemyVictory = Just 2
   , enemyPrey = MostClues
   }
 

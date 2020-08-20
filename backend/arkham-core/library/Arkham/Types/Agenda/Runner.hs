@@ -20,5 +20,6 @@ type AgendaRunner env
     , HasCount EnemyCount (LocationId, [Trait]) env
     , HasSet ActId () env
     , HasSet InvestigatorId () env
+    , HasCount ClueCount InvestigatorId env
     )
 

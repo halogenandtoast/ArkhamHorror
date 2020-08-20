@@ -131,5 +131,6 @@ class (HasId InvestigatorId () investigator) => IsInvestigator investigator wher
   canEvade :: (IsEnemy enemy) => enemy -> investigator -> Bool
   resourceCount :: investigator -> Int
   clueCount :: investigator -> Int
+  spendableClueCount :: investigator -> Int
   cardCount :: investigator -> Int
   canDo :: Action -> investigator -> Bool

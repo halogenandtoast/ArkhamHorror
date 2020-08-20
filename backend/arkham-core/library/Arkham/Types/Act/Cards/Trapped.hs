@@ -49,11 +49,12 @@ instance (ActRunner env) => RunMessage env Trapped where
            ]
         )
     PrePlayerWindow -> do
-      totalClueCount <- unClueCount <$> asks (getCount AllInvestigators)
+      totalSpendableClueCount <- unSpendableClueCount
+        <$> asks (getCount AllInvestigators)
       playerCount <- unPlayerCount <$> asks (getCount ())
       pure
         $ Trapped
         $ attrs
         & canAdvance
-        .~ (totalClueCount >= fromGameValue (PerPlayer 2) playerCount)
+        .~ (totalSpendableClueCount >= fromGameValue (PerPlayer 2) playerCount)
     _ -> Trapped <$> runMessage msg attrs

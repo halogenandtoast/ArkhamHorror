@@ -23,8 +23,8 @@ instance HasActions env investigator HuntingShadow where
 instance (TreacheryRunner env) => RunMessage env HuntingShadow where
   runMessage msg (HuntingShadow attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
-      playerClueCount <- unClueCount <$> asks (getCount iid)
-      if playerClueCount > 0
+      playerSpendableClueCount <- unSpendableClueCount <$> asks (getCount iid)
+      if playerSpendableClueCount > 0
         then unshiftMessage
           (Ask iid $ ChooseOne
             [ SpendClues 1 [iid]

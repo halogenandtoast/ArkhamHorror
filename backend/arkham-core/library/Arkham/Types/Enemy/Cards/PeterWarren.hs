@@ -34,7 +34,7 @@ instance (IsInvestigator investigator) => HasActions env investigator PeterWarre
       <> [ ActivateCardAbilityAction
              (getId () i)
              (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 (Just Parley)))
-         | clueCount i >= 2 && locationOf i == enemyLocation
+         | spendableClueCount i >= 2 && locationOf i == enemyLocation
          ]
 
 instance (EnemyRunner env) => RunMessage env PeterWarren where

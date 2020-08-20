@@ -9,6 +9,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Slot
 import Arkham.Types.Source
+import Arkham.Types.Target
 import ClassyPrelude
 
 newtype GuardDog = GuardDog Attrs
@@ -26,7 +27,7 @@ instance HasActions env investigator GuardDog where
 
 instance (AssetRunner env) => RunMessage env GuardDog where
   runMessage msg (GuardDog attrs@Attrs {..}) = case msg of
-    AssetDamage aid (EnemySource eid) _ _ | aid == assetId -> do
+    DidReceiveDamage (AssetTarget aid) (EnemySource eid) | aid == assetId -> do
       -- we must unshift the asset destroyed first before unshifting the question
       -- this is necessary to keep the asset as a valid investigator source of damage
       -- for any additional effects, such as triggering Roland's ability.

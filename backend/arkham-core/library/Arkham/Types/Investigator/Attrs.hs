@@ -647,9 +647,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       a <$ unshiftMessage (MoveTo iid lid)
     InvestigatorAssignDamage iid source health sanity | iid == investigatorId ->
       a <$ unshiftMessages
-        [InvestigatorDoAssignDamage iid source health sanity, CheckDefeated]
-    InvestigatorDoAssignDamage iid _ 0 0 | iid == investigatorId -> pure a
-    InvestigatorDoAssignDamage iid source health sanity
+        [InvestigatorDoAssignDamage iid source health sanity [], CheckDefeated]
+    InvestigatorDoAssignDamage iid source 0 0 targets | iid == investigatorId ->
+      a <$ unshiftMessages [DidReceiveDamage target source | target <- HashSet.toList (HashSet.fromList targets)]
+    InvestigatorDoAssignDamage iid source health sanity targets
       | iid == investigatorId -> do
         healthDamageMessages <- if health > 0
           then do
@@ -665,9 +666,9 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
             pure
               $ Run
                   [ InvestigatorDamage investigatorId source 1 0
-                  , assignRestOfHealthDamage
+                  , assignRestOfHealthDamage (InvestigatorTarget investigatorId:targets)
                   ]
-              : [ Run [AssetDamage aid source 1 0, assignRestOfHealthDamage]
+              : [ Run [AssetDamage aid source 1 0, assignRestOfHealthDamage (AssetTarget aid:targets)]
                 | aid <- healthDamageableAssets
                 ]
           else pure []
@@ -685,9 +686,9 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
             pure
               $ Run
                   [ InvestigatorDamage investigatorId source 0 1
-                  , assignRestOfSanityDamage
+                  , assignRestOfSanityDamage (InvestigatorTarget investigatorId:targets)
                   ]
-              : [ Run [AssetDamage aid source 0 1, assignRestOfSanityDamage]
+              : [ Run [AssetDamage aid source 0 1, assignRestOfSanityDamage (AssetTarget aid:targets)]
                 | aid <- sanityDamageableAssets
                 ]
           else pure []

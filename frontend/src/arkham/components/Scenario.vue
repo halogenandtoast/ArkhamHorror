@@ -9,7 +9,7 @@
       @choose="$emit('choose', $event)"
     />
     <div class="scenario-cards">
-      <VictoryPile :game="game" />
+      <VictoryDisplay :game="game" />
       <div v-if="topOfEncounterDiscard" class="discard">
         <img
           :src="topOfEncounterDiscard"
@@ -112,7 +112,7 @@ import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
 import Tab from '@/arkham/components/Tab.vue';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
-import VictoryPile from '@/arkham/components/VictoryPile.vue';
+import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import Location from '@/arkham/components/Location.vue';
 
 @Component({
@@ -130,7 +130,7 @@ import Location from '@/arkham/components/Location.vue';
     PlayerOrder,
     PlayerSelector,
     CardOverlay,
-    VictoryPile,
+    VictoryDisplay,
   },
 })
 export default class Scenario extends Vue {

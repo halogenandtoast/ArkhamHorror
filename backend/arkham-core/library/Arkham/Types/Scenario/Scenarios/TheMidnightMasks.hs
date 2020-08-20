@@ -34,7 +34,7 @@ theMidnightMasks difficulty =
      { scenarioLocationLayout = Just [ "northside downtown easttown", "miskatonicUniversity rivertown graveyard", "stMarysHospital southside yourHouse"] }
 
 instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
-  runMessage msg s@(TheMidnightMasks attrs) = case msg of
+  runMessage msg s@(TheMidnightMasks attrs@Attrs {..}) = case msg of
     Setup -> do
       count <- unPlayerCount <$> asks (getCount ())
       (acolytes, darkCult) <- splitAt (count - 1)
@@ -82,10 +82,15 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
         <> ghoulPriestMessages
         <> spawnAcolyteMessages
         )
-    ResolveToken Token.Skull iid skillValue -> do
-      cultists <- HashSet.toList <$> asks (getSet @EnemyId Cultist)
-      doomCounts <- map unDoomCount <$> traverse (\c -> asks (getCount c)) cultists
-      s <$ runTest skillValue (-(maximum $ ncons 0 doomCounts))
+    ResolveToken Token.Skull _ skillValue -> do
+      if scenarioDifficulty `elem` [Easy, Standard]
+        then do
+          cultists <- HashSet.toList <$> asks (getSet @EnemyId Cultist)
+          doomCounts <- map unDoomCount <$> traverse (\c -> asks (getCount c)) cultists
+          s <$ runTest skillValue (-(maximum $ ncons 0 doomCounts))
+        else do
+          doomCount <- unDoomCount <$> asks (getCount ())
+          s <$ runTest skillValue (-doomCount)
     ResolveToken Token.Cultist iid skillValue -> do
       closestCultitsts <- map unClosestEnemyId . HashSet.toList
         <$> asks (getSet (iid, [Cultist]))

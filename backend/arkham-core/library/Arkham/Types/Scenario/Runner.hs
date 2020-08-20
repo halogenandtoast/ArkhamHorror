@@ -15,6 +15,7 @@ type ScenarioRunner env
     , HasRecord env
     , HasCount PlayerCount () env
     , HasCount DoomCount EnemyId env
+    , HasCount DoomCount () env
     , HasSet EnemyId Trait env
     , HasSet ClosestEnemyId (InvestigatorId, [Trait]) env
     )

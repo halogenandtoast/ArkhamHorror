@@ -38,6 +38,7 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
 import Arkham.Types.Query
 import Arkham.Types.Slot
 import ClassyPrelude
@@ -80,6 +81,9 @@ instance HasTraits Asset where
 
 instance HasId (Maybe OwnerId) () Asset where
   getId _ = (OwnerId <$>) . assetInvestigator . assetAttrs
+
+instance HasId (Maybe LocationId) () Asset where
+  getId _ = assetLocation . assetAttrs
 
 instance HasCount DoomCount () Asset where
   getCount _ = DoomCount . assetDoom . assetAttrs

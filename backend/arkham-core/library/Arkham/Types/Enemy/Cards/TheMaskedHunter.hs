@@ -37,7 +37,7 @@ instance (EnemyRunner env) => RunMessage env TheMaskedHunter where
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       playerCount <- unPlayerCount <$> asks (getCount ())
       TheMaskedHunter
-        <$> runMessage msg (attrs & health %~ fmap (+ playerCount))
+        <$> runMessage msg (attrs & health %~ fmap (+ (2 * playerCount)))
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       unshiftMessages
         [ AddModifier

@@ -46,8 +46,10 @@ export enum MessageType {
   ADD_FOCUSED_TO_TOP_OF_DECK = 'AddFocusedToTopOfDeck',
   ENGAGE_ENEMY = 'EngageEnemy',
   INVESTIGATOR_DRAW_ENCOUNTER_CARD = 'InvestigatorDrawEncounterCard',
+  SURGE = 'Surge',
   ATTACH_TREACHERY_TO_LOCATION = 'AttachTreacheryToLocation',
   PLACE_DOOM = 'PlaceDoom',
+  FOUND_AND_DREW_ENCOUNTER_CARD = 'FoundAndDrewEncounterCard',
   LABEL = 'Label',
 }
 
@@ -106,6 +108,8 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('EngageEnemy').then(() => JsonDecoder.constant(MessageType.ENGAGE_ENEMY)),
     JsonDecoder.isExactly('AttachTreacheryToLocation').then(() => JsonDecoder.constant(MessageType.ATTACH_TREACHERY_TO_LOCATION)),
     JsonDecoder.isExactly('InvestigatorDrawEncounterCard').then(() => JsonDecoder.constant(MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD)),
+    JsonDecoder.isExactly('Surge').then(() => JsonDecoder.constant(MessageType.SURGE)),
+    JsonDecoder.isExactly('FoundAndDrewEncounterCard').then(() => JsonDecoder.constant(MessageType.FOUND_AND_DREW_ENCOUNTER_CARD)),
     JsonDecoder.isExactly('PlaceDoom').then(() => JsonDecoder.constant(MessageType.PLACE_DOOM)),
   ],
   'MessageType',

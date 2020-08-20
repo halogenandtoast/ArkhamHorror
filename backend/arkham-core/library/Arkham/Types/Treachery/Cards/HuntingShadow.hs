@@ -21,7 +21,7 @@ instance HasActions env investigator HuntingShadow where
   getActions i window (HuntingShadow attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env HuntingShadow where
-  runMessage msg (HuntingShadow attrs@Attrs {..}) = case msg of
+  runMessage msg t@(HuntingShadow attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
       playerSpendableClueCount <- unSpendableClueCount <$> asks (getCount iid)
       if playerSpendableClueCount > 0
@@ -35,5 +35,5 @@ instance (TreacheryRunner env) => RunMessage env HuntingShadow where
           )
         else unshiftMessage
           (InvestigatorAssignDamage iid (TreacherySource tid) 2 0)
-      HuntingShadow <$> runMessage msg attrs
+      pure t
     _ -> HuntingShadow <$> runMessage msg attrs

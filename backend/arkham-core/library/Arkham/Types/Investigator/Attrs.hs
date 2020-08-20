@@ -194,6 +194,12 @@ damageValueFor baseValue attrs = foldr
   applyModifier (DamageDealt m _) n = max 0 (n + m)
   applyModifier _ n = n
 
+canDiscoverClues :: Attrs -> Bool
+canDiscoverClues Attrs {..} = not (any match investigatorModifiers)
+ where
+  match CannotDiscoverClues{} = True
+  match _ = False
+
 removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
 
@@ -649,7 +655,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       a <$ unshiftMessages
         [InvestigatorDoAssignDamage iid source health sanity [], CheckDefeated]
     InvestigatorDoAssignDamage iid source 0 0 targets | iid == investigatorId ->
-      a <$ unshiftMessages [DidReceiveDamage target source | target <- HashSet.toList (HashSet.fromList targets)]
+      a <$ unshiftMessages
+        [ DidReceiveDamage target source
+        | target <- HashSet.toList (HashSet.fromList targets)
+        ]
     InvestigatorDoAssignDamage iid source health sanity targets
       | iid == investigatorId -> do
         healthDamageMessages <- if health > 0
@@ -666,9 +675,13 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
             pure
               $ Run
                   [ InvestigatorDamage investigatorId source 1 0
-                  , assignRestOfHealthDamage (InvestigatorTarget investigatorId:targets)
+                  , assignRestOfHealthDamage
+                    (InvestigatorTarget investigatorId : targets)
                   ]
-              : [ Run [AssetDamage aid source 1 0, assignRestOfHealthDamage (AssetTarget aid:targets)]
+              : [ Run
+                    [ AssetDamage aid source 1 0
+                    , assignRestOfHealthDamage (AssetTarget aid : targets)
+                    ]
                 | aid <- healthDamageableAssets
                 ]
           else pure []
@@ -686,9 +699,13 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
             pure
               $ Run
                   [ InvestigatorDamage investigatorId source 0 1
-                  , assignRestOfSanityDamage (InvestigatorTarget investigatorId:targets)
+                  , assignRestOfSanityDamage
+                    (InvestigatorTarget investigatorId : targets)
                   ]
-              : [ Run [AssetDamage aid source 0 1, assignRestOfSanityDamage (AssetTarget aid:targets)]
+              : [ Run
+                    [ AssetDamage aid source 0 1
+                    , assignRestOfSanityDamage (AssetTarget aid : targets)
+                    ]
                 | aid <- sanityDamageableAssets
                 ]
           else pure []
@@ -701,8 +718,11 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         , Investigate iid lid skillType tokenResponses False
         ]
     InvestigatorDiscoverClues iid lid n | iid == investigatorId ->
-      a <$ unshiftMessage
-        (DiscoverCluesAtLocation iid lid (cluesToDiscover a n))
+      if canDiscoverClues a
+        then
+          a <$ unshiftMessage
+            (DiscoverCluesAtLocation iid lid (cluesToDiscover a n))
+        else pure a
     DiscoverClues iid lid n | iid == investigatorId -> do
       a <$ unshiftMessage (AfterDiscoverClues iid lid n)
     AfterDiscoverClues iid _ n | iid == investigatorId -> pure $ a & clues +~ n
@@ -1115,10 +1135,12 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
     GainXP iid amount | iid == investigatorId -> pure $ a & xp +~ amount
     InvestigatorPlaceCluesOnLocation iid n | iid == investigatorId -> do
       let cluesToPlace = min n investigatorClues
-      unshiftMessage (PlaceClues (LocationTarget investigatorLocation) cluesToPlace)
+      unshiftMessage
+        (PlaceClues (LocationTarget investigatorLocation) cluesToPlace)
       pure $ a & clues -~ cluesToPlace
     InvestigatorPlaceAllCluesOnLocation iid | iid == investigatorId -> do
-      unshiftMessage (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
+      unshiftMessage
+        (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
       pure $ a & clues .~ 0
     PlayerWindow iid additionalActions | iid == investigatorId -> do
       actions <- asks (join (getActions a NonFast))

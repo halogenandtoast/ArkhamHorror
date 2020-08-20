@@ -370,6 +370,9 @@ instance HasCount TreacheryCount (LocationId, CardCode) Game where
 instance HasCount DoomCount EnemyId Game where
   getCount eid = getCount () . getEnemy eid
 
+instance HasCount DoomCount () Game where
+  getCount _ = DoomCount . sum . map (unDoomCount . getCount ()) . HashMap.elems . view enemies
+
 instance HasCount ClueCount LocationId Game where
   getCount lid = getCount () . getLocation lid
 

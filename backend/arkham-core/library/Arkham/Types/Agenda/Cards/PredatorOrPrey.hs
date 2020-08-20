@@ -7,11 +7,14 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
 import Arkham.Types.FastWindow
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
+import Arkham.Types.Query
 import ClassyPrelude hiding (sequence)
+import qualified Data.HashSet as HashSet
 
 newtype PredatorOrPrey = PredatorOrPrey Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -35,6 +38,9 @@ instance (ActionRunner env investigator) => HasActions env investigator Predator
 instance (AgendaRunner env) => RunMessage env PredatorOrPrey where
   runMessage msg a@(PredatorOrPrey attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1a" -> do
+      investigatorIds <- HashSet.toList <$> asks (getSet @InvestigatorId ())
+      investigatorIdsWithClues <- asks $ \env ->
+        for investigatorIds $ \iid -> (iid,) . unClueCount $ getCount @ClueCount iid env
       void $ error "Need to spawn the masked hunter"
       pure a
     UseCardAbility iid _ (AgendaSource aid) 1 | aid == agendaId -> do

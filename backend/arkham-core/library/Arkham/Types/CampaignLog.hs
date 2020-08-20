@@ -2,6 +2,7 @@ module Arkham.Types.CampaignLog where
 
 import Arkham.Json
 import Arkham.Types.CampaignLogKey
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes.HasRecord
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
@@ -10,6 +11,7 @@ import Lens.Micro
 data CampaignLog = CampaignLog
   { campaignLogRecorded :: HashSet CampaignLogKey
   , campaignLogRecordedCounts :: HashMap CampaignLogKey Int
+  , campaignLogRecordedSets :: HashMap CampaignLogKey [CardCode]
   }
   deriving stock (Show, Generic)
 
@@ -23,10 +25,15 @@ recordedCounts :: Lens' CampaignLog (HashMap CampaignLogKey Int)
 recordedCounts =
   lens campaignLogRecordedCounts $ \m x -> m { campaignLogRecordedCounts = x }
 
+recordedSets :: Lens' CampaignLog (HashMap CampaignLogKey [CardCode])
+recordedSets =
+  lens campaignLogRecordedSets $ \m x -> m { campaignLogRecordedSets = x }
+
 mkCampaignLog :: CampaignLog
 mkCampaignLog = CampaignLog
   { campaignLogRecorded = mempty
   , campaignLogRecordedCounts = mempty
+  , campaignLogRecordedSets = mempty
   }
 
 instance ToJSON CampaignLog where

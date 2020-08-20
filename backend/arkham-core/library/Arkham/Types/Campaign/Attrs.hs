@@ -52,7 +52,15 @@ instance (CampaignRunner env) => RunMessage env Attrs where
     InitDeck iid deck -> pure $ a & decks %~ HashMap.insert iid deck
     ResetGame -> a <$ unshiftMessages
       [ LoadDeck iid deck | (iid, deck) <- HashMap.toList campaignDecks ]
+    CrossOutRecord key ->
+      pure
+        $ a
+        & (log . recorded %~ HashSet.delete key)
+        & (log . recordedSets %~ HashMap.delete key)
+        & (log . recordedCounts %~ HashMap.delete key)
     Record key -> pure $ a & log . recorded %~ HashSet.insert key
+    RecordSet key cardCodes ->
+      pure $ a & log . recordedSets %~ HashMap.insert key cardCodes
     RecordCount key int ->
       pure $ a & log . recordedCounts %~ HashMap.insert key int
     _ -> pure a

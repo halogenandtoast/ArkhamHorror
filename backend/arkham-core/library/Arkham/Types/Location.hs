@@ -80,6 +80,11 @@ allLocations = HashMap.fromList $ map
 instance HasTraits Location where
   getTraits = locationTraits . locationAttrs
 
+instance HasVictoryPoints Location where
+  getVictoryPoints l =
+    let Attrs {..} = locationAttrs l
+    in if locationClues == 0 then locationVictory else Nothing
+
 instance HasCount ClueCount () Location where
   getCount _ = ClueCount . locationClues . locationAttrs
 

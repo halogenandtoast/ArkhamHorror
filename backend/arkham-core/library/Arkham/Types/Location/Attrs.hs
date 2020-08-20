@@ -25,20 +25,21 @@ import qualified Data.HashSet as HashSet
 import Lens.Micro
 
 data Attrs = Attrs
-  { locationName               :: Text
-  , locationId                 :: LocationId
-  , locationRevealClues        :: GameValue
-  , locationClues              :: Int
-  , locationShroud             :: Int
-  , locationRevealed           :: Bool
-  , locationBlocked            :: Bool
-  , locationInvestigators      :: HashSet InvestigatorId
-  , locationEnemies            :: HashSet EnemyId
-  , locationVictory            :: Maybe Int
-  , locationSymbol             :: LocationSymbol
-  , locationConnectedSymbols   :: HashSet LocationSymbol
+  { locationName :: Text
+  , locationId :: LocationId
+  , locationRevealClues :: GameValue
+  , locationClues :: Int
+  , locationDoom :: Int
+  , locationShroud :: Int
+  , locationRevealed :: Bool
+  , locationBlocked :: Bool
+  , locationInvestigators :: HashSet InvestigatorId
+  , locationEnemies :: HashSet EnemyId
+  , locationVictory :: Maybe Int
+  , locationSymbol :: LocationSymbol
+  , locationConnectedSymbols :: HashSet LocationSymbol
   , locationConnectedLocations :: HashSet LocationId
-  , locationTraits             :: HashSet Trait
+  , locationTraits :: HashSet Trait
   , locationTreacheries :: HashSet TreacheryId
   , locationAssets :: HashSet AssetId
   , locationModifiers :: [Modifier]
@@ -51,7 +52,6 @@ instance ToJSON Attrs where
 
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "location"
-
 
 investigators :: Lens' Attrs (HashSet InvestigatorId)
 investigators =
@@ -86,6 +86,7 @@ baseAttrs lid name shroud' revealClues symbol' connectedSymbols' = Attrs
   , locationId = lid
   , locationRevealClues = revealClues
   , locationClues = 0
+  , locationDoom = 0
   , locationShroud = shroud'
   , locationRevealed = False
   , locationBlocked = False

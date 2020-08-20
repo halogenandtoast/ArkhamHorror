@@ -371,7 +371,14 @@ instance HasCount DoomCount EnemyId Game where
   getCount eid = getCount () . getEnemy eid
 
 instance HasCount DoomCount () Game where
-  getCount _ = DoomCount . sum . map (unDoomCount . getCount ()) . HashMap.elems . view enemies
+  getCount _ g =
+    DoomCount
+      . sum
+      . map unDoomCount
+      $ (map (getCount ()) . HashMap.elems $ view enemies g)
+      <> (map (getCount ()) . HashMap.elems $ view locations g)
+      <> (map (getCount ()) . HashMap.elems $ view assets g)
+      <> (map (getCount ()) . HashMap.elems $ view treacheries g)
 
 instance HasCount ClueCount LocationId Game where
   getCount lid = getCount () . getLocation lid

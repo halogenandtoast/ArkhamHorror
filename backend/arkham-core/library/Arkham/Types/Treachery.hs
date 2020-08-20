@@ -12,6 +12,7 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Helpers
 import Arkham.Types.LocationId
+import Arkham.Types.Query
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Cards.AncientEvils
 import Arkham.Types.Treachery.Cards.CoverUp
@@ -59,6 +60,9 @@ instance HasCardCode Treachery where
 
 instance HasTraits Treachery where
   getTraits = treacheryTraits . treacheryAttrs
+
+instance HasCount DoomCount () Treachery where
+  getCount _ = DoomCount . treacheryDoom . treacheryAttrs
 
 data Treachery
   = CoverUp' CoverUp

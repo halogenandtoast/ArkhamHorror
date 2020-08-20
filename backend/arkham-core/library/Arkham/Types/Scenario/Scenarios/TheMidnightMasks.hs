@@ -31,7 +31,12 @@ newtype TheMidnightMasks = TheMidnightMasks Attrs
 theMidnightMasks :: Difficulty -> TheMidnightMasks
 theMidnightMasks difficulty =
   TheMidnightMasks $ (baseAttrs "01120" "The Midnight Masks" [] [] difficulty)
-     { scenarioLocationLayout = Just [ "northside downtown easttown", "miskatonicUniversity rivertown graveyard", "stMarysHospital southside yourHouse"] }
+    { scenarioLocationLayout = Just
+      [ "northside downtown easttown"
+      , "miskatonicUniversity rivertown graveyard"
+      , "stMarysHospital southside yourHouse"
+      ]
+    }
 
 instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs@Attrs {..}) = case msg of
@@ -86,18 +91,19 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
       if scenarioDifficulty `elem` [Easy, Standard]
         then do
           cultists <- HashSet.toList <$> asks (getSet @EnemyId Cultist)
-          doomCounts <- map unDoomCount <$> traverse (\c -> asks (getCount c)) cultists
+          doomCounts <- map unDoomCount <$> traverse (asks . getCount) cultists
           s <$ runTest skillValue (-(maximum $ ncons 0 doomCounts))
         else do
           doomCount <- unDoomCount <$> asks (getCount ())
           s <$ runTest skillValue (-doomCount)
     ResolveToken Token.Cultist iid skillValue -> do
-      closestCultitsts <- map unClosestEnemyId . HashSet.toList
-        <$> asks (getSet (iid, [Cultist]))
+      closestCultitsts <- map unClosestEnemyId . HashSet.toList <$> asks
+        (getSet (iid, [Cultist]))
       case closestCultitsts of
         [] -> pure ()
         [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
-        xs -> unshiftMessage (Ask iid $ ChooseOne [PlaceDoom (EnemyTarget x) 1 | x <- xs])
+        xs -> unshiftMessage
+          (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
       s <$ runTest skillValue (-2)
     ResolveToken Token.Tablet iid skillValue -> do
       unshiftMessage (AddOnFailure $ InvestigatorPlaceCluesOnLocation iid 1)

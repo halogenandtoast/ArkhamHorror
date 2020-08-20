@@ -83,6 +83,9 @@ instance HasTraits Location where
 instance HasCount ClueCount () Location where
   getCount _ = ClueCount . locationClues . locationAttrs
 
+instance HasCount DoomCount () Location where
+  getCount _ = DoomCount . locationDoom . locationAttrs
+
 instance HasSet EnemyId () Location where
   getSet _ = locationEnemies . locationAttrs
 

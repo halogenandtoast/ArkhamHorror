@@ -367,6 +367,9 @@ instance HasCount TreacheryCount (LocationId, CardCode) Game where
       (\k -> getCardCode <$> HashMap.lookup k (g ^. treacheries))
       treacheries'
 
+instance HasCount DoomCount EnemyId Game where
+  getCount eid = getCount () . getEnemy eid
+
 instance HasCount ClueCount LocationId Game where
   getCount lid = getCount () . getLocation lid
 
@@ -591,6 +594,9 @@ instance HasSet ClosestEnemyId (LocationId, [Trait]) Game where
         )
         locations'
     where matcher lid = not . null $ getSet @EnemyId (traits, lid) g
+
+instance HasSet ClosestEnemyId (InvestigatorId, [Trait]) Game where
+  getSet (iid, traits) g = getSet (locationFor iid g, traits) g
 
 instance HasSet ClosestLocationId (LocationId, LocationId) Game where
   getSet (start, destination) g =

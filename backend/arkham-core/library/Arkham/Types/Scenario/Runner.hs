@@ -1,6 +1,7 @@
 module Arkham.Types.Scenario.Runner where
 
 import Arkham.Types.Classes
+import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Query
 import Arkham.Types.Trait
@@ -13,5 +14,8 @@ type ScenarioRunner env
     , HasSet InvestigatorId () env
     , HasRecord env
     , HasCount PlayerCount () env
+    , HasCount DoomCount EnemyId env
+    , HasSet EnemyId Trait env
+    , HasSet ClosestEnemyId (InvestigatorId, [Trait]) env
     )
 

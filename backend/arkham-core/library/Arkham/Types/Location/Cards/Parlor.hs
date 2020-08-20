@@ -7,6 +7,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.FastWindow
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
@@ -27,13 +28,14 @@ parlor = Parlor $ (baseAttrs "01115" "Parlor" 2 (Static 0) Diamond [Square])
   }
 
 instance (ActionRunner env investigator) => HasActions env investigator Parlor where
-  getActions i window (Parlor attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions i window attrs
+  getActions i NonFast (Parlor attrs@Attrs {..}) | locationRevealed = do
+    baseActions <- getActions i NonFast attrs
     maid <- asks (fmap unStoryAssetId <$> getId (CardCode "01117"))
     case maid of
       Nothing -> pure []
       Just aid -> do
         miid <- fmap unOwnerId <$> asks (getId aid)
+        assetLocationId <- asks (getId aid)
         pure
           $ baseActions
           <> [ ActivateCardAbilityAction
@@ -55,7 +57,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Parlor w
                    { abilityProvider = LocationSource "01115"
                    }
                  )
-             | isNothing miid
+             | isNothing miid && Just (locationOf i) == assetLocationId
              ]
   getActions _ _ _ = pure []
 

@@ -9,6 +9,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
+import Arkham.Types.FastWindow
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
@@ -195,7 +196,7 @@ instance IsEnemy Attrs where
   isAloof Attrs {..} = Keyword.Aloof `elem` enemyKeywords
 
 instance (IsInvestigator investigator) => HasActions env investigator Attrs where
-  getActions i _ enemy@Attrs {..} =
+  getActions i NonFast enemy@Attrs {..} =
     pure $ fightEnemyActions <> engageEnemyActions <> evadeEnemyActions
    where
     investigatorId = getId () i
@@ -212,6 +213,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Attrs wher
       [ EvadeEnemy investigatorId enemyId SkillAgility mempty mempty mempty True
       | canEvade enemy i
       ]
+  getActions _ _ _ = pure []
 
 instance (EnemyRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
@@ -376,6 +378,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
     UnengageEnemy iid eid | eid == enemyId -> do
       pure $ a & engagedInvestigators %~ HashSet.delete iid
     EnemySetBearer eid bid | eid == enemyId -> pure $ a & prey .~ Bearer bid
+    AdvanceAgenda{} -> pure $ a & doom .~ 0
     PlaceDoom (EnemyTarget eid) amount | eid == enemyId ->
       pure $ a & doom +~ amount
     _ -> pure a

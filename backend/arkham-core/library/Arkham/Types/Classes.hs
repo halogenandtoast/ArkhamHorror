@@ -121,6 +121,7 @@ type ActionRunner env investigator
     , HasActions env investigator (ActionType, env)
     , HasId (Maybe StoryAssetId) CardCode env
     , HasId (Maybe OwnerId) AssetId env
+    , HasId (Maybe LocationId) AssetId env
     , HasList UsedAbility () env
     , HasCount SpendableClueCount AllInvestigators env
     )

@@ -10,6 +10,7 @@ import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Slot
 import Arkham.Types.Source
@@ -29,6 +30,7 @@ data Attrs = Attrs
   , assetCardCode :: CardCode
   , assetCost :: Int
   , assetInvestigator :: Maybe InvestigatorId
+  , assetLocation :: Maybe LocationId
   , assetActions :: [Message]
   , assetSlots :: [SlotType]
   , assetHealth :: Maybe Int
@@ -64,6 +66,7 @@ baseAttrs aid cardCode =
       , assetCardCode = cardCode
       , assetCost = pcCost
       , assetInvestigator = Nothing
+      , assetLocation = Nothing
       , assetActions = mempty
       , assetSlots = mempty
       , assetHealth = Nothing
@@ -84,6 +87,9 @@ uses = lens assetUses $ \m x -> m { assetUses = x }
 
 investigator :: Lens' Attrs (Maybe InvestigatorId)
 investigator = lens assetInvestigator $ \m x -> m { assetInvestigator = x }
+
+location :: Lens' Attrs (Maybe LocationId)
+location = lens assetLocation $ \m x -> m { assetLocation = x }
 
 getInvestigator :: HasCallStack => Attrs -> InvestigatorId
 getInvestigator = fromJustNote "asset must be owned" . view investigator
@@ -111,6 +117,7 @@ instance (AssetRunner env) => RunMessage env Attrs where
       pure $ a & healthDamage +~ health & sanityDamage +~ sanity
     InvestigatorEliminated iid | assetInvestigator == Just iid ->
       a <$ unshiftMessage (DiscardAsset assetId)
+    AddAssetAt aid lid | aid == assetId -> pure $ a & location ?~ lid
     DiscardAsset aid | aid == assetId -> case assetInvestigator of
       Nothing -> pure a
       Just iid -> a <$ unshiftMessage

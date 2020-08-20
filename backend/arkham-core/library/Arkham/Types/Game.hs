@@ -344,6 +344,9 @@ instance HasId LeadInvestigatorId () Game where
 instance HasId (Maybe OwnerId) AssetId Game where
   getId aid = getId () . getAsset aid
 
+instance HasId (Maybe LocationId) AssetId Game where
+  getId aid = getId () . getAsset aid
+
 instance HasId (Maybe StoryAssetId) CardCode Game where
   getId cardCode =
     (StoryAssetId . fst <$>)
@@ -621,11 +624,21 @@ instance HasSet ClosestEnemyId (LocationId, [Trait]) Game where
   getSet (start, traits) g =
     let locations' = map ClosestLocationId $ getShortestPath g start matcher
     in
-      HashSet.unions $ map
-        (\lid -> HashSet.map ClosestEnemyId
-          $ getSet (traits, unClosestLocationId lid) g
-        )
-        locations'
+      case locations' of
+        [] -> mempty
+        lids ->
+          let
+            theSet = HashSet.unions $ map
+              (\lid -> HashSet.map ClosestEnemyId
+                $ getSet (traits, unClosestLocationId lid) g
+              )
+              lids
+          in
+            if null theSet
+              then HashSet.unions $ map
+                (\lid -> getSet (unClosestLocationId lid, traits) g)
+                lids
+              else theSet
     where matcher lid = not . null $ getSet @EnemyId (traits, lid) g
 
 instance HasSet ClosestEnemyId (InvestigatorId, [Trait]) Game where
@@ -894,7 +907,7 @@ runGameMessage msg g = case msg of
   ShuffleAllFocusedIntoDeck _ (InvestigatorTarget iid') -> do
     let cards = mapMaybe toPlayerCard (g ^. focusedCards)
     unshiftMessage (ShuffleCardsIntoDeck iid' cards)
-    pure $ g & focusedCards .~ []
+    pure $ g & focusedCards .~ mempty
   AddFocusedToTopOfDeck _ EncounterDeckTarget cardId -> do
     let
       card =
@@ -1284,7 +1297,7 @@ runGameMessage msg g = case msg of
     let
       matchingDeckCards =
         filter (encounterCardMatch matcher) (g ^. encounterDeck)
-    g <$ unshiftMessage
+    unshiftMessage
       (Ask iid
       $ ChooseOne
       $ map (FoundAndDrewEncounterCard iid FromDiscard) matchingDiscards
@@ -1292,6 +1305,7 @@ runGameMessage msg g = case msg of
            (FoundAndDrewEncounterCard iid FromEncounterDeck)
            matchingDeckCards
       )
+    pure $ g & focusedCards .~ map EncounterCard matchingDeckCards
   FoundAndDrewEncounterCard iid cardSource card -> do
     let
       cardId = getCardId card
@@ -1304,7 +1318,11 @@ runGameMessage msg g = case msg of
         _ -> g ^. encounterDeck
     shuffled <- liftIO $ shuffleM encounterDeck'
     unshiftMessage (InvestigatorDrewEncounterCard iid card)
-    pure $ g & encounterDeck .~ shuffled & discard .~ discard'
+    pure
+      $ g
+      & (encounterDeck .~ shuffled)
+      & (discard .~ discard')
+      & (focusedCards .~ mempty)
   DiscardEncounterUntilFirst source matcher -> do
     let
       (discards, remainingDeck) =
@@ -1317,6 +1335,7 @@ runGameMessage msg g = case msg of
       (x : xs) -> do
         unshiftMessage (RequestedEncounterCard source (Just x))
         pure $ g & encounterDeck .~ xs & discard %~ (reverse discards <>)
+  Surge iid -> g <$ unshiftMessage (InvestigatorDrawEncounterCard iid)
   InvestigatorDrawEncounterCard iid -> if null (g ^. encounterDeck)
     then g <$ unshiftMessages
       [ShuffleEncounterDiscardBackIn, InvestigatorDrawEncounterCard iid]

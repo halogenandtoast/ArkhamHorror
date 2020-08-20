@@ -23,11 +23,11 @@ instance HasActions env investigator FalseLead where
   getActions i window (FalseLead attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env FalseLead where
-  runMessage msg (FalseLead attrs@Attrs {..}) = case msg of
+  runMessage msg t@(FalseLead attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
       playerClueCount <- unClueCount <$> asks (getCount iid)
       if playerClueCount == 0
-        then unshiftMessage (Surge iid)
+        then unshiftMessage (Ask iid $ ChooseOne [Surge iid])
         else unshiftMessages
           [ RevelationSkillTest
             iid
@@ -38,5 +38,5 @@ instance (TreacheryRunner env) => RunMessage env FalseLead where
             [PlaceCluePerPointOfFailureOnLocation iid]
           , Discard (TreacheryTarget tid)
           ]
-      FalseLead <$> runMessage msg attrs
+      pure t
     _ -> FalseLead <$> runMessage msg attrs

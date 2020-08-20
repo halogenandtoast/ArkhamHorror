@@ -36,9 +36,17 @@ export default class EncounterDeck extends Vue {
     return this.choices.findIndex((c) => c.tag === MessageType.SEARCH_TOP_OF_DECK && c.contents[1].tag === 'EncounterDeckTarget');
   }
 
+  get surgeAction() {
+    return this.choices.findIndex((c) => c.tag === MessageType.SURGE);
+  }
+
   get deckAction() {
     if (this.drawEncounterCardAction !== -1) {
       return this.drawEncounterCardAction;
+    }
+
+    if (this.surgeAction !== -1) {
+      return this.surgeAction;
     }
 
     return this.searchTopOfEncounterCardAction;
@@ -53,6 +61,8 @@ export default class EncounterDeck extends Vue {
 
     switch (choice.tag) {
       case MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD:
+        return `/img/arkham/portraits/${choice.contents}.jpg`;
+      case MessageType.SURGE:
         return `/img/arkham/portraits/${choice.contents}.jpg`;
       default:
         return `/img/arkham/portraits/${choice.contents[0]}.jpg`;

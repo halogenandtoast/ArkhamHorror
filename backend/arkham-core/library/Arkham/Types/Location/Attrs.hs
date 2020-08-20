@@ -27,7 +27,7 @@ import Lens.Micro
 data Attrs = Attrs
   { locationName :: Text
   , locationId :: LocationId
-  , locationRevealClues :: GameValue
+  , locationRevealClues :: GameValue Int
   , locationClues :: Int
   , locationDoom :: Int
   , locationShroud :: Int
@@ -77,7 +77,7 @@ baseAttrs
   :: LocationId
   -> Text
   -> Int
-  -> GameValue
+  -> GameValue Int
   -> LocationSymbol
   -> [LocationSymbol]
   -> Attrs
@@ -206,6 +206,8 @@ instance (LocationRunner env) => RunMessage env Attrs where
     EnemyMove eid _ lid | lid == locationId ->
       pure $ a & enemies %~ HashSet.insert eid
     EnemySpawn lid eid | lid == locationId ->
+      pure $ a & enemies %~ HashSet.insert eid
+    EnemySpawnedAt lid eid | lid == locationId ->
       pure $ a & enemies %~ HashSet.insert eid
     RemoveEnemy eid -> pure $ a & enemies %~ HashSet.delete eid
     EnemyDefeated eid _ _ _ -> pure $ a & enemies %~ HashSet.delete eid

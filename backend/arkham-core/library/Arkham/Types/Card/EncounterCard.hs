@@ -73,6 +73,7 @@ allEncounterCards = HashMap.fromList
   [ ("01116", ghoulPriest)
   , ("01118", fleshEater)
   , ("01119", icyGhoul)
+  , ("01121b", theMaskedHunter)
   , ("01135", huntingShadow)
   , ("01136", falseLead)
   , ("01137", wolfManDrew)
@@ -111,6 +112,12 @@ fleshEater cardId =
 icyGhoul :: CardId -> EncounterCard
 icyGhoul cardId =
   (enemy cardId "01119" "Icy Ghoul") { ecTraits = [Humanoid, Monster, Ghoul] }
+
+theMaskedHunter :: CardId -> EncounterCard
+theMaskedHunter cardId = (enemy cardId "01121b" "The Masked Hunter")
+  { ecTraits = [Humanoid, Cultist, Elite]
+  , ecKeywords = [Keyword.Hunter]
+  }
 
 huntingShadow :: CardId -> EncounterCard
 huntingShadow cardId = (treachery cardId "01135" "Hunting Shadow")

@@ -358,7 +358,10 @@ instance GetInvestigatorId Investigator where
   getInvestigatorId = investigatorId . investigatorAttrs
 
 isPrey
-  :: (HasSet Int SkillType env, HasSet RemainingHealth () env)
+  :: ( HasSet Int SkillType env
+     , HasSet RemainingHealth () env
+     , HasSet ClueCount () env
+     )
   => Prey
   -> env
   -> Investigator
@@ -374,6 +377,9 @@ isPrey LowestHealth env i =
     == remainingHealth i
 isPrey (Bearer bid) _ i =
   unBearerId bid == unInvestigatorId (investigatorId $ investigatorAttrs i)
+isPrey MostClues env i =
+  fromMaybe 0 (maximumMay . map unClueCount . HashSet.toList $ getSet () env)
+    == unClueCount (getCount () i)
 isPrey SetToBearer _ _ = error "The bearer was not correctly set"
 
 handOf :: Investigator -> [Card]

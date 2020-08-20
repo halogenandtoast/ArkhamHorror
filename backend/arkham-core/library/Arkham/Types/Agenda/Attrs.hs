@@ -14,7 +14,7 @@ import Lens.Micro
 
 data Attrs = Attrs
   { agendaDoom          :: Int
-  , agendaDoomThreshold :: GameValue
+  , agendaDoomThreshold :: GameValue Int
   , agendaId            :: AgendaId
   , agendaName          :: Text
   , agendaSequence      :: Text
@@ -39,11 +39,11 @@ sequence = lens agendaSequence $ \m x -> m { agendaSequence = x }
 flipped :: Lens' Attrs Bool
 flipped = lens agendaFlipped $ \m x -> m { agendaFlipped = x }
 
-doomThreshold :: Lens' Attrs GameValue
+doomThreshold :: Lens' Attrs (GameValue Int)
 doomThreshold =
   lens agendaDoomThreshold $ \m x -> m { agendaDoomThreshold = x }
 
-baseAttrs :: AgendaId -> Text -> Text -> GameValue -> Attrs
+baseAttrs :: AgendaId -> Text -> Text -> GameValue Int -> Attrs
 baseAttrs aid name seq' threshold = Attrs
   { agendaDoom = 0
   , agendaDoomThreshold = threshold

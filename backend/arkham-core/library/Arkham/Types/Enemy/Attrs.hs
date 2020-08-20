@@ -34,7 +34,7 @@ data Attrs = Attrs
   , enemyEngagedInvestigators :: HashSet InvestigatorId
   , enemyLocation :: LocationId
   , enemyFight :: Int
-  , enemyHealth :: GameValue
+  , enemyHealth :: GameValue Int
   , enemyEvade :: Int
   , enemyDamage :: Int
   , enemyHealthDamage :: Int
@@ -72,7 +72,7 @@ location = lens enemyLocation $ \m x -> m { enemyLocation = x }
 damage :: Lens' Attrs Int
 damage = lens enemyDamage $ \m x -> m { enemyDamage = x }
 
-health :: Lens' Attrs GameValue
+health :: Lens' Attrs (GameValue Int)
 health = lens enemyHealth $ \m x -> m { enemyHealth = x }
 
 modifiers :: Lens' Attrs [Modifier]
@@ -215,6 +215,21 @@ instance (IsInvestigator investigator) => HasActions env investigator Attrs wher
 
 instance (EnemyRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
+    EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
+      preyIds <- map unPreyId . HashSet.toList <$> asks (getSet enemyPrey)
+      preyIdsWithLocation <- for preyIds
+        $ \iid -> (iid, ) <$> asks (getId @LocationId iid)
+      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      a <$ case preyIdsWithLocation of
+        [] -> pure ()
+        [(iid, lid)] -> unshiftMessages
+          [EnemySpawnedAt lid eid, EnemyEngageInvestigator eid iid]
+        iids -> unshiftMessage
+          (Ask leadInvestigatorId $ ChooseOne
+            [ Run [EnemySpawnedAt lid eid, EnemyEngageInvestigator eid iid]
+            | (iid, lid) <- iids
+            ]
+          )
     EnemySpawn lid eid | eid == enemyId -> do
       when
           (Keyword.Aloof
@@ -241,6 +256,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
         unshiftMessages
           [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
       pure $ a & location .~ lid
+    EnemySpawnedAt lid eid | eid == enemyId -> pure $ a & location .~ lid
     ReadyExhausted -> do
       miid <- headMay . HashSet.toList <$> asks (getSet enemyLocation)
       case miid of

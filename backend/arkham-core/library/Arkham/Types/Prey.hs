@@ -8,6 +8,6 @@ import Arkham.Types.SkillType
 import ClassyPrelude
 import Data.Aeson
 
-data Prey = AnyPrey | HighestSkill SkillType | LowestHealth | Bearer BearerId | SetToBearer
+data Prey = AnyPrey | HighestSkill SkillType | LowestHealth | Bearer BearerId | SetToBearer | MostClues
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

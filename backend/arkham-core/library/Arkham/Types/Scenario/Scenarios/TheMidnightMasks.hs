@@ -18,7 +18,7 @@ import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Target
 import qualified Arkham.Types.Token as Token
-import Arkham.Types.Trait
+import Arkham.Types.Trait hiding (Trait(Expert))
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
 import Data.List.NonEmpty (NonEmpty(..))
@@ -87,24 +87,36 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
         <> ghoulPriestMessages
         <> spawnAcolyteMessages
         )
-    ResolveToken Token.Skull _ skillValue -> do
-      if scenarioDifficulty `elem` [Easy, Standard]
-        then do
-          cultists <- HashSet.toList <$> asks (getSet @EnemyId Cultist)
-          doomCounts <- map unDoomCount <$> traverse (asks . getCount) cultists
-          s <$ runTest skillValue (-(maximum $ ncons 0 doomCounts))
-        else do
-          doomCount <- unDoomCount <$> asks (getCount ())
-          s <$ runTest skillValue (-doomCount)
-    ResolveToken Token.Cultist iid skillValue -> do
-      closestCultitsts <- map unClosestEnemyId . HashSet.toList <$> asks
-        (getSet (iid, [Cultist]))
-      case closestCultitsts of
-        [] -> pure ()
-        [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
-        xs -> unshiftMessage
-          (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
-      s <$ runTest skillValue (-2)
+    ResolveToken Token.Skull _ skillValue
+      | scenarioDifficulty `elem` [Easy, Standard] -> do
+        cultists <- HashSet.toList <$> asks (getSet @EnemyId Cultist)
+        doomCounts <- map unDoomCount <$> traverse (asks . getCount) cultists
+        s <$ runTest skillValue (-(maximum $ ncons 0 doomCounts))
+    ResolveToken Token.Skull _ skillValue
+      | scenarioDifficulty `elem` [Hard, Expert] -> do
+        doomCount <- unDoomCount <$> asks (getCount ())
+        s <$ runTest skillValue (-doomCount)
+    ResolveToken Token.Cultist iid skillValue
+      | scenarioDifficulty `elem` [Easy, Standard] -> do
+        closestCultitsts <- map unClosestEnemyId . HashSet.toList <$> asks
+          (getSet (iid, [Cultist]))
+        case closestCultitsts of
+          [] -> pure ()
+          [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
+          xs -> unshiftMessage
+            (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
+        s <$ runTest skillValue (-2)
+    ResolveToken Token.Cultist iid skillValue
+      | scenarioDifficulty `elem` [Hard, Expert] -> do
+        cultists <- HashSet.toList <$> asks (getSet @EnemyId Cultist)
+        case cultists of
+          [] ->
+            s <$ unshiftMessage
+              (DrawAnotherToken iid skillValue Token.Cultist (-2))
+          xs -> do
+            unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
+            s <$ runTest skillValue (-2)
+
     ResolveToken Token.Tablet iid skillValue -> do
       unshiftMessage (AddOnFailure $ InvestigatorPlaceCluesOnLocation iid 1)
       s <$ runTest skillValue (-3)

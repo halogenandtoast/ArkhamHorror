@@ -1217,7 +1217,7 @@ runGameMessage msg g = case msg of
     (token, chaosBag') <- drawToken g
     unshiftMessages [DrawToken token, ResolveToken token iid skillValue]
     pure $ g & (chaosBag .~ chaosBag')
-  DrawAnotherToken iid skillValue _ -> do
+  DrawAnotherToken iid skillValue _ _ -> do
     (token, chaosBag') <- drawToken g
     unshiftMessage (ResolveToken token iid skillValue)
     unshiftMessage (DrawToken token)

@@ -3,6 +3,7 @@ module Arkham.Types.Scenario.Scenarios.TheMidnightMasks where
 
 import Arkham.Json
 import Arkham.Types.CampaignLogKey
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
 import Arkham.Types.Card.EncounterCard (lookupEncounterCard)
 import Arkham.Types.Card.Id
@@ -125,4 +126,65 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
       | scenarioDifficulty `elem` [Hard, Expert] -> do
         unshiftMessage (AddOnFailure $ InvestigatorPlaceAllCluesOnLocation iid)
         s <$ runTest skillValue (-4)
+    NoResolution -> s <$ unshiftMessage (Resolution 1)
+    Resolution 1 -> do
+      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      victoryDisplay <- HashSet.map unVictoryDisplayCardCode
+        <$> asks (getSet ())
+      let
+        cultists = HashSet.fromList
+          ["01137", "01138", "01139", "01140", "01141", "01121b"]
+        cultistsWeInterrogated = cultists `intersection` victoryDisplay
+        cultistsWhoGotAway = cultists `difference` cultistsWeInterrogated
+        ghoulPriestDefeated = "01116" `elem` victoryDisplay
+      s <$ unshiftMessage
+        (Ask leadInvestigatorId $ ChooseOne
+          [ Run
+            $ [ Continue "Continue"
+              , FlavorText
+                Nothing
+                [ "You’ve managed to obtain some useful\
+                  \ information about the cult and its plans. You can only hope\
+                  \ it’s enough."
+                ]
+              , RecordSet
+                CultistsWeInterrogated
+                (HashSet.toList cultistsWeInterrogated)
+              , RecordSet CultistsWhoGotAway (HashSet.toList cultistsWhoGotAway)
+              ]
+            <> [ CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated ]
+            <> [EndOfGame]
+          ]
+        )
+    Resolution 2 -> do
+      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      victoryDisplay <- HashSet.map unVictoryDisplayCardCode
+        <$> asks (getSet ())
+      let
+        cultists = HashSet.fromList
+          ["01137", "01138", "01139", "01140", "01141", "01121b"]
+        cultistsWeInterrogated = cultists `intersection` victoryDisplay
+        cultistsWhoGotAway = cultists `difference` cultistsWeInterrogated
+        ghoulPriestDefeated = "01116" `elem` victoryDisplay
+      s <$ unshiftMessage
+        (Ask leadInvestigatorId $ ChooseOne
+          [ Run
+            $ [ Continue "Continue"
+              , FlavorText
+                Nothing
+                [ "Twelve bells ring out, signaling midnight. You’re\
+                  \ out of time; the cult’s ritual will begin shortly. You’ve managed\
+                  \ to obtain some useful information about the cult and its plans.\
+                  \ You can only hope it’s enough."
+                ]
+              , RecordSet
+                CultistsWeInterrogated
+                (HashSet.toList cultistsWeInterrogated)
+              , RecordSet CultistsWhoGotAway (HashSet.toList cultistsWhoGotAway)
+              , Record IsIsPastMidnight
+              ]
+            <> [ CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated ]
+            <> [EndOfGame]
+          ]
+        )
     _ -> TheMidnightMasks <$> runMessage msg attrs

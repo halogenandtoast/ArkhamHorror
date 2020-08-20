@@ -8,6 +8,9 @@ data CampaignLogKey
   | YourHouseIsStillStanding
   | YourHouseHasBurnedToTheGround
   | LitaWasForcedToFindOthersToHelpHerCause
+  | CultistsWeInterrogated
+  | CultistsWhoGotAway
+  | IsIsPastMidnight
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)
 

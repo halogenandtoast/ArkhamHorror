@@ -65,7 +65,9 @@ data Message
   | CampaignStep (Maybe CampaignStep)
   | NextCampaignStep
   | Record CampaignLogKey
+  | CrossOutRecord CampaignLogKey
   | RecordCount CampaignLogKey Int
+  | RecordSet CampaignLogKey [CardCode]
   | StartScenario ScenarioId
   | SetupInvestigators
   | FlavorText (Maybe Text) [Text]

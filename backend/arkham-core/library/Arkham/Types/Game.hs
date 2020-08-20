@@ -98,7 +98,7 @@ data Game = Game
   , giUsedAbilities :: [(InvestigatorId, Ability)]
   , giFocusedCards :: [Card]
   , giActiveCard :: Maybe Card
-  , giVictory :: [Card]
+  , giVictoryDisplay :: [Card]
   }
 
 getInvestigator :: InvestigatorId -> Game -> Investigator
@@ -129,8 +129,8 @@ focusedCards = lens giFocusedCards $ \m x -> m { giFocusedCards = x }
 activeCard :: Lens' Game (Maybe Card)
 activeCard = lens giActiveCard $ \m x -> m { giActiveCard = x }
 
-victory :: Lens' Game [Card]
-victory = lens giVictory $ \m x -> m { giVictory = x }
+victoryDisplay :: Lens' Game [Card]
+victoryDisplay = lens giVictoryDisplay $ \m x -> m { giVictoryDisplay = x }
 
 playerOrder :: Lens' Game [InvestigatorId]
 playerOrder = lens giPlayerOrder $ \m x -> m { giPlayerOrder = x }
@@ -242,7 +242,7 @@ newCampaign campaignId investigatorsList difficulty' = do
     , giPlayerOrder = map
       (getInvestigatorId . fst)
       (HashMap.elems investigatorsList)
-    , giVictory = mempty
+    , giVictoryDisplay = mempty
     }
  where
   initialInvestigatorId =
@@ -320,7 +320,7 @@ newGame scenarioId investigatorsList difficulty' = do
     , giPlayerOrder = map
       (getInvestigatorId . fst)
       (HashMap.elems investigatorsList)
-    , giVictory = mempty
+    , giVictoryDisplay = mempty
     }
  where
   initialInvestigatorId =
@@ -451,6 +451,12 @@ instance HasSet Trait AssetId Game where
 
 instance HasSet InvestigatorId EnemyId Game where
   getSet eid = getEngagedInvestigators . getEnemy eid
+
+instance HasSet VictoryDisplayCardCode () Game where
+  getSet _ =
+    HashSet.fromList
+      . map (VictoryDisplayCardCode . getCardCode)
+      . view victoryDisplay
 
 instance HasSet ClueCount () Game where
   getSet _ =
@@ -838,7 +844,7 @@ runGameMessage msg g = case msg of
       & (usedAbilities .~ mempty)
       & (focusedCards .~ mempty)
       & (activeCard .~ Nothing)
-      & (victory .~ mempty)
+      & (victoryDisplay .~ mempty)
   StartScenario sid -> do
     let
       campaign' = fromJustNote "not a campaign" (g ^. campaign)
@@ -1109,7 +1115,7 @@ runGameMessage msg g = case msg of
           pure
           $ g
           & (enemies %~ HashMap.delete eid)
-          & (victory %~ (EncounterCard ec :))
+          & (victoryDisplay %~ (EncounterCard ec :))
         else pure $ g & (enemies %~ HashMap.delete eid) & (discard %~ (ec :))
   AddToVictory (EnemyTarget eid) -> do
     let
@@ -1125,7 +1131,7 @@ runGameMessage msg g = case msg of
         pure
           $ g
           & (enemies %~ HashMap.delete eid)
-          & (victory %~ (EncounterCard ec :))
+          & (victoryDisplay %~ (EncounterCard ec :))
   BeginInvestigation -> do
     unshiftMessage (ChoosePlayerOrder (giPlayerOrder g) [])
     pure $ g & phase .~ InvestigationPhase
@@ -1392,7 +1398,7 @@ toExternalGame Game {..} mq = do
     , gFocusedCards = giFocusedCards
     , gActiveCard = giActiveCard
     , gPlayerOrder = giPlayerOrder
-    , gVictory = giVictory
+    , gVictoryDisplay = giVictoryDisplay
     }
 
 toInternalGame :: MonadIO m => GameJson -> m Game
@@ -1426,7 +1432,7 @@ toInternalGame' ref GameJson {..} = Game
   , giFocusedCards = gFocusedCards
   , giActiveCard = gActiveCard
   , giPlayerOrder = gPlayerOrder
-  , giVictory = gVictory
+  , giVictoryDisplay = gVictoryDisplay
   }
 
 runMessages :: MonadIO m => Game -> m GameJson

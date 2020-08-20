@@ -8,3 +8,6 @@ newtype CardCode = CardCode { unCardCode :: Text }
 
 newtype TreacheryCardCode = TreacheryCardCode { unTreacheryCardCode :: CardCode }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
+
+newtype VictoryDisplayCardCode = VictoryDisplayCardCode { unVictoryDisplayCardCode :: CardCode }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)

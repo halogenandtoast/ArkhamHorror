@@ -131,6 +131,8 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
       victoryDisplay <- HashSet.map unVictoryDisplayCardCode
         <$> asks (getSet ())
+      investigatorIds <- HashSet.toList <$> asks (getSet ())
+      xp <- unXPCount <$> asks (getCount ())
       let
         cultists = HashSet.fromList
           ["01137", "01138", "01139", "01140", "01141", "01121b"]
@@ -153,6 +155,7 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
               , RecordSet CultistsWhoGotAway (HashSet.toList cultistsWhoGotAway)
               ]
             <> [ CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated ]
+            <> [ GainXP iid xp | iid <- investigatorIds ]
             <> [EndOfGame]
           ]
         )
@@ -160,6 +163,8 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
       victoryDisplay <- HashSet.map unVictoryDisplayCardCode
         <$> asks (getSet ())
+      investigatorIds <- HashSet.toList <$> asks (getSet ())
+      xp <- unXPCount <$> asks (getCount ())
       let
         cultists = HashSet.fromList
           ["01137", "01138", "01139", "01140", "01141", "01121b"]
@@ -184,6 +189,7 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
               , Record IsIsPastMidnight
               ]
             <> [ CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated ]
+            <> [ GainXP iid xp | iid <- investigatorIds ]
             <> [EndOfGame]
           ]
         )

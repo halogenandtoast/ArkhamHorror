@@ -20,7 +20,6 @@ fleshEater uuid = FleshEater $ (baseAttrs uuid "01118")
   , enemyFight = 4
   , enemyHealth = Static 4
   , enemyEvade = 1
-  , enemyVictory = Just 1
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator FleshEater where

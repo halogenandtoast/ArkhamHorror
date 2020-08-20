@@ -21,7 +21,6 @@ ghoulPriest uuid = GhoulPriest $ (baseAttrs uuid "01116")
   , enemyFight = 4
   , enemyHealth = PerPlayer 5
   , enemyEvade = 4
-  , enemyVictory = Just 2
   , enemyPrey = HighestSkill SkillCombat
   }
 

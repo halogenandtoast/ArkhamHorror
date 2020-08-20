@@ -25,6 +25,7 @@ data EncounterCard = MkEncounterCard
   , ecTraits   :: [Trait]
   , ecKeywords   :: [Keyword]
   , ecId :: CardId
+  , ecVictoryPoints :: Maybe Int
   }
   deriving stock (Show, Generic)
 
@@ -42,6 +43,7 @@ baseEncounterCard cardId cardCode name encounterCardType = MkEncounterCard
   , ecTraits = mempty
   , ecKeywords = mempty
   , ecCardType = encounterCardType
+  , ecVictoryPoints = Nothing
   }
 
 enemy :: CardId -> CardCode -> Text -> EncounterCard
@@ -103,20 +105,26 @@ ghoulPriest :: CardId -> EncounterCard
 ghoulPriest cardId = (enemy cardId "01116" "Ghoul Priest")
   { ecTraits = [Humanoid, Monster, Ghoul, Elite]
   , ecKeywords = [Keyword.Hunter, Keyword.Retaliate]
+  , ecVictoryPoints = Just 2
   }
 
 fleshEater :: CardId -> EncounterCard
-fleshEater cardId =
-  (enemy cardId "01118" "Flesh-Eater") { ecTraits = [Humanoid, Monster, Ghoul] }
+fleshEater cardId = (enemy cardId "01118" "Flesh-Eater")
+  { ecTraits = [Humanoid, Monster, Ghoul]
+  , ecVictoryPoints = Just 1
+  }
 
 icyGhoul :: CardId -> EncounterCard
-icyGhoul cardId =
-  (enemy cardId "01119" "Icy Ghoul") { ecTraits = [Humanoid, Monster, Ghoul] }
+icyGhoul cardId = (enemy cardId "01119" "Icy Ghoul")
+  { ecTraits = [Humanoid, Monster, Ghoul]
+  , ecVictoryPoints = Just 1
+  }
 
 theMaskedHunter :: CardId -> EncounterCard
 theMaskedHunter cardId = (enemy cardId "01121b" "The Masked Hunter")
   { ecTraits = [Humanoid, Cultist, Elite]
   , ecKeywords = [Keyword.Hunter]
+  , ecVictoryPoints = Just 2
   }
 
 huntingShadow :: CardId -> EncounterCard
@@ -129,24 +137,34 @@ falseLead :: CardId -> EncounterCard
 falseLead cardId = treachery cardId "01136" "False Lead"
 
 wolfManDrew :: CardId -> EncounterCard
-wolfManDrew cardId =
-  (enemy cardId "01137" "\"Wolf-Man\" Drew") { ecTraits = [Humanoid, Cultist] }
+wolfManDrew cardId = (enemy cardId "01137" "\"Wolf-Man\" Drew")
+  { ecTraits = [Humanoid, Cultist]
+  , ecVictoryPoints = Just 1
+  }
 
 hermanCollins :: CardId -> EncounterCard
-hermanCollins cardId =
-  (enemy cardId "01138" "Herman Collins") { ecTraits = [Humanoid, Cultist] }
+hermanCollins cardId = (enemy cardId "01138" "Herman Collins")
+  { ecTraits = [Humanoid, Cultist]
+  , ecVictoryPoints = Just 1
+  }
 
 peterWarren :: CardId -> EncounterCard
-peterWarren cardId =
-  (enemy cardId "01139" "Peter Warren") { ecTraits = [Humanoid, Cultist] }
+peterWarren cardId = (enemy cardId "01139" "Peter Warren")
+  { ecTraits = [Humanoid, Cultist]
+  , ecVictoryPoints = Just 1
+  }
 
 victoriaDevereux :: CardId -> EncounterCard
-victoriaDevereux cardId =
-  (enemy cardId "01140" "Victoria Devereux") { ecTraits = [Humanoid, Cultist] }
+victoriaDevereux cardId = (enemy cardId "01140" "Victoria Devereux")
+  { ecTraits = [Humanoid, Cultist]
+  , ecVictoryPoints = Just 1
+  }
 
 ruthTurner :: CardId -> EncounterCard
-ruthTurner cardId =
-  (enemy cardId "01141" "Ruth Turner") { ecTraits = [Humanoid, Cultist] }
+ruthTurner cardId = (enemy cardId "01141" "Ruth Turner")
+  { ecTraits = [Humanoid, Cultist]
+  , ecVictoryPoints = Just 1
+  }
 
 swarmOfRats :: CardId -> EncounterCard
 swarmOfRats cardId = (enemy cardId "01159" "Swarm of Rats")

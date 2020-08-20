@@ -17,6 +17,7 @@ type ScenarioRunner env
     , HasCount PlayerCount () env
     , HasCount DoomCount EnemyId env
     , HasCount DoomCount () env
+    , HasCount XPCount () env
     , HasSet EnemyId Trait env
     , HasSet ClosestEnemyId (InvestigatorId, [Trait]) env
     , HasSet VictoryDisplayCardCode () env

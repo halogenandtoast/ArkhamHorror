@@ -45,6 +45,7 @@ data PlayerCard = MkPlayerCard
   , pcId :: CardId
   , pcAction :: Maybe Action
   , pcRevelation :: Bool
+  , pcVictoryPoints :: Maybe Int
   }
   deriving stock (Show, Generic)
 
@@ -94,6 +95,7 @@ basePlayerCard cardId cardCode name cost cardType classSymbol = MkPlayerCard
   , pcId = cardId
   , pcAction = Nothing
   , pcRevelation = False
+  , pcVictoryPoints = Nothing
   }
 
 asset :: CardId -> CardCode -> Text -> Int -> ClassSymbol -> PlayerCard

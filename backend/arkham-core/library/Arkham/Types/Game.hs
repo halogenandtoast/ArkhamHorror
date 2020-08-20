@@ -370,6 +370,9 @@ instance HasCount TreacheryCount (LocationId, CardCode) Game where
 instance HasCount DoomCount EnemyId Game where
   getCount eid = getCount () . getEnemy eid
 
+instance HasCount XPCount () Game where
+  getCount _ = XPCount . sum . mapMaybe getVictoryPoints . view victoryDisplay
+
 instance HasCount DoomCount () Game where
   getCount _ g =
     DoomCount

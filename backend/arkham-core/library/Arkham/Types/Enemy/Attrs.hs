@@ -103,12 +103,12 @@ baseAttrs eid cardCode =
       , enemyHealthDamage = 0
       , enemySanityDamage = 0
       , enemyTraits = HashSet.fromList ecTraits
-      , enemyVictory = Nothing
       , enemyKeywords = HashSet.fromList ecKeywords
       , enemyPrey = AnyPrey
       , enemyModifiers = mempty
       , enemyExhausted = False
       , enemyDoom = 0
+      , enemyVictory = ecVictoryPoints
       }
 
 weaknessBaseAttrs :: EnemyId -> CardCode -> Attrs
@@ -133,7 +133,7 @@ weaknessBaseAttrs eid cardCode =
       , enemyHealthDamage = 0
       , enemySanityDamage = 0
       , enemyTraits = HashSet.fromList pcTraits
-      , enemyVictory = Nothing
+      , enemyVictory = pcVictoryPoints
       , enemyKeywords = HashSet.fromList pcKeywords
       , enemyPrey = AnyPrey
       , enemyModifiers = mempty

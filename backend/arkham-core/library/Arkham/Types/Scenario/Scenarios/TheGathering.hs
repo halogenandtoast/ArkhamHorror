@@ -111,10 +111,12 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
           s <$ runTest skillValue (-4)
     NoResolution -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      investigatorIds <- HashSet.toList <$> asks (getSet ())
+      xp <- unXPCount <$> asks (getCount ())
       s <$ unshiftMessage
         (Ask leadInvestigatorId $ ChooseOne
           [ Run
-              [ Continue "Continue"
+            $ [ Continue "Continue"
               , FlavorText
                 Nothing
                 [ "You barely manage to escape\
@@ -130,16 +132,19 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
                 ]
               , Record YourHouseIsStillStanding
               , Record GhoulPriestIsStillAlive
-              , EndOfGame
               ]
+            <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+            <> [EndOfGame]
           ]
         )
     Resolution 1 -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      investigatorIds <- HashSet.toList <$> asks (getSet ())
+      xp <- unXPCount <$> asks (getCount ())
       s <$ unshiftMessage
         (Ask leadInvestigatorId $ ChooseOne
           [ Run
-              [ Continue "Continue"
+            $ [ Continue "Continue"
               , FlavorText
                 Nothing
                 [ "You nod and allow the red-haired woman to\
@@ -152,16 +157,19 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
                 ]
               , Record YourHouseHasBurnedToTheGround
               , SufferTrauma leadInvestigatorId 0 1
-              , EndOfGame
               ]
+            <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+            <> [EndOfGame]
           ]
         )
     Resolution 2 -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      investigatorIds <- HashSet.toList <$> asks (getSet ())
+      xp <- unXPCount <$> asks (getCount ())
       s <$ unshiftMessage
         (Ask leadInvestigatorId $ ChooseOne
           [ Run
-              [ Continue "Continue"
+            $ [ Continue "Continue"
               , FlavorText
                 Nothing
                 [ "You refuse to follow the overzealous woman’s\
@@ -175,8 +183,9 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
                 ]
               , Record YourHouseIsStillStanding
               , GainXP leadInvestigatorId 1
-              , EndOfGame
               ]
+            <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+            <> [EndOfGame]
           ]
         )
     Resolution 3 -> do

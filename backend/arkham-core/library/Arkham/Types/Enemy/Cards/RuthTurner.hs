@@ -20,7 +20,6 @@ ruthTurner uuid = RuthTurner $ (baseAttrs uuid "01141")
   , enemyFight = 2
   , enemyHealth = Static 4
   , enemyEvade = 5
-  , enemyVictory = Just 1
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator RuthTurner where

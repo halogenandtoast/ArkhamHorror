@@ -20,7 +20,6 @@ icyGhoul uuid = IcyGhoul $ (baseAttrs uuid "01119")
   , enemyFight = 3
   , enemyHealth = Static 4
   , enemyEvade = 4
-  , enemyVictory = Just 1
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator IcyGhoul where

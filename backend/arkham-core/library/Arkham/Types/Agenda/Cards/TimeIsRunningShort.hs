@@ -10,8 +10,10 @@ import Arkham.Types.Classes
 import Arkham.Types.FastWindow
 import Arkham.Types.GameValue
 import Arkham.Types.Message
+import Arkham.Types.Query
 import Arkham.Types.Source
 import ClassyPrelude hiding (sequence)
+import Lens.Micro
 
 newtype TimeIsRunningShort = TimeIsRunningShort Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -33,10 +35,15 @@ instance (ActionRunner env investigator) => HasActions env investigator TimeIsRu
   getActions _ _ _ = pure []
 
 instance (AgendaRunner env) => RunMessage env TimeIsRunningShort where
-  runMessage msg a@(TimeIsRunningShort attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1a" -> do
-      void $ error "Resolution 2"
-      pure a
+  runMessage msg (TimeIsRunningShort attrs@Attrs {..}) = case msg of
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
+      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      unshiftMessage (Ask leadInvestigatorId $ ChooseOne [Resolution 2])
+      pure
+        $ TimeIsRunningShort
+        $ attrs
+        & (sequence .~ "Agenda 2b")
+        & (flipped .~ True)
     UseCardAbility iid _ (AgendaSource aid) 1 | aid == agendaId -> do
       unshiftMessage (Resign iid)
       TimeIsRunningShort <$> runMessage msg attrs

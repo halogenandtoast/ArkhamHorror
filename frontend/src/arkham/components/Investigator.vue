@@ -126,7 +126,7 @@ export default class Investigator extends Vue {
   canActivateAbility(c: Message): boolean {
     switch (c.tag) {
       case MessageType.ACTIVATE_ABILITY:
-        return c.contents[0] === this.id;
+        return c.contents[1].source.contents === this.id;
       case MessageType.RUN:
         return c.contents.some((c1: Message) => this.canActivateAbility(c1));
       default:

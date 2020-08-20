@@ -200,6 +200,12 @@ canDiscoverClues Attrs {..} = not (any match investigatorModifiers)
   match CannotDiscoverClues{} = True
   match _ = False
 
+canSpendClues :: Attrs -> Bool
+canSpendClues Attrs {..} = not (any match investigatorModifiers)
+ where
+  match CannotSpendClues{} = True
+  match _ = False
+
 removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
 
@@ -416,6 +422,8 @@ instance IsInvestigator Attrs where
   resourceCount Attrs {..} = investigatorResources
   canDo action a@Attrs {..} = canAfford a action
   clueCount Attrs {..} = investigatorClues
+  spendableClueCount a@Attrs {..} =
+    if canSpendClues a then investigatorClues else 0
   cardCount Attrs {..} = length investigatorHand
   canInvestigate location a@Attrs {..} =
     canDo Action.Investigate a && getId () location == investigatorLocation

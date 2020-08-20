@@ -386,12 +386,18 @@ instance HasCount ClueCount LocationId Game where
 instance HasCount ClueCount InvestigatorId Game where
   getCount iid = getCount () . getInvestigator iid
 
+instance HasCount SpendableClueCount InvestigatorId Game where
+  getCount iid = getCount () . getInvestigator iid
+
 instance HasCount ResourceCount InvestigatorId Game where
   getCount iid = getCount () . getInvestigator iid
 
-instance HasCount ClueCount AllInvestigators Game where
-  getCount _ g =
-    mconcat $ map (`getCount` g) (g ^. investigators . to HashMap.keys)
+instance HasCount SpendableClueCount AllInvestigators Game where
+  getCount _ g = (SpendableClueCount . sum)
+    (map
+      (unSpendableClueCount . (`getCount` g))
+      (g ^. investigators . to HashMap.keys)
+    )
 
 instance HasCount PlayerCount () Game where
   getCount _ = PlayerCount . HashMap.size . view investigators
@@ -916,14 +922,14 @@ runGameMessage msg g = case msg of
   SpendClues n iids -> do
     let
       investigatorsWithClues = HashMap.keys $ HashMap.filterWithKey
-        (\k v -> k `elem` iids && hasClues v)
+        (\k v -> k `elem` iids && hasSpendableClues v)
         (g ^. investigators)
     case investigatorsWithClues of
       [] -> error "someone needed to spend some clues"
       [x] -> g <$ unshiftMessage (InvestigatorSpendClues x n)
       xs -> g <$ unshiftMessages
         [ Ask (giLeadInvestigatorId g) $ ChooseOne $ map
-          (flip InvestigatorSpendClues 1)
+          (`InvestigatorSpendClues` 1)
           xs
         , SpendClues (n - 1) investigatorsWithClues
         ]

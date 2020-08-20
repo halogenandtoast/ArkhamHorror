@@ -5,6 +5,7 @@ module Arkham.Types.Investigator
   , hasEndedTurn
   , hasResigned
   , hasClues
+  , hasSpendableClues
   , isDefeated
   , remainingHealth
   , lookupInvestigator
@@ -345,6 +346,11 @@ instance HasCount ResourceCount () Investigator where
 instance HasCount ClueCount () Investigator where
   getCount _ = ClueCount . investigatorClues . investigatorAttrs
 
+instance HasCount SpendableClueCount () Investigator where
+  getCount _ i = if canSpendClues (investigatorAttrs i)
+    then SpendableClueCount . investigatorClues $ investigatorAttrs i
+    else SpendableClueCount 0
+
 instance HasSet AssetId () Investigator where
   getSet _ = investigatorAssets . investigatorAttrs
 
@@ -402,6 +408,9 @@ isDefeated = view defeated . investigatorAttrs
 
 hasClues :: Investigator -> Bool
 hasClues i = investigatorAttrs i ^. clues > 0
+
+hasSpendableClues :: Investigator -> Bool
+hasSpendableClues i = spendableClueCount (investigatorAttrs i) > 0
 
 remainingHealth :: Investigator -> Int
 remainingHealth i = investigatorHealth attrs - investigatorHealthDamage attrs

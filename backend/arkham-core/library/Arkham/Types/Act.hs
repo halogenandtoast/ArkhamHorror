@@ -51,7 +51,7 @@ actAttrs = \case
   WhatHaveYouDone' attrs -> coerce attrs
   UncoveringTheConspiracy' attrs -> coerce attrs
 
-instance HasActions env investigator Act where
+instance (ActionRunner env investigator) => HasActions env investigator Act where
   getActions i window = \case
     Trapped' x -> getActions i window x
     TheBarrier' x -> getActions i window x

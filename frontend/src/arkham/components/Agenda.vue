@@ -6,10 +6,18 @@
       @click="$emit('choose', advanceAgendaAction)"
       :src="image"
     />
-    <PoolItem
-      type="doom"
-      :amount="agenda.contents.doom"
-    />
+    <button
+      v-for="ability in abilities"
+      :key="ability"
+      class="button ability-button"
+      @click="$emit('choose', ability)"
+      >{{abilityLabel(ability)}}</button>
+    <div class="pool">
+      <PoolItem
+        type="doom"
+        :amount="agenda.contents.doom"
+      />
+    </div>
   </div>
 </template>
 
@@ -47,6 +55,22 @@ export default class Agenda extends Vue {
   get advanceAgendaAction() {
     return this.choices.findIndex((c) => c.tag === MessageType.ADVANCE_AGENDA);
   }
+
+  abilityLabel(idx: number) {
+    return this.choices[idx].contents[1].type.contents[1];
+  }
+
+  get abilities() {
+    return this
+      .choices
+      .reduce<number[]>((acc, v, i) => {
+        if (v.tag === 'ActivateCardAbilityAction' && v.contents[1].source.tag === 'AgendaSource' && v.contents[1].source.contents === this.id) {
+          return [...acc, i];
+        }
+
+        return acc;
+      }, []);
+  }
 }
 </script>
 
@@ -64,9 +88,38 @@ export default class Agenda extends Vue {
   height: 100px;
 }
 
+.agenda-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .agenda--can-progress {
   border: 3px solid #ff00ff;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.pool {
+  display: flex;
+  flex-direction: row;
+  height: 2em;
+  justify-content: flex-start;
+}
+
+.button{
+  margin-top: 2px;
+  border: 0;
+  color: #fff;
+  border-radius: 4px;
+  border: 1px solid #ff00ff;
+}
+
+.ability-button {
+  background-color: #555;
+  &:before {
+    font-family: "arkham";
+    content: "\0049";
+    margin-right: 5px;
+  }
 }
 </style>

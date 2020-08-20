@@ -39,7 +39,7 @@ instance (IsInvestigator investigator) => HasActions env investigator HermanColl
 
 instance (EnemyRunner env) => RunMessage env HermanCollins where
   runMessage msg e@(HermanCollins attrs@Attrs {..}) = case msg of
-    InvestigatorDrawEnemy _ _ eid | eid == enemyId -> e <$ spawnAt eid "01134"
+    InvestigatorDrawEnemy _ _ eid | eid == enemyId -> e <$ spawnAt eid "01133"
     UseCardAbility iid _ (EnemySource eid) 1 | eid == enemyId ->
       e <$ unshiftMessages
         (replicate 4 (ChooseAndDiscardCard iid)

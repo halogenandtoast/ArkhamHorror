@@ -25,7 +25,7 @@
       </div>
 
       <a
-        v-if="choice.tag === MessageType.BEGIN_SKILL_TEST_AFTER_FAST"
+        v-if="skillTestMessageTypes.includes(choice.tag)"
         class="button"
         @click="$emit('choose', index)"
       >
@@ -47,12 +47,22 @@ export default class StatusBar extends Vue {
 
   MessageType: any = MessageType // eslint-disable-line
 
+  skillTestMessageTypes= [MessageType.BEGIN_SKILL_TEST_AFTER_FAST, MessageType.BEGIN_SKILL_TEST];
+
   get choices() {
     return choices(this.game, this.investigatorId);
   }
 
   get shouldShow() {
     return this.choices.some(this.isStatusBarMessage);
+  }
+
+  get includeBeginSkillTest() {
+    return this
+      .choices
+      .filter((c) => c.tag === MessageType.BEGIN_SKILL_TEST).length > 1
+      ? [MessageType.BEGIN_SKILL_TEST]
+      : [];
   }
 
   isStatusBarMessage(c: Message): boolean {
@@ -67,7 +77,7 @@ export default class StatusBar extends Vue {
       case MessageType.RUN:
         return this.isStatusBarMessage(c.contents[0]);
       default:
-        return validMessageTags.includes(c.tag);
+        return [...validMessageTags, ...this.includeBeginSkillTest].includes(c.tag);
     }
   }
 }
@@ -111,7 +121,7 @@ i.iconSkillCombat {
 i.iconSkillAgility {
   &:before {
     font-family: "Arkham";
-    content: "\0042";
+    content: "\0053";
   }
 }
 

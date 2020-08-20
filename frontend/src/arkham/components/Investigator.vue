@@ -88,9 +88,14 @@ export default class Investigator extends Vue {
   }
 
   get runSkillTestAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.BEGIN_SKILL_TEST && c.contents[0] === this.id);
+    if (this.choices.filter((c) => c.tag === MessageType.BEGIN_SKILL_TEST
+      && c.contents[0] === this.id).length === 1) {
+      return this
+        .choices
+        .findIndex((c) => c.tag === MessageType.BEGIN_SKILL_TEST && c.contents[0] === this.id);
+    }
+
+    return -1;
   }
 
   get enemyEngageInvestigatorAction() {

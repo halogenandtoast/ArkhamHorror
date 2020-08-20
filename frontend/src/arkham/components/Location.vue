@@ -104,6 +104,10 @@ export default class Location extends Vue {
   }
 
   get cardAction() {
+    if (this.attachTreacheryToLocationAction !== -1) {
+      return this.attachTreacheryToLocationAction;
+    }
+
     return this.moveAction;
   }
 
@@ -117,6 +121,13 @@ export default class Location extends Vue {
     return this
       .choices
       .findIndex((c) => c.tag === MessageType.MOVE && c.contents[1] === this.id);
+  }
+
+  get attachTreacheryToLocationAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.ATTACH_TREACHERY_TO_LOCATION
+        && c.contents[1] === this.id);
   }
 
   abilityLabel(idx: number) {

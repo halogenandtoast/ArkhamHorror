@@ -23,7 +23,7 @@ timeIsRunningShort = TimeIsRunningShort
   $ baseAttrs "01122" "Time Is Running Short" "Agenda 2a" (Static 8)
 
 instance (ActionRunner env investigator) => HasActions env investigator TimeIsRunningShort where
-  getActions i NonFast (TimeIsRunningShort _) = pure
+  getActions i NonFast (TimeIsRunningShort _) | canDo Action.Resign i = pure
     [ ActivateCardAbilityAction
         (getId () i)
         (mkAbility

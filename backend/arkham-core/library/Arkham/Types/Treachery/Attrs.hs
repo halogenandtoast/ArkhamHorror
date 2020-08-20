@@ -27,6 +27,7 @@ data Attrs = Attrs
   , treacheryAttachedInvestigator :: Maybe InvestigatorId
   , treacheryWeakness :: Bool
   , treacheryResolved :: Bool
+  , treacheryDoom :: Int
   }
   deriving stock (Show, Generic)
 
@@ -67,6 +68,7 @@ baseAttrs tid cardCode =
       , treacheryAttachedInvestigator = Nothing
       , treacheryWeakness = False
       , treacheryResolved = False
+      , treacheryDoom = 0
       }
 
 weaknessAttrs :: TreacheryId -> CardCode -> Attrs
@@ -87,6 +89,7 @@ weaknessAttrs tid cardCode =
       , treacheryAttachedInvestigator = Nothing
       , treacheryWeakness = True
       , treacheryResolved = False
+      , treacheryDoom = 0
       }
 
 instance HasActions env investigator Attrs where

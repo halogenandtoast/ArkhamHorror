@@ -38,6 +38,7 @@ data Attrs = Attrs
   , assetTraits :: HashSet Trait
   , assetUses :: Uses
   , assetExhausted :: Bool
+  , assetDoom :: Int
   }
   deriving stock (Show, Generic)
 
@@ -72,6 +73,7 @@ baseAttrs aid cardCode =
       , assetTraits = HashSet.fromList pcTraits
       , assetUses = NoUses
       , assetExhausted = False
+      , assetDoom = 0
       }
 
 exhausted :: Lens' Attrs Bool

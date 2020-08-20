@@ -38,6 +38,7 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Query
 import Arkham.Types.Slot
 import ClassyPrelude
 import Data.Coerce
@@ -79,6 +80,9 @@ instance HasTraits Asset where
 
 instance HasId (Maybe OwnerId) () Asset where
   getId _ = (OwnerId <$>) . assetInvestigator . assetAttrs
+
+instance HasCount DoomCount () Asset where
+  getCount _ = DoomCount . assetDoom . assetAttrs
 
 slotsOf :: Asset -> [SlotType]
 slotsOf = assetSlots . assetAttrs
@@ -132,13 +136,13 @@ assetAttrs = \case
 
 isHealthDamageable :: Asset -> Bool
 isHealthDamageable a = case assetHealth (assetAttrs a) of
-                         Nothing -> False
-                         Just n ->  n > assetHealthDamage (assetAttrs a)
+  Nothing -> False
+  Just n -> n > assetHealthDamage (assetAttrs a)
 
 isSanityDamageable :: Asset -> Bool
 isSanityDamageable a = case assetSanity (assetAttrs a) of
-                       Nothing -> False
-                       Just n -> n > assetSanityDamage (assetAttrs a)
+  Nothing -> False
+  Just n -> n > assetSanityDamage (assetAttrs a)
 
 instance (ActionRunner env investigator) => HasActions env investigator Asset where
   getActions i window = \case

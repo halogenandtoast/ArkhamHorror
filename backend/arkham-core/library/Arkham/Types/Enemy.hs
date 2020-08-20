@@ -24,6 +24,7 @@ import Arkham.Types.Enemy.Cards.RavenousGhoul
 import Arkham.Types.Enemy.Cards.RuthTurner
 import Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
 import Arkham.Types.Enemy.Cards.SwarmOfRats
+import Arkham.Types.Enemy.Cards.TheMaskedHunter
 import Arkham.Types.Enemy.Cards.VictoriaDevereux
 import Arkham.Types.Enemy.Cards.WizardOfTheOrder
 import Arkham.Types.Enemy.Cards.WolfManDrew
@@ -47,6 +48,7 @@ allEnemies = HashMap.fromList
   , ("01116", GhoulPriest' . ghoulPriest)
   , ("01118", FleshEater' . fleshEater)
   , ("01119", IcyGhoul' . icyGhoul)
+  , ("01121b", TheMaskedHunter' . theMaskedHunter)
   , ("01137", WolfManDrew' . wolfManDrew)
   , ("01138", HermanCollins' . hermanCollins)
   , ("01139", PeterWarren' . peterWarren)
@@ -94,6 +96,7 @@ data Enemy
   | GhoulPriest' GhoulPriest
   | FleshEater' FleshEater
   | IcyGhoul' IcyGhoul
+  | TheMaskedHunter' TheMaskedHunter
   | WolfManDrew' WolfManDrew
   | HermanCollins' HermanCollins
   | PeterWarren' PeterWarren
@@ -114,6 +117,7 @@ enemyAttrs = \case
   GhoulPriest' attrs -> coerce attrs
   FleshEater' attrs -> coerce attrs
   IcyGhoul' attrs -> coerce attrs
+  TheMaskedHunter' attrs -> coerce attrs
   WolfManDrew' attrs -> coerce attrs
   HermanCollins' attrs -> coerce attrs
   PeterWarren' attrs -> coerce attrs
@@ -138,6 +142,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Enemy wher
     GhoulPriest' x -> getActions i window x
     FleshEater' x -> getActions i window x
     IcyGhoul' x -> getActions i window x
+    TheMaskedHunter' x -> getActions i window x
     WolfManDrew' x -> getActions i window x
     HermanCollins' x -> getActions i window x
     PeterWarren' x -> getActions i window x
@@ -156,6 +161,7 @@ instance (EnemyRunner env) => RunMessage env Enemy where
     GhoulPriest' x -> GhoulPriest' <$> runMessage msg x
     FleshEater' x -> FleshEater' <$> runMessage msg x
     IcyGhoul' x -> IcyGhoul' <$> runMessage msg x
+    TheMaskedHunter' x -> TheMaskedHunter' <$> runMessage msg x
     WolfManDrew' x -> WolfManDrew' <$> runMessage msg x
     HermanCollins' x -> HermanCollins' <$> runMessage msg x
     PeterWarren' x -> PeterWarren' <$> runMessage msg x

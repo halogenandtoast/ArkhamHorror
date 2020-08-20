@@ -446,6 +446,10 @@ instance HasSet Trait AssetId Game where
 instance HasSet InvestigatorId EnemyId Game where
   getSet eid = getEngagedInvestigators . getEnemy eid
 
+instance HasSet ClueCount () Game where
+  getSet _ =
+    HashSet.fromList . map (getCount ()) . HashMap.elems . view investigators
+
 instance HasSet RemainingHealth () Game where
   getSet _ =
     HashSet.fromList
@@ -618,6 +622,13 @@ instance HasSet ClosestLocationId (LocationId, LocationId) Game where
 instance HasSet Int SkillType Game where
   getSet skillType g = HashSet.fromList
     $ map (getSkill skillType) (HashMap.elems $ g ^. investigators)
+
+instance HasSet PreyId Prey Game where
+  getSet preyType g =
+    HashSet.map PreyId . HashMap.keysSet . HashMap.filter matcher $ view
+      investigators
+      g
+    where matcher i = isPrey preyType g i
 
 instance HasSet PreyId (Prey, LocationId) Game where
   getSet (preyType, lid) g = HashSet.map PreyId
@@ -1240,6 +1251,10 @@ runGameMessage msg g = case msg of
   CreateEnemyAt cardCode lid -> do
     (enemyId', enemy') <- createEnemy cardCode
     unshiftMessage (EnemySpawn lid enemyId')
+    pure $ g & enemies . at enemyId' ?~ enemy'
+  CreateEnemyEngagedWithPrey cardCode -> do
+    (enemyId', enemy') <- createEnemy cardCode
+    unshiftMessage (EnemySpawnEngagedWithPrey enemyId')
     pure $ g & enemies . at enemyId' ?~ enemy'
   FindAndDrawEncounterCard iid matcher -> do
     let matchingDiscards = filter (encounterCardMatch matcher) (g ^. discard)

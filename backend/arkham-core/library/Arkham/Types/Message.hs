@@ -142,6 +142,7 @@ data Message
   | InvestigatorDrewEncounterCard InvestigatorId EncounterCard
   | InvestigatorDrawEnemy InvestigatorId LocationId EnemyId
   | EnemySpawn LocationId EnemyId
+  | EnemySpawnedAt LocationId EnemyId
   | EnemyEngageInvestigator EnemyId InvestigatorId
   | InvestigatorDamageEnemy InvestigatorId EnemyId
   | InvestigatorDamageInvestigator InvestigatorId InvestigatorId
@@ -218,6 +219,8 @@ data Message
   | AfterEnterLocation InvestigatorId LocationId
   | EnemyMove EnemyId LocationId LocationId
   | CreateEnemyAt CardCode LocationId
+  | CreateEnemyEngagedWithPrey CardCode
+  | EnemySpawnEngagedWithPrey EnemyId
   | Revelation InvestigatorId TreacheryId
   | AfterRevelation InvestigatorId TreacheryId
   | RevelationSkillTest InvestigatorId Source SkillType Int [Message] [Message]

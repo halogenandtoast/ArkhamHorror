@@ -21,6 +21,7 @@ newtype AssetCount = AssetCount { unAssetCount :: Int }
 newtype TreacheryCount = TreacheryCount { unTreacheryCount :: Int }
 newtype EnemyCount = EnemyCount { unEnemyCount :: Int }
 newtype ClueCount = ClueCount { unClueCount :: Int }
+  deriving newtype (Eq, Hashable)
 newtype DoomCount = DoomCount { unDoomCount :: Int }
 newtype ResourceCount = ResourceCount { unResourceCount :: Int }
 newtype RemainingHealth = RemainingHealth { unRemainingHealth :: Int }

@@ -385,6 +385,7 @@ instance HasCount DoomCount () Game where
       <> (map (getCount ()) . HashMap.elems $ view locations g)
       <> (map (getCount ()) . HashMap.elems $ view assets g)
       <> (map (getCount ()) . HashMap.elems $ view treacheries g)
+      <> (map (getCount ()) . HashMap.elems $ view agendas g)
 
 instance HasCount ClueCount LocationId Game where
   getCount lid = getCount () . getLocation lid

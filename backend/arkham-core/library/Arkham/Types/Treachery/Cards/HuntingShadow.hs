@@ -27,8 +27,10 @@ instance (TreacheryRunner env) => RunMessage env HuntingShadow where
       if playerSpendableClueCount > 0
         then unshiftMessage
           (Ask iid $ ChooseOne
-            [ SpendClues 1 [iid]
-            , InvestigatorAssignDamage iid (TreacherySource tid) 2 0
+            [ Label "Spend 1 clue" [SpendClues 1 [iid]]
+            , Label
+              "Take 2 damage"
+              [InvestigatorAssignDamage iid (TreacherySource tid) 2 0]
             ]
           )
         else unshiftMessage

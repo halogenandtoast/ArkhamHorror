@@ -59,4 +59,7 @@ instance (ScenarioRunner env) => RunMessage env Attrs where
       error "The scenario should specify what to do for no resolution"
     Resolution _ ->
       error "The scenario should specify what to do for the resolution"
+    UseScenarioSpecificAbility{} ->
+      error
+        "The scenario should specify what to do for a scenario specific ability."
     _ -> pure a

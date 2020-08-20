@@ -18,6 +18,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.Message
+import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import ClassyPrelude
@@ -121,6 +122,7 @@ type ActionRunner env investigator
     , HasId (Maybe StoryAssetId) CardCode env
     , HasId (Maybe OwnerId) AssetId env
     , HasList UsedAbility () env
+    , HasCount SpendableClueCount AllInvestigators env
     )
 
 class HasActions env investigator a where

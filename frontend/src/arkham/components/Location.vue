@@ -108,6 +108,10 @@ export default class Location extends Vue {
       return this.attachTreacheryToLocationAction;
     }
 
+    if (this.enemySpawnAction !== -1) {
+      return this.enemySpawnAction;
+    }
+
     return this.moveAction;
   }
 
@@ -128,6 +132,13 @@ export default class Location extends Vue {
       .choices
       .findIndex((c) => c.tag === MessageType.ATTACH_TREACHERY_TO_LOCATION
         && c.contents[1] === this.id);
+  }
+
+  get enemySpawnAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.ENEMY_SPAWN
+        && c.contents[0] === this.id);
   }
 
   abilityLabel(idx: number) {

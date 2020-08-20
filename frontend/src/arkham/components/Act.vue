@@ -6,6 +6,12 @@
       @click="$emit('choose', advanceActAction)"
       :src="image"
     />
+    <button
+      v-for="ability in abilities"
+      :key="ability"
+      class="button ability-button"
+      @click="$emit('choose', ability)"
+      >{{abilityLabel(ability)}}</button>
   </div>
 </template>
 
@@ -40,6 +46,22 @@ export default class Act extends Vue {
   get advanceActAction() {
     return this.choices.findIndex((c) => c.tag === MessageType.ADVANCE_ACT);
   }
+
+  abilityLabel(idx: number) {
+    return this.choices[idx].contents[1].type.contents[1];
+  }
+
+  get abilities() {
+    return this
+      .choices
+      .reduce<number[]>((acc, v, i) => {
+        if (v.tag === 'ActivateCardAbilityAction' && v.contents[1].source.tag === 'ActSource' && v.contents[1].source.contents === this.id) {
+          return [...acc, i];
+        }
+
+        return acc;
+      }, []);
+  }
 }
 </script>
 
@@ -52,6 +74,11 @@ export default class Act extends Vue {
   margin: 2px;
 }
 
+.act-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .card--sideways {
   width: auto;
   height: 100px;
@@ -61,5 +88,22 @@ export default class Act extends Vue {
   border: 3px solid #ff00ff;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.button{
+  margin-top: 2px;
+  border: 0;
+  color: #fff;
+  border-radius: 4px;
+  border: 1px solid #ff00ff;
+}
+
+.ability-button {
+  background-color: #555;
+  &:before {
+    font-family: "arkham";
+    content: "\0049";
+    margin-right: 5px;
+  }
 }
 </style>

@@ -5,6 +5,7 @@ module Arkham.Types.Source
   )
 where
 
+import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
 import Arkham.Types.Card
@@ -37,5 +38,6 @@ data Source
   | SkillSource CardCode
   | EmptyDeckSource
   | DeckSource
+  | ActSource ActId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

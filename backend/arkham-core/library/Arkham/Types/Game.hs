@@ -1276,6 +1276,8 @@ runGameMessage msg g = case msg of
     (enemyId', enemy') <- createEnemy cardCode
     unshiftMessage (EnemySpawnEngagedWithPrey enemyId')
     pure $ g & enemies . at enemyId' ?~ enemy'
+  EnemySpawn{} -> pure $ g & activeCard .~ Nothing
+  EnemySpawnEngagedWithPrey{} -> pure $ g & activeCard .~ Nothing
   FindAndDrawEncounterCard iid matcher -> do
     let matchingDiscards = filter (encounterCardMatch matcher) (g ^. discard)
     let
@@ -1331,7 +1333,10 @@ runGameMessage msg g = case msg of
       (enemyId', enemy') <- createEnemy (ecCardCode card)
       let lid = locationFor iid g
       unshiftMessage (InvestigatorDrawEnemy iid lid enemyId')
-      pure $ g & (enemies . at enemyId' ?~ enemy')
+      pure
+        $ g
+        & (enemies . at enemyId' ?~ enemy')
+        & (activeCard ?~ EncounterCard card)
     TreacheryType -> g <$ unshiftMessage (DrewTreachery iid (ecCardCode card))
     LocationType -> pure g
   DrewTreachery iid cardCode -> do

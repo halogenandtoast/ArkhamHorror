@@ -37,10 +37,13 @@ instance (ActionRunner env investigator) => HasActions env investigator RolandBa
   getActions i (Fast.WhenEnemyDefeated You) (RolandBanks Attrs {..})
     | getId () i == investigatorId = do
       let
-        ability = mkAbility
-          (InvestigatorSource investigatorId)
-          1
-          (ReactionAbility (Fast.WhenEnemyDefeated You))
+        ability = (mkAbility
+                    (InvestigatorSource investigatorId)
+                    1
+                    (ReactionAbility (Fast.WhenEnemyDefeated You))
+                  )
+          { abilityLimit = OncePerRound
+          }
       usedAbilities <- map unUsedAbility <$> asks (getList ())
       pure
         [ ActivateCardAbilityAction investigatorId ability

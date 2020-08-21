@@ -2,11 +2,16 @@
 module Arkham.Types.Location.Cards.MiskatonicUniversity where
 
 import Arkham.Json
+import Arkham.Types.Ability
 import Arkham.Types.Classes
+import Arkham.Types.FastWindow
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
@@ -27,9 +32,27 @@ miskatonicUniversity = MiskatonicUniversity $ (baseAttrs
   , locationVictory = Just 1
   }
 
-instance (IsInvestigator investigator) => HasActions env investigator MiskatonicUniversity where
-  getActions i window (MiskatonicUniversity attrs) = getActions i window attrs
+instance (ActionRunner env investigator) => HasActions env investigator MiskatonicUniversity where
+  getActions i NonFast (MiskatonicUniversity attrs@Attrs {..})
+    | locationRevealed && getId () i `elem` locationInvestigators = do
+      baseActions <- getActions i NonFast attrs
+      pure
+        $ baseActions
+        <> [ ActivateCardAbilityAction
+               (getId () i)
+               (mkAbility (LocationSource "01129") 1 (ActionAbility 1 Nothing))
+           ]
+  getActions _ _ _ = pure []
 
 instance (LocationRunner env) => RunMessage env MiskatonicUniversity where
-  runMessage msg (MiskatonicUniversity attrs) =
-    MiskatonicUniversity <$> runMessage msg attrs
+  runMessage msg l@(MiskatonicUniversity attrs@Attrs {..}) = case msg of
+    UseCardAbility iid _ (LocationSource lid) 1 | lid == locationId ->
+      l <$ unshiftMessage
+        (SearchTopOfDeck
+          iid
+          (InvestigatorTarget iid)
+          6
+          [Tome, Spell]
+          ShuffleBackIn
+        )
+    _ -> MiskatonicUniversity <$> runMessage msg attrs

@@ -341,6 +341,9 @@ instance HasCard InvestigatorId Game where
 instance HasId LeadInvestigatorId () Game where
   getId _ = LeadInvestigatorId . view leadInvestigatorId
 
+instance HasId CardCode EnemyId Game where
+  getId eid = getCardCode . getEnemy eid
+
 instance HasId (Maybe OwnerId) AssetId Game where
   getId aid = getId () . getAsset aid
 
@@ -1284,11 +1287,14 @@ runGameMessage msg g = case msg of
     pure $ g & assets . at assetId' ?~ asset'
   CreateEnemyAt cardCode lid -> do
     (enemyId', enemy') <- createEnemy cardCode
-    unshiftMessage (EnemySpawn lid enemyId')
+    unshiftMessages [Will (EnemySpawn lid enemyId'), EnemySpawn lid enemyId']
     pure $ g & enemies . at enemyId' ?~ enemy'
   CreateEnemyEngagedWithPrey cardCode -> do
     (enemyId', enemy') <- createEnemy cardCode
-    unshiftMessage (EnemySpawnEngagedWithPrey enemyId')
+    unshiftMessages
+      [ Will (EnemySpawnEngagedWithPrey enemyId')
+      , EnemySpawnEngagedWithPrey enemyId'
+      ]
     pure $ g & enemies . at enemyId' ?~ enemy'
   EnemySpawn{} -> pure $ g & activeCard .~ Nothing
   EnemySpawnEngagedWithPrey{} -> pure $ g & activeCard .~ Nothing

@@ -7,6 +7,9 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.SkillType
+import Arkham.Types.Source
 import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
@@ -25,4 +28,26 @@ instance (IsInvestigator investigator) => HasActions env investigator Graveyard 
   getActions i window (Graveyard attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Graveyard where
-  runMessage msg (Graveyard attrs) = Graveyard <$> runMessage msg attrs
+  runMessage msg (Graveyard attrs@Attrs {..}) = case msg of
+    AfterEnterLocation iid lid | lid == locationId -> do
+      unshiftMessage
+        (BeginSkillTest
+          iid
+          (LocationSource lid)
+          Nothing
+          SkillWillpower
+          3
+          []
+          [ Ask
+              iid
+              (ChooseOne
+                [ InvestigatorAssignDamage iid (LocationSource lid) 0 2
+                , MoveTo iid "01125"
+                ]
+              )
+          ]
+          []
+          mempty
+        )
+      Graveyard <$> runMessage msg attrs
+    _ -> Graveyard <$> runMessage msg attrs

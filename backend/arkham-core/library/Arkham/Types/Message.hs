@@ -167,6 +167,7 @@ data Message
   | AssetDiscarded AssetId CardCode
   | InvestigatorDamage InvestigatorId Source Int Int
   | InvestigatorPlayAsset InvestigatorId AssetId [SlotType] [Trait]
+  | GainClues InvestigatorId Int
   | DiscoverCluesAtLocation InvestigatorId LocationId Int
   | PlaceClues Target Int
   | InvestigatorDiscoverClues InvestigatorId LocationId Int
@@ -295,6 +296,7 @@ data Message
   | UnengageNonMatching InvestigatorId [Trait]
   | PlaceDoom Target Int
   | Surge InvestigatorId
+  | Will Message
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

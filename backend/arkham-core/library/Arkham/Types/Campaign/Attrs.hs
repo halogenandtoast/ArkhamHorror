@@ -31,6 +31,9 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
+chaosBag :: Lens' Attrs [Token]
+chaosBag = lens campaignChaosBag $ \m x -> m { campaignChaosBag = x }
+
 decks :: Lens' Attrs (HashMap InvestigatorId [PlayerCard])
 decks = lens campaignDecks $ \m x -> m { campaignDecks = x }
 
@@ -49,6 +52,7 @@ instance FromJSON Attrs where
 
 instance (CampaignRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
+    AddToken token -> pure $ a & chaosBag %~ (token :)
     InitDeck iid deck -> pure $ a & decks %~ HashMap.insert iid deck
     ResetGame -> a <$ unshiftMessages
       [ LoadDeck iid deck | (iid, deck) <- HashMap.toList campaignDecks ]

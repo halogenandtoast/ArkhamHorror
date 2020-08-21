@@ -59,6 +59,8 @@ data ActionType = EnemyActionType | LocationActionType | AssetActionType | Treac
 
 data Message
   = Setup
+  | AddToken Token
+  | SetLocationLabel LocationId Text
   | EndOfGame
   | StartCampaign
   | ResetGame

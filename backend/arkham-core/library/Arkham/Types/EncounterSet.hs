@@ -11,7 +11,23 @@ import qualified Data.HashMap.Strict as HashMap
 import Data.UUID.V4
 import Safe (fromJustNote)
 
-data EncounterSet = TheGathering | Rats | Ghouls | StrikingFear | ChillingCold | TheMidnightMasks | Nightgaunts | DarkCult | LockedDoors | CultOfUmordhoth
+data EncounterSet
+  = TheGathering
+  | TheMidnightMasks
+  | TheDevourerBelow
+  | CultOfUmordhoth
+  | Rats
+  | Ghouls
+  | StrikingFear
+  | AncientEvils
+  | ChillingCold
+  | Nightgaunts
+  | DarkCult
+  | LockedDoors
+  | AgentsOfHastur
+  | AgentsOfYogSothoth
+  | AgentsOfShubNiggurath
+  | AgentsOfCthulhu
 
 gatherEncounterSet :: MonadIO m => EncounterSet -> m [EncounterCard]
 gatherEncounterSet =
@@ -28,13 +44,19 @@ gatherEncounterSet =
 setCards :: EncounterSet -> [CardCode]
 setCards = \case
   TheGathering -> ["01118", "01119"]
+  TheMidnightMasks -> replicate 3 "01135" <> replicate 2 "01136"
+  CultOfUmordhoth -> ["01137", "01138", "01139", "01140", "01141"]
+  TheDevourerBelow -> replicate 2 "01158"
   Rats -> replicate 3 "01159"
   Ghouls -> replicate 3 "01160" <> ["01161"] <> replicate 3 "01162"
   StrikingFear ->
     replicate 3 "01163" <> replicate 2 "01164" <> replicate 2 "01165"
+  AncientEvils -> replicate 3 "01166"
   ChillingCold -> replicate 2 "01167" <> replicate 2 "01168"
-  TheMidnightMasks -> replicate 3 "01135" <> replicate 2 "01136"
   DarkCult -> replicate 3 "01169" <> ["01170"] <> replicate 2 "01171"
   Nightgaunts -> replicate 2 "01172" <> replicate 2 "01173"
   LockedDoors -> replicate 2 "01174"
-  CultOfUmordhoth -> ["01137", "01138", "01139", "01140", "01141"]
+  AgentsOfHastur -> replicate 2 "01175" <> replicate 2 "01176"
+  AgentsOfYogSothoth -> replicate 2 "01177" <> replicate 2 "01178"
+  AgentsOfShubNiggurath -> "01179" : replicate 3 "01180"
+  AgentsOfCthulhu -> replicate 2 "01181" <> replicate 2 "01182"

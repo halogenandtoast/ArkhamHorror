@@ -26,6 +26,7 @@ import Lens.Micro
 
 data Attrs = Attrs
   { locationName :: Text
+  , locationLabel :: Text
   , locationId :: LocationId
   , locationRevealClues :: GameValue Int
   , locationClues :: Int
@@ -83,6 +84,7 @@ baseAttrs
   -> Attrs
 baseAttrs lid name shroud' revealClues symbol' connectedSymbols' = Attrs
   { locationName = name
+  , locationLabel = pack . camelCase . unpack $ name
   , locationId = lid
   , locationRevealClues = revealClues
   , locationClues = 0
@@ -104,6 +106,9 @@ baseAttrs lid name shroud' revealClues symbol' connectedSymbols' = Attrs
 
 clues :: Lens' Attrs Int
 clues = lens locationClues $ \m x -> m { locationClues = x }
+
+label :: Lens' Attrs Text
+label = lens locationLabel $ \m x -> m { locationLabel = x }
 
 revealed :: Lens' Attrs Bool
 revealed = lens locationRevealed $ \m x -> m { locationRevealed = x }
@@ -161,6 +166,8 @@ instance (LocationRunner env) => RunMessage env Attrs where
           []
           tokenResponses
         )
+    SetLocationLabel lid label' | lid == locationId ->
+      pure $ a & label .~ label'
     AddModifier (LocationTarget lid) modifier | lid == locationId ->
       pure $ a & modifiers %~ (modifier :)
     RemoveAllModifiersOnTargetFrom (LocationTarget lid) source

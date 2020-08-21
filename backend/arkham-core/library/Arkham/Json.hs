@@ -1,6 +1,7 @@
 module Arkham.Json
   ( module X
   , aesonOptions
+  , camelCase
   )
 where
 

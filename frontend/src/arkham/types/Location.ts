@@ -7,6 +7,7 @@ export interface Location {
 
 export interface LocationContents {
   name: string;
+  label: string;
   id: string;
   clues: number;
   shroud: number;
@@ -25,6 +26,7 @@ export interface LocationContents {
 export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
   {
     name: JsonDecoder.string,
+    label: JsonDecoder.string,
     id: JsonDecoder.string,
     clues: JsonDecoder.number,
     shroud: JsonDecoder.number,

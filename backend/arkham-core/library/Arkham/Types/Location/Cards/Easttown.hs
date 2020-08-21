@@ -7,6 +7,10 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.Modifier
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
@@ -25,4 +29,21 @@ instance (IsInvestigator investigator) => HasActions env investigator Easttown w
   getActions i window (Easttown attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Easttown where
-  runMessage msg (Easttown attrs) = Easttown <$> runMessage msg attrs
+  runMessage msg (Easttown attrs@Attrs {..}) = case msg of
+    WhenEnterLocation iid lid | lid == locationId -> do
+      unshiftMessage
+        (AddModifier
+          (InvestigatorTarget iid)
+          (ReduceCostOf [Ally] 2 (LocationSource "01132"))
+        )
+      Easttown <$> runMessage msg attrs
+    WhenEnterLocation iid lid
+      | lid /= locationId && iid `elem` locationInvestigators -> do
+        unshiftMessage
+          (RemoveAllModifiersOnTargetFrom
+            (InvestigatorTarget iid)
+            (LocationSource "01132")
+          )
+        Easttown <$> runMessage msg attrs
+    _ -> Easttown <$> runMessage msg attrs
+

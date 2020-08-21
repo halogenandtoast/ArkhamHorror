@@ -11,6 +11,7 @@ import Arkham.Types.Card
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Token
+import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
@@ -29,6 +30,7 @@ sourceOfModifier (DiscoveredClues _ s) = s
 sourceOfModifier (UseSkillInPlaceOf _ _ s) = s
 sourceOfModifier (ForcedTokenChange _ _ s) = s
 sourceOfModifier (DoubleNegativeModifiersOnTokens s) = s
+sourceOfModifier (ReduceCostOf _ _ s) = s
 
 replaceModifierSource :: Source -> Modifier -> Modifier
 replaceModifierSource s (ActionCostOf a b _) = ActionCostOf a b s
@@ -47,6 +49,7 @@ replaceModifierSource s (UseSkillInPlaceOf a b _) = UseSkillInPlaceOf a b s
 replaceModifierSource s (ForcedTokenChange a b _) = ForcedTokenChange a b s
 replaceModifierSource s (DoubleNegativeModifiersOnTokens _) =
   DoubleNegativeModifiersOnTokens s
+replaceModifierSource s (ReduceCostOf a b _) = ReduceCostOf a b s
 
 data Modifier
   = ActionCostOf ActionTarget Int Source
@@ -63,6 +66,7 @@ data Modifier
   | UseSkillInPlaceOf SkillType SkillType Source
   | ForcedTokenChange Token Token Source
   | DoubleNegativeModifiersOnTokens Source
+  | ReduceCostOf [Trait] Int Source
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
 

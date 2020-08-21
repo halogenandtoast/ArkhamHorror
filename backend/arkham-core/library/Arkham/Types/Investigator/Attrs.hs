@@ -378,11 +378,33 @@ fastIsPlayable _ _ (EncounterCard _) = False -- TODO: there might be some playab
 fastIsPlayable a windows c@(PlayerCard MkPlayerCard {..}) =
   pcFast && isPlayable a windows c
 
+modifiedCardCost :: Attrs -> Card -> Int
+modifiedCardCost Attrs {..} (PlayerCard MkPlayerCard {..}) = foldr
+  applyModifier
+  pcCost
+  investigatorModifiers
+ where
+  applyModifier (ReduceCostOf traits m _) n
+    | not
+      (null (HashSet.fromList traits `intersection` HashSet.fromList pcTraits))
+    = max 0 (n - m)
+  applyModifier _ n = n
+modifiedCardCost Attrs {..} (EncounterCard MkEncounterCard {..}) = foldr
+  applyModifier
+  (error "we need so specify ecCost for this to work")
+  investigatorModifiers
+ where
+  applyModifier (ReduceCostOf traits m _) n
+    | not
+      (null (HashSet.fromList traits `intersection` HashSet.fromList ecTraits))
+    = max 0 (n - m)
+  applyModifier _ n = n
+
 isPlayable :: Attrs -> [FastWindow] -> Card -> Bool
 isPlayable _ _ (EncounterCard _) = False -- TODO: there might be some playable ones?
 isPlayable a@Attrs {..} windows c@(PlayerCard MkPlayerCard {..}) =
   (pcCardType /= SkillType)
-    && (pcCost <= investigatorResources)
+    && (modifiedCardCost a c <= investigatorResources)
     && none prevents investigatorModifiers
     && (not pcFast || (pcFast && cardInWindows windows c a))
     && (pcAction /= Just Action.Evade || not (null investigatorEngagedEnemies))
@@ -732,6 +754,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           a <$ unshiftMessage
             (DiscoverCluesAtLocation iid lid (cluesToDiscover a n))
         else pure a
+    GainClues iid n | iid == investigatorId -> do
+      pure $ a & clues +~ n
     DiscoverClues iid lid n | iid == investigatorId -> do
       a <$ unshiftMessage (AfterDiscoverClues iid lid n)
     AfterDiscoverClues iid _ n | iid == investigatorId -> pure $ a & clues +~ n

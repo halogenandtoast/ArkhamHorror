@@ -287,7 +287,7 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
                 , RecordSet
                   CultistsWhoGotAway
                   (HashSet.toList cultistsWhoGotAway)
-                , Record IsIsPastMidnight
+                , Record ItIsPastMidnight
                 ]
               <> [ CrossOutRecord GhoulPriestIsStillAlive
                  | ghoulPriestDefeated

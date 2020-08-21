@@ -979,6 +979,7 @@ runGameMessage msg g = case msg of
   AddAgenda aid -> pure $ g & agendas . at aid ?~ lookupAgenda aid
   SkillTestEnds -> pure $ g & skillTest .~ Nothing
   ReturnTokens tokens -> pure $ g & chaosBag %~ (tokens <>)
+  AddToken token -> pure $ g & chaosBag %~ (token:)
   PlayCard iid cardId False -> do
     let
       investigator = getInvestigator iid g

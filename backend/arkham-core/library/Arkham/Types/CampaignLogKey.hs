@@ -10,7 +10,7 @@ data CampaignLogKey
   | LitaWasForcedToFindOthersToHelpHerCause
   | CultistsWeInterrogated
   | CultistsWhoGotAway
-  | IsIsPastMidnight
+  | ItIsPastMidnight
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)
 

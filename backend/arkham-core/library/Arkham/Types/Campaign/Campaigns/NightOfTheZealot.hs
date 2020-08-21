@@ -36,8 +36,8 @@ nightOfTheZealot difficulty =
           ]
         }
  where
-  chaosBagContents = case difficulty of
-    Easy ->
+  chaosBagContents = if difficulty `elem` [Easy, Standard]
+    then
       [ Token.PlusOne
       , Token.PlusOne
       , Token.Zero
@@ -55,25 +55,7 @@ nightOfTheZealot difficulty =
       , Token.AutoFail
       , Token.ElderSign
       ]
-    Standard ->
-      [ Token.PlusOne
-      , Token.Zero
-      , Token.Zero
-      , Token.MinusOne
-      , Token.MinusOne
-      , Token.MinusOne
-      , Token.MinusTwo
-      , Token.MinusTwo
-      , Token.MinusThree
-      , Token.MinusFour
-      , Token.Skull
-      , Token.Skull
-      , Token.Cultist
-      , Token.Tablet
-      , Token.AutoFail
-      , Token.ElderSign
-      ]
-    Hard ->
+    else
       [ Token.Zero
       , Token.Zero
       , Token.Zero
@@ -85,26 +67,6 @@ nightOfTheZealot difficulty =
       , Token.MinusThree
       , Token.MinusFour
       , Token.MinusFive
-      , Token.Skull
-      , Token.Skull
-      , Token.Cultist
-      , Token.Tablet
-      , Token.AutoFail
-      , Token.ElderSign
-      ]
-    Expert ->
-      [ Token.Zero
-      , Token.MinusOne
-      , Token.MinusOne
-      , Token.MinusTwo
-      , Token.MinusTwo
-      , Token.MinusThree
-      , Token.MinusThree
-      , Token.MinusFour
-      , Token.MinusFour
-      , Token.MinusFive
-      , Token.MinusSix
-      , Token.MinusEight
       , Token.Skull
       , Token.Skull
       , Token.Cultist

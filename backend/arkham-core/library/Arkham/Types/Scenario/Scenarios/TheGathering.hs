@@ -40,6 +40,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
         , EncounterSet.Rats
         , EncounterSet.Ghouls
         , EncounterSet.StrikingFear
+        , EncounterSet.AncientEvils
         , EncounterSet.ChillingCold
         ]
       pushMessages

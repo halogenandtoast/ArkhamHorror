@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5787edce41b6e029c991452cb6409ae4ac0f2db87d17138cfc8edb14647b58e2
+-- hash: 2b0f13a0fb9f6f0756c9c893e0a373e7ab668270a90152f454b37c6ec892762b
 
 name:           arkham-core
 version:        0.0.0
@@ -190,6 +190,7 @@ library
       Arkham.Types.Scenario
       Arkham.Types.Scenario.Attrs
       Arkham.Types.Scenario.Runner
+      Arkham.Types.Scenario.Scenarios.TheDevourerBelow
       Arkham.Types.Scenario.Scenarios.TheGathering
       Arkham.Types.Scenario.Scenarios.TheMidnightMasks
       Arkham.Types.ScenarioId

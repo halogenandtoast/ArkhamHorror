@@ -65,7 +65,7 @@
         :game="game"
         :investigatorId="investigatorId"
         :location="location"
-        :style="{ 'grid-area': camelize(location.contents.name), 'justify-self': 'center' }"
+        :style="{ 'grid-area': location.contents.label, 'justify-self': 'center' }"
         @choose="$emit('choose', $event)"
       />
     </div>
@@ -97,7 +97,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import * as _ from 'lodash';
 import { Game } from '@/arkham/types/Game';
 import { Investigator } from '@/arkham/types/Investigator';
 import Player from '@/arkham/components/Player.vue';
@@ -199,8 +198,6 @@ export default class Scenario extends Vue {
   update(game: Game) {
     this.$emit('update', game);
   }
-
-  camelize = (str: string) => _.camelCase(str)
 }
 
 </script>

@@ -1,5 +1,6 @@
 module Arkham.Types.Act.Runner where
 
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
@@ -15,4 +16,5 @@ type ActRunner env
     , HasCount PlayerCount () env
     , HasSet InvestigatorId () env
     , HasId LeadInvestigatorId () env
+    , HasSet VictoryDisplayCardCode () env
     )

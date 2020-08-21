@@ -12,12 +12,12 @@ packages:
   original:
     hackage: monoidal-containers-0.6.0.1@sha256:7d776942659eb4d70d8b8da5d734396374a6eda8b4622df9e61e26b24e9c8e40,2501
 - completed:
-    hackage: unordered-containers-0.2.11.0@sha256:ba70b8a9d7eebc2034bf92e5690b2dd71200e76aa9f3f93e0b6be3f27f244d18,4998
+    hackage: unordered-containers-0.2.12.0@sha256:164a47850c4536c8b7cc12f74578588cf3b6c331f04e671306d2dcb806284bb1,4978
     pantry-tree:
-      size: 1416
-      sha256: d9b83f62373f509a441223f22f12e22e39b38ef3275dfca7c190a4795bebfed5
+      size: 1388
+      sha256: 6c5fc0b867c11681dbadeb9cbcae10864abe3c5a4799410016c90871d3406c6e
   original:
-    hackage: unordered-containers-0.2.11.0
+    hackage: unordered-containers-0.2.12.0
 snapshots:
 - completed:
     size: 496112

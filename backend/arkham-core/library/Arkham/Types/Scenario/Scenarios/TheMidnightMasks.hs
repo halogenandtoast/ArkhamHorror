@@ -21,6 +21,7 @@ import Arkham.Types.Target
 import qualified Arkham.Types.Token as Token
 import Arkham.Types.Trait hiding (Trait(Expert))
 import ClassyPrelude
+import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Data.List.NonEmpty (NonEmpty(..))
 import Data.UUID.V4
@@ -51,6 +52,7 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
     = case msg of
       Setup -> do
         count <- unPlayerCount <$> asks (getCount ())
+        investigatorIds <- HashSet.toList <$> asks (getSet ())
         (acolytes, darkCult) <- splitAt (count - 1)
           <$> gatherEncounterSet EncounterSet.DarkCult
         -- ^ we will spawn these acolytes
@@ -58,6 +60,8 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
         downtown <- liftIO $ sample $ "01130" :| ["01131"]
         houseBurnedDown <- asks $ hasRecord YourHouseHasBurnedToTheGround
         ghoulPriestAlive <- asks $ hasRecord GhoulPriestIsStillAlive
+        litaForcedToFindOthersToHelpHerCause <- asks
+          $ hasRecord LitaWasForcedToFindOthersToHelpHerCause
         ghoulPriestCard <-
           liftIO $ lookupEncounterCard "01116" . CardId <$> nextRandom
         cultistCards <-
@@ -86,23 +90,90 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
           , EncounterSet.DarkCult
           , EncounterSet.LockedDoors
           ]
+        let
+          intro1or2 = if litaForcedToFindOthersToHelpHerCause
+            then
+              [ "The woman came to you in a panic, raving about monsters emerging\
+                              \ from the ground in a home near Rivertown. “I managed to trap them,” she\
+                              \ explains, “but there are others. Other pits. Other domains.” Only last week,\
+                              \ you would have thought she was a lunatic. Recent events, however, have\
+                              \ challenged your preconceptions of normality. You decide to hear her out."
+              , "She introduces herself as Lita Chantler and lays out a tale that strains\
+                              \ the limits of your belief. “The creatures I speak of ,” she claims, “are called\
+                              \ ghouls—cruel beings who plague the crypts, caverns, and tunnels beneath the\
+                              \ city of Arkham…”"
+              ]
+            else
+              [ "In the wake of the disaster at your home, Lita Chantler, the\
+                              \ red-haired woman from your parlor, lays out a tale that—even in light of\
+                              \ what you have just witnessed—strains the limits of your belief. “The creatures\
+                              \ in your home,” she claims, “are called ghouls—cruel beings who plague the\
+                              \ crypts, caverns, and tunnels beneath the city of Arkham…”"
+              ]
         pushMessages
-          ([ SetEncounterDeck encounterDeck
-           , AddAgenda "01121"
-           , AddAct "01123"
-           , PlaceLocation "01125"
-           , PlaceLocation southside
-           , PlaceLocation "01128"
-           , PlaceLocation "01129"
-           , PlaceLocation downtown
-           , PlaceLocation "01132"
-           , PlaceLocation "01133"
-           , PlaceLocation "01134"
-           ]
+          $ [ AskMap
+              (HashMap.fromList
+                [ ( iid
+                  , ChooseOne
+                    [ Run
+                        [ Continue "Continue"
+                        , FlavorText
+                          (Just "Part II: The MidnightMasks")
+                          intro1or2
+                        ]
+                    ]
+                  )
+                | iid <- investigatorIds
+                ]
+              )
+            , AskMap
+              (HashMap.fromList
+                [ ( iid
+                  , ChooseOne
+                    [ Run
+                        [ Continue "Continue"
+                        , FlavorText
+                          (Just "Part II: The MidnightMasks")
+                          [ "“These creatures feed on the corpses of humans, and they are served\
+                           \ by a dark cult within Arkham whose members have inexplicably come to\
+                           \ worship the ancient master of the ghouls. This cult has been killing innocent\
+                           \ people and feeding them to the ghouls, satiating a monstrous hunger. A dark\
+                           \ balance was maintained. Until now. Recently,” Lita continues, “one of their\
+                           \ lairs, where the corpses were stored, was destroyed. Since then, the ghouls have\
+                           \ been more active than usual. I have tracked their movements and tried my\
+                           \ best to stop them from running amok throughout the city. But I think there\
+                           \ is something worse going on. The cult has been planning something darker,\
+                           \ and more ominous, than anything I have yet observed. Indications are that\
+                           \ this plan shall come to fruition tonight, shortly after midnight. Beyond that, I\
+                           \ cannot fathom what to expect."
+                          , "“Many of the cultists,” Lita continues, “will seem like everyday people, despite\
+                           \ their foul intentions. Whenever the cult meets, its members don masks shaped\
+                           \ like the skulls of various animals to protect their identities from one another.\
+                           \ These masks are our mark. Symbols of death and decay. We must unmask the\
+                           \ cultists to expose and derail their plans. We have but a few hours. The more\
+                           \ cultists we find before midnight, the better.”"
+                          ]
+                        ]
+                    ]
+                  )
+                | iid <- investigatorIds
+                ]
+              )
+            , SetEncounterDeck encounterDeck
+            , AddAgenda "01121"
+            , AddAct "01123"
+            , PlaceLocation "01125"
+            , PlaceLocation southside
+            , PlaceLocation "01128"
+            , PlaceLocation "01129"
+            , PlaceLocation downtown
+            , PlaceLocation "01132"
+            , PlaceLocation "01133"
+            , PlaceLocation "01134"
+            ]
           <> startingLocationMessages
           <> ghoulPriestMessages
           <> spawnAcolyteMessages
-          )
         pure $ TheMidnightMasks
           (attrs `with` TheMidnightMasksMetadata cultistDeck')
       UseScenarioSpecificAbility iid 1 -> do

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: de1225f70639ff330e561c34e5cfef51f844010e11a958ee945afcbf7e9c8507
+-- hash: 5787edce41b6e029c991452cb6409ae4ac0f2db87d17138cfc8edb14647b58e2
 
 name:           arkham-core
 version:        0.0.0
@@ -243,7 +243,7 @@ library
     , random-shuffle
     , safe
     , text
-    , unordered-containers >=0.2.11.0
+    , unordered-containers >=0.2.12.0
     , uuid
     , vector
   default-language: Haskell2010

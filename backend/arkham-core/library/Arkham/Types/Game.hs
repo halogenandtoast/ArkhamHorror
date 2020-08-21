@@ -462,6 +462,9 @@ instance HasList Ability () Game where
 instance HasSet Trait AssetId Game where
   getSet aid = getTraits . getAsset aid
 
+instance HasSet Trait EnemyId Game where
+  getSet eid = getTraits . getEnemy eid
+
 instance HasSet InvestigatorId EnemyId Game where
   getSet eid = getEngagedInvestigators . getEnemy eid
 

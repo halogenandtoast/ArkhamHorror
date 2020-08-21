@@ -13,6 +13,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
 
@@ -35,7 +36,8 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
       Just ownerId -> do
         locationId <- asks (getId @LocationId ownerId)
         locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
-        if iid `elem` locationInvestigatorIds
+        traits <- HashSet.toList <$> asks (getSet eid)
+        if iid `elem` locationInvestigatorIds && Monster `elem` traits
           then a <$ unshiftMessage
             (Ask iid $ ChooseOne
               [ Run

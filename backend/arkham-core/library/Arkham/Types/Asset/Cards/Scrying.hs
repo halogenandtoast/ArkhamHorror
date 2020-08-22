@@ -28,7 +28,7 @@ scrying uuid = Scrying $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
 
 instance (ActionRunner env investigator) => HasActions env investigator Scrying where
   getActions i NonFast (Scrying Attrs {..})
-    | Just (getId () i) == assetInvestigator = pure
+    | Just (getId () i) == assetInvestigator && not assetExhausted = pure
       [ ActivateCardAbilityAction
           (getId () i)
           (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
@@ -58,6 +58,12 @@ instance (AssetRunner env) => RunMessage env Scrying where
               | iid' <- investigatorIds
               ]
             )
-          pure $ Scrying $ attrs & uses .~ Uses Resource.Charge (n - 1)
+          pure
+            $ Scrying
+            $ attrs
+            & uses
+            .~ Uses Resource.Charge (n - 1)
+            & exhausted
+            .~ True
         _ -> pure a
     _ -> Scrying <$> runMessage msg attrs

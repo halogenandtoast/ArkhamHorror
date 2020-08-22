@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0e5ab69d8c02db267aad42797343b1e4e76c63d08e45ed027fd96288f44115ca
+-- hash: cd0cc557a5b0d494ec919b319cf524c0136635a359c6ad5ff045fb22f7dfcda7
 
 name:           arkham-api
 version:        0.0.0
@@ -30,6 +30,7 @@ library
       Base.Api.Handler.Registration
       Base.Util
       Entity.Arkham.Game
+      Entity.Arkham.Player
       Entity.User
       Foundation
       Import
@@ -57,6 +58,7 @@ library
     , classy-prelude-yesod
     , conduit
     , containers
+    , esqueleto
     , fast-logger
     , file-embed
     , http-client-tls

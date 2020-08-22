@@ -57,6 +57,7 @@ library:
     - classy-prelude-yesod
     - conduit
     - containers
+    - esqueleto
     - fast-logger
     - file-embed
     - http-client-tls

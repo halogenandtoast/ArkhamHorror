@@ -1,16 +1,17 @@
 module Api.Handler.Arkham.Games
   ( getApiV1ArkhamGameR
-  , postApiV1ArkhamCreateGameR
+  , getApiV1ArkhamGamesR
+  , postApiV1ArkhamGamesR
   , putApiV1ArkhamGameR
   , putApiV1ArkhamGameRawR
   )
 where
 
+import Arkham.Types.CampaignId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Difficulty
 import Arkham.Types.Game
-import Arkham.Types.CampaignId
 import Arkham.Types.GameJson
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator
@@ -19,9 +20,10 @@ import Arkham.Types.Message
 import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap
 import Data.UUID.V4
-import Database.Persist.Sql
+import Database.Esqueleto
+import Entity.Arkham.Player
 import GHC.Stack
-import Import
+import Import hiding (on, (==.))
 import Network.HTTP.Conduit (simpleHttp)
 import Safe (fromJustNote)
 import Yesod.WebSockets
@@ -49,6 +51,14 @@ getApiV1ArkhamGameR gameId = do
       $ HashMap.lookup (fromIntegral $ fromSqlKey userId) gPlayers
   pure $ GetGameJson investigatorId (Entity gameId ge)
 
+getApiV1ArkhamGamesR :: Handler [Entity ArkhamGame]
+getApiV1ArkhamGamesR = do
+  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  runDB $ select $ from $ \(players `InnerJoin` games) -> do
+    on (players ^. ArkhamPlayerArkhamGameId ==. games ^. persistIdField)
+    where_ (players ^. ArkhamPlayerUserId ==. val userId)
+    pure games
+
 data CreateGamePost = CreateGamePost
   { deckIds :: [String]
   , campaignId :: CampaignId
@@ -57,14 +67,19 @@ data CreateGamePost = CreateGamePost
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
 
-postApiV1ArkhamCreateGameR :: Handler (Entity ArkhamGame)
-postApiV1ArkhamCreateGameR = do
+postApiV1ArkhamGamesR :: Handler (Entity ArkhamGame)
+postApiV1ArkhamGamesR = do
   CreateGamePost {..} <- requireCheckJsonBody
-  investigators <- (HashMap.fromList <$>) $ for (zip [1..] deckIds) $ \(userId, deckId) -> do
-    (iid, deck) <- liftIO $ loadDeck deckId
-    pure (userId, (lookupInvestigator iid, deck))
+  investigators <-
+    (HashMap.fromList <$>) $ for (zip [1 ..] deckIds) $ \(userId, deckId) -> do
+      (iid, deck) <- liftIO $ loadDeck deckId
+      pure (userId, (lookupInvestigator iid, deck))
   ge <- liftIO $ runMessages =<< newCampaign campaignId investigators difficulty
-  key <- runDB $ insert $ ArkhamGame ge
+  key <- runDB $ do
+    gameId <- insert $ ArkhamGame ge
+    for_ (HashMap.keys investigators) $ \userId ->
+      insert $ ArkhamPlayer (toSqlKey $ fromIntegral userId) gameId
+    pure gameId
   pure (Entity key (ArkhamGame ge))
 
 newtype QuestionReponse = QuestionResponse { choice :: Int }

@@ -5,7 +5,7 @@
     /whoami ApiV1CurrentUserR GET
     /arkham ApiV1ArkhamP:
       /games ApiV1ArkhamGamesP:
-        / ApiV1ArkhamCreateGameR POST
+        / ApiV1ArkhamGamesR GET POST
         /#ArkhamGameId ApiV1ArkhamGameP:
           / ApiV1ArkhamGameR GET PUT
           /raw ApiV1ArkhamGameRawR PUT

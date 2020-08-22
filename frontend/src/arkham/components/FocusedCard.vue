@@ -44,6 +44,8 @@ export default class FocusedCard extends Vue {
         return c.contents[2] === this.id;
       case MessageType.ADD_FOCUSED_TO_TOP_OF_DECK:
         return c.contents[2] === this.id;
+      case MessageType.FOUND_AND_DREW_ENCOUNTER_CARD:
+        return c.contents[2].id === this.id;
       case MessageType.RUN:
         return c.contents.some((c1: Message) => this.canInteract(c1));
       default:

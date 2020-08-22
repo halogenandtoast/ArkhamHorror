@@ -27,8 +27,7 @@ northside =
         }
 
 instance (ActionRunner env investigator) => HasActions env investigator Northside where
-  getActions i NonFast (Northside attrs@Attrs {..})
-    | locationRevealed && getId () i `elem` locationInvestigators = do
+  getActions i NonFast (Northside attrs@Attrs {..}) = do
       baseActions <- getActions i NonFast attrs
       usedAbilities <- map unUsedAbility <$> asks (getList ())
       let
@@ -39,7 +38,11 @@ instance (ActionRunner env investigator) => HasActions env investigator Northsid
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction (getId () i) ability
-           | resourceCount i >= 5 && ability `notElem` map snd usedAbilities
+           | resourceCount i >= 5
+             && ability `notElem` map snd usedAbilities
+             && locationRevealed
+             && getId () i `elem` locationInvestigators
+             && hasActionsRemaining i
            ] -- GROUP LIMIT
   getActions _ _ _ = pure []
 

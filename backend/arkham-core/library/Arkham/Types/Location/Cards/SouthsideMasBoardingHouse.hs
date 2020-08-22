@@ -34,8 +34,7 @@ southsideMasBoardingHouse =
         }
 
 instance (ActionRunner env investigator) => HasActions env investigator SouthsideMasBoardingHouse where
-  getActions i NonFast (SouthsideMasBoardingHouse attrs@Attrs {..})
-    | locationRevealed && getId () i `elem` locationInvestigators = do
+  getActions i NonFast (SouthsideMasBoardingHouse attrs@Attrs {..}) = do
       baseActions <- getActions i NonFast attrs
       usedAbilities <- map unUsedAbility <$> asks (getList ())
       let
@@ -47,6 +46,9 @@ instance (ActionRunner env investigator) => HasActions env investigator Southsid
         $ baseActions
         <> [ ActivateCardAbilityAction (getId () i) ability
            | (getId () i, ability) `notElem` usedAbilities
+             && locationRevealed
+             && getId () i `elem` locationInvestigators
+             && hasActionsRemaining i
            ]
   getActions _ _ _ = pure []
 

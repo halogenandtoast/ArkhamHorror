@@ -49,6 +49,7 @@ import Arkham.Types.ScenarioId
 import Arkham.Types.Skill
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
+import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Token (Token)
@@ -1358,6 +1359,14 @@ runGameMessage msg g = case msg of
   ShuffleEncounterDiscardBackIn -> do
     encounterDeck' <- liftIO . shuffleM $ view encounterDeck g <> view discard g
     pure $ g & encounterDeck .~ encounterDeck' & discard .~ mempty
+  RevelationSkillTest _ (TreacherySource tid) _ _ _ _ -> do
+    let
+      treachery = getTreachery tid g
+      card = fromJustNote
+        "missing card"
+        (HashMap.lookup (getCardCode treachery) allEncounterCards)
+        (CardId $ unTreacheryId tid)
+    pure $ g & (activeCard ?~ EncounterCard card)
   InvestigatorDrewEncounterCard iid card -> case ecCardType card of
     EnemyType -> do
       (enemyId', enemy') <- createEnemy (ecCardCode card)

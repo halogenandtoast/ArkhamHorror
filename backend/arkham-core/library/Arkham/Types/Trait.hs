@@ -9,6 +9,7 @@ import Data.Aeson
 data Trait
   = Agency
   | Ally
+  | AncientOne
   | Arkham
   | Armor
   | Artist
@@ -20,6 +21,8 @@ data Trait
   | Blunder
   | Bold
   | Boon
+  | Byakhee
+  | Cave
   | Central
   | Charm
   | Chosen
@@ -121,5 +124,7 @@ data Trait
   | Wayfarer
   | Weapon
   | Witch
+  | Woods
+  | Yithian
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

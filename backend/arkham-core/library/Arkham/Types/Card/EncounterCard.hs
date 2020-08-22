@@ -83,6 +83,8 @@ allEncounterCards = HashMap.fromList
   , ("01139", peterWarren)
   , ("01140", victoriaDevereux)
   , ("01141", ruthTurner)
+  , ("01157", umordhoth)
+  , ("01158", umordhothsWrath)
   , ("01159", swarmOfRats)
   , ("01160", ghoulMinion)
   , ("01161", ravenousGhoul)
@@ -99,6 +101,14 @@ allEncounterCards = HashMap.fromList
   , ("01172", huntingNightgaunt)
   , ("01173", onWingsOfDarkness)
   , ("01174", lockedDoor)
+  , ("01175", screechingByakhee)
+  , ("01176", theYellowSign)
+  , ("01177", yithianObserver)
+  , ("01178", offerOfPower)
+  , ("01179", relentlessDarkYoung)
+  , ("01180", goatSpawn)
+  , ("01181", youngDeepOne)
+  , ("01182", dreamsOfRlyeh)
   ]
 
 ghoulPriest :: CardId -> EncounterCard
@@ -165,6 +175,16 @@ ruthTurner cardId = (enemy cardId "01141" "Ruth Turner")
   { ecTraits = [Humanoid, Cultist]
   , ecVictoryPoints = Just 1
   }
+
+umordhoth :: CardId -> EncounterCard
+umordhoth cardId = (enemy cardId "01157" "Umôrdhoth")
+  { ecTraits = [AncientOne, Elite]
+  , ecKeywords = [Keyword.Hunter, Keyword.Massive]
+  }
+
+umordhothsWrath :: CardId -> EncounterCard
+umordhothsWrath cardId =
+  (treachery cardId "01158" "Umôrdhoth's Wrath") { ecTraits = [Curse] }
 
 swarmOfRats :: CardId -> EncounterCard
 swarmOfRats cardId = (enemy cardId "01159" "Swarm of Rats")
@@ -236,3 +256,45 @@ onWingsOfDarkness cardId = treachery cardId "01173" "On Wings of Darkness"
 lockedDoor :: CardId -> EncounterCard
 lockedDoor cardId =
   (treachery cardId "01174" "Locked Door") { ecTraits = [Obstacle] }
+
+screechingByakhee :: CardId -> EncounterCard
+screechingByakhee cardId = (enemy cardId "01175" "Screeching Byakhee")
+  { ecTraits = [Monster, Byakhee]
+  , ecKeywords = [Keyword.Hunter]
+  }
+
+theYellowSign :: CardId -> EncounterCard
+theYellowSign cardId =
+  (treachery cardId "01176" "The Yellow Sign") { ecTraits = [Omen] }
+
+yithianObserver :: CardId -> EncounterCard
+yithianObserver cardId =
+  (enemy cardId "01177" "Yithian Observer") { ecTraits = [Monster, Yithian] }
+
+offerOfPower :: CardId -> EncounterCard
+offerOfPower cardId = (treachery cardId "01178" "Offer of Power")
+  { ecTraits = [Pact]
+  , ecKeywords = [Keyword.Peril]
+  }
+
+relentlessDarkYoung :: CardId -> EncounterCard
+relentlessDarkYoung cardId = (enemy cardId "01179" "Relentless Dark Young")
+  { ecTraits = [Monster, DarkYoung]
+  , ecVictoryPoints = Just 1
+  }
+
+goatSpawn :: CardId -> EncounterCard
+goatSpawn cardId = (enemy cardId "01180" "Goat Spawn")
+  { ecTraits = [Humanoid, Monster]
+  , ecKeywords = [Keyword.Hunter, Keyword.Retaliate]
+  }
+
+youngDeepOne :: CardId -> EncounterCard
+youngDeepOne cardId = (enemy cardId "01181" "Young Deep One")
+  { ecTraits = [Humanoid, Monster, DeepOne]
+  , ecKeywords = [Keyword.Hunter]
+  }
+
+dreamsOfRlyeh :: CardId -> EncounterCard
+dreamsOfRlyeh cardId =
+  (treachery cardId "01182" "Dreams of R'lyeh") { ecTraits = [Omen] }

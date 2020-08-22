@@ -15,6 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Runner
+import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Token as Token
 import Arkham.Types.Trait hiding (Trait(Expert))
@@ -33,8 +34,8 @@ theDevourerBelow difficulty =
   TheDevourerBelow $ (baseAttrs "01142" "The Devourer Below" [] [] difficulty)
     { scenarioLocationLayout = Just
       [ "woods1     .     woods2"
-      , "woods1 rivertown woods2"
-      , "woods3 rivertown woods4"
+      , "woods1 mainPath woods2"
+      , "woods3 mainPath woods4"
       , "woods3     .     woods4"
       ]
     }
@@ -45,6 +46,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
       investigatorIds <- HashSet.toList <$> asks (getSet ())
       pastMidnight <- asks $ hasRecord ItIsPastMidnight
       ghoulPriestAlive <- asks $ hasRecord GhoulPriestIsStillAlive
+      cultistsWhoGotAway <- asks $ hasRecordSet CultistsWhoGotAway
       ghoulPriestCard <-
         liftIO $ lookupEncounterCard "01116" . CardId <$> nextRandom
       let
@@ -54,6 +56,8 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
           if ghoulPriestAlive then [AddToEncounterDeck ghoulPriestCard] else []
         pastMidnightMessages =
           if pastMidnight then [AllRandomDiscard, AllRandomDiscard] else []
+        cultistsWhoGotAwayMessages =
+          replicate ((length cultistsWhoGotAway + 1) `div` 2) PlaceDoomOnAgenda
       woodsLocations <- liftIO $ take 4 <$> shuffleM arkhamWoods
       randomSet <-
         liftIO
@@ -119,7 +123,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
            ]
         <> [RevealLocation "01149", MoveAllTo "01149"]
         <> ghoulPriestMessages
-        <> error "TODO: cultists who got away"
+        <> cultistsWhoGotAwayMessages
         <> pastMidnightMessages
       pure s
     ResolveToken Token.Skull _ skillValue

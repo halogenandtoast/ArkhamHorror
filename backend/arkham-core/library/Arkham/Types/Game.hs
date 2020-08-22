@@ -335,6 +335,9 @@ instance HasRecord Game where
   hasRecord key g = case g ^. campaign of
     Nothing -> False
     Just c -> hasRecord key c
+  hasRecordSet key g = case g ^. campaign of
+    Nothing -> []
+    Just c -> hasRecordSet key c
 
 instance HasCard InvestigatorId Game where
   getCard iid cardId g = getCard () cardId (getInvestigator iid g)
@@ -980,7 +983,7 @@ runGameMessage msg g = case msg of
   AddAgenda aid -> pure $ g & agendas . at aid ?~ lookupAgenda aid
   SkillTestEnds -> pure $ g & skillTest .~ Nothing
   ReturnTokens tokens -> pure $ g & chaosBag %~ (tokens <>)
-  AddToken token -> pure $ g & chaosBag %~ (token:)
+  AddToken token -> pure $ g & chaosBag %~ (token :)
   PlayCard iid cardId False -> do
     let
       investigator = getInvestigator iid g

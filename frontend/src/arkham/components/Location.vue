@@ -152,7 +152,7 @@ export default class Location extends Vue {
   }
 
   abilityLabel(idx: number) {
-    return this.choices[idx].contents[1][3].contents[1];
+    return this.choices[idx].contents[1].type.contents[1];
   }
 
   get abilities() {

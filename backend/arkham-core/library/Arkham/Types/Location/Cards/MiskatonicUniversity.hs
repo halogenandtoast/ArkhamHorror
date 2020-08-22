@@ -33,14 +33,16 @@ miskatonicUniversity = MiskatonicUniversity $ (baseAttrs
   }
 
 instance (ActionRunner env investigator) => HasActions env investigator MiskatonicUniversity where
-  getActions i NonFast (MiskatonicUniversity attrs@Attrs {..})
-    | locationRevealed && getId () i `elem` locationInvestigators = do
+  getActions i NonFast (MiskatonicUniversity attrs@Attrs {..}) = do
       baseActions <- getActions i NonFast attrs
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction
                (getId () i)
                (mkAbility (LocationSource "01129") 1 (ActionAbility 1 Nothing))
+           | locationRevealed
+             && getId () i `elem` locationInvestigators
+             && hasActionsRemaining i
            ]
   getActions _ _ _ = pure []
 

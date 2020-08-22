@@ -9,9 +9,8 @@ where
 
 import Arkham.Types.GameJson
 import ClassyPrelude
-import Data.Aeson
-import Data.Aeson.Casing
 import Database.Persist.TH
+import Json
 import Orphans ()
 
 mkPersist sqlSettings [persistLowerCase|
@@ -21,7 +20,5 @@ ArkhamGame sql=arkham_games
 |]
 
 instance ToJSON ArkhamGame where
-  toJSON =
-    genericToJSON $ defaultOptions { fieldLabelModifier = camelCase . drop 10 }
-  toEncoding = genericToEncoding
-    $ defaultOptions { fieldLabelModifier = camelCase . drop 10 }
+  toJSON = genericToJSON $ aesonOptions $ Just "arkhamGame"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "arkhamGame"

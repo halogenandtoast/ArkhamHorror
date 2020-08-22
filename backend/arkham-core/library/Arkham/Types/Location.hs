@@ -13,6 +13,12 @@ import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Cards.ArkhamWoodsCliffside
+import Arkham.Types.Location.Cards.ArkhamWoodsOldHouse
+import Arkham.Types.Location.Cards.ArkhamWoodsQuietGlade
+import Arkham.Types.Location.Cards.ArkhamWoodsTangledThicket
+import Arkham.Types.Location.Cards.ArkhamWoodsTwistingPaths
+import Arkham.Types.Location.Cards.ArkhamWoodsUnhallowedGround
 import Arkham.Types.Location.Cards.Attic
 import Arkham.Types.Location.Cards.Cellar
 import Arkham.Types.Location.Cards.DowntownArkhamAsylum
@@ -20,9 +26,11 @@ import Arkham.Types.Location.Cards.DowntownFirstBankOfArkham
 import Arkham.Types.Location.Cards.Easttown
 import Arkham.Types.Location.Cards.Graveyard
 import Arkham.Types.Location.Cards.Hallway
+import Arkham.Types.Location.Cards.MainPath
 import Arkham.Types.Location.Cards.MiskatonicUniversity
 import Arkham.Types.Location.Cards.Northside
 import Arkham.Types.Location.Cards.Parlor
+import Arkham.Types.Location.Cards.RitualSite
 import Arkham.Types.Location.Cards.Rivertown
 import Arkham.Types.Location.Cards.SouthsideHistoricalSociety
 import Arkham.Types.Location.Cards.SouthsideMasBoardingHouse
@@ -75,6 +83,14 @@ allLocations = HashMap.fromList $ map
   , Easttown' easttown
   , Graveyard' graveyard
   , Northside' northside
+  , MainPath' mainPath
+  , ArkhamWoodsUnhallowedGround' arkhamWoodsUnhallowedGround
+  , ArkhamWoodsTwistingPaths' arkhamWoodsTwistingPaths
+  , ArkhamWoodsOldHouse' arkhamWoodsOldHouse
+  , ArkhamWoodsCliffside' arkhamWoodsCliffside
+  , ArkhamWoodsTangledThicket' arkhamWoodsTangledThicket
+  , ArkhamWoodsQuietGlade' arkhamWoodsQuietGlade
+  , RitualSite' ritualSite
   ]
 
 instance HasTraits Location where
@@ -124,6 +140,14 @@ data Location
   | Easttown' Easttown
   | Graveyard' Graveyard
   | Northside' Northside
+  | MainPath' MainPath
+  | ArkhamWoodsUnhallowedGround' ArkhamWoodsUnhallowedGround
+  | ArkhamWoodsTwistingPaths' ArkhamWoodsTwistingPaths
+  | ArkhamWoodsOldHouse' ArkhamWoodsOldHouse
+  | ArkhamWoodsCliffside' ArkhamWoodsCliffside
+  | ArkhamWoodsTangledThicket' ArkhamWoodsTangledThicket
+  | ArkhamWoodsQuietGlade' ArkhamWoodsQuietGlade
+  | RitualSite' RitualSite
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -145,6 +169,14 @@ locationAttrs = \case
   Easttown' attrs -> coerce attrs
   Graveyard' attrs -> coerce attrs
   Northside' attrs -> coerce attrs
+  MainPath' attrs -> coerce attrs
+  ArkhamWoodsUnhallowedGround' attrs -> coerce attrs
+  ArkhamWoodsTwistingPaths' attrs -> coerce attrs
+  ArkhamWoodsOldHouse' attrs -> coerce attrs
+  ArkhamWoodsCliffside' attrs -> coerce attrs
+  ArkhamWoodsTangledThicket' attrs -> coerce attrs
+  ArkhamWoodsQuietGlade' attrs -> coerce attrs
+  RitualSite' attrs -> coerce attrs
 
 instance (ActionRunner env investigator) => HasActions env investigator Location where
   getActions i window = \case
@@ -164,6 +196,14 @@ instance (ActionRunner env investigator) => HasActions env investigator Location
     Easttown' l -> getActions i window l
     Graveyard' l -> getActions i window l
     Northside' l -> getActions i window l
+    MainPath' l -> getActions i window l
+    ArkhamWoodsUnhallowedGround' l -> getActions i window l
+    ArkhamWoodsTwistingPaths' l -> getActions i window l
+    ArkhamWoodsOldHouse' l -> getActions i window l
+    ArkhamWoodsCliffside' l -> getActions i window l
+    ArkhamWoodsTangledThicket' l -> getActions i window l
+    ArkhamWoodsQuietGlade' l -> getActions i window l
+    RitualSite' l -> getActions i window l
 
 instance (LocationRunner env) => RunMessage env Location where
   runMessage msg = \case
@@ -186,3 +226,14 @@ instance (LocationRunner env) => RunMessage env Location where
     Easttown' x -> Easttown' <$> runMessage msg x
     Graveyard' x -> Graveyard' <$> runMessage msg x
     Northside' x -> Northside' <$> runMessage msg x
+    MainPath' x -> MainPath' <$> runMessage msg x
+    ArkhamWoodsUnhallowedGround' x ->
+      ArkhamWoodsUnhallowedGround' <$> runMessage msg x
+    ArkhamWoodsTwistingPaths' x ->
+      ArkhamWoodsTwistingPaths' <$> runMessage msg x
+    ArkhamWoodsOldHouse' x -> ArkhamWoodsOldHouse' <$> runMessage msg x
+    ArkhamWoodsCliffside' x -> ArkhamWoodsCliffside' <$> runMessage msg x
+    ArkhamWoodsTangledThicket' x ->
+      ArkhamWoodsTangledThicket' <$> runMessage msg x
+    ArkhamWoodsQuietGlade' x -> ArkhamWoodsQuietGlade' <$> runMessage msg x
+    RitualSite' x -> RitualSite' <$> runMessage msg x

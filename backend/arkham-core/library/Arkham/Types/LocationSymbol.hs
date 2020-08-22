@@ -13,5 +13,6 @@ data LocationSymbol
   | Moon
   | Hourglass
   | T
+  | Equals
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

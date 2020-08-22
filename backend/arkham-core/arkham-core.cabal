@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2b0f13a0fb9f6f0756c9c893e0a373e7ab668270a90152f454b37c6ec892762b
+-- hash: b45cdc8ec8d9a36fc6c10f48dfce7f43201eef591c06c45efbd3e48623f95784
 
 name:           arkham-core
 version:        0.0.0
@@ -16,6 +16,9 @@ library
       Arkham.Types.Ability
       Arkham.Types.Act
       Arkham.Types.Act.Attrs
+      Arkham.Types.Act.Cards.DisruptingTheRitual
+      Arkham.Types.Act.Cards.IntoTheDarkness
+      Arkham.Types.Act.Cards.InvestigatingTheTrail
       Arkham.Types.Act.Cards.TheBarrier
       Arkham.Types.Act.Cards.Trapped
       Arkham.Types.Act.Cards.UncoveringTheConspiracy
@@ -27,8 +30,11 @@ library
       Arkham.Types.Agenda.Attrs
       Arkham.Types.Agenda.Cards.PredatorOrPrey
       Arkham.Types.Agenda.Cards.RiseOfTheGhouls
+      Arkham.Types.Agenda.Cards.TheArkhamWoods
+      Arkham.Types.Agenda.Cards.TheRitualBegins
       Arkham.Types.Agenda.Cards.TheyreGettingOut
       Arkham.Types.Agenda.Cards.TimeIsRunningShort
+      Arkham.Types.Agenda.Cards.VengeanceAwaits
       Arkham.Types.Agenda.Cards.WhatsGoingOn
       Arkham.Types.Agenda.Runner
       Arkham.Types.AgendaId
@@ -84,18 +90,24 @@ library
       Arkham.Types.Enemy.Cards.FleshEater
       Arkham.Types.Enemy.Cards.GhoulMinion
       Arkham.Types.Enemy.Cards.GhoulPriest
+      Arkham.Types.Enemy.Cards.GoatSpawn
       Arkham.Types.Enemy.Cards.HermanCollins
       Arkham.Types.Enemy.Cards.HuntingNightgaunt
       Arkham.Types.Enemy.Cards.IcyGhoul
       Arkham.Types.Enemy.Cards.PeterWarren
       Arkham.Types.Enemy.Cards.RavenousGhoul
+      Arkham.Types.Enemy.Cards.RelentlessDarkYoung
       Arkham.Types.Enemy.Cards.RuthTurner
+      Arkham.Types.Enemy.Cards.ScreechingByakhee
       Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
       Arkham.Types.Enemy.Cards.SwarmOfRats
       Arkham.Types.Enemy.Cards.TheMaskedHunter
+      Arkham.Types.Enemy.Cards.Umordhoth
       Arkham.Types.Enemy.Cards.VictoriaDevereux
       Arkham.Types.Enemy.Cards.WizardOfTheOrder
       Arkham.Types.Enemy.Cards.WolfManDrew
+      Arkham.Types.Enemy.Cards.YithianObserver
+      Arkham.Types.Enemy.Cards.YoungDeepOne
       Arkham.Types.Enemy.Runner
       Arkham.Types.EnemyId
       Arkham.Types.Event
@@ -162,6 +174,12 @@ library
       Arkham.Types.Keyword
       Arkham.Types.Location
       Arkham.Types.Location.Attrs
+      Arkham.Types.Location.Cards.ArkhamWoodsCliffside
+      Arkham.Types.Location.Cards.ArkhamWoodsOldHouse
+      Arkham.Types.Location.Cards.ArkhamWoodsQuietGlade
+      Arkham.Types.Location.Cards.ArkhamWoodsTangledThicket
+      Arkham.Types.Location.Cards.ArkhamWoodsTwistingPaths
+      Arkham.Types.Location.Cards.ArkhamWoodsUnhallowedGround
       Arkham.Types.Location.Cards.Attic
       Arkham.Types.Location.Cards.Cellar
       Arkham.Types.Location.Cards.DowntownArkhamAsylum
@@ -169,9 +187,11 @@ library
       Arkham.Types.Location.Cards.Easttown
       Arkham.Types.Location.Cards.Graveyard
       Arkham.Types.Location.Cards.Hallway
+      Arkham.Types.Location.Cards.MainPath
       Arkham.Types.Location.Cards.MiskatonicUniversity
       Arkham.Types.Location.Cards.Northside
       Arkham.Types.Location.Cards.Parlor
+      Arkham.Types.Location.Cards.RitualSite
       Arkham.Types.Location.Cards.Rivertown
       Arkham.Types.Location.Cards.SouthsideHistoricalSociety
       Arkham.Types.Location.Cards.SouthsideMasBoardingHouse
@@ -220,6 +240,7 @@ library
       Arkham.Types.Treachery.Cards.ObscuringFog
       Arkham.Types.Treachery.Cards.OnWingsOfDarkness
       Arkham.Types.Treachery.Cards.RottingRemains
+      Arkham.Types.Treachery.Cards.UmordhothsWrath
       Arkham.Types.Treachery.Runner
       Arkham.Types.TreacheryId
   other-modules:

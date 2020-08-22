@@ -5,6 +5,7 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes.HasRecord
 import ClassyPrelude
+import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Lens.Micro
 
@@ -17,6 +18,7 @@ data CampaignLog = CampaignLog
 
 instance HasRecord CampaignLog where
   hasRecord key = HashSet.member key . campaignLogRecorded
+  hasRecordSet key = HashMap.lookupDefault [] key . campaignLogRecordedSets
 
 recorded :: Lens' CampaignLog (HashSet CampaignLogKey)
 recorded = lens campaignLogRecorded $ \m x -> m { campaignLogRecorded = x }

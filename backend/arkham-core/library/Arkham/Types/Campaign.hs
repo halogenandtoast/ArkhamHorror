@@ -40,6 +40,7 @@ data Campaign
 
 instance HasRecord Campaign where
   hasRecord key = hasRecord key . campaignLog . campaignAttrs
+  hasRecordSet key = hasRecordSet key . campaignLog . campaignAttrs
 
 instance (CampaignRunner env) => RunMessage env Campaign where
   runMessage msg = \case

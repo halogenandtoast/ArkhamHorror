@@ -9,6 +9,9 @@ where
 
 import Arkham.Json
 import Arkham.Types.Act.Attrs
+import Arkham.Types.Act.Cards.DisruptingTheRitual
+import Arkham.Types.Act.Cards.IntoTheDarkness
+import Arkham.Types.Act.Cards.InvestigatingTheTrail
 import Arkham.Types.Act.Cards.TheBarrier
 import Arkham.Types.Act.Cards.Trapped
 import Arkham.Types.Act.Cards.UncoveringTheConspiracy
@@ -31,6 +34,9 @@ allActs = HashMap.fromList $ map
   , TheBarrier' theBarrier
   , WhatHaveYouDone' whatHaveYouDone
   , UncoveringTheConspiracy' uncoveringTheConspiracy
+  , InvestigatingTheTrail' investigatingTheTrail
+  , IntoTheDarkness' intoTheDarkness
+  , DisruptingTheRitual' disruptingTheRitual
   ]
 
 instance IsAdvanceable Act where
@@ -41,6 +47,9 @@ data Act
   | TheBarrier' TheBarrier
   | WhatHaveYouDone' WhatHaveYouDone
   | UncoveringTheConspiracy' UncoveringTheConspiracy
+  | InvestigatingTheTrail' InvestigatingTheTrail
+  | IntoTheDarkness' IntoTheDarkness
+  | DisruptingTheRitual' DisruptingTheRitual
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -50,6 +59,9 @@ actAttrs = \case
   TheBarrier' attrs -> coerce attrs
   WhatHaveYouDone' attrs -> coerce attrs
   UncoveringTheConspiracy' attrs -> coerce attrs
+  InvestigatingTheTrail' attrs -> coerce attrs
+  IntoTheDarkness' attrs -> coerce attrs
+  DisruptingTheRitual' attrs -> coerce attrs
 
 instance (ActionRunner env investigator) => HasActions env investigator Act where
   getActions i window = \case
@@ -57,6 +69,9 @@ instance (ActionRunner env investigator) => HasActions env investigator Act wher
     TheBarrier' x -> getActions i window x
     WhatHaveYouDone' x -> getActions i window x
     UncoveringTheConspiracy' x -> getActions i window x
+    InvestigatingTheTrail' x -> getActions i window x
+    IntoTheDarkness' x -> getActions i window x
+    DisruptingTheRitual' x -> getActions i window x
 
 instance (ActRunner env) => RunMessage env Act where
   runMessage msg = \case
@@ -64,3 +79,6 @@ instance (ActRunner env) => RunMessage env Act where
     TheBarrier' x -> TheBarrier' <$> runMessage msg x
     WhatHaveYouDone' x -> WhatHaveYouDone' <$> runMessage msg x
     UncoveringTheConspiracy' x -> UncoveringTheConspiracy' <$> runMessage msg x
+    InvestigatingTheTrail' x -> InvestigatingTheTrail' <$> runMessage msg x
+    IntoTheDarkness' x -> IntoTheDarkness' <$> runMessage msg x
+    DisruptingTheRitual' x -> DisruptingTheRitual' <$> runMessage msg x

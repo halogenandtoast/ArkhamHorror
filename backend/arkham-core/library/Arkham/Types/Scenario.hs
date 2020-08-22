@@ -9,6 +9,7 @@ import Arkham.Json
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Scenario.Runner
+import Arkham.Types.Scenario.Scenarios.TheDevourerBelow
 import Arkham.Types.Scenario.Scenarios.TheGathering
 import Arkham.Types.Scenario.Scenarios.TheMidnightMasks
 import Arkham.Types.ScenarioId
@@ -24,11 +25,13 @@ allScenarios :: HashMap ScenarioId (Difficulty -> Scenario)
 allScenarios = HashMap.fromList
   [ ("01104", TheGathering' . theGathering)
   , ("01120", TheMidnightMasks' . theMidnightMasks)
+  , ("01142", TheDevourerBelow' . theDevourerBelow)
   ]
 
 data Scenario
   = TheGathering' TheGathering
   | TheMidnightMasks' TheMidnightMasks
+  | TheDevourerBelow' TheDevourerBelow
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -36,3 +39,4 @@ instance (ScenarioRunner env) => RunMessage env Scenario where
   runMessage msg = \case
     TheGathering' x -> TheGathering' <$> runMessage msg x
     TheMidnightMasks' x -> TheMidnightMasks' <$> runMessage msg x
+    TheDevourerBelow' x -> TheDevourerBelow' <$> runMessage msg x

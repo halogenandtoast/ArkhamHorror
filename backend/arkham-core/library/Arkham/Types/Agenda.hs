@@ -9,8 +9,11 @@ import Arkham.Json
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Cards.PredatorOrPrey
 import Arkham.Types.Agenda.Cards.RiseOfTheGhouls
+import Arkham.Types.Agenda.Cards.TheArkhamWoods
+import Arkham.Types.Agenda.Cards.TheRitualBegins
 import Arkham.Types.Agenda.Cards.TheyreGettingOut
 import Arkham.Types.Agenda.Cards.TimeIsRunningShort
+import Arkham.Types.Agenda.Cards.VengeanceAwaits
 import Arkham.Types.Agenda.Cards.WhatsGoingOn
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.AgendaId
@@ -32,6 +35,9 @@ allAgendas = HashMap.fromList $ map
   , TheyreGettingOut' theyreGettingOut
   , PredatorOrPrey' predatorOrPrey
   , TimeIsRunningShort' timeIsRunningShort
+  , TheArkhamWoods' theArkhamWoods
+  , TheRitualBegins' theRitualBegins
+  , VengeanceAwaits' vengeanceAwaits
   ]
 
 instance HasAbilities Agenda where
@@ -46,6 +52,9 @@ data Agenda
   | TheyreGettingOut' TheyreGettingOut
   | PredatorOrPrey' PredatorOrPrey
   | TimeIsRunningShort' TimeIsRunningShort
+  | TheArkhamWoods' TheArkhamWoods
+  | TheRitualBegins' TheRitualBegins
+  | VengeanceAwaits' VengeanceAwaits
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -56,6 +65,9 @@ agendaAttrs = \case
   TheyreGettingOut' attrs -> coerce attrs
   PredatorOrPrey' attrs -> coerce attrs
   TimeIsRunningShort' attrs -> coerce attrs
+  TheArkhamWoods' attrs -> coerce attrs
+  TheRitualBegins' attrs -> coerce attrs
+  VengeanceAwaits' attrs -> coerce attrs
 
 instance (ActionRunner env investigator) => HasActions env investigator Agenda where
   getActions i window = \case
@@ -64,6 +76,9 @@ instance (ActionRunner env investigator) => HasActions env investigator Agenda w
     TheyreGettingOut' x -> getActions i window x
     PredatorOrPrey' x -> getActions i window x
     TimeIsRunningShort' x -> getActions i window x
+    TheArkhamWoods' x -> getActions i window x
+    TheRitualBegins' x -> getActions i window x
+    VengeanceAwaits' x -> getActions i window x
 
 instance (AgendaRunner env) => RunMessage env Agenda where
   runMessage msg = \case
@@ -72,3 +87,6 @@ instance (AgendaRunner env) => RunMessage env Agenda where
     TheyreGettingOut' x -> TheyreGettingOut' <$> runMessage msg x
     PredatorOrPrey' x -> PredatorOrPrey' <$> runMessage msg x
     TimeIsRunningShort' x -> TimeIsRunningShort' <$> runMessage msg x
+    TheArkhamWoods' x -> TheArkhamWoods' <$> runMessage msg x
+    TheRitualBegins' x -> TheRitualBegins' <$> runMessage msg x
+    VengeanceAwaits' x -> VengeanceAwaits' <$> runMessage msg x

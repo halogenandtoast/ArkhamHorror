@@ -22,6 +22,7 @@ import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
+import qualified Data.Text as T
 import Lens.Micro
 
 data Attrs = Attrs
@@ -84,7 +85,7 @@ baseAttrs
   -> Attrs
 baseAttrs lid name shroud' revealClues symbol' connectedSymbols' = Attrs
   { locationName = name
-  , locationLabel = pack . camelCase . unpack $ name
+  , locationLabel = pack . camelCase . unpack . T.filter (/= ' ') $ name
   , locationId = lid
   , locationRevealClues = revealClues
   , locationClues = 0

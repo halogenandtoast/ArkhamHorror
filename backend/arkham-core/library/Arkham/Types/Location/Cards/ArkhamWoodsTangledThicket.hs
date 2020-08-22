@@ -1,0 +1,36 @@
+{-# LANGUAGE UndecidableInstances #-}
+module Arkham.Types.Location.Cards.ArkhamWoodsTangledThicket where
+
+import Arkham.Json
+import Arkham.Types.Classes
+import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Trait
+import ClassyPrelude
+import qualified Data.HashSet as HashSet
+
+newtype ArkhamWoodsTangledThicket = ArkhamWoodsTangledThicket Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+arkhamWoodsTangledThicket :: ArkhamWoodsTangledThicket
+arkhamWoodsTangledThicket =
+  ArkhamWoodsTangledThicket $ (baseAttrs
+                                "01154"
+                                "Arkham Woods: Tangled Thicket"
+                                2
+                                (PerPlayer 1)
+                                Equals
+                                [Squiggle, T, Moon]
+                              )
+    { locationTraits = HashSet.fromList [Woods]
+    }
+
+instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsTangledThicket where
+  getActions i window (ArkhamWoodsTangledThicket attrs) =
+    getActions i window attrs
+
+instance (LocationRunner env) => RunMessage env ArkhamWoodsTangledThicket where
+  runMessage msg (ArkhamWoodsTangledThicket attrs) =
+    ArkhamWoodsTangledThicket <$> runMessage msg attrs

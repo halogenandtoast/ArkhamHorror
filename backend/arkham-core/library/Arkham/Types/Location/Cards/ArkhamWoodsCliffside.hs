@@ -1,0 +1,34 @@
+{-# LANGUAGE UndecidableInstances #-}
+module Arkham.Types.Location.Cards.ArkhamWoodsCliffside where
+
+import Arkham.Json
+import Arkham.Types.Classes
+import Arkham.Types.GameValue
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+import Arkham.Types.LocationSymbol
+import Arkham.Types.Trait
+import ClassyPrelude
+import qualified Data.HashSet as HashSet
+
+newtype ArkhamWoodsCliffside = ArkhamWoodsCliffside Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+arkhamWoodsCliffside :: ArkhamWoodsCliffside
+arkhamWoodsCliffside = ArkhamWoodsCliffside $ (baseAttrs
+                                                "01153"
+                                                "Arkham Woods: Cliffside"
+                                                2
+                                                (PerPlayer 1)
+                                                Hourglass
+                                                [Squiggle, Moon, Triangle]
+                                              )
+  { locationTraits = HashSet.fromList [Woods]
+  }
+
+instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsCliffside where
+  getActions i window (ArkhamWoodsCliffside attrs) = getActions i window attrs
+
+instance (LocationRunner env) => RunMessage env ArkhamWoodsCliffside where
+  runMessage msg (ArkhamWoodsCliffside attrs) =
+    ArkhamWoodsCliffside <$> runMessage msg attrs

@@ -27,6 +27,7 @@ import Arkham.Types.Treachery.Cards.MysteriousChanting
 import Arkham.Types.Treachery.Cards.ObscuringFog
 import Arkham.Types.Treachery.Cards.OnWingsOfDarkness
 import Arkham.Types.Treachery.Cards.RottingRemains
+import Arkham.Types.Treachery.Cards.UmordhothsWrath
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
 import ClassyPrelude
@@ -43,6 +44,7 @@ allTreacheries = HashMap.fromList
   [ ("01007", CoverUp' . coverUp)
   , ("01135", HuntingShadow' . huntingShadow)
   , ("01136", FalseLead' . falseLead)
+  , ("01158", UmordhothsWrath' . umordhothsWrath)
   , ("01162", GraspingHands' . graspingHands)
   , ("01166", AncientEvils' . ancientEvils)
   , ("01163", RottingRemains' . rottingRemains)
@@ -68,6 +70,7 @@ data Treachery
   = CoverUp' CoverUp
   | HuntingShadow' HuntingShadow
   | FalseLead' FalseLead
+  | UmordhothsWrath' UmordhothsWrath
   | GraspingHands' GraspingHands
   | AncientEvils' AncientEvils
   | RottingRemains' RottingRemains
@@ -86,6 +89,7 @@ treacheryAttrs = \case
   CoverUp' (CoverUp (attrs `With` _)) -> attrs
   HuntingShadow' attrs -> coerce attrs
   FalseLead' attrs -> coerce attrs
+  UmordhothsWrath' attrs -> coerce attrs
   GraspingHands' attrs -> coerce attrs
   AncientEvils' attrs -> coerce attrs
   RottingRemains' attrs -> coerce attrs
@@ -102,6 +106,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Treacher
     CoverUp' x -> getActions i window x
     HuntingShadow' x -> getActions i window x
     FalseLead' x -> getActions i window x
+    UmordhothsWrath' x -> getActions i window x
     GraspingHands' x -> getActions i window x
     AncientEvils' x -> getActions i window x
     RottingRemains' x -> getActions i window x
@@ -124,6 +129,7 @@ instance (TreacheryRunner env) => RunMessage env Treachery where
     CoverUp' x -> CoverUp' <$> runMessage msg x
     HuntingShadow' x -> HuntingShadow' <$> runMessage msg x
     FalseLead' x -> FalseLead' <$> runMessage msg x
+    UmordhothsWrath' x -> UmordhothsWrath' <$> runMessage msg x
     GraspingHands' x -> GraspingHands' <$> runMessage msg x
     AncientEvils' x -> AncientEvils' <$> runMessage msg x
     RottingRemains' x -> RottingRemains' <$> runMessage msg x

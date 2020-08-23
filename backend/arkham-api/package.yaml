@@ -57,14 +57,17 @@ library:
     - classy-prelude-yesod
     - conduit
     - containers
+    - errors
     - esqueleto
     - fast-logger
     - file-embed
+    - http-api-data
     - http-client-tls
     - http-conduit
     - http-types
     - jwt
     - monad-logger
+    - path-pieces
     - persistent
     - persistent-postgresql
     - persistent-template

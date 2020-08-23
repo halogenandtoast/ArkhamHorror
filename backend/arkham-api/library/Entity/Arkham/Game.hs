@@ -8,14 +8,15 @@ where
 
 import Arkham.Types.GameJson
 import ClassyPrelude
+import Data.UUID
 import Database.Persist.Postgresql.JSON ()
-import Database.Persist.Sql
 import Database.Persist.TH
 import Json
 import Orphans ()
 
 mkPersist sqlSettings [persistLowerCase|
 ArkhamGame sql=arkham_games
+  Id UUID default=uuid_generate_v4()
   currentData GameJson
   deriving Generic Show
 |]

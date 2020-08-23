@@ -104,11 +104,7 @@ export default class NewCampaign extends Vue {
     const mcampaign = this.campaigns.find((campaign) => campaign.id === this.selectedCampaign);
     if (mcampaign && this.deckId) {
       newGame(this.deckId, this.playerCount, mcampaign.id, this.selectedDifficulty)
-        .then((egame) => {
-          if ('Right' in egame) {
-            this.$router.push(`/games/${egame.Right.id}`);
-          }
-        });
+        .then((game) => this.$router.push(`/games/${game.id}`));
     }
   }
 }

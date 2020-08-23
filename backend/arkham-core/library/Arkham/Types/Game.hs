@@ -219,12 +219,16 @@ addInvestigator uid i d g = do
   liftIO $ atomicModifyIORef'
     (giMessages g)
     (\queue -> (InitDeck (getInvestigatorId i) d : queue, ()))
-  flip toExternalGame mempty
-    $ g
-    & investigators
-    %~ HashMap.insert (getInvestigatorId i) i
-    & players
-    %~ HashMap.insert uid (getInvestigatorId i)
+  let
+    g' =
+      g
+        & (investigators %~ HashMap.insert (getInvestigatorId i) i)
+        & (players %~ HashMap.insert uid (getInvestigatorId i))
+
+  runMessages
+    $ g'
+    & pending
+    .~ (HashMap.size (view players g') < view playerCount g')
 
 newCampaign
   :: MonadIO m

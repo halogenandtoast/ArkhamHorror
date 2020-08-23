@@ -1,5 +1,6 @@
 import Game from '@/arkham/views/Game.vue';
 import EditGame from '@/arkham/views/EditGame.vue';
+import JoinGame from '@/arkham/views/JoinGame.vue';
 import NewCampaign from '@/arkham/views/NewCampaign.vue';
 
 export default [
@@ -14,6 +15,13 @@ export default [
     path: '/games/:gameId',
     name: 'Game',
     component: Game,
+    meta: { requiresAuth: true },
+    props: true,
+  },
+  {
+    path: '/games/:gameId/join',
+    name: 'JoinGame',
+    component: JoinGame,
     meta: { requiresAuth: true },
     props: true,
   },

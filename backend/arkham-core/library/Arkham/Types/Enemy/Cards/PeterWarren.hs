@@ -8,6 +8,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
+import Arkham.Types.FastWindow
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -26,8 +27,8 @@ peterWarren uuid = PeterWarren $ (baseAttrs uuid "01139")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator PeterWarren where
-  getActions i window (PeterWarren attrs@Attrs {..}) = do
-    baseActions <- getActions i window attrs
+  getActions i NonFast (PeterWarren attrs@Attrs {..}) = do
+    baseActions <- getActions i NonFast attrs
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction

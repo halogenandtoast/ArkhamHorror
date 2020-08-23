@@ -175,7 +175,7 @@ section {
   }
 
   p {
-    margin: 0;
+    margin: 10px;
   }
 }
 </style>

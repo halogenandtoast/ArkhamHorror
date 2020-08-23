@@ -8,6 +8,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
+import Arkham.Types.FastWindow
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -26,8 +27,8 @@ victoriaDevereux uuid = VictoriaDevereux $ (baseAttrs uuid "01140")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator VictoriaDevereux where
-  getActions i window (VictoriaDevereux attrs@Attrs {..}) = do
-    baseActions <- getActions i window attrs
+  getActions i NonFast (VictoriaDevereux attrs@Attrs {..}) = do
+    baseActions <- getActions i NonFast attrs
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction
@@ -35,6 +36,7 @@ instance (IsInvestigator investigator) => HasActions env investigator VictoriaDe
              (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 (Just Parley)))
          | resourceCount i >= 5 && locationOf i == enemyLocation
          ]
+  getActions _ _ _ = pure []
 
 instance (EnemyRunner env) => RunMessage env VictoriaDevereux where
   runMessage msg e@(VictoriaDevereux attrs@Attrs {..}) = case msg of

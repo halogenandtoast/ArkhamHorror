@@ -20,6 +20,12 @@
       class="button engage-button"
       @click="$emit('choose', engageAction)"
     >Engage</button>
+    <button
+      v-for="ability in abilities"
+      :key="ability"
+      class="button ability-button"
+      @click="$emit('choose', ability)"
+      >{{abilityLabel(ability)}}</button>
     <div class="pool">
       <PoolItem type="health" :amount="enemy.contents.damage" />
       <PoolItem v-if="enemy.contents.doom > 0" type="doom" :amount="enemy.contents.doom" />
@@ -112,6 +118,22 @@ export default class Enemy extends Vue {
       .choices
       .findIndex((c) => c.tag === MessageType.ENGAGE_ENEMY && c.contents[1] === this.id);
   }
+
+  abilityLabel(idx: number) {
+    return this.choices[idx].contents[1].type.contents[1];
+  }
+
+  get abilities() {
+    return this
+      .choices
+      .reduce<number[]>((acc, v, i) => {
+        if (v.tag === 'ActivateCardAbilityAction' && v.contents[1].source.tag === 'EnemySource' && v.contents[1].source.contents === this.id) {
+          return [...acc, i];
+        }
+
+        return acc;
+      }, []);
+  }
 }
 </script>
 
@@ -172,5 +194,22 @@ export default class Enemy extends Vue {
   display: flex;
   flex-direction: row;
   height: 2em;
+}
+
+.button{
+  margin-top: 2px;
+  border: 0;
+  color: #fff;
+  border-radius: 4px;
+  border: 1px solid #ff00ff;
+}
+
+.ability-button {
+  background-color: #555;
+  &:before {
+    font-family: "arkham";
+    content: "\0049";
+    margin-right: 5px;
+  }
 }
 </style>

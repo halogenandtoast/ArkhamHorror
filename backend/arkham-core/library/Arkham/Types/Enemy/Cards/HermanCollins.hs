@@ -8,6 +8,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
+import Arkham.Types.FastWindow
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -27,8 +28,8 @@ hermanCollins uuid = HermanCollins $ (baseAttrs uuid "01138")
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator HermanCollins where
-  getActions i window (HermanCollins attrs@Attrs {..}) = do
-    baseActions <- getActions i window attrs
+  getActions i NonFast (HermanCollins attrs@Attrs {..}) = do
+    baseActions <- getActions i NonFast attrs
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction
@@ -36,6 +37,7 @@ instance (IsInvestigator investigator) => HasActions env investigator HermanColl
              (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 (Just Parley)))
          | cardCount i >= 4 && locationOf i == enemyLocation
          ]
+  getActions _ _ _ = pure []
 
 instance (EnemyRunner env) => RunMessage env HermanCollins where
   runMessage msg e@(HermanCollins attrs@Attrs {..}) = case msg of

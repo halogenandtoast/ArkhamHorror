@@ -21,9 +21,10 @@ arkhamWoodsCliffside = ArkhamWoodsCliffside $ (baseAttrs
                                                 2
                                                 (PerPlayer 1)
                                                 Hourglass
-                                                [Squiggle, Moon, Triangle]
+                                                [Squiggle]
                                               )
   { locationTraits = HashSet.fromList [Woods]
+  , locationRevealedConnectedSymbols = HashSet.fromList [Squiggle, Moon, Triangle]
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsCliffside where

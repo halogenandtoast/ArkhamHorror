@@ -27,8 +27,8 @@ instance (IsInvestigator investigator) => HasActions env investigator MainPath w
   getActions i window (MainPath attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env MainPath where
-  runMessage msg (MainPath attrs) = case msg of
-    AddConnection lid _ -> do
+  runMessage msg (MainPath attrs@Attrs {..}) = case msg of
+    AddConnection lid _ | locationId /= lid -> do
       traits <- HashSet.toList <$> asks (getSet lid)
       if Woods `elem` traits
         then MainPath <$> runMessage

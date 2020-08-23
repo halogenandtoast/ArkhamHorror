@@ -1,5 +1,5 @@
 import api from '@/api';
-import { gameDecoder } from '@/arkham/types/Game';
+import { eitherGameDecoder, gameDecoder } from '@/arkham/types/Game';
 import { Difficulty } from '@/arkham/types/Difficulty';
 import { JsonDecoder } from 'ts.data.json';
 
@@ -16,8 +16,8 @@ export const fetchGames = () => api
   .get('arkham/games')
   .then((resp) => JsonDecoder.array(gameDecoder, 'ArkhamGame[]').decodePromise(resp.data));
 
-export const updateGame = (gameId: string, choice: number) => api
-  .put(`arkham/games/${gameId}`, { choice })
+export const updateGame = (gameId: string, choice: number, gameHash: string) => api
+  .put(`arkham/games/${gameId}`, { choice, gameHash })
   .then((resp) => gameDecoder.decodePromise(resp.data));
 
 export const fetchGameRaw = (gameId: string) => api
@@ -27,6 +27,16 @@ export const fetchGameRaw = (gameId: string) => api
 export const updateGameRaw = (gameId: string, gameJson: string) => api
   .put(`arkham/games/${gameId}/raw`, { gameJson });
 
-export const newGame = (deckIds: string[], campaignId: string, difficulty: Difficulty) => api
-  .post('arkham/games', { deckIds, campaignId, difficulty })
-  .then((resp) => gameDecoder.decodePromise(resp.data));
+export const newGame = (
+  deckId: string,
+  playerCount: number,
+  campaignId: string,
+  difficulty: Difficulty,
+) => api
+  .post('arkham/games', {
+    deckId,
+    playerCount,
+    campaignId,
+    difficulty,
+  })
+  .then((resp) => eitherGameDecoder.decodePromise(resp.data));

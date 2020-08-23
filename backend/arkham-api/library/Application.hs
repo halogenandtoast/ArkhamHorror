@@ -51,6 +51,7 @@ import Text.Regex.Posix ((=~))
 -- Don't forget to add new modules to your cabal file!
 
 import Api.Handler.Arkham.Games
+import Api.Handler.Arkham.PendingGames
 import Base.Api.Handler.Authentication
 import Base.Api.Handler.CurrentUser
 import Base.Api.Handler.Registration

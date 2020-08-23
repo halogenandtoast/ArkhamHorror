@@ -25,6 +25,7 @@ import Arkham.Types.Token
 import Arkham.Types.Treachery
 import Arkham.Types.TreacheryId
 import ClassyPrelude
+import Data.UUID
 
 data GameJson = GameJson
   { gMessages :: [Message]
@@ -53,6 +54,7 @@ data GameJson = GameJson
   , gActiveCard :: Maybe Card
   , gPlayerOrder :: [InvestigatorId]
   , gVictoryDisplay :: [Card]
+  , gHash :: UUID
   }
   deriving stock (Show, Generic)
 

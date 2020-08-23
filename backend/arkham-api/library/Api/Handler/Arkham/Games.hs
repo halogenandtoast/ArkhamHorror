@@ -7,9 +7,8 @@ module Api.Handler.Arkham.Games
   )
 where
 
+import Api.Arkham.Helpers
 import Arkham.Types.CampaignId
-import Arkham.Types.Card
-import Arkham.Types.Card.Id
 import Arkham.Types.Difficulty
 import Arkham.Types.Game
 import Arkham.Types.GameJson
@@ -17,14 +16,15 @@ import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
-import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap
+import Data.UUID
 import Data.UUID.V4
 import Database.Esqueleto
+import Entity.Arkham.GameSetupState
+import Entity.Arkham.PendingGame
 import Entity.Arkham.Player
-import GHC.Stack
 import Import hiding (on, (==.))
-import Network.HTTP.Conduit (simpleHttp)
+import Json
 import Safe (fromJustNote)
 import Yesod.WebSockets
 
@@ -60,29 +60,44 @@ getApiV1ArkhamGamesR = do
     pure games
 
 data CreateGamePost = CreateGamePost
-  { deckIds :: [String]
+  { deckId :: String
+  , playerCount :: Int
   , campaignId :: CampaignId
   , difficulty :: Difficulty
   }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
 
-postApiV1ArkhamGamesR :: Handler (Entity ArkhamGame)
+postApiV1ArkhamGamesR
+  :: Handler (Either (Entity ArkhamPendingGame) (Entity ArkhamGame))
 postApiV1ArkhamGamesR = do
+  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   CreateGamePost {..} <- requireCheckJsonBody
-  investigators <-
-    (HashMap.fromList <$>) $ for (zip [1 ..] deckIds) $ \(userId, deckId) -> do
-      (iid, deck) <- liftIO $ loadDeck deckId
-      pure (userId, (lookupInvestigator iid, deck))
-  ge <- liftIO $ runMessages =<< newCampaign campaignId investigators difficulty
-  key <- runDB $ do
-    gameId <- insert $ ArkhamGame ge
-    for_ (HashMap.keys investigators) $ \userId ->
-      insert $ ArkhamPlayer (toSqlKey $ fromIntegral userId) gameId
-    pure gameId
-  pure (Entity key (ArkhamGame ge))
+  (iid, deck) <- liftIO $ loadDeck deckId
+  let
+    hashKey = fromIntegral $ fromSqlKey userId
+    investigators = HashMap.singleton hashKey (lookupInvestigator iid, deck)
+  if playerCount == 1
+    then do
+      ge <-
+        liftIO $ runMessages =<< newCampaign campaignId investigators difficulty
+      key <- runDB $ do
+        gameId <- insert $ ArkhamGame ge
+        insert_ $ ArkhamPlayer userId gameId
+        pure gameId
+      pure $ Right (Entity key (ArkhamGame ge))
+    else do
+      let
+        apg = GameSetupState
+          playerCount
+          (HashMap.singleton hashKey deckId)
+          campaignId
+          difficulty
+      token <- liftIO nextRandom
+      key <- runDB $ insert $ ArkhamPendingGame token apg
+      pure $ Left (Entity key (ArkhamPendingGame token apg))
 
-newtype QuestionReponse = QuestionResponse { choice :: Int }
+data QuestionReponse = QuestionResponse { choice :: Int, gameHash :: UUID }
   deriving stock (Generic)
   deriving anyclass (FromJSON)
 
@@ -111,14 +126,18 @@ putApiV1ArkhamGameR gameId = do
             [m', Ask investigatorId $ ChooseOneAtATime msgs'']
           (Nothing, msgs'') -> [Ask investigatorId $ ChooseOneAtATime msgs'']
       _ -> []
-  ge <- liftIO $ runMessages =<< toInternalGame
-    (gameJson { gMessages = messages <> gMessages })
 
-  App { appBroadcastChannel = writeChannel } <- getYesod
-  liftIO $ atomically $ writeTChan
-    writeChannel
-    (encode (Entity gameId (ArkhamGame ge)))
-  Entity gameId (ArkhamGame ge) <$ runDB (replace gameId (ArkhamGame ge))
+  if gHash == gameHash response
+    then do
+      ge <- liftIO $ runMessages =<< toInternalGame
+        (gameJson { gMessages = messages <> gMessages })
+
+      App { appBroadcastChannel = writeChannel } <- getYesod
+      liftIO $ atomically $ writeTChan
+        writeChannel
+        (encode (Entity gameId (ArkhamGame ge)))
+      Entity gameId (ArkhamGame ge) <$ runDB (replace gameId (ArkhamGame ge))
+    else invalidArgs ["Hash mismatch"]
 
 
 newtype PutRawGameJson = PutRawGameJson { gameJson :: GameJson }
@@ -140,24 +159,3 @@ putApiV1ArkhamGameRawR gameId = do
     writeChannel
     (encode (Entity gameId (ArkhamGame ge)))
   runDB (replace gameId (ArkhamGame ge))
-
-data ArkhamDBDecklist = ArkhamDBDecklist
-  { slots :: HashMap CardCode Int, investigator_code :: InvestigatorId }
-  deriving stock (Generic, Show)
-  deriving anyclass (FromJSON)
-
-loadDeck :: HasCallStack => String -> IO (InvestigatorId, [PlayerCard])
-loadDeck deckId = do
-  edecklist <- eitherDecode @ArkhamDBDecklist
-    <$> simpleHttp ("https://arkhamdb.com/api/public/decklist/" <> deckId)
-  case edecklist of
-    Left err -> throwString $ "Parsing failed with: " <> err
-    Right decklist -> do
-      cards <-
-        flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count' ->
-          if cardCode /= "01000"
-            then replicateM
-              count'
-              ((<$> (CardId <$> nextRandom)) (lookupPlayerCard cardCode))
-            else pure []
-      pure (investigator_code decklist, cards)

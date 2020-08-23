@@ -2,13 +2,14 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Entity.Arkham.Game
-  ( ArkhamGame(..)
-  , ArkhamGameId
+  ( module Entity.Arkham.Game
   )
 where
 
 import Arkham.Types.GameJson
 import ClassyPrelude
+import Database.Persist.Postgresql.JSON ()
+import Database.Persist.Sql
 import Database.Persist.TH
 import Json
 import Orphans ()

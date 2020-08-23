@@ -7,9 +7,11 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
 import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
+import Lens.Micro
 
 newtype MainPath = MainPath Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -25,4 +27,13 @@ instance (IsInvestigator investigator) => HasActions env investigator MainPath w
   getActions i window (MainPath attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env MainPath where
-  runMessage msg (MainPath attrs) = MainPath <$> runMessage msg attrs
+  runMessage msg (MainPath attrs) = case msg of
+    AddConnection lid _ -> do
+      traits <- HashSet.toList <$> asks (getSet lid)
+      if Woods `elem` traits
+        then MainPath <$> runMessage
+          msg
+          (attrs & connectedLocations %~ HashSet.insert lid)
+        else MainPath <$> runMessage msg attrs
+
+    _ -> MainPath <$> runMessage msg attrs

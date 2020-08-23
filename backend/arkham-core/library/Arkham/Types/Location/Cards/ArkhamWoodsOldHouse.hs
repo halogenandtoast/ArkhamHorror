@@ -21,9 +21,10 @@ arkhamWoodsOldHouse = ArkhamWoodsOldHouse $ (baseAttrs
                                               2
                                               (PerPlayer 1)
                                               Diamond
-                                              [Squiggle, Triangle, T]
+                                              [Squiggle]
                                             )
   { locationTraits = HashSet.fromList [Woods]
+  , locationRevealedConnectedSymbols = HashSet.fromList [Squiggle, Triangle, T]
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsOldHouse where

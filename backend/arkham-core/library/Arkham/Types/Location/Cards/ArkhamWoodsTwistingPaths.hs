@@ -22,9 +22,10 @@ arkhamWoodsTwistingPaths =
                                3
                                (PerPlayer 1)
                                T
-                               [Squiggle, Diamond, Equals]
+                               [Squiggle]
                              )
     { locationTraits = HashSet.fromList [Woods]
+    , locationRevealedConnectedSymbols = HashSet.fromList [Squiggle, Diamond, Equals]
     }
 
 instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsTwistingPaths where

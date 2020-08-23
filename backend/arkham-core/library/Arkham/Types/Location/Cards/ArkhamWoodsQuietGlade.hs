@@ -21,9 +21,10 @@ arkhamWoodsQuietGlade = ArkhamWoodsQuietGlade $ (baseAttrs
                                                   1
                                                   (Static 0)
                                                   Moon
-                                                  [Squiggle, Equals, Hourglass]
+                                                  [Squiggle]
                                                 )
   { locationTraits = HashSet.fromList [Woods]
+  , locationRevealedConnectedSymbols = HashSet.fromList [Squiggle, Equals, Hourglass]
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsQuietGlade where

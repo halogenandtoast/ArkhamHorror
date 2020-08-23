@@ -22,9 +22,10 @@ arkhamWoodsTangledThicket =
                                 2
                                 (PerPlayer 1)
                                 Equals
-                                [Squiggle, T, Moon]
+                                [Squiggle]
                               )
     { locationTraits = HashSet.fromList [Woods]
+    , locationRevealedConnectedSymbols = HashSet.fromList [Squiggle, T, Moon]
     }
 
 instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsTangledThicket where

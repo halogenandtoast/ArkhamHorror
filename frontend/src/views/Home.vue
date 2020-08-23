@@ -5,7 +5,7 @@
     </div>
 
     <div v-for="game in games" :key="game.id">
-      <router-link :to="`/games/${game.id}`">Game {{game.id}}</router-link>
+      <router-link :to="`/games/${game.id}`">{{game.name}}</router-link>
     </div>
   </div>
 </template>

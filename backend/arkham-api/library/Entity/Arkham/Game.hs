@@ -17,6 +17,7 @@ import Orphans ()
 mkPersist sqlSettings [persistLowerCase|
 ArkhamGame sql=arkham_games
   Id UUID default=uuid_generate_v4()
+  name Text
   currentData GameJson
   deriving Generic Show
 |]

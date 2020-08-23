@@ -32,12 +32,14 @@ export const newGame = (
   playerCount: number,
   campaignId: string,
   difficulty: Difficulty,
+  campaignName: string,
 ) => api
   .post('arkham/games', {
     deckId,
     playerCount,
     campaignId,
     difficulty,
+    campaignName,
   })
   .then((resp) => gameDecoder.decodePromise(resp.data));
 

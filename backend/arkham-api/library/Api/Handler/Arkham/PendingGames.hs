@@ -37,5 +37,6 @@ putApiV1ArkhamPendingGameR gameId = do
   App { appBroadcastChannel = writeChannel } <- getYesod
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode (Entity gameId (ArkhamGame ge)))
-  Entity gameId (ArkhamGame ge) <$ runDB (replace gameId (ArkhamGame ge))
+    (encode (Entity gameId (ArkhamGame arkhamGameName ge)))
+  Entity gameId (ArkhamGame arkhamGameName ge)
+    <$ runDB (replace gameId (ArkhamGame arkhamGameName ge))

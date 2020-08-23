@@ -26,14 +26,21 @@
       <img v-if="investigator" :src="`/img/arkham/portraits/${investigator}.jpg`" />
     </div>
 
-    <select v-model="selectedCampaign">
-      <option
-        v-for="campaign in campaigns"
-        :key="campaign.id"
-        :value="campaign.id"
-        :selected="campaign.id == selectedCampaign"
-        >{{campaign.name}}</option>
-    </select>
+    <div>
+      <select v-model="selectedCampaign">
+        <option
+          v-for="campaign in campaigns"
+          :key="campaign.id"
+          :value="campaign.id"
+          :selected="campaign.id == selectedCampaign"
+          >{{campaign.name}}</option>
+      </select>
+    </div>
+
+    <div>
+      <p>Campaign Name</p>
+      <input v-model="campaignName" :placeholder="currentCampaignName" />
+    </div>
 
     <button type="submit" :disabled="disabled">Start</button>
   </form>
@@ -53,6 +60,7 @@ export default class NewCampaign extends Vue {
   investigator: string | null = null
   deckId: string | null = null
   selectedCampaign = '01'
+  campaignName = null
   campaigns = [
     {
       id: '01',
@@ -74,6 +82,24 @@ export default class NewCampaign extends Vue {
 
   get disabled() {
     return !this.investigator;
+  }
+
+  get currentCampaignName() {
+    if (this.campaignName !== '' && this.campaignName !== null) {
+      return this.campaignName;
+    }
+
+    return this.defaultCampaignName;
+  }
+
+  get defaultCampaignName() {
+    const campaign = this.campaigns.find((c) => c.id === this.selectedCampaign);
+
+    if (campaign) {
+      return `${campaign.name} - ${this.selectedDifficulty}`;
+    }
+
+    return '';
   }
 
   pasteDeck(evt: ClipboardEvent) {
@@ -102,9 +128,14 @@ export default class NewCampaign extends Vue {
 
   start() {
     const mcampaign = this.campaigns.find((campaign) => campaign.id === this.selectedCampaign);
-    if (mcampaign && this.deckId) {
-      newGame(this.deckId, this.playerCount, mcampaign.id, this.selectedDifficulty)
-        .then((game) => this.$router.push(`/games/${game.id}`));
+    if (mcampaign && this.deckId && this.currentCampaignName) {
+      newGame(
+        this.deckId,
+        this.playerCount,
+        mcampaign.id,
+        this.selectedDifficulty,
+        this.currentCampaignName,
+      ).then((game) => this.$router.push(`/games/${game.id}`));
     }
   }
 }

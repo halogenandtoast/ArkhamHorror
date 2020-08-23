@@ -21,6 +21,7 @@ import {
 
 export interface Game {
   id: string;
+  name: string;
   currentData: GameState;
 }
 
@@ -124,6 +125,7 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
 export const gameDecoder = JsonDecoder.object<Game>(
   {
     id: JsonDecoder.string,
+    name: JsonDecoder.string,
     currentData: gameStateDecoder,
   },
   'Game',

@@ -61,6 +61,7 @@ data CreateGamePost = CreateGamePost
   , playerCount :: Int
   , campaignId :: CampaignId
   , difficulty :: Difficulty
+  , campaignName :: Text
   }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
@@ -78,10 +79,10 @@ postApiV1ArkhamGamesR = do
     $ runMessages
     =<< newCampaign campaignId playerCount investigators difficulty
   key <- runDB $ do
-    gameId <- insert $ ArkhamGame ge
+    gameId <- insert $ ArkhamGame campaignName ge
     insert_ $ ArkhamPlayer userId gameId
     pure gameId
-  pure $ Entity key (ArkhamGame ge)
+  pure $ Entity key (ArkhamGame campaignName ge)
 
 data QuestionReponse = QuestionResponse { choice :: Int, gameHash :: UUID }
   deriving stock (Generic)
@@ -94,10 +95,10 @@ extract n xs =
 putApiV1ArkhamGameR :: ArkhamGameId -> Handler (Entity ArkhamGame)
 putApiV1ArkhamGameR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
-  game <- runDB $ get404 gameId
+  ArkhamGame {..} <- runDB $ get404 gameId
   response <- requireCheckJsonBody
   let
-    gameJson@GameJson {..} = arkhamGameCurrentData game
+    gameJson@GameJson {..} = arkhamGameCurrentData
     investigatorId = fromJustNote "not in game"
       $ HashMap.lookup (fromIntegral $ fromSqlKey userId) gPlayers
     messages = case HashMap.lookup investigatorId gQuestion of
@@ -121,8 +122,9 @@ putApiV1ArkhamGameR gameId = do
       App { appBroadcastChannel = writeChannel } <- getYesod
       liftIO $ atomically $ writeTChan
         writeChannel
-        (encode (Entity gameId (ArkhamGame ge)))
-      Entity gameId (ArkhamGame ge) <$ runDB (replace gameId (ArkhamGame ge))
+        (encode (Entity gameId (ArkhamGame arkhamGameName ge)))
+      Entity gameId (ArkhamGame arkhamGameName ge)
+        <$ runDB (replace gameId (ArkhamGame arkhamGameName ge))
     else invalidArgs ["Hash mismatch"]
 
 
@@ -133,7 +135,7 @@ newtype PutRawGameJson = PutRawGameJson { gameJson :: GameJson }
 putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameRawR gameId = do
   void $ fromJustNote "Not authenticated" <$> getRequestUserId
-  void $ runDB $ get404 gameId
+  ArkhamGame {..} <- runDB $ get404 gameId
   response <- requireCheckJsonBody
   ge <- liftIO $ runMessages =<< toInternalGame
     ((gameJson response)
@@ -143,5 +145,5 @@ putApiV1ArkhamGameRawR gameId = do
   App { appBroadcastChannel = writeChannel } <- getYesod
   liftIO $ atomically $ writeTChan
     writeChannel
-    (encode (Entity gameId (ArkhamGame ge)))
-  runDB (replace gameId (ArkhamGame ge))
+    (encode (Entity gameId (ArkhamGame arkhamGameName ge)))
+  runDB (replace gameId (ArkhamGame arkhamGameName ge))

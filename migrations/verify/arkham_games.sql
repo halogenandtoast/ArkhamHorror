@@ -2,7 +2,7 @@
 
 BEGIN;
 
-SELECT id, current_data
+SELECT id, name, current_data
   FROM arkham_games
  WHERE FALSE;
 

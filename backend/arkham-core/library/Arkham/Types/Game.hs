@@ -503,6 +503,9 @@ instance HasList Enemy () Game where
 instance HasList Ability () Game where
   getList _ g = g ^. agendas . traverse . to getAbilities
 
+instance HasSet Trait LocationId Game where
+  getSet lid = getTraits . getLocation lid
+
 instance HasSet Trait AssetId Game where
   getSet aid = getTraits . getAsset aid
 

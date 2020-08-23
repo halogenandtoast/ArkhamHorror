@@ -27,7 +27,7 @@ instance (ActionRunner env investigator) => HasActions env investigator TimeIsRu
     [ ActivateCardAbilityAction
         (getId () i)
         (mkAbility
-          (AgendaSource "01121")
+          (AgendaSource "01122")
           1
           (ActionAbility 1 (Just Action.Resign))
         )

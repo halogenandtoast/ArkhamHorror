@@ -193,9 +193,9 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
           s <$ runTest skillValue (-doomCount)
       ResolveToken Token.Cultist iid skillValue
         | scenarioDifficulty `elem` [Easy, Standard] -> do
-          closestCultitsts <- map unClosestEnemyId . HashSet.toList <$> asks
+          closestCultists <- map unClosestEnemyId . HashSet.toList <$> asks
             (getSet (iid, [Cultist]))
-          case closestCultitsts of
+          case closestCultists of
             [] -> pure ()
             [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
             xs -> unshiftMessage

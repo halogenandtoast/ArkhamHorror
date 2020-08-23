@@ -625,10 +625,7 @@ bfs game initialLocation target = do
           put (BFSState newSearchQueue newVisitedSet parentsMap True)
           others <- bfs game initialLocation target
           pure
-            $ [ fromJustNote "bfs broke" $ headMay $ unwindPath
-                  parentsMap
-                  [nextLoc]
-              ]
+            $ maybe [] pure (headMay $ unwindPath parentsMap [nextLoc])
             <> others
         else if hasFoundAtDepth
           then do
@@ -1443,14 +1440,22 @@ runGameMessage msg g = case msg of
         (HashMap.lookup (getCardCode enemy) allEncounterCards)
         (CardId $ unEnemyId eid)
     in pure $ g & enemies %~ HashMap.delete eid & discard %~ (card :)
-  Discard (TreacheryTarget tid) ->
+  Discard (TreacheryTarget tid) -> do
     let
       treachery = getTreachery tid g
-      card = fromJustNote
-        "missing card"
-        (HashMap.lookup (getCardCode treachery) allEncounterCards)
-        (CardId $ unTreacheryId tid)
-    in pure $ g & treacheries %~ HashMap.delete tid & discard %~ (card :)
+      encounterCard = do
+        f <- HashMap.lookup (getCardCode treachery) allEncounterCards
+        pure $ EncounterCard $ f (CardId $ unTreacheryId tid)
+      playerCard = do
+        f <- HashMap.lookup (getCardCode treachery) allPlayerCards
+        pure $ PlayerCard $ f (CardId $ unTreacheryId tid)
+    case encounterCard <|> playerCard of
+      Nothing -> error "missing"
+      Just (PlayerCard _) -> do
+        -- unshiftMessage (AddToDiscard iid card) -- TODO: we need to put this in the players discard
+        pure $ g & treacheries %~ HashMap.delete tid
+      Just (EncounterCard ec) ->
+        pure $ g & treacheries %~ HashMap.delete tid & discard %~ (ec :)
   _ -> pure g
 
 instance (RunMessage Game a) => RunMessage Game (Maybe a) where

@@ -36,6 +36,7 @@ instance (IsInvestigator investigator) => HasActions env investigator PeterWarre
              (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 (Just Parley)))
          | spendableClueCount i >= 2 && locationOf i == enemyLocation
          ]
+  getActions _ _ _ = pure []
 
 instance (EnemyRunner env) => RunMessage env PeterWarren where
   runMessage msg e@(PeterWarren attrs@Attrs {..}) = case msg of

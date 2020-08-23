@@ -224,6 +224,7 @@ addInvestigator uid i d g = do
       g
         & (investigators %~ HashMap.insert (getInvestigatorId i) i)
         & (players %~ HashMap.insert uid (getInvestigatorId i))
+        & (playerOrder %~ (<> [getInvestigatorId i]))
 
   runMessages
     $ g'

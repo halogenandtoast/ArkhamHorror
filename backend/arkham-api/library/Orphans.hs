@@ -5,14 +5,18 @@
 module Orphans where
 
 import Arkham.Types.GameJson
-import ClassyPrelude hiding (fromString)
+import ClassyPrelude
+import Control.Error.Util (hush)
 import Data.Aeson
 import Data.Aeson.Types
+import qualified Data.ByteString.Char8 as BS8
 import qualified Data.Text as T
-import Data.UUID
+import Data.UUID (UUID)
+import qualified Data.UUID as UUID
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.Sql
-import Entity.Arkham.GameSetupState
+import Web.HttpApiData
+import Web.PathPieces
 import Yesod.Core.Content
 
 fmapLeft :: (a -> b) -> Either a c -> Either b c
@@ -27,21 +31,20 @@ instance PersistField GameJson where
   fromPersistValue val =
     fromPersistValue val >>= fmapLeft pack . parseEither parseJSON
 
-instance PersistFieldSql GameSetupState where
-  sqlType _ = SqlString
-
-instance PersistField GameSetupState where
-  toPersistValue = toPersistValue . toJSON
-  fromPersistValue val =
-    fromPersistValue val >>= fmapLeft pack . parseEither parseJSON
-
-instance PersistFieldSql UUID where
-  sqlType _ = SqlString
+instance PathPiece UUID where
+  toPathPiece = toUrlPiece
+  fromPathPiece = hush . parseUrlPiece
 
 instance PersistField UUID where
-  toPersistValue = toPersistValue . toString
-  fromPersistValue val =
-    fromPersistValue val >>= maybe (Left "invalid uuid") Right . fromString
+  toPersistValue u = PersistDbSpecific . BS8.pack . UUID.toString $ u
+  fromPersistValue (PersistDbSpecific t) =
+    case UUID.fromString $ BS8.unpack t of
+      Just x -> Right x
+      Nothing -> Left "Invalid UUID"
+  fromPersistValue _ = Left "Not PersistDBSpecific"
+
+instance PersistFieldSql UUID where
+  sqlType _ = SqlOther "uuid"
 
 -- Entity (and Key)
 deriving stock instance Typeable Key

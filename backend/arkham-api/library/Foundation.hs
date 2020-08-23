@@ -14,13 +14,10 @@ import qualified Auth.JWT as JWT
 import Control.Monad.Logger (LogSource)
 import Data.Aeson (Result(Success), fromJSON)
 import Data.Kind
-import Data.UUID
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Import.NoFoundation
 
 import qualified Data.ByteString.Lazy as BSL
-import qualified Data.CaseInsensitive as CI
-import qualified Data.Text.Encoding as TE
 import Yesod.Core.Types (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
 

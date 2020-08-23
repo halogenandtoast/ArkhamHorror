@@ -18,10 +18,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import qualified Data.HashMap.Strict as HashMap
 import Data.UUID
-import Data.UUID.V4
 import Database.Esqueleto
-import Entity.Arkham.GameSetupState
-import Entity.Arkham.PendingGame
 import Entity.Arkham.Player
 import Import hiding (on, (==.))
 import Json
@@ -68,8 +65,7 @@ data CreateGamePost = CreateGamePost
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
 
-postApiV1ArkhamGamesR
-  :: Handler (Either (Entity ArkhamPendingGame) (Entity ArkhamGame))
+postApiV1ArkhamGamesR :: Handler (Entity ArkhamGame)
 postApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   CreateGamePost {..} <- requireCheckJsonBody
@@ -77,25 +73,15 @@ postApiV1ArkhamGamesR = do
   let
     hashKey = fromIntegral $ fromSqlKey userId
     investigators = HashMap.singleton hashKey (lookupInvestigator iid, deck)
-  if playerCount == 1
-    then do
-      ge <-
-        liftIO $ runMessages =<< newCampaign campaignId investigators difficulty
-      key <- runDB $ do
-        gameId <- insert $ ArkhamGame ge
-        insert_ $ ArkhamPlayer userId gameId
-        pure gameId
-      pure $ Right (Entity key (ArkhamGame ge))
-    else do
-      let
-        apg = GameSetupState
-          playerCount
-          (HashMap.singleton hashKey deckId)
-          campaignId
-          difficulty
-      token <- liftIO nextRandom
-      key <- runDB $ insert $ ArkhamPendingGame token apg
-      pure $ Left (Entity key (ArkhamPendingGame token apg))
+  ge <-
+    liftIO
+    $ runMessages
+    =<< newCampaign campaignId playerCount investigators difficulty
+  key <- runDB $ do
+    gameId <- insert $ ArkhamGame ge
+    insert_ $ ArkhamPlayer userId gameId
+    pure gameId
+  pure $ Entity key (ArkhamGame ge)
 
 data QuestionReponse = QuestionResponse { choice :: Int, gameHash :: UUID }
   deriving stock (Generic)

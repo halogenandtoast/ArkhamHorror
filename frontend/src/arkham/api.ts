@@ -1,5 +1,5 @@
 import api from '@/api';
-import { eitherGameDecoder, gameDecoder } from '@/arkham/types/Game';
+import { gameDecoder } from '@/arkham/types/Game';
 import { Difficulty } from '@/arkham/types/Difficulty';
 import { JsonDecoder } from 'ts.data.json';
 
@@ -39,4 +39,4 @@ export const newGame = (
     campaignId,
     difficulty,
   })
-  .then((resp) => eitherGameDecoder.decodePromise(resp.data));
+  .then((resp) => gameDecoder.decodePromise(resp.data));

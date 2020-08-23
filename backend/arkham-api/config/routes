@@ -4,7 +4,7 @@
     /register ApiV1RegistrationR POST
     /whoami ApiV1CurrentUserR GET
     /arkham ApiV1ArkhamP:
-      /join/#String ApiV1ArkhamPendingGameR GET
+      /join/#ArkhamGameId ApiV1ArkhamPendingGameR GET
       /games ApiV1ArkhamGamesP:
         / ApiV1ArkhamGamesR GET POST
         /#ArkhamGameId ApiV1ArkhamGameP:

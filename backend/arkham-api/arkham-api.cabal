@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 45f8caabb6baba67c673460b15ca469aa7612e9189779af5eaa9da97f781fe37
+-- hash: 143b3ead5d493f1200c25964d935570002f6026a1328e0ad5c4d3ae63c447e8e
 
 name:           arkham-api
 version:        0.0.0
@@ -32,8 +32,6 @@ library
       Base.Api.Handler.Registration
       Base.Util
       Entity.Arkham.Game
-      Entity.Arkham.GameSetupState
-      Entity.Arkham.PendingGame
       Entity.Arkham.Player
       Entity.User
       Foundation
@@ -62,14 +60,17 @@ library
     , classy-prelude-yesod
     , conduit
     , containers
+    , errors
     , esqueleto
     , fast-logger
     , file-embed
+    , http-api-data
     , http-client-tls
     , http-conduit
     , http-types
     , jwt
     , monad-logger
+    , path-pieces
     , persistent
     , persistent-postgresql
     , persistent-template

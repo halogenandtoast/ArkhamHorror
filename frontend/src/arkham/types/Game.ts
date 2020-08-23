@@ -20,7 +20,7 @@ import {
 } from '@/arkham/types/Card';
 
 export interface Game {
-  id: number;
+  id: string;
   currentData: GameState;
 }
 
@@ -121,39 +121,8 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
 
 export const gameDecoder = JsonDecoder.object<Game>(
   {
-    id: JsonDecoder.number,
+    id: JsonDecoder.string,
     currentData: gameStateDecoder,
   },
   'Game',
 );
-
-export interface RightGame {
-  Right: Game;
-}
-
-export interface LeftPendingGame {
-  Left: PendingGame;
-}
-
-interface PendingGame {
-  token: string;
-}
-
-export type EitherGame = RightGame | LeftPendingGame
-
-const pendingGameDecoder = JsonDecoder.object<PendingGame>({
-  token: JsonDecoder.string,
-}, 'PendingGame');
-
-const rightGameDecoder = JsonDecoder.object<RightGame>({
-  Right: gameDecoder,
-}, 'RightGameDecoder');
-
-const leftPendingGameDecoder = JsonDecoder.object<LeftPendingGame>({
-  Left: pendingGameDecoder,
-}, 'LeftPendingGameDecoder');
-
-export const eitherGameDecoder = JsonDecoder.oneOf<EitherGame>([
-  leftPendingGameDecoder,
-  rightGameDecoder,
-], 'EitherGameDecoder');

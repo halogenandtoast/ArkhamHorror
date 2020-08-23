@@ -6,6 +6,8 @@ module Arkham.Types.Game
   ( runMessages
   , newGame
   , newCampaign
+  , addInvestigator
+  , startGame
   , toInternalGame
   , toInternalGame'
   , Game(..)
@@ -96,6 +98,8 @@ data Game = Game
   , giAgendas :: HashMap AgendaId Agenda
   , giTreacheries :: HashMap TreacheryId Treachery
   , giGameOver :: Bool
+  , giPending :: Bool
+  , giPlayerCount :: Int
   , giUsedAbilities :: [(InvestigatorId, Ability)]
   , giFocusedCards :: [Card]
   , giActiveCard :: Maybe Card
@@ -123,6 +127,15 @@ getAsset aid g =
 getTreachery :: TreacheryId -> Game -> Treachery
 getTreachery tid g =
   fromJustNote ("No such treachery: " <> show tid) $ g ^? (treacheries . ix tid)
+
+players :: Lens' Game (HashMap Int InvestigatorId)
+players = lens giPlayers $ \m x -> m { giPlayers = x }
+
+playerCount :: Lens' Game Int
+playerCount = lens giPlayerCount $ \m x -> m { giPlayerCount = x }
+
+pending :: Lens' Game Bool
+pending = lens giPending $ \m x -> m { giPending = x }
 
 focusedCards :: Lens' Game [Card]
 focusedCards = lens giFocusedCards $ \m x -> m { giFocusedCards = x }
@@ -196,13 +209,31 @@ skillTest = lens giSkillTest $ \m x -> m { giSkillTest = x }
 activeInvestigator :: Game -> Investigator
 activeInvestigator g = getInvestigator (g ^. activeInvestigatorId) g
 
+startGame :: MonadIO m => Game -> m Game
+startGame g = pure $ g & pending .~ False & playerCount .~ HashMap.size
+  (view investigators g)
+
+addInvestigator
+  :: MonadIO m => Int -> Investigator -> [PlayerCard] -> Game -> m GameJson
+addInvestigator uid i d g = do
+  liftIO $ atomicModifyIORef'
+    (giMessages g)
+    (\queue -> (InitDeck (getInvestigatorId i) d : queue, ()))
+  flip toExternalGame mempty
+    $ g
+    & investigators
+    %~ HashMap.insert (getInvestigatorId i) i
+    & players
+    %~ HashMap.insert uid (getInvestigatorId i)
+
 newCampaign
   :: MonadIO m
   => CampaignId
+  -> Int
   -> HashMap Int (Investigator, [PlayerCard])
   -> Difficulty
   -> m Game
-newCampaign campaignId investigatorsList difficulty' = do
+newCampaign campaignId playerCount' investigatorsList difficulty' = do
   mseed <- liftIO $ lookupEnv "SEED"
   seed <- maybe
     (liftIO $ randomIO @Int)
@@ -221,6 +252,7 @@ newCampaign campaignId investigatorsList difficulty' = do
     , giSeed = seed
     , giCampaign = Just campaign'
     , giScenario = Nothing
+    , giPlayerCount = playerCount'
     , giLocations = mempty
     , giEnemies = mempty
     , giAssets = mempty
@@ -237,6 +269,7 @@ newCampaign campaignId investigatorsList difficulty' = do
     , giActs = mempty
     , giChaosBag = Bag []
     , giGameOver = False
+    , giPending = HashMap.size investigatorsMap /= playerCount'
     , giUsedAbilities = mempty
     , giFocusedCards = mempty
     , giActiveCard = Nothing
@@ -321,6 +354,8 @@ newGame scenarioId investigatorsList difficulty' = do
     , giPlayerOrder = map
       (getInvestigatorId . fst)
       (HashMap.elems investigatorsList)
+    , giPlayerCount = HashMap.size investigatorsList
+    , giPending = False
     , giVictoryDisplay = mempty
     }
  where
@@ -1435,7 +1470,7 @@ toExternalGame
   :: MonadIO m => Game -> HashMap InvestigatorId Question -> m GameJson
 toExternalGame Game {..} mq = do
   queue <- liftIO $ readIORef giMessages
-  hash <- liftIO nextRandom
+  hash' <- liftIO nextRandom
   pure $ GameJson
     { gMessages = queue
     , gSeed = giSeed
@@ -1457,13 +1492,15 @@ toExternalGame Game {..} mq = do
     , gAgendas = giAgendas
     , gTreacheries = giTreacheries
     , gGameOver = giGameOver
+    , gPending = giPending
     , gUsedAbilities = giUsedAbilities
     , gQuestion = mq
     , gFocusedCards = giFocusedCards
     , gActiveCard = giActiveCard
     , gPlayerOrder = giPlayerOrder
+    , gPlayerCount = giPlayerCount
     , gVictoryDisplay = giVictoryDisplay
-    , gHash = hash
+    , gHash = hash'
     }
 
 toInternalGame :: MonadIO m => GameJson -> m Game
@@ -1493,15 +1530,17 @@ toInternalGame' ref GameJson {..} = Game
   , giTreacheries = gTreacheries
   , giActs = gActs
   , giGameOver = gGameOver
+  , giPending = gPending
   , giUsedAbilities = gUsedAbilities
   , giFocusedCards = gFocusedCards
   , giActiveCard = gActiveCard
   , giPlayerOrder = gPlayerOrder
   , giVictoryDisplay = gVictoryDisplay
+  , giPlayerCount = gPlayerCount
   }
 
 runMessages :: MonadIO m => Game -> m GameJson
-runMessages g = if g ^. gameOver
+runMessages g = if g ^. gameOver || g ^. pending
   then toExternalGame g mempty
   else flip runReaderT g $ do
     liftIO $ readIORef (giMessages g) >>= pPrint

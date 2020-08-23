@@ -27,6 +27,8 @@ putApiV1ArkhamPendingGameR gameId = do
   when (userId' `HashMap.member` gPlayers arkhamGameCurrentData)
     $ invalidArgs ["Already joined game"]
   (iid, deck) <- liftIO $ loadDeck deckId
+  when (iid `HashMap.member` gInvestigators arkhamGameCurrentData)
+    $ invalidArgs ["Investigator already taken"]
   ge <-
     liftIO
     $ addInvestigator userId' (lookupInvestigator iid) deck

@@ -70,6 +70,7 @@ export function choicesSource(game: Game, investigatorId: string) {
 
 export interface GameState {
   activeInvestigatorId: string;
+  hash: string;
   acts: Record<string, Act>;
   agendas: Record<string, Agenda>;
   assets: Record<string, Asset>;
@@ -94,6 +95,7 @@ export interface GameState {
 export const gameStateDecoder = JsonDecoder.object<GameState>(
   {
     activeInvestigatorId: JsonDecoder.string,
+    hash: JsonDecoder.string,
     acts: JsonDecoder.dictionary<Act>(actDecoder, 'Dict<UUID, Act>'),
     agendas: JsonDecoder.dictionary<Agenda>(agendaDecoder, 'Dict<UUID, Agenda>'),
     assets: JsonDecoder.dictionary<Asset>(assetDecoder, 'Dict<UUID, Asset>'),
@@ -124,3 +126,34 @@ export const gameDecoder = JsonDecoder.object<Game>(
   },
   'Game',
 );
+
+export interface RightGame {
+  Right: Game;
+}
+
+export interface LeftPendingGame {
+  Left: PendingGame;
+}
+
+interface PendingGame {
+  token: string;
+}
+
+export type EitherGame = RightGame | LeftPendingGame
+
+const pendingGameDecoder = JsonDecoder.object<PendingGame>({
+  token: JsonDecoder.string,
+}, 'PendingGame');
+
+const rightGameDecoder = JsonDecoder.object<RightGame>({
+  Right: gameDecoder,
+}, 'RightGameDecoder');
+
+const leftPendingGameDecoder = JsonDecoder.object<LeftPendingGame>({
+  Left: pendingGameDecoder,
+}, 'LeftPendingGameDecoder');
+
+export const eitherGameDecoder = JsonDecoder.oneOf<EitherGame>([
+  leftPendingGameDecoder,
+  rightGameDecoder,
+], 'EitherGameDecoder');

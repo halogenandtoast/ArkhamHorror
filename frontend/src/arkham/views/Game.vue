@@ -53,8 +53,8 @@ export default class Game extends Vue {
   }
 
   async choose(idx: number) {
-    if (idx !== -1) {
-      updateGame(this.gameId, idx);
+    if (idx !== -1 && this.game && this.game.currentData) {
+      updateGame(this.gameId, idx, this.game.currentData.hash);
     }
   }
 

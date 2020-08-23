@@ -5,12 +5,14 @@
 module Orphans where
 
 import Arkham.Types.GameJson
-import ClassyPrelude
+import ClassyPrelude hiding (fromString)
 import Data.Aeson
 import Data.Aeson.Types
 import qualified Data.Text as T
+import Data.UUID
 import Database.Persist.Postgresql.JSON ()
 import Database.Persist.Sql
+import Entity.Arkham.GameSetupState
 import Yesod.Core.Content
 
 fmapLeft :: (a -> b) -> Either a c -> Either b c
@@ -24,6 +26,22 @@ instance PersistField GameJson where
   toPersistValue = toPersistValue . toJSON
   fromPersistValue val =
     fromPersistValue val >>= fmapLeft pack . parseEither parseJSON
+
+instance PersistFieldSql GameSetupState where
+  sqlType _ = SqlString
+
+instance PersistField GameSetupState where
+  toPersistValue = toPersistValue . toJSON
+  fromPersistValue val =
+    fromPersistValue val >>= fmapLeft pack . parseEither parseJSON
+
+instance PersistFieldSql UUID where
+  sqlType _ = SqlString
+
+instance PersistField UUID where
+  toPersistValue = toPersistValue . toString
+  fromPersistValue val =
+    fromPersistValue val >>= maybe (Left "invalid uuid") Right . fromString
 
 -- Entity (and Key)
 deriving stock instance Typeable Key

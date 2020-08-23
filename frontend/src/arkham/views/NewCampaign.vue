@@ -15,15 +15,15 @@
       <label>{{difficulty}}</label>
     </div>
 
-    <div v-for="n in playerCount" :key="n">
-      <p>ArkhamDB deck url for player {{n}}</p>
+    <div>
+      <p>ArkhamDB deck url</p>
       <input
         type="url"
-        v-model="decks[n - 1]"
-        @change="loadDeck(n - 1)"
-        @paste.prevent="pasteDeck(n - 1, $event)"
+        v-model="deck"
+        @change="loadDeck"
+        @paste.prevent="pasteDeck($event)"
       />
-      <img v-if="investigators[n - 1]" :src="`/img/arkham/portraits/${investigators[n - 1]}.jpg`" />
+      <img v-if="investigator" :src="`/img/arkham/portraits/${investigator}.jpg`" />
     </div>
 
     <select v-model="selectedCampaign">
@@ -49,9 +49,9 @@ export default class NewCampaign extends Vue {
   playerCount = 1
   difficulties: Difficulty[] = ['Easy', 'Standard', 'Hard', 'Expert'];
   selectedDifficulty: Difficulty = 'Easy'
-  decks: string[] = []
-  investigators: string[] = []
-  deckIds: string[] = []
+  deck: string | null = null
+  investigator: string | null = null
+  deckId: string | null = null
   selectedCampaign = '01'
   campaigns = [
     {
@@ -73,36 +73,42 @@ export default class NewCampaign extends Vue {
   ]
 
   get disabled() {
-    const currentInvestigators = this.investigators.slice(0, this.playerCount);
-
-    return currentInvestigators.length !== this.playerCount || currentInvestigators.some((investigator) => investigator === '');
+    return !this.investigator;
   }
 
-  pasteDeck(idx: number, evt: ClipboardEvent) {
+  pasteDeck(evt: ClipboardEvent) {
     if (evt.clipboardData) {
-      this.$set(this.decks, idx, evt.clipboardData.getData('text'));
-      this.loadDeck(idx);
+      this.deck = evt.clipboardData.getData('text');
+      this.loadDeck();
     }
   }
 
-  loadDeck(idx: number) {
-    const matches = this.decks[idx].match(/\/decklist(\/view)?\/([^/]+)/);
+  loadDeck() {
+    if (!this.deck) {
+      return;
+    }
+
+    const matches = this.deck.match(/\/decklist(\/view)?\/([^/]+)/);
     if (matches && matches[2]) {
       fetch(`https://arkhamdb.com/api/public/decklist/${matches[2]}`)
         .then((response) => response.json())
         .then((data) => {
           const deckId = matches[2];
-          this.$set(this.investigators, idx, data.investigator_code);
-          this.$set(this.deckIds, idx, deckId);
+          this.investigator = data.investigator_code;
+          this.deckId = deckId;
         });
     }
   }
 
   start() {
     const mcampaign = this.campaigns.find((campaign) => campaign.id === this.selectedCampaign);
-    if (mcampaign) {
-      newGame(this.deckIds, mcampaign.id, this.selectedDifficulty)
-        .then((game) => this.$router.push(`/games/${game.id}`));
+    if (mcampaign && this.deckId) {
+      newGame(this.deckId, this.playerCount, mcampaign.id, this.selectedDifficulty)
+        .then((egame) => {
+          if ('Right' in egame) {
+            this.$router.push(`/games/${egame.Right.id}`);
+          }
+        });
     }
   }
 }

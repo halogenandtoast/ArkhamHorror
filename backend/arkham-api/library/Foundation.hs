@@ -14,6 +14,7 @@ import qualified Auth.JWT as JWT
 import Control.Monad.Logger (LogSource)
 import Data.Aeson (Result(Success), fromJSON)
 import Data.Kind
+import Data.UUID
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Import.NoFoundation
 

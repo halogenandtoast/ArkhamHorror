@@ -1435,6 +1435,7 @@ toExternalGame
   :: MonadIO m => Game -> HashMap InvestigatorId Question -> m GameJson
 toExternalGame Game {..} mq = do
   queue <- liftIO $ readIORef giMessages
+  hash <- liftIO nextRandom
   pure $ GameJson
     { gMessages = queue
     , gSeed = giSeed
@@ -1462,6 +1463,7 @@ toExternalGame Game {..} mq = do
     , gActiveCard = giActiveCard
     , gPlayerOrder = giPlayerOrder
     , gVictoryDisplay = giVictoryDisplay
+    , gHash = hash
     }
 
 toInternalGame :: MonadIO m => GameJson -> m Game

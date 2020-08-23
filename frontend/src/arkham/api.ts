@@ -40,3 +40,7 @@ export const newGame = (
     difficulty,
   })
   .then((resp) => gameDecoder.decodePromise(resp.data));
+
+export const joinGame = (gameId: string, deckId: string) => api
+  .put(`arkham/games/${gameId}/join`, { deckId })
+  .then((resp) => gameDecoder.decodePromise(resp.data));

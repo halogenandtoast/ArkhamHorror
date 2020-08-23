@@ -4,11 +4,11 @@
     /register ApiV1RegistrationR POST
     /whoami ApiV1CurrentUserR GET
     /arkham ApiV1ArkhamP:
-      /join/#ArkhamGameId ApiV1ArkhamPendingGameR GET
       /games ApiV1ArkhamGamesP:
         / ApiV1ArkhamGamesR GET POST
         /#ArkhamGameId ApiV1ArkhamGameP:
           / ApiV1ArkhamGameR GET PUT
           /raw ApiV1ArkhamGameRawR PUT
+          /join ApiV1ArkhamPendingGameR PUT
 
 !/ StaticR Static appStatic

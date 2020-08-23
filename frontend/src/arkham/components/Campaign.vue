@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!game.currentData.gameOver" id="game" class="game">
+  <div v-if="!game.currentData.gameOver && !game.currentData.pending" id="game" class="game">
     <Scenario
       v-if="game.currentData.scenario"
 
@@ -22,6 +22,12 @@
         @choose="$emit('choose', $event)"
       />
     </template>
+  </div>
+  <div v-else-if="game.currentData.pending">
+    <p>Waiting for more players</p>
+    <div v-if="investigatorId == game.currentData.leadInvestigatorId">
+      <p>Invite them with this url: {{inviteLink}}</p>
+    </div>
   </div>
 </template>
 
@@ -50,6 +56,7 @@ export default class Campaign extends Vue {
 
   private commitedCards: number[] = []
   private moving = false
+  inviteLink = `${window.location.href}/join` // fix-syntax`
 
   get activeCard() {
     if (this.game.currentData.activeCard) {

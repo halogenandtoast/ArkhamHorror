@@ -21,11 +21,13 @@ arkhamWoodsTwistingPaths =
                                "Arkham Woods: Twisting Paths"
                                3
                                (PerPlayer 1)
-                               T
+                               Square
                                [Squiggle]
                              )
     { locationTraits = HashSet.fromList [Woods]
-    , locationRevealedConnectedSymbols = HashSet.fromList [Squiggle, Diamond, Equals]
+    , locationRevealedConnectedSymbols = HashSet.fromList
+      [Squiggle, Diamond, Equals]
+    , locationRevealedSymbol = T
     }
 
 instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsTwistingPaths where

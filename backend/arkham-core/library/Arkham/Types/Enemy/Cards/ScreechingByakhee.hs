@@ -56,9 +56,3 @@ instance (EnemyRunner env) => RunMessage env ScreechingByakhee where
         )
       -- ^ we unshift this last so we do not double up
     _ -> ScreechingByakhee <$> runMessage msg attrs
-
--- EnemyEvaded
--- EnemyEngageInvestigator
--- EngageEnemy
--- InvestigatorEliminated
--- UnengageEnemy

@@ -19,6 +19,7 @@ import Arkham.Types.Act.Cards.WhatHaveYouDone
 import Arkham.Types.Act.Runner
 import Arkham.Types.ActId
 import Arkham.Types.Classes
+import Arkham.Types.Helpers
 import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
@@ -61,7 +62,7 @@ actAttrs = \case
   UncoveringTheConspiracy' attrs -> coerce attrs
   InvestigatingTheTrail' attrs -> coerce attrs
   IntoTheDarkness' attrs -> coerce attrs
-  DisruptingTheRitual' attrs -> coerce attrs
+  DisruptingTheRitual' (DisruptingTheRitual (attrs `With` _)) -> attrs
 
 instance (ActionRunner env investigator) => HasActions env investigator Act where
   getActions i window = \case

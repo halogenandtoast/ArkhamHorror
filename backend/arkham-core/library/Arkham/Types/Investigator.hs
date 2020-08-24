@@ -383,6 +383,9 @@ isPrey AnyPrey _ _ = True
 isPrey (HighestSkill skillType) env i =
   fromMaybe 0 (maximumMay . HashSet.toList $ getSet skillType env)
     == skillValueFor skillType Nothing [] (investigatorAttrs i)
+isPrey (LowestSkill skillType) env i =
+  fromMaybe 100 (minimumMay . HashSet.toList $ getSet skillType env)
+    == skillValueFor skillType Nothing [] (investigatorAttrs i)
 isPrey LowestRemainingHealth env i =
   fromMaybe
       100

@@ -542,6 +542,19 @@ instance HasSet RemainingHealth () Game where
       . HashMap.elems
       . view investigators
 
+instance HasSet RemainingSanity () Game where
+  getSet _ =
+    HashSet.fromList
+      . map (RemainingSanity . remainingSanity)
+      . HashMap.elems
+      . view investigators
+
+instance HasCount RemainingHealth InvestigatorId Game where
+  getCount iid = RemainingHealth . remainingHealth . getInvestigator iid
+
+instance HasCount RemainingSanity InvestigatorId Game where
+  getCount iid = RemainingSanity . remainingSanity . getInvestigator iid
+
 instance HasSet LocationId () Game where
   getSet _ = HashMap.keysSet . view locations
 

@@ -10,6 +10,7 @@ type EnemyRunner env
   = ( HasSet LocationId () env
     , HasSet InvestigatorId LocationId env
     , HasCount PlayerCount () env
+    , HasCount RemainingSanity InvestigatorId env
     , HasQueue env
     , HasSet ClosestLocationId (LocationId, Prey) env
     , HasSet PreyId (Prey, LocationId) env

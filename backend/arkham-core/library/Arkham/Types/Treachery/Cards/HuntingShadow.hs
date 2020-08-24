@@ -10,6 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
 import ClassyPrelude
+import Lens.Micro
 
 newtype HuntingShadow = HuntingShadow Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -21,7 +22,7 @@ instance HasActions env investigator HuntingShadow where
   getActions i window (HuntingShadow attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env HuntingShadow where
-  runMessage msg t@(HuntingShadow attrs@Attrs {..}) = case msg of
+  runMessage msg (HuntingShadow attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
       playerSpendableClueCount <- unSpendableClueCount <$> asks (getCount iid)
       if playerSpendableClueCount > 0
@@ -35,5 +36,5 @@ instance (TreacheryRunner env) => RunMessage env HuntingShadow where
           )
         else unshiftMessage
           (InvestigatorAssignDamage iid (TreacherySource tid) 2 0)
-      pure t
+      HuntingShadow <$> runMessage msg (attrs & resolved .~ True)
     _ -> HuntingShadow <$> runMessage msg attrs

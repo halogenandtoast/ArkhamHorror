@@ -238,7 +238,6 @@ data Message
   | RevelationSkillTest InvestigatorId Source SkillType Int [Message] [Message]
   | DamagePerPointOfFailure InvestigatorId
   | HorrorPerPointOfFailure InvestigatorId
-  | PlaceCluePerPointOfFailureOnLocation InvestigatorId
   | PlaceCluesOnLocation InvestigatorId Int
   | Discard Target
   | SetEncounterDeck [EncounterCard]

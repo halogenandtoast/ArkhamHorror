@@ -12,6 +12,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
 import ClassyPrelude
+import Lens.Micro
 
 newtype FalseLead = FalseLead Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -28,15 +29,16 @@ instance (TreacheryRunner env) => RunMessage env FalseLead where
       playerClueCount <- unClueCount <$> asks (getCount iid)
       if playerClueCount == 0
         then unshiftMessage (Ask iid $ ChooseOne [Surge iid])
-        else unshiftMessages
-          [ RevelationSkillTest
+        else unshiftMessage
+          (RevelationSkillTest
             iid
             (TreacherySource treacheryId)
             SkillIntellect
             4
             []
-            [PlaceCluePerPointOfFailureOnLocation iid]
-          , Discard (TreacheryTarget tid)
-          ]
-      pure t
+            [NotifyOnFailure iid (TreacheryTarget treacheryId)]
+          )
+      FalseLead <$> runMessage msg (attrs & resolved .~ True)
+    SkillTestDidFailBy iid (TreacheryTarget tid) n | tid == treacheryId ->
+      t <$ unshiftMessage (PlaceCluesOnLocation iid n)
     _ -> FalseLead <$> runMessage msg attrs

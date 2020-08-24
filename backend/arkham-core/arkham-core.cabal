@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dca237f4166b16625509690c75136462355193f7ae43e537148e4cb1eb4d21cf
+-- hash: 185dd9e6767684cb6bcf7de193cde9de56c25fd33218b1ad59fb4e3be10abd4c
 
 name:           arkham-core
 version:        0.0.0
@@ -241,6 +241,7 @@ library
       Arkham.Types.Treachery.Cards.ObscuringFog
       Arkham.Types.Treachery.Cards.OfferOfPower
       Arkham.Types.Treachery.Cards.OnWingsOfDarkness
+      Arkham.Types.Treachery.Cards.Paranoia
       Arkham.Types.Treachery.Cards.RottingRemains
       Arkham.Types.Treachery.Cards.TheYellowSign
       Arkham.Types.Treachery.Cards.UmordhothsWrath

@@ -19,7 +19,7 @@ data FastWindow
   | DuringTurn Who
   | WhenDiscoverClues Who Where
   | WhenSkillTest SkillType
-  | WhenAssignedHorror Who
+  | AfterAssignedHorror Who
   | Any
   | NonFast
   deriving stock (Show, Generic, Eq)

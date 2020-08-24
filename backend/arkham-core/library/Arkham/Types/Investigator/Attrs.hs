@@ -734,6 +734,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
            | target <- HashSet.toList (HashSet.fromList horrorTargets)
            ]
         )
+    DidReceiveHorror (InvestigatorTarget iid) _ | iid == investigatorId ->
+      a <$ unshiftMessage (CheckFastWindow iid [AfterAssignedHorror You])
     InvestigatorDoAssignDamage iid source health sanity damageTargets horrorTargets
       | iid == investigatorId
       -> do

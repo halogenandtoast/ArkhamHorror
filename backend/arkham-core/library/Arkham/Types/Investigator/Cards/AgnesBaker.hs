@@ -4,38 +4,27 @@ module Arkham.Types.Investigator.Cards.AgnesBaker where
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.EnemyId
 import Arkham.Types.FastWindow (Who(..))
 import qualified Arkham.Types.FastWindow as Fast
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
+import Arkham.Types.LocationId
 import Arkham.Types.Message
+import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
+import qualified Data.HashSet as HashSet
 
 newtype AgnesBaker = AgnesBaker Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 agnesBaker :: AgnesBaker
-agnesBaker = AgnesBaker $ (baseAttrs
-                            "01004"
-                            "Agnes Baker"
-                            Mystic
-                            stats
-                            [Sorcerer]
-                          )
-  { investigatorAbilities =
-    [ (mkAbility
-        (InvestigatorSource "01004")
-        1
-        (ReactionAbility (Fast.WhenAssignedHorror You))
-      )
-        { abilityLimit = OncePerPhase
-        }
-    ]
-  }
+agnesBaker = AgnesBaker
+  $ baseAttrs "01004" "Agnes Baker" Mystic stats [Sorcerer]
  where
   stats = Stats
     { health = 6
@@ -46,20 +35,36 @@ agnesBaker = AgnesBaker $ (baseAttrs
     , agility = 3
     }
 
-instance HasActions env investigator AgnesBaker where
+instance (ActionRunner env investigator) => HasActions env investigator AgnesBaker where
+  getActions i (Fast.AfterAssignedHorror You) (AgnesBaker Attrs {..}) = do
+    locationEnemyIds <- HashSet.toList <$> asks (getSet @EnemyId (locationOf i))
+    let
+      ability = (mkAbility
+                  (InvestigatorSource investigatorId)
+                  1
+                  (ReactionAbility (Fast.AfterAssignedHorror You))
+                )
+        { abilityLimit = OncePerPhase
+        }
+    usedAbilities <- map unUsedAbility <$> asks (getList ())
+    pure
+      [ ActivateCardAbilityAction investigatorId ability
+      | (investigatorId, ability) `notElem` usedAbilities && not
+        (null locationEnemyIds)
+      ]
   getActions i window (AgnesBaker attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env AgnesBaker where
   runMessage msg i@(AgnesBaker attrs@Attrs {..}) = case msg of
-    UseCardAbility _ _ (InvestigatorSource iid) 1 | iid == investigatorId ->
-      locationId <- asks (getId @LocationId (getInvestigator attrs))
-      locationEnemyIds <- HashSet.toList <$> asks (getSet locationId)
-      unshiftMessage (Ask iid $ ChooseOne
-        [ EnemyDamage eid iid (AssetSource assetId) 1
-        | eid <- locationEnemyIds
-        ])
-      pure i
-    ResolveToken ElderSign iid _skillValue | iid == investigatorId ->
+    UseCardAbility _ _ (InvestigatorSource iid) 1 | iid == investigatorId -> do
+      lid <- asks (getId @LocationId investigatorId)
+      locationEnemyIds <- HashSet.toList <$> asks (getSet lid)
+      i <$ unshiftMessage
+        (Ask iid $ ChooseOne
+          [ EnemyDamage eid iid (InvestigatorSource investigatorId) 1
+          | eid <- locationEnemyIds
+          ]
+        )
+    ResolveToken ElderSign iid skillValue | iid == investigatorId ->
       i <$ runTest skillValue investigatorSanityDamage
-      pure i
     _ -> AgnesBaker <$> runMessage msg attrs

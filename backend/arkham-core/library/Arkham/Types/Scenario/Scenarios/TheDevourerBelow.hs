@@ -156,9 +156,35 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
             (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget x) 2 | x <- xs ])
         s <$ runTest skillValue (-4)
     ResolveToken Token.Tablet iid skillValue
-      | scenarioDifficulty `elem` [Easy, Standard] -> error "TODO"
+      | scenarioDifficulty `elem` [Easy, Standard] -> do
+        ghoulCount <- unEnemyCount
+          <$> asks (getCount (InvestigatorLocation iid, [Monster]))
+        when (ghoulCount > 0) $ unshiftMessage
+          (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 0)
+        s <$ runTest skillValue (-3)
     ResolveToken Token.Tablet iid skillValue
-      | scenarioDifficulty `elem` [Hard, Expert] -> error "TODO"
+      | scenarioDifficulty `elem` [Hard, Expert] -> do
+        ghoulCount <- unEnemyCount
+          <$> asks (getCount (InvestigatorLocation iid, [Monster]))
+        when (ghoulCount > 0) $ unshiftMessage
+          (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 1)
+        s <$ runTest skillValue (-5)
+    ResolveToken Token.ElderThing iid skillValue
+      | scenarioDifficulty `elem` [Easy, Standard] -> do
+        ancientOneCount <- unEnemyCount <$> asks (getCount [AncientOne])
+        if ancientOneCount > 0
+          then
+            s <$ unshiftMessage
+              (DrawAnotherToken iid skillValue Token.ElderThing (-5))
+          else s <$ runTest skillValue (-5)
+    ResolveToken Token.ElderThing iid skillValue
+      | scenarioDifficulty `elem` [Hard, Expert] -> do
+        ancientOneCount <- unEnemyCount <$> asks (getCount [AncientOne])
+        if ancientOneCount > 0
+          then
+            s <$ unshiftMessage
+              (DrawAnotherToken iid skillValue Token.ElderThing (-7))
+          else s <$ runTest skillValue (-5)
     NoResolution -> error "not yet implemented"
     Resolution 1 -> error "not yet implemented"
     Resolution 2 -> error "not yet implemented"

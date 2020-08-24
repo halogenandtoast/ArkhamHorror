@@ -43,13 +43,8 @@ instance (TreacheryRunner env) => RunMessage env Psychosis where
     Revelation iid tid | tid == treacheryId -> do
       unshiftMessage $ AttachTreacheryToInvestigator tid iid
       Psychosis <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
-    InvestigatorDirectDamage iid _ _ n
-      | Just iid == treacheryAttachedInvestigator && n > 0
-      -> t <$ unshiftMessage
-        (InvestigatorDirectDamage iid (TreacherySource treacheryId) 1 0)
-    InvestigatorAssignDamage iid _ _ n
-      | Just iid == treacheryAttachedInvestigator && n > 0
-      -> t <$ unshiftMessage
+    After (InvestigatorTakeHorror iid _ _)
+      | Just iid == treacheryAttachedInvestigator -> t <$ unshiftMessage
         (InvestigatorDirectDamage iid (TreacherySource treacheryId) 1 0)
     UseCardAbility _ _ (TreacherySource tid) 1 | tid == treacheryId ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))

@@ -148,3 +148,4 @@ class (HasId InvestigatorId () investigator) => IsInvestigator investigator wher
   cardCount :: investigator -> Int
   canDo :: Action -> investigator -> Bool
   hasActionsRemaining :: investigator -> Bool
+  canTakeDirectDamage :: investigator -> Bool

@@ -160,7 +160,7 @@ instance HasId EnemyId () Enemy where
 instance IsEnemy Enemy where
   isAloof = isAloof . enemyAttrs
 
-instance (IsInvestigator investigator) => HasActions env investigator Enemy where
+instance (ActionRunner env investigator) => HasActions env investigator Enemy where
   getActions i window = \case
     SilverTwilightAcolyte' x -> getActions i window x
     GhoulPriest' x -> getActions i window x

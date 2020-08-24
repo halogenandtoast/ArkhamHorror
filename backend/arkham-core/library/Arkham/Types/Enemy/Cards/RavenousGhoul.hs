@@ -20,7 +20,7 @@ ravenousGhoul uuid = RavenousGhoul $ (baseAttrs uuid "01161")
   , enemyFight = 3
   , enemyHealth = Static 3
   , enemyEvade = 3
-  , enemyPrey = LowestHealth
+  , enemyPrey = LowestRemainingHealth
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator RavenousGhoul where

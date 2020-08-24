@@ -180,6 +180,18 @@ spawnAtOneOf iid eid targetLids = do
     lids ->
       unshiftMessage (Ask iid $ ChooseOne [ EnemySpawn lid eid | lid <- lids ])
 
+modifiedEnemyFight :: Attrs -> Int
+modifiedEnemyFight Attrs {..} = foldr applyModifier enemyFight enemyModifiers
+ where
+  applyModifier (EnemyFight m _) n = max 0 (n + m)
+  applyModifier _ n = n
+
+modifiedEnemyEvade :: Attrs -> Int
+modifiedEnemyEvade Attrs {..} = foldr applyModifier enemyEvade enemyModifiers
+ where
+  applyModifier (EnemyEvade m _) n = max 0 (n + m)
+  applyModifier _ n = n
+
 modifiedDamageAmount :: Attrs -> Int -> Int
 modifiedDamageAmount attrs baseAmount = foldr
   applyModifier
@@ -306,7 +318,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
             (EnemySource eid)
             (Just Action.Fight)
             skillType
-            enemyFight
+            (modifiedEnemyFight a)
             [SuccessfulAttackEnemy iid eid, InvestigatorDamageEnemy iid eid]
             onFailure
             tempModifiers
@@ -327,7 +339,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
             (EnemySource eid)
             (Just Action.Evade)
             skillType
-            enemyEvade
+            (modifiedEnemyEvade a)
             (EnemyEvaded iid eid : onSuccess)
             onFailure'
             skillTestModifiers

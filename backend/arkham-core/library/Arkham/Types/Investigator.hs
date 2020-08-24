@@ -8,6 +8,7 @@ module Arkham.Types.Investigator
   , hasSpendableClues
   , isDefeated
   , remainingHealth
+  , remainingSanity
   , lookupInvestigator
   , handOf
   , deckOf
@@ -366,9 +367,11 @@ class GetInvestigatorId a where
 instance GetInvestigatorId Investigator where
   getInvestigatorId = investigatorId . investigatorAttrs
 
+-- TODO: This does not work for more than 2 players
 isPrey
   :: ( HasSet Int SkillType env
      , HasSet RemainingHealth () env
+     , HasSet RemainingSanity () env
      , HasSet ClueCount () env
      )
   => Prey
@@ -379,11 +382,16 @@ isPrey AnyPrey _ _ = True
 isPrey (HighestSkill skillType) env i =
   fromMaybe 0 (maximumMay . HashSet.toList $ getSet skillType env)
     == skillValueFor skillType Nothing [] (investigatorAttrs i)
-isPrey LowestHealth env i =
+isPrey LowestRemainingHealth env i =
   fromMaybe
       100
       (minimumMay . map unRemainingHealth . HashSet.toList $ getSet () env)
     == remainingHealth i
+isPrey LowestRemainingSanity env i =
+  fromMaybe
+      100
+      (minimumMay . map unRemainingSanity . HashSet.toList $ getSet () env)
+    == remainingSanity i
 isPrey (Bearer bid) _ i =
   unBearerId bid == unInvestigatorId (investigatorId $ investigatorAttrs i)
 isPrey MostClues env i =
@@ -416,5 +424,9 @@ hasSpendableClues :: Investigator -> Bool
 hasSpendableClues i = spendableClueCount (investigatorAttrs i) > 0
 
 remainingHealth :: Investigator -> Int
-remainingHealth i = investigatorHealth attrs - investigatorHealthDamage attrs
+remainingHealth i = modifiedHealth attrs - investigatorHealthDamage attrs
+  where attrs = investigatorAttrs i
+
+remainingSanity :: Investigator -> Int
+remainingSanity i = modifiedSanity attrs - investigatorSanityDamage attrs
   where attrs = investigatorAttrs i

@@ -21,6 +21,7 @@ type ScenarioRunner env
     , HasCount XPCount () env
     , HasSet EnemyId Trait env
     , HasSet ClosestEnemyId (InvestigatorId, [Trait]) env
+    , HasSet ClosestEnemyId InvestigatorId env
     , HasSet VictoryDisplayCardCode () env
     )
 

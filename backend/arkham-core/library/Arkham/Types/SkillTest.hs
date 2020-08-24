@@ -234,6 +234,10 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         skillTestModifiers
 
       pure s
+    NotifyOnFailure iid target -> do
+      case skillTestResult of
+        FailedBy n -> s <$ unshiftMessage (SkillTestDidFailBy iid target n)
+        _ -> pure s
     RunSkillTest skillValue tokenValue -> do
       let
         totaledTokenValues =

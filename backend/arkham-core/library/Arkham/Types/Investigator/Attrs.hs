@@ -504,7 +504,9 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           | card <- investigatorHand
           ]
         )
-    AllRandomDiscard | not (a ^. defeated || a ^. resigned) -> do
+    AllRandomDiscard | not (a ^. defeated || a ^. resigned) ->
+      a <$ unshiftMessage (RandomDiscard investigatorId)
+    RandomDiscard iid | iid == investigatorId -> do
       n <- liftIO $ randomRIO (0, length investigatorHand - 1)
       case investigatorHand !!? n of
         Nothing -> pure a

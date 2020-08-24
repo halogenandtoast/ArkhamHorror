@@ -3,6 +3,7 @@ module Arkham.Types.Query
   , SpendableClueCount(..)
   , PlayerCount(..)
   , ResourceCount(..)
+  , CardCount(..)
   , EnemyCount(..)
   , DoomCount(..)
   , AssetCount(..)
@@ -29,6 +30,7 @@ newtype SpendableClueCount = SpendableClueCount { unSpendableClueCount :: Int }
   deriving newtype (Eq, Hashable)
 newtype DoomCount = DoomCount { unDoomCount :: Int }
 newtype ResourceCount = ResourceCount { unResourceCount :: Int }
+newtype CardCount = CardCount { unCardCount :: Int }
 newtype RemainingHealth = RemainingHealth { unRemainingHealth :: Int }
   deriving newtype (Eq, Hashable)
 

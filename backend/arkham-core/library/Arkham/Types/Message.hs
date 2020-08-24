@@ -185,6 +185,9 @@ data Message
   | BeforeSkillTest InvestigatorId SkillType
   | TriggerSkillTest InvestigatorId SkillType Int
   | RunSkillTest Int Int
+  | NotifyOnFailure InvestigatorId Target
+  | HandlePointOfFailure InvestigatorId Target Int
+  | SkillTestDidFailBy InvestigatorId Target Int
   | SkillTestResults
   | SkillTestApplyResults
   | RunSkill InvestigatorId CardCode SkillTestResult
@@ -220,6 +223,7 @@ data Message
   | AddAct ActId
   | AddAgenda AgendaId
   | AllRandomDiscard
+  | RandomDiscard InvestigatorId
   | NextAgenda AgendaId AgendaId
   | NextAct ActId ActId
   | WhenEnterLocation InvestigatorId LocationId

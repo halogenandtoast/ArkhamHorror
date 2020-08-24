@@ -165,6 +165,10 @@ allPlayerCards = HashMap.fromList
   , ("01091", overpower)
   , ("01092", manualDexterity)
   , ("01093", unexpectedCourage)
+  , ("01096", amnesia)
+  , ("01097", paranoia)
+  , ("01099", psychosis)
+  , ("01100", hypochondria)
   , ("01102", silverTwilightAcolyte)
   , ("01117", litaChantler)
   ]
@@ -391,6 +395,30 @@ unexpectedCourage cardId =
   (skill cardId "01093" "Unexpected Courage" [SkillWild, SkillWild] Neutral)
     { pcTraits = [Innate]
     }
+
+amnesia :: CardId -> PlayerCard
+amnesia cardId = (treachery cardId "01096" "Amnesia" 0)
+  { pcTraits = [Madness]
+  , pcRevelation = True
+  }
+
+paranoia :: CardId -> PlayerCard
+paranoia cardId = (treachery cardId "01097" "Paranoia" 0)
+  { pcTraits = [Madness]
+  , pcRevelation = True
+  }
+
+psychosis :: CardId -> PlayerCard
+psychosis cardId = (treachery cardId "01099" "Psychosis" 0)
+  { pcTraits = [Madness]
+  , pcRevelation = True
+  }
+
+hypochondria :: CardId -> PlayerCard
+hypochondria cardId = (treachery cardId "01100" "Hypochondria" 0)
+  { pcTraits = [Madness]
+  , pcRevelation = True
+  }
 
 silverTwilightAcolyte :: CardId -> PlayerCard
 silverTwilightAcolyte cardId =

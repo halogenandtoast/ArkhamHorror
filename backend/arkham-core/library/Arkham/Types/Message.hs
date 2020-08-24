@@ -122,7 +122,6 @@ data Message
   | TakeAction InvestigatorId Int (Maybe Action)
   | LoseAction InvestigatorId Source
   | GainAction InvestigatorId Source
-  | ChoosePlayCardAction InvestigatorId
   | ChooseActivateCardAbilityAction InvestigatorId
   | ActivateCardAbilityAction InvestigatorId Ability
   | UseCardAbility InvestigatorId Source Source Int
@@ -163,7 +162,6 @@ data Message
   | SufferTrauma InvestigatorId Int Int
   | AssetDamage AssetId Source Int Int
   | AssetDefeated AssetId
-  | DiscardAsset AssetId
   | AssetDiscarded AssetId CardCode
   | InvestigatorDamage InvestigatorId Source Int Int
   | InvestigatorPlayAsset InvestigatorId AssetId [SlotType] [Trait]

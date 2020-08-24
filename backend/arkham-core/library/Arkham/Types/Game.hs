@@ -1211,7 +1211,7 @@ runGameMessage msg g = case msg of
         unshiftMessage (EnemyAttacks (EnemyAttack iid2 eid2 : as))
       _ -> unshiftMessage (Ask (giLeadInvestigatorId g) $ ChooseOneAtATime as)
     pure g
-  DiscardAsset aid -> do
+  Discard (AssetTarget aid) -> do
     let asset = g ^?! assets . ix aid
     unshiftMessage (AssetDiscarded aid (getCardCode asset))
     pure $ g & assets %~ HashMap.delete aid

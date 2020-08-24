@@ -116,9 +116,9 @@ instance (AssetRunner env) => RunMessage env Attrs where
     AssetDamage aid _ health sanity | aid == assetId ->
       pure $ a & healthDamage +~ health & sanityDamage +~ sanity
     InvestigatorEliminated iid | assetInvestigator == Just iid ->
-      a <$ unshiftMessage (DiscardAsset assetId)
+      a <$ unshiftMessage (Discard (AssetTarget assetId))
     AddAssetAt aid lid | aid == assetId -> pure $ a & location ?~ lid
-    DiscardAsset aid | aid == assetId -> case assetInvestigator of
+    Discard (AssetTarget aid) | aid == assetId -> case assetInvestigator of
       Nothing -> pure a
       Just iid -> a <$ unshiftMessage
         (RemoveAllModifiersOnTargetFrom

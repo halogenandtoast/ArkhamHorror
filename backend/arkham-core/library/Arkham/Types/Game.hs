@@ -758,6 +758,7 @@ instance HasSet PreyId Prey Game where
       g
     where matcher i = isPrey preyType g i
 
+-- TODO: This does not work for more than 2 players
 instance HasSet PreyId (Prey, LocationId) Game where
   getSet (preyType, lid) g = HashSet.map PreyId
     $ HashSet.filter matcher investigators'

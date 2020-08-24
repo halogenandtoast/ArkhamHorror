@@ -153,6 +153,8 @@ data Message
   | AddToVictory Target
   | PlayCard InvestigatorId CardId Bool
   | PlayedCard InvestigatorId CardId Bool
+  | InvestigatorTakeDamage InvestigatorId Source Int
+  | InvestigatorTakeHorror InvestigatorId Source Int
   | InvestigatorDirectDamage InvestigatorId Source Int Int
   | InvestigatorAssignDamage InvestigatorId Source Int Int
   -- ^ uses the internal method and then checks defeat
@@ -302,6 +304,7 @@ data Message
   | PlaceDoom Target Int
   | Surge InvestigatorId
   | Will Message
+  | After Message
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

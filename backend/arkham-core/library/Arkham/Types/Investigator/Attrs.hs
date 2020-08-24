@@ -477,6 +477,7 @@ instance IsInvestigator Attrs where
   canEngage enemy a@Attrs {..} =
     canDo Action.Engage a && getId () enemy `notElem` investigatorEngagedEnemies
   hasActionsRemaining Attrs {..} = investigatorRemainingActions > 0
+  canTakeDirectDamage a = not (facingDefeat a)
 
 instance HasId InvestigatorId () Attrs where
   getId _ Attrs {..} = investigatorId
@@ -706,14 +707,24 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       ]
     MoveAction iid lid False | iid == investigatorId ->
       a <$ unshiftMessages [Will (MoveTo iid lid), MoveTo iid lid]
-    InvestigatorDirectDamage iid source health sanity | iid == investigatorId ->
-      a <$ unshiftMessages
-        [InvestigatorDamage iid source health sanity, CheckDefeated]
-    InvestigatorAssignDamage iid source health sanity | iid == investigatorId ->
-      a <$ unshiftMessages
-        [ InvestigatorDoAssignDamage iid source health sanity [] []
-        , CheckDefeated
-        ]
+    InvestigatorDirectDamage iid source damage horror
+      | iid == investigatorId && not
+        (investigatorDefeated || investigatorResigned)
+      -> a <$ unshiftMessages
+        ([InvestigatorDamage iid source damage horror, CheckDefeated]
+        <> [ After (InvestigatorTakeDamage iid source damage) | damage > 0 ]
+        <> [ After (InvestigatorTakeHorror iid source horror) | horror > 0 ]
+        )
+    InvestigatorAssignDamage iid source damage horror
+      | iid == investigatorId && not
+        (investigatorDefeated || investigatorResigned)
+      -> a <$ unshiftMessages
+        ([ InvestigatorDoAssignDamage iid source damage horror [] []
+         , CheckDefeated
+         ]
+        <> [ After (InvestigatorTakeDamage iid source damage) | damage > 0 ]
+        <> [ After (InvestigatorTakeHorror iid source horror) | horror > 0 ]
+        )
     InvestigatorDoAssignDamage iid source 0 0 damageTargets horrorTargets
       | iid == investigatorId -> a <$ unshiftMessages
         ([ DidReceiveDamage target source

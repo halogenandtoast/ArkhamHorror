@@ -122,6 +122,7 @@ type ActionRunner env investigator
     , HasId (Maybe OwnerId) AssetId env
     , HasId (Maybe LocationId) AssetId env
     , HasId LocationId InvestigatorId env
+    , HasSet EnemyId LocationId env
     , HasList UsedAbility () env
     , HasCount SpendableClueCount AllInvestigators env
     )

@@ -1278,16 +1278,25 @@ runGameMessage msg g = case msg of
     pure g
   ChooseEndTurn iid -> pure $ g & usedAbilities %~ filter
     (\(iid', Ability {..}) -> iid' /= iid && abilityLimit /= OncePerTurn)
-  EndInvestigation -> g <$ pushMessage BeginEnemy
+  EndInvestigation -> do
+    pushMessage BeginEnemy
+    pure $ g & usedAbilities %~ filter
+      (\(_, Ability {..}) -> abilityLimit /= OncePerPhase)
   BeginEnemy -> do
     pushMessages [HuntersMove, EnemiesAttack, EndEnemy]
     pure $ g & phase .~ EnemyPhase
-  EndEnemy -> g <$ pushMessage BeginUpkeep
+  EndEnemy -> do
+    pushMessage BeginUpkeep
+    pure $ g & usedAbilities %~ filter
+      (\(_, Ability {..}) -> abilityLimit /= OncePerPhase)
   BeginUpkeep -> do
     pushMessages
       [ReadyExhausted, AllDrawCardAndResource, AllCheckHandSize, EndUpkeep]
     pure $ g & phase .~ UpkeepPhase
-  EndUpkeep -> g <$ pushMessages [EndRoundWindow, EndRound]
+  EndUpkeep -> do
+    pushMessages [EndRoundWindow, EndRound]
+    pure $ g & usedAbilities %~ filter
+      (\(_, Ability {..}) -> abilityLimit /= OncePerPhase)
   EndRound -> do
     pushMessage BeginRound
     pure $ g & usedAbilities %~ filter
@@ -1301,7 +1310,10 @@ runGameMessage msg g = case msg of
       , EndMythos
       ]
     pure $ g & phase .~ MythosPhase
-  EndMythos -> g <$ pushMessage BeginInvestigation
+  EndMythos -> do
+    pushMessage BeginInvestigation
+    pure $ g & usedAbilities %~ filter
+      (\(_, Ability {..}) -> abilityLimit /= OncePerPhase)
   BeginSkillTest iid source maction skillType difficulty onSuccess onFailure skillTestModifiers tokenResponses
     -> do
       let

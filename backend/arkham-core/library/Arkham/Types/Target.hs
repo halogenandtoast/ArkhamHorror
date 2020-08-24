@@ -3,6 +3,7 @@ module Arkham.Types.Target
   )
 where
 
+import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
 import Arkham.Types.Card.Id
@@ -22,6 +23,7 @@ data Target
   | TreacheryTarget TreacheryId
   | EncounterDeckTarget
   | AgendaTarget AgendaId
+  | ActTarget ActId
   | CardIdTarget CardId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

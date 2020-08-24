@@ -11,7 +11,9 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.ScenarioId
+import Arkham.Types.Target
 import ClassyPrelude
+import Lens.Micro
 
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
   deriving newtype (Show, IsString, ToJSON, FromJSON)
@@ -34,19 +36,25 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "scenario"
 
+actStack :: Lens' Attrs [(Int, [ActId])]
+actStack = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
+
 baseAttrs :: CardCode -> Text -> [AgendaId] -> [ActId] -> Difficulty -> Attrs
-baseAttrs cardCode name agendaStack actStack difficulty = Attrs
+baseAttrs cardCode name agendaStack actStack' difficulty = Attrs
   { scenarioId = ScenarioId cardCode
   , scenarioName = name
   , scenarioDifficulty = difficulty
   , scenarioAgendaStack = [(1, agendaStack)]
-  , scenarioActStack = [(1, actStack)]
+  , scenarioActStack = [(1, actStack')]
   , scenarioLocationLayout = Nothing
   }
 
 instance (ScenarioRunner env) => RunMessage env Attrs where
   runMessage msg a = case msg of
     Setup -> a <$ pushMessage BeginInvestigation
+    Discard (ActTarget _) -> pure $ a & actStack .~ []
+    -- ^ See: Vengeance Awaits / The Devourer Below - right now the assumption
+    -- | is that the act deck has been replaced.
     InvestigatorDefeated _ -> do
       investigatorIds <- asks (getSet @InScenarioInvestigatorId ())
       if null investigatorIds then a <$ unshiftMessage NoResolution else pure a

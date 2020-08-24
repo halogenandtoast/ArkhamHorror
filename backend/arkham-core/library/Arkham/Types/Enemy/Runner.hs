@@ -11,6 +11,7 @@ type EnemyRunner env
     , HasSet InvestigatorId LocationId env
     , HasCount PlayerCount () env
     , HasCount RemainingSanity InvestigatorId env
+    , HasCount CardCount InvestigatorId env
     , HasQueue env
     , HasSet ClosestLocationId (LocationId, Prey) env
     , HasSet PreyId (Prey, LocationId) env

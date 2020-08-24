@@ -373,6 +373,7 @@ isPrey
      , HasSet RemainingHealth () env
      , HasSet RemainingSanity () env
      , HasSet ClueCount () env
+     , HasSet CardCount () env
      )
   => Prey
   -> env
@@ -397,6 +398,9 @@ isPrey (Bearer bid) _ i =
 isPrey MostClues env i =
   fromMaybe 0 (maximumMay . map unClueCount . HashSet.toList $ getSet () env)
     == unClueCount (getCount () i)
+isPrey FewestCards env i =
+  fromMaybe 100 (minimumMay . map unCardCount . HashSet.toList $ getSet () env)
+    == unCardCount (getCount () i)
 isPrey SetToBearer _ _ = error "The bearer was not correctly set"
 
 handOf :: Investigator -> [Card]

@@ -13,6 +13,7 @@ data Prey
   | HighestSkill SkillType
   | LowestRemainingHealth
   | LowestRemainingSanity
+  | FewestCards
   | Bearer BearerId
   | SetToBearer
   | MostClues

@@ -74,12 +74,10 @@ data Message
   | SetupInvestigators
   | FlavorText (Maybe Text) [Text]
   | InvestigatorMulligan InvestigatorId
-  | MulliganCard InvestigatorId CardId
   | FinishedWithMulligan InvestigatorId
   | SearchCollectionForRandom InvestigatorId Source (PlayerCardType, Maybe Trait)
   | SearchDeckForTraits InvestigatorId Target [Trait]
   | SearchTopOfDeck InvestigatorId Target Int [Trait] LeftoverCardStrategy
-  | RunEvent InvestigatorId CardCode
   | InitDeck InvestigatorId [PlayerCard]
   | LoadDeck InvestigatorId [PlayerCard]
   | BeginRound
@@ -100,7 +98,6 @@ data Message
   | AllDrawCardAndResource
   | AllCheckHandSize
   | CheckHandSize InvestigatorId
-  | AddDoom Target
   | PlaceDoomOnAgenda
   | AdvanceAgendaIfThresholdSatisfied
   | AdvanceAgenda AgendaId
@@ -199,6 +196,7 @@ data Message
   | FailSkillTest
   | InvestigatorPlaceCluesOnLocation InvestigatorId Int
   | InvestigatorPlaceAllCluesOnLocation InvestigatorId
+  -- ^ This message exists in case the number of clues will change
   | FindAndDrawEncounterCard InvestigatorId
                          (EncounterCardType, Maybe Trait)
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
@@ -238,7 +236,6 @@ data Message
   | RevelationSkillTest InvestigatorId Source SkillType Int [Message] [Message]
   | DamagePerPointOfFailure InvestigatorId
   | HorrorPerPointOfFailure InvestigatorId
-  | PlaceCluesOnLocation InvestigatorId Int
   | Discard Target
   | SetEncounterDeck [EncounterCard]
   | TreacheryFailure InvestigatorId TreacheryId -- TODO: better name

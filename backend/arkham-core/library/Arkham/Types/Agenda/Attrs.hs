@@ -9,6 +9,7 @@ import Arkham.Types.Classes
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Query
+import Arkham.Types.Target
 import ClassyPrelude
 import Lens.Micro
 
@@ -59,7 +60,7 @@ instance HasActions env investigator Attrs where
 
 instance (AgendaRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
-    PlaceDoomOnAgenda -> pure $ a & doom +~ 1
+    PlaceDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doom +~ n
     AdvanceAgendaIfThresholdSatisfied -> do
       pc <- unPlayerCount <$> asks (getCount ())
       totalDoom <- unDoomCount <$> asks (getCount ())

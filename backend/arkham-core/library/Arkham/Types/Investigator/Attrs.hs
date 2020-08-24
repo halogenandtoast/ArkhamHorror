@@ -486,10 +486,6 @@ instance HasActions env investigator Attrs where
 
 instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
-    PlaceCluesOnLocation iid n | iid == investigatorId -> do
-      let m = min n investigatorClues
-      unshiftMessage (PlaceClues (LocationTarget investigatorLocation) m)
-      pure $ a & clues -~ m
     ResetGame -> pure $ (baseAttrs
                           investigatorId
                           investigatorName

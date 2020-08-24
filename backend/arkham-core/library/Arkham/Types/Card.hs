@@ -17,6 +17,7 @@ module Arkham.Types.Card
   , lookupEncounterCard
   , allEncounterCards
   , encounterCardMatch
+  , playerCardMatch
   , toPlayerCard
   , toEncounterCard
   )

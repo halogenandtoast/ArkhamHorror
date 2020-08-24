@@ -64,6 +64,7 @@ import Control.Monad.State
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
+import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.Sequence as Seq
 import Data.UUID.V4
 import Lens.Micro
@@ -783,6 +784,9 @@ instance HasSet SanityDamageableAssetId InvestigatorId Game where
       (\k v -> k `elem` assetIds && isSanityDamageable v)
       (g ^. assets)
 
+instance HasSet EnemyId () Game where
+  getSet _ = HashMap.keysSet . view enemies
+
 instance HasSet EnemyId LocationId Game where
   getSet lid = getSet () . getLocation lid
 
@@ -1412,6 +1416,16 @@ runGameMessage msg g = case msg of
       & (encounterDeck .~ shuffled)
       & (discard .~ discard')
       & (focusedCards .~ mempty)
+  SearchCollectionForRandom iid source matcher -> do
+    newCardId <- CardId <$> liftIO nextRandom
+    let
+      matches = filter
+        (playerCardMatch matcher . ($ newCardId))
+        (HashMap.elems allPlayerCards)
+    mcard <- case matches of
+      [] -> pure Nothing
+      (x : xs) -> liftIO $ Just . ($ newCardId) <$> sample (x :| xs)
+    g <$ unshiftMessage (RequestedPlayerCard iid source mcard)
   DiscardEncounterUntilFirst source matcher -> do
     let
       (discards, remainingDeck) =

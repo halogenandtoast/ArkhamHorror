@@ -31,6 +31,8 @@ sourceOfModifier (UseSkillInPlaceOf _ _ s) = s
 sourceOfModifier (ForcedTokenChange _ _ s) = s
 sourceOfModifier (DoubleNegativeModifiersOnTokens s) = s
 sourceOfModifier (ReduceCostOf _ _ s) = s
+sourceOfModifier (EnemyFight _ s) = s
+sourceOfModifier (EnemyEvade _ s) = s
 
 replaceModifierSource :: Source -> Modifier -> Modifier
 replaceModifierSource s (ActionCostOf a b _) = ActionCostOf a b s
@@ -50,6 +52,8 @@ replaceModifierSource s (ForcedTokenChange a b _) = ForcedTokenChange a b s
 replaceModifierSource s (DoubleNegativeModifiersOnTokens _) =
   DoubleNegativeModifiersOnTokens s
 replaceModifierSource s (ReduceCostOf a b _) = ReduceCostOf a b s
+replaceModifierSource s (EnemyFight a _) = EnemyFight a s
+replaceModifierSource s (EnemyEvade a _) = EnemyEvade a s
 
 data Modifier
   = ActionCostOf ActionTarget Int Source
@@ -61,6 +65,8 @@ data Modifier
   | ActionSkillModifier Action SkillType Int Source
   | DamageDealt Int Source
   | DamageTaken Int Source
+  | EnemyFight Int Source
+  | EnemyEvade Int Source
   | ShroudModifier Int Source
   | DiscoveredClues Int Source
   | UseSkillInPlaceOf SkillType SkillType Source

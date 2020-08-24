@@ -127,9 +127,14 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
         <> pastMidnightMessages
       pure s
     ResolveToken Token.Skull _ skillValue
-      | scenarioDifficulty `elem` [Easy, Standard] -> error "TODO"
-    ResolveToken Token.Skull _ skillValue
-      | scenarioDifficulty `elem` [Hard, Expert] -> error "TODO"
+      | scenarioDifficulty `elem` [Easy, Standard] -> do
+        monsterCount <- unEnemyCount <$> asks (getCount [Monster])
+        s <$ runTest skillValue (-monsterCount)
+    ResolveToken Token.Skull iid skillValue
+      | scenarioDifficulty `elem` [Hard, Expert] -> do
+        unshiftMessage
+          (AddOnFailure $ FindAndDrawEncounterCard iid (EnemyType, Monster))
+        s <$ runTest skillValue (-3)
     ResolveToken Token.Cultist iid skillValue
       | scenarioDifficulty `elem` [Easy, Standard] -> error "TODO"
     ResolveToken Token.Cultist iid skillValue

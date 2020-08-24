@@ -469,7 +469,13 @@ instance HasCount AssetCount (InvestigatorId, [Trait]) Game where
    where
     investigator = getInvestigator iid g
     assetMatcher aid =
-      all (`HashSet.member` (getTraits $ getAsset aid g)) traits
+      any (`HashSet.member` (getTraits $ getAsset aid g)) traits
+
+instance HasCount EnemyCount [Trait] Game where
+  getCount traits g@Game {..} = EnemyCount . length $ HashMap.filter
+    enemyMatcher
+    (view enemies g)
+    where enemyMatcher enemy = any (`HashSet.member` getTraits enemy) traits
 
 instance HasCount EnemyCount (LocationId, [Trait]) Game where
   getCount (lid, traits) g@Game {..} = case mlocation of
@@ -480,7 +486,7 @@ instance HasCount EnemyCount (LocationId, [Trait]) Game where
    where
     mlocation = g ^? locations . ix lid
     enemyMatcher eid =
-      all (`HashSet.member` (getTraits $ g ^?! enemies . ix eid)) traits
+      any (`HashSet.member` (getTraits $ g ^?! enemies . ix eid)) traits
 
 instance HasCount EnemyCount (InvestigatorLocation, [Trait]) Game where
   getCount (InvestigatorLocation iid, traits) g@Game {..} = getCount

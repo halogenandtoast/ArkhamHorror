@@ -9,6 +9,7 @@ import Arkham.Types.Trait
 
 type ScenarioRunner env
   = ( HasCount EnemyCount (InvestigatorLocation, [Trait]) env
+    , HasCount EnemyCount [Trait] env
     , HasQueue env
     , HasSet InScenarioInvestigatorId () env
     , HasId LeadInvestigatorId () env

@@ -136,9 +136,25 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
           (AddOnFailure $ FindAndDrawEncounterCard iid (EnemyType, Monster))
         s <$ runTest skillValue (-3)
     ResolveToken Token.Cultist iid skillValue
-      | scenarioDifficulty `elem` [Easy, Standard] -> error "TODO"
+      | scenarioDifficulty `elem` [Easy, Standard] -> do
+        closestEnemyIds <- map unClosestEnemyId . HashSet.toList <$> asks
+          (getSet iid)
+        case closestEnemyIds of
+          [] -> pure ()
+          [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
+          xs -> unshiftMessage
+            (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
+        s <$ runTest skillValue (-2)
     ResolveToken Token.Cultist iid skillValue
-      | scenarioDifficulty `elem` [Hard, Expert] -> error "TODO"
+      | scenarioDifficulty `elem` [Hard, Expert] -> do
+        closestEnemyIds <- map unClosestEnemyId . HashSet.toList <$> asks
+          (getSet iid)
+        case closestEnemyIds of
+          [] -> pure ()
+          [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 2)
+          xs -> unshiftMessage
+            (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget x) 2 | x <- xs ])
+        s <$ runTest skillValue (-4)
     ResolveToken Token.Tablet iid skillValue
       | scenarioDifficulty `elem` [Easy, Standard] -> error "TODO"
     ResolveToken Token.Tablet iid skillValue

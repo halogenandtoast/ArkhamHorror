@@ -676,6 +676,29 @@ instance HasSet ClosestLocationId (LocationId, Prey) Game where
     HashSet.fromList . map ClosestLocationId $ getShortestPath g start matcher
     where matcher lid = not . null $ getSet @PreyId (prey, lid) g
 
+instance HasSet ClosestEnemyId LocationId Game where
+  getSet start g =
+    let locations' = map ClosestLocationId $ getShortestPath g start matcher
+    in
+      case locations' of
+        [] -> mempty
+        lids ->
+          let
+            theSet = HashSet.unions $ map
+              (\lid -> HashSet.map ClosestEnemyId
+                $ getSet (unClosestLocationId lid) g
+              )
+              lids
+          in
+            if null theSet
+              then HashSet.unions
+                $ map (\lid -> getSet (unClosestLocationId lid) g) lids
+              else theSet
+    where matcher lid = not . null $ getSet @EnemyId lid g
+
+instance HasSet ClosestEnemyId InvestigatorId Game where
+  getSet iid g = getSet (locationFor iid g) g
+
 instance HasSet ClosestEnemyId (LocationId, [Trait]) Game where
   getSet (start, traits) g =
     let locations' = map ClosestLocationId $ getShortestPath g start matcher

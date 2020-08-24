@@ -11,6 +11,7 @@ import Data.Aeson
 data Prey
   = AnyPrey
   | HighestSkill SkillType
+  | LowestSkill SkillType
   | LowestRemainingHealth
   | LowestRemainingSanity
   | FewestCards

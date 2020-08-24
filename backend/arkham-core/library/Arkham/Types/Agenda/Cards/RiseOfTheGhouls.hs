@@ -34,7 +34,9 @@ instance (AgendaRunner env) => RunMessage env RiseOfTheGhouls where
       a <$ unshiftMessage
         (Run
           [ ShuffleEncounterDiscardBackIn
-          , DiscardEncounterUntilFirst (AgendaSource aid) (EnemyType, Ghoul)
+          , DiscardEncounterUntilFirst
+            (AgendaSource aid)
+            (EnemyType, Just Ghoul)
           ]
         )
     RequestedEncounterCard (AgendaSource aid) mcard | aid == agendaId ->

@@ -66,9 +66,9 @@ instance HasCardCode EncounterCard where
 instance HasCardId EncounterCard where
   getCardId = ecId
 
-encounterCardMatch :: (EncounterCardType, Trait) -> EncounterCard -> Bool
-encounterCardMatch (cardType, trait) MkEncounterCard {..} =
-  ecCardType == cardType && trait `elem` ecTraits
+encounterCardMatch :: (EncounterCardType, Maybe Trait) -> EncounterCard -> Bool
+encounterCardMatch (cardType, mtrait) MkEncounterCard {..} =
+  ecCardType == cardType && maybe True (`elem` ecTraits) mtrait
 
 allEncounterCards :: HashMap CardCode (CardId -> EncounterCard)
 allEncounterCards = HashMap.fromList

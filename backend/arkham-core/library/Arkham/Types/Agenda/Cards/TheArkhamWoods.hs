@@ -35,7 +35,7 @@ instance (AgendaRunner env) => RunMessage env TheArkhamWoods where
       a <$ unshiftMessage
         (Run
           [ ShuffleEncounterDiscardBackIn
-          , DiscardEncounterUntilFirst (AgendaSource aid) (EnemyType, Monster)
+          , DiscardEncounterUntilFirst (AgendaSource aid) (EnemyType, Just Monster)
           ]
         )
     RequestedEncounterCard (AgendaSource aid) mcard | aid == agendaId ->

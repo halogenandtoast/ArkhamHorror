@@ -12,6 +12,7 @@ type AgendaRunner env
   = ( HasId LeadInvestigatorId () env
     , HasCount PlayerCount () env
     , HasQueue env
+    , HasSet EnemyId () env
     , HasSet UnengagedEnemyId () env
     , HasSet EnemyId Trait env
     , HasSet EnemyId LocationId env

@@ -76,6 +76,7 @@ data Message
   | InvestigatorMulligan InvestigatorId
   | MulliganCard InvestigatorId CardId
   | FinishedWithMulligan InvestigatorId
+  | SearchCollectionForRandom InvestigatorId Source (PlayerCardType, Maybe Trait)
   | SearchDeckForTraits InvestigatorId Target [Trait]
   | SearchTopOfDeck InvestigatorId Target Int [Trait] LeftoverCardStrategy
   | RunEvent InvestigatorId CardCode
@@ -259,6 +260,7 @@ data Message
   | RefillSlots InvestigatorId SlotType [AssetId]
   | RemoveAllModifiersOnTargetFrom Target Source
   | RequestedEncounterCard Source (Maybe EncounterCard)
+  | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard)
   | ShuffleEncounterDiscardBackIn
   | ShuffleDiscardBackIn InvestigatorId
   | DiscardEncounterUntilFirst Source (EncounterCardType, Maybe Trait)

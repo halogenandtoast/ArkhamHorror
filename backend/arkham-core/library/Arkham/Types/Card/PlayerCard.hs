@@ -124,6 +124,10 @@ enemy cardId cardCode name cost =
     { pcWeakness = True
     }
 
+playerCardMatch :: (PlayerCardType, Maybe Trait) -> PlayerCard -> Bool
+playerCardMatch (cardType, mtrait) MkPlayerCard {..} =
+  pcCardType == cardType && maybe True (`elem` pcTraits) mtrait
+
 allPlayerCards :: HashMap CardCode (CardId -> PlayerCard)
 allPlayerCards = HashMap.fromList
   [ ("01006", rolands38Special)

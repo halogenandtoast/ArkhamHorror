@@ -15,17 +15,21 @@ newtype ArkhamWoodsCliffside = ArkhamWoodsCliffside Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 arkhamWoodsCliffside :: ArkhamWoodsCliffside
-arkhamWoodsCliffside = ArkhamWoodsCliffside $ (baseAttrs
-                                                "01153"
-                                                "Arkham Woods: Cliffside"
-                                                2
-                                                (PerPlayer 1)
-                                                Hourglass
-                                                [Squiggle]
-                                              )
-  { locationTraits = HashSet.fromList [Woods]
-  , locationRevealedConnectedSymbols = HashSet.fromList [Squiggle, Moon, Triangle]
-  }
+arkhamWoodsCliffside =
+  ArkhamWoodsCliffside
+    $ (baseAttrs
+        "01153"
+        "Arkham Woods: Cliffside"
+        2
+        (PerPlayer 1)
+        Square
+        [Squiggle]
+      )
+        { locationTraits = HashSet.fromList [Woods]
+        , locationRevealedConnectedSymbols = HashSet.fromList
+          [Squiggle, Moon, Triangle]
+        , locationRevealedSymbol = Hourglass
+        }
 
 instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsCliffside where
   getActions i window (ArkhamWoodsCliffside attrs) = getActions i window attrs

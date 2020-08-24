@@ -20,11 +20,12 @@ arkhamWoodsQuietGlade = ArkhamWoodsQuietGlade $ (baseAttrs
                                                   "Arkham Woods: Quiet Glade"
                                                   1
                                                   (Static 0)
-                                                  Moon
+                                                  Square
                                                   [Squiggle]
                                                 )
   { locationTraits = HashSet.fromList [Woods]
   , locationRevealedConnectedSymbols = HashSet.fromList [Squiggle, Equals, Hourglass]
+  , locationRevealedSymbol = Moon
   }
 
 instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsQuietGlade where

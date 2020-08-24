@@ -39,6 +39,7 @@ data Attrs = Attrs
   , locationEnemies :: HashSet EnemyId
   , locationVictory :: Maybe Int
   , locationSymbol :: LocationSymbol
+  , locationRevealedSymbol :: LocationSymbol
   , locationConnectedSymbols :: HashSet LocationSymbol
   , locationRevealedConnectedSymbols :: HashSet LocationSymbol
   , locationConnectedLocations :: HashSet LocationId
@@ -98,6 +99,7 @@ baseAttrs lid name shroud' revealClues symbol' connectedSymbols' = Attrs
   , locationEnemies = mempty
   , locationVictory = Nothing
   , locationSymbol = symbol'
+  , locationRevealedSymbol = symbol'
   , locationConnectedSymbols = HashSet.fromList connectedSymbols'
   , locationRevealedConnectedSymbols = HashSet.fromList connectedSymbols'
   , locationConnectedLocations = mempty
@@ -187,27 +189,28 @@ instance (LocationRunner env) => RunMessage env Attrs where
       pure $ a & assets %~ HashSet.insert aid
     AddConnection lid symbol' -> do
       -- | Since connections can be one directional we need to check both cases
-      let symbols = if locationRevealed
-                       then locationRevealedConnectedSymbols
-                       else locationConnectedSymbols
+      let
+        symbols = if locationRevealed
+          then locationRevealedConnectedSymbols
+          else locationConnectedSymbols
       if symbol' `elem` symbols
-         then do
+        then do
           unshiftMessages
             [ AddConnectionBack locationId locationSymbol
             , AddedConnection locationId lid
             ]
           pure $ a & connectedLocations %~ HashSet.insert lid
-         else a <$ unshiftMessages [ AddConnectionBack locationId locationSymbol ]
-    AddConnectionBack lid symbol' ->
-      do
-        let symbols = if locationRevealed
-                       then locationRevealedConnectedSymbols
-                       else locationConnectedSymbols
-        if symbol' `elem` symbols
-          then do
-            unshiftMessage (AddedConnection locationId lid)
-            pure $ a & connectedLocations %~ HashSet.insert lid
-          else pure a
+        else a <$ unshiftMessages [AddConnectionBack locationId locationSymbol]
+    AddConnectionBack lid symbol' -> do
+      let
+        symbols = if locationRevealed
+          then locationRevealedConnectedSymbols
+          else locationConnectedSymbols
+      if symbol' `elem` symbols
+        then do
+          unshiftMessage (AddedConnection locationId lid)
+          pure $ a & connectedLocations %~ HashSet.insert lid
+        else pure a
     DiscoverCluesAtLocation iid lid n | lid == locationId -> do
       let discoveredClues = min n locationClues
       a <$ unshiftMessages
@@ -240,7 +243,8 @@ instance (LocationRunner env) => RunMessage env Attrs where
     RevealLocation lid | lid == locationId -> do
       locationClueCount <-
         fromGameValue locationRevealClues . unPlayerCount <$> asks (getCount ())
-      unshiftMessage (AddConnection lid locationSymbol)
+      unshiftMessage (AddConnection lid locationRevealedSymbol)
       pure $ a & clues .~ locationClueCount & revealed .~ True
-    RevealLocation lid | lid /= locationId -> pure $ a & connectedLocations %~ HashSet.delete lid
+    RevealLocation lid | lid /= locationId ->
+      pure $ a & connectedLocations %~ HashSet.delete lid
     _ -> pure a

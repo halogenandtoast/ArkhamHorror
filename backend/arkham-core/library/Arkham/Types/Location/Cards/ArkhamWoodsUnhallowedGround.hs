@@ -21,11 +21,13 @@ arkhamWoodsUnhallowedGround =
                                   "Arkham Woods: Unhallowed Ground"
                                   4
                                   (PerPlayer 1)
-                                  Triangle
+                                  Square
                                   [Squiggle]
                                 )
     { locationTraits = HashSet.fromList [Woods]
-    , locationRevealedConnectedSymbols = HashSet.fromList [Squiggle, Hourglass, Diamond]
+    , locationRevealedConnectedSymbols = HashSet.fromList
+      [Squiggle, Hourglass, Diamond]
+    , locationRevealedSymbol = Triangle
     }
 
 instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsUnhallowedGround where

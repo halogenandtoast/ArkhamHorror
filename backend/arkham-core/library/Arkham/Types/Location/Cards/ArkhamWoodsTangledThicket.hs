@@ -21,11 +21,12 @@ arkhamWoodsTangledThicket =
                                 "Arkham Woods: Tangled Thicket"
                                 2
                                 (PerPlayer 1)
-                                Equals
+                                Square
                                 [Squiggle]
                               )
     { locationTraits = HashSet.fromList [Woods]
     , locationRevealedConnectedSymbols = HashSet.fromList [Squiggle, T, Moon]
+    , locationRevealedSymbol = Equals
     }
 
 instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsTangledThicket where

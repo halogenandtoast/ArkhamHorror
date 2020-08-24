@@ -7,6 +7,8 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
@@ -35,5 +37,10 @@ instance (IsInvestigator investigator) => HasActions env investigator ArkhamWood
   getActions i window (ArkhamWoodsOldHouse attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsOldHouse where
-  runMessage msg (ArkhamWoodsOldHouse attrs) =
-    ArkhamWoodsOldHouse <$> runMessage msg attrs
+  runMessage msg (ArkhamWoodsOldHouse attrs@Attrs {..}) = case msg of
+    Investigate iid lid _ tokenResponses False | lid == locationId ->
+      ArkhamWoodsOldHouse
+        <$> runMessage
+              (Investigate iid lid SkillWillpower tokenResponses False)
+              attrs
+    _ -> ArkhamWoodsOldHouse <$> runMessage msg attrs

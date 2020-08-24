@@ -2,12 +2,16 @@
 module Arkham.Types.Location.Cards.MainPath where
 
 import Arkham.Json
+import Arkham.Types.Ability
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
+import Arkham.Types.FastWindow
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
+import Arkham.Types.Source
 import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
@@ -24,10 +28,26 @@ mainPath =
     }
 
 instance (IsInvestigator investigator) => HasActions env investigator MainPath where
+  getActions i NonFast (MainPath attrs@Attrs {..}) | locationRevealed = do
+    baseActions <- getActions i NonFast attrs
+    pure
+      $ baseActions
+      <> [ ActivateCardAbilityAction
+             (getId () i)
+             (mkAbility
+               (LocationSource "01149")
+               1
+               (ActionAbility 1 (Just Action.Resign))
+             )
+         | getId () i `elem` locationInvestigators
+         ]
   getActions i window (MainPath attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env MainPath where
-  runMessage msg (MainPath attrs@Attrs {..}) = case msg of
+  runMessage msg l@(MainPath attrs@Attrs {..}) = case msg of
+    UseCardAbility iid _ (LocationSource lid) 1
+      | lid == locationId && locationRevealed -> l
+      <$ unshiftMessage (Resign iid)
     AddConnection lid _ | locationId /= lid -> do
       traits <- HashSet.toList <$> asks (getSet lid)
       if Woods `elem` traits

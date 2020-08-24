@@ -81,7 +81,6 @@ class HasList c b a where
 class HasId c b a where
   getId :: HasCallStack => b -> a -> c
 
-
 class HasCount c b a where
   getCount :: b -> a -> c
 

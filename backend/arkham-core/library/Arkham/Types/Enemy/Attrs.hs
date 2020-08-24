@@ -379,6 +379,8 @@ instance (EnemyRunner env) => RunMessage env Attrs where
       pure $ a & engagedInvestigators %~ HashSet.delete iid
     EnemySetBearer eid bid | eid == enemyId -> pure $ a & prey .~ Bearer bid
     AdvanceAgenda{} -> pure $ a & doom .~ 0
+    PlaceDoom (CardIdTarget cid) amount | unCardId cid == unEnemyId enemyId ->
+      pure $ a & doom +~ amount
     PlaceDoom (EnemyTarget eid) amount | eid == enemyId ->
       pure $ a & doom +~ amount
     _ -> pure a

@@ -224,6 +224,7 @@ data Message
   | WhenEnterLocation InvestigatorId LocationId
   | AfterEnterLocation InvestigatorId LocationId
   | EnemyMove EnemyId LocationId LocationId
+  | SpawnEnemyAt Card LocationId
   | CreateEnemyAt CardCode LocationId
   | CreateEnemyEngagedWithPrey CardCode
   | EnemySpawnEngagedWithPrey EnemyId

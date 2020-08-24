@@ -7,6 +7,9 @@ import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
+import Arkham.Types.Message
+import Arkham.Types.SkillType
+import Arkham.Types.Source
 import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
@@ -35,5 +38,20 @@ instance (IsInvestigator investigator) => HasActions env investigator ArkhamWood
     getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsTwistingPaths where
-  runMessage msg (ArkhamWoodsTwistingPaths attrs) =
-    ArkhamWoodsTwistingPaths <$> runMessage msg attrs
+  runMessage msg l@(ArkhamWoodsTwistingPaths attrs@Attrs {..}) = case msg of
+    Will (MoveTo iid lid)
+      | iid `elem` locationInvestigators && lid /= locationId -> do
+        void popMessage
+        l <$ unshiftMessage
+          (BeginSkillTest
+            iid
+            (LocationSource "01151")
+            Nothing
+            SkillIntellect
+            3
+            [MoveTo iid lid]
+            []
+            mempty
+            mempty
+          )
+    _ -> ArkhamWoodsTwistingPaths <$> runMessage msg attrs

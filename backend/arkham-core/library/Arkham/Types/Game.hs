@@ -441,6 +441,9 @@ instance HasCount DoomCount () Game where
 instance HasCount ClueCount LocationId Game where
   getCount lid = getCount () . getLocation lid
 
+instance HasCount CardCount InvestigatorId Game where
+  getCount iid = getCount () . getInvestigator iid
+
 instance HasCount ClueCount InvestigatorId Game where
   getCount iid = getCount () . getInvestigator iid
 

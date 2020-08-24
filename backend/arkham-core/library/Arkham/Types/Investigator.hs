@@ -343,6 +343,9 @@ instance HasCount EnemyCount () Investigator where
 instance HasCount ResourceCount () Investigator where
   getCount _ = ResourceCount . investigatorResources . investigatorAttrs
 
+instance HasCount CardCount () Investigator where
+  getCount _ = CardCount . length . investigatorHand . investigatorAttrs
+
 instance HasCount ClueCount () Investigator where
   getCount _ = ClueCount . investigatorClues . investigatorAttrs
 

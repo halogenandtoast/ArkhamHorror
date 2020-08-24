@@ -20,6 +20,7 @@ module Arkham.Types.Card
   , playerCardMatch
   , toPlayerCard
   , toEncounterCard
+  , cardIsWeakness
   )
 where
 
@@ -64,6 +65,10 @@ toPlayerCard _ = Nothing
 toEncounterCard :: Card -> Maybe EncounterCard
 toEncounterCard (EncounterCard ec) = Just ec
 toEncounterCard _ = Nothing
+
+cardIsWeakness :: Card -> Bool
+cardIsWeakness (EncounterCard _) = False
+cardIsWeakness (PlayerCard pc) = pcWeakness pc
 
 allCards :: HashMap CardCode (CardId -> Card)
 allCards =

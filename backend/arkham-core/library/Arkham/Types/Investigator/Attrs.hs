@@ -588,11 +588,16 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         )
       pure a
     AddToDiscard iid pc | iid == investigatorId -> pure $ a & discard %~ (pc :)
-    ChooseAndDiscardCard iid | iid == investigatorId -> a <$ unshiftMessage
-      (Ask iid
-      $ ChooseOne
-      $ [ DiscardCard iid (getCardId card) | card <- investigatorHand ]
-      )
+    ChooseAndDiscardCard iid | iid == investigatorId -> do
+      let
+        discardable = if all cardIsWeakness investigatorHand
+          then investigatorHand
+          else filter (not . cardIsWeakness) investigatorHand
+      a <$ unshiftMessage
+        (Ask iid
+        $ ChooseOne
+        $ [ DiscardCard iid (getCardId card) | card <- discardable ]
+        )
     DiscardCard iid cardId | iid == investigatorId -> do
       let
         card = fromJustNote "must be in hand"

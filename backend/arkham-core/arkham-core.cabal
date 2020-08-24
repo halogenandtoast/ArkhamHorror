@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 185dd9e6767684cb6bcf7de193cde9de56c25fd33218b1ad59fb4e3be10abd4c
+-- hash: 8958d5d4592bb5dfc651c18fbf980feab9c244c4b3b954a0e0c14909e464ca3e
 
 name:           arkham-core
 version:        0.0.0
@@ -227,6 +227,7 @@ library
       Arkham.Types.Trait
       Arkham.Types.Treachery
       Arkham.Types.Treachery.Attrs
+      Arkham.Types.Treachery.Cards.Amnesia
       Arkham.Types.Treachery.Cards.AncientEvils
       Arkham.Types.Treachery.Cards.CoverUp
       Arkham.Types.Treachery.Cards.CryptChill

@@ -40,5 +40,5 @@ instance (TreacheryRunner env) => RunMessage env FalseLead where
           )
       FalseLead <$> runMessage msg (attrs & resolved .~ True)
     SkillTestDidFailBy iid (TreacheryTarget tid) n | tid == treacheryId ->
-      t <$ unshiftMessage (PlaceCluesOnLocation iid n)
+      t <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid n)
     _ -> FalseLead <$> runMessage msg attrs

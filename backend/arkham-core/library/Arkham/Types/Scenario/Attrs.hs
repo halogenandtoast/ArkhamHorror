@@ -14,6 +14,7 @@ import Arkham.Types.ScenarioId
 import Arkham.Types.Target
 import ClassyPrelude
 import Lens.Micro
+import Safe (fromJustNote)
 
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
   deriving newtype (Show, IsString, ToJSON, FromJSON)
@@ -50,8 +51,13 @@ baseAttrs cardCode name agendaStack actStack' difficulty = Attrs
   }
 
 instance (ScenarioRunner env) => RunMessage env Attrs where
-  runMessage msg a = case msg of
+  runMessage msg a@Attrs {..} = case msg of
     Setup -> a <$ pushMessage BeginInvestigation
+    PlaceDoomOnAgenda -> do
+      let
+        agendaId =
+          fromJustNote "No agenda" $ scenarioAgendaStack ^? ix 0 . _2 . ix 0
+      a <$ unshiftMessage (PlaceDoom (AgendaTarget agendaId) 1)
     Discard (ActTarget _) -> pure $ a & actStack .~ []
     -- ^ See: Vengeance Awaits / The Devourer Below - right now the assumption
     -- | is that the act deck has been replaced.

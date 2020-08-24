@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b45cdc8ec8d9a36fc6c10f48dfce7f43201eef591c06c45efbd3e48623f95784
+-- hash: dca237f4166b16625509690c75136462355193f7ae43e537148e4cb1eb4d21cf
 
 name:           arkham-core
 version:        0.0.0
@@ -231,6 +231,7 @@ library
       Arkham.Types.Treachery.Cards.CoverUp
       Arkham.Types.Treachery.Cards.CryptChill
       Arkham.Types.Treachery.Cards.DissonantVoices
+      Arkham.Types.Treachery.Cards.DreamsOfRlyeh
       Arkham.Types.Treachery.Cards.FalseLead
       Arkham.Types.Treachery.Cards.FrozenInFear
       Arkham.Types.Treachery.Cards.GraspingHands
@@ -238,8 +239,10 @@ library
       Arkham.Types.Treachery.Cards.LockedDoor
       Arkham.Types.Treachery.Cards.MysteriousChanting
       Arkham.Types.Treachery.Cards.ObscuringFog
+      Arkham.Types.Treachery.Cards.OfferOfPower
       Arkham.Types.Treachery.Cards.OnWingsOfDarkness
       Arkham.Types.Treachery.Cards.RottingRemains
+      Arkham.Types.Treachery.Cards.TheYellowSign
       Arkham.Types.Treachery.Cards.UmordhothsWrath
       Arkham.Types.Treachery.Runner
       Arkham.Types.TreacheryId

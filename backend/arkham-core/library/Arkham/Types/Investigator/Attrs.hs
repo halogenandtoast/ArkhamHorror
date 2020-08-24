@@ -161,11 +161,11 @@ deck :: Lens' Attrs (Deck PlayerCard)
 deck = lens investigatorDeck $ \m x -> m { investigatorDeck = x }
 
 facingDefeat :: Attrs -> Bool
-facingDefeat Attrs {..} =
+facingDefeat a@Attrs {..} =
   investigatorHealthDamage
-    >= investigatorHealth
+    >= modifiedHealth a
     || investigatorSanityDamage
-    >= investigatorSanity
+    >= modifiedSanity a
 
 skillValueFor :: SkillType -> Maybe Action -> [Modifier] -> Attrs -> Int
 skillValueFor skill maction tempModifiers attrs = foldr
@@ -205,6 +205,24 @@ canSpendClues Attrs {..} = not (any match investigatorModifiers)
  where
   match CannotSpendClues{} = True
   match _ = False
+
+modifiedHealth :: Attrs -> Int
+modifiedHealth Attrs {..} = foldr
+  applyModifier
+  investigatorHealth
+  investigatorModifiers
+ where
+  applyModifier (HealthModifier m _) n = max 0 (n + m)
+  applyModifier _ n = n
+
+modifiedSanity :: Attrs -> Int
+modifiedSanity Attrs {..} = foldr
+  applyModifier
+  investigatorSanity
+  investigatorModifiers
+ where
+  applyModifier (SanityModifier m _) n = max 0 (n + m)
+  applyModifier _ n = n
 
 removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = HashMap.map (map (removeIfMatches aid))

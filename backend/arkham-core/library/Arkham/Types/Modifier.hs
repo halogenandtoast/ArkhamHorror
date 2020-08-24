@@ -22,6 +22,8 @@ sourceOfModifier (CannotInvestigate s) = s
 sourceOfModifier (CannotDiscoverClues s) = s
 sourceOfModifier (CannotSpendClues s) = s
 sourceOfModifier (SkillModifier _ _ s) = s
+sourceOfModifier (SanityModifier _ s) = s
+sourceOfModifier (HealthModifier _ s) = s
 sourceOfModifier (ActionSkillModifier _ _ _ s) = s
 sourceOfModifier (DamageTaken _ s) = s
 sourceOfModifier (DamageDealt _ s) = s
@@ -41,6 +43,8 @@ replaceModifierSource s (CannotInvestigate _) = CannotInvestigate s
 replaceModifierSource s (CannotDiscoverClues _) = CannotDiscoverClues s
 replaceModifierSource s (CannotSpendClues _) = CannotSpendClues s
 replaceModifierSource s (SkillModifier a b _) = SkillModifier a b s
+replaceModifierSource s (SanityModifier a _) = SanityModifier a s
+replaceModifierSource s (HealthModifier a _) = HealthModifier a s
 replaceModifierSource s (ActionSkillModifier a b c _) =
   ActionSkillModifier a b c s
 replaceModifierSource s (DamageTaken a _) = DamageTaken a s
@@ -62,6 +66,8 @@ data Modifier
   | CannotDiscoverClues Source
   | CannotSpendClues Source
   | SkillModifier SkillType Int Source
+  | SanityModifier Int Source
+  | HealthModifier Int Source
   | ActionSkillModifier Action SkillType Int Source
   | DamageDealt Int Source
   | DamageTaken Int Source

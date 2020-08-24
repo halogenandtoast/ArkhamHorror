@@ -706,6 +706,9 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       ]
     MoveAction iid lid False | iid == investigatorId ->
       a <$ unshiftMessages [Will (MoveTo iid lid), MoveTo iid lid]
+    InvestigatorDirectDamage iid source health sanity | iid == investigatorId ->
+      a <$ unshiftMessages
+        [InvestigatorDamage iid source health sanity, CheckDefeated]
     InvestigatorAssignDamage iid source health sanity | iid == investigatorId ->
       a <$ unshiftMessages
         [ InvestigatorDoAssignDamage iid source health sanity [] []

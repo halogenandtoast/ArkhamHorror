@@ -155,9 +155,10 @@ data Message
   | PlayedCard InvestigatorId CardId Bool
   | InvestigatorAssignDamage InvestigatorId Source Int Int
   -- ^ uses the internal method and then checks defeat
-  | InvestigatorDoAssignDamage InvestigatorId Source Int Int [Target]
-  -- ^ meant to be used internally by investigators
+  | InvestigatorDoAssignDamage InvestigatorId Source Int Int [Target] [Target]
+  -- ^ meant to be used internally by investigators          ^ damage ^ horror
   | DidReceiveDamage Target Source
+  | DidReceiveHorror Target Source
   | GainXP InvestigatorId Int
   | SufferTrauma InvestigatorId Int Int
   | AssetDamage AssetId Source Int Int

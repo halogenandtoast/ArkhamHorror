@@ -708,14 +708,21 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       a <$ unshiftMessages [Will (MoveTo iid lid), MoveTo iid lid]
     InvestigatorAssignDamage iid source health sanity | iid == investigatorId ->
       a <$ unshiftMessages
-        [InvestigatorDoAssignDamage iid source health sanity [], CheckDefeated]
-    InvestigatorDoAssignDamage iid source 0 0 targets | iid == investigatorId ->
-      a <$ unshiftMessages
-        [ DidReceiveDamage target source
-        | target <- HashSet.toList (HashSet.fromList targets)
+        [ InvestigatorDoAssignDamage iid source health sanity [] []
+        , CheckDefeated
         ]
-    InvestigatorDoAssignDamage iid source health sanity targets
-      | iid == investigatorId -> do
+    InvestigatorDoAssignDamage iid source 0 0 damageTargets horrorTargets
+      | iid == investigatorId -> a <$ unshiftMessages
+        ([ DidReceiveDamage target source
+         | target <- HashSet.toList (HashSet.fromList damageTargets)
+         ]
+        <> [ DidReceiveHorror target source
+           | target <- HashSet.toList (HashSet.fromList horrorTargets)
+           ]
+        )
+    InvestigatorDoAssignDamage iid source health sanity damageTargets horrorTargets
+      | iid == investigatorId
+      -> do
         healthDamageMessages <- if health > 0
           then do
             let
@@ -731,11 +738,14 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
               $ Run
                   [ InvestigatorDamage investigatorId source 1 0
                   , assignRestOfHealthDamage
-                    (InvestigatorTarget investigatorId : targets)
+                    (InvestigatorTarget investigatorId : damageTargets)
+                    horrorTargets
                   ]
               : [ Run
                     [ AssetDamage aid source 1 0
-                    , assignRestOfHealthDamage (AssetTarget aid : targets)
+                    , assignRestOfHealthDamage
+                      (AssetTarget aid : damageTargets)
+                      horrorTargets
                     ]
                 | aid <- healthDamageableAssets
                 ]
@@ -755,11 +765,14 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
               $ Run
                   [ InvestigatorDamage investigatorId source 0 1
                   , assignRestOfSanityDamage
-                    (InvestigatorTarget investigatorId : targets)
+                    damageTargets
+                    (InvestigatorTarget investigatorId : horrorTargets)
                   ]
               : [ Run
                     [ AssetDamage aid source 0 1
-                    , assignRestOfSanityDamage (AssetTarget aid : targets)
+                    , assignRestOfSanityDamage
+                      damageTargets
+                      (AssetTarget aid : horrorTargets)
                     ]
                 | aid <- sanityDamageableAssets
                 ]

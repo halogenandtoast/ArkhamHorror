@@ -36,7 +36,8 @@ theDevourerBelow difficulty =
       [ "woods1     .     woods2"
       , "woods1 mainPath woods2"
       , "woods3 mainPath woods4"
-      , "woods3     .     woods4"
+      , "woods3 ritualSite woods4"
+      , "   .   ritualSite   .  "
       ]
     }
 

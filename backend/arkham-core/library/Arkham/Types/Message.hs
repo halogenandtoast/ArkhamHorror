@@ -196,7 +196,7 @@ data Message
   | InvestigatorPlaceCluesOnLocation InvestigatorId Int
   | InvestigatorPlaceAllCluesOnLocation InvestigatorId
   | FindAndDrawEncounterCard InvestigatorId
-                         (EncounterCardType, Trait)
+                         (EncounterCardType, Maybe Trait)
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
   | AddToEncounterDeck EncounterCard
   | DrawAnotherToken InvestigatorId Int Token Int
@@ -261,7 +261,7 @@ data Message
   | RequestedEncounterCard Source (Maybe EncounterCard)
   | ShuffleEncounterDiscardBackIn
   | ShuffleDiscardBackIn InvestigatorId
-  | DiscardEncounterUntilFirst Source (EncounterCardType, Trait)
+  | DiscardEncounterUntilFirst Source (EncounterCardType, Maybe Trait)
   | SpendClues Int [InvestigatorId]
   | InvestigatorSpendClues InvestigatorId Int
   | CreateStoryAssetAt CardCode LocationId

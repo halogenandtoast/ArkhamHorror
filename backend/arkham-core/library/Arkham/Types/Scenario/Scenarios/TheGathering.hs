@@ -81,7 +81,8 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
           s <$ runTest skillValue (-ghoulCount)
         else do
           unshiftMessage
-            (AddOnFailure $ FindAndDrawEncounterCard iid (EnemyType, Ghoul))
+            (AddOnFailure $ FindAndDrawEncounterCard iid (EnemyType, Just Ghoul)
+            )
           s <$ runTest skillValue (-2)
     ResolveToken Token.Cultist iid skillValue ->
       if scenarioDifficulty `elem` [Easy, Standard]

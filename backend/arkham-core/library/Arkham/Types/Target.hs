@@ -5,6 +5,7 @@ where
 
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
+import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
@@ -21,5 +22,6 @@ data Target
   | TreacheryTarget TreacheryId
   | EncounterDeckTarget
   | AgendaTarget AgendaId
+  | CardIdTarget CardId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

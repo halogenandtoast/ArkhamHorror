@@ -1362,6 +1362,12 @@ runGameMessage msg g = case msg of
     (assetId', asset') <- createAsset cardCode
     unshiftMessage (AddAssetAt assetId' lid)
     pure $ g & assets . at assetId' ?~ asset'
+  SpawnEnemyAt card lid -> do
+    let
+      eid = EnemyId $ unCardId (getCardId card)
+      enemy' = lookupEnemy (getCardCode card) eid
+    unshiftMessages [Will (EnemySpawn lid eid), EnemySpawn lid eid]
+    pure $ g & enemies . at eid ?~ enemy'
   CreateEnemyAt cardCode lid -> do
     (enemyId', enemy') <- createEnemy cardCode
     unshiftMessages [Will (EnemySpawn lid enemyId'), EnemySpawn lid enemyId']

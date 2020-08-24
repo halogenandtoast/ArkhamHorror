@@ -153,6 +153,7 @@ data Message
   | AddToVictory Target
   | PlayCard InvestigatorId CardId Bool
   | PlayedCard InvestigatorId CardId Bool
+  | InvestigatorDirectDamage InvestigatorId Source Int Int
   | InvestigatorAssignDamage InvestigatorId Source Int Int
   -- ^ uses the internal method and then checks defeat
   | InvestigatorDoAssignDamage InvestigatorId Source Int Int [Target] [Target]

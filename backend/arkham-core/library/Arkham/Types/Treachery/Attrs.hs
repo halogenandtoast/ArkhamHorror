@@ -99,7 +99,6 @@ instance (TreacheryRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     InvestigatorEliminated iid | treacheryAttachedInvestigator == Just iid ->
       a <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
-    Revelation{} -> pure $ a & resolved .~ True
     AfterRevelation{} -> a <$ unless
       treacheryResolved
       (unshiftMessage (Discard (TreacheryTarget treacheryId)))

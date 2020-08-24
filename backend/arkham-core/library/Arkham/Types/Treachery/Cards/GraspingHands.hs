@@ -11,6 +11,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
 import ClassyPrelude
+import Lens.Micro
 
 newtype GraspingHands = GraspingHands Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -34,5 +35,5 @@ instance (TreacheryRunner env) => RunMessage env GraspingHands where
           [DamagePerPointOfFailure iid]
         , Discard (TreacheryTarget tid)
         ]
-      GraspingHands <$> runMessage msg attrs
+      GraspingHands <$> runMessage msg (attrs & resolved .~ True)
     _ -> GraspingHands <$> runMessage msg attrs

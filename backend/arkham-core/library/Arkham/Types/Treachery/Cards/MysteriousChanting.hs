@@ -14,6 +14,7 @@ import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
+import Lens.Micro
 
 newtype MysteriousChanting = MysteriousChanting Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -25,7 +26,7 @@ instance HasActions env investigator MysteriousChanting where
   getActions i window (MysteriousChanting attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env MysteriousChanting where
-  runMessage msg t@(MysteriousChanting attrs@Attrs {..}) = case msg of
+  runMessage msg (MysteriousChanting attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
       lid <- asks (getId @LocationId iid)
       enemies <- map unClosestEnemyId . HashSet.toList <$> asks
@@ -35,5 +36,5 @@ instance (TreacheryRunner env) => RunMessage env MysteriousChanting where
           (FindAndDrawEncounterCard iid (EnemyType, Just Cultist))
         xs -> unshiftMessage
           (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget eid) 2 | eid <- xs ])
-      pure t
+      MysteriousChanting <$> runMessage msg (attrs & resolved .~ True)
     _ -> MysteriousChanting <$> runMessage msg attrs

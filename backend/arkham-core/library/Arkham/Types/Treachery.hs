@@ -28,6 +28,7 @@ import Arkham.Types.Treachery.Cards.MysteriousChanting
 import Arkham.Types.Treachery.Cards.ObscuringFog
 import Arkham.Types.Treachery.Cards.OfferOfPower
 import Arkham.Types.Treachery.Cards.OnWingsOfDarkness
+import Arkham.Types.Treachery.Cards.Paranoia
 import Arkham.Types.Treachery.Cards.RottingRemains
 import Arkham.Types.Treachery.Cards.TheYellowSign
 import Arkham.Types.Treachery.Cards.UmordhothsWrath
@@ -45,6 +46,7 @@ lookupTreachery =
 allTreacheries :: HashMap CardCode (TreacheryId -> Treachery)
 allTreacheries = HashMap.fromList
   [ ("01007", CoverUp' . coverUp)
+  , ("01097", Paranoia' . paranoia)
   , ("01135", HuntingShadow' . huntingShadow)
   , ("01136", FalseLead' . falseLead)
   , ("01158", UmordhothsWrath' . umordhothsWrath)
@@ -74,6 +76,7 @@ instance HasCount DoomCount () Treachery where
 
 data Treachery
   = CoverUp' CoverUp
+  | Paranoia' Paranoia
   | HuntingShadow' HuntingShadow
   | FalseLead' FalseLead
   | UmordhothsWrath' UmordhothsWrath
@@ -96,6 +99,7 @@ data Treachery
 treacheryAttrs :: Treachery -> Attrs
 treacheryAttrs = \case
   CoverUp' (CoverUp (attrs `With` _)) -> attrs
+  Paranoia' attrs -> coerce attrs
   HuntingShadow' attrs -> coerce attrs
   FalseLead' attrs -> coerce attrs
   UmordhothsWrath' attrs -> coerce attrs
@@ -116,6 +120,7 @@ treacheryAttrs = \case
 instance (ActionRunner env investigator) => HasActions env investigator Treachery where
   getActions i window = \case
     CoverUp' x -> getActions i window x
+    Paranoia' x -> getActions i window x
     HuntingShadow' x -> getActions i window x
     FalseLead' x -> getActions i window x
     UmordhothsWrath' x -> getActions i window x
@@ -142,6 +147,7 @@ treacheryLocation = treacheryAttachedLocation . treacheryAttrs
 instance (TreacheryRunner env) => RunMessage env Treachery where
   runMessage msg = \case
     CoverUp' x -> CoverUp' <$> runMessage msg x
+    Paranoia' x -> Paranoia' <$> runMessage msg x
     HuntingShadow' x -> HuntingShadow' <$> runMessage msg x
     FalseLead' x -> FalseLead' <$> runMessage msg x
     UmordhothsWrath' x -> UmordhothsWrath' <$> runMessage msg x

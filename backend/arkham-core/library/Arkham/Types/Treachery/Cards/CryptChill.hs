@@ -13,6 +13,7 @@ import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
+import Lens.Micro
 
 newtype CryptChill = CryptChill Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -36,7 +37,7 @@ instance (TreacheryRunner env) => RunMessage env CryptChill where
           [TreacheryFailure iid tid]
         , Discard (TreacheryTarget tid)
         ]
-      CryptChill <$> runMessage msg attrs
+      CryptChill <$> runMessage msg (attrs & resolved .~ True)
     TreacheryFailure iid tid | tid == treacheryId -> do
       assetCount <- HashSet.size <$> asks (getSet @AssetId iid)
       if assetCount > 0

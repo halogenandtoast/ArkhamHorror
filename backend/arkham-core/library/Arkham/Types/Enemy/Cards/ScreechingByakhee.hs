@@ -34,7 +34,8 @@ instance (IsInvestigator investigator) => HasActions env investigator Screeching
 
 instance (EnemyRunner env) => RunMessage env ScreechingByakhee where
   runMessage msg e@(ScreechingByakhee attrs@Attrs {..}) = case msg of
-    PrePlayerWindow -> do
+    PrePlayerWindow -> runMessage PostPlayerWindow e
+    PostPlayerWindow -> do
       sanities <- map unRemainingSanity <$> traverse
         (asks . getCount)
         (HashSet.toList enemyEngagedInvestigators)

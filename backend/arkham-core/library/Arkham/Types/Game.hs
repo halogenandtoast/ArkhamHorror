@@ -535,6 +535,10 @@ instance HasSet ClueCount () Game where
   getSet _ =
     HashSet.fromList . map (getCount ()) . HashMap.elems . view investigators
 
+instance HasSet CardCount () Game where
+  getSet _ =
+    HashSet.fromList . map (getCount ()) . HashMap.elems . view investigators
+
 instance HasSet RemainingHealth () Game where
   getSet _ =
     HashSet.fromList

@@ -569,7 +569,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
     TakeControlOfAsset iid aid | iid == investigatorId ->
       pure $ a & assets %~ HashSet.insert aid
     ChooseAndDiscardAsset iid | iid == investigatorId -> a <$ unshiftMessage
-      (Ask iid $ ChooseOne $ map DiscardAsset (HashSet.toList $ a ^. assets))
+      (Ask iid $ ChooseOne $ map
+        (Discard . AssetTarget)
+        (HashSet.toList $ a ^. assets)
+      )
     AttachTreacheryToInvestigator tid iid | iid == investigatorId ->
       pure $ a & treacheries %~ HashSet.insert tid
     AllCheckHandSize | not (a ^. defeated || a ^. resigned) -> do
@@ -631,7 +634,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
             ]
           )
     EngageEnemy iid eid True | iid == investigatorId -> a <$ unshiftMessages
-      [TakeAction iid 1 (Just Action.Fight), EngageEnemy iid eid False]
+      [TakeAction iid 1 (Just Action.Engage), EngageEnemy iid eid False]
     EngageEnemy iid eid False | iid == investigatorId ->
       pure $ a & engagedEnemies %~ HashSet.insert eid
     EngageEnemy iid eid False | iid /= investigatorId ->
@@ -830,7 +833,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
               then a <$ unshiftMessage
                 (Ask iid $ ChooseOne
                   [ Run
-                      [ DiscardAsset aid'
+                      [ Discard (AssetTarget aid')
                       , InvestigatorPlayAsset iid aid slotTypes traits
                       ]
                   | aid' <- discardableAssets slotType a
@@ -894,7 +897,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           unshiftMessage
             (Ask iid $ ChooseOne
               [ Run
-                  [ DiscardAsset aid'
+                  [ Discard (AssetTarget aid')
                   , RefillSlots iid slotType (filter (/= aid') assetIds)
                   ]
               | aid' <- assetIds

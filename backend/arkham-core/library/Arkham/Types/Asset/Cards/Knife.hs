@@ -14,6 +14,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
+import Arkham.Types.Target
 import ClassyPrelude
 
 newtype Knife = Knife Attrs
@@ -61,7 +62,7 @@ instance (AssetRunner env) => RunMessage env Knife where
       pure a
     UseCardAbility iid _ (AssetSource aid) 2 | aid == assetId -> do
       unshiftMessages
-        [ DiscardAsset aid
+        [ Discard (AssetTarget aid)
         , ChooseFightEnemy
           iid
           SkillCombat

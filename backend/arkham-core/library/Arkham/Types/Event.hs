@@ -4,16 +4,17 @@ module Arkham.Types.Event
 where
 
 import Arkham.Types.Card
-import Arkham.Types.GameRunner
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Event.Cards.EmergencyCache
-import Arkham.Types.Event.Cards.Evidence
+import Arkham.Types.Event.Cards.BlindingLight
 import Arkham.Types.Event.Cards.Dodge
 import Arkham.Types.Event.Cards.DynamiteBlast
+import Arkham.Types.Event.Cards.EmergencyCache
+import Arkham.Types.Event.Cards.Evidence
 import Arkham.Types.Event.Cards.MindOverMatter
-import Arkham.Types.Event.Cards.WorkingAHunch
+import Arkham.Types.Event.Cards.OnTheLam
 import Arkham.Types.Event.Cards.WardOfProtection
-import Arkham.Types.Event.Cards.BlindingLight
+import Arkham.Types.Event.Cards.WorkingAHunch
+import Arkham.Types.GameRunner
+import Arkham.Types.InvestigatorId
 import ClassyPrelude
 
 allEvents
@@ -21,6 +22,7 @@ allEvents
   => CardCode
   -> InvestigatorId
   -> m ()
+allEvents "01010" = onTheLam
 allEvents "01022" = evidence
 allEvents "01023" = dodge
 allEvents "01024" = dynamiteBlast

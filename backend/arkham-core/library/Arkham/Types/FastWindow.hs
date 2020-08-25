@@ -21,6 +21,7 @@ data FastWindow
   | WhenDiscoverClues Who Where
   | WhenSkillTest SkillType
   | AfterAssignedHorror Who
+  | AfterTurnBegins Who
   | Any
   | NonFast
   deriving stock (Show, Generic, Eq)

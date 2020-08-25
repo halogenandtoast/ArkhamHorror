@@ -59,6 +59,7 @@ data ActionType = EnemyActionType | LocationActionType | AssetActionType | Treac
 
 data Message
   = Setup
+  | BeginTurn InvestigatorId
   | AddToken Token
   | SetLocationLabel LocationId Text
   | EndOfGame

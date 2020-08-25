@@ -42,6 +42,7 @@ import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Location
 import Arkham.Types.LocationId
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.PlayerRevelation
 import Arkham.Types.Prey
@@ -1082,7 +1083,8 @@ runGameMessage msg g = case msg of
       (lookupAct aid2)
   AddAct aid -> pure $ g & acts . at aid ?~ lookupAct aid
   AddAgenda aid -> pure $ g & agendas . at aid ?~ lookupAgenda aid
-  SkillTestEnds -> pure $ g & skillTest .~ Nothing
+  SkillTestEnds -> pure $ g & skillTest .~ Nothing & usedAbilities %~ filter
+    (\(_, Ability {..}) -> abilityLimit /= OncePerTestOrAbility)
   ReturnTokens tokens -> pure $ g & chaosBag %~ (tokens <>)
   AddToken token -> pure $ g & chaosBag %~ (token :)
   PlayCard iid cardId False -> do
@@ -1188,21 +1190,43 @@ runGameMessage msg g = case msg of
       _ -> unshiftMessage (AskMap askMap)
     pure g
   EnemyWillAttack iid eid -> do
-    mNextMessage <- peekMessage
-    case mNextMessage of
-      Just (EnemyAttacks as) -> do
-        _ <- popMessage
-        unshiftMessage (EnemyAttacks (EnemyAttack iid eid : as))
-      Just aoo@(CheckAttackOfOpportunity _ _) -> do
-        _ <- popMessage
-        unshiftMessage msg
-        unshiftMessage aoo
-      Just (EnemyWillAttack iid2 eid2) -> do
-        _ <- popMessage
-        unshiftMessage
-          (EnemyAttacks [EnemyAttack iid eid, EnemyAttack iid2 eid2])
-      _ -> unshiftMessage (EnemyAttack iid eid)
-    pure g
+    let
+      investigator = getInvestigator iid g
+      cannotBeAttackedByNonElites =
+        flip any (getModifiers investigator) $ \case
+          CannotBeAttackedByNonElite{} -> True
+          _ -> False
+      enemy = getEnemy eid g
+      canAttack = cannotBeAttackedByNonElites || Elite `elem` getTraits enemy
+    if canAttack
+      then do
+        mNextMessage <- peekMessage
+        case mNextMessage of
+          Just (EnemyAttacks as) -> do
+            _ <- popMessage
+            unshiftMessage (EnemyAttacks (EnemyAttack iid eid : as))
+          Just aoo@(CheckAttackOfOpportunity _ _) -> do
+            _ <- popMessage
+            unshiftMessage msg
+            unshiftMessage aoo
+          Just (EnemyWillAttack iid2 eid2) -> do
+            _ <- popMessage
+            let
+              investigator2 = getInvestigator iid2 g
+              cannotBeAttackedByNonElites2 =
+                flip any (getModifiers investigator2) $ \case
+                  CannotBeAttackedByNonElite{} -> True
+                  _ -> False
+              enemy2 = getEnemy eid2 g
+              canAttack2 =
+                cannotBeAttackedByNonElites2 || Elite `elem` getTraits enemy2
+            if canAttack2
+              then unshiftMessage
+                (EnemyAttacks [EnemyAttack iid eid, EnemyAttack iid2 eid2])
+              else unshiftMessage (EnemyAttacks [EnemyAttack iid eid])
+          _ -> unshiftMessage (EnemyAttack iid eid)
+        pure g
+      else pure g
   EnemyAttacks as -> do
     mNextMessage <- peekMessage
     case mNextMessage of
@@ -1269,11 +1293,14 @@ runGameMessage msg g = case msg of
   BeginInvestigation -> do
     unshiftMessage (ChoosePlayerOrder (giPlayerOrder g) [])
     pure $ g & phase .~ InvestigationPhase
-  ChoosePlayerOrder [x] [] ->
+  ChoosePlayerOrder [x] [] -> do
+    unshiftMessages [BeginTurn x, After (BeginTurn x)]
     pure $ g & playerOrder .~ [x] & activeInvestigatorId .~ x
-  ChoosePlayerOrder [] (x : xs) ->
+  ChoosePlayerOrder [] (x : xs) -> do
+    unshiftMessages [BeginTurn x, After (BeginTurn x)]
     pure $ g & playerOrder .~ (x : xs) & activeInvestigatorId .~ x
-  ChoosePlayerOrder [y] (x : xs) ->
+  ChoosePlayerOrder [y] (x : xs) -> do
+    unshiftMessages [BeginTurn x, After (BeginTurn x)]
     pure $ g & playerOrder .~ (x : (xs <> [y])) & activeInvestigatorId .~ x
   ChoosePlayerOrder investigatorIds orderedInvestigatorIds -> do
     unshiftMessage $ Ask (giLeadInvestigatorId g) $ ChooseOne

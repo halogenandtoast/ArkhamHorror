@@ -314,12 +314,6 @@ baseAttrs iid name classSymbol Stats {..} traits = Attrs
   , investigatorMentalTrauma = 0
   }
 
-sourceIsInvestigator :: Source -> Attrs -> Bool
-sourceIsInvestigator source Attrs {..} = case source of
-  InvestigatorSource sourceId -> sourceId == investigatorId
-  AssetSource sourceId -> sourceId `elem` investigatorAssets
-  _ -> False
-
 matchTarget :: Attrs -> ActionTarget -> Action -> Bool
 matchTarget attrs (FirstOneOf as) action =
   action `elem` as && all (`notElem` investigatorActionsTaken attrs) as
@@ -355,49 +349,6 @@ cluesToDiscover attrs startValue = foldr
 canAfford :: Attrs -> Action -> Bool
 canAfford a@Attrs {..} actionType =
   actionCost a actionType <= investigatorRemainingActions
-
-canPayAbilityCost :: Maybe AbilityCost -> Attrs -> Bool
-canPayAbilityCost Nothing _ = True
-canPayAbilityCost (Just cost) Attrs {..} = case cost of
-  ResourceCost n -> investigatorResources >= n
-  ClueCost n -> investigatorClues >= n
-  CardCost n -> length investigatorHand >= n
-
-canPerform
-  :: (MonadReader env m, InvestigatorRunner Attrs env)
-  => Attrs
-  -> Action
-  -> m Bool
-canPerform a@Attrs {..} Action.Move = do
-  blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
-  let
-    accessibleLocations =
-      investigatorConnectedLocations `difference` blockedLocationIds
-  pure $ canAfford a Action.Move && not (null accessibleLocations)
-canPerform a Action.Investigate = pure $ canAfford a Action.Investigate
-canPerform a@Attrs {..} Action.Fight = do
-  enemyIds <- asks (getSet investigatorLocation)
-  aloofEnemyIds <- HashSet.map unAloofEnemyId
-    <$> asks (getSet investigatorLocation)
-  let
-    unengagedEnemyIds = enemyIds `difference` investigatorEngagedEnemies
-    fightableEnemyIds =
-      investigatorEngagedEnemies
-        `union` (unengagedEnemyIds `difference` aloofEnemyIds)
-  pure $ canAfford a Action.Fight && not (null fightableEnemyIds)
-canPerform a@Attrs {..} Action.Evade =
-  pure $ canAfford a Action.Evade && not (null investigatorEngagedEnemies)
-canPerform a@Attrs {..} Action.Engage = do
-  enemyIds <- asks (getSet investigatorLocation)
-  let unengagedEnemyIds = enemyIds `difference` investigatorEngagedEnemies
-  pure $ canAfford a Action.Engage && not (null unengagedEnemyIds)
-canPerform a Action.Draw = pure $ canAfford a Action.Draw
-canPerform a Action.Resign = pure $ canAfford a Action.Resign
-canPerform a Action.Resource = pure $ canAfford a Action.Resource
-canPerform a Action.Parley = pure $ canAfford a Action.Parley
-canPerform a@Attrs {..} Action.Play = pure $ canAfford a Action.Play && not
-  (null $ playableCards a [DuringTurn You, NonFast])
-canPerform Attrs {..} Action.Ability = pure $ investigatorRemainingActions > 0
 
 fastIsPlayable :: Attrs -> [FastWindow] -> Card -> Bool
 fastIsPlayable _ _ (EncounterCard _) = False -- TODO: there might be some playable ones?

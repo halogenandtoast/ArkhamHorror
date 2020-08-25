@@ -4,7 +4,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Game
   ( runMessages
-  , newGame
   , newCampaign
   , addInvestigator
   , startGame
@@ -49,7 +48,6 @@ import Arkham.Types.PlayerRevelation
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.Scenario
-import Arkham.Types.ScenarioId
 import Arkham.Types.Skill
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
@@ -284,86 +282,6 @@ newCampaign campaignId playerCount' investigatorsList difficulty' = do
     , giPlayerOrder = map
       (getInvestigatorId . fst)
       (HashMap.elems investigatorsList)
-    , giVictoryDisplay = mempty
-    }
- where
-  initialInvestigatorId =
-    fromJustNote "No investigators" . headMay . HashMap.keys $ investigatorsMap
-  playersMap = HashMap.map (getInvestigatorId . fst) investigatorsList
-  investigatorsMap = HashMap.fromList $ map
-    (\(i, _) -> (getInvestigatorId i, i))
-    (HashMap.elems investigatorsList)
-
-
-newGame
-  :: MonadIO m
-  => ScenarioId
-  -> HashMap Int (Investigator, [PlayerCard])
-  -> Difficulty
-  -> m Game
-newGame scenarioId investigatorsList difficulty' = do
-  ref <-
-    newIORef
-    $ map
-        (\(i, d) -> LoadDeck (getInvestigatorId i) d)
-        (HashMap.elems investigatorsList)
-    <> [ChooseLeadInvestigator, SetupInvestigators]
-    <> [ InvestigatorMulligan (getInvestigatorId i)
-       | (i, _) <- HashMap.elems investigatorsList
-       ]
-    <> [Setup]
-  mseed <- liftIO $ lookupEnv "SEED"
-  seed <- maybe
-    (liftIO $ randomIO @Int)
-    (pure . fromJustNote "invalid seed" . readMaybe)
-    mseed
-  liftIO $ setStdGen (mkStdGen seed)
-  pure $ Game
-    { giMessages = ref
-    , giSeed = seed
-    , giCampaign = Nothing
-    , giScenario = Just (lookupScenario scenarioId difficulty')
-    , giLocations = mempty
-    , giEnemies = mempty
-    , giAssets = mempty
-    , giInvestigators = investigatorsMap
-    , giPlayers = playersMap
-    , giActiveInvestigatorId = initialInvestigatorId
-    , giLeadInvestigatorId = initialInvestigatorId
-    , giPhase = InvestigationPhase
-    , giEncounterDeck = mempty
-    , giDiscard = mempty
-    , giSkillTest = Nothing
-    , giAgendas = mempty
-    , giTreacheries = mempty
-    , giActs = mempty
-    , giChaosBag = Bag
-      [ Token.PlusOne
-      , Token.PlusOne
-      , Token.Zero
-      , Token.Zero
-      , Token.Zero
-      , Token.MinusOne
-      , Token.MinusOne
-      , Token.MinusOne
-      , Token.MinusTwo
-      , Token.MinusTwo
-      , Token.Skull
-      , Token.Skull
-      , Token.Cultist
-      , Token.Tablet
-      , Token.AutoFail
-      , Token.ElderSign
-      ]
-    , giGameOver = False
-    , giUsedAbilities = mempty
-    , giFocusedCards = mempty
-    , giActiveCard = Nothing
-    , giPlayerOrder = map
-      (getInvestigatorId . fst)
-      (HashMap.elems investigatorsList)
-    , giPlayerCount = HashMap.size investigatorsList
-    , giPending = False
     , giVictoryDisplay = mempty
     }
  where

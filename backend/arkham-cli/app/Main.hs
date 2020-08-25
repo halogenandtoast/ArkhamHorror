@@ -113,8 +113,9 @@ main = do
       pPrint deck
       ge <-
         runGame
-          =<< newGame
-                "01104"
+          =<< newCampaign
+                "01"
+                1
                 (HashMap.fromList
                   [(1, (lookupInvestigator investigatorId, deck))]
                 )

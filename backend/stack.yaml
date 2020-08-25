@@ -2,7 +2,7 @@
 require-stack-version: ">= 2.3.1"
 concurrent-tests: false
 
-resolver: lts-15.13
+resolver: lts-16.11
 
 # NB. -fignore-optim-changes can get in the way of profiling projects. To
 # build for profiling, consider using a separate .stack-work directory or

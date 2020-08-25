@@ -35,6 +35,7 @@ sourceOfModifier (DoubleNegativeModifiersOnTokens s) = s
 sourceOfModifier (ReduceCostOf _ _ s) = s
 sourceOfModifier (EnemyFight _ s) = s
 sourceOfModifier (EnemyEvade _ s) = s
+sourceOfModifier (CannotBeAttackedByNonElite s) = s
 
 replaceModifierSource :: Source -> Modifier -> Modifier
 replaceModifierSource s (ActionCostOf a b _) = ActionCostOf a b s
@@ -58,6 +59,8 @@ replaceModifierSource s (DoubleNegativeModifiersOnTokens _) =
 replaceModifierSource s (ReduceCostOf a b _) = ReduceCostOf a b s
 replaceModifierSource s (EnemyFight a _) = EnemyFight a s
 replaceModifierSource s (EnemyEvade a _) = EnemyEvade a s
+replaceModifierSource s (CannotBeAttackedByNonElite _) =
+  CannotBeAttackedByNonElite s
 
 data Modifier
   = ActionCostOf ActionTarget Int Source
@@ -78,6 +81,7 @@ data Modifier
   | UseSkillInPlaceOf SkillType SkillType Source
   | ForcedTokenChange Token Token Source
   | DoubleNegativeModifiersOnTokens Source
+  | CannotBeAttackedByNonElite Source
   | ReduceCostOf [Trait] Int Source
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)

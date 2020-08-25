@@ -18,6 +18,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
@@ -101,6 +102,9 @@ class HasKeywords a where
 
 class HasAbilities a where
   getAbilities :: a -> [Ability]
+
+class HasModifiers a where
+  getModifiers :: a -> [Modifier]
 
 class HasVictoryPoints a where
   getVictoryPoints :: a -> Maybe Int

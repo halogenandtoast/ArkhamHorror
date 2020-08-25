@@ -134,6 +134,7 @@ allPlayerCards = HashMap.fromList
   , ("01007", coverUp)
   , ("01008", daisysToteBag)
   , ("01009", theNecronomicon)
+  , ("01010", onTheLam)
   , ("01016", fortyFiveAutomatic)
   , ("01017", physicalTraining)
   , ("01018", beatCop)
@@ -197,6 +198,14 @@ theNecronomicon cardId = (asset cardId "01009" "The Necronomicon" 0 Neutral)
   { pcTraits = [Item, Tome]
   , pcWeakness = True
   , pcRevelation = True
+  }
+
+onTheLam :: CardId -> PlayerCard
+onTheLam cardId = (asset cardId "01010" "On the Lam" 1 Neutral)
+  { pcTraits = [Tactic]
+  , pcSkills = [SkillIntellect, SkillAgility, SkillWild, SkillWild]
+  , pcFast = True
+  , pcFastWindows = HashSet.fromList [AfterTurnBegins You]
   }
 
 fortyFiveAutomatic :: CardId -> PlayerCard

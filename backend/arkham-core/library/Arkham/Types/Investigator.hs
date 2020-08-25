@@ -324,6 +324,9 @@ instance HasCard () Investigator where
 instance HasCardCode Investigator where
   getCardCode = getCardCode . investigatorAttrs
 
+instance HasModifiers Investigator where
+  getModifiers = investigatorModifiers . investigatorAttrs
+
 instance HasInvestigatorStats Stats () Investigator where
   getStats _ i = Stats
     { health = investigatorHealth - investigatorHealthDamage

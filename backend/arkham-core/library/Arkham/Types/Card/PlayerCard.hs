@@ -157,6 +157,7 @@ allPlayerCards = HashMap.fromList
   , ("01037", workingAHunch)
   , ("01039", deduction)
   , ("01048", leoDeLuca)
+  , ("01049", hardKnocks)
   , ("01059", holyRosary)
   , ("01060", shrivelling)
   , ("01061", scrying)
@@ -355,6 +356,12 @@ leoDeLuca :: CardId -> PlayerCard
 leoDeLuca cardId = (asset cardId "01048" "Leo De Luca" 6 Rogue)
   { pcSkills = [SkillIntellect]
   , pcTraits = [Ally, Criminal]
+  }
+
+hardKnocks :: CardId -> PlayerCard
+hardKnocks cardId = (asset cardId "01049" "Hard Knocks" 2 Rogue)
+  { pcSkills = [SkillCombat, SkillAgility]
+  , pcTraits = [Talent]
   }
 
 holyRosary :: CardId -> PlayerCard

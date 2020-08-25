@@ -19,6 +19,7 @@ import Arkham.Types.Asset.Cards.DrMilanChristopher
 import Arkham.Types.Asset.Cards.Flashlight
 import Arkham.Types.Asset.Cards.FortyFiveAutomatic
 import Arkham.Types.Asset.Cards.GuardDog
+import Arkham.Types.Asset.Cards.HardKnocks
 import Arkham.Types.Asset.Cards.HeirloomOfHyperborea
 import Arkham.Types.Asset.Cards.HolyRosary
 import Arkham.Types.Asset.Cards.Knife
@@ -72,6 +73,7 @@ allAssets = HashMap.fromList
   , ("01033", DrMilanChristopher' . drMilanChristopher)
   , ("01035", MedicalTexts' . medicalTexts)
   , ("01048", LeoDeLuca' . leoDeLuca)
+  , ("01049", HardKnocks' . hardKnocks)
   , ("01059", HolyRosary' . holyRosary)
   , ("01060", Shrivelling' . shrivelling)
   , ("01061", Scrying' . scrying)
@@ -118,6 +120,7 @@ data Asset
   | ResearchLibrarian' ResearchLibrarian
   | DrMilanChristopher' DrMilanChristopher
   | LeoDeLuca' LeoDeLuca
+  | HardKnocks' HardKnocks
   | HolyRosary' HolyRosary
   | Shrivelling' Shrivelling
   | Scrying' Scrying
@@ -148,6 +151,7 @@ assetAttrs = \case
   ResearchLibrarian' attrs -> coerce attrs
   DrMilanChristopher' attrs -> coerce attrs
   LeoDeLuca' attrs -> coerce attrs
+  HardKnocks' attrs -> coerce attrs
   HolyRosary' attrs -> coerce attrs
   Shrivelling' attrs -> coerce attrs
   Scrying' attrs -> coerce attrs
@@ -186,6 +190,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     ResearchLibrarian' x -> getActions i window x
     DrMilanChristopher' x -> getActions i window x
     LeoDeLuca' x -> getActions i window x
+    HardKnocks' x -> getActions i window x
     HolyRosary' x -> getActions i window x
     Shrivelling' x -> getActions i window x
     Scrying' x -> getActions i window x
@@ -214,6 +219,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     ResearchLibrarian' x -> ResearchLibrarian' <$> runMessage msg x
     DrMilanChristopher' x -> DrMilanChristopher' <$> runMessage msg x
     LeoDeLuca' x -> LeoDeLuca' <$> runMessage msg x
+    HardKnocks' x -> HardKnocks' <$> runMessage msg x
     HolyRosary' x -> HolyRosary' <$> runMessage msg x
     Shrivelling' x -> Shrivelling' <$> runMessage msg x
     Scrying' x -> Scrying' <$> runMessage msg x

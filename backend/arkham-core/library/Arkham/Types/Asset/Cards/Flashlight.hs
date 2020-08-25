@@ -55,7 +55,7 @@ instance (AssetRunner env) => RunMessage env Flashlight where
             [ AddModifier
               (LocationTarget lid)
               (ShroudModifier (-2) (AssetSource aid))
-            , Investigate iid lid SkillIntellect mempty False
+            , Investigate iid lid SkillIntellect mempty mempty False
             , RemoveAllModifiersOnTargetFrom
               (LocationTarget lid)
               (AssetSource aid)

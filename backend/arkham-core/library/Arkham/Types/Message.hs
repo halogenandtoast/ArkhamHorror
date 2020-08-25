@@ -128,7 +128,7 @@ data Message
   | UseCardAbility InvestigatorId Source Source Int
   | UseScenarioSpecificAbility InvestigatorId Int
   | ResolveToken Token InvestigatorId Int
-  | Investigate InvestigatorId LocationId SkillType [TokenResponse Message] Bool
+  | Investigate InvestigatorId LocationId SkillType [TokenResponse Message] [Message] Bool
   | ChooseFightEnemy InvestigatorId SkillType [Modifier] [TokenResponse Message] Bool
   | ChooseEvadeEnemy InvestigatorId SkillType [Message] [Message] [TokenResponse Message] Bool
   | EngageEnemy InvestigatorId EnemyId Bool

@@ -156,6 +156,7 @@ allPlayerCards = HashMap.fromList
   , ("01036", mindOverMatter)
   , ("01037", workingAHunch)
   , ("01039", deduction)
+  , ("01045", burglary)
   , ("01048", leoDeLuca)
   , ("01049", hardKnocks)
   , ("01059", holyRosary)
@@ -350,6 +351,12 @@ workingAHunch cardId = (event cardId "01037" "Working a Hunch" 2 Seeker)
 deduction :: CardId -> PlayerCard
 deduction cardId = (skill cardId "01039" "Deduction" [SkillIntellect] Seeker)
   { pcTraits = [Practiced]
+  }
+
+burglary :: CardId -> PlayerCard
+burglary cardId = (asset cardId "01045" "Burglary" 1 Rogue)
+  { pcSkills = [SkillIntellect]
+  , pcTraits = [Talent, Illicit]
   }
 
 leoDeLuca :: CardId -> PlayerCard

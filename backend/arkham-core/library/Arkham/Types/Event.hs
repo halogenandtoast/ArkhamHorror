@@ -4,6 +4,7 @@ module Arkham.Types.Event
 where
 
 import Arkham.Types.Card
+import Arkham.Types.Event.Cards.Backstab
 import Arkham.Types.Event.Cards.BlindingLight
 import Arkham.Types.Event.Cards.DarkMemory
 import Arkham.Types.Event.Cards.Dodge
@@ -30,6 +31,7 @@ allEvents "01023" = dodge
 allEvents "01024" = dynamiteBlast
 allEvents "01036" = mindOverMatter
 allEvents "01037" = workingAHunch
+allEvents "01051" = backstab
 allEvents "01065" = wardOfProtection
 allEvents "01066" = blindingLight
 allEvents "01088" = emergencyCache

@@ -599,7 +599,13 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       pure a
     EnemyEngageInvestigator eid iid | iid == investigatorId ->
       pure $ a & engagedEnemies %~ HashSet.insert eid
-    EnemyDefeated eid _ _ _ -> pure $ a & engagedEnemies %~ HashSet.delete eid
+    EnemyDefeated eid _ _ _ -> do
+      unshiftMessage
+        (RemoveAllModifiersOnTargetFrom
+          (InvestigatorTarget investigatorId)
+          (EnemySource eid)
+        )
+      pure $ a & engagedEnemies %~ HashSet.delete eid
     RemoveEnemy eid -> pure $ a & engagedEnemies %~ HashSet.delete eid
     TakeControlOfAsset iid aid | iid == investigatorId ->
       pure $ a & assets %~ HashSet.insert aid

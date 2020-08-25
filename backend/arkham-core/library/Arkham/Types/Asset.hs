@@ -33,6 +33,7 @@ import Arkham.Types.Asset.Cards.Rolands38Special
 import Arkham.Types.Asset.Cards.Scrying
 import Arkham.Types.Asset.Cards.Shrivelling
 import Arkham.Types.Asset.Cards.TheNecronomicon
+import Arkham.Types.Asset.Cards.WendysAmulet
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Card
@@ -56,6 +57,7 @@ allAssets = HashMap.fromList
   , ("01008", DaisysToteBag' . daisysToteBag)
   , ("01009", TheNecronomicon' . theNecronomicon)
   , ("01012", HeirloomOfHyperborea' . heirloomOfHyperborea)
+  , ("01014", WendysAmulet' . wendysAmulet)
   , ("01016", FortyFiveAutomatic' . fortyFiveAutomatic)
   , ("01017", PhysicalTraining' . physicalTraining)
   , ("01018", BeatCop' . beatCop)
@@ -98,6 +100,7 @@ data Asset
   | DaisysToteBag' DaisysToteBag
   | TheNecronomicon' TheNecronomicon
   | HeirloomOfHyperborea' HeirloomOfHyperborea
+  | WendysAmulet' WendysAmulet
   | FortyFiveAutomatic' FortyFiveAutomatic
   | PhysicalTraining' PhysicalTraining
   | BeatCop' BeatCop
@@ -124,6 +127,7 @@ assetAttrs = \case
   DaisysToteBag' attrs -> coerce attrs
   TheNecronomicon' (TheNecronomicon (attrs `With` _)) -> attrs
   HeirloomOfHyperborea' attrs -> coerce attrs
+  WendysAmulet' attrs -> coerce attrs
   FortyFiveAutomatic' attrs -> coerce attrs
   PhysicalTraining' attrs -> coerce attrs
   BeatCop' attrs -> coerce attrs
@@ -158,6 +162,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     DaisysToteBag' x -> getActions i window x
     TheNecronomicon' x -> getActions i window x
     HeirloomOfHyperborea' x -> getActions i window x
+    WendysAmulet' x -> getActions i window x
     FortyFiveAutomatic' x -> getActions i window x
     PhysicalTraining' x -> getActions i window x
     BeatCop' x -> getActions i window x
@@ -182,6 +187,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     DaisysToteBag' x -> DaisysToteBag' <$> runMessage msg x
     TheNecronomicon' x -> TheNecronomicon' <$> runMessage msg x
     HeirloomOfHyperborea' x -> HeirloomOfHyperborea' <$> runMessage msg x
+    WendysAmulet' x -> WendysAmulet' <$> runMessage msg x
     FortyFiveAutomatic' x -> FortyFiveAutomatic' <$> runMessage msg x
     PhysicalTraining' x -> PhysicalTraining' <$> runMessage msg x
     BeatCop' x -> BeatCop' <$> runMessage msg x

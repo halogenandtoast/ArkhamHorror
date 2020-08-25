@@ -389,11 +389,8 @@ canPerform a Action.Draw = pure $ canAfford a Action.Draw
 canPerform a Action.Resign = pure $ canAfford a Action.Resign
 canPerform a Action.Resource = pure $ canAfford a Action.Resource
 canPerform a Action.Parley = pure $ canAfford a Action.Parley
-canPerform a@Attrs {..} Action.Play = do
-  let
-    playableCards =
-      filter (isPlayable a [DuringTurn You, NonFast]) investigatorHand
-  pure $ canAfford a Action.Play && not (null playableCards)
+canPerform a@Attrs {..} Action.Play = pure $ canAfford a Action.Play && not
+  (null $ playableCards a [DuringTurn You, NonFast])
 canPerform Attrs {..} Action.Ability = pure $ investigatorRemainingActions > 0
 
 fastIsPlayable :: Attrs -> [FastWindow] -> Card -> Bool
@@ -452,6 +449,30 @@ cardInWindows windows c _ = case c of
     not . null $ pcFastWindows pc `intersect` HashSet.fromList windows
   _ -> False
 
+playableCards :: Attrs -> [FastWindow] -> [Card]
+playableCards a@Attrs {..} windows =
+  filter (fastIsPlayable a windows) investigatorHand
+    <> playableDiscards a windows
+
+playableDiscards :: Attrs -> [FastWindow] -> [Card]
+playableDiscards a@Attrs {..} windows = filter
+  (fastIsPlayable a windows)
+  possibleCards
+ where
+  possibleCards = map (PlayerCard . snd)
+    $ filter canPlayFromDiscard (zip @_ @Int [0 ..] investigatorDiscard)
+  canPlayFromDiscard (n, card) =
+    any (allowsPlayFromDiscard n card) investigatorModifiers
+  allowsPlayFromDiscard 0 MkPlayerCard {..} (CanPlayTopOfDiscard (mcardType, traits) _)
+    = maybe True (== pcCardType) mcardType
+      && (null traits
+         || (HashSet.fromList traits
+            `HashSet.isSubsetOf` HashSet.fromList pcTraits
+            )
+         )
+  allowsPlayFromDiscard _ _ _ = False
+
+
 possibleSkillTypeChoices :: SkillType -> Attrs -> [SkillType]
 possibleSkillTypeChoices skillType attrs = foldr
   applyModifier
@@ -464,6 +485,7 @@ possibleSkillTypeChoices skillType attrs = foldr
 
 instance IsInvestigator Attrs where
   locationOf Attrs {..} = investigatorLocation
+  discardOf Attrs {..} = investigatorDiscard
   resourceCount Attrs {..} = investigatorResources
   canDo action a@Attrs {..} = canAfford a action
   clueCount Attrs {..} = investigatorClues
@@ -1120,8 +1142,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
     CheckFastWindow iid windows | iid == investigatorId -> do
       actions <- fmap concat <$> for windows $ \window -> do
         asks (join (getActions a window))
-      let playableCards = filter (fastIsPlayable a windows) investigatorHand
-      if not (null playableCards) || not (null actions)
+      if not (null $ playableCards a windows) || not (null actions)
         then a <$ unshiftMessage
           (Ask iid
           $ ChooseOne
@@ -1132,7 +1153,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
                 , CheckFastWindow iid windows
                 ]
               )
-              playableCards
+              (playableCards a windows)
           <> map (Run . (: [CheckFastWindow iid windows])) actions
           <> [Continue "Skip playing fast cards or using reactions"]
           )

@@ -155,3 +155,4 @@ class (HasId InvestigatorId () investigator) => IsInvestigator investigator wher
   canDo :: Action -> investigator -> Bool
   hasActionsRemaining :: investigator -> Bool
   canTakeDirectDamage :: investigator -> Bool
+  discardOf :: investigator -> [PlayerCard]

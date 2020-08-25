@@ -37,6 +37,7 @@ sourceOfModifier (EnemyFight _ s) = s
 sourceOfModifier (EnemyEvade _ s) = s
 sourceOfModifier (CannotBeAttackedByNonElite s) = s
 sourceOfModifier (XPModifier _ s) = s
+sourceOfModifier (CanPlayTopOfDiscard _ s) = s
 
 replaceModifierSource :: Source -> Modifier -> Modifier
 replaceModifierSource s (ActionCostOf a b _) = ActionCostOf a b s
@@ -63,28 +64,30 @@ replaceModifierSource s (EnemyEvade a _) = EnemyEvade a s
 replaceModifierSource s (CannotBeAttackedByNonElite _) =
   CannotBeAttackedByNonElite s
 replaceModifierSource s (XPModifier a _) = XPModifier a s
+replaceModifierSource s (CanPlayTopOfDiscard a _) = CanPlayTopOfDiscard a s
 
 data Modifier
   = ActionCostOf ActionTarget Int Source
-  | CannotPlay [PlayerCardType] Source
-  | CannotInvestigate Source
-  | CannotDiscoverClues Source
-  | CannotSpendClues Source
-  | SkillModifier SkillType Int Source
-  | SanityModifier Int Source
-  | HealthModifier Int Source
   | ActionSkillModifier Action SkillType Int Source
+  | CanPlayTopOfDiscard (Maybe PlayerCardType, [Trait]) Source
+  | CannotBeAttackedByNonElite Source
+  | CannotDiscoverClues Source
+  | CannotInvestigate Source
+  | CannotPlay [PlayerCardType] Source
+  | CannotSpendClues Source
   | DamageDealt Int Source
   | DamageTaken Int Source
-  | EnemyFight Int Source
-  | EnemyEvade Int Source
-  | ShroudModifier Int Source
   | DiscoveredClues Int Source
-  | UseSkillInPlaceOf SkillType SkillType Source
-  | ForcedTokenChange Token Token Source
   | DoubleNegativeModifiersOnTokens Source
-  | CannotBeAttackedByNonElite Source
+  | EnemyEvade Int Source
+  | EnemyFight Int Source
+  | ForcedTokenChange Token Token Source
+  | HealthModifier Int Source
   | ReduceCostOf [Trait] Int Source
+  | SanityModifier Int Source
+  | ShroudModifier Int Source
+  | SkillModifier SkillType Int Source
+  | UseSkillInPlaceOf SkillType SkillType Source
   | XPModifier Int Source
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)

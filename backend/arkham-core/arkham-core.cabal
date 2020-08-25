@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 40c0fb0da157a2b3c9ba086991cd065cfc0a7f03f2065216c7aa1be57aacb8a2
+-- hash: 99b66365b1390cf593d4b15b47efc937e03d06492d33506f72e78ac505b86230
 
 name:           arkham-core
 version:        0.0.0
@@ -78,6 +78,7 @@ library
       Arkham.Types.Card.CardCode
       Arkham.Types.Card.Class
       Arkham.Types.Card.EncounterCard
+      Arkham.Types.Card.Forced
       Arkham.Types.Card.Id
       Arkham.Types.Card.PlayerCard
       Arkham.Types.Classes
@@ -113,6 +114,7 @@ library
       Arkham.Types.EnemyId
       Arkham.Types.Event
       Arkham.Types.Event.Cards.BlindingLight
+      Arkham.Types.Event.Cards.DarkMemory
       Arkham.Types.Event.Cards.Dodge
       Arkham.Types.Event.Cards.DynamiteBlast
       Arkham.Types.Event.Cards.EmergencyCache

@@ -9,6 +9,7 @@ import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
@@ -39,5 +40,6 @@ data Source
   | EmptyDeckSource
   | DeckSource
   | ActSource ActId
+  | PlayerCardSource CardId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

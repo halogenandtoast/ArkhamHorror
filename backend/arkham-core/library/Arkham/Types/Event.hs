@@ -5,6 +5,7 @@ where
 
 import Arkham.Types.Card
 import Arkham.Types.Event.Cards.BlindingLight
+import Arkham.Types.Event.Cards.DarkMemory
 import Arkham.Types.Event.Cards.Dodge
 import Arkham.Types.Event.Cards.DynamiteBlast
 import Arkham.Types.Event.Cards.EmergencyCache
@@ -23,6 +24,7 @@ allEvents
   -> InvestigatorId
   -> m ()
 allEvents "01010" = onTheLam
+allEvents "01013" = darkMemory
 allEvents "01022" = evidence
 allEvents "01023" = dodge
 allEvents "01024" = dynamiteBlast

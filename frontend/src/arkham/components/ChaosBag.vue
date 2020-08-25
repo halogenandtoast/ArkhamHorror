@@ -80,6 +80,10 @@ export default class ChaosBag extends Vue {
   imageFor = imageFor.bind(this);
 
   get revealedTokens() {
+    if (this.game.currentData.focusedTokens.length > 0) {
+      return this.game.currentData.focusedTokens;
+    }
+
     if (this.game.currentData.skillTest !== null) {
       return this.game.currentData.skillTest.setAsideTokens;
     }

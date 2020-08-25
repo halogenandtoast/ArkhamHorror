@@ -15,7 +15,7 @@ newtype Paranoia = Paranoia Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 paranoia :: TreacheryId -> Paranoia
-paranoia uuid = Paranoia $ baseAttrs uuid "01097"
+paranoia uuid = Paranoia $ weaknessAttrs uuid "01097"
 
 instance HasActions env investigator Paranoia where
   getActions i window (Paranoia attrs) = getActions i window attrs

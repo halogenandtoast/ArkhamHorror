@@ -15,7 +15,7 @@ newtype AbandonedAndAlone = AbandonedAndAlone Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 abandonedAndAlone :: TreacheryId -> AbandonedAndAlone
-abandonedAndAlone uuid = AbandonedAndAlone $ baseAttrs uuid "01015"
+abandonedAndAlone uuid = AbandonedAndAlone $ weaknessAttrs uuid "01015"
 
 instance HasActions env investigator AbandonedAndAlone where
   getActions i window (AbandonedAndAlone attrs) = getActions i window attrs

@@ -34,7 +34,7 @@ import Data.Aeson
 data Card
   = PlayerCard PlayerCard
   | EncounterCard EncounterCard
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 newtype DeckCard = DeckCard { unDeckCard ::PlayerCard }

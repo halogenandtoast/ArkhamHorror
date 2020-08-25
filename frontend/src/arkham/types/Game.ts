@@ -90,6 +90,7 @@ export interface GameState {
   skillTest: SkillTest | null;
   treacheries: Record<string, Treachery>;
   focusedCards: Card[];
+  focusedTokens: ChaosToken[];
   activeCard: Card | null;
   victoryDisplay: Card[];
 }
@@ -116,6 +117,7 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     skillTest: JsonDecoder.nullable(skillTestDecoder),
     treacheries: JsonDecoder.dictionary<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),
     focusedCards: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
+    focusedTokens: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'Token[]'),
     activeCard: JsonDecoder.nullable(cardDecoder),
     victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   },

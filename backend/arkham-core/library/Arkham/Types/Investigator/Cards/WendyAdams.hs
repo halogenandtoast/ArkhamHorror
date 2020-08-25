@@ -36,13 +36,13 @@ wendyAdams = WendyAdams $ baseAttrs
   [Drifter]
 
 instance (ActionRunner env investigator) => HasActions env investigator WendyAdams where
-  getActions i (WhenDrawToken You) (WendyAdams Attrs {..})
+  getActions i (WhenDrawToken You token) (WendyAdams Attrs {..})
     | getId () i == investigatorId = do
       let
         ability = (mkAbility
                     (InvestigatorSource investigatorId)
                     1
-                    (ReactionAbility (WhenDrawToken You))
+                    (ReactionAbility (WhenDrawToken You token))
                   )
           { abilityLimit = PerTestOrAbility
           }
@@ -58,8 +58,33 @@ instance (ActionRunner env investigator) => HasActions env investigator WendyAda
 
 instance (InvestigatorRunner Attrs env) => RunMessage env WendyAdams where
   runMessage msg i@(WendyAdams attrs@Attrs {..}) = case msg of
-    When (DrawToken _) ->
-      i <$ unshiftMessage (CheckFastWindow investigatorId [WhenDrawToken You])
+    UseCardAbility _ _ (InvestigatorSource iid) 1 | iid == investigatorId -> do
+      mResolveToken <- withQueue $ \queue ->
+        (queue, find ((== Just ResolveTokenMessage) . messageType) queue)
+      case mResolveToken of
+        Just (ResolveToken token _ skillValue) -> do
+          void
+            $ withQueue
+            $ \queue ->
+                ( filter
+                  (/= CheckFastWindow iid [WhenDrawToken You token])
+                  queue
+                , ()
+                )
+          i <$ unshiftMessages
+            [ ChooseAndDiscardCard iid
+            , CancelNext DrawTokenMessage
+            , CancelNext ResolveTokenMessage
+            , ReturnTokens [token]
+            , UnfocusTokens
+            , DrawAnotherToken iid skillValue token 0
+            ]
+        _ -> error "we expect resolve token to be on the stack"
+    When (DrawToken token) -> i <$ unshiftMessages
+      [ FocusTokens [token]
+      , CheckFastWindow investigatorId [WhenDrawToken You token]
+      , UnfocusTokens
+      ]
     ResolveToken ElderSign iid skillValue | iid == investigatorId -> do
       maid <- asks (getId @(Maybe AssetId) (CardCode "01014"))
       case maid of

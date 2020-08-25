@@ -38,21 +38,23 @@ import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude
 
-data MessageType = RevelationMessage | AttackMessage
+data MessageType = RevelationMessage | AttackMessage | DrawTokenMessage | ResolveTokenMessage
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 messageType :: Message -> Maybe MessageType
 messageType PerformEnemyAttack{} = Just AttackMessage
 messageType Revelation{} = Just RevelationMessage
+messageType DrawToken{} = Just DrawTokenMessage
+messageType ResolveToken{} = Just ResolveTokenMessage
 messageType _ = Nothing
 
 data EncounterCardSource = FromDiscard | FromEncounterDeck
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 data LeftoverCardStrategy = ShuffleBackIn | PutBackInAnyOrder
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 data ActionType = EnemyActionType | LocationActionType | AssetActionType | TreacheryActionType | ActActionType | AgendaActionType | InvestigatorActionType
@@ -313,19 +315,21 @@ data Message
   | RemoveDiscardFromGame InvestigatorId
   | FailedSkillTest InvestigatorId Int
   | PassedSkillTest InvestigatorId Int
+  | FocusTokens [Token]
+  | UnfocusTokens
   | Will Message
   | When Message
   | After Message
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 data Question
   = ChooseOne [Message]
   | ChooseOneAtATime [Message]
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
 data ChoosePlayerChoice
   = SetLeadInvestigator
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)

@@ -55,7 +55,7 @@ baseAttrs tid cardCode =
   let
     MkEncounterCard {..} =
       fromJustNote
-          "missing encounter card"
+          ("missing encounter card: " <> unpack (unCardCode cardCode))
           (HashMap.lookup cardCode allEncounterCards)
         $ CardId (unTreacheryId tid)
   in

@@ -95,7 +95,7 @@ data Modifier
   | AnySkillValue Int Source
   | UseSkillInPlaceOf SkillType SkillType Source
   | XPModifier Int Source
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
 data ActionTarget

@@ -13,6 +13,6 @@ data ClassSymbol
   | Rogue
   | Mystic
   | Neutral
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

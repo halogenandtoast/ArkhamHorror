@@ -24,6 +24,7 @@ allSkills "01025" = viciousBlow
 allSkills "01039" = deduction
 allSkills "01067" = fearless
 allSkills "01089" = guts
+allSkills "01090" = perception
 allSkills "01091" = overpower
 allSkills "01092" = manualDexterity
 allSkills "01093" = unexpectedCourage
@@ -66,6 +67,15 @@ guts
   -> SkillTestResult
   -> m ()
 guts iid = \case
+  SucceededBy _ -> unshiftMessage (AddOnSuccess (DrawCards iid 1 False))
+  _ -> pure ()
+
+perception
+  :: (MonadReader env m, GameRunner env, MonadIO m)
+  => InvestigatorId
+  -> SkillTestResult
+  -> m ()
+perception iid = \case
   SucceededBy _ -> unshiftMessage (AddOnSuccess (DrawCards iid 1 False))
   _ -> pure ()
 

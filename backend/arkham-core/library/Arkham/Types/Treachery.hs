@@ -23,6 +23,7 @@ import Arkham.Types.Treachery.Cards.DreamsOfRlyeh
 import Arkham.Types.Treachery.Cards.FalseLead
 import Arkham.Types.Treachery.Cards.FrozenInFear
 import Arkham.Types.Treachery.Cards.GraspingHands
+import Arkham.Types.Treachery.Cards.HospitalDebts
 import Arkham.Types.Treachery.Cards.HuntingShadow
 import Arkham.Types.Treachery.Cards.Hypochondria
 import Arkham.Types.Treachery.Cards.LockedDoor
@@ -49,6 +50,7 @@ lookupTreachery =
 allTreacheries :: HashMap CardCode (TreacheryId -> Treachery)
 allTreacheries = HashMap.fromList
   [ ("01007", CoverUp' . coverUp)
+  , ("01011", HospitalDebts' . hospitalDebts)
   , ("01096", Amnesia' . amnesia)
   , ("01097", Paranoia' . paranoia)
   , ("01099", Psychosis' . psychosis)
@@ -82,6 +84,7 @@ instance HasCount DoomCount () Treachery where
 
 data Treachery
   = CoverUp' CoverUp
+  | HospitalDebts' HospitalDebts
   | Amnesia' Amnesia
   | Paranoia' Paranoia
   | Psychosis' Psychosis
@@ -108,6 +111,7 @@ data Treachery
 treacheryAttrs :: Treachery -> Attrs
 treacheryAttrs = \case
   CoverUp' (CoverUp (attrs `With` _)) -> attrs
+  HospitalDebts' (HospitalDebts (attrs `With` _)) -> attrs
   Amnesia' attrs -> coerce attrs
   Paranoia' attrs -> coerce attrs
   Psychosis' attrs -> coerce attrs
@@ -132,6 +136,7 @@ treacheryAttrs = \case
 instance (ActionRunner env investigator) => HasActions env investigator Treachery where
   getActions i window = \case
     CoverUp' x -> getActions i window x
+    HospitalDebts' x -> getActions i window x
     Amnesia' x -> getActions i window x
     Paranoia' x -> getActions i window x
     Psychosis' x -> getActions i window x
@@ -162,6 +167,7 @@ treacheryLocation = treacheryAttachedLocation . treacheryAttrs
 instance (TreacheryRunner env) => RunMessage env Treachery where
   runMessage msg = \case
     CoverUp' x -> CoverUp' <$> runMessage msg x
+    HospitalDebts' x -> HospitalDebts' <$> runMessage msg x
     Amnesia' x -> Amnesia' <$> runMessage msg x
     Paranoia' x -> Paranoia' <$> runMessage msg x
     Psychosis' x -> Psychosis' <$> runMessage msg x

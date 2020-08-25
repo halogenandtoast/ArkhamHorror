@@ -23,14 +23,14 @@ rabbitsFoot uuid =
   RabbitsFoot $ (baseAttrs uuid "01075") { assetSlots = [AccessorySlot] }
 
 instance (IsInvestigator investigator) => HasActions env investigator RabbitsFoot where
-  getActions i (AfterFailSkillTest You) (RabbitsFoot Attrs {..})
+  getActions i (AfterFailSkillTest You n) (RabbitsFoot Attrs {..})
     | Just (getId () i) == assetInvestigator = pure
       [ ActivateCardAbilityAction
           (getId () i)
           (mkAbility
             (AssetSource assetId)
             1
-            (ReactionAbility (AfterFailSkillTest You))
+            (ReactionAbility (AfterFailSkillTest You n))
           )
       ]
   getActions i window (RabbitsFoot x) = getActions i window x

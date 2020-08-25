@@ -1198,6 +1198,28 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
             )
         unshiftMessage (FocusCards $ map PlayerCard cards)
         pure $ a & deck .~ Deck deck'
+    SearchDiscard iid (InvestigatorTarget iid') traits
+      | iid' == investigatorId -> do
+        let traits' = HashSet.fromList traits
+        unshiftMessage
+          (Ask iid $ ChooseOne
+            [ Run
+                [ AddFocusedToHand
+                  iid
+                  (InvestigatorTarget iid')
+                  (getCardId card)
+                , RemoveFromDiscard iid (getCardId card)
+                ]
+            | card <- investigatorDiscard
+            , null traits'
+              || traits'
+              `intersection` HashSet.fromList (pcTraits card)
+              == traits'
+            ]
+          )
+        a <$ unshiftMessage (FocusCards $ map PlayerCard investigatorDiscard)
+    RemoveFromDiscard iid cardId | iid == investigatorId ->
+      pure $ a & discard %~ filter ((/= cardId) . getCardId)
     SufferTrauma iid physical mental | iid == investigatorId ->
       pure $ a & physicalTrauma +~ physical & mentalTrauma +~ mental
     GainXP iid amount | iid == investigatorId -> pure $ a & xp +~ amount
@@ -1212,10 +1234,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       pure $ a & clues .~ 0
     RemoveDiscardFromGame iid | iid == investigatorId ->
       pure $ a & discard .~ []
-    After (FailedSkillTest iid _) | iid == investigatorId -> do
-      a <$ unshiftMessage (CheckFastWindow iid [AfterFailSkillTest You])
-    After (PassedSkillTest iid _) | iid == investigatorId -> do
-      a <$ unshiftMessage (CheckFastWindow iid [AfterPassSkillTest You])
+    After (FailedSkillTest iid n) | iid == investigatorId -> do
+      a <$ unshiftMessage (CheckFastWindow iid [AfterFailSkillTest You n])
+    After (PassedSkillTest iid n) | iid == investigatorId -> do
+      a <$ unshiftMessage (CheckFastWindow iid [AfterPassSkillTest You n])
     PlayerWindow iid additionalActions | iid == investigatorId -> do
       actions <- asks (join (getActions a NonFast))
       fastActions <- asks (join (getActions a (DuringTurn You)))

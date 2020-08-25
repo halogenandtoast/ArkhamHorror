@@ -166,6 +166,7 @@ allPlayerCards = HashMap.fromList
   , ("01066", blindingLight)
   , ("01067", fearless)
   , ("01072", leatherCoat)
+  , ("01073", scavenging)
   , ("01074", baseballBat)
   , ("01075", rabbitsFoot)
   , ("01086", knife)
@@ -413,6 +414,12 @@ leatherCoat :: CardId -> PlayerCard
 leatherCoat cardId = (asset cardId "01072" "Leather Coat" 0 Survivor)
   { pcSkills = [SkillCombat]
   , pcTraits = [Item, Armor]
+  }
+
+scavenging :: CardId -> PlayerCard
+scavenging cardId = (asset cardId "01073" "Scavending" 1 Survivor)
+  { pcSkills = [SkillIntellect]
+  , pcTraits = [Talent]
   }
 
 baseballBat :: CardId -> PlayerCard

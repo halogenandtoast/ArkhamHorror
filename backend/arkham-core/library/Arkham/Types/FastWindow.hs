@@ -16,6 +16,7 @@ data FastWindow
   = WhenDrawTreachery Who Bool -- < is weakness
   | WhenEnemyAttacks Who
   | WhenEnemyDefeated Who
+  | WhenDrawToken Who
   | DuringTurn Who
   | WhenDiscoverClues Who Where
   | WhenSkillTest SkillType

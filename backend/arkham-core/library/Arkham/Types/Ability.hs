@@ -17,6 +17,7 @@ data AbilityLimit
   | OncePerPhase
   | OncePerRound
   | OncePerTurn
+  | OncePerTestOrAbility
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -177,6 +177,12 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         & (onTokenResponses .~ onTokenResponses')
     DrawAnotherToken _ _ _ valueModifier' ->
       pure $ s & valueModifier +~ valueModifier'
+    PassSkillTest -> do
+      unshiftMessages
+        [ Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
+        , SkillTestEnds
+        ]
+      pure $ s & result .~ SucceededBy 0
     FailSkillTest -> do
       unshiftMessages
         [ Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]

@@ -195,6 +195,7 @@ data Message
   | SkillTestUncommitCard InvestigatorId CardId
   | AddOnFailure Message
   | AddOnSuccess Message
+  | PassSkillTest
   | FailSkillTest
   | InvestigatorPlaceCluesOnLocation InvestigatorId Int
   | InvestigatorPlaceAllCluesOnLocation InvestigatorId
@@ -304,6 +305,7 @@ data Message
   | PlaceDoom Target Int
   | Surge InvestigatorId
   | Will Message
+  | When Message
   | After Message
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

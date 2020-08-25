@@ -14,6 +14,7 @@ import Arkham.Types.Helpers
 import Arkham.Types.LocationId
 import Arkham.Types.Query
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Cards.AbandonedAndAlone
 import Arkham.Types.Treachery.Cards.Amnesia
 import Arkham.Types.Treachery.Cards.AncientEvils
 import Arkham.Types.Treachery.Cards.CoverUp
@@ -51,6 +52,7 @@ allTreacheries :: HashMap CardCode (TreacheryId -> Treachery)
 allTreacheries = HashMap.fromList
   [ ("01007", CoverUp' . coverUp)
   , ("01011", HospitalDebts' . hospitalDebts)
+  , ("01015", AbandonedAndAlone' . abandonedAndAlone)
   , ("01096", Amnesia' . amnesia)
   , ("01097", Paranoia' . paranoia)
   , ("01099", Psychosis' . psychosis)
@@ -85,6 +87,7 @@ instance HasCount DoomCount () Treachery where
 data Treachery
   = CoverUp' CoverUp
   | HospitalDebts' HospitalDebts
+  | AbandonedAndAlone' AbandonedAndAlone
   | Amnesia' Amnesia
   | Paranoia' Paranoia
   | Psychosis' Psychosis
@@ -112,6 +115,7 @@ treacheryAttrs :: Treachery -> Attrs
 treacheryAttrs = \case
   CoverUp' (CoverUp (attrs `With` _)) -> attrs
   HospitalDebts' (HospitalDebts (attrs `With` _)) -> attrs
+  AbandonedAndAlone' attrs -> coerce attrs
   Amnesia' attrs -> coerce attrs
   Paranoia' attrs -> coerce attrs
   Psychosis' attrs -> coerce attrs
@@ -137,6 +141,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Treacher
   getActions i window = \case
     CoverUp' x -> getActions i window x
     HospitalDebts' x -> getActions i window x
+    AbandonedAndAlone' x -> getActions i window x
     Amnesia' x -> getActions i window x
     Paranoia' x -> getActions i window x
     Psychosis' x -> getActions i window x
@@ -168,6 +173,7 @@ instance (TreacheryRunner env) => RunMessage env Treachery where
   runMessage msg = \case
     CoverUp' x -> CoverUp' <$> runMessage msg x
     HospitalDebts' x -> HospitalDebts' <$> runMessage msg x
+    AbandonedAndAlone' x -> AbandonedAndAlone' <$> runMessage msg x
     Amnesia' x -> Amnesia' <$> runMessage msg x
     Paranoia' x -> Paranoia' <$> runMessage msg x
     Psychosis' x -> Psychosis' <$> runMessage msg x

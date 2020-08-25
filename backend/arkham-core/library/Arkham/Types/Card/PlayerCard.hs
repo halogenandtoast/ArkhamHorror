@@ -137,6 +137,7 @@ allPlayerCards = HashMap.fromList
   , ("01010", onTheLam)
   , ("01012", heirloomOfHyperborea)
   , ("01013", darkMemory)
+  , ("01015", abandonedAndAlone)
   , ("01016", fortyFiveAutomatic)
   , ("01017", physicalTraining)
   , ("01018", beatCop)
@@ -220,6 +221,12 @@ heirloomOfHyperborea cardId =
 darkMemory :: CardId -> PlayerCard
 darkMemory cardId =
   (event cardId "01013" "Dark Memory" 2 Neutral) { pcTraits = [Spell] }
+
+abandonedAndAlone :: CardId -> PlayerCard
+abandonedAndAlone cardId = (treachery cardId "01015" "Abandoned and Alone" 0)
+  { pcTraits = [Madness]
+  , pcRevelation = True
+  }
 
 fortyFiveAutomatic :: CardId -> PlayerCard
 fortyFiveAutomatic cardId = (asset cardId "01016" ".45 Automatic" 4 Guardian)

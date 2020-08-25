@@ -11,6 +11,7 @@ import Arkham.Types.Event.Cards.Dodge
 import Arkham.Types.Event.Cards.DynamiteBlast
 import Arkham.Types.Event.Cards.EmergencyCache
 import Arkham.Types.Event.Cards.Evidence
+import Arkham.Types.Event.Cards.Lucky
 import Arkham.Types.Event.Cards.MindOverMatter
 import Arkham.Types.Event.Cards.OnTheLam
 import Arkham.Types.Event.Cards.WardOfProtection
@@ -34,5 +35,6 @@ allEvents "01037" = workingAHunch
 allEvents "01051" = backstab
 allEvents "01065" = wardOfProtection
 allEvents "01066" = blindingLight
+allEvents "01080" = lucky
 allEvents "01088" = emergencyCache
 allEvents evid = const (throwString $ "No event with id: " <> show evid)

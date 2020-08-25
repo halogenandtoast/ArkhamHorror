@@ -20,6 +20,7 @@ data Target
   | InvestigatorTarget InvestigatorId
   | LocationTarget LocationId
   | SkillTestTarget
+  | AfterSkillTestTarget
   | TreacheryTarget TreacheryId
   | EncounterDeckTarget
   | AgendaTarget AgendaId

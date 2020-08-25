@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8e99078829ef35b27f167eb4a440699807ae1f84cf35ee3f8c5ef6388803df27
+-- hash: 8b7e7d6a1e27ae19e2d192e8df28c9f06e763f398048c4a1f0f4a6ccee38e02e
 
 name:           arkham-core
 version:        0.0.0
@@ -127,6 +127,7 @@ library
       Arkham.Types.Event.Cards.DynamiteBlast
       Arkham.Types.Event.Cards.EmergencyCache
       Arkham.Types.Event.Cards.Evidence
+      Arkham.Types.Event.Cards.Lucky
       Arkham.Types.Event.Cards.MindOverMatter
       Arkham.Types.Event.Cards.OnTheLam
       Arkham.Types.Event.Cards.WardOfProtection

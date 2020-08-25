@@ -170,6 +170,7 @@ allPlayerCards = HashMap.fromList
   , ("01073", scavenging)
   , ("01074", baseballBat)
   , ("01075", rabbitsFoot)
+  , ("01080", lucky)
   , ("01086", knife)
   , ("01087", flashlight)
   , ("01088", emergencyCache)
@@ -439,6 +440,13 @@ rabbitsFoot :: CardId -> PlayerCard
 rabbitsFoot cardId = (asset cardId "01075" "Rabbit's Foot" 1 Survivor)
   { pcSkills = [SkillWild]
   , pcTraits = [Item, Charm]
+  }
+
+lucky :: CardId -> PlayerCard
+lucky cardId = (event cardId "01080" "Lucky!" 1 Survivor)
+  { pcTraits = [Fortune]
+  , pcFast = True
+  , pcFastWindows = HashSet.fromList [WhenWouldFailSkillTest You]
   }
 
 knife :: CardId -> PlayerCard

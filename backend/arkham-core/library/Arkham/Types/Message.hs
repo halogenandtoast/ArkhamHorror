@@ -193,6 +193,7 @@ data Message
   | SkillTestDidFailBy InvestigatorId Target Int
   | SkillTestResults
   | SkillTestApplyResults
+  | SkillTestApplyResultsAfterSkills
   | RunSkill InvestigatorId CardCode SkillTestResult
   | SkillTestCommitCard InvestigatorId CardId
   | SkillTestAsk Message

@@ -534,6 +534,9 @@ instance HasSet Trait EnemyId Game where
 instance HasSet InvestigatorId EnemyId Game where
   getSet eid = getEngagedInvestigators . getEnemy eid
 
+instance HasSet AgendaId () Game where
+  getSet _ = HashMap.keysSet . view agendas
+
 instance HasSet VictoryDisplayCardCode () Game where
   getSet _ =
     HashSet.fromList

@@ -9,7 +9,6 @@ import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target

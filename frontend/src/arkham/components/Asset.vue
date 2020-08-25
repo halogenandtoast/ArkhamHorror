@@ -92,8 +92,8 @@ export default class Asset extends Vue {
 
   canInteract(c: Message): boolean {
     switch (c.tag) {
-      case MessageType.DISCARD_ASSET:
-        return c.contents === this.id;
+      case MessageType.DISCARD:
+        return c.contents.contents === this.id;
       case MessageType.USE_CARD_ABILITY:
         return c.contents[1].contents === this.id;
       case MessageType.RUN:

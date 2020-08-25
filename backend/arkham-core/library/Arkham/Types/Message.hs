@@ -308,6 +308,8 @@ data Message
   | Surge InvestigatorId
   | RevealInHand CardId
   | RemoveDiscardFromGame InvestigatorId
+  | FailedSkillTest InvestigatorId Int
+  | PassedSkillTest InvestigatorId Int
   | Will Message
   | When Message
   | After Message

@@ -15,6 +15,7 @@ import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Lens.Micro
+import Safe (fromJustNote)
 
 newtype HospitalDebtsMetadata = HospitalDebtsMetadata { hospitalDebtsResources :: Int }
   deriving stock (Show, Generic)
@@ -62,17 +63,21 @@ instance (ActionRunner env investigator) => HasActions env investigator Hospital
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env HospitalDebts where
-  runMessage msg (HospitalDebts (attrs@Attrs {..} `With` metadata@HospitalDebtsMetadata {..}))
+  runMessage msg t@(HospitalDebts (attrs@Attrs {..} `With` metadata@HospitalDebtsMetadata {..}))
     = case msg of
       Revelation iid tid | tid == treacheryId -> do
         unshiftMessages
           [ RemoveCardFromHand iid "01011"
           , AttachTreacheryToInvestigator tid iid
-          , AddModifier (InvestigatorTarget iid) (XPModifier (-2) (TreacherySource tid))
           ]
         HospitalDebts . (`with` metadata) <$> runMessage
           msg
           (attrs & attachedInvestigator ?~ iid)
+      EndOfGame | hospitalDebtsResources < 6 ->
+        let
+          investigator =
+            fromJustNote "missing investigator" treacheryAttachedInvestigator
+        in t <$ unshiftMessage (AddModifier (InvestigatorTarget investigator) (XPModifier (-2) (TreacherySource treacheryId)))
       UseCardAbility iid _ (TreacherySource tid) 1 | tid == treacheryId -> do
         unshiftMessage (SpendResources iid 1)
         pure $ HospitalDebts (attrs `with` HospitalDebtsMetadata (hospitalDebtsResources + 1))

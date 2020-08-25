@@ -36,6 +36,7 @@ sourceOfModifier (ReduceCostOf _ _ s) = s
 sourceOfModifier (EnemyFight _ s) = s
 sourceOfModifier (EnemyEvade _ s) = s
 sourceOfModifier (CannotBeAttackedByNonElite s) = s
+sourceOfModifier (XPModifier _ s) = s
 
 replaceModifierSource :: Source -> Modifier -> Modifier
 replaceModifierSource s (ActionCostOf a b _) = ActionCostOf a b s
@@ -61,6 +62,7 @@ replaceModifierSource s (EnemyFight a _) = EnemyFight a s
 replaceModifierSource s (EnemyEvade a _) = EnemyEvade a s
 replaceModifierSource s (CannotBeAttackedByNonElite _) =
   CannotBeAttackedByNonElite s
+replaceModifierSource s (XPModifier a _) = XPModifier a s
 
 data Modifier
   = ActionCostOf ActionTarget Int Source
@@ -83,6 +85,7 @@ data Modifier
   | DoubleNegativeModifiersOnTokens Source
   | CannotBeAttackedByNonElite Source
   | ReduceCostOf [Trait] Int Source
+  | XPModifier Int Source
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
 

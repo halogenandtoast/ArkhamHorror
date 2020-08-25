@@ -27,7 +27,7 @@ data EncounterCard = MkEncounterCard
   , ecId :: CardId
   , ecVictoryPoints :: Maybe Int
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
 
 lookupEncounterCard :: CardCode -> (CardId -> EncounterCard)
 lookupEncounterCard cardCode =

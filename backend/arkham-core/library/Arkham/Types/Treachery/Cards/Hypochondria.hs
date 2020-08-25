@@ -18,7 +18,7 @@ newtype Hypochondria = Hypochondria Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 hypochondria :: TreacheryId -> Hypochondria
-hypochondria uuid = Hypochondria $ baseAttrs uuid "01100"
+hypochondria uuid = Hypochondria $ weaknessAttrs uuid "01100"
 
 instance (ActionRunner env investigator) => HasActions env investigator Hypochondria where
   getActions i NonFast (Hypochondria Attrs {..}) =

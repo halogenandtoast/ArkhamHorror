@@ -18,7 +18,7 @@ newtype Psychosis = Psychosis Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 psychosis :: TreacheryId -> Psychosis
-psychosis uuid = Psychosis $ baseAttrs uuid "01099"
+psychosis uuid = Psychosis $ weaknessAttrs uuid "01099"
 
 instance (ActionRunner env investigator) => HasActions env investigator Psychosis where
   getActions i NonFast (Psychosis Attrs {..}) =

@@ -8,5 +8,5 @@ import Arkham.Types.Token
 import ClassyPrelude
 
 data TokenResponse a = OnAnyToken [Token] [a]
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

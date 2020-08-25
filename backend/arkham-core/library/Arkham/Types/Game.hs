@@ -103,6 +103,7 @@ data Game = Game
   , giPlayerCount :: Int
   , giUsedAbilities :: [(InvestigatorId, Ability)]
   , giFocusedCards :: [Card]
+  , giFocusedTokens :: [Token]
   , giActiveCard :: Maybe Card
   , giVictoryDisplay :: [Card]
   }
@@ -140,6 +141,9 @@ pending = lens giPending $ \m x -> m { giPending = x }
 
 focusedCards :: Lens' Game [Card]
 focusedCards = lens giFocusedCards $ \m x -> m { giFocusedCards = x }
+
+focusedTokens :: Lens' Game [Token]
+focusedTokens = lens giFocusedTokens $ \m x -> m { giFocusedTokens = x }
 
 activeCard :: Lens' Game (Maybe Card)
 activeCard = lens giActiveCard $ \m x -> m { giActiveCard = x }
@@ -278,6 +282,7 @@ newCampaign campaignId playerCount' investigatorsList difficulty' = do
     , giPending = HashMap.size investigatorsMap /= playerCount'
     , giUsedAbilities = mempty
     , giFocusedCards = mempty
+    , giFocusedTokens = mempty
     , giActiveCard = Nothing
     , giPlayerOrder = map
       (getInvestigatorId . fst)
@@ -917,6 +922,8 @@ runGameMessage msg g = case msg of
       & (chaosBag .~ chaosBag')
       & (phase .~ InvestigationPhase)
   FocusCards cards -> pure $ g & focusedCards .~ cards
+  FocusTokens tokens -> pure $ g & focusedTokens .~ tokens
+  UnfocusTokens -> pure $ g & focusedTokens .~ mempty
   ChooseLeadInvestigator -> if HashMap.size (g ^. investigators) == 1
     then pure g
     else g <$ unshiftMessage
@@ -1119,7 +1126,8 @@ runGameMessage msg g = case msg of
           CannotBeAttackedByNonElite{} -> True
           _ -> False
       enemy = getEnemy eid g
-      canAttack = cannotBeAttackedByNonElites || Elite `elem` getTraits enemy
+      canAttack =
+        not cannotBeAttackedByNonElites || (Elite `elem` getTraits enemy)
     if canAttack
       then do
         mNextMessage <- peekMessage
@@ -1141,7 +1149,8 @@ runGameMessage msg g = case msg of
                   _ -> False
               enemy2 = getEnemy eid2 g
               canAttack2 =
-                cannotBeAttackedByNonElites2 || Elite `elem` getTraits enemy2
+                not cannotBeAttackedByNonElites2
+                  || (Elite `elem` getTraits enemy2)
             if canAttack2
               then unshiftMessage
                 (EnemyAttacks [EnemyAttack iid eid, EnemyAttack iid2 eid2])
@@ -1562,6 +1571,7 @@ toExternalGame Game {..} mq = do
     , gUsedAbilities = giUsedAbilities
     , gQuestion = mq
     , gFocusedCards = giFocusedCards
+    , gFocusedTokens = giFocusedTokens
     , gActiveCard = giActiveCard
     , gPlayerOrder = giPlayerOrder
     , gPlayerCount = giPlayerCount
@@ -1599,6 +1609,7 @@ toInternalGame' ref GameJson {..} = Game
   , giPending = gPending
   , giUsedAbilities = gUsedAbilities
   , giFocusedCards = gFocusedCards
+  , giFocusedTokens = gFocusedTokens
   , giActiveCard = gActiveCard
   , giPlayerOrder = gPlayerOrder
   , giVictoryDisplay = gVictoryDisplay

@@ -53,6 +53,7 @@ data GameJson = GameJson
   , gUsedAbilities :: [(InvestigatorId, Ability)]
   , gQuestion :: HashMap InvestigatorId Question
   , gFocusedCards :: [Card]
+  , gFocusedTokens :: [Token]
   , gActiveCard :: Maybe Card
   , gPlayerOrder :: [InvestigatorId]
   , gVictoryDisplay :: [Card]

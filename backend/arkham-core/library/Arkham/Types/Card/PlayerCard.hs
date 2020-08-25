@@ -47,7 +47,7 @@ data PlayerCard = MkPlayerCard
   , pcRevelation :: Bool
   , pcVictoryPoints :: Maybe Int
   }
-  deriving stock (Show, Generic)
+  deriving stock (Show, Eq, Generic)
 
 instance ToJSON PlayerCard where
   toJSON = genericToJSON $ aesonOptions $ Just "pc"
@@ -175,6 +175,7 @@ allPlayerCards = HashMap.fromList
   , ("01087", flashlight)
   , ("01088", emergencyCache)
   , ("01089", guts)
+  , ("01090", perception)
   , ("01091", overpower)
   , ("01092", manualDexterity)
   , ("01093", unexpectedCourage)
@@ -469,6 +470,12 @@ guts :: CardId -> PlayerCard
 guts cardId =
   (skill cardId "01089" "Guts" [SkillWillpower, SkillWillpower] Neutral)
     { pcTraits = [Innate]
+    }
+
+perception :: CardId -> PlayerCard
+perception cardId =
+  (skill cardId "01090" "Perceptions" [SkillIntellect, SkillIntellect] Neutral)
+    { pcTraits = [Practiced]
     }
 
 overpower :: CardId -> PlayerCard

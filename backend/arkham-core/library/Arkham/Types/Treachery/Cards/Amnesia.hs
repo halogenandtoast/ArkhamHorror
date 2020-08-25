@@ -15,7 +15,7 @@ newtype Amnesia = Amnesia Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 amnesia :: TreacheryId -> Amnesia
-amnesia uuid = Amnesia $ baseAttrs uuid "01096"
+amnesia uuid = Amnesia $ weaknessAttrs uuid "01096"
 
 instance HasActions env investigator Amnesia where
   getActions i window (Amnesia attrs) = getActions i window attrs

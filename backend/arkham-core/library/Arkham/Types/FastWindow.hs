@@ -1,6 +1,7 @@
 module Arkham.Types.FastWindow where
 
 import Arkham.Types.SkillType
+import Arkham.Types.Token
 import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
@@ -17,7 +18,7 @@ data FastWindow
   = WhenDrawTreachery Who Bool -- < is weakness
   | WhenEnemyAttacks Who
   | WhenEnemyDefeated Who
-  | WhenDrawToken Who
+  | WhenDrawToken Who Token
   | WhenWouldFailSkillTest Who
   | DuringTurn Who
   | WhenDiscoverClues Who Where

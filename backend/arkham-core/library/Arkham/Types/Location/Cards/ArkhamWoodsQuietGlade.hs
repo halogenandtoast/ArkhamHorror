@@ -43,7 +43,7 @@ instance (ActionRunner env investigator) => HasActions env investigator ArkhamWo
     let
       ability = (mkAbility (LocationSource "01155") 1 (ActionAbility 1 Nothing)
                 )
-        { abilityLimit = OncePerTurn
+        { abilityLimit = PerTurn
         }
     pure
       $ baseActions

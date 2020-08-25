@@ -1084,7 +1084,7 @@ runGameMessage msg g = case msg of
   AddAct aid -> pure $ g & acts . at aid ?~ lookupAct aid
   AddAgenda aid -> pure $ g & agendas . at aid ?~ lookupAgenda aid
   SkillTestEnds -> pure $ g & skillTest .~ Nothing & usedAbilities %~ filter
-    (\(_, Ability {..}) -> abilityLimit /= OncePerTestOrAbility)
+    (\(_, Ability {..}) -> abilityLimit /= PerTestOrAbility)
   ReturnTokens tokens -> pure $ g & chaosBag %~ (tokens <>)
   AddToken token -> pure $ g & chaosBag %~ (token :)
   PlayCard iid cardId False -> do
@@ -1311,18 +1311,18 @@ runGameMessage msg g = case msg of
       ]
     pure g
   ChooseEndTurn iid -> pure $ g & usedAbilities %~ filter
-    (\(iid', Ability {..}) -> iid' /= iid && abilityLimit /= OncePerTurn)
+    (\(iid', Ability {..}) -> iid' /= iid && abilityLimit /= PerTurn)
   EndInvestigation -> do
     pushMessage BeginEnemy
     pure $ g & usedAbilities %~ filter
-      (\(_, Ability {..}) -> abilityLimit /= OncePerPhase)
+      (\(_, Ability {..}) -> abilityLimit /= PerPhase)
   BeginEnemy -> do
     pushMessages [HuntersMove, EnemiesAttack, EndEnemy]
     pure $ g & phase .~ EnemyPhase
   EndEnemy -> do
     pushMessage BeginUpkeep
     pure $ g & usedAbilities %~ filter
-      (\(_, Ability {..}) -> abilityLimit /= OncePerPhase)
+      (\(_, Ability {..}) -> abilityLimit /= PerPhase)
   BeginUpkeep -> do
     pushMessages
       [ReadyExhausted, AllDrawCardAndResource, AllCheckHandSize, EndUpkeep]
@@ -1330,11 +1330,11 @@ runGameMessage msg g = case msg of
   EndUpkeep -> do
     pushMessages [EndRoundWindow, EndRound]
     pure $ g & usedAbilities %~ filter
-      (\(_, Ability {..}) -> abilityLimit /= OncePerPhase)
+      (\(_, Ability {..}) -> abilityLimit /= PerPhase)
   EndRound -> do
     pushMessage BeginRound
     pure $ g & usedAbilities %~ filter
-      (\(_, Ability {..}) -> abilityLimit /= OncePerRound)
+      (\(_, Ability {..}) -> abilityLimit /= PerRound)
   BeginRound -> g <$ pushMessage BeginMythos
   BeginMythos -> do
     pushMessages
@@ -1347,7 +1347,7 @@ runGameMessage msg g = case msg of
   EndMythos -> do
     pushMessage BeginInvestigation
     pure $ g & usedAbilities %~ filter
-      (\(_, Ability {..}) -> abilityLimit /= OncePerPhase)
+      (\(_, Ability {..}) -> abilityLimit /= PerPhase)
   BeginSkillTest iid source maction skillType difficulty onSuccess onFailure skillTestModifiers tokenResponses
     -> do
       let

@@ -46,7 +46,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Hospital
                 1
                 (FastAbility (DuringTurn You))
               )
-              { abilityLimit = OncePerRound
+              { abilityLimit = PerRound
               }
         usedAbilities <- map unUsedAbility <$> asks (getList ())
         pure

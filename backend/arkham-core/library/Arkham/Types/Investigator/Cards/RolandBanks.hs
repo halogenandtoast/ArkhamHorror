@@ -42,7 +42,7 @@ instance (ActionRunner env investigator) => HasActions env investigator RolandBa
                     1
                     (ReactionAbility (Fast.WhenEnemyDefeated You))
                   )
-          { abilityLimit = OncePerRound
+          { abilityLimit = PerRound
           }
       usedAbilities <- map unUsedAbility <$> asks (getList ())
       pure

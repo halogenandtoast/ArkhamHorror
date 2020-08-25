@@ -44,7 +44,7 @@ instance (ActionRunner env investigator) => HasActions env investigator WendyAda
                     1
                     (ReactionAbility (WhenDrawToken You))
                   )
-          { abilityLimit = OncePerTestOrAbility
+          { abilityLimit = PerTestOrAbility
           }
       usedAbilities <- map unUsedAbility <$> asks (getList ())
       pure

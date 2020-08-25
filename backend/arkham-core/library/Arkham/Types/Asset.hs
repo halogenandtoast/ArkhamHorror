@@ -35,6 +35,7 @@ import Arkham.Types.Asset.Cards.PhysicalTraining
 import Arkham.Types.Asset.Cards.RabbitsFoot
 import Arkham.Types.Asset.Cards.ResearchLibrarian
 import Arkham.Types.Asset.Cards.Rolands38Special
+import Arkham.Types.Asset.Cards.Scavenging
 import Arkham.Types.Asset.Cards.Scrying
 import Arkham.Types.Asset.Cards.Shrivelling
 import Arkham.Types.Asset.Cards.TheNecronomicon
@@ -80,6 +81,7 @@ allAssets = HashMap.fromList
   , ("01060", Shrivelling' . shrivelling)
   , ("01061", Scrying' . scrying)
   , ("01072", LeatherCoat' . leatherCoat)
+  , ("01073", Scavenging' . scavenging)
   , ("01074", BaseballBat' . baseballBat)
   , ("01075", RabbitsFoot' . rabbitsFoot)
   , ("01086", Knife' . knife)
@@ -128,6 +130,7 @@ data Asset
   | Shrivelling' Shrivelling
   | Scrying' Scrying
   | LeatherCoat' LeatherCoat
+  | Scavenging' Scavenging
   | BaseballBat' BaseballBat
   | RabbitsFoot' RabbitsFoot
   | Knife' Knife
@@ -160,6 +163,7 @@ assetAttrs = \case
   Shrivelling' attrs -> coerce attrs
   Scrying' attrs -> coerce attrs
   LeatherCoat' attrs -> coerce attrs
+  Scavenging' attrs -> coerce attrs
   BaseballBat' attrs -> coerce attrs
   RabbitsFoot' attrs -> coerce attrs
   Knife' attrs -> coerce attrs
@@ -200,6 +204,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     Shrivelling' x -> getActions i window x
     Scrying' x -> getActions i window x
     LeatherCoat' x -> getActions i window x
+    Scavenging' x -> getActions i window x
     BaseballBat' x -> getActions i window x
     RabbitsFoot' x -> getActions i window x
     Knife' x -> getActions i window x
@@ -230,6 +235,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     Shrivelling' x -> Shrivelling' <$> runMessage msg x
     Scrying' x -> Scrying' <$> runMessage msg x
     LeatherCoat' x -> LeatherCoat' <$> runMessage msg x
+    Scavenging' x -> Scavenging' <$> runMessage msg x
     BaseballBat' x -> BaseballBat' <$> runMessage msg x
     RabbitsFoot' x -> RabbitsFoot' <$> runMessage msg x
     Knife' x -> Knife' <$> runMessage msg x

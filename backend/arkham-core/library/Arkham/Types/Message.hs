@@ -79,6 +79,8 @@ data Message
   | SearchCollectionForRandom InvestigatorId Source (PlayerCardType, Maybe Trait)
   | SearchDeckForTraits InvestigatorId Target [Trait]
   | SearchTopOfDeck InvestigatorId Target Int [Trait] LeftoverCardStrategy
+  | SearchDiscard InvestigatorId Target [Trait]
+  | RemoveFromDiscard InvestigatorId CardId
   | InitDeck InvestigatorId [PlayerCard]
   | LoadDeck InvestigatorId [PlayerCard]
   | BeginRound

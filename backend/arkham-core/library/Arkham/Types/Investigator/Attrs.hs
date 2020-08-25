@@ -846,13 +846,11 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         <> [PlayCard iid cardId False]
         )
     PlayedCard iid cardId discarded | iid == investigatorId -> do
-      let
-        card = fromJustNote "not in hand... spooky"
-          $ find ((== cardId) . getCardId) investigatorHand
-        discardUpdate = case card of
-          PlayerCard pc -> if discarded then discard %~ (pc :) else id
-          _ -> error "We should decide what happens here"
-      pure $ a & hand %~ filter ((/= cardId) . getCardId) & discardUpdate
+      when
+        discarded
+        (unshiftMessages [Will (DiscardCard iid cardId), DiscardCard iid cardId]
+        )
+      pure $ a & hand %~ filter ((/= cardId) . getCardId)
     InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
       let assetsUpdate = assets %~ HashSet.insert aid
       if not (null slotTypes)
@@ -1230,6 +1228,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       unshiftMessage
         (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
       pure $ a & clues .~ 0
+    RemoveDiscardFromGame iid | iid == investigatorId ->
+      pure $ a & discard .~ []
     PlayerWindow iid additionalActions | iid == investigatorId -> do
       actions <- asks (join (getActions a NonFast))
       fastActions <- asks (join (getActions a (DuringTurn You)))

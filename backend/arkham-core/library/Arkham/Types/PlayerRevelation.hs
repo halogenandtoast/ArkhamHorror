@@ -21,9 +21,13 @@ allPlayerRevelations
   -> m ()
 allPlayerRevelations "01007" = putIntoPlay -- cover up
 allPlayerRevelations "01009" = putIntoPlay -- the necronomicon
+allPlayerRevelations "01015" = putIntoPlay -- abandoned and alone
 allPlayerRevelations ptid =
   const (const (throwString $ "No relation for card with id: " <> show ptid))
 
 putIntoPlay
-  :: (MonadReader env m, GameRunner env, MonadIO m) => InvestigatorId -> CardId -> m ()
+  :: (MonadReader env m, GameRunner env, MonadIO m)
+  => InvestigatorId
+  -> CardId
+  -> m ()
 putIntoPlay iid cardId = unshiftMessage (PlayCard iid cardId False)

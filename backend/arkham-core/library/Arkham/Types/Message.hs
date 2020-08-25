@@ -307,6 +307,7 @@ data Message
   | PlaceDoom Target Int
   | Surge InvestigatorId
   | RevealInHand CardId
+  | RemoveDiscardFromGame InvestigatorId
   | Will Message
   | When Message
   | After Message

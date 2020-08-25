@@ -147,6 +147,7 @@ class (HasId InvestigatorId () investigator) => IsInvestigator investigator wher
   clueCount :: investigator -> Int
   spendableClueCount :: investigator -> Int
   cardCount :: investigator -> Int
+  discardableCardCount :: investigator -> Int
   canDo :: Action -> investigator -> Bool
   hasActionsRemaining :: investigator -> Bool
   canTakeDirectDamage :: investigator -> Bool

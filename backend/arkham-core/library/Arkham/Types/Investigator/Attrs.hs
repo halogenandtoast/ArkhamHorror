@@ -243,6 +243,11 @@ discardableAssets slotType a = case HashMap.lookup slotType (a ^. slots) of
   Nothing -> []
   Just slots' -> mapMaybe slotItem slots'
 
+discardableCards :: Attrs -> [Card]
+discardableCards Attrs {..} = if all cardIsWeakness investigatorHand
+  then investigatorHand
+  else filter (not . cardIsWeakness) investigatorHand
+
 getAttrStats :: Attrs -> Stats
 getAttrStats Attrs {..} = Stats
   { health = investigatorHealth
@@ -465,6 +470,7 @@ instance IsInvestigator Attrs where
   spendableClueCount a@Attrs {..} =
     if canSpendClues a then investigatorClues else 0
   cardCount Attrs {..} = length investigatorHand
+  discardableCardCount a = length $ discardableCards a
   canInvestigate location a@Attrs {..} =
     canDo Action.Investigate a && getId () location == investigatorLocation
   canMoveTo location a@Attrs {..} =
@@ -590,14 +596,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       pure a
     AddToDiscard iid pc | iid == investigatorId -> pure $ a & discard %~ (pc :)
     ChooseAndDiscardCard iid | iid == investigatorId -> do
-      let
-        discardable = if all cardIsWeakness investigatorHand
-          then investigatorHand
-          else filter (not . cardIsWeakness) investigatorHand
       a <$ unshiftMessage
         (Ask iid
         $ ChooseOne
-        $ [ DiscardCard iid (getCardId card) | card <- discardable ]
+        $ [ DiscardCard iid (getCardId card) | card <- discardableCards a ]
         )
     DiscardCard iid cardId | iid == investigatorId -> do
       let

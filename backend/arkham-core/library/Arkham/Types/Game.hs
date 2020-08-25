@@ -402,6 +402,13 @@ instance HasId (Maybe StoryAssetId) CardCode Game where
       . HashMap.toList
       . view assets
 
+instance HasId (Maybe AssetId) CardCode Game where
+  getId cardCode =
+    (fst <$>)
+      . find ((cardCode ==) . getCardCode . snd)
+      . HashMap.toList
+      . view assets
+
 instance HasId LocationId InvestigatorId Game where
   getId = locationFor
 
@@ -1377,7 +1384,11 @@ runGameMessage msg g = case msg of
           )
   TriggerSkillTest iid _ skillValue -> do
     (token, chaosBag') <- drawToken g
-    unshiftMessages [DrawToken token, ResolveToken token iid skillValue]
+    unshiftMessages
+      [ When (DrawToken token)
+      , DrawToken token
+      , ResolveToken token iid skillValue
+      ]
     pure $ g & (chaosBag .~ chaosBag')
   DrawAnotherToken iid skillValue _ _ -> do
     (token, chaosBag') <- drawToken g

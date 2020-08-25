@@ -379,6 +379,7 @@ backstab :: CardId -> PlayerCard
 backstab cardId = (event cardId "01051" "Backstab" 3 Rogue)
   { pcSkills = [SkillCombat, SkillAgility]
   , pcTraits = [Tactic]
+  , pcAction = Just Action.Fight
   }
 
 holyRosary :: CardId -> PlayerCard

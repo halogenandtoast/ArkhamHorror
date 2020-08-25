@@ -134,6 +134,7 @@ data Message
   | EngageEnemy InvestigatorId EnemyId Bool
   | UnengageEnemy InvestigatorId EnemyId
   | ChooseEndTurn InvestigatorId
+  | EndTurn InvestigatorId
   | CheckAttackOfOpportunity InvestigatorId Bool
   | TakeResources InvestigatorId Int Bool
   | SpendResources InvestigatorId Int
@@ -305,6 +306,7 @@ data Message
   | UnengageNonMatching InvestigatorId [Trait]
   | PlaceDoom Target Int
   | Surge InvestigatorId
+  | RevealInHand CardId
   | Will Message
   | When Message
   | After Message

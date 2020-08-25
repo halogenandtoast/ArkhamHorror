@@ -136,6 +136,7 @@ allPlayerCards = HashMap.fromList
   , ("01009", theNecronomicon)
   , ("01010", onTheLam)
   , ("01012", heirloomOfHyperborea)
+  , ("01013", darkMemory)
   , ("01016", fortyFiveAutomatic)
   , ("01017", physicalTraining)
   , ("01018", beatCop)
@@ -210,10 +211,15 @@ onTheLam cardId = (asset cardId "01010" "On the Lam" 1 Neutral)
   }
 
 heirloomOfHyperborea :: CardId -> PlayerCard
-heirloomOfHyperborea cardId = (asset cardId "01012" "Heirloom of Hyperborea" 3 Neutral)
-  { pcSkills = [SkillWillpower, SkillCombat, SkillWild]
-  , pcTraits = [Item, Relic]
-  }
+heirloomOfHyperborea cardId =
+  (asset cardId "01012" "Heirloom of Hyperborea" 3 Neutral)
+    { pcSkills = [SkillWillpower, SkillCombat, SkillWild]
+    , pcTraits = [Item, Relic]
+    }
+
+darkMemory :: CardId -> PlayerCard
+darkMemory cardId =
+  (event cardId "01013" "Dark Memory" 2 Neutral) { pcTraits = [Spell] }
 
 fortyFiveAutomatic :: CardId -> PlayerCard
 fortyFiveAutomatic cardId = (asset cardId "01016" ".45 Automatic" 4 Guardian)

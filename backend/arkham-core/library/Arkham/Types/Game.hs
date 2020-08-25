@@ -25,6 +25,7 @@ import Arkham.Types.Campaign
 import Arkham.Types.CampaignId
 import Arkham.Types.Card
 import Arkham.Types.Card.CardCode
+import Arkham.Types.Card.Forced
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
@@ -1310,7 +1311,18 @@ runGameMessage msg g = case msg of
       | iid <- investigatorIds
       ]
     pure g
-  ChooseEndTurn iid -> pure $ g & usedAbilities %~ filter
+  ChooseEndTurn iid -> do
+    effects <- filter (not . null)
+      <$> traverse (inHandAtEndOfRound iid) (handOf $ getInvestigator iid g)
+    unshiftMessage (EndTurn iid)
+    g <$ unless
+      (null effects)
+      (unshiftMessage
+        (Ask iid $ ChooseOneAtATime
+          [ if null xs then x else Run (x : xs) | (x : xs) <- effects ]
+        )
+      )
+  EndTurn iid -> pure $ g & usedAbilities %~ filter
     (\(iid', Ability {..}) -> iid' /= iid && abilityLimit /= PerTurn)
   EndInvestigation -> do
     pushMessage BeginEnemy

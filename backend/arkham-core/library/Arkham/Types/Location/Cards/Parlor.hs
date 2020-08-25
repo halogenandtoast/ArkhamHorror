@@ -52,7 +52,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Parlor w
                  ((mkAbility
                     (AssetSource aid)
                     1
-                    (ActionAbility 1 (Just Action.Parley))
+                    (ActionAbility 2 (Just Action.Parley))
                   )
                    { abilityProvider = LocationSource "01115"
                    }

@@ -56,10 +56,6 @@ infix 9 !!?
   go _ [] = Nothing
 {-# INLINE (!!?) #-}
 
-fromSet :: (Eq key) => HashSet key -> HashMap key value -> [value]
-fromSet hset =
-  HashMap.foldrWithKey (\k v vs -> if k `elem` hset then v : vs else vs) []
-
 drawCard :: [a] -> (Maybe a, [a])
 drawCard [] = (Nothing, [])
 drawCard (x : xs) = (Just x, xs)

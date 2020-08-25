@@ -11,7 +11,6 @@ module Arkham.Types.Card
   , HasCost(..)
   , HasCard(..)
   , BearerId(..)
-  , allCards
   , allPlayerCards
   , lookupPlayerCard
   , lookupEncounterCard
@@ -31,7 +30,6 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import ClassyPrelude
 import Data.Aeson
-import qualified Data.HashMap.Strict as HashMap
 
 data Card
   = PlayerCard PlayerCard
@@ -69,8 +67,3 @@ toEncounterCard _ = Nothing
 cardIsWeakness :: Card -> Bool
 cardIsWeakness (EncounterCard _) = False
 cardIsWeakness (PlayerCard pc) = pcWeakness pc
-
-allCards :: HashMap CardCode (CardId -> Card)
-allCards =
-  HashMap.map (PlayerCard .) allPlayerCards
-    <> HashMap.map (EncounterCard .) allEncounterCards

@@ -15,7 +15,6 @@ import Arkham.Types.Target
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
 import Lens.Micro
-import Safe (fromJustNote)
 
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
   deriving newtype (Show, IsString, ToJSON, FromJSON)
@@ -58,7 +57,7 @@ instance (ScenarioRunner env) => RunMessage env Attrs where
       agendaIds <- HashSet.toList <$> asks (getSet @AgendaId ())
       case agendaIds of
         [] -> pure a
-        (x : _) -> a <$ unshiftMessage (PlaceDoom (AgendaTarget x) 1)
+        [x] -> a <$ unshiftMessage (PlaceDoom (AgendaTarget x) 1)
         _ -> error "multiple agendas should be handled by the scenario"
     Discard (ActTarget _) -> pure $ a & actStack .~ []
     -- ^ See: Vengeance Awaits / The Devourer Below - right now the assumption

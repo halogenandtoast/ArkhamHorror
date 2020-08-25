@@ -4,7 +4,6 @@ module Arkham.Types.Investigator
   , investigatorAttrs
   , hasEndedTurn
   , hasResigned
-  , hasClues
   , hasSpendableClues
   , isDefeated
   , remainingHealth
@@ -77,7 +76,6 @@ import Data.Aeson
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
-import Lens.Micro
 import Lens.Micro.Extras
 import Safe (fromJustNote)
 
@@ -426,9 +424,6 @@ hasResigned = view resigned . investigatorAttrs
 
 isDefeated :: Investigator -> Bool
 isDefeated = view defeated . investigatorAttrs
-
-hasClues :: Investigator -> Bool
-hasClues i = investigatorAttrs i ^. clues > 0
 
 hasSpendableClues :: Investigator -> Bool
 hasSpendableClues i = spendableClueCount (investigatorAttrs i) > 0

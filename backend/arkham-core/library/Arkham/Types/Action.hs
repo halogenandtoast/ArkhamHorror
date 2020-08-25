@@ -17,6 +17,3 @@ data Action
   | Resource
   deriving stock (Show, Eq, Ord, Enum, Bounded, Generic)
   deriving anyclass (ToJSON, FromJSON)
-
-allActions :: [Action]
-allActions = [minBound .. maxBound]

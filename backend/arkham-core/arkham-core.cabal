@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 03efa868fed2c9772b654d24a6a401c721d7c1a5bcdd8d36e9f1e147780fcdd7
+-- hash: 6279a99faa87fb70251622b6b35d0ed7ae3d50853e1ffc0f6e3776d1a257512f
 
 name:           arkham-core
 version:        0.0.0
@@ -47,6 +47,7 @@ library
       Arkham.Types.Asset.Cards.DaisysToteBag
       Arkham.Types.Asset.Cards.DigDeep
       Arkham.Types.Asset.Cards.DrMilanChristopher
+      Arkham.Types.Asset.Cards.FirstAid
       Arkham.Types.Asset.Cards.Flashlight
       Arkham.Types.Asset.Cards.FortyFiveAutomatic
       Arkham.Types.Asset.Cards.GuardDog

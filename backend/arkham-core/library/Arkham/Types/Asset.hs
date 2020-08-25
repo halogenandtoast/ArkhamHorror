@@ -19,6 +19,7 @@ import Arkham.Types.Asset.Cards.Burglary
 import Arkham.Types.Asset.Cards.DaisysToteBag
 import Arkham.Types.Asset.Cards.DigDeep
 import Arkham.Types.Asset.Cards.DrMilanChristopher
+import Arkham.Types.Asset.Cards.FirstAid
 import Arkham.Types.Asset.Cards.Flashlight
 import Arkham.Types.Asset.Cards.FortyFiveAutomatic
 import Arkham.Types.Asset.Cards.GuardDog
@@ -70,6 +71,7 @@ allAssets = HashMap.fromList
   , ("01016", FortyFiveAutomatic' . fortyFiveAutomatic)
   , ("01017", PhysicalTraining' . physicalTraining)
   , ("01018", BeatCop' . beatCop)
+  , ("01019", FirstAid' . firstAid)
   , ("01020", Machete' . machete)
   , ("01021", GuardDog' . guardDog)
   , ("01030", MagnifyingGlass' . magnifyingGlass)
@@ -122,6 +124,7 @@ data Asset
   | FortyFiveAutomatic' FortyFiveAutomatic
   | PhysicalTraining' PhysicalTraining
   | BeatCop' BeatCop
+  | FirstAid' FirstAid
   | Machete' Machete
   | GuardDog' GuardDog
   | MagnifyingGlass' MagnifyingGlass
@@ -158,6 +161,7 @@ assetAttrs = \case
   FortyFiveAutomatic' attrs -> coerce attrs
   PhysicalTraining' attrs -> coerce attrs
   BeatCop' attrs -> coerce attrs
+  FirstAid' attrs -> coerce attrs
   Machete' attrs -> coerce attrs
   GuardDog' attrs -> coerce attrs
   MagnifyingGlass' attrs -> coerce attrs
@@ -202,6 +206,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     FortyFiveAutomatic' x -> getActions i window x
     PhysicalTraining' x -> getActions i window x
     BeatCop' x -> getActions i window x
+    FirstAid' x -> getActions i window x
     Machete' x -> getActions i window x
     GuardDog' x -> getActions i window x
     MagnifyingGlass' x -> getActions i window x
@@ -236,6 +241,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     FortyFiveAutomatic' x -> FortyFiveAutomatic' <$> runMessage msg x
     PhysicalTraining' x -> PhysicalTraining' <$> runMessage msg x
     BeatCop' x -> BeatCop' <$> runMessage msg x
+    FirstAid' x -> FirstAid' <$> runMessage msg x
     Machete' x -> Machete' <$> runMessage msg x
     GuardDog' x -> GuardDog' <$> runMessage msg x
     MagnifyingGlass' x -> MagnifyingGlass' <$> runMessage msg x

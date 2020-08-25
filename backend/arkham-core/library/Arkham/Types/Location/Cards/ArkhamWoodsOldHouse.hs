@@ -38,9 +38,10 @@ instance (IsInvestigator investigator) => HasActions env investigator ArkhamWood
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsOldHouse where
   runMessage msg (ArkhamWoodsOldHouse attrs@Attrs {..}) = case msg of
-    Investigate iid lid _ tokenResponses False | lid == locationId ->
+    Investigate iid lid _ tokenResponses overrides False | lid == locationId ->
       ArkhamWoodsOldHouse
         <$> runMessage
-              (Investigate iid lid SkillWillpower tokenResponses False)
+              (Investigate iid lid SkillWillpower tokenResponses overrides False
+              )
               attrs
     _ -> ArkhamWoodsOldHouse <$> runMessage msg attrs

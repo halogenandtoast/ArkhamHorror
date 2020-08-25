@@ -147,7 +147,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Attrs wher
     pure $ moveActions <> investigateActions
    where
     investigateActions =
-      [ Investigate (getId () i) locationId SkillIntellect mempty True
+      [ Investigate (getId () i) locationId SkillIntellect mempty mempty True
       | canInvestigate location i && investigateAllowed location
       ]
     moveActions =
@@ -158,19 +158,24 @@ instance (IsInvestigator investigator) => HasActions env investigator Attrs wher
 
 instance (LocationRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
-    Investigate iid lid skillType tokenResponses False | lid == locationId ->
-      a <$ unshiftMessage
-        (BeginSkillTest
-          iid
-          (LocationSource lid)
-          (Just Action.Investigate)
-          skillType
-          (shroudValueFor a)
-          [SuccessfulInvestigation iid lid, InvestigatorDiscoverClues iid lid 1]
-          []
-          []
-          tokenResponses
-        )
+    Investigate iid lid skillType tokenResponses overrides False
+      | lid == locationId -> do
+        let
+          investigationResult = if null overrides
+            then [InvestigatorDiscoverClues iid lid 1]
+            else overrides
+        a <$ unshiftMessage
+          (BeginSkillTest
+            iid
+            (LocationSource lid)
+            (Just Action.Investigate)
+            skillType
+            (shroudValueFor a)
+            (SuccessfulInvestigation iid lid : investigationResult)
+            []
+            []
+            tokenResponses
+          )
     SetLocationLabel lid label' | lid == locationId ->
       pure $ a & label .~ label'
     AddModifier (LocationTarget lid) modifier | lid == locationId ->

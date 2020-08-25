@@ -831,11 +831,11 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           else pure []
         a <$ unshiftMessage
           (Ask iid $ ChooseOne $ healthDamageMessages <> sanityDamageMessages)
-    Investigate iid lid skillType tokenResponses True | iid == investigatorId ->
-      a <$ unshiftMessages
+    Investigate iid lid skillType tokenResponses overrides True
+      | iid == investigatorId -> a <$ unshiftMessages
         [ TakeAction iid 1 (Just Action.Investigate)
         , CheckAttackOfOpportunity iid False
-        , Investigate iid lid skillType tokenResponses False
+        , Investigate iid lid skillType tokenResponses overrides False
         ]
     InvestigatorDiscoverClues iid lid n | iid == investigatorId ->
       if canDiscoverClues a

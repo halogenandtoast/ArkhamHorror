@@ -1,6 +1,7 @@
 module Arkham.Types.FastWindow where
 
 import Arkham.Types.SkillType
+import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
@@ -22,6 +23,7 @@ data FastWindow
   | WhenSkillTest SkillType
   | AfterAssignedHorror Who
   | AfterTurnBegins Who
+  | AfterPlayCard Who [Trait]
   | Any
   | NonFast
   deriving stock (Show, Generic, Eq)

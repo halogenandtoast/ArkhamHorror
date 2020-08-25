@@ -135,6 +135,7 @@ allPlayerCards = HashMap.fromList
   , ("01008", daisysToteBag)
   , ("01009", theNecronomicon)
   , ("01010", onTheLam)
+  , ("01012", heirloomOfHyperborea)
   , ("01016", fortyFiveAutomatic)
   , ("01017", physicalTraining)
   , ("01018", beatCop)
@@ -206,6 +207,12 @@ onTheLam cardId = (asset cardId "01010" "On the Lam" 1 Neutral)
   , pcSkills = [SkillIntellect, SkillAgility, SkillWild, SkillWild]
   , pcFast = True
   , pcFastWindows = HashSet.fromList [AfterTurnBegins You]
+  }
+
+heirloomOfHyperborea :: CardId -> PlayerCard
+heirloomOfHyperborea cardId = (asset cardId "01012" "Heirloom of Hyperborea" 3 Neutral)
+  { pcSkills = [SkillWillpower, SkillCombat, SkillWild]
+  , pcTraits = [Item, Relic]
   }
 
 fortyFiveAutomatic :: CardId -> PlayerCard

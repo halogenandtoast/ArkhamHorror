@@ -36,7 +36,7 @@ wendyAdams = WendyAdams $ baseAttrs
   [Drifter]
 
 instance (ActionRunner env investigator) => HasActions env investigator WendyAdams where
-  getActions i (WhenDrawToken You) (WendyAdams attrs@Attrs {..})
+  getActions i (WhenDrawToken You) (WendyAdams Attrs {..})
     | getId () i == investigatorId = do
       let
         ability = (mkAbility
@@ -58,7 +58,7 @@ instance (ActionRunner env investigator) => HasActions env investigator WendyAda
 
 instance (InvestigatorRunner Attrs env) => RunMessage env WendyAdams where
   runMessage msg i@(WendyAdams attrs@Attrs {..}) = case msg of
-    When (DrawToken token) ->
+    When (DrawToken _) ->
       i <$ unshiftMessage (CheckFastWindow investigatorId [WhenDrawToken You])
     ResolveToken ElderSign iid skillValue | iid == investigatorId -> do
       maid <- asks (getId @(Maybe AssetId) (CardCode "01014"))

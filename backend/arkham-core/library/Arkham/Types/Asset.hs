@@ -18,6 +18,7 @@ import Arkham.Types.Asset.Cards.DrMilanChristopher
 import Arkham.Types.Asset.Cards.Flashlight
 import Arkham.Types.Asset.Cards.FortyFiveAutomatic
 import Arkham.Types.Asset.Cards.GuardDog
+import Arkham.Types.Asset.Cards.HeirloomOfHyperborea
 import Arkham.Types.Asset.Cards.HolyRosary
 import Arkham.Types.Asset.Cards.Knife
 import Arkham.Types.Asset.Cards.LeatherCoat
@@ -54,6 +55,7 @@ allAssets = HashMap.fromList
   [ ("01006", Rolands38Special' . rolands38Special)
   , ("01008", DaisysToteBag' . daisysToteBag)
   , ("01009", TheNecronomicon' . theNecronomicon)
+  , ("01012", HeirloomOfHyperborea' . heirloomOfHyperborea)
   , ("01016", FortyFiveAutomatic' . fortyFiveAutomatic)
   , ("01017", PhysicalTraining' . physicalTraining)
   , ("01018", BeatCop' . beatCop)
@@ -95,6 +97,7 @@ data Asset
   = Rolands38Special' Rolands38Special
   | DaisysToteBag' DaisysToteBag
   | TheNecronomicon' TheNecronomicon
+  | HeirloomOfHyperborea' HeirloomOfHyperborea
   | FortyFiveAutomatic' FortyFiveAutomatic
   | PhysicalTraining' PhysicalTraining
   | BeatCop' BeatCop
@@ -120,6 +123,7 @@ assetAttrs = \case
   Rolands38Special' attrs -> coerce attrs
   DaisysToteBag' attrs -> coerce attrs
   TheNecronomicon' (TheNecronomicon (attrs `With` _)) -> attrs
+  HeirloomOfHyperborea' attrs -> coerce attrs
   FortyFiveAutomatic' attrs -> coerce attrs
   PhysicalTraining' attrs -> coerce attrs
   BeatCop' attrs -> coerce attrs
@@ -153,6 +157,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     Rolands38Special' x -> getActions i window x
     DaisysToteBag' x -> getActions i window x
     TheNecronomicon' x -> getActions i window x
+    HeirloomOfHyperborea' x -> getActions i window x
     FortyFiveAutomatic' x -> getActions i window x
     PhysicalTraining' x -> getActions i window x
     BeatCop' x -> getActions i window x
@@ -176,6 +181,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     Rolands38Special' x -> Rolands38Special' <$> runMessage msg x
     DaisysToteBag' x -> DaisysToteBag' <$> runMessage msg x
     TheNecronomicon' x -> TheNecronomicon' <$> runMessage msg x
+    HeirloomOfHyperborea' x -> HeirloomOfHyperborea' <$> runMessage msg x
     FortyFiveAutomatic' x -> FortyFiveAutomatic' <$> runMessage msg x
     PhysicalTraining' x -> PhysicalTraining' <$> runMessage msg x
     BeatCop' x -> BeatCop' <$> runMessage msg x

@@ -142,6 +142,7 @@ allPlayerCards = HashMap.fromList
   , ("01016", fortyFiveAutomatic)
   , ("01017", physicalTraining)
   , ("01018", beatCop)
+  , ("01019", firstAid)
   , ("01020", machete)
   , ("01021", guardDog)
   , ("01022", evidence)
@@ -263,6 +264,12 @@ beatCop :: CardId -> PlayerCard
 beatCop cardId = (asset cardId "01018" "Beat Cop" 4 Guardian)
   { pcSkills = [SkillCombat]
   , pcTraits = [Ally, Police]
+  }
+
+firstAid :: CardId -> PlayerCard
+firstAid cardId = (asset cardId "01019" "First Aid" 2 Guardian)
+  { pcSkills = [SkillWillpower]
+  , pcTraits = [Talent, Science]
   }
 
 machete :: CardId -> PlayerCard

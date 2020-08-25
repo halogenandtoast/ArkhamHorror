@@ -13,11 +13,11 @@ data AbilityType = FastAbility FastWindow | ReactionAbility FastWindow | ActionA
 
 data AbilityLimit
   = NoLimit
-  | OncePerGame
-  | OncePerPhase
-  | OncePerRound
-  | OncePerTurn
-  | OncePerTestOrAbility
+  | PerGame
+  | PerPhase
+  | PerRound
+  | PerTurn
+  | PerTestOrAbility
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 

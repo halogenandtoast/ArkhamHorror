@@ -44,7 +44,7 @@ instance (ActionRunner env investigator) => HasActions env investigator AgnesBak
                   1
                   (ReactionAbility (Fast.AfterAssignedHorror You))
                 )
-        { abilityLimit = OncePerPhase
+        { abilityLimit = PerPhase
         }
     usedAbilities <- map unUsedAbility <$> asks (getList ())
     pure

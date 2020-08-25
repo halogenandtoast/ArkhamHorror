@@ -32,7 +32,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Downtown
       let
         ability =
           (mkAbility (LocationSource "01130") 1 (ActionAbility 1 Nothing))
-            { abilityLimit = OncePerGame
+            { abilityLimit = PerGame
             }
       pure
         $ baseActions

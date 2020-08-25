@@ -226,8 +226,14 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       unshiftMessage SkillTestEnds
 
       case skillTestResult of
-        SucceededBy _ -> unshiftMessages skillTestOnSuccess
-        FailedBy _ -> unshiftMessages skillTestOnFailure
+        SucceededBy n ->
+          unshiftMessages
+            $ skillTestOnSuccess
+            <> [After (PassedSkillTest skillTestInvestigator n)]
+        FailedBy n ->
+          unshiftMessages
+            $ skillTestOnFailure
+            <> [After (FailedSkillTest skillTestInvestigator n)]
         Unrun -> pure ()
 
       unshiftMessages $ map

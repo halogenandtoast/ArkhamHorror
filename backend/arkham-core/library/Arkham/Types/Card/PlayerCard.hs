@@ -156,6 +156,7 @@ allPlayerCards = HashMap.fromList
   , ("01036", mindOverMatter)
   , ("01037", workingAHunch)
   , ("01039", deduction)
+  , ("01048", leoDeLuca)
   , ("01059", holyRosary)
   , ("01060", shrivelling)
   , ("01061", scrying)
@@ -163,6 +164,8 @@ allPlayerCards = HashMap.fromList
   , ("01066", blindingLight)
   , ("01067", fearless)
   , ("01072", leatherCoat)
+  , ("01074", baseballBat)
+  , ("01075", rabbitsFoot)
   , ("01086", knife)
   , ("01087", flashlight)
   , ("01088", emergencyCache)
@@ -348,6 +351,12 @@ deduction cardId = (skill cardId "01039" "Deduction" [SkillIntellect] Seeker)
   { pcTraits = [Practiced]
   }
 
+leoDeLuca :: CardId -> PlayerCard
+leoDeLuca cardId = (asset cardId "01048" "Leo De Luca" 6 Rogue)
+  { pcSkills = [SkillIntellect]
+  , pcTraits = [Ally, Criminal]
+  }
+
 holyRosary :: CardId -> PlayerCard
 holyRosary cardId = (asset cardId "01059" "Holy Rosary" 2 Mystic)
   { pcSkills = [SkillWillpower]
@@ -390,6 +399,18 @@ leatherCoat :: CardId -> PlayerCard
 leatherCoat cardId = (asset cardId "01072" "Leather Coat" 0 Survivor)
   { pcSkills = [SkillCombat]
   , pcTraits = [Item, Armor]
+  }
+
+baseballBat :: CardId -> PlayerCard
+baseballBat cardId = (asset cardId "01074" "Baseball Bat" 2 Survivor)
+  { pcSkills = [SkillCombat]
+  , pcTraits = [Item, Weapon, Melee]
+  }
+
+rabbitsFoot :: CardId -> PlayerCard
+rabbitsFoot cardId = (asset cardId "01075" "Rabbit's Foot" 1 Survivor)
+  { pcSkills = [SkillWild]
+  , pcTraits = [Item, Charm]
   }
 
 knife :: CardId -> PlayerCard

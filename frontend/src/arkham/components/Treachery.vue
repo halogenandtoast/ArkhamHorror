@@ -47,8 +47,8 @@ export default class Treachery extends Vue {
 
   canInteract(c: Message): boolean {
     switch (c.tag) {
-      case MessageType.DISCARD_ASSET:
-        return c.contents === this.id;
+      case MessageType.DISCARD:
+        return c.contents.contents === this.id;
       case MessageType.ASSET_DAMAGE:
         return c.contents[0] === this.id;
       case MessageType.ACTIVATE_ABILITY:

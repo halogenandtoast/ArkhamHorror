@@ -12,6 +12,7 @@ where
 
 import Arkham.Json
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Cards.BaseballBat
 import Arkham.Types.Asset.Cards.BeatCop
 import Arkham.Types.Asset.Cards.DaisysToteBag
 import Arkham.Types.Asset.Cards.DrMilanChristopher
@@ -22,12 +23,14 @@ import Arkham.Types.Asset.Cards.HeirloomOfHyperborea
 import Arkham.Types.Asset.Cards.HolyRosary
 import Arkham.Types.Asset.Cards.Knife
 import Arkham.Types.Asset.Cards.LeatherCoat
+import Arkham.Types.Asset.Cards.LeoDeLuca
 import Arkham.Types.Asset.Cards.LitaChantler
 import Arkham.Types.Asset.Cards.Machete
 import Arkham.Types.Asset.Cards.MagnifyingGlass
 import Arkham.Types.Asset.Cards.MedicalTexts
 import Arkham.Types.Asset.Cards.OldBookOfLore
 import Arkham.Types.Asset.Cards.PhysicalTraining
+import Arkham.Types.Asset.Cards.RabbitsFoot
 import Arkham.Types.Asset.Cards.ResearchLibrarian
 import Arkham.Types.Asset.Cards.Rolands38Special
 import Arkham.Types.Asset.Cards.Scrying
@@ -68,10 +71,13 @@ allAssets = HashMap.fromList
   , ("01032", ResearchLibrarian' . researchLibrarian)
   , ("01033", DrMilanChristopher' . drMilanChristopher)
   , ("01035", MedicalTexts' . medicalTexts)
+  , ("01048", LeoDeLuca' . leoDeLuca)
   , ("01059", HolyRosary' . holyRosary)
   , ("01060", Shrivelling' . shrivelling)
   , ("01061", Scrying' . scrying)
   , ("01072", LeatherCoat' . leatherCoat)
+  , ("01074", BaseballBat' . baseballBat)
+  , ("01075", RabbitsFoot' . rabbitsFoot)
   , ("01086", Knife' . knife)
   , ("01087", Flashlight' . flashlight)
   , ("01117", LitaChantler' . litaChantler)
@@ -111,10 +117,13 @@ data Asset
   | MedicalTexts' MedicalTexts
   | ResearchLibrarian' ResearchLibrarian
   | DrMilanChristopher' DrMilanChristopher
+  | LeoDeLuca' LeoDeLuca
   | HolyRosary' HolyRosary
   | Shrivelling' Shrivelling
   | Scrying' Scrying
   | LeatherCoat' LeatherCoat
+  | BaseballBat' BaseballBat
+  | RabbitsFoot' RabbitsFoot
   | Knife' Knife
   | Flashlight' Flashlight
   | LitaChantler' LitaChantler
@@ -138,10 +147,13 @@ assetAttrs = \case
   MedicalTexts' attrs -> coerce attrs
   ResearchLibrarian' attrs -> coerce attrs
   DrMilanChristopher' attrs -> coerce attrs
+  LeoDeLuca' attrs -> coerce attrs
   HolyRosary' attrs -> coerce attrs
   Shrivelling' attrs -> coerce attrs
   Scrying' attrs -> coerce attrs
   LeatherCoat' attrs -> coerce attrs
+  BaseballBat' attrs -> coerce attrs
+  RabbitsFoot' attrs -> coerce attrs
   Knife' attrs -> coerce attrs
   Flashlight' attrs -> coerce attrs
   LitaChantler' attrs -> coerce attrs
@@ -173,10 +185,13 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     MedicalTexts' x -> getActions i window x
     ResearchLibrarian' x -> getActions i window x
     DrMilanChristopher' x -> getActions i window x
+    LeoDeLuca' x -> getActions i window x
     HolyRosary' x -> getActions i window x
     Shrivelling' x -> getActions i window x
     Scrying' x -> getActions i window x
     LeatherCoat' x -> getActions i window x
+    BaseballBat' x -> getActions i window x
+    RabbitsFoot' x -> getActions i window x
     Knife' x -> getActions i window x
     Flashlight' x -> getActions i window x
     LitaChantler' x -> getActions i window x
@@ -198,10 +213,13 @@ instance (AssetRunner env) => RunMessage env Asset where
     MedicalTexts' x -> MedicalTexts' <$> runMessage msg x
     ResearchLibrarian' x -> ResearchLibrarian' <$> runMessage msg x
     DrMilanChristopher' x -> DrMilanChristopher' <$> runMessage msg x
+    LeoDeLuca' x -> LeoDeLuca' <$> runMessage msg x
     HolyRosary' x -> HolyRosary' <$> runMessage msg x
     Shrivelling' x -> Shrivelling' <$> runMessage msg x
     Scrying' x -> Scrying' <$> runMessage msg x
     LeatherCoat' x -> LeatherCoat' <$> runMessage msg x
+    BaseballBat' x -> BaseballBat' <$> runMessage msg x
+    RabbitsFoot' x -> RabbitsFoot' <$> runMessage msg x
     Knife' x -> Knife' <$> runMessage msg x
     Flashlight' x -> Flashlight' <$> runMessage msg x
     LitaChantler' x -> LitaChantler' <$> runMessage msg x

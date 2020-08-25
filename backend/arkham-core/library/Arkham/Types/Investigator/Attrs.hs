@@ -194,6 +194,12 @@ damageValueFor baseValue attrs = foldr
   applyModifier (DamageDealt m _) n = max 0 (n + m)
   applyModifier _ n = n
 
+getActionsForTurn :: Attrs -> Int
+getActionsForTurn Attrs {..} = foldr applyModifier 3 investigatorModifiers
+ where
+  applyModifier (AdditionalActions m _) n = max 0 (n + m)
+  applyModifier _ n = n
+
 canDiscoverClues :: Attrs -> Bool
 canDiscoverClues Attrs {..} = not (any match investigatorModifiers)
  where
@@ -868,11 +874,11 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         <> [PlayCard iid cardId False]
         )
     PlayedCard iid cardId discarded | iid == investigatorId -> do
-      when
-        discarded
-        (unshiftMessages [Will (DiscardCard iid cardId), DiscardCard iid cardId]
-        )
-      pure $ a & hand %~ filter ((/= cardId) . getCardId)
+      if discarded
+        then
+          a <$ unshiftMessages
+            [Will (DiscardCard iid cardId), DiscardCard iid cardId]
+        else pure $ a & hand %~ filter ((/= cardId) . getCardId)
     InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
       let assetsUpdate = assets %~ HashSet.insert aid
       if not (null slotTypes)
@@ -917,12 +923,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         <$> asks (getSet lid)
       unshiftMessages [WhenEnterLocation iid lid, AfterEnterLocation iid lid]
       pure $ a & locationId .~ lid & connectedLocations .~ connectedLocations'
-    AddedConnection lid1 lid2
-      | lid1 == investigatorLocation || lid2 == investigatorLocation
-      -> pure
-        $ a
-        & (connectedLocations %~ HashSet.insert lid1)
-        & (connectedLocations %~ HashSet.insert lid2)
+    AddedConnection lid1 lid2 | lid1 == investigatorLocation ->
+      pure $ a & (connectedLocations %~ HashSet.insert lid2)
+    AddedConnection lid1 lid2 | lid2 == investigatorLocation ->
+      pure $ a & (connectedLocations %~ HashSet.insert lid1)
     AddModifier (InvestigatorTarget iid) modifier | iid == investigatorId ->
       pure $ a & modifiers %~ (modifier :)
     AddSlot iid slotType slot | iid == investigatorId -> do
@@ -975,7 +979,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       pure
         $ a
         & (endedTurn .~ False)
-        & (remainingActions .~ 3)
+        & (remainingActions .~ getActionsForTurn a)
         & (actionsTaken .~ mempty)
     EndRound ->
       pure $ a & modifiers %~ filter (not . sourceIsEvent . sourceOfModifier)
@@ -1251,6 +1255,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       pure $ a & clues .~ 0
     RemoveDiscardFromGame iid | iid == investigatorId ->
       pure $ a & discard .~ []
+    After (FailedSkillTest iid _) | iid == investigatorId -> do
+      a <$ unshiftMessage (CheckFastWindow iid [AfterFailSkillTest You])
+    After (PassedSkillTest iid _) | iid == investigatorId -> do
+      a <$ unshiftMessage (CheckFastWindow iid [AfterPassSkillTest You])
     PlayerWindow iid additionalActions | iid == investigatorId -> do
       actions <- asks (join (getActions a NonFast))
       fastActions <- asks (join (getActions a (DuringTurn You)))

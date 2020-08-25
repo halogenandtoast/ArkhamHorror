@@ -21,6 +21,8 @@ data FastWindow
   | DuringTurn Who
   | WhenDiscoverClues Who Where
   | WhenSkillTest SkillType
+  | AfterFailSkillTest Who
+  | AfterPassSkillTest Who
   | AfterAssignedHorror Who
   | AfterTurnBegins Who
   | AfterPlayCard Who [Trait]

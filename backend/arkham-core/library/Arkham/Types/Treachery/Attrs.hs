@@ -26,7 +26,7 @@ data Attrs = Attrs
   , treacheryAttachedLocation :: Maybe LocationId
   , treacheryAttachedInvestigator :: Maybe InvestigatorId
   , treacheryWeakness :: Bool
-  , treacheryResolved :: Bool
+  , treacheryResolved :: Bool -- should this be discarded
   , treacheryDoom :: Int
   }
   deriving stock (Show, Generic)
@@ -99,7 +99,7 @@ instance (TreacheryRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     InvestigatorEliminated iid | treacheryAttachedInvestigator == Just iid ->
       a <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
-    AfterRevelation{} -> a <$ unless
+    AfterRevelation{} -> a <$ when
       treacheryResolved
       (unshiftMessage (Discard (TreacheryTarget treacheryId)))
     _ -> pure a

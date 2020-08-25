@@ -13,6 +13,7 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.ScenarioId
 import Arkham.Types.Target
 import ClassyPrelude
+import qualified Data.HashSet as HashSet
 import Lens.Micro
 import Safe (fromJustNote)
 
@@ -54,10 +55,11 @@ instance (ScenarioRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     Setup -> a <$ pushMessage BeginInvestigation
     PlaceDoomOnAgenda -> do
-      let
-        agendaId =
-          fromJustNote "No agenda" $ scenarioAgendaStack ^? ix 0 . _2 . ix 0
-      a <$ unshiftMessage (PlaceDoom (AgendaTarget agendaId) 1)
+      agendaIds <- HashSet.toList <$> asks (getSet @AgendaId ())
+      case agendaIds of
+        [] -> pure a
+        (x : _) -> a <$ unshiftMessage (PlaceDoom (AgendaTarget x) 1)
+        _ -> error "multiple agendas should be handled by the scenario"
     Discard (ActTarget _) -> pure $ a & actStack .~ []
     -- ^ See: Vengeance Awaits / The Devourer Below - right now the assumption
     -- | is that the act deck has been replaced.

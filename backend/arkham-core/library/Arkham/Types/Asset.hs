@@ -12,10 +12,12 @@ where
 
 import Arkham.Json
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Cards.ArcaneStudies
 import Arkham.Types.Asset.Cards.BaseballBat
 import Arkham.Types.Asset.Cards.BeatCop
 import Arkham.Types.Asset.Cards.Burglary
 import Arkham.Types.Asset.Cards.DaisysToteBag
+import Arkham.Types.Asset.Cards.DigDeep
 import Arkham.Types.Asset.Cards.DrMilanChristopher
 import Arkham.Types.Asset.Cards.Flashlight
 import Arkham.Types.Asset.Cards.FortyFiveAutomatic
@@ -23,6 +25,7 @@ import Arkham.Types.Asset.Cards.GuardDog
 import Arkham.Types.Asset.Cards.HardKnocks
 import Arkham.Types.Asset.Cards.HeirloomOfHyperborea
 import Arkham.Types.Asset.Cards.HolyRosary
+import Arkham.Types.Asset.Cards.Hyperawareness
 import Arkham.Types.Asset.Cards.Knife
 import Arkham.Types.Asset.Cards.LeatherCoat
 import Arkham.Types.Asset.Cards.LeoDeLuca
@@ -73,6 +76,7 @@ allAssets = HashMap.fromList
   , ("01031", OldBookOfLore' . oldBookOfLore)
   , ("01032", ResearchLibrarian' . researchLibrarian)
   , ("01033", DrMilanChristopher' . drMilanChristopher)
+  , ("01034", Hyperawareness' . hyperawareness)
   , ("01035", MedicalTexts' . medicalTexts)
   , ("01045", Burglary' . burglary)
   , ("01048", LeoDeLuca' . leoDeLuca)
@@ -80,10 +84,12 @@ allAssets = HashMap.fromList
   , ("01059", HolyRosary' . holyRosary)
   , ("01060", Shrivelling' . shrivelling)
   , ("01061", Scrying' . scrying)
+  , ("01062", ArcaneStudies' . arcaneStudies)
   , ("01072", LeatherCoat' . leatherCoat)
   , ("01073", Scavenging' . scavenging)
   , ("01074", BaseballBat' . baseballBat)
   , ("01075", RabbitsFoot' . rabbitsFoot)
+  , ("01077", DigDeep' . digDeep)
   , ("01086", Knife' . knife)
   , ("01087", Flashlight' . flashlight)
   , ("01117", LitaChantler' . litaChantler)
@@ -123,16 +129,19 @@ data Asset
   | MedicalTexts' MedicalTexts
   | ResearchLibrarian' ResearchLibrarian
   | DrMilanChristopher' DrMilanChristopher
+  | Hyperawareness' Hyperawareness
   | Burglary' Burglary
   | LeoDeLuca' LeoDeLuca
   | HardKnocks' HardKnocks
   | HolyRosary' HolyRosary
   | Shrivelling' Shrivelling
   | Scrying' Scrying
+  | ArcaneStudies' ArcaneStudies
   | LeatherCoat' LeatherCoat
   | Scavenging' Scavenging
   | BaseballBat' BaseballBat
   | RabbitsFoot' RabbitsFoot
+  | DigDeep' DigDeep
   | Knife' Knife
   | Flashlight' Flashlight
   | LitaChantler' LitaChantler
@@ -156,16 +165,19 @@ assetAttrs = \case
   MedicalTexts' attrs -> coerce attrs
   ResearchLibrarian' attrs -> coerce attrs
   DrMilanChristopher' attrs -> coerce attrs
+  Hyperawareness' attrs -> coerce attrs
   Burglary' attrs -> coerce attrs
   LeoDeLuca' attrs -> coerce attrs
   HardKnocks' attrs -> coerce attrs
   HolyRosary' attrs -> coerce attrs
   Shrivelling' attrs -> coerce attrs
   Scrying' attrs -> coerce attrs
+  ArcaneStudies' attrs -> coerce attrs
   LeatherCoat' attrs -> coerce attrs
   Scavenging' attrs -> coerce attrs
   BaseballBat' attrs -> coerce attrs
   RabbitsFoot' attrs -> coerce attrs
+  DigDeep' attrs -> coerce attrs
   Knife' attrs -> coerce attrs
   Flashlight' attrs -> coerce attrs
   LitaChantler' attrs -> coerce attrs
@@ -197,16 +209,19 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     MedicalTexts' x -> getActions i window x
     ResearchLibrarian' x -> getActions i window x
     DrMilanChristopher' x -> getActions i window x
+    Hyperawareness' x -> getActions i window x
     Burglary' x -> getActions i window x
     LeoDeLuca' x -> getActions i window x
     HardKnocks' x -> getActions i window x
     HolyRosary' x -> getActions i window x
     Shrivelling' x -> getActions i window x
     Scrying' x -> getActions i window x
+    ArcaneStudies' x -> getActions i window x
     LeatherCoat' x -> getActions i window x
     Scavenging' x -> getActions i window x
     BaseballBat' x -> getActions i window x
     RabbitsFoot' x -> getActions i window x
+    DigDeep' x -> getActions i window x
     Knife' x -> getActions i window x
     Flashlight' x -> getActions i window x
     LitaChantler' x -> getActions i window x
@@ -228,16 +243,19 @@ instance (AssetRunner env) => RunMessage env Asset where
     MedicalTexts' x -> MedicalTexts' <$> runMessage msg x
     ResearchLibrarian' x -> ResearchLibrarian' <$> runMessage msg x
     DrMilanChristopher' x -> DrMilanChristopher' <$> runMessage msg x
+    Hyperawareness' x -> Hyperawareness' <$> runMessage msg x
     Burglary' x -> Burglary' <$> runMessage msg x
     LeoDeLuca' x -> LeoDeLuca' <$> runMessage msg x
     HardKnocks' x -> HardKnocks' <$> runMessage msg x
     HolyRosary' x -> HolyRosary' <$> runMessage msg x
     Shrivelling' x -> Shrivelling' <$> runMessage msg x
     Scrying' x -> Scrying' <$> runMessage msg x
+    ArcaneStudies' x -> ArcaneStudies' <$> runMessage msg x
     LeatherCoat' x -> LeatherCoat' <$> runMessage msg x
     Scavenging' x -> Scavenging' <$> runMessage msg x
     BaseballBat' x -> BaseballBat' <$> runMessage msg x
     RabbitsFoot' x -> RabbitsFoot' <$> runMessage msg x
+    DigDeep' x -> DigDeep' <$> runMessage msg x
     Knife' x -> Knife' <$> runMessage msg x
     Flashlight' x -> Flashlight' <$> runMessage msg x
     LitaChantler' x -> LitaChantler' <$> runMessage msg x

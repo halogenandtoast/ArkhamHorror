@@ -152,6 +152,7 @@ allPlayerCards = HashMap.fromList
   , ("01031", oldBookOfLore)
   , ("01032", researchLibrarian)
   , ("01033", drMilanChristopher)
+  , ("01034", hyperawareness)
   , ("01035", medicalTexts)
   , ("01036", mindOverMatter)
   , ("01037", workingAHunch)
@@ -163,6 +164,7 @@ allPlayerCards = HashMap.fromList
   , ("01059", holyRosary)
   , ("01060", shrivelling)
   , ("01061", scrying)
+  , ("01062", arcaneStudies)
   , ("01065", wardOfProtection)
   , ("01066", blindingLight)
   , ("01067", fearless)
@@ -170,6 +172,7 @@ allPlayerCards = HashMap.fromList
   , ("01073", scavenging)
   , ("01074", baseballBat)
   , ("01075", rabbitsFoot)
+  , ("01077", digDeep)
   , ("01080", lucky)
   , ("01086", knife)
   , ("01087", flashlight)
@@ -330,6 +333,12 @@ drMilanChristopher cardId =
     , pcTraits = [Ally, Miskatonic]
     }
 
+hyperawareness :: CardId -> PlayerCard
+hyperawareness cardId = (asset cardId "01034" "Hyperawareness" 2 Seeker)
+  { pcSkills = [SkillIntellect, SkillAgility]
+  , pcTraits = [Talent]
+  }
+
 medicalTexts :: CardId -> PlayerCard
 medicalTexts cardId = (asset cardId "01035" "Medical Texts" 2 Seeker)
   { pcSkills = [SkillCombat]
@@ -400,6 +409,12 @@ scrying cardId = (asset cardId "01061" "Scrying" 1 Mystic)
   , pcTraits = [Spell]
   }
 
+arcaneStudies :: CardId -> PlayerCard
+arcaneStudies cardId = (asset cardId "01062" "Arcane Studies" 2 Mystic)
+  { pcSkills = [SkillWillpower, SkillIntellect]
+  , pcTraits = [Talent]
+  }
+
 wardOfProtection :: CardId -> PlayerCard
 wardOfProtection cardId = (event cardId "01065" "Ward of Protection" 1 Mystic)
   { pcSkills = [SkillWild]
@@ -442,6 +457,12 @@ rabbitsFoot :: CardId -> PlayerCard
 rabbitsFoot cardId = (asset cardId "01075" "Rabbit's Foot" 1 Survivor)
   { pcSkills = [SkillWild]
   , pcTraits = [Item, Charm]
+  }
+
+digDeep :: CardId -> PlayerCard
+digDeep cardId = (asset cardId "01077" "Dig Deep" 2 Survivor)
+  { pcSkills = [SkillIntellect, SkillAgility]
+  , pcTraits = [Talent]
   }
 
 lucky :: CardId -> PlayerCard

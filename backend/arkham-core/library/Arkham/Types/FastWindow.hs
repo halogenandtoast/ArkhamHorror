@@ -18,6 +18,7 @@ data FastWindow
   | WhenEnemyAttacks Who
   | WhenEnemyDefeated Who
   | WhenDrawToken Who
+  | WhenWouldFailSkillTest Who
   | DuringTurn Who
   | WhenDiscoverClues Who Where
   | WhenSkillTest SkillType

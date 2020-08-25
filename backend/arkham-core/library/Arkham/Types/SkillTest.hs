@@ -141,6 +141,15 @@ skillIconCount SkillTest {..} = length . filter matches $ concatMap
   matches SkillWild = True
   matches s = s == skillTestSkillType
 
+skillValueModifiers :: Int -> SkillTest a -> Int
+skillValueModifiers baseValue SkillTest {..} = foldr
+  applyModifier
+  baseValue
+  skillTestModifiers
+ where
+  applyModifier (AnySkillValue m _) n = max 0 (n + m)
+  applyModifier _ n = n
+
 modifiedTokenValue :: Int -> SkillTest a -> Int
 modifiedTokenValue baseValue SkillTest {..} = foldr
   applyModifier
@@ -216,13 +225,24 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
     SkillTestResults -> do
       unshiftMessage
         (Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults])
+      case skillTestResult of
+        SucceededBy n ->
+          unshiftMessage (Will (PassedSkillTest skillTestInvestigator n))
+        FailedBy n ->
+          unshiftMessage (Will (FailedSkillTest skillTestInvestigator n))
+        Unrun -> pure ()
+      pure s
+    AddModifier AfterSkillTestTarget modifier ->
+      pure $ s & modifiers %~ (modifier :)
+    SkillTestApplyResults -> do
+      unshiftMessage SkillTestApplyResultsAfterSkills
       for_ skillTestCommittedCards $ \(iid, card) -> case card of
         PlayerCard MkPlayerCard {..} -> when
           (pcCardType == SkillType)
           (unshiftMessage (RunSkill iid pcCardCode skillTestResult))
         _ -> pure ()
       pure s
-    SkillTestApplyResults -> do
+    SkillTestApplyResultsAfterSkills -> do
       unshiftMessage SkillTestEnds
 
       case skillTestResult of
@@ -253,7 +273,10 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
           modifiedTokenValue tokenValue s + skillTestValueModifier
       let
         modifiedSkillValue' =
-          skillValue + totaledTokenValues + skillIconCount s
+          skillValue
+            + totaledTokenValues
+            + skillIconCount s
+            + skillValueModifiers skillValue s
       unshiftMessage SkillTestResults
       putStrLn
         . pack

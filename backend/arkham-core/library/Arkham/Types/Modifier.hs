@@ -22,6 +22,7 @@ sourceOfModifier (CannotInvestigate s) = s
 sourceOfModifier (CannotDiscoverClues s) = s
 sourceOfModifier (CannotSpendClues s) = s
 sourceOfModifier (SkillModifier _ _ s) = s
+sourceOfModifier (AnySkillValue _ s) = s
 sourceOfModifier (SanityModifier _ s) = s
 sourceOfModifier (HealthModifier _ s) = s
 sourceOfModifier (ActionSkillModifier _ _ _ s) = s
@@ -47,6 +48,7 @@ replaceModifierSource s (CannotInvestigate _) = CannotInvestigate s
 replaceModifierSource s (CannotDiscoverClues _) = CannotDiscoverClues s
 replaceModifierSource s (CannotSpendClues _) = CannotSpendClues s
 replaceModifierSource s (SkillModifier a b _) = SkillModifier a b s
+replaceModifierSource s (AnySkillValue a _) = AnySkillValue a s
 replaceModifierSource s (SanityModifier a _) = SanityModifier a s
 replaceModifierSource s (HealthModifier a _) = HealthModifier a s
 replaceModifierSource s (ActionSkillModifier a b c _) =
@@ -90,6 +92,7 @@ data Modifier
   | SanityModifier Int Source
   | ShroudModifier Int Source
   | SkillModifier SkillType Int Source
+  | AnySkillValue Int Source
   | UseSkillInPlaceOf SkillType SkillType Source
   | XPModifier Int Source
   deriving stock (Show, Generic)

@@ -470,6 +470,21 @@ instance HasSet Trait EnemyId Game where
 instance HasSet InvestigatorId EnemyId Game where
   getSet eid = getEngagedInvestigators . getEnemy eid
 
+instance HasSet EnemyId InvestigatorId Game where
+  getSet iid = getEngagedEnemies . getInvestigator iid
+
+instance HasSet ExhaustedEnemyId LocationId Game where
+  getSet lid g =
+    let
+      location = getLocation lid g
+      locationEnemyIds = getSet @EnemyId () location
+    in
+      HashSet.map ExhaustedEnemyId
+      . HashMap.keysSet
+      . HashMap.filter
+          (\e -> getId () e `member` locationEnemyIds && isExhausted e)
+      $ view enemies g
+
 instance HasSet AgendaId () Game where
   getSet _ = HashMap.keysSet . view agendas
 
@@ -1576,6 +1591,7 @@ instance RunMessage Game Game where
       >>= traverseOf (acts . traverse) (runMessage msg)
       >>= traverseOf (agendas . traverse) (runMessage msg)
       >>= traverseOf (treacheries . traverse) (runMessage msg)
+      >>= traverseOf (events . traverse) (runMessage msg)
       >>= traverseOf (locations . traverse) (runMessage msg)
       >>= traverseOf (enemies . traverse) (runMessage msg)
       >>= traverseOf (assets . traverse) (runMessage msg)

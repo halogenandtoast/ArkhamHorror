@@ -1,6 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator
   ( isPrey
+  , getEngagedEnemies
   , investigatorAttrs
   , hasEndedTurn
   , hasResigned
@@ -311,6 +312,9 @@ lookupInvestigator :: InvestigatorId -> Investigator
 lookupInvestigator iid =
   fromJustNote ("Unkown investigator: " <> show iid)
     $ HashMap.lookup iid allInvestigators
+
+getEngagedEnemies :: Investigator -> HashSet EnemyId
+getEngagedEnemies = investigatorEngagedEnemies . investigatorAttrs
 
 instance HasCard () Investigator where
   getCard _ cardId =

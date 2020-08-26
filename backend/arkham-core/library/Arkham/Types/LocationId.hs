@@ -18,3 +18,6 @@ newtype ClosestLocationId = ClosestLocationId { unClosestLocationId :: LocationI
 
 newtype EmptyLocationId = EmptyLocationId { unEmptyLocationId :: LocationId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
+newtype RevealedLocationId = RevealedLocationId { unRevealedLocationId :: LocationId }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

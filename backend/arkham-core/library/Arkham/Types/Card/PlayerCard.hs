@@ -165,6 +165,7 @@ allPlayerCards = HashMap.fromList
   , ("01047", fortyOneDerringer)
   , ("01048", leoDeLuca)
   , ("01049", hardKnocks)
+  , ("01050", elusive)
   , ("01051", backstab)
   , ("01058", forbiddenKnowledge)
   , ("01059", holyRosary)
@@ -422,6 +423,14 @@ hardKnocks :: CardId -> PlayerCard
 hardKnocks cardId = (asset cardId "01049" "Hard Knocks" 2 Rogue)
   { pcSkills = [SkillCombat, SkillAgility]
   , pcTraits = [Talent]
+  }
+
+elusive :: CardId -> PlayerCard
+elusive cardId = (event cardId "01050" "Elusive" 2 Rogue)
+  { pcSkills = [SkillIntellect, SkillAgility]
+  , pcTraits = [Tactic]
+  , pcFast = True
+  , pcFastWindows = HashSet.fromList [DuringTurn You]
   }
 
 backstab :: CardId -> PlayerCard

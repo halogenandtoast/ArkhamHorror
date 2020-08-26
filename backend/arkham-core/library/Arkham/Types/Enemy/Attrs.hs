@@ -386,7 +386,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
           willMove <- canEnterLocation enemyId lid
           if willMove
             then pure $ a & location .~ lid
-            else a <$ unshiftMessage (UnengageEnemy iid enemyId)
+            else a <$ unshiftMessage (DisengageEnemy iid enemyId)
     AfterEnterLocation iid lid | lid == enemyLocation -> do
       when
           (null enemyEngagedInvestigators
@@ -406,8 +406,8 @@ instance (EnemyRunner env) => RunMessage env Attrs where
     UnengageNonMatching iid traits
       | iid `elem` enemyEngagedInvestigators && null
         (HashSet.fromList traits `intersection` enemyTraits)
-      -> a <$ unshiftMessage (UnengageEnemy iid enemyId)
-    UnengageEnemy iid eid | eid == enemyId -> do
+      -> a <$ unshiftMessage (DisengageEnemy iid enemyId)
+    DisengageEnemy iid eid | eid == enemyId -> do
       pure $ a & engagedInvestigators %~ HashSet.delete iid
     EnemySetBearer eid bid | eid == enemyId -> pure $ a & prey .~ Bearer bid
     AdvanceAgenda{} -> pure $ a & doom .~ 0

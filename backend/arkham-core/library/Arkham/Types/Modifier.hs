@@ -40,6 +40,7 @@ sourceOfModifier (CannotBeAttackedByNonElite s) = s
 sourceOfModifier (XPModifier _ s) = s
 sourceOfModifier (CanPlayTopOfDiscard _ s) = s
 sourceOfModifier (AdditionalActions _ s) = s
+sourceOfModifier (ModifierIfSucceededBy _ m) = sourceOfModifier m
 
 replaceModifierSource :: Source -> Modifier -> Modifier
 replaceModifierSource s (ActionCostOf a b _) = ActionCostOf a b s
@@ -69,6 +70,8 @@ replaceModifierSource s (CannotBeAttackedByNonElite _) =
 replaceModifierSource s (XPModifier a _) = XPModifier a s
 replaceModifierSource s (CanPlayTopOfDiscard a _) = CanPlayTopOfDiscard a s
 replaceModifierSource s (AdditionalActions a _) = AdditionalActions a s
+replaceModifierSource s (ModifierIfSucceededBy a m) =
+  ModifierIfSucceededBy a (replaceModifierSource s m)
 
 data Modifier
   = ActionCostOf ActionTarget Int Source
@@ -95,6 +98,7 @@ data Modifier
   | AnySkillValue Int Source
   | UseSkillInPlaceOf SkillType SkillType Source
   | XPModifier Int Source
+  | ModifierIfSucceededBy Int Modifier
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 

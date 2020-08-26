@@ -158,6 +158,7 @@ allPlayerCards = HashMap.fromList
   , ("01036", mindOverMatter)
   , ("01037", workingAHunch)
   , ("01039", deduction)
+  , ("01044", switchblade)
   , ("01045", burglary)
   , ("01048", leoDeLuca)
   , ("01049", hardKnocks)
@@ -371,6 +372,14 @@ workingAHunch cardId = (event cardId "01037" "Working a Hunch" 2 Seeker)
 deduction :: CardId -> PlayerCard
 deduction cardId = (skill cardId "01039" "Deduction" [SkillIntellect] Seeker)
   { pcTraits = [Practiced]
+  }
+
+switchblade :: CardId -> PlayerCard
+switchblade cardId = (asset cardId "01044" "Switchbalde" 1 Rogue)
+  { pcSkills = [SkillAgility]
+  , pcTraits = [Item, Weapon, Melee, Illicit]
+  , pcFast = True
+  , pcFastWindows = HashSet.fromList [DuringTurn You]
   }
 
 burglary :: CardId -> PlayerCard

@@ -131,6 +131,16 @@ onTokenResponses :: Lens' (SkillTest a) [TokenResponse a]
 onTokenResponses =
   lens skillTestOnTokenResponses $ \m x -> m { skillTestOnTokenResponses = x }
 
+applicableModifiers :: SkillTest a -> [Modifier]
+applicableModifiers SkillTest {..} = mapMaybe
+  applicableModifier
+  skillTestModifiers
+ where
+  applicableModifier (ModifierIfSucceededBy n m) = case skillTestResult of
+    SucceededBy x | x >= n -> Just m
+    _ -> Nothing
+  applicableModifier m = Just m
+
 skillIconCount :: SkillTest a -> Int
 skillIconCount SkillTest {..} = length . filter matches $ concatMap
   (iconsForCard . snd)
@@ -260,12 +270,15 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         (AddModifier (InvestigatorTarget skillTestInvestigator)
         . replaceModifierSource SkillTestSource
         )
-        skillTestModifiers
-
+        (applicableModifiers s)
       pure s
     NotifyOnFailure iid target -> do
       case skillTestResult of
         FailedBy n -> s <$ unshiftMessage (SkillTestDidFailBy iid target n)
+        _ -> pure s
+    NotifyOnSuccess iid target -> do
+      case skillTestResult of
+        SucceededBy n -> s <$ unshiftMessage (SkillTestDidPassBy iid target n)
         _ -> pure s
     RunSkillTest skillValue tokenValue -> do
       let

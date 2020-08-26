@@ -1158,7 +1158,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           when (pcCardType == PlayerEnemyType)
             $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
       pure $ a & deck .~ Deck deck' & hand %~ (PlayerCard card :)
-    UnengageEnemy iid eid | iid == investigatorId -> do
+    DisengageEnemy iid eid | iid == investigatorId -> do
       pure $ a & engagedEnemies %~ HashSet.delete eid
     SearchDeckForTraits iid (InvestigatorTarget iid') traits
       | iid' == investigatorId -> runMessage

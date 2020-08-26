@@ -3,6 +3,7 @@
 module Arkham.Types.Location
   ( lookupLocation
   , isEmptyLocation
+  , isRevealed
   , Location(..)
   )
 where
@@ -67,6 +68,9 @@ isEmptyLocation l = null enemies' && null investigators'
  where
   enemies' = locationEnemies $ locationAttrs l
   investigators' = locationInvestigators $ locationAttrs l
+
+isRevealed :: Location -> Bool
+isRevealed = locationRevealed . locationAttrs
 
 allLocations :: HashMap LocationId Location
 allLocations = HashMap.fromList $ map

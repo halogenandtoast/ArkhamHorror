@@ -18,6 +18,7 @@ import Arkham.Types.Event.Cards.DarkMemory
 import Arkham.Types.Event.Cards.Dodge
 import Arkham.Types.Event.Cards.DrawnToTheFlame
 import Arkham.Types.Event.Cards.DynamiteBlast
+import Arkham.Types.Event.Cards.Elusive
 import Arkham.Types.Event.Cards.EmergencyCache
 import Arkham.Types.Event.Cards.Evidence
 import Arkham.Types.Event.Cards.Lucky
@@ -49,6 +50,7 @@ allEvents = HashMap.fromList
   , ("01036", (MindOverMatter' .) . mindOverMatter)
   , ("01037", (WorkingAHunch' .) . workingAHunch)
   , ("01038", (Barricade' .) . barricade)
+  , ("01050", (Elusive' .) . elusive)
   , ("01051", (Backstab' .) . backstab)
   , ("01064", (DrawnToTheFlame' .) . drawnToTheFlame)
   , ("01065", (WardOfProtection' .) . wardOfProtection)
@@ -69,6 +71,7 @@ data Event
   | MindOverMatter' MindOverMatter
   | WorkingAHunch' WorkingAHunch
   | Barricade' Barricade
+  | Elusive' Elusive
   | Backstab' Backstab
   | DrawnToTheFlame' DrawnToTheFlame
   | WardOfProtection' WardOfProtection
@@ -88,6 +91,7 @@ eventAttrs = \case
   MindOverMatter' attrs -> coerce attrs
   WorkingAHunch' attrs -> coerce attrs
   Barricade' attrs -> coerce attrs
+  Elusive' attrs -> coerce attrs
   Backstab' attrs -> coerce attrs
   DrawnToTheFlame' attrs -> coerce attrs
   WardOfProtection' attrs -> coerce attrs
@@ -105,6 +109,7 @@ instance HasActions env investigator Event where
     MindOverMatter' x -> getActions i window x
     WorkingAHunch' x -> getActions i window x
     Barricade' x -> getActions i window x
+    Elusive' x -> getActions i window x
     Backstab' x -> getActions i window x
     DrawnToTheFlame' x -> getActions i window x
     WardOfProtection' x -> getActions i window x
@@ -128,6 +133,7 @@ instance (EventRunner env) => RunMessage env Event where
     MindOverMatter' x -> MindOverMatter' <$> runMessage msg x
     WorkingAHunch' x -> WorkingAHunch' <$> runMessage msg x
     Barricade' x -> Barricade' <$> runMessage msg x
+    Elusive' x -> Elusive' <$> runMessage msg x
     Backstab' x -> Backstab' <$> runMessage msg x
     DrawnToTheFlame' x -> DrawnToTheFlame' <$> runMessage msg x
     WardOfProtection' x -> WardOfProtection' <$> runMessage msg x

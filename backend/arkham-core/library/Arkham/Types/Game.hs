@@ -517,6 +517,13 @@ instance HasSet EmptyLocationId () Game where
       . HashMap.filter isEmptyLocation
       . view locations
 
+instance HasSet RevealedLocationId () Game where
+  getSet _ =
+    HashSet.map RevealedLocationId
+      . HashMap.keysSet
+      . HashMap.filter isRevealed
+      . view locations
+
 instance HasSet LocationId TreacheryCardCode Game where
   getSet (TreacheryCardCode cc) =
     HashSet.fromList

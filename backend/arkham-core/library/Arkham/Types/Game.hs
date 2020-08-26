@@ -443,6 +443,9 @@ instance HasCount EnemyCount (InvestigatorLocation, [Trait]) Game where
 instance HasInvestigatorStats Stats InvestigatorId Game where
   getStats iid = getStats () . getInvestigator iid
 
+instance HasList Modifier LocationId Game where
+  getList lid = getModifiers . getLocation lid
+
 instance HasList Location () Game where
   getList _ = HashMap.elems . view locations
 

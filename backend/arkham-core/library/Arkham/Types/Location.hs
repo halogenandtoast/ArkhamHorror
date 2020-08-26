@@ -53,6 +53,9 @@ lookupLocation lid =
   fromJustNote ("Unkown location: " <> show lid)
     $ HashMap.lookup lid allLocations
 
+instance HasModifiers Location where
+  getModifiers = locationModifiers . locationAttrs
+
 instance HasId LocationId () Location where
   getId _ = locationId . locationAttrs
 

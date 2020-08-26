@@ -148,6 +148,15 @@ investigateAllowed Attrs {..} = not (any isCannotInvestigate locationModifiers)
   isCannotInvestigate CannotInvestigate{} = True
   isCannotInvestigate _ = False
 
+canEnterLocation
+  :: (LocationRunner env, MonadReader env m) => EnemyId -> LocationId -> m Bool
+canEnterLocation eid lid = do
+  traits <- asks (getSet eid)
+  modifiers <- asks (getList lid)
+  pure $ not $ flip any modifiers $ \case
+    CannotBeEnteredByNonElite{} -> Elite `notMember` traits
+    _ -> False
+
 instance (IsInvestigator investigator) => HasActions env investigator Attrs where
   getActions i NonFast location@Attrs {..} =
     pure $ moveActions <> investigateActions
@@ -240,11 +249,13 @@ instance (LocationRunner env) => RunMessage env Attrs where
     WhenEnterLocation iid lid | lid == locationId -> do
       unless locationRevealed $ unshiftMessage (RevealLocation lid)
       pure $ a & investigators %~ HashSet.insert iid
-    EnemyMove eid lid _ | lid == locationId ->
-      pure $ a & enemies %~ HashSet.delete eid
     AddToVictory (EnemyTarget eid) -> pure $ a & enemies %~ HashSet.delete eid
-    EnemyMove eid _ lid | lid == locationId ->
-      pure $ a & enemies %~ HashSet.insert eid
+    EnemyMove eid lid fromLid | lid == locationId -> do
+      willMove <- canEnterLocation eid fromLid
+      if willMove then pure $ a & enemies %~ HashSet.delete eid else pure a
+    EnemyMove eid _ lid | lid == locationId -> do
+      willMove <- canEnterLocation eid lid
+      if willMove then pure $ a & enemies %~ HashSet.insert eid else pure a
     EnemySpawn lid eid | lid == locationId ->
       pure $ a & enemies %~ HashSet.insert eid
     EnemySpawnedAt lid eid | lid == locationId ->

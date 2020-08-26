@@ -201,6 +201,15 @@ modifiedDamageAmount attrs baseAmount = foldr
   applyModifier (DamageTaken m _) n = max 0 (n + m)
   applyModifier _ n = n
 
+canEnterLocation
+  :: (EnemyRunner env, MonadReader env m) => EnemyId -> LocationId -> m Bool
+canEnterLocation eid lid = do
+  traits <- asks (getSet eid)
+  modifiers' <- asks (getList lid)
+  pure $ not $ flip any modifiers' $ \case
+    CannotBeEnteredByNonElite{} -> Elite `notMember` traits
+    _ -> False
+
 instance HasId EnemyId () Attrs where
   getId _ Attrs {..} = enemyId
 
@@ -283,6 +292,9 @@ instance (EnemyRunner env) => RunMessage env Attrs where
             $ unshiftMessage (EnemyEngageInvestigator enemyId iid)
         Nothing -> pure ()
       pure $ a & exhausted .~ False
+    EnemyMove eid _ lid | eid == enemyId -> do
+      willMove <- canEnterLocation eid lid
+      if willMove then pure $ a & location .~ lid else pure a
     HuntersMove
       | Keyword.Hunter
         `elem` enemyKeywords
@@ -367,6 +379,14 @@ instance (EnemyRunner env) => RunMessage env Attrs where
       pure $ a & engagedInvestigators %~ HashSet.insert iid
     EngageEnemy iid eid False | eid == enemyId ->
       pure $ a & engagedInvestigators .~ HashSet.singleton iid
+    MoveTo iid lid | iid `elem` enemyEngagedInvestigators ->
+      if Keyword.Massive `elem` enemyKeywords
+        then pure a
+        else do
+          willMove <- canEnterLocation enemyId lid
+          if willMove
+            then pure $ a & location .~ lid
+            else a <$ unshiftMessage (UnengageEnemy iid enemyId)
     AfterEnterLocation iid lid | lid == enemyLocation -> do
       when
           (null enemyEngagedInvestigators

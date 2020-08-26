@@ -7,6 +7,7 @@ import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Stats
 import Arkham.Types.Trait
@@ -21,5 +22,7 @@ type LocationRunner env
     , HasId CardCode EnemyId env
     , HasSet Trait LocationId env
     , HasSet EventId () env
+    , HasSet Trait EnemyId env
+    , HasList Modifier LocationId env
     )
 

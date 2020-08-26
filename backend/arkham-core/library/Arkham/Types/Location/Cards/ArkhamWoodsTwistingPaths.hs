@@ -41,7 +41,8 @@ instance (LocationRunner env) => RunMessage env ArkhamWoodsTwistingPaths where
   runMessage msg l@(ArkhamWoodsTwistingPaths attrs@Attrs {..}) = case msg of
     Will (MoveTo iid lid)
       | iid `elem` locationInvestigators && lid /= locationId -> do
-        void popMessage
+        moveFrom <- popMessage -- MoveFrom
+        moveTo <- popMessage -- MoveTo
         l <$ unshiftMessage
           (BeginSkillTest
             iid
@@ -49,7 +50,7 @@ instance (LocationRunner env) => RunMessage env ArkhamWoodsTwistingPaths where
             Nothing
             SkillIntellect
             3
-            [MoveTo iid lid]
+            (catMaybes [moveFrom, moveTo])
             []
             mempty
             mempty

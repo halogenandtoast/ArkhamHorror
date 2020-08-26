@@ -129,10 +129,11 @@ type ActionRunner env investigator
     , HasSet EnemyId LocationId env
     , HasList UsedAbility () env
     , HasCount SpendableClueCount AllInvestigators env
+    , HasQueue env
     )
 
 class HasActions env investigator a where
-  getActions :: forall m. MonadReader env m => investigator -> FastWindow -> a -> m [Message]
+  getActions :: forall m. (MonadReader env m, MonadIO m) => investigator -> FastWindow -> a -> m [Message]
 
 class (HasId LocationId () location) => IsLocation location where
   isBlocked :: location -> Bool

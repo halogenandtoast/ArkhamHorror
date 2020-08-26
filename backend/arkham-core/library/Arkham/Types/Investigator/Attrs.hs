@@ -692,8 +692,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       , CheckAttackOfOpportunity iid False
       , MoveAction iid lid False
       ]
-    MoveAction iid lid False | iid == investigatorId ->
-      a <$ unshiftMessages [Will (MoveTo iid lid), MoveTo iid lid]
+    MoveAction iid lid False | iid == investigatorId -> a <$ unshiftMessages
+      [Will (MoveTo iid lid), MoveFrom iid investigatorLocation, MoveTo iid lid]
     InvestigatorDirectDamage iid source damage horror
       | iid == investigatorId && not
         (investigatorDefeated || investigatorResigned)
@@ -938,8 +938,13 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         & (endedTurn .~ False)
         & (remainingActions .~ getActionsForTurn a)
         & (actionsTaken .~ mempty)
-    EndRound ->
-      pure $ a & modifiers %~ filter (not . sourceIsEvent . sourceOfModifier)
+    EndRound -> do
+      lingeringEventIds <- asks (getSet ())
+      pure $ a & modifiers %~ filter
+        (\modifier -> case sourceOfModifier modifier of
+          EventSource eid -> eid `member` lingeringEventIds
+          _ -> True
+        )
     DrawCards iid n True | iid == investigatorId -> a <$ unshiftMessages
       [ TakeAction iid 1 (Just Action.Draw)
       , CheckAttackOfOpportunity iid False
@@ -1024,7 +1029,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
     BeforeSkillTest iid skillType | iid == investigatorId -> do
       commitedCardIds <- map unCommitedCardId . HashSet.toList <$> asks
         (getSet iid)
-      actions <- asks (join $ getActions a (WhenSkillTest skillType))
+      actions <- join $ asks (getActions a (WhenSkillTest skillType))
       let
         triggerMessage = StartSkillTest investigatorId
         beginMessage = BeforeSkillTest iid skillType
@@ -1102,7 +1107,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         )
     CheckFastWindow iid windows | iid == investigatorId -> do
       actions <- fmap concat <$> for windows $ \window -> do
-        asks (join (getActions a window))
+        join (asks (getActions a window))
       if not (null $ playableCards a windows) || not (null actions)
         then a <$ unshiftMessage
           (Ask iid
@@ -1239,8 +1244,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
     After (PassedSkillTest iid n) | iid == investigatorId -> do
       a <$ unshiftMessage (CheckFastWindow iid [AfterPassSkillTest You n])
     PlayerWindow iid additionalActions | iid == investigatorId -> do
-      actions <- asks (join (getActions a NonFast))
-      fastActions <- asks (join (getActions a (DuringTurn You)))
+      actions <- join $ asks (getActions a NonFast)
+      fastActions <- join $ asks (getActions a (DuringTurn You))
       a <$ unshiftMessage
         (Ask iid $ ChooseOne
           (additionalActions

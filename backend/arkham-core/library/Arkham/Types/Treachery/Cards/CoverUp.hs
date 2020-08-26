@@ -33,14 +33,25 @@ newtype CoverUp = CoverUp (Attrs `With` CoverUpMetadata)
 coverUp :: TreacheryId -> CoverUp
 coverUp uuid = CoverUp $ weaknessAttrs uuid "01007" `With` CoverUpMetadata 3
 
-instance (IsInvestigator investigator) => HasActions env investigator CoverUp where
+instance (ActionRunner env investigator) => HasActions env investigator CoverUp where
   getActions i window@(WhenDiscoverClues You YourLocation) (CoverUp (Attrs {..} `With` CoverUpMetadata {..}))
-    = pure
-      [ ActivateCardAbilityAction
-          (getId () i)
-          (mkAbility (TreacherySource treacheryId) 1 (ReactionAbility window))
-      | coverUpClues > 0 && Just (getId () i) == treacheryAttachedInvestigator
-      ]
+    | Just (getId () i) == treacheryAttachedInvestigator
+    = do
+      cluesToDiscover <- withQueue $ \queue -> do
+        let
+          mDiscoverClues = flip find queue $ \case
+            DiscoverClues{} -> True
+            _ -> False
+          clues' = case mDiscoverClues of
+            Just (DiscoverClues _ _ m) -> m
+            _ -> 0
+        (queue, clues')
+      pure
+        [ ActivateCardAbilityAction
+            (getId () i)
+            (mkAbility (TreacherySource treacheryId) 1 (ReactionAbility window))
+        | coverUpClues > 0 && cluesToDiscover > 0
+        ]
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env CoverUp where

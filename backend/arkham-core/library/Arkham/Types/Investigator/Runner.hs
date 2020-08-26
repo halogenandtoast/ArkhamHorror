@@ -7,6 +7,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
+import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location
 import Arkham.Types.LocationId
@@ -22,6 +23,7 @@ type InvestigatorRunner investigator env
     , HasSet HealthDamageableAssetId InvestigatorId env
     , HasSet SanityDamageableAssetId InvestigatorId env
     , HasSet CommitedCardId InvestigatorId env
+    , HasSet EventId () env
     , HasQueue env
     , HasSet AdvanceableActId () env
     , HasSet ConnectedLocationId LocationId env

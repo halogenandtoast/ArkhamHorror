@@ -735,6 +735,9 @@ instance HasSet TreacheryId LocationId Game where
 instance HasSet EventId LocationId Game where
   getSet lid = getSet () . getLocation lid
 
+instance HasSet EventId () Game where
+  getSet _ = HashMap.keysSet . view events
+
 instance HasSet HealthDamageableAssetId InvestigatorId Game where
   getSet iid g =
     HashSet.map HealthDamageableAssetId . HashMap.keysSet $ assets'

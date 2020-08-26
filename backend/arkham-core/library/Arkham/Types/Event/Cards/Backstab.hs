@@ -32,7 +32,7 @@ instance (EventRunner env) => RunMessage env Backstab where
         [ ChooseFightEnemy
           iid
           SkillAgility
-          [DamageDealt 2 (EventSource "01051")]
+          [DamageDealt 2 (EventSource eid)]
           mempty
           False
         , Discard (EventTarget eid)

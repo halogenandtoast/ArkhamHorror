@@ -35,11 +35,11 @@ instance (EventRunner env) => RunMessage env DynamiteBlast where
         enemyIds <- HashSet.toList <$> asks (getSet lid)
         investigatorIds <- HashSet.toList <$> asks (getSet @InvestigatorId lid)
         pure
-          $ map (\eid -> EnemyDamage eid iid (EventSource "01023") 3) enemyIds
+          $ map (\enid -> EnemyDamage enid iid (EventSource eid) 3) enemyIds
           <> map
-               (\iid' -> InvestigatorAssignDamage iid' (EventSource "01023") 3 0
-               )
+               (\iid' -> InvestigatorAssignDamage iid' (EventSource eid) 3 0)
                investigatorIds
       unshiftMessages
         [Ask iid $ ChooseOne $ map Run choices, Discard (EventTarget eid)]
       DynamiteBlast <$> runMessage msg (attrs & resolved .~ True)
+    _ -> DynamiteBlast <$> runMessage msg attrs

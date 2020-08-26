@@ -164,10 +164,13 @@ allPlayerCards = HashMap.fromList
   , ("01048", leoDeLuca)
   , ("01049", hardKnocks)
   , ("01051", backstab)
+  , ("01058", forbiddenKnowledge)
   , ("01059", holyRosary)
   , ("01060", shrivelling)
   , ("01061", scrying)
   , ("01062", arcaneStudies)
+  , ("01063", arcaneInitiate)
+  , ("01064", drawnToTheFlame)
   , ("01065", wardOfProtection)
   , ("01066", blindingLight)
   , ("01067", fearless)
@@ -414,6 +417,13 @@ backstab cardId = (event cardId "01051" "Backstab" 3 Rogue)
   , pcAction = Just Action.Fight
   }
 
+forbiddenKnowledge :: CardId -> PlayerCard
+forbiddenKnowledge cardId =
+  (asset cardId "01058" "Forbidden Knowledge" 0 Mystic)
+    { pcSkills = [SkillIntellect]
+    , pcTraits = [Talent]
+    }
+
 holyRosary :: CardId -> PlayerCard
 holyRosary cardId = (asset cardId "01059" "Holy Rosary" 2 Mystic)
   { pcSkills = [SkillWillpower]
@@ -436,6 +446,18 @@ arcaneStudies :: CardId -> PlayerCard
 arcaneStudies cardId = (asset cardId "01062" "Arcane Studies" 2 Mystic)
   { pcSkills = [SkillWillpower, SkillIntellect]
   , pcTraits = [Talent]
+  }
+
+arcaneInitiate :: CardId -> PlayerCard
+arcaneInitiate cardId = (asset cardId "01063" "Arcane Initiate" 1 Mystic)
+  { pcSkills = [SkillWillpower]
+  , pcTraits = [Ally, Sorcerer]
+  }
+
+drawnToTheFlame :: CardId -> PlayerCard
+drawnToTheFlame cardId = (event cardId "01064" "Drawn to the Flame" 0 Mystic)
+  { pcSkills = [SkillWillpower, SkillIntellect]
+  , pcTraits = [Insight]
   }
 
 wardOfProtection :: CardId -> PlayerCard

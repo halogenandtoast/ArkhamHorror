@@ -12,6 +12,7 @@ where
 
 import Arkham.Json
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Cards.ArcaneInitiate
 import Arkham.Types.Asset.Cards.ArcaneStudies
 import Arkham.Types.Asset.Cards.BaseballBat
 import Arkham.Types.Asset.Cards.BeatCop
@@ -21,6 +22,7 @@ import Arkham.Types.Asset.Cards.DigDeep
 import Arkham.Types.Asset.Cards.DrMilanChristopher
 import Arkham.Types.Asset.Cards.FirstAid
 import Arkham.Types.Asset.Cards.Flashlight
+import Arkham.Types.Asset.Cards.ForbiddenKnowledge
 import Arkham.Types.Asset.Cards.FortyFiveAutomatic
 import Arkham.Types.Asset.Cards.FortyOneDerringer
 import Arkham.Types.Asset.Cards.GuardDog
@@ -87,10 +89,12 @@ allAssets = HashMap.fromList
   , ("01047", FortyOneDerringer' . fortyOneDerringer)
   , ("01048", LeoDeLuca' . leoDeLuca)
   , ("01049", HardKnocks' . hardKnocks)
+  , ("01058", ForbiddenKnowledge' . forbiddenKnowledge)
   , ("01059", HolyRosary' . holyRosary)
   , ("01060", Shrivelling' . shrivelling)
   , ("01061", Scrying' . scrying)
   , ("01062", ArcaneStudies' . arcaneStudies)
+  , ("01063", ArcaneInitiate' . arcaneInitiate)
   , ("01072", LeatherCoat' . leatherCoat)
   , ("01073", Scavenging' . scavenging)
   , ("01074", BaseballBat' . baseballBat)
@@ -142,10 +146,12 @@ data Asset
   | FortyOneDerringer' FortyOneDerringer
   | LeoDeLuca' LeoDeLuca
   | HardKnocks' HardKnocks
+  | ForbiddenKnowledge' ForbiddenKnowledge
   | HolyRosary' HolyRosary
   | Shrivelling' Shrivelling
   | Scrying' Scrying
   | ArcaneStudies' ArcaneStudies
+  | ArcaneInitiate' ArcaneInitiate
   | LeatherCoat' LeatherCoat
   | Scavenging' Scavenging
   | BaseballBat' BaseballBat
@@ -181,10 +187,12 @@ assetAttrs = \case
   FortyOneDerringer' attrs -> coerce attrs
   LeoDeLuca' attrs -> coerce attrs
   HardKnocks' attrs -> coerce attrs
+  ForbiddenKnowledge' attrs -> coerce attrs
   HolyRosary' attrs -> coerce attrs
   Shrivelling' attrs -> coerce attrs
   Scrying' attrs -> coerce attrs
   ArcaneStudies' attrs -> coerce attrs
+  ArcaneInitiate' attrs -> coerce attrs
   LeatherCoat' attrs -> coerce attrs
   Scavenging' attrs -> coerce attrs
   BaseballBat' attrs -> coerce attrs
@@ -221,17 +229,19 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     OldBookOfLore' x -> getActions i window x
     ResearchLibrarian' x -> getActions i window x
     DrMilanChristopher' x -> getActions i window x
-    Hyperawareness' x -> getActions i window x
     MedicalTexts' x -> getActions i window x
     Hyperawareness' x -> getActions i window x
+    Switchblade' x -> getActions i window x
     Burglary' x -> getActions i window x
     FortyOneDerringer' x -> getActions i window x
     LeoDeLuca' x -> getActions i window x
     HardKnocks' x -> getActions i window x
+    ForbiddenKnowledge' x -> getActions i window x
     HolyRosary' x -> getActions i window x
     Shrivelling' x -> getActions i window x
     Scrying' x -> getActions i window x
     ArcaneStudies' x -> getActions i window x
+    ArcaneInitiate' x -> getActions i window x
     LeatherCoat' x -> getActions i window x
     Scavenging' x -> getActions i window x
     BaseballBat' x -> getActions i window x
@@ -265,13 +275,15 @@ instance (AssetRunner env) => RunMessage env Asset where
     FortyOneDerringer' x -> FortyOneDerringer' <$> runMessage msg x
     LeoDeLuca' x -> LeoDeLuca' <$> runMessage msg x
     HardKnocks' x -> HardKnocks' <$> runMessage msg x
+    ForbiddenKnowledge' x -> ForbiddenKnowledge' <$> runMessage msg x
     HolyRosary' x -> HolyRosary' <$> runMessage msg x
     Shrivelling' x -> Shrivelling' <$> runMessage msg x
     Scrying' x -> Scrying' <$> runMessage msg x
     ArcaneStudies' x -> ArcaneStudies' <$> runMessage msg x
+    ArcaneInitiate' x -> ArcaneInitiate' <$> runMessage msg x
     LeatherCoat' x -> LeatherCoat' <$> runMessage msg x
-    Scavenging' x -> Scavenging' <$> runMessage msg x
     BaseballBat' x -> BaseballBat' <$> runMessage msg x
+    Scavenging' x -> Scavenging' <$> runMessage msg x
     RabbitsFoot' x -> RabbitsFoot' <$> runMessage msg x
     DigDeep' x -> DigDeep' <$> runMessage msg x
     Knife' x -> Knife' <$> runMessage msg x

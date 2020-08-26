@@ -79,6 +79,9 @@ baseAttrs aid cardCode =
       , assetDoom = 0
       }
 
+doom :: Lens' Attrs Int
+doom = lens assetDoom $ \m x -> m { assetDoom = x }
+
 exhausted :: Lens' Attrs Bool
 exhausted = lens assetExhausted $ \m x -> m { assetExhausted = x }
 

@@ -191,8 +191,10 @@ data Message
   | TriggerSkillTest InvestigatorId SkillType Int
   | RunSkillTest Int Int
   | NotifyOnFailure InvestigatorId Target
+  | NotifyOnSuccess InvestigatorId Target
   | HandlePointOfFailure InvestigatorId Target Int
   | SkillTestDidFailBy InvestigatorId Target Int
+  | SkillTestDidPassBy InvestigatorId Target Int
   | SkillTestResults
   | SkillTestApplyResults
   | SkillTestApplyResultsAfterSkills

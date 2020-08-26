@@ -42,6 +42,7 @@ import Arkham.Types.Asset.Cards.Rolands38Special
 import Arkham.Types.Asset.Cards.Scavenging
 import Arkham.Types.Asset.Cards.Scrying
 import Arkham.Types.Asset.Cards.Shrivelling
+import Arkham.Types.Asset.Cards.Switchblade
 import Arkham.Types.Asset.Cards.TheNecronomicon
 import Arkham.Types.Asset.Cards.WendysAmulet
 import Arkham.Types.Asset.Runner
@@ -80,6 +81,7 @@ allAssets = HashMap.fromList
   , ("01033", DrMilanChristopher' . drMilanChristopher)
   , ("01034", Hyperawareness' . hyperawareness)
   , ("01035", MedicalTexts' . medicalTexts)
+  , ("01044", Switchblade' . switchblade)
   , ("01045", Burglary' . burglary)
   , ("01048", LeoDeLuca' . leoDeLuca)
   , ("01049", HardKnocks' . hardKnocks)
@@ -129,10 +131,11 @@ data Asset
   | GuardDog' GuardDog
   | MagnifyingGlass' MagnifyingGlass
   | OldBookOfLore' OldBookOfLore
-  | MedicalTexts' MedicalTexts
   | ResearchLibrarian' ResearchLibrarian
   | DrMilanChristopher' DrMilanChristopher
   | Hyperawareness' Hyperawareness
+  | MedicalTexts' MedicalTexts
+  | Switchblade' Switchblade
   | Burglary' Burglary
   | LeoDeLuca' LeoDeLuca
   | HardKnocks' HardKnocks
@@ -166,10 +169,11 @@ assetAttrs = \case
   GuardDog' attrs -> coerce attrs
   MagnifyingGlass' attrs -> coerce attrs
   OldBookOfLore' attrs -> coerce attrs
-  MedicalTexts' attrs -> coerce attrs
   ResearchLibrarian' attrs -> coerce attrs
   DrMilanChristopher' attrs -> coerce attrs
   Hyperawareness' attrs -> coerce attrs
+  MedicalTexts' attrs -> coerce attrs
+  Switchblade' attrs -> coerce attrs
   Burglary' attrs -> coerce attrs
   LeoDeLuca' attrs -> coerce attrs
   HardKnocks' attrs -> coerce attrs
@@ -211,9 +215,10 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     GuardDog' x -> getActions i window x
     MagnifyingGlass' x -> getActions i window x
     OldBookOfLore' x -> getActions i window x
-    MedicalTexts' x -> getActions i window x
     ResearchLibrarian' x -> getActions i window x
     DrMilanChristopher' x -> getActions i window x
+    Hyperawareness' x -> getActions i window x
+    MedicalTexts' x -> getActions i window x
     Hyperawareness' x -> getActions i window x
     Burglary' x -> getActions i window x
     LeoDeLuca' x -> getActions i window x
@@ -246,10 +251,11 @@ instance (AssetRunner env) => RunMessage env Asset where
     GuardDog' x -> GuardDog' <$> runMessage msg x
     MagnifyingGlass' x -> MagnifyingGlass' <$> runMessage msg x
     OldBookOfLore' x -> OldBookOfLore' <$> runMessage msg x
-    MedicalTexts' x -> MedicalTexts' <$> runMessage msg x
     ResearchLibrarian' x -> ResearchLibrarian' <$> runMessage msg x
     DrMilanChristopher' x -> DrMilanChristopher' <$> runMessage msg x
     Hyperawareness' x -> Hyperawareness' <$> runMessage msg x
+    MedicalTexts' x -> MedicalTexts' <$> runMessage msg x
+    Switchblade' x -> Switchblade' <$> runMessage msg x
     Burglary' x -> Burglary' <$> runMessage msg x
     LeoDeLuca' x -> LeoDeLuca' <$> runMessage msg x
     HardKnocks' x -> HardKnocks' <$> runMessage msg x

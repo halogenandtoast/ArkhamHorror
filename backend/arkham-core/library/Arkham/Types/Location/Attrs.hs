@@ -152,8 +152,8 @@ canEnterLocation
   :: (LocationRunner env, MonadReader env m) => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
   traits <- asks (getSet eid)
-  modifiers <- asks (getList lid)
-  pure $ not $ flip any modifiers $ \case
+  modifiers' <- asks (getList lid)
+  pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
 

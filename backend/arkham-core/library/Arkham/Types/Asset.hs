@@ -39,6 +39,7 @@ import Arkham.Types.Asset.Cards.MagnifyingGlass
 import Arkham.Types.Asset.Cards.MedicalTexts
 import Arkham.Types.Asset.Cards.OldBookOfLore
 import Arkham.Types.Asset.Cards.PhysicalTraining
+import Arkham.Types.Asset.Cards.Pickpocketing
 import Arkham.Types.Asset.Cards.RabbitsFoot
 import Arkham.Types.Asset.Cards.ResearchLibrarian
 import Arkham.Types.Asset.Cards.Rolands38Special
@@ -86,6 +87,7 @@ allAssets = HashMap.fromList
   , ("01035", MedicalTexts' . medicalTexts)
   , ("01044", Switchblade' . switchblade)
   , ("01045", Burglary' . burglary)
+  , ("01046", Pickpocketing' . pickpoketing)
   , ("01047", FortyOneDerringer' . fortyOneDerringer)
   , ("01048", LeoDeLuca' . leoDeLuca)
   , ("01049", HardKnocks' . hardKnocks)
@@ -143,6 +145,7 @@ data Asset
   | MedicalTexts' MedicalTexts
   | Switchblade' Switchblade
   | Burglary' Burglary
+  | Pickpocketing' Pickpocketing
   | FortyOneDerringer' FortyOneDerringer
   | LeoDeLuca' LeoDeLuca
   | HardKnocks' HardKnocks
@@ -184,6 +187,7 @@ assetAttrs = \case
   MedicalTexts' attrs -> coerce attrs
   Switchblade' attrs -> coerce attrs
   Burglary' attrs -> coerce attrs
+  Pickpocketing' attrs -> coerce attrs
   FortyOneDerringer' attrs -> coerce attrs
   LeoDeLuca' attrs -> coerce attrs
   HardKnocks' attrs -> coerce attrs
@@ -233,6 +237,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     Hyperawareness' x -> getActions i window x
     Switchblade' x -> getActions i window x
     Burglary' x -> getActions i window x
+    Pickpocketing' x -> getActions i window x
     FortyOneDerringer' x -> getActions i window x
     LeoDeLuca' x -> getActions i window x
     HardKnocks' x -> getActions i window x
@@ -272,6 +277,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     MedicalTexts' x -> MedicalTexts' <$> runMessage msg x
     Switchblade' x -> Switchblade' <$> runMessage msg x
     Burglary' x -> Burglary' <$> runMessage msg x
+    Pickpocketing' x -> Pickpocketing' <$> runMessage msg x
     FortyOneDerringer' x -> FortyOneDerringer' <$> runMessage msg x
     LeoDeLuca' x -> LeoDeLuca' <$> runMessage msg x
     HardKnocks' x -> HardKnocks' <$> runMessage msg x

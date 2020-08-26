@@ -169,6 +169,7 @@ allPlayerCards = HashMap.fromList
   , ("01050", elusive)
   , ("01051", backstab)
   , ("01052", sneakAttack)
+  , ("01053", opportunist)
   , ("01058", forbiddenKnowledge)
   , ("01059", holyRosary)
   , ("01060", shrivelling)
@@ -453,6 +454,10 @@ sneakAttack cardId = (event cardId "01052" "Sneak Attack" 2 Rogue)
   { pcSkills = [SkillIntellect, SkillCombat]
   , pcTraits = [Tactic]
   }
+
+opportunist :: CardId -> PlayerCard
+opportunist cardId =
+  (skill cardId "01053" "Opportunist" [SkillWild] Rogue) { pcTraits = [Innate] }
 
 forbiddenKnowledge :: CardId -> PlayerCard
 forbiddenKnowledge cardId =

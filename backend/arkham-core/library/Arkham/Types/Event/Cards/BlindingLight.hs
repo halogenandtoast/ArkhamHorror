@@ -42,7 +42,7 @@ instance (EventRunner env) => RunMessage env BlindingLight where
               , Token.ElderThing
               , Token.AutoFail
               ]
-              [LoseAction iid (EventSource "01066")]
+              [LoseAction iid (EventSource eid)]
           ]
           False
         , Discard (EventTarget eid)

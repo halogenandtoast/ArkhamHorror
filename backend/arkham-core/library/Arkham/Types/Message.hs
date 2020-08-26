@@ -120,6 +120,7 @@ data Message
   | MoveAllTo LocationId
   | MoveAction InvestigatorId LocationId Bool
   | MoveTo InvestigatorId LocationId
+  | MoveFrom InvestigatorId LocationId
   | PrePlayerWindow
   | PostPlayerWindow
   | PlayerWindow InvestigatorId [Message]

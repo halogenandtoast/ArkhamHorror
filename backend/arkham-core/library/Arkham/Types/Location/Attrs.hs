@@ -261,4 +261,11 @@ instance (LocationRunner env) => RunMessage env Attrs where
       pure $ a & clues .~ locationClueCount & revealed .~ True
     RevealLocation lid | lid /= locationId ->
       pure $ a & connectedLocations %~ HashSet.delete lid
+    EndRound -> do
+      lingeringEventIds <- asks (getSet ())
+      pure $ a & modifiers %~ filter
+        (\modifier -> case sourceOfModifier modifier of
+          EventSource eid -> eid `member` lingeringEventIds
+          _ -> True
+        )
     _ -> pure a

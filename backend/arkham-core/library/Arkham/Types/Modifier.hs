@@ -37,6 +37,7 @@ sourceOfModifier (ReduceCostOf _ _ s) = s
 sourceOfModifier (EnemyFight _ s) = s
 sourceOfModifier (EnemyEvade _ s) = s
 sourceOfModifier (CannotBeAttackedByNonElite s) = s
+sourceOfModifier (CannotBeEnteredByNonElite s) = s
 sourceOfModifier (XPModifier _ s) = s
 sourceOfModifier (CanPlayTopOfDiscard _ s) = s
 sourceOfModifier (AdditionalActions _ s) = s
@@ -67,6 +68,8 @@ replaceModifierSource s (EnemyFight a _) = EnemyFight a s
 replaceModifierSource s (EnemyEvade a _) = EnemyEvade a s
 replaceModifierSource s (CannotBeAttackedByNonElite _) =
   CannotBeAttackedByNonElite s
+replaceModifierSource s (CannotBeEnteredByNonElite _) =
+  CannotBeEnteredByNonElite s
 replaceModifierSource s (XPModifier a _) = XPModifier a s
 replaceModifierSource s (CanPlayTopOfDiscard a _) = CanPlayTopOfDiscard a s
 replaceModifierSource s (AdditionalActions a _) = AdditionalActions a s
@@ -79,6 +82,7 @@ data Modifier
   | AdditionalActions Int Source
   | CanPlayTopOfDiscard (Maybe PlayerCardType, [Trait]) Source
   | CannotBeAttackedByNonElite Source
+  | CannotBeEnteredByNonElite Source
   | CannotDiscoverClues Source
   | CannotInvestigate Source
   | CannotPlay [PlayerCardType] Source

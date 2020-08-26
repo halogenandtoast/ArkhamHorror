@@ -80,8 +80,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env DaisyWalker where
       PlayerWindow iid additionalActions | iid == investigatorId ->
         if investigatorRemainingActions == 0 && tomeActions > 0
           then do
-            tomeActions' <- asks
-              (join $ getActions attrs NonFast . (AssetActionType, Tome, ))
+            tomeActions' <- join
+              $ asks (getActions attrs NonFast . (AssetActionType, Tome, ))
             DaisyWalker
               . (`with` metadata)
               <$> runMessage

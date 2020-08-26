@@ -11,6 +11,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
+import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Token
@@ -35,7 +36,7 @@ data Source
   | LocationSource LocationId
   | SkillTestSource
   | TreacherySource TreacheryId
-  | EventSource CardCode
+  | EventSource EventId
   | SkillSource CardCode
   | EmptyDeckSource
   | DeckSource

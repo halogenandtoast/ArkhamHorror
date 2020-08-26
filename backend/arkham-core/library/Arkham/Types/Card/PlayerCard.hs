@@ -160,6 +160,7 @@ allPlayerCards = HashMap.fromList
   , ("01039", deduction)
   , ("01044", switchblade)
   , ("01045", burglary)
+  , ("01047", fortyOneDerringer)
   , ("01048", leoDeLuca)
   , ("01049", hardKnocks)
   , ("01051", backstab)
@@ -386,6 +387,12 @@ burglary :: CardId -> PlayerCard
 burglary cardId = (asset cardId "01045" "Burglary" 1 Rogue)
   { pcSkills = [SkillIntellect]
   , pcTraits = [Talent, Illicit]
+  }
+
+fortyOneDerringer :: CardId -> PlayerCard
+fortyOneDerringer cardId = (asset cardId "01047" ".41 Derringer" 3 Rogue)
+  { pcSkills = [SkillCombat]
+  , pcTraits = [Item, Weapon, Firearm, Illicit]
   }
 
 leoDeLuca :: CardId -> PlayerCard

@@ -22,6 +22,7 @@ import Arkham.Types.Asset.Cards.DrMilanChristopher
 import Arkham.Types.Asset.Cards.FirstAid
 import Arkham.Types.Asset.Cards.Flashlight
 import Arkham.Types.Asset.Cards.FortyFiveAutomatic
+import Arkham.Types.Asset.Cards.FortyOneDerringer
 import Arkham.Types.Asset.Cards.GuardDog
 import Arkham.Types.Asset.Cards.HardKnocks
 import Arkham.Types.Asset.Cards.HeirloomOfHyperborea
@@ -83,6 +84,7 @@ allAssets = HashMap.fromList
   , ("01035", MedicalTexts' . medicalTexts)
   , ("01044", Switchblade' . switchblade)
   , ("01045", Burglary' . burglary)
+  , ("01047", FortyOneDerringer' . fortyOneDerringer)
   , ("01048", LeoDeLuca' . leoDeLuca)
   , ("01049", HardKnocks' . hardKnocks)
   , ("01059", HolyRosary' . holyRosary)
@@ -137,6 +139,7 @@ data Asset
   | MedicalTexts' MedicalTexts
   | Switchblade' Switchblade
   | Burglary' Burglary
+  | FortyOneDerringer' FortyOneDerringer
   | LeoDeLuca' LeoDeLuca
   | HardKnocks' HardKnocks
   | HolyRosary' HolyRosary
@@ -175,6 +178,7 @@ assetAttrs = \case
   MedicalTexts' attrs -> coerce attrs
   Switchblade' attrs -> coerce attrs
   Burglary' attrs -> coerce attrs
+  FortyOneDerringer' attrs -> coerce attrs
   LeoDeLuca' attrs -> coerce attrs
   HardKnocks' attrs -> coerce attrs
   HolyRosary' attrs -> coerce attrs
@@ -221,6 +225,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     MedicalTexts' x -> getActions i window x
     Hyperawareness' x -> getActions i window x
     Burglary' x -> getActions i window x
+    FortyOneDerringer' x -> getActions i window x
     LeoDeLuca' x -> getActions i window x
     HardKnocks' x -> getActions i window x
     HolyRosary' x -> getActions i window x
@@ -257,6 +262,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     MedicalTexts' x -> MedicalTexts' <$> runMessage msg x
     Switchblade' x -> Switchblade' <$> runMessage msg x
     Burglary' x -> Burglary' <$> runMessage msg x
+    FortyOneDerringer' x -> FortyOneDerringer' <$> runMessage msg x
     LeoDeLuca' x -> LeoDeLuca' <$> runMessage msg x
     HardKnocks' x -> HardKnocks' <$> runMessage msg x
     HolyRosary' x -> HolyRosary' <$> runMessage msg x

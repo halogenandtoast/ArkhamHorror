@@ -24,6 +24,7 @@ import Arkham.Types.Event.Cards.Evidence
 import Arkham.Types.Event.Cards.Lucky
 import Arkham.Types.Event.Cards.MindOverMatter
 import Arkham.Types.Event.Cards.OnTheLam
+import Arkham.Types.Event.Cards.SneakAttack
 import Arkham.Types.Event.Cards.WardOfProtection
 import Arkham.Types.Event.Cards.WorkingAHunch
 import Arkham.Types.Event.Runner
@@ -52,6 +53,7 @@ allEvents = HashMap.fromList
   , ("01038", (Barricade' .) . barricade)
   , ("01050", (Elusive' .) . elusive)
   , ("01051", (Backstab' .) . backstab)
+  , ("01052", (SneakAttack' .) . sneakAttack)
   , ("01064", (DrawnToTheFlame' .) . drawnToTheFlame)
   , ("01065", (WardOfProtection' .) . wardOfProtection)
   , ("01066", (BlindingLight' .) . blindingLight)
@@ -73,6 +75,7 @@ data Event
   | Barricade' Barricade
   | Elusive' Elusive
   | Backstab' Backstab
+  | SneakAttack' SneakAttack
   | DrawnToTheFlame' DrawnToTheFlame
   | WardOfProtection' WardOfProtection
   | BlindingLight' BlindingLight
@@ -93,6 +96,7 @@ eventAttrs = \case
   Barricade' attrs -> coerce attrs
   Elusive' attrs -> coerce attrs
   Backstab' attrs -> coerce attrs
+  SneakAttack' attrs -> coerce attrs
   DrawnToTheFlame' attrs -> coerce attrs
   WardOfProtection' attrs -> coerce attrs
   BlindingLight' attrs -> coerce attrs
@@ -111,6 +115,7 @@ instance HasActions env investigator Event where
     Barricade' x -> getActions i window x
     Elusive' x -> getActions i window x
     Backstab' x -> getActions i window x
+    SneakAttack' x -> getActions i window x
     DrawnToTheFlame' x -> getActions i window x
     WardOfProtection' x -> getActions i window x
     BlindingLight' x -> getActions i window x
@@ -135,6 +140,7 @@ instance (EventRunner env) => RunMessage env Event where
     Barricade' x -> Barricade' <$> runMessage msg x
     Elusive' x -> Elusive' <$> runMessage msg x
     Backstab' x -> Backstab' <$> runMessage msg x
+    SneakAttack' x -> SneakAttack' <$> runMessage msg x
     DrawnToTheFlame' x -> DrawnToTheFlame' <$> runMessage msg x
     WardOfProtection' x -> WardOfProtection' <$> runMessage msg x
     BlindingLight' x -> BlindingLight' <$> runMessage msg x

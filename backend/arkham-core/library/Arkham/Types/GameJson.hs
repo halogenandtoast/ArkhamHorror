@@ -12,6 +12,8 @@ import Arkham.Types.Campaign
 import Arkham.Types.Card
 import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
+import Arkham.Types.Event
+import Arkham.Types.EventId
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
@@ -46,6 +48,7 @@ data GameJson = GameJson
   , gChaosBag :: Bag Token
   , gAgendas :: HashMap AgendaId Agenda
   , gTreacheries :: HashMap TreacheryId Treachery
+  , gEvents :: HashMap EventId Event
   , gActs :: HashMap ActId Act
   , gGameOver :: Bool
   , gPending :: Bool

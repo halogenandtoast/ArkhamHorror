@@ -31,6 +31,7 @@ import Arkham.Types.Difficulty
 import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
 import Arkham.Types.Event
+import Arkham.Types.EventId
 import Arkham.Types.FastWindow (Who(..))
 import qualified Arkham.Types.FastWindow as Fast
 import Arkham.Types.GameJson
@@ -98,6 +99,7 @@ data Game = Game
   , giActs :: HashMap ActId Act
   , giAgendas :: HashMap AgendaId Agenda
   , giTreacheries :: HashMap TreacheryId Treachery
+  , giEvents :: HashMap EventId Event
   , giGameOver :: Bool
   , giPending :: Bool
   , giPlayerCount :: Int
@@ -129,6 +131,10 @@ getAsset aid g =
 getTreachery :: TreacheryId -> Game -> Treachery
 getTreachery tid g =
   fromJustNote ("No such treachery: " <> show tid) $ g ^? (treacheries . ix tid)
+
+getEvent :: EventId -> Game -> Event
+getEvent eid g =
+  fromJustNote ("No such event: " <> show eid) $ g ^? (events . ix eid)
 
 players :: Lens' Game (HashMap Int InvestigatorId)
 players = lens giPlayers $ \m x -> m { giPlayers = x }
@@ -168,6 +174,9 @@ agendas = lens giAgendas $ \m x -> m { giAgendas = x }
 
 treacheries :: Lens' Game (HashMap TreacheryId Treachery)
 treacheries = lens giTreacheries $ \m x -> m { giTreacheries = x }
+
+events :: Lens' Game (HashMap EventId Event)
+events = lens giEvents $ \m x -> m { giEvents = x }
 
 locations :: Lens' Game (HashMap LocationId Location)
 locations = lens giLocations $ \m x -> m { giLocations = x }
@@ -276,6 +285,7 @@ newCampaign campaignId playerCount' investigatorsList difficulty' = do
     , giSkillTest = Nothing
     , giAgendas = mempty
     , giTreacheries = mempty
+    , giEvents = mempty
     , giActs = mempty
     , giChaosBag = Bag []
     , giGameOver = False
@@ -722,6 +732,9 @@ instance HasSet AssetId LocationId Game where
 instance HasSet TreacheryId LocationId Game where
   getSet lid = getSet () . getLocation lid
 
+instance HasSet EventId LocationId Game where
+  getSet lid = getSet () . getLocation lid
+
 instance HasSet HealthDamageableAssetId InvestigatorId Game where
   getSet iid g =
     HashSet.map HealthDamageableAssetId . HashMap.keysSet $ assets'
@@ -901,6 +914,7 @@ runGameMessage msg g = case msg of
       & (acts .~ mempty)
       & (agendas .~ mempty)
       & (treacheries .~ mempty)
+      & (events .~ mempty)
       & (gameOver .~ False)
       & (usedAbilities .~ mempty)
       & (focusedCards .~ mempty)
@@ -986,6 +1000,8 @@ runGameMessage msg g = case msg of
     unshiftMessages [ Discard (TreacheryTarget tid) | tid <- treacheryIds ]
     enemyIds <- HashSet.toList <$> asks (getSet lid)
     unshiftMessages [ Discard (EnemyTarget eid) | eid <- enemyIds ]
+    eventIds <- HashSet.toList <$> asks (getSet lid)
+    unshiftMessages [ Discard (EventTarget eid) | eid <- eventIds ]
     pure $ g & locations %~ HashMap.delete lid
   SpendClues 0 _ -> pure g
   SpendClues n iids -> do
@@ -1046,9 +1062,11 @@ runGameMessage msg g = case msg of
             ]
           pure $ g & assets %~ HashMap.insert aid asset
         EventType -> do
-          void $ allEvents (pcCardCode pc) iid
+          let
+            eid = EventId $ unCardId cardId
+            event = lookupEvent (pcCardCode pc) iid eid
           unshiftMessage (PlayedCard iid cardId True)
-          pure g
+          pure $ g & events %~ HashMap.insert eid event
         _ -> pure g
       EncounterCard _ -> pure g
   ActivateCardAbilityAction iid ability ->
@@ -1505,6 +1523,17 @@ runGameMessage msg g = case msg of
         (HashMap.lookup (getCardCode enemy) allEncounterCards)
         (CardId $ unEnemyId eid)
     in pure $ g & enemies %~ HashMap.delete eid & discard %~ (card :)
+  Discard (EventTarget eid) -> do
+    let
+      event = getEvent eid g
+      mPlayerCard = do
+        f <- HashMap.lookup (getCardCode event) allPlayerCards
+        pure $ f (CardId $ unEventId eid)
+    case mPlayerCard of
+      Nothing -> error "missing"
+      Just pc -> do
+        unshiftMessage (AddToDiscard (ownerOfEvent event) pc)
+        pure $ g & events %~ HashMap.delete eid
   Discard (TreacheryTarget tid) -> do
     let
       treachery = getTreachery tid g
@@ -1566,6 +1595,7 @@ toExternalGame Game {..} mq = do
     , gActs = giActs
     , gAgendas = giAgendas
     , gTreacheries = giTreacheries
+    , gEvents = giEvents
     , gGameOver = giGameOver
     , gPending = giPending
     , gUsedAbilities = giUsedAbilities
@@ -1604,6 +1634,7 @@ toInternalGame' ref GameJson {..} = Game
   , giChaosBag = gChaosBag
   , giAgendas = gAgendas
   , giTreacheries = gTreacheries
+  , giEvents = gEvents
   , giActs = gActs
   , giGameOver = gGameOver
   , giPending = gPending

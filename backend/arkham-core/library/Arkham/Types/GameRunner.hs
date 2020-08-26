@@ -4,6 +4,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
+import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Query
@@ -24,4 +25,5 @@ type GameRunner env
     , HasCount ResourceCount InvestigatorId env
     , HasList DeckCard (InvestigatorId, Trait) env
     , HasId (Maybe OwnerId) AssetId env
+    , HasSet EventId LocationId env
     )

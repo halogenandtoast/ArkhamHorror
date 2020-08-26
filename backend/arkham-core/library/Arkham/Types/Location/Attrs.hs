@@ -6,6 +6,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
+import Arkham.Types.EventId
 import Arkham.Types.FastWindow
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
@@ -45,6 +46,7 @@ data Attrs = Attrs
   , locationConnectedLocations :: HashSet LocationId
   , locationTraits :: HashSet Trait
   , locationTreacheries :: HashSet TreacheryId
+  , locationEvents :: HashSet EventId
   , locationAssets :: HashSet AssetId
   , locationModifiers :: [Modifier]
   }
@@ -63,6 +65,9 @@ investigators =
 
 treacheries :: Lens' Attrs (HashSet TreacheryId)
 treacheries = lens locationTreacheries $ \m x -> m { locationTreacheries = x }
+
+events :: Lens' Attrs (HashSet EventId)
+events = lens locationEvents $ \m x -> m { locationEvents = x }
 
 assets :: Lens' Attrs (HashSet AssetId)
 assets = lens locationAssets $ \m x -> m { locationAssets = x }
@@ -105,6 +110,7 @@ baseAttrs lid name shroud' revealClues symbol' connectedSymbols' = Attrs
   , locationConnectedLocations = mempty
   , locationTraits = mempty
   , locationTreacheries = mempty
+  , locationEvents = mempty
   , locationAssets = mempty
   , locationModifiers = mempty
   }
@@ -187,8 +193,11 @@ instance (LocationRunner env) => RunMessage env Attrs where
       a <$ unshiftMessage (AddConnection lid locationSymbol)
     AttachTreacheryToLocation tid lid | lid == locationId ->
       pure $ a & treacheries %~ HashSet.insert tid
+    AttachEventToLocation eid lid | lid == locationId ->
+      pure $ a & events %~ HashSet.insert eid
     Discard (TreacheryTarget tid) ->
       pure $ a & treacheries %~ HashSet.delete tid
+    Discard (EventTarget eid) -> pure $ a & events %~ HashSet.delete eid
     Discard (EnemyTarget eid) -> pure $ a & enemies %~ HashSet.delete eid
     AddAssetAt aid lid | lid == locationId ->
       pure $ a & assets %~ HashSet.insert aid

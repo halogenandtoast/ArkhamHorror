@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9d723ba4b404c5798a92ef08d4ad1762da8154b0905f0d308bd2ac967e1895f6
+-- hash: acf63ce1c4b26d459c72f1ecc8b3f10d01d6abacb33f72f931c67b1f918613aa
 
 name:           arkham-core
 version:        0.0.0
@@ -128,6 +128,7 @@ library
       Arkham.Types.Enemy.Runner
       Arkham.Types.EnemyId
       Arkham.Types.Event
+      Arkham.Types.Event.Attrs
       Arkham.Types.Event.Cards.Backstab
       Arkham.Types.Event.Cards.BlindingLight
       Arkham.Types.Event.Cards.DarkMemory
@@ -141,6 +142,8 @@ library
       Arkham.Types.Event.Cards.OnTheLam
       Arkham.Types.Event.Cards.WardOfProtection
       Arkham.Types.Event.Cards.WorkingAHunch
+      Arkham.Types.Event.Runner
+      Arkham.Types.EventId
       Arkham.Types.FastWindow
       Arkham.Types.Game
       Arkham.Types.GameJson

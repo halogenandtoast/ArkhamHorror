@@ -8,6 +8,7 @@ import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
+import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.TreacheryId
@@ -26,5 +27,6 @@ data Target
   | AgendaTarget AgendaId
   | ActTarget ActId
   | CardIdTarget CardId
+  | EventTarget EventId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

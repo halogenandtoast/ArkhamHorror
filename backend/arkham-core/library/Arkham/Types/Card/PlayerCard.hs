@@ -157,6 +157,7 @@ allPlayerCards = HashMap.fromList
   , ("01035", medicalTexts)
   , ("01036", mindOverMatter)
   , ("01037", workingAHunch)
+  , ("01038", barricade)
   , ("01039", deduction)
   , ("01044", switchblade)
   , ("01045", burglary)
@@ -371,6 +372,12 @@ workingAHunch cardId = (event cardId "01037" "Working a Hunch" 2 Seeker)
   , pcTraits = [Insight]
   , pcFast = True
   , pcFastWindows = HashSet.fromList [DuringTurn You]
+  }
+
+barricade :: CardId -> PlayerCard
+barricade cardId = (event cardId "01038" "Barricade" 0 Seeker)
+  { pcSkills = [SkillWillpower, SkillIntellect, SkillAgility]
+  , pcTraits = [Insight, Tactic]
   }
 
 deduction :: CardId -> PlayerCard

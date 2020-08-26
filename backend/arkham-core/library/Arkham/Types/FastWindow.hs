@@ -15,21 +15,22 @@ data Who = You | InvestigatorAtYourLocation
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data FastWindow
-  = WhenDrawTreachery Who Bool -- < is weakness
-  | WhenEnemyAttacks Who
-  | WhenEnemyDefeated Who
-  | WhenDrawToken Who Token
-  | WhenWouldFailSkillTest Who
-  | DuringTurn Who
-  | WhenDiscoverClues Who Where
-  | WhenSkillTest SkillType
+  = AfterAssignedHorror Who
   | AfterFailSkillTest Who Int
   | AfterPassSkillTest Who Int
-  | AfterAssignedHorror Who
-  | AfterTurnBegins Who
   | AfterPlayCard Who [Trait]
+  | AfterTurnBegins Who
   | Any
+  | DuringTurn Who
   | NonFast
+  | WhenDiscoverClues Who Where
+  | WhenDrawToken Who Token
+  | WhenDrawTreachery Who Bool -- < is weakness
+  | WhenEnemyAttacks Who
+  | WhenEnemyDefeated Who
+  | WhenEnemyEvaded Who
+  | WhenSkillTest SkillType
+  | WhenWouldFailSkillTest Who
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

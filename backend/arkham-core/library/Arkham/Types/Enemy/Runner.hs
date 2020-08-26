@@ -1,10 +1,13 @@
 module Arkham.Types.Enemy.Runner where
 
 import Arkham.Types.Classes
+import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.Modifier
 import Arkham.Types.Prey
 import Arkham.Types.Query
+import Arkham.Types.Trait
 
 type EnemyRunner env
   = ( HasSet LocationId () env
@@ -19,4 +22,6 @@ type EnemyRunner env
     , HasSet EmptyLocationId () env
     , HasId LocationId InvestigatorId env
     , HasSet PreyId Prey env
+    , HasSet Trait EnemyId env
+    , HasList Modifier LocationId env
     )

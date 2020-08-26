@@ -11,6 +11,7 @@ import Arkham.Json
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
+import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Cards.ArkhamWoodsCliffside
@@ -112,6 +113,9 @@ instance HasSet EnemyId () Location where
 
 instance HasSet TreacheryId () Location where
   getSet _ = locationTreacheries . locationAttrs
+
+instance HasSet EventId () Location where
+  getSet _ = locationEvents . locationAttrs
 
 instance HasSet AssetId () Location where
   getSet _ = locationAssets . locationAttrs

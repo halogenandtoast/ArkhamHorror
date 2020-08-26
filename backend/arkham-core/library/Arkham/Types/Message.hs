@@ -21,6 +21,7 @@ import Arkham.Types.CampaignStep
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
+import Arkham.Types.EventId
 import Arkham.Types.FastWindow
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
@@ -175,6 +176,7 @@ data Message
   | AssetDiscarded AssetId CardCode
   | InvestigatorDamage InvestigatorId Source Int Int
   | InvestigatorPlayAsset InvestigatorId AssetId [SlotType] [Trait]
+  | InvestigatorPlayEvent InvestigatorId EventId
   | GainClues InvestigatorId Int
   | DiscoverCluesAtLocation InvestigatorId LocationId Int
   | PlaceClues Target Int
@@ -266,6 +268,7 @@ data Message
   | SuccessfulAttackEnemy InvestigatorId EnemyId
   | FailedAttackEnemy InvestigatorId EnemyId
   | AttachTreacheryToLocation TreacheryId LocationId
+  | AttachEventToLocation EventId LocationId
   | AttachTreacheryToInvestigator TreacheryId InvestigatorId
   | AddModifier Target Modifier
   | AddSlot InvestigatorId SlotType Slot

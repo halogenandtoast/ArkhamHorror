@@ -7,6 +7,7 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
 import Arkham.Types.Card.Id
 import Arkham.Types.ClassSymbol
+import Arkham.Types.CommitRestriction
 import Arkham.Types.FastWindow
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
@@ -47,6 +48,7 @@ data PlayerCard = MkPlayerCard
   , pcAction :: Maybe Action
   , pcRevelation :: Bool
   , pcVictoryPoints :: Maybe Int
+  , pcCommitRestrictions :: [CommitRestriction]
   }
   deriving stock (Show, Eq, Generic)
 
@@ -97,6 +99,7 @@ basePlayerCard cardId cardCode name cost cardType classSymbol = MkPlayerCard
   , pcAction = Nothing
   , pcRevelation = False
   , pcVictoryPoints = Nothing
+  , pcCommitRestrictions = mempty
   }
 
 asset :: CardId -> CardCode -> Text -> Int -> ClassSymbol -> PlayerCard
@@ -456,8 +459,10 @@ sneakAttack cardId = (event cardId "01052" "Sneak Attack" 2 Rogue)
   }
 
 opportunist :: CardId -> PlayerCard
-opportunist cardId =
-  (skill cardId "01053" "Opportunist" [SkillWild] Rogue) { pcTraits = [Innate] }
+opportunist cardId = (skill cardId "01053" "Opportunist" [SkillWild] Rogue)
+  { pcTraits = [Innate]
+  , pcCommitRestrictions = [OnlyYourTest]
+  }
 
 forbiddenKnowledge :: CardId -> PlayerCard
 forbiddenKnowledge cardId =
@@ -603,30 +608,35 @@ guts :: CardId -> PlayerCard
 guts cardId =
   (skill cardId "01089" "Guts" [SkillWillpower, SkillWillpower] Neutral)
     { pcTraits = [Innate]
+    , pcCommitRestrictions = [MaxOnePerTest]
     }
 
 perception :: CardId -> PlayerCard
 perception cardId =
   (skill cardId "01090" "Perceptions" [SkillIntellect, SkillIntellect] Neutral)
     { pcTraits = [Practiced]
+    , pcCommitRestrictions = [MaxOnePerTest]
     }
 
 overpower :: CardId -> PlayerCard
 overpower cardId =
   (skill cardId "01091" "Overpower" [SkillCombat, SkillCombat] Neutral)
     { pcTraits = [Practiced]
+    , pcCommitRestrictions = [MaxOnePerTest]
     }
 
 manualDexterity :: CardId -> PlayerCard
 manualDexterity cardId =
   (skill cardId "01092" "Manual Dexterity" [SkillAgility, SkillAgility] Neutral)
     { pcTraits = [Innate]
+    , pcCommitRestrictions = [MaxOnePerTest]
     }
 
 unexpectedCourage :: CardId -> PlayerCard
 unexpectedCourage cardId =
   (skill cardId "01093" "Unexpected Courage" [SkillWild, SkillWild] Neutral)
     { pcTraits = [Innate]
+    , pcCommitRestrictions = [MaxOnePerTest]
     }
 
 amnesia :: CardId -> PlayerCard

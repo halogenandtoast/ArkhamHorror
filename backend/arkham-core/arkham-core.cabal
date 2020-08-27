@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b88ec80fa8d1edae7188709d2dcbb0d931b7ed21d4bdd4c72f18e82fa6187c50
+-- hash: 18e7043194101832c848e8c16661b2bdbc5dbfa0865f73007a6f76a7dcdbae6b
 
 name:           arkham-core
 version:        0.0.0
@@ -101,6 +101,7 @@ library
       Arkham.Types.Classes
       Arkham.Types.Classes.HasRecord
       Arkham.Types.ClassSymbol
+      Arkham.Types.CommitRestriction
       Arkham.Types.Difficulty
       Arkham.Types.EncounterSet
       Arkham.Types.Enemy

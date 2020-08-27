@@ -1091,6 +1091,18 @@ runGameMessage msg g = case msg of
       [ AddToDiscard iid card | (card, iid) <- skillCardsWithOwner ]
     pure $ g & skills .~ mempty & skillTest .~ Nothing & usedAbilities %~ filter
       (\(_, Ability {..}) -> abilityLimit /= PerTestOrAbility)
+  ReturnToHand iid (SkillTarget skillId) -> do
+    let
+      skill =
+        fromJustNote ("No such skill: " <> show skillId)
+          $ g
+          ^? (skills . ix skillId)
+      card = fromJustNote
+        "no such skill"
+        (HashMap.lookup (getCardCode skill) allPlayerCards)
+        (CardId $ unSkillId skillId)
+    unshiftMessage (AddToHand iid (PlayerCard card))
+    pure $ g & skills %~ HashMap.delete skillId
   ReturnTokens tokens -> pure $ g & chaosBag %~ (tokens <>)
   AddToken token -> pure $ g & chaosBag %~ (token :)
   PlayCard iid cardId False -> do

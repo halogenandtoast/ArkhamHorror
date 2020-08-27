@@ -15,6 +15,7 @@ import Arkham.Types.Skill.Cards.Deduction
 import Arkham.Types.Skill.Cards.Fearless
 import Arkham.Types.Skill.Cards.Guts
 import Arkham.Types.Skill.Cards.ManualDexterity
+import Arkham.Types.Skill.Cards.Opportunist
 import Arkham.Types.Skill.Cards.Overpower
 import Arkham.Types.Skill.Cards.Perception
 import Arkham.Types.Skill.Cards.UnexpectedCourage
@@ -35,6 +36,7 @@ allSkills :: HashMap CardCode (InvestigatorId -> SkillId -> Skill)
 allSkills = HashMap.fromList
   [ ("01025", (ViciousBlow' .) . viciousBlow)
   , ("01039", (Deduction' .) . deduction)
+  , ("01053", (Opportunist' .) . opportunist)
   , ("01067", (Fearless' .) . fearless)
   , ("01089", (Guts' .) . guts)
   , ("01090", (Perception' .) . perception)
@@ -49,6 +51,7 @@ instance HasCardCode Skill where
 data Skill
   = ViciousBlow' ViciousBlow
   | Deduction' Deduction
+  | Opportunist' Opportunist
   | Fearless' Fearless
   | Guts' Guts
   | Perception' Perception
@@ -62,6 +65,7 @@ skillAttrs :: Skill -> Attrs
 skillAttrs = \case
   ViciousBlow' attrs -> coerce attrs
   Deduction' attrs -> coerce attrs
+  Opportunist' attrs -> coerce attrs
   Fearless' attrs -> coerce attrs
   Guts' attrs -> coerce attrs
   Perception' attrs -> coerce attrs
@@ -73,6 +77,7 @@ instance HasActions env investigator Skill where
   getActions i window = \case
     ViciousBlow' x -> getActions i window x
     Deduction' x -> getActions i window x
+    Opportunist' x -> getActions i window x
     Fearless' x -> getActions i window x
     Guts' x -> getActions i window x
     Perception' x -> getActions i window x
@@ -87,6 +92,7 @@ instance (SkillRunner env) => RunMessage env Skill where
   runMessage msg = \case
     ViciousBlow' x -> ViciousBlow' <$> runMessage msg x
     Deduction' x -> Deduction' <$> runMessage msg x
+    Opportunist' x -> Opportunist' <$> runMessage msg x
     Fearless' x -> Fearless' <$> runMessage msg x
     Guts' x -> Guts' <$> runMessage msg x
     Perception' x -> Perception' <$> runMessage msg x

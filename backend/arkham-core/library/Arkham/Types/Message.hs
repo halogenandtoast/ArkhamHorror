@@ -201,11 +201,12 @@ data Message
   | SkillTestDidPassBy InvestigatorId Target Int
   | SkillTestResults
   | SkillTestApplyResults
+  | SkillTestApplyResultsAfter
   | RunSkill InvestigatorId CardCode SkillTestResult
   | SkillTestCommitCard InvestigatorId CardId
   | CommitCard InvestigatorId CardId
-  | InvestigatorCommitedCard InvestigatorId CardId
-  | InvestigatorCommitedSkill InvestigatorId SkillId
+  | InvestigatorCommittedCard InvestigatorId CardId
+  | InvestigatorCommittedSkill InvestigatorId SkillId
   | SkillTestAsk Message
   | SkillTestUncommitCard InvestigatorId CardId
   | AddOnFailure Message

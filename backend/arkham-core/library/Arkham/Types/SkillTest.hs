@@ -66,9 +66,9 @@ instance ToJSON a => ToJSON (SkillTest a) where
 instance FromJSON a => FromJSON (SkillTest a) where
   parseJSON = genericParseJSON $ aesonOptions $ Just "skillTest"
 
-instance HasSet CommitedCardId InvestigatorId (SkillTest a) where
+instance HasSet CommittedCardId InvestigatorId (SkillTest a) where
   getSet iid =
-    HashSet.map CommitedCardId
+    HashSet.map CommittedCardId
       . HashMap.keysSet
       . HashMap.filter ((== iid) . fst)
       . skillTestCommittedCards
@@ -151,11 +151,8 @@ skillIconCount SkillTest {..} = length . filter matches $ concatMap
   matches SkillWild = True
   matches s = s == skillTestSkillType
 
-skillValueModifiers :: Int -> SkillTest a -> Int
-skillValueModifiers baseValue SkillTest {..} = foldr
-  applyModifier
-  baseValue
-  skillTestModifiers
+skillValueModifiers :: SkillTest a -> Int
+skillValueModifiers SkillTest {..} = foldr applyModifier 0 skillTestModifiers
  where
   applyModifier (AnySkillValue m _) n = max 0 (n + m)
   applyModifier _ n = n
@@ -244,7 +241,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       pure s
     AddModifier AfterSkillTestTarget modifier ->
       pure $ s & modifiers %~ (modifier :)
-    SkillTestApplyResults -> do
+    SkillTestApplyResultsAfter -> do
       unshiftMessage SkillTestEnds
 
       case skillTestResult of
@@ -258,12 +255,21 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
             <> [After (FailedSkillTest skillTestInvestigator n)]
         Unrun -> pure ()
 
-      unshiftMessages $ map
-        (AddModifier (InvestigatorTarget skillTestInvestigator)
-        . replaceModifierSource SkillTestSource
+      s <$ unshiftMessages
+        (map
+          (AddModifier (InvestigatorTarget skillTestInvestigator)
+          . replaceModifierSource SkillTestSource
+          )
+          (applicableModifiers s)
         )
-        (applicableModifiers s)
-      pure s
+    SkillTestApplyResults -> do
+      -- TODO: the player can sequence the skill test results in whatever order they want
+      unshiftMessage SkillTestApplyResultsAfter
+      s <$ case skillTestResult of
+        SucceededBy n ->
+          unshiftMessage (PassedSkillTest skillTestInvestigator n)
+        FailedBy n -> unshiftMessage (FailedSkillTest skillTestInvestigator n)
+        Unrun -> pure ()
     NotifyOnFailure iid target -> do
       case skillTestResult of
         FailedBy n -> s <$ unshiftMessage (SkillTestDidFailBy iid target n)
@@ -281,11 +287,20 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
           skillValue
             + totaledTokenValues
             + skillIconCount s
-            + skillValueModifiers skillValue s
+            + skillValueModifiers s
       unshiftMessage SkillTestResults
       putStrLn
         . pack
-        $ "Modified skill value: "
+        $ "skill value: "
+        <> show skillValue
+        <> "\n+ totaled token values: "
+        <> show totaledTokenValues
+        <> "\n+ skill icon count: "
+        <> show (skillIconCount s)
+        <> "\n+ skill value modifiers: "
+        <> show (skillValueModifiers s)
+        <> "\n-------------------------"
+        <> "\n= Modified skill value: "
         <> show modifiedSkillValue'
         <> "\nDifficulty: "
         <> show skillTestDifficulty

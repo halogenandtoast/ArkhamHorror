@@ -96,6 +96,8 @@ export default class Asset extends Vue {
         return c.contents.contents === this.id;
       case MessageType.USE_CARD_ABILITY:
         return c.contents[1].contents === this.id;
+      case MessageType.ACTIVATE_ABILITY:
+        return c.contents[1].source.contents === this.id && c.contents[1].type.tag === 'ReactionAbility';
       case MessageType.RUN:
         return c.contents.some((c1: Message) => this.canInteract(c1));
       default:
@@ -147,6 +149,18 @@ export default class Asset extends Vue {
 
         return acc;
       }, []);
+  }
+
+  canTriggerReaction(c: Message): boolean {
+    switch (c.tag) {
+      case MessageType.ACTIVATE_ABILITY:
+        console.log(c); // eslint-disable-line
+        return c.contents[1].source.tag === 'AssetSource' && c.contents[1].source.contents === this.id;
+      case MessageType.RUN:
+        return c.contents.some((c1: Message) => this.canTriggerReaction(c1));
+      default:
+        return false;
+    }
   }
 }
 </script>

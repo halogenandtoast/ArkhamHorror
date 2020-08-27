@@ -17,12 +17,6 @@
       src="/img/arkham/ct_blank.png"
       @click="$emit('choose', drawTokenAction)"
     />
-    <div>
-      <button
-        v-if="applyResultsAction !== -1"
-        @click="$emit('choose', applyResultsAction)"
-      >Apply Results</button>
-    </div>
   </div>
 </template>
 
@@ -110,10 +104,6 @@ export default class ChaosBag extends Vue {
     }
 
     return null;
-  }
-
-  get applyResultsAction() {
-    return this.choices.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);
   }
 }
 </script>

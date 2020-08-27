@@ -21,6 +21,7 @@ import Arkham.Types.Enemy.Cards.GoatSpawn
 import Arkham.Types.Enemy.Cards.HermanCollins
 import Arkham.Types.Enemy.Cards.HuntingNightgaunt
 import Arkham.Types.Enemy.Cards.IcyGhoul
+import Arkham.Types.Enemy.Cards.MobEnforcer
 import Arkham.Types.Enemy.Cards.PeterWarren
 import Arkham.Types.Enemy.Cards.RavenousGhoul
 import Arkham.Types.Enemy.Cards.RelentlessDarkYoung
@@ -52,7 +53,8 @@ lookupEnemy = fromJustNote "Unkown enemy" . flip HashMap.lookup allEnemies
 
 allEnemies :: HashMap CardCode (EnemyId -> Enemy)
 allEnemies = HashMap.fromList
-  [ ("01102", SilverTwilightAcolyte' . silverTwilightAcolyte)
+  [ ("01101", MobEnforcer' . mobEnforcer)
+  , ("01102", SilverTwilightAcolyte' . silverTwilightAcolyte)
   , ("01103", StubbornDetective' . stubbornDetective)
   , ("01116", GhoulPriest' . ghoulPriest)
   , ("01118", FleshEater' . fleshEater)
@@ -110,7 +112,8 @@ instance HasKeywords Enemy where
   getKeywords = enemyKeywords . enemyAttrs
 
 data Enemy
-  = SilverTwilightAcolyte' SilverTwilightAcolyte
+  = MobEnforcer' MobEnforcer
+  | SilverTwilightAcolyte' SilverTwilightAcolyte
   | StubbornDetective' StubbornDetective
   | GhoulPriest' GhoulPriest
   | FleshEater' FleshEater
@@ -138,6 +141,7 @@ data Enemy
 
 enemyAttrs :: Enemy -> Attrs
 enemyAttrs = \case
+  MobEnforcer' attrs -> coerce attrs
   SilverTwilightAcolyte' attrs -> coerce attrs
   StubbornDetective' attrs -> coerce attrs
   GhoulPriest' attrs -> coerce attrs
@@ -170,6 +174,7 @@ instance IsEnemy Enemy where
 
 instance (ActionRunner env investigator) => HasActions env investigator Enemy where
   getActions i window = \case
+    MobEnforcer' x -> getActions i window x
     SilverTwilightAcolyte' x -> getActions i window x
     StubbornDetective' x -> getActions i window x
     GhoulPriest' x -> getActions i window x
@@ -196,6 +201,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Enemy wh
 
 instance (EnemyRunner env) => RunMessage env Enemy where
   runMessage msg = \case
+    MobEnforcer' x -> MobEnforcer' <$> runMessage msg x
     SilverTwilightAcolyte' x -> SilverTwilightAcolyte' <$> runMessage msg x
     StubbornDetective' x -> StubbornDetective' <$> runMessage msg x
     GhoulPriest' x -> GhoulPriest' <$> runMessage msg x

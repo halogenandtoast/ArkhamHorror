@@ -12,6 +12,7 @@ import Arkham.Types.Trait
 type EnemyRunner env
   = ( HasSet LocationId () env
     , HasSet InvestigatorId LocationId env
+    , HasSet InvestigatorId () env
     , HasCount PlayerCount () env
     , HasCount RemainingSanity InvestigatorId env
     , HasCount CardCount InvestigatorId env

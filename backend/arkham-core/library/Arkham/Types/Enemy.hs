@@ -27,6 +27,7 @@ import Arkham.Types.Enemy.Cards.RelentlessDarkYoung
 import Arkham.Types.Enemy.Cards.RuthTurner
 import Arkham.Types.Enemy.Cards.ScreechingByakhee
 import Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
+import Arkham.Types.Enemy.Cards.StubbornDetective
 import Arkham.Types.Enemy.Cards.SwarmOfRats
 import Arkham.Types.Enemy.Cards.TheMaskedHunter
 import Arkham.Types.Enemy.Cards.Umordhoth
@@ -52,6 +53,7 @@ lookupEnemy = fromJustNote "Unkown enemy" . flip HashMap.lookup allEnemies
 allEnemies :: HashMap CardCode (EnemyId -> Enemy)
 allEnemies = HashMap.fromList
   [ ("01102", SilverTwilightAcolyte' . silverTwilightAcolyte)
+  , ("01103", StubbornDetective' . stubbornDetective)
   , ("01116", GhoulPriest' . ghoulPriest)
   , ("01118", FleshEater' . fleshEater)
   , ("01119", IcyGhoul' . icyGhoul)
@@ -109,6 +111,7 @@ instance HasKeywords Enemy where
 
 data Enemy
   = SilverTwilightAcolyte' SilverTwilightAcolyte
+  | StubbornDetective' StubbornDetective
   | GhoulPriest' GhoulPriest
   | FleshEater' FleshEater
   | IcyGhoul' IcyGhoul
@@ -136,6 +139,7 @@ data Enemy
 enemyAttrs :: Enemy -> Attrs
 enemyAttrs = \case
   SilverTwilightAcolyte' attrs -> coerce attrs
+  StubbornDetective' attrs -> coerce attrs
   GhoulPriest' attrs -> coerce attrs
   FleshEater' attrs -> coerce attrs
   IcyGhoul' attrs -> coerce attrs
@@ -167,6 +171,7 @@ instance IsEnemy Enemy where
 instance (ActionRunner env investigator) => HasActions env investigator Enemy where
   getActions i window = \case
     SilverTwilightAcolyte' x -> getActions i window x
+    StubbornDetective' x -> getActions i window x
     GhoulPriest' x -> getActions i window x
     FleshEater' x -> getActions i window x
     IcyGhoul' x -> getActions i window x
@@ -192,6 +197,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Enemy wh
 instance (EnemyRunner env) => RunMessage env Enemy where
   runMessage msg = \case
     SilverTwilightAcolyte' x -> SilverTwilightAcolyte' <$> runMessage msg x
+    StubbornDetective' x -> StubbornDetective' <$> runMessage msg x
     GhoulPriest' x -> GhoulPriest' <$> runMessage msg x
     FleshEater' x -> FleshEater' <$> runMessage msg x
     IcyGhoul' x -> IcyGhoul' <$> runMessage msg x

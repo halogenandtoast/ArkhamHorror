@@ -39,6 +39,7 @@ sourceOfModifier (EnemyEvade _ s) = s
 sourceOfModifier (CannotBeAttackedByNonElite s) = s
 sourceOfModifier (CannotBeEnteredByNonElite s) = s
 sourceOfModifier (XPModifier _ s) = s
+sourceOfModifier (Blank s) = s
 sourceOfModifier (CanPlayTopOfDiscard _ s) = s
 sourceOfModifier (AdditionalActions _ s) = s
 sourceOfModifier (ModifierIfSucceededBy _ m) = sourceOfModifier m
@@ -71,6 +72,7 @@ replaceModifierSource s (CannotBeAttackedByNonElite _) =
 replaceModifierSource s (CannotBeEnteredByNonElite _) =
   CannotBeEnteredByNonElite s
 replaceModifierSource s (XPModifier a _) = XPModifier a s
+replaceModifierSource s (Blank _) = Blank s
 replaceModifierSource s (CanPlayTopOfDiscard a _) = CanPlayTopOfDiscard a s
 replaceModifierSource s (AdditionalActions a _) = AdditionalActions a s
 replaceModifierSource s (ModifierIfSucceededBy a m) =
@@ -80,6 +82,7 @@ data Modifier
   = ActionCostOf ActionTarget Int Source
   | ActionSkillModifier Action SkillType Int Source
   | AdditionalActions Int Source
+  | Blank Source
   | CanPlayTopOfDiscard (Maybe PlayerCardType, [Trait]) Source
   | CannotBeAttackedByNonElite Source
   | CannotBeEnteredByNonElite Source

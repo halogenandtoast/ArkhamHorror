@@ -8,7 +8,8 @@ import Arkham.Types.Card.Class
 import Arkham.Types.Card.Id
 import Arkham.Types.ClassSymbol
 import Arkham.Types.FastWindow
-import Arkham.Types.Keyword
+import Arkham.Types.Keyword (Keyword)
+import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import ClassyPrelude
@@ -200,6 +201,7 @@ allPlayerCards = HashMap.fromList
   , ("01099", psychosis)
   , ("01100", hypochondria)
   , ("01102", silverTwilightAcolyte)
+  , ("01103", stubbornDetective)
   , ("01117", litaChantler)
   ]
 
@@ -649,6 +651,12 @@ silverTwilightAcolyte cardId =
   (enemy cardId "01102" "Silver Twilight Acolyte" 0)
     { pcTraits = [Humanoid, Cultist, SilverTwilight]
     }
+
+stubbornDetective :: CardId -> PlayerCard
+stubbornDetective cardId = (enemy cardId "01103" "Stubborn Detective" 0)
+  { pcTraits = [Humanoid, Detective]
+  , pcKeywords = [Keyword.Hunter]
+  }
 
 litaChantler :: CardId -> PlayerCard
 litaChantler cardId =

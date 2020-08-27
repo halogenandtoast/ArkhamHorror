@@ -68,10 +68,13 @@ import Arkham.Types.Investigator.Cards.WinifredHabbamock
 import Arkham.Types.Investigator.Cards.ZoeySamaras
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Stats
+import Arkham.Types.Token
 import ClassyPrelude
 import Data.Aeson
 import Data.Coerce
@@ -219,7 +222,9 @@ data Investigator
   deriving anyclass (ToJSON, FromJSON)
 
 instance (ActionRunner env investigator) => HasActions env investigator Investigator where
-  getActions i window = \case
+  getActions i window investigator | any isBlank (getModifiers investigator) =
+    getActions i window (investigatorAttrs investigator)
+  getActions i window investigator = case investigator of
     AgnesBaker' x -> getActions i window x
     AkachiOnyele' x -> getActions i window x
     AmandaSharpe' x -> getActions i window x
@@ -263,8 +268,15 @@ instance (ActionRunner env investigator) => HasActions env investigator Investig
     WinifredHabbamock' x -> getActions i window x
     ZoeySamaras' x -> getActions i window x
 
+isBlank :: Modifier -> Bool
+isBlank Blank{} = True
+isBlank _ = False
+
 instance (InvestigatorRunner Attrs env) => RunMessage env Investigator where
-  runMessage msg = \case
+  runMessage (ResolveToken ElderSign iid skillValue) i
+    | iid == getInvestigatorId i && any isBlank (getModifiers i) = i
+    <$ runTest skillValue 0
+  runMessage msg i = case i of
     AgnesBaker' x -> AgnesBaker' <$> runMessage msg x
     AkachiOnyele' x -> AkachiOnyele' <$> runMessage msg x
     AmandaSharpe' x -> AmandaSharpe' <$> runMessage msg x

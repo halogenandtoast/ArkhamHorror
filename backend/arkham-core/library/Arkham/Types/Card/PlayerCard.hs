@@ -183,6 +183,7 @@ allPlayerCards = HashMap.fromList
   , ("01074", baseballBat)
   , ("01075", rabbitsFoot)
   , ("01077", digDeep)
+  , ("01078", cunningDistraction)
   , ("01080", lucky)
   , ("01086", knife)
   , ("01087", flashlight)
@@ -539,6 +540,13 @@ digDeep cardId = (asset cardId "01077" "Dig Deep" 2 Survivor)
   { pcSkills = [SkillIntellect, SkillAgility]
   , pcTraits = [Talent]
   }
+
+cunningDistraction :: CardId -> PlayerCard
+cunningDistraction cardId =
+  (event cardId "01078" "Cunning Distraction" 5 Survivor)
+    { pcTraits = [Tactic]
+    , pcAction = Just Action.Evade
+    }
 
 lucky :: CardId -> PlayerCard
 lucky cardId = (event cardId "01080" "Lucky!" 1 Survivor)

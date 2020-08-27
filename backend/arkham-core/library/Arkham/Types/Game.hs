@@ -49,6 +49,7 @@ import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.Scenario
 import Arkham.Types.Skill
+import Arkham.Types.SkillId
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -99,6 +100,7 @@ data Game = Game
   , giAgendas :: HashMap AgendaId Agenda
   , giTreacheries :: HashMap TreacheryId Treachery
   , giEvents :: HashMap EventId Event
+  , giSkills :: HashMap SkillId Skill
   , giGameOver :: Bool
   , giPending :: Bool
   , giPlayerCount :: Int
@@ -176,6 +178,9 @@ treacheries = lens giTreacheries $ \m x -> m { giTreacheries = x }
 
 events :: Lens' Game (HashMap EventId Event)
 events = lens giEvents $ \m x -> m { giEvents = x }
+
+skills :: Lens' Game (HashMap SkillId Skill)
+skills = lens giSkills $ \m x -> m { giSkills = x }
 
 locations :: Lens' Game (HashMap LocationId Location)
 locations = lens giLocations $ \m x -> m { giLocations = x }
@@ -285,6 +290,7 @@ newCampaign campaignId playerCount' investigatorsList difficulty' = do
     , giAgendas = mempty
     , giTreacheries = mempty
     , giEvents = mempty
+    , giSkills = mempty
     , giActs = mempty
     , giChaosBag = Bag []
     , giGameOver = False
@@ -1055,8 +1061,29 @@ runGameMessage msg g = case msg of
       (lookupAct aid2)
   AddAct aid -> pure $ g & acts . at aid ?~ lookupAct aid
   AddAgenda aid -> pure $ g & agendas . at aid ?~ lookupAgenda aid
-  SkillTestEnds -> pure $ g & skillTest .~ Nothing & usedAbilities %~ filter
-    (\(_, Ability {..}) -> abilityLimit /= PerTestOrAbility)
+  CommitCard iid cardId -> do
+    let
+      investigator = getInvestigator iid g
+      card = fromJustNote "could not find card in hand"
+        $ find ((== cardId) . getCardId) (handOf investigator)
+    unshiftMessage (InvestigatorCommitedCard iid cardId)
+    case card of
+      PlayerCard pc -> case pcCardType pc of
+        SkillType -> do
+          let
+            skillId = SkillId $ unCardId cardId
+            skill = lookupSkill (pcCardCode pc) skillId iid
+          unshiftMessage (InvestigatorCommittedSkill iid skillId)
+        _ -> pure ()
+    pure $ g & skills %~ HashMap.insert skillId skill
+  SkillTestEnds -> do
+    skillCardsWithOwner <- for (HashMap.elems $ g ^. skills) $ \skill -> do
+      f <- HashMap.lookup (getCardCode skill) allPlayerCards
+      pure (PlayerCard $ f cardId, skillOwner skill)
+    unshiftMessages
+      [ AddToDiscard iid card | (card, iid) <- skillCardsWithOwner ]
+    pure $ g & skills .~ mempty & skillTest .~ Nothing & usedAbilities %~ filter
+      (\(_, Ability {..}) -> abilityLimit /= PerTestOrAbility)
   ReturnTokens tokens -> pure $ g & chaosBag %~ (tokens <>)
   AddToken token -> pure $ g & chaosBag %~ (token :)
   PlayCard iid cardId False -> do
@@ -1130,9 +1157,6 @@ runGameMessage msg g = case msg of
       : [RemoveCardFromHand iid cardCode, InvestigatorDrawEnemy iid lid eid]
       )
     pure $ g & enemies %~ HashMap.insert eid enemy
-  RunSkill iid cardCode result -> do
-    void $ allSkills cardCode iid result
-    pure g
   CancelNext msgType -> do
     void $ withQueue $ \queue -> do
       let
@@ -1640,6 +1664,7 @@ toExternalGame Game {..} mq = do
     , gAgendas = giAgendas
     , gTreacheries = giTreacheries
     , gEvents = giEvents
+    , gSkills = giSkills
     , gGameOver = giGameOver
     , gPending = giPending
     , gUsedAbilities = giUsedAbilities
@@ -1679,6 +1704,7 @@ toInternalGame' ref GameJson {..} = Game
   , giAgendas = gAgendas
   , giTreacheries = gTreacheries
   , giEvents = gEvents
+  , giSkills = gSkills
   , giActs = gActs
   , giGameOver = gGameOver
   , giPending = gPending

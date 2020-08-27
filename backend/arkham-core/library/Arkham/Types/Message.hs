@@ -28,6 +28,7 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.ScenarioId
+import Arkham.Types.SkillId
 import Arkham.Types.SkillTestResult
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
@@ -200,9 +201,11 @@ data Message
   | SkillTestDidPassBy InvestigatorId Target Int
   | SkillTestResults
   | SkillTestApplyResults
-  | SkillTestApplyResultsAfterSkills
   | RunSkill InvestigatorId CardCode SkillTestResult
   | SkillTestCommitCard InvestigatorId CardId
+  | CommitCard InvestigatorId CardId
+  | InvestigatorCommitedCard InvestigatorId CardId
+  | InvestigatorCommitedSkill InvestigatorId SkillId
   | SkillTestAsk Message
   | SkillTestUncommitCard InvestigatorId CardId
   | AddOnFailure Message

@@ -22,6 +22,8 @@ import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Phase
 import Arkham.Types.Scenario
+import Arkham.Types.Skill
+import Arkham.Types.SkillId
 import Arkham.Types.SkillTest
 import Arkham.Types.Token
 import Arkham.Types.Treachery
@@ -49,6 +51,7 @@ data GameJson = GameJson
   , gAgendas :: HashMap AgendaId Agenda
   , gTreacheries :: HashMap TreacheryId Treachery
   , gEvents :: HashMap EventId Event
+  , gSkills :: HashMap SkillId Skill
   , gActs :: HashMap ActId Act
   , gGameOver :: Bool
   , gPending :: Bool

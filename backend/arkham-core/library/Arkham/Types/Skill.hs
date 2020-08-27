@@ -1,101 +1,95 @@
+{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Skill
-  ( allSkills
+  ( lookupSkill
+  , Skill(..)
+  , ownerOfSkill
   )
 where
 
+import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.GameRunner
 import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.SkillTestResult
-import Arkham.Types.Source
-import Arkham.Types.Target
+import Arkham.Types.Skill.Attrs
+import Arkham.Types.Skill.Cards.Deduction
+import Arkham.Types.Skill.Cards.Fearless
+import Arkham.Types.Skill.Cards.Guts
+import Arkham.Types.Skill.Cards.ManualDexterity
+import Arkham.Types.Skill.Cards.Overpower
+import Arkham.Types.Skill.Cards.Perception
+import Arkham.Types.Skill.Cards.UnexpectedCourage
+import Arkham.Types.Skill.Cards.ViciousBlow
+import Arkham.Types.Skill.Runner
+import Arkham.Types.SkillId
 import ClassyPrelude
+import Data.Coerce
+import qualified Data.HashMap.Strict as HashMap
+import Safe (fromJustNote)
 
-allSkills
-  :: (MonadReader env m, GameRunner env, MonadIO m)
-  => CardCode
-  -> InvestigatorId
-  -> SkillTestResult
-  -> m ()
-allSkills "01025" = viciousBlow
-allSkills "01039" = deduction
-allSkills "01067" = fearless
-allSkills "01089" = guts
-allSkills "01090" = perception
-allSkills "01091" = overpower
-allSkills "01092" = manualDexterity
-allSkills "01093" = unexpectedCourage
-allSkills skid =
-  const (const (throwString $ "No event with id: " <> show skid))
+lookupSkill :: CardCode -> (InvestigatorId -> SkillId -> Skill)
+lookupSkill cardCode =
+  fromJustNote ("Unknown skill: " <> show cardCode)
+    $ HashMap.lookup cardCode allSkills
 
-viciousBlow
-  :: (MonadReader env m, GameRunner env, MonadIO m)
-  => InvestigatorId
-  -> SkillTestResult
-  -> m ()
-viciousBlow _ = \case
-  SucceededBy _ -> unshiftMessage
-    (AddModifier SkillTestTarget (DamageDealt 1 (SkillSource "01025")))
-  _ -> pure ()
+allSkills :: HashMap CardCode (InvestigatorId -> SkillId -> Skill)
+allSkills = HashMap.fromList
+  [ ("01025", (ViciousBlow' .) . viciousBlow)
+  , ("01039", (Deduction' .) . deduction)
+  , ("01067", (Fearless' .) . fearless)
+  , ("01089", (Guts' .) . guts)
+  , ("01090", (Perception' .) . perception)
+  , ("01091", (Overpower' .) . overpower)
+  , ("01092", (ManualDexterity' .) . manualDexterity)
+  , ("01093", (UnexpectedCourage' .) . unexpectedCourage)
+  ]
 
-deduction
-  :: (MonadReader env m, GameRunner env, MonadIO m)
-  => InvestigatorId
-  -> SkillTestResult
-  -> m ()
-deduction _ = \case
-  SucceededBy _ -> unshiftMessage
-    (AddModifier SkillTestTarget (DiscoveredClues 1 (SkillSource "01039")))
-  _ -> pure ()
+instance HasCardCode Skill where
+  getCardCode = skillCardCode . skillAttrs
 
-fearless
-  :: (MonadReader env m, GameRunner env, MonadIO m)
-  => InvestigatorId
-  -> SkillTestResult
-  -> m ()
-fearless iid = \case
-  SucceededBy _ ->
-    unshiftMessage (AddOnSuccess (HealHorror (InvestigatorTarget iid) 1))
-  _ -> pure ()
+data Skill
+  = ViciousBlow' ViciousBlow
+  | Deduction' Deduction
+  | Fearless' Fearless
+  | Guts' Guts
+  | Perception' Perception
+  | Overpower' Overpower
+  | ManualDexterity' ManualDexterity
+  | UnexpectedCourage' UnexpectedCourage
+  deriving stock (Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
-guts
-  :: (MonadReader env m, GameRunner env, MonadIO m)
-  => InvestigatorId
-  -> SkillTestResult
-  -> m ()
-guts iid = \case
-  SucceededBy _ -> unshiftMessage (AddOnSuccess (DrawCards iid 1 False))
-  _ -> pure ()
+skillAttrs :: Skill -> Attrs
+skillAttrs = \case
+  ViciousBlow' attrs -> coerce attrs
+  Deduction' attrs -> coerce attrs
+  Fearless' attrs -> coerce attrs
+  Guts' attrs -> coerce attrs
+  Perception' attrs -> coerce attrs
+  Overpower' attrs -> coerce attrs
+  ManualDexterity' attrs -> coerce attrs
+  UnexpectedCourage' attrs -> coerce attrs
 
-perception
-  :: (MonadReader env m, GameRunner env, MonadIO m)
-  => InvestigatorId
-  -> SkillTestResult
-  -> m ()
-perception iid = \case
-  SucceededBy _ -> unshiftMessage (AddOnSuccess (DrawCards iid 1 False))
-  _ -> pure ()
+instance HasActions env investigator Skill where
+  getActions i window = \case
+    ViciousBlow' x -> getActions i window x
+    Deduction' x -> getActions i window x
+    Fearless' x -> getActions i window x
+    Guts' x -> getActions i window x
+    Perception' x -> getActions i window x
+    Overpower' x -> getActions i window x
+    ManualDexterity' x -> getActions i window x
+    UnexpectedCourage' x -> getActions i window x
 
-overpower
-  :: (MonadReader env m, GameRunner env, MonadIO m)
-  => InvestigatorId
-  -> SkillTestResult
-  -> m ()
-overpower iid = \case
-  SucceededBy _ -> unshiftMessage (AddOnSuccess (DrawCards iid 1 False))
-  _ -> pure ()
+ownerOfSkill :: Skill -> InvestigatorId
+ownerOfSkill = skillOwner . skillAttrs
 
-manualDexterity
-  :: (MonadReader env m, GameRunner env, MonadIO m)
-  => InvestigatorId
-  -> SkillTestResult
-  -> m ()
-manualDexterity iid = \case
-  SucceededBy _ -> unshiftMessage (AddOnSuccess (DrawCards iid 1 False))
-  _ -> pure ()
-
-unexpectedCourage :: (MonadIO m) => InvestigatorId -> SkillTestResult -> m ()
-unexpectedCourage _ _ = pure ()
+instance (SkillRunner env) => RunMessage env Skill where
+  runMessage msg = \case
+    ViciousBlow' x -> ViciousBlow' <$> runMessage msg x
+    Deduction' x -> Deduction' <$> runMessage msg x
+    Fearless' x -> Fearless' <$> runMessage msg x
+    Guts' x -> Guts' <$> runMessage msg x
+    Perception' x -> Perception' <$> runMessage msg x
+    Overpower' x -> Overpower' <$> runMessage msg x
+    ManualDexterity' x -> ManualDexterity' <$> runMessage msg x
+    UnexpectedCourage' x -> UnexpectedCourage' <$> runMessage msg x

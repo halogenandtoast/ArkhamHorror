@@ -1034,8 +1034,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
     BeforeSkillTest iid skillType | iid == investigatorId -> do
       committedCardIds <- map unCommittedCardId . HashSet.toList <$> asks
         (getSet iid)
-      committedCardCodes <- HashSet.map unCommittedCardCode
-        <$> asks (getSet ())
+      committedCardCodes <- HashSet.map unCommittedCardCode <$> asks (getSet ())
       actions <- join $ asks (getActions a (WhenSkillTest skillType))
       let
         triggerMessage = StartSkillTest investigatorId
@@ -1259,9 +1258,9 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       pure $ a & clues .~ 0
     RemoveDiscardFromGame iid | iid == investigatorId ->
       pure $ a & discard .~ []
-    After (FailedSkillTest iid n) | iid == investigatorId -> do
+    After (FailedSkillTest iid _ _ n) | iid == investigatorId -> do
       a <$ unshiftMessage (CheckFastWindow iid [AfterFailSkillTest You n])
-    After (PassedSkillTest iid n) | iid == investigatorId -> do
+    After (PassedSkillTest iid _ _ n) | iid == investigatorId -> do
       a <$ unshiftMessage (CheckFastWindow iid [AfterPassSkillTest You n])
     PlayerWindow iid additionalActions | iid == investigatorId -> do
       actions <- join $ asks (getActions a NonFast)

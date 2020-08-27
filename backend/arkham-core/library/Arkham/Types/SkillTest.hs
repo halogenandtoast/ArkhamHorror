@@ -241,10 +241,24 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       unshiftMessage
         (Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults])
       case skillTestResult of
-        SucceededBy n ->
-          unshiftMessage (Will (PassedSkillTest skillTestInvestigator n))
-        FailedBy n ->
-          unshiftMessage (Will (FailedSkillTest skillTestInvestigator n))
+        SucceededBy n -> unshiftMessage
+          (Will
+            (PassedSkillTest
+              skillTestInvestigator
+              skillTestAction
+              skillTestSource
+              n
+            )
+          )
+        FailedBy n -> unshiftMessage
+          (Will
+            (FailedSkillTest
+              skillTestInvestigator
+              skillTestAction
+              skillTestSource
+              n
+            )
+          )
         Unrun -> pure ()
       pure s
     AddModifier AfterSkillTestTarget modifier ->
@@ -256,11 +270,25 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         SucceededBy n ->
           unshiftMessages
             $ skillTestOnSuccess
-            <> [After (PassedSkillTest skillTestInvestigator n)]
+            <> [ After
+                   (PassedSkillTest
+                     skillTestInvestigator
+                     skillTestAction
+                     skillTestSource
+                     n
+                   )
+               ]
         FailedBy n ->
           unshiftMessages
             $ skillTestOnFailure
-            <> [After (FailedSkillTest skillTestInvestigator n)]
+            <> [ After
+                   (FailedSkillTest
+                     skillTestInvestigator
+                     skillTestAction
+                     skillTestSource
+                     n
+                   )
+               ]
         Unrun -> pure ()
 
       s <$ unshiftMessages
@@ -274,9 +302,20 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       -- TODO: the player can sequence the skill test results in whatever order they want
       unshiftMessage SkillTestApplyResultsAfter
       s <$ case skillTestResult of
-        SucceededBy n ->
-          unshiftMessage (PassedSkillTest skillTestInvestigator n)
-        FailedBy n -> unshiftMessage (FailedSkillTest skillTestInvestigator n)
+        SucceededBy n -> unshiftMessage
+          (PassedSkillTest
+            skillTestInvestigator
+            skillTestAction
+            skillTestSource
+            n
+          )
+        FailedBy n -> unshiftMessage
+          (FailedSkillTest
+            skillTestInvestigator
+            skillTestAction
+            skillTestSource
+            n
+          )
         Unrun -> pure ()
     NotifyOnFailure iid target -> do
       case skillTestResult of

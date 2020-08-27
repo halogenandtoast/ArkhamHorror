@@ -192,6 +192,7 @@ allPlayerCards = HashMap.fromList
   , ("01078", cunningDistraction)
   , ("01079", lookWhatIFound)
   , ("01080", lucky)
+  , ("01081", survivalInstinct)
   , ("01086", knife)
   , ("01087", flashlight)
   , ("01088", emergencyCache)
@@ -587,6 +588,12 @@ lucky cardId = (event cardId "01080" "Lucky!" 1 Survivor)
   , pcFast = True
   , pcFastWindows = HashSet.fromList [WhenWouldFailSkillTest You]
   }
+
+survivalInstinct :: CardId -> PlayerCard
+survivalInstinct cardId =
+  (skill cardId "01080" "Survival Instrinct" [SkillAgility] Survivor)
+    { pcTraits = [Innate]
+    }
 
 knife :: CardId -> PlayerCard
 knife cardId = (asset cardId "01086" "Knife" 1 Neutral)

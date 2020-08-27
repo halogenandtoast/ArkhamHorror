@@ -22,6 +22,6 @@ instance HasActions env investigator ManualDexterity where
 
 instance (SkillRunner env) => RunMessage env ManualDexterity where
   runMessage msg s@(ManualDexterity attrs@Attrs {..}) = case msg of
-    PassedSkillTest _ _ ->
+    PassedSkillTest{} ->
       s <$ unshiftMessage (AddOnSuccess (DrawCards skillOwner 1 False))
     _ -> ManualDexterity <$> runMessage msg attrs

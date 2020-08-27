@@ -323,8 +323,8 @@ data Message
   | Surge InvestigatorId
   | RevealInHand CardId
   | RemoveDiscardFromGame InvestigatorId
-  | FailedSkillTest InvestigatorId Int
-  | PassedSkillTest InvestigatorId Int
+  | FailedSkillTest InvestigatorId (Maybe Action) Source Int
+  | PassedSkillTest InvestigatorId (Maybe Action) Source Int
   | ReturnToHand InvestigatorId Target
   | FocusTokens [Token]
   | UnfocusTokens

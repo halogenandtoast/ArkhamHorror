@@ -201,6 +201,7 @@ allPlayerCards = HashMap.fromList
   , ("01098", haunted)
   , ("01099", psychosis)
   , ("01100", hypochondria)
+  , ("01101", mobEnforcer)
   , ("01102", silverTwilightAcolyte)
   , ("01103", stubbornDetective)
   , ("01117", litaChantler)
@@ -653,10 +654,17 @@ hypochondria cardId = (treachery cardId "01100" "Hypochondria" 0)
   , pcRevelation = True
   }
 
+mobEnforcer :: CardId -> PlayerCard
+mobEnforcer cardId = (enemy cardId "01101" "Mob Enforcer" 0)
+  { pcTraits = [Humanoid, Criminal]
+  , pcKeywords = [Keyword.Hunter]
+  }
+
 silverTwilightAcolyte :: CardId -> PlayerCard
 silverTwilightAcolyte cardId =
   (enemy cardId "01102" "Silver Twilight Acolyte" 0)
     { pcTraits = [Humanoid, Cultist, SilverTwilight]
+    , pcKeywords = [Keyword.Hunter]
     }
 
 stubbornDetective :: CardId -> PlayerCard

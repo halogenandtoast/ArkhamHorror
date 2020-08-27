@@ -46,6 +46,7 @@ import Arkham.Types.Asset.Cards.Rolands38Special
 import Arkham.Types.Asset.Cards.Scavenging
 import Arkham.Types.Asset.Cards.Scrying
 import Arkham.Types.Asset.Cards.Shrivelling
+import Arkham.Types.Asset.Cards.StrayCat
 import Arkham.Types.Asset.Cards.Switchblade
 import Arkham.Types.Asset.Cards.TheNecronomicon
 import Arkham.Types.Asset.Cards.WendysAmulet
@@ -101,6 +102,7 @@ allAssets = HashMap.fromList
   , ("01073", Scavenging' . scavenging)
   , ("01074", BaseballBat' . baseballBat)
   , ("01075", RabbitsFoot' . rabbitsFoot)
+  , ("01076", StrayCat' . strayCat)
   , ("01077", DigDeep' . digDeep)
   , ("01086", Knife' . knife)
   , ("01087", Flashlight' . flashlight)
@@ -159,6 +161,7 @@ data Asset
   | Scavenging' Scavenging
   | BaseballBat' BaseballBat
   | RabbitsFoot' RabbitsFoot
+  | StrayCat' StrayCat
   | DigDeep' DigDeep
   | Knife' Knife
   | Flashlight' Flashlight
@@ -201,6 +204,7 @@ assetAttrs = \case
   Scavenging' attrs -> coerce attrs
   BaseballBat' attrs -> coerce attrs
   RabbitsFoot' attrs -> coerce attrs
+  StrayCat' attrs -> coerce attrs
   DigDeep' attrs -> coerce attrs
   Knife' attrs -> coerce attrs
   Flashlight' attrs -> coerce attrs
@@ -251,6 +255,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     Scavenging' x -> getActions i window x
     BaseballBat' x -> getActions i window x
     RabbitsFoot' x -> getActions i window x
+    StrayCat' x -> getActions i window x
     DigDeep' x -> getActions i window x
     Knife' x -> getActions i window x
     Flashlight' x -> getActions i window x
@@ -291,6 +296,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     BaseballBat' x -> BaseballBat' <$> runMessage msg x
     Scavenging' x -> Scavenging' <$> runMessage msg x
     RabbitsFoot' x -> RabbitsFoot' <$> runMessage msg x
+    StrayCat' x -> StrayCat' <$> runMessage msg x
     DigDeep' x -> DigDeep' <$> runMessage msg x
     Knife' x -> Knife' <$> runMessage msg x
     Flashlight' x -> Flashlight' <$> runMessage msg x

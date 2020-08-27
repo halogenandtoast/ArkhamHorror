@@ -8,9 +8,11 @@ import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.CommitRestriction
 import Arkham.Types.EnemyId
 import Arkham.Types.FastWindow
 import Arkham.Types.Helpers
@@ -1032,6 +1034,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
     BeforeSkillTest iid skillType | iid == investigatorId -> do
       committedCardIds <- map unCommittedCardId . HashSet.toList <$> asks
         (getSet iid)
+      committedCardCodes <- HashSet.map unCommittedCardCode
+        <$> asks (getSet ())
       actions <- join $ asks (getActions a (WhenSkillTest skillType))
       let
         triggerMessage = StartSkillTest investigatorId
@@ -1041,6 +1045,11 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
             pcId
               `notElem` committedCardIds
               && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
+              && (MaxOnePerTest
+                 `notElem` pcCommitRestrictions
+                 || pcCardCode
+                 `notElem` committedCardCodes
+                 )
           _ -> False
       if not (null committableCards) || not (null committedCardIds) || not
         (null actions)
@@ -1069,6 +1078,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       when (locationId' == investigatorLocation) $ do
         committedCardIds <- map unCommittedCardId . HashSet.toList <$> asks
           (getSet investigatorId)
+        committedCardCodes <- HashSet.map unCommittedCardCode
+          <$> asks (getSet ())
         let
           beginMessage = BeforeSkillTest iid skillType
           committableCards = if not (null committedCardIds)
@@ -1078,6 +1089,12 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
                 pcId
                   `notElem` committedCardIds
                   && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
+                  && (OnlyYourTest `notElem` pcCommitRestrictions)
+                  && (MaxOnePerTest
+                     `notElem` pcCommitRestrictions
+                     || pcCardCode
+                     `notElem` committedCardCodes
+                     )
               _ -> False
         when (not (null committableCards) || not (null committedCardIds))
           $ unshiftMessage

@@ -584,6 +584,9 @@ instance HasSet EnemyId Trait Game where
 instance HasSet CommittedCardId InvestigatorId Game where
   getSet iid = maybe mempty (getSet iid) . view skillTest
 
+instance HasSet CommittedCardCode () Game where
+  getSet _ = maybe mempty (getSet ()) . view skillTest
+
 instance HasList DeckCard (InvestigatorId, Trait) Game where
   getList (iid, trait) g =
     let

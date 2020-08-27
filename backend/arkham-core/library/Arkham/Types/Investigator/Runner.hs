@@ -23,6 +23,7 @@ type InvestigatorRunner investigator env
     , HasSet HealthDamageableAssetId InvestigatorId env
     , HasSet SanityDamageableAssetId InvestigatorId env
     , HasSet CommittedCardId InvestigatorId env
+    , HasSet CommittedCardCode () env
     , HasSet EventId () env
     , HasQueue env
     , HasSet AdvanceableActId () env

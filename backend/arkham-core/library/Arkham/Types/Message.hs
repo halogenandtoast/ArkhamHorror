@@ -325,6 +325,7 @@ data Message
   | RemoveDiscardFromGame InvestigatorId
   | FailedSkillTest InvestigatorId Int
   | PassedSkillTest InvestigatorId Int
+  | ReturnToHand InvestigatorId Target
   | FocusTokens [Token]
   | UnfocusTokens
   | Will Message

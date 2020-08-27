@@ -22,6 +22,7 @@ import Arkham.Types.Event.Cards.DynamiteBlast
 import Arkham.Types.Event.Cards.Elusive
 import Arkham.Types.Event.Cards.EmergencyCache
 import Arkham.Types.Event.Cards.Evidence
+import Arkham.Types.Event.Cards.LookWhatIFound
 import Arkham.Types.Event.Cards.Lucky
 import Arkham.Types.Event.Cards.MindOverMatter
 import Arkham.Types.Event.Cards.OnTheLam
@@ -59,6 +60,7 @@ allEvents = HashMap.fromList
   , ("01065", (WardOfProtection' .) . wardOfProtection)
   , ("01066", (BlindingLight' .) . blindingLight)
   , ("01078", (CunningDistraction' .) . cunningDistraction)
+  , ("01078", (LookWhatIFound' .) . lookWhatIFound)
   , ("01080", (Lucky' .) . lucky)
   , ("01088", (EmergencyCache' .) . emergencyCache)
   ]
@@ -82,6 +84,7 @@ data Event
   | WardOfProtection' WardOfProtection
   | BlindingLight' BlindingLight
   | CunningDistraction' CunningDistraction
+  | LookWhatIFound' LookWhatIFound
   | Lucky' Lucky
   | EmergencyCache' EmergencyCache
   deriving stock (Show, Generic)
@@ -104,6 +107,7 @@ eventAttrs = \case
   WardOfProtection' attrs -> coerce attrs
   BlindingLight' attrs -> coerce attrs
   CunningDistraction' attrs -> coerce attrs
+  LookWhatIFound' attrs -> coerce attrs
   Lucky' attrs -> coerce attrs
   EmergencyCache' attrs -> coerce attrs
 
@@ -124,6 +128,7 @@ instance HasActions env investigator Event where
     WardOfProtection' x -> getActions i window x
     BlindingLight' x -> getActions i window x
     CunningDistraction' x -> getActions i window x
+    LookWhatIFound' x -> getActions i window x
     Lucky' x -> getActions i window x
     EmergencyCache' x -> getActions i window x
 
@@ -150,5 +155,6 @@ instance (EventRunner env) => RunMessage env Event where
     WardOfProtection' x -> WardOfProtection' <$> runMessage msg x
     BlindingLight' x -> BlindingLight' <$> runMessage msg x
     CunningDistraction' x -> CunningDistraction' <$> runMessage msg x
+    LookWhatIFound' x -> LookWhatIFound' <$> runMessage msg x
     Lucky' x -> Lucky' <$> runMessage msg x
     EmergencyCache' x -> EmergencyCache' <$> runMessage msg x

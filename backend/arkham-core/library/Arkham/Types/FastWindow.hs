@@ -17,6 +17,7 @@ data Who = You | InvestigatorAtYourLocation
 data FastWindow
   = AfterAssignedHorror Who
   | AfterFailSkillTest Who Int
+  | AfterFailSkillTestAtOrLess Who Int
   | AfterPassSkillTest Who Int
   | AfterPlayCard Who [Trait]
   | AfterTurnBegins Who

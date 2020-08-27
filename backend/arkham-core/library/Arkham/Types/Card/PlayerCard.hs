@@ -185,6 +185,7 @@ allPlayerCards = HashMap.fromList
   , ("01076", strayCat)
   , ("01077", digDeep)
   , ("01078", cunningDistraction)
+  , ("01079", lookWhatIFound)
   , ("01080", lucky)
   , ("01086", knife)
   , ("01087", flashlight)
@@ -551,8 +552,19 @@ digDeep cardId = (asset cardId "01077" "Dig Deep" 2 Survivor)
 cunningDistraction :: CardId -> PlayerCard
 cunningDistraction cardId =
   (event cardId "01078" "Cunning Distraction" 5 Survivor)
-    { pcTraits = [Tactic]
+    { pcSkills = [SkillIntellect, SkillWild]
+    , pcTraits = [Tactic]
     , pcAction = Just Action.Evade
+    }
+
+lookWhatIFound :: CardId -> PlayerCard
+lookWhatIFound cardId =
+  (event cardId "01079" "\"Look what I found!\"" 2 Survivor)
+    { pcSkills = [SkillIntellect, SkillIntellect]
+    , pcTraits = [Fortune]
+    , pcFast = True
+    , pcFastWindows = HashSet.fromList
+      [ AfterFailSkillTest You n | n <- [0 .. 2] ]
     }
 
 lucky :: CardId -> PlayerCard

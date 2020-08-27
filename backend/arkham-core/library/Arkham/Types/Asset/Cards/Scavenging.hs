@@ -29,7 +29,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Scavenging
           (mkAbility
             (AssetSource assetId)
             1
-            (ReactionAbility (AfterFailSkillTest You n))
+            (ReactionAbility (AfterPassSkillTest You n))
           )
       ]
   getActions i window (Scavenging x) = getActions i window x

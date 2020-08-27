@@ -31,6 +31,11 @@
       >
         Use <i :class="`icon${choice.contents[3]}`"></i>
       </a>
+
+      <button
+        v-if="applyResultsAction !== -1"
+        @click="$emit('choose', applyResultsAction)"
+      >Apply Results</button>
     </div>
   </section>
 </template>
@@ -79,6 +84,10 @@ export default class StatusBar extends Vue {
       default:
         return [...validMessageTags, ...this.includeBeginSkillTest].includes(c.tag);
     }
+  }
+
+  get applyResultsAction() {
+    return this.choices.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);
   }
 }
 </script>

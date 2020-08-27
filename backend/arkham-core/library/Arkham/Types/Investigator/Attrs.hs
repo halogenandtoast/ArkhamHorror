@@ -237,7 +237,6 @@ modifiedSanity Attrs {..} = foldr
 removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
 
--- TODO: this logic needs to be updated for multi-slot-type items
 fitsAvailableSlots :: [SlotType] -> [Trait] -> Attrs -> Bool
 fitsAvailableSlots slotTypes traits a = null
   (slotTypes

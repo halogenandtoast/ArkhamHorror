@@ -17,8 +17,8 @@ import Lens.Micro
 newtype TheYellowSign = TheYellowSign Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-theYellowSign :: TreacheryId -> TheYellowSign
-theYellowSign uuid = TheYellowSign $ baseAttrs uuid "01176"
+theYellowSign :: TreacheryId -> a -> TheYellowSign
+theYellowSign uuid _ = TheYellowSign $ baseAttrs uuid "01176"
 
 instance HasActions env investigator TheYellowSign where
   getActions i window (TheYellowSign attrs) = getActions i window attrs

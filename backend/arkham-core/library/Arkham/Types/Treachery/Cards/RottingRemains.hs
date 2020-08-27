@@ -15,8 +15,8 @@ import Lens.Micro
 newtype RottingRemains = RottingRemains Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-rottingRemains :: TreacheryId -> RottingRemains
-rottingRemains uuid = RottingRemains $ baseAttrs uuid "01163"
+rottingRemains :: TreacheryId -> a -> RottingRemains
+rottingRemains uuid _ = RottingRemains $ baseAttrs uuid "01163"
 
 instance HasActions env investigator RottingRemains where
   getActions i window (RottingRemains attrs) = getActions i window attrs

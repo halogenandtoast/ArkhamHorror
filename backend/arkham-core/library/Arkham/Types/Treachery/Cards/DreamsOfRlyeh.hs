@@ -19,8 +19,8 @@ import Lens.Micro
 newtype DreamsOfRlyeh = DreamsOfRlyeh Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-dreamsOfRlyeh :: TreacheryId -> DreamsOfRlyeh
-dreamsOfRlyeh uuid = DreamsOfRlyeh $ baseAttrs uuid "01182"
+dreamsOfRlyeh :: TreacheryId -> a -> DreamsOfRlyeh
+dreamsOfRlyeh uuid _ = DreamsOfRlyeh $ baseAttrs uuid "01182"
 
 instance (IsInvestigator investigator) => HasActions env investigator DreamsOfRlyeh where
   getActions i NonFast (DreamsOfRlyeh Attrs {..}) = pure

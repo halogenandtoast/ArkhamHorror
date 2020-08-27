@@ -24,8 +24,8 @@ import Safe (fromJustNote)
 newtype LockedDoor = LockedDoor Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-lockedDoor :: TreacheryId -> LockedDoor
-lockedDoor uuid = LockedDoor $ baseAttrs uuid "01174"
+lockedDoor :: TreacheryId -> a -> LockedDoor
+lockedDoor uuid _ = LockedDoor $ baseAttrs uuid "01174"
 
 instance (IsInvestigator investigator) => HasActions env investigator LockedDoor where
   getActions i NonFast (LockedDoor Attrs {..}) = pure

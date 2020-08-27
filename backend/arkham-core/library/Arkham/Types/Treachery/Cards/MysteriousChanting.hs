@@ -19,8 +19,8 @@ import Lens.Micro
 newtype MysteriousChanting = MysteriousChanting Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-mysteriousChanting :: TreacheryId -> MysteriousChanting
-mysteriousChanting uuid = MysteriousChanting $ baseAttrs uuid "01171"
+mysteriousChanting :: TreacheryId -> a -> MysteriousChanting
+mysteriousChanting uuid _ = MysteriousChanting $ baseAttrs uuid "01171"
 
 instance HasActions env investigator MysteriousChanting where
   getActions i window (MysteriousChanting attrs) = getActions i window attrs

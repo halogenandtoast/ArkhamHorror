@@ -18,8 +18,8 @@ import Lens.Micro
 newtype FrozenInFear = FrozenInFear Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-frozenInFear :: TreacheryId -> FrozenInFear
-frozenInFear uuid = FrozenInFear $ baseAttrs uuid "01164"
+frozenInFear :: TreacheryId -> a -> FrozenInFear
+frozenInFear uuid _ = FrozenInFear $ baseAttrs uuid "01164"
 
 instance HasActions env investigator FrozenInFear where
   getActions i window (FrozenInFear attrs) = getActions i window attrs

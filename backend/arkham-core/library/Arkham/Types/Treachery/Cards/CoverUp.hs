@@ -6,6 +6,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.FastWindow
 import Arkham.Types.Helpers
+import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -30,8 +31,9 @@ newtype CoverUp = CoverUp (Attrs `With` CoverUpMetadata)
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-coverUp :: TreacheryId -> CoverUp
-coverUp uuid = CoverUp $ weaknessAttrs uuid "01007" `With` CoverUpMetadata 3
+coverUp :: TreacheryId -> Maybe InvestigatorId -> CoverUp
+coverUp uuid iid =
+  CoverUp $ weaknessAttrs uuid iid "01007" `With` CoverUpMetadata 3
 
 instance (ActionRunner env investigator) => HasActions env investigator CoverUp where
   getActions i window@(WhenDiscoverClues You YourLocation) (CoverUp (Attrs {..} `With` CoverUpMetadata {..}))

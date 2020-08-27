@@ -3,6 +3,7 @@ module Arkham.Types.Treachery.Cards.Paranoia where
 
 import Arkham.Json
 import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Treachery.Attrs
@@ -14,8 +15,8 @@ import Lens.Micro
 newtype Paranoia = Paranoia Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-paranoia :: TreacheryId -> Paranoia
-paranoia uuid = Paranoia $ weaknessAttrs uuid "01097"
+paranoia :: TreacheryId -> Maybe InvestigatorId -> Paranoia
+paranoia uuid iid = Paranoia $ weaknessAttrs uuid iid "01097"
 
 instance HasActions env investigator Paranoia where
   getActions i window (Paranoia attrs) = getActions i window attrs

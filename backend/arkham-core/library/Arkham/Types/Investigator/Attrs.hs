@@ -173,6 +173,7 @@ skillValueFor skill maction tempModifiers attrs = foldr
   baseSkillValue
   (investigatorModifiers attrs <> tempModifiers)
  where
+  applyModifier (AnySkillValue m _) n = max 0 (n + m)
   applyModifier (SkillModifier skillType m _) n =
     if skillType == skill then max 0 (n + m) else n
   applyModifier (ActionSkillModifier action skillType m _) n =
@@ -963,8 +964,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
             handUpdate = maybe id ((:) . PlayerCard) mcard
           case mcard of
             Just MkPlayerCard {..} -> do
-              when pcRevelation
-                $ unshiftMessage (DrewRevelation iid pcCardCode pcId)
+              when (pcCardType == PlayerTreacheryType)
+                $ unshiftMessage (DrewPlayerTreachery iid pcCardCode pcId)
               when (pcCardType == PlayerEnemyType)
                 $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
             Nothing -> pure ()
@@ -1153,8 +1154,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         (unDeck investigatorDeck)
       case card of
         MkPlayerCard {..} -> do
-          when pcRevelation
-            $ unshiftMessage (DrewRevelation iid pcCardCode pcId)
+          when (pcCardType == PlayerTreacheryType)
+            $ unshiftMessage (DrewPlayerTreachery iid pcCardCode pcId)
           when (pcCardType == PlayerEnemyType)
             $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
       pure $ a & deck .~ Deck deck' & hand %~ (PlayerCard card :)

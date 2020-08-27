@@ -16,8 +16,8 @@ import Lens.Micro
 newtype GraspingHands = GraspingHands Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-graspingHands :: TreacheryId -> GraspingHands
-graspingHands uuid = GraspingHands $ baseAttrs uuid "01162"
+graspingHands :: TreacheryId -> a -> GraspingHands
+graspingHands uuid _ = GraspingHands $ baseAttrs uuid "01162"
 
 instance HasActions env investigator GraspingHands where
   getActions i window (GraspingHands attrs) = getActions i window attrs

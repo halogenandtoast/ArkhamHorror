@@ -25,6 +25,7 @@ data Attrs = Attrs
   , treacheryTraits :: HashSet Trait
   , treacheryAttachedLocation :: Maybe LocationId
   , treacheryAttachedInvestigator :: Maybe InvestigatorId
+  , treacheryOwner :: Maybe InvestigatorId
   , treacheryWeakness :: Bool
   , treacheryResolved :: Bool -- should this be discarded
   , treacheryDoom :: Int
@@ -66,13 +67,14 @@ baseAttrs tid cardCode =
       , treacheryTraits = HashSet.fromList ecTraits
       , treacheryAttachedLocation = Nothing
       , treacheryAttachedInvestigator = Nothing
+      , treacheryOwner = Nothing
       , treacheryWeakness = False
       , treacheryResolved = False
       , treacheryDoom = 0
       }
 
-weaknessAttrs :: TreacheryId -> CardCode -> Attrs
-weaknessAttrs tid cardCode =
+weaknessAttrs :: TreacheryId -> Maybe InvestigatorId -> CardCode -> Attrs
+weaknessAttrs tid iid cardCode =
   let
     MkPlayerCard {..} =
       fromJustNote
@@ -87,6 +89,7 @@ weaknessAttrs tid cardCode =
       , treacheryTraits = HashSet.fromList pcTraits
       , treacheryAttachedLocation = Nothing
       , treacheryAttachedInvestigator = Nothing
+      , treacheryOwner = iid
       , treacheryWeakness = True
       , treacheryResolved = False
       , treacheryDoom = 0

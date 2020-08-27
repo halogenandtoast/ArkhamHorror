@@ -15,8 +15,8 @@ import Lens.Micro
 newtype HuntingShadow = HuntingShadow Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-huntingShadow :: TreacheryId -> HuntingShadow
-huntingShadow uuid = HuntingShadow $ baseAttrs uuid "01135"
+huntingShadow :: TreacheryId -> a -> HuntingShadow
+huntingShadow uuid _ = HuntingShadow $ baseAttrs uuid "01135"
 
 instance HasActions env investigator HuntingShadow where
   getActions i window (HuntingShadow attrs) = getActions i window attrs

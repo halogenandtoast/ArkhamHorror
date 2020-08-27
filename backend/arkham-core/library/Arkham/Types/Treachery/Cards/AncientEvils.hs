@@ -14,8 +14,8 @@ import Lens.Micro
 newtype AncientEvils = AncientEvils Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-ancientEvils :: TreacheryId -> AncientEvils
-ancientEvils uuid = AncientEvils $ baseAttrs uuid "01166"
+ancientEvils :: TreacheryId -> a -> AncientEvils
+ancientEvils uuid _ = AncientEvils $ baseAttrs uuid "01166"
 
 instance HasActions env investigator AncientEvils where
   getActions i window (AncientEvils attrs) = getActions i window attrs

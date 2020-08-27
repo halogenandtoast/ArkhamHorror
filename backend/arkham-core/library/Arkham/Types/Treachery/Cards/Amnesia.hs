@@ -3,6 +3,7 @@ module Arkham.Types.Treachery.Cards.Amnesia where
 
 import Arkham.Json
 import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Treachery.Attrs
@@ -14,8 +15,8 @@ import Lens.Micro
 newtype Amnesia = Amnesia Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-amnesia :: TreacheryId -> Amnesia
-amnesia uuid = Amnesia $ weaknessAttrs uuid "01096"
+amnesia :: TreacheryId -> Maybe InvestigatorId -> Amnesia
+amnesia uuid iid = Amnesia $ weaknessAttrs uuid iid "01096"
 
 instance HasActions env investigator Amnesia where
   getActions i window (Amnesia attrs) = getActions i window attrs

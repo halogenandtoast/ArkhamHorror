@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1517d2461ba82febae48551f468b8ac9c36676d558c46ac19261353d5f33ab09
+-- hash: e6e7ed310701ba5f6297bc833e448b9489ef08e46a6caf198c4166af36746f8a
 
 name:           arkham-core
 version:        0.0.0
@@ -237,7 +237,6 @@ library
       Arkham.Types.Message
       Arkham.Types.Modifier
       Arkham.Types.Phase
-      Arkham.Types.PlayerRevelation
       Arkham.Types.Prey
       Arkham.Types.Query
       Arkham.Types.Scenario
@@ -270,6 +269,7 @@ library
       Arkham.Types.Treachery.Cards.FalseLead
       Arkham.Types.Treachery.Cards.FrozenInFear
       Arkham.Types.Treachery.Cards.GraspingHands
+      Arkham.Types.Treachery.Cards.Haunted
       Arkham.Types.Treachery.Cards.HospitalDebts
       Arkham.Types.Treachery.Cards.HuntingShadow
       Arkham.Types.Treachery.Cards.Hypochondria

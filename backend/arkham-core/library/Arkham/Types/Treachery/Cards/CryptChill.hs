@@ -18,8 +18,8 @@ import Lens.Micro
 newtype CryptChill = CryptChill Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-cryptChill :: TreacheryId -> CryptChill
-cryptChill uuid = CryptChill $ baseAttrs uuid "01167"
+cryptChill :: TreacheryId -> a -> CryptChill
+cryptChill uuid _ = CryptChill $ baseAttrs uuid "01167"
 
 instance HasActions env investigator CryptChill where
   getActions i window (CryptChill attrs) = getActions i window attrs

@@ -225,7 +225,7 @@ data Message
   | DrawCards InvestigatorId Int Bool
   | HealHorror Target Int
   | HealDamage Target Int
-  | DrewRevelation InvestigatorId CardCode CardId
+  | DrewPlayerTreachery InvestigatorId CardCode CardId
   | DrewPlayerEnemy InvestigatorId CardCode CardId
   | RemoveCardFromHand InvestigatorId CardCode
   | AddToDiscard InvestigatorId PlayerCard

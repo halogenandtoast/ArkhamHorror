@@ -12,6 +12,7 @@ where
 import Arkham.Json
 import Arkham.Types.Action (Action)
 import Arkham.Types.Card
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
@@ -71,6 +72,13 @@ instance HasSet CommittedCardId InvestigatorId (SkillTest a) where
     HashSet.map CommittedCardId
       . HashMap.keysSet
       . HashMap.filter ((== iid) . fst)
+      . skillTestCommittedCards
+
+instance HasSet CommittedCardCode () (SkillTest a) where
+  getSet _ =
+    HashSet.fromList
+      . map (CommittedCardCode . getCardCode . snd)
+      . HashMap.elems
       . skillTestCommittedCards
 
 initSkillTest

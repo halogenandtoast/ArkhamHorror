@@ -17,8 +17,8 @@ import Lens.Micro
 newtype ObscuringFog = ObscuringFog Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-obscuringFog :: TreacheryId -> ObscuringFog
-obscuringFog uuid = ObscuringFog $ baseAttrs uuid "01168"
+obscuringFog :: TreacheryId -> a -> ObscuringFog
+obscuringFog uuid _ = ObscuringFog $ baseAttrs uuid "01168"
 
 instance HasActions env investigator ObscuringFog where
   getActions i window (ObscuringFog attrs) = getActions i window attrs

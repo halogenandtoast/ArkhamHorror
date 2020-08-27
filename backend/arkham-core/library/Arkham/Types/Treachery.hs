@@ -11,6 +11,7 @@ import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Helpers
+import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Query
 import Arkham.Types.Treachery.Attrs
@@ -24,6 +25,7 @@ import Arkham.Types.Treachery.Cards.DreamsOfRlyeh
 import Arkham.Types.Treachery.Cards.FalseLead
 import Arkham.Types.Treachery.Cards.FrozenInFear
 import Arkham.Types.Treachery.Cards.GraspingHands
+import Arkham.Types.Treachery.Cards.Haunted
 import Arkham.Types.Treachery.Cards.HospitalDebts
 import Arkham.Types.Treachery.Cards.HuntingShadow
 import Arkham.Types.Treachery.Cards.Hypochondria
@@ -44,35 +46,38 @@ import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import Safe (fromJustNote)
 
-lookupTreachery :: CardCode -> (TreacheryId -> Treachery)
+lookupTreachery
+  :: CardCode -> (TreacheryId -> Maybe InvestigatorId -> Treachery)
 lookupTreachery =
   fromJustNote "Unkown treachery" . flip HashMap.lookup allTreacheries
 
-allTreacheries :: HashMap CardCode (TreacheryId -> Treachery)
+allTreacheries
+  :: HashMap CardCode (TreacheryId -> Maybe InvestigatorId -> Treachery)
 allTreacheries = HashMap.fromList
-  [ ("01007", CoverUp' . coverUp)
-  , ("01011", HospitalDebts' . hospitalDebts)
-  , ("01015", AbandonedAndAlone' . abandonedAndAlone)
-  , ("01096", Amnesia' . amnesia)
-  , ("01097", Paranoia' . paranoia)
-  , ("01099", Psychosis' . psychosis)
-  , ("01100", Hypochondria' . hypochondria)
-  , ("01135", HuntingShadow' . huntingShadow)
-  , ("01136", FalseLead' . falseLead)
-  , ("01158", UmordhothsWrath' . umordhothsWrath)
-  , ("01162", GraspingHands' . graspingHands)
-  , ("01166", AncientEvils' . ancientEvils)
-  , ("01163", RottingRemains' . rottingRemains)
-  , ("01164", FrozenInFear' . frozenInFear)
-  , ("01165", DissonantVoices' . dissonantVoices)
-  , ("01167", CryptChill' . cryptChill)
-  , ("01168", ObscuringFog' . obscuringFog)
-  , ("01171", MysteriousChanting' . mysteriousChanting)
-  , ("01173", OnWingsOfDarkness' . onWingsOfDarkness)
-  , ("01174", LockedDoor' . lockedDoor)
-  , ("01176", TheYellowSign' . theYellowSign)
-  , ("01178", OfferOfPower' . offerOfPower)
-  , ("01182", DreamsOfRlyeh' . dreamsOfRlyeh)
+  [ ("01007", (CoverUp' .) . coverUp)
+  , ("01011", (HospitalDebts' .) . hospitalDebts)
+  , ("01015", (AbandonedAndAlone' .) . abandonedAndAlone)
+  , ("01096", (Amnesia' .) . amnesia)
+  , ("01097", (Paranoia' .) . paranoia)
+  , ("01098", (Haunted' .) . haunted)
+  , ("01099", (Psychosis' .) . psychosis)
+  , ("01100", (Hypochondria' .) . hypochondria)
+  , ("01135", (HuntingShadow' .) . huntingShadow)
+  , ("01136", (FalseLead' .) . falseLead)
+  , ("01158", (UmordhothsWrath' .) . umordhothsWrath)
+  , ("01162", (GraspingHands' .) . graspingHands)
+  , ("01166", (AncientEvils' .) . ancientEvils)
+  , ("01163", (RottingRemains' .) . rottingRemains)
+  , ("01164", (FrozenInFear' .) . frozenInFear)
+  , ("01165", (DissonantVoices' .) . dissonantVoices)
+  , ("01167", (CryptChill' .) . cryptChill)
+  , ("01168", (ObscuringFog' .) . obscuringFog)
+  , ("01171", (MysteriousChanting' .) . mysteriousChanting)
+  , ("01173", (OnWingsOfDarkness' .) . onWingsOfDarkness)
+  , ("01174", (LockedDoor' .) . lockedDoor)
+  , ("01176", (TheYellowSign' .) . theYellowSign)
+  , ("01178", (OfferOfPower' .) . offerOfPower)
+  , ("01182", (DreamsOfRlyeh' .) . dreamsOfRlyeh)
   ]
 
 instance HasCardCode Treachery where
@@ -84,12 +89,16 @@ instance HasTraits Treachery where
 instance HasCount DoomCount () Treachery where
   getCount _ = DoomCount . treacheryDoom . treacheryAttrs
 
+instance HasId (Maybe OwnerId) () Treachery where
+  getId _ = (OwnerId <$>) . treacheryOwner . treacheryAttrs
+
 data Treachery
   = CoverUp' CoverUp
   | HospitalDebts' HospitalDebts
   | AbandonedAndAlone' AbandonedAndAlone
   | Amnesia' Amnesia
   | Paranoia' Paranoia
+  | Haunted' Haunted
   | Psychosis' Psychosis
   | Hypochondria' Hypochondria
   | HuntingShadow' HuntingShadow
@@ -118,6 +127,7 @@ treacheryAttrs = \case
   AbandonedAndAlone' attrs -> coerce attrs
   Amnesia' attrs -> coerce attrs
   Paranoia' attrs -> coerce attrs
+  Haunted' attrs -> coerce attrs
   Psychosis' attrs -> coerce attrs
   Hypochondria' attrs -> coerce attrs
   HuntingShadow' attrs -> coerce attrs
@@ -144,6 +154,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Treacher
     AbandonedAndAlone' x -> getActions i window x
     Amnesia' x -> getActions i window x
     Paranoia' x -> getActions i window x
+    Haunted' x -> getActions i window x
     Psychosis' x -> getActions i window x
     Hypochondria' x -> getActions i window x
     HuntingShadow' x -> getActions i window x
@@ -176,6 +187,7 @@ instance (TreacheryRunner env) => RunMessage env Treachery where
     AbandonedAndAlone' x -> AbandonedAndAlone' <$> runMessage msg x
     Amnesia' x -> Amnesia' <$> runMessage msg x
     Paranoia' x -> Paranoia' <$> runMessage msg x
+    Haunted' x -> Haunted' <$> runMessage msg x
     Psychosis' x -> Psychosis' <$> runMessage msg x
     Hypochondria' x -> Hypochondria' <$> runMessage msg x
     HuntingShadow' x -> HuntingShadow' <$> runMessage msg x

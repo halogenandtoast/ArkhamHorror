@@ -17,8 +17,8 @@ import Lens.Micro
 newtype FalseLead = FalseLead Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-falseLead :: TreacheryId -> FalseLead
-falseLead uuid = FalseLead $ baseAttrs uuid "01136"
+falseLead :: TreacheryId -> a -> FalseLead
+falseLead uuid _ = FalseLead $ baseAttrs uuid "01136"
 
 instance HasActions env investigator FalseLead where
   getActions i window (FalseLead attrs) = getActions i window attrs

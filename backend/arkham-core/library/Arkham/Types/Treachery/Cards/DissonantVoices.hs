@@ -17,8 +17,8 @@ import Lens.Micro
 newtype DissonantVoices= DissonantVoices Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-dissonantVoices :: TreacheryId -> DissonantVoices
-dissonantVoices uuid = DissonantVoices $ baseAttrs uuid "01165"
+dissonantVoices :: TreacheryId -> a -> DissonantVoices
+dissonantVoices uuid _ = DissonantVoices $ baseAttrs uuid "01165"
 
 instance HasActions env investigator DissonantVoices where
   getActions i window (DissonantVoices attrs) = getActions i window attrs

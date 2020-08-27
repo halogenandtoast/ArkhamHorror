@@ -14,8 +14,8 @@ import Lens.Micro
 newtype OfferOfPower = OfferOfPower Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-offerOfPower :: TreacheryId -> OfferOfPower
-offerOfPower uuid = OfferOfPower $ baseAttrs uuid "01178"
+offerOfPower :: TreacheryId -> a -> OfferOfPower
+offerOfPower uuid _ = OfferOfPower $ baseAttrs uuid "01178"
 
 instance HasActions env investigator OfferOfPower where
   getActions i window (OfferOfPower attrs) = getActions i window attrs

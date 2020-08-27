@@ -3,6 +3,7 @@ module Arkham.Types.Treachery.Cards.AbandonedAndAlone where
 
 import Arkham.Json
 import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Treachery.Attrs
@@ -14,8 +15,8 @@ import Lens.Micro
 newtype AbandonedAndAlone = AbandonedAndAlone Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-abandonedAndAlone :: TreacheryId -> AbandonedAndAlone
-abandonedAndAlone uuid = AbandonedAndAlone $ weaknessAttrs uuid "01015"
+abandonedAndAlone :: TreacheryId -> Maybe InvestigatorId -> AbandonedAndAlone
+abandonedAndAlone uuid iid = AbandonedAndAlone $ weaknessAttrs uuid iid "01015"
 
 instance HasActions env investigator AbandonedAndAlone where
   getActions i window (AbandonedAndAlone attrs) = getActions i window attrs

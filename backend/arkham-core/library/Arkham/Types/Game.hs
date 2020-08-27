@@ -45,7 +45,6 @@ import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Phase
-import Arkham.Types.PlayerRevelation
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.Scenario
@@ -829,7 +828,7 @@ createAsset cardCode = do
 createTreachery :: MonadIO m => CardCode -> m (TreacheryId, Treachery)
 createTreachery cardCode = do
   tid <- liftIO $ TreacheryId <$> nextRandom
-  pure (tid, lookupTreachery cardCode tid)
+  pure (tid, lookupTreachery cardCode tid Nothing)
 
 locationFor :: InvestigatorId -> Game -> LocationId
 locationFor iid = locationOf . investigatorAttrs . getInvestigator iid
@@ -1070,7 +1069,7 @@ runGameMessage msg g = case msg of
         PlayerTreacheryType -> do
           let
             tid = TreacheryId $ unCardId cardId
-            treachery = lookupTreachery (pcCardCode pc) tid
+            treachery = lookupTreachery (pcCardCode pc) tid Nothing
           unshiftMessages [Revelation iid tid]
           pure $ g & treacheries %~ HashMap.insert tid treachery
         AssetType -> do
@@ -1099,8 +1098,20 @@ runGameMessage msg g = case msg of
       EncounterCard _ -> pure g
   ActivateCardAbilityAction iid ability ->
     pure $ g & usedAbilities %~ ((iid, ability) :)
-  DrewRevelation iid cardCode cardId ->
-    g <$ allPlayerRevelations cardCode iid cardId
+  DrewPlayerTreachery iid cardCode cardId -> do
+    let
+      playerCard = lookupPlayerCard cardCode cardId
+      treacheryId = TreacheryId (unCardId cardId)
+      treachery = lookupTreachery cardCode treacheryId (Just iid)
+    unshiftMessages
+      $ [ RemoveCardFromHand iid cardCode | pcRevelation playerCard ]
+      <> [ CheckFastWindow
+           iid
+           [Fast.WhenDrawTreachery You (isWeakness treachery)]
+         , Revelation iid treacheryId
+         , AfterRevelation iid treacheryId
+         ]
+    pure $ g & treacheries %~ HashMap.insert treacheryId treachery
   DrewPlayerEnemy iid cardCode cardId -> do
     let
       investigator = getInvestigator iid g
@@ -1573,8 +1584,12 @@ runGameMessage msg g = case msg of
         pure $ PlayerCard $ f (CardId $ unTreacheryId tid)
     case encounterCard <|> playerCard of
       Nothing -> error "missing"
-      Just (PlayerCard _) -> do
-        -- unshiftMessage (AddToDiscard iid card) -- TODO: we need to put this in the players discard
+      Just (PlayerCard card) -> do
+        unshiftMessage
+          (AddToDiscard
+            (unOwnerId . fromJustNote "owner was not set" $ getId () treachery)
+            card
+          )
         pure $ g & treacheries %~ HashMap.delete tid
       Just (EncounterCard ec) ->
         pure $ g & treacheries %~ HashMap.delete tid & discard %~ (ec :)

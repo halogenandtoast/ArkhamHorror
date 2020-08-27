@@ -6,10 +6,11 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.FastWindow
 import Arkham.Types.Helpers
+import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Target
-import Arkham.Types.Modifier
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
@@ -31,9 +32,9 @@ newtype HospitalDebts = HospitalDebts (Attrs `With` HospitalDebtsMetadata)
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-hospitalDebts :: TreacheryId -> HospitalDebts
-hospitalDebts uuid =
-  HospitalDebts $ weaknessAttrs uuid "01011" `With` HospitalDebtsMetadata 0
+hospitalDebts :: TreacheryId -> Maybe InvestigatorId -> HospitalDebts
+hospitalDebts uuid iid =
+  HospitalDebts $ weaknessAttrs uuid iid "01011" `With` HospitalDebtsMetadata 0
 
 instance (ActionRunner env investigator) => HasActions env investigator HospitalDebts where
   getActions i (DuringTurn You) (HospitalDebts (Attrs {..} `With` HospitalDebtsMetadata {..}))
@@ -77,8 +78,14 @@ instance (TreacheryRunner env) => RunMessage env HospitalDebts where
         let
           investigator =
             fromJustNote "missing investigator" treacheryAttachedInvestigator
-        in t <$ unshiftMessage (AddModifier (InvestigatorTarget investigator) (XPModifier (-2) (TreacherySource treacheryId)))
+        in
+          t <$ unshiftMessage
+            (AddModifier
+              (InvestigatorTarget investigator)
+              (XPModifier (-2) (TreacherySource treacheryId))
+            )
       UseCardAbility iid _ (TreacherySource tid) 1 | tid == treacheryId -> do
         unshiftMessage (SpendResources iid 1)
-        pure $ HospitalDebts (attrs `with` HospitalDebtsMetadata (hospitalDebtsResources + 1))
+        pure $ HospitalDebts
+          (attrs `with` HospitalDebtsMetadata (hospitalDebtsResources + 1))
       _ -> HospitalDebts . (`with` metadata) <$> runMessage msg attrs

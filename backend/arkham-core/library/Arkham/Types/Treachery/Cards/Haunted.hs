@@ -1,5 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Treachery.Cards.Hypochondria where
+module Arkham.Types.Treachery.Cards.Haunted where
 
 import Arkham.Json
 import Arkham.Types.Ability
@@ -7,6 +7,7 @@ import Arkham.Types.Classes
 import Arkham.Types.FastWindow
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
@@ -15,14 +16,14 @@ import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Lens.Micro
 
-newtype Hypochondria = Hypochondria Attrs
+newtype Haunted = Haunted Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-hypochondria :: TreacheryId -> Maybe InvestigatorId -> Hypochondria
-hypochondria uuid iid = Hypochondria $ weaknessAttrs uuid iid "01100"
+haunted :: TreacheryId -> Maybe InvestigatorId -> Haunted
+haunted uuid iid = Haunted $ weaknessAttrs uuid iid "01098"
 
-instance (ActionRunner env investigator) => HasActions env investigator Hypochondria where
-  getActions i NonFast (Hypochondria Attrs {..}) =
+instance (ActionRunner env investigator) => HasActions env investigator Haunted where
+  getActions i NonFast (Haunted Attrs {..}) =
     case treacheryAttachedInvestigator of
       Nothing -> pure []
       Just tormented -> do
@@ -39,14 +40,18 @@ instance (ActionRunner env investigator) => HasActions env investigator Hypochon
           ]
   getActions _ _ _ = pure []
 
-instance (TreacheryRunner env) => RunMessage env Hypochondria where
-  runMessage msg t@(Hypochondria attrs@Attrs {..}) = case msg of
+instance (TreacheryRunner env) => RunMessage env Haunted where
+  runMessage msg t@(Haunted attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
       unshiftMessage $ AttachTreacheryToInvestigator tid iid
-      Hypochondria <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
-    After (InvestigatorTakeDamage iid _ _)
-      | Just iid == treacheryAttachedInvestigator -> t <$ unshiftMessage
-        (InvestigatorDirectDamage iid (TreacherySource treacheryId) 0 1)
+      Haunted <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
+    AttachTreacheryToInvestigator tid iid | tid == treacheryId -> do
+      unshiftMessage
+        (AddModifier
+          (InvestigatorTarget iid)
+          (AnySkillValue (-1) (TreacherySource tid))
+        )
+      Haunted <$> runMessage msg attrs
     UseCardAbility _ _ (TreacherySource tid) 1 | tid == treacheryId ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
-    _ -> Hypochondria <$> runMessage msg attrs
+    _ -> Haunted <$> runMessage msg attrs

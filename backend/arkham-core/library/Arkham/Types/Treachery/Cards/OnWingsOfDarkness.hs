@@ -17,8 +17,8 @@ import Lens.Micro
 newtype OnWingsOfDarkness = OnWingsOfDarkness Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-onWingsOfDarkness :: TreacheryId -> OnWingsOfDarkness
-onWingsOfDarkness uuid = OnWingsOfDarkness $ baseAttrs uuid "01173"
+onWingsOfDarkness :: TreacheryId -> a -> OnWingsOfDarkness
+onWingsOfDarkness uuid _ = OnWingsOfDarkness $ baseAttrs uuid "01173"
 
 instance HasActions env investigator OnWingsOfDarkness where
   getActions i window (OnWingsOfDarkness attrs) = getActions i window attrs

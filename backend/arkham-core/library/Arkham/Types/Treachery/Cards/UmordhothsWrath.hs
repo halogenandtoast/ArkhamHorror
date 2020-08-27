@@ -16,8 +16,8 @@ import ClassyPrelude
 newtype UmordhothsWrath = UmordhothsWrath Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-umordhothsWrath :: TreacheryId -> UmordhothsWrath
-umordhothsWrath uuid = UmordhothsWrath $ baseAttrs uuid "01158"
+umordhothsWrath :: TreacheryId -> a -> UmordhothsWrath
+umordhothsWrath uuid _ = UmordhothsWrath $ baseAttrs uuid "01158"
 
 instance HasActions env investigator UmordhothsWrath where
   getActions i window (UmordhothsWrath attrs) = getActions i window attrs

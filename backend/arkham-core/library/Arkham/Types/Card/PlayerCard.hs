@@ -198,6 +198,7 @@ allPlayerCards = HashMap.fromList
   , ("01093", unexpectedCourage)
   , ("01096", amnesia)
   , ("01097", paranoia)
+  , ("01098", haunted)
   , ("01099", psychosis)
   , ("01100", hypochondria)
   , ("01102", silverTwilightAcolyte)
@@ -631,6 +632,12 @@ amnesia cardId = (treachery cardId "01096" "Amnesia" 0)
 paranoia :: CardId -> PlayerCard
 paranoia cardId = (treachery cardId "01097" "Paranoia" 0)
   { pcTraits = [Madness]
+  , pcRevelation = True
+  }
+
+haunted :: CardId -> PlayerCard
+haunted cardId = (treachery cardId "01098" "Haunted" 0)
+  { pcTraits = [Curse]
   , pcRevelation = True
   }
 

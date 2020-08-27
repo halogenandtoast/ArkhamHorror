@@ -210,7 +210,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       pure $ s & result .~ FailedBy skillTestDifficulty
     StartSkillTest _ -> s <$ unshiftMessages
       (HashMap.foldMapWithKey
-          (\k (i, _) -> [DiscardCard i k])
+          (\k (i, _) -> [CommitCard i k])
           skillTestCommittedCards
       <> [ InvestigatorStartSkillTest
              skillTestInvestigator
@@ -245,14 +245,6 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
     AddModifier AfterSkillTestTarget modifier ->
       pure $ s & modifiers %~ (modifier :)
     SkillTestApplyResults -> do
-      unshiftMessage SkillTestApplyResultsAfterSkills
-      for_ skillTestCommittedCards $ \(iid, card) -> case card of
-        PlayerCard MkPlayerCard {..} -> when
-          (pcCardType == SkillType)
-          (unshiftMessage (RunSkill iid pcCardCode skillTestResult))
-        _ -> pure ()
-      pure s
-    SkillTestApplyResultsAfterSkills -> do
       unshiftMessage SkillTestEnds
 
       case skillTestResult of

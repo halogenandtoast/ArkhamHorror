@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f47e04490259cba1e7ad6e04fa73f95a5ae5d944f6a3c7afedea6767405c71b8
+-- hash: e13b2353ebccc0765c0c577cc9fcf2488fa5fd42f126cc74681ea12c1ffabd15
 
 name:           arkham-core
 version:        0.0.0
@@ -248,6 +248,17 @@ library
       Arkham.Types.Scenario.Scenarios.TheMidnightMasks
       Arkham.Types.ScenarioId
       Arkham.Types.Skill
+      Arkham.Types.Skill.Attrs
+      Arkham.Types.Skill.Cards.Deduction
+      Arkham.Types.Skill.Cards.Fearless
+      Arkham.Types.Skill.Cards.Guts
+      Arkham.Types.Skill.Cards.ManualDexterity
+      Arkham.Types.Skill.Cards.Overpower
+      Arkham.Types.Skill.Cards.Perception
+      Arkham.Types.Skill.Cards.UnexpectedCourage
+      Arkham.Types.Skill.Cards.ViciousBlow
+      Arkham.Types.Skill.Runner
+      Arkham.Types.SkillId
       Arkham.Types.SkillTest
       Arkham.Types.SkillTestResult
       Arkham.Types.SkillType

@@ -18,6 +18,7 @@ import Arkham.Types.Skill.Cards.ManualDexterity
 import Arkham.Types.Skill.Cards.Opportunist
 import Arkham.Types.Skill.Cards.Overpower
 import Arkham.Types.Skill.Cards.Perception
+import Arkham.Types.Skill.Cards.SurvivalInstinct
 import Arkham.Types.Skill.Cards.UnexpectedCourage
 import Arkham.Types.Skill.Cards.ViciousBlow
 import Arkham.Types.Skill.Runner
@@ -38,6 +39,7 @@ allSkills = HashMap.fromList
   , ("01039", (Deduction' .) . deduction)
   , ("01053", (Opportunist' .) . opportunist)
   , ("01067", (Fearless' .) . fearless)
+  , ("01081", (SurvivalInstinct' .) . survivalInstinct)
   , ("01089", (Guts' .) . guts)
   , ("01090", (Perception' .) . perception)
   , ("01091", (Overpower' .) . overpower)
@@ -53,6 +55,7 @@ data Skill
   | Deduction' Deduction
   | Opportunist' Opportunist
   | Fearless' Fearless
+  | SurvivalInstinct' SurvivalInstinct
   | Guts' Guts
   | Perception' Perception
   | Overpower' Overpower
@@ -67,6 +70,7 @@ skillAttrs = \case
   Deduction' attrs -> coerce attrs
   Opportunist' attrs -> coerce attrs
   Fearless' attrs -> coerce attrs
+  SurvivalInstinct' attrs -> coerce attrs
   Guts' attrs -> coerce attrs
   Perception' attrs -> coerce attrs
   Overpower' attrs -> coerce attrs
@@ -79,6 +83,7 @@ instance HasActions env investigator Skill where
     Deduction' x -> getActions i window x
     Opportunist' x -> getActions i window x
     Fearless' x -> getActions i window x
+    SurvivalInstinct' x -> getActions i window x
     Guts' x -> getActions i window x
     Perception' x -> getActions i window x
     Overpower' x -> getActions i window x
@@ -94,6 +99,7 @@ instance (SkillRunner env) => RunMessage env Skill where
     Deduction' x -> Deduction' <$> runMessage msg x
     Opportunist' x -> Opportunist' <$> runMessage msg x
     Fearless' x -> Fearless' <$> runMessage msg x
+    SurvivalInstinct' x -> SurvivalInstinct' <$> runMessage msg x
     Guts' x -> Guts' <$> runMessage msg x
     Perception' x -> Perception' <$> runMessage msg x
     Overpower' x -> Overpower' <$> runMessage msg x

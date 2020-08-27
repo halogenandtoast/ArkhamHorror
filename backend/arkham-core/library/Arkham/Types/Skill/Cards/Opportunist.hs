@@ -7,11 +7,9 @@ import Arkham.Json
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
-import Arkham.Types.Modifier
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 import Arkham.Types.SkillId
-import Arkham.Types.Source
 import Arkham.Types.Target
 
 newtype Opportunist = Opportunist Attrs
@@ -25,6 +23,6 @@ instance HasActions env investigator Opportunist where
 
 instance (SkillRunner env) => RunMessage env Opportunist where
   runMessage msg s@(Opportunist attrs@Attrs {..}) = case msg of
-    PassedSkillTest iid n | n >= 3 ->
+    PassedSkillTest iid _ _ n | n >= 3 ->
       s <$ unshiftMessage (ReturnToHand iid (SkillTarget skillId))
     _ -> Opportunist <$> runMessage msg attrs

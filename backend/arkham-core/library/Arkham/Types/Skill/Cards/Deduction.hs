@@ -4,6 +4,7 @@ module Arkham.Types.Skill.Cards.Deduction where
 import ClassyPrelude
 
 import Arkham.Json
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
@@ -25,6 +26,7 @@ instance HasActions env investigator Deduction where
 
 instance (SkillRunner env) => RunMessage env Deduction where
   runMessage msg s@(Deduction attrs@Attrs {..}) = case msg of
-    PassedSkillTest _ _ -> s <$ unshiftMessage
-      (AddModifier SkillTestTarget (DiscoveredClues 1 (SkillSource skillId)))
+    PassedSkillTest _ (Just Action.Investigate) (LocationSource _) _ ->
+      s <$ unshiftMessage
+        (AddModifier SkillTestTarget (DiscoveredClues 1 (SkillSource skillId)))
     _ -> Deduction <$> runMessage msg attrs

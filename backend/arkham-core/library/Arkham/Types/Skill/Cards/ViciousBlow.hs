@@ -4,6 +4,7 @@ module Arkham.Types.Skill.Cards.ViciousBlow where
 import ClassyPrelude
 
 import Arkham.Json
+import Arkham.Types.Action
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
@@ -25,6 +26,6 @@ instance HasActions env investigator ViciousBlow where
 
 instance (SkillRunner env) => RunMessage env ViciousBlow where
   runMessage msg s@(ViciousBlow attrs@Attrs {..}) = case msg of
-    PassedSkillTest _ _ -> s <$ unshiftMessage
+    PassedSkillTest _ (Just Fight) _ _ -> s <$ unshiftMessage
       (AddModifier SkillTestTarget (DamageDealt 1 (SkillSource skillId)))
     _ -> ViciousBlow <$> runMessage msg attrs

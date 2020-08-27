@@ -28,10 +28,11 @@ import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
-import ClassyPrelude hiding (unpack)
+import ClassyPrelude hiding (unpack, (\\))
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
+import Data.List ((\\))
 import Lens.Micro
 import Lens.Micro.Platform ()
 import Safe (fromJustNote)
@@ -235,6 +236,22 @@ modifiedSanity Attrs {..} = foldr
 
 removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
+
+fitsAvailableSlots :: [SlotType] -> [Trait] -> Attrs -> Bool
+fitsAvailableSlots slotTypes traits a =
+  length
+      (concatMap
+        (\slotType -> availableSlotTypesFor slotType traits a)
+        (HashSet.toList (HashSet.fromList slotTypes))
+      )
+    == length slotTypes
+
+availableSlotTypesFor :: SlotType -> [Trait] -> Attrs -> [SlotType]
+availableSlotTypesFor slotType traits a =
+  case HashMap.lookup slotType (a ^. slots) of
+    Nothing -> []
+    Just slots' ->
+      replicate (length (filter (canPutIntoSlot traits) slots')) slotType
 
 hasEmptySlot :: SlotType -> [Trait] -> Attrs -> Bool
 hasEmptySlot slotType traits a = case HashMap.lookup slotType (a ^. slots) of
@@ -841,29 +858,31 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         else pure $ a & hand %~ filter ((/= cardId) . getCardId)
     InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
       let assetsUpdate = assets %~ HashSet.insert aid
-      if not (null slotTypes)
-        then case slotTypes of
-          [slotType] -> if hasEmptySlot slotType traits a
-            then
-              pure
-              $ a
-              & assetsUpdate
-              & slots
-              . ix slotType
-              %~ placeInAvailableSlot aid traits
-            else if not (null $ discardableAssets slotType a)
-              then a <$ unshiftMessage
-                (Ask iid $ ChooseOne
-                  [ Run
-                      [ Discard (AssetTarget aid')
-                      , InvestigatorPlayAsset iid aid slotTypes traits
-                      ]
-                  | aid' <- discardableAssets slotType a
+      if fitsAvailableSlots slotTypes traits a
+        then pure $ foldl'
+          (\a' slotType ->
+            a' & slots . ix slotType %~ placeInAvailableSlot aid traits
+          )
+          (a & assetsUpdate)
+          slotTypes
+        else do
+          let
+            missingSlotTypes = slotTypes \\ concatMap
+              (\slotType -> availableSlotTypesFor slotType traits a)
+              (HashSet.toList (HashSet.fromList slotTypes))
+            assetsThatCanProvideSlots =
+              HashSet.toList . HashSet.fromList $ concatMap
+                (`discardableAssets` a)
+                missingSlotTypes
+          a <$ unshiftMessage
+            (Ask iid $ ChooseOne
+              [ Run
+                  [ Discard (AssetTarget aid')
+                  , InvestigatorPlayAsset iid aid slotTypes traits
                   ]
-                )
-              else error "could not find asset to discard"
-          _ -> error "multi-slot items not handled yet"
-        else pure $ a & assetsUpdate
+              | aid' <- assetsThatCanProvideSlots
+              ]
+            )
     InvestigatorDamage iid _ health sanity | iid == investigatorId ->
       pure $ a & healthDamage +~ health & sanityDamage +~ sanity
     CheckDefeated -> a <$ when

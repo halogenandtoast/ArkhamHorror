@@ -7,10 +7,12 @@ import Arkham.Json
 import Arkham.Types.Action
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 import Arkham.Types.SkillId
+import qualified Data.HashSet as HashSet
 
 newtype SurvivalInstinct = SurvivalInstinct Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -23,5 +25,37 @@ instance HasActions env investigator SurvivalInstinct where
 
 instance (SkillRunner env) => RunMessage env SurvivalInstinct where
   runMessage msg s@(SurvivalInstinct attrs@Attrs {..}) = case msg of
-    PassedSkillTest _ (Just Evade) _ _ -> pure s -- TODO: fill this in
+    After (PassedSkillTest iid (Just Evade) _ _) -> do
+      engagedEnemyIds <- HashSet.toList <$> asks (getSet iid)
+      locationId <- asks (getId @LocationId iid)
+      blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
+      connectedLocationIds <- HashSet.map unConnectedLocationId
+        <$> asks (getSet locationId)
+      let
+        unblockedConnectedLocationIds =
+          HashSet.toList $ connectedLocationIds `difference` blockedLocationIds
+        moveOptions = Ask
+          iid
+          (ChooseOne
+            ([Label "Do not move to a connecting location" []]
+            <> [ MoveAction iid lid False
+               | lid <- unblockedConnectedLocationIds
+               ]
+            )
+          )
+
+      s <$ case engagedEnemyIds of
+        [] -> if null unblockedConnectedLocationIds
+          then pure ()
+          else unshiftMessage moveOptions
+        es -> unshiftMessages
+          ([ Ask iid $ ChooseOne
+               [ Label
+                 "Disengage from each other enemy"
+                 [ DisengageEnemy iid eid | eid <- es ]
+               , Label "Skip" []
+               ]
+           ]
+          <> [ moveOptions | not (null unblockedConnectedLocationIds) ]
+          )
     _ -> SurvivalInstinct <$> runMessage msg attrs

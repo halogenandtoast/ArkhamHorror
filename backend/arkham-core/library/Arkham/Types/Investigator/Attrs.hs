@@ -237,14 +237,14 @@ modifiedSanity Attrs {..} = foldr
 removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
 
+-- TODO: this logic needs to be updated for multi-slot-type items
 fitsAvailableSlots :: [SlotType] -> [Trait] -> Attrs -> Bool
-fitsAvailableSlots slotTypes traits a =
-  length
-      (concatMap
-        (\slotType -> availableSlotTypesFor slotType traits a)
-        (HashSet.toList (HashSet.fromList slotTypes))
-      )
-    == length slotTypes
+fitsAvailableSlots slotTypes traits a = null
+  (slotTypes
+  \\ concatMap
+       (\slotType -> availableSlotTypesFor slotType traits a)
+       (HashSet.toList (HashSet.fromList slotTypes))
+  )
 
 availableSlotTypesFor :: SlotType -> [Trait] -> Attrs -> [SlotType]
 availableSlotTypesFor slotType traits a =

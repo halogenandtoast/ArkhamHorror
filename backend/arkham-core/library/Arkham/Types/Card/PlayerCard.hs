@@ -182,6 +182,7 @@ allPlayerCards = HashMap.fromList
   , ("01073", scavenging)
   , ("01074", baseballBat)
   , ("01075", rabbitsFoot)
+  , ("01076", strayCat)
   , ("01077", digDeep)
   , ("01078", cunningDistraction)
   , ("01080", lucky)
@@ -533,6 +534,12 @@ rabbitsFoot :: CardId -> PlayerCard
 rabbitsFoot cardId = (asset cardId "01075" "Rabbit's Foot" 1 Survivor)
   { pcSkills = [SkillWild]
   , pcTraits = [Item, Charm]
+  }
+
+strayCat :: CardId -> PlayerCard
+strayCat cardId = (asset cardId "01076" "Stray Cat" 1 Survivor)
+  { pcSkills = [SkillAgility]
+  , pcTraits = [Ally, Creature]
   }
 
 digDeep :: CardId -> PlayerCard

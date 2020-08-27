@@ -1027,8 +1027,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           then card { pcBearer = Just $ BearerId $ unInvestigatorId iid }
           else card
       pure $ a & deck .~ Deck shuffled
+    InvestigatorCommittedCard iid cardId | iid == investigatorId ->
+      pure $ a & hand %~ filter ((/= cardId) . getCardId)
     BeforeSkillTest iid skillType | iid == investigatorId -> do
-      commitedCardIds <- map unCommitedCardId . HashSet.toList <$> asks
+      committedCardIds <- map unCommittedCardId . HashSet.toList <$> asks
         (getSet iid)
       actions <- join $ asks (getActions a (WhenSkillTest skillType))
       let
@@ -1037,10 +1039,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         committableCards = flip filter investigatorHand $ \case
           PlayerCard MkPlayerCard {..} ->
             pcId
-              `notElem` commitedCardIds
+              `notElem` committedCardIds
               && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
           _ -> False
-      if not (null committableCards) || not (null commitedCardIds) || not
+      if not (null committableCards) || not (null committedCardIds) || not
         (null actions)
       then
         unshiftMessage
@@ -1054,7 +1056,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
                  (\cardId ->
                    Run [SkillTestUncommitCard iid cardId, beginMessage]
                  )
-                 commitedCardIds
+                 committedCardIds
             <> map (\action -> Run [action, beginMessage]) actions
             <> [triggerMessage]
             )
@@ -1065,19 +1067,19 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
     BeforeSkillTest iid skillType | iid /= investigatorId -> do
       locationId' <- asks (getId iid)
       when (locationId' == investigatorLocation) $ do
-        commitedCardIds <- map unCommitedCardId . HashSet.toList <$> asks
+        committedCardIds <- map unCommittedCardId . HashSet.toList <$> asks
           (getSet investigatorId)
         let
           beginMessage = BeforeSkillTest iid skillType
-          committableCards = if not (null commitedCardIds)
+          committableCards = if not (null committedCardIds)
             then []
             else flip filter investigatorHand $ \case
               PlayerCard MkPlayerCard {..} ->
                 pcId
-                  `notElem` commitedCardIds
+                  `notElem` committedCardIds
                   && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
               _ -> False
-        when (not (null committableCards) || not (null commitedCardIds))
+        when (not (null committableCards) || not (null committedCardIds))
           $ unshiftMessage
               (SkillTestAsk $ Ask investigatorId $ ChooseOne
                 (map
@@ -1095,7 +1097,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
                          , beginMessage
                          ]
                      )
-                     commitedCardIds
+                     committedCardIds
                 )
               )
       pure a

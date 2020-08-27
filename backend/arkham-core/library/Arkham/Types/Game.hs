@@ -581,7 +581,7 @@ instance HasSet EnemyId Trait Game where
   getSet trait =
     HashMap.keysSet . HashMap.filter ((trait `elem`) . getTraits) . view enemies
 
-instance HasSet CommitedCardId InvestigatorId Game where
+instance HasSet CommittedCardId InvestigatorId Game where
   getSet iid = maybe mempty (getSet iid) . view skillTest
 
 instance HasList DeckCard (InvestigatorId, Trait) Game where
@@ -1066,20 +1066,27 @@ runGameMessage msg g = case msg of
       investigator = getInvestigator iid g
       card = fromJustNote "could not find card in hand"
         $ find ((== cardId) . getCardId) (handOf investigator)
-    unshiftMessage (InvestigatorCommitedCard iid cardId)
+    unshiftMessage (InvestigatorCommittedCard iid cardId)
     case card of
       PlayerCard pc -> case pcCardType pc of
         SkillType -> do
           let
             skillId = SkillId $ unCardId cardId
-            skill = lookupSkill (pcCardCode pc) skillId iid
+            skill = lookupSkill (pcCardCode pc) iid skillId
           unshiftMessage (InvestigatorCommittedSkill iid skillId)
-        _ -> pure ()
-    pure $ g & skills %~ HashMap.insert skillId skill
+          pure $ g & skills %~ HashMap.insert skillId skill
+        _ -> pure g
+      _ -> pure g
   SkillTestEnds -> do
-    skillCardsWithOwner <- for (HashMap.elems $ g ^. skills) $ \skill -> do
-      f <- HashMap.lookup (getCardCode skill) allPlayerCards
-      pure (PlayerCard $ f cardId, skillOwner skill)
+    let
+      skillCardsWithOwner =
+        flip map (HashMap.toList $ g ^. skills) $ \(skillId, skill) ->
+          ( fromJustNote
+            "missing skill"
+            (HashMap.lookup (getCardCode skill) allPlayerCards)
+            (CardId $ unSkillId skillId)
+          , ownerOfSkill skill
+          )
     unshiftMessages
       [ AddToDiscard iid card | (card, iid) <- skillCardsWithOwner ]
     pure $ g & skills .~ mempty & skillTest .~ Nothing & usedAbilities %~ filter
@@ -1119,7 +1126,8 @@ runGameMessage msg g = case msg of
           let
             eid = EventId $ unCardId cardId
             event = lookupEvent (pcCardCode pc) iid eid
-          unshiftMessage (PlayedCard iid cardId True)
+          unshiftMessages
+            [PlayedCard iid cardId True, InvestigatorPlayEvent iid eid]
           pure $ g & events %~ HashMap.insert eid event
         _ -> pure g
       EncounterCard _ -> pure g
@@ -1635,6 +1643,7 @@ instance RunMessage Game Game where
       >>= traverseOf (enemies . traverse) (runMessage msg)
       >>= traverseOf (assets . traverse) (runMessage msg)
       >>= traverseOf (skillTest . traverse) (runMessage msg)
+      >>= traverseOf (skills . traverse) (runMessage msg)
       >>= traverseOf (investigators . traverse) (runMessage msg)
       >>= runGameMessage msg
 

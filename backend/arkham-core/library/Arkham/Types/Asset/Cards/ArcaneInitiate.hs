@@ -19,8 +19,11 @@ newtype ArcaneInitiate = ArcaneInitiate Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 arcaneInitiate :: AssetId -> ArcaneInitiate
-arcaneInitiate uuid =
-  ArcaneInitiate $ (baseAttrs uuid "01053") { assetSlots = [AllySlot] }
+arcaneInitiate uuid = ArcaneInitiate $ (baseAttrs uuid "01063")
+  { assetSlots = [AllySlot]
+  , assetHealth = Just 1
+  , assetSanity = Just 2
+  }
 
 instance (IsInvestigator investigator) => HasActions env investigator ArcaneInitiate where
   getActions i window (ArcaneInitiate Attrs {..})
@@ -35,7 +38,7 @@ instance (IsInvestigator investigator) => HasActions env investigator ArcaneInit
 instance (AssetRunner env) => RunMessage env ArcaneInitiate where
   runMessage msg (ArcaneInitiate attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
-      ArcaneInitiate <$> runMessage msg (attrs & doom +~ 1)
+      ArcaneInitiate <$> runMessage msg (attrs & doom +~ 1) -- TODO: this triggers multiple time due to having to discard other assets
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
       unshiftMessage
         (Ask iid

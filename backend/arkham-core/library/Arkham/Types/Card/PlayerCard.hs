@@ -139,6 +139,7 @@ allPlayerCards = HashMap.fromList
   , ("01008", daisysToteBag)
   , ("01009", theNecronomicon)
   , ("01010", onTheLam)
+  , ("01011", hospitalDebts)
   , ("01012", heirloomOfHyperborea)
   , ("01013", darkMemory)
   , ("01014", wendysAmulet)
@@ -239,11 +240,17 @@ theNecronomicon cardId = (asset cardId "01009" "The Necronomicon" 0 Neutral)
   }
 
 onTheLam :: CardId -> PlayerCard
-onTheLam cardId = (asset cardId "01010" "On the Lam" 1 Neutral)
+onTheLam cardId = (event cardId "01010" "On the Lam" 1 Neutral)
   { pcTraits = [Tactic]
   , pcSkills = [SkillIntellect, SkillAgility, SkillWild, SkillWild]
   , pcFast = True
-  , pcFastWindows = HashSet.fromList [AfterTurnBegins You]
+  , pcFastWindows = HashSet.fromList [AfterTurnBegins You, DuringTurn You]
+  }
+
+hospitalDebts :: CardId -> PlayerCard
+hospitalDebts cardId = (treachery cardId "01011" "Hospital Debts" 0)
+  { pcTraits = [Task]
+  , pcRevelation = True
   }
 
 heirloomOfHyperborea :: CardId -> PlayerCard
@@ -254,8 +261,10 @@ heirloomOfHyperborea cardId =
     }
 
 darkMemory :: CardId -> PlayerCard
-darkMemory cardId =
-  (event cardId "01013" "Dark Memory" 2 Neutral) { pcTraits = [Spell] }
+darkMemory cardId = (event cardId "01013" "Dark Memory" 2 Neutral)
+  { pcTraits = [Spell]
+  , pcWeakness = True
+  }
 
 wendysAmulet :: CardId -> PlayerCard
 wendysAmulet cardId = (asset cardId "01014" "Wendy's Amulet" 2 Neutral)

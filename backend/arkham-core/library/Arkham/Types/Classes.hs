@@ -128,6 +128,7 @@ type ActionRunner env investigator
     , HasId LocationId InvestigatorId env
     , HasSet EnemyId LocationId env
     , HasList UsedAbility () env
+    , HasCount PlayerCount () env
     , HasCount SpendableClueCount AllInvestigators env
     , HasQueue env
     )

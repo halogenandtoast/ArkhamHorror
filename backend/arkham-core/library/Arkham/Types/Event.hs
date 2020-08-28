@@ -60,7 +60,7 @@ allEvents = HashMap.fromList
   , ("01065", (WardOfProtection' .) . wardOfProtection)
   , ("01066", (BlindingLight' .) . blindingLight)
   , ("01078", (CunningDistraction' .) . cunningDistraction)
-  , ("01078", (LookWhatIFound' .) . lookWhatIFound)
+  , ("01079", (LookWhatIFound' .) . lookWhatIFound)
   , ("01080", (Lucky' .) . lucky)
   , ("01088", (EmergencyCache' .) . emergencyCache)
   ]

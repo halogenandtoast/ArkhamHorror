@@ -51,6 +51,10 @@ export default class HandCard extends Vue {
     return this.choices.findIndex(this.canPlay);
   }
 
+  get revealCardAction() {
+    return this.choices.findIndex(this.canReveal);
+  }
+
   get commitCardAction() {
     return this.choices.findIndex(this.canCommit);
   }
@@ -60,6 +64,10 @@ export default class HandCard extends Vue {
   }
 
   get cardAction() {
+    if (this.revealCardAction !== -1) {
+      return this.revealCardAction;
+    }
+
     if (this.playCardAction !== -1) {
       return this.playCardAction;
     }
@@ -81,6 +89,17 @@ export default class HandCard extends Vue {
         return c.contents[1] === this.id;
       case MessageType.RUN:
         return c.contents.some((c1: Message) => this.canPlay(c1));
+      default:
+        return false;
+    }
+  }
+
+  canReveal(c: Message): boolean {
+    switch (c.tag) {
+      case MessageType.REVEAL_CARD:
+        return c.contents === this.id;
+      case MessageType.RUN:
+        return c.contents.some((c1: Message) => this.canReveal(c1));
       default:
         return false;
     }

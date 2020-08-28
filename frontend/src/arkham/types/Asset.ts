@@ -19,6 +19,7 @@ export interface AssetContents {
   uses: Uses | null;
   exhausted: boolean;
   horror?: number;
+  doom: number;
 }
 
 export const assetContentsDecoder = JsonDecoder.object<AssetContents>({
@@ -32,6 +33,7 @@ export const assetContentsDecoder = JsonDecoder.object<AssetContents>({
   uses: JsonDecoder.nullable(usesDecoder),
   exhausted: JsonDecoder.boolean,
   horror: JsonDecoder.optional(JsonDecoder.number),
+  doom: JsonDecoder.number,
 }, 'AssetContents');
 
 export interface Asset {

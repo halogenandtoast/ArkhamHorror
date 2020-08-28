@@ -25,9 +25,10 @@ uncoveringTheConspiracy = UncoveringTheConspiracy
 instance (ActionRunner env investigator) => HasActions env investigator UncoveringTheConspiracy where
   getActions i NonFast (UncoveringTheConspiracy x@Attrs {..})
     | hasActionsRemaining i = do
+      playerCount <- unPlayerCount <$> asks (getCount ())
       totalSpendableClueCount <- unSpendableClueCount
         <$> asks (getCount AllInvestigators)
-      if totalSpendableClueCount >= 2
+      if totalSpendableClueCount >= (2 * playerCount)
         then pure
           [ ActivateCardAbilityAction
               (getId () i)
@@ -60,6 +61,9 @@ instance (ActRunner env) => RunMessage env UncoveringTheConspiracy where
         (unshiftMessage (AdvanceAct actId))
     UseCardAbility iid _ (ActSource aid) 1 | aid == actId -> do
       investigatorIds <- HashSet.toList <$> asks (getSet ())
+      playerCount <- unPlayerCount <$> asks (getCount ())
       a <$ unshiftMessages
-        [SpendClues 2 investigatorIds, UseScenarioSpecificAbility iid 1]
+        [ SpendClues (2 * playerCount) investigatorIds
+        , UseScenarioSpecificAbility iid 1
+        ]
     _ -> UncoveringTheConspiracy <$> runMessage msg attrs

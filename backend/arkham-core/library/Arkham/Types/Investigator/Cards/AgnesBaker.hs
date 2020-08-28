@@ -36,22 +36,24 @@ agnesBaker = AgnesBaker
     }
 
 instance (ActionRunner env investigator) => HasActions env investigator AgnesBaker where
-  getActions i (Fast.AfterAssignedHorror You) (AgnesBaker Attrs {..}) = do
-    locationEnemyIds <- HashSet.toList <$> asks (getSet @EnemyId (locationOf i))
-    let
-      ability = (mkAbility
-                  (InvestigatorSource investigatorId)
-                  1
-                  (ReactionAbility (Fast.AfterAssignedHorror You))
-                )
-        { abilityLimit = PerPhase
-        }
-    usedAbilities <- map unUsedAbility <$> asks (getList ())
-    pure
-      [ ActivateCardAbilityAction investigatorId ability
-      | (investigatorId, ability) `notElem` usedAbilities && not
-        (null locationEnemyIds)
-      ]
+  getActions i (Fast.AfterAssignedHorror You) (AgnesBaker Attrs {..})
+    | getId () i == investigatorId = do
+      locationEnemyIds <- HashSet.toList
+        <$> asks (getSet @EnemyId (locationOf i))
+      let
+        ability = (mkAbility
+                    (InvestigatorSource investigatorId)
+                    1
+                    (ReactionAbility (Fast.AfterAssignedHorror You))
+                  )
+          { abilityLimit = PerPhase
+          }
+      usedAbilities <- map unUsedAbility <$> asks (getList ())
+      pure
+        [ ActivateCardAbilityAction investigatorId ability
+        | (investigatorId, ability) `notElem` usedAbilities && not
+          (null locationEnemyIds)
+        ]
   getActions i window (AgnesBaker attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env AgnesBaker where

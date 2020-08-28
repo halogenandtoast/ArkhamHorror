@@ -46,7 +46,7 @@ instance (AssetRunner env) => RunMessage env FortyOneDerringer where
   runMessage msg a@(FortyOneDerringer attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       FortyOneDerringer
-        <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo 4)
+        <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo 3)
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
       case assetUses of
         Uses Resource.Ammo n -> do

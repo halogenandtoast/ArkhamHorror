@@ -87,7 +87,6 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
           [ EncounterSet.TheMidnightMasks
           , EncounterSet.ChillingCold
           , EncounterSet.Nightgaunts
-          , EncounterSet.DarkCult
           , EncounterSet.LockedDoors
           ]
         let

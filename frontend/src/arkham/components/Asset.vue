@@ -37,6 +37,7 @@
         :class="{ 'sanity--can-interact': sanityAction !== -1 }"
         @choose="$emit('choose', sanityAction)"
       />
+      <PoolItem v-if="asset.contents.doom > 0" type="doom" :amount="asset.contents.doom" />
     </div>
   </div>
 </template>
@@ -97,7 +98,8 @@ export default class Asset extends Vue {
       case MessageType.USE_CARD_ABILITY:
         return c.contents[1].contents === this.id;
       case MessageType.ACTIVATE_ABILITY:
-        return c.contents[1].source.contents === this.id && c.contents[1].type.tag === 'ReactionAbility';
+        return c.contents[1].source.contents === this.id
+          && (c.contents[1].type.tag === 'ReactionAbility' || c.contents[1].type.tag === 'FastAbility');
       case MessageType.RUN:
         return c.contents.some((c1: Message) => this.canInteract(c1));
       default:

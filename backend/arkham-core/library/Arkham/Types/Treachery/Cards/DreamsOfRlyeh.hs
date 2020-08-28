@@ -27,7 +27,9 @@ instance (IsInvestigator investigator) => HasActions env investigator DreamsOfRl
     [ ActivateCardAbilityAction
         (getId () i)
         (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 1 Nothing))
-    | treacheryAttachedInvestigator == Just (getId () i)
+    | treacheryAttachedInvestigator
+      == Just (getId () i)
+      && hasActionsRemaining i
     ]
   getActions _ _ _ = pure []
 

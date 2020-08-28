@@ -11,6 +11,11 @@
       type="clue"
       :amount="treachery.contents.clues"
     />
+    <PoolItem
+      v-if="treachery.contents.resources && treachery.contents.resources > 0"
+      type="resource"
+      :amount="treachery.contents.resources"
+    />
   </div>
 </template>
 

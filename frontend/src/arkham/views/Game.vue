@@ -1,22 +1,27 @@
 <template>
-  <div id="game" class="game" v-if="ready">
-    <Campaign
-      v-if="game.currentData.campaign"
-      :game="game"
-      :investigatorId="investigatorId"
-      @choose="choose"
-      @update="update"
-    />
-    <Scenario
-      v-else-if="!game.currentData.gameOver"
-      :game="game"
-      :investigatorId="investigatorId"
-      @choose="choose"
-      @update="update"
-    />
-    <p v-if="game.currentData.gameOver">
-      Game over
-    </p>
+  <div id="game" v-if="ready">
+    <div v-if="socketError" class="socketWarning">
+       <p>Your game is out of sync, trying to reconnect...</p>
+    </div>
+    <div class="game">
+      <Campaign
+        v-if="game.currentData.campaign"
+        :game="game"
+        :investigatorId="investigatorId"
+        @choose="choose"
+        @update="update"
+      />
+      <Scenario
+        v-else-if="!game.currentData.gameOver"
+        :game="game"
+        :investigatorId="investigatorId"
+        @choose="choose"
+        @update="update"
+      />
+      <p v-if="game.currentData.gameOver">
+        Game over
+      </p>
+    </div>
   </div>
 </template>
 
@@ -34,6 +39,7 @@ export default class Game extends Vue {
   @Prop(String) readonly gameId!: string;
 
   private ready = false;
+  private socketError = false;
   private socket: WebSocket | null = null;
   private game: Arkham.Game | null = null;
   private investigatorId: string | null = null;
@@ -42,13 +48,28 @@ export default class Game extends Vue {
     fetchGame(this.gameId).then(({ game, investigatorId }) => {
       this.game = game;
       this.investigatorId = investigatorId;
-      const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
-      this.socket = new WebSocket(`${baseURL}/api/v1/arkham/games/${this.gameId}`.replace(/https/, 'wss').replace(/http/, 'ws'));
-      this.socket.addEventListener('message', (event) => {
-        Arkham.gameDecoder.decodePromise(JSON.parse(event.data))
-          .then((updatedGame) => { this.game = updatedGame; });
-      });
+      this.connect();
+    });
+  }
+
+  connect() {
+    const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
+    this.socket = new WebSocket(`${baseURL}/api/v1/arkham/games/${this.gameId}`.replace(/https/, 'wss').replace(/http/, 'ws'));
+    this.socket.addEventListener('open', () => {
       this.ready = true;
+      this.socketError = false;
+    });
+    this.socket.addEventListener('message', (event) => {
+      Arkham.gameDecoder.decodePromise(JSON.parse(event.data))
+        .then((updatedGame) => { this.game = updatedGame; });
+    });
+    this.socket.addEventListener('error', () => {
+      this.socketError = true;
+      setTimeout(() => this.connect(), 1000);
+    });
+    this.socket.addEventListener('close', () => {
+      this.socketError = true;
+      setTimeout(() => this.connect(), 1000);
     });
   }
 
@@ -64,7 +85,7 @@ export default class Game extends Vue {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .action { border: 5px solid #FF00FF; border-radius: 15px; }
 
 .game {
@@ -72,5 +93,28 @@ export default class Game extends Vue {
   height: calc(100vh - 40px);
   display: grid;
   grid-template-rows: min-content min-content 1fr min-content;
+}
+
+.socketWarning  {
+  backdrop-filter: blur(3px);
+  background-color: rgba(0,0,0,0.8);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  z-index: 100;
+
+  justify-content: center;
+  align-items: center;
+  justify-self: center;
+  align-self: center;
+
+  p {
+    padding: 10px;
+    background: #FFF;
+    border-radius: 4px;
+  }
 }
 </style>

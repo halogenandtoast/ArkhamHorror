@@ -1,14 +1,30 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Api.Arkham.Helpers where
 
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.InvestigatorId
-import ClassyPrelude
+import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HashMap
+import qualified Data.Map.Strict as Map
 import Data.UUID.V4
 import GHC.Stack
+import Import
 import Json
 import Network.HTTP.Conduit (simpleHttp)
+
+getChannel :: ArkhamGameId -> Handler (TChan BSL.ByteString)
+getChannel gameId = do
+  gameChannelsRef <- appGameChannels <$> getYesod
+  gameChannels <- readIORef gameChannelsRef
+  $logInfo (pack $ show $ Map.keys gameChannels)
+  case Map.lookup gameId gameChannels of
+    Just chan -> pure chan
+    Nothing -> do
+      chan <- atomically newBroadcastTChan
+      atomicModifyIORef' gameChannelsRef
+        $ \gameChannels' -> (Map.insert gameId chan gameChannels', ())
+      pure chan
 
 data ArkhamDBDecklist = ArkhamDBDecklist
   { slots :: HashMap CardCode Int, investigator_code :: InvestigatorId }

@@ -34,7 +34,7 @@ putApiV1ArkhamPendingGameR gameId = do
     $ addInvestigator userId' (lookupInvestigator iid) deck
     =<< toInternalGame arkhamGameCurrentData
   runDB $ insert_ $ ArkhamPlayer userId gameId
-  App { appBroadcastChannel = writeChannel } <- getYesod
+  writeChannel <- getChannel gameId
   liftIO $ atomically $ writeTChan
     writeChannel
     (encode (Entity gameId (ArkhamGame arkhamGameName ge)))

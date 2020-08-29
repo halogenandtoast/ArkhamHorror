@@ -33,7 +33,8 @@ data App = App
     , appConnPool    :: ConnectionPool -- ^ Database connection pool.
     , appHttpManager :: Manager
     , appLogger      :: Logger
-    , appBroadcastChannel :: TChan BSL.ByteString
+    , appGameChannels :: IORef (Map ArkhamGameId (TChan BSL.ByteString))
+    , appGameChannelClients :: IORef (Map ArkhamGameId Int)
     }
 
 -- This is where we define all of the routes in our application. For a full

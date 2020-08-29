@@ -78,7 +78,10 @@ makeFoundation appSettings = do
 
     let appStatic = Static (staticSettings { ssIndices = [unsafeToPiece "index.html"] })
 
-    appBroadcastChannel <- atomically newBroadcastTChan
+    -- appBroadcastChannel <- atomically newBroadcastTChan
+    appGameChannels <- newIORef mempty
+    appGameChannelClients <- newIORef mempty
+
     -- We need a log function to create a connection pool. We need a connection
     -- pool to create our foundation. And we need our foundation to get a
     -- logging function. To get out of this loop, we initially create a

@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Api.Handler.Arkham.Games
   ( getApiV1ArkhamGameR
   , getApiV1ArkhamGamesR
@@ -17,21 +18,42 @@ import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import qualified Data.HashMap.Strict as HashMap
+import qualified Data.Map.Strict as Map
 import Data.UUID
 import Database.Esqueleto
 import Entity.Arkham.Player
 import Import hiding (on, (==.))
 import Json
+import Network.WebSockets (ConnectionException)
 import Safe (fromJustNote)
 import Yesod.WebSockets
 
 gameStream :: ArkhamGameId -> WebSocketsT Handler ()
-gameStream _ = do
-  App { appBroadcastChannel = writeChannel } <- getYesod
-  readChannel <- atomically $ dupTChan writeChannel
-  race_
-    (forever $ atomically (readTChan readChannel) >>= sendTextData)
-    (runConduit $ sourceWS .| mapM_C (atomically . writeTChan writeChannel))
+gameStream gameId = catchingConnectionException $ do
+  writeChannel <- lift $ getChannel gameId
+  gameChannelClients <- appGameChannelClients <$> getYesod
+  atomicModifyIORef' gameChannelClients
+    $ \channelClients -> (Map.insertWith (+) gameId 1 channelClients, ())
+  bracket (atomically $ dupTChan writeChannel) closeConnection
+    $ \readChannel -> race_
+        (forever $ atomically (readTChan readChannel) >>= sendTextData)
+        (runConduit $ sourceWS .| mapM_C (atomically . writeTChan writeChannel))
+ where
+  closeConnection _ = do
+    gameChannelsRef <- appGameChannels <$> lift getYesod
+    gameChannelClientsRef <- appGameChannelClients <$> lift getYesod
+    clientCount <-
+      atomicModifyIORef' gameChannelClientsRef $ \channelClients ->
+        ( Map.adjust pred gameId channelClients
+        , Map.findWithDefault 1 gameId channelClients - 1
+        )
+    when (clientCount == 0) $ do
+      atomicModifyIORef' gameChannelsRef
+        $ \gameChannels' -> (Map.delete gameId gameChannels', ())
+
+catchingConnectionException :: WebSocketsT Handler () -> WebSocketsT Handler ()
+catchingConnectionException f =
+  f `catch` \e -> $(logWarn) $ pack $ show (e :: ConnectionException)
 
 data GetGameJson = GetGameJson { investigatorId :: InvestigatorId, game :: Entity ArkhamGame }
   deriving stock (Show, Generic)
@@ -119,7 +141,7 @@ putApiV1ArkhamGameR gameId = do
       ge <- liftIO $ runMessages =<< toInternalGame
         (gameJson { gMessages = messages <> gMessages })
 
-      App { appBroadcastChannel = writeChannel } <- getYesod
+      writeChannel <- getChannel gameId
       liftIO $ atomically $ writeTChan
         writeChannel
         (encode (Entity gameId (ArkhamGame arkhamGameName ge)))
@@ -142,7 +164,7 @@ putApiV1ArkhamGameRawR gameId = do
       { gMessages = Continue "edited" : gMessages (gameJson response)
       }
     )
-  App { appBroadcastChannel = writeChannel } <- getYesod
+  writeChannel <- getChannel gameId
   liftIO $ atomically $ writeTChan
     writeChannel
     (encode (Entity gameId (ArkhamGame arkhamGameName ge)))

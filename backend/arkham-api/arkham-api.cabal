@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e4de08056e6c1aac4e469d8d671c161c4a9c0de37491376c2fb357bc172527c6
+-- hash: 53d1a652168c389833803cff979a4e6a541fca0b2d084775e904dae0fcdb341f
 
 name:           arkham-api
 version:        0.0.0
@@ -91,6 +91,7 @@ library
     , wai-extra
     , wai-logger
     , warp
+    , websockets
     , yaml
     , yesod
     , yesod-core

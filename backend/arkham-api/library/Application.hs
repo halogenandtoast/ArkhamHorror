@@ -46,6 +46,7 @@ import Network.Wai.Middleware.RequestLogger
   )
 import System.Log.FastLogger (defaultBufSize, newStdoutLoggerSet, toLogStr)
 import Text.Regex.Posix ((=~))
+import WaiAppStatic.Types (StaticSettings(..), unsafeToPiece)
 
 -- Import all relevant handler modules here.
 -- Don't forget to add new modules to your cabal file!
@@ -71,9 +72,11 @@ makeFoundation appSettings = do
     -- subsite.
     appHttpManager <- getGlobalManager
     appLogger <- newStdoutLoggerSet defaultBufSize >>= makeYesodLogger
-    appStatic <-
+    Static staticSettings <-
         (if appMutableStatic appSettings then staticDevel else static)
         (appStaticDir appSettings)
+
+    let appStatic = Static (staticSettings { ssIndices = [unsafeToPiece "index.html"] })
 
     appBroadcastChannel <- atomically newBroadcastTChan
     -- We need a log function to create a connection pool. We need a connection

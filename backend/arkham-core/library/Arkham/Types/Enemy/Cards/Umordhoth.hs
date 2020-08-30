@@ -9,7 +9,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message

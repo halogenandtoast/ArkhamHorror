@@ -5,7 +5,7 @@ import Arkham.Json
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner

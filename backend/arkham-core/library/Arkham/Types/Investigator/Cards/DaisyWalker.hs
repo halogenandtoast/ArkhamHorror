@@ -2,7 +2,7 @@
 module Arkham.Types.Investigator.Cards.DaisyWalker where
 
 import Arkham.Types.Ability
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Helpers

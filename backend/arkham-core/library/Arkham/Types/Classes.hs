@@ -13,7 +13,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes.HasRecord
 import Arkham.Types.EnemyId
-import Arkham.Types.FastWindow (FastWindow)
+import Arkham.Types.Window (Window)
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
@@ -134,7 +134,7 @@ type ActionRunner env investigator
     )
 
 class HasActions env investigator a where
-  getActions :: forall m. (MonadReader env m, MonadIO m) => investigator -> FastWindow -> a -> m [Message]
+  getActions :: forall m. (MonadReader env m, MonadIO m) => investigator -> Window -> a -> m [Message]
 
 class (HasId LocationId () location) => IsLocation location where
   isBlocked :: location -> Bool

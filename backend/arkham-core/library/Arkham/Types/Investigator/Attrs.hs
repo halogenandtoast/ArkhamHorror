@@ -14,7 +14,7 @@ import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
 import Arkham.Types.EnemyId
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.InvestigatorId
@@ -369,7 +369,7 @@ canAfford :: Attrs -> Action -> Bool
 canAfford a@Attrs {..} actionType =
   actionCost a actionType <= investigatorRemainingActions
 
-fastIsPlayable :: Attrs -> [FastWindow] -> Card -> Bool
+fastIsPlayable :: Attrs -> [Window] -> Card -> Bool
 fastIsPlayable _ _ (EncounterCard _) = False -- TODO: there might be some playable ones?
 fastIsPlayable a windows c@(PlayerCard MkPlayerCard {..}) =
   pcFast && isPlayable a windows c
@@ -396,7 +396,7 @@ modifiedCardCost Attrs {..} (EncounterCard MkEncounterCard {..}) = foldr
     = max 0 (n - m)
   applyModifier _ n = n
 
-isPlayable :: Attrs -> [FastWindow] -> Card -> Bool
+isPlayable :: Attrs -> [Window] -> Card -> Bool
 isPlayable _ _ (EncounterCard _) = False -- TODO: there might be some playable ones?
 isPlayable a@Attrs {..} windows c@(PlayerCard MkPlayerCard {..}) =
   (pcCardType /= SkillType)
@@ -419,18 +419,18 @@ drawOpeningHand a n = go n (a ^. discard, a ^. hand, coerce (a ^. deck))
     then go m (c : d, h, cs)
     else go (m - 1) (d, PlayerCard c : h, cs)
 
-cardInWindows :: [FastWindow] -> Card -> Attrs -> Bool
+cardInWindows :: [Window] -> Card -> Attrs -> Bool
 cardInWindows windows c _ = case c of
   PlayerCard pc ->
-    not . null $ pcFastWindows pc `intersect` HashSet.fromList windows
+    not . null $ pcWindows pc `intersect` HashSet.fromList windows
   _ -> False
 
-playableCards :: Attrs -> [FastWindow] -> [Card]
+playableCards :: Attrs -> [Window] -> [Card]
 playableCards a@Attrs {..} windows =
   filter (fastIsPlayable a windows) investigatorHand
     <> playableDiscards a windows
 
-playableDiscards :: Attrs -> [FastWindow] -> [Card]
+playableDiscards :: Attrs -> [Window] -> [Card]
 playableDiscards a@Attrs {..} windows = filter
   (fastIsPlayable a windows)
   possibleCards
@@ -741,7 +741,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
            ]
         )
     DidReceiveHorror (InvestigatorTarget iid) _ | iid == investigatorId ->
-      a <$ unshiftMessage (CheckFastWindow iid [AfterAssignedHorror You])
+      a <$ unshiftMessage (CheckWindow iid [AfterAssignedHorror You])
     InvestigatorDoAssignDamage iid source health sanity damageTargets horrorTargets
       | iid == investigatorId
       -> do
@@ -1142,7 +1142,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           skillType
           (skillValueFor skillType maction tempModifiers a)
         )
-    CheckFastWindow iid windows | iid == investigatorId -> do
+    CheckWindow iid windows | iid == investigatorId -> do
       actions <- fmap concat <$> for windows $ \window -> do
         join (asks (getActions a window))
       if not (null $ playableCards a windows) || not (null actions)
@@ -1153,11 +1153,11 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
               (\c -> Run
                 [ PayCardCost iid (getCardId c)
                 , PlayCard iid (getCardId c) False
-                , CheckFastWindow iid windows
+                , CheckWindow iid windows
                 ]
               )
               (playableCards a windows)
-          <> map (Run . (: [CheckFastWindow iid windows])) actions
+          <> map (Run . (: [CheckWindow iid windows])) actions
           <> [Continue "Skip playing fast cards or using reactions"]
           )
         else pure a
@@ -1277,9 +1277,9 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
     RemoveDiscardFromGame iid | iid == investigatorId ->
       pure $ a & discard .~ []
     After (FailedSkillTest iid _ _ n) | iid == investigatorId -> do
-      a <$ unshiftMessage (CheckFastWindow iid [AfterFailSkillTest You n])
+      a <$ unshiftMessage (CheckWindow iid [AfterFailSkillTest You n])
     After (PassedSkillTest iid _ _ n) | iid == investigatorId -> do
-      a <$ unshiftMessage (CheckFastWindow iid [AfterPassSkillTest You n])
+      a <$ unshiftMessage (CheckWindow iid [AfterPassSkillTest You n])
     PlayerWindow iid additionalActions | iid == investigatorId -> do
       actions <- join $ asks (getActions a NonFast)
       fastActions <- join $ asks (getActions a (DuringTurn You))

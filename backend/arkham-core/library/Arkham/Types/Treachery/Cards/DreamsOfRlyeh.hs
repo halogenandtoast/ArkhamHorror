@@ -4,7 +4,7 @@ module Arkham.Types.Treachery.Cards.DreamsOfRlyeh where
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType

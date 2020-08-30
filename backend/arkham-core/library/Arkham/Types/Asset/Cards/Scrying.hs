@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Slot

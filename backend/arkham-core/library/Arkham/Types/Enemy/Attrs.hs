@@ -9,7 +9,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword

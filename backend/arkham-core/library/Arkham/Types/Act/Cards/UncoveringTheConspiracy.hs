@@ -7,7 +7,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Source

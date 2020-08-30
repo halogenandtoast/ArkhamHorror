@@ -4,7 +4,7 @@ module Arkham.Types.Treachery.Cards.HospitalDebts where
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message

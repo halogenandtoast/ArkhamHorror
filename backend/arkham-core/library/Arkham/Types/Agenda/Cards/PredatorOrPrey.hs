@@ -7,7 +7,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source

@@ -2,9 +2,9 @@ module Arkham.Types.Ability where
 
 import Arkham.Json
 import Arkham.Types.Action hiding (Ability)
-import Arkham.Types.Window
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Source
+import Arkham.Types.Window
 import ClassyPrelude
 
 data AbilityType
@@ -24,10 +24,6 @@ data AbilityLimit
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
-data AbilityCost = ResourceCost Int | ClueCost Int | CardCost Int
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
 mkAbility :: Source -> Int -> AbilityType -> Ability
 mkAbility source idx type' = Ability
   { abilitySource = source
@@ -35,7 +31,6 @@ mkAbility source idx type' = Ability
   , abilityIndex = idx
   , abilityType = type'
   , abilityLimit = NoLimit
-  , abilityCost = Nothing
   }
 
 data Ability = Ability
@@ -44,7 +39,6 @@ data Ability = Ability
   , abilityIndex :: Int
   , abilityType :: AbilityType
   , abilityLimit :: AbilityLimit
-  , abilityCost :: Maybe AbilityCost
   }
   deriving stock (Show, Generic)
 

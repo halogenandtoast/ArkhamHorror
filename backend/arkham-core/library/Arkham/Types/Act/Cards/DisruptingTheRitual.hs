@@ -6,7 +6,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Query

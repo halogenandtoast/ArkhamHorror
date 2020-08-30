@@ -1,4 +1,4 @@
-module Arkham.Types.FastWindow where
+module Arkham.Types.Window where
 
 import Arkham.Types.SkillType
 import Arkham.Types.Token
@@ -14,7 +14,7 @@ data Who = You | InvestigatorAtYourLocation
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data FastWindow
+data Window
   = AfterAssignedHorror Who
   | AfterFailSkillTest Who Int
   | AfterFailSkillTestAtOrLess Who Int

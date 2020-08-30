@@ -4,8 +4,8 @@ module Arkham.Types.Investigator.Cards.RolandBanks where
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
-import Arkham.Types.FastWindow (Who(..))
-import qualified Arkham.Types.FastWindow as Fast
+import Arkham.Types.Window (Who(..))
+import qualified Arkham.Types.Window as Fast
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message

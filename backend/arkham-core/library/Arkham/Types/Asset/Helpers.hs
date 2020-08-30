@@ -3,7 +3,7 @@
 module Arkham.Types.Asset.Helpers where
 
 import Arkham.Types.Classes
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.Message
 import ClassyPrelude
 
@@ -14,7 +14,7 @@ hasFightActions
      , HasActions env investigator (ActionType, env)
      )
   => investigator
-  -> FastWindow
+  -> Window
   -> m Bool
 hasFightActions i NonFast = do
   enemyActions <- join $ asks (getActions i NonFast . (EnemyActionType, ))
@@ -28,7 +28,7 @@ hasInvestigateActions
      , HasActions env investigator (ActionType, env)
      )
   => investigator
-  -> FastWindow
+  -> Window
   -> m Bool
 hasInvestigateActions i NonFast = do
   locationActions <- join $ asks (getActions i NonFast . (LocationActionType, ))

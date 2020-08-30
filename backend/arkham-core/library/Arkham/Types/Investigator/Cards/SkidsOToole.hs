@@ -4,8 +4,8 @@ module Arkham.Types.Investigator.Cards.SkidsOToole where
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
-import Arkham.Types.FastWindow
-import qualified Arkham.Types.FastWindow as Fast
+import Arkham.Types.Window
+import qualified Arkham.Types.Window as Fast
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message

@@ -6,7 +6,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -67,7 +67,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env WendyAdams where
             $ withQueue
             $ \queue ->
                 ( filter
-                  (/= CheckFastWindow iid [WhenDrawToken You token])
+                  (/= CheckWindow iid [WhenDrawToken You token])
                   queue
                 , ()
                 )
@@ -82,7 +82,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env WendyAdams where
         _ -> error "we expect resolve token to be on the stack"
     When (DrawToken token) -> i <$ unshiftMessages
       [ FocusTokens [token]
-      , CheckFastWindow investigatorId [WhenDrawToken You token]
+      , CheckWindow investigatorId [WhenDrawToken You token]
       , UnfocusTokens
       ]
     ResolveToken ElderSign iid skillValue | iid == investigatorId -> do

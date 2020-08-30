@@ -32,8 +32,8 @@ import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
 import Arkham.Types.Event
 import Arkham.Types.EventId
-import Arkham.Types.FastWindow (Who(..))
-import qualified Arkham.Types.FastWindow as Fast
+import Arkham.Types.Window (Who(..))
+import qualified Arkham.Types.Window as Fast
 import Arkham.Types.GameJson
 import Arkham.Types.GameRunner
 import Arkham.Types.Helpers
@@ -849,17 +849,17 @@ drawToken Game {..} = do
   let token = fromJustNote "impossible" $ tokens !!? n
   pure (token, without n tokens)
 
-broadcastFastWindow
+broadcastWindow
   :: (MonadReader env m, HasQueue env, MonadIO m)
-  => (Who -> Fast.FastWindow)
+  => (Who -> Fast.Window)
   -> InvestigatorId
   -> Game
   -> m ()
-broadcastFastWindow builder currentInvestigatorId g =
+broadcastWindow builder currentInvestigatorId g =
   for_ (HashMap.keys $ g ^. investigators) $ \iid2 ->
     if currentInvestigatorId == iid2
       then unshiftMessage
-        (CheckFastWindow
+        (CheckWindow
           currentInvestigatorId
           [Fast.DuringTurn You, builder You, builder InvestigatorAtYourLocation]
         )
@@ -868,7 +868,7 @@ broadcastFastWindow builder currentInvestigatorId g =
           lid1 = getId @LocationId currentInvestigatorId g
           lid2 = getId @LocationId iid2 g
         when (lid1 == lid2) $ unshiftMessage
-          (CheckFastWindow
+          (CheckWindow
             currentInvestigatorId
             [ Fast.DuringTurn InvestigatorAtYourLocation
             , builder InvestigatorAtYourLocation
@@ -1155,7 +1155,7 @@ runGameMessage msg g = case msg of
       treachery = lookupTreachery cardCode treacheryId (Just iid)
     unshiftMessages
       $ [ RemoveCardFromHand iid cardCode | pcRevelation playerCard ]
-      <> [ CheckFastWindow
+      <> [ CheckWindow
            iid
            [Fast.WhenDrawTreachery You (isWeakness treachery)]
          , Revelation iid treacheryId
@@ -1191,7 +1191,7 @@ runGameMessage msg g = case msg of
     pure g
   EnemyAttack iid eid -> do
     unshiftMessage (PerformEnemyAttack iid eid)
-    broadcastFastWindow Fast.WhenEnemyAttacks iid g
+    broadcastWindow Fast.WhenEnemyAttacks iid g
     pure g
   SkillTestAsk (Ask iid1 (ChooseOne c1)) -> do
     mNextMessage <- peekMessage
@@ -1295,7 +1295,7 @@ runGameMessage msg g = case msg of
       playerCard = do
         f <- HashMap.lookup (getCardCode enemy) allPlayerCards
         pure $ PlayerCard $ f cardId
-    broadcastFastWindow Fast.WhenEnemyDefeated iid g
+    broadcastWindow Fast.WhenEnemyDefeated iid g
     case encounterCard <|> playerCard of
       Nothing -> error "missing"
       Just (PlayerCard pc) -> do
@@ -1590,7 +1590,7 @@ runGameMessage msg g = case msg of
   DrewTreachery iid cardCode -> do
     (treacheryId', treachery') <- createTreachery cardCode
     unshiftMessages
-      [ CheckFastWindow iid [Fast.WhenDrawTreachery You (isWeakness treachery')]
+      [ CheckWindow iid [Fast.WhenDrawTreachery You (isWeakness treachery')]
       , Revelation iid treacheryId'
       , AfterRevelation iid treacheryId'
       ]

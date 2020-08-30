@@ -4,7 +4,7 @@ module Arkham.Types.Treachery.Cards.LockedDoor where
 import Arkham.Json
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Ability
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.LocationId
 import Arkham.Types.Classes
 import Arkham.Types.Message

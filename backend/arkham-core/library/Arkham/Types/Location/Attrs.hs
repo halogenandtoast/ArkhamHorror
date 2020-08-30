@@ -7,7 +7,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Runner
@@ -237,7 +237,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
     DiscoverCluesAtLocation iid lid n | lid == locationId -> do
       let discoveredClues = min n locationClues
       a <$ unshiftMessages
-        [ CheckFastWindow iid [WhenDiscoverClues You YourLocation]
+        [ CheckWindow iid [WhenDiscoverClues You YourLocation]
         , DiscoverClues iid lid discoveredClues
         ]
     AfterDiscoverClues _ lid n | lid == locationId -> pure $ a & clues -~ n

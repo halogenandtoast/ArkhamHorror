@@ -22,7 +22,7 @@ import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
-import Arkham.Types.FastWindow
+import Arkham.Types.Window
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
@@ -300,7 +300,7 @@ data Message
   | InvestigatorResigned InvestigatorId
   | InvestigatorWhenEliminated InvestigatorId
   | InvestigatorEliminated InvestigatorId
-  | CheckFastWindow InvestigatorId [FastWindow]
+  | CheckWindow InvestigatorId [Window]
   | CancelNext MessageType
   | Run [Message]
   | Continue Text

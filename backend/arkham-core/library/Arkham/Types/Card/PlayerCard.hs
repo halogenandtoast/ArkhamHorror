@@ -376,6 +376,12 @@ hyperawareness cardId = (asset cardId "01034" "Hyperawareness" 2 Seeker)
   , pcTraits = [Talent]
   }
 
+hyperawareness2 :: CardId -> PlayerCard
+hyperawareness2 cardId = (asset cardId "50003" "Hyperawareness" 0 Seeker)
+  { pcSkills = [SkillIntellect, SkillIntellect, SkillAgility, SkillAgility]
+  , pcTraits = [Talent]
+  }
+
 medicalTexts :: CardId -> PlayerCard
 medicalTexts cardId = (asset cardId "01035" "Medical Texts" 2 Seeker)
   { pcSkills = [SkillCombat]

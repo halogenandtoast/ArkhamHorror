@@ -38,6 +38,7 @@ sourceOfModifier (EnemyFight _ s) = s
 sourceOfModifier (EnemyEvade _ s) = s
 sourceOfModifier (CannotBeAttackedByNonElite s) = s
 sourceOfModifier (CannotBeEnteredByNonElite s) = s
+sourceOfModifier (SpawnNonEliteAtConnectingInstead s) = s
 sourceOfModifier (XPModifier _ s) = s
 sourceOfModifier (Blank s) = s
 sourceOfModifier (CanPlayTopOfDiscard _ s) = s
@@ -71,6 +72,8 @@ replaceModifierSource s (CannotBeAttackedByNonElite _) =
   CannotBeAttackedByNonElite s
 replaceModifierSource s (CannotBeEnteredByNonElite _) =
   CannotBeEnteredByNonElite s
+replaceModifierSource s (SpawnNonEliteAtConnectingInstead _) =
+  SpawnNonEliteAtConnectingInstead s
 replaceModifierSource s (XPModifier a _) = XPModifier a s
 replaceModifierSource s (Blank _) = Blank s
 replaceModifierSource s (CanPlayTopOfDiscard a _) = CanPlayTopOfDiscard a s
@@ -86,6 +89,7 @@ data Modifier
   | CanPlayTopOfDiscard (Maybe PlayerCardType, [Trait]) Source
   | CannotBeAttackedByNonElite Source
   | CannotBeEnteredByNonElite Source
+  | SpawnNonEliteAtConnectingInstead Source
   | CannotDiscoverClues Source
   | CannotInvestigate Source
   | CannotPlay [PlayerCardType] Source

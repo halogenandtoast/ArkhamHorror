@@ -211,6 +211,7 @@ allPlayerCards = HashMap.fromList
   , ("01102", silverTwilightAcolyte)
   , ("01103", stubbornDetective)
   , ("01117", litaChantler)
+  , ("50004", barricade2)
   ]
 
 rolands38Special :: CardId -> PlayerCard
@@ -400,6 +401,12 @@ workingAHunch cardId = (event cardId "01037" "Working a Hunch" 2 Seeker)
 
 barricade :: CardId -> PlayerCard
 barricade cardId = (event cardId "01038" "Barricade" 0 Seeker)
+  { pcSkills = [SkillWillpower, SkillIntellect, SkillAgility]
+  , pcTraits = [Insight, Tactic]
+  }
+
+barricade2 :: CardId -> PlayerCard
+barricade2 cardId = (event cardId "50004" "Barricade" 0 Seeker)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillAgility]
   , pcTraits = [Insight, Tactic]
   }

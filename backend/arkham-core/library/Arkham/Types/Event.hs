@@ -13,6 +13,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Cards.Backstab
 import Arkham.Types.Event.Cards.Barricade
+import Arkham.Types.Event.Cards.Barricade2
 import Arkham.Types.Event.Cards.BlindingLight
 import Arkham.Types.Event.Cards.CunningDistraction
 import Arkham.Types.Event.Cards.DarkMemory
@@ -63,6 +64,7 @@ allEvents = HashMap.fromList
   , ("01079", (LookWhatIFound' .) . lookWhatIFound)
   , ("01080", (Lucky' .) . lucky)
   , ("01088", (EmergencyCache' .) . emergencyCache)
+  , ("50004", (Barricade2' .) . barricade2)
   ]
 
 instance HasCardCode Event where
@@ -77,6 +79,7 @@ data Event
   | MindOverMatter' MindOverMatter
   | WorkingAHunch' WorkingAHunch
   | Barricade' Barricade
+  | Barricade2' Barricade2
   | Elusive' Elusive
   | Backstab' Backstab
   | SneakAttack' SneakAttack
@@ -100,6 +103,7 @@ eventAttrs = \case
   MindOverMatter' attrs -> coerce attrs
   WorkingAHunch' attrs -> coerce attrs
   Barricade' attrs -> coerce attrs
+  Barricade2' attrs -> coerce attrs
   Elusive' attrs -> coerce attrs
   Backstab' attrs -> coerce attrs
   SneakAttack' attrs -> coerce attrs
@@ -121,6 +125,7 @@ instance HasActions env investigator Event where
     MindOverMatter' x -> getActions i window x
     WorkingAHunch' x -> getActions i window x
     Barricade' x -> getActions i window x
+    Barricade2' x -> getActions i window x
     Elusive' x -> getActions i window x
     Backstab' x -> getActions i window x
     SneakAttack' x -> getActions i window x
@@ -148,6 +153,7 @@ instance (EventRunner env) => RunMessage env Event where
     MindOverMatter' x -> MindOverMatter' <$> runMessage msg x
     WorkingAHunch' x -> WorkingAHunch' <$> runMessage msg x
     Barricade' x -> Barricade' <$> runMessage msg x
+    Barricade2' x -> Barricade2' <$> runMessage msg x
     Elusive' x -> Elusive' <$> runMessage msg x
     Backstab' x -> Backstab' <$> runMessage msg x
     SneakAttack' x -> SneakAttack' <$> runMessage msg x

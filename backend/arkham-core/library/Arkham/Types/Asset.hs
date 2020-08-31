@@ -107,6 +107,7 @@ allAssets = HashMap.fromList
   , ("01086", Knife' . knife)
   , ("01087", Flashlight' . flashlight)
   , ("01117", LitaChantler' . litaChantler)
+  , ("50003", Hyperawareness2' . hyperawareness2)
   ]
 
 instance HasCardCode Asset where
@@ -144,6 +145,7 @@ data Asset
   | ResearchLibrarian' ResearchLibrarian
   | DrMilanChristopher' DrMilanChristopher
   | Hyperawareness' Hyperawareness
+  | Hyperawareness2' Hyperawareness2
   | MedicalTexts' MedicalTexts
   | Switchblade' Switchblade
   | Burglary' Burglary

@@ -344,6 +344,12 @@ dynamiteBlast cardId = (event cardId "01024" "Dynamite Blast" 5 Guardian)
   , pcTraits = [Tactic]
   }
 
+dynamiteBlast2 :: CardId -> PlayerCard
+dynamiteBlast2 cardId = (event cardId "50002" "Dynamite Blast" 4 Guardian)
+  { pcSkills = [SkillWillpower, SkillCombat]
+  , pcTraits = [Tactic]
+  }
+
 viciousBlow :: CardId -> PlayerCard
 viciousBlow cardId =
   (skill cardId "01025" "Vicious Blow" [SkillCombat] Guardian)

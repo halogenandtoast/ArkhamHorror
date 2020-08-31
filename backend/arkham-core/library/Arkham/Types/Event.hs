@@ -19,6 +19,7 @@ import Arkham.Types.Event.Cards.DarkMemory
 import Arkham.Types.Event.Cards.Dodge
 import Arkham.Types.Event.Cards.DrawnToTheFlame
 import Arkham.Types.Event.Cards.DynamiteBlast
+import Arkham.Types.Event.Cards.DynamiteBlast2
 import Arkham.Types.Event.Cards.Elusive
 import Arkham.Types.Event.Cards.EmergencyCache
 import Arkham.Types.Event.Cards.Evidence
@@ -63,6 +64,7 @@ allEvents = HashMap.fromList
   , ("01079", (LookWhatIFound' .) . lookWhatIFound)
   , ("01080", (Lucky' .) . lucky)
   , ("01088", (EmergencyCache' .) . emergencyCache)
+  , ("50002", (DynamiteBlast2' .) . dynamiteBlast2)
   ]
 
 instance HasCardCode Event where
@@ -74,6 +76,7 @@ data Event
   | Evidence' Evidence
   | Dodge' Dodge
   | DynamiteBlast' DynamiteBlast
+  | DynamiteBlast2' DynamiteBlast2
   | MindOverMatter' MindOverMatter
   | WorkingAHunch' WorkingAHunch
   | Barricade' Barricade

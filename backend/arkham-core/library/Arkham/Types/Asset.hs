@@ -14,6 +14,7 @@ import Arkham.Json
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Cards.ArcaneInitiate
 import Arkham.Types.Asset.Cards.ArcaneStudies
+import Arkham.Types.Asset.Cards.ArcaneStudies2
 import Arkham.Types.Asset.Cards.BaseballBat
 import Arkham.Types.Asset.Cards.BeatCop
 import Arkham.Types.Asset.Cards.Burglary
@@ -113,6 +114,7 @@ allAssets = HashMap.fromList
   , ("50001", PhysicalTraining2' . physicalTraining2)
   , ("50003", Hyperawareness2' . hyperawareness2)
   , ("50005", HardKnocks2' . hardKnocks2)
+  , ("50007", ArcaneStudies2' . arcaneStudies2)
   ]
 
 instance HasCardCode Asset where
@@ -175,6 +177,7 @@ data Asset
   | PhysicalTraining2' PhysicalTraining2
   | Hyperawareness2' Hyperawareness2
   | HardKnocks2' HardKnocks2
+  | ArcaneStudies2' ArcaneStudies2
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -221,6 +224,7 @@ assetAttrs = \case
   PhysicalTraining2' attrs -> coerce attrs
   Hyperawareness2' attrs -> coerce attrs
   HardKnocks2' attrs -> coerce attrs
+  ArcaneStudies2' attrs -> coerce attrs
 
 isHealthDamageable :: Asset -> Bool
 isHealthDamageable a = case assetHealth (assetAttrs a) of
@@ -275,6 +279,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     PhysicalTraining2' x -> getActions i window x
     Hyperawareness2' x -> getActions i window x
     HardKnocks2' x -> getActions i window x
+    ArcaneStudies2' x -> getActions i window x
 
 instance (AssetRunner env) => RunMessage env Asset where
   runMessage msg = \case
@@ -319,3 +324,4 @@ instance (AssetRunner env) => RunMessage env Asset where
     PhysicalTraining2' x -> PhysicalTraining2' <$> runMessage msg x
     Hyperawareness2' x -> Hyperawareness2' <$> runMessage msg x
     HardKnocks2' x -> HardKnocks2' <$> runMessage msg x
+    ArcaneStudies2' x -> ArcaneStudies2' <$> runMessage msg x

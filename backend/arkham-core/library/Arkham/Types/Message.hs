@@ -276,7 +276,7 @@ data Message
   | AttachTreacheryToLocation TreacheryId LocationId
   | AttachEventToLocation EventId LocationId
   | AttachTreacheryToInvestigator TreacheryId InvestigatorId
-  | AddModifier Target Modifier
+  | AddModifier Target Source Modifier
   | AddSlot InvestigatorId SlotType Slot
   | RefillSlots InvestigatorId SlotType [AssetId]
   | RemoveAllModifiersOnTargetFrom Target Source
@@ -332,6 +332,7 @@ data Message
   | Will Message
   | When Message
   | After Message
+  | Blanked Message
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

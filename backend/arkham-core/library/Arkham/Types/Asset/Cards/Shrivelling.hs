@@ -57,7 +57,7 @@ instance (AssetRunner env) => RunMessage env Shrivelling where
             (ChooseFightEnemy
               iid
               SkillWillpower
-              [DamageDealt 1 (AssetSource aid)]
+              [DamageDealt 1]
               [ OnAnyToken
                   [ Token.Skull
                   , Token.Cultist

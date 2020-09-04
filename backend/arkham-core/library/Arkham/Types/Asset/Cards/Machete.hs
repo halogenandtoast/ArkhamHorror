@@ -44,16 +44,13 @@ instance (AssetRunner env) => RunMessage env Machete where
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
       engagedEnemiesCount <- unEnemyCount <$> asks (getCount iid)
       let
-        damageDealtModifiers = if engagedEnemiesCount == 1
-          then [DamageDealt 1 (AssetSource aid)]
-          else []
+        damageDealtModifiers =
+          if engagedEnemiesCount == 1 then [DamageDealt 1] else []
       unshiftMessage
         (ChooseFightEnemy
           iid
           SkillCombat
-          (damageDealtModifiers
-          <> [SkillModifier SkillCombat 1 (AssetSource aid)]
-          )
+          (damageDealtModifiers <> [SkillModifier SkillCombat 1])
           mempty
           False
         )

@@ -55,7 +55,7 @@ instance (AssetRunner env) => RunMessage env Knife where
         (ChooseFightEnemy
           iid
           SkillCombat
-          [SkillModifier SkillCombat 1 (AssetSource aid)]
+          [SkillModifier SkillCombat 1]
           mempty
           False
         )
@@ -66,9 +66,7 @@ instance (AssetRunner env) => RunMessage env Knife where
         , ChooseFightEnemy
           iid
           SkillCombat
-          [ SkillModifier SkillCombat 2 (AssetSource aid)
-          , DamageDealt 1 (AssetSource aid)
-          ]
+          [SkillModifier SkillCombat 2, DamageDealt 1]
           mempty
           False
         ]

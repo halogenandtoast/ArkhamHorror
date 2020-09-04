@@ -22,6 +22,7 @@ import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
 import ClassyPrelude
+import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import qualified Data.Text as T
 import Lens.Micro
@@ -48,7 +49,7 @@ data Attrs = Attrs
   , locationTreacheries :: HashSet TreacheryId
   , locationEvents :: HashSet EventId
   , locationAssets :: HashSet AssetId
-  , locationModifiers :: [Modifier]
+  , locationModifiers :: HashMap Source [Modifier]
   }
   deriving stock (Show, Generic)
 
@@ -79,7 +80,7 @@ connectedLocations =
 blocked :: Lens' Attrs Bool
 blocked = lens locationBlocked $ \m x -> m { locationBlocked = x }
 
-modifiers :: Lens' Attrs [Modifier]
+modifiers :: Lens' Attrs (HashMap Source [Modifier])
 modifiers = lens locationModifiers $ \m x -> m { locationModifiers = x }
 
 baseAttrs
@@ -131,9 +132,9 @@ shroudValueFor :: Attrs -> Int
 shroudValueFor Attrs {..} = foldr
   applyModifier
   locationShroud
-  locationModifiers
+  (concat . HashMap.elems $ locationModifiers)
  where
-  applyModifier (ShroudModifier m _) n = max 0 (n + m)
+  applyModifier (ShroudModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
 instance HasId LocationId () Attrs where
@@ -143,7 +144,8 @@ instance IsLocation Attrs where
   isBlocked Attrs {..} = locationBlocked
 
 investigateAllowed :: Attrs -> Bool
-investigateAllowed Attrs {..} = not (any isCannotInvestigate locationModifiers)
+investigateAllowed Attrs {..} = not
+  (any isCannotInvestigate (concat . HashMap.elems $ locationModifiers))
  where
   isCannotInvestigate CannotInvestigate{} = True
   isCannotInvestigate _ = False
@@ -173,7 +175,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Attrs wher
 
 shouldSpawnNonEliteAtConnectingInstead :: Attrs -> Bool
 shouldSpawnNonEliteAtConnectingInstead Attrs {..} =
-  flip any locationModifiers $ \case
+  flip any (concat . HashMap.elems $ locationModifiers) $ \case
     SpawnNonEliteAtConnectingInstead{} -> True
     _ -> False
 
@@ -199,11 +201,10 @@ instance (LocationRunner env) => RunMessage env Attrs where
           )
     SetLocationLabel lid label' | lid == locationId ->
       pure $ a & label .~ label'
-    AddModifier (LocationTarget lid) modifier | lid == locationId ->
-      pure $ a & modifiers %~ (modifier :)
+    AddModifier (LocationTarget lid) source modifier | lid == locationId ->
+      pure $ a & modifiers %~ HashMap.insertWith (<>) source [modifier]
     RemoveAllModifiersOnTargetFrom (LocationTarget lid) source
-      | lid == locationId -> pure $ a & modifiers %~ filter
-        ((source /=) . sourceOfModifier)
+      | lid == locationId -> pure $ a & modifiers %~ HashMap.delete source
     PlacedLocation lid | lid == locationId ->
       a <$ unshiftMessage (AddConnection lid locationSymbol)
     AttachTreacheryToLocation tid lid | lid == locationId ->
@@ -307,8 +308,8 @@ instance (LocationRunner env) => RunMessage env Attrs where
       pure $ a & connectedLocations %~ HashSet.delete lid
     EndRound -> do
       lingeringEventIds <- asks (getSet ())
-      pure $ a & modifiers %~ filter
-        (\modifier -> case sourceOfModifier modifier of
+      pure $ a & modifiers %~ HashMap.filterWithKey
+        (\key _ -> case key of
           EventSource eid -> eid `member` lingeringEventIds
           _ -> True
         )

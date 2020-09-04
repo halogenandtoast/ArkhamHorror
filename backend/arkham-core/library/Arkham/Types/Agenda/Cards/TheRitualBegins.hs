@@ -33,18 +33,19 @@ instance (AgendaRunner env) => RunMessage env TheRitualBegins where
     NextAgenda _ aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
       enemyIds <- HashSet.toList <$> asks (getSet ())
       unshiftMessages
-        $ [ AddModifier (EnemyTarget eid) (EnemyFight 1 (AgendaSource agendaId))
+        $ [ AddModifier (EnemyTarget eid) (AgendaSource agendaId) (EnemyFight 1)
           | eid <- enemyIds
           ]
         <> [ AddModifier
                (EnemyTarget eid)
-               (EnemyEvade 1 (AgendaSource agendaId))
+               (AgendaSource agendaId)
+               (EnemyEvade 1)
            | eid <- enemyIds
            ]
       TheRitualBegins <$> runMessage msg attrs
     EnemySpawn _ eid -> a <$ unshiftMessages
-      [ AddModifier (EnemyTarget eid) (EnemyFight 1 (AgendaSource agendaId))
-      , AddModifier (EnemyTarget eid) (EnemyEvade 1 (AgendaSource agendaId))
+      [ AddModifier (EnemyTarget eid) (AgendaSource agendaId) (EnemyFight 1)
+      , AddModifier (EnemyTarget eid) (AgendaSource agendaId) (EnemyEvade 1)
       ]
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())

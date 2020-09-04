@@ -27,5 +27,5 @@ instance HasActions env investigator ViciousBlow where
 instance (SkillRunner env) => RunMessage env ViciousBlow where
   runMessage msg s@(ViciousBlow attrs@Attrs {..}) = case msg of
     PassedSkillTest _ (Just Fight) _ _ -> s <$ unshiftMessage
-      (AddModifier SkillTestTarget (DamageDealt 1 (SkillSource skillId)))
+      (AddModifier SkillTestTarget (SkillSource skillId) (DamageDealt 1))
     _ -> ViciousBlow <$> runMessage msg attrs

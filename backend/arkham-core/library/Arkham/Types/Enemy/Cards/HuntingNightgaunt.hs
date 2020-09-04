@@ -9,7 +9,6 @@ import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Source
 import ClassyPrelude
 
 newtype HuntingNightgaunt = HuntingNightgaunt Attrs
@@ -39,9 +38,7 @@ instance (EnemyRunner env) => RunMessage env HuntingNightgaunt where
                 skillType
                 onSuccess
                 onFailure
-                (DoubleNegativeModifiersOnTokens (EnemySource eid)
-                : skillTestModifiers
-                )
+                (DoubleNegativeModifiersOnTokens : skillTestModifiers)
                 tokenResponses
               )
               attrs

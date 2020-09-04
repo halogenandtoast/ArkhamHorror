@@ -48,7 +48,8 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
                   1
                 , AddModifier
                   (EnemyTarget eid)
-                  (DamageTaken 1 (AssetSource assetId))
+                  (AssetSource assetId)
+                  (DamageTaken 1)
                 ]
               , Continue "Do not use Lita Chantler's ability"
               ]
@@ -64,9 +65,11 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
           locationId <- asks (getId @LocationId ownerId)
           locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
           unshiftMessages $ map
-            (flip
-                AddModifier
-                (SkillModifier SkillCombat 1 (AssetSource assetId))
+            ((\target -> AddModifier
+               target
+               (AssetSource assetId)
+               (SkillModifier SkillCombat 1)
+             )
             . InvestigatorTarget
             )
             locationInvestigatorIds

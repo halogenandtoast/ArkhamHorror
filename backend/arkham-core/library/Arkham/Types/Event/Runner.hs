@@ -6,6 +6,7 @@ import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Query
+import Arkham.Types.Trait
 
 type EventRunner env
   = ( HasQueue env
@@ -18,4 +19,5 @@ type EventRunner env
     , HasSet EmptyLocationId () env
     , HasSet RevealedLocationId () env
     , HasSet ExhaustedEnemyId LocationId env
+    , HasSet Trait EnemyId env
     )

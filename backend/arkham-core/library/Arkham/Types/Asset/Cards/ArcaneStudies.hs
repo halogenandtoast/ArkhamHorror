@@ -6,12 +6,12 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
-import qualified Arkham.Types.Window as Fast
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Window as Fast
 import ClassyPrelude
 
 newtype ArcaneStudies = ArcaneStudies Attrs
@@ -48,13 +48,15 @@ instance (AssetRunner env) => RunMessage env ArcaneStudies where
         [ SpendResources iid 1
         , AddModifier
           SkillTestTarget
-          (SkillModifier SkillWillpower 1 (AssetSource aid))
+          (AssetSource aid)
+          (SkillModifier SkillWillpower 1)
         ]
     UseCardAbility iid _ (AssetSource aid) 2 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , AddModifier
           SkillTestTarget
-          (SkillModifier SkillIntellect 1 (AssetSource aid))
+          (AssetSource aid)
+          (SkillModifier SkillIntellect 1)
         ]
     _ -> ArcaneStudies <$> runMessage msg attrs

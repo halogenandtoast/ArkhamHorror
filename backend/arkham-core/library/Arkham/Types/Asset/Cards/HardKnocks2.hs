@@ -48,13 +48,15 @@ instance (AssetRunner env) => RunMessage env HardKnocks2 where
         [ SpendResources iid 1
         , AddModifier
           SkillTestTarget
-          (SkillModifier SkillCombat 1 (AssetSource aid))
+          (AssetSource aid)
+          (SkillModifier SkillCombat 1)
         ]
     UseCardAbility iid _ (AssetSource aid) 2 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , AddModifier
           SkillTestTarget
-          (SkillModifier SkillAgility 1 (AssetSource aid))
+          (AssetSource aid)
+          (SkillModifier SkillAgility 1)
         ]
     _ -> HardKnocks2 <$> runMessage msg attrs

@@ -10,7 +10,6 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
-import Arkham.Types.Source
 import Arkham.Types.Target
 import Lens.Micro
 
@@ -29,12 +28,7 @@ instance (EventRunner env) => RunMessage env Backstab where
   runMessage msg (Backstab attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid | eid == eventId -> do
       unshiftMessages
-        [ ChooseFightEnemy
-          iid
-          SkillAgility
-          [DamageDealt 2 (EventSource eid)]
-          mempty
-          False
+        [ ChooseFightEnemy iid SkillAgility [DamageDealt 2] mempty False
         , Discard (EventTarget eid)
         ]
       Backstab <$> runMessage msg (attrs & resolved .~ True)

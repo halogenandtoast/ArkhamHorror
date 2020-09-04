@@ -43,4 +43,4 @@ data Source
   | ActSource ActId
   | PlayerCardSource CardId
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

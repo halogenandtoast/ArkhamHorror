@@ -53,7 +53,8 @@ data SkillTest a = SkillTest
   , skillTestSetAsideTokens  :: [Token]
   , skillTestValueModifier :: Int
   , skillTestResult :: SkillTestResult
-  , skillTestModifiers :: [Modifier]
+  , skillTestModifiers :: HashMap Source [Modifier]
+  , skillTestTempModifiers :: [Modifier]
   , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
   , skillTestSource :: Source
   , skillTestAction :: Maybe Action
@@ -105,13 +106,14 @@ initSkillTest iid source maction skillType' difficulty' onSuccess' onFailure' mo
     , skillTestSetAsideTokens = mempty
     , skillTestValueModifier = 0
     , skillTestResult = Unrun
-    , skillTestModifiers = modifiers'
+    , skillTestTempModifiers = modifiers'
+    , skillTestModifiers = mempty
     , skillTestCommittedCards = mempty
     , skillTestSource = source
     , skillTestAction = maction
     }
 
-modifiers :: Lens' (SkillTest a) [Modifier]
+modifiers :: Lens' (SkillTest a) (HashMap Source [Modifier])
 modifiers = lens skillTestModifiers $ \m x -> m { skillTestModifiers = x }
 
 valueModifier :: Lens' (SkillTest a) Int
@@ -142,7 +144,7 @@ onTokenResponses =
 applicableModifiers :: SkillTest a -> [Modifier]
 applicableModifiers SkillTest {..} = mapMaybe
   applicableModifier
-  skillTestModifiers
+  ((concat . HashMap.elems $ skillTestModifiers) <> skillTestTempModifiers)
  where
   applicableModifier (ModifierIfSucceededBy n m) = case skillTestResult of
     SucceededBy x | x >= n -> Just m
@@ -160,18 +162,21 @@ skillIconCount SkillTest {..} = length . filter matches $ concatMap
   matches s = s == skillTestSkillType
 
 skillValueModifiers :: SkillTest a -> Int
-skillValueModifiers SkillTest {..} = foldr applyModifier 0 skillTestModifiers
+skillValueModifiers SkillTest {..} = foldr
+  applyModifier
+  0
+  ((concat . HashMap.elems $ skillTestModifiers) <> skillTestTempModifiers)
  where
-  applyModifier (AnySkillValue m _) n = max 0 (n + m)
+  applyModifier (AnySkillValue m) n = max 0 (n + m)
   applyModifier _ n = n
 
 modifiedTokenValue :: Int -> SkillTest a -> Int
 modifiedTokenValue baseValue SkillTest {..} = foldr
   applyModifier
   baseValue
-  skillTestModifiers
+  ((concat . HashMap.elems $ skillTestModifiers) <> skillTestTempModifiers)
  where
-  applyModifier (DoubleNegativeModifiersOnTokens _) n =
+  applyModifier DoubleNegativeModifiersOnTokens n =
     if baseValue < 0 then n + baseValue else n
   applyModifier _ n = n
 
@@ -221,7 +226,9 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
              skillTestInvestigator
              skillTestAction
              skillTestSkillType
-             skillTestModifiers
+             ((concat . HashMap.elems $ skillTestModifiers)
+             <> skillTestTempModifiers
+             )
          ]
       )
     SkillTestCommitCard iid cardId -> do
@@ -229,8 +236,8 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       pure $ s & committedCards %~ HashMap.insert cardId (iid, card)
     SkillTestUncommitCard _ cardId ->
       pure $ s & committedCards %~ HashMap.delete cardId
-    AddModifier SkillTestTarget modifier ->
-      pure $ s & modifiers %~ (modifier :)
+    AddModifier SkillTestTarget source modifier ->
+      pure $ s & modifiers %~ HashMap.insertWith (<>) source [modifier]
     SkillTestEnds -> s <$ unshiftMessages
       [ RemoveAllModifiersOnTargetFrom
         (InvestigatorTarget skillTestInvestigator)
@@ -261,8 +268,8 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
           )
         Unrun -> pure ()
       pure s
-    AddModifier AfterSkillTestTarget modifier ->
-      pure $ s & modifiers %~ (modifier :)
+    AddModifier AfterSkillTestTarget source modifier ->
+      pure $ s & modifiers %~ HashMap.insertWith (<>) source [modifier]
     SkillTestApplyResultsAfter -> do
       unshiftMessage SkillTestEnds
 
@@ -293,8 +300,9 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
 
       s <$ unshiftMessages
         (map
-          (AddModifier (InvestigatorTarget skillTestInvestigator)
-          . replaceModifierSource SkillTestSource
+          (AddModifier
+            (InvestigatorTarget skillTestInvestigator)
+            SkillTestSource
           )
           (applicableModifiers s)
         )

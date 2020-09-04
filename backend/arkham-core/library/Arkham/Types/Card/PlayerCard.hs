@@ -224,6 +224,7 @@ allPlayerCards = HashMap.fromList
   , ("50005", hardKnocks2)
   , ("50006", hotStreak2)
   , ("50007", arcaneStudies2)
+  , ("50008", mindWipe3)
   ]
 
 rolands38Special :: CardId -> PlayerCard
@@ -768,4 +769,13 @@ arcaneStudies2 cardId = (asset cardId "50007" "Arcane Studies" 0 Mystic)
   { pcSkills = [SkillWillpower, SkillWillpower, SkillIntellect, SkillIntellect]
   , pcTraits = [Talent]
   , pcLevel = 2
+  }
+
+mindWipe3 :: CardId -> PlayerCard
+mindWipe3 cardId = (event cardId "50008" "Mind Wipe" 1 Mystic)
+  { pcSkills = [SkillWillpower, SkillCombat]
+  , pcTraits = [Spell]
+  , pcLevel = 3
+  , pcFast = True
+  , pcWindows = HashSet.fromList [AnyPhaseBegins]
   }

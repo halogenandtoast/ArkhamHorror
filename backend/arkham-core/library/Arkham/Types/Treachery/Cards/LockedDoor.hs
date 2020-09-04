@@ -66,7 +66,8 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
       unshiftMessage
         (AddModifier
           (LocationTarget lid)
-          (CannotInvestigate (TreacherySource tid))
+          (TreacherySource tid)
+          CannotInvestigate
         )
       pure . LockedDoor $ attrs & attachedLocation ?~ lid
     UseCardAbility iid _ (TreacherySource tid) 1 | tid == treacheryId -> do

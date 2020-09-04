@@ -54,7 +54,8 @@ instance (AssetRunner env) => RunMessage env Flashlight where
           unshiftMessages
             [ AddModifier
               (LocationTarget lid)
-              (ShroudModifier (-2) (AssetSource aid))
+              (AssetSource aid)
+              (ShroudModifier (-2))
             , Investigate iid lid SkillIntellect mempty mempty False
             , RemoveAllModifiersOnTargetFrom
               (LocationTarget lid)

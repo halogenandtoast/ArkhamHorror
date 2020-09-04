@@ -17,6 +17,7 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
+import qualified Data.HashMap.Strict as HashMap
 
 newtype DaisyWalkerMetadata = DaisyWalkerMetadata { tomeActions :: Int }
   deriving stock (Show, Generic)
@@ -41,7 +42,7 @@ daisyWalker =
     }
 
 becomesFailure :: Token -> Modifier -> Bool
-becomesFailure token (ForcedTokenChange fromToken AutoFail _) =
+becomesFailure token (ForcedTokenChange fromToken AutoFail) =
   token == fromToken
 becomesFailure _ _ = False
 
@@ -89,7 +90,9 @@ instance (InvestigatorRunner Attrs env) => RunMessage env DaisyWalker where
                     attrs
           else DaisyWalker . (`with` metadata) <$> runMessage msg attrs
       ResolveToken ElderSign iid skillValue | iid == investigatorId ->
-        if any (becomesFailure ElderSign) investigatorModifiers
+        if any
+            (becomesFailure ElderSign)
+            (concat . HashMap.elems $ investigatorModifiers)
           then i <$ unshiftMessage (ResolveToken AutoFail iid skillValue)
           else do
             tomeCount <- unAssetCount <$> asks (getCount (iid, [Tome]))

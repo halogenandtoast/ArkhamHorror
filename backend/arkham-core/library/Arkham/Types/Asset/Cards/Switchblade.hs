@@ -46,7 +46,7 @@ instance (AssetRunner env) => RunMessage env Switchblade where
         (ChooseFightEnemy
           iid
           SkillCombat
-          [ModifierIfSucceededBy 2 (DamageDealt 1 (AssetSource assetId))]
+          [ModifierIfSucceededBy 2 (DamageDealt 1)]
           mempty
           False
         )

@@ -44,7 +44,7 @@ data Attrs = Attrs
   , enemyVictory :: Maybe Int
   , enemyKeywords :: HashSet Keyword
   , enemyPrey :: Prey
-  , enemyModifiers :: [Modifier]
+  , enemyModifiers :: HashMap Source [Modifier]
   , enemyExhausted :: Bool
   , enemyDoom :: Int
   }
@@ -76,7 +76,7 @@ damage = lens enemyDamage $ \m x -> m { enemyDamage = x }
 health :: Lens' Attrs (GameValue Int)
 health = lens enemyHealth $ \m x -> m { enemyHealth = x }
 
-modifiers :: Lens' Attrs [Modifier]
+modifiers :: Lens' Attrs (HashMap Source [Modifier])
 modifiers = lens enemyModifiers $ \m x -> m { enemyModifiers = x }
 
 exhausted :: Lens' Attrs Bool
@@ -181,24 +181,30 @@ spawnAtOneOf iid eid targetLids = do
       unshiftMessage (Ask iid $ ChooseOne [ EnemySpawn lid eid | lid <- lids ])
 
 modifiedEnemyFight :: Attrs -> Int
-modifiedEnemyFight Attrs {..} = foldr applyModifier enemyFight enemyModifiers
+modifiedEnemyFight Attrs {..} = foldr
+  applyModifier
+  enemyFight
+  (concat . HashMap.elems $ enemyModifiers)
  where
-  applyModifier (EnemyFight m _) n = max 0 (n + m)
+  applyModifier (EnemyFight m) n = max 0 (n + m)
   applyModifier _ n = n
 
 modifiedEnemyEvade :: Attrs -> Int
-modifiedEnemyEvade Attrs {..} = foldr applyModifier enemyEvade enemyModifiers
+modifiedEnemyEvade Attrs {..} = foldr
+  applyModifier
+  enemyEvade
+  (concat . HashMap.elems $ enemyModifiers)
  where
-  applyModifier (EnemyEvade m _) n = max 0 (n + m)
+  applyModifier (EnemyEvade m) n = max 0 (n + m)
   applyModifier _ n = n
 
 modifiedDamageAmount :: Attrs -> Int -> Int
 modifiedDamageAmount attrs baseAmount = foldr
   applyModifier
   baseAmount
-  (enemyModifiers attrs)
+  (concat . HashMap.elems $ enemyModifiers attrs)
  where
-  applyModifier (DamageTaken m _) n = max 0 (n + m)
+  applyModifier (DamageTaken m) n = max 0 (n + m)
   applyModifier _ n = n
 
 canEnterLocation
@@ -371,10 +377,10 @@ instance (EnemyRunner env) => RunMessage env Attrs where
         (a ^. damage + amount' >= a ^. health . to (`fromGameValue` playerCount)
         )
         (unshiftMessage (EnemyDefeated eid iid enemyCardCode source))
-    AddModifier (EnemyTarget eid) modifier | eid == enemyId ->
-      pure $ a & modifiers %~ (modifier :)
+    AddModifier (EnemyTarget eid) source modifier | eid == enemyId ->
+      pure $ a & modifiers %~ HashMap.insertWith (<>) source [modifier]
     RemoveAllModifiersOnTargetFrom (EnemyTarget eid) source | eid == enemyId ->
-      pure $ a & modifiers %~ filter ((source /=) . sourceOfModifier)
+      pure $ a & modifiers %~ HashMap.delete source
     EnemyEngageInvestigator eid iid | eid == enemyId ->
       pure $ a & engagedInvestigators %~ HashSet.insert iid
     EngageEnemy iid eid False | eid == enemyId ->
@@ -415,4 +421,5 @@ instance (EnemyRunner env) => RunMessage env Attrs where
       pure $ a & doom +~ amount
     PlaceDoom (EnemyTarget eid) amount | eid == enemyId ->
       pure $ a & doom +~ amount
+    Blanked msg' -> runMessage msg' a
     _ -> pure a

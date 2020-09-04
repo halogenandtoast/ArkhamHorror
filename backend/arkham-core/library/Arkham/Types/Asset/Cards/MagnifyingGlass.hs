@@ -31,12 +31,8 @@ instance (AssetRunner env) => RunMessage env MagnifyingGlass where
       unshiftMessage
         (AddModifier
           (InvestigatorTarget iid)
-          (ActionSkillModifier
-            Action.Investigate
-            SkillIntellect
-            1
-            (AssetSource aid)
-          )
+          (AssetSource aid)
+          (ActionSkillModifier Action.Investigate SkillIntellect 1)
         )
       MagnifyingGlass <$> runMessage msg attrs
     _ -> MagnifyingGlass <$> runMessage msg attrs

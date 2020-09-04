@@ -49,7 +49,8 @@ instance (EnemyRunner env) => RunMessage env StubbornDetective where
          ]
         <> [ AddModifier
                (InvestigatorTarget investigatorId)
-               (Blank (EnemySource enemyId))
+               (EnemySource enemyId)
+               Blank
            | investigatorId <- locationInvestigatorIds
            ]
         )

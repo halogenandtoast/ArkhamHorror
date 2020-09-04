@@ -54,9 +54,7 @@ instance (AssetRunner env) => RunMessage env FortyFiveAutomatic where
             (ChooseFightEnemy
               iid
               SkillCombat
-              [ DamageDealt 1 (AssetSource aid)
-              , SkillModifier SkillCombat 1 (AssetSource aid)
-              ]
+              [DamageDealt 1, SkillModifier SkillCombat 1]
               mempty
               False
             )

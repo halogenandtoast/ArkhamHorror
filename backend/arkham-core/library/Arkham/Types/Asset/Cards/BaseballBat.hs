@@ -51,7 +51,7 @@ instance (AssetRunner env) => RunMessage env BaseballBat where
         (ChooseFightEnemy
           iid
           SkillCombat
-          [SkillModifier SkillCombat 2 (AssetSource aid)]
+          [SkillModifier SkillCombat 2]
           [ OnAnyToken
               [Token.Skull, Token.AutoFail]
               [Discard (AssetTarget assetId)]

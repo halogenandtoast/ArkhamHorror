@@ -6,12 +6,12 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
-import qualified Arkham.Types.Window as Fast
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Window as Fast
 import ClassyPrelude
 
 newtype PhysicalTraining2 = PhysicalTraining2 Attrs
@@ -22,7 +22,8 @@ physicalTraining2 uuid = PhysicalTraining2 $ baseAttrs uuid "50001"
 
 instance (IsInvestigator investigator) => HasActions env investigator PhysicalTraining2 where
   getActions i (Fast.WhenSkillTest SkillWillpower) (PhysicalTraining2 Attrs {..})
-    | Just (getId () i) == assetInvestigator = pure
+    | Just (getId () i) == assetInvestigator
+    = pure
       [ UseCardAbility
           (getId () i)
           (AssetSource assetId)
@@ -48,13 +49,15 @@ instance (AssetRunner env) => RunMessage env PhysicalTraining2 where
         [ SpendResources iid 1
         , AddModifier
           SkillTestTarget
-          (SkillModifier SkillWillpower 1 (AssetSource aid))
+          (AssetSource aid)
+          (SkillModifier SkillWillpower 1)
         ]
     UseCardAbility iid _ (AssetSource aid) 2 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , AddModifier
           SkillTestTarget
-          (SkillModifier SkillCombat 1 (AssetSource aid))
+          (AssetSource aid)
+          (SkillModifier SkillCombat 1)
         ]
     _ -> PhysicalTraining2 <$> runMessage msg attrs

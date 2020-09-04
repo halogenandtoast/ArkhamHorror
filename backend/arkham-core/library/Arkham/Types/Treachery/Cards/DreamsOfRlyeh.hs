@@ -4,7 +4,6 @@ module Arkham.Types.Treachery.Cards.DreamsOfRlyeh where
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -13,6 +12,7 @@ import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
+import Arkham.Types.Window
 import ClassyPrelude
 import Lens.Micro
 
@@ -40,10 +40,12 @@ instance (TreacheryRunner env) => RunMessage env DreamsOfRlyeh where
         [ AttachTreacheryToInvestigator tid iid
         , AddModifier
           (InvestigatorTarget iid)
-          (SkillModifier SkillWillpower (-1) (TreacherySource tid))
+          (TreacherySource tid)
+          (SkillModifier SkillWillpower (-1))
         , AddModifier
           (InvestigatorTarget iid)
-          (SanityModifier (-1) (TreacherySource tid))
+          (TreacherySource tid)
+          (SanityModifier (-1))
         ]
       DreamsOfRlyeh <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     UseCardAbility iid _ (TreacherySource tid) 1 | tid == treacheryId ->

@@ -41,6 +41,8 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import ClassyPrelude
@@ -110,6 +112,9 @@ instance HasTraits Enemy where
 
 instance HasKeywords Enemy where
   getKeywords = enemyKeywords . enemyAttrs
+
+instance HasModifiers Enemy where
+  getModifiers = concat . HashMap.elems . enemyModifiers . enemyAttrs
 
 data Enemy
   = MobEnforcer' MobEnforcer
@@ -199,8 +204,18 @@ instance (ActionRunner env investigator) => HasActions env investigator Enemy wh
     GoatSpawn' x -> getActions i window x
     YoungDeepOne' x -> getActions i window x
 
+isBlank :: Modifier -> Bool
+isBlank Blank{} = True
+isBlank _ = False
+
+isBlanked :: Message -> Bool
+isBlanked Blanked{} = True
+isBlanked _ = False
+
 instance (EnemyRunner env) => RunMessage env Enemy where
-  runMessage msg = \case
+  runMessage msg e | any isBlank (getModifiers e) && not (isBlanked msg) =
+    runMessage (Blanked msg) e
+  runMessage msg e = case e of
     MobEnforcer' x -> MobEnforcer' <$> runMessage msg x
     SilverTwilightAcolyte' x -> SilverTwilightAcolyte' <$> runMessage msg x
     StubbornDetective' x -> StubbornDetective' <$> runMessage msg x

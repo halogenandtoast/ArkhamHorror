@@ -36,7 +36,8 @@ instance (TreacheryRunner env) => RunMessage env ObscuringFog where
             [ AttachTreacheryToLocation tid currentLocationId
             , AddModifier
               (LocationTarget currentLocationId)
-              (ShroudModifier 2 (TreacherySource tid))
+              (TreacherySource tid)
+              (ShroudModifier 2)
             ]
           ObscuringFog
             <$> runMessage msg (attrs & attachedLocation ?~ currentLocationId)

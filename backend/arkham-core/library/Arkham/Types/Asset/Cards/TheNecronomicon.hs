@@ -7,7 +7,6 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -15,6 +14,7 @@ import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
 import qualified Arkham.Types.Token as Token
+import Arkham.Types.Window
 import ClassyPrelude
 
 newtype TheNecronomiconMetadata = TheNecronomiconMetadata { theNecronomiconHorror :: Int }
@@ -55,7 +55,8 @@ instance (AssetRunner env) => RunMessage env TheNecronomicon where
         unshiftMessage
           (AddModifier
             (InvestigatorTarget iid)
-            (ForcedTokenChange Token.ElderSign Token.AutoFail (AssetSource aid))
+            (AssetSource aid)
+            (ForcedTokenChange Token.ElderSign Token.AutoFail)
           )
         TheNecronomicon . (`with` metadata) <$> runMessage msg attrs
       UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do

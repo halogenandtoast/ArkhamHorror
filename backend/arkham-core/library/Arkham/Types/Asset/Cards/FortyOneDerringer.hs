@@ -54,8 +54,8 @@ instance (AssetRunner env) => RunMessage env FortyOneDerringer where
             (ChooseFightEnemy
               iid
               SkillCombat
-              [ ModifierIfSucceededBy 2 (DamageDealt 1 (AssetSource aid))
-              , SkillModifier SkillCombat 2 (AssetSource aid)
+              [ ModifierIfSucceededBy 2 (DamageDealt 1)
+              , SkillModifier SkillCombat 2
               ]
               mempty
               False

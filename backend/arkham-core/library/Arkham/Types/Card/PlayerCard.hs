@@ -221,6 +221,7 @@ allPlayerCards = HashMap.fromList
   , ("50002", dynamiteBlast2)
   , ("50003", hyperawareness2)
   , ("50004", barricade3)
+  , ("50005", hardKnocks2)
   ]
 
 rolands38Special :: CardId -> PlayerCard
@@ -744,4 +745,11 @@ barricade3 cardId = (event cardId "50004" "Barricade" 0 Seeker)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillAgility]
   , pcTraits = [Insight, Tactic]
   , pcLevel = 3
+  }
+
+hardKnocks2 :: CardId -> PlayerCard
+hardKnocks2 cardId = (asset cardId "50005" "Hard Knocks" 0 Rogue)
+  { pcSkills = [SkillCombat, SkillCombat, SkillAgility, SkillAgility]
+  , pcTraits = [Talent]
+  , pcLevel = 2
   }

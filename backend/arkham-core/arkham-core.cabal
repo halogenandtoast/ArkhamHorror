@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 703e5bbf004eb2c3c6a4ac8ae95360a57f0c860601d32bfaa6177a083d4a02a1
+-- hash: f402d3154c67efb09acef66a32d2ce6b060a8ba199c652968f8f3613f0f7cd5c
 
 name:           arkham-core
 version:        0.0.0
@@ -55,6 +55,7 @@ library
       Arkham.Types.Asset.Cards.FortyOneDerringer
       Arkham.Types.Asset.Cards.GuardDog
       Arkham.Types.Asset.Cards.HardKnocks
+      Arkham.Types.Asset.Cards.HardKnocks2
       Arkham.Types.Asset.Cards.HeirloomOfHyperborea
       Arkham.Types.Asset.Cards.HolyRosary
       Arkham.Types.Asset.Cards.Hyperawareness

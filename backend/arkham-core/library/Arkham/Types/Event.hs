@@ -76,7 +76,6 @@ data Event
   | Evidence' Evidence
   | Dodge' Dodge
   | DynamiteBlast' DynamiteBlast
-  | DynamiteBlast2' DynamiteBlast2
   | MindOverMatter' MindOverMatter
   | WorkingAHunch' WorkingAHunch
   | Barricade' Barricade
@@ -90,6 +89,7 @@ data Event
   | LookWhatIFound' LookWhatIFound
   | Lucky' Lucky
   | EmergencyCache' EmergencyCache
+  | DynamiteBlast2' DynamiteBlast2
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -113,6 +113,7 @@ eventAttrs = \case
   LookWhatIFound' attrs -> coerce attrs
   Lucky' attrs -> coerce attrs
   EmergencyCache' attrs -> coerce attrs
+  DynamiteBlast2' attrs -> coerce attrs
 
 instance HasActions env investigator Event where
   getActions i window = \case
@@ -134,6 +135,7 @@ instance HasActions env investigator Event where
     LookWhatIFound' x -> getActions i window x
     Lucky' x -> getActions i window x
     EmergencyCache' x -> getActions i window x
+    DynamiteBlast2' x -> getActions i window x
 
 eventLocation :: Event -> Maybe LocationId
 eventLocation = eventAttachedLocation . eventAttrs
@@ -161,3 +163,4 @@ instance (EventRunner env) => RunMessage env Event where
     LookWhatIFound' x -> LookWhatIFound' <$> runMessage msg x
     Lucky' x -> Lucky' <$> runMessage msg x
     EmergencyCache' x -> EmergencyCache' <$> runMessage msg x
+    DynamiteBlast2' x -> DynamiteBlast2' <$> runMessage msg x

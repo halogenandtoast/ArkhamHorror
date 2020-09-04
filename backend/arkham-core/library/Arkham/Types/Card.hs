@@ -11,6 +11,7 @@ module Arkham.Types.Card
   , HasCost(..)
   , HasCard(..)
   , BearerId(..)
+  , AttackOfOpportunityModifier(..)
   , allPlayerCards
   , lookupPlayerCard
   , lookupEncounterCard

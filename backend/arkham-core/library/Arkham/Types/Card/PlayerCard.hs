@@ -8,11 +8,11 @@ import Arkham.Types.Card.Class
 import Arkham.Types.Card.Id
 import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
-import Arkham.Types.Window
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
+import Arkham.Types.Window
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
@@ -29,6 +29,10 @@ data PlayerCardType
 
 newtype BearerId = BearerId { unBearerId :: CardCode }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
+
+data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 data PlayerCard = MkPlayerCard
   { pcCardCode :: CardCode
@@ -49,6 +53,7 @@ data PlayerCard = MkPlayerCard
   , pcRevelation :: Bool
   , pcVictoryPoints :: Maybe Int
   , pcCommitRestrictions :: [CommitRestriction]
+  , pcAttackOfOpportunityModifiers :: [AttackOfOpportunityModifier]
   }
   deriving stock (Show, Eq, Generic)
 
@@ -100,6 +105,7 @@ basePlayerCard cardId cardCode name cost cardType classSymbol = MkPlayerCard
   , pcRevelation = False
   , pcVictoryPoints = Nothing
   , pcCommitRestrictions = mempty
+  , pcAttackOfOpportunityModifiers = mempty
   }
 
 asset :: CardId -> CardCode -> Text -> Int -> ClassSymbol -> PlayerCard
@@ -211,7 +217,9 @@ allPlayerCards = HashMap.fromList
   , ("01102", silverTwilightAcolyte)
   , ("01103", stubbornDetective)
   , ("01117", litaChantler)
-  , ("50001", physicalTraining)
+  , ("50001", physicalTraining2)
+  , ("50002", dynamiteBlast2)
+  , ("50003", hyperawareness2)
   ]
 
 rolands38Special :: CardId -> PlayerCard
@@ -291,12 +299,6 @@ physicalTraining cardId = (asset cardId "01017" "Physical Training" 2 Guardian)
   , pcTraits = [Talent]
   }
 
-physicalTraining2 :: CardId -> PlayerCard
-physicalTraining2 cardId = (asset cardId "50001" "Physical Training" 0 Guardian)
-  { pcSkills = [SkillWillpower, SkillWillpower, SkillCombat, SkillCombat]
-  , pcTraits = [Talent]
-  }
-
 beatCop :: CardId -> PlayerCard
 beatCop cardId = (asset cardId "01018" "Beat Cop" 4 Guardian)
   { pcSkills = [SkillCombat]
@@ -334,19 +336,12 @@ dodge cardId = (event cardId "01023" "Dodge" 1 Guardian)
   { pcSkills = [SkillWillpower, SkillAgility]
   , pcTraits = [Tactic]
   , pcFast = True
-  , pcWindows = HashSet.fromList
-    [WhenEnemyAttacks InvestigatorAtYourLocation]
+  , pcWindows = HashSet.fromList [WhenEnemyAttacks InvestigatorAtYourLocation]
   }
 
 dynamiteBlast :: CardId -> PlayerCard
 dynamiteBlast cardId = (event cardId "01024" "Dynamite Blast" 5 Guardian)
   { pcSkills = [SkillWillpower]
-  , pcTraits = [Tactic]
-  }
-
-dynamiteBlast2 :: CardId -> PlayerCard
-dynamiteBlast2 cardId = (event cardId "50002" "Dynamite Blast" 4 Guardian)
-  { pcSkills = [SkillWillpower, SkillCombat]
   , pcTraits = [Tactic]
   }
 
@@ -386,12 +381,6 @@ drMilanChristopher cardId =
 hyperawareness :: CardId -> PlayerCard
 hyperawareness cardId = (asset cardId "01034" "Hyperawareness" 2 Seeker)
   { pcSkills = [SkillIntellect, SkillAgility]
-  , pcTraits = [Talent]
-  }
-
-hyperawareness2 :: CardId -> PlayerCard
-hyperawareness2 cardId = (asset cardId "50003" "Hyperawareness" 0 Seeker)
-  { pcSkills = [SkillIntellect, SkillIntellect, SkillAgility, SkillAgility]
   , pcTraits = [Talent]
   }
 
@@ -606,8 +595,7 @@ lookWhatIFound cardId =
     { pcSkills = [SkillIntellect, SkillIntellect]
     , pcTraits = [Fortune]
     , pcFast = True
-    , pcWindows = HashSet.fromList
-      [ AfterFailSkillTest You n | n <- [0 .. 2] ]
+    , pcWindows = HashSet.fromList [ AfterFailSkillTest You n | n <- [0 .. 2] ]
     }
 
 lucky :: CardId -> PlayerCard
@@ -726,3 +714,23 @@ stubbornDetective cardId = (enemy cardId "01103" "Stubborn Detective" 0)
 litaChantler :: CardId -> PlayerCard
 litaChantler cardId =
   (asset cardId "01117" "Lita Chantler" 0 Neutral) { pcTraits = [Ally] }
+
+physicalTraining2 :: CardId -> PlayerCard
+physicalTraining2 cardId = (asset cardId "50001" "Physical Training" 0 Guardian
+                           )
+  { pcSkills = [SkillWillpower, SkillWillpower, SkillCombat, SkillCombat]
+  , pcTraits = [Talent]
+  }
+
+dynamiteBlast2 :: CardId -> PlayerCard
+dynamiteBlast2 cardId = (event cardId "50002" "Dynamite Blast" 4 Guardian)
+  { pcSkills = [SkillWillpower, SkillCombat]
+  , pcTraits = [Tactic]
+  , pcAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+  }
+
+hyperawareness2 :: CardId -> PlayerCard
+hyperawareness2 cardId = (asset cardId "50003" "Hyperawareness" 0 Seeker)
+  { pcSkills = [SkillIntellect, SkillIntellect, SkillAgility, SkillAgility]
+  , pcTraits = [Talent]
+  }

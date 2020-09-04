@@ -30,6 +30,7 @@ import Arkham.Types.Asset.Cards.HardKnocks
 import Arkham.Types.Asset.Cards.HeirloomOfHyperborea
 import Arkham.Types.Asset.Cards.HolyRosary
 import Arkham.Types.Asset.Cards.Hyperawareness
+import Arkham.Types.Asset.Cards.Hyperawareness2
 import Arkham.Types.Asset.Cards.Knife
 import Arkham.Types.Asset.Cards.LeatherCoat
 import Arkham.Types.Asset.Cards.LeoDeLuca
@@ -145,7 +146,6 @@ data Asset
   | ResearchLibrarian' ResearchLibrarian
   | DrMilanChristopher' DrMilanChristopher
   | Hyperawareness' Hyperawareness
-  | Hyperawareness2' Hyperawareness2
   | MedicalTexts' MedicalTexts
   | Switchblade' Switchblade
   | Burglary' Burglary
@@ -168,6 +168,7 @@ data Asset
   | Knife' Knife
   | Flashlight' Flashlight
   | LitaChantler' LitaChantler
+  | Hyperawareness2' Hyperawareness2
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -211,6 +212,7 @@ assetAttrs = \case
   Knife' attrs -> coerce attrs
   Flashlight' attrs -> coerce attrs
   LitaChantler' attrs -> coerce attrs
+  Hyperawareness2' attrs -> coerce attrs
 
 isHealthDamageable :: Asset -> Bool
 isHealthDamageable a = case assetHealth (assetAttrs a) of
@@ -262,6 +264,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     Knife' x -> getActions i window x
     Flashlight' x -> getActions i window x
     LitaChantler' x -> getActions i window x
+    Hyperawareness2' x -> getActions i window x
 
 instance (AssetRunner env) => RunMessage env Asset where
   runMessage msg = \case
@@ -303,3 +306,4 @@ instance (AssetRunner env) => RunMessage env Asset where
     Knife' x -> Knife' <$> runMessage msg x
     Flashlight' x -> Flashlight' <$> runMessage msg x
     LitaChantler' x -> LitaChantler' <$> runMessage msg x
+    Hyperawareness2' x -> Hyperawareness2' <$> runMessage msg x

@@ -1,27 +1,27 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.Hyperawareness where
+module Arkham.Types.Asset.Cards.Hyperawareness2 where
 
 import Arkham.Json
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
-import qualified Arkham.Types.Window as Fast
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import qualified Arkham.Types.Window as Fast
 import ClassyPrelude
 
-newtype Hyperawareness = Hyperawareness Attrs
+newtype Hyperawareness2 = Hyperawareness2 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-hyperawareness :: AssetId -> Hyperawareness
-hyperawareness uuid = Hyperawareness $ baseAttrs uuid "01034"
+hyperawareness2 :: AssetId -> Hyperawareness2
+hyperawareness2 uuid = Hyperawareness2 $ baseAttrs uuid "50003"
 
-instance (IsInvestigator investigator) => HasActions env investigator Hyperawareness where
-  getActions i (Fast.WhenSkillTest SkillIntellect) (Hyperawareness Attrs {..})
+instance (IsInvestigator investigator) => HasActions env investigator Hyperawareness2 where
+  getActions i (Fast.WhenSkillTest SkillIntellect) (Hyperawareness2 Attrs {..})
     | Just (getId () i) == assetInvestigator = pure
       [ UseCardAbility
           (getId () i)
@@ -30,7 +30,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Hyperaware
           1
       | resourceCount i > 0
       ]
-  getActions i (Fast.WhenSkillTest SkillAgility) (Hyperawareness Attrs {..})
+  getActions i (Fast.WhenSkillTest SkillAgility) (Hyperawareness2 Attrs {..})
     | Just (getId () i) == assetInvestigator = pure
       [ UseCardAbility
           (getId () i)
@@ -41,8 +41,8 @@ instance (IsInvestigator investigator) => HasActions env investigator Hyperaware
       ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env Hyperawareness where
-  runMessage msg a@(Hyperawareness attrs@Attrs {..}) = case msg of
+instance (AssetRunner env) => RunMessage env Hyperawareness2 where
+  runMessage msg a@(Hyperawareness2 attrs@Attrs {..}) = case msg of
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
@@ -57,4 +57,4 @@ instance (AssetRunner env) => RunMessage env Hyperawareness where
           SkillTestTarget
           (SkillModifier SkillAgility 1 (AssetSource aid))
         ]
-    _ -> Hyperawareness <$> runMessage msg attrs
+    _ -> Hyperawareness2 <$> runMessage msg attrs

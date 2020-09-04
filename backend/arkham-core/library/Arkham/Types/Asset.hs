@@ -27,6 +27,7 @@ import Arkham.Types.Asset.Cards.FortyFiveAutomatic
 import Arkham.Types.Asset.Cards.FortyOneDerringer
 import Arkham.Types.Asset.Cards.GuardDog
 import Arkham.Types.Asset.Cards.HardKnocks
+import Arkham.Types.Asset.Cards.HardKnocks2
 import Arkham.Types.Asset.Cards.HeirloomOfHyperborea
 import Arkham.Types.Asset.Cards.HolyRosary
 import Arkham.Types.Asset.Cards.Hyperawareness
@@ -111,6 +112,7 @@ allAssets = HashMap.fromList
   , ("01117", LitaChantler' . litaChantler)
   , ("50001", PhysicalTraining2' . physicalTraining2)
   , ("50003", Hyperawareness2' . hyperawareness2)
+  , ("50005", HardKnocks2' . hardKnocks2)
   ]
 
 instance HasCardCode Asset where
@@ -172,6 +174,7 @@ data Asset
   | LitaChantler' LitaChantler
   | PhysicalTraining2' PhysicalTraining2
   | Hyperawareness2' Hyperawareness2
+  | HardKnocks2' HardKnocks2
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -217,6 +220,7 @@ assetAttrs = \case
   LitaChantler' attrs -> coerce attrs
   PhysicalTraining2' attrs -> coerce attrs
   Hyperawareness2' attrs -> coerce attrs
+  HardKnocks2' attrs -> coerce attrs
 
 isHealthDamageable :: Asset -> Bool
 isHealthDamageable a = case assetHealth (assetAttrs a) of
@@ -270,6 +274,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     LitaChantler' x -> getActions i window x
     PhysicalTraining2' x -> getActions i window x
     Hyperawareness2' x -> getActions i window x
+    HardKnocks2' x -> getActions i window x
 
 instance (AssetRunner env) => RunMessage env Asset where
   runMessage msg = \case
@@ -313,3 +318,4 @@ instance (AssetRunner env) => RunMessage env Asset where
     LitaChantler' x -> LitaChantler' <$> runMessage msg x
     PhysicalTraining2' x -> PhysicalTraining2' <$> runMessage msg x
     Hyperawareness2' x -> Hyperawareness2' <$> runMessage msg x
+    HardKnocks2' x -> HardKnocks2' <$> runMessage msg x

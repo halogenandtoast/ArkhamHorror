@@ -14,7 +14,6 @@ import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
 import Arkham.Types.EnemyId
-import Arkham.Types.Window
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.InvestigatorId
@@ -28,6 +27,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
+import Arkham.Types.Window
 import ClassyPrelude hiding (unpack, (\\))
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
@@ -239,10 +239,9 @@ removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> Attrs -> Bool
 fitsAvailableSlots slotTypes traits a = null
-  (slotTypes
-  \\ concatMap
-       (\slotType -> availableSlotTypesFor slotType traits a)
-       (HashSet.toList (HashSet.fromList slotTypes))
+  (slotTypes \\ concatMap
+    (\slotType -> availableSlotTypesFor slotType traits a)
+    (HashSet.toList (HashSet.fromList slotTypes))
   )
 
 availableSlotTypesFor :: SlotType -> [Trait] -> Attrs -> [SlotType]
@@ -834,16 +833,23 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         maction = case card of
           PlayerCard pc -> pcAction pc
           _ -> Nothing
+        actionProvokesAttackOfOpportunities =
+          maction
+            `notElem` [ Just Action.Evade
+                      , Just Action.Parley
+                      , Just Action.Resign
+                      , Just Action.Fight
+                      ]
+        provokesAttackOfOpportunities = case card of
+          PlayerCard pc ->
+            actionProvokesAttackOfOpportunities
+              && DoesNotProvokeAttacksOfOpportunity
+              `notElem` pcAttackOfOpportunityModifiers pc
+          _ -> actionProvokesAttackOfOpportunities
         actionCost' = if isFast then 0 else maybe 1 (actionCost a) maction
-        aooMessage =
-          if maction
-              `notElem` [ Just Action.Evade
-                        , Just Action.Parley
-                        , Just Action.Resign
-                        , Just Action.Fight
-                        ]
-            then [CheckAttackOfOpportunity iid isFast]
-            else []
+        aooMessage = if provokesAttackOfOpportunities
+          then [CheckAttackOfOpportunity iid isFast]
+          else []
       a <$ unshiftMessages
         ([TakeAction iid actionCost' (Just Action.Play), PayCardCost iid cardId]
         <> aooMessage

@@ -20,6 +20,7 @@ import Arkham.Types.Event.Cards.DarkMemory
 import Arkham.Types.Event.Cards.Dodge
 import Arkham.Types.Event.Cards.DrawnToTheFlame
 import Arkham.Types.Event.Cards.DynamiteBlast
+import Arkham.Types.Event.Cards.DynamiteBlast2
 import Arkham.Types.Event.Cards.Elusive
 import Arkham.Types.Event.Cards.EmergencyCache
 import Arkham.Types.Event.Cards.Evidence
@@ -64,6 +65,7 @@ allEvents = HashMap.fromList
   , ("01079", (LookWhatIFound' .) . lookWhatIFound)
   , ("01080", (Lucky' .) . lucky)
   , ("01088", (EmergencyCache' .) . emergencyCache)
+  , ("50002", (DynamiteBlast2' .) . dynamiteBlast2)
   , ("50004", (Barricade2' .) . barricade2)
   ]
 
@@ -79,7 +81,6 @@ data Event
   | MindOverMatter' MindOverMatter
   | WorkingAHunch' WorkingAHunch
   | Barricade' Barricade
-  | Barricade2' Barricade2
   | Elusive' Elusive
   | Backstab' Backstab
   | SneakAttack' SneakAttack
@@ -90,6 +91,8 @@ data Event
   | LookWhatIFound' LookWhatIFound
   | Lucky' Lucky
   | EmergencyCache' EmergencyCache
+  | DynamiteBlast2' DynamiteBlast2
+  | Barricade2' Barricade2
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -103,7 +106,6 @@ eventAttrs = \case
   MindOverMatter' attrs -> coerce attrs
   WorkingAHunch' attrs -> coerce attrs
   Barricade' attrs -> coerce attrs
-  Barricade2' attrs -> coerce attrs
   Elusive' attrs -> coerce attrs
   Backstab' attrs -> coerce attrs
   SneakAttack' attrs -> coerce attrs
@@ -114,6 +116,8 @@ eventAttrs = \case
   LookWhatIFound' attrs -> coerce attrs
   Lucky' attrs -> coerce attrs
   EmergencyCache' attrs -> coerce attrs
+  DynamiteBlast2' attrs -> coerce attrs
+  Barricade2' attrs -> coerce attrs
 
 instance HasActions env investigator Event where
   getActions i window = \case
@@ -125,7 +129,6 @@ instance HasActions env investigator Event where
     MindOverMatter' x -> getActions i window x
     WorkingAHunch' x -> getActions i window x
     Barricade' x -> getActions i window x
-    Barricade2' x -> getActions i window x
     Elusive' x -> getActions i window x
     Backstab' x -> getActions i window x
     SneakAttack' x -> getActions i window x
@@ -136,6 +139,8 @@ instance HasActions env investigator Event where
     LookWhatIFound' x -> getActions i window x
     Lucky' x -> getActions i window x
     EmergencyCache' x -> getActions i window x
+    DynamiteBlast2' x -> getActions i window x
+    Barricade2' x -> getActions i window x
 
 eventLocation :: Event -> Maybe LocationId
 eventLocation = eventAttachedLocation . eventAttrs
@@ -153,7 +158,6 @@ instance (EventRunner env) => RunMessage env Event where
     MindOverMatter' x -> MindOverMatter' <$> runMessage msg x
     WorkingAHunch' x -> WorkingAHunch' <$> runMessage msg x
     Barricade' x -> Barricade' <$> runMessage msg x
-    Barricade2' x -> Barricade2' <$> runMessage msg x
     Elusive' x -> Elusive' <$> runMessage msg x
     Backstab' x -> Backstab' <$> runMessage msg x
     SneakAttack' x -> SneakAttack' <$> runMessage msg x
@@ -164,3 +168,5 @@ instance (EventRunner env) => RunMessage env Event where
     LookWhatIFound' x -> LookWhatIFound' <$> runMessage msg x
     Lucky' x -> Lucky' <$> runMessage msg x
     EmergencyCache' x -> EmergencyCache' <$> runMessage msg x
+    DynamiteBlast2' x -> DynamiteBlast2' <$> runMessage msg x
+    Barricade2' x -> Barricade2' <$> runMessage msg x

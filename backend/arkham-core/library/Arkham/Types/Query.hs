@@ -13,6 +13,7 @@ module Arkham.Types.Query
   , RemainingSanity(..)
   , InvestigatorLocation(..)
   , LeadInvestigatorId(..)
+  , ActiveInvestigatorId(..)
   , AllInvestigators(..)
   )
 where
@@ -47,6 +48,7 @@ instance Monoid ClueCount where
 
 newtype PlayerCount = PlayerCount { unPlayerCount :: Int }
 newtype LeadInvestigatorId = LeadInvestigatorId { unLeadInvestigatorId :: InvestigatorId }
+newtype ActiveInvestigatorId = ActiveInvestigatorId { unActiveInvestigatorId :: InvestigatorId }
 
 newtype InvestigatorLocation = InvestigatorLocation InvestigatorId
 data AllInvestigators = AllInvestigators

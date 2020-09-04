@@ -4,6 +4,7 @@ module Arkham.Types.Scenario.Scenarios.TheGathering where
 import Arkham.Json
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.EncounterSet (gatherEncounterSet)
@@ -18,6 +19,7 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
+import Data.UUID.V4
 import System.Random.Shuffle
 
 newtype TheGathering = TheGathering Attrs
@@ -143,6 +145,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
       investigatorIds <- HashSet.toList <$> asks (getSet ())
       xp <- unXPCount <$> asks (getCount ())
+      litaChantler <- liftIO $ lookupPlayerCard "01117" . CardId <$> nextRandom
       s <$ unshiftMessage
         (Ask leadInvestigatorId $ ChooseOne
           [ Run
@@ -158,6 +161,15 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
                   \ Alone, we are surely doomed…but together, we can stop it.”"
                 ]
               , Record YourHouseHasBurnedToTheGround
+              , Ask
+                leadInvestigatorId
+                (ChooseOne
+                  [ Label
+                    "Add Lita Chantler to your deck"
+                    [AddCampaignCardToDeck leadInvestigatorId litaChantler]
+                  , Label "Do not add Lita Chantler to your deck" []
+                  ]
+                )
               , SufferTrauma leadInvestigatorId 0 1
               ]
             <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
@@ -192,6 +204,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
         )
     Resolution 3 -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      litaChantler <- liftIO $ lookupPlayerCard "01117" . CardId <$> nextRandom
       s <$ unshiftMessage
         (Ask leadInvestigatorId $ ChooseOne
           [ Run
@@ -206,6 +219,15 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
               , Record LitaWasForcedToFindOthersToHelpHerCause
               , Record YourHouseIsStillStanding
               , Record GhoulPriestIsStillAlive
+              , Ask
+                leadInvestigatorId
+                (ChooseOne
+                  [ Label
+                    "Add Lita Chantler to your deck"
+                    [AddCampaignCardToDeck leadInvestigatorId litaChantler]
+                  , Label "Do not add Lita Chantler to your deck" []
+                  ]
+                )
               , EndOfGame
               ]
           ]

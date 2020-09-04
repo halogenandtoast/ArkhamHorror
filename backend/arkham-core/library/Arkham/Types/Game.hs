@@ -32,8 +32,6 @@ import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
 import Arkham.Types.Event
 import Arkham.Types.EventId
-import Arkham.Types.Window (Who(..))
-import qualified Arkham.Types.Window as Fast
 import Arkham.Types.GameJson
 import Arkham.Types.GameRunner
 import Arkham.Types.Helpers
@@ -60,6 +58,8 @@ import qualified Arkham.Types.Token as Token
 import Arkham.Types.Trait
 import Arkham.Types.Treachery
 import Arkham.Types.TreacheryId
+import Arkham.Types.Window (Who(..))
+import qualified Arkham.Types.Window as Fast
 import ClassyPrelude
 import Control.Monad.State
 import Data.Coerce
@@ -325,6 +325,9 @@ instance HasCard InvestigatorId Game where
 
 instance HasId LeadInvestigatorId () Game where
   getId _ = LeadInvestigatorId . view leadInvestigatorId
+
+instance HasId ActiveInvestigatorId () Game where
+  getId _ = ActiveInvestigatorId . view activeInvestigatorId
 
 instance HasId CardCode EnemyId Game where
   getId eid = getCardCode . getEnemy eid
@@ -1155,9 +1158,7 @@ runGameMessage msg g = case msg of
       treachery = lookupTreachery cardCode treacheryId (Just iid)
     unshiftMessages
       $ [ RemoveCardFromHand iid cardCode | pcRevelation playerCard ]
-      <> [ CheckWindow
-           iid
-           [Fast.WhenDrawTreachery You (isWeakness treachery)]
+      <> [ CheckWindow iid [Fast.WhenDrawTreachery You (isWeakness treachery)]
          , Revelation iid treacheryId
          , AfterRevelation iid treacheryId
          ]

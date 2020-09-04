@@ -22,6 +22,7 @@ data Window
   | AfterPlayCard Who [Trait]
   | AfterTurnBegins Who
   | Any
+  | AnyPhaseBegins
   | DuringTurn Who
   | NonFast
   | WhenDiscoverClues Who Where

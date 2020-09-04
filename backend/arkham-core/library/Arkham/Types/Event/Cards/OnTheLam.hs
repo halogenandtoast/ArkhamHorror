@@ -30,7 +30,8 @@ instance (EventRunner env) => RunMessage env OnTheLam where
       unshiftMessages
         [ AddModifier
           (InvestigatorTarget iid)
-          (CannotBeAttackedByNonElite (EventSource eid))
+          (EventSource eid)
+          CannotBeAttackedByNonElite
         , Discard (EventTarget eid)
         ]
       OnTheLam <$> runMessage msg (attrs & resolved .~ True)

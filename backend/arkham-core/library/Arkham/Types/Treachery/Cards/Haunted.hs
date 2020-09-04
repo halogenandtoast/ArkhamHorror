@@ -4,7 +4,6 @@ module Arkham.Types.Treachery.Cards.Haunted where
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -13,6 +12,7 @@ import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
+import Arkham.Types.Window
 import ClassyPrelude
 import Lens.Micro
 
@@ -49,7 +49,8 @@ instance (TreacheryRunner env) => RunMessage env Haunted where
       unshiftMessage
         (AddModifier
           (InvestigatorTarget iid)
-          (AnySkillValue (-1) (TreacherySource tid))
+          (TreacherySource tid)
+          (AnySkillValue (-1))
         )
       Haunted <$> runMessage msg attrs
     UseCardAbility _ _ (TreacherySource tid) 1 | tid == treacheryId ->

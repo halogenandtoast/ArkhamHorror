@@ -48,13 +48,15 @@ instance (AssetRunner env) => RunMessage env ArcaneStudies2 where
         [ SpendResources iid 1
         , AddModifier
           SkillTestTarget
-          (SkillModifier SkillWillpower 1 (AssetSource aid))
+          (AssetSource aid)
+          (SkillModifier SkillWillpower 1)
         ]
     UseCardAbility iid _ (AssetSource aid) 2 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , AddModifier
           SkillTestTarget
-          (SkillModifier SkillIntellect 1 (AssetSource aid))
+          (AssetSource aid)
+          (SkillModifier SkillIntellect 1)
         ]
     _ -> ArcaneStudies2 <$> runMessage msg attrs

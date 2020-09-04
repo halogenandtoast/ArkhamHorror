@@ -34,7 +34,8 @@ instance (AssetRunner env) => RunMessage env LeoDeLuca where
         [ GainAction iid (AssetSource aid)
         , AddModifier
           (InvestigatorTarget iid)
-          (AdditionalActions 1 (AssetSource aid))
+          (AssetSource aid)
+          (AdditionalActions 1)
         ]
       LeoDeLuca <$> runMessage msg attrs
     _ -> LeoDeLuca <$> runMessage msg attrs

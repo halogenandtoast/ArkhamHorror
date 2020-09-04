@@ -1327,7 +1327,11 @@ runGameMessage msg g = case msg of
           & (enemies %~ HashMap.delete eid)
           & (victoryDisplay %~ (EncounterCard ec :))
   BeginInvestigation -> do
-    unshiftMessage (ChoosePlayerOrder (giPlayerOrder g) [])
+    unshiftMessages
+      $ [ CheckWindow iid [Fast.AnyPhaseBegins]
+        | iid <- g ^. investigators . to HashMap.keys
+        ]
+      <> [ChoosePlayerOrder (giPlayerOrder g) []]
     pure $ g & phase .~ InvestigationPhase
   ChoosePlayerOrder [x] [] -> do
     unshiftMessages [BeginTurn x, After (BeginTurn x)]
@@ -1364,7 +1368,11 @@ runGameMessage msg g = case msg of
     pure $ g & usedAbilities %~ filter
       (\(_, Ability {..}) -> abilityLimit /= PerPhase)
   BeginEnemy -> do
-    pushMessages [HuntersMove, EnemiesAttack, EndEnemy]
+    pushMessages
+      $ [ CheckWindow iid [Fast.AnyPhaseBegins]
+        | iid <- g ^. investigators . to HashMap.keys
+        ]
+      <> [HuntersMove, EnemiesAttack, EndEnemy]
     pure $ g & phase .~ EnemyPhase
   EndEnemy -> do
     pushMessage BeginUpkeep
@@ -1372,7 +1380,10 @@ runGameMessage msg g = case msg of
       (\(_, Ability {..}) -> abilityLimit /= PerPhase)
   BeginUpkeep -> do
     pushMessages
-      [ReadyExhausted, AllDrawCardAndResource, AllCheckHandSize, EndUpkeep]
+      $ [ CheckWindow iid [Fast.AnyPhaseBegins]
+        | iid <- g ^. investigators . to HashMap.keys
+        ]
+      <> [ReadyExhausted, AllDrawCardAndResource, AllCheckHandSize, EndUpkeep]
     pure $ g & phase .~ UpkeepPhase
   EndUpkeep -> do
     pushMessages [EndRoundWindow, EndRound]
@@ -1385,11 +1396,14 @@ runGameMessage msg g = case msg of
   BeginRound -> g <$ pushMessage BeginMythos
   BeginMythos -> do
     pushMessages
-      [ PlaceDoomOnAgenda
-      , AdvanceAgendaIfThresholdSatisfied
-      , AllDrawEncounterCard
-      , EndMythos
-      ]
+      $ [ CheckWindow iid [Fast.AnyPhaseBegins]
+        | iid <- g ^. investigators . to HashMap.keys
+        ]
+      <> [ PlaceDoomOnAgenda
+         , AdvanceAgendaIfThresholdSatisfied
+         , AllDrawEncounterCard
+         , EndMythos
+         ]
     pure $ g & phase .~ MythosPhase
   EndMythos -> do
     pushMessage BeginInvestigation

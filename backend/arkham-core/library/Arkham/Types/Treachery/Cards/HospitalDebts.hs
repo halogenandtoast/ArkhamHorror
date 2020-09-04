@@ -4,7 +4,6 @@ module Arkham.Types.Treachery.Cards.HospitalDebts where
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
@@ -14,6 +13,7 @@ import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
+import Arkham.Types.Window
 import ClassyPrelude
 import Lens.Micro
 import Safe (fromJustNote)
@@ -82,7 +82,8 @@ instance (TreacheryRunner env) => RunMessage env HospitalDebts where
           t <$ unshiftMessage
             (AddModifier
               (InvestigatorTarget investigator)
-              (XPModifier (-2) (TreacherySource treacheryId))
+              (TreacherySource treacheryId)
+              (XPModifier (-2))
             )
       UseCardAbility iid _ (TreacherySource tid) 1 | tid == treacheryId -> do
         unshiftMessage (SpendResources iid 1)

@@ -58,9 +58,7 @@ instance (AssetRunner env) => RunMessage env Rolands38Special where
             (ChooseFightEnemy
               iid
               SkillCombat
-              [ DamageDealt 1 (AssetSource aid)
-              , SkillModifier SkillCombat skillModifier (AssetSource aid)
-              ]
+              [DamageDealt 1, SkillModifier SkillCombat skillModifier]
               mempty
               False
             )

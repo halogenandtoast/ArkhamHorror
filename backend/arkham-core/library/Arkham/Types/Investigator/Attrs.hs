@@ -68,7 +68,7 @@ data Attrs = Attrs
   , investigatorConnectedLocations :: HashSet LocationId
   , investigatorTraits :: HashSet Trait
   , investigatorTreacheries :: HashSet TreacheryId
-  , investigatorModifiers :: [Modifier]
+  , investigatorModifiers :: HashMap Source [Modifier]
   , investigatorDefeated :: Bool
   , investigatorResigned :: Bool
   , investigatorSlots :: HashMap SlotType [Slot]
@@ -99,7 +99,7 @@ mentalTrauma :: Lens' Attrs Int
 mentalTrauma =
   lens investigatorMentalTrauma $ \m x -> m { investigatorMentalTrauma = x }
 
-modifiers :: Lens' Attrs [Modifier]
+modifiers :: Lens' Attrs (HashMap Source [Modifier])
 modifiers =
   lens investigatorModifiers $ \m x -> m { investigatorModifiers = x }
 
@@ -174,12 +174,12 @@ skillValueFor :: SkillType -> Maybe Action -> [Modifier] -> Attrs -> Int
 skillValueFor skill maction tempModifiers attrs = foldr
   applyModifier
   baseSkillValue
-  (investigatorModifiers attrs <> tempModifiers)
+  (concat (HashMap.elems $ investigatorModifiers attrs) <> tempModifiers)
  where
-  applyModifier (AnySkillValue m _) n = max 0 (n + m)
-  applyModifier (SkillModifier skillType m _) n =
+  applyModifier (AnySkillValue m) n = max 0 (n + m)
+  applyModifier (SkillModifier skillType m) n =
     if skillType == skill then max 0 (n + m) else n
-  applyModifier (ActionSkillModifier action skillType m _) n =
+  applyModifier (ActionSkillModifier action skillType m) n =
     if skillType == skill && Just action == maction then max 0 (n + m) else n
   applyModifier _ n = n
   baseSkillValue = case skill of
@@ -193,25 +193,30 @@ damageValueFor :: Int -> Attrs -> Int
 damageValueFor baseValue attrs = foldr
   applyModifier
   baseValue
-  (investigatorModifiers attrs)
+  (concat . HashMap.elems $ investigatorModifiers attrs)
  where
-  applyModifier (DamageDealt m _) n = max 0 (n + m)
+  applyModifier (DamageDealt m) n = max 0 (n + m)
   applyModifier _ n = n
 
 getActionsForTurn :: Attrs -> Int
-getActionsForTurn Attrs {..} = foldr applyModifier 3 investigatorModifiers
+getActionsForTurn Attrs {..} = foldr
+  applyModifier
+  3
+  (concat . HashMap.elems $ investigatorModifiers)
  where
-  applyModifier (AdditionalActions m _) n = max 0 (n + m)
+  applyModifier (AdditionalActions m) n = max 0 (n + m)
   applyModifier _ n = n
 
 canDiscoverClues :: Attrs -> Bool
-canDiscoverClues Attrs {..} = not (any match investigatorModifiers)
+canDiscoverClues Attrs {..} = not
+  (any match (concat . HashMap.elems $ investigatorModifiers))
  where
   match CannotDiscoverClues{} = True
   match _ = False
 
 canSpendClues :: Attrs -> Bool
-canSpendClues Attrs {..} = not (any match investigatorModifiers)
+canSpendClues Attrs {..} = not
+  (any match (concat . HashMap.elems $ investigatorModifiers))
  where
   match CannotSpendClues{} = True
   match _ = False
@@ -220,18 +225,18 @@ modifiedHealth :: Attrs -> Int
 modifiedHealth Attrs {..} = foldr
   applyModifier
   investigatorHealth
-  investigatorModifiers
+  (concat . HashMap.elems $ investigatorModifiers)
  where
-  applyModifier (HealthModifier m _) n = max 0 (n + m)
+  applyModifier (HealthModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
 modifiedSanity :: Attrs -> Int
 modifiedSanity Attrs {..} = foldr
   applyModifier
   investigatorSanity
-  investigatorModifiers
+  (concat . HashMap.elems $ investigatorModifiers)
  where
-  applyModifier (SanityModifier m _) n = max 0 (n + m)
+  applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
 removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
@@ -338,9 +343,12 @@ matchTarget attrs (FirstOneOf as) action =
 matchTarget _ (IsAction a) action = action == a
 
 actionCost :: Attrs -> Action -> Int
-actionCost attrs a = foldr applyModifier 1 (investigatorModifiers attrs)
+actionCost attrs a = foldr
+  applyModifier
+  1
+  (concat . HashMap.elems $ investigatorModifiers attrs)
  where
-  applyModifier (ActionCostOf match m _) n =
+  applyModifier (ActionCostOf match m) n =
     if matchTarget attrs match a then n + m else n
   applyModifier _ n = n
 
@@ -349,9 +357,9 @@ actionCostModifier _ Nothing = 0
 actionCostModifier attrs (Just a) = foldr
   applyModifier
   0
-  (investigatorModifiers attrs)
+  (concat . HashMap.elems $ investigatorModifiers attrs)
  where
-  applyModifier (ActionCostOf match m _) n =
+  applyModifier (ActionCostOf match m) n =
     if matchTarget attrs match a then n + m else n
   applyModifier _ n = n
 
@@ -359,9 +367,9 @@ cluesToDiscover :: Attrs -> Int -> Int
 cluesToDiscover attrs startValue = foldr
   applyModifier
   startValue
-  (investigatorModifiers attrs)
+  (concat . HashMap.elems $ investigatorModifiers attrs)
  where
-  applyModifier (DiscoveredClues m _) n = n + m
+  applyModifier (DiscoveredClues m) n = n + m
   applyModifier _ n = n
 
 canAfford :: Attrs -> Action -> Bool
@@ -377,9 +385,9 @@ modifiedCardCost :: Attrs -> Card -> Int
 modifiedCardCost Attrs {..} (PlayerCard MkPlayerCard {..}) = foldr
   applyModifier
   pcCost
-  investigatorModifiers
+  (concat . HashMap.elems $ investigatorModifiers)
  where
-  applyModifier (ReduceCostOf traits m _) n
+  applyModifier (ReduceCostOf traits m) n
     | not
       (null (HashSet.fromList traits `intersection` HashSet.fromList pcTraits))
     = max 0 (n - m)
@@ -387,9 +395,9 @@ modifiedCardCost Attrs {..} (PlayerCard MkPlayerCard {..}) = foldr
 modifiedCardCost Attrs {..} (EncounterCard MkEncounterCard {..}) = foldr
   applyModifier
   (error "we need so specify ecCost for this to work")
-  investigatorModifiers
+  (concat . HashMap.elems $ investigatorModifiers)
  where
-  applyModifier (ReduceCostOf traits m _) n
+  applyModifier (ReduceCostOf traits m) n
     | not
       (null (HashSet.fromList traits `intersection` HashSet.fromList ecTraits))
     = max 0 (n - m)
@@ -400,12 +408,12 @@ isPlayable _ _ (EncounterCard _) = False -- TODO: there might be some playable o
 isPlayable a@Attrs {..} windows c@(PlayerCard MkPlayerCard {..}) =
   (pcCardType /= SkillType)
     && (modifiedCardCost a c <= investigatorResources)
-    && none prevents investigatorModifiers
+    && none prevents (concat . HashMap.elems $ investigatorModifiers)
     && (not pcFast || (pcFast && cardInWindows windows c a))
     && (pcAction /= Just Action.Evade || not (null investigatorEngagedEnemies))
  where
   none f = not . any f
-  prevents (CannotPlay types _) = pcCardType `elem` types
+  prevents (CannotPlay types) = pcCardType `elem` types
   prevents _ = False
 
 drawOpeningHand :: Attrs -> Int -> ([PlayerCard], [Card], [PlayerCard])
@@ -436,9 +444,10 @@ playableDiscards a@Attrs {..} windows = filter
  where
   possibleCards = map (PlayerCard . snd)
     $ filter canPlayFromDiscard (zip @_ @Int [0 ..] investigatorDiscard)
-  canPlayFromDiscard (n, card) =
-    any (allowsPlayFromDiscard n card) investigatorModifiers
-  allowsPlayFromDiscard 0 MkPlayerCard {..} (CanPlayTopOfDiscard (mcardType, traits) _)
+  canPlayFromDiscard (n, card) = any
+    (allowsPlayFromDiscard n card)
+    (concat . HashMap.elems $ investigatorModifiers)
+  allowsPlayFromDiscard 0 MkPlayerCard {..} (CanPlayTopOfDiscard (mcardType, traits))
     = maybe True (== pcCardType) mcardType
       && (null traits
          || (HashSet.fromList traits
@@ -452,9 +461,9 @@ possibleSkillTypeChoices :: SkillType -> Attrs -> [SkillType]
 possibleSkillTypeChoices skillType attrs = foldr
   applyModifier
   [skillType]
-  (investigatorModifiers attrs)
+  (concat . HashMap.elems $ investigatorModifiers attrs)
  where
-  applyModifier (UseSkillInPlaceOf toReplace toUse _) skills
+  applyModifier (UseSkillInPlaceOf toReplace toUse) skills
     | toReplace == skillType = toUse : skills
   applyModifier _ skills = skills
 
@@ -911,8 +920,11 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       pure $ a & (connectedLocations %~ HashSet.insert lid2)
     AddedConnection lid1 lid2 | lid2 == investigatorLocation ->
       pure $ a & (connectedLocations %~ HashSet.insert lid1)
-    AddModifier (InvestigatorTarget iid) modifier | iid == investigatorId ->
-      pure $ a & modifiers %~ (modifier :)
+    AddModifier (InvestigatorTarget iid) source modifier
+      | iid == investigatorId -> pure $ a & modifiers %~ HashMap.insertWith
+        (<>)
+        source
+        [modifier]
     AddSlot iid slotType slot | iid == investigatorId -> do
       let
         slots' = HashMap.findWithDefault [] slotType investigatorSlots
@@ -956,7 +968,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           ]
         pure
           $ a
-          & (modifiers %~ filter ((source /=) . sourceOfModifier))
+          & (modifiers %~ HashMap.delete source)
           & (slots %~ HashMap.map (filter ((source /=) . sourceOfSlot)))
     ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurn .~ True
     BeginRound ->
@@ -967,8 +979,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         & (actionsTaken .~ mempty)
     EndRound -> do
       lingeringEventIds <- asks (getSet ())
-      pure $ a & modifiers %~ filter
-        (\modifier -> case sourceOfModifier modifier of
+      pure $ a & modifiers %~ HashMap.filterWithKey
+        (\k _ -> case k of
           EventSource eid -> eid `member` lingeringEventIds
           _ -> True
         )

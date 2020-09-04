@@ -55,7 +55,7 @@ lookupLocation lid =
     $ HashMap.lookup lid allLocations
 
 instance HasModifiers Location where
-  getModifiers = locationModifiers . locationAttrs
+  getModifiers = concat . HashMap.elems . locationModifiers . locationAttrs
 
 instance HasId LocationId () Location where
   getId _ = locationId . locationAttrs

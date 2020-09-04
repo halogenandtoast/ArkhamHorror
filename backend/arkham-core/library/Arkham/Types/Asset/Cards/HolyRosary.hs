@@ -32,7 +32,8 @@ instance (AssetRunner env) => RunMessage env HolyRosary where
       unshiftMessage
         (AddModifier
           (InvestigatorTarget iid)
-          (SkillModifier SkillWillpower 1 (AssetSource aid))
+          (AssetSource aid)
+          (SkillModifier SkillWillpower 1)
         )
       HolyRosary <$> runMessage msg attrs
     _ -> HolyRosary <$> runMessage msg attrs

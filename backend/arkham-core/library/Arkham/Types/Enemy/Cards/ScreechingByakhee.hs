@@ -44,10 +44,12 @@ instance (EnemyRunner env) => RunMessage env ScreechingByakhee where
         (unshiftMessages
           [ AddModifier
             (EnemyTarget enemyId)
-            (EnemyFight 1 (EnemySource enemyId))
+            (EnemySource enemyId)
+            (EnemyFight 1)
           , AddModifier
             (EnemyTarget enemyId)
-            (EnemyEvade 1 (EnemySource enemyId))
+            (EnemySource enemyId)
+            (EnemyEvade 1)
           ]
         )
       e <$ unshiftMessage

@@ -31,10 +31,12 @@ instance (EventRunner env) => RunMessage env MindOverMatter where
       unshiftMessages
         [ AddModifier
           (InvestigatorTarget iid)
-          (UseSkillInPlaceOf SkillCombat SkillIntellect (EventSource eid))
+          (EventSource eid)
+          (UseSkillInPlaceOf SkillCombat SkillIntellect)
         , AddModifier
           (InvestigatorTarget iid)
-          (UseSkillInPlaceOf SkillAgility SkillIntellect (EventSource eid))
+          (EventSource eid)
+          (UseSkillInPlaceOf SkillAgility SkillIntellect)
         , Discard (EventTarget eid)
         ]
       MindOverMatter <$> runMessage msg (attrs & resolved .~ True)

@@ -56,10 +56,12 @@ instance (EnemyRunner env) => RunMessage env TheMaskedHunter where
       unshiftMessages
         [ AddModifier
           (InvestigatorTarget iid)
-          (CannotDiscoverClues (EnemySource eid))
+          (EnemySource eid)
+          CannotDiscoverClues
         , AddModifier
           (InvestigatorTarget iid)
-          (CannotSpendClues (EnemySource eid))
+          (EnemySource eid)
+          CannotSpendClues
         ]
       TheMaskedHunter <$> runMessage msg attrs
     _ -> TheMaskedHunter <$> runMessage msg attrs

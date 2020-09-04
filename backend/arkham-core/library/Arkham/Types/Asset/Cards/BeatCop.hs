@@ -43,7 +43,8 @@ instance (AssetRunner env) => RunMessage env BeatCop where
       unshiftMessage
         (AddModifier
           (InvestigatorTarget iid)
-          (SkillModifier SkillCombat 1 (AssetSource aid))
+          (AssetSource aid)
+          (SkillModifier SkillCombat 1)
         )
       pure a
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do

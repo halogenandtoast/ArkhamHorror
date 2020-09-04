@@ -339,7 +339,8 @@ instance HasCardCode Investigator where
   getCardCode = getCardCode . investigatorAttrs
 
 instance HasModifiers Investigator where
-  getModifiers = investigatorModifiers . investigatorAttrs
+  getModifiers =
+    concat . HashMap.elems . investigatorModifiers . investigatorAttrs
 
 instance HasInvestigatorStats Stats () Investigator where
   getStats _ i = Stats

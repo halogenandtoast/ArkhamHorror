@@ -31,10 +31,8 @@ instance (TreacheryRunner env) => RunMessage env FrozenInFear where
         [ AttachTreacheryToInvestigator tid iid
         , AddModifier
           (InvestigatorTarget iid)
-          (ActionCostOf
-            (FirstOneOf [Action.Move, Action.Fight, Action.Evade])
-            1
-            (TreacherySource tid)
+          (TreacherySource tid)
+          (ActionCostOf (FirstOneOf [Action.Move, Action.Fight, Action.Evade]) 1
           )
         ]
       FrozenInFear <$> runMessage msg (attrs & attachedInvestigator ?~ iid)

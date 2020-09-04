@@ -1,5 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Event.Cards.Barricade2 where
+module Arkham.Types.Event.Cards.Barricade3 where
 
 import Arkham.Json
 import Arkham.Types.Classes
@@ -15,17 +15,17 @@ import ClassyPrelude
 import Lens.Micro
 import Safe (fromJustNote)
 
-newtype Barricade2 = Barricade2 Attrs
+newtype Barricade3 = Barricade3 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-barricade2 :: InvestigatorId -> EventId -> Barricade2
-barricade2 iid uuid = Barricade2 $ baseAttrs iid uuid "50004"
+barricade3 :: InvestigatorId -> EventId -> Barricade3
+barricade3 iid uuid = Barricade3 $ baseAttrs iid uuid "50004"
 
-instance HasActions env investigator Barricade2 where
-  getActions i window (Barricade2 attrs) = getActions i window attrs
+instance HasActions env investigator Barricade3 where
+  getActions i window (Barricade3 attrs) = getActions i window attrs
 
-instance (EventRunner env) => RunMessage env Barricade2 where
-  runMessage msg e@(Barricade2 attrs@Attrs {..}) = case msg of
+instance (EventRunner env) => RunMessage env Barricade3 where
+  runMessage msg e@(Barricade3 attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid | eid == eventId -> do
       lid <- asks (getId iid)
       e <$ unshiftMessage (AttachEventToLocation eid lid)
@@ -40,7 +40,7 @@ instance (EventRunner env) => RunMessage env Barricade2 where
           (LocationTarget lid)
           (SpawnNonEliteAtConnectingInstead (EventSource eid))
         ]
-      pure . Barricade2 $ attrs & attachedLocation ?~ lid
+      pure . Barricade3 $ attrs & attachedLocation ?~ lid
     Discard (EventTarget eid) | eid == eventId -> do
       unshiftMessages
         [ RemoveAllModifiersOnTargetFrom
@@ -49,5 +49,5 @@ instance (EventRunner env) => RunMessage env Barricade2 where
             )
             (EventSource eventId)
         ]
-      Barricade2 <$> runMessage msg attrs
-    _ -> Barricade2 <$> runMessage msg attrs
+      Barricade3 <$> runMessage msg attrs
+    _ -> Barricade3 <$> runMessage msg attrs

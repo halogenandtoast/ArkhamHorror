@@ -220,7 +220,7 @@ allPlayerCards = HashMap.fromList
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
   , ("50003", hyperawareness2)
-  , ("50004", barricade2)
+  , ("50004", barricade3)
   ]
 
 rolands38Special :: CardId -> PlayerCard
@@ -721,6 +721,7 @@ physicalTraining2 cardId = (asset cardId "50001" "Physical Training" 0 Guardian
                            )
   { pcSkills = [SkillWillpower, SkillWillpower, SkillCombat, SkillCombat]
   , pcTraits = [Talent]
+  , pcLevel = 2
   }
 
 dynamiteBlast2 :: CardId -> PlayerCard
@@ -728,16 +729,19 @@ dynamiteBlast2 cardId = (event cardId "50002" "Dynamite Blast" 4 Guardian)
   { pcSkills = [SkillWillpower, SkillCombat]
   , pcTraits = [Tactic]
   , pcAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
+  , pcLevel = 2
   }
 
 hyperawareness2 :: CardId -> PlayerCard
 hyperawareness2 cardId = (asset cardId "50003" "Hyperawareness" 0 Seeker)
   { pcSkills = [SkillIntellect, SkillIntellect, SkillAgility, SkillAgility]
   , pcTraits = [Talent]
+  , pcLevel = 2
   }
 
-barricade2 :: CardId -> PlayerCard
-barricade2 cardId = (event cardId "50004" "Barricade" 0 Seeker)
+barricade3 :: CardId -> PlayerCard
+barricade3 cardId = (event cardId "50004" "Barricade" 0 Seeker)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillAgility]
   , pcTraits = [Insight, Tactic]
+  , pcLevel = 3
   }

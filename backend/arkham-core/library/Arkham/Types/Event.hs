@@ -13,7 +13,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Cards.Backstab
 import Arkham.Types.Event.Cards.Barricade
-import Arkham.Types.Event.Cards.Barricade2
+import Arkham.Types.Event.Cards.Barricade3
 import Arkham.Types.Event.Cards.BlindingLight
 import Arkham.Types.Event.Cards.CunningDistraction
 import Arkham.Types.Event.Cards.DarkMemory
@@ -66,7 +66,7 @@ allEvents = HashMap.fromList
   , ("01080", (Lucky' .) . lucky)
   , ("01088", (EmergencyCache' .) . emergencyCache)
   , ("50002", (DynamiteBlast2' .) . dynamiteBlast2)
-  , ("50004", (Barricade2' .) . barricade2)
+  , ("50004", (Barricade3' .) . barricade3)
   ]
 
 instance HasCardCode Event where
@@ -92,7 +92,7 @@ data Event
   | Lucky' Lucky
   | EmergencyCache' EmergencyCache
   | DynamiteBlast2' DynamiteBlast2
-  | Barricade2' Barricade2
+  | Barricade3' Barricade3
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -117,7 +117,7 @@ eventAttrs = \case
   Lucky' attrs -> coerce attrs
   EmergencyCache' attrs -> coerce attrs
   DynamiteBlast2' attrs -> coerce attrs
-  Barricade2' attrs -> coerce attrs
+  Barricade3' attrs -> coerce attrs
 
 instance HasActions env investigator Event where
   getActions i window = \case
@@ -140,7 +140,7 @@ instance HasActions env investigator Event where
     Lucky' x -> getActions i window x
     EmergencyCache' x -> getActions i window x
     DynamiteBlast2' x -> getActions i window x
-    Barricade2' x -> getActions i window x
+    Barricade3' x -> getActions i window x
 
 eventLocation :: Event -> Maybe LocationId
 eventLocation = eventAttachedLocation . eventAttrs
@@ -169,4 +169,4 @@ instance (EventRunner env) => RunMessage env Event where
     Lucky' x -> Lucky' <$> runMessage msg x
     EmergencyCache' x -> EmergencyCache' <$> runMessage msg x
     DynamiteBlast2' x -> DynamiteBlast2' <$> runMessage msg x
-    Barricade2' x -> Barricade2' <$> runMessage msg x
+    Barricade3' x -> Barricade3' <$> runMessage msg x

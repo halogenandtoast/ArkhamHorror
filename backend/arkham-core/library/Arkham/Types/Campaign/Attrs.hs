@@ -23,6 +23,7 @@ data Attrs = Attrs
   , campaignName :: Text
   , campaignInvestigators :: HashMap Int Investigator
   , campaignDecks :: HashMap InvestigatorId [PlayerCard]
+  , campaignStoryCards :: HashMap InvestigatorId [PlayerCard]
   , campaignDifficulty :: Difficulty
   , campaignChaosBag :: [Token]
   , campaignLog :: CampaignLog
@@ -36,6 +37,9 @@ chaosBag = lens campaignChaosBag $ \m x -> m { campaignChaosBag = x }
 
 decks :: Lens' Attrs (HashMap InvestigatorId [PlayerCard])
 decks = lens campaignDecks $ \m x -> m { campaignDecks = x }
+
+storyCards :: Lens' Attrs (HashMap InvestigatorId [PlayerCard])
+storyCards = lens campaignStoryCards $ \m x -> m { campaignStoryCards = x }
 
 step :: Lens' Attrs Int
 step = lens campaignStep $ \m x -> m { campaignStep = x }
@@ -52,10 +56,17 @@ instance FromJSON Attrs where
 
 instance (CampaignRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
+    AddCampaignCardToDeck iid card ->
+      pure $ a & storyCards %~ HashMap.insertWith (<>) iid [card]
     AddToken token -> pure $ a & chaosBag %~ (token :)
     InitDeck iid deck -> pure $ a & decks %~ HashMap.insert iid deck
-    ResetGame -> a <$ unshiftMessages
-      [ LoadDeck iid deck | (iid, deck) <- HashMap.toList campaignDecks ]
+    ResetGame -> do
+      for_ (HashMap.toList campaignDecks) $ \(iid, deck) -> do
+        let
+          investigatorStoryCards =
+            HashMap.findWithDefault [] iid campaignStoryCards
+        unshiftMessage (LoadDeck iid $ deck <> investigatorStoryCards)
+      pure a
     CrossOutRecord key ->
       pure
         $ a
@@ -75,6 +86,7 @@ baseAttrs campaignId' name difficulty chaosBagContents = Attrs
   , campaignName = name
   , campaignInvestigators = mempty
   , campaignDecks = mempty
+  , campaignStoryCards = mempty
   , campaignDifficulty = difficulty
   , campaignChaosBag = chaosBagContents
   , campaignLog = mkCampaignLog

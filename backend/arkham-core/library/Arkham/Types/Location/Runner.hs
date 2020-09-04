@@ -24,5 +24,7 @@ type LocationRunner env
     , HasSet EventId () env
     , HasSet Trait EnemyId env
     , HasList Modifier LocationId env
+    , HasSet ConnectedLocationId LocationId env
+    , HasId ActiveInvestigatorId () env
     )
 

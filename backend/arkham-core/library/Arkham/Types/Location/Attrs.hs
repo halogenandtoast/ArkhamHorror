@@ -7,7 +7,6 @@ import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
-import Arkham.Types.Window
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Runner
@@ -21,6 +20,7 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
+import Arkham.Types.Window
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
 import qualified Data.Text as T
@@ -171,6 +171,12 @@ instance (IsInvestigator investigator) => HasActions env investigator Attrs wher
       ]
   getActions _ _ _ = pure []
 
+shouldSpawnNonEliteAtConnectingInstead :: Attrs -> Bool
+shouldSpawnNonEliteAtConnectingInstead Attrs {..} =
+  flip any locationModifiers $ \case
+    SpawnNonEliteAtConnectingInstead{} -> True
+    _ -> False
+
 instance (LocationRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     Investigate iid lid skillType tokenResponses overrides False
@@ -256,6 +262,33 @@ instance (LocationRunner env) => RunMessage env Attrs where
     EnemyMove eid _ lid | lid == locationId -> do
       willMove <- canEnterLocation eid lid
       if willMove then pure $ a & enemies %~ HashSet.insert eid else pure a
+    Will next@(EnemySpawn lid eid) | lid == locationId -> do
+      when (shouldSpawnNonEliteAtConnectingInstead a) $ do
+        traits <- HashSet.toList <$> asks (getSet eid)
+        when (Elite `notElem` traits) $ do
+          activeInvestigatorId <- unActiveInvestigatorId <$> asks (getId ())
+          connectedLocationIds <-
+            HashSet.toList . HashSet.map unConnectedLocationId <$> asks
+              (getSet lid)
+          availableLocationIds <-
+            flip filterM connectedLocationIds $ \locationId' -> do
+              modifiers' <- asks (getList locationId')
+              pure . not $ flip any modifiers' $ \case
+                SpawnNonEliteAtConnectingInstead{} -> True
+                _ -> False
+          withQueue $ \queue -> (filter (/= next) queue, ())
+          if null availableLocationIds
+            then unshiftMessage (Discard (EnemyTarget eid))
+            else unshiftMessage
+              (Ask
+                activeInvestigatorId
+                (ChooseOne
+                  [ Run [Will (EnemySpawn lid' eid), EnemySpawn lid' eid]
+                  | lid' <- availableLocationIds
+                  ]
+                )
+              )
+      pure a
     EnemySpawn lid eid | lid == locationId ->
       pure $ a & enemies %~ HashSet.insert eid
     EnemySpawnedAt lid eid | lid == locationId ->

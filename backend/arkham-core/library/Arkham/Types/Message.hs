@@ -22,7 +22,6 @@ import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
-import Arkham.Types.Window
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
@@ -38,6 +37,7 @@ import Arkham.Types.Token
 import Arkham.Types.TokenResponse
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
+import Arkham.Types.Window
 import ClassyPrelude
 
 data MessageType = RevelationMessage | AttackMessage | DrawTokenMessage | ResolveTokenMessage
@@ -65,6 +65,7 @@ data Message
   = Setup
   | BeginTurn InvestigatorId
   | AddToken Token
+  | AddCampaignCardToDeck InvestigatorId PlayerCard
   | SetLocationLabel LocationId Text
   | EndOfGame
   | StartCampaign

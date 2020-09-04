@@ -18,8 +18,8 @@ import Safe (fromJustNote)
 newtype Barricade2 = Barricade2 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-barricade :: InvestigatorId -> EventId -> Barricade2
-barricade iid uuid = Barricade2 $ baseAttrs iid uuid "01038"
+barricade2 :: InvestigatorId -> EventId -> Barricade2
+barricade2 iid uuid = Barricade2 $ baseAttrs iid uuid "50004"
 
 instance HasActions env investigator Barricade2 where
   getActions i window (Barricade2 attrs) = getActions i window attrs
@@ -32,12 +32,14 @@ instance (EventRunner env) => RunMessage env Barricade2 where
     MoveFrom _ lid | Just lid == eventAttachedLocation ->
       e <$ unshiftMessage (Discard (EventTarget eventId))
     AttachEventToLocation eid lid | eid == eventId -> do
-      unshiftMessage
-        (AddModifier
+      unshiftMessages
+        [ AddModifier
           (LocationTarget lid)
           (CannotBeEnteredByNonElite (EventSource eid))
+        , AddModifier
+          (LocationTarget lid)
           (SpawnNonEliteAtConnectingInstead (EventSource eid))
-        )
+        ]
       pure . Barricade2 $ attrs & attachedLocation ?~ lid
     Discard (EventTarget eid) | eid == eventId -> do
       unshiftMessages

@@ -211,6 +211,7 @@ allPlayerCards = HashMap.fromList
   , ("01102", silverTwilightAcolyte)
   , ("01103", stubbornDetective)
   , ("01117", litaChantler)
+  , ("50001", physicalTraining)
   ]
 
 rolands38Special :: CardId -> PlayerCard
@@ -287,6 +288,12 @@ fortyFiveAutomatic cardId = (asset cardId "01016" ".45 Automatic" 4 Guardian)
 physicalTraining :: CardId -> PlayerCard
 physicalTraining cardId = (asset cardId "01017" "Physical Training" 2 Guardian)
   { pcSkills = [SkillWillpower, SkillCombat]
+  , pcTraits = [Talent]
+  }
+
+physicalTraining2 :: CardId -> PlayerCard
+physicalTraining2 cardId = (asset cardId "50001" "Physical Training" 0 Guardian)
+  { pcSkills = [SkillWillpower, SkillWillpower, SkillCombat, SkillCombat]
   , pcTraits = [Talent]
   }
 

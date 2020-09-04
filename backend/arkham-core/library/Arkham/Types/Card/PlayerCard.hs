@@ -222,6 +222,7 @@ allPlayerCards = HashMap.fromList
   , ("50003", hyperawareness2)
   , ("50004", barricade3)
   , ("50005", hardKnocks2)
+  , ("50006", hotStreak2)
   ]
 
 rolands38Special :: CardId -> PlayerCard
@@ -751,5 +752,12 @@ hardKnocks2 :: CardId -> PlayerCard
 hardKnocks2 cardId = (asset cardId "50005" "Hard Knocks" 0 Rogue)
   { pcSkills = [SkillCombat, SkillCombat, SkillAgility, SkillAgility]
   , pcTraits = [Talent]
+  , pcLevel = 2
+  }
+
+hotStreak2 :: CardId -> PlayerCard
+hotStreak2 cardId = (event cardId "50006" "Hot Streak" 5 Rogue)
+  { pcSkills = [SkillWillpower]
+  , pcTraits = [Fortune]
   , pcLevel = 2
   }

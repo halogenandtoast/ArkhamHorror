@@ -226,6 +226,7 @@ allPlayerCards = HashMap.fromList
   , ("50006", hotStreak2)
   , ("50007", arcaneStudies2)
   , ("50008", mindWipe3)
+  , ("50009", digDeep2)
   ]
 
 rolands38Special :: CardId -> PlayerCard
@@ -788,4 +789,11 @@ mindWipe3 cardId = (event cardId "50008" "Mind Wipe" 1 Mystic)
   , pcLevel = 3
   , pcFast = True
   , pcWindows = HashSet.fromList [AnyPhaseBegins]
+  }
+
+digDeep2 :: CardId -> PlayerCard
+digDeep2 cardId = (asset cardId "50009" "Dig Deep" 0 Survivor)
+  { pcSkills = [SkillWillpower, SkillWillpower, SkillAgility, SkillAgility]
+  , pcTraits = [Talent]
+  , pcLevel = 2
   }

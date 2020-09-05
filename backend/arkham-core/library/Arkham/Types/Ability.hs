@@ -2,7 +2,6 @@ module Arkham.Types.Ability where
 
 import Arkham.Json
 import Arkham.Types.Action hiding (Ability)
-import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Source
 import Arkham.Types.Window

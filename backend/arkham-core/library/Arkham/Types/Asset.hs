@@ -40,6 +40,7 @@ import Arkham.Types.Asset.Cards.Hyperawareness2
 import Arkham.Types.Asset.Cards.Knife
 import Arkham.Types.Asset.Cards.LeatherCoat
 import Arkham.Types.Asset.Cards.LeoDeLuca
+import Arkham.Types.Asset.Cards.LeoDeLuca1
 import Arkham.Types.Asset.Cards.LitaChantler
 import Arkham.Types.Asset.Cards.Machete
 import Arkham.Types.Asset.Cards.MagnifyingGlass
@@ -110,6 +111,7 @@ allAssets = HashMap.fromList
   , ("01047", FortyOneDerringer' . fortyOneDerringer)
   , ("01048", LeoDeLuca' . leoDeLuca)
   , ("01049", HardKnocks' . hardKnocks)
+  , ("01054", LeoDeLuca1' . leoDeLuca1)
   , ("01058", ForbiddenKnowledge' . forbiddenKnowledge)
   , ("01059", HolyRosary' . holyRosary)
   , ("01060", Shrivelling' . shrivelling)
@@ -181,6 +183,7 @@ data Asset
   | FortyOneDerringer' FortyOneDerringer
   | LeoDeLuca' LeoDeLuca
   | HardKnocks' HardKnocks
+  | LeoDeLuca1' LeoDeLuca1
   | ForbiddenKnowledge' ForbiddenKnowledge
   | HolyRosary' HolyRosary
   | Shrivelling' Shrivelling
@@ -236,6 +239,7 @@ assetAttrs = \case
   FortyOneDerringer' attrs -> coerce attrs
   LeoDeLuca' attrs -> coerce attrs
   HardKnocks' attrs -> coerce attrs
+  LeoDeLuca1' attrs -> coerce attrs
   ForbiddenKnowledge' attrs -> coerce attrs
   HolyRosary' attrs -> coerce attrs
   Shrivelling' attrs -> coerce attrs
@@ -299,6 +303,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     FortyOneDerringer' x -> getActions i window x
     LeoDeLuca' x -> getActions i window x
     HardKnocks' x -> getActions i window x
+    LeoDeLuca1' x -> getActions i window x
     ForbiddenKnowledge' x -> getActions i window x
     HolyRosary' x -> getActions i window x
     Shrivelling' x -> getActions i window x
@@ -352,6 +357,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     FortyOneDerringer' x -> FortyOneDerringer' <$> runMessage msg x
     LeoDeLuca' x -> LeoDeLuca' <$> runMessage msg x
     HardKnocks' x -> HardKnocks' <$> runMessage msg x
+    LeoDeLuca1' x -> LeoDeLuca1' <$> runMessage msg x
     ForbiddenKnowledge' x -> ForbiddenKnowledge' <$> runMessage msg x
     HolyRosary' x -> HolyRosary' <$> runMessage msg x
     Shrivelling' x -> Shrivelling' <$> runMessage msg x

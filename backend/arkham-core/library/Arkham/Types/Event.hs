@@ -27,6 +27,7 @@ import Arkham.Types.Event.Cards.EmergencyCache
 import Arkham.Types.Event.Cards.Evidence
 import Arkham.Types.Event.Cards.ExtraAmmunition1
 import Arkham.Types.Event.Cards.HotStreak2
+import Arkham.Types.Event.Cards.HotStreak4
 import Arkham.Types.Event.Cards.LookWhatIFound
 import Arkham.Types.Event.Cards.Lucky
 import Arkham.Types.Event.Cards.MindOverMatter
@@ -67,6 +68,7 @@ allEvents = HashMap.fromList
   , ("01051", (Backstab' .) . backstab)
   , ("01052", (SneakAttack' .) . sneakAttack)
   , ("01056", (SureGamble3' .) . sureGamble3)
+  , ("01057", (HotStreak4' .) . hotStreak4)
   , ("01064", (DrawnToTheFlame' .) . drawnToTheFlame)
   , ("01065", (WardOfProtection' .) . wardOfProtection)
   , ("01066", (BlindingLight' .) . blindingLight)
@@ -99,6 +101,7 @@ data Event
   | Backstab' Backstab
   | SneakAttack' SneakAttack
   | SureGamble3' SureGamble3
+  | HotStreak4' HotStreak4
   | DrawnToTheFlame' DrawnToTheFlame
   | WardOfProtection' WardOfProtection
   | BlindingLight' BlindingLight
@@ -130,6 +133,7 @@ eventAttrs = \case
   Backstab' attrs -> coerce attrs
   SneakAttack' attrs -> coerce attrs
   SureGamble3' attrs -> coerce attrs
+  HotStreak4' attrs -> coerce attrs
   DrawnToTheFlame' attrs -> coerce attrs
   WardOfProtection' attrs -> coerce attrs
   BlindingLight' attrs -> coerce attrs
@@ -159,6 +163,7 @@ instance HasActions env investigator Event where
     Backstab' x -> getActions i window x
     SneakAttack' x -> getActions i window x
     SureGamble3' x -> getActions i window x
+    HotStreak4' x -> getActions i window x
     DrawnToTheFlame' x -> getActions i window x
     WardOfProtection' x -> getActions i window x
     BlindingLight' x -> getActions i window x
@@ -194,6 +199,7 @@ instance (EventRunner env) => RunMessage env Event where
     Backstab' x -> Backstab' <$> runMessage msg x
     SneakAttack' x -> SneakAttack' <$> runMessage msg x
     SureGamble3' x -> SureGamble3' <$> runMessage msg x
+    HotStreak4' x -> HotStreak4' <$> runMessage msg x
     DrawnToTheFlame' x -> DrawnToTheFlame' <$> runMessage msg x
     WardOfProtection' x -> WardOfProtection' <$> runMessage msg x
     BlindingLight' x -> BlindingLight' <$> runMessage msg x

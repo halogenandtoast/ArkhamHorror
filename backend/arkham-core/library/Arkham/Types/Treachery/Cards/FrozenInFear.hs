@@ -29,11 +29,13 @@ instance (TreacheryRunner env) => RunMessage env FrozenInFear where
     Revelation iid tid | tid == treacheryId -> do
       unshiftMessages
         [ AttachTreacheryToInvestigator tid iid
-        , AddModifier
+        , AddModifiers
           (InvestigatorTarget iid)
           (TreacherySource tid)
-          (ActionCostOf (FirstOneOf [Action.Move, Action.Fight, Action.Evade]) 1
-          )
+          [ ActionCostOf
+              (FirstOneOf [Action.Move, Action.Fight, Action.Evade])
+              1
+          ]
         ]
       FrozenInFear <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     ChooseEndTurn iid | Just iid == treacheryAttachedInvestigator ->

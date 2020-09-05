@@ -236,8 +236,8 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       pure $ s & committedCards %~ HashMap.insert cardId (iid, card)
     SkillTestUncommitCard _ cardId ->
       pure $ s & committedCards %~ HashMap.delete cardId
-    AddModifier SkillTestTarget source modifier ->
-      pure $ s & modifiers %~ HashMap.insertWith (<>) source [modifier]
+    AddModifiers SkillTestTarget source modifiers' ->
+      pure $ s & modifiers %~ HashMap.insertWith (<>) source modifiers'
     SkillTestEnds -> s <$ unshiftMessages
       [ RemoveAllModifiersOnTargetFrom
         (InvestigatorTarget skillTestInvestigator)
@@ -268,8 +268,8 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
           )
         Unrun -> pure ()
       pure s
-    AddModifier AfterSkillTestTarget source modifier ->
-      pure $ s & modifiers %~ HashMap.insertWith (<>) source [modifier]
+    AddModifiers AfterSkillTestTarget source modifiers' ->
+      pure $ s & modifiers %~ HashMap.insertWith (<>) source modifiers'
     SkillTestApplyResultsAfter -> do
       unshiftMessage SkillTestEnds
 
@@ -298,12 +298,10 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
                ]
         Unrun -> pure ()
 
-      s <$ unshiftMessages
-        (map
-          (AddModifier
-            (InvestigatorTarget skillTestInvestigator)
-            SkillTestSource
-          )
+      s <$ unshiftMessage
+        (AddModifiers
+          (InvestigatorTarget skillTestInvestigator)
+          SkillTestSource
           (applicableModifiers s)
         )
     SkillTestApplyResults -> do

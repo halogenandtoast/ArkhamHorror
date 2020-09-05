@@ -53,10 +53,10 @@ instance (AssetRunner env) => RunMessage env TheNecronomicon where
     = case msg of
       InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
         unshiftMessage
-          (AddModifier
+          (AddModifiers
             (InvestigatorTarget iid)
             (AssetSource aid)
-            (ForcedTokenChange Token.ElderSign Token.AutoFail)
+            [ForcedTokenChange Token.ElderSign Token.AutoFail]
           )
         TheNecronomicon . (`with` metadata) <$> runMessage msg attrs
       UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do

@@ -29,10 +29,10 @@ instance (AssetRunner env) => RunMessage env MagnifyingGlass where
   runMessage msg (MagnifyingGlass attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage
-        (AddModifier
+        (AddModifiers
           (InvestigatorTarget iid)
           (AssetSource aid)
-          (ActionSkillModifier Action.Investigate SkillIntellect 1)
+          [ActionSkillModifier Action.Investigate SkillIntellect 1]
         )
       MagnifyingGlass <$> runMessage msg attrs
     _ -> MagnifyingGlass <$> runMessage msg attrs

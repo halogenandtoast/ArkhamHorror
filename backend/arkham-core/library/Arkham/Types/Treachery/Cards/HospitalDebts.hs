@@ -80,10 +80,10 @@ instance (TreacheryRunner env) => RunMessage env HospitalDebts where
             fromJustNote "missing investigator" treacheryAttachedInvestigator
         in
           t <$ unshiftMessage
-            (AddModifier
+            (AddModifiers
               (InvestigatorTarget investigator)
               (TreacherySource treacheryId)
-              (XPModifier (-2))
+              [XPModifier (-2)]
             )
       UseCardAbility iid _ (TreacherySource tid) 1 | tid == treacheryId -> do
         unshiftMessage (SpendResources iid 1)

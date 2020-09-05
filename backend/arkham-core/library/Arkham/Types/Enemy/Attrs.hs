@@ -377,9 +377,17 @@ instance (EnemyRunner env) => RunMessage env Attrs where
         (a ^. damage + amount' >= a ^. health . to (`fromGameValue` playerCount)
         )
         (unshiftMessage (EnemyDefeated eid iid enemyCardCode source))
-    AddModifier (EnemyTarget eid) source modifier | eid == enemyId ->
-      pure $ a & modifiers %~ HashMap.insertWith (<>) source [modifier]
+    AddModifiers (EnemyTarget eid) source modifiers' | eid == enemyId -> do
+      when (Blank `elem` modifiers')
+        $ unshiftMessage (BlankText (EnemyTarget eid))
+      pure $ a & modifiers %~ HashMap.insertWith (<>) source modifiers'
+    BlankText (EnemyTarget eid) | eid == enemyId ->
+      a <$ unshiftMessage (RemoveAllModifiersFrom (EnemySource eid))
+    UnblankText (EnemyTarget eid) | eid == enemyId ->
+      a <$ unshiftMessage (ApplyModifiers (EnemyTarget eid))
     RemoveAllModifiersOnTargetFrom (EnemyTarget eid) source | eid == enemyId ->
+      pure $ a & modifiers %~ HashMap.delete source
+    RemoveAllModifiersFrom source ->
       pure $ a & modifiers %~ HashMap.delete source
     EnemyEngageInvestigator eid iid | eid == enemyId ->
       pure $ a & engagedInvestigators %~ HashSet.insert iid

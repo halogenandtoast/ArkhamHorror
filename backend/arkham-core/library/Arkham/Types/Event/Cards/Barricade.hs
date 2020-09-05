@@ -33,10 +33,10 @@ instance (EventRunner env) => RunMessage env Barricade where
       e <$ unshiftMessage (Discard (EventTarget eventId))
     AttachEventToLocation eid lid | eid == eventId -> do
       unshiftMessage
-        (AddModifier
+        (AddModifiers
           (LocationTarget lid)
           (EventSource eid)
-          CannotBeEnteredByNonElite
+          [CannotBeEnteredByNonElite]
         )
       pure . Barricade $ attrs & attachedLocation ?~ lid
     Discard (EventTarget eid) | eid == eventId -> do

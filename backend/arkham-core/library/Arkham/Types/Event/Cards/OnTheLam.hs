@@ -28,10 +28,10 @@ instance (EventRunner env) => RunMessage env OnTheLam where
   runMessage msg (OnTheLam attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid | eid == eventId -> do
       unshiftMessages
-        [ AddModifier
+        [ AddModifiers
           (InvestigatorTarget iid)
           (EventSource eid)
-          CannotBeAttackedByNonElite
+          [CannotBeAttackedByNonElite]
         , Discard (EventTarget eid)
         ]
       OnTheLam <$> runMessage msg (attrs & resolved .~ True)

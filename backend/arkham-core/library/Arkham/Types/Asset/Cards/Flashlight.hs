@@ -52,10 +52,10 @@ instance (AssetRunner env) => RunMessage env Flashlight where
         Uses Resource.Supply n -> do
           lid <- asks (getId iid)
           unshiftMessages
-            [ AddModifier
+            [ AddModifiers
               (LocationTarget lid)
               (AssetSource aid)
-              (ShroudModifier (-2))
+              [ShroudModifier (-2)]
             , Investigate iid lid SkillIntellect mempty mempty False
             , RemoveAllModifiersOnTargetFrom
               (LocationTarget lid)

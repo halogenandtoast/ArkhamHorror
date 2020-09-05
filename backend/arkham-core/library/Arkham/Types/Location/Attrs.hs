@@ -201,10 +201,12 @@ instance (LocationRunner env) => RunMessage env Attrs where
           )
     SetLocationLabel lid label' | lid == locationId ->
       pure $ a & label .~ label'
-    AddModifier (LocationTarget lid) source modifier | lid == locationId ->
-      pure $ a & modifiers %~ HashMap.insertWith (<>) source [modifier]
+    AddModifiers (LocationTarget lid) source modifiers' | lid == locationId ->
+      pure $ a & modifiers %~ HashMap.insertWith (<>) source modifiers'
     RemoveAllModifiersOnTargetFrom (LocationTarget lid) source
       | lid == locationId -> pure $ a & modifiers %~ HashMap.delete source
+    RemoveAllModifiersFrom source ->
+      pure $ a & modifiers %~ HashMap.delete source
     PlacedLocation lid | lid == locationId ->
       a <$ unshiftMessage (AddConnection lid locationSymbol)
     AttachTreacheryToLocation tid lid | lid == locationId ->

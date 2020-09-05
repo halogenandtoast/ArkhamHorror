@@ -47,10 +47,10 @@ instance (TreacheryRunner env) => RunMessage env Haunted where
       Haunted <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     AttachTreacheryToInvestigator tid iid | tid == treacheryId -> do
       unshiftMessage
-        (AddModifier
+        (AddModifiers
           (InvestigatorTarget iid)
           (TreacherySource tid)
-          (AnySkillValue (-1))
+          [AnySkillValue (-1)]
         )
       Haunted <$> runMessage msg attrs
     UseCardAbility _ _ (TreacherySource tid) 1 | tid == treacheryId ->

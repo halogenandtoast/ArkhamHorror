@@ -28,10 +28,10 @@ instance (AssetRunner env) => RunMessage env WendysAmulet where
   runMessage msg (WendysAmulet attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage
-        (AddModifier
+        (AddModifiers
           (InvestigatorTarget iid)
           (AssetSource assetId)
-          (CanPlayTopOfDiscard (Just EventType, []))
+          [CanPlayTopOfDiscard (Just EventType, [])]
         )
       WendysAmulet <$> runMessage msg attrs
     _ -> WendysAmulet <$> runMessage msg attrs

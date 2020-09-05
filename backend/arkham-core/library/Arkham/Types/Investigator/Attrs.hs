@@ -920,11 +920,9 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       pure $ a & (connectedLocations %~ HashSet.insert lid2)
     AddedConnection lid1 lid2 | lid2 == investigatorLocation ->
       pure $ a & (connectedLocations %~ HashSet.insert lid1)
-    AddModifier (InvestigatorTarget iid) source modifier
-      | iid == investigatorId -> pure $ a & modifiers %~ HashMap.insertWith
-        (<>)
-        source
-        [modifier]
+    AddModifiers (InvestigatorTarget iid) source modifiers'
+      | iid == investigatorId
+      -> pure $ a & modifiers %~ HashMap.insertWith (<>) source modifiers'
     AddSlot iid slotType slot | iid == investigatorId -> do
       let
         slots' = HashMap.findWithDefault [] slotType investigatorSlots
@@ -970,6 +968,15 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           $ a
           & (modifiers %~ HashMap.delete source)
           & (slots %~ HashMap.map (filter ((source /=) . sourceOfSlot)))
+    RemoveAllModifiersFrom source -> do
+      unshiftMessages
+        [ RefillSlots investigatorId slotType (mapMaybe slotItem slots')
+        | (slotType, slots') <- HashMap.toList investigatorSlots
+        ]
+      pure
+        $ a
+        & (modifiers %~ HashMap.delete source)
+        & (slots %~ HashMap.map (filter ((source /=) . sourceOfSlot)))
     ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurn .~ True
     BeginRound ->
       pure

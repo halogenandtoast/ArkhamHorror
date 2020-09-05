@@ -33,12 +33,16 @@ instance (IsInvestigator investigator) => HasActions env investigator StubbornDe
 
 instance (EnemyRunner env) => RunMessage env StubbornDetective where
   runMessage msg e@(StubbornDetective attrs@Attrs {..}) = case msg of
-    EnemySpawn _ eid | eid == enemyId -> runMessage PostPlayerWindow e
-    EnemySpawnedAt _ eid | eid == enemyId -> runMessage PostPlayerWindow e
-    EnemyMove eid _ _ | eid == enemyId -> runMessage PostPlayerWindow e
-    MoveTo _ _ -> runMessage PostPlayerWindow e
-    PrePlayerWindow -> runMessage PostPlayerWindow e
-    PostPlayerWindow -> do
+    EnemySpawn _ eid | eid == enemyId ->
+      runMessage (ApplyModifiers (EnemyTarget enemyId)) e
+    EnemySpawnedAt _ eid | eid == enemyId ->
+      runMessage (ApplyModifiers (EnemyTarget enemyId)) e
+    EnemyMove eid _ _ | eid == enemyId ->
+      runMessage (ApplyModifiers (EnemyTarget enemyId)) e
+    MoveTo _ _ -> runMessage (ApplyModifiers (EnemyTarget enemyId)) e
+    PrePlayerWindow -> runMessage (ApplyModifiers (EnemyTarget enemyId)) e
+    PostPlayerWindow -> runMessage (ApplyModifiers (EnemyTarget enemyId)) e
+    ApplyModifiers (EnemyTarget eid) | eid == enemyId -> do
       investigatorIds <- HashSet.toList <$> asks (getSet ())
       locationInvestigatorIds <- HashSet.toList <$> asks (getSet enemyLocation)
       e <$ unshiftMessages
@@ -47,10 +51,10 @@ instance (EnemyRunner env) => RunMessage env StubbornDetective where
              (EnemySource enemyId)
          | investigatorId <- investigatorIds
          ]
-        <> [ AddModifier
+        <> [ AddModifiers
                (InvestigatorTarget investigatorId)
                (EnemySource enemyId)
-               Blank
+               [Blank]
            | investigatorId <- locationInvestigatorIds
            ]
         )

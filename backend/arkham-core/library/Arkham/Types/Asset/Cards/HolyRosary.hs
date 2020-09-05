@@ -30,10 +30,10 @@ instance (AssetRunner env) => RunMessage env HolyRosary where
   runMessage msg (HolyRosary attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage
-        (AddModifier
+        (AddModifiers
           (InvestigatorTarget iid)
           (AssetSource aid)
-          (SkillModifier SkillWillpower 1)
+          [SkillModifier SkillWillpower 1]
         )
       HolyRosary <$> runMessage msg attrs
     _ -> HolyRosary <$> runMessage msg attrs

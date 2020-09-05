@@ -382,6 +382,7 @@ beatCop2 :: CardId -> PlayerCard
 beatCop2 cardId = (asset cardId "01028" "Beat Cop" 4 Guardian)
   { pcSkills = [SkillCombat, SkillAgility]
   , pcTraits = [Ally, Police]
+  , pcLevel = 2
   }
 
 magnifyingGlass :: CardId -> PlayerCard

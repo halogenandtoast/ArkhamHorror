@@ -275,7 +275,7 @@ isBlank _ = False
 instance (InvestigatorRunner Attrs env) => RunMessage env Investigator where
   runMessage (ResolveToken ElderSign iid skillValue) i
     | iid == getInvestigatorId i && any isBlank (getModifiers i) = i
-    <$ runTest skillValue 0
+    <$ runTest iid skillValue 0
   runMessage msg i = case i of
     AgnesBaker' x -> AgnesBaker' <$> runMessage msg x
     AkachiOnyele' x -> AkachiOnyele' <$> runMessage msg x

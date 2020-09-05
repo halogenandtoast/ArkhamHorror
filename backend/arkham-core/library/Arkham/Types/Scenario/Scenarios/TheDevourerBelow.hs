@@ -127,16 +127,16 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
         <> cultistsWhoGotAwayMessages
         <> pastMidnightMessages
       pure s
-    ResolveToken Token.Skull _ skillValue
+    ResolveToken Token.Skull iid skillValue
       | scenarioDifficulty `elem` [Easy, Standard] -> do
         monsterCount <- unEnemyCount <$> asks (getCount [Monster])
-        s <$ runTest skillValue (-monsterCount)
+        s <$ runTest iid skillValue (-monsterCount)
     ResolveToken Token.Skull iid skillValue
       | scenarioDifficulty `elem` [Hard, Expert] -> do
         unshiftMessage
           (AddOnFailure $ FindAndDrawEncounterCard iid (EnemyType, Just Monster)
           )
-        s <$ runTest skillValue (-3)
+        s <$ runTest iid skillValue (-3)
     ResolveToken Token.Cultist iid skillValue
       | scenarioDifficulty `elem` [Easy, Standard] -> do
         closestEnemyIds <- map unClosestEnemyId . HashSet.toList <$> asks
@@ -146,7 +146,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
           [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
           xs -> unshiftMessage
             (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
-        s <$ runTest skillValue (-2)
+        s <$ runTest iid skillValue (-2)
     ResolveToken Token.Cultist iid skillValue
       | scenarioDifficulty `elem` [Hard, Expert] -> do
         closestEnemyIds <- map unClosestEnemyId . HashSet.toList <$> asks
@@ -156,21 +156,21 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
           [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 2)
           xs -> unshiftMessage
             (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget x) 2 | x <- xs ])
-        s <$ runTest skillValue (-4)
+        s <$ runTest iid skillValue (-4)
     ResolveToken Token.Tablet iid skillValue
       | scenarioDifficulty `elem` [Easy, Standard] -> do
         ghoulCount <- unEnemyCount
           <$> asks (getCount (InvestigatorLocation iid, [Monster]))
         when (ghoulCount > 0) $ unshiftMessage
           (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 0)
-        s <$ runTest skillValue (-3)
+        s <$ runTest iid skillValue (-3)
     ResolveToken Token.Tablet iid skillValue
       | scenarioDifficulty `elem` [Hard, Expert] -> do
         ghoulCount <- unEnemyCount
           <$> asks (getCount (InvestigatorLocation iid, [Monster]))
         when (ghoulCount > 0) $ unshiftMessage
           (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 1)
-        s <$ runTest skillValue (-5)
+        s <$ runTest iid skillValue (-5)
     ResolveToken Token.ElderThing iid skillValue
       | scenarioDifficulty `elem` [Easy, Standard] -> do
         ancientOneCount <- unEnemyCount <$> asks (getCount [AncientOne])
@@ -178,7 +178,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
           then
             s <$ unshiftMessage
               (DrawAnotherToken iid skillValue Token.ElderThing (-5))
-          else s <$ runTest skillValue (-5)
+          else s <$ runTest iid skillValue (-5)
     ResolveToken Token.ElderThing iid skillValue
       | scenarioDifficulty `elem` [Hard, Expert] -> do
         ancientOneCount <- unEnemyCount <$> asks (getCount [AncientOne])
@@ -186,7 +186,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
           then
             s <$ unshiftMessage
               (DrawAnotherToken iid skillValue Token.ElderThing (-7))
-          else s <$ runTest skillValue (-5)
+          else s <$ runTest iid skillValue (-5)
     NoResolution -> error "not yet implemented"
     Resolution 1 -> error "not yet implemented"
     Resolution 2 -> error "not yet implemented"

@@ -17,6 +17,7 @@ import Arkham.Types.Asset.Cards.ArcaneStudies
 import Arkham.Types.Asset.Cards.ArcaneStudies2
 import Arkham.Types.Asset.Cards.BaseballBat
 import Arkham.Types.Asset.Cards.BeatCop
+import Arkham.Types.Asset.Cards.BeatCop2
 import Arkham.Types.Asset.Cards.Burglary
 import Arkham.Types.Asset.Cards.DaisysToteBag
 import Arkham.Types.Asset.Cards.DigDeep
@@ -88,6 +89,7 @@ allAssets = HashMap.fromList
   , ("01020", Machete' . machete)
   , ("01021", GuardDog' . guardDog)
   , ("01027", PoliceBadge2' . policeBadge2)
+  , ("01028", BeatCop2' . beatCop2)
   , ("01030", MagnifyingGlass' . magnifyingGlass)
   , ("01031", OldBookOfLore' . oldBookOfLore)
   , ("01032", ResearchLibrarian' . researchLibrarian)
@@ -154,6 +156,7 @@ data Asset
   | Machete' Machete
   | GuardDog' GuardDog
   | PoliceBadge2' PoliceBadge2
+  | BeatCop2' BeatCop2
   | MagnifyingGlass' MagnifyingGlass
   | OldBookOfLore' OldBookOfLore
   | ResearchLibrarian' ResearchLibrarian
@@ -204,6 +207,7 @@ assetAttrs = \case
   Machete' attrs -> coerce attrs
   GuardDog' attrs -> coerce attrs
   PoliceBadge2' attrs -> coerce attrs
+  BeatCop2' attrs -> coerce attrs
   MagnifyingGlass' attrs -> coerce attrs
   OldBookOfLore' attrs -> coerce attrs
   ResearchLibrarian' attrs -> coerce attrs
@@ -262,6 +266,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     Machete' x -> getActions i window x
     GuardDog' x -> getActions i window x
     PoliceBadge2' x -> getActions i window x
+    BeatCop2' x -> getActions i window x
     MagnifyingGlass' x -> getActions i window x
     OldBookOfLore' x -> getActions i window x
     ResearchLibrarian' x -> getActions i window x
@@ -310,6 +315,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     Machete' x -> Machete' <$> runMessage msg x
     GuardDog' x -> GuardDog' <$> runMessage msg x
     PoliceBadge2' x -> PoliceBadge2' <$> runMessage msg x
+    BeatCop2' x -> BeatCop2' <$> runMessage msg x
     MagnifyingGlass' x -> MagnifyingGlass' <$> runMessage msg x
     OldBookOfLore' x -> OldBookOfLore' <$> runMessage msg x
     ResearchLibrarian' x -> ResearchLibrarian' <$> runMessage msg x

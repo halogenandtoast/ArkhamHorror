@@ -19,4 +19,5 @@ type AssetRunner env
     , HasCount ResourceCount InvestigatorId env
     , HasList DeckCard (InvestigatorId, Trait) env
     , HasSet Trait EnemyId env
+    , HasId ActiveInvestigatorId () env
     )

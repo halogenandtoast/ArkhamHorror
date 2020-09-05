@@ -31,7 +31,7 @@ instance (AssetRunner env) => RunMessage env LeoDeLuca where
   runMessage msg (LeoDeLuca attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessages
-        [ GainAction iid (AssetSource aid)
+        [ GainActions iid (AssetSource aid) 1
         , AddModifiers
           (InvestigatorTarget iid)
           (AssetSource aid)

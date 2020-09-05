@@ -161,6 +161,7 @@ allPlayerCards = HashMap.fromList
   , ("01024", dynamiteBlast)
   , ("01025", viciousBlow)
   , ("01026", extraAmmunition1)
+  , ("01027", policeBadge2)
   , ("01030", magnifyingGlass)
   , ("01031", oldBookOfLore)
   , ("01032", researchLibrarian)
@@ -366,6 +367,14 @@ extraAmmunition1 cardId =
     { pcSkills = [SkillIntellect]
     , pcTraits = [Supply]
     , pcLevel = 1
+    }
+
+policeBadge2 :: CardId -> PlayerCard
+policeBadge2 cardId =
+  (asset cardId "01027" "Police Badge" 3 Guardian)
+    { pcSkills = [SkillWillpower, SkillWild]
+    , pcTraits = [Item]
+    , pcLevel = 2
     }
 
 magnifyingGlass :: CardId -> PlayerCard

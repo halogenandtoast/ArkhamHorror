@@ -13,7 +13,6 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes.HasRecord
 import Arkham.Types.EnemyId
-import Arkham.Types.Window (Window)
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
@@ -22,6 +21,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
+import Arkham.Types.Window (Window)
 import ClassyPrelude
 import GHC.Stack
 import Lens.Micro
@@ -130,6 +130,7 @@ type ActionRunner env investigator
     , HasList UsedAbility () env
     , HasCount PlayerCount () env
     , HasCount SpendableClueCount AllInvestigators env
+    , HasCount ClueCount LocationId env
     , HasQueue env
     )
 

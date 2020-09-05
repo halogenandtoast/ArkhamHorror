@@ -160,6 +160,7 @@ allPlayerCards = HashMap.fromList
   , ("01023", dodge)
   , ("01024", dynamiteBlast)
   , ("01025", viciousBlow)
+  , ("01026", extraAmmunition1)
   , ("01030", magnifyingGlass)
   , ("01031", oldBookOfLore)
   , ("01032", researchLibrarian)
@@ -357,6 +358,14 @@ viciousBlow :: CardId -> PlayerCard
 viciousBlow cardId =
   (skill cardId "01025" "Vicious Blow" [SkillCombat] Guardian)
     { pcTraits = [Practiced]
+    }
+
+extraAmmunition1 :: CardId -> PlayerCard
+extraAmmunition1 cardId =
+  (event cardId "01026" "Extra Ammunition" 2 Guardian)
+    { pcSkills = [SkillIntellect]
+    , pcTraits = [Supply]
+    , pcLevel = 1
     }
 
 magnifyingGlass :: CardId -> PlayerCard

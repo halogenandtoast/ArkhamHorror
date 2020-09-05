@@ -15,6 +15,7 @@ import Arkham.Types.Ability
 import Arkham.Types.ActId
 import Arkham.Types.Action
 import Arkham.Types.AgendaId
+import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.CampaignStep
@@ -138,6 +139,7 @@ data Message
   | ActivateCardAbilityAction InvestigatorId Ability
   | UseCardAbility InvestigatorId Source Source (Maybe AbilityMetadata) Int
   | UseScenarioSpecificAbility InvestigatorId Int
+  | AddUses Target UseType Int
   | ResolveToken Token InvestigatorId Int
   | Investigate InvestigatorId LocationId SkillType [TokenResponse Message] [Message] Bool
   | ChooseFightEnemy InvestigatorId SkillType [Modifier] [TokenResponse Message] Bool

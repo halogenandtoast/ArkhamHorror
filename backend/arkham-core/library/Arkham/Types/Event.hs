@@ -24,6 +24,7 @@ import Arkham.Types.Event.Cards.DynamiteBlast2
 import Arkham.Types.Event.Cards.Elusive
 import Arkham.Types.Event.Cards.EmergencyCache
 import Arkham.Types.Event.Cards.Evidence
+import Arkham.Types.Event.Cards.ExtraAmmunition1
 import Arkham.Types.Event.Cards.HotStreak2
 import Arkham.Types.Event.Cards.LookWhatIFound
 import Arkham.Types.Event.Cards.Lucky
@@ -55,6 +56,7 @@ allEvents = HashMap.fromList
   , ("01022", (Evidence' .) . evidence)
   , ("01023", (Dodge' .) . dodge)
   , ("01024", (DynamiteBlast' .) . dynamiteBlast)
+  , ("01026", (ExtraAmmunition1' .) . extraAmmunition1)
   , ("01036", (MindOverMatter' .) . mindOverMatter)
   , ("01037", (WorkingAHunch' .) . workingAHunch)
   , ("01038", (Barricade' .) . barricade)
@@ -84,6 +86,7 @@ data Event
   | Evidence' Evidence
   | Dodge' Dodge
   | DynamiteBlast' DynamiteBlast
+  | ExtraAmmunition1' ExtraAmmunition1
   | MindOverMatter' MindOverMatter
   | WorkingAHunch' WorkingAHunch
   | Barricade' Barricade
@@ -112,6 +115,7 @@ eventAttrs = \case
   Evidence' attrs -> coerce attrs
   Dodge' attrs -> coerce attrs
   DynamiteBlast' attrs -> coerce attrs
+  ExtraAmmunition1' attrs -> coerce attrs
   MindOverMatter' attrs -> coerce attrs
   WorkingAHunch' attrs -> coerce attrs
   Barricade' attrs -> coerce attrs
@@ -138,6 +142,7 @@ instance HasActions env investigator Event where
     Evidence' x -> getActions i window x
     Dodge' x -> getActions i window x
     DynamiteBlast' x -> getActions i window x
+    ExtraAmmunition1' x -> getActions i window x
     MindOverMatter' x -> getActions i window x
     WorkingAHunch' x -> getActions i window x
     Barricade' x -> getActions i window x
@@ -170,6 +175,7 @@ instance (EventRunner env) => RunMessage env Event where
     Evidence' x -> Evidence' <$> runMessage msg x
     Dodge' x -> Dodge' <$> runMessage msg x
     DynamiteBlast' x -> DynamiteBlast' <$> runMessage msg x
+    ExtraAmmunition1' x -> ExtraAmmunition1' <$> runMessage msg x
     MindOverMatter' x -> MindOverMatter' <$> runMessage msg x
     WorkingAHunch' x -> WorkingAHunch' <$> runMessage msg x
     Barricade' x -> Barricade' <$> runMessage msg x

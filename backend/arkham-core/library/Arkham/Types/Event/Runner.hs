@@ -1,6 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Runner where
 
+import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
@@ -20,4 +21,6 @@ type EventRunner env
     , HasSet RevealedLocationId () env
     , HasSet ExhaustedEnemyId LocationId env
     , HasSet Trait EnemyId env
+    , HasSet Trait AssetId env
+    , HasSet AssetId InvestigatorId env
     )

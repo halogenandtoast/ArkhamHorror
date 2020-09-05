@@ -188,6 +188,7 @@ allPlayerCards = HashMap.fromList
   , ("01051", backstab)
   , ("01052", sneakAttack)
   , ("01053", opportunist)
+  , ("01054", leoDeLuca1)
   , ("01058", forbiddenKnowledge)
   , ("01059", holyRosary)
   , ("01060", shrivelling)
@@ -555,6 +556,12 @@ opportunist :: CardId -> PlayerCard
 opportunist cardId = (skill cardId "01053" "Opportunist" [SkillWild] Rogue)
   { pcTraits = [Innate]
   , pcCommitRestrictions = [OnlyYourTest]
+  }
+
+leoDeLuca1 :: CardId -> PlayerCard
+leoDeLuca1 cardId = (asset cardId "01054" "Leo De Luca" 5 Rogue)
+  { pcSkills = [SkillIntellect]
+  , pcTraits = [Ally, Criminal]
   }
 
 forbiddenKnowledge :: CardId -> PlayerCard

@@ -170,19 +170,25 @@ facingDefeat a@Attrs {..} =
     || investigatorSanityDamage
     >= modifiedSanity a
 
-updateFailureModifiers :: Int -> HashMap Source [Modifier] -> HashMap Source [Modifier]
-updateFailureModifiers n modifiers' = HashMap.map updateFailureModifiers' modifiers'
-  where
-    updateFailureModifiers' modifiers'' = flip map modifiers'' $ \case
-      ByPointsFailedBy mbounds m -> replaceIntModifierValue mbounds n m
-      m -> m
+updateFailureModifiers
+  :: Int -> HashMap Source [Modifier] -> HashMap Source [Modifier]
+updateFailureModifiers n modifiers' = HashMap.map
+  updateFailureModifiers'
+  modifiers'
+ where
+  updateFailureModifiers' modifiers'' = flip map modifiers'' $ \case
+    ByPointsFailedBy mbounds m -> replaceIntModifierValue mbounds n m
+    m -> m
 
-updateSuccessModifiers :: Int -> HashMap Source [Modifier] -> HashMap Source [Modifier]
-updateSuccessModifiers n modifiers' = HashMap.map updateSuccessModifiers' modifiers'
-  where
-    updateSuccessModifiers' modifiers'' = flip map modifiers'' $ \case
-      ByPointsSucceededBy mbounds m -> replaceIntModifierValue mbounds n m
-      m -> m
+updateSuccessModifiers
+  :: Int -> HashMap Source [Modifier] -> HashMap Source [Modifier]
+updateSuccessModifiers n modifiers' = HashMap.map
+  updateSuccessModifiers'
+  modifiers'
+ where
+  updateSuccessModifiers' modifiers'' = flip map modifiers'' $ \case
+    ByPointsSucceededBy mbounds m -> replaceIntModifierValue mbounds n m
+    m -> m
 
 skillValueFor :: SkillType -> Maybe Action -> [Modifier] -> Attrs -> Int
 skillValueFor skill maction tempModifiers attrs = foldr
@@ -1047,6 +1053,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         (Ask investigatorId
         $ ChooseOne [InvestigatorDrawEncounterCard investigatorId]
         )
+    When (EnemySpawn lid eid) | lid == investigatorLocation -> do
+      traits <- HashSet.toList <$> asks (getSet eid)
+      a <$ unshiftMessage
+        (CheckWindow investigatorId [WhenEnemySpawns YourLocation traits])
     RevelationSkillTest iid source skillType difficulty onSuccess onFailure
       | iid == investigatorId -> a <$ unshiftMessage
         (BeginSkillTest
@@ -1208,7 +1218,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         else pure a
     LoseActions iid _ n | iid == investigatorId ->
       pure $ a & remainingActions %~ max 0 . subtract n
-    GainActions iid _ n | iid == investigatorId -> pure $ a & remainingActions +~ n
+    GainActions iid _ n | iid == investigatorId ->
+      pure $ a & remainingActions +~ n
     TakeAction iid actionCost' maction | iid == investigatorId -> do
       let
         costModifier = actionCostModifier a maction

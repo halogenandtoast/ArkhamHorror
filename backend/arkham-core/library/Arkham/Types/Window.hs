@@ -29,6 +29,7 @@ data Window
   | WhenDrawToken Who Token
   | WhenDrawTreachery Who Bool -- < is weakness
   | WhenEnemyAttacks Who
+  | WhenEnemySpawns Where [Trait]
   | WhenEnemyDefeated Who
   | WhenEnemyEvaded Who
   | WhenSkillTest SkillType

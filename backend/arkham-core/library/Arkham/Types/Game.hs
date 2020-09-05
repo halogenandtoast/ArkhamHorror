@@ -1502,11 +1502,16 @@ runGameMessage msg g = case msg of
     let
       eid = EnemyId $ unCardId (getCardId card)
       enemy' = lookupEnemy (getCardCode card) eid
-    unshiftMessages [Will (EnemySpawn lid eid), EnemySpawn lid eid]
+    unshiftMessages
+      [Will (EnemySpawn lid eid), When (EnemySpawn lid eid), EnemySpawn lid eid]
     pure $ g & enemies . at eid ?~ enemy'
   CreateEnemyAt cardCode lid -> do
     (enemyId', enemy') <- createEnemy cardCode
-    unshiftMessages [Will (EnemySpawn lid enemyId'), EnemySpawn lid enemyId']
+    unshiftMessages
+      [ Will (EnemySpawn lid enemyId')
+      , When (EnemySpawn lid enemyId')
+      , EnemySpawn lid enemyId'
+      ]
     pure $ g & enemies . at enemyId' ?~ enemy'
   CreateEnemyEngagedWithPrey cardCode -> do
     (enemyId', enemy') <- createEnemy cardCode

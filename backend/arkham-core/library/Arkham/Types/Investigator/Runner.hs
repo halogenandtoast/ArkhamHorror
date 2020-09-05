@@ -35,6 +35,7 @@ type InvestigatorRunner investigator env
     , HasSet AloofEnemyId LocationId env
     , HasSet AssetId LocationId env
     , HasSet Trait AssetId env
+    , HasSet Trait EnemyId env
     , HasId LocationId InvestigatorId env
     , HasId (Maybe AssetId) CardCode env
     , HasList Location () env

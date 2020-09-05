@@ -22,6 +22,7 @@ import Arkham.Types.Asset.Cards.Burglary
 import Arkham.Types.Asset.Cards.DaisysToteBag
 import Arkham.Types.Asset.Cards.DigDeep
 import Arkham.Types.Asset.Cards.DigDeep2
+import Arkham.Types.Asset.Cards.DiscOfItzamna2
 import Arkham.Types.Asset.Cards.DrMilanChristopher
 import Arkham.Types.Asset.Cards.FirstAid
 import Arkham.Types.Asset.Cards.Flashlight
@@ -100,6 +101,7 @@ allAssets = HashMap.fromList
   , ("01034", Hyperawareness' . hyperawareness)
   , ("01035", MedicalTexts' . medicalTexts)
   , ("01040", MagnifyingGlass1' . magnifyingGlass1)
+  , ("01041", DiscOfItzamna2' . discOfItzamna2)
   , ("01044", Switchblade' . switchblade)
   , ("01045", Burglary' . burglary)
   , ("01046", Pickpocketing' . pickpoketing)
@@ -169,6 +171,7 @@ data Asset
   | Hyperawareness' Hyperawareness
   | MedicalTexts' MedicalTexts
   | MagnifyingGlass1' MagnifyingGlass1
+  | DiscOfItzamna2' DiscOfItzamna2
   | Switchblade' Switchblade
   | Burglary' Burglary
   | Pickpocketing' Pickpocketing
@@ -222,6 +225,7 @@ assetAttrs = \case
   Hyperawareness' attrs -> coerce attrs
   MedicalTexts' attrs -> coerce attrs
   MagnifyingGlass1' attrs -> coerce attrs
+  DiscOfItzamna2' attrs -> coerce attrs
   Switchblade' attrs -> coerce attrs
   Burglary' attrs -> coerce attrs
   Pickpocketing' attrs -> coerce attrs
@@ -282,6 +286,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     DrMilanChristopher' x -> getActions i window x
     MedicalTexts' x -> getActions i window x
     MagnifyingGlass1' x -> getActions i window x
+    DiscOfItzamna2' x -> getActions i window x
     Hyperawareness' x -> getActions i window x
     Switchblade' x -> getActions i window x
     Burglary' x -> getActions i window x
@@ -334,6 +339,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     Hyperawareness' x -> Hyperawareness' <$> runMessage msg x
     MedicalTexts' x -> MedicalTexts' <$> runMessage msg x
     MagnifyingGlass1' x -> MagnifyingGlass1' <$> runMessage msg x
+    DiscOfItzamna2' x -> DiscOfItzamna2' <$> runMessage msg x
     Switchblade' x -> Switchblade' <$> runMessage msg x
     Burglary' x -> Burglary' <$> runMessage msg x
     Pickpocketing' x -> Pickpocketing' <$> runMessage msg x

@@ -175,6 +175,7 @@ allPlayerCards = HashMap.fromList
   , ("01038", barricade)
   , ("01039", deduction)
   , ("01040", magnifyingGlass1)
+  , ("01041", discOfItzamna2)
   , ("01044", switchblade)
   , ("01045", burglary)
   , ("01046", pickpoketing)
@@ -365,20 +366,18 @@ viciousBlow cardId =
     }
 
 extraAmmunition1 :: CardId -> PlayerCard
-extraAmmunition1 cardId =
-  (event cardId "01026" "Extra Ammunition" 2 Guardian)
-    { pcSkills = [SkillIntellect]
-    , pcTraits = [Supply]
-    , pcLevel = 1
-    }
+extraAmmunition1 cardId = (event cardId "01026" "Extra Ammunition" 2 Guardian)
+  { pcSkills = [SkillIntellect]
+  , pcTraits = [Supply]
+  , pcLevel = 1
+  }
 
 policeBadge2 :: CardId -> PlayerCard
-policeBadge2 cardId =
-  (asset cardId "01027" "Police Badge" 3 Guardian)
-    { pcSkills = [SkillWillpower, SkillWild]
-    , pcTraits = [Item]
-    , pcLevel = 2
-    }
+policeBadge2 cardId = (asset cardId "01027" "Police Badge" 3 Guardian)
+  { pcSkills = [SkillWillpower, SkillWild]
+  , pcTraits = [Item]
+  , pcLevel = 2
+  }
 
 beatCop2 :: CardId -> PlayerCard
 beatCop2 cardId = (asset cardId "01028" "Beat Cop" 4 Guardian)
@@ -466,6 +465,12 @@ magnifyingGlass1 cardId = (asset cardId "01040" "Magnifying Glass" 0 Seeker)
   , pcTraits = [Item, Tool]
   , pcFast = True
   , pcWindows = HashSet.fromList [DuringTurn You]
+  }
+
+discOfItzamna2 :: CardId -> PlayerCard
+discOfItzamna2 cardId = (asset cardId "01041" "Disc of Itzamna" 3 Seeker)
+  { pcSkills = [SkillWillpower, SkillIntellect, SkillCombat]
+  , pcTraits = [Item, Relic]
   }
 
 switchblade :: CardId -> PlayerCard

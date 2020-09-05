@@ -20,4 +20,7 @@ type AssetRunner env
     , HasList DeckCard (InvestigatorId, Trait) env
     , HasSet Trait EnemyId env
     , HasId ActiveInvestigatorId () env
+    , HasSet ConnectedLocationId LocationId env
+    , HasSet BlockedLocationId () env
+    , HasSet EnemyId InvestigatorId env
     )

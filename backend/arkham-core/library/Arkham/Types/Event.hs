@@ -28,6 +28,7 @@ import Arkham.Types.Event.Cards.HotStreak2
 import Arkham.Types.Event.Cards.LookWhatIFound
 import Arkham.Types.Event.Cards.Lucky
 import Arkham.Types.Event.Cards.MindOverMatter
+import Arkham.Types.Event.Cards.MindWipe1
 import Arkham.Types.Event.Cards.MindWipe3
 import Arkham.Types.Event.Cards.OnTheLam
 import Arkham.Types.Event.Cards.SneakAttack
@@ -63,6 +64,7 @@ allEvents = HashMap.fromList
   , ("01064", (DrawnToTheFlame' .) . drawnToTheFlame)
   , ("01065", (WardOfProtection' .) . wardOfProtection)
   , ("01066", (BlindingLight' .) . blindingLight)
+  , ("01068", (MindWipe1' .) . mindWipe1)
   , ("01078", (CunningDistraction' .) . cunningDistraction)
   , ("01079", (LookWhatIFound' .) . lookWhatIFound)
   , ("01080", (Lucky' .) . lucky)
@@ -91,6 +93,7 @@ data Event
   | DrawnToTheFlame' DrawnToTheFlame
   | WardOfProtection' WardOfProtection
   | BlindingLight' BlindingLight
+  | MindWipe1' MindWipe1
   | CunningDistraction' CunningDistraction
   | LookWhatIFound' LookWhatIFound
   | Lucky' Lucky
@@ -118,6 +121,7 @@ eventAttrs = \case
   DrawnToTheFlame' attrs -> coerce attrs
   WardOfProtection' attrs -> coerce attrs
   BlindingLight' attrs -> coerce attrs
+  MindWipe1' attrs -> coerce attrs
   CunningDistraction' attrs -> coerce attrs
   LookWhatIFound' attrs -> coerce attrs
   Lucky' attrs -> coerce attrs
@@ -143,6 +147,7 @@ instance HasActions env investigator Event where
     DrawnToTheFlame' x -> getActions i window x
     WardOfProtection' x -> getActions i window x
     BlindingLight' x -> getActions i window x
+    MindWipe1' x -> getActions i window x
     CunningDistraction' x -> getActions i window x
     LookWhatIFound' x -> getActions i window x
     Lucky' x -> getActions i window x
@@ -174,6 +179,7 @@ instance (EventRunner env) => RunMessage env Event where
     DrawnToTheFlame' x -> DrawnToTheFlame' <$> runMessage msg x
     WardOfProtection' x -> WardOfProtection' <$> runMessage msg x
     BlindingLight' x -> BlindingLight' <$> runMessage msg x
+    MindWipe1' x -> MindWipe1' <$> runMessage msg x
     CunningDistraction' x -> CunningDistraction' <$> runMessage msg x
     LookWhatIFound' x -> LookWhatIFound' <$> runMessage msg x
     Lucky' x -> Lucky' <$> runMessage msg x

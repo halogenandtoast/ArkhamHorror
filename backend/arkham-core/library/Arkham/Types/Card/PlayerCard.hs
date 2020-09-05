@@ -190,6 +190,7 @@ allPlayerCards = HashMap.fromList
   , ("01065", wardOfProtection)
   , ("01066", blindingLight)
   , ("01067", fearless)
+  , ("01068", mindWipe1)
   , ("01072", leatherCoat)
   , ("01073", scavenging)
   , ("01074", baseballBat)
@@ -548,6 +549,15 @@ blindingLight cardId = (event cardId "01066" "Blinding Light" 2 Mystic)
 fearless :: CardId -> PlayerCard
 fearless cardId = (skill cardId "01067" "Fearless" [SkillWillpower] Mystic)
   { pcTraits = [Innate]
+  }
+
+mindWipe1 :: CardId -> PlayerCard
+mindWipe1 cardId = (event cardId "01068" "Mind Wipe" 1 Mystic)
+  { pcSkills = [SkillWillpower, SkillCombat]
+  , pcTraits = [Spell]
+  , pcLevel = 1
+  , pcFast = True
+  , pcWindows = HashSet.fromList [AnyPhaseBegins]
   }
 
 leatherCoat :: CardId -> PlayerCard

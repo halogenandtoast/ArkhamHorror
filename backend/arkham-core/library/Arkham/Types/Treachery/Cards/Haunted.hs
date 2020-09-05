@@ -53,6 +53,6 @@ instance (TreacheryRunner env) => RunMessage env Haunted where
           [AnySkillValue (-1)]
         )
       Haunted <$> runMessage msg attrs
-    UseCardAbility _ _ (TreacherySource tid) 1 | tid == treacheryId ->
+    UseCardAbility _ _ (TreacherySource tid) _ 1 | tid == treacheryId ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
     _ -> Haunted <$> runMessage msg attrs

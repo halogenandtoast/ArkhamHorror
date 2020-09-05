@@ -6,13 +6,13 @@ import Arkham.Types.Ability
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Window
 import ClassyPrelude hiding (sequence)
 import Lens.Micro
 
@@ -66,7 +66,7 @@ instance (ActRunner env) => RunMessage env DisruptingTheRitual where
         when (totalClues >= 2 * playerCount) (unshiftMessage (AdvanceAct actId))
         pure $ DisruptingTheRitual
           (attrs `with` DisruptingTheRitualMetadata totalClues)
-      UseCardAbility iid _ (ActSource aid) 1 | aid == actId -> do
+      UseCardAbility iid _ (ActSource aid) _ 1 | aid == actId -> do
         a <$ unshiftMessage
           (Ask iid $ ChooseOne
             [ BeginSkillTest

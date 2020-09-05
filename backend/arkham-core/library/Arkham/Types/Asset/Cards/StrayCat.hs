@@ -37,7 +37,7 @@ instance (IsInvestigator investigator) => HasActions env investigator StrayCat w
 
 instance (AssetRunner env) => RunMessage env StrayCat where
   runMessage msg a@(StrayCat attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
       locationId <- asks (getId @LocationId (getInvestigator attrs))
       locationEnemyIds <- HashSet.toList <$> asks (getSet locationId)
       nonEliteEnemyIds <- flip filterM locationEnemyIds $ \enemyId -> do

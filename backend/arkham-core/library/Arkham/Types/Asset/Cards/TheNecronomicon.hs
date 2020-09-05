@@ -59,7 +59,7 @@ instance (AssetRunner env) => RunMessage env TheNecronomicon where
             [ForcedTokenChange Token.ElderSign Token.AutoFail]
           )
         TheNecronomicon . (`with` metadata) <$> runMessage msg attrs
-      UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
+      UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
         unshiftMessage $ InvestigatorDamage iid (AssetSource aid) 0 1
         if theNecronomiconHorror == 1
           then a <$ unshiftMessage (Discard (AssetTarget aid))

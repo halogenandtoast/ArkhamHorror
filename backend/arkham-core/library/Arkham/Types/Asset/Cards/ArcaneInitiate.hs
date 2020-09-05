@@ -39,7 +39,7 @@ instance (AssetRunner env) => RunMessage env ArcaneInitiate where
   runMessage msg (ArcaneInitiate attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       ArcaneInitiate <$> runMessage msg (attrs & doom +~ 1) -- TODO: this triggers multiple time due to having to discard other assets
-    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
       unshiftMessage
         (Ask iid
         $ ChooseOne

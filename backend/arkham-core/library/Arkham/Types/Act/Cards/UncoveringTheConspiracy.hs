@@ -7,10 +7,10 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Source
+import Arkham.Types.Window
 import ClassyPrelude hiding (sequence)
 import qualified Data.HashSet as HashSet
 import Lens.Micro
@@ -59,7 +59,7 @@ instance (ActRunner env) => RunMessage env UncoveringTheConspiracy where
       a <$ when
         (cultists `HashSet.isSubsetOf` victoryDisplay)
         (unshiftMessage (AdvanceAct actId))
-    UseCardAbility iid _ (ActSource aid) 1 | aid == actId -> do
+    UseCardAbility iid _ (ActSource aid) _ 1 | aid == actId -> do
       investigatorIds <- HashSet.toList <$> asks (getSet ())
       playerCount <- unPlayerCount <$> asks (getCount ())
       a <$ unshiftMessages

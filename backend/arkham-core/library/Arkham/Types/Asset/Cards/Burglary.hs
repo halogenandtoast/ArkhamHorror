@@ -8,11 +8,11 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Window
 import ClassyPrelude
 import Lens.Micro
 
@@ -38,7 +38,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Burglary w
 
 instance (AssetRunner env) => RunMessage env Burglary where
   runMessage msg (Burglary attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
       lid <- asks (getId @LocationId iid)
       unshiftMessage
         (Investigate

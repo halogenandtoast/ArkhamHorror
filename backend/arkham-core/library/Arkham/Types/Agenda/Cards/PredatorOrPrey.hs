@@ -7,10 +7,10 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
+import Arkham.Types.Window
 import ClassyPrelude hiding (sequence)
 
 newtype PredatorOrPrey = PredatorOrPrey Attrs
@@ -37,7 +37,7 @@ instance (AgendaRunner env) => RunMessage env PredatorOrPrey where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1a" -> do
       a <$ unshiftMessages
         [CreateEnemyEngagedWithPrey "01121b", NextAgenda aid "01122"]
-    UseCardAbility iid _ (AgendaSource aid) 1 | aid == agendaId -> do
+    UseCardAbility iid _ (AgendaSource aid) _ 1 | aid == agendaId -> do
       unshiftMessage (Resign iid)
       PredatorOrPrey <$> runMessage msg attrs
     _ -> PredatorOrPrey <$> runMessage msg attrs

@@ -41,7 +41,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Machete 
 
 instance (AssetRunner env) => RunMessage env Machete where
   runMessage msg a@(Machete attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
       engagedEnemiesCount <- unEnemyCount <$> asks (getCount iid)
       let
         damageDealtModifiers =

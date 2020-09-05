@@ -7,7 +7,6 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
@@ -16,6 +15,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Window
 import ClassyPrelude
 import Lens.Micro
 
@@ -66,10 +66,10 @@ instance (LocationRunner env) => RunMessage env Parlor where
     RevealLocation lid | lid == locationId -> do
       attrs' <- runMessage msg attrs
       pure $ Parlor $ attrs' & blocked .~ False
-    UseCardAbility iid _ (LocationSource lid) 1
+    UseCardAbility iid _ (LocationSource lid) _ 1
       | lid == locationId && locationRevealed -> l
       <$ unshiftMessage (Resign iid)
-    UseCardAbility iid _ (LocationSource lid) 2
+    UseCardAbility iid _ (LocationSource lid) _ 2
       | lid == locationId && locationRevealed -> do
         maid <- asks (fmap unStoryAssetId <$> getId (CardCode "01117"))
         case maid of

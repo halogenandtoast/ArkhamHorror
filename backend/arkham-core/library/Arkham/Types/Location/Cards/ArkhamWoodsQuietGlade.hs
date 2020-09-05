@@ -4,7 +4,6 @@ module Arkham.Types.Location.Cards.ArkhamWoodsQuietGlade where
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -13,6 +12,7 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
+import Arkham.Types.Window
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
 
@@ -59,7 +59,7 @@ instance (ActionRunner env investigator) => HasActions env investigator ArkhamWo
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsQuietGlade where
   runMessage msg l@(ArkhamWoodsQuietGlade attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (LocationSource lid) 1 | lid == locationId ->
+    UseCardAbility iid _ (LocationSource lid) _ 1 | lid == locationId ->
       l <$ unshiftMessages
         [ HealDamage (InvestigatorTarget iid) 1
         , HealHorror (InvestigatorTarget iid) 1

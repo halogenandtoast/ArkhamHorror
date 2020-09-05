@@ -45,6 +45,7 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
                   iid
                   (AssetSource assetId)
                   (AssetSource assetId)
+                  Nothing
                   1
                 , AddModifiers
                   (EnemyTarget eid)

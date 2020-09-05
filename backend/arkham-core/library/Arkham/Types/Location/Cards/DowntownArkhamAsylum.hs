@@ -4,7 +4,6 @@ module Arkham.Types.Location.Cards.DowntownArkhamAsylum where
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -13,6 +12,7 @@ import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
+import Arkham.Types.Window
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
 
@@ -29,25 +29,27 @@ downtownArkhamAsylum =
 
 instance (ActionRunner env investigator) => HasActions env investigator DowntownArkhamAsylum where
   getActions i NonFast (DowntownArkhamAsylum attrs@Attrs {..}) = do
-      baseActions <- getActions i NonFast attrs
-      usedAbilities <- map unUsedAbility <$> asks (getList ())
-      let
-        ability =
-          (mkAbility (LocationSource "01131") 1 (ActionAbility 1 Nothing))
-            { abilityLimit = PerGame
-            }
-      pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction (getId () i) ability
-           | (getId () i, ability) `notElem` usedAbilities
-             && locationRevealed
-             && getId () i `elem` locationInvestigators
-             && hasActionsRemaining i
-           ]
+    baseActions <- getActions i NonFast attrs
+    usedAbilities <- map unUsedAbility <$> asks (getList ())
+    let
+      ability = (mkAbility (LocationSource "01131") 1 (ActionAbility 1 Nothing)
+                )
+        { abilityLimit = PerGame
+        }
+    pure
+      $ baseActions
+      <> [ ActivateCardAbilityAction (getId () i) ability
+         | (getId () i, ability)
+           `notElem` usedAbilities
+           && locationRevealed
+           && getId () i
+           `elem` locationInvestigators
+           && hasActionsRemaining i
+         ]
   getActions _ _ _ = pure []
 
 instance (LocationRunner env) => RunMessage env DowntownArkhamAsylum where
   runMessage msg l@(DowntownArkhamAsylum attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (LocationSource lid) 1 | lid == locationId ->
+    UseCardAbility iid _ (LocationSource lid) _ 1 | lid == locationId ->
       l <$ unshiftMessage (HealHorror (InvestigatorTarget iid) 3)
     _ -> DowntownArkhamAsylum <$> runMessage msg attrs

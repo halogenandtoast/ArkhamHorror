@@ -27,6 +27,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Hyperaware
           (getId () i)
           (AssetSource assetId)
           (AssetSource assetId)
+          Nothing
           1
       | resourceCount i > 0
       ]
@@ -36,6 +37,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Hyperaware
           (getId () i)
           (AssetSource assetId)
           (AssetSource assetId)
+          Nothing
           2
       | resourceCount i > 0
       ]
@@ -43,7 +45,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Hyperaware
 
 instance (AssetRunner env) => RunMessage env Hyperawareness where
   runMessage msg a@(Hyperawareness attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , AddModifiers
@@ -51,7 +53,7 @@ instance (AssetRunner env) => RunMessage env Hyperawareness where
           (AssetSource aid)
           [SkillModifier SkillIntellect 1]
         ]
-    UseCardAbility iid _ (AssetSource aid) 2 | aid == assetId ->
+    UseCardAbility iid _ (AssetSource aid) _ 2 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , AddModifiers

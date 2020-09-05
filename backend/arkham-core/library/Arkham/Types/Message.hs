@@ -136,7 +136,7 @@ data Message
   | GainAction InvestigatorId Source
   | ChooseActivateCardAbilityAction InvestigatorId
   | ActivateCardAbilityAction InvestigatorId Ability
-  | UseCardAbility InvestigatorId Source Source Int
+  | UseCardAbility InvestigatorId Source Source (Maybe AbilityMetadata) Int
   | UseScenarioSpecificAbility InvestigatorId Int
   | ResolveToken Token InvestigatorId Int
   | Investigate InvestigatorId LocationId SkillType [TokenResponse Message] [Message] Bool

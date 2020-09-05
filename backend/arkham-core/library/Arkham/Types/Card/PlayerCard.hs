@@ -227,6 +227,7 @@ allPlayerCards = HashMap.fromList
   , ("50007", arcaneStudies2)
   , ("50008", mindWipe3)
   , ("50009", digDeep2)
+  , ("50010", rabbitsFoot3)
   ]
 
 rolands38Special :: CardId -> PlayerCard
@@ -796,4 +797,11 @@ digDeep2 cardId = (asset cardId "50009" "Dig Deep" 0 Survivor)
   { pcSkills = [SkillWillpower, SkillWillpower, SkillAgility, SkillAgility]
   , pcTraits = [Talent]
   , pcLevel = 2
+  }
+
+rabbitsFoot3 :: CardId -> PlayerCard
+rabbitsFoot3 cardId = (asset cardId "50010" "Rabbit's Foot" 1 Survivor)
+  { pcSkills = [SkillWild]
+  , pcTraits = [Item, Charm]
+  , pcLevel = 3
   }

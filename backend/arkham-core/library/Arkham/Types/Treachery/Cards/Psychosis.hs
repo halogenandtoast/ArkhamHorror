@@ -4,7 +4,6 @@ module Arkham.Types.Treachery.Cards.Psychosis where
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Source
@@ -12,6 +11,7 @@ import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
+import Arkham.Types.Window
 import ClassyPrelude
 import Lens.Micro
 
@@ -47,6 +47,6 @@ instance (TreacheryRunner env) => RunMessage env Psychosis where
     After (InvestigatorTakeHorror iid _ _)
       | Just iid == treacheryAttachedInvestigator -> t <$ unshiftMessage
         (InvestigatorDirectDamage iid (TreacherySource treacheryId) 1 0)
-    UseCardAbility _ _ (TreacherySource tid) 1 | tid == treacheryId ->
+    UseCardAbility _ _ (TreacherySource tid) _ 1 | tid == treacheryId ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
     _ -> Psychosis <$> runMessage msg attrs

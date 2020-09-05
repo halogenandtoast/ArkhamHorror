@@ -8,11 +8,11 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
-import Arkham.Types.Window
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Window
 import ClassyPrelude
 
 newtype PeterWarren = PeterWarren Attrs
@@ -41,7 +41,7 @@ instance (IsInvestigator investigator) => HasActions env investigator PeterWarre
 instance (EnemyRunner env) => RunMessage env PeterWarren where
   runMessage msg e@(PeterWarren attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == enemyId -> e <$ spawnAt eid "01129"
-    UseCardAbility iid _ (EnemySource eid) 1 | eid == enemyId ->
+    UseCardAbility iid _ (EnemySource eid) _ 1 | eid == enemyId ->
       e <$ unshiftMessages
         [SpendClues 2 [iid], AddToVictory (EnemyTarget enemyId)]
     _ -> PeterWarren <$> runMessage msg attrs

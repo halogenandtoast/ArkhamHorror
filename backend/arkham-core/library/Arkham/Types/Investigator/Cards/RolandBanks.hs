@@ -4,8 +4,6 @@ module Arkham.Types.Investigator.Cards.RolandBanks where
 import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
-import Arkham.Types.Window (Who(..))
-import qualified Arkham.Types.Window as Fast
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -14,6 +12,8 @@ import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Token
 import Arkham.Types.Trait
+import Arkham.Types.Window (Who(..))
+import qualified Arkham.Types.Window as Fast
 import ClassyPrelude
 import Data.Aeson
 
@@ -53,7 +53,7 @@ instance (ActionRunner env investigator) => HasActions env investigator RolandBa
 
 instance (InvestigatorRunner Attrs env) => RunMessage env RolandBanks where
   runMessage msg rb@(RolandBanks attrs@Attrs {..}) = case msg of
-    UseCardAbility _ _ (InvestigatorSource iid) 1 | iid == investigatorId ->
+    UseCardAbility _ _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       rb <$ unshiftMessage
         (DiscoverCluesAtLocation investigatorId investigatorLocation 1)
     ResolveToken ElderSign iid skillValue | iid == investigatorId -> do

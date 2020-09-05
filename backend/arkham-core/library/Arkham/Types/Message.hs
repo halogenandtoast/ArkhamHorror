@@ -41,7 +41,7 @@ import Arkham.Types.TreacheryId
 import Arkham.Types.Window
 import ClassyPrelude
 
-data MessageType = RevelationMessage | AttackMessage | DrawTokenMessage | ResolveTokenMessage
+data MessageType = RevelationMessage | AttackMessage | DrawTokenMessage | ResolveTokenMessage | EnemySpawnMessage
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -50,6 +50,7 @@ messageType PerformEnemyAttack{} = Just AttackMessage
 messageType Revelation{} = Just RevelationMessage
 messageType DrawToken{} = Just DrawTokenMessage
 messageType ResolveToken{} = Just ResolveTokenMessage
+messageType EnemySpawn{} = Just EnemySpawnMessage
 messageType _ = Nothing
 
 data EncounterCardSource = FromDiscard | FromEncounterDeck

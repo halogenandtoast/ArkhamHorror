@@ -54,7 +54,6 @@ import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Token (Token)
-import qualified Arkham.Types.Token as Token
 import Arkham.Types.Trait
 import Arkham.Types.Treachery
 import Arkham.Types.TreacheryId

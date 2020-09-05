@@ -20,6 +20,7 @@ import Arkham.Types.Asset.Cards.BeatCop
 import Arkham.Types.Asset.Cards.Burglary
 import Arkham.Types.Asset.Cards.DaisysToteBag
 import Arkham.Types.Asset.Cards.DigDeep
+import Arkham.Types.Asset.Cards.DigDeep2
 import Arkham.Types.Asset.Cards.DrMilanChristopher
 import Arkham.Types.Asset.Cards.FirstAid
 import Arkham.Types.Asset.Cards.Flashlight
@@ -115,6 +116,7 @@ allAssets = HashMap.fromList
   , ("50003", Hyperawareness2' . hyperawareness2)
   , ("50005", HardKnocks2' . hardKnocks2)
   , ("50007", ArcaneStudies2' . arcaneStudies2)
+  , ("50009", DigDeep2' . digDeep2)
   ]
 
 instance HasCardCode Asset where
@@ -178,6 +180,7 @@ data Asset
   | Hyperawareness2' Hyperawareness2
   | HardKnocks2' HardKnocks2
   | ArcaneStudies2' ArcaneStudies2
+  | DigDeep2' DigDeep2
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -225,6 +228,7 @@ assetAttrs = \case
   Hyperawareness2' attrs -> coerce attrs
   HardKnocks2' attrs -> coerce attrs
   ArcaneStudies2' attrs -> coerce attrs
+  DigDeep2' attrs -> coerce attrs
 
 isHealthDamageable :: Asset -> Bool
 isHealthDamageable a = case assetHealth (assetAttrs a) of
@@ -280,6 +284,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     Hyperawareness2' x -> getActions i window x
     HardKnocks2' x -> getActions i window x
     ArcaneStudies2' x -> getActions i window x
+    DigDeep2' x -> getActions i window x
 
 instance (AssetRunner env) => RunMessage env Asset where
   runMessage msg = \case
@@ -325,3 +330,4 @@ instance (AssetRunner env) => RunMessage env Asset where
     Hyperawareness2' x -> Hyperawareness2' <$> runMessage msg x
     HardKnocks2' x -> HardKnocks2' <$> runMessage msg x
     ArcaneStudies2' x -> ArcaneStudies2' <$> runMessage msg x
+    DigDeep2' x -> DigDeep2' <$> runMessage msg x

@@ -170,6 +170,20 @@ facingDefeat a@Attrs {..} =
     || investigatorSanityDamage
     >= modifiedSanity a
 
+updateFailureModifiers :: Int -> HashMap Source [Modifier] -> HashMap Source [Modifier]
+updateFailureModifiers n modifiers' = HashMap.map updateFailureModifiers' modifiers'
+  where
+    updateFailureModifiers' modifiers'' = flip map modifiers'' $ \case
+      ByPointsFailedBy mbounds m -> replaceIntModifierValue mbounds n m
+      m -> m
+
+updateSuccessModifiers :: Int -> HashMap Source [Modifier] -> HashMap Source [Modifier]
+updateSuccessModifiers n modifiers' = HashMap.map updateSuccessModifiers' modifiers'
+  where
+    updateSuccessModifiers' modifiers'' = flip map modifiers'' $ \case
+      ByPointsSucceededBy mbounds m -> replaceIntModifierValue mbounds n m
+      m -> m
+
 skillValueFor :: SkillType -> Maybe Action -> [Modifier] -> Attrs -> Int
 skillValueFor skill maction tempModifiers attrs = foldr
   applyModifier
@@ -1307,6 +1321,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       pure $ a & clues .~ 0
     RemoveDiscardFromGame iid | iid == investigatorId ->
       pure $ a & discard .~ []
+    Will (FailedSkillTest iid _ _ n) | iid == investigatorId -> do
+      pure $ a & modifiers %~ updateFailureModifiers n
+    Will (PassedSkillTest iid _ _ n) | iid == investigatorId -> do
+      pure $ a & modifiers %~ updateSuccessModifiers n
     After (FailedSkillTest iid _ _ n) | iid == investigatorId -> do
       a <$ unshiftMessage (CheckWindow iid [AfterFailSkillTest You n])
     After (PassedSkillTest iid _ _ n) | iid == investigatorId -> do

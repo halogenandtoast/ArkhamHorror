@@ -32,10 +32,10 @@ instance (LocationRunner env) => RunMessage env Easttown where
   runMessage msg (Easttown attrs@Attrs {..}) = case msg of
     WhenEnterLocation iid lid | lid == locationId -> do
       unshiftMessage
-        (AddModifier
+        (AddModifiers
           (InvestigatorTarget iid)
           (LocationSource "01132")
-          (ReduceCostOf [Ally] 2)
+          [ReduceCostOf [Ally] 2]
         )
       Easttown <$> runMessage msg attrs
     WhenEnterLocation iid lid

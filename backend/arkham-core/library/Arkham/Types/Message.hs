@@ -63,6 +63,9 @@ data ActionType = EnemyActionType | LocationActionType | AssetActionType | Treac
 
 data Message
   = Setup
+  | BlankText Target
+  | UnblankText Target
+  | ApplyModifiers Target
   | BeginTurn InvestigatorId
   | AddToken Token
   | AddCampaignCardToDeck InvestigatorId PlayerCard
@@ -276,10 +279,12 @@ data Message
   | AttachTreacheryToLocation TreacheryId LocationId
   | AttachEventToLocation EventId LocationId
   | AttachTreacheryToInvestigator TreacheryId InvestigatorId
-  | AddModifier Target Source Modifier
+  | AddModifiers Target Source [Modifier]
+  | SetModifiers Target Source [Modifier]
   | AddSlot InvestigatorId SlotType Slot
   | RefillSlots InvestigatorId SlotType [AssetId]
   | RemoveAllModifiersOnTargetFrom Target Source
+  | RemoveAllModifiersFrom Source
   | RequestedEncounterCard Source (Maybe EncounterCard)
   | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard)
   | ShuffleEncounterDiscardBackIn

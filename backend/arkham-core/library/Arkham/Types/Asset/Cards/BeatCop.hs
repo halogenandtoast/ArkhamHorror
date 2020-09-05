@@ -41,10 +41,10 @@ instance (AssetRunner env) => RunMessage env BeatCop where
   runMessage msg a@(BeatCop attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage
-        (AddModifier
+        (AddModifiers
           (InvestigatorTarget iid)
           (AssetSource aid)
-          (SkillModifier SkillCombat 1)
+          [SkillModifier SkillCombat 1]
         )
       pure a
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do

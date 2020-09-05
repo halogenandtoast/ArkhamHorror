@@ -47,17 +47,17 @@ instance (AssetRunner env) => RunMessage env PhysicalTraining2 where
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
-        , AddModifier
+        , AddModifiers
           SkillTestTarget
           (AssetSource aid)
-          (SkillModifier SkillWillpower 1)
+          [SkillModifier SkillWillpower 1]
         ]
     UseCardAbility iid _ (AssetSource aid) 2 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
-        , AddModifier
+        , AddModifiers
           SkillTestTarget
           (AssetSource aid)
-          (SkillModifier SkillCombat 1)
+          [SkillModifier SkillCombat 1]
         ]
     _ -> PhysicalTraining2 <$> runMessage msg attrs

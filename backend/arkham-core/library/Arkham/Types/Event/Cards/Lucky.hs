@@ -28,7 +28,7 @@ instance (EventRunner env) => RunMessage env Lucky where
   runMessage msg (Lucky attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent _ eid | eid == eventId -> do
       unshiftMessages
-        [ AddModifier AfterSkillTestTarget (EventSource eid) (AnySkillValue 2)
+        [ AddModifiers AfterSkillTestTarget (EventSource eid) [AnySkillValue 2]
         , Discard (EventTarget eid)
         ]
       Lucky <$> runMessage msg (attrs & resolved .~ True)

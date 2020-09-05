@@ -46,17 +46,17 @@ instance (AssetRunner env) => RunMessage env Hyperawareness2 where
     UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
-        , AddModifier
+        , AddModifiers
           SkillTestTarget
           (AssetSource aid)
-          (SkillModifier SkillIntellect 1)
+          [SkillModifier SkillIntellect 1]
         ]
     UseCardAbility iid _ (AssetSource aid) 2 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
-        , AddModifier
+        , AddModifiers
           SkillTestTarget
           (AssetSource aid)
-          (SkillModifier SkillAgility 1)
+          [SkillModifier SkillAgility 1]
         ]
     _ -> Hyperawareness2 <$> runMessage msg attrs

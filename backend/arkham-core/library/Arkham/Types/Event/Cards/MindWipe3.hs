@@ -40,17 +40,10 @@ instance (EventRunner env) => RunMessage env MindWipe3 where
         then unshiftMessage (Discard (EventTarget eventId))
         else unshiftMessages
           [ Ask iid $ ChooseOne
-            [ Run
-                [ AddModifier (EnemyTarget eid') (EventSource eventId) Blank
-                , AddModifier
-                  (EnemyTarget eid')
-                  (EventSource eventId)
-                  (DamageDealt (-1))
-                , AddModifier
-                  (EnemyTarget eid')
-                  (EventSource eventId)
-                  (HorrorDealt (-1))
-                ]
+            [ AddModifiers
+                (EnemyTarget eid')
+                (EventSource eventId)
+                [Blank, DamageDealt (-1), HorrorDealt (-1)]
             | eid' <- nonEliteEnemyIds
             ]
           , Discard (EventTarget eid)

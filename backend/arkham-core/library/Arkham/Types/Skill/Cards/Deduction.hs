@@ -28,5 +28,5 @@ instance (SkillRunner env) => RunMessage env Deduction where
   runMessage msg s@(Deduction attrs@Attrs {..}) = case msg of
     PassedSkillTest _ (Just Action.Investigate) (LocationSource _) _ ->
       s <$ unshiftMessage
-        (AddModifier SkillTestTarget (SkillSource skillId) (DiscoveredClues 1))
+        (AddModifiers SkillTestTarget (SkillSource skillId) [DiscoveredClues 1])
     _ -> Deduction <$> runMessage msg attrs

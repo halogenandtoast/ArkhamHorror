@@ -14,6 +14,7 @@ import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
 import ClassyPrelude
+import qualified Data.HashSet as HashSet
 import Lens.Micro
 
 newtype TheMaskedHunter = TheMaskedHunter Attrs
@@ -33,7 +34,7 @@ instance (IsInvestigator investigator) => HasActions env investigator TheMaskedH
   getActions i window (TheMaskedHunter attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env TheMaskedHunter where
-  runMessage msg (TheMaskedHunter attrs@Attrs {..}) = case msg of
+  runMessage msg e@(TheMaskedHunter attrs@Attrs {..}) = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       playerCount <- unPlayerCount <$> asks (getCount ())
       TheMaskedHunter
@@ -52,16 +53,15 @@ instance (EnemyRunner env) => RunMessage env TheMaskedHunter where
           (EnemySource enemyId)
         )
       TheMaskedHunter <$> runMessage msg attrs
-    EnemyEngageInvestigator eid iid | eid == enemyId -> do
+    EnemyEngageInvestigator eid _ | eid == enemyId ->
+      runMessage (ApplyModifiers (EnemyTarget eid)) e
+    ApplyModifiers (EnemyTarget eid) | eid == enemyId -> do
       unshiftMessages
-        [ AddModifier
-          (InvestigatorTarget iid)
-          (EnemySource eid)
-          CannotDiscoverClues
-        , AddModifier
-          (InvestigatorTarget iid)
-          (EnemySource eid)
-          CannotSpendClues
+        [ AddModifiers
+            (InvestigatorTarget iid)
+            (EnemySource eid)
+            [CannotDiscoverClues, CannotSpendClues]
+        | iid <- HashSet.toList enemyEngagedInvestigators
         ]
       TheMaskedHunter <$> runMessage msg attrs
     _ -> TheMaskedHunter <$> runMessage msg attrs

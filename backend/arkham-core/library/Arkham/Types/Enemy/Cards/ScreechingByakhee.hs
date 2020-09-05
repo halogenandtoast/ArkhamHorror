@@ -41,16 +41,10 @@ instance (EnemyRunner env) => RunMessage env ScreechingByakhee where
         (HashSet.toList enemyEngagedInvestigators)
       when
         (any (<= 4) sanities)
-        (unshiftMessages
-          [ AddModifier
-            (EnemyTarget enemyId)
-            (EnemySource enemyId)
-            (EnemyFight 1)
-          , AddModifier
-            (EnemyTarget enemyId)
-            (EnemySource enemyId)
-            (EnemyEvade 1)
-          ]
+        (unshiftMessage $ AddModifiers
+          (EnemyTarget enemyId)
+          (EnemySource enemyId)
+          [EnemyFight 1, EnemyEvade 1]
         )
       e <$ unshiftMessage
         (RemoveAllModifiersOnTargetFrom

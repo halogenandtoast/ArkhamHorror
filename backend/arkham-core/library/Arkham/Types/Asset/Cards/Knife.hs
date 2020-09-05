@@ -50,7 +50,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Knife wh
 
 instance (AssetRunner env) => RunMessage env Knife where
   runMessage msg a@(Knife attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
       unshiftMessage
         (ChooseFightEnemy
           iid
@@ -60,7 +60,7 @@ instance (AssetRunner env) => RunMessage env Knife where
           False
         )
       pure a
-    UseCardAbility iid _ (AssetSource aid) 2 | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) _ 2 | aid == assetId -> do
       unshiftMessages
         [ Discard (AssetTarget aid)
         , ChooseFightEnemy

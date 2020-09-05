@@ -85,7 +85,7 @@ instance (TreacheryRunner env) => RunMessage env HospitalDebts where
               (TreacherySource treacheryId)
               [XPModifier (-2)]
             )
-      UseCardAbility iid _ (TreacherySource tid) 1 | tid == treacheryId -> do
+      UseCardAbility iid _ (TreacherySource tid) _ 1 | tid == treacheryId -> do
         unshiftMessage (SpendResources iid 1)
         pure $ HospitalDebts
           (attrs `with` HospitalDebtsMetadata (hospitalDebtsResources + 1))

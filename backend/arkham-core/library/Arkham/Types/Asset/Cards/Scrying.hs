@@ -9,12 +9,12 @@ import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Window
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
 import Lens.Micro
@@ -40,7 +40,7 @@ instance (AssetRunner env) => RunMessage env Scrying where
   runMessage msg a@(Scrying attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       Scrying <$> runMessage msg (attrs & uses .~ Uses Resource.Charge 3)
-    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
       locationId <- asks (getId @LocationId iid)
       investigatorIds <- HashSet.toList <$> asks (getSet locationId)
       case assetUses of

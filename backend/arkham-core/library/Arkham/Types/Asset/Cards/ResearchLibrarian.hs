@@ -31,12 +31,17 @@ instance (AssetRunner env) => RunMessage env ResearchLibrarian where
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessage
         (Ask iid $ ChooseOne
-          [ UseCardAbility iid (AssetSource assetId) (AssetSource assetId) 1
+          [ UseCardAbility
+            iid
+            (AssetSource assetId)
+            (AssetSource assetId)
+            Nothing
+            1
           , Continue "Do not use ability"
           ]
         )
       ResearchLibrarian <$> runMessage msg attrs
-    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
       a <$ unshiftMessage
         (SearchDeckForTraits iid (InvestigatorTarget iid) [Tome])
     _ -> ResearchLibrarian <$> runMessage msg attrs

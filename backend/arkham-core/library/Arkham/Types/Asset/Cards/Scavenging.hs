@@ -7,11 +7,11 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
+import Arkham.Types.Window
 import ClassyPrelude
 import Lens.Micro
 
@@ -36,7 +36,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Scavenging
 
 instance (AssetRunner env) => RunMessage env Scavenging where
   runMessage msg (Scavenging attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
       unshiftMessage (SearchDiscard iid (InvestigatorTarget iid) [Item])
       pure $ Scavenging $ attrs & exhausted .~ True
     _ -> Scavenging <$> runMessage msg attrs

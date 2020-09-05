@@ -24,6 +24,10 @@ data AbilityLimit
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 
+newtype AbilityMetadata = IntMetadata Int
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 mkAbility :: Source -> Int -> AbilityType -> Ability
 mkAbility source idx type' = Ability
   { abilitySource = source
@@ -31,6 +35,7 @@ mkAbility source idx type' = Ability
   , abilityIndex = idx
   , abilityType = type'
   , abilityLimit = NoLimit
+  , abilityMetadata = Nothing
   }
 
 data Ability = Ability
@@ -39,6 +44,7 @@ data Ability = Ability
   , abilityIndex :: Int
   , abilityType :: AbilityType
   , abilityLimit :: AbilityLimit
+  , abilityMetadata :: Maybe AbilityMetadata
   }
   deriving stock (Show, Generic)
 

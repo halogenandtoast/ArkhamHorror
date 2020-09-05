@@ -1048,7 +1048,13 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         )
     ActivateCardAbilityAction iid Ability {..} | iid == investigatorId -> do
       unshiftMessage
-        (UseCardAbility iid abilitySource abilityProvider abilityIndex) -- We should check action type when added for aoo
+        (UseCardAbility
+          iid
+          abilitySource
+          abilityProvider
+          abilityMetadata
+          abilityIndex
+        ) -- We should check action type when added for aoo
       case abilityType of
         FastAbility _ -> pure ()
         ReactionAbility _ -> pure ()

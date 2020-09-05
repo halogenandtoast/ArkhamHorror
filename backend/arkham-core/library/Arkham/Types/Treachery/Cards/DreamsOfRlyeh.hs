@@ -44,7 +44,7 @@ instance (TreacheryRunner env) => RunMessage env DreamsOfRlyeh where
           [SkillModifier SkillWillpower (-1), SanityModifier (-1)]
         ]
       DreamsOfRlyeh <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
-    UseCardAbility iid _ (TreacherySource tid) 1 | tid == treacheryId ->
+    UseCardAbility iid _ (TreacherySource tid) _ 1 | tid == treacheryId ->
       t <$ unshiftMessage
         (BeginSkillTest
           iid

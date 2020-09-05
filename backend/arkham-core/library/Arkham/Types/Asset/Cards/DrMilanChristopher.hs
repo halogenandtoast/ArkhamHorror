@@ -41,10 +41,15 @@ instance (AssetRunner env) => RunMessage env DrMilanChristopher where
     SuccessfulInvestigation iid _ | iid == getInvestigator attrs ->
       a <$ unshiftMessage
         (Ask iid $ ChooseOne
-          [ UseCardAbility iid (AssetSource assetId) (AssetSource assetId) 1
+          [ UseCardAbility
+            iid
+            (AssetSource assetId)
+            (AssetSource assetId)
+            Nothing
+            1
           , Continue "Do not use Dr. Christopher Milan's ability"
           ]
         )
-    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
       a <$ unshiftMessage (TakeResources iid 1 False)
     _ -> DrMilanChristopher <$> runMessage msg attrs

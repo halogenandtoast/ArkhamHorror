@@ -6,7 +6,6 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
-import Arkham.Types.Window
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -14,6 +13,7 @@ import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Token
 import Arkham.Types.Trait
+import Arkham.Types.Window
 import ClassyPrelude
 import Data.Aeson
 
@@ -58,28 +58,27 @@ instance (ActionRunner env investigator) => HasActions env investigator WendyAda
 
 instance (InvestigatorRunner Attrs env) => RunMessage env WendyAdams where
   runMessage msg i@(WendyAdams attrs@Attrs {..}) = case msg of
-    UseCardAbility _ _ (InvestigatorSource iid) 1 | iid == investigatorId -> do
-      mResolveToken <- withQueue $ \queue ->
-        (queue, find ((== Just ResolveTokenMessage) . messageType) queue)
-      case mResolveToken of
-        Just (ResolveToken token _ skillValue) -> do
-          void
-            $ withQueue
-            $ \queue ->
-                ( filter
-                  (/= CheckWindow iid [WhenDrawToken You token])
-                  queue
-                , ()
-                )
-          i <$ unshiftMessages
-            [ ChooseAndDiscardCard iid
-            , CancelNext DrawTokenMessage
-            , CancelNext ResolveTokenMessage
-            , ReturnTokens [token]
-            , UnfocusTokens
-            , DrawAnotherToken iid skillValue token 0
-            ]
-        _ -> error "we expect resolve token to be on the stack"
+    UseCardAbility _ _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
+      do
+        mResolveToken <- withQueue $ \queue ->
+          (queue, find ((== Just ResolveTokenMessage) . messageType) queue)
+        case mResolveToken of
+          Just (ResolveToken token _ skillValue) -> do
+            void
+              $ withQueue
+              $ \queue ->
+                  ( filter (/= CheckWindow iid [WhenDrawToken You token]) queue
+                  , ()
+                  )
+            i <$ unshiftMessages
+              [ ChooseAndDiscardCard iid
+              , CancelNext DrawTokenMessage
+              , CancelNext ResolveTokenMessage
+              , ReturnTokens [token]
+              , UnfocusTokens
+              , DrawAnotherToken iid skillValue token 0
+              ]
+          _ -> error "we expect resolve token to be on the stack"
     When (DrawToken token) -> i <$ unshiftMessages
       [ FocusTokens [token]
       , CheckWindow investigatorId [WhenDrawToken You token]

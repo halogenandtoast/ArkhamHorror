@@ -8,11 +8,11 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
-import Arkham.Types.Window
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Window
 import ClassyPrelude
 
 newtype HermanCollins = HermanCollins Attrs
@@ -42,7 +42,7 @@ instance (IsInvestigator investigator) => HasActions env investigator HermanColl
 instance (EnemyRunner env) => RunMessage env HermanCollins where
   runMessage msg e@(HermanCollins attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == enemyId -> e <$ spawnAt eid "01133"
-    UseCardAbility iid _ (EnemySource eid) 1 | eid == enemyId ->
+    UseCardAbility iid _ (EnemySource eid) _ 1 | eid == enemyId ->
       e <$ unshiftMessages
         (replicate 4 (ChooseAndDiscardCard iid)
         <> [AddToVictory (EnemyTarget enemyId)]

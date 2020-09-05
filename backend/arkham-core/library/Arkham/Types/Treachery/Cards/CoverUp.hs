@@ -4,7 +4,6 @@ module Arkham.Types.Treachery.Cards.CoverUp where
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
@@ -13,6 +12,7 @@ import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
+import Arkham.Types.Window
 import ClassyPrelude
 import Lens.Micro
 import Safe (fromJustNote)
@@ -72,7 +72,7 @@ instance (TreacheryRunner env) => RunMessage env CoverUp where
           investigator =
             fromJustNote "missing investigator" treacheryAttachedInvestigator
         in t <$ unshiftMessage (SufferTrauma investigator 0 1)
-      UseCardAbility iid _ (TreacherySource tid) 1 | tid == treacheryId -> do
+      UseCardAbility iid _ (TreacherySource tid) _ 1 | tid == treacheryId -> do
         cluesToRemove <- withQueue $ \queue -> do
           let
             (before, after) = flip break queue $ \case

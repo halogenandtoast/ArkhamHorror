@@ -9,12 +9,12 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
-import Arkham.Types.Window
 import Arkham.Types.GameValue
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Source
+import Arkham.Types.Window
 import ClassyPrelude
 import Lens.Micro
 
@@ -55,6 +55,6 @@ instance (EnemyRunner env) => RunMessage env Umordhoth where
         <$> runMessage msg (attrs & health %~ fmap (+ (4 * playerCount)))
     ChooseEndTurn _ -> do
       Umordhoth <$> runMessage msg (attrs & exhausted .~ False)
-    UseCardAbility _ _ (EnemySource eid) 1 | eid == enemyId ->
+    UseCardAbility _ _ (EnemySource eid) _ 1 | eid == enemyId ->
       e <$ unshiftMessage (Resolution 3)
     _ -> Umordhoth <$> runMessage msg attrs

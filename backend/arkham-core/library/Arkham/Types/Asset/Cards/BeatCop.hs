@@ -33,6 +33,7 @@ instance (IsInvestigator investigator) => HasActions env investigator BeatCop wh
           (getId () i)
           (AssetSource assetId)
           (AssetSource assetId)
+          Nothing
           1
       ]
   getActions _ _ _ = pure []
@@ -47,7 +48,7 @@ instance (AssetRunner env) => RunMessage env BeatCop where
           [SkillModifier SkillCombat 1]
         )
       pure a
-    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
       locationId <- asks (getId @LocationId (getInvestigator attrs))
       locationEnemyIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessages

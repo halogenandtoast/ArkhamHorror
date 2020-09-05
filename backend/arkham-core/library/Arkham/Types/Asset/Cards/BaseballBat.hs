@@ -46,7 +46,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Baseball
 
 instance (AssetRunner env) => RunMessage env BaseballBat where
   runMessage msg a@(BaseballBat attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
       a <$ unshiftMessage
         (ChooseFightEnemy
           iid

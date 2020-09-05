@@ -47,7 +47,7 @@ instance (AssetRunner env) => RunMessage env Flashlight where
   runMessage msg a@(Flashlight attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       Flashlight <$> runMessage msg (attrs & uses .~ Uses Resource.Supply 3)
-    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
       case assetUses of
         Uses Resource.Supply n -> do
           lid <- asks (getId iid)

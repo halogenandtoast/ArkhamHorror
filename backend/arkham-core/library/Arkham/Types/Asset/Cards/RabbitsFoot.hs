@@ -7,10 +7,10 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.Message
 import Arkham.Types.Slot
 import Arkham.Types.Source
+import Arkham.Types.Window
 import ClassyPrelude
 import Lens.Micro
 
@@ -37,7 +37,7 @@ instance (IsInvestigator investigator) => HasActions env investigator RabbitsFoo
 
 instance (AssetRunner env) => RunMessage env RabbitsFoot where
   runMessage msg (RabbitsFoot attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId -> do
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
       unshiftMessage (DrawCards iid 1 False)
       pure $ RabbitsFoot $ attrs & exhausted .~ True
     _ -> RabbitsFoot <$> runMessage msg attrs

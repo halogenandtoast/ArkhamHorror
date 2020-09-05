@@ -8,12 +8,12 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
-import Arkham.Types.Window
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Prey
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Window
 import ClassyPrelude
 
 newtype MobEnforcer = MobEnforcer Attrs
@@ -43,6 +43,6 @@ instance (IsInvestigator investigator) => HasActions env investigator MobEnforce
 
 instance (EnemyRunner env) => RunMessage env MobEnforcer where
   runMessage msg e@(MobEnforcer attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (EnemySource eid) 1 | eid == enemyId ->
+    UseCardAbility iid _ (EnemySource eid) _ 1 | eid == enemyId ->
       e <$ unshiftMessages [SpendResources iid 4, Discard (EnemyTarget enemyId)]
     _ -> MobEnforcer <$> runMessage msg attrs

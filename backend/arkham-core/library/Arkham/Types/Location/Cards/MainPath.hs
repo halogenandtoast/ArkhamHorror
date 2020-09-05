@@ -5,7 +5,6 @@ import Arkham.Json
 import Arkham.Types.Ability
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Classes
-import Arkham.Types.Window
 import Arkham.Types.GameValue
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -13,6 +12,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Trait
+import Arkham.Types.Window
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
 import Lens.Micro
@@ -45,7 +45,7 @@ instance (IsInvestigator investigator) => HasActions env investigator MainPath w
 
 instance (LocationRunner env) => RunMessage env MainPath where
   runMessage msg l@(MainPath attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (LocationSource lid) 1
+    UseCardAbility iid _ (LocationSource lid) _ 1
       | lid == locationId && locationRevealed -> l
       <$ unshiftMessage (Resign iid)
     AddConnection lid _ | locationId /= lid -> do

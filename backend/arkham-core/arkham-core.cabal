@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 948ad5863dda8bc9204a5cb26e09cdb40365621184a5875ba61764d851a9862a
+-- hash: 0460812afadc65fa8a0539df8f378234ca07dd29f004c2a307cbb62f4f68a249
 
 name:           arkham-core
 version:        0.0.0
@@ -74,6 +74,7 @@ library
       Arkham.Types.Asset.Cards.PhysicalTraining2
       Arkham.Types.Asset.Cards.Pickpocketing
       Arkham.Types.Asset.Cards.RabbitsFoot
+      Arkham.Types.Asset.Cards.RabbitsFoot3
       Arkham.Types.Asset.Cards.ResearchLibrarian
       Arkham.Types.Asset.Cards.Rolands38Special
       Arkham.Types.Asset.Cards.Scavenging

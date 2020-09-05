@@ -5,8 +5,6 @@ import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
 import Arkham.Types.EnemyId
-import Arkham.Types.Window (Who(..))
-import qualified Arkham.Types.Window as Fast
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.LocationId
@@ -15,6 +13,8 @@ import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Token
 import Arkham.Types.Trait
+import Arkham.Types.Window (Who(..))
+import qualified Arkham.Types.Window as Fast
 import ClassyPrelude
 import Data.Aeson
 import qualified Data.HashSet as HashSet
@@ -58,15 +58,16 @@ instance (ActionRunner env investigator) => HasActions env investigator AgnesBak
 
 instance (InvestigatorRunner Attrs env) => RunMessage env AgnesBaker where
   runMessage msg i@(AgnesBaker attrs@Attrs {..}) = case msg of
-    UseCardAbility _ _ (InvestigatorSource iid) 1 | iid == investigatorId -> do
-      lid <- asks (getId @LocationId investigatorId)
-      locationEnemyIds <- HashSet.toList <$> asks (getSet lid)
-      i <$ unshiftMessage
-        (Ask iid $ ChooseOne
-          [ EnemyDamage eid iid (InvestigatorSource investigatorId) 1
-          | eid <- locationEnemyIds
-          ]
-        )
+    UseCardAbility _ _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
+      do
+        lid <- asks (getId @LocationId investigatorId)
+        locationEnemyIds <- HashSet.toList <$> asks (getSet lid)
+        i <$ unshiftMessage
+          (Ask iid $ ChooseOne
+            [ EnemyDamage eid iid (InvestigatorSource investigatorId) 1
+            | eid <- locationEnemyIds
+            ]
+          )
     ResolveToken ElderSign iid skillValue | iid == investigatorId ->
       i <$ runTest skillValue investigatorSanityDamage
     _ -> AgnesBaker <$> runMessage msg attrs

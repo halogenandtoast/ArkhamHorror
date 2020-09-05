@@ -50,7 +50,7 @@ instance (AssetRunner env) => RunMessage env Shrivelling where
   runMessage msg a@(Shrivelling attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       Shrivelling <$> runMessage msg (attrs & uses .~ Uses Resource.Charge 4)
-    UseCardAbility iid _ (AssetSource aid) 1 | aid == assetId ->
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
       case assetUses of
         Uses Resource.Charge n -> do
           unshiftMessage

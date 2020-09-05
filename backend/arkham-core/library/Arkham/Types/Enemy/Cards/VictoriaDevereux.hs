@@ -8,11 +8,11 @@ import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
-import Arkham.Types.Window
 import Arkham.Types.GameValue
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Window
 import ClassyPrelude
 
 newtype VictoriaDevereux = VictoriaDevereux Attrs
@@ -41,7 +41,7 @@ instance (IsInvestigator investigator) => HasActions env investigator VictoriaDe
 instance (EnemyRunner env) => RunMessage env VictoriaDevereux where
   runMessage msg e@(VictoriaDevereux attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == enemyId -> e <$ spawnAt eid "01134"
-    UseCardAbility iid _ (EnemySource eid) 1 | eid == enemyId ->
+    UseCardAbility iid _ (EnemySource eid) _ 1 | eid == enemyId ->
       e <$ unshiftMessages
         [SpendResources iid 5, AddToVictory (EnemyTarget enemyId)]
     _ -> VictoriaDevereux <$> runMessage msg attrs

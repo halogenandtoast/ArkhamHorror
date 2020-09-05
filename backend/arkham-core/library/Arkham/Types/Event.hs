@@ -15,6 +15,7 @@ import Arkham.Types.Event.Cards.Backstab
 import Arkham.Types.Event.Cards.Barricade
 import Arkham.Types.Event.Cards.Barricade3
 import Arkham.Types.Event.Cards.BlindingLight
+import Arkham.Types.Event.Cards.CrypticResearch4
 import Arkham.Types.Event.Cards.CunningDistraction
 import Arkham.Types.Event.Cards.DarkMemory
 import Arkham.Types.Event.Cards.Dodge
@@ -60,6 +61,7 @@ allEvents = HashMap.fromList
   , ("01036", (MindOverMatter' .) . mindOverMatter)
   , ("01037", (WorkingAHunch' .) . workingAHunch)
   , ("01038", (Barricade' .) . barricade)
+  , ("01043", (CrypticResearch4' .) . crypticResearch4)
   , ("01050", (Elusive' .) . elusive)
   , ("01051", (Backstab' .) . backstab)
   , ("01052", (SneakAttack' .) . sneakAttack)
@@ -90,6 +92,7 @@ data Event
   | MindOverMatter' MindOverMatter
   | WorkingAHunch' WorkingAHunch
   | Barricade' Barricade
+  | CrypticResearch4' CrypticResearch4
   | Elusive' Elusive
   | Backstab' Backstab
   | SneakAttack' SneakAttack
@@ -119,6 +122,7 @@ eventAttrs = \case
   MindOverMatter' attrs -> coerce attrs
   WorkingAHunch' attrs -> coerce attrs
   Barricade' attrs -> coerce attrs
+  CrypticResearch4' attrs -> coerce attrs
   Elusive' attrs -> coerce attrs
   Backstab' attrs -> coerce attrs
   SneakAttack' attrs -> coerce attrs
@@ -146,6 +150,7 @@ instance HasActions env investigator Event where
     MindOverMatter' x -> getActions i window x
     WorkingAHunch' x -> getActions i window x
     Barricade' x -> getActions i window x
+    CrypticResearch4' x -> getActions i window x
     Elusive' x -> getActions i window x
     Backstab' x -> getActions i window x
     SneakAttack' x -> getActions i window x
@@ -179,6 +184,7 @@ instance (EventRunner env) => RunMessage env Event where
     MindOverMatter' x -> MindOverMatter' <$> runMessage msg x
     WorkingAHunch' x -> WorkingAHunch' <$> runMessage msg x
     Barricade' x -> Barricade' <$> runMessage msg x
+    CrypticResearch4' x -> CrypticResearch4' <$> runMessage msg x
     Elusive' x -> Elusive' <$> runMessage msg x
     Backstab' x -> Backstab' <$> runMessage msg x
     SneakAttack' x -> SneakAttack' <$> runMessage msg x

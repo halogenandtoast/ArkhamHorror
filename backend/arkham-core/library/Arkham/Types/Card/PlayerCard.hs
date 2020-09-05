@@ -176,6 +176,8 @@ allPlayerCards = HashMap.fromList
   , ("01039", deduction)
   , ("01040", magnifyingGlass1)
   , ("01041", discOfItzamna2)
+  , ("01042", encyclopedia2)
+  , ("01043", crypticResearch4)
   , ("01044", switchblade)
   , ("01045", burglary)
   , ("01046", pickpoketing)
@@ -465,12 +467,29 @@ magnifyingGlass1 cardId = (asset cardId "01040" "Magnifying Glass" 0 Seeker)
   , pcTraits = [Item, Tool]
   , pcFast = True
   , pcWindows = HashSet.fromList [DuringTurn You]
+  , pcLevel = 1
   }
 
 discOfItzamna2 :: CardId -> PlayerCard
 discOfItzamna2 cardId = (asset cardId "01041" "Disc of Itzamna" 3 Seeker)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillCombat]
   , pcTraits = [Item, Relic]
+  , pcLevel = 2
+  }
+
+encyclopedia2 :: CardId -> PlayerCard
+encyclopedia2 cardId = (asset cardId "01042" "Encyclopedia" 2 Seeker)
+  { pcSkills = [SkillWild]
+  , pcTraits = [Item, Tome]
+  , pcLevel = 2
+  }
+
+crypticResearch4 :: CardId -> PlayerCard
+crypticResearch4 cardId = (event cardId "01043" "Cryptic Research" 0 Seeker)
+  { pcTraits = [Insight]
+  , pcLevel = 4
+  , pcFast = True
+  , pcWindows = HashSet.fromList [DuringTurn You]
   }
 
 switchblade :: CardId -> PlayerCard

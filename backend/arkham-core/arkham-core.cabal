@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 74a88a87d323edda21388f763b058cc20c22a4c4100493b5e45299c00ca323f2
+-- hash: b93c164a9e3e8740bff06537a97e61ca443fbfb294a3eb6a466ebe1a272066f8
 
 name:           arkham-core
 version:        0.0.0
@@ -52,6 +52,7 @@ library
       Arkham.Types.Asset.Cards.DigDeep2
       Arkham.Types.Asset.Cards.DiscOfItzamna2
       Arkham.Types.Asset.Cards.DrMilanChristopher
+      Arkham.Types.Asset.Cards.Encyclopedia2
       Arkham.Types.Asset.Cards.FirstAid
       Arkham.Types.Asset.Cards.Flashlight
       Arkham.Types.Asset.Cards.ForbiddenKnowledge
@@ -149,6 +150,7 @@ library
       Arkham.Types.Event.Cards.Barricade
       Arkham.Types.Event.Cards.Barricade3
       Arkham.Types.Event.Cards.BlindingLight
+      Arkham.Types.Event.Cards.CrypticResearch4
       Arkham.Types.Event.Cards.CunningDistraction
       Arkham.Types.Event.Cards.DarkMemory
       Arkham.Types.Event.Cards.Dodge

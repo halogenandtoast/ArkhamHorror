@@ -163,6 +163,7 @@ allPlayerCards = HashMap.fromList
   , ("01026", extraAmmunition1)
   , ("01027", policeBadge2)
   , ("01028", beatCop2)
+  , ("01029", shotgun4)
   , ("01030", magnifyingGlass)
   , ("01031", oldBookOfLore)
   , ("01032", researchLibrarian)
@@ -383,6 +384,13 @@ beatCop2 cardId = (asset cardId "01028" "Beat Cop" 4 Guardian)
   { pcSkills = [SkillCombat, SkillAgility]
   , pcTraits = [Ally, Police]
   , pcLevel = 2
+  }
+
+shotgun4 :: CardId -> PlayerCard
+shotgun4 cardId = (asset cardId "01029" "Shotgun" 5 Guardian)
+  { pcSkills = [SkillCombat, SkillCombat]
+  , pcTraits = [Item, Weapon, Firearm]
+  , pcLevel = 4
   }
 
 magnifyingGlass :: CardId -> PlayerCard

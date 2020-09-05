@@ -166,6 +166,7 @@ data Message
   | InvestigatorDamageInvestigator InvestigatorId InvestigatorId
   | EnemyDamage EnemyId InvestigatorId Source Int
   | EnemyDefeated EnemyId InvestigatorId CardCode Source
+  | Damage Target Source Int
   | AddToVictory Target
   | PlayCard InvestigatorId CardId Bool
   | PlayedCard InvestigatorId CardId Bool

@@ -1028,6 +1028,14 @@ runGameMessage msg g = case msg of
   GameOver -> do
     clearQueue
     pure $ g & gameOver .~ True
+  EnemyEvaded iid eid -> do
+    void $ withQueue $ \queue ->
+      let
+        queue' = flip map queue $ \case
+          Damage EnemyJustEvadedTarget source n -> EnemyDamage eid iid source n
+          msg' -> msg'
+       in pure (queue', ())
+    pure g
   PlaceLocation lid -> do
     unshiftMessage (PlacedLocation lid)
     pure $ g & locations . at lid ?~ lookupLocation lid

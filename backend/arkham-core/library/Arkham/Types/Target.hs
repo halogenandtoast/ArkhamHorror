@@ -30,5 +30,6 @@ data Target
   | CardIdTarget CardId
   | EventTarget EventId
   | SkillTarget SkillId
+  | EnemyJustEvadedTarget
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

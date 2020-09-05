@@ -26,7 +26,7 @@ magnifyingGlass1 uuid =
 instance (ActionRunner env investigator) => HasActions env investigator MagnifyingGlass1 where
   getActions i _ (MagnifyingGlass1 Attrs {..})
     | Just (getId () i) == assetInvestigator = do
-      clueCount <- unClueCount <$> asks (getCount (locationOf i))
+      clueCount' <- unClueCount <$> asks (getCount (locationOf i))
       pure
         [ UseCardAbility
             (getId () i)
@@ -34,7 +34,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Magnifyi
             (AssetSource assetId)
             Nothing
             1
-        | clueCount == 0
+        | clueCount' == 0
         ]
   getActions i window (MagnifyingGlass1 x) = getActions i window x
 

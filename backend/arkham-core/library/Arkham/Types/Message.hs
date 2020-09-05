@@ -327,6 +327,7 @@ data Message
   | ChooseLeadInvestigator
   | ChoosePlayer InvestigatorId ChoosePlayerChoice
   | Label Text [Message]
+  | TargetLabel Target [Message]
   | UnengageNonMatching InvestigatorId [Trait]
   | PlaceDoom Target Int
   | Surge InvestigatorId

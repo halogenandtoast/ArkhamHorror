@@ -32,6 +32,7 @@ data Window
   | WhenEnemySpawns Where [Trait]
   | WhenEnemyDefeated Who
   | WhenEnemyEvaded Who
+  | WhenRevealTokenWithNegativeModifier Who
   | WhenSkillTest SkillType
   | WhenWouldFailSkillTest Who
   deriving stock (Show, Generic, Eq)

@@ -190,6 +190,7 @@ allPlayerCards = HashMap.fromList
   , ("01053", opportunist)
   , ("01054", leoDeLuca1)
   , ("01055", catBurgler1)
+  , ("01056", sureGamble3)
   , ("01058", forbiddenKnowledge)
   , ("01059", holyRosary)
   , ("01060", shrivelling)
@@ -569,6 +570,13 @@ catBurgler1 :: CardId -> PlayerCard
 catBurgler1 cardId = (asset cardId "01055" "Cat Burgler" 4 Rogue)
   { pcSkills = [SkillWillpower, SkillAgility]
   , pcTraits = [Ally, Criminal]
+  }
+
+sureGamble3 :: CardId -> PlayerCard
+sureGamble3 cardId = (asset cardId "01056" "Sure Gamble" 2 Rogue)
+  { pcTraits = [Fortune, Insight]
+  , pcFast = True
+  , pcWindows = HashSet.fromList [WhenRevealTokenWithNegativeModifier You]
   }
 
 forbiddenKnowledge :: CardId -> PlayerCard

@@ -204,6 +204,7 @@ allPlayerCards = HashMap.fromList
   , ("01067", fearless)
   , ("01068", mindWipe1)
   , ("01069", blindingLight2)
+  , ("01070", bookOfShadows3)
   , ("01072", leatherCoat)
   , ("01073", scavenging)
   , ("01074", baseballBat)
@@ -665,6 +666,13 @@ blindingLight2 cardId = (event cardId "01069" "Blinding Light" 1 Mystic)
   , pcTraits = [Spell]
   , pcAction = Just Action.Evade
   , pcLevel = 1
+  }
+
+bookOfShadows3 :: CardId -> PlayerCard
+bookOfShadows3 cardId = (asset cardId "01070" "Book of Shadows" 4 Mystic)
+  { pcSkills = [SkillWillpower, SkillIntellect]
+  , pcTraits = [Item, Tome]
+  , pcLevel = 3
   }
 
 leatherCoat :: CardId -> PlayerCard

@@ -1,5 +1,6 @@
 module Arkham.Types.Asset.Runner where
 
+import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
@@ -23,4 +24,6 @@ type AssetRunner env
     , HasSet ConnectedLocationId LocationId env
     , HasSet BlockedLocationId () env
     , HasSet EnemyId InvestigatorId env
+    , HasSet Trait AssetId env
+    , HasSet AssetId InvestigatorId env
     )

@@ -18,6 +18,7 @@ import Arkham.Types.Asset.Cards.ArcaneStudies2
 import Arkham.Types.Asset.Cards.BaseballBat
 import Arkham.Types.Asset.Cards.BeatCop
 import Arkham.Types.Asset.Cards.BeatCop2
+import Arkham.Types.Asset.Cards.BookOfShadows3
 import Arkham.Types.Asset.Cards.Burglary
 import Arkham.Types.Asset.Cards.CatBurgler1
 import Arkham.Types.Asset.Cards.DaisysToteBag
@@ -120,6 +121,7 @@ allAssets = HashMap.fromList
   , ("01061", Scrying' . scrying)
   , ("01062", ArcaneStudies' . arcaneStudies)
   , ("01063", ArcaneInitiate' . arcaneInitiate)
+  , ("01070", BookOfShadows3' . bookOfShadows3)
   , ("01072", LeatherCoat' . leatherCoat)
   , ("01073", Scavenging' . scavenging)
   , ("01074", BaseballBat' . baseballBat)
@@ -193,6 +195,7 @@ data Asset
   | Scrying' Scrying
   | ArcaneStudies' ArcaneStudies
   | ArcaneInitiate' ArcaneInitiate
+  | BookOfShadows3' BookOfShadows3
   | LeatherCoat' LeatherCoat
   | Scavenging' Scavenging
   | BaseballBat' BaseballBat
@@ -250,6 +253,7 @@ assetAttrs = \case
   Scrying' attrs -> coerce attrs
   ArcaneStudies' attrs -> coerce attrs
   ArcaneInitiate' attrs -> coerce attrs
+  BookOfShadows3' attrs -> coerce attrs
   LeatherCoat' attrs -> coerce attrs
   Scavenging' attrs -> coerce attrs
   BaseballBat' attrs -> coerce attrs
@@ -315,6 +319,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Asset wh
     Scrying' x -> getActions i window x
     ArcaneStudies' x -> getActions i window x
     ArcaneInitiate' x -> getActions i window x
+    BookOfShadows3' x -> getActions i window x
     LeatherCoat' x -> getActions i window x
     Scavenging' x -> getActions i window x
     BaseballBat' x -> getActions i window x
@@ -370,6 +375,7 @@ instance (AssetRunner env) => RunMessage env Asset where
     Scrying' x -> Scrying' <$> runMessage msg x
     ArcaneStudies' x -> ArcaneStudies' <$> runMessage msg x
     ArcaneInitiate' x -> ArcaneInitiate' <$> runMessage msg x
+    BookOfShadows3' x -> BookOfShadows3' <$> runMessage msg x
     LeatherCoat' x -> LeatherCoat' <$> runMessage msg x
     BaseballBat' x -> BaseballBat' <$> runMessage msg x
     Scavenging' x -> Scavenging' <$> runMessage msg x

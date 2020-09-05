@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3c75abdd67c149d924af86b65adc5f8dd5c5a1af71ffdb89c318c9a4ae50f15e
+-- hash: 4d089e71a5fd2d6c7393961c0c06c440ff833ae6897184fbbff2d08239b3b0e1
 
 name:           arkham-core
 version:        0.0.0
@@ -46,6 +46,7 @@ library
       Arkham.Types.Asset.Cards.BaseballBat
       Arkham.Types.Asset.Cards.BeatCop
       Arkham.Types.Asset.Cards.BeatCop2
+      Arkham.Types.Asset.Cards.BookOfShadows3
       Arkham.Types.Asset.Cards.Burglary
       Arkham.Types.Asset.Cards.CatBurgler1
       Arkham.Types.Asset.Cards.DaisysToteBag

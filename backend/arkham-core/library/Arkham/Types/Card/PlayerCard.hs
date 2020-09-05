@@ -174,6 +174,7 @@ allPlayerCards = HashMap.fromList
   , ("01037", workingAHunch)
   , ("01038", barricade)
   , ("01039", deduction)
+  , ("01040", magnifyingGlass1)
   , ("01044", switchblade)
   , ("01045", burglary)
   , ("01046", pickpoketing)
@@ -457,6 +458,14 @@ barricade cardId = (event cardId "01038" "Barricade" 0 Seeker)
 deduction :: CardId -> PlayerCard
 deduction cardId = (skill cardId "01039" "Deduction" [SkillIntellect] Seeker)
   { pcTraits = [Practiced]
+  }
+
+magnifyingGlass1 :: CardId -> PlayerCard
+magnifyingGlass1 cardId = (asset cardId "01040" "Magnifying Glass" 0 Seeker)
+  { pcSkills = [SkillIntellect]
+  , pcTraits = [Item, Tool]
+  , pcFast = True
+  , pcWindows = HashSet.fromList [DuringTurn You]
   }
 
 switchblade :: CardId -> PlayerCard

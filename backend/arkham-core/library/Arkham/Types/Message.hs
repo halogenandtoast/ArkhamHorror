@@ -133,8 +133,8 @@ data Message
   | Ask InvestigatorId Question
   | AskMap (HashMap InvestigatorId Question)
   | TakeAction InvestigatorId Int (Maybe Action)
-  | LoseAction InvestigatorId Source
-  | GainAction InvestigatorId Source
+  | LoseActions InvestigatorId Source Int
+  | GainActions InvestigatorId Source Int
   | ChooseActivateCardAbilityAction InvestigatorId
   | ActivateCardAbilityAction InvestigatorId Ability
   | UseCardAbility InvestigatorId Source Source (Maybe AbilityMetadata) Int

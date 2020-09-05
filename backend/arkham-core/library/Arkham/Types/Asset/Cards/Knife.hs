@@ -35,7 +35,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Knife wh
                 1
                 (ActionAbility 1 (Just Action.Fight))
               )
-          | fightAvailable
+          | fightAvailable && canDo Action.Fight i
           ]
         <> [ ActivateCardAbilityAction
                (getId () i)

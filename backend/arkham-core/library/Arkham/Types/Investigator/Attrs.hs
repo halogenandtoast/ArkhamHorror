@@ -1192,9 +1192,9 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           <> [Continue "Skip playing fast cards or using reactions"]
           )
         else pure a
-    LoseAction iid _ | iid == investigatorId ->
-      pure $ a & remainingActions %~ max 0 . subtract 1
-    GainAction iid _ | iid == investigatorId -> pure $ a & remainingActions +~ 1
+    LoseActions iid _ n | iid == investigatorId ->
+      pure $ a & remainingActions %~ max 0 . subtract n
+    GainActions iid _ n | iid == investigatorId -> pure $ a & remainingActions +~ n
     TakeAction iid actionCost' maction | iid == investigatorId -> do
       let
         costModifier = actionCostModifier a maction

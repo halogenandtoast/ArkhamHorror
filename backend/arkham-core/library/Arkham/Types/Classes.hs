@@ -20,8 +20,10 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
+import Arkham.Types.Token (Token)
 import Arkham.Types.Trait
 import Arkham.Types.Window (Window)
+import qualified Arkham.Types.Window as Window
 import ClassyPrelude
 import GHC.Stack
 import Lens.Micro
@@ -69,9 +71,18 @@ unshiftMessages
   :: (MonadIO m, MonadReader env m, HasQueue env) => [Message] -> m ()
 unshiftMessages msgs = withQueue $ \queue -> (msgs <> queue, ())
 
-runTest :: (HasQueue env, MonadReader env m, MonadIO m) => Int -> Int -> m ()
-runTest skillValue tokenValue =
-  unshiftMessage (RunSkillTest skillValue tokenValue)
+runTest
+  :: (HasQueue env, MonadReader env m, MonadIO m)
+  => InvestigatorId
+  -> Int
+  -> Int
+  -> m ()
+runTest iid skillValue tokenValue = if tokenValue < 0
+  then unshiftMessages
+    [ CheckWindow iid [Window.WhenRevealTokenWithNegativeModifier Window.You]
+    , RunSkillTest skillValue tokenValue
+    ]
+  else unshiftMessage (RunSkillTest skillValue tokenValue)
 
 class HasSet c b a where
   getSet :: b -> a -> HashSet c
@@ -142,6 +153,9 @@ class (HasId LocationId () location) => IsLocation location where
 
 class (HasId EnemyId () enemy) => IsEnemy enemy where
   isAloof :: enemy -> Bool
+
+class IsScenario scenario where
+  tokensWithNegativeModifier :: scenario -> HashSet Token
 
 class (HasId InvestigatorId () investigator) => IsInvestigator investigator where
   locationOf :: investigator -> LocationId

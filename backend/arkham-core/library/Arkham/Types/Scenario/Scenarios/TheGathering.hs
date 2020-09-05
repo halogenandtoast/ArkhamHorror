@@ -80,12 +80,12 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
         then do
           ghoulCount <- unEnemyCount
             <$> asks (getCount (InvestigatorLocation iid, [Ghoul]))
-          s <$ runTest skillValue (-ghoulCount)
+          s <$ runTest iid skillValue (-ghoulCount)
         else do
           unshiftMessage
             (AddOnFailure $ FindAndDrawEncounterCard iid (EnemyType, Just Ghoul)
             )
-          s <$ runTest skillValue (-2)
+          s <$ runTest iid skillValue (-2)
     ResolveToken Token.Cultist iid skillValue ->
       if scenarioDifficulty `elem` [Easy, Standard]
         then do
@@ -93,7 +93,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
             (AddOnFailure
             $ InvestigatorAssignDamage iid (TokenSource Token.Cultist) 0 1
             )
-          s <$ runTest skillValue (-1)
+          s <$ runTest iid skillValue (-1)
         else do
           unshiftMessage (DrawAnotherToken iid skillValue Token.Cultist 0)
           unshiftMessage
@@ -108,11 +108,11 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
         then do
           when (ghoulCount > 0) $ unshiftMessage
             (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 0)
-          s <$ runTest skillValue (-2)
+          s <$ runTest iid skillValue (-2)
         else do
           when (ghoulCount > 0) $ unshiftMessage
             (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 1)
-          s <$ runTest skillValue (-4)
+          s <$ runTest iid skillValue (-4)
     NoResolution -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
       investigatorIds <- HashSet.toList <$> asks (getSet ())

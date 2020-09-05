@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5c441920bde4ad8ee3950592844768d007055e542555ba6e7d8b3ca253d10a50
+-- hash: 0d8ac53c53f4239bfc2de50cab1fd9babc63a185c6814b1e1c4aacae07d78127
 
 name:           arkham-core
 version:        0.0.0
@@ -171,6 +171,7 @@ library
       Arkham.Types.Event.Cards.MindWipe3
       Arkham.Types.Event.Cards.OnTheLam
       Arkham.Types.Event.Cards.SneakAttack
+      Arkham.Types.Event.Cards.SureGamble3
       Arkham.Types.Event.Cards.WardOfProtection
       Arkham.Types.Event.Cards.WorkingAHunch
       Arkham.Types.Event.Runner

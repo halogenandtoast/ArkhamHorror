@@ -1,6 +1,8 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Scenario.Attrs where
 
+import ClassyPrelude
+
 import Arkham.Json
 import Arkham.Types.ActId
 import Arkham.Types.AgendaId
@@ -12,7 +14,7 @@ import Arkham.Types.Message
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.ScenarioId
 import Arkham.Types.Target
-import ClassyPrelude
+import qualified Arkham.Types.Token as Token
 import qualified Data.HashSet as HashSet
 import Lens.Micro
 
@@ -77,4 +79,23 @@ instance (ScenarioRunner env) => RunMessage env Attrs where
     UseScenarioSpecificAbility{} ->
       error
         "The scenario should specify what to do for a scenario specific ability."
+    ResolveToken Token.PlusOne iid skillValue -> a <$ runTest iid skillValue 1
+    ResolveToken Token.Zero iid skillValue -> a <$ runTest iid skillValue 0
+    ResolveToken Token.MinusOne iid skillValue ->
+      a <$ runTest iid skillValue (-1)
+    ResolveToken Token.MinusTwo iid skillValue ->
+      a <$ runTest iid skillValue (-2)
+    ResolveToken Token.MinusThree iid skillValue ->
+      a <$ runTest iid skillValue (-3)
+    ResolveToken Token.MinusFour iid skillValue ->
+      a <$ runTest iid skillValue (-4)
+    ResolveToken Token.MinusFive iid skillValue ->
+      a <$ runTest iid skillValue (-5)
+    ResolveToken Token.MinusSix iid skillValue ->
+      a <$ runTest iid skillValue (-6)
+    ResolveToken Token.MinusSeven iid skillValue ->
+      a <$ runTest iid skillValue (-7)
+    ResolveToken Token.MinusEight iid skillValue ->
+      a <$ runTest iid skillValue (-8)
+    ResolveToken Token.AutoFail _ _ -> a <$ unshiftMessage FailSkillTest
     _ -> pure a

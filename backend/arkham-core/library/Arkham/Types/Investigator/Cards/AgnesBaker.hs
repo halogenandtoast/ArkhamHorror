@@ -69,5 +69,5 @@ instance (InvestigatorRunner Attrs env) => RunMessage env AgnesBaker where
             ]
           )
     ResolveToken ElderSign iid skillValue | iid == investigatorId ->
-      i <$ runTest skillValue investigatorSanityDamage
+      i <$ runTest investigatorId skillValue investigatorSanityDamage
     _ -> AgnesBaker <$> runMessage msg attrs

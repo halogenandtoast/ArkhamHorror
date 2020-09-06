@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bc2a2739c9fb1e1a7476a870db6f71c1412b65b4394aa9da8608f4495bb331a6
+-- hash: e819d25a6b4c025839ea86e6c85a7b289fdf98ff2572d9abdd09807f87f0d28b
 
 name:           arkham-core
 version:        0.0.0
@@ -61,6 +61,7 @@ library
       Arkham.Types.Asset.Cards.ForbiddenKnowledge
       Arkham.Types.Asset.Cards.FortyFiveAutomatic
       Arkham.Types.Asset.Cards.FortyOneDerringer
+      Arkham.Types.Asset.Cards.GrotesqueStatue4
       Arkham.Types.Asset.Cards.GuardDog
       Arkham.Types.Asset.Cards.HardKnocks
       Arkham.Types.Asset.Cards.HardKnocks2
@@ -181,7 +182,6 @@ library
       Arkham.Types.Event.Runner
       Arkham.Types.EventId
       Arkham.Types.Game
-      Arkham.Types.GameJson
       Arkham.Types.GameRunner
       Arkham.Types.GameValue
       Arkham.Types.Helpers
@@ -296,6 +296,7 @@ library
       Arkham.Types.Target
       Arkham.Types.Token
       Arkham.Types.TokenResponse
+      Arkham.Types.TokenStrategy
       Arkham.Types.Trait
       Arkham.Types.Treachery
       Arkham.Types.Treachery.Attrs

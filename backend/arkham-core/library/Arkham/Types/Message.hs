@@ -229,6 +229,7 @@ data Message
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
   | AddToEncounterDeck EncounterCard
   | DrawAnotherToken InvestigatorId Int Token Int
+  | SetAsideToken Token
   | SkillTestEnds
   | SkillTestEnded SkillTestResult [Token]
   | ReturnTokens [Token]

@@ -205,6 +205,7 @@ allPlayerCards = HashMap.fromList
   , ("01068", mindWipe1)
   , ("01069", blindingLight2)
   , ("01070", bookOfShadows3)
+  , ("01071", grotesqueStatue4)
   , ("01072", leatherCoat)
   , ("01073", scavenging)
   , ("01074", baseballBat)
@@ -674,6 +675,13 @@ bookOfShadows3 cardId = (asset cardId "01070" "Book of Shadows" 4 Mystic)
   { pcSkills = [SkillWillpower, SkillIntellect]
   , pcTraits = [Item, Tome]
   , pcLevel = 3
+  }
+
+grotesqueStatue4 :: CardId -> PlayerCard
+grotesqueStatue4 cardId = (asset cardId "01071" "Grotesque Statue" 2 Mystic)
+  { pcSkills = [SkillWild]
+  , pcTraits = [Item, Relic]
+  , pcLevel = 4
   }
 
 leatherCoat :: CardId -> PlayerCard

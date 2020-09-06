@@ -5,7 +5,6 @@ where
 
 import Api.Arkham.Helpers
 import Arkham.Types.Game
-import Arkham.Types.GameJson
 import Arkham.Types.Investigator
 import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap
@@ -24,10 +23,10 @@ putApiV1ArkhamPendingGameR gameId = do
   let userId' = fromIntegral (fromSqlKey userId)
   JoinGameJson {..} <- requireCheckJsonBody
   ArkhamGame {..} <- runDB $ get404 gameId
-  when (userId' `HashMap.member` gPlayers arkhamGameCurrentData)
+  when (userId' `HashMap.member` gamePlayers arkhamGameCurrentData)
     $ invalidArgs ["Already joined game"]
   (iid, deck) <- liftIO $ loadDeck deckId
-  when (iid `HashMap.member` gInvestigators arkhamGameCurrentData)
+  when (iid `HashMap.member` gameInvestigators arkhamGameCurrentData)
     $ invalidArgs ["Investigator already taken"]
   ge <-
     liftIO

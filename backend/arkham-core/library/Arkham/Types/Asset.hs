@@ -33,6 +33,7 @@ import Arkham.Types.Asset.Cards.Flashlight
 import Arkham.Types.Asset.Cards.ForbiddenKnowledge
 import Arkham.Types.Asset.Cards.FortyFiveAutomatic
 import Arkham.Types.Asset.Cards.FortyOneDerringer
+import Arkham.Types.Asset.Cards.GrotesqueStatue4
 import Arkham.Types.Asset.Cards.GuardDog
 import Arkham.Types.Asset.Cards.HardKnocks
 import Arkham.Types.Asset.Cards.HardKnocks2
@@ -124,6 +125,7 @@ allAssets = HashMap.fromList
   , ("01062", ArcaneStudies' . arcaneStudies)
   , ("01063", ArcaneInitiate' . arcaneInitiate)
   , ("01070", BookOfShadows3' . bookOfShadows3)
+  , ("01071", GrotesqueStatue4' . grotesqueStatue4)
   , ("01072", LeatherCoat' . leatherCoat)
   , ("01073", Scavenging' . scavenging)
   , ("01074", BaseballBat' . baseballBat)
@@ -199,6 +201,7 @@ data Asset
   | ArcaneStudies' ArcaneStudies
   | ArcaneInitiate' ArcaneInitiate
   | BookOfShadows3' BookOfShadows3
+  | GrotesqueStatue4' GrotesqueStatue4
   | LeatherCoat' LeatherCoat
   | Scavenging' Scavenging
   | BaseballBat' BaseballBat

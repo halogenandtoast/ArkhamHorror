@@ -12,7 +12,6 @@ import Api.Arkham.Helpers
 import Arkham.Types.CampaignId
 import Arkham.Types.Difficulty
 import Arkham.Types.Game
-import Arkham.Types.GameJson
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
@@ -65,9 +64,9 @@ getApiV1ArkhamGameR gameId = do
   ge <- runDB $ get404 gameId
   webSockets (gameStream gameId)
   let
-    GameJson {..} = arkhamGameCurrentData ge
+    Game {..} = arkhamGameCurrentData ge
     investigatorId = fromJustNote "not in game"
-      $ HashMap.lookup (fromIntegral $ fromSqlKey userId) gPlayers
+      $ HashMap.lookup (fromIntegral $ fromSqlKey userId) gamePlayers
   pure $ GetGameJson investigatorId (Entity gameId ge)
 
 getApiV1ArkhamGamesR :: Handler [Entity ArkhamGame]
@@ -106,9 +105,11 @@ postApiV1ArkhamGamesR = do
     pure gameId
   pure $ Entity key (ArkhamGame campaignName ge)
 
-data QuestionReponse = QuestionResponse { choice :: Int, gameHash :: UUID }
+data QuestionReponse = QuestionResponse { qrChoice :: Int, qrGameHash :: UUID }
   deriving stock (Generic)
-  deriving anyclass (FromJSON)
+
+instance FromJSON QuestionReponse where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "qr"
 
 extract :: Int -> [a] -> (Maybe a, [a])
 extract n xs =
@@ -120,15 +121,15 @@ putApiV1ArkhamGameR gameId = do
   ArkhamGame {..} <- runDB $ get404 gameId
   response <- requireCheckJsonBody
   let
-    gameJson@GameJson {..} = arkhamGameCurrentData
+    gameJson@Game {..} = arkhamGameCurrentData
     investigatorId = fromJustNote "not in game"
-      $ HashMap.lookup (fromIntegral $ fromSqlKey userId) gPlayers
-    messages = case HashMap.lookup investigatorId gQuestion of
-      Just (ChooseOne qs) -> case qs !!? choice response of
+      $ HashMap.lookup (fromIntegral $ fromSqlKey userId) gamePlayers
+    messages = case HashMap.lookup investigatorId gameQuestion of
+      Just (ChooseOne qs) -> case qs !!? qrChoice response of
         Nothing -> [Ask investigatorId $ ChooseOne qs]
         Just msg -> [msg]
       Just (ChooseOneAtATime msgs) -> do
-        let (mm, msgs') = extract (choice response) msgs
+        let (mm, msgs') = extract (qrChoice response) msgs
         case (mm, msgs') of
           (Just m', []) -> [m']
           (Just m', msgs'') ->
@@ -136,10 +137,10 @@ putApiV1ArkhamGameR gameId = do
           (Nothing, msgs'') -> [Ask investigatorId $ ChooseOneAtATime msgs'']
       _ -> []
 
-  if gHash == gameHash response
+  if gameHash == qrGameHash response
     then do
       ge <- liftIO $ runMessages =<< toInternalGame
-        (gameJson { gMessages = messages <> gMessages })
+        (gameJson { gameMessages = messages <> gameMessages })
 
       writeChannel <- getChannel gameId
       liftIO $ atomically $ writeTChan
@@ -150,7 +151,7 @@ putApiV1ArkhamGameR gameId = do
     else invalidArgs ["Hash mismatch"]
 
 
-newtype PutRawGameJson = PutRawGameJson { gameJson :: GameJson }
+newtype PutRawGameJson = PutRawGameJson { gameJson :: GameExternal }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
 
@@ -161,7 +162,7 @@ putApiV1ArkhamGameRawR gameId = do
   response <- requireCheckJsonBody
   ge <- liftIO $ runMessages =<< toInternalGame
     ((gameJson response)
-      { gMessages = Continue "edited" : gMessages (gameJson response)
+      { gameMessages = Continue "edited" : gameMessages (gameJson response)
       }
     )
   writeChannel <- getChannel gameId

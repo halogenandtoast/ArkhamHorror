@@ -204,6 +204,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         $ s
         & (setAsideTokens %~ (token :))
         & (onTokenResponses .~ onTokenResponses')
+    SetAsideToken token -> pure $ s & (setAsideTokens %~ (token :))
     DrawAnotherToken _ _ _ valueModifier' ->
       pure $ s & valueModifier +~ valueModifier'
     PassSkillTest -> do

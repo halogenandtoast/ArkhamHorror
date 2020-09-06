@@ -4,7 +4,7 @@
 
 module Orphans where
 
-import Arkham.Types.GameJson
+import Arkham.Types.Game
 import ClassyPrelude
 import Control.Error.Util (hush)
 import Data.Aeson
@@ -23,10 +23,10 @@ fmapLeft :: (a -> b) -> Either a c -> Either b c
 fmapLeft f (Left a) = Left (f a)
 fmapLeft _ (Right a) = Right a -- Rewrap to fix types.
 
-instance PersistFieldSql GameJson where
+instance PersistFieldSql GameExternal where
   sqlType _ = SqlString
 
-instance PersistField GameJson where
+instance PersistField GameExternal where
   toPersistValue = toPersistValue . toJSON
   fromPersistValue val =
     fromPersistValue val >>= fmapLeft pack . parseEither parseJSON

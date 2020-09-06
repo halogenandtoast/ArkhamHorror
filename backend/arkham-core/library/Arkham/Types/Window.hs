@@ -35,6 +35,7 @@ data Window
   | WhenRevealTokenWithNegativeModifier Who
   | WhenSkillTest SkillType
   | WhenWouldFailSkillTest Who
+  | WhenWouldRevealChaosToken Who
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

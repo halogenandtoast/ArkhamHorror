@@ -6,7 +6,7 @@ module Entity.Arkham.Game
   )
 where
 
-import Arkham.Types.GameJson
+import Arkham.Types.Game
 import ClassyPrelude
 import Data.UUID
 import Database.Persist.Postgresql.JSON ()
@@ -18,7 +18,7 @@ mkPersist sqlSettings [persistLowerCase|
 ArkhamGame sql=arkham_games
   Id UUID default=uuid_generate_v4()
   name Text
-  currentData GameJson
+  currentData GameExternal
   deriving Generic Show
 |]
 

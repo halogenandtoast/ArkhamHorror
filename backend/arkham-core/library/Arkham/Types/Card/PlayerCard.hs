@@ -232,6 +232,7 @@ allPlayerCards = HashMap.fromList
   , ("01102", silverTwilightAcolyte)
   , ("01103", stubbornDetective)
   , ("01117", litaChantler)
+  , ("02147", bandolier)
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
   , ("50003", hyperawareness2)
@@ -840,6 +841,13 @@ stubbornDetective cardId = (enemy cardId "01103" "Stubborn Detective" 0)
   { pcTraits = [Humanoid, Detective]
   , pcKeywords = [Keyword.Hunter]
   }
+
+bandolier :: CardId -> PlayerCard
+bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)
+  { pcSkills = [SkillWillpower, SkillIntellect, SkillWild]
+  , pcTraits = [Item]
+  }
+
 
 litaChantler :: CardId -> PlayerCard
 litaChantler cardId =

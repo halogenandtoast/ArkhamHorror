@@ -42,10 +42,7 @@ instance HasRecord Campaign where
   hasRecord key = hasRecord key . campaignLog . campaignAttrs
   hasRecordSet key = hasRecordSet key . campaignLog . campaignAttrs
 
-instance (CampaignRunner env) => RunMessage env Campaign where
-  runMessage msg = \case
-    NightOfTheZealot' x -> NightOfTheZealot' <$> runMessage msg x
-    TheDunwichLegacy' x -> TheDunwichLegacy' <$> runMessage msg x
+deriving anyclass instance (CampaignRunner env) => RunMessage env Campaign
 
 lookupCampaign :: CampaignId -> (Difficulty -> Campaign)
 lookupCampaign cid =

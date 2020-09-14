@@ -35,8 +35,4 @@ data Scenario
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-instance (ScenarioRunner env) => RunMessage env Scenario where
-  runMessage msg = \case
-    TheGathering' x -> TheGathering' <$> runMessage msg x
-    TheMidnightMasks' x -> TheMidnightMasks' <$> runMessage msg x
-    TheDevourerBelow' x -> TheDevourerBelow' <$> runMessage msg x
+deriving anyclass instance (ScenarioRunner env) => RunMessage env Scenario

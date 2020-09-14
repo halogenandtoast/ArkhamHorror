@@ -276,49 +276,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Investigator where
   runMessage (ResolveToken ElderSign iid skillValue) i
     | iid == getInvestigatorId i && any isBlank (getModifiers i) = i
     <$ runTest iid skillValue 0
-  runMessage msg i = case i of
-    AgnesBaker' x -> AgnesBaker' <$> runMessage msg x
-    AkachiOnyele' x -> AkachiOnyele' <$> runMessage msg x
-    AmandaSharpe' x -> AmandaSharpe' <$> runMessage msg x
-    AshcanPete' x -> AshcanPete' <$> runMessage msg x
-    CalvinWright' x -> CalvinWright' <$> runMessage msg x
-    CarolynFern' x -> CarolynFern' <$> runMessage msg x
-    DaisyWalker' x -> DaisyWalker' <$> runMessage msg x
-    DexterDrake' x -> DexterDrake' <$> runMessage msg x
-    DianaStanley' x -> DianaStanley' <$> runMessage msg x
-    FatherMateo' x -> FatherMateo' <$> runMessage msg x
-    FinnEdwards' x -> FinnEdwards' <$> runMessage msg x
-    HarveyWalters' x -> HarveyWalters' <$> runMessage msg x
-    JacquelineFine' x -> JacquelineFine' <$> runMessage msg x
-    JennyBarnes' x -> JennyBarnes' <$> runMessage msg x
-    JimCulver' x -> JimCulver' <$> runMessage msg x
-    JoeDiamond' x -> JoeDiamond' <$> runMessage msg x
-    LeoAnderson' x -> LeoAnderson' <$> runMessage msg x
-    LolaHayes' x -> LolaHayes' <$> runMessage msg x
-    LukeRobinson' x -> LukeRobinson' <$> runMessage msg x
-    MandyThompson' x -> MandyThompson' <$> runMessage msg x
-    MarieLambeau' x -> MarieLambeau' <$> runMessage msg x
-    MarkHarrigan' x -> MarkHarrigan' <$> runMessage msg x
-    MinhThiPhan' x -> MinhThiPhan' <$> runMessage msg x
-    NathanielCho' x -> NathanielCho' <$> runMessage msg x
-    NormanWithers' x -> NormanWithers' <$> runMessage msg x
-    PatriceHathaway' x -> PatriceHathaway' <$> runMessage msg x
-    PrestonFairmont' x -> PrestonFairmont' <$> runMessage msg x
-    RexMurphy' x -> RexMurphy' <$> runMessage msg x
-    RitaYoung' x -> RitaYoung' <$> runMessage msg x
-    RolandBanks' x -> RolandBanks' <$> runMessage msg x
-    SefinaRousseau' x -> SefinaRousseau' <$> runMessage msg x
-    SilasMarsh' x -> SilasMarsh' <$> runMessage msg x
-    SisterMary' x -> SisterMary' <$> runMessage msg x
-    SkidsOToole' x -> SkidsOToole' <$> runMessage msg x
-    StellaClark' x -> StellaClark' <$> runMessage msg x
-    TommyMuldoon' x -> TommyMuldoon' <$> runMessage msg x
-    TonyMorgan' x -> TonyMorgan' <$> runMessage msg x
-    UrsulaDowns' x -> UrsulaDowns' <$> runMessage msg x
-    WendyAdams' x -> WendyAdams' <$> runMessage msg x
-    WilliamYorick' x -> WilliamYorick' <$> runMessage msg x
-    WinifredHabbamock' x -> WinifredHabbamock' <$> runMessage msg x
-    ZoeySamaras' x -> ZoeySamaras' <$> runMessage msg x
+  runMessage msg i = defaultRunMessage msg i
 
 lookupInvestigator :: InvestigatorId -> Investigator
 lookupInvestigator iid =

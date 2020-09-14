@@ -216,35 +216,4 @@ instance (ActionRunner env investigator) => HasActions env investigator Location
     ArkhamWoodsQuietGlade' l -> getActions i window l
     RitualSite' l -> getActions i window l
 
-instance (LocationRunner env) => RunMessage env Location where
-  runMessage msg = \case
-    Study' x -> Study' <$> runMessage msg x
-    Hallway' x -> Hallway' <$> runMessage msg x
-    Attic' x -> Attic' <$> runMessage msg x
-    Cellar' x -> Cellar' <$> runMessage msg x
-    Parlor' x -> Parlor' <$> runMessage msg x
-    YourHouse' x -> YourHouse' <$> runMessage msg x
-    Rivertown' x -> Rivertown' <$> runMessage msg x
-    SouthsideHistoricalSociety' x ->
-      SouthsideHistoricalSociety' <$> runMessage msg x
-    SouthsideMasBoardingHouse' x ->
-      SouthsideMasBoardingHouse' <$> runMessage msg x
-    StMarysHospital' x -> StMarysHospital' <$> runMessage msg x
-    MiskatonicUniversity' x -> MiskatonicUniversity' <$> runMessage msg x
-    DowntownFirstBankOfArkham' x ->
-      DowntownFirstBankOfArkham' <$> runMessage msg x
-    DowntownArkhamAsylum' x -> DowntownArkhamAsylum' <$> runMessage msg x
-    Easttown' x -> Easttown' <$> runMessage msg x
-    Graveyard' x -> Graveyard' <$> runMessage msg x
-    Northside' x -> Northside' <$> runMessage msg x
-    MainPath' x -> MainPath' <$> runMessage msg x
-    ArkhamWoodsUnhallowedGround' x ->
-      ArkhamWoodsUnhallowedGround' <$> runMessage msg x
-    ArkhamWoodsTwistingPaths' x ->
-      ArkhamWoodsTwistingPaths' <$> runMessage msg x
-    ArkhamWoodsOldHouse' x -> ArkhamWoodsOldHouse' <$> runMessage msg x
-    ArkhamWoodsCliffside' x -> ArkhamWoodsCliffside' <$> runMessage msg x
-    ArkhamWoodsTangledThicket' x ->
-      ArkhamWoodsTangledThicket' <$> runMessage msg x
-    ArkhamWoodsQuietGlade' x -> ArkhamWoodsQuietGlade' <$> runMessage msg x
-    RitualSite' x -> RitualSite' <$> runMessage msg x
+deriving anyclass instance (LocationRunner env) => RunMessage env Location

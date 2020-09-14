@@ -180,29 +180,4 @@ isWeakness = treacheryWeakness . treacheryAttrs
 treacheryLocation :: Treachery -> Maybe LocationId
 treacheryLocation = treacheryAttachedLocation . treacheryAttrs
 
-instance (TreacheryRunner env) => RunMessage env Treachery where
-  runMessage msg = \case
-    CoverUp' x -> CoverUp' <$> runMessage msg x
-    HospitalDebts' x -> HospitalDebts' <$> runMessage msg x
-    AbandonedAndAlone' x -> AbandonedAndAlone' <$> runMessage msg x
-    Amnesia' x -> Amnesia' <$> runMessage msg x
-    Paranoia' x -> Paranoia' <$> runMessage msg x
-    Haunted' x -> Haunted' <$> runMessage msg x
-    Psychosis' x -> Psychosis' <$> runMessage msg x
-    Hypochondria' x -> Hypochondria' <$> runMessage msg x
-    HuntingShadow' x -> HuntingShadow' <$> runMessage msg x
-    FalseLead' x -> FalseLead' <$> runMessage msg x
-    UmordhothsWrath' x -> UmordhothsWrath' <$> runMessage msg x
-    GraspingHands' x -> GraspingHands' <$> runMessage msg x
-    AncientEvils' x -> AncientEvils' <$> runMessage msg x
-    RottingRemains' x -> RottingRemains' <$> runMessage msg x
-    FrozenInFear' x -> FrozenInFear' <$> runMessage msg x
-    DissonantVoices' x -> DissonantVoices' <$> runMessage msg x
-    CryptChill' x -> CryptChill' <$> runMessage msg x
-    ObscuringFog' x -> ObscuringFog' <$> runMessage msg x
-    MysteriousChanting' x -> MysteriousChanting' <$> runMessage msg x
-    OnWingsOfDarkness' x -> OnWingsOfDarkness' <$> runMessage msg x
-    LockedDoor' x -> LockedDoor' <$> runMessage msg x
-    TheYellowSign' x -> TheYellowSign' <$> runMessage msg x
-    OfferOfPower' x -> OfferOfPower' <$> runMessage msg x
-    DreamsOfRlyeh' x -> DreamsOfRlyeh' <$> runMessage msg x
+deriving anyclass instance (TreacheryRunner env) => RunMessage env Treachery

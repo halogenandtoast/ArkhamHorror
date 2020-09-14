@@ -74,12 +74,4 @@ instance (ActionRunner env investigator) => HasActions env investigator Act wher
     IntoTheDarkness' x -> getActions i window x
     DisruptingTheRitual' x -> getActions i window x
 
-instance (ActRunner env) => RunMessage env Act where
-  runMessage msg = \case
-    Trapped' x -> Trapped' <$> runMessage msg x
-    TheBarrier' x -> TheBarrier' <$> runMessage msg x
-    WhatHaveYouDone' x -> WhatHaveYouDone' <$> runMessage msg x
-    UncoveringTheConspiracy' x -> UncoveringTheConspiracy' <$> runMessage msg x
-    InvestigatingTheTrail' x -> InvestigatingTheTrail' <$> runMessage msg x
-    IntoTheDarkness' x -> IntoTheDarkness' <$> runMessage msg x
-    DisruptingTheRitual' x -> DisruptingTheRitual' <$> runMessage msg x
+deriving anyclass instance (ActRunner env) => RunMessage env Act

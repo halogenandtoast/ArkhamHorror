@@ -41,6 +41,7 @@ data Attrs = Attrs
   , assetUses :: Uses
   , assetExhausted :: Bool
   , assetDoom :: Int
+  , assetHorror :: Maybe Int
   }
   deriving stock (Show, Generic)
 
@@ -77,6 +78,7 @@ baseAttrs aid cardCode =
       , assetUses = NoUses
       , assetExhausted = False
       , assetDoom = 0
+      , assetHorror = Nothing
       }
 
 doom :: Lens' Attrs Int
@@ -120,10 +122,10 @@ instance (AssetRunner env) => RunMessage env Attrs where
       pure $ a & healthDamage +~ health & sanityDamage +~ sanity
     InvestigatorEliminated iid | assetInvestigator == Just iid ->
       a <$ unshiftMessage (Discard (AssetTarget assetId))
-    AddUses (AssetTarget aid) useType n | aid == assetId ->
-      case assetUses of
-        Uses useType' m | useType == useType' -> pure $ a & uses .~ Uses useType (n + m)
-        _ -> error "Trying to add the wrong use type"
+    AddUses (AssetTarget aid) useType n | aid == assetId -> case assetUses of
+      Uses useType' m | useType == useType' ->
+        pure $ a & uses .~ Uses useType (n + m)
+      _ -> error "Trying to add the wrong use type"
     AddAssetAt aid lid | aid == assetId -> pure $ a & location ?~ lid
     Discard (AssetTarget aid) | aid == assetId -> case assetInvestigator of
       Nothing -> pure a

@@ -13,6 +13,7 @@ data Attrs = Attrs
   , actName       :: Text
   , actSequence   :: Text
   , actFlipped :: Bool
+  , actClues :: Maybe Int
   }
   deriving stock (Show, Generic)
 
@@ -39,6 +40,7 @@ baseAttrs aid name seq' = Attrs
   , actName = name
   , actSequence = seq'
   , actFlipped = False
+  , actClues = Nothing
   }
 
 instance HasActions env investigator Attrs where

@@ -22,6 +22,8 @@ import Arkham.Types.Query
 import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
+import Generics.SOP hiding (Generic)
+import qualified Generics.SOP as SOP
 import Safe (fromJustNote)
 
 lookupAgenda :: AgendaId -> Agenda
@@ -56,18 +58,21 @@ data Agenda
   | TheRitualBegins' TheRitualBegins
   | VengeanceAwaits' VengeanceAwaits
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-agendaAttrs :: Agenda -> Attrs
-agendaAttrs = \case
-  WhatsGoingOn' attrs -> coerce attrs
-  RiseOfTheGhouls' attrs -> coerce attrs
-  TheyreGettingOut' attrs -> coerce attrs
-  PredatorOrPrey' attrs -> coerce attrs
-  TimeIsRunningShort' attrs -> coerce attrs
-  TheArkhamWoods' attrs -> coerce attrs
-  TheRitualBegins' attrs -> coerce attrs
-  VengeanceAwaits' attrs -> coerce attrs
+  deriving anyclass (ToJSON, FromJSON, SOP.Generic)
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Agenda
 deriving anyclass instance (AgendaRunner env) => RunMessage env Agenda
+
+agendaAttrs :: Agenda -> Attrs
+agendaAttrs = getAttrs
+
+class (Coercible a Attrs) => IsAttrs a
+instance (Coercible a Attrs) => IsAttrs a
+
+getAttrs :: (All2 IsAttrs (Code a), SOP.Generic a) => a -> Attrs
+getAttrs a = go (unSOP $ from a)
+ where
+  go :: (All2 IsAttrs xs) => NS (NP I) xs -> Attrs
+  go (S next) = go next
+  go (Z (I x :* _)) = coerce x
+  go (Z Nil) = error "should not happen"

@@ -134,48 +134,6 @@ allInvestigators = HashMap.fromList $ map
 
 investigatorAttrs :: Investigator -> Attrs
 investigatorAttrs = getAttrs
-  -- AgnesBaker' attrs -> coerce attrs
-  -- AkachiOnyele' attrs -> coerce attrs
-  -- AmandaSharpe' attrs -> coerce attrs
-  -- AshcanPete' attrs -> coerce attrs
-  -- CalvinWright' attrs -> coerce attrs
-  -- CarolynFern' attrs -> coerce attrs
-  -- DaisyWalker' (DaisyWalker (With attrs _)) -> attrs
-  -- DexterDrake' attrs -> coerce attrs
-  -- DianaStanley' attrs -> coerce attrs
-  -- FatherMateo' attrs -> coerce attrs
-  -- FinnEdwards' attrs -> coerce attrs
-  -- HarveyWalters' attrs -> coerce attrs
-  -- JacquelineFine' attrs -> coerce attrs
-  -- JennyBarnes' attrs -> coerce attrs
-  -- JimCulver' attrs -> coerce attrs
-  -- JoeDiamond' attrs -> coerce attrs
-  -- LeoAnderson' attrs -> coerce attrs
-  -- LolaHayes' attrs -> coerce attrs
-  -- LukeRobinson' attrs -> coerce attrs
-  -- MandyThompson' attrs -> coerce attrs
-  -- MarieLambeau' attrs -> coerce attrs
-  -- MarkHarrigan' attrs -> coerce attrs
-  -- MinhThiPhan' attrs -> coerce attrs
-  -- NathanielCho' attrs -> coerce attrs
-  -- NormanWithers' attrs -> coerce attrs
-  -- PatriceHathaway' attrs -> coerce attrs
-  -- PrestonFairmont' attrs -> coerce attrs
-  -- RexMurphy' attrs -> coerce attrs
-  -- RitaYoung' attrs -> coerce attrs
-  -- RolandBanks' attrs -> coerce attrs
-  -- SefinaRousseau' attrs -> coerce attrs
-  -- SilasMarsh' attrs -> coerce attrs
-  -- SisterMary' attrs -> coerce attrs
-  -- SkidsOToole' attrs -> coerce attrs
-  -- StellaClark' attrs -> coerce attrs
-  -- TommyMuldoon' attrs -> coerce attrs
-  -- TonyMorgan' attrs -> coerce attrs
-  -- UrsulaDowns' attrs -> coerce attrs
-  -- WendyAdams' attrs -> coerce attrs
-  -- WilliamYorick' attrs -> coerce attrs
-  -- WinifredHabbamock' attrs -> coerce attrs
-  -- ZoeySamaras' attrs -> coerce attrs
 
 data Investigator
   = AgnesBaker' AgnesBaker
@@ -228,15 +186,15 @@ instance (ActionRunner env investigator) => HasActions env investigator Investig
     getActions i window (investigatorAttrs investigator)
   getActions i window investigator = defaultGetActions i window investigator
 
-isBlank :: Modifier -> Bool
-isBlank Blank{} = True
-isBlank _ = False
-
 instance (InvestigatorRunner Attrs env) => RunMessage env Investigator where
   runMessage (ResolveToken ElderSign iid skillValue) i
     | iid == getInvestigatorId i && any isBlank (getModifiers i) = i
     <$ runTest iid skillValue 0
   runMessage msg i = defaultRunMessage msg i
+
+isBlank :: Modifier -> Bool
+isBlank Blank{} = True
+isBlank _ = False
 
 lookupInvestigator :: InvestigatorId -> Investigator
 lookupInvestigator iid =

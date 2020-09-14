@@ -46,10 +46,6 @@ attachedLocation :: Lens' Attrs (Maybe LocationId)
 attachedLocation =
   lens eventAttachedLocation $ \m x -> m { eventAttachedLocation = x }
 
-attachedInvestigator :: Lens' Attrs (Maybe InvestigatorId)
-attachedInvestigator =
-  lens eventAttachedInvestigator $ \m x -> m { eventAttachedInvestigator = x }
-
 baseAttrs :: InvestigatorId -> EventId -> CardCode -> Attrs
 baseAttrs iid eid cardCode =
   let

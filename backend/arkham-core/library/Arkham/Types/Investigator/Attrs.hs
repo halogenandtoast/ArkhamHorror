@@ -75,6 +75,8 @@ data Attrs = Attrs
   , investigatorXP :: Int
   , investigatorPhysicalTrauma :: Int
   , investigatorMentalTrauma :: Int
+  -- investigator-specific fields
+  , investigatorTomeActions :: Maybe Int
   }
   deriving stock (Show, Generic)
 
@@ -276,11 +278,6 @@ availableSlotTypesFor slotType traits a =
     Just slots' ->
       replicate (length (filter (canPutIntoSlot traits) slots')) slotType
 
-hasEmptySlot :: SlotType -> [Trait] -> Attrs -> Bool
-hasEmptySlot slotType traits a = case HashMap.lookup slotType (a ^. slots) of
-  Nothing -> False
-  Just slots' -> any (canPutIntoSlot traits) slots'
-
 placeInAvailableSlot :: AssetId -> [Trait] -> [Slot] -> [Slot]
 placeInAvailableSlot _ _ [] = error "could not find empty slot"
 placeInAvailableSlot aid traits (x : xs) = if canPutIntoSlot traits x
@@ -355,6 +352,7 @@ baseAttrs iid name classSymbol Stats {..} traits = Attrs
   , investigatorXP = 0
   , investigatorPhysicalTrauma = 0
   , investigatorMentalTrauma = 0
+  , investigatorTomeActions = Nothing
   }
 
 matchTarget :: Attrs -> ActionTarget -> Action -> Bool

@@ -10,7 +10,6 @@ where
 import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.Classes
-import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Query
@@ -44,6 +43,8 @@ import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
+import Generics.SOP hiding (Generic)
+import qualified Generics.SOP as SOP
 import Safe (fromJustNote)
 
 lookupTreachery
@@ -118,40 +119,27 @@ data Treachery
   | OfferOfPower' OfferOfPower
   | DreamsOfRlyeh' DreamsOfRlyeh
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, SOP.Generic)
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Treachery
 deriving anyclass instance (TreacheryRunner env) => RunMessage env Treachery
 
 treacheryAttrs :: Treachery -> Attrs
-treacheryAttrs = \case
-  CoverUp' (CoverUp (attrs `With` _)) -> attrs
-  HospitalDebts' (HospitalDebts (attrs `With` _)) -> attrs
-  AbandonedAndAlone' attrs -> coerce attrs
-  Amnesia' attrs -> coerce attrs
-  Paranoia' attrs -> coerce attrs
-  Haunted' attrs -> coerce attrs
-  Psychosis' attrs -> coerce attrs
-  Hypochondria' attrs -> coerce attrs
-  HuntingShadow' attrs -> coerce attrs
-  FalseLead' attrs -> coerce attrs
-  UmordhothsWrath' attrs -> coerce attrs
-  GraspingHands' attrs -> coerce attrs
-  AncientEvils' attrs -> coerce attrs
-  RottingRemains' attrs -> coerce attrs
-  FrozenInFear' attrs -> coerce attrs
-  DissonantVoices' attrs -> coerce attrs
-  CryptChill' attrs -> coerce attrs
-  ObscuringFog' attrs -> coerce attrs
-  MysteriousChanting' attrs -> coerce attrs
-  OnWingsOfDarkness' attrs -> coerce attrs
-  LockedDoor' attrs -> coerce attrs
-  TheYellowSign' attrs -> coerce attrs
-  OfferOfPower' attrs -> coerce attrs
-  DreamsOfRlyeh' attrs -> coerce attrs
+treacheryAttrs = getAttrs
 
 isWeakness :: Treachery -> Bool
 isWeakness = treacheryWeakness . treacheryAttrs
 
 treacheryLocation :: Treachery -> Maybe LocationId
 treacheryLocation = treacheryAttachedLocation . treacheryAttrs
+
+class (Coercible a Attrs) => IsAttrs a
+instance (Coercible a Attrs) => IsAttrs a
+
+getAttrs :: (All2 IsAttrs (Code a), SOP.Generic a) => a -> Attrs
+getAttrs a = go (unSOP $ from a)
+ where
+  go :: (All2 IsAttrs xs) => NS (NP I) xs -> Attrs
+  go (S next) = go next
+  go (Z (I x :* _)) = coerce x
+  go (Z Nil) = error "should not happen"

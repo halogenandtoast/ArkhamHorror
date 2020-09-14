@@ -1,6 +1,5 @@
 module Arkham.Types.Source
   ( Source(..)
-  , sourceIsEvent
   , sourceIsAsset
   )
 where
@@ -18,10 +17,6 @@ import Arkham.Types.Token
 import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Data.Aeson
-
-sourceIsEvent :: Source -> Bool
-sourceIsEvent (EventSource _) = True
-sourceIsEvent _ = False
 
 sourceIsAsset :: Source -> Bool
 sourceIsAsset (AssetSource _) = True

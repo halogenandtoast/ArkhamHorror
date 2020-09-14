@@ -29,6 +29,8 @@ data Attrs = Attrs
   , treacheryWeakness :: Bool
   , treacheryResolved :: Bool -- should this be discarded
   , treacheryDoom :: Int
+  , treacheryClues :: Maybe Int
+  , treacheryResources :: Maybe Int
   }
   deriving stock (Show, Generic)
 
@@ -71,6 +73,8 @@ baseAttrs tid cardCode =
       , treacheryWeakness = False
       , treacheryResolved = False
       , treacheryDoom = 0
+      , treacheryClues = Nothing
+      , treacheryResources = Nothing
       }
 
 weaknessAttrs :: TreacheryId -> Maybe InvestigatorId -> CardCode -> Attrs
@@ -93,6 +97,8 @@ weaknessAttrs tid iid cardCode =
       , treacheryWeakness = True
       , treacheryResolved = False
       , treacheryDoom = 0
+      , treacheryClues = Nothing
+      , treacheryResources = Nothing
       }
 
 instance HasActions env investigator Attrs where

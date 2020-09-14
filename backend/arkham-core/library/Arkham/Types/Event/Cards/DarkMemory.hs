@@ -17,7 +17,7 @@ newtype DarkMemory = DarkMemory Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 darkMemory :: InvestigatorId -> EventId -> DarkMemory
-darkMemory iid uuid = DarkMemory $ baseAttrs iid uuid "01013"
+darkMemory iid uuid = DarkMemory $ weaknessAttrs iid uuid "01013"
 
 instance HasActions env investigator DarkMemory where
   getActions i window (DarkMemory attrs) = getActions i window attrs

@@ -215,28 +215,4 @@ isBlanked _ = False
 instance (EnemyRunner env) => RunMessage env Enemy where
   runMessage msg e | any isBlank (getModifiers e) && not (isBlanked msg) =
     runMessage (Blanked msg) e
-  runMessage msg e = case e of
-    MobEnforcer' x -> MobEnforcer' <$> runMessage msg x
-    SilverTwilightAcolyte' x -> SilverTwilightAcolyte' <$> runMessage msg x
-    StubbornDetective' x -> StubbornDetective' <$> runMessage msg x
-    GhoulPriest' x -> GhoulPriest' <$> runMessage msg x
-    FleshEater' x -> FleshEater' <$> runMessage msg x
-    IcyGhoul' x -> IcyGhoul' <$> runMessage msg x
-    TheMaskedHunter' x -> TheMaskedHunter' <$> runMessage msg x
-    WolfManDrew' x -> WolfManDrew' <$> runMessage msg x
-    HermanCollins' x -> HermanCollins' <$> runMessage msg x
-    PeterWarren' x -> PeterWarren' <$> runMessage msg x
-    VictoriaDevereux' x -> VictoriaDevereux' <$> runMessage msg x
-    RuthTurner' x -> RuthTurner' <$> runMessage msg x
-    Umordhoth' x -> Umordhoth' <$> runMessage msg x
-    SwarmOfRats' x -> SwarmOfRats' <$> runMessage msg x
-    GhoulMinion' x -> GhoulMinion' <$> runMessage msg x
-    RavenousGhoul' x -> RavenousGhoul' <$> runMessage msg x
-    Acolyte' x -> Acolyte' <$> runMessage msg x
-    WizardOfTheOrder' x -> WizardOfTheOrder' <$> runMessage msg x
-    HuntingNightgaunt' x -> HuntingNightgaunt' <$> runMessage msg x
-    ScreechingByakhee' x -> ScreechingByakhee' <$> runMessage msg x
-    YithianObserver' x -> YithianObserver' <$> runMessage msg x
-    RelentlessDarkYoung' x -> RelentlessDarkYoung' <$> runMessage msg x
-    GoatSpawn' x -> GoatSpawn' <$> runMessage msg x
-    YoungDeepOne' x -> YoungDeepOne' <$> runMessage msg x
+  runMessage msg e = defaultRunMessage msg e

@@ -93,15 +93,4 @@ instance HasActions env investigator Skill where
 ownerOfSkill :: Skill -> InvestigatorId
 ownerOfSkill = skillOwner . skillAttrs
 
-instance (SkillRunner env) => RunMessage env Skill where
-  runMessage msg = \case
-    ViciousBlow' x -> ViciousBlow' <$> runMessage msg x
-    Deduction' x -> Deduction' <$> runMessage msg x
-    Opportunist' x -> Opportunist' <$> runMessage msg x
-    Fearless' x -> Fearless' <$> runMessage msg x
-    SurvivalInstinct' x -> SurvivalInstinct' <$> runMessage msg x
-    Guts' x -> Guts' <$> runMessage msg x
-    Perception' x -> Perception' <$> runMessage msg x
-    Overpower' x -> Overpower' <$> runMessage msg x
-    ManualDexterity' x -> ManualDexterity' <$> runMessage msg x
-    UnexpectedCourage' x -> UnexpectedCourage' <$> runMessage msg x
+deriving anyclass instance (SkillRunner env) => RunMessage env Skill

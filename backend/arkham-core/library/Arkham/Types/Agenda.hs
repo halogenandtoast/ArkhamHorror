@@ -80,13 +80,4 @@ instance (ActionRunner env investigator) => HasActions env investigator Agenda w
     TheRitualBegins' x -> getActions i window x
     VengeanceAwaits' x -> getActions i window x
 
-instance (AgendaRunner env) => RunMessage env Agenda where
-  runMessage msg = \case
-    WhatsGoingOn' x -> WhatsGoingOn' <$> runMessage msg x
-    RiseOfTheGhouls' x -> RiseOfTheGhouls' <$> runMessage msg x
-    TheyreGettingOut' x -> TheyreGettingOut' <$> runMessage msg x
-    PredatorOrPrey' x -> PredatorOrPrey' <$> runMessage msg x
-    TimeIsRunningShort' x -> TimeIsRunningShort' <$> runMessage msg x
-    TheArkhamWoods' x -> TheArkhamWoods' <$> runMessage msg x
-    TheRitualBegins' x -> TheRitualBegins' <$> runMessage msg x
-    VengeanceAwaits' x -> VengeanceAwaits' <$> runMessage msg x
+deriving anyclass instance (AgendaRunner env) => RunMessage env Agenda

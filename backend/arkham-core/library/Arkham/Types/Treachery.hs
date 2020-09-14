@@ -120,6 +120,9 @@ data Treachery
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Treachery
+deriving anyclass instance (TreacheryRunner env) => RunMessage env Treachery
+
 treacheryAttrs :: Treachery -> Attrs
 treacheryAttrs = \case
   CoverUp' (CoverUp (attrs `With` _)) -> attrs
@@ -147,37 +150,8 @@ treacheryAttrs = \case
   OfferOfPower' attrs -> coerce attrs
   DreamsOfRlyeh' attrs -> coerce attrs
 
-instance (ActionRunner env investigator) => HasActions env investigator Treachery where
-  getActions i window = \case
-    CoverUp' x -> getActions i window x
-    HospitalDebts' x -> getActions i window x
-    AbandonedAndAlone' x -> getActions i window x
-    Amnesia' x -> getActions i window x
-    Paranoia' x -> getActions i window x
-    Haunted' x -> getActions i window x
-    Psychosis' x -> getActions i window x
-    Hypochondria' x -> getActions i window x
-    HuntingShadow' x -> getActions i window x
-    FalseLead' x -> getActions i window x
-    UmordhothsWrath' x -> getActions i window x
-    GraspingHands' x -> getActions i window x
-    AncientEvils' x -> getActions i window x
-    RottingRemains' x -> getActions i window x
-    FrozenInFear' x -> getActions i window x
-    DissonantVoices' x -> getActions i window x
-    CryptChill' x -> getActions i window x
-    ObscuringFog' x -> getActions i window x
-    MysteriousChanting' x -> getActions i window x
-    OnWingsOfDarkness' x -> getActions i window x
-    LockedDoor' x -> getActions i window x
-    TheYellowSign' x -> getActions i window x
-    OfferOfPower' x -> getActions i window x
-    DreamsOfRlyeh' x -> getActions i window x
-
 isWeakness :: Treachery -> Bool
 isWeakness = treacheryWeakness . treacheryAttrs
 
 treacheryLocation :: Treachery -> Maybe LocationId
 treacheryLocation = treacheryAttachedLocation . treacheryAttrs
-
-deriving anyclass instance (TreacheryRunner env) => RunMessage env Treachery

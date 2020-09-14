@@ -64,6 +64,9 @@ data Skill
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+deriving anyclass instance HasActions env investigator Skill
+deriving anyclass instance (SkillRunner env) => RunMessage env Skill
+
 skillAttrs :: Skill -> Attrs
 skillAttrs = \case
   ViciousBlow' attrs -> coerce attrs
@@ -77,20 +80,5 @@ skillAttrs = \case
   ManualDexterity' attrs -> coerce attrs
   UnexpectedCourage' attrs -> coerce attrs
 
-instance HasActions env investigator Skill where
-  getActions i window = \case
-    ViciousBlow' x -> getActions i window x
-    Deduction' x -> getActions i window x
-    Opportunist' x -> getActions i window x
-    Fearless' x -> getActions i window x
-    SurvivalInstinct' x -> getActions i window x
-    Guts' x -> getActions i window x
-    Perception' x -> getActions i window x
-    Overpower' x -> getActions i window x
-    ManualDexterity' x -> getActions i window x
-    UnexpectedCourage' x -> getActions i window x
-
 ownerOfSkill :: Skill -> InvestigatorId
 ownerOfSkill = skillOwner . skillAttrs
-
-deriving anyclass instance (SkillRunner env) => RunMessage env Skill

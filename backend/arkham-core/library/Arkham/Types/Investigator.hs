@@ -80,6 +80,8 @@ import Data.Aeson
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
+import Generics.SOP hiding (Generic)
+import qualified Generics.SOP as SOP
 import Lens.Micro.Extras
 import Safe (fromJustNote)
 
@@ -131,49 +133,49 @@ allInvestigators = HashMap.fromList $ map
   ]
 
 investigatorAttrs :: Investigator -> Attrs
-investigatorAttrs = \case
-  AgnesBaker' attrs -> coerce attrs
-  AkachiOnyele' attrs -> coerce attrs
-  AmandaSharpe' attrs -> coerce attrs
-  AshcanPete' attrs -> coerce attrs
-  CalvinWright' attrs -> coerce attrs
-  CarolynFern' attrs -> coerce attrs
-  DaisyWalker' (DaisyWalker (With attrs _)) -> attrs
-  DexterDrake' attrs -> coerce attrs
-  DianaStanley' attrs -> coerce attrs
-  FatherMateo' attrs -> coerce attrs
-  FinnEdwards' attrs -> coerce attrs
-  HarveyWalters' attrs -> coerce attrs
-  JacquelineFine' attrs -> coerce attrs
-  JennyBarnes' attrs -> coerce attrs
-  JimCulver' attrs -> coerce attrs
-  JoeDiamond' attrs -> coerce attrs
-  LeoAnderson' attrs -> coerce attrs
-  LolaHayes' attrs -> coerce attrs
-  LukeRobinson' attrs -> coerce attrs
-  MandyThompson' attrs -> coerce attrs
-  MarieLambeau' attrs -> coerce attrs
-  MarkHarrigan' attrs -> coerce attrs
-  MinhThiPhan' attrs -> coerce attrs
-  NathanielCho' attrs -> coerce attrs
-  NormanWithers' attrs -> coerce attrs
-  PatriceHathaway' attrs -> coerce attrs
-  PrestonFairmont' attrs -> coerce attrs
-  RexMurphy' attrs -> coerce attrs
-  RitaYoung' attrs -> coerce attrs
-  RolandBanks' attrs -> coerce attrs
-  SefinaRousseau' attrs -> coerce attrs
-  SilasMarsh' attrs -> coerce attrs
-  SisterMary' attrs -> coerce attrs
-  SkidsOToole' attrs -> coerce attrs
-  StellaClark' attrs -> coerce attrs
-  TommyMuldoon' attrs -> coerce attrs
-  TonyMorgan' attrs -> coerce attrs
-  UrsulaDowns' attrs -> coerce attrs
-  WendyAdams' attrs -> coerce attrs
-  WilliamYorick' attrs -> coerce attrs
-  WinifredHabbamock' attrs -> coerce attrs
-  ZoeySamaras' attrs -> coerce attrs
+investigatorAttrs = getAttrs
+  -- AgnesBaker' attrs -> coerce attrs
+  -- AkachiOnyele' attrs -> coerce attrs
+  -- AmandaSharpe' attrs -> coerce attrs
+  -- AshcanPete' attrs -> coerce attrs
+  -- CalvinWright' attrs -> coerce attrs
+  -- CarolynFern' attrs -> coerce attrs
+  -- DaisyWalker' (DaisyWalker (With attrs _)) -> attrs
+  -- DexterDrake' attrs -> coerce attrs
+  -- DianaStanley' attrs -> coerce attrs
+  -- FatherMateo' attrs -> coerce attrs
+  -- FinnEdwards' attrs -> coerce attrs
+  -- HarveyWalters' attrs -> coerce attrs
+  -- JacquelineFine' attrs -> coerce attrs
+  -- JennyBarnes' attrs -> coerce attrs
+  -- JimCulver' attrs -> coerce attrs
+  -- JoeDiamond' attrs -> coerce attrs
+  -- LeoAnderson' attrs -> coerce attrs
+  -- LolaHayes' attrs -> coerce attrs
+  -- LukeRobinson' attrs -> coerce attrs
+  -- MandyThompson' attrs -> coerce attrs
+  -- MarieLambeau' attrs -> coerce attrs
+  -- MarkHarrigan' attrs -> coerce attrs
+  -- MinhThiPhan' attrs -> coerce attrs
+  -- NathanielCho' attrs -> coerce attrs
+  -- NormanWithers' attrs -> coerce attrs
+  -- PatriceHathaway' attrs -> coerce attrs
+  -- PrestonFairmont' attrs -> coerce attrs
+  -- RexMurphy' attrs -> coerce attrs
+  -- RitaYoung' attrs -> coerce attrs
+  -- RolandBanks' attrs -> coerce attrs
+  -- SefinaRousseau' attrs -> coerce attrs
+  -- SilasMarsh' attrs -> coerce attrs
+  -- SisterMary' attrs -> coerce attrs
+  -- SkidsOToole' attrs -> coerce attrs
+  -- StellaClark' attrs -> coerce attrs
+  -- TommyMuldoon' attrs -> coerce attrs
+  -- TonyMorgan' attrs -> coerce attrs
+  -- UrsulaDowns' attrs -> coerce attrs
+  -- WendyAdams' attrs -> coerce attrs
+  -- WilliamYorick' attrs -> coerce attrs
+  -- WinifredHabbamock' attrs -> coerce attrs
+  -- ZoeySamaras' attrs -> coerce attrs
 
 data Investigator
   = AgnesBaker' AgnesBaker
@@ -219,7 +221,7 @@ data Investigator
   | WinifredHabbamock' WinifredHabbamock
   | ZoeySamaras' ZoeySamaras
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, SOP.Generic)
 
 instance (ActionRunner env investigator) => HasActions env investigator Investigator where
   getActions i window investigator | any isBlank (getModifiers investigator) =
@@ -368,3 +370,14 @@ remainingHealth i = modifiedHealth attrs - investigatorHealthDamage attrs
 remainingSanity :: Investigator -> Int
 remainingSanity i = modifiedSanity attrs - investigatorSanityDamage attrs
   where attrs = investigatorAttrs i
+
+class (Coercible a Attrs) => IsAttrs a
+instance (Coercible a Attrs) => IsAttrs a
+
+getAttrs :: (All2 IsAttrs (Code a), SOP.Generic a) => a -> Attrs
+getAttrs a = go (unSOP $ from a)
+ where
+  go :: (All2 IsAttrs xs) => NS (NP I) xs -> Attrs
+  go (S next) = go next
+  go (Z (I x :* _)) = coerce x
+  go (Z Nil) = error "should not happen"

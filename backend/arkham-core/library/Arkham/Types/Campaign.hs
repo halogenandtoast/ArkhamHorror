@@ -1,3 +1,6 @@
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Campaign where
 
@@ -13,6 +16,8 @@ import Arkham.Types.Token
 import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
+import Generics.SOP hiding (Generic)
+import qualified Generics.SOP as SOP
 import Safe (fromJustNote)
 
 difficultyOf :: Campaign -> Difficulty
@@ -27,24 +32,33 @@ allCampaigns = HashMap.fromList
   , ("02", TheDunwichLegacy' . theDunwichLegacy)
   ]
 
+lookupCampaign :: CampaignId -> (Difficulty -> Campaign)
+lookupCampaign cid =
+  fromJustNote ("Unknown campaign: " <> show cid)
+    $ HashMap.lookup cid allCampaigns
+
 campaignAttrs :: Campaign -> Attrs
-campaignAttrs = \case
-  NightOfTheZealot' attrs -> coerce attrs
-  TheDunwichLegacy' attrs -> coerce attrs
+campaignAttrs = getAttrs
 
 data Campaign
   = NightOfTheZealot' NightOfTheZealot
   | TheDunwichLegacy' TheDunwichLegacy
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, SOP.Generic)
+
+deriving anyclass instance (CampaignRunner env) => RunMessage env Campaign
 
 instance HasRecord Campaign where
   hasRecord key = hasRecord key . campaignLog . campaignAttrs
   hasRecordSet key = hasRecordSet key . campaignLog . campaignAttrs
 
-deriving anyclass instance (CampaignRunner env) => RunMessage env Campaign
+class (Coercible a Attrs) => IsAttrs a
+instance (Coercible a Attrs) => IsAttrs a
 
-lookupCampaign :: CampaignId -> (Difficulty -> Campaign)
-lookupCampaign cid =
-  fromJustNote ("Unknown campaign: " <> show cid)
-    $ HashMap.lookup cid allCampaigns
+getAttrs :: (All2 IsAttrs (Code a), SOP.Generic a) => a -> Attrs
+getAttrs a = go (unSOP $ from a)
+ where
+  go :: (All2 IsAttrs xs) => NS (NP I) xs -> Attrs
+  go (S next) = go next
+  go (Z (I x :* _)) = coerce x
+  go (Z Nil) = error "should not happen"

@@ -17,6 +17,10 @@ sample xs = do
 without :: Int -> [a] -> [a]
 without n as = [ a | (i, a) <- zip [0 ..] as, i /= n ]
 
+type family Unwith a where
+  Unwith (With a _) = a
+  Unwith a = a
+
 data With a b = With a b
 
 instance (ToJSON a, ToJSON b) => ToJSON (a `With` b) where

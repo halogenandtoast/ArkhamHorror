@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 876ab07b2578f9d6f2bc24be62e8e409b1f34584cf7ea46fe9058cec247b26d1
+-- hash: bc2a2739c9fb1e1a7476a870db6f71c1412b65b4394aa9da8608f4495bb331a6
 
 name:           arkham-core
 version:        0.0.0
@@ -330,7 +330,7 @@ library
       Paths_arkham_core
   hs-source-dirs:
       library
-  default-extensions: NoImplicitPrelude RecordWildCards DerivingStrategies DeriveGeneric DeriveAnyClass LambdaCase FlexibleInstances MultiParamTypeClasses GeneralizedNewtypeDeriving OverloadedStrings TypeApplications TypeOperators TupleSections FlexibleContexts ConstraintKinds StandaloneDeriving DerivingVia
+  default-extensions: NoImplicitPrelude RecordWildCards DerivingStrategies DeriveGeneric DeriveAnyClass LambdaCase FlexibleInstances MultiParamTypeClasses GeneralizedNewtypeDeriving OverloadedStrings TypeApplications TypeOperators TupleSections FlexibleContexts ConstraintKinds StandaloneDeriving DerivingVia TypeFamilies
   build-depends:
       MonadRandom
     , aeson
@@ -339,6 +339,7 @@ library
     , classy-prelude
     , containers
     , extra
+    , generics-sop
     , hashable
     , microlens
     , microlens-platform

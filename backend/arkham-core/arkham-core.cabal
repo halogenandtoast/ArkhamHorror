@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e819d25a6b4c025839ea86e6c85a7b289fdf98ff2572d9abdd09807f87f0d28b
+-- hash: 49d1784dce6c11025d764b749858095ef2d822bc86d92e20879ac42dff41f0f2
 
 name:           arkham-core
 version:        0.0.0
@@ -344,6 +344,7 @@ library
     , hashable
     , microlens
     , microlens-platform
+    , microlens-th
     , mtl
     , pretty-simple
     , random

@@ -23,10 +23,10 @@ putApiV1ArkhamPendingGameR gameId = do
   let userId' = fromIntegral (fromSqlKey userId)
   JoinGameJson {..} <- requireCheckJsonBody
   ArkhamGame {..} <- runDB $ get404 gameId
-  when (userId' `HashMap.member` gamePlayers arkhamGameCurrentData)
+  when (userId' `HashMap.member` _gamePlayers arkhamGameCurrentData)
     $ invalidArgs ["Already joined game"]
   (iid, deck) <- liftIO $ loadDeck deckId
-  when (iid `HashMap.member` gameInvestigators arkhamGameCurrentData)
+  when (iid `HashMap.member` _gameInvestigators arkhamGameCurrentData)
     $ invalidArgs ["Investigator already taken"]
   ge <-
     liftIO

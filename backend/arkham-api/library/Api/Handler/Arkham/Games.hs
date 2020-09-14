@@ -66,7 +66,7 @@ getApiV1ArkhamGameR gameId = do
   let
     Game {..} = arkhamGameCurrentData ge
     investigatorId = fromJustNote "not in game"
-      $ HashMap.lookup (fromIntegral $ fromSqlKey userId) gamePlayers
+      $ HashMap.lookup (fromIntegral $ fromSqlKey userId) _gamePlayers
   pure $ GetGameJson investigatorId (Entity gameId ge)
 
 getApiV1ArkhamGamesR :: Handler [Entity ArkhamGame]
@@ -123,8 +123,8 @@ putApiV1ArkhamGameR gameId = do
   let
     gameJson@Game {..} = arkhamGameCurrentData
     investigatorId = fromJustNote "not in game"
-      $ HashMap.lookup (fromIntegral $ fromSqlKey userId) gamePlayers
-    messages = case HashMap.lookup investigatorId gameQuestion of
+      $ HashMap.lookup (fromIntegral $ fromSqlKey userId) _gamePlayers
+    messages = case HashMap.lookup investigatorId _gameQuestion of
       Just (ChooseOne qs) -> case qs !!? qrChoice response of
         Nothing -> [Ask investigatorId $ ChooseOne qs]
         Just msg -> [msg]
@@ -137,10 +137,10 @@ putApiV1ArkhamGameR gameId = do
           (Nothing, msgs'') -> [Ask investigatorId $ ChooseOneAtATime msgs'']
       _ -> []
 
-  if gameHash == qrGameHash response
+  if _gameHash == qrGameHash response
     then do
       ge <- liftIO $ runMessages =<< toInternalGame
-        (gameJson { gameMessages = messages <> gameMessages })
+        (gameJson { _gameMessages = messages <> _gameMessages })
 
       writeChannel <- getChannel gameId
       liftIO $ atomically $ writeTChan
@@ -162,7 +162,7 @@ putApiV1ArkhamGameRawR gameId = do
   response <- requireCheckJsonBody
   ge <- liftIO $ runMessages =<< toInternalGame
     ((gameJson response)
-      { gameMessages = Continue "edited" : gameMessages (gameJson response)
+      { _gameMessages = Continue "edited" : _gameMessages (gameJson response)
       }
     )
   writeChannel <- getChannel gameId

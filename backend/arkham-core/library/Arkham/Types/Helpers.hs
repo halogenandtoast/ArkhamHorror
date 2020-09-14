@@ -1,13 +1,10 @@
 module Arkham.Types.Helpers where
 
 import Arkham.Json
-import ClassyPrelude hiding (unpack)
+import ClassyPrelude
 import Control.Monad.Random
-import qualified Data.HashMap.Strict as HashMap
 import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as NE
-import Data.Text.Lazy (unpack)
-import Data.Text.Lazy.Builder
 
 sample :: MonadRandom m => NonEmpty a -> m a
 sample xs = do
@@ -16,37 +13,6 @@ sample xs = do
 
 without :: Int -> [a] -> [a]
 without n as = [ a | (i, a) <- zip [0 ..] as, i /= n ]
-
-type family Unwith a where
-  Unwith (With a _) = a
-  Unwith a = a
-
-data With a b = With a b
-
-instance (ToJSON a, ToJSON b) => ToJSON (a `With` b) where
-  toJSON (a `With` b) = case (toJSON a, toJSON b) of
-    (Object o, Object m) -> Object $ HashMap.union m o
-    (a', b') -> metadataError a' b'
-   where
-    metadataError a' b' =
-      error
-        . unpack
-        . toLazyText
-        $ "With failed to serialize to object: "
-        <> "\nattrs: "
-        <> encodeToTextBuilder a'
-        <> "\nmetadata: "
-        <> encodeToTextBuilder b'
-
-instance (FromJSON a, FromJSON b) => FromJSON (a `With` b) where
-  parseJSON = withObject "With"
-    $ \o -> With <$> parseJSON (Object o) <*> parseJSON (Object o)
-
-instance (Show a, Show b) => Show (a `With` b) where
-  show (With a b) = show a <> " WITH " <> show b
-
-with :: a -> b -> a `With`  b
-with a b = With a b
 
 infix 9 !!?
 (!!?) :: [a] -> Int -> Maybe a

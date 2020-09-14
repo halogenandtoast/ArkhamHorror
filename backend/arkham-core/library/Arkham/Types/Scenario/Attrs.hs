@@ -29,6 +29,7 @@ data Attrs = Attrs
   , scenarioAgendaStack :: [(Int, [AgendaId])] -- These types are to handle complex scenarios with multiple stacks
   , scenarioActStack    :: [(Int, [ActId])]
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
+  , scenarioDeck :: Maybe [EncounterCard]
   }
   deriving stock (Show, Generic)
 
@@ -50,6 +51,7 @@ baseAttrs cardCode name agendaStack actStack' difficulty = Attrs
   , scenarioAgendaStack = [(1, agendaStack)]
   , scenarioActStack = [(1, actStack')]
   , scenarioLocationLayout = Nothing
+  , scenarioDeck = Nothing
   }
 
 instance (ScenarioRunner env) => RunMessage env Attrs where

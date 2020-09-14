@@ -162,6 +162,9 @@ data Location
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Location
+deriving anyclass instance (LocationRunner env) => RunMessage env Location
+
 locationAttrs :: Location -> Attrs
 locationAttrs = \case
   Study' attrs -> coerce attrs
@@ -188,32 +191,3 @@ locationAttrs = \case
   ArkhamWoodsTangledThicket' attrs -> coerce attrs
   ArkhamWoodsQuietGlade' attrs -> coerce attrs
   RitualSite' attrs -> coerce attrs
-
-instance (ActionRunner env investigator) => HasActions env investigator Location where
-  getActions i window = \case
-    Study' l -> getActions i window l
-    Hallway' l -> getActions i window l
-    Attic' l -> getActions i window l
-    Cellar' l -> getActions i window l
-    Parlor' l -> getActions i window l
-    YourHouse' l -> getActions i window l
-    Rivertown' l -> getActions i window l
-    SouthsideHistoricalSociety' l -> getActions i window l
-    SouthsideMasBoardingHouse' l -> getActions i window l
-    StMarysHospital' l -> getActions i window l
-    MiskatonicUniversity' l -> getActions i window l
-    DowntownFirstBankOfArkham' l -> getActions i window l
-    DowntownArkhamAsylum' l -> getActions i window l
-    Easttown' l -> getActions i window l
-    Graveyard' l -> getActions i window l
-    Northside' l -> getActions i window l
-    MainPath' l -> getActions i window l
-    ArkhamWoodsUnhallowedGround' l -> getActions i window l
-    ArkhamWoodsTwistingPaths' l -> getActions i window l
-    ArkhamWoodsOldHouse' l -> getActions i window l
-    ArkhamWoodsCliffside' l -> getActions i window l
-    ArkhamWoodsTangledThicket' l -> getActions i window l
-    ArkhamWoodsQuietGlade' l -> getActions i window l
-    RitualSite' l -> getActions i window l
-
-deriving anyclass instance (LocationRunner env) => RunMessage env Location

@@ -69,15 +69,5 @@ agendaAttrs = \case
   TheRitualBegins' attrs -> coerce attrs
   VengeanceAwaits' attrs -> coerce attrs
 
-instance (ActionRunner env investigator) => HasActions env investigator Agenda where
-  getActions i window = \case
-    WhatsGoingOn' x -> getActions i window x
-    RiseOfTheGhouls' x -> getActions i window x
-    TheyreGettingOut' x -> getActions i window x
-    PredatorOrPrey' x -> getActions i window x
-    TimeIsRunningShort' x -> getActions i window x
-    TheArkhamWoods' x -> getActions i window x
-    TheRitualBegins' x -> getActions i window x
-    VengeanceAwaits' x -> getActions i window x
-
+deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Agenda
 deriving anyclass instance (AgendaRunner env) => RunMessage env Agenda

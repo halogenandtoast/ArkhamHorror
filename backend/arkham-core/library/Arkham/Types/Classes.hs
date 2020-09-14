@@ -171,8 +171,35 @@ type ActionRunner env investigator
     , HasQueue env
     )
 
+class HasActions1 env investigator f where
+  getActions1 :: (MonadIO m, MonadReader env m) => investigator -> Window -> f p -> m [Message]
+
+instance HasActions1 env investigator f => HasActions1 env investigator (M1 i c f) where
+  getActions1 investigator window (M1 x) = getActions1 investigator window x
+
+instance (HasActions1 env investigator l, HasActions1 env investigator r) => HasActions1 env investigator (l :+: r) where
+  getActions1 investigator window (L1 x) = getActions1 investigator window x
+  getActions1 investigator window (R1 x) = getActions1 investigator window x
+
+instance (HasActions env investigator p) => HasActions1 env investigator (K1 R p) where
+  getActions1 investigator window (K1 x) = getActions investigator window x
+
+defaultGetActions
+  :: ( Generic a
+     , HasActions1 env investigator (Rep a)
+     , MonadIO m
+     , MonadReader env m
+     )
+  => investigator
+  -> Window
+  -> a
+  -> m [Message]
+defaultGetActions investigator window = getActions1 investigator window . from
+
 class HasActions env investigator a where
-  getActions :: forall m. (MonadReader env m, MonadIO m) => investigator -> Window -> a -> m [Message]
+  getActions :: (MonadReader env m, MonadIO m) => investigator -> Window -> a -> m [Message]
+  default getActions :: (Generic a, HasActions1 env investigator (Rep a), MonadIO m, MonadReader env m) => investigator -> Window -> a -> m [Message]
+  getActions = defaultGetActions
 
 class (HasId LocationId () location) => IsLocation location where
   isBlocked :: location -> Bool

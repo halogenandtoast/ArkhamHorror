@@ -64,14 +64,5 @@ actAttrs = \case
   IntoTheDarkness' attrs -> coerce attrs
   DisruptingTheRitual' (DisruptingTheRitual (attrs `With` _)) -> attrs
 
-instance (ActionRunner env investigator) => HasActions env investigator Act where
-  getActions i window = \case
-    Trapped' x -> getActions i window x
-    TheBarrier' x -> getActions i window x
-    WhatHaveYouDone' x -> getActions i window x
-    UncoveringTheConspiracy' x -> getActions i window x
-    InvestigatingTheTrail' x -> getActions i window x
-    IntoTheDarkness' x -> getActions i window x
-    DisruptingTheRitual' x -> getActions i window x
-
+deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Act
 deriving anyclass instance (ActRunner env) => RunMessage env Act

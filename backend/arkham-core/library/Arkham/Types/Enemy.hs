@@ -177,32 +177,7 @@ instance HasId EnemyId () Enemy where
 instance IsEnemy Enemy where
   isAloof = isAloof . enemyAttrs
 
-instance (ActionRunner env investigator) => HasActions env investigator Enemy where
-  getActions i window = \case
-    MobEnforcer' x -> getActions i window x
-    SilverTwilightAcolyte' x -> getActions i window x
-    StubbornDetective' x -> getActions i window x
-    GhoulPriest' x -> getActions i window x
-    FleshEater' x -> getActions i window x
-    IcyGhoul' x -> getActions i window x
-    TheMaskedHunter' x -> getActions i window x
-    WolfManDrew' x -> getActions i window x
-    HermanCollins' x -> getActions i window x
-    PeterWarren' x -> getActions i window x
-    VictoriaDevereux' x -> getActions i window x
-    RuthTurner' x -> getActions i window x
-    Umordhoth' x -> getActions i window x
-    SwarmOfRats' x -> getActions i window x
-    GhoulMinion' x -> getActions i window x
-    RavenousGhoul' x -> getActions i window x
-    Acolyte' x -> getActions i window x
-    WizardOfTheOrder' x -> getActions i window x
-    HuntingNightgaunt' x -> getActions i window x
-    ScreechingByakhee' x -> getActions i window x
-    YithianObserver' x -> getActions i window x
-    RelentlessDarkYoung' x -> getActions i window x
-    GoatSpawn' x -> getActions i window x
-    YoungDeepOne' x -> getActions i window x
+deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Enemy
 
 isBlank :: Modifier -> Bool
 isBlank Blank{} = True

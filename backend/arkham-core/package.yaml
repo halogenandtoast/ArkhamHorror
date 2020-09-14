@@ -21,6 +21,7 @@ default-extensions:
 - ConstraintKinds
 - StandaloneDeriving
 - DerivingVia
+- TypeFamilies
 
 library:
   source-dirs: library
@@ -43,3 +44,4 @@ library:
     - vector
     - MonadRandom
     - extra
+    - generics-sop

@@ -49,17 +49,17 @@ instance (HasQueue env, RunMessage1 env l, RunMessage1 env r) => RunMessage1 env
 instance (HasQueue env, RunMessage env p) => RunMessage1 env (K1 R p) where
   runMessage1 msg (K1 x) = K1 <$> runMessage msg x
 
+class (HasQueue env) => RunMessage env a where
+  runMessage :: (MonadIO m, MonadReader env m) => Message -> a -> m a
+  default runMessage :: (Generic a, RunMessage1 env (Rep a), MonadIO m, MonadReader env m) => Message -> a -> m a
+  runMessage = defaultRunMessage
+
 defaultRunMessage
   :: (Generic a, RunMessage1 env (Rep a), MonadIO m, MonadReader env m)
   => Message
   -> a
   -> m a
 defaultRunMessage msg = fmap to . runMessage1 msg . from
-
-class (HasQueue env) => RunMessage env a where
-  runMessage :: (MonadIO m, MonadReader env m) => Message -> a -> m a
-  default runMessage :: (Generic a, RunMessage1 env (Rep a), MonadIO m, MonadReader env m) => Message -> a -> m a
-  runMessage = defaultRunMessage
 
 withQueue
   :: (MonadIO m, MonadReader env m, HasQueue env)

@@ -72,7 +72,7 @@ import Data.UUID.V4
 import Lens.Micro
 import Lens.Micro.Extras
 import Lens.Micro.Platform ()
-import Safe (fromJustNote)
+import Safe (fromJustNote, headNote)
 import System.Environment
 import System.Random
 import System.Random.Shuffle
@@ -236,8 +236,8 @@ activeInvestigator :: Game queue -> Investigator
 activeInvestigator g = getInvestigator (g ^. activeInvestigatorId) g
 
 startGame :: MonadIO m => Game queue -> m (Game queue)
-startGame g = pure $ g & pending .~ False & playerCount .~ HashMap.size
-  (view investigators g)
+startGame g =
+  pure $ g & (pending .~ False) & (playerCount .~ length (g ^. investigators))
 
 addInvestigator
   :: (MonadIO m, MonadFail m)
@@ -248,18 +248,16 @@ addInvestigator
   -> m GameExternal
 addInvestigator uid i d g = do
   liftIO $ atomicModifyIORef'
-    (gameMessages g)
+    (g ^. messageQueue)
     (\queue -> (InitDeck (getInvestigatorId i) d : queue, ()))
   let
+    iid = getInvestigatorId i
     g' =
       g
-        & (investigators %~ HashMap.insert (getInvestigatorId i) i)
-        & (players %~ HashMap.insert uid (getInvestigatorId i))
-        & (playerOrder %~ (<> [getInvestigatorId i]))
-  runMessages
-    $ g'
-    & pending
-    .~ (HashMap.size (view players g') < view playerCount g')
+        & (investigators %~ insertMap iid i)
+        & (players %~ insertMap uid iid)
+        & (playerOrder %~ (<> [iid]))
+  runMessages $ g' & pending .~ (length (g' ^. players) < g' ^. playerCount)
 
 newCampaign
   :: MonadIO m
@@ -279,9 +277,7 @@ newCampaign campaignId playerCount' investigatorsList difficulty' = do
   let campaign' = lookupCampaign campaignId difficulty'
   ref <-
     newIORef
-    $ map
-        (\(i, d) -> InitDeck (getInvestigatorId i) d)
-        (HashMap.elems investigatorsList)
+    $ map (uncurry (InitDeck . getInvestigatorId)) (toList investigatorsList)
     <> [StartCampaign]
   pure $ Game
     { gameMessages = ref
@@ -307,25 +303,21 @@ newCampaign campaignId playerCount' investigatorsList difficulty' = do
     , gameActs = mempty
     , gameChaosBag = Bag []
     , gameGameOver = False
-    , gamePending = HashMap.size investigatorsMap /= playerCount'
+    , gamePending = length investigatorsMap /= playerCount'
     , gameUsedAbilities = mempty
     , gameFocusedCards = mempty
     , gameFocusedTokens = mempty
     , gameActiveCard = Nothing
-    , gamePlayerOrder = map
-      (getInvestigatorId . fst)
-      (HashMap.elems investigatorsList)
+    , gamePlayerOrder = toList playersMap
     , gameVictoryDisplay = mempty
     , gameQuestion = mempty
     , gameHash = hash'
     }
  where
-  initialInvestigatorId =
-    fromJustNote "No investigators" . headMay . HashMap.keys $ investigatorsMap
-  playersMap = HashMap.map (getInvestigatorId . fst) investigatorsList
-  investigatorsMap = HashMap.fromList $ map
-    (\(i, _) -> (getInvestigatorId i, i))
-    (HashMap.elems investigatorsList)
+  initialInvestigatorId = headNote "No investigators" $ keys investigatorsMap
+  playersMap = map (getInvestigatorId . fst) investigatorsList
+  investigatorsMap =
+    mapFromList $ map (toFst getInvestigatorId . fst) (toList investigatorsList)
 
 instance HasRecord (Game queue) where
   hasRecord key g = case g ^. campaign of
@@ -354,17 +346,13 @@ instance HasId (Maybe LocationId) AssetId (Game queue) where
   getId aid = getId () . getAsset aid
 
 instance HasId (Maybe StoryAssetId) CardCode (Game queue) where
-  getId cardCode =
-    (StoryAssetId . fst <$>)
-      . find ((cardCode ==) . getCardCode . snd)
-      . HashMap.toList
-      . view assets
+  getId cardCode = (StoryAssetId <$>) . getId cardCode
 
 instance HasId (Maybe AssetId) CardCode (Game queue) where
   getId cardCode =
     (fst <$>)
       . find ((cardCode ==) . getCardCode . snd)
-      . HashMap.toList
+      . mapToList
       . view assets
 
 instance HasId LocationId InvestigatorId (Game queue) where
@@ -374,14 +362,15 @@ instance HasId LocationId EnemyId (Game queue) where
   getId eid = getId () . getEnemy eid
 
 instance HasCount TreacheryCount (LocationId, CardCode) (Game queue) where
-  getCount (lid, cardCode) g = TreacheryCount
-    (length (filter (== cardCode) cardCodes))
+  getCount (lid, cardCode) g = TreacheryCount $ count (== cardCode) cardCodes
    where
     location = getLocation lid g
-    treacheries' = HashSet.toList $ getSet () location
-    cardCodes = mapMaybe
-      (\k -> getCardCode <$> HashMap.lookup k (g ^. treacheries))
-      treacheries'
+    treacheries' = getSet () location
+    cardCodes =
+      [ getCardCode c
+      | (i, c) <- mapToList (g ^. treacheries)
+      , i `member` treacheries'
+      ]
 
 instance HasCount DoomCount EnemyId (Game queue) where
   getCount eid = getCount () . getEnemy eid
@@ -389,19 +378,19 @@ instance HasCount DoomCount EnemyId (Game queue) where
 instance HasCount XPCount () (Game queue) where
   getCount _ g =
     XPCount
-      $ (sum . mapMaybe getVictoryPoints $ view victoryDisplay g)
-      + (sum . mapMaybe getVictoryPoints . HashMap.elems $ view locations g)
+      $ (sum . mapMaybe getVictoryPoints $ g ^. victoryDisplay)
+      + (sum . mapMaybe getVictoryPoints . toList $ g ^. locations)
 
 instance HasCount DoomCount () (Game queue) where
   getCount _ g =
     DoomCount
       . sum
       . map unDoomCount
-      $ (map (getCount ()) . HashMap.elems $ view enemies g)
-      <> (map (getCount ()) . HashMap.elems $ view locations g)
-      <> (map (getCount ()) . HashMap.elems $ view assets g)
-      <> (map (getCount ()) . HashMap.elems $ view treacheries g)
-      <> (map (getCount ()) . HashMap.elems $ view agendas g)
+      $ (map (getCount ()) . toList $ g ^. enemies)
+      <> (map (getCount ()) . toList $ g ^. locations)
+      <> (map (getCount ()) . toList $ g ^. assets)
+      <> (map (getCount ()) . toList $ g ^. treacheries)
+      <> (map (getCount ()) . toList $ g ^. agendas)
 
 instance HasCount ClueCount LocationId (Game queue) where
   getCount lid = getCount () . getLocation lid
@@ -420,42 +409,37 @@ instance HasCount ResourceCount InvestigatorId (Game queue) where
 
 instance HasCount SpendableClueCount AllInvestigators (Game queue) where
   getCount _ g = (SpendableClueCount . sum)
-    (map
-      (unSpendableClueCount . (`getCount` g))
-      (g ^. investigators . to HashMap.keys)
-    )
+    (map (unSpendableClueCount . (`getCount` g)) (g ^. investigators . to keys))
 
 instance HasCount PlayerCount () (Game queue) where
-  getCount _ = PlayerCount . HashMap.size . view investigators
+  getCount _ = PlayerCount . length . view investigators
 
 instance HasCount EnemyCount InvestigatorId (Game queue) where
   getCount iid = getCount () . getInvestigator iid
 
 instance HasCount AssetCount (InvestigatorId, [Trait]) (Game queue) where
   getCount (iid, traits) g@Game {..} =
-    let investigatorAssets = getSet () investigator
-    in AssetCount . length $ HashSet.filter assetMatcher investigatorAssets
+    let investigatorAssets = toList $ getSet () investigator
+    in AssetCount $ count assetMatcher investigatorAssets
    where
     investigator = getInvestigator iid g
-    assetMatcher aid =
-      any (`HashSet.member` (getTraits $ getAsset aid g)) traits
+    assetMatcher aid = any (`member` (getTraits $ getAsset aid g)) traits
 
 instance HasCount EnemyCount [Trait] (Game queue) where
   getCount traits g@Game {..} = EnemyCount . length $ HashMap.filter
     enemyMatcher
     (view enemies g)
-    where enemyMatcher enemy = any (`HashSet.member` getTraits enemy) traits
+    where enemyMatcher enemy = any (`member` getTraits enemy) traits
 
 instance HasCount EnemyCount (LocationId, [Trait]) (Game queue) where
   getCount (lid, traits) g@Game {..} = case mlocation of
     Just location ->
-      let locationEnemies = getSet () location
-      in EnemyCount . length $ HashSet.filter enemyMatcher locationEnemies
+      let locationEnemies = toList $ getSet () location
+      in EnemyCount $ count enemyMatcher locationEnemies
     Nothing -> EnemyCount 0
    where
     mlocation = g ^? locations . ix lid
-    enemyMatcher eid =
-      any (`HashSet.member` (getTraits $ getEnemy eid g)) traits
+    enemyMatcher eid = any (`member` (getTraits $ getEnemy eid g)) traits
 
 instance HasCount EnemyCount (InvestigatorLocation, [Trait]) (Game queue) where
   getCount (InvestigatorLocation iid, traits) g@Game {..} = getCount
@@ -518,25 +502,23 @@ instance HasSet VictoryDisplayCardCode () (Game queue) where
       . view victoryDisplay
 
 instance HasSet ClueCount () (Game queue) where
-  getSet _ =
-    HashSet.fromList . map (getCount ()) . HashMap.elems . view investigators
+  getSet _ = HashSet.fromList . map (getCount ()) . toList . view investigators
 
 instance HasSet CardCount () (Game queue) where
-  getSet _ =
-    HashSet.fromList . map (getCount ()) . HashMap.elems . view investigators
+  getSet _ = HashSet.fromList . map (getCount ()) . toList . view investigators
 
 instance HasSet RemainingHealth () (Game queue) where
   getSet _ =
     HashSet.fromList
       . map (RemainingHealth . remainingHealth)
-      . HashMap.elems
+      . toList
       . view investigators
 
 instance HasSet RemainingSanity () (Game queue) where
   getSet _ =
     HashSet.fromList
       . map (RemainingSanity . remainingSanity)
-      . HashMap.elems
+      . toList
       . view investigators
 
 instance HasCount RemainingHealth InvestigatorId (Game queue) where
@@ -552,28 +534,26 @@ instance HasSet EmptyLocationId () (Game queue) where
   getSet _ =
     HashSet.map EmptyLocationId
       . HashMap.keysSet
-      . HashMap.filter isEmptyLocation
+      . filterMap isEmptyLocation
       . view locations
 
 instance HasSet RevealedLocationId () (Game queue) where
   getSet _ =
     HashSet.map RevealedLocationId
       . HashMap.keysSet
-      . HashMap.filter isRevealed
+      . filterMap isRevealed
       . view locations
 
 instance HasSet LocationId TreacheryCardCode (Game queue) where
   getSet (TreacheryCardCode cc) =
     HashSet.fromList
-      . catMaybes
-      . HashMap.elems
-      . HashMap.map treacheryLocation
-      . HashMap.filter ((== cc) . getCardCode)
+      . mapMaybe treacheryLocation
+      . toList
+      . filterMap ((== cc) . getCardCode)
       . view treacheries
 
 instance HasSet LocationId [Trait] (Game queue) where
-  getSet traits =
-    HashMap.keysSet . HashMap.filter hasMatchingTrait . view locations
+  getSet traits = HashMap.keysSet . filterMap hasMatchingTrait . view locations
    where
     hasMatchingTrait =
       not . null . (HashSet.fromList traits `intersection`) . getTraits
@@ -585,19 +565,19 @@ instance HasSet InScenarioInvestigatorId () (Game queue) where
   getSet _ =
     HashSet.map InScenarioInvestigatorId
       . HashMap.keysSet
-      . HashMap.filter (not . (\i -> hasResigned i || isDefeated i))
+      . filterMap (not . (\i -> hasResigned i || isDefeated i))
       . view investigators
 
 instance HasSet UnengagedEnemyId () (Game queue) where
   getSet _ =
     HashSet.map UnengagedEnemyId
       . HashMap.keysSet
-      . HashMap.filter (not . isEngaged)
+      . filterMap (not . isEngaged)
       . view enemies
 
 instance HasSet EnemyId Trait (Game queue) where
   getSet trait =
-    HashMap.keysSet . HashMap.filter ((trait `elem`) . getTraits) . view enemies
+    HashMap.keysSet . filterMap ((trait `elem`) . getTraits) . view enemies
 
 instance HasSet CommittedCardId InvestigatorId (Game queue) where
   getSet iid = maybe mempty (getSet iid) . view skillTest
@@ -616,7 +596,7 @@ instance HasSet BlockedLocationId () (Game queue) where
   getSet _ =
     HashSet.map BlockedLocationId
       . HashMap.keysSet
-      . HashMap.filter isBlocked
+      . filterMap isBlocked
       . view locations
 
 data BFSState = BFSState
@@ -1675,9 +1655,9 @@ runGameMessage msg g = case msg of
             (unOwnerId . fromJustNote "owner was not set" $ getId () treachery)
             card
           )
-        pure $ g & treacheries %~ HashMap.delete tid
+        pure $ g & treacheries %~ deleteMap tid
       Just (EncounterCard ec) ->
-        pure $ g & treacheries %~ HashMap.delete tid & discard %~ (ec :)
+        pure $ g & treacheries %~ deleteMap tid & discard %~ (ec :)
   _ -> pure g
 
 instance RunMessage GameInternal GameInternal where

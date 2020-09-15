@@ -6,6 +6,12 @@ import Control.Monad.Random
 import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as NE
 
+toFst :: (a -> b) -> a -> (b, a)
+toFst f a = (f a, a)
+
+count :: (a -> Bool) -> [a] -> Int
+count = (length .) . filter
+
 sample :: MonadRandom m => NonEmpty a -> m a
 sample xs = do
   idx <- getRandomR (0, NE.length xs - 1)

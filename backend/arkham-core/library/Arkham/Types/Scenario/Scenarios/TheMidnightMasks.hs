@@ -45,9 +45,9 @@ theMidnightMasks difficulty =
 instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs@Attrs {..}) = case msg of
     Setup -> do
-      count <- unPlayerCount <$> asks (getCount ())
+      count' <- unPlayerCount <$> asks (getCount ())
       investigatorIds <- HashSet.toList <$> asks (getSet ())
-      (acolytes, darkCult) <- splitAt (count - 1)
+      (acolytes, darkCult) <- splitAt (count' - 1)
         <$> gatherEncounterSet EncounterSet.DarkCult
       -- ^ we will spawn these acolytes
       southside <- liftIO $ sample $ "01126" :| ["01127"]

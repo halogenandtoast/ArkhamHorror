@@ -128,30 +128,22 @@ instance (FromJSON queue) => FromJSON (Game queue) where
 deriving stock instance (Show queue) => Show (Game queue)
 
 getInvestigator :: InvestigatorId -> Game queue -> Investigator
-getInvestigator iid g =
-  fromJustNote ("No such investigator: " <> show iid)
-    $ g
-    ^? (investigators . ix iid)
+getInvestigator iid g = g ^?! investigators . ix iid
 
 getLocation :: LocationId -> Game queue -> Location
-getLocation lid g =
-  fromJustNote ("No such location: " <> show lid) $ g ^? (locations . ix lid)
+getLocation lid g = g ^?! locations . ix lid
 
 getEnemy :: EnemyId -> Game queue -> Enemy
-getEnemy eid g =
-  fromJustNote ("No such enemy: " <> show eid) $ g ^? (enemies . ix eid)
+getEnemy eid g = g ^?! enemies . ix eid
 
 getAsset :: AssetId -> Game queue -> Asset
-getAsset aid g =
-  fromJustNote ("No such asset: " <> show aid) $ g ^? (assets . ix aid)
+getAsset aid g = g ^?! assets . ix aid
 
 getTreachery :: TreacheryId -> Game queue -> Treachery
-getTreachery tid g =
-  fromJustNote ("No such treachery: " <> show tid) $ g ^? (treacheries . ix tid)
+getTreachery tid g = g ^?! treacheries . ix tid
 
 getEvent :: EventId -> Game queue -> Event
-getEvent eid g =
-  fromJustNote ("No such event: " <> show eid) $ g ^? (events . ix eid)
+getEvent eid g = g ^?! events . ix eid
 
 players :: Lens' (Game queue) (HashMap Int InvestigatorId)
 players = lens gamePlayers $ \m x -> m { gamePlayers = x }
@@ -264,7 +256,6 @@ addInvestigator uid i d g = do
         & (investigators %~ HashMap.insert (getInvestigatorId i) i)
         & (players %~ HashMap.insert uid (getInvestigatorId i))
         & (playerOrder %~ (<> [getInvestigatorId i]))
-
   runMessages
     $ g'
     & pending
@@ -464,7 +455,7 @@ instance HasCount EnemyCount (LocationId, [Trait]) (Game queue) where
    where
     mlocation = g ^? locations . ix lid
     enemyMatcher eid =
-      any (`HashSet.member` (getTraits $ g ^?! enemies . ix eid)) traits
+      any (`HashSet.member` (getTraits $ getEnemy eid g)) traits
 
 instance HasCount EnemyCount (InvestigatorLocation, [Trait]) (Game queue) where
   getCount (InvestigatorLocation iid, traits) g@Game {..} = getCount
@@ -1317,16 +1308,16 @@ runGameMessage msg g = case msg of
         unshiftMessage (Ask (gameLeadInvestigatorId g) $ ChooseOneAtATime as)
     pure g
   Discard (AssetTarget aid) -> do
-    let asset = g ^?! assets . ix aid
+    let asset = getAsset aid g
     unshiftMessage (AssetDiscarded aid (getCardCode asset))
     pure $ g & assets %~ HashMap.delete aid
   AssetDefeated aid -> do
-    let asset = g ^?! assets . ix aid
+    let asset = getAsset aid g
     unshiftMessage (AssetDiscarded aid (getCardCode asset))
     pure $ g & assets %~ HashMap.delete aid
   EnemyDefeated eid iid _ _ -> do
     let
-      enemy = g ^?! enemies . ix eid
+      enemy = getEnemy eid g
       cardId = CardId (unEnemyId eid)
       encounterCard = do
         f <- HashMap.lookup (getCardCode enemy) allEncounterCards
@@ -1351,7 +1342,7 @@ runGameMessage msg g = case msg of
         else pure $ g & (enemies %~ HashMap.delete eid) & (discard %~ (ec :))
   AddToVictory (EnemyTarget eid) -> do
     let
-      enemy = g ^?! enemies . ix eid
+      enemy = getEnemy eid g
       cardId = CardId (unEnemyId eid)
       encounterCard = do
         f <- HashMap.lookup (getCardCode enemy) allEncounterCards

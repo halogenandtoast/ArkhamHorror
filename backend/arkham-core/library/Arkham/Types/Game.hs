@@ -865,37 +865,33 @@ broadcastWindow builder currentInvestigatorId g =
         )
 
 instance (IsInvestigator investigator) => HasActions GameInternal investigator (ActionType, GameInternal) where
-  getActions i window (EnemyActionType, g) =
-    concat <$> traverse (getActions i window) (toList $ view enemies g)
-  getActions i window (LocationActionType, g) =
-    concat <$> traverse (getActions i window) (toList $ view locations g)
-  getActions i window (AssetActionType, g) =
-    concat <$> traverse (getActions i window) (toList $ view assets g)
-  getActions i window (TreacheryActionType, g) =
-    concat <$> traverse (getActions i window) (toList $ view treacheries g)
-  getActions i window (ActActionType, g) =
-    concat <$> traverse (getActions i window) (toList $ view acts g)
-  getActions i window (AgendaActionType, g) =
-    concat <$> traverse (getActions i window) (toList $ view agendas g)
-  getActions i window (InvestigatorActionType, g) =
-    concat <$> traverse (getActions i window) (toList $ view investigators g)
+  getActions i window (actionType, g) = case actionType of
+    EnemyActionType -> concatMapM' (getActions i window) (g ^. enemies)
+    LocationActionType -> concatMapM' (getActions i window) (g ^. locations)
+    AssetActionType -> concatMapM' (getActions i window) (g ^. assets)
+    TreacheryActionType -> concatMapM' (getActions i window) (g ^. treacheries)
+    ActActionType -> concatMapM' (getActions i window) (g ^. acts)
+    AgendaActionType -> concatMapM' (getActions i window) (g ^. agendas)
+    InvestigatorActionType ->
+      concatMapM' (getActions i window) (g ^. investigators)
 
 instance (IsInvestigator investigator) => HasActions GameInternal investigator (ActionType, Trait, GameInternal) where
-  getActions i window (EnemyActionType, trait, g) = concat <$> traverse
-    (getActions i window)
-    (filter ((trait `elem`) . getTraits) $ toList $ view enemies g)
-  getActions i window (LocationActionType, trait, g) = concat <$> traverse
-    (getActions i window)
-    (filter ((trait `elem`) . getTraits) $ toList $ view locations g)
-  getActions i window (AssetActionType, trait, g) = concat <$> traverse
-    (getActions i window)
-    (filter ((trait `elem`) . getTraits) $ toList $ view assets g)
-  getActions i window (TreacheryActionType, trait, g) = concat <$> traverse
-    (getActions i window)
-    (filter ((trait `elem`) . getTraits) $ toList $ view treacheries g)
-  getActions _ _ (InvestigatorActionType, _, _) = pure [] -- is this a thing?
-  getActions _ _ (ActActionType, _, _) = pure [] -- acts do not have traits
-  getActions _ _ (AgendaActionType, _, _) = pure [] -- agendas do not have traits
+  getActions i window (actionType, trait, g) = case actionType of
+    EnemyActionType -> concatMapM'
+      (getActions i window)
+      (filterMap ((trait `elem`) . getTraits) $ g ^. enemies)
+    LocationActionType -> concatMapM'
+      (getActions i window)
+      (filterMap ((trait `elem`) . getTraits) $ g ^. locations)
+    AssetActionType -> concatMapM'
+      (getActions i window)
+      (filterMap ((trait `elem`) . getTraits) $ g ^. assets)
+    TreacheryActionType -> concatMapM'
+      (getActions i window)
+      (filterMap ((trait `elem`) . getTraits) $ g ^. treacheries)
+    InvestigatorActionType -> pure [] -- do we need these
+    ActActionType -> pure [] -- acts do not have traits
+    AgendaActionType -> pure [] -- agendas do not have traits
 
 instance
   (HasActions env investigator (ActionType, Game queue))

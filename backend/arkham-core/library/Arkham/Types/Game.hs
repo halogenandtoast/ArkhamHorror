@@ -1,5 +1,7 @@
+
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Game
@@ -127,24 +129,6 @@ instance (FromJSON queue) => FromJSON (Game queue) where
 
 deriving stock instance (Show queue) => Show (Game queue)
 
-getInvestigator :: InvestigatorId -> Game queue -> Investigator
-getInvestigator iid g = g ^?! investigators . ix iid
-
-getLocation :: LocationId -> Game queue -> Location
-getLocation lid g = g ^?! locations . ix lid
-
-getEnemy :: EnemyId -> Game queue -> Enemy
-getEnemy eid g = g ^?! enemies . ix eid
-
-getAsset :: AssetId -> Game queue -> Asset
-getAsset aid g = g ^?! assets . ix aid
-
-getTreachery :: TreacheryId -> Game queue -> Treachery
-getTreachery tid g = g ^?! treacheries . ix tid
-
-getEvent :: EventId -> Game queue -> Event
-getEvent eid g = g ^?! events . ix eid
-
 players :: Lens' (Game queue) (HashMap Int InvestigatorId)
 players = lens gamePlayers $ \m x -> m { gamePlayers = x }
 
@@ -202,9 +186,8 @@ enemies = lens gameEnemies $ \m x -> m { gameEnemies = x }
 assets :: Lens' (Game queue) (HashMap AssetId Asset)
 assets = lens gameAssets $ \m x -> m { gameAssets = x }
 
-encounterDeck :: Lens' (Game queue) [EncounterCard]
-encounterDeck =
-  lens (coerce . gameEncounterDeck) $ \m x -> m { gameEncounterDeck = coerce x }
+encounterDeck :: Lens' (Game queue) (Deck EncounterCard)
+encounterDeck = lens gameEncounterDeck $ \m x -> m { gameEncounterDeck = x }
 
 discard :: Lens' (Game queue) [EncounterCard]
 discard = lens gameDiscard $ \m x -> m { gameDiscard = x }
@@ -212,8 +195,8 @@ discard = lens gameDiscard $ \m x -> m { gameDiscard = x }
 usedAbilities :: Lens' (Game queue) [(InvestigatorId, Ability)]
 usedAbilities = lens gameUsedAbilities $ \m x -> m { gameUsedAbilities = x }
 
-chaosBag :: Lens' (Game queue) [Token]
-chaosBag = lens (coerce . gameChaosBag) $ \m x -> m { gameChaosBag = coerce x }
+chaosBag :: Lens' (Game queue) (Bag Token)
+chaosBag = lens gameChaosBag $ \m x -> m { gameChaosBag = x }
 
 leadInvestigatorId :: Lens' (Game queue) InvestigatorId
 leadInvestigatorId =
@@ -231,6 +214,25 @@ campaign = lens gameCampaign $ \m x -> m { gameCampaign = x }
 
 skillTest :: Lens' (Game queue) (Maybe (SkillTest Message))
 skillTest = lens gameSkillTest $ \m x -> m { gameSkillTest = x }
+
+
+getInvestigator :: InvestigatorId -> Game queue -> Investigator
+getInvestigator iid g = g ^?! investigators . ix iid
+
+getLocation :: LocationId -> Game queue -> Location
+getLocation lid g = g ^?! locations . ix lid
+
+getEnemy :: EnemyId -> Game queue -> Enemy
+getEnemy eid g = g ^?! enemies . ix eid
+
+getAsset :: AssetId -> Game queue -> Asset
+getAsset aid g = g ^?! assets . ix aid
+
+getTreachery :: TreacheryId -> Game queue -> Treachery
+getTreachery tid g = g ^?! treacheries . ix tid
+
+getEvent :: EventId -> Game queue -> Event
+getEvent eid g = g ^?! events . ix eid
 
 activeInvestigator :: Game queue -> Investigator
 activeInvestigator g = getInvestigator (g ^. activeInvestigatorId) g
@@ -956,7 +958,7 @@ runGameMessage msg g = case msg of
     pure
       $ g
       & (scenario ?~ lookupScenario sid difficulty')
-      & (chaosBag .~ chaosBag')
+      & (chaosBag .~ Bag chaosBag')
       & (phase .~ InvestigationPhase)
   FocusCards cards -> pure $ g & focusedCards .~ cards
   FocusTokens tokens -> pure $ g & focusedTokens .~ tokens
@@ -981,7 +983,7 @@ runGameMessage msg g = case msg of
         )
       ShuffleBackIn -> error "this is not handled yet"
     unshiftMessage (FocusCards $ map EncounterCard cards)
-    pure $ g & encounterDeck .~ encounterDeck'
+    pure $ g & encounterDeck .~ Deck encounterDeck'
   ShuffleAllFocusedIntoDeck _ (InvestigatorTarget iid') -> do
     let cards = mapMaybe toPlayerCard (g ^. focusedCards)
     unshiftMessage (ShuffleCardsIntoDeck iid' cards)
@@ -993,7 +995,10 @@ runGameMessage msg g = case msg of
           $ find ((== cardId) . getCardId) (g ^. focusedCards)
           >>= toEncounterCard
       focusedCards' = filter ((/= cardId) . getCardId) (g ^. focusedCards)
-    pure $ g & (focusedCards .~ focusedCards') & (encounterDeck %~ (card :))
+    pure
+      $ g
+      & (focusedCards .~ focusedCards')
+      & (encounterDeck %~ Deck . (card :) . unDeck)
   AddFocusedToTopOfDeck _ (InvestigatorTarget iid') cardId -> do
     let
       card =
@@ -1024,7 +1029,8 @@ runGameMessage msg g = case msg of
   PlaceLocation lid -> do
     unshiftMessage (PlacedLocation lid)
     pure $ g & locations . at lid ?~ lookupLocation lid
-  SetEncounterDeck encounterDeck' -> pure $ g & encounterDeck .~ encounterDeck'
+  SetEncounterDeck encounterDeck' ->
+    pure $ g & encounterDeck .~ Deck encounterDeck'
   RemoveEnemy eid -> pure $ g & enemies %~ deleteMap eid
   RemoveLocation lid -> do
     treacheryIds <- toList <$> asks (getSet lid)
@@ -1099,8 +1105,8 @@ runGameMessage msg g = case msg of
         (CardId $ unSkillId skillId)
     unshiftMessage (AddToHand iid (PlayerCard card))
     pure $ g & skills %~ deleteMap skillId
-  ReturnTokens tokens -> pure $ g & chaosBag %~ (tokens <>)
-  AddToken token -> pure $ g & chaosBag %~ (token :)
+  ReturnTokens tokens -> pure $ g & chaosBag %~ Bag . (tokens <>) . unBag
+  AddToken token -> pure $ g & chaosBag %~ Bag . (token :) . unBag
   PlayCard iid cardId False -> do
     let
       investigator = getInvestigator iid g
@@ -1466,12 +1472,12 @@ runGameMessage msg g = case msg of
       , DrawToken token
       , ResolveToken token iid skillValue
       ]
-    pure $ g & (chaosBag .~ chaosBag')
+    pure $ g & (chaosBag .~ Bag chaosBag')
   DrawAnotherToken iid skillValue _ _ -> do
     ([token], chaosBag') <- drawTokens g 1
     unshiftMessage (ResolveToken token iid skillValue)
     unshiftMessage (DrawToken token)
-    pure $ g & chaosBag .~ chaosBag'
+    pure $ g & chaosBag .~ Bag chaosBag'
   CreateStoryAssetAt cardCode lid -> do
     (assetId', asset') <- createAsset cardCode
     unshiftMessage (AddAssetAt assetId' lid)
@@ -1504,7 +1510,7 @@ runGameMessage msg g = case msg of
     let matchingDiscards = filter (encounterCardMatch matcher) (g ^. discard)
     let
       matchingDeckCards =
-        filter (encounterCardMatch matcher) (g ^. encounterDeck)
+        filter (encounterCardMatch matcher) (unDeck $ g ^. encounterDeck)
     unshiftMessage
       (Ask iid
       $ ChooseOne
@@ -1522,13 +1528,13 @@ runGameMessage msg g = case msg of
         _ -> g ^. discard
       encounterDeck' = case cardSource of
         FromEncounterDeck ->
-          filter ((/= cardId) . getCardId) (g ^. encounterDeck)
-        _ -> g ^. encounterDeck
+          filter ((/= cardId) . getCardId) (unDeck $ g ^. encounterDeck)
+        _ -> unDeck (g ^. encounterDeck)
     shuffled <- liftIO $ shuffleM encounterDeck'
     unshiftMessage (InvestigatorDrewEncounterCard iid card)
     pure
       $ g
-      & (encounterDeck .~ shuffled)
+      & (encounterDeck .~ Deck shuffled)
       & (discard .~ discard')
       & (focusedCards .~ mempty)
   SearchCollectionForRandom iid source matcher -> do
@@ -1543,28 +1549,29 @@ runGameMessage msg g = case msg of
   DiscardEncounterUntilFirst source matcher -> do
     let
       (discards, remainingDeck) =
-        break (encounterCardMatch matcher) (g ^. encounterDeck)
+        break (encounterCardMatch matcher) (unDeck $ g ^. encounterDeck)
     case remainingDeck of
       [] -> do
         unshiftMessage (RequestedEncounterCard source Nothing)
         encounterDeck' <- liftIO $ shuffleM (discards <> g ^. discard)
-        pure $ g & encounterDeck .~ encounterDeck' & discard .~ mempty
+        pure $ g & encounterDeck .~ Deck encounterDeck' & discard .~ mempty
       (x : xs) -> do
         unshiftMessage (RequestedEncounterCard source (Just x))
-        pure $ g & encounterDeck .~ xs & discard %~ (reverse discards <>)
+        pure $ g & encounterDeck .~ Deck xs & discard %~ (reverse discards <>)
   Surge iid -> g <$ unshiftMessage (InvestigatorDrawEncounterCard iid)
-  InvestigatorDrawEncounterCard iid -> if null (g ^. encounterDeck)
+  InvestigatorDrawEncounterCard iid -> if null (unDeck $ g ^. encounterDeck)
     then g <$ unshiftMessages
       [ShuffleEncounterDiscardBackIn, InvestigatorDrawEncounterCard iid]
       -- This case should not happen but this safeguards against it
     else do
-      let (card : encounterDeck') = g ^. encounterDeck
+      let (card : encounterDeck') = unDeck $ g ^. encounterDeck
       when (null encounterDeck') (unshiftMessage ShuffleEncounterDiscardBackIn)
       unshiftMessage (InvestigatorDrewEncounterCard iid card)
-      pure $ g & encounterDeck .~ encounterDeck'
+      pure $ g & encounterDeck .~ Deck encounterDeck'
   ShuffleEncounterDiscardBackIn -> do
-    encounterDeck' <- liftIO . shuffleM $ view encounterDeck g <> view discard g
-    pure $ g & encounterDeck .~ encounterDeck' & discard .~ mempty
+    encounterDeck' <-
+      liftIO . shuffleM $ unDeck (view encounterDeck g) <> view discard g
+    pure $ g & encounterDeck .~ Deck encounterDeck' & discard .~ mempty
   RevelationSkillTest _ (TreacherySource tid) _ _ _ _ -> do
     let
       treachery = getTreachery tid g

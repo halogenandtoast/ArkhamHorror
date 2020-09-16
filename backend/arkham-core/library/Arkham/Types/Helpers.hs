@@ -2,12 +2,18 @@ module Arkham.Types.Helpers where
 
 import Arkham.Json
 import ClassyPrelude
+import Control.Monad.Extra (concatMapM)
 import Control.Monad.Random
 import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as NE
 
 toFst :: (a -> b) -> a -> (b, a)
 toFst f a = (f a, a)
+
+concatMapM'
+  :: (Monad m, MonoFoldable mono) => (Element mono -> m [b]) -> mono -> m [b]
+concatMapM' f xs = concatMapM f (toList xs)
+
 
 count :: (a -> Bool) -> [a] -> Int
 count = (length .) . filter

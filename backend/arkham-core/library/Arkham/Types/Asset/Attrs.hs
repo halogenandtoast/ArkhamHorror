@@ -17,8 +17,6 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import ClassyPrelude
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
 import GHC.Stack
 import Lens.Micro
 import Lens.Micro.Extras
@@ -56,9 +54,7 @@ baseAttrs :: AssetId -> CardCode -> Attrs
 baseAttrs aid cardCode =
   let
     MkPlayerCard {..} =
-      fromJustNote
-          "missing player card"
-          (HashMap.lookup cardCode allPlayerCards)
+      fromJustNote "missing player card" (lookup cardCode allPlayerCards)
         $ CardId (unAssetId aid)
   in
     Attrs
@@ -74,7 +70,7 @@ baseAttrs aid cardCode =
       , assetSanity = Nothing
       , assetHealthDamage = 0
       , assetSanityDamage = 0
-      , assetTraits = HashSet.fromList pcTraits
+      , assetTraits = setFromList pcTraits
       , assetUses = NoUses
       , assetExhausted = False
       , assetDoom = 0

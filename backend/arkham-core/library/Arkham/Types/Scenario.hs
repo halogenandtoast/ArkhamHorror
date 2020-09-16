@@ -14,19 +14,7 @@ import Arkham.Types.Scenario.Scenarios.TheGathering
 import Arkham.Types.Scenario.Scenarios.TheMidnightMasks
 import Arkham.Types.ScenarioId
 import ClassyPrelude
-import qualified Data.HashMap.Strict as HashMap
 import Safe (fromJustNote)
-
-lookupScenario :: ScenarioId -> Difficulty -> Scenario
-lookupScenario =
-  fromJustNote "Unknown scenario" . flip HashMap.lookup allScenarios
-
-allScenarios :: HashMap ScenarioId (Difficulty -> Scenario)
-allScenarios = HashMap.fromList
-  [ ("01104", TheGathering' . theGathering)
-  , ("01120", TheMidnightMasks' . theMidnightMasks)
-  , ("01142", TheDevourerBelow' . theDevourerBelow)
-  ]
 
 data Scenario
   = TheGathering' TheGathering
@@ -36,3 +24,13 @@ data Scenario
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (ScenarioRunner env) => RunMessage env Scenario
+
+lookupScenario :: ScenarioId -> Difficulty -> Scenario
+lookupScenario = fromJustNote "Unknown scenario" . flip lookup allScenarios
+
+allScenarios :: HashMap ScenarioId (Difficulty -> Scenario)
+allScenarios = mapFromList
+  [ ("01104", TheGathering' . theGathering)
+  , ("01120", TheMidnightMasks' . theMidnightMasks)
+  , ("01142", TheDevourerBelow' . theDevourerBelow)
+  ]

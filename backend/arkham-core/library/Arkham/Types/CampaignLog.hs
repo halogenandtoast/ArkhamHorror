@@ -1,3 +1,5 @@
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Types.CampaignLog where
 
 import Arkham.Json
@@ -5,9 +7,7 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes.HasRecord
 import ClassyPrelude
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
-import Lens.Micro
+import Lens.Micro.TH
 
 data CampaignLog = CampaignLog
   { campaignLogRecorded :: HashSet CampaignLogKey
@@ -16,27 +16,7 @@ data CampaignLog = CampaignLog
   }
   deriving stock (Show, Generic)
 
-instance HasRecord CampaignLog where
-  hasRecord key = HashSet.member key . campaignLogRecorded
-  hasRecordSet key = HashMap.lookupDefault [] key . campaignLogRecordedSets
-
-recorded :: Lens' CampaignLog (HashSet CampaignLogKey)
-recorded = lens campaignLogRecorded $ \m x -> m { campaignLogRecorded = x }
-
-recordedCounts :: Lens' CampaignLog (HashMap CampaignLogKey Int)
-recordedCounts =
-  lens campaignLogRecordedCounts $ \m x -> m { campaignLogRecordedCounts = x }
-
-recordedSets :: Lens' CampaignLog (HashMap CampaignLogKey [CardCode])
-recordedSets =
-  lens campaignLogRecordedSets $ \m x -> m { campaignLogRecordedSets = x }
-
-mkCampaignLog :: CampaignLog
-mkCampaignLog = CampaignLog
-  { campaignLogRecorded = mempty
-  , campaignLogRecordedCounts = mempty
-  , campaignLogRecordedSets = mempty
-  }
+makeFields ''CampaignLog
 
 instance ToJSON CampaignLog where
   toJSON = genericToJSON $ aesonOptions $ Just "campaignLog"
@@ -44,3 +24,14 @@ instance ToJSON CampaignLog where
 
 instance FromJSON CampaignLog where
   parseJSON = genericParseJSON $ aesonOptions $ Just "campaignLog"
+
+instance HasRecord CampaignLog where
+  hasRecord key = member key . campaignLogRecorded
+  hasRecordSet key = findWithDefault [] key . campaignLogRecordedSets
+
+mkCampaignLog :: CampaignLog
+mkCampaignLog = CampaignLog
+  { campaignLogRecorded = mempty
+  , campaignLogRecordedCounts = mempty
+  , campaignLogRecordedSets = mempty
+  }

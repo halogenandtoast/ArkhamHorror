@@ -6,6 +6,30 @@ import Arkham.Types.Source
 import Arkham.Types.Trait
 import ClassyPrelude
 
+data Slot = Slot Source (Maybe AssetId) | TraitRestrictedSlot Source Trait (Maybe AssetId)
+  deriving stock (Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+instance Eq Slot where
+  TraitRestrictedSlot{} == TraitRestrictedSlot{} = True
+  Slot{} == Slot{} = True
+  _ == _ = False
+
+-- We want slots sorted by most restrictive, so assets take up the best match
+instance Ord Slot where
+  TraitRestrictedSlot{} <= _ = True
+  Slot{} <= Slot{} = True
+  Slot{} <= _ = False
+
+data SlotType
+  = HandSlot
+  | BodySlot
+  | AllySlot
+  | AccessorySlot
+  | ArcaneSlot
+  deriving stock (Show, Generic, Eq)
+  deriving anyclass (ToJSON, FromJSON, Hashable, ToJSONKey, FromJSONKey)
+
 isEmptySlot :: Slot -> Bool
 isEmptySlot = isNothing . slotItem
 
@@ -41,27 +65,3 @@ removeIfMatches aid = \case
   TraitRestrictedSlot source trait masset -> if masset == Just aid
     then TraitRestrictedSlot source trait Nothing
     else TraitRestrictedSlot source trait masset
-
-data Slot = Slot Source (Maybe AssetId) | TraitRestrictedSlot Source Trait (Maybe AssetId)
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-instance Eq Slot where
-  TraitRestrictedSlot{} == TraitRestrictedSlot{} = True
-  Slot{} == Slot{} = True
-  _ == _ = False
-
--- We want slots sorted by most restrictive, so assets take up the best match
-instance Ord Slot where
-  TraitRestrictedSlot{} <= _ = True
-  Slot{} <= Slot{} = True
-  Slot{} <= _ = False
-
-data SlotType
-  = HandSlot
-  | BodySlot
-  | AllySlot
-  | AccessorySlot
-  | ArcaneSlot
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, Hashable, ToJSONKey, FromJSONKey)

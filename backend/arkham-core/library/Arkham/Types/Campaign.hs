@@ -15,30 +15,9 @@ import Arkham.Types.Difficulty
 import Arkham.Types.Token
 import ClassyPrelude
 import Data.Coerce
-import qualified Data.HashMap.Strict as HashMap
 import Generics.SOP hiding (Generic)
 import qualified Generics.SOP as SOP
 import Safe (fromJustNote)
-
-difficultyOf :: Campaign -> Difficulty
-difficultyOf = campaignDifficulty . campaignAttrs
-
-chaosBagOf :: Campaign -> [Token]
-chaosBagOf = campaignChaosBag . campaignAttrs
-
-allCampaigns :: HashMap CampaignId (Difficulty -> Campaign)
-allCampaigns = HashMap.fromList
-  [ ("01", NightOfTheZealot' . nightOfTheZealot)
-  , ("02", TheDunwichLegacy' . theDunwichLegacy)
-  ]
-
-lookupCampaign :: CampaignId -> (Difficulty -> Campaign)
-lookupCampaign cid =
-  fromJustNote ("Unknown campaign: " <> show cid)
-    $ HashMap.lookup cid allCampaigns
-
-campaignAttrs :: Campaign -> Attrs
-campaignAttrs = getAttrs
 
 data Campaign
   = NightOfTheZealot' NightOfTheZealot
@@ -52,8 +31,24 @@ instance HasRecord Campaign where
   hasRecord key = hasRecord key . campaignLog . campaignAttrs
   hasRecordSet key = hasRecordSet key . campaignLog . campaignAttrs
 
-class (Coercible a Attrs) => IsAttrs a
-instance (Coercible a Attrs) => IsAttrs a
+allCampaigns :: HashMap CampaignId (Difficulty -> Campaign)
+allCampaigns = mapFromList
+  [ ("01", NightOfTheZealot' . nightOfTheZealot)
+  , ("02", TheDunwichLegacy' . theDunwichLegacy)
+  ]
+
+lookupCampaign :: CampaignId -> (Difficulty -> Campaign)
+lookupCampaign cid =
+  fromJustNote ("Unknown campaign: " <> show cid) $ lookup cid allCampaigns
+
+difficultyOf :: Campaign -> Difficulty
+difficultyOf = campaignDifficulty . campaignAttrs
+
+chaosBagOf :: Campaign -> [Token]
+chaosBagOf = campaignChaosBag . campaignAttrs
+
+campaignAttrs :: Campaign -> Attrs
+campaignAttrs = getAttrs
 
 getAttrs :: (All2 IsAttrs (Code a), SOP.Generic a) => a -> Attrs
 getAttrs a = go (unSOP $ from a)
@@ -62,3 +57,6 @@ getAttrs a = go (unSOP $ from a)
   go (S next) = go next
   go (Z (I x :* _)) = coerce x
   go (Z Nil) = error "should not happen"
+
+class (Coercible a Attrs) => IsAttrs a
+instance (Coercible a Attrs) => IsAttrs a

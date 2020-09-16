@@ -18,20 +18,20 @@ import Arkham.Types.Agenda.Cards.WhatsGoingOn
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.AgendaId
 import Arkham.Types.Classes
+import Arkham.Types.Helpers
 import Arkham.Types.Query
 import ClassyPrelude
 import Data.Coerce
-import qualified Data.HashMap.Strict as HashMap
-import Generics.SOP hiding (Generic)
+import Generics.SOP hiding (Generic, fromList)
 import qualified Generics.SOP as SOP
 import Safe (fromJustNote)
 
 lookupAgenda :: AgendaId -> Agenda
-lookupAgenda = fromJustNote "Unknown agenda" . flip HashMap.lookup allAgendas
+lookupAgenda = fromJustNote "Unknown agenda" . flip lookup allAgendas
 
 allAgendas :: HashMap AgendaId Agenda
-allAgendas = HashMap.fromList $ map
-  (\a -> (agendaId $ agendaAttrs a, a))
+allAgendas = mapFromList $ map
+  (toFst $ agendaId . agendaAttrs)
   [ WhatsGoingOn' whatsGoingOn
   , RiseOfTheGhouls' riseOfTheGhouls
   , TheyreGettingOut' theyreGettingOut

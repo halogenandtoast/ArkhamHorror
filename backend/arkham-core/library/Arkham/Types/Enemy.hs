@@ -47,16 +47,77 @@ import Arkham.Types.Prey
 import Arkham.Types.Query
 import ClassyPrelude
 import Data.Coerce
-import qualified Data.HashMap.Strict as HashMap
 import Generics.SOP hiding (Generic)
 import qualified Generics.SOP as SOP
 import Safe (fromJustNote)
 
+data Enemy
+  = MobEnforcer' MobEnforcer
+  | SilverTwilightAcolyte' SilverTwilightAcolyte
+  | StubbornDetective' StubbornDetective
+  | GhoulPriest' GhoulPriest
+  | FleshEater' FleshEater
+  | IcyGhoul' IcyGhoul
+  | TheMaskedHunter' TheMaskedHunter
+  | WolfManDrew' WolfManDrew
+  | HermanCollins' HermanCollins
+  | PeterWarren' PeterWarren
+  | VictoriaDevereux' VictoriaDevereux
+  | RuthTurner' RuthTurner
+  | Umordhoth' Umordhoth
+  | SwarmOfRats' SwarmOfRats
+  | GhoulMinion' GhoulMinion
+  | RavenousGhoul' RavenousGhoul
+  | Acolyte' Acolyte
+  | WizardOfTheOrder' WizardOfTheOrder
+  | HuntingNightgaunt' HuntingNightgaunt
+  | ScreechingByakhee' ScreechingByakhee
+  | YithianObserver' YithianObserver
+  | RelentlessDarkYoung' RelentlessDarkYoung
+  | GoatSpawn' GoatSpawn
+  | YoungDeepOne' YoungDeepOne
+  deriving stock (Show, Generic)
+  deriving anyclass (ToJSON, FromJSON, SOP.Generic)
+
+deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Enemy
+
+instance (EnemyRunner env) => RunMessage env Enemy where
+  runMessage msg e | any isBlank (getModifiers e) && not (isBlanked msg) =
+    runMessage (Blanked msg) e
+  runMessage msg e = defaultRunMessage msg e
+
+instance HasVictoryPoints Enemy where
+  getVictoryPoints = enemyVictory . enemyAttrs
+
+instance HasCount DoomCount () Enemy where
+  getCount _ = DoomCount . enemyDoom . enemyAttrs
+
+instance HasId LocationId () Enemy where
+  getId _ = enemyLocation . enemyAttrs
+
+instance HasCardCode Enemy where
+  getCardCode = enemyCardCode . enemyAttrs
+
+instance HasTraits Enemy where
+  getTraits = enemyTraits . enemyAttrs
+
+instance HasKeywords Enemy where
+  getKeywords = enemyKeywords . enemyAttrs
+
+instance HasModifiers Enemy where
+  getModifiers = concat . toList . enemyModifiers . enemyAttrs
+
+instance HasId EnemyId () Enemy where
+  getId _ = enemyId . enemyAttrs
+
+instance IsEnemy Enemy where
+  isAloof = isAloof . enemyAttrs
+
 lookupEnemy :: CardCode -> (EnemyId -> Enemy)
-lookupEnemy = fromJustNote "Unkown enemy" . flip HashMap.lookup allEnemies
+lookupEnemy = fromJustNote "Unkown enemy" . flip lookup allEnemies
 
 allEnemies :: HashMap CardCode (EnemyId -> Enemy)
-allEnemies = HashMap.fromList
+allEnemies = mapFromList
   [ ("01101", MobEnforcer' . mobEnforcer)
   , ("01102", SilverTwilightAcolyte' . silverTwilightAcolyte)
   , ("01103", StubbornDetective' . stubbornDetective)
@@ -97,66 +158,6 @@ getBearer enemy = case enemyPrey (enemyAttrs enemy) of
   Bearer iid -> Just (InvestigatorId $ unBearerId iid)
   _ -> Nothing
 
-instance HasVictoryPoints Enemy where
-  getVictoryPoints = enemyVictory . enemyAttrs
-
-instance HasCount DoomCount () Enemy where
-  getCount _ = DoomCount . enemyDoom . enemyAttrs
-
-instance HasId LocationId () Enemy where
-  getId _ = enemyLocation . enemyAttrs
-
-instance HasCardCode Enemy where
-  getCardCode = enemyCardCode . enemyAttrs
-
-instance HasTraits Enemy where
-  getTraits = enemyTraits . enemyAttrs
-
-instance HasKeywords Enemy where
-  getKeywords = enemyKeywords . enemyAttrs
-
-instance HasModifiers Enemy where
-  getModifiers = concat . HashMap.elems . enemyModifiers . enemyAttrs
-
-data Enemy
-  = MobEnforcer' MobEnforcer
-  | SilverTwilightAcolyte' SilverTwilightAcolyte
-  | StubbornDetective' StubbornDetective
-  | GhoulPriest' GhoulPriest
-  | FleshEater' FleshEater
-  | IcyGhoul' IcyGhoul
-  | TheMaskedHunter' TheMaskedHunter
-  | WolfManDrew' WolfManDrew
-  | HermanCollins' HermanCollins
-  | PeterWarren' PeterWarren
-  | VictoriaDevereux' VictoriaDevereux
-  | RuthTurner' RuthTurner
-  | Umordhoth' Umordhoth
-  | SwarmOfRats' SwarmOfRats
-  | GhoulMinion' GhoulMinion
-  | RavenousGhoul' RavenousGhoul
-  | Acolyte' Acolyte
-  | WizardOfTheOrder' WizardOfTheOrder
-  | HuntingNightgaunt' HuntingNightgaunt
-  | ScreechingByakhee' ScreechingByakhee
-  | YithianObserver' YithianObserver
-  | RelentlessDarkYoung' RelentlessDarkYoung
-  | GoatSpawn' GoatSpawn
-  | YoungDeepOne' YoungDeepOne
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, SOP.Generic)
-
-deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Enemy
-
-enemyAttrs :: Enemy -> Attrs
-enemyAttrs = getAttrs
-
-instance HasId EnemyId () Enemy where
-  getId _ = enemyId . enemyAttrs
-
-instance IsEnemy Enemy where
-  isAloof = isAloof . enemyAttrs
-
 isBlank :: Modifier -> Bool
 isBlank Blank{} = True
 isBlank _ = False
@@ -165,13 +166,8 @@ isBlanked :: Message -> Bool
 isBlanked Blanked{} = True
 isBlanked _ = False
 
-instance (EnemyRunner env) => RunMessage env Enemy where
-  runMessage msg e | any isBlank (getModifiers e) && not (isBlanked msg) =
-    runMessage (Blanked msg) e
-  runMessage msg e = defaultRunMessage msg e
-
-class (Coercible a Attrs) => IsAttrs a
-instance (Coercible a Attrs) => IsAttrs a
+enemyAttrs :: Enemy -> Attrs
+enemyAttrs = getAttrs
 
 getAttrs :: (All2 IsAttrs (Code a), SOP.Generic a) => a -> Attrs
 getAttrs a = go (unSOP $ from a)
@@ -180,3 +176,6 @@ getAttrs a = go (unSOP $ from a)
   go (S next) = go next
   go (Z (I x :* _)) = coerce x
   go (Z Nil) = error "should not happen"
+
+class (Coercible a Attrs) => IsAttrs a
+instance (Coercible a Attrs) => IsAttrs a

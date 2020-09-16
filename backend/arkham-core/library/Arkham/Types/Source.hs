@@ -18,10 +18,6 @@ import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Data.Aeson
 
-sourceIsAsset :: Source -> Bool
-sourceIsAsset (AssetSource _) = True
-sourceIsAsset _ = False
-
 data Source
   = AssetSource AssetId
   | EnemySource EnemyId
@@ -39,3 +35,7 @@ data Source
   | PlayerCardSource CardId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
+sourceIsAsset :: Source -> Bool
+sourceIsAsset (AssetSource _) = True
+sourceIsAsset _ = False

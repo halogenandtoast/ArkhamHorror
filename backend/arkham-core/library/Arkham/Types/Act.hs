@@ -19,30 +19,12 @@ import Arkham.Types.Act.Cards.WhatHaveYouDone
 import Arkham.Types.Act.Runner
 import Arkham.Types.ActId
 import Arkham.Types.Classes
+import Arkham.Types.Helpers
 import ClassyPrelude
 import Data.Coerce
-import qualified Data.HashMap.Strict as HashMap
 import Generics.SOP hiding (Generic)
 import qualified Generics.SOP as SOP
 import Safe (fromJustNote)
-
-lookupAct :: ActId -> Act
-lookupAct = fromJustNote "Unknown act" . flip HashMap.lookup allActs
-
-allActs :: HashMap ActId Act
-allActs = HashMap.fromList $ map
-  (\a -> (actId $ actAttrs a, a))
-  [ Trapped' trapped
-  , TheBarrier' theBarrier
-  , WhatHaveYouDone' whatHaveYouDone
-  , UncoveringTheConspiracy' uncoveringTheConspiracy
-  , InvestigatingTheTrail' investigatingTheTrail
-  , IntoTheDarkness' intoTheDarkness
-  , DisruptingTheRitual' disruptingTheRitual
-  ]
-
-instance IsAdvanceable Act where
-  isAdvanceable = actCanAdvance . actAttrs
 
 data Act
   = Trapped' Trapped
@@ -55,11 +37,29 @@ data Act
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON, SOP.Generic)
 
-actAttrs :: Act -> Attrs
-actAttrs = getAttrs
-
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Act
 deriving anyclass instance (ActRunner env) => RunMessage env Act
+
+instance IsAdvanceable Act where
+  isAdvanceable = actCanAdvance . actAttrs
+
+lookupAct :: ActId -> Act
+lookupAct = fromJustNote "Unknown act" . flip lookup allActs
+
+allActs :: HashMap ActId Act
+allActs = mapFromList $ map
+  (toFst $ actId . actAttrs)
+  [ Trapped' trapped
+  , TheBarrier' theBarrier
+  , WhatHaveYouDone' whatHaveYouDone
+  , UncoveringTheConspiracy' uncoveringTheConspiracy
+  , InvestigatingTheTrail' investigatingTheTrail
+  , IntoTheDarkness' intoTheDarkness
+  , DisruptingTheRitual' disruptingTheRitual
+  ]
+
+actAttrs :: Act -> Attrs
+actAttrs = getAttrs
 
 class (Coercible a Attrs) => IsAttrs a
 instance (Coercible a Attrs) => IsAttrs a

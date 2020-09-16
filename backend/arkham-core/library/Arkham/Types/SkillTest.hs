@@ -29,18 +29,6 @@ import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Lens.Micro
 
-data DrawStrategy
-  = DrawOne
-  | DrawX Int
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-data ResolveStrategy
-  = ResolveAll
-  | ResolveOne
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
 data SkillTest a = SkillTest
   { skillTestInvestigator    :: InvestigatorId
   , skillTestSkillType :: SkillType
@@ -71,16 +59,28 @@ instance FromJSON a => FromJSON (SkillTest a) where
 instance HasSet CommittedCardId InvestigatorId (SkillTest a) where
   getSet iid =
     HashSet.map CommittedCardId
-      . HashMap.keysSet
-      . HashMap.filter ((== iid) . fst)
+      . keysSet
+      . filterMap ((== iid) . fst)
       . skillTestCommittedCards
 
 instance HasSet CommittedCardCode () (SkillTest a) where
   getSet _ =
-    HashSet.fromList
+    setFromList
       . map (CommittedCardCode . getCardCode . snd)
-      . HashMap.elems
+      . toList
       . skillTestCommittedCards
+
+data DrawStrategy
+  = DrawOne
+  | DrawX Int
+  deriving stock (Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
+data ResolveStrategy
+  = ResolveAll
+  | ResolveOne
+  deriving stock (Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 initSkillTest
   :: InvestigatorId
@@ -144,7 +144,7 @@ onTokenResponses =
 applicableModifiers :: SkillTest a -> [Modifier]
 applicableModifiers SkillTest {..} = mapMaybe
   applicableModifier
-  ((concat . HashMap.elems $ skillTestModifiers) <> skillTestTempModifiers)
+  ((concat . toList $ skillTestModifiers) <> skillTestTempModifiers)
  where
   applicableModifier (ModifierIfSucceededBy n m) = case skillTestResult of
     SucceededBy x | x >= n -> Just m
@@ -154,7 +154,7 @@ applicableModifiers SkillTest {..} = mapMaybe
 skillIconCount :: SkillTest a -> Int
 skillIconCount SkillTest {..} = length . filter matches $ concatMap
   (iconsForCard . snd)
-  (HashMap.elems skillTestCommittedCards)
+  (toList skillTestCommittedCards)
  where
   iconsForCard (PlayerCard MkPlayerCard {..}) = pcSkills
   iconsForCard _ = []
@@ -165,7 +165,7 @@ skillValueModifiers :: SkillTest a -> Int
 skillValueModifiers SkillTest {..} = foldr
   applyModifier
   0
-  ((concat . HashMap.elems $ skillTestModifiers) <> skillTestTempModifiers)
+  ((concat . toList $ skillTestModifiers) <> skillTestTempModifiers)
  where
   applyModifier (AnySkillValue m) n = max 0 (n + m)
   applyModifier _ n = n
@@ -174,7 +174,7 @@ modifiedTokenValue :: Int -> SkillTest a -> Int
 modifiedTokenValue baseValue SkillTest {..} = foldr
   applyModifier
   baseValue
-  ((concat . HashMap.elems $ skillTestModifiers) <> skillTestTempModifiers)
+  ((concat . toList $ skillTestModifiers) <> skillTestTempModifiers)
  where
   applyModifier DoubleNegativeModifiersOnTokens n =
     if baseValue < 0 then n + baseValue else n
@@ -227,18 +227,17 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
              skillTestInvestigator
              skillTestAction
              skillTestSkillType
-             ((concat . HashMap.elems $ skillTestModifiers)
-             <> skillTestTempModifiers
+             ((concat . toList $ skillTestModifiers) <> skillTestTempModifiers
              )
          ]
       )
     SkillTestCommitCard iid cardId -> do
       card <- asks (getCard iid cardId)
-      pure $ s & committedCards %~ HashMap.insert cardId (iid, card)
+      pure $ s & committedCards %~ insertMap cardId (iid, card)
     SkillTestUncommitCard _ cardId ->
-      pure $ s & committedCards %~ HashMap.delete cardId
+      pure $ s & committedCards %~ deleteMap cardId
     AddModifiers SkillTestTarget source modifiers' ->
-      pure $ s & modifiers %~ HashMap.insertWith (<>) source modifiers'
+      pure $ s & modifiers %~ insertWith (<>) source modifiers'
     SkillTestEnds -> s <$ unshiftMessages
       [ RemoveAllModifiersOnTargetFrom
         (InvestigatorTarget skillTestInvestigator)
@@ -270,7 +269,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         Unrun -> pure ()
       pure s
     AddModifiers AfterSkillTestTarget source modifiers' ->
-      pure $ s & modifiers %~ HashMap.insertWith (<>) source modifiers'
+      pure $ s & modifiers %~ insertWith (<>) source modifiers'
     SkillTestApplyResultsAfter -> do
       unshiftMessage SkillTestEnds
 
@@ -336,28 +335,12 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       let
         totaledTokenValues =
           modifiedTokenValue tokenValue s + skillTestValueModifier
-      let
         modifiedSkillValue' =
           skillValue
             + totaledTokenValues
             + skillIconCount s
             + skillValueModifiers s
       unshiftMessage SkillTestResults
-      putStrLn
-        . pack
-        $ "skill value: "
-        <> show skillValue
-        <> "\n+ totaled token values: "
-        <> show totaledTokenValues
-        <> "\n+ skill icon count: "
-        <> show (skillIconCount s)
-        <> "\n+ skill value modifiers: "
-        <> show (skillValueModifiers s)
-        <> "\n-------------------------"
-        <> "\n= Modified skill value: "
-        <> show modifiedSkillValue'
-        <> "\nDifficulty: "
-        <> show skillTestDifficulty
       if modifiedSkillValue' >= skillTestDifficulty
         then pure $ s & result .~ SucceededBy
           (modifiedSkillValue' - skillTestDifficulty)

@@ -24,48 +24,7 @@ import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
-import Arkham.Types.Investigator.Cards.AgnesBaker
-import Arkham.Types.Investigator.Cards.AkachiOnyele
-import Arkham.Types.Investigator.Cards.AmandaSharpe
-import Arkham.Types.Investigator.Cards.AshcanPete
-import Arkham.Types.Investigator.Cards.CalvinWright
-import Arkham.Types.Investigator.Cards.CarolynFern
-import Arkham.Types.Investigator.Cards.DaisyWalker
-import Arkham.Types.Investigator.Cards.DexterDrake
-import Arkham.Types.Investigator.Cards.DianaStanley
-import Arkham.Types.Investigator.Cards.FatherMateo
-import Arkham.Types.Investigator.Cards.FinnEdwards
-import Arkham.Types.Investigator.Cards.HarveyWalters
-import Arkham.Types.Investigator.Cards.JacquelineFine
-import Arkham.Types.Investigator.Cards.JennyBarnes
-import Arkham.Types.Investigator.Cards.JimCulver
-import Arkham.Types.Investigator.Cards.JoeDiamond
-import Arkham.Types.Investigator.Cards.LeoAnderson
-import Arkham.Types.Investigator.Cards.LolaHayes
-import Arkham.Types.Investigator.Cards.LukeRobinson
-import Arkham.Types.Investigator.Cards.MandyThompson
-import Arkham.Types.Investigator.Cards.MarieLambeau
-import Arkham.Types.Investigator.Cards.MarkHarrigan
-import Arkham.Types.Investigator.Cards.MinhThiPhan
-import Arkham.Types.Investigator.Cards.NathanielCho
-import Arkham.Types.Investigator.Cards.NormanWithers
-import Arkham.Types.Investigator.Cards.PatriceHathaway
-import Arkham.Types.Investigator.Cards.PrestonFairmont
-import Arkham.Types.Investigator.Cards.RexMurphy
-import Arkham.Types.Investigator.Cards.RitaYoung
-import Arkham.Types.Investigator.Cards.RolandBanks
-import Arkham.Types.Investigator.Cards.SefinaRousseau
-import Arkham.Types.Investigator.Cards.SilasMarsh
-import Arkham.Types.Investigator.Cards.SisterMary
-import Arkham.Types.Investigator.Cards.SkidsOToole
-import Arkham.Types.Investigator.Cards.StellaClark
-import Arkham.Types.Investigator.Cards.TommyMuldoon
-import Arkham.Types.Investigator.Cards.TonyMorgan
-import Arkham.Types.Investigator.Cards.UrsulaDowns
-import Arkham.Types.Investigator.Cards.WendyAdams
-import Arkham.Types.Investigator.Cards.WilliamYorick
-import Arkham.Types.Investigator.Cards.WinifredHabbamock
-import Arkham.Types.Investigator.Cards.ZoeySamaras
+import Arkham.Types.Investigator.Cards
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
@@ -78,62 +37,10 @@ import Arkham.Types.Token
 import ClassyPrelude
 import Data.Aeson
 import Data.Coerce
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
 import Generics.SOP hiding (Generic)
 import qualified Generics.SOP as SOP
 import Lens.Micro.Extras
 import Safe (fromJustNote)
-
-allInvestigators :: HashMap InvestigatorId Investigator
-allInvestigators = HashMap.fromList $ map
-  (\s -> (investigatorId . investigatorAttrs $ s, s))
-  [ AgnesBaker' agnesBaker
-  , AkachiOnyele' akachiOnyele
-  , AmandaSharpe' amandaSharpe
-  , AshcanPete' ashcanPete
-  , CalvinWright' calvinWright
-  , CarolynFern' carolynFern
-  , DaisyWalker' daisyWalker
-  , DexterDrake' dexterDrake
-  , DianaStanley' dianaStanley
-  , FatherMateo' fatherMateo
-  , FinnEdwards' finnEdwards
-  , HarveyWalters' harveyWalters
-  , JacquelineFine' jacquelineFine
-  , JennyBarnes' jennyBarnes
-  , JimCulver' jimCulver
-  , JoeDiamond' joeDiamond
-  , LeoAnderson' leoAnderson
-  , LolaHayes' lolaHayes
-  , LukeRobinson' lukeRobinson
-  , MandyThompson' mandyThompson
-  , MarieLambeau' marieLambeau
-  , MarkHarrigan' markHarrigan
-  , MinhThiPhan' minhThiPhan
-  , NathanielCho' nathanielCho
-  , NormanWithers' normanWithers
-  , PatriceHathaway' patriceHathaway
-  , PrestonFairmont' prestonFairmont
-  , RexMurphy' rexMurphy
-  , RitaYoung' ritaYoung
-  , RolandBanks' rolandBanks
-  , SefinaRousseau' sefinaRousseau
-  , SilasMarsh' silasMarsh
-  , SisterMary' sisterMary
-  , SkidsOToole' skidsOToole
-  , StellaClark' stellaClark
-  , TommyMuldoon' tommyMuldoon
-  , TonyMorgan' tonyMorgan
-  , UrsulaDowns' ursulaDowns
-  , WendyAdams' wendyAdams
-  , WilliamYorick' williamYorick
-  , WinifredHabbamock' winifredHabbamock
-  , ZoeySamaras' zoeySamaras
-  ]
-
-investigatorAttrs :: Investigator -> Attrs
-investigatorAttrs = getAttrs
 
 data Investigator
   = AgnesBaker' AgnesBaker
@@ -192,18 +99,6 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Investigator where
     <$ runTest iid skillValue 0
   runMessage msg i = defaultRunMessage msg i
 
-isBlank :: Modifier -> Bool
-isBlank Blank{} = True
-isBlank _ = False
-
-lookupInvestigator :: InvestigatorId -> Investigator
-lookupInvestigator iid =
-  fromJustNote ("Unkown investigator: " <> show iid)
-    $ HashMap.lookup iid allInvestigators
-
-getEngagedEnemies :: Investigator -> HashSet EnemyId
-getEngagedEnemies = investigatorEngagedEnemies . investigatorAttrs
-
 instance HasCard () Investigator where
   getCard _ cardId =
     fromJustNote "player does not have this card"
@@ -215,8 +110,7 @@ instance HasCardCode Investigator where
   getCardCode = getCardCode . investigatorAttrs
 
 instance HasModifiers Investigator where
-  getModifiers =
-    concat . HashMap.elems . investigatorModifiers . investigatorAttrs
+  getModifiers = concat . toList . investigatorModifiers . investigatorAttrs
 
 instance HasInvestigatorStats Stats () Investigator where
   getStats _ i = Stats
@@ -233,7 +127,7 @@ instance HasSet EnemyId () Investigator where
   getSet _ = investigatorEngagedEnemies . investigatorAttrs
 
 instance HasCount EnemyCount () Investigator where
-  getCount _ = EnemyCount . HashSet.size . getSet @EnemyId ()
+  getCount _ = EnemyCount . length . getSet @EnemyId ()
 
 instance HasCount ResourceCount () Investigator where
   getCount _ = ResourceCount . investigatorResources . investigatorAttrs
@@ -261,6 +155,65 @@ class GetInvestigatorId a where
 instance GetInvestigatorId Investigator where
   getInvestigatorId = investigatorId . investigatorAttrs
 
+allInvestigators :: HashMap InvestigatorId Investigator
+allInvestigators = mapFromList $ map
+  (toFst $ investigatorId . investigatorAttrs)
+  [ AgnesBaker' agnesBaker
+  , AkachiOnyele' akachiOnyele
+  , AmandaSharpe' amandaSharpe
+  , AshcanPete' ashcanPete
+  , CalvinWright' calvinWright
+  , CarolynFern' carolynFern
+  , DaisyWalker' daisyWalker
+  , DexterDrake' dexterDrake
+  , DianaStanley' dianaStanley
+  , FatherMateo' fatherMateo
+  , FinnEdwards' finnEdwards
+  , HarveyWalters' harveyWalters
+  , JacquelineFine' jacquelineFine
+  , JennyBarnes' jennyBarnes
+  , JimCulver' jimCulver
+  , JoeDiamond' joeDiamond
+  , LeoAnderson' leoAnderson
+  , LolaHayes' lolaHayes
+  , LukeRobinson' lukeRobinson
+  , MandyThompson' mandyThompson
+  , MarieLambeau' marieLambeau
+  , MarkHarrigan' markHarrigan
+  , MinhThiPhan' minhThiPhan
+  , NathanielCho' nathanielCho
+  , NormanWithers' normanWithers
+  , PatriceHathaway' patriceHathaway
+  , PrestonFairmont' prestonFairmont
+  , RexMurphy' rexMurphy
+  , RitaYoung' ritaYoung
+  , RolandBanks' rolandBanks
+  , SefinaRousseau' sefinaRousseau
+  , SilasMarsh' silasMarsh
+  , SisterMary' sisterMary
+  , SkidsOToole' skidsOToole
+  , StellaClark' stellaClark
+  , TommyMuldoon' tommyMuldoon
+  , TonyMorgan' tonyMorgan
+  , UrsulaDowns' ursulaDowns
+  , WendyAdams' wendyAdams
+  , WilliamYorick' williamYorick
+  , WinifredHabbamock' winifredHabbamock
+  , ZoeySamaras' zoeySamaras
+  ]
+
+isBlank :: Modifier -> Bool
+isBlank Blank{} = True
+isBlank _ = False
+
+lookupInvestigator :: InvestigatorId -> Investigator
+lookupInvestigator iid =
+  fromJustNote ("Unkown investigator: " <> show iid)
+    $ lookup iid allInvestigators
+
+getEngagedEnemies :: Investigator -> HashSet EnemyId
+getEngagedEnemies = investigatorEngagedEnemies . investigatorAttrs
+
 -- TODO: This does not work for more than 2 players
 isPrey
   :: ( HasSet Int SkillType env
@@ -275,28 +228,24 @@ isPrey
   -> Bool
 isPrey AnyPrey _ _ = True
 isPrey (HighestSkill skillType) env i =
-  fromMaybe 0 (maximumMay . HashSet.toList $ getSet skillType env)
+  fromMaybe 0 (maximumMay . toList $ getSet skillType env)
     == skillValueFor skillType Nothing [] (investigatorAttrs i)
 isPrey (LowestSkill skillType) env i =
-  fromMaybe 100 (minimumMay . HashSet.toList $ getSet skillType env)
+  fromMaybe 100 (minimumMay . toList $ getSet skillType env)
     == skillValueFor skillType Nothing [] (investigatorAttrs i)
 isPrey LowestRemainingHealth env i =
-  fromMaybe
-      100
-      (minimumMay . map unRemainingHealth . HashSet.toList $ getSet () env)
+  fromMaybe 100 (minimumMay . map unRemainingHealth . toList $ getSet () env)
     == remainingHealth i
 isPrey LowestRemainingSanity env i =
-  fromMaybe
-      100
-      (minimumMay . map unRemainingSanity . HashSet.toList $ getSet () env)
+  fromMaybe 100 (minimumMay . map unRemainingSanity . toList $ getSet () env)
     == remainingSanity i
 isPrey (Bearer bid) _ i =
   unBearerId bid == unInvestigatorId (investigatorId $ investigatorAttrs i)
 isPrey MostClues env i =
-  fromMaybe 0 (maximumMay . map unClueCount . HashSet.toList $ getSet () env)
+  fromMaybe 0 (maximumMay . map unClueCount . toList $ getSet () env)
     == unClueCount (getCount () i)
 isPrey FewestCards env i =
-  fromMaybe 100 (minimumMay . map unCardCount . HashSet.toList $ getSet () env)
+  fromMaybe 100 (minimumMay . map unCardCount . toList $ getSet () env)
     == unCardCount (getCount () i)
 isPrey SetToBearer _ _ = error "The bearer was not correctly set"
 
@@ -329,8 +278,8 @@ remainingSanity :: Investigator -> Int
 remainingSanity i = modifiedSanity attrs - investigatorSanityDamage attrs
   where attrs = investigatorAttrs i
 
-class (Coercible a Attrs) => IsAttrs a
-instance (Coercible a Attrs) => IsAttrs a
+investigatorAttrs :: Investigator -> Attrs
+investigatorAttrs = getAttrs
 
 getAttrs :: (All2 IsAttrs (Code a), SOP.Generic a) => a -> Attrs
 getAttrs a = go (unSOP $ from a)
@@ -339,3 +288,6 @@ getAttrs a = go (unSOP $ from a)
   go (S next) = go next
   go (Z (I x :* _)) = coerce x
   go (Z Nil) = error "should not happen"
+
+class (Coercible a Attrs) => IsAttrs a
+instance (Coercible a Attrs) => IsAttrs a

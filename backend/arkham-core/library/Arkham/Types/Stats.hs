@@ -5,4 +5,11 @@ where
 
 import ClassyPrelude
 
-data Stats = Stats { health :: Int, sanity :: Int, willpower :: Int, intellect :: Int, combat :: Int, agility :: Int }
+data Stats = Stats
+  { health :: Int
+  , sanity :: Int
+  , willpower :: Int
+  , intellect :: Int
+  , combat :: Int
+  , agility :: Int
+  }

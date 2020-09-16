@@ -5,6 +5,7 @@ dependencies:
 
 default-extensions:
 - NoImplicitPrelude
+- NamedFieldPuns
 - RecordWildCards
 - DerivingStrategies
 - DeriveGeneric
@@ -31,6 +32,7 @@ library:
     - mtl
     - microlens
     - microlens-platform
+    - microlens-th
     - unordered-containers >= 0.2.12.0
     - hashable
     - safe

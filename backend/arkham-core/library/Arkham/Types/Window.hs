@@ -6,14 +6,6 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
-data Where = YourLocation
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
-data Who = You | InvestigatorAtYourLocation
-  deriving stock (Show, Generic, Eq)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
-
 data Window
   = AfterAssignedHorror Who
   | AfterFailSkillTest Who Int
@@ -39,3 +31,11 @@ data Window
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
+
+data Where = YourLocation
+  deriving stock (Show, Generic, Eq)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
+data Who = You | InvestigatorAtYourLocation
+  deriving stock (Show, Generic, Eq)
+  deriving anyclass (ToJSON, FromJSON, Hashable)

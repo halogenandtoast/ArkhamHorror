@@ -426,7 +426,7 @@ instance HasCount AssetCount (InvestigatorId, [Trait]) (Game queue) where
     assetMatcher aid = any (`member` (getTraits $ getAsset aid g)) traits
 
 instance HasCount EnemyCount [Trait] (Game queue) where
-  getCount traits g@Game {..} = EnemyCount . length $ HashMap.filter
+  getCount traits g@Game {..} = EnemyCount . length $ filterMap
     enemyMatcher
     (view enemies g)
     where enemyMatcher enemy = any (`member` getTraits enemy) traits
@@ -454,13 +454,13 @@ instance HasList Modifier LocationId (Game queue) where
   getList lid = getModifiers . getLocation lid
 
 instance HasList Location () (Game queue) where
-  getList _ = HashMap.elems . view locations
+  getList _ = toList . view locations
 
 instance HasList UsedAbility () (Game queue) where
   getList _ = map UsedAbility . view usedAbilities
 
 instance HasList Enemy () (Game queue) where
-  getList _ = HashMap.elems . view enemies
+  getList _ = toList . view enemies
 
 instance HasList Ability () (Game queue) where
   getList _ g = g ^. agendas . traverse . to getAbilities
@@ -487,36 +487,35 @@ instance HasSet ExhaustedEnemyId LocationId (Game queue) where
       locationEnemyIds = getSet @EnemyId () location
     in
       HashSet.map ExhaustedEnemyId
-      . HashMap.keysSet
-      . HashMap.filter
-          (\e -> getId () e `member` locationEnemyIds && isExhausted e)
+      . keysSet
+      . filterMap (\e -> getId () e `member` locationEnemyIds && isExhausted e)
       $ view enemies g
 
 instance HasSet AgendaId () (Game queue) where
-  getSet _ = HashMap.keysSet . view agendas
+  getSet _ = keysSet . view agendas
 
 instance HasSet VictoryDisplayCardCode () (Game queue) where
   getSet _ =
-    HashSet.fromList
+    setFromList
       . map (VictoryDisplayCardCode . getCardCode)
       . view victoryDisplay
 
 instance HasSet ClueCount () (Game queue) where
-  getSet _ = HashSet.fromList . map (getCount ()) . toList . view investigators
+  getSet _ = setFromList . map (getCount ()) . toList . view investigators
 
 instance HasSet CardCount () (Game queue) where
-  getSet _ = HashSet.fromList . map (getCount ()) . toList . view investigators
+  getSet _ = setFromList . map (getCount ()) . toList . view investigators
 
 instance HasSet RemainingHealth () (Game queue) where
   getSet _ =
-    HashSet.fromList
+    setFromList
       . map (RemainingHealth . remainingHealth)
       . toList
       . view investigators
 
 instance HasSet RemainingSanity () (Game queue) where
   getSet _ =
-    HashSet.fromList
+    setFromList
       . map (RemainingSanity . remainingSanity)
       . toList
       . view investigators
@@ -528,56 +527,56 @@ instance HasCount RemainingSanity InvestigatorId (Game queue) where
   getCount iid = RemainingSanity . remainingSanity . getInvestigator iid
 
 instance HasSet LocationId () (Game queue) where
-  getSet _ = HashMap.keysSet . view locations
+  getSet _ = keysSet . view locations
 
 instance HasSet EmptyLocationId () (Game queue) where
   getSet _ =
     HashSet.map EmptyLocationId
-      . HashMap.keysSet
+      . keysSet
       . filterMap isEmptyLocation
       . view locations
 
 instance HasSet RevealedLocationId () (Game queue) where
   getSet _ =
     HashSet.map RevealedLocationId
-      . HashMap.keysSet
+      . keysSet
       . filterMap isRevealed
       . view locations
 
 instance HasSet LocationId TreacheryCardCode (Game queue) where
   getSet (TreacheryCardCode cc) =
-    HashSet.fromList
+    setFromList
       . mapMaybe treacheryLocation
       . toList
       . filterMap ((== cc) . getCardCode)
       . view treacheries
 
 instance HasSet LocationId [Trait] (Game queue) where
-  getSet traits = HashMap.keysSet . filterMap hasMatchingTrait . view locations
+  getSet traits = keysSet . filterMap hasMatchingTrait . view locations
    where
     hasMatchingTrait =
-      not . null . (HashSet.fromList traits `intersection`) . getTraits
+      not . null . (setFromList traits `intersection`) . getTraits
 
 instance HasSet ActId () (Game queue) where
-  getSet _ = HashMap.keysSet . view acts
+  getSet _ = keysSet . view acts
 
 instance HasSet InScenarioInvestigatorId () (Game queue) where
   getSet _ =
     HashSet.map InScenarioInvestigatorId
-      . HashMap.keysSet
+      . keysSet
       . filterMap (not . (\i -> hasResigned i || isDefeated i))
       . view investigators
 
 instance HasSet UnengagedEnemyId () (Game queue) where
   getSet _ =
     HashSet.map UnengagedEnemyId
-      . HashMap.keysSet
+      . keysSet
       . filterMap (not . isEngaged)
       . view enemies
 
 instance HasSet EnemyId Trait (Game queue) where
   getSet trait =
-    HashMap.keysSet . filterMap ((trait `elem`) . getTraits) . view enemies
+    keysSet . filterMap ((trait `elem`) . getTraits) . view enemies
 
 instance HasSet CommittedCardId InvestigatorId (Game queue) where
   getSet iid = maybe mempty (getSet iid) . view skillTest
@@ -595,7 +594,7 @@ instance HasList DeckCard (InvestigatorId, Trait) (Game queue) where
 instance HasSet BlockedLocationId () (Game queue) where
   getSet _ =
     HashSet.map BlockedLocationId
-      . HashMap.keysSet
+      . keysSet
       . filterMap isBlocked
       . view locations
 
@@ -631,7 +630,7 @@ bfs game initialLocation target = do
       if target nextLoc
         then do
           let
-            newVisitedSet = HashSet.insert nextLoc visitedSet
+            newVisitedSet = insertSet nextLoc visitedSet
             newSearchQueue = Seq.drop 1 searchQueue
           put (BFSState newSearchQueue newVisitedSet parentsMap True)
           others <- bfs game initialLocation target
@@ -641,41 +640,34 @@ bfs game initialLocation target = do
         else if hasFoundAtDepth
           then do
             let
-              newVisitedSet = HashSet.insert nextLoc visitedSet
+              newVisitedSet = insertSet nextLoc visitedSet
               newSearchQueue = Seq.drop 1 searchQueue
             put (BFSState newSearchQueue newVisitedSet parentsMap True)
             bfs game initialLocation target
           else do
             let
               adjacentCells =
-                HashSet.toList . HashSet.map unConnectedLocationId $ getSet
-                  nextLoc
-                  game
-              unvisitedNextCells = filter
-                (\loc -> not (HashSet.member loc visitedSet))
-                adjacentCells
-              newVisitedSet = HashSet.insert nextLoc visitedSet
+                map unConnectedLocationId . toList $ getSet nextLoc game
+              unvisitedNextCells =
+                filter (\loc -> not (loc `member` visitedSet)) adjacentCells
+              newVisitedSet = insertSet nextLoc visitedSet
               newSearchQueue = foldr
                 (flip (Seq.|>))
                 (Seq.drop 1 searchQueue)
                 unvisitedNextCells
               newParentsMap =
-                foldr (`HashMap.insert` nextLoc) parentsMap unvisitedNextCells
+                foldr (`insertMap` nextLoc) parentsMap unvisitedNextCells
             put (BFSState newSearchQueue newVisitedSet newParentsMap False)
             bfs game initialLocation target
  where
   unwindPath parentsMap currentPath =
-    case
-        HashMap.lookup
-          (fromJustNote "failed bfs" $ headMay currentPath)
-          parentsMap
-      of
-        Nothing -> fromJustNote "failed bfs on tail" $ tailMay currentPath
-        Just parent -> unwindPath parentsMap (parent : currentPath)
+    case lookup (fromJustNote "failed bfs" $ headMay currentPath) parentsMap of
+      Nothing -> fromJustNote "failed bfs on tail" $ tailMay currentPath
+      Just parent -> unwindPath parentsMap (parent : currentPath)
 
 instance HasSet ClosestLocationId (LocationId, Prey) (Game queue) where
   getSet (start, prey) g =
-    HashSet.fromList . map ClosestLocationId $ getShortestPath g start matcher
+    setFromList . map ClosestLocationId $ getShortestPath g start matcher
     where matcher lid = not . null $ getSet @PreyId (prey, lid) g
 
 instance HasSet ClosestEnemyId LocationId (Game queue) where
@@ -727,34 +719,33 @@ instance HasSet ClosestEnemyId (InvestigatorId, [Trait]) (Game queue) where
 
 instance HasSet ClosestLocationId (LocationId, LocationId) (Game queue) where
   getSet (start, destination) g =
-    HashSet.fromList . map ClosestLocationId $ getShortestPath
+    setFromList . map ClosestLocationId $ getShortestPath
       g
       start
       (== destination)
 
 instance HasSet Int SkillType (Game queue) where
-  getSet skillType g = HashSet.fromList
-    $ map (getSkill skillType) (HashMap.elems $ g ^. investigators)
+  getSet skillType g =
+    setFromList $ map (getSkill skillType) (toList $ g ^. investigators)
 
 instance HasSet PreyId Prey (Game queue) where
-  getSet preyType g =
-    HashSet.map PreyId . HashMap.keysSet . HashMap.filter matcher $ view
-      investigators
-      g
+  getSet preyType g = HashSet.map PreyId . keysSet . filterMap matcher $ view
+    investigators
+    g
     where matcher i = isPrey preyType g i
 
 -- TODO: This does not work for more than 2 players
 instance HasSet PreyId (Prey, LocationId) (Game queue) where
   getSet (preyType, lid) g = HashSet.map PreyId
-    $ HashSet.filter matcher investigators'
+    $ filterSet matcher investigators'
    where
     location = getLocation lid g
     investigators' = getSet () location
     matcher iid = isPrey preyType g (getInvestigator iid g)
 
 instance HasSet AdvanceableActId () (Game queue) where
-  getSet _ g = HashSet.map AdvanceableActId . HashMap.keysSet $ acts'
-    where acts' = HashMap.filter isAdvanceable (g ^. acts)
+  getSet _ g = HashSet.map AdvanceableActId . keysSet $ acts'
+    where acts' = filterMap isAdvanceable (g ^. acts)
 
 instance HasSet ConnectedLocationId LocationId (Game queue) where
   getSet lid = getSet () . getLocation lid
@@ -772,11 +763,10 @@ instance HasSet EventId LocationId (Game queue) where
   getSet lid = getSet () . getLocation lid
 
 instance HasSet EventId () (Game queue) where
-  getSet _ = HashMap.keysSet . view events
+  getSet _ = keysSet . view events
 
 instance HasSet HealthDamageableAssetId InvestigatorId (Game queue) where
-  getSet iid g =
-    HashSet.map HealthDamageableAssetId . HashMap.keysSet $ assets'
+  getSet iid g = HashSet.map HealthDamageableAssetId . keysSet $ assets'
    where
     assetIds = getSet iid g
     assets' = HashMap.filterWithKey
@@ -784,8 +774,7 @@ instance HasSet HealthDamageableAssetId InvestigatorId (Game queue) where
       (g ^. assets)
 
 instance HasSet SanityDamageableAssetId InvestigatorId (Game queue) where
-  getSet iid g =
-    HashSet.map SanityDamageableAssetId . HashMap.keysSet $ assets'
+  getSet iid g = HashSet.map SanityDamageableAssetId . keysSet $ assets'
    where
     assetIds = getSet iid g
     assets' = HashMap.filterWithKey
@@ -793,17 +782,17 @@ instance HasSet SanityDamageableAssetId InvestigatorId (Game queue) where
       (g ^. assets)
 
 instance HasSet EnemyId () (Game queue) where
-  getSet _ = HashMap.keysSet . view enemies
+  getSet _ = keysSet . view enemies
 
 instance HasSet EnemyId LocationId (Game queue) where
   getSet lid = getSet () . getLocation lid
 
 instance HasSet EnemyId ([Trait], LocationId) (Game queue) where
   getSet (traits, lid) g =
-    HashSet.filter
+    filterSet
         (not
         . null
-        . (HashSet.fromList traits `intersection`)
+        . (setFromList traits `intersection`)
         . getTraits
         . flip getEnemy g
         )
@@ -811,7 +800,7 @@ instance HasSet EnemyId ([Trait], LocationId) (Game queue) where
       $ getLocation lid g
 
 instance HasSet AloofEnemyId LocationId (Game queue) where
-  getSet lid g = HashSet.map AloofEnemyId . HashMap.keysSet $ enemies'
+  getSet lid g = HashSet.map AloofEnemyId . keysSet $ enemies'
    where
     enemyIds = getSet lid g
     enemies' = HashMap.filterWithKey
@@ -819,7 +808,7 @@ instance HasSet AloofEnemyId LocationId (Game queue) where
       (g ^. enemies)
 
 instance HasSet InvestigatorId () (Game queue) where
-  getSet _ = HashMap.keysSet . view investigators
+  getSet _ = keysSet . view investigators
 
 instance HasSet InvestigatorId LocationId (Game queue) where
   getSet lid = getSet () . getLocation lid
@@ -857,54 +846,53 @@ broadcastWindow
   -> GameInternal
   -> m ()
 broadcastWindow builder currentInvestigatorId g =
-  for_ (HashMap.keys $ g ^. investigators) $ \iid2 ->
-    if currentInvestigatorId == iid2
-      then unshiftMessage
+  for_ (keys $ g ^. investigators) $ \iid2 -> if currentInvestigatorId == iid2
+    then unshiftMessage
+      (CheckWindow
+        currentInvestigatorId
+        [Fast.DuringTurn You, builder You, builder InvestigatorAtYourLocation]
+      )
+    else do
+      let
+        lid1 = getId @LocationId currentInvestigatorId g
+        lid2 = getId @LocationId iid2 g
+      when (lid1 == lid2) $ unshiftMessage
         (CheckWindow
           currentInvestigatorId
-          [Fast.DuringTurn You, builder You, builder InvestigatorAtYourLocation]
+          [ Fast.DuringTurn InvestigatorAtYourLocation
+          , builder InvestigatorAtYourLocation
+          ]
         )
-      else do
-        let
-          lid1 = getId @LocationId currentInvestigatorId g
-          lid2 = getId @LocationId iid2 g
-        when (lid1 == lid2) $ unshiftMessage
-          (CheckWindow
-            currentInvestigatorId
-            [ Fast.DuringTurn InvestigatorAtYourLocation
-            , builder InvestigatorAtYourLocation
-            ]
-          )
 
 instance (IsInvestigator investigator) => HasActions GameInternal investigator (ActionType, GameInternal) where
   getActions i window (EnemyActionType, g) =
-    concat <$> traverse (getActions i window) (HashMap.elems $ view enemies g)
+    concat <$> traverse (getActions i window) (toList $ view enemies g)
   getActions i window (LocationActionType, g) =
-    concat <$> traverse (getActions i window) (HashMap.elems $ view locations g)
+    concat <$> traverse (getActions i window) (toList $ view locations g)
   getActions i window (AssetActionType, g) =
-    concat <$> traverse (getActions i window) (HashMap.elems $ view assets g)
-  getActions i window (TreacheryActionType, g) = concat
-    <$> traverse (getActions i window) (HashMap.elems $ view treacheries g)
+    concat <$> traverse (getActions i window) (toList $ view assets g)
+  getActions i window (TreacheryActionType, g) =
+    concat <$> traverse (getActions i window) (toList $ view treacheries g)
   getActions i window (ActActionType, g) =
-    concat <$> traverse (getActions i window) (HashMap.elems $ view acts g)
+    concat <$> traverse (getActions i window) (toList $ view acts g)
   getActions i window (AgendaActionType, g) =
-    concat <$> traverse (getActions i window) (HashMap.elems $ view agendas g)
-  getActions i window (InvestigatorActionType, g) = concat
-    <$> traverse (getActions i window) (HashMap.elems $ view investigators g)
+    concat <$> traverse (getActions i window) (toList $ view agendas g)
+  getActions i window (InvestigatorActionType, g) =
+    concat <$> traverse (getActions i window) (toList $ view investigators g)
 
 instance (IsInvestigator investigator) => HasActions GameInternal investigator (ActionType, Trait, GameInternal) where
   getActions i window (EnemyActionType, trait, g) = concat <$> traverse
     (getActions i window)
-    (filter ((trait `elem`) . getTraits) $ HashMap.elems $ view enemies g)
+    (filter ((trait `elem`) . getTraits) $ toList $ view enemies g)
   getActions i window (LocationActionType, trait, g) = concat <$> traverse
     (getActions i window)
-    (filter ((trait `elem`) . getTraits) $ HashMap.elems $ view locations g)
+    (filter ((trait `elem`) . getTraits) $ toList $ view locations g)
   getActions i window (AssetActionType, trait, g) = concat <$> traverse
     (getActions i window)
-    (filter ((trait `elem`) . getTraits) $ HashMap.elems $ view assets g)
+    (filter ((trait `elem`) . getTraits) $ toList $ view assets g)
   getActions i window (TreacheryActionType, trait, g) = concat <$> traverse
     (getActions i window)
-    (filter ((trait `elem`) . getTraits) $ HashMap.elems $ view treacheries g)
+    (filter ((trait `elem`) . getTraits) $ toList $ view treacheries g)
   getActions _ _ (InvestigatorActionType, _, _) = pure [] -- is this a thing?
   getActions _ _ (ActActionType, _, _) = pure [] -- acts do not have traits
   getActions _ _ (AgendaActionType, _, _) = pure [] -- agendas do not have traits
@@ -967,7 +955,7 @@ runGameMessage msg g = case msg of
       chaosBag' = chaosBagOf campaign'
     unshiftMessages
       $ [ChooseLeadInvestigator, SetupInvestigators]
-      <> [ InvestigatorMulligan iid | iid <- HashMap.keys $ g ^. investigators ]
+      <> [ InvestigatorMulligan iid | iid <- keys $ g ^. investigators ]
       <> [Setup]
     pure
       $ g
@@ -977,12 +965,12 @@ runGameMessage msg g = case msg of
   FocusCards cards -> pure $ g & focusedCards .~ cards
   FocusTokens tokens -> pure $ g & focusedTokens .~ tokens
   UnfocusTokens -> pure $ g & focusedTokens .~ mempty
-  ChooseLeadInvestigator -> if HashMap.size (g ^. investigators) == 1
+  ChooseLeadInvestigator -> if length (g ^. investigators) == 1
     then pure g
     else g <$ unshiftMessage
       (Ask (g ^. leadInvestigatorId) $ ChooseOne
         [ ChoosePlayer iid SetLeadInvestigator
-        | iid <- g ^. investigators . to HashMap.keys
+        | iid <- g ^. investigators . to keys
         ]
       )
   ChoosePlayer iid SetLeadInvestigator -> pure $ g & leadInvestigatorId .~ iid
@@ -1041,19 +1029,19 @@ runGameMessage msg g = case msg of
     unshiftMessage (PlacedLocation lid)
     pure $ g & locations . at lid ?~ lookupLocation lid
   SetEncounterDeck encounterDeck' -> pure $ g & encounterDeck .~ encounterDeck'
-  RemoveEnemy eid -> pure $ g & enemies %~ HashMap.delete eid
+  RemoveEnemy eid -> pure $ g & enemies %~ deleteMap eid
   RemoveLocation lid -> do
-    treacheryIds <- HashSet.toList <$> asks (getSet lid)
+    treacheryIds <- toList <$> asks (getSet lid)
     unshiftMessages [ Discard (TreacheryTarget tid) | tid <- treacheryIds ]
-    enemyIds <- HashSet.toList <$> asks (getSet lid)
+    enemyIds <- toList <$> asks (getSet lid)
     unshiftMessages [ Discard (EnemyTarget eid) | eid <- enemyIds ]
-    eventIds <- HashSet.toList <$> asks (getSet lid)
+    eventIds <- toList <$> asks (getSet lid)
     unshiftMessages [ Discard (EventTarget eid) | eid <- eventIds ]
-    pure $ g & locations %~ HashMap.delete lid
+    pure $ g & locations %~ deleteMap lid
   SpendClues 0 _ -> pure g
   SpendClues n iids -> do
     let
-      investigatorsWithClues = HashMap.keys $ HashMap.filterWithKey
+      investigatorsWithClues = keys $ HashMap.filterWithKey
         (\k v -> k `elem` iids && hasSpendableClues v)
         (g ^. investigators)
     case investigatorsWithClues of
@@ -1066,13 +1054,11 @@ runGameMessage msg g = case msg of
         , SpendClues (n - 1) investigatorsWithClues
         ]
   NextAgenda aid1 aid2 ->
-    pure $ g & agendas %~ HashMap.delete aid1 & agendas %~ HashMap.insert
+    pure $ g & agendas %~ deleteMap aid1 & agendas %~ insertMap
       aid2
       (lookupAgenda aid2)
   NextAct aid1 aid2 ->
-    pure $ g & acts %~ HashMap.delete aid1 & acts %~ HashMap.insert
-      aid2
-      (lookupAct aid2)
+    pure $ g & acts %~ deleteMap aid1 & acts %~ insertMap aid2 (lookupAct aid2)
   AddAct aid -> pure $ g & acts . at aid ?~ lookupAct aid
   AddAgenda aid -> pure $ g & agendas . at aid ?~ lookupAgenda aid
   CommitCard iid cardId -> do
@@ -1088,16 +1074,16 @@ runGameMessage msg g = case msg of
             skillId = SkillId $ unCardId cardId
             skill = lookupSkill (pcCardCode pc) iid skillId
           unshiftMessage (InvestigatorCommittedSkill iid skillId)
-          pure $ g & skills %~ HashMap.insert skillId skill
+          pure $ g & skills %~ insertMap skillId skill
         _ -> pure g
       _ -> pure g
   SkillTestEnds -> do
     let
       skillCardsWithOwner =
-        flip map (HashMap.toList $ g ^. skills) $ \(skillId, skill) ->
+        flip map (mapToList $ g ^. skills) $ \(skillId, skill) ->
           ( fromJustNote
             "missing skill"
-            (HashMap.lookup (getCardCode skill) allPlayerCards)
+            (lookup (getCardCode skill) allPlayerCards)
             (CardId $ unSkillId skillId)
           , ownerOfSkill skill
           )
@@ -1113,10 +1099,10 @@ runGameMessage msg g = case msg of
           ^? (skills . ix skillId)
       card = fromJustNote
         "no such skill"
-        (HashMap.lookup (getCardCode skill) allPlayerCards)
+        (lookup (getCardCode skill) allPlayerCards)
         (CardId $ unSkillId skillId)
     unshiftMessage (AddToHand iid (PlayerCard card))
-    pure $ g & skills %~ HashMap.delete skillId
+    pure $ g & skills %~ deleteMap skillId
   ReturnTokens tokens -> pure $ g & chaosBag %~ (tokens <>)
   AddToken token -> pure $ g & chaosBag %~ (token :)
   PlayCard iid cardId False -> do
@@ -1131,30 +1117,30 @@ runGameMessage msg g = case msg of
             tid = TreacheryId $ unCardId cardId
             treachery = lookupTreachery (pcCardCode pc) tid Nothing
           unshiftMessages [Revelation iid tid]
-          pure $ g & treacheries %~ HashMap.insert tid treachery
+          pure $ g & treacheries %~ insertMap tid treachery
         AssetType -> do
           let
             aid = AssetId $ unCardId cardId
             asset = fromJustNote
               "could not find asset"
-              (HashMap.lookup (pcCardCode pc) allAssets)
+              (lookup (pcCardCode pc) allAssets)
               aid
           unshiftMessages
             [ InvestigatorPlayAsset
               iid
               aid
               (slotsOf asset)
-              (HashSet.toList $ getTraits asset)
+              (toList $ getTraits asset)
             , PlayedCard iid cardId False
             ]
-          pure $ g & assets %~ HashMap.insert aid asset
+          pure $ g & assets %~ insertMap aid asset
         EventType -> do
           let
             eid = EventId $ unCardId cardId
             event = lookupEvent (pcCardCode pc) iid eid
           unshiftMessages
             [PlayedCard iid cardId True, InvestigatorPlayEvent iid eid]
-          pure $ g & events %~ HashMap.insert eid event
+          pure $ g & events %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
   ActivateCardAbilityAction iid ability ->
@@ -1170,7 +1156,7 @@ runGameMessage msg g = case msg of
          , Revelation iid treacheryId
          , AfterRevelation iid treacheryId
          ]
-    pure $ g & treacheries %~ HashMap.insert treacheryId treachery
+    pure $ g & treacheries %~ insertMap treacheryId treachery
   DrewPlayerEnemy iid cardCode cardId -> do
     let
       investigator = getInvestigator iid g
@@ -1188,7 +1174,7 @@ runGameMessage msg g = case msg of
       (bearerMessage
       : [RemoveCardFromHand iid cardCode, InvestigatorDrawEnemy iid lid eid]
       )
-    pure $ g & enemies %~ HashMap.insert eid enemy
+    pure $ g & enemies %~ insertMap eid enemy
   CancelNext msgType -> do
     void $ withQueue $ \queue -> do
       let
@@ -1209,9 +1195,7 @@ runGameMessage msg g = case msg of
         _ <- popMessage
         unshiftMessage
           (SkillTestAsk
-            (AskMap
-            $ HashMap.fromList [(iid1, ChooseOne c1), (iid2, ChooseOne c2)]
-            )
+            (AskMap $ mapFromList [(iid1, ChooseOne c1), (iid2, ChooseOne c2)])
           )
       _ -> unshiftMessage (Ask iid1 $ ChooseOne c1)
     pure g
@@ -1222,7 +1206,7 @@ runGameMessage msg g = case msg of
         _ <- popMessage
         unshiftMessage
           (SkillTestAsk
-            (AskMap $ HashMap.insertWith
+            (AskMap $ insertWith
               (\(ChooseOne m) (ChooseOne n) -> ChooseOne $ m <> n)
               iid2
               (ChooseOne c2)
@@ -1290,20 +1274,20 @@ runGameMessage msg g = case msg of
   Discard (AssetTarget aid) -> do
     let asset = getAsset aid g
     unshiftMessage (AssetDiscarded aid (getCardCode asset))
-    pure $ g & assets %~ HashMap.delete aid
+    pure $ g & assets %~ deleteMap aid
   AssetDefeated aid -> do
     let asset = getAsset aid g
     unshiftMessage (AssetDiscarded aid (getCardCode asset))
-    pure $ g & assets %~ HashMap.delete aid
+    pure $ g & assets %~ deleteMap aid
   EnemyDefeated eid iid _ _ -> do
     let
       enemy = getEnemy eid g
       cardId = CardId (unEnemyId eid)
       encounterCard = do
-        f <- HashMap.lookup (getCardCode enemy) allEncounterCards
+        f <- lookup (getCardCode enemy) allEncounterCards
         pure $ EncounterCard $ f cardId
       playerCard = do
-        f <- HashMap.lookup (getCardCode enemy) allPlayerCards
+        f <- lookup (getCardCode enemy) allPlayerCards
         pure $ PlayerCard $ f cardId
     broadcastWindow Fast.WhenEnemyDefeated iid g
     case encounterCard <|> playerCard of
@@ -1312,20 +1296,20 @@ runGameMessage msg g = case msg of
         case getBearer enemy of
           Nothing -> error "No bearer recorded"
           Just iid' -> unshiftMessage (AddToDiscard iid' pc)
-        pure $ g & enemies %~ HashMap.delete eid
+        pure $ g & enemies %~ deleteMap eid
       Just (EncounterCard ec) -> if isJust (getVictoryPoints enemy)
         then
           pure
           $ g
-          & (enemies %~ HashMap.delete eid)
+          & (enemies %~ deleteMap eid)
           & (victoryDisplay %~ (EncounterCard ec :))
-        else pure $ g & (enemies %~ HashMap.delete eid) & (discard %~ (ec :))
+        else pure $ g & (enemies %~ deleteMap eid) & (discard %~ (ec :))
   AddToVictory (EnemyTarget eid) -> do
     let
       enemy = getEnemy eid g
       cardId = CardId (unEnemyId eid)
       encounterCard = do
-        f <- HashMap.lookup (getCardCode enemy) allEncounterCards
+        f <- lookup (getCardCode enemy) allEncounterCards
         pure $ EncounterCard $ f cardId
     case encounterCard of
       Nothing -> error "missing"
@@ -1333,12 +1317,12 @@ runGameMessage msg g = case msg of
       Just (EncounterCard ec) ->
         pure
           $ g
-          & (enemies %~ HashMap.delete eid)
+          & (enemies %~ deleteMap eid)
           & (victoryDisplay %~ (EncounterCard ec :))
   BeginInvestigation -> do
     unshiftMessages
       $ [ CheckWindow iid [Fast.AnyPhaseBegins]
-        | iid <- g ^. investigators . to HashMap.keys
+        | iid <- g ^. investigators . to keys
         ]
       <> [ChoosePlayerOrder (gamePlayerOrder g) []]
     pure $ g & phase .~ InvestigationPhase
@@ -1379,7 +1363,7 @@ runGameMessage msg g = case msg of
   BeginEnemy -> do
     pushMessages
       $ [ CheckWindow iid [Fast.AnyPhaseBegins]
-        | iid <- g ^. investigators . to HashMap.keys
+        | iid <- g ^. investigators . to keys
         ]
       <> [HuntersMove, EnemiesAttack, EndEnemy]
     pure $ g & phase .~ EnemyPhase
@@ -1390,7 +1374,7 @@ runGameMessage msg g = case msg of
   BeginUpkeep -> do
     pushMessages
       $ [ CheckWindow iid [Fast.AnyPhaseBegins]
-        | iid <- g ^. investigators . to HashMap.keys
+        | iid <- g ^. investigators . to keys
         ]
       <> [ReadyExhausted, AllDrawCardAndResource, AllCheckHandSize, EndUpkeep]
     pure $ g & phase .~ UpkeepPhase
@@ -1406,7 +1390,7 @@ runGameMessage msg g = case msg of
   BeginMythos -> do
     pushMessages
       $ [ CheckWindow iid [Fast.AnyPhaseBegins]
-        | iid <- g ^. investigators . to HashMap.keys
+        | iid <- g ^. investigators . to keys
         ]
       <> [ PlaceDoomOnAgenda
          , AdvanceAgendaIfThresholdSatisfied
@@ -1554,9 +1538,8 @@ runGameMessage msg g = case msg of
   SearchCollectionForRandom iid source matcher -> do
     newCardId <- CardId <$> liftIO nextRandom
     let
-      matches = filter
-        (playerCardMatch matcher . ($ newCardId))
-        (HashMap.elems allPlayerCards)
+      matches =
+        filter (playerCardMatch matcher . ($ newCardId)) (toList allPlayerCards)
     mcard <- case matches of
       [] -> pure Nothing
       (x : xs) -> liftIO $ Just . ($ newCardId) <$> sample (x :| xs)
@@ -1591,7 +1574,7 @@ runGameMessage msg g = case msg of
       treachery = getTreachery tid g
       card = fromJustNote
         "missing card"
-        (HashMap.lookup (getCardCode treachery) allEncounterCards)
+        (lookup (getCardCode treachery) allEncounterCards)
         (CardId $ unTreacheryId tid)
     pure $ g & (activeCard ?~ EncounterCard card)
   InvestigatorDrewEncounterCard iid card -> case ecCardType card of
@@ -1624,28 +1607,28 @@ runGameMessage msg g = case msg of
       enemy = getEnemy eid g
       card = fromJustNote
         "missing card"
-        (HashMap.lookup (getCardCode enemy) allEncounterCards)
+        (lookup (getCardCode enemy) allEncounterCards)
         (CardId $ unEnemyId eid)
-    in pure $ g & enemies %~ HashMap.delete eid & discard %~ (card :)
+    in pure $ g & enemies %~ deleteMap eid & discard %~ (card :)
   Discard (EventTarget eid) -> do
     let
       event = getEvent eid g
       mPlayerCard = do
-        f <- HashMap.lookup (getCardCode event) allPlayerCards
+        f <- lookup (getCardCode event) allPlayerCards
         pure $ f (CardId $ unEventId eid)
     case mPlayerCard of
       Nothing -> error "missing"
       Just pc -> do
         unshiftMessage (AddToDiscard (ownerOfEvent event) pc)
-        pure $ g & events %~ HashMap.delete eid
+        pure $ g & events %~ deleteMap eid
   Discard (TreacheryTarget tid) -> do
     let
       treachery = getTreachery tid g
       encounterCard = do
-        f <- HashMap.lookup (getCardCode treachery) allEncounterCards
+        f <- lookup (getCardCode treachery) allEncounterCards
         pure $ EncounterCard $ f (CardId $ unTreacheryId tid)
       playerCard = do
-        f <- HashMap.lookup (getCardCode treachery) allPlayerCards
+        f <- lookup (getCardCode treachery) allPlayerCards
         pure $ PlayerCard $ f (CardId $ unTreacheryId tid)
     case encounterCard <|> playerCard of
       Nothing -> error "missing"

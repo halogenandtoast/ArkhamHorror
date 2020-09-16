@@ -7,7 +7,6 @@ where
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import ClassyPrelude
-import qualified Data.HashMap.Strict as HashMap
 import Data.UUID.V4
 import Safe (fromJustNote)
 
@@ -33,9 +32,7 @@ gatherEncounterSet :: MonadIO m => EncounterSet -> m [EncounterCard]
 gatherEncounterSet =
   traverse
       (\cid ->
-        fromJustNote
-            ("missing card" <> show cid)
-            (HashMap.lookup cid allEncounterCards)
+        fromJustNote ("missing card" <> show cid) (lookup cid allEncounterCards)
           . CardId
           <$> liftIO nextRandom
       )

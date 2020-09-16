@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e819d25a6b4c025839ea86e6c85a7b289fdf98ff2572d9abdd09807f87f0d28b
+-- hash: ef12369b5fad1ff75276092f91f54d792132345f4c6174e322de4b402d08fff2
 
 name:           arkham-core
 version:        0.0.0
@@ -14,6 +14,8 @@ library
   exposed-modules:
       Arkham.Json
       Arkham.Types.Ability
+      Arkham.Types.Ability.Limit
+      Arkham.Types.Ability.Type
       Arkham.Types.Act
       Arkham.Types.Act.Attrs
       Arkham.Types.Act.Cards.DisruptingTheRitual
@@ -40,6 +42,7 @@ library
       Arkham.Types.AgendaId
       Arkham.Types.Asset
       Arkham.Types.Asset.Attrs
+      Arkham.Types.Asset.Cards
       Arkham.Types.Asset.Cards.ArcaneInitiate
       Arkham.Types.Asset.Cards.ArcaneStudies
       Arkham.Types.Asset.Cards.ArcaneStudies2
@@ -151,6 +154,7 @@ library
       Arkham.Types.EnemyId
       Arkham.Types.Event
       Arkham.Types.Event.Attrs
+      Arkham.Types.Event.Cards
       Arkham.Types.Event.Cards.Backstab
       Arkham.Types.Event.Cards.Barricade
       Arkham.Types.Event.Cards.Barricade3
@@ -187,6 +191,7 @@ library
       Arkham.Types.Helpers
       Arkham.Types.Investigator
       Arkham.Types.Investigator.Attrs
+      Arkham.Types.Investigator.Cards
       Arkham.Types.Investigator.Cards.AgnesBaker
       Arkham.Types.Investigator.Cards.AkachiOnyele
       Arkham.Types.Investigator.Cards.AmandaSharpe
@@ -234,6 +239,7 @@ library
       Arkham.Types.Keyword
       Arkham.Types.Location
       Arkham.Types.Location.Attrs
+      Arkham.Types.Location.Cards
       Arkham.Types.Location.Cards.ArkhamWoodsCliffside
       Arkham.Types.Location.Cards.ArkhamWoodsOldHouse
       Arkham.Types.Location.Cards.ArkhamWoodsQuietGlade
@@ -275,6 +281,7 @@ library
       Arkham.Types.ScenarioId
       Arkham.Types.Skill
       Arkham.Types.Skill.Attrs
+      Arkham.Types.Skill.Cards
       Arkham.Types.Skill.Cards.Deduction
       Arkham.Types.Skill.Cards.Fearless
       Arkham.Types.Skill.Cards.Guts
@@ -300,6 +307,7 @@ library
       Arkham.Types.Trait
       Arkham.Types.Treachery
       Arkham.Types.Treachery.Attrs
+      Arkham.Types.Treachery.Cards
       Arkham.Types.Treachery.Cards.AbandonedAndAlone
       Arkham.Types.Treachery.Cards.Amnesia
       Arkham.Types.Treachery.Cards.AncientEvils
@@ -331,7 +339,7 @@ library
       Paths_arkham_core
   hs-source-dirs:
       library
-  default-extensions: NoImplicitPrelude RecordWildCards DerivingStrategies DeriveGeneric DeriveAnyClass LambdaCase FlexibleInstances MultiParamTypeClasses GeneralizedNewtypeDeriving OverloadedStrings TypeApplications TypeOperators TupleSections FlexibleContexts ConstraintKinds StandaloneDeriving DerivingVia TypeFamilies
+  default-extensions: NoImplicitPrelude NamedFieldPuns RecordWildCards DerivingStrategies DeriveGeneric DeriveAnyClass LambdaCase FlexibleInstances MultiParamTypeClasses GeneralizedNewtypeDeriving OverloadedStrings TypeApplications TypeOperators TupleSections FlexibleContexts ConstraintKinds StandaloneDeriving DerivingVia TypeFamilies
   build-depends:
       MonadRandom
     , aeson
@@ -344,6 +352,7 @@ library
     , hashable
     , microlens
     , microlens-platform
+    , microlens-th
     , mtl
     , pretty-simple
     , random

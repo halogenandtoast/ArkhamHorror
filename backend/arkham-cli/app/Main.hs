@@ -7,12 +7,12 @@ import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Difficulty
 import Arkham.Types.Game
-import Arkham.Types.GameJson
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import ClassyPrelude
+import Control.Monad.Fail
 import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap
 import Data.UUID.V4
@@ -23,10 +23,10 @@ import System.Environment
 import Text.Pretty.Simple
 import Text.Read (readMaybe)
 
-instance FromField GameJson where
+instance FromField GameExternal where
   fromField = fromJSONField
 
-loadFromDB :: Int -> IO GameJson
+loadFromDB :: Int -> IO GameExternal
 loadFromDB gid = do
   conn <- connectPostgreSQL "dbname=arkham-horror-backend"
   [Only i] <- query
@@ -86,19 +86,19 @@ handleQuestion iid = \case
       Just m' -> pure [m', Ask iid $ ChooseOneAtATime msgs']
       Nothing -> pure []
 
-runGame :: MonadIO m => Game -> m GameJson
+runGame :: (MonadIO m, MonadFail m) => GameInternal -> m GameExternal
 runGame g = do
-  let ref = giMessages g
+  let ref = gameMessages g
   gameJson <- runMessages g
   pPrint gameJson
-  case HashMap.toList (gQuestion gameJson) of
+  case HashMap.toList (gameQuestion gameJson) of
     [(investigatorId, question)] -> do
       messages <- handleQuestion investigatorId question
       modifyIORef' ref (messages <>)
       messages' <- readIORef ref
       if null messages'
         then pure gameJson
-        else runGame $ toInternalGame' ref gameJson
+        else runGame $ gameJson { gameMessages = ref }
     _ -> pure gameJson
 
 main :: IO ()

@@ -1,7 +1,5 @@
-
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Game
@@ -214,7 +212,6 @@ campaign = lens gameCampaign $ \m x -> m { gameCampaign = x }
 
 skillTest :: Lens' (Game queue) (Maybe (SkillTest Message))
 skillTest = lens gameSkillTest $ \m x -> m { gameSkillTest = x }
-
 
 getInvestigator :: InvestigatorId -> Game queue -> Investigator
 getInvestigator iid g = g ^?! investigators . ix iid

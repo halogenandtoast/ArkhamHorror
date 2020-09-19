@@ -917,9 +917,13 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
             )
     InvestigatorDamage iid _ health sanity | iid == investigatorId ->
       pure $ a & healthDamage +~ health & sanityDamage +~ sanity
-    CheckDefeated -> a <$ when
-      (facingDefeat a)
-      (unshiftMessage (InvestigatorWhenDefeated investigatorId))
+    CheckDefeated -> if facingDefeat a
+      then do
+        unshiftMessage (InvestigatorWhenDefeated investigatorId)
+        if investigatorHealthDamage >= modifiedHealth a
+          then pure $ a & physicalTrauma +~ 1
+          else pure $ a & mentalTrauma +~ 1
+      else pure a
     HealDamage (InvestigatorTarget iid) amount | iid == investigatorId ->
       pure $ a & healthDamage %~ max 0 . subtract amount
     HealHorror (InvestigatorTarget iid) amount | iid == investigatorId ->

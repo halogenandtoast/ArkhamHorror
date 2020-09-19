@@ -44,10 +44,11 @@ instance (ActionRunner env investigator) => HasActions env investigator RolandBa
                   )
           { abilityLimit = PerRound
           }
+      clueCount' <- unClueCount <$> asks (getCount investigatorLocation)
       usedAbilities <- map unUsedAbility <$> asks (getList ())
       pure
         [ ActivateCardAbilityAction investigatorId ability
-        | (investigatorId, ability) `notElem` usedAbilities
+        | (investigatorId, ability) `notElem` usedAbilities && clueCount' > 0
         ]
   getActions _ _ _ = pure []
 

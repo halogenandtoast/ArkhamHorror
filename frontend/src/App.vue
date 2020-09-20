@@ -54,12 +54,16 @@ body {
   height: 40px;
   box-sizing: border-box;
   padding: 10px 15px;
-  text-align: right;
   background: #EEE;
+  display: flex;
 
   a {
     font-weight: bold;
     color: #2c3e50;
+  }
+
+  .home-link {
+    flex-grow: 1;
   }
 }
 </style>

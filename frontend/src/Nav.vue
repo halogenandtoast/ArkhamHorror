@@ -1,13 +1,17 @@
 <template>
   <div id="nav">
-    <template v-if="currentUser">
-      Welcome {{currentUser.username}}
-      <a href="#" @click="logout">Logout</a>
-    </template>
-    <template v-else>
-      <router-link to="/sign-in">Login</router-link> |
-      <router-link to="/sign-up">Register</router-link>
-    </template>
+    <router-link to="/" class="home-link">Home</router-link>
+
+    <span>
+      <template v-if="currentUser">
+        Welcome {{currentUser.username}}
+        <a href="#" @click="logout">Logout</a>
+      </template>
+      <template v-else>
+        <router-link to="/sign-in">Login</router-link> |
+        <router-link to="/sign-up">Register</router-link>
+      </template>
+    </span>
   </div>
 </template>
 

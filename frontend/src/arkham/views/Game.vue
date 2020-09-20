@@ -18,9 +18,17 @@
         @choose="choose"
         @update="update"
       />
-      <p v-if="game.currentData.gameOver">
-        Game over
-      </p>
+      <div v-if="game.currentData.gameOver">
+        <p>Game over</p>
+
+        <div v-for="entry in game.currentData.campaign.contents.log.recorded" :key="entry">
+          {{entry}}
+        </div>
+
+        <div v-for="(entry, idx) in game.currentData.campaign.contents.log.recordedSets" :key="idx">
+          {{entry[0]}}: {{entry[1].join(", ")}}
+        </div>
+      </div>
     </div>
   </div>
 </template>

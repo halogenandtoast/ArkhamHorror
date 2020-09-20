@@ -53,7 +53,7 @@ instance (ActionRunner env investigator) => HasActions env investigator ArkhamWo
            && locationRevealed
            && getId () i
            `elem` locationInvestigators
-           && hasActionsRemaining i
+           && hasActionsRemaining i Nothing locationTraits
          ]
   getActions _ _ _ = pure []
 

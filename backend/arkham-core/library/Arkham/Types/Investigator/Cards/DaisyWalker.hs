@@ -2,7 +2,6 @@
 module Arkham.Types.Investigator.Cards.DaisyWalker where
 
 import Arkham.Types.Ability
-import Arkham.Types.Window
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
@@ -14,6 +13,7 @@ import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Token
 import Arkham.Types.Trait
+import Arkham.Types.Window
 import ClassyPrelude
 import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap
@@ -76,19 +76,6 @@ instance (InvestigatorRunner Attrs env) => RunMessage env DaisyWalker where
               else DaisyWalker <$> runMessage msg attrs
         else
           DaisyWalker <$> runMessage msg attrs
-    PlayerWindow iid additionalActions | iid == investigatorId ->
-      if investigatorRemainingActions
-          == 0
-          && fromJustNote "Must be set" investigatorTomeActions
-          > 0
-        then do
-          tomeActions' <- join
-            $ asks (getActions attrs NonFast . (AssetActionType, Tome, ))
-          DaisyWalker
-            <$> runMessage
-                  (PlayerWindow iid (additionalActions <> tomeActions'))
-                  attrs
-        else DaisyWalker <$> runMessage msg attrs
     ResolveToken ElderSign iid skillValue | iid == investigatorId ->
       if any
           (becomesFailure ElderSign)

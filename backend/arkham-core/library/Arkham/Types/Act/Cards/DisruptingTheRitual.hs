@@ -27,7 +27,7 @@ disruptingTheRitual =
 
 instance (ActionRunner env investigator) => HasActions env investigator DisruptingTheRitual where
   getActions i NonFast (DisruptingTheRitual Attrs {..})
-    | hasActionsRemaining i = pure
+    | hasActionsRemaining i Nothing mempty = pure
       [ ActivateCardAbilityAction
           (getId () i)
           (mkAbility (ActSource actId) 1 (ActionAbility 1 Nothing))

@@ -45,7 +45,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Northsid
            && locationRevealed
            && getId () i
            `elem` locationInvestigators
-           && hasActionsRemaining i
+           && hasActionsRemaining i Nothing locationTraits
          ] -- GROUP LIMIT
   getActions _ _ _ = pure []
 

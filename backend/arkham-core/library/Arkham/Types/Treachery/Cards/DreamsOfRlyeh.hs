@@ -29,7 +29,7 @@ instance (IsInvestigator investigator) => HasActions env investigator DreamsOfRl
         (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 1 Nothing))
     | treacheryAttachedInvestigator
       == Just (getId () i)
-      && hasActionsRemaining i
+      && hasActionsRemaining i Nothing treacheryTraits
     ]
   getActions _ _ _ = pure []
 

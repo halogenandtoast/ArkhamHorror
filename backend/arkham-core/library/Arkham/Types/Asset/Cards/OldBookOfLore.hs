@@ -30,7 +30,7 @@ instance (IsInvestigator investigator) => HasActions env investigator OldBookOfL
       [ ActivateCardAbilityAction
           (getId () i)
           (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
-      | not assetExhausted
+      | not assetExhausted && hasActionsRemaining i Nothing assetTraits
       ]
   getActions _ _ _ = pure []
 
@@ -41,7 +41,7 @@ instance (AssetRunner env) => RunMessage env OldBookOfLore where
       investigatorIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessage
         (Ask iid $ ChooseOne
-          [ SearchTopOfDeck iid (InvestigatorTarget iid') 3 [] ShuffleBackIn
+          [ SearchTopOfDeck iid' (InvestigatorTarget iid') 3 [] ShuffleBackIn
           | iid' <- investigatorIds
           ]
         )

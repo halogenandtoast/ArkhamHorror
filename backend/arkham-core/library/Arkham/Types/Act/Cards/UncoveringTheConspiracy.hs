@@ -24,7 +24,7 @@ uncoveringTheConspiracy = UncoveringTheConspiracy
 
 instance (ActionRunner env investigator) => HasActions env investigator UncoveringTheConspiracy where
   getActions i NonFast (UncoveringTheConspiracy x@Attrs {..})
-    | hasActionsRemaining i = do
+    | hasActionsRemaining i Nothing mempty = do
       playerCount <- unPlayerCount <$> asks (getCount ())
       totalSpendableClueCount <- unSpendableClueCount
         <$> asks (getCount AllInvestigators)

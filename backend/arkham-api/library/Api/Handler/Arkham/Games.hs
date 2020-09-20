@@ -4,6 +4,7 @@ module Api.Handler.Arkham.Games
   , getApiV1ArkhamGamesR
   , postApiV1ArkhamGamesR
   , putApiV1ArkhamGameR
+  , deleteApiV1ArkhamGameR
   , putApiV1ArkhamGameRawR
   )
 where
@@ -21,7 +22,7 @@ import qualified Data.Map.Strict as Map
 import Data.UUID
 import Database.Esqueleto
 import Entity.Arkham.Player
-import Import hiding (on, (==.))
+import Import hiding (delete, on, (==.))
 import Json
 import Network.WebSockets (ConnectionException)
 import Safe (fromJustNote)
@@ -170,3 +171,11 @@ putApiV1ArkhamGameRawR gameId = do
     writeChannel
     (encode (Entity gameId (ArkhamGame arkhamGameName ge)))
   runDB (replace gameId (ArkhamGame arkhamGameName ge))
+
+deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
+deleteApiV1ArkhamGameR gameId = do
+  void $ runDB $ do
+    delete $ from $ \players -> do
+      where_ $ players ^. ArkhamPlayerArkhamGameId ==. val gameId
+    delete $ from $ \games -> do
+      where_ $ games ^. persistIdField ==. val gameId

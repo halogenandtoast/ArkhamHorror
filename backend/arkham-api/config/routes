@@ -7,7 +7,7 @@
       /games ApiV1ArkhamGamesP:
         / ApiV1ArkhamGamesR GET POST
         /#ArkhamGameId ApiV1ArkhamGameP:
-          / ApiV1ArkhamGameR GET PUT
+          / ApiV1ArkhamGameR GET PUT DELETE
           /raw ApiV1ArkhamGameRawR PUT
           /join ApiV1ArkhamPendingGameR PUT
 

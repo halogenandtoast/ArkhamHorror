@@ -14,7 +14,7 @@ import Database.Persist.TH
 import Json
 import Orphans ()
 
-mkPersist sqlSettings [persistLowerCase|
+share [mkPersist sqlSettings, mkDeleteCascade sqlSettings] [persistLowerCase|
 ArkhamGame sql=arkham_games
   Id UUID default=uuid_generate_v4()
   name Text

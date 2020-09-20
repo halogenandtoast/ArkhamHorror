@@ -9,7 +9,10 @@
         <button @click="$emit('choose', index)">{{choice.contents}}</button>
       </div>
 
-      <div v-if="choice.tag === MessageType.RUN && choice.contents[0].tag === MessageType.CONTINUE">
+      <div
+        v-if="choice.tag === MessageType.RUN
+          && (choice.contents[0] && choice.contents[0].tag === MessageType.CONTINUE)"
+        >
         <div v-if="choice.contents[1].tag === MessageType.FLAVOR_TEXT" class="intro-text">
           <h1 v-if="choice.contents[1].contents[0]">{{choice.contents[1].contents[0]}}</h1>
           <p
@@ -80,7 +83,7 @@ export default class StatusBar extends Vue {
 
     switch (c.tag) {
       case MessageType.RUN:
-        return this.isStatusBarMessage(c.contents[0]);
+        return c.contents[0] && this.isStatusBarMessage(c.contents[0]);
       default:
         return [...validMessageTags, ...this.includeBeginSkillTest].includes(c.tag);
     }

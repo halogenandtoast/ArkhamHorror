@@ -96,7 +96,11 @@ export default class Enemy extends Vue {
   }
 
   get damageAction() {
-    return this
+    const isRunDamage = this.choices.findIndex((c) => c.tag === MessageType.RUN
+      && c.contents[0]
+      && c.contents[0].tag === MessageType.ENEMY_DAMAGE
+      && c.contents[0].contents[0] === this.id);
+    return isRunDamage || this
       .choices
       .findIndex((c) => c.tag === MessageType.ENEMY_DAMAGE && c.contents[0] === this.id);
   }

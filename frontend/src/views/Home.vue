@@ -41,10 +41,12 @@ export default class Home extends Vue {
   private deleteId: string | null = null;
 
   deleteGameEvent() {
-    deleteGame(this.deleteId).then(() => {
-      this.games = this.games.filter((game) => game.id !== this.deleteId);
-      this.deleteId = null;
-    });
+    if (this.deleteId) {
+      deleteGame(this.deleteId).then(() => {
+        this.games = this.games.filter((game) => game.id !== this.deleteId);
+        this.deleteId = null;
+      });
+    }
   }
 
   async mounted() {

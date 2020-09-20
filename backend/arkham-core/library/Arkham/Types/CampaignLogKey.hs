@@ -11,6 +11,10 @@ data CampaignLogKey
   | CultistsWeInterrogated
   | CultistsWhoGotAway
   | ItIsPastMidnight
+  | ArkhamSuccumbedToUmordhothsTerribleVengeance
+  | TheRitualToSummonUmordhothWasBroken
+  | TheInvestigatorsRepelledUmordoth
+  | TheInvestigatorsSacrificedLitaChantlerToUmordhoth
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)
 

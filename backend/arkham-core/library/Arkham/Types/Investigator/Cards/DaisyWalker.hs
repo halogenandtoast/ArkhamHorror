@@ -47,6 +47,9 @@ instance HasActions env investigator DaisyWalker where
 
 instance (InvestigatorRunner Attrs env) => RunMessage env DaisyWalker where
   runMessage msg i@(DaisyWalker attrs@Attrs {..}) = case msg of
+    ResetGame -> do
+      attrs' <- runMessage msg attrs
+      pure $ DaisyWalker $ attrs' { investigatorTomeActions = Just 1 }
     ActivateCardAbilityAction iid ability@Ability {..}
       | iid == investigatorId && sourceIsAsset abilitySource -> do
         let (AssetSource aid) = abilitySource

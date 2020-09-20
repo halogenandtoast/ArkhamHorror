@@ -21,7 +21,7 @@ export const updateGame = (gameId: string, choice: number, gameHash: string) => 
   .then((resp) => gameDecoder.decodePromise(resp.data));
 
 export const deleteGame = (gameId: string) => api
-  .delete(`arkham/games/${gameId}`)
+  .delete(`arkham/games/${gameId}`);
 
 export const fetchGameRaw = (gameId: string) => api
   .get(`arkham/games/${gameId}`)

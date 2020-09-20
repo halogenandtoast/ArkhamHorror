@@ -229,6 +229,6 @@ class (HasId InvestigatorId () investigator) => IsInvestigator investigator wher
   cardCount :: investigator -> Int
   discardableCardCount :: investigator -> Int
   canDo :: Action -> investigator -> Bool
-  hasActionsRemaining :: investigator -> Bool
+  hasActionsRemaining :: investigator -> Maybe Action -> HashSet Trait -> Bool
   canTakeDirectDamage :: investigator -> Bool
   discardOf :: investigator -> [PlayerCard]

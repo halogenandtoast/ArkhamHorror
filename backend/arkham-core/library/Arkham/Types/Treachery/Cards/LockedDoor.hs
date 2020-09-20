@@ -32,7 +32,9 @@ instance (IsInvestigator investigator) => HasActions env investigator LockedDoor
     [ ActivateCardAbilityAction
         (getId () i)
         (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 1 Nothing))
-    | Just (locationOf i) == treacheryAttachedLocation && hasActionsRemaining i
+    | Just (locationOf i)
+      == treacheryAttachedLocation
+      && hasActionsRemaining i Nothing treacheryTraits
     ]
   getActions _ _ _ = pure []
 

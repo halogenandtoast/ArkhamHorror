@@ -506,7 +506,11 @@ instance IsInvestigator Attrs where
   canFight _ a@Attrs {..} = canDo Action.Fight a
   canEngage enemy a@Attrs {..} =
     canDo Action.Engage a && getId () enemy `notElem` investigatorEngagedEnemies
-  hasActionsRemaining Attrs {..} = investigatorRemainingActions > 0
+  hasActionsRemaining Attrs {..} _actionType traits =
+    let
+      hasTomeActionsRemaining =
+        Tome `member` traits && maybe False (> 0) investigatorTomeActions
+    in investigatorRemainingActions > 0 || hasTomeActionsRemaining
   canTakeDirectDamage a = not (facingDefeat a)
 
 instance HasId InvestigatorId () Attrs where

@@ -32,7 +32,8 @@ instance (IsInvestigator investigator) => HasActions env investigator Burglary w
             1
             (ActionAbility 1 (Just Action.Investigate))
           )
-      | not assetExhausted && hasActionsRemaining i
+      | not assetExhausted
+        && hasActionsRemaining i (Just Action.Investigate) assetTraits
       ]
   getActions _ _ _ = pure []
 

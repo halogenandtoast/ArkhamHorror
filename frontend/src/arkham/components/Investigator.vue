@@ -113,7 +113,12 @@ export default class Investigator extends Vue {
   }
 
   get takeDamageAction() {
-    return this.choices.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DAMAGE);
+    const isRunDamage = this.choices.findIndex((c) => c.tag === MessageType.RUN
+      && c.contents[0]
+      && c.contents[0].tag === MessageType.INVESTIGATOR_ASSIGN_DAMAGE
+      && c.contents[0].contents[0] === this.id);
+    return isRunDamage
+      || this.choices.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DAMAGE);
   }
 
   get healthAction() {

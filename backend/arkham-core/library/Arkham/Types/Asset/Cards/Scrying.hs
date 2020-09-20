@@ -32,7 +32,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Scrying 
       [ ActivateCardAbilityAction
           (getId () i)
           (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
-      | useCount assetUses > 0
+      | useCount assetUses > 0 && hasActionsRemaining i Nothing assetTraits
       ]
   getActions _ _ _ = pure []
 

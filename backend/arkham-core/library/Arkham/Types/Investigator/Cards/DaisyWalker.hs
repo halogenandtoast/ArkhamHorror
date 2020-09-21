@@ -13,7 +13,6 @@ import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
 import ClassyPrelude
 import Data.Aeson
 import qualified Data.HashMap.Strict as HashMap

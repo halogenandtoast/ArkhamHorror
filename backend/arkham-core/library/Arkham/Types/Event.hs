@@ -3,6 +3,7 @@ module Arkham.Types.Event
   ( lookupEvent
   , Event(..)
   , ownerOfEvent
+  , eventAttrs
   )
 where
 

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ef12369b5fad1ff75276092f91f54d792132345f4c6174e322de4b402d08fff2
+-- hash: 60a9dc8e6f424bd0227c027ce0cda4a3b631703b845ca68a12a0a5e24405c280
 
 name:           arkham-core
 version:        0.0.0
@@ -362,4 +362,26 @@ library
     , unordered-containers >=0.2.12.0
     , uuid
     , vector
+  default-language: Haskell2010
+
+test-suite spec
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Arkham.Types.Event.Cards.EmergencyCacheSpec
+      TestImport
+      Paths_arkham_core
+  hs-source-dirs:
+      tests
+  default-extensions: NoImplicitPrelude NamedFieldPuns RecordWildCards DerivingStrategies DeriveGeneric DeriveAnyClass LambdaCase FlexibleInstances MultiParamTypeClasses GeneralizedNewtypeDeriving OverloadedStrings TypeApplications TypeOperators TupleSections FlexibleContexts ConstraintKinds StandaloneDeriving DerivingVia TypeFamilies
+  ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
+  build-depends:
+      arkham-core
+    , base >=4.7 && <5
+    , classy-prelude
+    , hspec
+    , hspec-core
+    , microlens
+    , unordered-containers >=0.2.12.0
+    , uuid
   default-language: Haskell2010

@@ -5,7 +5,6 @@ import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
-import Arkham.Types.Event.Runner
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
@@ -93,7 +92,7 @@ weaknessAttrs iid eid cardCode =
 instance HasActions env investigator Attrs where
   getActions _ _ _ = pure []
 
-instance (EventRunner env) => RunMessage env Attrs where
+instance HasQueue env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     InvestigatorEliminated iid | eventAttachedInvestigator == Just iid ->
       a <$ unshiftMessage (Discard (EventTarget eventId))

@@ -8,7 +8,7 @@ import TestImport
 
 spec :: Spec
 spec = do
-  describe "Emegency cache" $ do
+  describe "Emergency Cache" $ do
 
     let
       investigatorId = "01001"

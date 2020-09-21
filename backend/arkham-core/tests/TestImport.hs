@@ -1,16 +1,11 @@
 module TestImport
   ( module X
-  , newEvent
-  , newLocation
-  , newEnemy
-  , newInvestigator
-  , newScenario
-  , runGameTest
-  , runGameTestOnlyOption
+  , module TestImport
   )
 where
 
-import Arkham.Types.Card.CardCode
+import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes as X
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy as X
@@ -116,3 +111,35 @@ newGame investigator queue = do
     , gameHash = UUID.nil
     }
   where investigatorId = getInvestigatorId investigator
+
+isInDiscardOf
+  :: (ToPlayerCard entity) => Game queue -> Investigator -> entity -> Bool
+isInDiscardOf game investigator entity = card `elem` discard'
+ where
+  discard' = game ^?! investigators . ix (getId () investigator) . to discardOf
+  card = asPlayerCard entity
+
+class ToPlayerCard a where
+  asPlayerCard :: a -> PlayerCard
+
+class ToEncounterCard a where
+  asEncounterCard :: a -> EncounterCard
+
+instance ToPlayerCard Event where
+  asPlayerCard event =
+    lookupPlayerCard (getCardCode event) (CardId . unEventId $ getId () event)
+
+isInEncounterDiscard :: (ToEncounterCard entity) => Game queue -> entity -> Bool
+isInEncounterDiscard game entity = card `elem` discard'
+ where
+  discard' = game ^. discard
+  card = asEncounterCard entity
+
+instance ToEncounterCard Enemy where
+  asEncounterCard enemy = lookupEncounterCard
+    (getCardCode enemy)
+    (CardId . unEnemyId $ getId () enemy)
+
+updatedResourceCount :: Game queue -> Investigator -> Int
+updatedResourceCount game investigator = game ^?! investigators . ix (getId () investigator) . to resourceCount
+

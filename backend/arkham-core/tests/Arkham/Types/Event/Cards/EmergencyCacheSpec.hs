@@ -21,8 +21,4 @@ spec = do
         event = lookupEvent "01088" investigatorId eventId
         game = newGame investigator queue
       g' <- runMessages $ game & events %~ insertMap eventId event
-      g'
-        ^?! investigators
-        . ix investigatorId
-        . to (resourceCount . investigatorAttrs)
-        `shouldBe` 3
+      g' ^?! investigators . ix investigatorId . to resourceCount `shouldBe` 3

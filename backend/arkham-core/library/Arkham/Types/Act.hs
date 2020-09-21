@@ -22,8 +22,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Helpers
 import ClassyPrelude
 import Data.Coerce
-import Generics.SOP hiding (Generic)
-import qualified Generics.SOP as SOP
 import Safe (fromJustNote)
 
 data Act
@@ -35,7 +33,7 @@ data Act
   | IntoTheDarkness' IntoTheDarkness
   | DisruptingTheRitual' DisruptingTheRitual
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, SOP.Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Act
 deriving anyclass instance (ActRunner env) => RunMessage env Act
@@ -59,15 +57,11 @@ allActs = mapFromList $ map
   ]
 
 actAttrs :: Act -> Attrs
-actAttrs = getAttrs
-
-class (Coercible a Attrs) => IsAttrs a
-instance (Coercible a Attrs) => IsAttrs a
-
-getAttrs :: (All2 IsAttrs (Code a), SOP.Generic a) => a -> Attrs
-getAttrs a = go (unSOP $ from a)
- where
-  go :: (All2 IsAttrs xs) => NS (NP I) xs -> Attrs
-  go (S next) = go next
-  go (Z (I x :* _)) = coerce x
-  go (Z Nil) = error "should not happen"
+actAttrs = \case
+  Trapped' attrs -> coerce attrs
+  TheBarrier' attrs -> coerce attrs
+  WhatHaveYouDone' attrs -> coerce attrs
+  UncoveringTheConspiracy' attrs -> coerce attrs
+  InvestigatingTheTrail' attrs -> coerce attrs
+  IntoTheDarkness' attrs -> coerce attrs
+  DisruptingTheRitual' attrs -> coerce attrs

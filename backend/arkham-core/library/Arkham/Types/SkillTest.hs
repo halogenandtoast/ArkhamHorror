@@ -28,6 +28,7 @@ import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Lens.Micro
+import System.Environment
 
 data SkillTest a = SkillTest
   { skillTestInvestigator    :: InvestigatorId
@@ -341,7 +342,9 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
             + skillIconCount s
             + skillValueModifiers s
       unshiftMessage SkillTestResults
-      putStrLn
+      liftIO $ whenM
+        (isJust <$> lookupEnv "DEBUG")
+        (putStrLn
         . pack
         $ "skill value: "
         <> show skillValue
@@ -356,6 +359,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         <> show modifiedSkillValue'
         <> "\nDifficulty: "
         <> show skillTestDifficulty
+        )
       if modifiedSkillValue' >= skillTestDifficulty
         then pure $ s & result .~ SucceededBy
           (modifiedSkillValue' - skillTestDifficulty)

@@ -1685,7 +1685,9 @@ runMessages :: (MonadIO m, MonadFail m) => GameInternal -> m GameExternal
 runMessages g = if g ^. gameOver || g ^. pending
   then toExternalGame g mempty
   else flip runReaderT g $ do
-    liftIO $ readIORef (gameMessages g) >>= pPrint
+    liftIO $ whenM
+      (isJust <$> lookupEnv "DEBUG")
+      (readIORef (gameMessages g) >>= pPrint)
     mmsg <- popMessage
     case mmsg of
       Nothing -> case gamePhase g of

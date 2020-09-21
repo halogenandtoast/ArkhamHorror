@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 206d92bd50abe9d84a57e6e2d27aa5aec4d4b8a5c2ee06cb92093ad404c66d9f
+-- hash: a17350ea27db697a589df96c799466d4acdb6a4090f155060711fea3cad1dd34
 
 name:           arkham-core
 version:        0.0.0
@@ -367,6 +367,7 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Arkham.Types.Event.Cards.BackstabSpec
       Arkham.Types.Event.Cards.EmergencyCacheSpec
       TestImport
       Paths_arkham_core
@@ -380,6 +381,7 @@ test-suite spec
     , classy-prelude
     , hspec
     , hspec-core
+    , hspec-expectations
     , microlens
     , unordered-containers >=0.2.12.0
     , uuid

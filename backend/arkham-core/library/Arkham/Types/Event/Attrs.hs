@@ -38,6 +38,9 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "event"
 
+instance HasId EventId () Attrs where
+  getId _ Attrs {..} = eventId
+
 resolved :: Lens' Attrs Bool
 resolved = lens eventResolved $ \m x -> m { eventResolved = x }
 

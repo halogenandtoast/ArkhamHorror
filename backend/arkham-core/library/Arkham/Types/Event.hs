@@ -57,6 +57,9 @@ deriving anyclass instance (EventRunner env) => RunMessage env Event
 instance HasCardCode Event where
   getCardCode = eventCardCode . eventAttrs
 
+instance HasId EventId () Event where
+  getId _ = getId () . eventAttrs
+
 lookupEvent :: CardCode -> (InvestigatorId -> EventId -> Event)
 lookupEvent cardCode =
   fromJustNote ("Unknown event: " <> show cardCode) $ lookup cardCode allEvents

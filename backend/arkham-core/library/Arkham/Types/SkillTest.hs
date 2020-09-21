@@ -341,6 +341,21 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
             + skillIconCount s
             + skillValueModifiers s
       unshiftMessage SkillTestResults
+      putStrLn
+        . pack
+        $ "skill value: "
+        <> show skillValue
+        <> "\n+ totaled token values: "
+        <> show totaledTokenValues
+        <> "\n+ skill icon count: "
+        <> show (skillIconCount s)
+        <> "\n+ skill value modifiers: "
+        <> show (skillValueModifiers s)
+        <> "\n-------------------------"
+        <> "\n= Modified skill value: "
+        <> show modifiedSkillValue'
+        <> "\nDifficulty: "
+        <> show skillTestDifficulty
       if modifiedSkillValue' >= skillTestDifficulty
         then pure $ s & result .~ SucceededBy
           (modifiedSkillValue' - skillTestDifficulty)

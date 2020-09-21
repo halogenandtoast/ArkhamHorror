@@ -13,6 +13,11 @@ module Arkham.Types.Game
   , GameInternal
   , events
   , investigators
+  , locations
+  , enemies
+  , chaosBag
+  , scenario
+  , discard
   )
 where
 

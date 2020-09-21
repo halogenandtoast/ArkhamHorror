@@ -57,6 +57,7 @@ tests:
       - arkham-core
       - hspec
       - hspec-core
+      - hspec-expectations
       - microlens
       - uuid
       - unordered-containers >= 0.2.12.0

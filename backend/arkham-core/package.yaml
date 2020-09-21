@@ -47,3 +47,17 @@ library:
     - MonadRandom
     - extra
     - generics-sop
+
+tests:
+  spec:
+    main: Spec.hs
+    source-dirs: tests
+    ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
+    dependencies:
+      - classy-prelude
+      - arkham-core
+      - hspec
+      - hspec-core
+      - microlens
+      - uuid
+      - unordered-containers >= 0.2.12.0

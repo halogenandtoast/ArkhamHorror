@@ -11,6 +11,8 @@ module Arkham.Types.Game
   , Game(..)
   , GameExternal
   , GameInternal
+  , events
+  , investigators
   )
 where
 

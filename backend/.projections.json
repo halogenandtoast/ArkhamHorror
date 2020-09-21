@@ -1,0 +1,29 @@
+{
+  "arkham-core/library/Arkham/Types/*.hs": {
+    "type": "core",
+    "alternate": "arkham-core/tests/Arkham/Types/{}Spec.hs",
+    "template": [
+      "module FrontRow.Core.{dot}",
+      "  ( undefined",
+      "  )",
+      "where",
+      "",
+      "import Prelude",
+      ""
+    ]
+  },
+  "arkham-core/tests/Arkham/Types/*Spec.hs": {
+    "alternate": "arkham-core/library/Arkham/Types/{}.hs",
+    "template": [
+      "module Arkham.Types.{dot}Spec",
+      "  ( spec",
+      "  )",
+      "where",
+      "",
+      "import TestImport",
+      "",
+      "spec :: Spec",
+      "spec = undefined"
+    ]
+  }
+}

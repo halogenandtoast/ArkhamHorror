@@ -5,8 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Card
-import Arkham.Types.Card.Id
 import Arkham.Types.Difficulty
 import Arkham.Types.Helpers
 import Arkham.Types.Token
@@ -41,32 +39,3 @@ spec = do
       -- We expect the skill check to succeed and the enemy to be defeated
       ravenousGhoul `shouldSatisfy` isInEncounterDiscard game
       backstab `shouldSatisfy` isInDiscardOf game wendyAdams
-
-isInDiscardOf
-  :: (ToPlayerCard entity) => Game queue -> Investigator -> entity -> Bool
-isInDiscardOf game investigator entity = card `elem` discard'
- where
-  discard' = game ^?! investigators . ix (getId () investigator) . to discardOf
-  card = asPlayerCard entity
-
-class ToPlayerCard a where
-  asPlayerCard :: a -> PlayerCard
-
-class ToEncounterCard a where
-  asEncounterCard :: a -> EncounterCard
-
-instance ToPlayerCard Event where
-  asPlayerCard event =
-    lookupPlayerCard (getCardCode event) (CardId . unEventId $ getId () event)
-
-isInEncounterDiscard :: (ToEncounterCard entity) => Game queue -> entity -> Bool
-isInEncounterDiscard game entity = card `elem` discard'
- where
-  discard' = game ^. discard
-  card = asEncounterCard entity
-
-instance ToEncounterCard Enemy where
-  asEncounterCard enemy = lookupEncounterCard
-    (getCardCode enemy)
-    (CardId . unEnemyId $ getId () enemy)
-

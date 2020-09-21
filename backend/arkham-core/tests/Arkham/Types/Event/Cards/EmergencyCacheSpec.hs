@@ -12,4 +12,4 @@ spec = do
         investigator
         [InvestigatorPlayEvent investigatorId eventId]
         (events %~ insertMap eventId event)
-      game ^?! investigators . ix investigatorId . to resourceCount `shouldBe` 3
+      updatedResourceCount game investigator `shouldBe` 3

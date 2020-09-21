@@ -46,7 +46,6 @@ library:
     - vector
     - MonadRandom
     - extra
-    - generics-sop
 
 tests:
   spec:

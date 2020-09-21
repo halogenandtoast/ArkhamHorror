@@ -47,8 +47,6 @@ import Arkham.Types.Prey
 import Arkham.Types.Query
 import ClassyPrelude
 import Data.Coerce
-import Generics.SOP hiding (Generic)
-import qualified Generics.SOP as SOP
 import Safe (fromJustNote)
 
 data Enemy
@@ -77,7 +75,7 @@ data Enemy
   | GoatSpawn' GoatSpawn
   | YoungDeepOne' YoungDeepOne
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, SOP.Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Enemy
 
@@ -167,15 +165,28 @@ isBlanked Blanked{} = True
 isBlanked _ = False
 
 enemyAttrs :: Enemy -> Attrs
-enemyAttrs = getAttrs
-
-getAttrs :: (All2 IsAttrs (Code a), SOP.Generic a) => a -> Attrs
-getAttrs a = go (unSOP $ from a)
- where
-  go :: (All2 IsAttrs xs) => NS (NP I) xs -> Attrs
-  go (S next) = go next
-  go (Z (I x :* _)) = coerce x
-  go (Z Nil) = error "should not happen"
-
-class (Coercible a Attrs) => IsAttrs a
-instance (Coercible a Attrs) => IsAttrs a
+enemyAttrs = \case
+  MobEnforcer' attrs -> coerce attrs
+  SilverTwilightAcolyte' attrs -> coerce attrs
+  StubbornDetective' attrs -> coerce attrs
+  GhoulPriest' attrs -> coerce attrs
+  FleshEater' attrs -> coerce attrs
+  IcyGhoul' attrs -> coerce attrs
+  TheMaskedHunter' attrs -> coerce attrs
+  WolfManDrew' attrs -> coerce attrs
+  HermanCollins' attrs -> coerce attrs
+  PeterWarren' attrs -> coerce attrs
+  VictoriaDevereux' attrs -> coerce attrs
+  RuthTurner' attrs -> coerce attrs
+  Umordhoth' attrs -> coerce attrs
+  SwarmOfRats' attrs -> coerce attrs
+  GhoulMinion' attrs -> coerce attrs
+  RavenousGhoul' attrs -> coerce attrs
+  Acolyte' attrs -> coerce attrs
+  WizardOfTheOrder' attrs -> coerce attrs
+  HuntingNightgaunt' attrs -> coerce attrs
+  ScreechingByakhee' attrs -> coerce attrs
+  YithianObserver' attrs -> coerce attrs
+  RelentlessDarkYoung' attrs -> coerce attrs
+  GoatSpawn' attrs -> coerce attrs
+  YoungDeepOne' attrs -> coerce attrs

@@ -17,8 +17,6 @@ import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import ClassyPrelude
 import Data.Coerce
-import Generics.SOP hiding (Generic)
-import qualified Generics.SOP as SOP
 import Safe (fromJustNote)
 
 data Event
@@ -51,7 +49,7 @@ data Event
   | HotStreak2' HotStreak2
   | MindWipe3' MindWipe3
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, SOP.Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance HasActions env investigator Event
 deriving anyclass instance (EventRunner env) => RunMessage env Event
@@ -99,16 +97,32 @@ ownerOfEvent :: Event -> InvestigatorId
 ownerOfEvent = eventOwner . eventAttrs
 
 eventAttrs :: Event -> Attrs
-eventAttrs = getAttrs
-
-getAttrs :: (All2 IsAttrs (Code a), SOP.Generic a) => a -> Attrs
-getAttrs a = go (unSOP $ from a)
- where
-  go :: (All2 IsAttrs xs) => NS (NP I) xs -> Attrs
-  go (S next) = go next
-  go (Z (I x :* _)) = coerce x
-  go (Z Nil) = error "should not happen"
-
-class (Coercible a Attrs) => IsAttrs a
-instance (Coercible a Attrs) => IsAttrs a
-
+eventAttrs = \case
+  OnTheLam' attrs -> coerce attrs
+  DarkMemory' attrs -> coerce attrs
+  Evidence' attrs -> coerce attrs
+  Dodge' attrs -> coerce attrs
+  DynamiteBlast' attrs -> coerce attrs
+  ExtraAmmunition1' attrs -> coerce attrs
+  MindOverMatter' attrs -> coerce attrs
+  WorkingAHunch' attrs -> coerce attrs
+  Barricade' attrs -> coerce attrs
+  CrypticResearch4' attrs -> coerce attrs
+  Elusive' attrs -> coerce attrs
+  Backstab' attrs -> coerce attrs
+  SneakAttack' attrs -> coerce attrs
+  SureGamble3' attrs -> coerce attrs
+  HotStreak4' attrs -> coerce attrs
+  DrawnToTheFlame' attrs -> coerce attrs
+  WardOfProtection' attrs -> coerce attrs
+  BlindingLight' attrs -> coerce attrs
+  MindWipe1' attrs -> coerce attrs
+  BlindingLight2' attrs -> coerce attrs
+  CunningDistraction' attrs -> coerce attrs
+  LookWhatIFound' attrs -> coerce attrs
+  Lucky' attrs -> coerce attrs
+  EmergencyCache' attrs -> coerce attrs
+  DynamiteBlast2' attrs -> coerce attrs
+  Barricade3' attrs -> coerce attrs
+  HotStreak2' attrs -> coerce attrs
+  MindWipe3' attrs -> coerce attrs

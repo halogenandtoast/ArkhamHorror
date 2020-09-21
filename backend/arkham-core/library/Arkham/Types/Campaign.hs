@@ -15,15 +15,13 @@ import Arkham.Types.Difficulty
 import Arkham.Types.Token
 import ClassyPrelude
 import Data.Coerce
-import Generics.SOP hiding (Generic)
-import qualified Generics.SOP as SOP
 import Safe (fromJustNote)
 
 data Campaign
   = NightOfTheZealot' NightOfTheZealot
   | TheDunwichLegacy' TheDunwichLegacy
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, SOP.Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (CampaignRunner env) => RunMessage env Campaign
 
@@ -48,15 +46,6 @@ chaosBagOf :: Campaign -> [Token]
 chaosBagOf = campaignChaosBag . campaignAttrs
 
 campaignAttrs :: Campaign -> Attrs
-campaignAttrs = getAttrs
-
-getAttrs :: (All2 IsAttrs (Code a), SOP.Generic a) => a -> Attrs
-getAttrs a = go (unSOP $ from a)
- where
-  go :: (All2 IsAttrs xs) => NS (NP I) xs -> Attrs
-  go (S next) = go next
-  go (Z (I x :* _)) = coerce x
-  go (Z Nil) = error "should not happen"
-
-class (Coercible a Attrs) => IsAttrs a
-instance (Coercible a Attrs) => IsAttrs a
+campaignAttrs = \case
+  NightOfTheZealot' attrs -> coerce attrs
+  TheDunwichLegacy' attrs -> coerce attrs

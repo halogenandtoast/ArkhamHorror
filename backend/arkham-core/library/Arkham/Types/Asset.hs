@@ -23,8 +23,6 @@ import Arkham.Types.Query
 import Arkham.Types.Slot
 import ClassyPrelude
 import Data.Coerce
-import Generics.SOP hiding (Generic)
-import qualified Generics.SOP as SOP
 import Safe (fromJustNote)
 
 data Asset
@@ -84,7 +82,7 @@ data Asset
   | DigDeep2' DigDeep2
   | RabbitsFoot3' RabbitsFoot3
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, SOP.Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Asset
 deriving anyclass instance (AssetRunner env) => RunMessage env Asset
@@ -180,15 +178,59 @@ isSanityDamageable a = case assetSanity (assetAttrs a) of
   Just n -> n > assetSanityDamage (assetAttrs a)
 
 assetAttrs :: Asset -> Attrs
-assetAttrs = getAttrs
-
-getAttrs :: (All2 IsAttrs (Code a), SOP.Generic a) => a -> Attrs
-getAttrs a = go (unSOP $ from a)
- where
-  go :: (All2 IsAttrs xs) => NS (NP I) xs -> Attrs
-  go (S next) = go next
-  go (Z (I x :* _)) = coerce x
-  go (Z Nil) = error "should not happen"
-
-class (Coercible a Attrs) => IsAttrs a
-instance (Coercible a Attrs) => IsAttrs a
+assetAttrs = \case
+  Rolands38Special' attrs -> coerce attrs
+  DaisysToteBag' attrs -> coerce attrs
+  TheNecronomicon' attrs -> coerce attrs
+  HeirloomOfHyperborea' attrs -> coerce attrs
+  WendysAmulet' attrs -> coerce attrs
+  FortyFiveAutomatic' attrs -> coerce attrs
+  PhysicalTraining' attrs -> coerce attrs
+  BeatCop' attrs -> coerce attrs
+  FirstAid' attrs -> coerce attrs
+  Machete' attrs -> coerce attrs
+  GuardDog' attrs -> coerce attrs
+  PoliceBadge2' attrs -> coerce attrs
+  BeatCop2' attrs -> coerce attrs
+  Shotgun4' attrs -> coerce attrs
+  MagnifyingGlass' attrs -> coerce attrs
+  OldBookOfLore' attrs -> coerce attrs
+  ResearchLibrarian' attrs -> coerce attrs
+  DrMilanChristopher' attrs -> coerce attrs
+  Hyperawareness' attrs -> coerce attrs
+  MedicalTexts' attrs -> coerce attrs
+  MagnifyingGlass1' attrs -> coerce attrs
+  DiscOfItzamna2' attrs -> coerce attrs
+  Encyclopedia2' attrs -> coerce attrs
+  Switchblade' attrs -> coerce attrs
+  Burglary' attrs -> coerce attrs
+  Pickpocketing' attrs -> coerce attrs
+  FortyOneDerringer' attrs -> coerce attrs
+  LeoDeLuca' attrs -> coerce attrs
+  HardKnocks' attrs -> coerce attrs
+  LeoDeLuca1' attrs -> coerce attrs
+  CatBurgler1' attrs -> coerce attrs
+  ForbiddenKnowledge' attrs -> coerce attrs
+  HolyRosary' attrs -> coerce attrs
+  Shrivelling' attrs -> coerce attrs
+  Scrying' attrs -> coerce attrs
+  ArcaneStudies' attrs -> coerce attrs
+  ArcaneInitiate' attrs -> coerce attrs
+  BookOfShadows3' attrs -> coerce attrs
+  LeatherCoat' attrs -> coerce attrs
+  Scavenging' attrs -> coerce attrs
+  BaseballBat' attrs -> coerce attrs
+  RabbitsFoot' attrs -> coerce attrs
+  StrayCat' attrs -> coerce attrs
+  DigDeep' attrs -> coerce attrs
+  Knife' attrs -> coerce attrs
+  Flashlight' attrs -> coerce attrs
+  LitaChantler' attrs -> coerce attrs
+  PhysicalTraining2' attrs -> coerce attrs
+  Hyperawareness2' attrs -> coerce attrs
+  HardKnocks2' attrs -> coerce attrs
+  ArcaneStudies2' attrs -> coerce attrs
+  GrotesqueStatue4' attrs -> coerce attrs
+  DigDeep2' attrs -> coerce attrs
+  RabbitsFoot3' attrs -> coerce attrs
+  Bandolier' attrs -> coerce attrs

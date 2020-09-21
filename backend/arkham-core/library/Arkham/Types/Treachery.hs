@@ -19,8 +19,6 @@ import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Data.Coerce
-import Generics.SOP hiding (Generic)
-import qualified Generics.SOP as SOP
 import Safe (fromJustNote)
 
 data Treachery
@@ -49,7 +47,7 @@ data Treachery
   | OfferOfPower' OfferOfPower
   | DreamsOfRlyeh' DreamsOfRlyeh
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, SOP.Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Treachery
 deriving anyclass instance (TreacheryRunner env) => RunMessage env Treachery
@@ -106,15 +104,28 @@ treacheryLocation :: Treachery -> Maybe LocationId
 treacheryLocation = treacheryAttachedLocation . treacheryAttrs
 
 treacheryAttrs :: Treachery -> Attrs
-treacheryAttrs = getAttrs
-
-getAttrs :: (All2 IsAttrs (Code a), SOP.Generic a) => a -> Attrs
-getAttrs a = go (unSOP $ from a)
- where
-  go :: (All2 IsAttrs xs) => NS (NP I) xs -> Attrs
-  go (S next) = go next
-  go (Z (I x :* _)) = coerce x
-  go (Z Nil) = error "should not happen"
-
-class (Coercible a Attrs) => IsAttrs a
-instance (Coercible a Attrs) => IsAttrs a
+treacheryAttrs = \case
+  CoverUp' attrs -> coerce attrs
+  HospitalDebts' attrs -> coerce attrs
+  AbandonedAndAlone' attrs -> coerce attrs
+  Amnesia' attrs -> coerce attrs
+  Paranoia' attrs -> coerce attrs
+  Haunted' attrs -> coerce attrs
+  Psychosis' attrs -> coerce attrs
+  Hypochondria' attrs -> coerce attrs
+  HuntingShadow' attrs -> coerce attrs
+  FalseLead' attrs -> coerce attrs
+  UmordhothsWrath' attrs -> coerce attrs
+  GraspingHands' attrs -> coerce attrs
+  AncientEvils' attrs -> coerce attrs
+  RottingRemains' attrs -> coerce attrs
+  FrozenInFear' attrs -> coerce attrs
+  DissonantVoices' attrs -> coerce attrs
+  CryptChill' attrs -> coerce attrs
+  ObscuringFog' attrs -> coerce attrs
+  MysteriousChanting' attrs -> coerce attrs
+  OnWingsOfDarkness' attrs -> coerce attrs
+  LockedDoor' attrs -> coerce attrs
+  TheYellowSign' attrs -> coerce attrs
+  OfferOfPower' attrs -> coerce attrs
+  DreamsOfRlyeh' attrs -> coerce attrs

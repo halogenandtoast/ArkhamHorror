@@ -24,8 +24,6 @@ import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashSet as HashSet
-import Generics.SOP hiding (Generic)
-import qualified Generics.SOP as SOP
 import Safe (fromJustNote)
 
 data Location
@@ -54,7 +52,7 @@ data Location
   | ArkhamWoodsQuietGlade' ArkhamWoodsQuietGlade
   | RitualSite' RitualSite
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, SOP.Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Location
 deriving anyclass instance (LocationRunner env) => RunMessage env Location
@@ -144,15 +142,28 @@ isRevealed :: Location -> Bool
 isRevealed = locationRevealed . locationAttrs
 
 locationAttrs :: Location -> Attrs
-locationAttrs = getAttrs
-
-getAttrs :: (All2 IsAttrs (Code a), SOP.Generic a) => a -> Attrs
-getAttrs a = go (unSOP $ from a)
- where
-  go :: (All2 IsAttrs xs) => NS (NP I) xs -> Attrs
-  go (S next) = go next
-  go (Z (I x :* _)) = coerce x
-  go (Z Nil) = error "should not happen"
-
-class (Coercible a Attrs) => IsAttrs a
-instance (Coercible a Attrs) => IsAttrs a
+locationAttrs = \case
+  Study' attrs -> coerce attrs
+  Hallway' attrs -> coerce attrs
+  Attic' attrs -> coerce attrs
+  Cellar' attrs -> coerce attrs
+  Parlor' attrs -> coerce attrs
+  YourHouse' attrs -> coerce attrs
+  Rivertown' attrs -> coerce attrs
+  SouthsideHistoricalSociety' attrs -> coerce attrs
+  SouthsideMasBoardingHouse' attrs -> coerce attrs
+  StMarysHospital' attrs -> coerce attrs
+  MiskatonicUniversity' attrs -> coerce attrs
+  DowntownFirstBankOfArkham' attrs -> coerce attrs
+  DowntownArkhamAsylum' attrs -> coerce attrs
+  Easttown' attrs -> coerce attrs
+  Graveyard' attrs -> coerce attrs
+  Northside' attrs -> coerce attrs
+  MainPath' attrs -> coerce attrs
+  ArkhamWoodsUnhallowedGround' attrs -> coerce attrs
+  ArkhamWoodsTwistingPaths' attrs -> coerce attrs
+  ArkhamWoodsOldHouse' attrs -> coerce attrs
+  ArkhamWoodsCliffside' attrs -> coerce attrs
+  ArkhamWoodsTangledThicket' attrs -> coerce attrs
+  ArkhamWoodsQuietGlade' attrs -> coerce attrs
+  RitualSite' attrs -> coerce attrs

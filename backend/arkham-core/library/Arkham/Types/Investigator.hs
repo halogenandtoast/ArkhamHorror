@@ -37,8 +37,6 @@ import Arkham.Types.Token
 import ClassyPrelude
 import Data.Aeson
 import Data.Coerce
-import Generics.SOP hiding (Generic)
-import qualified Generics.SOP as SOP
 import Lens.Micro.Extras
 import Safe (fromJustNote)
 
@@ -86,7 +84,7 @@ data Investigator
   | WinifredHabbamock' WinifredHabbamock
   | ZoeySamaras' ZoeySamaras
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, SOP.Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 instance (ActionRunner env investigator) => HasActions env investigator Investigator where
   getActions i window investigator | any isBlank (getModifiers investigator) =
@@ -98,6 +96,26 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Investigator where
     | iid == getInvestigatorId i && any isBlank (getModifiers i) = i
     <$ runTest iid skillValue 0
   runMessage msg i = defaultRunMessage msg i
+
+instance IsInvestigator Investigator where
+  locationOf = locationOf . investigatorAttrs
+  canInvestigate location = canInvestigate location . investigatorAttrs
+  canMoveTo location = canMoveTo location . investigatorAttrs
+  canFight enemy = canFight enemy . investigatorAttrs
+  canEngage enemy = canEngage enemy . investigatorAttrs
+  canEvade enemy = canEvade enemy . investigatorAttrs
+  resourceCount = resourceCount . investigatorAttrs
+  clueCount = clueCount . investigatorAttrs
+  spendableClueCount = spendableClueCount . investigatorAttrs
+  cardCount = cardCount . investigatorAttrs
+  discardableCardCount = discardableCardCount . investigatorAttrs
+  canDo action = canDo action . investigatorAttrs
+  hasActionsRemaining i = hasActionsRemaining (investigatorAttrs i)
+  canTakeDirectDamage = canTakeDirectDamage . investigatorAttrs
+  discardOf = discardOf . investigatorAttrs
+
+instance HasId InvestigatorId () Investigator where
+  getId _ = getId () . investigatorAttrs
 
 instance HasCard () Investigator where
   getCard _ cardId =
@@ -279,15 +297,46 @@ remainingSanity i = modifiedSanity attrs - investigatorSanityDamage attrs
   where attrs = investigatorAttrs i
 
 investigatorAttrs :: Investigator -> Attrs
-investigatorAttrs = getAttrs
-
-getAttrs :: (All2 IsAttrs (Code a), SOP.Generic a) => a -> Attrs
-getAttrs a = go (unSOP $ from a)
- where
-  go :: (All2 IsAttrs xs) => NS (NP I) xs -> Attrs
-  go (S next) = go next
-  go (Z (I x :* _)) = coerce x
-  go (Z Nil) = error "should not happen"
-
-class (Coercible a Attrs) => IsAttrs a
-instance (Coercible a Attrs) => IsAttrs a
+investigatorAttrs = \case
+  AgnesBaker' attrs -> coerce attrs
+  AkachiOnyele' attrs -> coerce attrs
+  AmandaSharpe' attrs -> coerce attrs
+  AshcanPete' attrs -> coerce attrs
+  CalvinWright' attrs -> coerce attrs
+  CarolynFern' attrs -> coerce attrs
+  DaisyWalker' attrs -> coerce attrs
+  DexterDrake' attrs -> coerce attrs
+  DianaStanley' attrs -> coerce attrs
+  FatherMateo' attrs -> coerce attrs
+  FinnEdwards' attrs -> coerce attrs
+  HarveyWalters' attrs -> coerce attrs
+  JacquelineFine' attrs -> coerce attrs
+  JennyBarnes' attrs -> coerce attrs
+  JimCulver' attrs -> coerce attrs
+  JoeDiamond' attrs -> coerce attrs
+  LeoAnderson' attrs -> coerce attrs
+  LolaHayes' attrs -> coerce attrs
+  LukeRobinson' attrs -> coerce attrs
+  MandyThompson' attrs -> coerce attrs
+  MarieLambeau' attrs -> coerce attrs
+  MarkHarrigan' attrs -> coerce attrs
+  MinhThiPhan' attrs -> coerce attrs
+  NathanielCho' attrs -> coerce attrs
+  NormanWithers' attrs -> coerce attrs
+  PatriceHathaway' attrs -> coerce attrs
+  PrestonFairmont' attrs -> coerce attrs
+  RexMurphy' attrs -> coerce attrs
+  RitaYoung' attrs -> coerce attrs
+  RolandBanks' attrs -> coerce attrs
+  SefinaRousseau' attrs -> coerce attrs
+  SilasMarsh' attrs -> coerce attrs
+  SisterMary' attrs -> coerce attrs
+  SkidsOToole' attrs -> coerce attrs
+  StellaClark' attrs -> coerce attrs
+  TommyMuldoon' attrs -> coerce attrs
+  TonyMorgan' attrs -> coerce attrs
+  UrsulaDowns' attrs -> coerce attrs
+  WendyAdams' attrs -> coerce attrs
+  WilliamYorick' attrs -> coerce attrs
+  WinifredHabbamock' attrs -> coerce attrs
+  ZoeySamaras' attrs -> coerce attrs

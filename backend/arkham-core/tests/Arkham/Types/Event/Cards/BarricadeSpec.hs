@@ -13,14 +13,14 @@ spec = do
     it "should make the current location unenterable by non elites" $ do
       (locationId, location) <- testLocation "00000" id
       (investigatorId, investigator) <- testInvestigator "00000" id
-      (eventId, barricade) <- buildEvent "01038" investigatorId
+      (barricadeId, barricade) <- buildEvent "01038" investigatorId
       game <-
         runGameTest
           investigator
           [ MoveTo investigatorId locationId
-          , InvestigatorPlayEvent investigatorId eventId
+          , InvestigatorPlayEvent investigatorId barricadeId
           ]
-        $ (events %~ insertMap eventId barricade)
+        $ (events %~ insertMap barricadeId barricade)
         . (locations %~ insertMap locationId location)
       location `shouldSatisfy` hasModifier game CannotBeEnteredByNonElite
       barricade `shouldSatisfy` isAttachedTo game location
@@ -29,15 +29,15 @@ spec = do
       (locationId, location) <- testLocation "00000" id
       (investigatorId, investigator) <- testInvestigator "00000" id
       (investigator2Id, investigator2) <- testInvestigator "00001" id
-      (eventId, barricade) <- buildEvent "01038" investigatorId
+      (barricadeId, barricade) <- buildEvent "01038" investigatorId
       game <-
         runGameTest
           investigator
           [ MoveAllTo locationId
-          , InvestigatorPlayEvent investigatorId eventId
+          , InvestigatorPlayEvent investigatorId barricadeId
           , MoveFrom investigator2Id locationId
           ]
-        $ (events %~ insertMap eventId barricade)
+        $ (events %~ insertMap barricadeId barricade)
         . (locations %~ insertMap locationId location)
         . (investigators %~ insertMap investigator2Id investigator2)
       location `shouldSatisfy` not . hasModifier game CannotBeEnteredByNonElite

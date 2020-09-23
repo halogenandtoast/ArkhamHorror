@@ -1028,7 +1028,7 @@ runGameMessage msg g = case msg of
         queue' = flip map queue $ \case
           Damage EnemyJustEvadedTarget source n -> EnemyDamage eid iid source n
           msg' -> msg'
-      in pure (queue', ())
+      in (queue', ())
     pure g
   PlaceLocation lid -> do
     unshiftMessage (PlacedLocation lid)

@@ -21,17 +21,17 @@ spec = do
       (enemyId, enemy) <- testEnemy
         (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 3))
       (blindingLight2Id, blindingLight2) <- buildEvent "01069" investigatorId
-      (hallwayId, hallway) <- newLocation "01112"
+      (locationId, location) <- testLocation "00000" id
       game <-
         runGameTest
           investigator
-          [ EnemySpawn hallwayId enemyId
-          , MoveTo investigatorId hallwayId
+          [ EnemySpawn locationId enemyId
+          , MoveTo investigatorId locationId
           , InvestigatorPlayEvent investigatorId blindingLight2Id
           ]
           ((events %~ insertMap blindingLight2Id blindingLight2)
           . (enemies %~ insertMap enemyId enemy)
-          . (locations %~ insertMap hallwayId hallway)
+          . (locations %~ insertMap locationId location)
           . (chaosBag .~ Bag [MinusOne])
           . (scenario ?~ theGathering)
           )
@@ -47,17 +47,17 @@ spec = do
       (enemyId, enemy) <- testEnemy
         (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 3))
       (blindingLight2Id, blindingLight2) <- buildEvent "01069" investigatorId
-      (hallwayId, hallway) <- newLocation "01112"
+      (locationId, location) <- testLocation "00000" id
       game <-
         runGameTest
           investigator
-          [ EnemySpawn hallwayId enemyId
-          , MoveTo investigatorId hallwayId
+          [ EnemySpawn locationId enemyId
+          , MoveTo investigatorId locationId
           , InvestigatorPlayEvent investigatorId blindingLight2Id
           ]
           ((events %~ insertMap blindingLight2Id blindingLight2)
           . (enemies %~ insertMap enemyId enemy)
-          . (locations %~ insertMap hallwayId hallway)
+          . (locations %~ insertMap locationId location)
           . (chaosBag .~ Bag [MinusOne])
           . (scenario ?~ theGathering)
           )
@@ -78,17 +78,17 @@ spec = do
           (blindingLight2Id, blindingLight2) <- buildEvent
             "01069"
             investigatorId
-          (hallwayId, hallway) <- newLocation "01112"
+          (locationId, location) <- testLocation "00000" id
           game <-
             runGameTest
               investigator
-              [ EnemySpawn hallwayId enemyId
-              , MoveTo investigatorId hallwayId
+              [ EnemySpawn locationId enemyId
+              , MoveTo investigatorId locationId
               , InvestigatorPlayEvent investigatorId blindingLight2Id
               ]
               ((events %~ insertMap blindingLight2Id blindingLight2)
               . (enemies %~ insertMap enemyId enemy)
-              . (locations %~ insertMap hallwayId hallway)
+              . (locations %~ insertMap locationId location)
               . (chaosBag .~ Bag [token])
               . (scenario ?~ theDevourerBelow)
               )

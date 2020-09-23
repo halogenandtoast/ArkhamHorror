@@ -2,6 +2,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location
   ( lookupLocation
+  , baseLocation
   , isEmptyLocation
   , isRevealed
   , Location(..)
@@ -10,6 +11,8 @@ where
 
 import Arkham.Json
 import Arkham.Types.AssetId
+import Arkham.Types.GameValue
+import Arkham.Types.LocationSymbol
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
@@ -51,11 +54,34 @@ data Location
   | ArkhamWoodsTangledThicket' ArkhamWoodsTangledThicket
   | ArkhamWoodsQuietGlade' ArkhamWoodsQuietGlade
   | RitualSite' RitualSite
+  | BaseLocation' BaseLocation
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Location
 deriving anyclass instance (LocationRunner env) => RunMessage env Location
+
+newtype BaseLocation = BaseLocation Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+instance (ActionRunner env investigator) => HasActions env investigator BaseLocation where
+  getActions investigator window (BaseLocation attrs) =
+    getActions investigator window attrs
+
+instance (LocationRunner env) => RunMessage env BaseLocation where
+  runMessage msg (BaseLocation attrs) = BaseLocation <$> runMessage msg attrs
+
+baseLocation
+  :: LocationId
+  -> Text
+  -> Int
+  -> GameValue Int
+  -> LocationSymbol
+  -> [LocationSymbol]
+  -> (Attrs -> Attrs)
+  -> Location
+baseLocation a b c d e f func =
+  BaseLocation' . BaseLocation . func $ baseAttrs a b c d e f
 
 instance HasTraits Location where
   getTraits = locationTraits . locationAttrs
@@ -167,3 +193,4 @@ locationAttrs = \case
   ArkhamWoodsTangledThicket' attrs -> coerce attrs
   ArkhamWoodsQuietGlade' attrs -> coerce attrs
   RitualSite' attrs -> coerce attrs
+  BaseLocation' attrs -> coerce attrs

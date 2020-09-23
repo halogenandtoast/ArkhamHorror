@@ -9,6 +9,7 @@ module Arkham.Types.Investigator
   , isDefeated
   , remainingHealth
   , remainingSanity
+  , actionsRemaining
   , lookupInvestigator
   , handOf
   , deckOf
@@ -295,6 +296,9 @@ remainingHealth i = modifiedHealth attrs - investigatorHealthDamage attrs
 remainingSanity :: Investigator -> Int
 remainingSanity i = modifiedSanity attrs - investigatorSanityDamage attrs
   where attrs = investigatorAttrs i
+
+actionsRemaining :: Investigator -> Int
+actionsRemaining = investigatorRemainingActions . investigatorAttrs
 
 investigatorAttrs :: Investigator -> Attrs
 investigatorAttrs = \case

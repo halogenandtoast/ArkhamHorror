@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5cb5df5e0c81a1424e14506b3d6ea047b6b03f123d29fe4e197d4453bfa8581d
+-- hash: 508272324921957b3dbfb7446c0d8477cecf60b59667dfa6ae260f35db16f4c4
 
 name:           arkham-core
 version:        0.0.0
@@ -370,6 +370,7 @@ test-suite spec
       Arkham.Types.Event.Cards.BackstabSpec
       Arkham.Types.Event.Cards.Barricade3Spec
       Arkham.Types.Event.Cards.BarricadeSpec
+      Arkham.Types.Event.Cards.BlindingLightSpec
       Arkham.Types.Event.Cards.EmergencyCacheSpec
       TestImport
       Paths_arkham_core

@@ -76,6 +76,12 @@ damage = lens enemyDamage $ \m x -> m { enemyDamage = x }
 health :: Lens' Attrs (GameValue Int)
 health = lens enemyHealth $ \m x -> m { enemyHealth = x }
 
+fight :: Lens' Attrs Int
+fight = lens enemyFight $ \m x -> m { enemyFight = x }
+
+evade :: Lens' Attrs Int
+evade = lens enemyEvade $ \m x -> m { enemyEvade = x }
+
 modifiers :: Lens' Attrs (HashMap Source [Modifier])
 modifiers = lens enemyModifiers $ \m x -> m { enemyModifiers = x }
 

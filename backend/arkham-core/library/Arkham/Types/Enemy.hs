@@ -1,6 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy
   ( lookupEnemy
+  , baseEnemy
   , isEngaged
   , isExhausted
   , getEngagedInvestigators
@@ -74,8 +75,22 @@ data Enemy
   | RelentlessDarkYoung' RelentlessDarkYoung
   | GoatSpawn' GoatSpawn
   | YoungDeepOne' YoungDeepOne
+  | BaseEnemy' BaseEnemy
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+newtype BaseEnemy = BaseEnemy Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+baseEnemy :: EnemyId -> CardCode -> (Attrs -> Attrs) -> Enemy
+baseEnemy a b f = BaseEnemy' . BaseEnemy . f $ baseAttrs a b
+
+instance (IsInvestigator investigator) => HasActions env investigator BaseEnemy where
+  getActions investigator window (BaseEnemy attrs) =
+    getActions investigator window attrs
+
+instance (EnemyRunner env) => RunMessage env BaseEnemy where
+  runMessage msg (BaseEnemy attrs) = BaseEnemy <$> runMessage msg attrs
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Enemy
 
@@ -193,3 +208,4 @@ enemyAttrs = \case
   RelentlessDarkYoung' attrs -> coerce attrs
   GoatSpawn' attrs -> coerce attrs
   YoungDeepOne' attrs -> coerce attrs
+  BaseEnemy' attrs -> coerce attrs

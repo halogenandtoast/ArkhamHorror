@@ -68,7 +68,7 @@ spec = do
 
     it
         "On Skull, Cultist, Tablet, ElderThing, or AutoFail the investigator loses an action and takes 1 horror"
-      $ for_ [Skull]
+      $ for_ [Skull, Cultist, Tablet, ElderThing, AutoFail]
       $ \token -> do
           scenario' <- testScenario "00000" id
           (investigatorId, investigator) <- testInvestigator "00000" id
@@ -97,6 +97,4 @@ spec = do
             >>= runGameTestOnlyOption "take event damage"
           blindingLight2 `shouldSatisfy` isInDiscardOf game investigator
           investigator `shouldSatisfy` hasRemainingActions game 2
-          investigator `shouldSatisfy` hasDamage
-            game
-            (if token == Tablet then 1 else 0, 1)
+          investigator `shouldSatisfy` hasDamage game (0, 1)

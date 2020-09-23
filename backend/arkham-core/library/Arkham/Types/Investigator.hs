@@ -1,6 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator
   ( isPrey
+  , baseInvestigator
   , getEngagedEnemies
   , investigatorAttrs
   , hasEndedTurn
@@ -22,6 +23,7 @@ where
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.ClassSymbol
 import Arkham.Types.EnemyId
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
@@ -35,6 +37,7 @@ import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Stats
 import Arkham.Types.Token
+import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 import Data.Coerce
@@ -84,8 +87,25 @@ data Investigator
   | WilliamYorick' WilliamYorick
   | WinifredHabbamock' WinifredHabbamock
   | ZoeySamaras' ZoeySamaras
+  | BaseInvestigator' BaseInvestigator
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+baseInvestigator
+  :: InvestigatorId -> Text -> ClassSymbol -> Stats -> [Trait] -> Investigator
+baseInvestigator a b c d e =
+  BaseInvestigator' . BaseInvestigator $ baseAttrs a b c d e
+
+newtype BaseInvestigator = BaseInvestigator Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+instance HasActions env investigator BaseInvestigator where
+  getActions investigator window (BaseInvestigator attrs) =
+    getActions investigator window attrs
+
+instance (InvestigatorRunner Attrs env) => RunMessage env BaseInvestigator where
+  runMessage msg (BaseInvestigator attrs) =
+    BaseInvestigator <$> runMessage msg attrs
 
 instance (ActionRunner env investigator) => HasActions env investigator Investigator where
   getActions i window investigator | any isBlank (getModifiers investigator) =
@@ -141,6 +161,10 @@ instance HasInvestigatorStats Stats () Investigator where
     , agility = skillValueFor SkillAgility Nothing [] a
     }
     where a@Attrs {..} = investigatorAttrs i
+
+instance HasDamage Investigator where
+  getDamage i = (investigatorHealthDamage, investigatorSanityDamage)
+    where Attrs {..} = investigatorAttrs i
 
 instance HasSet EnemyId () Investigator where
   getSet _ = investigatorEngagedEnemies . investigatorAttrs
@@ -344,3 +368,4 @@ investigatorAttrs = \case
   WilliamYorick' attrs -> coerce attrs
   WinifredHabbamock' attrs -> coerce attrs
   ZoeySamaras' attrs -> coerce attrs
+  BaseInvestigator' attrs -> coerce attrs

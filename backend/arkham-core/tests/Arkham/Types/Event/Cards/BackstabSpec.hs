@@ -15,14 +15,14 @@ spec = do
     it "should use agility and do +2 damage" $ do
       theGathering <- newScenario Easy "01104"
       (locationId, study) <- newLocation "01111"
-      (investigatorId, wendyAdams) <- newInvestigator "01005"
-      -- Wendy adams has combat 1 and agility 4
+      (investigatorId, investigator) <- newInvestigator "00000"
+        $ \stats -> stats { combat = 1, agility = 4 }
       (eventId, backstab) <- newEvent "01051" investigatorId
       (enemyId, ravenousGhoul) <- newEnemy "01161"
       -- Ravenous Ghoul has 3 health
       game <-
         runGameTest
-          wendyAdams
+          investigator
           [ EnemySpawn locationId enemyId
           , MoveTo investigatorId locationId
           , InvestigatorPlayEvent investigatorId eventId
@@ -38,4 +38,4 @@ spec = do
         >>= runGameTestOnlyOption "Apply results"
       -- We expect the skill check to succeed and the enemy to be defeated
       ravenousGhoul `shouldSatisfy` isInEncounterDiscard game
-      backstab `shouldSatisfy` isInDiscardOf game wendyAdams
+      backstab `shouldSatisfy` isInDiscardOf game investigator

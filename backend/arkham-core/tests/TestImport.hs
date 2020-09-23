@@ -7,6 +7,7 @@ where
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes as X
+import Arkham.Types.ClassSymbol
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy as X
 import Arkham.Types.EnemyId as X
@@ -23,6 +24,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.Scenario as X
 import Arkham.Types.ScenarioId as X
+import Arkham.Types.Stats as X
 import Arkham.Types.Target
 import ClassyPrelude as X
 import Control.Monad.Fail as X
@@ -52,10 +54,12 @@ newLocation cardCode =
   let locationId = LocationId cardCode
   in pure (locationId, lookupLocation locationId)
 
-newInvestigator :: MonadIO m => CardCode -> m (InvestigatorId, Investigator)
-newInvestigator cardCode =
+newInvestigator :: MonadIO m => CardCode -> (Stats -> Stats) -> m (InvestigatorId, Investigator)
+newInvestigator cardCode statsF =
   let investigatorId = InvestigatorId cardCode
-  in pure (investigatorId, lookupInvestigator investigatorId)
+      name = unCardCode cardCode
+      stats = statsF (Stats 5 5 5 5 5 5)
+  in pure (investigatorId, baseInvestigator investigatorId name Neutral stats [])
 
 runGameTestOnlyOption
   :: (MonadFail m, MonadIO m) => String -> Game [Message] -> m (Game [Message])
@@ -143,6 +147,9 @@ instance Entity Event where
 instance Entity Enemy where
   toTarget = EnemyTarget . getId ()
 
+instance Entity Investigator where
+  toTarget = InvestigatorTarget . getId ()
+
 hasModifier :: (Entity a) => Game queue -> Modifier -> a -> Bool
 hasModifier game modifier a = modifier `elem` modifiers
   where
@@ -185,4 +192,5 @@ hasRemainingActions game n investigator =
 hasDamage :: (Entity a) => Game queue -> (Int, Int) -> a -> Bool
 hasDamage game n a = case toTarget a of
   EnemyTarget eid -> getDamage (game ^?! enemies . ix eid) == n
+  InvestigatorTarget iid -> getDamage (game ^?! investigators . ix iid) == n
   _ -> error "Not implemented"

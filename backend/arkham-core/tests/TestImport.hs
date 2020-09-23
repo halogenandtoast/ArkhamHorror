@@ -10,6 +10,7 @@ import Arkham.Types.Classes as X
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy as X
+import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
 import Arkham.Types.EnemyId as X
 import Arkham.Types.Event as X
 import Arkham.Types.EventId as X
@@ -44,10 +45,10 @@ newEvent cardCode investigatorId = do
   eventId <- liftIO $ EventId <$> nextRandom
   pure (eventId, lookupEvent cardCode investigatorId eventId)
 
-newEnemy :: MonadIO m => CardCode -> m (EnemyId, Enemy)
-newEnemy cardCode = do
+newEnemy :: MonadIO m => (EnemyAttrs.Attrs -> EnemyAttrs.Attrs) -> m (EnemyId, Enemy)
+newEnemy f = do
   enemyId <- liftIO $ EnemyId <$> nextRandom
-  pure (enemyId, lookupEnemy cardCode enemyId)
+  pure (enemyId, baseEnemy enemyId "00000" f)
 
 newLocation :: MonadIO m => CardCode -> m (LocationId, Location)
 newLocation cardCode =

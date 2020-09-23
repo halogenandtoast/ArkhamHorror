@@ -6,6 +6,8 @@ where
 import TestImport
 
 import Arkham.Types.Difficulty
+import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
+import Arkham.Types.GameValue
 import Arkham.Types.Helpers
 import Arkham.Types.Token
 
@@ -16,18 +18,19 @@ spec = do
       theGathering <- newScenario Easy "01104"
       (investigatorId, investigator) <- newInvestigator "00000"
         $ \stats -> stats { willpower = 5, agility = 3 }
-      (icyGhoulId, icyGhoul) <- newEnemy "01119"
+      (enemyId, enemy) <- newEnemy
+        (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
       (blindingLightId, blindingLight) <- newEvent "01066" investigatorId
       (hallwayId, hallway) <- newLocation "01112"
       game <-
         runGameTest
           investigator
-          [ EnemySpawn hallwayId icyGhoulId
+          [ EnemyMove enemyId "00000" hallwayId
           , MoveTo investigatorId hallwayId
           , InvestigatorPlayEvent investigatorId blindingLightId
           ]
           ((events %~ insertMap blindingLightId blindingLight)
-          . (enemies %~ insertMap icyGhoulId icyGhoul)
+          . (enemies %~ insertMap enemyId enemy)
           . (locations %~ insertMap hallwayId hallway)
           . (chaosBag .~ Bag [MinusOne])
           . (scenario ?~ theGathering)
@@ -36,23 +39,24 @@ spec = do
         >>= runGameTestOnlyOption "Run skill check"
         >>= runGameTestOnlyOption "Apply results"
       blindingLight `shouldSatisfy` isInDiscardOf game investigator
-      icyGhoul `shouldSatisfy` evadedBy game investigator
+      enemy `shouldSatisfy` evadedBy game investigator
 
     it "deals 1 damage to the evaded enemy" $ do
       theGathering <- newScenario Easy "01104"
       (investigatorId, investigator) <- newInvestigator "01004" id
-      (icyGhoulId, icyGhoul) <- newEnemy "01119"
+      (enemyId, enemy) <- newEnemy
+        (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
       (blindingLightId, blindingLight) <- newEvent "01066" investigatorId
       (hallwayId, hallway) <- newLocation "01112"
       game <-
         runGameTest
           investigator
-          [ EnemySpawn hallwayId icyGhoulId
+          [ EnemySpawn hallwayId enemyId
           , MoveTo investigatorId hallwayId
           , InvestigatorPlayEvent investigatorId blindingLightId
           ]
           ((events %~ insertMap blindingLightId blindingLight)
-          . (enemies %~ insertMap icyGhoulId icyGhoul)
+          . (enemies %~ insertMap enemyId enemy)
           . (locations %~ insertMap hallwayId hallway)
           . (chaosBag .~ Bag [MinusOne])
           . (scenario ?~ theGathering)
@@ -61,7 +65,7 @@ spec = do
         >>= runGameTestOnlyOption "Run skill check"
         >>= runGameTestOnlyOption "Apply results"
       blindingLight `shouldSatisfy` isInDiscardOf game investigator
-      icyGhoul `shouldSatisfy` hasDamage game (1, 0)
+      enemy `shouldSatisfy` hasDamage game (1, 0)
 
     it
         "On Skull, Cultist, Tablet, ElderThing, or AutoFail the investigator loses an action"
@@ -69,18 +73,19 @@ spec = do
       $ \token -> do
           theDevourerBelow <- newScenario Easy "01142"
           (investigatorId, investigator) <- newInvestigator "01004" id
-          (icyGhoulId, icyGhoul) <- newEnemy "01119"
+          (enemyId, enemy) <- newEnemy
+            (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
           (blindingLightId, blindingLight) <- newEvent "01066" investigatorId
           (hallwayId, hallway) <- newLocation "01112"
           game <-
             runGameTest
               investigator
-              [ EnemySpawn hallwayId icyGhoulId
+              [ EnemySpawn hallwayId enemyId
               , MoveTo investigatorId hallwayId
               , InvestigatorPlayEvent investigatorId blindingLightId
               ]
               ((events %~ insertMap blindingLightId blindingLight)
-              . (enemies %~ insertMap icyGhoulId icyGhoul)
+              . (enemies %~ insertMap enemyId enemy)
               . (locations %~ insertMap hallwayId hallway)
               . (chaosBag .~ Bag [token])
               . (scenario ?~ theDevourerBelow)
@@ -88,9 +93,5 @@ spec = do
             >>= runGameTestOnlyOption "Evade enemy"
             >>= runGameTestOnlyOption "Run skill check"
             >>= runGameTestOnlyOption "Apply results"
-            >>= (\game -> if token == Tablet
-                  then runGameTestOnlyOption "take damage" game
-                  else pure game
-                )
           blindingLight `shouldSatisfy` isInDiscardOf game investigator
           investigator `shouldSatisfy` hasRemainingActions game 2

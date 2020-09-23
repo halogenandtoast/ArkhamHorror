@@ -6,6 +6,8 @@ where
 import TestImport
 
 import Arkham.Types.Difficulty
+import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
+import Arkham.Types.GameValue
 import Arkham.Types.Helpers
 import Arkham.Types.Token
 
@@ -18,8 +20,8 @@ spec = do
       (investigatorId, investigator) <- newInvestigator "00000"
         $ \stats -> stats { combat = 1, agility = 4 }
       (eventId, backstab) <- newEvent "01051" investigatorId
-      (enemyId, ravenousGhoul) <- newEnemy "01161"
-      -- Ravenous Ghoul has 3 health
+      (enemyId, ravenousGhoul) <- newEnemy
+        (set EnemyAttrs.fight 3 . set EnemyAttrs.health (Static 3))
       game <-
         runGameTest
           investigator

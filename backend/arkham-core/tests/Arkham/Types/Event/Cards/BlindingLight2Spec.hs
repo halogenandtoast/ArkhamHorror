@@ -6,28 +6,31 @@ where
 import TestImport
 
 import Arkham.Types.Difficulty
+import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
+import Arkham.Types.GameValue
 import Arkham.Types.Helpers
 import Arkham.Types.Token
 
 spec :: Spec
 spec = do
-  describe "Blinding Light" $ do
+  describe "Blinding Light 2" $ do
     it "Uses willpower to evade an enemy" $ do
       theGathering <- newScenario Easy "01104"
       (investigatorId, investigator) <- newInvestigator "00000"
         $ \stats -> stats { willpower = 5, agility = 3 }
-      (icyGhoulId, icyGhoul) <- newEnemy "01119"
+      (enemyId, enemy) <- newEnemy
+        (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 3))
       (blindingLight2Id, blindingLight2) <- newEvent "01069" investigatorId
       (hallwayId, hallway) <- newLocation "01112"
       game <-
         runGameTest
           investigator
-          [ EnemySpawn hallwayId icyGhoulId
+          [ EnemySpawn hallwayId enemyId
           , MoveTo investigatorId hallwayId
           , InvestigatorPlayEvent investigatorId blindingLight2Id
           ]
           ((events %~ insertMap blindingLight2Id blindingLight2)
-          . (enemies %~ insertMap icyGhoulId icyGhoul)
+          . (enemies %~ insertMap enemyId enemy)
           . (locations %~ insertMap hallwayId hallway)
           . (chaosBag .~ Bag [MinusOne])
           . (scenario ?~ theGathering)
@@ -36,23 +39,24 @@ spec = do
         >>= runGameTestOnlyOption "Run skill check"
         >>= runGameTestOnlyOption "Apply results"
       blindingLight2 `shouldSatisfy` isInDiscardOf game investigator
-      icyGhoul `shouldSatisfy` evadedBy game investigator
+      enemy `shouldSatisfy` evadedBy game investigator
 
     it "deals 2 damage to the evaded enemy" $ do
       theGathering <- newScenario Easy "01104"
       (investigatorId, investigator) <- newInvestigator "00000" id
-      (icyGhoulId, icyGhoul) <- newEnemy "01119"
+      (enemyId, enemy) <- newEnemy
+        (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 3))
       (blindingLight2Id, blindingLight2) <- newEvent "01069" investigatorId
       (hallwayId, hallway) <- newLocation "01112"
       game <-
         runGameTest
           investigator
-          [ EnemySpawn hallwayId icyGhoulId
+          [ EnemySpawn hallwayId enemyId
           , MoveTo investigatorId hallwayId
           , InvestigatorPlayEvent investigatorId blindingLight2Id
           ]
           ((events %~ insertMap blindingLight2Id blindingLight2)
-          . (enemies %~ insertMap icyGhoulId icyGhoul)
+          . (enemies %~ insertMap enemyId enemy)
           . (locations %~ insertMap hallwayId hallway)
           . (chaosBag .~ Bag [MinusOne])
           . (scenario ?~ theGathering)
@@ -61,7 +65,7 @@ spec = do
         >>= runGameTestOnlyOption "Run skill check"
         >>= runGameTestOnlyOption "Apply results"
       blindingLight2 `shouldSatisfy` isInDiscardOf game investigator
-      icyGhoul `shouldSatisfy` hasDamage game (2, 0)
+      enemy `shouldSatisfy` hasDamage game (2, 0)
 
     it
         "On Skull, Cultist, Tablet, ElderThing, or AutoFail the investigator loses an action and takes 1 horror"
@@ -69,18 +73,19 @@ spec = do
       $ \token -> do
           theDevourerBelow <- newScenario Easy "01142"
           (investigatorId, investigator) <- newInvestigator "00000" id
-          (icyGhoulId, icyGhoul) <- newEnemy "01119"
+          (enemyId, enemy) <- newEnemy
+            (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 3))
           (blindingLight2Id, blindingLight2) <- newEvent "01069" investigatorId
           (hallwayId, hallway) <- newLocation "01112"
           game <-
             runGameTest
               investigator
-              [ EnemySpawn hallwayId icyGhoulId
+              [ EnemySpawn hallwayId enemyId
               , MoveTo investigatorId hallwayId
               , InvestigatorPlayEvent investigatorId blindingLight2Id
               ]
               ((events %~ insertMap blindingLight2Id blindingLight2)
-              . (enemies %~ insertMap icyGhoulId icyGhoul)
+              . (enemies %~ insertMap enemyId enemy)
               . (locations %~ insertMap hallwayId hallway)
               . (chaosBag .~ Bag [token])
               . (scenario ?~ theDevourerBelow)

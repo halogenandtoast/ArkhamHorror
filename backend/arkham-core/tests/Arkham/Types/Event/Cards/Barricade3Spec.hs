@@ -12,11 +12,11 @@ spec = do
   describe "Barricade 3" $ do
     it "should make the current location unenterable by non elites" $ do
       (locationId, study) <- newLocation "01111"
-      (investigatorId, daisyWalker) <- newInvestigator "01002"
+      (investigatorId, investigator) <- newInvestigator "00000" id
       (eventId, barricade3) <- newEvent "50004" investigatorId
       game <-
         runGameTest
-          daisyWalker
+          investigator
           [ MoveTo investigatorId locationId
           , InvestigatorPlayEvent investigatorId eventId
           ]
@@ -28,22 +28,22 @@ spec = do
 
     it "should be discarded if an investigator leaves the location" $ do
       (hallwayId, hallway) <- newLocation "01112"
-      (daisyWalkerId, daisyWalker) <- newInvestigator "01002"
-      (rolandBanksId, rolandBanks) <- newInvestigator "01001"
-      (eventId, barricade3) <- newEvent "01038" daisyWalkerId
+      (investigatorId, investigator) <- newInvestigator "00000" id
+      (investigator2Id, investigator2) <- newInvestigator "00001" id
+      (eventId, barricade3) <- newEvent "01038" investigatorId
       game <-
         runGameTest
-          daisyWalker
+          investigator
           [ MoveAllTo hallwayId
-          , InvestigatorPlayEvent daisyWalkerId eventId
-          , MoveFrom rolandBanksId hallwayId
+          , InvestigatorPlayEvent investigatorId eventId
+          , MoveFrom investigator2Id hallwayId
           ]
         $ (events %~ insertMap eventId barricade3)
         . (locations %~ insertMap hallwayId hallway)
-        . (investigators %~ insertMap rolandBanksId rolandBanks)
+        . (investigators %~ insertMap investigator2Id investigator2)
       hallway `shouldSatisfy` not . hasModifier game CannotBeEnteredByNonElite
       hallway
         `shouldSatisfy` not
         . hasModifier game SpawnNonEliteAtConnectingInstead
       barricade3 `shouldSatisfy` not . isAttachedTo game hallway
-      barricade3 `shouldSatisfy` isInDiscardOf game daisyWalker
+      barricade3 `shouldSatisfy` isInDiscardOf game investigator

@@ -6,7 +6,7 @@ spec :: Spec
 spec = do
   describe "Emergency Cache" $ do
     it "should increase the investigators resources by 3" $ do
-      (investigatorId, investigator) <- newInvestigator "01001"
+      (investigatorId, investigator) <- newInvestigator "00000" id
       (eventId, event) <- newEvent "01088" investigatorId
       game <- runGameTest
         investigator

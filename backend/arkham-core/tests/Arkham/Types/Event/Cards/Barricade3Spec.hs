@@ -9,7 +9,7 @@ import Arkham.Types.Modifier
 
 spec :: Spec
 spec = do
-  describe "Barricade" $ do
+  describe "Barricade 3" $ do
     it "should make the current location unenterable by non elites" $ do
       (locationId, study) <- newLocation "01111"
       (investigatorId, daisyWalker) <- newInvestigator "01002"

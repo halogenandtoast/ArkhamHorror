@@ -33,7 +33,7 @@ instance (EventRunner env) => RunMessage env BlindingLight where
         [ ChooseEvadeEnemy
           iid
           SkillWillpower
-          []
+          [Damage EnemyJustEvadedTarget (EventSource eid) 1]
           []
           [ OnAnyToken
               [ Token.Skull

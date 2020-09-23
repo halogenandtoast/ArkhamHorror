@@ -111,6 +111,9 @@ instance HasId EnemyId () Enemy where
 instance IsEnemy Enemy where
   isAloof = isAloof . enemyAttrs
 
+instance HasDamage Enemy where
+  getDamage = (, 0) . enemyDamage . enemyAttrs
+
 lookupEnemy :: CardCode -> (EnemyId -> Enemy)
 lookupEnemy = fromJustNote "Unkown enemy" . flip lookup allEnemies
 

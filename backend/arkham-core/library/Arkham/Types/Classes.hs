@@ -152,6 +152,9 @@ class HasModifiers a where
 class HasVictoryPoints a where
   getVictoryPoints :: a -> Maybe Int
 
+class HasDamage a where
+  getDamage :: a -> (Int, Int)
+
 instance HasVictoryPoints Card where
   getVictoryPoints (PlayerCard card) = getVictoryPoints card
   getVictoryPoints (EncounterCard card) = getVictoryPoints card

@@ -1023,7 +1023,7 @@ runGameMessage msg g = case msg of
     clearQueue
     pure $ g & gameOver .~ True
   EnemyEvaded iid eid -> do
-    void $ withQueue $ \queue ->
+    withQueue $ \queue ->
       let
         queue' = flip map queue $ \case
           Damage EnemyJustEvadedTarget source n -> EnemyDamage eid iid source n

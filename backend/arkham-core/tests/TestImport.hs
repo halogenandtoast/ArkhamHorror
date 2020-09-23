@@ -140,6 +140,9 @@ instance Entity Location where
 instance Entity Event where
   toTarget = EventTarget . getId ()
 
+instance Entity Enemy where
+  toTarget = EnemyTarget . getId ()
+
 hasModifier :: (Entity a) => Game queue -> Modifier -> a -> Bool
 hasModifier game modifier a = modifier `elem` modifiers
   where
@@ -169,3 +172,17 @@ instance ToEncounterCard Enemy where
 updatedResourceCount :: Game queue -> Investigator -> Int
 updatedResourceCount game investigator = game ^?! investigators . ix (getId () investigator) . to resourceCount
 
+evadedBy :: Game queue -> Investigator -> Enemy -> Bool
+evadedBy game _investigator enemy =
+  let enemy' = game ^?! enemies . ix (getId () enemy)
+  in not (isEngaged enemy') && isExhausted enemy'
+
+hasRemainingActions :: Game queue -> Int -> Investigator -> Bool
+hasRemainingActions game n investigator =
+  let investigator' = game ^?! investigators . ix (getId () investigator)
+  in actionsRemaining investigator' == n
+
+hasDamage :: (Entity a) => Game queue -> (Int, Int) -> a -> Bool
+hasDamage game n a = case toTarget a of
+  EnemyTarget eid -> getDamage (game ^?! enemies . ix eid) == n
+  _ -> error "Not implemented"

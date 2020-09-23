@@ -19,9 +19,11 @@ import Arkham.Types.InvestigatorId as X
 import Arkham.Types.Location as X
 import Arkham.Types.LocationId as X
 import Arkham.Types.Message as X
+import Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.Scenario as X
 import Arkham.Types.ScenarioId as X
+import Arkham.Types.Target
 import ClassyPrelude as X
 import Control.Monad.Fail as X
 import qualified Data.HashMap.Strict as HashMap
@@ -128,6 +130,30 @@ class ToEncounterCard a where
 instance ToPlayerCard Event where
   asPlayerCard event =
     lookupPlayerCard (getCardCode event) (CardId . unEventId $ getId () event)
+
+class Entity a where
+  toTarget :: a -> Target
+
+instance Entity Location where
+  toTarget = LocationTarget . getId ()
+
+instance Entity Event where
+  toTarget = EventTarget . getId ()
+
+hasModifier :: (Entity a) => Game queue -> Modifier -> a -> Bool
+hasModifier game modifier a = modifier `elem` modifiers
+  where
+    modifiers = case toTarget a of
+      LocationTarget locId -> game ^. locations . ix locId . to getModifiers
+      _ -> []
+
+isAttachedTo :: (Entity a, Entity b) => Game queue -> a -> b -> Bool
+isAttachedTo game x y = case toTarget x of
+  LocationTarget locId -> case toTarget y of
+    EventTarget eventId -> eventId `member` (game ^. locations . ix locId . to (getSet ()))
+    _ -> False
+  _ -> False
+
 
 isInEncounterDiscard :: (ToEncounterCard entity) => Game queue -> entity -> Bool
 isInEncounterDiscard game entity = card `elem` discard'

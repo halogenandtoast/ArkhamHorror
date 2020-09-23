@@ -351,6 +351,10 @@ instance (EnemyRunner env) => RunMessage env Attrs where
           onFailure' = if Keyword.Alert `elem` enemyKeywords
             then EnemyAttack iid eid : onFailure
             else onFailure
+          onSuccess' = flip map onSuccess $ \case
+            Damage EnemyJustEvadedTarget source n ->
+              EnemyDamage eid iid source n
+            msg' -> msg'
         a <$ unshiftMessage
           (BeginSkillTest
             iid
@@ -358,7 +362,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
             (Just Action.Evade)
             skillType
             (modifiedEnemyEvade a)
-            (EnemyEvaded iid eid : onSuccess)
+            (EnemyEvaded iid eid : onSuccess')
             onFailure'
             skillTestModifiers
             tokenResponses

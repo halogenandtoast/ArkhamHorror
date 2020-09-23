@@ -20,8 +20,8 @@ spec = do
       (investigatorId, investigator) <- newInvestigator "00000"
         $ \stats -> stats { combat = 1, agility = 4 }
       (eventId, backstab) <- newEvent "01051" investigatorId
-      (enemyId, ravenousGhoul) <- newEnemy
-        (set EnemyAttrs.fight 3 . set EnemyAttrs.health (Static 3))
+      (enemyId, enemy) <- newEnemy
+        (set EnemyAttrs.fight 3 . set EnemyAttrs.health (Static 4))
       game <-
         runGameTest
           investigator
@@ -31,7 +31,7 @@ spec = do
           ]
           ((events %~ insertMap eventId backstab)
           . (locations %~ insertMap locationId study)
-          . (enemies %~ insertMap enemyId ravenousGhoul)
+          . (enemies %~ insertMap enemyId enemy)
           . (chaosBag .~ Bag [MinusOne])
           . (scenario ?~ theGathering)
           )
@@ -39,5 +39,5 @@ spec = do
         >>= runGameTestOnlyOption "Run skill check"
         >>= runGameTestOnlyOption "Apply results"
       -- We expect the skill check to succeed and the enemy to be defeated
-      ravenousGhoul `shouldSatisfy` isInEncounterDiscard game
+      enemy `shouldSatisfy` hasDamage game (3, 0)
       backstab `shouldSatisfy` isInDiscardOf game investigator

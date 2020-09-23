@@ -40,13 +40,13 @@ newScenario difficulty cardCode = do
   let scenarioId = ScenarioId cardCode
    in pure $ lookupScenario scenarioId difficulty
 
-newEvent :: MonadIO m => CardCode -> InvestigatorId -> m (EventId, Event)
-newEvent cardCode investigatorId = do
+buildEvent :: MonadIO m => CardCode -> InvestigatorId -> m (EventId, Event)
+buildEvent cardCode investigatorId = do
   eventId <- liftIO $ EventId <$> nextRandom
   pure (eventId, lookupEvent cardCode investigatorId eventId)
 
-newEnemy :: MonadIO m => (EnemyAttrs.Attrs -> EnemyAttrs.Attrs) -> m (EnemyId, Enemy)
-newEnemy f = do
+testEnemy :: MonadIO m => (EnemyAttrs.Attrs -> EnemyAttrs.Attrs) -> m (EnemyId, Enemy)
+testEnemy f = do
   enemyId <- liftIO $ EnemyId <$> nextRandom
   pure (enemyId, baseEnemy enemyId "00000" f)
 
@@ -55,8 +55,8 @@ newLocation cardCode =
   let locationId = LocationId cardCode
   in pure (locationId, lookupLocation locationId)
 
-newInvestigator :: MonadIO m => CardCode -> (Stats -> Stats) -> m (InvestigatorId, Investigator)
-newInvestigator cardCode statsF =
+testInvestigator :: MonadIO m => CardCode -> (Stats -> Stats) -> m (InvestigatorId, Investigator)
+testInvestigator cardCode statsF =
   let investigatorId = InvestigatorId cardCode
       name = unCardCode cardCode
       stats = statsF (Stats 5 5 5 5 5 5)

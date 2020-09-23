@@ -12,8 +12,8 @@ spec = do
   describe "Barricade" $ do
     it "should make the current location unenterable by non elites" $ do
       (locationId, study) <- newLocation "01111"
-      (investigatorId, investigator) <- newInvestigator "00000" id
-      (eventId, barricade) <- newEvent "01038" investigatorId
+      (investigatorId, investigator) <- testInvestigator "00000" id
+      (eventId, barricade) <- buildEvent "01038" investigatorId
       game <-
         runGameTest
           investigator
@@ -27,9 +27,9 @@ spec = do
 
     it "should be discarded if an investigator leaves the location" $ do
       (hallwayId, hallway) <- newLocation "01112"
-      (investigatorId, investigator) <- newInvestigator "00000" id
-      (investigator2Id, investigator2) <- newInvestigator "00001" id
-      (eventId, barricade) <- newEvent "01038" investigatorId
+      (investigatorId, investigator) <- testInvestigator "00000" id
+      (investigator2Id, investigator2) <- testInvestigator "00001" id
+      (eventId, barricade) <- buildEvent "01038" investigatorId
       game <-
         runGameTest
           investigator

@@ -15,11 +15,14 @@ import Arkham.Types.EnemyId as X
 import Arkham.Types.Event as X
 import Arkham.Types.EventId as X
 import Arkham.Types.Game as X
+import Arkham.Types.GameValue
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator as X
 import Arkham.Types.InvestigatorId as X
 import Arkham.Types.Location as X
+import qualified Arkham.Types.Location.Attrs as LocationAttrs
 import Arkham.Types.LocationId as X
+import Arkham.Types.LocationSymbol
 import Arkham.Types.Message as X
 import Arkham.Types.Modifier
 import Arkham.Types.Phase
@@ -50,10 +53,11 @@ testEnemy f = do
   enemyId <- liftIO $ EnemyId <$> nextRandom
   pure (enemyId, baseEnemy enemyId "00000" f)
 
-newLocation :: MonadIO m => CardCode -> m (LocationId, Location)
-newLocation cardCode =
+testLocation :: MonadIO m => CardCode -> (LocationAttrs.Attrs -> LocationAttrs.Attrs) -> m (LocationId, Location)
+testLocation cardCode f =
   let locationId = LocationId cardCode
-  in pure (locationId, lookupLocation locationId)
+      name = unCardCode cardCode
+  in pure (locationId, baseLocation locationId name 0 (Static 0) Square [] f)
 
 testInvestigator :: MonadIO m => CardCode -> (Stats -> Stats) -> m (InvestigatorId, Investigator)
 testInvestigator cardCode statsF =

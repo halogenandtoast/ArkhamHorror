@@ -16,7 +16,7 @@ spec = do
   describe "Backstab" $ do
     it "should use agility and do +2 damage" $ do
       theGathering <- newScenario Easy "01104"
-      (locationId, study) <- newLocation "01111"
+      (locationId, location) <- testLocation "00000" id
       (investigatorId, investigator) <- testInvestigator "00000"
         $ \stats -> stats { combat = 1, agility = 4 }
       (eventId, backstab) <- buildEvent "01051" investigatorId
@@ -30,7 +30,7 @@ spec = do
           , InvestigatorPlayEvent investigatorId eventId
           ]
           ((events %~ insertMap eventId backstab)
-          . (locations %~ insertMap locationId study)
+          . (locations %~ insertMap locationId location)
           . (enemies %~ insertMap enemyId enemy)
           . (chaosBag .~ Bag [MinusOne])
           . (scenario ?~ theGathering)

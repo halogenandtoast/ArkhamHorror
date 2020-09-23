@@ -27,6 +27,7 @@ import Arkham.Types.Message as X
 import Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.Scenario as X
+import qualified Arkham.Types.Scenario.Attrs as ScenarioAttrs
 import Arkham.Types.ScenarioId as X
 import Arkham.Types.Stats as X
 import Arkham.Types.Target
@@ -38,33 +39,49 @@ import Data.UUID.V4 as X
 import Lens.Micro as X
 import Test.Hspec as X
 
-newScenario :: MonadIO m => Difficulty -> CardCode -> m Scenario
-newScenario difficulty cardCode = do
-  let scenarioId = ScenarioId cardCode
-   in pure $ lookupScenario scenarioId difficulty
+testScenario
+  :: MonadIO m
+  => CardCode
+  -> (ScenarioAttrs.Attrs -> ScenarioAttrs.Attrs)
+  -> m Scenario
+testScenario cardCode f =
+  let name = unCardCode cardCode
+  in pure $ baseScenario cardCode name [] [] Easy f
 
 buildEvent :: MonadIO m => CardCode -> InvestigatorId -> m (EventId, Event)
 buildEvent cardCode investigatorId = do
   eventId <- liftIO $ EventId <$> nextRandom
   pure (eventId, lookupEvent cardCode investigatorId eventId)
 
-testEnemy :: MonadIO m => (EnemyAttrs.Attrs -> EnemyAttrs.Attrs) -> m (EnemyId, Enemy)
+testEnemy
+  :: MonadIO m => (EnemyAttrs.Attrs -> EnemyAttrs.Attrs) -> m (EnemyId, Enemy)
 testEnemy f = do
   enemyId <- liftIO $ EnemyId <$> nextRandom
   pure (enemyId, baseEnemy enemyId "00000" f)
 
-testLocation :: MonadIO m => CardCode -> (LocationAttrs.Attrs -> LocationAttrs.Attrs) -> m (LocationId, Location)
+testLocation
+  :: MonadIO m
+  => CardCode
+  -> (LocationAttrs.Attrs -> LocationAttrs.Attrs)
+  -> m (LocationId, Location)
 testLocation cardCode f =
-  let locationId = LocationId cardCode
-      name = unCardCode cardCode
+  let
+    locationId = LocationId cardCode
+    name = unCardCode cardCode
   in pure (locationId, baseLocation locationId name 0 (Static 0) Square [] f)
 
-testInvestigator :: MonadIO m => CardCode -> (Stats -> Stats) -> m (InvestigatorId, Investigator)
+testInvestigator
+  :: MonadIO m
+  => CardCode
+  -> (Stats -> Stats)
+  -> m (InvestigatorId, Investigator)
 testInvestigator cardCode statsF =
-  let investigatorId = InvestigatorId cardCode
-      name = unCardCode cardCode
-      stats = statsF (Stats 5 5 5 5 5 5)
-  in pure (investigatorId, baseInvestigator investigatorId name Neutral stats [])
+  let
+    investigatorId = InvestigatorId cardCode
+    name = unCardCode cardCode
+    stats = statsF (Stats 5 5 5 5 5 5)
+  in pure
+    (investigatorId, baseInvestigator investigatorId name Neutral stats [])
 
 runGameTestOnlyOption
   :: (MonadFail m, MonadIO m) => String -> Game [Message] -> m (Game [Message])
@@ -157,15 +174,16 @@ instance Entity Investigator where
 
 hasModifier :: (Entity a) => Game queue -> Modifier -> a -> Bool
 hasModifier game modifier a = modifier `elem` modifiers
-  where
-    modifiers = case toTarget a of
-      LocationTarget locId -> game ^. locations . ix locId . to getModifiers
-      _ -> []
+ where
+  modifiers = case toTarget a of
+    LocationTarget locId -> game ^. locations . ix locId . to getModifiers
+    _ -> []
 
 isAttachedTo :: (Entity a, Entity b) => Game queue -> a -> b -> Bool
 isAttachedTo game x y = case toTarget x of
   LocationTarget locId -> case toTarget y of
-    EventTarget eventId -> eventId `member` (game ^. locations . ix locId . to (getSet ()))
+    EventTarget eventId ->
+      eventId `member` (game ^. locations . ix locId . to (getSet ()))
     _ -> False
   _ -> False
 
@@ -182,7 +200,8 @@ instance ToEncounterCard Enemy where
     (CardId . unEnemyId $ getId () enemy)
 
 updatedResourceCount :: Game queue -> Investigator -> Int
-updatedResourceCount game investigator = game ^?! investigators . ix (getId () investigator) . to resourceCount
+updatedResourceCount game investigator =
+  game ^?! investigators . ix (getId () investigator) . to resourceCount
 
 evadedBy :: Game queue -> Investigator -> Enemy -> Bool
 evadedBy game _investigator enemy =

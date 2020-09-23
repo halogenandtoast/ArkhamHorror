@@ -5,7 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Difficulty
 import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
 import Arkham.Types.GameValue
 import Arkham.Types.Helpers
@@ -15,7 +14,7 @@ spec :: Spec
 spec = do
   describe "Blinding Light" $ do
     it "Uses willpower to evade an enemy" $ do
-      theGathering <- newScenario Easy "01104"
+      scenario' <- testScenario "00000" id
       (investigatorId, investigator) <- testInvestigator "00000"
         $ \stats -> stats { willpower = 5, agility = 3 }
       (enemyId, enemy) <- testEnemy
@@ -33,7 +32,7 @@ spec = do
           . (enemies %~ insertMap enemyId enemy)
           . (locations %~ insertMap locationId location)
           . (chaosBag .~ Bag [MinusOne])
-          . (scenario ?~ theGathering)
+          . (scenario ?~ scenario')
           )
         >>= runGameTestOnlyOption "Evade enemy"
         >>= runGameTestOnlyOption "Run skill check"
@@ -42,7 +41,7 @@ spec = do
       enemy `shouldSatisfy` evadedBy game investigator
 
     it "deals 1 damage to the evaded enemy" $ do
-      theGathering <- newScenario Easy "01104"
+      scenario' <- testScenario "00000" id
       (investigatorId, investigator) <- testInvestigator "01004" id
       (enemyId, enemy) <- testEnemy
         (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
@@ -59,7 +58,7 @@ spec = do
           . (enemies %~ insertMap enemyId enemy)
           . (locations %~ insertMap locationId location)
           . (chaosBag .~ Bag [MinusOne])
-          . (scenario ?~ theGathering)
+          . (scenario ?~ scenario')
           )
         >>= runGameTestOnlyOption "Evade enemy"
         >>= runGameTestOnlyOption "Run skill check"
@@ -71,7 +70,7 @@ spec = do
         "On Skull, Cultist, Tablet, ElderThing, or AutoFail the investigator loses an action"
       $ for_ [Skull, Cultist, Tablet, ElderThing, AutoFail]
       $ \token -> do
-          theDevourerBelow <- newScenario Easy "01142"
+          scenario' <- testScenario "00000" id
           (investigatorId, investigator) <- testInvestigator "01004" id
           (enemyId, enemy) <- testEnemy
             (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
@@ -88,7 +87,7 @@ spec = do
               . (enemies %~ insertMap enemyId enemy)
               . (locations %~ insertMap locationId location)
               . (chaosBag .~ Bag [token])
-              . (scenario ?~ theDevourerBelow)
+              . (scenario ?~ scenario')
               )
             >>= runGameTestOnlyOption "Evade enemy"
             >>= runGameTestOnlyOption "Run skill check"

@@ -5,7 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Difficulty
 import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
 import Arkham.Types.GameValue
 import Arkham.Types.Helpers
@@ -15,7 +14,7 @@ spec :: Spec
 spec = do
   describe "Backstab" $ do
     it "should use agility and do +2 damage" $ do
-      theGathering <- newScenario Easy "01104"
+      scenario' <- testScenario "00000" id
       (locationId, location) <- testLocation "00000" id
       (investigatorId, investigator) <- testInvestigator "00000"
         $ \stats -> stats { combat = 1, agility = 4 }
@@ -33,7 +32,7 @@ spec = do
           . (locations %~ insertMap locationId location)
           . (enemies %~ insertMap enemyId enemy)
           . (chaosBag .~ Bag [MinusOne])
-          . (scenario ?~ theGathering)
+          . (scenario ?~ scenario')
           )
         >>= runGameTestOnlyOption "Fight enemy"
         >>= runGameTestOnlyOption "Run skill check"

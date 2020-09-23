@@ -95,10 +95,6 @@ spec = do
             >>= runGameTestOnlyOption "Run skill check"
             >>= runGameTestOnlyOption "Apply results"
             >>= runGameTestOnlyOption "take event damage"
-            >>= (\game -> if token == Tablet
-                  then runGameTestOnlyOption "take damage" game
-                  else pure game
-                )
           blindingLight2 `shouldSatisfy` isInDiscardOf game investigator
           investigator `shouldSatisfy` hasRemainingActions game 2
           investigator `shouldSatisfy` hasDamage

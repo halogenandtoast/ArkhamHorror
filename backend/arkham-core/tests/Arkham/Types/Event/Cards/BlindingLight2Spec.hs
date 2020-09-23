@@ -16,11 +16,11 @@ spec = do
   describe "Blinding Light 2" $ do
     it "Uses willpower to evade an enemy" $ do
       theGathering <- newScenario Easy "01104"
-      (investigatorId, investigator) <- newInvestigator "00000"
+      (investigatorId, investigator) <- testInvestigator "00000"
         $ \stats -> stats { willpower = 5, agility = 3 }
-      (enemyId, enemy) <- newEnemy
+      (enemyId, enemy) <- testEnemy
         (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 3))
-      (blindingLight2Id, blindingLight2) <- newEvent "01069" investigatorId
+      (blindingLight2Id, blindingLight2) <- buildEvent "01069" investigatorId
       (hallwayId, hallway) <- newLocation "01112"
       game <-
         runGameTest
@@ -43,10 +43,10 @@ spec = do
 
     it "deals 2 damage to the evaded enemy" $ do
       theGathering <- newScenario Easy "01104"
-      (investigatorId, investigator) <- newInvestigator "00000" id
-      (enemyId, enemy) <- newEnemy
+      (investigatorId, investigator) <- testInvestigator "00000" id
+      (enemyId, enemy) <- testEnemy
         (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 3))
-      (blindingLight2Id, blindingLight2) <- newEvent "01069" investigatorId
+      (blindingLight2Id, blindingLight2) <- buildEvent "01069" investigatorId
       (hallwayId, hallway) <- newLocation "01112"
       game <-
         runGameTest
@@ -72,10 +72,12 @@ spec = do
       $ for_ [Skull]
       $ \token -> do
           theDevourerBelow <- newScenario Easy "01142"
-          (investigatorId, investigator) <- newInvestigator "00000" id
-          (enemyId, enemy) <- newEnemy
+          (investigatorId, investigator) <- testInvestigator "00000" id
+          (enemyId, enemy) <- testEnemy
             (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 3))
-          (blindingLight2Id, blindingLight2) <- newEvent "01069" investigatorId
+          (blindingLight2Id, blindingLight2) <- buildEvent
+            "01069"
+            investigatorId
           (hallwayId, hallway) <- newLocation "01112"
           game <-
             runGameTest

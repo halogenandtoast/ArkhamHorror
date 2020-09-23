@@ -17,10 +17,10 @@ spec = do
     it "should use agility and do +2 damage" $ do
       theGathering <- newScenario Easy "01104"
       (locationId, study) <- newLocation "01111"
-      (investigatorId, investigator) <- newInvestigator "00000"
+      (investigatorId, investigator) <- testInvestigator "00000"
         $ \stats -> stats { combat = 1, agility = 4 }
-      (eventId, backstab) <- newEvent "01051" investigatorId
-      (enemyId, enemy) <- newEnemy
+      (eventId, backstab) <- buildEvent "01051" investigatorId
+      (enemyId, enemy) <- testEnemy
         (set EnemyAttrs.fight 3 . set EnemyAttrs.health (Static 4))
       game <-
         runGameTest

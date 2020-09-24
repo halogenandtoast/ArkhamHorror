@@ -48,40 +48,38 @@ testScenario cardCode f =
   let name = unCardCode cardCode
   in pure $ baseScenario cardCode name [] [] Easy f
 
-buildEvent :: MonadIO m => CardCode -> InvestigatorId -> m (EventId, Event)
-buildEvent cardCode investigatorId = do
-  eventId <- liftIO $ EventId <$> nextRandom
-  pure (eventId, lookupEvent cardCode investigatorId eventId)
+insertEntity
+  :: (HasId k () v, Eq k, Hashable k) => v -> HashMap k v -> HashMap k v
+insertEntity a = insertMap (getId () a) a
 
-testEnemy
-  :: MonadIO m => (EnemyAttrs.Attrs -> EnemyAttrs.Attrs) -> m (EnemyId, Enemy)
+buildEvent :: MonadIO m => CardCode -> Investigator -> m Event
+buildEvent cardCode investigator = do
+  eventId <- liftIO $ EventId <$> nextRandom
+  pure $ lookupEvent cardCode (getId () investigator) eventId
+
+testEnemy :: MonadIO m => (EnemyAttrs.Attrs -> EnemyAttrs.Attrs) -> m Enemy
 testEnemy f = do
   enemyId <- liftIO $ EnemyId <$> nextRandom
-  pure (enemyId, baseEnemy enemyId "00000" f)
+  pure $ baseEnemy enemyId "00000" f
 
 testLocation
   :: MonadIO m
   => CardCode
   -> (LocationAttrs.Attrs -> LocationAttrs.Attrs)
-  -> m (LocationId, Location)
+  -> m Location
 testLocation cardCode f =
   let
     locationId = LocationId cardCode
     name = unCardCode cardCode
-  in pure (locationId, baseLocation locationId name 0 (Static 0) Square [] f)
+  in pure $ baseLocation locationId name 0 (Static 0) Square [] f
 
-testInvestigator
-  :: MonadIO m
-  => CardCode
-  -> (Stats -> Stats)
-  -> m (InvestigatorId, Investigator)
+testInvestigator :: MonadIO m => CardCode -> (Stats -> Stats) -> m Investigator
 testInvestigator cardCode statsF =
   let
     investigatorId = InvestigatorId cardCode
     name = unCardCode cardCode
     stats = statsF (Stats 5 5 5 5 5 5)
-  in pure
-    (investigatorId, baseInvestigator investigatorId name Neutral stats [])
+  in pure $ baseInvestigator investigatorId name Neutral stats []
 
 runGameTestOnlyOption
   :: (MonadFail m, MonadIO m) => String -> Game [Message] -> m (Game [Message])
@@ -218,3 +216,18 @@ hasDamage game n a = case toTarget a of
   EnemyTarget eid -> getDamage (game ^?! enemies . ix eid) == n
   InvestigatorTarget iid -> getDamage (game ^?! investigators . ix iid) == n
   _ -> error "Not implemented"
+
+playEvent :: Investigator -> Event -> Message
+playEvent i e = InvestigatorPlayEvent (getId () i) (getId () e)
+
+moveTo :: Investigator -> Location -> Message
+moveTo i l = MoveTo (getId () i) (getId () l)
+
+moveFrom :: Investigator -> Location -> Message
+moveFrom i l = MoveFrom (getId () i) (getId () l)
+
+moveAllTo :: Location -> Message
+moveAllTo = MoveAllTo . getId ()
+
+enemySpawn :: Location -> Enemy -> Message
+enemySpawn l e = EnemySpawn (getId () l) (getId () e)

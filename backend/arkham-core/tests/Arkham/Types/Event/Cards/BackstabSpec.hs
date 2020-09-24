@@ -15,22 +15,22 @@ spec = do
   describe "Backstab" $ do
     it "should use agility and do +2 damage" $ do
       scenario' <- testScenario "00000" id
-      (locationId, location) <- testLocation "00000" id
-      (investigatorId, investigator) <- testInvestigator "00000"
+      location <- testLocation "00000" id
+      investigator <- testInvestigator "00000"
         $ \stats -> stats { combat = 1, agility = 4 }
-      (eventId, backstab) <- buildEvent "01051" investigatorId
-      (enemyId, enemy) <- testEnemy
+      backstab <- buildEvent "01051" investigator
+      enemy <- testEnemy
         (set EnemyAttrs.fight 3 . set EnemyAttrs.health (Static 4))
       game <-
         runGameTest
           investigator
-          [ EnemySpawn locationId enemyId
-          , MoveTo investigatorId locationId
-          , InvestigatorPlayEvent investigatorId eventId
+          [ enemySpawn location enemy
+          , moveTo investigator location
+          , playEvent investigator backstab
           ]
-          ((events %~ insertMap eventId backstab)
-          . (locations %~ insertMap locationId location)
-          . (enemies %~ insertMap enemyId enemy)
+          ((events %~ insertEntity backstab)
+          . (locations %~ insertEntity location)
+          . (enemies %~ insertEntity enemy)
           . (chaosBag .~ Bag [MinusOne])
           . (scenario ?~ scenario')
           )

@@ -11,35 +11,33 @@ spec :: Spec
 spec = do
   describe "Barricade" $ do
     it "should make the current location unenterable by non elites" $ do
-      (locationId, location) <- testLocation "00000" id
-      (investigatorId, investigator) <- testInvestigator "00000" id
-      (barricadeId, barricade) <- buildEvent "01038" investigatorId
+      location <- testLocation "00000" id
+      investigator <- testInvestigator "00000" id
+      barricade <- buildEvent "01038" investigator
       game <-
         runGameTest
           investigator
-          [ MoveTo investigatorId locationId
-          , InvestigatorPlayEvent investigatorId barricadeId
-          ]
-        $ (events %~ insertMap barricadeId barricade)
-        . (locations %~ insertMap locationId location)
+          [moveTo investigator location, playEvent investigator barricade]
+        $ (events %~ insertEntity barricade)
+        . (locations %~ insertEntity location)
       location `shouldSatisfy` hasModifier game CannotBeEnteredByNonElite
       barricade `shouldSatisfy` isAttachedTo game location
 
     it "should be discarded if an investigator leaves the location" $ do
-      (locationId, location) <- testLocation "00000" id
-      (investigatorId, investigator) <- testInvestigator "00000" id
-      (investigator2Id, investigator2) <- testInvestigator "00001" id
-      (barricadeId, barricade) <- buildEvent "01038" investigatorId
+      location <- testLocation "00000" id
+      investigator <- testInvestigator "00000" id
+      investigator2 <- testInvestigator "00001" id
+      barricade <- buildEvent "01038" investigator
       game <-
         runGameTest
           investigator
-          [ MoveAllTo locationId
-          , InvestigatorPlayEvent investigatorId barricadeId
-          , MoveFrom investigator2Id locationId
+          [ moveAllTo location
+          , playEvent investigator barricade
+          , moveFrom investigator2 location
           ]
-        $ (events %~ insertMap barricadeId barricade)
-        . (locations %~ insertMap locationId location)
-        . (investigators %~ insertMap investigator2Id investigator2)
+        $ (events %~ insertEntity barricade)
+        . (locations %~ insertEntity location)
+        . (investigators %~ insertEntity investigator2)
       location `shouldSatisfy` not . hasModifier game CannotBeEnteredByNonElite
       barricade `shouldSatisfy` not . isAttachedTo game location
       barricade `shouldSatisfy` isInDiscardOf game investigator

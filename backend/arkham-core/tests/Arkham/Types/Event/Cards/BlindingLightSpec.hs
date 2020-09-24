@@ -15,22 +15,22 @@ spec = do
   describe "Blinding Light" $ do
     it "Uses willpower to evade an enemy" $ do
       scenario' <- testScenario "00000" id
-      (investigatorId, investigator) <- testInvestigator "00000"
+      investigator <- testInvestigator "00000"
         $ \stats -> stats { willpower = 5, agility = 3 }
-      (enemyId, enemy) <- testEnemy
+      enemy <- testEnemy
         (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
-      (blindingLightId, blindingLight) <- buildEvent "01066" investigatorId
-      (locationId, location) <- testLocation "00000" id
+      blindingLight <- buildEvent "01066" investigator
+      location <- testLocation "00000" id
       game <-
         runGameTest
           investigator
-          [ EnemyMove enemyId "00000" locationId
-          , MoveTo investigatorId locationId
-          , InvestigatorPlayEvent investigatorId blindingLightId
+          [ enemySpawn location enemy
+          , moveTo investigator location
+          , playEvent investigator blindingLight
           ]
-          ((events %~ insertMap blindingLightId blindingLight)
-          . (enemies %~ insertMap enemyId enemy)
-          . (locations %~ insertMap locationId location)
+          ((events %~ insertEntity blindingLight)
+          . (enemies %~ insertEntity enemy)
+          . (locations %~ insertEntity location)
           . (chaosBag .~ Bag [MinusOne])
           . (scenario ?~ scenario')
           )
@@ -42,21 +42,21 @@ spec = do
 
     it "deals 1 damage to the evaded enemy" $ do
       scenario' <- testScenario "00000" id
-      (investigatorId, investigator) <- testInvestigator "01004" id
-      (enemyId, enemy) <- testEnemy
+      investigator <- testInvestigator "01004" id
+      enemy <- testEnemy
         (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
-      (blindingLightId, blindingLight) <- buildEvent "01066" investigatorId
-      (locationId, location) <- testLocation "00000" id
+      blindingLight <- buildEvent "01066" investigator
+      location <- testLocation "00000" id
       game <-
         runGameTest
           investigator
-          [ EnemySpawn locationId enemyId
-          , MoveTo investigatorId locationId
-          , InvestigatorPlayEvent investigatorId blindingLightId
+          [ enemySpawn location enemy
+          , moveTo investigator location
+          , playEvent investigator blindingLight
           ]
-          ((events %~ insertMap blindingLightId blindingLight)
-          . (enemies %~ insertMap enemyId enemy)
-          . (locations %~ insertMap locationId location)
+          ((events %~ insertEntity blindingLight)
+          . (enemies %~ insertEntity enemy)
+          . (locations %~ insertEntity location)
           . (chaosBag .~ Bag [MinusOne])
           . (scenario ?~ scenario')
           )
@@ -71,21 +71,21 @@ spec = do
       $ for_ [Skull, Cultist, Tablet, ElderThing, AutoFail]
       $ \token -> do
           scenario' <- testScenario "00000" id
-          (investigatorId, investigator) <- testInvestigator "01004" id
-          (enemyId, enemy) <- testEnemy
+          investigator <- testInvestigator "01004" id
+          enemy <- testEnemy
             (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
-          (blindingLightId, blindingLight) <- buildEvent "01066" investigatorId
-          (locationId, location) <- testLocation "00000" id
+          blindingLight <- buildEvent "01066" investigator
+          location <- testLocation "00000" id
           game <-
             runGameTest
               investigator
-              [ EnemySpawn locationId enemyId
-              , MoveTo investigatorId locationId
-              , InvestigatorPlayEvent investigatorId blindingLightId
+              [ enemySpawn location enemy
+              , moveTo investigator location
+              , playEvent investigator blindingLight
               ]
-              ((events %~ insertMap blindingLightId blindingLight)
-              . (enemies %~ insertMap enemyId enemy)
-              . (locations %~ insertMap locationId location)
+              ((events %~ insertEntity blindingLight)
+              . (enemies %~ insertEntity enemy)
+              . (locations %~ insertEntity location)
               . (chaosBag .~ Bag [token])
               . (scenario ?~ scenario')
               )

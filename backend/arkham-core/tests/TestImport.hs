@@ -67,10 +67,11 @@ testPlayerCard = do
   cardId <- CardId <$> liftIO nextRandom
   pure $ basePlayerCard cardId "00000" "Test" 0 AssetType Guardian
 
-testEnemy :: MonadIO m => (EnemyAttrs.Attrs -> EnemyAttrs.Attrs) -> m Enemy
-testEnemy f = do
+testEnemy
+  :: MonadIO m => CardCode -> (EnemyAttrs.Attrs -> EnemyAttrs.Attrs) -> m Enemy
+testEnemy cardCode f = do
   enemyId <- liftIO $ EnemyId <$> nextRandom
-  pure $ baseEnemy enemyId "00000" f
+  pure $ baseEnemy enemyId cardCode f
 
 testLocation
   :: MonadIO m

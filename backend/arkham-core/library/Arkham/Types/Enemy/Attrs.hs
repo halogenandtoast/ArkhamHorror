@@ -82,6 +82,9 @@ fight = lens enemyFight $ \m x -> m { enemyFight = x }
 evade :: Lens' Attrs Int
 evade = lens enemyEvade $ \m x -> m { enemyEvade = x }
 
+keywords :: Lens' Attrs (HashSet Keyword)
+keywords = lens enemyKeywords $ \m x -> m { enemyKeywords = x }
+
 modifiers :: Lens' Attrs (HashMap Source [Modifier])
 modifiers = lens enemyModifiers $ \m x -> m { enemyModifiers = x }
 

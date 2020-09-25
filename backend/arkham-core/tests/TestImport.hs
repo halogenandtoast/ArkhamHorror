@@ -4,8 +4,9 @@ module TestImport
   )
 where
 
-import Arkham.Types.Card
+import Arkham.Types.Card as X
 import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard (basePlayerCard)
 import Arkham.Types.Classes as X
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Difficulty
@@ -34,6 +35,7 @@ import Arkham.Types.Target
 import ClassyPrelude as X
 import Control.Monad.Fail as X
 import qualified Data.HashMap.Strict as HashMap
+import qualified Data.List as L
 import qualified Data.UUID as UUID
 import Data.UUID.V4 as X
 import Lens.Micro as X
@@ -56,6 +58,14 @@ buildEvent :: MonadIO m => CardCode -> Investigator -> m Event
 buildEvent cardCode investigator = do
   eventId <- liftIO $ EventId <$> nextRandom
   pure $ lookupEvent cardCode (getId () investigator) eventId
+
+testPlayerCards :: MonadIO m => Int -> m [PlayerCard]
+testPlayerCards count' = replicateM count' testPlayerCard
+
+testPlayerCard :: MonadIO m => m PlayerCard
+testPlayerCard = do
+  cardId <- CardId <$> liftIO nextRandom
+  pure $ basePlayerCard cardId "00000" "Test" 0 AssetType Guardian
 
 testEnemy :: MonadIO m => (EnemyAttrs.Attrs -> EnemyAttrs.Attrs) -> m Enemy
 testEnemy f = do
@@ -89,7 +99,22 @@ runGameTestOnlyOption _reason game = case mapToList (gameQuestion game) of
       toInternalGame (game { gameMessages = msg : gameMessages game })
         >>= runMessages
     _ -> error "spec expectation mismatch"
-  _ -> error "spec expectation mismatch"
+  _ -> error "There must be only one choice to use this function"
+
+runGameTestOptionMatching
+  :: (MonadFail m, MonadIO m)
+  => (Message -> Bool)
+  -> Game [Message]
+  -> m (Game [Message])
+runGameTestOptionMatching f game = case mapToList (gameQuestion game) of
+  [(_, question)] -> case question of
+    ChooseOne msgs -> case find f msgs of
+      Just msg ->
+        toInternalGame (game { gameMessages = msg : gameMessages game })
+          >>= runMessages
+      Nothing -> error "could not find a matching message"
+    _ -> error "unsupported questions type"
+  _ -> error "There must be only one question to use this function"
 
 runGameTest
   :: Investigator
@@ -217,6 +242,10 @@ hasDamage game n a = case toTarget a of
   InvestigatorTarget iid -> getDamage (game ^?! investigators . ix iid) == n
   _ -> error "Not implemented"
 
+handIs :: Game queue -> [Card] -> Investigator -> Bool
+handIs g cards i = not (null hand) && null (hand L.\\ cards)
+  where hand = handOf (g ^?! investigators . ix (getId () i))
+
 playEvent :: Investigator -> Event -> Message
 playEvent i e = InvestigatorPlayEvent (getId () i) (getId () e)
 
@@ -231,3 +260,6 @@ moveAllTo = MoveAllTo . getId ()
 
 enemySpawn :: Location -> Enemy -> Message
 enemySpawn l e = EnemySpawn (getId () l) (getId () e)
+
+loadDeck :: Investigator -> [PlayerCard] -> Message
+loadDeck i cs = LoadDeck (getId () i) cs

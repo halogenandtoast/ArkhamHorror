@@ -927,6 +927,7 @@ runGameMessage
 runGameMessage msg g = case msg of
   Run msgs -> g <$ unshiftMessages msgs
   Label _ msgs -> g <$ unshiftMessages msgs
+  TargetLabel _ msgs -> g <$ unshiftMessages msgs
   Continue _ -> pure g
   EndOfGame -> do
     clearQueue

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 83de3fef24449b507059edbfa86235d752566bb158e48bbc2d034643680e04f8
+-- hash: e3d9f1ff6e6f107a04c18223e82936414a5868f94ba8accffb7f8e64fa8cdddc
 
 name:           arkham-core
 version:        0.0.0
@@ -374,6 +374,7 @@ test-suite spec
       Arkham.Types.Event.Cards.BlindingLightSpec
       Arkham.Types.Event.Cards.CrypticResearch4Spec
       Arkham.Types.Event.Cards.CunningDistractionSpec
+      Arkham.Types.Event.Cards.DarkMemorySpec
       Arkham.Types.Event.Cards.EmergencyCacheSpec
       TestImport
       Paths_arkham_core
@@ -389,6 +390,7 @@ test-suite spec
     , hspec-core
     , hspec-expectations
     , microlens
+    , mtl
     , unordered-containers >=0.2.12.0
     , uuid
   default-language: Haskell2010

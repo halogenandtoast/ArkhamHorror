@@ -10,19 +10,22 @@ import Arkham.Types.Modifier
 spec :: Spec
 spec = do
   describe "Barricade 3" $ do
-    it "should make the current location unenterable by non elites" $ do
-      location <- testLocation "00000" id
-      investigator <- testInvestigator "00000" id
-      barricade3 <- buildEvent "50004" investigator
-      game <-
-        runGameTest
-          investigator
-          [moveTo investigator location, playEvent investigator barricade3]
-        $ (events %~ insertEntity barricade3)
-        . (locations %~ insertEntity location)
-      location `shouldSatisfy` hasModifier game CannotBeEnteredByNonElite
-      location `shouldSatisfy` hasModifier game SpawnNonEliteAtConnectingInstead
-      barricade3 `shouldSatisfy` isAttachedTo game location
+    it
+        "should make the current location unenterable by non elites and non elites cannot spawn there"
+      $ do
+          location <- testLocation "00000" id
+          investigator <- testInvestigator "00000" id
+          barricade3 <- buildEvent "50004" investigator
+          game <-
+            runGameTest
+              investigator
+              [moveTo investigator location, playEvent investigator barricade3]
+            $ (events %~ insertEntity barricade3)
+            . (locations %~ insertEntity location)
+          location `shouldSatisfy` hasModifier game CannotBeEnteredByNonElite
+          location
+            `shouldSatisfy` hasModifier game SpawnNonEliteAtConnectingInstead
+          barricade3 `shouldSatisfy` isAttachedTo game location
 
     it "should be discarded if an investigator leaves the location" $ do
       location <- testLocation "00000" id

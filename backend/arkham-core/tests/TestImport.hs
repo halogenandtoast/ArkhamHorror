@@ -4,6 +4,9 @@ module TestImport
   )
 where
 
+import Arkham.Types.Agenda as X
+import qualified Arkham.Types.Agenda.Attrs as AgendaAttrs
+import Arkham.Types.AgendaId as X
 import Arkham.Types.Card as X
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard (basePlayerCard)
@@ -27,6 +30,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message as X
 import Arkham.Types.Modifier
 import Arkham.Types.Phase
+import Arkham.Types.Query
 import Arkham.Types.Scenario as X
 import qualified Arkham.Types.Scenario.Attrs as ScenarioAttrs
 import Arkham.Types.ScenarioId as X
@@ -67,11 +71,25 @@ testPlayerCard = do
   cardId <- CardId <$> liftIO nextRandom
   pure $ basePlayerCard cardId "00000" "Test" 0 AssetType Guardian
 
+buildPlayerCard :: MonadIO m => CardCode -> m PlayerCard
+buildPlayerCard cardCode = do
+  cardId <- CardId <$> liftIO nextRandom
+  pure $ lookupPlayerCard cardCode cardId
+
+
 testEnemy
   :: MonadIO m => CardCode -> (EnemyAttrs.Attrs -> EnemyAttrs.Attrs) -> m Enemy
 testEnemy cardCode f = do
   enemyId <- liftIO $ EnemyId <$> nextRandom
   pure $ baseEnemy enemyId cardCode f
+
+testAgenda
+  :: MonadIO m
+  => CardCode
+  -> (AgendaAttrs.Attrs -> AgendaAttrs.Attrs)
+  -> m Agenda
+testAgenda cardCode f =
+  pure $ baseAgenda (AgendaId cardCode) "Agenda" "1A" (Static 1) f
 
 testLocation
   :: MonadIO m
@@ -97,6 +115,9 @@ runGameTestOnlyOption
 runGameTestOnlyOption _reason game = case mapToList (gameQuestion game) of
   [(_, question)] -> case question of
     ChooseOne [msg] ->
+      toInternalGame (game { gameMessages = msg : gameMessages game })
+        >>= runMessages
+    ChooseOneAtATime [msg] ->
       toInternalGame (game { gameMessages = msg : gameMessages game })
         >>= runMessages
     _ -> error "spec expectation mismatch"
@@ -128,8 +149,10 @@ runGameTest investigator queue f =
 newGame :: MonadIO m => Investigator -> [Message] -> m (Game (IORef [Message]))
 newGame investigator queue = do
   ref <- newIORef queue
+  history <- newIORef []
   pure $ Game
     { gameMessages = ref
+    , gameMessageHistory = history
     , gameSeed = 1
     , gameCampaign = Nothing
     , gameScenario = Nothing
@@ -183,6 +206,9 @@ instance ToPlayerCard Event where
 
 class Entity a where
   toTarget :: a -> Target
+
+instance Entity Agenda where
+  toTarget = AgendaTarget . getId ()
 
 instance Entity Location where
   toTarget = LocationTarget . getId ()
@@ -243,9 +269,17 @@ hasDamage game n a = case toTarget a of
   InvestigatorTarget iid -> getDamage (game ^?! investigators . ix iid) == n
   _ -> error "Not implemented"
 
+hasDoom :: (Entity a) => Game queue -> Int -> a -> Bool
+hasDoom game n a = case toTarget a of
+  AgendaTarget aid -> getCount aid game == DoomCount n
+  _ -> error "Not implemented"
+
 handIs :: Game queue -> [Card] -> Investigator -> Bool
 handIs g cards i = not (null hand) && null (hand L.\\ cards)
   where hand = handOf (g ^?! investigators . ix (getId () i))
+
+hasProcessedMessage :: Message -> Game [Message] -> Bool
+hasProcessedMessage m g = m `elem` gameMessageHistory g
 
 playEvent :: Investigator -> Event -> Message
 playEvent i e = InvestigatorPlayEvent (getId () i) (getId () e)
@@ -264,3 +298,9 @@ enemySpawn l e = EnemySpawn (getId () l) (getId () e)
 
 loadDeck :: Investigator -> [PlayerCard] -> Message
 loadDeck i cs = LoadDeck (getId () i) cs
+
+addToHand :: Investigator -> Card -> Message
+addToHand i card = AddToHand (getId () i) card
+
+chooseEndTurn :: Investigator -> Message
+chooseEndTurn i = ChooseEndTurn (getId () i)

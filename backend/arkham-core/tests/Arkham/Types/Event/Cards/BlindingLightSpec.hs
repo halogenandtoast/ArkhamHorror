@@ -18,6 +18,7 @@ spec = do
       investigator <- testInvestigator "00000"
         $ \stats -> stats { willpower = 5, agility = 3 }
       enemy <- testEnemy
+        "00000"
         (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
       blindingLight <- buildEvent "01066" investigator
       location <- testLocation "00000" id
@@ -44,6 +45,7 @@ spec = do
       scenario' <- testScenario "00000" id
       investigator <- testInvestigator "01004" id
       enemy <- testEnemy
+        "00000"
         (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
       blindingLight <- buildEvent "01066" investigator
       location <- testLocation "00000" id
@@ -73,6 +75,7 @@ spec = do
           scenario' <- testScenario "00000" id
           investigator <- testInvestigator "01004" id
           enemy <- testEnemy
+            "00000"
             (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
           blindingLight <- buildEvent "01066" investigator
           location <- testLocation "00000" id

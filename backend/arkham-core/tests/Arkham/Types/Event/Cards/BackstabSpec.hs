@@ -20,6 +20,7 @@ spec = do
         $ \stats -> stats { combat = 1, agility = 4 }
       backstab <- buildEvent "01051" investigator
       enemy <- testEnemy
+        "00000"
         (set EnemyAttrs.fight 3 . set EnemyAttrs.health (Static 4))
       game <-
         runGameTest

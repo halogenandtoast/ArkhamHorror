@@ -92,9 +92,15 @@ data Investigator
   deriving anyclass (ToJSON, FromJSON)
 
 baseInvestigator
-  :: InvestigatorId -> Text -> ClassSymbol -> Stats -> [Trait] -> Investigator
-baseInvestigator a b c d e =
-  BaseInvestigator' . BaseInvestigator $ baseAttrs a b c d e
+  :: InvestigatorId
+  -> Text
+  -> ClassSymbol
+  -> Stats
+  -> [Trait]
+  -> (Attrs -> Attrs)
+  -> Investigator
+baseInvestigator a b c d e f =
+  BaseInvestigator' . BaseInvestigator . f $ baseAttrs a b c d e
 
 newtype BaseInvestigator = BaseInvestigator Attrs
   deriving newtype (Show, ToJSON, FromJSON)

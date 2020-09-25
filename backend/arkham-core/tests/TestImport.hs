@@ -22,6 +22,7 @@ import Arkham.Types.Game as X
 import Arkham.Types.GameValue
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator as X
+import qualified Arkham.Types.Investigator.Attrs as InvestigatorAttrs
 import Arkham.Types.InvestigatorId as X
 import Arkham.Types.Location as X
 import qualified Arkham.Types.Location.Attrs as LocationAttrs
@@ -76,7 +77,6 @@ buildPlayerCard cardCode = do
   cardId <- CardId <$> liftIO nextRandom
   pure $ lookupPlayerCard cardCode cardId
 
-
 testEnemy
   :: MonadIO m => CardCode -> (EnemyAttrs.Attrs -> EnemyAttrs.Attrs) -> m Enemy
 testEnemy cardCode f = do
@@ -102,13 +102,17 @@ testLocation cardCode f =
     name = unCardCode cardCode
   in pure $ baseLocation locationId name 0 (Static 0) Square [] f
 
-testInvestigator :: MonadIO m => CardCode -> (Stats -> Stats) -> m Investigator
-testInvestigator cardCode statsF =
+testInvestigator
+  :: MonadIO m
+  => CardCode
+  -> (InvestigatorAttrs.Attrs -> InvestigatorAttrs.Attrs)
+  -> m Investigator
+testInvestigator cardCode f =
   let
     investigatorId = InvestigatorId cardCode
     name = unCardCode cardCode
-    stats = statsF (Stats 5 5 5 5 5 5)
-  in pure $ baseInvestigator investigatorId name Neutral stats []
+    stats = Stats 5 5 5 5 5 5
+  in pure $ baseInvestigator investigatorId name Neutral stats [] f
 
 runGameTestOnlyOption
   :: (MonadFail m, MonadIO m) => String -> Game [Message] -> m (Game [Message])
@@ -125,18 +129,20 @@ runGameTestOnlyOption _reason game = case mapToList (gameQuestion game) of
 
 runGameTestOptionMatching
   :: (MonadFail m, MonadIO m)
-  => (Message -> Bool)
+  => String
+  -> (Message -> Bool)
   -> Game [Message]
   -> m (Game [Message])
-runGameTestOptionMatching f game = case mapToList (gameQuestion game) of
-  [(_, question)] -> case question of
-    ChooseOne msgs -> case find f msgs of
-      Just msg ->
-        toInternalGame (game { gameMessages = msg : gameMessages game })
-          >>= runMessages
-      Nothing -> error "could not find a matching message"
-    _ -> error "unsupported questions type"
-  _ -> error "There must be only one question to use this function"
+runGameTestOptionMatching _reason f game =
+  case mapToList (gameQuestion game) of
+    [(_, question)] -> case question of
+      ChooseOne msgs -> case find f msgs of
+        Just msg ->
+          toInternalGame (game { gameMessages = msg : gameMessages game })
+            >>= runMessages
+        Nothing -> error "could not find a matching message"
+      _ -> error "unsupported questions type"
+    _ -> error "There must be only one question to use this function"
 
 runGameTest
   :: Investigator
@@ -304,3 +310,6 @@ addToHand i card = AddToHand (getId () i) card
 
 chooseEndTurn :: Investigator -> Message
 chooseEndTurn i = ChooseEndTurn (getId () i)
+
+enemyAttack :: Investigator -> Enemy -> Message
+enemyAttack i e = EnemyAttack (getId () i) (getId () e)

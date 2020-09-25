@@ -8,7 +8,7 @@ import ClassyPrelude
 
 inHandAtEndOfRound :: MonadIO m => InvestigatorId -> Card -> m [Message]
 inHandAtEndOfRound iid (PlayerCard MkPlayerCard {..}) = case pcCardCode of
-  "01013" -> pure
+  "01013" -> pure -- Dark Memory
     [ RevealInHand pcId
     , InvestigatorAssignDamage iid (PlayerCardSource pcId) 0 2
     ]

@@ -18,6 +18,7 @@ module Arkham.Types.Game
   , chaosBag
   , scenario
   , discard
+  , agendas
   )
 where
 
@@ -91,6 +92,7 @@ type GameExternal = Game [Message]
 
 data Game queue = Game
   { gameMessages :: queue
+  , gameMessageHistory :: queue
   , gameSeed :: Int
   , gameCampaign :: Maybe Campaign
   , gameScenario :: Maybe Scenario
@@ -229,6 +231,9 @@ getLocation lid g = g ^?! locations . ix lid
 getEnemy :: EnemyId -> Game queue -> Enemy
 getEnemy eid g = g ^?! enemies . ix eid
 
+getAgenda :: AgendaId -> Game queue -> Agenda
+getAgenda aid g = g ^?! agendas . ix aid
+
 getAsset :: AssetId -> Game queue -> Asset
 getAsset aid g = g ^?! assets . ix aid
 
@@ -285,8 +290,11 @@ newCampaign campaignId playerCount' investigatorsList difficulty' = do
     newIORef
     $ map (uncurry (InitDeck . getInvestigatorId)) (toList investigatorsList)
     <> [StartCampaign]
+
+  history <- newIORef []
   pure $ Game
     { gameMessages = ref
+    , gameMessageHistory = history
     , gameSeed = seed
     , gameCampaign = Just campaign'
     , gameScenario = Nothing
@@ -380,6 +388,9 @@ instance HasCount TreacheryCount (LocationId, CardCode) (Game queue) where
 
 instance HasCount DoomCount EnemyId (Game queue) where
   getCount eid = getCount () . getEnemy eid
+
+instance HasCount DoomCount AgendaId (Game queue) where
+  getCount aid = getCount () . getAgenda aid
 
 instance HasCount XPCount () (Game queue) where
   getCount _ g =
@@ -1666,13 +1677,20 @@ toExternalGame
   -> m GameExternal
 toExternalGame g@Game {..} mq = do
   queue <- liftIO $ readIORef gameMessages
+  history <- liftIO $ readIORef gameMessageHistory
   hash' <- liftIO nextRandom
-  pure $ g { gameMessages = queue, gameHash = hash', gameQuestion = mq }
+  pure $ g
+    { gameMessages = queue
+    , gameMessageHistory = history
+    , gameHash = hash'
+    , gameQuestion = mq
+    }
 
 toInternalGame :: MonadIO m => GameExternal -> m GameInternal
 toInternalGame g@Game {..} = do
   ref <- newIORef gameMessages
-  pure $ g { gameMessages = ref }
+  history <- newIORef gameMessageHistory
+  pure $ g { gameMessages = ref, gameMessageHistory = history }
 
 runMessages :: (MonadIO m, MonadFail m) => GameInternal -> m GameExternal
 runMessages g = if g ^. gameOver || g ^. pending
@@ -1682,6 +1700,8 @@ runMessages g = if g ^. gameOver || g ^. pending
       (isJust <$> lookupEnv "DEBUG")
       (readIORef (gameMessages g) >>= pPrint)
     mmsg <- popMessage
+    for_ mmsg $ \msg ->
+      atomicModifyIORef' (gameMessageHistory g) (\queue -> (msg : queue, ()))
     case mmsg of
       Nothing -> case gamePhase g of
         CampaignPhase -> toExternalGame g mempty

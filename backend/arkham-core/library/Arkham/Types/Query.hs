@@ -31,6 +31,7 @@ newtype ClueCount = ClueCount { unClueCount :: Int }
 newtype SpendableClueCount = SpendableClueCount { unSpendableClueCount :: Int }
   deriving newtype (Eq, Hashable)
 newtype DoomCount = DoomCount { unDoomCount :: Int }
+  deriving newtype (Eq)
 newtype ResourceCount = ResourceCount { unResourceCount :: Int }
 newtype CardCount = CardCount { unCardCount :: Int }
   deriving newtype (Eq, Hashable)

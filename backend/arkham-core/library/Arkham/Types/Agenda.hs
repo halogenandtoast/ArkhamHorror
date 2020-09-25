@@ -2,6 +2,7 @@
 module Arkham.Types.Agenda
   ( Agenda(..)
   , lookupAgenda
+  , baseAgenda
   )
 where
 
@@ -18,6 +19,7 @@ import Arkham.Types.Agenda.Cards.WhatsGoingOn
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.AgendaId
 import Arkham.Types.Classes
+import Arkham.Types.GameValue
 import Arkham.Types.Helpers
 import Arkham.Types.Query
 import ClassyPrelude
@@ -46,6 +48,9 @@ instance HasAbilities Agenda where
 instance HasCount DoomCount () Agenda where
   getCount _ = DoomCount . agendaDoom . agendaAttrs
 
+instance HasId AgendaId () Agenda where
+  getId _ = agendaId . agendaAttrs
+
 data Agenda
   = WhatsGoingOn' WhatsGoingOn
   | RiseOfTheGhouls' RiseOfTheGhouls
@@ -55,11 +60,26 @@ data Agenda
   | TheArkhamWoods' TheArkhamWoods
   | TheRitualBegins' TheRitualBegins
   | VengeanceAwaits' VengeanceAwaits
+  | BaseAgenda' BaseAgenda
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Agenda
 deriving anyclass instance (AgendaRunner env) => RunMessage env Agenda
+
+newtype BaseAgenda = BaseAgenda Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+baseAgenda
+  :: AgendaId -> Text -> Text -> GameValue Int -> (Attrs -> Attrs) -> Agenda
+baseAgenda a b c d f = BaseAgenda' . BaseAgenda . f $ baseAttrs a b c d
+
+instance HasActions env investigator BaseAgenda where
+  getActions investigator window (BaseAgenda attrs) =
+    getActions investigator window attrs
+
+instance (AgendaRunner env) => RunMessage env BaseAgenda where
+  runMessage msg (BaseAgenda attrs) = BaseAgenda <$> runMessage msg attrs
 
 agendaAttrs :: Agenda -> Attrs
 agendaAttrs = \case
@@ -71,3 +91,4 @@ agendaAttrs = \case
   TheArkhamWoods' attrs -> coerce attrs
   TheRitualBegins' attrs -> coerce attrs
   VengeanceAwaits' attrs -> coerce attrs
+  BaseAgenda' attrs -> coerce attrs

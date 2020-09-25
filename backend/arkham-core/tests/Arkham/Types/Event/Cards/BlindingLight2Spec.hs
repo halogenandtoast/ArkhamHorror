@@ -8,6 +8,7 @@ import TestImport
 import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
 import Arkham.Types.GameValue
 import Arkham.Types.Helpers
+import Arkham.Types.Investigator.Attrs (Attrs(..))
 import Arkham.Types.Token
 
 spec :: Spec
@@ -16,7 +17,7 @@ spec = do
     it "Uses willpower to evade an enemy" $ do
       scenario' <- testScenario "00000" id
       investigator <- testInvestigator "00000"
-        $ \stats -> stats { willpower = 5, agility = 3 }
+        $ \attrs -> attrs { investigatorWillpower = 5, investigatorAgility = 3 }
       enemy <- testEnemy
         "00000"
         (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 3))

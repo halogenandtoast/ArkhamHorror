@@ -47,6 +47,7 @@ spec = do
             . (investigators %~ insertEntity investigator2)
             )
           >>= runGameTestOptionMatching
+                "choose other investigator"
                 (\case
                   TargetLabel (InvestigatorTarget "00001") _ -> True
                   _ -> False

@@ -8,6 +8,7 @@ import TestImport
 import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
 import Arkham.Types.GameValue
 import Arkham.Types.Helpers
+import Arkham.Types.Investigator.Attrs (Attrs(..))
 import Arkham.Types.Token
 
 spec :: Spec
@@ -17,7 +18,7 @@ spec = do
       scenario' <- testScenario "00000" id
       location <- testLocation "00000" id
       investigator <- testInvestigator "00000"
-        $ \stats -> stats { combat = 1, agility = 4 }
+        $ \attrs -> attrs { investigatorCombat = 1, investigatorAgility = 4 }
       backstab <- buildEvent "01051" investigator
       enemy <- testEnemy
         "00000"

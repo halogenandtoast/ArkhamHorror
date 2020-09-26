@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 33cac217e643d737cd49283e717cb490d66375cf9695888f7cc1339be58f635c
+-- hash: 60f8c53bcce5c427d75787536c2dbbef662150084754dae9788eebd772ac6ca1
 
 name:           arkham-core
 version:        0.0.0
@@ -98,6 +98,7 @@ library
       Arkham.Types.Asset.Cards.Switchblade
       Arkham.Types.Asset.Cards.TheNecronomicon
       Arkham.Types.Asset.Cards.WendysAmulet
+      Arkham.Types.Asset.Cards.ZoeysCross
       Arkham.Types.Asset.Helpers
       Arkham.Types.Asset.Runner
       Arkham.Types.Asset.Uses
@@ -367,6 +368,7 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Arkham.Types.Asset.Cards.ZoeysCrossSpec
       Arkham.Types.Event.Cards.BackstabSpec
       Arkham.Types.Event.Cards.Barricade3Spec
       Arkham.Types.Event.Cards.BarricadeSpec

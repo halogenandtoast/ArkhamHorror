@@ -37,13 +37,14 @@ zoeySamaras = ZoeySamaras $ baseAttrs
   [Believer, Hunter]
 
 instance (ActionRunner env investigator) => HasActions env investigator ZoeySamaras where
-  getActions i (Fast.AfterEnemyEngageInvestigator You) (ZoeySamaras Attrs {..})
-    | getId () i == investigatorId = do
+  getActions i (Fast.AfterEnemyEngageInvestigator You eid) (ZoeySamaras Attrs {..})
+    | getId () i == investigatorId
+    = do
       let
         ability = mkAbility
           (InvestigatorSource investigatorId)
           1
-          (ReactionAbility (Fast.AfterEnemyEngageInvestigator You))
+          (ReactionAbility (Fast.AfterEnemyEngageInvestigator You eid))
 
       usedAbilities <- map unUsedAbility <$> asks (getList ())
       pure

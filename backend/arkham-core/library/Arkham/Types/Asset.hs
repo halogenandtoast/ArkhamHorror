@@ -74,6 +74,7 @@ data Asset
   | Knife' Knife
   | Flashlight' Flashlight
   | LitaChantler' LitaChantler
+  | ZoeysCross' ZoeysCross
   | Bandolier' Bandolier
   | PhysicalTraining2' PhysicalTraining2
   | Hyperawareness2' Hyperawareness2
@@ -92,6 +93,9 @@ instance HasCardCode Asset where
 
 instance HasTraits Asset where
   getTraits = assetTraits . assetAttrs
+
+instance HasId AssetId () Asset where
+  getId _ = assetId . assetAttrs
 
 instance HasId (Maybe OwnerId) () Asset where
   getId _ = (OwnerId <$>) . assetInvestigator . assetAttrs
@@ -155,6 +159,7 @@ allAssets = mapFromList
   , ("01086", Knife' . knife)
   , ("01087", Flashlight' . flashlight)
   , ("01117", LitaChantler' . litaChantler)
+  , ("02006", ZoeysCross' . zoeysCross)
   , ("02147", Bandolier' . bandolier)
   , ("50001", PhysicalTraining2' . physicalTraining2)
   , ("50003", Hyperawareness2' . hyperawareness2)
@@ -226,6 +231,8 @@ assetAttrs = \case
   Knife' attrs -> coerce attrs
   Flashlight' attrs -> coerce attrs
   LitaChantler' attrs -> coerce attrs
+  ZoeysCross' attrs -> coerce attrs
+  Bandolier' attrs -> coerce attrs
   PhysicalTraining2' attrs -> coerce attrs
   Hyperawareness2' attrs -> coerce attrs
   HardKnocks2' attrs -> coerce attrs
@@ -233,4 +240,3 @@ assetAttrs = \case
   GrotesqueStatue4' attrs -> coerce attrs
   DigDeep2' attrs -> coerce attrs
   RabbitsFoot3' attrs -> coerce attrs
-  Bandolier' attrs -> coerce attrs

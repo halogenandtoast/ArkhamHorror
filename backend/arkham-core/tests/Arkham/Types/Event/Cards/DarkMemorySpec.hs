@@ -35,6 +35,6 @@ spec = do
         >>= runGameTestOnlyOption "end of turn effect"
         >>= runGameTestOnlyOption "assign first horror"
         >>= runGameTestOnlyOption "assign second horror"
-      investigator `shouldSatisfy` hasDamage game (0, 2)
+      updated game investigator `shouldSatisfy` hasDamage (0, 2)
       game `shouldSatisfy` hasProcessedMessage
         (RevealInHand $ getCardId darkMemory)

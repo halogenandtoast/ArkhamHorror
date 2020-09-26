@@ -37,5 +37,5 @@ spec = do
         >>= runGameTestOnlyOption "Fight enemy"
         >>= runGameTestOnlyOption "Run skill check"
         >>= runGameTestOnlyOption "Apply results"
-      enemy `shouldSatisfy` hasDamage game (3, 0)
+      updated game enemy `shouldSatisfy` hasDamage (3, 0)
       backstab `shouldSatisfy` isInDiscardOf game investigator

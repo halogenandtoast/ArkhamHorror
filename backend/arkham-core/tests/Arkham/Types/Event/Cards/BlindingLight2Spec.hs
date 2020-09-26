@@ -64,7 +64,7 @@ spec = do
         >>= runGameTestOnlyOption "Run skill check"
         >>= runGameTestOnlyOption "Apply results"
       blindingLight2 `shouldSatisfy` isInDiscardOf game investigator
-      enemy `shouldSatisfy` hasDamage game (2, 0)
+      updated game enemy `shouldSatisfy` hasDamage (2, 0)
 
     it
         "On Skull, Cultist, Tablet, ElderThing, or AutoFail the investigator loses an action and takes 1 horror"
@@ -95,4 +95,4 @@ spec = do
             >>= runGameTestOnlyOption "take event damage"
           blindingLight2 `shouldSatisfy` isInDiscardOf game investigator
           investigator `shouldSatisfy` hasRemainingActions game 2
-          investigator `shouldSatisfy` hasDamage game (0, 1)
+          updated game investigator `shouldSatisfy` hasDamage (0, 1)

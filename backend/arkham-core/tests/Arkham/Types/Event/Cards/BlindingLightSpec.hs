@@ -6,7 +6,6 @@ where
 import TestImport
 
 import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
-import Arkham.Types.GameValue
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs (Attrs(..))
 import Arkham.Types.Token
@@ -19,7 +18,6 @@ spec = do
       investigator <- testInvestigator "00000"
         $ \attrs -> attrs { investigatorWillpower = 5, investigatorAgility = 3 }
       enemy <- testEnemy
-        "00000"
         (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
       blindingLight <- buildEvent "01066" investigator
       location <- testLocation "00000" id
@@ -46,7 +44,6 @@ spec = do
       scenario' <- testScenario "00000" id
       investigator <- testInvestigator "01004" id
       enemy <- testEnemy
-        "00000"
         (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
       blindingLight <- buildEvent "01066" investigator
       location <- testLocation "00000" id
@@ -76,7 +73,6 @@ spec = do
           scenario' <- testScenario "00000" id
           investigator <- testInvestigator "01004" id
           enemy <- testEnemy
-            "00000"
             (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
           blindingLight <- buildEvent "01066" investigator
           location <- testLocation "00000" id

@@ -312,6 +312,7 @@ data Message
   | InvestigatorWhenEliminated InvestigatorId
   | InvestigatorEliminated InvestigatorId
   | CheckWindow InvestigatorId [Window]
+  | EndCheckWindow
   | CancelNext MessageType
   | Run [Message]
   | Continue Text

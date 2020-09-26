@@ -13,7 +13,7 @@ spec = do
     it "cancels the attack" $ do
       investigator <- testInvestigator "00000"
         $ \attrs -> attrs { investigatorResources = 1 }
-      enemy <- testEnemy "00000" id
+      enemy <- testEnemy id
       location <- testLocation "00000" id
       dodge <- buildPlayerCard "01023"
       game <-

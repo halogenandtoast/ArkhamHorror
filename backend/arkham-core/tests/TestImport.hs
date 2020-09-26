@@ -14,12 +14,12 @@ import Arkham.Types.Classes as X
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy as X
-import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
+import qualified Arkham.Types.Enemy.Attrs as Enemy
 import Arkham.Types.EnemyId as X
 import Arkham.Types.Event as X
 import Arkham.Types.EventId as X
 import Arkham.Types.Game as X
-import Arkham.Types.GameValue
+import Arkham.Types.GameValue as X
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator as X
 import qualified Arkham.Types.Investigator.Attrs as InvestigatorAttrs
@@ -35,6 +35,7 @@ import Arkham.Types.Query
 import Arkham.Types.Scenario as X
 import qualified Arkham.Types.Scenario.Attrs as ScenarioAttrs
 import Arkham.Types.ScenarioId as X
+import Arkham.Types.SkillType as X
 import Arkham.Types.Stats as X
 import Arkham.Types.Target
 import ClassyPrelude as X
@@ -77,11 +78,10 @@ buildPlayerCard cardCode = do
   cardId <- CardId <$> liftIO nextRandom
   pure $ lookupPlayerCard cardCode cardId
 
-testEnemy
-  :: MonadIO m => CardCode -> (EnemyAttrs.Attrs -> EnemyAttrs.Attrs) -> m Enemy
-testEnemy cardCode f = do
+testEnemy :: MonadIO m => (Enemy.Attrs -> Enemy.Attrs) -> m Enemy
+testEnemy f = do
   enemyId <- liftIO $ EnemyId <$> nextRandom
-  pure $ baseEnemy enemyId cardCode f
+  pure $ baseEnemy enemyId "00000" f
 
 testAgenda
   :: MonadIO m
@@ -313,3 +313,6 @@ chooseEndTurn i = ChooseEndTurn (getId () i)
 
 enemyAttack :: Investigator -> Enemy -> Message
 enemyAttack i e = EnemyAttack (getId () i) (getId () e)
+
+fightEnemy :: Investigator -> Enemy -> Message
+fightEnemy i e = FightEnemy (getId () i) (getId () e) SkillCombat [] [] False

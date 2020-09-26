@@ -1,5 +1,6 @@
 module Arkham.Types.Window where
 
+import Arkham.Types.EnemyId
 import Arkham.Types.SkillType
 import Arkham.Types.Token
 import Arkham.Types.Trait
@@ -8,7 +9,7 @@ import Data.Aeson
 
 data Window
   = AfterAssignedHorror Who
-  | AfterEnemyEngageInvestigator Who
+  | AfterEnemyEngageInvestigator Who EnemyId
   | AfterFailSkillTest Who Int
   | AfterFailSkillTestAtOrLess Who Int
   | AfterPassSkillTest Who Int

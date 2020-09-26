@@ -233,6 +233,7 @@ allPlayerCards = HashMap.fromList
   , ("01102", silverTwilightAcolyte)
   , ("01103", stubbornDetective)
   , ("01117", litaChantler)
+  , ("02006", zoeysCross)
   , ("02147", bandolier)
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
@@ -850,12 +851,17 @@ stubbornDetective cardId = (enemy cardId "01103" "Stubborn Detective" 0)
   , pcKeywords = [Keyword.Hunter]
   }
 
+zoeysCross :: CardId -> PlayerCard
+zoeysCross cardId = (asset cardId "02006" "Zoey's Cross" 1 Neutral)
+  { pcSkills = [SkillCombat, SkillCombat, SkillWild]
+  , pcTraits = [Item, Charm]
+  }
+
 bandolier :: CardId -> PlayerCard
 bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillWild]
   , pcTraits = [Item]
   }
-
 
 litaChantler :: CardId -> PlayerCard
 litaChantler cardId =

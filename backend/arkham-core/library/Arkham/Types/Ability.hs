@@ -13,6 +13,7 @@ import Arkham.Types.Ability.Limit
 import Arkham.Types.Ability.Type
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Source
+import Arkham.Types.Target
 import ClassyPrelude
 
 data Ability = Ability
@@ -39,7 +40,7 @@ instance FromJSON Ability where
 
 newtype UsedAbility = UsedAbility { unUsedAbility :: (InvestigatorId, Ability) }
 
-newtype AbilityMetadata = IntMetadata Int
+data AbilityMetadata = IntMetadata Int | TargetMetadata Target
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

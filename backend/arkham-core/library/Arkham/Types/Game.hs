@@ -19,6 +19,7 @@ module Arkham.Types.Game
   , scenario
   , discard
   , agendas
+  , assets
   )
 where
 
@@ -1206,8 +1207,8 @@ runGameMessage msg g = case msg of
   EnemyAttack iid eid -> do
     unshiftMessage (PerformEnemyAttack iid eid)
     g <$ broadcastWindow Fast.WhenEnemyAttacks iid g
-  EnemyEngageInvestigator _ iid ->
-    g <$ broadcastWindow Fast.AfterEnemyEngageInvestigator iid g
+  EnemyEngageInvestigator eid iid ->
+    g <$ broadcastWindow (`Fast.AfterEnemyEngageInvestigator` eid) iid g
   SkillTestAsk (Ask iid1 (ChooseOne c1)) -> do
     mNextMessage <- peekMessage
     case mNextMessage of

@@ -42,7 +42,7 @@ spec = do
               )
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
-      enemy `shouldSatisfy` hasDamage game (2, 0)
+      updated game enemy `shouldSatisfy` hasDamage (2, 0)
     it "allows you to gain a resource each time you are engaged by an enemy"
       $ do
           let zoeySamaras = lookupInvestigator "02001"

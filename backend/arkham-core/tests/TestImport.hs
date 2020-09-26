@@ -1,3 +1,4 @@
+{-# LANGUAGE RankNTypes #-}
 module TestImport
   ( module X
   , module TestImport
@@ -7,6 +8,8 @@ where
 import Arkham.Types.Agenda as X
 import qualified Arkham.Types.Agenda.Attrs as AgendaAttrs
 import Arkham.Types.AgendaId as X
+import Arkham.Types.Asset as X
+import Arkham.Types.AssetId as X
 import Arkham.Types.Card as X
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard (basePlayerCard)
@@ -64,6 +67,11 @@ buildEvent :: MonadIO m => CardCode -> Investigator -> m Event
 buildEvent cardCode investigator = do
   eventId <- liftIO $ EventId <$> nextRandom
   pure $ lookupEvent cardCode (getId () investigator) eventId
+
+buildAsset :: MonadIO m => CardCode -> m Asset
+buildAsset cardCode = do
+  assetId <- liftIO $ AssetId <$> nextRandom
+  pure $ lookupAsset cardCode assetId
 
 testPlayerCards :: MonadIO m => Int -> m [PlayerCard]
 testPlayerCards count' = replicateM count' testPlayerCard
@@ -212,21 +220,27 @@ instance ToPlayerCard Event where
 
 class Entity a where
   toTarget :: a -> Target
+  updated :: Game queue -> a -> a
 
 instance Entity Agenda where
   toTarget = AgendaTarget . getId ()
+  updated g a = g ^?! agendas . ix (getId () a)
 
 instance Entity Location where
   toTarget = LocationTarget . getId ()
+  updated g a = g ^?! locations . ix (getId () a)
 
 instance Entity Event where
   toTarget = EventTarget . getId ()
+  updated g a = g ^?! events . ix (getId () a)
 
 instance Entity Enemy where
   toTarget = EnemyTarget . getId ()
+  updated g a = g ^?! enemies . ix (getId () a)
 
 instance Entity Investigator where
   toTarget = InvestigatorTarget . getId ()
+  updated g a = g ^?! investigators . ix (getId () a)
 
 hasModifier :: (Entity a) => Game queue -> Modifier -> a -> Bool
 hasModifier game modifier a = modifier `elem` modifiers
@@ -269,11 +283,8 @@ hasRemainingActions game n investigator =
   let investigator' = game ^?! investigators . ix (getId () investigator)
   in actionsRemaining investigator' == n
 
-hasDamage :: (Entity a) => Game queue -> (Int, Int) -> a -> Bool
-hasDamage game n a = case toTarget a of
-  EnemyTarget eid -> getDamage (game ^?! enemies . ix eid) == n
-  InvestigatorTarget iid -> getDamage (game ^?! investigators . ix iid) == n
-  _ -> error "Not implemented"
+hasDamage :: (HasDamage a) => (Int, Int) -> a -> Bool
+hasDamage n a = getDamage a == n
 
 hasDoom :: (Entity a) => Game queue -> Int -> a -> Bool
 hasDoom game n a = case toTarget a of
@@ -316,3 +327,10 @@ enemyAttack i e = EnemyAttack (getId () i) (getId () e)
 
 fightEnemy :: Investigator -> Enemy -> Message
 fightEnemy i e = FightEnemy (getId () i) (getId () e) SkillCombat [] [] False
+
+playAsset :: Investigator -> Asset -> Message
+playAsset i a = InvestigatorPlayAsset
+  (getId () i)
+  (getId () a)
+  (slotsOf a)
+  (toList $ getTraits a)

@@ -7,8 +7,10 @@ import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Source
 import Arkham.Types.Stats
+import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Window (Who(..))
@@ -36,17 +38,31 @@ zoeySamaras = ZoeySamaras $ baseAttrs
 
 instance (ActionRunner env investigator) => HasActions env investigator ZoeySamaras where
   getActions i (Fast.AfterEnemyEngageInvestigator You) (ZoeySamaras Attrs {..})
-    | getId () i == investigatorId
-    = let
+    | getId () i == investigatorId = do
+      let
         ability = mkAbility
           (InvestigatorSource investigatorId)
           1
           (ReactionAbility (Fast.AfterEnemyEngageInvestigator You))
-      in pure [ActivateCardAbilityAction investigatorId ability]
+
+      usedAbilities <- map unUsedAbility <$> asks (getList ())
+      pure
+        [ ActivateCardAbilityAction investigatorId ability
+        | (investigatorId, ability) `notElem` usedAbilities
+        ]
 
   getActions i window (ZoeySamaras attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env ZoeySamaras where
   runMessage msg i@(ZoeySamaras attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
+    UseCardAbility _ _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
+      i <$ unshiftMessage (TakeResources investigatorId 1 False)
+    ResolveToken ElderSign iid skillValue | iid == investigatorId -> do
+      runTest investigatorId skillValue 1
+      i <$ unshiftMessage
+        (AddModifiers
+          SkillTestTarget
+          (InvestigatorSource investigatorId)
+          [DamageDealt 1]
+        )
     _ -> ZoeySamaras <$> runMessage msg attrs

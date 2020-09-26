@@ -14,7 +14,7 @@ spec = do
     it "Evades enemies engaged with you" $ do
       investigator <- testInvestigator "00000" id
       location <- testLocation "00000" id
-      enemy <- testEnemy "00000" id
+      enemy <- testEnemy id
       cunningDistraction <- buildEvent "01078" investigator
       game <- runGameTest
         investigator
@@ -33,7 +33,7 @@ spec = do
       investigator <- testInvestigator "00000" id
       investigator2 <- testInvestigator "00001" id
       location <- testLocation "00000" id
-      enemy <- testEnemy "00000" id
+      enemy <- testEnemy id
       cunningDistraction <- buildEvent "01078" investigator
       game <- runGameTest
         investigator
@@ -52,7 +52,7 @@ spec = do
     it "Evades aloof enemies at your location" $ do
       investigator <- testInvestigator "00000" id
       location <- testLocation "00000" id
-      enemy <- testEnemy "00000" (set EnemyAttrs.keywords (setFromList [Aloof]))
+      enemy <- testEnemy (set EnemyAttrs.keywords (setFromList [Aloof]))
       cunningDistraction <- buildEvent "01078" investigator
       game <- runGameTest
         investigator

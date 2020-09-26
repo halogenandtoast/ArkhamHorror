@@ -930,6 +930,15 @@ instance
       <> agendaActions
       <> investigatorActions
 
+runPreGameMessage
+  :: (GameRunner env, MonadReader env m, MonadIO m)
+  => Message
+  -> GameInternal
+  -> m GameInternal
+runPreGameMessage msg g = case msg of
+  CheckWindow{} -> g <$ unshiftMessage EndCheckWindow
+  _ -> pure g
+
 runGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m, MonadFail m)
   => Message
@@ -1196,8 +1205,9 @@ runGameMessage msg g = case msg of
     pure g
   EnemyAttack iid eid -> do
     unshiftMessage (PerformEnemyAttack iid eid)
-    broadcastWindow Fast.WhenEnemyAttacks iid g
-    pure g
+    g <$ broadcastWindow Fast.WhenEnemyAttacks iid g
+  EnemyEngageInvestigator _ iid ->
+    g <$ broadcastWindow Fast.AfterEnemyEngageInvestigator iid g
   SkillTestAsk (Ask iid1 (ChooseOne c1)) -> do
     mNextMessage <- peekMessage
     case mNextMessage of
@@ -1652,11 +1662,14 @@ runGameMessage msg g = case msg of
         pure $ g & treacheries %~ deleteMap tid
       Just (EncounterCard ec) ->
         pure $ g & treacheries %~ deleteMap tid & discard %~ (ec :)
+  EndCheckWindow -> pure $ g & usedAbilities %~ filter
+    (\(_, Ability {..}) -> abilityLimit /= NoLimit)
   _ -> pure g
 
 instance RunMessage GameInternal GameInternal where
   runMessage msg g =
-    traverseOf (campaign . traverse) (runMessage msg) g
+    runPreGameMessage msg g
+      >>= traverseOf (campaign . traverse) (runMessage msg)
       >>= traverseOf (scenario . traverse) (runMessage msg)
       >>= traverseOf (acts . traverse) (runMessage msg)
       >>= traverseOf (agendas . traverse) (runMessage msg)

@@ -8,6 +8,7 @@ import Data.Aeson
 
 data Window
   = AfterAssignedHorror Who
+  | AfterEnemyEngageInvestigator Who
   | AfterFailSkillTest Who Int
   | AfterFailSkillTestAtOrLess Who Int
   | AfterPassSkillTest Who Int

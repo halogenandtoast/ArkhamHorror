@@ -172,6 +172,10 @@ instance HasDamage Investigator where
   getDamage i = (investigatorHealthDamage, investigatorSanityDamage)
     where Attrs {..} = investigatorAttrs i
 
+instance HasTrauma Investigator where
+  getTrauma i = (investigatorPhysicalTrauma, investigatorMentalTrauma)
+    where Attrs {..} = investigatorAttrs i
+
 instance HasSet EnemyId () Investigator where
   getSet _ = investigatorEngagedEnemies . investigatorAttrs
 

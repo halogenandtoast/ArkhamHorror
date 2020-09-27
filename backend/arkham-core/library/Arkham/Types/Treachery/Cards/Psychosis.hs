@@ -42,7 +42,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Psychosi
 instance (TreacheryRunner env) => RunMessage env Psychosis where
   runMessage msg t@(Psychosis attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
-      unshiftMessage $ AttachTreacheryToInvestigator tid iid
+      unshiftMessage $ AttachTreachery tid (InvestigatorTarget iid)
       Psychosis <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     After (InvestigatorTakeHorror iid _ _)
       | Just iid == treacheryAttachedInvestigator -> t <$ unshiftMessage

@@ -43,9 +43,9 @@ instance (ActionRunner env investigator) => HasActions env investigator Haunted 
 instance (TreacheryRunner env) => RunMessage env Haunted where
   runMessage msg t@(Haunted attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
-      unshiftMessage $ AttachTreacheryToInvestigator tid iid
+      unshiftMessage $ AttachTreachery tid (InvestigatorTarget iid)
       Haunted <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
-    AttachTreacheryToInvestigator tid iid | tid == treacheryId -> do
+    AttachTreachery tid (InvestigatorTarget iid) | tid == treacheryId -> do
       unshiftMessage
         (AddModifiers
           (InvestigatorTarget iid)

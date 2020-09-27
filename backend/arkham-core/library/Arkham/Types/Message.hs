@@ -73,6 +73,7 @@ data Message
   | AddCampaignCardToDeck InvestigatorId PlayerCard
   | SetLocationLabel LocationId Text
   | EndOfGame
+  | ClearQueue
   | StartCampaign
   | ResetGame
   | CampaignStep (Maybe CampaignStep)
@@ -160,6 +161,8 @@ data Message
   | InvestigatorDrewEncounterCard InvestigatorId EncounterCard
   | InvestigatorDrawEnemy InvestigatorId LocationId EnemyId
   | EnemySpawn LocationId EnemyId
+  | CreateEnemyRequest Source CardCode
+  | RequestedEnemy Source EnemyId
   | EnemySpawnedAt LocationId EnemyId
   | EnemyEngageInvestigator EnemyId InvestigatorId
   | InvestigatorDamageEnemy InvestigatorId EnemyId
@@ -281,9 +284,8 @@ data Message
   | SuccessfulInvestigation InvestigatorId LocationId
   | SuccessfulAttackEnemy InvestigatorId EnemyId
   | FailedAttackEnemy InvestigatorId EnemyId
-  | AttachTreacheryToLocation TreacheryId LocationId
+  | AttachTreachery TreacheryId Target
   | AttachEventToLocation EventId LocationId
-  | AttachTreacheryToInvestigator TreacheryId InvestigatorId
   | AddModifiers Target Source [Modifier]
   | SetModifiers Target Source [Modifier]
   | AddSlot InvestigatorId SlotType Slot

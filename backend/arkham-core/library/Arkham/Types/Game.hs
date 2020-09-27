@@ -20,6 +20,8 @@ module Arkham.Types.Game
   , discard
   , agendas
   , assets
+  , treacheries
+  , getLongestPath
   )
 where
 
@@ -634,6 +636,57 @@ getShortestPath game initialLocation target = evalState
     False
   )
 
+data LPState = LPState
+  { _lpSearchQueue       :: Seq LocationId
+  , _lpVisistedLocations :: HashSet LocationId
+  , _lpParents           :: HashMap LocationId LocationId
+  }
+
+getLongestPath
+  :: Game queue -> LocationId -> (LocationId -> Bool) -> [LocationId]
+getLongestPath game initialLocation target =
+  fromMaybe [] . headMay . map snd . sortOn (Down . fst) . mapToList $ evalState
+    (markDistances game initialLocation target)
+    (LPState (pure initialLocation) (HashSet.singleton initialLocation) mempty)
+
+markDistances
+  :: Game queue
+  -> LocationId
+  -> (LocationId -> Bool)
+  -> State LPState (HashMap Int [LocationId])
+markDistances game initialLocation target = do
+  LPState searchQueue visitedSet parentsMap <- get
+  if Seq.null searchQueue
+    then pure mempty
+    else do
+      let
+        nextLoc = Seq.index searchQueue 0
+        newVisitedSet = insertSet nextLoc visitedSet
+        adjacentCells =
+          map unConnectedLocationId . toList $ getSet nextLoc game
+        unvisitedNextCells =
+          filter (\loc -> not (loc `member` visitedSet)) adjacentCells
+        newSearchQueue =
+          foldr (flip (Seq.|>)) (Seq.drop 1 searchQueue) unvisitedNextCells
+        newParentsMap =
+          foldr (`insertMap` nextLoc) parentsMap unvisitedNextCells
+      put (LPState newSearchQueue newVisitedSet newParentsMap)
+      others <- markDistances game initialLocation target
+      if target nextLoc
+        then pure $ HashMap.unionWith
+          (<>)
+          others
+          (HashMap.singleton
+            (length $ unwindPath parentsMap [nextLoc])
+            [nextLoc]
+          )
+        else pure others
+ where
+  unwindPath parentsMap currentPath =
+    case lookup (fromJustNote "failed bfs" $ headMay currentPath) parentsMap of
+      Nothing -> fromJustNote "failed bfs on tail" $ tailMay currentPath
+      Just parent -> unwindPath parentsMap (parent : currentPath)
+
 bfs
   :: Game queue
   -> LocationId
@@ -741,6 +794,12 @@ instance HasSet ClosestLocationId (LocationId, LocationId) (Game queue) where
       g
       start
       (== destination)
+
+instance HasSet FarthestLocationId InvestigatorId (Game queue) where
+  getSet iid g =
+    let start = locationFor iid g
+    in
+      setFromList . map FarthestLocationId $ getLongestPath g start (const True)
 
 instance HasSet Int SkillType (Game queue) where
   getSet skillType g =
@@ -950,9 +1009,8 @@ runGameMessage msg g = case msg of
   Label _ msgs -> g <$ unshiftMessages msgs
   TargetLabel _ msgs -> g <$ unshiftMessages msgs
   Continue _ -> pure g
-  EndOfGame -> do
-    clearQueue
-    g <$ pushMessage NextCampaignStep
+  EndOfGame -> g <$ pushMessages [ClearQueue, NextCampaignStep]
+  ClearQueue -> g <$ clearQueue
   ResetGame ->
     pure
       $ g
@@ -1508,6 +1566,10 @@ runGameMessage msg g = case msg of
     unshiftMessages
       [Will (EnemySpawn lid eid), When (EnemySpawn lid eid), EnemySpawn lid eid]
     pure $ g & enemies . at eid ?~ enemy'
+  CreateEnemyRequest source cardCode -> do
+    (enemyId', enemy') <- createEnemy cardCode
+    unshiftMessage (RequestedEnemy source enemyId')
+    pure $ g & enemies . at enemyId' ?~ enemy'
   CreateEnemyAt cardCode lid -> do
     (enemyId', enemy') <- createEnemy cardCode
     unshiftMessages

@@ -58,13 +58,14 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
           in
             do
               case matches of
-                [(x, _)] -> unshiftMessages [AttachTreacheryToLocation tid x]
+                [(x, _)] ->
+                  unshiftMessages [AttachTreachery tid (LocationTarget x)]
                 xs -> unshiftMessage
                   (Ask iid $ ChooseOne
-                    [ AttachTreacheryToLocation tid x | (x, _) <- xs ]
+                    [ AttachTreachery tid (LocationTarget x) | (x, _) <- xs ]
                   )
               LockedDoor <$> runMessage msg attrs
-    AttachTreacheryToLocation tid lid | tid == treacheryId -> do
+    AttachTreachery tid (LocationTarget lid) | tid == treacheryId -> do
       unshiftMessage
         (AddModifiers
           (LocationTarget lid)

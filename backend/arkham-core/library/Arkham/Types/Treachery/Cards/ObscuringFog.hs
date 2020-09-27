@@ -33,7 +33,7 @@ instance (TreacheryRunner env) => RunMessage env ObscuringFog where
         then pure t -- Revelation did not run
         else do
           unshiftMessages
-            [ AttachTreacheryToLocation tid currentLocationId
+            [ AttachTreachery tid (LocationTarget currentLocationId)
             , AddModifiers
               (LocationTarget currentLocationId)
               (TreacherySource tid)

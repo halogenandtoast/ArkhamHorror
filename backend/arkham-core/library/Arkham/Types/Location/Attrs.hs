@@ -60,6 +60,22 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "location"
 
+symbol :: Lens' Attrs LocationSymbol
+symbol = lens locationSymbol $ \m x -> m { locationSymbol = x }
+
+revealedSymbol :: Lens' Attrs LocationSymbol
+revealedSymbol =
+  lens locationRevealedSymbol $ \m x -> m { locationRevealedSymbol = x }
+
+connectedSymbols :: Lens' Attrs (HashSet LocationSymbol)
+connectedSymbols =
+  lens locationConnectedSymbols $ \m x -> m { locationConnectedSymbols = x }
+
+revealedConnectedSymbols :: Lens' Attrs (HashSet LocationSymbol)
+revealedConnectedSymbols = lens locationRevealedConnectedSymbols
+  $ \m x -> m { locationRevealedConnectedSymbols = x }
+
+
 investigators :: Lens' Attrs (HashSet InvestigatorId)
 investigators =
   lens locationInvestigators $ \m x -> m { locationInvestigators = x }
@@ -209,7 +225,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
       pure $ a & modifiers %~ HashMap.delete source
     PlacedLocation lid | lid == locationId ->
       a <$ unshiftMessage (AddConnection lid locationSymbol)
-    AttachTreacheryToLocation tid lid | lid == locationId ->
+    AttachTreachery tid (LocationTarget lid) | lid == locationId ->
       pure $ a & treacheries %~ HashSet.insert tid
     AttachEventToLocation eid lid | lid == locationId ->
       pure $ a & events %~ HashSet.insert eid

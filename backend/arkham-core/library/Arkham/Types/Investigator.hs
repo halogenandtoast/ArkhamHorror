@@ -15,6 +15,7 @@ module Arkham.Types.Investigator
   , handOf
   , deckOf
   , availableSkillsFor
+  , skillValueOf
   , GetInvestigatorId(..)
   , Investigator
   )
@@ -314,6 +315,13 @@ deckOf = view deck . investigatorAttrs
 
 availableSkillsFor :: Investigator -> SkillType -> [SkillType]
 availableSkillsFor i s = possibleSkillTypeChoices s (investigatorAttrs i)
+
+skillValueOf :: SkillType -> Investigator -> Int
+skillValueOf SkillWillpower = investigatorWillpower . investigatorAttrs
+skillValueOf SkillIntellect = investigatorIntellect . investigatorAttrs
+skillValueOf SkillCombat = investigatorCombat . investigatorAttrs
+skillValueOf SkillAgility = investigatorAgility . investigatorAttrs
+skillValueOf SkillWild = error "should not look this up"
 
 hasEndedTurn :: Investigator -> Bool
 hasEndedTurn = view endedTurn . investigatorAttrs

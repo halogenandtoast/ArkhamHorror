@@ -32,21 +32,20 @@ import qualified Arkham.Types.Location.Attrs as LocationAttrs
 import Arkham.Types.LocationId as X
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Message as X
-import Arkham.Types.Modifier
 import Arkham.Types.Phase
-import Arkham.Types.Query
 import Arkham.Types.Scenario as X
 import qualified Arkham.Types.Scenario.Attrs as ScenarioAttrs
 import Arkham.Types.ScenarioId as X
 import Arkham.Types.SkillType as X
+import Arkham.Types.Source as X
 import Arkham.Types.Stats as X
-import Arkham.Types.Target
 import ClassyPrelude as X
 import Control.Monad.Fail as X
 import qualified Data.HashMap.Strict as HashMap
-import qualified Data.List as L
 import qualified Data.UUID as UUID
 import Data.UUID.V4 as X
+import Helpers.Matchers as X
+import Helpers.Message as X
 import Lens.Micro as X
 import Test.Hspec as X
 
@@ -85,6 +84,16 @@ buildPlayerCard :: MonadIO m => CardCode -> m PlayerCard
 buildPlayerCard cardCode = do
   cardId <- CardId <$> liftIO nextRandom
   pure $ lookupPlayerCard cardCode cardId
+
+buildTestEnemyEncounterCard :: MonadIO m => m EncounterCard
+buildTestEnemyEncounterCard = do
+  cardId <- CardId <$> liftIO nextRandom
+  pure $ lookupEncounterCard "00000" cardId -- 00000 is a hardcoded enemy type
+
+buildTestTreacheryEncounterCard :: MonadIO m => m EncounterCard
+buildTestTreacheryEncounterCard = do
+  cardId <- CardId <$> liftIO nextRandom
+  pure $ lookupEncounterCard "00001" cardId -- 00001 is a hardcoded treachery type
 
 testEnemy :: MonadIO m => (Enemy.Attrs -> Enemy.Attrs) -> m Enemy
 testEnemy f = do
@@ -134,6 +143,15 @@ runGameTestOnlyOption _reason game = case mapToList (gameQuestion game) of
         >>= runMessages
     _ -> error "spec expectation mismatch"
   _ -> error "There must be only one choice to use this function"
+
+runGameTestMessages
+  :: (MonadFail m, MonadIO m)
+  => Game [Message]
+  -> [Message]
+  -> m (Game [Message])
+runGameTestMessages game msgs =
+  toInternalGame (game { gameMessages = msgs <> gameMessages game })
+    >>= runMessages
 
 runGameTestOptionMatching
   :: (MonadFail m, MonadIO m)
@@ -200,137 +218,3 @@ newGame investigator queue = do
     , gameHash = UUID.nil
     }
   where investigatorId = getInvestigatorId investigator
-
-isInDiscardOf
-  :: (ToPlayerCard entity) => Game queue -> Investigator -> entity -> Bool
-isInDiscardOf game investigator entity = card `elem` discard'
- where
-  discard' = game ^?! investigators . ix (getId () investigator) . to discardOf
-  card = asPlayerCard entity
-
-class ToPlayerCard a where
-  asPlayerCard :: a -> PlayerCard
-
-class ToEncounterCard a where
-  asEncounterCard :: a -> EncounterCard
-
-instance ToPlayerCard Event where
-  asPlayerCard event =
-    lookupPlayerCard (getCardCode event) (CardId . unEventId $ getId () event)
-
-class Entity a where
-  toTarget :: a -> Target
-  updated :: Game queue -> a -> a
-
-instance Entity Agenda where
-  toTarget = AgendaTarget . getId ()
-  updated g a = g ^?! agendas . ix (getId () a)
-
-instance Entity Location where
-  toTarget = LocationTarget . getId ()
-  updated g a = g ^?! locations . ix (getId () a)
-
-instance Entity Event where
-  toTarget = EventTarget . getId ()
-  updated g a = g ^?! events . ix (getId () a)
-
-instance Entity Enemy where
-  toTarget = EnemyTarget . getId ()
-  updated g a = g ^?! enemies . ix (getId () a)
-
-instance Entity Investigator where
-  toTarget = InvestigatorTarget . getId ()
-  updated g a = g ^?! investigators . ix (getId () a)
-
-hasModifier :: (Entity a) => Game queue -> Modifier -> a -> Bool
-hasModifier game modifier a = modifier `elem` modifiers
- where
-  modifiers = case toTarget a of
-    LocationTarget locId -> game ^. locations . ix locId . to getModifiers
-    _ -> []
-
-isAttachedTo :: (Entity a, Entity b) => Game queue -> a -> b -> Bool
-isAttachedTo game x y = case toTarget x of
-  LocationTarget locId -> case toTarget y of
-    EventTarget eventId ->
-      eventId `member` (game ^. locations . ix locId . to (getSet ()))
-    _ -> False
-  _ -> False
-
-
-isInEncounterDiscard :: (ToEncounterCard entity) => Game queue -> entity -> Bool
-isInEncounterDiscard game entity = card `elem` discard'
- where
-  discard' = game ^. discard
-  card = asEncounterCard entity
-
-instance ToEncounterCard Enemy where
-  asEncounterCard enemy = lookupEncounterCard
-    (getCardCode enemy)
-    (CardId . unEnemyId $ getId () enemy)
-
-updatedResourceCount :: Game queue -> Investigator -> Int
-updatedResourceCount game investigator =
-  game ^?! investigators . ix (getId () investigator) . to resourceCount
-
-evadedBy :: Game queue -> Investigator -> Enemy -> Bool
-evadedBy game _investigator enemy =
-  let enemy' = game ^?! enemies . ix (getId () enemy)
-  in not (isEngaged enemy') && isExhausted enemy'
-
-hasRemainingActions :: Game queue -> Int -> Investigator -> Bool
-hasRemainingActions game n investigator =
-  let investigator' = game ^?! investigators . ix (getId () investigator)
-  in actionsRemaining investigator' == n
-
-hasDamage :: (HasDamage a) => (Int, Int) -> a -> Bool
-hasDamage n a = getDamage a == n
-
-hasDoom :: (Entity a) => Game queue -> Int -> a -> Bool
-hasDoom game n a = case toTarget a of
-  AgendaTarget aid -> getCount aid game == DoomCount n
-  _ -> error "Not implemented"
-
-handIs :: Game queue -> [Card] -> Investigator -> Bool
-handIs g cards i = not (null hand) && null (hand L.\\ cards)
-  where hand = handOf (g ^?! investigators . ix (getId () i))
-
-hasProcessedMessage :: Message -> Game [Message] -> Bool
-hasProcessedMessage m g = m `elem` gameMessageHistory g
-
-playEvent :: Investigator -> Event -> Message
-playEvent i e = InvestigatorPlayEvent (getId () i) (getId () e)
-
-moveTo :: Investigator -> Location -> Message
-moveTo i l = MoveTo (getId () i) (getId () l)
-
-moveFrom :: Investigator -> Location -> Message
-moveFrom i l = MoveFrom (getId () i) (getId () l)
-
-moveAllTo :: Location -> Message
-moveAllTo = MoveAllTo . getId ()
-
-enemySpawn :: Location -> Enemy -> Message
-enemySpawn l e = EnemySpawn (getId () l) (getId () e)
-
-loadDeck :: Investigator -> [PlayerCard] -> Message
-loadDeck i cs = LoadDeck (getId () i) cs
-
-addToHand :: Investigator -> Card -> Message
-addToHand i card = AddToHand (getId () i) card
-
-chooseEndTurn :: Investigator -> Message
-chooseEndTurn i = ChooseEndTurn (getId () i)
-
-enemyAttack :: Investigator -> Enemy -> Message
-enemyAttack i e = EnemyAttack (getId () i) (getId () e)
-
-fightEnemy :: Investigator -> Enemy -> Message
-fightEnemy i e = FightEnemy (getId () i) (getId () e) SkillCombat [] [] False
-
-playAsset :: Investigator -> Asset -> Message
-playAsset i a = InvestigatorPlayAsset
-  (getId () i)
-  (getId () a)
-  (slotsOf a)
-  (toList $ getTraits a)

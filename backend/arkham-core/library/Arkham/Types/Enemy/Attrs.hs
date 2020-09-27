@@ -8,6 +8,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
+import Arkham.Types.TreacheryId
 import Arkham.Types.GameValue
 import Arkham.Types.Window
 import Arkham.Types.InvestigatorId
@@ -41,6 +42,7 @@ data Attrs = Attrs
   , enemyHealthDamage :: Int
   , enemySanityDamage :: Int
   , enemyTraits :: HashSet Trait
+  , enemyTreacheries :: HashSet TreacheryId
   , enemyVictory :: Maybe Int
   , enemyKeywords :: HashSet Keyword
   , enemyPrey :: Prey
@@ -88,6 +90,9 @@ keywords = lens enemyKeywords $ \m x -> m { enemyKeywords = x }
 modifiers :: Lens' Attrs (HashMap Source [Modifier])
 modifiers = lens enemyModifiers $ \m x -> m { enemyModifiers = x }
 
+treacheries :: Lens' Attrs (HashSet TreacheryId)
+treacheries = lens enemyTreacheries $ \m x -> m { enemyTreacheries = x }
+
 exhausted :: Lens' Attrs Bool
 exhausted = lens enemyExhausted $ \m x -> m { enemyExhausted = x }
 
@@ -113,6 +118,7 @@ baseAttrs eid cardCode =
       , enemyHealthDamage = 0
       , enemySanityDamage = 0
       , enemyTraits = HashSet.fromList ecTraits
+      , enemyTreacheries = mempty
       , enemyKeywords = HashSet.fromList ecKeywords
       , enemyPrey = AnyPrey
       , enemyModifiers = mempty
@@ -143,6 +149,7 @@ weaknessBaseAttrs eid cardCode =
       , enemyHealthDamage = 0
       , enemySanityDamage = 0
       , enemyTraits = HashSet.fromList pcTraits
+      , enemyTreacheries = mempty
       , enemyVictory = pcVictoryPoints
       , enemyKeywords = HashSet.fromList pcKeywords
       , enemyPrey = AnyPrey
@@ -442,5 +449,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
       pure $ a & doom +~ amount
     PlaceDoom (EnemyTarget eid) amount | eid == enemyId ->
       pure $ a & doom +~ amount
+    AttachTreachery tid (EnemyTarget eid) | eid == enemyId ->
+      pure $ a & treacheries %~ HashSet.insert tid
     Blanked msg' -> runMessage msg' a
     _ -> pure a

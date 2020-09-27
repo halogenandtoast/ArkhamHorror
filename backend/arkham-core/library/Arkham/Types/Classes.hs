@@ -155,6 +155,9 @@ class HasVictoryPoints a where
 class HasDamage a where
   getDamage :: a -> (Int, Int)
 
+class HasTrauma a where
+  getTrauma :: a -> (Int, Int)
+
 instance HasVictoryPoints Card where
   getVictoryPoints (PlayerCard card) = getVictoryPoints card
   getVictoryPoints (EncounterCard card) = getVictoryPoints card

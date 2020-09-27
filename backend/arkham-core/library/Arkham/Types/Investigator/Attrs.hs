@@ -614,7 +614,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         (Discard . AssetTarget)
         (HashSet.toList $ a ^. assets)
       )
-    AttachTreacheryToInvestigator tid iid | iid == investigatorId ->
+    AttachTreachery tid (InvestigatorTarget iid) | iid == investigatorId ->
       pure $ a & treacheries %~ HashSet.insert tid
     AllCheckHandSize | not (a ^. defeated || a ^. resigned) -> do
       when (length investigatorHand > 8)

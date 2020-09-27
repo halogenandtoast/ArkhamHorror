@@ -46,6 +46,7 @@ data Treachery
   | TheYellowSign' TheYellowSign
   | OfferOfPower' OfferOfPower
   | DreamsOfRlyeh' DreamsOfRlyeh
+  | SmiteTheWicked' SmiteTheWicked
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -63,6 +64,9 @@ instance HasCount DoomCount () Treachery where
 
 instance HasId (Maybe OwnerId) () Treachery where
   getId _ = (OwnerId <$>) . treacheryOwner . treacheryAttrs
+
+instance HasId TreacheryId () Treachery where
+  getId _ = treacheryId . treacheryAttrs
 
 lookupTreachery
   :: CardCode -> (TreacheryId -> Maybe InvestigatorId -> Treachery)
@@ -95,6 +99,7 @@ allTreacheries = mapFromList
   , ("01176", (TheYellowSign' .) . theYellowSign)
   , ("01178", (OfferOfPower' .) . offerOfPower)
   , ("01182", (DreamsOfRlyeh' .) . dreamsOfRlyeh)
+  , ("02007", (SmiteTheWicked' .) . smiteTheWicked)
   ]
 
 isWeakness :: Treachery -> Bool
@@ -129,3 +134,4 @@ treacheryAttrs = \case
   TheYellowSign' attrs -> coerce attrs
   OfferOfPower' attrs -> coerce attrs
   DreamsOfRlyeh' attrs -> coerce attrs
+  SmiteTheWicked' attrs -> coerce attrs

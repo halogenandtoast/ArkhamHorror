@@ -72,7 +72,8 @@ encounterCardMatch (cardType, mtrait) MkEncounterCard {..} =
 
 allEncounterCards :: HashMap CardCode (CardId -> EncounterCard)
 allEncounterCards = HashMap.fromList
-  [ ("00000", placeholder)
+  [ ("00000", placeholderEnemy)
+  , ("00001", placeholderTreachery)
   , ("01116", ghoulPriest)
   , ("01118", fleshEater)
   , ("01119", icyGhoul)
@@ -112,8 +113,13 @@ allEncounterCards = HashMap.fromList
   , ("01182", dreamsOfRlyeh)
   ]
 
-placeholder :: CardId -> EncounterCard
-placeholder cardId = baseEncounterCard cardId "00000" "Placeholder" EnemyType
+placeholderEnemy :: CardId -> EncounterCard
+placeholderEnemy cardId =
+  baseEncounterCard cardId "00000" "Placeholder Enemy Card" EnemyType
+
+placeholderTreachery :: CardId -> EncounterCard
+placeholderTreachery cardId =
+  baseEncounterCard cardId "00001" "Placeholder Treachery Card" TreacheryType
 
 ghoulPriest :: CardId -> EncounterCard
 ghoulPriest cardId = (enemy cardId "01116" "Ghoul Priest")

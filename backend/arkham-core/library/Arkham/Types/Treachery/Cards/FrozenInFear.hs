@@ -28,7 +28,7 @@ instance (TreacheryRunner env) => RunMessage env FrozenInFear where
   runMessage msg t@(FrozenInFear attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
       unshiftMessages
-        [ AttachTreacheryToInvestigator tid iid
+        [ AttachTreachery tid (InvestigatorTarget iid)
         , AddModifiers
           (InvestigatorTarget iid)
           (TreacherySource tid)

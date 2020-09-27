@@ -48,7 +48,9 @@ instance (TreacheryRunner env) => RunMessage env CoverUp where
   runMessage msg t@(CoverUp attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
       unshiftMessages
-        [RemoveCardFromHand iid "01007", AttachTreacheryToInvestigator tid iid]
+        [ RemoveCardFromHand iid "01007"
+        , AttachTreachery tid (InvestigatorTarget iid)
+        ]
       CoverUp <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     EndOfGame | fromJustNote "Must be set" treacheryClues > 0 ->
       let

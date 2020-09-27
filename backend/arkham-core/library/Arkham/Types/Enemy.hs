@@ -12,6 +12,7 @@ where
 
 import Arkham.Json
 import Arkham.Types.Card
+import Arkham.Types.TreacheryId
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Cards.Acolyte
@@ -108,6 +109,9 @@ instance HasCount DoomCount () Enemy where
 instance HasId LocationId () Enemy where
   getId _ = enemyLocation . enemyAttrs
 
+instance HasSet TreacheryId () Enemy where
+  getSet _ = enemyTreacheries . enemyAttrs
+
 instance HasCardCode Enemy where
   getCardCode = enemyCardCode . enemyAttrs
 
@@ -158,6 +162,7 @@ allEnemies = mapFromList
   , ("01179", RelentlessDarkYoung' . relentlessDarkYoung)
   , ("01180", GoatSpawn' . goatSpawn)
   , ("01181", YoungDeepOne' . youngDeepOne)
+  , ("00000", \eid -> baseEnemy eid "00000" id)
   ]
 
 isEngaged :: Enemy -> Bool

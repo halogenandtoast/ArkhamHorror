@@ -234,6 +234,7 @@ allPlayerCards = HashMap.fromList
   , ("01103", stubbornDetective)
   , ("01117", litaChantler)
   , ("02006", zoeysCross)
+  , ("02007", smiteTheWicked)
   , ("02147", bandolier)
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
@@ -855,6 +856,12 @@ zoeysCross :: CardId -> PlayerCard
 zoeysCross cardId = (asset cardId "02006" "Zoey's Cross" 1 Neutral)
   { pcSkills = [SkillCombat, SkillCombat, SkillWild]
   , pcTraits = [Item, Charm]
+  }
+
+smiteTheWicked :: CardId -> PlayerCard
+smiteTheWicked cardId = (treachery cardId "02007" "Smite the Wicked" 0)
+  { pcTraits = [Task]
+  , pcRevelation = True
   }
 
 bandolier :: CardId -> PlayerCard

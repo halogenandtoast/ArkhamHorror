@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 60f8c53bcce5c427d75787536c2dbbef662150084754dae9788eebd772ac6ca1
+-- hash: a8e96249c04d57c7c77aa013ee0661e89acfb10c5e5fcc8de4960534d2d200b3
 
 name:           arkham-core
 version:        0.0.0
@@ -331,6 +331,7 @@ library
       Arkham.Types.Treachery.Cards.Paranoia
       Arkham.Types.Treachery.Cards.Psychosis
       Arkham.Types.Treachery.Cards.RottingRemains
+      Arkham.Types.Treachery.Cards.SmiteTheWicked
       Arkham.Types.Treachery.Cards.TheYellowSign
       Arkham.Types.Treachery.Cards.UmordhothsWrath
       Arkham.Types.Treachery.Runner
@@ -380,6 +381,9 @@ test-suite spec
       Arkham.Types.Event.Cards.DodgeSpec
       Arkham.Types.Event.Cards.EmergencyCacheSpec
       Arkham.Types.Investigator.Cards.ZoeySamarasSpec
+      Arkham.Types.Treachery.Cards.SmiteTheWickedSpec
+      Helpers.Matchers
+      Helpers.Message
       TestImport
       Paths_arkham_core
   hs-source-dirs:
@@ -395,6 +399,7 @@ test-suite spec
     , hspec-expectations
     , microlens
     , mtl
+    , safe
     , unordered-containers >=0.2.12.0
     , uuid
   default-language: Haskell2010

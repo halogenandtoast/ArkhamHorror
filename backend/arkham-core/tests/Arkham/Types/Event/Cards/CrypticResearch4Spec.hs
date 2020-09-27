@@ -27,7 +27,7 @@ spec = do
             )
           >>= runGameTestOnlyOption "choose self"
       crypticResearch4 `shouldSatisfy` isInDiscardOf game investigator
-      investigator `shouldSatisfy` handIs game (map PlayerCard cards)
+      updated game investigator `shouldSatisfy` handIs (map PlayerCard cards)
 
     it "can select any investigator at the same location" $ do
       investigator <- testInvestigator "00000" id
@@ -53,4 +53,4 @@ spec = do
                   _ -> False
                 )
       crypticResearch4 `shouldSatisfy` isInDiscardOf game investigator
-      investigator2 `shouldSatisfy` handIs game (map PlayerCard cards)
+      updated game investigator2 `shouldSatisfy` handIs (map PlayerCard cards)

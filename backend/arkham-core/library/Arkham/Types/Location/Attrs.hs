@@ -321,7 +321,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
       locationClueCount <-
         fromGameValue locationRevealClues . unPlayerCount <$> asks (getCount ())
       unshiftMessage (AddConnection lid locationRevealedSymbol)
-      pure $ a & clues .~ locationClueCount & revealed .~ True
+      pure $ a & clues +~ locationClueCount & revealed .~ True
     RevealLocation lid | lid /= locationId ->
       pure $ a & connectedLocations %~ HashSet.delete lid
     EndRound -> do

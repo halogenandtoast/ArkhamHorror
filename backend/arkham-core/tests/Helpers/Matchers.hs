@@ -118,9 +118,10 @@ hasDoom game n a = case toTarget a of
   AgendaTarget aid -> getCount aid game == DoomCount n
   _ -> error "Not implemented"
 
-handIs :: Game queue -> [Card] -> Investigator -> Bool
-handIs g cards i = not (null hand) && null (hand L.\\ cards)
-  where hand = handOf (g ^?! investigators . ix (getId () i))
+handIs :: [Card] -> Investigator -> Bool
+handIs [] i = null (handOf i)
+handIs cards i = not (null hand) && null (hand L.\\ cards)
+  where hand = handOf i
 
 hasProcessedMessage :: Message -> Game [Message] -> Bool
 hasProcessedMessage m g = m `elem` gameMessageHistory g

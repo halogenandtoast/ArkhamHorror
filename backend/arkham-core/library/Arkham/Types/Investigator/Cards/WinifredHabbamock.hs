@@ -35,5 +35,5 @@ instance HasActions env investigator WinifredHabbamock where
 
 instance (InvestigatorRunner Attrs env) => RunMessage env WinifredHabbamock where
   runMessage msg i@(WinifredHabbamock attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
+    ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> WinifredHabbamock <$> runMessage msg attrs

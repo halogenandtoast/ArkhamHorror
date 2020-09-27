@@ -38,6 +38,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Stats
 import Arkham.Types.Token
 import Arkham.Types.Trait
+import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Data.Aeson
 import Data.Coerce
@@ -119,9 +120,9 @@ instance (ActionRunner env investigator) => HasActions env investigator Investig
   getActions i window investigator = defaultGetActions i window investigator
 
 instance (InvestigatorRunner Attrs env) => RunMessage env Investigator where
-  runMessage (ResolveToken ElderSign iid skillValue) i
+  runMessage (ResolveToken ElderSign iid) i
     | iid == getInvestigatorId i && any isBlank (getModifiers i) = i
-    <$ runTest iid skillValue 0
+    <$ runTest iid 0
   runMessage msg i = defaultRunMessage msg i
 
 instance IsInvestigator Investigator where
@@ -178,6 +179,9 @@ instance HasTrauma Investigator where
 
 instance HasSet EnemyId () Investigator where
   getSet _ = investigatorEngagedEnemies . investigatorAttrs
+
+instance HasSet TreacheryId () Investigator where
+  getSet _ = investigatorTreacheries . investigatorAttrs
 
 instance HasCount EnemyCount () Investigator where
   getCount _ = EnemyCount . length . getSet @EnemyId ()

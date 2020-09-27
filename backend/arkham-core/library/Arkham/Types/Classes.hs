@@ -107,14 +107,13 @@ runTest
   :: (HasQueue env, MonadReader env m, MonadIO m)
   => InvestigatorId
   -> Int
-  -> Int
   -> m ()
-runTest iid skillValue tokenValue = if tokenValue < 0
+runTest iid tokenValue = if tokenValue < 0
   then unshiftMessages
     [ CheckWindow iid [Window.WhenRevealTokenWithNegativeModifier Window.You]
-    , RunSkillTest skillValue tokenValue
+    , RunSkillTest tokenValue
     ]
-  else unshiftMessage (RunSkillTest skillValue tokenValue)
+  else unshiftMessage (RunSkillTest tokenValue)
 
 class HasSet c b a where
   getSet :: b -> a -> HashSet c

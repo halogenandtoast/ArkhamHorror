@@ -75,44 +75,44 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
           ]
         ]
       TheGathering <$> runMessage msg attrs
-    ResolveToken Token.Skull iid skillValue ->
+    ResolveToken Token.Skull iid ->
       if scenarioDifficulty `elem` [Easy, Standard]
         then do
           ghoulCount <- unEnemyCount
             <$> asks (getCount (InvestigatorLocation iid, [Ghoul]))
-          s <$ runTest iid skillValue (-ghoulCount)
+          s <$ runTest iid (-ghoulCount)
         else do
           unshiftMessage
             (AddOnFailure $ FindAndDrawEncounterCard iid (EnemyType, Just Ghoul)
             )
-          s <$ runTest iid skillValue (-2)
-    ResolveToken Token.Cultist iid skillValue ->
+          s <$ runTest iid (-2)
+    ResolveToken Token.Cultist iid ->
       if scenarioDifficulty `elem` [Easy, Standard]
         then do
           unshiftMessage
             (AddOnFailure
             $ InvestigatorAssignDamage iid (TokenSource Token.Cultist) 0 1
             )
-          s <$ runTest iid skillValue (-1)
+          s <$ runTest iid (-1)
         else do
-          unshiftMessage (DrawAnotherToken iid skillValue Token.Cultist 0)
+          unshiftMessage (DrawAnotherToken iid 0)
           unshiftMessage
             (AddOnFailure
             $ InvestigatorAssignDamage iid (TokenSource Token.Cultist) 0 2
             )
           pure s
-    ResolveToken Token.Tablet iid skillValue -> do
+    ResolveToken Token.Tablet iid -> do
       ghoulCount <- unEnemyCount
         <$> asks (getCount (InvestigatorLocation iid, [Ghoul]))
       if scenarioDifficulty `elem` [Easy, Standard]
         then do
           when (ghoulCount > 0) $ unshiftMessage
             (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 0)
-          s <$ runTest iid skillValue (-2)
+          s <$ runTest iid (-2)
         else do
           when (ghoulCount > 0) $ unshiftMessage
             (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 1)
-          s <$ runTest iid skillValue (-4)
+          s <$ runTest iid (-4)
     NoResolution -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
       investigatorIds <- HashSet.toList <$> asks (getSet ())

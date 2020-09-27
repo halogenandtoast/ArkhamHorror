@@ -236,6 +236,7 @@ allPlayerCards = HashMap.fromList
   , ("02006", zoeysCross)
   , ("02007", smiteTheWicked)
   , ("02008", searchForTheTruth)
+  , ("02009", rexsCurse)
   , ("02147", bandolier)
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
@@ -871,6 +872,12 @@ searchForTheTruth cardId =
     { pcSkills = [SkillIntellect, SkillIntellect, SkillWild]
     , pcTraits = [Insight]
     }
+
+rexsCurse :: CardId -> PlayerCard
+rexsCurse cardId = (treachery cardId "02009" "Rex's Curse" 0)
+  { pcTraits = [Curse]
+  , pcRevelation = True
+  }
 
 bandolier :: CardId -> PlayerCard
 bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)

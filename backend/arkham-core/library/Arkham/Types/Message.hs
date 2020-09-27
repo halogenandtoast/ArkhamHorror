@@ -142,7 +142,7 @@ data Message
   | UseCardAbility InvestigatorId Source Source (Maybe AbilityMetadata) Int
   | UseScenarioSpecificAbility InvestigatorId Int
   | AddUses Target UseType Int
-  | ResolveToken Token InvestigatorId Int
+  | ResolveToken Token InvestigatorId
   | Investigate InvestigatorId LocationId SkillType [TokenResponse Message] [Message] Bool
   | ChooseFightEnemy InvestigatorId SkillType [Modifier] [TokenResponse Message] Bool
   | ChooseEvadeEnemy InvestigatorId SkillType [Message] [Message] [TokenResponse Message] Bool
@@ -196,15 +196,15 @@ data Message
   | InvestigatorDiscoverClues InvestigatorId LocationId Int
   | DiscoverClues InvestigatorId LocationId Int
   | AfterDiscoverClues InvestigatorId LocationId Int
-  | BeginSkillTest InvestigatorId Source (Maybe Action) SkillType Int [Message]
+  | BeginSkillTest InvestigatorId Source (Maybe Action) SkillType Int Int [Message]
                 [Message] [Modifier] [TokenResponse Message]
-  | BeginSkillTestAfterFast InvestigatorId Source (Maybe Action) SkillType Int [Message]
+  | BeginSkillTestAfterFast InvestigatorId Source (Maybe Action) SkillType Int Int [Message]
                 [Message] [Modifier] [TokenResponse Message]
   | StartSkillTest InvestigatorId
-  | InvestigatorStartSkillTest InvestigatorId (Maybe Action) SkillType [Modifier]
+  | InvestigatorStartSkillTest InvestigatorId
   | BeforeSkillTest InvestigatorId SkillType
-  | TriggerSkillTest InvestigatorId SkillType Int
-  | RunSkillTest Int Int
+  | TriggerSkillTest InvestigatorId
+  | RunSkillTest Int
   | NotifyOnFailure InvestigatorId Target
   | NotifyOnSuccess InvestigatorId Target
   | HandlePointOfFailure InvestigatorId Target Int
@@ -231,11 +231,12 @@ data Message
                          (EncounterCardType, Maybe Trait)
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
   | AddToEncounterDeck EncounterCard
-  | DrawAnotherToken InvestigatorId Int Token Int
+  | DrawAnotherToken InvestigatorId Int
   | SetAsideToken Token
   | SkillTestEnds
   | SkillTestEnded SkillTestResult [Token]
   | ReturnTokens [Token]
+  | ReturnSkillTestRevealedTokens
   | DrawToken Token
   | EmptyDeck InvestigatorId
   | DrawCards InvestigatorId Int Bool

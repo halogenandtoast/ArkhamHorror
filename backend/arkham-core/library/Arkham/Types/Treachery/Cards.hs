@@ -24,6 +24,7 @@ import Arkham.Types.Treachery.Cards.OfferOfPower as X
 import Arkham.Types.Treachery.Cards.OnWingsOfDarkness as X
 import Arkham.Types.Treachery.Cards.Paranoia as X
 import Arkham.Types.Treachery.Cards.Psychosis as X
+import Arkham.Types.Treachery.Cards.RexsCurse as X
 import Arkham.Types.Treachery.Cards.RottingRemains as X
 import Arkham.Types.Treachery.Cards.SmiteTheWicked as X
 import Arkham.Types.Treachery.Cards.TheYellowSign as X

@@ -26,8 +26,8 @@ instance (EventRunner env) => RunMessage env SureGamble3 where
     InvestigatorPlayEvent _ eid | eid == eventId -> do
       mrunSkillTest <- popMessage
       case mrunSkillTest of
-        Just (RunSkillTest skillValue tokenValue) ->
-          unshiftMessage (RunSkillTest skillValue (-tokenValue))
+        Just (RunSkillTest tokenValue) ->
+          unshiftMessage (RunSkillTest (-tokenValue))
         _ -> error "We expected this run skill test to be next"
       SureGamble3 <$> runMessage msg (attrs & resolved .~ True)
     _ -> SureGamble3 <$> runMessage msg attrs

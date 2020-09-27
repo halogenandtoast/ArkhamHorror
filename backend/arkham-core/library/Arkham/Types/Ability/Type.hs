@@ -9,6 +9,7 @@ data AbilityType
   = FastAbility Window
   | ReactionAbility Window
   | ActionAbility Int (Maybe Action)
+  | ForcedAbility
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)
 

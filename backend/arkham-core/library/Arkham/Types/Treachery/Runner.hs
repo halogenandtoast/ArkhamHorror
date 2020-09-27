@@ -1,5 +1,6 @@
 module Arkham.Types.Treachery.Runner where
 
+import Arkham.Types.Ability
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.CardCode
@@ -25,5 +26,6 @@ type TreacheryRunner env
     , HasSet LocationId [Trait] env
     , HasSet ClosestEnemyId (LocationId, [Trait]) env
     , HasSet FarthestLocationId InvestigatorId env
+    , HasList UsedAbility () env
     )
 

@@ -11,6 +11,7 @@ import Arkham.Types.EnemyId
 import Arkham.Types.Event
 import Arkham.Types.EventId
 import Arkham.Types.Game
+import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.Location
 import Arkham.Types.Message
@@ -20,7 +21,6 @@ import Arkham.Types.Target
 import Arkham.Types.TreacheryId
 import qualified Data.List as L
 import Lens.Micro
-import Safe (fromJustNote)
 
 isInDiscardOf
   :: (ToPlayerCard entity) => Game queue -> Investigator -> entity -> Bool
@@ -125,6 +125,9 @@ handIs cards i = flip handMatches i $ \hand ->
 handMatches :: ([Card] -> Bool) -> Investigator -> Bool
 handMatches f i = f (handOf i)
 
+deckMatches :: ([PlayerCard] -> Bool) -> Investigator -> Bool
+deckMatches f i = f (unDeck $ deckOf i)
+
 hasProcessedMessage :: Message -> Game [Message] -> Bool
 hasProcessedMessage m g = m `elem` gameMessageHistory g
 
@@ -133,13 +136,13 @@ hasEnemy e l = getId () e `member` getSet @EnemyId () l
 
 hasTreacheryWithMatchingCardCode
   :: (HasSet TreacheryId () a) => Game queue -> Card -> a -> Bool
-hasTreacheryWithMatchingCardCode g c a = treacheryId `member` getSet () a
+hasTreacheryWithMatchingCardCode g c a = maybe
+  False
+  (\treachery -> getId @TreacheryId () treachery `member` getSet () a)
+  mtreachery
  where
-  treacheryId =
-    getId @TreacheryId ()
-      $ fromJustNote "test failure"
-      $ find ((== getCardCode c) . getCardCode)
-      $ toList (g ^. treacheries)
+  mtreachery =
+    find ((== getCardCode c) . getCardCode) $ toList (g ^. treacheries)
 
 hasClueCount :: HasCount ClueCount () a => Int -> a -> Bool
 hasClueCount n a = n == unClueCount (getCount () a)

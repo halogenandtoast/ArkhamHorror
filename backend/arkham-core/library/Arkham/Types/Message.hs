@@ -196,9 +196,9 @@ data Message
   | InvestigatorDiscoverClues InvestigatorId LocationId Int
   | DiscoverClues InvestigatorId LocationId Int
   | AfterDiscoverClues InvestigatorId LocationId Int
-  | BeginSkillTest InvestigatorId Source (Maybe Action) SkillType Int Int [Message]
+  | BeginSkillTest InvestigatorId Source (Maybe Action) SkillType Int [Message]
                 [Message] [Modifier] [TokenResponse Message]
-  | BeginSkillTestAfterFast InvestigatorId Source (Maybe Action) SkillType Int Int [Message]
+  | BeginSkillTestAfterFast InvestigatorId Source (Maybe Action) SkillType Int [Message]
                 [Message] [Modifier] [TokenResponse Message]
   | StartSkillTest InvestigatorId
   | InvestigatorStartSkillTest InvestigatorId

@@ -1523,7 +1523,7 @@ runGameMessage msg g = case msg of
             | skillType' <- xs
             ]
           )
-  BeginSkillTestAfterFast iid source maction skillType skillValue difficulty onSuccess onFailure skillTestModifiers tokenResponses
+  BeginSkillTestAfterFast iid source maction skillType difficulty onSuccess onFailure skillTestModifiers tokenResponses
     -> do
       unshiftMessage (BeforeSkillTest iid skillType)
       pure
@@ -1534,7 +1534,7 @@ runGameMessage msg g = case msg of
                source
                maction
                skillType
-               skilValue
+               (skillValueOf skillType (getInvestigator iid g))
                difficulty
                onSuccess
                onFailure

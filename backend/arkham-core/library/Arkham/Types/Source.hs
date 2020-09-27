@@ -33,6 +33,7 @@ data Source
   | DeckSource
   | ActSource ActId
   | PlayerCardSource CardId
+  | TestSource
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 

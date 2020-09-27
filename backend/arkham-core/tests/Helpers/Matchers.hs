@@ -137,3 +137,6 @@ hasTreacheryWithMatchingCardCode g c a = treacheryId `member` getSet () a
       $ fromJustNote "test failure"
       $ find ((== getCardCode c) . getCardCode)
       $ toList (g ^. treacheries)
+
+hasClueCount :: HasCount ClueCount () a => Int -> a -> Bool
+hasClueCount n a = n == unClueCount (getCount () a)

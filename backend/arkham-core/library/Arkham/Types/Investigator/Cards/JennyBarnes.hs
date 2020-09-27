@@ -11,6 +11,7 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
+import Lens.Micro
 
 newtype JennyBarnes = JennyBarnes Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -35,5 +36,8 @@ instance HasActions env investigator JennyBarnes where
 
 instance (InvestigatorRunner Attrs env) => RunMessage env JennyBarnes where
   runMessage msg i@(JennyBarnes attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId -> pure i
+    ResolveToken ElderSign iid | iid == investigatorId ->
+      i <$ runTest investigatorId investigatorResources
+    AllDrawCardAndResource | not (attrs ^. defeated || attrs ^. resigned) ->
+      JennyBarnes <$> runMessage msg (attrs & resources +~ 1)
     _ -> JennyBarnes <$> runMessage msg attrs

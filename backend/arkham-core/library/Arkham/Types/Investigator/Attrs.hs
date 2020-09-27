@@ -9,6 +9,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.CardCode
+import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
@@ -402,9 +403,12 @@ fastIsPlayable a windows c@(PlayerCard MkPlayerCard {..}) =
 modifiedCardCost :: Attrs -> Card -> Int
 modifiedCardCost Attrs {..} (PlayerCard MkPlayerCard {..}) = foldr
   applyModifier
-  pcCost
+  startingCost
   (concat . HashMap.elems $ investigatorModifiers)
  where
+  startingCost = case pcCost of
+    StaticCost n -> n
+    DynamicCost -> 0
   applyModifier (ReduceCostOf traits m) n
     | not
       (null (HashSet.fromList traits `intersection` HashSet.fromList pcTraits))

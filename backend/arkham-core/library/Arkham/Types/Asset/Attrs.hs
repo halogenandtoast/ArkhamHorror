@@ -7,6 +7,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
@@ -26,7 +27,7 @@ data Attrs = Attrs
   { assetName :: Text
   , assetId :: AssetId
   , assetCardCode :: CardCode
-  , assetCost :: Int
+  , assetCost :: CardCost
   , assetInvestigator :: Maybe InvestigatorId
   , assetLocation :: Maybe LocationId
   , assetActions :: [Message]

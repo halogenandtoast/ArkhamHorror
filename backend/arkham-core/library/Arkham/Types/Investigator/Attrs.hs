@@ -1022,6 +1022,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       , CheckAttackOfOpportunity iid False
       , DrawCards iid n False
       ]
+    DrawCards iid 0 False | iid == investigatorId -> pure a
     DrawCards iid n False | iid == investigatorId ->
       if null (unDeck investigatorDeck)
         then if null investigatorDiscard
@@ -1040,6 +1041,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
               when (pcCardType == PlayerEnemyType)
                 $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
             Nothing -> pure ()
+          unshiftMessage (DrawCards iid (n - 1) False)
           pure $ a & hand %~ handUpdate & deck .~ Deck deck'
     InvestigatorSpendClues iid n | iid == investigatorId ->
       pure $ a & clues -~ n

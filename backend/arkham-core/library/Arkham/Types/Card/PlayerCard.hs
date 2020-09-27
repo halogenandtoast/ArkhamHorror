@@ -235,6 +235,7 @@ allPlayerCards = HashMap.fromList
   , ("01117", litaChantler)
   , ("02006", zoeysCross)
   , ("02007", smiteTheWicked)
+  , ("02008", searchForTheTruth)
   , ("02147", bandolier)
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
@@ -863,6 +864,13 @@ smiteTheWicked cardId = (treachery cardId "02007" "Smite the Wicked" 0)
   { pcTraits = [Task]
   , pcRevelation = True
   }
+
+searchForTheTruth :: CardId -> PlayerCard
+searchForTheTruth cardId =
+  (event cardId "02008" "Search for the Truth" 1 Neutral)
+    { pcSkills = [SkillIntellect, SkillIntellect, SkillWild]
+    , pcTraits = [Insight]
+    }
 
 bandolier :: CardId -> PlayerCard
 bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)

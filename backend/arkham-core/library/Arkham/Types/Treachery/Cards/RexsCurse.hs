@@ -2,9 +2,11 @@
 module Arkham.Types.Treachery.Cards.RexsCurse where
 
 import Arkham.Json
+import Arkham.Types.Ability
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
+import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
@@ -29,6 +31,29 @@ instance (TreacheryRunner env) => RunMessage env RexsCurse where
       RexsCurse <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     Will (PassedSkillTest iid _ _ _)
       | Just iid == treacheryAttachedInvestigator -> do
-        unshiftMessages [ReturnSkillTestRevealedTokens, DrawAnotherToken iid 0]
+        let
+          ability = (mkAbility (TreacherySource treacheryId) 0 ForcedAbility)
+            { abilityLimit = PerTestOrAbility
+            }
+        usedAbilities <- map unUsedAbility <$> asks (getList ())
+        when ((iid, ability) `notElem` usedAbilities) $ do
+          withQueue $ \queue ->
+            let
+              (before, after) = flip break queue $ \case
+                Ask iid' (ChooseOne [SkillTestApplyResults]) | iid == iid' ->
+                  True
+                _ -> False
+              remaining = case after of
+                [] -> []
+                (_ : xs) -> xs
+            in (before <> remaining, ())
+          unshiftMessages
+            [ ActivateCardAbilityAction iid ability
+            , ReturnSkillTestRevealedTokens
+            , AddOnFailure (NotifyOnFailure iid (TreacheryTarget treacheryId))
+            , DrawAnotherToken iid 0
+            ]
         pure t
+    SkillTestDidFailBy iid (TreacheryTarget tid) _ | tid == treacheryId -> do
+      t <$ unshiftMessage (ShuffleIntoDeck iid (TreacheryTarget treacheryId))
     _ -> RexsCurse <$> runMessage msg attrs

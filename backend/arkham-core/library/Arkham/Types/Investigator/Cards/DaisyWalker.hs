@@ -59,6 +59,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env DaisyWalker where
           > 0
         then
           case abilityType of
+            ForcedAbility -> DaisyWalker <$> runMessage msg attrs
             FastAbility _ -> DaisyWalker <$> runMessage msg attrs
             ReactionAbility _ -> DaisyWalker <$> runMessage msg attrs
             ActionAbility n actionType -> if n > 0

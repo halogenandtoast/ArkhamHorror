@@ -342,6 +342,7 @@ data Message
   | FailedSkillTest InvestigatorId (Maybe Action) Source Int
   | PassedSkillTest InvestigatorId (Maybe Action) Source Int
   | ReturnToHand InvestigatorId Target
+  | ShuffleIntoDeck InvestigatorId Target
   | FocusTokens [Token]
   | UnfocusTokens
   | Will Message

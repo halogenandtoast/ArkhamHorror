@@ -1183,6 +1183,15 @@ runGameMessage msg g = case msg of
         (CardId $ unSkillId skillId)
     unshiftMessage (AddToHand iid (PlayerCard card))
     pure $ g & skills %~ deleteMap skillId
+  ShuffleIntoDeck iid (TreacheryTarget treacheryId) -> do
+    let
+      treachery = getTreachery treacheryId g
+      card = fromJustNote
+        "no such treachery"
+        (lookup (getCardCode treachery) allPlayerCards)
+        (CardId $ unTreacheryId treacheryId)
+    unshiftMessage (ShuffleCardsIntoDeck iid [card])
+    pure $ g & treacheries %~ deleteMap treacheryId
   ReturnTokens tokens -> pure $ g & chaosBag %~ Bag . (tokens <>) . unBag
   AddToken token -> pure $ g & chaosBag %~ Bag . (token :) . unBag
   PlayCard iid cardId False -> do

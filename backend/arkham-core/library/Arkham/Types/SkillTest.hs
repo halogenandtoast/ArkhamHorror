@@ -366,8 +366,18 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         <> show skillTestDifficulty
         )
       if modifiedSkillValue' >= skillTestDifficulty
-        then pure $ s & result .~ SucceededBy
-          (modifiedSkillValue' - skillTestDifficulty)
-        else pure $ s & result .~ FailedBy
-          (skillTestDifficulty - modifiedSkillValue')
+        then
+          pure
+          $ s
+          & result
+          .~ SucceededBy (modifiedSkillValue' - skillTestDifficulty)
+          & valueModifier
+          .~ totaledTokenValues
+        else
+          pure
+          $ s
+          & result
+          .~ FailedBy (skillTestDifficulty - modifiedSkillValue')
+          & valueModifier
+          .~ totaledTokenValues
     _ -> pure s

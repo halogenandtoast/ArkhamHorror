@@ -654,6 +654,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       pure $ a & hand %~ filter ((/= cardCode) . getCardCode)
     Discard (TreacheryTarget tid) ->
       pure $ a & treacheries %~ HashSet.delete tid
+    ShuffleIntoDeck iid (TreacheryTarget tid) | iid == investigatorId ->
+      pure $ a & treacheries %~ HashSet.delete tid
     Discard (EnemyTarget eid) ->
       pure $ a & engagedEnemies %~ HashSet.delete eid
     Discarded (AssetTarget aid) cardCode | aid `elem` investigatorAssets ->
@@ -1090,6 +1092,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           abilityIndex
         ) -- We should check action type when added for aoo
       case abilityType of
+        ForcedAbility -> pure ()
         FastAbility _ -> pure ()
         ReactionAbility _ -> pure ()
         ActionAbility n actionType ->

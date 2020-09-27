@@ -5,6 +5,7 @@ import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
+import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
 import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
@@ -37,7 +38,7 @@ data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
 data PlayerCard = MkPlayerCard
   { pcCardCode :: CardCode
   , pcName :: Text
-  , pcCost :: Int
+  , pcCost :: CardCost
   , pcLevel :: Int
   , pcCardType :: PlayerCardType
   , pcWeakness :: Bool
@@ -71,7 +72,9 @@ instance HasCardId PlayerCard where
   getCardId = pcId
 
 instance HasCost PlayerCard where
-  getCost = pcCost
+  getCost c = case pcCost c of
+    StaticCost n -> n
+    DynamicCost -> 0
 
 lookupPlayerCard :: CardCode -> (CardId -> PlayerCard)
 lookupPlayerCard cardCode =
@@ -89,7 +92,7 @@ basePlayerCard
 basePlayerCard cardId cardCode name cost cardType classSymbol = MkPlayerCard
   { pcCardCode = cardCode
   , pcName = name
-  , pcCost = cost
+  , pcCost = StaticCost cost
   , pcLevel = 0
   , pcCardType = cardType
   , pcWeakness = False

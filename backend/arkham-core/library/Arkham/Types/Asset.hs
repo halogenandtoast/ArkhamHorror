@@ -14,6 +14,7 @@ import Arkham.Json
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Cards
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -75,6 +76,7 @@ data Asset
   | Flashlight' Flashlight
   | LitaChantler' LitaChantler
   | ZoeysCross' ZoeysCross
+  | JennysTwin45s' JennysTwin45s
   | Bandolier' Bandolier
   | PhysicalTraining2' PhysicalTraining2
   | Hyperawareness2' Hyperawareness2
@@ -105,6 +107,12 @@ instance HasId (Maybe LocationId) () Asset where
 
 instance HasCount DoomCount () Asset where
   getCount _ = DoomCount . assetDoom . assetAttrs
+
+instance HasCount UsesCount () Asset where
+  getCount _ asset = case uses' of
+    NoUses -> UsesCount 0
+    Uses _ n -> UsesCount n
+    where uses' = assetUses (assetAttrs asset)
 
 lookupAsset :: CardCode -> (AssetId -> Asset)
 lookupAsset = fromJustNote "Unkown asset" . flip lookup allAssets
@@ -160,6 +168,7 @@ allAssets = mapFromList
   , ("01087", Flashlight' . flashlight)
   , ("01117", LitaChantler' . litaChantler)
   , ("02006", ZoeysCross' . zoeysCross)
+  , ("02010", JennysTwin45s' . jennysTwin45s)
   , ("02147", Bandolier' . bandolier)
   , ("50001", PhysicalTraining2' . physicalTraining2)
   , ("50003", Hyperawareness2' . hyperawareness2)
@@ -232,6 +241,7 @@ assetAttrs = \case
   Flashlight' attrs -> coerce attrs
   LitaChantler' attrs -> coerce attrs
   ZoeysCross' attrs -> coerce attrs
+  JennysTwin45s' attrs -> coerce attrs
   Bandolier' attrs -> coerce attrs
   PhysicalTraining2' attrs -> coerce attrs
   Hyperawareness2' attrs -> coerce attrs

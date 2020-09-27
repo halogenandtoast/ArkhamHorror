@@ -1194,6 +1194,40 @@ runGameMessage msg g = case msg of
     pure $ g & treacheries %~ deleteMap treacheryId
   ReturnTokens tokens -> pure $ g & chaosBag %~ Bag . (tokens <>) . unBag
   AddToken token -> pure $ g & chaosBag %~ Bag . (token :) . unBag
+  PlayDynamicCard iid cardId n False -> do
+    let
+      investigator = getInvestigator iid g
+      card = fromJustNote "could not find card in hand"
+        $ find ((== cardId) . getCardId) (handOf investigator)
+    case card of
+      PlayerCard pc -> case pcCardType pc of
+        PlayerTreacheryType -> error "unhandled"
+        AssetType -> do
+          let
+            aid = AssetId $ unCardId cardId
+            asset = fromJustNote
+              "could not find asset"
+              (lookup (pcCardCode pc) allAssets)
+              aid
+          unshiftMessages
+            [ InvestigatorPlayDynamicAsset
+              iid
+              aid
+              (slotsOf asset)
+              (toList $ getTraits asset)
+              n
+            , PlayedCard iid cardId False
+            ]
+          pure $ g & assets %~ insertMap aid asset
+        EventType -> do
+          let
+            eid = EventId $ unCardId cardId
+            event = lookupEvent (pcCardCode pc) iid eid
+          unshiftMessages
+            [PlayedCard iid cardId True, InvestigatorPlayDynamicEvent iid eid n]
+          pure $ g & events %~ insertMap eid event
+        _ -> pure g
+      EncounterCard _ -> pure g
   PlayCard iid cardId False -> do
     let
       investigator = getInvestigator iid g

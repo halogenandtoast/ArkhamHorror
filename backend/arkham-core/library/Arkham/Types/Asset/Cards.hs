@@ -32,6 +32,7 @@ import Arkham.Types.Asset.Cards.HeirloomOfHyperborea as X
 import Arkham.Types.Asset.Cards.HolyRosary as X
 import Arkham.Types.Asset.Cards.Hyperawareness as X
 import Arkham.Types.Asset.Cards.Hyperawareness2 as X
+import Arkham.Types.Asset.Cards.JennysTwin45s as X
 import Arkham.Types.Asset.Cards.Knife as X
 import Arkham.Types.Asset.Cards.LeatherCoat as X
 import Arkham.Types.Asset.Cards.LeoDeLuca as X

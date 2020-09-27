@@ -3,6 +3,7 @@ module Helpers.Matchers where
 import ClassyPrelude
 
 import Arkham.Types.Agenda
+import Arkham.Types.Asset
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
@@ -49,6 +50,10 @@ class Entity a where
 instance Entity Agenda where
   toTarget = AgendaTarget . getId ()
   updated g a = g ^?! agendas . ix (getId () a)
+
+instance Entity Asset where
+  toTarget = AssetTarget . getId ()
+  updated g a = g ^?! assets . ix (getId () a)
 
 instance Entity Location where
   toTarget = LocationTarget . getId ()
@@ -146,3 +151,6 @@ hasTreacheryWithMatchingCardCode g c a = maybe
 
 hasClueCount :: HasCount ClueCount () a => Int -> a -> Bool
 hasClueCount n a = n == unClueCount (getCount () a)
+
+hasUses :: (HasCount UsesCount () a) => Int -> a -> Bool
+hasUses n a = n == unUsesCount (getCount () a)

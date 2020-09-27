@@ -21,11 +21,13 @@ module Arkham.Types.Card
   , toPlayerCard
   , toEncounterCard
   , cardIsWeakness
+  , isDynamic
   )
 where
 
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
+import Arkham.Types.Card.Cost
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
@@ -56,6 +58,12 @@ instance HasCardId Card where
 instance HasCost Card where
   getCost (PlayerCard card) = getCost card
   getCost _ = 0
+
+isDynamic :: Card -> Bool
+isDynamic (PlayerCard card) = case pcCost card of
+  DynamicCost -> True
+  _ -> False
+isDynamic _ = False
 
 toPlayerCard :: Card -> Maybe PlayerCard
 toPlayerCard (PlayerCard pc) = Just pc

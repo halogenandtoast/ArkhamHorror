@@ -862,6 +862,58 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           $ find ((== cardId) . getCardId) (a ^. hand)
         cost = getCost card
       pure $ a & resources -~ cost
+    PayDynamicCardCost iid cardId n beforePlayMessages
+      | iid == investigatorId -> do
+        let
+          resolve =
+            beforePlayMessages <> [PayedForDynamicCard iid cardId n False]
+        if investigatorResources > n
+          then a <$ unshiftMessage
+            (Ask
+              iid
+              (ChooseOne
+                [ Label
+                  "Increase spend resources"
+                  [PayDynamicCardCost iid cardId (n + 1) beforePlayMessages]
+                , Label ("Resolve with cost of " <> tshow n) resolve
+                ]
+              )
+            )
+          else a <$ unshiftMessages resolve
+    PayedForDynamicCard iid cardId n False | iid == investigatorId -> do
+      unshiftMessage (PlayDynamicCard iid cardId n False)
+      pure $ a & resources -~ n
+    PlayDynamicCard iid cardId _n True | iid == investigatorId -> do
+      let
+        card = fromJustNote "not in hand"
+          $ find ((== cardId) . getCardId) investigatorHand
+        isFast = case card of
+          PlayerCard pc -> pcFast pc
+          _ -> False
+        maction = case card of
+          PlayerCard pc -> pcAction pc
+          _ -> Nothing
+        actionProvokesAttackOfOpportunities =
+          maction
+            `notElem` [ Just Action.Evade
+                      , Just Action.Parley
+                      , Just Action.Resign
+                      , Just Action.Fight
+                      ]
+        provokesAttackOfOpportunities = case card of
+          PlayerCard pc ->
+            actionProvokesAttackOfOpportunities
+              && DoesNotProvokeAttacksOfOpportunity
+              `notElem` pcAttackOfOpportunityModifiers pc
+          _ -> actionProvokesAttackOfOpportunities
+        actionCost' = if isFast then 0 else maybe 1 (actionCost a) maction
+        aooMessage = if provokesAttackOfOpportunities
+          then [CheckAttackOfOpportunity iid isFast]
+          else []
+      a <$ unshiftMessages
+        [ TakeAction iid actionCost' (Just Action.Play)
+        , PayDynamicCardCost iid cardId 0 aooMessage
+        ]
     PlayCard iid cardId True | iid == investigatorId -> do
       let
         card = fromJustNote "not in hand"
@@ -1365,7 +1417,12 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           <> [ PlayCard iid (getCardId c) True
              | c <- investigatorHand
              , canAfford a Action.Play || fastIsPlayable a [DuringTurn You] c
-             , isPlayable a [DuringTurn You] c
+             , isPlayable a [DuringTurn You] c && not (isDynamic c)
+             ]
+          <> [ PlayDynamicCard iid (getCardId c) 0 True
+             | c <- investigatorHand
+             , canAfford a Action.Play || fastIsPlayable a [DuringTurn You] c
+             , isPlayable a [DuringTurn You] c && isDynamic c
              ]
           <> [ChooseEndTurn iid]
           <> actions

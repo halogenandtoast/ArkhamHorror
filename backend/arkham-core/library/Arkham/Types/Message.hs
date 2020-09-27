@@ -172,7 +172,9 @@ data Message
   | Damage Target Source Int
   | AddToVictory Target
   | PlayCard InvestigatorId CardId Bool
+  | PlayDynamicCard InvestigatorId CardId Int Bool -- Int is unused for Bool True
   | PlayedCard InvestigatorId CardId Bool
+  | PayedForDynamicCard InvestigatorId CardId Int Bool
   | InvestigatorTakeDamage InvestigatorId Source Int
   | InvestigatorTakeHorror InvestigatorId Source Int
   | InvestigatorDirectDamage InvestigatorId Source Int Int
@@ -189,7 +191,9 @@ data Message
   | Discarded Target CardCode
   | InvestigatorDamage InvestigatorId Source Int Int
   | InvestigatorPlayAsset InvestigatorId AssetId [SlotType] [Trait]
+  | InvestigatorPlayDynamicAsset InvestigatorId AssetId [SlotType] [Trait] Int
   | InvestigatorPlayEvent InvestigatorId EventId
+  | InvestigatorPlayDynamicEvent InvestigatorId EventId Int
   | GainClues InvestigatorId Int
   | DiscoverCluesAtLocation InvestigatorId LocationId Int
   | PlaceClues Target Int
@@ -250,6 +254,7 @@ data Message
   | DiscardCard InvestigatorId CardId
   | DrewTreachery InvestigatorId CardCode
   | PayCardCost InvestigatorId CardId
+  | PayDynamicCardCost InvestigatorId CardId Int [Message]
   | AddAct ActId
   | AddAgenda AgendaId
   | AllRandomDiscard

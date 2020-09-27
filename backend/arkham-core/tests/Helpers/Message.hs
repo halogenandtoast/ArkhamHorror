@@ -49,5 +49,8 @@ playAsset i a = InvestigatorPlayAsset
   (slotsOf a)
   (toList $ getTraits a)
 
+playDynamicCard :: Investigator -> Card -> Message
+playDynamicCard i c = PlayDynamicCard (getId () i) (getCardId c) 0 True
+
 drawCards :: Investigator -> Int -> Message
 drawCards i n = DrawCards (getId () i) n False

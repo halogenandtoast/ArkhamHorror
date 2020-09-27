@@ -531,6 +531,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       { investigatorXP = investigatorXP
       , investigatorPhysicalTrauma = investigatorPhysicalTrauma
       , investigatorMentalTrauma = investigatorMentalTrauma
+      , investigatorSanityDamage = investigatorMentalTrauma
+      , investigatorHealthDamage = investigatorPhysicalTrauma
       }
     SetupInvestigators -> do
       let (discard', hand', deck') = drawOpeningHand a 5
@@ -1198,8 +1200,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
                 )
               )
       pure a
-    InvestigatorStartSkillTest iid
-      | iid == investigatorId -> a <$ unshiftMessages
+    InvestigatorStartSkillTest iid | iid == investigatorId ->
+      a <$ unshiftMessages
         [CheckWindow iid [WhenWouldRevealChaosToken You], TriggerSkillTest iid]
     CheckWindow iid windows | iid == investigatorId -> do
       actions <- fmap concat <$> for windows $ \window -> do
@@ -1347,6 +1349,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
     PlayerWindow iid additionalActions | iid == investigatorId -> do
       actions <- join $ asks (getActions a NonFast)
       fastActions <- join $ asks (getActions a (DuringTurn You))
+      playerWindowActions <- join $ asks (getActions a FastPlayerWindow)
       a <$ unshiftMessage
         (Ask iid $ ChooseOne
           (additionalActions
@@ -1360,6 +1363,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           <> [ChooseEndTurn iid]
           <> actions
           <> fastActions
+          <> playerWindowActions
           )
         )
     _ -> pure a

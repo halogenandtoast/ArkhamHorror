@@ -15,7 +15,7 @@ data Window
   | AfterPassSkillTest Who Int
   | AfterPlayCard Who [Trait]
   | AfterTurnBegins Who
-  | Any
+  | FastPlayerWindow
   | AnyPhaseBegins
   | DuringTurn Who
   | NonFast

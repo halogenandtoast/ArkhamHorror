@@ -18,7 +18,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { choices, Game } from '@/arkham/types/Game';
-import { MessageType } from '@/arkham/types/Message';
+import { Message, MessageType } from '@/arkham/types/Message';
 import * as Arkham from '@/arkham/types/Act';
 
 @Component
@@ -44,11 +44,22 @@ export default class Act extends Vue {
   }
 
   get advanceActAction() {
-    return this.choices.findIndex((c) => c.tag === MessageType.ADVANCE_ACT);
+    return this.choices.findIndex(this.canAdvance);
   }
 
   abilityLabel(idx: number) {
     return this.choices[idx].contents[1].type.contents[1];
+  }
+
+  canAdvance(c: Message): boolean {
+    switch (c.tag) {
+      case MessageType.ADVANCE_ACT:
+        return true;
+      case MessageType.RUN:
+        return c.contents.some((c1: Message) => this.canAdvance(c1));
+      default:
+        return false;
+    }
   }
 
   get abilities() {

@@ -175,6 +175,8 @@ skillValueModifiers SkillTest {..} = foldr
   ((concat . toList $ skillTestModifiers) <> skillTestTempModifiers)
  where
   applyModifier (AnySkillValue m) n = max 0 (n + m)
+  applyModifier (SkillModifier stype m) n | skillTestSkillType == stype =
+    max 0 (n + m)
   applyModifier _ n = n
 
 modifiedTokenValue :: Int -> SkillTest a -> Int

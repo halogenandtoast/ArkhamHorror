@@ -1350,13 +1350,9 @@ runGameMessage msg g = case msg of
       _ ->
         unshiftMessage (Ask (gameLeadInvestigatorId g) $ ChooseOneAtATime as)
     pure g
-  Discard (AssetTarget aid) -> do
-    let asset = getAsset aid g
-    unshiftMessage (AssetDiscarded aid (getCardCode asset))
-    pure $ g & assets %~ deleteMap aid
   AssetDefeated aid -> do
     let asset = getAsset aid g
-    unshiftMessage (AssetDiscarded aid (getCardCode asset))
+    unshiftMessage (Discarded (AssetTarget aid) (getCardCode asset))
     pure $ g & assets %~ deleteMap aid
   EnemyDefeated eid iid _ _ -> do
     let
@@ -1368,6 +1364,8 @@ runGameMessage msg g = case msg of
       playerCard = do
         f <- lookup (getCardCode enemy) allPlayerCards
         pure $ PlayerCard $ f cardId
+      treacheries' = getSet @TreacheryId () enemy
+    for_ treacheries' $ \tid -> unshiftMessage (Discard (TreacheryTarget tid))
     broadcastWindow Fast.WhenEnemyDefeated iid g
     case encounterCard <|> playerCard of
       Nothing -> error "missing"
@@ -1686,6 +1684,10 @@ runGameMessage msg g = case msg of
           (lookupEncounterCard cardCode (CardId $ unTreacheryId treacheryId'))
         )
   AfterRevelation{} -> pure $ g & activeCard .~ Nothing
+  Discard (AssetTarget aid) -> do
+    let asset = getAsset aid g
+    unshiftMessage (Discarded (AssetTarget aid) (getCardCode asset))
+    pure $ g & assets %~ deleteMap aid
   Discard (EnemyTarget eid) ->
     let
       enemy = getEnemy eid g

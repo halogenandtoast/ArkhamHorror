@@ -35,6 +35,9 @@ class ToPlayerCard a where
 class ToEncounterCard a where
   asEncounterCard :: a -> EncounterCard
 
+instance ToPlayerCard PlayerCard where
+  asPlayerCard = id
+
 instance ToPlayerCard Event where
   asPlayerCard event =
     lookupPlayerCard (getCardCode event) (CardId . unEventId $ getId () event)

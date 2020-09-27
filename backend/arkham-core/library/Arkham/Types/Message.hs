@@ -186,7 +186,7 @@ data Message
   | SufferTrauma InvestigatorId Int Int
   | AssetDamage AssetId Source Int Int
   | AssetDefeated AssetId
-  | AssetDiscarded AssetId CardCode
+  | Discarded Target CardCode
   | InvestigatorDamage InvestigatorId Source Int Int
   | InvestigatorPlayAsset InvestigatorId AssetId [SlotType] [Trait]
   | InvestigatorPlayEvent InvestigatorId EventId

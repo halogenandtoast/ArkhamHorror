@@ -47,6 +47,7 @@ data Treachery
   | OfferOfPower' OfferOfPower
   | DreamsOfRlyeh' DreamsOfRlyeh
   | SmiteTheWicked' SmiteTheWicked
+  | RexsCurse' RexsCurse
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -100,6 +101,7 @@ allTreacheries = mapFromList
   , ("01178", (OfferOfPower' .) . offerOfPower)
   , ("01182", (DreamsOfRlyeh' .) . dreamsOfRlyeh)
   , ("02007", (SmiteTheWicked' .) . smiteTheWicked)
+  , ("02009", (RexsCurse' .) . rexsCurse)
   ]
 
 isWeakness :: Treachery -> Bool
@@ -135,3 +137,4 @@ treacheryAttrs = \case
   OfferOfPower' attrs -> coerce attrs
   DreamsOfRlyeh' attrs -> coerce attrs
   SmiteTheWicked' attrs -> coerce attrs
+  RexsCurse' attrs -> coerce attrs

@@ -58,7 +58,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env SkidsOToole where
     UseCardAbility _ _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       do
         pure . SkidsOToole $ attrs & resources -~ 2 & remainingActions +~ 1
-    ResolveToken ElderSign iid skillValue | iid == investigatorId -> do
-      runTest investigatorId skillValue 2
+    ResolveToken ElderSign iid | iid == investigatorId -> do
+      runTest investigatorId 2
       i <$ unshiftMessage (AddOnSuccess (TakeResources iid 2 False))
     _ -> SkidsOToole <$> runMessage msg attrs

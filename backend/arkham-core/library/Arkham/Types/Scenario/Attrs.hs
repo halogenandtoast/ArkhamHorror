@@ -81,23 +81,15 @@ instance (ScenarioRunner env) => RunMessage env Attrs where
     UseScenarioSpecificAbility{} ->
       error
         "The scenario should specify what to do for a scenario specific ability."
-    ResolveToken Token.PlusOne iid skillValue -> a <$ runTest iid skillValue 1
-    ResolveToken Token.Zero iid skillValue -> a <$ runTest iid skillValue 0
-    ResolveToken Token.MinusOne iid skillValue ->
-      a <$ runTest iid skillValue (-1)
-    ResolveToken Token.MinusTwo iid skillValue ->
-      a <$ runTest iid skillValue (-2)
-    ResolveToken Token.MinusThree iid skillValue ->
-      a <$ runTest iid skillValue (-3)
-    ResolveToken Token.MinusFour iid skillValue ->
-      a <$ runTest iid skillValue (-4)
-    ResolveToken Token.MinusFive iid skillValue ->
-      a <$ runTest iid skillValue (-5)
-    ResolveToken Token.MinusSix iid skillValue ->
-      a <$ runTest iid skillValue (-6)
-    ResolveToken Token.MinusSeven iid skillValue ->
-      a <$ runTest iid skillValue (-7)
-    ResolveToken Token.MinusEight iid skillValue ->
-      a <$ runTest iid skillValue (-8)
-    ResolveToken Token.AutoFail _ _ -> a <$ unshiftMessage FailSkillTest
+    ResolveToken Token.PlusOne iid -> a <$ runTest iid 1
+    ResolveToken Token.Zero iid -> a <$ runTest iid 0
+    ResolveToken Token.MinusOne iid -> a <$ runTest iid (-1)
+    ResolveToken Token.MinusTwo iid -> a <$ runTest iid (-2)
+    ResolveToken Token.MinusThree iid -> a <$ runTest iid (-3)
+    ResolveToken Token.MinusFour iid -> a <$ runTest iid (-4)
+    ResolveToken Token.MinusFive iid -> a <$ runTest iid (-5)
+    ResolveToken Token.MinusSix iid -> a <$ runTest iid (-6)
+    ResolveToken Token.MinusSeven iid -> a <$ runTest iid (-7)
+    ResolveToken Token.MinusEight iid -> a <$ runTest iid (-8)
+    ResolveToken Token.AutoFail _ -> a <$ unshiftMessage FailSkillTest
     _ -> pure a

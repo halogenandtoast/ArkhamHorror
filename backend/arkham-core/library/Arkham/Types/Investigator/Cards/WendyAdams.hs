@@ -63,7 +63,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env WendyAdams where
         mResolveToken <- withQueue $ \queue ->
           (queue, find ((== Just ResolveTokenMessage) . messageType) queue)
         case mResolveToken of
-          Just (ResolveToken token _ skillValue) -> do
+          Just (ResolveToken token _) -> do
             void
               $ withQueue
               $ \queue ->
@@ -76,7 +76,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env WendyAdams where
               , CancelNext ResolveTokenMessage
               , ReturnTokens [token]
               , UnfocusTokens
-              , DrawAnotherToken iid skillValue token 0
+              , DrawAnotherToken iid 0
               ]
           _ -> error "we expect resolve token to be on the stack"
     When (DrawToken token) -> i <$ unshiftMessages
@@ -84,9 +84,9 @@ instance (InvestigatorRunner Attrs env) => RunMessage env WendyAdams where
       , CheckWindow investigatorId [WhenDrawToken You token]
       , UnfocusTokens
       ]
-    ResolveToken ElderSign iid skillValue | iid == investigatorId -> do
+    ResolveToken ElderSign iid | iid == investigatorId -> do
       maid <- asks (getId @(Maybe AssetId) (CardCode "01014"))
       case maid of
-        Nothing -> i <$ runTest investigatorId skillValue 0
+        Nothing -> i <$ runTest investigatorId 0
         Just _ -> i <$ unshiftMessage PassSkillTest
     _ -> WendyAdams <$> runMessage msg attrs

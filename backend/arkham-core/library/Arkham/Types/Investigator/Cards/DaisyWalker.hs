@@ -75,14 +75,14 @@ instance (InvestigatorRunner Attrs env) => RunMessage env DaisyWalker where
               else DaisyWalker <$> runMessage msg attrs
         else
           DaisyWalker <$> runMessage msg attrs
-    ResolveToken ElderSign iid skillValue | iid == investigatorId ->
+    ResolveToken ElderSign iid | iid == investigatorId ->
       if any
           (becomesFailure ElderSign)
           (concat . HashMap.elems $ investigatorModifiers)
-        then i <$ unshiftMessage (ResolveToken AutoFail iid skillValue)
+        then i <$ unshiftMessage (ResolveToken AutoFail iid)
         else do
           tomeCount <- unAssetCount <$> asks (getCount (iid, [Tome]))
-          runTest investigatorId skillValue 0 -- Because this unshifts we need to call this before the on success is added
+          runTest investigatorId 0 -- Because this unshifts we need to call this before the on success is added
           when (tomeCount > 0) $ unshiftMessage
             (AddOnSuccess
               (Ask iid

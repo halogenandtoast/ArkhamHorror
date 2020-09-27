@@ -1523,7 +1523,7 @@ runGameMessage msg g = case msg of
             | skillType' <- xs
             ]
           )
-  BeginSkillTestAfterFast iid source maction skillType difficulty onSuccess onFailure skillTestModifiers tokenResponses
+  BeginSkillTestAfterFast iid source maction skillType skillValue difficulty onSuccess onFailure skillTestModifiers tokenResponses
     -> do
       unshiftMessage (BeforeSkillTest iid skillType)
       pure
@@ -1534,23 +1534,21 @@ runGameMessage msg g = case msg of
                source
                maction
                skillType
+               skilValue
                difficulty
                onSuccess
                onFailure
                skillTestModifiers
                tokenResponses
           )
-  TriggerSkillTest iid _ skillValue -> do
+  TriggerSkillTest iid -> do
     ([token], chaosBag') <- drawTokens g 1
     unshiftMessages
-      [ When (DrawToken token)
-      , DrawToken token
-      , ResolveToken token iid skillValue
-      ]
+      [When (DrawToken token), DrawToken token, ResolveToken token iid]
     pure $ g & (chaosBag .~ Bag chaosBag')
-  DrawAnotherToken iid skillValue _ _ -> do
+  DrawAnotherToken iid _ -> do
     ([token], chaosBag') <- drawTokens g 1
-    unshiftMessage (ResolveToken token iid skillValue)
+    unshiftMessage (ResolveToken token iid)
     unshiftMessage (DrawToken token)
     pure $ g & chaosBag .~ Bag chaosBag'
   CreateStoryAssetAt cardCode lid -> do

@@ -127,17 +127,17 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
         <> cultistsWhoGotAwayMessages
         <> pastMidnightMessages
       pure s
-    ResolveToken Token.Skull iid skillValue
-      | scenarioDifficulty `elem` [Easy, Standard] -> do
+    ResolveToken Token.Skull iid | scenarioDifficulty `elem` [Easy, Standard] ->
+      do
         monsterCount <- unEnemyCount <$> asks (getCount [Monster])
-        s <$ runTest iid skillValue (-monsterCount)
-    ResolveToken Token.Skull iid skillValue
-      | scenarioDifficulty `elem` [Hard, Expert] -> do
+        s <$ runTest iid (-monsterCount)
+    ResolveToken Token.Skull iid | scenarioDifficulty `elem` [Hard, Expert] ->
+      do
         unshiftMessage
           (AddOnFailure $ FindAndDrawEncounterCard iid (EnemyType, Just Monster)
           )
-        s <$ runTest iid skillValue (-3)
-    ResolveToken Token.Cultist iid skillValue
+        s <$ runTest iid (-3)
+    ResolveToken Token.Cultist iid
       | scenarioDifficulty `elem` [Easy, Standard] -> do
         closestEnemyIds <- map unClosestEnemyId . HashSet.toList <$> asks
           (getSet iid)
@@ -146,9 +146,9 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
           [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
           xs -> unshiftMessage
             (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
-        s <$ runTest iid skillValue (-2)
-    ResolveToken Token.Cultist iid skillValue
-      | scenarioDifficulty `elem` [Hard, Expert] -> do
+        s <$ runTest iid (-2)
+    ResolveToken Token.Cultist iid | scenarioDifficulty `elem` [Hard, Expert] ->
+      do
         closestEnemyIds <- map unClosestEnemyId . HashSet.toList <$> asks
           (getSet iid)
         case closestEnemyIds of
@@ -156,37 +156,33 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
           [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 2)
           xs -> unshiftMessage
             (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget x) 2 | x <- xs ])
-        s <$ runTest iid skillValue (-4)
-    ResolveToken Token.Tablet iid skillValue
+        s <$ runTest iid (-4)
+    ResolveToken Token.Tablet iid
       | scenarioDifficulty `elem` [Easy, Standard] -> do
         ghoulCount <- unEnemyCount
           <$> asks (getCount (InvestigatorLocation iid, [Monster]))
         when (ghoulCount > 0) $ unshiftMessage
           (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 0)
-        s <$ runTest iid skillValue (-3)
-    ResolveToken Token.Tablet iid skillValue
-      | scenarioDifficulty `elem` [Hard, Expert] -> do
+        s <$ runTest iid (-3)
+    ResolveToken Token.Tablet iid | scenarioDifficulty `elem` [Hard, Expert] ->
+      do
         ghoulCount <- unEnemyCount
           <$> asks (getCount (InvestigatorLocation iid, [Monster]))
         when (ghoulCount > 0) $ unshiftMessage
           (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 1)
-        s <$ runTest iid skillValue (-5)
-    ResolveToken Token.ElderThing iid skillValue
+        s <$ runTest iid (-5)
+    ResolveToken Token.ElderThing iid
       | scenarioDifficulty `elem` [Easy, Standard] -> do
         ancientOneCount <- unEnemyCount <$> asks (getCount [AncientOne])
         if ancientOneCount > 0
-          then
-            s <$ unshiftMessage
-              (DrawAnotherToken iid skillValue Token.ElderThing (-5))
-          else s <$ runTest iid skillValue (-5)
-    ResolveToken Token.ElderThing iid skillValue
+          then s <$ unshiftMessage (DrawAnotherToken iid (-5))
+          else s <$ runTest iid (-5)
+    ResolveToken Token.ElderThing iid
       | scenarioDifficulty `elem` [Hard, Expert] -> do
         ancientOneCount <- unEnemyCount <$> asks (getCount [AncientOne])
         if ancientOneCount > 0
-          then
-            s <$ unshiftMessage
-              (DrawAnotherToken iid skillValue Token.ElderThing (-7))
-          else s <$ runTest iid skillValue (-5)
+          then s <$ unshiftMessage (DrawAnotherToken iid (-7))
+          else s <$ runTest iid (-5)
     NoResolution -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
       s <$ unshiftMessage

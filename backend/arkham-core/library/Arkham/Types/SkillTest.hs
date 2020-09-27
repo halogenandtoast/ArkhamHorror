@@ -42,6 +42,7 @@ data SkillTest a = SkillTest
   , skillTestSetAsideTokens  :: [Token]
   , skillTestValueModifier :: Int
   , skillTestResult :: SkillTestResult
+  , skillTestSkillValue :: Int
   , skillTestModifiers :: HashMap Source [Modifier]
   , skillTestTempModifiers :: [Modifier]
   , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
@@ -89,12 +90,13 @@ initSkillTest
   -> Maybe Action
   -> SkillType
   -> Int
+  -> Int
   -> [Message]
   -> [Message]
   -> [Modifier]
   -> [TokenResponse Message]
   -> SkillTest Message
-initSkillTest iid source maction skillType' difficulty' onSuccess' onFailure' modifiers' tokenResponses'
+initSkillTest iid source maction skillType' skillValue' difficulty' onSuccess' onFailure' modifiers' tokenResponses'
   = SkillTest
     { skillTestInvestigator = iid
     , skillTestSkillType = skillType'
@@ -107,6 +109,7 @@ initSkillTest iid source maction skillType' difficulty' onSuccess' onFailure' mo
     , skillTestSetAsideTokens = mempty
     , skillTestValueModifier = 0
     , skillTestResult = Unrun
+    , skillTestSkillValue = skillValue'
     , skillTestTempModifiers = modifiers'
     , skillTestModifiers = mempty
     , skillTestCommittedCards = mempty
@@ -116,6 +119,9 @@ initSkillTest iid source maction skillType' difficulty' onSuccess' onFailure' mo
 
 modifiers :: Lens' (SkillTest a) (HashMap Source [Modifier])
 modifiers = lens skillTestModifiers $ \m x -> m { skillTestModifiers = x }
+
+-- skillValue :: Lens' (SkillTest a) Int
+-- skillValue = lens skillTestSkillValue $ \m x -> m { skillTestSkillValue = x }
 
 valueModifier :: Lens' (SkillTest a) Int
 valueModifier =
@@ -206,7 +212,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         & (setAsideTokens %~ (token :))
         & (onTokenResponses .~ onTokenResponses')
     SetAsideToken token -> pure $ s & (setAsideTokens %~ (token :))
-    DrawAnotherToken _ _ _ valueModifier' ->
+    DrawAnotherToken _ valueModifier' ->
       pure $ s & valueModifier +~ valueModifier'
     PassSkillTest -> do
       unshiftMessages
@@ -224,13 +230,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       (HashMap.foldMapWithKey
           (\k (i, _) -> [CommitCard i k])
           skillTestCommittedCards
-      <> [ InvestigatorStartSkillTest
-             skillTestInvestigator
-             skillTestAction
-             skillTestSkillType
-             ((concat . toList $ skillTestModifiers) <> skillTestTempModifiers
-             )
-         ]
+      <> [InvestigatorStartSkillTest skillTestInvestigator]
       )
     SkillTestCommitCard iid cardId -> do
       card <- asks (getCard iid cardId)
@@ -239,6 +239,9 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       pure $ s & committedCards %~ deleteMap cardId
     AddModifiers SkillTestTarget source modifiers' ->
       pure $ s & modifiers %~ insertWith (<>) source modifiers'
+    ReturnSkillTestRevealedTokens -> do
+      unshiftMessage (ReturnTokens skillTestSetAsideTokens)
+      pure $ s & setAsideTokens .~ mempty
     SkillTestEnds -> s <$ unshiftMessages
       [ RemoveAllModifiersOnTargetFrom
         (InvestigatorTarget skillTestInvestigator)
@@ -332,12 +335,12 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       case skillTestResult of
         SucceededBy n -> s <$ unshiftMessage (SkillTestDidPassBy iid target n)
         _ -> pure s
-    RunSkillTest skillValue tokenValue -> do
+    RunSkillTest tokenValue -> do
       let
         totaledTokenValues =
           modifiedTokenValue tokenValue s + skillTestValueModifier
         modifiedSkillValue' =
-          skillValue
+          skillTestSkillValue
             + totaledTokenValues
             + skillIconCount s
             + skillValueModifiers s
@@ -347,7 +350,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         (putStrLn
         . pack
         $ "skill value: "
-        <> show skillValue
+        <> show skillTestSkillValue
         <> "\n+ totaled token values: "
         <> show totaledTokenValues
         <> "\n+ skill icon count: "

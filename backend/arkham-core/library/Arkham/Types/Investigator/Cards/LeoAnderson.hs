@@ -35,5 +35,5 @@ instance HasActions env investigator LeoAnderson where
 
 instance (InvestigatorRunner Attrs env) => RunMessage env LeoAnderson where
   runMessage msg i@(LeoAnderson attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
+    ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> LeoAnderson <$> runMessage msg attrs

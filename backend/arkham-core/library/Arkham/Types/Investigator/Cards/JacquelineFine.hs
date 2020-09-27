@@ -35,5 +35,5 @@ instance HasActions env investigator JacquelineFine where
 
 instance (InvestigatorRunner Attrs env) => RunMessage env JacquelineFine where
   runMessage msg i@(JacquelineFine attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
+    ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> JacquelineFine <$> runMessage msg attrs

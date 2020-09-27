@@ -654,7 +654,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       pure $ a & treacheries %~ HashSet.delete tid
     Discard (EnemyTarget eid) ->
       pure $ a & engagedEnemies %~ HashSet.delete eid
-    AssetDiscarded aid cardCode | aid `elem` investigatorAssets ->
+    Discarded (AssetTarget aid) cardCode | aid `elem` investigatorAssets ->
       pure
         $ a
         & (assets %~ HashSet.delete aid)

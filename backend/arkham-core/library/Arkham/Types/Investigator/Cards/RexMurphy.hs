@@ -36,7 +36,7 @@ rexMurphy = RexMurphy $ baseAttrs
 
 instance (ActionRunner env investigator) => HasActions env investigator RexMurphy where
   getActions i (AfterPassSkillTest You n) (RexMurphy Attrs {..})
-    | getId () i == investigatorId = do
+    | getId () i == investigatorId && n >= 2 = do
       let
         ability = mkAbility
           (InvestigatorSource investigatorId)
@@ -55,5 +55,13 @@ instance (InvestigatorRunner Attrs env) => RunMessage env RexMurphy where
     UseCardAbility _ _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       i <$ unshiftMessage
         (DiscoverCluesAtLocation investigatorId investigatorLocation 1)
-    ResolveToken ElderSign iid _skillValue | iid == investigatorId -> pure i
+    ResolveToken ElderSign iid skillValue | iid == investigatorId ->
+      i <$ unshiftMessage
+        (Ask iid $ ChooseOne
+          [ Label
+            "Automatically fail to draw 3"
+            [FailSkillTest, DrawCards iid 3 False]
+          , Label "Resolve normally" [RunSkillTest skillValue 2]
+          ]
+        )
     _ -> RexMurphy <$> runMessage msg attrs

@@ -4,6 +4,7 @@ import Arkham.Json
 import Arkham.Types.ActId
 import Arkham.Types.Classes
 import Arkham.Types.Message
+import Arkham.Types.Window
 import ClassyPrelude
 import Lens.Micro
 
@@ -44,7 +45,9 @@ baseAttrs aid name seq' = Attrs
   }
 
 instance HasActions env investigator Attrs where
-  getActions _ _ Attrs {..} = pure [ AdvanceAct actId | actCanAdvance ]
+  getActions _ FastPlayerWindow Attrs {..} =
+    pure [ AdvanceAct actId | actCanAdvance ]
+  getActions _ _ _ = pure []
 
 instance (HasQueue env) => RunMessage env Attrs where
   runMessage _msg a@Attrs {..} = pure a

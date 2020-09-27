@@ -1009,8 +1009,10 @@ runGameMessage msg g = case msg of
   Label _ msgs -> g <$ unshiftMessages msgs
   TargetLabel _ msgs -> g <$ unshiftMessages msgs
   Continue _ -> pure g
-  EndOfGame -> g <$ pushMessages [ClearQueue, NextCampaignStep]
-  ClearQueue -> g <$ clearQueue
+  EndOfGame -> g <$ pushMessage EndOfScenario
+  EndOfScenario -> do
+    clearQueue
+    g <$ unshiftMessage NextCampaignStep
   ResetGame ->
     pure
       $ g

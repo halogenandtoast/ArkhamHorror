@@ -73,7 +73,7 @@ data Message
   | AddCampaignCardToDeck InvestigatorId PlayerCard
   | SetLocationLabel LocationId Text
   | EndOfGame
-  | ClearQueue
+  | EndOfScenario -- used by the game to clear queue
   | StartCampaign
   | ResetGame
   | CampaignStep (Maybe CampaignStep)

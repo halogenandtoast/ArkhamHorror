@@ -23,4 +23,5 @@ type EventRunner env
     , HasSet Trait EnemyId env
     , HasSet Trait AssetId env
     , HasSet AssetId InvestigatorId env
+    , HasCount ClueCount InvestigatorId env
     )

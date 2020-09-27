@@ -27,6 +27,7 @@ import Arkham.Types.Event.Cards.MindOverMatter as X
 import Arkham.Types.Event.Cards.MindWipe1 as X
 import Arkham.Types.Event.Cards.MindWipe3 as X
 import Arkham.Types.Event.Cards.OnTheLam as X
+import Arkham.Types.Event.Cards.SearchForTheTruth as X
 import Arkham.Types.Event.Cards.SneakAttack as X
 import Arkham.Types.Event.Cards.SureGamble3 as X
 import Arkham.Types.Event.Cards.WardOfProtection as X

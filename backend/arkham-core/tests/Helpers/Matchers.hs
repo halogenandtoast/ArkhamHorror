@@ -119,9 +119,11 @@ hasDoom game n a = case toTarget a of
   _ -> error "Not implemented"
 
 handIs :: [Card] -> Investigator -> Bool
-handIs [] i = null (handOf i)
-handIs cards i = not (null hand) && null (hand L.\\ cards)
-  where hand = handOf i
+handIs cards i = flip handMatches i $ \hand ->
+  null (foldr (flip (L.\\) . pure) hand cards) && length cards == length hand
+
+handMatches :: ([Card] -> Bool) -> Investigator -> Bool
+handMatches f i = f (handOf i)
 
 hasProcessedMessage :: Message -> Game [Message] -> Bool
 hasProcessedMessage m g = m `elem` gameMessageHistory g

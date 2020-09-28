@@ -70,4 +70,7 @@ instance (TreacheryRunner env) => RunMessage env SearchingForIzzie where
           mempty
           mempty
         )
+    EndOfGame ->
+      let investigator = fromJustNote "missing investigator" treacheryOwner
+      in t <$ unshiftMessage (SufferTrauma investigator 0 1)
     _ -> SearchingForIzzie <$> runMessage msg attrs

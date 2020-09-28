@@ -56,8 +56,7 @@ spec = describe "Smite the Wicked" $ do
     game <-
       runGameTest
           investigator
-          [ PlacedLocation (getId () location)
-          , SetEncounterDeck [enemy]
+          [ SetEncounterDeck [enemy]
           , loadDeck investigator [smiteTheWicked]
           , drawCards investigator 1
           , EndOfGame

@@ -16,7 +16,7 @@ spec = describe "Jenny's Twin .45s" $ do
     payResource = runGameTestOptionMatching
       "pay 1 resource"
       (\case
-        Label "Increase spend resources" _ -> True
+        Label "Increase spent resources" _ -> True
         _ -> False
       )
 

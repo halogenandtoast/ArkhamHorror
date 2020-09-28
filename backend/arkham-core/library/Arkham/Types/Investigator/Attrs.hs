@@ -873,7 +873,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
               iid
               (ChooseOne
                 [ Label
-                  "Increase spend resources"
+                  "Increase spent resources"
                   [PayDynamicCardCost iid cardId (n + 1) beforePlayMessages]
                 , Label ("Resolve with cost of " <> tshow n) resolve
                 ]

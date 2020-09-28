@@ -3,12 +3,12 @@
     "type": "core",
     "alternate": "arkham-core/tests/Arkham/Types/{}Spec.hs",
     "template": [
-      "module FrontRow.Core.{dot}",
+      "module Arkham.Types.{dot}",
       "  ( undefined",
       "  )",
       "where",
       "",
-      "import Prelude",
+      "import ClassyPrelude",
       ""
     ]
   },

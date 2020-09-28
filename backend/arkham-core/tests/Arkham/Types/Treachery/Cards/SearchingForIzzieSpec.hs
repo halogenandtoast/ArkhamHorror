@@ -72,3 +72,17 @@ spec = describe "Searching for Izzie" $ do
       . hasTreacheryWithMatchingCardCode game' (PlayerCard searchingForIzzie)
     updatedSearchingForIzzie `shouldSatisfy` isInDiscardOf game' investigator
     actionsRemaining (updated game' investigator) `shouldBe` 1
+    updated game investigator `shouldSatisfy` hasTrauma (0, 0)
+
+  it "causes 1 mental trauma if not discarded" $ do
+    investigator <- testInvestigator "00000" id
+    searchingForIzzie <- buildPlayerCard "02011"
+    location <- testLocation "00000" id
+    game <- runGameTest
+      investigator
+      [ loadDeck investigator [searchingForIzzie]
+      , drawCards investigator 1
+      , EndOfGame
+      ]
+      (locations %~ insertEntity location)
+    updated game investigator `shouldSatisfy` hasTrauma (0, 1)

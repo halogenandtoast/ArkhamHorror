@@ -119,13 +119,13 @@ pairInvestigatorIdsForWindow iid = do
     <$> asks (getSet lid)
   for investigatorIds $ \iid2 -> do
     lid2 <- asks (getId iid2)
-    if iid2 == iid
-      then pure (iid2, Window.You)
+    pure $ if iid2 == iid
+      then (iid2, Window.You)
       else if lid2 == lid
-        then pure (iid2, Window.InvestigatorAtYourLocation)
+        then (iid2, Window.InvestigatorAtYourLocation)
         else if lid2 `member` connectedLocationIds
-          then pure (iid2, Window.InvestigatorAtAConnectedLocation)
-          else pure (iid2, Window.InvestigatorInGame)
+          then (iid2, Window.InvestigatorAtAConnectedLocation)
+          else (iid2, Window.InvestigatorInGame)
 
 runTest
   :: ( HasQueue env

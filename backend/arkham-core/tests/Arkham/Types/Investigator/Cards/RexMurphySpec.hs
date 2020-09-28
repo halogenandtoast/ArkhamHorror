@@ -19,18 +19,7 @@ spec = describe "Rex Murphy" $ do
       game <-
         runGameTest
           rexMurphy
-          [ moveTo rexMurphy location
-          , BeginSkillTest
-            (getId () rexMurphy)
-            TestSource
-            Nothing
-            SkillIntellect
-            2
-            mempty
-            mempty
-            mempty
-            mempty
-          ]
+          [moveTo rexMurphy location, beginSkillTest rexMurphy SkillIntellect 2]
           ((chaosBag .~ Bag [Zero])
           . (locations %~ insertEntity location)
           . (scenario ?~ scenario')

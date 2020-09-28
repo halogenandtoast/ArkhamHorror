@@ -27,6 +27,7 @@ data Window
   | WhenEnemyDefeated Who
   | WhenEnemyEvaded Who
   | WhenRevealTokenWithNegativeModifier Who
+  | WhenRevealToken Who Token
   | WhenSkillTest SkillType
   | WhenWouldFailSkillTest Who
   | WhenWouldRevealChaosToken Who
@@ -38,6 +39,6 @@ data Where = YourLocation
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
-data Who = You | InvestigatorAtYourLocation
+data Who = You | InvestigatorAtYourLocation | InvestigatorAtAConnectedLocation | InvestigatorInGame
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

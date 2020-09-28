@@ -29,6 +29,7 @@ import Arkham.Types.Window (Window)
 import qualified Arkham.Types.Window as Window
 import ClassyPrelude
 import Control.Monad.Fail
+import qualified Data.HashSet as HashSet
 import GHC.Generics
 import GHC.Stack
 import Lens.Micro hiding (to)
@@ -103,18 +104,63 @@ unshiftMessages
   :: (MonadIO m, MonadReader env m, HasQueue env) => [Message] -> m ()
 unshiftMessages msgs = withQueue $ \queue -> (msgs <> queue, ())
 
+pairInvestigatorIdsForWindow
+  :: ( MonadReader env m
+     , HasSet InvestigatorId () env
+     , HasSet ConnectedLocationId LocationId env
+     , HasId LocationId InvestigatorId env
+     )
+  => InvestigatorId
+  -> m [(InvestigatorId, Window.Who)]
+pairInvestigatorIdsForWindow iid = do
+  investigatorIds <- setToList <$> asks (getSet @InvestigatorId ())
+  lid <- asks (getId iid)
+  connectedLocationIds <- HashSet.map unConnectedLocationId
+    <$> asks (getSet lid)
+  for investigatorIds $ \iid2 -> do
+    lid2 <- asks (getId iid2)
+    if iid2 == iid
+      then pure (iid2, Window.You)
+      else if lid2 == lid
+        then pure (iid2, Window.InvestigatorAtYourLocation)
+        else if lid2 `member` connectedLocationIds
+          then pure (iid2, Window.InvestigatorAtAConnectedLocation)
+          else pure (iid2, Window.InvestigatorInGame)
+
 runTest
-  :: (HasQueue env, MonadReader env m, MonadIO m)
+  :: ( HasQueue env
+     , MonadReader env m
+     , MonadIO m
+     , HasSet InvestigatorId () env
+     , HasSet ConnectedLocationId LocationId env
+     , HasId LocationId InvestigatorId env
+     )
   => InvestigatorId
   -> TokenValue
   -> m ()
-runTest iid tokenValue@(TokenValue _ value) = if value < 0
-  then unshiftMessages
-    [ CheckWindow iid [Window.WhenRevealTokenWithNegativeModifier Window.You]
-    , When (RunSkillTest iid tokenValue)
-    , RunSkillTest iid tokenValue
-    ]
-  else unshiftMessage (RunSkillTest iid tokenValue)
+runTest iid tokenValue@(TokenValue token value) = do
+  windowPairings <- pairInvestigatorIdsForWindow iid
+  if value < 0
+    then unshiftMessages
+      ([ CheckWindow
+           iid'
+           [ Window.WhenRevealTokenWithNegativeModifier who
+           , Window.WhenRevealToken who token
+           ]
+       | (iid', who) <- windowPairings
+       ]
+      <> [When (RunSkillTest iid tokenValue), RunSkillTest iid tokenValue]
+      )
+    else unshiftMessages
+      ([ CheckWindow
+           iid'
+           [ Window.WhenRevealTokenWithNegativeModifier who
+           , Window.WhenRevealToken who token
+           ]
+       | (iid', who) <- windowPairings
+       ]
+      <> [RunSkillTest iid tokenValue]
+      )
 
 class HasSet c b a where
   getSet :: b -> a -> HashSet c
@@ -175,11 +221,14 @@ type ActionRunner env investigator
     , HasId (Maybe OwnerId) AssetId env
     , HasId (Maybe LocationId) AssetId env
     , HasId LocationId InvestigatorId env
+    , HasSet InvestigatorId LocationId env
+    , HasSet ConnectedLocationId LocationId env
     , HasSet EnemyId LocationId env
     , HasList UsedAbility () env
     , HasCount PlayerCount () env
     , HasCount SpendableClueCount AllInvestigators env
     , HasCount ClueCount LocationId env
+    , HasCount HorrorCount InvestigatorId env
     , HasQueue env
     )
 

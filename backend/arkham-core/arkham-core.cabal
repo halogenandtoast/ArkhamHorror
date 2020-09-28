@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 50f4e3993ef1b05f86955aa8fbba36da71b6fc66f8be3e8cd807fc613153e5df
+-- hash: 30391624d1eade9f7683fcb17373ba60c7e4aeb9fae78d634d2ef9e16039c96a
 
 name:           arkham-core
 version:        0.0.0
@@ -73,6 +73,7 @@ library
       Arkham.Types.Asset.Cards.Hyperawareness
       Arkham.Types.Asset.Cards.Hyperawareness2
       Arkham.Types.Asset.Cards.JennysTwin45s
+      Arkham.Types.Asset.Cards.JimsTrumpet
       Arkham.Types.Asset.Cards.Knife
       Arkham.Types.Asset.Cards.LeatherCoat
       Arkham.Types.Asset.Cards.LeoDeLuca
@@ -375,6 +376,7 @@ test-suite spec
   main-is: Spec.hs
   other-modules:
       Arkham.Types.Asset.Cards.JennysTwin45sSpec
+      Arkham.Types.Asset.Cards.JimsTrumpetSpec
       Arkham.Types.Asset.Cards.ZoeysCrossSpec
       Arkham.Types.Event.Cards.BackstabSpec
       Arkham.Types.Event.Cards.Barricade3Spec

@@ -26,4 +26,5 @@ type AssetRunner env
     , HasSet EnemyId InvestigatorId env
     , HasSet Trait AssetId env
     , HasSet AssetId InvestigatorId env
+    , HasCount HorrorCount InvestigatorId env
     )

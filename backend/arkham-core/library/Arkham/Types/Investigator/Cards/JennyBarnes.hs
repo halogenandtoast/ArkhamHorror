@@ -37,7 +37,7 @@ instance HasActions env investigator JennyBarnes where
 instance (InvestigatorRunner Attrs env) => RunMessage env JennyBarnes where
   runMessage msg i@(JennyBarnes attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId ->
-      i <$ runTest investigatorId investigatorResources
+      i <$ runTest investigatorId (TokenValue ElderSign investigatorResources)
     AllDrawCardAndResource | not (attrs ^. defeated || attrs ^. resigned) ->
       JennyBarnes <$> runMessage msg (attrs & resources +~ 1)
     _ -> JennyBarnes <$> runMessage msg attrs

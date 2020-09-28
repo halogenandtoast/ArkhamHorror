@@ -208,7 +208,7 @@ data Message
   | InvestigatorStartSkillTest InvestigatorId
   | BeforeSkillTest InvestigatorId SkillType
   | TriggerSkillTest InvestigatorId
-  | RunSkillTest Int
+  | RunSkillTest InvestigatorId TokenValue
   | NotifyOnFailure InvestigatorId Target
   | NotifyOnSuccess InvestigatorId Target
   | HandlePointOfFailure InvestigatorId Target Int

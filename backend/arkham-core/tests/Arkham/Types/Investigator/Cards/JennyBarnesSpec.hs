@@ -24,4 +24,5 @@ spec = describe "Jenny Barnes" $ do
         , ResolveToken ElderSign (getId () jennyBarnes)
         ]
         (scenario ?~ scenario')
-      game `shouldSatisfy` hasProcessedMessage (RunSkillTest 5)
+      game `shouldSatisfy` hasProcessedMessage
+        (RunSkillTest (getId () jennyBarnes) (TokenValue ElderSign 5))

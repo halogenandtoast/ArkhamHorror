@@ -83,7 +83,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env DaisyWalker where
         then i <$ unshiftMessage (ResolveToken AutoFail iid)
         else do
           tomeCount <- unAssetCount <$> asks (getCount (iid, [Tome]))
-          runTest investigatorId 0 -- Because this unshifts we need to call this before the on success is added
+          runTest investigatorId (TokenValue ElderSign 0) -- Because this unshifts we need to call this before the on success is added
           when (tomeCount > 0) $ unshiftMessage
             (AddOnSuccess
               (Ask iid

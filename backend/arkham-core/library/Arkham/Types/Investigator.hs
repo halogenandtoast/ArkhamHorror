@@ -123,7 +123,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Investig
 instance (InvestigatorRunner Attrs env) => RunMessage env Investigator where
   runMessage (ResolveToken ElderSign iid) i
     | iid == getInvestigatorId i && any isBlank (getModifiers i) = i
-    <$ runTest iid 0
+    <$ runTest iid (TokenValue ElderSign 0)
   runMessage msg i = defaultRunMessage msg i
 
 instance IsInvestigator Investigator where

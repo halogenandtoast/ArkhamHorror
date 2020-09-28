@@ -175,11 +175,13 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
       do
         cultists <- HashSet.toList <$> asks (getSet @EnemyId Cultist)
         doomCounts <- map unDoomCount <$> traverse (asks . getCount) cultists
-        s <$ runTest iid (-(maximum $ ncons 0 doomCounts))
+        s <$ runTest
+          iid
+          (Token.TokenValue Token.Skull (-(maximum $ ncons 0 doomCounts)))
     ResolveToken Token.Skull iid | scenarioDifficulty `elem` [Hard, Expert] ->
       do
         doomCount <- unDoomCount <$> asks (getCount ())
-        s <$ runTest iid (-doomCount)
+        s <$ runTest iid (Token.TokenValue Token.Skull (-doomCount))
     ResolveToken Token.Cultist iid
       | scenarioDifficulty `elem` [Easy, Standard] -> do
         closestCultists <- map unClosestEnemyId . HashSet.toList <$> asks
@@ -189,7 +191,7 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
           [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
           xs -> unshiftMessage
             (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
-        s <$ runTest iid (-2)
+        s <$ runTest iid (Token.TokenValue Token.Cultist (-2))
     ResolveToken Token.Cultist iid | scenarioDifficulty `elem` [Hard, Expert] ->
       do
         cultists <- HashSet.toList <$> asks (getSet @EnemyId Cultist)
@@ -197,15 +199,15 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
           [] -> s <$ unshiftMessage (DrawAnotherToken iid (-2))
           xs -> do
             unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
-            s <$ runTest iid (-2)
+            s <$ runTest iid (Token.TokenValue Token.Cultist (-2))
     ResolveToken Token.Tablet iid
       | scenarioDifficulty `elem` [Easy, Standard] -> do
         unshiftMessage (AddOnFailure $ InvestigatorPlaceCluesOnLocation iid 1)
-        s <$ runTest iid (-3)
+        s <$ runTest iid (Token.TokenValue Token.Tablet (-3))
     ResolveToken Token.Tablet iid | scenarioDifficulty `elem` [Hard, Expert] ->
       do
         unshiftMessage (AddOnFailure $ InvestigatorPlaceAllCluesOnLocation iid)
-        s <$ runTest iid (-4)
+        s <$ runTest iid (Token.TokenValue Token.Tablet (-4))
     NoResolution -> s <$ unshiftMessage (Resolution 1)
     Resolution 1 -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())

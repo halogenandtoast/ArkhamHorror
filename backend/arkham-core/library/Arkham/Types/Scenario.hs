@@ -38,10 +38,14 @@ newtype BaseScenario = BaseScenario Attrs
 
 instance (ScenarioRunner env) => RunMessage env BaseScenario where
   runMessage msg a@(BaseScenario attrs) = case msg of
-    ResolveToken Token.Skull iid -> a <$ runTest iid 0
-    ResolveToken Token.Cultist iid -> a <$ runTest iid 0
-    ResolveToken Token.Tablet iid -> a <$ runTest iid 0
-    ResolveToken Token.ElderThing iid -> a <$ runTest iid 0
+    ResolveToken Token.Skull iid ->
+      a <$ runTest iid (Token.TokenValue Token.Skull (-1))
+    ResolveToken Token.Cultist iid ->
+      a <$ runTest iid (Token.TokenValue Token.Cultist (-1))
+    ResolveToken Token.Tablet iid ->
+      a <$ runTest iid (Token.TokenValue Token.Tablet (-1))
+    ResolveToken Token.ElderThing iid ->
+      a <$ runTest iid (Token.TokenValue Token.ElderThing (-1))
     _ -> BaseScenario <$> runMessage msg attrs
 
 baseScenario

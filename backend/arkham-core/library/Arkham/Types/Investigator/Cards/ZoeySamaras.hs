@@ -59,7 +59,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env ZoeySamaras where
     UseCardAbility _ _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       i <$ unshiftMessage (TakeResources investigatorId 1 False)
     ResolveToken ElderSign iid | iid == investigatorId -> do
-      runTest investigatorId 1
+      runTest investigatorId (TokenValue ElderSign 1)
       i <$ unshiftMessage
         (AddModifiers
           SkillTestTarget

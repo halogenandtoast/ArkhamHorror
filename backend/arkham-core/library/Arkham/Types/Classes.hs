@@ -23,7 +23,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
-import Arkham.Types.Token (Token)
+import Arkham.Types.Token (Token, TokenValue(..))
 import Arkham.Types.Trait
 import Arkham.Types.Window (Window)
 import qualified Arkham.Types.Window as Window
@@ -106,14 +106,15 @@ unshiftMessages msgs = withQueue $ \queue -> (msgs <> queue, ())
 runTest
   :: (HasQueue env, MonadReader env m, MonadIO m)
   => InvestigatorId
-  -> Int
+  -> TokenValue
   -> m ()
-runTest iid tokenValue = if tokenValue < 0
+runTest iid tokenValue@(TokenValue _ value) = if value < 0
   then unshiftMessages
     [ CheckWindow iid [Window.WhenRevealTokenWithNegativeModifier Window.You]
-    , RunSkillTest tokenValue
+    , Will (RunSkillTest iid tokenValue)
+    , RunSkillTest iid tokenValue
     ]
-  else unshiftMessage (RunSkillTest tokenValue)
+  else unshiftMessage (RunSkillTest iid tokenValue)
 
 class HasSet c b a where
   getSet :: b -> a -> HashSet c

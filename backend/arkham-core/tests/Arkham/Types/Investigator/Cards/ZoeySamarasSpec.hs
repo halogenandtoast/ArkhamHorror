@@ -18,7 +18,8 @@ spec = do
         zoeySamaras
         [ResolveToken ElderSign (getId () zoeySamaras)]
         id
-      game `shouldSatisfy` hasProcessedMessage (RunSkillTest 1)
+      game `shouldSatisfy` hasProcessedMessage
+        (RunSkillTest (getId () zoeySamaras) (TokenValue ElderSign 1))
     it "elder sign token gives +1 and does +1 damage for attacks" $ do
       let zoeySamaras = lookupInvestigator "02001" -- combat is 4
       enemy <- testEnemy ((Enemy.health .~ Static 3) . (Enemy.fight .~ 5))

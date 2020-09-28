@@ -35,5 +35,9 @@ instance HasActions env investigator JimCulver where
 
 instance (InvestigatorRunner Attrs env) => RunMessage env JimCulver where
   runMessage msg i@(JimCulver attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId -> pure i
+    ResolveToken ElderSign iid | iid == investigatorId ->
+      i <$ runTest investigatorId (TokenValue ElderSign 1)
+    Will (RunSkillTest iid (TokenValue Skull _)) | iid == investigatorId -> do
+      Just (RunSkillTest _ _) <- popMessage
+      i <$ unshiftMessage (RunSkillTest iid (TokenValue Skull 0))
     _ -> JimCulver <$> runMessage msg attrs

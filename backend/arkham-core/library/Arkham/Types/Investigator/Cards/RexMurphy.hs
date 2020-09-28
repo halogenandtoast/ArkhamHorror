@@ -60,7 +60,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env RexMurphy where
         [ Label
           "Automatically fail to draw 3"
           [FailSkillTest, DrawCards iid 3 False]
-        , Label "Resolve normally" [RunSkillTest 2]
+        , Label "Resolve normally" [RunSkillTest iid (TokenValue ElderSign 2)]
         ]
       )
     _ -> RexMurphy <$> runMessage msg attrs

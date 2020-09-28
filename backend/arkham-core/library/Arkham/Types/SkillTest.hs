@@ -337,7 +337,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       case skillTestResult of
         SucceededBy n -> s <$ unshiftMessage (SkillTestDidPassBy iid target n)
         _ -> pure s
-    RunSkillTest tokenValue -> do
+    RunSkillTest _ (TokenValue _ tokenValue) -> do
       let
         totaledTokenValues =
           modifiedTokenValue tokenValue s + skillTestValueModifier

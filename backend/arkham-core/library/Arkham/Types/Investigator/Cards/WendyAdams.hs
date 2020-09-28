@@ -87,6 +87,6 @@ instance (InvestigatorRunner Attrs env) => RunMessage env WendyAdams where
     ResolveToken ElderSign iid | iid == investigatorId -> do
       maid <- asks (getId @(Maybe AssetId) (CardCode "01014"))
       case maid of
-        Nothing -> i <$ runTest investigatorId 0
+        Nothing -> i <$ runTest investigatorId (TokenValue ElderSign 0)
         Just _ -> i <$ unshiftMessage PassSkillTest
     _ -> WendyAdams <$> runMessage msg attrs

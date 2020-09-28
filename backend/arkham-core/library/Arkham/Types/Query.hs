@@ -1,6 +1,7 @@
 module Arkham.Types.Query
   ( ClueCount(..)
   , UsesCount(..)
+  , Shroud(..)
   , SpendableClueCount(..)
   , PlayerCount(..)
   , ResourceCount(..)
@@ -29,6 +30,8 @@ newtype EnemyCount = EnemyCount { unEnemyCount :: Int }
 newtype XPCount = XPCount { unXPCount :: Int }
 newtype ClueCount = ClueCount { unClueCount :: Int }
   deriving newtype (Eq, Hashable)
+newtype Shroud = Shroud { unShroud :: Int }
+  deriving newtype (Eq)
 newtype SpendableClueCount = SpendableClueCount { unSpendableClueCount :: Int }
   deriving newtype (Eq, Hashable)
 newtype DoomCount = DoomCount { unDoomCount :: Int }

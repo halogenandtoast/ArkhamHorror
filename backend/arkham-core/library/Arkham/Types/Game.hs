@@ -415,6 +415,9 @@ instance HasCount DoomCount () (Game queue) where
 instance HasCount ClueCount LocationId (Game queue) where
   getCount lid = getCount () . getLocation lid
 
+instance HasCount Shroud LocationId (Game queue) where
+  getCount lid = getCount () . getLocation lid
+
 instance HasCount CardCount InvestigatorId (Game queue) where
   getCount iid = getCount () . getInvestigator iid
 

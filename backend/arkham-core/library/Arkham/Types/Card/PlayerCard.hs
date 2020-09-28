@@ -241,6 +241,7 @@ allPlayerCards = HashMap.fromList
   , ("02008", searchForTheTruth)
   , ("02009", rexsCurse)
   , ("02010", jennysTwin45s)
+  , ("02011", searchingForIzzie)
   , ("02147", bandolier)
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
@@ -888,6 +889,12 @@ jennysTwin45s cardId = (asset cardId "02010" "Jenny's Twin .45s" 0 Neutral)
   { pcSkills = [SkillAgility, SkillAgility, SkillWild]
   , pcTraits = [Item, Weapon, Firearm]
   , pcCost = DynamicCost
+  }
+
+searchingForIzzie :: CardId -> PlayerCard
+searchingForIzzie cardId = (treachery cardId "02011" "Searching for Izzie" 0)
+  { pcTraits = [Task]
+  , pcRevelation = True
   }
 
 bandolier :: CardId -> PlayerCard

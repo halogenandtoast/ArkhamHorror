@@ -111,7 +111,7 @@ runTest
 runTest iid tokenValue@(TokenValue _ value) = if value < 0
   then unshiftMessages
     [ CheckWindow iid [Window.WhenRevealTokenWithNegativeModifier Window.You]
-    , Will (RunSkillTest iid tokenValue)
+    , When (RunSkillTest iid tokenValue)
     , RunSkillTest iid tokenValue
     ]
   else unshiftMessage (RunSkillTest iid tokenValue)

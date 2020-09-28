@@ -79,7 +79,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env WendyAdams where
               , DrawAnotherToken iid 0
               ]
           _ -> error "we expect resolve token to be on the stack"
-    When (DrawToken token) -> i <$ unshiftMessages
+    When (DrawToken iid token) | iid == investigatorId -> i <$ unshiftMessages
       [ FocusTokens [token]
       , CheckWindow investigatorId [WhenDrawToken You token]
       , UnfocusTokens

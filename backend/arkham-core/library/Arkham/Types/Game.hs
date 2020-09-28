@@ -1592,12 +1592,12 @@ runGameMessage msg g = case msg of
   TriggerSkillTest iid -> do
     ([token], chaosBag') <- drawTokens g 1
     unshiftMessages
-      [When (DrawToken token), DrawToken token, ResolveToken token iid]
+      [When (DrawToken iid token), DrawToken iid token, ResolveToken token iid]
     pure $ g & (chaosBag .~ Bag chaosBag')
   DrawAnotherToken iid _ -> do
     ([token], chaosBag') <- drawTokens g 1
     unshiftMessage (ResolveToken token iid)
-    unshiftMessage (DrawToken token)
+    unshiftMessage (DrawToken iid token)
     pure $ g & chaosBag .~ Bag chaosBag'
   CreateStoryAssetAt cardCode lid -> do
     (assetId', asset') <- createAsset cardCode

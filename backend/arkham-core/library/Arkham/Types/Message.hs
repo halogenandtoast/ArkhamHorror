@@ -241,7 +241,7 @@ data Message
   | SkillTestEnded SkillTestResult [Token]
   | ReturnTokens [Token]
   | ReturnSkillTestRevealedTokens
-  | DrawToken Token
+  | DrawToken InvestigatorId Token
   | EmptyDeck InvestigatorId
   | DrawCards InvestigatorId Int Bool
   | HealHorror Target Int

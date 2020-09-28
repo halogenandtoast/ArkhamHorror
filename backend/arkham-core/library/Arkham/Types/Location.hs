@@ -94,6 +94,9 @@ instance HasVictoryPoints Location where
 instance HasCount ClueCount () Location where
   getCount _ = ClueCount . locationClues . locationAttrs
 
+instance HasCount Shroud () Location where
+  getCount _ = Shroud . locationShroud . locationAttrs
+
 instance HasCount DoomCount () Location where
   getCount _ = DoomCount . locationDoom . locationAttrs
 

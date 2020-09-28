@@ -27,5 +27,6 @@ type TreacheryRunner env
     , HasSet ClosestEnemyId (LocationId, [Trait]) env
     , HasSet FarthestLocationId InvestigatorId env
     , HasList UsedAbility () env
+    , HasCount Shroud LocationId env
     )
 

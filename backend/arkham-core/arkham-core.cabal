@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d863e1702d7425f07fdd9c4cabf79ddcebdfaeb58a6d1caab8de8c696bc27fc2
+-- hash: 9a244b54034c33ef1db8a1d6436ff27adefaa92714ef75b308eb652da0f4130a
 
 name:           arkham-core
 version:        0.0.0
@@ -335,6 +335,7 @@ library
       Arkham.Types.Treachery.Cards.Psychosis
       Arkham.Types.Treachery.Cards.RexsCurse
       Arkham.Types.Treachery.Cards.RottingRemains
+      Arkham.Types.Treachery.Cards.SearchingForIzzie
       Arkham.Types.Treachery.Cards.SmiteTheWicked
       Arkham.Types.Treachery.Cards.TheYellowSign
       Arkham.Types.Treachery.Cards.UmordhothsWrath
@@ -390,6 +391,7 @@ test-suite spec
       Arkham.Types.Investigator.Cards.RexMurphySpec
       Arkham.Types.Investigator.Cards.ZoeySamarasSpec
       Arkham.Types.Treachery.Cards.RexsCurseSpec
+      Arkham.Types.Treachery.Cards.SearchingForIzzieSpec
       Arkham.Types.Treachery.Cards.SmiteTheWickedSpec
       Helpers.Matchers
       Helpers.Message

@@ -19,6 +19,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Target
+import Arkham.Types.Treachery
 import Arkham.Types.TreacheryId
 import qualified Data.List as L
 import Lens.Micro
@@ -43,6 +44,11 @@ instance ToPlayerCard Event where
   asPlayerCard event =
     lookupPlayerCard (getCardCode event) (CardId . unEventId $ getId () event)
 
+instance ToPlayerCard Treachery where
+  asPlayerCard treachery = lookupPlayerCard
+    (getCardCode treachery)
+    (CardId . unTreacheryId $ getId () treachery)
+
 class Entity a where
   toTarget :: a -> Target
   updated :: Game queue -> a -> a
@@ -50,6 +56,10 @@ class Entity a where
 instance Entity Agenda where
   toTarget = AgendaTarget . getId ()
   updated g a = g ^?! agendas . ix (getId () a)
+
+instance Entity Treachery where
+  toTarget = TreacheryTarget . getId ()
+  updated g t = g ^?! treacheries . ix (getId () t)
 
 instance Entity Asset where
   toTarget = AssetTarget . getId ()

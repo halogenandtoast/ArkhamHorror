@@ -39,6 +39,7 @@ import Arkham.Types.ScenarioId as X
 import Arkham.Types.SkillType as X
 import Arkham.Types.Source as X
 import Arkham.Types.Stats as X
+import Arkham.Types.Window
 import ClassyPrelude as X
 import Control.Monad.Fail as X
 import qualified Data.HashMap.Strict as HashMap
@@ -130,6 +131,17 @@ testInvestigator cardCode f =
     name = unCardCode cardCode
     stats = Stats 5 5 5 5 5 5
   in pure $ baseInvestigator investigatorId name Neutral stats [] f
+
+getTestActions
+  :: MonadIO m
+  => Investigator
+  -> Window
+  -> ActionType
+  -> GameExternal
+  -> m [Message]
+getTestActions i w atype g = do
+  game <- toInternalGame g
+  runReaderT (getActions i w (atype, game)) game
 
 runGameTestOnlyOption
   :: (MonadFail m, MonadIO m) => String -> Game [Message] -> m (Game [Message])

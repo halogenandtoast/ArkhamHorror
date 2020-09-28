@@ -37,7 +37,23 @@ instance (InvestigatorRunner Attrs env) => RunMessage env JimCulver where
   runMessage msg i@(JimCulver attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId ->
       i <$ runTest investigatorId (TokenValue ElderSign 1)
-    Will (RunSkillTest iid (TokenValue Skull _)) | iid == investigatorId -> do
+    When (DrawToken iid ElderSign) | iid == investigatorId -> do
+      Just (DrawToken _ _) <- popMessage
+      Just (ResolveToken _ _) <- popMessage
+      i <$ unshiftMessage
+        (Ask
+          iid
+          (ChooseOne
+            [ Label
+              "Resolve as Elder Sign"
+              [DrawToken iid ElderSign, ResolveToken ElderSign iid]
+            , Label
+              "Resolve as Skull"
+              [DrawToken iid ElderSign, ResolveToken Skull iid]
+            ]
+          )
+        )
+    When (RunSkillTest iid (TokenValue Skull _)) | iid == investigatorId -> do
       Just (RunSkillTest _ _) <- popMessage
       i <$ unshiftMessage (RunSkillTest iid (TokenValue Skull 0))
     _ -> JimCulver <$> runMessage msg attrs

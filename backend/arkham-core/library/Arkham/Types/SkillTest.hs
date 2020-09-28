@@ -203,7 +203,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       FailedBy n ->
         s <$ unshiftMessage (InvestigatorAssignDamage iid SkillTestSource n 0)
       _ -> error "Should not be called when not failed"
-    DrawToken token -> do
+    DrawToken _ token -> do
       onTokenResponses' <-
         (catMaybes <$>) . for skillTestOnTokenResponses $ \case
           OnAnyToken tokens messages | token `elem` tokens ->

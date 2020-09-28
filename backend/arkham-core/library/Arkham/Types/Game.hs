@@ -378,6 +378,9 @@ instance HasId LocationId InvestigatorId (Game queue) where
 instance HasId LocationId EnemyId (Game queue) where
   getId eid = getId () . getEnemy eid
 
+instance HasCount HorrorCount InvestigatorId GameInternal where
+  getCount iid = HorrorCount . snd . getDamage . getInvestigator iid
+
 instance HasCount TreacheryCount (LocationId, CardCode) (Game queue) where
   getCount (lid, cardCode) g = TreacheryCount $ count (== cardCode) cardCodes
    where

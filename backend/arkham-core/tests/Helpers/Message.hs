@@ -11,6 +11,7 @@ import Arkham.Types.Investigator
 import Arkham.Types.Location
 import Arkham.Types.Message
 import Arkham.Types.SkillType
+import Arkham.Types.Source
 
 playEvent :: Investigator -> Event -> Message
 playEvent i e = InvestigatorPlayEvent (getId () i) (getId () e)
@@ -54,3 +55,15 @@ playDynamicCard i c = PlayDynamicCard (getId () i) (getCardId c) 0 True
 
 drawCards :: Investigator -> Int -> Message
 drawCards i n = DrawCards (getId () i) n False
+
+beginSkillTest :: Investigator -> SkillType -> Int -> Message
+beginSkillTest i stype difficulty = BeginSkillTest
+  (getId () i)
+  TestSource
+  Nothing
+  stype
+  difficulty
+  mempty
+  mempty
+  mempty
+  mempty

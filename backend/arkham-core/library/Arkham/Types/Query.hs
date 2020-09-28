@@ -1,5 +1,7 @@
 module Arkham.Types.Query
   ( ClueCount(..)
+  , HorrorCount(..)
+  , DamageCount(..)
   , UsesCount(..)
   , Shroud(..)
   , SpendableClueCount(..)
@@ -45,6 +47,10 @@ newtype RemainingHealth = RemainingHealth { unRemainingHealth :: Int }
   deriving newtype (Eq, Hashable)
 newtype RemainingSanity = RemainingSanity { unRemainingSanity :: Int }
   deriving newtype (Eq, Hashable)
+newtype HorrorCount = HorrorCount { unHorrorCount :: Int }
+  deriving newtype (Eq)
+newtype DamageCount = DamageCount { unDamageCount :: Int }
+  deriving newtype (Eq)
 
 instance Semigroup ClueCount where
   (ClueCount a) <> (ClueCount b) = ClueCount (a + b)

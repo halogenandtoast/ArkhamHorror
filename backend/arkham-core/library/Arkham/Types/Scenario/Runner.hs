@@ -5,6 +5,7 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
 import Arkham.Types.Query
 import Arkham.Types.Trait
 
@@ -25,5 +26,7 @@ type ScenarioRunner env
     , HasSet ClosestEnemyId (InvestigatorId, [Trait]) env
     , HasSet ClosestEnemyId InvestigatorId env
     , HasSet VictoryDisplayCardCode () env
+    , HasSet ConnectedLocationId LocationId env
+    , HasId LocationId InvestigatorId env
     )
 

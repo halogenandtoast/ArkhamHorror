@@ -42,4 +42,5 @@ type InvestigatorRunner investigator env
     , HasList Enemy () env
     , HasActions env investigator env
     , HasActions env investigator (ActionType, Trait, env)
+    , HasSet InvestigatorId () env
     )

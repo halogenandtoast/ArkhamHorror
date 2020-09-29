@@ -3,7 +3,6 @@ module Arkham.Types.Enemy
   ( lookupEnemy
   , baseEnemy
   , isEngaged
-  , isExhausted
   , getEngagedInvestigators
   , getBearer
   , Enemy
@@ -168,8 +167,8 @@ allEnemies = mapFromList
 isEngaged :: Enemy -> Bool
 isEngaged = not . null . enemyEngagedInvestigators . enemyAttrs
 
-isExhausted :: Enemy -> Bool
-isExhausted = enemyExhausted . enemyAttrs
+instance Exhaustable Enemy where
+  isExhausted = enemyExhausted . enemyAttrs
 
 getEngagedInvestigators :: Enemy -> HashSet InvestigatorId
 getEngagedInvestigators = enemyEngagedInvestigators . enemyAttrs

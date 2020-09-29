@@ -9,6 +9,7 @@ import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
 import Arkham.Types.Stats
+import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import ClassyPrelude
@@ -38,7 +39,9 @@ instance HasActions env investigator AshcanPete where
 
 instance (InvestigatorRunner Attrs env) => RunMessage env AshcanPete where
   runMessage msg i@(AshcanPete attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId -> pure i
+    ResolveToken ElderSign iid | iid == investigatorId -> do
+      unshiftMessage (Ready (CardCodeTarget "02014"))
+      i <$ runTest investigatorId (TokenValue ElderSign 2)
     SetupInvestigators -> do
       let
         (before, after) =

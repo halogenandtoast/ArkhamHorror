@@ -6,6 +6,7 @@ where
 import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
@@ -28,6 +29,7 @@ data Target
   | AgendaTarget AgendaId
   | ActTarget ActId
   | CardIdTarget CardId
+  | CardCodeTarget CardCode
   | EventTarget EventId
   | SkillTarget SkillId
   | EnemyJustEvadedTarget

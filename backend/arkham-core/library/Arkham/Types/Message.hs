@@ -305,6 +305,7 @@ data Message
   | SpendClues Int [InvestigatorId]
   | InvestigatorSpendClues InvestigatorId Int
   | CreateStoryAssetAt CardCode LocationId
+  | PutCardIntoPlay InvestigatorId Card
   | AddAssetAt AssetId LocationId
   | Resolution Int
   | GameOver

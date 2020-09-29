@@ -13,6 +13,7 @@ import Arkham.Types.AssetId as X
 import Arkham.Types.Card as X
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard (basePlayerCard)
+import Arkham.Types.ChaosBag as X
 import Arkham.Types.Classes as X
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Difficulty
@@ -23,7 +24,6 @@ import Arkham.Types.Event as X
 import Arkham.Types.EventId as X
 import Arkham.Types.Game as X
 import Arkham.Types.GameValue as X
-import Arkham.Types.Helpers
 import Arkham.Types.Investigator as X
 import qualified Arkham.Types.Investigator.Attrs as InvestigatorAttrs
 import Arkham.Types.InvestigatorId as X
@@ -217,7 +217,7 @@ newGame investigator queue = do
     , gameEvents = mempty
     , gameSkills = mempty
     , gameActs = mempty
-    , gameChaosBag = Bag []
+    , gameChaosBag = emptyChaosBag
     , gameGameOver = False
     , gamePending = False
     , gameUsedAbilities = mempty

@@ -5,7 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Helpers
 import Arkham.Types.Token
 
 spec :: Spec
@@ -17,18 +16,19 @@ spec = describe "Jum Culver" $ do
       game <-
         runGameTest
           jimCulver
-          [ BeginSkillTest
-              (getId () jimCulver)
-              TestSource
-              Nothing
-              SkillIntellect
-              2
-              mempty
-              mempty
-              mempty
-              mempty
+          [ SetTokens [ElderSign]
+          , BeginSkillTest
+            (getId () jimCulver)
+            TestSource
+            Nothing
+            SkillIntellect
+            2
+            mempty
+            mempty
+            mempty
+            mempty
           ]
-          ((scenario ?~ scenario') . (chaosBag .~ Bag [ElderSign]))
+          (scenario ?~ scenario')
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatching
               "change to skull"
@@ -46,18 +46,19 @@ spec = describe "Jum Culver" $ do
       game <-
         runGameTest
           jimCulver
-          [ BeginSkillTest
-              (getId () jimCulver)
-              TestSource
-              Nothing
-              SkillIntellect
-              2
-              mempty
-              mempty
-              mempty
-              mempty
+          [ SetTokens [ElderSign]
+          , BeginSkillTest
+            (getId () jimCulver)
+            TestSource
+            Nothing
+            SkillIntellect
+            2
+            mempty
+            mempty
+            mempty
+            mempty
           ]
-          ((scenario ?~ scenario') . (chaosBag .~ Bag [ElderSign]))
+          (scenario ?~ scenario')
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatching
               "resolve elder sign"
@@ -76,18 +77,19 @@ spec = describe "Jum Culver" $ do
       game <-
         runGameTest
           jimCulver
-          [ BeginSkillTest
-              (getId () jimCulver)
-              TestSource
-              Nothing
-              SkillIntellect
-              2
-              mempty
-              mempty
-              mempty
-              mempty
+          [ SetTokens [Skull]
+          , BeginSkillTest
+            (getId () jimCulver)
+            TestSource
+            Nothing
+            SkillIntellect
+            2
+            mempty
+            mempty
+            mempty
+            mempty
           ]
-          ((scenario ?~ scenario') . (chaosBag .~ Bag [Skull]))
+          (scenario ?~ scenario')
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
       game `shouldSatisfy` hasProcessedMessage

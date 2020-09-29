@@ -6,7 +6,6 @@ where
 import TestImport
 
 import qualified Arkham.Types.Enemy.Attrs as Enemy
-import Arkham.Types.Helpers
 import Arkham.Types.Token
 
 spec :: Spec
@@ -27,13 +26,13 @@ spec = do
       game <-
         runGameTest
           zoeySamaras
-          [ enemySpawn location enemy
+          [ SetTokens [ElderSign]
+          , enemySpawn location enemy
           , moveTo zoeySamaras location
           , fightEnemy zoeySamaras enemy
           ]
           ((enemies %~ insertEntity enemy)
           . (locations %~ insertEntity location)
-          . (chaosBag .~ Bag [ElderSign])
           )
         >>= runGameTestOptionMatching
               "skip ability"

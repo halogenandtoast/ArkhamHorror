@@ -6,7 +6,6 @@ where
 import TestImport
 
 import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
-import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs (Attrs(..))
 import Arkham.Types.Token
 
@@ -24,14 +23,14 @@ spec = do
       game <-
         runGameTest
           investigator
-          [ enemySpawn location enemy
+          [ SetTokens [MinusOne]
+          , enemySpawn location enemy
           , moveTo investigator location
           , playEvent investigator blindingLight
           ]
           ((events %~ insertEntity blindingLight)
           . (enemies %~ insertEntity enemy)
           . (locations %~ insertEntity location)
-          . (chaosBag .~ Bag [MinusOne])
           . (scenario ?~ scenario')
           )
         >>= runGameTestOnlyOption "Evade enemy"
@@ -50,14 +49,14 @@ spec = do
       game <-
         runGameTest
           investigator
-          [ enemySpawn location enemy
+          [ SetTokens [MinusOne]
+          , enemySpawn location enemy
           , moveTo investigator location
           , playEvent investigator blindingLight
           ]
           ((events %~ insertEntity blindingLight)
           . (enemies %~ insertEntity enemy)
           . (locations %~ insertEntity location)
-          . (chaosBag .~ Bag [MinusOne])
           . (scenario ?~ scenario')
           )
         >>= runGameTestOnlyOption "Evade enemy"
@@ -79,14 +78,14 @@ spec = do
           game <-
             runGameTest
               investigator
-              [ enemySpawn location enemy
+              [ SetTokens [token]
+              , enemySpawn location enemy
               , moveTo investigator location
               , playEvent investigator blindingLight
               ]
               ((events %~ insertEntity blindingLight)
               . (enemies %~ insertEntity enemy)
               . (locations %~ insertEntity location)
-              . (chaosBag .~ Bag [token])
               . (scenario ?~ scenario')
               )
             >>= runGameTestOnlyOption "Evade enemy"

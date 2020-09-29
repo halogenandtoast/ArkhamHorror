@@ -5,7 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Helpers
 import Arkham.Types.Token
 
 spec :: Spec
@@ -28,7 +27,8 @@ spec = describe "Rex's Curse" $ do
     game <-
       runGameTest
         investigator
-        [ loadDeck investigator [rexsCurse]
+        [ SetTokens [PlusOne]
+        , loadDeck investigator [rexsCurse]
         , drawCards investigator 1
         , BeginSkillTest
           (getId () investigator)
@@ -41,7 +41,7 @@ spec = describe "Rex's Curse" $ do
           mempty
           mempty
         ]
-        ((scenario ?~ scenario') . (chaosBag .~ Bag [PlusOne]))
+        (scenario ?~ scenario')
       >>= runGameTestOnlyOption "start skill test"
       >>= runGameTestOnlyOption "apply results"
     updated game investigator
@@ -57,7 +57,8 @@ spec = describe "Rex's Curse" $ do
     game <-
       runGameTest
         investigator
-        [ loadDeck investigator [rexsCurse]
+        [ SetTokens [MinusOne]
+        , loadDeck investigator [rexsCurse]
         , drawCards investigator 1
         , BeginSkillTest
           (getId () investigator)
@@ -70,7 +71,7 @@ spec = describe "Rex's Curse" $ do
           mempty
           mempty
         ]
-        ((scenario ?~ scenario') . (chaosBag .~ Bag [MinusOne]))
+        (scenario ?~ scenario')
       >>= runGameTestOnlyOption "start skill test"
       >>= runGameTestOnlyOption "apply results"
     updated game investigator

@@ -1,8 +1,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.SkillTest
   ( SkillTest(..)
-  , DrawStrategy(..)
-  , ResolveStrategy(..)
   , SkillTestResult(..)
   , TokenResponse(..)
   , initSkillTest
@@ -18,6 +16,7 @@ import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.SkillTestResult
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -37,8 +36,6 @@ data SkillTest a = SkillTest
   , skillTestOnSuccess       :: [a]
   , skillTestOnFailure       :: [a]
   , skillTestOnTokenResponses :: [TokenResponse a]
-  , skillTestDrawStrategy    :: DrawStrategy
-  , skillTestResolveStrategy :: ResolveStrategy
   , skillTestSetAsideTokens  :: [Token]
   , skillTestValueModifier :: Int
   , skillTestResult :: SkillTestResult
@@ -72,18 +69,6 @@ instance HasSet CommittedCardCode () (SkillTest a) where
       . toList
       . skillTestCommittedCards
 
-data DrawStrategy
-  = DrawOne
-  | DrawX Int
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-data ResolveStrategy
-  = ResolveAll
-  | ResolveOne
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
 initSkillTest
   :: InvestigatorId
   -> Source
@@ -104,8 +89,6 @@ initSkillTest iid source maction skillType' skillValue' difficulty' onSuccess' o
     , skillTestOnSuccess = onSuccess'
     , skillTestOnFailure = onFailure'
     , skillTestOnTokenResponses = tokenResponses'
-    , skillTestDrawStrategy = DrawOne
-    , skillTestResolveStrategy = ResolveAll
     , skillTestSetAsideTokens = mempty
     , skillTestValueModifier = 0
     , skillTestResult = Unrun
@@ -193,6 +176,18 @@ type SkillTestRunner env = (HasQueue env, HasCard InvestigatorId env)
 
 instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
   runMessage msg s@SkillTest {..} = case msg of
+    TriggerSkillTest iid -> do
+      s <$ unshiftMessage (RequestTokens SkillTestSource iid 1 SetAside)
+    DrawAnotherToken iid valueModifier' -> do
+      unshiftMessage (RequestTokens SkillTestSource iid 1 SetAside)
+      pure $ s & valueModifier +~ valueModifier'
+    RequestedTokens SkillTestSource iid tokens -> do
+      for_ tokens $ \token -> unshiftMessages
+        [ When (DrawToken iid token)
+        , DrawToken iid token
+        , ResolveToken token iid
+        ]
+      pure s
     AddOnFailure m -> pure $ s & onFailure %~ (m :)
     AddOnSuccess m -> pure $ s & onSuccess %~ (m :)
     HorrorPerPointOfFailure iid -> case skillTestResult of
@@ -214,8 +209,6 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         & (setAsideTokens %~ (token :))
         & (onTokenResponses .~ onTokenResponses')
     SetAsideToken token -> pure $ s & (setAsideTokens %~ (token :))
-    DrawAnotherToken _ valueModifier' ->
-      pure $ s & valueModifier +~ valueModifier'
     PassSkillTest -> do
       unshiftMessages
         [ Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]

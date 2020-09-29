@@ -5,7 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Helpers
 import Arkham.Types.Location.Attrs as Location
 import Arkham.Types.Token
 
@@ -19,11 +18,11 @@ spec = describe "Rex Murphy" $ do
       game <-
         runGameTest
           rexMurphy
-          [moveTo rexMurphy location, beginSkillTest rexMurphy SkillIntellect 2]
-          ((chaosBag .~ Bag [Zero])
-          . (locations %~ insertEntity location)
-          . (scenario ?~ scenario')
-          )
+          [ SetTokens [Zero]
+          , moveTo rexMurphy location
+          , beginSkillTest rexMurphy SkillIntellect 2
+          ]
+          ((locations %~ insertEntity location) . (scenario ?~ scenario'))
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
         >>= runGameTestOptionMatching
@@ -43,7 +42,8 @@ spec = describe "Rex Murphy" $ do
       game <-
         runGameTest
           rexMurphy
-          [ loadDeck rexMurphy cards
+          [ SetTokens [ElderSign]
+          , loadDeck rexMurphy cards
           , BeginSkillTest
             (getId () rexMurphy)
             TestSource
@@ -55,7 +55,7 @@ spec = describe "Rex Murphy" $ do
             mempty
             mempty
           ]
-          ((chaosBag .~ Bag [ElderSign]) . (scenario ?~ scenario'))
+          (scenario ?~ scenario')
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatching
               "automatically fail"
@@ -74,7 +74,8 @@ spec = describe "Rex Murphy" $ do
       game <-
         runGameTest
           rexMurphy
-          [ loadDeck rexMurphy cards
+          [ SetTokens [ElderSign]
+          , loadDeck rexMurphy cards
           , BeginSkillTest
             (getId () rexMurphy)
             TestSource
@@ -86,7 +87,7 @@ spec = describe "Rex Murphy" $ do
             mempty
             mempty
           ]
-          ((chaosBag .~ Bag [ElderSign]) . (scenario ?~ scenario'))
+          (scenario ?~ scenario')
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatching
               "resolve normally"

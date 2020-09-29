@@ -6,7 +6,6 @@ where
 import TestImport
 
 import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
-import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs (Attrs(..))
 import Arkham.Types.Token
 
@@ -24,14 +23,14 @@ spec = do
       game <-
         runGameTest
           investigator
-          [ enemySpawn location enemy
+          [ SetTokens [MinusOne]
+          , enemySpawn location enemy
           , moveTo investigator location
           , playEvent investigator backstab
           ]
           ((events %~ insertEntity backstab)
           . (locations %~ insertEntity location)
           . (enemies %~ insertEntity enemy)
-          . (chaosBag .~ Bag [MinusOne])
           . (scenario ?~ scenario')
           )
         >>= runGameTestOnlyOption "Fight enemy"

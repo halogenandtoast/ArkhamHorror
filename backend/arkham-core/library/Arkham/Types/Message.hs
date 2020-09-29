@@ -27,6 +27,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
+import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.ScenarioId
 import Arkham.Types.SkillId
 import Arkham.Types.SkillTestResult
@@ -235,11 +236,9 @@ data Message
                          (EncounterCardType, Maybe Trait)
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
   | AddToEncounterDeck EncounterCard
-  | DrawAnotherToken InvestigatorId Int
   | SetAsideToken Token
   | SkillTestEnds
   | SkillTestEnded SkillTestResult [Token]
-  | ReturnTokens [Token]
   | ReturnSkillTestRevealedTokens
   | DrawToken InvestigatorId Token
   | EmptyDeck InvestigatorId
@@ -354,6 +353,12 @@ data Message
   | When Message
   | After Message
   | Blanked Message
+  | DrawAnotherToken InvestigatorId Int
+  | SetTokens [Token]
+  | ResetTokens
+  | ReturnTokens [Token]
+  | RequestTokens Source InvestigatorId Int RequestedTokenStrategy
+  | RequestedTokens Source InvestigatorId [Token]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

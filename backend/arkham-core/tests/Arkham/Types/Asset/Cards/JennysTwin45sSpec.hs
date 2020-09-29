@@ -6,7 +6,6 @@ where
 import TestImport
 
 import qualified Arkham.Types.Enemy.Attrs as Enemy
-import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs (Attrs(..))
 import Arkham.Types.Token
 
@@ -51,11 +50,12 @@ spec = describe "Jenny's Twin .45s" $ do
     game <-
       runGameTest
           investigator
-          [playDynamicCard investigator (PlayerCard jennysTwin45s)]
+          [ SetTokens [Zero]
+          , playDynamicCard investigator (PlayerCard jennysTwin45s)
+          ]
           ((enemies %~ insertEntity enemy)
           . (locations %~ insertEntity location)
           . (scenario ?~ scenario')
-          . (chaosBag .~ Bag [Zero])
           )
         >>= payResource
     let jennysTwin45sAsset = game ^?! assets . to toList . ix 0

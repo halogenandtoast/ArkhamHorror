@@ -5,7 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Helpers
 import qualified Arkham.Types.Investigator.Attrs as Investigator
 import qualified Arkham.Types.Location.Attrs as Location
 import Arkham.Types.LocationSymbol
@@ -22,12 +21,12 @@ spec = describe "Jim's Trumpet" $ do
       game <-
         runGameTest
           investigator
-          [ playAsset investigator jimsTrumpet
+          [ SetTokens [Skull]
+          , playAsset investigator jimsTrumpet
           , moveTo investigator location
           , beginSkillTest investigator SkillIntellect 0
           ]
           ((assets %~ insertEntity jimsTrumpet)
-          . (chaosBag .~ Bag [Skull])
           . (scenario ?~ scenario')
           . (locations %~ insertEntity location)
           )
@@ -50,12 +49,12 @@ spec = describe "Jim's Trumpet" $ do
       game <-
         runGameTest
           investigator
-          [ playAsset investigator jimsTrumpet
+          [ SetTokens [Skull]
+          , playAsset investigator jimsTrumpet
           , moveAllTo location
           , beginSkillTest investigator SkillIntellect 0
           ]
           ((assets %~ insertEntity jimsTrumpet)
-          . (chaosBag .~ Bag [Skull])
           . (scenario ?~ scenario')
           . (locations %~ insertEntity location)
           . (investigators %~ insertEntity investigator2)
@@ -79,12 +78,12 @@ spec = describe "Jim's Trumpet" $ do
       game <-
         runGameTest
           investigator
-          [ playAsset investigator jimsTrumpet
+          [ SetTokens [Skull]
+          , playAsset investigator jimsTrumpet
           , moveAllTo location
           , beginSkillTest investigator2 SkillIntellect 0
           ]
           ((assets %~ insertEntity jimsTrumpet)
-          . (chaosBag .~ Bag [Skull])
           . (scenario ?~ scenario')
           . (locations %~ insertEntity location)
           . (investigators %~ insertEntity investigator2)
@@ -121,7 +120,8 @@ spec = describe "Jim's Trumpet" $ do
       game <-
         runGameTest
           investigator
-          [ PlacedLocation (getId () location1)
+          [ SetTokens [Skull]
+          , PlacedLocation (getId () location1)
           , PlacedLocation (getId () location2)
           , playAsset investigator jimsTrumpet
           , moveTo investigator location1
@@ -129,7 +129,6 @@ spec = describe "Jim's Trumpet" $ do
           , beginSkillTest investigator SkillIntellect 0
           ]
           ((assets %~ insertEntity jimsTrumpet)
-          . (chaosBag .~ Bag [Skull])
           . (scenario ?~ scenario')
           . (locations %~ insertEntity location1)
           . (locations %~ insertEntity location2)
@@ -159,7 +158,8 @@ spec = describe "Jim's Trumpet" $ do
       game <-
         runGameTest
           investigator
-          [ PlacedLocation (getId () location1)
+          [ SetTokens [Skull]
+          , PlacedLocation (getId () location1)
           , PlacedLocation (getId () location2)
           , playAsset investigator jimsTrumpet
           , moveTo investigator location1
@@ -167,7 +167,6 @@ spec = describe "Jim's Trumpet" $ do
           , beginSkillTest investigator SkillIntellect 0
           ]
           ((assets %~ insertEntity jimsTrumpet)
-          . (chaosBag .~ Bag [Skull])
           . (scenario ?~ scenario')
           . (locations %~ insertEntity location1)
           . (locations %~ insertEntity location2)

@@ -5,7 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Helpers
 import qualified Arkham.Types.Location.Attrs as Location
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Token
@@ -51,14 +50,12 @@ spec = describe "Searching for Izzie" $ do
     scenario' <- testScenario "00000" id
     game <- runGameTest
       investigator
-      [ loadDeck investigator [searchingForIzzie]
+      [ SetTokens [Zero]
+      , loadDeck investigator [searchingForIzzie]
       , drawCards investigator 1
       , moveTo investigator location
       ]
-      ((locations %~ insertEntity location)
-      . (scenario ?~ scenario')
-      . (chaosBag .~ Bag [Zero])
-      )
+      ((locations %~ insertEntity location) . (scenario ?~ scenario'))
     let updatedSearchingForIzzie = game ^?! treacheries . to toList . ix 0
 
     actions <- getTestActions investigator NonFast TreacheryActionType game

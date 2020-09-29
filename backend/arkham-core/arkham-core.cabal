@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 30391624d1eade9f7683fcb17373ba60c7e4aeb9fae78d634d2ef9e16039c96a
+-- hash: 9eaba643595ab2f62ff5a6f08b21243e6f52614510e063f6f3feafbb2d28d808
 
 name:           arkham-core
 version:        0.0.0
@@ -122,6 +122,7 @@ library
       Arkham.Types.Card.Forced
       Arkham.Types.Card.Id
       Arkham.Types.Card.PlayerCard
+      Arkham.Types.ChaosBag
       Arkham.Types.Classes
       Arkham.Types.Classes.HasRecord
       Arkham.Types.ClassSymbol
@@ -277,6 +278,7 @@ library
       Arkham.Types.Phase
       Arkham.Types.Prey
       Arkham.Types.Query
+      Arkham.Types.RequestedTokenStrategy
       Arkham.Types.Scenario
       Arkham.Types.Scenario.Attrs
       Arkham.Types.Scenario.Runner

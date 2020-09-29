@@ -39,6 +39,7 @@ import Arkham.Types.Card
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Forced
 import Arkham.Types.Card.Id
+import Arkham.Types.ChaosBag
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy
@@ -73,7 +74,6 @@ import Arkham.Types.Window (Who(..))
 import qualified Arkham.Types.Window as Fast
 import ClassyPrelude
 import Control.Monad.State
-import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Data.List.NonEmpty (NonEmpty(..))
@@ -110,7 +110,7 @@ data Game queue = Game
   , gamePhase :: Phase
   , gameEncounterDeck :: Deck EncounterCard
   , gameDiscard :: [EncounterCard]
-  , gameChaosBag :: Bag Token
+  , gameChaosBag :: ChaosBag
   , gameSkillTest :: Maybe (SkillTest Message)
   , gameActs :: HashMap ActId Act
   , gameAgendas :: HashMap AgendaId Agenda
@@ -205,7 +205,7 @@ discard = lens gameDiscard $ \m x -> m { gameDiscard = x }
 usedAbilities :: Lens' (Game queue) [(InvestigatorId, Ability)]
 usedAbilities = lens gameUsedAbilities $ \m x -> m { gameUsedAbilities = x }
 
-chaosBag :: Lens' (Game queue) (Bag Token)
+chaosBag :: Lens' (Game queue) ChaosBag
 chaosBag = lens gameChaosBag $ \m x -> m { gameChaosBag = x }
 
 leadInvestigatorId :: Lens' (Game queue) InvestigatorId
@@ -318,7 +318,7 @@ newCampaign campaignId playerCount' investigatorsList difficulty' = do
     , gameEvents = mempty
     , gameSkills = mempty
     , gameActs = mempty
-    , gameChaosBag = Bag []
+    , gameChaosBag = emptyChaosBag
     , gameGameOver = False
     , gamePending = length investigatorsMap /= playerCount'
     , gameUsedAbilities = mempty
@@ -917,11 +917,6 @@ createTreachery cardCode = do
 locationFor :: InvestigatorId -> Game queue -> LocationId
 locationFor iid = locationOf . investigatorAttrs . getInvestigator iid
 
-drawTokens :: MonadIO m => Game queue -> Int -> m ([Token], [Token])
-drawTokens Game {..} n = do
-  let tokens = coerce gameChaosBag
-  splitAt n <$> liftIO (shuffleM tokens)
-
 broadcastWindow
   :: (MonadReader env m, HasQueue env, MonadIO m)
   => (Who -> Fast.Window)
@@ -1006,7 +1001,7 @@ runPreGameMessage msg g = case msg of
   _ -> pure g
 
 runGameMessage
-  :: (GameRunner env, MonadReader env m, MonadIO m, MonadFail m)
+  :: (GameRunner env, MonadReader env m, MonadIO m)
   => Message
   -> GameInternal
   -> m GameInternal
@@ -1027,7 +1022,7 @@ runGameMessage msg g = case msg of
       & (assets .~ mempty)
       & (encounterDeck .~ mempty)
       & (discard .~ mempty)
-      & (chaosBag .~ mempty)
+      & (chaosBag .~ emptyChaosBag)
       & (skillTest .~ Nothing)
       & (acts .~ mempty)
       & (agendas .~ mempty)
@@ -1042,15 +1037,16 @@ runGameMessage msg g = case msg of
     let
       campaign' = fromJustNote "not a campaign" (g ^. campaign)
       difficulty' = difficultyOf campaign'
-      chaosBag' = chaosBagOf campaign'
     unshiftMessages
-      $ [ChooseLeadInvestigator, SetupInvestigators]
+      $ [ ChooseLeadInvestigator
+        , SetupInvestigators
+        , SetTokens (chaosBagOf campaign')
+        ]
       <> [ InvestigatorMulligan iid | iid <- keys $ g ^. investigators ]
       <> [Setup]
     pure
       $ g
       & (scenario ?~ lookupScenario sid difficulty')
-      & (chaosBag .~ Bag chaosBag')
       & (phase .~ InvestigationPhase)
   FocusCards cards -> pure $ g & focusedCards .~ cards
   FocusTokens tokens -> pure $ g & focusedTokens .~ tokens
@@ -1198,8 +1194,6 @@ runGameMessage msg g = case msg of
         (CardId $ unTreacheryId treacheryId)
     unshiftMessage (ShuffleCardsIntoDeck iid [card])
     pure $ g & treacheries %~ deleteMap treacheryId
-  ReturnTokens tokens -> pure $ g & chaosBag %~ Bag . (tokens <>) . unBag
-  AddToken token -> pure $ g & chaosBag %~ Bag . (token :) . unBag
   PlayDynamicCard iid cardId n False -> do
     let
       investigator = getInvestigator iid g
@@ -1592,16 +1586,6 @@ runGameMessage msg g = case msg of
                skillTestModifiers
                tokenResponses
           )
-  TriggerSkillTest iid -> do
-    ([token], chaosBag') <- drawTokens g 1
-    unshiftMessages
-      [When (DrawToken iid token), DrawToken iid token, ResolveToken token iid]
-    pure $ g & (chaosBag .~ Bag chaosBag')
-  DrawAnotherToken iid _ -> do
-    ([token], chaosBag') <- drawTokens g 1
-    unshiftMessage (ResolveToken token iid)
-    unshiftMessage (DrawToken iid token)
-    pure $ g & chaosBag .~ Bag chaosBag'
   CreateStoryAssetAt cardCode lid -> do
     (assetId', asset') <- createAsset cardCode
     unshiftMessage (AddAssetAt assetId' lid)
@@ -1783,6 +1767,7 @@ runGameMessage msg g = case msg of
 instance RunMessage GameInternal GameInternal where
   runMessage msg g =
     runPreGameMessage msg g
+      >>= traverseOf chaosBag (runMessage msg)
       >>= traverseOf (campaign . traverse) (runMessage msg)
       >>= traverseOf (scenario . traverse) (runMessage msg)
       >>= traverseOf (acts . traverse) (runMessage msg)

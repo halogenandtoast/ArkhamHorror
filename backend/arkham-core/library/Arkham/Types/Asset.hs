@@ -92,6 +92,9 @@ data Asset
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Asset
 deriving anyclass instance (AssetRunner env) => RunMessage env Asset
 
+instance Exhaustable Asset where
+  isExhausted = assetExhausted . assetAttrs
+
 instance HasCardCode Asset where
   getCardCode = assetCardCode . assetAttrs
 

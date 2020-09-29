@@ -110,6 +110,8 @@ data Message
   | HuntersMove
   | EnemiesAttack
   | ReadyExhausted
+  | Exhaust Target
+  | Ready Target
   | AllDrawCardAndResource
   | AllCheckHandSize
   | CheckHandSize InvestigatorId

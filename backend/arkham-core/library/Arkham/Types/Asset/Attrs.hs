@@ -110,6 +110,12 @@ defeated Attrs {..} =
 instance HasActions env investigator Attrs where
   getActions _ _ _ = pure []
 
+is :: Target -> Attrs -> Bool
+is (AssetTarget aid) a = aid == assetId a
+is (CardCodeTarget cardCode) a = cardCode == assetCardCode a
+is (CardIdTarget cardId) a = unCardId cardId == unAssetId (assetId a)
+is _ _ = False
+
 instance (AssetRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     ReadyExhausted -> pure $ a & exhausted .~ False
@@ -119,20 +125,22 @@ instance (AssetRunner env) => RunMessage env Attrs where
       pure $ a & healthDamage +~ health & sanityDamage +~ sanity
     InvestigatorEliminated iid | assetInvestigator == Just iid ->
       a <$ unshiftMessage (Discard (AssetTarget assetId))
-    AddUses (AssetTarget aid) useType n | aid == assetId -> case assetUses of
+    AddUses target useType n | target `is` a -> case assetUses of
       Uses useType' m | useType == useType' ->
         pure $ a & uses .~ Uses useType (n + m)
       _ -> error "Trying to add the wrong use type"
     AddAssetAt aid lid | aid == assetId -> pure $ a & location ?~ lid
-    Discard (AssetTarget aid) | aid == assetId -> case assetInvestigator of
+    Discard target | target `is` a -> case assetInvestigator of
       Nothing -> pure a
       Just iid -> a <$ unshiftMessage
         (RemoveAllModifiersOnTargetFrom
           (InvestigatorTarget iid)
-          (AssetSource aid)
+          (AssetSource assetId)
         )
     InvestigatorPlayAsset iid aid _ _ | aid == assetId ->
       pure $ a & investigator ?~ iid
     TakeControlOfAsset iid aid | aid == assetId ->
       pure $ a & investigator ?~ iid
+    Exhaust target | target `is` a -> pure $ a & exhausted .~ True
+    Ready target | target `is` a -> pure $ a & exhausted .~ False
     _ -> pure a

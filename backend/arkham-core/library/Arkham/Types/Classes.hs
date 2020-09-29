@@ -271,6 +271,15 @@ class (HasId EnemyId () enemy) => IsEnemy enemy where
 class IsScenario scenario where
   tokensWithNegativeModifier :: scenario -> HashSet Token
 
+class Exhaustable a where
+  isExhausted :: a -> Bool
+  isReady :: a -> Bool
+
+  isExhausted = not . isReady
+  isReady = not . isExhausted
+  {-# MINIMAL isExhausted | isReady #-}
+
+
 class (HasId InvestigatorId () investigator) => IsInvestigator investigator where
   locationOf :: investigator -> LocationId
   canInvestigate :: (IsLocation location) => location -> investigator -> Bool

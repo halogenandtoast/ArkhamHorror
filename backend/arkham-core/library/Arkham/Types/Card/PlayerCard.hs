@@ -244,6 +244,7 @@ allPlayerCards = HashMap.fromList
   , ("02011", searchingForIzzie)
   , ("02012", jimsTrumpet)
   , ("02013", finalRhapsody)
+  , ("02014", duke)
   , ("02147", bandolier)
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
@@ -910,6 +911,10 @@ finalRhapsody cardId = (treachery cardId "02013" "Final Rhapsody" 0)
   { pcTraits = [Endtimes]
   , pcRevelation = True
   }
+
+duke :: CardId -> PlayerCard
+duke cardId =
+  (asset cardId "02014" "Duke" 2 Neutral) { pcTraits = [Ally, Creature] }
 
 bandolier :: CardId -> PlayerCard
 bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)

@@ -1,8 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.AshcanPete where
 
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
+import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
@@ -11,6 +13,7 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
+import Lens.Micro
 
 newtype AshcanPete = AshcanPete Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -36,4 +39,13 @@ instance HasActions env investigator AshcanPete where
 instance (InvestigatorRunner Attrs env) => RunMessage env AshcanPete where
   runMessage msg i@(AshcanPete attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
+    SetupInvestigators -> do
+      let
+        (before, after) =
+          break ((== "02014") . pcCardCode) (unDeck investigatorDeck)
+      case after of
+        (card : rest) -> do
+          unshiftMessage (PutCardIntoPlay investigatorId (PlayerCard card))
+          AshcanPete <$> runMessage msg (attrs & deck .~ Deck (before <> rest))
+        _ -> error "Duke must be in deck"
     _ -> AshcanPete <$> runMessage msg attrs

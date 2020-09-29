@@ -1233,6 +1233,9 @@ runGameMessage msg g = case msg of
       investigator = getInvestigator iid g
       card = fromJustNote "could not find card in hand"
         $ find ((== cardId) . getCardId) (handOf investigator)
+    runGameMessage (PutCardIntoPlay iid card) g
+  PutCardIntoPlay iid card -> do
+    let cardId = getCardId card
     case card of
       PlayerCard pc -> case pcCardType pc of
         PlayerTreacheryType -> do

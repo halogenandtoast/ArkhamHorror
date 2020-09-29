@@ -78,6 +78,7 @@ data Asset
   | ZoeysCross' ZoeysCross
   | JennysTwin45s' JennysTwin45s
   | JimsTrumpet' JimsTrumpet
+  | Duke' Duke
   | Bandolier' Bandolier
   | PhysicalTraining2' PhysicalTraining2
   | Hyperawareness2' Hyperawareness2
@@ -171,6 +172,7 @@ allAssets = mapFromList
   , ("02006", ZoeysCross' . zoeysCross)
   , ("02010", JennysTwin45s' . jennysTwin45s)
   , ("02012", JimsTrumpet' . jimsTrumpet)
+  , ("02014", Duke' . duke)
   , ("02147", Bandolier' . bandolier)
   , ("50001", PhysicalTraining2' . physicalTraining2)
   , ("50003", Hyperawareness2' . hyperawareness2)
@@ -245,6 +247,7 @@ assetAttrs = \case
   ZoeysCross' attrs -> coerce attrs
   JennysTwin45s' attrs -> coerce attrs
   JimsTrumpet' attrs -> coerce attrs
+  Duke' attrs -> coerce attrs
   Bandolier' attrs -> coerce attrs
   PhysicalTraining2' attrs -> coerce attrs
   Hyperawareness2' attrs -> coerce attrs

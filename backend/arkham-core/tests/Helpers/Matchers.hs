@@ -4,6 +4,7 @@ import ClassyPrelude
 
 import Arkham.Types.Agenda
 import Arkham.Types.Asset
+import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
@@ -81,7 +82,6 @@ instance Entity Investigator where
   toTarget = InvestigatorTarget . getId ()
   updated g a = g ^?! investigators . ix (getId () a)
 
-
 hasModifier :: (Entity a) => Game queue -> Modifier -> a -> Bool
 hasModifier game modifier a = modifier `elem` modifiers
  where
@@ -148,6 +148,13 @@ hasProcessedMessage m g = m `elem` gameMessageHistory g
 
 hasEnemy :: Enemy -> Location -> Bool
 hasEnemy e l = getId () e `member` getSet @EnemyId () l
+
+hasCardInPlay :: Card -> Investigator -> Bool
+hasCardInPlay c i = case c of
+  PlayerCard pc -> case pcCardType pc of
+    AssetType -> AssetId (unCardId $ pcId pc) `member` getSet () i
+    _ -> error "not implemented"
+  _ -> error "not implemented"
 
 hasTreacheryWithMatchingCardCode
   :: (HasSet TreacheryId () a) => Game queue -> Card -> a -> Bool

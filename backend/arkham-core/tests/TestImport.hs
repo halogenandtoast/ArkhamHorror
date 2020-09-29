@@ -156,6 +156,19 @@ runGameTestOnlyOption _reason game = case mapToList (gameQuestion game) of
     _ -> error "spec expectation mismatch"
   _ -> error "There must be only one choice to use this function"
 
+runGameTestFirstOption
+  :: (MonadFail m, MonadIO m) => String -> Game [Message] -> m (Game [Message])
+runGameTestFirstOption _reason game = case mapToList (gameQuestion game) of
+  [(_, question)] -> case question of
+    ChooseOne (msg : _) ->
+      toInternalGame (game { gameMessages = msg : gameMessages game })
+        >>= runMessages
+    ChooseOneAtATime (msg : _) ->
+      toInternalGame (game { gameMessages = msg : gameMessages game })
+        >>= runMessages
+    _ -> error "spec expectation mismatch"
+  _ -> error "There must be at least one option"
+
 runGameTestMessages
   :: (MonadFail m, MonadIO m)
   => Game [Message]

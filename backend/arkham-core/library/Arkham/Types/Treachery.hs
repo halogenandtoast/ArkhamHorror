@@ -49,6 +49,7 @@ data Treachery
   | SmiteTheWicked' SmiteTheWicked
   | RexsCurse' RexsCurse
   | SearchingForIzzie' SearchingForIzzie
+  | FinalRhapsody' FinalRhapsody
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -104,6 +105,7 @@ allTreacheries = mapFromList
   , ("02007", (SmiteTheWicked' .) . smiteTheWicked)
   , ("02009", (RexsCurse' .) . rexsCurse)
   , ("02011", (SearchingForIzzie' .) . searchingForIzzie)
+  , ("02013", (FinalRhapsody' .) . finalRhapsody)
   ]
 
 isWeakness :: Treachery -> Bool
@@ -141,3 +143,4 @@ treacheryAttrs = \case
   SmiteTheWicked' attrs -> coerce attrs
   RexsCurse' attrs -> coerce attrs
   SearchingForIzzie' attrs -> coerce attrs
+  FinalRhapsody' attrs -> coerce attrs

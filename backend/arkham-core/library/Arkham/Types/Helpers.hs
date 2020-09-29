@@ -23,9 +23,6 @@ sample xs = do
   idx <- getRandomR (0, NE.length xs - 1)
   pure $ xs NE.!! idx
 
-without :: Int -> [a] -> [a]
-without n as = [ a | (i, a) <- zip [0 ..] as, i /= n ]
-
 infix 9 !!?
 (!!?) :: [a] -> Int -> Maybe a
 (!!?) xs i

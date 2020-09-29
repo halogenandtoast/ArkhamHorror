@@ -243,6 +243,7 @@ allPlayerCards = HashMap.fromList
   , ("02010", jennysTwin45s)
   , ("02011", searchingForIzzie)
   , ("02012", jimsTrumpet)
+  , ("02013", finalRhapsody)
   , ("02147", bandolier)
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
@@ -902,6 +903,12 @@ jimsTrumpet :: CardId -> PlayerCard
 jimsTrumpet cardId = (asset cardId "02012" "Jim's Trumpet" 2 Neutral)
   { pcSkills = [SkillWillpower, SkillWillpower, SkillWild]
   , pcTraits = [Item, Instrument, Relic]
+  }
+
+finalRhapsody :: CardId -> PlayerCard
+finalRhapsody cardId = (treachery cardId "02013" "Final Rhapsody" 0)
+  { pcTraits = [Endtimes]
+  , pcRevelation = True
   }
 
 bandolier :: CardId -> PlayerCard

@@ -11,6 +11,7 @@ import Arkham.Types.Treachery.Cards.CryptChill as X
 import Arkham.Types.Treachery.Cards.DissonantVoices as X
 import Arkham.Types.Treachery.Cards.DreamsOfRlyeh as X
 import Arkham.Types.Treachery.Cards.FalseLead as X
+import Arkham.Types.Treachery.Cards.FinalRhapsody as X
 import Arkham.Types.Treachery.Cards.FrozenInFear as X
 import Arkham.Types.Treachery.Cards.GraspingHands as X
 import Arkham.Types.Treachery.Cards.Haunted as X

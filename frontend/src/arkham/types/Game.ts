@@ -75,7 +75,6 @@ export interface GameState {
   acts: Record<string, Act>;
   agendas: Record<string, Agenda>;
   assets: Record<string, Asset>;
-  chaosBag: ChaosToken[];
   discard: EncounterCardContents[];
   enemies: Record<string, Enemy>;
   gameOver: boolean;
@@ -102,7 +101,6 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     acts: JsonDecoder.dictionary<Act>(actDecoder, 'Dict<UUID, Act>'),
     agendas: JsonDecoder.dictionary<Agenda>(agendaDecoder, 'Dict<UUID, Agenda>'),
     assets: JsonDecoder.dictionary<Asset>(assetDecoder, 'Dict<UUID, Asset>'),
-    chaosBag: JsonDecoder.array<ChaosToken>(chaosTokenDecoder, 'ChaosToken[]'),
     discard: JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]'),
     enemies: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
     gameOver: JsonDecoder.boolean,

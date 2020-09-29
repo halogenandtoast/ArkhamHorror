@@ -5,6 +5,8 @@
           , "^Arkham.Types.Game.toInternalGame$"
           , "^Arkham.Types.Investigator.lookupInvestigator$"
           , "^Paths_.*"
+          , "^Main.main$"
+          , "^Main.spec$"
           ]
 , type-class-roots = True
 }

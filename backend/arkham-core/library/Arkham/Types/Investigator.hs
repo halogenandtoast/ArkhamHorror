@@ -266,8 +266,21 @@ isBlank _ = False
 
 lookupInvestigator :: InvestigatorId -> Investigator
 lookupInvestigator iid =
-  fromJustNote ("Unkown investigator: " <> show iid)
-    $ lookup iid allInvestigators
+  fromMaybe (lookupPromoInvestigator iid) $ lookup iid allInvestigators
+
+-- | Handle promo investigators
+--
+-- Some investigators have book versions that are just alternative art
+-- with some replacement cards. Since these investigators are functionally
+-- the same, we proxy the lookup to their non-promo version.
+--
+-- Parallel investigators will need to be handled differently since they
+-- are not functionally the same.
+--
+lookupPromoInvestigator :: InvestigatorId -> Investigator
+lookupPromoInvestigator "98001" = lookupInvestigator "02003" -- Jenny Barnes
+lookupPromoInvestigator "98004" = lookupInvestigator "01001" -- Roland Banks
+lookupPromoInvestigator iid = error $ "Unknown investigator: " <> show iid
 
 getEngagedEnemies :: Investigator -> HashSet EnemyId
 getEngagedEnemies = investigatorEngagedEnemies . investigatorAttrs

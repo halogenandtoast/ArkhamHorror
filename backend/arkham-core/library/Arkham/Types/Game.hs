@@ -1584,7 +1584,7 @@ runGameMessage msg g = case msg of
       let
         mBaseValue = foldr
           (\modifier current -> case modifier of
-            BaseSkillOf n -> Just n
+            BaseSkillOf stype n | stype == skillType -> Just n
             _ -> current
           )
           Nothing

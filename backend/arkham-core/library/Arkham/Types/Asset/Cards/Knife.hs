@@ -42,8 +42,8 @@ instance (ActionRunner env investigator) => HasActions env investigator Knife wh
                (getId () i)
                (mkAbility
                  (AssetSource assetId)
-                 1
-                 (ActionAbility 2 (Just Action.Fight))
+                 2
+                 (ActionAbility 1 (Just Action.Fight))
                )
            | fightAvailable && canDo Action.Fight i
            ]

@@ -44,8 +44,8 @@ instance (ActionRunner env investigator) => HasActions env investigator Duke whe
                (getId () i)
                (mkAbility
                  (AssetSource assetId)
-                 1
-                 (ActionAbility 2 (Just Action.Fight))
+                 2
+                 (ActionAbility 1 (Just Action.Investigate))
                )
            | investigateAvailable && canDo Action.Investigate i
            ]
@@ -58,7 +58,20 @@ instance (AssetRunner env) => RunMessage env Duke where
         (ChooseFightEnemy
           iid
           SkillCombat
-          [BaseSkillOf 4, DamageDealt 1]
+          [BaseSkillOf SkillCombat 4, DamageDealt 1]
+          mempty
+          False
+        )
+      pure . Duke $ attrs & exhausted .~ True
+    UseCardAbility iid _ (AssetSource aid) _ 2 | aid == assetId -> do
+      lid <- asks (getId iid)
+      unshiftMessage
+        (Investigate
+          iid
+          lid
+          SkillIntellect
+          [BaseSkillOf SkillIntellect 4]
+          mempty
           mempty
           False
         )

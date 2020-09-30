@@ -47,6 +47,7 @@ instance (AssetRunner env) => RunMessage env Burglary where
           lid
           SkillIntellect
           mempty
+          mempty
           [TakeResources iid 3 False]
           False
         )

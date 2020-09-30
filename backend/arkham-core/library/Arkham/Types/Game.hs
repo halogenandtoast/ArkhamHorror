@@ -1581,6 +1581,16 @@ runGameMessage msg g = case msg of
   BeginSkillTestAfterFast iid source maction skillType difficulty onSuccess onFailure skillTestModifiers tokenResponses
     -> do
       unshiftMessage (BeforeSkillTest iid skillType)
+      let
+        mBaseValue = foldr
+          (\modifier current -> case modifier of
+            BaseSkillOf n -> Just n
+            _ -> current
+          )
+          Nothing
+          skillTestModifiers
+        skillValue =
+          fromMaybe (skillValueOf skillType (getInvestigator iid g)) mBaseValue
       pure
         $ g
         & (skillTest
@@ -1589,7 +1599,7 @@ runGameMessage msg g = case msg of
                source
                maction
                skillType
-               (skillValueOf skillType (getInvestigator iid g))
+               skillValue
                difficulty
                onSuccess
                onFailure

@@ -6,6 +6,7 @@ import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Trait
 
@@ -27,4 +28,5 @@ type AssetRunner env
     , HasSet Trait AssetId env
     , HasSet AssetId InvestigatorId env
     , HasCount HorrorCount InvestigatorId env
+    , HasList Modifier InvestigatorId env
     )

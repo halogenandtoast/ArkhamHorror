@@ -479,6 +479,9 @@ instance HasInvestigatorStats Stats InvestigatorId (Game queue) where
 instance HasList Modifier LocationId (Game queue) where
   getList lid = getModifiers . getLocation lid
 
+instance HasList Modifier InvestigatorId (Game queue) where
+  getList lid = getModifiers . getInvestigator lid
+
 instance HasList Location () (Game queue) where
   getList _ = toList . view locations
 
@@ -1589,8 +1592,9 @@ runGameMessage msg g = case msg of
           )
           Nothing
           skillTestModifiers
-        skillValue =
-          fromMaybe (skillValueOf skillType (getInvestigator iid g)) mBaseValue
+        skillValue = fromMaybe
+          (skillValueOf skillType (getInvestigator iid g))
+          mBaseValue
       pure
         $ g
         & (skillTest
@@ -1704,14 +1708,26 @@ runGameMessage msg g = case msg of
     encounterDeck' <-
       liftIO . shuffleM $ unDeck (view encounterDeck g) <> view discard g
     pure $ g & encounterDeck .~ Deck encounterDeck' & discard .~ mempty
-  RevelationSkillTest _ (TreacherySource tid) _ _ _ _ -> do
-    let
-      treachery = getTreachery tid g
-      card = fromJustNote
-        "missing card"
-        (lookup (getCardCode treachery) allEncounterCards)
-        (CardId $ unTreacheryId tid)
-    pure $ g & (activeCard ?~ EncounterCard card)
+  RevelationSkillTest iid (TreacherySource tid) skillType difficulty onSuccess onFailure
+    -> do
+      let
+        treachery = getTreachery tid g
+        card = fromJustNote
+          "missing card"
+          (lookup (getCardCode treachery) allEncounterCards)
+          (CardId $ unTreacheryId tid)
+
+      unshiftMessage $ BeginSkillTest
+        iid
+        (TreacherySource tid)
+        Nothing
+        skillType
+        difficulty
+        onSuccess
+        onFailure
+        []
+        mempty
+      pure $ g & (activeCard ?~ EncounterCard card)
   InvestigatorDrewEncounterCard iid card -> case ecCardType card of
     EnemyType -> do
       (enemyId', enemy') <- createEnemy (ecCardCode card)

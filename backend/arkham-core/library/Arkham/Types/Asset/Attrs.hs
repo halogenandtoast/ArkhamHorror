@@ -13,6 +13,7 @@ import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
+import Arkham.Types.Modifier
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
@@ -118,7 +119,13 @@ is _ _ = False
 
 instance (AssetRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
-    ReadyExhausted -> pure $ a & exhausted .~ False
+    ReadyExhausted -> case assetInvestigator of
+      Just iid -> do
+        modifiers <- asks (getList iid)
+        if ControlledAssetsCannotReady `elem` modifiers
+          then pure a
+          else pure $ a & exhausted .~ False
+      Nothing -> pure $ a & exhausted .~ False
     CheckDefeated ->
       a <$ when (defeated a) (unshiftMessage (AssetDefeated assetId))
     AssetDamage aid _ health sanity | aid == assetId ->
@@ -142,5 +149,11 @@ instance (AssetRunner env) => RunMessage env Attrs where
     TakeControlOfAsset iid aid | aid == assetId ->
       pure $ a & investigator ?~ iid
     Exhaust target | target `is` a -> pure $ a & exhausted .~ True
-    Ready target | target `is` a -> pure $ a & exhausted .~ False
+    Ready target | target `is` a -> case assetInvestigator of
+      Just iid -> do
+        modifiers <- asks (getList iid)
+        if ControlledAssetsCannotReady `elem` modifiers
+          then pure a
+          else pure $ a & exhausted .~ False
+      Nothing -> pure $ a & exhausted .~ False
     _ -> pure a

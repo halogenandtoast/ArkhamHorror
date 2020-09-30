@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 90f19116edc080ba35bcd1f9329501e671fb9c795fd73cf8f22e4d5f707cb2fd
+-- hash: ef37af37aac722c1c5cda32ef5812f2825316f947dd7f193e1eeb6afc2e4a6fd
 
 name:           arkham-core
 version:        0.0.0
@@ -404,6 +404,7 @@ test-suite spec
       Arkham.Types.Treachery.Cards.RexsCurseSpec
       Arkham.Types.Treachery.Cards.SearchingForIzzieSpec
       Arkham.Types.Treachery.Cards.SmiteTheWickedSpec
+      Arkham.Types.Treachery.Cards.WrackedByNightmaresSpec
       Helpers.Matchers
       Helpers.Message
       TestImport

@@ -69,9 +69,8 @@ spec = describe "Duke" $ do
           duke <- buildAsset "02014"
           investigator <- testInvestigator "00000"
             $ \attrs -> attrs { investigatorIntellect = 1 }
-          (location1, location2) <- testConnectedLocations
-            id
-            (\attrs -> attrs { locationShroud = 4, locationClues = 1 })
+          (location1, location2) <- testConnectedLocations id
+            $ \attrs -> attrs { locationShroud = 4, locationClues = 1 }
           scenario' <- testScenario "00000" id
           game <- runGameTest
             investigator

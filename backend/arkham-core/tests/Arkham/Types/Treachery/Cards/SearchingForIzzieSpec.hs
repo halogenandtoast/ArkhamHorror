@@ -5,8 +5,6 @@ where
 
 import TestImport
 
-import qualified Arkham.Types.Location.Attrs as Location
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Token
 import Arkham.Types.Window
 
@@ -15,20 +13,7 @@ spec = describe "Searching for Izzie" $ do
   it "attaches to the location farthest away from you" $ do
     investigator <- testInvestigator "00000" id
     searchingForIzzie <- buildPlayerCard "02011"
-    location1 <- testLocation
-      "00000"
-      ((Location.symbol .~ Square)
-      . (Location.revealedSymbol .~ Square)
-      . (Location.connectedSymbols .~ setFromList [Triangle])
-      . (Location.revealedConnectedSymbols .~ setFromList [Triangle])
-      )
-    location2 <- testLocation
-      "00001"
-      ((Location.symbol .~ Triangle)
-      . (Location.revealedSymbol .~ Triangle)
-      . (Location.connectedSymbols .~ setFromList [Square])
-      . (Location.revealedConnectedSymbols .~ setFromList [Square])
-      )
+    (location1, location2) <- testConnectedLocations id id
     game <- runGameTest
       investigator
       [ PlacedLocation (getId () location1)

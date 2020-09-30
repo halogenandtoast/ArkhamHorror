@@ -29,6 +29,7 @@ import Arkham.Types.Investigator as X
 import qualified Arkham.Types.Investigator.Attrs as InvestigatorAttrs
 import Arkham.Types.InvestigatorId as X
 import Arkham.Types.Location as X
+import qualified Arkham.Types.Location.Attrs as Location
 import qualified Arkham.Types.Location.Attrs as LocationAttrs
 import Arkham.Types.LocationId as X
 import Arkham.Types.LocationSymbol
@@ -137,6 +138,44 @@ testInvestigator cardCode f =
     name = unCardCode cardCode
     stats = Stats 5 5 5 5 5 5
   in pure $ baseInvestigator investigatorId name Neutral stats [] f
+
+testConnectedLocations
+  :: MonadIO m
+  => (LocationAttrs.Attrs -> LocationAttrs.Attrs)
+  -> (LocationAttrs.Attrs -> LocationAttrs.Attrs)
+  -> m (Location, Location)
+testConnectedLocations f1 f2 = do
+  location1 <- testLocation
+    "00000"
+    (f1
+    . (Location.symbol .~ Square)
+    . (Location.revealedSymbol .~ Square)
+    . (Location.connectedSymbols .~ setFromList [Triangle])
+    . (Location.revealedConnectedSymbols .~ setFromList [Triangle])
+    )
+  location2 <- testLocation
+    "00001"
+    (f2
+    . (Location.symbol .~ Triangle)
+    . (Location.revealedSymbol .~ Triangle)
+    . (Location.connectedSymbols .~ setFromList [Square])
+    . (Location.revealedConnectedSymbols .~ setFromList [Square])
+    )
+  pure (location1, location2)
+
+testUnconnectedLocations
+  :: MonadIO m
+  => (LocationAttrs.Attrs -> LocationAttrs.Attrs)
+  -> (LocationAttrs.Attrs -> LocationAttrs.Attrs)
+  -> m (Location, Location)
+testUnconnectedLocations f1 f2 = do
+  location1 <- testLocation
+    "00000"
+    (f1 . (Location.symbol .~ Square) . (Location.revealedSymbol .~ Square))
+  location2 <- testLocation
+    "00001"
+    (f2 . (Location.symbol .~ Triangle) . (Location.revealedSymbol .~ Triangle))
+  pure (location1, location2)
 
 getTestActions
   :: MonadIO m

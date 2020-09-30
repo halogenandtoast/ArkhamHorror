@@ -104,6 +104,12 @@ weaknessAttrs tid iid cardCode =
 instance HasActions env investigator Attrs where
   getActions _ _ _ = pure []
 
+is :: Target -> Attrs -> Bool
+is (TreacheryTarget tid) t = tid == treacheryId t
+is (CardCodeTarget cardCode) t = cardCode == treacheryCardCode t
+is (CardIdTarget cardId) t = unCardId cardId == unTreacheryId (treacheryId t)
+is _ _ = False
+
 instance (TreacheryRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     InvestigatorEliminated iid | treacheryAttachedInvestigator == Just iid ->

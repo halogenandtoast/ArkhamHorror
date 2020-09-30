@@ -656,13 +656,33 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         EncounterCard _ -> pure $ a & hand %~ filter ((/= cardId) . getCardId) -- TODO: This should discard to the encounter discard
     RemoveCardFromHand iid cardCode | iid == investigatorId ->
       pure $ a & hand %~ filter ((/= cardCode) . getCardCode)
-    Discard (TreacheryTarget tid) ->
+    ShuffleIntoDeck iid (TreacheryTarget tid) | iid == investigatorId -> do
+      unshiftMessage
+        (RemoveAllModifiersOnTargetFrom
+          (InvestigatorTarget investigatorId)
+          (TreacherySource tid)
+        )
       pure $ a & treacheries %~ HashSet.delete tid
-    ShuffleIntoDeck iid (TreacheryTarget tid) | iid == investigatorId ->
+    Discard (TreacheryTarget tid) -> do
+      unshiftMessage
+        (RemoveAllModifiersOnTargetFrom
+          (InvestigatorTarget investigatorId)
+          (TreacherySource tid)
+        )
       pure $ a & treacheries %~ HashSet.delete tid
-    Discard (EnemyTarget eid) ->
+    Discard (EnemyTarget eid) -> do
+      unshiftMessage
+        (RemoveAllModifiersOnTargetFrom
+          (InvestigatorTarget investigatorId)
+          (EnemySource eid)
+        )
       pure $ a & engagedEnemies %~ HashSet.delete eid
-    Discarded (AssetTarget aid) cardCode | aid `elem` investigatorAssets ->
+    Discarded (AssetTarget aid) cardCode | aid `elem` investigatorAssets -> do
+      unshiftMessage
+        (RemoveAllModifiersOnTargetFrom
+          (InvestigatorTarget investigatorId)
+          (AssetSource aid)
+        )
       pure
         $ a
         & (assets %~ HashSet.delete aid)
@@ -843,7 +863,14 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       | iid == investigatorId -> a <$ unshiftMessages
         [ TakeAction iid 1 (Just Action.Investigate)
         , CheckAttackOfOpportunity iid False
-        , Investigate iid lid skillType modifiers' tokenResponses overrides False
+        , Investigate
+          iid
+          lid
+          skillType
+          modifiers'
+          tokenResponses
+          overrides
+          False
         ]
     InvestigatorDiscoverClues iid lid n | iid == investigatorId ->
       if canDiscoverClues a
@@ -1046,19 +1073,21 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           pure a
     RemoveAllModifiersOnTargetFrom (InvestigatorTarget iid) source
       | iid == investigatorId -> do
-        unshiftMessages
-          [ RefillSlots iid slotType (mapMaybe slotItem slots')
-          | (slotType, slots') <- HashMap.toList investigatorSlots
-          ]
+        when (any (any ((source ==) . sourceOfSlot)) investigatorSlots)
+          $ unshiftMessages
+              [ RefillSlots iid slotType (mapMaybe slotItem slots')
+              | (slotType, slots') <- HashMap.toList investigatorSlots
+              ]
         pure
           $ a
           & (modifiers %~ HashMap.delete source)
           & (slots %~ HashMap.map (filter ((source /=) . sourceOfSlot)))
     RemoveAllModifiersFrom source -> do
-      unshiftMessages
-        [ RefillSlots investigatorId slotType (mapMaybe slotItem slots')
-        | (slotType, slots') <- HashMap.toList investigatorSlots
-        ]
+      when (any (any ((source ==) . sourceOfSlot)) investigatorSlots)
+        $ unshiftMessages
+            [ RefillSlots investigatorId slotType (mapMaybe slotItem slots')
+            | (slotType, slots') <- HashMap.toList investigatorSlots
+            ]
       pure
         $ a
         & (modifiers %~ HashMap.delete source)
@@ -1125,19 +1154,6 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       traits <- HashSet.toList <$> asks (getSet eid)
       a <$ unshiftMessage
         (CheckWindow investigatorId [WhenEnemySpawns YourLocation traits])
-    RevelationSkillTest iid source skillType difficulty onSuccess onFailure
-      | iid == investigatorId -> a <$ unshiftMessage
-        (BeginSkillTest
-          iid
-          source
-          Nothing
-          skillType
-          difficulty
-          onSuccess
-          onFailure
-          []
-          mempty
-        )
     ActivateCardAbilityAction iid Ability {..} | iid == investigatorId -> do
       unshiftMessage
         (UseCardAbility

@@ -19,8 +19,10 @@ import Lens.Micro
 newtype WrackedByNightmares = WrackedByNightmares Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-wrackedByNightmares :: TreacheryId -> Maybe InvestigatorId -> WrackedByNightmares
-wrackedByNightmares uuid iid = WrackedByNightmares $ weaknessAttrs uuid iid "02015"
+wrackedByNightmares
+  :: TreacheryId -> Maybe InvestigatorId -> WrackedByNightmares
+wrackedByNightmares uuid iid =
+  WrackedByNightmares $ weaknessAttrs uuid iid "02015"
 
 instance (ActionRunner env investigator) => HasActions env investigator WrackedByNightmares where
   getActions i NonFast (WrackedByNightmares Attrs {..}) =
@@ -43,16 +45,17 @@ instance (ActionRunner env investigator) => HasActions env investigator WrackedB
 instance (TreacheryRunner env) => RunMessage env WrackedByNightmares where
   runMessage msg t@(WrackedByNightmares attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
-      assetIds <- setToList <$> asks (getSet iid)
-      unshiftMessages [Exhaust (AssetTarget aid) | aid <- assetIds]
-      WrackedByNightmares <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
+      unshiftMessage $ AttachTreachery tid (InvestigatorTarget iid)
+      WrackedByNightmares
+        <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     AttachTreachery tid (InvestigatorTarget iid) | tid == treacheryId -> do
-      unshiftMessage
-        (AddModifiers
-          (InvestigatorTarget iid)
-          (TreacherySource tid)
-          [ControlledAssetsCannotReady]
-        )
+      assetIds <- setToList <$> asks (getSet iid)
+      unshiftMessages
+        $ AddModifiers
+            (InvestigatorTarget iid)
+            (TreacherySource tid)
+            [ControlledAssetsCannotReady]
+        : [ Exhaust (AssetTarget aid) | aid <- assetIds ]
       WrackedByNightmares <$> runMessage msg attrs
     UseCardAbility _ _ (TreacherySource tid) _ 1 | tid == treacheryId ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))

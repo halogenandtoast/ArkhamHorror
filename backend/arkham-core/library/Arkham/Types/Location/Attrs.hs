@@ -180,7 +180,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Attrs wher
     pure $ moveActions <> investigateActions
    where
     investigateActions =
-      [ Investigate (getId () i) locationId SkillIntellect mempty mempty True
+      [ Investigate (getId () i) locationId SkillIntellect mempty mempty mempty True
       | canInvestigate location i && investigateAllowed location
       ]
     moveActions =
@@ -197,7 +197,7 @@ shouldSpawnNonEliteAtConnectingInstead Attrs {..} =
 
 instance (LocationRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
-    Investigate iid lid skillType tokenResponses overrides False
+    Investigate iid lid skillType modifiers' tokenResponses overrides False
       | lid == locationId -> do
         let
           investigationResult = if null overrides
@@ -212,7 +212,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
             (shroudValueFor a)
             (SuccessfulInvestigation iid lid : investigationResult)
             []
-            []
+            modifiers'
             tokenResponses
           )
     SetLocationLabel lid label' | lid == locationId ->

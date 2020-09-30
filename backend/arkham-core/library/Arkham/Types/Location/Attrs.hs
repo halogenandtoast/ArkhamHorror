@@ -22,6 +22,7 @@ import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
 import ClassyPrelude
+import Data.Char (isLetter)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import qualified Data.Text as T
@@ -109,7 +110,8 @@ baseAttrs
   -> Attrs
 baseAttrs lid name shroud' revealClues symbol' connectedSymbols' = Attrs
   { locationName = name
-  , locationLabel = pack . camelCase . unpack . T.filter (/= ' ') $ name
+  , locationLabel =
+    pack . filter isLetter . camelCase . unpack . T.filter (/= ' ') $ name
   , locationId = lid
   , locationRevealClues = revealClues
   , locationClues = 0
@@ -180,7 +182,14 @@ instance (IsInvestigator investigator) => HasActions env investigator Attrs wher
     pure $ moveActions <> investigateActions
    where
     investigateActions =
-      [ Investigate (getId () i) locationId SkillIntellect mempty mempty mempty True
+      [ Investigate
+          (getId () i)
+          locationId
+          SkillIntellect
+          mempty
+          mempty
+          mempty
+          True
       | canInvestigate location i && investigateAllowed location
       ]
     moveActions =

@@ -140,8 +140,8 @@ export default class Location extends Vue {
   get attachTreacheryToLocationAction() {
     return this
       .choices
-      .findIndex((c) => c.tag === MessageType.ATTACH_TREACHERY_TO_LOCATION
-        && c.contents[1] === this.id);
+      .findIndex((c) => c.tag === MessageType.ATTACH_TREACHERY
+        && c.contents[1].contents === this.id);
   }
 
   get enemySpawnAction() {

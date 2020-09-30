@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e8f1e8db76e3fd4eee8cde8a74505e8df6b35ee6cefa35c3feec4773f905980e
+-- hash: 90f19116edc080ba35bcd1f9329501e671fb9c795fd73cf8f22e4d5f707cb2fd
 
 name:           arkham-core
 version:        0.0.0
@@ -344,6 +344,7 @@ library
       Arkham.Types.Treachery.Cards.SmiteTheWicked
       Arkham.Types.Treachery.Cards.TheYellowSign
       Arkham.Types.Treachery.Cards.UmordhothsWrath
+      Arkham.Types.Treachery.Cards.WrackedByNightmares
       Arkham.Types.Treachery.Runner
       Arkham.Types.TreacheryId
       Arkham.Types.Window

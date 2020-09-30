@@ -246,6 +246,7 @@ allPlayerCards = HashMap.fromList
   , ("02012", jimsTrumpet)
   , ("02013", finalRhapsody)
   , ("02014", duke)
+  , ("02015", wrackedByNightmares)
   , ("02147", bandolier)
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
@@ -919,6 +920,12 @@ finalRhapsody cardId = (treachery cardId "02013" "Final Rhapsody" 0)
 duke :: CardId -> PlayerCard
 duke cardId =
   (asset cardId "02014" "Duke" 2 Neutral) { pcTraits = [Ally, Creature] }
+
+wrackedByNightmares :: CardId -> PlayerCard
+wrackedByNightmares cardId = (treachery cardId "02015" "Wracked by Nightmares" 0)
+  { pcTraits = [Madness]
+  , pcRevelation = True
+  }
 
 bandolier :: CardId -> PlayerCard
 bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)

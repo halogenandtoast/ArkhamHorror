@@ -30,6 +30,7 @@ data Modifier
   | CannotInvestigate
   | CannotPlay [PlayerCardType]
   | CannotSpendClues
+  | ControlledAssetsCannotReady
   | DamageDealt Int
   | HorrorDealt Int
   | DamageTaken Int
@@ -73,6 +74,7 @@ replaceIntModifierValue mbounds n modifier = case modifier of
   CannotInvestigate -> modifier
   CannotPlay{} -> modifier
   CannotSpendClues -> modifier
+  ControlledAssetsCannotReady -> modifier
   DamageDealt _ -> DamageDealt val
   HorrorDealt _ -> HorrorDealt val
   DamageTaken _ -> DamageTaken val

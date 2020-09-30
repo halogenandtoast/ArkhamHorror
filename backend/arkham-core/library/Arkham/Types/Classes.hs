@@ -230,6 +230,7 @@ type ActionRunner env investigator
     , HasCount ClueCount LocationId env
     , HasCount HorrorCount InvestigatorId env
     , HasQueue env
+    , HasSet ExhaustedAssetId InvestigatorId env
     )
 
 class HasActions1 env investigator f where

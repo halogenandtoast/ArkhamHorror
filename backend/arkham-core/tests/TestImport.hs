@@ -9,6 +9,7 @@ import Arkham.Types.Agenda as X
 import qualified Arkham.Types.Agenda.Attrs as AgendaAttrs
 import Arkham.Types.AgendaId as X
 import Arkham.Types.Asset as X
+import qualified Arkham.Types.Asset.Attrs as Asset
 import Arkham.Types.AssetId as X
 import Arkham.Types.Card as X
 import Arkham.Types.Card.Id
@@ -79,7 +80,7 @@ testPlayerCards count' = replicateM count' testPlayerCard
 testPlayerCard :: MonadIO m => m PlayerCard
 testPlayerCard = do
   cardId <- CardId <$> liftIO nextRandom
-  pure $ basePlayerCard cardId "00000" "Test" 0 AssetType Guardian
+  pure $ basePlayerCard cardId "asset" "Test" 0 AssetType Guardian
 
 buildPlayerCard :: MonadIO m => CardCode -> m PlayerCard
 buildPlayerCard cardCode = do
@@ -89,17 +90,22 @@ buildPlayerCard cardCode = do
 buildTestEnemyEncounterCard :: MonadIO m => m EncounterCard
 buildTestEnemyEncounterCard = do
   cardId <- CardId <$> liftIO nextRandom
-  pure $ lookupEncounterCard "00000" cardId -- 00000 is a hardcoded enemy type
+  pure $ lookupEncounterCard "enemy" cardId
 
 buildTestTreacheryEncounterCard :: MonadIO m => m EncounterCard
 buildTestTreacheryEncounterCard = do
   cardId <- CardId <$> liftIO nextRandom
-  pure $ lookupEncounterCard "00001" cardId -- 00001 is a hardcoded treachery type
+  pure $ lookupEncounterCard "treachery" cardId
 
 testEnemy :: MonadIO m => (Enemy.Attrs -> Enemy.Attrs) -> m Enemy
 testEnemy f = do
   enemyId <- liftIO $ EnemyId <$> nextRandom
-  pure $ baseEnemy enemyId "00000" f
+  pure $ baseEnemy enemyId "enemy" f
+
+testAsset :: MonadIO m => (Asset.Attrs -> Asset.Attrs) -> m Asset
+testAsset f = do
+  assetId <- liftIO $ AssetId <$> nextRandom
+  pure $ baseAsset assetId "asset" f
 
 testAgenda
   :: MonadIO m

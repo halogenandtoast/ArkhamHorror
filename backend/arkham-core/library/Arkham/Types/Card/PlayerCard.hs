@@ -143,7 +143,8 @@ playerCardMatch (cardType, mtrait) MkPlayerCard {..} =
 
 allPlayerCards :: HashMap CardCode (CardId -> PlayerCard)
 allPlayerCards = HashMap.fromList
-  [ ("01006", rolands38Special)
+  [ ("asset", placeholderAsset)
+  , ("01006", rolands38Special)
   , ("01007", coverUp)
   , ("01008", daisysToteBag)
   , ("01009", theNecronomicon)
@@ -257,6 +258,9 @@ allPlayerCards = HashMap.fromList
   , ("50009", digDeep2)
   , ("50010", rabbitsFoot3)
   ]
+
+placeholderAsset :: CardId -> PlayerCard
+placeholderAsset cardId = asset cardId "asset" "Placeholder Asset" 0 Neutral
 
 rolands38Special :: CardId -> PlayerCard
 rolands38Special cardId =

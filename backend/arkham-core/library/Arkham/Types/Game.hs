@@ -506,6 +506,13 @@ instance HasSet InvestigatorId EnemyId (Game queue) where
 instance HasSet EnemyId InvestigatorId (Game queue) where
   getSet iid = getEngagedEnemies . getInvestigator iid
 
+instance HasSet ExhaustedAssetId InvestigatorId (Game queue) where
+  getSet iid g = HashSet.map ExhaustedAssetId
+    $ filterSet isAssetExhausted assetIds
+   where
+    assetIds = getSet () (getInvestigator iid g)
+    isAssetExhausted assetId = isExhausted $ getAsset assetId g
+
 instance HasSet ExhaustedEnemyId LocationId (Game queue) where
   getSet lid g =
     let

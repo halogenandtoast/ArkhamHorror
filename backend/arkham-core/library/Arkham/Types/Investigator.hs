@@ -260,10 +260,6 @@ allInvestigators = mapFromList $ map
   , ZoeySamaras' zoeySamaras
   ]
 
-isBlank :: Modifier -> Bool
-isBlank Blank{} = True
-isBlank _ = False
-
 lookupInvestigator :: InvestigatorId -> Investigator
 lookupInvestigator iid =
   fromMaybe (lookupPromoInvestigator iid) $ lookup iid allInvestigators

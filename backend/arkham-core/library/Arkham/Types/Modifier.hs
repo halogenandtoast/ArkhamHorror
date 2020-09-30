@@ -2,6 +2,7 @@ module Arkham.Types.Modifier
   ( Modifier(..)
   , ActionTarget(..)
   , replaceIntModifierValue
+  , isBlank
   )
 where
 
@@ -91,3 +92,8 @@ replaceIntModifierValue mbounds n modifier = case modifier of
   val = case mbounds of
     Nothing -> n
     Just (low, high) -> min low (max high n)
+
+isBlank :: Modifier -> Bool
+isBlank Blank{} = True
+isBlank _ = False
+

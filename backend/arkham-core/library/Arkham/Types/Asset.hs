@@ -2,6 +2,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset
   ( lookupAsset
+  , baseAsset
   , allAssets
   , isHealthDamageable
   , isSanityDamageable
@@ -86,11 +87,25 @@ data Asset
   | ArcaneStudies2' ArcaneStudies2
   | DigDeep2' DigDeep2
   | RabbitsFoot3' RabbitsFoot3
+  | BaseAsset' BaseAsset
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Asset
 deriving anyclass instance (AssetRunner env) => RunMessage env Asset
+
+newtype BaseAsset = BaseAsset Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+baseAsset :: AssetId -> CardCode -> (Attrs -> Attrs) -> Asset
+baseAsset a b f = BaseAsset' . BaseAsset . f $ baseAttrs a b
+
+instance HasActions env investigator BaseAsset where
+  getActions investigator' window (BaseAsset attrs) =
+    getActions investigator' window attrs
+
+instance (AssetRunner env) => RunMessage env BaseAsset where
+  runMessage msg (BaseAsset attrs) = BaseAsset <$> runMessage msg attrs
 
 instance Exhaustable Asset where
   isExhausted = assetExhausted . assetAttrs
@@ -183,6 +198,7 @@ allAssets = mapFromList
   , ("50007", ArcaneStudies2' . arcaneStudies2)
   , ("50009", DigDeep2' . digDeep2)
   , ("50010", RabbitsFoot3' . rabbitsFoot3)
+  , ("00000", \aid -> baseAsset aid "00000" id)
   ]
 
 slotsOf :: Asset -> [SlotType]
@@ -259,3 +275,4 @@ assetAttrs = \case
   GrotesqueStatue4' attrs -> coerce attrs
   DigDeep2' attrs -> coerce attrs
   RabbitsFoot3' attrs -> coerce attrs
+  BaseAsset' attrs -> coerce attrs

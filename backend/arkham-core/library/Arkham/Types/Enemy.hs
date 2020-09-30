@@ -161,7 +161,7 @@ allEnemies = mapFromList
   , ("01179", RelentlessDarkYoung' . relentlessDarkYoung)
   , ("01180", GoatSpawn' . goatSpawn)
   , ("01181", YoungDeepOne' . youngDeepOne)
-  , ("00000", \eid -> baseEnemy eid "00000" id)
+  , ("enemy", \eid -> baseEnemy eid "enemy" id)
   ]
 
 isEngaged :: Enemy -> Bool
@@ -177,10 +177,6 @@ getBearer :: Enemy -> Maybe InvestigatorId
 getBearer enemy = case enemyPrey (enemyAttrs enemy) of
   Bearer iid -> Just (InvestigatorId $ unBearerId iid)
   _ -> Nothing
-
-isBlank :: Modifier -> Bool
-isBlank Blank{} = True
-isBlank _ = False
 
 isBlanked :: Message -> Bool
 isBlanked Blanked{} = True

@@ -15,3 +15,6 @@ newtype HealthDamageableAssetId = HealthDamageableAssetId { unHealthDamageableAs
 
 newtype SanityDamageableAssetId = SanityDamageableAssetId { unSanityDamageableAssetId :: AssetId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
+newtype ExhaustedAssetId = ExhaustedAssetId { unExhaustedAssetId :: AssetId }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

@@ -51,3 +51,6 @@ spec = describe "Wracked by Nightmares" $ do
       `shouldSatisfy` not
       . hasTreacheryWithMatchingCardCode game (PlayerCard wrackedByNightmares)
     updated game' asset `shouldSatisfy` isReady
+    wrackedByNightmares `shouldSatisfy` isInDiscardOf game' investigator
+    investigator `shouldSatisfy` hasRemainingActions game' 1
+

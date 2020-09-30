@@ -15,6 +15,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Window
 import ClassyPrelude
 
 newtype Knife = Knife Attrs
@@ -24,9 +25,9 @@ knife :: AssetId -> Knife
 knife uuid = Knife $ (baseAttrs uuid "01086") { assetSlots = [HandSlot] }
 
 instance (ActionRunner env investigator) => HasActions env investigator Knife where
-  getActions i window (Knife Attrs {..})
+  getActions i NonFast (Knife Attrs {..})
     | Just (getId () i) == assetInvestigator = do
-      fightAvailable <- hasFightActions i window
+      fightAvailable <- hasFightActions i NonFast
       pure
         $ [ ActivateCardAbilityAction
               (getId () i)

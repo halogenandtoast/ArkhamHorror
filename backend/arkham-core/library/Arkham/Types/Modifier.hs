@@ -18,6 +18,7 @@ data Modifier
   = ActionCostOf ActionTarget Int
   | ActionSkillModifier Action SkillType Int
   | AdditionalActions Int
+  | BaseSkillOf Int
   | Blank
   | ByPointsSucceededBy (Maybe (Int, Int)) Modifier
   | ByPointsFailedBy (Maybe (Int, Int)) Modifier
@@ -60,6 +61,7 @@ replaceIntModifierValue mbounds n modifier = case modifier of
   ActionCostOf a _ -> ActionCostOf a val
   ActionSkillModifier a b _ -> ActionSkillModifier a b val
   AdditionalActions _ -> AdditionalActions val
+  BaseSkillOf _ -> BaseSkillOf val
   Blank -> modifier
   ByPointsSucceededBy{} -> modifier
   ByPointsFailedBy{} -> modifier

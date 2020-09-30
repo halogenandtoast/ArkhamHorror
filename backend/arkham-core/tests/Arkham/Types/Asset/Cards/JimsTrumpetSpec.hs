@@ -6,8 +6,6 @@ where
 import TestImport
 
 import qualified Arkham.Types.Investigator.Attrs as Investigator
-import qualified Arkham.Types.Location.Attrs as Location
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Token
 
 spec :: Spec
@@ -102,20 +100,7 @@ spec = describe "Jim's Trumpet" $ do
       investigator <- testInvestigator "00000" id
       investigator2 <- testInvestigator "00001" (Investigator.sanityDamage .~ 1)
       jimsTrumpet <- buildAsset "02012"
-      location1 <- testLocation
-        "00000"
-        ((Location.symbol .~ Square)
-        . (Location.revealedSymbol .~ Square)
-        . (Location.connectedSymbols .~ setFromList [Triangle])
-        . (Location.revealedConnectedSymbols .~ setFromList [Triangle])
-        )
-      location2 <- testLocation
-        "00001"
-        ((Location.symbol .~ Triangle)
-        . (Location.revealedSymbol .~ Triangle)
-        . (Location.connectedSymbols .~ setFromList [Square])
-        . (Location.revealedConnectedSymbols .~ setFromList [Square])
-        )
+      (location1, location2) <- testConnectedLocations id id
       scenario' <- testScenario "00000" id
       game <-
         runGameTest
@@ -148,12 +133,7 @@ spec = describe "Jim's Trumpet" $ do
       investigator <- testInvestigator "00000" id
       investigator2 <- testInvestigator "00001" (Investigator.sanityDamage .~ 1)
       jimsTrumpet <- buildAsset "02012"
-      location1 <- testLocation
-        "00000"
-        ((Location.symbol .~ Square) . (Location.revealedSymbol .~ Square))
-      location2 <- testLocation
-        "00001"
-        ((Location.symbol .~ Triangle) . (Location.revealedSymbol .~ Triangle))
+      (location1, location2) <- testUnconnectedLocations id id
       scenario' <- testScenario "00000" id
       game <-
         runGameTest

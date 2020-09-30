@@ -6,8 +6,8 @@ where
 import TestImport
 
 import qualified Arkham.Types.Enemy.Attrs as Enemy
-import Arkham.Types.Location.Attrs (Attrs (..))
 import Arkham.Types.Investigator.Attrs (Attrs(..))
+import Arkham.Types.Location.Attrs (Attrs(..))
 import Arkham.Types.Token
 import Arkham.Types.Window
 
@@ -45,7 +45,9 @@ spec = describe "Duke" $ do
       duke <- buildAsset "02014"
       investigator <- testInvestigator "00000"
         $ \attrs -> attrs { investigatorIntellect = 1 }
-      location <- testLocation "00000" (\attrs -> attrs { locationShroud = 4, locationClues = 1})
+      location <- testLocation
+        "00000"
+        (\attrs -> attrs { locationShroud = 4, locationClues = 1 })
       scenario' <- testScenario "00000" id
       game <- runGameTest
         investigator
@@ -64,6 +66,40 @@ spec = describe "Duke" $ do
         >>= runGameTestOnlyOption "Start skill test"
         >>= runGameTestOnlyOption "Apply results"
       updated game' investigator `shouldSatisfy` hasClueCount 1
-    it
-      "you may move to a connecting location immediately before investigating"
-      pending
+    it "you may move to a connecting location immediately before investigating"
+      $ do
+          duke <- buildAsset "02014"
+          investigator <- testInvestigator "00000"
+            $ \attrs -> attrs { investigatorIntellect = 1 }
+          (location1, location2) <- testConnectedLocations
+            id
+            (\attrs -> attrs { locationShroud = 4, locationClues = 1 })
+          scenario' <- testScenario "00000" id
+          game <- runGameTest
+            investigator
+            [ PlacedLocation (getId () location1)
+            , PlacedLocation (getId () location2)
+            , SetTokens [Zero]
+            , playAsset investigator duke
+            ]
+            ((locations %~ insertEntity location1)
+            . (locations %~ insertEntity location2)
+            . (scenario ?~ scenario')
+            . (assets %~ insertEntity duke)
+            )
+          let dukeAsset = game ^?! assets . to toList . ix 0
+          [investigateAction] <- toInternalGame game
+            >>= runReaderT (getActions investigator NonFast dukeAsset)
+          game' <-
+            runGameTestMessages
+              game
+              [moveTo investigator location1, investigateAction]
+            >>= runGameTestOptionMatching
+                  "move first"
+                  (\case
+                    Run{} -> True
+                    _ -> False
+                  )
+            >>= runGameTestOnlyOption "Start skill test"
+            >>= runGameTestOnlyOption "Apply results"
+          updated game' investigator `shouldSatisfy` hasClueCount 1

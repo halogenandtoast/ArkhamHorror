@@ -9,6 +9,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
+import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
@@ -65,15 +66,28 @@ instance (AssetRunner env) => RunMessage env Duke where
       pure . Duke $ attrs & exhausted .~ True
     UseCardAbility iid _ (AssetSource aid) _ 2 | aid == assetId -> do
       lid <- asks (getId iid)
-      unshiftMessage
-        (Investigate
+      connectedLocationIds <- map unConnectedLocationId . setToList <$> asks
+        (getSet lid)
+      let
+        investigate atLid = Investigate
           iid
-          lid
+          atLid
           SkillIntellect
           [BaseSkillOf SkillIntellect 4]
           mempty
           mempty
           False
-        )
+      if null connectedLocationIds
+        then unshiftMessage $ investigate lid
+        else unshiftMessage
+          (Ask
+            iid
+            (ChooseOne
+            $ investigate lid
+            : [ Run [MoveAction iid lid' False, investigate lid']
+              | lid' <- connectedLocationIds
+              ]
+            )
+          )
       pure . Duke $ attrs & exhausted .~ True
     _ -> Duke <$> runMessage msg attrs

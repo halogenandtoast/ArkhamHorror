@@ -5,9 +5,6 @@ where
 
 import TestImport
 
-import qualified Arkham.Types.Location.Attrs as Location
-import Arkham.Types.LocationSymbol
-
 spec :: Spec
 spec = describe "Smite the Wicked" $ do
   it "draws an enemy, attaches to it, and spawns farthest away from you" $ do
@@ -15,20 +12,7 @@ spec = describe "Smite the Wicked" $ do
     smiteTheWicked <- buildPlayerCard "02007"
     enemy <- buildTestEnemyEncounterCard
     treachery <- buildTestTreacheryEncounterCard
-    location1 <- testLocation
-      "00000"
-      ((Location.symbol .~ Square)
-      . (Location.revealedSymbol .~ Square)
-      . (Location.connectedSymbols .~ setFromList [Triangle])
-      . (Location.revealedConnectedSymbols .~ setFromList [Triangle])
-      )
-    location2 <- testLocation
-      "00001"
-      ((Location.symbol .~ Triangle)
-      . (Location.revealedSymbol .~ Triangle)
-      . (Location.connectedSymbols .~ setFromList [Square])
-      . (Location.revealedConnectedSymbols .~ setFromList [Square])
-      )
+    (location1, location2) <- testConnectedLocations id id
     game <-
       runGameTest
           investigator

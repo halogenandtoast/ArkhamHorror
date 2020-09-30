@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!game.currentData.gameOver" id="game" class="game">
+  <div v-if="!game.currentData.gameOver" id="scenario" class="scenario">
     <CardOverlay />
     <StatusBar :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
     <PlayerOrder :game="game" :investigatorId="investigatorId" @choose="$emit('choose', $event)" />
@@ -251,10 +251,13 @@ export default class Scenario extends Vue {
   }
 }
 
-.game {
+.scenario {
   background-image: linear-gradient(darken(#E5EAEC, 10), #E5EAEC);
   width: 100%;
+  height: 100%;
   z-index: 1;
+  display: grid;
+  grid-template-rows: min-content min-content 1fr min-content;
 }
 
 .location-cards {

@@ -99,8 +99,6 @@ export default class Game extends Vue {
 .game {
   width: 100vw;
   height: calc(100vh - 40px);
-  display: grid;
-  grid-template-rows: min-content min-content 1fr min-content;
 }
 
 .socketWarning  {

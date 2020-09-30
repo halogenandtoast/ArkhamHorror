@@ -177,16 +177,15 @@ testUnconnectedLocations f1 f2 = do
     (f2 . (Location.symbol .~ Triangle) . (Location.revealedSymbol .~ Triangle))
   pure (location1, location2)
 
-getTestActions
-  :: MonadIO m
-  => Investigator
+getActionsOf
+  :: (MonadIO m, HasActions GameInternal investigator a)
+  => GameExternal
+  -> investigator
   -> Window
-  -> ActionType
-  -> GameExternal
+  -> a
   -> m [Message]
-getTestActions i w atype g = do
-  game <- toInternalGame g
-  runReaderT (getActions i w (atype, game)) game
+getActionsOf game investigator window e =
+  toInternalGame game >>= runReaderT (getActions investigator window e)
 
 runGameTestOnlyOption
   :: (MonadFail m, MonadIO m) => String -> Game [Message] -> m (Game [Message])

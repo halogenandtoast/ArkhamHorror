@@ -43,10 +43,14 @@ spec = describe "Searching for Izzie" $ do
       ((locations %~ insertEntity location) . (scenario ?~ scenario'))
     let updatedSearchingForIzzie = game ^?! treacheries . to toList . ix 0
 
-    actions <- getTestActions investigator NonFast TreacheryActionType game
+    [searchingForIzzieAction] <- getActionsOf
+      game
+      investigator
+      NonFast
+      updatedSearchingForIzzie
 
     game' <-
-      runGameTestMessages game actions
+      runGameTestMessages game [searchingForIzzieAction]
       >>= runGameTestOnlyOption "start skill test"
       >>= runGameTestOnlyOption "apply results"
     updated game' location

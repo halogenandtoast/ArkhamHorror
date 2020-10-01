@@ -23,7 +23,7 @@ instance HasActions env investigator GraspingHands where
   getActions i window (GraspingHands attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env GraspingHands where
-  runMessage msg (GraspingHands attrs@Attrs {..}) = case msg of
+  runMessage msg t@(GraspingHands attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
       unshiftMessages
         [ RevelationSkillTest
@@ -32,8 +32,11 @@ instance (TreacheryRunner env) => RunMessage env GraspingHands where
           SkillAgility
           3
           []
-          [DamagePerPointOfFailure iid]
+          []
         , Discard (TreacheryTarget tid)
         ]
       GraspingHands <$> runMessage msg (attrs & resolved .~ True)
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget n
+      | tid == treacheryId -> t <$ unshiftMessage
+        (InvestigatorAssignDamage iid (TreacherySource treacheryId) n 0)
     _ -> GraspingHands <$> runMessage msg attrs

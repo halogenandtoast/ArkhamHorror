@@ -21,6 +21,9 @@ zoeysCross :: AssetId -> ZoeysCross
 zoeysCross uuid =
   ZoeysCross $ (baseAttrs uuid "02006") { assetSlots = [AccessorySlot] }
 
+instance HasModifiersFor env investigator ZoeysCross where
+  getModifiersFor _ _ = pure []
+
 instance (ActionRunner env investigator) => HasActions env investigator ZoeysCross where
   getActions i (AfterEnemyEngageInvestigator You eid) (ZoeysCross Attrs {..})
     | Just (getId () i) == assetInvestigator = do

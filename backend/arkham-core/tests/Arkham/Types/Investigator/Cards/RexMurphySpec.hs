@@ -6,6 +6,7 @@ where
 import TestImport
 
 import Arkham.Types.Location.Attrs as Location
+import Arkham.Types.Target
 import Arkham.Types.Token
 
 spec :: Spec
@@ -99,4 +100,10 @@ spec = describe "Rex Murphy" $ do
         >>= runGameTestOnlyOption "apply results"
       updated game rexMurphy `shouldSatisfy` handIs []
       game `shouldSatisfy` hasProcessedMessage
-        (PassedSkillTest (getId () rexMurphy) Nothing TestSource 0)
+        (PassedSkillTest
+          (getId () rexMurphy)
+          Nothing
+          TestSource
+          SkillTestInitiatorTarget
+          0
+        )

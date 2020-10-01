@@ -20,6 +20,9 @@ newtype HardKnocks = HardKnocks Attrs
 hardKnocks :: AssetId -> HardKnocks
 hardKnocks uuid = HardKnocks $ baseAttrs uuid "01049"
 
+instance HasModifiersFor env investigator HardKnocks where
+  getModifiersFor _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator HardKnocks where
   getActions i (Fast.WhenSkillTest SkillCombat) (HardKnocks Attrs {..})
     | Just (getId () i) == assetInvestigator = pure

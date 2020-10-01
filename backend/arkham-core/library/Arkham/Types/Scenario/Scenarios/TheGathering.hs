@@ -14,8 +14,9 @@ import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Source
+import Arkham.Types.Target
 import qualified Arkham.Types.Token as Token
-import Arkham.Types.Trait
+import Arkham.Types.Trait hiding (Trait(Expert))
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
@@ -81,26 +82,21 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
           ghoulCount <- unEnemyCount
             <$> asks (getCount (InvestigatorLocation iid, [Ghoul]))
           s <$ runTest iid (Token.TokenValue Token.Skull (-ghoulCount))
-        else do
-          unshiftMessage
-            (AddOnFailure $ FindAndDrawEncounterCard iid (EnemyType, Just Ghoul)
-            )
-          s <$ runTest iid (Token.TokenValue Token.Skull (-2))
+        else s <$ runTest iid (Token.TokenValue Token.Skull (-2))
+    FailedSkillTest iid _ _ (TokenTarget Token.Skull) _
+      | scenarioDifficulty `elem` [Hard, Expert] -> do
+        s <$ unshiftMessage
+          (FindAndDrawEncounterCard iid (EnemyType, Just Ghoul))
     ResolveToken Token.Cultist iid ->
       if scenarioDifficulty `elem` [Easy, Standard]
-        then do
-          unshiftMessage
-            (AddOnFailure
-            $ InvestigatorAssignDamage iid (TokenSource Token.Cultist) 0 1
-            )
-          s <$ runTest iid (Token.TokenValue Token.Cultist (-1))
-        else do
-          unshiftMessage (DrawAnotherToken iid 0)
-          unshiftMessage
-            (AddOnFailure
-            $ InvestigatorAssignDamage iid (TokenSource Token.Cultist) 0 2
-            )
-          pure s
+        then s <$ runTest iid (Token.TokenValue Token.Cultist (-1))
+        else s <$ unshiftMessage (DrawAnotherToken iid 0)
+    FailedSkillTest iid _ _ (TokenTarget Token.Cultist) _ ->
+      if scenarioDifficulty `elem` [Easy, Standard]
+        then s <$ unshiftMessage
+          (InvestigatorAssignDamage iid (TokenSource Token.Cultist) 0 1)
+        else s <$ unshiftMessage
+          (InvestigatorAssignDamage iid (TokenSource Token.Cultist) 0 2)
     ResolveToken Token.Tablet iid -> do
       ghoulCount <- unEnemyCount
         <$> asks (getCount (InvestigatorLocation iid, [Ghoul]))

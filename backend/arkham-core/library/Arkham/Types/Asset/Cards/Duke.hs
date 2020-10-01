@@ -26,6 +26,9 @@ duke :: AssetId -> Duke
 duke uuid =
   Duke $ (baseAttrs uuid "02014") { assetHealth = Just 2, assetSanity = Just 3 }
 
+instance HasModifiersFor env investigator Duke where
+  getModifiersFor _ _ = pure []
+
 instance (ActionRunner env investigator) => HasActions env investigator Duke where
   getActions i NonFast (Duke Attrs {..})
     | Just (getId () i) == assetInvestigator = do

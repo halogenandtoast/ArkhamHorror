@@ -27,6 +27,9 @@ flashlight :: AssetId -> Flashlight
 flashlight uuid =
   Flashlight $ (baseAttrs uuid "01087") { assetSlots = [HandSlot] }
 
+instance HasModifiersFor env investigator Flashlight where
+  getModifiersFor _ _ = pure []
+
 instance (ActionRunner env investigator) => HasActions env investigator Flashlight where
   getActions i window (Flashlight Attrs {..})
     | Just (getId () i) == assetInvestigator = do

@@ -36,9 +36,10 @@ instance (TreacheryRunner env) => RunMessage env FalseLead where
             SkillIntellect
             4
             []
-            [NotifyOnFailure iid (TreacheryTarget treacheryId)]
+            []
           )
       FalseLead <$> runMessage msg (attrs & resolved .~ True)
-    SkillTestDidFailBy iid (TreacheryTarget tid) n | tid == treacheryId ->
-      t <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid n)
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget n
+      | tid == treacheryId -> t
+      <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid n)
     _ -> FalseLead <$> runMessage msg attrs

@@ -27,6 +27,13 @@ hermanCollins uuid = HermanCollins $ (baseAttrs uuid "01138")
   , enemyEvade = 4
   }
 
+instance HasModifiersFor env investigator HermanCollins where
+  getModifiersFor _ _ = pure []
+
+instance HasModifiers env HermanCollins where
+  getModifiers (HermanCollins Attrs {..}) =
+    pure . concat . toList $ enemyModifiers
+
 instance (IsInvestigator investigator) => HasActions env investigator HermanCollins where
   getActions i NonFast (HermanCollins attrs@Attrs {..}) = do
     baseActions <- getActions i NonFast attrs

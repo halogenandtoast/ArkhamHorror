@@ -7,14 +7,11 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
 import Arkham.Types.GameValue
-import Arkham.Types.Message
+import Arkham.Types.InvestigatorId
 import Arkham.Types.Modifier
 import Arkham.Types.Prey
 import Arkham.Types.Query
-import Arkham.Types.Source
-import Arkham.Types.Target
 import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype ScreechingByakhee = ScreechingByakhee Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -29,28 +26,21 @@ screechingByakhee uuid = ScreechingByakhee $ (baseAttrs uuid "01175")
   , enemyPrey = LowestRemainingSanity
   }
 
+instance HasModifiersFor env investigator ScreechingByakhee where
+  getModifiersFor _ _ = pure []
+
+instance (HasCount RemainingSanity InvestigatorId env) => HasModifiers env ScreechingByakhee where
+  getModifiers (ScreechingByakhee Attrs {..}) = do
+    sanities <- map unRemainingSanity
+      <$> traverse (asks . getCount) (toList enemyEngagedInvestigators)
+    let
+      modifiers' =
+        if any (<= 4) sanities then [EnemyFight 1, EnemyEvade 1] else []
+    pure $ modifiers' <> concat (toList enemyModifiers)
+
 instance (IsInvestigator investigator) => HasActions env investigator ScreechingByakhee where
   getActions i window (ScreechingByakhee attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env ScreechingByakhee where
-  runMessage msg e@(ScreechingByakhee attrs@Attrs {..}) = case msg of
-    PrePlayerWindow -> runMessage (ApplyModifiers (EnemyTarget enemyId)) e
-    PostPlayerWindow -> runMessage (ApplyModifiers (EnemyTarget enemyId)) e
-    ApplyModifiers (EnemyTarget eid) | eid == enemyId -> do
-      sanities <- map unRemainingSanity <$> traverse
-        (asks . getCount)
-        (HashSet.toList enemyEngagedInvestigators)
-      when
-        (any (<= 4) sanities)
-        (unshiftMessage $ AddModifiers
-          (EnemyTarget enemyId)
-          (EnemySource enemyId)
-          [EnemyFight 1, EnemyEvade 1]
-        )
-      e <$ unshiftMessage
-        (RemoveAllModifiersOnTargetFrom
-          (EnemyTarget enemyId)
-          (EnemySource enemyId)
-        )
-      -- ^ we unshift this last so we do not double up
-    _ -> ScreechingByakhee <$> runMessage msg attrs
+  runMessage msg (ScreechingByakhee attrs) =
+    ScreechingByakhee <$> runMessage msg attrs

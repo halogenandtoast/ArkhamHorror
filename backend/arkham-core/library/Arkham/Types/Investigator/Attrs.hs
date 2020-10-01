@@ -173,26 +173,6 @@ facingDefeat a@Attrs {..} =
     || investigatorSanityDamage
     >= modifiedSanity a
 
-updateFailureModifiers
-  :: Int -> HashMap Source [Modifier] -> HashMap Source [Modifier]
-updateFailureModifiers n modifiers' = HashMap.map
-  updateFailureModifiers'
-  modifiers'
- where
-  updateFailureModifiers' modifiers'' = flip map modifiers'' $ \case
-    ByPointsFailedBy mbounds m -> replaceIntModifierValue mbounds n m
-    m -> m
-
-updateSuccessModifiers
-  :: Int -> HashMap Source [Modifier] -> HashMap Source [Modifier]
-updateSuccessModifiers n modifiers' = HashMap.map
-  updateSuccessModifiers'
-  modifiers'
- where
-  updateSuccessModifiers' modifiers'' = flip map modifiers'' $ \case
-    ByPointsSucceededBy mbounds m -> replaceIntModifierValue mbounds n m
-    m -> m
-
 skillValueFor :: SkillType -> Maybe Action -> [Modifier] -> Attrs -> Int
 skillValueFor skill maction tempModifiers attrs = foldr
   applyModifier
@@ -516,6 +496,8 @@ instance IsInvestigator Attrs where
         Tome `member` traits && maybe False (> 0) investigatorTomeActions
     in investigatorRemainingActions > 0 || hasTomeActionsRemaining
   canTakeDirectDamage a = not (facingDefeat a)
+  remainingHealth a = modifiedHealth a - investigatorHealthDamage a
+  remainingSanity a = modifiedSanity a - investigatorSanityDamage a
 
 instance HasId InvestigatorId () Attrs where
   getId _ Attrs {..} = investigatorId
@@ -776,8 +758,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         (investigatorDefeated || investigatorResigned)
       -> a <$ unshiftMessages
         ([InvestigatorDamage iid source damage horror, CheckDefeated]
-        <> [ After (InvestigatorTakeDamage iid source damage) | damage > 0 ]
-        <> [ After (InvestigatorTakeHorror iid source horror) | horror > 0 ]
+        <> [After (InvestigatorTakeDamage iid source damage horror)]
         )
     InvestigatorAssignDamage iid source damage horror
       | iid == investigatorId && not
@@ -786,8 +767,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         ([ InvestigatorDoAssignDamage iid source damage horror [] []
          , CheckDefeated
          ]
-        <> [ After (InvestigatorTakeDamage iid source damage) | damage > 0 ]
-        <> [ After (InvestigatorTakeHorror iid source horror) | horror > 0 ]
+        <> [After (InvestigatorTakeDamage iid source damage horror)]
         )
     InvestigatorDoAssignDamage iid source 0 0 damageTargets horrorTargets
       | iid == investigatorId -> a <$ unshiftMessages
@@ -1413,14 +1393,12 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       pure $ a & clues .~ 0
     RemoveDiscardFromGame iid | iid == investigatorId ->
       pure $ a & discard .~ []
-    Will (FailedSkillTest iid _ _ n) | iid == investigatorId -> do
-      pure $ a & modifiers %~ updateFailureModifiers n
-    Will (PassedSkillTest iid _ _ n) | iid == investigatorId -> do
-      pure $ a & modifiers %~ updateSuccessModifiers n
-    After (FailedSkillTest iid _ _ n) | iid == investigatorId -> do
-      a <$ unshiftMessage (CheckWindow iid [AfterFailSkillTest You n])
-    After (PassedSkillTest iid _ _ n) | iid == investigatorId -> do
-      a <$ unshiftMessage (CheckWindow iid [AfterPassSkillTest You n])
+    After (FailedSkillTest iid _ _ (InvestigatorTarget iid') n)
+      | iid == iid' && iid == investigatorId -> do
+        a <$ unshiftMessage (CheckWindow iid [AfterFailSkillTest You n])
+    After (PassedSkillTest iid _ _ (InvestigatorTarget iid') n)
+      | iid == iid' && iid == investigatorId -> do
+        a <$ unshiftMessage (CheckWindow iid [AfterPassSkillTest You n])
     PlayerWindow iid additionalActions | iid == investigatorId -> do
       actions <- join $ asks (getActions a NonFast)
       fastActions <- join $ asks (getActions a (DuringTurn You))

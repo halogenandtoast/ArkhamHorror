@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator
   ( isPrey
@@ -8,8 +9,6 @@ module Arkham.Types.Investigator
   , hasResigned
   , hasSpendableClues
   , isDefeated
-  , remainingHealth
-  , remainingSanity
   , actionsRemaining
   , lookupInvestigator
   , handOf
@@ -93,6 +92,9 @@ data Investigator
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+instance Eq Investigator where
+  a == b = getInvestigatorId a == getInvestigatorId b
+
 baseInvestigator
   :: InvestigatorId
   -> Text
@@ -116,14 +118,19 @@ instance (InvestigatorRunner Attrs env) => RunMessage env BaseInvestigator where
     BaseInvestigator <$> runMessage msg attrs
 
 instance (ActionRunner env investigator) => HasActions env investigator Investigator where
-  getActions i window investigator | any isBlank (getModifiers investigator) =
-    getActions i window (investigatorAttrs investigator)
-  getActions i window investigator = defaultGetActions i window investigator
+  getActions i window investigator = do
+    modifiers' <- getModifiers investigator
+    if any isBlank modifiers'
+      then getActions i window (investigatorAttrs investigator)
+      else defaultGetActions i window investigator
 
 instance (InvestigatorRunner Attrs env) => RunMessage env Investigator where
-  runMessage (ResolveToken ElderSign iid) i
-    | iid == getInvestigatorId i && any isBlank (getModifiers i) = i
-    <$ runTest iid (TokenValue ElderSign 0)
+  runMessage msg@(ResolveToken ElderSign iid) i | iid == getInvestigatorId i =
+    do
+      modifiers' <- getModifiers i
+      if any isBlank modifiers'
+        then i <$ runTest iid (TokenValue ElderSign 0)
+        else i <$ defaultRunMessage msg i
   runMessage msg i = defaultRunMessage msg i
 
 instance IsInvestigator Investigator where
@@ -142,6 +149,8 @@ instance IsInvestigator Investigator where
   hasActionsRemaining i = hasActionsRemaining (investigatorAttrs i)
   canTakeDirectDamage = canTakeDirectDamage . investigatorAttrs
   discardOf = discardOf . investigatorAttrs
+  remainingHealth = remainingHealth . investigatorAttrs
+  remainingSanity = remainingSanity . investigatorAttrs
 
 instance HasId InvestigatorId () Investigator where
   getId _ = getId () . investigatorAttrs
@@ -156,8 +165,13 @@ instance HasCard () Investigator where
 instance HasCardCode Investigator where
   getCardCode = getCardCode . investigatorAttrs
 
-instance HasModifiers Investigator where
-  getModifiers = concat . toList . investigatorModifiers . investigatorAttrs
+instance (HasModifiersFor env InvestigatorId env) => HasModifiers env Investigator where
+  getModifiers self = ask >>= getModifiersFor (getInvestigatorId self)
+
+instance HasModifiersFor env Investigator Investigator where
+  getModifiersFor i1 i2 | i1 == i2 =
+    pure . concat . toList . investigatorModifiers $ investigatorAttrs i1
+  getModifiersFor _ _ = pure []
 
 instance HasInvestigatorStats Stats () Investigator where
   getStats _ i = Stats
@@ -343,14 +357,6 @@ isDefeated = view defeated . investigatorAttrs
 
 hasSpendableClues :: Investigator -> Bool
 hasSpendableClues i = spendableClueCount (investigatorAttrs i) > 0
-
-remainingHealth :: Investigator -> Int
-remainingHealth i = modifiedHealth attrs - investigatorHealthDamage attrs
-  where attrs = investigatorAttrs i
-
-remainingSanity :: Investigator -> Int
-remainingSanity i = modifiedSanity attrs - investigatorSanityDamage attrs
-  where attrs = investigatorAttrs i
 
 actionsRemaining :: Investigator -> Int
 actionsRemaining = investigatorRemainingActions . investigatorAttrs

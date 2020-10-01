@@ -28,9 +28,13 @@ beatCop2 uuid = BeatCop2 $ (baseAttrs uuid "01018")
   , assetSanity = Just 2
   }
 
+instance IsInvestigator investigator => HasModifiersFor env investigator BeatCop2 where
+  getModifiersFor i (BeatCop2 Attrs {..}) = pure
+    [ SkillModifier SkillCombat 1 | Just (getId () i) == assetInvestigator ]
+
 instance (IsInvestigator investigator) => HasActions env investigator BeatCop2 where
-  getActions i _ (BeatCop2 Attrs {..}) | Just (getId () i) == assetInvestigator =
-    pure
+  getActions i _ (BeatCop2 Attrs {..})
+    | Just (getId () i) == assetInvestigator = pure
       [ UseCardAbility
           (getId () i)
           (AssetSource assetId)

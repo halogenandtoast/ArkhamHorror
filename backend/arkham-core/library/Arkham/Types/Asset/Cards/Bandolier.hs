@@ -16,10 +16,11 @@ newtype Bandolier = Bandolier Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 bandolier :: AssetId -> Bandolier
-bandolier uuid = Bandolier $ (baseAttrs uuid "02147")
-  { assetHealth = Just 1
-  , assetSlots = [BodySlot]
-  }
+bandolier uuid = Bandolier
+  $ (baseAttrs uuid "02147") { assetHealth = Just 1, assetSlots = [BodySlot] }
+
+instance HasModifiersFor env investigator Bandolier where
+  getModifiersFor _ _ = pure []
 
 instance HasActions env investigator Bandolier where
   getActions i window (Bandolier x) = getActions i window x
@@ -29,9 +30,9 @@ instance (AssetRunner env) => RunMessage env Bandolier where
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
       unshiftMessages
         [ AddSlot
-          iid
-          HandSlot
-          (TraitRestrictedSlot (AssetSource aid) Weapon Nothing)
+            iid
+            HandSlot
+            (TraitRestrictedSlot (AssetSource aid) Weapon Nothing)
         ]
       Bandolier <$> runMessage msg attrs
     _ -> Bandolier <$> runMessage msg attrs

@@ -9,6 +9,7 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Message
 import Arkham.Types.Source
 import Arkham.Types.Stats
+import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.Window
@@ -59,6 +60,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env SkidsOToole where
       do
         pure . SkidsOToole $ attrs & resources -~ 2 & remainingActions +~ 1
     ResolveToken ElderSign iid | iid == investigatorId -> do
-      runTest investigatorId (TokenValue ElderSign 2)
-      i <$ unshiftMessage (AddOnSuccess (TakeResources iid 2 False))
+      i <$ runTest investigatorId (TokenValue ElderSign 2)
+    PassedSkillTest iid _ _ (TokenTarget ElderSign) _ | iid == investigatorId -> do
+      i <$ unshiftMessage (TakeResources iid 2 False)
     _ -> SkidsOToole <$> runMessage msg attrs

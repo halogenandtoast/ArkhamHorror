@@ -43,6 +43,12 @@ enemyAttack i e = EnemyAttack (getId () i) (getId () e)
 fightEnemy :: Investigator -> Enemy -> Message
 fightEnemy i e = FightEnemy (getId () i) (getId () e) SkillCombat [] [] False
 
+engageEnemy :: Investigator -> Enemy -> Message
+engageEnemy i e = EngageEnemy (getId () i) (getId () e) False
+
+disengageEnemy :: Investigator -> Enemy -> Message
+disengageEnemy i e = DisengageEnemy (getId () i) (getId () e)
+
 playAsset :: Investigator -> Asset -> Message
 playAsset i a = InvestigatorPlayAsset
   (getId () i)

@@ -11,7 +11,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
-import Arkham.Types.Target
 import ClassyPrelude
 
 
@@ -25,19 +24,18 @@ drMilanChristopher uuid = DrMilanChristopher $ (baseAttrs uuid "01033")
   , assetSanity = Just 2
   }
 
+instance IsInvestigator investigator => HasModifiersFor env investigator DrMilanChristopher where
+  getModifiersFor i (DrMilanChristopher Attrs {..}) =
+    pure
+      [ SkillModifier SkillIntellect 1
+      | Just (getId () i) == assetInvestigator
+      ]
+
 instance HasActions env investigator DrMilanChristopher where
   getActions i window (DrMilanChristopher x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env DrMilanChristopher where
   runMessage msg a@(DrMilanChristopher attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      unshiftMessage
-        (AddModifiers
-          (InvestigatorTarget iid)
-          (AssetSource aid)
-          [SkillModifier SkillIntellect 1]
-        )
-      DrMilanChristopher <$> runMessage msg attrs
     SuccessfulInvestigation iid _ | iid == getInvestigator attrs ->
       a <$ unshiftMessage
         (Ask iid $ ChooseOne

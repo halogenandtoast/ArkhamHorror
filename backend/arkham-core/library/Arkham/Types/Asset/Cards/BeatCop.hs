@@ -26,6 +26,10 @@ beatCop uuid = BeatCop $ (baseAttrs uuid "01018")
   , assetSanity = Just 2
   }
 
+instance IsInvestigator investigator => HasModifiersFor env investigator BeatCop where
+  getModifiersFor i (BeatCop Attrs {..}) = pure
+    [ SkillModifier SkillCombat 1 | Just (getId () i) == assetInvestigator ]
+
 instance (IsInvestigator investigator) => HasActions env investigator BeatCop where
   getActions i _ (BeatCop Attrs {..}) | Just (getId () i) == assetInvestigator =
     pure
@@ -40,14 +44,6 @@ instance (IsInvestigator investigator) => HasActions env investigator BeatCop wh
 
 instance (AssetRunner env) => RunMessage env BeatCop where
   runMessage msg a@(BeatCop attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      unshiftMessage
-        (AddModifiers
-          (InvestigatorTarget iid)
-          (AssetSource aid)
-          [SkillModifier SkillCombat 1]
-        )
-      pure a
     UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
       locationId <- asks (getId @LocationId (getInvestigator attrs))
       locationEnemyIds <- HashSet.toList <$> asks (getSet locationId)

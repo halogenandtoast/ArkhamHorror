@@ -92,6 +92,7 @@ data Asset
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Asset
+deriving anyclass instance (IsInvestigator investigator, HasId LocationId InvestigatorId env) => HasModifiersFor env investigator Asset
 deriving anyclass instance (AssetRunner env) => RunMessage env Asset
 
 newtype BaseAsset = BaseAsset Attrs
@@ -103,6 +104,9 @@ baseAsset a b f = BaseAsset' . BaseAsset . f $ baseAttrs a b
 instance HasActions env investigator BaseAsset where
   getActions investigator' window (BaseAsset attrs) =
     getActions investigator' window attrs
+
+instance HasModifiersFor env investigator BaseAsset where
+  getModifiersFor _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env BaseAsset where
   runMessage msg (BaseAsset attrs) = BaseAsset <$> runMessage msg attrs

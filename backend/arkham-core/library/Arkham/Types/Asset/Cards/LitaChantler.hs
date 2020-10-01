@@ -6,6 +6,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
+import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
@@ -26,6 +27,14 @@ litaChantler uuid = LitaChantler $ (baseAttrs uuid "01117")
   , assetHealth = Just 3
   , assetSanity = Just 3
   }
+
+instance (IsInvestigator investigator, HasId LocationId InvestigatorId env) => HasModifiersFor env investigator LitaChantler where
+  getModifiersFor i (LitaChantler Attrs {..}) = do
+    case assetInvestigator of
+      Nothing -> pure []
+      Just ownerId -> do
+        lid <- asks (getId ownerId)
+        pure [ SkillModifier SkillCombat 1 | locationOf i == lid ]
 
 instance HasActions env investigator LitaChantler where
   getActions i window (LitaChantler x) = getActions i window x
@@ -59,26 +68,5 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
       _ -> pure a
     AfterAttackEnemy _ eid -> a <$ unshiftMessage
       (RemoveAllModifiersOnTargetFrom (EnemyTarget eid) (AssetSource assetId))
-    PostPlayerWindow -> do
-      allInvestigatorIds <- HashSet.toList <$> asks (getSet ())
-      case assetInvestigator of
-        Just ownerId -> do
-          locationId <- asks (getId @LocationId ownerId)
-          locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
-          unshiftMessages
-            [ AddModifiers
-                (InvestigatorTarget iid)
-                (AssetSource assetId)
-                [SkillModifier SkillCombat 1]
-            | iid <- locationInvestigatorIds
-            ]
-        _ -> pure ()
-      unshiftMessages $ map
-        (\iid -> RemoveAllModifiersOnTargetFrom
-          (InvestigatorTarget iid)
-          (AssetSource assetId)
-        )
-        allInvestigatorIds
-      pure a
     _ -> LitaChantler <$> runMessage msg attrs
 

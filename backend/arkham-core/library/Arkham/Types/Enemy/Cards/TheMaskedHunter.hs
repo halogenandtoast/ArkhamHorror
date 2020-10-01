@@ -11,10 +11,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Prey
 import Arkham.Types.Query
-import Arkham.Types.Source
-import Arkham.Types.Target
 import ClassyPrelude
-import qualified Data.HashSet as HashSet
 import Lens.Micro
 
 newtype TheMaskedHunter = TheMaskedHunter Attrs
@@ -30,38 +27,23 @@ theMaskedHunter uuid = TheMaskedHunter $ (baseAttrs uuid "01121b")
   , enemyPrey = MostClues
   }
 
+instance IsInvestigator investigator => HasModifiersFor env investigator TheMaskedHunter where
+  getModifiersFor i (TheMaskedHunter Attrs {..}) = do
+    if getId () i `elem` enemyEngagedInvestigators
+      then pure [CannotDiscoverClues, CannotSpendClues]
+      else pure []
+
+instance HasModifiers env TheMaskedHunter where
+  getModifiers (TheMaskedHunter Attrs {..}) =
+    pure . concat . toList $ enemyModifiers
+
 instance (IsInvestigator investigator) => HasActions env investigator TheMaskedHunter where
   getActions i window (TheMaskedHunter attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env TheMaskedHunter where
-  runMessage msg e@(TheMaskedHunter attrs@Attrs {..}) = case msg of
+  runMessage msg (TheMaskedHunter attrs@Attrs {..}) = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       playerCount <- unPlayerCount <$> asks (getCount ())
       TheMaskedHunter
         <$> runMessage msg (attrs & health %~ fmap (+ (2 * playerCount)))
-    DisengageEnemy iid eid | eid == enemyId -> do
-      unshiftMessage
-        (RemoveAllModifiersOnTargetFrom
-          (InvestigatorTarget iid)
-          (EnemySource enemyId)
-        )
-      TheMaskedHunter <$> runMessage msg attrs
-    EnemyEvaded iid eid | eid == enemyId -> do
-      unshiftMessage
-        (RemoveAllModifiersOnTargetFrom
-          (InvestigatorTarget iid)
-          (EnemySource enemyId)
-        )
-      TheMaskedHunter <$> runMessage msg attrs
-    EnemyEngageInvestigator eid _ | eid == enemyId ->
-      runMessage (ApplyModifiers (EnemyTarget eid)) e
-    ApplyModifiers (EnemyTarget eid) | eid == enemyId -> do
-      unshiftMessages
-        [ AddModifiers
-            (InvestigatorTarget iid)
-            (EnemySource eid)
-            [CannotDiscoverClues, CannotSpendClues]
-        | iid <- HashSet.toList enemyEngagedInvestigators
-        ]
-      TheMaskedHunter <$> runMessage msg attrs
     _ -> TheMaskedHunter <$> runMessage msg attrs

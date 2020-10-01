@@ -132,11 +132,11 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
         monsterCount <- unEnemyCount <$> asks (getCount [Monster])
         s <$ runTest iid (Token.TokenValue Token.Skull (-monsterCount))
     ResolveToken Token.Skull iid | scenarioDifficulty `elem` [Hard, Expert] ->
-      do
-        unshiftMessage
-          (AddOnFailure $ FindAndDrawEncounterCard iid (EnemyType, Just Monster)
-          )
-        s <$ runTest iid (Token.TokenValue Token.Skull (-3))
+      s <$ runTest iid (Token.TokenValue Token.Skull (-3))
+    FailedSkillTest iid _ _ (TokenTarget Token.Skull) _
+      | scenarioDifficulty `elem` [Hard, Expert] -> do
+        s <$ unshiftMessage
+          (FindAndDrawEncounterCard iid (EnemyType, Just Monster))
     ResolveToken Token.Cultist iid
       | scenarioDifficulty `elem` [Easy, Standard] -> do
         closestEnemyIds <- map unClosestEnemyId . HashSet.toList <$> asks

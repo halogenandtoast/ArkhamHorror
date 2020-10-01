@@ -10,7 +10,6 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Slot
 import Arkham.Types.Source
-import Arkham.Types.Target
 import ClassyPrelude
 
 
@@ -24,18 +23,16 @@ leoDeLuca uuid = LeoDeLuca $ (baseAttrs uuid "01048")
   , assetSanity = Just 2
   }
 
+instance IsInvestigator investigator => HasModifiersFor env investigator LeoDeLuca where
+  getModifiersFor i (LeoDeLuca Attrs {..}) =
+    pure [ AdditionalActions 1 | Just (getId () i) == assetInvestigator ]
+
 instance HasActions env investigator LeoDeLuca where
   getActions i window (LeoDeLuca x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env LeoDeLuca where
   runMessage msg (LeoDeLuca attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      unshiftMessages
-        [ GainActions iid (AssetSource aid) 1
-        , AddModifiers
-          (InvestigatorTarget iid)
-          (AssetSource aid)
-          [AdditionalActions 1]
-        ]
+      unshiftMessage $ GainActions iid (AssetSource aid) 1
       LeoDeLuca <$> runMessage msg attrs
     _ -> LeoDeLuca <$> runMessage msg attrs

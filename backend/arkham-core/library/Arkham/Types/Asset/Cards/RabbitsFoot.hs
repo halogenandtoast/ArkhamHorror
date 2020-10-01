@@ -14,13 +14,15 @@ import Arkham.Types.Window
 import ClassyPrelude
 import Lens.Micro
 
-
 newtype RabbitsFoot = RabbitsFoot Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 rabbitsFoot :: AssetId -> RabbitsFoot
 rabbitsFoot uuid =
   RabbitsFoot $ (baseAttrs uuid "01075") { assetSlots = [AccessorySlot] }
+
+instance HasModifiersFor env investigator RabbitsFoot where
+  getModifiersFor _ _ = pure []
 
 instance (IsInvestigator investigator) => HasActions env investigator RabbitsFoot where
   getActions i (AfterFailSkillTest You n) (RabbitsFoot Attrs {..})

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ef37af37aac722c1c5cda32ef5812f2825316f947dd7f193e1eeb6afc2e4a6fd
+-- hash: 0ab9fa6a3d1ca411885aa861ec376f3a1841960e6732cf3fa1ffa9200dbd2b1a
 
 name:           arkham-core
 version:        0.0.0
@@ -384,6 +384,7 @@ test-suite spec
       Arkham.Types.Asset.Cards.JennysTwin45sSpec
       Arkham.Types.Asset.Cards.JimsTrumpetSpec
       Arkham.Types.Asset.Cards.ZoeysCrossSpec
+      Arkham.Types.Enemy.Cards.TheMaskedHunterSpec
       Arkham.Types.Event.Cards.BackstabSpec
       Arkham.Types.Event.Cards.Barricade3Spec
       Arkham.Types.Event.Cards.BarricadeSpec

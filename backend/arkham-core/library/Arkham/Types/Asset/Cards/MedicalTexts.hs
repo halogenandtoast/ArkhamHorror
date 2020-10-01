@@ -24,6 +24,9 @@ medicalTexts :: AssetId -> MedicalTexts
 medicalTexts uuid =
   MedicalTexts $ (baseAttrs uuid "01035") { assetSlots = [HandSlot] }
 
+instance HasModifiersFor env investigator MedicalTexts where
+  getModifiersFor _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator MedicalTexts where
   getActions i NonFast (MedicalTexts Attrs {..})
     | Just (getId () i) == assetInvestigator = pure

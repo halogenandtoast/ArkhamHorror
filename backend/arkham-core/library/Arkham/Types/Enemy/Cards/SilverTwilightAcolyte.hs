@@ -25,6 +25,13 @@ silverTwilightAcolyte uuid =
     , enemyPrey = SetToBearer
     }
 
+instance HasModifiersFor env investigator SilverTwilightAcolyte where
+  getModifiersFor _ _ = pure []
+
+instance HasModifiers env SilverTwilightAcolyte where
+  getModifiers (SilverTwilightAcolyte Attrs {..}) =
+    pure . concat . toList $ enemyModifiers
+
 instance (IsInvestigator investigator) => HasActions env investigator SilverTwilightAcolyte where
   getActions i window (SilverTwilightAcolyte attrs) = getActions i window attrs
 

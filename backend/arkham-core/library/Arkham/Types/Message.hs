@@ -30,7 +30,6 @@ import Arkham.Types.Modifier
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.ScenarioId
 import Arkham.Types.SkillId
-import Arkham.Types.SkillTestResult
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
@@ -66,8 +65,6 @@ data ActionType = EnemyActionType | LocationActionType | AssetActionType | Treac
 
 data Message
   = Setup
-  | BlankText Target
-  | UnblankText Target
   | ApplyModifiers Target
   | BeginTurn InvestigatorId
   | AddToken Token
@@ -93,8 +90,8 @@ data Message
   | SearchTopOfDeck InvestigatorId Target Int [Trait] LeftoverCardStrategy
   | SearchDiscard InvestigatorId Target [Trait]
   | RemoveFromDiscard InvestigatorId CardId
-  | InitDeck InvestigatorId [PlayerCard]
-  | LoadDeck InvestigatorId [PlayerCard]
+  | InitDeck InvestigatorId [PlayerCard] -- used to initialize the deck for the campaign
+  | LoadDeck InvestigatorId [PlayerCard] -- used to reset the deck of the investigator
   | BeginRound
   | EndRoundWindow
   | EndRound
@@ -178,8 +175,7 @@ data Message
   | PlayDynamicCard InvestigatorId CardId Int Bool -- Int is unused for Bool True
   | PlayedCard InvestigatorId CardId Bool
   | PayedForDynamicCard InvestigatorId CardId Int Bool
-  | InvestigatorTakeDamage InvestigatorId Source Int
-  | InvestigatorTakeHorror InvestigatorId Source Int
+  | InvestigatorTakeDamage InvestigatorId Source Int Int
   | InvestigatorDirectDamage InvestigatorId Source Int Int
   | InvestigatorAssignDamage InvestigatorId Source Int Int
   -- ^ uses the internal method and then checks defeat
@@ -212,23 +208,17 @@ data Message
   | BeforeSkillTest InvestigatorId SkillType
   | TriggerSkillTest InvestigatorId
   | RunSkillTest InvestigatorId TokenValue
-  | NotifyOnFailure InvestigatorId Target
-  | NotifyOnSuccess InvestigatorId Target
-  | HandlePointOfFailure InvestigatorId Target Int
-  | SkillTestDidFailBy InvestigatorId Target Int
-  | SkillTestDidPassBy InvestigatorId Target Int
+  | HandlePointOfFailure InvestigatorId Target Int -- Really do x n times, does not have to be failure
   | SkillTestResults
   | SkillTestApplyResults
   | SkillTestApplyResultsAfter
-  | RunSkill InvestigatorId CardCode SkillTestResult
   | SkillTestCommitCard InvestigatorId CardId
   | CommitCard InvestigatorId CardId
   | InvestigatorCommittedCard InvestigatorId CardId
   | InvestigatorCommittedSkill InvestigatorId SkillId
   | SkillTestAsk Message
   | SkillTestUncommitCard InvestigatorId CardId
-  | AddOnFailure Message
-  | AddOnSuccess Message
+  | AddSkillTestSubscriber Target
   | PassSkillTest
   | FailSkillTest
   | InvestigatorPlaceCluesOnLocation InvestigatorId Int
@@ -240,7 +230,6 @@ data Message
   | AddToEncounterDeck EncounterCard
   | SetAsideToken Token
   | SkillTestEnds
-  | SkillTestEnded SkillTestResult [Token]
   | ReturnSkillTestRevealedTokens
   | DrawToken InvestigatorId Token
   | EmptyDeck InvestigatorId
@@ -272,11 +261,8 @@ data Message
   | Revelation InvestigatorId TreacheryId
   | AfterRevelation InvestigatorId TreacheryId
   | RevelationSkillTest InvestigatorId Source SkillType Int [Message] [Message]
-  | DamagePerPointOfFailure InvestigatorId
-  | HorrorPerPointOfFailure InvestigatorId
   | Discard Target
   | SetEncounterDeck [EncounterCard]
-  | TreacheryFailure InvestigatorId TreacheryId -- TODO: better name
   | ChooseAndDiscardAsset InvestigatorId
   | FightEnemy InvestigatorId EnemyId SkillType [Modifier] [TokenResponse Message] Bool
   | WhenAttackEnemy InvestigatorId EnemyId
@@ -346,8 +332,8 @@ data Message
   | Surge InvestigatorId
   | RevealInHand CardId
   | RemoveDiscardFromGame InvestigatorId
-  | FailedSkillTest InvestigatorId (Maybe Action) Source Int
-  | PassedSkillTest InvestigatorId (Maybe Action) Source Int
+  | FailedSkillTest InvestigatorId (Maybe Action) Source Target Int
+  | PassedSkillTest InvestigatorId (Maybe Action) Source Target Int
   | ReturnToHand InvestigatorId Target
   | ShuffleIntoDeck InvestigatorId Target
   | FocusTokens [Token]

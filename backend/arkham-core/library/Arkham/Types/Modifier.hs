@@ -20,8 +20,6 @@ data Modifier
   | AdditionalActions Int
   | BaseSkillOf SkillType Int
   | Blank
-  | ByPointsSucceededBy (Maybe (Int, Int)) Modifier
-  | ByPointsFailedBy (Maybe (Int, Int)) Modifier
   | CanPlayTopOfDiscard (Maybe PlayerCardType, [Trait])
   | CannotBeAttackedByNonElite
   | CannotBeEnteredByNonElite
@@ -64,8 +62,6 @@ replaceIntModifierValue mbounds n modifier = case modifier of
   AdditionalActions _ -> AdditionalActions val
   BaseSkillOf a _ -> BaseSkillOf a val
   Blank -> modifier
-  ByPointsSucceededBy{} -> modifier
-  ByPointsFailedBy{} -> modifier
   CanPlayTopOfDiscard{} -> modifier
   CannotBeAttackedByNonElite -> modifier
   CannotBeEnteredByNonElite -> modifier

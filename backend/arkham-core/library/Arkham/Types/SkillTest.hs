@@ -45,6 +45,7 @@ data SkillTest a = SkillTest
   , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
   , skillTestSource :: Source
   , skillTestAction :: Maybe Action
+  , skillTestSubscribers :: [Target]
   }
   deriving stock (Show, Generic)
 
@@ -98,10 +99,15 @@ initSkillTest iid source maction skillType' skillValue' difficulty' onSuccess' o
     , skillTestCommittedCards = mempty
     , skillTestSource = source
     , skillTestAction = maction
+    , skillTestSubscribers = [SkillTestInitiatorTarget, InvestigatorTarget iid]
     }
 
 modifiers :: Lens' (SkillTest a) (HashMap Source [Modifier])
 modifiers = lens skillTestModifiers $ \m x -> m { skillTestModifiers = x }
+
+subscribers :: Lens' (SkillTest a) [Target]
+subscribers =
+  lens skillTestSubscribers $ \m x -> m { skillTestSubscribers = x }
 
 -- skillValue :: Lens' (SkillTest a) Int
 -- skillValue = lens skillTestSkillValue $ \m x -> m { skillTestSkillValue = x }
@@ -120,12 +126,6 @@ committedCards =
 
 result :: Lens' (SkillTest a) SkillTestResult
 result = lens skillTestResult $ \m x -> m { skillTestResult = x }
-
-onFailure :: Lens' (SkillTest a) [a]
-onFailure = lens skillTestOnFailure $ \m x -> m { skillTestOnFailure = x }
-
-onSuccess :: Lens' (SkillTest a) [a]
-onSuccess = lens skillTestOnSuccess $ \m x -> m { skillTestOnSuccess = x }
 
 onTokenResponses :: Lens' (SkillTest a) [TokenResponse a]
 onTokenResponses =
@@ -188,16 +188,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         , ResolveToken token iid
         ]
       pure s
-    AddOnFailure m -> pure $ s & onFailure %~ (m :)
-    AddOnSuccess m -> pure $ s & onSuccess %~ (m :)
-    HorrorPerPointOfFailure iid -> case skillTestResult of
-      FailedBy n ->
-        s <$ unshiftMessage (InvestigatorAssignDamage iid SkillTestSource 0 n)
-      _ -> error "Should not be called when not failed"
-    DamagePerPointOfFailure iid -> case skillTestResult of
-      FailedBy n ->
-        s <$ unshiftMessage (InvestigatorAssignDamage iid SkillTestSource n 0)
-      _ -> error "Should not be called when not failed"
+    AddSkillTestSubscriber target -> pure $ s & subscribers %~ (target :)
     DrawToken _ token -> do
       onTokenResponses' <-
         (catMaybes <$>) . for skillTestOnTokenResponses $ \case
@@ -227,6 +218,8 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
           skillTestCommittedCards
       <> [InvestigatorStartSkillTest skillTestInvestigator]
       )
+    InvestigatorCommittedSkill _ skillId -> do
+      pure $ s & subscribers %~ (SkillTarget skillId :)
     SkillTestCommitCard iid cardId -> do
       card <- asks (getCard iid cardId)
       pure $ s & committedCards %~ insertMap cardId (iid, card)
@@ -235,6 +228,8 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
     AddModifiers SkillTestTarget source modifiers' ->
       pure $ s & modifiers %~ insertWith (<>) source modifiers'
     ReturnSkillTestRevealedTokens -> do
+      -- Rex's Curse timing keeps effects on stack so we do
+      -- not want to remove them as subscribers from the stack
       unshiftMessage (ReturnTokens skillTestSetAsideTokens)
       pure $ s & setAsideTokens .~ mempty
     SkillTestEnds -> s <$ unshiftMessages
@@ -247,30 +242,34 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       unshiftMessage
         (Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults])
       case skillTestResult of
-        SucceededBy n -> unshiftMessage
-          (Will
-            (PassedSkillTest
-              skillTestInvestigator
-              skillTestAction
-              skillTestSource
-              n
-            )
-          )
-        FailedBy n -> unshiftMessage
-          (Will
-            (FailedSkillTest
-              skillTestInvestigator
-              skillTestAction
-              skillTestSource
-              n
-            )
-          )
+        SucceededBy n -> unshiftMessages
+          [ Will
+              (PassedSkillTest
+                skillTestInvestigator
+                skillTestAction
+                skillTestSource
+                target
+                n
+              )
+          | target <- skillTestSubscribers
+          ]
+        FailedBy n -> unshiftMessages
+          [ Will
+              (FailedSkillTest
+                skillTestInvestigator
+                skillTestAction
+                skillTestSource
+                target
+                n
+              )
+          | target <- skillTestSubscribers
+          ]
         Unrun -> pure ()
       pure s
     AddModifiers AfterSkillTestTarget source modifiers' ->
       pure $ s & modifiers %~ insertWith (<>) source modifiers'
-    SkillTestApplyResultsAfter -> do
-      unshiftMessage SkillTestEnds
+    SkillTestApplyResultsAfter -> do -- ST.7 -- apply results
+      unshiftMessage SkillTestEnds -- -> ST.8 -- Skill test ends
 
       case skillTestResult of
         SucceededBy n ->
@@ -281,8 +280,10 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
                      skillTestInvestigator
                      skillTestAction
                      skillTestSource
+                     target
                      n
                    )
+               | target <- skillTestSubscribers
                ]
         FailedBy n ->
           unshiftMessages
@@ -292,8 +293,10 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
                      skillTestInvestigator
                      skillTestAction
                      skillTestSource
+                     target
                      n
                    )
+               | target <- skillTestSubscribers
                ]
         Unrun -> pure ()
 
@@ -303,33 +306,28 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
           SkillTestSource
           (applicableModifiers s)
         )
-    SkillTestApplyResults -> do
-      -- TODO: the player can sequence the skill test results in whatever order they want
+    SkillTestApplyResults -> do -- ST.7 Apply Results
       unshiftMessage SkillTestApplyResultsAfter
       s <$ case skillTestResult of
-        SucceededBy n -> unshiftMessage
-          (PassedSkillTest
-            skillTestInvestigator
-            skillTestAction
-            skillTestSource
-            n
-          )
-        FailedBy n -> unshiftMessage
-          (FailedSkillTest
-            skillTestInvestigator
-            skillTestAction
-            skillTestSource
-            n
-          )
+        SucceededBy n -> unshiftMessages
+          [ PassedSkillTest
+              skillTestInvestigator
+              skillTestAction
+              skillTestSource
+              target
+              n
+          | target <- skillTestSubscribers
+          ]
+        FailedBy n -> unshiftMessages
+          [ FailedSkillTest
+              skillTestInvestigator
+              skillTestAction
+              skillTestSource
+              target
+              n
+          | target <- skillTestSubscribers
+          ]
         Unrun -> pure ()
-    NotifyOnFailure iid target -> do
-      case skillTestResult of
-        FailedBy n -> s <$ unshiftMessage (SkillTestDidFailBy iid target n)
-        _ -> pure s
-    NotifyOnSuccess iid target -> do
-      case skillTestResult of
-        SucceededBy n -> s <$ unshiftMessage (SkillTestDidPassBy iid target n)
-        _ -> pure s
     RunSkillTest _ (TokenValue _ tokenValue) -> do
       let
         totaledTokenValues =

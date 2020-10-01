@@ -22,6 +22,13 @@ wolfManDrew uuid = WolfManDrew $ (baseAttrs uuid "01137")
   , enemyEvade = 2
   }
 
+instance HasModifiersFor env investigator WolfManDrew where
+  getModifiersFor _ _ = pure []
+
+instance HasModifiers env WolfManDrew where
+  getModifiers (WolfManDrew Attrs {..}) =
+    pure . concat . toList $ enemyModifiers
+
 instance (IsInvestigator investigator) => HasActions env investigator WolfManDrew where
   getActions i window (WolfManDrew attrs) = getActions i window attrs
 

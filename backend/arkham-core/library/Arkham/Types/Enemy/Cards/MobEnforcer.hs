@@ -29,6 +29,13 @@ mobEnforcer uuid = MobEnforcer $ (weaknessBaseAttrs uuid "01101")
   , enemyPrey = SetToBearer
   }
 
+instance HasModifiersFor env investigator MobEnforcer where
+  getModifiersFor _ _ = pure []
+
+instance HasModifiers env MobEnforcer where
+  getModifiers (MobEnforcer Attrs {..}) =
+    pure . concat . toList $ enemyModifiers
+
 instance (IsInvestigator investigator) => HasActions env investigator MobEnforcer where
   getActions i NonFast (MobEnforcer attrs@Attrs {..}) = do
     baseActions <- getActions i NonFast attrs

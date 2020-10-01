@@ -476,11 +476,19 @@ instance HasCount EnemyCount (InvestigatorLocation, [Trait]) (Game queue) where
 instance HasInvestigatorStats Stats InvestigatorId (Game queue) where
   getStats iid = getStats () . getInvestigator iid
 
-instance HasList Modifier LocationId (Game queue) where
-  getList lid = getModifiers . getLocation lid
+instance HasModifiers (Game queue) LocationId where
+  getModifiers lid = asks (getLocation lid) >>= getModifiers
 
-instance HasList Modifier InvestigatorId (Game queue) where
-  getList lid = getModifiers . getInvestigator lid
+instance HasModifiers (Game queue) InvestigatorId where
+  getModifiers iid = asks (getInvestigator iid) >>= getModifiers
+
+instance (HasId LocationId InvestigatorId env) => HasModifiersFor env InvestigatorId (Game queue) where
+  getModifiersFor iid g = concat <$> sequence
+    [ concat <$> traverse (getModifiersFor i) (g ^. enemies . to toList)
+    , concat <$> traverse (getModifiersFor i) (g ^. assets . to toList)
+    , concat <$> traverse (getModifiersFor i) (g ^. investigators . to toList)
+    ]
+    where i = getInvestigator iid g
 
 instance HasList Location () (Game queue) where
   getList _ = toList . view locations
@@ -1353,12 +1361,11 @@ runGameMessage msg g = case msg of
       _ -> unshiftMessage (AskMap askMap)
     pure g
   EnemyWillAttack iid eid -> do
+    modifiers' <- getModifiers (getInvestigator iid g)
     let
-      investigator = getInvestigator iid g
-      cannotBeAttackedByNonElites =
-        flip any (getModifiers investigator) $ \case
-          CannotBeAttackedByNonElite{} -> True
-          _ -> False
+      cannotBeAttackedByNonElites = flip any modifiers' $ \case
+        CannotBeAttackedByNonElite{} -> True
+        _ -> False
       enemy = getEnemy eid g
       canAttack =
         not cannotBeAttackedByNonElites || (Elite `elem` getTraits enemy)
@@ -1375,12 +1382,11 @@ runGameMessage msg g = case msg of
             unshiftMessage aoo
           Just (EnemyWillAttack iid2 eid2) -> do
             _ <- popMessage
+            modifiers2' <- getModifiers (getInvestigator iid2 g)
             let
-              investigator2 = getInvestigator iid2 g
-              cannotBeAttackedByNonElites2 =
-                flip any (getModifiers investigator2) $ \case
-                  CannotBeAttackedByNonElite{} -> True
-                  _ -> False
+              cannotBeAttackedByNonElites2 = flip any modifiers2' $ \case
+                CannotBeAttackedByNonElite{} -> True
+                _ -> False
               enemy2 = getEnemy eid2 g
               canAttack2 =
                 not cannotBeAttackedByNonElites2

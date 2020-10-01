@@ -22,6 +22,9 @@ guardDog uuid = GuardDog $ (baseAttrs uuid "01021")
   , assetSanity = Just 1
   }
 
+instance HasModifiersFor env investigator GuardDog where
+  getModifiersFor _ _ = pure []
+
 instance HasActions env investigator GuardDog where
   getActions i window (GuardDog x) = getActions i window x
 

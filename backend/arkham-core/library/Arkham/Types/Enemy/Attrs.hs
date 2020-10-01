@@ -224,10 +224,13 @@ modifiedDamageAmount attrs baseAmount = foldr
   applyModifier _ n = n
 
 canEnterLocation
-  :: (EnemyRunner env, MonadReader env m) => EnemyId -> LocationId -> m Bool
+  :: (EnemyRunner env, MonadReader env m, MonadIO m)
+  => EnemyId
+  -> LocationId
+  -> m Bool
 canEnterLocation eid lid = do
   traits <- asks (getSet eid)
-  modifiers' <- asks (getList lid)
+  modifiers' <- getModifiers lid
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
@@ -399,16 +402,16 @@ instance (EnemyRunner env) => RunMessage env Attrs where
         (unshiftMessage (EnemyDefeated eid iid enemyCardCode source))
     AddModifiers (EnemyTarget eid) source modifiers' | eid == enemyId -> do
       when (Blank `elem` modifiers')
-        $ unshiftMessage (BlankText (EnemyTarget eid))
+        $ unshiftMessage (RemoveAllModifiersFrom (EnemySource eid))
       pure $ a & modifiers %~ HashMap.insertWith (<>) source modifiers'
-    BlankText (EnemyTarget eid) | eid == enemyId ->
-      a <$ unshiftMessage (RemoveAllModifiersFrom (EnemySource eid))
-    UnblankText (EnemyTarget eid) | eid == enemyId ->
-      a <$ unshiftMessage (ApplyModifiers (EnemyTarget eid))
     RemoveAllModifiersOnTargetFrom (EnemyTarget eid) source | eid == enemyId ->
-      pure $ a & modifiers %~ HashMap.delete source
-    RemoveAllModifiersFrom source ->
-      pure $ a & modifiers %~ HashMap.delete source
+      do
+        when (Blank `elem` fromMaybe [] (lookup source enemyModifiers))
+          $ unshiftMessage (ApplyModifiers (EnemyTarget enemyId))
+        pure $ a & modifiers %~ HashMap.delete source
+    RemoveAllModifiersFrom source -> runMessage
+      (RemoveAllModifiersOnTargetFrom (EnemyTarget enemyId) source)
+      a
     EnemyEngageInvestigator eid iid | eid == enemyId ->
       pure $ a & engagedInvestigators %~ HashSet.insert iid
     EngageEnemy iid eid False | eid == enemyId ->

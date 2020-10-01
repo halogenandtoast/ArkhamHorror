@@ -119,8 +119,8 @@ instance HasSet ConnectedLocationId () Location where
   getSet _ =
     HashSet.map ConnectedLocationId . locationConnectedLocations . locationAttrs
 
-instance HasModifiers Location where
-  getModifiers = concat . toList . locationModifiers . locationAttrs
+instance HasModifiers env Location where
+  getModifiers = pure . concat . toList . locationModifiers . locationAttrs
 
 instance HasId LocationId () Location where
   getId _ = locationId . locationAttrs

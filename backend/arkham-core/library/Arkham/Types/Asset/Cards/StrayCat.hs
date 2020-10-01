@@ -23,6 +23,9 @@ strayCat :: AssetId -> StrayCat
 strayCat uuid = StrayCat
   $ (baseAttrs uuid "01076") { assetSlots = [AllySlot], assetHealth = Just 2 }
 
+instance HasModifiersFor env investigator StrayCat where
+  getModifiersFor _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator StrayCat where
   getActions i window (StrayCat attrs@Attrs {..})
     | Just (getId () i) == assetInvestigator = do

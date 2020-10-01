@@ -89,15 +89,24 @@ instance (IsInvestigator investigator) => HasActions env investigator BaseEnemy 
   getActions investigator window (BaseEnemy attrs) =
     getActions investigator window attrs
 
+instance HasModifiersFor env investigator BaseEnemy where
+  getModifiersFor _ _ = pure []
+
+instance HasModifiers env BaseEnemy where
+  getModifiers (BaseEnemy Attrs {..}) = pure . concat . toList $ enemyModifiers
+
 instance (EnemyRunner env) => RunMessage env BaseEnemy where
   runMessage msg (BaseEnemy attrs) = BaseEnemy <$> runMessage msg attrs
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Enemy
+deriving anyclass instance IsInvestigator investigator => HasModifiersFor env investigator Enemy
 
 instance (EnemyRunner env) => RunMessage env Enemy where
-  runMessage msg e | any isBlank (getModifiers e) && not (isBlanked msg) =
-    runMessage (Blanked msg) e
-  runMessage msg e = defaultRunMessage msg e
+  runMessage msg e = do
+    modifiers' <- getModifiers e
+    if any isBlank modifiers' && not (isBlanked msg)
+      then runMessage (Blanked msg) e
+      else defaultRunMessage msg e
 
 instance HasVictoryPoints Enemy where
   getVictoryPoints = enemyVictory . enemyAttrs
@@ -120,8 +129,7 @@ instance HasTraits Enemy where
 instance HasKeywords Enemy where
   getKeywords = enemyKeywords . enemyAttrs
 
-instance HasModifiers Enemy where
-  getModifiers = concat . toList . enemyModifiers . enemyAttrs
+deriving anyclass instance HasCount RemainingSanity InvestigatorId env => HasModifiers env Enemy
 
 instance HasId EnemyId () Enemy where
   getId _ = enemyId . enemyAttrs

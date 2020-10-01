@@ -26,6 +26,13 @@ yithianObserver uuid = YithianObserver $ (baseAttrs uuid "01177")
   , enemyPrey = FewestCards
   }
 
+instance HasModifiersFor env investigator YithianObserver where
+  getModifiersFor _ _ = pure []
+
+instance HasModifiers env YithianObserver where
+  getModifiers (YithianObserver Attrs {..}) =
+    pure . concat . toList $ enemyModifiers
+
 instance (IsInvestigator investigator) => HasActions env investigator YithianObserver where
   getActions i window (YithianObserver attrs) = getActions i window attrs
 

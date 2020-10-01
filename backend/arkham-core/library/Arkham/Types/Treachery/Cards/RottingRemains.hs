@@ -6,6 +6,7 @@ import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
@@ -22,16 +23,20 @@ instance HasActions env investigator RottingRemains where
   getActions i window (RottingRemains attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env RottingRemains where
-  runMessage msg (RottingRemains attrs@Attrs {..}) = case msg of
+  runMessage msg t@(RottingRemains attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
-      unshiftMessage
-        (RevelationSkillTest
+      unshiftMessages
+        [ RevelationSkillTest
           iid
           (TreacherySource treacheryId)
           SkillWillpower
           3
           []
-          [HorrorPerPointOfFailure iid]
-        )
+          []
+        , Discard (TreacheryTarget tid)
+        ]
       RottingRemains <$> runMessage msg (attrs & resolved .~ True)
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget n
+      | tid == treacheryId -> t <$ unshiftMessage
+        (InvestigatorAssignDamage iid (TreacherySource treacheryId) 0 n)
     _ -> RottingRemains <$> runMessage msg attrs

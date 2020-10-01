@@ -24,6 +24,9 @@ oldBookOfLore :: AssetId -> OldBookOfLore
 oldBookOfLore uuid =
   OldBookOfLore $ (baseAttrs uuid "01031") { assetSlots = [HandSlot] }
 
+instance HasModifiersFor env investigator OldBookOfLore where
+  getModifiersFor _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator OldBookOfLore where
   getActions i NonFast (OldBookOfLore Attrs {..})
     | Just (getId () i) == assetInvestigator = pure

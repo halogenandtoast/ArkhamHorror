@@ -20,6 +20,9 @@ newtype PhysicalTraining2 = PhysicalTraining2 Attrs
 physicalTraining2 :: AssetId -> PhysicalTraining2
 physicalTraining2 uuid = PhysicalTraining2 $ baseAttrs uuid "50001"
 
+instance HasModifiersFor env investigator PhysicalTraining2 where
+  getModifiersFor _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator PhysicalTraining2 where
   getActions i (Fast.WhenSkillTest SkillWillpower) (PhysicalTraining2 Attrs {..})
     | Just (getId () i) == assetInvestigator

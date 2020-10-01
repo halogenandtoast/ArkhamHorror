@@ -16,6 +16,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
+import Arkham.Types.Target
 import ClassyPrelude
 import Lens.Micro
 
@@ -25,6 +26,9 @@ newtype Shotgun4 = Shotgun4 Attrs
 shotgun4 :: AssetId -> Shotgun4
 shotgun4 uuid =
   Shotgun4 $ (baseAttrs uuid "01029") { assetSlots = [HandSlot, HandSlot] }
+
+instance HasModifiersFor env investigator Shotgun4 where
+  getModifiersFor _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator Shotgun4 where
   getActions i window (Shotgun4 Attrs {..})
@@ -53,13 +57,22 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
             (ChooseFightEnemy
               iid
               SkillCombat
-              [ ByPointsSucceededBy (Just (1, 5)) (DamageDealt 0)
-              , ByPointsFailedBy (Just (1, 5)) (DamageDealt 0)
-              , SkillModifier SkillCombat 3
-              ]
+              [SkillModifier SkillCombat 3]
               mempty
               False
             )
           pure $ Shotgun4 $ attrs & uses .~ Uses Resource.Ammo (n - 1)
         _ -> pure a
+    FailedSkillTest _ _ (AssetSource aid) SkillTestInitiatorTarget n
+      | aid == assetId
+      -> let val = min 1 (max 5 n)
+         in
+           a <$ unshiftMessage
+             (AddModifiers SkillTestTarget (AssetSource aid) [DamageDealt val])
+    PassedSkillTest _ _ (AssetSource aid) SkillTestInitiatorTarget n
+      | aid == assetId
+      -> let val = min 1 (max 5 n)
+         in
+           a <$ unshiftMessage
+             (AddModifiers SkillTestTarget (AssetSource aid) [DamageDealt val])
     _ -> Shotgun4 <$> runMessage msg attrs

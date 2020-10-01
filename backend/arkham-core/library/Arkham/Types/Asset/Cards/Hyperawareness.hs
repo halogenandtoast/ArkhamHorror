@@ -20,6 +20,9 @@ newtype Hyperawareness = Hyperawareness Attrs
 hyperawareness :: AssetId -> Hyperawareness
 hyperawareness uuid = Hyperawareness $ baseAttrs uuid "01034"
 
+instance HasModifiersFor env investigator Hyperawareness where
+  getModifiersFor _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator Hyperawareness where
   getActions i (Fast.WhenSkillTest SkillIntellect) (Hyperawareness Attrs {..})
     | Just (getId () i) == assetInvestigator = pure

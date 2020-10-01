@@ -21,6 +21,9 @@ newtype Scavenging = Scavenging Attrs
 scavenging :: AssetId -> Scavenging
 scavenging uuid = Scavenging $ baseAttrs uuid "01073"
 
+instance HasModifiersFor env investigator Scavenging where
+  getModifiersFor _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator Scavenging where
   getActions i (AfterPassSkillTest You n) (Scavenging Attrs {..})
     | Just (getId () i) == assetInvestigator && n >= 2 = pure

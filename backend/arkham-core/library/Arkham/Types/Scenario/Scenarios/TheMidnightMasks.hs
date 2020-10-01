@@ -200,14 +200,14 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
           xs -> do
             unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
             s <$ runTest iid (Token.TokenValue Token.Cultist (-2))
-    ResolveToken Token.Tablet iid
-      | scenarioDifficulty `elem` [Easy, Standard] -> do
-        unshiftMessage (AddOnFailure $ InvestigatorPlaceCluesOnLocation iid 1)
-        s <$ runTest iid (Token.TokenValue Token.Tablet (-3))
-    ResolveToken Token.Tablet iid | scenarioDifficulty `elem` [Hard, Expert] ->
-      do
-        unshiftMessage (AddOnFailure $ InvestigatorPlaceAllCluesOnLocation iid)
-        s <$ runTest iid (Token.TokenValue Token.Tablet (-4))
+    ResolveToken Token.Tablet iid -> do
+      if scenarioDifficulty `elem` [Easy, Standard]
+        then s <$ runTest iid (Token.TokenValue Token.Tablet (-3))
+        else s <$ runTest iid (Token.TokenValue Token.Tablet (-4))
+    FailedSkillTest iid _ _ (TokenTarget Token.Tablet) _ -> do
+      if scenarioDifficulty `elem` [Easy, Standard]
+        then s <$ unshiftMessage (InvestigatorPlaceAllCluesOnLocation iid)
+        else s <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid 1)
     NoResolution -> s <$ unshiftMessage (Resolution 1)
     Resolution 1 -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())

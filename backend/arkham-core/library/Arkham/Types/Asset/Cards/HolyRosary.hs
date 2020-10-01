@@ -6,12 +6,9 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.AssetId
 import Arkham.Types.Classes
-import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
-import Arkham.Types.Source
-import Arkham.Types.Target
 import ClassyPrelude
 
 newtype HolyRosary = HolyRosary Attrs
@@ -23,17 +20,15 @@ holyRosary uuid = HolyRosary $ (baseAttrs uuid "01059")
   , assetSanity = Just 2
   }
 
+instance IsInvestigator investigator => HasModifiersFor env investigator HolyRosary where
+  getModifiersFor i (HolyRosary Attrs {..}) =
+    pure
+      [ SkillModifier SkillWillpower 1
+      | Just (getId () i) == assetInvestigator
+      ]
+
 instance HasActions env investigator HolyRosary where
   getActions i window (HolyRosary x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env HolyRosary where
-  runMessage msg (HolyRosary attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      unshiftMessage
-        (AddModifiers
-          (InvestigatorTarget iid)
-          (AssetSource aid)
-          [SkillModifier SkillWillpower 1]
-        )
-      HolyRosary <$> runMessage msg attrs
-    _ -> HolyRosary <$> runMessage msg attrs
+  runMessage msg (HolyRosary attrs) = HolyRosary <$> runMessage msg attrs

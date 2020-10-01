@@ -23,6 +23,9 @@ discOfItzamna2 :: AssetId -> DiscOfItzamna2
 discOfItzamna2 uuid =
   DiscOfItzamna2 $ (baseAttrs uuid "01059") { assetSlots = [AccessorySlot] }
 
+instance HasModifiersFor env investigator DiscOfItzamna2 where
+  getModifiersFor _ _ = pure []
+
 instance ActionRunner env investigator => HasActions env investigator DiscOfItzamna2 where
   getActions i (WhenEnemySpawns YourLocation traits) (DiscOfItzamna2 Attrs {..})
     | Just (getId () i) == assetInvestigator = pure

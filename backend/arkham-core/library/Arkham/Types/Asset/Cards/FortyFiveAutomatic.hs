@@ -26,6 +26,9 @@ fortyFiveAutomatic :: AssetId -> FortyFiveAutomatic
 fortyFiveAutomatic uuid =
   FortyFiveAutomatic $ (baseAttrs uuid "01016") { assetSlots = [HandSlot] }
 
+instance HasModifiersFor env investigator FortyFiveAutomatic where
+  getModifiersFor _ _ = pure []
+
 instance (ActionRunner env investigator) => HasActions env investigator FortyFiveAutomatic where
   getActions i window (FortyFiveAutomatic Attrs {..})
     | Just (getId () i) == assetInvestigator = do

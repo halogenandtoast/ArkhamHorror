@@ -26,6 +26,13 @@ victoriaDevereux uuid = VictoriaDevereux $ (baseAttrs uuid "01140")
   , enemyEvade = 2
   }
 
+instance HasModifiersFor env investigator VictoriaDevereux where
+  getModifiersFor _ _ = pure []
+
+instance HasModifiers env VictoriaDevereux where
+  getModifiers (VictoriaDevereux Attrs {..}) =
+    pure . concat . toList $ enemyModifiers
+
 instance (IsInvestigator investigator) => HasActions env investigator VictoriaDevereux where
   getActions i NonFast (VictoriaDevereux attrs@Attrs {..}) = do
     baseActions <- getActions i NonFast attrs

@@ -162,6 +162,30 @@ runTest iid tokenValue@(TokenValue token value) = do
       <> [RunSkillTest iid tokenValue]
       )
 
+class HasModifiers1 env f where
+  getModifiers1 :: (MonadIO m, MonadReader env m) => f p -> m [Modifier]
+
+instance HasModifiers1 env f => HasModifiers1 env (M1 i c f) where
+  getModifiers1 (M1 x) = getModifiers1 x
+
+instance (HasModifiers1 env l, HasModifiers1 env r) => HasModifiers1 env (l :+: r) where
+  getModifiers1 (L1 x) = getModifiers1 x
+  getModifiers1 (R1 x) = getModifiers1 x
+
+instance (HasModifiers env p) => HasModifiers1 env (K1 R p) where
+  getModifiers1 (K1 x) = getModifiers x
+
+defaultGetModifiers
+  :: (Generic a, HasModifiers1 env (Rep a), MonadIO m, MonadReader env m)
+  => a
+  -> m [Modifier]
+defaultGetModifiers = getModifiers1 . from
+
+class HasModifiers env a where
+  getModifiers :: (MonadReader env m, MonadIO m) => a -> m [Modifier]
+  default getModifiers :: (Generic a, HasModifiers1 env (Rep a), MonadIO m, MonadReader env m) => a -> m [Modifier]
+  getModifiers = defaultGetModifiers
+
 class HasSet c b a where
   getSet :: b -> a -> HashSet c
 
@@ -191,9 +215,6 @@ class HasKeywords a where
 
 class HasAbilities a where
   getAbilities :: a -> [Ability]
-
-class HasModifiers a where
-  getModifiers :: a -> [Modifier]
 
 class HasVictoryPoints a where
   getVictoryPoints :: a -> Maybe Int
@@ -231,6 +252,7 @@ type ActionRunner env investigator
     , HasCount HorrorCount InvestigatorId env
     , HasQueue env
     , HasSet ExhaustedAssetId InvestigatorId env
+    , HasModifiersFor env InvestigatorId env
     )
 
 class HasActions1 env investigator f where
@@ -263,6 +285,35 @@ class HasActions env investigator a where
   default getActions :: (Generic a, HasActions1 env investigator (Rep a), MonadIO m, MonadReader env m) => investigator -> Window -> a -> m [Message]
   getActions = defaultGetActions
 
+class HasModifiersFor1 env investigator f where
+  getModifiersFor1 :: (MonadIO m, MonadReader env m) => investigator -> f p -> m [Modifier]
+
+instance HasModifiersFor1 env investigator f => HasModifiersFor1 env investigator (M1 i c f) where
+  getModifiersFor1 investigator (M1 x) = getModifiersFor1 investigator x
+
+instance (HasModifiersFor1 env investigator l, HasModifiersFor1 env investigator r) => HasModifiersFor1 env investigator (l :+: r) where
+  getModifiersFor1 investigator (L1 x) = getModifiersFor1 investigator x
+  getModifiersFor1 investigator (R1 x) = getModifiersFor1 investigator x
+
+instance (HasModifiersFor env investigator p) => HasModifiersFor1 env investigator (K1 R p) where
+  getModifiersFor1 investigator (K1 x) = getModifiersFor investigator x
+
+defaultGetModifiersFor
+  :: ( Generic a
+     , HasModifiersFor1 env investigator (Rep a)
+     , MonadIO m
+     , MonadReader env m
+     )
+  => investigator
+  -> a
+  -> m [Modifier]
+defaultGetModifiersFor investigator = getModifiersFor1 investigator . from
+
+class HasModifiersFor env investigator a where
+  getModifiersFor :: (MonadReader env m, MonadIO m) => investigator -> a -> m [Modifier]
+  default getModifiersFor :: (Generic a, HasModifiersFor1 env investigator (Rep a), MonadIO m, MonadReader env m) => investigator -> a -> m [Modifier]
+  getModifiersFor = defaultGetModifiersFor
+
 class (HasId LocationId () location) => IsLocation location where
   isBlocked :: location -> Bool
 
@@ -280,7 +331,6 @@ class Exhaustable a where
   isReady = not . isExhausted
   {-# MINIMAL isExhausted | isReady #-}
 
-
 class (HasId InvestigatorId () investigator) => IsInvestigator investigator where
   locationOf :: investigator -> LocationId
   canInvestigate :: (IsLocation location) => location -> investigator -> Bool
@@ -288,6 +338,8 @@ class (HasId InvestigatorId () investigator) => IsInvestigator investigator wher
   canFight :: (IsEnemy enemy) => enemy -> investigator -> Bool
   canEngage :: (IsEnemy enemy) => enemy -> investigator -> Bool
   canEvade :: (IsEnemy enemy) => enemy -> investigator -> Bool
+  remainingSanity :: investigator -> Int
+  remainingHealth :: investigator -> Int
   resourceCount :: investigator -> Int
   clueCount :: investigator -> Int
   spendableClueCount :: investigator -> Int

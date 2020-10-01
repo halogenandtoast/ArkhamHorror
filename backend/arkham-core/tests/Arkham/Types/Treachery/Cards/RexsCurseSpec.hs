@@ -5,6 +5,7 @@ where
 
 import TestImport
 
+import Arkham.Types.Target
 import Arkham.Types.Token
 
 spec :: Spec
@@ -49,7 +50,13 @@ spec = describe "Rex's Curse" $ do
                         game
                         (PlayerCard rexsCurse)
     game `shouldSatisfy` hasProcessedMessage
-      (PassedSkillTest (getId () investigator) Nothing TestSource 2)
+      (PassedSkillTest
+        (getId () investigator)
+        Nothing
+        TestSource
+        SkillTestInitiatorTarget
+        2
+      )
   it "is shuffled back into your deck if you fail the test" $ do
     investigator <- testInvestigator "00000" id
     rexsCurse <- buildPlayerCard "02009"

@@ -26,6 +26,13 @@ peterWarren uuid = PeterWarren $ (baseAttrs uuid "01139")
   , enemyEvade = 3
   }
 
+instance HasModifiersFor env investigator PeterWarren where
+  getModifiersFor _ _ = pure []
+
+instance HasModifiers env PeterWarren where
+  getModifiers (PeterWarren Attrs {..}) =
+    pure . concat . toList $ enemyModifiers
+
 instance (IsInvestigator investigator) => HasActions env investigator PeterWarren where
   getActions i NonFast (PeterWarren attrs@Attrs {..}) = do
     baseActions <- getActions i NonFast attrs

@@ -121,7 +121,7 @@ instance (AssetRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     ReadyExhausted -> case assetInvestigator of
       Just iid -> do
-        modifiers <- asks (getList iid)
+        modifiers <- getModifiers iid
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
           else pure $ a & exhausted .~ False
@@ -151,7 +151,7 @@ instance (AssetRunner env) => RunMessage env Attrs where
     Exhaust target | target `is` a -> pure $ a & exhausted .~ True
     Ready target | target `is` a -> case assetInvestigator of
       Just iid -> do
-        modifiers <- asks (getList iid)
+        modifiers <- getModifiers iid
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
           else pure $ a & exhausted .~ False

@@ -26,4 +26,5 @@ type GameRunner env
     , HasList DeckCard (InvestigatorId, Trait) env
     , HasId (Maybe OwnerId) AssetId env
     , HasSet EventId LocationId env
+    , HasModifiersFor env InvestigatorId env
     )

@@ -29,7 +29,7 @@ instance (TreacheryRunner env) => RunMessage env RexsCurse where
     Revelation iid tid | tid == treacheryId -> do
       unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
       RexsCurse <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
-    Will (PassedSkillTest iid _ _ _)
+    Will (PassedSkillTest iid _ _ SkillTestInitiatorTarget _)
       | Just iid == treacheryAttachedInvestigator -> do
         let
           ability = (mkAbility (TreacherySource treacheryId) 0 ForcedAbility)
@@ -50,10 +50,10 @@ instance (TreacheryRunner env) => RunMessage env RexsCurse where
           unshiftMessages
             [ ActivateCardAbilityAction iid ability
             , ReturnSkillTestRevealedTokens
-            , AddOnFailure (NotifyOnFailure iid (TreacheryTarget treacheryId))
+            , AddSkillTestSubscriber (TreacheryTarget treacheryId)
             , DrawAnotherToken iid 0
             ]
         pure t
-    SkillTestDidFailBy iid (TreacheryTarget tid) _ | tid == treacheryId -> do
+    FailedSkillTest iid _ _ (TreacheryTarget tid) _ | tid == treacheryId -> do
       t <$ unshiftMessage (ShuffleIntoDeck iid (TreacheryTarget treacheryId))
     _ -> RexsCurse <$> runMessage msg attrs

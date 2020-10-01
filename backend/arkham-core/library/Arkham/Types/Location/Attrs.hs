@@ -169,10 +169,13 @@ investigateAllowed Attrs {..} = not
   isCannotInvestigate _ = False
 
 canEnterLocation
-  :: (LocationRunner env, MonadReader env m) => EnemyId -> LocationId -> m Bool
+  :: (LocationRunner env, MonadReader env m, MonadIO m)
+  => EnemyId
+  -> LocationId
+  -> m Bool
 canEnterLocation eid lid = do
   traits <- asks (getSet eid)
-  modifiers' <- asks (getList lid)
+  modifiers' <- getModifiers lid
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
@@ -300,7 +303,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
               (getSet lid)
           availableLocationIds <-
             flip filterM connectedLocationIds $ \locationId' -> do
-              modifiers' <- asks (getList locationId')
+              modifiers' <- getModifiers locationId'
               pure . not $ flip any modifiers' $ \case
                 SpawnNonEliteAtConnectingInstead{} -> True
                 _ -> False

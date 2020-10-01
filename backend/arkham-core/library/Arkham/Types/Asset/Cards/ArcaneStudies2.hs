@@ -20,6 +20,9 @@ newtype ArcaneStudies2 = ArcaneStudies2 Attrs
 arcaneStudies2 :: AssetId -> ArcaneStudies2
 arcaneStudies2 uuid = ArcaneStudies2 $ baseAttrs uuid "50007"
 
+instance HasModifiersFor env investigator ArcaneStudies2 where
+  getModifiersFor _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator ArcaneStudies2 where
   getActions i (Fast.WhenSkillTest SkillWillpower) (ArcaneStudies2 Attrs {..})
     | Just (getId () i) == assetInvestigator = pure

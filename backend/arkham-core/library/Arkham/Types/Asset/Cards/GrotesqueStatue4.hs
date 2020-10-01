@@ -30,6 +30,9 @@ grotesqueStatue4 :: AssetId -> GrotesqueStatue4
 grotesqueStatue4 uuid =
   GrotesqueStatue4 $ (baseAttrs uuid "01070") { assetSlots = [HandSlot] }
 
+instance HasModifiersFor env investigator GrotesqueStatue4 where
+  getModifiersFor _ _ = pure []
+
 instance (ActionRunner env investigator) => HasActions env investigator GrotesqueStatue4 where
   getActions i window (GrotesqueStatue4 Attrs {..})
     | Just (getId () i) == assetInvestigator = do

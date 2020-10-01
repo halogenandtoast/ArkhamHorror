@@ -25,6 +25,9 @@ newtype FirstAid = FirstAid Attrs
 firstAid :: AssetId -> FirstAid
 firstAid uuid = FirstAid $ baseAttrs uuid "01019"
 
+instance HasModifiersFor env investigator FirstAid where
+  getModifiersFor _ _ = pure []
+
 instance (ActionRunner env investigator) => HasActions env investigator FirstAid where
   getActions i window (FirstAid Attrs {..})
     | Just (getId () i) == assetInvestigator = do

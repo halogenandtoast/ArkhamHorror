@@ -26,6 +26,13 @@ relentlessDarkYoung uuid = RelentlessDarkYoung $ (baseAttrs uuid "01179")
   , enemyPrey = LowestSkill SkillAgility
   }
 
+instance HasModifiersFor env investigator RelentlessDarkYoung where
+  getModifiersFor _ _ = pure []
+
+instance HasModifiers env RelentlessDarkYoung where
+  getModifiers (RelentlessDarkYoung Attrs {..}) =
+    pure . concat . toList $ enemyModifiers
+
 instance (IsInvestigator investigator) => HasActions env investigator RelentlessDarkYoung where
   getActions i window (RelentlessDarkYoung attrs) = getActions i window attrs
 

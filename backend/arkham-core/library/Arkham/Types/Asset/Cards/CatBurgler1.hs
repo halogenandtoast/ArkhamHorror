@@ -30,6 +30,10 @@ catBurgler1 uuid = CatBurgler1 $ (baseAttrs uuid "01055")
   , assetSanity = Just 2
   }
 
+instance IsInvestigator investigator => HasModifiersFor env investigator CatBurgler1 where
+  getModifiersFor i (CatBurgler1 Attrs {..}) = pure
+    [ SkillModifier SkillAgility 1 | Just (getId () i) == assetInvestigator ]
+
 instance IsInvestigator investigator => HasActions env investigator CatBurgler1 where
   getActions i NonFast (CatBurgler1 Attrs {..})
     | Just (getId () i) == assetInvestigator = pure

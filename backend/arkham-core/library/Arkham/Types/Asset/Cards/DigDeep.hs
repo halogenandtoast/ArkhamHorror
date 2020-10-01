@@ -20,6 +20,9 @@ newtype DigDeep = DigDeep Attrs
 digDeep :: AssetId -> DigDeep
 digDeep uuid = DigDeep $ baseAttrs uuid "01077"
 
+instance HasModifiersFor env investigator DigDeep where
+  getModifiersFor _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator DigDeep where
   getActions i (Fast.WhenSkillTest SkillWillpower) (DigDeep Attrs {..})
     | Just (getId () i) == assetInvestigator = pure

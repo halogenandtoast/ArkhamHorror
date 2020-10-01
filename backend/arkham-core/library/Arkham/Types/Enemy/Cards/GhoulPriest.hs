@@ -24,6 +24,13 @@ ghoulPriest uuid = GhoulPriest $ (baseAttrs uuid "01116")
   , enemyPrey = HighestSkill SkillCombat
   }
 
+instance HasModifiersFor env investigator GhoulPriest where
+  getModifiersFor _ _ = pure []
+
+instance HasModifiers env GhoulPriest where
+  getModifiers (GhoulPriest Attrs {..}) =
+    pure . concat . toList $ enemyModifiers
+
 instance (IsInvestigator investigator) => HasActions env investigator GhoulPriest where
   getActions i window (GhoulPriest attrs) = getActions i window attrs
 

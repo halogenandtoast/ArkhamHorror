@@ -1,3 +1,4 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE RankNTypes #-}
 module TestImport
   ( module X
@@ -69,6 +70,11 @@ buildEvent :: MonadIO m => CardCode -> Investigator -> m Event
 buildEvent cardCode investigator = do
   eventId <- liftIO $ EventId <$> nextRandom
   pure $ lookupEvent cardCode (getId () investigator) eventId
+
+buildEnemy :: MonadIO m => CardCode -> m Enemy
+buildEnemy cardCode = do
+  enemyId <- liftIO $ EnemyId <$> nextRandom
+  pure $ lookupEnemy cardCode enemyId
 
 buildAsset :: MonadIO m => CardCode -> m Asset
 buildAsset cardCode = do
@@ -185,7 +191,10 @@ getActionsOf
   -> a
   -> m [Message]
 getActionsOf game investigator window e =
-  toInternalGame game >>= runReaderT (getActions investigator window e)
+  withGame game (getActions investigator window e)
+
+withGame :: MonadIO m => GameExternal -> ReaderT GameInternal m b -> m b
+withGame game f = toInternalGame game >>= runReaderT f
 
 runGameTestOnlyOption
   :: (MonadFail m, MonadIO m) => String -> Game [Message] -> m (Game [Message])

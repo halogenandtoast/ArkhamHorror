@@ -25,6 +25,13 @@ theNecronomicon :: AssetId -> TheNecronomicon
 theNecronomicon uuid = TheNecronomicon
   $ (baseAttrs uuid "01009") { assetSlots = [HandSlot], assetHorror = Just 3 }
 
+instance IsInvestigator investigator => HasModifiersFor env investigator TheNecronomicon where
+  getModifiersFor i (TheNecronomicon Attrs {..}) = pure
+    [ ForcedTokenChange Token.ElderSign Token.AutoFail
+    | Just (getId () i) == assetInvestigator
+    ]
+
+
 instance (IsInvestigator investigator) => HasActions env investigator TheNecronomicon where
   getActions i NonFast (TheNecronomicon Attrs {..})
     | Just (getId () i) == assetInvestigator = pure
@@ -37,14 +44,6 @@ instance (IsInvestigator investigator) => HasActions env investigator TheNecrono
 
 instance (AssetRunner env) => RunMessage env TheNecronomicon where
   runMessage msg a@(TheNecronomicon attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      unshiftMessage
-        (AddModifiers
-          (InvestigatorTarget iid)
-          (AssetSource aid)
-          [ForcedTokenChange Token.ElderSign Token.AutoFail]
-        )
-      TheNecronomicon <$> runMessage msg attrs
     UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
       unshiftMessage $ InvestigatorDamage iid (AssetSource aid) 0 1
       if fromJustNote "Must be set" assetHorror == 1

@@ -21,6 +21,13 @@ ghoulMinion uuid = GhoulMinion $ (baseAttrs uuid "01160")
   , enemyEvade = 2
   }
 
+instance HasModifiersFor env investigator GhoulMinion where
+  getModifiersFor _ _ = pure []
+
+instance HasModifiers env GhoulMinion where
+  getModifiers (GhoulMinion Attrs {..}) =
+    pure . concat . toList $ enemyModifiers
+
 instance (IsInvestigator investigator) => HasActions env investigator GhoulMinion where
   getActions i window (GhoulMinion attrs) = getActions i window attrs
 

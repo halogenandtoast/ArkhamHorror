@@ -19,6 +19,9 @@ newtype Pickpocketing = Pickpocketing Attrs
 pickpoketing :: AssetId -> Pickpocketing
 pickpoketing uuid = Pickpocketing $ baseAttrs uuid "01046"
 
+instance HasModifiersFor env investigator Pickpocketing where
+  getModifiersFor _ _ = pure []
+
 instance (ActionRunner env investigator) => HasActions env investigator Pickpocketing where
   getActions i window@(WhenEnemyEvaded You) (Pickpocketing attrs@Attrs {..})
     | getId () i `elem` assetInvestigator = do

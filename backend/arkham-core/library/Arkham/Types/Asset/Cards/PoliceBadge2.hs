@@ -21,7 +21,15 @@ newtype PoliceBadge2 = PoliceBadge2 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 policeBadge2 :: AssetId -> PoliceBadge2
-policeBadge2 uuid = PoliceBadge2 $ (baseAttrs uuid "01027") { assetSlots = [AccessorySlot] }
+policeBadge2 uuid =
+  PoliceBadge2 $ (baseAttrs uuid "01027") { assetSlots = [AccessorySlot] }
+
+instance IsInvestigator investigator => HasModifiersFor env investigator PoliceBadge2 where
+  getModifiersFor i (PoliceBadge2 Attrs {..}) =
+    pure
+      [ SkillModifier SkillWillpower 1
+      | Just (getId () i) == assetInvestigator
+      ]
 
 instance (ActionRunner env investigator) => HasActions env investigator PoliceBadge2 where
   getActions i (DuringTurn InvestigatorAtYourLocation) (PoliceBadge2 Attrs {..})
@@ -29,24 +37,12 @@ instance (ActionRunner env investigator) => HasActions env investigator PoliceBa
       pure
         [ ActivateCardAbilityAction
             (getId () i)
-            (mkAbility
-              (AssetSource assetId)
-              1
-              (ActionAbility 1 Nothing)
-            )
+            (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
         ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env PoliceBadge2 where
   runMessage msg a@(PoliceBadge2 attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      unshiftMessage
-        (AddModifiers
-          (InvestigatorTarget iid)
-          (AssetSource aid)
-          [SkillModifier SkillWillpower 1]
-        )
-      PoliceBadge2 <$> runMessage msg attrs
     UseCardAbility _ _ (AssetSource aid) _ 1 | aid == assetId -> do
       activeInvestigatorId <- unActiveInvestigatorId <$> asks (getId ())
       a <$ unshiftMessages

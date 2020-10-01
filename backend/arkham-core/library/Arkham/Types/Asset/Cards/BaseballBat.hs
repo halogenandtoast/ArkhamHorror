@@ -27,6 +27,9 @@ baseballBat :: AssetId -> BaseballBat
 baseballBat uuid =
   BaseballBat $ (baseAttrs uuid "01074") { assetSlots = [HandSlot, HandSlot] }
 
+instance HasModifiersFor env investigator BaseballBat where
+  getModifiersFor _ _ = pure []
+
 instance (ActionRunner env investigator) => HasActions env investigator BaseballBat where
   getActions i window (BaseballBat Attrs {..})
     | Just (getId () i) == assetInvestigator = do

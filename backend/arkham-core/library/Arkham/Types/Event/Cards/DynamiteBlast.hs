@@ -39,7 +39,10 @@ instance (EventRunner env) => RunMessage env DynamiteBlast where
           <> map
                (\iid' -> InvestigatorAssignDamage iid' (EventSource eid) 3 0)
                investigatorIds
+      let availableChoices = filter (not . null) choices
       unshiftMessages
-        [Ask iid $ ChooseOne $ map Run choices, Discard (EventTarget eid)]
+        [ Ask iid $ ChooseOne $ map Run availableChoices
+        , Discard (EventTarget eid)
+        ]
       DynamiteBlast <$> runMessage msg (attrs & resolved .~ True)
     _ -> DynamiteBlast <$> runMessage msg attrs

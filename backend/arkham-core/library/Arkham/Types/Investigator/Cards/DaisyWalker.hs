@@ -10,6 +10,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Stats
 import Arkham.Types.Token
 import Arkham.Types.Trait
@@ -82,18 +83,17 @@ instance (InvestigatorRunner Attrs env) => RunMessage env DaisyWalker where
           (concat . HashMap.elems $ investigatorModifiers)
         then i <$ unshiftMessage (ResolveToken AutoFail iid)
         else do
-          tomeCount <- unAssetCount <$> asks (getCount (iid, [Tome]))
-          runTest investigatorId (TokenValue ElderSign 0) -- Because this unshifts we need to call this before the on success is added
-          when (tomeCount > 0) $ unshiftMessage
-            (AddOnSuccess
-              (Ask iid
-              $ ChooseOne
-                  [ DrawCards iid tomeCount False
-                  , Continue "Do not use Daisy's ability"
-                  ]
-              )
-            )
-          pure i
+          i <$ runTest investigatorId (TokenValue ElderSign 0)
+    PassedSkillTest iid _ _ (TokenTarget ElderSign) _ | iid == investigatorId -> do
+      tomeCount <- unAssetCount <$> asks (getCount (iid, [Tome]))
+      when (tomeCount > 0) $ unshiftMessage
+        (Ask iid
+          $ ChooseOne
+              [ DrawCards iid tomeCount False
+              , Continue "Do not use Daisy's ability"
+              ]
+        )
+      pure i
     BeginRound -> DaisyWalker
       <$> runMessage msg (attrs { investigatorTomeActions = Just 1 })
     _ -> DaisyWalker <$> runMessage msg attrs

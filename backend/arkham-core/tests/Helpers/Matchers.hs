@@ -17,7 +17,6 @@ import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.Location
 import Arkham.Types.Message
-import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Treachery
@@ -81,13 +80,6 @@ instance Entity Enemy where
 instance Entity Investigator where
   toTarget = InvestigatorTarget . getId ()
   updated g a = g ^?! investigators . ix (getId () a)
-
-hasModifier :: (Entity a) => Game queue -> Modifier -> a -> Bool
-hasModifier game modifier a = modifier `elem` modifiers
- where
-  modifiers = case toTarget a of
-    LocationTarget locId -> game ^. locations . ix locId . to getModifiers
-    _ -> []
 
 isAttachedTo :: (Entity a, Entity b) => Game queue -> a -> b -> Bool
 isAttachedTo game x y = case toTarget x of

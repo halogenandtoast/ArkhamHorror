@@ -23,6 +23,12 @@ magnifyingGlass1 :: AssetId -> MagnifyingGlass1
 magnifyingGlass1 uuid =
   MagnifyingGlass1 $ (baseAttrs uuid "01040") { assetSlots = [HandSlot] }
 
+instance IsInvestigator investigator => HasModifiersFor env investigator MagnifyingGlass1 where
+  getModifiersFor i (MagnifyingGlass1 Attrs {..}) = pure
+    [ ActionSkillModifier Action.Investigate SkillIntellect 1
+    | Just (getId () i) == assetInvestigator
+    ]
+
 instance (ActionRunner env investigator) => HasActions env investigator MagnifyingGlass1 where
   getActions i _ (MagnifyingGlass1 Attrs {..})
     | Just (getId () i) == assetInvestigator = do
@@ -39,13 +45,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Magnifyi
   getActions i window (MagnifyingGlass1 x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env MagnifyingGlass1 where
-  runMessage msg (MagnifyingGlass1 attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      unshiftMessage
-        (AddModifiers
-          (InvestigatorTarget iid)
-          (AssetSource aid)
-          [ActionSkillModifier Action.Investigate SkillIntellect 1]
-        )
-      MagnifyingGlass1 <$> runMessage msg attrs
+  runMessage msg a@(MagnifyingGlass1 attrs@Attrs {..}) = case msg of
+    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
+      a <$ unshiftMessage (ReturnToHand iid (AssetTarget assetId))
     _ -> MagnifyingGlass1 <$> runMessage msg attrs

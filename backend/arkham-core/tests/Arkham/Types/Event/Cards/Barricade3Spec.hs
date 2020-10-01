@@ -22,9 +22,10 @@ spec = do
               [moveTo investigator location, playEvent investigator barricade3]
             $ (events %~ insertEntity barricade3)
             . (locations %~ insertEntity location)
-          location `shouldSatisfy` hasModifier game CannotBeEnteredByNonElite
-          location
-            `shouldSatisfy` hasModifier game SpawnNonEliteAtConnectingInstead
+          withGame game (getModifiers $ getId @LocationId () location)
+            `shouldReturn` [ CannotBeEnteredByNonElite
+                           , SpawnNonEliteAtConnectingInstead
+                           ]
           barricade3 `shouldSatisfy` isAttachedTo game location
 
     it "should be discarded if an investigator leaves the location" $ do
@@ -42,9 +43,7 @@ spec = do
         $ (events %~ insertEntity barricade3)
         . (locations %~ insertEntity location)
         . (investigators %~ insertEntity investigator2)
-      location `shouldSatisfy` not . hasModifier game CannotBeEnteredByNonElite
-      location
-        `shouldSatisfy` not
-        . hasModifier game SpawnNonEliteAtConnectingInstead
+      withGame game (getModifiers $ getId @LocationId () location)
+        `shouldReturn` []
       barricade3 `shouldSatisfy` not . isAttachedTo game location
       barricade3 `shouldSatisfy` isInDiscardOf game investigator

@@ -4,6 +4,7 @@ module Arkham.Types.Target
 where
 
 import Arkham.Types.ActId
+import Arkham.Types.Token
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
 import Arkham.Types.Card.CardCode
@@ -33,5 +34,7 @@ data Target
   | EventTarget EventId
   | SkillTarget SkillId
   | EnemyJustEvadedTarget
+  | SkillTestInitiatorTarget
+  | TokenTarget Token
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

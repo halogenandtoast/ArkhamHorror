@@ -25,7 +25,6 @@ instance HasActions env investigator LookWhatIFound where
 instance (EventRunner env) => RunMessage env LookWhatIFound where
   runMessage msg (LookWhatIFound attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid | eid == eventId -> do
-      lid <- asks (getId iid)
       unshiftMessages
         [ InvestigatorDiscoverCluesAtTheirLocation iid 2
         , Discard (EventTarget eid)

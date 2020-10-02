@@ -197,6 +197,7 @@ data Message
   | DiscoverCluesAtLocation InvestigatorId LocationId Int
   | PlaceClues Target Int
   | InvestigatorDiscoverClues InvestigatorId LocationId Int
+  | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int
   | DiscoverClues InvestigatorId LocationId Int
   | AfterDiscoverClues InvestigatorId LocationId Int
   | BeginSkillTest InvestigatorId Source (Maybe Action) SkillType Int [Message]

@@ -27,6 +27,8 @@ instance (EventRunner env) => RunMessage env LookWhatIFound where
     InvestigatorPlayEvent iid eid | eid == eventId -> do
       lid <- asks (getId iid)
       unshiftMessages
-        [InvestigatorDiscoverClues iid lid 2, Discard (EventTarget eid)]
+        [ InvestigatorDiscoverCluesAtTheirLocation iid 2
+        , Discard (EventTarget eid)
+        ]
       LookWhatIFound <$> runMessage msg (attrs & resolved .~ True)
     _ -> LookWhatIFound <$> runMessage msg attrs

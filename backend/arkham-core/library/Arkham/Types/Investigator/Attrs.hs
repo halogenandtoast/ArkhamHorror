@@ -852,6 +852,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           overrides
           False
         ]
+    InvestigatorDiscoverCluesAtTheirLocation iid n | iid == investigatorId ->
+      runMessage (InvestigatorDiscoverClues iid investigatorLocation n) a
     InvestigatorDiscoverClues iid lid n | iid == investigatorId ->
       if canDiscoverClues a
         then

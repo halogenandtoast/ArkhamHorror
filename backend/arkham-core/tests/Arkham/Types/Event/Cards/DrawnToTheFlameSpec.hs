@@ -46,3 +46,4 @@ spec = describe "Drawn to the flame" $ do
           >>= runGameTestFirstOption "apply horror/damage"
           >>= runGameTestOnlyOption "move to central location"
         updated game investigator `shouldSatisfy` hasClueCount 2
+        drawnToTheFlame `shouldSatisfy` isInDiscardOf game investigator

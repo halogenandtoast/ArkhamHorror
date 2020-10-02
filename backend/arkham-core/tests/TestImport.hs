@@ -94,6 +94,11 @@ buildPlayerCard cardCode = do
   cardId <- CardId <$> liftIO nextRandom
   pure $ lookupPlayerCard cardCode cardId
 
+buildEncounterCard :: MonadIO m => CardCode -> m EncounterCard
+buildEncounterCard cardCode = do
+  cardId <- CardId <$> liftIO nextRandom
+  pure $ lookupEncounterCard cardCode cardId
+
 buildTestEnemyEncounterCard :: MonadIO m => m EncounterCard
 buildTestEnemyEncounterCard = do
   cardId <- CardId <$> liftIO nextRandom

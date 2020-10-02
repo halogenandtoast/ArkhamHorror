@@ -46,6 +46,7 @@ instance (ScenarioRunner env) => RunMessage env BaseScenario where
       a <$ runTest iid (Token.TokenValue Token.Tablet (-1))
     ResolveToken Token.ElderThing iid ->
       a <$ runTest iid (Token.TokenValue Token.ElderThing (-1))
+    NoResolution -> pure a
     _ -> BaseScenario <$> runMessage msg attrs
 
 baseScenario

@@ -78,3 +78,23 @@ spec = describe "Smite the Wicked" $ do
 
     updated game' investigator `shouldSatisfy` hasTrauma (0, 0)
     smiteTheWicked `shouldSatisfy` isInDiscardOf game' investigator
+
+  it "will cause trauma if player is eliminated" $ do
+    investigator <- testInvestigator "00000" id
+    smiteTheWicked <- buildPlayerCard "02007"
+    enemy <- buildTestEnemyEncounterCard
+    location <- testLocation "00000" id
+    scenario' <- testScenario "00000" id
+    game <-
+      runGameTest
+          investigator
+          [ PlacedLocation (getId () location)
+          , SetEncounterDeck [enemy]
+          , loadDeck investigator [smiteTheWicked]
+          , drawCards investigator 1
+          , Resign (getId () investigator)
+          ]
+          ((locations %~ insertEntity location) . (scenario ?~ scenario'))
+        >>= runGameTestOnlyOption "place enemy"
+
+    updated game investigator `shouldSatisfy` hasTrauma (0, 1)

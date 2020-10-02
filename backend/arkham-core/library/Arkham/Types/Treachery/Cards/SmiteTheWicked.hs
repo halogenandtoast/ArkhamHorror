@@ -48,6 +48,9 @@ instance (TreacheryRunner env) => RunMessage env SmiteTheWicked where
           ownerId
           (ChooseOne [ EnemySpawn lid eid | lid <- farthestLocations ])
         ]
+    InvestigatorEliminated iid | treacheryOwner == Just iid -> do
+      runMessage EndOfGame t >>= \case
+        SmiteTheWicked attrs' -> SmiteTheWicked <$> runMessage msg attrs'
     EndOfGame ->
       let investigator = fromJustNote "missing investigator" treacheryOwner
       in t <$ unshiftMessage (SufferTrauma investigator 0 1)

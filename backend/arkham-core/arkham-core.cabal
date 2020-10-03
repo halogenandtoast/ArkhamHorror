@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c1e59a9ec8b342e3c9e68a0ef3c63ca1a6b13db8917e494b04d31acc57363ffa
+-- hash: bc599b8b436eebc12e1eee28f452ad692259a1cf2a982fbe84715c4d6b7f7f71
 
 name:           arkham-core
 version:        0.0.0
@@ -124,6 +124,7 @@ library
       Arkham.Types.Card.Id
       Arkham.Types.Card.PlayerCard
       Arkham.Types.ChaosBag
+      Arkham.Types.ChaosBagStepState
       Arkham.Types.Classes
       Arkham.Types.Classes.HasRecord
       Arkham.Types.ClassSymbol
@@ -381,6 +382,7 @@ test-suite spec
   main-is: Spec.hs
   other-modules:
       Arkham.Types.Asset.Cards.DukeSpec
+      Arkham.Types.Asset.Cards.GrotesqueStatue4Spec
       Arkham.Types.Asset.Cards.JennysTwin45sSpec
       Arkham.Types.Asset.Cards.JimsTrumpetSpec
       Arkham.Types.Asset.Cards.ZoeysCrossSpec

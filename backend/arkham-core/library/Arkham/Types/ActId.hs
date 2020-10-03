@@ -1,6 +1,6 @@
 module Arkham.Types.ActId where
 
-import Arkham.Types.Card
+import Arkham.Types.Card.CardCode
 import ClassyPrelude
 import Data.Aeson
 

@@ -1257,9 +1257,6 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
                 )
               )
       pure a
-    InvestigatorStartSkillTest iid | iid == investigatorId ->
-      a <$ unshiftMessages
-        [CheckWindow iid [WhenWouldRevealChaosToken You], TriggerSkillTest iid]
     CheckWindow iid windows | iid == investigatorId -> do
       actions <- fmap concat <$> for windows $ \window -> do
         join (asks (getActions a window))

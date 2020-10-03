@@ -40,7 +40,7 @@ instance FromJSON Ability where
 
 newtype UsedAbility = UsedAbility { unUsedAbility :: (InvestigatorId, Ability) }
 
-data AbilityMetadata = IntMetadata Int | TargetMetadata Target
+data AbilityMetadata = IntMetadata Int | TargetMetadata Target | SourceMetadata Source
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

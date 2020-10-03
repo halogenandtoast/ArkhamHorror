@@ -2,6 +2,7 @@ module Arkham.Types.Window where
 
 import Arkham.Types.EnemyId
 import Arkham.Types.SkillType
+import Arkham.Types.Source
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import ClassyPrelude
@@ -30,7 +31,7 @@ data Window
   | WhenRevealToken Who Token
   | WhenSkillTest SkillType
   | WhenWouldFailSkillTest Who
-  | WhenWouldRevealChaosToken Who
+  | WhenWouldRevealChaosToken Source Who
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

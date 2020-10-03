@@ -26,6 +26,7 @@ import Arkham.Types.TokenResponse
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
+import qualified Data.List as L
 import Lens.Micro
 import System.Environment
 
@@ -37,6 +38,7 @@ data SkillTest a = SkillTest
   , skillTestOnFailure       :: [a]
   , skillTestOnTokenResponses :: [TokenResponse a]
   , skillTestSetAsideTokens  :: [Token]
+  , skillTestRevealedTokens  :: [Token] -- tokens may change from physical representation
   , skillTestValueModifier :: Int
   , skillTestResult :: SkillTestResult
   , skillTestSkillValue :: Int
@@ -91,6 +93,7 @@ initSkillTest iid source maction skillType' skillValue' difficulty' onSuccess' o
     , skillTestOnFailure = onFailure'
     , skillTestOnTokenResponses = tokenResponses'
     , skillTestSetAsideTokens = mempty
+    , skillTestRevealedTokens = mempty
     , skillTestValueModifier = 0
     , skillTestResult = Unrun
     , skillTestSkillValue = skillValue'
@@ -119,6 +122,10 @@ valueModifier =
 setAsideTokens :: Lens' (SkillTest a) [Token]
 setAsideTokens =
   lens skillTestSetAsideTokens $ \m x -> m { skillTestSetAsideTokens = x }
+
+revealedTokens :: Lens' (SkillTest a) [Token]
+revealedTokens =
+  lens skillTestRevealedTokens $ \m x -> m { skillTestRevealedTokens = x }
 
 committedCards :: Lens' (SkillTest a) (HashMap CardId (InvestigatorId, Card))
 committedCards =
@@ -182,23 +189,30 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       unshiftMessage (RequestTokens SkillTestSource iid 1 SetAside)
       pure $ s & valueModifier +~ valueModifier'
     RequestedTokens SkillTestSource iid tokens -> do
+      unshiftMessage (RevealSkillTestTokens iid)
       for_ tokens $ \token -> unshiftMessages
-        [ When (DrawToken iid token)
-        , DrawToken iid token
-        , ResolveToken token iid
+        [ When (RevealToken SkillTestSource iid token)
+        , RevealToken SkillTestSource iid token
         ]
-      pure s
-    AddSkillTestSubscriber target -> pure $ s & subscribers %~ (target :)
-    DrawToken _ token -> do
+      pure $ s & (setAsideTokens %~ (tokens <>))
+    RevealToken SkillTestSource _iid token -> do
+      pure $ s & revealedTokens %~ (token :)
+    RevealSkillTestTokens iid -> do
       onTokenResponses' <-
         (catMaybes <$>) . for skillTestOnTokenResponses $ \case
-          OnAnyToken tokens messages | token `elem` tokens ->
-            Nothing <$ unshiftMessages messages
+          OnAnyToken tokens' messages
+            | not (null $ skillTestRevealedTokens `L.intersect` tokens')
+            -> Nothing <$ unshiftMessages messages
           response -> pure (Just response)
+      unshiftMessages
+        [ ResolveToken token iid | token <- skillTestRevealedTokens ]
       pure
         $ s
-        & (setAsideTokens %~ (token :))
         & (onTokenResponses .~ onTokenResponses')
+        & (subscribers
+          %~ (<> [ TokenTarget token' | token' <- skillTestRevealedTokens ])
+          )
+    AddSkillTestSubscriber target -> pure $ s & subscribers %~ (target :)
     SetAsideToken token -> pure $ s & (setAsideTokens %~ (token :))
     PassSkillTest -> do
       unshiftMessages
@@ -216,7 +230,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       (HashMap.foldMapWithKey
           (\k (i, _) -> [CommitCard i k])
           skillTestCommittedCards
-      <> [InvestigatorStartSkillTest skillTestInvestigator]
+      <> [TriggerSkillTest skillTestInvestigator]
       )
     InvestigatorCommittedSkill _ skillId -> do
       pure $ s & subscribers %~ (SkillTarget skillId :)

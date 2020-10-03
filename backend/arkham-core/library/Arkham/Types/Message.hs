@@ -21,6 +21,7 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.CampaignStep
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
+import Arkham.Types.ChaosBagStepState
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
@@ -205,7 +206,6 @@ data Message
   | BeginSkillTestAfterFast InvestigatorId Source (Maybe Action) SkillType Int [Message]
                 [Message] [Modifier] [TokenResponse Message]
   | StartSkillTest InvestigatorId
-  | InvestigatorStartSkillTest InvestigatorId
   | BeforeSkillTest InvestigatorId SkillType
   | TriggerSkillTest InvestigatorId
   | RunSkillTest InvestigatorId TokenValue
@@ -232,6 +232,8 @@ data Message
   | SetAsideToken Token
   | SkillTestEnds
   | ReturnSkillTestRevealedTokens
+  | RevealToken Source InvestigatorId Token
+  | RevealSkillTestTokens InvestigatorId
   | DrawToken InvestigatorId Token
   | EmptyDeck InvestigatorId
   | DrawCards InvestigatorId Int Bool
@@ -348,7 +350,12 @@ data Message
   | ResetTokens
   | ReturnTokens [Token]
   | RequestTokens Source InvestigatorId Int RequestedTokenStrategy
+  | RunBag Source InvestigatorId RequestedTokenStrategy
+  | RunDrawFromBag Source InvestigatorId RequestedTokenStrategy
   | RequestedTokens Source InvestigatorId [Token]
+  | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep
+  | ChooseTokenGroups Source InvestigatorId ChaosBagStep
+  | NextChaosBagStep Source InvestigatorId RequestedTokenStrategy
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

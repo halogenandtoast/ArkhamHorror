@@ -154,9 +154,7 @@ runTest iid tokenValue@(TokenValue token value) = do
     else unshiftMessages
       ([ CheckWindow
            iid'
-           [ Window.WhenRevealTokenWithNegativeModifier who
-           , Window.WhenRevealToken who token
-           ]
+           [ Window.WhenRevealToken who token ]
        | (iid', who) <- windowPairings
        ]
       <> [RunSkillTest iid tokenValue]

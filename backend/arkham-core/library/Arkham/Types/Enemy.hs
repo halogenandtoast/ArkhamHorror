@@ -114,6 +114,12 @@ instance HasVictoryPoints Enemy where
 instance HasCount DoomCount () Enemy where
   getCount _ = DoomCount . enemyDoom . enemyAttrs
 
+instance HasCount HealthDamageCount () Enemy where
+  getCount _ = HealthDamageCount . enemyHealthDamage . enemyAttrs
+
+instance HasCount SanityDamageCount () Enemy where
+  getCount _ = SanityDamageCount . enemySanityDamage . enemyAttrs
+
 instance HasId LocationId () Enemy where
   getId _ = enemyLocation . enemyAttrs
 

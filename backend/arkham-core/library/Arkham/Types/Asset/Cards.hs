@@ -3,6 +3,7 @@ module Arkham.Types.Asset.Cards
   )
 where
 
+import Arkham.Types.Asset.Cards.Aquinnah1 as X
 import Arkham.Types.Asset.Cards.ArcaneInitiate as X
 import Arkham.Types.Asset.Cards.ArcaneStudies as X
 import Arkham.Types.Asset.Cards.ArcaneStudies2 as X

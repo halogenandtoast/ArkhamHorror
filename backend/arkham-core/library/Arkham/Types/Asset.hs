@@ -73,6 +73,7 @@ data Asset
   | RabbitsFoot' RabbitsFoot
   | StrayCat' StrayCat
   | DigDeep' DigDeep
+  | Aquinnah1' Aquinnah1
   | Knife' Knife
   | Flashlight' Flashlight
   | BulletproofVest3' BulletproofVest3
@@ -190,6 +191,7 @@ allAssets = mapFromList
   , ("01075", RabbitsFoot' . rabbitsFoot)
   , ("01076", StrayCat' . strayCat)
   , ("01077", DigDeep' . digDeep)
+  , ("01082", Aquinnah1' . aquinnah1)
   , ("01086", Knife' . knife)
   , ("01087", Flashlight' . flashlight)
   , ("01094", BulletproofVest3' . bulletproofVest3)
@@ -268,6 +270,7 @@ assetAttrs = \case
   RabbitsFoot' attrs -> coerce attrs
   StrayCat' attrs -> coerce attrs
   DigDeep' attrs -> coerce attrs
+  Aquinnah1' attrs -> coerce attrs
   Knife' attrs -> coerce attrs
   Flashlight' attrs -> coerce attrs
   BulletproofVest3' attrs -> coerce attrs

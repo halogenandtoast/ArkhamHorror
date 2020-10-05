@@ -220,6 +220,7 @@ allPlayerCards = HashMap.fromList
   , ("01079", lookWhatIFound)
   , ("01080", lucky)
   , ("01081", survivalInstinct)
+  , ("01082", aquinnah1)
   , ("01086", knife)
   , ("01087", flashlight)
   , ("01088", emergencyCache)
@@ -765,9 +766,15 @@ lucky cardId = (event cardId "01080" "Lucky!" 1 Survivor)
 
 survivalInstinct :: CardId -> PlayerCard
 survivalInstinct cardId =
-  (skill cardId "01080" "Survival Instrinct" [SkillAgility] Survivor)
+  (skill cardId "01081" "Survival Instrinct" [SkillAgility] Survivor)
     { pcTraits = [Innate]
     }
+
+aquinnah1 :: CardId -> PlayerCard
+aquinnah1 cardId = (asset cardId "01082" "Aquinnah" 5 Survivor)
+  { pcSkills = [SkillWillpower]
+  , pcTraits = [Ally]
+  }
 
 knife :: CardId -> PlayerCard
 knife cardId = (asset cardId "01086" "Knife" 1 Neutral)

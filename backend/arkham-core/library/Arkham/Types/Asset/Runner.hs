@@ -28,4 +28,6 @@ type AssetRunner env
     , HasSet AssetId InvestigatorId env
     , HasCount HorrorCount InvestigatorId env
     , HasModifiers env InvestigatorId
+    , HasCount SanityDamageCount EnemyId env
+    , HasCount HealthDamageCount EnemyId env
     )

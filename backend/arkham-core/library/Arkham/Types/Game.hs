@@ -378,6 +378,12 @@ instance HasId LocationId InvestigatorId (Game queue) where
 instance HasId LocationId EnemyId (Game queue) where
   getId eid = getId () . getEnemy eid
 
+instance HasCount SanityDamageCount EnemyId GameInternal where
+  getCount eid = getCount () . getEnemy eid
+
+instance HasCount HealthDamageCount EnemyId GameInternal where
+  getCount eid = getCount () . getEnemy eid
+
 instance HasCount HorrorCount InvestigatorId GameInternal where
   getCount iid = HorrorCount . snd . getDamage . getInvestigator iid
 

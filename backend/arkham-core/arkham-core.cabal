@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 44e5dd3768a569c0355a1328deacfbf8c23f6a36f3c8fa43783995f030214d8f
+-- hash: 57495f2b8f53188955022b2bae41f613b7e7742b9823f7e5daef26ca4815201d
 
 name:           arkham-core
 version:        0.0.0
@@ -43,6 +43,7 @@ library
       Arkham.Types.Asset
       Arkham.Types.Asset.Attrs
       Arkham.Types.Asset.Cards
+      Arkham.Types.Asset.Cards.Aquinnah1
       Arkham.Types.Asset.Cards.ArcaneInitiate
       Arkham.Types.Asset.Cards.ArcaneStudies
       Arkham.Types.Asset.Cards.ArcaneStudies2
@@ -383,6 +384,7 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Arkham.Types.Asset.Cards.Aquinnah1Spec
       Arkham.Types.Asset.Cards.DukeSpec
       Arkham.Types.Asset.Cards.GrotesqueStatue4Spec
       Arkham.Types.Asset.Cards.JennysTwin45sSpec

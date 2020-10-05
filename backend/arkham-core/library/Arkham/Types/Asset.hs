@@ -75,6 +75,8 @@ data Asset
   | DigDeep' DigDeep
   | Knife' Knife
   | Flashlight' Flashlight
+  | BulletproofVest3' BulletproofVest3
+  | ElderSignAmulet3' ElderSignAmulet3
   | LitaChantler' LitaChantler
   | ZoeysCross' ZoeysCross
   | JennysTwin45s' JennysTwin45s
@@ -190,6 +192,8 @@ allAssets = mapFromList
   , ("01077", DigDeep' . digDeep)
   , ("01086", Knife' . knife)
   , ("01087", Flashlight' . flashlight)
+  , ("01094", BulletproofVest3' . bulletproofVest3)
+  , ("01095", ElderSignAmulet3' . elderSignAmulet3)
   , ("01117", LitaChantler' . litaChantler)
   , ("02006", ZoeysCross' . zoeysCross)
   , ("02010", JennysTwin45s' . jennysTwin45s)
@@ -266,6 +270,8 @@ assetAttrs = \case
   DigDeep' attrs -> coerce attrs
   Knife' attrs -> coerce attrs
   Flashlight' attrs -> coerce attrs
+  BulletproofVest3' attrs -> coerce attrs
+  ElderSignAmulet3' attrs -> coerce attrs
   LitaChantler' attrs -> coerce attrs
   ZoeysCross' attrs -> coerce attrs
   JennysTwin45s' attrs -> coerce attrs

@@ -228,6 +228,8 @@ allPlayerCards = HashMap.fromList
   , ("01091", overpower)
   , ("01092", manualDexterity)
   , ("01093", unexpectedCourage)
+  , ("01094", bulletproofVest3)
+  , ("01095", elderSignAmulet3)
   , ("01096", amnesia)
   , ("01097", paranoia)
   , ("01098", haunted)
@@ -818,6 +820,20 @@ unexpectedCourage cardId =
     , pcCommitRestrictions = [MaxOnePerTest]
     }
 
+bulletproofVest3 :: CardId -> PlayerCard
+bulletproofVest3 cardId = (asset cardId "01094" "Bulletproof Vest" 2 Neutral)
+  { pcSkills = [SkillCombat, SkillWild]
+  , pcTraits = [Item, Armor]
+  , pcLevel = 3
+  }
+
+elderSignAmulet3 :: CardId -> PlayerCard
+elderSignAmulet3 cardId = (asset cardId "01095" "Elder Sign Amulet" 2 Neutral)
+  { pcSkills = [SkillWillpower, SkillWild]
+  , pcTraits = [Item, Relic]
+  , pcLevel = 3
+  }
+
 amnesia :: CardId -> PlayerCard
 amnesia cardId = (treachery cardId "01096" "Amnesia" 0)
   { pcTraits = [Madness]
@@ -922,10 +938,11 @@ duke cardId =
   (asset cardId "02014" "Duke" 2 Neutral) { pcTraits = [Ally, Creature] }
 
 wrackedByNightmares :: CardId -> PlayerCard
-wrackedByNightmares cardId = (treachery cardId "02015" "Wracked by Nightmares" 0)
-  { pcTraits = [Madness]
-  , pcRevelation = True
-  }
+wrackedByNightmares cardId =
+  (treachery cardId "02015" "Wracked by Nightmares" 0)
+    { pcTraits = [Madness]
+    , pcRevelation = True
+    }
 
 bandolier :: CardId -> PlayerCard
 bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)

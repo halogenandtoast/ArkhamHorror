@@ -11,6 +11,7 @@ import Arkham.Types.Asset.Cards.BaseballBat as X
 import Arkham.Types.Asset.Cards.BeatCop as X
 import Arkham.Types.Asset.Cards.BeatCop2 as X
 import Arkham.Types.Asset.Cards.BookOfShadows3 as X
+import Arkham.Types.Asset.Cards.BulletproofVest3 as X
 import Arkham.Types.Asset.Cards.Burglary as X
 import Arkham.Types.Asset.Cards.CatBurgler1 as X
 import Arkham.Types.Asset.Cards.DaisysToteBag as X
@@ -19,6 +20,7 @@ import Arkham.Types.Asset.Cards.DigDeep2 as X
 import Arkham.Types.Asset.Cards.DiscOfItzamna2 as X
 import Arkham.Types.Asset.Cards.DrMilanChristopher as X
 import Arkham.Types.Asset.Cards.Duke as X
+import Arkham.Types.Asset.Cards.ElderSignAmulet3 as X
 import Arkham.Types.Asset.Cards.Encyclopedia2 as X
 import Arkham.Types.Asset.Cards.FirstAid as X
 import Arkham.Types.Asset.Cards.Flashlight as X

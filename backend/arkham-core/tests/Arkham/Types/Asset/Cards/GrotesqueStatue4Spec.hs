@@ -47,3 +47,4 @@ spec = describe "Grotesque Statue (4)" $ do
           SkillTestInitiatorTarget
           5
         )
+      chaosBagTokensOf game `shouldMatchList` [Zero, AutoFail]

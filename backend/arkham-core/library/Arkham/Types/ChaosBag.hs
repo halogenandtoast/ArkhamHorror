@@ -1,6 +1,7 @@
 module Arkham.Types.ChaosBag
   ( ChaosBag
   , emptyChaosBag
+  , chaosBagTokensLens
   )
 where
 
@@ -94,7 +95,7 @@ resolveFirstUnresolved source iid strategy = \case
     Draw -> do
       bagTokens <- gets chaosBagTokens
       (drawn, remaining) <- splitAt 1 <$> liftIO (shuffleM bagTokens)
-      modify' (tokens .~ remaining)
+      modify' ((tokens .~ remaining) . (setAsideTokens %~ (drawn <>)))
       pure (Resolved drawn, [])
     Choose n steps tokens' -> if length tokens' == n
       then pure (Resolved $ concat tokens', [])
@@ -210,6 +211,9 @@ emptyChaosBag = ChaosBag
 tokens :: Lens' ChaosBag [Token]
 tokens = lens chaosBagTokens $ \m x -> m { chaosBagTokens = x }
 
+chaosBagTokensLens :: Lens' ChaosBag [Token]
+chaosBagTokensLens = tokens
+
 setAsideTokens :: Lens' ChaosBag [Token]
 setAsideTokens =
   lens chaosBagSetAsideTokens $ \m x -> m { chaosBagSetAsideTokens = x }
@@ -225,7 +229,7 @@ instance HasQueue env => RunMessage env ChaosBag where
   runMessage msg c@ChaosBag {..} = case msg of
     SetTokens tokens' ->
       pure $ c & tokens .~ tokens' & setAsideTokens .~ mempty
-    ResetTokens ->
+    ResetTokens _source ->
       pure
         $ c
         & tokens

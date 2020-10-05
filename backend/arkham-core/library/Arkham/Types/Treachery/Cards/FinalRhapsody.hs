@@ -40,7 +40,7 @@ instance (TreacheryRunner env) => RunMessage env FinalRhapsody where
           (TreacherySource treacheryId)
           damageCount
           damageCount
-        , ResetTokens
+        , ResetTokens (TreacherySource treacheryId)
         , Discard (TreacheryTarget treacheryId)
         ]
     _ -> FinalRhapsody <$> runMessage msg attrs

@@ -16,6 +16,7 @@ import Arkham.Types.Card as X
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard (basePlayerCard)
 import Arkham.Types.ChaosBag as X
+import qualified Arkham.Types.ChaosBag as ChaosBag
 import Arkham.Types.Classes as X
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Difficulty
@@ -42,6 +43,7 @@ import Arkham.Types.ScenarioId as X
 import Arkham.Types.SkillType as X
 import Arkham.Types.Source as X
 import Arkham.Types.Stats as X
+import Arkham.Types.Token
 import Arkham.Types.Window
 import ClassyPrelude as X
 import Control.Monad.Fail as X
@@ -197,6 +199,9 @@ getActionsOf
   -> m [Message]
 getActionsOf game investigator window e =
   withGame game (getActions investigator window e)
+
+chaosBagTokensOf :: Game queue -> [Token]
+chaosBagTokensOf g = g ^. chaosBag . ChaosBag.chaosBagTokensLens
 
 withGame :: MonadIO m => GameExternal -> ReaderT GameInternal m b -> m b
 withGame game f = toInternalGame game >>= runReaderT f

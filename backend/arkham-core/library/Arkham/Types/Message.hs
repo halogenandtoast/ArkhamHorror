@@ -347,7 +347,7 @@ data Message
   | Blanked Message
   | DrawAnotherToken InvestigatorId Int
   | SetTokens [Token]
-  | ResetTokens
+  | ResetTokens Source
   | ReturnTokens [Token]
   | RequestTokens Source InvestigatorId Int RequestedTokenStrategy
   | RunBag Source InvestigatorId RequestedTokenStrategy

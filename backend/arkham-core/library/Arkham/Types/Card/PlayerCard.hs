@@ -221,6 +221,7 @@ allPlayerCards = HashMap.fromList
   , ("01080", lucky)
   , ("01081", survivalInstinct)
   , ("01082", aquinnah1)
+  , ("01083", closeCall2)
   , ("01086", knife)
   , ("01087", flashlight)
   , ("01088", emergencyCache)
@@ -774,6 +775,14 @@ aquinnah1 :: CardId -> PlayerCard
 aquinnah1 cardId = (asset cardId "01082" "Aquinnah" 5 Survivor)
   { pcSkills = [SkillWillpower]
   , pcTraits = [Ally]
+  }
+
+closeCall2 :: CardId -> PlayerCard
+closeCall2 cardId = (event cardId "01083" "Close Call" 2 Survivor)
+  { pcSkills = [SkillCombat, SkillAgility]
+  , pcTraits = [Fortune]
+  , pcFast = True
+  , pcWindows = HashSet.fromList [AfterEnemyEvaded You (error "does not work")]
   }
 
 knife :: CardId -> PlayerCard

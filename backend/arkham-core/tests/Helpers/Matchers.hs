@@ -13,7 +13,6 @@ import Arkham.Types.EnemyId
 import Arkham.Types.Event
 import Arkham.Types.EventId
 import Arkham.Types.Game
-import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.Location
 import Arkham.Types.Message
@@ -133,7 +132,7 @@ handMatches :: ([Card] -> Bool) -> Investigator -> Bool
 handMatches f i = f (handOf i)
 
 deckMatches :: ([PlayerCard] -> Bool) -> Investigator -> Bool
-deckMatches f i = f (unDeck $ deckOf i)
+deckMatches f i = f (deckOf i)
 
 hasProcessedMessage :: Message -> Game [Message] -> Bool
 hasProcessedMessage m g = m `elem` gameMessageHistory g

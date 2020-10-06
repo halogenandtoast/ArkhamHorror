@@ -638,7 +638,7 @@ instance HasList DeckCard (InvestigatorId, Trait) (Game queue) where
   getList (iid, trait) g =
     let
       investigator = getInvestigator iid g
-      deck = unDeck $ deckOf investigator
+      deck = deckOf investigator
     in map DeckCard $ filter ((trait `elem`) . pcTraits) deck
 
 instance HasSet BlockedLocationId () (Game queue) where

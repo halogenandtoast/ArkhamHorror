@@ -152,9 +152,7 @@ runTest iid tokenValue@(TokenValue token value) = do
       <> [When (RunSkillTest iid tokenValue), RunSkillTest iid tokenValue]
       )
     else unshiftMessages
-      ([ CheckWindow
-           iid'
-           [ Window.WhenRevealToken who token ]
+      ([ CheckWindow iid' [Window.WhenRevealToken who token]
        | (iid', who) <- windowPairings
        ]
       <> [RunSkillTest iid tokenValue]
@@ -347,3 +345,5 @@ class (HasId InvestigatorId () investigator) => IsInvestigator investigator wher
   hasActionsRemaining :: investigator -> Maybe Action -> HashSet Trait -> Bool
   canTakeDirectDamage :: investigator -> Bool
   discardOf :: investigator -> [PlayerCard]
+  handOf :: investigator -> [Card]
+  deckOf :: investigator -> [PlayerCard]

@@ -8,6 +8,11 @@ export interface PlayerCardContents {
   cardCode: string;
 }
 
+export interface PlayerCardContentsWrapper {
+  tag: string;
+  contents: PlayerCardContents;
+}
+
 export interface EncounterCardContents {
   id: string;
   name: string;
@@ -30,7 +35,15 @@ export const playerCardContentsDecoder = JsonDecoder.object<PlayerCardContents>(
     name: JsonDecoder.string,
     cardCode: JsonDecoder.string,
   },
-  'PlayerCard',
+  'PlayerCardContents',
+);
+
+export const playerCardContentsWrapperDecoder = JsonDecoder.object<PlayerCardContentsWrapper>(
+  {
+    tag: JsonDecoder.string,
+    contents: playerCardContentsDecoder,
+  },
+  'PlayerCardContentsWrapper',
 );
 
 export const encounterCardContentsDecoder = JsonDecoder.object<EncounterCardContents>(
@@ -45,7 +58,7 @@ export const encounterCardContentsDecoder = JsonDecoder.object<EncounterCardCont
 export const playerCardDecoder = JsonDecoder.object<PlayerCard>(
   {
     tag: JsonDecoder.isExactly('PlayerCard'),
-    contents: playerCardContentsDecoder,
+    contents: playerCardContentsWrapperDecoder.map((result) => result.contents),
   },
   'PlayerCard',
 );

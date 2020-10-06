@@ -8,6 +8,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard.Attrs
 import Arkham.Types.Card.PlayerCard.Cards
 import Arkham.Types.Card.PlayerCard.Type
+import Arkham.Types.Classes.RunMessage
 import Arkham.Types.ClassSymbol
 import ClassyPrelude
 import Data.Coerce
@@ -136,6 +137,8 @@ data PlayerCard
   | RabbitsFoot3' RabbitsFoot3
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
+
+deriving anyclass instance (HasQueue env) => RunMessage env PlayerCard
 
 instance HasCardCode PlayerCard where
   getCardCode = pcCardCode . playerCardAttrs
@@ -281,6 +284,10 @@ allPlayerCards = HashMap.fromList
 
 newtype PlaceholderAsset = PlaceholderAsset Attrs
   deriving newtype (Show, ToJSON, FromJSON)
+
+instance (HasQueue env) => RunMessage env PlaceholderAsset where
+  runMessage msg (PlaceholderAsset attrs) =
+    PlaceholderAsset <$> runMessage msg attrs
 
 basePlayerCard
   :: CardId

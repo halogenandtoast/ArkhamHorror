@@ -20,6 +20,7 @@ import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard.Type
+import Arkham.Types.Classes.RunMessage
 import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
 import Arkham.Types.Keyword
@@ -115,3 +116,5 @@ enemy cardId cardCode name cost =
     { pcWeakness = True
     }
 
+instance (HasQueue env) => RunMessage env Attrs where
+  runMessage _ attrs = pure attrs

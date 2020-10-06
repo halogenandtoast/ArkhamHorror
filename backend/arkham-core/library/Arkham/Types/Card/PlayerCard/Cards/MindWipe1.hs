@@ -5,6 +5,7 @@ import ClassyPrelude
 import Arkham.Json
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard.Attrs
+import Arkham.Types.Classes.RunMessage
 import Arkham.Types.ClassSymbol
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
@@ -12,6 +13,9 @@ import Arkham.Types.Window
 
 newtype MindWipe1 = MindWipe1 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
+
+instance (HasQueue env) => RunMessage env MindWipe1 where
+  runMessage msg (MindWipe1 attrs) = MindWipe1 <$> runMessage msg attrs
 
 mindWipe1 :: CardId -> MindWipe1
 mindWipe1 cardId = MindWipe1 $ (event cardId "01068" "Mind Wipe" 1 Mystic)

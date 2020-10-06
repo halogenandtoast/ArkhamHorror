@@ -5,12 +5,17 @@ import ClassyPrelude
 import Arkham.Json
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard.Attrs
+import Arkham.Types.Classes.RunMessage
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Trait
 import Arkham.Types.Window
 
 newtype CrypticResearch4 = CrypticResearch4 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
+
+instance (HasQueue env) => RunMessage env CrypticResearch4 where
+  runMessage msg (CrypticResearch4 attrs) =
+    CrypticResearch4 <$> runMessage msg attrs
 
 crypticResearch4 :: CardId -> CrypticResearch4
 crypticResearch4 cardId = CrypticResearch4

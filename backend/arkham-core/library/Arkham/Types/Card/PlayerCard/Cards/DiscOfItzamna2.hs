@@ -5,12 +5,17 @@ import ClassyPrelude
 import Arkham.Json
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard.Attrs
+import Arkham.Types.Classes.RunMessage
 import Arkham.Types.ClassSymbol
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 
 newtype DiscOfItzamna2 = DiscOfItzamna2 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
+
+instance (HasQueue env) => RunMessage env DiscOfItzamna2 where
+  runMessage msg (DiscOfItzamna2 attrs) =
+    DiscOfItzamna2 <$> runMessage msg attrs
 
 discOfItzamna2 :: CardId -> DiscOfItzamna2
 discOfItzamna2 cardId = DiscOfItzamna2

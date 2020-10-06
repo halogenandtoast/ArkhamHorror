@@ -11,8 +11,6 @@ module Arkham.Types.Investigator
   , isDefeated
   , actionsRemaining
   , lookupInvestigator
-  , handOf
-  , deckOf
   , availableSkillsFor
   , skillValueOf
   , GetInvestigatorId(..)
@@ -149,6 +147,8 @@ instance IsInvestigator Investigator where
   hasActionsRemaining i = hasActionsRemaining (investigatorAttrs i)
   canTakeDirectDamage = canTakeDirectDamage . investigatorAttrs
   discardOf = discardOf . investigatorAttrs
+  handOf = handOf . investigatorAttrs
+  deckOf = deckOf . investigatorAttrs
   remainingHealth = remainingHealth . investigatorAttrs
   remainingSanity = remainingSanity . investigatorAttrs
 
@@ -329,12 +329,6 @@ isPrey FewestCards env i =
   fromMaybe 100 (minimumMay . map unCardCount . toList $ getSet () env)
     == unCardCount (getCount () i)
 isPrey SetToBearer _ _ = error "The bearer was not correctly set"
-
-handOf :: Investigator -> [Card]
-handOf = view hand . investigatorAttrs
-
-deckOf :: Investigator -> Deck PlayerCard
-deckOf = view deck . investigatorAttrs
 
 availableSkillsFor :: Investigator -> SkillType -> [SkillType]
 availableSkillsFor i s = possibleSkillTypeChoices s (investigatorAttrs i)

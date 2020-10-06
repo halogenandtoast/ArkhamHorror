@@ -32,7 +32,6 @@ spec = do
           , chooseEndTurn investigator
           ]
           id
-        >>= runGameTestOnlyOption "end of turn effect"
         >>= runGameTestOnlyOption "assign first horror"
         >>= runGameTestOnlyOption "assign second horror"
       updated game investigator `shouldSatisfy` hasDamage (0, 2)

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: de6b3bb1a7fab08f3f5d401182669fcfe3bd5567a06a2ff7837ae11fa1b1960f
+-- hash: f79bf82427c603de6bfdb3e4d6662082466856f7feef767a58769e9958151699
 
 name:           arkham-core
 version:        0.0.0
@@ -123,9 +123,9 @@ library
       Arkham.Types.Card.Class
       Arkham.Types.Card.Cost
       Arkham.Types.Card.EncounterCard
-      Arkham.Types.Card.Forced
       Arkham.Types.Card.Id
       Arkham.Types.Card.PlayerCard
+      Arkham.Types.Card.PlayerCardWithBehavior
       Arkham.Types.ChaosBag
       Arkham.Types.ChaosBagStepState
       Arkham.Types.Classes
@@ -390,7 +390,6 @@ test-suite spec
       Arkham.Types.Asset.Cards.JennysTwin45sSpec
       Arkham.Types.Asset.Cards.JimsTrumpetSpec
       Arkham.Types.Asset.Cards.ZoeysCrossSpec
-      Arkham.Types.Card.PlayerCard.Cards.DarkMemorySpec
       Arkham.Types.Enemy.Cards.TheMaskedHunterSpec
       Arkham.Types.Event.Cards.BackstabSpec
       Arkham.Types.Event.Cards.Barricade3Spec

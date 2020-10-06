@@ -44,6 +44,7 @@ data Event
   | LookWhatIFound' LookWhatIFound
   | Lucky' Lucky
   | CloseCall2' CloseCall2
+  | Lucky2' Lucky2
   | EmergencyCache' EmergencyCache
   | SearchForTheTruth' SearchForTheTruth
   | DynamiteBlast2' DynamiteBlast2
@@ -92,6 +93,7 @@ allEvents = mapFromList
   , ("01079", (LookWhatIFound' .) . lookWhatIFound)
   , ("01080", (Lucky' .) . lucky)
   , ("01083", (CloseCall2' .) . closeCall2)
+  , ("01084", (Lucky2' .) . lucky2)
   , ("01088", (EmergencyCache' .) . emergencyCache)
   , ("02008", (SearchForTheTruth' .) . searchForTheTruth)
   , ("50002", (DynamiteBlast2' .) . dynamiteBlast2)
@@ -129,6 +131,7 @@ eventAttrs = \case
   LookWhatIFound' attrs -> coerce attrs
   Lucky' attrs -> coerce attrs
   CloseCall2' attrs -> coerce attrs
+  Lucky2' attrs -> coerce attrs
   EmergencyCache' attrs -> coerce attrs
   SearchForTheTruth' attrs -> coerce attrs
   DynamiteBlast2' attrs -> coerce attrs

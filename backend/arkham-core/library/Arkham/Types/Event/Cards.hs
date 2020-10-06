@@ -4,11 +4,11 @@ module Arkham.Types.Event.Cards
 where
 
 import Arkham.Types.Event.Cards.Backstab as X
-import Arkham.Types.Event.Cards.CloseCall2 as X
 import Arkham.Types.Event.Cards.Barricade as X
 import Arkham.Types.Event.Cards.Barricade3 as X
 import Arkham.Types.Event.Cards.BlindingLight as X
 import Arkham.Types.Event.Cards.BlindingLight2 as X
+import Arkham.Types.Event.Cards.CloseCall2 as X
 import Arkham.Types.Event.Cards.CrypticResearch4 as X
 import Arkham.Types.Event.Cards.CunningDistraction as X
 import Arkham.Types.Event.Cards.DarkMemory as X
@@ -24,6 +24,7 @@ import Arkham.Types.Event.Cards.HotStreak2 as X
 import Arkham.Types.Event.Cards.HotStreak4 as X
 import Arkham.Types.Event.Cards.LookWhatIFound as X
 import Arkham.Types.Event.Cards.Lucky as X
+import Arkham.Types.Event.Cards.Lucky2 as X
 import Arkham.Types.Event.Cards.MindOverMatter as X
 import Arkham.Types.Event.Cards.MindWipe1 as X
 import Arkham.Types.Event.Cards.MindWipe3 as X

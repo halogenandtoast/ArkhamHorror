@@ -222,6 +222,7 @@ allPlayerCards = HashMap.fromList
   , ("01081", survivalInstinct)
   , ("01082", aquinnah1)
   , ("01083", closeCall2)
+  , ("01084", lucky2)
   , ("01086", knife)
   , ("01087", flashlight)
   , ("01088", emergencyCache)
@@ -775,6 +776,7 @@ aquinnah1 :: CardId -> PlayerCard
 aquinnah1 cardId = (asset cardId "01082" "Aquinnah" 5 Survivor)
   { pcSkills = [SkillWillpower]
   , pcTraits = [Ally]
+  , pcLevel = 1
   }
 
 closeCall2 :: CardId -> PlayerCard
@@ -783,6 +785,15 @@ closeCall2 cardId = (event cardId "01083" "Close Call" 2 Survivor)
   , pcTraits = [Fortune]
   , pcFast = True
   , pcWindows = mempty -- We handle this via behavior
+  , pcLevel = 2
+  }
+
+lucky2 :: CardId -> PlayerCard
+lucky2 cardId = (event cardId "01084" "Lucky!" 1 Survivor)
+  { pcTraits = [Fortune]
+  , pcFast = True
+  , pcWindows = setFromList [WhenWouldFailSkillTest You]
+  , pcLevel = 2
   }
 
 knife :: CardId -> PlayerCard

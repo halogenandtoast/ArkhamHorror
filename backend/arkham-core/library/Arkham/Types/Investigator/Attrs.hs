@@ -2,6 +2,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Attrs where
 
+import Control.Monad.Fail
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.Action (Action)
@@ -14,6 +15,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
+import Arkham.Types.Card.PlayerCardWithBehavior
 import Arkham.Types.EnemyId
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Runner
@@ -508,7 +510,21 @@ instance HasActions env investigator Attrs where
   getActions _ _ _ = pure []
 
 instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
-  runMessage msg a@Attrs {..} = case msg of
+  runMessage msg i = do
+    forOf_ (hand . traverse . _PlayerCard) i $ \pc ->
+      runMessage msg (toPlayerCardWithBehavior pc)
+    runInvestigatorMessage msg i
+
+_PlayerCard :: Traversal' Card PlayerCard
+_PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
+_PlayerCard _ (EncounterCard ec) = pure (EncounterCard ec)
+
+runInvestigatorMessage
+  :: (InvestigatorRunner Attrs env, MonadReader env m, MonadIO m, MonadFail m)
+  => Message
+  -> Attrs
+  -> m Attrs
+runInvestigatorMessage msg a@Attrs {..} = case msg of
     ResetGame -> pure $ (baseAttrs
                           investigatorId
                           investigatorName

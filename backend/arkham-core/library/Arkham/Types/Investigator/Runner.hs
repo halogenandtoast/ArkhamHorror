@@ -45,4 +45,5 @@ type InvestigatorRunner investigator env
     , HasSet InvestigatorId () env
     , HasSet ExhaustedAssetId InvestigatorId env
     , HasModifiersFor env InvestigatorId env
+    , HasSet HandCardId InvestigatorId env
     )

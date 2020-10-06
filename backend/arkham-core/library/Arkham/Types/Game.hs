@@ -37,7 +37,6 @@ import Arkham.Types.Campaign
 import Arkham.Types.CampaignId
 import Arkham.Types.Card
 import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.Forced
 import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBag
 import Arkham.Types.Classes
@@ -507,6 +506,9 @@ instance HasList Enemy () (Game queue) where
 
 instance HasList Ability () (Game queue) where
   getList _ g = g ^. agendas . traverse . to getAbilities
+
+instance HasSet HandCardId InvestigatorId (Game queue) where
+  getSet iid = setFromList . map (HandCardId . getCardId) . handOf . getInvestigator iid
 
 instance HasSet Trait LocationId (Game queue) where
   getSet lid = getTraits . getLocation lid
@@ -1491,16 +1493,7 @@ runGameMessage msg g = case msg of
       ]
     pure g
   ChooseEndTurn iid -> do
-    effects <- filter (not . null)
-      <$> traverse (inHandAtEndOfRound iid) (handOf $ getInvestigator iid g)
-    unshiftMessage (EndTurn iid)
-    g <$ unless
-      (null effects)
-      (unshiftMessage
-        (Ask iid $ ChooseOneAtATime
-          [ if null xs then x else Run (x : xs) | (x : xs) <- effects ]
-        )
-      )
+    g <$ unshiftMessage (EndTurn iid)
   EndTurn iid -> pure $ g & usedAbilities %~ filter
     (\(iid', Ability {..}) -> iid' /= iid && abilityLimit /= PerTurn)
   EndInvestigation -> do

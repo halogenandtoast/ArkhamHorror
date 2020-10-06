@@ -172,8 +172,8 @@ data Message
   | EnemyDefeated EnemyId InvestigatorId CardCode Source
   | Damage Target Source Int
   | AddToVictory Target
-  | PlayCard InvestigatorId CardId Bool
-  | PlayDynamicCard InvestigatorId CardId Int Bool -- Int is unused for Bool True
+  | PlayCard InvestigatorId CardId (Maybe Target) Bool
+  | PlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
   | PlayedCard InvestigatorId CardId Bool
   | PayedForDynamicCard InvestigatorId CardId Int Bool
   | InvestigatorTakeDamage InvestigatorId Source Int Int
@@ -192,7 +192,7 @@ data Message
   | InvestigatorDamage InvestigatorId Source Int Int
   | InvestigatorPlayAsset InvestigatorId AssetId [SlotType] [Trait]
   | InvestigatorPlayDynamicAsset InvestigatorId AssetId [SlotType] [Trait] Int
-  | InvestigatorPlayEvent InvestigatorId EventId
+  | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target)
   | InvestigatorPlayDynamicEvent InvestigatorId EventId Int
   | GainClues InvestigatorId Int
   | DiscoverCluesAtLocation InvestigatorId LocationId Int
@@ -290,13 +290,14 @@ data Message
   | RemoveAllModifiersFrom Source
   | RequestedEncounterCard Source (Maybe EncounterCard)
   | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard)
+  | ShuffleBackIntoEncounterDeck Target
   | ShuffleEncounterDiscardBackIn
   | ShuffleDiscardBackIn InvestigatorId
   | DiscardEncounterUntilFirst Source (EncounterCardType, Maybe Trait)
   | SpendClues Int [InvestigatorId]
   | InvestigatorSpendClues InvestigatorId Int
   | CreateStoryAssetAt CardCode LocationId
-  | PutCardIntoPlay InvestigatorId Card
+  | PutCardIntoPlay InvestigatorId Card (Maybe Target)
   | AddAssetAt AssetId LocationId
   | Resolution Int
   | GameOver

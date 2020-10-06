@@ -29,7 +29,7 @@ instance HasActions env investigator ExtraAmmunition1 where
 
 instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
   runMessage msg (ExtraAmmunition1 attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       locationId <- asks (getId @LocationId iid)
       investigatorIds <- HashSet.toList <$> asks (getSet @InvestigatorId locationId)
       assetIds <- concatForM investigatorIds (asks . (HashSet.toList .) . getSet)

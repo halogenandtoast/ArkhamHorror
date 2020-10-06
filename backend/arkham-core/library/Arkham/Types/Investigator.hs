@@ -107,7 +107,7 @@ baseInvestigator a b c d e f =
 newtype BaseInvestigator = BaseInvestigator Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-instance HasActions env investigator BaseInvestigator where
+instance ActionRunner env investigator => HasActions env investigator BaseInvestigator where
   getActions investigator window (BaseInvestigator attrs) =
     getActions investigator window attrs
 

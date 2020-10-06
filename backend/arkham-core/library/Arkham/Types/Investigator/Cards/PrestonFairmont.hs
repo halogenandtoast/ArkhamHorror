@@ -30,7 +30,7 @@ prestonFairmont = PrestonFairmont $ baseAttrs
     }
   [SilverTwilight, Socialite]
 
-instance HasActions env investigator PrestonFairmont where
+instance ActionRunner env investigator => HasActions env investigator PrestonFairmont where
   getActions i window (PrestonFairmont attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env PrestonFairmont where

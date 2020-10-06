@@ -21,6 +21,7 @@ module Arkham.Types.Game
   , agendas
   , assets
   , treacheries
+  , encounterDeck
   , getLongestPath
   )
 where
@@ -1220,7 +1221,7 @@ runGameMessage msg g = case msg of
         (CardId $ unTreacheryId treacheryId)
     unshiftMessage (ShuffleCardsIntoDeck iid [card])
     pure $ g & treacheries %~ deleteMap treacheryId
-  PlayDynamicCard iid cardId n False -> do
+  PlayDynamicCard iid cardId n _mtarget False -> do
     let
       investigator = getInvestigator iid g
       card = fromJustNote "could not find card in hand"
@@ -1254,13 +1255,13 @@ runGameMessage msg g = case msg of
           pure $ g & events %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
-  PlayCard iid cardId False -> do
+  PlayCard iid cardId mtarget False -> do
     let
       investigator = getInvestigator iid g
       card = fromJustNote "could not find card in hand"
         $ find ((== cardId) . getCardId) (handOf investigator)
-    runGameMessage (PutCardIntoPlay iid card) g
-  PutCardIntoPlay iid card -> do
+    runGameMessage (PutCardIntoPlay iid card mtarget) g
+  PutCardIntoPlay iid card mtarget -> do
     let cardId = getCardId card
     case card of
       PlayerCard pc -> case pcCardType pc of
@@ -1291,7 +1292,7 @@ runGameMessage msg g = case msg of
             eid = EventId $ unCardId cardId
             event = lookupEvent (pcCardCode pc) iid eid
           unshiftMessages
-            [PlayedCard iid cardId True, InvestigatorPlayEvent iid eid]
+            [PlayedCard iid cardId True, InvestigatorPlayEvent iid eid mtarget]
           pure $ g & events %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
@@ -1709,6 +1710,17 @@ runGameMessage msg g = case msg of
       when (null encounterDeck') (unshiftMessage ShuffleEncounterDiscardBackIn)
       unshiftMessage (InvestigatorDrewEncounterCard iid card)
       pure $ g & encounterDeck .~ Deck encounterDeck'
+  ShuffleBackIntoEncounterDeck (EnemyTarget eid) -> do
+    let
+      enemy = getEnemy eid g
+      card = fromJustNote
+        "missing card"
+        (lookup (getCardCode enemy) allEncounterCards)
+        (CardId $ unEnemyId eid)
+    unshiftMessage $ RemoveEnemy eid
+    encounterDeck' <-
+      liftIO . shuffleM $ card : unDeck (view encounterDeck g)
+    pure $ g & encounterDeck .~ Deck encounterDeck'
   ShuffleEncounterDiscardBackIn -> do
     encounterDeck' <-
       liftIO . shuffleM $ unDeck (view encounterDeck g) <> view discard g

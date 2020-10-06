@@ -26,7 +26,7 @@ instance HasActions env investigator WorkingAHunch where
 
 instance (EventRunner env) => RunMessage env WorkingAHunch where
   runMessage msg (WorkingAHunch attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       currentLocationId <- asks (getId @LocationId iid)
       locationClueCount <- unClueCount <$> asks (getCount currentLocationId)
       if locationClueCount > 0

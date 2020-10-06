@@ -31,7 +31,7 @@ jennyBarnes = JennyBarnes $ baseAttrs
     }
   [Drifter]
 
-instance HasActions env investigator JennyBarnes where
+instance ActionRunner env investigator => HasActions env investigator JennyBarnes where
   getActions i window (JennyBarnes attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env JennyBarnes where

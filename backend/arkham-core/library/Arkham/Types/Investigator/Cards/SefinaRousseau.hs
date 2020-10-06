@@ -30,7 +30,7 @@ sefinaRousseau = SefinaRousseau $ baseAttrs
     }
   [Artist]
 
-instance HasActions env investigator SefinaRousseau where
+instance ActionRunner env investigator => HasActions env investigator SefinaRousseau where
   getActions i window (SefinaRousseau attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env SefinaRousseau where

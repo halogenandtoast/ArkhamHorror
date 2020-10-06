@@ -23,7 +23,7 @@ instance HasActions env investigator SearchForTheTruth where
 
 instance (HasQueue env, HasCount ClueCount InvestigatorId env) => RunMessage env SearchForTheTruth where
   runMessage msg (SearchForTheTruth attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       clueCount' <- unClueCount <$> asks (getCount iid)
       unshiftMessage (DrawCards iid (min 5 clueCount') False)
       SearchForTheTruth <$> runMessage msg (attrs & resolved .~ True)

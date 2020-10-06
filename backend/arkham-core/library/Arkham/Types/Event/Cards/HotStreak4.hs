@@ -24,7 +24,7 @@ instance HasActions env investigator HotStreak4 where
 
 instance (EventRunner env) => RunMessage env HotStreak4 where
   runMessage msg (HotStreak4 attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       unshiftMessages [TakeResources iid 10 False, Discard (EventTarget eid)]
       HotStreak4 <$> runMessage msg (attrs & resolved .~ True)
     _ -> HotStreak4 <$> runMessage msg attrs

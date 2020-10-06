@@ -249,6 +249,8 @@ type ActionRunner env investigator
     , HasQueue env
     , HasSet ExhaustedAssetId InvestigatorId env
     , HasModifiersFor env InvestigatorId env
+    , HasSet Trait EnemyId env
+    , HasId CardCode EnemyId env
     )
 
 class HasActions1 env investigator f where

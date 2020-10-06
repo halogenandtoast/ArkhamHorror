@@ -25,7 +25,7 @@ instance HasActions env investigator Backstab where
 
 instance (HasQueue env) => RunMessage env Backstab where
   runMessage msg (Backstab attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       unshiftMessages
         [ ChooseFightEnemy iid SkillAgility [DamageDealt 2] mempty False
         , Discard (EventTarget eid)

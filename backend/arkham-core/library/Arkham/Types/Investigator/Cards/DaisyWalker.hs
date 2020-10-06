@@ -42,7 +42,7 @@ becomesFailure token (ForcedTokenChange fromToken AutoFail) =
   token == fromToken
 becomesFailure _ _ = False
 
-instance HasActions env investigator DaisyWalker where
+instance ActionRunner env investigator => HasActions env investigator DaisyWalker where
   getActions i window (DaisyWalker attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env DaisyWalker where

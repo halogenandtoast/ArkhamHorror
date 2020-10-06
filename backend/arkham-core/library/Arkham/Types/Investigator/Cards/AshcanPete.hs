@@ -84,7 +84,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env AshcanPete where
           break ((== "02014") . pcCardCode) (unDeck investigatorDeck)
       case after of
         (card : rest) -> do
-          unshiftMessage (PutCardIntoPlay investigatorId (PlayerCard card))
+          unshiftMessage (PutCardIntoPlay investigatorId (PlayerCard card) Nothing)
           AshcanPete <$> runMessage msg (attrs & deck .~ Deck (before <> rest))
         _ -> error "Duke must be in deck"
     _ -> AshcanPete <$> runMessage msg attrs

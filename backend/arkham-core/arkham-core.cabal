@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f79bf82427c603de6bfdb3e4d6662082466856f7feef767a58769e9958151699
+-- hash: 47c43b19e10d5cbcd411b5d91484408f8fdf399871a33495ad03800be2e8fec1
 
 name:           arkham-core
 version:        0.0.0
@@ -170,6 +170,7 @@ library
       Arkham.Types.Event.Cards.Barricade3
       Arkham.Types.Event.Cards.BlindingLight
       Arkham.Types.Event.Cards.BlindingLight2
+      Arkham.Types.Event.Cards.CloseCall2
       Arkham.Types.Event.Cards.CrypticResearch4
       Arkham.Types.Event.Cards.CunningDistraction
       Arkham.Types.Event.Cards.DarkMemory
@@ -396,6 +397,7 @@ test-suite spec
       Arkham.Types.Event.Cards.BarricadeSpec
       Arkham.Types.Event.Cards.BlindingLight2Spec
       Arkham.Types.Event.Cards.BlindingLightSpec
+      Arkham.Types.Event.Cards.CloseCall2Spec
       Arkham.Types.Event.Cards.CrypticResearch4Spec
       Arkham.Types.Event.Cards.CunningDistractionSpec
       Arkham.Types.Event.Cards.DarkMemorySpec

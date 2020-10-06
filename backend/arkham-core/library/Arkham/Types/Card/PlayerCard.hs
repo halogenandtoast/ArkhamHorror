@@ -781,6 +781,8 @@ closeCall2 :: CardId -> PlayerCard
 closeCall2 cardId = (event cardId "01083" "Close Call" 2 Survivor)
   { pcSkills = [SkillCombat, SkillAgility]
   , pcTraits = [Fortune]
+  , pcFast = True
+  , pcWindows = mempty -- We handle this via behavior
   }
 
 knife :: CardId -> PlayerCard

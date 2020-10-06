@@ -27,7 +27,7 @@ instance HasActions env investigator MindOverMatter where
 
 instance (EventRunner env) => RunMessage env MindOverMatter where
   runMessage msg (MindOverMatter attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       unshiftMessages
         [ AddModifiers
           (InvestigatorTarget iid)

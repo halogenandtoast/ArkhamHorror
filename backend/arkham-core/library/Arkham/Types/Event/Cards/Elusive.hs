@@ -26,7 +26,7 @@ instance HasActions env investigator Elusive where
 
 instance (EventRunner env) => RunMessage env Elusive where
   runMessage msg (Elusive attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       enemyIds <- HashSet.toList <$> asks (getSet iid)
       emptyLocations <- HashSet.map unEmptyLocationId <$> asks (getSet ())
       revealedLocations <- HashSet.map unRevealedLocationId <$> asks (getSet ())

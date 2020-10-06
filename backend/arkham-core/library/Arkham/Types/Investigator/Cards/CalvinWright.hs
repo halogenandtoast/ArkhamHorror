@@ -30,7 +30,7 @@ calvinWright = CalvinWright $ baseAttrs
     }
   [Cursed, Drifter]
 
-instance HasActions env investigator CalvinWright where
+instance ActionRunner env investigator => HasActions env investigator CalvinWright where
   getActions i window (CalvinWright attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env CalvinWright where

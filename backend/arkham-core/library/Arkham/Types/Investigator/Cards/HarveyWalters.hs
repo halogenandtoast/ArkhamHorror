@@ -30,7 +30,7 @@ harveyWalters = HarveyWalters $ baseAttrs
     }
   [Miskatonic]
 
-instance HasActions env investigator HarveyWalters where
+instance ActionRunner env investigator => HasActions env investigator HarveyWalters where
   getActions i window (HarveyWalters attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env HarveyWalters where

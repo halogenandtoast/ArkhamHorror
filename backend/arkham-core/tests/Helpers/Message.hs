@@ -14,7 +14,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 
 playEvent :: Investigator -> Event -> Message
-playEvent i e = InvestigatorPlayEvent (getId () i) (getId () e)
+playEvent i e = InvestigatorPlayEvent (getId () i) (getId () e) Nothing
 
 moveTo :: Investigator -> Location -> Message
 moveTo i l = MoveTo (getId () i) (getId () l)
@@ -57,7 +57,7 @@ playAsset i a = InvestigatorPlayAsset
   (toList $ getTraits a)
 
 playDynamicCard :: Investigator -> Card -> Message
-playDynamicCard i c = PlayDynamicCard (getId () i) (getCardId c) 0 True
+playDynamicCard i c = PlayDynamicCard (getId () i) (getCardId c) 0 Nothing True
 
 drawCards :: Investigator -> Int -> Message
 drawCards i n = DrawCards (getId () i) n False

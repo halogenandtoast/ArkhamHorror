@@ -24,7 +24,7 @@ instance HasActions env investigator DarkMemory where
 
 instance (EventRunner env) => RunMessage env DarkMemory where
   runMessage msg (DarkMemory attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent _ eid | eid == eventId -> do
+    InvestigatorPlayEvent _ eid _ | eid == eventId -> do
       unshiftMessages
         [ PlaceDoomOnAgenda
         , AdvanceAgendaIfThresholdSatisfied

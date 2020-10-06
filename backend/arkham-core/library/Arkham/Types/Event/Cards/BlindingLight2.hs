@@ -28,7 +28,7 @@ instance HasActions env investigator BlindingLight2 where
 
 instance (EventRunner env) => RunMessage env BlindingLight2 where
   runMessage msg (BlindingLight2 attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       unshiftMessages
         [ ChooseEvadeEnemy
           iid

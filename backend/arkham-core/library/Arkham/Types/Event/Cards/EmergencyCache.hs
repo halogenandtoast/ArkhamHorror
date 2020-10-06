@@ -23,7 +23,7 @@ instance HasActions env investigator EmergencyCache where
 
 instance HasQueue env => RunMessage env EmergencyCache where
   runMessage msg (EmergencyCache attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       unshiftMessages [TakeResources iid 3 False, Discard (EventTarget eid)]
       EmergencyCache <$> runMessage msg (attrs & resolved .~ True)
     _ -> EmergencyCache <$> runMessage msg attrs

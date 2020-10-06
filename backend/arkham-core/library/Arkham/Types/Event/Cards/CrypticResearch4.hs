@@ -26,7 +26,7 @@ instance HasActions env investigator CrypticResearch4 where
 
 instance (EventRunner env) => RunMessage env CrypticResearch4 where
   runMessage msg (CrypticResearch4 attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       locationId <- asks (getId @LocationId iid)
       investigatorIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessages

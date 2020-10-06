@@ -25,7 +25,7 @@ instance HasActions env investigator WardOfProtection where
 
 instance (EventRunner env) => RunMessage env WardOfProtection where
   runMessage msg (WardOfProtection attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       unshiftMessages
         [ CancelNext RevelationMessage
         , InvestigatorAssignDamage iid (EventSource eid) 0 1

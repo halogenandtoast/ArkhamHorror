@@ -28,7 +28,7 @@ instance HasActions env investigator SneakAttack where
 
 instance (EventRunner env) => RunMessage env SneakAttack where
   runMessage msg (SneakAttack attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       lid <- asks (getId @LocationId iid)
       enemyIds <- map unExhaustedEnemyId . HashSet.toList <$> asks (getSet lid)
       unshiftMessages

@@ -26,7 +26,7 @@ instance HasActions env investigator CunningDistraction where
 
 instance (EventRunner env) => RunMessage env CunningDistraction where
   runMessage msg (CunningDistraction attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       locationId <- asks (getId @LocationId iid)
       enemyIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessages

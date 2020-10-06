@@ -24,7 +24,7 @@ instance HasActions env investigator DrawnToTheFlame where
 
 instance (EventRunner env) => RunMessage env DrawnToTheFlame where
   runMessage msg (DrawnToTheFlame attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       unshiftMessages
         [ InvestigatorDrawEncounterCard iid
         , InvestigatorDiscoverCluesAtTheirLocation iid 2

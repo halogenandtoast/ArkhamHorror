@@ -30,7 +30,7 @@ fatherMateo = FatherMateo $ baseAttrs
     }
   [Believer, Warden]
 
-instance HasActions env investigator FatherMateo where
+instance ActionRunner env investigator => HasActions env investigator FatherMateo where
   getActions i window (FatherMateo attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env FatherMateo where

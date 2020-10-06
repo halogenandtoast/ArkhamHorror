@@ -24,7 +24,7 @@ instance HasActions env investigator SureGamble3 where
 
 instance (EventRunner env) => RunMessage env SureGamble3 where
   runMessage msg (SureGamble3 attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       mrunSkillTest <- popMessage
       case mrunSkillTest of
         Just (RunSkillTest _ (TokenValue token tokenValue)) ->

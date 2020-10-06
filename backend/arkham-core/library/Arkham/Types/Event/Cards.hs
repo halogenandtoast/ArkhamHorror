@@ -4,6 +4,7 @@ module Arkham.Types.Event.Cards
 where
 
 import Arkham.Types.Event.Cards.Backstab as X
+import Arkham.Types.Event.Cards.CloseCall2 as X
 import Arkham.Types.Event.Cards.Barricade as X
 import Arkham.Types.Event.Cards.Barricade3 as X
 import Arkham.Types.Event.Cards.BlindingLight as X

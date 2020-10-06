@@ -26,7 +26,7 @@ instance HasActions env investigator Evidence where
 
 instance (EventRunner env) => RunMessage env Evidence where
   runMessage msg (Evidence attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       currentLocationId <- asks (getId @LocationId iid)
       locationClueCount <- unClueCount <$> asks (getCount currentLocationId)
       if locationClueCount > 0

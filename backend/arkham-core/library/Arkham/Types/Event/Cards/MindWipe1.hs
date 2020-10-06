@@ -29,7 +29,7 @@ instance HasActions env investigator MindWipe1 where
 
 instance (EventRunner env) => RunMessage env MindWipe1 where
   runMessage msg (MindWipe1 attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid | eid == eventId -> do
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       locationId <- asks (getId @LocationId iid)
       enemyIds <- HashSet.toList <$> asks (getSet locationId)
       nonEliteEnemyIds <- flip filterM enemyIds $ \enemyId -> do

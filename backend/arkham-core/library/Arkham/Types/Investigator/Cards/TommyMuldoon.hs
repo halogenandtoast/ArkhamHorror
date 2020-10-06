@@ -30,7 +30,7 @@ tommyMuldoon = TommyMuldoon $ baseAttrs
     }
   [Police, Warden]
 
-instance HasActions env investigator TommyMuldoon where
+instance ActionRunner env investigator => HasActions env investigator TommyMuldoon where
   getActions i window (TommyMuldoon attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env TommyMuldoon where

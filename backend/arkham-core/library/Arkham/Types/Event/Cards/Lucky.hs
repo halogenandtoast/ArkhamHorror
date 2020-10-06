@@ -26,7 +26,7 @@ instance HasActions env investigator Lucky where
 
 instance (EventRunner env) => RunMessage env Lucky where
   runMessage msg (Lucky attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent _ eid | eid == eventId -> do
+    InvestigatorPlayEvent _ eid _ | eid == eventId -> do
       unshiftMessages
         [ AddModifiers AfterSkillTestTarget (EventSource eid) [AnySkillValue 2]
         , Discard (EventTarget eid)

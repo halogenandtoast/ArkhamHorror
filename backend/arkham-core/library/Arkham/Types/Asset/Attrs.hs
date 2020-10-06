@@ -9,6 +9,8 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard (playerCardAttrs)
+import qualified Arkham.Types.Card.PlayerCard.Attrs as PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
@@ -55,8 +57,9 @@ instance FromJSON Attrs where
 baseAttrs :: AssetId -> CardCode -> Attrs
 baseAttrs aid cardCode =
   let
-    MkPlayerCard {..} =
-      fromJustNote "missing player card" (lookup cardCode allPlayerCards)
+    PlayerCard.Attrs {..} =
+      playerCardAttrs
+        . fromJustNote "missing player card" (lookup cardCode allPlayerCards)
         $ CardId (unAssetId aid)
   in
     Attrs

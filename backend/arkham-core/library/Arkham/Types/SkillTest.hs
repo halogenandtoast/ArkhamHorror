@@ -12,6 +12,8 @@ import Arkham.Types.Action (Action)
 import Arkham.Types.Card
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard (playerCardAttrs)
+import Arkham.Types.Card.PlayerCard.Attrs (pcSkills)
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
@@ -153,7 +155,7 @@ skillIconCount SkillTest {..} = length . filter matches $ concatMap
   (iconsForCard . snd)
   (toList skillTestCommittedCards)
  where
-  iconsForCard (PlayerCard MkPlayerCard {..}) = pcSkills
+  iconsForCard (PlayerCard pc) = pcSkills (playerCardAttrs pc)
   iconsForCard _ = []
   matches SkillWild = True
   matches s = s == skillTestSkillType

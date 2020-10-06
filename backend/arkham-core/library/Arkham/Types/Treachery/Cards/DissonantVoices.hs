@@ -2,7 +2,7 @@
 module Arkham.Types.Treachery.Cards.DissonantVoices where
 
 import Arkham.Json
-import Arkham.Types.Card.PlayerCard
+import Arkham.Types.Card.PlayerCard.Type
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Modifier

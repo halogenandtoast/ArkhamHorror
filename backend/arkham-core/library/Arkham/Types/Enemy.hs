@@ -10,7 +10,8 @@ module Arkham.Types.Enemy
 where
 
 import Arkham.Json
-import Arkham.Types.Card
+import Arkham.Types.Card (HasCardCode(..))
+import Arkham.Types.Card.CardCode
 import Arkham.Types.TreacheryId
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs

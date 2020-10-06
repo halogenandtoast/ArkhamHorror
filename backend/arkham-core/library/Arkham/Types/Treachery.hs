@@ -8,7 +8,7 @@ module Arkham.Types.Treachery
 where
 
 import Arkham.Json
-import Arkham.Types.Card
+import Arkham.Types.Card (CardCode, HasCardCode(..))
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId

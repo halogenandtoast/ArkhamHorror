@@ -39,6 +39,9 @@ import Arkham.Types.Card
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Forced
 import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard (playerCardAttrs)
+import Arkham.Types.Card.PlayerCard.Attrs
+  (pcBearer, pcCardType, pcRevelation, pcTraits)
 import Arkham.Types.ChaosBag
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
@@ -639,7 +642,7 @@ instance HasList DeckCard (InvestigatorId, Trait) (Game queue) where
     let
       investigator = getInvestigator iid g
       deck = deckOf investigator
-    in map DeckCard $ filter ((trait `elem`) . pcTraits) deck
+    in map DeckCard $ filter ((trait `elem`) . pcTraits . playerCardAttrs) deck
 
 instance HasSet BlockedLocationId () (Game queue) where
   getSet _ =
@@ -1174,11 +1177,11 @@ runGameMessage msg g = case msg of
         $ find ((== cardId) . getCardId) (handOf investigator)
     unshiftMessage (InvestigatorCommittedCard iid cardId)
     case card of
-      PlayerCard pc -> case pcCardType pc of
+      PlayerCard pc -> case pcCardType (playerCardAttrs pc) of
         SkillType -> do
           let
             skillId = SkillId $ unCardId cardId
-            skill = lookupSkill (pcCardCode pc) iid skillId
+            skill = lookupSkill (getCardCode pc) iid skillId
           unshiftMessage (InvestigatorCommittedSkill iid skillId)
           pure $ g & skills %~ insertMap skillId skill
         _ -> pure g
@@ -1224,14 +1227,14 @@ runGameMessage msg g = case msg of
       card = fromJustNote "could not find card in hand"
         $ find ((== cardId) . getCardId) (handOf investigator)
     case card of
-      PlayerCard pc -> case pcCardType pc of
+      PlayerCard pc -> case pcCardType (playerCardAttrs pc) of
         PlayerTreacheryType -> error "unhandled"
         AssetType -> do
           let
             aid = AssetId $ unCardId cardId
             asset = fromJustNote
               "could not find asset"
-              (lookup (pcCardCode pc) allAssets)
+              (lookup (getCardCode pc) allAssets)
               aid
           unshiftMessages
             [ InvestigatorPlayDynamicAsset
@@ -1246,7 +1249,7 @@ runGameMessage msg g = case msg of
         EventType -> do
           let
             eid = EventId $ unCardId cardId
-            event = lookupEvent (pcCardCode pc) iid eid
+            event = lookupEvent (getCardCode pc) iid eid
           unshiftMessages
             [PlayedCard iid cardId True, InvestigatorPlayDynamicEvent iid eid n]
           pure $ g & events %~ insertMap eid event
@@ -1261,11 +1264,11 @@ runGameMessage msg g = case msg of
   PutCardIntoPlay iid card -> do
     let cardId = getCardId card
     case card of
-      PlayerCard pc -> case pcCardType pc of
+      PlayerCard pc -> case pcCardType (playerCardAttrs pc) of
         PlayerTreacheryType -> do
           let
             tid = TreacheryId $ unCardId cardId
-            treachery = lookupTreachery (pcCardCode pc) tid Nothing
+            treachery = lookupTreachery (getCardCode pc) tid Nothing
           unshiftMessages [Revelation iid tid]
           pure $ g & treacheries %~ insertMap tid treachery
         AssetType -> do
@@ -1273,7 +1276,7 @@ runGameMessage msg g = case msg of
             aid = AssetId $ unCardId cardId
             asset = fromJustNote
               "could not find asset"
-              (lookup (pcCardCode pc) allAssets)
+              (lookup (getCardCode pc) allAssets)
               aid
           unshiftMessages
             [ InvestigatorPlayAsset
@@ -1287,7 +1290,7 @@ runGameMessage msg g = case msg of
         EventType -> do
           let
             eid = EventId $ unCardId cardId
-            event = lookupEvent (pcCardCode pc) iid eid
+            event = lookupEvent (getCardCode pc) iid eid
           unshiftMessages
             [PlayedCard iid cardId True, InvestigatorPlayEvent iid eid]
           pure $ g & events %~ insertMap eid event
@@ -1301,7 +1304,9 @@ runGameMessage msg g = case msg of
       treacheryId = TreacheryId (unCardId cardId)
       treachery = lookupTreachery cardCode treacheryId (Just iid)
     unshiftMessages
-      $ [ RemoveCardFromHand iid cardCode | pcRevelation playerCard ]
+      $ [ RemoveCardFromHand iid cardCode
+        | pcRevelation (playerCardAttrs playerCard)
+        ]
       <> [ CheckWindow iid [Fast.WhenDrawTreachery You (isWeakness treachery)]
          , Revelation iid treacheryId
          , AfterRevelation iid treacheryId
@@ -1316,7 +1321,7 @@ runGameMessage msg g = case msg of
     (eid, enemy) <- createEnemy cardCode
     let
       bearerMessage = case card of
-        PlayerCard MkPlayerCard {..} -> case pcBearer of
+        PlayerCard pc -> case pcBearer (playerCardAttrs pc) of
           Just bid -> EnemySetBearer eid bid
           Nothing -> error "The bearer was not set for a player enemy"
         _ -> error "this should definitely be a player card"
@@ -1688,8 +1693,9 @@ runGameMessage msg g = case msg of
   SearchCollectionForRandom iid source matcher -> do
     newCardId <- CardId <$> liftIO nextRandom
     let
-      matches =
-        filter (playerCardMatch matcher . ($ newCardId)) (toList allPlayerCards)
+      matches = filter
+        (playerCardMatch matcher . playerCardAttrs . ($ newCardId))
+        (toList allPlayerCards)
     mcard <- case matches of
       [] -> pure Nothing
       (x : xs) -> liftIO $ Just . ($ newCardId) <$> sample (x :| xs)

@@ -325,6 +325,7 @@ data Message
   | PutOnTopOfEncounterDeck InvestigatorId EncounterCard
   | AddToHand InvestigatorId Card
   | EnemySetBearer EnemyId BearerId
+  | SetBearer CardId BearerId
   | CheckDefeated
   | ChooseLeadInvestigator
   | ChoosePlayer InvestigatorId ChoosePlayerChoice

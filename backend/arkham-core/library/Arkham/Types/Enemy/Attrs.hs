@@ -4,6 +4,8 @@ module Arkham.Types.Enemy.Attrs where
 import Arkham.Json
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard (playerCardAttrs)
+import qualified Arkham.Types.Card.PlayerCard.Attrs as PlayerCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Runner
@@ -130,10 +132,11 @@ baseAttrs eid cardCode =
 weaknessBaseAttrs :: EnemyId -> CardCode -> Attrs
 weaknessBaseAttrs eid cardCode =
   let
-    MkPlayerCard {..} =
-      fromJustNote
-          ("missing player enemy weakness card: " <> show cardCode)
-          (HashMap.lookup cardCode allPlayerCards)
+    PlayerCard.Attrs {..} =
+      playerCardAttrs
+        . fromJustNote
+            ("missing player enemy weakness card: " <> show cardCode)
+            (HashMap.lookup cardCode allPlayerCards)
         $ CardId (unEnemyId eid)
   in
     Attrs

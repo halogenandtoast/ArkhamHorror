@@ -11,6 +11,20 @@ import Arkham.Types.Card
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard (playerCardAttrs)
+import Arkham.Types.Card.PlayerCard.Attrs
+  ( pcAction
+  , pcAttackOfOpportunityModifiers
+  , pcBearer
+  , pcCardCode
+  , pcCardType
+  , pcFast
+  , pcId
+  , pcTraits
+  , pcWeakness
+  , pcWindows
+  )
+import qualified Arkham.Types.Card.PlayerCard.Attrs as PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
@@ -377,15 +391,16 @@ canAfford a@Attrs {..} actionType =
 
 fastIsPlayable :: Attrs -> [Window] -> Card -> Bool
 fastIsPlayable _ _ (EncounterCard _) = False -- TODO: there might be some playable ones?
-fastIsPlayable a windows c@(PlayerCard MkPlayerCard {..}) =
-  pcFast && isPlayable a windows c
+fastIsPlayable a windows c@(PlayerCard pc) =
+  pcFast (playerCardAttrs pc) && isPlayable a windows c
 
 modifiedCardCost :: Attrs -> Card -> Int
-modifiedCardCost Attrs {..} (PlayerCard MkPlayerCard {..}) = foldr
+modifiedCardCost Attrs {..} (PlayerCard pc) = foldr
   applyModifier
   startingCost
   (concat . HashMap.elems $ investigatorModifiers)
  where
+  PlayerCard.Attrs {..} = playerCardAttrs pc
   startingCost = case pcCost of
     StaticCost n -> n
     DynamicCost -> 0
@@ -407,13 +422,14 @@ modifiedCardCost Attrs {..} (EncounterCard MkEncounterCard {..}) = foldr
 
 isPlayable :: Attrs -> [Window] -> Card -> Bool
 isPlayable _ _ (EncounterCard _) = False -- TODO: there might be some playable ones?
-isPlayable a@Attrs {..} windows c@(PlayerCard MkPlayerCard {..}) =
+isPlayable a@Attrs {..} windows c@(PlayerCard pc) =
   (pcCardType /= SkillType)
     && (modifiedCardCost a c <= investigatorResources)
     && none prevents (concat . HashMap.elems $ investigatorModifiers)
     && (not pcFast || (pcFast && cardInWindows windows c a))
     && (pcAction /= Just Action.Evade || not (null investigatorEngagedEnemies))
  where
+  PlayerCard.Attrs {..} = playerCardAttrs pc
   none f = not . any f
   prevents (CannotPlay types) = pcCardType `elem` types
   prevents _ = False
@@ -424,14 +440,17 @@ drawOpeningHand a n = go n (a ^. discard, a ^. hand, coerce (a ^. deck))
   go 0 (d, h, cs) = (d, h, cs)
   go _ (_, _, []) =
     error "this should never happen, it means the deck was empty during drawing"
-  go m (d, h, c : cs) = if pcWeakness c
+  go m (d, h, c : cs) = if pcWeakness (playerCardAttrs c)
     then go m (c : d, h, cs)
     else go (m - 1) (d, PlayerCard c : h, cs)
 
 cardInWindows :: [Window] -> Card -> Attrs -> Bool
 cardInWindows windows c _ = case c of
   PlayerCard pc ->
-    not . null $ pcWindows pc `intersect` HashSet.fromList windows
+    not
+      . null
+      $ pcWindows (playerCardAttrs pc)
+      `intersect` HashSet.fromList windows
   _ -> False
 
 playableCards :: Attrs -> [Window] -> [Card]
@@ -449,13 +468,15 @@ playableDiscards a@Attrs {..} windows = filter
   canPlayFromDiscard (n, card) = any
     (allowsPlayFromDiscard n card)
     (concat . HashMap.elems $ investigatorModifiers)
-  allowsPlayFromDiscard 0 MkPlayerCard {..} (CanPlayTopOfDiscard (mcardType, traits))
-    = maybe True (== pcCardType) mcardType
-      && (null traits
-         || (HashSet.fromList traits
-            `HashSet.isSubsetOf` HashSet.fromList pcTraits
-            )
-         )
+  allowsPlayFromDiscard 0 pc (CanPlayTopOfDiscard (mcardType, traits)) =
+    let PlayerCard.Attrs {..} = playerCardAttrs pc
+    in
+      maybe True (== pcCardType) mcardType
+        && (null traits
+           || (HashSet.fromList traits
+              `HashSet.isSubsetOf` HashSet.fromList pcTraits
+              )
+           )
   allowsPlayFromDiscard _ _ _ = False
 
 
@@ -899,10 +920,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         card = fromJustNote "not in hand"
           $ find ((== cardId) . getCardId) investigatorHand
         isFast = case card of
-          PlayerCard pc -> pcFast pc
+          PlayerCard pc -> pcFast (playerCardAttrs pc)
           _ -> False
         maction = case card of
-          PlayerCard pc -> pcAction pc
+          PlayerCard pc -> pcAction (playerCardAttrs pc)
           _ -> Nothing
         actionProvokesAttackOfOpportunities =
           maction
@@ -915,7 +936,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           PlayerCard pc ->
             actionProvokesAttackOfOpportunities
               && DoesNotProvokeAttacksOfOpportunity
-              `notElem` pcAttackOfOpportunityModifiers pc
+              `notElem` pcAttackOfOpportunityModifiers (playerCardAttrs pc)
           _ -> actionProvokesAttackOfOpportunities
         actionCost' = if isFast then 0 else maybe 1 (actionCost a) maction
         aooMessage = if provokesAttackOfOpportunities
@@ -930,10 +951,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         card = fromJustNote "not in hand"
           $ find ((== cardId) . getCardId) investigatorHand
         isFast = case card of
-          PlayerCard pc -> pcFast pc
+          PlayerCard pc -> pcFast (playerCardAttrs pc)
           _ -> False
         maction = case card of
-          PlayerCard pc -> pcAction pc
+          PlayerCard pc -> pcAction (playerCardAttrs pc)
           _ -> Nothing
         actionProvokesAttackOfOpportunities =
           maction
@@ -946,7 +967,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           PlayerCard pc ->
             actionProvokesAttackOfOpportunities
               && DoesNotProvokeAttacksOfOpportunity
-              `notElem` pcAttackOfOpportunityModifiers pc
+              `notElem` pcAttackOfOpportunityModifiers (playerCardAttrs pc)
           _ -> actionProvokesAttackOfOpportunities
         actionCost' = if isFast then 0 else maybe 1 (actionCost a) maction
         aooMessage = if provokesAttackOfOpportunities
@@ -1108,7 +1129,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
             (mcard, deck') = drawCard (coerce investigatorDeck)
             handUpdate = maybe id ((:) . PlayerCard) mcard
           case mcard of
-            Just MkPlayerCard {..} -> do
+            Just pc -> do
+              let PlayerCard.Attrs {..} = playerCardAttrs pc
               when (pcCardType == PlayerTreacheryType)
                 $ unshiftMessage (DrewPlayerTreachery iid pcCardCode pcId)
               when (pcCardType == PlayerEnemyType)
@@ -1166,10 +1188,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       unshiftMessage (DrawCards investigatorId 1 False)
       pure $ a & resources +~ 1
     LoadDeck iid deck' | iid == investigatorId -> do
-      shuffled <- liftIO $ shuffleM $ flip map deck' $ \card ->
-        if pcWeakness card
-          then card { pcBearer = Just $ BearerId $ unInvestigatorId iid }
-          else card
+      for_ deck' $ \card -> do
+        when (pcWeakness $ playerCardAttrs card) $ unshiftMessage
+          (SetBearer (getCardId card) (BearerId $ getCardCode a))
+      shuffled <- liftIO $ shuffleM deck'
       pure $ a & deck .~ Deck shuffled
     InvestigatorCommittedCard iid cardId | iid == investigatorId ->
       pure $ a & hand %~ filter ((/= cardId) . getCardId)
@@ -1182,8 +1204,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
         triggerMessage = StartSkillTest investigatorId
         beginMessage = BeforeSkillTest iid skillType
         committableCards = flip filter investigatorHand $ \case
-          PlayerCard MkPlayerCard {..} ->
-            pcId
+          PlayerCard pc ->
+            let PlayerCard.Attrs {..} = playerCardAttrs pc
+            in
+              pcId
               `notElem` committedCardIds
               && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
               && (MaxOnePerTest
@@ -1226,8 +1250,10 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
           committableCards = if not (null committedCardIds)
             then []
             else flip filter investigatorHand $ \case
-              PlayerCard MkPlayerCard {..} ->
-                pcId
+              PlayerCard pc ->
+                let PlayerCard.Attrs {..} = playerCardAttrs pc
+                in
+                  pcId
                   `notElem` committedCardIds
                   && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
                   && (OnlyYourTest `notElem` pcCommitRestrictions)
@@ -1303,15 +1329,14 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
       let
         card = fromJustNote "card did not exist"
           $ find ((== cardId) . getCardId) (unDeck investigatorDeck)
+        PlayerCard.Attrs {..} = playerCardAttrs card
       deck' <- liftIO $ shuffleM $ filter
         ((/= cardId) . getCardId)
         (unDeck investigatorDeck)
-      case card of
-        MkPlayerCard {..} -> do
-          when (pcCardType == PlayerTreacheryType)
-            $ unshiftMessage (DrewPlayerTreachery iid pcCardCode pcId)
-          when (pcCardType == PlayerEnemyType)
-            $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
+      when (pcCardType == PlayerTreacheryType)
+        $ unshiftMessage (DrewPlayerTreachery iid pcCardCode pcId)
+      when (pcCardType == PlayerEnemyType)
+        $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
       pure $ a & deck .~ Deck deck' & hand %~ (PlayerCard card :)
     DisengageEnemy iid eid | iid == investigatorId -> do
       pure $ a & engagedEnemies %~ HashSet.delete eid
@@ -1352,7 +1377,8 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
               | card <- cards
               , null traits'
                 || traits'
-                `intersection` HashSet.fromList (pcTraits card)
+                `intersection` HashSet.fromList
+                                 (pcTraits $ playerCardAttrs card)
                 == traits'
               ]
             )
@@ -1373,7 +1399,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
             | card <- investigatorDiscard
             , null traits'
               || traits'
-              `intersection` HashSet.fromList (pcTraits card)
+              `intersection` setFromList (pcTraits $ playerCardAttrs card)
               == traits'
             ]
           )

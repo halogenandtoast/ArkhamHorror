@@ -7,6 +7,8 @@ import Arkham.Types.Asset
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard (playerCardAttrs)
+import Arkham.Types.Card.PlayerCard.Attrs (pcCardType)
 import Arkham.Types.Classes
 import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
@@ -142,8 +144,8 @@ hasEnemy e l = getId () e `member` getSet @EnemyId () l
 
 hasCardInPlay :: Card -> Investigator -> Bool
 hasCardInPlay c i = case c of
-  PlayerCard pc -> case pcCardType pc of
-    AssetType -> AssetId (unCardId $ pcId pc) `member` getSet () i
+  PlayerCard pc -> case pcCardType (playerCardAttrs pc) of
+    AssetType -> AssetId (unCardId $ getCardId pc) `member` getSet () i
     _ -> error "not implemented"
   _ -> error "not implemented"
 

@@ -4,6 +4,8 @@ module Arkham.Types.Event.Attrs where
 import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard (playerCardAttrs)
+import qualified Arkham.Types.Card.PlayerCard.Attrs as PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
@@ -51,10 +53,11 @@ attachedLocation =
 baseAttrs :: InvestigatorId -> EventId -> CardCode -> Attrs
 baseAttrs iid eid cardCode =
   let
-    MkPlayerCard {..} =
-      fromJustNote
-          ("missing player card: " <> unpack (unCardCode cardCode))
-          (HashMap.lookup cardCode allPlayerCards)
+    PlayerCard.Attrs {..} =
+      playerCardAttrs
+        . fromJustNote
+            ("missing player card: " <> unpack (unCardCode cardCode))
+            (HashMap.lookup cardCode allPlayerCards)
         $ CardId (unEventId eid)
   in
     Attrs
@@ -73,10 +76,11 @@ baseAttrs iid eid cardCode =
 weaknessAttrs :: InvestigatorId -> EventId -> CardCode -> Attrs
 weaknessAttrs iid eid cardCode =
   let
-    MkPlayerCard {..} =
-      fromJustNote
-          "missing weakness card"
-          (HashMap.lookup cardCode allPlayerCards)
+    PlayerCard.Attrs {..} =
+      playerCardAttrs
+        . fromJustNote
+            "missing weakness card"
+            (HashMap.lookup cardCode allPlayerCards)
         $ CardId (unEventId eid)
   in
     Attrs

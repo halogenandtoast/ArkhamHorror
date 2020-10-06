@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 57495f2b8f53188955022b2bae41f613b7e7742b9823f7e5daef26ca4815201d
+-- hash: c29fc60a3a56de3c99e6b453e62ba0bc20991a31d2f8aba0df1d71231ab2b1c6
 
 name:           arkham-core
 version:        0.0.0
@@ -126,6 +126,127 @@ library
       Arkham.Types.Card.Forced
       Arkham.Types.Card.Id
       Arkham.Types.Card.PlayerCard
+      Arkham.Types.Card.PlayerCard.Attrs
+      Arkham.Types.Card.PlayerCard.Cards
+      Arkham.Types.Card.PlayerCard.Cards.AbandonedAndAlone
+      Arkham.Types.Card.PlayerCard.Cards.Amnesia
+      Arkham.Types.Card.PlayerCard.Cards.Aquinnah1
+      Arkham.Types.Card.PlayerCard.Cards.ArcaneInitiate
+      Arkham.Types.Card.PlayerCard.Cards.ArcaneStudies
+      Arkham.Types.Card.PlayerCard.Cards.ArcaneStudies2
+      Arkham.Types.Card.PlayerCard.Cards.Backstab
+      Arkham.Types.Card.PlayerCard.Cards.Bandolier
+      Arkham.Types.Card.PlayerCard.Cards.Barricade
+      Arkham.Types.Card.PlayerCard.Cards.Barricade3
+      Arkham.Types.Card.PlayerCard.Cards.BaseballBat
+      Arkham.Types.Card.PlayerCard.Cards.BeatCop
+      Arkham.Types.Card.PlayerCard.Cards.BeatCop2
+      Arkham.Types.Card.PlayerCard.Cards.BlindingLight
+      Arkham.Types.Card.PlayerCard.Cards.BlindingLight2
+      Arkham.Types.Card.PlayerCard.Cards.BookOfShadows3
+      Arkham.Types.Card.PlayerCard.Cards.BulletproofVest3
+      Arkham.Types.Card.PlayerCard.Cards.Burglary
+      Arkham.Types.Card.PlayerCard.Cards.CatBurgler1
+      Arkham.Types.Card.PlayerCard.Cards.CloseCall2
+      Arkham.Types.Card.PlayerCard.Cards.CoverUp
+      Arkham.Types.Card.PlayerCard.Cards.CrypticResearch4
+      Arkham.Types.Card.PlayerCard.Cards.CunningDistraction
+      Arkham.Types.Card.PlayerCard.Cards.DaisysToteBag
+      Arkham.Types.Card.PlayerCard.Cards.DarkMemory
+      Arkham.Types.Card.PlayerCard.Cards.Deduction
+      Arkham.Types.Card.PlayerCard.Cards.DigDeep
+      Arkham.Types.Card.PlayerCard.Cards.DigDeep2
+      Arkham.Types.Card.PlayerCard.Cards.DiscOfItzamna2
+      Arkham.Types.Card.PlayerCard.Cards.Dodge
+      Arkham.Types.Card.PlayerCard.Cards.DrawnToTheFlame
+      Arkham.Types.Card.PlayerCard.Cards.DrMilanChristopher
+      Arkham.Types.Card.PlayerCard.Cards.Duke
+      Arkham.Types.Card.PlayerCard.Cards.DynamiteBlast
+      Arkham.Types.Card.PlayerCard.Cards.DynamiteBlast2
+      Arkham.Types.Card.PlayerCard.Cards.ElderSignAmulet3
+      Arkham.Types.Card.PlayerCard.Cards.Elusive
+      Arkham.Types.Card.PlayerCard.Cards.EmergencyCache
+      Arkham.Types.Card.PlayerCard.Cards.Encyclopedia2
+      Arkham.Types.Card.PlayerCard.Cards.Evidence
+      Arkham.Types.Card.PlayerCard.Cards.ExtraAmmunition1
+      Arkham.Types.Card.PlayerCard.Cards.Fearless
+      Arkham.Types.Card.PlayerCard.Cards.FinalRhapsody
+      Arkham.Types.Card.PlayerCard.Cards.FirstAid
+      Arkham.Types.Card.PlayerCard.Cards.Flashlight
+      Arkham.Types.Card.PlayerCard.Cards.ForbiddenKnowledge
+      Arkham.Types.Card.PlayerCard.Cards.FortyFiveAutomatic
+      Arkham.Types.Card.PlayerCard.Cards.FortyOneDerringer
+      Arkham.Types.Card.PlayerCard.Cards.GrotesqueStatue4
+      Arkham.Types.Card.PlayerCard.Cards.GuardDog
+      Arkham.Types.Card.PlayerCard.Cards.Guts
+      Arkham.Types.Card.PlayerCard.Cards.HardKnocks
+      Arkham.Types.Card.PlayerCard.Cards.HardKnocks2
+      Arkham.Types.Card.PlayerCard.Cards.Haunted
+      Arkham.Types.Card.PlayerCard.Cards.HeirloomOfHyperborea
+      Arkham.Types.Card.PlayerCard.Cards.HolyRosary
+      Arkham.Types.Card.PlayerCard.Cards.HospitalDebts
+      Arkham.Types.Card.PlayerCard.Cards.HotStreak2
+      Arkham.Types.Card.PlayerCard.Cards.HotStreak4
+      Arkham.Types.Card.PlayerCard.Cards.Hyperawareness
+      Arkham.Types.Card.PlayerCard.Cards.Hyperawareness2
+      Arkham.Types.Card.PlayerCard.Cards.Hypochondria
+      Arkham.Types.Card.PlayerCard.Cards.JennysTwin45s
+      Arkham.Types.Card.PlayerCard.Cards.JimsTrumpet
+      Arkham.Types.Card.PlayerCard.Cards.Knife
+      Arkham.Types.Card.PlayerCard.Cards.LeatherCoat
+      Arkham.Types.Card.PlayerCard.Cards.LeoDeLuca
+      Arkham.Types.Card.PlayerCard.Cards.LeoDeLuca1
+      Arkham.Types.Card.PlayerCard.Cards.LitaChantler
+      Arkham.Types.Card.PlayerCard.Cards.LookWhatIFound
+      Arkham.Types.Card.PlayerCard.Cards.Lucky
+      Arkham.Types.Card.PlayerCard.Cards.Machete
+      Arkham.Types.Card.PlayerCard.Cards.MagnifyingGlass
+      Arkham.Types.Card.PlayerCard.Cards.MagnifyingGlass1
+      Arkham.Types.Card.PlayerCard.Cards.ManualDexterity
+      Arkham.Types.Card.PlayerCard.Cards.MedicalTexts
+      Arkham.Types.Card.PlayerCard.Cards.MindOverMatter
+      Arkham.Types.Card.PlayerCard.Cards.MindWipe1
+      Arkham.Types.Card.PlayerCard.Cards.MindWipe3
+      Arkham.Types.Card.PlayerCard.Cards.MobEnforcer
+      Arkham.Types.Card.PlayerCard.Cards.OldBookOfLore
+      Arkham.Types.Card.PlayerCard.Cards.OnTheLam
+      Arkham.Types.Card.PlayerCard.Cards.Opportunist
+      Arkham.Types.Card.PlayerCard.Cards.Overpower
+      Arkham.Types.Card.PlayerCard.Cards.Paranoia
+      Arkham.Types.Card.PlayerCard.Cards.Perception
+      Arkham.Types.Card.PlayerCard.Cards.PhysicalTraining
+      Arkham.Types.Card.PlayerCard.Cards.PhysicalTraining2
+      Arkham.Types.Card.PlayerCard.Cards.Pickpocketing
+      Arkham.Types.Card.PlayerCard.Cards.PoliceBadge2
+      Arkham.Types.Card.PlayerCard.Cards.Psychosis
+      Arkham.Types.Card.PlayerCard.Cards.RabbitsFoot
+      Arkham.Types.Card.PlayerCard.Cards.RabbitsFoot3
+      Arkham.Types.Card.PlayerCard.Cards.ResearchLibrarian
+      Arkham.Types.Card.PlayerCard.Cards.RexsCurse
+      Arkham.Types.Card.PlayerCard.Cards.Rolands38Special
+      Arkham.Types.Card.PlayerCard.Cards.Scavenging
+      Arkham.Types.Card.PlayerCard.Cards.Scrying
+      Arkham.Types.Card.PlayerCard.Cards.SearchForTheTruth
+      Arkham.Types.Card.PlayerCard.Cards.SearchingForIzzie
+      Arkham.Types.Card.PlayerCard.Cards.Shotgun4
+      Arkham.Types.Card.PlayerCard.Cards.Shrivelling
+      Arkham.Types.Card.PlayerCard.Cards.SilverTwilightAcolyte
+      Arkham.Types.Card.PlayerCard.Cards.SmiteTheWicked
+      Arkham.Types.Card.PlayerCard.Cards.SneakAttack
+      Arkham.Types.Card.PlayerCard.Cards.StrayCat
+      Arkham.Types.Card.PlayerCard.Cards.StubbornDetective
+      Arkham.Types.Card.PlayerCard.Cards.SureGamble3
+      Arkham.Types.Card.PlayerCard.Cards.SurvivalInstinct
+      Arkham.Types.Card.PlayerCard.Cards.Switchblade
+      Arkham.Types.Card.PlayerCard.Cards.TheNecronomicon
+      Arkham.Types.Card.PlayerCard.Cards.UnexpectedCourage
+      Arkham.Types.Card.PlayerCard.Cards.ViciousBlow
+      Arkham.Types.Card.PlayerCard.Cards.WardOfProtection
+      Arkham.Types.Card.PlayerCard.Cards.WendysAmulet
+      Arkham.Types.Card.PlayerCard.Cards.WorkingAHunch
+      Arkham.Types.Card.PlayerCard.Cards.WrackedByNightmares
+      Arkham.Types.Card.PlayerCard.Cards.ZoeysCross
+      Arkham.Types.Card.PlayerCard.Type
       Arkham.Types.ChaosBag
       Arkham.Types.ChaosBagStepState
       Arkham.Types.Classes

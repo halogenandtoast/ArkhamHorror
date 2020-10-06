@@ -6,7 +6,7 @@ module Arkham.Types.Modifier
 where
 
 import Arkham.Types.Action
-import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard.Type
 import Arkham.Types.SkillType
 import Arkham.Types.Token
 import Arkham.Types.Trait

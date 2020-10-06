@@ -31,6 +31,8 @@ import Arkham.Types.Card.Cost
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
+import Arkham.Types.Card.PlayerCard.Attrs
+import Arkham.Types.Card.PlayerCard.Type
 import ClassyPrelude
 import Data.Aeson
 
@@ -60,7 +62,7 @@ instance HasCost Card where
   getCost _ = 0
 
 isDynamic :: Card -> Bool
-isDynamic (PlayerCard card) = case pcCost card of
+isDynamic (PlayerCard card) = case pcCost (playerCardAttrs card) of
   DynamicCost -> True
   _ -> False
 isDynamic _ = False
@@ -75,4 +77,4 @@ toEncounterCard _ = Nothing
 
 cardIsWeakness :: Card -> Bool
 cardIsWeakness (EncounterCard _) = False
-cardIsWeakness (PlayerCard pc) = pcWeakness pc
+cardIsWeakness (PlayerCard pc) = pcWeakness (playerCardAttrs pc)

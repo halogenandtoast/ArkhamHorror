@@ -4,6 +4,8 @@ module Arkham.Types.Skill.Attrs where
 import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
+import Arkham.Types.Card.PlayerCard (playerCardAttrs)
+import qualified Arkham.Types.Card.PlayerCard.Attrs as PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Skill.Runner
@@ -34,10 +36,11 @@ instance FromJSON Attrs where
 baseAttrs :: InvestigatorId -> SkillId -> CardCode -> Attrs
 baseAttrs iid eid cardCode =
   let
-    MkPlayerCard {..} =
-      fromJustNote
-          ("missing player card: " <> unpack (unCardCode cardCode))
-          (HashMap.lookup cardCode allPlayerCards)
+    PlayerCard.Attrs {..} =
+      playerCardAttrs
+        . fromJustNote
+            ("missing player card: " <> unpack (unCardCode cardCode))
+            (HashMap.lookup cardCode allPlayerCards)
         $ CardId (unSkillId eid)
   in
     Attrs
@@ -52,10 +55,11 @@ baseAttrs iid eid cardCode =
 weaknessAttrs :: InvestigatorId -> SkillId -> CardCode -> Attrs
 weaknessAttrs iid eid cardCode =
   let
-    MkPlayerCard {..} =
-      fromJustNote
-          "missing weakness card"
-          (HashMap.lookup cardCode allPlayerCards)
+    PlayerCard.Attrs {..} =
+      playerCardAttrs
+        . fromJustNote
+            "missing weakness card"
+            (HashMap.lookup cardCode allPlayerCards)
         $ CardId (unSkillId eid)
   in
     Attrs

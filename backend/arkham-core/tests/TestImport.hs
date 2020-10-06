@@ -13,8 +13,18 @@ import Arkham.Types.Asset as X
 import qualified Arkham.Types.Asset.Attrs as Asset
 import Arkham.Types.AssetId as X
 import Arkham.Types.Card as X
+  ( Card(..)
+  , CardCode(..)
+  , EncounterCard
+  , HasCardCode(..)
+  , HasCardId(..)
+  , PlayerCard
+  , lookupEncounterCard
+  , lookupPlayerCard
+  )
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard (basePlayerCard)
+import Arkham.Types.Card.PlayerCard.Type as X
 import Arkham.Types.ChaosBag as X
 import qualified Arkham.Types.ChaosBag as ChaosBag
 import Arkham.Types.Classes as X

@@ -14,6 +14,8 @@ import Arkham.Types.Ability
 import Arkham.Types.Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.PlayerCard
+import Arkham.Types.Card.PlayerCard.Attrs
 import Arkham.Types.Classes.HasRecord
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
@@ -229,7 +231,7 @@ instance HasVictoryPoints EncounterCard where
   getVictoryPoints MkEncounterCard {..} = ecVictoryPoints
 
 instance HasVictoryPoints PlayerCard where
-  getVictoryPoints MkPlayerCard {..} = pcVictoryPoints
+  getVictoryPoints = pcVictoryPoints . playerCardAttrs
 
 type ActionRunner env investigator
   = ( IsInvestigator investigator

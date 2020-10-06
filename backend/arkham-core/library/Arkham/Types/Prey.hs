@@ -3,7 +3,7 @@ module Arkham.Types.Prey
   )
 where
 
-import Arkham.Types.Card.PlayerCard
+import Arkham.Types.Card.CardCode
 import Arkham.Types.SkillType
 import ClassyPrelude
 import Data.Aeson

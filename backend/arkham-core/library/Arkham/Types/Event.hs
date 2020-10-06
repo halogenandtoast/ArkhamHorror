@@ -8,7 +8,7 @@ module Arkham.Types.Event
 where
 
 import Arkham.Json
-import Arkham.Types.Card
+import Arkham.Types.Card (CardCode, HasCardCode(..))
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Cards

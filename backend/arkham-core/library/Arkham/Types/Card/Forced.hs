@@ -7,10 +7,10 @@ import Arkham.Types.Source
 import ClassyPrelude
 
 inHandAtEndOfRound :: MonadIO m => InvestigatorId -> Card -> m [Message]
-inHandAtEndOfRound iid (PlayerCard MkPlayerCard {..}) = case pcCardCode of
+inHandAtEndOfRound iid pc@(PlayerCard _) = case getCardCode pc of
   "01013" -> pure -- Dark Memory
-    [ RevealInHand pcId
-    , InvestigatorAssignDamage iid (PlayerCardSource pcId) 0 2
+    [ RevealInHand (getCardId pc)
+    , InvestigatorAssignDamage iid (PlayerCardSource $ getCardId pc) 0 2
     ]
   _ -> pure []
 inHandAtEndOfRound _ (EncounterCard _) = pure []

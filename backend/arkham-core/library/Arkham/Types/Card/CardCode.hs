@@ -14,3 +14,7 @@ newtype TreacheryCardCode = TreacheryCardCode { unTreacheryCardCode :: CardCode 
 
 newtype VictoryDisplayCardCode = VictoryDisplayCardCode { unVictoryDisplayCardCode :: CardCode }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
+
+newtype BearerId = BearerId { unBearerId :: CardCode }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
+

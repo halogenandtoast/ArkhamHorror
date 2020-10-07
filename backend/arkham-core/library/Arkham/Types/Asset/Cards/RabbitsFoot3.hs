@@ -39,6 +39,7 @@ instance (IsInvestigator investigator) => HasActions env investigator RabbitsFoo
             { abilityMetadata = Just (IntMetadata n)
             }
           )
+      | not assetExhausted
       ]
   getActions i window (RabbitsFoot3 x) = getActions i window x
 

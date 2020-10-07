@@ -34,6 +34,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Scavenging
             1
             (ReactionAbility (AfterPassSkillTest You n))
           )
+      | any ((Item `member`) . getTraits) (discardOf i)
       ]
   getActions i window (Scavenging x) = getActions i window x
 

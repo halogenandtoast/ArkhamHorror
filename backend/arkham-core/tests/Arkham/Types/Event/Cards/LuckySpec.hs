@@ -1,31 +1,26 @@
-module Arkham.Types.Event.Cards.Lucky2Spec
+module Arkham.Types.Event.Cards.LuckySpec
   ( spec
   )
 where
 
 import TestImport
 
-import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs (Attrs(..))
 import Arkham.Types.Target
 import Arkham.Types.Token
 
 spec :: Spec
-spec = describe "Lucky! (2)" $ do
-  it "adds 2 to a skill test when you would fail and draws 1 card" $ do
-    cardToDraw <- testPlayerCard
-    investigator <- testInvestigator "00000" $ \attrs -> attrs
-      { investigatorIntellect = 1
-      , investigatorResources = 1
-      , investigatorDeck = Deck [cardToDraw]
-      }
-    lucky2 <- buildPlayerCard "01084"
+spec = describe "Lucky!" $ do
+  it "adds 2 to a skill test when you would fail" $ do
+    investigator <- testInvestigator "00000"
+      $ \attrs -> attrs { investigatorIntellect = 1, investigatorResources = 1 }
+    lucky <- buildPlayerCard "01080"
     scenario' <- testScenario "00000" id
     game <-
       runGameTest
         investigator
         [ SetTokens [Zero]
-        , addToHand investigator (PlayerCard lucky2)
+        , addToHand investigator (PlayerCard lucky)
         , beginSkillTest investigator SkillIntellect 3
         ]
         (scenario ?~ scenario')
@@ -45,4 +40,3 @@ spec = describe "Lucky! (2)" $ do
         SkillTestInitiatorTarget
         0
       )
-    updated game investigator `shouldSatisfy` handIs [PlayerCard cardToDraw]

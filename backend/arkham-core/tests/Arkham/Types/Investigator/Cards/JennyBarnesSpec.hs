@@ -25,4 +25,4 @@ spec = describe "Jenny Barnes" $ do
         ]
         (scenario ?~ scenario')
       game `shouldSatisfy` hasProcessedMessage
-        (RunSkillTest (getId () jennyBarnes) (TokenValue ElderSign 5))
+        (RunSkillTest (getId () jennyBarnes) [TokenValue ElderSign 5])

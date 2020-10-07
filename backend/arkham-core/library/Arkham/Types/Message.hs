@@ -174,7 +174,7 @@ data Message
   | AddToVictory Target
   | PlayCard InvestigatorId CardId (Maybe Target) Bool
   | PlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
-  | PlayedCard InvestigatorId CardId Bool
+  | PlayedCard InvestigatorId CardId
   | PayedForDynamicCard InvestigatorId CardId Int Bool
   | InvestigatorTakeDamage InvestigatorId Source Int Int
   | InvestigatorDirectDamage InvestigatorId Source Int Int
@@ -208,7 +208,7 @@ data Message
   | StartSkillTest InvestigatorId
   | BeforeSkillTest InvestigatorId SkillType
   | TriggerSkillTest InvestigatorId
-  | RunSkillTest InvestigatorId TokenValue
+  | RunSkillTest InvestigatorId [TokenValue]
   | HandlePointOfFailure InvestigatorId Target Int -- Really do x n times, does not have to be failure
   | SkillTestResults
   | SkillTestApplyResults

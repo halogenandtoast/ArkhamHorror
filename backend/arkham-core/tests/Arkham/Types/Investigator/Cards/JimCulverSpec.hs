@@ -38,7 +38,7 @@ spec = describe "Jum Culver" $ do
               )
         >>= runGameTestOnlyOption "apply results"
       game `shouldSatisfy` hasProcessedMessage
-        (RunSkillTest (getId () jimCulver) (TokenValue Skull 0))
+        (RunSkillTest (getId () jimCulver) [TokenValue Skull 0])
 
     it "is a +1" $ do
       let jimCulver = lookupInvestigator "02004"
@@ -68,7 +68,7 @@ spec = describe "Jum Culver" $ do
               )
         >>= runGameTestOnlyOption "apply results"
       game `shouldSatisfy` hasProcessedMessage
-        (RunSkillTest (getId () jimCulver) (TokenValue ElderSign 1))
+        (RunSkillTest (getId () jimCulver) [TokenValue ElderSign 1])
 
   context "ability" $ do
     it "changes skull modifier to 0" $ do
@@ -93,4 +93,4 @@ spec = describe "Jum Culver" $ do
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
       game `shouldSatisfy` hasProcessedMessage
-        (RunSkillTest (getId () jimCulver) (TokenValue Skull 0))
+        (RunSkillTest (getId () jimCulver) [TokenValue Skull 0])

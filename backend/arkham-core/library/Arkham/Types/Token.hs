@@ -7,6 +7,9 @@ data TokenValue = TokenValue Token Int
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+tokenValue :: TokenValue -> Int
+tokenValue (TokenValue _ n) = n
+
 data Token
   = PlusOne
   | Zero

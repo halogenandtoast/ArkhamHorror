@@ -217,6 +217,9 @@ class HasInvestigatorStats c b a where
 class HasTraits a where
   getTraits :: a -> HashSet Trait
 
+instance HasTraits PlayerCard where
+  getTraits = setFromList . pcTraits
+
 class IsAdvanceable a where
   isAdvanceable :: a -> Bool
 

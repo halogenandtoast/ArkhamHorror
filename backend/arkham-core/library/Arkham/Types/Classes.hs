@@ -138,7 +138,7 @@ runTest
   => InvestigatorId
   -> TokenValue
   -> m ()
-runTest iid tokenValue@(TokenValue token value) = do
+runTest iid tokenValue'@(TokenValue token value) = do
   windowPairings <- pairInvestigatorIdsForWindow iid
   if value < 0
     then unshiftMessages
@@ -149,13 +149,15 @@ runTest iid tokenValue@(TokenValue token value) = do
            ]
        | (iid', who) <- windowPairings
        ]
-      <> [When (RunSkillTest iid tokenValue), RunSkillTest iid tokenValue]
+      <> [ When (RunSkillTest iid [tokenValue'])
+         , RunSkillTest iid [tokenValue']
+         ]
       )
     else unshiftMessages
       ([ CheckWindow iid' [Window.WhenRevealToken who token]
        | (iid', who) <- windowPairings
        ]
-      <> [RunSkillTest iid tokenValue]
+      <> [RunSkillTest iid [tokenValue']]
       )
 
 class HasModifiers1 env f where

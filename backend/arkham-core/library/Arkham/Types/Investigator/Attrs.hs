@@ -507,8 +507,9 @@ instance HasId InvestigatorId () Attrs where
   getId _ Attrs {..} = investigatorId
 
 instance ActionRunner env investigator => HasActions env investigator Attrs where
-  getActions i window attrs =
-    concat <$> for (attrs ^.. hand . traverse . _PlayerCard) (getActions i window . toPlayerCardWithBehavior)
+  getActions i window attrs = concat <$> for
+    (attrs ^.. hand . traverse . _PlayerCard)
+    (getActions i window . toPlayerCardWithBehavior)
 
 instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
   runMessage msg i = do
@@ -765,6 +766,10 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     ]
   MoveAction iid lid False | iid == investigatorId -> a <$ unshiftMessages
     [Will (MoveTo iid lid), MoveFrom iid investigatorLocation, MoveTo iid lid]
+  Will (FailedSkillTest iid _ _ (InvestigatorTarget iid') _)
+    | iid == iid' && iid == investigatorId -> do
+      a <$ unshiftMessage
+        (CheckWindow investigatorId [WhenWouldFailSkillTest You])
   InvestigatorDirectDamage iid source damage horror
     | iid == investigatorId && not
       (investigatorDefeated || investigatorResigned)
@@ -958,12 +963,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       <> aooMessage
       <> [PlayCard iid cardId mtarget False]
       )
-  PlayedCard iid cardId discarded | iid == investigatorId -> do
-    if discarded
-      then
-        a <$ unshiftMessages
-          [Will (DiscardCard iid cardId), DiscardCard iid cardId]
-      else pure $ a & hand %~ filter ((/= cardId) . getCardId)
+  PlayedCard iid cardId | iid == investigatorId -> do
+    pure $ a & hand %~ filter ((/= cardId) . getCardId)
   InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
     let assetsUpdate = assets %~ HashSet.insert aid
     if fitsAvailableSlots slotTypes traits a

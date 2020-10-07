@@ -509,7 +509,8 @@ instance HasList Ability () (Game queue) where
   getList _ g = g ^. agendas . traverse . to getAbilities
 
 instance HasSet HandCardId InvestigatorId (Game queue) where
-  getSet iid = setFromList . map (HandCardId . getCardId) . handOf . getInvestigator iid
+  getSet iid =
+    setFromList . map (HandCardId . getCardId) . handOf . getInvestigator iid
 
 instance HasSet Trait LocationId (Game queue) where
   getSet lid = getTraits . getLocation lid
@@ -1243,7 +1244,7 @@ runGameMessage msg g = case msg of
               (slotsOf asset)
               (toList $ getTraits asset)
               n
-            , PlayedCard iid cardId False
+            , PlayedCard iid cardId
             ]
           pure $ g & assets %~ insertMap aid asset
         EventType -> do
@@ -1251,7 +1252,7 @@ runGameMessage msg g = case msg of
             eid = EventId $ unCardId cardId
             event = lookupEvent (pcCardCode pc) iid eid
           unshiftMessages
-            [PlayedCard iid cardId True, InvestigatorPlayDynamicEvent iid eid n]
+            [PlayedCard iid cardId, InvestigatorPlayDynamicEvent iid eid n]
           pure $ g & events %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
@@ -1284,7 +1285,7 @@ runGameMessage msg g = case msg of
               aid
               (slotsOf asset)
               (toList $ getTraits asset)
-            , PlayedCard iid cardId False
+            , PlayedCard iid cardId
             ]
           pure $ g & assets %~ insertMap aid asset
         EventType -> do
@@ -1292,7 +1293,7 @@ runGameMessage msg g = case msg of
             eid = EventId $ unCardId cardId
             event = lookupEvent (pcCardCode pc) iid eid
           unshiftMessages
-            [PlayedCard iid cardId True, InvestigatorPlayEvent iid eid mtarget]
+            [PlayedCard iid cardId, InvestigatorPlayEvent iid eid mtarget]
           pure $ g & events %~ insertMap eid event
         _ -> pure g
       EncounterCard _ -> pure g
@@ -1718,8 +1719,7 @@ runGameMessage msg g = case msg of
         (lookup (getCardCode enemy) allEncounterCards)
         (CardId $ unEnemyId eid)
     unshiftMessage $ RemoveEnemy eid
-    encounterDeck' <-
-      liftIO . shuffleM $ card : unDeck (view encounterDeck g)
+    encounterDeck' <- liftIO . shuffleM $ card : unDeck (view encounterDeck g)
     pure $ g & encounterDeck .~ Deck encounterDeck'
   ShuffleEncounterDiscardBackIn -> do
     encounterDeck' <-

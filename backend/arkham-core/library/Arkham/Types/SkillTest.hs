@@ -280,7 +280,17 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
           ]
         Unrun -> pure ()
       pure s
-    AddModifiers AfterSkillTestTarget source modifiers' ->
+    AddModifiers AfterSkillTestTarget source modifiers' -> do
+      withQueue $ \queue ->
+        let
+          queue' = flip filter queue $ \case
+            Will FailedSkillTest{} -> False
+            Will PassedSkillTest{} -> False
+            Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
+              | skillTestInvestigator == skillTestInvestigator' -> False
+            _ -> True
+        in (queue', ())
+      unshiftMessage (RunSkillTest skillTestInvestigator [])
       pure $ s & modifiers %~ insertWith (<>) source modifiers'
     SkillTestApplyResultsAfter -> do -- ST.7 -- apply results
       unshiftMessage SkillTestEnds -- -> ST.8 -- Skill test ends
@@ -342,10 +352,11 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
           | target <- skillTestSubscribers
           ]
         Unrun -> pure ()
-    RunSkillTest _ (TokenValue _ tokenValue) -> do
+    RunSkillTest _ tokenValues -> do
       let
+        incomingTokenValues = sum $ map tokenValue tokenValues
         totaledTokenValues =
-          modifiedTokenValue tokenValue s + skillTestValueModifier
+          modifiedTokenValue incomingTokenValues s + skillTestValueModifier
         modifiedSkillValue' =
           skillTestSkillValue
             + totaledTokenValues
@@ -374,15 +385,11 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         then
           pure
           $ s
-          & result
-          .~ SucceededBy (modifiedSkillValue' - skillTestDifficulty)
-          & valueModifier
-          .~ totaledTokenValues
+          & (result .~ SucceededBy (modifiedSkillValue' - skillTestDifficulty))
+          & (valueModifier .~ totaledTokenValues)
         else
           pure
           $ s
-          & result
-          .~ FailedBy (skillTestDifficulty - modifiedSkillValue')
-          & valueModifier
-          .~ totaledTokenValues
+          & (result .~ FailedBy (skillTestDifficulty - modifiedSkillValue'))
+          & (valueModifier .~ totaledTokenValues)
     _ -> pure s

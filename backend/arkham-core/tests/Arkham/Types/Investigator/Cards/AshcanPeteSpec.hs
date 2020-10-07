@@ -63,4 +63,4 @@ spec = describe "\"Ashcan\" Pete" $ do
         >>= runGameTestOnlyOption "apply results"
       updated game duke `shouldSatisfy` isReady
       game `shouldSatisfy` hasProcessedMessage
-        (RunSkillTest (getId () ashcanPete) (TokenValue ElderSign 2))
+        (RunSkillTest (getId () ashcanPete) [TokenValue ElderSign 2])

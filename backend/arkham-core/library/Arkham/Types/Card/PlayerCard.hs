@@ -763,7 +763,7 @@ lucky :: CardId -> PlayerCard
 lucky cardId = (event cardId "01080" "Lucky!" 1 Survivor)
   { pcTraits = [Fortune]
   , pcFast = True
-  , pcWindows = HashSet.fromList [WhenWouldFailSkillTest You]
+  , pcWindows = setFromList [WhenWouldFailSkillTest You]
   }
 
 survivalInstinct :: CardId -> PlayerCard

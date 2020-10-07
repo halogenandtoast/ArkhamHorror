@@ -48,7 +48,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env JimCulver where
             ]
           )
         )
-    When (RunSkillTest iid (TokenValue Skull _)) | iid == investigatorId -> do
+    When (RunSkillTest iid [TokenValue Skull _]) | iid == investigatorId -> do
       Just (RunSkillTest _ _) <- popMessage
-      i <$ unshiftMessage (RunSkillTest iid (TokenValue Skull 0))
+      i <$ unshiftMessage (RunSkillTest iid [TokenValue Skull 0])
     _ -> JimCulver <$> runMessage msg attrs

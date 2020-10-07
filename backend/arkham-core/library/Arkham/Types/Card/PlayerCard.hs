@@ -592,12 +592,14 @@ leoDeLuca1 :: CardId -> PlayerCard
 leoDeLuca1 cardId = (asset cardId "01054" "Leo De Luca" 5 Rogue)
   { pcSkills = [SkillIntellect]
   , pcTraits = [Ally, Criminal]
+  , pcLevel = 1
   }
 
 catBurgler1 :: CardId -> PlayerCard
 catBurgler1 cardId = (asset cardId "01055" "Cat Burgler" 4 Rogue)
   { pcSkills = [SkillWillpower, SkillAgility]
   , pcTraits = [Ally, Criminal]
+  , pcLevel = 1
   }
 
 sureGamble3 :: CardId -> PlayerCard
@@ -605,12 +607,14 @@ sureGamble3 cardId = (asset cardId "01056" "Sure Gamble" 2 Rogue)
   { pcTraits = [Fortune, Insight]
   , pcFast = True
   , pcWindows = HashSet.fromList [WhenRevealTokenWithNegativeModifier You]
+  , pcLevel = 3
   }
 
 hotStreak4 :: CardId -> PlayerCard
 hotStreak4 cardId = (event cardId "01057" "Hot Streak" 2 Rogue)
   { pcSkills = [SkillWild]
   , pcTraits = [Fortune]
+  , pcLevel = 4
   }
 
 forbiddenKnowledge :: CardId -> PlayerCard
@@ -690,7 +694,7 @@ blindingLight2 cardId = (event cardId "01069" "Blinding Light" 1 Mystic)
   { pcSkills = [SkillWillpower, SkillAgility]
   , pcTraits = [Spell]
   , pcAction = Just Action.Evade
-  , pcLevel = 1
+  , pcLevel = 2
   }
 
 bookOfShadows3 :: CardId -> PlayerCard

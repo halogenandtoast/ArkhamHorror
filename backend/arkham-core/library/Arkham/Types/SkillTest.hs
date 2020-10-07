@@ -186,7 +186,6 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
   runMessage msg s@SkillTest {..} = case msg of
     TriggerSkillTest iid -> do
       modifiers' <- getModifiers iid
-      print modifiers'
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
         then s <$ unshiftMessage (RunSkillTest iid [])
         else s <$ unshiftMessage (RequestTokens SkillTestSource iid 1 SetAside)

@@ -10,6 +10,7 @@ import Data.Aeson
 
 data Window
   = AfterAssignedHorror Who
+  | AfterEndTurn Who
   | AfterEnemyEngageInvestigator Who EnemyId
   | AfterEnemyEvaded Who EnemyId
   | AfterFailSkillTest Who Int

@@ -4,7 +4,6 @@ module Arkham.Types.Asset.Cards
 where
 
 import Arkham.Types.Asset.Cards.Aquinnah1 as X
-import Arkham.Types.Asset.Cards.FireAxe as X
 import Arkham.Types.Asset.Cards.ArcaneInitiate as X
 import Arkham.Types.Asset.Cards.ArcaneStudies as X
 import Arkham.Types.Asset.Cards.ArcaneStudies2 as X
@@ -24,6 +23,7 @@ import Arkham.Types.Asset.Cards.DrMilanChristopher as X
 import Arkham.Types.Asset.Cards.Duke as X
 import Arkham.Types.Asset.Cards.ElderSignAmulet3 as X
 import Arkham.Types.Asset.Cards.Encyclopedia2 as X
+import Arkham.Types.Asset.Cards.FireAxe as X
 import Arkham.Types.Asset.Cards.FirstAid as X
 import Arkham.Types.Asset.Cards.Flashlight as X
 import Arkham.Types.Asset.Cards.ForbiddenKnowledge as X
@@ -49,6 +49,7 @@ import Arkham.Types.Asset.Cards.MagnifyingGlass as X
 import Arkham.Types.Asset.Cards.MagnifyingGlass1 as X
 import Arkham.Types.Asset.Cards.MedicalTexts as X
 import Arkham.Types.Asset.Cards.OldBookOfLore as X
+import Arkham.Types.Asset.Cards.PeterSylvestre as X
 import Arkham.Types.Asset.Cards.PhysicalTraining as X
 import Arkham.Types.Asset.Cards.PhysicalTraining2 as X
 import Arkham.Types.Asset.Cards.Pickpocketing as X

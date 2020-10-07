@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6689dda892deea364bac1152a333ad893cd4b672f095df1a5c844b2be086c046
+-- hash: 4483d4ae5b57ca4c00e8e0b2800a0c7d10d463be648ed8941d9641f44324f22d
 
 name:           arkham-core
 version:        0.0.0
@@ -89,6 +89,7 @@ library
       Arkham.Types.Asset.Cards.MagnifyingGlass1
       Arkham.Types.Asset.Cards.MedicalTexts
       Arkham.Types.Asset.Cards.OldBookOfLore
+      Arkham.Types.Asset.Cards.PeterSylvestre
       Arkham.Types.Asset.Cards.PhysicalTraining
       Arkham.Types.Asset.Cards.PhysicalTraining2
       Arkham.Types.Asset.Cards.Pickpocketing
@@ -394,6 +395,7 @@ test-suite spec
       Arkham.Types.Asset.Cards.GrotesqueStatue4Spec
       Arkham.Types.Asset.Cards.JennysTwin45sSpec
       Arkham.Types.Asset.Cards.JimsTrumpetSpec
+      Arkham.Types.Asset.Cards.PeterSylvestreSpec
       Arkham.Types.Asset.Cards.ZoeysCrossSpec
       Arkham.Types.Enemy.Cards.TheMaskedHunterSpec
       Arkham.Types.Event.Cards.BackstabSpec

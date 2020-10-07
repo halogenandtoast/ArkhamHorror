@@ -693,7 +693,14 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
             `union` (enemyIds `difference` aloofEnemyIds)
       a <$ unshiftMessage
         (Ask iid $ ChooseOne
-          [ FightEnemy iid eid source skillType tempModifiers tokenResponses isAction
+          [ FightEnemy
+              iid
+              eid
+              source
+              skillType
+              tempModifiers
+              tokenResponses
+              isAction
           | eid <- HashSet.toList fightableEnemyIds
           ]
         )
@@ -735,7 +742,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   AddToVictory (EnemyTarget eid) ->
     pure $ a & engagedEnemies %~ HashSet.delete eid
   ChooseEvadeEnemy iid _source skillType onSuccess onFailure tokenResponses isAction
-    | iid == investigatorId -> a <$ unshiftMessage
+    | iid == investigatorId
+    -> a <$ unshiftMessage
       (Ask iid $ ChooseOne $ map
         (\eid -> EvadeEnemy
           iid
@@ -1078,7 +1086,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       $ a
       & (modifiers %~ HashMap.delete source)
       & (slots %~ HashMap.map (filter ((source /=) . sourceOfSlot)))
-  ChooseEndTurn iid | iid == investigatorId ->
+  ChooseEndTurn iid | iid == investigatorId -> do
+    unshiftMessage (CheckWindow iid [AfterEndTurn You])
     pure $ a & endedTurn .~ True & modifiers %~ HashMap.filterWithKey
       (\k _ -> case k of
         EndOfTurnSource{} -> False

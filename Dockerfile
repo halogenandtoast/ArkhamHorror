@@ -51,14 +51,12 @@ RUN mkdir -p /opt/arkham/src
 RUN mkdir -p /opt/arkham/bin
 RUN mkdir -p /opt/arkham/src/backend/arkham-api
 RUN mkdir -p /opt/arkham/src/backend/arkham-core
-RUN mkdir -p /opt/arkham/src/backend/arkham-cli
 RUN mkdir -p /opt/arkham/src/frontend
 
 WORKDIR /opt/arkham/src/backend
 COPY ./backend/stack.yaml /opt/arkham/src/backend/stack.yaml
 COPY ./backend/arkham-api/package.yaml /opt/arkham/src/backend/arkham-api/package.yaml
 COPY ./backend/arkham-core/package.yaml /opt/arkham/src/backend/arkham-core/package.yaml
-COPY ./backend/arkham-cli/package.yaml /opt/arkham/src/backend/arkham-cli/package.yaml
 RUN stack --no-terminal setup
 
 WORKDIR /opt/arkham/src/backend/arkham-api

@@ -49,6 +49,7 @@ instance (TreacheryRunner env) => RunMessage env UmordhothsWrath where
       (BeginSkillTest
         iid
         (TreacherySource treacheryId)
+        (InvestigatorTarget iid)
         Nothing
         SkillWillpower
         5

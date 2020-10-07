@@ -56,6 +56,7 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
           unshiftMessage
             (ChooseFightEnemy
               iid
+              (AssetSource aid)
               SkillCombat
               [SkillModifier SkillCombat 3]
               mempty

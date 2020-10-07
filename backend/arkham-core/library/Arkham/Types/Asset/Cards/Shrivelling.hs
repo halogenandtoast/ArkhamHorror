@@ -59,6 +59,7 @@ instance (AssetRunner env) => RunMessage env Shrivelling where
           unshiftMessage
             (ChooseFightEnemy
               iid
+              (AssetSource aid)
               SkillWillpower
               [DamageDealt 1]
               [ OnAnyToken

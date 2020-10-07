@@ -248,7 +248,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Attrs wher
     investigatorId = getId () i
     locationId = locationOf i
     fightEnemyActions =
-      [ FightEnemy investigatorId enemyId SkillCombat [] mempty True
+      [ FightEnemy investigatorId enemyId (InvestigatorSource investigatorId) SkillCombat [] mempty True
       | enemyLocation == locationId && canFight enemy i
       ]
     engageEnemyActions =
@@ -343,7 +343,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
         unshiftMessages $ map (flip EnemyWillAttack enemyId) $ HashSet.toList
           enemyEngagedInvestigators
         pure a
-    AttackEnemy iid eid skillType tempModifiers tokenResponses
+    AttackEnemy iid eid source skillType tempModifiers tokenResponses
       | eid == enemyId -> do
         let
           onFailure = if Keyword.Retaliate `elem` enemyKeywords
@@ -352,7 +352,8 @@ instance (EnemyRunner env) => RunMessage env Attrs where
         a <$ unshiftMessage
           (BeginSkillTest
             iid
-            (EnemySource eid)
+            source
+            (EnemyTarget eid)
             (Just Action.Fight)
             skillType
             (modifiedEnemyFight a)
@@ -377,7 +378,8 @@ instance (EnemyRunner env) => RunMessage env Attrs where
         a <$ unshiftMessage
           (BeginSkillTest
             iid
-            (EnemySource eid)
+            (EnemySource eid) -- TODO: Change to source
+            (EnemyTarget eid)
             (Just Action.Evade)
             skillType
             (modifiedEnemyEvade a)

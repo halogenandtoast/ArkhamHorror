@@ -253,6 +253,7 @@ allPlayerCards = HashMap.fromList
   , ("02013", finalRhapsody)
   , ("02014", duke)
   , ("02015", wrackedByNightmares)
+  , ("02032", fireAxe)
   , ("02147", bandolier)
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
@@ -983,6 +984,13 @@ wrackedByNightmares cardId =
   (treachery cardId "02015" "Wracked by Nightmares" 0)
     { pcTraits = [Madness]
     , pcRevelation = True
+    }
+
+fireAxe :: CardId -> PlayerCard
+fireAxe cardId =
+  (asset cardId "02032" "Fire Axe" 1 Survivor)
+    { pcSkills = [SkillCombat]
+    , pcTraits = [Item, Weapon, Melee]
     }
 
 bandolier :: CardId -> PlayerCard

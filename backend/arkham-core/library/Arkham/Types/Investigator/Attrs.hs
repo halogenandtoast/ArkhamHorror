@@ -682,7 +682,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       & (assets %~ HashSet.delete aid)
       & (discard %~ (lookupPlayerCard cardCode (CardId $ unAssetId aid) :))
       & (slots %~ removeFromSlots aid)
-  ChooseFightEnemy iid skillType tempModifiers tokenResponses isAction
+  ChooseFightEnemy iid source skillType tempModifiers tokenResponses isAction
     | iid == investigatorId -> do
       enemyIds <- asks (getSet investigatorLocation)
       aloofEnemyIds <- HashSet.map unAloofEnemyId
@@ -693,7 +693,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
             `union` (enemyIds `difference` aloofEnemyIds)
       a <$ unshiftMessage
         (Ask iid $ ChooseOne
-          [ FightEnemy iid eid skillType tempModifiers tokenResponses isAction
+          [ FightEnemy iid eid source skillType tempModifiers tokenResponses isAction
           | eid <- HashSet.toList fightableEnemyIds
           ]
         )
@@ -703,16 +703,16 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure $ a & engagedEnemies %~ HashSet.insert eid
   EngageEnemy iid eid False | iid /= investigatorId ->
     pure $ a & engagedEnemies %~ HashSet.delete eid
-  FightEnemy iid eid skillType tempModifiers tokenResponses True
+  FightEnemy iid eid source skillType tempModifiers tokenResponses True
     | iid == investigatorId -> a <$ unshiftMessages
       [ TakeAction iid 1 (Just Action.Fight)
-      , FightEnemy iid eid skillType tempModifiers tokenResponses False
+      , FightEnemy iid eid source skillType tempModifiers tokenResponses False
       ]
-  FightEnemy iid eid skillType tempModifiers tokenResponses False
+  FightEnemy iid eid source skillType tempModifiers tokenResponses False
     | iid == investigatorId -> do
       unshiftMessages
         [ WhenAttackEnemy iid eid
-        , AttackEnemy iid eid skillType tempModifiers tokenResponses
+        , AttackEnemy iid eid source skillType tempModifiers tokenResponses
         , AfterAttackEnemy iid eid
         ]
       pure a
@@ -734,7 +734,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure $ a & engagedEnemies %~ HashSet.delete eid
   AddToVictory (EnemyTarget eid) ->
     pure $ a & engagedEnemies %~ HashSet.delete eid
-  ChooseEvadeEnemy iid skillType onSuccess onFailure tokenResponses isAction
+  ChooseEvadeEnemy iid _source skillType onSuccess onFailure tokenResponses isAction
     | iid == investigatorId -> a <$ unshiftMessage
       (Ask iid $ ChooseOne $ map
         (\eid -> EvadeEnemy

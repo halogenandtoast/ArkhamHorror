@@ -7,6 +7,7 @@ import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Query
+import Arkham.Types.Target
 import Arkham.Types.Trait
 
 type ScenarioRunner env
@@ -28,5 +29,6 @@ type ScenarioRunner env
     , HasSet VictoryDisplayCardCode () env
     , HasSet ConnectedLocationId LocationId env
     , HasId LocationId InvestigatorId env
+    , HasSource ForSkillTest env
     )
 

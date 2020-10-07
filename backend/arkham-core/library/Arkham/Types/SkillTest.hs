@@ -46,6 +46,7 @@ data SkillTest a = SkillTest
   , skillTestTempModifiers :: [Modifier]
   , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
   , skillTestSource :: Source
+  , skillTestTarget :: Target
   , skillTestAction :: Maybe Action
   , skillTestSubscribers :: [Target]
   }
@@ -75,6 +76,7 @@ instance HasSet CommittedCardCode () (SkillTest a) where
 initSkillTest
   :: InvestigatorId
   -> Source
+  -> Target
   -> Maybe Action
   -> SkillType
   -> Int
@@ -84,7 +86,7 @@ initSkillTest
   -> [Modifier]
   -> [TokenResponse Message]
   -> SkillTest Message
-initSkillTest iid source maction skillType' skillValue' difficulty' onSuccess' onFailure' modifiers' tokenResponses'
+initSkillTest iid source target maction skillType' skillValue' difficulty' onSuccess' onFailure' modifiers' tokenResponses'
   = SkillTest
     { skillTestInvestigator = iid
     , skillTestSkillType = skillType'
@@ -101,6 +103,7 @@ initSkillTest iid source maction skillType' skillValue' difficulty' onSuccess' o
     , skillTestModifiers = mempty
     , skillTestCommittedCards = mempty
     , skillTestSource = source
+    , skillTestTarget = target
     , skillTestAction = maction
     , skillTestSubscribers = [SkillTestInitiatorTarget, InvestigatorTarget iid]
     }
@@ -111,9 +114,6 @@ modifiers = lens skillTestModifiers $ \m x -> m { skillTestModifiers = x }
 subscribers :: Lens' (SkillTest a) [Target]
 subscribers =
   lens skillTestSubscribers $ \m x -> m { skillTestSubscribers = x }
-
--- skillValue :: Lens' (SkillTest a) Int
--- skillValue = lens skillTestSkillValue $ \m x -> m { skillTestSkillValue = x }
 
 valueModifier :: Lens' (SkillTest a) Int
 valueModifier =
@@ -187,7 +187,10 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
     TriggerSkillTest iid -> do
       modifiers' <- getModifiers iid
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
-        then s <$ unshiftMessage (RunSkillTest iid [])
+        then s <$ unshiftMessages
+          [ RunSkillTestSourceNotification iid skillTestSource
+          , RunSkillTest iid []
+          ]
         else s <$ unshiftMessage (RequestTokens SkillTestSource iid 1 SetAside)
     DrawAnotherToken iid valueModifier' -> do
       unshiftMessage (RequestTokens SkillTestSource iid 1 SetAside)

@@ -11,7 +11,6 @@ spec :: Spec
 spec = describe "Aquinnah (1)" $ do
   it "can redirect damage to another enemy at your location" $ do
     aquinnah <- buildAsset "01082"
-    print aquinnah
     investigator <- testInvestigator "00000" id
     enemy1 <- testEnemy
       (\attrs ->

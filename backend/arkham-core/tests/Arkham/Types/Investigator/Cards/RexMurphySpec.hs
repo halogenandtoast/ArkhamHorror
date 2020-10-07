@@ -48,6 +48,7 @@ spec = describe "Rex Murphy" $ do
           , BeginSkillTest
             (getId () rexMurphy)
             TestSource
+            TestTarget
             Nothing
             SkillIntellect
             2
@@ -80,6 +81,7 @@ spec = describe "Rex Murphy" $ do
           , BeginSkillTest
             (getId () rexMurphy)
             TestSource
+            TestTarget
             Nothing
             SkillIntellect
             6 -- two higher

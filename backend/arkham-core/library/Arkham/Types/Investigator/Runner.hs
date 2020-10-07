@@ -13,6 +13,7 @@ import Arkham.Types.Location
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Query
+import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude
@@ -46,4 +47,5 @@ type InvestigatorRunner investigator env
     , HasSet ExhaustedAssetId InvestigatorId env
     , HasModifiersFor env InvestigatorId env
     , HasSet HandCardId InvestigatorId env
+    , HasSource ForSkillTest env
     )

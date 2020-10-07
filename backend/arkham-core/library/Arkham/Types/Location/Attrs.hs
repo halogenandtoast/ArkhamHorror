@@ -218,7 +218,8 @@ instance (LocationRunner env) => RunMessage env Attrs where
         a <$ unshiftMessage
           (BeginSkillTest
             iid
-            (LocationSource lid)
+            (LocationSource lid) -- TODO: set to source of action
+            (LocationTarget lid)
             (Just Action.Investigate)
             skillType
             (shroudValueFor a)

@@ -1,10 +1,10 @@
 module Arkham.Types.Target
   ( Target(..)
+  , ForSkillTest(..)
   )
 where
 
 import Arkham.Types.ActId
-import Arkham.Types.Token
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
 import Arkham.Types.Card.CardCode
@@ -14,9 +14,12 @@ import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.SkillId
+import Arkham.Types.Token
 import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Data.Aeson
+
+data ForSkillTest = ForSkillTest
 
 data Target
   = AssetTarget AssetId
@@ -36,5 +39,6 @@ data Target
   | EnemyJustEvadedTarget
   | SkillTestInitiatorTarget
   | TokenTarget Token
+  | TestTarget
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

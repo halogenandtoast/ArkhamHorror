@@ -56,6 +56,7 @@ instance (AssetRunner env) => RunMessage env FortyOneDerringer where
           unshiftMessage
             (ChooseFightEnemy
               iid
+              (AssetSource aid)
               SkillCombat
               [ ModifierIfSucceededBy 2 (DamageDealt 1)
               , SkillModifier SkillCombat 2

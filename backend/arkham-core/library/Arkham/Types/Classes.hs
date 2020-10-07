@@ -23,6 +23,8 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
+import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Token (Token, TokenValue(..))
 import Arkham.Types.Trait
 import Arkham.Types.Window (Window)
@@ -134,12 +136,15 @@ runTest
      , HasSet InvestigatorId () env
      , HasSet ConnectedLocationId LocationId env
      , HasId LocationId InvestigatorId env
+     , HasSource ForSkillTest env
      )
   => InvestigatorId
   -> TokenValue
   -> m ()
 runTest iid tokenValue'@(TokenValue token value) = do
   windowPairings <- pairInvestigatorIdsForWindow iid
+  testSource <- fromMaybe (error "missing source")
+    <$> asks (getSource ForSkillTest)
   if value < 0
     then unshiftMessages
       ([ CheckWindow
@@ -149,7 +154,8 @@ runTest iid tokenValue'@(TokenValue token value) = do
            ]
        | (iid', who) <- windowPairings
        ]
-      <> [ When (RunSkillTest iid [tokenValue'])
+      <> [ RunSkillTestSourceNotification iid testSource
+         , When (RunSkillTest iid [tokenValue'])
          , RunSkillTest iid [tokenValue']
          ]
       )
@@ -157,7 +163,10 @@ runTest iid tokenValue'@(TokenValue token value) = do
       ([ CheckWindow iid' [Window.WhenRevealToken who token]
        | (iid', who) <- windowPairings
        ]
-      <> [RunSkillTest iid [tokenValue']]
+      <> [ RunSkillTestSourceNotification iid testSource
+         , When (RunSkillTest iid [tokenValue'])
+         , RunSkillTest iid [tokenValue']
+         ]
       )
 
 class HasModifiers1 env f where
@@ -183,6 +192,9 @@ class HasModifiers env a where
   getModifiers :: (MonadReader env m, MonadIO m) => a -> m [Modifier]
   default getModifiers :: (Generic a, HasModifiers1 env (Rep a), MonadIO m, MonadReader env m) => a -> m [Modifier]
   getModifiers = defaultGetModifiers
+
+class HasSource b a where
+  getSource :: b -> a -> Maybe Source
 
 class HasSet c b a where
   getSet :: b -> a -> HashSet c
@@ -253,6 +265,7 @@ type ActionRunner env investigator
     , HasModifiersFor env InvestigatorId env
     , HasSet Trait EnemyId env
     , HasId CardCode EnemyId env
+    , HasSource ForSkillTest env
     )
 
 class HasActions1 env investigator f where

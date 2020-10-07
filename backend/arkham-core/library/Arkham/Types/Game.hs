@@ -508,6 +508,9 @@ instance HasList Enemy () (Game queue) where
 instance HasList Ability () (Game queue) where
   getList _ g = g ^. agendas . traverse . to getAbilities
 
+instance HasSource ForSkillTest (Game queue) where
+  getSource _ g = g ^? skillTest . traverse . to skillTestSource
+
 instance HasSet HandCardId InvestigatorId (Game queue) where
   getSet iid =
     setFromList . map (HandCardId . getCardId) . handOf . getInvestigator iid
@@ -1544,7 +1547,7 @@ runGameMessage msg g = case msg of
     pushMessage BeginInvestigation
     pure $ g & usedAbilities %~ filter
       (\(_, Ability {..}) -> abilityLimit /= PerPhase)
-  BeginSkillTest iid source maction skillType difficulty onSuccess onFailure skillTestModifiers tokenResponses
+  BeginSkillTest iid source target maction skillType difficulty onSuccess onFailure skillTestModifiers tokenResponses
     -> do
       let
         availableSkills = availableSkillsFor (getInvestigator iid g) skillType
@@ -1553,6 +1556,7 @@ runGameMessage msg g = case msg of
           (BeginSkillTestAfterFast
             iid
             source
+            target
             maction
             skillType
             difficulty
@@ -1565,6 +1569,7 @@ runGameMessage msg g = case msg of
           (BeginSkillTestAfterFast
             iid
             source
+            target
             maction
             skillType
             difficulty
@@ -1578,6 +1583,7 @@ runGameMessage msg g = case msg of
             [ BeginSkillTestAfterFast
                 iid
                 source
+                target
                 maction
                 skillType'
                 difficulty
@@ -1588,7 +1594,7 @@ runGameMessage msg g = case msg of
             | skillType' <- xs
             ]
           )
-  BeginSkillTestAfterFast iid source maction skillType difficulty onSuccess onFailure skillTestModifiers tokenResponses
+  BeginSkillTestAfterFast iid source target maction skillType difficulty onSuccess onFailure skillTestModifiers tokenResponses
     -> do
       unshiftMessage (BeforeSkillTest iid skillType)
       let
@@ -1608,6 +1614,7 @@ runGameMessage msg g = case msg of
           ?~ initSkillTest
                iid
                source
+               target
                maction
                skillType
                skillValue
@@ -1737,6 +1744,7 @@ runGameMessage msg g = case msg of
       unshiftMessage $ BeginSkillTest
         iid
         (TreacherySource tid)
+        (InvestigatorTarget iid)
         Nothing
         skillType
         difficulty

@@ -34,6 +34,7 @@ spec = describe "Rex's Curse" $ do
         , BeginSkillTest
           (getId () investigator)
           TestSource
+          TestTarget
           Nothing
           SkillIntellect
           5
@@ -70,6 +71,7 @@ spec = describe "Rex's Curse" $ do
         , BeginSkillTest
           (getId () investigator)
           TestSource
+          TestTarget
           Nothing
           SkillIntellect
           4

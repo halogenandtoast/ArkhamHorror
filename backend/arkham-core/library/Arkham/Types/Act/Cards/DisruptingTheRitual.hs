@@ -58,6 +58,7 @@ instance (ActRunner env) => RunMessage env DisruptingTheRitual where
           [ BeginSkillTest
             iid
             (ActSource actId)
+            (ActTarget actId)
             Nothing
             SkillWillpower
             3
@@ -68,6 +69,7 @@ instance (ActRunner env) => RunMessage env DisruptingTheRitual where
           , BeginSkillTest
             iid
             (ActSource actId)
+            (ActTarget actId)
             Nothing
             SkillAgility
             3

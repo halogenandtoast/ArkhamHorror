@@ -63,6 +63,7 @@ instance (AgendaRunner env) => RunMessage env TheRitualBegins where
         ([ BeginSkillTest
              iid
              (AgendaSource agendaId)
+             (InvestigatorTarget iid)
              Nothing
              SkillWillpower
              6

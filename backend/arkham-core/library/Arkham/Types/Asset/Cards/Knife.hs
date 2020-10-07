@@ -58,6 +58,7 @@ instance (AssetRunner env) => RunMessage env Knife where
       unshiftMessage
         (ChooseFightEnemy
           iid
+          (AssetSource aid)
           SkillCombat
           [SkillModifier SkillCombat 1]
           mempty
@@ -69,6 +70,7 @@ instance (AssetRunner env) => RunMessage env Knife where
         [ Discard (AssetTarget aid)
         , ChooseFightEnemy
           iid
+          (AssetSource aid)
           SkillCombat
           [SkillModifier SkillCombat 2, DamageDealt 1]
           mempty

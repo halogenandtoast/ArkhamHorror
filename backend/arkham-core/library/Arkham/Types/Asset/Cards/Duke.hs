@@ -61,6 +61,7 @@ instance (AssetRunner env) => RunMessage env Duke where
       unshiftMessage
         (ChooseFightEnemy
           iid
+          (AssetSource aid)
           SkillCombat
           [BaseSkillOf SkillCombat 4, DamageDealt 1]
           mempty

@@ -46,6 +46,7 @@ instance (AssetRunner env) => RunMessage env MedicalTexts where
           [ BeginSkillTest
               iid
               (AssetSource aid)
+              (InvestigatorTarget iid')
               Nothing
               SkillIntellect
               2

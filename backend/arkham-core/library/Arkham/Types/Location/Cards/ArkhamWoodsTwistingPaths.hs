@@ -10,6 +10,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
@@ -47,6 +48,7 @@ instance (LocationRunner env) => RunMessage env ArkhamWoodsTwistingPaths where
           (BeginSkillTest
             iid
             (LocationSource "01151")
+            (InvestigatorTarget iid)
             Nothing
             SkillIntellect
             3

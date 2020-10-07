@@ -10,6 +10,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashSet as HashSet
@@ -44,6 +45,7 @@ instance (LocationRunner env) => RunMessage env ArkhamWoodsUnhallowedGround wher
         (BeginSkillTest
           iid
           (LocationSource "01150")
+          (InvestigatorTarget iid)
           Nothing
           SkillWillpower
           4

@@ -52,6 +52,7 @@ instance (AssetRunner env) => RunMessage env Machete where
       unshiftMessage
         (ChooseFightEnemy
           iid
+          (AssetSource aid)
           SkillCombat
           (damageDealtModifiers <> [SkillModifier SkillCombat 1])
           mempty

@@ -53,6 +53,7 @@ instance (AssetRunner env) => RunMessage env BaseballBat where
       a <$ unshiftMessage
         (ChooseFightEnemy
           iid
+          (AssetSource aid)
           SkillCombat
           [SkillModifier SkillCombat 2]
           [ OnAnyToken

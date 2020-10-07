@@ -55,6 +55,7 @@ instance (AssetRunner env) => RunMessage env JennysTwin45s where
           unshiftMessage
             (ChooseFightEnemy
               iid
+              (AssetSource aid)
               SkillCombat
               [DamageDealt 1, SkillModifier SkillCombat 2]
               mempty

@@ -15,6 +15,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Window
 import ClassyPrelude
 import Lens.Micro
@@ -78,6 +79,7 @@ instance (LocationRunner env) => RunMessage env Parlor where
             (BeginSkillTest
               iid
               (LocationSource lid)
+              (AssetTarget aid)
               (Just Action.Parley)
               SkillIntellect
               4

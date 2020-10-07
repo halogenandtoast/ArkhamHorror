@@ -12,6 +12,7 @@ import Arkham.Types.Location
 import Arkham.Types.Message
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Target
 
 playEvent :: Investigator -> Event -> Message
 playEvent i e = InvestigatorPlayEvent (getId () i) (getId () e) Nothing
@@ -41,7 +42,8 @@ enemyAttack :: Investigator -> Enemy -> Message
 enemyAttack i e = EnemyAttack (getId () i) (getId () e)
 
 fightEnemy :: Investigator -> Enemy -> Message
-fightEnemy i e = FightEnemy (getId () i) (getId () e) SkillCombat [] [] False
+fightEnemy i e =
+  FightEnemy (getId () i) (getId () e) TestSource SkillCombat [] [] False
 
 engageEnemy :: Investigator -> Enemy -> Message
 engageEnemy i e = EngageEnemy (getId () i) (getId () e) False
@@ -66,6 +68,7 @@ beginSkillTest :: Investigator -> SkillType -> Int -> Message
 beginSkillTest i stype difficulty = BeginSkillTest
   (getId () i)
   TestSource
+  TestTarget
   Nothing
   stype
   difficulty

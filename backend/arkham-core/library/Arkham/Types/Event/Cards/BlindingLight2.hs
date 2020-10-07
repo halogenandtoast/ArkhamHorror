@@ -32,6 +32,7 @@ instance (EventRunner env) => RunMessage env BlindingLight2 where
       unshiftMessages
         [ ChooseEvadeEnemy
           iid
+          (EventSource eid)
           SkillWillpower
           [Damage EnemyJustEvadedTarget (EventSource eventId) 2]
           []

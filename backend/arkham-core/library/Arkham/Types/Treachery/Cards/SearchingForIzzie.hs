@@ -62,6 +62,7 @@ instance (TreacheryRunner env) => RunMessage env SearchingForIzzie where
         (BeginSkillTest
           iid
           (TreacherySource treacheryId)
+          (InvestigatorTarget iid)
           (Just Action.Investigate)
           SkillIntellect
           shroud

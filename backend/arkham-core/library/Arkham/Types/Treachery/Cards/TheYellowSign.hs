@@ -30,6 +30,7 @@ instance (TreacheryRunner env) => RunMessage env TheYellowSign where
         (BeginSkillTest
           iid
           (TreacherySource treacheryId)
+          (InvestigatorTarget iid)
           Nothing
           SkillWillpower
           4

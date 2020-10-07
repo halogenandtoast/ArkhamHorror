@@ -60,6 +60,7 @@ instance (AssetRunner env) => RunMessage env Rolands38Special where
           unshiftMessage
             (ChooseFightEnemy
               iid
+              (AssetSource aid)
               SkillCombat
               [DamageDealt 1, SkillModifier SkillCombat skillModifier]
               mempty

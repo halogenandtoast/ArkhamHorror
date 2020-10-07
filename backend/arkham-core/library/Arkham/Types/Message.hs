@@ -145,8 +145,8 @@ data Message
   | AddUses Target UseType Int
   | ResolveToken Token InvestigatorId
   | Investigate InvestigatorId LocationId SkillType [Modifier] [TokenResponse Message] [Message] Bool
-  | ChooseFightEnemy InvestigatorId SkillType [Modifier] [TokenResponse Message] Bool
-  | ChooseEvadeEnemy InvestigatorId SkillType [Message] [Message] [TokenResponse Message] Bool
+  | ChooseFightEnemy InvestigatorId Source SkillType [Modifier] [TokenResponse Message] Bool
+  | ChooseEvadeEnemy InvestigatorId Source SkillType [Message] [Message] [TokenResponse Message] Bool
   | EngageEnemy InvestigatorId EnemyId Bool
   | DisengageEnemy InvestigatorId EnemyId
   | ChooseEndTurn InvestigatorId
@@ -201,14 +201,15 @@ data Message
   | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int
   | DiscoverClues InvestigatorId LocationId Int
   | AfterDiscoverClues InvestigatorId LocationId Int
-  | BeginSkillTest InvestigatorId Source (Maybe Action) SkillType Int [Message]
+  | BeginSkillTest InvestigatorId Source Target (Maybe Action) SkillType Int [Message]
                 [Message] [Modifier] [TokenResponse Message]
-  | BeginSkillTestAfterFast InvestigatorId Source (Maybe Action) SkillType Int [Message]
+  | BeginSkillTestAfterFast InvestigatorId Source Target (Maybe Action) SkillType Int [Message]
                 [Message] [Modifier] [TokenResponse Message]
   | StartSkillTest InvestigatorId
   | BeforeSkillTest InvestigatorId SkillType
   | TriggerSkillTest InvestigatorId
   | RunSkillTest InvestigatorId [TokenValue]
+  | RunSkillTestSourceNotification InvestigatorId Source
   | HandlePointOfFailure InvestigatorId Target Int -- Really do x n times, does not have to be failure
   | SkillTestResults
   | SkillTestApplyResults
@@ -267,9 +268,9 @@ data Message
   | Discard Target
   | SetEncounterDeck [EncounterCard]
   | ChooseAndDiscardAsset InvestigatorId
-  | FightEnemy InvestigatorId EnemyId SkillType [Modifier] [TokenResponse Message] Bool
+  | FightEnemy InvestigatorId EnemyId Source SkillType [Modifier] [TokenResponse Message] Bool
   | WhenAttackEnemy InvestigatorId EnemyId
-  | AttackEnemy InvestigatorId EnemyId SkillType [Modifier] [TokenResponse Message]
+  | AttackEnemy InvestigatorId EnemyId Source SkillType [Modifier] [TokenResponse Message]
   | AfterAttackEnemy InvestigatorId EnemyId
   | AfterEnemyAttacks EnemyId Target
   | WhenEvadeEnemy InvestigatorId EnemyId

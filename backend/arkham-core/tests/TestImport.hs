@@ -191,14 +191,14 @@ testUnconnectedLocations f1 f2 = do
   pure (location1, location2)
 
 getActionsOf
-  :: (MonadIO m, HasActions GameInternal investigator a)
+  :: (MonadIO m, HasActions GameInternal investigator a, Entity a)
   => GameExternal
   -> investigator
   -> Window
   -> a
   -> m [Message]
 getActionsOf game investigator window e =
-  withGame game (getActions investigator window e)
+  withGame game (getActions investigator window (updated game e))
 
 chaosBagTokensOf :: Game queue -> [Token]
 chaosBagTokensOf g = g ^. chaosBag . ChaosBag.chaosBagTokensLens

@@ -79,6 +79,7 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
           [ BeginSkillTest
             iid
             (TreacherySource treacheryId)
+            (TreacheryTarget treacheryId)
             Nothing
             SkillCombat
             4
@@ -89,6 +90,7 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
           , BeginSkillTest
             iid
             (TreacherySource treacheryId)
+            (TreacheryTarget treacheryId)
             Nothing
             SkillAgility
             4

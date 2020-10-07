@@ -48,6 +48,7 @@ instance (AssetRunner env) => RunMessage env Switchblade where
       a <$ unshiftMessage
         (ChooseFightEnemy
           iid
+          (AssetSource aid)
           SkillCombat
           [ModifierIfSucceededBy 2 (DamageDealt 1)]
           mempty

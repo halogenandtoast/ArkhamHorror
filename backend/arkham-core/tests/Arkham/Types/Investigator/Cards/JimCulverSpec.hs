@@ -5,6 +5,7 @@ where
 
 import TestImport
 
+import Arkham.Types.Target
 import Arkham.Types.Token
 
 spec :: Spec
@@ -20,6 +21,7 @@ spec = describe "Jum Culver" $ do
           , BeginSkillTest
             (getId () jimCulver)
             TestSource
+            TestTarget
             Nothing
             SkillIntellect
             2
@@ -50,6 +52,7 @@ spec = describe "Jum Culver" $ do
           , BeginSkillTest
             (getId () jimCulver)
             TestSource
+            TestTarget
             Nothing
             SkillIntellect
             2
@@ -81,6 +84,7 @@ spec = describe "Jum Culver" $ do
           , BeginSkillTest
             (getId () jimCulver)
             TestSource
+            TestTarget
             Nothing
             SkillIntellect
             2

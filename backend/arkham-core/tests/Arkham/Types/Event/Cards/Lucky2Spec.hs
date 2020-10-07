@@ -46,3 +46,38 @@ spec = describe "Lucky! (2)" $ do
         0
       )
     updated game investigator `shouldSatisfy` handIs [PlayerCard cardToDraw]
+
+  it "does not cause an autofail to pass" $ do
+    cardToDraw <- testPlayerCard
+    investigator <- testInvestigator "00000" $ \attrs -> attrs
+      { investigatorIntellect = 1
+      , investigatorResources = 1
+      , investigatorDeck = Deck [cardToDraw]
+      }
+    lucky <- buildPlayerCard "01084"
+    scenario' <- testScenario "00000" id
+    game <-
+      runGameTest
+        investigator
+        [ SetTokens [AutoFail]
+        , addToHand investigator (PlayerCard lucky)
+        , beginSkillTest investigator SkillIntellect 2
+        ]
+        (scenario ?~ scenario')
+      >>= runGameTestOnlyOption "start skill test"
+      >>= runGameTestOptionMatching
+            "play lucky!"
+            (\case
+              Run{} -> True
+              _ -> False
+            )
+      >>= runGameTestOnlyOption "apply results"
+    game `shouldSatisfy` hasProcessedMessage
+      (FailedSkillTest
+        (getId () investigator)
+        Nothing
+        TestSource
+        SkillTestInitiatorTarget
+        2
+      )
+    updated game investigator `shouldSatisfy` handIs [PlayerCard cardToDraw]

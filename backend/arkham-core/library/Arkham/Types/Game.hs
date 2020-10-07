@@ -511,6 +511,9 @@ instance HasList Ability () (Game queue) where
 instance HasSource ForSkillTest (Game queue) where
   getSource _ g = g ^? skillTest . traverse . to skillTestSource
 
+instance HasTarget ForSkillTest (Game queue) where
+  getTarget _ g = g ^? skillTest . traverse . to skillTestTarget
+
 instance HasSet HandCardId InvestigatorId (Game queue) where
   getSet iid =
     setFromList . map (HandCardId . getCardId) . handOf . getInvestigator iid
@@ -1871,7 +1874,7 @@ runMessages g = if g ^. gameOver || g ^. pending
   else flip runReaderT g $ do
     liftIO $ whenM
       (isJust <$> lookupEnv "DEBUG")
-      (readIORef (gameMessages g) >>= pPrint)
+      (readIORef (gameMessages g) >>= pPrint >> putStrLn "\n")
     mmsg <- popMessage
     for_ mmsg $ \msg ->
       atomicModifyIORef' (gameMessageHistory g) (\queue -> (msg : queue, ()))

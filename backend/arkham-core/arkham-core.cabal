@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4483d4ae5b57ca4c00e8e0b2800a0c7d10d463be648ed8941d9641f44324f22d
+-- hash: 5ed7e9e48786674263c6343d133458e6afd3dd22b15060b3ed95498cf56153db
 
 name:           arkham-core
 version:        0.0.0
@@ -168,6 +168,7 @@ library
       Arkham.Types.Event.Attrs
       Arkham.Types.Event.Cards
       Arkham.Types.Event.Cards.Backstab
+      Arkham.Types.Event.Cards.BaitAndSwitch
       Arkham.Types.Event.Cards.Barricade
       Arkham.Types.Event.Cards.Barricade3
       Arkham.Types.Event.Cards.BlindingLight
@@ -399,6 +400,7 @@ test-suite spec
       Arkham.Types.Asset.Cards.ZoeysCrossSpec
       Arkham.Types.Enemy.Cards.TheMaskedHunterSpec
       Arkham.Types.Event.Cards.BackstabSpec
+      Arkham.Types.Event.Cards.BaitAndSwitchSpec
       Arkham.Types.Event.Cards.Barricade3Spec
       Arkham.Types.Event.Cards.BarricadeSpec
       Arkham.Types.Event.Cards.BlindingLight2Spec

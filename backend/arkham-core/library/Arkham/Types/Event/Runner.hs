@@ -7,6 +7,7 @@ import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Query
+import Arkham.Types.Target
 import Arkham.Types.Trait
 
 type EventRunner env
@@ -24,4 +25,5 @@ type EventRunner env
     , HasSet Trait AssetId env
     , HasSet AssetId InvestigatorId env
     , HasCount ClueCount InvestigatorId env
+    , HasTarget ForSkillTest env
     )

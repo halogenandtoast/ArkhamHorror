@@ -741,13 +741,14 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure $ a & engagedEnemies %~ HashSet.delete eid
   AddToVictory (EnemyTarget eid) ->
     pure $ a & engagedEnemies %~ HashSet.delete eid
-  ChooseEvadeEnemy iid _source skillType onSuccess onFailure tokenResponses isAction
+  ChooseEvadeEnemy iid source skillType onSuccess onFailure tokenResponses isAction
     | iid == investigatorId
     -> a <$ unshiftMessage
       (Ask iid $ ChooseOne $ map
         (\eid -> EvadeEnemy
           iid
           eid
+          source
           skillType
           onSuccess
           onFailure
@@ -756,15 +757,15 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         )
         (HashSet.toList investigatorEngagedEnemies)
       )
-  EvadeEnemy iid eid skillType onSuccess onFailure tokenResponses True
+  EvadeEnemy iid eid source skillType onSuccess onFailure tokenResponses True
     | iid == investigatorId -> a <$ unshiftMessages
       [ TakeAction iid 1 (Just Action.Evade)
-      , EvadeEnemy iid eid skillType onSuccess onFailure tokenResponses False
+      , EvadeEnemy iid eid source skillType onSuccess onFailure tokenResponses False
       ]
-  EvadeEnemy iid eid skillType onSuccess onFailure tokenResponses False
+  EvadeEnemy iid eid source skillType onSuccess onFailure tokenResponses False
     | iid == investigatorId -> a <$ unshiftMessages
       [ WhenEvadeEnemy iid eid
-      , TryEvadeEnemy iid eid skillType onSuccess onFailure [] tokenResponses
+      , TryEvadeEnemy iid eid source skillType onSuccess onFailure [] tokenResponses
       , AfterEvadeEnemy iid eid
       ]
   MoveAction iid lid True | iid == investigatorId -> a <$ unshiftMessages

@@ -196,6 +196,9 @@ class HasModifiers env a where
 class HasSource b a where
   getSource :: b -> a -> Maybe Source
 
+class HasTarget b a where
+  getTarget :: b -> a -> Maybe Target
+
 class HasSet c b a where
   getSet :: b -> a -> HashSet c
 

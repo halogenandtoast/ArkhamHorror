@@ -248,7 +248,14 @@ instance (IsInvestigator investigator) => HasActions env investigator Attrs wher
     investigatorId = getId () i
     locationId = locationOf i
     fightEnemyActions =
-      [ FightEnemy investigatorId enemyId (InvestigatorSource investigatorId) SkillCombat [] mempty True
+      [ FightEnemy
+          investigatorId
+          enemyId
+          (InvestigatorSource investigatorId)
+          SkillCombat
+          []
+          mempty
+          True
       | enemyLocation == locationId && canFight enemy i
       ]
     engageEnemyActions =
@@ -256,7 +263,15 @@ instance (IsInvestigator investigator) => HasActions env investigator Attrs wher
       | enemyLocation == locationId && canEngage enemy i
       ]
     evadeEnemyActions =
-      [ EvadeEnemy investigatorId enemyId SkillAgility mempty mempty mempty True
+      [ EvadeEnemy
+          investigatorId
+          enemyId
+          (InvestigatorSource investigatorId)
+          SkillAgility
+          mempty
+          mempty
+          mempty
+          True
       | canEvade enemy i
       ]
   getActions _ _ _ = pure []
@@ -364,7 +379,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
           )
     EnemyEvaded iid eid | eid == enemyId ->
       pure $ a & engagedInvestigators %~ HashSet.delete iid & exhausted .~ True
-    TryEvadeEnemy iid eid skillType onSuccess onFailure skillTestModifiers tokenResponses
+    TryEvadeEnemy iid eid source skillType onSuccess onFailure skillTestModifiers tokenResponses
       | eid == enemyId
       -> do
         let
@@ -372,13 +387,13 @@ instance (EnemyRunner env) => RunMessage env Attrs where
             then EnemyAttack iid eid : onFailure
             else onFailure
           onSuccess' = flip map onSuccess $ \case
-            Damage EnemyJustEvadedTarget source n ->
-              EnemyDamage eid iid source n
+            Damage EnemyJustEvadedTarget source' n ->
+              EnemyDamage eid iid source' n
             msg' -> msg'
         a <$ unshiftMessage
           (BeginSkillTest
             iid
-            (EnemySource eid) -- TODO: Change to source
+            source
             (EnemyTarget eid)
             (Just Action.Evade)
             skillType

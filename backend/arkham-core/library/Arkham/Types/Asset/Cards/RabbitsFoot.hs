@@ -34,6 +34,7 @@ instance (IsInvestigator investigator) => HasActions env investigator RabbitsFoo
             1
             (ReactionAbility (AfterFailSkillTest You n))
           )
+      | not assetExhausted
       ]
   getActions i window (RabbitsFoot x) = getActions i window x
 

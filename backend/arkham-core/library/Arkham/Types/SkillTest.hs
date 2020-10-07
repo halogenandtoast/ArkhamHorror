@@ -144,7 +144,7 @@ applicableModifiers SkillTest {..} = mapMaybe
   ((concat . toList $ skillTestModifiers) <> skillTestTempModifiers)
  where
   applicableModifier (ModifierIfSucceededBy n m) = case skillTestResult of
-    SucceededBy x | x >= n -> Just m
+    SucceededBy _ x | x >= n -> Just m
     _ -> Nothing
   applicableModifier m = Just m
 
@@ -219,13 +219,23 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         [ Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
         , SkillTestEnds
         ]
-      pure $ s & result .~ SucceededBy 0
+      pure $ s & result .~ SucceededBy True 0
     FailSkillTest -> do
       unshiftMessages
-        [ Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
-        , SkillTestEnds
-        ]
-      pure $ s & result .~ FailedBy skillTestDifficulty
+        $ [ Will
+              (FailedSkillTest
+                skillTestInvestigator
+                skillTestAction
+                skillTestSource
+                target
+                skillTestDifficulty
+              )
+          | target <- skillTestSubscribers
+          ]
+        <> [ Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
+           , SkillTestEnds
+           ]
+      pure $ s & result .~ FailedBy True skillTestDifficulty
     StartSkillTest _ -> s <$ unshiftMessages
       (HashMap.foldMapWithKey
           (\k (i, _) -> [CommitCard i k])
@@ -256,7 +266,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       unshiftMessage
         (Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults])
       case skillTestResult of
-        SucceededBy n -> unshiftMessages
+        SucceededBy _ n -> unshiftMessages
           [ Will
               (PassedSkillTest
                 skillTestInvestigator
@@ -267,7 +277,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
               )
           | target <- skillTestSubscribers
           ]
-        FailedBy n -> unshiftMessages
+        FailedBy _ n -> unshiftMessages
           [ Will
               (FailedSkillTest
                 skillTestInvestigator
@@ -281,22 +291,25 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         Unrun -> pure ()
       pure s
     AddModifiers AfterSkillTestTarget source modifiers' -> do
-      withQueue $ \queue ->
-        let
-          queue' = flip filter queue $ \case
-            Will FailedSkillTest{} -> False
-            Will PassedSkillTest{} -> False
-            Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
-              | skillTestInvestigator == skillTestInvestigator' -> False
-            _ -> True
-        in (queue', ())
-      unshiftMessage (RunSkillTest skillTestInvestigator [])
-      pure $ s & modifiers %~ insertWith (<>) source modifiers'
+      case skillTestResult of
+        FailedBy True _ -> pure s
+        _ -> do
+          withQueue $ \queue ->
+            let
+              queue' = flip filter queue $ \case
+                Will FailedSkillTest{} -> False
+                Will PassedSkillTest{} -> False
+                Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
+                  | skillTestInvestigator == skillTestInvestigator' -> False
+                _ -> True
+            in (queue', ())
+          unshiftMessage (RunSkillTest skillTestInvestigator [])
+          pure $ s & modifiers %~ insertWith (<>) source modifiers'
     SkillTestApplyResultsAfter -> do -- ST.7 -- apply results
       unshiftMessage SkillTestEnds -- -> ST.8 -- Skill test ends
 
       case skillTestResult of
-        SucceededBy n ->
+        SucceededBy _ n ->
           unshiftMessages
             $ skillTestOnSuccess
             <> [ After
@@ -309,7 +322,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
                    )
                | target <- skillTestSubscribers
                ]
-        FailedBy n ->
+        FailedBy _ n ->
           unshiftMessages
             $ skillTestOnFailure
             <> [ After
@@ -333,7 +346,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
     SkillTestApplyResults -> do -- ST.7 Apply Results
       unshiftMessage SkillTestApplyResultsAfter
       s <$ case skillTestResult of
-        SucceededBy n -> unshiftMessages
+        SucceededBy _ n -> unshiftMessages
           [ PassedSkillTest
               skillTestInvestigator
               skillTestAction
@@ -342,7 +355,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
               n
           | target <- skillTestSubscribers
           ]
-        FailedBy n -> unshiftMessages
+        FailedBy _ n -> unshiftMessages
           [ FailedSkillTest
               skillTestInvestigator
               skillTestAction
@@ -385,11 +398,15 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         then
           pure
           $ s
-          & (result .~ SucceededBy (modifiedSkillValue' - skillTestDifficulty))
+          & (result
+            .~ SucceededBy False (modifiedSkillValue' - skillTestDifficulty)
+            )
           & (valueModifier .~ totaledTokenValues)
         else
           pure
           $ s
-          & (result .~ FailedBy (skillTestDifficulty - modifiedSkillValue'))
+          & (result
+            .~ FailedBy False (skillTestDifficulty - modifiedSkillValue')
+            )
           & (valueModifier .~ totaledTokenValues)
     _ -> pure s

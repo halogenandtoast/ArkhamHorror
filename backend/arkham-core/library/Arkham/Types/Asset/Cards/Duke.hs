@@ -16,6 +16,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Window
 import ClassyPrelude
+import qualified Data.HashSet as HashSet
 import Lens.Micro
 
 newtype Duke = Duke Attrs
@@ -42,7 +43,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Duke whe
                 1
                 (ActionAbility 1 (Just Action.Fight))
               )
-          | fightAvailable && canDo Action.Fight i
+          | fightAvailable && canDo Action.Fight i && not assetExhausted
           ]
         <> [ ActivateCardAbilityAction
                (getId () i)
@@ -51,7 +52,9 @@ instance (ActionRunner env investigator) => HasActions env investigator Duke whe
                  2
                  (ActionAbility 1 (Just Action.Investigate))
                )
-           | investigateAvailable && canDo Action.Investigate i
+           | investigateAvailable
+             && canDo Action.Investigate i
+             && not assetExhausted
            ]
   getActions i window (Duke x) = getActions i window x
 
@@ -70,8 +73,12 @@ instance (AssetRunner env) => RunMessage env Duke where
       pure . Duke $ attrs & exhausted .~ True
     UseCardAbility iid _ (AssetSource aid) _ 2 | aid == assetId -> do
       lid <- asks (getId iid)
-      connectedLocationIds <- map unConnectedLocationId . setToList <$> asks
-        (getSet lid)
+      blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
+      connectedLocationIds <- HashSet.map unConnectedLocationId
+        <$> asks (getSet lid)
+      let
+        unblockedConnectedLocationIds =
+          setToList $ connectedLocationIds `difference` blockedLocationIds
       let
         investigate atLid = Investigate
           iid
@@ -81,7 +88,7 @@ instance (AssetRunner env) => RunMessage env Duke where
           mempty
           mempty
           False
-      if null connectedLocationIds
+      if null unblockedConnectedLocationIds
         then unshiftMessage $ investigate lid
         else unshiftMessage
           (Ask
@@ -89,7 +96,7 @@ instance (AssetRunner env) => RunMessage env Duke where
             (ChooseOne
             $ investigate lid
             : [ Run [MoveAction iid lid' False, investigate lid']
-              | lid' <- connectedLocationIds
+              | lid' <- unblockedConnectedLocationIds
               ]
             )
           )

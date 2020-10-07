@@ -16,4 +16,4 @@ data Action
   | Resign
   | Resource
   deriving stock (Show, Eq, Ord, Enum, Bounded, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)

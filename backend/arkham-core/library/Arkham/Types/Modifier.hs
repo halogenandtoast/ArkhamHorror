@@ -22,6 +22,7 @@ data Modifier
   | CanPlayTopOfDiscard (Maybe PlayerCardType, [Trait])
   | CannotBeAttackedByNonElite
   | CannotBeEnteredByNonElite
+  | DoNotDrawChaosTokensForSkillChecks
   | SpawnNonEliteAtConnectingInstead
   | CannotDiscoverClues
   | CannotInvestigate
@@ -46,13 +47,13 @@ data Modifier
   | XPModifier Int
   | ModifierIfSucceededBy Int Modifier
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass (FromJSON, ToJSON, Hashable)
 
 data ActionTarget
   = FirstOneOf [Action]
   | IsAction Action
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON)
+  deriving anyclass (FromJSON, ToJSON, Hashable)
 
 isBlank :: Modifier -> Bool
 isBlank Blank{} = True

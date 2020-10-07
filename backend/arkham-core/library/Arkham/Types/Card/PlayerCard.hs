@@ -26,7 +26,7 @@ data PlayerCardType
   | PlayerTreacheryType
   | PlayerEnemyType
   deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 newtype BearerId = BearerId { unBearerId :: CardCode }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
@@ -223,6 +223,7 @@ allPlayerCards = HashMap.fromList
   , ("01082", aquinnah1)
   , ("01083", closeCall2)
   , ("01084", lucky2)
+  , ("01085", willToSurvive4)
   , ("01086", knife)
   , ("01087", flashlight)
   , ("01088", emergencyCache)
@@ -794,6 +795,15 @@ lucky2 cardId = (event cardId "01084" "Lucky!" 1 Survivor)
   , pcFast = True
   , pcWindows = setFromList [WhenWouldFailSkillTest You]
   , pcLevel = 2
+  }
+
+willToSurvive4 :: CardId -> PlayerCard
+willToSurvive4 cardId = (event cardId "01085" "Will to Survive" 4 Survivor)
+  { pcSkills = [SkillCombat, SkillWild]
+  , pcTraits = [Spirit]
+  , pcFast = True
+  , pcWindows = setFromList [DuringTurn You]
+  , pcLevel = 4
   }
 
 knife :: CardId -> PlayerCard

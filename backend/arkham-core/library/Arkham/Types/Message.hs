@@ -274,8 +274,8 @@ data Message
   | AfterAttackEnemy InvestigatorId EnemyId
   | AfterEnemyAttacks EnemyId Target
   | WhenEvadeEnemy InvestigatorId EnemyId
-  | EvadeEnemy InvestigatorId EnemyId SkillType [Message] [Message] [TokenResponse Message] Bool
-  | TryEvadeEnemy InvestigatorId EnemyId SkillType [Message] [Message] [Modifier] [TokenResponse Message]
+  | EvadeEnemy InvestigatorId EnemyId Source SkillType [Message] [Message] [TokenResponse Message] Bool
+  | TryEvadeEnemy InvestigatorId EnemyId Source SkillType [Message] [Message] [Modifier] [TokenResponse Message]
   | EnemyEvaded InvestigatorId EnemyId
   | AfterEvadeEnemy InvestigatorId EnemyId
   | SuccessfulInvestigation InvestigatorId LocationId

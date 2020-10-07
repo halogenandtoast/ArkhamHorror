@@ -35,13 +35,14 @@ instance (IsInvestigator investigator) => HasActions env investigator HuntingNig
 
 instance (EnemyRunner env) => RunMessage env HuntingNightgaunt where
   runMessage msg (HuntingNightgaunt attrs@Attrs {..}) = case msg of
-    TryEvadeEnemy iid eid skillType onSuccess onFailure skillTestModifiers tokenResponses
+    TryEvadeEnemy iid eid source skillType onSuccess onFailure skillTestModifiers tokenResponses
       | eid == enemyId
       -> HuntingNightgaunt
         <$> runMessage
               (TryEvadeEnemy
                 iid
                 eid
+                source
                 skillType
                 onSuccess
                 onFailure

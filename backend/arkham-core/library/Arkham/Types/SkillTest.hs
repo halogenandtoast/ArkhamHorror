@@ -179,12 +179,17 @@ modifiedTokenValue baseValue SkillTest {..} = foldr
     if baseValue < 0 then n + baseValue else n
   applyModifier _ n = n
 
-type SkillTestRunner env = (HasQueue env, HasCard InvestigatorId env)
+type SkillTestRunner env
+  = (HasQueue env, HasCard InvestigatorId env, HasModifiers env InvestigatorId)
 
 instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
   runMessage msg s@SkillTest {..} = case msg of
     TriggerSkillTest iid -> do
-      s <$ unshiftMessage (RequestTokens SkillTestSource iid 1 SetAside)
+      modifiers' <- getModifiers iid
+      print modifiers'
+      if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
+        then s <$ unshiftMessage (RunSkillTest iid [])
+        else s <$ unshiftMessage (RequestTokens SkillTestSource iid 1 SetAside)
     DrawAnotherToken iid valueModifier' -> do
       unshiftMessage (RequestTokens SkillTestSource iid 1 SetAside)
       pure $ s & valueModifier +~ valueModifier'

@@ -34,6 +34,7 @@ data Source
   | ActSource ActId
   | PlayerCardSource CardId
   | TestSource
+  | EndOfTurnSource Source
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 

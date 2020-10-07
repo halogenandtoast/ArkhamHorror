@@ -1078,7 +1078,12 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       $ a
       & (modifiers %~ HashMap.delete source)
       & (slots %~ HashMap.map (filter ((source /=) . sourceOfSlot)))
-  ChooseEndTurn iid | iid == investigatorId -> pure $ a & endedTurn .~ True
+  ChooseEndTurn iid | iid == investigatorId ->
+    pure $ a & endedTurn .~ True & modifiers %~ HashMap.filterWithKey
+      (\k _ -> case k of
+        EndOfTurnSource{} -> False
+        _ -> True
+      )
   BeginRound ->
     pure
       $ a

@@ -254,6 +254,7 @@ allPlayerCards = HashMap.fromList
   , ("02014", duke)
   , ("02015", wrackedByNightmares)
   , ("02032", fireAxe)
+  , ("02033", peterSylvestre)
   , ("02147", bandolier)
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
@@ -987,11 +988,16 @@ wrackedByNightmares cardId =
     }
 
 fireAxe :: CardId -> PlayerCard
-fireAxe cardId =
-  (asset cardId "02032" "Fire Axe" 1 Survivor)
-    { pcSkills = [SkillCombat]
-    , pcTraits = [Item, Weapon, Melee]
-    }
+fireAxe cardId = (asset cardId "02032" "Fire Axe" 1 Survivor)
+  { pcSkills = [SkillCombat]
+  , pcTraits = [Item, Weapon, Melee]
+  }
+
+peterSylvestre :: CardId -> PlayerCard
+peterSylvestre cardId = (asset cardId "02033" "Peter Sylvestre" 3 Survivor)
+  { pcSkills = [SkillWillpower]
+  , pcTraits = [Ally, Miskatonic]
+  }
 
 bandolier :: CardId -> PlayerCard
 bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)

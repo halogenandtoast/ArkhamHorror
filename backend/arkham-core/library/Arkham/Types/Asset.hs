@@ -84,6 +84,7 @@ data Asset
   | JimsTrumpet' JimsTrumpet
   | Duke' Duke
   | FireAxe' FireAxe
+  | PeterSylvestre' PeterSylvestre
   | Bandolier' Bandolier
   | PhysicalTraining2' PhysicalTraining2
   | Hyperawareness2' Hyperawareness2
@@ -104,6 +105,10 @@ newtype BaseAsset = BaseAsset Attrs
 
 baseAsset :: AssetId -> CardCode -> (Attrs -> Attrs) -> Asset
 baseAsset a b f = BaseAsset' . BaseAsset . f $ baseAttrs a b
+
+instance HasDamage Asset where
+  getDamage a =
+    let Attrs {..} = assetAttrs a in (assetHealthDamage, assetSanityDamage)
 
 instance HasActions env investigator BaseAsset where
   getActions investigator' window (BaseAsset attrs) =
@@ -203,6 +208,7 @@ allAssets = mapFromList
   , ("02012", JimsTrumpet' . jimsTrumpet)
   , ("02014", Duke' . duke)
   , ("02032", FireAxe' . fireAxe)
+  , ("02033", PeterSylvestre' . peterSylvestre)
   , ("02147", Bandolier' . bandolier)
   , ("50001", PhysicalTraining2' . physicalTraining2)
   , ("50003", Hyperawareness2' . hyperawareness2)
@@ -283,6 +289,7 @@ assetAttrs = \case
   JimsTrumpet' attrs -> coerce attrs
   Duke' attrs -> coerce attrs
   FireAxe' attrs -> coerce attrs
+  PeterSylvestre' attrs -> coerce attrs
   Bandolier' attrs -> coerce attrs
   PhysicalTraining2' attrs -> coerce attrs
   Hyperawareness2' attrs -> coerce attrs

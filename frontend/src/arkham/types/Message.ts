@@ -3,6 +3,7 @@ import { JsonDecoder } from 'ts.data.json';
 export enum MessageType {
   ASK = 'Ask',
   RUN = 'Run',
+  READY = 'Ready',
   REVEAL_CARD = 'RevealInHand',
   FLAVOR_TEXT = 'FlavorText',
   RESOLUTION = 'Resolution',
@@ -113,6 +114,7 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('Surge').then(() => JsonDecoder.constant(MessageType.SURGE)),
     JsonDecoder.isExactly('FoundAndDrewEncounterCard').then(() => JsonDecoder.constant(MessageType.FOUND_AND_DREW_ENCOUNTER_CARD)),
     JsonDecoder.isExactly('PlaceDoom').then(() => JsonDecoder.constant(MessageType.PLACE_DOOM)),
+    JsonDecoder.isExactly('Ready').then(() => JsonDecoder.constant(MessageType.READY)),
   ],
   'MessageType',
 );

@@ -95,6 +95,8 @@ export default class Asset extends Vue {
     switch (c.tag) {
       case MessageType.DISCARD:
         return c.contents.contents === this.id;
+      case MessageType.READY:
+        return c.contents.contents === this.id;
       case MessageType.USE_CARD_ABILITY:
         return c.contents[1].contents === this.id;
       case MessageType.ACTIVATE_ABILITY:

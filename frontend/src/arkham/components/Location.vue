@@ -126,6 +126,15 @@ export default class Location extends Vue {
   }
 
   get moveAction() {
+    const isRunMove = this.choices.findIndex((c) => c.tag === MessageType.RUN
+      && c.contents[0]
+      && c.contents[0].tag === MessageType.MOVE
+      && c.contents[0].contents[1] === this.id);
+
+    if (isRunMove !== -1) {
+      return isRunMove;
+    }
+
     return this
       .choices
       .findIndex((c) => c.tag === MessageType.MOVE && c.contents[1] === this.id);

@@ -1,5 +1,9 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.FireAxe where
+module Arkham.Types.Asset.Cards.FireAxe
+  ( FireAxe(..)
+  , fireAxe
+  )
+where
 
 import Arkham.Json
 import Arkham.Types.Ability
@@ -25,72 +29,54 @@ newtype FireAxe = FireAxe Attrs
 fireAxe :: AssetId -> FireAxe
 fireAxe uuid = FireAxe $ (baseAttrs uuid "02032") { assetSlots = [HandSlot] }
 
+fightAbility :: AssetId -> Ability
+fightAbility assetId =
+  mkAbility (AssetSource assetId) 1 (ActionAbility 1 (Just Action.Fight))
+
+reactionAbility :: AssetId -> SkillType -> Ability
+reactionAbility assetId skillType =
+  mkAbility (AssetSource assetId) 2 (ReactionAbility (WhenSkillTest skillType))
+
 instance (HasSource ForSkillTest env, IsInvestigator investigator) => HasModifiersFor env investigator FireAxe where
-  getModifiersFor SkillTestSource i (FireAxe Attrs {..})
-    | Just (getId () i) == assetInvestigator = do
-      msource <- asks (getSource ForSkillTest)
-      case msource of
-        Just source' | source' == AssetSource assetId ->
-          pure [ DamageDealt 1 | resourceCount i == 0 ]
-        _ -> pure []
+  getModifiersFor SkillTestSource i (FireAxe a) | ownedBy a i = do
+    using <- asks $ any (isSource a) . getSource ForSkillTest
+    pure [ DamageDealt 1 | resourceCount i == 0 && using ]
   getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator FireAxe where
-  getActions i NonFast (FireAxe Attrs {..})
-    | Just (getId () i) == assetInvestigator = do
-      fightAvailable <- hasFightActions i NonFast
-      pure
-        $ [ ActivateCardAbilityAction
-              (getId () i)
-              (mkAbility
-                (AssetSource assetId)
-                1
-                (ActionAbility 1 (Just Action.Fight))
-              )
-          | fightAvailable && canDo Action.Fight i
-          ]
-  getActions i (WhenSkillTest skillType) (FireAxe Attrs {..})
-    | Just (getId () i) == assetInvestigator = do
-      let
-        ability = mkAbility
-          (AssetSource assetId)
-          2
-          (ReactionAbility (WhenSkillTest skillType))
-      testSource <- fromMaybe (error "missing source")
-        <$> asks (getSource ForSkillTest)
-      usedAbilities <- map unUsedAbility <$> asks (getList ())
-      let usedCount = count (== (getId () i, ability)) usedAbilities
-      print usedCount
+  getActions i NonFast (FireAxe a@Attrs {..}) | ownedBy a i = do
+    fightAvailable <- hasFightActions i NonFast
+    pure
+      $ [ ActivateCardAbilityAction (getId () i) (fightAbility assetId)
+        | fightAvailable && canDo Action.Fight i
+        ]
+  getActions i (WhenSkillTest skillType) (FireAxe a@Attrs {..}) | ownedBy a i =
+    do
+      let ability = reactionAbility assetId skillType
+      using <- asks $ any (isSource a) . getSource ForSkillTest
+      usedCount <-
+        asks $ count (== (getId () i, ability)) . map unUsedAbility . getList ()
       pure
         [ ActivateCardAbilityAction (getId () i) ability
-        | resourceCount i
-          > 0
-          && testSource
-          == AssetSource assetId
-          && usedCount
-          < 3
+        | resourceCount i > 0 && using && usedCount < 3
         ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env FireAxe where
-  runMessage msg a@(FireAxe attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
-      unshiftMessage
+  runMessage msg a@(FireAxe attrs) = case msg of
+    UseCardAbility iid _ source _ 1 | isSource attrs source ->
+      a <$ unshiftMessage
         (ChooseFightEnemy
           iid
-          (AssetSource aid)
+          source
           SkillCombat
           [SkillModifier SkillCombat 1]
           mempty
           False
         )
-      pure a
-    UseCardAbility iid _ (AssetSource aid) _ 2 | aid == assetId ->
+    UseCardAbility iid _ source _ 2 | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
-        , AddModifiers
-          SkillTestTarget
-          (AssetSource aid)
-          [SkillModifier SkillCombat 2]
+        , AddModifiers SkillTestTarget source [SkillModifier SkillCombat 2]
         ]
     _ -> FireAxe <$> runMessage msg attrs

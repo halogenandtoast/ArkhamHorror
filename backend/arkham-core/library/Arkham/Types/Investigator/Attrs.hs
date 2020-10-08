@@ -203,11 +203,14 @@ baseSkillValueFor skill _maction tempModifiers attrs = foldr
     SkillAgility -> investigatorAgility attrs
     SkillWild -> error "investigators do not have wild skills"
 
-damageValueFor :: Int -> Attrs -> Int
-damageValueFor baseValue attrs = foldr
-  applyModifier
-  baseValue
-  (concat . HashMap.elems $ investigatorModifiers attrs)
+damageValueFor
+  :: (MonadReader env m, MonadIO m, HasModifiersFor env InvestigatorId env)
+  => Int
+  -> Attrs
+  -> m Int
+damageValueFor baseValue attrs = do
+  modifiers' <- getModifiersFor SkillTestSource (investigatorId attrs) =<< ask
+  pure $ foldr applyModifier baseValue modifiers'
  where
   applyModifier (DamageDealt m) n = max 0 (n + m)
   applyModifier _ n = n
@@ -756,11 +759,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       _ -> pure ()
     pure a
   InvestigatorDamageInvestigator iid xid | iid == investigatorId -> do
-    let damage = damageValueFor 1 a
+    damage <- damageValueFor 1 a
     a <$ unshiftMessage
       (InvestigatorAssignDamage xid (InvestigatorSource iid) damage 0)
   InvestigatorDamageEnemy iid eid | iid == investigatorId -> do
-    let damage = damageValueFor 1 a
+    damage <- damageValueFor 1 a
     a <$ unshiftMessage (EnemyDamage eid iid (InvestigatorSource iid) damage)
   EnemyEvaded iid eid | iid == investigatorId -> do
     unshiftMessage (CheckWindow iid [AfterEnemyEvaded You eid])

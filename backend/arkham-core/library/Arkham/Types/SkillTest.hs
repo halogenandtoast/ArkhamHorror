@@ -60,7 +60,7 @@ instance FromJSON a => FromJSON (SkillTest a) where
   parseJSON = genericParseJSON $ aesonOptions $ Just "skillTest"
 
 instance (IsInvestigator investigator) => HasModifiersFor env investigator (SkillTest a) where
-  getModifiersFor _ i SkillTest {..} | getId () i == skillTestInvestigator =
+  getModifiersFor _ i SkillTest {..} | getId () i == skillTestInvestigator = do
     pure $ concat (toList skillTestModifiers)
   getModifiersFor _ _ SkillTest{} = pure []
 
@@ -140,16 +140,6 @@ result = lens skillTestResult $ \m x -> m { skillTestResult = x }
 onTokenResponses :: Lens' (SkillTest a) [TokenResponse a]
 onTokenResponses =
   lens skillTestOnTokenResponses $ \m x -> m { skillTestOnTokenResponses = x }
-
-applicableModifiers :: SkillTest a -> [Modifier]
-applicableModifiers SkillTest {..} = mapMaybe
-  applicableModifier
-  (concat . toList $ skillTestModifiers)
- where
-  applicableModifier (ModifierIfSucceededBy n m) = case skillTestResult of
-    SucceededBy _ x | x >= n -> Just m
-    _ -> Nothing
-  applicableModifier m = Just m
 
 skillIconCount :: SkillTest a -> Int
 skillIconCount SkillTest {..} = length . filter matches $ concatMap
@@ -340,13 +330,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
                | target <- skillTestSubscribers
                ]
         Unrun -> pure ()
-
-      s <$ unshiftMessage
-        (AddModifiers
-          (InvestigatorTarget skillTestInvestigator)
-          SkillTestSource
-          (applicableModifiers s)
-        )
+      pure s
     SkillTestApplyResults -> do -- ST.7 Apply Results
       unshiftMessage SkillTestApplyResultsAfter
       s <$ case skillTestResult of

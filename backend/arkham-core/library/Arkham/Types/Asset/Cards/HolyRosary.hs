@@ -21,7 +21,7 @@ holyRosary uuid = HolyRosary $ (baseAttrs uuid "01059")
   }
 
 instance IsInvestigator investigator => HasModifiersFor env investigator HolyRosary where
-  getModifiersFor i (HolyRosary Attrs {..}) =
+  getModifiersFor _ i (HolyRosary Attrs {..}) =
     pure
       [ SkillModifier SkillWillpower 1
       | Just (getId () i) == assetInvestigator

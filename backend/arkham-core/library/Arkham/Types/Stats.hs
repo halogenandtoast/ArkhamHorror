@@ -1,9 +1,12 @@
 module Arkham.Types.Stats
   ( Stats(..)
+  , statsSkillValue
   )
 where
 
 import ClassyPrelude
+
+import Arkham.Types.SkillType
 
 data Stats = Stats
   { health :: Int
@@ -13,6 +16,15 @@ data Stats = Stats
   , combat :: Int
   , agility :: Int
   }
+  deriving stock (Show)
+
+statsSkillValue :: Stats -> SkillType -> Int
+statsSkillValue Stats {..} = \case
+  SkillWillpower -> willpower
+  SkillIntellect -> intellect
+  SkillCombat -> combat
+  SkillAgility -> agility
+  SkillWild -> 0
 
 instance Semigroup Stats where
   Stats a1 b1 c1 d1 e1 f1 <> Stats a2 b2 c2 d2 e2 f2 =

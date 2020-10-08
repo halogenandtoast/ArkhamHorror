@@ -24,10 +24,10 @@ huntingNightgaunt uuid = HuntingNightgaunt $ (baseAttrs uuid "01172")
   }
 
 instance HasModifiersFor env investigator HuntingNightgaunt where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env HuntingNightgaunt where
-  getModifiers (HuntingNightgaunt Attrs {..}) =
+  getModifiers _ (HuntingNightgaunt Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
 instance (IsInvestigator investigator) => HasActions env investigator HuntingNightgaunt where

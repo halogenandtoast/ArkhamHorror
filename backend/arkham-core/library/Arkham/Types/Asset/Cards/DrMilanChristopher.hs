@@ -25,7 +25,7 @@ drMilanChristopher uuid = DrMilanChristopher $ (baseAttrs uuid "01033")
   }
 
 instance IsInvestigator investigator => HasModifiersFor env investigator DrMilanChristopher where
-  getModifiersFor i (DrMilanChristopher Attrs {..}) =
+  getModifiersFor _ i (DrMilanChristopher Attrs {..}) =
     pure
       [ SkillModifier SkillIntellect 1
       | Just (getId () i) == assetInvestigator

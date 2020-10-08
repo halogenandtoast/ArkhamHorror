@@ -25,10 +25,10 @@ ghoulPriest uuid = GhoulPriest $ (baseAttrs uuid "01116")
   }
 
 instance HasModifiersFor env investigator GhoulPriest where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env GhoulPriest where
-  getModifiers (GhoulPriest Attrs {..}) =
+  getModifiers _ (GhoulPriest Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
 instance (IsInvestigator investigator) => HasActions env investigator GhoulPriest where

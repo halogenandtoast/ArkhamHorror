@@ -23,7 +23,7 @@ burglary :: AssetId -> Burglary
 burglary uuid = Burglary $ baseAttrs uuid "01045"
 
 instance HasModifiersFor env investigator Burglary where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (IsInvestigator investigator) => HasActions env investigator Burglary where
   getActions i NonFast (Burglary Attrs {..})

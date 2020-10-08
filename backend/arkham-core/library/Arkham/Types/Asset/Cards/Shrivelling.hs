@@ -30,7 +30,7 @@ shrivelling uuid =
   Shrivelling $ (baseAttrs uuid "01060") { assetSlots = [ArcaneSlot] }
 
 instance HasModifiersFor env investigator Shrivelling where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator Shrivelling where
   getActions i window (Shrivelling Attrs {..})

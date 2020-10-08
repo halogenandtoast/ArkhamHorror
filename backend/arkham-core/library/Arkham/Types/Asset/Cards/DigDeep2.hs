@@ -21,7 +21,7 @@ digDeep2 :: AssetId -> DigDeep2
 digDeep2 uuid = DigDeep2 $ baseAttrs uuid "50009"
 
 instance HasModifiersFor env investigator DigDeep2 where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (IsInvestigator investigator) => HasActions env investigator DigDeep2 where
   getActions i (Fast.WhenSkillTest SkillWillpower) (DigDeep2 Attrs {..})

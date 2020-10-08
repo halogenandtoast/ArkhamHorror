@@ -22,7 +22,7 @@ forbiddenKnowledge :: AssetId -> ForbiddenKnowledge
 forbiddenKnowledge uuid = ForbiddenKnowledge $ baseAttrs uuid "01058"
 
 instance HasModifiersFor env investigator ForbiddenKnowledge where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator ForbiddenKnowledge where
   getActions i window (ForbiddenKnowledge Attrs {..})

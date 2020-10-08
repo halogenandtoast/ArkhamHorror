@@ -12,7 +12,6 @@ import Arkham.Types.Classes
 import Arkham.Types.Helpers
 import Arkham.Types.Message
 import Arkham.Types.Modifier
-import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
 import Arkham.Types.Source
@@ -26,8 +25,15 @@ newtype FireAxe = FireAxe Attrs
 fireAxe :: AssetId -> FireAxe
 fireAxe uuid = FireAxe $ (baseAttrs uuid "02032") { assetSlots = [HandSlot] }
 
-instance HasModifiersFor env investigator FireAxe where
-  getModifiersFor _ _ = pure []
+instance (HasSource ForSkillTest env, IsInvestigator investigator) => HasModifiersFor env investigator FireAxe where
+  getModifiersFor SkillTestSource i (FireAxe Attrs {..})
+    | Just (getId () i) == assetInvestigator = do
+      msource <- asks (getSource ForSkillTest)
+      case msource of
+        Just source' | source' == AssetSource assetId ->
+          pure [ DamageDealt 1 | resourceCount i == 0 ]
+        _ -> pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator FireAxe where
   getActions i NonFast (FireAxe Attrs {..})
@@ -68,13 +74,6 @@ instance (ActionRunner env investigator) => HasActions env investigator FireAxe 
 
 instance (AssetRunner env) => RunMessage env FireAxe where
   runMessage msg a@(FireAxe attrs@Attrs {..}) = case msg of
-    RunSkillTestSourceNotification iid (AssetSource aid) | aid == assetId -> do
-      count' <- unResourceCount <$> asks (getCount iid)
-      a <$ when
-        (count' == 0)
-        (unshiftMessage
-          (AddModifiers SkillTestTarget (AssetSource assetId) [DamageDealt 1])
-        )
     UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
       unshiftMessage
         (ChooseFightEnemy

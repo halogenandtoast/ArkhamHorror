@@ -21,7 +21,7 @@ arcaneStudies :: AssetId -> ArcaneStudies
 arcaneStudies uuid = ArcaneStudies $ baseAttrs uuid "01062"
 
 instance HasModifiersFor env investigator ArcaneStudies where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (IsInvestigator investigator) => HasActions env investigator ArcaneStudies where
   getActions i (Fast.WhenSkillTest SkillWillpower) (ArcaneStudies Attrs {..})

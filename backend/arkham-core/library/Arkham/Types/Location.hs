@@ -120,7 +120,7 @@ instance HasSet ConnectedLocationId () Location where
     HashSet.map ConnectedLocationId . locationConnectedLocations . locationAttrs
 
 instance HasModifiers env Location where
-  getModifiers = pure . concat . toList . locationModifiers . locationAttrs
+  getModifiers _ = pure . concat . toList . locationModifiers . locationAttrs
 
 instance HasId LocationId () Location where
   getId _ = locationId . locationAttrs

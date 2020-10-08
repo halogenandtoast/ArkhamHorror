@@ -27,10 +27,10 @@ relentlessDarkYoung uuid = RelentlessDarkYoung $ (baseAttrs uuid "01179")
   }
 
 instance HasModifiersFor env investigator RelentlessDarkYoung where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env RelentlessDarkYoung where
-  getModifiers (RelentlessDarkYoung Attrs {..}) =
+  getModifiers _ (RelentlessDarkYoung Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
 instance (IsInvestigator investigator) => HasActions env investigator RelentlessDarkYoung where

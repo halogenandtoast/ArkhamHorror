@@ -178,7 +178,7 @@ facingDefeat a@Attrs {..} =
 skillValueFor :: SkillType -> Maybe Action -> [Modifier] -> Attrs -> Int
 skillValueFor skill maction tempModifiers attrs = foldr
   applyModifier
-  baseSkillValue
+  (baseSkillValueFor skill maction tempModifiers attrs)
   (concat (HashMap.elems $ investigatorModifiers attrs) <> tempModifiers)
  where
   applyModifier (AnySkillValue m) n = max 0 (n + m)
@@ -186,6 +186,15 @@ skillValueFor skill maction tempModifiers attrs = foldr
     if skillType == skill then max 0 (n + m) else n
   applyModifier (ActionSkillModifier action skillType m) n =
     if skillType == skill && Just action == maction then max 0 (n + m) else n
+  applyModifier _ n = n
+
+baseSkillValueFor :: SkillType -> Maybe Action -> [Modifier] -> Attrs -> Int
+baseSkillValueFor skill _maction tempModifiers attrs = foldr
+  applyModifier
+  baseSkillValue
+  (concat (HashMap.elems $ investigatorModifiers attrs) <> tempModifiers)
+ where
+  applyModifier (BaseSkillOf skillType m) _ | skillType == skill = m
   applyModifier _ n = n
   baseSkillValue = case skill of
     SkillWillpower -> investigatorWillpower attrs
@@ -502,6 +511,21 @@ instance IsInvestigator Attrs where
   canTakeDirectDamage a = not (facingDefeat a)
   remainingHealth a = modifiedHealth a - investigatorHealthDamage a
   remainingSanity a = modifiedSanity a - investigatorSanityDamage a
+  modifiedStatsOf source a = do
+    modifiers' <- getModifiers source (investigatorId a)
+    let
+      willpower' = skillValueFor SkillWillpower Nothing modifiers' a
+      intellect' = skillValueFor SkillIntellect Nothing modifiers' a
+      combat' = skillValueFor SkillCombat Nothing modifiers' a
+      agility' = skillValueFor SkillAgility Nothing modifiers' a
+    pure Stats
+      { willpower = willpower'
+      , intellect = intellect'
+      , combat = combat'
+      , agility = agility'
+      , health = modifiedHealth a - investigatorHealthDamage a
+      , sanity = modifiedSanity a - investigatorSanityDamage a
+      }
 
 instance HasId InvestigatorId () Attrs where
   getId _ Attrs {..} = investigatorId

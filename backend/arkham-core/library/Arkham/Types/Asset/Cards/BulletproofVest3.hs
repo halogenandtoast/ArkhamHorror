@@ -18,7 +18,7 @@ bulletproofVest3 uuid = BulletproofVest3
   $ (baseAttrs uuid "01094") { assetSlots = [BodySlot], assetHealth = Just 4 }
 
 instance HasModifiersFor env investigator BulletproofVest3 where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env investigator BulletproofVest3 where
   getActions i window (BulletproofVest3 x) = getActions i window x

@@ -19,7 +19,7 @@ daisysToteBag :: AssetId -> DaisysToteBag
 daisysToteBag uuid = DaisysToteBag $ baseAttrs uuid "01008"
 
 instance HasModifiersFor env investigator DaisysToteBag where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env investigator DaisysToteBag where
   getActions i window (DaisysToteBag x) = getActions i window x

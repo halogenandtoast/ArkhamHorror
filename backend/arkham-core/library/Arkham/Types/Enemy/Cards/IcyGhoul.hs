@@ -23,10 +23,11 @@ icyGhoul uuid = IcyGhoul $ (baseAttrs uuid "01119")
   }
 
 instance HasModifiersFor env investigator IcyGhoul where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env IcyGhoul where
-  getModifiers (IcyGhoul Attrs {..}) = pure . concat . toList $ enemyModifiers
+  getModifiers _ (IcyGhoul Attrs {..}) =
+    pure . concat . toList $ enemyModifiers
 
 instance (IsInvestigator investigator) => HasActions env investigator IcyGhoul where
   getActions i window (IcyGhoul attrs) = getActions i window attrs

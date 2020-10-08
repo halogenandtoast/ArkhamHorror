@@ -16,10 +16,10 @@ swarmOfRats uuid = SwarmOfRats
   $ (baseAttrs uuid "01159") { enemyHealthDamage = 1, enemyEvade = 3 }
 
 instance HasModifiersFor env investigator SwarmOfRats where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env SwarmOfRats where
-  getModifiers (SwarmOfRats Attrs {..}) =
+  getModifiers _ (SwarmOfRats Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
 instance (IsInvestigator investigator) => HasActions env investigator SwarmOfRats where

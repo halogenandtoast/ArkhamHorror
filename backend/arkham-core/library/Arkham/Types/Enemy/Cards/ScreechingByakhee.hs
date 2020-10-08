@@ -27,10 +27,10 @@ screechingByakhee uuid = ScreechingByakhee $ (baseAttrs uuid "01175")
   }
 
 instance HasModifiersFor env investigator ScreechingByakhee where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (HasCount RemainingSanity InvestigatorId env) => HasModifiers env ScreechingByakhee where
-  getModifiers (ScreechingByakhee Attrs {..}) = do
+  getModifiers _ (ScreechingByakhee Attrs {..}) = do
     sanities <- map unRemainingSanity
       <$> traverse (asks . getCount) (toList enemyEngagedInvestigators)
     let

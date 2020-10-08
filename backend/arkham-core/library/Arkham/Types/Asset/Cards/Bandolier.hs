@@ -20,7 +20,7 @@ bandolier uuid = Bandolier
   $ (baseAttrs uuid "02147") { assetHealth = Just 1, assetSlots = [BodySlot] }
 
 instance HasModifiersFor env investigator Bandolier where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env investigator Bandolier where
   getActions i window (Bandolier x) = getActions i window x

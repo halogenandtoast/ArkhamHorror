@@ -21,7 +21,7 @@ hyperawareness2 :: AssetId -> Hyperawareness2
 hyperawareness2 uuid = Hyperawareness2 $ baseAttrs uuid "50003"
 
 instance HasModifiersFor env investigator Hyperawareness2 where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (IsInvestigator investigator) => HasActions env investigator Hyperawareness2 where
   getActions i (Fast.WhenSkillTest SkillIntellect) (Hyperawareness2 Attrs {..})

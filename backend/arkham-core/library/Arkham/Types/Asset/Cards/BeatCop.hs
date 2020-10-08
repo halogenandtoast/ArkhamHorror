@@ -27,7 +27,7 @@ beatCop uuid = BeatCop $ (baseAttrs uuid "01018")
   }
 
 instance IsInvestigator investigator => HasModifiersFor env investigator BeatCop where
-  getModifiersFor i (BeatCop Attrs {..}) = pure
+  getModifiersFor _ i (BeatCop Attrs {..}) = pure
     [ SkillModifier SkillCombat 1 | Just (getId () i) == assetInvestigator ]
 
 instance (IsInvestigator investigator) => HasActions env investigator BeatCop where

@@ -27,7 +27,7 @@ fortyOneDerringer uuid =
   FortyOneDerringer $ (baseAttrs uuid "01047") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env investigator FortyOneDerringer where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator FortyOneDerringer where
   getActions i window (FortyOneDerringer Attrs {..})

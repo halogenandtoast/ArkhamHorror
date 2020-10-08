@@ -26,7 +26,7 @@ bookOfShadows3 uuid =
   BookOfShadows3 $ (baseAttrs uuid "01070") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env investigator BookOfShadows3 where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (IsInvestigator investigator) => HasActions env investigator BookOfShadows3 where
   getActions i NonFast (BookOfShadows3 Attrs {..})

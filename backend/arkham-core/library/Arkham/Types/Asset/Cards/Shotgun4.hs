@@ -28,7 +28,7 @@ shotgun4 uuid =
   Shotgun4 $ (baseAttrs uuid "01029") { assetSlots = [HandSlot, HandSlot] }
 
 instance HasModifiersFor env investigator Shotgun4 where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator Shotgun4 where
   getActions i window (Shotgun4 Attrs {..})

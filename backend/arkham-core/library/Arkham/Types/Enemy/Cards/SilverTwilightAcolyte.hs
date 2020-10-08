@@ -26,10 +26,10 @@ silverTwilightAcolyte uuid =
     }
 
 instance HasModifiersFor env investigator SilverTwilightAcolyte where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env SilverTwilightAcolyte where
-  getModifiers (SilverTwilightAcolyte Attrs {..}) =
+  getModifiers _ (SilverTwilightAcolyte Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
 instance (IsInvestigator investigator) => HasActions env investigator SilverTwilightAcolyte where

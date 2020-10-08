@@ -23,10 +23,10 @@ wizardOfTheOrder uuid = WizardOfTheOrder $ (baseAttrs uuid "01170")
   }
 
 instance HasModifiersFor env investigator WizardOfTheOrder where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env WizardOfTheOrder where
-  getModifiers (WizardOfTheOrder Attrs {..}) =
+  getModifiers _ (WizardOfTheOrder Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
 instance (IsInvestigator investigator) => HasActions env investigator WizardOfTheOrder where

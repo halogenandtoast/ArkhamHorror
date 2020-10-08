@@ -230,7 +230,7 @@ canEnterLocation
   -> m Bool
 canEnterLocation eid lid = do
   traits <- asks (getSet eid)
-  modifiers' <- getModifiers lid
+  modifiers' <- getModifiers (EnemySource eid) lid
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False

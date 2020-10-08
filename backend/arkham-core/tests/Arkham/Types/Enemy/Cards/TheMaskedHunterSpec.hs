@@ -17,7 +17,7 @@ spec = describe "The Masked Hunter" $ do
         investigator
         [engageEnemy investigator theMaskedHunter]
         (enemies %~ insertEntity theMaskedHunter)
-      withGame game (getModifiers $ getInvestigatorId investigator)
+      withGame game (getModifiers TestSource $ getInvestigatorId investigator)
         `shouldReturn` [CannotDiscoverClues, CannotSpendClues]
 
     it
@@ -31,5 +31,7 @@ spec = describe "The Masked Hunter" $ do
             , disengageEnemy investigator theMaskedHunter
             ]
             (enemies %~ insertEntity theMaskedHunter)
-          withGame game (getModifiers $ getInvestigatorId investigator)
+          withGame
+              game
+              (getModifiers TestSource $ getInvestigatorId investigator)
             `shouldReturn` []

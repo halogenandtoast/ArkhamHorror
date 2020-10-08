@@ -27,7 +27,7 @@ scrying :: AssetId -> Scrying
 scrying uuid = Scrying $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
 
 instance HasModifiersFor env investigator Scrying where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator Scrying where
   getActions i NonFast (Scrying Attrs {..})

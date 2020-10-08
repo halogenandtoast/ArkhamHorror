@@ -13,6 +13,7 @@ import Arkham.Json
 import Arkham.Types.Card
 import Arkham.Types.TreacheryId
 import Arkham.Types.Classes
+import Arkham.Types.Source
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Cards.Acolyte
 import Arkham.Types.Enemy.Cards.FleshEater
@@ -90,10 +91,11 @@ instance (IsInvestigator investigator) => HasActions env investigator BaseEnemy 
     getActions investigator window attrs
 
 instance HasModifiersFor env investigator BaseEnemy where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env BaseEnemy where
-  getModifiers (BaseEnemy Attrs {..}) = pure . concat . toList $ enemyModifiers
+  getModifiers _ (BaseEnemy Attrs {..}) =
+    pure . concat . toList $ enemyModifiers
 
 instance (EnemyRunner env) => RunMessage env BaseEnemy where
   runMessage msg (BaseEnemy attrs) = BaseEnemy <$> runMessage msg attrs
@@ -103,7 +105,7 @@ deriving anyclass instance IsInvestigator investigator => HasModifiersFor env in
 
 instance (EnemyRunner env) => RunMessage env Enemy where
   runMessage msg e = do
-    modifiers' <- getModifiers e
+    modifiers' <- getModifiers (EnemySource (getId () e)) e
     if any isBlank modifiers' && not (isBlanked msg)
       then runMessage (Blanked msg) e
       else defaultRunMessage msg e

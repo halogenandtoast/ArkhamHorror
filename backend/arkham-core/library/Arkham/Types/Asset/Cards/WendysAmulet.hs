@@ -19,7 +19,7 @@ wendysAmulet uuid =
   WendysAmulet $ (baseAttrs uuid "01014") { assetSlots = [AccessorySlot] }
 
 instance IsInvestigator investigator => HasModifiersFor env investigator WendysAmulet where
-  getModifiersFor i (WendysAmulet Attrs {..}) = pure
+  getModifiersFor _ i (WendysAmulet Attrs {..}) = pure
     [ CanPlayTopOfDiscard (Just EventType, [])
     | Just (getId () i) == assetInvestigator
     ]

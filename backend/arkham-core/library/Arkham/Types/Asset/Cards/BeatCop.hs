@@ -11,10 +11,7 @@ import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
-import Arkham.Types.Source
-import Arkham.Types.Target
 import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype BeatCop = BeatCop Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -27,32 +24,23 @@ beatCop uuid = BeatCop $ (baseAttrs uuid "01018")
   }
 
 instance IsInvestigator investigator => HasModifiersFor env investigator BeatCop where
-  getModifiersFor _ i (BeatCop Attrs {..}) = pure
-    [ SkillModifier SkillCombat 1 | Just (getId () i) == assetInvestigator ]
+  getModifiersFor _ i (BeatCop a) =
+    pure [ SkillModifier SkillCombat 1 | ownedBy a i ]
 
-instance (IsInvestigator investigator) => HasActions env investigator BeatCop where
-  getActions i _ (BeatCop Attrs {..}) | Just (getId () i) == assetInvestigator =
-    pure
-      [ UseCardAbility
-          (getId () i)
-          (AssetSource assetId)
-          (AssetSource assetId)
-          Nothing
-          1
-      ]
+instance IsInvestigator investigator => HasActions env investigator BeatCop where
+  getActions i _ (BeatCop a) | ownedBy a i =
+    pure [UseCardAbility (getId () i) (toSource a) (toSource a) Nothing 1]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env BeatCop where
-  runMessage msg a@(BeatCop attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
-      locationId <- asks (getId @LocationId (getInvestigator attrs))
-      locationEnemyIds <- HashSet.toList <$> asks (getSet locationId)
-      unshiftMessages
-        [ Discard (AssetTarget aid)
-        , Ask iid $ ChooseOne
-          [ EnemyDamage eid iid (AssetSource assetId) 1
-          | eid <- locationEnemyIds
-          ]
+instance AssetRunner env => RunMessage env BeatCop where
+  runMessage msg a@(BeatCop attrs) = case msg of
+    UseCardAbility iid _ source _ 1 | isSource attrs source -> do
+      locationId <- asks $ getId @LocationId iid
+      locationEnemyIds <- asks $ setToList . getSet locationId
+      a <$ unshiftMessages
+        [ Discard (toTarget attrs)
+        , chooseOne
+          iid
+          [ EnemyDamage eid iid source 1 | eid <- locationEnemyIds ]
         ]
-      pure a
     _ -> BeatCop <$> runMessage msg attrs

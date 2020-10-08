@@ -79,6 +79,13 @@ baseAttrs aid cardCode =
       , assetHorror = Nothing
       }
 
+isSource :: Attrs -> Source -> Bool
+isSource Attrs {..} (AssetSource aid) = assetId == aid
+isSource _ _ = False
+
+ownedBy :: IsInvestigator investigator => Attrs -> investigator -> Bool
+ownedBy Attrs {..} = (== assetInvestigator) . Just . getId ()
+
 doom :: Lens' Attrs Int
 doom = lens assetDoom $ \m x -> m { assetDoom = x }
 

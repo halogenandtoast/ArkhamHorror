@@ -64,7 +64,6 @@ import Arkham.Types.SkillId
 import Arkham.Types.SkillTest
 import Arkham.Types.SkillType
 import Arkham.Types.Source
-import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Token (Token)
 import Arkham.Types.Trait
@@ -479,20 +478,22 @@ instance HasCount EnemyCount (InvestigatorLocation, [Trait]) (Game queue) where
     g
     where locationId = locationFor iid g
 
-instance HasInvestigatorStats Stats InvestigatorId (Game queue) where
-  getStats iid = getStats () . getInvestigator iid
+instance HasStats InvestigatorId (Game queue) where
+  getStats iid source g = modifiedStatsOf source (getInvestigator iid g)
 
 instance HasModifiers (Game queue) LocationId where
-  getModifiers lid = asks (getLocation lid) >>= getModifiers
+  getModifiers source lid = asks (getLocation lid) >>= getModifiers source
 
 instance HasModifiers (Game queue) InvestigatorId where
-  getModifiers iid = asks (getInvestigator iid) >>= getModifiers
+  getModifiers source iid = asks (getInvestigator iid) >>= getModifiers source
 
-instance (HasId LocationId InvestigatorId env) => HasModifiersFor env InvestigatorId (Game queue) where
-  getModifiersFor iid g = concat <$> sequence
-    [ concat <$> traverse (getModifiersFor i) (g ^. enemies . to toList)
-    , concat <$> traverse (getModifiersFor i) (g ^. assets . to toList)
-    , concat <$> traverse (getModifiersFor i) (g ^. investigators . to toList)
+instance (HasId LocationId InvestigatorId env, HasSource ForSkillTest env) => HasModifiersFor env InvestigatorId (Game queue) where
+  getModifiersFor source iid g = concat <$> sequence
+    [ concat <$> traverse (getModifiersFor source i) (g ^. enemies . to toList)
+    , concat <$> traverse (getModifiersFor source i) (g ^. assets . to toList)
+    , concat
+      <$> traverse (getModifiersFor source i) (g ^. investigators . to toList)
+    , maybe (pure []) (getModifiersFor source i) (g ^. skillTest)
     ]
     where i = getInvestigator iid g
 
@@ -1377,7 +1378,7 @@ runGameMessage msg g = case msg of
       _ -> unshiftMessage (AskMap askMap)
     pure g
   EnemyWillAttack iid eid -> do
-    modifiers' <- getModifiers (getInvestigator iid g)
+    modifiers' <- getModifiers (EnemySource eid) (getInvestigator iid g)
     let
       cannotBeAttackedByNonElites = flip any modifiers' $ \case
         CannotBeAttackedByNonElite{} -> True
@@ -1398,7 +1399,9 @@ runGameMessage msg g = case msg of
             unshiftMessage aoo
           Just (EnemyWillAttack iid2 eid2) -> do
             _ <- popMessage
-            modifiers2' <- getModifiers (getInvestigator iid2 g)
+            modifiers2' <- getModifiers
+              (EnemySource eid2)
+              (getInvestigator iid2 g)
             let
               cannotBeAttackedByNonElites2 = flip any modifiers2' $ \case
                 CannotBeAttackedByNonElite{} -> True

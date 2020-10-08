@@ -175,7 +175,7 @@ canEnterLocation
   -> m Bool
 canEnterLocation eid lid = do
   traits <- asks (getSet eid)
-  modifiers' <- getModifiers lid
+  modifiers' <- getModifiers (EnemySource eid) lid
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
@@ -304,7 +304,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
               (getSet lid)
           availableLocationIds <-
             flip filterM connectedLocationIds $ \locationId' -> do
-              modifiers' <- getModifiers locationId'
+              modifiers' <- getModifiers (EnemySource eid) locationId'
               pure . not $ flip any modifiers' $ \case
                 SpawnNonEliteAtConnectingInstead{} -> True
                 _ -> False

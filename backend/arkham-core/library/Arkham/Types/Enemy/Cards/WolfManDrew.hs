@@ -23,10 +23,10 @@ wolfManDrew uuid = WolfManDrew $ (baseAttrs uuid "01137")
   }
 
 instance HasModifiersFor env investigator WolfManDrew where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env WolfManDrew where
-  getModifiers (WolfManDrew Attrs {..}) =
+  getModifiers _ (WolfManDrew Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
 instance (IsInvestigator investigator) => HasActions env investigator WolfManDrew where

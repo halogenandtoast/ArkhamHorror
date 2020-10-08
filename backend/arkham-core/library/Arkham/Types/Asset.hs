@@ -23,6 +23,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Query
 import Arkham.Types.Slot
+import Arkham.Types.Target
 import ClassyPrelude
 import Data.Coerce
 import Safe (fromJustNote)
@@ -97,7 +98,7 @@ data Asset
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Asset
-deriving anyclass instance (IsInvestigator investigator, HasId LocationId InvestigatorId env) => HasModifiersFor env investigator Asset
+deriving anyclass instance (IsInvestigator investigator, HasId LocationId InvestigatorId env, HasSource ForSkillTest env) => HasModifiersFor env investigator Asset
 deriving anyclass instance (AssetRunner env) => RunMessage env Asset
 
 newtype BaseAsset = BaseAsset Attrs
@@ -115,7 +116,7 @@ instance HasActions env investigator BaseAsset where
     getActions investigator' window attrs
 
 instance HasModifiersFor env investigator BaseAsset where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env BaseAsset where
   runMessage msg (BaseAsset attrs) = BaseAsset <$> runMessage msg attrs

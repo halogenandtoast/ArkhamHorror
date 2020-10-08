@@ -28,7 +28,7 @@ jimsTrumpet uuid =
   JimsTrumpet $ (baseAttrs uuid "02012") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env investigator JimsTrumpet where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator JimsTrumpet where
   getActions i (WhenRevealToken who Skull) (JimsTrumpet Attrs {..})

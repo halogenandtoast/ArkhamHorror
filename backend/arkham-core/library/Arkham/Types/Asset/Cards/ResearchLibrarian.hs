@@ -24,7 +24,7 @@ researchLibrarian uuid = ResearchLibrarian $ (baseAttrs uuid "01032")
   }
 
 instance HasModifiersFor env investigator ResearchLibrarian where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env investigator ResearchLibrarian where
   getActions i window (ResearchLibrarian x) = getActions i window x

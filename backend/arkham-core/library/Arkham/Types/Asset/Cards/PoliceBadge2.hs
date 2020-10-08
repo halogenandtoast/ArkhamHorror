@@ -25,7 +25,7 @@ policeBadge2 uuid =
   PoliceBadge2 $ (baseAttrs uuid "01027") { assetSlots = [AccessorySlot] }
 
 instance IsInvestigator investigator => HasModifiersFor env investigator PoliceBadge2 where
-  getModifiersFor i (PoliceBadge2 Attrs {..}) =
+  getModifiersFor _ i (PoliceBadge2 Attrs {..}) =
     pure
       [ SkillModifier SkillWillpower 1
       | Just (getId () i) == assetInvestigator

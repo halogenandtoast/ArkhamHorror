@@ -24,7 +24,7 @@ magnifyingGlass1 uuid =
   MagnifyingGlass1 $ (baseAttrs uuid "01040") { assetSlots = [HandSlot] }
 
 instance IsInvestigator investigator => HasModifiersFor env investigator MagnifyingGlass1 where
-  getModifiersFor i (MagnifyingGlass1 Attrs {..}) = pure
+  getModifiersFor _ i (MagnifyingGlass1 Attrs {..}) = pure
     [ ActionSkillModifier Action.Investigate SkillIntellect 1
     | Just (getId () i) == assetInvestigator
     ]

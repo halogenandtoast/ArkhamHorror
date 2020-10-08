@@ -27,7 +27,7 @@ aquinnah1 uuid = Aquinnah1 $ (baseAttrs uuid "01082")
   }
 
 instance HasModifiersFor env investigator Aquinnah1 where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator Aquinnah1 where
   getActions i (WhenEnemyAttacks You) (Aquinnah1 Attrs {..})

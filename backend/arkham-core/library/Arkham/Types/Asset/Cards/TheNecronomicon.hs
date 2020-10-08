@@ -26,7 +26,7 @@ theNecronomicon uuid = TheNecronomicon
   $ (baseAttrs uuid "01009") { assetSlots = [HandSlot], assetHorror = Just 3 }
 
 instance IsInvestigator investigator => HasModifiersFor env investigator TheNecronomicon where
-  getModifiersFor i (TheNecronomicon Attrs {..}) = pure
+  getModifiersFor _ i (TheNecronomicon Attrs {..}) = pure
     [ ForcedTokenChange Token.ElderSign Token.AutoFail
     | Just (getId () i) == assetInvestigator
     ]

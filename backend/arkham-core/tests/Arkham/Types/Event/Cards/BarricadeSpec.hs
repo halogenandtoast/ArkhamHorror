@@ -20,7 +20,7 @@ spec = do
           [moveTo investigator location, playEvent investigator barricade]
         $ (events %~ insertEntity barricade)
         . (locations %~ insertEntity location)
-      withGame game (getModifiers $ getId @LocationId () location)
+      withGame game (getModifiers TestSource $ getId @LocationId () location)
         `shouldReturn` [CannotBeEnteredByNonElite]
       barricade `shouldSatisfy` isAttachedTo game location
 
@@ -39,7 +39,7 @@ spec = do
         $ (events %~ insertEntity barricade)
         . (locations %~ insertEntity location)
         . (investigators %~ insertEntity investigator2)
-      withGame game (getModifiers $ getId @LocationId () location)
+      withGame game (getModifiers TestSource $ getId @LocationId () location)
         `shouldReturn` []
       barricade `shouldSatisfy` not . isAttachedTo game location
       barricade `shouldSatisfy` isInDiscardOf game investigator

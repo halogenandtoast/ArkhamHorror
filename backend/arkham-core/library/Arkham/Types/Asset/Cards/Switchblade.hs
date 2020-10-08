@@ -24,7 +24,7 @@ switchblade uuid =
   Switchblade $ (baseAttrs uuid "01044") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env investigator Switchblade where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator Switchblade where
   getActions i window (Switchblade Attrs {..})

@@ -29,7 +29,7 @@ litaChantler uuid = LitaChantler $ (baseAttrs uuid "01117")
   }
 
 instance (IsInvestigator investigator, HasId LocationId InvestigatorId env) => HasModifiersFor env investigator LitaChantler where
-  getModifiersFor i (LitaChantler Attrs {..}) = do
+  getModifiersFor _ i (LitaChantler Attrs {..}) = do
     case assetInvestigator of
       Nothing -> pure []
       Just ownerId -> do

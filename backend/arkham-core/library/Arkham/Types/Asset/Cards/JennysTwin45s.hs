@@ -27,7 +27,7 @@ jennysTwin45s uuid =
   JennysTwin45s $ (baseAttrs uuid "02010") { assetSlots = [HandSlot, HandSlot] }
 
 instance HasModifiersFor env investigator JennysTwin45s where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator JennysTwin45s where
   getActions i window (JennysTwin45s Attrs {..})

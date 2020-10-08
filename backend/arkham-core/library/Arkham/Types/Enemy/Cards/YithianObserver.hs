@@ -27,10 +27,10 @@ yithianObserver uuid = YithianObserver $ (baseAttrs uuid "01177")
   }
 
 instance HasModifiersFor env investigator YithianObserver where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env YithianObserver where
-  getModifiers (YithianObserver Attrs {..}) =
+  getModifiers _ (YithianObserver Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
 instance (IsInvestigator investigator) => HasActions env investigator YithianObserver where

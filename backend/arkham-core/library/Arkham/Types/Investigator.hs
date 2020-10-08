@@ -33,6 +33,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.SkillType
+import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Token
 import Arkham.Types.Trait
@@ -117,7 +118,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env BaseInvestigator where
 
 instance (ActionRunner env investigator) => HasActions env investigator Investigator where
   getActions i window investigator = do
-    modifiers' <- getModifiers investigator
+    modifiers' <- getModifiers (InvestigatorSource (getId () i)) investigator
     if any isBlank modifiers'
       then getActions i window (investigatorAttrs investigator)
       else defaultGetActions i window investigator
@@ -125,7 +126,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Investig
 instance (InvestigatorRunner Attrs env) => RunMessage env Investigator where
   runMessage msg@(ResolveToken ElderSign iid) i | iid == getInvestigatorId i =
     do
-      modifiers' <- getModifiers i
+      modifiers' <- getModifiers (InvestigatorSource iid) i
       if any isBlank modifiers'
         then i <$ runTest iid (TokenValue ElderSign 0)
         else i <$ defaultRunMessage msg i
@@ -151,6 +152,7 @@ instance IsInvestigator Investigator where
   deckOf = deckOf . investigatorAttrs
   remainingHealth = remainingHealth . investigatorAttrs
   remainingSanity = remainingSanity . investigatorAttrs
+  modifiedStatsOf source = modifiedStatsOf source . investigatorAttrs
 
 instance HasId InvestigatorId () Investigator where
   getId _ = getId () . investigatorAttrs
@@ -166,23 +168,13 @@ instance HasCardCode Investigator where
   getCardCode = getCardCode . investigatorAttrs
 
 instance (HasModifiersFor env InvestigatorId env) => HasModifiers env Investigator where
-  getModifiers self = ask >>= getModifiersFor (getInvestigatorId self)
+  getModifiers source self =
+    ask >>= getModifiersFor source (getInvestigatorId self)
 
 instance HasModifiersFor env Investigator Investigator where
-  getModifiersFor i1 i2 | i1 == i2 =
+  getModifiersFor _ i1 i2 | i1 == i2 =
     pure . concat . toList . investigatorModifiers $ investigatorAttrs i1
-  getModifiersFor _ _ = pure []
-
-instance HasInvestigatorStats Stats () Investigator where
-  getStats _ i = Stats
-    { health = investigatorHealth - investigatorHealthDamage
-    , sanity = investigatorSanity - investigatorSanityDamage
-    , willpower = skillValueFor SkillWillpower Nothing [] a
-    , intellect = skillValueFor SkillIntellect Nothing [] a
-    , combat = skillValueFor SkillCombat Nothing [] a
-    , agility = skillValueFor SkillAgility Nothing [] a
-    }
-    where a@Attrs {..} = investigatorAttrs i
+  getModifiersFor _ _ _ = pure []
 
 instance HasDamage Investigator where
   getDamage i = (investigatorHealthDamage, investigatorSanityDamage)

@@ -26,7 +26,7 @@ arcaneInitiate uuid = ArcaneInitiate $ (baseAttrs uuid "01063")
   }
 
 instance HasModifiersFor env investigator ArcaneInitiate where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (IsInvestigator investigator) => HasActions env investigator ArcaneInitiate where
   getActions i window (ArcaneInitiate Attrs {..})

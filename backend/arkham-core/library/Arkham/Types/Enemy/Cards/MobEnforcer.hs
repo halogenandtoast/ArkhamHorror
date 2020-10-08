@@ -30,10 +30,10 @@ mobEnforcer uuid = MobEnforcer $ (weaknessBaseAttrs uuid "01101")
   }
 
 instance HasModifiersFor env investigator MobEnforcer where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env MobEnforcer where
-  getModifiers (MobEnforcer Attrs {..}) =
+  getModifiers _ (MobEnforcer Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
 instance (IsInvestigator investigator) => HasActions env investigator MobEnforcer where

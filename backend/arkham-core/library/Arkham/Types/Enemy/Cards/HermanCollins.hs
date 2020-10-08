@@ -28,10 +28,10 @@ hermanCollins uuid = HermanCollins $ (baseAttrs uuid "01138")
   }
 
 instance HasModifiersFor env investigator HermanCollins where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env HermanCollins where
-  getModifiers (HermanCollins Attrs {..}) =
+  getModifiers _ (HermanCollins Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
 instance (IsInvestigator investigator) => HasActions env investigator HermanCollins where

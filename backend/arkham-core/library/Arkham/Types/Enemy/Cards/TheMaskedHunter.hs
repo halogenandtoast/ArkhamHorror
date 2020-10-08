@@ -28,13 +28,13 @@ theMaskedHunter uuid = TheMaskedHunter $ (baseAttrs uuid "01121b")
   }
 
 instance IsInvestigator investigator => HasModifiersFor env investigator TheMaskedHunter where
-  getModifiersFor i (TheMaskedHunter Attrs {..}) = do
+  getModifiersFor _ i (TheMaskedHunter Attrs {..}) = do
     if getId () i `elem` enemyEngagedInvestigators
       then pure [CannotDiscoverClues, CannotSpendClues]
       else pure []
 
 instance HasModifiers env TheMaskedHunter where
-  getModifiers (TheMaskedHunter Attrs {..}) =
+  getModifiers _ (TheMaskedHunter Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
 instance (IsInvestigator investigator) => HasActions env investigator TheMaskedHunter where

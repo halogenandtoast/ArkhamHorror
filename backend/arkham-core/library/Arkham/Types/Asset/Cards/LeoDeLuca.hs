@@ -24,7 +24,7 @@ leoDeLuca uuid = LeoDeLuca $ (baseAttrs uuid "01048")
   }
 
 instance IsInvestigator investigator => HasModifiersFor env investigator LeoDeLuca where
-  getModifiersFor i (LeoDeLuca Attrs {..}) =
+  getModifiersFor _ i (LeoDeLuca Attrs {..}) =
     pure [ AdditionalActions 1 | Just (getId () i) == assetInvestigator ]
 
 instance HasActions env investigator LeoDeLuca where

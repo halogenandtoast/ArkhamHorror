@@ -24,6 +24,7 @@ import Arkham.Types.Modifier
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Token (Token, TokenValue(..))
 import Arkham.Types.Trait
@@ -170,27 +171,28 @@ runTest iid tokenValue'@(TokenValue token value) = do
       )
 
 class HasModifiers1 env f where
-  getModifiers1 :: (MonadIO m, MonadReader env m) => f p -> m [Modifier]
+  getModifiers1 :: (MonadIO m, MonadReader env m) => Source -> f p -> m [Modifier]
 
 instance HasModifiers1 env f => HasModifiers1 env (M1 i c f) where
-  getModifiers1 (M1 x) = getModifiers1 x
+  getModifiers1 source (M1 x) = getModifiers1 source x
 
 instance (HasModifiers1 env l, HasModifiers1 env r) => HasModifiers1 env (l :+: r) where
-  getModifiers1 (L1 x) = getModifiers1 x
-  getModifiers1 (R1 x) = getModifiers1 x
+  getModifiers1 source (L1 x) = getModifiers1 source x
+  getModifiers1 source (R1 x) = getModifiers1 source x
 
 instance (HasModifiers env p) => HasModifiers1 env (K1 R p) where
-  getModifiers1 (K1 x) = getModifiers x
+  getModifiers1 source (K1 x) = getModifiers source x
 
 defaultGetModifiers
   :: (Generic a, HasModifiers1 env (Rep a), MonadIO m, MonadReader env m)
-  => a
+  => Source
+  -> a
   -> m [Modifier]
-defaultGetModifiers = getModifiers1 . from
+defaultGetModifiers source = getModifiers1 source . from
 
 class HasModifiers env a where
-  getModifiers :: (MonadReader env m, MonadIO m) => a -> m [Modifier]
-  default getModifiers :: (Generic a, HasModifiers1 env (Rep a), MonadIO m, MonadReader env m) => a -> m [Modifier]
+  getModifiers :: (MonadReader env m, MonadIO m) => Source -> a -> m [Modifier]
+  default getModifiers :: (Generic a, HasModifiers1 env (Rep a), MonadIO m, MonadReader env m) => Source -> a -> m [Modifier]
   getModifiers = defaultGetModifiers
 
 class HasSource b a where
@@ -211,8 +213,8 @@ class HasId c b a where
 class HasCount c b a where
   getCount :: b -> a -> c
 
-class HasInvestigatorStats c b a where
-  getStats :: b -> a -> c
+class HasStats b a where
+  getStats :: (MonadReader env m, MonadIO m, HasModifiers env InvestigatorId) => b -> Source -> a -> m Stats
 
 class HasTraits a where
   getTraits :: a -> HashSet Trait
@@ -305,17 +307,21 @@ class HasActions env investigator a where
   getActions = defaultGetActions
 
 class HasModifiersFor1 env investigator f where
-  getModifiersFor1 :: (MonadIO m, MonadReader env m) => investigator -> f p -> m [Modifier]
+  getModifiersFor1 :: (MonadIO m, MonadReader env m) => Source -> investigator -> f p -> m [Modifier]
 
 instance HasModifiersFor1 env investigator f => HasModifiersFor1 env investigator (M1 i c f) where
-  getModifiersFor1 investigator (M1 x) = getModifiersFor1 investigator x
+  getModifiersFor1 source investigator (M1 x) =
+    getModifiersFor1 source investigator x
 
 instance (HasModifiersFor1 env investigator l, HasModifiersFor1 env investigator r) => HasModifiersFor1 env investigator (l :+: r) where
-  getModifiersFor1 investigator (L1 x) = getModifiersFor1 investigator x
-  getModifiersFor1 investigator (R1 x) = getModifiersFor1 investigator x
+  getModifiersFor1 source investigator (L1 x) =
+    getModifiersFor1 source investigator x
+  getModifiersFor1 source investigator (R1 x) =
+    getModifiersFor1 source investigator x
 
 instance (HasModifiersFor env investigator p) => HasModifiersFor1 env investigator (K1 R p) where
-  getModifiersFor1 investigator (K1 x) = getModifiersFor investigator x
+  getModifiersFor1 source investigator (K1 x) =
+    getModifiersFor source investigator x
 
 defaultGetModifiersFor
   :: ( Generic a
@@ -323,14 +329,16 @@ defaultGetModifiersFor
      , MonadIO m
      , MonadReader env m
      )
-  => investigator
+  => Source
+  -> investigator
   -> a
   -> m [Modifier]
-defaultGetModifiersFor investigator = getModifiersFor1 investigator . from
+defaultGetModifiersFor source investigator =
+  getModifiersFor1 source investigator . from
 
 class HasModifiersFor env investigator a where
-  getModifiersFor :: (MonadReader env m, MonadIO m) => investigator -> a -> m [Modifier]
-  default getModifiersFor :: (Generic a, HasModifiersFor1 env investigator (Rep a), MonadIO m, MonadReader env m) => investigator -> a -> m [Modifier]
+  getModifiersFor :: (MonadReader env m, MonadIO m) => Source -> investigator -> a -> m [Modifier]
+  default getModifiersFor :: (Generic a, HasModifiersFor1 env investigator (Rep a), MonadIO m, MonadReader env m) => Source -> investigator -> a -> m [Modifier]
   getModifiersFor = defaultGetModifiersFor
 
 class (HasId LocationId () location) => IsLocation location where
@@ -370,3 +378,4 @@ class (HasId InvestigatorId () investigator) => IsInvestigator investigator wher
   discardOf :: investigator -> [PlayerCard]
   handOf :: investigator -> [Card]
   deckOf :: investigator -> [PlayerCard]
+  modifiedStatsOf :: (MonadReader env m, MonadIO m, HasModifiers env InvestigatorId) => Source -> investigator -> m Stats

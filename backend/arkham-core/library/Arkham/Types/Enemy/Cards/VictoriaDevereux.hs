@@ -27,10 +27,10 @@ victoriaDevereux uuid = VictoriaDevereux $ (baseAttrs uuid "01140")
   }
 
 instance HasModifiersFor env investigator VictoriaDevereux where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env VictoriaDevereux where
-  getModifiers (VictoriaDevereux Attrs {..}) =
+  getModifiers _ (VictoriaDevereux Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
 instance (IsInvestigator investigator) => HasActions env investigator VictoriaDevereux where

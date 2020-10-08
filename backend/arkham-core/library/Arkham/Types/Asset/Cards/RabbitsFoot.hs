@@ -22,7 +22,7 @@ rabbitsFoot uuid =
   RabbitsFoot $ (baseAttrs uuid "01075") { assetSlots = [AccessorySlot] }
 
 instance HasModifiersFor env investigator RabbitsFoot where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (IsInvestigator investigator) => HasActions env investigator RabbitsFoot where
   getActions i (AfterFailSkillTest You n) (RabbitsFoot Attrs {..})

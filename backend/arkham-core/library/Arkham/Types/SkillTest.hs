@@ -20,9 +20,11 @@ import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.SkillTestResult
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Stats
 import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.TokenResponse
+import Arkham.Types.Window
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
@@ -41,9 +43,7 @@ data SkillTest a = SkillTest
   , skillTestRevealedTokens  :: [Token] -- tokens may change from physical representation
   , skillTestValueModifier :: Int
   , skillTestResult :: SkillTestResult
-  , skillTestSkillValue :: Int
   , skillTestModifiers :: HashMap Source [Modifier]
-  , skillTestTempModifiers :: [Modifier]
   , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
   , skillTestSource :: Source
   , skillTestTarget :: Target
@@ -58,6 +58,11 @@ instance ToJSON a => ToJSON (SkillTest a) where
 
 instance FromJSON a => FromJSON (SkillTest a) where
   parseJSON = genericParseJSON $ aesonOptions $ Just "skillTest"
+
+instance (IsInvestigator investigator) => HasModifiersFor env investigator (SkillTest a) where
+  getModifiersFor _ i SkillTest {..} | getId () i == skillTestInvestigator =
+    pure $ concat (toList skillTestModifiers)
+  getModifiersFor _ _ SkillTest{} = pure []
 
 instance HasSet CommittedCardId InvestigatorId (SkillTest a) where
   getSet iid =
@@ -86,7 +91,7 @@ initSkillTest
   -> [Modifier]
   -> [TokenResponse Message]
   -> SkillTest Message
-initSkillTest iid source target maction skillType' skillValue' difficulty' onSuccess' onFailure' modifiers' tokenResponses'
+initSkillTest iid source target maction skillType' _skillValue' difficulty' onSuccess' onFailure' modifiers' tokenResponses'
   = SkillTest
     { skillTestInvestigator = iid
     , skillTestSkillType = skillType'
@@ -98,9 +103,7 @@ initSkillTest iid source target maction skillType' skillValue' difficulty' onSuc
     , skillTestRevealedTokens = mempty
     , skillTestValueModifier = 0
     , skillTestResult = Unrun
-    , skillTestSkillValue = skillValue'
-    , skillTestTempModifiers = modifiers'
-    , skillTestModifiers = mempty
+    , skillTestModifiers = mapFromList [(SkillTestSource, modifiers')]
     , skillTestCommittedCards = mempty
     , skillTestSource = source
     , skillTestTarget = target
@@ -141,7 +144,7 @@ onTokenResponses =
 applicableModifiers :: SkillTest a -> [Modifier]
 applicableModifiers SkillTest {..} = mapMaybe
   applicableModifier
-  ((concat . toList $ skillTestModifiers) <> skillTestTempModifiers)
+  (concat . toList $ skillTestModifiers)
  where
   applicableModifier (ModifierIfSucceededBy n m) = case skillTestResult of
     SucceededBy _ x | x >= n -> Just m
@@ -158,34 +161,27 @@ skillIconCount SkillTest {..} = length . filter matches $ concatMap
   matches SkillWild = True
   matches s = s == skillTestSkillType
 
-skillValueModifiers :: SkillTest a -> Int
-skillValueModifiers SkillTest {..} = foldr
-  applyModifier
-  0
-  ((concat . toList $ skillTestModifiers) <> skillTestTempModifiers)
- where
-  applyModifier (AnySkillValue m) n = max 0 (n + m)
-  applyModifier (SkillModifier stype m) n | skillTestSkillType == stype =
-    max 0 (n + m)
-  applyModifier _ n = n
-
 modifiedTokenValue :: Int -> SkillTest a -> Int
 modifiedTokenValue baseValue SkillTest {..} = foldr
   applyModifier
   baseValue
-  ((concat . toList $ skillTestModifiers) <> skillTestTempModifiers)
+  (concat . toList $ skillTestModifiers)
  where
   applyModifier DoubleNegativeModifiersOnTokens n =
     if baseValue < 0 then n + baseValue else n
   applyModifier _ n = n
 
 type SkillTestRunner env
-  = (HasQueue env, HasCard InvestigatorId env, HasModifiers env InvestigatorId)
+  = ( HasQueue env
+    , HasCard InvestigatorId env
+    , HasModifiers env InvestigatorId
+    , HasStats InvestigatorId env
+    )
 
 instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
   runMessage msg s@SkillTest {..} = case msg of
     TriggerSkillTest iid -> do
-      modifiers' <- getModifiers iid
+      modifiers' <- getModifiers SkillTestSource iid
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
         then s <$ unshiftMessages
           [ RunSkillTestSourceNotification iid skillTestSource
@@ -306,6 +302,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
               queue' = flip filter queue $ \case
                 Will FailedSkillTest{} -> False
                 Will PassedSkillTest{} -> False
+                CheckWindow _ [WhenWouldFailSkillTest _] -> False
                 Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
                   | skillTestInvestigator == skillTestInvestigator' -> False
                 _ -> True
@@ -373,28 +370,25 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
           ]
         Unrun -> pure ()
     RunSkillTest _ tokenValues -> do
+      stats <- getStats skillTestInvestigator SkillTestSource =<< ask
       let
+        currentSkillValue = statsSkillValue stats skillTestSkillType
         incomingTokenValues = sum $ map tokenValue tokenValues
         totaledTokenValues =
           modifiedTokenValue incomingTokenValues s + skillTestValueModifier
         modifiedSkillValue' =
-          skillTestSkillValue
-            + totaledTokenValues
-            + skillIconCount s
-            + skillValueModifiers s
+          max 0 (currentSkillValue + totaledTokenValues + skillIconCount s)
       unshiftMessage SkillTestResults
       liftIO $ whenM
         (isJust <$> lookupEnv "DEBUG")
         (putStrLn
         . pack
         $ "skill value: "
-        <> show skillTestSkillValue
+        <> show currentSkillValue
         <> "\n+ totaled token values: "
         <> show totaledTokenValues
         <> "\n+ skill icon count: "
         <> show (skillIconCount s)
-        <> "\n+ skill value modifiers: "
-        <> show (skillValueModifiers s)
         <> "\n-------------------------"
         <> "\n= Modified skill value: "
         <> show modifiedSkillValue'

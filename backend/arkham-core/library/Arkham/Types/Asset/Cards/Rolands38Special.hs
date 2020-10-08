@@ -29,7 +29,7 @@ rolands38Special uuid =
   Rolands38Special $ (baseAttrs uuid "01006") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env investigator Rolands38Special where
-  getModifiersFor _ _ = pure []
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator Rolands38Special where
   getActions i window (Rolands38Special Attrs {..})

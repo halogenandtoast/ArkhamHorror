@@ -31,41 +31,35 @@ rolands38Special uuid =
 instance HasModifiersFor env investigator Rolands38Special where
   getModifiersFor _ _ _ = pure []
 
+fightAbility :: Attrs -> Ability
+fightAbility Attrs { assetId } =
+  mkAbility (AssetSource assetId) 1 (ActionAbility 1 (Just Action.Fight))
+
 instance (ActionRunner env investigator) => HasActions env investigator Rolands38Special where
-  getActions i window (Rolands38Special Attrs {..})
-    | Just (getId () i) == assetInvestigator = do
+  getActions i window (Rolands38Special a@Attrs { assetUses }) | ownedBy a i =
+    do
       fightAvailable <- hasFightActions i window
       pure
-        [ ActivateCardAbilityAction
-            (getId () i)
-            (mkAbility
-              (AssetSource assetId)
-              1
-              (ActionAbility 1 (Just Action.Fight))
-            )
+        [ ActivateCardAbilityAction (getId () i) (fightAbility a)
         | useCount assetUses > 0 && fightAvailable
         ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Rolands38Special where
-  runMessage msg a@(Rolands38Special attrs@Attrs {..}) = case msg of
+  runMessage msg (Rolands38Special attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       Rolands38Special <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo 4)
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
-      case assetUses of
-        Uses Resource.Ammo n -> do
-          locationId <- asks (getId @LocationId iid)
-          locationClueCount <- unClueCount <$> asks (getCount locationId)
-          let skillModifier = if locationClueCount == 0 then 1 else 3
-          unshiftMessage
-            (ChooseFightEnemy
-              iid
-              (AssetSource aid)
-              SkillCombat
-              [DamageDealt 1, SkillModifier SkillCombat skillModifier]
-              mempty
-              False
-            )
-          pure $ Rolands38Special $ attrs & uses .~ Uses Resource.Ammo (n - 1)
-        _ -> pure a
+    UseCardAbility iid _ source _ 1 | isSource attrs source -> do
+      locationId <- asks $ getId @LocationId iid
+      anyClues <- asks $ (/= 0) . unClueCount . getCount locationId
+      unshiftMessage
+        (ChooseFightEnemy
+          iid
+          source
+          SkillCombat
+          [DamageDealt 1, SkillModifier SkillCombat (if anyClues then 3 else 1)]
+          mempty
+          False
+        )
+      pure $ Rolands38Special $ attrs & uses %~ Resource.use
     _ -> Rolands38Special <$> runMessage msg attrs

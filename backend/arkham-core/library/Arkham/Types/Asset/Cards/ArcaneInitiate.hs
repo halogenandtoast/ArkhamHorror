@@ -9,9 +9,9 @@ import Arkham.Types.AssetId
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Slot
-import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
+import Arkham.Types.Window
 import ClassyPrelude
 import Lens.Micro
 
@@ -25,34 +25,26 @@ arcaneInitiate uuid = ArcaneInitiate $ (baseAttrs uuid "01063")
   , assetSanity = Just 2
   }
 
+fastAbility :: Attrs -> Window -> Ability
+fastAbility a window = mkAbility (toSource a) 1 (FastAbility window)
+
 instance HasModifiersFor env investigator ArcaneInitiate where
   getModifiersFor _ _ _ = pure []
 
 instance (IsInvestigator investigator) => HasActions env investigator ArcaneInitiate where
-  getActions i window (ArcaneInitiate Attrs {..})
-    | Just (getId () i) == assetInvestigator = pure
-      [ ActivateCardAbilityAction
-          (getId () i)
-          (mkAbility (AssetSource assetId) 1 (FastAbility window))
-      | not assetExhausted
-      ]
+  getActions i window (ArcaneInitiate a) | ownedBy a i = pure
+    [ ActivateCardAbilityAction (getId () i) (fastAbility a window)
+    | not (assetExhausted a)
+    ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env ArcaneInitiate where
-  runMessage msg (ArcaneInitiate attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
-      ArcaneInitiate <$> runMessage msg (attrs & doom +~ 1) -- TODO: this triggers multiple time due to having to discard other assets
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
-      unshiftMessage
-        (Ask iid
-        $ ChooseOne
-            [ SearchTopOfDeck
-                iid
-                (InvestigatorTarget iid)
-                3
-                [Spell]
-                ShuffleBackIn
-            ]
-        )
+  runMessage msg (ArcaneInitiate attrs) = case msg of
+    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
+      ArcaneInitiate <$> runMessage msg (attrs & doom +~ 1)
+    UseCardAbility iid _ source _ 1 | isSource attrs source -> do
+      unshiftMessage $ chooseOne
+        iid
+        [SearchTopOfDeck iid (InvestigatorTarget iid) 3 [Spell] ShuffleBackIn]
       pure $ ArcaneInitiate $ attrs & exhausted .~ True
     _ -> ArcaneInitiate <$> runMessage msg attrs

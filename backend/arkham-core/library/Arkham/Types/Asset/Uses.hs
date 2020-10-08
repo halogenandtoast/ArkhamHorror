@@ -10,6 +10,10 @@ data UseType = Ammo | Supply | Secret | Charge | Try | Bounty | Whistle | Resour
 data Uses = NoUses | Uses UseType Int
   deriving stock (Show, Eq, Generic)
 
+use :: Uses -> Uses
+use NoUses = NoUses
+use (Uses useType n) = Uses useType (max 0 (n - 1))
+
 useCount :: Uses -> Int
 useCount NoUses = 0
 useCount (Uses _ n) = n

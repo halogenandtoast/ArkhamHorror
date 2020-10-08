@@ -29,37 +29,36 @@ newtype FireAxe = FireAxe Attrs
 fireAxe :: AssetId -> FireAxe
 fireAxe uuid = FireAxe $ (baseAttrs uuid "02032") { assetSlots = [HandSlot] }
 
-fightAbility :: AssetId -> Ability
-fightAbility assetId =
+fightAbility :: Attrs -> Ability
+fightAbility Attrs { assetId } =
   mkAbility (AssetSource assetId) 1 (ActionAbility 1 (Just Action.Fight))
 
-reactionAbility :: AssetId -> SkillType -> Ability
-reactionAbility assetId skillType =
+reactionAbility :: Attrs -> SkillType -> Ability
+reactionAbility Attrs { assetId } skillType =
   mkAbility (AssetSource assetId) 2 (ReactionAbility (WhenSkillTest skillType))
 
 instance (HasSource ForSkillTest env, IsInvestigator investigator) => HasModifiersFor env investigator FireAxe where
   getModifiersFor SkillTestSource i (FireAxe a) | ownedBy a i = do
     using <- asks $ any (isSource a) . getSource ForSkillTest
-    pure [ DamageDealt 1 | resourceCount i == 0 && using ]
+    pure [ DamageDealt 1 | using && resourceCount i == 0 ]
   getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator FireAxe where
-  getActions i NonFast (FireAxe a@Attrs {..}) | ownedBy a i = do
+  getActions i NonFast (FireAxe a) | ownedBy a i = do
     fightAvailable <- hasFightActions i NonFast
     pure
-      $ [ ActivateCardAbilityAction (getId () i) (fightAbility assetId)
+      $ [ ActivateCardAbilityAction (getId () i) (fightAbility a)
         | fightAvailable && canDo Action.Fight i
         ]
-  getActions i (WhenSkillTest skillType) (FireAxe a@Attrs {..}) | ownedBy a i =
-    do
-      let ability = reactionAbility assetId skillType
-      using <- asks $ any (isSource a) . getSource ForSkillTest
-      usedCount <-
-        asks $ count (== (getId () i, ability)) . map unUsedAbility . getList ()
-      pure
-        [ ActivateCardAbilityAction (getId () i) ability
-        | resourceCount i > 0 && using && usedCount < 3
-        ]
+  getActions i (WhenSkillTest skillType) (FireAxe a) | ownedBy a i = do
+    let ability = reactionAbility a skillType
+    using <- asks $ any (isSource a) . getSource ForSkillTest
+    usedCount <-
+      asks $ count (== (getId () i, ability)) . map unUsedAbility . getList ()
+    pure
+      [ ActivateCardAbilityAction (getId () i) ability
+      | resourceCount i > 0 && using && usedCount < 3
+      ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env FireAxe where

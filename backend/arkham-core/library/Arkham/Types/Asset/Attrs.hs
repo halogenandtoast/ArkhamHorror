@@ -80,8 +80,10 @@ baseAttrs aid cardCode =
       }
 
 isSource :: Attrs -> Source -> Bool
-isSource Attrs {..} (AssetSource aid) = assetId == aid
-isSource _ _ = False
+isSource = (==) . toSource
+
+toSource :: Attrs -> Source
+toSource Attrs { assetId } = AssetSource assetId
 
 ownedBy :: IsInvestigator investigator => Attrs -> investigator -> Bool
 ownedBy Attrs {..} = (== assetInvestigator) . Just . getId ()

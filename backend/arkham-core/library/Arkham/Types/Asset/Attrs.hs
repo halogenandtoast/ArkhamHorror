@@ -85,6 +85,9 @@ isSource = (==) . toSource
 toSource :: Attrs -> Source
 toSource Attrs { assetId } = AssetSource assetId
 
+toTarget :: Attrs -> Target
+toTarget Attrs { assetId } = AssetTarget assetId
+
 ownedBy :: IsInvestigator investigator => Attrs -> investigator -> Bool
 ownedBy Attrs {..} = (== assetInvestigator) . Just . getId ()
 

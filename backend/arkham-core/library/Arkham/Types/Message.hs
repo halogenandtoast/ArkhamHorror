@@ -7,6 +7,7 @@ module Arkham.Types.Message
   , MessageType(..)
   , ActionType(..)
   , messageType
+  , chooseOne
   )
 where
 
@@ -360,6 +361,9 @@ data Message
   | NextChaosBagStep Source InvestigatorId RequestedTokenStrategy
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
+
+chooseOne :: InvestigatorId -> [Message] -> Message
+chooseOne iid msgs = Ask iid (ChooseOne msgs)
 
 data Question
   = ChooseOne [Message]

@@ -1,5 +1,9 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.Aquinnah1 where
+module Arkham.Types.Asset.Cards.Aquinnah1
+  ( Aquinnah1(..)
+  , aquinnah1
+  )
+where
 
 import Arkham.Json
 import Arkham.Types.Ability
@@ -26,58 +30,49 @@ aquinnah1 uuid = Aquinnah1 $ (baseAttrs uuid "01082")
   , assetSanity = Just 4
   }
 
+reactionAbility :: Attrs -> Ability
+reactionAbility attrs =
+  mkAbility (toSource attrs) 1 (FastAbility (WhenEnemyAttacks You))
+
+dropUntilAttack :: [Message] -> [Message]
+dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
+
 instance HasModifiersFor env investigator Aquinnah1 where
   getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator Aquinnah1 where
-  getActions i (WhenEnemyAttacks You) (Aquinnah1 Attrs {..})
-    | Just (getId () i) == assetInvestigator = do
-      enemyId <- withQueue $ \queue -> do
-        let (_, rest) = break ((== Just AttackMessage) . messageType) queue
-        case rest of
-          (PerformEnemyAttack iid eid : _) | iid == getId () i -> (queue, eid)
-          _ -> error "must be present"
-      enemyIds <- filter (/= enemyId) . setToList <$> asks
-        (getSet (locationOf i))
-      pure
-        [ ActivateCardAbilityAction
-            (getId () i)
-            (mkAbility
-              (AssetSource assetId)
-              1
-              (FastAbility (WhenEnemyAttacks You))
-            )
-        | not assetExhausted && not (null enemyIds)
-        ]
+  getActions i (WhenEnemyAttacks You) (Aquinnah1 a) | ownedBy a i = do
+    enemyId <- fromQueue $ \queue ->
+      let PerformEnemyAttack iid eid : _ = dropUntilAttack queue
+      in if iid == getId () i then eid else error "mismatch"
+    enemyIds <- asks $ filterSet (/= enemyId) . getSet (locationOf i)
+    pure
+      [ ActivateCardAbilityAction (getId () i) (reactionAbility a)
+      | not (assetExhausted a) && not (null enemyIds)
+      ]
   getActions i window (Aquinnah1 x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env Aquinnah1 where
-  runMessage msg (Aquinnah1 attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
-      enemyId <- withQueue $ \queue -> do
-        let
-          (_before, rest) = break ((== Just AttackMessage) . messageType) queue
-        case rest of
-          (PerformEnemyAttack _ eid : rest') -> (rest', eid)
-          _ -> error "must be present"
-      healthDamage' <- unHealthDamageCount <$> asks (getCount enemyId)
-      sanityDamage' <- unSanityDamageCount <$> asks (getCount enemyId)
-      locationId <- asks (getId @LocationId iid)
-      enemyIds <- filter (/= enemyId) . setToList <$> asks (getSet locationId)
+  runMessage msg (Aquinnah1 attrs) = case msg of
+    UseCardAbility iid _ source _ 1 | isSource attrs source -> do
+      enemyId <- withQueue $ \queue ->
+        let PerformEnemyAttack _ eid : queue' = dropUntilAttack queue
+        in (queue', eid)
+      healthDamage' <- asks $ unHealthDamageCount . getCount enemyId
+      sanityDamage' <- asks $ unSanityDamageCount . getCount enemyId
+      locationId <- asks $ getId @LocationId iid
+      enemyIds <- asks $ filter (/= enemyId) . setToList . getSet locationId
 
-      unshiftMessage
-        (Ask iid $ ChooseOne
-          [ Run
-              [ EnemyDamage eid iid (AssetSource assetId) healthDamage'
-              , InvestigatorAssignDamage
-                iid
-                (EnemySource enemyId)
-                0
-                sanityDamage'
-              ]
-          | eid <- enemyIds
-          ]
-        )
+      when (null enemyIds) (error "other enemies had to be present")
+
+      unshiftMessage $ chooseOne
+        iid
+        [ Run
+            [ EnemyDamage eid iid source healthDamage'
+            , InvestigatorAssignDamage iid (EnemySource enemyId) 0 sanityDamage'
+            ]
+        | eid <- enemyIds
+        ]
 
       pure $ Aquinnah1 $ attrs & exhausted .~ True
     _ -> Aquinnah1 <$> runMessage msg attrs

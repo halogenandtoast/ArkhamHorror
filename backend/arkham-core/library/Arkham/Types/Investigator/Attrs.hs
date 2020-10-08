@@ -513,8 +513,10 @@ instance ActionRunner env investigator => HasActions env investigator Attrs wher
 
 instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
   runMessage msg i = do
-    forOf_ (hand . traverse . _PlayerCard) i
-      $ \pc -> runMessage msg (toPlayerCardWithBehavior pc)
+    traverseOf_
+      (hand . traverse . _PlayerCard)
+      (runMessage msg . toPlayerCardWithBehavior)
+      i
     runInvestigatorMessage msg i
 
 _PlayerCard :: Traversal' Card PlayerCard
@@ -760,12 +762,28 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   EvadeEnemy iid eid source skillType onSuccess onFailure tokenResponses True
     | iid == investigatorId -> a <$ unshiftMessages
       [ TakeAction iid 1 (Just Action.Evade)
-      , EvadeEnemy iid eid source skillType onSuccess onFailure tokenResponses False
+      , EvadeEnemy
+        iid
+        eid
+        source
+        skillType
+        onSuccess
+        onFailure
+        tokenResponses
+        False
       ]
   EvadeEnemy iid eid source skillType onSuccess onFailure tokenResponses False
     | iid == investigatorId -> a <$ unshiftMessages
       [ WhenEvadeEnemy iid eid
-      , TryEvadeEnemy iid eid source skillType onSuccess onFailure [] tokenResponses
+      , TryEvadeEnemy
+        iid
+        eid
+        source
+        skillType
+        onSuccess
+        onFailure
+        []
+        tokenResponses
       , AfterEvadeEnemy iid eid
       ]
   MoveAction iid lid True | iid == investigatorId -> a <$ unshiftMessages

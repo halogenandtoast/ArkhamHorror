@@ -17,9 +17,6 @@ flashlight :: AssetId -> Flashlight
 flashlight uuid =
   Flashlight $ (baseAttrs uuid "01087") { assetSlots = [HandSlot] }
 
-instance HasModifiersFor env LocationId Flashlight where
-  getModifiersFor _ _ _ = pure [ShroudModifier (-2)]
-
 instance HasModifiersFor env investigator Flashlight where
   getModifiersFor _ _ _ = pure []
 

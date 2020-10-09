@@ -868,6 +868,18 @@ instance HasSet AdvanceableActId () (Game queue) where
 instance HasSet ConnectedLocationId LocationId (Game queue) where
   getSet lid = getSet () . getLocation lid
 
+instance HasSet AccessibleLocationId LocationId (Game queue) where
+  getSet lid g =
+    let
+      location = getLocation lid g
+      connectedLocationIds =
+        HashSet.map unConnectedLocationId (getSet () location)
+      blockedLocationIds = HashSet.map unBlockedLocationId (getSet () g)
+    in
+      HashSet.map AccessibleLocationId
+      $ connectedLocationIds
+      `difference` blockedLocationIds
+
 instance HasSet AssetId InvestigatorId (Game queue) where
   getSet iid = getSet () . getInvestigator iid
 

@@ -1,32 +1,15 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Attrs where
 
-import Arkham.Json
+import Arkham.Import
+
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.EventId
-import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationId
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Query
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-import ClassyPrelude
 import Data.Char (isLetter)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import qualified Data.Text as T
-import Lens.Micro
 
 data Attrs = Attrs
   { locationName :: Text

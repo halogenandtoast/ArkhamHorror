@@ -5,23 +5,13 @@ module Arkham.Types.Asset.Cards.FireAxe
   )
 where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import
+
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
 import Arkham.Types.Helpers
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Arkham.Types.Window
-import ClassyPrelude
 
 newtype FireAxe = FireAxe Attrs
   deriving newtype (Show, ToJSON, FromJSON)

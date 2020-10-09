@@ -53,7 +53,7 @@ instance (TreacheryRunner env) => RunMessage env SearchingForIzzie where
       SearchingForIzzie <$> runMessage msg attrs
     AttachTreachery tid (LocationTarget lid) | tid == treacheryId ->
       pure $ SearchingForIzzie $ attrs & attachedLocation ?~ lid
-    UseCardAbility iid _ (TreacherySource tid) _ 1 | tid == treacheryId -> do
+    UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId -> do
       let
         attachedLocationId =
           fromJustNote "has to be set" treacheryAttachedLocation

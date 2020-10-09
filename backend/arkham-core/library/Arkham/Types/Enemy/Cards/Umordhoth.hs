@@ -62,6 +62,6 @@ instance (EnemyRunner env) => RunMessage env Umordhoth where
         <$> runMessage msg (attrs & health %~ fmap (+ (4 * playerCount)))
     ChooseEndTurn _ -> do
       Umordhoth <$> runMessage msg (attrs & exhausted .~ False)
-    UseCardAbility _ _ (EnemySource eid) _ 1 | eid == enemyId ->
+    UseCardAbility _ (EnemySource eid) _ 1 | eid == enemyId ->
       e <$ unshiftMessage (Resolution 3)
     _ -> Umordhoth <$> runMessage msg attrs

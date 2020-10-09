@@ -47,6 +47,6 @@ instance (TreacheryRunner env) => RunMessage env Psychosis where
     After (InvestigatorTakeDamage iid _ _ n)
       | Just iid == treacheryAttachedInvestigator && n > 0 -> t <$ unshiftMessage
         (InvestigatorDirectDamage iid (TreacherySource treacheryId) 1 0)
-    UseCardAbility _ _ (TreacherySource tid) _ 1 | tid == treacheryId ->
+    UseCardAbility _ (TreacherySource tid) _ 1 | tid == treacheryId ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
     _ -> Psychosis <$> runMessage msg attrs

@@ -43,7 +43,7 @@ instance (ActionRunner env investigator) => HasActions env investigator PoliceBa
 
 instance (AssetRunner env) => RunMessage env PoliceBadge2 where
   runMessage msg a@(PoliceBadge2 attrs@Attrs {..}) = case msg of
-    UseCardAbility _ _ (AssetSource aid) _ 1 | aid == assetId -> do
+    UseCardAbility _ (AssetSource aid) _ 1 | aid == assetId -> do
       activeInvestigatorId <- unActiveInvestigatorId <$> asks (getId ())
       a <$ unshiftMessages
         [ Discard (AssetTarget aid)

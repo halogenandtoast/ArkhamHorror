@@ -34,7 +34,7 @@ instance IsInvestigator investigator => HasActions env investigator Burglary whe
 
 instance AssetRunner env => RunMessage env Burglary where
   runMessage msg (Burglary attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 | isSource attrs source -> do
       lid <- asks $ getId iid
       unshiftMessage $ Investigate
         iid

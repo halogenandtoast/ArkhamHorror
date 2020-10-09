@@ -45,6 +45,6 @@ instance (ActionRunner env investigator) => HasActions env investigator PeterSyl
 
 instance (AssetRunner env) => RunMessage env PeterSylvestre where
   runMessage msg (PeterSylvestre attrs@Attrs {..}) = case msg of
-    UseCardAbility _ _ (AssetSource aid) _ 1 | aid == assetId -> do
+    UseCardAbility _ (AssetSource aid) _ 1 | aid == assetId -> do
       pure $ PeterSylvestre $ attrs & sanityDamage -~ 1
     _ -> PeterSylvestre <$> runMessage msg attrs

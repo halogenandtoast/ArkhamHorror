@@ -50,12 +50,7 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
           then a <$ unshiftMessage
             (Ask iid $ ChooseOne
               [ Run
-                [ UseCardAbility
-                  iid
-                  (AssetSource assetId)
-                  (AssetSource assetId)
-                  Nothing
-                  1
+                [ UseCardAbility iid (AssetSource assetId) Nothing 1
                 , AddModifiers
                   (EnemyTarget eid)
                   (AssetSource assetId)

@@ -54,6 +54,6 @@ instance (LocationRunner env) => RunMessage env YourHouse where
         void popMessage
         unshiftMessage (EnemySpawn "01124" eid)
       YourHouse <$> runMessage msg attrs
-    UseCardAbility iid _ (LocationSource lid) _ 1 | lid == locationId ->
+    UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
       l <$ unshiftMessages [DrawCards iid 1 False, TakeResources iid 1 False]
     _ -> YourHouse <$> runMessage msg attrs

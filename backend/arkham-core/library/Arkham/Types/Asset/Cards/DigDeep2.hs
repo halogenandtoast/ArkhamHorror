@@ -29,7 +29,6 @@ instance (IsInvestigator investigator) => HasActions env investigator DigDeep2 w
       [ UseCardAbility
           (getId () i)
           (AssetSource assetId)
-          (AssetSource assetId)
           Nothing
           1
       | resourceCount i > 0
@@ -39,7 +38,6 @@ instance (IsInvestigator investigator) => HasActions env investigator DigDeep2 w
       [ UseCardAbility
           (getId () i)
           (AssetSource assetId)
-          (AssetSource assetId)
           Nothing
           2
       | resourceCount i > 0
@@ -48,7 +46,7 @@ instance (IsInvestigator investigator) => HasActions env investigator DigDeep2 w
 
 instance (AssetRunner env) => RunMessage env DigDeep2 where
   runMessage msg a@(DigDeep2 attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , AddModifiers
@@ -56,7 +54,7 @@ instance (AssetRunner env) => RunMessage env DigDeep2 where
           (AssetSource aid)
           [SkillModifier SkillWillpower 1]
         ]
-    UseCardAbility iid _ (AssetSource aid) _ 2 | aid == assetId ->
+    UseCardAbility iid (AssetSource aid) _ 2 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , AddModifiers

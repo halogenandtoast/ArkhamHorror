@@ -55,7 +55,7 @@ instance (ActionRunner env investigator) => HasActions env investigator JimsTrum
 
 instance (AssetRunner env) => RunMessage env JimsTrumpet where
   runMessage msg a@(JimsTrumpet attrs@Attrs {..}) = case msg of
-    UseCardAbility _ _ (AssetSource aid) _ 1 | aid == assetId -> do
+    UseCardAbility _ (AssetSource aid) _ 1 | aid == assetId -> do
       let ownerId = fromJustNote "must be owned" assetInvestigator
       locationId <- asks (getId ownerId)
       connectedLocationIds <- map unConnectedLocationId . setToList <$> asks

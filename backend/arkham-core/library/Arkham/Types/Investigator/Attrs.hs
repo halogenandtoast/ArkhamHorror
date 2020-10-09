@@ -1199,13 +1199,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       (CheckWindow investigatorId [WhenEnemySpawns YourLocation traits])
   ActivateCardAbilityAction iid Ability {..} | iid == investigatorId -> do
     unshiftMessage
-      (UseCardAbility
-        iid
-        abilitySource
-        abilityProvider
-        abilityMetadata
-        abilityIndex
-      ) -- We should check action type when added for aoo
+      (UseCardAbility iid abilitySource abilityMetadata abilityIndex) -- We should check action type when added for aoo
     case abilityType of
       ForcedAbility -> pure ()
       FastAbility _ -> pure ()

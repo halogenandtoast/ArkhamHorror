@@ -40,7 +40,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Scavenging
 
 instance (AssetRunner env) => RunMessage env Scavenging where
   runMessage msg (Scavenging attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId -> do
       unshiftMessage (SearchDiscard iid (InvestigatorTarget iid) [Item])
       pure $ Scavenging $ attrs & exhausted .~ True
     _ -> Scavenging <$> runMessage msg attrs

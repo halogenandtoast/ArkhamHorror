@@ -44,7 +44,7 @@ instance (IsInvestigator investigator) => HasActions env investigator TheNecrono
 
 instance (AssetRunner env) => RunMessage env TheNecronomicon where
   runMessage msg a@(TheNecronomicon attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId -> do
       unshiftMessage $ InvestigatorDamage iid (AssetSource aid) 0 1
       if fromJustNote "Must be set" assetHorror == 1
         then a <$ unshiftMessage (Discard (AssetTarget aid))

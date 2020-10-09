@@ -58,7 +58,7 @@ instance (ActionRunner env investigator) => HasActions env investigator AgnesBak
 
 instance (InvestigatorRunner Attrs env) => RunMessage env AgnesBaker where
   runMessage msg i@(AgnesBaker attrs@Attrs {..}) = case msg of
-    UseCardAbility _ _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
+    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       do
         lid <- asks (getId @LocationId investigatorId)
         locationEnemyIds <- HashSet.toList <$> asks (getSet lid)

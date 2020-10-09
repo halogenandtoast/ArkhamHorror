@@ -49,7 +49,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Miskaton
 
 instance (LocationRunner env) => RunMessage env MiskatonicUniversity where
   runMessage msg l@(MiskatonicUniversity attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (LocationSource lid) _ 1 | lid == locationId ->
+    UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
       l <$ unshiftMessage
         (SearchTopOfDeck
           iid

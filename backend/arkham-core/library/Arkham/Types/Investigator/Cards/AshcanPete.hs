@@ -68,7 +68,7 @@ instance (InvestigatorRunner Attrs env) => RunMessage env AshcanPete where
     ResolveToken ElderSign iid | iid == investigatorId -> do
       unshiftMessage (Ready (CardCodeTarget "02014"))
       i <$ runTest investigatorId (TokenValue ElderSign 2)
-    UseCardAbility _ _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
+    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       do
         exhaustedAssetIds <- map unExhaustedAssetId . setToList <$> asks
           (getSet investigatorId)

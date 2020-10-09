@@ -26,29 +26,19 @@ instance HasModifiersFor env investigator HardKnocks where
 instance (IsInvestigator investigator) => HasActions env investigator HardKnocks where
   getActions i (Fast.WhenSkillTest SkillCombat) (HardKnocks Attrs {..})
     | Just (getId () i) == assetInvestigator = pure
-      [ UseCardAbility
-          (getId () i)
-          (AssetSource assetId)
-          (AssetSource assetId)
-          Nothing
-          1
+      [ UseCardAbility (getId () i) (AssetSource assetId) Nothing 1
       | resourceCount i > 0
       ]
   getActions i (Fast.WhenSkillTest SkillAgility) (HardKnocks Attrs {..})
     | Just (getId () i) == assetInvestigator = pure
-      [ UseCardAbility
-          (getId () i)
-          (AssetSource assetId)
-          (AssetSource assetId)
-          Nothing
-          2
+      [ UseCardAbility (getId () i) (AssetSource assetId) Nothing 2
       | resourceCount i > 0
       ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env HardKnocks where
   runMessage msg a@(HardKnocks attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , AddModifiers
@@ -56,7 +46,7 @@ instance (AssetRunner env) => RunMessage env HardKnocks where
           (AssetSource aid)
           [SkillModifier SkillCombat 1]
         ]
-    UseCardAbility iid _ (AssetSource aid) _ 2 | aid == assetId ->
+    UseCardAbility iid (AssetSource aid) _ 2 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , AddModifiers

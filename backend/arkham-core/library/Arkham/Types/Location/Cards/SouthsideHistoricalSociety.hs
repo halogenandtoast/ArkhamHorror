@@ -55,6 +55,6 @@ instance (ActionRunner env investigator) => HasActions env investigator Southsid
 
 instance (LocationRunner env) => RunMessage env SouthsideHistoricalSociety where
   runMessage msg l@(SouthsideHistoricalSociety attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (LocationSource lid) _ 1 | lid == locationId ->
+    UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
       l <$ unshiftMessage (DrawCards iid 3 False)
     _ -> SouthsideHistoricalSociety <$> runMessage msg attrs

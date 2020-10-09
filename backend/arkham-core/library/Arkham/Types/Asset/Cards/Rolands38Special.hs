@@ -42,7 +42,7 @@ instance (AssetRunner env) => RunMessage env Rolands38Special where
   runMessage msg (Rolands38Special attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       Rolands38Special <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo 4)
-    UseCardAbility iid _ source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- asks $ getId @LocationId iid
       anyClues <- asks $ (/= 0) . unClueCount . getCount locationId
       unshiftMessage

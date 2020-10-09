@@ -63,7 +63,7 @@ instance (ActionRunner env investigator) => HasActions env investigator FireAxe 
 
 instance (AssetRunner env) => RunMessage env FireAxe where
   runMessage msg a@(FireAxe attrs) = case msg of
-    UseCardAbility iid _ source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 | isSource attrs source ->
       a <$ unshiftMessage
         (ChooseFightEnemy
           iid
@@ -73,7 +73,7 @@ instance (AssetRunner env) => RunMessage env FireAxe where
           mempty
           False
         )
-    UseCardAbility iid _ source _ 2 | isSource attrs source ->
+    UseCardAbility iid source _ 2 | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , AddModifiers SkillTestTarget source [SkillModifier SkillCombat 2]

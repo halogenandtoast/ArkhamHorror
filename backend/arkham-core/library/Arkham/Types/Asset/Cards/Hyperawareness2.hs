@@ -26,29 +26,19 @@ instance HasModifiersFor env investigator Hyperawareness2 where
 instance (IsInvestigator investigator) => HasActions env investigator Hyperawareness2 where
   getActions i (Fast.WhenSkillTest SkillIntellect) (Hyperawareness2 Attrs {..})
     | Just (getId () i) == assetInvestigator = pure
-      [ UseCardAbility
-          (getId () i)
-          (AssetSource assetId)
-          (AssetSource assetId)
-          Nothing
-          1
+      [ UseCardAbility (getId () i) (AssetSource assetId) Nothing 1
       | resourceCount i > 0
       ]
   getActions i (Fast.WhenSkillTest SkillAgility) (Hyperawareness2 Attrs {..})
     | Just (getId () i) == assetInvestigator = pure
-      [ UseCardAbility
-          (getId () i)
-          (AssetSource assetId)
-          (AssetSource assetId)
-          Nothing
-          2
+      [ UseCardAbility (getId () i) (AssetSource assetId) Nothing 2
       | resourceCount i > 0
       ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Hyperawareness2 where
   runMessage msg a@(Hyperawareness2 attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , AddModifiers
@@ -56,7 +46,7 @@ instance (AssetRunner env) => RunMessage env Hyperawareness2 where
           (AssetSource aid)
           [SkillModifier SkillIntellect 1]
         ]
-    UseCardAbility iid _ (AssetSource aid) _ 2 | aid == assetId ->
+    UseCardAbility iid (AssetSource aid) _ 2 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , AddModifiers

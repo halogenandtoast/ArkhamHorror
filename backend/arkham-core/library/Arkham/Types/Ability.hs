@@ -18,7 +18,6 @@ import ClassyPrelude
 
 data Ability = Ability
   { abilitySource :: Source
-  , abilityProvider :: Source
   , abilityIndex :: Int
   , abilityType :: AbilityType
   , abilityLimit :: AbilityLimit
@@ -28,8 +27,7 @@ data Ability = Ability
 
 instance Eq Ability where
   a == b =
-    (abilityProvider a == abilityProvider b)
-      && (abilityIndex a == abilityIndex b)
+    (abilitySource a == abilitySource b) && (abilityIndex a == abilityIndex b)
 
 instance ToJSON Ability where
   toJSON = genericToJSON $ aesonOptions $ Just "ability"
@@ -47,7 +45,6 @@ data AbilityMetadata = IntMetadata Int | TargetMetadata Target | SourceMetadata 
 mkAbility :: Source -> Int -> AbilityType -> Ability
 mkAbility source idx type' = Ability
   { abilitySource = source
-  , abilityProvider = source
   , abilityIndex = idx
   , abilityType = type'
   , abilityLimit = NoLimit

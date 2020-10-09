@@ -73,7 +73,7 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
           [CannotInvestigate]
         )
       pure . LockedDoor $ attrs & attachedLocation ?~ lid
-    UseCardAbility iid _ (TreacherySource tid) _ 1 | tid == treacheryId -> do
+    UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId -> do
       t <$ unshiftMessage
         (Ask iid $ ChooseOne
           [ BeginSkillTest

@@ -27,29 +27,19 @@ instance (IsInvestigator investigator) => HasActions env investigator PhysicalTr
   getActions i (Fast.WhenSkillTest SkillWillpower) (PhysicalTraining2 Attrs {..})
     | Just (getId () i) == assetInvestigator
     = pure
-      [ UseCardAbility
-          (getId () i)
-          (AssetSource assetId)
-          (AssetSource assetId)
-          Nothing
-          1
+      [ UseCardAbility (getId () i) (AssetSource assetId) Nothing 1
       | resourceCount i > 0
       ]
   getActions i (Fast.WhenSkillTest SkillCombat) (PhysicalTraining2 Attrs {..})
     | Just (getId () i) == assetInvestigator = pure
-      [ UseCardAbility
-          (getId () i)
-          (AssetSource assetId)
-          (AssetSource assetId)
-          Nothing
-          2
+      [ UseCardAbility (getId () i) (AssetSource assetId) Nothing 2
       | resourceCount i > 0
       ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env PhysicalTraining2 where
   runMessage msg a@(PhysicalTraining2 attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , AddModifiers
@@ -57,7 +47,7 @@ instance (AssetRunner env) => RunMessage env PhysicalTraining2 where
           (AssetSource aid)
           [SkillModifier SkillWillpower 1]
         ]
-    UseCardAbility iid _ (AssetSource aid) _ 2 | aid == assetId ->
+    UseCardAbility iid (AssetSource aid) _ 2 | aid == assetId ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , AddModifiers

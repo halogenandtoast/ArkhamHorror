@@ -50,7 +50,7 @@ instance (AssetRunner env) => RunMessage env FortyFiveAutomatic where
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       FortyFiveAutomatic
         <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo 4)
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId ->
       case assetUses of
         Uses Resource.Ammo n -> do
           unshiftMessage

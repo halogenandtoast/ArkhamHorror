@@ -60,7 +60,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Duke whe
 
 instance (AssetRunner env) => RunMessage env Duke where
   runMessage msg (Duke attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId -> do
       unshiftMessage
         (ChooseFightEnemy
           iid
@@ -71,7 +71,7 @@ instance (AssetRunner env) => RunMessage env Duke where
           False
         )
       pure . Duke $ attrs & exhausted .~ True
-    UseCardAbility iid _ (AssetSource aid) _ 2 | aid == assetId -> do
+    UseCardAbility iid (AssetSource aid) _ 2 | aid == assetId -> do
       lid <- asks (getId iid)
       blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
       connectedLocationIds <- HashSet.map unConnectedLocationId

@@ -52,7 +52,7 @@ instance (ActionRunner env investigator) => HasActions env investigator RexMurph
 
 instance (InvestigatorRunner Attrs env) => RunMessage env RexMurphy where
   runMessage msg i@(RexMurphy attrs@Attrs {..}) = case msg of
-    UseCardAbility _ _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
+    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       i <$ unshiftMessage
         (DiscoverCluesAtLocation investigatorId investigatorLocation 1)
     ResolveToken ElderSign iid | iid == investigatorId -> i <$ unshiftMessage

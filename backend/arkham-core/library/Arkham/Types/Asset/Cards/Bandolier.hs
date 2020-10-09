@@ -1,16 +1,15 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.Bandolier where
+module Arkham.Types.Asset.Cards.Bandolier
+  ( Bandolier(..)
+  , bandolier
+  )
+where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Slot
-import Arkham.Types.Source
 import Arkham.Types.Trait
-import ClassyPrelude
 
 newtype Bandolier = Bandolier Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -25,14 +24,12 @@ instance HasModifiersFor env investigator Bandolier where
 instance HasActions env investigator Bandolier where
   getActions i window (Bandolier x) = getActions i window x
 
-instance (AssetRunner env) => RunMessage env Bandolier where
-  runMessage msg (Bandolier attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      unshiftMessages
-        [ AddSlot
-            iid
-            HandSlot
-            (TraitRestrictedSlot (AssetSource aid) Weapon Nothing)
-        ]
+slot :: Attrs -> Slot
+slot attrs = TraitRestrictedSlot (toSource attrs) Weapon Nothing
+
+instance AssetRunner env => RunMessage env Bandolier where
+  runMessage msg (Bandolier attrs) = case msg of
+    InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
+      unshiftMessage $ AddSlot iid HandSlot (slot attrs)
       Bandolier <$> runMessage msg attrs
     _ -> Bandolier <$> runMessage msg attrs

@@ -1,22 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.BeatCop2 where
 
-import ClassyPrelude
+import Arkham.Import
 
-import Arkham.Json
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Source
-import Arkham.Types.Target
-import qualified Data.HashSet as HashSet
-import Lens.Micro
 
 newtype BeatCop2 = BeatCop2 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -29,40 +17,31 @@ beatCop2 uuid = BeatCop2 $ (baseAttrs uuid "01018")
   }
 
 instance IsInvestigator investigator => HasModifiersFor env investigator BeatCop2 where
-  getModifiersFor _ i (BeatCop2 Attrs {..}) = pure
-    [ SkillModifier SkillCombat 1 | Just (getId () i) == assetInvestigator ]
+  getModifiersFor _ i (BeatCop2 a) =
+    pure [ SkillModifier SkillCombat 1 | ownedBy a i ]
 
 instance (IsInvestigator investigator) => HasActions env investigator BeatCop2 where
-  getActions i _ (BeatCop2 Attrs {..})
-    | Just (getId () i) == assetInvestigator = pure
-      [ UseCardAbility
-          (getId () i)
-          (AssetSource assetId)
-          (AssetSource assetId)
-          Nothing
-          1
-      ]
+  getActions i _ (BeatCop2 a) | ownedBy a i =
+    pure [UseCardAbility (getId () i) (toSource a) (toSource a) Nothing 1]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env BeatCop2 where
-  runMessage msg a@(BeatCop2 attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      unshiftMessage
+  runMessage msg a@(BeatCop2 attrs) = case msg of
+    InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs ->
+      a <$ unshiftMessage
         (AddModifiers
           (InvestigatorTarget iid)
-          (AssetSource aid)
+          (toSource attrs)
           [SkillModifier SkillCombat 1]
         )
-      pure a
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
-      locationId <- asks (getId @LocationId (getInvestigator attrs))
-      locationEnemyIds <- HashSet.toList <$> asks (getSet locationId)
+    UseCardAbility iid _ source _ 1 | isSource attrs source -> do
+      locationId <- asks $ getId @LocationId (getInvestigator attrs)
+      locationEnemyIds <- asks $ setToList . getSet locationId
       unshiftMessages
-        [ AssetDamage assetId (AssetSource assetId) 1 0
-        , Ask iid $ ChooseOne
-          [ EnemyDamage eid iid (AssetSource assetId) 1
-          | eid <- locationEnemyIds
-          ]
+        [ AssetDamage (assetId attrs) (toSource attrs) 1 0
+        , chooseOne
+          iid
+          [ EnemyDamage eid iid (toSource attrs) 1 | eid <- locationEnemyIds ]
         ]
       pure . BeatCop2 $ attrs & exhausted .~ True
     _ -> BeatCop2 <$> runMessage msg attrs

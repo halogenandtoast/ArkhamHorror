@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5ed7e9e48786674263c6343d133458e6afd3dd22b15060b3ed95498cf56153db
+-- hash: de1a378263c4158e1231d7f0d6926e6ab6c5fbd0412ef3ef4dcd51ab6e788c7a
 
 name:           arkham-core
 version:        0.0.0
@@ -12,6 +12,7 @@ build-type:     Simple
 
 library
   exposed-modules:
+      Arkham.Import
       Arkham.Json
       Arkham.Types.Ability
       Arkham.Types.Ability.Limit

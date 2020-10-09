@@ -1,19 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.ArcaneInitiate where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import
+
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Slot
-import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Window
-import ClassyPrelude
-import Lens.Micro
 
 newtype ArcaneInitiate = ArcaneInitiate Attrs
   deriving newtype (Show, ToJSON, FromJSON)

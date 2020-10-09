@@ -37,10 +37,10 @@ reactionAbility :: Attrs -> SkillType -> Ability
 reactionAbility Attrs { assetId } skillType =
   mkAbility (AssetSource assetId) 2 (ReactionAbility (WhenSkillTest skillType))
 
-instance (HasSource ForSkillTest env, IsInvestigator investigator) => HasModifiersFor env investigator FireAxe where
-  getModifiersFor SkillTestSource i (FireAxe a) | ownedBy a i = do
-    using <- asks $ any (isSource a) . getSource ForSkillTest
-    pure [ DamageDealt 1 | using && resourceCount i == 0 ]
+instance IsInvestigator investigator => HasModifiersFor env investigator FireAxe where
+  getModifiersFor (SkillTestSource source (Just Action.Fight)) i (FireAxe a)
+    | ownedBy a i && isSource a source = pure
+      [ DamageDealt 1 | resourceCount i == 0 ]
   getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator FireAxe where
@@ -63,16 +63,15 @@ instance (ActionRunner env investigator) => HasActions env investigator FireAxe 
 
 instance (AssetRunner env) => RunMessage env FireAxe where
   runMessage msg a@(FireAxe attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
-      a <$ unshiftMessage
-        (ChooseFightEnemy
-          iid
-          source
-          SkillCombat
-          [SkillModifier SkillCombat 1]
-          mempty
-          False
-        )
+    UseCardAbility iid source _ 1 | isSource attrs source -> a <$ unshiftMessage
+      (ChooseFightEnemy
+        iid
+        source
+        SkillCombat
+        [SkillModifier SkillCombat 1]
+        mempty
+        False
+      )
     UseCardAbility iid source _ 2 | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1

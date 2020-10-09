@@ -5,6 +5,7 @@ module Arkham.Types.Source
 where
 
 import Arkham.Types.ActId
+import Arkham.Types.Action (Action)
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
 import Arkham.Types.Card.Id
@@ -25,7 +26,7 @@ data Source
   | TokenSource Token
   | AgendaSource AgendaId
   | LocationSource LocationId
-  | SkillTestSource
+  | SkillTestSource Source (Maybe Action)
   | TreacherySource TreacheryId
   | EventSource EventId
   | SkillSource SkillId

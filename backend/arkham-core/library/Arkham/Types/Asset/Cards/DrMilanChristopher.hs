@@ -1,18 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.DrMilanChristopher where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Source
-import ClassyPrelude
-
 
 newtype DrMilanChristopher = DrMilanChristopher Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -25,28 +17,22 @@ drMilanChristopher uuid = DrMilanChristopher $ (baseAttrs uuid "01033")
   }
 
 instance IsInvestigator investigator => HasModifiersFor env investigator DrMilanChristopher where
-  getModifiersFor _ i (DrMilanChristopher Attrs {..}) =
-    pure
-      [ SkillModifier SkillIntellect 1
-      | Just (getId () i) == assetInvestigator
-      ]
+  getModifiersFor _ i (DrMilanChristopher a) =
+    pure [ SkillModifier SkillIntellect 1 | ownedBy a i ]
 
 instance HasActions env investigator DrMilanChristopher where
   getActions i window (DrMilanChristopher x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env DrMilanChristopher where
-  runMessage msg a@(DrMilanChristopher attrs@Attrs {..}) = case msg of
-    SuccessfulInvestigation iid _ | iid == getInvestigator attrs ->
+  runMessage msg a@(DrMilanChristopher attrs) = case msg of
+    SuccessfulInvestigation iid _ | getInvestigator attrs == iid ->
       a <$ unshiftMessage
-        (Ask iid $ ChooseOne
-          [ UseCardAbility
-            iid
-            (AssetSource assetId)
-            Nothing
-            1
+        (chooseOne
+          iid
+          [ UseCardAbility iid (toSource attrs) Nothing 1
           , Continue "Do not use Dr. Christopher Milan's ability"
           ]
         )
-    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId ->
+    UseCardAbility iid source _ 1 | isSource attrs source ->
       a <$ unshiftMessage (TakeResources iid 1 False)
     _ -> DrMilanChristopher <$> runMessage msg attrs

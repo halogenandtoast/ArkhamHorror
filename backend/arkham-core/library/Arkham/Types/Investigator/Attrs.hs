@@ -204,12 +204,22 @@ baseSkillValueFor skill _maction tempModifiers attrs = foldr
     SkillWild -> error "investigators do not have wild skills"
 
 damageValueFor
-  :: (MonadReader env m, MonadIO m, HasModifiersFor env InvestigatorId env)
+  :: ( MonadReader env m
+     , MonadIO m
+     , HasModifiersFor env InvestigatorId env
+     , HasSource ForSkillTest env
+     , HasTestAction ForSkillTest env
+     )
   => Int
   -> Attrs
   -> m Int
 damageValueFor baseValue attrs = do
-  modifiers' <- getModifiersFor SkillTestSource (investigatorId attrs) =<< ask
+  source <-
+    asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
+  maction <- asks $ getTestAction ForSkillTest
+  modifiers' <-
+    getModifiersFor (SkillTestSource source maction) (investigatorId attrs)
+      =<< ask
   pure $ foldr applyModifier baseValue modifiers'
  where
   applyModifier (DamageDealt m) n = max 0 (n + m)
@@ -908,11 +918,19 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         else pure []
       a <$ unshiftMessage
         (Ask iid $ ChooseOne $ healthDamageMessages <> sanityDamageMessages)
-  Investigate iid lid skillType modifiers' tokenResponses overrides True
+  Investigate iid lid source skillType modifiers' tokenResponses overrides True
     | iid == investigatorId -> a <$ unshiftMessages
       [ TakeAction iid 1 (Just Action.Investigate)
       , CheckAttackOfOpportunity iid False
-      , Investigate iid lid skillType modifiers' tokenResponses overrides False
+      , Investigate
+        iid
+        lid
+        source
+        skillType
+        modifiers'
+        tokenResponses
+        overrides
+        False
       ]
   InvestigatorDiscoverCluesAtTheirLocation iid n | iid == investigatorId ->
     runMessage (InvestigatorDiscoverClues iid investigatorLocation n) a

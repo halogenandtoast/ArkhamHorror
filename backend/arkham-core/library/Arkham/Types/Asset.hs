@@ -98,7 +98,7 @@ data Asset
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Asset
-deriving anyclass instance (IsInvestigator investigator, HasId LocationId InvestigatorId env, HasSource ForSkillTest env) => HasModifiersFor env investigator Asset
+deriving anyclass instance (IsInvestigator investigator, HasId LocationId InvestigatorId env, HasSource ForSkillTest env, HasTestAction ForSkillTest env) => HasModifiersFor env investigator Asset
 deriving anyclass instance (AssetRunner env) => RunMessage env Asset
 
 newtype BaseAsset = BaseAsset Attrs

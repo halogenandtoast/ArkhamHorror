@@ -487,7 +487,12 @@ instance HasModifiers (Game queue) LocationId where
 instance HasModifiers (Game queue) InvestigatorId where
   getModifiers source iid = asks (getInvestigator iid) >>= getModifiers source
 
-instance (HasId LocationId InvestigatorId env, HasSource ForSkillTest env) => HasModifiersFor env InvestigatorId (Game queue) where
+instance
+  ( HasId LocationId InvestigatorId env
+  , HasSource ForSkillTest env
+  , HasTestAction ForSkillTest env
+  )
+  => HasModifiersFor env InvestigatorId (Game queue) where
   getModifiersFor source iid g = concat <$> sequence
     [ concat <$> traverse (getModifiersFor source i) (g ^. enemies . to toList)
     , concat <$> traverse (getModifiersFor source i) (g ^. assets . to toList)
@@ -514,6 +519,9 @@ instance HasSource ForSkillTest (Game queue) where
 
 instance HasTarget ForSkillTest (Game queue) where
   getTarget _ g = g ^? skillTest . traverse . to skillTestTarget
+
+instance HasTestAction ForSkillTest (Game queue) where
+  getTestAction _ g = join $ g ^? skillTest . traverse . to skillTestAction
 
 instance HasSet HandCardId InvestigatorId (Game queue) where
   getSet iid =
@@ -1520,6 +1528,7 @@ runGameMessage msg g = case msg of
   EndTurn iid -> pure $ g & usedAbilities %~ filter
     (\(iid', Ability {..}) -> iid' /= iid && abilityLimit /= PerTurn)
   EndInvestigation -> do
+    unshiftMessage EndPhase
     pushMessage BeginEnemy
     pure $ g & usedAbilities %~ filter
       (\(_, Ability {..}) -> abilityLimit /= PerPhase)
@@ -1531,6 +1540,7 @@ runGameMessage msg g = case msg of
       <> [HuntersMove, EnemiesAttack, EndEnemy]
     pure $ g & phase .~ EnemyPhase
   EndEnemy -> do
+    unshiftMessage EndPhase
     pushMessage BeginUpkeep
     pure $ g & usedAbilities %~ filter
       (\(_, Ability {..}) -> abilityLimit /= PerPhase)
@@ -1542,6 +1552,7 @@ runGameMessage msg g = case msg of
       <> [ReadyExhausted, AllDrawCardAndResource, AllCheckHandSize, EndUpkeep]
     pure $ g & phase .~ UpkeepPhase
   EndUpkeep -> do
+    unshiftMessage EndPhase
     pushMessages [EndRoundWindow, EndRound]
     pure $ g & usedAbilities %~ filter
       (\(_, Ability {..}) -> abilityLimit /= PerPhase)
@@ -1562,6 +1573,7 @@ runGameMessage msg g = case msg of
          ]
     pure $ g & phase .~ MythosPhase
   EndMythos -> do
+    unshiftMessage EndPhase
     pushMessage BeginInvestigation
     pure $ g & usedAbilities %~ filter
       (\(_, Ability {..}) -> abilityLimit /= PerPhase)

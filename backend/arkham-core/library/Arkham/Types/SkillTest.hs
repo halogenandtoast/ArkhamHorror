@@ -7,29 +7,17 @@ module Arkham.Types.SkillTest
   )
 where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Action (Action)
-import Arkham.Types.Card
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.Id
-import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.SkillTestResult
-import Arkham.Types.SkillType
-import Arkham.Types.Source
 import Arkham.Types.Stats
-import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.TokenResponse
-import Arkham.Types.Window
-import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import qualified Data.List as L
-import Lens.Micro
 import System.Environment
 
 data SkillTest a = SkillTest
@@ -51,6 +39,9 @@ data SkillTest a = SkillTest
   , skillTestSubscribers :: [Target]
   }
   deriving stock (Show, Generic)
+
+toSource :: SkillTest a -> Source
+toSource SkillTest {..} = SkillTestSource skillTestSource skillTestAction
 
 instance ToJSON a => ToJSON (SkillTest a) where
   toJSON = genericToJSON $ aesonOptions $ Just "skillTest"
@@ -103,7 +94,8 @@ initSkillTest iid source target maction skillType' _skillValue' difficulty' onSu
     , skillTestRevealedTokens = mempty
     , skillTestValueModifier = 0
     , skillTestResult = Unrun
-    , skillTestModifiers = mapFromList [(SkillTestSource, modifiers')]
+    , skillTestModifiers = mapFromList
+      [(SkillTestSource source maction, modifiers')]
     , skillTestCommittedCards = mempty
     , skillTestSource = source
     , skillTestTarget = target
@@ -166,29 +158,31 @@ type SkillTestRunner env
     , HasCard InvestigatorId env
     , HasModifiers env InvestigatorId
     , HasStats InvestigatorId env
+    , HasTestAction ForSkillTest env
+    , HasSource ForSkillTest env
     )
 
 instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
   runMessage msg s@SkillTest {..} = case msg of
     TriggerSkillTest iid -> do
-      modifiers' <- getModifiers SkillTestSource iid
+      modifiers' <- getModifiers (toSource s) iid
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
         then s <$ unshiftMessages
           [ RunSkillTestSourceNotification iid skillTestSource
           , RunSkillTest iid []
           ]
-        else s <$ unshiftMessage (RequestTokens SkillTestSource iid 1 SetAside)
+        else s <$ unshiftMessage (RequestTokens (toSource s) iid 1 SetAside)
     DrawAnotherToken iid valueModifier' -> do
-      unshiftMessage (RequestTokens SkillTestSource iid 1 SetAside)
+      unshiftMessage (RequestTokens (toSource s) iid 1 SetAside)
       pure $ s & valueModifier +~ valueModifier'
-    RequestedTokens SkillTestSource iid tokens -> do
+    RequestedTokens (SkillTestSource source maction) iid tokens -> do
       unshiftMessage (RevealSkillTestTokens iid)
       for_ tokens $ \token -> unshiftMessages
-        [ When (RevealToken SkillTestSource iid token)
-        , RevealToken SkillTestSource iid token
+        [ When (RevealToken (SkillTestSource source maction) iid token)
+        , RevealToken (SkillTestSource source maction) iid token
         ]
       pure $ s & (setAsideTokens %~ (tokens <>))
-    RevealToken SkillTestSource _iid token -> do
+    RevealToken (SkillTestSource _ _) _iid token -> do
       pure $ s & revealedTokens %~ (token :)
     RevealSkillTestTokens iid -> do
       onTokenResponses' <-
@@ -247,13 +241,13 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
     ReturnSkillTestRevealedTokens -> do
       -- Rex's Curse timing keeps effects on stack so we do
       -- not want to remove them as subscribers from the stack
-      unshiftMessage $ ResetTokens SkillTestSource
+      unshiftMessage $ ResetTokens (toSource s)
       pure $ s & setAsideTokens .~ mempty
     SkillTestEnds -> s <$ unshiftMessages
       [ RemoveAllModifiersOnTargetFrom
         (InvestigatorTarget skillTestInvestigator)
-        SkillTestSource
-      , ResetTokens SkillTestSource
+        (toSource s)
+      , ResetTokens (toSource s)
       ]
     SkillTestResults -> do
       unshiftMessage
@@ -354,7 +348,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
           ]
         Unrun -> pure ()
     RunSkillTest _ tokenValues -> do
-      stats <- getStats skillTestInvestigator SkillTestSource =<< ask
+      stats <- getStats skillTestInvestigator (toSource s) =<< ask
       let
         currentSkillValue = statsSkillValue stats skillTestSkillType
         incomingTokenValues = sum $ map tokenValue tokenValues

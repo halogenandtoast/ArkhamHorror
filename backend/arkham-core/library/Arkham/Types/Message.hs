@@ -94,6 +94,7 @@ data Message
   | RemoveFromDiscard InvestigatorId CardId
   | InitDeck InvestigatorId [PlayerCard] -- used to initialize the deck for the campaign
   | LoadDeck InvestigatorId [PlayerCard] -- used to reset the deck of the investigator
+  | EndPhase
   | BeginRound
   | EndRoundWindow
   | EndRound
@@ -145,7 +146,7 @@ data Message
   | UseScenarioSpecificAbility InvestigatorId Int
   | AddUses Target UseType Int
   | ResolveToken Token InvestigatorId
-  | Investigate InvestigatorId LocationId SkillType [Modifier] [TokenResponse Message] [Message] Bool
+  | Investigate InvestigatorId LocationId Source SkillType [Modifier] [TokenResponse Message] [Message] Bool
   | ChooseFightEnemy InvestigatorId Source SkillType [Modifier] [TokenResponse Message] Bool
   | ChooseEvadeEnemy InvestigatorId Source SkillType [Message] [Message] [TokenResponse Message] Bool
   | EngageEnemy InvestigatorId EnemyId Bool

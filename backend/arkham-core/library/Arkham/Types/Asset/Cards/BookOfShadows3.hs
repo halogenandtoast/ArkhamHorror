@@ -1,5 +1,9 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.BookOfShadows3 where
+module Arkham.Types.Asset.Cards.BookOfShadows3
+  ( BookOfShadows3(..)
+  , bookOfShadows3
+  )
+where
 
 import Arkham.Import
 
@@ -21,6 +25,9 @@ instance HasModifiersFor env investigator BookOfShadows3 where
 ability :: Attrs -> Ability
 ability a = mkAbility (toSource a) 1 (ActionAbility 1 Nothing)
 
+slot :: Attrs -> Slot
+slot Attrs { assetId } = Slot (AssetSource assetId) Nothing
+
 instance IsInvestigator investigator => HasActions env investigator BookOfShadows3 where
   getActions i NonFast (BookOfShadows3 a) | ownedBy a i = pure
     [ ActivateCardAbilityAction (getId () i) (ability a)
@@ -29,9 +36,9 @@ instance IsInvestigator investigator => HasActions env investigator BookOfShadow
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env BookOfShadows3 where
-  runMessage msg (BookOfShadows3 attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      unshiftMessage (AddSlot iid ArcaneSlot (Slot (AssetSource aid) Nothing))
+  runMessage msg (BookOfShadows3 attrs) = case msg of
+    InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
+      unshiftMessage (AddSlot iid ArcaneSlot (slot attrs))
       BookOfShadows3 <$> runMessage msg attrs
     UseCardAbility iid _ source _ 1 | isSource attrs source -> do
       assetIds <- asks $ setToList . getSet iid

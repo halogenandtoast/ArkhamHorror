@@ -5,20 +5,10 @@ module Arkham.Types.Asset.Cards.Aquinnah1
   )
 where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import
+
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.Slot
-import Arkham.Types.Source
-import Arkham.Types.Window
-import ClassyPrelude
-import Lens.Micro
 
 newtype Aquinnah1 = Aquinnah1 Attrs
   deriving newtype (Show, ToJSON, FromJSON)

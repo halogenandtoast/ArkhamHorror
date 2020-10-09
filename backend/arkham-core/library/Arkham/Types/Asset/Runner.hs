@@ -22,6 +22,7 @@ type AssetRunner env
     , HasSet Trait EnemyId env
     , HasId ActiveInvestigatorId () env
     , HasSet ConnectedLocationId LocationId env
+    , HasSet AccessibleLocationId LocationId env
     , HasSet BlockedLocationId () env
     , HasSet EnemyId InvestigatorId env
     , HasSet Trait AssetId env

@@ -1,24 +1,14 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.CatBurgler1 where
+module Arkham.Types.Asset.Cards.CatBurgler1
+  ( CatBurgler1(..)
+  , catBurgler1
+  )
+where
 
-import ClassyPrelude
+import Arkham.Import
 
-import Arkham.Json
-import Arkham.Types.Ability
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Arkham.Types.Window
-import qualified Data.HashSet as HashSet
-import Lens.Micro
 
 newtype CatBurgler1 = CatBurgler1 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -31,48 +21,38 @@ catBurgler1 uuid = CatBurgler1 $ (baseAttrs uuid "01055")
   }
 
 instance IsInvestigator investigator => HasModifiersFor env investigator CatBurgler1 where
-  getModifiersFor _ i (CatBurgler1 Attrs {..}) = pure
-    [ SkillModifier SkillAgility 1 | Just (getId () i) == assetInvestigator ]
+  getModifiersFor _ i (CatBurgler1 a) =
+    pure [ SkillModifier SkillAgility 1 | ownedBy a i ]
+
+ability :: Attrs -> Ability
+ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
 
 instance IsInvestigator investigator => HasActions env investigator CatBurgler1 where
-  getActions i NonFast (CatBurgler1 Attrs {..})
-    | Just (getId () i) == assetInvestigator = pure
-      [ ActivateCardAbilityAction
-          (getId () i)
-          (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
-      | not assetExhausted
-      ]
+  getActions i NonFast (CatBurgler1 a) | ownedBy a i = pure
+    [ ActivateCardAbilityAction (getId () i) (ability a)
+    | not (assetExhausted a)
+    ]
   getActions i window (CatBurgler1 x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env CatBurgler1 where
-  runMessage msg (CatBurgler1 attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      unshiftMessage
-        (AddModifiers
-          (InvestigatorTarget iid)
-          (AssetSource aid)
-          [SkillModifier SkillAgility 1]
-        )
+  runMessage msg (CatBurgler1 attrs) = case msg of
+    InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
+      unshiftMessage $ AddModifiers
+        (InvestigatorTarget iid)
+        (toSource attrs)
+        [SkillModifier SkillAgility 1]
       CatBurgler1 <$> runMessage msg attrs
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
-      engagedEnemyIds <- HashSet.toList <$> asks (getSet iid)
-      locationId <- asks (getId @LocationId iid)
-      blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
-      connectedLocationIds <- HashSet.map unConnectedLocationId
-        <$> asks (getSet locationId)
-      let
-        unblockedConnectedLocationIds =
-          HashSet.toList $ connectedLocationIds `difference` blockedLocationIds
+    UseCardAbility iid _ source _ 1 | isSource attrs source -> do
+      engagedEnemyIds <- asks $ setToList . getSet iid
+      locationId <- asks $ getId @LocationId iid
+      accessibleLocationIds <-
+        asks $ map unAccessibleLocationId . setToList . getSet locationId
       unshiftMessages
         $ [ DisengageEnemy iid eid | eid <- engagedEnemyIds ]
-        <> [ Ask
+        <> [ chooseOne
                iid
-               (ChooseOne
-                 [ MoveAction iid lid False
-                 | lid <- unblockedConnectedLocationIds
-                 ]
-               )
-           | not (null unblockedConnectedLocationIds)
+               [ MoveAction iid lid False | lid <- accessibleLocationIds ]
+           | not (null accessibleLocationIds)
            ]
       pure $ CatBurgler1 $ attrs & exhausted .~ True
     _ -> CatBurgler1 <$> runMessage msg attrs

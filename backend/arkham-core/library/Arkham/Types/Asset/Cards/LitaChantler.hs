@@ -1,22 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.LitaChantler where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Source
-import Arkham.Types.Target
 import Arkham.Types.Trait
-import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype LitaChantler = LitaChantler Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -33,8 +22,8 @@ instance (IsInvestigator investigator, HasId LocationId InvestigatorId env) => H
     case assetInvestigator of
       Nothing -> pure []
       Just ownerId -> do
-        lid <- asks (getId ownerId)
-        pure [ SkillModifier SkillCombat 1 | locationOf i == lid ]
+        sameLocation <- asks $ (== locationOf i) . getId ownerId
+        pure [ SkillModifier SkillCombat 1 | sameLocation ]
 
 instance HasActions env investigator LitaChantler where
   getActions i window (LitaChantler x) = getActions i window x
@@ -43,12 +32,13 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
   runMessage msg a@(LitaChantler attrs@Attrs {..}) = case msg of
     SuccessfulAttackEnemy iid eid -> case assetInvestigator of
       Just ownerId -> do
-        locationId <- asks (getId @LocationId ownerId)
-        locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
-        traits <- HashSet.toList <$> asks (getSet eid)
+        locationId <- asks $ getId @LocationId ownerId
+        locationInvestigatorIds <- asks $ setToList . getSet locationId
+        traits <- asks $ setToList . getSet eid
         if iid `elem` locationInvestigatorIds && Monster `elem` traits
           then a <$ unshiftMessage
-            (Ask iid $ ChooseOne
+            (chooseOne
+              iid
               [ Run
                 [ UseCardAbility iid (AssetSource assetId) Nothing 1
                 , AddModifiers

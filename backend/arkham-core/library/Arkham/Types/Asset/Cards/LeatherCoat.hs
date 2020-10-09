@@ -1,13 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.LeatherCoat where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Slot
-import ClassyPrelude
 
 newtype LeatherCoat = LeatherCoat Attrs
   deriving stock (Show, Generic)

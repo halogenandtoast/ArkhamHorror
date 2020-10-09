@@ -188,6 +188,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Attrs wher
       [ Investigate
           (getId () i)
           locationId
+          (InvestigatorSource $ getId () i)
           SkillIntellect
           mempty
           mempty
@@ -209,8 +210,9 @@ shouldSpawnNonEliteAtConnectingInstead Attrs {..} =
 
 instance (LocationRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
-    Investigate iid lid skillType modifiers' tokenResponses overrides False
-      | lid == locationId -> do
+    Investigate iid lid source skillType modifiers' tokenResponses overrides False
+      | lid == locationId
+      -> do
         let
           investigationResult = if null overrides
             then [InvestigatorDiscoverClues iid lid 1]
@@ -218,7 +220,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
         a <$ unshiftMessage
           (BeginSkillTest
             iid
-            (LocationSource lid) -- TODO: set to source of action
+            source
             (LocationTarget lid)
             (Just Action.Investigate)
             skillType

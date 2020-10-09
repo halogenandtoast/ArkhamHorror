@@ -1,13 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.ElderSignAmulet3 where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Slot
-import ClassyPrelude
 
 newtype ElderSignAmulet3 = ElderSignAmulet3 Attrs
   deriving stock (Show, Generic)

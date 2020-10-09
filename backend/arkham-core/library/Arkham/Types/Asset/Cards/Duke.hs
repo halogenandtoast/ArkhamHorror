@@ -1,23 +1,16 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.Duke where
+module Arkham.Types.Asset.Cards.Duke
+  ( Duke(..)
+  , duke
+  )
+where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import
+
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Window
-import ClassyPrelude
-import qualified Data.HashSet as HashSet
-import Lens.Micro
 
 newtype Duke = Duke Attrs
   deriving stock (Show, Generic)
@@ -27,78 +20,58 @@ duke :: AssetId -> Duke
 duke uuid =
   Duke $ (baseAttrs uuid "02014") { assetHealth = Just 2, assetSanity = Just 3 }
 
-instance HasModifiersFor env investigator Duke where
+instance IsInvestigator investigator => HasModifiersFor env investigator Duke where
+  getModifiersFor (SkillTestSource source (Just Action.Fight)) i (Duke a)
+    | ownedBy a i && isSource a source = pure
+      [BaseSkillOf SkillCombat 4, DamageDealt 1]
+  getModifiersFor (SkillTestSource source (Just Action.Investigate)) i (Duke a)
+    | ownedBy a i && isSource a source = pure [BaseSkillOf SkillIntellect 4]
   getModifiersFor _ _ _ = pure []
 
+fightAbility :: Attrs -> Ability
+fightAbility attrs =
+  mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Fight))
+
+investigateAbility :: Attrs -> Ability
+investigateAbility attrs =
+  mkAbility (toSource attrs) 2 (ActionAbility 1 (Just Action.Investigate))
+
 instance (ActionRunner env investigator) => HasActions env investigator Duke where
-  getActions i NonFast (Duke Attrs {..})
-    | Just (getId () i) == assetInvestigator = do
-      fightAvailable <- hasFightActions i NonFast
-      investigateAvailable <- hasInvestigateActions i NonFast
-      pure
-        $ [ ActivateCardAbilityAction
-              (getId () i)
-              (mkAbility
-                (AssetSource assetId)
-                1
-                (ActionAbility 1 (Just Action.Fight))
-              )
-          | fightAvailable && canDo Action.Fight i && not assetExhausted
-          ]
-        <> [ ActivateCardAbilityAction
-               (getId () i)
-               (mkAbility
-                 (AssetSource assetId)
-                 2
-                 (ActionAbility 1 (Just Action.Investigate))
-               )
-           | investigateAvailable
-             && canDo Action.Investigate i
-             && not assetExhausted
-           ]
+  getActions i NonFast (Duke a) | ownedBy a i = do
+    fightAvailable <- hasFightActions i NonFast
+    investigateAvailable <- hasInvestigateActions i NonFast
+    pure
+      $ [ ActivateCardAbilityAction (getId () i) (fightAbility a)
+        | fightAvailable && canDo Action.Fight i && not (assetExhausted a)
+        ]
+      <> [ ActivateCardAbilityAction (getId () i) (investigateAbility a)
+         | investigateAvailable && canDo Action.Investigate i && not
+           (assetExhausted a)
+         ]
   getActions i window (Duke x) = getActions i window x
+
+dukeInvestigate :: Attrs -> InvestigatorId -> LocationId -> Message
+dukeInvestigate attrs iid lid =
+  Investigate iid lid (toSource attrs) SkillIntellect mempty mempty mempty False
 
 instance (AssetRunner env) => RunMessage env Duke where
   runMessage msg (Duke attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId -> do
+    UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessage
-        (ChooseFightEnemy
-          iid
-          (AssetSource aid)
-          SkillCombat
-          [BaseSkillOf SkillCombat 4, DamageDealt 1]
-          mempty
-          False
-        )
+        $ ChooseFightEnemy iid source SkillCombat mempty mempty False
       pure . Duke $ attrs & exhausted .~ True
-    UseCardAbility iid (AssetSource aid) _ 2 | aid == assetId -> do
-      lid <- asks (getId iid)
-      blockedLocationIds <- HashSet.map unBlockedLocationId <$> asks (getSet ())
-      connectedLocationIds <- HashSet.map unConnectedLocationId
-        <$> asks (getSet lid)
-      let
-        unblockedConnectedLocationIds =
-          setToList $ connectedLocationIds `difference` blockedLocationIds
-      let
-        investigate atLid = Investigate
-          iid
-          atLid
-          SkillIntellect
-          [BaseSkillOf SkillIntellect 4]
-          mempty
-          mempty
-          False
-      if null unblockedConnectedLocationIds
-        then unshiftMessage $ investigate lid
+    UseCardAbility iid source _ 2 | isSource attrs source -> do
+      lid <- asks $ getId iid
+      accessibleLocationIds <-
+        asks $ map unAccessibleLocationId . setToList . getSet lid
+      if null accessibleLocationIds
+        then unshiftMessage $ dukeInvestigate attrs iid lid
         else unshiftMessage
-          (Ask
-            iid
-            (ChooseOne
-            $ investigate lid
-            : [ Run [MoveAction iid lid' False, investigate lid']
-              | lid' <- unblockedConnectedLocationIds
-              ]
-            )
+          (chooseOne iid
+          $ dukeInvestigate attrs iid lid
+          : [ Run [MoveAction iid lid' False, dukeInvestigate attrs iid lid']
+            | lid' <- accessibleLocationIds
+            ]
           )
       pure . Duke $ attrs & exhausted .~ True
     _ -> Duke <$> runMessage msg attrs

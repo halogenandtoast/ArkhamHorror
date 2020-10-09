@@ -39,6 +39,7 @@ instance AssetRunner env => RunMessage env Burglary where
       unshiftMessage $ Investigate
         iid
         lid
+        (toSource attrs)
         SkillIntellect
         mempty
         mempty

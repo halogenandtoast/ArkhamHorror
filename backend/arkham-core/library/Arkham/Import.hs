@@ -9,6 +9,7 @@ import Arkham.Json as X
 import Arkham.Types.Ability as X
 import Arkham.Types.AssetId as X
 import Arkham.Types.Card as X
+import Arkham.Types.Card.CardCode as X
 import Arkham.Types.Card.Cost as X
 import Arkham.Types.Card.Id as X
 import Arkham.Types.Classes as X

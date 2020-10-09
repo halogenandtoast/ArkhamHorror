@@ -42,7 +42,7 @@ instance (AssetRunner env) => RunMessage env CatBurgler1 where
         (toSource attrs)
         [SkillModifier SkillAgility 1]
       CatBurgler1 <$> runMessage msg attrs
-    UseCardAbility iid _ source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 | isSource attrs source -> do
       engagedEnemyIds <- asks $ setToList . getSet iid
       locationId <- asks $ getId @LocationId iid
       accessibleLocationIds <-

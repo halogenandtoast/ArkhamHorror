@@ -50,6 +50,6 @@ instance (IsInvestigator investigator) => HasActions env investigator MobEnforce
 
 instance (EnemyRunner env) => RunMessage env MobEnforcer where
   runMessage msg e@(MobEnforcer attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (EnemySource eid) _ 1 | eid == enemyId ->
+    UseCardAbility iid (EnemySource eid) _ 1 | eid == enemyId ->
       e <$ unshiftMessages [SpendResources iid 4, Discard (EnemyTarget enemyId)]
     _ -> MobEnforcer <$> runMessage msg attrs

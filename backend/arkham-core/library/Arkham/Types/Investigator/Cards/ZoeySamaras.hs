@@ -56,7 +56,7 @@ instance (ActionRunner env investigator) => HasActions env investigator ZoeySama
 
 instance (InvestigatorRunner Attrs env) => RunMessage env ZoeySamaras where
   runMessage msg i@(ZoeySamaras attrs@Attrs {..}) = case msg of
-    UseCardAbility _ _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
+    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       i <$ unshiftMessage (TakeResources investigatorId 1 False)
     ResolveToken ElderSign iid | iid == investigatorId -> do
       runTest investigatorId (TokenValue ElderSign 1)

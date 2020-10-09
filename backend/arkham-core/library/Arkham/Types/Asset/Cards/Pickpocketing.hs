@@ -36,7 +36,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Pickpock
 
 instance (AssetRunner env) => RunMessage env Pickpocketing where
   runMessage msg (Pickpocketing attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId -> do
       unshiftMessage (DrawCards iid 1 False)
       pure $ Pickpocketing $ attrs & exhausted .~ True
     _ -> Pickpocketing <$> runMessage msg attrs

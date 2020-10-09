@@ -52,7 +52,7 @@ instance (ActRunner env) => RunMessage env DisruptingTheRitual where
       let totalClues = n + fromJustNote "Must be set" actClues
       when (totalClues >= 2 * playerCount) (unshiftMessage (AdvanceAct actId))
       pure $ DisruptingTheRitual (attrs { actClues = Just totalClues })
-    UseCardAbility iid _ (ActSource aid) _ 1 | aid == actId -> do
+    UseCardAbility iid (ActSource aid) _ 1 | aid == actId -> do
       a <$ unshiftMessage
         (Ask iid $ ChooseOne
           [ BeginSkillTest

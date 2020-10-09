@@ -49,7 +49,7 @@ instance (AssetRunner env) => RunMessage env Encyclopedia2 where
       a <$ unshiftMessage (RemoveAllModifiersFrom (AssetSource assetId))
     EndUpkeep ->
       a <$ unshiftMessage (RemoveAllModifiersFrom (AssetSource assetId))
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId -> do
       locationId <- asks (getId @LocationId iid)
       investigatorIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessage

@@ -35,6 +35,7 @@ data Source
   | PlayerCardSource CardId
   | TestSource
   | EndOfTurnSource Source
+  | ProxySource Source Source
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 

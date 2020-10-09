@@ -1,16 +1,14 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.DaisysToteBag where
+module Arkham.Types.Asset.Cards.DaisysToteBag
+  ( DaisysToteBag(..)
+  , daisysToteBag
+  )
+where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Slot
-import Arkham.Types.Source
 import Arkham.Types.Trait
-import ClassyPrelude
 
 newtype DaisysToteBag = DaisysToteBag Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -24,18 +22,12 @@ instance HasModifiersFor env investigator DaisysToteBag where
 instance HasActions env investigator DaisysToteBag where
   getActions i window (DaisysToteBag x) = getActions i window x
 
-instance (AssetRunner env) => RunMessage env DaisysToteBag where
-  runMessage msg (DaisysToteBag attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
-      unshiftMessages
-        [ AddSlot
-          iid
-          HandSlot
-          (TraitRestrictedSlot (AssetSource aid) Tome Nothing)
-        , AddSlot
-          iid
-          HandSlot
-          (TraitRestrictedSlot (AssetSource aid) Tome Nothing)
-        ]
+slot :: Attrs -> Slot
+slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
+
+instance (HasQueue env, HasModifiers env InvestigatorId) => RunMessage env DaisysToteBag where
+  runMessage msg (DaisysToteBag attrs) = case msg of
+    InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
+      unshiftMessages $ replicate 2 (AddSlot iid HandSlot (slot attrs))
       DaisysToteBag <$> runMessage msg attrs
     _ -> DaisysToteBag <$> runMessage msg attrs

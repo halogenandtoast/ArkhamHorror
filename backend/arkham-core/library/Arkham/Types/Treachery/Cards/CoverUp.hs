@@ -57,7 +57,7 @@ instance (TreacheryRunner env) => RunMessage env CoverUp where
         investigator =
           fromJustNote "missing investigator" treacheryAttachedInvestigator
       in t <$ unshiftMessage (SufferTrauma investigator 0 1)
-    UseCardAbility iid _ (TreacherySource tid) _ 1 | tid == treacheryId -> do
+    UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId -> do
       cluesToRemove <- withQueue $ \queue -> do
         let
           (before, after) = flip break queue $ \case

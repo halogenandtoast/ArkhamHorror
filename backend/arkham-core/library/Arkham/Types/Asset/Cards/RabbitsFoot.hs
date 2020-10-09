@@ -40,7 +40,7 @@ instance (IsInvestigator investigator) => HasActions env investigator RabbitsFoo
 
 instance (AssetRunner env) => RunMessage env RabbitsFoot where
   runMessage msg (RabbitsFoot attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId -> do
       unshiftMessage (DrawCards iid 1 False)
       pure $ RabbitsFoot $ attrs & exhausted .~ True
     _ -> RabbitsFoot <$> runMessage msg attrs

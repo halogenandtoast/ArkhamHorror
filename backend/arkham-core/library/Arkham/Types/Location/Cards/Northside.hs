@@ -51,6 +51,6 @@ instance (ActionRunner env investigator) => HasActions env investigator Northsid
 
 instance (LocationRunner env) => RunMessage env Northside where
   runMessage msg l@(Northside attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (LocationSource lid) _ 1 | lid == locationId ->
+    UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
       l <$ unshiftMessages [SpendResources iid 5, GainClues iid 2]
     _ -> Northside <$> runMessage msg attrs

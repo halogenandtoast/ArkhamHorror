@@ -45,7 +45,7 @@ instance (IsInvestigator investigator) => HasActions env investigator MainPath w
 
 instance (LocationRunner env) => RunMessage env MainPath where
   runMessage msg l@(MainPath attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (LocationSource lid) _ 1
+    UseCardAbility iid (LocationSource lid) _ 1
       | lid == locationId && locationRevealed -> l
       <$ unshiftMessage (Resign iid)
     AddConnection lid _ | locationId /= lid -> do

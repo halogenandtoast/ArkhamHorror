@@ -54,7 +54,7 @@ instance (AssetRunner env) => RunMessage env GrotesqueStatue4 where
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       GrotesqueStatue4
         <$> runMessage msg (attrs & uses .~ Uses Resource.Charge 4)
-    UseCardAbility iid _ (AssetSource aid) (Just (SourceMetadata source)) 1
+    UseCardAbility iid (AssetSource aid) (Just (SourceMetadata source)) 1
       | aid == assetId -> case assetUses of
         Uses Resource.Charge n -> do
           when (n == 1) $ unshiftMessage (Discard (AssetTarget aid))

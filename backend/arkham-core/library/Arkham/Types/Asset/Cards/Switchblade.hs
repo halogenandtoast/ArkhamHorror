@@ -44,7 +44,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Switchbl
 
 instance (AssetRunner env) => RunMessage env Switchblade where
   runMessage msg a@(Switchblade attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId ->
       a <$ unshiftMessage
         (ChooseFightEnemy
           iid

@@ -43,7 +43,7 @@ instance (AssetRunner env) => RunMessage env Scrying where
   runMessage msg a@(Scrying attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       Scrying <$> runMessage msg (attrs & uses .~ Uses Resource.Charge 3)
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId -> do
       locationId <- asks (getId @LocationId iid)
       investigatorIds <- HashSet.toList <$> asks (getSet locationId)
       case assetUses of

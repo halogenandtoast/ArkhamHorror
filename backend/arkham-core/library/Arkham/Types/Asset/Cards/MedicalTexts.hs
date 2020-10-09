@@ -38,7 +38,7 @@ instance (IsInvestigator investigator) => HasActions env investigator MedicalTex
 
 instance (AssetRunner env) => RunMessage env MedicalTexts where
   runMessage msg (MedicalTexts attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId -> do
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId -> do
       locationId <- asks (getId @LocationId (getInvestigator attrs))
       locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
       unshiftMessage

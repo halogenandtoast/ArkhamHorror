@@ -59,7 +59,7 @@ instance (ActRunner env) => RunMessage env UncoveringTheConspiracy where
       a <$ when
         (cultists `HashSet.isSubsetOf` victoryDisplay)
         (unshiftMessage (AdvanceAct actId))
-    UseCardAbility iid _ (ActSource aid) _ 1 | aid == actId -> do
+    UseCardAbility iid (ActSource aid) _ 1 | aid == actId -> do
       investigatorIds <- HashSet.toList <$> asks (getSet ())
       playerCount <- unPlayerCount <$> asks (getCount ())
       a <$ unshiftMessages

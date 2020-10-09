@@ -66,7 +66,6 @@ spec = describe "Jenny's Twin .45s" $ do
         , moveTo investigator location
         , UseCardAbility
           (getId () investigator)
-          TestSource
           (AssetSource (getId () jennysTwin45sAsset))
           Nothing
           1

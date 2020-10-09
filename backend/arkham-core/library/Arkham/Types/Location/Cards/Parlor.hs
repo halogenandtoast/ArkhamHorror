@@ -50,13 +50,10 @@ instance (ActionRunner env investigator) => HasActions env investigator Parlor w
              ]
           <> [ ActivateCardAbilityAction
                  (getId () i)
-                 ((mkAbility
-                    (AssetSource aid)
-                    2
-                    (ActionAbility 1 (Just Action.Parley))
-                  )
-                   { abilityProvider = LocationSource "01115"
-                   }
+                 (mkAbility
+                   (ProxySource (AssetSource aid) (LocationSource "01115"))
+                   2
+                   (ActionAbility 1 (Just Action.Parley))
                  )
              | isNothing miid && Just (locationOf i) == assetLocationId
              ]
@@ -67,10 +64,10 @@ instance (LocationRunner env) => RunMessage env Parlor where
     RevealLocation lid | lid == locationId -> do
       attrs' <- runMessage msg attrs
       pure $ Parlor $ attrs' & blocked .~ False
-    UseCardAbility iid _ (LocationSource lid) _ 1
+    UseCardAbility iid (LocationSource lid) _ 1
       | lid == locationId && locationRevealed -> l
       <$ unshiftMessage (Resign iid)
-    UseCardAbility iid _ (LocationSource lid) _ 2
+    UseCardAbility iid (ProxySource _ (LocationSource lid)) _ 2
       | lid == locationId && locationRevealed -> do
         maid <- asks (fmap unStoryAssetId <$> getId (CardCode "01117"))
         case maid of

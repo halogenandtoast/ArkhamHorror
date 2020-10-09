@@ -45,7 +45,7 @@ instance (IsInvestigator investigator) => HasActions env investigator RabbitsFoo
 
 instance (AssetRunner env) => RunMessage env RabbitsFoot3 where
   runMessage msg (RabbitsFoot3 attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) (Just (IntMetadata x)) 1
+    UseCardAbility iid (AssetSource aid) (Just (IntMetadata x)) 1
       | aid == assetId -> do
         unshiftMessage
           (SearchTopOfDeck iid (InvestigatorTarget iid) x mempty ShuffleBackIn)

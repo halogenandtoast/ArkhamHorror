@@ -34,18 +34,13 @@ instance (ActionRunner env investigator) => HasActions env investigator Magnifyi
     | Just (getId () i) == assetInvestigator = do
       clueCount' <- unClueCount <$> asks (getCount (locationOf i))
       pure
-        [ UseCardAbility
-            (getId () i)
-            (AssetSource assetId)
-            (AssetSource assetId)
-            Nothing
-            1
+        [ UseCardAbility (getId () i) (AssetSource assetId) Nothing 1
         | clueCount' == 0
         ]
   getActions i window (MagnifyingGlass1 x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env MagnifyingGlass1 where
   runMessage msg a@(MagnifyingGlass1 attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId ->
       a <$ unshiftMessage (ReturnToHand iid (AssetTarget assetId))
     _ -> MagnifyingGlass1 <$> runMessage msg attrs

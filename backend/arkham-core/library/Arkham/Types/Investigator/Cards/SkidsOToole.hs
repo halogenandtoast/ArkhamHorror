@@ -56,7 +56,7 @@ instance (ActionRunner env investigator) => HasActions env investigator SkidsOTo
 
 instance (InvestigatorRunner Attrs env) => RunMessage env SkidsOToole where
   runMessage msg i@(SkidsOToole attrs@Attrs {..}) = case msg of
-    UseCardAbility _ _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
+    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       do
         pure . SkidsOToole $ attrs & resources -~ 2 & remainingActions +~ 1
     ResolveToken ElderSign iid | iid == investigatorId -> do

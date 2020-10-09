@@ -54,7 +54,7 @@ instance (ActionRunner env investigator) => HasActions env investigator RolandBa
 
 instance (InvestigatorRunner Attrs env) => RunMessage env RolandBanks where
   runMessage msg rb@(RolandBanks attrs@Attrs {..}) = case msg of
-    UseCardAbility _ _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
+    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       rb <$ unshiftMessage
         (DiscoverCluesAtLocation investigatorId investigatorLocation 1)
     ResolveToken ElderSign iid | iid == investigatorId -> do

@@ -32,7 +32,6 @@ instance ActionRunner env investigator => HasActions env investigator DiscOfItza
       [ UseCardAbility
           (getId () i)
           (AssetSource assetId)
-          (AssetSource assetId)
           Nothing
           1
       | Elite `notElem` traits
@@ -49,7 +48,7 @@ instance (AssetRunner env) => RunMessage env DiscOfItzamna2 where
           [SkillModifier SkillWillpower 1]
         )
       DiscOfItzamna2 <$> runMessage msg attrs
-    UseCardAbility _ _ (AssetSource aid) _ 1 | aid == assetId -> do
+    UseCardAbility _ (AssetSource aid) _ 1 | aid == assetId -> do
       menemySpawnMessage <- withQueue $ \queue ->
         (queue, find ((== Just EnemySpawnMessage) . messageType) queue)
       a <$ case menemySpawnMessage of

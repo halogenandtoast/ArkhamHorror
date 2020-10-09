@@ -56,6 +56,6 @@ instance (ActionRunner env investigator) => HasActions env investigator StMarysH
 
 instance (LocationRunner env) => RunMessage env StMarysHospital where
   runMessage msg l@(StMarysHospital attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (LocationSource lid) _ 1 | lid == locationId ->
+    UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
       l <$ unshiftMessage (HealDamage (InvestigatorTarget iid) 3)
     _ -> StMarysHospital <$> runMessage msg attrs

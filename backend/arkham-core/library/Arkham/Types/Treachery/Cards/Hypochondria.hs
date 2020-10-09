@@ -47,6 +47,6 @@ instance (TreacheryRunner env) => RunMessage env Hypochondria where
     After (InvestigatorTakeDamage iid _ n _)
       | Just iid == treacheryAttachedInvestigator && n > 0 -> t <$ unshiftMessage
         (InvestigatorDirectDamage iid (TreacherySource treacheryId) 0 1)
-    UseCardAbility _ _ (TreacherySource tid) _ 1 | tid == treacheryId ->
+    UseCardAbility _ (TreacherySource tid) _ 1 | tid == treacheryId ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
     _ -> Hypochondria <$> runMessage msg attrs

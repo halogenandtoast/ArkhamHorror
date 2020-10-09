@@ -40,7 +40,7 @@ instance (AssetRunner env) => RunMessage env BookOfShadows3 where
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       unshiftMessage (AddSlot iid ArcaneSlot (slot attrs))
       BookOfShadows3 <$> runMessage msg attrs
-    UseCardAbility iid _ source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 | isSource attrs source -> do
       assetIds <- asks $ setToList . getSet iid
       spellAssetIds <- filterM (asks . (member Spell .) . getSet) assetIds
       unless

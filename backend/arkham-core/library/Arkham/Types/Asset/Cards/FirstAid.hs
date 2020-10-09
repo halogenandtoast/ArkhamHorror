@@ -48,7 +48,7 @@ instance (AssetRunner env) => RunMessage env FirstAid where
   runMessage msg a@(FirstAid attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       FirstAid <$> runMessage msg (attrs & uses .~ Uses Resource.Supply 3)
-    UseCardAbility iid _ (AssetSource aid) _ 1 | aid == assetId ->
+    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId ->
       case assetUses of
         Uses Resource.Supply n -> do
           lid <- asks (getId @LocationId iid)

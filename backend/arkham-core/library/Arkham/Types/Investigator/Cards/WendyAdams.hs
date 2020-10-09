@@ -58,7 +58,7 @@ instance (ActionRunner env investigator) => HasActions env investigator WendyAda
 
 instance (InvestigatorRunner Attrs env) => RunMessage env WendyAdams where
   runMessage msg i@(WendyAdams attrs@Attrs {..}) = case msg of
-    UseCardAbility _ _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
+    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       do
         mResolveToken <- withQueue $ \queue ->
           (queue, find ((== Just ResolveTokenMessage) . messageType) queue)

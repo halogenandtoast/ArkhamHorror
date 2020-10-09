@@ -59,7 +59,7 @@ instance (ActionRunner env investigator) => HasActions env investigator ArkhamWo
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsQuietGlade where
   runMessage msg l@(ArkhamWoodsQuietGlade attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (LocationSource lid) _ 1 | lid == locationId ->
+    UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
       l <$ unshiftMessages
         [ HealDamage (InvestigatorTarget iid) 1
         , HealHorror (InvestigatorTarget iid) 1

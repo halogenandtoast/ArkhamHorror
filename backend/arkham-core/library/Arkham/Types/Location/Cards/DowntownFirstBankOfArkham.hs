@@ -48,6 +48,6 @@ instance (ActionRunner env investigator) => HasActions env investigator Downtown
 
 instance (LocationRunner env) => RunMessage env DowntownFirstBankOfArkham where
   runMessage msg l@(DowntownFirstBankOfArkham attrs@Attrs {..}) = case msg of
-    UseCardAbility iid _ (LocationSource lid) _ 1 | lid == locationId ->
+    UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
       l <$ unshiftMessage (TakeResources iid 3 False)
     _ -> DowntownFirstBankOfArkham <$> runMessage msg attrs

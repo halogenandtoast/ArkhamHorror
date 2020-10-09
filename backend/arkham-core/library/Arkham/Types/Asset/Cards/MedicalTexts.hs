@@ -1,21 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.MedicalTexts where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import
+
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Arkham.Types.Window
-import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype MedicalTexts = MedicalTexts Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -28,30 +17,30 @@ instance HasModifiersFor env investigator MedicalTexts where
   getModifiersFor _ _ _ = pure []
 
 instance (IsInvestigator investigator) => HasActions env investigator MedicalTexts where
-  getActions i NonFast (MedicalTexts Attrs {..})
-    | Just (getId () i) == assetInvestigator = pure
-      [ ActivateCardAbilityAction
-          (getId () i)
-          (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
-      ]
+  getActions i NonFast (MedicalTexts a) | ownedBy a i = pure
+    [ ActivateCardAbilityAction
+        (getId () i)
+        (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
+    ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env MedicalTexts where
-  runMessage msg (MedicalTexts attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId -> do
-      locationId <- asks (getId @LocationId (getInvestigator attrs))
-      locationInvestigatorIds <- HashSet.toList <$> asks (getSet locationId)
+  runMessage msg (MedicalTexts attrs) = case msg of
+    UseCardAbility iid source _ 1 | isSource attrs source -> do
+      locationId <- asks $ getId @LocationId (getInvestigator attrs)
+      locationInvestigatorIds <- asks $ setToList . getSet locationId
       unshiftMessage
-        (Ask iid $ ChooseOne
+        (chooseOne
+          iid
           [ BeginSkillTest
               iid
-              (AssetSource aid)
+              source
               (InvestigatorTarget iid')
               Nothing
               SkillIntellect
               2
               [HealDamage (InvestigatorTarget iid') 1]
-              [InvestigatorAssignDamage iid' (AssetSource aid) 1 0]
+              [InvestigatorAssignDamage iid' (toSource attrs) 1 0]
               []
               mempty
           | iid' <- locationInvestigatorIds

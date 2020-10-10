@@ -1,5 +1,9 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.PeterSylvestre where
+module Arkham.Types.Asset.Cards.PeterSylvestre
+  ( PeterSylvestre(..)
+  , peterSylvestre
+  )
+where
 
 import Arkham.Import
 

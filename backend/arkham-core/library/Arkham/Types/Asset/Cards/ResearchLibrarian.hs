@@ -1,17 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.ResearchLibrarian where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Slot
-import Arkham.Types.Source
-import Arkham.Types.Target
 import Arkham.Types.Trait
-import ClassyPrelude
 
 newtype ResearchLibrarian = ResearchLibrarian Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -30,16 +24,17 @@ instance HasActions env investigator ResearchLibrarian where
   getActions i window (ResearchLibrarian x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env ResearchLibrarian where
-  runMessage msg a@(ResearchLibrarian attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId -> do
+  runMessage msg a@(ResearchLibrarian attrs) = case msg of
+    InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       unshiftMessage
-        (Ask iid $ ChooseOne
-          [ UseCardAbility iid (AssetSource assetId) Nothing 1
+        (chooseOne
+          iid
+          [ UseCardAbility iid (toSource attrs) Nothing 1
           , Continue "Do not use ability"
           ]
         )
       ResearchLibrarian <$> runMessage msg attrs
-    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId ->
+    UseCardAbility iid source _ 1 | isSource attrs source ->
       a <$ unshiftMessage
         (SearchDeckForTraits iid (InvestigatorTarget iid) [Tome])
     _ -> ResearchLibrarian <$> runMessage msg attrs

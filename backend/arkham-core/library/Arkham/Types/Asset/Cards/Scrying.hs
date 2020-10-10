@@ -1,23 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.Scrying where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import
+
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Slot
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Arkham.Types.Window
-import ClassyPrelude
-import qualified Data.HashSet as HashSet
-import Lens.Micro
 
 newtype Scrying = Scrying Attrs
   deriving stock (Show, Generic)
@@ -30,43 +19,31 @@ instance HasModifiersFor env investigator Scrying where
   getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator Scrying where
-  getActions i NonFast (Scrying Attrs {..})
-    | Just (getId () i) == assetInvestigator && not assetExhausted = pure
+  getActions i NonFast (Scrying a) | ownedBy a i && not (assetExhausted a) =
+    pure
       [ ActivateCardAbilityAction
           (getId () i)
-          (mkAbility (AssetSource assetId) 1 (ActionAbility 1 Nothing))
-      | useCount assetUses > 0 && hasActionsRemaining i Nothing assetTraits
+          (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
+      | useCount (assetUses a) > 0 && hasActionsRemaining
+        i
+        Nothing
+        (assetTraits a)
       ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Scrying where
-  runMessage msg a@(Scrying attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
+  runMessage msg (Scrying attrs) = case msg of
+    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Scrying <$> runMessage msg (attrs & uses .~ Uses Resource.Charge 3)
-    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId -> do
-      locationId <- asks (getId @LocationId iid)
-      investigatorIds <- HashSet.toList <$> asks (getSet locationId)
-      case assetUses of
-        Uses Resource.Charge n -> do
-          unshiftMessage
-            (Ask iid
-            $ ChooseOne
-            $ SearchTopOfDeck iid EncounterDeckTarget 3 [] PutBackInAnyOrder
-            : [ SearchTopOfDeck
-                  iid
-                  (InvestigatorTarget iid')
-                  3
-                  []
-                  PutBackInAnyOrder
-              | iid' <- investigatorIds
-              ]
-            )
-          pure
-            $ Scrying
-            $ attrs
-            & uses
-            .~ Uses Resource.Charge (n - 1)
-            & exhausted
-            .~ True
-        _ -> pure a
+    UseCardAbility iid source _ 1 | isSource attrs source -> do
+      locationId <- asks $ getId @LocationId iid
+      targets <- asks $ map InvestigatorTarget . setToList . getSet locationId
+      unshiftMessage
+        (chooseOne iid
+        $ SearchTopOfDeck iid EncounterDeckTarget 3 [] PutBackInAnyOrder
+        : [ SearchTopOfDeck iid target 3 [] PutBackInAnyOrder
+          | target <- targets
+          ]
+        )
+      pure $ Scrying $ attrs & uses %~ Resource.use & exhausted .~ True
     _ -> Scrying <$> runMessage msg attrs

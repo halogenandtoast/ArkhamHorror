@@ -29,18 +29,17 @@ fightAbility Attrs { assetId } =
   mkAbility (AssetSource assetId) 1 (ActionAbility 1 (Just Action.Fight))
 
 instance (ActionRunner env investigator) => HasActions env investigator Rolands38Special where
-  getActions i window (Rolands38Special a@Attrs { assetUses }) | ownedBy a i =
-    do
-      fightAvailable <- hasFightActions i window
-      pure
-        [ ActivateCardAbilityAction (getId () i) (fightAbility a)
-        | useCount assetUses > 0 && fightAvailable
-        ]
+  getActions i window (Rolands38Special a) | ownedBy a i = do
+    fightAvailable <- hasFightActions i window
+    pure
+      [ ActivateCardAbilityAction (getId () i) (fightAbility a)
+      | useCount (assetUses a) > 0 && fightAvailable
+      ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Rolands38Special where
-  runMessage msg (Rolands38Special attrs@Attrs {..}) = case msg of
-    InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
+  runMessage msg (Rolands38Special attrs) = case msg of
+    InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Rolands38Special <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo 4)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- asks $ getId @LocationId iid

@@ -2,43 +2,22 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Attrs where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import
+
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.AssetId
-import Arkham.Types.Card
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.Cost
-import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCardWithBehavior
-import Arkham.Types.Classes
 import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
-import Arkham.Types.EnemyId
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import Arkham.Types.Source
 import Arkham.Types.Stats
-import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-import ClassyPrelude hiding (unpack, (\\))
 import Control.Monad.Fail
 import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Data.List ((\\))
-import Lens.Micro
-import Lens.Micro.Platform ()
-import Safe (fromJustNote)
 import System.Random
 import System.Random.Shuffle
 
@@ -168,6 +147,9 @@ hand = lens investigatorHand $ \m x -> m { investigatorHand = x }
 deck :: Lens' Attrs (Deck PlayerCard)
 deck = lens investigatorDeck $ \m x -> m { investigatorDeck = x }
 
+toSource :: Attrs -> Source
+toSource Attrs { investigatorId } = InvestigatorSource investigatorId
+
 facingDefeat :: Attrs -> Bool
 facingDefeat a@Attrs {..} =
   investigatorHealthDamage
@@ -273,7 +255,7 @@ fitsAvailableSlots :: [SlotType] -> [Trait] -> Attrs -> Bool
 fitsAvailableSlots slotTypes traits a = null
   (slotTypes \\ concatMap
     (\slotType -> availableSlotTypesFor slotType traits a)
-    (HashSet.toList (HashSet.fromList slotTypes))
+    (setToList (HashSet.fromList slotTypes))
   )
 
 availableSlotTypesFor :: SlotType -> [Trait] -> Attrs -> [SlotType]
@@ -334,7 +316,7 @@ baseAttrs iid name classSymbol Stats {..} traits = Attrs
   , investigatorDiscard = mempty
   , investigatorHand = mempty
   , investigatorConnectedLocations = mempty
-  , investigatorTraits = HashSet.fromList traits
+  , investigatorTraits = setFromList traits
   , investigatorTreacheries = mempty
   , investigatorModifiers = mempty
   , investigatorDefeated = False
@@ -414,9 +396,7 @@ modifiedCardCost Attrs {..} (PlayerCard MkPlayerCard {..}) = foldr
     StaticCost n -> n
     DynamicCost -> 0
   applyModifier (ReduceCostOf traits m) n
-    | not (null (HashSet.fromList traits `intersection` pcTraits)) = max
-      0
-      (n - m)
+    | not (null (setFromList traits `intersection` pcTraits)) = max 0 (n - m)
   applyModifier _ n = n
 modifiedCardCost Attrs {..} (EncounterCard MkEncounterCard {..}) = foldr
   applyModifier
@@ -454,8 +434,7 @@ drawOpeningHand a n = go n (a ^. discard, a ^. hand, coerce (a ^. deck))
 
 cardInWindows :: [Window] -> Card -> Attrs -> Bool
 cardInWindows windows c _ = case c of
-  PlayerCard pc ->
-    not . null $ pcWindows pc `intersect` HashSet.fromList windows
+  PlayerCard pc -> not . null $ pcWindows pc `intersect` setFromList windows
   _ -> False
 
 playableCards :: Attrs -> [Window] -> [Card]
@@ -475,8 +454,7 @@ playableDiscards a@Attrs {..} windows = filter
     (concat . HashMap.elems $ investigatorModifiers)
   allowsPlayFromDiscard 0 MkPlayerCard {..} (CanPlayTopOfDiscard (mcardType, traits))
     = maybe True (== pcCardType) mcardType
-      && (null traits || (HashSet.fromList traits `HashSet.isSubsetOf` pcTraits)
-         )
+      && (null traits || (setFromList traits `HashSet.isSubsetOf` pcTraits))
   allowsPlayFromDiscard _ _ _ = False
 
 
@@ -484,7 +462,7 @@ possibleSkillTypeChoices :: SkillType -> Attrs -> [SkillType]
 possibleSkillTypeChoices skillType attrs = foldr
   applyModifier
   [skillType]
-  (concat . HashMap.elems $ investigatorModifiers attrs)
+  (concat . toList $ investigatorModifiers attrs)
  where
   applyModifier (UseSkillInPlaceOf toReplace toUse) skills
     | toReplace == skillType = toUse : skills
@@ -568,7 +546,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
                         investigatorName
                         investigatorClass
                         (getAttrStats a)
-                        (HashSet.toList investigatorTraits)
+                        (setToList investigatorTraits)
                       )
     { investigatorXP = investigatorXP
     , investigatorPhysicalTrauma = investigatorPhysicalTrauma
@@ -633,30 +611,28 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
     pure $ a & clues .~ 0 & resources .~ 0
   EnemyMove eid _ lid | lid == investigatorLocation -> do
-    aloofEnemyIds <- HashSet.map unAloofEnemyId
-      <$> asks (getSet investigatorLocation)
+    aloofEnemyIds <-
+      asks $ HashSet.map unAloofEnemyId . getSet investigatorLocation
     when (eid `notElem` aloofEnemyIds)
       $ unshiftMessage (EnemyEngageInvestigator eid investigatorId)
     pure a
   EnemyEngageInvestigator eid iid | iid == investigatorId ->
-    pure $ a & engagedEnemies %~ HashSet.insert eid
+    pure $ a & engagedEnemies %~ insertSet eid
   EnemyDefeated eid _ _ _ -> do
     unshiftMessage
       (RemoveAllModifiersOnTargetFrom
         (InvestigatorTarget investigatorId)
         (EnemySource eid)
       )
-    pure $ a & engagedEnemies %~ HashSet.delete eid
-  RemoveEnemy eid -> pure $ a & engagedEnemies %~ HashSet.delete eid
+    pure $ a & engagedEnemies %~ deleteSet eid
+  RemoveEnemy eid -> pure $ a & engagedEnemies %~ deleteSet eid
   TakeControlOfAsset iid aid | iid == investigatorId ->
-    pure $ a & assets %~ HashSet.insert aid
+    pure $ a & assets %~ insertSet aid
   ChooseAndDiscardAsset iid | iid == investigatorId -> a <$ unshiftMessage
-    (Ask iid $ ChooseOne $ map
-      (Discard . AssetTarget)
-      (HashSet.toList $ a ^. assets)
+    (Ask iid $ ChooseOne $ map (Discard . AssetTarget) (setToList $ a ^. assets)
     )
   AttachTreachery tid (InvestigatorTarget iid) | iid == investigatorId ->
-    pure $ a & treacheries %~ HashSet.insert tid
+    pure $ a & treacheries %~ insertSet tid
   AllCheckHandSize | not (a ^. defeated || a ^. resigned) -> do
     when (length investigatorHand > 8)
       $ unshiftMessage (CheckHandSize investigatorId)
@@ -692,21 +668,21 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         (InvestigatorTarget investigatorId)
         (TreacherySource tid)
       )
-    pure $ a & treacheries %~ HashSet.delete tid
+    pure $ a & treacheries %~ deleteSet tid
   Discard (TreacheryTarget tid) -> do
     unshiftMessage
       (RemoveAllModifiersOnTargetFrom
         (InvestigatorTarget investigatorId)
         (TreacherySource tid)
       )
-    pure $ a & treacheries %~ HashSet.delete tid
+    pure $ a & treacheries %~ deleteSet tid
   Discard (EnemyTarget eid) -> do
     unshiftMessage
       (RemoveAllModifiersOnTargetFrom
         (InvestigatorTarget investigatorId)
         (EnemySource eid)
       )
-    pure $ a & engagedEnemies %~ HashSet.delete eid
+    pure $ a & engagedEnemies %~ deleteSet eid
   Discarded (AssetTarget aid) cardCode | aid `elem` investigatorAssets -> do
     unshiftMessage
       (RemoveAllModifiersOnTargetFrom
@@ -715,14 +691,14 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       )
     pure
       $ a
-      & (assets %~ HashSet.delete aid)
+      & (assets %~ deleteSet aid)
       & (discard %~ (lookupPlayerCard cardCode (CardId $ unAssetId aid) :))
       & (slots %~ removeFromSlots aid)
   ChooseFightEnemy iid source skillType tempModifiers tokenResponses isAction
     | iid == investigatorId -> do
       enemyIds <- asks (getSet investigatorLocation)
-      aloofEnemyIds <- HashSet.map unAloofEnemyId
-        <$> asks (getSet investigatorLocation)
+      aloofEnemyIds <-
+        asks $ HashSet.map unAloofEnemyId . getSet investigatorLocation
       let
         fightableEnemyIds =
           investigatorEngagedEnemies
@@ -737,15 +713,15 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
               tempModifiers
               tokenResponses
               isAction
-          | eid <- HashSet.toList fightableEnemyIds
+          | eid <- setToList fightableEnemyIds
           ]
         )
   EngageEnemy iid eid True | iid == investigatorId -> a <$ unshiftMessages
     [TakeAction iid 1 (Just Action.Engage), EngageEnemy iid eid False]
   EngageEnemy iid eid False | iid == investigatorId ->
-    pure $ a & engagedEnemies %~ HashSet.insert eid
+    pure $ a & engagedEnemies %~ insertSet eid
   EngageEnemy iid eid False | iid /= investigatorId ->
-    pure $ a & engagedEnemies %~ HashSet.delete eid
+    pure $ a & engagedEnemies %~ deleteSet eid
   FightEnemy iid eid source skillType tempModifiers tokenResponses True
     | iid == investigatorId -> a <$ unshiftMessages
       [ TakeAction iid 1 (Just Action.Fight)
@@ -760,7 +736,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         ]
       pure a
   FailedAttackEnemy iid eid | iid == investigatorId -> do
-    investigatorIds <- HashSet.toList <$> asks (getSet eid)
+    investigatorIds <- asks $ setToList . getSet eid
     case investigatorIds of
       [x] | x /= iid -> unshiftMessage (InvestigatorDamageInvestigator iid x)
       _ -> pure ()
@@ -774,9 +750,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     a <$ unshiftMessage (EnemyDamage eid iid (InvestigatorSource iid) damage)
   EnemyEvaded iid eid | iid == investigatorId -> do
     unshiftMessage (CheckWindow iid [AfterEnemyEvaded You eid])
-    pure $ a & engagedEnemies %~ HashSet.delete eid
-  AddToVictory (EnemyTarget eid) ->
-    pure $ a & engagedEnemies %~ HashSet.delete eid
+    pure $ a & engagedEnemies %~ deleteSet eid
+  AddToVictory (EnemyTarget eid) -> pure $ a & engagedEnemies %~ deleteSet eid
   ChooseEvadeEnemy iid source skillType onSuccess onFailure tokenResponses isAction
     | iid == investigatorId
     -> a <$ unshiftMessage
@@ -791,7 +766,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
           tokenResponses
           isAction
         )
-        (HashSet.toList investigatorEngagedEnemies)
+        (setToList investigatorEngagedEnemies)
       )
   EvadeEnemy iid eid source skillType onSuccess onFailure tokenResponses True
     | iid == investigatorId -> a <$ unshiftMessages
@@ -850,10 +825,10 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   InvestigatorDoAssignDamage iid source 0 0 damageTargets horrorTargets
     | iid == investigatorId -> a <$ unshiftMessages
       ([ DidReceiveDamage target source
-       | target <- HashSet.toList (HashSet.fromList damageTargets)
+       | target <- setToList (HashSet.fromList damageTargets)
        ]
       <> [ DidReceiveHorror target source
-         | target <- HashSet.toList (HashSet.fromList horrorTargets)
+         | target <- setToList (HashSet.fromList horrorTargets)
          ]
       )
   DidReceiveHorror (InvestigatorTarget iid) _ | iid == investigatorId ->
@@ -870,7 +845,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
               (health - 1)
               sanity
           healthDamageableAssets <-
-            map unHealthDamageableAssetId . HashSet.toList <$> asks (getSet iid)
+            asks $ map unHealthDamageableAssetId . setToList . getSet iid
           pure
             $ Run
                 [ InvestigatorDamage investigatorId source 1 0
@@ -896,7 +871,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
               health
               (sanity - 1)
           sanityDamageableAssets <-
-            map unSanityDamageableAssetId . HashSet.toList <$> asks (getSet iid)
+            asks $ map unSanityDamageableAssetId . setToList . getSet iid
           pure
             $ Run
                 [ InvestigatorDamage investigatorId source 0 1
@@ -1035,7 +1010,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   PlayedCard iid cardId | iid == investigatorId -> do
     pure $ a & hand %~ filter ((/= cardId) . getCardId)
   InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
-    let assetsUpdate = assets %~ HashSet.insert aid
+    let assetsUpdate = assets %~ insertSet aid
     if fitsAvailableSlots slotTypes traits a
       then pure $ foldl'
         (\a' slotType ->
@@ -1047,11 +1022,10 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         let
           missingSlotTypes = slotTypes \\ concatMap
             (\slotType -> availableSlotTypesFor slotType traits a)
-            (HashSet.toList (HashSet.fromList slotTypes))
-          assetsThatCanProvideSlots =
-            HashSet.toList . HashSet.fromList $ concatMap
-              (`discardableAssets` a)
-              missingSlotTypes
+            (setToList (HashSet.fromList slotTypes))
+          assetsThatCanProvideSlots = setToList . HashSet.fromList $ concatMap
+            (`discardableAssets` a)
+            missingSlotTypes
         a <$ unshiftMessage
           (Ask iid $ ChooseOne
             [ Run
@@ -1080,14 +1054,13 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   MoveAllTo lid | not (a ^. defeated || a ^. resigned) ->
     a <$ unshiftMessage (MoveTo investigatorId lid)
   MoveTo iid lid | iid == investigatorId -> do
-    connectedLocations' <- HashSet.map unConnectedLocationId
-      <$> asks (getSet lid)
+    connectedLocations' <- asks $ HashSet.map unConnectedLocationId . getSet lid
     unshiftMessages [WhenEnterLocation iid lid, AfterEnterLocation iid lid]
     pure $ a & locationId .~ lid & connectedLocations .~ connectedLocations'
   AddedConnection lid1 lid2 | lid1 == investigatorLocation ->
-    pure $ a & (connectedLocations %~ HashSet.insert lid2)
+    pure $ a & (connectedLocations %~ insertSet lid2)
   AddedConnection lid1 lid2 | lid2 == investigatorLocation ->
-    pure $ a & (connectedLocations %~ HashSet.insert lid1)
+    pure $ a & (connectedLocations %~ insertSet lid1)
   AddModifiers (InvestigatorTarget iid) source modifiers'
     | iid == investigatorId
     -> pure $ a & modifiers %~ HashMap.insertWith (<>) source modifiers'
@@ -1103,7 +1076,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       slots' = HashMap.findWithDefault [] slotType investigatorSlots
       emptiedSlots = sort $ map emptySlot slots'
     assetsWithTraits <- for assetIds $ \assetId -> do
-      traits <- HashSet.toList <$> asks (getSet assetId)
+      traits <- asks $ setToList . getSet assetId
       pure (assetId, traits)
     let
       updatedSlots = foldl'
@@ -1161,7 +1134,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       & (remainingActions .~ getActionsForTurn a)
       & (actionsTaken .~ mempty)
   EndRound -> do
-    lingeringEventIds <- asks (getSet ())
+    lingeringEventIds <- asks $ getSet ()
     pure $ a & modifiers %~ HashMap.filterWithKey
       (\k _ -> case k of
         EventSource eid -> eid `member` lingeringEventIds
@@ -1209,7 +1182,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       $ ChooseOne [InvestigatorDrawEncounterCard investigatorId]
       )
   When (EnemySpawn lid eid) | lid == investigatorLocation -> do
-    traits <- HashSet.toList <$> asks (getSet eid)
+    traits <- asks $ setToList . getSet eid
     a <$ unshiftMessage
       (CheckWindow investigatorId [WhenEnemySpawns YourLocation traits])
   ActivateCardAbilityAction iid Ability {..} | iid == investigatorId -> do
@@ -1241,9 +1214,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   InvestigatorCommittedCard iid cardId | iid == investigatorId ->
     pure $ a & hand %~ filter ((/= cardId) . getCardId)
   BeforeSkillTest iid skillType | iid == investigatorId -> do
-    committedCardIds <- map unCommittedCardId . HashSet.toList <$> asks
-      (getSet iid)
-    committedCardCodes <- HashSet.map unCommittedCardCode <$> asks (getSet ())
+    committedCardIds <- asks $ map unCommittedCardId . setToList . getSet iid
+    committedCardCodes <- asks $ HashSet.map unCommittedCardCode . getSet ()
     actions <- join $ asks (getActions a (WhenSkillTest skillType))
     let
       triggerMessage = StartSkillTest investigatorId
@@ -1284,9 +1256,9 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   BeforeSkillTest iid skillType | iid /= investigatorId -> do
     locationId' <- asks (getId iid)
     when (locationId' == investigatorLocation) $ do
-      committedCardIds <- map unCommittedCardId . HashSet.toList <$> asks
-        (getSet investigatorId)
-      committedCardCodes <- HashSet.map unCommittedCardCode <$> asks (getSet ())
+      committedCardIds <-
+        asks $ map unCommittedCardId . setToList . getSet investigatorId
+      committedCardCodes <- asks $ HashSet.map unCommittedCardCode . getSet ()
       let
         beginMessage = BeforeSkillTest iid skillType
         committableCards = if not (null committedCardIds)
@@ -1380,7 +1352,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
           $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
     pure $ a & deck .~ Deck deck' & hand %~ (PlayerCard card :)
   DisengageEnemy iid eid | iid == investigatorId -> do
-    pure $ a & engagedEnemies %~ HashSet.delete eid
+    pure $ a & engagedEnemies %~ deleteSet eid
   SearchDeckForTraits iid (InvestigatorTarget iid') traits
     | iid' == investigatorId -> runMessage
       (SearchTopOfDeck
@@ -1395,7 +1367,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     | iid' == investigatorId -> do
       let
         (cards, deck') = splitAt n $ unDeck investigatorDeck
-        traits' = HashSet.fromList traits
+        traits' = setFromList traits
       case strategy of
         PutBackInAnyOrder -> unshiftMessage
           (Ask iid $ ChooseOneAtATime
@@ -1427,7 +1399,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       pure $ a & deck .~ Deck deck'
   SearchDiscard iid (InvestigatorTarget iid') traits | iid' == investigatorId ->
     do
-      let traits' = HashSet.fromList traits
+      let traits' = setFromList traits
       unshiftMessage
         (Ask iid $ ChooseOne
           [ Run

@@ -3,7 +3,7 @@ module Arkham.Import
   )
 where
 
-import ClassyPrelude as X
+import ClassyPrelude as X hiding ((\\))
 
 import Arkham.Json as X
 import Arkham.Types.Ability as X
@@ -32,4 +32,5 @@ import Arkham.Types.Window as X
 import GHC.Stack as X
 import Lens.Micro as X
 import Lens.Micro.Extras as X
+import Lens.Micro.Platform as X ()
 import Safe as X (fromJustNote)

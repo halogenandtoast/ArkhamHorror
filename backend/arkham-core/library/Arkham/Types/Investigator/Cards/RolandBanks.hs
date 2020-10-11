@@ -1,21 +1,14 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.RolandBanks where
 
-import Arkham.Types.Ability
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window (Who(..))
-import qualified Arkham.Types.Window as Fast
-import ClassyPrelude
-import Data.Aeson
 
 newtype RolandBanks = RolandBanks Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -33,22 +26,20 @@ rolandBanks = RolandBanks
     , agility = 2
     }
 
+ability :: Attrs -> Ability
+ability attrs = base { abilityLimit = PerRound }
+ where
+  base = mkAbility (toSource attrs) 1 (ReactionAbility (WhenEnemyDefeated You))
+
 instance (ActionRunner env investigator) => HasActions env investigator RolandBanks where
-  getActions i (Fast.WhenEnemyDefeated You) (RolandBanks Attrs {..})
+  getActions i (WhenEnemyDefeated You) (RolandBanks a@Attrs {..})
     | getId () i == investigatorId = do
-      let
-        ability = (mkAbility
-                    (InvestigatorSource investigatorId)
-                    1
-                    (ReactionAbility (Fast.WhenEnemyDefeated You))
-                  )
-          { abilityLimit = PerRound
-          }
-      clueCount' <- unClueCount <$> asks (getCount investigatorLocation)
-      usedAbilities <- map unUsedAbility <$> asks (getList ())
+      let ability' = (investigatorId, ability a)
+      clueCount' <- asks $ unClueCount . getCount investigatorLocation
+      unused <- asks $ notElem ability' . map unUsedAbility . getList ()
       pure
-        [ ActivateCardAbilityAction investigatorId ability
-        | (investigatorId, ability) `notElem` usedAbilities && clueCount' > 0
+        [ uncurry ActivateCardAbilityAction ability'
+        | unused && clueCount' > 0
         ]
   getActions _ _ _ = pure []
 
@@ -58,6 +49,6 @@ instance (InvestigatorRunner Attrs env) => RunMessage env RolandBanks where
       rb <$ unshiftMessage
         (DiscoverCluesAtLocation investigatorId investigatorLocation 1)
     ResolveToken ElderSign iid | iid == investigatorId -> do
-      locationClueCount <- unClueCount <$> asks (getCount investigatorLocation)
+      locationClueCount <- asks $ unClueCount . getCount investigatorLocation
       rb <$ runTest investigatorId (TokenValue ElderSign locationClueCount)
     _ -> RolandBanks <$> runMessage msg attrs

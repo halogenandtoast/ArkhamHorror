@@ -33,7 +33,7 @@ newtype TreacheryCount = TreacheryCount { unTreacheryCount :: Int }
 newtype EnemyCount = EnemyCount { unEnemyCount :: Int }
 newtype XPCount = XPCount { unXPCount :: Int }
 newtype ClueCount = ClueCount { unClueCount :: Int }
-  deriving newtype (Eq, Hashable)
+  deriving newtype (Eq, Hashable, Show)
 newtype Shroud = Shroud { unShroud :: Int }
   deriving newtype (Eq)
 newtype SpendableClueCount = SpendableClueCount { unSpendableClueCount :: Int }

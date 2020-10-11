@@ -64,6 +64,17 @@ playDynamicCard i c = PlayDynamicCard (getId () i) (getCardId c) 0 Nothing True
 drawCards :: Investigator -> Int -> Message
 drawCards i n = DrawCards (getId () i) n False
 
+investigate :: Investigator -> Location -> Message
+investigate i l = Investigate
+  (getId () i)
+  (getId () l)
+  TestSource
+  SkillIntellect
+  mempty
+  mempty
+  mempty
+  False
+
 beginSkillTest :: Investigator -> SkillType -> Int -> Message
 beginSkillTest i stype difficulty = BeginSkillTest
   (getId () i)

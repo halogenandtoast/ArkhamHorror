@@ -1,22 +1,18 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Investigator.Cards.SkidsOToole where
+module Arkham.Types.Investigator.Cards.SkidsOToole
+  ( SkidsOToole(..)
+  , skidsOToole
+  )
+where
 
-import Arkham.Types.Ability
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Stats
-import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
-import qualified Arkham.Types.Window as Fast
-import ClassyPrelude
-import Data.Aeson
-import Lens.Micro
 
 newtype SkidsOToole = SkidsOToole Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -36,31 +32,27 @@ skidsOToole = SkidsOToole $ baseAttrs
     }
   [Criminal]
 
+ability :: Attrs -> Ability
+ability attrs = mkAbility (toSource attrs) 1 (FastAbility (DuringTurn You))
+
 instance (ActionRunner env investigator) => HasActions env investigator SkidsOToole where
-  getActions i (DuringTurn You) (SkidsOToole Attrs {..})
+  getActions i (DuringTurn You) (SkidsOToole a@Attrs {..})
     | getId () i == investigatorId = do
-      let
-        ability = mkAbility
-          (InvestigatorSource "01003")
-          1
-          (FastAbility (Fast.DuringTurn You))
-      usedAbilities <- map unUsedAbility <$> asks (getList ())
+      let ability' = (getId () i, ability a)
+      unused <- asks $ notElem ability' . map unUsedAbility . getList ()
       pure
-        [ ActivateCardAbilityAction investigatorId ability
-        | resourceCount i
-          >= 2
-          && (investigatorId, ability)
-          `notElem` usedAbilities
+        [ uncurry ActivateCardAbilityAction ability'
+        | unused && resourceCount i >= 2
         ]
   getActions _ _ _ = pure []
 
 instance (InvestigatorRunner Attrs env) => RunMessage env SkidsOToole where
   runMessage msg i@(SkidsOToole attrs@Attrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
-      do
-        pure . SkidsOToole $ attrs & resources -~ 2 & remainingActions +~ 1
+    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
+      pure . SkidsOToole $ attrs & resources -~ 2 & remainingActions +~ 1
     ResolveToken ElderSign iid | iid == investigatorId -> do
       i <$ runTest investigatorId (TokenValue ElderSign 2)
-    PassedSkillTest iid _ _ (TokenTarget ElderSign) _ | iid == investigatorId -> do
-      i <$ unshiftMessage (TakeResources iid 2 False)
+    PassedSkillTest iid _ _ (TokenTarget ElderSign) _ | iid == investigatorId ->
+      do
+        i <$ unshiftMessage (TakeResources iid 2 False)
     _ -> SkidsOToole <$> runMessage msg attrs

@@ -178,7 +178,8 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
     RequestedTokens (SkillTestSource source maction) iid tokens -> do
       unshiftMessage (RevealSkillTestTokens iid)
       for_ tokens $ \token -> unshiftMessages
-        [ When (RevealToken (SkillTestSource source maction) iid token)
+        [ CheckWindow iid [WhenRevealToken You token]
+        , When (RevealToken (SkillTestSource source maction) iid token)
         , RevealToken (SkillTestSource source maction) iid token
         ]
       pure $ s & (setAsideTokens %~ (tokens <>))
@@ -202,11 +203,16 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
     AddSkillTestSubscriber target -> pure $ s & subscribers %~ (target :)
     SetAsideToken token -> pure $ s & (setAsideTokens %~ (token :))
     PassSkillTest -> do
+      stats <- getStats skillTestInvestigator (toSource s) =<< ask
+      let
+        currentSkillValue = statsSkillValue stats skillTestSkillType
+        modifiedSkillValue' =
+          max 0 (currentSkillValue + skillTestValueModifier + skillIconCount s)
       unshiftMessages
         [ Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
         , SkillTestEnds
         ]
-      pure $ s & result .~ SucceededBy True 0
+      pure $ s & result .~ SucceededBy True modifiedSkillValue'
     FailSkillTest -> do
       unshiftMessages
         $ [ Will

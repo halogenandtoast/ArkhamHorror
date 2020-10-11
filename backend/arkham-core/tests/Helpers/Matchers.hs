@@ -17,6 +17,7 @@ import Arkham.Types.Investigator
 import Arkham.Types.Location
 import Arkham.Types.Message
 import Arkham.Types.Query
+import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery
 import Arkham.Types.TreacheryId
@@ -146,6 +147,17 @@ hasCardInPlay c i = case c of
     AssetType -> AssetId (unCardId $ pcId pc) `member` getSet () i
     _ -> error "not implemented"
   _ -> error "not implemented"
+
+hasPassedSkillTestBy :: Int -> GameExternal -> Investigator -> Bool
+hasPassedSkillTestBy n game investigator = hasProcessedMessage
+  (PassedSkillTest
+    (getId () investigator)
+    Nothing
+    TestSource
+    SkillTestInitiatorTarget
+    n
+  )
+  game
 
 hasTreacheryWithMatchingCardCode
   :: (HasSet TreacheryId () a) => Game queue -> Card -> a -> Bool

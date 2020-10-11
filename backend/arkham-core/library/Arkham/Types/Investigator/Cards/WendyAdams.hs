@@ -36,13 +36,13 @@ wendyAdams = WendyAdams $ baseAttrs
   [Drifter]
 
 instance (ActionRunner env investigator) => HasActions env investigator WendyAdams where
-  getActions i (WhenDrawToken You token) (WendyAdams Attrs {..})
+  getActions i (WhenRevealToken You token) (WendyAdams Attrs {..})
     | getId () i == investigatorId = do
       let
         ability = (mkAbility
                     (InvestigatorSource investigatorId)
                     1
-                    (ReactionAbility (WhenDrawToken You token))
+                    (ReactionAbility (WhenRevealToken You token))
                   )
           { abilityLimit = PerTestOrAbility
           }
@@ -58,27 +58,26 @@ instance (ActionRunner env investigator) => HasActions env investigator WendyAda
 
 instance (InvestigatorRunner Attrs env) => RunMessage env WendyAdams where
   runMessage msg i@(WendyAdams attrs@Attrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
-      do
-        mResolveToken <- withQueue $ \queue ->
-          (queue, find ((== Just ResolveTokenMessage) . messageType) queue)
-        case mResolveToken of
-          Just (ResolveToken token _) -> do
-            void
-              $ withQueue
-              $ \queue ->
-                  ( filter (/= CheckWindow iid [WhenDrawToken You token]) queue
-                  , ()
-                  )
-            i <$ unshiftMessages
-              [ ChooseAndDiscardCard iid
-              , CancelNext DrawTokenMessage
-              , CancelNext ResolveTokenMessage
-              , ReturnTokens [token]
-              , UnfocusTokens
-              , DrawAnotherToken iid 0
-              ]
-          _ -> error "we expect resolve token to be on the stack"
+    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
+      mResolveToken <- withQueue $ \queue ->
+        (queue, find ((== Just RevealTokenMessage) . messageType) queue)
+      case mResolveToken of
+        Just (RevealToken _ _ token) -> do
+          void
+            $ withQueue
+            $ \queue ->
+                ( filter (/= CheckWindow iid [WhenRevealToken You token]) queue
+                , ()
+                )
+          i <$ unshiftMessages
+            [ ChooseAndDiscardCard iid
+            , CancelNext DrawTokenMessage
+            , CancelNext RevealTokenMessage
+            , ReturnTokens [token]
+            , UnfocusTokens
+            , DrawAnotherToken iid 0
+            ]
+        _ -> error "we expect resolve token to be on the stack"
     When (DrawToken iid token) | iid == investigatorId -> i <$ unshiftMessages
       [ FocusTokens [token]
       , CheckWindow investigatorId [WhenDrawToken You token]

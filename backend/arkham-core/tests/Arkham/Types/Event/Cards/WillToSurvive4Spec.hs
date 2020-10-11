@@ -6,7 +6,6 @@ where
 import TestImport
 
 import Arkham.Types.Investigator.Attrs (Attrs(..))
-import Arkham.Types.Target
 import Arkham.Types.Token
 
 spec :: Spec

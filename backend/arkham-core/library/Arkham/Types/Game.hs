@@ -8,6 +8,7 @@ module Arkham.Types.Game
   , addInvestigator
   , startGame
   , toInternalGame
+  , toExternalGame
   , Game(..)
   , GameExternal
   , GameInternal

@@ -8,9 +8,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.EnemyId
-import Arkham.Types.TreacheryId
 import Arkham.Types.GameValue
-import Arkham.Types.Window
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
@@ -23,6 +21,8 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
+import Arkham.Types.TreacheryId
+import Arkham.Types.Window
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
@@ -148,7 +148,7 @@ weaknessBaseAttrs eid cardCode =
       , enemyDamage = 0
       , enemyHealthDamage = 0
       , enemySanityDamage = 0
-      , enemyTraits = HashSet.fromList pcTraits
+      , enemyTraits = pcTraits
       , enemyTreacheries = mempty
       , enemyVictory = pcVictoryPoints
       , enemyKeywords = HashSet.fromList pcKeywords

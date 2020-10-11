@@ -157,10 +157,10 @@ canEnterLocation
   -> LocationId
   -> m Bool
 canEnterLocation eid lid = do
-  traits <- asks (getSet eid)
+  traits' <- asks (getSet eid)
   modifiers' <- getModifiers (EnemySource eid) lid
   pure $ not $ flip any modifiers' $ \case
-    CannotBeEnteredByNonElite{} -> Elite `notMember` traits
+    CannotBeEnteredByNonElite{} -> Elite `notMember` traits'
     _ -> False
 
 instance (IsInvestigator investigator) => HasActions env investigator Attrs where
@@ -281,8 +281,8 @@ instance (LocationRunner env) => RunMessage env Attrs where
       if willMove then pure $ a & enemies %~ HashSet.insert eid else pure a
     Will next@(EnemySpawn lid eid) | lid == locationId -> do
       when (shouldSpawnNonEliteAtConnectingInstead a) $ do
-        traits <- HashSet.toList <$> asks (getSet eid)
-        when (Elite `notElem` traits) $ do
+        traits' <- HashSet.toList <$> asks (getSet eid)
+        when (Elite `notElem` traits') $ do
           activeInvestigatorId <- unActiveInvestigatorId <$> asks (getId ())
           connectedLocationIds <-
             HashSet.toList . HashSet.map unConnectedLocationId <$> asks

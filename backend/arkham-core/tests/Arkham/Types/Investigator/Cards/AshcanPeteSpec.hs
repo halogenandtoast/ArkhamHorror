@@ -5,9 +5,7 @@ where
 
 import TestImport
 
-import Arkham.Types.Target
 import Arkham.Types.Token
-import Arkham.Types.Window
 
 spec :: Spec
 spec = describe "\"Ashcan\" Pete" $ do
@@ -26,7 +24,7 @@ spec = describe "\"Ashcan\" Pete" $ do
       let ashcanPete = lookupInvestigator "02005"
       asset <- testAsset id
       scenario' <- testScenario "00000" id
-      card <- testPlayerCard
+      card <- testPlayerCard id
       game <-
         runGameTest
           ashcanPete

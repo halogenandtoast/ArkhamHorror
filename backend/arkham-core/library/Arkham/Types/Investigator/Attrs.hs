@@ -414,9 +414,9 @@ modifiedCardCost Attrs {..} (PlayerCard MkPlayerCard {..}) = foldr
     StaticCost n -> n
     DynamicCost -> 0
   applyModifier (ReduceCostOf traits m) n
-    | not
-      (null (HashSet.fromList traits `intersection` HashSet.fromList pcTraits))
-    = max 0 (n - m)
+    | not (null (HashSet.fromList traits `intersection` pcTraits)) = max
+      0
+      (n - m)
   applyModifier _ n = n
 modifiedCardCost Attrs {..} (EncounterCard MkEncounterCard {..}) = foldr
   applyModifier
@@ -475,10 +475,7 @@ playableDiscards a@Attrs {..} windows = filter
     (concat . HashMap.elems $ investigatorModifiers)
   allowsPlayFromDiscard 0 MkPlayerCard {..} (CanPlayTopOfDiscard (mcardType, traits))
     = maybe True (== pcCardType) mcardType
-      && (null traits
-         || (HashSet.fromList traits
-            `HashSet.isSubsetOf` HashSet.fromList pcTraits
-            )
+      && (null traits || (HashSet.fromList traits `HashSet.isSubsetOf` pcTraits)
          )
   allowsPlayFromDiscard _ _ _ = False
 
@@ -1409,22 +1406,23 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
             | card <- cards
             ]
           )
-        ShuffleBackIn -> unshiftMessage
-          (Ask iid $ ChooseOne
-            [ Run
-                [ AddFocusedToHand
-                  iid
-                  (InvestigatorTarget iid')
-                  (getCardId card)
-                , ShuffleAllFocusedIntoDeck iid (InvestigatorTarget iid')
-                ]
-            | card <- cards
-            , null traits'
-              || traits'
-              `intersection` HashSet.fromList (pcTraits card)
-              == traits'
-            ]
-          )
+        ShuffleBackIn -> do
+          let
+            choices =
+              [ Run
+                  [ AddFocusedToHand
+                    iid
+                    (InvestigatorTarget iid')
+                    (getCardId card)
+                  , ShuffleAllFocusedIntoDeck iid (InvestigatorTarget iid')
+                  ]
+              | card <- cards
+              , null traits' || traits' `intersection` getTraits card == traits'
+              ]
+          unshiftMessage
+            (chooseOne iid
+            $ if null choices then [Continue "No cards found"] else choices
+            )
       unshiftMessage (FocusCards $ map PlayerCard cards)
       pure $ a & deck .~ Deck deck'
   SearchDiscard iid (InvestigatorTarget iid') traits | iid' == investigatorId ->
@@ -1437,10 +1435,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
               , RemoveFromDiscard iid (getCardId card)
               ]
           | card <- investigatorDiscard
-          , null traits'
-            || traits'
-            `intersection` HashSet.fromList (pcTraits card)
-            == traits'
+          , null traits' || traits' `intersection` getTraits card == traits'
           ]
         )
       a <$ unshiftMessage (FocusCards $ map PlayerCard investigatorDiscard)

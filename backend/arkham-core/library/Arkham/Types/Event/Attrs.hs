@@ -1,21 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Attrs where
 
-import Arkham.Json
-import Arkham.Types.Card
-import Arkham.Types.Card.Id
-import Arkham.Types.Classes
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Target
+import Arkham.Import
+
 import Arkham.Types.Trait
-import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
-import Lens.Micro
-import Safe (fromJustNote)
 
 data Attrs = Attrs
   { eventName :: Text
@@ -61,7 +50,7 @@ baseAttrs iid eid cardCode =
       { eventName = pcName
       , eventId = eid
       , eventCardCode = pcCardCode
-      , eventTraits = HashSet.fromList pcTraits
+      , eventTraits = pcTraits
       , eventAttachedLocation = Nothing
       , eventAttachedInvestigator = Nothing
       , eventWeakness = False
@@ -83,7 +72,7 @@ weaknessAttrs iid eid cardCode =
       { eventName = pcName
       , eventId = eid
       , eventCardCode = pcCardCode
-      , eventTraits = HashSet.fromList pcTraits
+      , eventTraits = pcTraits
       , eventAttachedLocation = Nothing
       , eventAttachedInvestigator = Nothing
       , eventOwner = iid

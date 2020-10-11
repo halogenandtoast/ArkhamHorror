@@ -59,6 +59,7 @@ tests:
       - hspec-core
       - hspec-expectations
       - microlens
+      - microlens-mtl
       - uuid
       - unordered-containers >= 0.2.12.0
       - mtl

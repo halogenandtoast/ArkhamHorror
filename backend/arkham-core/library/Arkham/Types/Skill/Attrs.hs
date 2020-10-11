@@ -1,18 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Skill.Attrs where
 
-import Arkham.Json
-import Arkham.Types.Card
-import Arkham.Types.Card.Id
-import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
+import Arkham.Import
+
 import Arkham.Types.Skill.Runner
-import Arkham.Types.SkillId
 import Arkham.Types.Trait
-import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
-import Safe (fromJustNote)
 
 data Attrs = Attrs
   { skillName :: Text
@@ -44,7 +37,7 @@ baseAttrs iid eid cardCode =
       { skillName = pcName
       , skillId = eid
       , skillCardCode = pcCardCode
-      , skillTraits = HashSet.fromList pcTraits
+      , skillTraits = pcTraits
       , skillOwner = iid
       , skillWeakness = False
       }
@@ -62,7 +55,7 @@ weaknessAttrs iid eid cardCode =
       { skillName = pcName
       , skillId = eid
       , skillCardCode = pcCardCode
-      , skillTraits = HashSet.fromList pcTraits
+      , skillTraits = pcTraits
       , skillOwner = iid
       , skillWeakness = True
       }

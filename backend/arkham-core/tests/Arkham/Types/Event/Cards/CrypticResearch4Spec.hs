@@ -5,8 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Target
-
 spec :: Spec
 spec = do
   describe "Cryptic Research 4" $ do

@@ -5,8 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Modifier
-
 spec :: Spec
 spec = describe "Peter Sylvestre" $ do
   it "gives you +1 agility" $ do

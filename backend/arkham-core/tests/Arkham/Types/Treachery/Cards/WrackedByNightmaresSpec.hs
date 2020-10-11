@@ -6,7 +6,6 @@ where
 import TestImport
 
 import qualified Arkham.Types.Asset.Attrs as Asset
-import Arkham.Types.Window
 
 spec :: Spec
 spec = describe "Wracked by Nightmares" $ do

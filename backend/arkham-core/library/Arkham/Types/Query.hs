@@ -39,7 +39,7 @@ newtype Shroud = Shroud { unShroud :: Int }
 newtype SpendableClueCount = SpendableClueCount { unSpendableClueCount :: Int }
   deriving newtype (Eq, Hashable)
 newtype DoomCount = DoomCount { unDoomCount :: Int }
-  deriving newtype (Eq)
+  deriving newtype (Eq, Show)
 newtype UsesCount = UsesCount { unUsesCount :: Int }
   deriving newtype (Eq)
 newtype ResourceCount = ResourceCount { unResourceCount :: Int }

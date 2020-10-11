@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 634e679de97a88a7352cc97765cb4bb44a97f67faae35ca12cb7e15021c5c84d
+-- hash: d944b5f268ca29051730a65cbf9d162203a700767bf78d2011b2dbbd9edbd205
 
 name:           arkham-core
 version:        0.0.0
@@ -430,6 +430,7 @@ test-suite spec
       Arkham.Types.Event.Cards.SearchForTheTruthSpec
       Arkham.Types.Event.Cards.WillToSurvive4Spec
       Arkham.Types.Investigator.Cards.AshcanPeteSpec
+      Arkham.Types.Investigator.Cards.DaisyWalkerSpec
       Arkham.Types.Investigator.Cards.JennyBarnesSpec
       Arkham.Types.Investigator.Cards.JimCulverSpec
       Arkham.Types.Investigator.Cards.RexMurphySpec

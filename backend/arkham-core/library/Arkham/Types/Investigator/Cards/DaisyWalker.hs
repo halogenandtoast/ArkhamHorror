@@ -1,23 +1,14 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.DaisyWalker where
 
-import Arkham.Types.Ability
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Query
-import Arkham.Types.Source
-import Arkham.Types.Target
 import Arkham.Types.Stats
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import ClassyPrelude
-import Data.Aeson
-import qualified Data.HashMap.Strict as HashMap
-import Safe (fromJustNote)
 
 newtype DaisyWalker = DaisyWalker Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -80,20 +71,21 @@ instance (InvestigatorRunner Attrs env) => RunMessage env DaisyWalker where
     ResolveToken ElderSign iid | iid == investigatorId ->
       if any
           (becomesFailure ElderSign)
-          (concat . HashMap.elems $ investigatorModifiers)
+          (concat . toList $ investigatorModifiers)
         then i <$ unshiftMessage (ResolveToken AutoFail iid)
         else do
           i <$ runTest investigatorId (TokenValue ElderSign 0)
-    PassedSkillTest iid _ _ (TokenTarget ElderSign) _ | iid == investigatorId -> do
-      tomeCount <- unAssetCount <$> asks (getCount (iid, [Tome]))
-      when (tomeCount > 0) $ unshiftMessage
-        (Ask iid
+    PassedSkillTest iid _ _ (TokenTarget ElderSign) _ | iid == investigatorId ->
+      do
+        tomeCount <- asks $ unAssetCount . getCount (iid, [Tome])
+        when (tomeCount > 0) $ unshiftMessage
+          (Ask iid
           $ ChooseOne
               [ DrawCards iid tomeCount False
               , Continue "Do not use Daisy's ability"
               ]
-        )
-      pure i
+          )
+        pure i
     BeginRound -> DaisyWalker
       <$> runMessage msg (attrs { investigatorTomeActions = Just 1 })
     _ -> DaisyWalker <$> runMessage msg attrs

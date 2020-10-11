@@ -812,6 +812,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     -> a <$ unshiftMessages
       ([InvestigatorDamage iid source damage horror, CheckDefeated]
       <> [After (InvestigatorTakeDamage iid source damage horror)]
+      <> [ CheckWindow iid [AfterAssignedHorror You] | horror > 0 ]
       )
   InvestigatorAssignDamage iid source damage horror
     | iid == investigatorId && not

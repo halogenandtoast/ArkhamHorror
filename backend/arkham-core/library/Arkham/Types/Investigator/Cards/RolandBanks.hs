@@ -1,5 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Investigator.Cards.RolandBanks where
+module Arkham.Types.Investigator.Cards.RolandBanks (RolandBanks(..), rolandBanks) where
 
 import Arkham.Import
 

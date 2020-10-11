@@ -67,17 +67,7 @@ spec = describe "Rex's Curse" $ do
         [ SetTokens [MinusOne]
         , loadDeck investigator [rexsCurse]
         , drawCards investigator 1
-        , BeginSkillTest
-          (getId () investigator)
-          TestSource
-          TestTarget
-          Nothing
-          SkillIntellect
-          4
-          mempty
-          mempty
-          mempty
-          mempty
+        , beginSkillTest investigator SkillIntellect 4
         ]
         (scenario ?~ scenario')
       >>= runGameTestOnlyOption "start skill test"

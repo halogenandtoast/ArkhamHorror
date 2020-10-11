@@ -242,7 +242,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
       -- Rex's Curse timing keeps effects on stack so we do
       -- not want to remove them as subscribers from the stack
       unshiftMessage $ ResetTokens (toSource s)
-      pure $ s & setAsideTokens .~ mempty
+      pure $ s & setAsideTokens .~ mempty & revealedTokens .~ mempty
     SkillTestEnds -> s <$ unshiftMessages
       [ RemoveAllModifiersOnTargetFrom
         (InvestigatorTarget skillTestInvestigator)

@@ -148,8 +148,8 @@ runTest
   -> m ()
 runTest iid tokenValue'@(TokenValue token value) = do
   windowPairings <- pairInvestigatorIdsForWindow iid
-  testSource <- fromMaybe (error "missing source")
-    <$> asks (getSource ForSkillTest)
+  testSource <-
+    asks $ fromMaybe (error "missing source") . getSource ForSkillTest
   if value < 0
     then unshiftMessages
       ([ CheckWindow

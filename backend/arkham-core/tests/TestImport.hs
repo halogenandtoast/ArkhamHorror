@@ -1,58 +1,46 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 module TestImport
   ( module X
   , module TestImport
   )
 where
 
+import Arkham.Import as X
 import Arkham.Types.Agenda as X
 import qualified Arkham.Types.Agenda.Attrs as AgendaAttrs
 import Arkham.Types.AgendaId as X
 import Arkham.Types.Asset as X
 import qualified Arkham.Types.Asset.Attrs as Asset
-import Arkham.Types.AssetId as X
-import Arkham.Types.Card as X
-import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard (basePlayerCard)
 import Arkham.Types.ChaosBag as X
 import qualified Arkham.Types.ChaosBag as ChaosBag
-import Arkham.Types.Classes as X
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy as X
 import qualified Arkham.Types.Enemy.Attrs as Enemy
-import Arkham.Types.EnemyId as X
 import Arkham.Types.Event as X
-import Arkham.Types.EventId as X
 import Arkham.Types.Game as X
-import Arkham.Types.GameValue as X
 import Arkham.Types.Investigator as X
 import qualified Arkham.Types.Investigator.Attrs as InvestigatorAttrs
-import Arkham.Types.InvestigatorId as X
 import Arkham.Types.Location as X
 import qualified Arkham.Types.Location.Attrs as Location
 import qualified Arkham.Types.Location.Attrs as LocationAttrs
-import Arkham.Types.LocationId as X
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message as X
 import Arkham.Types.Phase
 import Arkham.Types.Scenario as X
 import qualified Arkham.Types.Scenario.Attrs as ScenarioAttrs
 import Arkham.Types.ScenarioId as X
-import Arkham.Types.SkillType as X
-import Arkham.Types.Source as X
 import Arkham.Types.Stats as X
 import Arkham.Types.Token
-import Arkham.Types.Window
-import ClassyPrelude as X
 import Control.Monad.Fail as X
+import Control.Monad.State hiding (replicateM)
+import Control.Monad.State as X (get)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.UUID as UUID
 import Data.UUID.V4 as X
 import Helpers.Matchers as X
 import Helpers.Message as X
-import Lens.Micro as X
 import Test.Hspec as X
 
 testScenario
@@ -84,12 +72,12 @@ buildAsset cardCode = do
   pure $ lookupAsset cardCode assetId
 
 testPlayerCards :: MonadIO m => Int -> m [PlayerCard]
-testPlayerCards count' = replicateM count' testPlayerCard
+testPlayerCards count' = replicateM count' (testPlayerCard id)
 
-testPlayerCard :: MonadIO m => m PlayerCard
-testPlayerCard = do
+testPlayerCard :: MonadIO m => (PlayerCard -> PlayerCard) -> m PlayerCard
+testPlayerCard f = do
   cardId <- CardId <$> liftIO nextRandom
-  pure $ basePlayerCard cardId "asset" "Test" 0 AssetType Guardian
+  pure . f $ basePlayerCard cardId "asset" "Test" 0 AssetType Guardian
 
 buildPlayerCard :: MonadIO m => CardCode -> m PlayerCard
 buildPlayerCard cardCode = do
@@ -261,12 +249,12 @@ runGameTestOptionMatching _reason f game =
 runGameTest
   :: Investigator
   -> [Message]
-  -> (Game (IORef [Message]) -> Game (IORef [Message]))
-  -> IO (Game [Message])
+  -> (GameInternal -> GameInternal)
+  -> IO GameExternal
 runGameTest investigator queue f =
   newGame investigator queue >>= runMessages . f
 
-newGame :: MonadIO m => Investigator -> [Message] -> m (Game (IORef [Message]))
+newGame :: MonadIO m => Investigator -> [Message] -> m GameInternal
 newGame investigator queue = do
   ref <- newIORef queue
   history <- newIORef []

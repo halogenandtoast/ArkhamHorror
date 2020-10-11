@@ -6,7 +6,6 @@ where
 import TestImport
 
 import Arkham.Types.ChaosBagStepState
-import Arkham.Types.Target
 import Arkham.Types.Token
 
 spec :: Spec

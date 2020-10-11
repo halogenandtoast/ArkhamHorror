@@ -6,7 +6,6 @@ where
 import TestImport
 
 import Arkham.Types.Token
-import Arkham.Types.Window
 
 spec :: Spec
 spec = describe "Searching for Izzie" $ do

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: de1a378263c4158e1231d7f0d6926e6ab6c5fbd0412ef3ef4dcd51ab6e788c7a
+-- hash: 67503fec2bdf184acaaee8c9c1ec3627ffe9227c1199a34525e0dcd4f19ea046
 
 name:           arkham-core
 version:        0.0.0
@@ -392,12 +392,24 @@ test-suite spec
   main-is: Spec.hs
   other-modules:
       Arkham.Types.Asset.Cards.Aquinnah1Spec
+      Arkham.Types.Asset.Cards.ArcaneInitiateSpec
+      Arkham.Types.Asset.Cards.ArcaneStudies2Spec
+      Arkham.Types.Asset.Cards.ArcaneStudiesSpec
+      Arkham.Types.Asset.Cards.BandolierSpec
+      Arkham.Types.Asset.Cards.DigDeep2Spec
+      Arkham.Types.Asset.Cards.DigDeepSpec
       Arkham.Types.Asset.Cards.DukeSpec
       Arkham.Types.Asset.Cards.FireAxeSpec
       Arkham.Types.Asset.Cards.GrotesqueStatue4Spec
+      Arkham.Types.Asset.Cards.HardKnocks2Spec
+      Arkham.Types.Asset.Cards.HardKnocksSpec
+      Arkham.Types.Asset.Cards.Hyperawareness2Spec
+      Arkham.Types.Asset.Cards.HyperawarenessSpec
       Arkham.Types.Asset.Cards.JennysTwin45sSpec
       Arkham.Types.Asset.Cards.JimsTrumpetSpec
       Arkham.Types.Asset.Cards.PeterSylvestreSpec
+      Arkham.Types.Asset.Cards.PhysicalTraining2Spec
+      Arkham.Types.Asset.Cards.PhysicalTrainingSpec
       Arkham.Types.Asset.Cards.ZoeysCrossSpec
       Arkham.Types.Enemy.Cards.TheMaskedHunterSpec
       Arkham.Types.Event.Cards.BackstabSpec
@@ -443,6 +455,7 @@ test-suite spec
     , hspec-core
     , hspec-expectations
     , microlens
+    , microlens-mtl
     , mtl
     , safe
     , unordered-containers >=0.2.12.0

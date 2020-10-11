@@ -8,7 +8,6 @@ import TestImport
 import Arkham.Types.Enemy.Attrs (Attrs(..))
 import Arkham.Types.Investigator.Attrs (Attrs(..))
 import Arkham.Types.Token
-import Arkham.Types.Window
 
 spec :: Spec
 spec = describe "Fire Axe" $ do

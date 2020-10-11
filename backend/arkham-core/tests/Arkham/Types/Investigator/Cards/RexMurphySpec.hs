@@ -6,7 +6,6 @@ where
 import TestImport
 
 import Arkham.Types.Location.Attrs as Location
-import Arkham.Types.Target
 import Arkham.Types.Token
 
 spec :: Spec

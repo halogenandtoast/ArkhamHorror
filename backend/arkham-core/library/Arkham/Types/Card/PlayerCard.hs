@@ -17,6 +17,7 @@ import Arkham.Types.Window
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
+import Lens.Micro
 import Safe (fromJustNote)
 
 data PlayerCardType
@@ -45,7 +46,7 @@ data PlayerCard = MkPlayerCard
   , pcBearer :: Maybe BearerId
   , pcClassSymbol :: ClassSymbol
   , pcSkills :: [SkillType]
-  , pcTraits :: [Trait]
+  , pcTraits :: HashSet Trait
   , pcKeywords :: [Keyword]
   , pcFast :: Bool
   , pcWindows :: HashSet Window
@@ -75,6 +76,9 @@ instance HasCost PlayerCard where
   getCost c = case pcCost c of
     StaticCost n -> n
     DynamicCost -> 0
+
+traits :: Lens' PlayerCard (HashSet Trait)
+traits = lens pcTraits $ \m x -> m { pcTraits = x }
 
 lookupPlayerCard :: CardCode -> (CardId -> PlayerCard)
 lookupPlayerCard cardCode =
@@ -276,31 +280,31 @@ rolands38Special :: CardId -> PlayerCard
 rolands38Special cardId =
   (asset cardId "01006" "Roland's .38 Special" 3 Neutral)
     { pcSkills = [SkillCombat, SkillAgility, SkillWild]
-    , pcTraits = [Item, Weapon, Firearm]
+    , pcTraits = setFromList [Item, Weapon, Firearm]
     }
 
 coverUp :: CardId -> PlayerCard
 coverUp cardId = (treachery cardId "01007" "Cover Up" 0)
-  { pcTraits = [Task]
+  { pcTraits = setFromList [Task]
   , pcRevelation = True
   }
 
 daisysToteBag :: CardId -> PlayerCard
 daisysToteBag cardId = (asset cardId "01008" "Daisy's Tote Bag" 2 Neutral)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillWild]
-  , pcTraits = [Item]
+  , pcTraits = setFromList [Item]
   }
 
 theNecronomicon :: CardId -> PlayerCard
 theNecronomicon cardId = (asset cardId "01009" "The Necronomicon" 0 Neutral)
-  { pcTraits = [Item, Tome]
+  { pcTraits = setFromList [Item, Tome]
   , pcWeakness = True
   , pcRevelation = True
   }
 
 onTheLam :: CardId -> PlayerCard
 onTheLam cardId = (event cardId "01010" "On the Lam" 1 Neutral)
-  { pcTraits = [Tactic]
+  { pcTraits = setFromList [Tactic]
   , pcSkills = [SkillIntellect, SkillAgility, SkillWild, SkillWild]
   , pcFast = True
   , pcWindows = HashSet.fromList [AfterTurnBegins You, DuringTurn You]
@@ -308,7 +312,7 @@ onTheLam cardId = (event cardId "01010" "On the Lam" 1 Neutral)
 
 hospitalDebts :: CardId -> PlayerCard
 hospitalDebts cardId = (treachery cardId "01011" "Hospital Debts" 0)
-  { pcTraits = [Task]
+  { pcTraits = setFromList [Task]
   , pcRevelation = True
   }
 
@@ -316,67 +320,67 @@ heirloomOfHyperborea :: CardId -> PlayerCard
 heirloomOfHyperborea cardId =
   (asset cardId "01012" "Heirloom of Hyperborea" 3 Neutral)
     { pcSkills = [SkillWillpower, SkillCombat, SkillWild]
-    , pcTraits = [Item, Relic]
+    , pcTraits = setFromList [Item, Relic]
     }
 
 darkMemory :: CardId -> PlayerCard
 darkMemory cardId = (event cardId "01013" "Dark Memory" 2 Neutral)
-  { pcTraits = [Spell]
+  { pcTraits = setFromList [Spell]
   , pcWeakness = True
   }
 
 wendysAmulet :: CardId -> PlayerCard
 wendysAmulet cardId = (asset cardId "01014" "Wendy's Amulet" 2 Neutral)
   { pcSkills = [SkillWild, SkillWild]
-  , pcTraits = [Item, Relic]
+  , pcTraits = setFromList [Item, Relic]
   }
 
 abandonedAndAlone :: CardId -> PlayerCard
 abandonedAndAlone cardId = (treachery cardId "01015" "Abandoned and Alone" 0)
-  { pcTraits = [Madness]
+  { pcTraits = setFromList [Madness]
   , pcRevelation = True
   }
 
 fortyFiveAutomatic :: CardId -> PlayerCard
 fortyFiveAutomatic cardId = (asset cardId "01016" ".45 Automatic" 4 Guardian)
   { pcSkills = [SkillAgility]
-  , pcTraits = [Item, Weapon, Firearm]
+  , pcTraits = setFromList [Item, Weapon, Firearm]
   }
 
 physicalTraining :: CardId -> PlayerCard
 physicalTraining cardId = (asset cardId "01017" "Physical Training" 2 Guardian)
   { pcSkills = [SkillWillpower, SkillCombat]
-  , pcTraits = [Talent]
+  , pcTraits = setFromList [Talent]
   }
 
 beatCop :: CardId -> PlayerCard
 beatCop cardId = (asset cardId "01018" "Beat Cop" 4 Guardian)
   { pcSkills = [SkillCombat]
-  , pcTraits = [Ally, Police]
+  , pcTraits = setFromList [Ally, Police]
   }
 
 firstAid :: CardId -> PlayerCard
 firstAid cardId = (asset cardId "01019" "First Aid" 2 Guardian)
   { pcSkills = [SkillWillpower]
-  , pcTraits = [Talent, Science]
+  , pcTraits = setFromList [Talent, Science]
   }
 
 machete :: CardId -> PlayerCard
 machete cardId = (asset cardId "01020" "Machete" 3 Guardian)
   { pcSkills = [SkillCombat]
-  , pcTraits = [Item, Weapon, Melee]
+  , pcTraits = setFromList [Item, Weapon, Melee]
   }
 
 guardDog :: CardId -> PlayerCard
 guardDog cardId = (asset cardId "01021" "Guard Dog" 3 Guardian)
   { pcSkills = [SkillCombat]
-  , pcTraits = [Ally, Creature]
+  , pcTraits = setFromList [Ally, Creature]
   }
 
 evidence :: CardId -> PlayerCard
 evidence cardId = (event cardId "01022" "Evidence!" 1 Guardian)
   { pcSkills = [SkillIntellect, SkillIntellect]
-  , pcTraits = [Insight]
+  , pcTraits = setFromList [Insight]
   , pcFast = True
   , pcWindows = HashSet.fromList [WhenEnemyDefeated You]
   }
@@ -384,7 +388,7 @@ evidence cardId = (event cardId "01022" "Evidence!" 1 Guardian)
 dodge :: CardId -> PlayerCard
 dodge cardId = (event cardId "01023" "Dodge" 1 Guardian)
   { pcSkills = [SkillWillpower, SkillAgility]
-  , pcTraits = [Tactic]
+  , pcTraits = setFromList [Tactic]
   , pcFast = True
   , pcWindows = HashSet.fromList [WhenEnemyAttacks InvestigatorAtYourLocation]
   }
@@ -392,47 +396,47 @@ dodge cardId = (event cardId "01023" "Dodge" 1 Guardian)
 dynamiteBlast :: CardId -> PlayerCard
 dynamiteBlast cardId = (event cardId "01024" "Dynamite Blast" 5 Guardian)
   { pcSkills = [SkillWillpower]
-  , pcTraits = [Tactic]
+  , pcTraits = setFromList [Tactic]
   }
 
 viciousBlow :: CardId -> PlayerCard
 viciousBlow cardId =
   (skill cardId "01025" "Vicious Blow" [SkillCombat] Guardian)
-    { pcTraits = [Practiced]
+    { pcTraits = setFromList [Practiced]
     }
 
 extraAmmunition1 :: CardId -> PlayerCard
 extraAmmunition1 cardId = (event cardId "01026" "Extra Ammunition" 2 Guardian)
   { pcSkills = [SkillIntellect]
-  , pcTraits = [Supply]
+  , pcTraits = setFromList [Supply]
   , pcLevel = 1
   }
 
 policeBadge2 :: CardId -> PlayerCard
 policeBadge2 cardId = (asset cardId "01027" "Police Badge" 3 Guardian)
   { pcSkills = [SkillWillpower, SkillWild]
-  , pcTraits = [Item]
+  , pcTraits = setFromList [Item]
   , pcLevel = 2
   }
 
 beatCop2 :: CardId -> PlayerCard
 beatCop2 cardId = (asset cardId "01028" "Beat Cop" 4 Guardian)
   { pcSkills = [SkillCombat, SkillAgility]
-  , pcTraits = [Ally, Police]
+  , pcTraits = setFromList [Ally, Police]
   , pcLevel = 2
   }
 
 shotgun4 :: CardId -> PlayerCard
 shotgun4 cardId = (asset cardId "01029" "Shotgun" 5 Guardian)
   { pcSkills = [SkillCombat, SkillCombat]
-  , pcTraits = [Item, Weapon, Firearm]
+  , pcTraits = setFromList [Item, Weapon, Firearm]
   , pcLevel = 4
   }
 
 magnifyingGlass :: CardId -> PlayerCard
 magnifyingGlass cardId = (asset cardId "01030" "Magnifying Glass" 1 Seeker)
   { pcSkills = [SkillIntellect]
-  , pcTraits = [Item, Tool]
+  , pcTraits = setFromList [Item, Tool]
   , pcFast = True
   , pcWindows = HashSet.fromList [DuringTurn You]
   }
@@ -440,38 +444,38 @@ magnifyingGlass cardId = (asset cardId "01030" "Magnifying Glass" 1 Seeker)
 oldBookOfLore :: CardId -> PlayerCard
 oldBookOfLore cardId = (asset cardId "01031" "Old Book of Lore" 3 Seeker)
   { pcSkills = [SkillWillpower]
-  , pcTraits = [Item, Tome]
+  , pcTraits = setFromList [Item, Tome]
   }
 
 researchLibrarian :: CardId -> PlayerCard
 researchLibrarian cardId = (asset cardId "01032" "Research Librarian" 2 Seeker)
   { pcSkills = [SkillAgility]
-  , pcTraits = [Ally, Miskatonic]
+  , pcTraits = setFromList [Ally, Miskatonic]
   }
 
 drMilanChristopher :: CardId -> PlayerCard
 drMilanChristopher cardId =
   (asset cardId "01033" "Dr. Milan Christopher" 4 Seeker)
     { pcSkills = [SkillIntellect]
-    , pcTraits = [Ally, Miskatonic]
+    , pcTraits = setFromList [Ally, Miskatonic]
     }
 
 hyperawareness :: CardId -> PlayerCard
 hyperawareness cardId = (asset cardId "01034" "Hyperawareness" 2 Seeker)
   { pcSkills = [SkillIntellect, SkillAgility]
-  , pcTraits = [Talent]
+  , pcTraits = setFromList [Talent]
   }
 
 medicalTexts :: CardId -> PlayerCard
 medicalTexts cardId = (asset cardId "01035" "Medical Texts" 2 Seeker)
   { pcSkills = [SkillCombat]
-  , pcTraits = [Item, Tome]
+  , pcTraits = setFromList [Item, Tome]
   }
 
 mindOverMatter :: CardId -> PlayerCard
 mindOverMatter cardId = (event cardId "01036" "Mind over Matter" 1 Seeker)
   { pcSkills = [SkillCombat, SkillAgility]
-  , pcTraits = [Insight]
+  , pcTraits = setFromList [Insight]
   , pcFast = True
   , pcWindows = HashSet.fromList [DuringTurn You]
   }
@@ -479,7 +483,7 @@ mindOverMatter cardId = (event cardId "01036" "Mind over Matter" 1 Seeker)
 workingAHunch :: CardId -> PlayerCard
 workingAHunch cardId = (event cardId "01037" "Working a Hunch" 2 Seeker)
   { pcSkills = [SkillIntellect, SkillIntellect]
-  , pcTraits = [Insight]
+  , pcTraits = setFromList [Insight]
   , pcFast = True
   , pcWindows = HashSet.fromList [DuringTurn You]
   }
@@ -487,18 +491,18 @@ workingAHunch cardId = (event cardId "01037" "Working a Hunch" 2 Seeker)
 barricade :: CardId -> PlayerCard
 barricade cardId = (event cardId "01038" "Barricade" 0 Seeker)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillAgility]
-  , pcTraits = [Insight, Tactic]
+  , pcTraits = setFromList [Insight, Tactic]
   }
 
 deduction :: CardId -> PlayerCard
 deduction cardId = (skill cardId "01039" "Deduction" [SkillIntellect] Seeker)
-  { pcTraits = [Practiced]
+  { pcTraits = setFromList [Practiced]
   }
 
 magnifyingGlass1 :: CardId -> PlayerCard
 magnifyingGlass1 cardId = (asset cardId "01040" "Magnifying Glass" 0 Seeker)
   { pcSkills = [SkillIntellect]
-  , pcTraits = [Item, Tool]
+  , pcTraits = setFromList [Item, Tool]
   , pcFast = True
   , pcWindows = HashSet.fromList [DuringTurn You]
   , pcLevel = 1
@@ -507,20 +511,20 @@ magnifyingGlass1 cardId = (asset cardId "01040" "Magnifying Glass" 0 Seeker)
 discOfItzamna2 :: CardId -> PlayerCard
 discOfItzamna2 cardId = (asset cardId "01041" "Disc of Itzamna" 3 Seeker)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillCombat]
-  , pcTraits = [Item, Relic]
+  , pcTraits = setFromList [Item, Relic]
   , pcLevel = 2
   }
 
 encyclopedia2 :: CardId -> PlayerCard
 encyclopedia2 cardId = (asset cardId "01042" "Encyclopedia" 2 Seeker)
   { pcSkills = [SkillWild]
-  , pcTraits = [Item, Tome]
+  , pcTraits = setFromList [Item, Tome]
   , pcLevel = 2
   }
 
 crypticResearch4 :: CardId -> PlayerCard
 crypticResearch4 cardId = (event cardId "01043" "Cryptic Research" 0 Seeker)
-  { pcTraits = [Insight]
+  { pcTraits = setFromList [Insight]
   , pcLevel = 4
   , pcFast = True
   , pcWindows = HashSet.fromList [DuringTurn You]
@@ -529,7 +533,7 @@ crypticResearch4 cardId = (event cardId "01043" "Cryptic Research" 0 Seeker)
 switchblade :: CardId -> PlayerCard
 switchblade cardId = (asset cardId "01044" "Switchbalde" 1 Rogue)
   { pcSkills = [SkillAgility]
-  , pcTraits = [Item, Weapon, Melee, Illicit]
+  , pcTraits = setFromList [Item, Weapon, Melee, Illicit]
   , pcFast = True
   , pcWindows = HashSet.fromList [DuringTurn You]
   }
@@ -537,37 +541,37 @@ switchblade cardId = (asset cardId "01044" "Switchbalde" 1 Rogue)
 burglary :: CardId -> PlayerCard
 burglary cardId = (asset cardId "01045" "Burglary" 1 Rogue)
   { pcSkills = [SkillIntellect]
-  , pcTraits = [Talent, Illicit]
+  , pcTraits = setFromList [Talent, Illicit]
   }
 
 pickpoketing :: CardId -> PlayerCard
 pickpoketing cardId = (asset cardId "01046" "Pickpocketing" 2 Rogue)
   { pcSkills = [SkillAgility]
-  , pcTraits = [Talent, Illicit]
+  , pcTraits = setFromList [Talent, Illicit]
   }
 
 fortyOneDerringer :: CardId -> PlayerCard
 fortyOneDerringer cardId = (asset cardId "01047" ".41 Derringer" 3 Rogue)
   { pcSkills = [SkillCombat]
-  , pcTraits = [Item, Weapon, Firearm, Illicit]
+  , pcTraits = setFromList [Item, Weapon, Firearm, Illicit]
   }
 
 leoDeLuca :: CardId -> PlayerCard
 leoDeLuca cardId = (asset cardId "01048" "Leo De Luca" 6 Rogue)
   { pcSkills = [SkillIntellect]
-  , pcTraits = [Ally, Criminal]
+  , pcTraits = setFromList [Ally, Criminal]
   }
 
 hardKnocks :: CardId -> PlayerCard
 hardKnocks cardId = (asset cardId "01049" "Hard Knocks" 2 Rogue)
   { pcSkills = [SkillCombat, SkillAgility]
-  , pcTraits = [Talent]
+  , pcTraits = setFromList [Talent]
   }
 
 elusive :: CardId -> PlayerCard
 elusive cardId = (event cardId "01050" "Elusive" 2 Rogue)
   { pcSkills = [SkillIntellect, SkillAgility]
-  , pcTraits = [Tactic]
+  , pcTraits = setFromList [Tactic]
   , pcFast = True
   , pcWindows = HashSet.fromList [DuringTurn You]
   }
@@ -575,39 +579,39 @@ elusive cardId = (event cardId "01050" "Elusive" 2 Rogue)
 backstab :: CardId -> PlayerCard
 backstab cardId = (event cardId "01051" "Backstab" 3 Rogue)
   { pcSkills = [SkillCombat, SkillAgility]
-  , pcTraits = [Tactic]
+  , pcTraits = setFromList [Tactic]
   , pcAction = Just Action.Fight
   }
 
 sneakAttack :: CardId -> PlayerCard
 sneakAttack cardId = (event cardId "01052" "Sneak Attack" 2 Rogue)
   { pcSkills = [SkillIntellect, SkillCombat]
-  , pcTraits = [Tactic]
+  , pcTraits = setFromList [Tactic]
   }
 
 opportunist :: CardId -> PlayerCard
 opportunist cardId = (skill cardId "01053" "Opportunist" [SkillWild] Rogue)
-  { pcTraits = [Innate]
+  { pcTraits = setFromList [Innate]
   , pcCommitRestrictions = [OnlyYourTest]
   }
 
 leoDeLuca1 :: CardId -> PlayerCard
 leoDeLuca1 cardId = (asset cardId "01054" "Leo De Luca" 5 Rogue)
   { pcSkills = [SkillIntellect]
-  , pcTraits = [Ally, Criminal]
+  , pcTraits = setFromList [Ally, Criminal]
   , pcLevel = 1
   }
 
 catBurgler1 :: CardId -> PlayerCard
 catBurgler1 cardId = (asset cardId "01055" "Cat Burgler" 4 Rogue)
   { pcSkills = [SkillWillpower, SkillAgility]
-  , pcTraits = [Ally, Criminal]
+  , pcTraits = setFromList [Ally, Criminal]
   , pcLevel = 1
   }
 
 sureGamble3 :: CardId -> PlayerCard
 sureGamble3 cardId = (asset cardId "01056" "Sure Gamble" 2 Rogue)
-  { pcTraits = [Fortune, Insight]
+  { pcTraits = setFromList [Fortune, Insight]
   , pcFast = True
   , pcWindows = HashSet.fromList [WhenRevealTokenWithNegativeModifier You]
   , pcLevel = 3
@@ -616,7 +620,7 @@ sureGamble3 cardId = (asset cardId "01056" "Sure Gamble" 2 Rogue)
 hotStreak4 :: CardId -> PlayerCard
 hotStreak4 cardId = (event cardId "01057" "Hot Streak" 2 Rogue)
   { pcSkills = [SkillWild]
-  , pcTraits = [Fortune]
+  , pcTraits = setFromList [Fortune]
   , pcLevel = 4
   }
 
@@ -624,49 +628,49 @@ forbiddenKnowledge :: CardId -> PlayerCard
 forbiddenKnowledge cardId =
   (asset cardId "01058" "Forbidden Knowledge" 0 Mystic)
     { pcSkills = [SkillIntellect]
-    , pcTraits = [Talent]
+    , pcTraits = setFromList [Talent]
     }
 
 holyRosary :: CardId -> PlayerCard
 holyRosary cardId = (asset cardId "01059" "Holy Rosary" 2 Mystic)
   { pcSkills = [SkillWillpower]
-  , pcTraits = [Item, Charm]
+  , pcTraits = setFromList [Item, Charm]
   }
 
 shrivelling :: CardId -> PlayerCard
 shrivelling cardId = (asset cardId "01060" "Shrivelling" 3 Mystic)
   { pcSkills = [SkillCombat]
-  , pcTraits = [Spell]
+  , pcTraits = setFromList [Spell]
   }
 
 scrying :: CardId -> PlayerCard
 scrying cardId = (asset cardId "01061" "Scrying" 1 Mystic)
   { pcSkills = [SkillIntellect]
-  , pcTraits = [Spell]
+  , pcTraits = setFromList [Spell]
   }
 
 arcaneStudies :: CardId -> PlayerCard
 arcaneStudies cardId = (asset cardId "01062" "Arcane Studies" 2 Mystic)
   { pcSkills = [SkillWillpower, SkillIntellect]
-  , pcTraits = [Talent]
+  , pcTraits = setFromList [Talent]
   }
 
 arcaneInitiate :: CardId -> PlayerCard
 arcaneInitiate cardId = (asset cardId "01063" "Arcane Initiate" 1 Mystic)
   { pcSkills = [SkillWillpower]
-  , pcTraits = [Ally, Sorcerer]
+  , pcTraits = setFromList [Ally, Sorcerer]
   }
 
 drawnToTheFlame :: CardId -> PlayerCard
 drawnToTheFlame cardId = (event cardId "01064" "Drawn to the Flame" 0 Mystic)
   { pcSkills = [SkillWillpower, SkillIntellect]
-  , pcTraits = [Insight]
+  , pcTraits = setFromList [Insight]
   }
 
 wardOfProtection :: CardId -> PlayerCard
 wardOfProtection cardId = (event cardId "01065" "Ward of Protection" 1 Mystic)
   { pcSkills = [SkillWild]
-  , pcTraits = [Spell, Spirit]
+  , pcTraits = setFromList [Spell, Spirit]
   , pcFast = True
   , pcWindows = HashSet.fromList [WhenDrawTreachery You False]
   }
@@ -674,19 +678,19 @@ wardOfProtection cardId = (event cardId "01065" "Ward of Protection" 1 Mystic)
 blindingLight :: CardId -> PlayerCard
 blindingLight cardId = (event cardId "01066" "Blinding Light" 2 Mystic)
   { pcSkills = [SkillWillpower, SkillAgility]
-  , pcTraits = [Spell]
+  , pcTraits = setFromList [Spell]
   , pcAction = Just Action.Evade
   }
 
 fearless :: CardId -> PlayerCard
 fearless cardId = (skill cardId "01067" "Fearless" [SkillWillpower] Mystic)
-  { pcTraits = [Innate]
+  { pcTraits = setFromList [Innate]
   }
 
 mindWipe1 :: CardId -> PlayerCard
 mindWipe1 cardId = (event cardId "01068" "Mind Wipe" 1 Mystic)
   { pcSkills = [SkillWillpower, SkillCombat]
-  , pcTraits = [Spell]
+  , pcTraits = setFromList [Spell]
   , pcLevel = 1
   , pcFast = True
   , pcWindows = HashSet.fromList [AnyPhaseBegins]
@@ -695,7 +699,7 @@ mindWipe1 cardId = (event cardId "01068" "Mind Wipe" 1 Mystic)
 blindingLight2 :: CardId -> PlayerCard
 blindingLight2 cardId = (event cardId "01069" "Blinding Light" 1 Mystic)
   { pcSkills = [SkillWillpower, SkillAgility]
-  , pcTraits = [Spell]
+  , pcTraits = setFromList [Spell]
   , pcAction = Just Action.Evade
   , pcLevel = 2
   }
@@ -703,58 +707,58 @@ blindingLight2 cardId = (event cardId "01069" "Blinding Light" 1 Mystic)
 bookOfShadows3 :: CardId -> PlayerCard
 bookOfShadows3 cardId = (asset cardId "01070" "Book of Shadows" 4 Mystic)
   { pcSkills = [SkillWillpower, SkillIntellect]
-  , pcTraits = [Item, Tome]
+  , pcTraits = setFromList [Item, Tome]
   , pcLevel = 3
   }
 
 grotesqueStatue4 :: CardId -> PlayerCard
 grotesqueStatue4 cardId = (asset cardId "01071" "Grotesque Statue" 2 Mystic)
   { pcSkills = [SkillWild]
-  , pcTraits = [Item, Relic]
+  , pcTraits = setFromList [Item, Relic]
   , pcLevel = 4
   }
 
 leatherCoat :: CardId -> PlayerCard
 leatherCoat cardId = (asset cardId "01072" "Leather Coat" 0 Survivor)
   { pcSkills = [SkillCombat]
-  , pcTraits = [Item, Armor]
+  , pcTraits = setFromList [Item, Armor]
   }
 
 scavenging :: CardId -> PlayerCard
 scavenging cardId = (asset cardId "01073" "Scavending" 1 Survivor)
   { pcSkills = [SkillIntellect]
-  , pcTraits = [Talent]
+  , pcTraits = setFromList [Talent]
   }
 
 baseballBat :: CardId -> PlayerCard
 baseballBat cardId = (asset cardId "01074" "Baseball Bat" 2 Survivor)
   { pcSkills = [SkillCombat]
-  , pcTraits = [Item, Weapon, Melee]
+  , pcTraits = setFromList [Item, Weapon, Melee]
   }
 
 rabbitsFoot :: CardId -> PlayerCard
 rabbitsFoot cardId = (asset cardId "01075" "Rabbit's Foot" 1 Survivor)
   { pcSkills = [SkillWild]
-  , pcTraits = [Item, Charm]
+  , pcTraits = setFromList [Item, Charm]
   }
 
 strayCat :: CardId -> PlayerCard
 strayCat cardId = (asset cardId "01076" "Stray Cat" 1 Survivor)
   { pcSkills = [SkillAgility]
-  , pcTraits = [Ally, Creature]
+  , pcTraits = setFromList [Ally, Creature]
   }
 
 digDeep :: CardId -> PlayerCard
 digDeep cardId = (asset cardId "01077" "Dig Deep" 2 Survivor)
   { pcSkills = [SkillIntellect, SkillAgility]
-  , pcTraits = [Talent]
+  , pcTraits = setFromList [Talent]
   }
 
 cunningDistraction :: CardId -> PlayerCard
 cunningDistraction cardId =
   (event cardId "01078" "Cunning Distraction" 5 Survivor)
     { pcSkills = [SkillIntellect, SkillWild]
-    , pcTraits = [Tactic]
+    , pcTraits = setFromList [Tactic]
     , pcAction = Just Action.Evade
     }
 
@@ -762,14 +766,14 @@ lookWhatIFound :: CardId -> PlayerCard
 lookWhatIFound cardId =
   (event cardId "01079" "\"Look what I found!\"" 2 Survivor)
     { pcSkills = [SkillIntellect, SkillIntellect]
-    , pcTraits = [Fortune]
+    , pcTraits = setFromList [Fortune]
     , pcFast = True
     , pcWindows = HashSet.fromList [ AfterFailSkillTest You n | n <- [0 .. 2] ]
     }
 
 lucky :: CardId -> PlayerCard
 lucky cardId = (event cardId "01080" "Lucky!" 1 Survivor)
-  { pcTraits = [Fortune]
+  { pcTraits = setFromList [Fortune]
   , pcFast = True
   , pcWindows = setFromList [WhenWouldFailSkillTest You]
   }
@@ -777,20 +781,20 @@ lucky cardId = (event cardId "01080" "Lucky!" 1 Survivor)
 survivalInstinct :: CardId -> PlayerCard
 survivalInstinct cardId =
   (skill cardId "01081" "Survival Instrinct" [SkillAgility] Survivor)
-    { pcTraits = [Innate]
+    { pcTraits = setFromList [Innate]
     }
 
 aquinnah1 :: CardId -> PlayerCard
 aquinnah1 cardId = (asset cardId "01082" "Aquinnah" 5 Survivor)
   { pcSkills = [SkillWillpower]
-  , pcTraits = [Ally]
+  , pcTraits = setFromList [Ally]
   , pcLevel = 1
   }
 
 closeCall2 :: CardId -> PlayerCard
 closeCall2 cardId = (event cardId "01083" "Close Call" 2 Survivor)
   { pcSkills = [SkillCombat, SkillAgility]
-  , pcTraits = [Fortune]
+  , pcTraits = setFromList [Fortune]
   , pcFast = True
   , pcWindows = mempty -- We handle this via behavior
   , pcLevel = 2
@@ -798,7 +802,7 @@ closeCall2 cardId = (event cardId "01083" "Close Call" 2 Survivor)
 
 lucky2 :: CardId -> PlayerCard
 lucky2 cardId = (event cardId "01084" "Lucky!" 1 Survivor)
-  { pcTraits = [Fortune]
+  { pcTraits = setFromList [Fortune]
   , pcFast = True
   , pcWindows = setFromList [WhenWouldFailSkillTest You]
   , pcLevel = 2
@@ -807,7 +811,7 @@ lucky2 cardId = (event cardId "01084" "Lucky!" 1 Survivor)
 willToSurvive4 :: CardId -> PlayerCard
 willToSurvive4 cardId = (event cardId "01085" "Will to Survive" 4 Survivor)
   { pcSkills = [SkillCombat, SkillWild]
-  , pcTraits = [Spirit]
+  , pcTraits = setFromList [Spirit]
   , pcFast = True
   , pcWindows = setFromList [DuringTurn You]
   , pcLevel = 4
@@ -816,126 +820,127 @@ willToSurvive4 cardId = (event cardId "01085" "Will to Survive" 4 Survivor)
 knife :: CardId -> PlayerCard
 knife cardId = (asset cardId "01086" "Knife" 1 Neutral)
   { pcSkills = [SkillCombat]
-  , pcTraits = [Item, Weapon, Melee]
+  , pcTraits = setFromList [Item, Weapon, Melee]
   }
 
 flashlight :: CardId -> PlayerCard
 flashlight cardId = (asset cardId "01087" "Flashlight" 2 Neutral)
   { pcSkills = [SkillIntellect]
-  , pcTraits = [Item, Tool]
+  , pcTraits = setFromList [Item, Tool]
   }
 
 emergencyCache :: CardId -> PlayerCard
-emergencyCache cardId =
-  (event cardId "01088" "Emergency Cache" 0 Neutral) { pcTraits = [Supply] }
+emergencyCache cardId = (event cardId "01088" "Emergency Cache" 0 Neutral)
+  { pcTraits = setFromList [Supply]
+  }
 
 guts :: CardId -> PlayerCard
 guts cardId =
   (skill cardId "01089" "Guts" [SkillWillpower, SkillWillpower] Neutral)
-    { pcTraits = [Innate]
+    { pcTraits = setFromList [Innate]
     , pcCommitRestrictions = [MaxOnePerTest]
     }
 
 perception :: CardId -> PlayerCard
 perception cardId =
   (skill cardId "01090" "Perceptions" [SkillIntellect, SkillIntellect] Neutral)
-    { pcTraits = [Practiced]
+    { pcTraits = setFromList [Practiced]
     , pcCommitRestrictions = [MaxOnePerTest]
     }
 
 overpower :: CardId -> PlayerCard
 overpower cardId =
   (skill cardId "01091" "Overpower" [SkillCombat, SkillCombat] Neutral)
-    { pcTraits = [Practiced]
+    { pcTraits = setFromList [Practiced]
     , pcCommitRestrictions = [MaxOnePerTest]
     }
 
 manualDexterity :: CardId -> PlayerCard
 manualDexterity cardId =
   (skill cardId "01092" "Manual Dexterity" [SkillAgility, SkillAgility] Neutral)
-    { pcTraits = [Innate]
+    { pcTraits = setFromList [Innate]
     , pcCommitRestrictions = [MaxOnePerTest]
     }
 
 unexpectedCourage :: CardId -> PlayerCard
 unexpectedCourage cardId =
   (skill cardId "01093" "Unexpected Courage" [SkillWild, SkillWild] Neutral)
-    { pcTraits = [Innate]
+    { pcTraits = setFromList [Innate]
     , pcCommitRestrictions = [MaxOnePerTest]
     }
 
 bulletproofVest3 :: CardId -> PlayerCard
 bulletproofVest3 cardId = (asset cardId "01094" "Bulletproof Vest" 2 Neutral)
   { pcSkills = [SkillCombat, SkillWild]
-  , pcTraits = [Item, Armor]
+  , pcTraits = setFromList [Item, Armor]
   , pcLevel = 3
   }
 
 elderSignAmulet3 :: CardId -> PlayerCard
 elderSignAmulet3 cardId = (asset cardId "01095" "Elder Sign Amulet" 2 Neutral)
   { pcSkills = [SkillWillpower, SkillWild]
-  , pcTraits = [Item, Relic]
+  , pcTraits = setFromList [Item, Relic]
   , pcLevel = 3
   }
 
 amnesia :: CardId -> PlayerCard
 amnesia cardId = (treachery cardId "01096" "Amnesia" 0)
-  { pcTraits = [Madness]
+  { pcTraits = setFromList [Madness]
   , pcRevelation = True
   }
 
 paranoia :: CardId -> PlayerCard
 paranoia cardId = (treachery cardId "01097" "Paranoia" 0)
-  { pcTraits = [Madness]
+  { pcTraits = setFromList [Madness]
   , pcRevelation = True
   }
 
 haunted :: CardId -> PlayerCard
 haunted cardId = (treachery cardId "01098" "Haunted" 0)
-  { pcTraits = [Curse]
+  { pcTraits = setFromList [Curse]
   , pcRevelation = True
   }
 
 psychosis :: CardId -> PlayerCard
 psychosis cardId = (treachery cardId "01099" "Psychosis" 0)
-  { pcTraits = [Madness]
+  { pcTraits = setFromList [Madness]
   , pcRevelation = True
   }
 
 hypochondria :: CardId -> PlayerCard
 hypochondria cardId = (treachery cardId "01100" "Hypochondria" 0)
-  { pcTraits = [Madness]
+  { pcTraits = setFromList [Madness]
   , pcRevelation = True
   }
 
 mobEnforcer :: CardId -> PlayerCard
 mobEnforcer cardId = (enemy cardId "01101" "Mob Enforcer" 0)
-  { pcTraits = [Humanoid, Criminal]
+  { pcTraits = setFromList [Humanoid, Criminal]
   , pcKeywords = [Keyword.Hunter]
   }
 
 silverTwilightAcolyte :: CardId -> PlayerCard
 silverTwilightAcolyte cardId =
   (enemy cardId "01102" "Silver Twilight Acolyte" 0)
-    { pcTraits = [Humanoid, Cultist, SilverTwilight]
+    { pcTraits = setFromList [Humanoid, Cultist, SilverTwilight]
     , pcKeywords = [Keyword.Hunter]
     }
 
 stubbornDetective :: CardId -> PlayerCard
 stubbornDetective cardId = (enemy cardId "01103" "Stubborn Detective" 0)
-  { pcTraits = [Humanoid, Detective]
+  { pcTraits = setFromList [Humanoid, Detective]
   , pcKeywords = [Keyword.Hunter]
   }
 
 zoeysCross :: CardId -> PlayerCard
 zoeysCross cardId = (asset cardId "02006" "Zoey's Cross" 1 Neutral)
   { pcSkills = [SkillCombat, SkillCombat, SkillWild]
-  , pcTraits = [Item, Charm]
+  , pcTraits = setFromList [Item, Charm]
   }
 
 smiteTheWicked :: CardId -> PlayerCard
 smiteTheWicked cardId = (treachery cardId "02007" "Smite the Wicked" 0)
-  { pcTraits = [Task]
+  { pcTraits = setFromList [Task]
   , pcRevelation = True
   }
 
@@ -943,92 +948,94 @@ searchForTheTruth :: CardId -> PlayerCard
 searchForTheTruth cardId =
   (event cardId "02008" "Search for the Truth" 1 Neutral)
     { pcSkills = [SkillIntellect, SkillIntellect, SkillWild]
-    , pcTraits = [Insight]
+    , pcTraits = setFromList [Insight]
     }
 
 rexsCurse :: CardId -> PlayerCard
 rexsCurse cardId = (treachery cardId "02009" "Rex's Curse" 0)
-  { pcTraits = [Curse]
+  { pcTraits = setFromList [Curse]
   , pcRevelation = True
   }
 
 jennysTwin45s :: CardId -> PlayerCard
 jennysTwin45s cardId = (asset cardId "02010" "Jenny's Twin .45s" 0 Neutral)
   { pcSkills = [SkillAgility, SkillAgility, SkillWild]
-  , pcTraits = [Item, Weapon, Firearm]
+  , pcTraits = setFromList [Item, Weapon, Firearm]
   , pcCost = DynamicCost
   }
 
 searchingForIzzie :: CardId -> PlayerCard
 searchingForIzzie cardId = (treachery cardId "02011" "Searching for Izzie" 0)
-  { pcTraits = [Task]
+  { pcTraits = setFromList [Task]
   , pcRevelation = True
   }
 
 jimsTrumpet :: CardId -> PlayerCard
 jimsTrumpet cardId = (asset cardId "02012" "Jim's Trumpet" 2 Neutral)
   { pcSkills = [SkillWillpower, SkillWillpower, SkillWild]
-  , pcTraits = [Item, Instrument, Relic]
+  , pcTraits = setFromList [Item, Instrument, Relic]
   }
 
 finalRhapsody :: CardId -> PlayerCard
 finalRhapsody cardId = (treachery cardId "02013" "Final Rhapsody" 0)
-  { pcTraits = [Endtimes]
+  { pcTraits = setFromList [Endtimes]
   , pcRevelation = True
   }
 
 duke :: CardId -> PlayerCard
-duke cardId =
-  (asset cardId "02014" "Duke" 2 Neutral) { pcTraits = [Ally, Creature] }
+duke cardId = (asset cardId "02014" "Duke" 2 Neutral)
+  { pcTraits = setFromList [Ally, Creature]
+  }
 
 wrackedByNightmares :: CardId -> PlayerCard
 wrackedByNightmares cardId =
   (treachery cardId "02015" "Wracked by Nightmares" 0)
-    { pcTraits = [Madness]
+    { pcTraits = setFromList [Madness]
     , pcRevelation = True
     }
 
 fireAxe :: CardId -> PlayerCard
 fireAxe cardId = (asset cardId "02032" "Fire Axe" 1 Survivor)
   { pcSkills = [SkillCombat]
-  , pcTraits = [Item, Weapon, Melee]
+  , pcTraits = setFromList [Item, Weapon, Melee]
   }
 
 peterSylvestre :: CardId -> PlayerCard
 peterSylvestre cardId = (asset cardId "02033" "Peter Sylvestre" 3 Survivor)
   { pcSkills = [SkillWillpower]
-  , pcTraits = [Ally, Miskatonic]
+  , pcTraits = setFromList [Ally, Miskatonic]
   }
 
 baitAndSwitch :: CardId -> PlayerCard
 baitAndSwitch cardId = (event cardId "02034" "Bait and Switch" 1 Survivor)
   { pcSkills = [SkillIntellect, SkillAgility]
-  , pcTraits = [Trick]
+  , pcTraits = setFromList [Trick]
   , pcAction = Just Action.Evade
   }
 
 bandolier :: CardId -> PlayerCard
 bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillWild]
-  , pcTraits = [Item]
+  , pcTraits = setFromList [Item]
   }
 
 litaChantler :: CardId -> PlayerCard
-litaChantler cardId =
-  (asset cardId "01117" "Lita Chantler" 0 Neutral) { pcTraits = [Ally] }
+litaChantler cardId = (asset cardId "01117" "Lita Chantler" 0 Neutral)
+  { pcTraits = setFromList [Ally]
+  }
 
 physicalTraining2 :: CardId -> PlayerCard
 physicalTraining2 cardId = (asset cardId "50001" "Physical Training" 0 Guardian
                            )
   { pcSkills = [SkillWillpower, SkillWillpower, SkillCombat, SkillCombat]
-  , pcTraits = [Talent]
+  , pcTraits = setFromList [Talent]
   , pcLevel = 2
   }
 
 dynamiteBlast2 :: CardId -> PlayerCard
 dynamiteBlast2 cardId = (event cardId "50002" "Dynamite Blast" 4 Guardian)
   { pcSkills = [SkillWillpower, SkillCombat]
-  , pcTraits = [Tactic]
+  , pcTraits = setFromList [Tactic]
   , pcAttackOfOpportunityModifiers = [DoesNotProvokeAttacksOfOpportunity]
   , pcLevel = 2
   }
@@ -1036,42 +1043,42 @@ dynamiteBlast2 cardId = (event cardId "50002" "Dynamite Blast" 4 Guardian)
 hyperawareness2 :: CardId -> PlayerCard
 hyperawareness2 cardId = (asset cardId "50003" "Hyperawareness" 0 Seeker)
   { pcSkills = [SkillIntellect, SkillIntellect, SkillAgility, SkillAgility]
-  , pcTraits = [Talent]
+  , pcTraits = setFromList [Talent]
   , pcLevel = 2
   }
 
 barricade3 :: CardId -> PlayerCard
 barricade3 cardId = (event cardId "50004" "Barricade" 0 Seeker)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillAgility]
-  , pcTraits = [Insight, Tactic]
+  , pcTraits = setFromList [Insight, Tactic]
   , pcLevel = 3
   }
 
 hardKnocks2 :: CardId -> PlayerCard
 hardKnocks2 cardId = (asset cardId "50005" "Hard Knocks" 0 Rogue)
   { pcSkills = [SkillCombat, SkillCombat, SkillAgility, SkillAgility]
-  , pcTraits = [Talent]
+  , pcTraits = setFromList [Talent]
   , pcLevel = 2
   }
 
 hotStreak2 :: CardId -> PlayerCard
 hotStreak2 cardId = (event cardId "50006" "Hot Streak" 5 Rogue)
   { pcSkills = [SkillWillpower]
-  , pcTraits = [Fortune]
+  , pcTraits = setFromList [Fortune]
   , pcLevel = 2
   }
 
 arcaneStudies2 :: CardId -> PlayerCard
 arcaneStudies2 cardId = (asset cardId "50007" "Arcane Studies" 0 Mystic)
   { pcSkills = [SkillWillpower, SkillWillpower, SkillIntellect, SkillIntellect]
-  , pcTraits = [Talent]
+  , pcTraits = setFromList [Talent]
   , pcLevel = 2
   }
 
 mindWipe3 :: CardId -> PlayerCard
 mindWipe3 cardId = (event cardId "50008" "Mind Wipe" 1 Mystic)
   { pcSkills = [SkillWillpower, SkillCombat]
-  , pcTraits = [Spell]
+  , pcTraits = setFromList [Spell]
   , pcLevel = 3
   , pcFast = True
   , pcWindows = HashSet.fromList [AnyPhaseBegins]
@@ -1080,13 +1087,13 @@ mindWipe3 cardId = (event cardId "50008" "Mind Wipe" 1 Mystic)
 digDeep2 :: CardId -> PlayerCard
 digDeep2 cardId = (asset cardId "50009" "Dig Deep" 0 Survivor)
   { pcSkills = [SkillWillpower, SkillWillpower, SkillAgility, SkillAgility]
-  , pcTraits = [Talent]
+  , pcTraits = setFromList [Talent]
   , pcLevel = 2
   }
 
 rabbitsFoot3 :: CardId -> PlayerCard
 rabbitsFoot3 cardId = (asset cardId "50010" "Rabbit's Foot" 1 Survivor)
   { pcSkills = [SkillWild]
-  , pcTraits = [Item, Charm]
+  , pcTraits = setFromList [Item, Charm]
   , pcLevel = 3
   }

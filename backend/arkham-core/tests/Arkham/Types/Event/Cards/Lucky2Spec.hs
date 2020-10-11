@@ -7,13 +7,12 @@ import TestImport
 
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs (Attrs(..))
-import Arkham.Types.Target
 import Arkham.Types.Token
 
 spec :: Spec
 spec = describe "Lucky! (2)" $ do
   it "adds 2 to a skill test when you would fail and draws 1 card" $ do
-    cardToDraw <- testPlayerCard
+    cardToDraw <- testPlayerCard id
     investigator <- testInvestigator "00000" $ \attrs -> attrs
       { investigatorIntellect = 1
       , investigatorResources = 1
@@ -48,7 +47,7 @@ spec = describe "Lucky! (2)" $ do
     updated game investigator `shouldSatisfy` handIs [PlayerCard cardToDraw]
 
   it "does not cause an autofail to pass" $ do
-    cardToDraw <- testPlayerCard
+    cardToDraw <- testPlayerCard id
     investigator <- testInvestigator "00000" $ \attrs -> attrs
       { investigatorIntellect = 1
       , investigatorResources = 1

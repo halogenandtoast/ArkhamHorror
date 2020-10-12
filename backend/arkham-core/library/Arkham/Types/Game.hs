@@ -5,6 +5,7 @@
 module Arkham.Types.Game
   ( runMessages
   , newCampaign
+  , newScenario
   , addInvestigator
   , startGame
   , toInternalGame
@@ -27,52 +28,33 @@ module Arkham.Types.Game
   )
 where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import
 import Arkham.Types.Act
 import Arkham.Types.ActId
 import Arkham.Types.Agenda
 import Arkham.Types.AgendaId
 import Arkham.Types.Asset
-import Arkham.Types.AssetId
 import Arkham.Types.Campaign
 import Arkham.Types.CampaignId
-import Arkham.Types.Card
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBag
-import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy
-import Arkham.Types.EnemyId
 import Arkham.Types.Event
-import Arkham.Types.EventId
 import Arkham.Types.GameRunner
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator
-import Arkham.Types.InvestigatorId
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Location
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
 import Arkham.Types.Phase
 import Arkham.Types.Prey
-import Arkham.Types.Query
 import Arkham.Types.Scenario
+import Arkham.Types.ScenarioId
 import Arkham.Types.Skill
-import Arkham.Types.SkillId
 import Arkham.Types.SkillTest
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
 import Arkham.Types.Token (Token)
 import Arkham.Types.Trait
 import Arkham.Types.Treachery
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window (Who(..))
 import qualified Arkham.Types.Window as Fast
-import ClassyPrelude
 import Control.Monad.State
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
@@ -80,10 +62,8 @@ import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.Sequence as Seq
 import Data.UUID (UUID)
 import Data.UUID.V4
-import Lens.Micro
-import Lens.Micro.Extras
 import Lens.Micro.Platform ()
-import Safe (fromJustNote, headNote)
+import Safe (headNote)
 import System.Environment
 import System.Random
 import System.Random.Shuffle
@@ -280,7 +260,25 @@ newCampaign
   -> HashMap Int (Investigator, [PlayerCard])
   -> Difficulty
   -> m GameInternal
-newCampaign campaignId playerCount' investigatorsList difficulty' = do
+newCampaign campaignId = newGame (Right campaignId)
+
+newScenario
+  :: MonadIO m
+  => ScenarioId
+  -> Int
+  -> HashMap Int (Investigator, [PlayerCard])
+  -> Difficulty
+  -> m GameInternal
+newScenario scenarioId = newGame (Left scenarioId)
+
+newGame
+  :: MonadIO m
+  => Either ScenarioId CampaignId
+  -> Int
+  -> HashMap Int (Investigator, [PlayerCard])
+  -> Difficulty
+  -> m GameInternal
+newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
   hash' <- liftIO nextRandom
   mseed <- liftIO $ lookupEnv "SEED"
   seed <- maybe
@@ -288,7 +286,8 @@ newCampaign campaignId playerCount' investigatorsList difficulty' = do
     (pure . fromJustNote "invalid seed" . readMaybe)
     mseed
   liftIO $ setStdGen (mkStdGen seed)
-  let campaign' = lookupCampaign campaignId difficulty'
+  let campaign' = either (const Nothing) (Just . (`lookupCampaign` difficulty')) scenarioOrCampaignId
+  let scenario' = either (Just . (`lookupScenario` difficulty')) (const Nothing) scenarioOrCampaignId
   ref <-
     newIORef
     $ map (uncurry (InitDeck . getInvestigatorId)) (toList investigatorsList)
@@ -299,8 +298,8 @@ newCampaign campaignId playerCount' investigatorsList difficulty' = do
     { gameMessages = ref
     , gameMessageHistory = history
     , gameSeed = seed
-    , gameCampaign = Just campaign'
-    , gameScenario = Nothing
+    , gameCampaign = campaign'
+    , gameScenario = scenario'
     , gamePlayerCount = playerCount'
     , gameLocations = mempty
     , gameEnemies = mempty

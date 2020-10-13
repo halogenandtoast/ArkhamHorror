@@ -1,22 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Treachery.Attrs where
 
-import Arkham.Json
-import Arkham.Types.Card
-import Arkham.Types.Card.Id
-import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Target
+import Arkham.Import
+
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
-import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
-import Lens.Micro
-import Safe (fromJustNote)
 
 data Attrs = Attrs
   { treacheryName :: Text
@@ -40,6 +30,17 @@ instance ToJSON Attrs where
 
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "treachery"
+
+toSource :: Attrs -> Source
+toSource Attrs { treacheryId } = TreacherySource treacheryId
+
+isSource :: Attrs -> Source -> Bool
+isSource Attrs { treacheryId } (TreacherySource tid) = treacheryId == tid
+isSource _ _ = False
+
+ownedBy :: Attrs -> InvestigatorId -> Bool
+ownedBy Attrs { treacheryAttachedInvestigator } iid =
+  treacheryAttachedInvestigator == Just iid
 
 resolved :: Lens' Attrs Bool
 resolved = lens treacheryResolved $ \m x -> m { treacheryResolved = x }

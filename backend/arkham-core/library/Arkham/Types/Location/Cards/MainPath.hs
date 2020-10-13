@@ -21,11 +21,8 @@ newtype MainPath = MainPath Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 mainPath :: MainPath
-mainPath =
-  MainPath $ (baseAttrs "01149" "Main Path" 2 (Static 0) Squiggle [Square, Plus]
-             )
-    { locationTraits = HashSet.fromList [Woods]
-    }
+mainPath = MainPath
+  $ baseAttrs "01149" "Main Path" 2 (Static 0) Squiggle [Square, Plus] [Woods]
 
 instance (IsInvestigator investigator) => HasActions env investigator MainPath where
   getActions i NonFast (MainPath attrs@Attrs {..}) | locationRevealed = do

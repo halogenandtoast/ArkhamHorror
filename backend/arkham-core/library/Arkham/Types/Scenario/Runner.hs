@@ -30,5 +30,9 @@ type ScenarioRunner env
     , HasSet ConnectedLocationId LocationId env
     , HasId LocationId InvestigatorId env
     , HasSource ForSkillTest env
+    , HasSet LocationId [Trait] env
+    , HasSet Trait LocationId env
+    , HasSet EnemyId LocationId env
+    , HasId CardCode EnemyId env
     )
 

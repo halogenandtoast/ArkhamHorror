@@ -24,9 +24,10 @@ newtype Parlor = Parlor Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 parlor :: Parlor
-parlor = Parlor $ (baseAttrs "01115" "Parlor" 2 (Static 0) Diamond [Square])
-  { locationBlocked = True
-  }
+parlor =
+  Parlor $ (baseAttrs "01115" "Parlor" 2 (Static 0) Diamond [Square] mempty)
+    { locationBlocked = True
+    }
 
 instance (ActionRunner env investigator) => HasActions env investigator Parlor where
   getActions i NonFast (Parlor attrs@Attrs {..}) | locationRevealed = do

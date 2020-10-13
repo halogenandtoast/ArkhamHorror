@@ -19,11 +19,14 @@ newtype Easttown = Easttown Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 easttown :: Easttown
-easttown =
-  Easttown
-    $ (baseAttrs "01132" "Easttown" 2 (PerPlayer 1) Moon [Circle, Triangle])
-        { locationTraits = HashSet.fromList [Arkham]
-        }
+easttown = Easttown $ baseAttrs
+  "01132"
+  "Easttown"
+  2
+  (PerPlayer 1)
+  Moon
+  [Circle, Triangle]
+  [Arkham]
 
 instance (IsInvestigator investigator) => HasActions env investigator Easttown where
   getActions i window (Easttown attrs) = getActions i window attrs

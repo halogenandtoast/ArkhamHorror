@@ -20,21 +20,19 @@ newtype ArkhamWoodsQuietGlade = ArkhamWoodsQuietGlade Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 arkhamWoodsQuietGlade :: ArkhamWoodsQuietGlade
-arkhamWoodsQuietGlade =
-  ArkhamWoodsQuietGlade
-    $ (baseAttrs
-        "01155"
-        "Arkham Woods: Quiet Glade"
-        1
-        (Static 0)
-        Square
-        [Squiggle]
-      )
-        { locationTraits = HashSet.fromList [Woods]
-        , locationRevealedConnectedSymbols = HashSet.fromList
-          [Squiggle, Equals, Hourglass]
-        , locationRevealedSymbol = Moon
-        }
+arkhamWoodsQuietGlade = ArkhamWoodsQuietGlade $ (baseAttrs
+                                                  "01155"
+                                                  "Arkham Woods: Quiet Glade"
+                                                  1
+                                                  (Static 0)
+                                                  Square
+                                                  [Squiggle]
+                                                  [Woods]
+                                                )
+  { locationRevealedConnectedSymbols = HashSet.fromList
+    [Squiggle, Equals, Hourglass]
+  , locationRevealedSymbol = Moon
+  }
 
 instance (ActionRunner env investigator) => HasActions env investigator ArkhamWoodsQuietGlade where
   getActions i NonFast (ArkhamWoodsQuietGlade attrs@Attrs {..}) = do

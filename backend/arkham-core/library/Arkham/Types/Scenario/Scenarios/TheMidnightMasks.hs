@@ -1,31 +1,21 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Scenario.Scenarios.TheMidnightMasks where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.CampaignLogKey
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.Class
-import Arkham.Types.Card.EncounterCard
-import Arkham.Types.Card.Id
-import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.EnemyId
 import Arkham.Types.Helpers
-import Arkham.Types.Message
-import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
+import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
-import Arkham.Types.Target
 import qualified Arkham.Types.Token as Token
 import Arkham.Types.Trait hiding (Trait(Expert))
-import ClassyPrelude
-import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Data.List.NonEmpty (NonEmpty(..))
 import Data.UUID.V4
-import Safe (fromJustNote)
 import System.Random.Shuffle
 
 newtype TheMidnightMasks = TheMidnightMasks Attrs
@@ -45,8 +35,8 @@ theMidnightMasks difficulty =
 instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs@Attrs {..}) = case msg of
     Setup -> do
-      count' <- unPlayerCount <$> asks (getCount ())
-      investigatorIds <- HashSet.toList <$> asks (getSet ())
+      count' <- getPlayerCount
+      investigatorIds <- getInvestigatorIds
       (acolytes, darkCult) <- splitAt (count' - 1)
         <$> gatherEncounterSet EncounterSet.DarkCult
       -- ^ we will spawn these acolytes
@@ -75,8 +65,8 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
           [ CreateEnemyAt (getCardCode c) l
           | (c, l) <- zip acolytes [southside, downtown, "01133"]
           ]
-      encounterDeck <- liftIO $ shuffleM . (<> darkCult) . concat =<< traverse
-        gatherEncounterSet
+      encounterDeck <- buildEncounterDeckWith
+        (<> darkCult)
         [ EncounterSet.TheMidnightMasks
         , EncounterSet.ChillingCold
         , EncounterSet.Nightgaunts
@@ -104,7 +94,7 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
             ]
       pushMessages
         $ [ AskMap
-            (HashMap.fromList
+            (mapFromList
               [ ( iid
                 , ChooseOne
                   [ Run
@@ -117,7 +107,7 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
               ]
             )
           , AskMap
-            (HashMap.fromList
+            (mapFromList
               [ ( iid
                 , ChooseOne
                   [ Run
@@ -171,58 +161,54 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
         (x : xs) -> do
           unshiftMessage (InvestigatorDrewEncounterCard iid x)
           pure $ TheMidnightMasks (attrs { scenarioDeck = Just xs })
-    ResolveToken Token.Skull iid | scenarioDifficulty `elem` [Easy, Standard] ->
-      do
-        cultists <- HashSet.toList <$> asks (getSet @EnemyId Cultist)
-        doomCounts <- map unDoomCount <$> traverse (asks . getCount) cultists
-        s <$ runTest
-          iid
-          (Token.TokenValue Token.Skull (-(maximum $ ncons 0 doomCounts)))
-    ResolveToken Token.Skull iid | scenarioDifficulty `elem` [Hard, Expert] ->
-      do
-        doomCount <- unDoomCount <$> asks (getCount ())
-        s <$ runTest iid (Token.TokenValue Token.Skull (-doomCount))
-    ResolveToken Token.Cultist iid
-      | scenarioDifficulty `elem` [Easy, Standard] -> do
-        closestCultists <- map unClosestEnemyId . HashSet.toList <$> asks
-          (getSet (iid, [Cultist]))
-        case closestCultists of
-          [] -> pure ()
-          [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
-          xs -> unshiftMessage
-            (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
-        s <$ runTest iid (Token.TokenValue Token.Cultist (-2))
-    ResolveToken Token.Cultist iid | scenarioDifficulty `elem` [Hard, Expert] ->
-      do
-        cultists <- HashSet.toList <$> asks (getSet @EnemyId Cultist)
-        case cultists of
-          [] -> s <$ unshiftMessage (DrawAnotherToken iid (-2))
-          xs -> do
-            unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
-            s <$ runTest iid (Token.TokenValue Token.Cultist (-2))
+    ResolveToken Token.Skull iid | isEasyStandard attrs -> do
+      cultists <- asks $ setToList . getSet @EnemyId Cultist
+      doomCounts <- traverse (asks . (unDoomCount .) . getCount) cultists
+      s <$ runTest
+        iid
+        (Token.TokenValue Token.Skull (-(maximum $ ncons 0 doomCounts)))
+    ResolveToken Token.Skull iid | isHardExpert attrs -> do
+      doomCount <- asks $ unDoomCount . getCount ()
+      s <$ runTest iid (Token.TokenValue Token.Skull (-doomCount))
+    ResolveToken Token.Cultist iid | isEasyStandard attrs -> do
+      closestCultists <- asks $ map unClosestEnemyId . setToList . getSet
+        (iid, [Cultist])
+      case closestCultists of
+        [] -> pure ()
+        [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
+        xs -> unshiftMessage
+          (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
+      s <$ runTest iid (Token.TokenValue Token.Cultist (-2))
+    ResolveToken Token.Cultist iid | isHardExpert attrs -> do
+      cultists <- asks $ setToList . getSet @EnemyId Cultist
+      case cultists of
+        [] -> s <$ unshiftMessage (DrawAnotherToken iid (-2))
+        xs -> do
+          unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
+          s <$ runTest iid (Token.TokenValue Token.Cultist (-2))
     ResolveToken Token.Tablet iid -> do
-      if scenarioDifficulty `elem` [Easy, Standard]
+      if isEasyStandard attrs
         then s <$ runTest iid (Token.TokenValue Token.Tablet (-3))
         else s <$ runTest iid (Token.TokenValue Token.Tablet (-4))
     FailedSkillTest iid _ _ (TokenTarget Token.Tablet) _ -> do
-      if scenarioDifficulty `elem` [Easy, Standard]
+      if isEasyStandard attrs
         then s <$ unshiftMessage (InvestigatorPlaceAllCluesOnLocation iid)
         else s <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid 1)
     NoResolution -> s <$ unshiftMessage (Resolution 1)
     Resolution 1 -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
-      victoryDisplay <- HashSet.map unVictoryDisplayCardCode
-        <$> asks (getSet ())
-      investigatorIds <- HashSet.toList <$> asks (getSet ())
-      xp <- unXPCount <$> asks (getCount ())
+      leadInvestigatorId <- getLeadInvestigatorId
+      victoryDisplay <- asks $ HashSet.map unVictoryDisplayCardCode . getSet ()
+      investigatorIds <- getInvestigatorIds
+      xp <- getXp
       let
-        cultists = HashSet.fromList
-          ["01137", "01138", "01139", "01140", "01141", "01121b"]
+        cultists =
+          setFromList ["01137", "01138", "01139", "01140", "01141", "01121b"]
         cultistsWeInterrogated = cultists `intersection` victoryDisplay
         cultistsWhoGotAway = cultists `difference` cultistsWeInterrogated
         ghoulPriestDefeated = "01116" `elem` victoryDisplay
       s <$ unshiftMessage
-        (Ask leadInvestigatorId $ ChooseOne
+        (chooseOne
+          leadInvestigatorId
           [ Run
             $ [ Continue "Continue"
               , FlavorText
@@ -233,8 +219,8 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
                 ]
               , RecordSet
                 CultistsWeInterrogated
-                (HashSet.toList cultistsWeInterrogated)
-              , RecordSet CultistsWhoGotAway (HashSet.toList cultistsWhoGotAway)
+                (setToList cultistsWeInterrogated)
+              , RecordSet CultistsWhoGotAway (setToList cultistsWhoGotAway)
               ]
             <> [ CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated ]
             <> [ GainXP iid xp | iid <- investigatorIds ]
@@ -242,19 +228,19 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
           ]
         )
     Resolution 2 -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
-      victoryDisplay <- HashSet.map unVictoryDisplayCardCode
-        <$> asks (getSet ())
-      investigatorIds <- HashSet.toList <$> asks (getSet ())
-      xp <- unXPCount <$> asks (getCount ())
+      leadInvestigatorId <- getLeadInvestigatorId
+      victoryDisplay <- asks $ HashSet.map unVictoryDisplayCardCode . getSet ()
+      investigatorIds <- getInvestigatorIds
+      xp <- getXp
       let
-        cultists = HashSet.fromList
-          ["01137", "01138", "01139", "01140", "01141", "01121b"]
+        cultists =
+          setFromList ["01137", "01138", "01139", "01140", "01141", "01121b"]
         cultistsWeInterrogated = cultists `intersection` victoryDisplay
         cultistsWhoGotAway = cultists `difference` cultistsWeInterrogated
         ghoulPriestDefeated = "01116" `elem` victoryDisplay
       s <$ unshiftMessage
-        (Ask leadInvestigatorId $ ChooseOne
+        (chooseOne
+          leadInvestigatorId
           [ Run
             $ [ Continue "Continue"
               , FlavorText
@@ -266,8 +252,8 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
                 ]
               , RecordSet
                 CultistsWeInterrogated
-                (HashSet.toList cultistsWeInterrogated)
-              , RecordSet CultistsWhoGotAway (HashSet.toList cultistsWhoGotAway)
+                (setToList cultistsWeInterrogated)
+              , RecordSet CultistsWhoGotAway (setToList cultistsWhoGotAway)
               , Record ItIsPastMidnight
               ]
             <> [ CrossOutRecord GhoulPriestIsStillAlive | ghoulPriestDefeated ]

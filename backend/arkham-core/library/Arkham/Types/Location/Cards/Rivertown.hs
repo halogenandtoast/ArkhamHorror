@@ -9,22 +9,19 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Trait
 import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype Rivertown = Rivertown Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 rivertown :: Rivertown
-rivertown = Rivertown $ (baseAttrs
-                          "01125"
-                          "Rivertown"
-                          1
-                          (PerPlayer 1)
-                          Circle
-                          [Moon, Diamond, Square, Squiggle, Hourglass]
-                        )
-  { locationTraits = HashSet.fromList [Arkham, Central]
-  }
+rivertown = Rivertown $ baseAttrs
+  "01125"
+  "Rivertown"
+  1
+  (PerPlayer 1)
+  Circle
+  [Moon, Diamond, Square, Squiggle, Hourglass]
+  [Arkham, Central]
 
 instance (IsInvestigator investigator) => HasActions env investigator Rivertown where
   getActions i window (Rivertown attrs) = getActions i window attrs

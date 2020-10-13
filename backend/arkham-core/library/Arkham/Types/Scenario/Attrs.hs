@@ -40,6 +40,14 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "scenario"
 
+isEasyStandard :: Attrs -> Bool
+isEasyStandard Attrs { scenarioDifficulty } =
+  scenarioDifficulty `elem` [Easy, Standard]
+
+isHardExpert :: Attrs -> Bool
+isHardExpert Attrs { scenarioDifficulty } =
+  scenarioDifficulty `elem` [Hard, Expert]
+
 actStack :: Lens' Attrs [(Int, [ActId])]
 actStack = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
 

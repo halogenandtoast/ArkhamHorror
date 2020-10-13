@@ -21,9 +21,16 @@ newtype Northside = Northside Attrs
 northside :: Northside
 northside =
   Northside
-    $ (baseAttrs "01134" "Northside" 3 (PerPlayer 2) T [Diamond, Triangle])
-        { locationTraits = HashSet.fromList [Arkham]
-        , locationVictory = Just 1
+    $ (baseAttrs
+        "01134"
+        "Northside"
+        3
+        (PerPlayer 2)
+        T
+        [Diamond, Triangle]
+        [Arkham]
+      )
+        { locationVictory = Just 1
         }
 
 instance (ActionRunner env investigator) => HasActions env investigator Northside where

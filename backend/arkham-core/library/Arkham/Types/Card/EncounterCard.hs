@@ -111,6 +111,12 @@ allEncounterCards = HashMap.fromList
   , ("01180", goatSpawn)
   , ("01181", youngDeepOne)
   , ("01182", dreamsOfRlyeh)
+  , ("81022", bogGator)
+  , ("81023", swampLeech)
+  , ("81024", cursedSwamp)
+  , ("81025", spectralMist)
+  , ("81026", draggedUnder)
+  , ("81027", ripplesOnTheSurface)
   ]
 
 placeholderEnemy :: CardId -> EncounterCard
@@ -311,3 +317,26 @@ youngDeepOne cardId = (enemy cardId "01181" "Young Deep One")
 dreamsOfRlyeh :: CardId -> EncounterCard
 dreamsOfRlyeh cardId =
   (treachery cardId "01182" "Dreams of R'lyeh") { ecTraits = [Omen] }
+
+bogGator :: CardId -> EncounterCard
+bogGator cardId = (enemy cardId "81022" "Bog Gator") { ecTraits = [Creature] }
+
+swampLeech :: CardId -> EncounterCard
+swampLeech cardId =
+  (enemy cardId "81023" "Swamp Leech") { ecTraits = [Creature] }
+
+cursedSwamp :: CardId -> EncounterCard
+cursedSwamp cardId =
+  (treachery cardId "81024" "Cursed Swamp") { ecTraits = [Hazard] }
+
+spectralMist :: CardId -> EncounterCard
+spectralMist cardId =
+  (treachery cardId "81025" "Spectral Mist") { ecTraits = [Hazard] }
+
+draggedUnder :: CardId -> EncounterCard
+draggedUnder cardId =
+  (treachery cardId "81026" "Dragged Under") { ecTraits = [Hazard] }
+
+ripplesOnTheSurface :: CardId -> EncounterCard
+ripplesOnTheSurface cardId =
+  (treachery cardId "81027" "Ripples on the Surface") { ecTraits = [Terror] }

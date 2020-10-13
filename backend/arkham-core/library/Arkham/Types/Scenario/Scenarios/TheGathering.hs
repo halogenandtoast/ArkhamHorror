@@ -1,27 +1,16 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Scenario.Scenarios.TheGathering where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.CampaignLogKey
-import Arkham.Types.Card
-import Arkham.Types.Card.Id
-import Arkham.Types.Classes
 import Arkham.Types.Difficulty
-import Arkham.Types.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Message
-import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
+import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
-import Arkham.Types.Source
-import Arkham.Types.Target
 import qualified Arkham.Types.Token as Token
 import Arkham.Types.Trait hiding (Trait(Expert))
-import ClassyPrelude
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
-import Data.UUID.V4
-import System.Random.Shuffle
 
 newtype TheGathering = TheGathering Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -36,9 +25,8 @@ theGathering = TheGathering . baseAttrs
 instance (ScenarioRunner env) => RunMessage env TheGathering where
   runMessage msg s@(TheGathering attrs@Attrs {..}) = case msg of
     Setup -> do
-      investigatorIds <- HashSet.toList <$> asks (getSet ())
-      encounterDeck <- liftIO $ shuffleM . concat =<< traverse
-        gatherEncounterSet
+      investigatorIds <- getInvestigatorIds
+      encounterDeck <- buildEncounterDeck
         [ EncounterSet.TheGathering
         , EncounterSet.Rats
         , EncounterSet.Ghouls
@@ -54,7 +42,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
         , RevealLocation "01111"
         , MoveAllTo "01111"
         , AskMap
-        . HashMap.fromList
+        . mapFromList
         $ [ ( iid
             , ChooseOne
               [ Run
@@ -76,31 +64,29 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
           ]
         ]
       TheGathering <$> runMessage msg attrs
-    ResolveToken Token.Skull iid ->
-      if scenarioDifficulty `elem` [Easy, Standard]
-        then do
-          ghoulCount <- unEnemyCount
-            <$> asks (getCount (InvestigatorLocation iid, [Ghoul]))
-          s <$ runTest iid (Token.TokenValue Token.Skull (-ghoulCount))
-        else s <$ runTest iid (Token.TokenValue Token.Skull (-2))
-    FailedSkillTest iid _ _ (TokenTarget Token.Skull) _
-      | scenarioDifficulty `elem` [Hard, Expert] -> do
+    ResolveToken Token.Skull iid -> if isEasyStandard attrs
+      then do
+        ghoulCount <- asks $ unEnemyCount . getCount
+          (InvestigatorLocation iid, [Ghoul])
+        s <$ runTest iid (Token.TokenValue Token.Skull (-ghoulCount))
+      else s <$ runTest iid (Token.TokenValue Token.Skull (-2))
+    FailedSkillTest iid _ _ (TokenTarget Token.Skull) _ | isHardExpert attrs ->
+      do
         s <$ unshiftMessage
           (FindAndDrawEncounterCard iid (EnemyType, Just Ghoul))
-    ResolveToken Token.Cultist iid ->
-      if scenarioDifficulty `elem` [Easy, Standard]
-        then s <$ runTest iid (Token.TokenValue Token.Cultist (-1))
-        else s <$ unshiftMessage (DrawAnotherToken iid 0)
+    ResolveToken Token.Cultist iid -> if isEasyStandard attrs
+      then s <$ runTest iid (Token.TokenValue Token.Cultist (-1))
+      else s <$ unshiftMessage (DrawAnotherToken iid 0)
     FailedSkillTest iid _ _ (TokenTarget Token.Cultist) _ ->
-      if scenarioDifficulty `elem` [Easy, Standard]
+      if isEasyStandard attrs
         then s <$ unshiftMessage
           (InvestigatorAssignDamage iid (TokenSource Token.Cultist) 0 1)
         else s <$ unshiftMessage
           (InvestigatorAssignDamage iid (TokenSource Token.Cultist) 0 2)
     ResolveToken Token.Tablet iid -> do
-      ghoulCount <- unEnemyCount
-        <$> asks (getCount (InvestigatorLocation iid, [Ghoul]))
-      if scenarioDifficulty `elem` [Easy, Standard]
+      ghoulCount <- asks $ unEnemyCount . getCount
+        (InvestigatorLocation iid, [Ghoul])
+      if isEasyStandard attrs
         then do
           when (ghoulCount > 0) $ unshiftMessage
             (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 0)
@@ -110,11 +96,12 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
             (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 1)
           s <$ runTest iid (Token.TokenValue Token.Tablet (-4))
     NoResolution -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
-      investigatorIds <- HashSet.toList <$> asks (getSet ())
-      xp <- unXPCount <$> asks (getCount ())
+      leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
+      xp <- getXp
       s <$ unshiftMessage
-        (Ask leadInvestigatorId $ ChooseOne
+        (chooseOne
+          leadInvestigatorId
           [ Run
             $ [ Continue "Continue"
               , FlavorText
@@ -132,18 +119,25 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
                 ]
               , Record YourHouseIsStillStanding
               , Record GhoulPriestIsStillAlive
+              , chooseOne
+                leadInvestigatorId
+                [ Label
+                  "Add Lita Chantler to your deck"
+                  [AddCampaignCardToDeck leadInvestigatorId "01117"]
+                , Label "Do not add Lita Chantler to your deck" []
+                ]
               ]
             <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
             <> [EndOfGame]
           ]
         )
     Resolution 1 -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
-      investigatorIds <- HashSet.toList <$> asks (getSet ())
-      xp <- unXPCount <$> asks (getCount ())
-      litaChantler <- liftIO $ lookupPlayerCard "01117" . CardId <$> nextRandom
+      leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
+      xp <- getXp
       s <$ unshiftMessage
-        (Ask leadInvestigatorId $ ChooseOne
+        (chooseOne
+          leadInvestigatorId
           [ Run
             $ [ Continue "Continue"
               , FlavorText
@@ -157,15 +151,13 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
                   \ Alone, we are surely doomed…but together, we can stop it.”"
                 ]
               , Record YourHouseHasBurnedToTheGround
-              , Ask
+              , chooseOne
                 leadInvestigatorId
-                (ChooseOne
-                  [ Label
-                    "Add Lita Chantler to your deck"
-                    [AddCampaignCardToDeck leadInvestigatorId litaChantler]
-                  , Label "Do not add Lita Chantler to your deck" []
-                  ]
-                )
+                [ Label
+                  "Add Lita Chantler to your deck"
+                  [AddCampaignCardToDeck leadInvestigatorId "01117"]
+                , Label "Do not add Lita Chantler to your deck" []
+                ]
               , SufferTrauma leadInvestigatorId 0 1
               ]
             <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
@@ -173,11 +165,12 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
           ]
         )
     Resolution 2 -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
-      investigatorIds <- HashSet.toList <$> asks (getSet ())
-      xp <- unXPCount <$> asks (getCount ())
+      leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
+      xp <- getXp
       s <$ unshiftMessage
-        (Ask leadInvestigatorId $ ChooseOne
+        (chooseOne
+          leadInvestigatorId
           [ Run
             $ [ Continue "Continue"
               , FlavorText
@@ -199,10 +192,10 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
           ]
         )
     Resolution 3 -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
-      litaChantler <- liftIO $ lookupPlayerCard "01117" . CardId <$> nextRandom
+      leadInvestigatorId <- getLeadInvestigatorId
       s <$ unshiftMessage
-        (Ask leadInvestigatorId $ ChooseOne
+        (chooseOne
+          leadInvestigatorId
           [ Run
               [ Continue "Continue"
               , FlavorText
@@ -215,15 +208,13 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
               , Record LitaWasForcedToFindOthersToHelpHerCause
               , Record YourHouseIsStillStanding
               , Record GhoulPriestIsStillAlive
-              , Ask
+              , chooseOne
                 leadInvestigatorId
-                (ChooseOne
-                  [ Label
-                    "Add Lita Chantler to your deck"
-                    [AddCampaignCardToDeck leadInvestigatorId litaChantler]
-                  , Label "Do not add Lita Chantler to your deck" []
-                  ]
-                )
+                [ Label
+                  "Add Lita Chantler to your deck"
+                  [AddCampaignCardToDeck leadInvestigatorId "01117"]
+                , Label "Do not add Lita Chantler to your deck" []
+                ]
               , EndOfGame
               ]
           ]

@@ -27,9 +27,9 @@ arkhamWoodsTwistingPaths =
                                (PerPlayer 1)
                                Square
                                [Squiggle]
+                               [Woods]
                              )
-    { locationTraits = HashSet.fromList [Woods]
-    , locationRevealedConnectedSymbols = HashSet.fromList
+    { locationRevealedConnectedSymbols = HashSet.fromList
       [Squiggle, Diamond, Equals]
     , locationRevealedSymbol = T
     }

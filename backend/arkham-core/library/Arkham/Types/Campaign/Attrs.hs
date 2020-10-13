@@ -6,6 +6,7 @@ import Arkham.Types.Campaign.Runner
 import Arkham.Types.CampaignId
 import Arkham.Types.CampaignLog
 import Arkham.Types.CampaignStep
+import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.Difficulty
@@ -16,6 +17,7 @@ import Arkham.Types.Token
 import ClassyPrelude hiding (log)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
+import Data.UUID.V4
 import Lens.Micro
 
 data Attrs = Attrs
@@ -56,8 +58,15 @@ instance FromJSON Attrs where
 
 instance (CampaignRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
-    AddCampaignCardToDeck iid card ->
+    SetTokensForScenario -> a <$ unshiftMessage (SetTokens campaignChaosBag)
+    AddCampaignCardToDeck iid cardCode -> do
+      card <- liftIO $ lookupPlayerCard cardCode . CardId <$> nextRandom
       pure $ a & storyCards %~ HashMap.insertWith (<>) iid [card]
+    RemoveCampaignCardFromDeck iid cardCode -> do
+      pure
+        $ a
+        & storyCards
+        %~ HashMap.adjust (filter ((/= cardCode) . pcCardCode)) iid
     AddToken token -> pure $ a & chaosBag %~ (token :)
     InitDeck iid deck -> pure $ a & decks %~ HashMap.insert iid deck
     ResetGame -> do

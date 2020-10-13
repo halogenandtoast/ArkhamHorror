@@ -286,8 +286,16 @@ newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
     (pure . fromJustNote "invalid seed" . readMaybe)
     mseed
   liftIO $ setStdGen (mkStdGen seed)
-  let campaign' = either (const Nothing) (Just . (`lookupCampaign` difficulty')) scenarioOrCampaignId
-  let scenario' = either (Just . (`lookupScenario` difficulty')) (const Nothing) scenarioOrCampaignId
+  let
+    campaign' = either
+      (const Nothing)
+      (Just . (`lookupCampaign` difficulty'))
+      scenarioOrCampaignId
+  let
+    scenario' = either
+      (Just . (`lookupScenario` difficulty'))
+      (const Nothing)
+      scenarioOrCampaignId
   ref <-
     newIORef
     $ map (uncurry (InitDeck . getInvestigatorId)) (toList investigatorsList)
@@ -1090,12 +1098,18 @@ runGameMessage msg g = case msg of
       & (victoryDisplay .~ mempty)
   StartScenario sid -> do
     let
-      campaign' = fromJustNote "not a campaign" (g ^. campaign)
-      difficulty' = difficultyOf campaign'
+      difficulty' = maybe
+        (difficultyOfScenario
+        . fromJustNote "missing scenario and campaign"
+        $ g
+        ^. scenario
+        )
+        difficultyOf
+        (g ^. campaign)
     unshiftMessages
       $ [ ChooseLeadInvestigator
         , SetupInvestigators
-        , SetTokens (chaosBagOf campaign')
+        , SetTokensForScenario -- (chaosBagOf campaign')
         ]
       <> [ InvestigatorMulligan iid | iid <- keys $ g ^. investigators ]
       <> [Setup]

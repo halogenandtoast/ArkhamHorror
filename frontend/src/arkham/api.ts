@@ -33,7 +33,8 @@ export const updateGameRaw = (gameId: string, gameJson: string) => api
 export const newGame = (
   deckId: string,
   playerCount: number,
-  campaignId: string,
+  campaignId: string | null,
+  scenarioId: string | null,
   difficulty: Difficulty,
   campaignName: string,
 ) => api
@@ -41,6 +42,7 @@ export const newGame = (
     deckId,
     playerCount,
     campaignId,
+    scenarioId,
     difficulty,
     campaignName,
   })

@@ -15,6 +15,9 @@ data CampaignLogKey
   | TheRitualToSummonUmordhothWasBroken
   | TheInvestigatorsRepelledUmordoth
   | TheInvestigatorsSacrificedLitaChantlerToUmordhoth
+  | TheRougarouContinuesToHauntTheBayou
+  | TheRougarouIsDestroyed
+  | TheRougarouEscapedAndYouEmbracedTheCurse
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)
 

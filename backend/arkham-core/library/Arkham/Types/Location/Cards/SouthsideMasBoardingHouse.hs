@@ -14,24 +14,19 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
 import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype SouthsideMasBoardingHouse = SouthsideMasBoardingHouse Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 southsideMasBoardingHouse :: SouthsideMasBoardingHouse
-southsideMasBoardingHouse =
-  SouthsideMasBoardingHouse
-    $ (baseAttrs
-        "01127"
-        "Southside"
-        2
-        (PerPlayer 1)
-        Square
-        [Diamond, Plus, Circle]
-      )
-        { locationTraits = HashSet.fromList [Arkham]
-        }
+southsideMasBoardingHouse = SouthsideMasBoardingHouse $ baseAttrs
+  "01127"
+  "Southside"
+  2
+  (PerPlayer 1)
+  Square
+  [Diamond, Plus, Circle]
+  [Arkham]
 
 instance (ActionRunner env investigator) => HasActions env investigator SouthsideMasBoardingHouse where
   getActions i NonFast (SouthsideMasBoardingHouse attrs@Attrs {..}) = do

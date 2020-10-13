@@ -27,6 +27,21 @@
     </div>
 
     <div>
+      <input type="radio" v-model="standalone" :value="false"> <label>Campaign</label>
+      <input type="radio" v-model="standalone" :value="true"> <label>Standalone</label>
+    </div>
+
+    <div v-if="standalone">
+      <select v-model="selectedScenario">
+        <option
+          v-for="scenario in scenarios"
+          :key="scenario.id"
+          :value="scenario.id"
+          :selected="scenario.id == selectedScenario"
+          >{{scenario.name}}</option>
+      </select>
+    </div>
+    <div v-else>
       <select v-model="selectedCampaign">
         <option
           v-for="campaign in campaigns"
@@ -59,8 +74,16 @@ export default class NewCampaign extends Vue {
   deck: string | null = null
   investigator: string | null = null
   deckId: string | null = null
+  standalone = false
   selectedCampaign = '01'
+  selectedScenario = '81001'
   campaignName = null
+  scenarios = [
+    {
+      id: '81001',
+      name: 'Curse of the Rougarou',
+    },
+  ]
   campaigns = [
     {
       id: '01',
@@ -94,9 +117,14 @@ export default class NewCampaign extends Vue {
 
   get defaultCampaignName() {
     const campaign = this.campaigns.find((c) => c.id === this.selectedCampaign);
+    const scenario = this.scenarios.find((c) => c.id === this.selectedScenario);
 
-    if (campaign) {
+    if (!this.standalone && campaign) {
       return `${campaign.name} - ${this.selectedDifficulty}`;
+    }
+
+    if (this.standalone && scenario) {
+      return `${scenario.name} - ${this.selectedDifficulty}`;
     }
 
     return '';
@@ -127,15 +155,30 @@ export default class NewCampaign extends Vue {
   }
 
   start() {
-    const mcampaign = this.campaigns.find((campaign) => campaign.id === this.selectedCampaign);
-    if (mcampaign && this.deckId && this.currentCampaignName) {
-      newGame(
-        this.deckId,
-        this.playerCount,
-        mcampaign.id,
-        this.selectedDifficulty,
-        this.currentCampaignName,
-      ).then((game) => this.$router.push(`/games/${game.id}`));
+    if (this.standalone) {
+      const mscenario = this.scenarios.find((scenario) => scenario.id === this.selectedScenario);
+      if (mscenario && this.deckId && this.currentCampaignName) {
+        newGame(
+          this.deckId,
+          this.playerCount,
+          null,
+          mscenario.id,
+          this.selectedDifficulty,
+          this.currentCampaignName,
+        ).then((game) => this.$router.push(`/games/${game.id}`));
+      }
+    } else {
+      const mcampaign = this.campaigns.find((campaign) => campaign.id === this.selectedCampaign);
+      if (mcampaign && this.deckId && this.currentCampaignName) {
+        newGame(
+          this.deckId,
+          this.playerCount,
+          mcampaign.id,
+          null,
+          this.selectedDifficulty,
+          this.currentCampaignName,
+        ).then((game) => this.$router.push(`/games/${game.id}`));
+      }
     }
   }
 }

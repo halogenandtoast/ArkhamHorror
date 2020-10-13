@@ -20,10 +20,11 @@ newtype Graveyard = Graveyard Attrs
 
 graveyard :: Graveyard
 graveyard =
-  Graveyard $ (baseAttrs "01133" "Graveyard" 1 (PerPlayer 2) Hourglass [Circle])
-    { locationTraits = HashSet.fromList [Arkham]
-    , locationVictory = Just 1
-    }
+  Graveyard
+    $ (baseAttrs "01133" "Graveyard" 1 (PerPlayer 2) Hourglass [Circle] [Arkham]
+      )
+        { locationVictory = Just 1
+        }
 
 instance (IsInvestigator investigator) => HasActions env investigator Graveyard where
   getActions i window (Graveyard attrs) = getActions i window attrs

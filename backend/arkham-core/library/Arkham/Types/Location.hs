@@ -54,6 +54,18 @@ data Location
   | ArkhamWoodsTangledThicket' ArkhamWoodsTangledThicket
   | ArkhamWoodsQuietGlade' ArkhamWoodsQuietGlade
   | RitualSite' RitualSite
+  | CursedShores' CursedShores
+  | GardenDistrict' GardenDistrict
+  | Broadmoor' Broadmoor
+  | BrackishWaters' BrackishWaters
+  | AudubonPark' AudubonPark
+  | FauborgMarigny' FauborgMarigny
+  | ForgottenMarsh' ForgottenMarsh
+  | TrappersCabin' TrappersCabin
+  | TwistedUnderbrush' TwistedUnderbrush
+  | FoulSwamp' FoulSwamp
+  | RitualGrounds' RitualGrounds
+  | OvergrownCairns' OvergrownCairns
   | BaseLocation' BaseLocation
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -81,7 +93,7 @@ baseLocation
   -> (Attrs -> Attrs)
   -> Location
 baseLocation a b c d e f func =
-  BaseLocation' . BaseLocation . func $ baseAttrs a b c d e f
+  BaseLocation' . BaseLocation . func $ baseAttrs a b c d e f []
 
 instance HasTraits Location where
   getTraits = locationTraits . locationAttrs
@@ -130,7 +142,7 @@ instance IsLocation Location where
 
 lookupLocation :: LocationId -> Location
 lookupLocation lid =
-  fromJustNote ("Unkown location: " <> show lid) $ lookup lid allLocations
+  fromJustNote ("Unknown location: " <> show lid) $ lookup lid allLocations
 
 allLocations :: HashMap LocationId Location
 allLocations = mapFromList $ map
@@ -159,6 +171,18 @@ allLocations = mapFromList $ map
   , ArkhamWoodsTangledThicket' arkhamWoodsTangledThicket
   , ArkhamWoodsQuietGlade' arkhamWoodsQuietGlade
   , RitualSite' ritualSite
+  , CursedShores' cursedShores
+  , GardenDistrict' gardenDistrict
+  , Broadmoor' broadmoor
+  , BrackishWaters' brackishWaters
+  , AudubonPark' audubonPark
+  , FauborgMarigny' fauborgMarigny
+  , ForgottenMarsh' forgottenMarsh
+  , TrappersCabin' trappersCabin
+  , TwistedUnderbrush' twistedUnderbrush
+  , FoulSwamp' foulSwamp
+  , RitualGrounds' ritualGrounds
+  , OvergrownCairns' overgrownCairns
   ]
 
 isEmptyLocation :: Location -> Bool
@@ -196,4 +220,16 @@ locationAttrs = \case
   ArkhamWoodsTangledThicket' attrs -> coerce attrs
   ArkhamWoodsQuietGlade' attrs -> coerce attrs
   RitualSite' attrs -> coerce attrs
+  CursedShores' attrs -> coerce attrs
+  GardenDistrict' attrs -> coerce attrs
+  Broadmoor' attrs -> coerce attrs
+  BrackishWaters' attrs -> coerce attrs
+  AudubonPark' attrs -> coerce attrs
+  FauborgMarigny' attrs -> coerce attrs
+  ForgottenMarsh' attrs -> coerce attrs
+  TrappersCabin' attrs -> coerce attrs
+  TwistedUnderbrush' attrs -> coerce attrs
+  FoulSwamp' attrs -> coerce attrs
+  RitualGrounds' attrs -> coerce attrs
+  OvergrownCairns' attrs -> coerce attrs
   BaseLocation' attrs -> coerce attrs

@@ -25,9 +25,9 @@ arkhamWoodsTangledThicket =
                                 (PerPlayer 1)
                                 Square
                                 [Squiggle]
+                                [Woods]
                               )
-    { locationTraits = HashSet.fromList [Woods]
-    , locationRevealedConnectedSymbols = HashSet.fromList [Squiggle, T, Moon]
+    { locationRevealedConnectedSymbols = HashSet.fromList [Squiggle, T, Moon]
     , locationRevealedSymbol = Equals
     }
 

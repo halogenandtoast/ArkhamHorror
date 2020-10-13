@@ -13,8 +13,14 @@ newtype Hallway = Hallway Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 hallway :: Hallway
-hallway = Hallway
-  $ baseAttrs "01112" "Hallway" 1 (Static 0) Square [Triangle, Plus, Diamond]
+hallway = Hallway $ baseAttrs
+  "01112"
+  "Hallway"
+  1
+  (Static 0)
+  Square
+  [Triangle, Plus, Diamond]
+  mempty
 
 instance (IsInvestigator investigator) => HasActions env investigator Hallway where
   getActions i window (Hallway attrs) = getActions i window attrs

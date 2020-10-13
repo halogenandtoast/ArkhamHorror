@@ -17,6 +17,7 @@ import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
+import Arkham.Types.ScenarioId
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
 import Data.UUID
@@ -81,7 +82,8 @@ getApiV1ArkhamGamesR = do
 data CreateGamePost = CreateGamePost
   { deckId :: String
   , playerCount :: Int
-  , campaignId :: CampaignId
+  , campaignId :: Maybe CampaignId
+  , scenarioId :: Maybe ScenarioId
   , difficulty :: Difficulty
   , campaignName :: Text
   }
@@ -96,15 +98,29 @@ postApiV1ArkhamGamesR = do
   let
     hashKey = fromIntegral $ fromSqlKey userId
     investigators = HashMap.singleton hashKey (lookupInvestigator iid, deck)
-  ge <-
-    liftIO
-    $ runMessages
-    =<< newCampaign campaignId playerCount investigators difficulty
-  key <- runDB $ do
-    gameId <- insert $ ArkhamGame campaignName ge
-    insert_ $ ArkhamPlayer userId gameId
-    pure gameId
-  pure $ Entity key (ArkhamGame campaignName ge)
+  case campaignId of
+    Just cid -> do
+      ge <-
+        liftIO
+        $ runMessages
+        =<< newCampaign cid playerCount investigators difficulty
+      key <- runDB $ do
+        gameId <- insert $ ArkhamGame campaignName ge
+        insert_ $ ArkhamPlayer userId gameId
+        pure gameId
+      pure $ Entity key (ArkhamGame campaignName ge)
+    Nothing -> case scenarioId of
+      Just sid -> do
+        ge <-
+          liftIO
+          $ runMessages
+          =<< newScenario sid playerCount investigators difficulty
+        key <- runDB $ do
+          gameId <- insert $ ArkhamGame campaignName ge
+          insert_ $ ArkhamPlayer userId gameId
+          pure gameId
+        pure $ Entity key (ArkhamGame campaignName ge)
+      Nothing -> error "missing either campaign id or scenario id"
 
 data QuestionReponse = QuestionResponse { qrChoice :: Int, qrGameHash :: UUID }
   deriving stock (Generic)

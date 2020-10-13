@@ -68,10 +68,12 @@ data ActionType = EnemyActionType | LocationActionType | AssetActionType | Treac
 
 data Message
   = Setup
+  | SetupStep Int
   | ApplyModifiers Target
   | BeginTurn InvestigatorId
   | AddToken Token
-  | AddCampaignCardToDeck InvestigatorId PlayerCard
+  | AddCampaignCardToDeck InvestigatorId CardCode
+  | RemoveCampaignCardFromDeck InvestigatorId CardCode
   | SetLocationLabel LocationId Text
   | EndOfGame
   | EndOfScenario -- used by the game to clear queue
@@ -352,6 +354,7 @@ data Message
   | Blanked Message
   | DrawAnotherToken InvestigatorId Int
   | SetTokens [Token]
+  | SetTokensForScenario
   | ResetTokens Source
   | ReturnTokens [Token]
   | RequestTokens Source InvestigatorId Int RequestedTokenStrategy

@@ -16,6 +16,7 @@ data Trait
   | Assistant
   | Augury
   | Avatar
+  | Bayou
   | Believer
   | Blessed
   | Blunder
@@ -80,6 +81,7 @@ data Trait
   | Miskatonic
   | Monster
   | Mystery
+  | NewOrleans
   | Nightgaunt
   | Obstacle
   | Occult
@@ -95,6 +97,7 @@ data Trait
   | Reporter
   | Research
   | Ritual
+  | Riverside
   | Scholar
   | Science
   | Serpent
@@ -123,8 +126,10 @@ data Trait
   | Warden
   | Wayfarer
   | Weapon
+  | Wilderness
   | Witch
   | Woods
+  | Unhallowed
   | Yithian
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

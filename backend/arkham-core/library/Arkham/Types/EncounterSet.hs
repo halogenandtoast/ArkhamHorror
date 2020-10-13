@@ -27,6 +27,8 @@ data EncounterSet
   | AgentsOfYogSothoth
   | AgentsOfShubNiggurath
   | AgentsOfCthulhu
+  | TheBayou
+  | CurseOfTheRougarou
 
 gatherEncounterSet :: MonadIO m => EncounterSet -> m [EncounterCard]
 gatherEncounterSet =
@@ -57,3 +59,5 @@ setCards = \case
   AgentsOfYogSothoth -> replicate 2 "01177" <> replicate 2 "01178"
   AgentsOfShubNiggurath -> "01179" : replicate 3 "01180"
   AgentsOfCthulhu -> replicate 2 "01181" <> replicate 2 "01182"
+  TheBayou -> replicate 2 "81022" <> replicate 3 "81023" <> replicate 3 "81024" <> replicate 3 "81025" <> replicate 4 "81026" <> replicate 3 "81027"
+  CurseOfTheRougarou -> replicate 2 "81031" <> replicate 2 "81032" <> ["81033"] <> replicate 5 "81034" <> replicate 2 "81035" <> replicate 3 "81036"

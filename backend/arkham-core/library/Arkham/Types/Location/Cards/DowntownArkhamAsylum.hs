@@ -22,9 +22,8 @@ newtype DowntownArkhamAsylum = DowntownArkhamAsylum Attrs
 downtownArkhamAsylum :: DowntownArkhamAsylum
 downtownArkhamAsylum =
   DowntownArkhamAsylum
-    $ (baseAttrs "01131" "Downtown" 4 (PerPlayer 2) Triangle [Moon, T])
-        { locationTraits = HashSet.fromList [Arkham]
-        , locationVictory = Just 1
+    $ (baseAttrs "01131" "Downtown" 4 (PerPlayer 2) Triangle [Moon, T] [Arkham])
+        { locationVictory = Just 1
         }
 
 instance (ActionRunner env investigator) => HasActions env investigator DowntownArkhamAsylum where

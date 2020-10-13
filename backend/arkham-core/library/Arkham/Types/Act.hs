@@ -10,6 +10,7 @@ where
 import Arkham.Json
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Cards.DisruptingTheRitual
+import Arkham.Types.Act.Cards.FindingLadyEsprit
 import Arkham.Types.Act.Cards.IntoTheDarkness
 import Arkham.Types.Act.Cards.InvestigatingTheTrail
 import Arkham.Types.Act.Cards.TheBarrier
@@ -32,6 +33,7 @@ data Act
   | InvestigatingTheTrail' InvestigatingTheTrail
   | IntoTheDarkness' IntoTheDarkness
   | DisruptingTheRitual' DisruptingTheRitual
+  | FindingLadyEsprit' FindingLadyEsprit
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -42,7 +44,8 @@ instance IsAdvanceable Act where
   isAdvanceable = actCanAdvance . actAttrs
 
 lookupAct :: ActId -> Act
-lookupAct = fromJustNote "Unknown act" . flip lookup allActs
+lookupAct actId =
+  fromJustNote ("Unknown act: " <> show actId) $ lookup actId allActs
 
 allActs :: HashMap ActId Act
 allActs = mapFromList $ map
@@ -54,6 +57,7 @@ allActs = mapFromList $ map
   , InvestigatingTheTrail' investigatingTheTrail
   , IntoTheDarkness' intoTheDarkness
   , DisruptingTheRitual' disruptingTheRitual
+  , FindingLadyEsprit' findingLadyEsprit
   ]
 
 actAttrs :: Act -> Attrs
@@ -65,3 +69,4 @@ actAttrs = \case
   InvestigatingTheTrail' attrs -> coerce attrs
   IntoTheDarkness' attrs -> coerce attrs
   DisruptingTheRitual' attrs -> coerce attrs
+  FindingLadyEsprit' attrs -> coerce attrs

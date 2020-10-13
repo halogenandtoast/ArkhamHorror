@@ -15,7 +15,7 @@ newtype Cellar = Cellar Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 cellar :: Cellar
-cellar = Cellar $ (baseAttrs "01114" "Cellar" 4 (PerPlayer 2) Plus [Square])
+cellar = Cellar $ (baseAttrs "01114" "Cellar" 4 (PerPlayer 2) Plus [Square] [])
   { locationVictory = Just 1
   }
 

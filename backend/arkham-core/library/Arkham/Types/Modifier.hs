@@ -22,6 +22,7 @@ data Modifier
   | CanPlayTopOfDiscard (Maybe PlayerCardType, [Trait])
   | CannotBeAttackedByNonElite
   | CannotBeEnteredByNonElite
+  | CannotMove
   | DoNotDrawChaosTokensForSkillChecks
   | SpawnNonEliteAtConnectingInstead
   | CannotDiscoverClues

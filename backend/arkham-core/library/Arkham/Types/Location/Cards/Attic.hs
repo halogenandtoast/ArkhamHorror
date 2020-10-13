@@ -15,7 +15,8 @@ newtype Attic = Attic Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 attic :: Attic
-attic = Attic $ (baseAttrs "01113" "Attic" 1 (PerPlayer 2) Triangle [Square])
+attic = Attic $ (baseAttrs "01113" "Attic" 1 (PerPlayer 2) Triangle [Square] []
+                )
   { locationVictory = Just 1
   }
 

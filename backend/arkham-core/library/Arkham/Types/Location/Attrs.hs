@@ -44,6 +44,10 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "location"
 
+isSource :: Attrs -> Source -> Bool
+isSource Attrs { locationId } (LocationSource lid) = locationId == lid
+isSource _ _ = False
+
 symbol :: Lens' Attrs LocationSymbol
 symbol = lens locationSymbol $ \m x -> m { locationSymbol = x }
 
@@ -90,32 +94,34 @@ baseAttrs
   -> GameValue Int
   -> LocationSymbol
   -> [LocationSymbol]
+  -> [Trait]
   -> Attrs
-baseAttrs lid name shroud' revealClues symbol' connectedSymbols' = Attrs
-  { locationName = name
-  , locationLabel =
-    pack . filter isLetter . camelCase . unpack . T.filter (/= ' ') $ name
-  , locationId = lid
-  , locationRevealClues = revealClues
-  , locationClues = 0
-  , locationDoom = 0
-  , locationShroud = shroud'
-  , locationRevealed = False
-  , locationBlocked = False
-  , locationInvestigators = mempty
-  , locationEnemies = mempty
-  , locationVictory = Nothing
-  , locationSymbol = symbol'
-  , locationRevealedSymbol = symbol'
-  , locationConnectedSymbols = HashSet.fromList connectedSymbols'
-  , locationRevealedConnectedSymbols = HashSet.fromList connectedSymbols'
-  , locationConnectedLocations = mempty
-  , locationTraits = mempty
-  , locationTreacheries = mempty
-  , locationEvents = mempty
-  , locationAssets = mempty
-  , locationModifiers = mempty
-  }
+baseAttrs lid name shroud' revealClues symbol' connectedSymbols' traits' =
+  Attrs
+    { locationName = name
+    , locationLabel =
+      pack . filter isLetter . camelCase . unpack . T.filter (/= ' ') $ name
+    , locationId = lid
+    , locationRevealClues = revealClues
+    , locationClues = 0
+    , locationDoom = 0
+    , locationShroud = shroud'
+    , locationRevealed = False
+    , locationBlocked = False
+    , locationInvestigators = mempty
+    , locationEnemies = mempty
+    , locationVictory = Nothing
+    , locationSymbol = symbol'
+    , locationRevealedSymbol = symbol'
+    , locationConnectedSymbols = HashSet.fromList connectedSymbols'
+    , locationRevealedConnectedSymbols = HashSet.fromList connectedSymbols'
+    , locationConnectedLocations = mempty
+    , locationTraits = setFromList traits'
+    , locationTreacheries = mempty
+    , locationEvents = mempty
+    , locationAssets = mempty
+    , locationModifiers = mempty
+    }
 
 clues :: Lens' Attrs Int
 clues = lens locationClues $ \m x -> m { locationClues = x }

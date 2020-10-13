@@ -27,9 +27,9 @@ miskatonicUniversity = MiskatonicUniversity $ (baseAttrs
                                                 (PerPlayer 2)
                                                 Diamond
                                                 [T, Plus, Circle, Square]
+                                                [Arkham]
                                               )
-  { locationTraits = HashSet.fromList [Arkham]
-  , locationVictory = Just 1
+  { locationVictory = Just 1
   }
 
 instance (ActionRunner env investigator) => HasActions env investigator MiskatonicUniversity where

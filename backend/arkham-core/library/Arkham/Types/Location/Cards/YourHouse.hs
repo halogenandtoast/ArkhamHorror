@@ -14,16 +14,13 @@ import Arkham.Types.Source
 import Arkham.Types.Trait
 import Arkham.Types.Window
 import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype YourHouse = YourHouse Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 yourHouse :: YourHouse
-yourHouse =
-  YourHouse $ (baseAttrs "01124" "Your House" 2 (PerPlayer 1) Squiggle [Circle])
-    { locationTraits = HashSet.fromList [Arkham]
-    }
+yourHouse = YourHouse
+  $ baseAttrs "01124" "Your House" 2 (PerPlayer 1) Squiggle [Circle] [Arkham]
 
 instance (ActionRunner env investigator) => HasActions env investigator YourHouse where
   getActions i NonFast (YourHouse attrs@Attrs {..}) = do

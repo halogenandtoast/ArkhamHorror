@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ebf372a3e5d21aaf0edb58df0cf04cdce5a74031a9c7fdd28c0fe1a7ce2e4636
+-- hash: 886b611324637494dbdde3ddb2888d1515f44cd1d08699d5c97e3f43a4345c53
 
 name:           arkham-core
 version:        0.0.0
@@ -20,6 +20,7 @@ library
       Arkham.Types.Act
       Arkham.Types.Act.Attrs
       Arkham.Types.Act.Cards.DisruptingTheRitual
+      Arkham.Types.Act.Cards.FindingLadyEsprit
       Arkham.Types.Act.Cards.IntoTheDarkness
       Arkham.Types.Act.Cards.InvestigatingTheTrail
       Arkham.Types.Act.Cards.TheBarrier
@@ -31,6 +32,7 @@ library
       Arkham.Types.Action
       Arkham.Types.Agenda
       Arkham.Types.Agenda.Attrs
+      Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
       Arkham.Types.Agenda.Cards.PredatorOrPrey
       Arkham.Types.Agenda.Cards.RiseOfTheGhouls
       Arkham.Types.Agenda.Cards.TheArkhamWoods
@@ -265,22 +267,34 @@ library
       Arkham.Types.Location.Cards.ArkhamWoodsTwistingPaths
       Arkham.Types.Location.Cards.ArkhamWoodsUnhallowedGround
       Arkham.Types.Location.Cards.Attic
+      Arkham.Types.Location.Cards.AudubonPark
+      Arkham.Types.Location.Cards.BrackishWaters
+      Arkham.Types.Location.Cards.Broadmoor
       Arkham.Types.Location.Cards.Cellar
+      Arkham.Types.Location.Cards.CursedShores
       Arkham.Types.Location.Cards.DowntownArkhamAsylum
       Arkham.Types.Location.Cards.DowntownFirstBankOfArkham
       Arkham.Types.Location.Cards.Easttown
+      Arkham.Types.Location.Cards.FauborgMarigny
+      Arkham.Types.Location.Cards.ForgottenMarsh
+      Arkham.Types.Location.Cards.FoulSwamp
+      Arkham.Types.Location.Cards.GardenDistrict
       Arkham.Types.Location.Cards.Graveyard
       Arkham.Types.Location.Cards.Hallway
       Arkham.Types.Location.Cards.MainPath
       Arkham.Types.Location.Cards.MiskatonicUniversity
       Arkham.Types.Location.Cards.Northside
+      Arkham.Types.Location.Cards.OvergrownCairns
       Arkham.Types.Location.Cards.Parlor
+      Arkham.Types.Location.Cards.RitualGrounds
       Arkham.Types.Location.Cards.RitualSite
       Arkham.Types.Location.Cards.Rivertown
       Arkham.Types.Location.Cards.SouthsideHistoricalSociety
       Arkham.Types.Location.Cards.SouthsideMasBoardingHouse
       Arkham.Types.Location.Cards.StMarysHospital
       Arkham.Types.Location.Cards.Study
+      Arkham.Types.Location.Cards.TrappersCabin
+      Arkham.Types.Location.Cards.TwistedUnderbrush
       Arkham.Types.Location.Cards.YourHouse
       Arkham.Types.Location.Runner
       Arkham.Types.LocationId
@@ -293,7 +307,9 @@ library
       Arkham.Types.RequestedTokenStrategy
       Arkham.Types.Scenario
       Arkham.Types.Scenario.Attrs
+      Arkham.Types.Scenario.Helpers
       Arkham.Types.Scenario.Runner
+      Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
       Arkham.Types.Scenario.Scenarios.TheDevourerBelow
       Arkham.Types.Scenario.Scenarios.TheGathering
       Arkham.Types.Scenario.Scenarios.TheMidnightMasks

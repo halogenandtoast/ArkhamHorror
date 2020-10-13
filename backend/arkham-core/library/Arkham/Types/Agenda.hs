@@ -8,6 +8,7 @@ where
 
 import Arkham.Json
 import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
 import Arkham.Types.Agenda.Cards.PredatorOrPrey
 import Arkham.Types.Agenda.Cards.RiseOfTheGhouls
 import Arkham.Types.Agenda.Cards.TheArkhamWoods
@@ -27,7 +28,9 @@ import Data.Coerce
 import Safe (fromJustNote)
 
 lookupAgenda :: AgendaId -> Agenda
-lookupAgenda = fromJustNote "Unknown agenda" . flip lookup allAgendas
+lookupAgenda agendaId =
+  fromJustNote ("Unknown agenda: " <> show agendaId)
+    $ lookup agendaId allAgendas
 
 allAgendas :: HashMap AgendaId Agenda
 allAgendas = mapFromList $ map
@@ -40,6 +43,7 @@ allAgendas = mapFromList $ map
   , TheArkhamWoods' theArkhamWoods
   , TheRitualBegins' theRitualBegins
   , VengeanceAwaits' vengeanceAwaits
+  , ACreatureOfTheBayou' aCreatureOfTheBayou
   ]
 
 instance HasAbilities Agenda where
@@ -60,6 +64,7 @@ data Agenda
   | TheArkhamWoods' TheArkhamWoods
   | TheRitualBegins' TheRitualBegins
   | VengeanceAwaits' VengeanceAwaits
+  | ACreatureOfTheBayou' ACreatureOfTheBayou
   | BaseAgenda' BaseAgenda
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -91,4 +96,5 @@ agendaAttrs = \case
   TheArkhamWoods' attrs -> coerce attrs
   TheRitualBegins' attrs -> coerce attrs
   VengeanceAwaits' attrs -> coerce attrs
+  ACreatureOfTheBayou' attrs -> coerce attrs
   BaseAgenda' attrs -> coerce attrs

@@ -14,24 +14,19 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
 import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype StMarysHospital = StMarysHospital Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 stMarysHospital :: StMarysHospital
-stMarysHospital =
-  StMarysHospital
-    $ (baseAttrs
-        "01128"
-        "St. Mary's Hospital"
-        2
-        (PerPlayer 1)
-        Plus
-        [Diamond, Square]
-      )
-        { locationTraits = HashSet.fromList [Arkham]
-        }
+stMarysHospital = StMarysHospital $ baseAttrs
+  "01128"
+  "St. Mary's Hospital"
+  2
+  (PerPlayer 1)
+  Plus
+  [Diamond, Square]
+  [Arkham]
 
 instance (ActionRunner env investigator) => HasActions env investigator StMarysHospital where
   getActions i NonFast (StMarysHospital attrs@Attrs {..}) = do

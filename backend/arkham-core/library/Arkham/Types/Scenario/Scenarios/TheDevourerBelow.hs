@@ -1,27 +1,17 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Scenario.Scenarios.TheDevourerBelow where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.CampaignLogKey
-import Arkham.Types.Card.EncounterCard
-import Arkham.Types.Card.Id
-import Arkham.Types.Classes
 import Arkham.Types.Difficulty
-import Arkham.Types.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.EnemyId
 import Arkham.Types.Helpers
-import Arkham.Types.Message
-import Arkham.Types.Query
 import Arkham.Types.Scenario.Attrs
+import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
-import Arkham.Types.Source
-import Arkham.Types.Target
 import qualified Arkham.Types.Token as Token
 import Arkham.Types.Trait hiding (Trait(Expert))
-import ClassyPrelude
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
 import Data.List.NonEmpty (NonEmpty(..))
 import Data.UUID.V4
 import System.Random.Shuffle
@@ -44,7 +34,7 @@ theDevourerBelow difficulty =
 instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
   runMessage msg s@(TheDevourerBelow attrs@Attrs {..}) = case msg of
     Setup -> do
-      investigatorIds <- HashSet.toList <$> asks (getSet ())
+      investigatorIds <- getInvestigatorIds
       pastMidnight <- asks $ hasRecord ItIsPastMidnight
       ghoulPriestAlive <- asks $ hasRecord GhoulPriestIsStillAlive
       cultistsWhoGotAway <- asks $ hasRecordSet CultistsWhoGotAway
@@ -68,8 +58,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
            , EncounterSet.AgentsOfCthulhu
            , EncounterSet.AgentsOfHastur
            ]
-      encounterDeck <- liftIO $ shuffleM . concat =<< traverse
-        gatherEncounterSet
+      encounterDeck <- buildEncounterDeck
         [ EncounterSet.TheDevourerBelow
         , EncounterSet.AncientEvils
         , EncounterSet.StrikingFear
@@ -79,7 +68,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
         ]
       pushMessages
         $ [ AskMap
-            (HashMap.fromList
+            (mapFromList
               [ ( iid
                 , ChooseOne
                   [ Run
@@ -127,66 +116,46 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
         <> cultistsWhoGotAwayMessages
         <> pastMidnightMessages
       pure s
-    ResolveToken Token.Skull iid | scenarioDifficulty `elem` [Easy, Standard] ->
-      do
-        monsterCount <- unEnemyCount <$> asks (getCount [Monster])
+    ResolveToken Token.Skull iid -> if isEasyStandard attrs
+      then do
+        monsterCount <- asks $ unEnemyCount . getCount [Monster]
         s <$ runTest iid (Token.TokenValue Token.Skull (-monsterCount))
-    ResolveToken Token.Skull iid | scenarioDifficulty `elem` [Hard, Expert] ->
-      s <$ runTest iid (Token.TokenValue Token.Skull (-3))
-    FailedSkillTest iid _ _ (TokenTarget Token.Skull) _
-      | scenarioDifficulty `elem` [Hard, Expert] -> do
+      else s <$ runTest iid (Token.TokenValue Token.Skull (-3))
+    FailedSkillTest iid _ _ (TokenTarget Token.Skull) _ | isHardExpert attrs ->
+      do
         s <$ unshiftMessage
           (FindAndDrawEncounterCard iid (EnemyType, Just Monster))
-    ResolveToken Token.Cultist iid
-      | scenarioDifficulty `elem` [Easy, Standard] -> do
-        closestEnemyIds <- map unClosestEnemyId . HashSet.toList <$> asks
-          (getSet iid)
-        case closestEnemyIds of
-          [] -> pure ()
-          [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
-          xs -> unshiftMessage
-            (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
-        s <$ runTest iid (Token.TokenValue Token.Cultist (-2))
-    ResolveToken Token.Cultist iid | scenarioDifficulty `elem` [Hard, Expert] ->
-      do
-        closestEnemyIds <- map unClosestEnemyId . HashSet.toList <$> asks
-          (getSet iid)
-        case closestEnemyIds of
-          [] -> pure ()
-          [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 2)
-          xs -> unshiftMessage
-            (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget x) 2 | x <- xs ])
-        s <$ runTest iid (Token.TokenValue Token.Cultist (-4))
-    ResolveToken Token.Tablet iid
-      | scenarioDifficulty `elem` [Easy, Standard] -> do
-        ghoulCount <- unEnemyCount
-          <$> asks (getCount (InvestigatorLocation iid, [Monster]))
-        when (ghoulCount > 0) $ unshiftMessage
-          (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 0)
-        s <$ runTest iid (Token.TokenValue Token.Tablet (-3))
-    ResolveToken Token.Tablet iid | scenarioDifficulty `elem` [Hard, Expert] ->
-      do
-        ghoulCount <- unEnemyCount
-          <$> asks (getCount (InvestigatorLocation iid, [Monster]))
-        when (ghoulCount > 0) $ unshiftMessage
-          (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 1)
-        s <$ runTest iid (Token.TokenValue Token.Tablet (-5))
-    ResolveToken Token.ElderThing iid
-      | scenarioDifficulty `elem` [Easy, Standard] -> do
-        ancientOneCount <- unEnemyCount <$> asks (getCount [AncientOne])
-        if ancientOneCount > 0
-          then s <$ unshiftMessage (DrawAnotherToken iid (-5))
-          else s <$ runTest iid (Token.TokenValue Token.ElderThing (-5))
-    ResolveToken Token.ElderThing iid
-      | scenarioDifficulty `elem` [Hard, Expert] -> do
-        ancientOneCount <- unEnemyCount <$> asks (getCount [AncientOne])
-        if ancientOneCount > 0
-          then s <$ unshiftMessage (DrawAnotherToken iid (-7))
-          else s <$ runTest iid (Token.TokenValue Token.ElderThing (-7))
+    ResolveToken Token.Cultist iid -> do
+      let
+        doom = if isEasyStandard attrs then 1 else 2
+        tokenValue = if isEasyStandard attrs then (-2) else (-4)
+      closestEnemyIds <- asks $ map unClosestEnemyId . setToList . getSet iid
+      case closestEnemyIds of
+        [] -> pure ()
+        [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) doom)
+        xs -> unshiftMessage
+          (chooseOne iid [ PlaceDoom (EnemyTarget x) doom | x <- xs ])
+      s <$ runTest iid (Token.TokenValue Token.Cultist tokenValue)
+    ResolveToken Token.Tablet iid -> do
+      let
+        horror = if isEasyStandard attrs then 0 else 1
+        tokenValue = if isEasyStandard attrs then (-3) else (-5)
+      ghoulCount <- asks $ unEnemyCount . getCount
+        (InvestigatorLocation iid, [Monster])
+      when (ghoulCount > 0) $ unshiftMessage
+        (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 horror)
+      s <$ runTest iid (Token.TokenValue Token.Tablet tokenValue)
+    ResolveToken Token.ElderThing iid -> do
+      let tokenValue = if isEasyStandard attrs then (-5) else (-7)
+      ancientOneCount <- asks $ unEnemyCount . getCount [AncientOne]
+      if ancientOneCount > 0
+        then s <$ unshiftMessage (DrawAnotherToken iid tokenValue)
+        else s <$ runTest iid (Token.TokenValue Token.ElderThing tokenValue)
     NoResolution -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      leadInvestigatorId <- getLeadInvestigatorId
       s <$ unshiftMessage
-        (Ask leadInvestigatorId $ ChooseOne
+        (chooseOne
+          leadInvestigatorId
           [ Run
             $ [ Continue "Continue"
               , FlavorText
@@ -205,9 +174,10 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
           ]
         )
     Resolution 1 -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      leadInvestigatorId <- getLeadInvestigatorId
       s <$ unshiftMessage
-        (Ask leadInvestigatorId $ ChooseOne
+        (chooseOne
+          leadInvestigatorId
           [ Run
             $ [ Continue "Continue"
               , FlavorText
@@ -225,9 +195,10 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
           ]
         )
     Resolution 2 -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      leadInvestigatorId <- getLeadInvestigatorId
       s <$ unshiftMessage
-        (Ask leadInvestigatorId $ ChooseOne
+        (chooseOne
+          leadInvestigatorId
           [ Run
             $ [ Continue "Continue"
               , FlavorText
@@ -251,9 +222,10 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
           ]
         )
     Resolution 3 -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      leadInvestigatorId <- getLeadInvestigatorId
       s <$ unshiftMessage
-        (Ask leadInvestigatorId $ ChooseOne
+        (chooseOne
+          leadInvestigatorId
           [ Run
             $ [ Continue "Continue"
               , FlavorText

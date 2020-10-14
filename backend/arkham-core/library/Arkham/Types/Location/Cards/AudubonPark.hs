@@ -23,6 +23,9 @@ audubonPark = AudubonPark $ baseAttrs
   [Triangle, Squiggle]
   [Riverside]
 
+instance HasModifiersFor env investigator AudubonPark where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator AudubonPark where
   getActions i window (AudubonPark attrs) = getActions i window attrs
 

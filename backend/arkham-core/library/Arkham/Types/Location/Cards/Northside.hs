@@ -13,7 +13,6 @@ import Arkham.Types.Source
 import Arkham.Types.Trait
 import Arkham.Types.Window
 import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype Northside = Northside Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -32,6 +31,9 @@ northside =
       )
         { locationVictory = Just 1
         }
+
+instance HasModifiersFor env investigator Northside where
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator Northside where
   getActions i NonFast (Northside attrs@Attrs {..}) = do

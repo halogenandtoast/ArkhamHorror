@@ -23,6 +23,9 @@ twistedUnderbrush = TwistedUnderbrush $ baseAttrs
   [Diamond, Moon]
   [Wilderness]
 
+instance HasModifiersFor env investigator TwistedUnderbrush where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator TwistedUnderbrush where
   getActions i window (TwistedUnderbrush attrs) = getActions i window attrs
 

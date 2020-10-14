@@ -34,6 +34,9 @@ arkhamWoodsUnhallowedGround =
     , locationRevealedSymbol = Triangle
     }
 
+instance HasModifiersFor env investigator ArkhamWoodsUnhallowedGround where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsUnhallowedGround where
   getActions i window (ArkhamWoodsUnhallowedGround attrs) =
     getActions i window attrs

@@ -22,6 +22,9 @@ yourHouse :: YourHouse
 yourHouse = YourHouse
   $ baseAttrs "01124" "Your House" 2 (PerPlayer 1) Squiggle [Circle] [Arkham]
 
+instance HasModifiersFor env investigator YourHouse where
+  getModifiersFor _ _ _ = pure []
+
 instance (ActionRunner env investigator) => HasActions env investigator YourHouse where
   getActions i NonFast (YourHouse attrs@Attrs {..}) = do
     baseActions <- getActions i NonFast attrs

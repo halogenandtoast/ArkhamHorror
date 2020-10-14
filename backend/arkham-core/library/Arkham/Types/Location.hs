@@ -72,9 +72,13 @@ data Location
 
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Location
 deriving anyclass instance (LocationRunner env) => RunMessage env Location
+deriving anyclass instance IsInvestigator investigator => HasModifiersFor env investigator Location
 
 newtype BaseLocation = BaseLocation Attrs
   deriving newtype (Show, ToJSON, FromJSON)
+
+instance HasModifiersFor env investigator BaseLocation where
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator BaseLocation where
   getActions investigator window (BaseLocation attrs) =

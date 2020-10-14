@@ -31,6 +31,7 @@ import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.ScenarioId
+import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillId
 import Arkham.Types.SkillType
 import Arkham.Types.Slot
@@ -81,6 +82,7 @@ data Message
   | ResetGame
   | CampaignStep (Maybe CampaignStep)
   | NextCampaignStep
+  | Remember ScenarioLogKey
   | Record CampaignLogKey
   | CrossOutRecord CampaignLogKey
   | RecordCount CampaignLogKey Int

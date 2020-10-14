@@ -41,4 +41,4 @@ data Target
   | TokenTarget Token
   | TestTarget
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

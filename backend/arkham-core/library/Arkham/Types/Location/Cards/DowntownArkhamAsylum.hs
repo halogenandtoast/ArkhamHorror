@@ -14,7 +14,6 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
 import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype DowntownArkhamAsylum = DowntownArkhamAsylum Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -25,6 +24,9 @@ downtownArkhamAsylum =
     $ (baseAttrs "01131" "Downtown" 4 (PerPlayer 2) Triangle [Moon, T] [Arkham])
         { locationVictory = Just 1
         }
+
+instance HasModifiersFor env investigator DowntownArkhamAsylum where
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator DowntownArkhamAsylum where
   getActions i NonFast (DowntownArkhamAsylum attrs@Attrs {..}) = do

@@ -14,7 +14,6 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.Window
 import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype MiskatonicUniversity = MiskatonicUniversity Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -31,6 +30,9 @@ miskatonicUniversity = MiskatonicUniversity $ (baseAttrs
                                               )
   { locationVictory = Just 1
   }
+
+instance HasModifiersFor env investigator MiskatonicUniversity where
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator MiskatonicUniversity where
   getActions i NonFast (MiskatonicUniversity attrs@Attrs {..}) = do

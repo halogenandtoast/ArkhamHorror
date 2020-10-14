@@ -30,6 +30,9 @@ arkhamWoodsOldHouse = ArkhamWoodsOldHouse $ (baseAttrs
   , locationRevealedSymbol = Diamond
   }
 
+instance HasModifiersFor env investigator ArkhamWoodsOldHouse where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsOldHouse where
   getActions i window (ArkhamWoodsOldHouse attrs) = getActions i window attrs
 

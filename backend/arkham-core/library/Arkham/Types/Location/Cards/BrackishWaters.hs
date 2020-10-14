@@ -23,6 +23,9 @@ brackishWaters = BrackishWaters $ baseAttrs
   [Squiggle, Square, Diamond, Hourglass]
   [Riverside, Bayou]
 
+instance HasModifiersFor env investigator BrackishWaters where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator BrackishWaters where
   getActions i window (BrackishWaters attrs) = getActions i window attrs
 

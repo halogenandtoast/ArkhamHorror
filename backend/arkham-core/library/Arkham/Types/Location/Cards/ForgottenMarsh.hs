@@ -23,6 +23,9 @@ forgottenMarsh = ForgottenMarsh $ baseAttrs
   [Moon, Square, Triangle, Hourglass]
   [Wilderness, Bayou]
 
+instance HasModifiersFor env investigator ForgottenMarsh where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator ForgottenMarsh where
   getActions i window (ForgottenMarsh attrs) = getActions i window attrs
 

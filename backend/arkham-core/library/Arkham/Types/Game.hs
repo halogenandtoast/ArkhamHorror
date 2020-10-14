@@ -505,6 +505,8 @@ instance
     [ concat <$> traverse (getModifiersFor source i) (g ^. enemies . to toList)
     , concat <$> traverse (getModifiersFor source i) (g ^. assets . to toList)
     , concat
+      <$> traverse (getModifiersFor source i) (g ^. locations . to toList)
+    , concat
       <$> traverse (getModifiersFor source i) (g ^. investigators . to toList)
     , maybe (pure []) (getModifiersFor source i) (g ^. skillTest)
     ]

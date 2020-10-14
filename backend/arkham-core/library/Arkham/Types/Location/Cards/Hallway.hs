@@ -22,6 +22,9 @@ hallway = Hallway $ baseAttrs
   [Triangle, Plus, Diamond]
   mempty
 
+instance HasModifiersFor env investigator Hallway where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator Hallway where
   getActions i window (Hallway attrs) = getActions i window attrs
 

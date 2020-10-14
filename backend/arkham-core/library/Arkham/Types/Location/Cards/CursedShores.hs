@@ -20,6 +20,12 @@ cursedShores = CursedShores $ baseAttrs
   [Plus, Triangle, Diamond, Hourglass]
   [NewOrleans, Bayou]
 
+instance IsInvestigator investigator => HasModifiersFor env investigator CursedShores where
+  getModifiersFor _ i (CursedShores Attrs {..}) = pure $ findWithDefault
+    []
+    (InvestigatorTarget $ getId () i)
+    locationModifiersFor
+
 instance (IsInvestigator investigator) => HasActions env investigator CursedShores where
   getActions i NonFast (CursedShores attrs@Attrs {..}) | locationRevealed = do
     baseActions <- getActions i NonFast attrs
@@ -33,10 +39,13 @@ instance (IsInvestigator investigator) => HasActions env investigator CursedShor
   getActions i window (CursedShores attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env CursedShores where
-  runMessage msg l@(CursedShores attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
-      l <$ unshiftMessages
-        [ InvestigatorAssignDamage iid source 1 0
-        , AddModifiers (InvestigatorTarget iid) source [AnySkillValue 2]
-        ]
+  runMessage msg (CursedShores attrs) = case msg of
+    UseCardAbility iid source _ 1 | isSource attrs source -> do
+      unshiftMessages [InvestigatorAssignDamage iid source 1 0]
+      pure . CursedShores $ attrs & modifiersFor %~ insertWith
+        (<>)
+        (InvestigatorTarget iid)
+        [AnySkillValue 2]
+    SkillTestEnds -> pure . CursedShores $ attrs & modifiersFor .~ mempty
+    EndRound -> pure . CursedShores $ attrs & modifiersFor .~ mempty
     _ -> CursedShores <$> runMessage msg attrs

@@ -23,6 +23,9 @@ trappersCabin = TrappersCabin $ baseAttrs
   [Diamond, Moon]
   [Wilderness]
 
+instance HasModifiersFor env investigator TrappersCabin where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator TrappersCabin where
   getActions i window (TrappersCabin attrs) = getActions i window attrs
 

@@ -34,6 +34,9 @@ arkhamWoodsTwistingPaths =
     , locationRevealedSymbol = T
     }
 
+instance HasModifiersFor env investigator ArkhamWoodsTwistingPaths where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsTwistingPaths where
   getActions i window (ArkhamWoodsTwistingPaths attrs) =
     getActions i window attrs

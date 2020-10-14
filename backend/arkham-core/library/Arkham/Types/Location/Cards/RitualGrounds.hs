@@ -23,6 +23,9 @@ ritualGrounds = RitualGrounds $ baseAttrs
   [Hourglass, Equals]
   [Unhallowed]
 
+instance HasModifiersFor env investigator RitualGrounds where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator RitualGrounds where
   getActions i window (RitualGrounds attrs) = getActions i window attrs
 

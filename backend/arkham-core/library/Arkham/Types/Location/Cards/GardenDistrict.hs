@@ -1,14 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Cards.GardenDistrict where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
+import Arkham.Import
+
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
+import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
-import ClassyPrelude
 
 newtype GardenDistrict = GardenDistrict Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -23,9 +21,34 @@ gardenDistrict = GardenDistrict $ baseAttrs
   [Square, Plus]
   [NewOrleans]
 
+instance HasModifiersFor env investigator GardenDistrict where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator GardenDistrict where
+  getActions i NonFast (GardenDistrict attrs@Attrs {..}) | locationRevealed = do
+    baseActions <- getActions i NonFast attrs
+    pure
+      $ baseActions
+      <> [ ActivateCardAbilityAction
+             (getId () i)
+             (mkAbility (LocationSource locationId) 1 (ActionAbility 1 Nothing))
+         | getId () i `elem` locationInvestigators
+         ]
   getActions i window (GardenDistrict attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env GardenDistrict where
-  runMessage msg (GardenDistrict attrs) =
-    GardenDistrict <$> runMessage msg attrs
+  runMessage msg l@(GardenDistrict attrs) = case msg of
+    UseCardAbility iid source _ 1 | isSource attrs source -> l <$ unshiftMessage
+      (BeginSkillTest
+        iid
+        source
+        (toTarget attrs)
+        Nothing
+        SkillAgility
+        7
+        [Remember FoundAStrangeDoll]
+        mempty
+        mempty
+        mempty
+      )
+    _ -> GardenDistrict <$> runMessage msg attrs

@@ -18,6 +18,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
@@ -100,6 +101,12 @@ data Asset
 deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Asset
 deriving anyclass instance (IsInvestigator investigator, HasId LocationId InvestigatorId env, HasSource ForSkillTest env, HasTestAction ForSkillTest env) => HasModifiersFor env investigator Asset
 deriving anyclass instance (AssetRunner env) => RunMessage env Asset
+
+instance IsCard Asset where
+  toCard a = PlayerCard $ lookupPlayerCard (getCardCode a) (getCardId a)
+
+instance HasCardId Asset where
+  getCardId = CardId . unAssetId . assetId . assetAttrs
 
 newtype BaseAsset = BaseAsset Attrs
   deriving newtype (Show, ToJSON, FromJSON)

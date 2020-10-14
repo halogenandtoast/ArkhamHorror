@@ -1,27 +1,27 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Cards.AudubonPark where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
+import Arkham.Import
+
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Trait
-import ClassyPrelude
 
 newtype AudubonPark = AudubonPark Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 audubonPark :: AudubonPark
-audubonPark = AudubonPark $ baseAttrs
-  "81011"
-  "Audubon Park"
-  3
-  (PerPlayer 1)
-  Squiggle
-  [Triangle, Squiggle]
-  [Riverside]
+audubonPark = AudubonPark $ (baseAttrs
+                              "81011"
+                              "Audubon Park"
+                              3
+                              (PerPlayer 1)
+                              Squiggle
+                              [Triangle, Squiggle]
+                              [Riverside]
+                            )
+  { locationVictory = Just 1
+  }
 
 instance HasModifiersFor env investigator AudubonPark where
   getModifiersFor _ _ _ = pure []
@@ -30,4 +30,7 @@ instance (IsInvestigator investigator) => HasActions env investigator AudubonPar
   getActions i window (AudubonPark attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env AudubonPark where
-  runMessage msg (AudubonPark attrs) = AudubonPark <$> runMessage msg attrs
+  runMessage msg l@(AudubonPark attrs@Attrs {..}) = case msg of
+    EnemyEvaded iid eid | eid `member` locationEnemies ->
+      l <$ unshiftMessage (RandomDiscard iid)
+    _ -> AudubonPark <$> runMessage msg attrs

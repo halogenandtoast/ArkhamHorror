@@ -204,6 +204,9 @@ runGameTestOnlyOption _reason game = case mapToList (gameQuestion game) of
     ChooseOneAtATime [msg] ->
       toInternalGame (game { gameMessages = msg : gameMessages game })
         >>= runMessages
+    ChooseN _ [msg] ->
+      toInternalGame (game { gameMessages = msg : gameMessages game })
+        >>= runMessages
     _ -> error "spec expectation mismatch"
   _ -> error "There must be only one choice to use this function"
 

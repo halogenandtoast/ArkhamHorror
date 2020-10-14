@@ -471,6 +471,8 @@ possibleSkillTypeChoices skillType attrs = foldr
 instance IsInvestigator Attrs where
   locationOf Attrs {..} = investigatorLocation
   discardOf Attrs {..} = investigatorDiscard
+  inPlayCounts Attrs {..} =
+    InPlayCounts { inPlayAssetsCount = length investigatorAssets }
   handOf Attrs {..} = investigatorHand
   deckOf Attrs {..} = unDeck investigatorDeck
   resourceCount Attrs {..} = investigatorResources

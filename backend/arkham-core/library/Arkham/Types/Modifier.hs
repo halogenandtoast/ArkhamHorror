@@ -40,6 +40,7 @@ data Modifier
   | ForcedTokenChange Token Token
   | HealthModifier Int
   | ReduceCostOf [Trait] Int
+  | ReduceCostOfCardType PlayerCardType Int
   | SanityModifier Int
   | ShroudModifier Int
   | SkillModifier SkillType Int

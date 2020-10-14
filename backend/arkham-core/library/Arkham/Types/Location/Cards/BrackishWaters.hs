@@ -1,14 +1,13 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Cards.BrackishWaters where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
+import Arkham.Import
+
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Trait
-import ClassyPrelude
 
 newtype BrackishWaters = BrackishWaters Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -23,12 +22,55 @@ brackishWaters = BrackishWaters $ baseAttrs
   [Squiggle, Square, Diamond, Hourglass]
   [Riverside, Bayou]
 
-instance HasModifiersFor env investigator BrackishWaters where
-  getModifiersFor _ _ _ = pure []
+instance IsInvestigator investigator => HasModifiersFor env investigator BrackishWaters where
+  getModifiersFor _ i (BrackishWaters Attrs {..}) =
+    pure [ CannotPlay [AssetType] | getId () i `elem` locationInvestigators ]
 
 instance (IsInvestigator investigator) => HasActions env investigator BrackishWaters where
+  getActions i NonFast (BrackishWaters attrs@Attrs {..}) = do
+    baseActions <- getActions i NonFast attrs
+    let
+      assetsCount =
+        count
+            (maybe False (playerCardMatch (AssetType, Nothing)) . toPlayerCard)
+            (handOf i)
+          + inPlayAssetsCount (inPlayCounts i)
+    pure
+      $ baseActions
+      <> [ ActivateCardAbilityAction
+             (getId () i)
+             (mkAbility
+               (toSource attrs)
+               1
+               (ActionAbility 1 (Just Action.Resign))
+             )
+         | getId () i `elem` locationInvestigators && assetsCount >= 2
+         ]
   getActions i window (BrackishWaters attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env BrackishWaters where
-  runMessage msg (BrackishWaters attrs) =
-    BrackishWaters <$> runMessage msg attrs
+  runMessage msg l@(BrackishWaters attrs) = case msg of
+    UseCardAbility iid source _ 1 | isSource attrs source -> do
+      assetIds <- asks $ setToList . getSet @AssetId iid
+      handAssetIds <- asks $ map unHandCardId . setToList . getSet
+        (iid, AssetType)
+      l <$ unshiftMessages
+        [ Ask
+          iid
+          (ChooseN 2
+          $ [ Discard (AssetTarget aid) | aid <- assetIds ]
+          <> [ DiscardCard iid cid | cid <- handAssetIds ]
+          )
+        , BeginSkillTest
+          iid
+          source
+          (toTarget attrs)
+          Nothing
+          SkillAgility
+          3
+          [TakeControlOfSetAsideAsset iid "81021"]
+          mempty
+          mempty
+          mempty
+        ]
+    _ -> BrackishWaters <$> runMessage msg attrs

@@ -12,14 +12,19 @@ newtype Broadmoor = Broadmoor Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 broadmoor :: Broadmoor
-broadmoor = Broadmoor $ baseAttrs
-  "81009"
-  "Broadmoor"
-  3
-  (PerPlayer 1)
-  Plus
-  [Square, Plus]
-  [NewOrleans]
+broadmoor =
+  Broadmoor
+    $ (baseAttrs
+        "81009"
+        "Broadmoor"
+        3
+        (PerPlayer 1)
+        Plus
+        [Square, Plus]
+        [NewOrleans]
+      )
+        { locationVictory = Just 1
+        }
 
 instance HasModifiersFor env investigator Broadmoor where
   getModifiersFor _ _ _ = pure []

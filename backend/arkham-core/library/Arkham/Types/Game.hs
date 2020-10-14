@@ -537,6 +537,15 @@ instance HasSet HandCardId InvestigatorId (Game queue) where
   getSet iid =
     setFromList . map (HandCardId . getCardId) . handOf . getInvestigator iid
 
+instance HasSet HandCardId (InvestigatorId, PlayerCardType) (Game queue) where
+  getSet (iid, cardType) =
+    setFromList
+      . map (HandCardId . getCardId)
+      . filter
+          (maybe False (playerCardMatch (cardType, Nothing)) . toPlayerCard)
+      . handOf
+      . getInvestigator iid
+
 instance HasSet Trait LocationId (Game queue) where
   getSet lid = getTraits . getLocation lid
 

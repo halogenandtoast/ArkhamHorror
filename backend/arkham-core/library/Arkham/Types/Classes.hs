@@ -365,6 +365,11 @@ class Exhaustable a where
   isReady = not . isExhausted
   {-# MINIMAL isExhausted | isReady #-}
 
+class IsCard a where
+  toCard :: a -> Card
+
+newtype InPlayCounts = InPlayCounts { inPlayAssetsCount :: Int }
+
 class (HasId InvestigatorId () investigator) => IsInvestigator investigator where
   locationOf :: investigator -> LocationId
   canInvestigate :: (IsLocation location) => location -> investigator -> Bool
@@ -385,4 +390,5 @@ class (HasId InvestigatorId () investigator) => IsInvestigator investigator wher
   discardOf :: investigator -> [PlayerCard]
   handOf :: investigator -> [Card]
   deckOf :: investigator -> [PlayerCard]
+  inPlayCounts :: investigator -> InPlayCounts
   modifiedStatsOf :: (MonadReader env m, MonadIO m, HasModifiers env InvestigatorId) => Source -> investigator -> m Stats

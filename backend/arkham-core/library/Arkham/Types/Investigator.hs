@@ -150,6 +150,7 @@ instance IsInvestigator Investigator where
   discardOf = discardOf . investigatorAttrs
   handOf = handOf . investigatorAttrs
   deckOf = deckOf . investigatorAttrs
+  inPlayCounts = inPlayCounts . investigatorAttrs
   remainingHealth = remainingHealth . investigatorAttrs
   remainingSanity = remainingSanity . investigatorAttrs
   modifiedStatsOf source = modifiedStatsOf source . investigatorAttrs

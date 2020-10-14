@@ -305,6 +305,8 @@ data Message
   | SpendClues Int [InvestigatorId]
   | InvestigatorSpendClues InvestigatorId Int
   | CreateStoryAssetAt CardCode LocationId
+  | TakeControlOfAsset InvestigatorId AssetId
+  | TakeControlOfSetAsideAsset InvestigatorId CardCode
   | PutCardIntoPlay InvestigatorId Card (Maybe Target)
   | AddAssetAt AssetId LocationId
   | Resolution Int
@@ -315,7 +317,6 @@ data Message
   | InvestigatorDefeated InvestigatorId
   | AddAbility Source Ability
   | RemoveAbilitiesFrom Source
-  | TakeControlOfAsset InvestigatorId AssetId
   | InvestigatorResigned InvestigatorId
   | InvestigatorWhenEliminated InvestigatorId
   | InvestigatorEliminated InvestigatorId
@@ -374,6 +375,7 @@ chooseOne iid msgs = Ask iid (ChooseOne msgs)
 
 data Question
   = ChooseOne [Message]
+  | ChooseN Int [Message]
   | ChooseOneAtATime [Message]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)

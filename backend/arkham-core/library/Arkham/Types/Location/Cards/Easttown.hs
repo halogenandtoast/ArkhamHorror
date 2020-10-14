@@ -1,18 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Cards.Easttown where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
+import Arkham.Import
+
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Source
-import Arkham.Types.Target
 import Arkham.Types.Trait
-import ClassyPrelude
 
 newtype Easttown = Easttown Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -27,29 +20,14 @@ easttown = Easttown $ baseAttrs
   [Circle, Triangle]
   [Arkham]
 
-instance HasModifiersFor env investigator Easttown where
-  getModifiersFor _ _ _ = pure []
+instance IsInvestigator investigator => HasModifiersFor env investigator Easttown where
+  getModifiersFor _ i (Easttown Attrs {..}) =
+    pure [ ReduceCostOf [Ally] 2 | getId () i `member` locationInvestigators ]
 
 instance (IsInvestigator investigator) => HasActions env investigator Easttown where
   getActions i window (Easttown attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Easttown where
-  runMessage msg (Easttown attrs@Attrs {..}) = case msg of
-    WhenEnterLocation iid lid | lid == locationId -> do
-      unshiftMessage
-        (AddModifiers
-          (InvestigatorTarget iid)
-          (LocationSource "01132")
-          [ReduceCostOf [Ally] 2]
-        )
-      Easttown <$> runMessage msg attrs
-    WhenEnterLocation iid lid
-      | lid /= locationId && iid `elem` locationInvestigators -> do
-        unshiftMessage
-          (RemoveAllModifiersOnTargetFrom
-            (InvestigatorTarget iid)
-            (LocationSource "01132")
-          )
-        Easttown <$> runMessage msg attrs
-    _ -> Easttown <$> runMessage msg attrs
+  runMessage msg (Easttown attrs@Attrs {..}) =
+    Easttown <$> runMessage msg attrs
 

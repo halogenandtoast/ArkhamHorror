@@ -145,6 +145,13 @@ putApiV1ArkhamGameR gameId = do
       Just (ChooseOne qs) -> case qs !!? qrChoice response of
         Nothing -> [Ask investigatorId $ ChooseOne qs]
         Just msg -> [msg]
+      Just (ChooseN n qs) -> do
+        let (mm, msgs') = extract (qrChoice response) msgs
+        case (mm, msgs') of
+          (Just m', []) -> [m']
+          (Just m', msgs'') ->
+            [m', Ask investigatorId $ ChooseN (n - 1) msgs'']
+          (Nothing, msgs'') -> [Ask investigatorId $ ChooseOneAtATime msgs'']
       Just (ChooseOneAtATime msgs) -> do
         let (mm, msgs') = extract (qrChoice response) msgs
         case (mm, msgs') of

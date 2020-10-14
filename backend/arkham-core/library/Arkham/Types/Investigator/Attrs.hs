@@ -397,6 +397,8 @@ modifiedCardCost Attrs {..} (PlayerCard MkPlayerCard {..}) = foldr
     DynamicCost -> 0
   applyModifier (ReduceCostOf traits m) n
     | not (null (setFromList traits `intersection` pcTraits)) = max 0 (n - m)
+  applyModifier (ReduceCostOfCardType cardType m) n
+    | cardType == pcCardType = max 0 (n - m)
   applyModifier _ n = n
 modifiedCardCost Attrs {..} (EncounterCard MkEncounterCard {..}) = foldr
   applyModifier

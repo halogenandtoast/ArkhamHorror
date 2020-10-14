@@ -34,6 +34,7 @@ data Attrs = Attrs
   , locationEvents :: HashSet EventId
   , locationAssets :: HashSet AssetId
   , locationModifiers :: HashMap Source [Modifier]
+  , locationModifiersFor :: HashMap Target [Modifier]
   }
   deriving stock (Show, Generic)
 
@@ -47,6 +48,12 @@ instance FromJSON Attrs where
 isSource :: Attrs -> Source -> Bool
 isSource Attrs { locationId } (LocationSource lid) = locationId == lid
 isSource _ _ = False
+
+toTarget :: Attrs -> Target
+toTarget Attrs { locationId } = LocationTarget locationId
+
+toSource :: Attrs -> Source
+toSource Attrs { locationId } = LocationSource locationId
 
 symbol :: Lens' Attrs LocationSymbol
 symbol = lens locationSymbol $ \m x -> m { locationSymbol = x }
@@ -83,6 +90,10 @@ connectedLocations =
 
 blocked :: Lens' Attrs Bool
 blocked = lens locationBlocked $ \m x -> m { locationBlocked = x }
+
+modifiersFor :: Lens' Attrs (HashMap Target [Modifier])
+modifiersFor =
+  lens locationModifiersFor $ \m x -> m { locationModifiersFor = x }
 
 modifiers :: Lens' Attrs (HashMap Source [Modifier])
 modifiers = lens locationModifiers $ \m x -> m { locationModifiers = x }
@@ -121,6 +132,7 @@ baseAttrs lid name shroud' revealClues symbol' connectedSymbols' traits' =
     , locationEvents = mempty
     , locationAssets = mempty
     , locationModifiers = mempty
+    , locationModifiersFor = mempty
     }
 
 clues :: Lens' Attrs Int

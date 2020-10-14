@@ -23,6 +23,9 @@ overgrownCairns = OvergrownCairns $ baseAttrs
   [Hourglass, Equals]
   [Unhallowed]
 
+instance HasModifiersFor env investigator OvergrownCairns where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator OvergrownCairns where
   getActions i window (OvergrownCairns attrs) = getActions i window attrs
 

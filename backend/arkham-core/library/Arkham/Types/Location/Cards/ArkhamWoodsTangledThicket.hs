@@ -31,6 +31,9 @@ arkhamWoodsTangledThicket =
     , locationRevealedSymbol = Equals
     }
 
+instance HasModifiersFor env investigator ArkhamWoodsTangledThicket where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsTangledThicket where
   getActions i window (ArkhamWoodsTangledThicket attrs) =
     getActions i window attrs

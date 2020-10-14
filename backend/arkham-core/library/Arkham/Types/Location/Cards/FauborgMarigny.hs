@@ -23,6 +23,9 @@ fauborgMarigny = FauborgMarigny $ baseAttrs
   [Triangle, Squiggle]
   [Riverside]
 
+instance HasModifiersFor env investigator FauborgMarigny where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator FauborgMarigny where
   getActions i window (FauborgMarigny attrs) = getActions i window attrs
 

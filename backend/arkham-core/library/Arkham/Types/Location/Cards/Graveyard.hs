@@ -13,7 +13,6 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype Graveyard = Graveyard Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -25,6 +24,9 @@ graveyard =
       )
         { locationVictory = Just 1
         }
+
+instance HasModifiersFor env investigator Graveyard where
+  getModifiersFor _ _ _ = pure []
 
 instance (IsInvestigator investigator) => HasActions env investigator Graveyard where
   getActions i window (Graveyard attrs) = getActions i window attrs

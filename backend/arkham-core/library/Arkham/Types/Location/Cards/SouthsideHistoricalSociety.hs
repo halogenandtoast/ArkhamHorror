@@ -27,6 +27,9 @@ southsideHistoricalSociety = SouthsideHistoricalSociety $ baseAttrs
   [Diamond, Plus, Circle]
   [Arkham]
 
+instance HasModifiersFor env investigator SouthsideHistoricalSociety where
+  getModifiersFor _ _ _ = pure []
+
 instance (ActionRunner env investigator) => HasActions env investigator SouthsideHistoricalSociety where
   getActions i NonFast (SouthsideHistoricalSociety attrs@Attrs {..}) = do
     baseActions <- getActions i NonFast attrs

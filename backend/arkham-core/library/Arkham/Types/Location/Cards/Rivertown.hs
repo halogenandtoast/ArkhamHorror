@@ -23,6 +23,9 @@ rivertown = Rivertown $ baseAttrs
   [Moon, Diamond, Square, Squiggle, Hourglass]
   [Arkham, Central]
 
+instance HasModifiersFor env investigator Rivertown where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator Rivertown where
   getActions i window (Rivertown attrs) = getActions i window attrs
 

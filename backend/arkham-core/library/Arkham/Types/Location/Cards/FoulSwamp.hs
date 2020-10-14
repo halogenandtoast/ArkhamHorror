@@ -23,6 +23,9 @@ foulSwamp = FoulSwamp $ baseAttrs
   [Equals, Square, Triangle, Diamond]
   [Unhallowed, Bayou]
 
+instance HasModifiersFor env investigator FoulSwamp where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator FoulSwamp where
   getActions i window (FoulSwamp attrs) = getActions i window attrs
 

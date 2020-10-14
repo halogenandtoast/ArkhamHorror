@@ -13,7 +13,6 @@ import Arkham.Types.Source
 import Arkham.Types.Trait
 import Arkham.Types.Window
 import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype DowntownFirstBankOfArkham = DowntownFirstBankOfArkham Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -21,6 +20,9 @@ newtype DowntownFirstBankOfArkham = DowntownFirstBankOfArkham Attrs
 downtownFirstBankOfArkham :: DowntownFirstBankOfArkham
 downtownFirstBankOfArkham = DowntownFirstBankOfArkham
   $ baseAttrs "01130" "Downtown" 3 (PerPlayer 1) Triangle [Moon, T] [Arkham]
+
+instance HasModifiersFor env investigator DowntownFirstBankOfArkham where
+  getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator DowntownFirstBankOfArkham where
   getActions i NonFast (DowntownFirstBankOfArkham attrs@Attrs {..}) = do

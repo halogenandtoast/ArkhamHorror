@@ -13,7 +13,6 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype Easttown = Easttown Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -27,6 +26,9 @@ easttown = Easttown $ baseAttrs
   Moon
   [Circle, Triangle]
   [Arkham]
+
+instance HasModifiersFor env investigator Easttown where
+  getModifiersFor _ _ _ = pure []
 
 instance (IsInvestigator investigator) => HasActions env investigator Easttown where
   getActions i window (Easttown attrs) = getActions i window attrs

@@ -28,6 +28,9 @@ stMarysHospital = StMarysHospital $ baseAttrs
   [Diamond, Square]
   [Arkham]
 
+instance HasModifiersFor env investigator StMarysHospital where
+  getModifiersFor _ _ _ = pure []
+
 instance (ActionRunner env investigator) => HasActions env investigator StMarysHospital where
   getActions i NonFast (StMarysHospital attrs@Attrs {..}) = do
     baseActions <- getActions i NonFast attrs

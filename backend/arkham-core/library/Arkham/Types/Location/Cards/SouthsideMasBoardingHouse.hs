@@ -28,6 +28,9 @@ southsideMasBoardingHouse = SouthsideMasBoardingHouse $ baseAttrs
   [Diamond, Plus, Circle]
   [Arkham]
 
+instance HasModifiersFor env investigator SouthsideMasBoardingHouse where
+  getModifiersFor _ _ _ = pure []
+
 instance (ActionRunner env investigator) => HasActions env investigator SouthsideMasBoardingHouse where
   getActions i NonFast (SouthsideMasBoardingHouse attrs@Attrs {..}) = do
     baseActions <- getActions i NonFast attrs

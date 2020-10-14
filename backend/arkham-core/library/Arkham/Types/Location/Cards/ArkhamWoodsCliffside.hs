@@ -31,6 +31,9 @@ arkhamWoodsCliffside = ArkhamWoodsCliffside $ (baseAttrs
   , locationRevealedSymbol = Hourglass
   }
 
+instance HasModifiersFor env investigator ArkhamWoodsCliffside where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsCliffside where
   getActions i window (ArkhamWoodsCliffside attrs) = getActions i window attrs
 

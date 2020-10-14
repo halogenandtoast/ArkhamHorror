@@ -24,6 +24,9 @@ mainPath :: MainPath
 mainPath = MainPath
   $ baseAttrs "01149" "Main Path" 2 (Static 0) Squiggle [Square, Plus] [Woods]
 
+instance HasModifiersFor env investigator MainPath where
+  getModifiersFor _ _ _ = pure []
+
 instance (IsInvestigator investigator) => HasActions env investigator MainPath where
   getActions i NonFast (MainPath attrs@Attrs {..}) | locationRevealed = do
     baseActions <- getActions i NonFast attrs

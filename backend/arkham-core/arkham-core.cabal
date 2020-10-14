@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 886b611324637494dbdde3ddb2888d1515f44cd1d08699d5c97e3f43a4345c53
+-- hash: cdc4a202a6c801a24c6ac689d7c0def25756844439e7f18bb8bfa45104099b5b
 
 name:           arkham-core
 version:        0.0.0
@@ -314,6 +314,7 @@ library
       Arkham.Types.Scenario.Scenarios.TheGathering
       Arkham.Types.Scenario.Scenarios.TheMidnightMasks
       Arkham.Types.ScenarioId
+      Arkham.Types.ScenarioLogKey
       Arkham.Types.Skill
       Arkham.Types.Skill.Attrs
       Arkham.Types.Skill.Cards

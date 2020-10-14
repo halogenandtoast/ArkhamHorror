@@ -34,6 +34,9 @@ arkhamWoodsQuietGlade = ArkhamWoodsQuietGlade $ (baseAttrs
   , locationRevealedSymbol = Moon
   }
 
+instance HasModifiersFor env investigator ArkhamWoodsQuietGlade where
+  getModifiersFor _ _ _ = pure []
+
 instance (ActionRunner env investigator) => HasActions env investigator ArkhamWoodsQuietGlade where
   getActions i NonFast (ArkhamWoodsQuietGlade attrs@Attrs {..}) = do
     baseActions <- getActions i NonFast attrs

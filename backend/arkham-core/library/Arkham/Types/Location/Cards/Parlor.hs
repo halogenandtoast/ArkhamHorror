@@ -29,6 +29,9 @@ parlor =
     { locationBlocked = True
     }
 
+instance HasModifiersFor env investigator Parlor where
+  getModifiersFor _ _ _ = pure []
+
 instance (ActionRunner env investigator) => HasActions env investigator Parlor where
   getActions i NonFast (Parlor attrs@Attrs {..}) | locationRevealed = do
     baseActions <- getActions i NonFast attrs

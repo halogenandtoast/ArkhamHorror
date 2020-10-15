@@ -23,6 +23,7 @@ data Modifier
   | CannotBeAttackedByNonElite
   | CannotBeEnteredByNonElite
   | CannotMove
+  | CannotGainResources
   | DoNotDrawChaosTokensForSkillChecks
   | SpawnNonEliteAtConnectingInstead
   | CannotDiscoverClues

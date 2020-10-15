@@ -3,7 +3,6 @@ module Arkham.Types.Location.Cards.BrackishWaters where
 
 import Arkham.Import
 
-import qualified Arkham.Types.Action as Action
 import Arkham.Types.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -42,7 +41,7 @@ instance (IsInvestigator investigator) => HasActions env investigator BrackishWa
              (mkAbility
                (toSource attrs)
                1
-               (ActionAbility 1 (Just Action.Resign))
+               (ActionAbility 1 Nothing)
              )
          | getId () i `elem` locationInvestigators && assetsCount >= 2
          ]

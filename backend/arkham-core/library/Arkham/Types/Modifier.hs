@@ -24,6 +24,8 @@ data Modifier
   | CannotBeEnteredByNonElite
   | CannotMove
   | CannotGainResources
+  | CannotHealHorror
+  | CannotCancelHorror
   | DoNotDrawChaosTokensForSkillChecks
   | SpawnNonEliteAtConnectingInstead
   | CannotDiscoverClues

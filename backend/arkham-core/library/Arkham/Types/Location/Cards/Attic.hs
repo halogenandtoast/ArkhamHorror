@@ -1,15 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Cards.Attic where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
+import Arkham.Import
+
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.Source
-import ClassyPrelude
 
 newtype Attic = Attic Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -27,9 +22,7 @@ instance (IsInvestigator investigator) => HasActions env investigator Attic wher
   getActions i window (Attic attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Attic where
-  runMessage msg a@(Attic attrs@Attrs {..}) = case msg of
-    AfterEnterLocation iid lid | lid == locationId -> do
-      unshiftMessage
-        $ InvestigatorAssignDamage iid (LocationSource locationId) 0 1
-      pure a
+  runMessage msg a@(Attic attrs@Attrs { locationId }) = case msg of
+    AfterEnterLocation iid lid | lid == locationId -> a <$ unshiftMessage
+      (InvestigatorAssignDamage iid (LocationSource locationId) 0 1)
     _ -> Attic <$> runMessage msg attrs

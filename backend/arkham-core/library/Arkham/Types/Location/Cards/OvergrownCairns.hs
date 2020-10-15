@@ -1,9 +1,14 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.OvergrownCairns where
+module Arkham.Types.Location.Cards.OvergrownCairns
+  ( OvergrownCairns(..)
+  , overgrownCairns
+  )
+where
 
 import Arkham.Import
 
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
@@ -24,26 +29,22 @@ instance HasModifiersFor env investigator OvergrownCairns where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
-ability attrs =             (mkAbility
-               (toSource attrs)
-               1
-               (ActionAbility 1 Nothing)
-             )
+ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
 
 instance (ActionRunner env investigator) => HasActions env investigator OvergrownCairns where
-  getActions i NonFast (OvergrownCairns attrs@Attrs {..}) = do
-    let ability' = (getId () i, ability attrs)
-    unused <- asks $ notElem ability' . map unUsedAbility . getList ()
+  getActions i NonFast (OvergrownCairns attrs) = do
+    unused <- getIsUnused i (ability attrs)
     baseActions <- getActions i NonFast attrs
     pure
       $ baseActions
-      <> [ uncurry ActivateCardAbilityAction ability'
-         | unused && getId () i `elem` locationInvestigators && resourceCount i >= 2
+      <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
+         | unused && atLocation i attrs && resourceCount i >= 2
          ]
   getActions i window (OvergrownCairns attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env OvergrownCairns where
   runMessage msg l@(OvergrownCairns attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source ->
-      l <$ unshiftMessages [SpendResources iid 2, HealHorror (InvestigatorTarget iid) 2]
+      l <$ unshiftMessages
+        [SpendResources iid 2, HealHorror (InvestigatorTarget iid) 2]
     _ -> OvergrownCairns <$> runMessage msg attrs

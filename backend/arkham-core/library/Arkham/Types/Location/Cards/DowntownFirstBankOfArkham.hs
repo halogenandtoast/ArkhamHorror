@@ -1,18 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Cards.DowntownFirstBankOfArkham where
 
-import Arkham.Json
-import Arkham.Types.Ability
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
+import Arkham.Import
+
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Trait
-import Arkham.Types.Window
-import ClassyPrelude
 
 newtype DowntownFirstBankOfArkham = DowntownFirstBankOfArkham Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -25,9 +18,10 @@ instance HasModifiersFor env investigator DowntownFirstBankOfArkham where
   getModifiersFor _ _ _ = pure []
 
 instance (ActionRunner env investigator) => HasActions env investigator DowntownFirstBankOfArkham where
-  getActions i NonFast (DowntownFirstBankOfArkham attrs@Attrs {..}) = do
+  getActions i NonFast (DowntownFirstBankOfArkham attrs@Attrs {..}) | locationRevealed = do
     baseActions <- getActions i NonFast attrs
     usedAbilities <- map unUsedAbility <$> asks (getList ())
+    modifiers' <- getModifiersFor (LocationSource locationId) (getId @InvestigatorId () i) =<< ask
     let
       ability = (mkAbility (LocationSource "01130") 1 (ActionAbility 1 Nothing)
                 )
@@ -38,7 +32,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Downtown
       <> [ ActivateCardAbilityAction (getId () i) ability
          | (getId () i, ability)
            `notElem` usedAbilities
-           && locationRevealed
+           && CannotGainResources `notElem` modifiers'
            && getId () i
            `elem` locationInvestigators
            && hasActionsRemaining i Nothing locationTraits

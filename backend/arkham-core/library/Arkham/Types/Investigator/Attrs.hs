@@ -1173,12 +1173,20 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   InvestigatorSpendClues iid n | iid == investigatorId -> pure $ a & clues -~ n
   SpendResources iid n | iid == investigatorId ->
     pure $ a & resources %~ max 0 . subtract n
-  TakeResources iid n True | iid == investigatorId -> a <$ unshiftMessages
-    [ TakeAction iid 1 (Just Action.Resource)
-    , CheckAttackOfOpportunity iid False
-    , TakeResources iid n False
-    ]
-  TakeResources iid n False | iid == investigatorId -> pure $ a & resources +~ n
+  TakeResources iid n True | iid == investigatorId -> do
+    modifiers' <- getModifiersFor (InvestigatorSource iid) iid =<< ask
+    unless (CannotGainResources `elem` modifiers') $
+      unshiftMessages
+      [ TakeAction iid 1 (Just Action.Resource)
+      , CheckAttackOfOpportunity iid False
+      , TakeResources iid n False
+      ]
+    pure a
+  TakeResources iid n False | iid == investigatorId -> do
+    modifiers' <- getModifiersFor (InvestigatorSource iid) iid =<< ask
+    if (CannotGainResources `elem` modifiers')
+       then pure a
+       else pure $ a & resources +~ n
   EmptyDeck iid | iid == investigatorId -> a <$ unshiftMessages
     [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
   AllDrawEncounterCard | not (a ^. defeated || a ^. resigned) ->
@@ -1441,10 +1449,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     actions <- join $ asks (getActions a NonFast)
     fastActions <- join $ asks (getActions a (DuringTurn You))
     playerWindowActions <- join $ asks (getActions a FastPlayerWindow)
+    modifiers' <- getModifiersFor (InvestigatorSource iid) iid =<< ask
     a <$ unshiftMessage
       (Ask iid $ ChooseOne
         (additionalActions
-        <> [ TakeResources iid 1 True | canAfford a Action.Resource ]
+        <> [ TakeResources iid 1 True | canAfford a Action.Resource && CannotGainResources `notElem` modifiers']
         <> [ DrawCards iid 1 True | canAfford a Action.Draw ]
         <> [ PlayCard iid (getCardId c) Nothing True
            | c <- investigatorHand

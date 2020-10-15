@@ -1,22 +1,14 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.ZoeySamaras where
 
-import Arkham.Types.Ability
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Source
 import Arkham.Types.Stats
-import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window (Who(..))
-import qualified Arkham.Types.Window as Fast
-import ClassyPrelude
-import Data.Aeson
 
 newtype ZoeySamaras = ZoeySamaras Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -37,19 +29,20 @@ zoeySamaras = ZoeySamaras $ baseAttrs
   [Believer, Hunter]
 
 instance (ActionRunner env investigator) => HasActions env investigator ZoeySamaras where
-  getActions i (Fast.AfterEnemyEngageInvestigator You eid) (ZoeySamaras Attrs {..})
+  getActions i (AfterEnemyEngageInvestigator You eid) (ZoeySamaras Attrs {..})
     | getId () i == investigatorId
     = do
       let
         ability = mkAbility
           (InvestigatorSource investigatorId)
           1
-          (ReactionAbility (Fast.AfterEnemyEngageInvestigator You eid))
+          (ReactionAbility (AfterEnemyEngageInvestigator You eid))
 
+      modifiers' <- getModifiersFor (InvestigatorSource investigatorId) (getId @InvestigatorId () i) =<< ask
       usedAbilities <- map unUsedAbility <$> asks (getList ())
       pure
         [ ActivateCardAbilityAction investigatorId ability
-        | (investigatorId, ability) `notElem` usedAbilities
+        | (investigatorId, ability) `notElem` usedAbilities && CannotGainResources `notElem` modifiers'
         ]
 
   getActions i window (ZoeySamaras attrs) = getActions i window attrs

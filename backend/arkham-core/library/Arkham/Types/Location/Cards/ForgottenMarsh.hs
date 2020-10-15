@@ -1,14 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Cards.ForgottenMarsh where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
+import Arkham.Import
+
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Trait
-import ClassyPrelude
 
 newtype ForgottenMarsh = ForgottenMarsh Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -30,5 +27,8 @@ instance (IsInvestigator investigator) => HasActions env investigator ForgottenM
   getActions i window (ForgottenMarsh attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env ForgottenMarsh where
-  runMessage msg (ForgottenMarsh attrs) =
-    ForgottenMarsh <$> runMessage msg attrs
+  runMessage msg l@(ForgottenMarsh attrs@Attrs {..}) = case msg of
+    Will (MoveTo iid lid)
+      | iid `elem` locationInvestigators && lid /= locationId ->
+        l <$ unshiftMessage (SpendResources iid 2)
+    _ -> ForgottenMarsh <$> runMessage msg attrs

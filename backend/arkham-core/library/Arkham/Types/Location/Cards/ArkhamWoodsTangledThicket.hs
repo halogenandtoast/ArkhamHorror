@@ -1,35 +1,29 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Cards.ArkhamWoodsTangledThicket where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
+import Arkham.Import
+
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.SkillType
 import Arkham.Types.Trait
-import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype ArkhamWoodsTangledThicket = ArkhamWoodsTangledThicket Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 arkhamWoodsTangledThicket :: ArkhamWoodsTangledThicket
-arkhamWoodsTangledThicket =
-  ArkhamWoodsTangledThicket $ (baseAttrs
-                                "01154"
-                                "Arkham Woods: Tangled Thicket"
-                                2
-                                (PerPlayer 1)
-                                Square
-                                [Squiggle]
-                                [Woods]
-                              )
-    { locationRevealedConnectedSymbols = HashSet.fromList [Squiggle, T, Moon]
-    , locationRevealedSymbol = Equals
-    }
+arkhamWoodsTangledThicket = ArkhamWoodsTangledThicket $ base
+  { locationRevealedConnectedSymbols = setFromList [Squiggle, T, Moon]
+  , locationRevealedSymbol = Equals
+  }
+ where
+  base = baseAttrs
+    "01154"
+    "Arkham Woods: Tangled Thicket"
+    2
+    (PerPlayer 1)
+    Square
+    [Squiggle]
+    [Woods]
 
 instance HasModifiersFor env investigator ArkhamWoodsTangledThicket where
   getModifiersFor _ _ _ = pure []
@@ -40,19 +34,7 @@ instance (IsInvestigator investigator) => HasActions env investigator ArkhamWood
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsTangledThicket where
   runMessage msg (ArkhamWoodsTangledThicket attrs@Attrs {..}) = case msg of
-    Investigate iid lid source _ modifiers' tokenResponses overrides False
-      | lid == locationId
-      -> ArkhamWoodsTangledThicket
-        <$> runMessage
-              (Investigate
-                iid
-                lid
-                source
-                SkillCombat
-                modifiers'
-                tokenResponses
-                overrides
-                False
-              )
-              attrs
+    Investigate iid lid s _ m tr o False | lid == locationId -> do
+      let investigate = Investigate iid lid s SkillCombat m tr o False
+      ArkhamWoodsTangledThicket <$> runMessage investigate attrs
     _ -> ArkhamWoodsTangledThicket <$> runMessage msg attrs

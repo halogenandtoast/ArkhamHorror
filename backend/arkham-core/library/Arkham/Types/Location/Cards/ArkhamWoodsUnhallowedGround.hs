@@ -1,38 +1,30 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Cards.ArkhamWoodsUnhallowedGround where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
+import Arkham.Import
+
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
 import Arkham.Types.Trait
-import ClassyPrelude
-import qualified Data.HashSet as HashSet
 
 newtype ArkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 arkhamWoodsUnhallowedGround :: ArkhamWoodsUnhallowedGround
-arkhamWoodsUnhallowedGround =
-  ArkhamWoodsUnhallowedGround $ (baseAttrs
-                                  "01150"
-                                  "Arkham Woods: Unhallowed Ground"
-                                  4
-                                  (PerPlayer 1)
-                                  Square
-                                  [Squiggle]
-                                  [Woods]
-                                )
-    { locationRevealedConnectedSymbols = HashSet.fromList
-      [Squiggle, Hourglass, Diamond]
-    , locationRevealedSymbol = Triangle
-    }
+arkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround $ base
+  { locationRevealedConnectedSymbols = setFromList
+    [Squiggle, Hourglass, Diamond]
+  , locationRevealedSymbol = Triangle
+  }
+ where
+  base = baseAttrs
+    "01150"
+    "Arkham Woods: Unhallowed Ground"
+    4
+    (PerPlayer 1)
+    Square
+    [Squiggle]
+    [Woods]
 
 instance HasModifiersFor env investigator ArkhamWoodsUnhallowedGround where
   getModifiersFor _ _ _ = pure []

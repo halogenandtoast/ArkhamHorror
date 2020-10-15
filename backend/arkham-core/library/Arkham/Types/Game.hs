@@ -1351,6 +1351,8 @@ runGameMessage msg g = case msg of
       EncounterCard _ -> pure g
   ActivateCardAbilityAction iid ability ->
     pure $ g & usedAbilities %~ ((iid, ability) :)
+  ActivateCardAbilityActionWithDynamicCost iid ability ->
+    pure $ g & usedAbilities %~ ((iid, ability) :)
   DrewPlayerTreachery iid cardCode cardId -> do
     let
       playerCard = lookupPlayerCard cardCode cardId

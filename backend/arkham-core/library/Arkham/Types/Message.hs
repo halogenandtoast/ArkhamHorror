@@ -147,7 +147,9 @@ data Message
   | GainActions InvestigatorId Source Int
   | ChooseActivateCardAbilityAction InvestigatorId
   | ActivateCardAbilityAction InvestigatorId Ability
+  | ActivateCardAbilityActionWithDynamicCost InvestigatorId Ability
   | UseCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int
+  | PayForCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int
   | UseScenarioSpecificAbility InvestigatorId Int
   | AddUses Target UseType Int
   | ResolveToken Token InvestigatorId

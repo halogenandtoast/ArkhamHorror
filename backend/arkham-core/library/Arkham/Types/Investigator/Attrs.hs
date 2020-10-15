@@ -397,8 +397,8 @@ modifiedCardCost Attrs {..} (PlayerCard MkPlayerCard {..}) = foldr
     DynamicCost -> 0
   applyModifier (ReduceCostOf traits m) n
     | not (null (setFromList traits `intersection` pcTraits)) = max 0 (n - m)
-  applyModifier (ReduceCostOfCardType cardType m) n
-    | cardType == pcCardType = max 0 (n - m)
+  applyModifier (ReduceCostOfCardType cardType m) n | cardType == pcCardType =
+    max 0 (n - m)
   applyModifier _ n = n
 modifiedCardCost Attrs {..} (EncounterCard MkEncounterCard {..}) = foldr
   applyModifier
@@ -538,6 +538,21 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
 _PlayerCard :: Traversal' Card PlayerCard
 _PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
 _PlayerCard _ (EncounterCard ec) = pure (EncounterCard ec)
+
+hasModifier
+  :: ( Monad m
+     , MonadReader env m
+     , HasModifiersFor env InvestigatorId env
+     , MonadIO m
+     )
+  => Attrs
+  -> Modifier
+  -> m Bool
+hasModifier Attrs { investigatorId } m =
+  elem m
+    <$> (getModifiersFor (InvestigatorSource investigatorId) investigatorId
+        =<< ask
+        )
 
 runInvestigatorMessage
   :: (InvestigatorRunner Attrs env, MonadReader env m, MonadIO m, MonadFail m)
@@ -1051,8 +1066,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     else pure a
   HealDamage (InvestigatorTarget iid) amount | iid == investigatorId ->
     pure $ a & healthDamage %~ max 0 . subtract amount
-  HealHorror (InvestigatorTarget iid) amount | iid == investigatorId ->
-    pure $ a & sanityDamage %~ max 0 . subtract amount
+  HealHorror (InvestigatorTarget iid) amount | iid == investigatorId -> do
+    cannotHealHorror <- hasModifier a CannotHealHorror
+    pure $ if cannotHealHorror
+      then a
+      else a & sanityDamage %~ max 0 . subtract amount
   InvestigatorWhenDefeated iid | iid == investigatorId -> do
     unshiftMessage (InvestigatorDefeated iid)
     pure $ a & defeated .~ True & endedTurn .~ True
@@ -1174,19 +1192,15 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   SpendResources iid n | iid == investigatorId ->
     pure $ a & resources %~ max 0 . subtract n
   TakeResources iid n True | iid == investigatorId -> do
-    modifiers' <- getModifiersFor (InvestigatorSource iid) iid =<< ask
-    unless (CannotGainResources `elem` modifiers') $
-      unshiftMessages
+    unlessM (hasModifier a CannotGainResources) $ unshiftMessages
       [ TakeAction iid 1 (Just Action.Resource)
       , CheckAttackOfOpportunity iid False
       , TakeResources iid n False
       ]
     pure a
   TakeResources iid n False | iid == investigatorId -> do
-    modifiers' <- getModifiersFor (InvestigatorSource iid) iid =<< ask
-    if (CannotGainResources `elem` modifiers')
-       then pure a
-       else pure $ a & resources +~ n
+    cannotGainResources <- hasModifier a CannotGainResources
+    pure $ if cannotGainResources then a else a & resources +~ n
   EmptyDeck iid | iid == investigatorId -> a <$ unshiftMessages
     [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
   AllDrawEncounterCard | not (a ^. defeated || a ^. resigned) ->
@@ -1216,6 +1230,25 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
             [TakeAction iid n actionType, CheckAttackOfOpportunity iid False]
           else unshiftMessage (TakeAction iid n actionType)
     pure a
+  ActivateCardAbilityActionWithDynamicCost iid Ability {..}
+    | iid == investigatorId -> do
+      unshiftMessage
+        (PayForCardAbility iid abilitySource abilityMetadata abilityIndex) -- We should check action type when added for aoo
+      case abilityType of
+        ForcedAbility -> pure ()
+        FastAbility _ -> pure ()
+        ReactionAbility _ -> pure ()
+        ActionAbility n actionType ->
+          if actionType
+              `notElem` [ Just Action.Fight
+                        , Just Action.Evade
+                        , Just Action.Resign
+                        , Just Action.Parley
+                        ]
+            then unshiftMessages
+              [TakeAction iid n actionType, CheckAttackOfOpportunity iid False]
+            else unshiftMessage (TakeAction iid n actionType)
+      pure a
   AllDrawCardAndResource | not (a ^. defeated || a ^. resigned) -> do
     unshiftMessage (DrawCards investigatorId 1 False)
     pure $ a & resources +~ 1
@@ -1453,7 +1486,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     a <$ unshiftMessage
       (Ask iid $ ChooseOne
         (additionalActions
-        <> [ TakeResources iid 1 True | canAfford a Action.Resource && CannotGainResources `notElem` modifiers']
+        <> [ TakeResources iid 1 True
+           | canAfford a Action.Resource
+             && CannotGainResources
+             `notElem` modifiers'
+           ]
         <> [ DrawCards iid 1 True | canAfford a Action.Draw ]
         <> [ PlayCard iid (getCardId c) Nothing True
            | c <- investigatorHand

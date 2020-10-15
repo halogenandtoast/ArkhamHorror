@@ -4,6 +4,7 @@ module Arkham.Types.Location.Cards.GardenDistrict where
 import Arkham.Import
 
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
@@ -32,7 +33,7 @@ instance (IsInvestigator investigator) => HasActions env investigator GardenDist
       <> [ ActivateCardAbilityAction
              (getId () i)
              (mkAbility (LocationSource locationId) 1 (ActionAbility 1 Nothing))
-         | getId () i `elem` locationInvestigators
+         | atLocation i attrs && hasActionsRemaining i Nothing locationTraits
          ]
   getActions i window (GardenDistrict attrs) = getActions i window attrs
 

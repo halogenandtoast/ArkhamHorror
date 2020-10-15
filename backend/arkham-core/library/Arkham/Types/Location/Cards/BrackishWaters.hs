@@ -5,6 +5,7 @@ import Arkham.Import
 
 import Arkham.Types.Helpers
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
@@ -22,8 +23,8 @@ brackishWaters = BrackishWaters $ baseAttrs
   [Riverside, Bayou]
 
 instance IsInvestigator investigator => HasModifiersFor env investigator BrackishWaters where
-  getModifiersFor _ i (BrackishWaters Attrs {..}) =
-    pure [ CannotPlay [AssetType] | getId () i `elem` locationInvestigators ]
+  getModifiersFor _ i (BrackishWaters attrs) =
+    pure [ CannotPlay [AssetType] | atLocation i attrs ]
 
 instance (IsInvestigator investigator) => HasActions env investigator BrackishWaters where
   getActions i NonFast (BrackishWaters attrs@Attrs {..}) = do
@@ -38,12 +39,11 @@ instance (IsInvestigator investigator) => HasActions env investigator BrackishWa
       $ baseActions
       <> [ ActivateCardAbilityAction
              (getId () i)
-             (mkAbility
-               (toSource attrs)
-               1
-               (ActionAbility 1 Nothing)
-             )
-         | getId () i `elem` locationInvestigators && assetsCount >= 2
+             (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
+         | atLocation i attrs
+           && assetsCount
+           >= 2
+           && hasActionsRemaining i Nothing locationTraits
          ]
   getActions i window (BrackishWaters attrs) = getActions i window attrs
 

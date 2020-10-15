@@ -1,10 +1,15 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.FauborgMarigny where
+module Arkham.Types.Location.Cards.FauborgMarigny
+  ( FauborgMarigny(..)
+  , fauborgMarigny
+  )
+where
 
 import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
@@ -22,24 +27,21 @@ fauborgMarigny = FauborgMarigny $ baseAttrs
   [Riverside]
 
 instance IsInvestigator investigator => HasModifiersFor env investigator FauborgMarigny where
-  getModifiersFor _ i (FauborgMarigny Attrs { locationInvestigators }) = pure
-    [ ReduceCostOfCardType AssetType 1
-    | getId () i `member` locationInvestigators
-    ]
+  getModifiersFor _ i (FauborgMarigny attrs) =
+    pure [ ReduceCostOfCardType AssetType 1 | atLocation i attrs ]
+
+ability :: Attrs -> Ability
+ability attrs =
+  mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Resign))
 
 instance (IsInvestigator investigator) => HasActions env investigator FauborgMarigny where
-  getActions i NonFast (FauborgMarigny attrs@Attrs {..}) = do
+  getActions i NonFast (FauborgMarigny attrs@Attrs {..}) | locationRevealed = do
     baseActions <- getActions i NonFast attrs
     pure
       $ baseActions
-      <> [ ActivateCardAbilityAction
-             (getId () i)
-             (mkAbility
-               (toSource attrs)
-               1
-               (ActionAbility 1 (Just Action.Resign))
-             )
-         | getId () i `elem` locationInvestigators
+      <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
+         | atLocation i attrs
+           && hasActionsRemaining i (Just Action.Resign) locationTraits
          ]
   getActions i window (FauborgMarigny attrs) = getActions i window attrs
 

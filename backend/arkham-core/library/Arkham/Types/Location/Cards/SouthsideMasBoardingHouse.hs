@@ -1,19 +1,16 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.SouthsideMasBoardingHouse where
+module Arkham.Types.Location.Cards.SouthsideMasBoardingHouse
+  ( SouthsideMasBoardingHouse(..)
+  , southsideMasBoardingHouse
+  )
+where
 
-import Arkham.Json
-import Arkham.Types.Ability
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
+import Arkham.Import
+
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.Source
-import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Window
-import ClassyPrelude
 
 newtype SouthsideMasBoardingHouse = SouthsideMasBoardingHouse Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -31,30 +28,28 @@ southsideMasBoardingHouse = SouthsideMasBoardingHouse $ baseAttrs
 instance HasModifiersFor env investigator SouthsideMasBoardingHouse where
   getModifiersFor _ _ _ = pure []
 
+ability :: Attrs -> Ability
+ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
+  { abilityLimit = PerGame
+  }
+
 instance (ActionRunner env investigator) => HasActions env investigator SouthsideMasBoardingHouse where
-  getActions i NonFast (SouthsideMasBoardingHouse attrs@Attrs {..}) = do
-    baseActions <- getActions i NonFast attrs
-    usedAbilities <- map unUsedAbility <$> asks (getList ())
-    let
-      ability = (mkAbility (LocationSource "01127") 1 (ActionAbility 1 Nothing)
-                )
-        { abilityLimit = PerGame
-        }
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction (getId () i) ability
-         | (getId () i, ability)
-           `notElem` usedAbilities
-           && locationRevealed
-           && getId () i
-           `elem` locationInvestigators
-           && hasActionsRemaining i Nothing locationTraits
-         ]
+  getActions i NonFast (SouthsideMasBoardingHouse attrs@Attrs {..})
+    | locationRevealed = do
+      baseActions <- getActions i NonFast attrs
+      unused <- getIsUnused i (ability attrs)
+      pure
+        $ baseActions
+        <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
+           | unused
+             && atLocation i attrs
+             && hasActionsRemaining i Nothing locationTraits
+           ]
   getActions _ _ _ = pure []
 
 instance (LocationRunner env) => RunMessage env SouthsideMasBoardingHouse where
-  runMessage msg l@(SouthsideMasBoardingHouse attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
+  runMessage msg l@(SouthsideMasBoardingHouse attrs) = case msg of
+    UseCardAbility iid source _ 1 | isSource attrs source ->
       l <$ unshiftMessage
         (SearchDeckForTraits iid (InvestigatorTarget iid) [Ally])
     _ -> SouthsideMasBoardingHouse <$> runMessage msg attrs

@@ -32,14 +32,19 @@ ability :: Attrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
 
 instance (ActionRunner env investigator) => HasActions env investigator OvergrownCairns where
-  getActions i NonFast (OvergrownCairns attrs) = do
-    unused <- getIsUnused i (ability attrs)
-    baseActions <- getActions i NonFast attrs
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
-         | unused && atLocation i attrs && resourceCount i >= 2
-         ]
+  getActions i NonFast (OvergrownCairns attrs@Attrs {..}) | locationRevealed =
+    do
+      unused <- getIsUnused i (ability attrs)
+      baseActions <- getActions i NonFast attrs
+      pure
+        $ baseActions
+        <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
+           | unused
+             && atLocation i attrs
+             && resourceCount i
+             >= 2
+             && hasActionsRemaining i Nothing locationTraits
+           ]
   getActions i window (OvergrownCairns attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env OvergrownCairns where

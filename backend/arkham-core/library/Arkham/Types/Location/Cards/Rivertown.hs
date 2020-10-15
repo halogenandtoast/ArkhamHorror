@@ -1,14 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Cards.Rivertown where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
+import Arkham.Import
+
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
 import Arkham.Types.Trait
-import ClassyPrelude
 
 newtype Rivertown = Rivertown Attrs
   deriving newtype (Show, ToJSON, FromJSON)

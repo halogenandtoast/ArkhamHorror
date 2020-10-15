@@ -1,24 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Cards.Parlor where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import
+
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.AssetId
-import Arkham.Types.Card
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Arkham.Types.Window
-import ClassyPrelude
-import Lens.Micro
 
 newtype Parlor = Parlor Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -39,7 +27,7 @@ instance (ActionRunner env investigator) => HasActions env investigator Parlor w
     case maid of
       Nothing -> pure []
       Just aid -> do
-        miid <- fmap unOwnerId <$> asks (getId aid)
+        miid <- asks (fmap unOwnerId . getId aid)
         assetLocationId <- asks (getId aid)
         pure
           $ baseActions
@@ -50,7 +38,8 @@ instance (ActionRunner env investigator) => HasActions env investigator Parlor w
                    1
                    (ActionAbility 1 (Just Action.Resign))
                  )
-             | getId () i `elem` locationInvestigators
+             | atLocation i attrs
+               && hasActionsRemaining i (Just Action.Resign) locationTraits
              ]
           <> [ ActivateCardAbilityAction
                  (getId () i)
@@ -59,7 +48,10 @@ instance (ActionRunner env investigator) => HasActions env investigator Parlor w
                    2
                    (ActionAbility 1 (Just Action.Parley))
                  )
-             | isNothing miid && Just (locationOf i) == assetLocationId
+             | isNothing miid
+               && Just (locationOf i)
+               == assetLocationId
+               && hasActionsRemaining i (Just Action.Parley) locationTraits
              ]
   getActions _ _ _ = pure []
 
@@ -68,18 +60,17 @@ instance (LocationRunner env) => RunMessage env Parlor where
     RevealLocation lid | lid == locationId -> do
       attrs' <- runMessage msg attrs
       pure $ Parlor $ attrs' & blocked .~ False
-    UseCardAbility iid (LocationSource lid) _ 1
-      | lid == locationId && locationRevealed -> l
-      <$ unshiftMessage (Resign iid)
-    UseCardAbility iid (ProxySource _ (LocationSource lid)) _ 2
-      | lid == locationId && locationRevealed -> do
+    UseCardAbility iid source _ 1 | isSource attrs source && locationRevealed ->
+      l <$ unshiftMessage (Resign iid)
+    UseCardAbility iid (ProxySource _ source) _ 2
+      | isSource attrs source && locationRevealed -> do
         maid <- asks (fmap unStoryAssetId <$> getId (CardCode "01117"))
         case maid of
           Nothing -> error "this ability should not be able to be used"
           Just aid -> l <$ unshiftMessage
             (BeginSkillTest
               iid
-              (LocationSource lid)
+              source
               (AssetTarget aid)
               (Just Action.Parley)
               SkillIntellect

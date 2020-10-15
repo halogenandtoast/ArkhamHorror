@@ -1,13 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Cards.Hallway where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
+import Arkham.Import
+
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
-import ClassyPrelude
 
 newtype Hallway = Hallway Attrs
   deriving newtype (Show, ToJSON, FromJSON)

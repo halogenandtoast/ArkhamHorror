@@ -1,19 +1,16 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.DowntownArkhamAsylum where
+module Arkham.Types.Location.Cards.DowntownArkhamAsylum
+  ( DowntownArkhamAsylum(..)
+  , downtownArkhamAsylum
+  )
+where
 
-import Arkham.Json
-import Arkham.Types.Ability
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
+import Arkham.Import
+
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.Source
-import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.Window
-import ClassyPrelude
 
 newtype DowntownArkhamAsylum = DowntownArkhamAsylum Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -28,29 +25,27 @@ downtownArkhamAsylum =
 instance HasModifiersFor env investigator DowntownArkhamAsylum where
   getModifiersFor _ _ _ = pure []
 
+ability :: Attrs -> Ability
+ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
+  { abilityLimit = PerGame
+  }
+
 instance (ActionRunner env investigator) => HasActions env investigator DowntownArkhamAsylum where
-  getActions i NonFast (DowntownArkhamAsylum attrs@Attrs {..}) = do
-    baseActions <- getActions i NonFast attrs
-    usedAbilities <- map unUsedAbility <$> asks (getList ())
-    let
-      ability = (mkAbility (LocationSource "01131") 1 (ActionAbility 1 Nothing)
-                )
-        { abilityLimit = PerGame
-        }
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction (getId () i) ability
-         | (getId () i, ability)
-           `notElem` usedAbilities
-           && locationRevealed
-           && getId () i
-           `elem` locationInvestigators
-           && hasActionsRemaining i Nothing locationTraits
-         ]
+  getActions i NonFast (DowntownArkhamAsylum attrs@Attrs {..})
+    | locationRevealed = do
+      baseActions <- getActions i NonFast attrs
+      unused <- getIsUnused i (ability attrs)
+      pure
+        $ baseActions
+        <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
+           | unused
+             && atLocation i attrs
+             && hasActionsRemaining i Nothing locationTraits
+           ]
   getActions _ _ _ = pure []
 
 instance (LocationRunner env) => RunMessage env DowntownArkhamAsylum where
-  runMessage msg l@(DowntownArkhamAsylum attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
+  runMessage msg l@(DowntownArkhamAsylum attrs) = case msg of
+    UseCardAbility iid source _ 1 | isSource attrs source ->
       l <$ unshiftMessage (HealHorror (InvestigatorTarget iid) 3)
     _ -> DowntownArkhamAsylum <$> runMessage msg attrs

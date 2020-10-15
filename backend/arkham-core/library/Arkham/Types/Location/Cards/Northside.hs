@@ -1,18 +1,16 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.Northside where
+module Arkham.Types.Location.Cards.Northside
+  ( Northside(..)
+  , northside
+  )
+where
 
-import Arkham.Json
-import Arkham.Types.Ability
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
+import Arkham.Import
+
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Trait
-import Arkham.Types.Window
-import ClassyPrelude
 
 newtype Northside = Northside Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -35,31 +33,29 @@ northside =
 instance HasModifiersFor env investigator Northside where
   getModifiersFor _ _ _ = pure []
 
+
+ability :: Attrs -> Ability
+ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
+  { abilityLimit = PerGame
+  }
+
 instance (ActionRunner env investigator) => HasActions env investigator Northside where
-  getActions i NonFast (Northside attrs@Attrs {..}) = do
+  getActions i NonFast (Northside attrs@Attrs {..}) | locationRevealed = do
     baseActions <- getActions i NonFast attrs
-    usedAbilities <- map unUsedAbility <$> asks (getList ())
-    let
-      ability = (mkAbility (LocationSource "01134") 1 (ActionAbility 1 Nothing)
-                )
-        { abilityLimit = PerGame
-        }
+    unused <- getGroupIsUnused (ability attrs)
     pure
       $ baseActions
-      <> [ ActivateCardAbilityAction (getId () i) ability
+      <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
          | resourceCount i
            >= 5
-           && ability
-           `notElem` map snd usedAbilities
-           && locationRevealed
-           && getId () i
-           `elem` locationInvestigators
+           && unused
+           && atLocation i attrs
            && hasActionsRemaining i Nothing locationTraits
          ] -- GROUP LIMIT
   getActions _ _ _ = pure []
 
 instance (LocationRunner env) => RunMessage env Northside where
   runMessage msg l@(Northside attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
+    UseCardAbility iid source _ 1 | isSource attrs source ->
       l <$ unshiftMessages [SpendResources iid 5, GainClues iid 2]
     _ -> Northside <$> runMessage msg attrs

@@ -12,13 +12,16 @@ newtype RitualGrounds = RitualGrounds Attrs
 
 ritualGrounds :: RitualGrounds
 ritualGrounds = RitualGrounds $ (baseAttrs
-  "81017"
-  "Ritual Grounds"
-  2
-  (PerPlayer 1)
-  Equals
-  [Hourglass, Equals]
-  [Unhallowed]) { locationVictory = Just 1 }
+                                  "81017"
+                                  "Ritual Grounds"
+                                  2
+                                  (PerPlayer 1)
+                                  Equals
+                                  [Hourglass, Equals]
+                                  [Unhallowed]
+                                )
+  { locationVictory = Just 1
+  }
 
 instance HasModifiersFor env investigator RitualGrounds where
   getModifiersFor _ _ _ = pure []
@@ -27,6 +30,7 @@ instance (IsInvestigator investigator) => HasActions env investigator RitualGrou
   getActions i window (RitualGrounds attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env RitualGrounds where
-  runMessage msg l@(RitualGrounds attrs@Attrs{..}) = case msg of
-    EndTurn iid | iid `elem` locationInvestigators -> l <$ unshiftMessages [DrawCards iid 1 False, InvestigatorAssignDamage iid (toSource attrs) 0 1]
+  runMessage msg l@(RitualGrounds attrs@Attrs {..}) = case msg of
+    EndTurn iid | iid `elem` locationInvestigators -> l <$ unshiftMessages
+      [DrawCards iid 1 False, InvestigatorAssignDamage iid (toSource attrs) 0 1]
     _ -> RitualGrounds <$> runMessage msg attrs

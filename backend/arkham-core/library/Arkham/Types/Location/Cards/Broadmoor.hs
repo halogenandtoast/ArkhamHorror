@@ -5,6 +5,7 @@ import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
@@ -41,7 +42,8 @@ instance (IsInvestigator investigator) => HasActions env investigator Broadmoor 
                1
                (ActionAbility 1 (Just Action.Resign))
              )
-         | getId () i `elem` locationInvestigators
+         | atLocation i attrs
+           && hasActionsRemaining i (Just Action.Resign) locationTraits
          ]
   getActions i window (Broadmoor attrs) = getActions i window attrs
 

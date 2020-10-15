@@ -1,19 +1,16 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.YourHouse where
+module Arkham.Types.Location.Cards.YourHouse
+  ( YourHouse(..)
+  , yourHouse
+  )
+where
 
-import Arkham.Json
-import Arkham.Types.Ability
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
+import Arkham.Import
+
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
-import Arkham.Types.LocationSymbol
-import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Trait
-import Arkham.Types.Window
-import ClassyPrelude
 
 newtype YourHouse = YourHouse Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -25,23 +22,21 @@ yourHouse = YourHouse
 instance HasModifiersFor env investigator YourHouse where
   getModifiersFor _ _ _ = pure []
 
+ability :: Attrs -> Ability
+ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
+  { abilityLimit = PerTurn
+  }
+
 instance (ActionRunner env investigator) => HasActions env investigator YourHouse where
-  getActions i NonFast (YourHouse attrs@Attrs {..}) = do
+  getActions i NonFast (YourHouse attrs@Attrs {..}) | locationRevealed = do
     baseActions <- getActions i NonFast attrs
-    usedAbilities <- map unUsedAbility <$> asks (getList ())
-    let
-      ability = (mkAbility (LocationSource "01124") 1 (ActionAbility 1 Nothing)
-                )
-        { abilityLimit = PerTurn
-        }
+    unused <- getIsUnused i (ability attrs)
     pure
       $ baseActions
-      <> [ ActivateCardAbilityAction (getId () i) ability
-         | (getId () i, ability)
-           `notElem` usedAbilities
+      <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
+         | unused
            && locationRevealed
-           && getId () i
-           `elem` locationInvestigators
+           && atLocation i attrs
            && hasActionsRemaining i Nothing locationTraits
          ]
   getActions _ _ _ = pure []
@@ -54,6 +49,6 @@ instance (LocationRunner env) => RunMessage env YourHouse where
         void popMessage
         unshiftMessage (EnemySpawn "01124" eid)
       YourHouse <$> runMessage msg attrs
-    UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
+    UseCardAbility iid source _ 1 | isSource attrs source ->
       l <$ unshiftMessages [DrawCards iid 1 False, TakeResources iid 1 False]
     _ -> YourHouse <$> runMessage msg attrs

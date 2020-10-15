@@ -4,6 +4,7 @@ module Arkham.Types.Location.Cards.CursedShores where
 import Arkham.Import
 
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
@@ -33,8 +34,8 @@ instance (IsInvestigator investigator) => HasActions env investigator CursedShor
       $ baseActions
       <> [ ActivateCardAbilityAction
              (getId () i)
-             (mkAbility (LocationSource "81007") 1 (ActionAbility 1 Nothing))
-         | getId () i `elem` locationInvestigators
+             (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
+         | atLocation i attrs && hasActionsRemaining i Nothing locationTraits
          ]
   getActions i window (CursedShores attrs) = getActions i window attrs
 

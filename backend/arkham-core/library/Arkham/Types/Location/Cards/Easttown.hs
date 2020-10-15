@@ -4,6 +4,7 @@ module Arkham.Types.Location.Cards.Easttown where
 import Arkham.Import
 
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
@@ -21,13 +22,11 @@ easttown = Easttown $ baseAttrs
   [Arkham]
 
 instance IsInvestigator investigator => HasModifiersFor env investigator Easttown where
-  getModifiersFor _ i (Easttown Attrs {..}) =
-    pure [ ReduceCostOf [Ally] 2 | getId () i `member` locationInvestigators ]
+  getModifiersFor _ i (Easttown attrs) =
+    pure [ ReduceCostOf [Ally] 2 | atLocation i attrs ]
 
 instance (IsInvestigator investigator) => HasActions env investigator Easttown where
   getActions i window (Easttown attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Easttown where
-  runMessage msg (Easttown attrs@Attrs {..}) =
-    Easttown <$> runMessage msg attrs
-
+  runMessage msg (Easttown attrs) = Easttown <$> runMessage msg attrs

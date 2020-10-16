@@ -137,6 +137,7 @@ data Message
   | MoveAction InvestigatorId LocationId Bool
   | MoveTo InvestigatorId LocationId
   | MoveFrom InvestigatorId LocationId
+  | MoveUntil LocationId Target
   | PrePlayerWindow
   | PostPlayerWindow
   | PlayerWindow InvestigatorId [Message]

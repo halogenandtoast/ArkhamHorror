@@ -33,7 +33,8 @@ instance (ActionRunner env investigator) => HasActions env investigator Downtown
       baseActions <- getActions i NonFast attrs
       unused <- getIsUnused i (ability attrs)
       canGainResources <-
-        notElem CannotGainResources <$> getInvestigatorModifiers i attrs
+        notElem CannotGainResources
+          <$> getInvestigatorModifiers i (toSource attrs)
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction (getId () i) (ability attrs)

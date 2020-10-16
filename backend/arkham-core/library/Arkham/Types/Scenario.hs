@@ -9,8 +9,6 @@ where
 
 import Arkham.Import
 
-import Arkham.Types.ActId
-import Arkham.Types.AgendaId
 import Arkham.Types.Difficulty
 import Arkham.Types.Helpers
 import Arkham.Types.Scenario.Attrs

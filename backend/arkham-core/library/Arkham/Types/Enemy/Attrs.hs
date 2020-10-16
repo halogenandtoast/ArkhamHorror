@@ -1,33 +1,15 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy.Attrs where
 
-import Arkham.Json
+import Arkham.Import
+
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.Card
-import Arkham.Types.Card.Id
-import Arkham.Types.Classes
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
 import Arkham.Types.Prey
-import Arkham.Types.Query
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
 import Arkham.Types.Trait
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-import ClassyPrelude
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
-import Lens.Micro
-import Safe (fromJustNote)
 
 data Attrs = Attrs
   { enemyName :: Text
@@ -102,7 +84,7 @@ baseAttrs eid cardCode =
     MkEncounterCard {..} =
       fromJustNote
           ("missing enemy encounter card: " <> show cardCode)
-          (HashMap.lookup cardCode allEncounterCards)
+          (lookup cardCode allEncounterCards)
         $ CardId (unEnemyId eid)
   in
     Attrs
@@ -117,9 +99,9 @@ baseAttrs eid cardCode =
       , enemyDamage = 0
       , enemyHealthDamage = 0
       , enemySanityDamage = 0
-      , enemyTraits = HashSet.fromList ecTraits
+      , enemyTraits = setFromList ecTraits
       , enemyTreacheries = mempty
-      , enemyKeywords = HashSet.fromList ecKeywords
+      , enemyKeywords = setFromList ecKeywords
       , enemyPrey = AnyPrey
       , enemyModifiers = mempty
       , enemyExhausted = False
@@ -133,7 +115,7 @@ weaknessBaseAttrs eid cardCode =
     MkPlayerCard {..} =
       fromJustNote
           ("missing player enemy weakness card: " <> show cardCode)
-          (HashMap.lookup cardCode allPlayerCards)
+          (lookup cardCode allPlayerCards)
         $ CardId (unEnemyId eid)
   in
     Attrs
@@ -151,7 +133,7 @@ weaknessBaseAttrs eid cardCode =
       , enemyTraits = pcTraits
       , enemyTreacheries = mempty
       , enemyVictory = pcVictoryPoints
-      , enemyKeywords = HashSet.fromList pcKeywords
+      , enemyKeywords = setFromList pcKeywords
       , enemyPrey = AnyPrey
       , enemyModifiers = mempty
       , enemyExhausted = False
@@ -164,7 +146,7 @@ spawnAtEmptyLocation
   -> EnemyId
   -> m ()
 spawnAtEmptyLocation iid eid = do
-  emptyLocations <- map unEmptyLocationId . HashSet.toList <$> asks (getSet ())
+  emptyLocations <- asks $ map unEmptyLocationId . setToList . getSet ()
   case emptyLocations of
     [] -> unshiftMessage (Discard (EnemyTarget eid))
     [lid] -> unshiftMessage (EnemySpawn lid eid)
@@ -190,7 +172,7 @@ spawnAtOneOf
   -> m ()
 spawnAtOneOf iid eid targetLids = do
   locations' <- asks (getSet ())
-  case HashSet.toList (HashSet.fromList targetLids `intersection` locations') of
+  case setToList (setFromList targetLids `intersection` locations') of
     [] -> unshiftMessage (Discard (EnemyTarget eid))
     [lid] -> unshiftMessage (EnemySpawn lid eid)
     lids ->
@@ -200,7 +182,7 @@ modifiedEnemyFight :: Attrs -> Int
 modifiedEnemyFight Attrs {..} = foldr
   applyModifier
   enemyFight
-  (concat . HashMap.elems $ enemyModifiers)
+  (concat . toList $ enemyModifiers)
  where
   applyModifier (EnemyFight m) n = max 0 (n + m)
   applyModifier _ n = n
@@ -209,7 +191,7 @@ modifiedEnemyEvade :: Attrs -> Int
 modifiedEnemyEvade Attrs {..} = foldr
   applyModifier
   enemyEvade
-  (concat . HashMap.elems $ enemyModifiers)
+  (concat . toList $ enemyModifiers)
  where
   applyModifier (EnemyEvade m) n = max 0 (n + m)
   applyModifier _ n = n
@@ -218,7 +200,7 @@ modifiedDamageAmount :: Attrs -> Int -> Int
 modifiedDamageAmount attrs baseAmount = foldr
   applyModifier
   baseAmount
-  (concat . HashMap.elems $ enemyModifiers attrs)
+  (concat . toList $ enemyModifiers attrs)
  where
   applyModifier (DamageTaken m) n = max 0 (n + m)
   applyModifier _ n = n
@@ -276,13 +258,17 @@ instance (IsInvestigator investigator) => HasActions env investigator Attrs wher
       ]
   getActions _ _ _ = pure []
 
-instance (EnemyRunner env) => RunMessage env Attrs where
+isTarget :: Attrs -> Target -> Bool
+isTarget Attrs { enemyId } (EnemyTarget eid) = enemyId == eid
+isTarget _ _ = False
+
+instance EnemyRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
-      preyIds <- map unPreyId . HashSet.toList <$> asks (getSet enemyPrey)
+      preyIds <- asks $ map unPreyId . setToList . getSet enemyPrey
       preyIdsWithLocation <- for preyIds
         $ \iid -> (iid, ) <$> asks (getId @LocationId iid)
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      leadInvestigatorId <- getLeadInvestigatorId
       a <$ case preyIdsWithLocation of
         [] -> pure ()
         [(iid, lid)] -> unshiftMessages
@@ -301,12 +287,11 @@ instance (EnemyRunner env) => RunMessage env Attrs where
           `notElem` enemyKeywords
           )
         $ do
-            preyIds <- map unPreyId . HashSet.toList <$> asks
-              (getSet (enemyPrey, lid))
+            preyIds <- asks $ map unPreyId . setToList . getSet (enemyPrey, lid)
             investigatorIds <- if null preyIds
-              then HashSet.toList <$> asks (getSet lid)
+              then getInvestigatorIds
               else pure []
-            leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+            leadInvestigatorId <- getLeadInvestigatorId
             case preyIds <> investigatorIds of
               [] -> pure ()
               [iid] -> unshiftMessage (EnemyEngageInvestigator eid iid)
@@ -315,13 +300,13 @@ instance (EnemyRunner env) => RunMessage env Attrs where
                   [ EnemyEngageInvestigator eid iid | iid <- iids ]
                 )
       when (Keyword.Massive `elem` enemyKeywords) $ do
-        investigatorIds <- HashSet.toList <$> asks (getSet lid)
+        investigatorIds <- getInvestigatorIds
         unshiftMessages
           [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
       pure $ a & location .~ lid
     EnemySpawnedAt lid eid | eid == enemyId -> pure $ a & location .~ lid
     ReadyExhausted -> do
-      miid <- headMay . HashSet.toList <$> asks (getSet enemyLocation)
+      miid <- asks $ headMay . setToList . getSet enemyLocation
       case miid of
         Just iid ->
           when
@@ -332,6 +317,22 @@ instance (EnemyRunner env) => RunMessage env Attrs where
             $ unshiftMessage (EnemyEngageInvestigator enemyId iid)
         Nothing -> pure ()
       pure $ a & exhausted .~ False
+    MoveUntil lid target | isTarget a target -> if lid == enemyLocation
+      then pure a
+      else do
+        leadInvestigatorId <- getLeadInvestigatorId
+        closestLocationIds <-
+          asks $ map unClosestLocationId . setToList . getSet
+            (enemyLocation, lid)
+        a <$ unshiftMessages
+          [ chooseOne
+            leadInvestigatorId
+            [ EnemyMove enemyId enemyLocation lid'
+            | lid' <- closestLocationIds
+            ]
+          , MoveUntil lid target
+          ]
+
     EnemyMove eid _ lid | eid == enemyId -> do
       willMove <- canEnterLocation eid lid
       if willMove then pure $ a & location .~ lid else pure a
@@ -342,9 +343,9 @@ instance (EnemyRunner env) => RunMessage env Attrs where
         && not enemyExhausted
       -> do
         closestLocationIds <-
-          HashSet.toList . HashSet.map unClosestLocationId <$> asks
-            (getSet (enemyLocation, enemyPrey))
-        leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+          asks $ map unClosestLocationId . setToList . getSet
+            (enemyLocation, enemyPrey)
+        leadInvestigatorId <- getLeadInvestigatorId
         case closestLocationIds of
           [] -> pure a
           [lid] -> a <$ unshiftMessage (EnemyMove enemyId enemyLocation lid)
@@ -355,7 +356,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
             )
     EnemiesAttack
       | not (null enemyEngagedInvestigators) && not enemyExhausted -> do
-        unshiftMessages $ map (flip EnemyWillAttack enemyId) $ HashSet.toList
+        unshiftMessages $ map (`EnemyWillAttack` enemyId) $ setToList
           enemyEngagedInvestigators
         pure a
     AttackEnemy iid eid source skillType tempModifiers tokenResponses
@@ -378,7 +379,7 @@ instance (EnemyRunner env) => RunMessage env Attrs where
             tokenResponses
           )
     EnemyEvaded iid eid | eid == enemyId ->
-      pure $ a & engagedInvestigators %~ HashSet.delete iid & exhausted .~ True
+      pure $ a & engagedInvestigators %~ deleteSet iid & exhausted .~ True
     TryEvadeEnemy iid eid source skillType onSuccess onFailure skillTestModifiers tokenResponses
       | eid == enemyId
       -> do
@@ -420,19 +421,19 @@ instance (EnemyRunner env) => RunMessage env Attrs where
     AddModifiers (EnemyTarget eid) source modifiers' | eid == enemyId -> do
       when (Blank `elem` modifiers')
         $ unshiftMessage (RemoveAllModifiersFrom (EnemySource eid))
-      pure $ a & modifiers %~ HashMap.insertWith (<>) source modifiers'
+      pure $ a & modifiers %~ insertWith (<>) source modifiers'
     RemoveAllModifiersOnTargetFrom (EnemyTarget eid) source | eid == enemyId ->
       do
         when (Blank `elem` fromMaybe [] (lookup source enemyModifiers))
           $ unshiftMessage (ApplyModifiers (EnemyTarget enemyId))
-        pure $ a & modifiers %~ HashMap.delete source
+        pure $ a & modifiers %~ deleteMap source
     RemoveAllModifiersFrom source -> runMessage
       (RemoveAllModifiersOnTargetFrom (EnemyTarget enemyId) source)
       a
     EnemyEngageInvestigator eid iid | eid == enemyId ->
-      pure $ a & engagedInvestigators %~ HashSet.insert iid
+      pure $ a & engagedInvestigators %~ insertSet iid
     EngageEnemy iid eid False | eid == enemyId ->
-      pure $ a & engagedInvestigators .~ HashSet.singleton iid
+      pure $ a & engagedInvestigators .~ singleton iid
     MoveTo iid lid | iid `elem` enemyEngagedInvestigators ->
       if Keyword.Massive `elem` enemyKeywords
         then pure a
@@ -456,13 +457,13 @@ instance (EnemyRunner env) => RunMessage env Attrs where
       unshiftMessage (EnemySpawn lid eid)
       pure $ a & location .~ lid
     InvestigatorEliminated iid ->
-      pure $ a & engagedInvestigators %~ HashSet.delete iid
+      pure $ a & engagedInvestigators %~ deleteSet iid
     UnengageNonMatching iid traits
       | iid `elem` enemyEngagedInvestigators && null
-        (HashSet.fromList traits `intersection` enemyTraits)
+        (setFromList traits `intersection` enemyTraits)
       -> a <$ unshiftMessage (DisengageEnemy iid enemyId)
     DisengageEnemy iid eid | eid == enemyId -> do
-      pure $ a & engagedInvestigators %~ HashSet.delete iid
+      pure $ a & engagedInvestigators %~ deleteSet iid
     EnemySetBearer eid bid | eid == enemyId -> pure $ a & prey .~ Bearer bid
     AdvanceAgenda{} -> pure $ a & doom .~ 0
     PlaceDoom (CardIdTarget cid) amount | unCardId cid == unEnemyId enemyId ->
@@ -470,6 +471,6 @@ instance (EnemyRunner env) => RunMessage env Attrs where
     PlaceDoom (EnemyTarget eid) amount | eid == enemyId ->
       pure $ a & doom +~ amount
     AttachTreachery tid (EnemyTarget eid) | eid == enemyId ->
-      pure $ a & treacheries %~ HashSet.insert tid
+      pure $ a & treacheries %~ insertSet tid
     Blanked msg' -> runMessage msg' a
     _ -> pure a

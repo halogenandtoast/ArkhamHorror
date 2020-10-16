@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bec9a0433782fcb494e69830db617d99f0e06e93710a3c1591b7fe91854a66c5
+-- hash: 180e5a186c297a9767c99492e22eeb5f3d1019244e333f6a50af892c75b0d459
 
 name:           arkham-core
 version:        0.0.0
@@ -41,6 +41,7 @@ library
       Arkham.Types.Agenda.Cards.TimeIsRunningShort
       Arkham.Types.Agenda.Cards.VengeanceAwaits
       Arkham.Types.Agenda.Cards.WhatsGoingOn
+      Arkham.Types.Agenda.Helpers
       Arkham.Types.Agenda.Runner
       Arkham.Types.AgendaId
       Arkham.Types.Asset
@@ -206,6 +207,7 @@ library
       Arkham.Types.Event.Runner
       Arkham.Types.EventId
       Arkham.Types.Game
+      Arkham.Types.Game.Helpers
       Arkham.Types.GameRunner
       Arkham.Types.GameValue
       Arkham.Types.Helpers

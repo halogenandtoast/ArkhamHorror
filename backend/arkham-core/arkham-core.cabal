@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 180e5a186c297a9767c99492e22eeb5f3d1019244e333f6a50af892c75b0d459
+-- hash: 5718358887eb8056acef24db8816c78714a6b91d40b5a666a2176cbfb7ca70a3
 
 name:           arkham-core
 version:        0.0.0
@@ -32,11 +32,13 @@ library
       Arkham.Types.Action
       Arkham.Types.Agenda
       Arkham.Types.Agenda.Attrs
+      Arkham.Types.Agenda.Cards
       Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
       Arkham.Types.Agenda.Cards.PredatorOrPrey
       Arkham.Types.Agenda.Cards.RiseOfTheGhouls
       Arkham.Types.Agenda.Cards.TheArkhamWoods
       Arkham.Types.Agenda.Cards.TheRitualBegins
+      Arkham.Types.Agenda.Cards.TheRougarouFeeds
       Arkham.Types.Agenda.Cards.TheyreGettingOut
       Arkham.Types.Agenda.Cards.TimeIsRunningShort
       Arkham.Types.Agenda.Cards.VengeanceAwaits

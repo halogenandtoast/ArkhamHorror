@@ -24,4 +24,5 @@ type EnemyRunner env
     , HasSet PreyId Prey env
     , HasSet Trait EnemyId env
     , HasModifiers env LocationId
+    , HasSet ClosestLocationId (LocationId, LocationId) env
     )

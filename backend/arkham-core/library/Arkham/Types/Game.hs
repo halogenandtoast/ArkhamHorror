@@ -30,9 +30,7 @@ where
 
 import Arkham.Import
 import Arkham.Types.Act
-import Arkham.Types.ActId
 import Arkham.Types.Agenda
-import Arkham.Types.AgendaId
 import Arkham.Types.Asset
 import Arkham.Types.Campaign
 import Arkham.Types.CampaignId
@@ -378,6 +376,16 @@ instance HasId (Maybe AssetId) CardCode (Game queue) where
       . find ((cardCode ==) . getCardCode . snd)
       . mapToList
       . view assets
+
+instance HasId (Maybe StoryEnemyId) CardCode (Game queue) where
+  getId cardCode = (StoryEnemyId <$>) . getId cardCode
+
+instance HasId (Maybe EnemyId) CardCode (Game queue) where
+  getId cardCode =
+    (fst <$>)
+      . find ((cardCode ==) . getCardCode . snd)
+      . mapToList
+      . view enemies
 
 instance HasId LocationId InvestigatorId (Game queue) where
   getId = locationFor

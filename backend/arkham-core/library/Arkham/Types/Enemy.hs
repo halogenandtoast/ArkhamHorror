@@ -9,47 +9,13 @@ module Arkham.Types.Enemy
   )
 where
 
-import Arkham.Json
-import Arkham.Types.Card
-import Arkham.Types.TreacheryId
-import Arkham.Types.Classes
-import Arkham.Types.Source
+import Arkham.Import
+
 import Arkham.Types.Enemy.Attrs
-import Arkham.Types.Enemy.Cards.Acolyte
-import Arkham.Types.Enemy.Cards.FleshEater
-import Arkham.Types.Enemy.Cards.GhoulMinion
-import Arkham.Types.Enemy.Cards.GhoulPriest
-import Arkham.Types.Enemy.Cards.GoatSpawn
-import Arkham.Types.Enemy.Cards.HermanCollins
-import Arkham.Types.Enemy.Cards.HuntingNightgaunt
-import Arkham.Types.Enemy.Cards.IcyGhoul
-import Arkham.Types.Enemy.Cards.MobEnforcer
-import Arkham.Types.Enemy.Cards.PeterWarren
-import Arkham.Types.Enemy.Cards.RavenousGhoul
-import Arkham.Types.Enemy.Cards.RelentlessDarkYoung
-import Arkham.Types.Enemy.Cards.RuthTurner
-import Arkham.Types.Enemy.Cards.ScreechingByakhee
-import Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
-import Arkham.Types.Enemy.Cards.StubbornDetective
-import Arkham.Types.Enemy.Cards.SwarmOfRats
-import Arkham.Types.Enemy.Cards.TheMaskedHunter
-import Arkham.Types.Enemy.Cards.Umordhoth
-import Arkham.Types.Enemy.Cards.VictoriaDevereux
-import Arkham.Types.Enemy.Cards.WizardOfTheOrder
-import Arkham.Types.Enemy.Cards.WolfManDrew
-import Arkham.Types.Enemy.Cards.YithianObserver
-import Arkham.Types.Enemy.Cards.YoungDeepOne
+import Arkham.Types.Enemy.Cards
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
 import Arkham.Types.Prey
-import Arkham.Types.Query
-import ClassyPrelude
 import Data.Coerce
-import Safe (fromJustNote)
 
 data Enemy
   = MobEnforcer' MobEnforcer
@@ -127,6 +93,9 @@ instance HasId LocationId () Enemy where
 
 instance HasSet TreacheryId () Enemy where
   getSet _ = enemyTreacheries . enemyAttrs
+
+instance HasSet AssetId () Enemy where
+  getSet _ = enemyAssets . enemyAttrs
 
 instance HasCardCode Enemy where
   getCardCode = enemyCardCode . enemyAttrs

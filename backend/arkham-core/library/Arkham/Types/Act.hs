@@ -9,14 +9,7 @@ where
 
 import Arkham.Json
 import Arkham.Types.Act.Attrs
-import Arkham.Types.Act.Cards.DisruptingTheRitual
-import Arkham.Types.Act.Cards.FindingLadyEsprit
-import Arkham.Types.Act.Cards.IntoTheDarkness
-import Arkham.Types.Act.Cards.InvestigatingTheTrail
-import Arkham.Types.Act.Cards.TheBarrier
-import Arkham.Types.Act.Cards.Trapped
-import Arkham.Types.Act.Cards.UncoveringTheConspiracy
-import Arkham.Types.Act.Cards.WhatHaveYouDone
+import Arkham.Types.Act.Cards
 import Arkham.Types.Act.Runner
 import Arkham.Types.ActId
 import Arkham.Types.Classes
@@ -34,6 +27,7 @@ data Act
   | IntoTheDarkness' IntoTheDarkness
   | DisruptingTheRitual' DisruptingTheRitual
   | FindingLadyEsprit' FindingLadyEsprit
+  | HuntingTheRougarou' HuntingTheRougarou
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -58,6 +52,7 @@ allActs = mapFromList $ map
   , IntoTheDarkness' intoTheDarkness
   , DisruptingTheRitual' disruptingTheRitual
   , FindingLadyEsprit' findingLadyEsprit
+  , HuntingTheRougarou' huntingTheRougarou
   ]
 
 actAttrs :: Act -> Attrs
@@ -70,3 +65,4 @@ actAttrs = \case
   IntoTheDarkness' attrs -> coerce attrs
   DisruptingTheRitual' attrs -> coerce attrs
   FindingLadyEsprit' attrs -> coerce attrs
+  HuntingTheRougarou' attrs -> coerce attrs

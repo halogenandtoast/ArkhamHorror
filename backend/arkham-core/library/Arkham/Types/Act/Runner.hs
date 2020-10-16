@@ -2,6 +2,7 @@ module Arkham.Types.Act.Runner where
 
 import Arkham.Import
 
+import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
 type ActRunner env
@@ -18,4 +19,10 @@ type ActRunner env
     , HasSet LocationId () env
     , HasSet LocationId [Trait] env
     , HasSet InvestigatorId (HashSet LocationId) env
+    , HasId CardCode EnemyId env
+    , HasId (Maybe StoryEnemyId) CardCode env
+    , HasCount DamageCount EnemyId env
+    , HasSet ScenarioLogKey () env
+    , HasSet Trait AssetId env
+    , HasSet AssetId EnemyId env
     )

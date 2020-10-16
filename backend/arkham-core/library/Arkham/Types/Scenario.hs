@@ -18,6 +18,7 @@ import Arkham.Types.Scenario.Scenarios.TheDevourerBelow
 import Arkham.Types.Scenario.Scenarios.TheGathering
 import Arkham.Types.Scenario.Scenarios.TheMidnightMasks
 import Arkham.Types.ScenarioId
+import Arkham.Types.ScenarioLogKey
 import qualified Arkham.Types.Token as Token
 import Data.Coerce
 
@@ -31,6 +32,9 @@ data Scenario
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (ScenarioRunner env) => RunMessage env Scenario
+
+instance HasSet ScenarioLogKey () Scenario where
+  getSet _ = scenarioLog . scenarioAttrs
 
 newtype BaseScenario = BaseScenario Attrs
   deriving newtype (Show, ToJSON, FromJSON)

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2704029e750b24ff712d074b3909186da7d66b94efcee025a2ad2f23f7b8708e
+-- hash: 5d206520349e20ec8aeac82e3023379d521cddf30293a3a2e5cfd7620de8363d
 
 name:           arkham-core
 version:        0.0.0
@@ -19,8 +19,10 @@ library
       Arkham.Types.Ability.Type
       Arkham.Types.Act
       Arkham.Types.Act.Attrs
+      Arkham.Types.Act.Cards
       Arkham.Types.Act.Cards.DisruptingTheRitual
       Arkham.Types.Act.Cards.FindingLadyEsprit
+      Arkham.Types.Act.Cards.HuntingTheRougarou
       Arkham.Types.Act.Cards.IntoTheDarkness
       Arkham.Types.Act.Cards.InvestigatingTheTrail
       Arkham.Types.Act.Cards.TheBarrier
@@ -146,6 +148,7 @@ library
       Arkham.Types.EncounterSet
       Arkham.Types.Enemy
       Arkham.Types.Enemy.Attrs
+      Arkham.Types.Enemy.Cards
       Arkham.Types.Enemy.Cards.Acolyte
       Arkham.Types.Enemy.Cards.FleshEater
       Arkham.Types.Enemy.Cards.GhoulMinion

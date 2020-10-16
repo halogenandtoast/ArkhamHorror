@@ -264,10 +264,12 @@ type ActionRunner env investigator
   = ( IsInvestigator investigator
     , HasActions env investigator (ActionType, env)
     , HasId (Maybe StoryAssetId) CardCode env
+    , HasId (Maybe StoryEnemyId) CardCode env
     , HasId (Maybe OwnerId) AssetId env
     , HasId (Maybe LocationId) AssetId env
     , HasId LocationId InvestigatorId env
     , HasSet InvestigatorId LocationId env
+    , HasSet InvestigatorId EnemyId env
     , HasSet ConnectedLocationId LocationId env
     , HasSet EnemyId LocationId env
     , HasList UsedAbility () env

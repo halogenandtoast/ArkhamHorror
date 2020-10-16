@@ -36,7 +36,7 @@ instance AgendaRunner env => RunMessage env ACreatureOfTheBayou where
           ]
         Just eid -> do
           leadInvestigatorId <- getLeadInvestigatorId
-          locations <- asks $ getSet @LocationId ()
+          locations <- getLocationSet
           nonBayouLocations <- asks $ setToList . difference locations . getSet
             [Bayou]
           nonBayouLocationsWithClueCounts <- sortOn snd <$> for

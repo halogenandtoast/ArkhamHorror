@@ -25,6 +25,7 @@ data Attrs = Attrs
   , enemySanityDamage :: Int
   , enemyTraits :: HashSet Trait
   , enemyTreacheries :: HashSet TreacheryId
+  , enemyAssets :: HashSet AssetId
   , enemyVictory :: Maybe Int
   , enemyKeywords :: HashSet Keyword
   , enemyPrey :: Prey
@@ -75,6 +76,9 @@ modifiers = lens enemyModifiers $ \m x -> m { enemyModifiers = x }
 treacheries :: Lens' Attrs (HashSet TreacheryId)
 treacheries = lens enemyTreacheries $ \m x -> m { enemyTreacheries = x }
 
+assets :: Lens' Attrs (HashSet AssetId)
+assets = lens enemyAssets $ \m x -> m { enemyAssets = x }
+
 exhausted :: Lens' Attrs Bool
 exhausted = lens enemyExhausted $ \m x -> m { enemyExhausted = x }
 
@@ -101,6 +105,7 @@ baseAttrs eid cardCode =
       , enemySanityDamage = 0
       , enemyTraits = setFromList ecTraits
       , enemyTreacheries = mempty
+      , enemyAssets = mempty
       , enemyKeywords = setFromList ecKeywords
       , enemyPrey = AnyPrey
       , enemyModifiers = mempty
@@ -132,6 +137,7 @@ weaknessBaseAttrs eid cardCode =
       , enemySanityDamage = 0
       , enemyTraits = pcTraits
       , enemyTreacheries = mempty
+      , enemyAssets = mempty
       , enemyVictory = pcVictoryPoints
       , enemyKeywords = setFromList pcKeywords
       , enemyPrey = AnyPrey
@@ -472,5 +478,7 @@ instance EnemyRunner env => RunMessage env Attrs where
       pure $ a & doom +~ amount
     AttachTreachery tid (EnemyTarget eid) | eid == enemyId ->
       pure $ a & treacheries %~ insertSet tid
+    AttachAsset aid (EnemyTarget eid) | eid == enemyId ->
+      pure $ a & assets %~ insertSet aid
     Blanked msg' -> runMessage msg' a
     _ -> pure a

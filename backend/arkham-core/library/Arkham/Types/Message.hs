@@ -124,6 +124,7 @@ data Message
   | AdvanceAgendaIfThresholdSatisfied
   | AdvanceAgenda AgendaId
   | AdvanceAct ActId
+  | RevertAct ActId
   | NextAdvanceActStep ActId Int
   | AllDrawEncounterCard
   | PlaceLocation LocationId
@@ -294,6 +295,7 @@ data Message
   | SuccessfulAttackEnemy InvestigatorId EnemyId
   | FailedAttackEnemy InvestigatorId EnemyId
   | AttachTreachery TreacheryId Target
+  | AttachAsset AssetId Target
   | AttachEventToLocation EventId LocationId
   | AddModifiers Target Source [Modifier]
   | SetModifiers Target Source [Modifier]

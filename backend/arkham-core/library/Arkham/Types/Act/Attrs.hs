@@ -1,12 +1,6 @@
 module Arkham.Types.Act.Attrs where
 
-import Arkham.Json
-import Arkham.Types.ActId
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Window
-import ClassyPrelude
-import Lens.Micro
+import Arkham.Import
 
 data Attrs = Attrs
   { actCanAdvance :: Bool
@@ -24,6 +18,13 @@ instance ToJSON Attrs where
 
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "act"
+
+isSource :: Attrs -> Source -> Bool
+isSource Attrs { actId } (ActSource aid) = actId == aid
+isSource _ _ = False
+
+toSource :: Attrs -> Source
+toSource Attrs { actId } = ActSource actId
 
 canAdvance :: Lens' Attrs Bool
 canAdvance = lens actCanAdvance $ \m x -> m { actCanAdvance = x }

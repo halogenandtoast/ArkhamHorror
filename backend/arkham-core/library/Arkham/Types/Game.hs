@@ -47,6 +47,7 @@ import Arkham.Types.Phase
 import Arkham.Types.Prey
 import Arkham.Types.Scenario
 import Arkham.Types.ScenarioId
+import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Skill
 import Arkham.Types.SkillTest
 import Arkham.Types.Token (Token)
@@ -402,6 +403,9 @@ instance HasCount HealthDamageCount EnemyId GameInternal where
 instance HasCount HorrorCount InvestigatorId GameInternal where
   getCount iid = HorrorCount . snd . getDamage . getInvestigator iid
 
+instance HasCount DamageCount EnemyId GameInternal where
+  getCount eid = DamageCount . snd . getDamage . getEnemy eid
+
 instance HasCount TreacheryCount (LocationId, CardCode) (Game queue) where
   getCount (lid, cardCode) g = TreacheryCount $ count (== cardCode) cardCodes
    where
@@ -540,6 +544,9 @@ instance HasTarget ForSkillTest (Game queue) where
 
 instance HasTestAction ForSkillTest (Game queue) where
   getTestAction _ g = join $ g ^? skillTest . traverse . to skillTestAction
+
+instance HasSet ScenarioLogKey () (Game queue) where
+  getSet _ g = maybe mempty (getSet ()) (g ^. scenario)
 
 instance HasSet HandCardId InvestigatorId (Game queue) where
   getSet iid =
@@ -917,6 +924,9 @@ instance HasSet AccessibleLocationId LocationId (Game queue) where
 
 instance HasSet AssetId InvestigatorId (Game queue) where
   getSet iid = getSet () . getInvestigator iid
+
+instance HasSet AssetId EnemyId (Game queue) where
+  getSet eid = getSet () . getEnemy eid
 
 instance HasSet AssetId LocationId (Game queue) where
   getSet lid = getSet () . getLocation lid

@@ -1,11 +1,8 @@
 module Arkham.Types.Act.Runner where
 
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Query
+import Arkham.Import
+
+import Arkham.Types.Trait
 
 type ActRunner env
   = ( HasQueue env
@@ -19,4 +16,6 @@ type ActRunner env
     , HasSet VictoryDisplayCardCode () env
     , HasRecord env
     , HasSet LocationId () env
+    , HasSet LocationId [Trait] env
+    , HasSet InvestigatorId (HashSet LocationId) env
     )

@@ -124,6 +124,7 @@ data Message
   | AdvanceAgendaIfThresholdSatisfied
   | AdvanceAgenda AgendaId
   | AdvanceAct ActId
+  | NextAdvanceActStep ActId Int
   | AllDrawEncounterCard
   | PlaceLocation LocationId
   | PlacedLocation LocationId
@@ -152,6 +153,7 @@ data Message
   | UseCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int
   | PayForCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int
   | UseScenarioSpecificAbility InvestigatorId Int
+  | PutSetAsideIntoPlay Target
   | AddUses Target UseType Int
   | ResolveToken Token InvestigatorId
   | Investigate InvestigatorId LocationId Source SkillType [Modifier] [TokenResponse Message] [Message] Bool
@@ -301,6 +303,7 @@ data Message
   | RemoveAllModifiersFrom Source
   | RequestedEncounterCard Source (Maybe EncounterCard)
   | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard)
+  | ShuffleIntoEncounterDeck [EncounterCard]
   | ShuffleBackIntoEncounterDeck Target
   | ShuffleEncounterDiscardBackIn
   | ShuffleAllInEncounterDiscardBackIn CardCode
@@ -308,6 +311,7 @@ data Message
   | DiscardEncounterUntilFirst Source (EncounterCardType, Maybe Trait)
   | SpendClues Int [InvestigatorId]
   | InvestigatorSpendClues InvestigatorId Int
+  | CreateWeaknessInThreatArea CardCode InvestigatorId
   | CreateStoryAssetAt CardCode LocationId
   | TakeControlOfAsset InvestigatorId AssetId
   | TakeControlOfSetAsideAsset InvestigatorId CardCode

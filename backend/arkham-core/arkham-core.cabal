@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 717531c5f8239a620c48426ba72508583a7038d201a77921917d31844ffb04ed
+-- hash: 2704029e750b24ff712d074b3909186da7d66b94efcee025a2ad2f23f7b8708e
 
 name:           arkham-core
 version:        0.0.0
@@ -27,6 +27,7 @@ library
       Arkham.Types.Act.Cards.Trapped
       Arkham.Types.Act.Cards.UncoveringTheConspiracy
       Arkham.Types.Act.Cards.WhatHaveYouDone
+      Arkham.Types.Act.Helpers
       Arkham.Types.Act.Runner
       Arkham.Types.ActId
       Arkham.Types.Action

@@ -10,7 +10,6 @@ where
 import Arkham.Import as X
 import Arkham.Types.Agenda as X
 import qualified Arkham.Types.Agenda.Attrs as AgendaAttrs
-import Arkham.Types.AgendaId as X
 import Arkham.Types.Asset as X
 import qualified Arkham.Types.Asset.Attrs as Asset
 import Arkham.Types.Card.PlayerCard (basePlayerCard)

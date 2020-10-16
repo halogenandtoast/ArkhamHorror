@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5d206520349e20ec8aeac82e3023379d521cddf30293a3a2e5cfd7620de8363d
+-- hash: e107b48ecd83389b35baa96e14ba70bce4e396d7c3b2a8d17933b5f128ab41f4
 
 name:           arkham-core
 version:        0.0.0
@@ -90,6 +90,7 @@ library
       Arkham.Types.Asset.Cards.JennysTwin45s
       Arkham.Types.Asset.Cards.JimsTrumpet
       Arkham.Types.Asset.Cards.Knife
+      Arkham.Types.Asset.Cards.LadyEsprit
       Arkham.Types.Asset.Cards.LeatherCoat
       Arkham.Types.Asset.Cards.LeoDeLuca
       Arkham.Types.Asset.Cards.LeoDeLuca1

@@ -11,23 +11,13 @@ module Arkham.Types.Asset
   )
 where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Cards
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
-import Arkham.Types.AssetId
-import Arkham.Types.Card
-import Arkham.Types.Card.Id
-import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Query
-import Arkham.Types.Slot
-import Arkham.Types.Target
-import ClassyPrelude
 import Data.Coerce
-import Safe (fromJustNote)
 
 data Asset
   = Rolands38Special' Rolands38Special
@@ -94,6 +84,7 @@ data Asset
   | ArcaneStudies2' ArcaneStudies2
   | DigDeep2' DigDeep2
   | RabbitsFoot3' RabbitsFoot3
+  | LadyEsprit' LadyEsprit
   | BaseAsset' BaseAsset
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -224,6 +215,7 @@ allAssets = mapFromList
   , ("50007", ArcaneStudies2' . arcaneStudies2)
   , ("50009", DigDeep2' . digDeep2)
   , ("50010", RabbitsFoot3' . rabbitsFoot3)
+  , ("81019", LadyEsprit' . ladyEsprit)
   , ("00000", \aid -> baseAsset aid "00000" id)
   ]
 
@@ -306,4 +298,5 @@ assetAttrs = \case
   GrotesqueStatue4' attrs -> coerce attrs
   DigDeep2' attrs -> coerce attrs
   RabbitsFoot3' attrs -> coerce attrs
+  LadyEsprit' attrs -> coerce attrs
   BaseAsset' attrs -> coerce attrs

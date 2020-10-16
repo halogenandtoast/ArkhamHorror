@@ -45,6 +45,17 @@ getInvestigatorIds = asks $ setToList . getSet ()
 getPlayerCount :: (HasCount PlayerCount () env, MonadReader env m) => m Int
 getPlayerCount = asks $ unPlayerCount . getCount ()
 
+getPlayerCountValue
+  :: (HasCount PlayerCount () env, MonadReader env m) => GameValue Int -> m Int
+getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount
+
 getLocationSet
   :: (HasSet LocationId () env, MonadReader env m) => m (HashSet LocationId)
 getLocationSet = asks $ getSet ()
+
+getSpendableClueCount
+  :: (MonadReader env m, HasCount SpendableClueCount InvestigatorId env)
+  => [InvestigatorId]
+  -> m Int
+getSpendableClueCount investigatorIds =
+  sum <$> for investigatorIds (asks . (unSpendableClueCount .) . getCount)

@@ -978,6 +978,9 @@ instance HasSet InvestigatorId () (Game queue) where
 instance HasSet InvestigatorId LocationId (Game queue) where
   getSet lid = getSet () . getLocation lid
 
+instance HasSet InvestigatorId (HashSet LocationId) (Game queue) where
+  getSet lids game = unions $ map (`getSet` game) (setToList lids)
+
 instance HasQueue GameInternal where
   messageQueue = lens gameMessages $ \m x -> m { gameMessages = x }
 
@@ -991,10 +994,11 @@ createAsset cardCode = do
   aid <- liftIO $ AssetId <$> nextRandom
   pure (aid, lookupAsset cardCode aid)
 
-createTreachery :: MonadIO m => CardCode -> m (TreacheryId, Treachery)
-createTreachery cardCode = do
+createTreachery
+  :: MonadIO m => CardCode -> Maybe InvestigatorId -> m (TreacheryId, Treachery)
+createTreachery cardCode miid = do
   tid <- liftIO $ TreacheryId <$> nextRandom
-  pure (tid, lookupTreachery cardCode tid Nothing)
+  pure (tid, lookupTreachery cardCode tid miid)
 
 locationFor :: InvestigatorId -> Game queue -> LocationId
 locationFor iid = locationOf . investigatorAttrs . getInvestigator iid
@@ -1693,6 +1697,10 @@ runGameMessage msg g = case msg of
     (assetId', asset') <- createAsset cardCode
     unshiftMessage (AddAssetAt assetId' lid)
     pure $ g & assets . at assetId' ?~ asset'
+  CreateWeaknessInThreatArea cardCode iid -> do
+    (treacheryId', treachery') <- createTreachery cardCode (Just iid)
+    unshiftMessage (AttachTreachery treacheryId' (InvestigatorTarget iid))
+    pure $ g & treacheries . at treacheryId' ?~ treachery'
   SpawnEnemyAt card lid -> do
     let
       eid = EnemyId $ unCardId (getCardId card)
@@ -1837,7 +1845,7 @@ runGameMessage msg g = case msg of
     TreacheryType -> g <$ unshiftMessage (DrewTreachery iid (ecCardCode card))
     LocationType -> pure g
   DrewTreachery iid cardCode -> do
-    (treacheryId', treachery') <- createTreachery cardCode
+    (treacheryId', treachery') <- createTreachery cardCode (Just iid)
     unshiftMessages
       [ CheckWindow iid [Fast.WhenDrawTreachery You (isWeakness treachery')]
       , Revelation iid treacheryId'

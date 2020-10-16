@@ -31,6 +31,7 @@ import Arkham.Types.Source as X
 import Arkham.Types.Target as X
 import Arkham.Types.TreacheryId as X
 import Arkham.Types.Window as X
+import Control.Monad.Extra as X (concatMapM)
 import GHC.Stack as X
 import Lens.Micro as X
 import Lens.Micro.Extras as X

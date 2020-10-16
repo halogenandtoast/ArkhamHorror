@@ -15,6 +15,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.SkillId
 import Arkham.Types.Token
+import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Data.Aeson
@@ -26,6 +27,7 @@ data Target
   | EnemyTarget EnemyId
   | InvestigatorTarget InvestigatorId
   | LocationTarget LocationId
+  | SetAsideLocations [Trait]
   | SkillTestTarget
   | AfterSkillTestTarget
   | TreacheryTarget TreacheryId

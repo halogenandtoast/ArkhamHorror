@@ -1,5 +1,9 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Agenda.Cards.TheRougarouFeeds where
+module Arkham.Types.Agenda.Cards.TheRougarouFeeds
+  ( TheRougarouFeeds(..)
+  , theRougarouFeeds
+  )
+where
 
 import Arkham.Import
 
@@ -25,11 +29,21 @@ getRougarou
 getRougarou = asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))
 
 instance AgendaRunner env => RunMessage env TheRougarouFeeds where
-  runMessage msg (TheRougarouFeeds attrs@Attrs {..}) = case msg of
+  runMessage msg a@(TheRougarouFeeds attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      unshiftMessage $ chooseOne leadInvestigatorId [AdvanceAgenda aid]
+      pure
+        $ TheRougarouFeeds
+        $ attrs
+        & Agenda.sequence
+        .~ "Agenda 2b"
+        & flipped
+        .~ True
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2b" -> do
       mrougarou <- getRougarou
       case mrougarou of
-        Nothing -> unshiftMessages
+        Nothing -> a <$ unshiftMessages
           [ ShuffleAllInEncounterDiscardBackIn "81034"
           , NextAgenda aid "81004"
           , PlaceDoomOnAgenda
@@ -55,16 +69,9 @@ instance AgendaRunner env => RunMessage env TheRougarouFeeds where
                     xs -> chooseOne
                       leadInvestigatorId
                       [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
-          unshiftMessages
+          a <$ unshiftMessages
             [ ShuffleAllInEncounterDiscardBackIn "81034"
             , moveMessage
             , NextAgenda aid "81004"
             ]
-      pure
-        $ TheRougarouFeeds
-        $ attrs
-        & Agenda.sequence
-        .~ "Agenda 2b"
-        & flipped
-        .~ True
     _ -> TheRougarouFeeds <$> runMessage msg attrs

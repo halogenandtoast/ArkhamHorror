@@ -32,6 +32,7 @@ allAgendas = mapFromList $ map
   , VengeanceAwaits' vengeanceAwaits
   , ACreatureOfTheBayou' aCreatureOfTheBayou
   , TheRougarouFeeds' theRougarouFeeds
+  , TheCurseSpreads' theCurseSpreads
   ]
 
 instance HasAbilities Agenda where
@@ -54,6 +55,7 @@ data Agenda
   | VengeanceAwaits' VengeanceAwaits
   | ACreatureOfTheBayou' ACreatureOfTheBayou
   | TheRougarouFeeds' TheRougarouFeeds
+  | TheCurseSpreads' TheCurseSpreads
   | BaseAgenda' BaseAgenda
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -87,4 +89,5 @@ agendaAttrs = \case
   VengeanceAwaits' attrs -> coerce attrs
   ACreatureOfTheBayou' attrs -> coerce attrs
   TheRougarouFeeds' attrs -> coerce attrs
+  TheCurseSpreads' attrs -> coerce attrs
   BaseAgenda' attrs -> coerce attrs

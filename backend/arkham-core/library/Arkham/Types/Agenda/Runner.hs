@@ -23,5 +23,6 @@ type AgendaRunner env
     , HasSet LocationId [Trait] env
     , HasSet LocationId () env
     , HasCount ClueCount LocationId env
+    , HasSet InvestigatorId EnemyId env
     )
 

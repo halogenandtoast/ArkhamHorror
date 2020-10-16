@@ -7,6 +7,7 @@ import Arkham.Types.Agenda.Cards.ACreatureOfTheBayou as X
 import Arkham.Types.Agenda.Cards.PredatorOrPrey as X
 import Arkham.Types.Agenda.Cards.RiseOfTheGhouls as X
 import Arkham.Types.Agenda.Cards.TheArkhamWoods as X
+import Arkham.Types.Agenda.Cards.TheCurseSpreads as X
 import Arkham.Types.Agenda.Cards.TheRitualBegins as X
 import Arkham.Types.Agenda.Cards.TheRougarouFeeds as X
 import Arkham.Types.Agenda.Cards.TheyreGettingOut as X

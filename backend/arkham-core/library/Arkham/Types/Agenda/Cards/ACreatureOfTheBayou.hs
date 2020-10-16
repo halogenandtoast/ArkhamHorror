@@ -29,11 +29,21 @@ getRougarou
 getRougarou = asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))
 
 instance AgendaRunner env => RunMessage env ACreatureOfTheBayou where
-  runMessage msg (ACreatureOfTheBayou attrs@Attrs {..}) = case msg of
+  runMessage msg a@(ACreatureOfTheBayou attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1a" -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      unshiftMessage $ chooseOne leadInvestigatorId [AdvanceAgenda aid]
+      pure
+        $ ACreatureOfTheBayou
+        $ attrs
+        & Agenda.sequence
+        .~ "Agenda 1b"
+        & flipped
+        .~ True
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1b" -> do
       mrougarou <- getRougarou
       case mrougarou of
-        Nothing -> unshiftMessages
+        Nothing -> a <$ unshiftMessages
           [ ShuffleEncounterDiscardBackIn
           , NextAgenda aid "81003"
           , PlaceDoomOnAgenda
@@ -59,13 +69,6 @@ instance AgendaRunner env => RunMessage env ACreatureOfTheBayou where
                     xs -> chooseOne
                       leadInvestigatorId
                       [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
-          unshiftMessages
+          a <$ unshiftMessages
             [ShuffleEncounterDiscardBackIn, moveMessage, NextAgenda aid "81003"]
-      pure
-        $ ACreatureOfTheBayou
-        $ attrs
-        & Agenda.sequence
-        .~ "Agenda 1b"
-        & flipped
-        .~ True
     _ -> ACreatureOfTheBayou <$> runMessage msg attrs

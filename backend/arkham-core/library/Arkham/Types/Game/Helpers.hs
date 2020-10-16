@@ -44,3 +44,7 @@ getInvestigatorIds = asks $ setToList . getSet ()
 
 getPlayerCount :: (HasCount PlayerCount () env, MonadReader env m) => m Int
 getPlayerCount = asks $ unPlayerCount . getCount ()
+
+getLocationSet
+  :: (HasSet LocationId () env, MonadReader env m) => m (HashSet LocationId)
+getLocationSet = asks $ getSet ()

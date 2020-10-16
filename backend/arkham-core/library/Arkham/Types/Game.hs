@@ -1797,6 +1797,13 @@ runGameMessage msg g = case msg of
     encounterDeck' <-
       liftIO . shuffleM $ unDeck (view encounterDeck g) <> view discard g
     pure $ g & encounterDeck .~ Deck encounterDeck' & discard .~ mempty
+  ShuffleAllInEncounterDiscardBackIn cardCode -> do
+    let
+      (toShuffleBackIn, discard') =
+        partition ((== cardCode) . getCardCode) (g ^. discard)
+    encounterDeck' <-
+      liftIO . shuffleM $ unDeck (view encounterDeck g) <> toShuffleBackIn
+    pure $ g & encounterDeck .~ Deck encounterDeck' & discard .~ discard'
   RevelationSkillTest iid (TreacherySource tid) skillType difficulty onSuccess onFailure
     -> do
       let

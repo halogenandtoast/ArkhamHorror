@@ -6,26 +6,13 @@ module Arkham.Types.Agenda
   )
 where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
-import Arkham.Types.Agenda.Cards.PredatorOrPrey
-import Arkham.Types.Agenda.Cards.RiseOfTheGhouls
-import Arkham.Types.Agenda.Cards.TheArkhamWoods
-import Arkham.Types.Agenda.Cards.TheRitualBegins
-import Arkham.Types.Agenda.Cards.TheyreGettingOut
-import Arkham.Types.Agenda.Cards.TimeIsRunningShort
-import Arkham.Types.Agenda.Cards.VengeanceAwaits
-import Arkham.Types.Agenda.Cards.WhatsGoingOn
+import Arkham.Types.Agenda.Cards
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.AgendaId
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
 import Arkham.Types.Helpers
-import Arkham.Types.Query
-import ClassyPrelude
 import Data.Coerce
-import Safe (fromJustNote)
 
 lookupAgenda :: AgendaId -> Agenda
 lookupAgenda agendaId =
@@ -44,6 +31,7 @@ allAgendas = mapFromList $ map
   , TheRitualBegins' theRitualBegins
   , VengeanceAwaits' vengeanceAwaits
   , ACreatureOfTheBayou' aCreatureOfTheBayou
+  , TheRougarouFeeds' theRougarouFeeds
   ]
 
 instance HasAbilities Agenda where
@@ -65,6 +53,7 @@ data Agenda
   | TheRitualBegins' TheRitualBegins
   | VengeanceAwaits' VengeanceAwaits
   | ACreatureOfTheBayou' ACreatureOfTheBayou
+  | TheRougarouFeeds' TheRougarouFeeds
   | BaseAgenda' BaseAgenda
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -97,4 +86,5 @@ agendaAttrs = \case
   TheRitualBegins' attrs -> coerce attrs
   VengeanceAwaits' attrs -> coerce attrs
   ACreatureOfTheBayou' attrs -> coerce attrs
+  TheRougarouFeeds' attrs -> coerce attrs
   BaseAgenda' attrs -> coerce attrs

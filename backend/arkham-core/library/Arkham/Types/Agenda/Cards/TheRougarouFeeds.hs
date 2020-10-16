@@ -1,9 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
-  ( ACreatureOfTheBayou(..)
-  , aCreatureOfTheBayou
-  )
-where
+module Arkham.Types.Agenda.Cards.TheRougarouFeeds where
 
 import Arkham.Import
 
@@ -13,29 +9,29 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Trait
 
-newtype ACreatureOfTheBayou = ACreatureOfTheBayou Attrs
+newtype TheRougarouFeeds = TheRougarouFeeds Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-aCreatureOfTheBayou :: ACreatureOfTheBayou
-aCreatureOfTheBayou = ACreatureOfTheBayou
-  $ baseAttrs "81002" "A Creature of the Bayou" "Agenda 1a" (Static 5)
+theRougarouFeeds :: TheRougarouFeeds
+theRougarouFeeds = TheRougarouFeeds
+  $ baseAttrs "81003" "The Rougarou Feeds" "Agenda 2a" (Static 6)
 
-instance HasActions env investigator ACreatureOfTheBayou where
-  getActions i window (ACreatureOfTheBayou x) = getActions i window x
+instance HasActions env investigator TheRougarouFeeds where
+  getActions i window (TheRougarouFeeds x) = getActions i window x
 
 getRougarou
   :: (MonadReader env m, HasId (Maybe StoryEnemyId) CardCode env)
   => m (Maybe EnemyId)
 getRougarou = asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))
 
-instance AgendaRunner env => RunMessage env ACreatureOfTheBayou where
-  runMessage msg (ACreatureOfTheBayou attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1a" -> do
+instance AgendaRunner env => RunMessage env TheRougarouFeeds where
+  runMessage msg (TheRougarouFeeds attrs@Attrs {..}) = case msg of
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
       mrougarou <- getRougarou
       case mrougarou of
         Nothing -> unshiftMessages
-          [ ShuffleEncounterDiscardBackIn
-          , NextAgenda aid "81003"
+          [ ShuffleAllInEncounterDiscardBackIn "81034"
+          , NextAgenda aid "81004"
           , PlaceDoomOnAgenda
           ]
         Just eid -> do
@@ -60,12 +56,15 @@ instance AgendaRunner env => RunMessage env ACreatureOfTheBayou where
                       leadInvestigatorId
                       [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
           unshiftMessages
-            [ShuffleEncounterDiscardBackIn, moveMessage, NextAgenda aid "81003"]
+            [ ShuffleAllInEncounterDiscardBackIn "81034"
+            , moveMessage
+            , NextAgenda aid "81004"
+            ]
       pure
-        $ ACreatureOfTheBayou
+        $ TheRougarouFeeds
         $ attrs
         & Agenda.sequence
-        .~ "Agenda 1b"
+        .~ "Agenda 2b"
         & flipped
         .~ True
-    _ -> ACreatureOfTheBayou <$> runMessage msg attrs
+    _ -> TheRougarouFeeds <$> runMessage msg attrs

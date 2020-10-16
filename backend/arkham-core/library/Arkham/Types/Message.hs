@@ -303,6 +303,7 @@ data Message
   | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard)
   | ShuffleBackIntoEncounterDeck Target
   | ShuffleEncounterDiscardBackIn
+  | ShuffleAllInEncounterDiscardBackIn CardCode
   | ShuffleDiscardBackIn InvestigatorId
   | DiscardEncounterUntilFirst Source (EncounterCardType, Maybe Trait)
   | SpendClues Int [InvestigatorId]

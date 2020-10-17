@@ -261,34 +261,35 @@ instance HasVictoryPoints PlayerCard where
   getVictoryPoints MkPlayerCard {..} = pcVictoryPoints
 
 type ActionRunner env
-  = ( HasActions env (ActionType, env)
-    , HasId (Maybe StoryAssetId) CardCode env
-    , HasId (Maybe StoryEnemyId) CardCode env
-    , HasId (Maybe OwnerId) AssetId env
-    , HasId (Maybe LocationId) AssetId env
-    , HasId LocationId InvestigatorId env
-    , HasSet InvestigatorId LocationId env
-    , HasSet InvestigatorId EnemyId env
-    , HasSet ConnectedLocationId LocationId env
-    , HasSet EnemyId LocationId env
-    , HasList UsedAbility () env
-    , HasCount PlayerCount () env
+  = ( HasQueue env
+    , HasActions env (ActionType, env)
+    , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
     , HasCount CardCount InvestigatorId env
-    , HasCount SpendableClueCount InvestigatorId env
     , HasCount ClueCount LocationId env
     , HasCount HorrorCount InvestigatorId env
-    , HasQueue env
-    , HasSet ExhaustedAssetId InvestigatorId env
-    , HasModifiersFor env env
-    , HasSet Trait EnemyId env
-    , HasId CardCode EnemyId env
-    , HasSource ForSkillTest env
-    , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
-    , HasSet InvestigatorId () env
+    , HasCount PlayerCount () env
     , HasCount ResourceCount InvestigatorId env
+    , HasCount SpendableClueCount InvestigatorId env
+    , HasId (Maybe LocationId) AssetId env
+    , HasId (Maybe OwnerId) AssetId env
+    , HasId (Maybe StoryAssetId) CardCode env
+    , HasId (Maybe StoryEnemyId) CardCode env
+    , HasId CardCode EnemyId env
+    , HasId LocationId InvestigatorId env
     , HasList DiscardedPlayerCard InvestigatorId env
-    , HasList InPlayCard InvestigatorId env
     , HasList HandCard InvestigatorId env
+    , HasList InPlayCard InvestigatorId env
+    , HasList UsedAbility () env
+    , HasModifiersFor env env
+    , HasSet AccessibleLocationId LocationId env
+    , HasSet ConnectedLocationId LocationId env
+    , HasSet EnemyId LocationId env
+    , HasSet ExhaustedAssetId InvestigatorId env
+    , HasSet InvestigatorId () env
+    , HasSet InvestigatorId EnemyId env
+    , HasSet InvestigatorId LocationId env
+    , HasSet Trait EnemyId env
+    , HasSource ForSkillTest env
     )
 
 class HasActions1 env f where

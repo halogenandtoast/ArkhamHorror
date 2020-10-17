@@ -99,26 +99,37 @@ getCanEvade
   -> m Bool
 getCanEvade _ iid = getHasActionsRemaining iid (Just Action.Evade) mempty
 
--- TODO: canMoveTo location a@Attrs {..} = canDo Action.Move a && getId () location `elem` investigatorConnectedLocations
 getCanMoveTo
   :: ( MonadReader env m
      , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
+     , HasSet AccessibleLocationId LocationId env
+     , HasId LocationId InvestigatorId env
      )
   => LocationId
   -> InvestigatorId
   -> m Bool
-getCanMoveTo _ iid = getHasActionsRemaining iid (Just Action.Move) mempty
+getCanMoveTo lid iid = do
+  locationId <- asks $ getId @LocationId iid
+  accessibleLocations <-
+    asks $ map unAccessibleLocationId . setToList . getSet locationId
+  hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Move) mempty
+  pure $ lid `elem` accessibleLocations && hasActionsRemaining
 
--- TODO: canInvestigate location a@Attrs {..} = canDo Action.Investigate a && getId () location == investigatorLocation
 getCanInvestigate
   :: ( MonadReader env m
      , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
+     , HasId LocationId InvestigatorId env
      )
   => LocationId
   -> InvestigatorId
   -> m Bool
-getCanInvestigate _ iid =
-  getHasActionsRemaining iid (Just Action.Investigate) mempty
+getCanInvestigate lid iid = do
+  locationId <- asks $ getId @LocationId iid
+  hasActionsRemaining <- getHasActionsRemaining
+    iid
+    (Just Action.Investigate)
+    mempty
+  pure $ lid == locationId && hasActionsRemaining
 
 getResourceCount
   :: (MonadReader env m, HasCount ResourceCount InvestigatorId env)

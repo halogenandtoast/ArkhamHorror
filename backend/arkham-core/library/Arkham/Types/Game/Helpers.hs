@@ -4,6 +4,8 @@ import Arkham.Import
 
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
+import Arkham.Types.Keyword
+import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait (Trait)
 
 getIsUnused
@@ -73,31 +75,45 @@ getHasActionsRemaining iid maction traits =
 getCanFight
   :: ( MonadReader env m
      , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
+     , HasSet InvestigatorId EnemyId env
+     , HasSet Keyword EnemyId env
      )
   => EnemyId
   -> InvestigatorId
   -> m Bool
-getCanFight _ iid = getHasActionsRemaining iid (Just Action.Fight) mempty
+getCanFight eid iid = do
+  keywords <- asks $ getSet eid
+  hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Fight) mempty
+  engagedInvestigators <- asks $ getSet eid
+  pure
+    $ hasActionsRemaining
+    && (Keyword.Aloof `notMember` keywords || iid `member` engagedInvestigators)
 
--- TODO: canEngage enemy a@Attrs {..} = canDo Action.Engage a && getId () enemy `notElem` investigatorEngagedEnemies
 getCanEngage
   :: ( MonadReader env m
      , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
+     , HasSet InvestigatorId EnemyId env
      )
   => EnemyId
   -> InvestigatorId
   -> m Bool
-getCanEngage _ iid = getHasActionsRemaining iid (Just Action.Engage) mempty
+getCanEngage eid iid = do
+  notEngaged <- asks $ notElem iid . getSet eid
+  hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Engage) mempty
+  pure $ notEngaged && hasActionsRemaining
 
--- TODO: canEvade enemy a@Attrs {..} = canDo Action.Evade a && getId () enemy `elem` investigatorEngagedEnemies
 getCanEvade
   :: ( MonadReader env m
      , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
+     , HasSet InvestigatorId EnemyId env
      )
   => EnemyId
   -> InvestigatorId
   -> m Bool
-getCanEvade _ iid = getHasActionsRemaining iid (Just Action.Evade) mempty
+getCanEvade eid iid = do
+  engaged <- asks $ elem iid . getSet eid
+  hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Evade) mempty
+  pure $ engaged && hasActionsRemaining
 
 getCanMoveTo
   :: ( MonadReader env m

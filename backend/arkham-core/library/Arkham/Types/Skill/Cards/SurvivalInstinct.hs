@@ -21,7 +21,7 @@ newtype SurvivalInstinct = SurvivalInstinct Attrs
 survivalInstinct :: InvestigatorId -> SkillId -> SurvivalInstinct
 survivalInstinct iid uuid = SurvivalInstinct $ baseAttrs iid uuid "01081"
 
-instance HasActions env investigator SurvivalInstinct where
+instance HasActions env SurvivalInstinct where
   getActions i window (SurvivalInstinct attrs) = getActions i window attrs
 
 instance (SkillRunner env) => RunMessage env SurvivalInstinct where

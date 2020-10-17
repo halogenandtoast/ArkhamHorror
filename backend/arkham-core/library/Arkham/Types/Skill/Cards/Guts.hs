@@ -18,7 +18,7 @@ newtype Guts = Guts Attrs
 guts :: InvestigatorId -> SkillId -> Guts
 guts iid uuid = Guts $ baseAttrs iid uuid "01089"
 
-instance HasActions env investigator Guts where
+instance HasActions env Guts where
   getActions i window (Guts attrs) = getActions i window attrs
 
 instance (SkillRunner env) => RunMessage env Guts where

@@ -35,9 +35,9 @@ wendyAdams = WendyAdams $ baseAttrs
     }
   [Drifter]
 
-instance (ActionRunner env investigator) => HasActions env investigator WendyAdams where
-  getActions i (WhenRevealToken You token) (WendyAdams Attrs {..})
-    | getId () i == investigatorId = do
+instance ActionRunner env => HasActions env WendyAdams where
+  getActions iid (WhenRevealToken You token) (WendyAdams attrs@Attrs {..})
+    | iid == investigatorId = do
       let
         ability = (mkAbility
                     (InvestigatorSource investigatorId)
@@ -49,10 +49,8 @@ instance (ActionRunner env investigator) => HasActions env investigator WendyAda
       usedAbilities <- map unUsedAbility <$> asks (getList ())
       pure
         [ ActivateCardAbilityAction investigatorId ability
-        | (investigatorId, ability)
-          `notElem` usedAbilities
-          && discardableCardCount i
-          > 0
+        | (investigatorId, ability) `notElem` usedAbilities && not
+          (null $ discardableCards attrs)
         ]
   getActions i window (WendyAdams attrs) = getActions i window attrs
 

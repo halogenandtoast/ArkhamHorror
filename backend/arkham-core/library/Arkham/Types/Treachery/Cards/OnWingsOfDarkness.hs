@@ -20,7 +20,7 @@ newtype OnWingsOfDarkness = OnWingsOfDarkness Attrs
 onWingsOfDarkness :: TreacheryId -> a -> OnWingsOfDarkness
 onWingsOfDarkness uuid _ = OnWingsOfDarkness $ baseAttrs uuid "01173"
 
-instance HasActions env investigator OnWingsOfDarkness where
+instance HasActions env OnWingsOfDarkness where
   getActions i window (OnWingsOfDarkness attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env OnWingsOfDarkness where

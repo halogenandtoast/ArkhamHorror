@@ -13,13 +13,13 @@ encyclopedia2 :: AssetId -> Encyclopedia2
 encyclopedia2 uuid =
   Encyclopedia2 $ (baseAttrs uuid "01042") { assetSlots = [HandSlot] }
 
-instance HasModifiersFor env investigator Encyclopedia2 where
+instance HasModifiersFor env Encyclopedia2 where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator Encyclopedia2 where
-  getActions i NonFast (Encyclopedia2 a) | ownedBy a i = pure
+instance HasActions env Encyclopedia2 where
+  getActions iid NonFast (Encyclopedia2 a) | ownedBy a iid = pure
     [ ActivateCardAbilityAction
-        (getId () i)
+        iid
         (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
     | not (assetExhausted a)
     ]

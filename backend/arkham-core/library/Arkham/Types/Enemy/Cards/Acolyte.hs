@@ -20,13 +20,13 @@ acolyte uuid = Acolyte $ (baseAttrs uuid "01169")
   , enemyEvade = 2
   }
 
-instance HasModifiersFor env investigator Acolyte where
+instance HasModifiersFor env Acolyte where
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env Acolyte where
   getModifiers _ (Acolyte Attrs {..}) = pure . concat . toList $ enemyModifiers
 
-instance (IsInvestigator investigator) => HasActions env investigator Acolyte where
+instance ActionRunner env => HasActions env Acolyte where
   getActions i window (Acolyte attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env Acolyte where

@@ -1,19 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.TheArkhamWoods where
 
-import Arkham.Json
+import Arkham.Import hiding (sequence)
+
 import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.Card
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.Source
-import Arkham.Types.Target
 import Arkham.Types.Trait
-import ClassyPrelude hiding (sequence)
-import Lens.Micro
 
 newtype TheArkhamWoods = TheArkhamWoods Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -22,20 +15,22 @@ theArkhamWoods :: TheArkhamWoods
 theArkhamWoods =
   TheArkhamWoods $ baseAttrs "01143" "The Arkham Woods" "Agenda 1a" (Static 4)
 
-instance HasActions env investigator TheArkhamWoods where
+instance HasActions env TheArkhamWoods where
   getActions i window (TheArkhamWoods x) = getActions i window x
 
-instance (AgendaRunner env) => RunMessage env TheArkhamWoods where
+instance AgendaRunner env => RunMessage env TheArkhamWoods where
   runMessage msg a@(TheArkhamWoods attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1a" -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
-      unshiftMessage (Ask leadInvestigatorId $ ChooseOne [AdvanceAgenda aid])
+      leadInvestigatorId <- getLeadInvestigatorId
+      unshiftMessage (chooseOne leadInvestigatorId [AdvanceAgenda aid])
       pure $ TheArkhamWoods $ attrs & sequence .~ "Agenda 1b" & flipped .~ True
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1b" ->
       a <$ unshiftMessage
         (Run
           [ ShuffleEncounterDiscardBackIn
-          , DiscardEncounterUntilFirst (AgendaSource aid) (EnemyType, Just Monster)
+          , DiscardEncounterUntilFirst
+            (AgendaSource aid)
+            (EnemyType, Just Monster)
           ]
         )
     RequestedEncounterCard (AgendaSource aid) mcard | aid == agendaId ->

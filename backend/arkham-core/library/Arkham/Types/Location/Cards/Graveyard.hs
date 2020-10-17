@@ -18,10 +18,10 @@ graveyard =
         { locationVictory = Just 1
         }
 
-instance HasModifiersFor env investigator Graveyard where
+instance HasModifiersFor env Graveyard where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator Graveyard where
+instance ActionRunner env => HasActions env Graveyard where
   getActions i window (Graveyard attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Graveyard where

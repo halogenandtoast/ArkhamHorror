@@ -17,10 +17,10 @@ researchLibrarian uuid = ResearchLibrarian $ (baseAttrs uuid "01032")
   , assetSanity = Just 1
   }
 
-instance HasModifiersFor env investigator ResearchLibrarian where
+instance HasModifiersFor env ResearchLibrarian where
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env investigator ResearchLibrarian where
+instance HasActions env ResearchLibrarian where
   getActions i window (ResearchLibrarian x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env ResearchLibrarian where

@@ -27,27 +27,27 @@ reactionAbility :: Attrs -> SkillType -> Ability
 reactionAbility Attrs { assetId } skillType =
   mkAbility (AssetSource assetId) 2 (ReactionAbility (WhenSkillTest skillType))
 
-instance IsInvestigator investigator => HasModifiersFor env investigator FireAxe where
-  getModifiersFor (SkillTestSource source (Just Action.Fight)) i (FireAxe a)
-    | ownedBy a i && isSource a source = pure
-      [ DamageDealt 1 | resourceCount i == 0 ]
+instance AssetRunner env => HasModifiersFor env FireAxe where
+  getModifiersFor (SkillTestSource source (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)
+    | ownedBy a iid && isSource a source
+    = do
+      resourceCount <- getResourceCount iid
+      pure [ DamageDealt 1 | resourceCount == 0 ]
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env investigator) => HasActions env investigator FireAxe where
-  getActions i NonFast (FireAxe a) | ownedBy a i = do
-    fightAvailable <- hasFightActions i NonFast
-    pure
-      $ [ ActivateCardAbilityAction (getId () i) (fightAbility a)
-        | fightAvailable && canDo Action.Fight i
-        ]
-  getActions i (WhenSkillTest skillType) (FireAxe a) | ownedBy a i = do
+instance ActionRunner env => HasActions env FireAxe where
+  getActions iid NonFast (FireAxe a) | ownedBy a iid = do
+    fightAvailable <- hasFightActions iid NonFast
+    pure $ [ ActivateCardAbilityAction iid (fightAbility a) | fightAvailable ]
+  getActions iid (WhenSkillTest skillType) (FireAxe a) | ownedBy a iid = do
     let ability = reactionAbility a skillType
     using <- asks $ any (isSource a) . getSource ForSkillTest
     usedCount <-
-      asks $ count (== (getId () i, ability)) . map unUsedAbility . getList ()
+      asks $ count (== (iid, ability)) . map unUsedAbility . getList ()
+    resourceCount <- getResourceCount iid
     pure
-      [ ActivateCardAbilityAction (getId () i) ability
-      | resourceCount i > 0 && using && usedCount < 3
+      [ ActivateCardAbilityAction iid ability
+      | resourceCount > 0 && using && usedCount < 3
       ]
   getActions _ _ _ = pure []
 

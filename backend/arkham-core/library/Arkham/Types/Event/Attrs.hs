@@ -81,7 +81,7 @@ weaknessAttrs iid eid cardCode =
       , eventDoom = 0
       }
 
-instance HasActions env investigator Attrs where
+instance HasActions env Attrs where
   getActions _ _ _ = pure []
 
 instance HasQueue env => RunMessage env Attrs where

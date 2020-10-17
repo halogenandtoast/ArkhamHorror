@@ -21,7 +21,7 @@ newtype ViciousBlow = ViciousBlow Attrs
 viciousBlow :: InvestigatorId -> SkillId -> ViciousBlow
 viciousBlow iid uuid = ViciousBlow $ baseAttrs iid uuid "01025"
 
-instance HasActions env investigator ViciousBlow where
+instance HasActions env ViciousBlow where
   getActions i window (ViciousBlow attrs) = getActions i window attrs
 
 instance (SkillRunner env) => RunMessage env ViciousBlow where

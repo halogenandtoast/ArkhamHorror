@@ -15,13 +15,13 @@ newtype ForbiddenKnowledge = ForbiddenKnowledge Attrs
 forbiddenKnowledge :: AssetId -> ForbiddenKnowledge
 forbiddenKnowledge uuid = ForbiddenKnowledge $ baseAttrs uuid "01058"
 
-instance HasModifiersFor env investigator ForbiddenKnowledge where
+instance HasModifiersFor env ForbiddenKnowledge where
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env investigator) => HasActions env investigator ForbiddenKnowledge where
-  getActions i window (ForbiddenKnowledge a) | ownedBy a i = pure
+instance HasActions env ForbiddenKnowledge where
+  getActions iid window (ForbiddenKnowledge a) | ownedBy a iid = pure
     [ ActivateCardAbilityAction
-        (getId () i)
+        iid
         (mkAbility (toSource a) 1 (FastAbility window))
     | useCount (assetUses a) > 0
     ]

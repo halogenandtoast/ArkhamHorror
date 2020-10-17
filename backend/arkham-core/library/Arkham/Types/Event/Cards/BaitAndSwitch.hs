@@ -22,7 +22,7 @@ newtype BaitAndSwitch = BaitAndSwitch Attrs
 baitAndSwitch :: InvestigatorId -> EventId -> BaitAndSwitch
 baitAndSwitch iid uuid = BaitAndSwitch $ baseAttrs iid uuid "02034"
 
-instance HasActions env investigator BaitAndSwitch where
+instance HasActions env BaitAndSwitch where
   getActions i window (BaitAndSwitch attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env BaitAndSwitch where

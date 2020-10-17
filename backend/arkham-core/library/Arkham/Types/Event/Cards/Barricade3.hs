@@ -21,7 +21,7 @@ newtype Barricade3 = Barricade3 Attrs
 barricade3 :: InvestigatorId -> EventId -> Barricade3
 barricade3 iid uuid = Barricade3 $ baseAttrs iid uuid "50004"
 
-instance HasActions env investigator Barricade3 where
+instance HasActions env Barricade3 where
   getActions i window (Barricade3 attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env Barricade3 where

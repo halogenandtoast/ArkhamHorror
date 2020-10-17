@@ -30,7 +30,7 @@ silasMarsh = SilasMarsh $ baseAttrs
     }
   [Drifter]
 
-instance ActionRunner env investigator => HasActions env investigator SilasMarsh where
+instance ActionRunner env => HasActions env SilasMarsh where
   getActions i window (SilasMarsh attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env SilasMarsh where

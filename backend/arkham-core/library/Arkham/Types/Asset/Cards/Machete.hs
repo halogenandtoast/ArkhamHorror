@@ -14,15 +14,15 @@ newtype Machete = Machete Attrs
 machete :: AssetId -> Machete
 machete uuid = Machete $ (baseAttrs uuid "01020") { assetSlots = [HandSlot] }
 
-instance HasModifiersFor env investigator Machete where
+instance HasModifiersFor env Machete where
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env investigator) => HasActions env investigator Machete where
-  getActions i window (Machete a) | ownedBy a i = do
-    fightAvailable <- hasFightActions i window
+instance ActionRunner env => HasActions env Machete where
+  getActions iid window (Machete a) | ownedBy a iid = do
+    fightAvailable <- hasFightActions iid window
     pure
       [ ActivateCardAbilityAction
-          (getId () i)
+          iid
           (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight)))
       | fightAvailable
       ]

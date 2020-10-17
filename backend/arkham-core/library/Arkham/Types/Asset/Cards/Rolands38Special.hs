@@ -21,18 +21,18 @@ rolands38Special :: AssetId -> Rolands38Special
 rolands38Special uuid =
   Rolands38Special $ (baseAttrs uuid "01006") { assetSlots = [HandSlot] }
 
-instance HasModifiersFor env investigator Rolands38Special where
+instance HasModifiersFor env Rolands38Special where
   getModifiersFor _ _ _ = pure []
 
 fightAbility :: Attrs -> Ability
 fightAbility Attrs { assetId } =
   mkAbility (AssetSource assetId) 1 (ActionAbility 1 (Just Action.Fight))
 
-instance (ActionRunner env investigator) => HasActions env investigator Rolands38Special where
-  getActions i window (Rolands38Special a) | ownedBy a i = do
-    fightAvailable <- hasFightActions i window
+instance ActionRunner env => HasActions env Rolands38Special where
+  getActions iid window (Rolands38Special a) | ownedBy a iid = do
+    fightAvailable <- hasFightActions iid window
     pure
-      [ ActivateCardAbilityAction (getId () i) (fightAbility a)
+      [ ActivateCardAbilityAction iid (fightAbility a)
       | useCount (assetUses a) > 0 && fightAvailable
       ]
   getActions _ _ _ = pure []

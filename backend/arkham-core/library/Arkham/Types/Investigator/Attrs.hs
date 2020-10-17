@@ -188,7 +188,7 @@ baseSkillValueFor skill _maction tempModifiers attrs = foldr
 damageValueFor
   :: ( MonadReader env m
      , MonadIO m
-     , HasModifiersFor env InvestigatorId env
+     , HasModifiersFor env env
      , HasSource ForSkillTest env
      , HasTestAction ForSkillTest env
      )
@@ -200,7 +200,9 @@ damageValueFor baseValue attrs = do
     asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
   maction <- asks $ getTestAction ForSkillTest
   modifiers' <-
-    getModifiersFor (SkillTestSource source maction) (investigatorId attrs)
+    getModifiersFor
+        (SkillTestSource source maction)
+        (InvestigatorTarget $ investigatorId attrs)
       =<< ask
   pure $ foldr applyModifier baseValue modifiers'
  where
@@ -368,6 +370,9 @@ actionCostModifier attrs (Just a) = foldr
     if matchTarget attrs match a then n + m else n
   applyModifier _ n = n
 
+spendableClueCount :: Attrs -> Int
+spendableClueCount a = if canSpendClues a then investigatorClues a else 0
+
 cluesToDiscover :: Attrs -> Int -> Int
 cluesToDiscover attrs startValue = foldr
   applyModifier
@@ -470,62 +475,14 @@ possibleSkillTypeChoices skillType attrs = foldr
     | toReplace == skillType = toUse : skills
   applyModifier _ skills = skills
 
-instance IsInvestigator Attrs where
-  locationOf Attrs {..} = investigatorLocation
-  discardOf Attrs {..} = investigatorDiscard
-  inPlayCounts Attrs {..} =
-    InPlayCounts { inPlayAssetsCount = length investigatorAssets }
-  handOf Attrs {..} = investigatorHand
-  deckOf Attrs {..} = unDeck investigatorDeck
-  resourceCount Attrs {..} = investigatorResources
-  canDo action a@Attrs {..} = canAfford a action
-  clueCount Attrs {..} = investigatorClues
-  spendableClueCount a@Attrs {..} =
-    if canSpendClues a then investigatorClues else 0
-  cardCount Attrs {..} = length investigatorHand
-  discardableCardCount a = length $ discardableCards a
-  canInvestigate location a@Attrs {..} =
-    canDo Action.Investigate a && getId () location == investigatorLocation
-  canMoveTo location a@Attrs {..} =
-    canDo Action.Move a
-      && getId () location
-      `elem` investigatorConnectedLocations
-  canEvade enemy a@Attrs {..} =
-    canDo Action.Evade a && getId () enemy `elem` investigatorEngagedEnemies
-  canFight _ a@Attrs {..} = canDo Action.Fight a
-  canEngage enemy a@Attrs {..} =
-    canDo Action.Engage a && getId () enemy `notElem` investigatorEngagedEnemies
-  hasActionsRemaining Attrs {..} _actionType traits =
-    let
-      hasTomeActionsRemaining =
-        Tome `member` traits && maybe False (> 0) investigatorTomeActions
-    in investigatorRemainingActions > 0 || hasTomeActionsRemaining
-  canTakeDirectDamage a = not (facingDefeat a)
-  remainingHealth a = modifiedHealth a - investigatorHealthDamage a
-  remainingSanity a = modifiedSanity a - investigatorSanityDamage a
-  modifiedStatsOf source a = do
-    modifiers' <- getModifiers source (investigatorId a)
-    let
-      willpower' = skillValueFor SkillWillpower Nothing modifiers' a
-      intellect' = skillValueFor SkillIntellect Nothing modifiers' a
-      combat' = skillValueFor SkillCombat Nothing modifiers' a
-      agility' = skillValueFor SkillAgility Nothing modifiers' a
-    pure Stats
-      { willpower = willpower'
-      , intellect = intellect'
-      , combat = combat'
-      , agility = agility'
-      , health = modifiedHealth a - investigatorHealthDamage a
-      , sanity = modifiedSanity a - investigatorSanityDamage a
-      }
-
 instance HasId InvestigatorId () Attrs where
   getId _ Attrs {..} = investigatorId
 
-instance ActionRunner env investigator => HasActions env investigator Attrs where
-  getActions i window attrs = concat <$> for
+instance ActionRunner env => HasActions env Attrs where
+  getActions iid window attrs | iid == investigatorId attrs = concat <$> for
     (attrs ^.. hand . traverse . _PlayerCard)
-    (getActions i window . toPlayerCardWithBehavior)
+    (getActions iid window . toPlayerCardWithBehavior)
+  getActions _ _ _ = pure []
 
 instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
   runMessage msg i = do
@@ -540,17 +497,15 @@ _PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
 _PlayerCard _ (EncounterCard ec) = pure (EncounterCard ec)
 
 hasModifier
-  :: ( Monad m
-     , MonadReader env m
-     , HasModifiersFor env InvestigatorId env
-     , MonadIO m
-     )
+  :: (Monad m, MonadReader env m, HasModifiersFor env env, MonadIO m)
   => Attrs
   -> Modifier
   -> m Bool
 hasModifier Attrs { investigatorId } m =
   elem m
-    <$> (getModifiersFor (InvestigatorSource investigatorId) investigatorId
+    <$> (getModifiersFor
+            (InvestigatorSource investigatorId)
+            (InvestigatorTarget investigatorId)
         =<< ask
         )
 
@@ -1262,7 +1217,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   BeforeSkillTest iid skillType | iid == investigatorId -> do
     committedCardIds <- asks $ map unCommittedCardId . setToList . getSet iid
     committedCardCodes <- asks $ HashSet.map unCommittedCardCode . getSet ()
-    actions <- join $ asks (getActions a (WhenSkillTest skillType))
+    actions <- join $ asks (getActions iid (WhenSkillTest skillType))
     let
       triggerMessage = StartSkillTest investigatorId
       beginMessage = BeforeSkillTest iid skillType
@@ -1345,7 +1300,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure a
   CheckWindow iid windows | iid == investigatorId -> do
     actions <- fmap concat <$> for windows $ \window -> do
-      join (asks (getActions a window))
+      join (asks (getActions iid window))
     if not (null $ playableCards a windows) || not (null actions)
       then a <$ unshiftMessage
         (Ask iid
@@ -1479,10 +1434,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     | iid == iid' && iid == investigatorId -> do
       a <$ unshiftMessage (CheckWindow iid [AfterPassSkillTest You n])
   PlayerWindow iid additionalActions | iid == investigatorId -> do
-    actions <- join $ asks (getActions a NonFast)
-    fastActions <- join $ asks (getActions a (DuringTurn You))
-    playerWindowActions <- join $ asks (getActions a FastPlayerWindow)
-    modifiers' <- getModifiersFor (InvestigatorSource iid) iid =<< ask
+    actions <- join $ asks (getActions iid NonFast)
+    fastActions <- join $ asks (getActions iid (DuringTurn You))
+    playerWindowActions <- join $ asks (getActions iid FastPlayerWindow)
+    modifiers' <-
+      getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) =<< ask
     a <$ unshiftMessage
       (Ask iid $ ChooseOne
         (additionalActions

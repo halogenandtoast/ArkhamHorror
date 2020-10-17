@@ -19,7 +19,7 @@ bookOfShadows3 :: AssetId -> BookOfShadows3
 bookOfShadows3 uuid =
   BookOfShadows3 $ (baseAttrs uuid "01070") { assetSlots = [HandSlot] }
 
-instance HasModifiersFor env investigator BookOfShadows3 where
+instance HasModifiersFor env BookOfShadows3 where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
@@ -28,11 +28,9 @@ ability a = mkAbility (toSource a) 1 (ActionAbility 1 Nothing)
 slot :: Attrs -> Slot
 slot Attrs { assetId } = Slot (AssetSource assetId) Nothing
 
-instance IsInvestigator investigator => HasActions env investigator BookOfShadows3 where
-  getActions i NonFast (BookOfShadows3 a) | ownedBy a i = pure
-    [ ActivateCardAbilityAction (getId () i) (ability a)
-    | not (assetExhausted a)
-    ]
+instance HasActions env BookOfShadows3 where
+  getActions iid NonFast (BookOfShadows3 a) | ownedBy a iid =
+    pure [ ActivateCardAbilityAction iid (ability a) | not (assetExhausted a) ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env BookOfShadows3 where

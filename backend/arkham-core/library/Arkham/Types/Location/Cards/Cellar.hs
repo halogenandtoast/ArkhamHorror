@@ -14,10 +14,10 @@ cellar = Cellar $ (baseAttrs "01114" "Cellar" 4 (PerPlayer 2) Plus [Square] [])
   { locationVictory = Just 1
   }
 
-instance HasModifiersFor env investigator Cellar where
+instance HasModifiersFor env Cellar where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator Cellar where
+instance ActionRunner env => HasActions env Cellar where
   getActions i window (Cellar attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Cellar where

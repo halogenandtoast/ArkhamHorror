@@ -18,7 +18,7 @@ newtype SearchForTheTruth = SearchForTheTruth Attrs
 searchForTheTruth :: InvestigatorId -> EventId -> SearchForTheTruth
 searchForTheTruth iid uuid = SearchForTheTruth $ baseAttrs iid uuid "02008"
 
-instance HasActions env investigator SearchForTheTruth where
+instance HasActions env SearchForTheTruth where
   getActions i window (SearchForTheTruth attrs) = getActions i window attrs
 
 instance (HasQueue env, HasCount ClueCount InvestigatorId env) => RunMessage env SearchForTheTruth where

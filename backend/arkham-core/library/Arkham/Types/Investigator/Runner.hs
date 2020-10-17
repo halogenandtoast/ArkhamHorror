@@ -41,11 +41,11 @@ type InvestigatorRunner investigator env
     , HasId (Maybe AssetId) CardCode env
     , HasList Location () env
     , HasList Enemy () env
-    , HasActions env investigator env
-    , HasActions env investigator (ActionType, Trait, env)
+    , HasActions env env
+    , HasActions env (ActionType, Trait, env)
     , HasSet InvestigatorId () env
     , HasSet ExhaustedAssetId InvestigatorId env
-    , HasModifiersFor env InvestigatorId env
+    , HasModifiersFor env env
     , HasSet HandCardId InvestigatorId env
     , HasSource ForSkillTest env
     , HasTestAction ForSkillTest env

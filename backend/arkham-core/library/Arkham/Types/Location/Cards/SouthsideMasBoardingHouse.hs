@@ -25,7 +25,7 @@ southsideMasBoardingHouse = SouthsideMasBoardingHouse $ baseAttrs
   [Diamond, Plus, Circle]
   [Arkham]
 
-instance HasModifiersFor env investigator SouthsideMasBoardingHouse where
+instance HasModifiersFor env SouthsideMasBoardingHouse where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
@@ -33,17 +33,19 @@ ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
   { abilityLimit = PerGame
   }
 
-instance (ActionRunner env investigator) => HasActions env investigator SouthsideMasBoardingHouse where
-  getActions i NonFast (SouthsideMasBoardingHouse attrs@Attrs {..})
+instance ActionRunner env => HasActions env SouthsideMasBoardingHouse where
+  getActions iid NonFast (SouthsideMasBoardingHouse attrs@Attrs {..})
     | locationRevealed = do
-      baseActions <- getActions i NonFast attrs
-      unused <- getIsUnused i (ability attrs)
+      baseActions <- getActions iid NonFast attrs
+      unused <- getIsUnused iid (ability attrs)
+      hasActionsRemaining <- getHasActionsRemaining
+        iid
+        Nothing
+        (setToList locationTraits)
       pure
         $ baseActions
-        <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
-           | unused
-             && atLocation i attrs
-             && hasActionsRemaining i Nothing locationTraits
+        <> [ ActivateCardAbilityAction iid (ability attrs)
+           | unused && iid `member` locationInvestigators && hasActionsRemaining
            ]
   getActions _ _ _ = pure []
 

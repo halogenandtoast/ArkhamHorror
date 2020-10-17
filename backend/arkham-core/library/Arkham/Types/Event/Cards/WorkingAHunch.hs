@@ -21,7 +21,7 @@ newtype WorkingAHunch = WorkingAHunch Attrs
 workingAHunch :: InvestigatorId -> EventId -> WorkingAHunch
 workingAHunch iid uuid = WorkingAHunch $ baseAttrs iid uuid "01037"
 
-instance HasActions env investigator WorkingAHunch where
+instance HasActions env WorkingAHunch where
   getActions i window (WorkingAHunch attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env WorkingAHunch where

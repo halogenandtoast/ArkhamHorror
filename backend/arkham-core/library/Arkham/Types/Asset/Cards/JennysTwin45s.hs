@@ -17,21 +17,21 @@ jennysTwin45s :: AssetId -> JennysTwin45s
 jennysTwin45s uuid =
   JennysTwin45s $ (baseAttrs uuid "02010") { assetSlots = [HandSlot, HandSlot] }
 
-instance HasModifiersFor env investigator JennysTwin45s where
+instance HasModifiersFor env JennysTwin45s where
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env investigator) => HasActions env investigator JennysTwin45s where
-  getActions i window (JennysTwin45s a) | ownedBy a i = do
-    fightAvailable <- hasFightActions i window
+instance ActionRunner env => HasActions env JennysTwin45s where
+  getActions iid window (JennysTwin45s a) | ownedBy a iid = do
+    fightAvailable <- hasFightActions iid window
     pure
       [ ActivateCardAbilityAction
-          (getId () i)
+          iid
           (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight)))
       | useCount (assetUses a) > 0 && fightAvailable
       ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env JennysTwin45s where
+instance AssetRunner env => RunMessage env JennysTwin45s where
   runMessage msg (JennysTwin45s attrs) = case msg of
     InvestigatorPlayDynamicAsset _ aid _ _ n | aid == assetId attrs ->
       JennysTwin45s <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo n)

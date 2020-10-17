@@ -17,21 +17,21 @@ fortyOneDerringer :: AssetId -> FortyOneDerringer
 fortyOneDerringer uuid =
   FortyOneDerringer $ (baseAttrs uuid "01047") { assetSlots = [HandSlot] }
 
-instance HasModifiersFor env investigator FortyOneDerringer where
+instance HasModifiersFor env FortyOneDerringer where
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env investigator) => HasActions env investigator FortyOneDerringer where
-  getActions i window (FortyOneDerringer a) | ownedBy a i = do
-    fightAvailable <- hasFightActions i window
+instance ActionRunner env => HasActions env FortyOneDerringer where
+  getActions iid window (FortyOneDerringer a) | ownedBy a iid = do
+    fightAvailable <- hasFightActions iid window
     pure
       [ ActivateCardAbilityAction
-          (getId () i)
+          iid
           (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight)))
       | useCount (assetUses a) > 0 && fightAvailable
       ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env FortyOneDerringer where
+instance AssetRunner env => RunMessage env FortyOneDerringer where
   runMessage msg (FortyOneDerringer attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       FortyOneDerringer

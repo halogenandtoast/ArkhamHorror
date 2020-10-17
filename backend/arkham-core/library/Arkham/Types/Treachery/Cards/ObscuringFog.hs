@@ -20,7 +20,7 @@ newtype ObscuringFog = ObscuringFog Attrs
 obscuringFog :: TreacheryId -> a -> ObscuringFog
 obscuringFog uuid _ = ObscuringFog $ baseAttrs uuid "01168"
 
-instance HasActions env investigator ObscuringFog where
+instance HasActions env ObscuringFog where
   getActions i window (ObscuringFog attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env ObscuringFog where

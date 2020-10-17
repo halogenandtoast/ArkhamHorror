@@ -19,7 +19,7 @@ newtype UmordhothsWrath = UmordhothsWrath Attrs
 umordhothsWrath :: TreacheryId -> a -> UmordhothsWrath
 umordhothsWrath uuid _ = UmordhothsWrath $ baseAttrs uuid "01158"
 
-instance HasActions env investigator UmordhothsWrath where
+instance HasActions env UmordhothsWrath where
   getActions i window (UmordhothsWrath attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env UmordhothsWrath where

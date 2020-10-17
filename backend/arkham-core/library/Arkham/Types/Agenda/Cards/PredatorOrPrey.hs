@@ -1,17 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.PredatorOrPrey where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
-import Arkham.Types.Message
-import Arkham.Types.Source
-import Arkham.Types.Window
-import ClassyPrelude hiding (sequence)
 
 newtype PredatorOrPrey = PredatorOrPrey Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -20,16 +14,22 @@ predatorOrPrey :: PredatorOrPrey
 predatorOrPrey =
   PredatorOrPrey $ baseAttrs "01121" "Predator or Prey?" "Agenda 1a" (Static 6)
 
-instance (ActionRunner env investigator) => HasActions env investigator PredatorOrPrey where
-  getActions i NonFast (PredatorOrPrey _) | canDo Action.Resign i = pure
-    [ ActivateCardAbilityAction
-        (getId () i)
-        (mkAbility
-          (AgendaSource "01121")
-          1
-          (ActionAbility 1 (Just Action.Resign))
-        )
-    ]
+instance ActionRunner env  => HasActions env PredatorOrPrey where
+  getActions iid NonFast (PredatorOrPrey _) = do
+    hasActionsRemaining <- getHasActionsRemaining
+      iid
+      (Just Action.Resign)
+      mempty
+    pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility
+            (AgendaSource "01121")
+            1
+            (ActionAbility 1 (Just Action.Resign))
+          )
+      | hasActionsRemaining
+      ]
   getActions _ _ _ = pure []
 
 instance (AgendaRunner env) => RunMessage env PredatorOrPrey where

@@ -18,7 +18,7 @@ newtype EmergencyCache = EmergencyCache Attrs
 emergencyCache :: InvestigatorId -> EventId -> EmergencyCache
 emergencyCache iid uuid = EmergencyCache $ baseAttrs iid uuid "01088"
 
-instance HasActions env investigator EmergencyCache where
+instance HasActions env EmergencyCache where
   getActions i window (EmergencyCache attrs) = getActions i window attrs
 
 instance HasQueue env => RunMessage env EmergencyCache where

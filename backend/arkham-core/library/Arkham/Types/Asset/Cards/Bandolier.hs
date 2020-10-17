@@ -18,11 +18,11 @@ bandolier :: AssetId -> Bandolier
 bandolier uuid = Bandolier
   $ (baseAttrs uuid "02147") { assetHealth = Just 1, assetSlots = [BodySlot] }
 
-instance HasModifiersFor env investigator Bandolier where
+instance HasModifiersFor env Bandolier where
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env investigator Bandolier where
-  getActions i window (Bandolier x) = getActions i window x
+instance HasActions env Bandolier where
+  getActions iid window (Bandolier x) = getActions iid window x
 
 slot :: Attrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Weapon Nothing

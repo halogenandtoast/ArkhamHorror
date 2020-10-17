@@ -21,14 +21,20 @@ newtype Backstab = Backstab Attrs
 backstab :: InvestigatorId -> EventId -> Backstab
 backstab iid uuid = Backstab $ baseAttrs iid uuid "01051"
 
-instance HasActions env investigator Backstab where
+instance HasActions env Backstab where
   getActions i window (Backstab attrs) = getActions i window attrs
 
 instance (HasQueue env) => RunMessage env Backstab where
   runMessage msg (Backstab attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       unshiftMessages
-        [ ChooseFightEnemy iid (EventSource eid) SkillAgility [DamageDealt 2] mempty False
+        [ ChooseFightEnemy
+          iid
+          (EventSource eid)
+          SkillAgility
+          [DamageDealt 2]
+          mempty
+          False
         , Discard (EventTarget eid)
         ]
       Backstab <$> runMessage msg (attrs & resolved .~ True)

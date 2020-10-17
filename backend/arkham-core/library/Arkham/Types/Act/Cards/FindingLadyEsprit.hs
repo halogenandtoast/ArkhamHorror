@@ -22,7 +22,7 @@ findingLadyEsprit :: FindingLadyEsprit
 findingLadyEsprit =
   FindingLadyEsprit $ baseAttrs "81005" "Finding Lady Esprit" "Act 1a"
 
-instance HasActions env investigator FindingLadyEsprit where
+instance HasActions env FindingLadyEsprit where
   getActions i window (FindingLadyEsprit x) = getActions i window x
 
 investigatorsInABayouLocation

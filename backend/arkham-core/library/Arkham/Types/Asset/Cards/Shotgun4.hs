@@ -17,15 +17,15 @@ shotgun4 :: AssetId -> Shotgun4
 shotgun4 uuid =
   Shotgun4 $ (baseAttrs uuid "01029") { assetSlots = [HandSlot, HandSlot] }
 
-instance HasModifiersFor env investigator Shotgun4 where
+instance HasModifiersFor env Shotgun4 where
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env investigator => HasActions env investigator Shotgun4 where
-  getActions i window (Shotgun4 a) | ownedBy a i = do
-    fightAvailable <- hasFightActions i window
+instance ActionRunner env => HasActions env Shotgun4 where
+  getActions iid window (Shotgun4 a) | ownedBy a iid = do
+    fightAvailable <- hasFightActions iid window
     pure
       [ ActivateCardAbilityAction
-          (getId () i)
+          iid
           (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight)))
       | useCount (assetUses a) > 0 && fightAvailable
       ]

@@ -19,7 +19,7 @@ newtype SureGamble3 = SureGamble3 Attrs
 sureGamble3 :: InvestigatorId -> EventId -> SureGamble3
 sureGamble3 iid uuid = SureGamble3 $ baseAttrs iid uuid "01088"
 
-instance HasActions env investigator SureGamble3 where
+instance HasActions env SureGamble3 where
   getActions i window (SureGamble3 attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env SureGamble3 where

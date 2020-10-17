@@ -45,12 +45,12 @@ toPlayerCardWithBehavior pc = builder pc
   defaultCard = DefaultPlayerCard' . DefaultPlayerCard
 
 deriving anyclass instance (HasSet HandCardId InvestigatorId env, HasQueue env) => RunMessage env PlayerCard'
-deriving anyclass instance (HasId CardCode EnemyId env, HasSet Trait EnemyId env, IsInvestigator investigator) => HasActions env investigator PlayerCard'
+deriving anyclass instance (HasId CardCode EnemyId env, HasSet Trait EnemyId env) => HasActions env PlayerCard'
 
 instance HasQueue env => RunMessage env DefaultPlayerCard where
   runMessage _ pc = pure pc
 
-instance HasActions env investigator DefaultPlayerCard where
+instance HasActions env DefaultPlayerCard where
   getActions _ _ _ = pure []
 
 instance (HasSet HandCardId InvestigatorId env, HasQueue env) => RunMessage env DarkMemory where
@@ -68,7 +68,7 @@ instance (HasSet HandCardId InvestigatorId env, HasQueue env) => RunMessage env 
     DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
     pure $ DarkMemory pc'
 
-instance HasActions env investigator DarkMemory where
+instance HasActions env DarkMemory where
   getActions i window (DarkMemory pc) =
     getActions i window (DefaultPlayerCard pc)
 
@@ -77,12 +77,12 @@ instance (HasQueue env) => RunMessage env CloseCall2 where
     DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
     pure $ CloseCall2 pc'
 
-instance (HasId CardCode EnemyId env, HasSet Trait EnemyId env, IsInvestigator investigator) => HasActions env investigator CloseCall2 where
-  getActions i (AfterEnemyEvaded You eid) (CloseCall2 pc) = do
+instance (HasId CardCode EnemyId env, HasSet Trait EnemyId env) => HasActions env CloseCall2 where
+  getActions iid (AfterEnemyEvaded You eid) (CloseCall2 pc) = do
     traits' <- asks (getSet eid)
     cardCode <- asks (getId eid)
     pure
-      [ PlayCard (getId () i) (getCardId pc) (Just $ EnemyTarget eid) False
+      [ PlayCard iid (getCardId pc) (Just $ EnemyTarget eid) False
       | Elite `notMember` traits' && cardCode `elem` keys allEncounterCards
       ]
   getActions i window (CloseCall2 pc) =

@@ -25,7 +25,7 @@ theRitualBegins :: TheRitualBegins
 theRitualBegins =
   TheRitualBegins $ baseAttrs "01144" "The Ritual Begins" "Agenda 2a" (Static 5)
 
-instance HasActions env investigator TheRitualBegins where
+instance HasActions env TheRitualBegins where
   getActions i window (TheRitualBegins x) = getActions i window x
 
 instance (AgendaRunner env) => RunMessage env TheRitualBegins where

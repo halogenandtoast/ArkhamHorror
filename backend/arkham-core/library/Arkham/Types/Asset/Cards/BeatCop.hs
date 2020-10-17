@@ -1,17 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.BeatCop where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.AssetId
-import Arkham.Types.Classes
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.SkillType
-import Arkham.Types.Slot
-import ClassyPrelude
 
 newtype BeatCop = BeatCop Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -23,13 +16,14 @@ beatCop uuid = BeatCop $ (baseAttrs uuid "01018")
   , assetSanity = Just 2
   }
 
-instance IsInvestigator investigator => HasModifiersFor env investigator BeatCop where
-  getModifiersFor _ i (BeatCop a) =
-    pure [ SkillModifier SkillCombat 1 | ownedBy a i ]
+instance HasModifiersFor env BeatCop where
+  getModifiersFor _ (InvestigatorTarget iid) (BeatCop a) =
+    pure [ SkillModifier SkillCombat 1 | ownedBy a iid ]
+  getModifiersFor _ _ _ = pure []
 
-instance IsInvestigator investigator => HasActions env investigator BeatCop where
-  getActions i _ (BeatCop a) | ownedBy a i =
-    pure [UseCardAbility (getId () i) (toSource a) Nothing 1]
+instance HasActions env BeatCop where
+  getActions iid _ (BeatCop a) | ownedBy a iid =
+    pure [UseCardAbility iid (toSource a) Nothing 1]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env BeatCop where

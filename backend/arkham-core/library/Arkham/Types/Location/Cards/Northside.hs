@@ -30,7 +30,7 @@ northside =
         { locationVictory = Just 1
         }
 
-instance HasModifiersFor env investigator Northside where
+instance HasModifiersFor env Northside where
   getModifiersFor _ _ _ = pure []
 
 
@@ -39,18 +39,24 @@ ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
   { abilityLimit = PerGame
   }
 
-instance (ActionRunner env investigator) => HasActions env investigator Northside where
-  getActions i NonFast (Northside attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions i NonFast attrs
+instance ActionRunner env => HasActions env Northside where
+  getActions iid NonFast (Northside attrs@Attrs {..}) | locationRevealed = do
+    baseActions <- getActions iid NonFast attrs
     unused <- getGroupIsUnused (ability attrs)
+    resourceCount <- getResourceCount iid
+    hasActionsRemaining <- getHasActionsRemaining
+      iid
+      Nothing
+      (setToList locationTraits)
     pure
       $ baseActions
-      <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
-         | resourceCount i
+      <> [ ActivateCardAbilityAction iid (ability attrs)
+         | resourceCount
            >= 5
            && unused
-           && atLocation i attrs
-           && hasActionsRemaining i Nothing locationTraits
+           && iid
+           `member` locationInvestigators
+           && hasActionsRemaining
          ] -- GROUP LIMIT
   getActions _ _ _ = pure []
 

@@ -14,13 +14,12 @@ heirloomOfHyperborea :: AssetId -> HeirloomOfHyperborea
 heirloomOfHyperborea uuid = HeirloomOfHyperborea
   $ (baseAttrs uuid "01012") { assetSlots = [AccessorySlot] }
 
-instance HasModifiersFor env investigator HeirloomOfHyperborea where
+instance HasModifiersFor env HeirloomOfHyperborea where
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env investigator) => HasActions env investigator HeirloomOfHyperborea where
-  getActions i (AfterPlayCard You traits) (HeirloomOfHyperborea a)
-    | ownedBy a i = pure
-      [ DrawCards (getId () i) 1 False | Spell `elem` traits ]
+instance HasActions env HeirloomOfHyperborea where
+  getActions iid (AfterPlayCard You traits) (HeirloomOfHyperborea a)
+    | ownedBy a iid = pure [ DrawCards iid 1 False | Spell `elem` traits ]
   getActions i window (HeirloomOfHyperborea x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env HeirloomOfHyperborea where

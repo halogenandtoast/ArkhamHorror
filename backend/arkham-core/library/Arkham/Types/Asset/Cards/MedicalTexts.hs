@@ -13,13 +13,13 @@ medicalTexts :: AssetId -> MedicalTexts
 medicalTexts uuid =
   MedicalTexts $ (baseAttrs uuid "01035") { assetSlots = [HandSlot] }
 
-instance HasModifiersFor env investigator MedicalTexts where
+instance HasModifiersFor env MedicalTexts where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator MedicalTexts where
-  getActions i NonFast (MedicalTexts a) | ownedBy a i = pure
+instance HasActions env MedicalTexts where
+  getActions iid NonFast (MedicalTexts a) | ownedBy a iid = pure
     [ ActivateCardAbilityAction
-        (getId () i)
+        iid
         (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
     ]
   getActions _ _ _ = pure []

@@ -20,12 +20,13 @@ duke :: AssetId -> Duke
 duke uuid =
   Duke $ (baseAttrs uuid "02014") { assetHealth = Just 2, assetSanity = Just 3 }
 
-instance IsInvestigator investigator => HasModifiersFor env investigator Duke where
-  getModifiersFor (SkillTestSource source (Just Action.Fight)) i (Duke a)
-    | ownedBy a i && isSource a source = pure
-      [BaseSkillOf SkillCombat 4, DamageDealt 1]
-  getModifiersFor (SkillTestSource source (Just Action.Investigate)) i (Duke a)
-    | ownedBy a i && isSource a source = pure [BaseSkillOf SkillIntellect 4]
+instance HasModifiersFor env Duke where
+  getModifiersFor (SkillTestSource source (Just Action.Fight)) (InvestigatorTarget iid) (Duke a)
+    | ownedBy a iid && isSource a source
+    = pure [BaseSkillOf SkillCombat 4, DamageDealt 1]
+  getModifiersFor (SkillTestSource source (Just Action.Investigate)) (InvestigatorTarget iid) (Duke a)
+    | ownedBy a iid && isSource a source
+    = pure [BaseSkillOf SkillIntellect 4]
   getModifiersFor _ _ _ = pure []
 
 fightAbility :: Attrs -> Ability
@@ -36,17 +37,16 @@ investigateAbility :: Attrs -> Ability
 investigateAbility attrs =
   mkAbility (toSource attrs) 2 (ActionAbility 1 (Just Action.Investigate))
 
-instance (ActionRunner env investigator) => HasActions env investigator Duke where
-  getActions i NonFast (Duke a) | ownedBy a i = do
-    fightAvailable <- hasFightActions i NonFast
-    investigateAvailable <- hasInvestigateActions i NonFast
+instance ActionRunner env => HasActions env Duke where
+  getActions iid NonFast (Duke a) | ownedBy a iid = do
+    fightAvailable <- hasFightActions iid NonFast
+    investigateAvailable <- hasInvestigateActions iid NonFast
     pure
-      $ [ ActivateCardAbilityAction (getId () i) (fightAbility a)
-        | fightAvailable && canDo Action.Fight i && not (assetExhausted a)
+      $ [ ActivateCardAbilityAction iid (fightAbility a)
+        | fightAvailable && not (assetExhausted a)
         ]
-      <> [ ActivateCardAbilityAction (getId () i) (investigateAbility a)
-         | investigateAvailable && canDo Action.Investigate i && not
-           (assetExhausted a)
+      <> [ ActivateCardAbilityAction iid (investigateAbility a)
+         | investigateAvailable && not (assetExhausted a)
          ]
   getActions i window (Duke x) = getActions i window x
 

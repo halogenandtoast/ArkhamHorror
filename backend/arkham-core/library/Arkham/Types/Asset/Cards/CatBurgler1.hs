@@ -8,6 +8,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype CatBurgler1 = CatBurgler1 Attrs
@@ -20,18 +21,21 @@ catBurgler1 uuid = CatBurgler1 $ (baseAttrs uuid "01055")
   , assetSanity = Just 2
   }
 
-instance IsInvestigator investigator => HasModifiersFor env investigator CatBurgler1 where
-  getModifiersFor _ i (CatBurgler1 a) =
-    pure [ SkillModifier SkillAgility 1 | ownedBy a i ]
+instance HasModifiersFor env CatBurgler1 where
+  getModifiersFor _ (InvestigatorTarget iid) (CatBurgler1 a) =
+    pure [ SkillModifier SkillAgility 1 | ownedBy a iid ]
+  getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
 
-instance IsInvestigator investigator => HasActions env investigator CatBurgler1 where
-  getActions i NonFast (CatBurgler1 a) | ownedBy a i = pure
-    [ ActivateCardAbilityAction (getId () i) (ability a)
-    | not (assetExhausted a)
-    ]
+instance ActionRunner env => HasActions env CatBurgler1 where
+  getActions iid NonFast (CatBurgler1 a) | ownedBy a iid = do
+    hasActionsRemaining <- getHasActionsRemaining iid Nothing mempty
+    pure
+      [ ActivateCardAbilityAction iid (ability a)
+      | not (assetExhausted a) && hasActionsRemaining
+      ]
   getActions i window (CatBurgler1 x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env CatBurgler1 where

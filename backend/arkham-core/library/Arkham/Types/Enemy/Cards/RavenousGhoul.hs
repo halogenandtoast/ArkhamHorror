@@ -23,14 +23,14 @@ ravenousGhoul uuid = RavenousGhoul $ (baseAttrs uuid "01161")
   , enemyPrey = LowestRemainingHealth
   }
 
-instance HasModifiersFor env investigator RavenousGhoul where
+instance HasModifiersFor env RavenousGhoul where
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env RavenousGhoul where
   getModifiers _ (RavenousGhoul Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
-instance (IsInvestigator investigator) => HasActions env investigator RavenousGhoul where
+instance ActionRunner env => HasActions env RavenousGhoul where
   getActions i window (RavenousGhoul attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env RavenousGhoul where

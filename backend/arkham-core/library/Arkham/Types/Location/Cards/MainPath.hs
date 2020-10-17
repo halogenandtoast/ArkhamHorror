@@ -16,23 +16,26 @@ mainPath :: MainPath
 mainPath = MainPath
   $ baseAttrs "01149" "Main Path" 2 (Static 0) Squiggle [Square, Plus] [Woods]
 
-instance HasModifiersFor env investigator MainPath where
+instance HasModifiersFor env MainPath where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator MainPath where
-  getActions i NonFast (MainPath attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions i NonFast attrs
+instance ActionRunner env => HasActions env MainPath where
+  getActions iid NonFast (MainPath attrs@Attrs {..}) | locationRevealed = do
+    baseActions <- getActions iid NonFast attrs
+    hasActionsRemaining <- getHasActionsRemaining
+      iid
+      (Just Action.Resign)
+      (setToList locationTraits)
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction
-             (getId () i)
+             iid
              (mkAbility
                (toSource attrs)
                1
                (ActionAbility 1 (Just Action.Resign))
              )
-         | atLocation i attrs
-           && hasActionsRemaining i (Just Action.Resign) locationTraits
+         | iid `member` locationInvestigators && hasActionsRemaining
          ]
   getActions i window (MainPath attrs) = getActions i window attrs
 

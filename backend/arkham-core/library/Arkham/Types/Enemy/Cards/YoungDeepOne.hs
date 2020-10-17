@@ -26,14 +26,14 @@ youngDeepOne uuid = YoungDeepOne $ (baseAttrs uuid "01181")
   , enemyPrey = LowestSkill SkillCombat
   }
 
-instance HasModifiersFor env investigator YoungDeepOne where
+instance HasModifiersFor env YoungDeepOne where
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env YoungDeepOne where
   getModifiers _ (YoungDeepOne Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
-instance (IsInvestigator investigator) => HasActions env investigator YoungDeepOne where
+instance ActionRunner env => HasActions env YoungDeepOne where
   getActions i window (YoungDeepOne attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env YoungDeepOne where

@@ -21,7 +21,7 @@ newtype Evidence = Evidence Attrs
 evidence :: InvestigatorId -> EventId -> Evidence
 evidence iid uuid = Evidence $ baseAttrs iid uuid "01022"
 
-instance HasActions env investigator Evidence where
+instance HasActions env Evidence where
   getActions i window (Evidence attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env Evidence where

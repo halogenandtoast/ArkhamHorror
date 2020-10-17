@@ -23,10 +23,10 @@ ritualGrounds = RitualGrounds $ (baseAttrs
   { locationVictory = Just 1
   }
 
-instance HasModifiersFor env investigator RitualGrounds where
+instance HasModifiersFor env RitualGrounds where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator RitualGrounds where
+instance ActionRunner env => HasActions env RitualGrounds where
   getActions i window (RitualGrounds attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env RitualGrounds where

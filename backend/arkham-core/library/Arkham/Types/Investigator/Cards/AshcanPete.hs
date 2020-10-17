@@ -38,9 +38,9 @@ ashcanPete = AshcanPete $ baseAttrs
     }
   [Drifter]
 
-instance ActionRunner env investigator => HasActions env investigator AshcanPete where
-  getActions i FastPlayerWindow (AshcanPete Attrs {..})
-    | getId () i == investigatorId = do
+instance ActionRunner env => HasActions env AshcanPete where
+  getActions iid FastPlayerWindow (AshcanPete Attrs {..})
+    | iid == investigatorId = do
       let
         ability =
           (mkAbility
@@ -58,8 +58,7 @@ instance ActionRunner env investigator => HasActions env investigator AshcanPete
         | (investigatorId, ability)
           `notElem` usedAbilities
           && not (null exhaustedAssetIds)
-          && cardCount i
-          > 0
+          && not (null investigatorHand)
         ]
   getActions i window (AshcanPete attrs) = getActions i window attrs
 
@@ -68,23 +67,23 @@ instance (InvestigatorRunner Attrs env) => RunMessage env AshcanPete where
     ResolveToken ElderSign iid | iid == investigatorId -> do
       unshiftMessage (Ready (CardCodeTarget "02014"))
       i <$ runTest investigatorId (TokenValue ElderSign 2)
-    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
-      do
-        exhaustedAssetIds <- map unExhaustedAssetId . setToList <$> asks
-          (getSet investigatorId)
-        i <$ unshiftMessages
-          [ ChooseAndDiscardCard investigatorId
-          , Ask
-            investigatorId
-            (ChooseOne [ Ready (AssetTarget aid) | aid <- exhaustedAssetIds ])
-          ]
+    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
+      exhaustedAssetIds <- map unExhaustedAssetId . setToList <$> asks
+        (getSet investigatorId)
+      i <$ unshiftMessages
+        [ ChooseAndDiscardCard investigatorId
+        , Ask
+          investigatorId
+          (ChooseOne [ Ready (AssetTarget aid) | aid <- exhaustedAssetIds ])
+        ]
     SetupInvestigators -> do
       let
         (before, after) =
           break ((== "02014") . pcCardCode) (unDeck investigatorDeck)
       case after of
         (card : rest) -> do
-          unshiftMessage (PutCardIntoPlay investigatorId (PlayerCard card) Nothing)
+          unshiftMessage
+            (PutCardIntoPlay investigatorId (PlayerCard card) Nothing)
           AshcanPete <$> runMessage msg (attrs & deck .~ Deck (before <> rest))
         _ -> error "Duke must be in deck"
     _ -> AshcanPete <$> runMessage msg attrs

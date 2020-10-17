@@ -17,7 +17,7 @@ newtype AncientEvils = AncientEvils Attrs
 ancientEvils :: TreacheryId -> a -> AncientEvils
 ancientEvils uuid _ = AncientEvils $ baseAttrs uuid "01166"
 
-instance HasActions env investigator AncientEvils where
+instance HasActions env AncientEvils where
   getActions i window (AncientEvils attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env AncientEvils where

@@ -18,7 +18,7 @@ newtype Opportunist = Opportunist Attrs
 opportunist :: InvestigatorId -> SkillId -> Opportunist
 opportunist iid uuid = Opportunist $ baseAttrs iid uuid "01053"
 
-instance HasActions env investigator Opportunist where
+instance HasActions env Opportunist where
   getActions i window (Opportunist attrs) = getActions i window attrs
 
 instance (SkillRunner env) => RunMessage env Opportunist where

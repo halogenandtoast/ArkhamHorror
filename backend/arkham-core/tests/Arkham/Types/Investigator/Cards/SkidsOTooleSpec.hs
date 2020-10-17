@@ -25,8 +25,10 @@ spec = describe "\"Skids\" O'Toole" $ do
         (DuringTurn You)
         skidsOToole'
       game' <- runGameTestMessages game [buyAction]
-      hasActionsRemaining (updated game' skidsOToole') Nothing mempty
-        `shouldBe` True
+      withGame
+          game'
+          (getHasActionsRemaining (getId () skidsOToole') Nothing mempty)
+        `shouldReturn` True
 
   context "elder sign" $ do
     it "gains 2 resources on success" $ do
@@ -38,4 +40,4 @@ spec = describe "\"Skids\" O'Toole" $ do
           id
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
-      resourceCount (updated game skidsOToole) `shouldBe` 2
+      updatedResourceCount game skidsOToole `shouldBe` 2

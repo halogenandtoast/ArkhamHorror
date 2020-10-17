@@ -14,6 +14,7 @@ import Arkham.Types.Event
 import Arkham.Types.EventId
 import Arkham.Types.Game
 import Arkham.Types.Investigator
+import qualified Arkham.Types.Investigator.Attrs as Investigator
 import Arkham.Types.Location
 import Arkham.Types.Message
 import Arkham.Types.Query
@@ -102,7 +103,8 @@ isInEncounterDiscard game entity = card `elem` discard'
 
 updatedResourceCount :: Game queue -> Investigator -> Int
 updatedResourceCount game investigator =
-  game ^?! investigators . ix (getId () investigator) . to resourceCount
+  game ^?! investigators . ix (getId () investigator) . to
+    (Investigator.investigatorResources . investigatorAttrs)
 
 evadedBy :: Game queue -> Investigator -> Enemy -> Bool
 evadedBy game _investigator enemy =

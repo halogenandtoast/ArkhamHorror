@@ -22,18 +22,18 @@ ability attrs = (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow))
   { abilityLimit = PerPhase
   }
 
-instance ActionRunner env investigator => HasActions env investigator HuntingTheRougarou where
-  getActions i FastPlayerWindow (HuntingTheRougarou a) = do
-    baseActions <- getActions i FastPlayerWindow a
-    unused <- getIsUnused i (ability a)
+instance ActionRunner env => HasActions env HuntingTheRougarou where
+  getActions iid FastPlayerWindow (HuntingTheRougarou a) = do
+    baseActions <- getActions iid FastPlayerWindow a
+    unused <- getIsUnused iid (ability a)
     mrougarou <- asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))
     engagedWithTheRougarou <- maybe
       (pure False)
-      (asks . (member (getId @InvestigatorId () i) .) . getSet)
+      (asks . (member iid .) . getSet)
       mrougarou
     pure
       $ baseActions
-      <> [ ActivateCardAbilityAction (getId () i) (ability a)
+      <> [ ActivateCardAbilityAction iid (ability a)
          | unused && engagedWithTheRougarou
          ]
   getActions i window (HuntingTheRougarou x) = getActions i window x

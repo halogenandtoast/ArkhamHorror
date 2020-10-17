@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.OldBookOfLore where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype OldBookOfLore = OldBookOfLore Attrs
@@ -13,16 +14,21 @@ oldBookOfLore :: AssetId -> OldBookOfLore
 oldBookOfLore uuid =
   OldBookOfLore $ (baseAttrs uuid "01031") { assetSlots = [HandSlot] }
 
-instance HasModifiersFor env investigator OldBookOfLore where
+instance HasModifiersFor env OldBookOfLore where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator OldBookOfLore where
-  getActions i NonFast (OldBookOfLore a) | ownedBy a i = pure
-    [ ActivateCardAbilityAction
-        (getId () i)
-        (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
-    | not (assetExhausted a) && hasActionsRemaining i Nothing (assetTraits a)
-    ]
+instance ActionRunner env => HasActions env OldBookOfLore where
+  getActions iid NonFast (OldBookOfLore a) | ownedBy a iid = do
+    hasActionsRemaining <- getHasActionsRemaining
+      iid
+      Nothing
+      (setToList $ assetTraits a)
+    pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
+      | not (assetExhausted a) && hasActionsRemaining
+      ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env OldBookOfLore where

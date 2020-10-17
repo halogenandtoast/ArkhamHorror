@@ -1,20 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Treachery.Cards.Haunted where
 
-import Arkham.Json
-import Arkham.Types.Ability
-import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Source
-import Arkham.Types.Target
+import Arkham.Import
+
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-import ClassyPrelude
-import Lens.Micro
 
 newtype Haunted = Haunted Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -22,21 +12,22 @@ newtype Haunted = Haunted Attrs
 haunted :: TreacheryId -> Maybe InvestigatorId -> Haunted
 haunted uuid iid = Haunted $ weaknessAttrs uuid iid "01098"
 
-instance (ActionRunner env investigator) => HasActions env investigator Haunted where
-  getActions i NonFast (Haunted Attrs {..}) =
+instance ActionRunner env => HasActions env Haunted where
+  getActions iid NonFast (Haunted Attrs {..}) =
     case treacheryAttachedInvestigator of
       Nothing -> pure []
       Just tormented -> do
-        treacheryLocation <- asks (getId tormented)
+        investigatorLocationId <- asks $ getId @LocationId iid
+        treacheryLocation <- asks $ getId tormented
         pure
           [ ActivateCardAbilityAction
-              (getId () i)
+              iid
               (mkAbility
                 (TreacherySource treacheryId)
                 1
                 (ActionAbility 2 Nothing)
               )
-          | treacheryLocation == locationOf i
+          | treacheryLocation == investigatorLocationId
           ]
   getActions _ _ _ = pure []
 

@@ -21,7 +21,7 @@ newtype Elusive = Elusive Attrs
 elusive :: InvestigatorId -> EventId -> Elusive
 elusive iid uuid = Elusive $ baseAttrs iid uuid "01050"
 
-instance HasActions env investigator Elusive where
+instance HasActions env Elusive where
   getActions i window (Elusive attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env Elusive where

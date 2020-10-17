@@ -19,7 +19,7 @@ yourHouse :: YourHouse
 yourHouse = YourHouse
   $ baseAttrs "01124" "Your House" 2 (PerPlayer 1) Squiggle [Circle] [Arkham]
 
-instance HasModifiersFor env investigator YourHouse where
+instance HasModifiersFor env YourHouse where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
@@ -27,17 +27,22 @@ ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
   { abilityLimit = PerTurn
   }
 
-instance (ActionRunner env investigator) => HasActions env investigator YourHouse where
-  getActions i NonFast (YourHouse attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions i NonFast attrs
-    unused <- getIsUnused i (ability attrs)
+instance ActionRunner env => HasActions env YourHouse where
+  getActions iid NonFast (YourHouse attrs@Attrs {..}) | locationRevealed = do
+    baseActions <- getActions iid NonFast attrs
+    unused <- getIsUnused iid (ability attrs)
+    hasActionsRemaining <- getHasActionsRemaining
+      iid
+      Nothing
+      (setToList locationTraits)
     pure
       $ baseActions
-      <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
+      <> [ ActivateCardAbilityAction iid (ability attrs)
          | unused
            && locationRevealed
-           && atLocation i attrs
-           && hasActionsRemaining i Nothing locationTraits
+           && iid
+           `member` locationInvestigators
+           && hasActionsRemaining
          ]
   getActions _ _ _ = pure []
 

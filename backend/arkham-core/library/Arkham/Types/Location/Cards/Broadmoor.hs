@@ -27,23 +27,26 @@ broadmoor =
         { locationVictory = Just 1
         }
 
-instance HasModifiersFor env investigator Broadmoor where
+instance HasModifiersFor env Broadmoor where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator Broadmoor where
-  getActions i NonFast (Broadmoor attrs@Attrs {..}) = do
-    baseActions <- getActions i NonFast attrs
+instance ActionRunner env => HasActions env Broadmoor where
+  getActions iid NonFast (Broadmoor attrs@Attrs {..}) = do
+    baseActions <- getActions iid NonFast attrs
+    hasActionsRemaining <- getHasActionsRemaining
+      iid
+      (Just Action.Resign)
+      (setToList locationTraits)
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction
-             (getId () i)
+             iid
              (mkAbility
                (toSource attrs)
                1
                (ActionAbility 1 (Just Action.Resign))
              )
-         | atLocation i attrs
-           && hasActionsRemaining i (Just Action.Resign) locationTraits
+         | iid `member` locationInvestigators && hasActionsRemaining
          ]
   getActions i window (Broadmoor attrs) = getActions i window attrs
 

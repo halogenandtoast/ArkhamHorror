@@ -27,22 +27,23 @@ reactionAbility attrs =
 dropUntilAttack :: [Message] -> [Message]
 dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 
-instance HasModifiersFor env investigator Aquinnah1 where
+instance HasModifiersFor env Aquinnah1 where
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env investigator) => HasActions env investigator Aquinnah1 where
-  getActions i (WhenEnemyAttacks You) (Aquinnah1 a) | ownedBy a i = do
+instance ActionRunner env => HasActions env Aquinnah1 where
+  getActions iid (WhenEnemyAttacks You) (Aquinnah1 a) | ownedBy a iid = do
+    locationId <- asks $ getId @LocationId iid
     enemyId <- fromQueue $ \queue ->
-      let PerformEnemyAttack iid eid : _ = dropUntilAttack queue
-      in if iid == getId () i then eid else error "mismatch"
-    enemyIds <- asks $ filterSet (/= enemyId) . getSet (locationOf i)
+      let PerformEnemyAttack iid' eid : _ = dropUntilAttack queue
+      in if iid' == iid then eid else error "mismatch"
+    enemyIds <- asks $ filterSet (/= enemyId) . getSet locationId
     pure
-      [ ActivateCardAbilityAction (getId () i) (reactionAbility a)
+      [ ActivateCardAbilityAction iid (reactionAbility a)
       | not (assetExhausted a) && not (null enemyIds)
       ]
   getActions i window (Aquinnah1 x) = getActions i window x
 
-instance (AssetRunner env) => RunMessage env Aquinnah1 where
+instance AssetRunner env => RunMessage env Aquinnah1 where
   runMessage msg (Aquinnah1 attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       enemyId <- withQueue $ \queue ->

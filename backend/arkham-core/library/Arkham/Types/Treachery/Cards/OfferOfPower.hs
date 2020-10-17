@@ -17,7 +17,7 @@ newtype OfferOfPower = OfferOfPower Attrs
 offerOfPower :: TreacheryId -> a -> OfferOfPower
 offerOfPower uuid _ = OfferOfPower $ baseAttrs uuid "01178"
 
-instance HasActions env investigator OfferOfPower where
+instance HasActions env OfferOfPower where
   getActions i window (OfferOfPower attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env OfferOfPower where

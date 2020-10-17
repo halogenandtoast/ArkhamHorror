@@ -23,17 +23,18 @@ ladyEsprit uuid = LadyEsprit $ (baseAttrs uuid "81019")
 ability :: Attrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
 
-instance HasModifiersFor env investigator LadyEsprit where
+instance HasModifiersFor env LadyEsprit where
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env  investigator => HasActions env investigator LadyEsprit where
-  getActions i NonFast (LadyEsprit a@Attrs {..}) = do
-    locationId <- case assetInvestigator of
+instance ActionRunner env => HasActions env LadyEsprit where
+  getActions iid NonFast (LadyEsprit a@Attrs {..}) = do
+    locationId <- asks $ getId @LocationId iid
+    assetLocationId <- case assetInvestigator of
       Nothing -> pure $ fromJustNote "must be set" assetLocation
-      Just iid -> asks (getId iid)
+      Just iid' -> asks (getId iid')
     pure
-      [ ActivateCardAbilityAction (getId () i) (ability a)
-      | not assetExhausted && locationOf i == locationId
+      [ ActivateCardAbilityAction iid (ability a)
+      | not assetExhausted && locationId == assetLocationId
       ]
   getActions _ _ _ = pure []
 

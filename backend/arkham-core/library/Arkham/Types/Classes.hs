@@ -260,9 +260,8 @@ instance HasVictoryPoints EncounterCard where
 instance HasVictoryPoints PlayerCard where
   getVictoryPoints MkPlayerCard {..} = pcVictoryPoints
 
-type ActionRunner env investigator
-  = ( IsInvestigator investigator
-    , HasActions env investigator (ActionType, env)
+type ActionRunner env
+  = ( HasActions env (ActionType, env)
     , HasId (Maybe StoryAssetId) CardCode env
     , HasId (Maybe StoryEnemyId) CardCode env
     , HasId (Maybe OwnerId) AssetId env
@@ -274,80 +273,74 @@ type ActionRunner env investigator
     , HasSet EnemyId LocationId env
     , HasList UsedAbility () env
     , HasCount PlayerCount () env
-    , HasCount SpendableClueCount AllInvestigators env
+    , HasCount CardCount InvestigatorId env
+    , HasCount SpendableClueCount InvestigatorId env
     , HasCount ClueCount LocationId env
     , HasCount HorrorCount InvestigatorId env
     , HasQueue env
     , HasSet ExhaustedAssetId InvestigatorId env
-    , HasModifiersFor env InvestigatorId env
+    , HasModifiersFor env env
     , HasSet Trait EnemyId env
     , HasId CardCode EnemyId env
     , HasSource ForSkillTest env
+    , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
+    , HasSet InvestigatorId () env
+    , HasCount ResourceCount InvestigatorId env
+    , HasList DiscardedPlayerCard InvestigatorId env
+    , HasList InPlayCard InvestigatorId env
+    , HasList HandCard InvestigatorId env
     )
 
-class HasActions1 env investigator f where
-  getActions1 :: (MonadIO m, MonadReader env m) => investigator -> Window -> f p -> m [Message]
+class HasActions1 env f where
+  getActions1 :: (MonadIO m, MonadReader env m) => InvestigatorId -> Window -> f p -> m [Message]
 
-instance HasActions1 env investigator f => HasActions1 env investigator (M1 i c f) where
-  getActions1 investigator window (M1 x) = getActions1 investigator window x
+instance HasActions1 env f => HasActions1 env (M1 i c f) where
+  getActions1 iid window (M1 x) = getActions1 iid window x
 
-instance (HasActions1 env investigator l, HasActions1 env investigator r) => HasActions1 env investigator (l :+: r) where
-  getActions1 investigator window (L1 x) = getActions1 investigator window x
-  getActions1 investigator window (R1 x) = getActions1 investigator window x
+instance (HasActions1 env l, HasActions1 env r) => HasActions1 env (l :+: r) where
+  getActions1 iid window (L1 x) = getActions1 iid window x
+  getActions1 iid window (R1 x) = getActions1 iid window x
 
-instance (HasActions env investigator p) => HasActions1 env investigator (K1 R p) where
-  getActions1 investigator window (K1 x) = getActions investigator window x
+instance (HasActions env p) => HasActions1 env (K1 R p) where
+  getActions1 iid window (K1 x) = getActions iid window x
 
 defaultGetActions
-  :: ( Generic a
-     , HasActions1 env investigator (Rep a)
-     , MonadIO m
-     , MonadReader env m
-     )
-  => investigator
+  :: (Generic a, HasActions1 env (Rep a), MonadIO m, MonadReader env m)
+  => InvestigatorId
   -> Window
   -> a
   -> m [Message]
-defaultGetActions investigator window = getActions1 investigator window . from
+defaultGetActions iid window = getActions1 iid window . from
 
-class HasActions env investigator a where
-  getActions :: (MonadReader env m, MonadIO m) => investigator -> Window -> a -> m [Message]
-  default getActions :: (Generic a, HasActions1 env investigator (Rep a), MonadIO m, MonadReader env m) => investigator -> Window -> a -> m [Message]
+class HasActions env a where
+  getActions :: (MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Message]
+  default getActions :: (Generic a, HasActions1 env (Rep a), MonadIO m, MonadReader env m) => InvestigatorId -> Window -> a -> m [Message]
   getActions = defaultGetActions
 
-class HasModifiersFor1 env investigator f where
-  getModifiersFor1 :: (MonadIO m, MonadReader env m) => Source -> investigator -> f p -> m [Modifier]
+class HasModifiersFor1 env f where
+  getModifiersFor1 :: (MonadIO m, MonadReader env m) => Source -> Target -> f p -> m [Modifier]
 
-instance HasModifiersFor1 env investigator f => HasModifiersFor1 env investigator (M1 i c f) where
-  getModifiersFor1 source investigator (M1 x) =
-    getModifiersFor1 source investigator x
+instance HasModifiersFor1 env f => HasModifiersFor1 env (M1 i c f) where
+  getModifiersFor1 source target (M1 x) = getModifiersFor1 source target x
 
-instance (HasModifiersFor1 env investigator l, HasModifiersFor1 env investigator r) => HasModifiersFor1 env investigator (l :+: r) where
-  getModifiersFor1 source investigator (L1 x) =
-    getModifiersFor1 source investigator x
-  getModifiersFor1 source investigator (R1 x) =
-    getModifiersFor1 source investigator x
+instance (HasModifiersFor1 env l, HasModifiersFor1 env r) => HasModifiersFor1 env (l :+: r) where
+  getModifiersFor1 source target (L1 x) = getModifiersFor1 source target x
+  getModifiersFor1 source target (R1 x) = getModifiersFor1 source target x
 
-instance (HasModifiersFor env investigator p) => HasModifiersFor1 env investigator (K1 R p) where
-  getModifiersFor1 source investigator (K1 x) =
-    getModifiersFor source investigator x
+instance (HasModifiersFor env p) => HasModifiersFor1 env (K1 R p) where
+  getModifiersFor1 source target (K1 x) = getModifiersFor source target x
 
 defaultGetModifiersFor
-  :: ( Generic a
-     , HasModifiersFor1 env investigator (Rep a)
-     , MonadIO m
-     , MonadReader env m
-     )
+  :: (Generic a, HasModifiersFor1 env (Rep a), MonadIO m, MonadReader env m)
   => Source
-  -> investigator
+  -> Target
   -> a
   -> m [Modifier]
-defaultGetModifiersFor source investigator =
-  getModifiersFor1 source investigator . from
+defaultGetModifiersFor source target = getModifiersFor1 source target . from
 
-class HasModifiersFor env investigator a where
-  getModifiersFor :: (MonadReader env m, MonadIO m) => Source -> investigator -> a -> m [Modifier]
-  default getModifiersFor :: (Generic a, HasModifiersFor1 env investigator (Rep a), MonadIO m, MonadReader env m) => Source -> investigator -> a -> m [Modifier]
+class HasModifiersFor env a where
+  getModifiersFor :: (MonadReader env m, MonadIO m) => Source -> Target -> a -> m [Modifier]
+  default getModifiersFor :: (Generic a, HasModifiersFor1 env (Rep a), MonadIO m, MonadReader env m) => Source -> Target -> a -> m [Modifier]
   getModifiersFor = defaultGetModifiersFor
 
 class (HasId LocationId () location) => IsLocation location where
@@ -369,28 +362,3 @@ class Exhaustable a where
 
 class IsCard a where
   toCard :: a -> Card
-
-newtype InPlayCounts = InPlayCounts { inPlayAssetsCount :: Int }
-
-class (HasId InvestigatorId () investigator) => IsInvestigator investigator where
-  locationOf :: investigator -> LocationId
-  canInvestigate :: (IsLocation location) => location -> investigator -> Bool
-  canMoveTo :: (IsLocation location) => location -> investigator -> Bool
-  canFight :: (IsEnemy enemy) => enemy -> investigator -> Bool
-  canEngage :: (IsEnemy enemy) => enemy -> investigator -> Bool
-  canEvade :: (IsEnemy enemy) => enemy -> investigator -> Bool
-  remainingSanity :: investigator -> Int
-  remainingHealth :: investigator -> Int
-  resourceCount :: investigator -> Int
-  clueCount :: investigator -> Int
-  spendableClueCount :: investigator -> Int
-  cardCount :: investigator -> Int
-  discardableCardCount :: investigator -> Int
-  canDo :: Action -> investigator -> Bool
-  hasActionsRemaining :: investigator -> Maybe Action -> HashSet Trait -> Bool
-  canTakeDirectDamage :: investigator -> Bool
-  discardOf :: investigator -> [PlayerCard]
-  handOf :: investigator -> [Card]
-  deckOf :: investigator -> [PlayerCard]
-  inPlayCounts :: investigator -> InPlayCounts
-  modifiedStatsOf :: (MonadReader env m, MonadIO m, HasModifiers env InvestigatorId) => Source -> investigator -> m Stats

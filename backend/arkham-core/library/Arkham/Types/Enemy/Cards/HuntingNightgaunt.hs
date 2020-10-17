@@ -23,14 +23,14 @@ huntingNightgaunt uuid = HuntingNightgaunt $ (baseAttrs uuid "01172")
   , enemyEvade = 1
   }
 
-instance HasModifiersFor env investigator HuntingNightgaunt where
+instance HasModifiersFor env HuntingNightgaunt where
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env HuntingNightgaunt where
   getModifiers _ (HuntingNightgaunt Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
-instance (IsInvestigator investigator) => HasActions env investigator HuntingNightgaunt where
+instance ActionRunner env => HasActions env HuntingNightgaunt where
   getActions i window (HuntingNightgaunt attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env HuntingNightgaunt where

@@ -19,7 +19,7 @@ newtype HotStreak2 = HotStreak2 Attrs
 hotStreak2 :: InvestigatorId -> EventId -> HotStreak2
 hotStreak2 iid uuid = HotStreak2 $ baseAttrs iid uuid "50006"
 
-instance HasActions env investigator HotStreak2 where
+instance HasActions env HotStreak2 where
   getActions i window (HotStreak2 attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env HotStreak2 where

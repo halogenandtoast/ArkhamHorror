@@ -21,7 +21,7 @@ newtype Lucky = Lucky Attrs
 lucky :: InvestigatorId -> EventId -> Lucky
 lucky iid uuid = Lucky $ baseAttrs iid uuid "01080"
 
-instance HasActions env investigator Lucky where
+instance HasActions env Lucky where
   getActions i window (Lucky attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env Lucky where

@@ -17,21 +17,21 @@ fortyFiveAutomatic :: AssetId -> FortyFiveAutomatic
 fortyFiveAutomatic uuid =
   FortyFiveAutomatic $ (baseAttrs uuid "01016") { assetSlots = [HandSlot] }
 
-instance HasModifiersFor env investigator FortyFiveAutomatic where
+instance HasModifiersFor env FortyFiveAutomatic where
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env investigator) => HasActions env investigator FortyFiveAutomatic where
-  getActions i window (FortyFiveAutomatic a) | ownedBy a i = do
-    fightAvailable <- hasFightActions i window
+instance ActionRunner env => HasActions env FortyFiveAutomatic where
+  getActions iid window (FortyFiveAutomatic a) | ownedBy a iid = do
+    fightAvailable <- hasFightActions iid window
     pure
       [ ActivateCardAbilityAction
-          (getId () i)
+          iid
           (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight)))
       | useCount (assetUses a) > 0 && fightAvailable
       ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env FortyFiveAutomatic where
+instance AssetRunner env => RunMessage env FortyFiveAutomatic where
   runMessage msg (FortyFiveAutomatic attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       FortyFiveAutomatic

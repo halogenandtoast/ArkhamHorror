@@ -1,18 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.RiseOfTheGhouls where
 
-import Arkham.Json
+import Arkham.Import hiding (sequence)
+
 import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.Card.EncounterCard
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.Source
 import Arkham.Types.Trait
-import ClassyPrelude hiding (sequence)
-import Lens.Micro
 
 newtype RiseOfTheGhouls = RiseOfTheGhouls Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -21,14 +15,14 @@ riseOfTheGhouls :: RiseOfTheGhouls
 riseOfTheGhouls = RiseOfTheGhouls
   $ baseAttrs "01106" "Rise of the Ghouls" "Agenda 2a" (Static 7)
 
-instance HasActions env investigator RiseOfTheGhouls where
+instance HasActions env RiseOfTheGhouls where
   getActions i window (RiseOfTheGhouls x) = getActions i window x
 
-instance (AgendaRunner env) => RunMessage env RiseOfTheGhouls where
+instance AgendaRunner env => RunMessage env RiseOfTheGhouls where
   runMessage msg a@(RiseOfTheGhouls attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
-      unshiftMessage (Ask leadInvestigatorId $ ChooseOne [AdvanceAgenda aid])
+      leadInvestigatorId <- getLeadInvestigatorId
+      unshiftMessage (chooseOne leadInvestigatorId [AdvanceAgenda aid])
       pure $ RiseOfTheGhouls $ attrs & sequence .~ "Agenda 2b" & flipped .~ True
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2b" ->
       a <$ unshiftMessage
@@ -43,7 +37,7 @@ instance (AgendaRunner env) => RunMessage env RiseOfTheGhouls where
       case mcard of
         Nothing -> a <$ unshiftMessage (NextAgenda aid "01107")
         Just card -> do
-          leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+          leadInvestigatorId <- getLeadInvestigatorId
           a <$ unshiftMessages
             [ InvestigatorDrewEncounterCard leadInvestigatorId card
             , NextAgenda aid "01107"

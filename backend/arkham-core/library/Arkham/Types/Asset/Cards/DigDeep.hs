@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.DigDeep where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype DigDeep = DigDeep Attrs
@@ -12,14 +13,16 @@ newtype DigDeep = DigDeep Attrs
 digDeep :: AssetId -> DigDeep
 digDeep uuid = DigDeep $ baseAttrs uuid "01077"
 
-instance HasModifiersFor env investigator DigDeep where
+instance HasModifiersFor env DigDeep where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator DigDeep where
-  getActions i (WhenSkillTest SkillWillpower) (DigDeep a) | ownedBy a i = pure
-    [ UseCardAbility (getId () i) (toSource a) Nothing 1 | resourceCount i > 0 ]
-  getActions i (WhenSkillTest SkillAgility) (DigDeep a) | ownedBy a i = pure
-    [ UseCardAbility (getId () i) (toSource a) Nothing 2 | resourceCount i > 0 ]
+instance ActionRunner env => HasActions env DigDeep where
+  getActions iid (WhenSkillTest SkillWillpower) (DigDeep a) | ownedBy a iid = do
+    resourceCount <- getResourceCount iid
+    pure [ UseCardAbility iid (toSource a) Nothing 1 | resourceCount > 0 ]
+  getActions iid (WhenSkillTest SkillAgility) (DigDeep a) | ownedBy a iid = do
+    resourceCount <- getResourceCount iid
+    pure [ UseCardAbility iid (toSource a) Nothing 2 | resourceCount > 0 ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env DigDeep where

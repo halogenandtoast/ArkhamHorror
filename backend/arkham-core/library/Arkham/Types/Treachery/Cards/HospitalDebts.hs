@@ -1,21 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Treachery.Cards.HospitalDebts where
 
-import Arkham.Json
-import Arkham.Types.Ability
-import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Source
-import Arkham.Types.Target
+import Arkham.Import
+
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-import ClassyPrelude
-import Lens.Micro
-import Safe (fromJustNote)
 
 newtype HospitalDebts = HospitalDebts Attrs
   deriving stock (Show, Generic)
@@ -25,8 +15,8 @@ hospitalDebts :: TreacheryId -> Maybe InvestigatorId -> HospitalDebts
 hospitalDebts uuid iid = HospitalDebts
   $ (weaknessAttrs uuid iid "01011") { treacheryResources = Just 0 }
 
-instance (ActionRunner env investigator) => HasActions env investigator HospitalDebts where
-  getActions i (DuringTurn You) (HospitalDebts Attrs {..}) =
+instance ActionRunner env => HasActions env HospitalDebts where
+  getActions iid (DuringTurn You) (HospitalDebts Attrs {..}) =
     case treacheryAttachedInvestigator of
       Nothing -> pure []
       Just attachedInvestigator' -> do
@@ -40,11 +30,12 @@ instance (ActionRunner env investigator) => HasActions env investigator Hospital
               { abilityLimit = PerRound
               }
         usedAbilities <- map unUsedAbility <$> asks (getList ())
+        resourceCount <- getResourceCount iid
         pure
-          [ ActivateCardAbilityAction (getId () i) ability
-          | resourceCount i
+          [ ActivateCardAbilityAction iid ability
+          | resourceCount
             > 0
-            && getId () i
+            && iid
             == attachedInvestigator'
             && length
                  (filter (== (attachedInvestigator', ability)) usedAbilities)

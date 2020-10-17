@@ -22,36 +22,32 @@ baseballBat :: AssetId -> BaseballBat
 baseballBat uuid =
   BaseballBat $ (baseAttrs uuid "01074") { assetSlots = [HandSlot, HandSlot] }
 
-instance HasModifiersFor env investigator BaseballBat where
+instance HasModifiersFor env BaseballBat where
   getModifiersFor _ _ _ = pure []
 
 fightAbility :: Attrs -> Ability
 fightAbility Attrs { assetId } =
   mkAbility (AssetSource assetId) 1 (ActionAbility 1 (Just Action.Fight))
 
-instance (ActionRunner env investigator) => HasActions env investigator BaseballBat where
-  getActions i window (BaseballBat a@Attrs {..}) | ownedBy a i = do
-    fightAvailable <- hasFightActions i window
-    pure
-      [ ActivateCardAbilityAction (getId () i) (fightAbility a)
-      | fightAvailable
-      ]
+instance ActionRunner env  => HasActions env BaseballBat where
+  getActions iid window (BaseballBat a@Attrs {..}) | ownedBy a iid = do
+    fightAvailable <- hasFightActions iid window
+    pure [ ActivateCardAbilityAction iid (fightAbility a) | fightAvailable ]
   getActions _ _ _ = pure []
 
 
 instance (AssetRunner env) => RunMessage env BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
-      a <$ unshiftMessage
-        (ChooseFightEnemy
-          iid
-          source
-          SkillCombat
-          [SkillModifier SkillCombat 2]
-          [ OnAnyToken
-              [Token.Skull, Token.AutoFail]
-              [Discard (AssetTarget $ assetId attrs)]
-          ]
-          False
-        )
+    UseCardAbility iid source _ 1 | isSource attrs source -> a <$ unshiftMessage
+      (ChooseFightEnemy
+        iid
+        source
+        SkillCombat
+        [SkillModifier SkillCombat 2]
+        [ OnAnyToken
+            [Token.Skull, Token.AutoFail]
+            [Discard (AssetTarget $ assetId attrs)]
+        ]
+        False
+      )
     _ -> BaseballBat <$> runMessage msg attrs

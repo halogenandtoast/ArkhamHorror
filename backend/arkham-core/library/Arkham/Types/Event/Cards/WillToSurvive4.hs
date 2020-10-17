@@ -20,7 +20,7 @@ newtype WillToSurvive4 = WillToSurvive4 Attrs
 willToSurvive4 :: InvestigatorId -> EventId -> WillToSurvive4
 willToSurvive4 iid uuid = WillToSurvive4 $ baseAttrs iid uuid "01085"
 
-instance HasActions env investigator WillToSurvive4 where
+instance HasActions env WillToSurvive4 where
   getActions i window (WillToSurvive4 attrs) = getActions i window attrs
 
 instance HasQueue env => RunMessage env WillToSurvive4 where

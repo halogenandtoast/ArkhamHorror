@@ -21,7 +21,7 @@ newtype Deduction = Deduction Attrs
 deduction :: InvestigatorId -> SkillId -> Deduction
 deduction iid uuid = Deduction $ baseAttrs iid uuid "01039"
 
-instance HasActions env investigator Deduction where
+instance HasActions env Deduction where
   getActions i window (Deduction attrs) = getActions i window attrs
 
 instance (SkillRunner env) => RunMessage env Deduction where

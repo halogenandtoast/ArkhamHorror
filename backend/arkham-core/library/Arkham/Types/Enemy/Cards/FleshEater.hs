@@ -22,14 +22,14 @@ fleshEater uuid = FleshEater $ (baseAttrs uuid "01118")
   , enemyEvade = 1
   }
 
-instance HasModifiersFor env investigator FleshEater where
+instance HasModifiersFor env FleshEater where
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env FleshEater where
   getModifiers _ (FleshEater Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
-instance (IsInvestigator investigator) => HasActions env investigator FleshEater where
+instance ActionRunner env => HasActions env FleshEater where
   getActions i window (FleshEater attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env FleshEater where

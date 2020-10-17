@@ -102,7 +102,7 @@ weaknessAttrs tid iid cardCode =
       , treacheryResources = Nothing
       }
 
-instance HasActions env investigator Attrs where
+instance HasActions env Attrs where
   getActions _ _ _ = pure []
 
 is :: Target -> Attrs -> Bool

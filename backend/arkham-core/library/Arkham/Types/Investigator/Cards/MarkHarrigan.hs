@@ -30,7 +30,7 @@ markHarrigan = MarkHarrigan $ baseAttrs
     }
   [Veteran]
 
-instance ActionRunner env investigator => HasActions env investigator MarkHarrigan where
+instance ActionRunner env => HasActions env MarkHarrigan where
   getActions i window (MarkHarrigan attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env MarkHarrigan where

@@ -21,7 +21,7 @@ newtype CunningDistraction = CunningDistraction Attrs
 cunningDistraction :: InvestigatorId -> EventId -> CunningDistraction
 cunningDistraction iid uuid = CunningDistraction $ baseAttrs iid uuid "01078"
 
-instance HasActions env investigator CunningDistraction where
+instance HasActions env CunningDistraction where
   getActions i window (CunningDistraction attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env CunningDistraction where

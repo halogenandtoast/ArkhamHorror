@@ -1,21 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Treachery.Cards.SmiteTheWicked where
 
-import Arkham.Json
-import Arkham.Types.Card.EncounterCard
-import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Source
-import Arkham.Types.Target
+import Arkham.Import
+
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
-import ClassyPrelude
-import qualified Data.HashSet as HashSet
-import Lens.Micro
-import Safe (fromJustNote)
 
 newtype SmiteTheWicked = SmiteTheWicked Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -23,7 +12,7 @@ newtype SmiteTheWicked = SmiteTheWicked Attrs
 smiteTheWicked :: TreacheryId -> Maybe InvestigatorId -> SmiteTheWicked
 smiteTheWicked uuid iid = SmiteTheWicked $ weaknessAttrs uuid iid "02007"
 
-instance HasActions env investigator SmiteTheWicked where
+instance HasActions env SmiteTheWicked where
   getActions i window (SmiteTheWicked attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env SmiteTheWicked where
@@ -40,8 +29,8 @@ instance (TreacheryRunner env) => RunMessage env SmiteTheWicked where
             (CreateEnemyRequest (TreacherySource tid) (ecCardCode card))
     RequestedEnemy (TreacherySource tid) eid | tid == treacheryId -> do
       let ownerId = fromJustNote "has to be set" treacheryOwner
-      farthestLocations <- setToList . HashSet.map unFarthestLocationId <$> asks
-        (getSet ownerId)
+      farthestLocations <-
+        asks $ map unFarthestLocationId . setToList . getSet ownerId
       t <$ unshiftMessages
         [ AttachTreachery treacheryId (EnemyTarget eid)
         , Ask

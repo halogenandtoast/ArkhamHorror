@@ -21,23 +21,31 @@ trappersCabin = TrappersCabin $ baseAttrs
   [Diamond, Moon]
   [Wilderness]
 
-instance IsInvestigator investigator => HasModifiersFor env investigator TrappersCabin where
-  getModifiersFor _ i (TrappersCabin attrs) =
-    pure [ CannotGainResources | atLocation i attrs ]
+instance HasModifiersFor env TrappersCabin where
+  getModifiersFor _ (InvestigatorTarget iid) (TrappersCabin attrs) =
+    pure [ CannotGainResources | iid `member` locationInvestigators attrs ]
+  getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator TrappersCabin where
-  getActions i NonFast (TrappersCabin attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions i NonFast attrs
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction
-             (getId () i)
-             (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
-         | atLocation i attrs
-           && resourceCount i
-           >= 5
-           && hasActionsRemaining i Nothing locationTraits
-         ]
+instance ActionRunner env => HasActions env TrappersCabin where
+  getActions iid NonFast (TrappersCabin attrs@Attrs {..}) | locationRevealed =
+    do
+      baseActions <- getActions iid NonFast attrs
+      resourceCount <- getResourceCount iid
+      hasActionsRemaining <- getHasActionsRemaining
+        iid
+        Nothing
+        (setToList locationTraits)
+      pure
+        $ baseActions
+        <> [ ActivateCardAbilityAction
+               iid
+               (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
+           | iid
+             `member` locationInvestigators
+             && resourceCount
+             >= 5
+             && hasActionsRemaining
+           ]
   getActions i window (TrappersCabin attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env TrappersCabin where

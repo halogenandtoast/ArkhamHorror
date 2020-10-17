@@ -22,9 +22,9 @@ coverUpClues :: Attrs -> Int
 coverUpClues Attrs { treacheryClues } =
   fromJustNote "must be set" treacheryClues
 
-instance (ActionRunner env investigator) => HasActions env investigator CoverUp where
-  getActions i window@(WhenDiscoverClues You YourLocation) (CoverUp a@Attrs {..})
-    | Just (getId () i) == treacheryAttachedInvestigator
+instance ActionRunner env => HasActions env CoverUp where
+  getActions iid window@(WhenDiscoverClues You YourLocation) (CoverUp a@Attrs {..})
+    | Just iid == treacheryAttachedInvestigator
     = do
       cluesToDiscover <- fromQueue $ \queue -> do
         let
@@ -36,7 +36,7 @@ instance (ActionRunner env investigator) => HasActions env investigator CoverUp 
           _ -> 0
       pure
         [ ActivateCardAbilityAction
-            (getId () i)
+            iid
             (mkAbility (toSource a) 1 (ReactionAbility window))
         | coverUpClues a > 0 && cluesToDiscover > 0
         ]

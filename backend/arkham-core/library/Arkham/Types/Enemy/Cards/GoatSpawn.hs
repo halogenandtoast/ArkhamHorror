@@ -23,14 +23,14 @@ goatSpawn uuid = GoatSpawn $ (baseAttrs uuid "01180")
   , enemyEvade = 2
   }
 
-instance HasModifiersFor env investigator GoatSpawn where
+instance HasModifiersFor env GoatSpawn where
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env GoatSpawn where
   getModifiers _ (GoatSpawn Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
-instance (IsInvestigator investigator) => HasActions env investigator GoatSpawn where
+instance ActionRunner env => HasActions env GoatSpawn where
   getActions i window (GoatSpawn attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env GoatSpawn where

@@ -4,9 +4,9 @@ import Arkham.Json
 import ClassyPrelude hiding (unpack)
 import Control.Monad.Extra (concatMapM)
 import Control.Monad.Random
+import qualified Data.HashMap.Strict as HashMap
 import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as NE
-import qualified Data.HashMap.Strict as HashMap
 import Data.Text.Lazy (unpack)
 import Data.Text.Lazy.Builder
 
@@ -16,7 +16,6 @@ toFst f a = (f a, a)
 concatMapM'
   :: (Monad m, MonoFoldable mono) => (Element mono -> m [b]) -> mono -> m [b]
 concatMapM' f xs = concatMapM f (toList xs)
-
 
 count :: (a -> Bool) -> [a] -> Int
 count = (length .) . filter
@@ -57,19 +56,19 @@ instance Show (Bag a) where
 data With a b = With a b
 
 instance (ToJSON a, ToJSON b) => ToJSON (a `With` b) where
-    toJSON (a `With` b) = case (toJSON a, toJSON b) of
-      (Object o, Object m) -> Object $ HashMap.union m o
-      (a', b') -> metadataError a' b'
-     where
-      metadataError a' b' =
-        error
-          . unpack
-          . toLazyText
-          $ "With failed to serialize to object: "
-          <> "\nattrs: "
-          <> encodeToTextBuilder a'
-          <> "\nmetadata: "
-          <> encodeToTextBuilder b'
+  toJSON (a `With` b) = case (toJSON a, toJSON b) of
+    (Object o, Object m) -> Object $ HashMap.union m o
+    (a', b') -> metadataError a' b'
+   where
+    metadataError a' b' =
+      error
+        . unpack
+        . toLazyText
+        $ "With failed to serialize to object: "
+        <> "\nattrs: "
+        <> encodeToTextBuilder a'
+        <> "\nmetadata: "
+        <> encodeToTextBuilder b'
 
 instance (FromJSON a, FromJSON b) => FromJSON (a `With` b) where
   parseJSON = withObject "With"

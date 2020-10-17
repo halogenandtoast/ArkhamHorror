@@ -1,17 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Attrs where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import
+
+import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.AgendaId
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.Target
-import ClassyPrelude
-import Lens.Micro
 
 data Attrs = Attrs
   { agendaDoom          :: Int
@@ -55,17 +48,16 @@ baseAttrs aid name seq' threshold = Attrs
   , agendaFlipped = False
   }
 
-instance HasActions env investigator Attrs where
+instance HasActions env Attrs where
   getActions _ _ _ = pure []
 
-instance (AgendaRunner env) => RunMessage env Attrs where
+instance AgendaRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     PlaceDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doom +~ n
     AdvanceAgendaIfThresholdSatisfied -> do
-      pc <- unPlayerCount <$> asks (getCount ())
-      totalDoom <- unDoomCount <$> asks (getCount ())
-      when
-        (totalDoom >= fromGameValue (a ^. doomThreshold) pc)
+      perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThreshold)
+      totalDoom <- asks $ unDoomCount . getCount ()
+      a <$ when
+        (totalDoom >= perPlayerDoomThreshold)
         (unshiftMessage (AdvanceAgenda agendaId))
-      pure a
     _ -> pure a

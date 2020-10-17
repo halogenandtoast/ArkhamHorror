@@ -25,10 +25,10 @@ arkhamWoodsTangledThicket = ArkhamWoodsTangledThicket $ base
     [Squiggle]
     [Woods]
 
-instance HasModifiersFor env investigator ArkhamWoodsTangledThicket where
+instance HasModifiersFor env ArkhamWoodsTangledThicket where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsTangledThicket where
+instance ActionRunner env => HasActions env ArkhamWoodsTangledThicket where
   getActions i window (ArkhamWoodsTangledThicket attrs) =
     getActions i window attrs
 

@@ -19,7 +19,7 @@ newtype Dodge = Dodge Attrs
 dodge :: InvestigatorId -> EventId -> Dodge
 dodge iid uuid = Dodge $ baseAttrs iid uuid "01023"
 
-instance HasActions env investigator Dodge where
+instance HasActions env Dodge where
   getActions i window (Dodge attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env Dodge where

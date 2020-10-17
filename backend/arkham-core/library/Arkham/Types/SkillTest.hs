@@ -50,9 +50,10 @@ instance ToJSON a => ToJSON (SkillTest a) where
 instance FromJSON a => FromJSON (SkillTest a) where
   parseJSON = genericParseJSON $ aesonOptions $ Just "skillTest"
 
-instance (IsInvestigator investigator) => HasModifiersFor env investigator (SkillTest a) where
-  getModifiersFor _ i SkillTest {..} | getId () i == skillTestInvestigator = do
-    pure $ concat (toList skillTestModifiers)
+instance HasModifiersFor env (SkillTest a) where
+  getModifiersFor _ (InvestigatorTarget iid) SkillTest {..}
+    | iid == skillTestInvestigator = do
+      pure $ concat (toList skillTestModifiers)
   getModifiersFor _ _ SkillTest{} = pure []
 
 instance HasSet CommittedCardId InvestigatorId (SkillTest a) where

@@ -17,18 +17,18 @@ flashlight :: AssetId -> Flashlight
 flashlight uuid =
   Flashlight $ (baseAttrs uuid "01087") { assetSlots = [HandSlot] }
 
-instance HasModifiersFor env investigator Flashlight where
+instance HasModifiersFor env Flashlight where
   getModifiersFor _ _ _ = pure []
 
 investigateAbility :: Attrs -> Ability
 investigateAbility attrs =
   mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Investigate))
 
-instance (ActionRunner env investigator) => HasActions env investigator Flashlight where
-  getActions i window (Flashlight a) | ownedBy a i = do
-    investigateAvailable <- hasInvestigateActions i window
+instance ActionRunner env => HasActions env Flashlight where
+  getActions iid window (Flashlight a) | ownedBy a iid = do
+    investigateAvailable <- hasInvestigateActions iid window
     pure
-      [ ActivateCardAbilityAction (getId () i) (investigateAbility a)
+      [ ActivateCardAbilityAction iid (investigateAbility a)
       | useCount (assetUses a) > 0 && investigateAvailable
       ]
   getActions _ _ _ = pure []

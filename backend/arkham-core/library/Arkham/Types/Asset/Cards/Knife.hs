@@ -14,22 +14,22 @@ newtype Knife = Knife Attrs
 knife :: AssetId -> Knife
 knife uuid = Knife $ (baseAttrs uuid "01086") { assetSlots = [HandSlot] }
 
-instance HasModifiersFor env investigator Knife where
+instance HasModifiersFor env Knife where
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env investigator) => HasActions env investigator Knife where
-  getActions i NonFast (Knife a) | ownedBy a i = do
-    fightAvailable <- hasFightActions i NonFast
+instance ActionRunner env => HasActions env Knife where
+  getActions iid NonFast (Knife a) | ownedBy a iid = do
+    fightAvailable <- hasFightActions iid NonFast
     pure
       $ [ ActivateCardAbilityAction
-            (getId () i)
+            iid
             (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight)))
-        | fightAvailable && canDo Action.Fight i
+        | fightAvailable
         ]
       <> [ ActivateCardAbilityAction
-             (getId () i)
+             iid
              (mkAbility (toSource a) 2 (ActionAbility 1 (Just Action.Fight)))
-         | fightAvailable && canDo Action.Fight i
+         | fightAvailable
          ]
   getActions _ _ _ = pure []
 

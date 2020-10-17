@@ -30,7 +30,7 @@ joeDiamond = JoeDiamond $ baseAttrs
     }
   [Detective]
 
-instance ActionRunner env investigator => HasActions env investigator JoeDiamond where
+instance ActionRunner env => HasActions env JoeDiamond where
   getActions i window (JoeDiamond attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env JoeDiamond where

@@ -71,8 +71,8 @@ toSource Attrs { assetId } = AssetSource assetId
 toTarget :: Attrs -> Target
 toTarget Attrs { assetId } = AssetTarget assetId
 
-ownedBy :: IsInvestigator investigator => Attrs -> investigator -> Bool
-ownedBy Attrs {..} = (== assetInvestigator) . Just . getId ()
+ownedBy :: Attrs -> InvestigatorId -> Bool
+ownedBy Attrs {..} = (== assetInvestigator) . Just
 
 doom :: Lens' Attrs Int
 doom = lens assetDoom $ \m x -> m { assetDoom = x }
@@ -103,7 +103,7 @@ defeated Attrs {..} =
   maybe False (assetHealthDamage >=) assetHealth
     || maybe False (assetSanityDamage >=) assetSanity
 
-instance HasActions env investigator Attrs where
+instance HasActions env Attrs where
   getActions _ _ _ = pure []
 
 is :: Target -> Attrs -> Bool

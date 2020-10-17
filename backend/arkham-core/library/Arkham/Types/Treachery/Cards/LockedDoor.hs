@@ -1,25 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Treachery.Cards.LockedDoor where
 
-import Arkham.Json
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Ability
-import Arkham.Types.Window
-import Arkham.Types.LocationId
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Query
-import Arkham.Types.Source
-import Arkham.Types.Target
+import Arkham.Import
+
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
-import Arkham.Types.SkillType
-import qualified Data.HashSet as HashSet
-import ClassyPrelude
-import Lens.Micro
-import Safe (fromJustNote)
 
 newtype LockedDoor = LockedDoor Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -27,15 +13,21 @@ newtype LockedDoor = LockedDoor Attrs
 lockedDoor :: TreacheryId -> a -> LockedDoor
 lockedDoor uuid _ = LockedDoor $ baseAttrs uuid "01174"
 
-instance (IsInvestigator investigator) => HasActions env investigator LockedDoor where
-  getActions i NonFast (LockedDoor Attrs {..}) = pure
-    [ ActivateCardAbilityAction
-        (getId () i)
-        (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 1 Nothing))
-    | Just (locationOf i)
-      == treacheryAttachedLocation
-      && hasActionsRemaining i Nothing treacheryTraits
-    ]
+instance ActionRunner env => HasActions env LockedDoor where
+  getActions iid NonFast (LockedDoor Attrs {..}) = do
+    investigatorLocationId <- asks $ getId @LocationId iid
+    hasActionsRemaining <- getHasActionsRemaining
+      iid
+      Nothing
+      (setToList treacheryTraits)
+    pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 1 Nothing))
+      | Just investigatorLocationId
+        == treacheryAttachedLocation
+        && hasActionsRemaining
+      ]
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env LockedDoor where
@@ -43,9 +35,8 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
     Revelation iid tid | tid == treacheryId -> do
       exemptLocations <- asks
         (getSet @LocationId (TreacheryCardCode $ CardCode "01174"))
-      targetLocations <-
-        HashSet.toList . (`difference` exemptLocations) <$> asks
-          (getSet @LocationId ())
+      targetLocations <- setToList . (`difference` exemptLocations) <$> asks
+        (getSet @LocationId ())
       locationsWithClueCounts <- for targetLocations
         $ \lid -> (lid, ) . unClueCount <$> asks (getCount lid)
       let

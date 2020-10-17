@@ -1,19 +1,13 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Act.Cards.UncoveringTheConspiracy where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import
+
 import Arkham.Types.Act.Attrs
+import qualified Arkham.Types.Act.Attrs as Act
+import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.Source
-import Arkham.Types.Window
-import ClassyPrelude hiding (sequence)
 import qualified Data.HashSet as HashSet
-import Lens.Micro
 
 newtype UncoveringTheConspiracy = UncoveringTheConspiracy Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -22,48 +16,47 @@ uncoveringTheConspiracy :: UncoveringTheConspiracy
 uncoveringTheConspiracy = UncoveringTheConspiracy
   $ baseAttrs "01123" "Uncovering the Conspiracy" "Act 1a"
 
-instance (ActionRunner env investigator) => HasActions env investigator UncoveringTheConspiracy where
-  getActions i NonFast (UncoveringTheConspiracy x@Attrs {..})
-    | hasActionsRemaining i Nothing mempty = do
-      playerCount <- unPlayerCount <$> asks (getCount ())
-      totalSpendableClueCount <- unSpendableClueCount
-        <$> asks (getCount AllInvestigators)
-      if totalSpendableClueCount >= (2 * playerCount)
-        then pure
-          [ ActivateCardAbilityAction
-              (getId () i)
-              (mkAbility (ActSource actId) 1 (ActionAbility 1 Nothing))
-          ]
-        else getActions i NonFast x
-  getActions i window (UncoveringTheConspiracy attrs) =
-    getActions i window attrs
+instance ActionRunner env => HasActions env UncoveringTheConspiracy where
+  getActions iid NonFast (UncoveringTheConspiracy x@Attrs {..}) = do
+    hasActionsRemaining <- getHasActionsRemaining iid Nothing mempty
+    requiredClues <- getPlayerCountValue (PerPlayer 2)
+    totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds
+    if totalSpendableClues >= requiredClues
+      then pure
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility (ActSource actId) 1 (ActionAbility 1 Nothing))
+        | hasActionsRemaining
+        ]
+      else getActions iid NonFast x
+  getActions iid window (UncoveringTheConspiracy attrs) =
+    getActions iid window attrs
 
-instance (ActRunner env) => RunMessage env UncoveringTheConspiracy where
+instance ActRunner env => RunMessage env UncoveringTheConspiracy where
   runMessage msg a@(UncoveringTheConspiracy attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && actSequence == "Act 1a" -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
-      unshiftMessage (Ask leadInvestigatorId $ ChooseOne [AdvanceAct aid])
+      leadInvestigatorId <- getLeadInvestigatorId
+      unshiftMessage (chooseOne leadInvestigatorId [AdvanceAct aid])
       pure
         $ UncoveringTheConspiracy
         $ attrs
-        & (sequence .~ "Act 1b")
+        & (Act.sequence .~ "Act 1b")
         & (flipped .~ True)
     AdvanceAct aid | aid == actId && actSequence == "Act 1b" -> do
       a <$ unshiftMessage (Resolution 1)
     AddToVictory _ -> do
-      victoryDisplay <- HashSet.map unVictoryDisplayCardCode
-        <$> asks (getSet ())
+      victoryDisplay <- asks $ HashSet.map unVictoryDisplayCardCode . getSet ()
       let
-        cultists = HashSet.fromList
-          ["01121b", "01137", "01138", "01139", "01140", "01141"]
+        cultists =
+          setFromList ["01121b", "01137", "01138", "01139", "01140", "01141"]
       a <$ when
         (cultists `HashSet.isSubsetOf` victoryDisplay)
         (unshiftMessage (AdvanceAct actId))
     UseCardAbility iid (ActSource aid) _ 1 | aid == actId -> do
-      investigatorIds <- HashSet.toList <$> asks (getSet ())
-      playerCount <- unPlayerCount <$> asks (getCount ())
+      investigatorIds <- getInvestigatorIds
+      requiredClues <- getPlayerCountValue (PerPlayer 2)
       a <$ unshiftMessages
-        [ SpendClues (2 * playerCount) investigatorIds
+        [ SpendClues requiredClues investigatorIds
         , UseScenarioSpecificAbility iid 1
         ]
     _ -> UncoveringTheConspiracy <$> runMessage msg attrs

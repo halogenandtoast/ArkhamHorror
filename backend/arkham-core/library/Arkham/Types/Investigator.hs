@@ -13,36 +13,31 @@ module Arkham.Types.Investigator
   , lookupInvestigator
   , availableSkillsFor
   , skillValueOf
+  , handOf
+  , discardOf
+  , deckOf
+  , locationOf
+  , remainingHealth
+  , remainingSanity
+  , modifiedStatsOf
   , GetInvestigatorId(..)
   , Investigator
   )
 where
 
-import Arkham.Types.AssetId
-import Arkham.Types.Card
-import Arkham.Types.Classes
+import Arkham.Import
+
+import Arkham.Types.Action (Action)
 import Arkham.Types.ClassSymbol
-import Arkham.Types.EnemyId
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Cards
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
 import Arkham.Types.Prey
-import Arkham.Types.Query
-import Arkham.Types.SkillType
-import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.TreacheryId
-import ClassyPrelude
-import Data.Aeson
 import Data.Coerce
-import Lens.Micro.Extras
-import Safe (fromJustNote)
 
 data Investigator
   = AgnesBaker' AgnesBaker
@@ -108,20 +103,19 @@ baseInvestigator a b c d e f =
 newtype BaseInvestigator = BaseInvestigator Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-instance ActionRunner env investigator => HasActions env investigator BaseInvestigator where
-  getActions investigator window (BaseInvestigator attrs) =
-    getActions investigator window attrs
+instance ActionRunner env => HasActions env BaseInvestigator where
+  getActions iid window (BaseInvestigator attrs) = getActions iid window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env BaseInvestigator where
   runMessage msg (BaseInvestigator attrs) =
     BaseInvestigator <$> runMessage msg attrs
 
-instance (ActionRunner env investigator) => HasActions env investigator Investigator where
-  getActions i window investigator = do
-    modifiers' <- getModifiers (InvestigatorSource (getId () i)) investigator
+instance ActionRunner env => HasActions env Investigator where
+  getActions iid window investigator = do
+    modifiers' <- getModifiers (InvestigatorSource iid) investigator
     if any isBlank modifiers'
-      then getActions i window (investigatorAttrs investigator)
-      else defaultGetActions i window investigator
+      then getActions iid window (investigatorAttrs investigator)
+      else defaultGetActions iid window investigator
 
 instance (InvestigatorRunner Attrs env) => RunMessage env Investigator where
   runMessage msg@(ResolveToken ElderSign iid) i | iid == getInvestigatorId i =
@@ -132,31 +126,14 @@ instance (InvestigatorRunner Attrs env) => RunMessage env Investigator where
         else i <$ defaultRunMessage msg i
   runMessage msg i = defaultRunMessage msg i
 
-instance IsInvestigator Investigator where
-  locationOf = locationOf . investigatorAttrs
-  canInvestigate location = canInvestigate location . investigatorAttrs
-  canMoveTo location = canMoveTo location . investigatorAttrs
-  canFight enemy = canFight enemy . investigatorAttrs
-  canEngage enemy = canEngage enemy . investigatorAttrs
-  canEvade enemy = canEvade enemy . investigatorAttrs
-  resourceCount = resourceCount . investigatorAttrs
-  clueCount = clueCount . investigatorAttrs
-  spendableClueCount = spendableClueCount . investigatorAttrs
-  cardCount = cardCount . investigatorAttrs
-  discardableCardCount = discardableCardCount . investigatorAttrs
-  canDo action = canDo action . investigatorAttrs
-  hasActionsRemaining i = hasActionsRemaining (investigatorAttrs i)
-  canTakeDirectDamage = canTakeDirectDamage . investigatorAttrs
-  discardOf = discardOf . investigatorAttrs
-  handOf = handOf . investigatorAttrs
-  deckOf = deckOf . investigatorAttrs
-  inPlayCounts = inPlayCounts . investigatorAttrs
-  remainingHealth = remainingHealth . investigatorAttrs
-  remainingSanity = remainingSanity . investigatorAttrs
-  modifiedStatsOf source = modifiedStatsOf source . investigatorAttrs
-
 instance HasId InvestigatorId () Investigator where
   getId _ = getId () . investigatorAttrs
+
+instance HasList DiscardedPlayerCard () Investigator where
+  getList _ = map DiscardedPlayerCard . investigatorDiscard . investigatorAttrs
+
+instance HasList HandCard () Investigator where
+  getList _ = map HandCard . investigatorHand . investigatorAttrs
 
 instance HasCard () Investigator where
   getCard _ cardId =
@@ -168,13 +145,15 @@ instance HasCard () Investigator where
 instance HasCardCode Investigator where
   getCardCode = getCardCode . investigatorAttrs
 
-instance (HasModifiersFor env InvestigatorId env) => HasModifiers env Investigator where
+instance (HasModifiersFor env env) => HasModifiers env Investigator where
   getModifiers source self =
-    ask >>= getModifiersFor source (getInvestigatorId self)
+    ask >>= getModifiersFor source (InvestigatorTarget $ getInvestigatorId self)
 
-instance HasModifiersFor env Investigator Investigator where
-  getModifiersFor _ i1 i2 | i1 == i2 =
-    pure . concat . toList . investigatorModifiers $ investigatorAttrs i1
+instance HasModifiersFor env Investigator where
+  getModifiersFor _ (InvestigatorTarget iid) investigator
+    | iid == getId () investigator
+    = pure . concat . toList . investigatorModifiers $ investigatorAttrs
+      investigator
   getModifiersFor _ _ _ = pure []
 
 instance HasDamage Investigator where
@@ -190,6 +169,15 @@ instance HasSet EnemyId () Investigator where
 
 instance HasSet TreacheryId () Investigator where
   getSet _ = investigatorTreacheries . investigatorAttrs
+
+instance HasCount ActionRemainingCount (Maybe Action, [Trait]) Investigator where
+  getCount (_maction, traits) i =
+    let
+      tomeActionCount = if Tome `elem` traits
+        then fromMaybe 0 (investigatorTomeActions a)
+        else 0
+    in ActionRemainingCount $ investigatorRemainingActions a + tomeActionCount
+    where a = investigatorAttrs i
 
 instance HasCount EnemyCount () Investigator where
   getCount _ = EnemyCount . length . getSet @EnemyId ()
@@ -332,6 +320,48 @@ skillValueOf SkillIntellect = investigatorIntellect . investigatorAttrs
 skillValueOf SkillCombat = investigatorCombat . investigatorAttrs
 skillValueOf SkillAgility = investigatorAgility . investigatorAttrs
 skillValueOf SkillWild = error "should not look this up"
+
+handOf :: Investigator -> [Card]
+handOf = investigatorHand . investigatorAttrs
+
+discardOf :: Investigator -> [PlayerCard]
+discardOf = investigatorDiscard . investigatorAttrs
+
+deckOf :: Investigator -> [PlayerCard]
+deckOf = unDeck . investigatorDeck . investigatorAttrs
+
+locationOf :: Investigator -> LocationId
+locationOf = investigatorLocation . investigatorAttrs
+
+remainingSanity :: Investigator -> Int
+remainingSanity i = modifiedSanity a - investigatorSanityDamage a
+  where a = investigatorAttrs i
+
+remainingHealth :: Investigator -> Int
+remainingHealth i = modifiedHealth a - investigatorHealthDamage a
+  where a = investigatorAttrs i
+
+modifiedStatsOf
+  :: (MonadReader env m, HasModifiers env InvestigatorId, MonadIO m)
+  => Source
+  -> Investigator
+  -> m Stats
+modifiedStatsOf source i = do
+  modifiers' <- getModifiers source (getInvestigatorId i)
+  let
+    a = investigatorAttrs i
+    willpower' = skillValueFor SkillWillpower Nothing modifiers' a
+    intellect' = skillValueFor SkillIntellect Nothing modifiers' a
+    combat' = skillValueFor SkillCombat Nothing modifiers' a
+    agility' = skillValueFor SkillAgility Nothing modifiers' a
+  pure Stats
+    { willpower = willpower'
+    , intellect = intellect'
+    , combat = combat'
+    , agility = agility'
+    , health = remainingHealth i
+    , sanity = remainingSanity i
+    }
 
 hasEndedTurn :: Investigator -> Bool
 hasEndedTurn = view endedTurn . investigatorAttrs

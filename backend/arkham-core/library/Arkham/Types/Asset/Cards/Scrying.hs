@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.Scrying where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
@@ -15,20 +16,22 @@ newtype Scrying = Scrying Attrs
 scrying :: AssetId -> Scrying
 scrying uuid = Scrying $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
 
-instance HasModifiersFor env investigator Scrying where
+instance HasModifiersFor env Scrying where
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env investigator) => HasActions env investigator Scrying where
-  getActions i NonFast (Scrying a) | ownedBy a i && not (assetExhausted a) =
-    pure
-      [ ActivateCardAbilityAction
-          (getId () i)
-          (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
-      | useCount (assetUses a) > 0 && hasActionsRemaining
-        i
+instance ActionRunner env => HasActions env Scrying where
+  getActions iid NonFast (Scrying a) | ownedBy a iid && not (assetExhausted a) =
+    do
+      hasActionsRemaining <- getHasActionsRemaining
+        iid
         Nothing
-        (assetTraits a)
-      ]
+        (setToList $ assetTraits a)
+      pure
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
+        | useCount (assetUses a) > 0 && hasActionsRemaining
+        ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Scrying where

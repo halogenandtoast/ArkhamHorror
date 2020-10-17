@@ -1,20 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Act.Cards.DisruptingTheRitual where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import
+
 import Arkham.Types.Act.Attrs
+import qualified Arkham.Types.Act.Attrs as Act
+import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Arkham.Types.Window
-import ClassyPrelude hiding (sequence)
-import Lens.Micro
-import Safe (fromJustNote)
 
 newtype DisruptingTheRitual = DisruptingTheRitual Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -25,36 +17,39 @@ disruptingTheRitual =
     { actClues = Just 0
     }
 
-instance (ActionRunner env investigator) => HasActions env investigator DisruptingTheRitual where
-  getActions i NonFast (DisruptingTheRitual Attrs {..})
-    | hasActionsRemaining i Nothing mempty = pure
+instance ActionRunner env => HasActions env DisruptingTheRitual where
+  getActions iid NonFast (DisruptingTheRitual Attrs {..}) = do
+    hasActionsRemaining <- getHasActionsRemaining iid Nothing mempty
+    spendableClueCount <- getSpendableClueCount [iid]
+    pure
       [ ActivateCardAbilityAction
-          (getId () i)
+          iid
           (mkAbility (ActSource actId) 1 (ActionAbility 1 Nothing))
-      | spendableClueCount i > 0
+      | hasActionsRemaining && spendableClueCount > 0
       ]
   getActions i window (DisruptingTheRitual x) = getActions i window x
 
-instance (ActRunner env) => RunMessage env DisruptingTheRitual where
+instance ActRunner env => RunMessage env DisruptingTheRitual where
   runMessage msg a@(DisruptingTheRitual attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && actSequence == "Act 3a" -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
-      unshiftMessage (Ask leadInvestigatorId $ ChooseOne [AdvanceAct actId])
+      leadInvestigatorId <- getLeadInvestigatorId
+      unshiftMessage (chooseOne leadInvestigatorId [AdvanceAct actId])
       pure
         $ DisruptingTheRitual
         $ attrs
-        & (sequence .~ "Act 3b")
+        & (Act.sequence .~ "Act 3b")
         & (flipped .~ True)
     AdvanceAct aid | aid == actId && actSequence == "Act 3a" ->
       a <$ unshiftMessage (Resolution 1)
     PlaceClues (ActTarget aid) n | aid == actId -> do
-      playerCount <- unPlayerCount <$> asks (getCount ())
+      requiredClues <- getPlayerCountValue (PerPlayer 2)
       let totalClues = n + fromJustNote "Must be set" actClues
-      when (totalClues >= 2 * playerCount) (unshiftMessage (AdvanceAct actId))
+      when (totalClues >= requiredClues) (unshiftMessage (AdvanceAct actId))
       pure $ DisruptingTheRitual (attrs { actClues = Just totalClues })
     UseCardAbility iid (ActSource aid) _ 1 | aid == actId -> do
       a <$ unshiftMessage
-        (Ask iid $ ChooseOne
+        (chooseOne
+          iid
           [ BeginSkillTest
             iid
             (ActSource actId)

@@ -30,7 +30,7 @@ jimCulver = JimCulver $ baseAttrs
     }
   [Performer]
 
-instance ActionRunner env investigator => HasActions env investigator JimCulver where
+instance ActionRunner env => HasActions env JimCulver where
   getActions i window (JimCulver attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env JimCulver where

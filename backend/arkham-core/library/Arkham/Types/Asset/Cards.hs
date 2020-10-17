@@ -9,6 +9,7 @@ import Arkham.Types.Asset.Cards.ArcaneStudies as X
 import Arkham.Types.Asset.Cards.ArcaneStudies2 as X
 import Arkham.Types.Asset.Cards.Bandolier as X
 import Arkham.Types.Asset.Cards.BaseballBat as X
+import Arkham.Types.Asset.Cards.BearTrap as X
 import Arkham.Types.Asset.Cards.BeatCop as X
 import Arkham.Types.Asset.Cards.BeatCop2 as X
 import Arkham.Types.Asset.Cards.BookOfShadows3 as X

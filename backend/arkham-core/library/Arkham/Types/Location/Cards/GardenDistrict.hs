@@ -22,19 +22,28 @@ gardenDistrict = GardenDistrict $ baseAttrs
   [Square, Plus]
   [NewOrleans]
 
-instance HasModifiersFor env investigator GardenDistrict where
+instance HasModifiersFor env GardenDistrict where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator GardenDistrict where
-  getActions i NonFast (GardenDistrict attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions i NonFast attrs
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction
-             (getId () i)
-             (mkAbility (LocationSource locationId) 1 (ActionAbility 1 Nothing))
-         | atLocation i attrs && hasActionsRemaining i Nothing locationTraits
-         ]
+instance ActionRunner env => HasActions env GardenDistrict where
+  getActions iid NonFast (GardenDistrict attrs@Attrs {..}) | locationRevealed =
+    do
+      baseActions <- getActions iid NonFast attrs
+      hasActionsRemaining <- getHasActionsRemaining
+        iid
+        Nothing
+        (setToList locationTraits)
+      pure
+        $ baseActions
+        <> [ ActivateCardAbilityAction
+               iid
+               (mkAbility
+                 (LocationSource locationId)
+                 1
+                 (ActionAbility 1 Nothing)
+               )
+           | iid `member` locationInvestigators && hasActionsRemaining
+           ]
   getActions i window (GardenDistrict attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env GardenDistrict where

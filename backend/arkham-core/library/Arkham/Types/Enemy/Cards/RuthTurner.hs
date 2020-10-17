@@ -22,14 +22,14 @@ ruthTurner uuid = RuthTurner $ (baseAttrs uuid "01141")
   , enemyEvade = 5
   }
 
-instance HasModifiersFor env investigator RuthTurner where
+instance HasModifiersFor env RuthTurner where
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env RuthTurner where
   getModifiers _ (RuthTurner Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
-instance (IsInvestigator investigator) => HasActions env investigator RuthTurner where
+instance ActionRunner env => HasActions env RuthTurner where
   getActions i window (RuthTurner attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env RuthTurner where

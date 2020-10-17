@@ -25,25 +25,31 @@ overgrownCairns = OvergrownCairns $ baseAttrs
   [Hourglass, Equals]
   [Unhallowed]
 
-instance HasModifiersFor env investigator OvergrownCairns where
+instance HasModifiersFor env OvergrownCairns where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
 
-instance (ActionRunner env investigator) => HasActions env investigator OvergrownCairns where
-  getActions i NonFast (OvergrownCairns attrs@Attrs {..}) | locationRevealed =
+instance ActionRunner env => HasActions env OvergrownCairns where
+  getActions iid NonFast (OvergrownCairns attrs@Attrs {..}) | locationRevealed =
     do
-      unused <- getIsUnused i (ability attrs)
-      baseActions <- getActions i NonFast attrs
+      unused <- getIsUnused iid (ability attrs)
+      baseActions <- getActions iid NonFast attrs
+      resourceCount <- getResourceCount iid
+      hasActionsRemaining <- getHasActionsRemaining
+        iid
+        Nothing
+        (setToList locationTraits)
       pure
         $ baseActions
-        <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
+        <> [ ActivateCardAbilityAction iid (ability attrs)
            | unused
-             && atLocation i attrs
-             && resourceCount i
+             && iid
+             `member` locationInvestigators
+             && resourceCount
              >= 2
-             && hasActionsRemaining i Nothing locationTraits
+             && hasActionsRemaining
            ]
   getActions i window (OvergrownCairns attrs) = getActions i window attrs
 

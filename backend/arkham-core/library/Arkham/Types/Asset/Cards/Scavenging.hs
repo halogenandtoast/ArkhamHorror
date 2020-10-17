@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.Scavenging where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
@@ -13,21 +14,26 @@ newtype Scavenging = Scavenging Attrs
 scavenging :: AssetId -> Scavenging
 scavenging uuid = Scavenging $ baseAttrs uuid "01073"
 
-instance HasModifiersFor env investigator Scavenging where
+instance HasModifiersFor env Scavenging where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator Scavenging where
-  getActions i (AfterPassSkillTest You n) (Scavenging a)
-    | ownedBy a i && n >= 2 = pure
-      [ ActivateCardAbilityAction
-          (getId () i)
-          (mkAbility (toSource a) 1 (ReactionAbility (AfterPassSkillTest You n))
-          )
-      | any ((Item `member`) . getTraits) (discardOf i)
-      ]
+instance ActionRunner env => HasActions env Scavenging where
+  getActions iid (AfterPassSkillTest You n) (Scavenging a)
+    | ownedBy a iid && n >= 2 = do
+      discard <- getDiscardOf iid
+      pure
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility
+              (toSource a)
+              1
+              (ReactionAbility (AfterPassSkillTest You n))
+            )
+        | any ((Item `member`) . getTraits) discard
+        ]
   getActions i window (Scavenging x) = getActions i window x
 
-instance (AssetRunner env) => RunMessage env Scavenging where
+instance AssetRunner env => RunMessage env Scavenging where
   runMessage msg (Scavenging attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessage (SearchDiscard iid (InvestigatorTarget iid) [Item])

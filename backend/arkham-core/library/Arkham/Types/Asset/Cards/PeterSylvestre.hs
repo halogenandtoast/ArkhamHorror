@@ -20,17 +20,18 @@ peterSylvestre uuid = PeterSylvestre $ (baseAttrs uuid "02033")
   , assetSanity = Just 2
   }
 
-instance IsInvestigator investigator => HasModifiersFor env investigator PeterSylvestre where
-  getModifiersFor _ i (PeterSylvestre a) =
-    pure [ SkillModifier SkillAgility 1 | ownedBy a i ]
+instance HasModifiersFor env PeterSylvestre where
+  getModifiersFor _ (InvestigatorTarget iid) (PeterSylvestre a) =
+    pure [ SkillModifier SkillAgility 1 | ownedBy a iid ]
+  getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ReactionAbility (AfterEndTurn You))
 
-instance (ActionRunner env investigator) => HasActions env investigator PeterSylvestre where
-  getActions i (AfterEndTurn You) (PeterSylvestre a) | ownedBy a i = do
-    let ability' = (getId () i, ability a)
+instance ActionRunner env => HasActions env PeterSylvestre where
+  getActions iid (AfterEndTurn You) (PeterSylvestre a) | ownedBy a iid = do
+    let ability' = (iid, ability a)
     unused <- asks $ notElem ability' . map unUsedAbility . getList ()
     pure
       [ uncurry ActivateCardAbilityAction ability'

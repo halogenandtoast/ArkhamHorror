@@ -19,7 +19,7 @@ newtype LookWhatIFound = LookWhatIFound Attrs
 lookWhatIFound :: InvestigatorId -> EventId -> LookWhatIFound
 lookWhatIFound iid uuid = LookWhatIFound $ baseAttrs iid uuid "01079"
 
-instance HasActions env investigator LookWhatIFound where
+instance HasActions env LookWhatIFound where
   getActions i window (LookWhatIFound attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env LookWhatIFound where

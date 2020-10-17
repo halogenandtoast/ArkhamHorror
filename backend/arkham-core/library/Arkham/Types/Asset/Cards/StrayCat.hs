@@ -14,14 +14,14 @@ strayCat :: AssetId -> StrayCat
 strayCat uuid = StrayCat
   $ (baseAttrs uuid "01076") { assetSlots = [AllySlot], assetHealth = Just 2 }
 
-instance HasModifiersFor env investigator StrayCat where
+instance HasModifiersFor env StrayCat where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator StrayCat where
-  getActions i window (StrayCat a) | ownedBy a i = do
-    baseActions <- getActions i window a
+instance HasActions env StrayCat where
+  getActions iid window (StrayCat a) | ownedBy a iid = do
+    baseActions <- getActions iid window a
     let ability = mkAbility (toSource a) 1 (FastAbility window)
-    pure $ baseActions <> [ActivateCardAbilityAction (getId () i) ability]
+    pure $ baseActions <> [ActivateCardAbilityAction iid ability]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env StrayCat where

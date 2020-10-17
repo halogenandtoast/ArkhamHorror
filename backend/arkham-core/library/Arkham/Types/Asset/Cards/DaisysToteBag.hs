@@ -16,10 +16,10 @@ newtype DaisysToteBag = DaisysToteBag Attrs
 daisysToteBag :: AssetId -> DaisysToteBag
 daisysToteBag uuid = DaisysToteBag $ baseAttrs uuid "01008"
 
-instance HasModifiersFor env investigator DaisysToteBag where
+instance HasModifiersFor env DaisysToteBag where
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env investigator DaisysToteBag where
+instance HasActions env DaisysToteBag where
   getActions i window (DaisysToteBag x) = getActions i window x
 
 slot :: Attrs -> Slot

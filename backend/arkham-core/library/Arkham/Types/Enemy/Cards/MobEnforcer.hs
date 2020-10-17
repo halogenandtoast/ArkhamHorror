@@ -1,20 +1,13 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy.Cards.MobEnforcer where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import
+
 import Arkham.Types.Action
-import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Message
 import Arkham.Types.Prey
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Arkham.Types.Window
-import ClassyPrelude
 
 newtype MobEnforcer = MobEnforcer Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -29,22 +22,24 @@ mobEnforcer uuid = MobEnforcer $ (weaknessBaseAttrs uuid "01101")
   , enemyPrey = SetToBearer
   }
 
-instance HasModifiersFor env investigator MobEnforcer where
+instance HasModifiersFor env MobEnforcer where
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env MobEnforcer where
   getModifiers _ (MobEnforcer Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
-instance (IsInvestigator investigator) => HasActions env investigator MobEnforcer where
-  getActions i NonFast (MobEnforcer attrs@Attrs {..}) = do
-    baseActions <- getActions i NonFast attrs
+instance ActionRunner env => HasActions env MobEnforcer where
+  getActions iid NonFast (MobEnforcer attrs@Attrs {..}) = do
+    baseActions <- getActions iid NonFast attrs
+    resourceCount <- getResourceCount iid
+    locationId <- asks $ getId @LocationId iid
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction
-             (getId () i)
+             iid
              (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 (Just Parley)))
-         | resourceCount i >= 4 && locationOf i == enemyLocation
+         | resourceCount >= 4 && locationId == enemyLocation
          ]
   getActions i window (MobEnforcer attrs) = getActions i window attrs
 

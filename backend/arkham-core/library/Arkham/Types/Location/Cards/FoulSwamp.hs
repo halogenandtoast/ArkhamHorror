@@ -26,9 +26,10 @@ foulSwamp = FoulSwamp $ baseAttrs
   [Equals, Square, Triangle, Diamond]
   [Unhallowed, Bayou]
 
-instance IsInvestigator investigator => HasModifiersFor env investigator FoulSwamp where
-  getModifiersFor _ i (FoulSwamp attrs) | atLocation i attrs =
-    pure [CannotHealHorror, CannotCancelHorror]
+instance HasModifiersFor env FoulSwamp where
+  getModifiersFor _ (InvestigatorTarget iid) (FoulSwamp attrs)
+    | iid `member` locationInvestigators attrs = pure
+      [CannotHealHorror, CannotCancelHorror]
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
@@ -36,13 +37,17 @@ ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
   { abilityMetadata = Just (IntMetadata 0)
   }
 
-instance IsInvestigator investigator => HasActions env investigator FoulSwamp where
-  getActions i NonFast (FoulSwamp attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions i NonFast attrs
+instance ActionRunner env => HasActions env FoulSwamp where
+  getActions iid NonFast (FoulSwamp attrs@Attrs {..}) | locationRevealed = do
+    baseActions <- getActions iid NonFast attrs
+    hasActionsRemaining <- getHasActionsRemaining
+      iid
+      Nothing
+      (setToList locationTraits)
     pure
       $ baseActions
-      <> [ ActivateCardAbilityActionWithDynamicCost (getId () i) (ability attrs)
-         | atLocation i attrs && hasActionsRemaining i Nothing locationTraits
+      <> [ ActivateCardAbilityActionWithDynamicCost iid (ability attrs)
+         | iid `member` locationInvestigators && hasActionsRemaining
          ]
   getActions i window (FoulSwamp attrs) = getActions i window attrs
 

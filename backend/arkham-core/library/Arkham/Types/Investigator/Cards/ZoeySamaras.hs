@@ -28,21 +28,27 @@ zoeySamaras = ZoeySamaras $ baseAttrs
     }
   [Believer, Hunter]
 
-instance (ActionRunner env investigator) => HasActions env investigator ZoeySamaras where
-  getActions i (AfterEnemyEngageInvestigator You eid) (ZoeySamaras Attrs {..})
-    | getId () i == investigatorId
-    = do
+instance ActionRunner env => HasActions env ZoeySamaras where
+  getActions iid (AfterEnemyEngageInvestigator You eid) (ZoeySamaras Attrs {..})
+    | iid == investigatorId = do
       let
         ability = mkAbility
           (InvestigatorSource investigatorId)
           1
           (ReactionAbility (AfterEnemyEngageInvestigator You eid))
 
-      modifiers' <- getModifiersFor (InvestigatorSource investigatorId) (getId @InvestigatorId () i) =<< ask
+      modifiers' <-
+        getModifiersFor
+            (InvestigatorSource investigatorId)
+            (InvestigatorTarget investigatorId)
+          =<< ask
       usedAbilities <- map unUsedAbility <$> asks (getList ())
       pure
         [ ActivateCardAbilityAction investigatorId ability
-        | (investigatorId, ability) `notElem` usedAbilities && CannotGainResources `notElem` modifiers'
+        | (investigatorId, ability)
+          `notElem` usedAbilities
+          && CannotGainResources
+          `notElem` modifiers'
         ]
 
   getActions i window (ZoeySamaras attrs) = getActions i window attrs

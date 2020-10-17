@@ -16,13 +16,14 @@ beatCop2 uuid = BeatCop2 $ (baseAttrs uuid "01018")
   , assetSanity = Just 2
   }
 
-instance IsInvestigator investigator => HasModifiersFor env investigator BeatCop2 where
-  getModifiersFor _ i (BeatCop2 a) =
-    pure [ SkillModifier SkillCombat 1 | ownedBy a i ]
+instance HasModifiersFor env BeatCop2 where
+  getModifiersFor _ (InvestigatorTarget iid) (BeatCop2 a) =
+    pure [ SkillModifier SkillCombat 1 | ownedBy a iid ]
+  getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator BeatCop2 where
-  getActions i _ (BeatCop2 a) | ownedBy a i =
-    pure [UseCardAbility (getId () i) (toSource a) Nothing 1]
+instance HasActions env BeatCop2 where
+  getActions iid _ (BeatCop2 a) | ownedBy a iid =
+    pure [UseCardAbility iid (toSource a) Nothing 1]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env BeatCop2 where

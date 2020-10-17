@@ -31,8 +31,8 @@ data Act
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Act
-deriving anyclass instance (ActRunner env) => RunMessage env Act
+deriving anyclass instance ActionRunner env => HasActions env Act
+deriving anyclass instance ActRunner env => RunMessage env Act
 
 instance IsAdvanceable Act where
   isAdvanceable = actCanAdvance . actAttrs

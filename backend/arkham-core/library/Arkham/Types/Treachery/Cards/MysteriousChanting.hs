@@ -22,7 +22,7 @@ newtype MysteriousChanting = MysteriousChanting Attrs
 mysteriousChanting :: TreacheryId -> a -> MysteriousChanting
 mysteriousChanting uuid _ = MysteriousChanting $ baseAttrs uuid "01171"
 
-instance HasActions env investigator MysteriousChanting where
+instance HasActions env MysteriousChanting where
   getActions i window (MysteriousChanting attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env MysteriousChanting where

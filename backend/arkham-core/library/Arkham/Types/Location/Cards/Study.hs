@@ -11,10 +11,10 @@ newtype Study = Study Attrs
 study :: Study
 study = Study $ baseAttrs "01111" "Study" 2 (PerPlayer 2) Circle mempty mempty
 
-instance HasModifiersFor env investigator Study where
+instance HasModifiersFor env Study where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator Study where
+instance ActionRunner env => HasActions env Study where
   getActions i window (Study attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Study where

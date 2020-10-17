@@ -15,15 +15,15 @@ switchblade :: AssetId -> Switchblade
 switchblade uuid =
   Switchblade $ (baseAttrs uuid "01044") { assetSlots = [HandSlot] }
 
-instance HasModifiersFor env investigator Switchblade where
+instance HasModifiersFor env Switchblade where
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env investigator) => HasActions env investigator Switchblade where
-  getActions i window (Switchblade a) | ownedBy a i = do
+instance ActionRunner env => HasActions env Switchblade where
+  getActions iid window (Switchblade a) | ownedBy a iid = do
     let
       ability = mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight))
-    fightAvailable <- hasFightActions i window
-    pure [ ActivateCardAbilityAction (getId () i) ability | fightAvailable ]
+    fightAvailable <- hasFightActions iid window
+    pure [ ActivateCardAbilityAction iid ability | fightAvailable ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Switchblade where

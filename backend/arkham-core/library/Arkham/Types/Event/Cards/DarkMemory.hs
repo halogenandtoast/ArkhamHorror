@@ -19,7 +19,7 @@ newtype DarkMemory = DarkMemory Attrs
 darkMemory :: InvestigatorId -> EventId -> DarkMemory
 darkMemory iid uuid = DarkMemory $ weaknessAttrs iid uuid "01013"
 
-instance HasActions env investigator DarkMemory where
+instance HasActions env DarkMemory where
   getActions i window (DarkMemory attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env DarkMemory where

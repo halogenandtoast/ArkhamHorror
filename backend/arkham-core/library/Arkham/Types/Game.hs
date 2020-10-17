@@ -30,6 +30,7 @@ where
 
 import Arkham.Import
 import Arkham.Types.Act
+import Arkham.Types.Action (Action)
 import Arkham.Types.Agenda
 import Arkham.Types.Asset
 import Arkham.Types.Campaign
@@ -394,6 +395,10 @@ instance HasId LocationId InvestigatorId (Game queue) where
 instance HasId LocationId EnemyId (Game queue) where
   getId eid = getId () . getEnemy eid
 
+instance HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) (Game queue) where
+  getCount (iid, maction, traits) =
+    getCount (maction, traits) . getInvestigator iid
+
 instance HasCount SanityDamageCount EnemyId GameInternal where
   getCount eid = getCount () . getEnemy eid
 
@@ -458,10 +463,6 @@ instance HasCount SpendableClueCount InvestigatorId (Game queue) where
 instance HasCount ResourceCount InvestigatorId (Game queue) where
   getCount iid = getCount () . getInvestigator iid
 
-instance HasCount SpendableClueCount AllInvestigators (Game queue) where
-  getCount _ g = (SpendableClueCount . sum)
-    (map (unSpendableClueCount . (`getCount` g)) (g ^. investigators . to keys))
-
 instance HasCount PlayerCount () (Game queue) where
   getCount _ = PlayerCount . length . view investigators
 
@@ -501,28 +502,43 @@ instance HasCount EnemyCount (InvestigatorLocation, [Trait]) (Game queue) where
 instance HasStats InvestigatorId (Game queue) where
   getStats iid source g = modifiedStatsOf source (getInvestigator iid g)
 
-instance HasModifiers (Game queue) LocationId where
+instance HasModifiers GameInternal LocationId where
   getModifiers source lid = asks (getLocation lid) >>= getModifiers source
 
-instance HasModifiers (Game queue) InvestigatorId where
+instance HasModifiers GameInternal InvestigatorId where
   getModifiers source iid = asks (getInvestigator iid) >>= getModifiers source
 
-instance
-  ( HasId LocationId InvestigatorId env
-  , HasSource ForSkillTest env
-  , HasTestAction ForSkillTest env
-  )
-  => HasModifiersFor env InvestigatorId (Game queue) where
-  getModifiersFor source iid g = concat <$> sequence
-    [ concat <$> traverse (getModifiersFor source i) (g ^. enemies . to toList)
-    , concat <$> traverse (getModifiersFor source i) (g ^. assets . to toList)
+instance GameRunner env => HasModifiersFor env (Game queue) where
+  getModifiersFor source target g = concat <$> sequence
+    [ concat
+      <$> traverse (getModifiersFor source target) (g ^. enemies . to toList)
     , concat
-      <$> traverse (getModifiersFor source i) (g ^. locations . to toList)
+      <$> traverse (getModifiersFor source target) (g ^. assets . to toList)
     , concat
-      <$> traverse (getModifiersFor source i) (g ^. investigators . to toList)
-    , maybe (pure []) (getModifiersFor source i) (g ^. skillTest)
+      <$> traverse (getModifiersFor source target) (g ^. locations . to toList)
+    , concat <$> traverse
+      (getModifiersFor source target)
+      (g ^. investigators . to toList)
+    , maybe (pure []) (getModifiersFor source target) (g ^. skillTest)
     ]
-    where i = getInvestigator iid g
+
+instance HasList InPlayCard InvestigatorId (Game queue) where
+  getList iid g = do
+    let
+      investigator = getInvestigator iid g
+      assets' = map (`getAsset` g) . setToList $ getSet () investigator
+    map
+      (\asset -> InPlayCard . PlayerCard $ lookupPlayerCard
+        (getCardCode asset)
+        (CardId . unAssetId $ getId () asset)
+      )
+      assets'
+
+instance HasList HandCard InvestigatorId (Game queue) where
+  getList iid = getList () . getInvestigator iid
+
+instance HasList DiscardedPlayerCard InvestigatorId (Game queue) where
+  getList iid = getList () . getInvestigator iid
 
 instance HasList Location () (Game queue) where
   getList _ = toList . view locations
@@ -1011,7 +1027,7 @@ createTreachery cardCode miid = do
   pure (tid, lookupTreachery cardCode tid miid)
 
 locationFor :: InvestigatorId -> Game queue -> LocationId
-locationFor iid = locationOf . investigatorAttrs . getInvestigator iid
+locationFor iid = locationOf . getInvestigator iid
 
 broadcastWindow
   :: (MonadReader env m, HasQueue env, MonadIO m)
@@ -1038,46 +1054,47 @@ broadcastWindow builder currentInvestigatorId g =
           ]
         )
 
-instance (IsInvestigator investigator) => HasActions GameInternal investigator (ActionType, GameInternal) where
-  getActions i window (actionType, g) = case actionType of
-    EnemyActionType -> concatMapM' (getActions i window) (g ^. enemies)
-    LocationActionType -> concatMapM' (getActions i window) (g ^. locations)
-    AssetActionType -> concatMapM' (getActions i window) (g ^. assets)
-    TreacheryActionType -> concatMapM' (getActions i window) (g ^. treacheries)
-    ActActionType -> concatMapM' (getActions i window) (g ^. acts)
-    AgendaActionType -> concatMapM' (getActions i window) (g ^. agendas)
+instance HasActions GameInternal (ActionType, GameInternal) where
+  getActions iid window (actionType, g) = case actionType of
+    EnemyActionType -> concatMapM' (getActions iid window) (g ^. enemies)
+    LocationActionType -> concatMapM' (getActions iid window) (g ^. locations)
+    AssetActionType -> concatMapM' (getActions iid window) (g ^. assets)
+    TreacheryActionType ->
+      concatMapM' (getActions iid window) (g ^. treacheries)
+    ActActionType -> concatMapM' (getActions iid window) (g ^. acts)
+    AgendaActionType -> concatMapM' (getActions iid window) (g ^. agendas)
     InvestigatorActionType ->
-      concatMapM' (getActions i window) (g ^. investigators)
+      concatMapM' (getActions iid window) (g ^. investigators)
 
-instance (IsInvestigator investigator) => HasActions GameInternal investigator (ActionType, Trait, GameInternal) where
-  getActions i window (actionType, trait, g) = case actionType of
+instance HasActions GameInternal (ActionType, Trait, GameInternal) where
+  getActions iid window (actionType, trait, g) = case actionType of
     EnemyActionType -> concatMapM'
-      (getActions i window)
+      (getActions iid window)
       (filterMap ((trait `elem`) . getTraits) $ g ^. enemies)
     LocationActionType -> concatMapM'
-      (getActions i window)
+      (getActions iid window)
       (filterMap ((trait `elem`) . getTraits) $ g ^. locations)
     AssetActionType -> concatMapM'
-      (getActions i window)
+      (getActions iid window)
       (filterMap ((trait `elem`) . getTraits) $ g ^. assets)
     TreacheryActionType -> concatMapM'
-      (getActions i window)
+      (getActions iid window)
       (filterMap ((trait `elem`) . getTraits) $ g ^. treacheries)
     InvestigatorActionType -> pure [] -- do we need these
     ActActionType -> pure [] -- acts do not have traits
     AgendaActionType -> pure [] -- agendas do not have traits
 
 instance
-  (HasActions env investigator (ActionType, Game queue))
-  => HasActions env investigator (Game queue) where
-  getActions i window g = do
-    locationActions <- getActions i window (LocationActionType, g)
-    enemyActions <- getActions i window (EnemyActionType, g)
-    assetActions <- getActions i window (AssetActionType, g)
-    treacheryActions <- getActions i window (TreacheryActionType, g)
-    actActions <- getActions i window (ActActionType, g)
-    agendaActions <- getActions i window (AgendaActionType, g)
-    investigatorActions <- getActions i window (InvestigatorActionType, g)
+  (HasActions env (ActionType, Game queue))
+  => HasActions env (Game queue) where
+  getActions iid window g = do
+    locationActions <- getActions iid window (LocationActionType, g)
+    enemyActions <- getActions iid window (EnemyActionType, g)
+    assetActions <- getActions iid window (AssetActionType, g)
+    treacheryActions <- getActions iid window (TreacheryActionType, g)
+    actActions <- getActions iid window (ActActionType, g)
+    agendaActions <- getActions iid window (AgendaActionType, g)
+    investigatorActions <- getActions iid window (InvestigatorActionType, g)
     pure
       $ enemyActions
       <> locationActions

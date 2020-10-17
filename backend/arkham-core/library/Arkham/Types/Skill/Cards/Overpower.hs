@@ -18,7 +18,7 @@ newtype Overpower = Overpower Attrs
 overpower :: InvestigatorId -> SkillId -> Overpower
 overpower iid uuid = Overpower $ baseAttrs iid uuid "01091"
 
-instance HasActions env investigator Overpower where
+instance HasActions env Overpower where
   getActions i window (Overpower attrs) = getActions i window attrs
 
 instance (SkillRunner env) => RunMessage env Overpower where

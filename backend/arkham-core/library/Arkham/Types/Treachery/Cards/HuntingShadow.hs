@@ -18,7 +18,7 @@ newtype HuntingShadow = HuntingShadow Attrs
 huntingShadow :: TreacheryId -> a -> HuntingShadow
 huntingShadow uuid _ = HuntingShadow $ baseAttrs uuid "01135"
 
-instance HasActions env investigator HuntingShadow where
+instance HasActions env HuntingShadow where
   getActions i window (HuntingShadow attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env HuntingShadow where

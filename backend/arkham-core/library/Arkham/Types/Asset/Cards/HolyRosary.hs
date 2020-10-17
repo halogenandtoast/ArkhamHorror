@@ -15,12 +15,13 @@ holyRosary uuid = HolyRosary $ (baseAttrs uuid "01059")
   , assetSanity = Just 2
   }
 
-instance IsInvestigator investigator => HasModifiersFor env investigator HolyRosary where
-  getModifiersFor _ i (HolyRosary a) =
-    pure [ SkillModifier SkillWillpower 1 | ownedBy a i ]
+instance HasModifiersFor env  HolyRosary where
+  getModifiersFor _ (InvestigatorTarget iid) (HolyRosary a) =
+    pure [ SkillModifier SkillWillpower 1 | ownedBy a iid ]
+  getModifiersFor _ _ _ = pure []
 
-instance HasActions env investigator HolyRosary where
+instance HasActions env HolyRosary where
   getActions i window (HolyRosary x) = getActions i window x
 
-instance (AssetRunner env) => RunMessage env HolyRosary where
+instance AssetRunner env => RunMessage env HolyRosary where
   runMessage msg (HolyRosary attrs) = HolyRosary <$> runMessage msg attrs

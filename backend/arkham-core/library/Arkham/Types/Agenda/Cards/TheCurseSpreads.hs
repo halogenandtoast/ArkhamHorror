@@ -19,7 +19,7 @@ theCurseSpreads :: TheCurseSpreads
 theCurseSpreads =
   TheCurseSpreads $ baseAttrs "81004" "The Curse Spreads" "Agenda 3a" (Static 8)
 
-instance HasActions env investigator TheCurseSpreads where
+instance HasActions env TheCurseSpreads where
   getActions i window (TheCurseSpreads x) = getActions i window x
 
 getRougarou

@@ -21,7 +21,7 @@ newtype OnTheLam = OnTheLam Attrs
 onTheLam :: InvestigatorId -> EventId -> OnTheLam
 onTheLam iid uuid = OnTheLam $ baseAttrs iid uuid "01010"
 
-instance HasActions env investigator OnTheLam where
+instance HasActions env OnTheLam where
   getActions i window (OnTheLam attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env OnTheLam where

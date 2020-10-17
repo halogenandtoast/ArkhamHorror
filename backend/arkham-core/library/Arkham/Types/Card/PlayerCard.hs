@@ -32,6 +32,8 @@ data PlayerCardType
 newtype BearerId = BearerId { unBearerId :: CardCode }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
 
+newtype DiscardedPlayerCard = DiscardedPlayerCard { unDiscardedPlayerCard :: PlayerCard }
+
 data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

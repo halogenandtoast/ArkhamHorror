@@ -54,8 +54,8 @@ data Treachery
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Treachery
-deriving anyclass instance (TreacheryRunner env) => RunMessage env Treachery
+deriving anyclass instance ActionRunner env => HasActions env Treachery
+deriving anyclass instance TreacheryRunner env => RunMessage env Treachery
 
 instance HasCardCode Treachery where
   getCardCode = treacheryCardCode . treacheryAttrs

@@ -26,10 +26,10 @@ arkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround $ base
     [Squiggle]
     [Woods]
 
-instance HasModifiersFor env investigator ArkhamWoodsUnhallowedGround where
+instance HasModifiersFor env ArkhamWoodsUnhallowedGround where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsUnhallowedGround where
+instance ActionRunner env => HasActions env ArkhamWoodsUnhallowedGround where
   getActions i window (ArkhamWoodsUnhallowedGround attrs) =
     getActions i window attrs
 

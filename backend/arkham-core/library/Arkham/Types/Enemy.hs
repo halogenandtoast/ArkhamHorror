@@ -52,11 +52,11 @@ newtype BaseEnemy = BaseEnemy Attrs
 baseEnemy :: EnemyId -> CardCode -> (Attrs -> Attrs) -> Enemy
 baseEnemy a b f = BaseEnemy' . BaseEnemy . f $ baseAttrs a b
 
-instance (IsInvestigator investigator) => HasActions env investigator BaseEnemy where
+instance ActionRunner env => HasActions env BaseEnemy where
   getActions investigator window (BaseEnemy attrs) =
     getActions investigator window attrs
 
-instance HasModifiersFor env investigator BaseEnemy where
+instance HasModifiersFor env BaseEnemy where
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env BaseEnemy where
@@ -66,8 +66,8 @@ instance HasModifiers env BaseEnemy where
 instance (EnemyRunner env) => RunMessage env BaseEnemy where
   runMessage msg (BaseEnemy attrs) = BaseEnemy <$> runMessage msg attrs
 
-deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Enemy
-deriving anyclass instance IsInvestigator investigator => HasModifiersFor env investigator Enemy
+deriving anyclass instance ActionRunner env => HasActions env Enemy
+deriving anyclass instance EnemyRunner env => HasModifiersFor env Enemy
 
 instance (EnemyRunner env) => RunMessage env Enemy where
   runMessage msg e = do

@@ -20,12 +20,12 @@ arcaneInitiate uuid = ArcaneInitiate $ (baseAttrs uuid "01063")
 fastAbility :: Attrs -> Window -> Ability
 fastAbility a window = mkAbility (toSource a) 1 (FastAbility window)
 
-instance HasModifiersFor env investigator ArcaneInitiate where
+instance HasModifiersFor env ArcaneInitiate where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator ArcaneInitiate where
-  getActions i window (ArcaneInitiate a) | ownedBy a i = pure
-    [ ActivateCardAbilityAction (getId () i) (fastAbility a window)
+instance HasActions env ArcaneInitiate where
+  getActions iid window (ArcaneInitiate a) | ownedBy a iid = pure
+    [ ActivateCardAbilityAction iid (fastAbility a window)
     | not (assetExhausted a)
     ]
   getActions _ _ _ = pure []

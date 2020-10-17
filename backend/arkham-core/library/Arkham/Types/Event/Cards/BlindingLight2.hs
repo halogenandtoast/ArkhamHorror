@@ -23,7 +23,7 @@ newtype BlindingLight2 = BlindingLight2 Attrs
 blindingLight2 :: InvestigatorId -> EventId -> BlindingLight2
 blindingLight2 iid uuid = BlindingLight2 $ baseAttrs iid uuid "01069"
 
-instance HasActions env investigator BlindingLight2 where
+instance HasActions env BlindingLight2 where
   getActions i window (BlindingLight2 attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env BlindingLight2 where

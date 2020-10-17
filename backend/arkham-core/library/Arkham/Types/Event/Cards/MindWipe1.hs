@@ -24,7 +24,7 @@ newtype MindWipe1 = MindWipe1 Attrs
 mindWipe1 :: InvestigatorId -> EventId -> MindWipe1
 mindWipe1 iid uuid = MindWipe1 $ baseAttrs iid uuid "01068"
 
-instance HasActions env investigator MindWipe1 where
+instance HasActions env MindWipe1 where
   getActions i window (MindWipe1 attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env MindWipe1 where

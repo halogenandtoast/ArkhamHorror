@@ -30,7 +30,7 @@ akachiOnyele = AkachiOnyele $ baseAttrs
     }
   [Sorcerer]
 
-instance ActionRunner env investigator => HasActions env investigator AkachiOnyele where
+instance ActionRunner env => HasActions env AkachiOnyele where
   getActions i window (AkachiOnyele attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env AkachiOnyele where

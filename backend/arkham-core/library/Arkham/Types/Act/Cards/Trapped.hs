@@ -1,18 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Act.Cards.Trapped where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Act.Attrs
+import qualified Arkham.Types.Act.Attrs as Act
+import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.Target
-import ClassyPrelude hiding (sequence)
-import qualified Data.HashSet as HashSet
-import Lens.Micro
 
 newtype Trapped = Trapped Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -20,21 +14,22 @@ newtype Trapped = Trapped Attrs
 trapped :: Trapped
 trapped = Trapped $ baseAttrs "01108" "Trapped" "Act 1a"
 
-instance HasActions env investigator Trapped where
+instance HasActions env Trapped where
   getActions i window (Trapped x) = getActions i window x
 
-instance (ActRunner env) => RunMessage env Trapped where
+instance ActRunner env => RunMessage env Trapped where
   runMessage msg a@(Trapped attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && actSequence == "Act 1a" -> do
-      investigatorIds <- HashSet.toList <$> asks (getSet ())
-      playerCount <- unPlayerCount <$> asks (getCount ())
+      leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
+      requiredClues <- getPlayerCountValue (PerPlayer 2)
       unshiftMessages
-        (SpendClues (fromGameValue (PerPlayer 2) playerCount) investigatorIds
-        : [ Ask iid $ ChooseOne [AdvanceAct aid] | iid <- investigatorIds ]
-        )
-      pure $ Trapped $ attrs & sequence .~ "Act 1b" & flipped .~ True
+        [ SpendClues requiredClues investigatorIds
+        , chooseOne leadInvestigatorId [AdvanceAct aid]
+        ]
+      pure $ Trapped $ attrs & Act.sequence .~ "Act 1b" & flipped .~ True
     AdvanceAct aid | aid == actId && actSequence == "Act 1b" -> do
-      enemyIds <- HashSet.toList <$> asks (getSet (LocationId "01111"))
+      enemyIds <- asks (setToList . getSet (LocationId "01111"))
       a <$ unshiftMessages
         ([ PlaceLocation "01112"
          , PlaceLocation "01114"
@@ -49,12 +44,11 @@ instance (ActRunner env) => RunMessage env Trapped where
            ]
         )
     PrePlayerWindow -> do
-      totalSpendableClueCount <- unSpendableClueCount
-        <$> asks (getCount AllInvestigators)
-      playerCount <- unPlayerCount <$> asks (getCount ())
+      totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds
+      requiredClues <- getPlayerCountValue (PerPlayer 2)
       pure
         $ Trapped
         $ attrs
         & canAdvance
-        .~ (totalSpendableClueCount >= fromGameValue (PerPlayer 2) playerCount)
+        .~ (totalSpendableClues >= requiredClues)
     _ -> Trapped <$> runMessage msg attrs

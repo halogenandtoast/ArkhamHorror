@@ -20,7 +20,7 @@ theRougarouFeeds :: TheRougarouFeeds
 theRougarouFeeds = TheRougarouFeeds
   $ baseAttrs "81003" "The Rougarou Feeds" "Agenda 2a" (Static 6)
 
-instance HasActions env investigator TheRougarouFeeds where
+instance HasActions env TheRougarouFeeds where
   getActions i window (TheRougarouFeeds x) = getActions i window x
 
 getRougarou

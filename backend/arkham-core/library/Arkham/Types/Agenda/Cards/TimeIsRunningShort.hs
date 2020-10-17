@@ -1,19 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.TimeIsRunningShort where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import hiding (sequence)
+
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.Source
-import Arkham.Types.Window
-import ClassyPrelude hiding (sequence)
-import Lens.Micro
 
 newtype TimeIsRunningShort = TimeIsRunningShort Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -22,16 +15,22 @@ timeIsRunningShort :: TimeIsRunningShort
 timeIsRunningShort = TimeIsRunningShort
   $ baseAttrs "01122" "Time Is Running Short" "Agenda 2a" (Static 8)
 
-instance (ActionRunner env investigator) => HasActions env investigator TimeIsRunningShort where
-  getActions i NonFast (TimeIsRunningShort _) | canDo Action.Resign i = pure
-    [ ActivateCardAbilityAction
-        (getId () i)
-        (mkAbility
-          (AgendaSource "01122")
-          1
-          (ActionAbility 1 (Just Action.Resign))
-        )
-    ]
+instance ActionRunner env => HasActions env TimeIsRunningShort where
+  getActions iid NonFast (TimeIsRunningShort _) = do
+    hasActionsRemaining <- getHasActionsRemaining
+      iid
+      (Just Action.Resign)
+      mempty
+    pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility
+            (AgendaSource "01122")
+            1
+            (ActionAbility 1 (Just Action.Resign))
+          )
+      | hasActionsRemaining
+      ]
   getActions _ _ _ = pure []
 
 instance (AgendaRunner env) => RunMessage env TimeIsRunningShort where

@@ -60,7 +60,7 @@ data Agenda
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Agenda
+deriving anyclass instance ActionRunner env => HasActions env Agenda
 deriving anyclass instance (AgendaRunner env) => RunMessage env Agenda
 
 newtype BaseAgenda = BaseAgenda Attrs
@@ -70,11 +70,10 @@ baseAgenda
   :: AgendaId -> Text -> Text -> GameValue Int -> (Attrs -> Attrs) -> Agenda
 baseAgenda a b c d f = BaseAgenda' . BaseAgenda . f $ baseAttrs a b c d
 
-instance HasActions env investigator BaseAgenda where
-  getActions investigator window (BaseAgenda attrs) =
-    getActions investigator window attrs
+instance HasActions env BaseAgenda where
+  getActions iid window (BaseAgenda attrs) = getActions iid window attrs
 
-instance (AgendaRunner env) => RunMessage env BaseAgenda where
+instance AgendaRunner env => RunMessage env BaseAgenda where
   runMessage msg (BaseAgenda attrs) = BaseAgenda <$> runMessage msg attrs
 
 agendaAttrs :: Agenda -> Attrs

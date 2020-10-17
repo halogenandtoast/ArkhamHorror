@@ -15,10 +15,10 @@ attic = Attic $ (baseAttrs "01113" "Attic" 1 (PerPlayer 2) Triangle [Square] []
   { locationVictory = Just 1
   }
 
-instance HasModifiersFor env investigator Attic where
+instance HasModifiersFor env Attic where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator Attic where
+instance ActionRunner env => HasActions env Attic where
   getActions i window (Attic attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Attic where

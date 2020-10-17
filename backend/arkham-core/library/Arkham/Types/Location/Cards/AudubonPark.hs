@@ -23,10 +23,10 @@ audubonPark = AudubonPark $ (baseAttrs
   { locationVictory = Just 1
   }
 
-instance HasModifiersFor env investigator AudubonPark where
+instance HasModifiersFor env AudubonPark where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator AudubonPark where
+instance ActionRunner env => HasActions env AudubonPark where
   getActions i window (AudubonPark attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env AudubonPark where

@@ -3,11 +3,10 @@ module Arkham.Types.Act.Runner where
 import Arkham.Import
 
 import Arkham.Types.ScenarioLogKey
-import Arkham.Types.Trait
+import Arkham.Types.Trait (Trait)
 
 type ActRunner env
   = ( HasQueue env
-    , HasCount SpendableClueCount AllInvestigators env
     , HasCount SpendableClueCount InvestigatorId env
     , HasSet EnemyId LocationId env
     , HasSet InvestigatorId LocationId env

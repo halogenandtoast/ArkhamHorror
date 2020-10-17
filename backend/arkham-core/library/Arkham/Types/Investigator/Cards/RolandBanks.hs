@@ -1,5 +1,9 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Investigator.Cards.RolandBanks (RolandBanks(..), rolandBanks) where
+module Arkham.Types.Investigator.Cards.RolandBanks
+  ( RolandBanks(..)
+  , rolandBanks
+  )
+where
 
 import Arkham.Import
 
@@ -31,9 +35,9 @@ ability attrs = base { abilityLimit = PerRound }
  where
   base = mkAbility (toSource attrs) 1 (ReactionAbility (WhenEnemyDefeated You))
 
-instance (ActionRunner env investigator) => HasActions env investigator RolandBanks where
-  getActions i (WhenEnemyDefeated You) (RolandBanks a@Attrs {..})
-    | getId () i == investigatorId = do
+instance ActionRunner env => HasActions env RolandBanks where
+  getActions iid (WhenEnemyDefeated You) (RolandBanks a@Attrs {..})
+    | iid == investigatorId = do
       let ability' = (investigatorId, ability a)
       clueCount' <- asks $ unClueCount . getCount investigatorLocation
       unused <- asks $ notElem ability' . map unUsedAbility . getList ()

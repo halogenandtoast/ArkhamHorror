@@ -1,4 +1,4 @@
-module Arkham.Types.Location.Helpers
+module Arkham.Types.Treachery.Helpers
   ( module X
   )
 where

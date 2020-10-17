@@ -21,6 +21,7 @@ import Arkham.Types.Enemy as X
 import qualified Arkham.Types.Enemy.Attrs as Enemy
 import Arkham.Types.Event as X
 import Arkham.Types.Game as X
+import Arkham.Types.Game.Helpers as X
 import Arkham.Types.Investigator as X
 import qualified Arkham.Types.Investigator.Attrs as InvestigatorAttrs
 import Arkham.Types.Location as X
@@ -178,14 +179,14 @@ testUnconnectedLocations f1 f2 = do
   pure (location1, location2)
 
 getActionsOf
-  :: (MonadIO m, HasActions GameInternal investigator a, Entity a)
+  :: (MonadIO m, HasActions GameInternal a, Entity a)
   => GameExternal
-  -> investigator
+  -> Investigator
   -> Window
   -> a
   -> m [Message]
 getActionsOf game investigator window e =
-  withGame game (getActions investigator window (updated game e))
+  withGame game (getActions (getId () investigator) window (updated game e))
 
 chaosBagTokensOf :: Game queue -> [Token]
 chaosBagTokensOf g = g ^. chaosBag . ChaosBag.chaosBagTokensLens

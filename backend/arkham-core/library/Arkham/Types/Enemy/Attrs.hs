@@ -229,38 +229,39 @@ instance HasId EnemyId () Attrs where
 instance IsEnemy Attrs where
   isAloof Attrs {..} = Keyword.Aloof `elem` enemyKeywords
 
-instance (IsInvestigator investigator) => HasActions env investigator Attrs where
-  getActions i NonFast enemy@Attrs {..} =
-    pure $ fightEnemyActions <> engageEnemyActions <> evadeEnemyActions
+instance ActionRunner env => HasActions env Attrs where
+  getActions iid NonFast Attrs {..} = do
+    canFight <- getCanFight enemyId iid
+    canEngage <- getCanEngage enemyId iid
+    canEvade <- getCanEvade enemyId iid
+    pure
+      $ fightEnemyActions canFight
+      <> engageEnemyActions canEngage
+      <> evadeEnemyActions canEvade
    where
-    investigatorId = getId () i
-    locationId = locationOf i
-    fightEnemyActions =
+    fightEnemyActions canFight =
       [ FightEnemy
-          investigatorId
+          iid
           enemyId
-          (InvestigatorSource investigatorId)
+          (InvestigatorSource iid)
           SkillCombat
           []
           mempty
           True
-      | enemyLocation == locationId && canFight enemy i
+      | canFight
       ]
-    engageEnemyActions =
-      [ EngageEnemy investigatorId enemyId True
-      | enemyLocation == locationId && canEngage enemy i
-      ]
-    evadeEnemyActions =
+    engageEnemyActions canEngage = [ EngageEnemy iid enemyId True | canEngage ]
+    evadeEnemyActions canEvade =
       [ EvadeEnemy
-          investigatorId
+          iid
           enemyId
-          (InvestigatorSource investigatorId)
+          (InvestigatorSource iid)
           SkillAgility
           mempty
           mempty
           mempty
           True
-      | canEvade enemy i
+      | canEvade
       ]
   getActions _ _ _ = pure []
 

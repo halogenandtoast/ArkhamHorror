@@ -21,21 +21,23 @@ cursedShores = CursedShores $ baseAttrs
   [Plus, Triangle, Diamond, Hourglass]
   [NewOrleans, Bayou]
 
-instance IsInvestigator investigator => HasModifiersFor env investigator CursedShores where
-  getModifiersFor _ i (CursedShores Attrs {..}) = pure $ findWithDefault
-    []
-    (InvestigatorTarget $ getId () i)
-    locationModifiersFor
+instance HasModifiersFor env CursedShores where
+  getModifiersFor _ target (CursedShores Attrs {..}) =
+    pure $ findWithDefault [] target locationModifiersFor
 
-instance (IsInvestigator investigator) => HasActions env investigator CursedShores where
-  getActions i NonFast (CursedShores attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions i NonFast attrs
+instance ActionRunner env => HasActions env CursedShores where
+  getActions iid NonFast (CursedShores attrs@Attrs {..}) | locationRevealed = do
+    baseActions <- getActions iid NonFast attrs
+    hasActionsRemaining <- getHasActionsRemaining
+      iid
+      Nothing
+      (setToList locationTraits)
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction
-             (getId () i)
+             iid
              (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
-         | atLocation i attrs && hasActionsRemaining i Nothing locationTraits
+         | iid `member` locationInvestigators && hasActionsRemaining
          ]
   getActions i window (CursedShores attrs) = getActions i window attrs
 

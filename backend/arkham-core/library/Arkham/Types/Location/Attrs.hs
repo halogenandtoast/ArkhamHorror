@@ -5,6 +5,7 @@ import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Location.Runner
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Trait
 import Data.Char (isLetter)
 import qualified Data.HashMap.Strict as HashMap
@@ -69,7 +70,6 @@ connectedSymbols =
 revealedConnectedSymbols :: Lens' Attrs (HashSet LocationSymbol)
 revealedConnectedSymbols = lens locationRevealedConnectedSymbols
   $ \m x -> m { locationRevealedConnectedSymbols = x }
-
 
 investigators :: Lens' Attrs (HashSet InvestigatorId)
 investigators =
@@ -181,26 +181,26 @@ canEnterLocation eid lid = do
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits'
     _ -> False
 
-instance (IsInvestigator investigator) => HasActions env investigator Attrs where
-  getActions i NonFast location@Attrs {..} =
-    pure $ moveActions <> investigateActions
+instance ActionRunner env => HasActions env Attrs where
+  getActions iid NonFast location@Attrs {..} = do
+    canMoveTo <- getCanMoveTo locationId iid
+    canInvestigate <- getCanInvestigate locationId iid
+    pure $ moveActions canMoveTo <> investigateActions canInvestigate
    where
-    investigateActions =
+    investigateActions canInvestigate =
       [ Investigate
-          (getId () i)
+          iid
           locationId
-          (InvestigatorSource $ getId () i)
+          (InvestigatorSource iid)
           SkillIntellect
           mempty
           mempty
           mempty
           True
-      | canInvestigate location i && investigateAllowed location
+      | canInvestigate && investigateAllowed location
       ]
-    moveActions =
-      [ MoveAction (getId () i) locationId True
-      | canMoveTo location i && not locationBlocked
-      ]
+    moveActions canMoveTo =
+      [ MoveAction iid locationId True | canMoveTo && not locationBlocked ]
   getActions _ _ _ = pure []
 
 shouldSpawnNonEliteAtConnectingInstead :: Attrs -> Bool

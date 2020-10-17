@@ -1,19 +1,22 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-module Arkham.Types.Asset.Helpers where
+module Arkham.Types.Asset.Helpers
+  ( module Arkham.Types.Asset.Helpers
+  , module X
+  )
+where
 
 import Arkham.Types.Classes
 import Arkham.Types.Window
 import Arkham.Types.Message
+import Arkham.Types.InvestigatorId
 import ClassyPrelude
+import Arkham.Types.Game.Helpers as X
 
 hasFightActions
-  :: forall investigator env m
-   . ( MonadIO m
-     , MonadReader env m
-     , HasActions env investigator (ActionType, env)
-     )
-  => investigator
+  :: forall env m
+   . (MonadIO m, MonadReader env m, HasActions env (ActionType, env))
+  => InvestigatorId
   -> Window
   -> m Bool
 hasFightActions i NonFast = do
@@ -22,12 +25,9 @@ hasFightActions i NonFast = do
 hasFightActions _ _ = pure False
 
 hasInvestigateActions
-  :: forall investigator env m
-   . ( MonadIO m
-     , MonadReader env m
-     , HasActions env investigator (ActionType, env)
-     )
-  => investigator
+  :: forall env m
+   . (MonadIO m, MonadReader env m, HasActions env (ActionType, env))
+  => InvestigatorId
   -> Window
   -> m Bool
 hasInvestigateActions i NonFast = do

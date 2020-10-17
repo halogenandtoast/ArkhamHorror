@@ -35,14 +35,14 @@ skidsOToole = SkidsOToole $ baseAttrs
 ability :: Attrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (FastAbility (DuringTurn You))
 
-instance (ActionRunner env investigator) => HasActions env investigator SkidsOToole where
-  getActions i (DuringTurn You) (SkidsOToole a@Attrs {..})
-    | getId () i == investigatorId = do
-      let ability' = (getId () i, ability a)
+instance ActionRunner env => HasActions env SkidsOToole where
+  getActions iid (DuringTurn You) (SkidsOToole a@Attrs {..})
+    | iid == investigatorId = do
+      let ability' = (investigatorId, ability a)
       unused <- asks $ notElem ability' . map unUsedAbility . getList ()
       pure
         [ uncurry ActivateCardAbilityAction ability'
-        | unused && resourceCount i >= 2
+        | unused && investigatorResources >= 2
         ]
   getActions _ _ _ = pure []
 

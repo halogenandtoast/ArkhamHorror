@@ -17,41 +17,49 @@ parlor =
     { locationBlocked = True
     }
 
-instance HasModifiersFor env investigator Parlor where
+instance HasModifiersFor env Parlor where
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env investigator) => HasActions env investigator Parlor where
-  getActions i NonFast (Parlor attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions i NonFast attrs
+instance ActionRunner env => HasActions env Parlor where
+  getActions iid NonFast (Parlor attrs@Attrs {..}) | locationRevealed = do
+    baseActions <- getActions iid NonFast attrs
     maid <- asks (fmap unStoryAssetId <$> getId (CardCode "01117"))
     case maid of
       Nothing -> pure []
       Just aid -> do
         miid <- asks (fmap unOwnerId . getId aid)
         assetLocationId <- asks (getId aid)
+        investigatorLocationId <- asks $ getId @LocationId iid
+        hasResignActionsRemaining <- getHasActionsRemaining
+          iid
+          (Just Action.Resign)
+          (setToList locationTraits)
+        hasParleyActionsRemaining <- getHasActionsRemaining
+          iid
+          (Just Action.Parley)
+          (setToList locationTraits)
         pure
           $ baseActions
           <> [ ActivateCardAbilityAction
-                 (getId () i)
+                 iid
                  (mkAbility
                    (LocationSource "01115")
                    1
                    (ActionAbility 1 (Just Action.Resign))
                  )
-             | atLocation i attrs
-               && hasActionsRemaining i (Just Action.Resign) locationTraits
+             | iid `member` locationInvestigators && hasResignActionsRemaining
              ]
           <> [ ActivateCardAbilityAction
-                 (getId () i)
+                 iid
                  (mkAbility
                    (ProxySource (AssetSource aid) (LocationSource "01115"))
                    2
                    (ActionAbility 1 (Just Action.Parley))
                  )
              | isNothing miid
-               && Just (locationOf i)
+               && Just investigatorLocationId
                == assetLocationId
-               && hasActionsRemaining i (Just Action.Parley) locationTraits
+               && hasParleyActionsRemaining
              ]
   getActions _ _ _ = pure []
 

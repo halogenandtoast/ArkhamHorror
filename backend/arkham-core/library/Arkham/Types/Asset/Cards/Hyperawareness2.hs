@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.Hyperawareness2 where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype Hyperawareness2 = Hyperawareness2 Attrs
@@ -12,20 +13,18 @@ newtype Hyperawareness2 = Hyperawareness2 Attrs
 hyperawareness2 :: AssetId -> Hyperawareness2
 hyperawareness2 uuid = Hyperawareness2 $ baseAttrs uuid "50003"
 
-instance HasModifiersFor env investigator Hyperawareness2 where
+instance HasModifiersFor env Hyperawareness2 where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator Hyperawareness2 where
-  getActions i (WhenSkillTest SkillIntellect) (Hyperawareness2 a)
-    | ownedBy a i = pure
-      [ UseCardAbility (getId () i) (toSource a) Nothing 1
-      | resourceCount i > 0
-      ]
-  getActions i (WhenSkillTest SkillAgility) (Hyperawareness2 a) | ownedBy a i =
-    pure
-      [ UseCardAbility (getId () i) (toSource a) Nothing 2
-      | resourceCount i > 0
-      ]
+instance ActionRunner env => HasActions env Hyperawareness2 where
+  getActions iid (WhenSkillTest SkillIntellect) (Hyperawareness2 a)
+    | ownedBy a iid = do
+      resourceCount <- getResourceCount iid
+      pure [ UseCardAbility iid (toSource a) Nothing 1 | resourceCount > 0 ]
+  getActions iid (WhenSkillTest SkillAgility) (Hyperawareness2 a)
+    | ownedBy a iid = do
+      resourceCount <- getResourceCount iid
+      pure [ UseCardAbility iid (toSource a) Nothing 2 | resourceCount > 0 ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Hyperawareness2 where

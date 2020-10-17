@@ -23,7 +23,7 @@ theyreGettingOut :: TheyreGettingOut
 theyreGettingOut = TheyreGettingOut
   $ baseAttrs "01107" "They're Getting Out!" "Agenda 3a" (Static 10)
 
-instance HasActions env investigator TheyreGettingOut where
+instance HasActions env TheyreGettingOut where
   getActions i window (TheyreGettingOut x) = getActions i window x
 
 instance (AgendaRunner env) => RunMessage env TheyreGettingOut where

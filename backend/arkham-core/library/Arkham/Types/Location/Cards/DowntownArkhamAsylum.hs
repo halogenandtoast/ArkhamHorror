@@ -22,7 +22,7 @@ downtownArkhamAsylum =
         { locationVictory = Just 1
         }
 
-instance HasModifiersFor env investigator DowntownArkhamAsylum where
+instance HasModifiersFor env DowntownArkhamAsylum where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
@@ -30,17 +30,19 @@ ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
   { abilityLimit = PerGame
   }
 
-instance (ActionRunner env investigator) => HasActions env investigator DowntownArkhamAsylum where
-  getActions i NonFast (DowntownArkhamAsylum attrs@Attrs {..})
+instance ActionRunner env => HasActions env DowntownArkhamAsylum where
+  getActions iid NonFast (DowntownArkhamAsylum attrs@Attrs {..})
     | locationRevealed = do
-      baseActions <- getActions i NonFast attrs
-      unused <- getIsUnused i (ability attrs)
+      baseActions <- getActions iid NonFast attrs
+      unused <- getIsUnused iid (ability attrs)
+      hasActionsRemaining <- getHasActionsRemaining
+        iid
+        Nothing
+        (setToList locationTraits)
       pure
         $ baseActions
-        <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
-           | unused
-             && atLocation i attrs
-             && hasActionsRemaining i Nothing locationTraits
+        <> [ ActivateCardAbilityAction iid (ability attrs)
+           | unused && iid `elem` locationInvestigators && hasActionsRemaining
            ]
   getActions _ _ _ = pure []
 

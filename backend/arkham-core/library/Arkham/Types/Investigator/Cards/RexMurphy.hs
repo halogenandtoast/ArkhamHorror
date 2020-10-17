@@ -34,9 +34,9 @@ rexMurphy = RexMurphy $ baseAttrs
     }
   [Reporter]
 
-instance (ActionRunner env investigator) => HasActions env investigator RexMurphy where
-  getActions i (AfterPassSkillTest You n) (RexMurphy Attrs {..})
-    | getId () i == investigatorId && n >= 2 = do
+instance ActionRunner env => HasActions env RexMurphy where
+  getActions iid (AfterPassSkillTest You n) (RexMurphy Attrs {..})
+    | iid == investigatorId && n >= 2 = do
       let
         ability = mkAbility
           (InvestigatorSource investigatorId)

@@ -17,15 +17,17 @@ litaChantler uuid = LitaChantler $ (baseAttrs uuid "01117")
   , assetSanity = Just 3
   }
 
-instance (IsInvestigator investigator, HasId LocationId InvestigatorId env) => HasModifiersFor env investigator LitaChantler where
-  getModifiersFor _ i (LitaChantler Attrs {..}) = do
+instance (HasId LocationId InvestigatorId env) => HasModifiersFor env LitaChantler where
+  getModifiersFor _ (InvestigatorTarget iid) (LitaChantler Attrs {..}) = do
+    locationId <- asks $ getId @LocationId iid
     case assetInvestigator of
       Nothing -> pure []
       Just ownerId -> do
-        sameLocation <- asks $ (== locationOf i) . getId ownerId
+        sameLocation <- asks $ (== locationId) . getId ownerId
         pure [ SkillModifier SkillCombat 1 | sameLocation ]
+  getModifiersFor _ _ _ = pure []
 
-instance HasActions env investigator LitaChantler where
+instance HasActions env LitaChantler where
   getActions i window (LitaChantler x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env LitaChantler where

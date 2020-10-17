@@ -19,7 +19,7 @@ newtype DrawnToTheFlame = DrawnToTheFlame Attrs
 drawnToTheFlame :: InvestigatorId -> EventId -> DrawnToTheFlame
 drawnToTheFlame iid uuid = DrawnToTheFlame $ baseAttrs iid uuid "01064"
 
-instance HasActions env investigator DrawnToTheFlame where
+instance HasActions env DrawnToTheFlame where
   getActions i window (DrawnToTheFlame attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env DrawnToTheFlame where

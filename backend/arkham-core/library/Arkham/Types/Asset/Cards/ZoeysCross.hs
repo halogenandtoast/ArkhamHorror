@@ -8,6 +8,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype ZoeysCross = ZoeysCross Attrs
@@ -17,7 +18,7 @@ zoeysCross :: AssetId -> ZoeysCross
 zoeysCross uuid =
   ZoeysCross $ (baseAttrs uuid "02006") { assetSlots = [AccessorySlot] }
 
-instance HasModifiersFor env investigator ZoeysCross where
+instance HasModifiersFor env ZoeysCross where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> EnemyId -> Ability
@@ -29,14 +30,16 @@ ability attrs eid = (mkAbility
   { abilityMetadata = Just (TargetMetadata (EnemyTarget eid))
   }
 
-instance (ActionRunner env investigator) => HasActions env investigator ZoeysCross where
-  getActions i (AfterEnemyEngageInvestigator You eid) (ZoeysCross a@Attrs {..})
-    | ownedBy a i = do
-      let ability' = (getId () i, ability a eid)
+instance ActionRunner env => HasActions env ZoeysCross where
+  getActions iid (AfterEnemyEngageInvestigator You eid) (ZoeysCross a@Attrs {..})
+    | ownedBy a iid
+    = do
+      let ability' = (iid, ability a eid)
       unused <- asks $ notElem ability' . map unUsedAbility . getList ()
+      resourceCount <- getResourceCount iid
       pure
         [ uncurry ActivateCardAbilityAction ability'
-        | unused && resourceCount i > 0
+        | unused && resourceCount > 0
         ]
   getActions i window (ZoeysCross x) = getActions i window x
 

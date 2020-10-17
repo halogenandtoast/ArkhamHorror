@@ -24,19 +24,23 @@ miskatonicUniversity = MiskatonicUniversity $ (baseAttrs
   { locationVictory = Just 1
   }
 
-instance HasModifiersFor env investigator MiskatonicUniversity where
+instance HasModifiersFor env MiskatonicUniversity where
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env investigator) => HasActions env investigator MiskatonicUniversity where
-  getActions i NonFast (MiskatonicUniversity attrs@Attrs {..})
+instance ActionRunner env => HasActions env MiskatonicUniversity where
+  getActions iid NonFast (MiskatonicUniversity attrs@Attrs {..})
     | locationRevealed = do
-      baseActions <- getActions i NonFast attrs
+      baseActions <- getActions iid NonFast attrs
+      hasActionsRemaining <- getHasActionsRemaining
+        iid
+        Nothing
+        (setToList locationTraits)
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction
-               (getId () i)
+               iid
                (mkAbility (LocationSource "01129") 1 (ActionAbility 1 Nothing))
-           | atLocation i attrs && hasActionsRemaining i Nothing locationTraits
+           | iid `member` locationInvestigators && hasActionsRemaining
            ]
   getActions _ _ _ = pure []
 

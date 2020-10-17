@@ -22,14 +22,14 @@ wizardOfTheOrder uuid = WizardOfTheOrder $ (baseAttrs uuid "01170")
   , enemyEvade = 2
   }
 
-instance HasModifiersFor env investigator WizardOfTheOrder where
+instance HasModifiersFor env WizardOfTheOrder where
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env WizardOfTheOrder where
   getModifiers _ (WizardOfTheOrder Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
-instance (IsInvestigator investigator) => HasActions env investigator WizardOfTheOrder where
+instance ActionRunner env => HasActions env WizardOfTheOrder where
   getActions i window (WizardOfTheOrder attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env WizardOfTheOrder where

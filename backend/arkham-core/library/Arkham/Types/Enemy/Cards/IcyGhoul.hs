@@ -22,14 +22,14 @@ icyGhoul uuid = IcyGhoul $ (baseAttrs uuid "01119")
   , enemyEvade = 4
   }
 
-instance HasModifiersFor env investigator IcyGhoul where
+instance HasModifiersFor env IcyGhoul where
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env IcyGhoul where
   getModifiers _ (IcyGhoul Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
-instance (IsInvestigator investigator) => HasActions env investigator IcyGhoul where
+instance ActionRunner env => HasActions env IcyGhoul where
   getActions i window (IcyGhoul attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env IcyGhoul where

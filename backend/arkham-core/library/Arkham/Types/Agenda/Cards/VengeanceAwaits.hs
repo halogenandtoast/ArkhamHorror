@@ -20,10 +20,10 @@ vengeanceAwaits :: VengeanceAwaits
 vengeanceAwaits =
   VengeanceAwaits $ baseAttrs "01145" "Vengeance Awaits" "Agenda 3a" (Static 5)
 
-instance HasActions env investigator VengeanceAwaits where
+instance HasActions env VengeanceAwaits where
   getActions i window (VengeanceAwaits x) = getActions i window x
 
-instance (AgendaRunner env) => RunMessage env VengeanceAwaits where
+instance AgendaRunner env => RunMessage env VengeanceAwaits where
   runMessage msg a@(VengeanceAwaits attrs@Attrs {..}) = case msg of
     EnemyDefeated _ _ "01156" _ -> a <$ unshiftMessage (Resolution 2)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3a" -> do

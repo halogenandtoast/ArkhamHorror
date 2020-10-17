@@ -26,7 +26,7 @@ screechingByakhee uuid = ScreechingByakhee $ (baseAttrs uuid "01175")
   , enemyPrey = LowestRemainingSanity
   }
 
-instance HasModifiersFor env investigator ScreechingByakhee where
+instance HasModifiersFor env ScreechingByakhee where
   getModifiersFor _ _ _ = pure []
 
 instance (HasCount RemainingSanity InvestigatorId env) => HasModifiers env ScreechingByakhee where
@@ -38,7 +38,7 @@ instance (HasCount RemainingSanity InvestigatorId env) => HasModifiers env Scree
         if any (<= 4) sanities then [EnemyFight 1, EnemyEvade 1] else []
     pure $ modifiers' <> concat (toList enemyModifiers)
 
-instance (IsInvestigator investigator) => HasActions env investigator ScreechingByakhee where
+instance ActionRunner env => HasActions env ScreechingByakhee where
   getActions i window (ScreechingByakhee attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env ScreechingByakhee where

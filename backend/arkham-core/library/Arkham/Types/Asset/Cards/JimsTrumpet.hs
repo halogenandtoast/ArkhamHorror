@@ -19,31 +19,31 @@ jimsTrumpet :: AssetId -> JimsTrumpet
 jimsTrumpet uuid =
   JimsTrumpet $ (baseAttrs uuid "02012") { assetSlots = [HandSlot] }
 
-instance HasModifiersFor env investigator JimsTrumpet where
+instance HasModifiersFor env JimsTrumpet where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Who -> Ability
 ability attrs who =
   mkAbility (toSource attrs) 1 (ReactionAbility (WhenDrawToken who Skull))
 
-instance (ActionRunner env investigator) => HasActions env investigator JimsTrumpet where
-  getActions i (WhenRevealToken who Skull) (JimsTrumpet a) | ownedBy a i = do
-    let
-      locationId = locationOf i
-      ability' = (getId () i, ability a who)
-    connectedLocationIds <-
-      asks $ map unConnectedLocationId . setToList . getSet locationId
-    investigatorIds <- for
-      (locationId : connectedLocationIds)
-      (asks . (setToList .) . getSet @InvestigatorId)
-    horrorCounts <- for
-      (concat investigatorIds)
-      (asks . (unHorrorCount .) . getCount)
-    unused <- asks $ notElem ability' . map unUsedAbility . getList ()
-    pure
-      [ uncurry ActivateCardAbilityAction ability'
-      | unused && any (> 0) horrorCounts
-      ]
+instance ActionRunner env => HasActions env JimsTrumpet where
+  getActions iid (WhenRevealToken who Skull) (JimsTrumpet a) | ownedBy a iid =
+    do
+      let ability' = (iid, ability a who)
+      locationId <- asks $ getId @LocationId iid
+      connectedLocationIds <-
+        asks $ map unConnectedLocationId . setToList . getSet locationId
+      investigatorIds <- for
+        (locationId : connectedLocationIds)
+        (asks . (setToList .) . getSet @InvestigatorId)
+      horrorCounts <- for
+        (concat investigatorIds)
+        (asks . (unHorrorCount .) . getCount)
+      unused <- asks $ notElem ability' . map unUsedAbility . getList ()
+      pure
+        [ uncurry ActivateCardAbilityAction ability'
+        | unused && any (> 0) horrorCounts
+        ]
   getActions i window (JimsTrumpet x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env JimsTrumpet where

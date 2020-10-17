@@ -21,7 +21,7 @@ grotesqueStatue4 :: AssetId -> GrotesqueStatue4
 grotesqueStatue4 uuid =
   GrotesqueStatue4 $ (baseAttrs uuid "01071") { assetSlots = [HandSlot] }
 
-instance HasModifiersFor env investigator GrotesqueStatue4 where
+instance HasModifiersFor env GrotesqueStatue4 where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Source -> Window -> Ability
@@ -31,11 +31,11 @@ ability attrs source window =
     , abilityLimit = PerTestOrAbility
     }
 
-instance (ActionRunner env investigator) => HasActions env investigator GrotesqueStatue4 where
-  getActions i window@(WhenWouldRevealChaosToken source You) (GrotesqueStatue4 a)
-    | ownedBy a i
+instance ActionRunner env => HasActions env GrotesqueStatue4 where
+  getActions iid window@(WhenWouldRevealChaosToken source You) (GrotesqueStatue4 a)
+    | ownedBy a iid
     = do
-      let ability' = (getId () i, ability a source window)
+      let ability' = (iid, ability a source window)
       unused <- asks $ notElem ability' . map unUsedAbility . getList ()
       pure
         [ uncurry ActivateCardAbilityAction ability'

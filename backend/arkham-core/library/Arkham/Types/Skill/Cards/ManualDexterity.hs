@@ -18,7 +18,7 @@ newtype ManualDexterity = ManualDexterity Attrs
 manualDexterity :: InvestigatorId -> SkillId -> ManualDexterity
 manualDexterity iid uuid = ManualDexterity $ baseAttrs iid uuid "01092"
 
-instance HasActions env investigator ManualDexterity where
+instance HasActions env ManualDexterity where
   getActions i window (ManualDexterity attrs) = getActions i window attrs
 
 instance (SkillRunner env) => RunMessage env ManualDexterity where

@@ -1,18 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy.Cards.TheMaskedHunter where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Message
-import Arkham.Types.Modifier
 import Arkham.Types.Prey
-import Arkham.Types.Query
-import ClassyPrelude
-import Lens.Micro
 
 newtype TheMaskedHunter = TheMaskedHunter Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -27,17 +20,18 @@ theMaskedHunter uuid = TheMaskedHunter $ (baseAttrs uuid "01121b")
   , enemyPrey = MostClues
   }
 
-instance IsInvestigator investigator => HasModifiersFor env investigator TheMaskedHunter where
-  getModifiersFor _ i (TheMaskedHunter Attrs {..}) = do
-    if getId () i `elem` enemyEngagedInvestigators
+instance HasModifiersFor env TheMaskedHunter where
+  getModifiersFor _ (InvestigatorTarget iid) (TheMaskedHunter Attrs {..}) = do
+    if iid `elem` enemyEngagedInvestigators
       then pure [CannotDiscoverClues, CannotSpendClues]
       else pure []
+  getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env TheMaskedHunter where
   getModifiers _ (TheMaskedHunter Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
-instance (IsInvestigator investigator) => HasActions env investigator TheMaskedHunter where
+instance ActionRunner env => HasActions env TheMaskedHunter where
   getActions i window (TheMaskedHunter attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env TheMaskedHunter where

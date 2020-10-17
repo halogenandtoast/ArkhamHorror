@@ -26,23 +26,30 @@ fauborgMarigny = FauborgMarigny $ baseAttrs
   [Triangle, Squiggle]
   [Riverside]
 
-instance IsInvestigator investigator => HasModifiersFor env investigator FauborgMarigny where
-  getModifiersFor _ i (FauborgMarigny attrs) =
-    pure [ ReduceCostOfCardType AssetType 1 | atLocation i attrs ]
+instance HasModifiersFor env FauborgMarigny where
+  getModifiersFor _ (InvestigatorTarget iid) (FauborgMarigny attrs) = pure
+    [ ReduceCostOfCardType AssetType 1
+    | iid `member` locationInvestigators attrs
+    ]
+  getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Resign))
 
-instance (IsInvestigator investigator) => HasActions env investigator FauborgMarigny where
-  getActions i NonFast (FauborgMarigny attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions i NonFast attrs
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
-         | atLocation i attrs
-           && hasActionsRemaining i (Just Action.Resign) locationTraits
-         ]
+instance ActionRunner env => HasActions env FauborgMarigny where
+  getActions iid NonFast (FauborgMarigny attrs@Attrs {..}) | locationRevealed =
+    do
+      baseActions <- getActions iid NonFast attrs
+      hasActionsRemaining <- getHasActionsRemaining
+        iid
+        (Just Action.Resign)
+        (setToList locationTraits)
+      pure
+        $ baseActions
+        <> [ ActivateCardAbilityAction iid (ability attrs)
+           | iid `member` locationInvestigators && hasActionsRemaining
+           ]
   getActions i window (FauborgMarigny attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env FauborgMarigny where

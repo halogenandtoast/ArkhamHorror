@@ -1,36 +1,12 @@
-module Arkham.Types.Query
-  ( ClueCount(..)
-  , HorrorCount(..)
-  , DamageCount(..)
-  , HealthDamageCount(..)
-  , SanityDamageCount(..)
-  , UsesCount(..)
-  , Shroud(..)
-  , SpendableClueCount(..)
-  , PlayerCount(..)
-  , ResourceCount(..)
-  , CardCount(..)
-  , EnemyCount(..)
-  , DoomCount(..)
-  , AssetCount(..)
-  , XPCount(..)
-  , TreacheryCount(..)
-  , RemainingHealth(..)
-  , RemainingSanity(..)
-  , InvestigatorLocation(..)
-  , LeadInvestigatorId(..)
-  , ActiveInvestigatorId(..)
-  , AllInvestigators(..)
-  )
-where
+module Arkham.Types.Query where
 
 import Arkham.Types.InvestigatorId
 import ClassyPrelude
 
-
 newtype AssetCount = AssetCount { unAssetCount :: Int }
 newtype TreacheryCount = TreacheryCount { unTreacheryCount :: Int }
 newtype EnemyCount = EnemyCount { unEnemyCount :: Int }
+newtype ActionRemainingCount = ActionRemainingCount { unActionRemainingCount :: Int }
 newtype XPCount = XPCount { unXPCount :: Int }
 newtype ClueCount = ClueCount { unClueCount :: Int }
   deriving newtype (Eq, Hashable, Show)
@@ -70,5 +46,3 @@ newtype LeadInvestigatorId = LeadInvestigatorId { unLeadInvestigatorId :: Invest
 newtype ActiveInvestigatorId = ActiveInvestigatorId { unActiveInvestigatorId :: InvestigatorId }
 
 newtype InvestigatorLocation = InvestigatorLocation InvestigatorId
-data AllInvestigators = AllInvestigators
-

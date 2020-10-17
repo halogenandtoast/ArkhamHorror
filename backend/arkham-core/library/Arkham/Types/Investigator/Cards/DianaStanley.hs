@@ -30,11 +30,10 @@ dianaStanley = DianaStanley $ baseAttrs
     }
   [Cultist, SilverTwilight]
 
-instance ActionRunner env investigator => HasActions env investigator DianaStanley where
+instance ActionRunner env => HasActions env DianaStanley where
   getActions i window (DianaStanley attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env DianaStanley where
   runMessage msg i@(DianaStanley attrs@Attrs {..}) = case msg of
-    ResolveToken Token.ElderSign iid | iid == investigatorId ->
-      pure i
+    ResolveToken Token.ElderSign iid | iid == investigatorId -> pure i
     _ -> DianaStanley <$> runMessage msg attrs

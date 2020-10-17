@@ -20,7 +20,7 @@ aCreatureOfTheBayou :: ACreatureOfTheBayou
 aCreatureOfTheBayou = ACreatureOfTheBayou
   $ baseAttrs "81002" "A Creature of the Bayou" "Agenda 1a" (Static 5)
 
-instance HasActions env investigator ACreatureOfTheBayou where
+instance HasActions env ACreatureOfTheBayou where
   getActions i window (ACreatureOfTheBayou x) = getActions i window x
 
 getRougarou

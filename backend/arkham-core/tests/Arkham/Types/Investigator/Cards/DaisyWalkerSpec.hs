@@ -18,8 +18,14 @@ spec = describe "Daisy Walker" $ do
         daisyWalker
         [LoseActions (getId () daisyWalker) TestSource 3]
         id
-      hasActionsRemaining (updated game daisyWalker) Nothing (singleton Tome)
-        `shouldBe` True
+      withGame
+          game
+          (getHasActionsRemaining
+            (getId () daisyWalker)
+            Nothing
+            (singleton Tome)
+          )
+        `shouldReturn` True
 
   context "elder sign" $ do
     it "allows you to draw one card for each Tome you control" $ do

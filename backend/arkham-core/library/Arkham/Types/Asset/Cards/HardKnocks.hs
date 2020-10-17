@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.HardKnocks where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype HardKnocks = HardKnocks Attrs
@@ -12,14 +13,17 @@ newtype HardKnocks = HardKnocks Attrs
 hardKnocks :: AssetId -> HardKnocks
 hardKnocks uuid = HardKnocks $ baseAttrs uuid "01049"
 
-instance HasModifiersFor env investigator HardKnocks where
+instance HasModifiersFor env HardKnocks where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator HardKnocks where
-  getActions i (WhenSkillTest SkillCombat) (HardKnocks a) | ownedBy a i = pure
-    [ UseCardAbility (getId () i) (toSource a) Nothing 1 | resourceCount i > 0 ]
-  getActions i (WhenSkillTest SkillAgility) (HardKnocks a) | ownedBy a i = pure
-    [ UseCardAbility (getId () i) (toSource a) Nothing 2 | resourceCount i > 0 ]
+instance ActionRunner env => HasActions env HardKnocks where
+  getActions iid (WhenSkillTest SkillCombat) (HardKnocks a) | ownedBy a iid = do
+    resourceCount <- getResourceCount iid
+    pure [ UseCardAbility iid (toSource a) Nothing 1 | resourceCount > 0 ]
+  getActions iid (WhenSkillTest SkillAgility) (HardKnocks a) | ownedBy a iid =
+    do
+      resourceCount <- getResourceCount iid
+      pure [ UseCardAbility iid (toSource a) Nothing 2 | resourceCount > 0 ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env HardKnocks where

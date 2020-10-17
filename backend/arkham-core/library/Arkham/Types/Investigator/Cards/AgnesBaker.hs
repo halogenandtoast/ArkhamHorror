@@ -35,11 +35,11 @@ agnesBaker = AgnesBaker
     , agility = 3
     }
 
-instance (ActionRunner env investigator) => HasActions env investigator AgnesBaker where
-  getActions i (Fast.AfterAssignedHorror You) (AgnesBaker Attrs {..})
-    | getId () i == investigatorId = do
-      locationEnemyIds <- HashSet.toList
-        <$> asks (getSet @EnemyId (locationOf i))
+instance ActionRunner env => HasActions env AgnesBaker where
+  getActions iid (Fast.AfterAssignedHorror You) (AgnesBaker Attrs {..})
+    | iid == investigatorId = do
+      locationEnemyIds <-
+        asks $ setToList . getSet @EnemyId investigatorLocation
       let
         ability = (mkAbility
                     (InvestigatorSource investigatorId)
@@ -48,7 +48,7 @@ instance (ActionRunner env investigator) => HasActions env investigator AgnesBak
                   )
           { abilityLimit = PerPhase
           }
-      usedAbilities <- map unUsedAbility <$> asks (getList ())
+      usedAbilities <- asks $ map unUsedAbility . getList ()
       pure
         [ ActivateCardAbilityAction investigatorId ability
         | (investigatorId, ability) `notElem` usedAbilities && not
@@ -58,16 +58,15 @@ instance (ActionRunner env investigator) => HasActions env investigator AgnesBak
 
 instance (InvestigatorRunner Attrs env) => RunMessage env AgnesBaker where
   runMessage msg i@(AgnesBaker attrs@Attrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
-      do
-        lid <- asks (getId @LocationId investigatorId)
-        locationEnemyIds <- HashSet.toList <$> asks (getSet lid)
-        i <$ unshiftMessage
-          (Ask iid $ ChooseOne
-            [ EnemyDamage eid iid (InvestigatorSource investigatorId) 1
-            | eid <- locationEnemyIds
-            ]
-          )
+    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
+      lid <- asks (getId @LocationId investigatorId)
+      locationEnemyIds <- HashSet.toList <$> asks (getSet lid)
+      i <$ unshiftMessage
+        (Ask iid $ ChooseOne
+          [ EnemyDamage eid iid (InvestigatorSource investigatorId) 1
+          | eid <- locationEnemyIds
+          ]
+        )
     ResolveToken ElderSign iid | iid == investigatorId -> i <$ runTest
       investigatorId
       (TokenValue ElderSign investigatorSanityDamage)

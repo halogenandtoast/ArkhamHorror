@@ -32,8 +32,8 @@ data Skill
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance HasActions env investigator Skill
-deriving anyclass instance (SkillRunner env) => RunMessage env Skill
+deriving anyclass instance ActionRunner env => HasActions env Skill
+deriving anyclass instance SkillRunner env => RunMessage env Skill
 
 instance HasCardCode Skill where
   getCardCode = skillCardCode . skillAttrs

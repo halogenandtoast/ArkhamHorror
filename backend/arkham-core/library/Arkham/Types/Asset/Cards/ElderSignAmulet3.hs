@@ -16,10 +16,10 @@ elderSignAmulet3 uuid = ElderSignAmulet3 $ (baseAttrs uuid "01095")
   , assetSanity = Just 4
   }
 
-instance HasModifiersFor env investigator ElderSignAmulet3 where
+instance HasModifiersFor env ElderSignAmulet3 where
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env investigator ElderSignAmulet3 where
+instance HasActions env ElderSignAmulet3 where
   getActions i window (ElderSignAmulet3 x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env ElderSignAmulet3 where

@@ -85,13 +85,14 @@ data Asset
   | DigDeep2' DigDeep2
   | RabbitsFoot3' RabbitsFoot3
   | LadyEsprit' LadyEsprit
+  | BearTrap' BearTrap
   | BaseAsset' BaseAsset
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance (ActionRunner env investigator) => HasActions env investigator Asset
-deriving anyclass instance (IsInvestigator investigator, HasId LocationId InvestigatorId env, HasSource ForSkillTest env, HasTestAction ForSkillTest env) => HasModifiersFor env investigator Asset
-deriving anyclass instance (AssetRunner env) => RunMessage env Asset
+deriving anyclass instance ActionRunner env => HasActions env Asset
+deriving anyclass instance AssetRunner env => HasModifiersFor env Asset
+deriving anyclass instance AssetRunner env => RunMessage env Asset
 
 instance IsCard Asset where
   toCard a = PlayerCard $ lookupPlayerCard (getCardCode a) (getCardId a)
@@ -109,11 +110,10 @@ instance HasDamage Asset where
   getDamage a =
     let Attrs {..} = assetAttrs a in (assetHealthDamage, assetSanityDamage)
 
-instance HasActions env investigator BaseAsset where
-  getActions investigator' window (BaseAsset attrs) =
-    getActions investigator' window attrs
+instance HasActions env BaseAsset where
+  getActions iid window (BaseAsset attrs) = getActions iid window attrs
 
-instance HasModifiersFor env investigator BaseAsset where
+instance HasModifiersFor env BaseAsset where
   getModifiersFor _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env BaseAsset where
@@ -216,6 +216,7 @@ allAssets = mapFromList
   , ("50009", DigDeep2' . digDeep2)
   , ("50010", RabbitsFoot3' . rabbitsFoot3)
   , ("81019", LadyEsprit' . ladyEsprit)
+  , ("81020", BearTrap' . bearTrap)
   , ("00000", \aid -> baseAsset aid "00000" id)
   ]
 
@@ -299,4 +300,5 @@ assetAttrs = \case
   DigDeep2' attrs -> coerce attrs
   RabbitsFoot3' attrs -> coerce attrs
   LadyEsprit' attrs -> coerce attrs
+  BearTrap' attrs -> coerce attrs
   BaseAsset' attrs -> coerce attrs

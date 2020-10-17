@@ -30,7 +30,7 @@ lolaHayes = LolaHayes $ baseAttrs
     }
   [Performer]
 
-instance ActionRunner env investigator => HasActions env investigator LolaHayes where
+instance ActionRunner env => HasActions env LolaHayes where
   getActions i window (LolaHayes attrs) = getActions i window attrs
 
 instance (InvestigatorRunner Attrs env) => RunMessage env LolaHayes where

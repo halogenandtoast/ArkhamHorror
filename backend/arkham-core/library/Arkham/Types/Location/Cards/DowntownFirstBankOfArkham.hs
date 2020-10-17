@@ -19,7 +19,7 @@ downtownFirstBankOfArkham :: DowntownFirstBankOfArkham
 downtownFirstBankOfArkham = DowntownFirstBankOfArkham
   $ baseAttrs "01130" "Downtown" 3 (PerPlayer 1) Triangle [Moon, T] [Arkham]
 
-instance HasModifiersFor env investigator DowntownFirstBankOfArkham where
+instance HasModifiersFor env DowntownFirstBankOfArkham where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
@@ -27,21 +27,26 @@ ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
   { abilityLimit = PerGame
   }
 
-instance (ActionRunner env investigator) => HasActions env investigator DowntownFirstBankOfArkham where
-  getActions i NonFast (DowntownFirstBankOfArkham attrs@Attrs {..})
+instance ActionRunner env => HasActions env DowntownFirstBankOfArkham where
+  getActions iid NonFast (DowntownFirstBankOfArkham attrs@Attrs {..})
     | locationRevealed = do
-      baseActions <- getActions i NonFast attrs
-      unused <- getIsUnused i (ability attrs)
+      baseActions <- getActions iid NonFast attrs
+      unused <- getIsUnused iid (ability attrs)
+      hasActionsRemaining <- getHasActionsRemaining
+        iid
+        Nothing
+        (setToList locationTraits)
       canGainResources <-
         notElem CannotGainResources
-          <$> getInvestigatorModifiers i (toSource attrs)
+          <$> getInvestigatorModifiers iid (toSource attrs)
       pure
         $ baseActions
-        <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
+        <> [ ActivateCardAbilityAction iid (ability attrs)
            | unused
              && canGainResources
-             && atLocation i attrs
-             && hasActionsRemaining i Nothing locationTraits
+             && iid
+             `member` locationInvestigators
+             && hasActionsRemaining
            ]
   getActions _ _ _ = pure []
 

@@ -1,19 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy.Cards.VictoriaDevereux where
 
-import Arkham.Json
-import Arkham.Types.Ability
+import Arkham.Import
+
 import Arkham.Types.Action hiding (Ability)
-import Arkham.Types.Classes
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Message
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Arkham.Types.Window
-import ClassyPrelude
 
 newtype VictoriaDevereux = VictoriaDevereux Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -26,22 +19,24 @@ victoriaDevereux uuid = VictoriaDevereux $ (baseAttrs uuid "01140")
   , enemyEvade = 2
   }
 
-instance HasModifiersFor env investigator VictoriaDevereux where
+instance HasModifiersFor env VictoriaDevereux where
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env VictoriaDevereux where
   getModifiers _ (VictoriaDevereux Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
-instance (IsInvestigator investigator) => HasActions env investigator VictoriaDevereux where
-  getActions i NonFast (VictoriaDevereux attrs@Attrs {..}) = do
-    baseActions <- getActions i NonFast attrs
+instance ActionRunner env => HasActions env VictoriaDevereux where
+  getActions iid NonFast (VictoriaDevereux attrs@Attrs {..}) = do
+    baseActions <- getActions iid NonFast attrs
+    resourceCount <- getResourceCount iid
+    locationId <- asks $ getId @LocationId iid
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction
-             (getId () i)
+             iid
              (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 (Just Parley)))
-         | resourceCount i >= 5 && locationOf i == enemyLocation
+         | resourceCount >= 5 && locationId == enemyLocation
          ]
   getActions _ _ _ = pure []
 

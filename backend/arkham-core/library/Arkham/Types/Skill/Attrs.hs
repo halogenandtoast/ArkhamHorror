@@ -60,7 +60,7 @@ weaknessAttrs iid eid cardCode =
       , skillWeakness = True
       }
 
-instance HasActions env investigator Attrs where
+instance HasActions env Attrs where
   getActions _ _ _ = pure []
 
 instance (SkillRunner env) => RunMessage env Attrs where

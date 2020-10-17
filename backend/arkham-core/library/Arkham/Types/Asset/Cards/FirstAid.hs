@@ -19,17 +19,17 @@ newtype FirstAid = FirstAid Attrs
 firstAid :: AssetId -> FirstAid
 firstAid uuid = FirstAid $ baseAttrs uuid "01019"
 
-instance HasModifiersFor env investigator FirstAid where
+instance HasModifiersFor env FirstAid where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
 
-instance (ActionRunner env investigator) => HasActions env investigator FirstAid where
-  getActions i window (FirstAid a) | ownedBy a i = do
-    investigateAvailable <- hasInvestigateActions i window
+instance ActionRunner env => HasActions env FirstAid where
+  getActions iid window (FirstAid a) | ownedBy a iid = do
+    investigateAvailable <- hasInvestigateActions iid window
     pure
-      [ ActivateCardAbilityAction (getId () i) (ability a)
+      [ ActivateCardAbilityAction iid (ability a)
       | useCount (assetUses a) > 0 && investigateAvailable
       ]
   getActions _ _ _ = pure []

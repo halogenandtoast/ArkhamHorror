@@ -19,22 +19,21 @@ shrivelling :: AssetId -> Shrivelling
 shrivelling uuid =
   Shrivelling $ (baseAttrs uuid "01060") { assetSlots = [ArcaneSlot] }
 
-instance HasModifiersFor env investigator Shrivelling where
+instance HasModifiersFor env Shrivelling where
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env investigator) => HasActions env investigator Shrivelling where
-  getActions i window (Shrivelling a) | ownedBy a i = do
-    fightAvailable <- hasFightActions i window
+instance ActionRunner env => HasActions env Shrivelling where
+  getActions iid window (Shrivelling a) | ownedBy a iid = do
+    fightAvailable <- hasFightActions iid window
     pure
       [ ActivateCardAbilityAction
-          (getId () i)
+          iid
           (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight)))
       | useCount (assetUses a) > 0 && fightAvailable
       ]
   getActions _ _ _ = pure []
 
-
-instance (AssetRunner env) => RunMessage env Shrivelling where
+instance AssetRunner env => RunMessage env Shrivelling where
   runMessage msg (Shrivelling attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Shrivelling <$> runMessage msg (attrs & uses .~ Uses Resource.Charge 4)

@@ -20,7 +20,7 @@ newtype WardOfProtection = WardOfProtection Attrs
 wardOfProtection :: InvestigatorId -> EventId -> WardOfProtection
 wardOfProtection iid uuid = WardOfProtection $ baseAttrs iid uuid "01065"
 
-instance HasActions env investigator WardOfProtection where
+instance HasActions env WardOfProtection where
   getActions i window (WardOfProtection attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env WardOfProtection where

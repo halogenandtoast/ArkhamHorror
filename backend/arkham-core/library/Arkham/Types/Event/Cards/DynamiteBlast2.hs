@@ -21,7 +21,7 @@ newtype DynamiteBlast2 = DynamiteBlast2 Attrs
 dynamiteBlast2 :: InvestigatorId -> EventId -> DynamiteBlast2
 dynamiteBlast2 iid uuid = DynamiteBlast2 $ baseAttrs iid uuid "01023"
 
-instance HasActions env investigator DynamiteBlast2 where
+instance HasActions env DynamiteBlast2 where
   getActions i window (DynamiteBlast2 attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env DynamiteBlast2 where

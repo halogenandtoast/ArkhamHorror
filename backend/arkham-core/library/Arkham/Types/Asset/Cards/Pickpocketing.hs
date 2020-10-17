@@ -12,21 +12,20 @@ newtype Pickpocketing = Pickpocketing Attrs
 pickpoketing :: AssetId -> Pickpocketing
 pickpoketing uuid = Pickpocketing $ baseAttrs uuid "01046"
 
-instance HasModifiersFor env investigator Pickpocketing where
+instance HasModifiersFor env Pickpocketing where
   getModifiersFor _ _ _ = pure []
 
-instance (ActionRunner env investigator) => HasActions env investigator Pickpocketing where
-  getActions i window@(WhenEnemyEvaded You) (Pickpocketing a) | ownedBy a i = do
-    baseActions <- getActions i window a
-    let ability = mkAbility (toSource a) 1 (ReactionAbility window)
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction (getId () i) ability
-         | not (assetExhausted a)
-         ]
+instance HasActions env Pickpocketing where
+  getActions iid window@(WhenEnemyEvaded You) (Pickpocketing a)
+    | ownedBy a iid = do
+      baseActions <- getActions iid window a
+      let ability = mkAbility (toSource a) 1 (ReactionAbility window)
+      pure
+        $ baseActions
+        <> [ ActivateCardAbilityAction iid ability | not (assetExhausted a) ]
   getActions i window (Pickpocketing a) = getActions i window a
 
-instance (AssetRunner env) => RunMessage env Pickpocketing where
+instance AssetRunner env => RunMessage env Pickpocketing where
   runMessage msg (Pickpocketing attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessage (DrawCards iid 1 False)

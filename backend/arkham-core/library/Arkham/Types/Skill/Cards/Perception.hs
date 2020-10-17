@@ -18,7 +18,7 @@ newtype Perception = Perception Attrs
 perception :: InvestigatorId -> SkillId -> Perception
 perception iid uuid = Perception $ baseAttrs iid uuid "01090"
 
-instance HasActions env investigator Perception where
+instance HasActions env Perception where
   getActions i window (Perception attrs) = getActions i window attrs
 
 instance (SkillRunner env) => RunMessage env Perception where

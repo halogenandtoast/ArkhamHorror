@@ -1,22 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy.Cards.Umordhoth where
 
-import Arkham.Json
-import Arkham.Types.Ability
-import Arkham.Types.AssetId
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.Source
-import Arkham.Types.Window
-import ClassyPrelude
-import Lens.Micro
 
 newtype Umordhoth = Umordhoth Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -30,17 +18,18 @@ umordhoth uuid = Umordhoth $ (baseAttrs uuid "01157")
   , enemyEvade = 6
   }
 
-instance HasModifiersFor env investigator Umordhoth where
+instance HasModifiersFor env Umordhoth where
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env Umordhoth where
   getModifiers _ (Umordhoth Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
-instance (ActionRunner env investigator) => HasActions env investigator Umordhoth where
-  getActions i NonFast (Umordhoth attrs@Attrs {..}) = do
-    baseActions <- getActions i NonFast attrs
+instance ActionRunner env => HasActions env Umordhoth where
+  getActions iid NonFast (Umordhoth attrs@Attrs {..}) = do
+    baseActions <- getActions iid NonFast attrs
     maid <- asks (fmap unStoryAssetId <$> getId (CardCode "01117"))
+    locationId <- asks $ getId @LocationId iid
     case maid of
       Nothing -> pure baseActions
       Just aid -> do
@@ -48,9 +37,9 @@ instance (ActionRunner env investigator) => HasActions env investigator Umordhot
         pure
           $ baseActions
           <> [ ActivateCardAbilityAction
-                 (getId () i)
+                 iid
                  (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 Nothing))
-             | locationOf i == enemyLocation && miid == Just (getId () i)
+             | locationId == enemyLocation && miid == Just iid
              ]
   getActions i window (Umordhoth attrs) = getActions i window attrs
 

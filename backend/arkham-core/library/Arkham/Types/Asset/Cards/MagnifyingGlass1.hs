@@ -14,15 +14,19 @@ magnifyingGlass1 :: AssetId -> MagnifyingGlass1
 magnifyingGlass1 uuid =
   MagnifyingGlass1 $ (baseAttrs uuid "01040") { assetSlots = [HandSlot] }
 
-instance IsInvestigator investigator => HasModifiersFor env investigator MagnifyingGlass1 where
-  getModifiersFor _ i (MagnifyingGlass1 a) = pure
-    [ ActionSkillModifier Action.Investigate SkillIntellect 1 | ownedBy a i ]
-
-instance (ActionRunner env investigator) => HasActions env investigator MagnifyingGlass1 where
-  getActions i _ (MagnifyingGlass1 a) | ownedBy a i = do
-    clueCount' <- asks $ unClueCount . getCount (locationOf i)
+instance HasModifiersFor env MagnifyingGlass1 where
+  getModifiersFor _ (InvestigatorTarget iid) (MagnifyingGlass1 a) =
     pure
-      [ UseCardAbility (getId () i) (toSource a) Nothing 1 | clueCount' == 0 ]
+      [ ActionSkillModifier Action.Investigate SkillIntellect 1
+      | ownedBy a iid
+      ]
+  getModifiersFor _ _ _ = pure []
+
+instance ActionRunner env => HasActions env MagnifyingGlass1 where
+  getActions iid _ (MagnifyingGlass1 a) | ownedBy a iid = do
+    locationId <- asks $ getId @LocationId iid
+    clueCount' <- asks $ unClueCount . getCount locationId
+    pure [ UseCardAbility iid (toSource a) Nothing 1 | clueCount' == 0 ]
   getActions i window (MagnifyingGlass1 x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env MagnifyingGlass1 where

@@ -20,7 +20,7 @@ newtype TheYellowSign = TheYellowSign Attrs
 theYellowSign :: TreacheryId -> a -> TheYellowSign
 theYellowSign uuid _ = TheYellowSign $ baseAttrs uuid "01176"
 
-instance HasActions env investigator TheYellowSign where
+instance HasActions env TheYellowSign where
   getActions i window (TheYellowSign attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env TheYellowSign where

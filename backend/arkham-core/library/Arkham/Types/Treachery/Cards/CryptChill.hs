@@ -21,7 +21,7 @@ newtype CryptChill = CryptChill Attrs
 cryptChill :: TreacheryId -> a -> CryptChill
 cryptChill uuid _ = CryptChill $ baseAttrs uuid "01167"
 
-instance HasActions env investigator CryptChill where
+instance HasActions env CryptChill where
   getActions i window (CryptChill attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env CryptChill where

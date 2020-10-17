@@ -15,14 +15,15 @@ theNecronomicon :: AssetId -> TheNecronomicon
 theNecronomicon uuid = TheNecronomicon
   $ (baseAttrs uuid "01009") { assetSlots = [HandSlot], assetHorror = Just 3 }
 
-instance IsInvestigator investigator => HasModifiersFor env investigator TheNecronomicon where
-  getModifiersFor _ i (TheNecronomicon a) =
-    pure [ ForcedTokenChange Token.ElderSign Token.AutoFail | ownedBy a i ]
+instance HasModifiersFor env TheNecronomicon where
+  getModifiersFor _ (InvestigatorTarget iid) (TheNecronomicon a) =
+    pure [ ForcedTokenChange Token.ElderSign Token.AutoFail | ownedBy a iid ]
+  getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator TheNecronomicon where
-  getActions i NonFast (TheNecronomicon a) | ownedBy a i = pure
+instance HasActions env TheNecronomicon where
+  getActions iid NonFast (TheNecronomicon a) | ownedBy a iid = pure
     [ ActivateCardAbilityAction
-        (getId () i)
+        iid
         (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
     | fromJustNote "Must be set" (assetHorror a) > 0
     ]

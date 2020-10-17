@@ -16,14 +16,15 @@ drMilanChristopher uuid = DrMilanChristopher $ (baseAttrs uuid "01033")
   , assetSanity = Just 2
   }
 
-instance IsInvestigator investigator => HasModifiersFor env investigator DrMilanChristopher where
-  getModifiersFor _ i (DrMilanChristopher a) =
-    pure [ SkillModifier SkillIntellect 1 | ownedBy a i ]
+instance HasModifiersFor env DrMilanChristopher where
+  getModifiersFor _ (InvestigatorTarget iid) (DrMilanChristopher a) =
+    pure [ SkillModifier SkillIntellect 1 | ownedBy a iid ]
+  getModifiersFor _ _ _ = pure []
 
-instance HasActions env investigator DrMilanChristopher where
+instance HasActions env DrMilanChristopher where
   getActions i window (DrMilanChristopher x) = getActions i window x
 
-instance (AssetRunner env) => RunMessage env DrMilanChristopher where
+instance AssetRunner env => RunMessage env DrMilanChristopher where
   runMessage msg a@(DrMilanChristopher attrs) = case msg of
     SuccessfulInvestigation iid _ | getInvestigator attrs == iid ->
       a <$ unshiftMessage

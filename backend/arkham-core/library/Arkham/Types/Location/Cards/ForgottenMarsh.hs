@@ -20,15 +20,15 @@ forgottenMarsh = ForgottenMarsh $ baseAttrs
   [Moon, Square, Triangle, Hourglass]
   [Wilderness, Bayou]
 
-instance HasModifiersFor env investigator ForgottenMarsh where
+instance HasModifiersFor env ForgottenMarsh where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator ForgottenMarsh where
+instance ActionRunner env => HasActions env ForgottenMarsh where
   getActions i window (ForgottenMarsh attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env ForgottenMarsh where
   runMessage msg l@(ForgottenMarsh attrs@Attrs {..}) = case msg of
     Will (MoveTo iid lid)
-      | iid `elem` locationInvestigators && lid /= locationId ->
-        l <$ unshiftMessage (SpendResources iid 2)
+      | iid `elem` locationInvestigators && lid /= locationId -> l
+      <$ unshiftMessage (SpendResources iid 2)
     _ -> ForgottenMarsh <$> runMessage msg attrs

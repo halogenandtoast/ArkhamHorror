@@ -22,32 +22,45 @@ brackishWaters = BrackishWaters $ baseAttrs
   [Squiggle, Square, Diamond, Hourglass]
   [Riverside, Bayou]
 
-instance IsInvestigator investigator => HasModifiersFor env investigator BrackishWaters where
-  getModifiersFor _ i (BrackishWaters attrs) =
-    pure [ CannotPlay [AssetType] | atLocation i attrs ]
+instance HasModifiersFor env BrackishWaters where
+  getModifiersFor _ (InvestigatorTarget iid) (BrackishWaters attrs) =
+    pure [ CannotPlay [AssetType] | iid `elem` locationInvestigators attrs ]
+  getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator BrackishWaters where
-  getActions i NonFast (BrackishWaters attrs@Attrs {..}) = do
-    baseActions <- getActions i NonFast attrs
+-- TODO: LEFT OFF HERE WITH HAND OF
+instance ActionRunner env => HasActions env BrackishWaters where
+  getActions iid NonFast (BrackishWaters attrs@Attrs {..}) = do
+    baseActions <- getActions iid NonFast attrs
+    hand <- getHandOf iid
+    inPlayAssetsCount <- getInPlayOf iid <&> count
+      (\case
+        PlayerCard pc -> pcCardType pc == AssetType
+        EncounterCard _ -> False
+      )
+    hasActionsRemaining <- getHasActionsRemaining
+      iid
+      Nothing
+      (setToList locationTraits)
     let
       assetsCount =
         count
             (maybe False (playerCardMatch (AssetType, Nothing)) . toPlayerCard)
-            (handOf i)
-          + inPlayAssetsCount (inPlayCounts i)
+            hand
+          + inPlayAssetsCount
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction
-             (getId () i)
+             iid
              (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
-         | atLocation i attrs
+         | iid
+           `member` locationInvestigators
            && assetsCount
            >= 2
-           && hasActionsRemaining i Nothing locationTraits
+           && hasActionsRemaining
          ]
   getActions i window (BrackishWaters attrs) = getActions i window attrs
 
-instance (LocationRunner env) => RunMessage env BrackishWaters where
+instance LocationRunner env => RunMessage env BrackishWaters where
   runMessage msg l@(BrackishWaters attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       assetIds <- asks $ setToList . getSet @AssetId iid

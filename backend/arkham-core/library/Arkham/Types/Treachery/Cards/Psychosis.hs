@@ -1,19 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Treachery.Cards.Psychosis where
 
-import Arkham.Json
-import Arkham.Types.Ability
-import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Source
-import Arkham.Types.Target
+import Arkham.Import
+
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
-import Arkham.Types.Window
-import ClassyPrelude
-import Lens.Micro
 
 newtype Psychosis = Psychosis Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -21,21 +12,22 @@ newtype Psychosis = Psychosis Attrs
 psychosis :: TreacheryId -> Maybe InvestigatorId -> Psychosis
 psychosis uuid iid = Psychosis $ weaknessAttrs uuid iid "01099"
 
-instance (ActionRunner env investigator) => HasActions env investigator Psychosis where
-  getActions i NonFast (Psychosis Attrs {..}) =
+instance ActionRunner env => HasActions env Psychosis where
+  getActions iid NonFast (Psychosis Attrs {..}) =
     case treacheryAttachedInvestigator of
       Nothing -> pure []
       Just tormented -> do
+        investigatorLocationId <- asks $ getId @LocationId iid
         treacheryLocation <- asks (getId tormented)
         pure
           [ ActivateCardAbilityAction
-              (getId () i)
+              iid
               (mkAbility
                 (TreacherySource treacheryId)
                 1
                 (ActionAbility 2 Nothing)
               )
-          | treacheryLocation == locationOf i
+          | treacheryLocation == investigatorLocationId
           ]
   getActions _ _ _ = pure []
 
@@ -45,7 +37,8 @@ instance (TreacheryRunner env) => RunMessage env Psychosis where
       unshiftMessage $ AttachTreachery tid (InvestigatorTarget iid)
       Psychosis <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     After (InvestigatorTakeDamage iid _ _ n)
-      | Just iid == treacheryAttachedInvestigator && n > 0 -> t <$ unshiftMessage
+      | Just iid == treacheryAttachedInvestigator && n > 0
+      -> t <$ unshiftMessage
         (InvestigatorDirectDamage iid (TreacherySource treacheryId) 1 0)
     UseCardAbility _ (TreacherySource tid) _ 1 | tid == treacheryId ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))

@@ -16,7 +16,7 @@ newtype UnexpectedCourage = UnexpectedCourage Attrs
 unexpectedCourage :: InvestigatorId -> SkillId -> UnexpectedCourage
 unexpectedCourage iid uuid = UnexpectedCourage $ baseAttrs iid uuid "01093"
 
-instance HasActions env investigator UnexpectedCourage where
+instance HasActions env UnexpectedCourage where
   getActions i window (UnexpectedCourage attrs) = getActions i window attrs
 
 instance (SkillRunner env) => RunMessage env UnexpectedCourage where

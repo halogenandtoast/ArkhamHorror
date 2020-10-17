@@ -14,15 +14,13 @@ discOfItzamna2 :: AssetId -> DiscOfItzamna2
 discOfItzamna2 uuid =
   DiscOfItzamna2 $ (baseAttrs uuid "01059") { assetSlots = [AccessorySlot] }
 
-instance HasModifiersFor env investigator DiscOfItzamna2 where
+instance HasModifiersFor env DiscOfItzamna2 where
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env investigator => HasActions env investigator DiscOfItzamna2 where
-  getActions i (WhenEnemySpawns YourLocation traits) (DiscOfItzamna2 a)
-    | ownedBy a i = pure
-      [ UseCardAbility (getId () i) (toSource a) Nothing 1
-      | Elite `notElem` traits
-      ]
+instance HasActions env DiscOfItzamna2 where
+  getActions iid (WhenEnemySpawns YourLocation traits) (DiscOfItzamna2 a)
+    | ownedBy a iid = pure
+      [ UseCardAbility iid (toSource a) Nothing 1 | Elite `notElem` traits ]
   getActions i window (DiscOfItzamna2 x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env DiscOfItzamna2 where

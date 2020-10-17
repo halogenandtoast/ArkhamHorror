@@ -45,7 +45,7 @@ baseAttrs aid name seq' = Attrs
   , actClues = Nothing
   }
 
-instance HasActions env investigator Attrs where
+instance HasActions env Attrs where
   getActions _ FastPlayerWindow Attrs {..} =
     pure [ AdvanceAct actId | actCanAdvance ]
   getActions _ _ _ = pure []

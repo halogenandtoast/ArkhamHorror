@@ -18,7 +18,7 @@ newtype Amnesia = Amnesia Attrs
 amnesia :: TreacheryId -> Maybe InvestigatorId -> Amnesia
 amnesia uuid iid = Amnesia $ weaknessAttrs uuid iid "01096"
 
-instance HasActions env investigator Amnesia where
+instance HasActions env Amnesia where
   getActions i window (Amnesia attrs) = getActions i window attrs
 
 instance (TreacheryRunner env) => RunMessage env Amnesia where

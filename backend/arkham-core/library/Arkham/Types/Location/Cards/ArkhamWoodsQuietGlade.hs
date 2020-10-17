@@ -30,7 +30,7 @@ arkhamWoodsQuietGlade = ArkhamWoodsQuietGlade $ base
     [Squiggle]
     [Woods]
 
-instance HasModifiersFor env investigator ArkhamWoodsQuietGlade where
+instance HasModifiersFor env ArkhamWoodsQuietGlade where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
@@ -38,17 +38,20 @@ ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
   { abilityLimit = PerTurn
   }
 
-instance (ActionRunner env investigator) => HasActions env investigator ArkhamWoodsQuietGlade where
-  getActions i NonFast (ArkhamWoodsQuietGlade attrs@Attrs {..})
+instance ActionRunner env => HasActions env ArkhamWoodsQuietGlade where
+  getActions iid NonFast (ArkhamWoodsQuietGlade attrs@Attrs {..})
     | locationRevealed = do
-      baseActions <- getActions i NonFast attrs
-      unused <- getIsUnused i (ability attrs)
+      baseActions <- getActions iid NonFast attrs
+      unused <- getIsUnused iid (ability attrs)
+      hasActionsRemaining <- getHasActionsRemaining
+        iid
+        Nothing
+        (setToList locationTraits)
+
       pure
         $ baseActions
-        <> [ ActivateCardAbilityAction (getId () i) (ability attrs)
-           | unused
-             && atLocation i attrs
-             && hasActionsRemaining i Nothing locationTraits
+        <> [ ActivateCardAbilityAction iid (ability attrs)
+           | unused && iid `elem` locationInvestigators && hasActionsRemaining
            ]
   getActions _ _ _ = pure []
 

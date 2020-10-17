@@ -13,11 +13,12 @@ wendysAmulet :: AssetId -> WendysAmulet
 wendysAmulet uuid =
   WendysAmulet $ (baseAttrs uuid "01014") { assetSlots = [AccessorySlot] }
 
-instance IsInvestigator investigator => HasModifiersFor env investigator WendysAmulet where
-  getModifiersFor _ i (WendysAmulet a) =
-    pure [ CanPlayTopOfDiscard (Just EventType, []) | ownedBy a i ]
+instance HasModifiersFor env WendysAmulet where
+  getModifiersFor _ (InvestigatorTarget iid) (WendysAmulet a) =
+    pure [ CanPlayTopOfDiscard (Just EventType, []) | ownedBy a iid ]
+  getModifiersFor _ _ _ = pure []
 
-instance HasActions env investigator WendysAmulet where
+instance HasActions env WendysAmulet where
   getActions i window (WendysAmulet x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env WendysAmulet where

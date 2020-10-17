@@ -56,7 +56,7 @@ data Event
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance HasActions env investigator Event
+deriving anyclass instance HasActions env Event
 deriving anyclass instance (EventRunner env) => RunMessage env Event
 
 instance HasCardCode Event where

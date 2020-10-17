@@ -14,10 +14,10 @@ ritualSite :: RitualSite
 ritualSite = RitualSite
   $ baseAttrs "01156" "Ritual Site" 3 (PerPlayer 2) Plus [Squiggle] [Cave]
 
-instance HasModifiersFor env investigator RitualSite where
+instance HasModifiersFor env RitualSite where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator RitualSite where
+instance ActionRunner env => HasActions env RitualSite where
   getActions i window (RitualSite attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env RitualSite where

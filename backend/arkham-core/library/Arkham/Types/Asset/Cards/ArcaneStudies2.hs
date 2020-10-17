@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.ArcaneStudies2 where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype ArcaneStudies2 = ArcaneStudies2 Attrs
@@ -12,23 +13,21 @@ newtype ArcaneStudies2 = ArcaneStudies2 Attrs
 arcaneStudies2 :: AssetId -> ArcaneStudies2
 arcaneStudies2 uuid = ArcaneStudies2 $ baseAttrs uuid "50007"
 
-instance HasModifiersFor env investigator ArcaneStudies2 where
+instance HasModifiersFor env ArcaneStudies2 where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator ArcaneStudies2 where
-  getActions i (WhenSkillTest SkillWillpower) (ArcaneStudies2 a) | ownedBy a i =
-    pure
-      [ UseCardAbility (getId () i) (toSource a) Nothing 1
-      | resourceCount i > 0
-      ]
-  getActions i (WhenSkillTest SkillIntellect) (ArcaneStudies2 a) | ownedBy a i =
-    pure
-      [ UseCardAbility (getId () i) (toSource a) Nothing 2
-      | resourceCount i > 0
-      ]
+instance ActionRunner env => HasActions env ArcaneStudies2 where
+  getActions iid (WhenSkillTest SkillWillpower) (ArcaneStudies2 a)
+    | ownedBy a iid = do
+      resourceCount <- getResourceCount iid
+      pure [ UseCardAbility iid (toSource a) Nothing 1 | resourceCount > 0 ]
+  getActions iid (WhenSkillTest SkillIntellect) (ArcaneStudies2 a)
+    | ownedBy a iid = do
+      resourceCount <- getResourceCount iid
+      pure [ UseCardAbility iid (toSource a) Nothing 2 | resourceCount > 0 ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env ArcaneStudies2 where
+instance AssetRunner env => RunMessage env ArcaneStudies2 where
   runMessage msg a@(ArcaneStudies2 attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source ->
       a <$ unshiftMessages

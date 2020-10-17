@@ -15,14 +15,14 @@ swarmOfRats :: EnemyId -> SwarmOfRats
 swarmOfRats uuid = SwarmOfRats
   $ (baseAttrs uuid "01159") { enemyHealthDamage = 1, enemyEvade = 3 }
 
-instance HasModifiersFor env investigator SwarmOfRats where
+instance HasModifiersFor env SwarmOfRats where
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env SwarmOfRats where
   getModifiers _ (SwarmOfRats Attrs {..}) =
     pure . concat . toList $ enemyModifiers
 
-instance (IsInvestigator investigator) => HasActions env investigator SwarmOfRats where
+instance ActionRunner env => HasActions env SwarmOfRats where
   getActions i window (SwarmOfRats attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env SwarmOfRats where

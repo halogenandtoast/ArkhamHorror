@@ -21,7 +21,7 @@ newtype RexsCurse = RexsCurse Attrs
 rexsCurse :: TreacheryId -> Maybe InvestigatorId -> RexsCurse
 rexsCurse uuid iid = RexsCurse $ weaknessAttrs uuid iid "02009"
 
-instance HasActions env investigator RexsCurse where
+instance HasActions env RexsCurse where
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env RexsCurse where

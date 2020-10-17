@@ -16,11 +16,12 @@ leoDeLuca1 uuid = LeoDeLuca1 $ (baseAttrs uuid "01054")
   , assetSanity = Just 2
   }
 
-instance IsInvestigator investigator => HasModifiersFor env investigator LeoDeLuca1 where
-  getModifiersFor _ i (LeoDeLuca1 a) =
-    pure [ AdditionalActions 1 | ownedBy a i ]
+instance HasModifiersFor env LeoDeLuca1 where
+  getModifiersFor _ (InvestigatorTarget iid) (LeoDeLuca1 a) =
+    pure [ AdditionalActions 1 | ownedBy a iid ]
+  getModifiersFor _ _ _ = pure []
 
-instance HasActions env investigator LeoDeLuca1 where
+instance HasActions env LeoDeLuca1 where
   getActions i window (LeoDeLuca1 x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env LeoDeLuca1 where

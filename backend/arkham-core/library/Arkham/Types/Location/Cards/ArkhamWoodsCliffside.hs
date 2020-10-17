@@ -25,10 +25,10 @@ arkhamWoodsCliffside = ArkhamWoodsCliffside $ base
     [Squiggle]
     [Woods]
 
-instance HasModifiersFor env investigator ArkhamWoodsCliffside where
+instance HasModifiersFor env ArkhamWoodsCliffside where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator ArkhamWoodsCliffside where
+instance ActionRunner env => HasActions env ArkhamWoodsCliffside where
   getActions i window (ArkhamWoodsCliffside attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsCliffside where

@@ -24,19 +24,23 @@ twistedUnderbrush = TwistedUnderbrush $ (baseAttrs
   { locationVictory = Just 1
   }
 
-instance HasModifiersFor env investigator TwistedUnderbrush where
+instance HasModifiersFor env TwistedUnderbrush where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator TwistedUnderbrush where
-  getActions i NonFast (TwistedUnderbrush attrs@Attrs {..}) | locationRevealed =
-    do
-      baseActions <- getActions i NonFast attrs
+instance ActionRunner env => HasActions env TwistedUnderbrush where
+  getActions iid NonFast (TwistedUnderbrush attrs@Attrs {..})
+    | locationRevealed = do
+      baseActions <- getActions iid NonFast attrs
+      hasActionsRemaining <- getHasActionsRemaining
+        iid
+        Nothing
+        (setToList locationTraits)
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction
-               (getId () i)
+               iid
                (mkAbility (LocationSource "81007") 1 (ActionAbility 1 Nothing))
-           | atLocation i attrs && hasActionsRemaining i Nothing locationTraits
+           | iid `member` locationInvestigators && hasActionsRemaining
            ]
   getActions i window (TwistedUnderbrush attrs) = getActions i window attrs
 

@@ -21,7 +21,7 @@ newtype CrypticResearch4 = CrypticResearch4 Attrs
 crypticResearch4 :: InvestigatorId -> EventId -> CrypticResearch4
 crypticResearch4 iid uuid = CrypticResearch4 $ baseAttrs iid uuid "01043"
 
-instance HasActions env investigator CrypticResearch4 where
+instance HasActions env CrypticResearch4 where
   getActions i window (CrypticResearch4 attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env CrypticResearch4 where

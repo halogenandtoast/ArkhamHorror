@@ -1,14 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Act.Cards.WhatHaveYouDone where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Act.Attrs
+import qualified Arkham.Types.Act.Attrs as Act
+import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Query
-import ClassyPrelude hiding (sequence)
-import Lens.Micro
 
 newtype WhatHaveYouDone = WhatHaveYouDone Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -17,15 +15,16 @@ whatHaveYouDone :: WhatHaveYouDone
 whatHaveYouDone =
   WhatHaveYouDone $ baseAttrs "01110" "What Have You Done?" "Act 3a"
 
-instance HasActions env investigator WhatHaveYouDone where
+instance HasActions env WhatHaveYouDone where
   getActions i window (WhatHaveYouDone x) = getActions i window x
 
 instance (ActRunner env) => RunMessage env WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage
-        (Ask leadInvestigatorId $ ChooseOne
+        (chooseOne
+          leadInvestigatorId
           [ Label
             "It was never much of a home. Burn it down! (-> R1)"
             [Resolution 1]
@@ -34,6 +33,10 @@ instance (ActRunner env) => RunMessage env WhatHaveYouDone where
             [Resolution 2]
           ]
         )
-      pure $ WhatHaveYouDone $ attrs & sequence .~ "Act 3b" & flipped .~ True
+      pure
+        $ WhatHaveYouDone
+        $ attrs
+        & (Act.sequence .~ "Act 3b")
+        & (flipped .~ True)
     EnemyDefeated _ _ "01116" _ -> a <$ unshiftMessage (AdvanceAct actId)
     _ -> WhatHaveYouDone <$> runMessage msg attrs

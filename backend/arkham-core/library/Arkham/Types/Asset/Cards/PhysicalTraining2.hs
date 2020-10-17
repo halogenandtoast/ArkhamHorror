@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.PhysicalTraining2 where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype PhysicalTraining2 = PhysicalTraining2 Attrs
@@ -12,20 +13,18 @@ newtype PhysicalTraining2 = PhysicalTraining2 Attrs
 physicalTraining2 :: AssetId -> PhysicalTraining2
 physicalTraining2 uuid = PhysicalTraining2 $ baseAttrs uuid "50001"
 
-instance HasModifiersFor env investigator PhysicalTraining2 where
+instance HasModifiersFor env PhysicalTraining2 where
   getModifiersFor _ _ _ = pure []
 
-instance (IsInvestigator investigator) => HasActions env investigator PhysicalTraining2 where
-  getActions i (WhenSkillTest SkillWillpower) (PhysicalTraining2 a)
-    | ownedBy a i = pure
-      [ UseCardAbility (getId () i) (toSource a) Nothing 1
-      | resourceCount i > 0
-      ]
-  getActions i (WhenSkillTest SkillCombat) (PhysicalTraining2 a) | ownedBy a i =
-    pure
-      [ UseCardAbility (getId () i) (toSource a) Nothing 2
-      | resourceCount i > 0
-      ]
+instance ActionRunner env => HasActions env PhysicalTraining2 where
+  getActions iid (WhenSkillTest SkillWillpower) (PhysicalTraining2 a)
+    | ownedBy a iid = do
+      resourceCount <- getResourceCount iid
+      pure [ UseCardAbility iid (toSource a) Nothing 1 | resourceCount > 0 ]
+  getActions iid (WhenSkillTest SkillCombat) (PhysicalTraining2 a)
+    | ownedBy a iid = do
+      resourceCount <- getResourceCount iid
+      pure [ UseCardAbility iid (toSource a) Nothing 2 | resourceCount > 0 ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env PhysicalTraining2 where

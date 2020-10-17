@@ -42,6 +42,7 @@ import Arkham.Types.Event
 import Arkham.Types.GameRunner
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator
+import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Location
 import Arkham.Types.Phase
@@ -576,6 +577,9 @@ instance HasSet HandCardId (InvestigatorId, PlayerCardType) (Game queue) where
           (maybe False (playerCardMatch (cardType, Nothing)) . toPlayerCard)
       . handOf
       . getInvestigator iid
+
+instance HasSet Keyword EnemyId (Game queue) where
+  getSet eid = getKeywords . getEnemy eid
 
 instance HasSet Trait LocationId (Game queue) where
   getSet lid = getTraits . getLocation lid

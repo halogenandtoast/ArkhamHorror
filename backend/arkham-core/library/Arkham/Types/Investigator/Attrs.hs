@@ -373,11 +373,26 @@ actionCostModifier attrs (Just a) = foldr
 spendableClueCount :: Attrs -> Int
 spendableClueCount a = if canSpendClues a then investigatorClues a else 0
 
-cluesToDiscover :: Attrs -> Int -> Int
-cluesToDiscover attrs startValue = foldr
-  applyModifier
-  startValue
-  (concat . HashMap.elems $ investigatorModifiers attrs)
+cluesToDiscover
+  :: ( MonadReader env m
+     , MonadIO m
+     , HasModifiersFor env env
+     , HasSource ForSkillTest env
+     , HasTestAction ForSkillTest env
+     )
+  => Attrs
+  -> Int
+  -> m Int
+cluesToDiscover attrs startValue = do
+  source <-
+    asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
+  maction <- asks $ getTestAction ForSkillTest
+  modifiers' <-
+    getModifiersFor
+        (SkillTestSource source maction)
+        (InvestigatorTarget $ investigatorId attrs)
+      =<< ask
+  pure $ foldr applyModifier startValue modifiers'
  where
   applyModifier (DiscoveredClues m) n = n + m
   applyModifier _ n = n
@@ -883,9 +898,10 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     runMessage (InvestigatorDiscoverClues iid investigatorLocation n) a
   InvestigatorDiscoverClues iid lid n | iid == investigatorId ->
     if canDiscoverClues a
-      then
+      then do
+        modifiedCluesToDiscover <- cluesToDiscover a n
         a <$ unshiftMessage
-          (DiscoverCluesAtLocation iid lid (cluesToDiscover a n))
+          (DiscoverCluesAtLocation iid lid modifiedCluesToDiscover)
       else pure a
   GainClues iid n | iid == investigatorId -> do
     pure $ a & clues +~ n

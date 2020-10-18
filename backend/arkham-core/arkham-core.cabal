@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a2052feba0ab685fee1d3b5ce80fd1df7f9483622f9bb0ab3d5216b862e71c91
+-- hash: efb58a6071ac473e23bf794ec26698ca8936033ad8f178451e5a5e90212eb8cb
 
 name:           arkham-core
 version:        0.0.0
@@ -155,6 +155,7 @@ library
       Arkham.Types.Enemy.Cards
       Arkham.Types.Enemy.Cards.Acolyte
       Arkham.Types.Enemy.Cards.BogGator
+      Arkham.Types.Enemy.Cards.DarkYoungHost
       Arkham.Types.Enemy.Cards.FleshEater
       Arkham.Types.Enemy.Cards.GhoulMinion
       Arkham.Types.Enemy.Cards.GhoulPriest

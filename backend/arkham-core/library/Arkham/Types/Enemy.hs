@@ -48,6 +48,7 @@ data Enemy
   | TheRougarou' TheRougarou
   | SlimeCoveredDhole' SlimeCoveredDhole
   | MarshGug' MarshGug
+  | DarkYoungHost' DarkYoungHost
   | BaseEnemy' BaseEnemy
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -157,6 +158,7 @@ allEnemies = mapFromList
   , ("81028", TheRougarou' . theRougarou)
   , ("81031", SlimeCoveredDhole' . slimeCoveredDhole)
   , ("81032", MarshGug' . marshGug)
+  , ("81033", DarkYoungHost' . darkYoungHost)
   , ("enemy", \eid -> baseEnemy eid "enemy" id)
   ]
 
@@ -209,4 +211,5 @@ enemyAttrs = \case
   TheRougarou' (TheRougarou (attrs `With` _)) -> attrs
   SlimeCoveredDhole' attrs -> coerce attrs
   MarshGug' attrs -> coerce attrs
+  DarkYoungHost' attrs -> coerce attrs
   BaseEnemy' attrs -> coerce attrs

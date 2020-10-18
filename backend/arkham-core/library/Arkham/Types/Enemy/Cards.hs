@@ -5,6 +5,7 @@ where
 
 import Arkham.Types.Enemy.Cards.Acolyte as X
 import Arkham.Types.Enemy.Cards.BogGator as X
+import Arkham.Types.Enemy.Cards.DarkYoungHost as X
 import Arkham.Types.Enemy.Cards.FleshEater as X
 import Arkham.Types.Enemy.Cards.GhoulMinion as X
 import Arkham.Types.Enemy.Cards.GhoulPriest as X

@@ -8,6 +8,7 @@ import Arkham.Types.Treachery.Cards.Amnesia as X
 import Arkham.Types.Treachery.Cards.AncientEvils as X
 import Arkham.Types.Treachery.Cards.CoverUp as X
 import Arkham.Types.Treachery.Cards.CryptChill as X
+import Arkham.Types.Treachery.Cards.CursedSwamp as X
 import Arkham.Types.Treachery.Cards.DissonantVoices as X
 import Arkham.Types.Treachery.Cards.DreamsOfRlyeh as X
 import Arkham.Types.Treachery.Cards.FalseLead as X
@@ -29,6 +30,7 @@ import Arkham.Types.Treachery.Cards.RexsCurse as X
 import Arkham.Types.Treachery.Cards.RottingRemains as X
 import Arkham.Types.Treachery.Cards.SearchingForIzzie as X
 import Arkham.Types.Treachery.Cards.SmiteTheWicked as X
+import Arkham.Types.Treachery.Cards.SpectralMist as X
 import Arkham.Types.Treachery.Cards.TheYellowSign as X
 import Arkham.Types.Treachery.Cards.UmordhothsWrath as X
 import Arkham.Types.Treachery.Cards.WrackedByNightmares as X

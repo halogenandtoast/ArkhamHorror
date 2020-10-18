@@ -4,6 +4,7 @@ module Arkham.Types.SkillTest
   , SkillTestResult(..)
   , TokenResponse(..)
   , initSkillTest
+  , skillTestToSource
   )
 where
 
@@ -40,8 +41,12 @@ data SkillTest a = SkillTest
   }
   deriving stock (Show, Generic)
 
+skillTestToSource :: SkillTest a -> Source
+skillTestToSource = toSource
+
 toSource :: SkillTest a -> Source
-toSource SkillTest {..} = SkillTestSource skillTestSource skillTestAction
+toSource SkillTest {..} =
+  SkillTestSource skillTestInvestigator skillTestSource skillTestAction
 
 instance ToJSON a => ToJSON (SkillTest a) where
   toJSON = genericToJSON $ aesonOptions $ Just "skillTest"
@@ -50,6 +55,7 @@ instance ToJSON a => ToJSON (SkillTest a) where
 instance FromJSON a => FromJSON (SkillTest a) where
   parseJSON = genericParseJSON $ aesonOptions $ Just "skillTest"
 
+-- TODO: Cursed Swamp would apply to anyone trying to commit skill cards
 instance HasModifiersFor env (SkillTest a) where
   getModifiersFor _ (InvestigatorTarget iid) SkillTest {..}
     | iid == skillTestInvestigator = do
@@ -96,7 +102,7 @@ initSkillTest iid source target maction skillType' _skillValue' difficulty' onSu
     , skillTestValueModifier = 0
     , skillTestResult = Unrun
     , skillTestModifiers = mapFromList
-      [(SkillTestSource source maction, modifiers')]
+      [(SkillTestSource iid source maction, modifiers')]
     , skillTestCommittedCards = mempty
     , skillTestSource = source
     , skillTestTarget = target
@@ -144,6 +150,20 @@ skillIconCount SkillTest {..} = length . filter matches $ concatMap
   matches SkillWild = True
   matches s = s == skillTestSkillType
 
+getModifiedSkillTestDifficulty
+  :: (MonadReader env m, MonadIO m, HasModifiersFor env env)
+  => SkillTest a
+  -> m Int
+getModifiedSkillTestDifficulty s = do
+  modifiers' <- getModifiersFor (toSource s) SkillTestTarget =<< ask
+  pure $ foldr
+    applyModifier
+    (skillTestDifficulty s)
+    (modifiers' <> concat (toList $ skillTestModifiers s))
+ where
+  applyModifier (Difficulty m) n = max 0 (n + m)
+  applyModifier _ n = n
+
 modifiedTokenValue :: Int -> SkillTest a -> Int
 modifiedTokenValue baseValue SkillTest {..} = foldr
   applyModifier
@@ -159,8 +179,8 @@ type SkillTestRunner env
     , HasCard InvestigatorId env
     , HasModifiers env InvestigatorId
     , HasStats InvestigatorId env
-    , HasTestAction ForSkillTest env
     , HasSource ForSkillTest env
+    , HasModifiersFor env env
     )
 
 instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
@@ -176,15 +196,15 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
     DrawAnotherToken iid valueModifier' -> do
       unshiftMessage (RequestTokens (toSource s) iid 1 SetAside)
       pure $ s & valueModifier +~ valueModifier'
-    RequestedTokens (SkillTestSource source maction) iid tokens -> do
+    RequestedTokens (SkillTestSource siid source maction) iid tokens -> do
       unshiftMessage (RevealSkillTestTokens iid)
       for_ tokens $ \token -> unshiftMessages
         [ CheckWindow iid [WhenRevealToken You token]
-        , When (RevealToken (SkillTestSource source maction) iid token)
-        , RevealToken (SkillTestSource source maction) iid token
+        , When (RevealToken (SkillTestSource siid source maction) iid token)
+        , RevealToken (SkillTestSource siid source maction) iid token
         ]
       pure $ s & (setAsideTokens %~ (tokens <>))
-    RevealToken (SkillTestSource _ _) _iid token -> do
+    RevealToken SkillTestSource{} _iid token -> do
       pure $ s & revealedTokens %~ (token :)
     RevealSkillTestTokens iid -> do
       onTokenResponses' <-
@@ -356,6 +376,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         Unrun -> pure ()
     RunSkillTest _ tokenValues -> do
       stats <- getStats skillTestInvestigator (toSource s) =<< ask
+      modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
       let
         currentSkillValue = statsSkillValue stats skillTestSkillType
         incomingTokenValues = sum $ map tokenValue tokenValues
@@ -379,20 +400,24 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         <> show modifiedSkillValue'
         <> "\nDifficulty: "
         <> show skillTestDifficulty
+        <> "\nModified Skill Difficulty: "
+        <> show modifiedSkillTestDifficulty
         )
-      if modifiedSkillValue' >= skillTestDifficulty
+      if modifiedSkillValue' >= modifiedSkillTestDifficulty
         then
           pure
           $ s
-          & (result
-            .~ SucceededBy False (modifiedSkillValue' - skillTestDifficulty)
+          & (result .~ SucceededBy
+              False
+              (modifiedSkillValue' - modifiedSkillTestDifficulty)
             )
           & (valueModifier .~ totaledTokenValues)
         else
           pure
           $ s
-          & (result
-            .~ FailedBy False (skillTestDifficulty - modifiedSkillValue')
+          & (result .~ FailedBy
+              False
+              (modifiedSkillTestDifficulty - modifiedSkillValue')
             )
           & (valueModifier .~ totaledTokenValues)
     _ -> pure s

@@ -17,6 +17,9 @@ newtype AncientEvils = AncientEvils Attrs
 ancientEvils :: TreacheryId -> a -> AncientEvils
 ancientEvils uuid _ = AncientEvils $ baseAttrs uuid "01166"
 
+instance HasModifiersFor env AncientEvils where
+  getModifiersFor _ _ _ = pure []
+
 instance HasActions env AncientEvils where
   getActions i window (AncientEvils attrs) = getActions i window attrs
 

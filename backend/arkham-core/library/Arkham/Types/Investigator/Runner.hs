@@ -49,6 +49,5 @@ type InvestigatorRunner investigator env
     , HasModifiersFor env env
     , HasSet HandCardId InvestigatorId env
     , HasSource ForSkillTest env
-    , HasTestAction ForSkillTest env
     , HasSet Keyword EnemyId env
     )

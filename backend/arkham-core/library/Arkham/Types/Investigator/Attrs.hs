@@ -191,7 +191,6 @@ damageValueFor
      , MonadIO m
      , HasModifiersFor env env
      , HasSource ForSkillTest env
-     , HasTestAction ForSkillTest env
      )
   => Int
   -> Attrs
@@ -199,12 +198,8 @@ damageValueFor
 damageValueFor baseValue attrs = do
   source <-
     asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
-  maction <- asks $ getTestAction ForSkillTest
   modifiers' <-
-    getModifiersFor
-        (SkillTestSource source maction)
-        (InvestigatorTarget $ investigatorId attrs)
-      =<< ask
+    getModifiersFor source (InvestigatorTarget $ investigatorId attrs) =<< ask
   pure $ foldr applyModifier baseValue modifiers'
  where
   applyModifier (DamageDealt m) n = max 0 (n + m)
@@ -379,7 +374,6 @@ cluesToDiscover
      , MonadIO m
      , HasModifiersFor env env
      , HasSource ForSkillTest env
-     , HasTestAction ForSkillTest env
      )
   => Attrs
   -> Int
@@ -387,12 +381,8 @@ cluesToDiscover
 cluesToDiscover attrs startValue = do
   source <-
     asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
-  maction <- asks $ getTestAction ForSkillTest
   modifiers' <-
-    getModifiersFor
-        (SkillTestSource source maction)
-        (InvestigatorTarget $ investigatorId attrs)
-      =<< ask
+    getModifiersFor source (InvestigatorTarget $ investigatorId attrs) =<< ask
   pure $ foldr applyModifier startValue modifiers'
  where
   applyModifier (DiscoveredClues m) n = n + m
@@ -1241,20 +1231,27 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     committedCardIds <- asks $ map unCommittedCardId . setToList . getSet iid
     committedCardCodes <- asks $ HashSet.map unCommittedCardCode . getSet ()
     actions <- join $ asks (getActions iid (WhenSkillTest skillType))
+    source <-
+      asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
+    cannotCommitCards <-
+      elem CannotCommitCards
+        <$> (getModifiersFor source (InvestigatorTarget investigatorId) =<< ask)
     let
       triggerMessage = StartSkillTest investigatorId
       beginMessage = BeforeSkillTest iid skillType
-      committableCards = flip filter investigatorHand $ \case
-        PlayerCard MkPlayerCard {..} ->
-          pcId
-            `notElem` committedCardIds
-            && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
-            && (MaxOnePerTest
-               `notElem` pcCommitRestrictions
-               || pcCardCode
-               `notElem` committedCardCodes
-               )
-        _ -> False
+      committableCards = if cannotCommitCards
+        then []
+        else flip filter investigatorHand $ \case
+          PlayerCard MkPlayerCard {..} ->
+            pcId
+              `notElem` committedCardIds
+              && (SkillWild `elem` pcSkills || skillType `elem` pcSkills)
+              && (MaxOnePerTest
+                 `notElem` pcCommitRestrictions
+                 || pcCardCode
+                 `notElem` committedCardCodes
+                 )
+          _ -> False
     if not (null committableCards) || not (null committedCardIds) || not
       (null actions)
     then

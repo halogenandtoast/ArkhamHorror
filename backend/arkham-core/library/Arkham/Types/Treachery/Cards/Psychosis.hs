@@ -12,6 +12,9 @@ newtype Psychosis = Psychosis Attrs
 psychosis :: TreacheryId -> Maybe InvestigatorId -> Psychosis
 psychosis uuid iid = Psychosis $ weaknessAttrs uuid iid "01099"
 
+instance HasModifiersFor env Psychosis where
+  getModifiersFor _ _ _ = pure []
+
 instance ActionRunner env => HasActions env Psychosis where
   getActions iid NonFast (Psychosis Attrs {..}) =
     case treacheryAttachedInvestigator of

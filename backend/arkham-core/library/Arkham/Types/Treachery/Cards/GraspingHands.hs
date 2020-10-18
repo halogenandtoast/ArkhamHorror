@@ -1,23 +1,19 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Treachery.Cards.GraspingHands where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
+import Arkham.Import
+
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
-import ClassyPrelude
-import Lens.Micro
 
 newtype GraspingHands = GraspingHands Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 graspingHands :: TreacheryId -> a -> GraspingHands
 graspingHands uuid _ = GraspingHands $ baseAttrs uuid "01162"
+
+instance HasModifiersFor env GraspingHands where
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env GraspingHands where
   getActions i window (GraspingHands attrs) = getActions i window attrs
@@ -31,6 +27,7 @@ instance (TreacheryRunner env) => RunMessage env GraspingHands where
           (TreacherySource treacheryId)
           SkillAgility
           3
+          []
           []
           []
         , Discard (TreacheryTarget tid)

@@ -12,6 +12,9 @@ newtype Hypochondria = Hypochondria Attrs
 hypochondria :: TreacheryId -> Maybe InvestigatorId -> Hypochondria
 hypochondria uuid iid = Hypochondria $ weaknessAttrs uuid iid "01100"
 
+instance HasModifiersFor env Hypochondria where
+  getModifiersFor _ _ _ = pure []
+
 instance ActionRunner env => HasActions env Hypochondria where
   getActions iid NonFast (Hypochondria Attrs {..}) =
     case treacheryAttachedInvestigator of

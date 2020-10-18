@@ -13,6 +13,9 @@ newtype LockedDoor = LockedDoor Attrs
 lockedDoor :: TreacheryId -> a -> LockedDoor
 lockedDoor uuid _ = LockedDoor $ baseAttrs uuid "01174"
 
+instance HasModifiersFor env LockedDoor where
+  getModifiersFor _ _ _ = pure []
+
 instance ActionRunner env => HasActions env LockedDoor where
   getActions iid NonFast (LockedDoor Attrs {..}) = do
     investigatorLocationId <- asks $ getId @LocationId iid

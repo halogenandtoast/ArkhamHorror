@@ -28,7 +28,7 @@ reactionAbility Attrs { assetId } skillType =
   mkAbility (AssetSource assetId) 2 (ReactionAbility (WhenSkillTest skillType))
 
 instance AssetRunner env => HasModifiersFor env FireAxe where
-  getModifiersFor (SkillTestSource source (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)
+  getModifiersFor (SkillTestSource _ source (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)
     | ownedBy a iid && isSource a source
     = do
       resourceCount <- getResourceCount iid

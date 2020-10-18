@@ -202,9 +202,6 @@ class HasModifiers env a where
 class HasSource b a where
   getSource :: b -> a -> Maybe Source
 
-class HasTestAction b a where
-  getTestAction :: b -> a -> Maybe Action
-
 class HasTarget b a where
   getTarget :: b -> a -> Maybe Target
 

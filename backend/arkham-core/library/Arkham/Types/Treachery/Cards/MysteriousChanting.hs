@@ -22,6 +22,9 @@ newtype MysteriousChanting = MysteriousChanting Attrs
 mysteriousChanting :: TreacheryId -> a -> MysteriousChanting
 mysteriousChanting uuid _ = MysteriousChanting $ baseAttrs uuid "01171"
 
+instance HasModifiersFor env MysteriousChanting where
+  getModifiersFor _ _ _ = pure []
+
 instance HasActions env MysteriousChanting where
   getActions i window (MysteriousChanting attrs) = getActions i window attrs
 

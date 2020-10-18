@@ -51,11 +51,14 @@ data Treachery
   | SearchingForIzzie' SearchingForIzzie
   | FinalRhapsody' FinalRhapsody
   | WrackedByNightmares' WrackedByNightmares
+  | CursedSwamp' CursedSwamp
+  | SpectralMist' SpectralMist
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Treachery
 deriving anyclass instance TreacheryRunner env => RunMessage env Treachery
+deriving anyclass instance TreacheryRunner env => HasModifiersFor env Treachery
 
 instance HasCardCode Treachery where
   getCardCode = treacheryCardCode . treacheryAttrs
@@ -108,6 +111,8 @@ allTreacheries = mapFromList
   , ("02011", (SearchingForIzzie' .) . searchingForIzzie)
   , ("02013", (FinalRhapsody' .) . finalRhapsody)
   , ("02015", (WrackedByNightmares' .) . wrackedByNightmares)
+  , ("81024", (CursedSwamp' .) . cursedSwamp)
+  , ("81025", (SpectralMist' .) . spectralMist)
   ]
 
 isWeakness :: Treachery -> Bool
@@ -147,3 +152,5 @@ treacheryAttrs = \case
   SearchingForIzzie' attrs -> coerce attrs
   FinalRhapsody' attrs -> coerce attrs
   WrackedByNightmares' attrs -> coerce attrs
+  CursedSwamp' attrs -> coerce attrs
+  SpectralMist' attrs -> coerce attrs

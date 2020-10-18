@@ -519,6 +519,9 @@ instance GameRunner env => HasModifiersFor env (Game queue) where
       <$> traverse (getModifiersFor source target) (g ^. locations . to toList)
     , concat <$> traverse
       (getModifiersFor source target)
+      (g ^. treacheries . to toList)
+    , concat <$> traverse
+      (getModifiersFor source target)
       (g ^. investigators . to toList)
     , maybe (pure []) (getModifiersFor source target) (g ^. skillTest)
     ]
@@ -554,13 +557,10 @@ instance HasList Ability () (Game queue) where
   getList _ g = g ^. agendas . traverse . to getAbilities
 
 instance HasSource ForSkillTest (Game queue) where
-  getSource _ g = g ^? skillTest . traverse . to skillTestSource
+  getSource _ g = (Just . skillTestToSource @Message) =<< (g ^. skillTest)
 
 instance HasTarget ForSkillTest (Game queue) where
   getTarget _ g = g ^? skillTest . traverse . to skillTestTarget
-
-instance HasTestAction ForSkillTest (Game queue) where
-  getTestAction _ g = join $ g ^? skillTest . traverse . to skillTestAction
 
 instance HasSet ScenarioLogKey () (Game queue) where
   getSet _ g = maybe mempty (getSet ()) (g ^. scenario)
@@ -1843,7 +1843,7 @@ runGameMessage msg g = case msg of
     encounterDeck' <-
       liftIO . shuffleM $ unDeck (view encounterDeck g) <> toShuffleBackIn
     pure $ g & encounterDeck .~ Deck encounterDeck' & discard .~ discard'
-  RevelationSkillTest iid (TreacherySource tid) skillType difficulty onSuccess onFailure
+  RevelationSkillTest iid (TreacherySource tid) skillType difficulty onSuccess onFailure tempModifiers
     -> do
       let
         treachery = getTreachery tid g
@@ -1861,7 +1861,7 @@ runGameMessage msg g = case msg of
         difficulty
         onSuccess
         onFailure
-        []
+        tempModifiers
         mempty
       pure $ g & (activeCard ?~ EncounterCard card)
   InvestigatorDrewEncounterCard iid card -> case ecCardType card of

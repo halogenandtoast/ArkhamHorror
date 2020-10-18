@@ -20,6 +20,9 @@ newtype FalseLead = FalseLead Attrs
 falseLead :: TreacheryId -> a -> FalseLead
 falseLead uuid _ = FalseLead $ baseAttrs uuid "01136"
 
+instance HasModifiersFor env FalseLead where
+  getModifiersFor _ _ _ = pure []
+
 instance HasActions env FalseLead where
   getActions i window (FalseLead attrs) = getActions i window attrs
 
@@ -35,6 +38,7 @@ instance (TreacheryRunner env) => RunMessage env FalseLead where
             (TreacherySource treacheryId)
             SkillIntellect
             4
+            []
             []
             []
           )

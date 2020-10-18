@@ -20,6 +20,9 @@ newtype DissonantVoices= DissonantVoices Attrs
 dissonantVoices :: TreacheryId -> a -> DissonantVoices
 dissonantVoices uuid _ = DissonantVoices $ baseAttrs uuid "01165"
 
+instance HasModifiersFor env DissonantVoices where
+  getModifiersFor _ _ _ = pure []
+
 instance HasActions env DissonantVoices where
   getActions i window (DissonantVoices attrs) = getActions i window attrs
 

@@ -8,8 +8,7 @@
       "  )",
       "where",
       "",
-      "import ClassyPrelude",
-      ""
+      "import Arkham.Import"
     ]
   },
   "arkham-core/tests/Arkham/Types/*Spec.hs": {

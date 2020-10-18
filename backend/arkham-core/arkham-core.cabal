@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e7754359499f96e812b4a1fb981d5f9232b266fb4a83ad742000857116d285ea
+-- hash: 847c6c6d1a64ff7cc55f2ff4d39faea1196a54aab5aa4ae8c6c0c2cbb357b752
 
 name:           arkham-core
 version:        0.0.0
@@ -101,6 +101,7 @@ library
       Arkham.Types.Asset.Cards.MagnifyingGlass
       Arkham.Types.Asset.Cards.MagnifyingGlass1
       Arkham.Types.Asset.Cards.MedicalTexts
+      Arkham.Types.Asset.Cards.MonstrousTransformation
       Arkham.Types.Asset.Cards.OldBookOfLore
       Arkham.Types.Asset.Cards.PeterSylvestre
       Arkham.Types.Asset.Cards.PhysicalTraining
@@ -367,6 +368,7 @@ library
       Arkham.Types.Treachery.Cards.CoverUp
       Arkham.Types.Treachery.Cards.CryptChill
       Arkham.Types.Treachery.Cards.CursedSwamp
+      Arkham.Types.Treachery.Cards.CurseOfTheRougarou
       Arkham.Types.Treachery.Cards.DissonantVoices
       Arkham.Types.Treachery.Cards.DraggedUnder
       Arkham.Types.Treachery.Cards.DreamsOfRlyeh

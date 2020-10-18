@@ -87,6 +87,7 @@ data Asset
   | LadyEsprit' LadyEsprit
   | BearTrap' BearTrap
   | FishingNet' FishingNet
+  | MonstrousTransformation' MonstrousTransformation
   | BaseAsset' BaseAsset
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -219,6 +220,7 @@ allAssets = mapFromList
   , ("81019", LadyEsprit' . ladyEsprit)
   , ("81020", BearTrap' . bearTrap)
   , ("81021", FishingNet' . fishingNet)
+  , ("81030", MonstrousTransformation' . monstrousTransformation)
   , ("00000", \aid -> baseAsset aid "00000" id)
   ]
 
@@ -304,4 +306,5 @@ assetAttrs = \case
   LadyEsprit' attrs -> coerce attrs
   BearTrap' attrs -> coerce attrs
   FishingNet' attrs -> coerce attrs
+  MonstrousTransformation' attrs -> coerce attrs
   BaseAsset' attrs -> coerce attrs

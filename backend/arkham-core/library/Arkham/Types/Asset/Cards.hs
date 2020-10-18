@@ -51,6 +51,7 @@ import Arkham.Types.Asset.Cards.Machete as X
 import Arkham.Types.Asset.Cards.MagnifyingGlass as X
 import Arkham.Types.Asset.Cards.MagnifyingGlass1 as X
 import Arkham.Types.Asset.Cards.MedicalTexts as X
+import Arkham.Types.Asset.Cards.MonstrousTransformation as X
 import Arkham.Types.Asset.Cards.OldBookOfLore as X
 import Arkham.Types.Asset.Cards.PeterSylvestre as X
 import Arkham.Types.Asset.Cards.PhysicalTraining as X

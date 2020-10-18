@@ -189,17 +189,13 @@ modifiedEnemyFight
      , MonadIO m
      , HasModifiersFor env env
      , HasSource ForSkillTest env
-     , HasTestAction ForSkillTest env
      )
   => Attrs
   -> m Int
 modifiedEnemyFight Attrs {..} = do
   source <-
     asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
-  maction <- asks $ getTestAction ForSkillTest
-  modifiers' <-
-    getModifiersFor (SkillTestSource source maction) (EnemyTarget enemyId)
-      =<< ask
+  modifiers' <- getModifiersFor source (EnemyTarget enemyId) =<< ask
   pure $ foldr applyModifier enemyFight modifiers'
  where
   applyModifier (EnemyFight m) n = max 0 (n + m)
@@ -210,17 +206,13 @@ modifiedEnemyEvade
      , MonadIO m
      , HasModifiersFor env env
      , HasSource ForSkillTest env
-     , HasTestAction ForSkillTest env
      )
   => Attrs
   -> m Int
 modifiedEnemyEvade Attrs {..} = do
   source <-
     asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
-  maction <- asks $ getTestAction ForSkillTest
-  modifiers' <-
-    getModifiersFor (SkillTestSource source maction) (EnemyTarget enemyId)
-      =<< ask
+  modifiers' <- getModifiersFor source (EnemyTarget enemyId) =<< ask
   pure $ foldr applyModifier enemyEvade modifiers'
  where
   applyModifier (EnemyEvade m) n = max 0 (n + m)

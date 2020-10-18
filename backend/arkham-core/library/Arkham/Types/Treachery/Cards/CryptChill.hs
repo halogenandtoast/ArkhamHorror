@@ -21,6 +21,9 @@ newtype CryptChill = CryptChill Attrs
 cryptChill :: TreacheryId -> a -> CryptChill
 cryptChill uuid _ = CryptChill $ baseAttrs uuid "01167"
 
+instance HasModifiersFor env CryptChill where
+  getModifiersFor _ _ _ = pure []
+
 instance HasActions env CryptChill where
   getActions i window (CryptChill attrs) = getActions i window attrs
 
@@ -28,7 +31,14 @@ instance (TreacheryRunner env) => RunMessage env CryptChill where
   runMessage msg t@(CryptChill attrs@Attrs {..}) = case msg of
     Revelation iid tid | tid == treacheryId -> do
       unshiftMessages
-        [ RevelationSkillTest iid (TreacherySource tid) SkillWillpower 4 [] []
+        [ RevelationSkillTest
+          iid
+          (TreacherySource tid)
+          SkillWillpower
+          4
+          []
+          []
+          []
         , Discard (TreacheryTarget tid)
         ]
       CryptChill <$> runMessage msg (attrs & resolved .~ True)

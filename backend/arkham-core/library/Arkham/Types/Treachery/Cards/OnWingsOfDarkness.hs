@@ -20,6 +20,9 @@ newtype OnWingsOfDarkness = OnWingsOfDarkness Attrs
 onWingsOfDarkness :: TreacheryId -> a -> OnWingsOfDarkness
 onWingsOfDarkness uuid _ = OnWingsOfDarkness $ baseAttrs uuid "01173"
 
+instance HasModifiersFor env OnWingsOfDarkness where
+  getModifiersFor _ _ _ = pure []
+
 instance HasActions env OnWingsOfDarkness where
   getActions i window (OnWingsOfDarkness attrs) = getActions i window attrs
 
@@ -41,6 +44,7 @@ instance (TreacheryRunner env) => RunMessage env OnWingsOfDarkness where
                  [ MoveTo iid lid | lid <- centralLocations ]
              ]
           )
+          []
         )
       OnWingsOfDarkness <$> runMessage msg (attrs & resolved .~ True)
     _ -> OnWingsOfDarkness <$> runMessage msg attrs

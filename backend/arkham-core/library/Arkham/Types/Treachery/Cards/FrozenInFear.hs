@@ -21,6 +21,9 @@ newtype FrozenInFear = FrozenInFear Attrs
 frozenInFear :: TreacheryId -> a -> FrozenInFear
 frozenInFear uuid _ = FrozenInFear $ baseAttrs uuid "01164"
 
+instance HasModifiersFor env FrozenInFear where
+  getModifiersFor _ _ _ = pure []
+
 instance HasActions env FrozenInFear where
   getActions i window (FrozenInFear attrs) = getActions i window attrs
 
@@ -50,6 +53,7 @@ instance (TreacheryRunner env) => RunMessage env FrozenInFear where
             (TreacherySource treacheryId)
           , Discard (TreacheryTarget treacheryId)
           ]
+          []
           []
         )
     _ -> FrozenInFear <$> runMessage msg attrs

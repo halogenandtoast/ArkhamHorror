@@ -17,40 +17,42 @@ data Modifier
   = ActionCostOf ActionTarget Int
   | ActionSkillModifier Action SkillType Int
   | AdditionalActions Int
+  | AnySkillValue Int
   | BaseSkillOf SkillType Int
   | Blank
   | CanPlayTopOfDiscard (Maybe PlayerCardType, [Trait])
   | CannotBeAttackedByNonElite
   | CannotBeEnteredByNonElite
-  | CannotMove
+  | CannotCancelHorror
+  | CannotCommitCards
+  | CannotDiscoverClues
   | CannotGainResources
   | CannotHealHorror
-  | CannotCancelHorror
-  | DoNotDrawChaosTokensForSkillChecks
-  | SpawnNonEliteAtConnectingInstead
-  | CannotDiscoverClues
   | CannotInvestigate
+  | CannotMove
   | CannotPlay [PlayerCardType]
   | CannotSpendClues
   | ControlledAssetsCannotReady
   | DamageDealt Int
-  | HorrorDealt Int
   | DamageTaken Int
+  | Difficulty Int
   | DiscoveredClues Int
+  | DoNotDrawChaosTokensForSkillChecks
   | DoubleNegativeModifiersOnTokens
   | EnemyEvade Int
   | EnemyFight Int
   | ForcedTokenChange Token Token
   | HealthModifier Int
+  | HorrorDealt Int
+  | ModifierIfSucceededBy Int Modifier
   | ReduceCostOf [Trait] Int
   | ReduceCostOfCardType PlayerCardType Int
   | SanityModifier Int
   | ShroudModifier Int
   | SkillModifier SkillType Int
-  | AnySkillValue Int
+  | SpawnNonEliteAtConnectingInstead
   | UseSkillInPlaceOf SkillType SkillType
   | XPModifier Int
-  | ModifierIfSucceededBy Int Modifier
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON, Hashable)
 

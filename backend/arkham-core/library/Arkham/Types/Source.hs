@@ -26,7 +26,7 @@ data Source
   | TokenSource Token
   | AgendaSource AgendaId
   | LocationSource LocationId
-  | SkillTestSource Source (Maybe Action)
+  | SkillTestSource InvestigatorId Source (Maybe Action)
   | TreacherySource TreacheryId
   | EventSource EventId
   | SkillSource SkillId

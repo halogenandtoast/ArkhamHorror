@@ -30,5 +30,4 @@ type EnemyRunner env
     , HasSet Trait EnemyId env
     , HasSet Trait LocationId env
     , HasSource ForSkillTest env
-    , HasTestAction ForSkillTest env
     )

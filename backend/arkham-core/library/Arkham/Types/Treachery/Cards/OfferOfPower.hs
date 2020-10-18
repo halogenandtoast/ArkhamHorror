@@ -17,6 +17,9 @@ newtype OfferOfPower = OfferOfPower Attrs
 offerOfPower :: TreacheryId -> a -> OfferOfPower
 offerOfPower uuid _ = OfferOfPower $ baseAttrs uuid "01178"
 
+instance HasModifiersFor env OfferOfPower where
+  getModifiersFor _ _ _ = pure []
+
 instance HasActions env OfferOfPower where
   getActions i window (OfferOfPower attrs) = getActions i window attrs
 

@@ -18,6 +18,9 @@ newtype AbandonedAndAlone = AbandonedAndAlone Attrs
 abandonedAndAlone :: TreacheryId -> Maybe InvestigatorId -> AbandonedAndAlone
 abandonedAndAlone uuid iid = AbandonedAndAlone $ weaknessAttrs uuid iid "01015"
 
+instance HasModifiersFor env AbandonedAndAlone where
+  getModifiersFor _ _ _ = pure []
+
 instance HasActions env AbandonedAndAlone where
   getActions i window (AbandonedAndAlone attrs) = getActions i window attrs
 

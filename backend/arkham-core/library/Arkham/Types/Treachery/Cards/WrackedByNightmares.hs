@@ -14,6 +14,9 @@ wrackedByNightmares
 wrackedByNightmares uuid iid =
   WrackedByNightmares $ weaknessAttrs uuid iid "02015"
 
+instance HasModifiersFor env WrackedByNightmares where
+  getModifiersFor _ _ _ = pure []
+
 instance ActionRunner env => HasActions env WrackedByNightmares where
   getActions iid NonFast (WrackedByNightmares Attrs {..}) =
     case treacheryAttachedInvestigator of

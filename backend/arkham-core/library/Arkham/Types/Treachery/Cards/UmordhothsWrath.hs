@@ -19,6 +19,9 @@ newtype UmordhothsWrath = UmordhothsWrath Attrs
 umordhothsWrath :: TreacheryId -> a -> UmordhothsWrath
 umordhothsWrath uuid _ = UmordhothsWrath $ baseAttrs uuid "01158"
 
+instance HasModifiersFor env UmordhothsWrath where
+  getModifiersFor _ _ _ = pure []
+
 instance HasActions env UmordhothsWrath where
   getActions i window (UmordhothsWrath attrs) = getActions i window attrs
 

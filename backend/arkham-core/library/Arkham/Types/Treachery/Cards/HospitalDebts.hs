@@ -15,6 +15,9 @@ hospitalDebts :: TreacheryId -> Maybe InvestigatorId -> HospitalDebts
 hospitalDebts uuid iid = HospitalDebts
   $ (weaknessAttrs uuid iid "01011") { treacheryResources = Just 0 }
 
+instance HasModifiersFor env HospitalDebts where
+  getModifiersFor _ _ _ = pure []
+
 instance ActionRunner env => HasActions env HospitalDebts where
   getActions iid (DuringTurn You) (HospitalDebts Attrs {..}) =
     case treacheryAttachedInvestigator of

@@ -278,7 +278,7 @@ data Message
   | EnemySpawnEngagedWithPrey EnemyId
   | Revelation InvestigatorId TreacheryId
   | AfterRevelation InvestigatorId TreacheryId
-  | RevelationSkillTest InvestigatorId Source SkillType Int [Message] [Message]
+  | RevelationSkillTest InvestigatorId Source SkillType Int [Message] [Message] [Modifier]
   | Discard Target
   | SetEncounterDeck [EncounterCard]
   | ChooseAndDiscardAsset InvestigatorId

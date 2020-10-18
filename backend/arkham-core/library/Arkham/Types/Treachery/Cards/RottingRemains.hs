@@ -19,6 +19,9 @@ newtype RottingRemains = RottingRemains Attrs
 rottingRemains :: TreacheryId -> a -> RottingRemains
 rottingRemains uuid _ = RottingRemains $ baseAttrs uuid "01163"
 
+instance HasModifiersFor env RottingRemains where
+  getModifiersFor _ _ _ = pure []
+
 instance HasActions env RottingRemains where
   getActions i window (RottingRemains attrs) = getActions i window attrs
 
@@ -31,6 +34,7 @@ instance (TreacheryRunner env) => RunMessage env RottingRemains where
           (TreacherySource treacheryId)
           SkillWillpower
           3
+          []
           []
           []
         , Discard (TreacheryTarget tid)

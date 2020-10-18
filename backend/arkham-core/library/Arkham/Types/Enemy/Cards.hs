@@ -12,6 +12,7 @@ import Arkham.Types.Enemy.Cards.GoatSpawn as X
 import Arkham.Types.Enemy.Cards.HermanCollins as X
 import Arkham.Types.Enemy.Cards.HuntingNightgaunt as X
 import Arkham.Types.Enemy.Cards.IcyGhoul as X
+import Arkham.Types.Enemy.Cards.MarshGug as X
 import Arkham.Types.Enemy.Cards.MobEnforcer as X
 import Arkham.Types.Enemy.Cards.PeterWarren as X
 import Arkham.Types.Enemy.Cards.RavenousGhoul as X

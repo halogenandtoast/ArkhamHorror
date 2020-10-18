@@ -20,6 +20,7 @@ import Arkham.Types.Enemy.Cards.RuthTurner as X
 import Arkham.Types.Enemy.Cards.ScreechingByakhee as X
 import Arkham.Types.Enemy.Cards.SilverTwilightAcolyte as X
 import Arkham.Types.Enemy.Cards.StubbornDetective as X
+import Arkham.Types.Enemy.Cards.SwampLeech as X
 import Arkham.Types.Enemy.Cards.SwarmOfRats as X
 import Arkham.Types.Enemy.Cards.TheMaskedHunter as X
 import Arkham.Types.Enemy.Cards.Umordhoth as X

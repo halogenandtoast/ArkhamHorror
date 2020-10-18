@@ -52,6 +52,7 @@ type GameRunner env
     , HasSet InvestigatorId () env
     , HasSet InvestigatorId LocationId env
     , HasSet LocationId () env
+    , HasSet LocationId [Trait] env
     , HasSet PreyId (Prey, LocationId) env
     , HasSet PreyId Prey env
     , HasSet Trait AssetId env

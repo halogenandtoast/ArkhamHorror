@@ -168,7 +168,7 @@ export default class Location extends Vue {
     return this
       .choices
       .reduce<number[]>((acc, v, i) => {
-        if (v.tag === 'ActivateCardAbilityAction' && v.contents[1].source.tag === 'LocationSource' && v.contents[1].source.contents === this.id) {
+        if ((v.tag === 'ActivateCardAbilityAction' || v.tag === 'ActivateCardAbilityActionWithDynamicCost') && v.contents[1].source.tag === 'LocationSource' && v.contents[1].source.contents === this.id) {
           return [i, ...acc];
         }
 

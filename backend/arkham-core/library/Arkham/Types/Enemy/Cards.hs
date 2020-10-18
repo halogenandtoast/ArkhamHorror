@@ -23,6 +23,7 @@ import Arkham.Types.Enemy.Cards.StubbornDetective as X
 import Arkham.Types.Enemy.Cards.SwampLeech as X
 import Arkham.Types.Enemy.Cards.SwarmOfRats as X
 import Arkham.Types.Enemy.Cards.TheMaskedHunter as X
+import Arkham.Types.Enemy.Cards.TheRougarou as X
 import Arkham.Types.Enemy.Cards.Umordhoth as X
 import Arkham.Types.Enemy.Cards.VictoriaDevereux as X
 import Arkham.Types.Enemy.Cards.WizardOfTheOrder as X

@@ -11,6 +11,7 @@ where
 
 import Arkham.Import
 
+import Arkham.Types.Helpers
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Cards
 import Arkham.Types.Enemy.Runner
@@ -44,6 +45,7 @@ data Enemy
   | YoungDeepOne' YoungDeepOne
   | BogGator' BogGator
   | SwampLeech' SwampLeech
+  | TheRougarou' TheRougarou
   | BaseEnemy' BaseEnemy
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -150,6 +152,7 @@ allEnemies = mapFromList
   , ("01181", YoungDeepOne' . youngDeepOne)
   , ("81022", BogGator' . bogGator)
   , ("81023", SwampLeech' . swampLeech)
+  , ("81028", TheRougarou' . theRougarou)
   , ("enemy", \eid -> baseEnemy eid "enemy" id)
   ]
 
@@ -199,4 +202,5 @@ enemyAttrs = \case
   YoungDeepOne' attrs -> coerce attrs
   BogGator' attrs -> coerce attrs
   SwampLeech' attrs -> coerce attrs
+  TheRougarou' (TheRougarou (attrs `With` _)) -> attrs
   BaseEnemy' attrs -> coerce attrs

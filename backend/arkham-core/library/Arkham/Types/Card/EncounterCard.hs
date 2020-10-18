@@ -117,6 +117,7 @@ allEncounterCards = HashMap.fromList
   , ("81025", spectralMist)
   , ("81026", draggedUnder)
   , ("81027", ripplesOnTheSurface)
+  , ("81028", theRougarou)
   ]
 
 placeholderEnemy :: CardId -> EncounterCard
@@ -340,3 +341,9 @@ draggedUnder cardId =
 ripplesOnTheSurface :: CardId -> EncounterCard
 ripplesOnTheSurface cardId =
   (treachery cardId "81027" "Ripples on the Surface") { ecTraits = [Terror] }
+
+theRougarou :: CardId -> EncounterCard
+theRougarou cardId = (enemy cardId "81028" "The Rougarou")
+  { ecTraits = [Monster, Creature, Elite]
+  , ecKeywords = [Keyword.Aloof, Keyword.Retaliate]
+  }

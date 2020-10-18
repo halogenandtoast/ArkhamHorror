@@ -1911,10 +1911,11 @@ runGameMessage msg g = case msg of
   DrewTreachery iid cardCode -> do
     (treacheryId', treachery') <- createTreachery cardCode (Just iid)
     unshiftMessages
-      [ CheckWindow iid [Fast.WhenDrawTreachery You (isWeakness treachery')]
-      , Revelation iid treacheryId'
-      , AfterRevelation iid treacheryId'
-      ]
+      $ [ CheckWindow iid [Fast.WhenDrawTreachery You (isWeakness treachery')]
+        , Revelation iid treacheryId'
+        , AfterRevelation iid treacheryId'
+        ]
+      <> [ Surge iid | Keyword.Surge `member` getKeywords treachery' ]
     pure
       $ g
       & (treacheries . at treacheryId' ?~ treachery')

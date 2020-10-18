@@ -50,6 +50,7 @@ data Treachery
   | DraggedUnder' DraggedUnder
   | RipplesOnTheSurface' RipplesOnTheSurface
   | CurseOfTheRougarou' CurseOfTheRougarou
+  | OnTheProwl' OnTheProwl
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -62,6 +63,9 @@ instance HasCardCode Treachery where
 
 instance HasTraits Treachery where
   getTraits = treacheryTraits . treacheryAttrs
+
+instance HasKeywords Treachery where
+  getKeywords = treacheryKeywords . treacheryAttrs
 
 instance HasCount DoomCount () Treachery where
   getCount _ = DoomCount . treacheryDoom . treacheryAttrs
@@ -113,6 +117,7 @@ allTreacheries = mapFromList
   , ("81026", (DraggedUnder' .) . draggedUnder)
   , ("81027", (RipplesOnTheSurface' .) . ripplesOnTheSurface)
   , ("81029", (CurseOfTheRougarou' .) . curseOfTheRougarou)
+  , ("81034", (OnTheProwl' .) . onTheProwl)
   ]
 
 isWeakness :: Treachery -> Bool
@@ -157,3 +162,4 @@ treacheryAttrs = \case
   DraggedUnder' attrs -> coerce attrs
   RipplesOnTheSurface' attrs -> coerce attrs
   CurseOfTheRougarou' (CurseOfTheRougarou (attrs `With` _)) -> attrs
+  OnTheProwl' attrs -> coerce attrs

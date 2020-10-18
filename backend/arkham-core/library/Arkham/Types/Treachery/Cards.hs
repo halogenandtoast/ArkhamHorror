@@ -25,6 +25,7 @@ import Arkham.Types.Treachery.Cards.LockedDoor as X
 import Arkham.Types.Treachery.Cards.MysteriousChanting as X
 import Arkham.Types.Treachery.Cards.ObscuringFog as X
 import Arkham.Types.Treachery.Cards.OfferOfPower as X
+import Arkham.Types.Treachery.Cards.OnTheProwl as X
 import Arkham.Types.Treachery.Cards.OnWingsOfDarkness as X
 import Arkham.Types.Treachery.Cards.Paranoia as X
 import Arkham.Types.Treachery.Cards.Psychosis as X

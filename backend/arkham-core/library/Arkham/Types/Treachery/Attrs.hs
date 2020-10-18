@@ -4,6 +4,7 @@ module Arkham.Types.Treachery.Attrs where
 import Arkham.Import
 
 import Arkham.Types.Trait
+import Arkham.Types.Keyword
 import Arkham.Types.Treachery.Runner
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
@@ -13,6 +14,7 @@ data Attrs = Attrs
   , treacheryId :: TreacheryId
   , treacheryCardCode :: CardCode
   , treacheryTraits :: HashSet Trait
+  , treacheryKeywords :: HashSet Keyword
   , treacheryAttachedLocation :: Maybe LocationId
   , treacheryAttachedInvestigator :: Maybe InvestigatorId
   , treacheryOwner :: Maybe InvestigatorId
@@ -68,6 +70,7 @@ baseAttrs tid cardCode =
       , treacheryId = tid
       , treacheryCardCode = ecCardCode
       , treacheryTraits = HashSet.fromList ecTraits
+      , treacheryKeywords = HashSet.fromList ecKeywords
       , treacheryAttachedLocation = Nothing
       , treacheryAttachedInvestigator = Nothing
       , treacheryOwner = Nothing
@@ -92,6 +95,7 @@ weaknessAttrs tid iid cardCode =
       , treacheryId = tid
       , treacheryCardCode = pcCardCode
       , treacheryTraits = pcTraits
+      , treacheryKeywords = setFromList pcKeywords
       , treacheryAttachedLocation = Nothing
       , treacheryAttachedInvestigator = Nothing
       , treacheryOwner = iid

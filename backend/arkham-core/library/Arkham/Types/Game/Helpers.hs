@@ -106,14 +106,22 @@ getCanEvade
   :: ( MonadReader env m
      , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
      , HasSet InvestigatorId EnemyId env
+     , HasModifiersFor env env
+     , MonadIO m
      )
   => EnemyId
   -> InvestigatorId
   -> m Bool
 getCanEvade eid iid = do
   engaged <- asks $ elem iid . getSet eid
+  enemyModifiers <-
+    getModifiersFor (InvestigatorSource iid) (EnemyTarget eid) =<< ask
   hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Evade) mempty
-  pure $ engaged && hasActionsRemaining
+  pure
+    $ engaged
+    && hasActionsRemaining
+    && CannotBeEvaded
+    `notElem` enemyModifiers
 
 getCanMoveTo
   :: ( MonadReader env m

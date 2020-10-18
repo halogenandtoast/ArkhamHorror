@@ -51,6 +51,8 @@ data Treachery
   | RipplesOnTheSurface' RipplesOnTheSurface
   | CurseOfTheRougarou' CurseOfTheRougarou
   | OnTheProwl' OnTheProwl
+  | BeastOfTheBayou' BeastOfTheBayou
+  | InsatiableBloodlust' InsatiableBloodlust
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -118,6 +120,8 @@ allTreacheries = mapFromList
   , ("81027", (RipplesOnTheSurface' .) . ripplesOnTheSurface)
   , ("81029", (CurseOfTheRougarou' .) . curseOfTheRougarou)
   , ("81034", (OnTheProwl' .) . onTheProwl)
+  , ("81035", (BeastOfTheBayou' .) . beastOfTheBayou)
+  , ("81036", (InsatiableBloodlust' .) . insatiableBloodlust)
   ]
 
 isWeakness :: Treachery -> Bool
@@ -163,3 +167,5 @@ treacheryAttrs = \case
   RipplesOnTheSurface' attrs -> coerce attrs
   CurseOfTheRougarou' (CurseOfTheRougarou (attrs `With` _)) -> attrs
   OnTheProwl' attrs -> coerce attrs
+  BeastOfTheBayou' attrs -> coerce attrs
+  InsatiableBloodlust' attrs -> coerce attrs

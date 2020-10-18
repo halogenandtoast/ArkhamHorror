@@ -17,6 +17,7 @@ data Attrs = Attrs
   , treacheryKeywords :: HashSet Keyword
   , treacheryAttachedLocation :: Maybe LocationId
   , treacheryAttachedInvestigator :: Maybe InvestigatorId
+  , treacheryAttachedEnemy :: Maybe EnemyId
   , treacheryOwner :: Maybe InvestigatorId
   , treacheryWeakness :: Bool
   , treacheryResolved :: Bool -- should this be discarded
@@ -36,6 +37,9 @@ instance FromJSON Attrs where
 toSource :: Attrs -> Source
 toSource Attrs { treacheryId } = TreacherySource treacheryId
 
+toTarget :: Attrs -> Target
+toTarget Attrs { treacheryId } = TreacheryTarget treacheryId
+
 isSource :: Attrs -> Source -> Bool
 isSource Attrs { treacheryId } (TreacherySource tid) = treacheryId == tid
 isSource _ _ = False
@@ -50,6 +54,10 @@ resolved = lens treacheryResolved $ \m x -> m { treacheryResolved = x }
 attachedLocation :: Lens' Attrs (Maybe LocationId)
 attachedLocation =
   lens treacheryAttachedLocation $ \m x -> m { treacheryAttachedLocation = x }
+
+attachedEnemy :: Lens' Attrs (Maybe EnemyId)
+attachedEnemy =
+  lens treacheryAttachedEnemy $ \m x -> m { treacheryAttachedEnemy = x }
 
 attachedInvestigator :: Lens' Attrs (Maybe InvestigatorId)
 attachedInvestigator = lens treacheryAttachedInvestigator
@@ -72,6 +80,7 @@ baseAttrs tid cardCode =
       , treacheryTraits = HashSet.fromList ecTraits
       , treacheryKeywords = HashSet.fromList ecKeywords
       , treacheryAttachedLocation = Nothing
+      , treacheryAttachedEnemy = Nothing
       , treacheryAttachedInvestigator = Nothing
       , treacheryOwner = Nothing
       , treacheryWeakness = False
@@ -97,6 +106,7 @@ weaknessAttrs tid iid cardCode =
       , treacheryTraits = pcTraits
       , treacheryKeywords = setFromList pcKeywords
       , treacheryAttachedLocation = Nothing
+      , treacheryAttachedEnemy = Nothing
       , treacheryAttachedInvestigator = Nothing
       , treacheryOwner = iid
       , treacheryWeakness = True
@@ -121,6 +131,8 @@ instance (TreacheryRunner env) => RunMessage env Attrs where
       a <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
     AttachTreachery tid (LocationTarget lid) | tid == treacheryId ->
       pure $ a & attachedLocation ?~ lid
+    AttachTreachery tid (EnemyTarget eid) | tid == treacheryId ->
+      pure $ a & attachedEnemy ?~ eid
     AfterRevelation{} -> a <$ when
       treacheryResolved
       (unshiftMessage (Discard (TreacheryTarget treacheryId)))

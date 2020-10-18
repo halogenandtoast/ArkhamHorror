@@ -32,6 +32,7 @@ data Attrs = Attrs
   , enemyModifiers :: HashMap Source [Modifier]
   , enemyExhausted :: Bool
   , enemyDoom :: Int
+  , enemyClues :: Int
   }
   deriving stock (Show, Generic)
 
@@ -44,6 +45,9 @@ instance FromJSON Attrs where
 
 doom :: Lens' Attrs Int
 doom = lens enemyDoom $ \m x -> m { enemyDoom = x }
+
+clues :: Lens' Attrs Int
+clues = lens enemyClues $ \m x -> m { enemyClues = x }
 
 prey :: Lens' Attrs Prey
 prey = lens enemyPrey $ \m x -> m { enemyPrey = x }
@@ -111,6 +115,7 @@ baseAttrs eid cardCode =
       , enemyModifiers = mempty
       , enemyExhausted = False
       , enemyDoom = 0
+      , enemyClues = 0
       , enemyVictory = ecVictoryPoints
       }
 
@@ -143,6 +148,7 @@ weaknessBaseAttrs eid cardCode =
       , enemyPrey = AnyPrey
       , enemyModifiers = mempty
       , enemyExhausted = False
+      , enemyClues = 0
       , enemyDoom = 0
       }
 

@@ -334,6 +334,8 @@ instance (LocationRunner env) => RunMessage env Attrs where
     TakeControlOfAsset _ aid -> pure $ a & assets %~ HashSet.delete aid
     PlaceClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & clues +~ n
+    RemoveClues (LocationTarget lid) n | lid == locationId ->
+      pure $ a & clues %~ max 0 . subtract n
     RevealLocation lid | lid == locationId -> do
       locationClueCount <-
         fromGameValue locationRevealClues . unPlayerCount <$> asks (getCount ())

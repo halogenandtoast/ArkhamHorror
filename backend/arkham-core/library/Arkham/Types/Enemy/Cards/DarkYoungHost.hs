@@ -36,4 +36,9 @@ instance (EnemyRunner env) => RunMessage env DarkYoungHost where
       leadInvestigatorId <- getLeadInvestigatorId
       bayouLocations <- asks $ setToList . getSet [Bayou]
       e <$ spawnAtOneOf leadInvestigatorId enemyId bayouLocations
+    PlaceClues (LocationTarget lid) n | lid == enemyLocation -> do
+      unshiftMessage $ RemoveClues (LocationTarget lid) n
+      pure . DarkYoungHost $ attrs & clues +~ n
+    When (EnemyDefeated eid _ _ _) | eid == enemyId ->
+      e <$ unshiftMessage (PlaceClues (LocationTarget enemyLocation) enemyClues)
     _ -> DarkYoungHost <$> runMessage msg attrs

@@ -1557,7 +1557,11 @@ runGameMessage msg g = case msg of
     let asset = getAsset aid g
     unshiftMessage (Discarded (AssetTarget aid) (getCardCode asset))
     pure $ g & assets %~ deleteMap aid
-  EnemyDefeated eid iid _ _ -> do
+  EnemyDefeated eid iid cardCode source -> do
+    broadcastWindow Fast.WhenEnemyDefeated iid g
+    g <$ unshiftMessages
+      [When (EnemyDefeated eid iid cardCode source), Discard (EnemyTarget eid)]
+  Discard (EnemyTarget eid) -> do
     let
       enemy = getEnemy eid g
       cardId = CardId (unEnemyId eid)
@@ -1569,7 +1573,6 @@ runGameMessage msg g = case msg of
         pure $ PlayerCard $ f cardId
       treacheries' = getSet @TreacheryId () enemy
     for_ treacheries' $ \tid -> unshiftMessage (Discard (TreacheryTarget tid))
-    broadcastWindow Fast.WhenEnemyDefeated iid g
     case encounterCard <|> playerCard of
       Nothing -> error "missing"
       Just (PlayerCard pc) -> do
@@ -1923,14 +1926,6 @@ runGameMessage msg g = case msg of
     let asset = getAsset aid g
     unshiftMessage (Discarded (AssetTarget aid) (getCardCode asset))
     pure $ g & assets %~ deleteMap aid
-  Discard (EnemyTarget eid) ->
-    let
-      enemy = getEnemy eid g
-      card = fromJustNote
-        "missing card"
-        (lookup (getCardCode enemy) allEncounterCards)
-        (CardId $ unEnemyId eid)
-    in pure $ g & enemies %~ deleteMap eid & discard %~ (card :)
   Discard (EventTarget eid) -> do
     let
       event = getEvent eid g

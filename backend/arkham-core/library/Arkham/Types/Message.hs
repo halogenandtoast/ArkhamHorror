@@ -211,6 +211,7 @@ data Message
   | GainClues InvestigatorId Int
   | DiscoverCluesAtLocation InvestigatorId LocationId Int
   | PlaceClues Target Int
+  | RemoveClues Target Int
   | InvestigatorDiscoverClues InvestigatorId LocationId Int
   | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int
   | DiscoverClues InvestigatorId LocationId Int

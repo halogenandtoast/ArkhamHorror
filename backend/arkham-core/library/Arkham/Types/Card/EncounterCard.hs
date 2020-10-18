@@ -118,6 +118,12 @@ allEncounterCards = HashMap.fromList
   , ("81026", draggedUnder)
   , ("81027", ripplesOnTheSurface)
   , ("81028", theRougarou)
+  , ("81031", slimeCoveredDhole)
+  , ("81032", marshGug)
+  , ("81033", darkYoungHost)
+  , ("81034", onTheProwl)
+  , ("81035", beastOfTheBayou)
+  , ("81036", insatiableBloodlust)
   ]
 
 placeholderEnemy :: CardId -> EncounterCard
@@ -347,3 +353,30 @@ theRougarou cardId = (enemy cardId "81028" "The Rougarou")
   { ecTraits = [Monster, Creature, Elite]
   , ecKeywords = [Keyword.Aloof, Keyword.Retaliate]
   }
+
+slimeCoveredDhole :: CardId -> EncounterCard
+slimeCoveredDhole cardId = (enemy cardId "81031" "Slime-Covered Dhole")
+  { ecTraits = [Monster, Dhole]
+  , ecKeywords = [Keyword.Hunter]
+  }
+
+marshGug :: CardId -> EncounterCard
+marshGug cardId = (enemy cardId "81032" "Marsh Gug")
+  { ecTraits = [Monster, Gug]
+  , ecKeywords = [Keyword.Hunter]
+  }
+
+darkYoungHost :: CardId -> EncounterCard
+darkYoungHost cardId = (enemy cardId "81033" "Dark Young Host")
+  { ecTraits = [Monster, DarkYoung]
+  , ecVictoryPoints = Just 1
+  }
+
+onTheProwl :: CardId -> EncounterCard
+onTheProwl cardId = treachery cardId "81034" "On the Prowl"
+
+beastOfTheBayou :: CardId -> EncounterCard
+beastOfTheBayou cardId = treachery cardId "81035" "Beast of the Bayou"
+
+insatiableBloodlust :: CardId -> EncounterCard
+insatiableBloodlust cardId = treachery cardId "81026" "Insatiable Bloodlust"

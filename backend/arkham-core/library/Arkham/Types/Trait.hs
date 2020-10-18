@@ -44,6 +44,7 @@ data Trait
   | Desperate
   | Detective
   | Developed
+  | Dhole
   | Dreamer
   | Dreamlands
   | Drifter
@@ -62,6 +63,7 @@ data Trait
   | Geist
   | Ghoul
   | Grant
+  | Gug
   | Hazard
   | Hex
   | Humanoid

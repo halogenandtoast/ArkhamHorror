@@ -473,7 +473,7 @@ instance EnemyRunner env => RunMessage env Attrs where
         else do
           willMove <- canEnterLocation enemyId lid
           if willMove
-            then pure $ a & location .~ lid
+            then a <$ unshiftMessage (EnemyMove enemyId enemyLocation lid)
             else a <$ unshiftMessage (DisengageEnemy iid enemyId)
     AfterEnterLocation iid lid | lid == enemyLocation -> do
       when

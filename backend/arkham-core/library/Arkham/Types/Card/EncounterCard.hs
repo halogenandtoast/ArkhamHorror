@@ -373,7 +373,8 @@ darkYoungHost cardId = (enemy cardId "81033" "Dark Young Host")
   }
 
 onTheProwl :: CardId -> EncounterCard
-onTheProwl cardId = treachery cardId "81034" "On the Prowl"
+onTheProwl cardId =
+  (treachery cardId "81034" "On the Prowl") { ecKeywords = [Keyword.Surge] }
 
 beastOfTheBayou :: CardId -> EncounterCard
 beastOfTheBayou cardId = treachery cardId "81035" "Beast of the Bayou"

@@ -1,5 +1,7 @@
 module Arkham.Types.Treachery.Runner where
 
+import ClassyPrelude
+
 import Arkham.Types.Ability
 import Arkham.Types.AssetId
 import Arkham.Types.Card
@@ -20,6 +22,7 @@ type TreacheryRunner env
     , HasCount Shroud LocationId env
     , HasCount SpendableClueCount InvestigatorId env
     , HasCount TreacheryCount (LocationId, CardCode) env
+    , HasId (Maybe StoryEnemyId) CardCode env
     , HasId LocationId InvestigatorId env
     , HasList UsedAbility () env
     , HasSet AssetId InvestigatorId env

@@ -4,6 +4,7 @@ module Arkham.Types.Enemy.Cards
 where
 
 import Arkham.Types.Enemy.Cards.Acolyte as X
+import Arkham.Types.Enemy.Cards.BogGator as X
 import Arkham.Types.Enemy.Cards.FleshEater as X
 import Arkham.Types.Enemy.Cards.GhoulMinion as X
 import Arkham.Types.Enemy.Cards.GhoulPriest as X

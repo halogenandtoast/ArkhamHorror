@@ -42,6 +42,7 @@ data Enemy
   | RelentlessDarkYoung' RelentlessDarkYoung
   | GoatSpawn' GoatSpawn
   | YoungDeepOne' YoungDeepOne
+  | BogGator' BogGator
   | BaseEnemy' BaseEnemy
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -146,6 +147,7 @@ allEnemies = mapFromList
   , ("01179", RelentlessDarkYoung' . relentlessDarkYoung)
   , ("01180", GoatSpawn' . goatSpawn)
   , ("01181", YoungDeepOne' . youngDeepOne)
+  , ("81022", BogGator' . bogGator)
   , ("enemy", \eid -> baseEnemy eid "enemy" id)
   ]
 
@@ -193,4 +195,5 @@ enemyAttrs = \case
   RelentlessDarkYoung' attrs -> coerce attrs
   GoatSpawn' attrs -> coerce attrs
   YoungDeepOne' attrs -> coerce attrs
+  BogGator' attrs -> coerce attrs
   BaseEnemy' attrs -> coerce attrs

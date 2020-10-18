@@ -10,23 +10,24 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 type EnemyRunner env
-  = ( HasSet LocationId () env
-    , HasSet InvestigatorId LocationId env
-    , HasSet InvestigatorId () env
+  = ( HasQueue env
+    , HasCount CardCount InvestigatorId env
     , HasCount PlayerCount () env
     , HasCount RemainingSanity InvestigatorId env
-    , HasCount CardCount InvestigatorId env
-    , HasQueue env
-    , HasSet ClosestLocationId (LocationId, Prey) env
-    , HasSet PreyId (Prey, LocationId) env
     , HasId LeadInvestigatorId () env
-    , HasSet EmptyLocationId () env
     , HasId LocationId InvestigatorId env
+    , HasModifiers env LocationId
+    , HasModifiersFor env env
+    , HasSet ClosestLocationId (LocationId, LocationId) env
+    , HasSet ClosestLocationId (LocationId, Prey) env
+    , HasSet EmptyLocationId () env
+    , HasSet InvestigatorId () env
+    , HasSet InvestigatorId LocationId env
+    , HasSet LocationId () env
+    , HasSet PreyId (Prey, LocationId) env
     , HasSet PreyId Prey env
     , HasSet Trait EnemyId env
-    , HasModifiers env LocationId
-    , HasSet ClosestLocationId (LocationId, LocationId) env
-    , HasModifiersFor env env
+    , HasSet Trait LocationId env
     , HasSource ForSkillTest env
     , HasTestAction ForSkillTest env
     )

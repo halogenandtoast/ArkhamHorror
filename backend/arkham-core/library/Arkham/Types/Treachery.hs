@@ -7,19 +7,13 @@ module Arkham.Types.Treachery
   )
 where
 
-import Arkham.Json
-import Arkham.Types.Card
-import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Query
+import Arkham.Import
+
+import Arkham.Types.Helpers
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Cards
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
-import ClassyPrelude
 import Data.Coerce
-import Safe (fromJustNote)
 
 data Treachery
   = CoverUp' CoverUp
@@ -55,6 +49,7 @@ data Treachery
   | SpectralMist' SpectralMist
   | DraggedUnder' DraggedUnder
   | RipplesOnTheSurface' RipplesOnTheSurface
+  | CurseOfTheRougarou' CurseOfTheRougarou
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -117,6 +112,7 @@ allTreacheries = mapFromList
   , ("81025", (SpectralMist' .) . spectralMist)
   , ("81026", (DraggedUnder' .) . draggedUnder)
   , ("81027", (RipplesOnTheSurface' .) . ripplesOnTheSurface)
+  , ("81029", (CurseOfTheRougarou' .) . curseOfTheRougarou)
   ]
 
 isWeakness :: Treachery -> Bool
@@ -160,3 +156,4 @@ treacheryAttrs = \case
   SpectralMist' attrs -> coerce attrs
   DraggedUnder' attrs -> coerce attrs
   RipplesOnTheSurface' attrs -> coerce attrs
+  CurseOfTheRougarou' (CurseOfTheRougarou (attrs `With` _)) -> attrs

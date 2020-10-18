@@ -273,6 +273,9 @@ allPlayerCards = HashMap.fromList
   , ("50008", mindWipe3)
   , ("50009", digDeep2)
   , ("50010", rabbitsFoot3)
+  , ("81019", ladyEsprit)
+  , ("81029", curseOfTheRougarou)
+  , ("81030", monstrousTransformation)
   ]
 
 placeholderAsset :: CardId -> PlayerCard
@@ -1099,3 +1102,24 @@ rabbitsFoot3 cardId = (asset cardId "50010" "Rabbit's Foot" 1 Survivor)
   , pcTraits = setFromList [Item, Charm]
   , pcLevel = 3
   }
+
+ladyEsprit :: CardId -> PlayerCard
+ladyEsprit cardId = (asset cardId "81019" "Lady Espirt" 4 Neutral)
+  { pcSkills = [SkillWillpower, SkillIntellect, SkillWild]
+  , pcTraits = setFromList [Ally, Sorcerer]
+  }
+
+curseOfTheRougarou :: CardId -> PlayerCard
+curseOfTheRougarou cardId = (treachery cardId "81029" "Curse of the Rougarou" 0
+                            )
+  { pcTraits = setFromList [Curse]
+  , pcRevelation = True
+  }
+
+monstrousTransformation :: CardId -> PlayerCard
+monstrousTransformation cardId =
+  (asset cardId "81030" "Monstrous Transformation" 0 Neutral)
+    { pcTraits = setFromList [Talent]
+    , pcFast = True
+    , pcWindows = setFromList [DuringTurn You]
+    }

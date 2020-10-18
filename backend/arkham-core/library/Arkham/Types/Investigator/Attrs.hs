@@ -789,7 +789,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   MoveAction iid lid False | iid == investigatorId -> a <$ unshiftMessages
     [Will (MoveTo iid lid), MoveFrom iid investigatorLocation, MoveTo iid lid]
   Will (FailedSkillTest iid _ _ (InvestigatorTarget iid') _)
-    | iid == iid' && iid == investigatorId -> do
+    | iid == iid' && iid == investigatorId ->
       a <$ unshiftMessage
         (CheckWindow investigatorId [WhenWouldFailSkillTest You])
   InvestigatorDirectDamage iid source damage horror

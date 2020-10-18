@@ -54,6 +54,7 @@ data Treachery
   | CursedSwamp' CursedSwamp
   | SpectralMist' SpectralMist
   | DraggedUnder' DraggedUnder
+  | RipplesOnTheSurface' RipplesOnTheSurface
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -115,6 +116,7 @@ allTreacheries = mapFromList
   , ("81024", (CursedSwamp' .) . cursedSwamp)
   , ("81025", (SpectralMist' .) . spectralMist)
   , ("81026", (DraggedUnder' .) . draggedUnder)
+  , ("81027", (RipplesOnTheSurface' .) . ripplesOnTheSurface)
   ]
 
 isWeakness :: Treachery -> Bool
@@ -157,3 +159,4 @@ treacheryAttrs = \case
   CursedSwamp' attrs -> coerce attrs
   SpectralMist' attrs -> coerce attrs
   DraggedUnder' attrs -> coerce attrs
+  RipplesOnTheSurface' attrs -> coerce attrs

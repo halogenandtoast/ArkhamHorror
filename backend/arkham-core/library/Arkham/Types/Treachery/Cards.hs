@@ -28,6 +28,7 @@ import Arkham.Types.Treachery.Cards.OnWingsOfDarkness as X
 import Arkham.Types.Treachery.Cards.Paranoia as X
 import Arkham.Types.Treachery.Cards.Psychosis as X
 import Arkham.Types.Treachery.Cards.RexsCurse as X
+import Arkham.Types.Treachery.Cards.RipplesOnTheSurface as X
 import Arkham.Types.Treachery.Cards.RottingRemains as X
 import Arkham.Types.Treachery.Cards.SearchingForIzzie as X
 import Arkham.Types.Treachery.Cards.SmiteTheWicked as X

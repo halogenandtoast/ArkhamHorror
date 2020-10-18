@@ -184,20 +184,44 @@ spawnAtOneOf iid eid targetLids = do
     lids ->
       unshiftMessage (Ask iid $ ChooseOne [ EnemySpawn lid eid | lid <- lids ])
 
-modifiedEnemyFight :: Attrs -> Int
-modifiedEnemyFight Attrs {..} = foldr
-  applyModifier
-  enemyFight
-  (concat . toList $ enemyModifiers)
+modifiedEnemyFight
+  :: ( MonadReader env m
+     , MonadIO m
+     , HasModifiersFor env env
+     , HasSource ForSkillTest env
+     , HasTestAction ForSkillTest env
+     )
+  => Attrs
+  -> m Int
+modifiedEnemyFight Attrs {..} = do
+  source <-
+    asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
+  maction <- asks $ getTestAction ForSkillTest
+  modifiers' <-
+    getModifiersFor (SkillTestSource source maction) (EnemyTarget enemyId)
+      =<< ask
+  pure $ foldr applyModifier enemyFight modifiers'
  where
   applyModifier (EnemyFight m) n = max 0 (n + m)
   applyModifier _ n = n
 
-modifiedEnemyEvade :: Attrs -> Int
-modifiedEnemyEvade Attrs {..} = foldr
-  applyModifier
-  enemyEvade
-  (concat . toList $ enemyModifiers)
+modifiedEnemyEvade
+  :: ( MonadReader env m
+     , MonadIO m
+     , HasModifiersFor env env
+     , HasSource ForSkillTest env
+     , HasTestAction ForSkillTest env
+     )
+  => Attrs
+  -> m Int
+modifiedEnemyEvade Attrs {..} = do
+  source <-
+    asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
+  maction <- asks $ getTestAction ForSkillTest
+  modifiers' <-
+    getModifiersFor (SkillTestSource source maction) (EnemyTarget enemyId)
+      =<< ask
+  pure $ foldr applyModifier enemyEvade modifiers'
  where
   applyModifier (EnemyEvade m) n = max 0 (n + m)
   applyModifier _ n = n
@@ -372,6 +396,7 @@ instance EnemyRunner env => RunMessage env Attrs where
           onFailure = if Keyword.Retaliate `elem` enemyKeywords
             then [EnemyAttack iid eid, FailedAttackEnemy iid eid]
             else [FailedAttackEnemy iid eid]
+        enemyFight' <- modifiedEnemyFight a
         a <$ unshiftMessage
           (BeginSkillTest
             iid
@@ -379,7 +404,7 @@ instance EnemyRunner env => RunMessage env Attrs where
             (EnemyTarget eid)
             (Just Action.Fight)
             skillType
-            (modifiedEnemyFight a)
+            enemyFight'
             [SuccessfulAttackEnemy iid eid, InvestigatorDamageEnemy iid eid]
             onFailure
             tempModifiers
@@ -398,6 +423,7 @@ instance EnemyRunner env => RunMessage env Attrs where
             Damage EnemyJustEvadedTarget source' n ->
               EnemyDamage eid iid source' n
             msg' -> msg'
+        enemyEvade' <- modifiedEnemyEvade a
         a <$ unshiftMessage
           (BeginSkillTest
             iid
@@ -405,7 +431,7 @@ instance EnemyRunner env => RunMessage env Attrs where
             (EnemyTarget eid)
             (Just Action.Evade)
             skillType
-            (modifiedEnemyEvade a)
+            enemyEvade'
             (EnemyEvaded iid eid : onSuccess')
             onFailure'
             skillTestModifiers
@@ -481,5 +507,6 @@ instance EnemyRunner env => RunMessage env Attrs where
       pure $ a & treacheries %~ insertSet tid
     AttachAsset aid (EnemyTarget eid) | eid == enemyId ->
       pure $ a & assets %~ insertSet aid
+    AttachAsset aid _ -> pure $ a & assets %~ deleteSet aid
     Blanked msg' -> runMessage msg' a
     _ -> pure a

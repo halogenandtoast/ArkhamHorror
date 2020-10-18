@@ -12,6 +12,7 @@ import Arkham.Types.CommitRestriction
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
+import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait
 import Control.Monad.Fail
 import Data.Coerce
@@ -600,9 +601,13 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
     pure $ a & clues .~ 0 & resources .~ 0
   EnemyMove eid _ lid | lid == investigatorLocation -> do
-    aloofEnemyIds <-
-      asks $ HashSet.map unAloofEnemyId . getSet investigatorLocation
-    when (eid `notElem` aloofEnemyIds)
+    keywords <- asks $ getSet eid
+    unengaged <- asks $ null . getSet @InvestigatorId eid
+    when
+        (Keyword.Aloof
+        `notElem` keywords
+        && (unengaged || Keyword.Massive `elem` keywords)
+        )
       $ unshiftMessage (EnemyEngageInvestigator eid investigatorId)
     pure a
   EnemyEngageInvestigator eid iid | iid == investigatorId ->
@@ -620,6 +625,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   ChooseAndDiscardAsset iid | iid == investigatorId -> a <$ unshiftMessage
     (Ask iid $ ChooseOne $ map (Discard . AssetTarget) (setToList $ a ^. assets)
     )
+  AttachAsset aid _ | aid `member` investigatorAssets ->
+    pure $ a & assets %~ deleteSet aid
   AttachTreachery tid (InvestigatorTarget iid) | iid == investigatorId ->
     pure $ a & treacheries %~ insertSet tid
   AllCheckHandSize | not (a ^. defeated || a ^. resigned) -> do

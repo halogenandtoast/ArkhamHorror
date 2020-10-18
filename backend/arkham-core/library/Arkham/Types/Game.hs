@@ -1726,7 +1726,7 @@ runGameMessage msg g = case msg of
           )
   CreateStoryAssetAt cardCode lid -> do
     (assetId', asset') <- createAsset cardCode
-    unshiftMessage (AddAssetAt assetId' lid)
+    unshiftMessage $ AttachAsset assetId' (LocationTarget lid)
     pure $ g & assets . at assetId' ?~ asset'
   CreateWeaknessInThreatArea cardCode iid -> do
     (treacheryId', treachery') <- createTreachery cardCode (Just iid)

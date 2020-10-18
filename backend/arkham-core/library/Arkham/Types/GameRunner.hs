@@ -38,6 +38,7 @@ type GameRunner env
     , HasId ActiveInvestigatorId () env
     , HasId LeadInvestigatorId () env
     , HasId CardCode EnemyId env
+    , HasId LocationId EnemyId env
     , HasId LocationId InvestigatorId env
     , HasList DeckCard (InvestigatorId, Trait) env
     , HasList UsedAbility () env

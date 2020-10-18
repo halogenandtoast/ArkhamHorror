@@ -4,8 +4,10 @@ module Arkham.Types.Treachery.Cards
 where
 
 import Arkham.Types.Treachery.Cards.AbandonedAndAlone as X
+import Arkham.Types.Treachery.Cards.InsatiableBloodlust as X
 import Arkham.Types.Treachery.Cards.Amnesia as X
 import Arkham.Types.Treachery.Cards.AncientEvils as X
+import Arkham.Types.Treachery.Cards.BeastOfTheBayou as X
 import Arkham.Types.Treachery.Cards.CoverUp as X
 import Arkham.Types.Treachery.Cards.CryptChill as X
 import Arkham.Types.Treachery.Cards.CursedSwamp as X

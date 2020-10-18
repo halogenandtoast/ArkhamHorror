@@ -26,6 +26,7 @@ import Arkham.Types.Asset.Cards.ElderSignAmulet3 as X
 import Arkham.Types.Asset.Cards.Encyclopedia2 as X
 import Arkham.Types.Asset.Cards.FireAxe as X
 import Arkham.Types.Asset.Cards.FirstAid as X
+import Arkham.Types.Asset.Cards.FishingNet as X
 import Arkham.Types.Asset.Cards.Flashlight as X
 import Arkham.Types.Asset.Cards.ForbiddenKnowledge as X
 import Arkham.Types.Asset.Cards.FortyFiveAutomatic as X

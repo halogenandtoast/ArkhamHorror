@@ -19,6 +19,7 @@ import Arkham.Types.Enemy.Cards.RelentlessDarkYoung as X
 import Arkham.Types.Enemy.Cards.RuthTurner as X
 import Arkham.Types.Enemy.Cards.ScreechingByakhee as X
 import Arkham.Types.Enemy.Cards.SilverTwilightAcolyte as X
+import Arkham.Types.Enemy.Cards.SlimeCoveredDhole as X
 import Arkham.Types.Enemy.Cards.StubbornDetective as X
 import Arkham.Types.Enemy.Cards.SwampLeech as X
 import Arkham.Types.Enemy.Cards.SwarmOfRats as X

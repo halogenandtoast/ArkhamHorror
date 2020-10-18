@@ -281,6 +281,9 @@ instance ActionRunner env => HasActions env Attrs where
       ]
   getActions _ _ _ = pure []
 
+toSource :: Attrs -> Source
+toSource Attrs { enemyId } = EnemySource enemyId
+
 isTarget :: Attrs -> Target -> Bool
 isTarget Attrs { enemyId } (EnemyTarget eid) = enemyId == eid
 isTarget _ _ = False

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 847c6c6d1a64ff7cc55f2ff4d39faea1196a54aab5aa4ae8c6c0c2cbb357b752
+-- hash: e478f240a289f389a3d654a73ac40eb8a18c6211156426e7bac602c5123d7193
 
 name:           arkham-core
 version:        0.0.0
@@ -169,6 +169,7 @@ library
       Arkham.Types.Enemy.Cards.RuthTurner
       Arkham.Types.Enemy.Cards.ScreechingByakhee
       Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
+      Arkham.Types.Enemy.Cards.SlimeCoveredDhole
       Arkham.Types.Enemy.Cards.StubbornDetective
       Arkham.Types.Enemy.Cards.SwampLeech
       Arkham.Types.Enemy.Cards.SwarmOfRats

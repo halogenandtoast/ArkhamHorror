@@ -28,6 +28,7 @@ type GameRunner env
     , HasCount SanityDamageCount EnemyId env
     , HasId (Maybe OwnerId) AssetId env
     , HasId (Maybe StoryAssetId) CardCode env
+    , HasId (Maybe StoryEnemyId) CardCode env
     , HasId ActiveInvestigatorId () env
     , HasId LeadInvestigatorId () env
     , HasId CardCode EnemyId env

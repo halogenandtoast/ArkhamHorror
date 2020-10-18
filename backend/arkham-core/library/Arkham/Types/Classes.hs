@@ -285,6 +285,7 @@ type ActionRunner env
     , HasSet ConnectedLocationId LocationId env
     , HasSet EnemyId LocationId env
     , HasSet ExhaustedAssetId InvestigatorId env
+    , HasSet ExhaustedEnemyId LocationId env
     , HasSet InvestigatorId () env
     , HasSet InvestigatorId EnemyId env
     , HasSet InvestigatorId LocationId env

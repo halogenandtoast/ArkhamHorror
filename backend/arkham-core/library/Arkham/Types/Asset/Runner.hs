@@ -1,5 +1,7 @@
 module Arkham.Types.Asset.Runner where
 
+import ClassyPrelude
+
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -17,6 +19,7 @@ type AssetRunner env
     , HasCount HorrorCount InvestigatorId env
     , HasCount ResourceCount InvestigatorId env
     , HasCount SanityDamageCount EnemyId env
+    , HasId (Maybe StoryEnemyId) CardCode env
     , HasId ActiveInvestigatorId () env
     , HasId CardCode EnemyId env
     , HasId LocationId InvestigatorId env

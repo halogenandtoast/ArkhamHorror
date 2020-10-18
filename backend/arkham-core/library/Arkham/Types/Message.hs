@@ -26,6 +26,7 @@ import Arkham.Types.ChaosBagStepState
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Modifier
@@ -376,6 +377,10 @@ data Message
   | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep
   | ChooseTokenGroups Source InvestigatorId ChaosBagStep
   | NextChaosBagStep Source InvestigatorId RequestedTokenStrategy
+  | AddTraits Target [Trait]
+  | RemoveTraits Target [Trait]
+  | AddKeywords Target [Keyword]
+  | RemoveKeywords Target [Keyword]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

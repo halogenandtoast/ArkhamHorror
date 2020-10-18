@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1489e854c4822129aa5f9faa0551c63a1ed799437dc44b3f6589d1147d9f7f13
+-- hash: 2e4e41bc7d288a6a9dcaea9bc7919d064ba7366ad52b09f6359b4bb66aba47b8
 
 name:           arkham-core
 version:        0.0.0
@@ -76,6 +76,7 @@ library
       Arkham.Types.Asset.Cards.Encyclopedia2
       Arkham.Types.Asset.Cards.FireAxe
       Arkham.Types.Asset.Cards.FirstAid
+      Arkham.Types.Asset.Cards.FishingNet
       Arkham.Types.Asset.Cards.Flashlight
       Arkham.Types.Asset.Cards.ForbiddenKnowledge
       Arkham.Types.Asset.Cards.FortyFiveAutomatic

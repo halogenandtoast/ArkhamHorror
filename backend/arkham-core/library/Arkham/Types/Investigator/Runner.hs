@@ -9,6 +9,7 @@ import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Keyword
 import Arkham.Types.Location
 import Arkham.Types.LocationId
 import Arkham.Types.Message
@@ -49,4 +50,5 @@ type InvestigatorRunner investigator env
     , HasSet HandCardId InvestigatorId env
     , HasSource ForSkillTest env
     , HasTestAction ForSkillTest env
+    , HasSet Keyword EnemyId env
     )

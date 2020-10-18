@@ -11,24 +11,25 @@ import Arkham.Types.Trait
 
 type AssetRunner env
   = ( HasQueue env
+    , HasCount ClueCount LocationId env
+    , HasCount EnemyCount InvestigatorId env
+    , HasCount HealthDamageCount EnemyId env
+    , HasCount HorrorCount InvestigatorId env
+    , HasCount ResourceCount InvestigatorId env
+    , HasCount SanityDamageCount EnemyId env
+    , HasId ActiveInvestigatorId () env
+    , HasId CardCode EnemyId env
+    , HasId LocationId InvestigatorId env
+    , HasList DeckCard (InvestigatorId, Trait) env
+    , HasModifiers env InvestigatorId
+    , HasSet AccessibleLocationId LocationId env
+    , HasSet AssetId InvestigatorId env
+    , HasSet BlockedLocationId () env
+    , HasSet ConnectedLocationId LocationId env
+    , HasSet EnemyId InvestigatorId env
+    , HasSet EnemyId LocationId env
     , HasSet InvestigatorId () env
     , HasSet InvestigatorId LocationId env
-    , HasSet EnemyId LocationId env
-    , HasId LocationId InvestigatorId env
-    , HasCount EnemyCount InvestigatorId env
-    , HasCount ClueCount LocationId env
-    , HasCount ResourceCount InvestigatorId env
-    , HasList DeckCard (InvestigatorId, Trait) env
-    , HasSet Trait EnemyId env
-    , HasId ActiveInvestigatorId () env
-    , HasSet ConnectedLocationId LocationId env
-    , HasSet AccessibleLocationId LocationId env
-    , HasSet BlockedLocationId () env
-    , HasSet EnemyId InvestigatorId env
     , HasSet Trait AssetId env
-    , HasSet AssetId InvestigatorId env
-    , HasCount HorrorCount InvestigatorId env
-    , HasModifiers env InvestigatorId
-    , HasCount SanityDamageCount EnemyId env
-    , HasCount HealthDamageCount EnemyId env
+    , HasSet Trait EnemyId env
     )

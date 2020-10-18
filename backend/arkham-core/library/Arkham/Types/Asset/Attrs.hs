@@ -14,6 +14,7 @@ data Attrs = Attrs
   , assetCost :: CardCost
   , assetInvestigator :: Maybe InvestigatorId
   , assetLocation :: Maybe LocationId
+  , assetEnemy :: Maybe EnemyId
   , assetActions :: [Message]
   , assetSlots :: [SlotType]
   , assetHealth :: Maybe Int
@@ -49,6 +50,7 @@ baseAttrs aid cardCode =
       , assetCost = pcCost
       , assetInvestigator = Nothing
       , assetLocation = Nothing
+      , assetEnemy = Nothing
       , assetActions = mempty
       , assetSlots = mempty
       , assetHealth = Nothing
@@ -88,6 +90,9 @@ investigator = lens assetInvestigator $ \m x -> m { assetInvestigator = x }
 
 location :: Lens' Attrs (Maybe LocationId)
 location = lens assetLocation $ \m x -> m { assetLocation = x }
+
+enemy :: Lens' Attrs (Maybe EnemyId)
+enemy = lens assetEnemy $ \m x -> m { assetEnemy = x }
 
 getInvestigator :: HasCallStack => Attrs -> InvestigatorId
 getInvestigator = fromJustNote "asset must be owned" . view investigator
@@ -131,7 +136,10 @@ instance (HasQueue env, HasModifiers env InvestigatorId) => RunMessage env Attrs
       Uses useType' m | useType == useType' ->
         pure $ a & uses .~ Uses useType (n + m)
       _ -> error "Trying to add the wrong use type"
-    AddAssetAt aid lid | aid == assetId -> pure $ a & location ?~ lid
+    AttachAsset aid target | aid == assetId -> case target of
+      LocationTarget lid -> pure $ a & location ?~ lid
+      EnemyTarget eid -> pure $ a & enemy ?~ eid
+      _ -> error "Cannot attach asset to that type"
     Discard target | target `is` a -> case assetInvestigator of
       Nothing -> pure a
       Just iid -> a <$ unshiftMessage

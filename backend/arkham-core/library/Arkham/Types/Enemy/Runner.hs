@@ -6,6 +6,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Prey
 import Arkham.Types.Query
+import Arkham.Types.Target
 import Arkham.Types.Trait
 
 type EnemyRunner env
@@ -25,4 +26,7 @@ type EnemyRunner env
     , HasSet Trait EnemyId env
     , HasModifiers env LocationId
     , HasSet ClosestLocationId (LocationId, LocationId) env
+    , HasModifiersFor env env
+    , HasSource ForSkillTest env
+    , HasTestAction ForSkillTest env
     )

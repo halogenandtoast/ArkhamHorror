@@ -249,8 +249,9 @@ instance (LocationRunner env) => RunMessage env Attrs where
       pure $ a & treacheries %~ HashSet.delete tid
     Discard (EventTarget eid) -> pure $ a & events %~ HashSet.delete eid
     Discard (EnemyTarget eid) -> pure $ a & enemies %~ HashSet.delete eid
-    AddAssetAt aid lid | lid == locationId ->
-      pure $ a & assets %~ HashSet.insert aid
+    AttachAsset aid (LocationTarget lid) | lid == locationId ->
+      pure $ a & assets %~ insertSet aid
+    AttachAsset aid _ -> pure $ a & assets %~ deleteSet aid
     AddConnection lid symbol' -> do
       -- | Since connections can be one directional we need to check both cases
       let

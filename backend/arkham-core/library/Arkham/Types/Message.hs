@@ -318,7 +318,6 @@ data Message
   | TakeControlOfAsset InvestigatorId AssetId
   | TakeControlOfSetAsideAsset InvestigatorId CardCode
   | PutCardIntoPlay InvestigatorId Card (Maybe Target)
-  | AddAssetAt AssetId LocationId
   | Resolution Int
   | GameOver
   | NoResolution

@@ -904,6 +904,36 @@ instance HasSet FarthestLocationId InvestigatorId (Game queue) where
     in
       setFromList . map FarthestLocationId $ getLongestPath g start (const True)
 
+distanceSingletons :: HashMap Int [LocationId] -> HashMap LocationId Int
+distanceSingletons hmap = foldr
+  (\(n, lids) hmap' -> unions (hmap' : map (`singletonMap` n) lids))
+  mempty
+  (mapToList hmap)
+
+distanceAggregates :: HashMap LocationId Int -> HashMap Int [LocationId]
+distanceAggregates hmap = unionsWith (<>) (map convert $ mapToList hmap)
+  where convert = uncurry singletonMap . second pure . swap
+
+instance HasSet FarthestLocationId [InvestigatorId] (Game queue) where
+  getSet iids game =
+    let
+      distances = flip map iids $ \iid ->
+        let start = locationFor iid game
+        in
+          distanceSingletons $ evalState
+            (markDistances game start (const True))
+            (LPState (pure start) (singleton start) mempty)
+      overallDistances =
+        distanceAggregates $ foldr (unionWith min) mempty distances
+    in
+      setFromList
+      . maybe [] (map FarthestLocationId)
+      . headMay
+      . map snd
+      . sortOn (Down . fst)
+      . mapToList
+      $ overallDistances
+
 instance HasSet Int SkillType (Game queue) where
   getSet skillType g =
     setFromList $ map (getSkill skillType) (toList $ g ^. investigators)

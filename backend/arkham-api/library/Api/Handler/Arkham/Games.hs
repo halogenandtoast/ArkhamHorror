@@ -56,7 +56,7 @@ catchingConnectionException :: WebSocketsT Handler () -> WebSocketsT Handler ()
 catchingConnectionException f =
   f `catch` \e -> $(logWarn) $ pack $ show (e :: ConnectionException)
 
-data GetGameJson = GetGameJson { investigatorId :: InvestigatorId, game :: Entity ArkhamGame }
+data GetGameJson = GetGameJson { investigatorId :: Maybe InvestigatorId, game :: Entity ArkhamGame }
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON)
 
@@ -67,8 +67,8 @@ getApiV1ArkhamGameR gameId = do
   webSockets (gameStream gameId)
   let
     Game {..} = arkhamGameCurrentData ge
-    investigatorId = fromJustNote "not in game"
-      $ HashMap.lookup (fromIntegral $ fromSqlKey userId) gamePlayers
+    investigatorId =
+      HashMap.lookup (fromIntegral $ fromSqlKey userId) gamePlayers
   pure $ GetGameJson investigatorId (Entity gameId ge)
 
 getApiV1ArkhamGamesR :: Handler [Entity ArkhamGame]

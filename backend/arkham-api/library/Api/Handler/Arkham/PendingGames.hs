@@ -26,14 +26,8 @@ putApiV1ArkhamPendingGameR gameId = do
   when (userId' `HashMap.member` gamePlayers arkhamGameCurrentData)
     $ invalidArgs ["Already joined game"]
 
-  deckA :: [Entity ArkhamDeck] <- runDB $ select . from $ \decks -> do
-    where_ $ decks ^. persistIdField ==. val deckId
-    where_ $ decks ^. ArkhamDeckUserId ==. val userId
-    limit 1
-    pure decks
-
-  deck :: ArkhamDeck <- maybe notFound (pure . entityVal) (headMay deckA)
-
+  deck <- runDB $ get404 deckId
+  when (arkhamDeckUserId deck /= userId) notFound
   (iid, decklist) <- liftIO $ loadDecklist deck
   when (iid `HashMap.member` gameInvestigators arkhamGameCurrentData)
     $ invalidArgs ["Investigator already taken"]

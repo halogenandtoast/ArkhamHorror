@@ -1,78 +1,81 @@
 <template>
-  <form id="new-campaign" @submit.prevent="start">
-    <p>Number of Players</p>
-    <input type="radio" v-model="playerCount" :value="1" /><label>1</label>
-    <input type="radio" v-model="playerCount" :value="2" /><label>2</label>
-
-    <p>Difficulty</p>
-    <div v-for="difficulty in difficulties" :key="difficulty">
-      <input
-        type="radio"
-        v-model="selectedDifficulty"
-        :value="difficulty"
-        :checked="difficulty === selectedDifficulty"
-      />
-      <label>{{difficulty}}</label>
+  <div v-if="ready">
+    <div v-if="decks.length == 0">
+      No decks, please add one first here <router-link to="/decks">here</router-link>
     </div>
+    <form v-else id="new-campaign" @submit.prevent="start">
+      <p>Number of Players</p>
+      <input type="radio" v-model="playerCount" :value="1" /><label>1</label>
+      <input type="radio" v-model="playerCount" :value="2" /><label>2</label>
 
-    <div>
-      <p>ArkhamDB deck url</p>
-      <input
-        type="url"
-        v-model="deck"
-        @change="loadDeck"
-        @paste.prevent="pasteDeck($event)"
-      />
-      <img v-if="investigator" :src="`/img/arkham/portraits/${investigator}.jpg`" />
-    </div>
+      <p>Difficulty</p>
+      <div v-for="difficulty in difficulties" :key="difficulty">
+        <input
+          type="radio"
+          v-model="selectedDifficulty"
+          :value="difficulty"
+          :checked="difficulty === selectedDifficulty"
+        />
+        <label>{{difficulty}}</label>
+      </div>
 
-    <div>
-      <input type="radio" v-model="standalone" :value="false"> <label>Campaign</label>
-      <input type="radio" v-model="standalone" :value="true"> <label>Standalone</label>
-    </div>
+      <div>
+        <p>Deck</p>
+        <select v-model="deckId">
+          <option disabled :value="null">-- Select a Deck--</option>
+          <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
+        </select>
+      </div>
 
-    <div v-if="standalone">
-      <select v-model="selectedScenario">
-        <option
-          v-for="scenario in scenarios"
-          :key="scenario.id"
-          :value="scenario.id"
-          :selected="scenario.id == selectedScenario"
-          >{{scenario.name}}</option>
-      </select>
-    </div>
-    <div v-else>
-      <select v-model="selectedCampaign">
-        <option
-          v-for="campaign in campaigns"
-          :key="campaign.id"
-          :value="campaign.id"
-          :selected="campaign.id == selectedCampaign"
-          >{{campaign.name}}</option>
-      </select>
-    </div>
+      <div>
+        <input type="radio" v-model="standalone" :value="false"> <label>Campaign</label>
+        <input type="radio" v-model="standalone" :value="true"> <label>Standalone</label>
+      </div>
 
-    <div>
-      <p>Campaign Name</p>
-      <input v-model="campaignName" :placeholder="currentCampaignName" />
-    </div>
+      <div v-if="standalone">
+        <select v-model="selectedScenario">
+          <option
+            v-for="scenario in scenarios"
+            :key="scenario.id"
+            :value="scenario.id"
+            :selected="scenario.id == selectedScenario"
+            >{{scenario.name}}</option>
+        </select>
+      </div>
+      <div v-else>
+        <select v-model="selectedCampaign">
+          <option
+            v-for="campaign in campaigns"
+            :key="campaign.id"
+            :value="campaign.id"
+            :selected="campaign.id == selectedCampaign"
+            >{{campaign.name}}</option>
+        </select>
+      </div>
 
-    <button type="submit" :disabled="disabled">Start</button>
-  </form>
+      <div>
+        <p>Campaign Name</p>
+        <input v-model="campaignName" :placeholder="currentCampaignName" />
+      </div>
+
+      <button type="submit" :disabled="disabled">Start</button>
+    </form>
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { newGame } from '@/arkham/api';
+import * as Arkham from '@/arkham/types/Deck';
+import { fetchDecks, newGame } from '@/arkham/api';
 import { Difficulty } from '@/arkham/types/Difficulty';
 
 @Component
 export default class NewCampaign extends Vue {
+  private decks: Arkham.Deck[] = [];
+  ready = false
   playerCount = 1
   difficulties: Difficulty[] = ['Easy', 'Standard', 'Hard', 'Expert'];
   selectedDifficulty: Difficulty = 'Easy'
-  deck: string | null = null
-  investigator: string | null = null
   deckId: string | null = null
   standalone = false
   selectedCampaign = '01'
@@ -103,8 +106,15 @@ export default class NewCampaign extends Vue {
     },
   ]
 
+  async mounted() {
+    fetchDecks().then((decks) => {
+      this.decks = decks;
+      this.ready = true;
+    });
+  }
+
   get disabled() {
-    return !this.investigator;
+    return !this.deckId;
   }
 
   get currentCampaignName() {
@@ -128,30 +138,6 @@ export default class NewCampaign extends Vue {
     }
 
     return '';
-  }
-
-  pasteDeck(evt: ClipboardEvent) {
-    if (evt.clipboardData) {
-      this.deck = evt.clipboardData.getData('text');
-      this.loadDeck();
-    }
-  }
-
-  loadDeck() {
-    if (!this.deck) {
-      return;
-    }
-
-    const matches = this.deck.match(/\/decklist(\/view)?\/([^/]+)/);
-    if (matches && matches[2]) {
-      fetch(`https://arkhamdb.com/api/public/decklist/${matches[2]}`)
-        .then((response) => response.json())
-        .then((data) => {
-          const deckId = matches[2];
-          this.investigator = data.investigator_code;
-          this.deckId = deckId;
-        });
-    }
   }
 
   start() {

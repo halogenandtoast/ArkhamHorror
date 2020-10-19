@@ -13,7 +13,7 @@ import Entity.Arkham.Player
 import Import hiding (on, (==.))
 import Safe (fromJustNote)
 
-newtype JoinGameJson = JoinGameJson { deckId :: String }
+newtype JoinGameJson = JoinGameJson { deckId :: ArkhamDeckId }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
 
@@ -25,12 +25,21 @@ putApiV1ArkhamPendingGameR gameId = do
   ArkhamGame {..} <- runDB $ get404 gameId
   when (userId' `HashMap.member` gamePlayers arkhamGameCurrentData)
     $ invalidArgs ["Already joined game"]
-  (iid, deck) <- liftIO $ loadDeck deckId
+
+  deckA :: [Entity ArkhamDeck] <- runDB $ select . from $ \decks -> do
+    where_ $ decks ^. persistIdField ==. val deckId
+    where_ $ decks ^. ArkhamDeckUserId ==. val userId
+    limit 1
+    pure decks
+
+  deck :: ArkhamDeck <- maybe notFound (pure . entityVal) (headMay deckA)
+
+  (iid, decklist) <- liftIO $ loadDecklist deck
   when (iid `HashMap.member` gameInvestigators arkhamGameCurrentData)
     $ invalidArgs ["Investigator already taken"]
   ge <-
     liftIO
-    $ addInvestigator userId' (lookupInvestigator iid) deck
+    $ addInvestigator userId' (lookupInvestigator iid) decklist
     =<< toInternalGame arkhamGameCurrentData
   runDB $ insert_ $ ArkhamPlayer userId gameId
   writeChannel <- getChannel gameId

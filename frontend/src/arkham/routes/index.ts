@@ -1,9 +1,17 @@
 import Game from '@/arkham/views/Game.vue';
+import Decks from '@/arkham/views/Decks.vue';
 import EditGame from '@/arkham/views/EditGame.vue';
 import JoinGame from '@/arkham/views/JoinGame.vue';
 import NewCampaign from '@/arkham/views/NewCampaign.vue';
 
 export default [
+  {
+    path: '/decks',
+    name: 'Decks',
+    component: Decks,
+    meta: { requiresAuth: true },
+    props: true,
+  },
   {
     path: '/campaigns/new',
     name: 'NewCampaign',

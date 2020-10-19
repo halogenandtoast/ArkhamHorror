@@ -478,9 +478,12 @@ instance EnemyRunner env => RunMessage env Attrs where
             else a <$ unshiftMessage (DisengageEnemy iid enemyId)
     AfterEnterLocation iid lid | lid == enemyLocation -> do
       when
-          (null enemyEngagedInvestigators
-          || Keyword.Massive
-          `elem` enemyKeywords
+          (Keyword.Aloof
+          `notElem` enemyKeywords
+          && (null enemyEngagedInvestigators
+             || Keyword.Massive
+             `elem` enemyKeywords
+             )
           )
         $ unshiftMessage (EnemyEngageInvestigator enemyId iid)
       pure a

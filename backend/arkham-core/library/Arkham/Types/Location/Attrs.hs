@@ -252,7 +252,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
     AttachAsset aid (LocationTarget lid) | lid == locationId ->
       pure $ a & assets %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assets %~ deleteSet aid
-    AddConnection lid symbol' -> do
+    AddConnection lid symbol' | lid /= locationId -> do
       -- | Since connections can be one directional we need to check both cases
       let
         symbols = if locationRevealed
@@ -266,7 +266,7 @@ instance (LocationRunner env) => RunMessage env Attrs where
             ]
           pure $ a & connectedLocations %~ HashSet.insert lid
         else a <$ unshiftMessages [AddConnectionBack locationId locationSymbol]
-    AddConnectionBack lid symbol' -> do
+    AddConnectionBack lid symbol' | lid /= locationId -> do
       let
         symbols = if locationRevealed
           then locationRevealedConnectedSymbols

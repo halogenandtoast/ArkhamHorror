@@ -21,7 +21,7 @@ swampLeech uuid = SwampLeech $ (baseAttrs uuid "81023")
   , enemyEvade = 0
   }
 
-instance EnemyRunner env => HasModifiersFor env SwampLeech where
+instance HasModifiersFor env SwampLeech where
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env SwampLeech where

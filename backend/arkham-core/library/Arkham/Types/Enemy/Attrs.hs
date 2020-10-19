@@ -199,8 +199,8 @@ modifiedEnemyFight
   => Attrs
   -> m Int
 modifiedEnemyFight Attrs {..} = do
-  source <-
-    asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
+  msource <- asks $ getSource ForSkillTest
+  let source = fromMaybe (EnemySource enemyId) msource
   modifiers' <- getModifiersFor source (EnemyTarget enemyId) =<< ask
   pure $ foldr applyModifier enemyFight modifiers'
  where
@@ -216,8 +216,8 @@ modifiedEnemyEvade
   => Attrs
   -> m Int
 modifiedEnemyEvade Attrs {..} = do
-  source <-
-    asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
+  msource <- asks $ getSource ForSkillTest
+  let source = fromMaybe (EnemySource enemyId) msource
   modifiers' <- getModifiersFor source (EnemyTarget enemyId) =<< ask
   pure $ foldr applyModifier enemyEvade modifiers'
  where
@@ -342,9 +342,12 @@ instance EnemyRunner env => RunMessage env Attrs where
       case miid of
         Just iid ->
           when
-              (null enemyEngagedInvestigators
-              || Keyword.Massive
-              `elem` enemyKeywords
+              (Keyword.Aloof
+              `notElem` enemyKeywords
+              && (null enemyEngagedInvestigators
+                 || Keyword.Massive
+                 `elem` enemyKeywords
+                 )
               )
             $ unshiftMessage (EnemyEngageInvestigator enemyId iid)
         Nothing -> pure ()

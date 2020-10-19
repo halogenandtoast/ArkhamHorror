@@ -1,58 +1,44 @@
 <template>
-  <form id="join-game" @submit.prevent="join">
-    <div>
-      <p>ArkhamDB deck url</p>
-      <input
-        type="url"
-        v-model="deck"
-        @change="loadDeck"
-        @paste.prevent="pasteDeck($event)"
-      />
-      <img v-if="investigator" :src="`/img/arkham/portraits/${investigator}.jpg`" />
+  <div v-if="ready">
+    <div v-if="decks.length == 0">
+      No decks, please add one first here <router-link to="/decks">here</router-link>
     </div>
+    <form v-else id="join-game" @submit.prevent="join">
+      <div>
+        <p>Deck</p>
+        <select v-model="deckId">
+          <option disabled :value="null">-- Select a Deck--</option>
+          <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
+        </select>
+      </div>
 
-    <button type="submit" :disabled="disabled">Join</button>
-  </form>
+      <button type="submit" :disabled="disabled">Join</button>
+    </form>
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { joinGame } from '@/arkham/api';
+import { fetchDecks, joinGame } from '@/arkham/api';
+import * as Arkham from '@/arkham/types/Deck';
 
 @Component
 export default class NewCampaign extends Vue {
   @Prop(String) readonly gameId!: string;
+  private decks: Arkham.Deck[] = [];
 
-  deck: string | null = null
-  investigator: string | null = null
   deckId: string | null = null
+  ready = false
+
+  async mounted() {
+    fetchDecks().then((decks) => {
+      this.decks = decks;
+      this.ready = true;
+    });
+  }
 
   get disabled() {
-    return !this.investigator;
-  }
-
-  pasteDeck(evt: ClipboardEvent) {
-    if (evt.clipboardData) {
-      this.deck = evt.clipboardData.getData('text');
-      this.loadDeck();
-    }
-  }
-
-  loadDeck() {
-    if (!this.deck) {
-      return;
-    }
-
-    const matches = this.deck.match(/\/decklist(\/view)?\/([^/]+)/);
-    if (matches && matches[2]) {
-      fetch(`https://arkhamdb.com/api/public/decklist/${matches[2]}`)
-        .then((response) => response.json())
-        .then((data) => {
-          const deckId = matches[2];
-          this.investigator = data.investigator_code;
-          this.deckId = deckId;
-        });
-    }
+    return !this.deckId;
   }
 
   join() {

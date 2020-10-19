@@ -80,7 +80,7 @@ getApiV1ArkhamGamesR = do
     pure games
 
 data CreateGamePost = CreateGamePost
-  { deckId :: String
+  { deckId :: ArkhamDeckId
   , playerCount :: Int
   , campaignId :: Maybe CampaignId
   , scenarioId :: Maybe ScenarioId
@@ -94,10 +94,18 @@ postApiV1ArkhamGamesR :: Handler (Entity ArkhamGame)
 postApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   CreateGamePost {..} <- requireCheckJsonBody
-  (iid, deck) <- liftIO $ loadDeck deckId
+  deckA :: [Entity ArkhamDeck] <- runDB $ select . from $ \decks -> do
+    where_ $ decks ^. persistIdField ==. val deckId
+    where_ $ decks ^. ArkhamDeckUserId ==. val userId
+    limit 1
+    pure decks
+  deck :: ArkhamDeck <- maybe notFound (pure . entityVal) (headMay deckA)
+
+  (iid, decklist) <- liftIO $ loadDecklist deck
   let
     hashKey = fromIntegral $ fromSqlKey userId
-    investigators = HashMap.singleton hashKey (lookupInvestigator iid, deck)
+    investigators =
+      HashMap.singleton hashKey (lookupInvestigator iid, decklist)
   case campaignId of
     Just cid -> do
       ge <-

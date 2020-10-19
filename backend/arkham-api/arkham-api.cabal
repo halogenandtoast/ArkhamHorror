@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 53d1a652168c389833803cff979a4e6a541fca0b2d084775e904dae0fcdb341f
+-- hash: 5be962deec308c50248b4b48a5440f44454486e0de46cd9cb9a5787a9e9378b0
 
 name:           arkham-api
 version:        0.0.0
@@ -23,6 +23,7 @@ flag library-only
 library
   exposed-modules:
       Api.Arkham.Helpers
+      Api.Handler.Arkham.Decks
       Api.Handler.Arkham.Games
       Api.Handler.Arkham.PendingGames
       Application
@@ -31,6 +32,8 @@ library
       Base.Api.Handler.CurrentUser
       Base.Api.Handler.Registration
       Base.Util
+      Entity.Arkham.ArkhamDBDecklist
+      Entity.Arkham.Deck
       Entity.Arkham.Game
       Entity.Arkham.Player
       Entity.User

@@ -370,7 +370,9 @@ instance EnemyRunner env => RunMessage env Attrs where
 
     EnemyMove eid _ lid | eid == enemyId -> do
       willMove <- canEnterLocation eid lid
-      if willMove then pure $ a & location .~ lid else pure a
+      if willMove
+        then pure $ a & location .~ lid & engagedInvestigators .~ mempty
+        else pure a
     HuntersMove
       | Keyword.Hunter
         `elem` enemyKeywords

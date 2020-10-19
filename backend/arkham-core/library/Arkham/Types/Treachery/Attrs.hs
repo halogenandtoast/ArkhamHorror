@@ -129,6 +129,8 @@ instance (TreacheryRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     InvestigatorEliminated iid | treacheryAttachedInvestigator == Just iid ->
       a <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
+    AttachTreachery tid (InvestigatorTarget iid) | tid == treacheryId ->
+      pure $ a & attachedInvestigator ?~ iid
     AttachTreachery tid (LocationTarget lid) | tid == treacheryId ->
       pure $ a & attachedLocation ?~ lid
     AttachTreachery tid (EnemyTarget eid) | tid == treacheryId ->

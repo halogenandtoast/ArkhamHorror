@@ -22,10 +22,6 @@ swampLeech uuid = SwampLeech $ (baseAttrs uuid "81023")
   }
 
 instance EnemyRunner env => HasModifiersFor env SwampLeech where
-  getModifiersFor _ (EnemyTarget eid) (SwampLeech Attrs {..}) | eid == enemyId =
-    do
-      bayouLocation <- asks $ member Bayou . getSet enemyLocation
-      pure $ if bayouLocation then [EnemyFight 2, EnemyEvade 2] else []
   getModifiersFor _ _ _ = pure []
 
 instance HasModifiers env SwampLeech where

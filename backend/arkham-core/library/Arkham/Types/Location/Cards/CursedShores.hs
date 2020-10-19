@@ -41,14 +41,24 @@ instance ActionRunner env => HasActions env CursedShores where
          ]
   getActions i window (CursedShores attrs) = getActions i window attrs
 
-instance (LocationRunner env) => RunMessage env CursedShores where
-  runMessage msg (CursedShores attrs) = case msg of
+instance LocationRunner env => RunMessage env CursedShores where
+  runMessage msg (CursedShores attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessages [InvestigatorAssignDamage iid source 1 0]
       pure . CursedShores $ attrs & modifiersFor %~ insertWith
         (<>)
         (InvestigatorTarget iid)
         [AnySkillValue 2]
+    WhenEnterLocation iid lid
+      | -- TODO: SHOULD WE BROADCAST LRAVING THE LOCATION INSTEAD
+        lid /= locationId && iid `elem` locationInvestigators -> do
+        skillCards <- asks $ map unHandCardId . setToList . getSet
+          (iid, SkillType)
+        case skillCards of
+          [] -> pure ()
+          [x] -> unshiftMessage (DiscardCard iid x)
+          xs -> unshiftMessage (chooseOne iid [ DiscardCard iid x | x <- xs ])
+        CursedShores <$> runMessage msg attrs
     SkillTestEnds -> pure . CursedShores $ attrs & modifiersFor .~ mempty
     EndRound -> pure . CursedShores $ attrs & modifiersFor .~ mempty
     _ -> CursedShores <$> runMessage msg attrs

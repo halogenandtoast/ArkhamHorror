@@ -82,6 +82,7 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
            , ShuffleIntoEncounterDeck curseOfTheRougarouSet
            , AddCampaignCardToDeck leadInvestigatorId "81029"
            , CreateWeaknessInThreatArea "81029" leadInvestigatorId
+           , NextAct aid "81006"
            ]
         )
     PrePlayerWindow -> do

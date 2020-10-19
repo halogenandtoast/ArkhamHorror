@@ -490,7 +490,7 @@ workingAHunch cardId = (event cardId "01037" "Working a Hunch" 2 Seeker)
   { pcSkills = [SkillIntellect, SkillIntellect]
   , pcTraits = setFromList [Insight]
   , pcFast = True
-  , pcWindows = HashSet.fromList [DuringTurn You]
+  , pcWindows = setFromList [DuringTurn You]
   }
 
 barricade :: CardId -> PlayerCard

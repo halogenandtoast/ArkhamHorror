@@ -8,6 +8,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype LadyEsprit = LadyEsprit Attrs
@@ -28,13 +29,17 @@ instance HasModifiersFor env LadyEsprit where
 
 instance ActionRunner env => HasActions env LadyEsprit where
   getActions iid NonFast (LadyEsprit a@Attrs {..}) = do
+    hasActionsRemaining <- getHasActionsRemaining iid Nothing mempty
     locationId <- asks $ getId @LocationId iid
     assetLocationId <- case assetInvestigator of
       Nothing -> pure $ fromJustNote "must be set" assetLocation
       Just iid' -> asks (getId iid')
     pure
       [ ActivateCardAbilityAction iid (ability a)
-      | not assetExhausted && locationId == assetLocationId
+      | not assetExhausted
+        && locationId
+        == assetLocationId
+        && hasActionsRemaining
       ]
   getActions _ _ _ = pure []
 

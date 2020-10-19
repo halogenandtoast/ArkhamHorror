@@ -116,6 +116,10 @@ export default class Location extends Vue {
       return this.moveToAction;
     }
 
+    if (this.createEnemyAtAction !== -1) {
+      return this.createEnemyAtAction;
+    }
+
     return this.moveAction;
   }
 
@@ -123,6 +127,12 @@ export default class Location extends Vue {
     return this
       .choices
       .findIndex((c) => c.tag === MessageType.INVESTIGATE && c.contents[1] === this.id);
+  }
+
+  get createEnemyAtAction() {
+    return this
+      .choices
+      .findIndex((c) => c.tag === MessageType.CREATE_ENEMY_AT && c.contents[1] === this.id);
   }
 
   get moveAction() {

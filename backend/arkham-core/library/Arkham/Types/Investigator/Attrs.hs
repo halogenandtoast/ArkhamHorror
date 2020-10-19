@@ -392,10 +392,10 @@ canAfford :: Attrs -> Action -> Bool
 canAfford a@Attrs {..} actionType =
   actionCost a actionType <= investigatorRemainingActions
 
-fastIsPlayable :: Attrs -> [Window] -> Card -> Bool
-fastIsPlayable _ _ (EncounterCard _) = False -- TODO: there might be some playable ones?
-fastIsPlayable a windows c@(PlayerCard MkPlayerCard {..}) =
-  pcFast && isPlayable a windows c
+fastIsPlayable :: Attrs -> [Window] -> [Modifier] -> Card -> Bool
+fastIsPlayable _ _ _ (EncounterCard _) = False -- TODO: there might be some playable ones?
+fastIsPlayable a windows modifiers' c@(PlayerCard MkPlayerCard {..}) =
+  pcFast && isPlayable a windows modifiers' c
 
 modifiedCardCost :: Attrs -> Card -> Int
 modifiedCardCost Attrs {..} (PlayerCard MkPlayerCard {..}) = foldr
@@ -422,12 +422,13 @@ modifiedCardCost Attrs {..} (EncounterCard MkEncounterCard {..}) = foldr
     = max 0 (n - m)
   applyModifier _ n = n
 
-isPlayable :: Attrs -> [Window] -> Card -> Bool
-isPlayable _ _ (EncounterCard _) = False -- TODO: there might be some playable ones?
-isPlayable a@Attrs {..} windows c@(PlayerCard MkPlayerCard {..}) =
+isPlayable :: Attrs -> [Window] -> [Modifier] -> Card -> Bool
+isPlayable _ _ _ (EncounterCard _) = False -- TODO: there might be some playable ones?
+isPlayable a@Attrs {..} windows modifiers' c@(PlayerCard MkPlayerCard {..}) =
   (pcCardType /= SkillType)
     && (modifiedCardCost a c <= investigatorResources)
     && none prevents (concat . HashMap.elems $ investigatorModifiers)
+    && none prevents modifiers'
     && (not pcFast || (pcFast && cardInWindows windows c a))
     && (pcAction /= Just Action.Evade || not (null investigatorEngagedEnemies))
  where
@@ -450,14 +451,14 @@ cardInWindows windows c _ = case c of
   PlayerCard pc -> not . null $ pcWindows pc `intersect` setFromList windows
   _ -> False
 
-playableCards :: Attrs -> [Window] -> [Card]
-playableCards a@Attrs {..} windows =
-  filter (fastIsPlayable a windows) investigatorHand
-    <> playableDiscards a windows
+playableCards :: Attrs -> [Window] -> [Modifier] -> [Card]
+playableCards a@Attrs {..} windows modifiers' =
+  filter (fastIsPlayable a windows modifiers') investigatorHand
+    <> playableDiscards a windows modifiers'
 
-playableDiscards :: Attrs -> [Window] -> [Card]
-playableDiscards a@Attrs {..} windows = filter
-  (fastIsPlayable a windows)
+playableDiscards :: Attrs -> [Window] -> [Modifier] -> [Card]
+playableDiscards a@Attrs {..} windows modifiers' = filter
+  (fastIsPlayable a windows modifiers')
   possibleCards
  where
   possibleCards = map (PlayerCard . snd)
@@ -789,9 +790,9 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   MoveAction iid lid False | iid == investigatorId -> a <$ unshiftMessages
     [Will (MoveTo iid lid), MoveFrom iid investigatorLocation, MoveTo iid lid]
   Will (FailedSkillTest iid _ _ (InvestigatorTarget iid') _)
-    | iid == iid' && iid == investigatorId ->
-      a <$ unshiftMessage
-        (CheckWindow investigatorId [WhenWouldFailSkillTest You])
+    | iid == iid' && iid == investigatorId
+    -> a <$ unshiftMessage
+      (CheckWindow investigatorId [WhenWouldFailSkillTest You])
   InvestigatorDirectDamage iid source damage horror
     | iid == investigatorId && not
       (investigatorDefeated || investigatorResigned)
@@ -1321,7 +1322,9 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   CheckWindow iid windows | iid == investigatorId -> do
     actions <- fmap concat <$> for windows $ \window -> do
       join (asks (getActions iid window))
-    if not (null $ playableCards a windows) || not (null actions)
+    modifiers' <-
+      getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) =<< ask
+    if not (null $ playableCards a windows modifiers') || not (null actions)
       then a <$ unshiftMessage
         (Ask iid
         $ ChooseOne
@@ -1332,7 +1335,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
               , CheckWindow iid windows
               ]
             )
-            (playableCards a windows)
+            (playableCards a windows modifiers')
         <> map (Run . (: [CheckWindow iid windows])) actions
         <> [Continue "Skip playing fast cards or using reactions"]
         )
@@ -1470,13 +1473,15 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         <> [ DrawCards iid 1 True | canAfford a Action.Draw ]
         <> [ PlayCard iid (getCardId c) Nothing True
            | c <- investigatorHand
-           , canAfford a Action.Play || fastIsPlayable a [DuringTurn You] c
-           , isPlayable a [DuringTurn You] c && not (isDynamic c)
+           , canAfford a Action.Play
+             || fastIsPlayable a [DuringTurn You] modifiers' c
+           , isPlayable a [DuringTurn You] modifiers' c && not (isDynamic c)
            ]
         <> [ PlayDynamicCard iid (getCardId c) 0 Nothing True
            | c <- investigatorHand
-           , canAfford a Action.Play || fastIsPlayable a [DuringTurn You] c
-           , isPlayable a [DuringTurn You] c && isDynamic c
+           , canAfford a Action.Play
+             || fastIsPlayable a [DuringTurn You] modifiers' c
+           , isPlayable a [DuringTurn You] modifiers' c && isDynamic c
            ]
         <> [ChooseEndTurn iid]
         <> actions

@@ -94,13 +94,8 @@ postApiV1ArkhamGamesR :: Handler (Entity ArkhamGame)
 postApiV1ArkhamGamesR = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   CreateGamePost {..} <- requireCheckJsonBody
-  deckA :: [Entity ArkhamDeck] <- runDB $ select . from $ \decks -> do
-    where_ $ decks ^. persistIdField ==. val deckId
-    where_ $ decks ^. ArkhamDeckUserId ==. val userId
-    limit 1
-    pure decks
-  deck :: ArkhamDeck <- maybe notFound (pure . entityVal) (headMay deckA)
-
+  deck <- runDB $ get404 deckId
+  when (arkhamDeckUserId deck /= userId) notFound
   (iid, decklist) <- liftIO $ loadDecklist deck
   let
     hashKey = fromIntegral $ fromSqlKey userId

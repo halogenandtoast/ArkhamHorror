@@ -137,7 +137,12 @@ getCanMoveTo lid iid = do
   accessibleLocations <-
     asks $ map unAccessibleLocationId . setToList . getSet locationId
   hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Move) mempty
-  pure $ lid `elem` accessibleLocations && hasActionsRemaining
+  pure
+    $ lid
+    `elem` accessibleLocations
+    && hasActionsRemaining
+    && lid
+    /= locationId
 
 getCanInvestigate
   :: ( MonadReader env m

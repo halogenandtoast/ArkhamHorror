@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -56,7 +57,7 @@ import Arkham.Types.Token (Token)
 import Arkham.Types.Trait
 import Arkham.Types.Treachery
 import qualified Arkham.Types.Window as Fast
-import Control.Monad.State
+import Control.Monad.State.Strict
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Data.List.NonEmpty (NonEmpty(..))
@@ -747,10 +748,12 @@ data LPState = LPState
 
 getLongestPath
   :: Game queue -> LocationId -> (LocationId -> Bool) -> [LocationId]
-getLongestPath game initialLocation target =
-  fromMaybe [] . headMay . map snd . sortOn (Down . fst) . mapToList $ evalState
-    (markDistances game initialLocation target)
-    (LPState (pure initialLocation) (HashSet.singleton initialLocation) mempty)
+getLongestPath !game !initialLocation !target = do
+  let
+    !state' =
+      LPState (pure initialLocation) (HashSet.singleton initialLocation) mempty
+  let !result = evalState (markDistances game initialLocation target) state'
+  fromMaybe [] . headMay . map snd . sortOn (Down . fst) . mapToList $ result
 
 markDistances
   :: Game queue
@@ -760,31 +763,33 @@ markDistances
 markDistances game initialLocation target = do
   LPState searchQueue visitedSet parentsMap <- get
   if Seq.null searchQueue
-    then pure mempty
+    then pure $ getDistances parentsMap
     else do
       let
         nextLoc = Seq.index searchQueue 0
         newVisitedSet = insertSet nextLoc visitedSet
         adjacentCells =
           map unConnectedLocationId . toList $ getSet nextLoc game
-        unvisitedNextCells =
-          filter (\loc -> not (loc `member` visitedSet)) adjacentCells
+        unvisitedNextCells = filter (`notMember` visitedSet) adjacentCells
         newSearchQueue =
           foldr (flip (Seq.|>)) (Seq.drop 1 searchQueue) unvisitedNextCells
-        newParentsMap =
-          foldr (`insertMap` nextLoc) parentsMap unvisitedNextCells
+        newParentsMap = foldr
+          (\loc map' -> insertWith (\_ b -> b) loc nextLoc map')
+          parentsMap
+          unvisitedNextCells
       put (LPState newSearchQueue newVisitedSet newParentsMap)
-      others <- markDistances game initialLocation target
-      if target nextLoc
-        then pure $ HashMap.unionWith
-          (<>)
-          others
-          (HashMap.singleton
-            (length $ unwindPath parentsMap [nextLoc])
-            [nextLoc]
-          )
-        else pure others
+      markDistances game initialLocation target
  where
+  getDistances :: HashMap LocationId LocationId -> HashMap Int [LocationId]
+  getDistances map' = do
+    let locationIds = filter target (keys map')
+    foldr
+      (\locationId distanceMap ->
+        insertWith (<>) (getDistance map' locationId) [locationId] distanceMap
+      )
+      mempty
+      locationIds
+  getDistance map' lid = length $ unwindPath map' [lid]
   unwindPath parentsMap currentPath =
     case lookup (fromJustNote "failed bfs" $ headMay currentPath) parentsMap of
       Nothing -> fromJustNote "failed bfs on tail" $ tailMay currentPath

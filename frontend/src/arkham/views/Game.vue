@@ -75,17 +75,11 @@ export default class Game extends Vue {
       this.socketError = true;
       if (this.socket) {
         this.socket.close();
-        this.socket = null;
       }
-      setTimeout(() => this.connect(), 5000);
     });
     this.socket.addEventListener('close', () => {
       this.socketError = true;
-      if (this.socket) {
-        this.socket.close();
-        this.socket = null;
-      }
-      setTimeout(() => this.connect(), 5000);
+      setTimeout(() => this.connect(), 1000);
     });
   }
 

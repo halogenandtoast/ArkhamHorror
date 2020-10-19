@@ -45,9 +45,11 @@ instance (TreacheryRunner env) => RunMessage env SpectralMist where
       targetLocations <-
         asks $ setToList . (`difference` exemptLocations) . getSet @LocationId
           [Bayou]
-      unshiftMessage $ chooseOne
-        iid
-        [ AttachTreachery tid (LocationTarget x) | x <- targetLocations ]
+      if null targetLocations
+        then unshiftMessage (Discard (toTarget attrs))
+        else unshiftMessage $ chooseOne
+          iid
+          [ AttachTreachery tid (LocationTarget x) | x <- targetLocations ]
       SpectralMist <$> runMessage msg attrs
     UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId -> do
       t <$ unshiftMessage

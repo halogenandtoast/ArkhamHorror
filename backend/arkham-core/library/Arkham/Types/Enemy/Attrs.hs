@@ -356,17 +356,22 @@ instance EnemyRunner env => RunMessage env Attrs where
       then pure a
       else do
         leadInvestigatorId <- getLeadInvestigatorId
+        adjacentLocationIds <-
+          asks $ map unConnectedLocationId . setToList . getSet enemyLocation
         closestLocationIds <-
           asks $ map unClosestLocationId . setToList . getSet
             (enemyLocation, lid)
-        a <$ unshiftMessages
-          [ chooseOne
-            leadInvestigatorId
-            [ EnemyMove enemyId enemyLocation lid'
-            | lid' <- closestLocationIds
+        if lid `elem` adjacentLocationIds
+          then a <$ unshiftMessage
+            (chooseOne leadInvestigatorId [EnemyMove enemyId enemyLocation lid])
+          else a <$ unshiftMessages
+            [ chooseOne
+              leadInvestigatorId
+              [ EnemyMove enemyId enemyLocation lid'
+              | lid' <- closestLocationIds
+              ]
+            , MoveUntil lid target
             ]
-          , MoveUntil lid target
-          ]
 
     EnemyMove eid _ lid | eid == enemyId -> do
       willMove <- canEnterLocation eid lid

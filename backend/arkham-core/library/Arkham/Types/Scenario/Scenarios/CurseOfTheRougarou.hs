@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
   ( CurseOfTheRougarou(..)
@@ -54,6 +55,20 @@ locations = mapFromList
   , (Unhallowed, ["81016", "81017", "81018"])
   ]
 
+locationsWithLabels :: MonadIO m => Trait -> m [(Text, LocationId)]
+locationsWithLabels trait = do
+  shuffled <- liftIO $ shuffleM (before <> after)
+  pure $ zip labels (bayou : shuffled)
+ where
+  locationSet = findWithDefault [] trait locations
+  labels =
+    [ pack (camelCase $ show trait) <> "Bayou"
+    , pack (camelCase $ show trait) <> "1"
+    , pack (camelCase $ show trait) <> "2"
+    ]
+  (before, bayou : after) =
+    break (elem Bayou . getTraits . lookupLocation) locationSet
+
 instance (ScenarioRunner env) => RunMessage env CurseOfTheRougarou where
   runMessage msg s@(CurseOfTheRougarou (attrs@Attrs {..} `With` metadata)) =
     case msg of
@@ -63,23 +78,15 @@ instance (ScenarioRunner env) => RunMessage env CurseOfTheRougarou where
         investigatorIds <- getInvestigatorIds
         encounterDeck <- buildEncounterDeck [EncounterSet.TheBayou]
         (_ : trait : rest) <- liftIO . shuffleM $ keys locations
-        startingLocations <- liftIO . shuffleM $ findWithDefault
-          []
-          trait
-          locations
+        startingLocationsWithLabel <- locationsWithLabels trait
         let
-          (before, bayou : after) =
-            break (elem Bayou . getTraits . lookupLocation) startingLocations
-          labels =
-            [ camelCase (show trait) <> "Bayou"
-            , camelCase (show trait) <> "1"
-            , camelCase (show trait) <> "2"
-            ]
-          startingLocationsWithLabel = zip labels (bayou : before <> after)
+          (_, bayou : _) = break
+            (elem Bayou . getTraits . lookupLocation)
+            (map snd startingLocationsWithLabel)
         pushMessages
           $ [SetEncounterDeck encounterDeck, AddAgenda "81002", AddAct "81005"]
           <> [ PlaceLocation lid | (_, lid) <- startingLocationsWithLabel ]
-          <> [ SetLocationLabel lid (pack label)
+          <> [ SetLocationLabel lid label
              | (label, lid) <- startingLocationsWithLabel
              ]
           <> [ RevealLocation bayou
@@ -118,6 +125,18 @@ instance (ScenarioRunner env) => RunMessage env CurseOfTheRougarou where
              ]
         CurseOfTheRougarou
           . (`with` metadata { setAsideLocationTraits = setFromList rest })
+          <$> runMessage msg attrs
+      PutSetAsideIntoPlay (SetAsideLocations _) -> do
+        setAsideLocationsWithLabels <- concat <$> traverse
+          locationsWithLabels
+          (setToList $ setAsideLocationTraits metadata)
+        unshiftMessages
+          $ [ PlaceLocation lid | (_, lid) <- setAsideLocationsWithLabels ]
+          <> [ SetLocationLabel lid label
+             | (label, lid) <- setAsideLocationsWithLabels
+             ]
+        CurseOfTheRougarou
+          . (`with` metadata { setAsideLocationTraits = mempty })
           <$> runMessage msg attrs
       SetTokensForScenario -> do
         let

@@ -321,7 +321,7 @@ instance EnemyRunner env => RunMessage env Attrs where
         $ do
             preyIds <- asks $ map unPreyId . setToList . getSet (enemyPrey, lid)
             investigatorIds <- if null preyIds
-              then getInvestigatorIds
+              then asks $ setToList . getSet @InvestigatorId lid
               else pure []
             leadInvestigatorId <- getLeadInvestigatorId
             case preyIds <> investigatorIds of

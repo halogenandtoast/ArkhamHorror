@@ -159,6 +159,8 @@ export default class Investigator extends Vue {
     switch (c.tag) {
       case MessageType.INVESTIGATOR_DAMAGE:
         return c.contents[0] === this.id && c.contents[3] > 0;
+      case MessageType.INVESTIGATOR_ASSIGN_DAMAGE:
+        return c.contents[0] === this.id && c.contents[3] > 0;
       case MessageType.RUN:
         return c.contents.some((c1: Message) => this.canAdjustSanity(c1));
       default:

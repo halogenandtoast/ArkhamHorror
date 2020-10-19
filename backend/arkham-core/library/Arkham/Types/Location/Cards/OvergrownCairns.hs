@@ -29,7 +29,9 @@ instance HasModifiersFor env OvergrownCairns where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
+ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
+  { abilityLimit = PerGame
+  }
 
 instance ActionRunner env => HasActions env OvergrownCairns where
   getActions iid NonFast (OvergrownCairns attrs@Attrs {..}) | locationRevealed =

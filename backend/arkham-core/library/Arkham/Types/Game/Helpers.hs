@@ -128,12 +128,16 @@ getCanMoveTo
      , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
      , HasSet AccessibleLocationId LocationId env
      , HasId LocationId InvestigatorId env
+     , HasModifiersFor env env
+     , MonadIO m
      )
   => LocationId
   -> InvestigatorId
   -> m Bool
 getCanMoveTo lid iid = do
   locationId <- asks $ getId @LocationId iid
+  modifiers' <-
+    getModifiersFor (LocationSource lid) (InvestigatorTarget iid) =<< ask
   accessibleLocations <-
     asks $ map unAccessibleLocationId . setToList . getSet locationId
   hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Move) mempty
@@ -143,6 +147,8 @@ getCanMoveTo lid iid = do
     && hasActionsRemaining
     && lid
     /= locationId
+    && CannotMove
+    `notElem` modifiers'
 
 getCanInvestigate
   :: ( MonadReader env m

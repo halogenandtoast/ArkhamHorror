@@ -35,6 +35,8 @@ export function choices(game: Game, investigatorId: string) {
   switch (question.tag) {
     case 'ChooseOne':
       return question.contents;
+    case 'ChooseN':
+      return question.contents;
     case 'ChooseOneAtATime':
       return question.contents;
     case 'ChooseOneFromSource':

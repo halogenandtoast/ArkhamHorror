@@ -10,49 +10,47 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { defineComponent, computed } from 'vue';
 import { Card } from '@/arkham/types/Card';
-import { choices, Game } from '@/arkham/types/Game';
+import { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
 
-@Component
-export default class FocusedCard extends Vue {
-  @Prop(Object) readonly card!: Card
-  @Prop(Object) readonly game!: Game
-  @Prop(String) readonly investigatorId!: string
+export default defineComponent({
+  props: {
+    game: { type: Object as () => Game, required: true },
+    card: { type: Object as () => Card, required: true },
+    investigatorId: { type: String, required: true }
+  },
+  setup(props) {
+    const image = computed(() => {
+      const { cardCode } = props.card.contents;
+      return `/img/arkham/cards/${cardCode}.jpg`;
+    })
 
-  get image() {
-    const { cardCode } = this.card.contents;
-    return `/img/arkham/cards/${cardCode}.jpg`;
-  }
+    const id = computed(() => props.card.contents.id)
+    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-  get id() {
-    return this.card.contents.id;
-  }
-
-  get choices() {
-    return choices(this.game, this.investigatorId);
-  }
-
-  get cardAction() {
-    return this.choices.findIndex(this.canInteract);
-  }
-
-  canInteract(c: Message): boolean {
-    switch (c.tag) {
-      case MessageType.ADD_FOCUSED_TO_HAND:
-        return c.contents[2] === this.id;
-      case MessageType.ADD_FOCUSED_TO_TOP_OF_DECK:
-        return c.contents[2] === this.id;
-      case MessageType.FOUND_AND_DREW_ENCOUNTER_CARD:
-        return c.contents[2].id === this.id;
-      case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.canInteract(c1));
-      default:
-        return false;
+    function canInteract(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.ADD_FOCUSED_TO_HAND:
+          return c.contents[2] === id.value;
+        case MessageType.ADD_FOCUSED_TO_TOP_OF_DECK:
+          return c.contents[2] === id.value;
+        case MessageType.FOUND_AND_DREW_ENCOUNTER_CARD:
+          return c.contents[2].id === id.value;
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canInteract(c1));
+        default:
+          return false;
+      }
     }
+
+    const cardAction = computed(() =>  choices.value.findIndex(canInteract))
+
+    return { cardAction, image }
   }
-}
+})
 </script>
 
 <style scoped lang="scss">

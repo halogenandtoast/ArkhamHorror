@@ -6,17 +6,18 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, computed } from 'vue'
 
-@Component
-export default class PoolItem extends Vue {
-  @Prop(String) readonly type!: string;
-  @Prop(Number) readonly amount!: number;
-
-  get image() {
-    return `/img/arkham/${this.type}.png`;
+export default defineComponent({
+  props: {
+    type: { type: String, required: true },
+    amount: { type: Number, required: true },
+  },
+  setup(props) {
+    const image = computed(() => `/img/arkham/${props.type}.png`)
+    return { image }
   }
-}
+})
 </script>
 
 <style scoped lang="scss">

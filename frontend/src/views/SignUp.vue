@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="register(registration)">
+  <form @submit.prevent="register">
     <div>
       <input
         v-model="registration.username"
@@ -28,18 +28,34 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
-import { Action } from 'vuex-class';
-import { Registration } from '../types';
+import { defineComponent, reactive } from 'vue'
+import { useStore } from 'vuex'
+import { useRoute, useRouter } from 'vue-router'
+import { Registration } from '@/types'
 
-@Component
-export default class SignUp extends Vue {
-  @Action register!: (registration: Registration) => void;
+export default defineComponent({
+  setup() {
+    const route = useRoute()
+    const router = useRouter()
+    const store = useStore()
+    const registration: Registration = reactive({
+      username: '',
+      email: '',
+      password: '',
+    })
 
-  registration: Registration = {
-    username: '',
-    email: '',
-    password: '',
-  };
-}
+    async function register() {
+      await store.dispatch('register', registration)
+      const { nextUrl } = route.query
+      if (nextUrl) {
+        router.push({ path: nextUrl as string })
+      } else {
+        router.push({ path: '/' })
+      }
+
+    }
+
+    return { registration, register }
+  }
+});
 </script>

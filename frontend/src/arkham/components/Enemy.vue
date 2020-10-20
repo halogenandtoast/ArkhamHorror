@@ -34,116 +34,117 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-import { choices, Game } from '@/arkham/types/Game';
-import { MessageType } from '@/arkham/types/Message';
-import PoolItem from '@/arkham/components/PoolItem.vue';
-import * as Arkham from '@/arkham/types/Enemy';
+import { defineComponent, computed } from 'vue'
+import { Game } from '@/arkham/types/Game'
+import * as ArkhamGame from '@/arkham/types/Game'
+import { MessageType } from '@/arkham/types/Message'
+import PoolItem from '@/arkham/components/PoolItem.vue'
+import * as Arkham from '@/arkham/types/Enemy'
 
-@Component({
+export default defineComponent({
   components: { PoolItem },
+  props: {
+    game: { type: Object as () => Game, required: true },
+    enemy: { type: Object as () => Arkham.Enemy, required: true },
+    investigatorId: { type: String, required: true },
+  },
+  setup(props) {
+    const image = computed(() => {
+      const { cardCode } = props.enemy.contents;
+      return `/img/arkham/cards/${cardCode}.jpg`;
+    })
+
+    const id = computed(() => props.enemy.contents.id)
+
+    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+    const attackAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.ENEMY_ATTACK && c.contents[1] === id.value)
+    })
+
+    const moveAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.ENEMY_MOVE && c.contents[0] === id.value)
+    })
+
+    const placeDoomAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.PLACE_DOOM && c.contents[0].contents === id.value)
+    })
+
+    const damageAction = computed(() => {
+      const isRunDamage = choices.value.findIndex((c) => c.tag === MessageType.RUN
+        && c.contents[0]
+        && c.contents[0].tag === MessageType.ENEMY_DAMAGE
+        && c.contents[0].contents[0] === id.value);
+
+      if (isRunDamage !== -1) {
+        return isRunDamage;
+      }
+
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.ENEMY_DAMAGE && c.contents[0] === id.value);
+    })
+
+    const cardAction = computed(() => {
+      if (attackAction.value !== -1) {
+        return attackAction.value;
+      }
+
+      if (moveAction.value !== -1) {
+        return moveAction.value;
+      }
+
+      if (placeDoomAction.value !== -1) {
+        return placeDoomAction.value;
+      }
+
+      return damageAction.value;
+    });
+
+
+    const fightAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.FIGHT_ENEMY && c.contents[1] === id.value);
+    })
+
+    const evadeAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.EVADE_ENEMY && c.contents[1] === id.value);
+    })
+
+    const engageAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.ENGAGE_ENEMY && c.contents[1] === id.value);
+    })
+
+    function abilityLabel(idx: number) {
+      return choices.value[idx].contents[1].type.contents[1];
+    }
+
+    const abilities = computed(() => {
+      return choices
+        .value
+        .reduce<number[]>((acc, v, i) => {
+          if (v.tag === 'ActivateCardAbilityAction' && v.contents[1].source.tag === 'EnemySource' && v.contents[1].source.contents === id.value) {
+            return [...acc, i];
+          }
+
+          return acc;
+        }, []);
+    })
+
+    return { abilities, abilityLabel, engageAction, fightAction, evadeAction, cardAction, image }
+  }
 })
-export default class Enemy extends Vue {
-  @Prop(Object) readonly game!: Game
-  @Prop(String) readonly investigatorId!: string
-  @Prop(Object) readonly enemy!: Arkham.Enemy
-
-  get image() {
-    const { cardCode } = this.enemy.contents;
-    return `/img/arkham/cards/${cardCode}.jpg`;
-  }
-
-  get id() {
-    return this.enemy.contents.id;
-  }
-
-  get cardAction() {
-    if (this.attackAction !== -1) {
-      return this.attackAction;
-    }
-
-    if (this.moveAction !== -1) {
-      return this.moveAction;
-    }
-
-    if (this.placeDoomAction !== -1) {
-      return this.placeDoomAction;
-    }
-
-    return this.damageAction;
-  }
-
-  get choices() {
-    return choices(this.game, this.investigatorId);
-  }
-
-  get attackAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.ENEMY_ATTACK && c.contents[1] === this.id);
-  }
-
-  get moveAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.ENEMY_MOVE && c.contents[0] === this.id);
-  }
-
-  get placeDoomAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.PLACE_DOOM && c.contents[0].contents === this.id);
-  }
-
-  get damageAction() {
-    const isRunDamage = this.choices.findIndex((c) => c.tag === MessageType.RUN
-      && c.contents[0]
-      && c.contents[0].tag === MessageType.ENEMY_DAMAGE
-      && c.contents[0].contents[0] === this.id);
-
-    if (isRunDamage !== -1) {
-      return isRunDamage;
-    }
-
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.ENEMY_DAMAGE && c.contents[0] === this.id);
-  }
-
-  get fightAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.FIGHT_ENEMY && c.contents[1] === this.id);
-  }
-
-  get evadeAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.EVADE_ENEMY && c.contents[1] === this.id);
-  }
-
-  get engageAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.ENGAGE_ENEMY && c.contents[1] === this.id);
-  }
-
-  abilityLabel(idx: number) {
-    return this.choices[idx].contents[1].type.contents[1];
-  }
-
-  get abilities() {
-    return this
-      .choices
-      .reduce<number[]>((acc, v, i) => {
-        if (v.tag === 'ActivateCardAbilityAction' && v.contents[1].source.tag === 'EnemySource' && v.contents[1].source.contents === this.id) {
-          return [...acc, i];
-        }
-
-        return acc;
-      }, []);
-  }
-}
 </script>
 
 <style scoped lang="scss">

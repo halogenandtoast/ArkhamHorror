@@ -19,41 +19,44 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
-import { choices, Game } from '@/arkham/types/Game';
+import { defineComponent, computed } from 'vue';
+import { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
 
-@Component
-export default class PlayerOrder extends Vue {
-  @Prop(Object) readonly game!: Game;
-  @Prop(String) readonly investigatorId!: string;
+export default defineComponent({
+  props: {
+    game: { type: Object as () => Game, required: true },
+    investigatorId: { type: String, required: true }
+  },
+  setup(props) {
+    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-  get choices(): Message[] {
-    return choices(this.game, this.investigatorId);
-  }
+    const playerOrderChoices = computed(() => {
+      return choices
+        .value
+        .map((choice, idx) => ({ choice, idx }))
+        .filter(({ choice }) => choice.tag === MessageType.CHOOSE_PLAYER_ORDER);
+    })
 
-  get ordinal() {
-    switch (this.playerOrderChoices[0].choice.contents[1].length) {
-      case 1: return 'First';
-      case 2: return 'Second';
-      case 3: return 'Third';
-      case 4: return 'Fourth';
-      default: return 'Unknown';
+    const ordinal = computed(() => {
+      switch (playerOrderChoices.value[0].choice.contents[1].length) {
+        case 1: return 'First';
+        case 2: return 'Second';
+        case 3: return 'Third';
+        case 4: return 'Fourth';
+        default: return 'Unknown';
+      }
+    })
+
+    const investigatorPortrait = (choice: Message) => {
+      const iid = choice.contents[1].slice(-1);
+      return `/img/arkham/portraits/${iid}.jpg`;
     }
-  }
 
-  get playerOrderChoices() {
-    return this
-      .choices
-      .map((choice, idx) => ({ choice, idx }))
-      .filter(({ choice }) => choice.tag === MessageType.CHOOSE_PLAYER_ORDER);
+    return { investigatorPortrait, ordinal, playerOrderChoices }
   }
-
-  investigatorPortrait = (choice: Message) => {
-    const iid = choice.contents[1].slice(-1);
-    return `/img/arkham/portraits/${iid}.jpg`;
-  }
-}
+})
 </script>
 
 <style scoped lang="scss">

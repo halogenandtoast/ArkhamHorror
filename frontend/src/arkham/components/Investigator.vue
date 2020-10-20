@@ -45,153 +45,152 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-import * as Arkham from '@/arkham/types/Investigator';
-import { choices, Game } from '@/arkham/types/Game';
-import { Message, MessageType } from '@/arkham/types/Message';
-import PoolItem from '@/arkham/components/PoolItem.vue';
+import { defineComponent, computed } from 'vue'
+import * as Arkham from '@/arkham/types/Investigator'
+import { Game } from '@/arkham/types/Game'
+import * as ArkhamGame from '@/arkham/types/Game'
+import { Message, MessageType } from '@/arkham/types/Message'
+import PoolItem from '@/arkham/components/PoolItem.vue'
 
-@Component({
+export default defineComponent({
   components: { PoolItem },
+  props: {
+    game: { type: Object as () => Game, required: true },
+    player: { type: Object as () => Arkham.Investigator, required: true },
+    investigatorId: { type: String, required: true },
+  },
+  setup(props) {
+    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+    const id = computed(() => props.player.contents.id)
+
+    const searchTopOfDeckAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.SEARCH_TOP_OF_DECK
+          && c.contents[1].contents === id.value);
+    })
+
+    const runSkillTestAction = computed(() => {
+      if (choices.value.filter((c) => c.tag === MessageType.BEGIN_SKILL_TEST
+        && c.contents[0] === id.value).length === 1) {
+        return choices
+          .value
+          .findIndex((c) => c.tag === MessageType.BEGIN_SKILL_TEST && c.contents[0] === id.value)
+      }
+
+      return -1
+    })
+
+    function canActivateAbility(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.ACTIVATE_ABILITY:
+          return c.contents[1].source.contents === id.value;
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canActivateAbility(c1));
+        default:
+          return false;
+      }
+    }
+    const activateAbilityAction = computed(() => choices.value.findIndex(canActivateAbility))
+
+    const enemyEngageInvestigatorAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.ENEMY_ENGAGE_INVESTIGATOR
+          && c.contents[1] === id.value)
+    })
+
+    const takeDamageAction = computed(() => {
+      const isRunDamage = choices.value.findIndex((c) => c.tag === MessageType.RUN
+        && c.contents[0]
+        && c.contents[0].tag === MessageType.INVESTIGATOR_ASSIGN_DAMAGE
+        && c.contents[0].contents[0] === id.value);
+      return isRunDamage
+        || choices.value.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DAMAGE);
+    })
+
+    const investigatorAction = computed(() => {
+      if (searchTopOfDeckAction.value !== -1) {
+        return searchTopOfDeckAction.value
+      }
+
+      if (runSkillTestAction.value !== -1) {
+        return runSkillTestAction.value
+      }
+
+      if (enemyEngageInvestigatorAction.value !== -1) {
+        return enemyEngageInvestigatorAction.value
+      }
+
+      if (activateAbilityAction.value !== -1) {
+        return activateAbilityAction.value
+      }
+
+      return takeDamageAction.value
+    })
+
+    function canAdjustHealth(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.INVESTIGATOR_DAMAGE:
+          return c.contents[0] === id.value && c.contents[2] > 0;
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canAdjustHealth(c1));
+        default:
+          return false;
+      }
+    }
+
+    function canAdjustSanity(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.INVESTIGATOR_DAMAGE:
+          return c.contents[0] === id.value && c.contents[3] > 0;
+        case MessageType.INVESTIGATOR_ASSIGN_DAMAGE:
+          return c.contents[0] === id.value && c.contents[3] > 0;
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canAdjustSanity(c1));
+        default:
+          return false;
+      }
+    }
+
+    const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
+    const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
+
+    const takeResourceAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.TAKE_RESOURCES && c.contents[0] === id.value);
+    })
+
+    const spendCluesAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.INVESTIGATOR_SPEND_CLUES
+          && c.contents[0] === id.value);
+    })
+
+    const endTurnAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.END_TURN && c.contents === id.value);
+    })
+
+    const image = computed(() => {
+      const { id } = props.player.contents;
+      return `/img/arkham/cards/${id}.jpg`;
+    })
+
+    return {
+      image,
+      endTurnAction,
+      spendCluesAction,
+      takeResourceAction,
+      healthAction,
+      sanityAction,
+      investigatorAction
+    }
+  }
 })
-export default class Investigator extends Vue {
-  @Prop(Object) readonly player!: Arkham.Investigator
-  @Prop(Object) readonly game!: Game
-  @Prop(String) readonly investigatorId!: string
-
-  get choices() {
-    return choices(this.game, this.investigatorId);
-  }
-
-  get id() {
-    return this.player.contents.id;
-  }
-
-  get investigatorAction() {
-    if (this.searchTopOfDeckAction !== -1) {
-      return this.searchTopOfDeckAction;
-    }
-
-    if (this.runSkillTestAction !== -1) {
-      return this.runSkillTestAction;
-    }
-
-    if (this.enemyEngageInvestigatorAction !== -1) {
-      return this.enemyEngageInvestigatorAction;
-    }
-
-    if (this.activateAbilityAction !== -1) {
-      return this.activateAbilityAction;
-    }
-
-    return this.takeDamageAction;
-  }
-
-  get runSkillTestAction() {
-    if (this.choices.filter((c) => c.tag === MessageType.BEGIN_SKILL_TEST
-      && c.contents[0] === this.id).length === 1) {
-      return this
-        .choices
-        .findIndex((c) => c.tag === MessageType.BEGIN_SKILL_TEST && c.contents[0] === this.id);
-    }
-
-    return -1;
-  }
-
-  get enemyEngageInvestigatorAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.ENEMY_ENGAGE_INVESTIGATOR
-        && c.contents[1] === this.id);
-  }
-
-  get searchTopOfDeckAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.SEARCH_TOP_OF_DECK
-        && c.contents[1].contents === this.id);
-  }
-
-  get takeDamageAction() {
-    const isRunDamage = this.choices.findIndex((c) => c.tag === MessageType.RUN
-      && c.contents[0]
-      && c.contents[0].tag === MessageType.INVESTIGATOR_ASSIGN_DAMAGE
-      && c.contents[0].contents[0] === this.id);
-    return isRunDamage
-      || this.choices.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DAMAGE);
-  }
-
-  get healthAction() {
-    return this.choices.findIndex(this.canAdjustHealth);
-  }
-
-  get sanityAction() {
-    return this.choices.findIndex(this.canAdjustSanity);
-  }
-
-  get activateAbilityAction() {
-    return this.choices.findIndex(this.canActivateAbility);
-  }
-
-  canActivateAbility(c: Message): boolean {
-    switch (c.tag) {
-      case MessageType.ACTIVATE_ABILITY:
-        return c.contents[1].source.contents === this.id;
-      case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.canActivateAbility(c1));
-      default:
-        return false;
-    }
-  }
-
-  canAdjustHealth(c: Message): boolean {
-    switch (c.tag) {
-      case MessageType.INVESTIGATOR_DAMAGE:
-        return c.contents[0] === this.id && c.contents[2] > 0;
-      case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.canAdjustHealth(c1));
-      default:
-        return false;
-    }
-  }
-
-  canAdjustSanity(c: Message): boolean {
-    switch (c.tag) {
-      case MessageType.INVESTIGATOR_DAMAGE:
-        return c.contents[0] === this.id && c.contents[3] > 0;
-      case MessageType.INVESTIGATOR_ASSIGN_DAMAGE:
-        return c.contents[0] === this.id && c.contents[3] > 0;
-      case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.canAdjustSanity(c1));
-      default:
-        return false;
-    }
-  }
-
-  get takeResourceAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.TAKE_RESOURCES && c.contents[0] === this.id);
-  }
-
-  get spendCluesAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.INVESTIGATOR_SPEND_CLUES
-        && c.contents[0] === this.id);
-  }
-
-  get endTurnAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.END_TURN && c.contents === this.id);
-  }
-
-  get image() {
-    const { id } = this.player.contents;
-    return `/img/arkham/cards/${id}.jpg`;
-  }
-}
 </script>
 
 <style scoped lang="scss">

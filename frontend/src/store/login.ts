@@ -8,7 +8,6 @@ import {
   User,
 } from '@/types';
 import api from '@/api';
-import router from '@/router';
 
 const mutations: MutationTree<LoginState> = {
   signIn(state, user) {
@@ -23,25 +22,17 @@ const actions: ActionTree<LoginState, RootState> = {
   authenticate({ dispatch }, credentials: Credentials): void {
     api.post<Authentication>('authenticate', credentials).then((authentication) => {
       dispatch('setCurrentUser', authentication.data);
-      const { nextUrl } = router.currentRoute.query;
-      if (nextUrl) {
-        router.push({ path: nextUrl as string });
-      } else {
-        router.push({ path: '/' });
-      }
     });
   },
   register({ dispatch }, registration: Registration): void {
     api.post<Authentication>('register', registration).then((authentication) => {
       dispatch('setCurrentUser', authentication.data);
-      router.push({ path: '/' });
     });
   },
   logout({ commit }): void {
     localStorage.removeItem('token');
     delete api.defaults.headers.common.Authorization;
     commit('signOut');
-    router.push({ path: '/' });
   },
   setCurrentUser({ commit, dispatch }, authentication: Authentication): void {
     localStorage.setItem('token', authentication.token);

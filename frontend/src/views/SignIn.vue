@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="authenticate(credentials)">
+  <form @submit.prevent="authenticate">
     <div>
       <input
         v-model="credentials.email"
@@ -21,17 +21,32 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
-import { Action } from 'vuex-class';
-import { Credentials } from '../types';
+import { useStore } from 'vuex'
+import { useRoute, useRouter } from 'vue-router'
+import { defineComponent, reactive } from 'vue'
+import { Credentials } from '../types'
 
-@Component
-export default class SignIn extends Vue {
-  @Action authenticate!: (credentials: Credentials) => void;
+export default defineComponent({
+  setup() {
+    const store = useStore()
+    const route = useRoute()
+    const router = useRouter()
+    const credentials: Credentials = reactive({
+      email: '',
+      password: '',
+    })
 
-  credentials: Credentials = {
-    email: '',
-    password: '',
-  };
-}
+    async function authenticate() {
+      await store.dispatch('authenticate', credentials)
+      const { nextUrl } = route.query
+      if (nextUrl) {
+        router.push({ path: nextUrl as string })
+      } else {
+        router.push({ path: '/' })
+      }
+    }
+
+    return { credentials, authenticate }
+  }
+})
 </script>

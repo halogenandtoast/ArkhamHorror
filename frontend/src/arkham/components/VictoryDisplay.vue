@@ -8,26 +8,25 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
 
-@Component
-export default class VictoryDisplay extends Vue {
-  @Prop(Object) readonly game!: Game
+export default defineComponent({
+  props: { game: { type: Object as () => Game, required: true } },
+  setup(props) {
+    const victoryDisplay = computed(() => props.game.currentData.victoryDisplay)
+    const topOfVictoryDisplay = computed(() => {
+      if (victoryDisplay.value[0]) {
+        const { cardCode } = victoryDisplay.value[0].contents;
+        return `/img/arkham/cards/${cardCode}.jpg`;
+      }
 
-  get victoryDisplay() {
-    return this.game.currentData.victoryDisplay;
+      return null;
+    })
+
+    return { topOfVictoryDisplay }
   }
-
-  get topOfVictoryDisplay() {
-    if (this.victoryDisplay[0]) {
-      const { cardCode } = this.victoryDisplay[0].contents;
-      return `/img/arkham/cards/${cardCode}.jpg`;
-    }
-
-    return null;
-  }
-}
+})
 </script>
 
 <style lang="scss">

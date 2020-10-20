@@ -25,35 +25,34 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
-import { choices, Game } from '@/arkham/types/Game';
-import { MessageType, Message } from '@/arkham/types/Message';
+import { defineComponent, computed } from 'vue';
+import { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
+import { MessageType } from '@/arkham/types/Message';
 import FocusedCard from '@/arkham/components/FocusedCard.vue';
 
-@Component({
+export default defineComponent({
   components: {
     FocusedCard,
   },
+  props: {
+    game: { type: Object as () => Game, required: true },
+    investigatorId: { type: String, required: true }
+  },
+  setup(props) {
+    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+    const focusedCards = computed(() => props.game.currentData.focusedCards)
+
+    const resolutions = computed(() => {
+      return choices
+        .value
+        .map((choice, idx) => ({ choice, idx }))
+        .filter(({ choice }) => choice.tag === MessageType.RESOLUTION);
+    })
+
+    return { choices, focusedCards, resolutions }
+  }
 })
-export default class ChoiceModal extends Vue {
-  @Prop(Object) readonly game!: Game;
-  @Prop(String) readonly investigatorId!: string
-
-  get choices(): Message[] {
-    return choices(this.game, this.investigatorId);
-  }
-
-  get focusedCards() {
-    return this.game.currentData.focusedCards;
-  }
-
-  get resolutions() {
-    return this
-      .choices
-      .map((choice, idx) => ({ choice, idx }))
-      .filter(({ choice }) => choice.tag === MessageType.RESOLUTION);
-  }
-}
 </script>
 
 <style scoped lang="scss">

@@ -22,56 +22,53 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { choices, Game } from '@/arkham/types/Game';
+import { defineComponent, computed } from 'vue';
+import { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Agenda';
 
-@Component({
+export default defineComponent({
   components: { PoolItem },
-})
-export default class Agenda extends Vue {
-  @Prop(Object) readonly agenda!: Arkham.Agenda;
-  @Prop(Object) readonly game!: Game;
-  @Prop(String) readonly investigatorId!: string;
+  props: {
+    agenda: { type: Object as () => Arkham.Agenda, required: true },
+    game: { type: Object as () => Game, required: true },
+    investigatorId: { type: String, required: true }
+  },
+  setup(props) {
+    const id = computed(() => props.agenda.contents.id)
+    const image = computed(() => {
+      if (props.agenda.contents.flipped) {
+        return `/img/arkham/cards/${id.value}b.jpg`;
+      }
 
-  get id() {
-    return this.agenda.contents.id;
-  }
+      return `/img/arkham/cards/${id.value}.jpg`;
+    })
 
-  get image() {
-    if (this.agenda.contents.flipped) {
-      return `/img/arkham/cards/${this.id}b.jpg`;
+    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+    const advanceAgendaAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.ADVANCE_AGENDA))
+
+    function abilityLabel(idx: number) {
+      return choices.value[idx].contents[1].type.contents[1];
     }
 
-    return `/img/arkham/cards/${this.id}.jpg`;
-  }
+    const abilities = computed(() => {
+      return choices
+        .value
+        .reduce<number[]>((acc, v, i) => {
+          if (v.tag === 'ActivateCardAbilityAction' && v.contents[1].source.tag === 'AgendaSource' && v.contents[1].source.contents === id.value) {
+            return [...acc, i];
+          }
 
-  get choices() {
-    return choices(this.game, this.investigatorId);
-  }
+          return acc;
+        }, [])
+    })
 
-  get advanceAgendaAction() {
-    return this.choices.findIndex((c) => c.tag === MessageType.ADVANCE_AGENDA);
+    return { abilities, abilityLabel, advanceAgendaAction, image, id }
   }
-
-  abilityLabel(idx: number) {
-    return this.choices[idx].contents[1].type.contents[1];
-  }
-
-  get abilities() {
-    return this
-      .choices
-      .reduce<number[]>((acc, v, i) => {
-        if (v.tag === 'ActivateCardAbilityAction' && v.contents[1].source.tag === 'AgendaSource' && v.contents[1].source.contents === this.id) {
-          return [...acc, i];
-        }
-
-        return acc;
-      }, []);
-  }
-}
+})
 </script>
 
 <style scoped lang="scss">

@@ -27,34 +27,34 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { Getter } from 'vuex-class';
+import { defineComponent, ref, computed, Ref } from 'vue';
+import { useStore } from 'vuex';
 import { deleteGame, fetchGames } from '@/arkham/api';
 import { Game } from '@/arkham/types/Game';
-import { User } from '../types';
+import { User } from '@/types';
 
-@Component
-export default class Home extends Vue {
-  @Getter currentUser!: User | undefined;
+export default defineComponent({
+  setup() {
+    const store = useStore()
+    const currentUser = computed<User | null>(() => store.getters.currentUser)
+    const deleteId = ref<string | null>(null)
+    const games: Ref<Game[]> = ref([])
 
-  private games: Game[] = [];
-  private deleteId: string | null = null;
+    fetchGames().then((result) => games.value = result)
 
-  deleteGameEvent() {
-    if (this.deleteId) {
-      deleteGame(this.deleteId).then(() => {
-        this.games = this.games.filter((game) => game.id !== this.deleteId);
-        this.deleteId = null;
-      });
+    async function deleteGameEvent() {
+      const { value } = deleteId
+      if (value) {
+        deleteGame(value).then(() => {
+          games.value = games.value.filter((game) => game.id !== value);
+          deleteId.value = null;
+        });
+      }
     }
-  }
 
-  async mounted() {
-    fetchGames().then((games) => {
-      this.games = games;
-    });
+    return { currentUser, deleteId, games, deleteGameEvent }
   }
-}
+})
 </script>
 
 <style lang="scss">

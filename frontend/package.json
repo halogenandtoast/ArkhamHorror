@@ -1,58 +1,40 @@
 {
-  "name": "arkham-horror-frontend",
+  "name": "frontend-v2",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e",
-    "lint": "vue-cli-service lint",
-    "lint:template": "vue-type-check --workspace ./ --srcDir ./src"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.30",
-    "@fortawesome/free-brands-svg-icons": "^5.14.0",
-    "@fortawesome/free-solid-svg-icons": "^5.14.0",
-    "@fortawesome/vue-fontawesome": "^0.1.10",
-    "@types/lodash": "^4.14.159",
-    "axios": "^0.19.2",
-    "core-js": "^3.6.4",
-    "lodash": "^4.17.20",
-    "register-service-worker": "^1.6.2",
-    "ts.data.json": "^1.1.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.32",
+    "@fortawesome/free-brands-svg-icons": "^5.15.1",
+    "@fortawesome/free-solid-svg-icons": "^5.15.1",
+    "@fortawesome/vue-fontawesome": "^3.0.0-2",
+    "axios": "^0.20.0",
+    "core-js": "^3.6.5",
+    "ts.data.json": "^1.4.0",
     "v-jsoneditor": "^1.4.1",
-    "vue": "^2.6.11",
-    "vue-class-component": "^7.2.2",
-    "vue-property-decorator": "^8.3.0",
-    "vue-router": "^3.1.5",
-    "vuex": "^3.1.2",
-    "vuex-class": "^0.3.2"
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.0-0",
+    "vuex": "^4.0.0-beta.4"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.19",
-    "@typescript-eslint/eslint-plugin": "^2.18.0",
-    "@typescript-eslint/parser": "^2.18.0",
-    "@vue/cli-plugin-babel": "~4.2.0",
-    "@vue/cli-plugin-e2e-cypress": "~4.2.0",
-    "@vue/cli-plugin-eslint": "~4.2.0",
-    "@vue/cli-plugin-pwa": "~4.2.0",
-    "@vue/cli-plugin-router": "~4.2.0",
-    "@vue/cli-plugin-typescript": "~4.2.0",
-    "@vue/cli-plugin-unit-jest": "~4.2.0",
-    "@vue/cli-plugin-vuex": "~4.2.0",
-    "@vue/cli-service": "~4.2.0",
-    "@vue/eslint-config-airbnb": "^5.0.2",
-    "@vue/eslint-config-typescript": "^5.0.1",
-    "@vue/test-utils": "1.0.0-beta.31",
+    "@typescript-eslint/eslint-plugin": "^2.33.0",
+    "@typescript-eslint/parser": "^2.33.0",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-typescript": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/compiler-sfc": "^3.0.0",
+    "@vue/eslint-config-typescript": "^5.0.2",
     "eslint": "^6.7.2",
-    "eslint-plugin-import": "^2.20.1",
-    "eslint-plugin-vue": "^6.1.2",
+    "eslint-plugin-vue": "^7.0.0-0",
     "node-sass": "^4.12.0",
     "sass-loader": "^8.0.2",
-    "typescript": "~3.7.5",
-    "vue-template-compiler": "^2.6.11",
-    "vue-type-check": "^1.0.0"
+    "typescript": "~3.9.3"
   },
   "eslintConfig": {
     "root": true,
@@ -60,33 +42,18 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/essential",
-      "@vue/airbnb",
+      "plugin:vue/vue3-essential",
+      "eslint:recommended",
       "@vue/typescript/recommended"
     ],
     "parserOptions": {
       "ecmaVersion": 2020
     },
-    "rules": {
-      "lines-between-class-members": 0
-    },
-    "overrides": [
-      {
-        "files": [
-          "**/__tests__/*.{j,t}s?(x)",
-          "**/tests/unit/**/*.spec.{j,t}s?(x)"
-        ],
-        "env": {
-          "jest": true
-        }
-      }
-    ]
+    "rules": {}
   },
   "browserslist": [
     "> 1%",
-    "last 2 versions"
-  ],
-  "jest": {
-    "preset": "@vue/cli-plugin-unit-jest/presets/typescript-and-babel"
-  }
+    "last 2 versions",
+    "not dead"
+  ]
 }

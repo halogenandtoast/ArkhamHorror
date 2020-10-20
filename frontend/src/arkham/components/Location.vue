@@ -62,8 +62,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { choices, Game } from '@/arkham/types/Game';
+import { defineComponent, computed } from 'vue';
+import { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Asset from '@/arkham/components/Asset.vue';
@@ -71,157 +72,160 @@ import Treachery from '@/arkham/components/Treachery.vue';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Location';
 
-@Component({
+export default defineComponent({
   components: {
     Enemy,
     Treachery,
     Asset,
     PoolItem,
   },
+  props: {
+    game: { type: Object as () => Game, required: true },
+    location: { type: Object as () => Arkham.Location, required: true },
+    investigatorId: { type: String, required: true },
+  },
+  setup(props, { emit }) {
+    const clues = computed(() => props.location.contents.clues)
+    const image = computed(() => {
+      const { id, revealed } = props.location.contents;
+      const suffix = revealed ? '' : 'b';
+
+      return `/img/arkham/cards/${id}${suffix}.jpg`;
+    })
+
+    const id = computed(() => props.location.contents.id)
+    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+    const attachTreacheryToLocationAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.ATTACH_TREACHERY
+          && c.contents[1].contents === id.value);
+    })
+
+    const enemySpawnAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.ENEMY_SPAWN
+          && c.contents[0] === id.value);
+    })
+
+    const moveToAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.MOVE_TO && c.contents[1] === id.value);
+    })
+
+    const moveUntilAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.MOVE_UNTIL && c.contents[0] === id.value);
+    })
+
+    const createEnemyAtAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.CREATE_ENEMY_AT && c.contents[1] === id.value);
+    })
+
+    const moveAction = computed(() => {
+      const isRunMove = choices.value.findIndex((c) => c.tag === MessageType.RUN
+        && c.contents[0]
+        && c.contents[0].tag === MessageType.MOVE
+        && c.contents[0].contents[1] === id.value);
+
+      if (isRunMove !== -1) {
+        return isRunMove;
+      }
+
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.MOVE && c.contents[1] === id.value);
+    })
+
+    const cardAction = computed(() => {
+      if (attachTreacheryToLocationAction.value !== -1) {
+        return attachTreacheryToLocationAction.value;
+      }
+
+      if (enemySpawnAction.value !== -1) {
+        return enemySpawnAction.value;
+      }
+
+      if (moveToAction.value !== -1) {
+        return moveToAction.value;
+      }
+
+      if (moveUntilAction.value !== -1) {
+        return moveUntilAction.value;
+      }
+
+      if (createEnemyAtAction.value !== -1) {
+        return createEnemyAtAction.value;
+      }
+
+      return moveAction.value;
+    })
+
+    const investigateAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.INVESTIGATE && c.contents[1] === id.value);
+    })
+
+    function abilityLabel(idx: number) {
+      return choices.value[idx].contents[1].type.contents[1];
+    }
+
+    const abilities = computed(() => {
+      return choices
+        .value
+        .reduce<number[]>((acc, v, i) => {
+          if ((v.tag === 'ActivateCardAbilityAction' || v.tag === 'ActivateCardAbilityActionWithDynamicCost') && v.contents[1].source.tag === 'LocationSource' && v.contents[1].source.contents === id.value) {
+            return [i, ...acc];
+          }
+
+          return acc;
+        }, []);
+    })
+
+    const enemies = computed(() => {
+      const enemyIds = props.location.contents.enemies;
+      return enemyIds
+        .filter((e) => props.game.currentData.enemies[e].contents.engagedInvestigators.length === 0);
+    })
+
+    const blocked = computed(() => props.location.contents.blocked)
+
+    function warnAction(msg: string, action: number) {
+      if (window.confirm(msg)) { // eslint-disable-line
+        emit('choose', action);
+      }
+    }
+
+    function doInvestigate() {
+      if (clues.value === 0) {
+        warnAction('There are no clues left, are you sure?', investigateAction.value);
+      } else {
+        emit('choose', investigateAction.value);
+      }
+    }
+
+    const portrait = (cardCode: string) => `/img/arkham/portraits/${cardCode}.jpg`
+
+    return {
+      portrait,
+      doInvestigate,
+      blocked,
+      enemies,
+      abilities,
+      abilityLabel,
+      investigateAction,
+      cardAction,
+      image
+    }
+  }
 })
-export default class Location extends Vue {
-  @Prop(Object) readonly game!: Game;
-  @Prop(String) readonly investigatorId!: string;
-  @Prop(Object) readonly location!: Arkham.Location;
-
-  get clues() {
-    return this.location.contents.clues;
-  }
-
-  get image() {
-    const { id, revealed } = this.location.contents;
-    const suffix = revealed ? '' : 'b';
-
-    return `/img/arkham/cards/${id}${suffix}.jpg`;
-  }
-
-  get id() {
-    return this.location.contents.id;
-  }
-
-  get choices() {
-    return choices(this.game, this.investigatorId);
-  }
-
-  get cardAction() {
-    if (this.attachTreacheryToLocationAction !== -1) {
-      return this.attachTreacheryToLocationAction;
-    }
-
-    if (this.enemySpawnAction !== -1) {
-      return this.enemySpawnAction;
-    }
-
-    if (this.moveToAction !== -1) {
-      return this.moveToAction;
-    }
-
-    if (this.moveUntilAction !== -1) {
-      return this.moveUntilAction;
-    }
-
-    if (this.createEnemyAtAction !== -1) {
-      return this.createEnemyAtAction;
-    }
-
-    return this.moveAction;
-  }
-
-  get investigateAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.INVESTIGATE && c.contents[1] === this.id);
-  }
-
-  get createEnemyAtAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.CREATE_ENEMY_AT && c.contents[1] === this.id);
-  }
-
-  get moveAction() {
-    const isRunMove = this.choices.findIndex((c) => c.tag === MessageType.RUN
-      && c.contents[0]
-      && c.contents[0].tag === MessageType.MOVE
-      && c.contents[0].contents[1] === this.id);
-
-    if (isRunMove !== -1) {
-      return isRunMove;
-    }
-
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.MOVE && c.contents[1] === this.id);
-  }
-
-  get moveToAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.MOVE_TO && c.contents[1] === this.id);
-  }
-
-  get moveUntilAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.MOVE_UNTIL && c.contents[0] === this.id);
-  }
-
-  get attachTreacheryToLocationAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.ATTACH_TREACHERY
-        && c.contents[1].contents === this.id);
-  }
-
-  get enemySpawnAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.ENEMY_SPAWN
-        && c.contents[0] === this.id);
-  }
-
-  abilityLabel(idx: number) {
-    return this.choices[idx].contents[1].type.contents[1];
-  }
-
-  get abilities() {
-    return this
-      .choices
-      .reduce<number[]>((acc, v, i) => {
-        if ((v.tag === 'ActivateCardAbilityAction' || v.tag === 'ActivateCardAbilityActionWithDynamicCost') && v.contents[1].source.tag === 'LocationSource' && v.contents[1].source.contents === this.id) {
-          return [i, ...acc];
-        }
-
-        return acc;
-      }, []);
-  }
-
-  get enemies() {
-    const enemyIds = this.location.contents.enemies;
-    return enemyIds
-      .filter((e) => this.game.currentData.enemies[e].contents.engagedInvestigators.length === 0);
-  }
-
-  get blocked() {
-    return this.location.contents.blocked;
-  }
-
-  doInvestigate() {
-    if (this.clues === 0) {
-      this.warnAction('There are no clues left, are you sure?', this.investigateAction);
-    } else {
-      this.$emit('choose', this.investigateAction);
-    }
-  }
-
-  warnAction(msg: string, action: number) {
-    if (window.confirm(msg)) { // eslint-disable-line
-      this.$emit('choose', action);
-    }
-  }
-
-  portrait = (cardCode: string) => `/img/arkham/portraits/${cardCode}.jpg`
-}
 </script>
 
 <style scoped lang="scss">

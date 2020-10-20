@@ -44,55 +44,54 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { choices, Game } from '@/arkham/types/Game';
+import { defineComponent, computed } from 'vue';
+import { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
 
-@Component
-export default class StatusBar extends Vue {
-  @Prop(Object) readonly game!: Game
-  @Prop(String) readonly investigatorId!: string
+export default defineComponent({
+  props: {
+    game: { type: Object as () => Game, required: true },
+    investigatorId: { type: String, required: true }
+  },
+  setup(props) {
+    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+    const skillTestMessageTypes= [MessageType.BEGIN_SKILL_TEST_AFTER_FAST, MessageType.BEGIN_SKILL_TEST];
 
-  MessageType: any = MessageType // eslint-disable-line
+    const includeBeginSkillTest = computed(() => {
+      return choices
+        .value
+        .filter((c) => c.tag === MessageType.BEGIN_SKILL_TEST).length > 1
+        ? [MessageType.BEGIN_SKILL_TEST]
+        : [];
+    })
 
-  skillTestMessageTypes= [MessageType.BEGIN_SKILL_TEST_AFTER_FAST, MessageType.BEGIN_SKILL_TEST];
+    function isStatusBarMessage(c: Message): boolean {
+      const validMessageTags = [
+        MessageType.CONTINUE,
+        MessageType.AFTER_DISCOVER_CLUES,
+        MessageType.BEGIN_SKILL_TEST_AFTER_FAST,
+        MessageType.LABEL,
+      ];
 
-  get choices() {
-    return choices(this.game, this.investigatorId);
-  }
-
-  get shouldShow() {
-    return this.choices.some(this.isStatusBarMessage);
-  }
-
-  get includeBeginSkillTest() {
-    return this
-      .choices
-      .filter((c) => c.tag === MessageType.BEGIN_SKILL_TEST).length > 1
-      ? [MessageType.BEGIN_SKILL_TEST]
-      : [];
-  }
-
-  isStatusBarMessage(c: Message): boolean {
-    const validMessageTags = [
-      MessageType.CONTINUE,
-      MessageType.AFTER_DISCOVER_CLUES,
-      MessageType.BEGIN_SKILL_TEST_AFTER_FAST,
-      MessageType.LABEL,
-    ];
-
-    switch (c.tag) {
-      case MessageType.RUN:
-        return c.contents[0] && this.isStatusBarMessage(c.contents[0]);
-      default:
-        return [...validMessageTags, ...this.includeBeginSkillTest].includes(c.tag);
+      switch (c.tag) {
+        case MessageType.RUN:
+          return c.contents[0] && isStatusBarMessage(c.contents[0]);
+        default:
+          return [...validMessageTags, ...includeBeginSkillTest.value].includes(c.tag);
+      }
     }
-  }
 
-  get applyResultsAction() {
-    return this.choices.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);
+    const shouldShow = computed(() => choices.value.some(isStatusBarMessage))
+
+
+    const applyResultsAction = computed(() => {
+      return choices.value.findIndex((c) => c.tag === MessageType.SKILL_TEST_RESULTS);
+    })
+
+    return { choices, skillTestMessageTypes, applyResultsAction, shouldShow, MessageType }
   }
-}
+})
 </script>
 
 <style scoped lang="scss">

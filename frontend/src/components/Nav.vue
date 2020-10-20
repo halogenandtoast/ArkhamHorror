@@ -16,13 +16,18 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { Action, Getter } from 'vuex-class';
-import { User } from './types';
+import { defineComponent, computed } from 'vue';
+import { useStore } from 'vuex';
+import { User } from '@/types';
 
-@Component
-export default class Nav extends Vue {
-  @Getter currentUser!: User | void;
-  @Action logout!: () => Promise<void>
-}
+export default defineComponent({
+  setup() {
+    const store = useStore()
+    const currentUser = computed<User | null>(() => store.getters.currentUser)
+    async function logout() {
+      store.dispatch('logout')
+    }
+    return { currentUser, logout }
+  }
+})
 </script>

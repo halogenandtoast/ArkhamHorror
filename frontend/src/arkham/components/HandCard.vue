@@ -11,133 +11,119 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-import { Card } from '@/arkham/types/Card';
-import { choices, Game } from '@/arkham/types/Game';
-import { Message, MessageType } from '@/arkham/types/Message';
+import { defineComponent, computed } from 'vue'
+import { Card } from '@/arkham/types/Card'
+import { Game } from '@/arkham/types/Game'
+import * as ArkhamGame from '@/arkham/types/Game'
+import { Message, MessageType } from '@/arkham/types/Message'
 
-@Component
-export default class HandCard extends Vue {
-  @Prop(Object) readonly card!: Card
-  @Prop(Object) readonly game!: Game
-  @Prop(String) readonly investigatorId!: string
-  @Prop(Boolean) readonly isCommited!: boolean
+export default defineComponent({
+  props: {
+    game: { type: Object as () => Game, required: true },
+    card: { type: Object as () => Card, required: true },
+    investigatorId: { type: String, required: true },
+    isCommited: { type: Boolean, required: true },
+  },
+  setup(props) {
+    const id = computed(() => props.card.contents.id)
+    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-  get classObject() {
-    return {
-      'card--can-interact': this.cardAction !== -1,
-      'card--committed': this.uncommitCardAction !== -1,
-    };
-  }
+    function canUncommit(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.UNCOMMIT_CARD:
+          return c.contents[1] === id.value
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canUncommit(c1))
+        default:
+          return false
+      }
+    }
+    const uncommitCardAction = computed(() => choices.value.findIndex(canUncommit))
 
-  get image() {
-    const { cardCode } = this.card.contents;
-    return `/img/arkham/cards/${cardCode}.jpg`;
-  }
-
-  get id() {
-    return this.card.contents.id;
-  }
-
-  get choices() {
-    return choices(this.game, this.investigatorId);
-  }
-
-  get discardCardAction() {
-    return this.choices.findIndex(this.canDiscard);
-  }
-
-  get playCardAction() {
-    return this.choices.findIndex(this.canPlay);
-  }
-
-  get revealCardAction() {
-    return this.choices.findIndex(this.canReveal);
-  }
-
-  get commitCardAction() {
-    return this.choices.findIndex(this.canCommit);
-  }
-
-  get uncommitCardAction() {
-    return this.choices.findIndex(this.canUncommit);
-  }
-
-  get cardAction() {
-    if (this.revealCardAction !== -1) {
-      return this.revealCardAction;
+    function canPlay(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.PLAY_CARD:
+          return c.contents[1] === id.value
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canPlay(c1))
+        default:
+          return false
+      }
     }
 
-    if (this.playCardAction !== -1) {
-      return this.playCardAction;
+    function canReveal(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.REVEAL_CARD:
+          return c.contents === id.value
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canReveal(c1))
+        default:
+          return false
+      }
     }
 
-    if (this.uncommitCardAction !== -1) {
-      return this.uncommitCardAction;
+    function canDiscard(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.DISCARD_CARD:
+          return c.contents[1] === id.value;
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canDiscard(c1));
+        default:
+          return false;
+      }
     }
 
-    if (this.discardCardAction !== -1) {
-      return this.discardCardAction;
+    function canCommit(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.COMMIT_CARD:
+          return c.contents[1] === id.value;
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canCommit(c1));
+        default:
+          return false;
+      }
     }
 
-    return this.commitCardAction;
+    const discardCardAction = computed(() => choices.value.findIndex(canDiscard))
+    const playCardAction = computed(() => choices.value.findIndex(canPlay))
+    const revealCardAction = computed(() => choices.value.findIndex(canReveal))
+    const commitCardAction = computed(() => choices.value.findIndex(canCommit))
+
+    const cardAction = computed(() => {
+      if (revealCardAction.value !== -1) {
+        return revealCardAction.value
+      }
+
+      if (playCardAction.value !== -1) {
+        return playCardAction.value
+      }
+
+      if (uncommitCardAction.value !== -1) {
+        return uncommitCardAction.value
+      }
+
+      if (discardCardAction.value !== -1) {
+        return discardCardAction.value
+      }
+
+      return commitCardAction.value
+    })
+
+    const classObject = computed(() => {
+      return {
+        'card--can-interact': cardAction.value !== -1,
+        'card--committed': uncommitCardAction.value !== -1,
+      }
+    })
+
+    const image = computed(() => {
+      const { cardCode } = props.card.contents;
+      return `/img/arkham/cards/${cardCode}.jpg`;
+    })
+
+    return { image, classObject, cardAction }
   }
-
-  canPlay(c: Message): boolean {
-    switch (c.tag) {
-      case MessageType.PLAY_CARD:
-        return c.contents[1] === this.id;
-      case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.canPlay(c1));
-      default:
-        return false;
-    }
-  }
-
-  canReveal(c: Message): boolean {
-    switch (c.tag) {
-      case MessageType.REVEAL_CARD:
-        return c.contents === this.id;
-      case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.canReveal(c1));
-      default:
-        return false;
-    }
-  }
-
-  canDiscard(c: Message): boolean {
-    switch (c.tag) {
-      case MessageType.DISCARD_CARD:
-        return c.contents[1] === this.id;
-      case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.canDiscard(c1));
-      default:
-        return false;
-    }
-  }
-
-  canCommit(c: Message): boolean {
-    switch (c.tag) {
-      case MessageType.COMMIT_CARD:
-        return c.contents[1] === this.id;
-      case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.canCommit(c1));
-      default:
-        return false;
-    }
-  }
-
-  canUncommit(c: Message): boolean {
-    switch (c.tag) {
-      case MessageType.UNCOMMIT_CARD:
-        return c.contents[1] === this.id;
-      case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.canUncommit(c1));
-      default:
-        return false;
-    }
-  }
-}
+})
 </script>
 
 <style scoped lang="scss">

@@ -1,58 +1,68 @@
 <template lang="html">
   <div>
     <ul class='tabs__header'>
-      <li v-for='(tab, index) in tabs'
-        :key='tab.title'
+      <li v-for='(player, index) in players'
+        :key='player.contents.name'
         @click='selectTab(index)'
-        :class='tabClass(tab, index)'
+        :class='tabClass(index)'
       >
-        {{ tab.title }}
+        {{ player.contents.name }}
       </li>
     </ul>
-    <slot></slot>
+    <Tab
+      v-for="(player, index) in players"
+      :key="index"
+      :index="index"
+      :playerClass="player.contents.class"
+      :title="player.contents.name"
+      :investigatorId="index"
+      :activePlayer="player.contents.id == activePlayerId"
+    >
+      <Player
+        :game="game"
+        :investigatorId="investigatorId"
+        :player="player"
+        @choose="$emit('choose', $event)"
+      />
+    </Tab>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue, Prop, Component } from 'vue-property-decorator';
+import { defineComponent, ref } from 'vue';
+import { Game } from '@/arkham/types/Game';
 import Tab from '@/arkham/components/Tab.vue';
+import Player from '@/arkham/components/Player.vue';
+import { Investigator } from '@/arkham/types/Investigator';
 
-@Component
-export default class PlayerTabs extends Vue {
-  @Prop(String) readonly investigatorId!: string
+export default defineComponent({
+  components: { Tab, Player },
+  props: {
+    game: { type: Object as () => Game, required: true },
+    investigatorId: { type: String, required: true },
+    players: { type: Object as () => Record<string, Investigator>, required: true },
+    activePlayerId: { type: String, required: true }
+  },
+  setup(props) {
+    const selectedTab = ref(props.investigatorId)
 
-  selectedIndex = 0
-  tabs: Tab[] = []
+    function tabClass(index: string) {
+      return [
+        {
+          'tab--selected': index === selectedTab.value,
+          'tab--active-player': props.players[index].contents.id == props.activePlayerId,
+        },
+        `tab--${props.players[index].contents.class}`,
+      ]
+    }
 
-  created() {
-    this.tabs = this.$children as Tab[];
+    function selectTab(i: string) {
+      selectedTab.value = i
+    }
+
+    return { selectedTab, selectTab, tabClass }
   }
-
-  tabClass(tab: Tab, index: number) {
-    return [
-      {
-        'tab--selected': index === this.selectedIndex,
-        'tab--active-player': tab.activePlayer,
-      },
-      `tab--${tab.playerClass}`,
-    ];
-  }
-
-  mounted() {
-    const idx = this
-      .tabs
-      .findIndex((tab) => tab.$props.investigatorId === this.investigatorId);
-    this.selectTab(idx === -1 ? 0 : idx);
-  }
-
-  selectTab(i: number) {
-    this.selectedIndex = i;
-
-    this.tabs.forEach((tab, index) => {
-      tab.isActive = (index === i) // eslint-disable-line
-    });
-  }
-}
+})
 </script>
 
 <style lang="scss">

@@ -166,7 +166,7 @@ export default defineComponent({
   box-sizing: border-box;
 }
 
-/deep/ .in-play .card {
+::v-deep .in-play .card {
   width: 130px;
   margin: 0 2px;
 }

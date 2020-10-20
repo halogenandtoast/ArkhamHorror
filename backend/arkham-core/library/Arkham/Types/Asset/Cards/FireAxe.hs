@@ -41,7 +41,12 @@ instance ActionRunner env => HasActions env FireAxe where
     pure $ [ ActivateCardAbilityAction iid (fightAbility a) | fightAvailable ]
   getActions iid (WhenSkillTest skillType) (FireAxe a) | ownedBy a iid = do
     let ability = reactionAbility a skillType
-    using <- asks $ any (isSource a) . getSource ForSkillTest
+    msource <- asks $ getSource ForSkillTest
+    let
+      using = case msource of
+        Just (SkillTestSource _ source (Just Action.Fight))
+          | isSource a source -> True
+        _ -> False
     usedCount <-
       asks $ count (== (iid, ability)) . map unUsedAbility . getList ()
     resourceCount <- getResourceCount iid

@@ -11,7 +11,7 @@ import Arkham.Types.Token
 
 spec :: Spec
 spec = describe "Deduction" $ do
-  fit "it allows you to discover another clue if you succeed" $ do
+  it "it allows you to discover another clue if you succeed" $ do
     scenario' <- testScenario "00000" id
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 1 }

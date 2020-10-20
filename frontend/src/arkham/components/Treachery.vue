@@ -20,53 +20,47 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-import { choices, Game } from '@/arkham/types/Game';
+import { defineComponent, computed } from 'vue';
+import { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Treachery';
 
-@Component({
+export default defineComponent({
   components: { PoolItem },
-})
-export default class Treachery extends Vue {
-  @Prop(Object) readonly game!: Game
-  @Prop(String) readonly investigatorId!: string
-  @Prop(Object) readonly treachery!: Arkham.Treachery
+  props: {
+    game: { type: Object as () => Game, required: true },
+    treachery: { type: Object as () => Arkham.Treachery, required: true },
+    investigatorId: { type: String, required: true },
+  },
+  setup(props) {
+    const image = computed(() => `/img/arkham/cards/${props.treachery.contents.cardCode}.jpg`)
+    const id = computed(() => props.treachery.contents.id)
+    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-  get image() {
-    return `/img/arkham/cards/${this.treachery.contents.cardCode}.jpg`;
-  }
-
-  get id() {
-    return this.treachery.contents.id;
-  }
-
-  get choices() {
-    return choices(this.game, this.investigatorId);
-  }
-
-  get cardAction() {
-    return this.choices.findIndex(this.canInteract);
-  }
-
-  canInteract(c: Message): boolean {
-    switch (c.tag) {
-      case MessageType.DISCARD:
-        return c.contents.contents === this.id;
-      case MessageType.ASSET_DAMAGE:
-        return c.contents[0] === this.id;
-      case MessageType.ACTIVATE_ABILITY:
-        return c.contents[1].source.contents === this.id;
-      case MessageType.USE_CARD_ABILITY:
-        return c.contents[1][0].contents === this.id;
-      case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.canInteract(c1));
-      default:
-        return false;
+    function canInteract(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.DISCARD:
+          return c.contents.contents === id.value;
+        case MessageType.ASSET_DAMAGE:
+          return c.contents[0] === id.value;
+        case MessageType.ACTIVATE_ABILITY:
+          return c.contents[1].source.contents === id.value;
+        case MessageType.USE_CARD_ABILITY:
+          return c.contents[1][0].contents === id.value;
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canInteract(c1));
+        default:
+          return false;
+      }
     }
+
+    const cardAction = computed(() => choices.value.findIndex(canInteract))
+
+    return { image, cardAction }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

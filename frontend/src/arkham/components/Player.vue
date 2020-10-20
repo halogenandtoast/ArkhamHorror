@@ -64,8 +64,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-import { choices, Game } from '@/arkham/types/Game';
+import { defineComponent, computed } from 'vue';
+import { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
 import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
@@ -74,7 +75,7 @@ import HandCard from '@/arkham/components/HandCard.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import * as Arkham from '@/arkham/types/Investigator';
 
-@Component({
+export default defineComponent({
   components: {
     Enemy,
     Treachery,
@@ -82,39 +83,34 @@ import * as Arkham from '@/arkham/types/Investigator';
     HandCard,
     Investigator,
   },
+  props: {
+    game: { type: Object as () => Game, required: true },
+    player: { type: Object as () => Arkham.Investigator, required: true },
+    investigatorId: { type: String, required: true },
+    canTakeActions: { type: Boolean, required: true },
+  },
+  setup(props) {
+    const topOfDiscard = computed(() => {
+      if (props.player.contents.discard[0]) {
+        const { cardCode } = props.player.contents.discard[0];
+        return `/img/arkham/cards/${cardCode}.jpg`;
+      }
+
+      return null;
+    })
+
+    const id = computed(() => props.player.contents.id)
+    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+    const drawCardsAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.DRAW_CARDS && c.contents[0] === id.value);
+    })
+
+    return { topOfDiscard, drawCardsAction }
+  }
 })
-export default class Player extends Vue {
-  @Prop(Object) readonly game!: Game
-  @Prop(String) readonly investigatorId!: string
-  @Prop(Object) readonly player!: Arkham.Investigator
-  @Prop(Array) readonly commitedCards!: number[]
-  @Prop(Boolean) readonly canTakeActions!: boolean
-
-  private focusedEnemy: string | null = null;
-
-  get topOfDiscard() {
-    if (this.player.contents.discard[0]) {
-      const { cardCode } = this.player.contents.discard[0];
-      return `/img/arkham/cards/${cardCode}.jpg`;
-    }
-
-    return null;
-  }
-
-  get id() {
-    return this.player.contents.id;
-  }
-
-  get choices() {
-    return choices(this.game, this.investigatorId);
-  }
-
-  get drawCardsAction() {
-    return this
-      .choices
-      .findIndex((c) => c.tag === MessageType.DRAW_CARDS && c.contents[0] === this.id);
-  }
-}
 </script>
 
 <style scoped lang="scss">
@@ -160,6 +156,7 @@ export default class Player extends Vue {
 
 .deck {
   margin-top: 10px;
+  width: auto;
 }
 
 .in-play {

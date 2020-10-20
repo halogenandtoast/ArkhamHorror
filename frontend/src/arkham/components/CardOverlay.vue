@@ -5,26 +5,27 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { defineComponent, ref } from 'vue';
 
-@Component
-export default class CardOverlay extends Vue {
-  card: string | null = null
+export default defineComponent({
+  setup() {
+    const card = ref<string | null>(null);
 
-  mounted() {
     document.addEventListener('mousemove', (event) => {
       if (event.target instanceof HTMLImageElement) {
         if (event.target.classList.contains('card')) {
-          this.card = event.target.src;
+          card.value = event.target.src
         } else {
-          this.card = null;
+          card.value = null
         }
       } else {
-        this.card = null;
+        card.value = null
       }
-    });
+    })
+
+    return { card }
   }
-}
+})
 </script>
 
 <style lang="scss">

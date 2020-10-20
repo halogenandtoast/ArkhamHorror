@@ -34,65 +34,64 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import * as Arkham from '@/arkham/types/Game';
-import { fetchGame, updateGame } from '@/arkham/api';
-import Scenario from '@/arkham/components/Scenario.vue';
-import Campaign from '@/arkham/components/Campaign.vue';
+import { defineComponent, ref } from 'vue'
+import * as Arkham from '@/arkham/types/Game'
+import { fetchGame, updateGame } from '@/arkham/api'
+import Scenario from '@/arkham/components/Scenario.vue'
+import Campaign from '@/arkham/components/Campaign.vue'
 
-@Component({
+export default defineComponent({
   components: { Scenario, Campaign },
-})
-export default class Game extends Vue {
-  @Prop(String) readonly gameId!: string;
+  props: { gameId: { type: String, required: true } },
+  setup(props) {
+    const ready = ref(false)
+    const socketError = ref(false)
+    const socket = ref<WebSocket | null>(null)
+    const game = ref<Arkham.Game | null>(null)
+    const investigatorId = ref<string | null>(null)
 
-  private ready = false;
-  private socketError = false;
-  private socket: WebSocket | null = null;
-  private game: Arkham.Game | null = null;
-  private investigatorId: string | null = null;
-
-  async mounted() {
-    fetchGame(this.gameId).then(({ game, investigatorId }) => {
-      this.game = game;
-      this.investigatorId = investigatorId;
-      this.connect();
-    });
-  }
-
-  connect() {
-    const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
-    this.socket = new WebSocket(`${baseURL}/api/v1/arkham/games/${this.gameId}`.replace(/https/, 'wss').replace(/http/, 'ws'));
-    this.socket.addEventListener('open', () => {
-      this.ready = true;
-      this.socketError = false;
-    });
-    this.socket.addEventListener('message', (event) => {
-      Arkham.gameDecoder.decodePromise(JSON.parse(event.data))
-        .then((updatedGame) => { this.game = updatedGame; });
-    });
-    this.socket.addEventListener('error', () => {
-      this.socketError = true;
-      if (this.socket) {
-        this.socket.close();
-      }
-    });
-    this.socket.addEventListener('close', () => {
-      this.socketError = true;
-      setTimeout(() => this.connect(), 1000);
-    });
-  }
-
-  async choose(idx: number) {
-    if (idx !== -1 && this.game && this.game.currentData) {
-      updateGame(this.gameId, idx, this.game.currentData.hash);
+    function connect() {
+      const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
+      socket.value = new WebSocket(`${baseURL}/api/v1/arkham/games/${props.gameId}`.replace(/https/, 'wss').replace(/http/, 'ws'));
+      socket.value.addEventListener('open', () => {
+        ready.value = true;
+        socketError.value = false;
+      });
+      socket.value.addEventListener('message', (event: any) => {
+        Arkham.gameDecoder.decodePromise(JSON.parse(event.data))
+          .then((updatedGame) => { game.value = updatedGame; });
+      });
+      socket.value.addEventListener('error', () => {
+        socketError.value = true;
+        if (socket.value) {
+          socket.value.close();
+        }
+      });
+      socket.value.addEventListener('close', () => {
+        socketError.value = true;
+        setTimeout(() => connect(), 1000);
+      });
     }
-  }
 
-  update(state: Arkham.Game) {
-    this.game = state;
+    fetchGame(props.gameId).then(({ game: newGame, investigatorId: newInvestigatorId }) => {
+      game.value = newGame;
+      investigatorId.value = newInvestigatorId;
+      connect();
+    });
+
+    async function choose(idx: number) {
+      if (idx !== -1 && game.value && game.value.currentData) {
+        updateGame(props.gameId, idx, game.value.currentData.hash);
+      }
+    }
+
+    async function update(state: Arkham.Game) {
+      game.value = state;
+    }
+
+    return { socketError, ready, game, investigatorId, choose, update }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

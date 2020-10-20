@@ -15,60 +15,60 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { choices, Game } from '@/arkham/types/Game';
+import { defineComponent, computed } from 'vue';
+import { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
 
-@Component
-export default class EncounterDeck extends Vue {
-  @Prop(Object) readonly game!: Game;
-  @Prop(String) readonly investigatorId!: string
+export default defineComponent({
+  props: {
+    game: { type: Object as () => Game, required: true },
+    investigatorId: { type: String, required: true }
+  },
+  setup(props) {
+    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+    const drawEncounterCardAction = computed(() => {
+      return choices.value.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD)
+    })
 
-  get choices() {
-    return choices(this.game, this.investigatorId);
+    const searchTopOfEncounterCardAction = computed(() => {
+      return choices.value.findIndex((c) => c.tag === MessageType.SEARCH_TOP_OF_DECK && c.contents[1].tag === 'EncounterDeckTarget');
+    })
+
+    const surgeAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.SURGE))
+
+    const deckAction = computed(() => {
+      if (drawEncounterCardAction.value !== -1) {
+        return drawEncounterCardAction.value
+      }
+
+      if (surgeAction.value !== -1) {
+        return surgeAction.value
+      }
+
+      return searchTopOfEncounterCardAction.value
+    })
+
+    const investigatorPortrait = computed(() => {
+      const choice = choices.value[deckAction.value]
+
+      if (!choice) {
+        return null;
+      }
+
+      switch (choice.tag) {
+        case MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD:
+          return `/img/arkham/portraits/${choice.contents}.jpg`;
+        case MessageType.SURGE:
+          return `/img/arkham/portraits/${choice.contents}.jpg`;
+        default:
+          return `/img/arkham/portraits/${choice.contents[0]}.jpg`;
+      }
+    })
+
+    return { investigatorPortrait, deckAction, surgeAction, searchTopOfEncounterCardAction, drawEncounterCardAction }
   }
-
-  get drawEncounterCardAction() {
-    return this.choices.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD);
-  }
-
-  get searchTopOfEncounterCardAction() {
-    return this.choices.findIndex((c) => c.tag === MessageType.SEARCH_TOP_OF_DECK && c.contents[1].tag === 'EncounterDeckTarget');
-  }
-
-  get surgeAction() {
-    return this.choices.findIndex((c) => c.tag === MessageType.SURGE);
-  }
-
-  get deckAction() {
-    if (this.drawEncounterCardAction !== -1) {
-      return this.drawEncounterCardAction;
-    }
-
-    if (this.surgeAction !== -1) {
-      return this.surgeAction;
-    }
-
-    return this.searchTopOfEncounterCardAction;
-  }
-
-  get investigatorPortrait() {
-    const choice = this.choices[this.deckAction];
-
-    if (!choice) {
-      return null;
-    }
-
-    switch (choice.tag) {
-      case MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD:
-        return `/img/arkham/portraits/${choice.contents}.jpg`;
-      case MessageType.SURGE:
-        return `/img/arkham/portraits/${choice.contents}.jpg`;
-      default:
-        return `/img/arkham/portraits/${choice.contents[0]}.jpg`;
-    }
-  }
-}
+})
 </script>
 
 <style scoped lang="scss">

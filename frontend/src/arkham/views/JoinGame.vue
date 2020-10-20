@@ -18,34 +18,35 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-import { fetchDecks, joinGame } from '@/arkham/api';
-import * as Arkham from '@/arkham/types/Deck';
+import { defineComponent, ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { fetchDecks, joinGame } from '@/arkham/api'
+import * as Arkham from '@/arkham/types/Deck'
 
-@Component
-export default class NewCampaign extends Vue {
-  @Prop(String) readonly gameId!: string;
-  private decks: Arkham.Deck[] = [];
+export default defineComponent({
+  props: { gameId: { type: String, required: true } },
+  setup(props) {
+    const router = useRouter()
+    const decks = ref<Arkham.Deck[]>([])
 
-  deckId: string | null = null
-  ready = false
+    const deckId = ref<string | null>(null)
+    const ready = ref(false)
 
-  async mounted() {
-    fetchDecks().then((decks) => {
-      this.decks = decks;
-      this.ready = true;
-    });
-  }
+    fetchDecks().then((result) => {
+      decks.value = result
+      ready.value = true
+    })
 
-  get disabled() {
-    return !this.deckId;
-  }
+    const disabled = computed(() => !deckId.value)
 
-  join() {
-    if (this.deckId) {
-      joinGame(this.gameId, this.deckId)
-        .then((game) => this.$router.push(`/games/${game.id}`));
+    async function join() {
+      if (deckId.value) {
+        joinGame(props.gameId, deckId.value)
+          .then((game) => router.push(`/games/${game.id}`));
+      }
     }
+
+    return { ready, decks, join, disabled }
   }
-}
+})
 </script>

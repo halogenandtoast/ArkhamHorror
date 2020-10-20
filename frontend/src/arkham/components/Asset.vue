@@ -43,140 +43,110 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-import { choices, Game } from '@/arkham/types/Game';
+import { defineComponent, computed } from 'vue';
+import { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Asset';
 
-@Component({
+export default defineComponent({
   components: { PoolItem },
-})
-export default class Asset extends Vue {
-  @Prop(Object) readonly game!: Game
-  @Prop(String) readonly investigatorId!: string
-  @Prop(Object) readonly asset!: Arkham.Asset
+  props: {
+    game: { type: Object as () => Game, required: true },
+    asset: { type: Object as () => Arkham.Asset, required: true },
+    investigatorId: { type: String, required: true },
+  },
+  setup(props) {
+    const id = computed(() => props.asset.contents.id)
+    const hasPool = computed(() => {
+      const {
+        sanity,
+        health,
+        horror,
+        uses,
+      } = props.asset.contents;
+      return sanity || health || horror || uses;
+    })
 
-  get id() {
-    return this.asset.contents.id;
-  }
+    const exhausted = computed(() => props.asset.contents.exhausted)
+    const cardCode = computed(() => props.asset.contents.cardCode)
+    const image = computed(() => `/img/arkham/cards/${cardCode.value}.jpg`)
+    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-  get hasPool() {
-    const {
-      sanity,
-      health,
-      horror,
-      uses,
-    } = this.asset.contents;
-    return sanity || health || horror || uses;
-  }
-
-  get exhausted() {
-    return this.asset.contents.exhausted;
-  }
-
-  get cardCode() {
-    return this.asset.contents.cardCode;
-  }
-
-  get image() {
-    return `/img/arkham/cards/${this.cardCode}.jpg`;
-  }
-
-  get choices() {
-    return choices(this.game, this.investigatorId);
-  }
-
-  get cardAction() {
-    return this.choices.findIndex(this.canInteract);
-  }
-
-  canInteract(c: Message): boolean {
-    switch (c.tag) {
-      case MessageType.DISCARD:
-        return c.contents.contents === this.id;
-      case MessageType.READY:
-        return c.contents.contents === this.id;
-      case MessageType.USE_CARD_ABILITY:
-        return c.contents[1].contents === this.id;
-      case MessageType.ACTIVATE_ABILITY:
-        return c.contents[1].source.contents === this.id
-          && (c.contents[1].type.tag === 'ReactionAbility' || c.contents[1].type.tag === 'FastAbility');
-      case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.canInteract(c1));
-      default:
-        return false;
+    function canInteract(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.DISCARD:
+          return c.contents.contents === id.value
+        case MessageType.READY:
+          return c.contents.contents === id.value
+        case MessageType.USE_CARD_ABILITY:
+          return c.contents[1].contents === id.value
+        case MessageType.ACTIVATE_ABILITY:
+          return c.contents[1].source.contents === id.value
+            && (c.contents[1].type.tag === 'ReactionAbility' || c.contents[1].type.tag === 'FastAbility')
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canInteract(c1));
+        default:
+          return false;
+      }
     }
-  }
 
-  get healthAction() {
-    return this.choices.findIndex(this.canAdjustHealth);
-  }
-
-  get sanityAction() {
-    return this.choices.findIndex(this.canAdjustSanity);
-  }
-
-  canAdjustHealth(c: Message): boolean {
-    switch (c.tag) {
-      case MessageType.ASSET_DAMAGE:
-        return c.contents[0] === this.id && c.contents[2] > 0;
-      case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.canAdjustHealth(c1));
-      default:
-        return false;
+    function canAdjustHealth(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.ASSET_DAMAGE:
+          return c.contents[0] === id.value && c.contents[2] > 0;
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canAdjustHealth(c1));
+        default:
+          return false;
+      }
     }
-  }
 
-  canAdjustSanity(c: Message): boolean {
-    switch (c.tag) {
-      case MessageType.ASSET_DAMAGE:
-        return c.contents[0] === this.id && c.contents[3] > 0;
-      case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.canAdjustSanity(c1));
-      default:
-        return false;
+    function canAdjustSanity(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.ASSET_DAMAGE:
+          return c.contents[0] === id.value && c.contents[3] > 0;
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canAdjustSanity(c1));
+        default:
+          return false;
+      }
     }
-  }
 
-  abilityLabel(idx: number) {
-    return this.choices[idx].contents[1].type.contents[1];
-  }
+    const cardAction = computed(() => choices.value.findIndex(canInteract))
+    const healthAction = computed(() => choices.value.findIndex(canAdjustHealth))
+    const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
-  get abilities() {
-    return this
-      .choices
-      .reduce<number[]>((acc, v, i) => {
-        if (v.tag !== 'ActivateCardAbilityAction') {
+    function abilityLabel(idx: number) {
+      return choices.value[idx].contents[1].type.contents[1];
+    }
+
+    const abilities = computed(() => {
+      return choices
+        .value
+        .reduce<number[]>((acc, v, i) => {
+          if (v.tag !== 'ActivateCardAbilityAction') {
+            return acc;
+          }
+
+          const { tag, contents } = v.contents[1].source;
+
+          if (tag === 'AssetSource' && contents === id.value) {
+            return [...acc, i];
+          }
+
+          if (tag === 'ProxySource' && contents[0].tag === 'AssetSource' && contents[0].contents === id.value) {
+            return [...acc, i];
+          }
+
           return acc;
-        }
+        }, []);
+    })
 
-        const { tag, contents } = v.contents[1].source;
-
-        if (tag === 'AssetSource' && contents === this.id) {
-          return [...acc, i];
-        }
-
-        if (tag === 'ProxySource' && contents[0].tag === 'AssetSource' && contents[0].contents === this.id) {
-          return [...acc, i];
-        }
-
-        return acc;
-      }, []);
+    return { id, hasPool, exhausted, image, abilities, abilityLabel, sanityAction, healthAction, cardAction }
   }
-
-  canTriggerReaction(c: Message): boolean {
-    switch (c.tag) {
-      case MessageType.ACTIVATE_ABILITY:
-        console.log(c); // eslint-disable-line
-        return c.contents[1].source.tag === 'AssetSource' && c.contents[1].source.contents === this.id;
-      case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.canTriggerReaction(c1));
-      default:
-        return false;
-    }
-  }
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -5,15 +5,20 @@
 </template>
 
 <script lang="ts">
-import { Vue, Prop, Component } from 'vue-property-decorator';
+import { defineComponent, inject, computed } from 'vue';
 
-@Component
-export default class PlayerTab extends Vue {
-  @Prop(String) readonly title!: string
-  @Prop(Boolean) readonly activePlayer!: boolean
-  @Prop(String) readonly playerClass!: boolean
-  @Prop(String) readonly investigatorId!: string
-
-  isActive = true
-}
+export default defineComponent({
+  props: {
+    title: { type: String, required: true },
+    index: { type: String, required: true },
+    activePlayer: { type: Boolean, required: true },
+    playerClass: { type: String, required: true },
+    investigatorId: { type: String, required: true },
+  },
+  setup(props) {
+    const selectedTab = inject('selectedTab', props.index)
+    const isActive = computed(() => selectedTab == props.index)
+    return { isActive }
+  }
+})
 </script>

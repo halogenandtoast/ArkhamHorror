@@ -21,62 +21,62 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { defineComponent, ref } from 'vue';
 import * as Arkham from '@/arkham/types/Deck';
 import { fetchDecks, newDeck } from '@/arkham/api';
 
-@Component
-export default class Decks extends Vue {
-  private ready = false;
-  private decks: Arkham.Deck[] = [];
+export default defineComponent({
+  setup() {
+    const ready = ref(false)
+    const decks = ref<Arkham.Deck[]>([])
 
-  deck: string | null = null
-  investigator: string | null = null
-  deckId: string | null = null
-  deckName: string | null = null
+    const deck = ref<string | null>(null)
+    const investigator = ref<string | null>(null)
+    const deckId = ref<string | null>(null)
+    const deckName = ref<string | null>(null)
 
-  async mounted() {
-    fetchDecks().then((decks) => {
-      this.decks = decks;
-      this.ready = true;
-    });
-  }
+    fetchDecks().then((response) => {
+      decks.value = response
+      ready.value = true
+    })
 
-  pasteDeck(evt: ClipboardEvent) {
-    if (evt.clipboardData) {
-      this.deck = evt.clipboardData.getData('text');
-      this.loadDeck();
+    function loadDeck() {
+      if (!deck.value) {
+        return;
+      }
+
+      const matches = deck.value.match(/\/decklist(\/view)?\/([^/]+)/);
+      if (matches && matches[2]) {
+        fetch(`https://arkhamdb.com/api/public/decklist/${matches[2]}`)
+          .then((response) => response.json())
+          .then((data) => {
+            investigator.value = data.investigator_code
+            deckId.value = matches[2]
+            deckName.value = data.name
+          })
+      }
     }
-  }
 
-  loadDeck() {
-    if (!this.deck) {
-      return;
+    function pasteDeck(evt: ClipboardEvent) {
+      if (evt.clipboardData) {
+        deck.value = evt.clipboardData.getData('text');
+        loadDeck();
+      }
     }
 
-    const matches = this.deck.match(/\/decklist(\/view)?\/([^/]+)/);
-    if (matches && matches[2]) {
-      fetch(`https://arkhamdb.com/api/public/decklist/${matches[2]}`)
-        .then((response) => response.json())
-        .then((data) => {
-          const deckId = matches[2];
-          this.investigator = data.investigator_code;
-          this.deckId = deckId;
-          this.deckName = data.name;
-        });
+    async function createDeck() {
+      if (deckId.value && deckName.value) {
+        newDeck(deckId.value, deckName.value).then((deck) => decks.value.push(deck));
+        deckId.value = null;
+        deckName.value = null;
+        investigator.value = null;
+        deck.value = null;
+      }
     }
-  }
 
-  createDeck() {
-    if (this.deckId && this.deckName) {
-      newDeck(this.deckId, this.deckName).then((deck) => this.decks.push(deck));
-      this.deckId = null;
-      this.deckName = null;
-      this.investigator = null;
-      this.deck = null;
-    }
+    return { pasteDeck, createDeck, deck, loadDeck, investigator, deckName }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

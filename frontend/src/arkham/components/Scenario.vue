@@ -70,23 +70,14 @@
       />
     </div>
 
-    <PlayerTabs :investigatorId="investigatorId">
-      <Tab
-        v-for="(player, index) in players"
-        :key="index"
-        :playerClass="player.contents.class"
-        :title="player.contents.name"
-        :investigatorId="index"
-        :activePlayer="isActivePlayer(player)"
-      >
-        <Player
-          :game="game"
-          :investigatorId="investigatorId"
-          :player="player"
-          @choose="$emit('choose', $event)"
-        />
-      </Tab>
-    </PlayerTabs>
+    <PlayerTabs
+      :game="game"
+      :investigatorId="investigatorId"
+      :players="players"
+      :activePlayerId="activePlayerId"
+      @choose="$emit('choose', $event)"
+    />
+
     <ChoiceModal
       :game="game"
       :investigatorId="investigatorId"
@@ -96,10 +87,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent, computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
-import { Investigator } from '@/arkham/types/Investigator';
-import Player from '@/arkham/components/Player.vue';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
@@ -108,15 +97,13 @@ import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
 import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
 import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
-import Tab from '@/arkham/components/Tab.vue';
 import EncounterDeck from '@/arkham/components/EncounterDeck.vue';
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
 import VictoryDisplay from '@/arkham/components/VictoryDisplay.vue';
 import Location from '@/arkham/components/Location.vue';
 
-@Component({
+export default defineComponent({
   components: {
-    Player,
     Act,
     Agenda,
     Location,
@@ -124,82 +111,84 @@ import Location from '@/arkham/components/Location.vue';
     ChaosBag,
     ChoiceModal,
     PlayerTabs,
-    Tab,
     EncounterDeck,
     PlayerOrder,
     PlayerSelector,
     CardOverlay,
     VictoryDisplay,
   },
-})
-export default class Scenario extends Vue {
-  @Prop(Object) readonly game!: Game;
-  @Prop(String) readonly investigatorId!: string;
+  props: {
+    game: { type: Object as () => Game, required: true },
+    investigatorId: { type: String, required: true },
+  },
+  setup(props, { emit }) {
+    const scenarioGuide = computed(() => {
+      const { scenario } = props.game.currentData;
+      if (!scenario) {
+        return '';
+      }
 
-  private commitedCards: number[] = []
-  private moving = false
+      const { id, difficulty } = scenario.contents;
+      const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert'
+        ? 'b'
+        : '';
 
-  get scenarioGuide() {
-    const { scenario } = this.game.currentData;
-    if (!scenario) {
-      return '';
-    }
+      return `/img/arkham/cards/${id}${difficultySuffix}.jpg`;
+    })
 
-    const { id, difficulty } = scenario.contents;
-    const difficultySuffix = difficulty === 'Hard' || difficulty === 'Expert'
-      ? 'b'
-      : '';
-
-    return `/img/arkham/cards/${id}${difficultySuffix}.jpg`;
-  }
-
-  get locationStyles() {
-    const { scenario } = this.game.currentData;
-    if (!scenario) {
+    const locationStyles = computed(() => {
+      const { scenario } = props.game.currentData;
+      if (!scenario) {
+        return null;
+      }
+      const { locationLayout } = scenario.contents;
+      if (locationLayout) {
+        return {
+          display: 'grid',
+          'grid-template-areas': locationLayout.map((row) => `'${row}'`).join(' '),
+        };
+      }
       return null;
-    }
-    const { locationLayout } = scenario.contents;
-    if (locationLayout) {
-      return {
-        display: 'grid',
-        'grid-template-areas': locationLayout.map((row) => `'${row}'`).join(' '),
-      };
-    }
-    return null;
-  }
+    })
 
-  get activeCard() {
-    if (this.game.currentData.activeCard) {
-      const { cardCode } = this.game.currentData.activeCard.contents;
-      return `/img/arkham/cards/${cardCode}.jpg`;
-    }
+    const activeCard = computed(() => {
+      if (props.game.currentData.activeCard) {
+        const { cardCode } = props.game.currentData.activeCard.contents;
+        return `/img/arkham/cards/${cardCode}.jpg`;
+      }
 
-    return null;
-  }
+      return null;
+    })
 
-  get players() {
-    return this.game.currentData.investigators;
-  }
+    const players = computed(() => props.game.currentData.investigators)
 
-  get topOfEncounterDiscard() {
-    if (this.game.currentData.discard[0]) {
-      const { cardCode } = this.game.currentData.discard[0];
+    const topOfEncounterDiscard = computed(() => {
+      if (props.game.currentData.discard[0]) {
+        const { cardCode } = props.game.currentData.discard[0];
 
-      return `/img/arkham/cards/${cardCode}.jpg`;
+        return `/img/arkham/cards/${cardCode}.jpg`;
+      }
+
+      return null;
+    })
+
+    const activePlayerId = computed(() => props.game.currentData.activeInvestigatorId)
+
+    function update(game: Game) {
+      emit('update', game);
     }
 
-    return null;
+    return {
+      update,
+      activePlayerId,
+      topOfEncounterDiscard,
+      players,
+      activeCard,
+      locationStyles,
+      scenarioGuide
+    }
   }
-
-  isActivePlayer(player: Investigator) {
-    return player.contents.id === this.game.currentData.activeInvestigatorId;
-  }
-
-  update(game: Game) {
-    this.$emit('update', game);
-  }
-}
-
+})
 </script>
 
 <style scoped lang="scss">

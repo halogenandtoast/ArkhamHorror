@@ -19,31 +19,34 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
-import { choices, Game } from '@/arkham/types/Game';
+import { defineComponent, computed } from 'vue';
+import { Game } from '@/arkham/types/Game';
+import * as ArkhamGame from '@/arkham/types/Game';
 import { Message, MessageType } from '@/arkham/types/Message';
 
-@Component
-export default class PlayerSelector extends Vue {
-  @Prop(Object) readonly game!: Game;
-  @Prop(String) readonly investigatorId!: string;
+export default defineComponent({
+  props: {
+    game: { type: Object as () => Game, required: true },
+    investigatorId: { type: String, required: true }
+  },
+  setup(props) {
+    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-  get choices(): Message[] {
-    return choices(this.game, this.investigatorId);
-  }
+    const playerChoices = computed(() => {
+      return choices
+        .value
+        .map((choice, idx) => ({ choice, idx }))
+        .filter(({ choice }) => choice.tag === MessageType.CHOOSE_PLAYER);
+    })
 
-  get playerChoices() {
-    return this
-      .choices
-      .map((choice, idx) => ({ choice, idx }))
-      .filter(({ choice }) => choice.tag === MessageType.CHOOSE_PLAYER);
-  }
+    const investigatorPortrait = (choice: Message) => {
+      const iid = choice.contents[0];
+      return `/img/arkham/portraits/${iid}.jpg`;
+    }
 
-  investigatorPortrait = (choice: Message) => {
-    const iid = choice.contents[0];
-    return `/img/arkham/portraits/${iid}.jpg`;
+    return { playerChoices, investigatorPortrait }
   }
-}
+})
 </script>
 
 <style scoped lang="scss">

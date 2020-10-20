@@ -1,30 +1,22 @@
 <template>
-  <div id="app" v-if="ready">
-    <Nav />
+  <div id="app">
+    <Nav/>
     <router-view/>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { Action, Getter } from 'vuex-class';
-import { User } from './types';
-import Nav from './Nav.vue';
+import { defineComponent, onMounted } from 'vue'
+import { useStore } from 'vuex'
+import Nav from '@/components/Nav.vue'
 
-@Component({
+export default defineComponent({
   components: { Nav },
-})
-export default class App extends Vue {
-  @Getter currentUser!: User | undefined;
-  @Action loadUserFromStorage!: () => void;
-
-  ready = false
-
-  async mounted() {
-    await this.loadUserFromStorage();
-    this.ready = true;
+  setup() {
+    const store = useStore()
+    onMounted(async () => await store.dispatch('loadUserFromStorage'))
   }
-}
+})
 </script>
 
 <style lang="scss">

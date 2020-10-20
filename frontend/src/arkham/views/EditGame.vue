@@ -6,38 +6,37 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { fetchGameRaw, updateGameRaw } from '@/arkham/api';
-import VJsoneditor from 'v-jsoneditor';
+import { defineComponent, ref } from 'vue'
+import { fetchGameRaw, updateGameRaw } from '@/arkham/api'
+import VJsoneditor from 'v-jsoneditor'
 
-@Component({
+export default defineComponent({
   components: { VJsoneditor },
-})
-export default class EditGame extends Vue {
-  @Prop(String) readonly gameId!: string;
+  props: { gameId: { type: String, required: true } },
+  setup(props) {
+    const ready = ref(false);
+    const socket = ref<WebSocket | null>(null);
+    const json = ref<string | null>(null);
 
-  private ready = false;
-  private socket: WebSocket | null = null;
-  private json: string | null = null;
-
-  async mounted() {
-    fetchGameRaw(this.gameId).then(({ game }) => {
-      this.json = game.currentData;
+    fetchGameRaw(props.gameId).then(({ game }) => {
+      json.value = game.currentData;
       const baseURL = `${window.location.protocol}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}`;
-      this.socket = new WebSocket(`${baseURL}/api/v1/arkham/games/${this.gameId}`.replace(/https/, 'wss').replace(/http/, 'ws'));
-      this.socket.addEventListener('message', (event) => {
-        this.json = JSON.parse(event.data).currentData;
+      socket.value = new WebSocket(`${baseURL}/api/v1/arkham/games/${props.gameId}`.replace(/https/, 'wss').replace(/http/, 'ws'));
+      socket.value.addEventListener('message', (event: any) => {
+        json.value = JSON.parse(event.data).currentData;
       });
-      this.ready = true;
-    });
-  }
+      ready.value = true;
+    })
 
-  save() {
-    if (this.json) {
-      updateGameRaw(this.gameId, this.json);
+    async function save() {
+      if (json.value) {
+        updateGameRaw(props.gameId, json.value);
+      }
     }
+
+    return { save, ready, json }
   }
-}
+})
 </script>
 
 <style scoped>

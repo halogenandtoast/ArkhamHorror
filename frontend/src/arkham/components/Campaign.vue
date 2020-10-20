@@ -32,16 +32,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { defineComponent } from 'vue';
 import { Game } from '@/arkham/types/Game';
-import { Investigator } from '@/arkham/types/Investigator';
 import StatusBar from '@/arkham/components/StatusBar.vue';
 import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
 import Scenario from '@/arkham/components/Scenario.vue';
 import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
 
-@Component({
+export default defineComponent({
   components: {
     StatusBar,
     PlayerOrder,
@@ -49,47 +48,20 @@ import CardOverlay from '@/arkham/components/CardOverlay.vue';
     CardOverlay,
     Scenario,
   },
+  props: {
+    game: { type: Object as () => Game, required: true },
+    investigatorId: { type: String, required: true }
+  },
+  setup(props, { emit }) {
+    const inviteLink = `${window.location.href}/join` // fix-syntax`
+
+    async function update(game: Game) {
+      emit('update', game);
+    }
+
+    return { inviteLink, update }
+  }
 })
-export default class Campaign extends Vue {
-  @Prop(Object) readonly game!: Game;
-  @Prop(String) readonly investigatorId!: string;
-
-  private commitedCards: number[] = []
-  private moving = false
-  inviteLink = `${window.location.href}/join` // fix-syntax`
-
-  get activeCard() {
-    if (this.game.currentData.activeCard) {
-      const { cardCode } = this.game.currentData.activeCard.contents;
-      return `/img/arkham/cards/${cardCode}.jpg`;
-    }
-
-    return null;
-  }
-
-  get players() {
-    return this.game.currentData.investigators;
-  }
-
-  get topOfEncounterDiscard() {
-    if (this.game.currentData.discard[0]) {
-      const { cardCode } = this.game.currentData.discard[0];
-
-      return `/img/arkham/cards/${cardCode}.jpg`;
-    }
-
-    return null;
-  }
-
-  isActivePlayer(player: Investigator) {
-    return player.contents.id === this.game.currentData.activeInvestigatorId;
-  }
-
-  update(game: Game) {
-    this.$emit('update', game);
-  }
-}
-
 </script>
 
 <style scoped lang="scss">

@@ -16,64 +16,62 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { choices, Game } from '@/arkham/types/Game';
-import { Message, MessageType } from '@/arkham/types/Message';
-import * as Arkham from '@/arkham/types/Act';
+import { defineComponent, computed } from 'vue'
+import { Game } from '@/arkham/types/Game'
+import * as ArkhamGame from '@/arkham/types/Game'
+import { Message, MessageType } from '@/arkham/types/Message'
+import * as Arkham from '@/arkham/types/Act'
 
-@Component
-export default class Act extends Vue {
-  @Prop(Object) readonly act!: Arkham.Act;
-  @Prop(Object) readonly game!: Game;
-  @Prop(String) readonly investigatorId!: string;
+export default defineComponent({
+  props: {
+    act: { type: Object as () => Arkham.Act, required: true },
+    game: { type: Object as () => Game, required: true },
+    investigatorId: { type: String, required: true }
+  },
 
-  get id() {
-    return this.act.contents.id;
-  }
+  setup(props) {
+    const id = computed(() => props.act.contents.id)
+    const image = computed(() => {
+      if (props.act.contents.flipped) {
+        return `/img/arkham/cards/${id.value}b.jpg`;
+      }
 
-  get image() {
-    if (this.act.contents.flipped) {
-      return `/img/arkham/cards/${this.id}b.jpg`;
+      return `/img/arkham/cards/${id.value}.jpg`;
+    })
+
+    const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
+
+    function canAdvance(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.ADVANCE_ACT:
+          return true;
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canAdvance(c1));
+        default:
+          return false;
+      }
     }
 
-    return `/img/arkham/cards/${this.id}.jpg`;
-  }
+    const advanceActAction = computed(() => choices.value.findIndex(canAdvance));
 
-  get choices() {
-    return choices(this.game, this.investigatorId);
-  }
-
-  get advanceActAction() {
-    return this.choices.findIndex(this.canAdvance);
-  }
-
-  abilityLabel(idx: number) {
-    return this.choices[idx].contents[1].type.contents[1];
-  }
-
-  canAdvance(c: Message): boolean {
-    switch (c.tag) {
-      case MessageType.ADVANCE_ACT:
-        return true;
-      case MessageType.RUN:
-        return c.contents.some((c1: Message) => this.canAdvance(c1));
-      default:
-        return false;
+    function abilityLabel(idx: number) {
+      return choices.value[idx].contents[1].type.contents[1];
     }
-  }
 
-  get abilities() {
-    return this
-      .choices
-      .reduce<number[]>((acc, v, i) => {
-        if (v.tag === 'ActivateCardAbilityAction' && v.contents[1].source.tag === 'ActSource' && v.contents[1].source.contents === this.id) {
-          return [...acc, i];
-        }
+    const abilities = computed(() => {
+      return choices.value
+        .reduce<number[]>((acc, v, i) => {
+          if (v.tag === 'ActivateCardAbilityAction' && v.contents[1].source.tag === 'ActSource' && v.contents[1].source.contents === id.value) {
+            return [...acc, i];
+          }
 
-        return acc;
-      }, []);
+          return acc;
+        }, [])
+    })
+
+    return { abilities, abilityLabel, advanceActAction, choices, image, id }
   }
-}
+})
 </script>
 
 <style scoped lang="scss">

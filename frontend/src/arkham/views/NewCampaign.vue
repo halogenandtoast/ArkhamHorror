@@ -64,108 +64,128 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { defineComponent, ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import * as Arkham from '@/arkham/types/Deck';
 import { fetchDecks, newGame } from '@/arkham/api';
 import { Difficulty } from '@/arkham/types/Difficulty';
 
-@Component
-export default class NewCampaign extends Vue {
-  private decks: Arkham.Deck[] = [];
-  ready = false
-  playerCount = 1
-  difficulties: Difficulty[] = ['Easy', 'Standard', 'Hard', 'Expert'];
-  selectedDifficulty: Difficulty = 'Easy'
-  deckId: string | null = null
-  standalone = false
-  selectedCampaign = '01'
-  selectedScenario = '81001'
-  campaignName = null
-  scenarios = [
-    {
-      id: '81001',
-      name: 'Curse of the Rougarou',
-    },
-  ]
-  campaigns = [
-    {
-      id: '01',
-      name: 'Night of the Zealot',
-    },
-    {
-      id: '02',
-      name: 'The Dunwich Legacy',
-    },
-    {
-      id: '03',
-      name: 'The Path to Carcosa',
-    },
-    {
-      id: '04',
-      name: 'The Forgotten Age',
-    },
-  ]
+const scenarios = [
+  {
+    id: '81001',
+    name: 'Curse of the Rougarou',
+  },
+]
 
-  async mounted() {
-    fetchDecks().then((decks) => {
-      this.decks = decks;
-      this.ready = true;
-    });
-  }
+const campaigns = [
+  {
+    id: '01',
+    name: 'Night of the Zealot',
+  },
+  {
+    id: '02',
+    name: 'The Dunwich Legacy',
+  },
+  {
+    id: '03',
+    name: 'The Path to Carcosa',
+  },
+  {
+    id: '04',
+    name: 'The Forgotten Age',
+  },
+]
 
-  get disabled() {
-    return !this.deckId;
-  }
+const difficulties: Difficulty[] = ['Easy', 'Standard', 'Hard', 'Expert']
 
-  get currentCampaignName() {
-    if (this.campaignName !== '' && this.campaignName !== null) {
-      return this.campaignName;
-    }
+export default defineComponent({
+  setup() {
+    const router = useRouter()
+    const decks = ref<Arkham.Deck[]>([])
+    const ready = ref(false)
+    const playerCount = ref(1)
 
-    return this.defaultCampaignName;
-  }
+    const selectedDifficulty = ref<Difficulty>('Easy')
+    const deckId = ref<string | null>(null)
+    const standalone = ref(false)
+    const selectedCampaign = ref('01')
+    const selectedScenario = ref('81001')
+    const campaignName = ref<string | null>(null)
 
-  get defaultCampaignName() {
-    const campaign = this.campaigns.find((c) => c.id === this.selectedCampaign);
-    const scenario = this.scenarios.find((c) => c.id === this.selectedScenario);
+    fetchDecks().then((result) => {
+      decks.value = result;
+      ready.value = true;
+    })
 
-    if (!this.standalone && campaign) {
-      return `${campaign.name} - ${this.selectedDifficulty}`;
-    }
+    const disabled = computed(() => !deckId.value)
+    const defaultCampaignName = computed(() => {
+      const campaign = campaigns.find((c) => c.id === selectedCampaign.value);
+      const scenario = scenarios.find((c) => c.id === selectedScenario.value);
 
-    if (this.standalone && scenario) {
-      return `${scenario.name} - ${this.selectedDifficulty}`;
-    }
-
-    return '';
-  }
-
-  start() {
-    if (this.standalone) {
-      const mscenario = this.scenarios.find((scenario) => scenario.id === this.selectedScenario);
-      if (mscenario && this.deckId && this.currentCampaignName) {
-        newGame(
-          this.deckId,
-          this.playerCount,
-          null,
-          mscenario.id,
-          this.selectedDifficulty,
-          this.currentCampaignName,
-        ).then((game) => this.$router.push(`/games/${game.id}`));
+      if (!standalone.value && campaign) {
+        return `${campaign.name} - ${selectedDifficulty.value}`;
       }
-    } else {
-      const mcampaign = this.campaigns.find((campaign) => campaign.id === this.selectedCampaign);
-      if (mcampaign && this.deckId && this.currentCampaignName) {
-        newGame(
-          this.deckId,
-          this.playerCount,
-          mcampaign.id,
-          null,
-          this.selectedDifficulty,
-          this.currentCampaignName,
-        ).then((game) => this.$router.push(`/games/${game.id}`));
+
+      if (standalone.value && scenario) {
+        return `${scenario.name} - ${selectedDifficulty.value}`;
+      }
+
+      return '';
+    })
+
+    const currentCampaignName = computed(() => {
+      if (campaignName.value !== '' && campaignName.value !== null) {
+        return campaignName.value;
+      }
+
+      return defaultCampaignName.value;
+    })
+
+    async function start() {
+      if (standalone.value) {
+        const mscenario = scenarios.find((scenario) => scenario.id === selectedScenario.value);
+        if (mscenario && deckId.value && currentCampaignName.value) {
+          newGame(
+            deckId.value,
+            playerCount.value,
+            null,
+            mscenario.id,
+            selectedDifficulty.value,
+            currentCampaignName.value,
+          ).then((game) => router.push(`/games/${game.id}`));
+        }
+      } else {
+        const mcampaign = campaigns.find((campaign) => campaign.id === selectedCampaign.value);
+        if (mcampaign && deckId.value && currentCampaignName.value) {
+          newGame(
+            deckId.value,
+            playerCount.value,
+            mcampaign.id,
+            null,
+            selectedDifficulty.value,
+            currentCampaignName.value,
+          ).then((game) => router.push(`/games/${game.id}`));
+        }
       }
     }
+
+    return {
+      ready,
+      start,
+      standalone,
+      disabled,
+      campaignName,
+      currentCampaignName,
+      difficulties,
+      scenarios,
+      campaigns,
+      decks,
+      deckId,
+      playerCount,
+      selectedDifficulty,
+      selectedScenario,
+      selectedCampaign
+    }
   }
-}
+})
 </script>

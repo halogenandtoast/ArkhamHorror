@@ -763,7 +763,7 @@ markDistances
 markDistances game initialLocation target = do
   LPState searchQueue visitedSet parentsMap <- get
   if Seq.null searchQueue
-    then pure $ getDistances parentsMap
+    then pure $ insertWith (<>) 0 [initialLocation] (getDistances parentsMap)
     else do
       let
         nextLoc = Seq.index searchQueue 0

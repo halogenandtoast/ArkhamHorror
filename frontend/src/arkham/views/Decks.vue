@@ -74,7 +74,7 @@ export default defineComponent({
       }
     }
 
-    return { pasteDeck, createDeck, deck, loadDeck, investigator, deckName }
+    return { pasteDeck, createDeck, deck, decks, loadDeck, investigator, deckName }
   }
 })
 </script>

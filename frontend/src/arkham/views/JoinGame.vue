@@ -46,7 +46,7 @@ export default defineComponent({
       }
     }
 
-    return { ready, decks, join, disabled }
+    return { ready, deckId, decks, join, disabled }
   }
 })
 </script>

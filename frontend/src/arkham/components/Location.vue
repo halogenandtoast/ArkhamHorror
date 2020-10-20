@@ -239,11 +239,11 @@ export default defineComponent({
   border-radius: 10px;
 }
 
-/deep/ .enemy {
+::v-deep .enemy {
   width: 80px;
 }
 
-/deep/ .treachery {
+::v-deep .treachery {
   object-fit: cover;
   object-position: 0 -74px;
   height: 68px;

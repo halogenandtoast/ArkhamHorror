@@ -57,7 +57,7 @@ export default defineComponent({
         ready.value = true;
         socketError.value = false;
       });
-      socket.value.addEventListener('message', (event: any) => {
+      socket.value.addEventListener('message', (event: MessageEvent) => {
         Arkham.gameDecoder.decodePromise(JSON.parse(event.data))
           .then((updatedGame) => { game.value = updatedGame; });
       });

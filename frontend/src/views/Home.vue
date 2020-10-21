@@ -178,6 +178,7 @@ export default defineComponent({
 .game {
   display: flex;
   background-color: #15192C;
+  border-left: 10px solid #6e8640;
   color: #f0f0f0;
   margin: 10px;
   padding: 10px;

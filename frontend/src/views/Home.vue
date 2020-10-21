@@ -1,12 +1,34 @@
 <template>
   <div class="home">
-    <div v-if="currentUser">
-      <router-link to="/campaigns/new">New Campaign</router-link>
+    <div v-if="currentUser" class="new-game">
+      <router-link to="/campaigns/new" custom v-slot="{ navigate }">
+        <button @click="navigate">+ New Game</button>
+      </router-link>
     </div>
 
-    <div v-for="game in games" :key="game.id">
-      <router-link :to="`/games/${game.id}`">{{game.name}}</router-link>
-      - <a href="#delete" @click.prevent="deleteId = game.id">delete</a>
+    <div v-for="game in games" class="game" :key="game.id">
+      <div class="campaign-icon-container" v-if="game.currentData.campaign">
+        <img class="campaign-icon" :src="`/img/arkham/sets/${game.currentData.campaign.contents.id}.png`" />
+      </div>
+      <div class="campaign-icon-container" v-else-if="game.currentData.scenario">
+        <img class="campaign-icon" :src="`/img/arkham/sets/${game.currentData.scenario.contents.id.slice(0,2)}.png`" />
+      </div>
+      <div class="game-details">
+        <router-link class="title" :to="`/games/${game.id}`">{{game.name}}</router-link>
+        <div v-if="game.currentData.scenario" class="scenario-details">
+          <img class="scenario-icon" :src="`/img/arkham/sets/${game.currentData.scenario.contents.id}.png`" />
+          <span>{{game.currentData.scenario.contents.name}}</span>
+        </div>
+        <div>
+          <span>Investigators: </span>
+          <span v-for="investigator in game.currentData.investigators" :key="investigator.contents.id">
+            {{investigator.contents.name}}
+          </span>
+        </div>
+      </div>
+      <div class="game-delete">
+        <a href="#delete" @click.prevent="deleteId = game.id"><font-awesome-icon icon="trash" /></a>
+      </div>
     </div>
 
     <div v-if="deleteId" class="cd-popup" role="alert">
@@ -57,7 +79,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .cd-popup {
   position: fixed;
   left: 0;
@@ -152,4 +174,72 @@ export default defineComponent({
   color: transparent;
   white-space: nowrap;
 }
+
+.game {
+  display: flex;
+  background-color: #e2e2e2;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 3px;
+  a {
+    color: #336699;
+    font-weight: bolder;
+  }
+}
+
+.campaign-icon-container {
+  display: flex;
+  align-items: center;
+}
+
+.campaign-icon {
+  filter: invert(28%) sepia(100%) hue-rotate(-180deg) saturate(3);
+  width: 50px;
+}
+
+.scenario-icon {
+  width: 18px;
+  margin-right: 5px;
+}
+
+.game-details {
+  flex: 1;
+  padding-left: 20px;
+}
+
+.game-delete {
+  justify-self: flex-end;
+  align-self: flex-start;
+  a {
+    color: #990000;
+  }
+}
+
+.scenario-details {
+  display: flex;
+  align-items: center;
+  span {
+    line-height: 25px;
+  }
+}
+
+.new-game {
+  margin-left: 10px;
+  button {
+    outline: 0;
+    padding: 15px;
+    background: #6E8640;
+    text-transform: uppercase;
+    color: white;
+    border: 0;
+    &:hover {
+      background: darken(#6E8640, 7%);
+    }
+  }
+}
+
+.title {
+  font-size: 1.2em;
+}
+
 </style>

@@ -5,10 +5,11 @@
     <span>
       <template v-if="currentUser">
         Welcome {{currentUser.username}}
+        <router-link to="/decks">Decks</router-link>{{' '}}
         <a href="#" @click="logout">Logout</a>
       </template>
       <template v-else>
-        <router-link to="/sign-in">Login</router-link> |
+        <router-link to="/sign-in">Login</router-link>{{' '}}
         <router-link to="/sign-up">Register</router-link>
       </template>
     </span>

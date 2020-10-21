@@ -46,12 +46,15 @@ body {
   height: 40px;
   box-sizing: border-box;
   padding: 10px 15px;
-  background: #EEE;
   display: flex;
 
   a {
     font-weight: bold;
-    color: #2c3e50;
+    color: #3e4b24;
+    text-decoration: none;
+    &:hover {
+      color: #6E8640;
+    }
   }
 
   .home-link {

@@ -121,6 +121,17 @@ export default defineComponent({
     })
 
     const engageAction = computed(() => {
+      // This is for the rougarou, we look at the 2nd [1] item in the array because
+      // the first is spending clues, there may be a different approach to take here
+      const isRunEngage = choices.value.findIndex((c) => c.tag === MessageType.RUN
+        && c.contents[1]
+        && c.contents[1].tag === MessageType.ENGAGE_ENEMY
+        && c.contents[1].contents[1] === id.value);
+
+      if (isRunEngage !== -1) {
+        return isRunEngage;
+      }
+
       return choices
         .value
         .findIndex((c) => c.tag === MessageType.ENGAGE_ENEMY && c.contents[1] === id.value);

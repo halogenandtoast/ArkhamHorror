@@ -44,7 +44,6 @@ isEngage = \case
 instance ActionRunner env => HasActions env TheRougarou where
   getActions iid window (TheRougarou (attrs `With` _)) = do
     actions' <- getActions iid window attrs
-
     if any isEngage actions'
       then do
         playerCount <- getPlayerCount

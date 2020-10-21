@@ -1,6 +1,5 @@
 <template>
   <div id="edit-game" class="edit-game" v-if="ready">
-    <v-jsoneditor v-model="json" :plus="false" height="70vh"></v-jsoneditor>
     <button @click="save">Save</button>
   </div>
 </template>
@@ -8,10 +7,8 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { fetchGameRaw, updateGameRaw } from '@/arkham/api'
-import VJsoneditor from 'v-jsoneditor'
 
 export default defineComponent({
-  components: { VJsoneditor },
   props: { gameId: { type: String, required: true } },
   setup(props) {
     const ready = ref(false);

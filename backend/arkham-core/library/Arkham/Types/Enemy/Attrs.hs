@@ -372,7 +372,6 @@ instance EnemyRunner env => RunMessage env Attrs where
               ]
             , MoveUntil lid target
             ]
-
     EnemyMove eid _ lid | eid == enemyId -> do
       willMove <- canEnterLocation eid lid
       if willMove

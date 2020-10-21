@@ -34,7 +34,7 @@ export default defineComponent({
     const store = useStore()
     const route = useRoute()
     const router = useRouter()
-    const credentials: Credentials = reactive({
+    const credentials = reactive<Credentials>({
       email: '',
       password: '',
     })

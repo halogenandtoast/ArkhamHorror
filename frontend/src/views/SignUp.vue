@@ -41,7 +41,7 @@ export default defineComponent({
     const route = useRoute()
     const router = useRouter()
     const store = useStore()
-    const registration: Registration = reactive({
+    const registration = reactive<Registration>({
       username: '',
       email: '',
       password: '',

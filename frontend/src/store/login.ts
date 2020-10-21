@@ -29,15 +29,16 @@ const actions: ActionTree<LoginState, RootState> = {
       dispatch('setCurrentUser', authentication.data);
     });
   },
-  logout({ commit }): void {
-    localStorage.removeItem('token');
-    delete api.defaults.headers.common.Authorization;
-    commit('signOut');
+  logout({ commit }): Promise<void> {
+    localStorage.removeItem('token')
+    delete api.defaults.headers.common.Authorization
+    commit('signOut')
+    return Promise.resolve()
   },
-  setCurrentUser({ commit, dispatch }, authentication: Authentication): void {
+  setCurrentUser({ commit, dispatch }, authentication: Authentication): Promise<void> {
     localStorage.setItem('token', authentication.token);
     api.defaults.headers.common.Authorization = `Token ${authentication.token}`;
-    api.get<User>('whoami').then(
+    return api.get<User>('whoami').then(
       (whoami) => {
         commit('signIn', whoami.data);
       },
@@ -46,11 +47,12 @@ const actions: ActionTree<LoginState, RootState> = {
       },
     );
   },
-  loadUserFromStorage({ dispatch }): void {
+  loadUserFromStorage({ dispatch }): Promise<void> {
     const token = localStorage.getItem('token');
     if (token !== null && token !== undefined) {
-      dispatch('setCurrentUser', { token });
+      return dispatch('setCurrentUser', { token })
     }
+    return Promise.resolve()
   },
 };
 

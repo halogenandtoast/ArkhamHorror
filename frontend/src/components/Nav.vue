@@ -19,14 +19,17 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 import { User } from '@/types';
 
 export default defineComponent({
   setup() {
+    const router = useRouter()
     const store = useStore()
     const currentUser = computed<User | null>(() => store.getters.currentUser)
     async function logout() {
-      store.dispatch('logout')
+      await store.dispatch('logout')
+      router.push({ path: '/' })
     }
     return { currentUser, logout }
   }

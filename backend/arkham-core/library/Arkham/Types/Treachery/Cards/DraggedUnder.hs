@@ -32,7 +32,7 @@ instance (TreacheryRunner env) => RunMessage env DraggedUnder where
       DraggedUnder <$> runMessage msg attrs
     MoveFrom iid _ | Just iid == treacheryAttachedInvestigator ->
       t <$ unshiftMessages
-        [ InvestigatorAssignDamage iid (TreacherySource treacheryId) 1 0
+        [ InvestigatorAssignDamage iid (TreacherySource treacheryId) 2 0
         , Discard (TreacheryTarget treacheryId)
         ]
     EndTurn iid | Just iid == treacheryAttachedInvestigator ->

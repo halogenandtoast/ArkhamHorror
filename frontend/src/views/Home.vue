@@ -217,6 +217,9 @@ export default defineComponent({
   align-self: flex-start;
   a {
     color: #660000;
+    &:hover {
+      color: #990000;
+    }
   }
 }
 
@@ -235,7 +238,7 @@ export default defineComponent({
   button {
     border-radius: 3px;
     outline: 0;
-    padding: 15px;
+    padding: 10px 15px;
     background: #6E8640;
     text-transform: uppercase;
     color: white;

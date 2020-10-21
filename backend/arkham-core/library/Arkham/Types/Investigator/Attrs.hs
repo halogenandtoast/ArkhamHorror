@@ -601,6 +601,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         )
       $ unshiftMessage (EnemyEngageInvestigator eid investigatorId)
     pure a
+  EnemyMove eid _ lid | lid /= investigatorLocation ->
+    pure $ a & engagedEnemies %~ deleteSet eid
   EnemyEngageInvestigator eid iid | iid == investigatorId ->
     pure $ a & engagedEnemies %~ insertSet eid
   EnemyDefeated eid _ _ _ -> do

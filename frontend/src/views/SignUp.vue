@@ -72,7 +72,7 @@ form {
 }
 
 section {
-  background-color: #333;
+  background-color: #15192C;
   border-radius: 3px;
   padding: 10px;
 }
@@ -113,7 +113,7 @@ i.secret {
   text-transform: none;
   line-height: 1;
   font-size: 5em;
-  color: #333;
+  color: #15192C;
   -webkit-font-smoothing: antialiased;
   position: relative;
 

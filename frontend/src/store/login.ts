@@ -19,13 +19,13 @@ const mutations: MutationTree<LoginState> = {
 };
 
 const actions: ActionTree<LoginState, RootState> = {
-  authenticate({ dispatch }, credentials: Credentials): void {
-    api.post<Authentication>('authenticate', credentials).then((authentication) => {
+  authenticate({ dispatch }, credentials: Credentials): Promise<void> {
+    return api.post<Authentication>('authenticate', credentials).then((authentication) => {
       dispatch('setCurrentUser', authentication.data);
     });
   },
-  register({ dispatch }, registration: Registration): void {
-    api.post<Authentication>('register', registration).then((authentication) => {
+  register({ dispatch }, registration: Registration): Promise<void> {
+    return api.post<Authentication>('register', registration).then((authentication) => {
       dispatch('setCurrentUser', authentication.data);
     });
   },

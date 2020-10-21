@@ -177,13 +177,17 @@ export default defineComponent({
 
 .game {
   display: flex;
-  background-color: #e2e2e2;
+  background-color: #15192C;
+  color: #f0f0f0;
   margin: 10px;
   padding: 10px;
   border-radius: 3px;
   a {
-    color: #336699;
+    color: lighten(#365488, 10%);
     font-weight: bolder;
+    &:hover {
+      color: lighten(#365488, 20%);
+    }
   }
 }
 
@@ -200,6 +204,7 @@ export default defineComponent({
 .scenario-icon {
   width: 18px;
   margin-right: 5px;
+  filter: invert(100%);
 }
 
 .game-details {
@@ -211,7 +216,7 @@ export default defineComponent({
   justify-self: flex-end;
   align-self: flex-start;
   a {
-    color: #990000;
+    color: #660000;
   }
 }
 
@@ -224,8 +229,11 @@ export default defineComponent({
 }
 
 .new-game {
-  margin-left: 10px;
+  text-align: right;
+  margin-top: 10px;
+  margin-right: 10px;
   button {
+    border-radius: 3px;
     outline: 0;
     padding: 15px;
     background: #6E8640;
@@ -240,6 +248,12 @@ export default defineComponent({
 
 .title {
   font-size: 1.2em;
+}
+
+.home {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 </style>

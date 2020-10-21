@@ -43,6 +43,8 @@ body {
 }
 
 #nav {
+  background-color: #292C45;
+  color: #f2f2f2;
   height: 40px;
   box-sizing: border-box;
   padding: 10px 15px;
@@ -50,7 +52,7 @@ body {
 
   a {
     font-weight: bold;
-    color: #3e4b24;
+    color: #5a6e34;
     text-decoration: none;
     &:hover {
       color: #6E8640;
@@ -60,5 +62,9 @@ body {
   .home-link {
     flex-grow: 1;
   }
+}
+
+body {
+  background: #26283D;
 }
 </style>

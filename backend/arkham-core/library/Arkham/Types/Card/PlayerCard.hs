@@ -273,6 +273,7 @@ allPlayerCards = HashMap.fromList
   , ("50008", mindWipe3)
   , ("50009", digDeep2)
   , ("50010", rabbitsFoot3)
+  , ("60206", celaenoFragments)
   , ("81019", ladyEsprit)
   , ("81029", curseOfTheRougarou)
   , ("81030", monstrousTransformation)
@@ -1101,6 +1102,12 @@ rabbitsFoot3 cardId = (asset cardId "50010" "Rabbit's Foot" 1 Survivor)
   { pcSkills = [SkillWild]
   , pcTraits = setFromList [Item, Charm]
   , pcLevel = 3
+  }
+
+celaenoFragments :: CardId -> PlayerCard
+celaenoFragments cardId = (asset cardId "60206" "Celaeno Fragments" 1 Seeker)
+  { pcSkills = [SkillIntellect]
+  , pcTraits = setFromList [Item, Tome]
   }
 
 ladyEsprit :: CardId -> PlayerCard

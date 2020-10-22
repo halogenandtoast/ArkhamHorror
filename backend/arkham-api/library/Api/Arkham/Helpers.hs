@@ -15,7 +15,6 @@ getChannel :: ArkhamGameId -> Handler (TChan BSL.ByteString)
 getChannel gameId = do
   gameChannelsRef <- appGameChannels <$> getYesod
   gameChannels <- readIORef gameChannelsRef
-  $logInfo (pack $ show $ Map.keys gameChannels)
   case Map.lookup gameId gameChannels of
     Just chan -> pure chan
     Nothing -> do

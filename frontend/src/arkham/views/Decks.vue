@@ -49,12 +49,16 @@ export default defineComponent({
         return;
       }
 
-      const matches = deck.value.match(/\/decklist(\/view)?\/([^/]+)/);
+      const matches = deck.value.match(/\/(deck(?!list)?)(\/view)?\/([^/]+)/);
       if (matches && matches[2]) {
-        fetch(`https://arkhamdb.com/api/public/decklist/${matches[2]}`)
+        fetch(`https://arkhamdb.com/api/public/${matches[1]}/${matches[3]}`)
           .then((response) => response.json())
           .then((data) => {
-            investigator.value = data.investigator_code
+            if(data.meta && data.meta.alternate_front) {
+              investigator.value = data.meta.alternate_front
+            } else {
+              investigator.value = data.investigator_code
+            }
             deckId.value = matches[2]
             deckName.value = data.name
           })

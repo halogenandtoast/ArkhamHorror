@@ -1,6 +1,4 @@
 <template>
-  display: flex;
-  flex-wrap: auto;
   <div v-if="ready" class="container">
     <div v-if="decks.length == 0">
       No decks, please add one first here <router-link to="/decks">here</router-link>
@@ -9,20 +7,25 @@
       <h2>New Game</h2>
       <form id="new-campaign" @submit.prevent="start">
         <p>Number of Players</p>
-        <input type="radio" v-model="playerCount" :value="1" /><label>1</label>
-        <input type="radio" v-model="playerCount" :value="2" /><label>2</label>
+        <div class="options">
+          <input type="radio" v-model="playerCount" :value="1" id="player1" /><label for="player1">1</label>
+          <input type="radio" v-model="playerCount" :value="2" id="player2" /><label for="player2">2</label>
+          <input type="radio" v-model="playerCount" :value="3" id="player3" /><label for="player3">3</label>
+          <input type="radio" v-model="playerCount" :value="4" id="player4" /><label for="player4">4</label>
+        </div>
 
         <p>Difficulty</p>
-        <div class="difficulties">
-          <div v-for="difficulty in difficulties" :key="difficulty">
+        <div class="options">
+          <template v-for="difficulty in difficulties" :key="difficulty" class="options">
             <input
               type="radio"
               v-model="selectedDifficulty"
               :value="difficulty"
               :checked="difficulty === selectedDifficulty"
+              :id="`difficulty${difficulty}`"
             />
-            <label>{{difficulty}}</label>
-          </div>
+            <label :for="`difficulty${difficulty}`">{{difficulty}}</label>
+          </template>
         </div>
 
         <div>
@@ -33,9 +36,9 @@
           </select>
         </div>
 
-        <div>
-          <input type="radio" v-model="standalone" :value="false"> <label>Campaign</label>
-          <input type="radio" v-model="standalone" :value="true"> <label>Standalone</label>
+        <div class="options">
+          <input type="radio" v-model="standalone" :value="false" id="campaign"> <label for="campaign">Campaign</label>
+          <input type="radio" v-model="standalone" :value="true" id="standalone"> <label for="standalone">Standalone</label>
         </div>
 
         <div v-if="standalone">
@@ -60,11 +63,11 @@
         </div>
 
         <div>
-          <p>Campaign Name</p>
+          <p>Game Name</p>
           <input type="text" v-model="campaignName" :placeholder="currentCampaignName" />
         </div>
 
-        <button type="submit" :disabled="disabled">Start</button>
+        <button type="submit" :disabled="disabled">Create</button>
       </form>
     </div>
   </div>
@@ -211,6 +214,25 @@ export default defineComponent({
   background-color: #15192C;
   padding: 10px;
   border-radius: 3px;
+  button {
+    outline: 0;
+    padding: 15px;
+    background: #6E8640;
+    text-transform: uppercase;
+    color: white;
+    border: 0;
+    width: 100%;
+    &:hover {
+      background: darken(#6E8640, 7%);
+    }
+  }
+  button[disabled] {
+    background: #999;
+    cursor: not-allowed;
+    &:hover {
+      background: #999;
+    }
+  }
   input[type=text] {
     outline: 0;
     border: 1px solid #000;
@@ -264,5 +286,37 @@ h2 {
 .difficulties {
   display: flex;
   flex-wrap: auto;
+}
+
+input[type=radio] {
+  display: none;
+  /* margin: 10px; */
+}
+
+input[type=radio] + label {
+  display:inline-block;
+  padding: 4px 12px;
+  background-color: desaturate(#6E8640, 30%);
+  &:hover {
+    background-color: desaturate(#6E8640, 20%);
+  }
+  border-color: #ddd;
+}
+
+input[type=radio]:checked + label {
+  background: #6E8640;
+}
+
+.options {
+  display: flex;
+  margin-bottom: 10px;
+  label {
+    flex: 1;
+    text-align: center;
+    margin-left: 10px;
+    &:nth-of-type(1) {
+      margin-left: 0;
+    }
+  }
 }
 </style>

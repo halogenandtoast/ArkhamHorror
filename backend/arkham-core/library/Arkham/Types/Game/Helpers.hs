@@ -77,30 +77,39 @@ getCanFight
      , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
      , HasSet InvestigatorId EnemyId env
      , HasSet Keyword EnemyId env
+     , HasId LocationId InvestigatorId env
+     , HasId LocationId EnemyId env
      )
   => EnemyId
   -> InvestigatorId
   -> m Bool
 getCanFight eid iid = do
+  locationId <- asks $ getId @LocationId iid
+  sameLocation <- asks $ (== locationId) . getId @LocationId eid
   keywords <- asks $ getSet eid
   hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Fight) mempty
   engagedInvestigators <- asks $ getSet eid
   pure
     $ hasActionsRemaining
     && (Keyword.Aloof `notMember` keywords || iid `member` engagedInvestigators)
+    && sameLocation
 
 getCanEngage
   :: ( MonadReader env m
      , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
      , HasSet InvestigatorId EnemyId env
+     , HasId LocationId InvestigatorId env
+     , HasId LocationId EnemyId env
      )
   => EnemyId
   -> InvestigatorId
   -> m Bool
 getCanEngage eid iid = do
+  locationId <- asks $ getId @LocationId iid
+  sameLocation <- asks $ (== locationId) . getId @LocationId eid
   notEngaged <- asks $ notElem iid . getSet eid
   hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Engage) mempty
-  pure $ notEngaged && hasActionsRemaining
+  pure $ notEngaged && hasActionsRemaining && sameLocation
 
 getCanEvade
   :: ( MonadReader env m

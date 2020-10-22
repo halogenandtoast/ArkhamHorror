@@ -829,7 +829,7 @@ bfs game initialLocation target = do
                 map unConnectedLocationId . toList $ getSet nextLoc game
               unvisitedNextCells =
                 filter (\loc -> not (loc `member` visitedSet)) adjacentCells
-              newVisitedSet = insertSet nextLoc visitedSet
+              newVisitedSet = foldr insertSet visitedSet unvisitedNextCells
               newSearchQueue = foldr
                 (flip (Seq.|>))
                 (Seq.drop 1 searchQueue)

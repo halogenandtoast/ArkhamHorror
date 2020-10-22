@@ -24,12 +24,17 @@ export const fetchDecks = () => api
 export const newDeck = (
   deckId: string,
   deckName: string,
+  deckUrl: string,
 ) => api
   .post('arkham/decks', {
     deckId,
     deckName,
+    deckUrl,
   })
   .then((resp) => deckDecoder.decodePromise(resp.data));
+
+export const deleteDeck = (deckId: string) => api
+  .delete(`arkham/decks/${deckId}`);
 
 export const updateGame = (gameId: string, choice: number, gameHash: string) => api
   .put(`arkham/games/${gameId}`, { choice, gameHash })

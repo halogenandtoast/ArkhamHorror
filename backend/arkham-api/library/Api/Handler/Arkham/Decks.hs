@@ -5,9 +5,9 @@ module Api.Handler.Arkham.Decks
   )
 where
 
-import Database.Esqueleto
-import Entity.Arkham.Deck
 import Import hiding (delete, on, (==.))
+
+import Database.Esqueleto
 import Json
 import Network.HTTP.Conduit (simpleHttp)
 import Safe (fromJustNote)
@@ -20,8 +20,9 @@ getApiV1ArkhamDecksR = do
     pure decks
 
 data CreateDeckPost = CreateDeckPost
-  { deckId :: String
+  { deckId :: Text
   , deckName :: Text
+  , deckUrl :: Text
   }
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON)
@@ -38,10 +39,10 @@ postApiV1ArkhamDecksR = do
       pure $ Entity deckId deck
 
 fromPostData
-  :: MonadIO m => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)
+  :: (MonadIO m) => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)
 fromPostData userId CreateDeckPost {..} = do
   edecklist <- liftIO $ eitherDecode @ArkhamDBDecklist <$> simpleHttp
-    ("https://arkhamdb.com/api/public/decklist/" <> deckId)
+    (unpack deckUrl)
   pure $ case edecklist of
     Left err -> Left err
     Right decklist -> Right $ ArkhamDeck
@@ -53,6 +54,8 @@ fromPostData userId CreateDeckPost {..} = do
 
 deleteApiV1ArkhamDeckR :: ArkhamDeckId -> Handler ()
 deleteApiV1ArkhamDeckR deckId = do
+  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   void $ runDB $ do
     delete $ from $ \decks -> do
       where_ $ decks ^. persistIdField ==. val deckId
+      where_ $ decks ^. ArkhamDeckUserId ==. val userId

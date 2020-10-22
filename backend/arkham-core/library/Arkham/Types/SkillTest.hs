@@ -178,7 +178,7 @@ type SkillTestRunner env
   = ( HasQueue env
     , HasCard InvestigatorId env
     , HasModifiers env InvestigatorId
-    , HasStats InvestigatorId env
+    , HasStats (InvestigatorId, Maybe Action) env
     , HasSource ForSkillTest env
     , HasModifiersFor env env
     )
@@ -224,7 +224,8 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
     AddSkillTestSubscriber target -> pure $ s & subscribers %~ (target :)
     SetAsideToken token -> pure $ s & (setAsideTokens %~ (token :))
     PassSkillTest -> do
-      stats <- getStats skillTestInvestigator (toSource s) =<< ask
+      stats <-
+        getStats (skillTestInvestigator, skillTestAction) (toSource s) =<< ask
       let
         currentSkillValue = statsSkillValue stats skillTestSkillType
         modifiedSkillValue' =
@@ -375,7 +376,8 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
           ]
         Unrun -> pure ()
     RunSkillTest _ tokenValues -> do
-      stats <- getStats skillTestInvestigator (toSource s) =<< ask
+      stats <-
+        getStats (skillTestInvestigator, skillTestAction) (toSource s) =<< ask
       modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
       let
         currentSkillValue = statsSkillValue stats skillTestSkillType

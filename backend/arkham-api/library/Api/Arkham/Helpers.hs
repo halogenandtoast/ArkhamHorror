@@ -9,6 +9,7 @@ import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
 import Data.UUID.V4
 import Import
+import Json
 
 getChannel :: ArkhamGameId -> Handler (TChan BSL.ByteString)
 getChannel gameId = do
@@ -23,13 +24,24 @@ getChannel gameId = do
         $ \gameChannels' -> (Map.insert gameId chan gameChannels', ())
       pure chan
 
+newtype ArkhamDBDecklistMeta = ArkhamDBDecklistMeta { alternate_front :: InvestigatorId }
+  deriving stock (Generic, Show)
+  deriving anyclass (FromJSON)
+
 loadDecklist :: ArkhamDeck -> IO (InvestigatorId, [PlayerCard])
 loadDecklist arkhamDeck = do
-  let decklist = arkhamDeckList arkhamDeck
+  let
+    decklist = arkhamDeckList arkhamDeck
+    investigatorId = case meta decklist of
+      Nothing -> investigator_code decklist
+      Just meta' ->
+        case decode @ArkhamDBDecklistMeta (encodeUtf8 $ fromStrict meta') of
+          Nothing -> investigator_code decklist
+          Just ArkhamDBDecklistMeta {..} -> alternate_front
   cards <- flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count' ->
     if cardCode /= "01000"
       then replicateM
         count'
         ((<$> (CardId <$> nextRandom)) (lookupPlayerCard cardCode))
       else pure []
-  pure (investigator_code decklist, cards)
+  pure (investigatorId, cards)

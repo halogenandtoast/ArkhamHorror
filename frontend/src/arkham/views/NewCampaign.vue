@@ -1,65 +1,72 @@
 <template>
-  <div v-if="ready">
+  display: flex;
+  flex-wrap: auto;
+  <div v-if="ready" class="container">
     <div v-if="decks.length == 0">
       No decks, please add one first here <router-link to="/decks">here</router-link>
     </div>
-    <form v-else id="new-campaign" @submit.prevent="start">
-      <p>Number of Players</p>
-      <input type="radio" v-model="playerCount" :value="1" /><label>1</label>
-      <input type="radio" v-model="playerCount" :value="2" /><label>2</label>
+    <div v-else>
+      <h2>New Game</h2>
+      <form id="new-campaign" @submit.prevent="start">
+        <p>Number of Players</p>
+        <input type="radio" v-model="playerCount" :value="1" /><label>1</label>
+        <input type="radio" v-model="playerCount" :value="2" /><label>2</label>
 
-      <p>Difficulty</p>
-      <div v-for="difficulty in difficulties" :key="difficulty">
-        <input
-          type="radio"
-          v-model="selectedDifficulty"
-          :value="difficulty"
-          :checked="difficulty === selectedDifficulty"
-        />
-        <label>{{difficulty}}</label>
-      </div>
+        <p>Difficulty</p>
+        <div class="difficulties">
+          <div v-for="difficulty in difficulties" :key="difficulty">
+            <input
+              type="radio"
+              v-model="selectedDifficulty"
+              :value="difficulty"
+              :checked="difficulty === selectedDifficulty"
+            />
+            <label>{{difficulty}}</label>
+          </div>
+        </div>
 
-      <div>
-        <p>Deck</p>
-        <select v-model="deckId">
-          <option disabled :value="null">-- Select a Deck--</option>
-          <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
-        </select>
-      </div>
+        <div>
+          <p>Deck</p>
+          <select v-model="deckId">
+            <option disabled :value="null">-- Select a Deck--</option>
+            <option v-for="deck in decks" :key="deck.id" :value="deck.id">{{deck.name}}</option>
+          </select>
+        </div>
 
-      <div>
-        <input type="radio" v-model="standalone" :value="false"> <label>Campaign</label>
-        <input type="radio" v-model="standalone" :value="true"> <label>Standalone</label>
-      </div>
+        <div>
+          <input type="radio" v-model="standalone" :value="false"> <label>Campaign</label>
+          <input type="radio" v-model="standalone" :value="true"> <label>Standalone</label>
+        </div>
 
-      <div v-if="standalone">
-        <select v-model="selectedScenario">
-          <option
-            v-for="scenario in scenarios"
-            :key="scenario.id"
-            :value="scenario.id"
-            :selected="scenario.id == selectedScenario"
-            >{{scenario.name}}</option>
-        </select>
-      </div>
-      <div v-else>
-        <select v-model="selectedCampaign">
-          <option
-            v-for="campaign in campaigns"
-            :key="campaign.id"
-            :value="campaign.id"
-            :selected="campaign.id == selectedCampaign"
-            >{{campaign.name}}</option>
-        </select>
-      </div>
+        <div v-if="standalone">
+          <select v-model="selectedScenario">
+            <option
+              v-for="scenario in scenarios"
+              :key="scenario.id"
+              :value="scenario.id"
+              :selected="scenario.id == selectedScenario"
+              >{{scenario.name}}</option>
+          </select>
+        </div>
+        <div v-else>
+          <select v-model="selectedCampaign">
+            <option
+              v-for="campaign in campaigns"
+              :key="campaign.id"
+              :value="campaign.id"
+              :selected="campaign.id == selectedCampaign"
+              >{{campaign.name}}</option>
+          </select>
+        </div>
 
-      <div>
-        <p>Campaign Name</p>
-        <input v-model="campaignName" :placeholder="currentCampaignName" />
-      </div>
+        <div>
+          <p>Campaign Name</p>
+          <input type="text" v-model="campaignName" :placeholder="currentCampaignName" />
+        </div>
 
-      <button type="submit" :disabled="disabled">Start</button>
-    </form>
+        <button type="submit" :disabled="disabled">Start</button>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -123,11 +130,11 @@ export default defineComponent({
       const scenario = scenarios.find((c) => c.id === selectedScenario.value);
 
       if (!standalone.value && campaign) {
-        return `${campaign.name} - ${selectedDifficulty.value}`;
+        return `${campaign.name}`;
       }
 
       if (standalone.value && scenario) {
-        return `${scenario.name} - ${selectedDifficulty.value}`;
+        return `${scenario.name}`;
       }
 
       return '';
@@ -189,3 +196,73 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  margin-top: 10px;
+}
+
+#new-campaign {
+  width: 100%;
+  color: #FFF;
+  background-color: #15192C;
+  padding: 10px;
+  border-radius: 3px;
+  input[type=text] {
+    outline: 0;
+    border: 1px solid #000;
+    padding: 15px;
+    background: #F2F2F2;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+  }
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: 0;
+    border: 1px solid #000;
+    padding: 15px;
+    background: #F2F2F2;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    background-image:
+      linear-gradient(45deg, transparent 50%, gray 50%),
+      linear-gradient(135deg, gray 50%, transparent 50%),
+      linear-gradient(to right, #ccc, #ccc);
+    background-position:
+      calc(100% - 25px) calc(1.3em + 2px),
+      calc(100% - 20px) calc(1.3em + 2px),
+      calc(100% - 3.5em) 0.5em;
+    background-size:
+      5px 5px,
+      5px 5px,
+      1px 2.5em;
+    background-repeat: no-repeat;
+  }
+  a {
+    color: #365488;
+    font-weight: bolder;
+  }
+  p {
+    margin: 0;
+    padding: 0;
+    text-transform: uppercase;
+  }
+}
+
+h2 {
+  color: #656A84;
+  margin-left: 10px;
+  text-transform: uppercase;
+}
+
+.difficulties {
+  display: flex;
+  flex-wrap: auto;
+}
+</style>

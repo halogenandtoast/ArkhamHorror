@@ -205,6 +205,24 @@ damageValueFor baseValue attrs = do
   applyModifier (DamageDealt m) n = max 0 (n + m)
   applyModifier _ n = n
 
+getHandSize
+  :: ( MonadReader env m
+     , MonadIO m
+     , HasModifiersFor env env
+     , HasSource ForSkillTest env
+     )
+  => Int
+  -> Attrs
+  -> m Int
+getHandSize attrs = do
+  source <- asks $ fromMaybe (toSource attrs) . getSource ForSkillTest
+  modifiers' <-
+    getModifiersFor source (InvestigatorTarget $ investigatorId attrs) =<< ask
+  pure $ foldr applyModifier 8 modifiers'
+ where
+  applyModifier (HandSize m) n = max 0 (n + m)
+  applyModifier _ n = n
+
 getActionsForTurn :: Attrs -> Int
 getActionsForTurn Attrs {..} = foldr
   applyModifier
@@ -628,11 +646,13 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   AttachTreachery tid (InvestigatorTarget iid) | iid == investigatorId ->
     pure $ a & treacheries %~ insertSet tid
   AllCheckHandSize | not (a ^. defeated || a ^. resigned) -> do
-    when (length investigatorHand > 8)
+    handSize <- getHandSize a
+    when (length investigatorHand > handSize)
       $ unshiftMessage (CheckHandSize investigatorId)
     pure a
   CheckHandSize iid | iid == investigatorId -> do
-    when (length investigatorHand > 8) $ unshiftMessage
+    handSize <- getHandSize a
+    when (length investigatorHand > handSize) $ unshiftMessage
       (Ask iid $ ChooseOne
         [ Run [DiscardCard iid (getCardId card), CheckHandSize iid]
         | card <- investigatorHand

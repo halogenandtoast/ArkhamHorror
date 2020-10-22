@@ -85,6 +85,7 @@ data Asset
   | ArcaneStudies2' ArcaneStudies2
   | DigDeep2' DigDeep2
   | RabbitsFoot3' RabbitsFoot3
+  | ArcaneEnlightenment' ArcaneEnlightenment
   | CelaenoFragments' CelaenoFragments
   | Encyclopedia' Encyclopedia
   | LadyEsprit' LadyEsprit
@@ -221,6 +222,7 @@ allAssets = mapFromList
   , ("50007", ArcaneStudies2' . arcaneStudies2)
   , ("50009", DigDeep2' . digDeep2)
   , ("50010", RabbitsFoot3' . rabbitsFoot3)
+  , ("60205", ArcaneEnlightenment' . arcaneEnlightenment)
   , ("60206", CelaenoFragments' . celaenoFragments)
   , ("60208", Encyclopedia' . encyclopedia)
   , ("81019", LadyEsprit' . ladyEsprit)
@@ -310,6 +312,7 @@ assetAttrs = \case
   GrotesqueStatue4' attrs -> coerce attrs
   DigDeep2' attrs -> coerce attrs
   RabbitsFoot3' attrs -> coerce attrs
+  ArcaneEnlightenment' attrs -> coerce attrs
   CelaenoFragments' attrs -> coerce attrs
   Encyclopedia' attrs -> coerce attrs
   LadyEsprit' attrs -> coerce attrs

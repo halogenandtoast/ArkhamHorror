@@ -15,6 +15,10 @@ import Data.Aeson
 newtype JimCulver = JimCulver Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env JimCulver where
+  getModifiersFor source target (JimCulver attrs) =
+    getModifiersFor source target attrs
+
 jimCulver :: JimCulver
 jimCulver = JimCulver $ baseAttrs
   "02004"
@@ -33,7 +37,7 @@ jimCulver = JimCulver $ baseAttrs
 instance ActionRunner env => HasActions env JimCulver where
   getActions i window (JimCulver attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env JimCulver where
+instance (InvestigatorRunner env) => RunMessage env JimCulver where
   runMessage msg i@(JimCulver attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId ->
       i <$ runTest investigatorId (TokenValue ElderSign 1)

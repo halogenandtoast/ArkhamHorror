@@ -15,6 +15,10 @@ import Data.Aeson
 newtype CalvinWright = CalvinWright Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env CalvinWright where
+  getModifiersFor source target (CalvinWright attrs) =
+    getModifiersFor source target attrs
+
 calvinWright :: CalvinWright
 calvinWright = CalvinWright $ baseAttrs
   "04005"
@@ -33,7 +37,7 @@ calvinWright = CalvinWright $ baseAttrs
 instance ActionRunner env => HasActions env CalvinWright where
   getActions i window (CalvinWright attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env CalvinWright where
+instance (InvestigatorRunner env) => RunMessage env CalvinWright where
   runMessage msg i@(CalvinWright attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> CalvinWright <$> runMessage msg attrs

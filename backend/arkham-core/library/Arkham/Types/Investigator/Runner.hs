@@ -19,7 +19,7 @@ import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import ClassyPrelude
 
-type InvestigatorRunner investigator env
+type InvestigatorRunner env
   = ( HasCount ClueCount LocationId env
     , HasCount AssetCount (InvestigatorId, [Trait]) env
     , HasSet HealthDamageableAssetId InvestigatorId env
@@ -43,6 +43,7 @@ type InvestigatorRunner investigator env
     , HasList Location () env
     , HasList Enemy () env
     , HasActions env env
+    , HasActions env AssetId
     , HasActions env (ActionType, Trait, env)
     , HasSet InvestigatorId () env
     , HasSet ExhaustedAssetId InvestigatorId env

@@ -15,6 +15,10 @@ import Data.Aeson
 newtype FatherMateo = FatherMateo Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env FatherMateo where
+  getModifiersFor source target (FatherMateo attrs) =
+    getModifiersFor source target attrs
+
 fatherMateo :: FatherMateo
 fatherMateo = FatherMateo $ baseAttrs
   "04004"
@@ -33,7 +37,7 @@ fatherMateo = FatherMateo $ baseAttrs
 instance ActionRunner env => HasActions env FatherMateo where
   getActions i window (FatherMateo attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env FatherMateo where
+instance (InvestigatorRunner env) => RunMessage env FatherMateo where
   runMessage msg i@(FatherMateo attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> FatherMateo <$> runMessage msg attrs

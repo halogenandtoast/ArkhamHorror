@@ -15,6 +15,10 @@ import Data.Aeson
 newtype SilasMarsh = SilasMarsh Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env SilasMarsh where
+  getModifiersFor source target (SilasMarsh attrs) =
+    getModifiersFor source target attrs
+
 silasMarsh :: SilasMarsh
 silasMarsh = SilasMarsh $ baseAttrs
   "98013"
@@ -33,7 +37,7 @@ silasMarsh = SilasMarsh $ baseAttrs
 instance ActionRunner env => HasActions env SilasMarsh where
   getActions i window (SilasMarsh attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env SilasMarsh where
+instance (InvestigatorRunner env) => RunMessage env SilasMarsh where
   runMessage msg i@(SilasMarsh attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> SilasMarsh <$> runMessage msg attrs

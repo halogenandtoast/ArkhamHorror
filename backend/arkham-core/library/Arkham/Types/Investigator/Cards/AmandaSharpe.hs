@@ -15,6 +15,10 @@ import Data.Aeson
 newtype AmandaSharpe = AmandaSharpe Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env AmandaSharpe where
+  getModifiersFor source target (AmandaSharpe attrs) =
+    getModifiersFor source target attrs
+
 amandaSharpe :: AmandaSharpe
 amandaSharpe = AmandaSharpe $ baseAttrs
   "07002"
@@ -33,7 +37,7 @@ amandaSharpe = AmandaSharpe $ baseAttrs
 instance ActionRunner env => HasActions env AmandaSharpe where
   getActions i window (AmandaSharpe attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env AmandaSharpe where
+instance (InvestigatorRunner env) => RunMessage env AmandaSharpe where
   runMessage msg i@(AmandaSharpe attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> AmandaSharpe <$> runMessage msg attrs

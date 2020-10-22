@@ -15,6 +15,10 @@ import Data.Aeson
 newtype DianaStanley = DianaStanley Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env DianaStanley where
+  getModifiersFor source target (DianaStanley attrs) =
+    getModifiersFor source target attrs
+
 dianaStanley :: DianaStanley
 dianaStanley = DianaStanley $ baseAttrs
   "05004"
@@ -33,7 +37,7 @@ dianaStanley = DianaStanley $ baseAttrs
 instance ActionRunner env => HasActions env DianaStanley where
   getActions i window (DianaStanley attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env DianaStanley where
+instance (InvestigatorRunner env) => RunMessage env DianaStanley where
   runMessage msg i@(DianaStanley attrs@Attrs {..}) = case msg of
     ResolveToken Token.ElderSign iid | iid == investigatorId -> pure i
     _ -> DianaStanley <$> runMessage msg attrs

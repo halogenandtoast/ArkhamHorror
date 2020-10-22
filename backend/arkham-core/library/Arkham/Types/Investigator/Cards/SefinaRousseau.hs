@@ -15,6 +15,10 @@ import Data.Aeson
 newtype SefinaRousseau = SefinaRousseau Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env SefinaRousseau where
+  getModifiersFor source target (SefinaRousseau attrs) =
+    getModifiersFor source target attrs
+
 sefinaRousseau :: SefinaRousseau
 sefinaRousseau = SefinaRousseau $ baseAttrs
   "03003"
@@ -33,7 +37,7 @@ sefinaRousseau = SefinaRousseau $ baseAttrs
 instance ActionRunner env => HasActions env SefinaRousseau where
   getActions i window (SefinaRousseau attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env SefinaRousseau where
+instance (InvestigatorRunner env) => RunMessage env SefinaRousseau where
   runMessage msg i@(SefinaRousseau attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> SefinaRousseau <$> runMessage msg attrs

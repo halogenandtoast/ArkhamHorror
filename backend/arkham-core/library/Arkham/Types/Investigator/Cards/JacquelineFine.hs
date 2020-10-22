@@ -15,6 +15,10 @@ import Data.Aeson
 newtype JacquelineFine = JacquelineFine Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env JacquelineFine where
+  getModifiersFor source target (JacquelineFine attrs) =
+    getModifiersFor source target attrs
+
 jacquelineFine :: JacquelineFine
 jacquelineFine = JacquelineFine $ baseAttrs
   "60401"
@@ -33,7 +37,7 @@ jacquelineFine = JacquelineFine $ baseAttrs
 instance ActionRunner env => HasActions env JacquelineFine where
   getActions i window (JacquelineFine attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env JacquelineFine where
+instance (InvestigatorRunner env) => RunMessage env JacquelineFine where
   runMessage msg i@(JacquelineFine attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> JacquelineFine <$> runMessage msg attrs

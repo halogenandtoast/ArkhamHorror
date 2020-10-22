@@ -22,6 +22,10 @@ import qualified Data.HashSet as HashSet
 newtype AgnesBaker = AgnesBaker Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env AgnesBaker where
+  getModifiersFor source target (AgnesBaker attrs) =
+    getModifiersFor source target attrs
+
 agnesBaker :: AgnesBaker
 agnesBaker = AgnesBaker
   $ baseAttrs "01004" "Agnes Baker" Mystic stats [Sorcerer]
@@ -56,7 +60,7 @@ instance ActionRunner env => HasActions env AgnesBaker where
         ]
   getActions i window (AgnesBaker attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env AgnesBaker where
+instance (InvestigatorRunner env) => RunMessage env AgnesBaker where
   runMessage msg i@(AgnesBaker attrs@Attrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
       lid <- asks (getId @LocationId investigatorId)

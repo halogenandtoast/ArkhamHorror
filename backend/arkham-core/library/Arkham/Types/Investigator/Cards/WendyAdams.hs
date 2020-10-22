@@ -20,6 +20,10 @@ import Data.Aeson
 newtype WendyAdams = WendyAdams Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env WendyAdams where
+  getModifiersFor source target (WendyAdams attrs) =
+    getModifiersFor source target attrs
+
 wendyAdams :: WendyAdams
 wendyAdams = WendyAdams $ baseAttrs
   "01005"
@@ -54,7 +58,7 @@ instance ActionRunner env => HasActions env WendyAdams where
         ]
   getActions i window (WendyAdams attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env WendyAdams where
+instance (InvestigatorRunner env) => RunMessage env WendyAdams where
   runMessage msg i@(WendyAdams attrs@Attrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
       mResolveToken <- withQueue $ \queue ->

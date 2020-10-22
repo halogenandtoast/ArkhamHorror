@@ -502,7 +502,8 @@ instance HasCount EnemyCount (InvestigatorLocation, [Trait]) (Game queue) where
     where locationId = locationFor iid g
 
 instance HasStats (InvestigatorId, Maybe Action) (Game queue) where
-  getStats (iid, maction) source g = modifiedStatsOf source maction (getInvestigator iid g)
+  getStats (iid, maction) source g =
+    modifiedStatsOf source maction (getInvestigator iid g)
 
 instance HasModifiers GameInternal LocationId where
   getModifiers source lid = asks (getLocation lid) >>= getModifiers source
@@ -1142,6 +1143,9 @@ instance
       <> actActions
       <> agendaActions
       <> investigatorActions
+
+instance (GameRunner (Game queue)) => HasActions (Game queue) AssetId where
+  getActions iid window aid = ask >>= getActions iid window . getAsset aid
 
 runPreGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m)

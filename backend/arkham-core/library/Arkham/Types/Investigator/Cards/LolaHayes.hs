@@ -15,6 +15,10 @@ import Data.Aeson
 newtype LolaHayes = LolaHayes Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env LolaHayes where
+  getModifiersFor source target (LolaHayes attrs) =
+    getModifiersFor source target attrs
+
 lolaHayes :: LolaHayes
 lolaHayes = LolaHayes $ baseAttrs
   "03006"
@@ -33,7 +37,7 @@ lolaHayes = LolaHayes $ baseAttrs
 instance ActionRunner env => HasActions env LolaHayes where
   getActions i window (LolaHayes attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env LolaHayes where
+instance (InvestigatorRunner env) => RunMessage env LolaHayes where
   runMessage msg i@(LolaHayes attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> LolaHayes <$> runMessage msg attrs

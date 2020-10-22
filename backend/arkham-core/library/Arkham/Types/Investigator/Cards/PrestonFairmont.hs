@@ -15,6 +15,10 @@ import Data.Aeson
 newtype PrestonFairmont = PrestonFairmont Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env PrestonFairmont where
+  getModifiersFor source target (PrestonFairmont attrs) =
+    getModifiersFor source target attrs
+
 prestonFairmont :: PrestonFairmont
 prestonFairmont = PrestonFairmont $ baseAttrs
   "05003"
@@ -33,7 +37,7 @@ prestonFairmont = PrestonFairmont $ baseAttrs
 instance ActionRunner env => HasActions env PrestonFairmont where
   getActions i window (PrestonFairmont attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env PrestonFairmont where
+instance (InvestigatorRunner env) => RunMessage env PrestonFairmont where
   runMessage msg i@(PrestonFairmont attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> PrestonFairmont <$> runMessage msg attrs

@@ -47,6 +47,7 @@ data Investigator
   | CalvinWright' CalvinWright
   | CarolynFern' CarolynFern
   | DaisyWalker' DaisyWalker
+  | DaisyWalkerParallel' DaisyWalkerParallel
   | DexterDrake' DexterDrake
   | DianaStanley' DianaStanley
   | FatherMateo' FatherMateo
@@ -86,6 +87,8 @@ data Investigator
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
+deriving anyclass instance InvestigatorRunner env => HasModifiersFor env Investigator
+
 instance Eq Investigator where
   a == b = getInvestigatorId a == getInvestigatorId b
 
@@ -103,10 +106,14 @@ baseInvestigator a b c d e f =
 newtype BaseInvestigator = BaseInvestigator Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env BaseInvestigator where
+  getModifiersFor source target (BaseInvestigator attrs) =
+    getModifiersFor source target attrs
+
 instance ActionRunner env => HasActions env BaseInvestigator where
   getActions iid window (BaseInvestigator attrs) = getActions iid window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env BaseInvestigator where
+instance (InvestigatorRunner env) => RunMessage env BaseInvestigator where
   runMessage msg (BaseInvestigator attrs) =
     BaseInvestigator <$> runMessage msg attrs
 
@@ -117,7 +124,7 @@ instance ActionRunner env => HasActions env Investigator where
       then getActions iid window (investigatorAttrs investigator)
       else defaultGetActions iid window investigator
 
-instance (InvestigatorRunner Attrs env) => RunMessage env Investigator where
+instance (InvestigatorRunner env) => RunMessage env Investigator where
   runMessage msg@(ResolveToken ElderSign iid) i | iid == getInvestigatorId i =
     do
       modifiers' <- getModifiers (InvestigatorSource iid) i
@@ -148,13 +155,6 @@ instance HasCardCode Investigator where
 instance (HasModifiersFor env env) => HasModifiers env Investigator where
   getModifiers source self =
     ask >>= getModifiersFor source (InvestigatorTarget $ getInvestigatorId self)
-
-instance HasModifiersFor env Investigator where
-  getModifiersFor _ (InvestigatorTarget iid) investigator
-    | iid == getId () investigator
-    = pure . concat . toList . investigatorModifiers $ investigatorAttrs
-      investigator
-  getModifiersFor _ _ _ = pure []
 
 instance HasDamage Investigator where
   getDamage i = (investigatorHealthDamage, investigatorSanityDamage)
@@ -218,6 +218,7 @@ allInvestigators = mapFromList $ map
   , CalvinWright' calvinWright
   , CarolynFern' carolynFern
   , DaisyWalker' daisyWalker
+  , DaisyWalkerParallel' daisyWalkerParallel
   , DexterDrake' dexterDrake
   , DianaStanley' dianaStanley
   , FatherMateo' fatherMateo
@@ -388,6 +389,7 @@ investigatorAttrs = \case
   CalvinWright' attrs -> coerce attrs
   CarolynFern' attrs -> coerce attrs
   DaisyWalker' attrs -> coerce attrs
+  DaisyWalkerParallel' attrs -> coerce attrs
   DexterDrake' attrs -> coerce attrs
   DianaStanley' attrs -> coerce attrs
   FatherMateo' attrs -> coerce attrs

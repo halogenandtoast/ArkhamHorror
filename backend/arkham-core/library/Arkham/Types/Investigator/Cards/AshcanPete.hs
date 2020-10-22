@@ -23,6 +23,10 @@ import Lens.Micro
 newtype AshcanPete = AshcanPete Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env AshcanPete where
+  getModifiersFor source target (AshcanPete attrs) =
+    getModifiersFor source target attrs
+
 ashcanPete :: AshcanPete
 ashcanPete = AshcanPete $ baseAttrs
   "02005"
@@ -62,7 +66,7 @@ instance ActionRunner env => HasActions env AshcanPete where
         ]
   getActions i window (AshcanPete attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env AshcanPete where
+instance (InvestigatorRunner env) => RunMessage env AshcanPete where
   runMessage msg i@(AshcanPete attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> do
       unshiftMessage (Ready (CardCodeTarget "02014"))

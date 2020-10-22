@@ -273,6 +273,7 @@ type ActionRunner env
     , HasId (Maybe StoryEnemyId) CardCode env
     , HasId CardCode EnemyId env
     , HasId LocationId InvestigatorId env
+    , HasId LocationId EnemyId env
     , HasList DiscardedPlayerCard InvestigatorId env
     , HasList HandCard InvestigatorId env
     , HasList InPlayCard InvestigatorId env

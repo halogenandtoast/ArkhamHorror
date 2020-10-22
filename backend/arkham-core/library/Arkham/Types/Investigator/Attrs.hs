@@ -485,13 +485,18 @@ possibleSkillTypeChoices skillType attrs = foldr
 instance HasId InvestigatorId () Attrs where
   getId _ Attrs {..} = investigatorId
 
+instance HasModifiersFor env Attrs where
+  getModifiersFor _ (InvestigatorTarget iid) Attrs {..}
+    | iid == investigatorId = pure $ concat (toList investigatorModifiers)
+  getModifiersFor _ _ _ = pure []
+
 instance ActionRunner env => HasActions env Attrs where
   getActions iid window attrs | iid == investigatorId attrs = concat <$> for
     (attrs ^.. hand . traverse . _PlayerCard)
     (getActions iid window . toPlayerCardWithBehavior)
   getActions _ _ _ = pure []
 
-instance (InvestigatorRunner Attrs env) => RunMessage env Attrs where
+instance InvestigatorRunner env => RunMessage env Attrs where
   runMessage msg i = do
     traverseOf_
       (hand . traverse . _PlayerCard)
@@ -517,7 +522,7 @@ hasModifier Attrs { investigatorId } m =
         )
 
 runInvestigatorMessage
-  :: (InvestigatorRunner Attrs env, MonadReader env m, MonadIO m, MonadFail m)
+  :: (InvestigatorRunner env, MonadReader env m, MonadIO m, MonadFail m)
   => Message
   -> Attrs
   -> m Attrs

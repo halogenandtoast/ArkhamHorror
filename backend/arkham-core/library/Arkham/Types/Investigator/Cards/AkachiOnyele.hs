@@ -15,6 +15,10 @@ import Data.Aeson
 newtype AkachiOnyele = AkachiOnyele Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env AkachiOnyele where
+  getModifiersFor source target (AkachiOnyele attrs) =
+    getModifiersFor source target attrs
+
 akachiOnyele :: AkachiOnyele
 akachiOnyele = AkachiOnyele $ baseAttrs
   "03004"
@@ -33,7 +37,7 @@ akachiOnyele = AkachiOnyele $ baseAttrs
 instance ActionRunner env => HasActions env AkachiOnyele where
   getActions i window (AkachiOnyele attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env AkachiOnyele where
+instance (InvestigatorRunner env) => RunMessage env AkachiOnyele where
   runMessage msg i@(AkachiOnyele attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> AkachiOnyele <$> runMessage msg attrs

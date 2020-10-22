@@ -15,6 +15,10 @@ import Data.Aeson
 newtype NormanWithers = NormanWithers Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env NormanWithers where
+  getModifiersFor source target (NormanWithers attrs) =
+    getModifiersFor source target attrs
+
 normanWithers :: NormanWithers
 normanWithers = NormanWithers $ baseAttrs
   "98007"
@@ -33,7 +37,7 @@ normanWithers = NormanWithers $ baseAttrs
 instance ActionRunner env => HasActions env NormanWithers where
   getActions i window (NormanWithers attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env NormanWithers where
+instance (InvestigatorRunner env) => RunMessage env NormanWithers where
   runMessage msg i@(NormanWithers attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> NormanWithers <$> runMessage msg attrs

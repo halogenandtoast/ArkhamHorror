@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a45bc33b77ce30c89387c17211259cc36157a4c4ae88086142b2f6b3610d5f2d
+-- hash: 087975ff2c02695b928ec4836ecc75b6ddc11e008b8b1024e0a43cd166f37ccc
 
 name:           arkham-core
 version:        0.0.0
@@ -239,6 +239,7 @@ library
       Arkham.Types.Investigator.Cards.CalvinWright
       Arkham.Types.Investigator.Cards.CarolynFern
       Arkham.Types.Investigator.Cards.DaisyWalker
+      Arkham.Types.Investigator.Cards.DaisyWalkerParallel
       Arkham.Types.Investigator.Cards.DexterDrake
       Arkham.Types.Investigator.Cards.DianaStanley
       Arkham.Types.Investigator.Cards.FatherMateo

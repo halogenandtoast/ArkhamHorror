@@ -15,6 +15,10 @@ import Data.Aeson
 newtype DexterDrake = DexterDrake Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env DexterDrake where
+  getModifiersFor source target (DexterDrake attrs) =
+    getModifiersFor source target attrs
+
 dexterDrake :: DexterDrake
 dexterDrake = DexterDrake $ baseAttrs
   "98016"
@@ -33,7 +37,7 @@ dexterDrake = DexterDrake $ baseAttrs
 instance ActionRunner env => HasActions env DexterDrake where
   getActions i window (DexterDrake attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env DexterDrake where
+instance (InvestigatorRunner env) => RunMessage env DexterDrake where
   runMessage msg i@(DexterDrake attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> DexterDrake <$> runMessage msg attrs

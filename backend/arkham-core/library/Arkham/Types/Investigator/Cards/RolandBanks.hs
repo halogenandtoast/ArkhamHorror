@@ -17,6 +17,10 @@ import Arkham.Types.Trait
 newtype RolandBanks = RolandBanks Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env RolandBanks where
+  getModifiersFor source target (RolandBanks attrs) =
+    getModifiersFor source target attrs
+
 rolandBanks :: RolandBanks
 rolandBanks = RolandBanks
   $ baseAttrs "01001" "Roland Banks" Guardian stats [Agency, Detective]
@@ -47,7 +51,7 @@ instance ActionRunner env => HasActions env RolandBanks where
         ]
   getActions _ _ _ = pure []
 
-instance (InvestigatorRunner Attrs env) => RunMessage env RolandBanks where
+instance (InvestigatorRunner env) => RunMessage env RolandBanks where
   runMessage msg rb@(RolandBanks attrs@Attrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       rb <$ unshiftMessage

@@ -1,5 +1,9 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Investigator.Cards.DaisyWalker where
+module Arkham.Types.Investigator.Cards.DaisyWalker
+  ( DaisyWalker(..)
+  , daisyWalker
+  )
+where
 
 import Arkham.Import
 
@@ -12,6 +16,10 @@ import Arkham.Types.Trait
 
 newtype DaisyWalker = DaisyWalker Attrs
   deriving newtype (Show, ToJSON, FromJSON)
+
+instance HasModifiersFor env DaisyWalker where
+  getModifiersFor source target (DaisyWalker attrs) =
+    getModifiersFor source target attrs
 
 daisyWalker :: DaisyWalker
 daisyWalker =
@@ -36,7 +44,7 @@ becomesFailure _ _ = False
 instance ActionRunner env => HasActions env DaisyWalker where
   getActions i window (DaisyWalker attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env DaisyWalker where
+instance (InvestigatorRunner env) => RunMessage env DaisyWalker where
   runMessage msg i@(DaisyWalker attrs@Attrs {..}) = case msg of
     ResetGame -> do
       attrs' <- runMessage msg attrs

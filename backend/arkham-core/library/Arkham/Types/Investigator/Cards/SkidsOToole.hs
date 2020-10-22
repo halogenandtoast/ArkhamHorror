@@ -17,6 +17,10 @@ import Arkham.Types.Trait
 newtype SkidsOToole = SkidsOToole Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env SkidsOToole where
+  getModifiersFor source target (SkidsOToole attrs) =
+    getModifiersFor source target attrs
+
 skidsOToole :: SkidsOToole
 skidsOToole = SkidsOToole $ baseAttrs
   "01003"
@@ -46,7 +50,7 @@ instance ActionRunner env => HasActions env SkidsOToole where
         ]
   getActions _ _ _ = pure []
 
-instance (InvestigatorRunner Attrs env) => RunMessage env SkidsOToole where
+instance (InvestigatorRunner env) => RunMessage env SkidsOToole where
   runMessage msg i@(SkidsOToole attrs@Attrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
       pure . SkidsOToole $ attrs & resources -~ 2 & remainingActions +~ 1

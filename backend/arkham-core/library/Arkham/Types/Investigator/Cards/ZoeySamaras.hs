@@ -13,6 +13,10 @@ import Arkham.Types.Trait
 newtype ZoeySamaras = ZoeySamaras Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env ZoeySamaras where
+  getModifiersFor source target (ZoeySamaras attrs) =
+    getModifiersFor source target attrs
+
 zoeySamaras :: ZoeySamaras
 zoeySamaras = ZoeySamaras $ baseAttrs
   "02001"
@@ -53,7 +57,7 @@ instance ActionRunner env => HasActions env ZoeySamaras where
 
   getActions i window (ZoeySamaras attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env ZoeySamaras where
+instance (InvestigatorRunner env) => RunMessage env ZoeySamaras where
   runMessage msg i@(ZoeySamaras attrs@Attrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       i <$ unshiftMessage (TakeResources investigatorId 1 False)

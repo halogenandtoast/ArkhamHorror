@@ -15,6 +15,10 @@ import Data.Aeson
 newtype StellaClark = StellaClark Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env StellaClark where
+  getModifiersFor source target (StellaClark attrs) =
+    getModifiersFor source target attrs
+
 stellaClark :: StellaClark
 stellaClark = StellaClark $ baseAttrs
   "60501"
@@ -33,7 +37,7 @@ stellaClark = StellaClark $ baseAttrs
 instance ActionRunner env => HasActions env StellaClark where
   getActions i window (StellaClark attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env StellaClark where
+instance (InvestigatorRunner env) => RunMessage env StellaClark where
   runMessage msg i@(StellaClark attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> StellaClark <$> runMessage msg attrs

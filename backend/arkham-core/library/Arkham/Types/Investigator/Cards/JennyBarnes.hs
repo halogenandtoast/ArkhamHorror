@@ -16,6 +16,10 @@ import Lens.Micro
 newtype JennyBarnes = JennyBarnes Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env JennyBarnes where
+  getModifiersFor source target (JennyBarnes attrs) =
+    getModifiersFor source target attrs
+
 jennyBarnes :: JennyBarnes
 jennyBarnes = JennyBarnes $ baseAttrs
   "02003"
@@ -34,7 +38,7 @@ jennyBarnes = JennyBarnes $ baseAttrs
 instance ActionRunner env => HasActions env JennyBarnes where
   getActions i window (JennyBarnes attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env JennyBarnes where
+instance (InvestigatorRunner env) => RunMessage env JennyBarnes where
   runMessage msg i@(JennyBarnes attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId ->
       i <$ runTest investigatorId (TokenValue ElderSign investigatorResources)

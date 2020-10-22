@@ -19,6 +19,10 @@ import Data.Aeson
 newtype RexMurphy = RexMurphy Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env RexMurphy where
+  getModifiersFor source target (RexMurphy attrs) =
+    getModifiersFor source target attrs
+
 rexMurphy :: RexMurphy
 rexMurphy = RexMurphy $ baseAttrs
   "02002"
@@ -50,7 +54,7 @@ instance ActionRunner env => HasActions env RexMurphy where
         ]
   getActions i window (RexMurphy attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env RexMurphy where
+instance (InvestigatorRunner env) => RunMessage env RexMurphy where
   runMessage msg i@(RexMurphy attrs@Attrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       i <$ unshiftMessage

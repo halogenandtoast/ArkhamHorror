@@ -15,6 +15,10 @@ import Data.Aeson
 newtype WinifredHabbamock = WinifredHabbamock Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env WinifredHabbamock where
+  getModifiersFor source target (WinifredHabbamock attrs) =
+    getModifiersFor source target attrs
+
 winifredHabbamock :: WinifredHabbamock
 winifredHabbamock = WinifredHabbamock $ baseAttrs
   "60301"
@@ -33,7 +37,7 @@ winifredHabbamock = WinifredHabbamock $ baseAttrs
 instance ActionRunner env => HasActions env WinifredHabbamock where
   getActions i window (WinifredHabbamock attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env WinifredHabbamock where
+instance (InvestigatorRunner env) => RunMessage env WinifredHabbamock where
   runMessage msg i@(WinifredHabbamock attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> WinifredHabbamock <$> runMessage msg attrs

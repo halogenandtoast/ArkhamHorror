@@ -15,6 +15,10 @@ import Data.Aeson
 newtype UrsulaDowns = UrsulaDowns Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env UrsulaDowns where
+  getModifiersFor source target (UrsulaDowns attrs) =
+    getModifiersFor source target attrs
+
 ursulaDowns :: UrsulaDowns
 ursulaDowns = UrsulaDowns $ baseAttrs
   "04002"
@@ -33,7 +37,7 @@ ursulaDowns = UrsulaDowns $ baseAttrs
 instance ActionRunner env => HasActions env UrsulaDowns where
   getActions i window (UrsulaDowns attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env UrsulaDowns where
+instance (InvestigatorRunner env) => RunMessage env UrsulaDowns where
   runMessage msg i@(UrsulaDowns attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> UrsulaDowns <$> runMessage msg attrs

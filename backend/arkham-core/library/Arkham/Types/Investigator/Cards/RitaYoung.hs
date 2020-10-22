@@ -15,6 +15,10 @@ import Data.Aeson
 newtype RitaYoung = RitaYoung Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env RitaYoung where
+  getModifiersFor source target (RitaYoung attrs) =
+    getModifiersFor source target attrs
+
 ritaYoung :: RitaYoung
 ritaYoung = RitaYoung $ baseAttrs
   "05005"
@@ -33,7 +37,7 @@ ritaYoung = RitaYoung $ baseAttrs
 instance ActionRunner env => HasActions env RitaYoung where
   getActions i window (RitaYoung attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env RitaYoung where
+instance (InvestigatorRunner env) => RunMessage env RitaYoung where
   runMessage msg i@(RitaYoung attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> RitaYoung <$> runMessage msg attrs

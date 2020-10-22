@@ -10,6 +10,7 @@ import Arkham.Types.Investigator.Cards.AshcanPete as X
 import Arkham.Types.Investigator.Cards.CalvinWright as X
 import Arkham.Types.Investigator.Cards.CarolynFern as X
 import Arkham.Types.Investigator.Cards.DaisyWalker as X
+import Arkham.Types.Investigator.Cards.DaisyWalkerParallel as X
 import Arkham.Types.Investigator.Cards.DexterDrake as X
 import Arkham.Types.Investigator.Cards.DianaStanley as X
 import Arkham.Types.Investigator.Cards.FatherMateo as X

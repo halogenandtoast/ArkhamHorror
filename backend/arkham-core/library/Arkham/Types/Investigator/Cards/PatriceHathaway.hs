@@ -15,6 +15,10 @@ import Data.Aeson
 newtype PatriceHathaway = PatriceHathaway Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env PatriceHathaway where
+  getModifiersFor source target (PatriceHathaway attrs) =
+    getModifiersFor source target attrs
+
 patriceHathaway :: PatriceHathaway
 patriceHathaway = PatriceHathaway $ baseAttrs
   "06005"
@@ -33,7 +37,7 @@ patriceHathaway = PatriceHathaway $ baseAttrs
 instance ActionRunner env => HasActions env PatriceHathaway where
   getActions i window (PatriceHathaway attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env PatriceHathaway where
+instance (InvestigatorRunner env) => RunMessage env PatriceHathaway where
   runMessage msg i@(PatriceHathaway attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> PatriceHathaway <$> runMessage msg attrs

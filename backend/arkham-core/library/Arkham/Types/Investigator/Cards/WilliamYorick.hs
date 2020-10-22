@@ -15,6 +15,10 @@ import Data.Aeson
 newtype WilliamYorick = WilliamYorick Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance HasModifiersFor env WilliamYorick where
+  getModifiersFor source target (WilliamYorick attrs) =
+    getModifiersFor source target attrs
+
 williamYorick :: WilliamYorick
 williamYorick = WilliamYorick $ baseAttrs
   "03005"
@@ -33,7 +37,7 @@ williamYorick = WilliamYorick $ baseAttrs
 instance ActionRunner env => HasActions env WilliamYorick where
   getActions i window (WilliamYorick attrs) = getActions i window attrs
 
-instance (InvestigatorRunner Attrs env) => RunMessage env WilliamYorick where
+instance (InvestigatorRunner env) => RunMessage env WilliamYorick where
   runMessage msg i@(WilliamYorick attrs@Attrs {..}) = case msg of
     ResolveToken ElderSign iid | iid == investigatorId -> pure i
     _ -> WilliamYorick <$> runMessage msg attrs

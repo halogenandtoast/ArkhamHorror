@@ -24,6 +24,7 @@ import Arkham.Types.Asset.Cards.DiscOfItzamna2 as X
 import Arkham.Types.Asset.Cards.DrMilanChristopher as X
 import Arkham.Types.Asset.Cards.Duke as X
 import Arkham.Types.Asset.Cards.ElderSignAmulet3 as X
+import Arkham.Types.Asset.Cards.Encyclopedia as X
 import Arkham.Types.Asset.Cards.Encyclopedia2 as X
 import Arkham.Types.Asset.Cards.FireAxe as X
 import Arkham.Types.Asset.Cards.FirstAid as X

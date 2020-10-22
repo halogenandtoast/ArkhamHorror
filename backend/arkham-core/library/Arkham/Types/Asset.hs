@@ -85,6 +85,7 @@ data Asset
   | DigDeep2' DigDeep2
   | RabbitsFoot3' RabbitsFoot3
   | CelaenoFragments' CelaenoFragments
+  | Encyclopedia' Encyclopedia
   | LadyEsprit' LadyEsprit
   | BearTrap' BearTrap
   | FishingNet' FishingNet
@@ -219,6 +220,7 @@ allAssets = mapFromList
   , ("50009", DigDeep2' . digDeep2)
   , ("50010", RabbitsFoot3' . rabbitsFoot3)
   , ("60206", CelaenoFragments' . celaenoFragments)
+  , ("60208", Encyclopedia' . encyclopedia)
   , ("81019", LadyEsprit' . ladyEsprit)
   , ("81020", BearTrap' . bearTrap)
   , ("81021", FishingNet' . fishingNet)
@@ -306,6 +308,7 @@ assetAttrs = \case
   DigDeep2' attrs -> coerce attrs
   RabbitsFoot3' attrs -> coerce attrs
   CelaenoFragments' attrs -> coerce attrs
+  Encyclopedia' attrs -> coerce attrs
   LadyEsprit' attrs -> coerce attrs
   BearTrap' attrs -> coerce attrs
   FishingNet' attrs -> coerce attrs

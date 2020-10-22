@@ -43,6 +43,7 @@ data Modifier
   | EnemyEvade Int
   | EnemyFight Int
   | ForcedTokenChange Token Token
+  | HandSize Int
   | HealthModifier Int
   | HorrorDealt Int
   | ModifierIfSucceededBy Int Modifier

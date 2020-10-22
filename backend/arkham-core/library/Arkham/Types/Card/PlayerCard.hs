@@ -1110,6 +1110,12 @@ celaenoFragments cardId = (asset cardId "60206" "Celaeno Fragments" 1 Seeker)
   , pcTraits = setFromList [Item, Tome]
   }
 
+encyclopedia :: CardId -> PlayerCard
+encyclopedia cardId = (asset cardId "60208" "Encyclopedia" 2 Seeker)
+  { pcSkills = [SkillWild]
+  , pcTraits = setFromList [Item, Tome]
+  }
+
 ladyEsprit :: CardId -> PlayerCard
 ladyEsprit cardId = (asset cardId "81019" "Lady Espirt" 4 Neutral)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillWild]

@@ -263,6 +263,7 @@ allPlayerCards = HashMap.fromList
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
   , ("02147", bandolier)
+  , ("06116", scrollOfProphecies)
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
   , ("50003", hyperawareness2)
@@ -1024,6 +1025,13 @@ bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillWild]
   , pcTraits = setFromList [Item]
   }
+
+scrollOfProphecies :: CardId -> PlayerCard
+scrollOfProphecies cardId =
+  (asset cardId "06116" "Scroll of Prophecies" 3 Mystic)
+    { pcSkills = [SkillWillpower]
+    , pcTraits = setFromList [Item, Tome]
+    }
 
 litaChantler :: CardId -> PlayerCard
 litaChantler cardId = (asset cardId "01117" "Lita Chantler" 0 Neutral)

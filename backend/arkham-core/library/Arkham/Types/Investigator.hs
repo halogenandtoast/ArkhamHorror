@@ -344,16 +344,17 @@ remainingHealth i = modifiedHealth a - investigatorHealthDamage a
 modifiedStatsOf
   :: (MonadReader env m, HasModifiers env InvestigatorId, MonadIO m)
   => Source
+  -> Maybe Action
   -> Investigator
   -> m Stats
-modifiedStatsOf source i = do
+modifiedStatsOf source maction i = do
   modifiers' <- getModifiers source (getInvestigatorId i)
   let
     a = investigatorAttrs i
-    willpower' = skillValueFor SkillWillpower Nothing modifiers' a
-    intellect' = skillValueFor SkillIntellect Nothing modifiers' a
-    combat' = skillValueFor SkillCombat Nothing modifiers' a
-    agility' = skillValueFor SkillAgility Nothing modifiers' a
+    willpower' = skillValueFor SkillWillpower maction modifiers' a
+    intellect' = skillValueFor SkillIntellect maction modifiers' a
+    combat' = skillValueFor SkillCombat maction modifiers' a
+    agility' = skillValueFor SkillAgility maction modifiers' a
   pure Stats
     { willpower = willpower'
     , intellect = intellect'

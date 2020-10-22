@@ -501,8 +501,8 @@ instance HasCount EnemyCount (InvestigatorLocation, [Trait]) (Game queue) where
     g
     where locationId = locationFor iid g
 
-instance HasStats InvestigatorId (Game queue) where
-  getStats iid source g = modifiedStatsOf source (getInvestigator iid g)
+instance HasStats (InvestigatorId, Maybe Action) (Game queue) where
+  getStats (iid, maction) source g = modifiedStatsOf source maction (getInvestigator iid g)
 
 instance HasModifiers GameInternal LocationId where
   getModifiers source lid = asks (getLocation lid) >>= getModifiers source

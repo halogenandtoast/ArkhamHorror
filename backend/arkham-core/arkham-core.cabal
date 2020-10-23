@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4742e431a6b754d09f880f8afd86277c94e52a0c01932da02da5f3f11fa7ae0d
+-- hash: 3531ce743316c9206ef4e605156aeb0325f1b44f72a9e07b12925245309a6505
 
 name:           arkham-core
 version:        0.0.0
@@ -105,6 +105,7 @@ library
       Arkham.Types.Asset.Cards.MagnifyingGlass1
       Arkham.Types.Asset.Cards.MedicalTexts
       Arkham.Types.Asset.Cards.MonstrousTransformation
+      Arkham.Types.Asset.Cards.OccultLexicon
       Arkham.Types.Asset.Cards.OldBookOfLore
       Arkham.Types.Asset.Cards.PeterSylvestre
       Arkham.Types.Asset.Cards.PhysicalTraining
@@ -199,6 +200,7 @@ library
       Arkham.Types.Event.Cards.Barricade3
       Arkham.Types.Event.Cards.BlindingLight
       Arkham.Types.Event.Cards.BlindingLight2
+      Arkham.Types.Event.Cards.BloodRite
       Arkham.Types.Event.Cards.CloseCall2
       Arkham.Types.Event.Cards.CrypticResearch4
       Arkham.Types.Event.Cards.CunningDistraction

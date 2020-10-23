@@ -45,6 +45,7 @@ type GameRunner env
       , HasId (Maybe StoryEnemyId) CardCode env
       , HasId ActiveInvestigatorId () env
       , HasId LeadInvestigatorId () env
+      , HasId CardCode AssetId env
       , HasId CardCode EnemyId env
       , HasId LocationId EnemyId env
       , HasId LocationId InvestigatorId env

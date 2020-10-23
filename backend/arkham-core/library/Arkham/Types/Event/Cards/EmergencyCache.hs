@@ -1,16 +1,9 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.EmergencyCache where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.Event.Attrs
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Target
-import Lens.Micro
+import Arkham.Import
 
-import ClassyPrelude
+import Arkham.Types.Event.Attrs
 
 newtype EmergencyCache = EmergencyCache Attrs
   deriving newtype (Show, ToJSON, FromJSON)

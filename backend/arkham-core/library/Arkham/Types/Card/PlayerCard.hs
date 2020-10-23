@@ -82,6 +82,9 @@ instance HasCost PlayerCard where
 traits :: Lens' PlayerCard (HashSet Trait)
 traits = lens pcTraits $ \m x -> m { pcTraits = x }
 
+genPlayerCard :: MonadIO m => CardCode -> m PlayerCard
+genPlayerCard cardCode = lookupPlayerCard cardCode <$> genCardId
+
 lookupPlayerCard :: CardCode -> (CardId -> PlayerCard)
 lookupPlayerCard cardCode =
   fromJustNote ("Unknown card: " <> show cardCode)
@@ -263,6 +266,8 @@ allPlayerCards = HashMap.fromList
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
   , ("02147", bandolier)
+  , ("05316", occultLexicon)
+  , ("05317", bloodRite)
   , ("06116", scrollOfProphecies)
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
@@ -1026,6 +1031,18 @@ bandolier :: CardId -> PlayerCard
 bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillWild]
   , pcTraits = setFromList [Item]
+  }
+
+occultLexicon :: CardId -> PlayerCard
+occultLexicon cardId = (asset cardId "05316" "Occult Lexicon" 2 Seeker)
+  { pcSkills = [SkillIntellect]
+  , pcTraits = setFromList [Item, Tome, Occult]
+  }
+
+bloodRite :: CardId -> PlayerCard
+bloodRite cardId = (event cardId "05317" "Blood Rite" 0 Seeker)
+  { pcSkills = [SkillWillpower, SkillIntellect, SkillCombat]
+  , pcTraits = setFromList [Spell]
   }
 
 scrollOfProphecies :: CardId -> PlayerCard

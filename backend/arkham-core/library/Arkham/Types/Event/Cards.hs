@@ -9,6 +9,7 @@ import Arkham.Types.Event.Cards.Barricade as X
 import Arkham.Types.Event.Cards.Barricade3 as X
 import Arkham.Types.Event.Cards.BlindingLight as X
 import Arkham.Types.Event.Cards.BlindingLight2 as X
+import Arkham.Types.Event.Cards.BloodRite as X
 import Arkham.Types.Event.Cards.CloseCall2 as X
 import Arkham.Types.Event.Cards.CrypticResearch4 as X
 import Arkham.Types.Event.Cards.CunningDistraction as X

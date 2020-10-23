@@ -285,6 +285,7 @@ allPlayerCards = HashMap.fromList
   , ("81019", ladyEsprit)
   , ("81029", curseOfTheRougarou)
   , ("81030", monstrousTransformation)
+  , ("90003", theNecronomiconAdvanced)
   ]
 
 placeholderAsset :: CardId -> PlayerCard
@@ -1169,4 +1170,12 @@ monstrousTransformation cardId =
     { pcTraits = setFromList [Talent]
     , pcFast = True
     , pcWindows = setFromList [DuringTurn You]
+    }
+
+theNecronomiconAdvanced :: CardId -> PlayerCard
+theNecronomiconAdvanced cardId =
+  (asset cardId "90003" "The Necronomicon" 0 Neutral)
+    { pcTraits = setFromList [Item, Tome]
+    , pcWeakness = True
+    , pcRevelation = True
     }

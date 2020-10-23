@@ -28,20 +28,12 @@ instance HasActions env FalseLead where
 
 instance (TreacheryRunner env) => RunMessage env FalseLead where
   runMessage msg t@(FalseLead attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       playerClueCount <- unClueCount <$> asks (getCount iid)
       if playerClueCount == 0
         then unshiftMessage (Ask iid $ ChooseOne [Surge iid])
         else unshiftMessage
-          (RevelationSkillTest
-            iid
-            (TreacherySource treacheryId)
-            SkillIntellect
-            4
-            []
-            []
-            []
-          )
+          (RevelationSkillTest iid source SkillIntellect 4 [] [] [])
       FalseLead <$> runMessage msg (attrs & resolved .~ True)
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget n
       | tid == treacheryId -> t

@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env LockedDoor where
 
 instance (TreacheryRunner env) => RunMessage env LockedDoor where
   runMessage msg t@(LockedDoor attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       exemptLocations <- asks
         (getSet @LocationId (TreacheryCardCode $ CardCode "01174"))
       targetLocations <- setToList . (`difference` exemptLocations) <$> asks
@@ -52,11 +52,14 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
           in
             do
               case matches of
-                [(x, _)] ->
-                  unshiftMessages [AttachTreachery tid (LocationTarget x)]
+                [(x, _)] -> unshiftMessages
+                  [AttachTreachery treacheryId (LocationTarget x)]
                 xs -> unshiftMessage
-                  (Ask iid $ ChooseOne
-                    [ AttachTreachery tid (LocationTarget x) | (x, _) <- xs ]
+                  (Ask iid
+                  $ ChooseOne
+                      [ AttachTreachery treacheryId (LocationTarget x)
+                      | (x, _) <- xs
+                      ]
                   )
               LockedDoor <$> runMessage msg attrs
     AttachTreachery tid (LocationTarget lid) | tid == treacheryId -> do

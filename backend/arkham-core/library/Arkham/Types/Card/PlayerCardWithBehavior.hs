@@ -22,11 +22,14 @@ import Arkham.Types.Window
 
 data PlayerCard'
   = DefaultPlayerCard' DefaultPlayerCard
+  | TheNecronomicon' TheNecronomicon
   | DarkMemory' DarkMemory
   | CloseCall2' CloseCall2
   deriving stock (Generic, Show)
 
 newtype DefaultPlayerCard = DefaultPlayerCard PlayerCard
+  deriving newtype Show
+newtype TheNecronomicon = TheNecronomicon PlayerCard
   deriving newtype Show
 newtype DarkMemory = DarkMemory PlayerCard
   deriving newtype Show
@@ -35,7 +38,10 @@ newtype CloseCall2 = CloseCall2 PlayerCard
 
 allPlayerCardsWithBehavior :: HashMap CardCode (PlayerCard -> PlayerCard')
 allPlayerCardsWithBehavior = mapFromList
-  [("01013", DarkMemory' . DarkMemory), ("01083", CloseCall2' . CloseCall2)]
+  [ ("01009", TheNecronomicon' . TheNecronomicon)
+  , ("01013", DarkMemory' . DarkMemory)
+  , ("01083", CloseCall2' . CloseCall2)
+  ]
 
 toPlayerCardWithBehavior :: PlayerCard -> PlayerCard'
 toPlayerCardWithBehavior pc = builder pc
@@ -52,6 +58,17 @@ instance HasQueue env => RunMessage env DefaultPlayerCard where
 
 instance HasActions env DefaultPlayerCard where
   getActions _ _ _ = pure []
+
+instance (HasSet HandCardId InvestigatorId env, HasQueue env) => RunMessage env TheNecronomicon where
+  runMessage (Revelation iid (PlayerCardSource cid)) c@(TheNecronomicon pc)
+    | getCardId pc == cid = c <$ unshiftMessage (PlayCard iid cid Nothing False)
+  runMessage msg (TheNecronomicon pc) = do
+    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
+    pure $ TheNecronomicon pc'
+
+instance HasActions env TheNecronomicon where
+  getActions i window (TheNecronomicon pc) =
+    getActions i window (DefaultPlayerCard pc)
 
 instance (HasSet HandCardId InvestigatorId env, HasQueue env) => RunMessage env DarkMemory where
   runMessage (EndTurn iid) c@(DarkMemory pc) = do

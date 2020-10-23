@@ -20,17 +20,10 @@ instance HasActions env GraspingHands where
 
 instance (TreacheryRunner env) => RunMessage env GraspingHands where
   runMessage msg t@(GraspingHands attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       unshiftMessages
-        [ RevelationSkillTest
-          iid
-          (TreacherySource treacheryId)
-          SkillAgility
-          3
-          []
-          []
-          []
-        , Discard (TreacheryTarget tid)
+        [ RevelationSkillTest iid source SkillAgility 3 [] [] []
+        , Discard (TreacheryTarget treacheryId)
         ]
       GraspingHands <$> runMessage msg (attrs & resolved .~ True)
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget n

@@ -28,12 +28,12 @@ instance HasActions env DissonantVoices where
 
 instance (TreacheryRunner env) => RunMessage env DissonantVoices where
   runMessage msg t@(DissonantVoices attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       unshiftMessages
-        [ AttachTreachery tid (InvestigatorTarget iid)
+        [ AttachTreachery treacheryId (InvestigatorTarget iid)
         , AddModifiers
           (InvestigatorTarget iid)
-          (TreacherySource tid)
+          source
           [CannotPlay [AssetType, EventType]]
         ]
       DissonantVoices <$> runMessage msg (attrs & attachedInvestigator ?~ iid)

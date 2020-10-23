@@ -5,7 +5,6 @@ import Arkham.Json
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.SkillType
-import Arkham.Types.Source
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
@@ -28,16 +27,16 @@ instance HasActions env OnWingsOfDarkness where
 
 instance (TreacheryRunner env) => RunMessage env OnWingsOfDarkness where
   runMessage msg (OnWingsOfDarkness attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       centralLocations <- HashSet.toList <$> asks (getSet [Central])
       unshiftMessage
         (RevelationSkillTest
           iid
-          (TreacherySource treacheryId)
+          source
           SkillAgility
           4
           []
-          ([ InvestigatorAssignDamage iid (TreacherySource tid) 1 1
+          ([ InvestigatorAssignDamage iid source 1 1
            , UnengageNonMatching iid [Nightgaunt]
            ]
           <> [ Ask iid $ ChooseOne

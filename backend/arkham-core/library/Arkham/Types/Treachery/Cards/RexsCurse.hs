@@ -29,7 +29,7 @@ instance HasActions env RexsCurse where
 
 instance (TreacheryRunner env) => RunMessage env RexsCurse where
   runMessage msg t@(RexsCurse attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
       RexsCurse <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     Will (PassedSkillTest iid _ _ SkillTestInitiatorTarget _)

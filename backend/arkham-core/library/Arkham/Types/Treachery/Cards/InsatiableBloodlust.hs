@@ -23,12 +23,12 @@ instance HasActions env InsatiableBloodlust where
 
 instance (TreacheryRunner env) => RunMessage env InsatiableBloodlust where
   runMessage msg t@(InsatiableBloodlust attrs@Attrs {..}) = case msg of
-    Revelation _iid tid | tid == treacheryId -> do
+    Revelation _iid source | isSource attrs source -> do
       mrougarou <- asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))
       case mrougarou of
         Nothing -> error "can't happen"
         Just eid -> do
-          unshiftMessage (AttachTreachery tid (EnemyTarget eid))
+          unshiftMessage (AttachTreachery treacheryId (EnemyTarget eid))
       InsatiableBloodlust <$> runMessage msg attrs
     EnemyDamage eid _ _ n | n > 0 -> do
       mrougarou <- asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))

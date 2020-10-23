@@ -26,7 +26,7 @@ instance HasActions env Paranoia where
 
 instance (TreacheryRunner env) => RunMessage env Paranoia where
   runMessage msg (Paranoia attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       resourceCount' <- unResourceCount <$> asks (getCount iid)
       unshiftMessage (SpendResources iid resourceCount')
       Paranoia <$> runMessage msg (attrs & resolved .~ True)

@@ -280,7 +280,7 @@ data Message
   | CreateEnemyAt CardCode LocationId
   | CreateEnemyEngagedWithPrey CardCode
   | EnemySpawnEngagedWithPrey EnemyId
-  | Revelation InvestigatorId TreacheryId
+  | Revelation InvestigatorId Source
   | AfterRevelation InvestigatorId TreacheryId
   | RevelationSkillTest InvestigatorId Source SkillType Int [Message] [Message] [Modifier]
   | Discard Target

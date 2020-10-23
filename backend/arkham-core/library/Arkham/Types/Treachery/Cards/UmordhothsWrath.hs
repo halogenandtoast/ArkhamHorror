@@ -48,10 +48,10 @@ instance (TreacheryRunner env) => RunMessage env UmordhothsWrath where
           [ InvestigatorAssignDamage iid (TreacherySource treacheryId) 1 1
           , HandlePointOfFailure iid (TreacheryTarget treacheryId) (n - 1)
           ]
-    Revelation iid tid | tid == treacheryId -> t <$ unshiftMessage
+    Revelation iid source | isSource attrs source -> t <$ unshiftMessage
       (BeginSkillTest
         iid
-        (TreacherySource treacheryId)
+        source
         (InvestigatorTarget iid)
         Nothing
         SkillWillpower

@@ -1407,7 +1407,7 @@ runGameMessage msg g = case msg of
           let
             tid = TreacheryId $ unCardId cardId
             treachery = lookupTreachery (pcCardCode pc) tid Nothing
-          unshiftMessages [Revelation iid tid]
+          unshiftMessages [Revelation iid (TreacherySource tid)]
           pure $ g & treacheries %~ insertMap tid treachery
         AssetType -> do
           let
@@ -1446,7 +1446,7 @@ runGameMessage msg g = case msg of
     unshiftMessages
       $ [ RemoveCardFromHand iid cardCode | pcRevelation playerCard ]
       <> [ CheckWindow iid [Fast.WhenDrawTreachery You (isWeakness treachery)]
-         , Revelation iid treacheryId
+         , Revelation iid (TreacherySource treacheryId)
          , AfterRevelation iid treacheryId
          ]
     pure $ g & treacheries %~ insertMap treacheryId treachery
@@ -1925,7 +1925,7 @@ runGameMessage msg g = case msg of
     (treacheryId', treachery') <- createTreachery cardCode (Just iid)
     unshiftMessages
       $ [ CheckWindow iid [Fast.WhenDrawTreachery You (isWeakness treachery')]
-        , Revelation iid treacheryId'
+        , Revelation iid (TreacherySource treacheryId')
         , AfterRevelation iid treacheryId'
         ]
       <> [ Surge iid | Keyword.Surge `member` getKeywords treachery' ]

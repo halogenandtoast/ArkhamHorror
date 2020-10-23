@@ -40,10 +40,10 @@ nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
 
 instance TreacheryRunner env => RunMessage env OnTheProwl where
   runMessage msg (OnTheProwl attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       mrougarou <- asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))
       case mrougarou of
-        Nothing -> unshiftMessage (Discard (TreacheryTarget tid))
+        Nothing -> unshiftMessage (Discard (TreacheryTarget treacheryId))
         Just eid -> do
           locationIds <- setToList <$> nonBayouLocations
           locationsWithClueCounts <- for locationIds
@@ -51,23 +51,22 @@ instance TreacheryRunner env => RunMessage env OnTheProwl where
           let
             sortedLocationsWithClueCounts = sortOn snd locationsWithClueCounts
           case sortedLocationsWithClueCounts of
-            [] -> unshiftMessage (Discard (TreacheryTarget tid))
+            [] -> unshiftMessage (Discard (TreacheryTarget treacheryId))
             ((_, c) : _) ->
               let
                 (matches, _) =
                   span ((== c) . snd) sortedLocationsWithClueCounts
               in
                 case matches of
-                  [(x, _)] ->
-                    unshiftMessages
-                      [ MoveUntil x (EnemyTarget eid)
-                      , Discard (TreacheryTarget tid)
-                      ]
+                  [(x, _)] -> unshiftMessages
+                    [ MoveUntil x (EnemyTarget eid)
+                    , Discard (TreacheryTarget treacheryId)
+                    ]
                   xs -> unshiftMessages
                     [ chooseOne
                       iid
                       [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
-                    , Discard (TreacheryTarget tid)
+                    , Discard (TreacheryTarget treacheryId)
                     ]
       OnTheProwl <$> runMessage msg (attrs & resolved .~ True)
     _ -> OnTheProwl <$> runMessage msg attrs

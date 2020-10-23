@@ -32,12 +32,12 @@ instance ActionRunner env => HasActions env DreamsOfRlyeh where
 
 instance (TreacheryRunner env) => RunMessage env DreamsOfRlyeh where
   runMessage msg t@(DreamsOfRlyeh attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       unshiftMessages
-        [ AttachTreachery tid (InvestigatorTarget iid)
+        [ AttachTreachery treacheryId (InvestigatorTarget iid)
         , AddModifiers
           (InvestigatorTarget iid)
-          (TreacherySource tid)
+          source
           [SkillModifier SkillWillpower (-1), SanityModifier (-1)]
         ]
       DreamsOfRlyeh <$> runMessage msg (attrs & attachedInvestigator ?~ iid)

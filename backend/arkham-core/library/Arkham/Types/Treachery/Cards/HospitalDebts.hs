@@ -48,10 +48,10 @@ instance ActionRunner env => HasActions env HospitalDebts where
 
 instance (TreacheryRunner env) => RunMessage env HospitalDebts where
   runMessage msg t@(HospitalDebts attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       unshiftMessages
         [ RemoveCardFromHand iid "01011"
-        , AttachTreachery tid (InvestigatorTarget iid)
+        , AttachTreachery treacheryId (InvestigatorTarget iid)
         ]
       HospitalDebts <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     EndOfGame | fromJustNote "must be set" treacheryResources < 6 ->

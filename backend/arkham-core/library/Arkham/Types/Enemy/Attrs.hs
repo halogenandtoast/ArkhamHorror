@@ -461,6 +461,12 @@ instance EnemyRunner env => RunMessage env Attrs where
         (a ^. damage + amount' >= a ^. health . to (`fromGameValue` playerCount)
         )
         (unshiftMessage (EnemyDefeated eid iid enemyCardCode source))
+    EnemyDefeated eid _ _ _ | eid == enemyId -> do
+      unshiftMessages
+        [ Discard (TreacheryTarget tid) | tid <- setToList enemyTreacheries ]
+      unshiftMessages
+        [ Discard (AssetTarget aid) | aid <- setToList enemyAssets ]
+      pure a
     AddModifiers (EnemyTarget eid) source modifiers' | eid == enemyId -> do
       when (Blank `elem` modifiers')
         $ unshiftMessage (RemoveAllModifiersFrom (EnemySource eid))

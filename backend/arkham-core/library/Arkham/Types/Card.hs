@@ -16,6 +16,7 @@ module Arkham.Types.Card
   , BearerId(..)
   , AttackOfOpportunityModifier(..)
   , allPlayerCards
+  , lookupCard
   , lookupPlayerCard
   , genPlayerCard
   , lookupEncounterCard
@@ -88,3 +89,14 @@ toEncounterCard _ = Nothing
 cardIsWeakness :: Card -> Bool
 cardIsWeakness (EncounterCard _) = False
 cardIsWeakness (PlayerCard pc) = pcWeakness pc
+
+lookupCard :: CardCode -> Maybe (CardId -> Card)
+lookupCard cardCode =
+  let
+    encounterCard = do
+      f <- lookup cardCode allEncounterCards
+      pure $ EncounterCard . f
+    playerCard = do
+      f <- lookup cardCode allPlayerCards
+      pure $ PlayerCard . f
+  in encounterCard <|> playerCard

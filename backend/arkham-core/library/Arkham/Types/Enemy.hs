@@ -5,6 +5,7 @@ module Arkham.Types.Enemy
   , isEngaged
   , getEngagedInvestigators
   , getBearer
+  , getEnemyVictory
   , Enemy
   )
 where
@@ -170,6 +171,9 @@ instance Exhaustable Enemy where
 
 getEngagedInvestigators :: Enemy -> HashSet InvestigatorId
 getEngagedInvestigators = enemyEngagedInvestigators . enemyAttrs
+
+getEnemyVictory :: Enemy -> Maybe Int
+getEnemyVictory = enemyVictory . enemyAttrs
 
 getBearer :: Enemy -> Maybe InvestigatorId
 getBearer enemy = case enemyPrey (enemyAttrs enemy) of

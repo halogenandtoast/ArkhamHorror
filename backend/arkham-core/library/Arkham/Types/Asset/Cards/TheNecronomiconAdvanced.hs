@@ -19,8 +19,12 @@ theNecronomiconAdvanced uuid =
     }
 
 instance HasModifiersFor env TheNecronomiconAdvanced where
-  getModifiersFor _ (InvestigatorTarget iid) (TheNecronomiconAdvanced a) =
-    pure [ ForcedTokenChange Token.ElderSign Token.AutoFail | ownedBy a iid ]
+  getModifiersFor _ (InvestigatorTarget iid) (TheNecronomiconAdvanced a) = pure
+    [ ForcedTokenChange
+        Token.ElderSign
+        (Token.CompositeToken [Token.Cultist, Token.Tablet, Token.ElderThing])
+    | ownedBy a iid
+    ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env TheNecronomiconAdvanced where

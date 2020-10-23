@@ -1572,34 +1572,32 @@ runGameMessage msg g = case msg of
   RemoveFromGame (AssetTarget aid) -> pure $ g & assets %~ deleteMap aid
   EnemyDefeated eid iid cardCode source -> do
     broadcastWindow Fast.WhenEnemyDefeated iid g
-    g <$ unshiftMessages
-      [When (EnemyDefeated eid iid cardCode source), Discard (EnemyTarget eid)]
+    let
+      enemy = getEnemy eid g
+      cardId = CardId (unEnemyId eid)
+      card = fromJustNote "no card found" $ lookupCard cardCode <*> pure cardId
+    if isJust (getEnemyVictory enemy)
+      then pure $ g & (enemies %~ deleteMap eid) & (victoryDisplay %~ (card :))
+      else g <$ unshiftMessages
+        [ When (EnemyDefeated eid iid cardCode source)
+        , Discard (EnemyTarget eid)
+        ]
   Discard (EnemyTarget eid) -> do
     let
       enemy = getEnemy eid g
       cardId = CardId (unEnemyId eid)
-      encounterCard = do
-        f <- lookup (getCardCode enemy) allEncounterCards
-        pure $ EncounterCard $ f cardId
-      playerCard = do
-        f <- lookup (getCardCode enemy) allPlayerCards
-        pure $ PlayerCard $ f cardId
-      treacheries' = getSet @TreacheryId () enemy
-    for_ treacheries' $ \tid -> unshiftMessage (Discard (TreacheryTarget tid))
-    case encounterCard <|> playerCard of
-      Nothing -> error "missing"
-      Just (PlayerCard pc) -> do
+      card =
+        fromJustNote "no card found"
+          $ lookupCard (getCardCode enemy)
+          <*> pure cardId
+    case card of
+      PlayerCard pc -> do
         case getBearer enemy of
           Nothing -> error "No bearer recorded"
           Just iid' -> unshiftMessage (AddToDiscard iid' pc)
         pure $ g & enemies %~ deleteMap eid
-      Just (EncounterCard ec) -> if isJust (getVictoryPoints enemy)
-        then
-          pure
-          $ g
-          & (enemies %~ deleteMap eid)
-          & (victoryDisplay %~ (EncounterCard ec :))
-        else pure $ g & (enemies %~ deleteMap eid) & (discard %~ (ec :))
+      EncounterCard ec ->
+        pure $ g & (enemies %~ deleteMap eid) & (discard %~ (ec :))
   AddToVictory (EnemyTarget eid) -> do
     let
       enemy = getEnemy eid g

@@ -29,12 +29,12 @@ instance HasActions env FrozenInFear where
 
 instance (TreacheryRunner env) => RunMessage env FrozenInFear where
   runMessage msg t@(FrozenInFear attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       unshiftMessages
-        [ AttachTreachery tid (InvestigatorTarget iid)
+        [ AttachTreachery treacheryId (InvestigatorTarget iid)
         , AddModifiers
           (InvestigatorTarget iid)
-          (TreacherySource tid)
+          source
           [ ActionCostOf
               (FirstOneOf [Action.Move, Action.Fight, Action.Evade])
               1

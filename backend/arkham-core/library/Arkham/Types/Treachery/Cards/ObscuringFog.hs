@@ -28,7 +28,7 @@ instance HasActions env ObscuringFog where
 
 instance (TreacheryRunner env) => RunMessage env ObscuringFog where
   runMessage msg t@(ObscuringFog attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       currentLocationId <- asks (getId iid)
       obscuringFogCount <- unTreacheryCount
         <$> asks (getCount (currentLocationId, treacheryCardCode))
@@ -36,10 +36,10 @@ instance (TreacheryRunner env) => RunMessage env ObscuringFog where
         then pure t -- Revelation did not run
         else do
           unshiftMessages
-            [ AttachTreachery tid (LocationTarget currentLocationId)
+            [ AttachTreachery treacheryId (LocationTarget currentLocationId)
             , AddModifiers
               (LocationTarget currentLocationId)
-              (TreacherySource tid)
+              source
               [ShroudModifier 2]
             ]
           ObscuringFog

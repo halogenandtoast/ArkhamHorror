@@ -20,7 +20,7 @@ instance HasActions env BeastOfTheBayou where
 
 instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
   runMessage msg t@(BeastOfTheBayou attrs@Attrs {..}) = case msg of
-    Revelation _iid tid | tid == treacheryId -> do
+    Revelation _iid source | isSource attrs source -> do
       mrougarou <- asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))
       case mrougarou of
         Nothing ->

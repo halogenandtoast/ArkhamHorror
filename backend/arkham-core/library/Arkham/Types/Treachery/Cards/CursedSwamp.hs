@@ -25,19 +25,19 @@ instance HasActions env CursedSwamp where
 
 instance TreacheryRunner env => RunMessage env CursedSwamp where
   runMessage msg t@(CursedSwamp attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       locationId <- asks $ getId @LocationId iid
       isBayou <- asks $ member Bayou . getSet locationId
       unshiftMessages
         [ RevelationSkillTest
           iid
-          (TreacherySource treacheryId)
+          source
           SkillWillpower
           3
           []
           []
           [ CannotCommitCards | isBayou ]
-        , Discard (TreacheryTarget tid)
+        , Discard (TreacheryTarget treacheryId)
         ]
       CursedSwamp <$> runMessage msg (attrs & resolved .~ True)
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget n

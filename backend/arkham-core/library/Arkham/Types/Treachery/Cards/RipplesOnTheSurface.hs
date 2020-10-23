@@ -25,19 +25,19 @@ instance HasActions env RipplesOnTheSurface where
 
 instance TreacheryRunner env => RunMessage env RipplesOnTheSurface where
   runMessage msg t@(RipplesOnTheSurface attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       locationId <- asks $ getId @LocationId iid
       isBayou <- asks $ member Bayou . getSet locationId
       unshiftMessages
         [ RevelationSkillTest
           iid
-          (TreacherySource treacheryId)
+          source
           SkillWillpower
           3
           []
           []
           [ CannotCommitCards | isBayou ]
-        , Discard (TreacheryTarget tid)
+        , Discard (TreacheryTarget treacheryId)
         ]
       RipplesOnTheSurface <$> runMessage msg (attrs & resolved .~ True)
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget n

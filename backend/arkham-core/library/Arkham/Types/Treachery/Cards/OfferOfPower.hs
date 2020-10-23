@@ -4,7 +4,6 @@ module Arkham.Types.Treachery.Cards.OfferOfPower where
 import Arkham.Json
 import Arkham.Types.Classes
 import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
@@ -25,7 +24,7 @@ instance HasActions env OfferOfPower where
 
 instance (TreacheryRunner env) => RunMessage env OfferOfPower where
   runMessage msg (OfferOfPower attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       unshiftMessage
         (Ask iid $ ChooseOne
           [ Label
@@ -35,9 +34,7 @@ instance (TreacheryRunner env) => RunMessage env OfferOfPower where
             , PlaceDoomOnAgenda
             , AdvanceAgendaIfThresholdSatisfied
             ]
-          , Label
-            "Take 2 horror"
-            [InvestigatorAssignDamage iid (TreacherySource treacheryId) 0 2]
+          , Label "Take 2 horror" [InvestigatorAssignDamage iid source 0 2]
           ]
         )
       OfferOfPower <$> runMessage msg (attrs & resolved .~ True)

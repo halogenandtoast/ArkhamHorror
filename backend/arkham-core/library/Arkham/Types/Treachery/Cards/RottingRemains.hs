@@ -27,17 +27,10 @@ instance HasActions env RottingRemains where
 
 instance (TreacheryRunner env) => RunMessage env RottingRemains where
   runMessage msg t@(RottingRemains attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       unshiftMessages
-        [ RevelationSkillTest
-          iid
-          (TreacherySource treacheryId)
-          SkillWillpower
-          3
-          []
-          []
-          []
-        , Discard (TreacheryTarget tid)
+        [ RevelationSkillTest iid source SkillWillpower 3 [] [] []
+        , Discard (TreacheryTarget treacheryId)
         ]
       RottingRemains <$> runMessage msg (attrs & resolved .~ True)
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget n

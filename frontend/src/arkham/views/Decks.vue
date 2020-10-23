@@ -78,20 +78,30 @@ export default defineComponent({
         return;
       }
 
-      const matches = deck.value.match(/\/(deck(?!list)?)(\/view)?\/([^/]+)/);
-      if (matches && matches[2]) {
-        deckUrl.value = `https://arkhamdb.com/api/public/${matches[1]}/${matches[3]}`
+      const matches = deck.value.match(/\/(deck(list)?)(\/view)?\/([^/]+)/);
+      if (matches) {
+        deckUrl.value = `https://arkhamdb.com/api/public/${matches[1]}/${matches[4]}`
         fetch(deckUrl.value)
-          .then((response) => response.json())
+          .then((response) => response.json(), () => {
+            investigator.value = null;
+            deckId.value = null
+            deckName.value = null
+            deckUrl.value = null;
+          })
           .then((data) => {
             if(data.meta && data.meta.alternate_front) {
               investigator.value = data.meta.alternate_front
             } else {
               investigator.value = data.investigator_code
             }
-            deckId.value = matches[3]
+            deckId.value = matches[4]
             deckName.value = data.name
           })
+      } else {
+        investigator.value = null;
+        deckId.value = null
+        deckName.value = null
+        deckUrl.value = null;
       }
     }
 

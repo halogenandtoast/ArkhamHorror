@@ -30,7 +30,7 @@ instance HasActions env MysteriousChanting where
 
 instance (TreacheryRunner env) => RunMessage env MysteriousChanting where
   runMessage msg (MysteriousChanting attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       lid <- asks (getId @LocationId iid)
       enemies <- map unClosestEnemyId . HashSet.toList <$> asks
         (getSet (lid, [Cultist]))

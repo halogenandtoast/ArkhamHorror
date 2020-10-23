@@ -28,11 +28,11 @@ instance HasActions env TheYellowSign where
 
 instance (TreacheryRunner env) => RunMessage env TheYellowSign where
   runMessage msg (TheYellowSign attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       unshiftMessage
         (BeginSkillTest
           iid
-          (TreacherySource treacheryId)
+          source
           (InvestigatorTarget iid)
           Nothing
           SkillWillpower

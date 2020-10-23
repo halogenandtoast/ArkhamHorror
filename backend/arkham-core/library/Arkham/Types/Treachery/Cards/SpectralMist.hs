@@ -39,7 +39,7 @@ instance ActionRunner env => HasActions env SpectralMist where
 
 instance (TreacheryRunner env) => RunMessage env SpectralMist where
   runMessage msg t@(SpectralMist attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       exemptLocations <- asks
         (getSet @LocationId (TreacheryCardCode $ CardCode "81025"))
       targetLocations <-
@@ -49,7 +49,9 @@ instance (TreacheryRunner env) => RunMessage env SpectralMist where
         then unshiftMessage (Discard (toTarget attrs))
         else unshiftMessage $ chooseOne
           iid
-          [ AttachTreachery tid (LocationTarget x) | x <- targetLocations ]
+          [ AttachTreachery treacheryId (LocationTarget x)
+          | x <- targetLocations
+          ]
       SpectralMist <$> runMessage msg attrs
     UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId -> do
       t <$ unshiftMessage

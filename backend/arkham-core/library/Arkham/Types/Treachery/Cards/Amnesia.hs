@@ -26,7 +26,7 @@ instance HasActions env Amnesia where
 
 instance (TreacheryRunner env) => RunMessage env Amnesia where
   runMessage msg (Amnesia attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       cardCount' <- unCardCount <$> asks (getCount iid)
       unshiftMessages $ replicate (cardCount' - 1) (ChooseAndDiscardCard iid)
       Amnesia <$> runMessage msg (attrs & resolved .~ True)

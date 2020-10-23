@@ -47,10 +47,10 @@ instance ActionRunner env => HasActions env CoverUp where
 
 instance (TreacheryRunner env) => RunMessage env CoverUp where
   runMessage msg t@(CoverUp attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       unshiftMessages
         [ RemoveCardFromHand iid "01007"
-        , AttachTreachery tid (InvestigatorTarget iid)
+        , AttachTreachery treacheryId (InvestigatorTarget iid)
         ]
       CoverUp <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     InvestigatorEliminated iid | ownedBy attrs iid -> do

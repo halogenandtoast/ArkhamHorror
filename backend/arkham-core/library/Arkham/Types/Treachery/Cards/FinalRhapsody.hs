@@ -1,20 +1,13 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Treachery.Cards.FinalRhapsody where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Helpers
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
 import Arkham.Types.RequestedTokenStrategy
-import Arkham.Types.Source
-import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
-import ClassyPrelude
-import Lens.Micro
 
 newtype FinalRhapsody = FinalRhapsody Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -30,20 +23,16 @@ instance HasActions env FinalRhapsody where
 
 instance (TreacheryRunner env) => RunMessage env FinalRhapsody where
   runMessage msg t@(FinalRhapsody attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
-      unshiftMessages [RequestTokens (TreacherySource tid) iid 5 SetAside]
+    Revelation iid source | isSource attrs source -> do
+      unshiftMessages [RequestTokens source iid 5 SetAside]
       FinalRhapsody <$> runMessage msg (attrs & resolved .~ False)
-    RequestedTokens (TreacherySource tid) iid tokens | tid == treacheryId -> do
+    RequestedTokens source iid tokens | isSource attrs source -> do
       let
         damageCount =
           count (\token -> token == Skull || token == AutoFail) tokens
       t <$ unshiftMessages
-        [ InvestigatorAssignDamage
-          iid
-          (TreacherySource treacheryId)
-          damageCount
-          damageCount
-        , ResetTokens (TreacherySource treacheryId)
+        [ InvestigatorAssignDamage iid source damageCount damageCount
+        , ResetTokens source
         , Discard (TreacheryTarget treacheryId)
         ]
     _ -> FinalRhapsody <$> runMessage msg attrs

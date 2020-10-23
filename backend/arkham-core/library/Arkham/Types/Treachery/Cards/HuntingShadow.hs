@@ -5,7 +5,6 @@ import Arkham.Json
 import Arkham.Types.Classes
 import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.Source
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 import Arkham.Types.TreacheryId
@@ -26,18 +25,15 @@ instance HasActions env HuntingShadow where
 
 instance (TreacheryRunner env) => RunMessage env HuntingShadow where
   runMessage msg (HuntingShadow attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
+    Revelation iid source | isSource attrs source -> do
       playerSpendableClueCount <- unSpendableClueCount <$> asks (getCount iid)
       if playerSpendableClueCount > 0
         then unshiftMessage
           (Ask iid $ ChooseOne
             [ Label "Spend 1 clue" [SpendClues 1 [iid]]
-            , Label
-              "Take 2 damage"
-              [InvestigatorAssignDamage iid (TreacherySource tid) 2 0]
+            , Label "Take 2 damage" [InvestigatorAssignDamage iid source 2 0]
             ]
           )
-        else unshiftMessage
-          (InvestigatorAssignDamage iid (TreacherySource tid) 2 0)
+        else unshiftMessage (InvestigatorAssignDamage iid source 2 0)
       HuntingShadow <$> runMessage msg (attrs & resolved .~ True)
     _ -> HuntingShadow <$> runMessage msg attrs

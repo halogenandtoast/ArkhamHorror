@@ -1186,11 +1186,16 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
           (mcard, deck') = drawCard (coerce investigatorDeck)
           handUpdate = maybe id ((:) . PlayerCard) mcard
         case mcard of
-          Just MkPlayerCard {..} -> do
+          Just card@MkPlayerCard {..} -> do
             when (pcCardType == PlayerTreacheryType)
               $ unshiftMessage (DrewPlayerTreachery iid pcCardCode pcId)
             when (pcCardType == PlayerEnemyType)
               $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
+            when (pcCardType /= PlayerTreacheryType && pcWeakness) $ void
+              (runMessage
+                (Revelation iid (PlayerCardSource $ getCardId card))
+                (toPlayerCardWithBehavior card)
+              )
           Nothing -> pure ()
         unshiftMessage (DrawCards iid (n - 1) False)
         pure $ a & hand %~ handUpdate & deck .~ Deck deck'

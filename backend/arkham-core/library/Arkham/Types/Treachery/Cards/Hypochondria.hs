@@ -36,8 +36,8 @@ instance ActionRunner env => HasActions env Hypochondria where
 
 instance (TreacheryRunner env) => RunMessage env Hypochondria where
   runMessage msg t@(Hypochondria attrs@Attrs {..}) = case msg of
-    Revelation iid tid | tid == treacheryId -> do
-      unshiftMessage $ AttachTreachery tid (InvestigatorTarget iid)
+    Revelation iid source | isSource attrs source -> do
+      unshiftMessage $ AttachTreachery treacheryId (InvestigatorTarget iid)
       Hypochondria <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     After (InvestigatorTakeDamage iid _ n _)
       | Just iid == treacheryAttachedInvestigator && n > 0

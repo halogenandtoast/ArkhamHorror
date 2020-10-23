@@ -1,15 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Treachery.Cards.AncientEvils where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Target
+import Arkham.Import
+
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
-import ClassyPrelude
-import Lens.Micro
 
 newtype AncientEvils = AncientEvils Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -25,11 +20,11 @@ instance HasActions env AncientEvils where
 
 instance (TreacheryRunner env) => RunMessage env AncientEvils where
   runMessage msg (AncientEvils attrs@Attrs {..}) = case msg of
-    Revelation _ tid | tid == treacheryId -> do
+    Revelation _ source | isSource attrs source -> do
       unshiftMessages
         [ PlaceDoomOnAgenda
         , AdvanceAgendaIfThresholdSatisfied
-        , Discard (TreacheryTarget tid)
+        , Discard (TreacheryTarget treacheryId)
         ]
       AncientEvils <$> runMessage msg (attrs & resolved .~ True)
     _ -> AncientEvils <$> runMessage msg attrs

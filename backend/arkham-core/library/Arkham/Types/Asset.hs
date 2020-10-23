@@ -93,6 +93,7 @@ data Asset
   | BearTrap' BearTrap
   | FishingNet' FishingNet
   | MonstrousTransformation' MonstrousTransformation
+  | TheNecronomiconAdvanced' TheNecronomiconAdvanced
   | BaseAsset' BaseAsset
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -231,6 +232,7 @@ allAssets = mapFromList
   , ("81020", BearTrap' . bearTrap)
   , ("81021", FishingNet' . fishingNet)
   , ("81030", MonstrousTransformation' . monstrousTransformation)
+  , ("90003", TheNecronomiconAdvanced' . theNecronomiconAdvanced)
   , ("00000", \aid -> baseAsset aid "00000" id)
   ]
 
@@ -322,4 +324,5 @@ assetAttrs = \case
   BearTrap' attrs -> coerce attrs
   FishingNet' attrs -> coerce attrs
   MonstrousTransformation' attrs -> coerce attrs
+  TheNecronomiconAdvanced' attrs -> coerce attrs
   BaseAsset' attrs -> coerce attrs

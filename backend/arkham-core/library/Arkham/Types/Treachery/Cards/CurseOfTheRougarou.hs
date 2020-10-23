@@ -32,8 +32,8 @@ instance HasActions env CurseOfTheRougarou where
 instance (TreacheryRunner env) => RunMessage env CurseOfTheRougarou where
   runMessage msg (CurseOfTheRougarou (attrs@Attrs {..} `With` metadata)) =
     case msg of
-      Revelation iid tid | tid == treacheryId -> do
-        unshiftMessage $ AttachTreachery tid (InvestigatorTarget iid)
+      Revelation iid source | isSource attrs source -> do
+        unshiftMessage $ AttachTreachery treacheryId (InvestigatorTarget iid)
         CurseOfTheRougarou . (`with` metadata) <$> runMessage
           msg
           (attrs & attachedInvestigator ?~ iid)

@@ -81,6 +81,10 @@ weaknessAttrs iid eid cardCode =
       , eventDoom = 0
       }
 
+isSource :: Attrs -> Source -> Bool
+isSource Attrs { eventId } (EventSource eid) = eventId == eid
+isSource _ _ = False
+
 instance HasActions env Attrs where
   getActions _ _ _ = pure []
 

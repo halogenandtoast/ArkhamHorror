@@ -78,6 +78,7 @@ data Asset
   | FireAxe' FireAxe
   | PeterSylvestre' PeterSylvestre
   | Bandolier' Bandolier
+  | OccultLexicon' OccultLexicon
   | ScrollOfProphecies' ScrollOfProphecies
   | PhysicalTraining2' PhysicalTraining2
   | Hyperawareness2' Hyperawareness2
@@ -215,6 +216,7 @@ allAssets = mapFromList
   , ("02032", FireAxe' . fireAxe)
   , ("02033", PeterSylvestre' . peterSylvestre)
   , ("02147", Bandolier' . bandolier)
+  , ("05316", OccultLexicon' . occultLexicon)
   , ("06116", ScrollOfProphecies' . scrollOfProphecies)
   , ("50001", PhysicalTraining2' . physicalTraining2)
   , ("50003", Hyperawareness2' . hyperawareness2)
@@ -304,6 +306,7 @@ assetAttrs = \case
   FireAxe' attrs -> coerce attrs
   PeterSylvestre' attrs -> coerce attrs
   Bandolier' attrs -> coerce attrs
+  OccultLexicon' attrs -> coerce attrs
   ScrollOfProphecies' attrs -> coerce attrs
   PhysicalTraining2' attrs -> coerce attrs
   Hyperawareness2' attrs -> coerce attrs

@@ -17,6 +17,7 @@ module Arkham.Types.Card
   , AttackOfOpportunityModifier(..)
   , allPlayerCards
   , lookupPlayerCard
+  , genPlayerCard
   , lookupEncounterCard
   , allEncounterCards
   , encounterCardMatch

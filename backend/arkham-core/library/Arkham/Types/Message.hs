@@ -97,6 +97,9 @@ data Message
   | SearchDeckForTraits InvestigatorId Target [Trait]
   | SearchTopOfDeck InvestigatorId Target Int [Trait] LeftoverCardStrategy
   | SearchDiscard InvestigatorId Target [Trait]
+  | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
+  | RemovedFromPlay Source
+  | RemoveFromGame Target
   | RemoveFromDiscard InvestigatorId CardId
   | InitDeck InvestigatorId [PlayerCard] -- used to initialize the deck for the campaign
   | LoadDeck InvestigatorId [PlayerCard] -- used to reset the deck of the investigator

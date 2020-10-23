@@ -211,8 +211,7 @@ getHandSize
      , HasModifiersFor env env
      , HasSource ForSkillTest env
      )
-  => Int
-  -> Attrs
+  => Attrs
   -> m Int
 getHandSize attrs = do
   source <- asks $ fromMaybe (toSource attrs) . getSource ForSkillTest
@@ -1051,6 +1050,17 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
             | aid' <- assetsThatCanProvideSlots
             ]
           )
+  RemoveAllCopiesOfCardFromGame iid cardCode | iid == investigatorId -> do
+    for_ investigatorAssets $ \assetId -> do
+      cardCode' <- asks $ getId @CardCode assetId
+      when
+        (cardCode == cardCode')
+        (unshiftMessage $ RemoveFromGame (AssetTarget assetId))
+    pure
+      $ a
+      & (deck %~ Deck . filter ((/= cardCode) . getCardCode) . unDeck)
+      & (discard %~ filter ((/= cardCode) . getCardCode))
+      & (hand %~ filter ((/= cardCode) . getCardCode))
   InvestigatorDamage iid _ health sanity | iid == investigatorId ->
     pure $ a & healthDamage +~ health & sanityDamage +~ sanity
   CheckDefeated -> if facingDefeat a

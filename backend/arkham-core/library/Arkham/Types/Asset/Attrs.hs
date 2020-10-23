@@ -140,13 +140,16 @@ instance (HasQueue env, HasModifiers env InvestigatorId) => RunMessage env Attrs
       LocationTarget lid -> pure $ a & location ?~ lid
       EnemyTarget eid -> pure $ a & enemy ?~ eid
       _ -> error "Cannot attach asset to that type"
+    RemoveFromGame target | target `is` a ->
+      a <$ unshiftMessage (RemovedFromPlay (AssetSource assetId))
     Discard target | target `is` a -> case assetInvestigator of
       Nothing -> pure a
-      Just iid -> a <$ unshiftMessage
-        (RemoveAllModifiersOnTargetFrom
+      Just iid -> a <$ unshiftMessages
+        [ RemoveAllModifiersOnTargetFrom
           (InvestigatorTarget iid)
           (AssetSource assetId)
-        )
+        , RemovedFromPlay (AssetSource assetId)
+        ]
     InvestigatorPlayAsset iid aid _ _ | aid == assetId ->
       pure $ a & investigator ?~ iid
     TakeControlOfAsset iid aid | aid == assetId ->

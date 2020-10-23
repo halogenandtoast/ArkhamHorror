@@ -365,6 +365,9 @@ instance HasId ActiveInvestigatorId () (Game queue) where
 instance HasId CardCode EnemyId (Game queue) where
   getId eid = getCardCode . getEnemy eid
 
+instance HasId CardCode AssetId (Game queue) where
+  getId aid = getCardCode . getAsset aid
+
 instance HasId (Maybe OwnerId) AssetId (Game queue) where
   getId aid = getId () . getAsset aid
 
@@ -1566,6 +1569,7 @@ runGameMessage msg g = case msg of
     let asset = getAsset aid g
     unshiftMessage (Discarded (AssetTarget aid) (getCardCode asset))
     pure $ g & assets %~ deleteMap aid
+  RemoveFromGame (AssetTarget aid) -> pure $ g & assets %~ deleteMap aid
   EnemyDefeated eid iid cardCode source -> do
     broadcastWindow Fast.WhenEnemyDefeated iid g
     g <$ unshiftMessages

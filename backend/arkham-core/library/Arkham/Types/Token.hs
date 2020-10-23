@@ -27,5 +27,6 @@ data Token
   | ElderThing
   | AutoFail
   | ElderSign
+  | CompositeToken [Token]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (Hashable, ToJSON, FromJSON)

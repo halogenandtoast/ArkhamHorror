@@ -59,7 +59,7 @@ instance HasQueue env => RunMessage env DefaultPlayerCard where
 instance HasActions env DefaultPlayerCard where
   getActions _ _ _ = pure []
 
-instance (HasSet HandCardId InvestigatorId env, HasQueue env) => RunMessage env TheNecronomicon where
+instance HasQueue env => RunMessage env TheNecronomicon where
   runMessage (Revelation iid (PlayerCardSource cid)) c@(TheNecronomicon pc)
     | getCardId pc == cid = c <$ unshiftMessage (PlayCard iid cid Nothing False)
   runMessage msg (TheNecronomicon pc) = do

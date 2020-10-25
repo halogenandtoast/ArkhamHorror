@@ -1,24 +1,18 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.WillToSurvive4 where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.Event.Attrs
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Lens.Micro
+import Arkham.Import
 
-import ClassyPrelude
+import Arkham.Types.Event.Attrs
 
 newtype WillToSurvive4 = WillToSurvive4 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 willToSurvive4 :: InvestigatorId -> EventId -> WillToSurvive4
 willToSurvive4 iid uuid = WillToSurvive4 $ baseAttrs iid uuid "01085"
+
+instance HasModifiersFor env WillToSurvive4 where
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env WillToSurvive4 where
   getActions i window (WillToSurvive4 attrs) = getActions i window attrs

@@ -10,7 +10,7 @@ import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import qualified Arkham.Types.Token as Token
-import Arkham.Types.Trait hiding (Trait(Expert))
+import Arkham.Types.Trait
 
 newtype TheGathering = TheGathering Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -21,6 +21,24 @@ theGathering = TheGathering . baseAttrs
   "The Gathering"
   ["01105", "01106", "01107"]
   ["01108", "01109", "01110"]
+
+instance (HasTokenValue env InvestigatorId, HasCount EnemyCount (InvestigatorLocation, [Trait]) env, HasQueue env) => HasTokenValue env TheGathering where
+  getTokenValue (TheGathering attrs) iid token = do
+    case drawnTokenFace token of
+      Token.Skull -> do
+        ghoulCount <- asks $ unEnemyCount . getCount
+          (InvestigatorLocation iid, [Ghoul])
+        pure $ TokenValue
+          token
+          (NegativeModifier $ if isEasyStandard attrs then ghoulCount else 2)
+      Token.Cultist -> pure $ TokenValue
+        token
+        (if isEasyStandard attrs then NegativeModifier 1 else NoModifier)
+      Token.Tablet -> do
+        pure $ TokenValue
+          token
+          (NegativeModifier $ if isEasyStandard attrs then 2 else 4)
+      _other -> getTokenValue attrs iid token
 
 instance (ScenarioRunner env) => RunMessage env TheGathering where
   runMessage msg s@(TheGathering attrs@Attrs {..}) = case msg of
@@ -64,37 +82,33 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
           ]
         ]
       TheGathering <$> runMessage msg attrs
-    ResolveToken Token.Skull iid -> if isEasyStandard attrs
-      then do
+    ResolveToken token iid -> case drawnTokenFace token of
+      Token.Skull -> pure s
+      Token.Cultist ->
+        s <$ when (isHardExpert attrs) (unshiftMessage $ DrawAnotherToken iid)
+      Token.Tablet -> do
         ghoulCount <- asks $ unEnemyCount . getCount
           (InvestigatorLocation iid, [Ghoul])
-        s <$ runTest iid (Token.TokenValue Token.Skull (-ghoulCount))
-      else s <$ runTest iid (Token.TokenValue Token.Skull (-2))
-    FailedSkillTest iid _ _ (TokenTarget Token.Skull) _ | isHardExpert attrs ->
-      do
-        s <$ unshiftMessage
-          (FindAndDrawEncounterCard iid (EnemyType, Just Ghoul))
-    ResolveToken Token.Cultist iid -> if isEasyStandard attrs
-      then s <$ runTest iid (Token.TokenValue Token.Cultist (-1))
-      else s <$ unshiftMessage (DrawAnotherToken iid 0)
-    FailedSkillTest iid _ _ (TokenTarget Token.Cultist) _ ->
-      if isEasyStandard attrs
-        then s <$ unshiftMessage
-          (InvestigatorAssignDamage iid (TokenSource Token.Cultist) 0 1)
-        else s <$ unshiftMessage
-          (InvestigatorAssignDamage iid (TokenSource Token.Cultist) 0 2)
-    ResolveToken Token.Tablet iid -> do
-      ghoulCount <- asks $ unEnemyCount . getCount
-        (InvestigatorLocation iid, [Ghoul])
-      if isEasyStandard attrs
-        then do
-          when (ghoulCount > 0) $ unshiftMessage
-            (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 0)
-          s <$ runTest iid (Token.TokenValue Token.Tablet (-2))
-        else do
-          when (ghoulCount > 0) $ unshiftMessage
-            (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 1)
-          s <$ runTest iid (Token.TokenValue Token.Tablet (-4))
+        s <$ when
+          (ghoulCount > 0)
+          (unshiftMessage $ InvestigatorAssignDamage
+            iid
+            (DrawnTokenSource token)
+            1
+            (if isEasyStandard attrs then 0 else 1)
+          )
+      _other -> TheGathering <$> runMessage msg attrs
+    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ -> do
+      case drawnTokenFace token of
+        Token.Skull | isHardExpert attrs ->
+          unshiftMessage $ FindAndDrawEncounterCard iid (EnemyType, Just Ghoul)
+        Token.Cultist -> unshiftMessage $ InvestigatorAssignDamage
+          iid
+          (DrawnTokenSource token)
+          0
+          (if isEasyStandard attrs then 1 else 2)
+        _ -> pure ()
+      pure s
     NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds

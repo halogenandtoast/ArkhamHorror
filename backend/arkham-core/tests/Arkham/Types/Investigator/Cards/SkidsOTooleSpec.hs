@@ -5,8 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Token
-
 spec :: Spec
 spec = describe "\"Skids\" O'Toole" $ do
   context "ability" $ do
@@ -33,11 +31,12 @@ spec = describe "\"Skids\" O'Toole" $ do
   context "elder sign" $ do
     it "gains 2 resources on success" $ do
       let skidsOToole = lookupInvestigator "01003"
+      scenario' <- testScenario "00000" id
       game <-
         runGameTest
           skidsOToole
           [SetTokens [ElderSign], beginSkillTest skidsOToole SkillAgility 4]
-          id
+          (scenario ?~ scenario')
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
       updatedResourceCount game skidsOToole `shouldBe` 2

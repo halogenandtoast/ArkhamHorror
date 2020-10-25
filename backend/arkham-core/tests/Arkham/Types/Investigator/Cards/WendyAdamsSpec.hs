@@ -5,8 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Token
-
 spec :: Spec
 spec = describe "Wendy Adams" $ do
   context "ability" $ do

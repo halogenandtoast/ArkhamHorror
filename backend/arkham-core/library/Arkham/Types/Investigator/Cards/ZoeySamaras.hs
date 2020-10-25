@@ -3,11 +3,9 @@ module Arkham.Types.Investigator.Cards.ZoeySamaras where
 
 import Arkham.Import
 
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype ZoeySamaras = ZoeySamaras Attrs
@@ -57,13 +55,20 @@ instance ActionRunner env => HasActions env ZoeySamaras where
 
   getActions i window (ZoeySamaras attrs) = getActions i window attrs
 
+instance InvestigatorRunner env => HasTokenValue env ZoeySamaras where
+  getTokenValue (ZoeySamaras attrs) iid token | iid == investigatorId attrs =
+    case drawnTokenFace token of
+      ElderSign -> pure $ TokenValue token (PositiveModifier 1)
+      _other -> getTokenValue attrs iid token
+  getTokenValue (ZoeySamaras attrs) iid token = getTokenValue attrs iid token
+
 instance (InvestigatorRunner env) => RunMessage env ZoeySamaras where
   runMessage msg i@(ZoeySamaras attrs@Attrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       i <$ unshiftMessage (TakeResources investigatorId 1 False)
-    ResolveToken ElderSign iid | iid == investigatorId -> do
-      runTest investigatorId (TokenValue ElderSign 1)
-      i <$ unshiftMessage
+    ResolveToken token iid
+      | iid == investigatorId && drawnTokenFace token == ElderSign
+      -> i <$ unshiftMessage
         (AddModifiers
           SkillTestTarget
           (InvestigatorSource investigatorId)

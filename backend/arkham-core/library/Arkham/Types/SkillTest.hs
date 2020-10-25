@@ -14,11 +14,11 @@ import Arkham.Types.Action (Action)
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.SkillTestResult
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.TokenResponse
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import qualified Data.List as L
+import Data.UUID.V4
 import System.Environment
 
 data SkillTest a = SkillTest
@@ -29,7 +29,7 @@ data SkillTest a = SkillTest
   , skillTestOnFailure       :: [a]
   , skillTestOnTokenResponses :: [TokenResponse a]
   , skillTestSetAsideTokens  :: [Token]
-  , skillTestRevealedTokens  :: [Token] -- tokens may change from physical representation
+  , skillTestRevealedTokens  :: [DrawnToken] -- tokens may change from physical representation
   , skillTestValueModifier :: Int
   , skillTestResult :: SkillTestResult
   , skillTestModifiers :: HashMap Source [Modifier]
@@ -125,7 +125,7 @@ setAsideTokens :: Lens' (SkillTest a) [Token]
 setAsideTokens =
   lens skillTestSetAsideTokens $ \m x -> m { skillTestSetAsideTokens = x }
 
-revealedTokens :: Lens' (SkillTest a) [Token]
+revealedTokens :: Lens' (SkillTest a) [DrawnToken]
 revealedTokens =
   lens skillTestRevealedTokens $ \m x -> m { skillTestRevealedTokens = x }
 
@@ -164,16 +164,6 @@ getModifiedSkillTestDifficulty s = do
   applyModifier (Difficulty m) n = max 0 (n + m)
   applyModifier _ n = n
 
-modifiedTokenValue :: Int -> SkillTest a -> Int
-modifiedTokenValue baseValue SkillTest {..} = foldr
-  applyModifier
-  baseValue
-  (concat . toList $ skillTestModifiers)
- where
-  applyModifier DoubleNegativeModifiersOnTokens n =
-    if baseValue < 0 then n + baseValue else n
-  applyModifier _ n = n
-
 type SkillTestRunner env
   = ( HasQueue env
     , HasCard InvestigatorId env
@@ -181,37 +171,77 @@ type SkillTestRunner env
     , HasStats (InvestigatorId, Maybe Action) env
     , HasSource ForSkillTest env
     , HasModifiersFor env env
+    , HasTokenValue env env
+    , HasId LocationId InvestigatorId env
+    , HasSet ConnectedLocationId LocationId env
+    , HasSet InvestigatorId () env
     )
 
-instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
+-- per the FAQ the double negative modifier ceases to be active
+-- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
+getModifiedTokenValue
+  :: ( MonadReader env m
+     , HasModifiersFor env env
+     , HasTokenValue env env
+     , MonadIO m
+     )
+  => SkillTest a
+  -> DrawnToken
+  -> m Int
+getModifiedTokenValue s t = do
+  env <- ask
+  tokenModifiers' <- getModifiersFor (toSource s) (DrawnTokenTarget t) =<< ask
+  baseTokenValue <- getTokenValue env (skillTestInvestigator s) t
+  let
+    updatedTokenValue =
+      tokenValue $ foldr applyModifier baseTokenValue tokenModifiers'
+  pure $ fromMaybe 0 updatedTokenValue
+ where
+  applyModifier (ChangeTokenModifier modifier') (TokenValue token _) =
+    TokenValue token modifier'
+  applyModifier NegativeToPositive (TokenValue token (NegativeModifier n)) =
+    TokenValue token (PositiveModifier n)
+  applyModifier NegativeToPositive (TokenValue token (DoubleNegativeModifier n))
+    = TokenValue token (PositiveModifier n)
+  applyModifier DoubleNegativeModifiersOnTokens (TokenValue token (NegativeModifier n))
+    = TokenValue token (DoubleNegativeModifier n)
+  applyModifier _ currentTokenValue = currentTokenValue
+
+
+instance SkillTestRunner env => RunMessage env (SkillTest Message) where
   runMessage msg s@SkillTest {..} = case msg of
     TriggerSkillTest iid -> do
       modifiers' <- getModifiers (toSource s) iid
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
         then s <$ unshiftMessages
-          [ RunSkillTestSourceNotification iid skillTestSource
-          , RunSkillTest iid []
-          ]
-        else s <$ unshiftMessage (RequestTokens (toSource s) iid 1 SetAside)
-    DrawAnotherToken iid valueModifier' -> do
-      unshiftMessage (RequestTokens (toSource s) iid 1 SetAside)
-      pure $ s & valueModifier +~ valueModifier'
-    RequestedTokens (SkillTestSource siid source maction) iid tokens -> do
+          [RunSkillTestSourceNotification iid skillTestSource, RunSkillTest iid]
+        else s <$ unshiftMessages
+          [RequestTokens (toSource s) iid 1 SetAside, RunSkillTest iid]
+    DrawAnotherToken iid -> s <$ unshiftMessages
+      [RequestTokens (toSource s) iid 1 SetAside, RunSkillTest iid]
+    RequestedTokens (SkillTestSource siid source maction) iid tokenFaces -> do
       unshiftMessage (RevealSkillTestTokens iid)
-      for_ tokens $ \token -> unshiftMessages
-        [ CheckWindow iid [WhenRevealToken You token]
-        , When (RevealToken (SkillTestSource siid source maction) iid token)
-        , RevealToken (SkillTestSource siid source maction) iid token
-        ]
-      pure $ s & (setAsideTokens %~ (tokens <>))
-    RevealToken SkillTestSource{} _iid token -> do
-      pure $ s & revealedTokens %~ (token :)
+      for_ tokenFaces $ \tokenFace -> do
+        checkWindowMsgs <- checkWindows
+          iid
+          (\who -> pure [WhenRevealToken who tokenFace])
+        unshiftMessages
+          $ checkWindowMsgs
+          <> [ When
+               (RevealToken (SkillTestSource siid source maction) iid tokenFace)
+             , RevealToken (SkillTestSource siid source maction) iid tokenFace
+             ]
+      pure $ s & (setAsideTokens %~ (tokenFaces <>))
+    RevealToken SkillTestSource{} _iid tokenFace -> do
+      token' <- flip DrawnToken tokenFace . TokenId <$> liftIO nextRandom
+      pure $ s & revealedTokens %~ (token' :)
     RevealSkillTestTokens iid -> do
+      let revealedTokenFaces = map drawnTokenFace skillTestRevealedTokens
       onTokenResponses' <-
         (catMaybes <$>) . for skillTestOnTokenResponses $ \case
           OnAnyToken tokens' messages
-            | not (null $ skillTestRevealedTokens `L.intersect` tokens')
-            -> Nothing <$ unshiftMessages messages
+            | not (null $ revealedTokenFaces `L.intersect` tokens') -> Nothing
+            <$ unshiftMessages messages
           response -> pure (Just response)
       unshiftMessages
         [ ResolveToken token iid | token <- skillTestRevealedTokens ]
@@ -219,10 +249,12 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
         $ s
         & (onTokenResponses .~ onTokenResponses')
         & (subscribers
-          %~ (<> [ TokenTarget token' | token' <- skillTestRevealedTokens ])
+          %~ (<> [ DrawnTokenTarget token'
+                 | token' <- skillTestRevealedTokens
+                 ]
+             )
           )
     AddSkillTestSubscriber target -> pure $ s & subscribers %~ (target :)
-    SetAsideToken token -> pure $ s & (setAsideTokens %~ (token :))
     PassSkillTest -> do
       stats <-
         getStats (skillTestInvestigator, skillTestAction) (toSource s) =<< ask
@@ -319,7 +351,7 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
                   | skillTestInvestigator == skillTestInvestigator' -> False
                 _ -> True
             in (queue', ())
-          unshiftMessage (RunSkillTest skillTestInvestigator [])
+          unshiftMessage $ RunSkillTest skillTestInvestigator
           pure $ s & modifiers %~ insertWith (<>) source modifiers'
     SkillTestApplyResultsAfter -> do -- ST.7 -- apply results
       unshiftMessage SkillTestEnds -- -> ST.8 -- Skill test ends
@@ -375,15 +407,15 @@ instance (SkillTestRunner env) => RunMessage env (SkillTest Message) where
           | target <- skillTestSubscribers
           ]
         Unrun -> pure ()
-    RunSkillTest _ tokenValues -> do
+    RunSkillTest _ -> do
+      tokenValues <- sum
+        <$> for skillTestRevealedTokens (getModifiedTokenValue s)
       stats <-
         getStats (skillTestInvestigator, skillTestAction) (toSource s) =<< ask
       modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
       let
         currentSkillValue = statsSkillValue stats skillTestSkillType
-        incomingTokenValues = sum $ map tokenValue tokenValues
-        totaledTokenValues =
-          modifiedTokenValue incomingTokenValues s + skillTestValueModifier
+        totaledTokenValues = tokenValues + skillTestValueModifier
         modifiedSkillValue' =
           max 0 (currentSkillValue + totaledTokenValues + skillIconCount s)
       unshiftMessage SkillTestResults

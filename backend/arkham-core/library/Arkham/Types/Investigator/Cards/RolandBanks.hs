@@ -7,11 +7,9 @@ where
 
 import Arkham.Import
 
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype RolandBanks = RolandBanks Attrs
@@ -51,12 +49,19 @@ instance ActionRunner env => HasActions env RolandBanks where
         ]
   getActions _ _ _ = pure []
 
-instance (InvestigatorRunner env) => RunMessage env RolandBanks where
+instance InvestigatorRunner env => HasTokenValue env RolandBanks where
+  getTokenValue (RolandBanks attrs) iid token | iid == investigatorId attrs =
+    case drawnTokenFace token of
+      ElderSign -> do
+        locationClueCount <- asks $ unClueCount . getCount
+          (investigatorLocation attrs)
+        pure $ TokenValue token (PositiveModifier locationClueCount)
+      _other -> getTokenValue attrs iid token
+  getTokenValue (RolandBanks attrs) iid token = getTokenValue attrs iid token
+
+instance InvestigatorRunner env => RunMessage env RolandBanks where
   runMessage msg rb@(RolandBanks attrs@Attrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       rb <$ unshiftMessage
         (DiscoverCluesAtLocation investigatorId investigatorLocation 1)
-    ResolveToken ElderSign iid | iid == investigatorId -> do
-      locationClueCount <- asks $ unClueCount . getCount investigatorLocation
-      rb <$ runTest investigatorId (TokenValue ElderSign locationClueCount)
     _ -> RolandBanks <$> runMessage msg attrs

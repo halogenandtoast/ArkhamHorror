@@ -7,11 +7,9 @@ where
 
 import Arkham.Import
 
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype DaisyWalkerParallel = DaisyWalkerParallel Attrs
@@ -48,6 +46,14 @@ ability attrs = (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow))
   { abilityLimit = PerGame
   }
 
+instance InvestigatorRunner env => HasTokenValue env DaisyWalkerParallel where
+  getTokenValue (DaisyWalkerParallel attrs) iid token
+    | iid == investigatorId attrs = case drawnTokenFace token of
+      ElderSign -> pure $ TokenValue token (PositiveModifier 0)
+      _other -> getTokenValue attrs iid token
+  getTokenValue (DaisyWalkerParallel attrs) iid token =
+    getTokenValue attrs iid token
+
 instance ActionRunner env => HasActions env DaisyWalkerParallel where
   getActions iid FastPlayerWindow (DaisyWalkerParallel attrs)
     | iid == investigatorId attrs = do
@@ -58,11 +64,6 @@ instance ActionRunner env => HasActions env DaisyWalkerParallel where
         $ [ uncurry ActivateCardAbilityAction ability' | unused ]
         <> baseActions
   getActions i window (DaisyWalkerParallel attrs) = getActions i window attrs
-
-becomesFailure :: Token -> Modifier -> Bool
-becomesFailure token (ForcedTokenChange fromToken AutoFail) =
-  token == fromToken
-becomesFailure _ _ = False
 
 instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
   runMessage msg i@(DaisyWalkerParallel attrs@Attrs {..}) = case msg of
@@ -76,20 +77,16 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
           (not . null)
           pairs'
         )
-    UseCardAbility iid (TokenSource ElderSign) _ 2 ->
+    UseCardAbility iid (TokenSource _) _ 2 ->
       i <$ unshiftMessage (SearchDiscard iid (InvestigatorTarget iid) [Tome])
-    ResolveToken ElderSign iid | iid == investigatorId ->
-      if any
-          (becomesFailure ElderSign)
-          (concat . toList $ investigatorModifiers)
-        then i <$ unshiftMessage (ResolveToken AutoFail iid)
-        else do
-          runTest investigatorId (TokenValue ElderSign 1)
-          i <$ unshiftMessage
-            (chooseOne
-              iid
-              [ UseCardAbility iid (TokenSource ElderSign) Nothing 2
-              , Continue "Do not use Daisy's ability"
-              ]
-            )
+    ResolveToken token iid | iid == investigatorId ->
+      case drawnTokenFace token of
+        ElderSign -> i <$ unshiftMessage
+          (chooseOne
+            iid
+            [ UseCardAbility iid (DrawnTokenSource token) Nothing 2
+            , Continue "Do not use Daisy's ability"
+            ]
+          )
+        _other -> DaisyWalkerParallel <$> runMessage msg attrs
     _ -> DaisyWalkerParallel <$> runMessage msg attrs

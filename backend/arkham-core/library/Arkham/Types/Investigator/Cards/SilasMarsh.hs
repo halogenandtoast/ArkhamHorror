@@ -1,16 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.SilasMarsh where
 
-import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
+import Arkham.Import
+
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
-import ClassyPrelude
-import Data.Aeson
 
 newtype SilasMarsh = SilasMarsh Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -38,6 +34,4 @@ instance ActionRunner env => HasActions env SilasMarsh where
   getActions i window (SilasMarsh attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env SilasMarsh where
-  runMessage msg i@(SilasMarsh attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId -> pure i
-    _ -> SilasMarsh <$> runMessage msg attrs
+  runMessage msg (SilasMarsh attrs) = SilasMarsh <$> runMessage msg attrs

@@ -5,8 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Token
-
 spec :: Spec
 spec = describe "\"Ashcan\" Pete" $ do
   it "starts with Duke in play" $ do
@@ -60,5 +58,4 @@ spec = describe "\"Ashcan\" Pete" $ do
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
       updated game duke `shouldSatisfy` isReady
-      game `shouldSatisfy` hasProcessedMessage
-        (RunSkillTest (getId () ashcanPete) [TokenValue ElderSign 2])
+      ashcanPete `shouldSatisfy` hasPassedSkillTestBy 2 game

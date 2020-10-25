@@ -1,16 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.FatherMateo where
 
-import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
+import Arkham.Import
+
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
-import ClassyPrelude
-import Data.Aeson
 
 newtype FatherMateo = FatherMateo Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -38,6 +34,4 @@ instance ActionRunner env => HasActions env FatherMateo where
   getActions i window (FatherMateo attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env FatherMateo where
-  runMessage msg i@(FatherMateo attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId -> pure i
-    _ -> FatherMateo <$> runMessage msg attrs
+  runMessage msg (FatherMateo attrs) = FatherMateo <$> runMessage msg attrs

@@ -209,7 +209,7 @@ shouldSpawnNonEliteAtConnectingInstead Attrs {..} =
     SpawnNonEliteAtConnectingInstead{} -> True
     _ -> False
 
-instance (LocationRunner env) => RunMessage env Attrs where
+instance LocationRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     Investigate iid lid source skillType modifiers' tokenResponses overrides False
       | lid == locationId
@@ -278,10 +278,18 @@ instance (LocationRunner env) => RunMessage env Attrs where
         else pure a
     DiscoverCluesAtLocation iid lid n | lid == locationId -> do
       let discoveredClues = min n locationClues
+      checkWindowMsgs <- checkWindows
+        iid
+        (\who -> pure $ case who of
+          You -> [WhenDiscoverClues You YourLocation]
+          InvestigatorAtYourLocation -> [WhenDiscoverClues who YourLocation]
+          InvestigatorAtAConnectedLocation ->
+            [WhenDiscoverClues who ConnectedLocation]
+          InvestigatorInGame -> [WhenDiscoverClues who LocationInGame]
+        )
+
       a <$ unshiftMessages
-        [ CheckWindow iid [WhenDiscoverClues You YourLocation]
-        , DiscoverClues iid lid discoveredClues
-        ]
+        (checkWindowMsgs <> [DiscoverClues iid lid discoveredClues])
     AfterDiscoverClues _ lid n | lid == locationId -> pure $ a & clues -~ n
     InvestigatorEliminated iid ->
       pure $ a & investigators %~ HashSet.delete iid

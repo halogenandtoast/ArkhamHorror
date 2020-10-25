@@ -40,7 +40,8 @@ data Target
   | SkillTarget SkillId
   | EnemyJustEvadedTarget
   | SkillTestInitiatorTarget
-  | TokenTarget Token
+  | TokenTarget TokenId
+  | DrawnTokenTarget DrawnToken
   | TestTarget
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

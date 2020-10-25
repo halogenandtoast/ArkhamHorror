@@ -7,11 +7,9 @@ where
 
 import Arkham.Import
 
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype SkidsOToole = SkidsOToole Attrs
@@ -50,13 +48,18 @@ instance ActionRunner env => HasActions env SkidsOToole where
         ]
   getActions _ _ _ = pure []
 
+instance InvestigatorRunner env => HasTokenValue env SkidsOToole where
+  getTokenValue (SkidsOToole attrs) iid token | iid == investigatorId attrs =
+    case drawnTokenFace token of
+      ElderSign -> pure $ TokenValue token (PositiveModifier 2)
+      _other -> getTokenValue attrs iid token
+  getTokenValue (SkidsOToole attrs) iid token = getTokenValue attrs iid token
+
 instance (InvestigatorRunner env) => RunMessage env SkidsOToole where
   runMessage msg i@(SkidsOToole attrs@Attrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
       pure . SkidsOToole $ attrs & resources -~ 2 & remainingActions +~ 1
-    ResolveToken ElderSign iid | iid == investigatorId -> do
-      i <$ runTest investigatorId (TokenValue ElderSign 2)
-    PassedSkillTest iid _ _ (TokenTarget ElderSign) _ | iid == investigatorId ->
-      do
-        i <$ unshiftMessage (TakeResources iid 2 False)
+    PassedSkillTest iid _ _ (DrawnTokenTarget token) _
+      | iid == investigatorId && drawnTokenFace token == ElderSign -> i
+      <$ unshiftMessage (TakeResources iid 2 False)
     _ -> SkidsOToole <$> runMessage msg attrs

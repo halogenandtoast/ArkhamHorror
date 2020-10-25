@@ -1,21 +1,20 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.JimCulver where
 
-import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
+import Arkham.Import
+
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
-import ClassyPrelude
-import Data.Aeson
 
 newtype JimCulver = JimCulver Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 instance HasModifiersFor env JimCulver where
+  getModifiersFor (SkillTestSource iid _ _) (DrawnTokenTarget token) (JimCulver attrs)
+    | iid == investigatorId attrs && drawnTokenFace token == Skull
+    = pure [ChangeTokenModifier $ PositiveModifier 0]
   getModifiersFor source target (JimCulver attrs) =
     getModifiersFor source target attrs
 
@@ -37,10 +36,15 @@ jimCulver = JimCulver $ baseAttrs
 instance ActionRunner env => HasActions env JimCulver where
   getActions i window (JimCulver attrs) = getActions i window attrs
 
-instance (InvestigatorRunner env) => RunMessage env JimCulver where
+instance InvestigatorRunner env => HasTokenValue env JimCulver where
+  getTokenValue (JimCulver attrs) iid token | iid == investigatorId attrs =
+    case drawnTokenFace token of
+      ElderSign -> pure $ TokenValue token (PositiveModifier 1)
+      _other -> getTokenValue attrs iid token
+  getTokenValue (JimCulver attrs) iid token = getTokenValue attrs iid token
+
+instance InvestigatorRunner env => RunMessage env JimCulver where
   runMessage msg i@(JimCulver attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId ->
-      i <$ runTest investigatorId (TokenValue ElderSign 1)
     When (RevealToken source iid ElderSign) | iid == investigatorId -> do
       Just RevealToken{} <- popMessage
       i <$ unshiftMessage
@@ -52,7 +56,4 @@ instance (InvestigatorRunner env) => RunMessage env JimCulver where
             ]
           )
         )
-    When (RunSkillTest iid [TokenValue Skull _]) | iid == investigatorId -> do
-      Just (RunSkillTest _ _) <- popMessage
-      i <$ unshiftMessage (RunSkillTest iid [TokenValue Skull 0])
     _ -> JimCulver <$> runMessage msg attrs

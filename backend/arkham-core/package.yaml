@@ -23,6 +23,7 @@ default-extensions:
 - StandaloneDeriving
 - DerivingVia
 - TypeFamilies
+- ScopedTypeVariables
 
 library:
   source-dirs: library

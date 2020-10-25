@@ -15,7 +15,6 @@ import qualified Arkham.Types.Asset.Attrs as Asset
 import Arkham.Types.Card.PlayerCard (basePlayerCard)
 import Arkham.Types.ChaosBag as X
 import qualified Arkham.Types.ChaosBag as ChaosBag
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Difficulty
 import Arkham.Types.Enemy as X
 import qualified Arkham.Types.Enemy.Attrs as Enemy
@@ -32,7 +31,6 @@ import Arkham.Types.Scenario as X
 import qualified Arkham.Types.Scenario.Attrs as ScenarioAttrs
 import Arkham.Types.ScenarioId as X
 import Arkham.Types.Stats as X
-import Arkham.Types.Token
 import Control.Monad.Fail as X
 import Control.Monad.State hiding (replicateM)
 import Control.Monad.State as X (get)

@@ -1,16 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.TommyMuldoon where
 
-import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
+import Arkham.Import
+
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
-import ClassyPrelude
-import Data.Aeson
 
 newtype TommyMuldoon = TommyMuldoon Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -38,6 +34,4 @@ instance ActionRunner env => HasActions env TommyMuldoon where
   getActions i window (TommyMuldoon attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env TommyMuldoon where
-  runMessage msg i@(TommyMuldoon attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId -> pure i
-    _ -> TommyMuldoon <$> runMessage msg attrs
+  runMessage msg (TommyMuldoon attrs) = TommyMuldoon <$> runMessage msg attrs

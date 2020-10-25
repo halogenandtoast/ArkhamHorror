@@ -9,7 +9,6 @@ import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Token
 
 newtype JimsTrumpet = JimsTrumpet Attrs
   deriving stock (Show, Generic)

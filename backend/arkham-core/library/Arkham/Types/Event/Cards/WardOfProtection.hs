@@ -1,24 +1,19 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.WardOfProtection where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Lens.Micro
-
-import ClassyPrelude
 
 newtype WardOfProtection = WardOfProtection Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 wardOfProtection :: InvestigatorId -> EventId -> WardOfProtection
 wardOfProtection iid uuid = WardOfProtection $ baseAttrs iid uuid "01065"
+
+instance HasModifiersFor env WardOfProtection where
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env WardOfProtection where
   getActions i window (WardOfProtection attrs) = getActions i window attrs

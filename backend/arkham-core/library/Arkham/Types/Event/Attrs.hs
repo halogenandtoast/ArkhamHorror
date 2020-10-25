@@ -17,6 +17,7 @@ data Attrs = Attrs
   , eventWeakness :: Bool
   , eventResolved :: Bool -- should this be discarded
   , eventDoom :: Int
+  , eventModifiersFor :: HashMap Target [Modifier]
   }
   deriving stock (Show, Generic)
 
@@ -29,6 +30,9 @@ instance FromJSON Attrs where
 
 instance HasId EventId () Attrs where
   getId _ Attrs {..} = eventId
+
+modifiersFor :: Lens' Attrs (HashMap Target [Modifier])
+modifiersFor = lens eventModifiersFor $ \m x -> m { eventModifiersFor = x }
 
 resolved :: Lens' Attrs Bool
 resolved = lens eventResolved $ \m x -> m { eventResolved = x }
@@ -57,6 +61,7 @@ baseAttrs iid eid cardCode =
       , eventResolved = False
       , eventOwner = iid
       , eventDoom = 0
+      , eventModifiersFor = mempty
       }
 
 weaknessAttrs :: InvestigatorId -> EventId -> CardCode -> Attrs
@@ -79,6 +84,7 @@ weaknessAttrs iid eid cardCode =
       , eventWeakness = True
       , eventResolved = False
       , eventDoom = 0
+      , eventModifiersFor = mempty
       }
 
 isSource :: Attrs -> Source -> Bool

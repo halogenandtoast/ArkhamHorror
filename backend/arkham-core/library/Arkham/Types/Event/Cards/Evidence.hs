@@ -1,25 +1,19 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.Evidence where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.Target
-import Lens.Micro
-
-import ClassyPrelude
 
 newtype Evidence = Evidence Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 evidence :: InvestigatorId -> EventId -> Evidence
 evidence iid uuid = Evidence $ baseAttrs iid uuid "01022"
+
+instance HasModifiersFor env Evidence where
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env Evidence where
   getActions i window (Evidence attrs) = getActions i window attrs

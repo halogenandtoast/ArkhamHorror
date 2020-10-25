@@ -1,16 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.NathanielCho where
 
-import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
+import Arkham.Import
+
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
-import ClassyPrelude
-import Data.Aeson
 
 newtype NathanielCho = NathanielCho Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -38,6 +34,4 @@ instance ActionRunner env => HasActions env NathanielCho where
   getActions i window (NathanielCho attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env NathanielCho where
-  runMessage msg i@(NathanielCho attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId -> pure i
-    _ -> NathanielCho <$> runMessage msg attrs
+  runMessage msg (NathanielCho attrs) = NathanielCho <$> runMessage msg attrs

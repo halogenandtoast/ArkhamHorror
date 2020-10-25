@@ -40,22 +40,26 @@ instance (TreacheryRunner env) => RunMessage env RexsCurse where
             }
         usedAbilities <- map unUsedAbility <$> asks (getList ())
         when ((iid, ability) `notElem` usedAbilities) $ do
-          withQueue $ \queue ->
+          retainedMessages <- withQueue $ \queue ->
             let
-              (before, after) = flip break queue $ \case
+              (remainingWillPass, queue') = flip span queue $ \case
+                Will PassedSkillTest{} -> True
+                _ -> False
+              (before, after) = flip break queue' $ \case
                 Ask iid' (ChooseOne [SkillTestApplyResults]) | iid == iid' ->
                   True
                 _ -> False
               remaining = case after of
                 [] -> []
                 (_ : xs) -> xs
-            in (before <> remaining, ())
+            in (before <> remaining, remainingWillPass)
           unshiftMessages
-            [ ActivateCardAbilityAction iid ability
-            , ReturnSkillTestRevealedTokens
-            , AddSkillTestSubscriber (TreacheryTarget treacheryId)
-            , DrawAnotherToken iid 0
-            ]
+            $ retainedMessages
+            <> [ ActivateCardAbilityAction iid ability
+               , ReturnSkillTestRevealedTokens
+               , AddSkillTestSubscriber (TreacheryTarget treacheryId)
+               , DrawAnotherToken iid
+               ]
         pure t
     FailedSkillTest iid _ _ (TreacheryTarget tid) _ | tid == treacheryId -> do
       t <$ unshiftMessage (ShuffleIntoDeck iid (TreacheryTarget treacheryId))

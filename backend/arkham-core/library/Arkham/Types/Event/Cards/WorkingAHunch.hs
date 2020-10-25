@@ -1,25 +1,19 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.WorkingAHunch where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.Target
-import Lens.Micro
-
-import ClassyPrelude
 
 newtype WorkingAHunch = WorkingAHunch Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 workingAHunch :: InvestigatorId -> EventId -> WorkingAHunch
 workingAHunch iid uuid = WorkingAHunch $ baseAttrs iid uuid "01037"
+
+instance HasModifiersFor env WorkingAHunch where
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env WorkingAHunch where
   getActions i window (WorkingAHunch attrs) = getActions i window attrs

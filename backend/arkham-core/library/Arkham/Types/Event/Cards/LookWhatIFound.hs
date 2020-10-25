@@ -1,23 +1,19 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.LookWhatIFound where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Target
-import Lens.Micro
-
-import ClassyPrelude
 
 newtype LookWhatIFound = LookWhatIFound Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 lookWhatIFound :: InvestigatorId -> EventId -> LookWhatIFound
 lookWhatIFound iid uuid = LookWhatIFound $ baseAttrs iid uuid "01079"
+
+instance HasModifiersFor env LookWhatIFound where
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env LookWhatIFound where
   getActions i window (LookWhatIFound attrs) = getActions i window attrs

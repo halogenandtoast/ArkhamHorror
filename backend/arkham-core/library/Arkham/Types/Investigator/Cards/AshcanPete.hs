@@ -1,24 +1,13 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.AshcanPete where
 
-import Arkham.Types.Ability
-import Arkham.Types.AssetId
-import Arkham.Types.Card
-import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
+import Arkham.Import
+
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Stats
-import Arkham.Types.Target
-import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
-import ClassyPrelude
-import Data.Aeson
-import Lens.Micro
 
 newtype AshcanPete = AshcanPete Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -66,11 +55,18 @@ instance ActionRunner env => HasActions env AshcanPete where
         ]
   getActions i window (AshcanPete attrs) = getActions i window attrs
 
+instance InvestigatorRunner env => HasTokenValue env AshcanPete where
+  getTokenValue (AshcanPete attrs) iid token | iid == investigatorId attrs =
+    case drawnTokenFace token of
+      ElderSign -> pure $ TokenValue token (PositiveModifier 2)
+      _other -> getTokenValue attrs iid token
+  getTokenValue (AshcanPete attrs) iid token = getTokenValue attrs iid token
+
 instance (InvestigatorRunner env) => RunMessage env AshcanPete where
   runMessage msg i@(AshcanPete attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId -> do
-      unshiftMessage (Ready (CardCodeTarget "02014"))
-      i <$ runTest investigatorId (TokenValue ElderSign 2)
+    ResolveToken token iid | iid == investigatorId -> i <$ when
+      (ElderSign == drawnTokenFace token)
+      (unshiftMessage $ Ready (CardCodeTarget "02014"))
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
       exhaustedAssetIds <- map unExhaustedAssetId . setToList <$> asks
         (getSet investigatorId)

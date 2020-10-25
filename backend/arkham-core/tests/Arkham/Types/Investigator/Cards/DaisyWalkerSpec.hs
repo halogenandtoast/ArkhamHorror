@@ -6,7 +6,6 @@ where
 import TestImport
 
 import Arkham.Types.Asset.Attrs (Attrs(..))
-import Arkham.Types.Token
 import Arkham.Types.Trait
 
 spec :: Spec

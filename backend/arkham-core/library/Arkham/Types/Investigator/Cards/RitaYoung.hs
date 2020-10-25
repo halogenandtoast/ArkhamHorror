@@ -1,16 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.RitaYoung where
 
-import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
+import Arkham.Import
+
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
-import ClassyPrelude
-import Data.Aeson
 
 newtype RitaYoung = RitaYoung Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -38,6 +34,4 @@ instance ActionRunner env => HasActions env RitaYoung where
   getActions i window (RitaYoung attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env RitaYoung where
-  runMessage msg i@(RitaYoung attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId -> pure i
-    _ -> RitaYoung <$> runMessage msg attrs
+  runMessage msg (RitaYoung attrs) = RitaYoung <$> runMessage msg attrs

@@ -1,16 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.LolaHayes where
 
-import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
+import Arkham.Import
+
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
-import ClassyPrelude
-import Data.Aeson
 
 newtype LolaHayes = LolaHayes Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -38,6 +34,4 @@ instance ActionRunner env => HasActions env LolaHayes where
   getActions i window (LolaHayes attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env LolaHayes where
-  runMessage msg i@(LolaHayes attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId -> pure i
-    _ -> LolaHayes <$> runMessage msg attrs
+  runMessage msg (LolaHayes attrs) = LolaHayes <$> runMessage msg attrs

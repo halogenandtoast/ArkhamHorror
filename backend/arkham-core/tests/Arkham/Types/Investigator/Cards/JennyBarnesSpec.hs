@@ -5,8 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Token
-
 spec :: Spec
 spec = describe "Jenny Barnes" $ do
   context "ability" $ do
@@ -18,11 +16,13 @@ spec = describe "Jenny Barnes" $ do
     it "modifier is number of resources" $ do
       let jennyBarnes = lookupInvestigator "02003"
       scenario' <- testScenario "00000" id
+      elderSign <- flip DrawnToken ElderSign . TokenId <$> liftIO nextRandom
       game <- runGameTest
         jennyBarnes
-        [ TakeResources (getId () jennyBarnes) 5 False
-        , ResolveToken ElderSign (getId () jennyBarnes)
-        ]
+        [TakeResources (getId () jennyBarnes) 5 False]
         (scenario ?~ scenario')
-      game `shouldSatisfy` hasProcessedMessage
-        (RunSkillTest (getId () jennyBarnes) [TokenValue ElderSign 5])
+      token <- withGame game $ getTokenValue
+        (updated game jennyBarnes)
+        (getId () jennyBarnes)
+        elderSign
+      tokenValue token `shouldBe` Just 5

@@ -7,11 +7,9 @@ where
 
 import Arkham.Import
 
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
 
 newtype DaisyWalker = DaisyWalker Attrs
@@ -36,15 +34,17 @@ daisyWalker =
     , agility = 2
     }
 
-becomesFailure :: Token -> Modifier -> Bool
-becomesFailure token (ForcedTokenChange fromToken AutoFail) =
-  token == fromToken
-becomesFailure _ _ = False
-
 instance ActionRunner env => HasActions env DaisyWalker where
   getActions i window (DaisyWalker attrs) = getActions i window attrs
 
-instance (InvestigatorRunner env) => RunMessage env DaisyWalker where
+instance InvestigatorRunner env => HasTokenValue env DaisyWalker where
+  getTokenValue (DaisyWalker attrs) iid token | iid == investigatorId attrs =
+    case drawnTokenFace token of
+      ElderSign -> pure $ TokenValue token (PositiveModifier 0)
+      _other -> getTokenValue attrs iid token
+  getTokenValue (DaisyWalker attrs) iid token = getTokenValue attrs iid token
+
+instance InvestigatorRunner env => RunMessage env DaisyWalker where
   runMessage msg i@(DaisyWalker attrs@Attrs {..}) = case msg of
     ResetGame -> do
       attrs' <- runMessage msg attrs
@@ -76,24 +76,21 @@ instance (InvestigatorRunner env) => RunMessage env DaisyWalker where
               else DaisyWalker <$> runMessage msg attrs
         else
           DaisyWalker <$> runMessage msg attrs
-    ResolveToken ElderSign iid | iid == investigatorId ->
-      if any
-          (becomesFailure ElderSign)
-          (concat . toList $ investigatorModifiers)
-        then i <$ unshiftMessage (ResolveToken AutoFail iid)
-        else do
-          i <$ runTest investigatorId (TokenValue ElderSign 0)
-    PassedSkillTest iid _ _ (TokenTarget ElderSign) _ | iid == investigatorId ->
-      do
-        tomeCount <- asks $ unAssetCount . getCount (iid, [Tome])
-        when (tomeCount > 0) $ unshiftMessage
-          (Ask iid
-          $ ChooseOne
-              [ DrawCards iid tomeCount False
-              , Continue "Do not use Daisy's ability"
-              ]
-          )
-        pure i
+    PassedSkillTest iid _ _ (DrawnTokenTarget token) _
+      | iid == investigatorId -> case drawnTokenFace token of
+        ElderSign -> do
+          tomeCount <- asks $ unAssetCount . getCount (iid, [Tome])
+          i <$ when
+            (tomeCount > 0)
+            (unshiftMessage $ Ask
+              iid
+              (ChooseOne
+                [ DrawCards iid tomeCount False
+                , Continue "Do not use Daisy's ability"
+                ]
+              )
+            )
+        _ -> pure i
     BeginRound -> DaisyWalker
       <$> runMessage msg (attrs { investigatorTomeActions = Just 1 })
     _ -> DaisyWalker <$> runMessage msg attrs

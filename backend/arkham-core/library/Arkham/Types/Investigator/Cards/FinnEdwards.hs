@@ -1,16 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.FinnEdwards where
 
-import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
+import Arkham.Import
+
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
-import ClassyPrelude
-import Data.Aeson
 
 newtype FinnEdwards = FinnEdwards Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -38,6 +34,4 @@ instance ActionRunner env => HasActions env FinnEdwards where
   getActions i window (FinnEdwards attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env FinnEdwards where
-  runMessage msg i@(FinnEdwards attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId -> pure i
-    _ -> FinnEdwards <$> runMessage msg attrs
+  runMessage msg (FinnEdwards attrs) = FinnEdwards <$> runMessage msg attrs

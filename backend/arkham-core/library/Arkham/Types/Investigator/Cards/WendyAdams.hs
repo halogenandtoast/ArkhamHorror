@@ -1,21 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.WendyAdams where
 
-import Arkham.Types.Ability
-import Arkham.Types.AssetId
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
+import Arkham.Import
+
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
-import Arkham.Types.Source
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
-import ClassyPrelude
-import Data.Aeson
 
 newtype WendyAdams = WendyAdams Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -38,6 +29,13 @@ wendyAdams = WendyAdams $ baseAttrs
     , agility = 4
     }
   [Drifter]
+
+instance InvestigatorRunner env => HasTokenValue env WendyAdams where
+  getTokenValue (WendyAdams attrs) iid token | iid == investigatorId attrs =
+    case drawnTokenFace token of
+      ElderSign -> pure $ TokenValue token (PositiveModifier 0)
+      _other -> getTokenValue attrs iid token
+  getTokenValue (WendyAdams attrs) iid token = getTokenValue attrs iid token
 
 instance ActionRunner env => HasActions env WendyAdams where
   getActions iid (WhenRevealToken You token) (WendyAdams attrs@Attrs {..})
@@ -77,7 +75,7 @@ instance (InvestigatorRunner env) => RunMessage env WendyAdams where
             , CancelNext RevealTokenMessage
             , ReturnTokens [token]
             , UnfocusTokens
-            , DrawAnotherToken iid 0
+            , DrawAnotherToken iid
             ]
         _ -> error "we expect resolve token to be on the stack"
     When (DrawToken iid token) | iid == investigatorId -> i <$ unshiftMessages
@@ -85,9 +83,8 @@ instance (InvestigatorRunner env) => RunMessage env WendyAdams where
       , CheckWindow investigatorId [WhenDrawToken You token]
       , UnfocusTokens
       ]
-    ResolveToken ElderSign iid | iid == investigatorId -> do
-      maid <- asks (getId @(Maybe AssetId) (CardCode "01014"))
-      case maid of
-        Nothing -> i <$ runTest investigatorId (TokenValue ElderSign 0)
-        Just _ -> i <$ unshiftMessage PassSkillTest
+    ResolveToken token iid
+      | iid == investigatorId && drawnTokenFace token == ElderSign -> do
+        maid <- asks (getId @(Maybe AssetId) (CardCode "01014"))
+        i <$ when (isJust maid) (unshiftMessage PassSkillTest)
     _ -> WendyAdams <$> runMessage msg attrs

@@ -1,16 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.MarieLambeau where
 
-import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
+import Arkham.Import
+
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
-import ClassyPrelude
-import Data.Aeson
 
 newtype MarieLambeau = MarieLambeau Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -38,6 +34,4 @@ instance ActionRunner env => HasActions env MarieLambeau where
   getActions i window (MarieLambeau attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env MarieLambeau where
-  runMessage msg i@(MarieLambeau attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId -> pure i
-    _ -> MarieLambeau <$> runMessage msg attrs
+  runMessage msg (MarieLambeau attrs) = MarieLambeau <$> runMessage msg attrs

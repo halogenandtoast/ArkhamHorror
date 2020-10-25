@@ -5,7 +5,6 @@ import Arkham.Import
 
 import Arkham.Types.Helpers
 import Arkham.Types.RequestedTokenStrategy
-import Arkham.Types.Token
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
@@ -26,10 +25,8 @@ instance (TreacheryRunner env) => RunMessage env FinalRhapsody where
     Revelation iid source | isSource attrs source -> do
       unshiftMessages [RequestTokens source iid 5 SetAside]
       FinalRhapsody <$> runMessage msg (attrs & resolved .~ False)
-    RequestedTokens source iid tokens | isSource attrs source -> do
-      let
-        damageCount =
-          count (\token -> token == Skull || token == AutoFail) tokens
+    RequestedTokens source iid faces | isSource attrs source -> do
+      let damageCount = count (`elem` [Skull, AutoFail]) faces
       t <$ unshiftMessages
         [ InvestigatorAssignDamage iid source damageCount damageCount
         , ResetTokens source

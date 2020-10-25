@@ -26,9 +26,9 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
-import Arkham.Types.Token (Token, TokenValue(..))
+import Arkham.Types.Token (DrawnToken, Token, TokenValue(..))
 import Arkham.Types.Trait
-import Arkham.Types.Window (Window)
+import Arkham.Types.Window (Who, Window)
 import qualified Arkham.Types.Window as Window
 import ClassyPrelude
 import Control.Monad.Fail
@@ -70,6 +70,32 @@ defaultRunMessage
   -> a
   -> m a
 defaultRunMessage msg = fmap to . runMessage1 msg . from
+
+class (HasQueue env) => HasTokenValue1 env f where
+  getTokenValue1 :: (MonadIO m, MonadReader env m) => f p -> InvestigatorId -> DrawnToken -> m TokenValue
+
+instance (HasQueue env, HasTokenValue1 env f) => HasTokenValue1 env (M1 i c f) where
+  getTokenValue1 (M1 x) iid token = getTokenValue1 x iid token
+
+instance (HasQueue env, HasTokenValue1 env l, HasTokenValue1 env r) => HasTokenValue1 env (l :+: r) where
+  getTokenValue1 (L1 x) iid token = getTokenValue1 x iid token
+  getTokenValue1 (R1 x) iid token = getTokenValue1 x iid token
+
+instance (HasQueue env, HasTokenValue env p) => HasTokenValue1 env (K1 R p) where
+  getTokenValue1 (K1 x) iid token = getTokenValue x iid token
+
+class (HasQueue env) => HasTokenValue env a where
+  getTokenValue :: (MonadIO m, MonadReader env m) => a -> InvestigatorId -> DrawnToken -> m TokenValue
+  default getTokenValue :: (Generic a, HasTokenValue1 env (Rep a), MonadIO m, MonadReader env m) => a -> InvestigatorId -> DrawnToken -> m TokenValue
+  getTokenValue = defaultGetTokenValue
+
+defaultGetTokenValue
+  :: (Generic a, HasTokenValue1 env (Rep a), MonadIO m, MonadReader env m)
+  => a
+  -> InvestigatorId
+  -> DrawnToken
+  -> m TokenValue
+defaultGetTokenValue a iid token = getTokenValue1 (from a) iid token
 
 withQueue
   :: (MonadIO m, MonadReader env m, HasQueue env)
@@ -134,45 +160,18 @@ pairInvestigatorIdsForWindow iid = do
           then (iid2, Window.InvestigatorAtAConnectedLocation)
           else (iid2, Window.InvestigatorInGame)
 
-runTest
-  :: ( HasQueue env
-     , MonadReader env m
-     , MonadIO m
+checkWindows
+  :: ( MonadReader env m
      , HasSet InvestigatorId () env
      , HasSet ConnectedLocationId LocationId env
      , HasId LocationId InvestigatorId env
-     , HasSource ForSkillTest env
      )
   => InvestigatorId
-  -> TokenValue
-  -> m ()
-runTest iid tokenValue'@(TokenValue token value) = do
+  -> (Who -> m [Window])
+  -> m [Message]
+checkWindows iid f = do
   windowPairings <- pairInvestigatorIdsForWindow iid
-  testSource <-
-    asks $ fromMaybe (error "missing source") . getSource ForSkillTest
-  if value < 0
-    then unshiftMessages
-      ([ CheckWindow
-           iid'
-           [ Window.WhenRevealTokenWithNegativeModifier who
-           , Window.WhenRevealToken who token
-           ]
-       | (iid', who) <- windowPairings
-       ]
-      <> [ RunSkillTestSourceNotification iid testSource
-         , When (RunSkillTest iid [tokenValue'])
-         , RunSkillTest iid [tokenValue']
-         ]
-      )
-    else unshiftMessages
-      ([ CheckWindow iid' [Window.WhenRevealToken who token]
-       | (iid', who) <- windowPairings
-       ]
-      <> [ RunSkillTestSourceNotification iid testSource
-         , When (RunSkillTest iid [tokenValue'])
-         , RunSkillTest iid [tokenValue']
-         ]
-      )
+  sequence [ CheckWindow iid' <$> f who | (iid', who) <- windowPairings ]
 
 class HasModifiers1 env f where
   getModifiers1 :: (MonadIO m, MonadReader env m) => Source -> f p -> m [Modifier]

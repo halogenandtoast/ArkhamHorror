@@ -1,25 +1,19 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.Barricade where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import Arkham.Types.Source
-import Arkham.Types.Target
-import ClassyPrelude
-import Lens.Micro
-import Safe (fromJustNote)
 
 newtype Barricade = Barricade Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 barricade :: InvestigatorId -> EventId -> Barricade
 barricade iid uuid = Barricade $ baseAttrs iid uuid "01038"
+
+instance HasModifiersFor env Barricade where
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env Barricade where
   getActions i window (Barricade attrs) = getActions i window attrs

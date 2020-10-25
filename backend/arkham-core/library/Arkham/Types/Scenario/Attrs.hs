@@ -15,7 +15,7 @@ import Arkham.Types.Message
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.ScenarioId
 import Arkham.Types.Target
-import qualified Arkham.Types.Token as Token
+import Arkham.Types.Token
 import qualified Data.HashSet as HashSet
 import Lens.Micro
 
@@ -68,6 +68,23 @@ baseAttrs cardCode name agendaStack actStack' difficulty = Attrs
   , scenarioLog = mempty
   }
 
+instance (HasTokenValue env InvestigatorId, HasQueue env) => HasTokenValue env Attrs where
+  getTokenValue _ iid token = do
+    case drawnTokenFace token of
+      ElderSign -> getTokenValue iid iid token
+      AutoFail -> pure $ TokenValue token AutoFailModifier
+      PlusOne -> pure $ TokenValue token (PositiveModifier 1)
+      Zero -> pure $ TokenValue token (PositiveModifier 0)
+      MinusOne -> pure $ TokenValue token (NegativeModifier 1)
+      MinusTwo -> pure $ TokenValue token (NegativeModifier 2)
+      MinusThree -> pure $ TokenValue token (NegativeModifier 3)
+      MinusFour -> pure $ TokenValue token (NegativeModifier 4)
+      MinusFive -> pure $ TokenValue token (NegativeModifier 5)
+      MinusSix -> pure $ TokenValue token (NegativeModifier 6)
+      MinusSeven -> pure $ TokenValue token (NegativeModifier 7)
+      MinusEight -> pure $ TokenValue token (NegativeModifier 8)
+      _ -> pure $ TokenValue token NoModifier
+
 instance (ScenarioRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     Setup -> a <$ pushMessage BeginInvestigation
@@ -90,6 +107,8 @@ instance (ScenarioRunner env) => RunMessage env Attrs where
       a <$ unshiftMessage (InvestigatorEliminated iid)
     Remember logKey -> do
       pure $ a & log %~ insertSet logKey
+    ResolveToken token _iid | drawnTokenFace token == AutoFail ->
+      a <$ unshiftMessage FailSkillTest
     NoResolution ->
       error "The scenario should specify what to do for no resolution"
     Resolution _ ->
@@ -97,25 +116,4 @@ instance (ScenarioRunner env) => RunMessage env Attrs where
     UseScenarioSpecificAbility{} ->
       error
         "The scenario should specify what to do for a scenario specific ability."
-    ResolveToken Token.PlusOne iid ->
-      a <$ runTest iid (Token.TokenValue Token.PlusOne 1)
-    ResolveToken Token.Zero iid ->
-      a <$ runTest iid (Token.TokenValue Token.Zero 0)
-    ResolveToken Token.MinusOne iid ->
-      a <$ runTest iid (Token.TokenValue Token.MinusOne (-1))
-    ResolveToken Token.MinusTwo iid ->
-      a <$ runTest iid (Token.TokenValue Token.MinusTwo (-2))
-    ResolveToken Token.MinusThree iid ->
-      a <$ runTest iid (Token.TokenValue Token.MinusThree (-3))
-    ResolveToken Token.MinusFour iid ->
-      a <$ runTest iid (Token.TokenValue Token.MinusFour (-4))
-    ResolveToken Token.MinusFive iid ->
-      a <$ runTest iid (Token.TokenValue Token.MinusFive (-5))
-    ResolveToken Token.MinusSix iid ->
-      a <$ runTest iid (Token.TokenValue Token.MinusSix (-6))
-    ResolveToken Token.MinusSeven iid ->
-      a <$ runTest iid (Token.TokenValue Token.MinusSeven (-7))
-    ResolveToken Token.MinusEight iid ->
-      a <$ runTest iid (Token.TokenValue Token.MinusEight (-8))
-    ResolveToken Token.AutoFail _ -> a <$ unshiftMessage FailSkillTest
     _ -> pure a

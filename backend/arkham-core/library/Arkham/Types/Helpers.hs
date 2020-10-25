@@ -4,6 +4,7 @@ import Arkham.Json
 import ClassyPrelude hiding (unpack)
 import Control.Monad.Extra (concatMapM)
 import Control.Monad.Random
+import Data.Foldable (foldrM)
 import qualified Data.HashMap.Strict as HashMap
 import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as NE
@@ -16,6 +17,9 @@ toFst f a = (f a, a)
 concatMapM'
   :: (Monad m, MonoFoldable mono) => (Element mono -> m [b]) -> mono -> m [b]
 concatMapM' f xs = concatMapM f (toList xs)
+
+foldTokens :: (Foldable t, Monad m) => b -> t a -> (b -> a -> m b) -> m b
+foldTokens s tokens f = foldrM (flip f) s tokens
 
 count :: (a -> Bool) -> [a] -> Int
 count = (length .) . filter

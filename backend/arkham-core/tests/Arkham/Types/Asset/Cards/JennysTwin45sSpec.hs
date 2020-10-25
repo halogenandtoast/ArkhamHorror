@@ -7,7 +7,6 @@ import TestImport
 
 import qualified Arkham.Types.Enemy.Attrs as Enemy
 import Arkham.Types.Investigator.Attrs (Attrs(..))
-import Arkham.Types.Token
 
 spec :: Spec
 spec = describe "Jenny's Twin .45s" $ do

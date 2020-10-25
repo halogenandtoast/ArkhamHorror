@@ -28,66 +28,33 @@ where
 import Arkham.Import
 
 import Arkham.Types.Action (Action)
-import Arkham.Types.ClassSymbol
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Cards
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Prey
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
 import Data.Coerce
 
 data Investigator
   = AgnesBaker' AgnesBaker
-  | AkachiOnyele' AkachiOnyele
-  | AmandaSharpe' AmandaSharpe
   | AshcanPete' AshcanPete
-  | CalvinWright' CalvinWright
-  | CarolynFern' CarolynFern
   | DaisyWalker' DaisyWalker
   | DaisyWalkerParallel' DaisyWalkerParallel
-  | DexterDrake' DexterDrake
-  | DianaStanley' DianaStanley
-  | FatherMateo' FatherMateo
-  | FinnEdwards' FinnEdwards
-  | HarveyWalters' HarveyWalters
-  | JacquelineFine' JacquelineFine
   | JennyBarnes' JennyBarnes
   | JimCulver' JimCulver
-  | JoeDiamond' JoeDiamond
-  | LeoAnderson' LeoAnderson
-  | LolaHayes' LolaHayes
-  | LukeRobinson' LukeRobinson
-  | MandyThompson' MandyThompson
-  | MarieLambeau' MarieLambeau
-  | MarkHarrigan' MarkHarrigan
-  | MinhThiPhan' MinhThiPhan
-  | NathanielCho' NathanielCho
-  | NormanWithers' NormanWithers
-  | PatriceHathaway' PatriceHathaway
-  | PrestonFairmont' PrestonFairmont
   | RexMurphy' RexMurphy
-  | RitaYoung' RitaYoung
   | RolandBanks' RolandBanks
-  | SefinaRousseau' SefinaRousseau
-  | SilasMarsh' SilasMarsh
-  | SisterMary' SisterMary
   | SkidsOToole' SkidsOToole
-  | StellaClark' StellaClark
-  | TommyMuldoon' TommyMuldoon
-  | TonyMorgan' TonyMorgan
-  | UrsulaDowns' UrsulaDowns
   | WendyAdams' WendyAdams
-  | WilliamYorick' WilliamYorick
-  | WinifredHabbamock' WinifredHabbamock
   | ZoeySamaras' ZoeySamaras
   | BaseInvestigator' BaseInvestigator
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance InvestigatorRunner env => HasModifiersFor env Investigator
+deriving anyclass instance InvestigatorRunner env => HasTokenValue env Investigator
 
 instance Eq Investigator where
   a == b = getInvestigatorId a == getInvestigatorId b
@@ -102,6 +69,10 @@ baseInvestigator
   -> Investigator
 baseInvestigator a b c d e f =
   BaseInvestigator' . BaseInvestigator . f $ baseAttrs a b c d e
+
+instance InvestigatorRunner env => HasTokenValue env BaseInvestigator where
+  getTokenValue (BaseInvestigator attrs) iid token =
+    getTokenValue attrs iid token
 
 newtype BaseInvestigator = BaseInvestigator Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -125,12 +96,9 @@ instance ActionRunner env => HasActions env Investigator where
       else defaultGetActions iid window investigator
 
 instance (InvestigatorRunner env) => RunMessage env Investigator where
-  runMessage msg@(ResolveToken ElderSign iid) i | iid == getInvestigatorId i =
-    do
-      modifiers' <- getModifiers (InvestigatorSource iid) i
-      if any isBlank modifiers'
-        then i <$ runTest iid (TokenValue ElderSign 0)
-        else i <$ defaultRunMessage msg i
+  runMessage msg@(ResolveToken _ iid) i | iid == getInvestigatorId i = do
+    modifiers' <- getModifiers (InvestigatorSource iid) i
+    if any isBlank modifiers' then pure i else defaultRunMessage msg i
   runMessage msg i = defaultRunMessage msg i
 
 instance HasId InvestigatorId () Investigator where
@@ -212,47 +180,15 @@ allInvestigators :: HashMap InvestigatorId Investigator
 allInvestigators = mapFromList $ map
   (toFst $ investigatorId . investigatorAttrs)
   [ AgnesBaker' agnesBaker
-  , AkachiOnyele' akachiOnyele
-  , AmandaSharpe' amandaSharpe
   , AshcanPete' ashcanPete
-  , CalvinWright' calvinWright
-  , CarolynFern' carolynFern
   , DaisyWalker' daisyWalker
   , DaisyWalkerParallel' daisyWalkerParallel
-  , DexterDrake' dexterDrake
-  , DianaStanley' dianaStanley
-  , FatherMateo' fatherMateo
-  , FinnEdwards' finnEdwards
-  , HarveyWalters' harveyWalters
-  , JacquelineFine' jacquelineFine
   , JennyBarnes' jennyBarnes
   , JimCulver' jimCulver
-  , JoeDiamond' joeDiamond
-  , LeoAnderson' leoAnderson
-  , LolaHayes' lolaHayes
-  , LukeRobinson' lukeRobinson
-  , MandyThompson' mandyThompson
-  , MarieLambeau' marieLambeau
-  , MarkHarrigan' markHarrigan
-  , MinhThiPhan' minhThiPhan
-  , NathanielCho' nathanielCho
-  , NormanWithers' normanWithers
-  , PatriceHathaway' patriceHathaway
-  , PrestonFairmont' prestonFairmont
   , RexMurphy' rexMurphy
-  , RitaYoung' ritaYoung
   , RolandBanks' rolandBanks
-  , SefinaRousseau' sefinaRousseau
-  , SilasMarsh' silasMarsh
-  , SisterMary' sisterMary
   , SkidsOToole' skidsOToole
-  , StellaClark' stellaClark
-  , TommyMuldoon' tommyMuldoon
-  , TonyMorgan' tonyMorgan
-  , UrsulaDowns' ursulaDowns
   , WendyAdams' wendyAdams
-  , WilliamYorick' williamYorick
-  , WinifredHabbamock' winifredHabbamock
   , ZoeySamaras' zoeySamaras
   ]
 
@@ -383,46 +319,14 @@ actionsRemaining = investigatorRemainingActions . investigatorAttrs
 investigatorAttrs :: Investigator -> Attrs
 investigatorAttrs = \case
   AgnesBaker' attrs -> coerce attrs
-  AkachiOnyele' attrs -> coerce attrs
-  AmandaSharpe' attrs -> coerce attrs
   AshcanPete' attrs -> coerce attrs
-  CalvinWright' attrs -> coerce attrs
-  CarolynFern' attrs -> coerce attrs
   DaisyWalker' attrs -> coerce attrs
   DaisyWalkerParallel' attrs -> coerce attrs
-  DexterDrake' attrs -> coerce attrs
-  DianaStanley' attrs -> coerce attrs
-  FatherMateo' attrs -> coerce attrs
-  FinnEdwards' attrs -> coerce attrs
-  HarveyWalters' attrs -> coerce attrs
-  JacquelineFine' attrs -> coerce attrs
   JennyBarnes' attrs -> coerce attrs
   JimCulver' attrs -> coerce attrs
-  JoeDiamond' attrs -> coerce attrs
-  LeoAnderson' attrs -> coerce attrs
-  LolaHayes' attrs -> coerce attrs
-  LukeRobinson' attrs -> coerce attrs
-  MandyThompson' attrs -> coerce attrs
-  MarieLambeau' attrs -> coerce attrs
-  MarkHarrigan' attrs -> coerce attrs
-  MinhThiPhan' attrs -> coerce attrs
-  NathanielCho' attrs -> coerce attrs
-  NormanWithers' attrs -> coerce attrs
-  PatriceHathaway' attrs -> coerce attrs
-  PrestonFairmont' attrs -> coerce attrs
   RexMurphy' attrs -> coerce attrs
-  RitaYoung' attrs -> coerce attrs
   RolandBanks' attrs -> coerce attrs
-  SefinaRousseau' attrs -> coerce attrs
-  SilasMarsh' attrs -> coerce attrs
-  SisterMary' attrs -> coerce attrs
   SkidsOToole' attrs -> coerce attrs
-  StellaClark' attrs -> coerce attrs
-  TommyMuldoon' attrs -> coerce attrs
-  TonyMorgan' attrs -> coerce attrs
-  UrsulaDowns' attrs -> coerce attrs
   WendyAdams' attrs -> coerce attrs
-  WilliamYorick' attrs -> coerce attrs
-  WinifredHabbamock' attrs -> coerce attrs
   ZoeySamaras' attrs -> coerce attrs
   BaseInvestigator' attrs -> coerce attrs

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ac264c2b601c712619b87712df9d1394e64813b8a297199cdf2dd622197263ce
+-- hash: b8561b9f6b846cf0ee0bb994334c3f3e83ab4b2d1a269756b70d0a920b6ea609
 
 name:           arkham-core
 version:        0.0.0
@@ -367,6 +367,7 @@ library
       Arkham.Types.Stats
       Arkham.Types.Target
       Arkham.Types.Token
+      Arkham.Types.TokenId
       Arkham.Types.TokenResponse
       Arkham.Types.TokenStrategy
       Arkham.Types.Trait
@@ -418,7 +419,7 @@ library
       Paths_arkham_core
   hs-source-dirs:
       library
-  default-extensions: NoImplicitPrelude NamedFieldPuns RecordWildCards DerivingStrategies DeriveGeneric DeriveAnyClass LambdaCase FlexibleInstances MultiParamTypeClasses GeneralizedNewtypeDeriving OverloadedStrings TypeApplications TypeOperators TupleSections FlexibleContexts ConstraintKinds StandaloneDeriving DerivingVia TypeFamilies
+  default-extensions: NoImplicitPrelude NamedFieldPuns RecordWildCards DerivingStrategies DeriveGeneric DeriveAnyClass LambdaCase FlexibleInstances MultiParamTypeClasses GeneralizedNewtypeDeriving OverloadedStrings TypeApplications TypeOperators TupleSections FlexibleContexts ConstraintKinds StandaloneDeriving DerivingVia TypeFamilies ScopedTypeVariables
   build-depends:
       MonadRandom
     , aeson
@@ -507,7 +508,7 @@ test-suite spec
       Paths_arkham_core
   hs-source-dirs:
       tests
-  default-extensions: NoImplicitPrelude NamedFieldPuns RecordWildCards DerivingStrategies DeriveGeneric DeriveAnyClass LambdaCase FlexibleInstances MultiParamTypeClasses GeneralizedNewtypeDeriving OverloadedStrings TypeApplications TypeOperators TupleSections FlexibleContexts ConstraintKinds StandaloneDeriving DerivingVia TypeFamilies
+  default-extensions: NoImplicitPrelude NamedFieldPuns RecordWildCards DerivingStrategies DeriveGeneric DeriveAnyClass LambdaCase FlexibleInstances MultiParamTypeClasses GeneralizedNewtypeDeriving OverloadedStrings TypeApplications TypeOperators TupleSections FlexibleContexts ConstraintKinds StandaloneDeriving DerivingVia TypeFamilies ScopedTypeVariables
   ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
   build-depends:
       arkham-core

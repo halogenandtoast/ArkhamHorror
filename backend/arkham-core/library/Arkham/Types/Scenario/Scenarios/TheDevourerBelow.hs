@@ -11,7 +11,7 @@ import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import qualified Arkham.Types.Token as Token
-import Arkham.Types.Trait hiding (Trait(Expert))
+import Arkham.Types.Trait
 import Data.List.NonEmpty (NonEmpty(..))
 import Data.UUID.V4
 import System.Random.Shuffle
@@ -30,6 +30,25 @@ theDevourerBelow difficulty =
       , "   .   ritualSite   .  "
       ]
     }
+
+instance (HasTokenValue env InvestigatorId, HasQueue env, HasCount EnemyCount [Trait] env) => HasTokenValue env TheDevourerBelow where
+  getTokenValue (TheDevourerBelow attrs) iid token =
+    case drawnTokenFace token of
+      Token.Skull -> if isEasyStandard attrs
+        then do
+          monsterCount <- asks $ unEnemyCount . getCount [Monster]
+          pure $ TokenValue token (NegativeModifier monsterCount)
+        else pure $ TokenValue token (NegativeModifier 3)
+      Token.Cultist -> do
+        let tokenValue' = if isEasyStandard attrs then 2 else 4
+        pure $ TokenValue token (NegativeModifier tokenValue')
+      Token.Tablet -> do
+        let tokenValue' = if isEasyStandard attrs then 3 else 5
+        pure $ TokenValue token (NegativeModifier tokenValue')
+      Token.ElderThing -> do
+        let tokenValue' = if isEasyStandard attrs then (-5) else (-7)
+        pure $ TokenValue token (NegativeModifier tokenValue')
+      _other -> getTokenValue attrs iid token
 
 instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
   runMessage msg s@(TheDevourerBelow attrs@Attrs {..}) = case msg of
@@ -116,41 +135,33 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
         <> cultistsWhoGotAwayMessages
         <> pastMidnightMessages
       pure s
-    ResolveToken Token.Skull iid -> if isEasyStandard attrs
-      then do
-        monsterCount <- asks $ unEnemyCount . getCount [Monster]
-        s <$ runTest iid (Token.TokenValue Token.Skull (-monsterCount))
-      else s <$ runTest iid (Token.TokenValue Token.Skull (-3))
-    FailedSkillTest iid _ _ (TokenTarget Token.Skull) _ | isHardExpert attrs ->
-      do
-        s <$ unshiftMessage
-          (FindAndDrawEncounterCard iid (EnemyType, Just Monster))
-    ResolveToken Token.Cultist iid -> do
-      let
-        doom = if isEasyStandard attrs then 1 else 2
-        tokenValue = if isEasyStandard attrs then (-2) else (-4)
-      closestEnemyIds <- asks $ map unClosestEnemyId . setToList . getSet iid
-      case closestEnemyIds of
-        [] -> pure ()
-        [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) doom)
-        xs -> unshiftMessage
-          (chooseOne iid [ PlaceDoom (EnemyTarget x) doom | x <- xs ])
-      s <$ runTest iid (Token.TokenValue Token.Cultist tokenValue)
-    ResolveToken Token.Tablet iid -> do
-      let
-        horror = if isEasyStandard attrs then 0 else 1
-        tokenValue = if isEasyStandard attrs then (-3) else (-5)
-      ghoulCount <- asks $ unEnemyCount . getCount
-        (InvestigatorLocation iid, [Monster])
-      when (ghoulCount > 0) $ unshiftMessage
-        (InvestigatorAssignDamage iid (TokenSource Token.Tablet) 1 horror)
-      s <$ runTest iid (Token.TokenValue Token.Tablet tokenValue)
-    ResolveToken Token.ElderThing iid -> do
-      let tokenValue = if isEasyStandard attrs then (-5) else (-7)
-      ancientOneCount <- asks $ unEnemyCount . getCount [AncientOne]
-      if ancientOneCount > 0
-        then s <$ unshiftMessage (DrawAnotherToken iid tokenValue)
-        else s <$ runTest iid (Token.TokenValue Token.ElderThing tokenValue)
+    ResolveToken token iid -> case drawnTokenFace token of
+      Token.Cultist -> do
+        let doom = if isEasyStandard attrs then 1 else 2
+        closestEnemyIds <- asks $ map unClosestEnemyId . setToList . getSet iid
+        case closestEnemyIds of
+          [] -> pure ()
+          [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) doom)
+          xs -> unshiftMessage
+            (chooseOne iid [ PlaceDoom (EnemyTarget x) doom | x <- xs ])
+        pure s
+      Token.Tablet -> do
+        let horror = if isEasyStandard attrs then 0 else 1
+        monsterCount <- asks $ unEnemyCount . getCount
+          (InvestigatorLocation iid, [Monster])
+        s <$ when
+          (monsterCount > 0)
+          (unshiftMessage
+          $ InvestigatorAssignDamage iid (DrawnTokenSource token) 1 horror
+          )
+      Token.ElderThing -> do
+        ancientOneCount <- asks $ unEnemyCount . getCount [AncientOne]
+        s <$ when (ancientOneCount > 0) (unshiftMessage $ DrawAnotherToken iid)
+      _other -> TheDevourerBelow <$> runMessage msg attrs
+    FailedSkillTest iid _ _ (DrawnTokenTarget token) _
+      | isHardExpert attrs && drawnTokenFace token == Token.Skull
+      -> s <$ unshiftMessage
+        (FindAndDrawEncounterCard iid (EnemyType, Just Monster))
     NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
       s <$ unshiftMessage

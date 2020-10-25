@@ -6,7 +6,6 @@ where
 import TestImport
 
 import Arkham.Types.ChaosBagStepState
-import Arkham.Types.Token
 
 spec :: Spec
 spec = describe "Grotesque Statue (4)" $ do

@@ -1,23 +1,19 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.DarkMemory where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Target
-import Lens.Micro
-
-import ClassyPrelude
 
 newtype DarkMemory = DarkMemory Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 darkMemory :: InvestigatorId -> EventId -> DarkMemory
 darkMemory iid uuid = DarkMemory $ weaknessAttrs iid uuid "01013"
+
+instance HasModifiersFor env DarkMemory where
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env DarkMemory where
   getActions i window (DarkMemory attrs) = getActions i window attrs

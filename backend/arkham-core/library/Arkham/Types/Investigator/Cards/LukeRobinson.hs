@@ -1,16 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.LukeRobinson where
 
-import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
+import Arkham.Import
+
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
-import ClassyPrelude
-import Data.Aeson
 
 newtype LukeRobinson = LukeRobinson Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -38,6 +34,4 @@ instance ActionRunner env => HasActions env LukeRobinson where
   getActions i window (LukeRobinson attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env LukeRobinson where
-  runMessage msg i@(LukeRobinson attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId -> pure i
-    _ -> LukeRobinson <$> runMessage msg attrs
+  runMessage msg (LukeRobinson attrs) = LukeRobinson <$> runMessage msg attrs

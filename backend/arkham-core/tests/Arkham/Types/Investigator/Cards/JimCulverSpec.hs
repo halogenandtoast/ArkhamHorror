@@ -5,10 +5,8 @@ where
 
 import TestImport
 
-import Arkham.Types.Token
-
 spec :: Spec
-spec = describe "Jum Culver" $ do
+spec = describe "Jim Culver" $ do
   context "elder sign" $ do
     it "can be changed to a skull" $ do
       let jimCulver = lookupInvestigator "02004"
@@ -38,8 +36,11 @@ spec = describe "Jum Culver" $ do
                 _ -> False
               )
         >>= runGameTestOnlyOption "apply results"
-      game `shouldSatisfy` hasProcessedMessage
-        (RunSkillTest (getId () jimCulver) [TokenValue Skull 0])
+      gameMessageHistory game `shouldSatisfy` any
+        (\case
+          ResolveToken token _ -> drawnTokenFace token == Skull
+          _ -> False
+        )
 
     it "is a +1" $ do
       let jimCulver = lookupInvestigator "02004"
@@ -69,8 +70,11 @@ spec = describe "Jum Culver" $ do
                 _ -> False
               )
         >>= runGameTestOnlyOption "apply results"
-      game `shouldSatisfy` hasProcessedMessage
-        (RunSkillTest (getId () jimCulver) [TokenValue ElderSign 1])
+      gameMessageHistory game `shouldSatisfy` any
+        (\case
+          PassedSkillTest _ _ _ _ 2 -> True
+          _ -> False
+        )
 
   context "ability" $ do
     it "changes skull modifier to 0" $ do
@@ -95,5 +99,8 @@ spec = describe "Jum Culver" $ do
           (scenario ?~ scenario')
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
-      game `shouldSatisfy` hasProcessedMessage
-        (RunSkillTest (getId () jimCulver) [TokenValue Skull 0])
+      gameMessageHistory game `shouldSatisfy` any
+        (\case
+          PassedSkillTest _ _ _ _ 1 -> True
+          _ -> False
+        )

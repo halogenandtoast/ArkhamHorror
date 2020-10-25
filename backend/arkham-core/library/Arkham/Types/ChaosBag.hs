@@ -286,8 +286,8 @@ instance HasQueue env => RunMessage env ChaosBag where
         Nothing -> error "unexpected"
         Just choice' -> do
           case choice' of
-            Resolved tokens' ->
-              c <$ unshiftMessage (RequestedTokens source iid tokens')
+            Resolved tokenFaces' ->
+              c <$ unshiftMessage (RequestedTokens source iid tokenFaces')
             _ -> do
               ((choice'', msgs), c') <- runStateT
                 (resolveFirstUnresolved source iid strategy choice')

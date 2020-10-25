@@ -7,7 +7,6 @@ import TestImport
 
 import Arkham.Types.Enemy.Attrs (Attrs(..))
 import Arkham.Types.Location.Attrs (Attrs(..))
-import Arkham.Types.Token
 
 spec :: Spec
 spec = describe "Roland Banks" $ do

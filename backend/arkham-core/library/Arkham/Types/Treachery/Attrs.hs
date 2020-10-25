@@ -135,7 +135,7 @@ instance (TreacheryRunner env) => RunMessage env Attrs where
       pure $ a & attachedLocation ?~ lid
     AttachTreachery tid (EnemyTarget eid) | tid == treacheryId ->
       pure $ a & attachedEnemy ?~ eid
-    AfterRevelation{} -> a <$ when
+    AfterRevelation _iid tid | treacheryId == tid -> a <$ when
       treacheryResolved
       (unshiftMessage (Discard (TreacheryTarget treacheryId)))
     _ -> pure a

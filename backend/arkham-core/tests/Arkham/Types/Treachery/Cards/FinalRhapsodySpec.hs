@@ -5,8 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Token
-
 spec :: Spec
 spec = describe "Final Rhapsody" $ do
   it "does 1 damage per skull and autofail revealed" $ do

@@ -1,27 +1,21 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.BlindingLight2 where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
 import qualified Arkham.Types.Token as Token
 import Arkham.Types.TokenResponse
-import Lens.Micro
-
-import ClassyPrelude
 
 newtype BlindingLight2 = BlindingLight2 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 blindingLight2 :: InvestigatorId -> EventId -> BlindingLight2
 blindingLight2 iid uuid = BlindingLight2 $ baseAttrs iid uuid "01069"
+
+instance HasModifiersFor env BlindingLight2 where
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env BlindingLight2 where
   getActions i window (BlindingLight2 attrs) = getActions i window attrs

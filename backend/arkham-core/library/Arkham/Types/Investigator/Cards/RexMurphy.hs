@@ -54,17 +54,26 @@ instance ActionRunner env => HasActions env RexMurphy where
         ]
   getActions i window (RexMurphy attrs) = getActions i window attrs
 
+instance InvestigatorRunner env => HasTokenValue env RexMurphy where
+  getTokenValue (RexMurphy attrs) iid token | iid == investigatorId attrs =
+    case drawnTokenFace token of
+      ElderSign -> pure $ TokenValue token (PositiveModifier 2)
+      _other -> getTokenValue attrs iid token
+  getTokenValue (RexMurphy attrs) iid token = getTokenValue attrs iid token
+
 instance (InvestigatorRunner env) => RunMessage env RexMurphy where
   runMessage msg i@(RexMurphy attrs@Attrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       i <$ unshiftMessage
         (DiscoverCluesAtLocation investigatorId investigatorLocation 1)
-    ResolveToken ElderSign iid | iid == investigatorId -> i <$ unshiftMessage
-      (Ask iid $ ChooseOne
-        [ Label
-          "Automatically fail to draw 3"
-          [FailSkillTest, DrawCards iid 3 False]
-        , Label "Resolve normally" [RunSkillTest iid [TokenValue ElderSign 2]]
-        ]
-      )
+    ResolveToken token iid
+      | iid == investigatorId && drawnTokenFace token == ElderSign
+      -> i <$ unshiftMessage
+        (Ask iid $ ChooseOne
+          [ Label
+            "Automatically fail to draw 3"
+            [FailSkillTest, DrawCards iid 3 False]
+          , Label "Resolve normally" []
+          ]
+        )
     _ -> RexMurphy <$> runMessage msg attrs

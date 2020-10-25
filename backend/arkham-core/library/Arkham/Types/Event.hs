@@ -58,6 +58,7 @@ data Event
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance HasActions env Event
+deriving anyclass instance HasModifiersFor env Event
 deriving anyclass instance (EventRunner env) => RunMessage env Event
 
 instance HasCardCode Event where

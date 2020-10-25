@@ -6,7 +6,6 @@ where
 import TestImport
 
 import Arkham.Types.Enemy.Attrs (Attrs(..))
-import Arkham.Types.Token
 
 spec :: Spec
 spec = describe "Agnes Baker" $ do

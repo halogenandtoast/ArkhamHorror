@@ -21,6 +21,9 @@ newtype OnTheLam = OnTheLam Attrs
 onTheLam :: InvestigatorId -> EventId -> OnTheLam
 onTheLam iid uuid = OnTheLam $ baseAttrs iid uuid "01010"
 
+instance HasModifiersFor env OnTheLam where
+  getModifiersFor _ _ _ = pure []
+
 instance HasActions env OnTheLam where
   getActions i window (OnTheLam attrs) = getActions i window attrs
 

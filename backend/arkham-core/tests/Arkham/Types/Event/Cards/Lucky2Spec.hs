@@ -7,7 +7,6 @@ import TestImport
 
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs (Attrs(..))
-import Arkham.Types.Token
 
 spec :: Spec
 spec = describe "Lucky! (2)" $ do

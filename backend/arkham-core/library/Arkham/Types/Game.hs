@@ -53,7 +53,6 @@ import Arkham.Types.ScenarioId
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Skill
 import Arkham.Types.SkillTest
-import Arkham.Types.Token (Token)
 import Arkham.Types.Trait
 import Arkham.Types.Treachery
 import qualified Arkham.Types.Window as Fast
@@ -513,6 +512,17 @@ instance HasModifiers GameInternal LocationId where
 
 instance HasModifiers GameInternal InvestigatorId where
   getModifiers source iid = asks (getInvestigator iid) >>= getModifiers source
+
+instance GameRunner env => HasTokenValue env (Game queue) where
+  getTokenValue game iid token = case game ^. scenario of
+    Just scenario' -> getTokenValue scenario' iid token
+    Nothing -> error "missing scenario"
+
+instance (GameRunner (Game queue)) => HasTokenValue (Game queue) InvestigatorId where
+  getTokenValue iid' iid token = do
+    env <- ask
+    let investigator = getInvestigator iid' env
+    getTokenValue investigator iid token
 
 instance GameRunner env => HasModifiersFor env (Game queue) where
   getModifiersFor source target g = concat <$> sequence

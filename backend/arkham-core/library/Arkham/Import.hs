@@ -15,6 +15,7 @@ import Arkham.Types.Card.CardCode as X
 import Arkham.Types.Card.Cost as X
 import Arkham.Types.Card.Id as X
 import Arkham.Types.Classes as X
+import Arkham.Types.ClassSymbol as X
 import Arkham.Types.EnemyId as X
 import Arkham.Types.EventId as X
 import Arkham.Types.GameValue as X
@@ -28,7 +29,9 @@ import Arkham.Types.SkillId as X
 import Arkham.Types.SkillType as X
 import Arkham.Types.Slot as X
 import Arkham.Types.Source as X
+import Arkham.Types.Stats as X (Stats)
 import Arkham.Types.Target as X
+import Arkham.Types.Token as X
 import Arkham.Types.TreacheryId as X
 import Arkham.Types.Window as X
 import Control.Monad.Extra as X (concatMapM)

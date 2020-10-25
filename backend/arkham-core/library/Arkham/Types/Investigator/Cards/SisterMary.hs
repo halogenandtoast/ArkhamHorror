@@ -1,16 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.SisterMary where
 
-import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
+import Arkham.Import
+
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
-import ClassyPrelude
-import Data.Aeson
 
 newtype SisterMary = SisterMary Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -38,6 +34,4 @@ instance ActionRunner env => HasActions env SisterMary where
   getActions i window (SisterMary attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env SisterMary where
-  runMessage msg i@(SisterMary attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId -> pure i
-    _ -> SisterMary <$> runMessage msg attrs
+  runMessage msg (SisterMary attrs) = SisterMary <$> runMessage msg attrs

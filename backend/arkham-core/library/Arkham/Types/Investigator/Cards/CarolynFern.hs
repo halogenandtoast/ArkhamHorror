@@ -1,16 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.CarolynFern where
 
-import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
+import Arkham.Import
+
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
-import ClassyPrelude
-import Data.Aeson
 
 newtype CarolynFern = CarolynFern Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -37,7 +33,5 @@ carolynFern = CarolynFern $ baseAttrs
 instance ActionRunner env => HasActions env CarolynFern where
   getActions i window (CarolynFern attrs) = getActions i window attrs
 
-instance (InvestigatorRunner env) => RunMessage env CarolynFern where
-  runMessage msg i@(CarolynFern attrs@Attrs {..}) = case msg of
-    ResolveToken ElderSign iid | iid == investigatorId -> pure i
-    _ -> CarolynFern <$> runMessage msg attrs
+instance InvestigatorRunner env => RunMessage env CarolynFern where
+  runMessage msg (CarolynFern attrs) = CarolynFern <$> runMessage msg attrs

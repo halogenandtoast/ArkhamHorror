@@ -6,7 +6,6 @@ where
 import TestImport
 
 import qualified Arkham.Types.Investigator.Attrs as Investigator
-import Arkham.Types.Token
 
 spec :: Spec
 spec = describe "Jim's Trumpet" $ do

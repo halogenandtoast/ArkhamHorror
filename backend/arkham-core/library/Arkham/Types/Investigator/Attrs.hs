@@ -7,7 +7,6 @@ import Arkham.Import
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card.PlayerCardWithBehavior
-import Arkham.Types.ClassSymbol
 import Arkham.Types.CommitRestriction
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Runner
@@ -512,6 +511,9 @@ instance ActionRunner env => HasActions env Attrs where
     (attrs ^.. hand . traverse . _PlayerCard)
     (getActions iid window . toPlayerCardWithBehavior)
   getActions _ _ _ = pure []
+
+instance HasQueue env => HasTokenValue env Attrs where
+  getTokenValue _ _ _ = error "should not be asking this here"
 
 instance InvestigatorRunner env => RunMessage env Attrs where
   runMessage msg i = do

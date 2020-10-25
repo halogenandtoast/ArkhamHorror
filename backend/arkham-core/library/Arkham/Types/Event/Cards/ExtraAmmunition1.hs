@@ -1,28 +1,22 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.ExtraAmmunition1 where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Asset.Uses
-import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Target
 import Arkham.Types.Trait
 import Control.Monad.Extra hiding (filterM)
-import qualified Data.HashSet as HashSet
-import Lens.Micro
-
-import ClassyPrelude
 
 newtype ExtraAmmunition1 = ExtraAmmunition1 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 extraAmmunition1 :: InvestigatorId -> EventId -> ExtraAmmunition1
 extraAmmunition1 iid uuid = ExtraAmmunition1 $ baseAttrs iid uuid "01026"
+
+instance HasModifiersFor env ExtraAmmunition1 where
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env ExtraAmmunition1 where
   getActions i window (ExtraAmmunition1 attrs) = getActions i window attrs
@@ -31,13 +25,10 @@ instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
   runMessage msg (ExtraAmmunition1 attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       locationId <- asks (getId @LocationId iid)
-      investigatorIds <- HashSet.toList
-        <$> asks (getSet @InvestigatorId locationId)
-      assetIds <- concatForM
-        investigatorIds
-        (asks . (HashSet.toList .) . getSet)
+      investigatorIds <- asks $ setToList . getSet @InvestigatorId locationId
+      assetIds <- concatForM investigatorIds (asks . (setToList .) . getSet)
       firearmAssetids <- flip filterM assetIds $ \assetId -> do
-        traits <- HashSet.toList <$> asks (getSet assetId)
+        traits <- asks $ setToList . getSet assetId
         pure $ Firearm `elem` traits
       unshiftMessage
         (Ask iid $ ChooseOne

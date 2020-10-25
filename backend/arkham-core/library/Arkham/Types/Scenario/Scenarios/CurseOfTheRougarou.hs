@@ -17,7 +17,7 @@ import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import qualified Arkham.Types.Token as Token
-import Arkham.Types.Trait hiding (Expert)
+import Arkham.Types.Trait
 import Control.Monad.Extra (findM)
 import System.Random.Shuffle
 
@@ -69,7 +69,25 @@ locationsWithLabels trait = do
   (before, bayou : after) =
     break (elem Bayou . getTraits . lookupLocation) locationSet
 
-instance (ScenarioRunner env) => RunMessage env CurseOfTheRougarou where
+instance (HasTokenValue env InvestigatorId, HasQueue env, HasSet Trait LocationId env, HasId LocationId InvestigatorId env) => HasTokenValue env CurseOfTheRougarou where
+  getTokenValue (CurseOfTheRougarou (attrs `With` _)) iid token =
+    case drawnTokenFace token of
+      Token.Skull -> do
+        lid <- asks $ getId @LocationId iid
+        isBayou <- asks $ member Bayou . getSet lid
+        let
+          tokenVal
+            | isBayou = if isEasyStandard attrs then 4 else 6
+            | otherwise = if isEasyStandard attrs then 2 else 3
+        pure $ TokenValue token (NegativeModifier tokenVal)
+      Token.Cultist -> pure $ TokenValue
+        token
+        (NegativeModifier $ if isEasyStandard attrs then 2 else 3)
+      Token.Tablet -> pure $ TokenValue token (PositiveModifier 0)
+      Token.ElderThing -> pure $ TokenValue token (NegativeModifier 4)
+      _other -> getTokenValue attrs iid token
+
+instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
   runMessage msg s@(CurseOfTheRougarou (attrs@Attrs {..} `With` metadata)) =
     case msg of
       InitDeck iid deck -> s <$ unshiftMessage (LoadDeck iid deck)
@@ -196,45 +214,25 @@ instance (ScenarioRunner env) => RunMessage env CurseOfTheRougarou where
               , Token.ElderSign
               ]
         s <$ unshiftMessage (SetTokens tokens)
-      ResolveToken Token.Skull iid -> do
-        lid <- asks $ getId @LocationId iid
-        isBayou <- asks $ member Bayou . getSet lid
-        let
-          tokenVal
-            | isBayou = if isEasyStandard attrs then (-4) else (-6)
-            | otherwise = if isEasyStandard attrs then (-2) else (-3)
-        s <$ runTest iid (Token.TokenValue Token.Skull tokenVal)
-      ResolveToken Token.Cultist iid -> do
-        let
-          tokenVal
-            | isEasyStandard attrs = (-2)
-            | otherwise = (-3)
-        lid <- asks $ getId @LocationId iid
-        enemyIds <- asks $ setToList . getSet @EnemyId lid
-        rougarouAtYourLocation <- elem "81028"
-          <$> for enemyIds (asks . getId @CardCode)
-        if rougarouAtYourLocation
-          then s <$ unshiftMessage (DrawAnotherToken iid tokenVal)
-          else s <$ runTest iid (Token.TokenValue Token.Cultist tokenVal)
-      ResolveToken Token.Tablet iid ->
-        s <$ unshiftMessage (DrawAnotherToken iid 0)
-      FailedSkillTest iid _ _ (TokenTarget Token.Tablet) _ ->
-        s <$ unshiftMessage
-          (AddModifiers
-            (InvestigatorTarget iid)
-            (TokenSource Token.Tablet)
-            [CannotMove]
-          )
-      ResolveToken Token.ElderThing iid -> do
-        if isEasyStandard attrs
+      ResolveToken token iid -> case drawnTokenFace token of
+        Token.Skull -> pure s
+        Token.Cultist -> do
+          lid <- asks $ getId @LocationId iid
+          enemyIds <- asks $ setToList . getSet @EnemyId lid
+          rougarouAtYourLocation <- elem "81028"
+            <$> for enemyIds (asks . getId @CardCode)
+          s <$ when
+            rougarouAtYourLocation
+            (unshiftMessage $ DrawAnotherToken iid)
+        Token.Tablet -> pure s
+        Token.ElderThing -> if isEasyStandard attrs
           then do
             lid <- asks $ getId @LocationId iid
             enemyIds <- asks $ setToList . getSet @EnemyId lid
             mrougarou <- findM
               (asks . ((== "81028") .) . getId @CardCode)
               enemyIds
-            for_ mrougarou
-              $ \enemyId -> unshiftMessage (EnemyWillAttack iid enemyId)
+            s <$ for_ mrougarou (unshiftMessage . EnemyWillAttack iid)
           else do
             lid <- asks $ getId @LocationId iid
             connectedLocationIds <-
@@ -245,9 +243,17 @@ instance (ScenarioRunner env) => RunMessage env CurseOfTheRougarou where
             mrougarou <- findM
               (asks . ((== "81028") .) . getId @CardCode)
               enemyIds
-            for_ mrougarou
-              $ \enemyId -> unshiftMessage (EnemyWillAttack iid enemyId)
-        s <$ runTest iid (Token.TokenValue Token.ElderThing (-4))
+            s <$ for_ mrougarou (unshiftMessage . EnemyWillAttack iid)
+        _other ->
+          CurseOfTheRougarou . (`with` metadata) <$> runMessage msg attrs
+      FailedSkillTest iid _ _ (DrawnTokenTarget token) _ -> do
+        s <$ when
+          (drawnTokenFace token == Token.Tablet)
+          (unshiftMessage $ AddModifiers
+            (InvestigatorTarget iid)
+            (DrawnTokenSource token)
+            [CannotMove]
+          )
       NoResolution -> runMessage (Resolution 1) s
       Resolution 1 -> do
         leadInvestigatorId <- getLeadInvestigatorId

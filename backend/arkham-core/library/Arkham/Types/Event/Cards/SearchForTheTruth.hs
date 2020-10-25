@@ -1,22 +1,18 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.SearchForTheTruth where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.Event.Attrs
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Lens.Micro
+import Arkham.Import
 
-import ClassyPrelude
+import Arkham.Types.Event.Attrs
 
 newtype SearchForTheTruth = SearchForTheTruth Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 searchForTheTruth :: InvestigatorId -> EventId -> SearchForTheTruth
 searchForTheTruth iid uuid = SearchForTheTruth $ baseAttrs iid uuid "02008"
+
+instance HasModifiersFor env SearchForTheTruth where
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env SearchForTheTruth where
   getActions i window (SearchForTheTruth attrs) = getActions i window attrs

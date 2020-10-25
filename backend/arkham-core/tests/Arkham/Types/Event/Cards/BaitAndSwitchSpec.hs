@@ -7,7 +7,6 @@ import TestImport
 
 import qualified Arkham.Types.Enemy.Attrs as EnemyAttrs
 import Arkham.Types.Investigator.Attrs (Attrs(..))
-import Arkham.Types.Token
 
 spec :: Spec
 spec = describe "Bait and Switch" $ do

@@ -10,8 +10,10 @@ type LocationRunner env
     , HasId (Maybe StoryAssetId) CardCode env
     , HasId (Maybe OwnerId) AssetId env
     , HasId CardCode EnemyId env
+    , HasId LocationId InvestigatorId env
     , HasSet Trait LocationId env
     , HasSet EventId () env
+    , HasSet InvestigatorId () env
     , HasSet Trait EnemyId env
     , HasModifiers env LocationId
     , HasSet ConnectedLocationId LocationId env

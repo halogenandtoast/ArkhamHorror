@@ -6,22 +6,22 @@ where
 import TestImport
 
 import qualified Arkham.Types.Enemy.Attrs as Enemy
-import Arkham.Types.Token
 
 spec :: Spec
 spec = do
   describe "Zoey Samaras" $ do
     it "elder sign token gives +1" $ do
       let zoeySamaras = lookupInvestigator "02001"
-      game <- runGameTest
-        zoeySamaras
-        [ResolveToken ElderSign (getId () zoeySamaras)]
-        id
-      game `shouldSatisfy` hasProcessedMessage
-        (RunSkillTest (getId () zoeySamaras) [TokenValue ElderSign 1])
+      elderSign <- flip DrawnToken ElderSign . TokenId <$> liftIO nextRandom
+      game <- runGameTest zoeySamaras [] id
+      token <- withGame
+        game
+        (getTokenValue zoeySamaras (getId () zoeySamaras) elderSign)
+      tokenValue token `shouldBe` Just 1
     it "elder sign token gives +1 and does +1 damage for attacks" $ do
       let zoeySamaras = lookupInvestigator "02001" -- combat is 4
       enemy <- testEnemy ((Enemy.health .~ Static 3) . (Enemy.fight .~ 5))
+      scenario' <- testScenario "00000" id
       location <- testLocation "00000" id
       game <-
         runGameTest
@@ -33,6 +33,7 @@ spec = do
           ]
           ((enemies %~ insertEntity enemy)
           . (locations %~ insertEntity location)
+          . (scenario ?~ scenario')
           )
         >>= runGameTestOptionMatching
               "skip ability"

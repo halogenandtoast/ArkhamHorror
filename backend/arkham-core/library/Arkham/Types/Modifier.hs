@@ -42,11 +42,13 @@ data Modifier
   | DoubleNegativeModifiersOnTokens
   | EnemyEvade Int
   | EnemyFight Int
-  | ForcedTokenChange Token Token
+  | ForcedTokenChange Token [Token]
   | HandSize Int
   | HealthModifier Int
   | HorrorDealt Int
   | ModifierIfSucceededBy Int Modifier
+  | NegativeToPositive
+  | ChangeTokenModifier TokenModifier
   | ReduceCostOf [Trait] Int
   | ReduceCostOfCardType PlayerCardType Int
   | SanityModifier Int

@@ -160,7 +160,8 @@ data Message
   | UseScenarioSpecificAbility InvestigatorId Int
   | PutSetAsideIntoPlay Target
   | AddUses Target UseType Int
-  | ResolveToken Token InvestigatorId
+  | ResolveToken DrawnToken InvestigatorId
+  | AddTokenValue InvestigatorId TokenValue
   | Investigate InvestigatorId LocationId Source SkillType [Modifier] [TokenResponse Message] [Message] Bool
   | ChooseFightEnemy InvestigatorId Source SkillType [Modifier] [TokenResponse Message] Bool
   | ChooseEvadeEnemy InvestigatorId Source SkillType [Message] [Message] [TokenResponse Message] Bool
@@ -226,7 +227,7 @@ data Message
   | StartSkillTest InvestigatorId
   | BeforeSkillTest InvestigatorId SkillType
   | TriggerSkillTest InvestigatorId
-  | RunSkillTest InvestigatorId [TokenValue]
+  | RunSkillTest InvestigatorId
   | RunSkillTestSourceNotification InvestigatorId Source
   | HandlePointOfFailure InvestigatorId Target Int -- Really do x n times, does not have to be failure
   | SkillTestResults
@@ -248,7 +249,6 @@ data Message
                          (EncounterCardType, Maybe Trait)
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
   | AddToEncounterDeck EncounterCard
-  | SetAsideToken Token
   | SkillTestEnds
   | ReturnSkillTestRevealedTokens
   | RevealToken Source InvestigatorId Token
@@ -369,7 +369,7 @@ data Message
   | When Message
   | After Message
   | Blanked Message
-  | DrawAnotherToken InvestigatorId Int
+  | DrawAnotherToken InvestigatorId
   | SetTokens [Token]
   | SetTokensForScenario
   | ResetTokens Source

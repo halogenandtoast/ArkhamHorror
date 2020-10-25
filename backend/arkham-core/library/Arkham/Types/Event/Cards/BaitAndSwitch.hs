@@ -1,26 +1,19 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.BaitAndSwitch where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
-import Lens.Micro
-
-import ClassyPrelude
 
 newtype BaitAndSwitch = BaitAndSwitch Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 baitAndSwitch :: InvestigatorId -> EventId -> BaitAndSwitch
 baitAndSwitch iid uuid = BaitAndSwitch $ baseAttrs iid uuid "02034"
+
+instance HasModifiersFor env BaitAndSwitch where
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env BaitAndSwitch where
   getActions i window (BaitAndSwitch attrs) = getActions i window attrs

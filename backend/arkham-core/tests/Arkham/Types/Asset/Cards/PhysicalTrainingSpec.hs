@@ -6,7 +6,6 @@ where
 import TestImport
 
 import Arkham.Types.Investigator.Attrs (Attrs(..))
-import Arkham.Types.Token
 
 spec :: Spec
 spec = describe "Physical Training" $ do
@@ -42,8 +41,7 @@ spec = describe "Physical Training" $ do
               _ -> False
             )
       >>= runGameTestOnlyOption "apply results"
-    game `shouldSatisfy` hasProcessedMessage
-      (PassedSkillTest "00000" Nothing TestSource (TokenTarget Zero) 0)
+    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game
 
   it "Adds 1 to combat check for each resource spent" $ do
     physicalTraining <- buildAsset "01017"
@@ -77,5 +75,4 @@ spec = describe "Physical Training" $ do
               _ -> False
             )
       >>= runGameTestOnlyOption "apply results"
-    game `shouldSatisfy` hasProcessedMessage
-      (PassedSkillTest "00000" Nothing TestSource (TokenTarget Zero) 0)
+    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game

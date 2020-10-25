@@ -23,7 +23,7 @@ data Source
   = AssetSource AssetId
   | EnemySource EnemyId
   | InvestigatorSource InvestigatorId
-  | TokenSource Token
+  | TokenSource TokenId
   | AgendaSource AgendaId
   | LocationSource LocationId
   | SkillTestSource InvestigatorId Source (Maybe Action)
@@ -36,6 +36,7 @@ data Source
   | PlayerCardSource CardId
   | TestSource
   | EndOfTurnSource Source
+  | DrawnTokenSource DrawnToken
   | ProxySource Source Source
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

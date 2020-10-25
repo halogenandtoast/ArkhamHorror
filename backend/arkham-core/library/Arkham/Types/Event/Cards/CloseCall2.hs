@@ -1,22 +1,18 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.CloseCall2 where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.Event.Attrs
-import Arkham.Types.EventId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Target
-import Lens.Micro
+import Arkham.Import
 
-import ClassyPrelude
+import Arkham.Types.Event.Attrs
 
 newtype CloseCall2 = CloseCall2 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 closeCall2 :: InvestigatorId -> EventId -> CloseCall2
 closeCall2 iid uuid = CloseCall2 $ baseAttrs iid uuid "01083"
+
+instance HasModifiersFor env CloseCall2 where
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env CloseCall2 where
   getActions i window (CloseCall2 attrs) = getActions i window attrs

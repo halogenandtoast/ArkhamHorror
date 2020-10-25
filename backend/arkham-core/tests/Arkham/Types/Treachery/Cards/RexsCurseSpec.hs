@@ -5,8 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Token
-
 spec :: Spec
 spec = describe "Rex's Curse" $ do
   it "is put into play into your threat area" $ do

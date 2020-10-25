@@ -32,6 +32,7 @@ data Scenario
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (ScenarioRunner env) => RunMessage env Scenario
+deriving anyclass instance (ScenarioRunner env, HasTokenValue env InvestigatorId) => HasTokenValue env Scenario
 
 instance HasSet ScenarioLogKey () Scenario where
   getSet _ = scenarioLog . scenarioAttrs
@@ -39,16 +40,16 @@ instance HasSet ScenarioLogKey () Scenario where
 newtype BaseScenario = BaseScenario Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
+instance (HasTokenValue env InvestigatorId, HasQueue env) => HasTokenValue env BaseScenario where
+  getTokenValue (BaseScenario attrs) iid token = case drawnTokenFace token of
+    Token.Skull -> pure $ TokenValue token (NegativeModifier 1)
+    Token.Cultist -> pure $ TokenValue token (NegativeModifier 1)
+    Token.Tablet -> pure $ TokenValue token (NegativeModifier 1)
+    Token.ElderThing -> pure $ TokenValue token (NegativeModifier 1)
+    _other -> getTokenValue attrs iid token
+
 instance (ScenarioRunner env) => RunMessage env BaseScenario where
   runMessage msg a@(BaseScenario attrs) = case msg of
-    ResolveToken Token.Skull iid ->
-      a <$ runTest iid (Token.TokenValue Token.Skull (-1))
-    ResolveToken Token.Cultist iid ->
-      a <$ runTest iid (Token.TokenValue Token.Cultist (-1))
-    ResolveToken Token.Tablet iid ->
-      a <$ runTest iid (Token.TokenValue Token.Tablet (-1))
-    ResolveToken Token.ElderThing iid ->
-      a <$ runTest iid (Token.TokenValue Token.ElderThing (-1))
     NoResolution -> pure a
     _ -> BaseScenario <$> runMessage msg attrs
 

@@ -38,7 +38,7 @@ data Window
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 
-data Where = YourLocation
+data Where = YourLocation | ConnectedLocation | LocationInGame
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 

@@ -32,7 +32,7 @@
         class="button"
         @click="$emit('choose', index)"
       >
-        Use <i :class="`icon${choice.contents[3]}`"></i>
+        Use <i :class="`icon${choice.contents[4]}`"></i>
       </a>
 
       <button

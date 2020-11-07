@@ -14,11 +14,10 @@ newtype Aquinnah1 = Aquinnah1 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 aquinnah1 :: AssetId -> Aquinnah1
-aquinnah1 uuid = Aquinnah1 $ (baseAttrs uuid "01082")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 1
-  , assetSanity = Just 4
-  }
+aquinnah1 uuid = Aquinnah1 $ baseAttrs uuid "01082" $ do
+  slots .= [AllySlot]
+  health ?= 1
+  sanity ?= 4
 
 reactionAbility :: Attrs -> Ability
 reactionAbility attrs =

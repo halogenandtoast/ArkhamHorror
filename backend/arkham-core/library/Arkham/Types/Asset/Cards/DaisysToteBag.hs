@@ -14,7 +14,7 @@ newtype DaisysToteBag = DaisysToteBag Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 daisysToteBag :: AssetId -> DaisysToteBag
-daisysToteBag uuid = DaisysToteBag $ baseAttrs uuid "01008"
+daisysToteBag uuid = DaisysToteBag $ baseAttrs uuid "01008" $ pure ()
 
 instance HasModifiersFor env DaisysToteBag where
   getModifiersFor _ _ _ = pure []

@@ -12,7 +12,7 @@ newtype Knife = Knife Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 knife :: AssetId -> Knife
-knife uuid = Knife $ (baseAttrs uuid "01086") { assetSlots = [HandSlot] }
+knife uuid = Knife $ baseAttrs uuid "01086" $ slots .= [HandSlot]
 
 instance HasModifiersFor env Knife where
   getModifiersFor _ _ _ = pure []

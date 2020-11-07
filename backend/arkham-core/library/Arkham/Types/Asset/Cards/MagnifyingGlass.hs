@@ -12,7 +12,7 @@ newtype MagnifyingGlass = MagnifyingGlass Attrs
 
 magnifyingGlass :: AssetId -> MagnifyingGlass
 magnifyingGlass uuid =
-  MagnifyingGlass $ (baseAttrs uuid "01030") { assetSlots = [HandSlot] }
+  MagnifyingGlass $ baseAttrs uuid "01030" $ slots .= [HandSlot]
 
 instance HasModifiersFor env MagnifyingGlass where
   getModifiersFor _ (InvestigatorTarget iid) (MagnifyingGlass a) =

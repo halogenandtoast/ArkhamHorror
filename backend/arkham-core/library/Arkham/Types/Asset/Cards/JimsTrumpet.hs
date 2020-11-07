@@ -15,8 +15,7 @@ newtype JimsTrumpet = JimsTrumpet Attrs
   deriving anyclass (ToJSON, FromJSON)
 
 jimsTrumpet :: AssetId -> JimsTrumpet
-jimsTrumpet uuid =
-  JimsTrumpet $ (baseAttrs uuid "02012") { assetSlots = [HandSlot] }
+jimsTrumpet uuid = JimsTrumpet $ baseAttrs uuid "02012" $ slots .= [HandSlot]
 
 instance HasModifiersFor env JimsTrumpet where
   getModifiersFor _ _ _ = pure []

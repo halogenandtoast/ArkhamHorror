@@ -16,8 +16,7 @@ newtype Shrivelling = Shrivelling Attrs
   deriving anyclass (ToJSON, FromJSON)
 
 shrivelling :: AssetId -> Shrivelling
-shrivelling uuid =
-  Shrivelling $ (baseAttrs uuid "01060") { assetSlots = [ArcaneSlot] }
+shrivelling uuid = Shrivelling $ baseAttrs uuid "01060" $ slots .= [ArcaneSlot]
 
 instance HasModifiersFor env Shrivelling where
   getModifiersFor _ _ _ = pure []

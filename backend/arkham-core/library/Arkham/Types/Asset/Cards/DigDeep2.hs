@@ -11,7 +11,7 @@ newtype DigDeep2 = DigDeep2 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 digDeep2 :: AssetId -> DigDeep2
-digDeep2 uuid = DigDeep2 $ baseAttrs uuid "50009"
+digDeep2 uuid = DigDeep2 $ baseAttrs uuid "50009" $ pure ()
 
 instance HasModifiersFor env DigDeep2 where
   getModifiersFor _ _ _ = pure []

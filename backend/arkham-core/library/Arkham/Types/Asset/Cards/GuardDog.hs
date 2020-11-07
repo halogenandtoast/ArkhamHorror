@@ -10,11 +10,10 @@ newtype GuardDog = GuardDog Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 guardDog :: AssetId -> GuardDog
-guardDog uuid = GuardDog $ (baseAttrs uuid "01021")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 3
-  , assetSanity = Just 1
-  }
+guardDog uuid = GuardDog $ baseAttrs uuid "01021" $ do
+  slots .= [AllySlot]
+  health ?= 3
+  sanity ?= 1
 
 instance HasModifiersFor env GuardDog where
   getModifiersFor _ _ _ = pure []

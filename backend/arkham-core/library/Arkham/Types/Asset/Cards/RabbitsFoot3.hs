@@ -15,7 +15,7 @@ newtype RabbitsFoot3 = RabbitsFoot3 Attrs
 
 rabbitsFoot3 :: AssetId -> RabbitsFoot3
 rabbitsFoot3 uuid =
-  RabbitsFoot3 $ (baseAttrs uuid "50010") { assetSlots = [AccessorySlot] }
+  RabbitsFoot3 $ baseAttrs uuid "50010" $ slots .= [AccessorySlot]
 
 instance HasModifiersFor env RabbitsFoot3 where
   getModifiersFor _ _ _ = pure []

@@ -11,7 +11,7 @@ newtype Hyperawareness = Hyperawareness Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 hyperawareness :: AssetId -> Hyperawareness
-hyperawareness uuid = Hyperawareness $ baseAttrs uuid "01034"
+hyperawareness uuid = Hyperawareness $ baseAttrs uuid "01034" $ pure ()
 
 instance HasModifiersFor env Hyperawareness where
   getModifiersFor _ _ _ = pure []

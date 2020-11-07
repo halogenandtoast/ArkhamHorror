@@ -13,10 +13,10 @@ newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced Attrs
 
 theNecronomiconAdvanced :: AssetId -> TheNecronomiconAdvanced
 theNecronomiconAdvanced uuid =
-  TheNecronomiconAdvanced $ (baseAttrs uuid "80003")
-    { assetSlots = [HandSlot]
-    , assetHorror = Just 3
-    }
+  TheNecronomiconAdvanced $ baseAttrs uuid "80003" $ do
+    slots .= [HandSlot]
+    horror ?= 3
+    canLeavePlayByNormalMeans .= False
 
 instance HasModifiersFor env TheNecronomiconAdvanced where
   getModifiersFor _ (InvestigatorTarget iid) (TheNecronomiconAdvanced a) = pure

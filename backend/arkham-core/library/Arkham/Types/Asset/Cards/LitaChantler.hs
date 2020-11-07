@@ -11,11 +11,10 @@ newtype LitaChantler = LitaChantler Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 litaChantler :: AssetId -> LitaChantler
-litaChantler uuid = LitaChantler $ (baseAttrs uuid "01117")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 3
-  , assetSanity = Just 3
-  }
+litaChantler uuid = LitaChantler $ baseAttrs uuid "01117" $ do
+  slots .= [AllySlot]
+  health ?= 3
+  sanity ?= 3
 
 instance (HasId LocationId InvestigatorId env) => HasModifiersFor env LitaChantler where
   getModifiersFor _ (InvestigatorTarget iid) (LitaChantler Attrs {..}) = do

@@ -15,7 +15,7 @@ newtype JennysTwin45s = JennysTwin45s Attrs
 
 jennysTwin45s :: AssetId -> JennysTwin45s
 jennysTwin45s uuid =
-  JennysTwin45s $ (baseAttrs uuid "02010") { assetSlots = [HandSlot, HandSlot] }
+  JennysTwin45s $ baseAttrs uuid "02010" $ slots .= [HandSlot, HandSlot]
 
 instance HasModifiersFor env JennysTwin45s where
   getModifiersFor _ _ _ = pure []

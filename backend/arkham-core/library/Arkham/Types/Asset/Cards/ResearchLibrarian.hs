@@ -11,11 +11,10 @@ newtype ResearchLibrarian = ResearchLibrarian Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 researchLibrarian :: AssetId -> ResearchLibrarian
-researchLibrarian uuid = ResearchLibrarian $ (baseAttrs uuid "01032")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 1
-  , assetSanity = Just 1
-  }
+researchLibrarian uuid = ResearchLibrarian $ baseAttrs uuid "01032" $ do
+  slots .= [AllySlot]
+  health ?= 1
+  sanity ?= 1
 
 instance HasModifiersFor env ResearchLibrarian where
   getModifiersFor _ _ _ = pure []

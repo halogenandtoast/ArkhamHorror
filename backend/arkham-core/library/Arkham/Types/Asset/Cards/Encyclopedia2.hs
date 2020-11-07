@@ -11,7 +11,7 @@ newtype Encyclopedia2 = Encyclopedia2 Attrs
 
 encyclopedia2 :: AssetId -> Encyclopedia2
 encyclopedia2 uuid =
-  Encyclopedia2 $ (baseAttrs uuid "01042") { assetSlots = [HandSlot] }
+  Encyclopedia2 $ baseAttrs uuid "01042" $ slots .= [HandSlot]
 
 instance HasModifiersFor env Encyclopedia2 where
   getModifiersFor _ _ _ = pure []

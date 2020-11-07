@@ -11,8 +11,9 @@ newtype StrayCat = StrayCat Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 strayCat :: AssetId -> StrayCat
-strayCat uuid = StrayCat
-  $ (baseAttrs uuid "01076") { assetSlots = [AllySlot], assetHealth = Just 2 }
+strayCat uuid = StrayCat $ baseAttrs uuid "01076" $ do
+  slots .= [AllySlot]
+  health ?= 2
 
 instance HasModifiersFor env StrayCat where
   getModifiersFor _ _ _ = pure []

@@ -15,7 +15,7 @@ newtype FortyOneDerringer = FortyOneDerringer Attrs
 
 fortyOneDerringer :: AssetId -> FortyOneDerringer
 fortyOneDerringer uuid =
-  FortyOneDerringer $ (baseAttrs uuid "01047") { assetSlots = [HandSlot] }
+  FortyOneDerringer $ baseAttrs uuid "01047" $ slots .= [HandSlot]
 
 instance HasModifiersFor env FortyOneDerringer where
   getModifiersFor _ _ _ = pure []

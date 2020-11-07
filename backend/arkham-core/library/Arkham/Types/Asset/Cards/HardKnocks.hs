@@ -11,7 +11,7 @@ newtype HardKnocks = HardKnocks Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 hardKnocks :: AssetId -> HardKnocks
-hardKnocks uuid = HardKnocks $ baseAttrs uuid "01049"
+hardKnocks uuid = HardKnocks $ baseAttrs uuid "01049" $ pure ()
 
 instance HasModifiersFor env HardKnocks where
   getModifiersFor _ _ _ = pure []

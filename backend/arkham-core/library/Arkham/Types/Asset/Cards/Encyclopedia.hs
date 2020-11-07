@@ -12,8 +12,7 @@ newtype Encyclopedia = Encyclopedia Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 encyclopedia :: AssetId -> Encyclopedia
-encyclopedia uuid =
-  Encyclopedia $ (baseAttrs uuid "60208") { assetSlots = [HandSlot] }
+encyclopedia uuid = Encyclopedia $ baseAttrs uuid "60208" $ slots .= [HandSlot]
 
 instance HasModifiersFor env Encyclopedia where
   getModifiersFor _ _ _ = pure []

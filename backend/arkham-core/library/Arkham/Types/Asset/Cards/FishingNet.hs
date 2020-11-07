@@ -16,7 +16,7 @@ newtype FishingNet = FishingNet Attrs
   deriving anyclass (ToJSON, FromJSON)
 
 fishingNet :: AssetId -> FishingNet
-fishingNet uuid = FishingNet $ baseAttrs uuid "81021"
+fishingNet uuid = FishingNet $ baseAttrs uuid "81021" $ pure ()
 
 -- TODO: Removal of retaliate should maybe be a modifier of some sort
 instance HasModifiersFor env FishingNet where

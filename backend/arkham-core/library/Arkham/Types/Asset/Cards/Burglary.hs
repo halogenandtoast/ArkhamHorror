@@ -16,7 +16,7 @@ newtype Burglary = Burglary Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 burglary :: AssetId -> Burglary
-burglary uuid = Burglary $ baseAttrs uuid "01045"
+burglary uuid = Burglary $ baseAttrs uuid "01045" $ pure ()
 
 instance HasModifiersFor env Burglary where
   getModifiersFor _ _ _ = pure []

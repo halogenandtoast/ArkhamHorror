@@ -11,7 +11,7 @@ newtype OccultLexicon = OccultLexicon Attrs
 
 occultLexicon :: AssetId -> OccultLexicon
 occultLexicon uuid =
-  OccultLexicon $ (baseAttrs uuid "05316") { assetSlots = [HandSlot] }
+  OccultLexicon $ baseAttrs uuid "05316" $ slots .= [HandSlot]
 
 instance HasModifiersFor env OccultLexicon where
   getModifiersFor _ _ _ = pure []

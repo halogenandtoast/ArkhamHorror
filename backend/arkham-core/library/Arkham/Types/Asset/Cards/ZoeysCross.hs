@@ -16,7 +16,7 @@ newtype ZoeysCross = ZoeysCross Attrs
 
 zoeysCross :: AssetId -> ZoeysCross
 zoeysCross uuid =
-  ZoeysCross $ (baseAttrs uuid "02006") { assetSlots = [AccessorySlot] }
+  ZoeysCross $ baseAttrs uuid "02006" $ slots .= [AccessorySlot]
 
 instance HasModifiersFor env ZoeysCross where
   getModifiersFor _ _ _ = pure []

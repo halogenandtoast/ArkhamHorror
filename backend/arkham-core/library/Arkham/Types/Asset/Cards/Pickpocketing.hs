@@ -10,7 +10,7 @@ newtype Pickpocketing = Pickpocketing Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 pickpoketing :: AssetId -> Pickpocketing
-pickpoketing uuid = Pickpocketing $ baseAttrs uuid "01046"
+pickpoketing uuid = Pickpocketing $ baseAttrs uuid "01046" $ pure ()
 
 instance HasModifiersFor env Pickpocketing where
   getModifiersFor _ _ _ = pure []

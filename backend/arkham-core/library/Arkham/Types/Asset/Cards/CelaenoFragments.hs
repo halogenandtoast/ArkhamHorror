@@ -12,7 +12,7 @@ newtype CelaenoFragments = CelaenoFragments Attrs
 
 celaenoFragments :: AssetId -> CelaenoFragments
 celaenoFragments uuid =
-  CelaenoFragments $ (baseAttrs uuid "60206") { assetSlots = [HandSlot] }
+  CelaenoFragments $ baseAttrs uuid "60206" $ slots .= [HandSlot]
 
 instance AssetRunner env => HasModifiersFor env CelaenoFragments where
   getModifiersFor _ (InvestigatorTarget iid) (CelaenoFragments attrs)

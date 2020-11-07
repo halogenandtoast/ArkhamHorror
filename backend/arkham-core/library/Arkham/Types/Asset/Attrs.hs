@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Attrs where
 
 import Arkham.Import
 
+import Control.Monad.State.Strict
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Trait
 
@@ -37,34 +38,37 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "asset"
 
-baseAttrs :: AssetId -> CardCode -> Attrs
-baseAttrs aid cardCode =
+baseAttrs :: AssetId -> CardCode -> State Attrs () -> Attrs
+baseAttrs aid cardCode f =
   let
     MkPlayerCard {..} =
       fromJustNote "missing player card" (lookup cardCode allPlayerCards)
         $ CardId (unAssetId aid)
   in
-    Attrs
-      { assetName = pcName
-      , assetId = aid
-      , assetCardCode = cardCode
-      , assetCost = pcCost
-      , assetInvestigator = Nothing
-      , assetLocation = Nothing
-      , assetEnemy = Nothing
-      , assetActions = mempty
-      , assetSlots = mempty
-      , assetHealth = Nothing
-      , assetSanity = Nothing
-      , assetHealthDamage = 0
-      , assetSanityDamage = 0
-      , assetTraits = pcTraits
-      , assetUses = NoUses
-      , assetExhausted = False
-      , assetDoom = 0
-      , assetHorror = Nothing
-      , assetCanLeavePlayByNormalMeans = True
-      }
+    execState
+      f
+      (Attrs
+        { assetName = pcName
+        , assetId = aid
+        , assetCardCode = cardCode
+        , assetCost = pcCost
+        , assetInvestigator = Nothing
+        , assetLocation = Nothing
+        , assetEnemy = Nothing
+        , assetActions = mempty
+        , assetSlots = mempty
+        , assetHealth = Nothing
+        , assetSanity = Nothing
+        , assetHealthDamage = 0
+        , assetSanityDamage = 0
+        , assetTraits = pcTraits
+        , assetUses = NoUses
+        , assetExhausted = False
+        , assetDoom = 0
+        , assetHorror = Nothing
+        , assetCanLeavePlayByNormalMeans = True
+        }
+      )
 
 isSource :: Attrs -> Source -> Bool
 isSource = (==) . toSource
@@ -80,6 +84,22 @@ ownedBy Attrs {..} = (== assetInvestigator) . Just
 
 doom :: Lens' Attrs Int
 doom = lens assetDoom $ \m x -> m { assetDoom = x }
+
+horror :: Lens' Attrs (Maybe Int)
+horror = lens assetHorror $ \m x -> m { assetHorror = x }
+
+health :: Lens' Attrs (Maybe Int)
+health = lens assetHealth $ \m x -> m { assetHealth = x }
+
+sanity :: Lens' Attrs (Maybe Int)
+sanity = lens assetSanity $ \m x -> m { assetSanity = x }
+
+slots :: Lens' Attrs [SlotType]
+slots = lens assetSlots $ \m x -> m { assetSlots = x }
+
+canLeavePlayByNormalMeans :: Lens' Attrs Bool
+canLeavePlayByNormalMeans = lens assetCanLeavePlayByNormalMeans
+  $ \m x -> m { assetCanLeavePlayByNormalMeans = x }
 
 exhausted :: Lens' Attrs Bool
 exhausted = lens assetExhausted $ \m x -> m { assetExhausted = x }
@@ -130,8 +150,8 @@ instance (HasQueue env, HasModifiers env InvestigatorId) => RunMessage env Attrs
       Nothing -> pure $ a & exhausted .~ False
     CheckDefeated ->
       a <$ when (defeated a) (unshiftMessage (AssetDefeated assetId))
-    AssetDamage aid _ health sanity | aid == assetId ->
-      pure $ a & healthDamage +~ health & sanityDamage +~ sanity
+    AssetDamage aid _ health' sanity' | aid == assetId ->
+      pure $ a & healthDamage +~ health' & sanityDamage +~ sanity'
     InvestigatorEliminated iid | assetInvestigator == Just iid ->
       a <$ unshiftMessage (Discard (AssetTarget assetId))
     AddUses target useType n | target `is` a -> case assetUses of

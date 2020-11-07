@@ -6,7 +6,7 @@ module Arkham.Json
 where
 
 import ClassyPrelude
-import Data.Aeson as X
+import Data.Aeson as X hiding ((.=))
 import Data.Aeson.Casing (camelCase)
 import Data.Aeson.Text as X
 

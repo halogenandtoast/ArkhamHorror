@@ -12,7 +12,7 @@ newtype Scavenging = Scavenging Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 scavenging :: AssetId -> Scavenging
-scavenging uuid = Scavenging $ baseAttrs uuid "01073"
+scavenging uuid = Scavenging $ baseAttrs uuid "01073" $ pure ()
 
 instance HasModifiersFor env Scavenging where
   getModifiersFor _ _ _ = pure []

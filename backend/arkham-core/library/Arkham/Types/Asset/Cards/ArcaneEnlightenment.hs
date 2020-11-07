@@ -17,7 +17,7 @@ newtype ArcaneEnlightenment = ArcaneEnlightenment Attrs
 
 arcaneEnlightenment :: AssetId -> ArcaneEnlightenment
 arcaneEnlightenment uuid =
-  ArcaneEnlightenment $ (baseAttrs uuid "60205") { assetSlots = [ArcaneSlot] }
+  ArcaneEnlightenment $ baseAttrs uuid "60205" $ slots .= [ArcaneSlot]
 
 instance HasModifiersFor env ArcaneEnlightenment where
   getModifiersFor _ (InvestigatorTarget iid) (ArcaneEnlightenment attrs) =

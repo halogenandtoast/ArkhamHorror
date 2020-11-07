@@ -17,7 +17,7 @@ newtype FirstAid = FirstAid Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 firstAid :: AssetId -> FirstAid
-firstAid uuid = FirstAid $ baseAttrs uuid "01019"
+firstAid uuid = FirstAid $ baseAttrs uuid "01019" $ pure ()
 
 instance HasModifiersFor env FirstAid where
   getModifiersFor _ _ _ = pure []

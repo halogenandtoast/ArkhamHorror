@@ -12,7 +12,7 @@ newtype Machete = Machete Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 machete :: AssetId -> Machete
-machete uuid = Machete $ (baseAttrs uuid "01020") { assetSlots = [HandSlot] }
+machete uuid = Machete $ baseAttrs uuid "01020" $ slots .= [HandSlot]
 
 instance HasModifiersFor env Machete where
   getModifiersFor _ _ _ = pure []

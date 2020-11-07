@@ -14,8 +14,7 @@ newtype Flashlight = Flashlight Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 flashlight :: AssetId -> Flashlight
-flashlight uuid =
-  Flashlight $ (baseAttrs uuid "01087") { assetSlots = [HandSlot] }
+flashlight uuid = Flashlight $ baseAttrs uuid "01087" $ slots .= [HandSlot]
 
 instance HasModifiersFor env Flashlight where
   getModifiersFor _ _ _ = pure []

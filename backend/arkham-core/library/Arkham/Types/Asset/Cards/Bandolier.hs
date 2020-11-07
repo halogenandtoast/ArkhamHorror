@@ -15,8 +15,9 @@ newtype Bandolier = Bandolier Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 bandolier :: AssetId -> Bandolier
-bandolier uuid = Bandolier
-  $ (baseAttrs uuid "02147") { assetHealth = Just 1, assetSlots = [BodySlot] }
+bandolier uuid = Bandolier $ baseAttrs uuid "02147" $ do
+  slots .= [BodySlot]
+  health ?= 1
 
 instance HasModifiersFor env Bandolier where
   getModifiersFor _ _ _ = pure []

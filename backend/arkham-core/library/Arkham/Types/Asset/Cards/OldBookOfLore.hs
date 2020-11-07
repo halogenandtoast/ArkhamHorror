@@ -12,7 +12,7 @@ newtype OldBookOfLore = OldBookOfLore Attrs
 
 oldBookOfLore :: AssetId -> OldBookOfLore
 oldBookOfLore uuid =
-  OldBookOfLore $ (baseAttrs uuid "01031") { assetSlots = [HandSlot] }
+  OldBookOfLore $ baseAttrs uuid "01031" $ slots .= [HandSlot]
 
 instance HasModifiersFor env OldBookOfLore where
   getModifiersFor _ _ _ = pure []

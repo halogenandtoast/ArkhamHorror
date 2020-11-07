@@ -12,8 +12,7 @@ newtype Switchblade = Switchblade Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 switchblade :: AssetId -> Switchblade
-switchblade uuid =
-  Switchblade $ (baseAttrs uuid "01044") { assetSlots = [HandSlot] }
+switchblade uuid = Switchblade $ baseAttrs uuid "01044" $ slots .= [HandSlot]
 
 instance HasModifiersFor env Switchblade where
   getModifiersFor _ _ _ = pure []

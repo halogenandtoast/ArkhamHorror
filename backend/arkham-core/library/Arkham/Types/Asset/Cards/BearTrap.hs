@@ -15,7 +15,7 @@ newtype BearTrap = BearTrap Attrs
   deriving anyclass (ToJSON, FromJSON)
 
 bearTrap :: AssetId -> BearTrap
-bearTrap uuid = BearTrap $ baseAttrs uuid "81020"
+bearTrap uuid = BearTrap $ baseAttrs uuid "81020" $ pure ()
 
 instance HasModifiersFor env BearTrap where
   getModifiersFor _ (EnemyTarget eid) (BearTrap Attrs {..})

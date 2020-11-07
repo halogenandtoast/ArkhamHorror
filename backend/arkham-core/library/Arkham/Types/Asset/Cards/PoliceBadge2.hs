@@ -11,7 +11,7 @@ newtype PoliceBadge2 = PoliceBadge2 Attrs
 
 policeBadge2 :: AssetId -> PoliceBadge2
 policeBadge2 uuid =
-  PoliceBadge2 $ (baseAttrs uuid "01027") { assetSlots = [AccessorySlot] }
+  PoliceBadge2 $ baseAttrs uuid "01027" $ slots .= [AccessorySlot]
 
 instance HasModifiersFor env PoliceBadge2 where
   getModifiersFor _ (InvestigatorTarget iid) (PoliceBadge2 a) =

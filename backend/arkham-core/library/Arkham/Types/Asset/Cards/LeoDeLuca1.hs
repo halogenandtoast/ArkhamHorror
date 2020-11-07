@@ -10,11 +10,10 @@ newtype LeoDeLuca1 = LeoDeLuca1 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 leoDeLuca1 :: AssetId -> LeoDeLuca1
-leoDeLuca1 uuid = LeoDeLuca1 $ (baseAttrs uuid "01054")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 2
-  , assetSanity = Just 2
-  }
+leoDeLuca1 uuid = LeoDeLuca1 $ baseAttrs uuid "01054" $ do
+  slots .= [AllySlot]
+  health ?= 2
+  sanity ?= 2
 
 instance HasModifiersFor env LeoDeLuca1 where
   getModifiersFor _ (InvestigatorTarget iid) (LeoDeLuca1 a) =

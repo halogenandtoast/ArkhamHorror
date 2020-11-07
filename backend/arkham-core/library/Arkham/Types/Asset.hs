@@ -112,7 +112,7 @@ newtype BaseAsset = BaseAsset Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 baseAsset :: AssetId -> CardCode -> (Attrs -> Attrs) -> Asset
-baseAsset a b f = BaseAsset' . BaseAsset . f $ baseAttrs a b
+baseAsset a b f = BaseAsset' . BaseAsset . f $ baseAttrs a b (pure ())
 
 instance HasDamage Asset where
   getDamage a =

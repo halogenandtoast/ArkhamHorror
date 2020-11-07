@@ -14,7 +14,7 @@ newtype Scrying = Scrying Attrs
   deriving anyclass (ToJSON, FromJSON)
 
 scrying :: AssetId -> Scrying
-scrying uuid = Scrying $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
+scrying uuid = Scrying $ baseAttrs uuid "01061" $ slots .= [ArcaneSlot]
 
 instance HasModifiersFor env Scrying where
   getModifiersFor _ _ _ = pure []

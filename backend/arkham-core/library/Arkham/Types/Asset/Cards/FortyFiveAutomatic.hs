@@ -15,7 +15,7 @@ newtype FortyFiveAutomatic = FortyFiveAutomatic Attrs
 
 fortyFiveAutomatic :: AssetId -> FortyFiveAutomatic
 fortyFiveAutomatic uuid =
-  FortyFiveAutomatic $ (baseAttrs uuid "01016") { assetSlots = [HandSlot] }
+  FortyFiveAutomatic $ baseAttrs uuid "01016" $ slots .= [HandSlot]
 
 instance HasModifiersFor env FortyFiveAutomatic where
   getModifiersFor _ _ _ = pure []

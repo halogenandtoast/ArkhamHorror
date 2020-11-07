@@ -14,7 +14,7 @@ newtype ScrollOfProphecies = ScrollOfProphecies Attrs
 
 scrollOfProphecies :: AssetId -> ScrollOfProphecies
 scrollOfProphecies uuid =
-  ScrollOfProphecies $ (baseAttrs uuid "06116") { assetSlots = [HandSlot] }
+  ScrollOfProphecies $ baseAttrs uuid "06116" $ slots .= [HandSlot]
 
 instance HasModifiersFor env ScrollOfProphecies where
   getModifiersFor _ _ _ = pure []

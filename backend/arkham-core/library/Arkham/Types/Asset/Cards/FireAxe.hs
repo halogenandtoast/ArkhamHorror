@@ -17,7 +17,7 @@ newtype FireAxe = FireAxe Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 fireAxe :: AssetId -> FireAxe
-fireAxe uuid = FireAxe $ (baseAttrs uuid "02032") { assetSlots = [HandSlot] }
+fireAxe uuid = FireAxe $ baseAttrs uuid "02032" $ slots .= [HandSlot]
 
 fightAbility :: Attrs -> Ability
 fightAbility Attrs { assetId } =

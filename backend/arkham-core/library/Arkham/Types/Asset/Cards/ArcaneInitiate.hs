@@ -11,11 +11,10 @@ newtype ArcaneInitiate = ArcaneInitiate Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 arcaneInitiate :: AssetId -> ArcaneInitiate
-arcaneInitiate uuid = ArcaneInitiate $ (baseAttrs uuid "01063")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 1
-  , assetSanity = Just 2
-  }
+arcaneInitiate uuid = ArcaneInitiate $ baseAttrs uuid "01063" $ do
+  slots .= [AllySlot]
+  health ?= 1
+  sanity ?= 2
 
 fastAbility :: Attrs -> Window -> Ability
 fastAbility a window = mkAbility (toSource a) 1 (FastAbility window)

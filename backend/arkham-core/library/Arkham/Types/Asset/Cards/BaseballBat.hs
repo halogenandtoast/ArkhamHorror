@@ -20,7 +20,7 @@ newtype BaseballBat = BaseballBat Attrs
 
 baseballBat :: AssetId -> BaseballBat
 baseballBat uuid =
-  BaseballBat $ (baseAttrs uuid "01074") { assetSlots = [HandSlot, HandSlot] }
+  BaseballBat $ baseAttrs uuid "01074" $ slots .= [HandSlot, HandSlot]
 
 instance HasModifiersFor env BaseballBat where
   getModifiersFor _ _ _ = pure []

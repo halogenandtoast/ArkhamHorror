@@ -17,7 +17,7 @@ newtype BookOfShadows3 = BookOfShadows3 Attrs
 
 bookOfShadows3 :: AssetId -> BookOfShadows3
 bookOfShadows3 uuid =
-  BookOfShadows3 $ (baseAttrs uuid "01070") { assetSlots = [HandSlot] }
+  BookOfShadows3 $ baseAttrs uuid "01070" $ slots .= [HandSlot]
 
 instance HasModifiersFor env BookOfShadows3 where
   getModifiersFor _ _ _ = pure []

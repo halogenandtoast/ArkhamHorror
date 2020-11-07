@@ -11,7 +11,7 @@ newtype PhysicalTraining = PhysicalTraining Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 physicalTraining :: AssetId -> PhysicalTraining
-physicalTraining uuid = PhysicalTraining $ baseAttrs uuid "01017"
+physicalTraining uuid = PhysicalTraining $ baseAttrs uuid "01017" $ pure ()
 
 instance HasModifiersFor env PhysicalTraining where
   getModifiersFor _ _ _ = pure []

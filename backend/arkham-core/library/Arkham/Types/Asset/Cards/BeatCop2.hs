@@ -10,11 +10,10 @@ newtype BeatCop2 = BeatCop2 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 beatCop2 :: AssetId -> BeatCop2
-beatCop2 uuid = BeatCop2 $ (baseAttrs uuid "01018")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 3
-  , assetSanity = Just 2
-  }
+beatCop2 uuid = BeatCop2 $ baseAttrs uuid "01018" $ do
+  slots .= [AllySlot]
+  health ?= 3
+  sanity ?= 2
 
 instance HasModifiersFor env BeatCop2 where
   getModifiersFor _ (InvestigatorTarget iid) (BeatCop2 a) =

@@ -17,8 +17,9 @@ newtype Duke = Duke Attrs
   deriving anyclass (ToJSON, FromJSON)
 
 duke :: AssetId -> Duke
-duke uuid =
-  Duke $ (baseAttrs uuid "02014") { assetHealth = Just 2, assetSanity = Just 3 }
+duke uuid = Duke $ baseAttrs uuid "02014" $ do
+  health ?= 2
+  sanity ?= 3
 
 instance HasModifiersFor env Duke where
   getModifiersFor (SkillTestSource _ source (Just Action.Fight)) (InvestigatorTarget iid) (Duke a)

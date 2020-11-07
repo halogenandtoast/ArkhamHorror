@@ -11,8 +11,8 @@ newtype HeirloomOfHyperborea = HeirloomOfHyperborea Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 heirloomOfHyperborea :: AssetId -> HeirloomOfHyperborea
-heirloomOfHyperborea uuid = HeirloomOfHyperborea
-  $ (baseAttrs uuid "01012") { assetSlots = [AccessorySlot] }
+heirloomOfHyperborea uuid =
+  HeirloomOfHyperborea $ baseAttrs uuid "01012" $ slots .= [AccessorySlot]
 
 instance HasModifiersFor env HeirloomOfHyperborea where
   getModifiersFor _ _ _ = pure []

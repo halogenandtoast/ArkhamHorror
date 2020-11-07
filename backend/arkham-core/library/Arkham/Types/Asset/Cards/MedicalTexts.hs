@@ -10,8 +10,7 @@ newtype MedicalTexts = MedicalTexts Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 medicalTexts :: AssetId -> MedicalTexts
-medicalTexts uuid =
-  MedicalTexts $ (baseAttrs uuid "01035") { assetSlots = [HandSlot] }
+medicalTexts uuid = MedicalTexts $ baseAttrs uuid "01035" $ slots .= [HandSlot]
 
 instance HasModifiersFor env MedicalTexts where
   getModifiersFor _ _ _ = pure []

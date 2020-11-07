@@ -13,7 +13,7 @@ newtype ForbiddenKnowledge = ForbiddenKnowledge Attrs
   deriving anyclass (ToJSON, FromJSON)
 
 forbiddenKnowledge :: AssetId -> ForbiddenKnowledge
-forbiddenKnowledge uuid = ForbiddenKnowledge $ baseAttrs uuid "01058"
+forbiddenKnowledge uuid = ForbiddenKnowledge $ baseAttrs uuid "01058" $ pure ()
 
 instance HasModifiersFor env ForbiddenKnowledge where
   getModifiersFor _ _ _ = pure []

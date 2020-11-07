@@ -11,7 +11,7 @@ newtype WendysAmulet = WendysAmulet Attrs
 
 wendysAmulet :: AssetId -> WendysAmulet
 wendysAmulet uuid =
-  WendysAmulet $ (baseAttrs uuid "01014") { assetSlots = [AccessorySlot] }
+  WendysAmulet $ baseAttrs uuid "01014" $ slots .= [AccessorySlot]
 
 instance HasModifiersFor env WendysAmulet where
   getModifiersFor _ (InvestigatorTarget iid) (WendysAmulet a) =

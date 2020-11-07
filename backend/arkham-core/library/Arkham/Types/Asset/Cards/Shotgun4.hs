@@ -15,7 +15,7 @@ newtype Shotgun4 = Shotgun4 Attrs
 
 shotgun4 :: AssetId -> Shotgun4
 shotgun4 uuid =
-  Shotgun4 $ (baseAttrs uuid "01029") { assetSlots = [HandSlot, HandSlot] }
+  Shotgun4 $ baseAttrs uuid "01029" $ slots .= [HandSlot, HandSlot]
 
 instance HasModifiersFor env Shotgun4 where
   getModifiersFor _ _ _ = pure []

@@ -11,10 +11,9 @@ newtype ElderSignAmulet3 = ElderSignAmulet3 Attrs
   deriving anyclass (ToJSON, FromJSON)
 
 elderSignAmulet3 :: AssetId -> ElderSignAmulet3
-elderSignAmulet3 uuid = ElderSignAmulet3 $ (baseAttrs uuid "01095")
-  { assetSlots = [AccessorySlot]
-  , assetSanity = Just 4
-  }
+elderSignAmulet3 uuid = ElderSignAmulet3 $ baseAttrs uuid "01095" $ do
+  slots .= [AccessorySlot]
+  sanity ?= 4
 
 instance HasModifiersFor env ElderSignAmulet3 where
   getModifiersFor _ _ _ = pure []

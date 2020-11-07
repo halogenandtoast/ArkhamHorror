@@ -19,7 +19,7 @@ newtype Rolands38Special = Rolands38Special Attrs
 
 rolands38Special :: AssetId -> Rolands38Special
 rolands38Special uuid =
-  Rolands38Special $ (baseAttrs uuid "01006") { assetSlots = [HandSlot] }
+  Rolands38Special $ baseAttrs uuid "01006" $ slots .= [HandSlot]
 
 instance HasModifiersFor env Rolands38Special where
   getModifiersFor _ _ _ = pure []

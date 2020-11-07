@@ -11,8 +11,9 @@ newtype LeatherCoat = LeatherCoat Attrs
   deriving anyclass (ToJSON, FromJSON)
 
 leatherCoat :: AssetId -> LeatherCoat
-leatherCoat uuid = LeatherCoat
-  $ (baseAttrs uuid "01072") { assetSlots = [BodySlot], assetHealth = Just 2 }
+leatherCoat uuid = LeatherCoat $ baseAttrs uuid "01072" $ do
+  slots .= [BodySlot]
+  health ?= 2
 
 instance HasModifiersFor env LeatherCoat where
   getModifiersFor _ _ _ = pure []

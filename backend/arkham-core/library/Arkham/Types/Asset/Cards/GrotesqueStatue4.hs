@@ -19,7 +19,7 @@ newtype GrotesqueStatue4 = GrotesqueStatue4 Attrs
 
 grotesqueStatue4 :: AssetId -> GrotesqueStatue4
 grotesqueStatue4 uuid =
-  GrotesqueStatue4 $ (baseAttrs uuid "01071") { assetSlots = [HandSlot] }
+  GrotesqueStatue4 $ baseAttrs uuid "01071" $ slots .= [HandSlot]
 
 instance HasModifiersFor env GrotesqueStatue4 where
   getModifiersFor _ _ _ = pure []

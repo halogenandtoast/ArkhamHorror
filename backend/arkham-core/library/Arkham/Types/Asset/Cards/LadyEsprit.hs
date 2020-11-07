@@ -15,11 +15,10 @@ newtype LadyEsprit = LadyEsprit Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 ladyEsprit :: AssetId -> LadyEsprit
-ladyEsprit uuid = LadyEsprit $ (baseAttrs uuid "81019")
-  { assetSlots = [AllySlot]
-  , assetHealth = Just 2
-  , assetSanity = Just 4
-  }
+ladyEsprit uuid = LadyEsprit $ baseAttrs uuid "81019" $ do
+  slots .= [AllySlot]
+  health ?= 2
+  sanity ?= 4
 
 ability :: Attrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)

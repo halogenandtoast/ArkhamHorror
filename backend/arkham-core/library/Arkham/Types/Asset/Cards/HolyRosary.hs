@@ -10,10 +10,9 @@ newtype HolyRosary = HolyRosary Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 holyRosary :: AssetId -> HolyRosary
-holyRosary uuid = HolyRosary $ (baseAttrs uuid "01059")
-  { assetSlots = [AccessorySlot]
-  , assetSanity = Just 2
-  }
+holyRosary uuid = HolyRosary $ baseAttrs uuid "01059" $ do
+  slots .= [AccessorySlot]
+  sanity ?= 2
 
 instance HasModifiersFor env  HolyRosary where
   getModifiersFor _ (InvestigatorTarget iid) (HolyRosary a) =

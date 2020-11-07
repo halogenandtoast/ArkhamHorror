@@ -12,7 +12,7 @@ newtype DiscOfItzamna2 = DiscOfItzamna2 Attrs
 
 discOfItzamna2 :: AssetId -> DiscOfItzamna2
 discOfItzamna2 uuid =
-  DiscOfItzamna2 $ (baseAttrs uuid "01059") { assetSlots = [AccessorySlot] }
+  DiscOfItzamna2 $ baseAttrs uuid "01059" $ slots .= [AccessorySlot]
 
 instance HasModifiersFor env DiscOfItzamna2 where
   getModifiersFor _ _ _ = pure []

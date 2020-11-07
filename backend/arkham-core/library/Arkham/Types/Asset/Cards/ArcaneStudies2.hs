@@ -11,7 +11,7 @@ newtype ArcaneStudies2 = ArcaneStudies2 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 arcaneStudies2 :: AssetId -> ArcaneStudies2
-arcaneStudies2 uuid = ArcaneStudies2 $ baseAttrs uuid "50007"
+arcaneStudies2 uuid = ArcaneStudies2 $ baseAttrs uuid "50007" $ pure ()
 
 instance HasModifiersFor env ArcaneStudies2 where
   getModifiersFor _ _ _ = pure []

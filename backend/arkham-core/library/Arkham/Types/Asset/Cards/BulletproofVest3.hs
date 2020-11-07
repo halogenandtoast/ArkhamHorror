@@ -11,8 +11,9 @@ newtype BulletproofVest3 = BulletproofVest3 Attrs
   deriving anyclass (ToJSON, FromJSON)
 
 bulletproofVest3 :: AssetId -> BulletproofVest3
-bulletproofVest3 uuid = BulletproofVest3
-  $ (baseAttrs uuid "01094") { assetSlots = [BodySlot], assetHealth = Just 4 }
+bulletproofVest3 uuid = BulletproofVest3 $ baseAttrs uuid "01094" $ do
+  slots .= [BodySlot]
+  health ?= 4
 
 instance HasModifiersFor env BulletproofVest3 where
   getModifiersFor _ _ _ = pure []

@@ -5,22 +5,20 @@ import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import qualified Arkham.Types.Token as Token
 
 newtype TheNecronomicon = TheNecronomicon Attrs
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 theNecronomicon :: AssetId -> TheNecronomicon
-theNecronomicon uuid = TheNecronomicon $ (baseAttrs uuid "01009")
-  { assetSlots = [HandSlot]
-  , assetHorror = Just 3
-  , assetCanLeavePlayByNormalMeans = False
-  }
+theNecronomicon uuid = TheNecronomicon $ baseAttrs uuid "01009" $ do
+  slots .= [HandSlot]
+  horror ?= 3
+  canLeavePlayByNormalMeans .= False
 
 instance HasModifiersFor env TheNecronomicon where
   getModifiersFor _ (InvestigatorTarget iid) (TheNecronomicon a) =
-    pure [ ForcedTokenChange Token.ElderSign [Token.AutoFail] | ownedBy a iid ]
+    pure [ ForcedTokenChange ElderSign [AutoFail] | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env TheNecronomicon where

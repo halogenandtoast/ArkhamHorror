@@ -5,7 +5,6 @@ import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
-import qualified Arkham.Types.Token as Token
 
 newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced Attrs
   deriving stock (Show, Generic)
@@ -20,9 +19,7 @@ theNecronomiconAdvanced uuid =
 
 instance HasModifiersFor env TheNecronomiconAdvanced where
   getModifiersFor _ (InvestigatorTarget iid) (TheNecronomiconAdvanced a) = pure
-    [ ForcedTokenChange
-        Token.ElderSign
-        [Token.Cultist, Token.Tablet, Token.ElderThing]
+    [ ForcedTokenChange ElderSign [Cultist, Tablet, ElderThing]
     | ownedBy a iid
     ]
   getModifiersFor _ _ _ = pure []

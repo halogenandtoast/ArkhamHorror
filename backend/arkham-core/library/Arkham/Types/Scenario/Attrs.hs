@@ -69,21 +69,20 @@ baseAttrs cardCode name agendaStack actStack' difficulty = Attrs
   }
 
 instance (HasTokenValue env InvestigatorId, HasQueue env) => HasTokenValue env Attrs where
-  getTokenValue _ iid token = do
-    case drawnTokenFace token of
-      ElderSign -> getTokenValue iid iid token
-      AutoFail -> pure $ TokenValue token AutoFailModifier
-      PlusOne -> pure $ TokenValue token (PositiveModifier 1)
-      Zero -> pure $ TokenValue token (PositiveModifier 0)
-      MinusOne -> pure $ TokenValue token (NegativeModifier 1)
-      MinusTwo -> pure $ TokenValue token (NegativeModifier 2)
-      MinusThree -> pure $ TokenValue token (NegativeModifier 3)
-      MinusFour -> pure $ TokenValue token (NegativeModifier 4)
-      MinusFive -> pure $ TokenValue token (NegativeModifier 5)
-      MinusSix -> pure $ TokenValue token (NegativeModifier 6)
-      MinusSeven -> pure $ TokenValue token (NegativeModifier 7)
-      MinusEight -> pure $ TokenValue token (NegativeModifier 8)
-      _ -> pure $ TokenValue token NoModifier
+  getTokenValue _ iid = \case
+    ElderSign -> getTokenValue iid iid ElderSign
+    AutoFail -> pure $ TokenValue AutoFail AutoFailModifier
+    PlusOne -> pure $ TokenValue PlusOne (PositiveModifier 1)
+    Zero -> pure $ TokenValue Zero (PositiveModifier 0)
+    MinusOne -> pure $ TokenValue MinusOne (NegativeModifier 1)
+    MinusTwo -> pure $ TokenValue MinusTwo (NegativeModifier 2)
+    MinusThree -> pure $ TokenValue MinusThree (NegativeModifier 3)
+    MinusFour -> pure $ TokenValue MinusFour (NegativeModifier 4)
+    MinusFive -> pure $ TokenValue MinusFive (NegativeModifier 5)
+    MinusSix -> pure $ TokenValue MinusSix (NegativeModifier 6)
+    MinusSeven -> pure $ TokenValue MinusSeven (NegativeModifier 7)
+    MinusEight -> pure $ TokenValue MinusEight (NegativeModifier 8)
+    otherFace -> pure $ TokenValue otherFace NoModifier
 
 instance (ScenarioRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
@@ -103,10 +102,9 @@ instance (ScenarioRunner env) => RunMessage env Attrs where
     InvestigatorResigned _ -> do
       investigatorIds <- asks (getSet @InScenarioInvestigatorId ())
       if null investigatorIds then a <$ unshiftMessage NoResolution else pure a
-    InvestigatorWhenEliminated iid -> do
+    InvestigatorWhenEliminated iid ->
       a <$ unshiftMessage (InvestigatorEliminated iid)
-    Remember logKey -> do
-      pure $ a & log %~ insertSet logKey
+    Remember logKey -> pure $ a & log %~ insertSet logKey
     ResolveToken token _iid | token == AutoFail ->
       a <$ unshiftMessage FailSkillTest
     NoResolution ->

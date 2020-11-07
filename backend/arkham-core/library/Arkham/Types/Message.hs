@@ -161,7 +161,6 @@ data Message
   | PutSetAsideIntoPlay Target
   | AddUses Target UseType Int
   | ResolveToken Token InvestigatorId
-  | AddTokenValue InvestigatorId TokenValue
   | Investigate InvestigatorId LocationId Source SkillType [Modifier] [TokenResponse Message] [Message] Bool
   | ChooseFightEnemy InvestigatorId Source SkillType [Modifier] [TokenResponse Message] Bool
   | ChooseEvadeEnemy InvestigatorId Source SkillType [Message] [Message] [TokenResponse Message] Bool

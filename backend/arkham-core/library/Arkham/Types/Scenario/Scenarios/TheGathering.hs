@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Scenario.Scenarios.TheGathering where
 
-import Arkham.Import
+import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Difficulty
@@ -9,8 +9,9 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
-import qualified Arkham.Types.Token as Token
-import Arkham.Types.Trait
+import Arkham.Types.Token
+import Arkham.Types.Trait (Trait)
+import qualified Arkham.Types.Trait as Trait
 
 newtype TheGathering = TheGathering Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -23,22 +24,20 @@ theGathering = TheGathering . baseAttrs
   ["01108", "01109", "01110"]
 
 instance (HasTokenValue env InvestigatorId, HasCount EnemyCount (InvestigatorLocation, [Trait]) env, HasQueue env) => HasTokenValue env TheGathering where
-  getTokenValue (TheGathering attrs) iid token = do
-    case drawnTokenFace token of
-      Token.Skull -> do
-        ghoulCount <- asks $ unEnemyCount . getCount
-          (InvestigatorLocation iid, [Ghoul])
-        pure $ TokenValue
-          token
-          (NegativeModifier $ if isEasyStandard attrs then ghoulCount else 2)
-      Token.Cultist -> pure $ TokenValue
-        token
-        (if isEasyStandard attrs then NegativeModifier 1 else NoModifier)
-      Token.Tablet -> do
-        pure $ TokenValue
-          token
-          (NegativeModifier $ if isEasyStandard attrs then 2 else 4)
-      _other -> getTokenValue attrs iid token
+  getTokenValue (TheGathering attrs) iid = \case
+    Skull -> do
+      ghoulCount <- asks $ unEnemyCount . getCount
+        (InvestigatorLocation iid, [Trait.Ghoul])
+      pure $ TokenValue
+        Skull
+        (NegativeModifier $ if isEasyStandard attrs then ghoulCount else 2)
+    Cultist -> pure $ TokenValue
+      Cultist
+      (if isEasyStandard attrs then NegativeModifier 1 else NoModifier)
+    Tablet -> pure $ TokenValue
+      Tablet
+      (NegativeModifier $ if isEasyStandard attrs then 2 else 4)
+    otherFace -> getTokenValue attrs iid otherFace
 
 instance (ScenarioRunner env) => RunMessage env TheGathering where
   runMessage msg s@(TheGathering attrs@Attrs {..}) = case msg of
@@ -82,24 +81,24 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
           ]
         ]
       TheGathering <$> runMessage msg attrs
-    ResolveToken Token.Cultist iid ->
+    ResolveToken Cultist iid ->
       s <$ when (isHardExpert attrs) (unshiftMessage $ DrawAnotherToken iid)
-    ResolveToken Token.Tablet iid -> do
+    ResolveToken Tablet iid -> do
       ghoulCount <- asks $ unEnemyCount . getCount
-        (InvestigatorLocation iid, [Ghoul])
+        (InvestigatorLocation iid, [Trait.Ghoul])
       s <$ when
         (ghoulCount > 0)
         (unshiftMessage $ InvestigatorAssignDamage
           iid
-          (TokenEffectSource Token.Tablet)
+          (TokenEffectSource Tablet)
           1
           (if isEasyStandard attrs then 0 else 1)
         )
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _ -> do
       case drawnTokenFace token of
-        Token.Skull | isHardExpert attrs ->
-          unshiftMessage $ FindAndDrawEncounterCard iid (EnemyType, Just Ghoul)
-        Token.Cultist -> unshiftMessage $ InvestigatorAssignDamage
+        Skull | isHardExpert attrs -> unshiftMessage
+          $ FindAndDrawEncounterCard iid (EnemyType, Just Trait.Ghoul)
+        Cultist -> unshiftMessage $ InvestigatorAssignDamage
           iid
           (DrawnTokenSource token)
           0

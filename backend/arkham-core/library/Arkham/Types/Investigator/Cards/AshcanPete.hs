@@ -56,10 +56,8 @@ instance ActionRunner env => HasActions env AshcanPete where
   getActions i window (AshcanPete attrs) = getActions i window attrs
 
 instance InvestigatorRunner env => HasTokenValue env AshcanPete where
-  getTokenValue (AshcanPete attrs) iid token | iid == investigatorId attrs =
-    case drawnTokenFace token of
-      ElderSign -> pure $ TokenValue token (PositiveModifier 2)
-      _other -> getTokenValue attrs iid token
+  getTokenValue (AshcanPete attrs) iid ElderSign | iid == investigatorId attrs =
+    pure $ TokenValue ElderSign (PositiveModifier 2)
   getTokenValue (AshcanPete attrs) iid token = getTokenValue attrs iid token
 
 instance (InvestigatorRunner env) => RunMessage env AshcanPete where

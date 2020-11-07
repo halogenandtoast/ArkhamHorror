@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Scenario.Scenarios.TheDevourerBelow where
 
-import Arkham.Import
+import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Difficulty
@@ -10,8 +10,8 @@ import Arkham.Types.Helpers
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
-import qualified Arkham.Types.Token as Token
-import Arkham.Types.Trait
+import Arkham.Types.Token
+import Arkham.Types.Trait hiding (Cultist)
 import Data.List.NonEmpty (NonEmpty(..))
 import Data.UUID.V4
 import System.Random.Shuffle
@@ -32,23 +32,22 @@ theDevourerBelow difficulty =
     }
 
 instance (HasTokenValue env InvestigatorId, HasQueue env, HasCount EnemyCount [Trait] env) => HasTokenValue env TheDevourerBelow where
-  getTokenValue (TheDevourerBelow attrs) iid token =
-    case drawnTokenFace token of
-      Token.Skull -> if isEasyStandard attrs
-        then do
-          monsterCount <- asks $ unEnemyCount . getCount [Monster]
-          pure $ TokenValue token (NegativeModifier monsterCount)
-        else pure $ TokenValue token (NegativeModifier 3)
-      Token.Cultist -> do
-        let tokenValue' = if isEasyStandard attrs then 2 else 4
-        pure $ TokenValue token (NegativeModifier tokenValue')
-      Token.Tablet -> do
-        let tokenValue' = if isEasyStandard attrs then 3 else 5
-        pure $ TokenValue token (NegativeModifier tokenValue')
-      Token.ElderThing -> do
-        let tokenValue' = if isEasyStandard attrs then (-5) else (-7)
-        pure $ TokenValue token (NegativeModifier tokenValue')
-      _other -> getTokenValue attrs iid token
+  getTokenValue (TheDevourerBelow attrs) iid = \case
+    Skull -> if isEasyStandard attrs
+      then do
+        monsterCount <- asks $ unEnemyCount . getCount [Monster]
+        pure $ TokenValue Skull (NegativeModifier monsterCount)
+      else pure $ TokenValue Skull (NegativeModifier 3)
+    Cultist -> do
+      let tokenValue' = if isEasyStandard attrs then 2 else 4
+      pure $ TokenValue Cultist (NegativeModifier tokenValue')
+    Tablet -> do
+      let tokenValue' = if isEasyStandard attrs then 3 else 5
+      pure $ TokenValue Tablet (NegativeModifier tokenValue')
+    ElderThing -> do
+      let tokenValue' = if isEasyStandard attrs then (-5) else (-7)
+      pure $ TokenValue ElderThing (NegativeModifier tokenValue')
+    otherFace -> getTokenValue attrs iid otherFace
 
 instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
   runMessage msg s@(TheDevourerBelow attrs@Attrs {..}) = case msg of
@@ -121,7 +120,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
               ]
             )
           , SetEncounterDeck encounterDeck
-          , AddToken Token.ElderThing
+          , AddToken ElderThing
           , AddAgenda "01143"
           , AddAct "01146"
           , PlaceLocation "01149"
@@ -135,7 +134,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
         <> cultistsWhoGotAwayMessages
         <> pastMidnightMessages
       pure s
-    ResolveToken Token.Cultist iid -> do
+    ResolveToken Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
       closestEnemyIds <- asks $ map unClosestEnemyId . setToList . getSet iid
       case closestEnemyIds of
@@ -144,23 +143,20 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
         xs -> unshiftMessage
           (chooseOne iid [ PlaceDoom (EnemyTarget x) doom | x <- xs ])
       pure s
-    ResolveToken Token.Tablet iid -> do
+    ResolveToken Tablet iid -> do
       let horror = if isEasyStandard attrs then 0 else 1
       monsterCount <- asks $ unEnemyCount . getCount
         (InvestigatorLocation iid, [Monster])
       s <$ when
         (monsterCount > 0)
-        (unshiftMessage $ InvestigatorAssignDamage
-          iid
-          (TokenEffectSource Token.Tablet)
-          1
-          horror
+        (unshiftMessage
+        $ InvestigatorAssignDamage iid (TokenEffectSource Tablet) 1 horror
         )
-    ResolveToken Token.ElderThing iid -> do
+    ResolveToken ElderThing iid -> do
       ancientOneCount <- asks $ unEnemyCount . getCount [AncientOne]
       s <$ when (ancientOneCount > 0) (unshiftMessage $ DrawAnotherToken iid)
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _
-      | isHardExpert attrs && drawnTokenFace token == Token.Skull
+      | isHardExpert attrs && drawnTokenFace token == Skull
       -> s <$ unshiftMessage
         (FindAndDrawEncounterCard iid (EnemyType, Just Monster))
     NoResolution -> do

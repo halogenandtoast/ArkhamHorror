@@ -37,10 +37,8 @@ instance ActionRunner env => HasActions env JimCulver where
   getActions i window (JimCulver attrs) = getActions i window attrs
 
 instance InvestigatorRunner env => HasTokenValue env JimCulver where
-  getTokenValue (JimCulver attrs) iid token | iid == investigatorId attrs =
-    case drawnTokenFace token of
-      ElderSign -> pure $ TokenValue token (PositiveModifier 1)
-      _other -> getTokenValue attrs iid token
+  getTokenValue (JimCulver attrs) iid ElderSign | iid == investigatorId attrs =
+    pure $ TokenValue ElderSign (PositiveModifier 1)
   getTokenValue (JimCulver attrs) iid token = getTokenValue attrs iid token
 
 instance InvestigatorRunner env => RunMessage env JimCulver where

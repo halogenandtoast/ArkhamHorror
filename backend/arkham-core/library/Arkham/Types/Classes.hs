@@ -26,7 +26,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Stats
 import Arkham.Types.Target
-import Arkham.Types.Token (DrawnToken, Token, TokenValue(..))
+import Arkham.Types.Token (Token, TokenValue(..))
 import Arkham.Types.Trait
 import Arkham.Types.Window (Who, Window)
 import qualified Arkham.Types.Window as Window
@@ -72,7 +72,7 @@ defaultRunMessage
 defaultRunMessage msg = fmap to . runMessage1 msg . from
 
 class (HasQueue env) => HasTokenValue1 env f where
-  getTokenValue1 :: (MonadIO m, MonadReader env m) => f p -> InvestigatorId -> DrawnToken -> m TokenValue
+  getTokenValue1 :: (MonadIO m, MonadReader env m) => f p -> InvestigatorId -> Token -> m TokenValue
 
 instance (HasQueue env, HasTokenValue1 env f) => HasTokenValue1 env (M1 i c f) where
   getTokenValue1 (M1 x) iid token = getTokenValue1 x iid token
@@ -85,15 +85,15 @@ instance (HasQueue env, HasTokenValue env p) => HasTokenValue1 env (K1 R p) wher
   getTokenValue1 (K1 x) iid token = getTokenValue x iid token
 
 class (HasQueue env) => HasTokenValue env a where
-  getTokenValue :: (MonadIO m, MonadReader env m) => a -> InvestigatorId -> DrawnToken -> m TokenValue
-  default getTokenValue :: (Generic a, HasTokenValue1 env (Rep a), MonadIO m, MonadReader env m) => a -> InvestigatorId -> DrawnToken -> m TokenValue
+  getTokenValue :: (MonadIO m, MonadReader env m) => a -> InvestigatorId -> Token -> m TokenValue
+  default getTokenValue :: (Generic a, HasTokenValue1 env (Rep a), MonadIO m, MonadReader env m) => a -> InvestigatorId -> Token -> m TokenValue
   getTokenValue = defaultGetTokenValue
 
 defaultGetTokenValue
   :: (Generic a, HasTokenValue1 env (Rep a), MonadIO m, MonadReader env m)
   => a
   -> InvestigatorId
-  -> DrawnToken
+  -> Token
   -> m TokenValue
 defaultGetTokenValue a iid token = getTokenValue1 (from a) iid token
 

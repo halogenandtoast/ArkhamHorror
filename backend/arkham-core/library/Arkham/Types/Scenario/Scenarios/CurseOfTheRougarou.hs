@@ -6,7 +6,7 @@ module Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
   )
 where
 
-import Arkham.Import
+import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Difficulty
@@ -16,8 +16,8 @@ import Arkham.Types.Location
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
-import qualified Arkham.Types.Token as Token
-import Arkham.Types.Trait
+import Arkham.Types.Token
+import Arkham.Types.Trait hiding (Cultist)
 import Control.Monad.Extra (findM)
 import System.Random.Shuffle
 
@@ -70,22 +70,21 @@ locationsWithLabels trait = do
     break (elem Bayou . getTraits . lookupLocation) locationSet
 
 instance (HasTokenValue env InvestigatorId, HasQueue env, HasSet Trait LocationId env, HasId LocationId InvestigatorId env) => HasTokenValue env CurseOfTheRougarou where
-  getTokenValue (CurseOfTheRougarou (attrs `With` _)) iid token =
-    case drawnTokenFace token of
-      Token.Skull -> do
-        lid <- asks $ getId @LocationId iid
-        isBayou <- asks $ member Bayou . getSet lid
-        let
-          tokenVal
-            | isBayou = if isEasyStandard attrs then 4 else 6
-            | otherwise = if isEasyStandard attrs then 2 else 3
-        pure $ TokenValue token (NegativeModifier tokenVal)
-      Token.Cultist -> pure $ TokenValue
-        token
-        (NegativeModifier $ if isEasyStandard attrs then 2 else 3)
-      Token.Tablet -> pure $ TokenValue token (PositiveModifier 0)
-      Token.ElderThing -> pure $ TokenValue token (NegativeModifier 4)
-      _other -> getTokenValue attrs iid token
+  getTokenValue (CurseOfTheRougarou (attrs `With` _)) iid = \case
+    Skull -> do
+      lid <- asks $ getId @LocationId iid
+      isBayou <- asks $ member Bayou . getSet lid
+      let
+        tokenVal
+          | isBayou = if isEasyStandard attrs then 4 else 6
+          | otherwise = if isEasyStandard attrs then 2 else 3
+      pure $ TokenValue Skull (NegativeModifier tokenVal)
+    Cultist -> pure $ TokenValue
+      Cultist
+      (NegativeModifier $ if isEasyStandard attrs then 2 else 3)
+    Tablet -> pure $ TokenValue Tablet (PositiveModifier 0)
+    ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 4)
+    otherFace -> getTokenValue attrs iid otherFace
 
 instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
   runMessage msg s@(CurseOfTheRougarou (attrs@Attrs {..} `With` metadata)) =
@@ -160,67 +159,67 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
         let
           tokens = if isEasyStandard attrs
             then
-              [ Token.PlusOne
-              , Token.PlusOne
-              , Token.Zero
-              , Token.Zero
-              , Token.Zero
-              , Token.MinusOne
-              , Token.MinusOne
-              , Token.MinusOne
-              , Token.MinusTwo
-              , Token.MinusTwo
-              , Token.MinusThree
-              , Token.MinusThree
-              , Token.MinusFour
-              , Token.MinusFour
-              , Token.MinusFive
-              , Token.MinusSix
-              , Token.Skull
-              , Token.Skull
-              , Token.Cultist
-              , Token.Cultist
-              , Token.Tablet
-              , Token.ElderThing
-              , Token.AutoFail
-              , Token.ElderSign
+              [ PlusOne
+              , PlusOne
+              , Zero
+              , Zero
+              , Zero
+              , MinusOne
+              , MinusOne
+              , MinusOne
+              , MinusTwo
+              , MinusTwo
+              , MinusThree
+              , MinusThree
+              , MinusFour
+              , MinusFour
+              , MinusFive
+              , MinusSix
+              , Skull
+              , Skull
+              , Cultist
+              , Cultist
+              , Tablet
+              , ElderThing
+              , AutoFail
+              , ElderSign
               ]
             else
-              [ Token.PlusOne
-              , Token.Zero
-              , Token.Zero
-              , Token.Zero
-              , Token.MinusOne
-              , Token.MinusOne
-              , Token.MinusOne
-              , Token.MinusTwo
-              , Token.MinusTwo
-              , Token.MinusThree
-              , Token.MinusThree
-              , Token.MinusFour
-              , Token.MinusFour
-              , Token.MinusFive
-              , Token.MinusFive
-              , Token.MinusSix
-              , Token.MinusEight
-              , Token.Skull
-              , Token.Skull
-              , Token.Skull
-              , Token.Cultist
-              , Token.Cultist
-              , Token.Tablet
-              , Token.ElderThing
-              , Token.AutoFail
-              , Token.ElderSign
+              [ PlusOne
+              , Zero
+              , Zero
+              , Zero
+              , MinusOne
+              , MinusOne
+              , MinusOne
+              , MinusTwo
+              , MinusTwo
+              , MinusThree
+              , MinusThree
+              , MinusFour
+              , MinusFour
+              , MinusFive
+              , MinusFive
+              , MinusSix
+              , MinusEight
+              , Skull
+              , Skull
+              , Skull
+              , Cultist
+              , Cultist
+              , Tablet
+              , ElderThing
+              , AutoFail
+              , ElderSign
               ]
         s <$ unshiftMessage (SetTokens tokens)
-      ResolveToken Token.Cultist iid -> do
+      ResolveToken Cultist iid -> do
         lid <- asks $ getId @LocationId iid
         enemyIds <- asks $ setToList . getSet @EnemyId lid
         rougarouAtYourLocation <- elem "81028"
           <$> for enemyIds (asks . getId @CardCode)
         s <$ when rougarouAtYourLocation (unshiftMessage $ DrawAnotherToken iid)
-      ResolveToken Token.ElderThing iid -> if isEasyStandard attrs
+      ResolveToken ElderThing iid -> if isEasyStandard attrs
         then do
           lid <- asks $ getId @LocationId iid
           enemyIds <- asks $ setToList . getSet @EnemyId lid
@@ -239,14 +238,13 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
             (asks . ((== "81028") .) . getId @CardCode)
             enemyIds
           s <$ for_ mrougarou (unshiftMessage . EnemyWillAttack iid)
-      FailedSkillTest iid _ _ (DrawnTokenTarget token) _ -> do
-        s <$ when
-          (drawnTokenFace token == Token.Tablet)
-          (unshiftMessage $ AddModifiers
-            (InvestigatorTarget iid)
-            (DrawnTokenSource token)
-            [CannotMove]
-          )
+      FailedSkillTest iid _ _ (DrawnTokenTarget token) _ -> s <$ when
+        (drawnTokenFace token == Tablet)
+        (unshiftMessage $ AddModifiers
+          (InvestigatorTarget iid)
+          (DrawnTokenSource token)
+          [CannotMove]
+        )
       NoResolution -> runMessage (Resolution 1) s
       Resolution 1 -> do
         leadInvestigatorId <- getLeadInvestigatorId

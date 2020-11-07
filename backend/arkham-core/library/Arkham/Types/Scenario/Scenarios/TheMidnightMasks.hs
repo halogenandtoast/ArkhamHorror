@@ -11,8 +11,9 @@ import Arkham.Types.Helpers
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
-import qualified Arkham.Types.Token as Token
-import Arkham.Types.Trait
+import Arkham.Types.Token
+import Arkham.Types.Trait (Trait)
+import qualified Arkham.Types.Trait as Trait
 import qualified Data.HashSet as HashSet
 import Data.List.NonEmpty (NonEmpty(..))
 import Data.UUID.V4
@@ -33,21 +34,20 @@ theMidnightMasks difficulty =
     }
 
 instance (HasTokenValue env InvestigatorId, HasQueue env, HasCount DoomCount () env, HasCount DoomCount EnemyId env, HasSet EnemyId Trait env) => HasTokenValue env TheMidnightMasks where
-  getTokenValue (TheMidnightMasks attrs) iid token =
-    case drawnTokenFace token of
-      Token.Skull | isEasyStandard attrs -> do
-        cultists <- asks $ setToList . getSet @EnemyId Cultist
-        doomCounts <- traverse (asks . (unDoomCount .) . getCount) cultists
-        let tokenValue' = maximum $ ncons 0 doomCounts
-        pure $ Token.TokenValue token (NegativeModifier tokenValue')
-      Token.Skull | isHardExpert attrs -> do
-        doomCount <- asks $ unDoomCount . getCount ()
-        pure $ Token.TokenValue token (NegativeModifier doomCount)
-      Token.Cultist -> pure $ Token.TokenValue token (NegativeModifier 2)
-      Token.Tablet -> do
-        let tokenValue' = if isEasyStandard attrs then 3 else 4
-        pure $ Token.TokenValue token (NegativeModifier tokenValue')
-      _other -> getTokenValue attrs iid token
+  getTokenValue (TheMidnightMasks attrs) iid = \case
+    Skull | isEasyStandard attrs -> do
+      cultists <- asks $ setToList . getSet @EnemyId Trait.Cultist
+      doomCounts <- traverse (asks . (unDoomCount .) . getCount) cultists
+      let tokenValue' = maximum $ ncons 0 doomCounts
+      pure $ TokenValue Skull (NegativeModifier tokenValue')
+    Skull | isHardExpert attrs -> do
+      doomCount <- asks $ unDoomCount . getCount ()
+      pure $ TokenValue Skull (NegativeModifier doomCount)
+    Cultist -> pure $ TokenValue Cultist (NegativeModifier 2)
+    Tablet -> do
+      let tokenValue' = if isEasyStandard attrs then 3 else 4
+      pure $ TokenValue Tablet (NegativeModifier tokenValue')
+    otherFace -> getTokenValue attrs iid otherFace
 
 instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs@Attrs {..}) = case msg of
@@ -68,8 +68,7 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
       cultistCards <-
         liftIO
         $ for ["01137", "01138", "01139", "01140", "01141"]
-        $ \cardCode -> do
-            lookupEncounterCard cardCode . CardId <$> nextRandom
+        $ \cardCode -> lookupEncounterCard cardCode . CardId <$> nextRandom
       cultistDeck' <- liftIO $ shuffleM cultistCards
       let
         startingLocationMessages = if houseBurnedDown
@@ -172,32 +171,31 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
         <> ghoulPriestMessages
         <> spawnAcolyteMessages
       pure $ TheMidnightMasks (attrs { scenarioDeck = Just cultistDeck' })
-    UseScenarioSpecificAbility iid 1 -> do
+    UseScenarioSpecificAbility iid 1 ->
       case fromJustNote "must be set" scenarioDeck of
         [] -> pure s
         (x : xs) -> do
           unshiftMessage (InvestigatorDrewEncounterCard iid x)
           pure $ TheMidnightMasks (attrs { scenarioDeck = Just xs })
-    ResolveToken Token.Cultist iid | isEasyStandard attrs -> do
+    ResolveToken Cultist iid | isEasyStandard attrs -> do
       closestCultists <- asks $ map unClosestEnemyId . setToList . getSet
-        (iid, [Cultist])
+        (iid, [Trait.Cultist])
       case closestCultists of
         [] -> pure ()
         [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
         xs -> unshiftMessage
           (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
       pure s
-    ResolveToken Token.Cultist iid | isHardExpert attrs -> do
-      cultists <- asks $ setToList . getSet @EnemyId Cultist
+    ResolveToken Cultist iid | isHardExpert attrs -> do
+      cultists <- asks $ setToList . getSet @EnemyId Trait.Cultist
       case cultists of
         [] -> unshiftMessage (DrawAnotherToken iid)
         xs -> unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
       pure s
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _
-      | drawnTokenFace token == Token.Tablet -> do
-        if isEasyStandard attrs
-          then s <$ unshiftMessage (InvestigatorPlaceAllCluesOnLocation iid)
-          else s <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid 1)
+      | drawnTokenFace token == Tablet -> if isEasyStandard attrs
+        then s <$ unshiftMessage (InvestigatorPlaceAllCluesOnLocation iid)
+        else s <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid 1)
     NoResolution -> s <$ unshiftMessage (Resolution 1)
     Resolution 1 -> do
       leadInvestigatorId <- getLeadInvestigatorId

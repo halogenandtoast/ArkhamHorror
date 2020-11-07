@@ -47,10 +47,9 @@ ability attrs = (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow))
   }
 
 instance InvestigatorRunner env => HasTokenValue env DaisyWalkerParallel where
-  getTokenValue (DaisyWalkerParallel attrs) iid token
-    | iid == investigatorId attrs = case drawnTokenFace token of
-      ElderSign -> pure $ TokenValue token (PositiveModifier 0)
-      _other -> getTokenValue attrs iid token
+  getTokenValue (DaisyWalkerParallel attrs) iid ElderSign
+    | iid == investigatorId attrs = pure
+    $ TokenValue ElderSign (PositiveModifier 0)
   getTokenValue (DaisyWalkerParallel attrs) iid token =
     getTokenValue attrs iid token
 

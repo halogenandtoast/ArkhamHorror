@@ -30,7 +30,7 @@ instance Semigroup TokenModifier where
         GT -> PositiveModifier calc
         LT -> NegativeModifier calc
 
-data TokenValue = TokenValue DrawnToken TokenModifier
+data TokenValue = TokenValue Token TokenModifier
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

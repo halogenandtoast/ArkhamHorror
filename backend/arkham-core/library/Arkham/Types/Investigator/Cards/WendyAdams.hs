@@ -31,10 +31,8 @@ wendyAdams = WendyAdams $ baseAttrs
   [Drifter]
 
 instance InvestigatorRunner env => HasTokenValue env WendyAdams where
-  getTokenValue (WendyAdams attrs) iid token | iid == investigatorId attrs =
-    case drawnTokenFace token of
-      ElderSign -> pure $ TokenValue token (PositiveModifier 0)
-      _other -> getTokenValue attrs iid token
+  getTokenValue (WendyAdams attrs) iid ElderSign | iid == investigatorId attrs =
+    pure $ TokenValue ElderSign (PositiveModifier 0)
   getTokenValue (WendyAdams attrs) iid token = getTokenValue attrs iid token
 
 instance ActionRunner env => HasActions env WendyAdams where
@@ -83,8 +81,7 @@ instance (InvestigatorRunner env) => RunMessage env WendyAdams where
       , CheckWindow investigatorId [WhenDrawToken You token]
       , UnfocusTokens
       ]
-    ResolveToken ElderSign iid
-      | iid == investigatorId -> do
-        maid <- asks (getId @(Maybe AssetId) (CardCode "01014"))
-        i <$ when (isJust maid) (unshiftMessage PassSkillTest)
+    ResolveToken ElderSign iid | iid == investigatorId -> do
+      maid <- asks (getId @(Maybe AssetId) (CardCode "01014"))
+      i <$ when (isJust maid) (unshiftMessage PassSkillTest)
     _ -> WendyAdams <$> runMessage msg attrs

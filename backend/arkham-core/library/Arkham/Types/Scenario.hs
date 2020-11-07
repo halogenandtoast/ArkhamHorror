@@ -19,7 +19,6 @@ import Arkham.Types.Scenario.Scenarios.TheGathering
 import Arkham.Types.Scenario.Scenarios.TheMidnightMasks
 import Arkham.Types.ScenarioId
 import Arkham.Types.ScenarioLogKey
-import qualified Arkham.Types.Token as Token
 import Data.Coerce
 
 data Scenario
@@ -41,12 +40,12 @@ newtype BaseScenario = BaseScenario Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 instance (HasTokenValue env InvestigatorId, HasQueue env) => HasTokenValue env BaseScenario where
-  getTokenValue (BaseScenario attrs) iid token = case drawnTokenFace token of
-    Token.Skull -> pure $ TokenValue token (NegativeModifier 1)
-    Token.Cultist -> pure $ TokenValue token (NegativeModifier 1)
-    Token.Tablet -> pure $ TokenValue token (NegativeModifier 1)
-    Token.ElderThing -> pure $ TokenValue token (NegativeModifier 1)
-    _other -> getTokenValue attrs iid token
+  getTokenValue (BaseScenario attrs) iid = \case
+    Skull -> pure $ TokenValue Skull (NegativeModifier 1)
+    Cultist -> pure $ TokenValue Cultist (NegativeModifier 1)
+    Tablet -> pure $ TokenValue Tablet (NegativeModifier 1)
+    ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 1)
+    otherFace -> getTokenValue attrs iid otherFace
 
 instance (ScenarioRunner env) => RunMessage env BaseScenario where
   runMessage msg a@(BaseScenario attrs) = case msg of

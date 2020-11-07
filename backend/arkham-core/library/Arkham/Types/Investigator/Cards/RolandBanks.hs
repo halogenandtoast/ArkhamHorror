@@ -50,13 +50,11 @@ instance ActionRunner env => HasActions env RolandBanks where
   getActions _ _ _ = pure []
 
 instance InvestigatorRunner env => HasTokenValue env RolandBanks where
-  getTokenValue (RolandBanks attrs) iid token | iid == investigatorId attrs =
-    case drawnTokenFace token of
-      ElderSign -> do
-        locationClueCount <- asks $ unClueCount . getCount
-          (investigatorLocation attrs)
-        pure $ TokenValue token (PositiveModifier locationClueCount)
-      _other -> getTokenValue attrs iid token
+  getTokenValue (RolandBanks attrs) iid ElderSign
+    | iid == investigatorId attrs = do
+      locationClueCount <- asks $ unClueCount . getCount
+        (investigatorLocation attrs)
+      pure $ TokenValue ElderSign (PositiveModifier locationClueCount)
   getTokenValue (RolandBanks attrs) iid token = getTokenValue attrs iid token
 
 instance InvestigatorRunner env => RunMessage env RolandBanks where

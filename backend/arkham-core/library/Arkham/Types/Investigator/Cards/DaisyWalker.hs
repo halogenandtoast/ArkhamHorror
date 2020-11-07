@@ -38,10 +38,9 @@ instance ActionRunner env => HasActions env DaisyWalker where
   getActions i window (DaisyWalker attrs) = getActions i window attrs
 
 instance InvestigatorRunner env => HasTokenValue env DaisyWalker where
-  getTokenValue (DaisyWalker attrs) iid token | iid == investigatorId attrs =
-    case drawnTokenFace token of
-      ElderSign -> pure $ TokenValue token (PositiveModifier 0)
-      _other -> getTokenValue attrs iid token
+  getTokenValue (DaisyWalker attrs) iid ElderSign
+    | iid == investigatorId attrs = pure
+    $ TokenValue ElderSign (PositiveModifier 0)
   getTokenValue (DaisyWalker attrs) iid token = getTokenValue attrs iid token
 
 instance InvestigatorRunner env => RunMessage env DaisyWalker where

@@ -49,15 +49,14 @@ instance ActionRunner env => HasActions env SkidsOToole where
   getActions _ _ _ = pure []
 
 instance InvestigatorRunner env => HasTokenValue env SkidsOToole where
-  getTokenValue (SkidsOToole attrs) iid token | iid == investigatorId attrs =
-    case drawnTokenFace token of
-      ElderSign -> pure $ TokenValue token (PositiveModifier 2)
-      _other -> getTokenValue attrs iid token
+  getTokenValue (SkidsOToole attrs) iid ElderSign
+    | iid == investigatorId attrs = pure
+    $ TokenValue ElderSign (PositiveModifier 2)
   getTokenValue (SkidsOToole attrs) iid token = getTokenValue attrs iid token
 
 instance (InvestigatorRunner env) => RunMessage env SkidsOToole where
   runMessage msg i@(SkidsOToole attrs@Attrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
+    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       pure . SkidsOToole $ attrs & resources -~ 2 & remainingActions +~ 1
     PassedSkillTest iid _ _ (DrawnTokenTarget token) _
       | iid == investigatorId && drawnTokenFace token == ElderSign -> i

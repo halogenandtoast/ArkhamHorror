@@ -18,6 +18,7 @@ import Arkham.Types.TokenResponse
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import qualified Data.List as L
+import Data.Semigroup
 import Data.UUID.V4
 import System.Environment
 
@@ -190,12 +191,17 @@ getModifiedTokenValue
   -> m Int
 getModifiedTokenValue s t = do
   env <- ask
-  tokenModifiers' <- getModifiersFor (toSource s) (DrawnTokenTarget t) =<< ask
-  baseTokenValue <- getTokenValue env (skillTestInvestigator s) t
-  let
-    updatedTokenValue =
-      tokenValue $ foldr applyModifier baseTokenValue tokenModifiers'
-  pure $ fromMaybe 0 updatedTokenValue
+  tokenModifiers' <- getModifiersFor (toSource s) (DrawnTokenTarget t) env
+  modifiedTokenFaces' <- getModifiedTokenFaces s t
+  getSum . mconcat <$> for
+    modifiedTokenFaces'
+    (\tokenFace -> do
+      baseTokenValue <- getTokenValue env (skillTestInvestigator s) tokenFace
+      let
+        updatedTokenValue =
+          tokenValue $ foldr applyModifier baseTokenValue tokenModifiers'
+      pure . Sum $ fromMaybe 0 updatedTokenValue
+    )
  where
   applyModifier (ChangeTokenModifier modifier') (TokenValue token _) =
     TokenValue token modifier'

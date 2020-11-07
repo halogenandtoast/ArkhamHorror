@@ -12,11 +12,10 @@ spec = do
   describe "Zoey Samaras" $ do
     it "elder sign token gives +1" $ do
       let zoeySamaras = lookupInvestigator "02001"
-      elderSign <- flip DrawnToken ElderSign . TokenId <$> liftIO nextRandom
       game <- runGameTest zoeySamaras [] id
       token <- withGame
         game
-        (getTokenValue zoeySamaras (getId () zoeySamaras) elderSign)
+        (getTokenValue zoeySamaras (getId () zoeySamaras) ElderSign)
       tokenValue token `shouldBe` Just 1
     it "elder sign token gives +1 and does +1 damage for attacks" $ do
       let zoeySamaras = lookupInvestigator "02001" -- combat is 4

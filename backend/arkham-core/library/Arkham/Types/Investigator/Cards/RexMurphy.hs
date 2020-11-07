@@ -55,10 +55,8 @@ instance ActionRunner env => HasActions env RexMurphy where
   getActions i window (RexMurphy attrs) = getActions i window attrs
 
 instance InvestigatorRunner env => HasTokenValue env RexMurphy where
-  getTokenValue (RexMurphy attrs) iid token | iid == investigatorId attrs =
-    case drawnTokenFace token of
-      ElderSign -> pure $ TokenValue token (PositiveModifier 2)
-      _other -> getTokenValue attrs iid token
+  getTokenValue (RexMurphy attrs) iid ElderSign | iid == investigatorId attrs =
+    pure $ TokenValue ElderSign (PositiveModifier 2)
   getTokenValue (RexMurphy attrs) iid token = getTokenValue attrs iid token
 
 instance (InvestigatorRunner env) => RunMessage env RexMurphy where

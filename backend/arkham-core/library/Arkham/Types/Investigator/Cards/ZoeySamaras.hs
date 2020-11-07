@@ -56,10 +56,9 @@ instance ActionRunner env => HasActions env ZoeySamaras where
   getActions i window (ZoeySamaras attrs) = getActions i window attrs
 
 instance InvestigatorRunner env => HasTokenValue env ZoeySamaras where
-  getTokenValue (ZoeySamaras attrs) iid token | iid == investigatorId attrs =
-    case drawnTokenFace token of
-      ElderSign -> pure $ TokenValue token (PositiveModifier 1)
-      _other -> getTokenValue attrs iid token
+  getTokenValue (ZoeySamaras attrs) iid ElderSign
+    | iid == investigatorId attrs = pure
+    $ TokenValue ElderSign (PositiveModifier 1)
   getTokenValue (ZoeySamaras attrs) iid token = getTokenValue attrs iid token
 
 instance (InvestigatorRunner env) => RunMessage env ZoeySamaras where

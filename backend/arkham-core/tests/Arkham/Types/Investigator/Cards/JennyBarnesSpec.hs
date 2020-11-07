@@ -16,7 +16,6 @@ spec = describe "Jenny Barnes" $ do
     it "modifier is number of resources" $ do
       let jennyBarnes = lookupInvestigator "02003"
       scenario' <- testScenario "00000" id
-      elderSign <- flip DrawnToken ElderSign . TokenId <$> liftIO nextRandom
       game <- runGameTest
         jennyBarnes
         [TakeResources (getId () jennyBarnes) 5 False]
@@ -24,5 +23,5 @@ spec = describe "Jenny Barnes" $ do
       token <- withGame game $ getTokenValue
         (updated game jennyBarnes)
         (getId () jennyBarnes)
-        elderSign
+        ElderSign
       tokenValue token `shouldBe` Just 5

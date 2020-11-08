@@ -130,6 +130,9 @@ instance (AssetRunner env) => RunMessage env BaseAsset where
 instance Exhaustable Asset where
   isExhausted = assetExhausted . assetAttrs
 
+instance Discardable Asset where
+  canBeDiscarded = assetCanLeavePlayByNormalMeans . assetAttrs
+
 instance HasCardCode Asset where
   getCardCode = assetCardCode . assetAttrs
 

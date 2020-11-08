@@ -135,29 +135,30 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
         <> cultistsWhoGotAwayMessages
         <> pastMidnightMessages
       pure s
-    ResolveToken token iid -> case drawnTokenFace token of
-      Token.Cultist -> do
-        let doom = if isEasyStandard attrs then 1 else 2
-        closestEnemyIds <- asks $ map unClosestEnemyId . setToList . getSet iid
-        case closestEnemyIds of
-          [] -> pure ()
-          [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) doom)
-          xs -> unshiftMessage
-            (chooseOne iid [ PlaceDoom (EnemyTarget x) doom | x <- xs ])
-        pure s
-      Token.Tablet -> do
-        let horror = if isEasyStandard attrs then 0 else 1
-        monsterCount <- asks $ unEnemyCount . getCount
-          (InvestigatorLocation iid, [Monster])
-        s <$ when
-          (monsterCount > 0)
-          (unshiftMessage
-          $ InvestigatorAssignDamage iid (DrawnTokenSource token) 1 horror
-          )
-      Token.ElderThing -> do
-        ancientOneCount <- asks $ unEnemyCount . getCount [AncientOne]
-        s <$ when (ancientOneCount > 0) (unshiftMessage $ DrawAnotherToken iid)
-      _other -> TheDevourerBelow <$> runMessage msg attrs
+    ResolveToken Token.Cultist iid -> do
+      let doom = if isEasyStandard attrs then 1 else 2
+      closestEnemyIds <- asks $ map unClosestEnemyId . setToList . getSet iid
+      case closestEnemyIds of
+        [] -> pure ()
+        [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) doom)
+        xs -> unshiftMessage
+          (chooseOne iid [ PlaceDoom (EnemyTarget x) doom | x <- xs ])
+      pure s
+    ResolveToken Token.Tablet iid -> do
+      let horror = if isEasyStandard attrs then 0 else 1
+      monsterCount <- asks $ unEnemyCount . getCount
+        (InvestigatorLocation iid, [Monster])
+      s <$ when
+        (monsterCount > 0)
+        (unshiftMessage $ InvestigatorAssignDamage
+          iid
+          (TokenEffectSource Token.Tablet)
+          1
+          horror
+        )
+    ResolveToken Token.ElderThing iid -> do
+      ancientOneCount <- asks $ unEnemyCount . getCount [AncientOne]
+      s <$ when (ancientOneCount > 0) (unshiftMessage $ DrawAnotherToken iid)
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _
       | isHardExpert attrs && drawnTokenFace token == Token.Skull
       -> s <$ unshiftMessage

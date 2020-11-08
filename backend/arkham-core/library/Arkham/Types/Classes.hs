@@ -352,6 +352,9 @@ class (HasId EnemyId () enemy) => IsEnemy enemy where
 class IsScenario scenario where
   tokensWithNegativeModifier :: scenario -> HashSet Token
 
+class Discardable a where
+  canBeDiscarded :: a -> Bool
+
 class Exhaustable a where
   isExhausted :: a -> Bool
   isReady :: a -> Bool

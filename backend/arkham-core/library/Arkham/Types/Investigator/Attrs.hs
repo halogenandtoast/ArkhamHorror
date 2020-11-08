@@ -639,9 +639,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   RemoveEnemy eid -> pure $ a & engagedEnemies %~ deleteSet eid
   TakeControlOfAsset iid aid | iid == investigatorId ->
     pure $ a & assets %~ insertSet aid
-  ChooseAndDiscardAsset iid | iid == investigatorId -> a <$ unshiftMessage
-    (Ask iid $ ChooseOne $ map (Discard . AssetTarget) (setToList $ a ^. assets)
-    )
+  ChooseAndDiscardAsset iid | iid == investigatorId -> do
+    discardableAssetIds <-
+      asks $ map unDiscardableAssetId . setToList . getSet iid
+    a <$ unshiftMessage
+      (Ask iid $ ChooseOne $ map (Discard . AssetTarget) discardableAssetIds)
   AttachAsset aid _ | aid `member` investigatorAssets ->
     pure $ a & assets %~ deleteSet aid
   AttachTreachery tid (InvestigatorTarget iid) | iid == investigatorId ->
@@ -1401,7 +1403,13 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       & (actionsTaken %~ actionsTakenUpdate)
   PutOnTopOfDeck iid card | iid == investigatorId ->
     pure $ a & deck %~ Deck . (card :) . unDeck
-  AddToHand iid card | iid == investigatorId -> pure $ a & hand %~ (card :)
+  AddToHand iid card | iid == investigatorId -> do
+    case card of
+      PlayerCard card' -> void $ runMessage
+        (Revelation iid (PlayerCardSource $ getCardId card'))
+        (toPlayerCardWithBehavior card')
+      _ -> pure ()
+    pure $ a & hand %~ (card :)
   ShuffleCardsIntoDeck iid cards | iid == investigatorId -> do
     deck' <- liftIO $ shuffleM (cards <> unDeck investigatorDeck)
     pure $ a & deck .~ Deck deck'

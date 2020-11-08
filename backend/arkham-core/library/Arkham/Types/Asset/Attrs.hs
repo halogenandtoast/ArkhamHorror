@@ -26,6 +26,7 @@ data Attrs = Attrs
   , assetExhausted :: Bool
   , assetDoom :: Int
   , assetHorror :: Maybe Int
+  , assetCanLeavePlayByNormalMeans :: Bool
   }
   deriving stock (Show, Generic)
 
@@ -62,6 +63,7 @@ baseAttrs aid cardCode =
       , assetExhausted = False
       , assetDoom = 0
       , assetHorror = Nothing
+      , assetCanLeavePlayByNormalMeans = True
       }
 
 isSource :: Attrs -> Source -> Bool

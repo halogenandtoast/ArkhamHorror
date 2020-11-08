@@ -18,7 +18,7 @@ instance HasModifiersFor env CryptChill where
 instance HasActions env CryptChill where
   getActions i window (CryptChill attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env CryptChill where
+instance TreacheryRunner env => RunMessage env CryptChill where
   runMessage msg t@(CryptChill attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       unshiftMessages
@@ -28,7 +28,7 @@ instance (TreacheryRunner env) => RunMessage env CryptChill where
       CryptChill <$> runMessage msg (attrs & resolved .~ True)
     FailedSkillTest iid _ source SkillTestInitiatorTarget _
       | isSource attrs source -> do
-        assetCount <- asks $ length . getSet @AssetId iid
+        assetCount <- asks $ length . getSet @DiscardableAssetId iid
         if assetCount > 0
           then t <$ unshiftMessage (ChooseAndDiscardAsset iid)
           else t <$ unshiftMessage (InvestigatorAssignDamage iid source 2 0)

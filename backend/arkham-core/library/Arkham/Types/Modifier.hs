@@ -22,6 +22,7 @@ data Modifier
   | Blank
   | CanPlayTopOfDiscard (Maybe PlayerCardType, [Trait])
   | CannotBeAttackedByNonElite
+  | CannotBeDiscarded
   | CannotBeEnteredByNonElite
   | CannotBeEvaded
   | CannotCancelHorror

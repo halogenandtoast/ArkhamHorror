@@ -77,16 +77,13 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
           (not . null)
           pairs'
         )
-    UseCardAbility iid (TokenSource _) _ 2 ->
+    UseCardAbility iid (TokenEffectSource ElderSign) _ 2 ->
       i <$ unshiftMessage (SearchDiscard iid (InvestigatorTarget iid) [Tome])
-    ResolveToken token iid | iid == investigatorId ->
-      case drawnTokenFace token of
-        ElderSign -> i <$ unshiftMessage
-          (chooseOne
-            iid
-            [ UseCardAbility iid (DrawnTokenSource token) Nothing 2
-            , Continue "Do not use Daisy's ability"
-            ]
-          )
-        _other -> DaisyWalkerParallel <$> runMessage msg attrs
+    ResolveToken ElderSign iid | iid == investigatorId -> i <$ unshiftMessage
+      (chooseOne
+        iid
+        [ UseCardAbility iid (TokenEffectSource ElderSign) Nothing 2
+        , Continue "Do not use Daisy's ability"
+        ]
+      )
     _ -> DaisyWalkerParallel <$> runMessage msg attrs

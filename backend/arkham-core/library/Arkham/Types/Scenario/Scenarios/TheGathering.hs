@@ -82,22 +82,19 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
           ]
         ]
       TheGathering <$> runMessage msg attrs
-    ResolveToken token iid -> case drawnTokenFace token of
-      Token.Skull -> pure s
-      Token.Cultist ->
-        s <$ when (isHardExpert attrs) (unshiftMessage $ DrawAnotherToken iid)
-      Token.Tablet -> do
-        ghoulCount <- asks $ unEnemyCount . getCount
-          (InvestigatorLocation iid, [Ghoul])
-        s <$ when
-          (ghoulCount > 0)
-          (unshiftMessage $ InvestigatorAssignDamage
-            iid
-            (DrawnTokenSource token)
-            1
-            (if isEasyStandard attrs then 0 else 1)
-          )
-      _other -> TheGathering <$> runMessage msg attrs
+    ResolveToken Token.Cultist iid ->
+      s <$ when (isHardExpert attrs) (unshiftMessage $ DrawAnotherToken iid)
+    ResolveToken Token.Tablet iid -> do
+      ghoulCount <- asks $ unEnemyCount . getCount
+        (InvestigatorLocation iid, [Ghoul])
+      s <$ when
+        (ghoulCount > 0)
+        (unshiftMessage $ InvestigatorAssignDamage
+          iid
+          (TokenEffectSource Token.Tablet)
+          1
+          (if isEasyStandard attrs then 0 else 1)
+        )
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _ -> do
       case drawnTokenFace token of
         Token.Skull | isHardExpert attrs ->

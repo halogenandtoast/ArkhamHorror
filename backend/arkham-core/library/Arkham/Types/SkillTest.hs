@@ -207,6 +207,19 @@ getModifiedTokenValue s t = do
     = TokenValue token (DoubleNegativeModifier n)
   applyModifier _ currentTokenValue = currentTokenValue
 
+-- really just looking for forced token changes here
+getModifiedTokenFaces
+  :: (HasModifiersFor env env, MonadReader env m, MonadIO m)
+  => SkillTest a
+  -> DrawnToken
+  -> m [Token]
+getModifiedTokenFaces s token = do
+  tokenModifiers' <-
+    getModifiersFor (toSource s) (DrawnTokenTarget token) =<< ask
+  pure $ foldr applyModifier [drawnTokenFace token] tokenModifiers'
+ where
+  applyModifier (ForcedTokenChange t ts) [t'] | t == t' = ts
+  applyModifier _ ts = ts
 
 instance SkillTestRunner env => RunMessage env (SkillTest Message) where
   runMessage msg s@SkillTest {..} = case msg of
@@ -236,15 +249,16 @@ instance SkillTestRunner env => RunMessage env (SkillTest Message) where
       token' <- flip DrawnToken tokenFace . TokenId <$> liftIO nextRandom
       pure $ s & revealedTokens %~ (token' :)
     RevealSkillTestTokens iid -> do
-      let revealedTokenFaces = map drawnTokenFace skillTestRevealedTokens
+      revealedTokenFaces <- concatMapM
+        (getModifiedTokenFaces s)
+        skillTestRevealedTokens
       onTokenResponses' <-
         (catMaybes <$>) . for skillTestOnTokenResponses $ \case
           OnAnyToken tokens' messages
             | not (null $ revealedTokenFaces `L.intersect` tokens') -> Nothing
             <$ unshiftMessages messages
           response -> pure (Just response)
-      unshiftMessages
-        [ ResolveToken token iid | token <- skillTestRevealedTokens ]
+      unshiftMessages [ ResolveToken token iid | token <- revealedTokenFaces ]
       pure
         $ s
         & (onTokenResponses .~ onTokenResponses')

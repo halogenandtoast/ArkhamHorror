@@ -78,6 +78,7 @@ type GameRunner env
       , HasSet CommittedCardCode () env
       , HasSet CommittedCardId InvestigatorId env
       , HasSet ConnectedLocationId LocationId env
+      , HasSet DiscardableAssetId InvestigatorId env
       , HasSet EmptyLocationId () env
       , HasSet EnemyId InvestigatorId env
       , HasSet EnemyId LocationId env

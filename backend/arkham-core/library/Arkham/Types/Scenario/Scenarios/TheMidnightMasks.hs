@@ -178,23 +178,21 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
         (x : xs) -> do
           unshiftMessage (InvestigatorDrewEncounterCard iid x)
           pure $ TheMidnightMasks (attrs { scenarioDeck = Just xs })
-    ResolveToken token iid -> case drawnTokenFace token of
-      Token.Cultist | isEasyStandard attrs -> do
-        closestCultists <- asks $ map unClosestEnemyId . setToList . getSet
-          (iid, [Cultist])
-        case closestCultists of
-          [] -> pure ()
-          [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
-          xs -> unshiftMessage
-            (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
-        pure s
-      Token.Cultist | isHardExpert attrs -> do
-        cultists <- asks $ setToList . getSet @EnemyId Cultist
-        case cultists of
-          [] -> unshiftMessage (DrawAnotherToken iid)
-          xs -> unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
-        pure s
-      _other -> TheMidnightMasks <$> runMessage msg attrs
+    ResolveToken Token.Cultist iid | isEasyStandard attrs -> do
+      closestCultists <- asks $ map unClosestEnemyId . setToList . getSet
+        (iid, [Cultist])
+      case closestCultists of
+        [] -> pure ()
+        [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
+        xs -> unshiftMessage
+          (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
+      pure s
+    ResolveToken Token.Cultist iid | isHardExpert attrs -> do
+      cultists <- asks $ setToList . getSet @EnemyId Cultist
+      case cultists of
+        [] -> unshiftMessage (DrawAnotherToken iid)
+        xs -> unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
+      pure s
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _
       | drawnTokenFace token == Token.Tablet -> do
         if isEasyStandard attrs

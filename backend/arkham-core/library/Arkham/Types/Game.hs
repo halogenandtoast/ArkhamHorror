@@ -994,6 +994,15 @@ instance HasSet AccessibleLocationId LocationId (Game queue) where
 instance HasSet AssetId InvestigatorId (Game queue) where
   getSet iid = getSet () . getInvestigator iid
 
+instance HasSet DiscardableAssetId InvestigatorId (Game queue) where
+  getSet iid g = setFromList . map DiscardableAssetId $ filter
+    isDiscardable
+    assetIds
+   where
+    investigator = getInvestigator iid g
+    assetIds :: [AssetId] = setToList $ getSet @AssetId () investigator
+    isDiscardable aid = canBeDiscarded $ getAsset aid g
+
 instance HasSet AssetId EnemyId (Game queue) where
   getSet eid = getSet () . getEnemy eid
 

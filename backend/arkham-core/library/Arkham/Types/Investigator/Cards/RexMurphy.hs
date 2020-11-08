@@ -66,14 +66,12 @@ instance (InvestigatorRunner env) => RunMessage env RexMurphy where
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       i <$ unshiftMessage
         (DiscoverCluesAtLocation investigatorId investigatorLocation 1)
-    ResolveToken token iid
-      | iid == investigatorId && drawnTokenFace token == ElderSign
-      -> i <$ unshiftMessage
-        (Ask iid $ ChooseOne
-          [ Label
-            "Automatically fail to draw 3"
-            [FailSkillTest, DrawCards iid 3 False]
-          , Label "Resolve normally" []
-          ]
-        )
+    ResolveToken ElderSign iid | iid == investigatorId -> i <$ unshiftMessage
+      (Ask iid $ ChooseOne
+        [ Label
+          "Automatically fail to draw 3"
+          [FailSkillTest, DrawCards iid 3 False]
+        , Label "Resolve normally" []
+        ]
+      )
     _ -> RexMurphy <$> runMessage msg attrs

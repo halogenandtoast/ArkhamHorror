@@ -107,7 +107,7 @@ instance (ScenarioRunner env) => RunMessage env Attrs where
       a <$ unshiftMessage (InvestigatorEliminated iid)
     Remember logKey -> do
       pure $ a & log %~ insertSet logKey
-    ResolveToken token _iid | drawnTokenFace token == AutoFail ->
+    ResolveToken token _iid | token == AutoFail ->
       a <$ unshiftMessage FailSkillTest
     NoResolution ->
       error "The scenario should specify what to do for no resolution"

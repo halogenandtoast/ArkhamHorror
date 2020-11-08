@@ -12,8 +12,11 @@ newtype TheNecronomicon = TheNecronomicon Attrs
   deriving anyclass (ToJSON, FromJSON)
 
 theNecronomicon :: AssetId -> TheNecronomicon
-theNecronomicon uuid = TheNecronomicon
-  $ (baseAttrs uuid "01009") { assetSlots = [HandSlot], assetHorror = Just 3 }
+theNecronomicon uuid = TheNecronomicon $ (baseAttrs uuid "01009")
+  { assetSlots = [HandSlot]
+  , assetHorror = Just 3
+  , assetCanLeavePlayByNormalMeans = False
+  }
 
 instance HasModifiersFor env TheNecronomicon where
   getModifiersFor _ (InvestigatorTarget iid) (TheNecronomicon a) =

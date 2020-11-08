@@ -160,7 +160,7 @@ data Message
   | UseScenarioSpecificAbility InvestigatorId Int
   | PutSetAsideIntoPlay Target
   | AddUses Target UseType Int
-  | ResolveToken DrawnToken InvestigatorId
+  | ResolveToken Token InvestigatorId
   | AddTokenValue InvestigatorId TokenValue
   | Investigate InvestigatorId LocationId Source SkillType [Modifier] [TokenResponse Message] [Message] Bool
   | ChooseFightEnemy InvestigatorId Source SkillType [Modifier] [TokenResponse Message] Bool

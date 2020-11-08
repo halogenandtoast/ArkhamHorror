@@ -24,6 +24,7 @@ data Source
   | EnemySource EnemyId
   | InvestigatorSource InvestigatorId
   | TokenSource TokenId
+  | TokenEffectSource Token
   | AgendaSource AgendaId
   | LocationSource LocationId
   | SkillTestSource InvestigatorId Source (Maybe Action)
@@ -32,6 +33,7 @@ data Source
   | SkillSource SkillId
   | EmptyDeckSource
   | DeckSource
+  | GameSource
   | ActSource ActId
   | PlayerCardSource CardId
   | TestSource

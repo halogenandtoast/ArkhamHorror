@@ -64,9 +64,8 @@ instance InvestigatorRunner env => HasTokenValue env AshcanPete where
 
 instance (InvestigatorRunner env) => RunMessage env AshcanPete where
   runMessage msg i@(AshcanPete attrs@Attrs {..}) = case msg of
-    ResolveToken token iid | iid == investigatorId -> i <$ when
-      (ElderSign == drawnTokenFace token)
-      (unshiftMessage $ Ready (CardCodeTarget "02014"))
+    ResolveToken ElderSign iid | iid == investigatorId ->
+      i <$ unshiftMessage (Ready $ CardCodeTarget "02014")
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
       exhaustedAssetIds <- map unExhaustedAssetId . setToList <$> asks
         (getSet investigatorId)

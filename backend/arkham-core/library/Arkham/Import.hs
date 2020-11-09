@@ -24,6 +24,7 @@ import Arkham.Types.LocationId as X
 import Arkham.Types.LocationSymbol as X
 import Arkham.Types.Message as X
 import Arkham.Types.Modifier as X
+import Arkham.Types.Prey as X
 import Arkham.Types.Query as X
 import Arkham.Types.SkillId as X
 import Arkham.Types.SkillType as X

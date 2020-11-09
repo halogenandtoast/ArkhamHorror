@@ -12,13 +12,14 @@ newtype MarshGug = MarshGug Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 marshGug :: EnemyId -> MarshGug
-marshGug uuid = MarshGug $ (baseAttrs uuid "81032")
-  { enemyHealthDamage = 2
-  , enemySanityDamage = 1
-  , enemyFight = 3
-  , enemyHealth = Static 4
-  , enemyEvade = 3
-  }
+marshGug uuid =
+  MarshGug
+    $ baseAttrs uuid "81032"
+    $ (healthDamage .~ 2)
+    . (sanityDamage .~ 1)
+    . (fight .~ 3)
+    . (health .~ Static 4)
+    . (evade .~ 3)
 
 instance HasModifiersFor env MarshGug where
   getModifiersFor _ _ _ = pure []

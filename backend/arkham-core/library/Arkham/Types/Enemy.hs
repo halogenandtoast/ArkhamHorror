@@ -16,7 +16,6 @@ import Arkham.Types.Helpers
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Cards
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Prey
 import Data.Coerce
 
 data Enemy
@@ -58,7 +57,7 @@ newtype BaseEnemy = BaseEnemy Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 baseEnemy :: EnemyId -> CardCode -> (Attrs -> Attrs) -> Enemy
-baseEnemy a b f = BaseEnemy' . BaseEnemy . f $ baseAttrs a b
+baseEnemy a b f = BaseEnemy' . BaseEnemy $ baseAttrs a b f
 
 instance ActionRunner env => HasActions env BaseEnemy where
   getActions investigator window (BaseEnemy attrs) =

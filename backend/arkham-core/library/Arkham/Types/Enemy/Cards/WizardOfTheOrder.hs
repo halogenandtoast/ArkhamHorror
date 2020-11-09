@@ -15,12 +15,13 @@ newtype WizardOfTheOrder = WizardOfTheOrder Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 wizardOfTheOrder :: EnemyId -> WizardOfTheOrder
-wizardOfTheOrder uuid = WizardOfTheOrder $ (baseAttrs uuid "01170")
-  { enemyHealthDamage = 1
-  , enemyFight = 4
-  , enemyHealth = Static 2
-  , enemyEvade = 2
-  }
+wizardOfTheOrder uuid =
+  WizardOfTheOrder
+    $ baseAttrs uuid "01170"
+    $ (healthDamage .~ 1)
+    . (fight .~ 4)
+    . (health .~ Static 2)
+    . (evade .~ 2)
 
 instance HasModifiersFor env WizardOfTheOrder where
   getModifiersFor _ _ _ = pure []

@@ -5,7 +5,6 @@ import Arkham.Import
 
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Prey
 
 newtype StubbornDetective = StubbornDetective Attrs
   deriving newtype (Show, ToJSON, FromJSON)

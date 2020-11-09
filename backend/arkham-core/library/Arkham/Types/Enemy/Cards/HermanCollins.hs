@@ -12,13 +12,14 @@ newtype HermanCollins = HermanCollins Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 hermanCollins :: EnemyId -> HermanCollins
-hermanCollins uuid = HermanCollins $ (baseAttrs uuid "01138")
-  { enemyHealthDamage = 1
-  , enemySanityDamage = 1
-  , enemyFight = 3
-  , enemyHealth = Static 4
-  , enemyEvade = 4
-  }
+hermanCollins uuid =
+  HermanCollins
+    $ baseAttrs uuid "01138"
+    $ (healthDamage .~ 1)
+    . (sanityDamage .~ 1)
+    . (fight .~ 3)
+    . (health .~ Static 4)
+    . (evade .~ 4)
 
 instance HasModifiersFor env HermanCollins where
   getModifiersFor _ _ _ = pure []

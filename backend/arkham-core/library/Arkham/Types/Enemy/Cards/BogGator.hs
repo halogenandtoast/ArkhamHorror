@@ -2,23 +2,24 @@
 module Arkham.Types.Enemy.Cards.BogGator where
 
 import Arkham.Import
+
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Prey
 import Arkham.Types.Trait
 
 newtype BogGator = BogGator Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 bogGator :: EnemyId -> BogGator
-bogGator uuid = BogGator $ (baseAttrs uuid "81022")
-  { enemyHealthDamage = 1
-  , enemySanityDamage = 1
-  , enemyFight = 2
-  , enemyHealth = Static 2
-  , enemyEvade = 2
-  , enemyPrey = LowestSkill SkillAgility
-  }
+bogGator uuid =
+  BogGator
+    $ baseAttrs uuid "81022"
+    $ (healthDamage .~ 1)
+    . (sanityDamage .~ 1)
+    . (fight .~ 2)
+    . (health .~ Static 2)
+    . (evade .~ 2)
+    . (prey .~ LowestSkill SkillAgility)
 
 instance EnemyRunner env => HasModifiersFor env BogGator where
   getModifiersFor _ (EnemyTarget eid) (BogGator Attrs {..}) | eid == enemyId =

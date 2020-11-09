@@ -1,30 +1,24 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy.Cards.YithianObserver where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Message
-import Arkham.Types.Prey
-import Arkham.Types.Query
-import Arkham.Types.Source
-import ClassyPrelude
 
 newtype YithianObserver = YithianObserver Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 yithianObserver :: EnemyId -> YithianObserver
-yithianObserver uuid = YithianObserver $ (baseAttrs uuid "01177")
-  { enemyHealthDamage = 1
-  , enemySanityDamage = 1
-  , enemyFight = 4
-  , enemyHealth = Static 4
-  , enemyEvade = 3
-  , enemyPrey = FewestCards
-  }
+yithianObserver uuid =
+  YithianObserver
+    $ baseAttrs uuid "01177"
+    $ (healthDamage .~ 1)
+    . (sanityDamage .~ 1)
+    . (fight .~ 4)
+    . (health .~ Static 4)
+    . (evade .~ 3)
+    . (prey .~ FewestCards)
 
 instance HasModifiersFor env YithianObserver where
   getModifiersFor _ _ _ = pure []

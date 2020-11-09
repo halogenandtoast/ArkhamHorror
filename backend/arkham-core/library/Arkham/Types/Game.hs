@@ -47,7 +47,6 @@ import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Location
 import Arkham.Types.Phase
-import Arkham.Types.Prey
 import Arkham.Types.Scenario
 import Arkham.Types.ScenarioId
 import Arkham.Types.ScenarioLogKey

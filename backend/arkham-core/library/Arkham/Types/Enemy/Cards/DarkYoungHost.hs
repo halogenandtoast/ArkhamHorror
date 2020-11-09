@@ -12,13 +12,14 @@ newtype DarkYoungHost = DarkYoungHost Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 darkYoungHost :: EnemyId -> DarkYoungHost
-darkYoungHost uuid = DarkYoungHost $ (baseAttrs uuid "81033")
-  { enemyHealthDamage = 2
-  , enemySanityDamage = 1
-  , enemyFight = 4
-  , enemyHealth = Static 5
-  , enemyEvade = 2
-  }
+darkYoungHost uuid =
+  DarkYoungHost
+    $ baseAttrs uuid "81033"
+    $ (healthDamage .~ 2)
+    . (sanityDamage .~ 1)
+    . (fight .~ 4)
+    . (health .~ Static 5)
+    . (evade .~ 2)
 
 instance HasModifiersFor env DarkYoungHost where
   getModifiersFor _ _ _ = pure []

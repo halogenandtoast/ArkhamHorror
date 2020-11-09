@@ -5,20 +5,20 @@ import Arkham.Import
 
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Prey
 
 newtype GhoulPriest = GhoulPriest Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 ghoulPriest :: EnemyId -> GhoulPriest
-ghoulPriest uuid = GhoulPriest $ (baseAttrs uuid "01116")
-  { enemyHealthDamage = 2
-  , enemySanityDamage = 2
-  , enemyFight = 4
-  , enemyHealth = PerPlayer 5
-  , enemyEvade = 4
-  , enemyPrey = HighestSkill SkillCombat
-  }
+ghoulPriest uuid =
+  GhoulPriest
+    $ baseAttrs uuid "01116"
+    $ (healthDamage .~ 2)
+    . (sanityDamage .~ 2)
+    . (fight .~ 4)
+    . (health .~ PerPlayer 5)
+    . (evade .~ 4)
+    . (prey .~ HighestSkill SkillCombat)
 
 instance HasModifiersFor env GhoulPriest where
   getModifiersFor _ _ _ = pure []

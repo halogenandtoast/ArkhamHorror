@@ -15,12 +15,13 @@ newtype WolfManDrew = WolfManDrew Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 wolfManDrew :: EnemyId -> WolfManDrew
-wolfManDrew uuid = WolfManDrew $ (baseAttrs uuid "01137")
-  { enemyHealthDamage = 2
-  , enemyFight = 4
-  , enemyHealth = Static 4
-  , enemyEvade = 2
-  }
+wolfManDrew uuid =
+  WolfManDrew
+    $ baseAttrs uuid "01137"
+    $ (healthDamage .~ 2)
+    . (fight .~ 4)
+    . (health .~ Static 4)
+    . (evade .~ 2)
 
 instance HasModifiersFor env WolfManDrew where
   getModifiersFor _ _ _ = pure []

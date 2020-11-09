@@ -32,7 +32,6 @@ import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Cards
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Prey
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 import Data.Coerce

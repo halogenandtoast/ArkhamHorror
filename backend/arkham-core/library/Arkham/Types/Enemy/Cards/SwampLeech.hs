@@ -14,12 +14,13 @@ newtype SwampLeech = SwampLeech Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 swampLeech :: EnemyId -> SwampLeech
-swampLeech uuid = SwampLeech $ (baseAttrs uuid "81023")
-  { enemyHealthDamage = 1
-  , enemyFight = 4
-  , enemyHealth = Static 1
-  , enemyEvade = 0
-  }
+swampLeech uuid =
+  SwampLeech
+    $ baseAttrs uuid "81023"
+    $ (healthDamage .~ 1)
+    . (fight .~ 4)
+    . (health .~ Static 1)
+    . (evade .~ 0)
 
 instance HasModifiersFor env SwampLeech where
   getModifiersFor _ _ _ = pure []

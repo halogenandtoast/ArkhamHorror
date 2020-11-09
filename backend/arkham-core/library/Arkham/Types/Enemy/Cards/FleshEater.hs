@@ -1,26 +1,23 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy.Cards.FleshEater where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Message
-import ClassyPrelude
 
 newtype FleshEater = FleshEater Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 fleshEater :: EnemyId -> FleshEater
-fleshEater uuid = FleshEater $ (baseAttrs uuid "01118")
-  { enemyHealthDamage = 1
-  , enemySanityDamage = 2
-  , enemyFight = 4
-  , enemyHealth = Static 4
-  , enemyEvade = 1
-  }
+fleshEater uuid =
+  FleshEater
+    $ baseAttrs uuid "01118"
+    $ (healthDamage .~ 1)
+    . (sanityDamage .~ 2)
+    . (fight .~ 4)
+    . (health .~ Static 4)
+    . (evade .~ 1)
 
 instance HasModifiersFor env FleshEater where
   getModifiersFor _ _ _ = pure []

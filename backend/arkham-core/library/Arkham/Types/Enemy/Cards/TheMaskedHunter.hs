@@ -5,20 +5,20 @@ import Arkham.Import
 
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Prey
 
 newtype TheMaskedHunter = TheMaskedHunter Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 theMaskedHunter :: EnemyId -> TheMaskedHunter
-theMaskedHunter uuid = TheMaskedHunter $ (baseAttrs uuid "01121b")
-  { enemyHealthDamage = 2
-  , enemySanityDamage = 1
-  , enemyFight = 4
-  , enemyHealth = Static 4
-  , enemyEvade = 2
-  , enemyPrey = MostClues
-  }
+theMaskedHunter uuid =
+  TheMaskedHunter
+    $ baseAttrs uuid "01121b"
+    $ (healthDamage .~ 2)
+    . (sanityDamage .~ 1)
+    . (fight .~ 4)
+    . (health .~ Static 4)
+    . (evade .~ 2)
+    . (prey .~ MostClues)
 
 instance HasModifiersFor env TheMaskedHunter where
   getModifiersFor _ (InvestigatorTarget iid) (TheMaskedHunter Attrs {..}) = do

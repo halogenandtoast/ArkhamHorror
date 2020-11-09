@@ -1,30 +1,24 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy.Cards.ScreechingByakhee where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Modifier
-import Arkham.Types.Prey
-import Arkham.Types.Query
-import ClassyPrelude
 
 newtype ScreechingByakhee = ScreechingByakhee Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 screechingByakhee :: EnemyId -> ScreechingByakhee
-screechingByakhee uuid = ScreechingByakhee $ (baseAttrs uuid "01175")
-  { enemyHealthDamage = 1
-  , enemySanityDamage = 2
-  , enemyFight = 3
-  , enemyHealth = Static 4
-  , enemyEvade = 3
-  , enemyPrey = LowestRemainingSanity
-  }
+screechingByakhee uuid =
+  ScreechingByakhee
+    $ baseAttrs uuid "01175"
+    $ (healthDamage .~ 1)
+    . (sanityDamage .~ 2)
+    . (fight .~ 3)
+    . (health .~ Static 4)
+    . (evade .~ 3)
+    . (prey .~ LowestRemainingSanity)
 
 instance HasModifiersFor env ScreechingByakhee where
   getModifiersFor _ _ _ = pure []

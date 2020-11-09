@@ -1,27 +1,23 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy.Cards.HuntingNightgaunt where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Message
-import Arkham.Types.Modifier
-import ClassyPrelude
 
 newtype HuntingNightgaunt = HuntingNightgaunt Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 huntingNightgaunt :: EnemyId -> HuntingNightgaunt
-huntingNightgaunt uuid = HuntingNightgaunt $ (baseAttrs uuid "01172")
-  { enemyHealthDamage = 1
-  , enemySanityDamage = 1
-  , enemyFight = 3
-  , enemyHealth = Static 4
-  , enemyEvade = 1
-  }
+huntingNightgaunt uuid =
+  HuntingNightgaunt
+    $ baseAttrs uuid "01172"
+    $ (healthDamage .~ 1)
+    . (sanityDamage .~ 1)
+    . (fight .~ 3)
+    . (health .~ Static 4)
+    . (evade .~ 1)
 
 instance HasModifiersFor env HuntingNightgaunt where
   getModifiersFor _ _ _ = pure []

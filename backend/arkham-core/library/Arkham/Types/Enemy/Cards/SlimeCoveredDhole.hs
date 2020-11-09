@@ -10,21 +10,21 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Prey
 import Arkham.Types.Trait
 
 newtype SlimeCoveredDhole = SlimeCoveredDhole Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 slimeCoveredDhole :: EnemyId -> SlimeCoveredDhole
-slimeCoveredDhole uuid = SlimeCoveredDhole $ (baseAttrs uuid "81031")
-  { enemyHealthDamage = 1
-  , enemySanityDamage = 1
-  , enemyFight = 2
-  , enemyHealth = Static 3
-  , enemyEvade = 3
-  , enemyPrey = LowestRemainingHealth
-  }
+slimeCoveredDhole uuid =
+  SlimeCoveredDhole
+    $ baseAttrs uuid "81031"
+    $ (healthDamage .~ 1)
+    . (sanityDamage .~ 1)
+    . (fight .~ 2)
+    . (health .~ Static 3)
+    . (evade .~ 3)
+    . (prey .~ LowestRemainingHealth)
 
 instance HasModifiersFor env SlimeCoveredDhole where
   getModifiersFor _ _ _ = pure []

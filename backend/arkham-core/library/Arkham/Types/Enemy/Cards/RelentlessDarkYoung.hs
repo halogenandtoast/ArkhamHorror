@@ -17,14 +17,15 @@ newtype RelentlessDarkYoung = RelentlessDarkYoung Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 relentlessDarkYoung :: EnemyId -> RelentlessDarkYoung
-relentlessDarkYoung uuid = RelentlessDarkYoung $ (baseAttrs uuid "01179")
-  { enemyHealthDamage = 2
-  , enemySanityDamage = 1
-  , enemyFight = 4
-  , enemyHealth = Static 5
-  , enemyEvade = 2
-  , enemyPrey = LowestSkill SkillAgility
-  }
+relentlessDarkYoung uuid =
+  RelentlessDarkYoung
+    $ baseAttrs uuid "01179"
+    $ (healthDamage .~ 2)
+    . (sanityDamage .~ 1)
+    . (fight .~ 4)
+    . (health .~ Static 5)
+    . (evade .~ 2)
+    . (prey .~ LowestSkill SkillAgility)
 
 instance HasModifiersFor env RelentlessDarkYoung where
   getModifiersFor _ _ _ = pure []

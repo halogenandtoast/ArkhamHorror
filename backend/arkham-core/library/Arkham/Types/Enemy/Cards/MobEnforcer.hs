@@ -7,7 +7,6 @@ import Arkham.Types.Action
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Prey
 
 newtype MobEnforcer = MobEnforcer Attrs
   deriving newtype (Show, ToJSON, FromJSON)

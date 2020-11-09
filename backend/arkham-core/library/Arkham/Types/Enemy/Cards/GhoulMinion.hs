@@ -1,25 +1,23 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy.Cards.GhoulMinion where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import ClassyPrelude
 
 newtype GhoulMinion = GhoulMinion Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 ghoulMinion :: EnemyId -> GhoulMinion
-ghoulMinion uuid = GhoulMinion $ (baseAttrs uuid "01160")
-  { enemyHealthDamage = 1
-  , enemySanityDamage = 1
-  , enemyFight = 2
-  , enemyHealth = Static 2
-  , enemyEvade = 2
-  }
+ghoulMinion uuid =
+  GhoulMinion
+    $ baseAttrs uuid "01160"
+    $ (healthDamage .~ 1)
+    . (sanityDamage .~ 1)
+    . (fight .~ 2)
+    . (health .~ Static 2)
+    . (evade .~ 2)
 
 instance HasModifiersFor env GhoulMinion where
   getModifiersFor _ _ _ = pure []

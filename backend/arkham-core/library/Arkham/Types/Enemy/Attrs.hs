@@ -8,7 +8,6 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
-import Arkham.Types.Prey
 import Arkham.Types.Trait
 
 data Attrs = Attrs
@@ -65,6 +64,12 @@ damage = lens enemyDamage $ \m x -> m { enemyDamage = x }
 health :: Lens' Attrs (GameValue Int)
 health = lens enemyHealth $ \m x -> m { enemyHealth = x }
 
+healthDamage :: Lens' Attrs Int
+healthDamage = lens enemyHealthDamage $ \m x -> m { enemyHealthDamage = x }
+
+sanityDamage :: Lens' Attrs Int
+sanityDamage = lens enemySanityDamage $ \m x -> m { enemySanityDamage = x }
+
 fight :: Lens' Attrs Int
 fight = lens enemyFight $ \m x -> m { enemyFight = x }
 
@@ -86,8 +91,8 @@ assets = lens enemyAssets $ \m x -> m { enemyAssets = x }
 exhausted :: Lens' Attrs Bool
 exhausted = lens enemyExhausted $ \m x -> m { enemyExhausted = x }
 
-baseAttrs :: EnemyId -> CardCode -> Attrs
-baseAttrs eid cardCode =
+baseAttrs :: EnemyId -> CardCode -> (Attrs -> Attrs) -> Attrs
+baseAttrs eid cardCode f =
   let
     MkEncounterCard {..} =
       fromJustNote
@@ -95,7 +100,7 @@ baseAttrs eid cardCode =
           (lookup cardCode allEncounterCards)
         $ CardId (unEnemyId eid)
   in
-    Attrs
+    f $ Attrs
       { enemyName = ecName
       , enemyId = eid
       , enemyCardCode = cardCode

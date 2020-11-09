@@ -21,13 +21,14 @@ newtype TheRougarou = TheRougarou (Attrs `With` TheRougarouMetadata)
 
 theRougarou :: EnemyId -> TheRougarou
 theRougarou uuid =
-  TheRougarou . (`with` TheRougarouMetadata 0) $ (baseAttrs uuid "81028")
-    { enemyHealthDamage = 2
-    , enemySanityDamage = 2
-    , enemyFight = 3
-    , enemyHealth = PerPlayer 5
-    , enemyEvade = 3
-    }
+  TheRougarou
+    . (`with` TheRougarouMetadata 0)
+    $ baseAttrs uuid "81028"
+    $ (healthDamage .~ 2)
+    . (sanityDamage .~ 2)
+    . (fight .~ 3)
+    . (health .~ PerPlayer 5)
+    . (evade .~ 3)
 
 instance HasModifiersFor env TheRougarou where
   getModifiersFor _ _ _ = pure []

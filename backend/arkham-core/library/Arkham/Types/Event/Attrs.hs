@@ -91,6 +91,9 @@ isSource :: Attrs -> Source -> Bool
 isSource Attrs { eventId } (EventSource eid) = eventId == eid
 isSource _ _ = False
 
+toSource :: Attrs -> Source
+toSource Attrs { eventId } = EventSource eventId
+
 instance HasActions env Attrs where
   getActions _ _ _ = pure []
 

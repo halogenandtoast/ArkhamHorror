@@ -23,6 +23,7 @@ import Arkham.Types.CampaignStep
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBagStepState
+import Arkham.Types.EffectId
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
@@ -357,7 +358,7 @@ data Message
   | TargetLabel Target [Message]
   | UnengageNonMatching InvestigatorId [Trait]
   | PlaceDoom Target Int
-  | Surge InvestigatorId
+  | Surge InvestigatorId Source
   | RevealInHand CardId
   | RemoveDiscardFromGame InvestigatorId
   | FailedSkillTest InvestigatorId (Maybe Action) Source Target Int
@@ -387,6 +388,8 @@ data Message
   | AddKeywords Target [Keyword]
   | RemoveKeywords Target [Keyword]
   | ChangeCardToFast InvestigatorId CardId
+  | CreateEffect Source Target CardCode
+  | DisableEffect EffectId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

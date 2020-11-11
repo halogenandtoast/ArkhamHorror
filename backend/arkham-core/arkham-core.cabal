@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 75e8e15aecc01b6546f5a7c8cd7e0b466c7588e113051909a770d10b3d128977
+-- hash: 27659bbfaf968210042e518dfa413c9e6e0884931a95f3f25934ff06c624c2e8
 
 name:           arkham-core
 version:        0.0.0
@@ -159,6 +159,11 @@ library
       Arkham.Types.ClassSymbol
       Arkham.Types.CommitRestriction
       Arkham.Types.Difficulty
+      Arkham.Types.Effect
+      Arkham.Types.Effect.Attrs
+      Arkham.Types.Effect.Effects
+      Arkham.Types.Effect.Effects.LetMeHandleThis
+      Arkham.Types.EffectId
       Arkham.Types.EncounterSet
       Arkham.Types.Enemy
       Arkham.Types.Enemy.Attrs
@@ -220,6 +225,7 @@ library
       Arkham.Types.Event.Cards.ExtraAmmunition1
       Arkham.Types.Event.Cards.HotStreak2
       Arkham.Types.Event.Cards.HotStreak4
+      Arkham.Types.Event.Cards.LetMeHandleThis
       Arkham.Types.Event.Cards.LookWhatIFound
       Arkham.Types.Event.Cards.Lucky
       Arkham.Types.Event.Cards.Lucky2

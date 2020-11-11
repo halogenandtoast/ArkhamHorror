@@ -6,6 +6,7 @@ import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Token
 import Arkham.Types.Trait
+import Arkham.Types.TreacheryId
 import ClassyPrelude
 import Data.Aeson
 
@@ -27,13 +28,14 @@ data Window
   | NonFast
   | WhenDiscoverClues Who Where
   | WhenDrawToken Who Token
-  | WhenDrawTreachery Who Bool -- < is weakness
+  | WhenDrawTreachery Who
+  | WhenDrawNonPerilTreachery Who TreacheryId
   | WhenEnemyAttacks Who
   | WhenEnemySpawns Where [Trait]
   | WhenEnemyDefeated Who
   | WhenEnemyEvaded Who
   | WhenPlayCard Who CardId
-  | WhenRevealTokenWithNegativeModifier Who
+  | WhenRevealTokenWithNegativeModifier Who TokenId
   | WhenRevealToken Who Token
   | WhenSkillTest SkillType
   | WhenWouldFailSkillTest Who

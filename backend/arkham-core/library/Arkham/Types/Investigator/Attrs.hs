@@ -1499,6 +1499,18 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
             (chooseOne iid
             $ if null choices then [Continue "No cards found"] else choices
             )
+      actions <- fmap concat <$> for cards $ \card' -> getActions
+        iid
+        (WhenAmongSearchedCards You)
+        (toPlayerCardWithBehavior card')
+      -- TODO: This is for astounding revelation and only one research action is possible
+      -- so we are able to short circuit here, but we may have additional cards in the
+      -- future so we may want to make this more versatile
+      unless (null actions) $ unshiftMessage
+        (chooseOne iid
+        $ actions
+        <> [Continue "Skip playing fast cards or using reactions"]
+        )
       unshiftMessage (FocusCards $ map PlayerCard cards)
       pure $ a & deck .~ Deck deck'
   SearchDiscard iid (InvestigatorTarget iid') traits | iid' == investigatorId ->

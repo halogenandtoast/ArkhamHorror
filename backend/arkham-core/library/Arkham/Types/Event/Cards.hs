@@ -3,6 +3,7 @@ module Arkham.Types.Event.Cards
   )
 where
 
+import Arkham.Types.Event.Cards.AstoundingRevelation as X
 import Arkham.Types.Event.Cards.Backstab as X
 import Arkham.Types.Event.Cards.BaitAndSwitch as X
 import Arkham.Types.Event.Cards.Barricade as X

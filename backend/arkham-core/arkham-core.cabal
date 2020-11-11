@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 27659bbfaf968210042e518dfa413c9e6e0884931a95f3f25934ff06c624c2e8
+-- hash: 1b13e41b82f1d3c6ac9412cc35f73a5409a471c7aa33d5d544f7f3be79b3c228
 
 name:           arkham-core
 version:        0.0.0
@@ -204,6 +204,7 @@ library
       Arkham.Types.Event
       Arkham.Types.Event.Attrs
       Arkham.Types.Event.Cards
+      Arkham.Types.Event.Cards.AstoundingRevelation
       Arkham.Types.Event.Cards.Backstab
       Arkham.Types.Event.Cards.BaitAndSwitch
       Arkham.Types.Event.Cards.Barricade

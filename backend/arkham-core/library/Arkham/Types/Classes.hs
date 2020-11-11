@@ -12,6 +12,7 @@ where
 
 import Arkham.Types.Ability
 import Arkham.Types.Action
+import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
@@ -287,6 +288,7 @@ type ActionRunner env
     , HasList UsedAbility () env
     , HasModifiersFor env env
     , HasSet AccessibleLocationId LocationId env
+    , HasSet AssetId (InvestigatorId, UseType) env
     , HasSet ConnectedLocationId LocationId env
     , HasSet EnemyId LocationId env
     , HasSet ExhaustedAssetId InvestigatorId env

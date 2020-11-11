@@ -6,6 +6,8 @@ where
 
 import ClassyPrelude
 
+import Arkham.Types.Asset.Uses (UseType(..))
+import Arkham.Types.AssetId
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
 import Arkham.Types.Card.EncounterCard
@@ -67,7 +69,12 @@ toPlayerCardWithBehavior pc = builder pc
   defaultCard = DefaultPlayerCard' . DefaultPlayerCard
 
 deriving anyclass instance (HasSet HandCardId InvestigatorId env, HasQueue env) => RunMessage env PlayerCard'
-deriving anyclass instance (HasId CardCode EnemyId env, HasSet Trait EnemyId env) => HasActions env PlayerCard'
+deriving anyclass instance
+  ( HasId CardCode EnemyId env
+  , HasSet Trait EnemyId env
+  , HasSet AssetId (InvestigatorId, UseType) env
+  )
+  => HasActions env PlayerCard'
 
 instance HasQueue env => RunMessage env DefaultPlayerCard where
   runMessage _ pc = pure pc
@@ -149,13 +156,19 @@ instance (HasQueue env) => RunMessage env AstoundingRevelation where
     DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
     pure $ AstoundingRevelation pc'
 
-instance HasActions env AstoundingRevelation where
-  getActions iid (WhenAmongSearchedCards You) (AstoundingRevelation pc) = pure
-    [ Run
-        [ Discard (SearchedCardIdTarget $ getCardId pc)
-        , chooseOne iid [TakeResources iid 2 False]
-        ]
-    ]
+instance HasSet AssetId (InvestigatorId, UseType) env => HasActions env AstoundingRevelation where
+  getActions iid (WhenAmongSearchedCards You) (AstoundingRevelation pc) = do
+    secretAssetIds <- asks $ setToList . getSet (iid, Secret)
+    pure
+      [ Run
+          [ Discard (SearchedCardIdTarget $ getCardId pc)
+          , chooseOne
+            iid
+            (TakeResources iid 2 False
+            : [ AddUses (AssetTarget aid) Secret 1 | aid <- secretAssetIds ]
+            )
+          ]
+      ]
   getActions i window (AstoundingRevelation pc) =
     getActions i window (DefaultPlayerCard pc)
 

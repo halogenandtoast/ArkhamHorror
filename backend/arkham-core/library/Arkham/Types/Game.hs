@@ -34,6 +34,7 @@ import Arkham.Types.Act
 import Arkham.Types.Action (Action)
 import Arkham.Types.Agenda
 import Arkham.Types.Asset
+import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.Campaign
 import Arkham.Types.CampaignId
 import Arkham.Types.ChaosBag
@@ -1007,6 +1008,13 @@ instance HasSet AccessibleLocationId LocationId (Game queue) where
 
 instance HasSet AssetId InvestigatorId (Game queue) where
   getSet iid = getSet () . getInvestigator iid
+
+instance HasSet AssetId (InvestigatorId, UseType) (Game queue) where
+  getSet (iid, useType') g = setFromList $ filter isCorrectUseType assetIds
+   where
+    investigator = getInvestigator iid g
+    assetIds :: [AssetId] = setToList $ getSet @AssetId () investigator
+    isCorrectUseType aid = useTypeOf (getAsset aid g) == Just useType'
 
 instance HasSet DiscardableAssetId InvestigatorId (Game queue) where
   getSet iid g = setFromList . map DiscardableAssetId $ filter

@@ -134,9 +134,9 @@ instance (HasQueue env, HasModifiers env InvestigatorId) => RunMessage env Attrs
       pure $ a & healthDamage +~ health & sanityDamage +~ sanity
     InvestigatorEliminated iid | assetInvestigator == Just iid ->
       a <$ unshiftMessage (Discard (AssetTarget assetId))
-    AddUses target useType n | target `is` a -> case assetUses of
-      Uses useType' m | useType == useType' ->
-        pure $ a & uses .~ Uses useType (n + m)
+    AddUses target useType' n | target `is` a -> case assetUses of
+      Uses useType'' m | useType' == useType'' ->
+        pure $ a & uses .~ Uses useType' (n + m)
       _ -> error "Trying to add the wrong use type"
     AttachAsset aid target | aid == assetId -> case target of
       LocationTarget lid -> pure $ a & location ?~ lid

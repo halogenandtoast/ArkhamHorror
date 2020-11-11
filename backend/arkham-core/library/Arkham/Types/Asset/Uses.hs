@@ -12,7 +12,11 @@ data Uses = NoUses | Uses UseType Int
 
 use :: Uses -> Uses
 use NoUses = NoUses
-use (Uses useType n) = Uses useType (max 0 (n - 1))
+use (Uses useType' n) = Uses useType' (max 0 (n - 1))
+
+useType :: Uses -> Maybe UseType
+useType NoUses = Nothing
+useType (Uses useType' _) = Just useType'
 
 useCount :: Uses -> Int
 useCount NoUses = 0

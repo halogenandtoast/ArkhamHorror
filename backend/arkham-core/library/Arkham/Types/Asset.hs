@@ -7,6 +7,7 @@ module Arkham.Types.Asset
   , isHealthDamageable
   , isSanityDamageable
   , slotsOf
+  , useTypeOf
   , Asset
   )
 where
@@ -249,6 +250,9 @@ allAssets = mapFromList
 
 slotsOf :: Asset -> [SlotType]
 slotsOf = assetSlots . assetAttrs
+
+useTypeOf :: Asset -> Maybe UseType
+useTypeOf = useType . assetUses . assetAttrs
 
 isHealthDamageable :: Asset -> Bool
 isHealthDamageable a = case assetHealth (assetAttrs a) of

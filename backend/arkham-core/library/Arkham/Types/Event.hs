@@ -51,6 +51,7 @@ data Event
   | BaitAndSwitch' BaitAndSwitch
   | LetMeHandleThis' LetMeHandleThis
   | BloodRite' BloodRite
+  | AstoundingRevelation' AstoundingRevelation
   | DynamiteBlast2' DynamiteBlast2
   | Barricade3' Barricade3
   | HotStreak2' HotStreak2
@@ -105,6 +106,7 @@ allEvents = mapFromList
   , ("02034", (BaitAndSwitch' .) . baitAndSwitch)
   , ("03022", (LetMeHandleThis' .) . letMeHandleThis)
   , ("05317", (BloodRite' .) . bloodRite)
+  , ("06023", (AstoundingRevelation' .) . astoundingRevelation)
   , ("50002", (DynamiteBlast2' .) . dynamiteBlast2)
   , ("50004", (Barricade3' .) . barricade3)
   , ("50006", (HotStreak2' .) . hotStreak2)
@@ -147,6 +149,7 @@ eventAttrs = \case
   BaitAndSwitch' attrs -> coerce attrs
   LetMeHandleThis' attrs -> coerce attrs
   BloodRite' attrs -> coerce attrs
+  AstoundingRevelation' attrs -> coerce attrs
   DynamiteBlast2' attrs -> coerce attrs
   Barricade3' attrs -> coerce attrs
   HotStreak2' attrs -> coerce attrs

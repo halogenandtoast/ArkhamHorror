@@ -27,6 +27,7 @@ data PlayerCard'
   | SureGamble3' SureGamble3
   | CloseCall2' CloseCall2
   | LetMeHandleThis' LetMeHandleThis
+  | AstoundingRevelation' AstoundingRevelation
   | TheNecronomiconAdvanced' TheNecronomiconAdvanced
   deriving stock (Generic, Show)
 
@@ -42,6 +43,8 @@ newtype CloseCall2 = CloseCall2 PlayerCard
   deriving newtype Show
 newtype LetMeHandleThis = LetMeHandleThis PlayerCard
   deriving newtype Show
+newtype AstoundingRevelation = AstoundingRevelation PlayerCard
+  deriving newtype Show
 newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced PlayerCard
   deriving newtype Show
 
@@ -52,6 +55,7 @@ allPlayerCardsWithBehavior = mapFromList
   , ("01056", SureGamble3' . SureGamble3)
   , ("01083", CloseCall2' . CloseCall2)
   , ("03022", LetMeHandleThis' . LetMeHandleThis)
+  , ("06023", AstoundingRevelation' . AstoundingRevelation)
   , ("90003", TheNecronomiconAdvanced' . TheNecronomiconAdvanced)
   ]
 
@@ -138,6 +142,21 @@ instance HasActions env LetMeHandleThis where
     | who /= You = pure
       [PlayCard iid (getCardId pc) (Just $ TreacheryTarget tid) False]
   getActions i window (LetMeHandleThis pc) =
+    getActions i window (DefaultPlayerCard pc)
+
+instance (HasQueue env) => RunMessage env AstoundingRevelation where
+  runMessage msg (AstoundingRevelation pc) = do
+    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
+    pure $ AstoundingRevelation pc'
+
+instance HasActions env AstoundingRevelation where
+  getActions iid (WhenAmongSearchedCards You) (AstoundingRevelation pc) = pure
+    [ Run
+        [ Discard (SearchedCardIdTarget $ getCardId pc)
+        , chooseOne iid [TakeResources iid 2 False]
+        ]
+    ]
+  getActions i window (AstoundingRevelation pc) =
     getActions i window (DefaultPlayerCard pc)
 
 instance HasQueue env => RunMessage env TheNecronomiconAdvanced where

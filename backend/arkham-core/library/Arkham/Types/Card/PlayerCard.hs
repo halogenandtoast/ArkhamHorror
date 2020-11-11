@@ -271,6 +271,7 @@ allPlayerCards = HashMap.fromList
   , ("05316", occultLexicon)
   , ("05317", bloodRite)
   , ("06116", scrollOfProphecies)
+  , ("06023", astoundingRevelation)
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
   , ("50003", hyperawareness2)
@@ -1071,6 +1072,15 @@ scrollOfProphecies cardId =
   (asset cardId "06116" "Scroll of Prophecies" 3 Mystic)
     { pcSkills = [SkillWillpower]
     , pcTraits = setFromList [Item, Tome]
+    }
+
+astoundingRevelation :: CardId -> PlayerCard
+astoundingRevelation cardId =
+  (event cardId "06023" "Astounding Revelation" 0 Seeker)
+    { pcSkills = [SkillIntellect]
+    , pcTraits = setFromList [Research]
+    , pcFast = True
+    , pcWindows = mempty -- cannot be played
     }
 
 litaChantler :: CardId -> PlayerCard

@@ -598,6 +598,13 @@ instance HasSet Keyword EnemyId (Game queue) where
 instance HasSet Trait LocationId (Game queue) where
   getSet lid = getTraits . getLocation lid
 
+instance HasSet Trait (InvestigatorId, CardId) (Game queue) where
+  getSet (iid, cid) =
+    maybe mempty getTraits
+      . find ((== cid) . getCardId)
+      . handOf
+      . getInvestigator iid
+
 instance HasSet Trait AssetId (Game queue) where
   getSet aid = getTraits . getAsset aid
 

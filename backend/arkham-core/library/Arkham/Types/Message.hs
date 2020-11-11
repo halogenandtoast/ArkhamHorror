@@ -189,7 +189,9 @@ data Message
   | EnemyDefeated EnemyId InvestigatorId CardCode Source
   | Damage Target Source Int
   | AddToVictory Target
+  | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
   | PlayCard InvestigatorId CardId (Maybe Target) Bool
+  | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
   | PlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
   | PlayedCard InvestigatorId CardId
   | PayedForDynamicCard InvestigatorId CardId Int Bool
@@ -384,6 +386,7 @@ data Message
   | RemoveTraits Target [Trait]
   | AddKeywords Target [Keyword]
   | RemoveKeywords Target [Keyword]
+  | ChangeCardToFast InvestigatorId CardId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

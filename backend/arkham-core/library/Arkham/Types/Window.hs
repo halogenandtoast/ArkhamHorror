@@ -1,5 +1,6 @@
 module Arkham.Types.Window where
 
+import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -31,6 +32,7 @@ data Window
   | WhenEnemySpawns Where [Trait]
   | WhenEnemyDefeated Who
   | WhenEnemyEvaded Who
+  | WhenPlayCard Who CardId
   | WhenRevealTokenWithNegativeModifier Who
   | WhenRevealToken Who Token
   | WhenSkillTest SkillType

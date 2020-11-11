@@ -411,7 +411,14 @@ canAfford a@Attrs {..} actionType =
 fastIsPlayable :: Attrs -> [Window] -> [Modifier] -> Card -> Bool
 fastIsPlayable _ _ _ (EncounterCard _) = False -- TODO: there might be some playable ones?
 fastIsPlayable a windows modifiers' c@(PlayerCard MkPlayerCard {..}) =
-  pcFast && isPlayable a windows modifiers' c
+  (pcFast || canBecomeFast) && isPlayable a windows modifiers' c
+ where
+  canBecomeFast = foldr applyModifier False modifiers'
+  applyModifier (CanBecomeFast (mcardType, traits)) _
+    | maybe True (== pcCardType) mcardType
+      && not (null (setFromList traits `intersect` pcTraits))
+    = True
+  applyModifier _ val = val
 
 modifiedCardCost :: Attrs -> Card -> Int
 modifiedCardCost Attrs {..} (PlayerCard MkPlayerCard {..}) = foldr
@@ -433,9 +440,7 @@ modifiedCardCost Attrs {..} (EncounterCard MkEncounterCard {..}) = foldr
   (concat . HashMap.elems $ investigatorModifiers)
  where
   applyModifier (ReduceCostOf traits m) n
-    | not
-      (null (HashSet.fromList traits `intersection` HashSet.fromList ecTraits))
-    = max 0 (n - m)
+    | not (null (setFromList traits `intersection` ecTraits)) = max 0 (n - m)
   applyModifier _ n = n
 
 isPlayable :: Attrs -> [Window] -> [Modifier] -> Card -> Bool
@@ -963,6 +968,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   PayedForDynamicCard iid cardId n False | iid == investigatorId -> do
     unshiftMessage (PlayDynamicCard iid cardId n Nothing False)
     pure $ a & resources -~ n
+  InitiatePlayDynamicCard iid cardId n mtarget asAction
+    | iid == investigatorId -> a <$ unshiftMessages
+      [ CheckWindow iid [WhenPlayCard You cardId]
+      , PlayDynamicCard iid cardId n mtarget asAction
+      ]
   PlayDynamicCard iid cardId _n _mtarget True | iid == investigatorId -> do
     let
       card = fromJustNote "not in hand"
@@ -994,6 +1004,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       [ TakeAction iid actionCost' (Just Action.Play)
       , PayDynamicCardCost iid cardId 0 aooMessage
       ]
+  InitiatePlayCard iid cardId mtarget asAction | iid == investigatorId ->
+    a <$ unshiftMessages
+      [ CheckWindow iid [WhenPlayCard You cardId]
+      , PlayCard iid cardId mtarget asAction
+      ]
   PlayCard iid cardId mtarget True | iid == investigatorId -> do
     let
       card = fromJustNote "not in hand"
@@ -1021,11 +1036,16 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       aooMessage = if provokesAttackOfOpportunities
         then [CheckAttackOfOpportunity iid isFast]
         else []
-    a <$ unshiftMessages
-      ([TakeAction iid actionCost' (Just Action.Play), PayCardCost iid cardId]
-      <> aooMessage
-      <> [PlayCard iid cardId mtarget False]
-      )
+    if investigatorRemainingActions
+        >= actionCost'
+        && investigatorResources
+        >= getCost card
+      then a <$ unshiftMessages
+        ([TakeAction iid actionCost' (Just Action.Play), PayCardCost iid cardId]
+        <> aooMessage
+        <> [PlayCard iid cardId mtarget False]
+        )
+      else pure a
   PlayedCard iid cardId | iid == investigatorId -> do
     pure $ a & hand %~ filter ((/= cardId) . getCardId)
   InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
@@ -1054,6 +1074,14 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
             | aid' <- assetsThatCanProvideSlots
             ]
           )
+  ChangeCardToFast iid cardId | iid == investigatorId -> do
+    let
+      updateCard card = if getCardId card == cardId
+        then case card of
+          PlayerCard pc -> PlayerCard $ pc { pcFast = True }
+          EncounterCard ec -> EncounterCard ec
+        else card
+    pure $ a & hand %~ map updateCard
   RemoveAllCopiesOfCardFromGame iid cardCode | iid == investigatorId -> do
     for_ investigatorAssets $ \assetId -> do
       cardCode' <- asks $ getId @CardCode assetId
@@ -1523,13 +1551,13 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
              `notElem` modifiers'
            ]
         <> [ DrawCards iid 1 True | canAfford a Action.Draw ]
-        <> [ PlayCard iid (getCardId c) Nothing True
+        <> [ InitiatePlayCard iid (getCardId c) Nothing True
            | c <- investigatorHand
            , canAfford a Action.Play
              || fastIsPlayable a [DuringTurn You] modifiers' c
            , isPlayable a [DuringTurn You] modifiers' c && not (isDynamic c)
            ]
-        <> [ PlayDynamicCard iid (getCardId c) 0 Nothing True
+        <> [ InitiatePlayDynamicCard iid (getCardId c) 0 Nothing True
            | c <- investigatorHand
            , canAfford a Action.Play
              || fastIsPlayable a [DuringTurn You] modifiers' c

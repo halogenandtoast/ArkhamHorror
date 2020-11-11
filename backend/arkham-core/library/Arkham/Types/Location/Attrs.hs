@@ -297,7 +297,7 @@ instance LocationRunner env => RunMessage env Attrs where
       | lid /= locationId && iid `elem` locationInvestigators
       -> pure $ a & investigators %~ HashSet.delete iid -- TODO: should we broadcast leaving the location
     WhenEnterLocation iid lid | lid == locationId -> do
-      unless locationRevealed $ unshiftMessage (RevealLocation lid)
+      unless locationRevealed $ unshiftMessage (RevealLocation (Just iid) lid)
       pure $ a & investigators %~ HashSet.insert iid
     AddToVictory (EnemyTarget eid) -> pure $ a & enemies %~ HashSet.delete eid
     EnemyMove eid lid fromLid | lid == locationId -> do
@@ -344,12 +344,16 @@ instance LocationRunner env => RunMessage env Attrs where
       pure $ a & clues +~ n
     RemoveClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & clues %~ max 0 . subtract n
-    RevealLocation lid | lid == locationId -> do
+    RevealLocation miid lid | lid == locationId -> do
       locationClueCount <-
         fromGameValue locationRevealClues . unPlayerCount <$> asks (getCount ())
-      unshiftMessage (AddConnection lid locationRevealedSymbol)
+      unshiftMessages
+        $ AddConnection lid locationRevealedSymbol
+        : [ CheckWindow iid [AfterRevealLocation You]
+          | iid <- maybeToList miid
+          ]
       pure $ a & clues +~ locationClueCount & revealed .~ True
-    RevealLocation lid | lid /= locationId ->
+    RevealLocation _ lid | lid /= locationId ->
       pure $ a & connectedLocations %~ HashSet.delete lid
     EndRound -> do
       lingeringEventIds <- asks (getSet ())

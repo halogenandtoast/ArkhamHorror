@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fddc9b4a79dcae58f56547a33904c8016a0f1ad497b7d4b30d9f8c8698622176
+-- hash: fa114dac0e55b4b948aaa9e58330779a05bca7cbf64af54d7bc601aa485602c1
 
 name:           arkham-core
 version:        0.0.0
@@ -127,6 +127,7 @@ library
       Arkham.Types.Asset.Cards.TheNecronomiconAdvanced
       Arkham.Types.Asset.Cards.ToothOfEztli
       Arkham.Types.Asset.Cards.WendysAmulet
+      Arkham.Types.Asset.Cards.WhittonGreene
       Arkham.Types.Asset.Cards.ZoeysCross
       Arkham.Types.Asset.Helpers
       Arkham.Types.Asset.Runner

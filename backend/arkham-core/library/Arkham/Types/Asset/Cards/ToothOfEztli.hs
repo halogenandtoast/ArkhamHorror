@@ -23,14 +23,10 @@ instance HasModifiersFor env ToothOfEztli where
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env ToothOfEztli where
-  getActions iid (AfterPassSkillTest source@(TreacherySource _) You n) (ToothOfEztli a)
+  getActions iid window@(AfterPassSkillTest (TreacherySource _) You _) (ToothOfEztli a)
     | ownedBy a iid
     = do
-      let
-        ability = mkAbility
-          (toSource a)
-          1
-          (ReactionAbility (AfterPassSkillTest source You n))
+      let ability = mkAbility (toSource a) 1 (ReactionAbility window)
       pure [ ActivateCardAbilityAction iid ability | not (assetExhausted a) ]
   getActions i window (ToothOfEztli a) = getActions i window a
 

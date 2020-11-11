@@ -77,4 +77,5 @@ import Arkham.Types.Asset.Cards.TheNecronomicon as X
 import Arkham.Types.Asset.Cards.TheNecronomiconAdvanced as X
 import Arkham.Types.Asset.Cards.ToothOfEztli as X
 import Arkham.Types.Asset.Cards.WendysAmulet as X
+import Arkham.Types.Asset.Cards.WhittonGreene as X
 import Arkham.Types.Asset.Cards.ZoeysCross as X

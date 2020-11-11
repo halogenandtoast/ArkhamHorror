@@ -37,7 +37,7 @@ instance ActRunner env => RunMessage env Trapped where
          , PlaceLocation "01115"
          ]
         <> map (Discard . EnemyTarget) enemyIds
-        <> [ RevealLocation "01112"
+        <> [ RevealLocation Nothing "01112"
            , MoveAllTo "01112"
            , RemoveLocation "01111"
            , NextAct aid "01109"

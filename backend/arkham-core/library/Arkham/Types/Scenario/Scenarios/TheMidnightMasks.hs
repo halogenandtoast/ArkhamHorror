@@ -72,9 +72,12 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
       cultistDeck' <- liftIO $ shuffleM cultistCards
       let
         startingLocationMessages = if houseBurnedDown
-          then [RevealLocation "01125", MoveAllTo "01125"]
+          then [RevealLocation Nothing "01125", MoveAllTo "01125"]
           else
-            [PlaceLocation "01124", RevealLocation "01124", MoveAllTo "01124"]
+            [ PlaceLocation "01124"
+            , RevealLocation Nothing "01124"
+            , MoveAllTo "01124"
+            ]
         ghoulPriestMessages =
           if ghoulPriestAlive then [AddToEncounterDeck ghoulPriestCard] else []
         spawnAcolyteMessages =

@@ -106,7 +106,7 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
           <> [ SetLocationLabel lid label
              | (label, lid) <- startingLocationsWithLabel
              ]
-          <> [ RevealLocation bayou
+          <> [ RevealLocation Nothing bayou
              , MoveAllTo bayou
              , AskMap
              . mapFromList

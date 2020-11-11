@@ -17,6 +17,8 @@ data Window
   | AfterFailSkillTestAtOrLess Who Int
   | AfterPassSkillTest Source Who Int
   | AfterPlayCard Who [Trait]
+  | AfterPutLocationIntoPlay Who
+  | AfterRevealLocation Who
   | AfterTurnBegins Who
   | FastPlayerWindow
   | AnyPhaseBegins

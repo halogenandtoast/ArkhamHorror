@@ -56,7 +56,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
         , AddAgenda "01105"
         , AddAct "01108"
         , PlaceLocation "01111"
-        , RevealLocation "01111"
+        , RevealLocation Nothing "01111"
         , MoveAllTo "01111"
         , AskMap
         . mapFromList

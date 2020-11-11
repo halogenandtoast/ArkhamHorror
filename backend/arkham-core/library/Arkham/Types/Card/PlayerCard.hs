@@ -266,6 +266,7 @@ allPlayerCards = HashMap.fromList
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
   , ("02147", bandolier)
+  , ("03022", letMeHandleThis)
   , ("04023", toothOfEztli)
   , ("05316", occultLexicon)
   , ("05317", bloodRite)
@@ -632,7 +633,7 @@ sureGamble3 :: CardId -> PlayerCard
 sureGamble3 cardId = (asset cardId "01056" "Sure Gamble" 2 Rogue)
   { pcTraits = setFromList [Fortune, Insight]
   , pcFast = True
-  , pcWindows = HashSet.fromList [WhenRevealTokenWithNegativeModifier You]
+  , pcWindows = mempty -- We handle this via behavior
   , pcLevel = 3
   }
 
@@ -691,7 +692,7 @@ wardOfProtection cardId = (event cardId "01065" "Ward of Protection" 1 Mystic)
   { pcSkills = [SkillWild]
   , pcTraits = setFromList [Spell, Spirit]
   , pcFast = True
-  , pcWindows = HashSet.fromList [WhenDrawTreachery You False]
+  , pcWindows = HashSet.fromList [WhenDrawTreachery You]
   }
 
 blindingLight :: CardId -> PlayerCard
@@ -1037,6 +1038,15 @@ bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillWild]
   , pcTraits = setFromList [Item]
   }
+
+letMeHandleThis :: CardId -> PlayerCard
+letMeHandleThis cardId =
+  (event cardId "03022" "\"Let me handle this!\"" 0 Guardian)
+    { pcSkills = [SkillWillpower, SkillCombat]
+    , pcTraits = setFromList [Spirit]
+    , pcFast = True
+    , pcWindows = mempty -- We handle this via behavior
+    }
 
 toothOfEztli :: CardId -> PlayerCard
 toothOfEztli cardId = (asset cardId "04023" "Tooth of Eztli" 3 Seeker)

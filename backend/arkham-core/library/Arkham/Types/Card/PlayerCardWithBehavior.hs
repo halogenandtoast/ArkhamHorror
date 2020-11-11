@@ -24,7 +24,10 @@ data PlayerCard'
   = DefaultPlayerCard' DefaultPlayerCard
   | TheNecronomicon' TheNecronomicon
   | DarkMemory' DarkMemory
+  | SureGamble3' SureGamble3
   | CloseCall2' CloseCall2
+  | LetMeHandleThis' LetMeHandleThis
+  | TheNecronomiconAdvanced' TheNecronomiconAdvanced
   deriving stock (Generic, Show)
 
 newtype DefaultPlayerCard = DefaultPlayerCard PlayerCard
@@ -33,14 +36,23 @@ newtype TheNecronomicon = TheNecronomicon PlayerCard
   deriving newtype Show
 newtype DarkMemory = DarkMemory PlayerCard
   deriving newtype Show
+newtype SureGamble3 = SureGamble3 PlayerCard
+  deriving newtype Show
 newtype CloseCall2 = CloseCall2 PlayerCard
+  deriving newtype Show
+newtype LetMeHandleThis = LetMeHandleThis PlayerCard
+  deriving newtype Show
+newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced PlayerCard
   deriving newtype Show
 
 allPlayerCardsWithBehavior :: HashMap CardCode (PlayerCard -> PlayerCard')
 allPlayerCardsWithBehavior = mapFromList
   [ ("01009", TheNecronomicon' . TheNecronomicon)
   , ("01013", DarkMemory' . DarkMemory)
+  , ("01056", SureGamble3' . SureGamble3)
   , ("01083", CloseCall2' . CloseCall2)
+  , ("03022", LetMeHandleThis' . LetMeHandleThis)
+  , ("90003", TheNecronomiconAdvanced' . TheNecronomiconAdvanced)
   ]
 
 toPlayerCardWithBehavior :: PlayerCard -> PlayerCard'
@@ -89,6 +101,17 @@ instance HasActions env DarkMemory where
   getActions i window (DarkMemory pc) =
     getActions i window (DefaultPlayerCard pc)
 
+instance (HasQueue env) => RunMessage env SureGamble3 where
+  runMessage msg (SureGamble3 pc) = do
+    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
+    pure $ SureGamble3 pc'
+
+instance HasActions env SureGamble3 where
+  getActions iid (WhenRevealTokenWithNegativeModifier You tid) (SureGamble3 pc)
+    = pure [PlayCard iid (getCardId pc) (Just $ TokenTarget tid) False]
+  getActions i window (SureGamble3 pc) =
+    getActions i window (DefaultPlayerCard pc)
+
 instance (HasQueue env) => RunMessage env CloseCall2 where
   runMessage msg (CloseCall2 pc) = do
     DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
@@ -103,4 +126,28 @@ instance (HasId CardCode EnemyId env, HasSet Trait EnemyId env) => HasActions en
       | Elite `notMember` traits' && cardCode `elem` keys allEncounterCards
       ]
   getActions i window (CloseCall2 pc) =
+    getActions i window (DefaultPlayerCard pc)
+
+instance (HasQueue env) => RunMessage env LetMeHandleThis where
+  runMessage msg (LetMeHandleThis pc) = do
+    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
+    pure $ LetMeHandleThis pc'
+
+instance HasActions env LetMeHandleThis where
+  getActions iid (WhenDrawNonPerilTreachery who tid) (LetMeHandleThis pc)
+    | who /= You = pure
+      [PlayCard iid (getCardId pc) (Just $ TreacheryTarget tid) False]
+  getActions i window (LetMeHandleThis pc) =
+    getActions i window (DefaultPlayerCard pc)
+
+instance HasQueue env => RunMessage env TheNecronomiconAdvanced where
+  runMessage (Revelation iid (PlayerCardSource cid)) c@(TheNecronomiconAdvanced pc)
+    | getCardId pc == cid
+    = c <$ unshiftMessage (PlayCard iid cid Nothing False)
+  runMessage msg (TheNecronomiconAdvanced pc) = do
+    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
+    pure $ TheNecronomiconAdvanced pc'
+
+instance HasActions env TheNecronomiconAdvanced where
+  getActions i window (TheNecronomiconAdvanced pc) =
     getActions i window (DefaultPlayerCard pc)

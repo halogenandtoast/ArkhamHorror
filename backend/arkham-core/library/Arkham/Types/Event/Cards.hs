@@ -24,6 +24,7 @@ import Arkham.Types.Event.Cards.Evidence as X
 import Arkham.Types.Event.Cards.ExtraAmmunition1 as X
 import Arkham.Types.Event.Cards.HotStreak2 as X
 import Arkham.Types.Event.Cards.HotStreak4 as X
+import Arkham.Types.Event.Cards.LetMeHandleThis as X
 import Arkham.Types.Event.Cards.LookWhatIFound as X
 import Arkham.Types.Event.Cards.Lucky as X
 import Arkham.Types.Event.Cards.Lucky2 as X

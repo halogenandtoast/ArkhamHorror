@@ -38,6 +38,7 @@ import Arkham.Types.Campaign
 import Arkham.Types.CampaignId
 import Arkham.Types.ChaosBag
 import Arkham.Types.Difficulty
+import Arkham.Types.Effect
 import Arkham.Types.Enemy
 import Arkham.Types.Event
 import Arkham.Types.GameRunner
@@ -96,6 +97,7 @@ data Game queue = Game
   , gameAgendas :: HashMap AgendaId Agenda
   , gameTreacheries :: HashMap TreacheryId Treachery
   , gameEvents :: HashMap EventId Event
+  , gameEffects :: HashMap EffectId Effect
   , gameSkills :: HashMap SkillId Skill
   , gameGameOver :: Bool
   , gamePending :: Bool
@@ -160,6 +162,9 @@ treacheries = lens gameTreacheries $ \m x -> m { gameTreacheries = x }
 
 events :: Lens' (Game queue) (HashMap EventId Event)
 events = lens gameEvents $ \m x -> m { gameEvents = x }
+
+effects :: Lens' (Game queue) (HashMap EffectId Effect)
+effects = lens gameEffects $ \m x -> m { gameEffects = x }
 
 skills :: Lens' (Game queue) (HashMap SkillId Skill)
 skills = lens gameSkills $ \m x -> m { gameSkills = x }
@@ -323,6 +328,7 @@ newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
     , gameAgendas = mempty
     , gameTreacheries = mempty
     , gameEvents = mempty
+    , gameEffects = mempty
     , gameSkills = mempty
     , gameActs = mempty
     , gameChaosBag = emptyChaosBag
@@ -531,6 +537,8 @@ instance GameRunner env => HasModifiersFor env (Game queue) where
       <$> traverse (getModifiersFor source target) (g ^. assets . to toList)
     , concat
       <$> traverse (getModifiersFor source target) (g ^. locations . to toList)
+    , concat
+      <$> traverse (getModifiersFor source target) (g ^. effects . to toList)
     , concat <$> traverse
       (getModifiersFor source target)
       (g ^. treacheries . to toList)
@@ -1083,6 +1091,12 @@ createEnemy cardCode = do
   eid <- liftIO $ EnemyId <$> nextRandom
   pure (eid, lookupEnemy cardCode eid)
 
+createEffect
+  :: MonadIO m => CardCode -> Source -> Target -> m (EffectId, Effect)
+createEffect cardCode source target = do
+  eid <- liftIO $ EffectId <$> nextRandom
+  pure (eid, lookupEffect cardCode source target eid)
+
 createAsset :: MonadIO m => CardCode -> m (AssetId, Asset)
 createAsset cardCode = do
   aid <- liftIO $ AssetId <$> nextRandom
@@ -1238,6 +1252,10 @@ runGameMessage msg g = case msg of
       $ g
       & (scenario ?~ lookupScenario sid difficulty')
       & (phase .~ InvestigationPhase)
+  CreateEffect source target cardCode -> do
+    (effectId', effect') <- createEffect cardCode source target
+    pure $ g & effects %~ insertMap effectId' effect'
+  DisableEffect effectId -> pure $ g & effects %~ deleteMap effectId
   FocusCards cards -> pure $ g & focusedCards .~ cards
   FocusTokens tokens -> pure $ g & focusedTokens .~ tokens
   UnfocusTokens -> pure $ g & focusedTokens .~ mempty
@@ -1468,10 +1486,10 @@ runGameMessage msg g = case msg of
       playerCard = lookupPlayerCard cardCode cardId
       treacheryId = TreacheryId (unCardId cardId)
       treachery = lookupTreachery cardCode treacheryId (Just iid)
+    -- player treacheries will not trigger draw treachery windows
     unshiftMessages
       $ [ RemoveCardFromHand iid cardCode | pcRevelation playerCard ]
-      <> [ CheckWindow iid [Fast.WhenDrawTreachery You (isWeakness treachery)]
-         , Revelation iid (TreacherySource treacheryId)
+      <> [ Revelation iid (TreacherySource treacheryId)
          , AfterRevelation iid treacheryId
          ]
     pure $ g & treacheries %~ insertMap treacheryId treachery
@@ -1881,7 +1899,7 @@ runGameMessage msg g = case msg of
       (x : xs) -> do
         unshiftMessage (RequestedEncounterCard source (Just x))
         pure $ g & encounterDeck .~ Deck xs & discard %~ (reverse discards <>)
-  Surge iid -> g <$ unshiftMessage (InvestigatorDrawEncounterCard iid)
+  Surge iid _ -> g <$ unshiftMessage (InvestigatorDrawEncounterCard iid)
   InvestigatorDrawEncounterCard iid -> if null (unDeck $ g ^. encounterDeck)
     then g <$ unshiftMessages
       [ShuffleEncounterDiscardBackIn, InvestigatorDrawEncounterCard iid]
@@ -1946,12 +1964,20 @@ runGameMessage msg g = case msg of
     LocationType -> pure g
   DrewTreachery iid cardCode -> do
     (treacheryId', treachery') <- createTreachery cardCode (Just iid)
+    checkWindowMessages <- checkWindows iid $ \who ->
+      pure
+        $ [Fast.WhenDrawTreachery who]
+        <> [ Fast.WhenDrawNonPerilTreachery who treacheryId'
+           | Keyword.Peril `notMember` getKeywords treachery'
+           ]
     unshiftMessages
-      $ [ CheckWindow iid [Fast.WhenDrawTreachery You (isWeakness treachery')]
-        , Revelation iid (TreacherySource treacheryId')
-        , AfterRevelation iid treacheryId'
-        ]
-      <> [ Surge iid | Keyword.Surge `member` getKeywords treachery' ]
+      $ checkWindowMessages
+      <> [ Revelation iid (TreacherySource treacheryId')
+         , AfterRevelation iid treacheryId'
+         ]
+      <> [ Surge iid (TreacherySource treacheryId')
+         | Keyword.Surge `member` getKeywords treachery'
+         ]
     pure
       $ g
       & (treacheries . at treacheryId' ?~ treachery')
@@ -2008,6 +2034,7 @@ instance RunMessage GameInternal GameInternal where
       >>= traverseOf (agendas . traverse) (runMessage msg)
       >>= traverseOf (treacheries . traverse) (runMessage msg)
       >>= traverseOf (events . traverse) (runMessage msg)
+      >>= traverseOf (effects . traverse) (runMessage msg)
       >>= traverseOf (locations . traverse) (runMessage msg)
       >>= traverseOf (enemies . traverse) (runMessage msg)
       >>= traverseOf (assets . traverse) (runMessage msg)

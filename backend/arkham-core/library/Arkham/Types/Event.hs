@@ -49,6 +49,7 @@ data Event
   | EmergencyCache' EmergencyCache
   | SearchForTheTruth' SearchForTheTruth
   | BaitAndSwitch' BaitAndSwitch
+  | LetMeHandleThis' LetMeHandleThis
   | BloodRite' BloodRite
   | DynamiteBlast2' DynamiteBlast2
   | Barricade3' Barricade3
@@ -102,6 +103,7 @@ allEvents = mapFromList
   , ("01088", (EmergencyCache' .) . emergencyCache)
   , ("02008", (SearchForTheTruth' .) . searchForTheTruth)
   , ("02034", (BaitAndSwitch' .) . baitAndSwitch)
+  , ("03022", (LetMeHandleThis' .) . letMeHandleThis)
   , ("05317", (BloodRite' .) . bloodRite)
   , ("50002", (DynamiteBlast2' .) . dynamiteBlast2)
   , ("50004", (Barricade3' .) . barricade3)
@@ -143,6 +145,7 @@ eventAttrs = \case
   EmergencyCache' attrs -> coerce attrs
   SearchForTheTruth' attrs -> coerce attrs
   BaitAndSwitch' attrs -> coerce attrs
+  LetMeHandleThis' attrs -> coerce attrs
   BloodRite' attrs -> coerce attrs
   DynamiteBlast2' attrs -> coerce attrs
   Barricade3' attrs -> coerce attrs

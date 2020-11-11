@@ -13,7 +13,7 @@ crypticResearch4 :: InvestigatorId -> EventId -> CrypticResearch4
 crypticResearch4 iid uuid = CrypticResearch4 $ baseAttrs iid uuid "01043"
 
 instance HasModifiersFor env CrypticResearch4 where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env CrypticResearch4 where
   getActions i window (CrypticResearch4 attrs) = getActions i window attrs

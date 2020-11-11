@@ -18,7 +18,7 @@ huntingShadow :: TreacheryId -> a -> HuntingShadow
 huntingShadow uuid _ = HuntingShadow $ baseAttrs uuid "01135"
 
 instance HasModifiersFor env HuntingShadow where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env HuntingShadow where
   getActions i window (HuntingShadow attrs) = getActions i window attrs

@@ -15,7 +15,7 @@ ritualSite = RitualSite
   $ baseAttrs "01156" "Ritual Site" 3 (PerPlayer 2) Plus [Squiggle] [Cave]
 
 instance HasModifiersFor env RitualSite where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env RitualSite where
   getActions i window (RitualSite attrs) = getActions i window attrs

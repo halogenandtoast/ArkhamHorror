@@ -20,7 +20,7 @@ rottingRemains :: TreacheryId -> a -> RottingRemains
 rottingRemains uuid _ = RottingRemains $ baseAttrs uuid "01163"
 
 instance HasModifiersFor env RottingRemains where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env RottingRemains where
   getActions i window (RottingRemains attrs) = getActions i window attrs

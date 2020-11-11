@@ -16,7 +16,7 @@ forbiddenKnowledge :: AssetId -> ForbiddenKnowledge
 forbiddenKnowledge uuid = ForbiddenKnowledge $ baseAttrs uuid "01058"
 
 instance HasModifiersFor env ForbiddenKnowledge where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env ForbiddenKnowledge where
   getActions iid window (ForbiddenKnowledge a) | ownedBy a iid = pure

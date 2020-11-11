@@ -15,7 +15,7 @@ oldBookOfLore uuid =
   OldBookOfLore $ (baseAttrs uuid "01031") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env OldBookOfLore where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env OldBookOfLore where
   getActions iid NonFast (OldBookOfLore a) | ownedBy a iid = do

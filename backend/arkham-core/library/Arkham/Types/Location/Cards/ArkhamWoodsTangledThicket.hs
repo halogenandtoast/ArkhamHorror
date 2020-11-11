@@ -26,7 +26,7 @@ arkhamWoodsTangledThicket = ArkhamWoodsTangledThicket $ base
     [Woods]
 
 instance HasModifiersFor env ArkhamWoodsTangledThicket where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env ArkhamWoodsTangledThicket where
   getActions i window (ArkhamWoodsTangledThicket attrs) =

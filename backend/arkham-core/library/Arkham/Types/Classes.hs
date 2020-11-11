@@ -343,6 +343,9 @@ class HasModifiersFor env a where
   default getModifiersFor :: (Generic a, HasModifiersFor1 env (Rep a), MonadIO m, MonadReader env m) => Source -> Target -> a -> m [Modifier]
   getModifiersFor = defaultGetModifiersFor
 
+noModifiersFor :: (MonadReader env m) => Source -> Target -> a -> m [Modifier]
+noModifiersFor _ _ _ = pure []
+
 class (HasId LocationId () location) => IsLocation location where
   isBlocked :: location -> Bool
 

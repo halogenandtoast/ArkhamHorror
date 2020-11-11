@@ -64,7 +64,7 @@ instance ActionRunner env => HasActions env BaseEnemy where
     getActions investigator window attrs
 
 instance HasModifiersFor env BaseEnemy where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env BaseEnemy where
   getModifiers _ (BaseEnemy Attrs {..}) =

@@ -19,7 +19,7 @@ ruthTurner uuid =
     . (evade .~ 5)
 
 instance HasModifiersFor env RuthTurner where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env RuthTurner where
   getModifiers _ (RuthTurner Attrs {..}) =

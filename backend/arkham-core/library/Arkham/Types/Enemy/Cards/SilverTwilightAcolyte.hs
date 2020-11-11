@@ -26,7 +26,7 @@ silverTwilightAcolyte uuid =
     }
 
 instance HasModifiersFor env SilverTwilightAcolyte where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env SilverTwilightAcolyte where
   getModifiers _ (SilverTwilightAcolyte Attrs {..}) =

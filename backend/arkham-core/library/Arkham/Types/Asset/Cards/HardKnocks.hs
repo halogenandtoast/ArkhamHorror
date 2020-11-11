@@ -14,7 +14,7 @@ hardKnocks :: AssetId -> HardKnocks
 hardKnocks uuid = HardKnocks $ baseAttrs uuid "01049"
 
 instance HasModifiersFor env HardKnocks where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env HardKnocks where
   getActions iid (WhenSkillTest SkillCombat) (HardKnocks a) | ownedBy a iid = do

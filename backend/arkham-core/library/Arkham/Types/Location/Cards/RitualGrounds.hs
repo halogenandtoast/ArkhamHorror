@@ -24,7 +24,7 @@ ritualGrounds = RitualGrounds $ (baseAttrs
   }
 
 instance HasModifiersFor env RitualGrounds where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env RitualGrounds where
   getActions i window (RitualGrounds attrs) = getActions i window attrs

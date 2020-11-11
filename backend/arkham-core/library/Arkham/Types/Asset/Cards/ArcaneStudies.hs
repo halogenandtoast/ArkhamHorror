@@ -18,7 +18,7 @@ arcaneStudies :: AssetId -> ArcaneStudies
 arcaneStudies uuid = ArcaneStudies $ baseAttrs uuid "01062"
 
 instance HasModifiersFor env ArcaneStudies where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env ArcaneStudies where
   getActions iid (WhenSkillTest SkillWillpower) (ArcaneStudies a)

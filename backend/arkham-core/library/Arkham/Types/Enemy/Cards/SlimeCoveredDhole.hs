@@ -27,7 +27,7 @@ slimeCoveredDhole uuid =
     . (prey .~ LowestRemainingHealth)
 
 instance HasModifiersFor env SlimeCoveredDhole where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env SlimeCoveredDhole where
   getModifiers _ (SlimeCoveredDhole Attrs {..}) =

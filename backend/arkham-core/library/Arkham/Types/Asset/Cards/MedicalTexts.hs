@@ -14,7 +14,7 @@ medicalTexts uuid =
   MedicalTexts $ (baseAttrs uuid "01035") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env MedicalTexts where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env MedicalTexts where
   getActions iid NonFast (MedicalTexts a) | ownedBy a iid = pure

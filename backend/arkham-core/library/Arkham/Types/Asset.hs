@@ -122,7 +122,7 @@ instance HasActions env BaseAsset where
   getActions iid window (BaseAsset attrs) = getActions iid window attrs
 
 instance HasModifiersFor env BaseAsset where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance (AssetRunner env) => RunMessage env BaseAsset where
   runMessage msg (BaseAsset attrs) = BaseAsset <$> runMessage msg attrs

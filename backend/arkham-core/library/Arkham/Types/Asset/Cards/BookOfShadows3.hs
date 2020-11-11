@@ -20,7 +20,7 @@ bookOfShadows3 uuid =
   BookOfShadows3 $ (baseAttrs uuid "01070") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env BookOfShadows3 where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
 ability a = mkAbility (toSource a) 1 (ActionAbility 1 Nothing)

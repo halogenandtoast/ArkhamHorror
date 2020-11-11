@@ -21,7 +21,7 @@ ghoulPriest uuid =
     . (prey .~ HighestSkill SkillCombat)
 
 instance HasModifiersFor env GhoulPriest where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env GhoulPriest where
   getModifiers _ (GhoulPriest Attrs {..}) =

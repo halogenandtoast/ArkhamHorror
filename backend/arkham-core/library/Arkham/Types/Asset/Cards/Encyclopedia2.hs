@@ -14,7 +14,7 @@ encyclopedia2 uuid =
   Encyclopedia2 $ (baseAttrs uuid "01042") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env Encyclopedia2 where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env Encyclopedia2 where
   getActions iid NonFast (Encyclopedia2 a) | ownedBy a iid = pure

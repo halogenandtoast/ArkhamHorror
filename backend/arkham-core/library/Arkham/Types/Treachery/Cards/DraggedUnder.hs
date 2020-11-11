@@ -13,7 +13,7 @@ draggedUnder :: TreacheryId -> a -> DraggedUnder
 draggedUnder uuid _ = DraggedUnder $ baseAttrs uuid "81026"
 
 instance HasModifiersFor env DraggedUnder where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env DraggedUnder where
   getActions i window (DraggedUnder attrs) = getActions i window attrs

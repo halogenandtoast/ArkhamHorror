@@ -14,7 +14,7 @@ digDeep :: AssetId -> DigDeep
 digDeep uuid = DigDeep $ baseAttrs uuid "01077"
 
 instance HasModifiersFor env DigDeep where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env DigDeep where
   getActions iid (WhenSkillTest SkillWillpower) (DigDeep a) | ownedBy a iid = do

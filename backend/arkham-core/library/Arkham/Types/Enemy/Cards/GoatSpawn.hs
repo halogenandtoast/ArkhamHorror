@@ -19,7 +19,7 @@ goatSpawn uuid =
     . (evade .~ 2)
 
 instance HasModifiersFor env GoatSpawn where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env GoatSpawn where
   getModifiers _ (GoatSpawn Attrs {..}) =

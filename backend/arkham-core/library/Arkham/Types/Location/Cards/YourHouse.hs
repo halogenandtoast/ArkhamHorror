@@ -20,7 +20,7 @@ yourHouse = YourHouse
   $ baseAttrs "01124" "Your House" 2 (PerPlayer 1) Squiggle [Circle] [Arkham]
 
 instance HasModifiersFor env YourHouse where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
 ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))

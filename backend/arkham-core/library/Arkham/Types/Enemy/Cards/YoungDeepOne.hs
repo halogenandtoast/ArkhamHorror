@@ -21,7 +21,7 @@ youngDeepOne uuid =
     . (prey .~ LowestSkill SkillCombat)
 
 instance HasModifiersFor env YoungDeepOne where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env YoungDeepOne where
   getModifiers _ (YoungDeepOne Attrs {..}) =

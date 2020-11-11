@@ -12,7 +12,7 @@ backstab :: InvestigatorId -> EventId -> Backstab
 backstab iid uuid = Backstab $ baseAttrs iid uuid "01051"
 
 instance HasModifiersFor env Backstab where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env Backstab where
   getActions i window (Backstab attrs) = getActions i window attrs

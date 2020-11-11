@@ -23,7 +23,7 @@ gardenDistrict = GardenDistrict $ baseAttrs
   [NewOrleans]
 
 instance HasModifiersFor env GardenDistrict where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env GardenDistrict where
   getActions iid NonFast (GardenDistrict attrs@Attrs {..}) | locationRevealed =

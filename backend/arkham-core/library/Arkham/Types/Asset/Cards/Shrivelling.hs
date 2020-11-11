@@ -20,7 +20,7 @@ shrivelling uuid =
   Shrivelling $ (baseAttrs uuid "01060") { assetSlots = [ArcaneSlot] }
 
 instance HasModifiersFor env Shrivelling where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Shrivelling where
   getActions iid window (Shrivelling a) | ownedBy a iid = do

@@ -21,7 +21,7 @@ theYellowSign :: TreacheryId -> a -> TheYellowSign
 theYellowSign uuid _ = TheYellowSign $ baseAttrs uuid "01176"
 
 instance HasModifiersFor env TheYellowSign where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env TheYellowSign where
   getActions i window (TheYellowSign attrs) = getActions i window attrs

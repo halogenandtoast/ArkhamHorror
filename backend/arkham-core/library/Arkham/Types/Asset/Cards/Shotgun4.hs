@@ -18,7 +18,7 @@ shotgun4 uuid =
   Shotgun4 $ (baseAttrs uuid "01029") { assetSlots = [HandSlot, HandSlot] }
 
 instance HasModifiersFor env Shotgun4 where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Shotgun4 where
   getActions iid window (Shotgun4 a) | ownedBy a iid = do

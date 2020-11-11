@@ -20,7 +20,7 @@ huntingNightgaunt uuid =
     . (evade .~ 1)
 
 instance HasModifiersFor env HuntingNightgaunt where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env HuntingNightgaunt where
   getModifiers _ (HuntingNightgaunt Attrs {..}) =

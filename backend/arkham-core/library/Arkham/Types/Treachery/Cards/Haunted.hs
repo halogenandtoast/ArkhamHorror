@@ -13,7 +13,7 @@ haunted :: TreacheryId -> Maybe InvestigatorId -> Haunted
 haunted uuid iid = Haunted $ weaknessAttrs uuid iid "01098"
 
 instance HasModifiersFor env Haunted where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Haunted where
   getActions iid NonFast (Haunted Attrs {..}) =

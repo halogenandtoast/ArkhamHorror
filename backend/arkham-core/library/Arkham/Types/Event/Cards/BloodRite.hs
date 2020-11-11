@@ -13,7 +13,7 @@ bloodRite :: InvestigatorId -> EventId -> BloodRite
 bloodRite iid uuid = BloodRite $ baseAttrs iid uuid "05317"
 
 instance HasModifiersFor env BloodRite where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env BloodRite where
   getActions i window (BloodRite attrs) = getActions i window attrs

@@ -13,7 +13,7 @@ mindOverMatter :: InvestigatorId -> EventId -> MindOverMatter
 mindOverMatter iid uuid = MindOverMatter $ baseAttrs iid uuid "01036"
 
 instance HasModifiersFor env MindOverMatter where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env MindOverMatter where
   getActions i window (MindOverMatter attrs) = getActions i window attrs

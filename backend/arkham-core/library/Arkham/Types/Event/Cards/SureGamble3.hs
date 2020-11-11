@@ -13,7 +13,7 @@ sureGamble3 :: InvestigatorId -> EventId -> SureGamble3
 sureGamble3 iid uuid = SureGamble3 $ baseAttrs iid uuid "01088"
 
 instance HasModifiersFor env SureGamble3 where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env SureGamble3 where
   getActions i window (SureGamble3 attrs) = getActions i window attrs

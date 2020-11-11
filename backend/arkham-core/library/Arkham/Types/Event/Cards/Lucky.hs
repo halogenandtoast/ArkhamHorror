@@ -13,7 +13,7 @@ lucky :: InvestigatorId -> EventId -> Lucky
 lucky iid uuid = Lucky $ baseAttrs iid uuid "01080"
 
 instance HasModifiersFor env Lucky where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env Lucky where
   getActions i window (Lucky attrs) = getActions i window attrs

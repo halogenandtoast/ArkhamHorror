@@ -18,7 +18,7 @@ fortyFiveAutomatic uuid =
   FortyFiveAutomatic $ (baseAttrs uuid "01016") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env FortyFiveAutomatic where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env FortyFiveAutomatic where
   getActions iid window (FortyFiveAutomatic a) | ownedBy a iid = do

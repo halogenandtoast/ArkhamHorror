@@ -14,7 +14,7 @@ searchingForIzzie :: TreacheryId -> Maybe InvestigatorId -> SearchingForIzzie
 searchingForIzzie uuid iid = SearchingForIzzie $ weaknessAttrs uuid iid "02011"
 
 instance HasModifiersFor env SearchingForIzzie where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env SearchingForIzzie where
   getActions iid NonFast (SearchingForIzzie Attrs {..}) = do

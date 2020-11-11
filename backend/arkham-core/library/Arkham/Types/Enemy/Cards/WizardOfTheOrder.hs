@@ -24,7 +24,7 @@ wizardOfTheOrder uuid =
     . (evade .~ 2)
 
 instance HasModifiersFor env WizardOfTheOrder where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env WizardOfTheOrder where
   getModifiers _ (WizardOfTheOrder Attrs {..}) =

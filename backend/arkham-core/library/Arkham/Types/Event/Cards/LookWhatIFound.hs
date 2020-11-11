@@ -13,7 +13,7 @@ lookWhatIFound :: InvestigatorId -> EventId -> LookWhatIFound
 lookWhatIFound iid uuid = LookWhatIFound $ baseAttrs iid uuid "01079"
 
 instance HasModifiersFor env LookWhatIFound where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env LookWhatIFound where
   getActions i window (LookWhatIFound attrs) = getActions i window attrs

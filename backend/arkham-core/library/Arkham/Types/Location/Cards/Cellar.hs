@@ -15,7 +15,7 @@ cellar = Cellar $ (baseAttrs "01114" "Cellar" 4 (PerPlayer 2) Plus [Square] [])
   }
 
 instance HasModifiersFor env Cellar where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Cellar where
   getActions i window (Cellar attrs) = getActions i window attrs

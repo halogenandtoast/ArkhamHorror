@@ -21,7 +21,7 @@ fastAbility :: Attrs -> Window -> Ability
 fastAbility a window = mkAbility (toSource a) 1 (FastAbility window)
 
 instance HasModifiersFor env ArcaneInitiate where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env ArcaneInitiate where
   getActions iid window (ArcaneInitiate a) | ownedBy a iid = pure

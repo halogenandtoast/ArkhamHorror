@@ -22,7 +22,7 @@ hermanCollins uuid =
     . (evade .~ 4)
 
 instance HasModifiersFor env HermanCollins where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env HermanCollins where
   getModifiers _ (HermanCollins Attrs {..}) =

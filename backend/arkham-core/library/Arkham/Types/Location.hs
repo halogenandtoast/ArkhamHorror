@@ -78,7 +78,7 @@ newtype BaseLocation = BaseLocation Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 instance HasModifiersFor env BaseLocation where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env BaseLocation where
   getActions iid window (BaseLocation attrs) = getActions iid window attrs

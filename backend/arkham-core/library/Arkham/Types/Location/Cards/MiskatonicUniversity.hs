@@ -25,7 +25,7 @@ miskatonicUniversity = MiskatonicUniversity $ (baseAttrs
   }
 
 instance HasModifiersFor env MiskatonicUniversity where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env MiskatonicUniversity where
   getActions iid NonFast (MiskatonicUniversity attrs@Attrs {..})

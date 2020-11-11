@@ -26,7 +26,7 @@ arkhamWoodsOldHouse = ArkhamWoodsOldHouse $ base
     [Woods]
 
 instance HasModifiersFor env ArkhamWoodsOldHouse where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env ArkhamWoodsOldHouse where
   getActions i window (ArkhamWoodsOldHouse attrs) = getActions i window attrs

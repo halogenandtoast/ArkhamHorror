@@ -28,7 +28,7 @@ broadmoor =
         }
 
 instance HasModifiersFor env Broadmoor where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Broadmoor where
   getActions iid NonFast (Broadmoor attrs@Attrs {..}) = do

@@ -13,7 +13,7 @@ cunningDistraction :: InvestigatorId -> EventId -> CunningDistraction
 cunningDistraction iid uuid = CunningDistraction $ baseAttrs iid uuid "01078"
 
 instance HasModifiersFor env CunningDistraction where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env CunningDistraction where
   getActions i window (CunningDistraction attrs) = getActions i window attrs

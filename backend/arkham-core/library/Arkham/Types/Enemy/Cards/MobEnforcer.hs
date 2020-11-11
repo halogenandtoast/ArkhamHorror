@@ -22,7 +22,7 @@ mobEnforcer uuid = MobEnforcer $ (weaknessBaseAttrs uuid "01101")
   }
 
 instance HasModifiersFor env MobEnforcer where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env MobEnforcer where
   getModifiers _ (MobEnforcer Attrs {..}) =

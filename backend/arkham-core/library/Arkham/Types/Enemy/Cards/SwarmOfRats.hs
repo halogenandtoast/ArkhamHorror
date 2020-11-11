@@ -14,7 +14,7 @@ swarmOfRats uuid =
   SwarmOfRats $ baseAttrs uuid "01159" $ (healthDamage .~ 1) . (evade .~ 3)
 
 instance HasModifiersFor env SwarmOfRats where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env SwarmOfRats where
   getModifiers _ (SwarmOfRats Attrs {..}) =

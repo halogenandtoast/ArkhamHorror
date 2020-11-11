@@ -18,7 +18,7 @@ acolyte uuid =
     . (evade .~ 2)
 
 instance HasModifiersFor env Acolyte where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env Acolyte where
   getModifiers _ (Acolyte Attrs {..}) = pure . concat . toList $ enemyModifiers

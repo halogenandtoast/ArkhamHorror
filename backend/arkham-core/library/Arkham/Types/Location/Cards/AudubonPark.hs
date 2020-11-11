@@ -24,7 +24,7 @@ audubonPark = AudubonPark $ (baseAttrs
   }
 
 instance HasModifiersFor env AudubonPark where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env AudubonPark where
   getActions i window (AudubonPark attrs) = getActions i window attrs

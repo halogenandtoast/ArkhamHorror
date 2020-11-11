@@ -20,7 +20,7 @@ onWingsOfDarkness :: TreacheryId -> a -> OnWingsOfDarkness
 onWingsOfDarkness uuid _ = OnWingsOfDarkness $ baseAttrs uuid "01173"
 
 instance HasModifiersFor env OnWingsOfDarkness where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env OnWingsOfDarkness where
   getActions i window (OnWingsOfDarkness attrs) = getActions i window attrs

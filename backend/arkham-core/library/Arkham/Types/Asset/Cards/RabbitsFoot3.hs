@@ -18,7 +18,7 @@ rabbitsFoot3 uuid =
   RabbitsFoot3 $ (baseAttrs uuid "50010") { assetSlots = [AccessorySlot] }
 
 instance HasModifiersFor env RabbitsFoot3 where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Int -> Ability
 ability attrs n =

@@ -13,7 +13,7 @@ evidence :: InvestigatorId -> EventId -> Evidence
 evidence iid uuid = Evidence $ baseAttrs iid uuid "01022"
 
 instance HasModifiersFor env Evidence where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env Evidence where
   getActions i window (Evidence attrs) = getActions i window attrs

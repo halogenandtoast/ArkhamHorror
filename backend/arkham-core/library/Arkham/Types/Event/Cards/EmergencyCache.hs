@@ -12,7 +12,7 @@ emergencyCache :: InvestigatorId -> EventId -> EmergencyCache
 emergencyCache iid uuid = EmergencyCache $ baseAttrs iid uuid "01088"
 
 instance HasModifiersFor env EmergencyCache where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env EmergencyCache where
   getActions i window (EmergencyCache attrs) = getActions i window attrs

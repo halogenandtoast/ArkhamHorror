@@ -13,7 +13,7 @@ cryptChill :: TreacheryId -> a -> CryptChill
 cryptChill uuid _ = CryptChill $ baseAttrs uuid "01167"
 
 instance HasModifiersFor env CryptChill where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env CryptChill where
   getActions i window (CryptChill attrs) = getActions i window attrs

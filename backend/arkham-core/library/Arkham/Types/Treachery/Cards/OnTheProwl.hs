@@ -20,7 +20,7 @@ onTheProwl :: TreacheryId -> a -> OnTheProwl
 onTheProwl uuid _ = OnTheProwl $ baseAttrs uuid "81034"
 
 instance HasModifiersFor env OnTheProwl where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env OnTheProwl where
   getActions i window (OnTheProwl attrs) = getActions i window attrs

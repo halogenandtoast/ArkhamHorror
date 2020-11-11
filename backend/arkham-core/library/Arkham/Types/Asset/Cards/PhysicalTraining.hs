@@ -14,7 +14,7 @@ physicalTraining :: AssetId -> PhysicalTraining
 physicalTraining uuid = PhysicalTraining $ baseAttrs uuid "01017"
 
 instance HasModifiersFor env PhysicalTraining where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env PhysicalTraining where
   getActions iid (WhenSkillTest SkillWillpower) (PhysicalTraining a)

@@ -22,7 +22,7 @@ rolands38Special uuid =
   Rolands38Special $ (baseAttrs uuid "01006") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env Rolands38Special where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 fightAbility :: Attrs -> Ability
 fightAbility Attrs { assetId } =

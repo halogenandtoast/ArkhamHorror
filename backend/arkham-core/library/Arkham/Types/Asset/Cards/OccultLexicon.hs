@@ -14,7 +14,7 @@ occultLexicon uuid =
   OccultLexicon $ (baseAttrs uuid "05316") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env OccultLexicon where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env OccultLexicon where
   getActions i window (OccultLexicon x) = getActions i window x

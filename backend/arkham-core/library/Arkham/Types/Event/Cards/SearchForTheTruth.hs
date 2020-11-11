@@ -12,7 +12,7 @@ searchForTheTruth :: InvestigatorId -> EventId -> SearchForTheTruth
 searchForTheTruth iid uuid = SearchForTheTruth $ baseAttrs iid uuid "02008"
 
 instance HasModifiersFor env SearchForTheTruth where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env SearchForTheTruth where
   getActions i window (SearchForTheTruth attrs) = getActions i window attrs

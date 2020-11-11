@@ -16,7 +16,7 @@ extraAmmunition1 :: InvestigatorId -> EventId -> ExtraAmmunition1
 extraAmmunition1 iid uuid = ExtraAmmunition1 $ baseAttrs iid uuid "01026"
 
 instance HasModifiersFor env ExtraAmmunition1 where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env ExtraAmmunition1 where
   getActions i window (ExtraAmmunition1 attrs) = getActions i window attrs

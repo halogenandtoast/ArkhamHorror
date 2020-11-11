@@ -28,7 +28,7 @@ dropUntilAttack :: [Message] -> [Message]
 dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
 
 instance HasModifiersFor env Aquinnah1 where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Aquinnah1 where
   getActions iid (WhenEnemyAttacks You) (Aquinnah1 a) | ownedBy a iid = do

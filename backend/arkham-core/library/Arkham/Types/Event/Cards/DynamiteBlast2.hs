@@ -13,7 +13,7 @@ dynamiteBlast2 :: InvestigatorId -> EventId -> DynamiteBlast2
 dynamiteBlast2 iid uuid = DynamiteBlast2 $ baseAttrs iid uuid "01023"
 
 instance HasModifiersFor env DynamiteBlast2 where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env DynamiteBlast2 where
   getActions i window (DynamiteBlast2 attrs) = getActions i window attrs

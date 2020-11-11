@@ -13,7 +13,7 @@ barricade :: InvestigatorId -> EventId -> Barricade
 barricade iid uuid = Barricade $ baseAttrs iid uuid "01038"
 
 instance HasModifiersFor env Barricade where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env Barricade where
   getActions i window (Barricade attrs) = getActions i window attrs

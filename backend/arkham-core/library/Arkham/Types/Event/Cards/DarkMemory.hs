@@ -13,7 +13,7 @@ darkMemory :: InvestigatorId -> EventId -> DarkMemory
 darkMemory iid uuid = DarkMemory $ weaknessAttrs iid uuid "01013"
 
 instance HasModifiersFor env DarkMemory where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env DarkMemory where
   getActions i window (DarkMemory attrs) = getActions i window attrs

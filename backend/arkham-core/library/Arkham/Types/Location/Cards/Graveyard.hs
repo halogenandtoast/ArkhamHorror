@@ -19,7 +19,7 @@ graveyard =
         }
 
 instance HasModifiersFor env Graveyard where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Graveyard where
   getActions i window (Graveyard attrs) = getActions i window attrs

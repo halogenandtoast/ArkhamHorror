@@ -13,7 +13,7 @@ beastOfTheBayou :: TreacheryId -> a -> BeastOfTheBayou
 beastOfTheBayou uuid _ = BeastOfTheBayou $ baseAttrs uuid "81035"
 
 instance HasModifiersFor env BeastOfTheBayou where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env BeastOfTheBayou where
   getActions i window (BeastOfTheBayou attrs) = getActions i window attrs

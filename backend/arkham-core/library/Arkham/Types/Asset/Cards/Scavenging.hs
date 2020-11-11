@@ -15,7 +15,7 @@ scavenging :: AssetId -> Scavenging
 scavenging uuid = Scavenging $ baseAttrs uuid "01073"
 
 instance HasModifiersFor env Scavenging where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Scavenging where
   getActions iid (AfterPassSkillTest You n) (Scavenging a)

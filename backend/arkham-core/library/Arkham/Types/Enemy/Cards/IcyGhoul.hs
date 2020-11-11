@@ -20,7 +20,7 @@ icyGhoul uuid =
     . (evade .~ 4)
 
 instance HasModifiersFor env IcyGhoul where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env IcyGhoul where
   getModifiers _ (IcyGhoul Attrs {..}) =

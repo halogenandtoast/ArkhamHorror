@@ -13,7 +13,7 @@ graspingHands :: TreacheryId -> a -> GraspingHands
 graspingHands uuid _ = GraspingHands $ baseAttrs uuid "01162"
 
 instance HasModifiersFor env GraspingHands where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env GraspingHands where
   getActions i window (GraspingHands attrs) = getActions i window attrs

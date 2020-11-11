@@ -20,7 +20,7 @@ hallway = Hallway $ baseAttrs
   mempty
 
 instance HasModifiersFor env Hallway where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Hallway where
   getActions i window (Hallway attrs) = getActions i window attrs

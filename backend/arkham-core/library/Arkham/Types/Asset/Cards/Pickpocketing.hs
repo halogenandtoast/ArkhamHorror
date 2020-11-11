@@ -13,7 +13,7 @@ pickpoketing :: AssetId -> Pickpocketing
 pickpoketing uuid = Pickpocketing $ baseAttrs uuid "01046"
 
 instance HasModifiersFor env Pickpocketing where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env Pickpocketing where
   getActions iid window@(WhenEnemyEvaded You) (Pickpocketing a)

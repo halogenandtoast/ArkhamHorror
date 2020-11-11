@@ -15,7 +15,7 @@ machete :: AssetId -> Machete
 machete uuid = Machete $ (baseAttrs uuid "01020") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env Machete where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Machete where
   getActions iid window (Machete a) | ownedBy a iid = do

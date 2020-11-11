@@ -21,7 +21,7 @@ screechingByakhee uuid =
     . (prey .~ LowestRemainingSanity)
 
 instance HasModifiersFor env ScreechingByakhee where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance (HasCount RemainingSanity InvestigatorId env) => HasModifiers env ScreechingByakhee where
   getModifiers _ (ScreechingByakhee Attrs {..}) = do

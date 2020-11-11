@@ -13,7 +13,7 @@ smiteTheWicked :: TreacheryId -> Maybe InvestigatorId -> SmiteTheWicked
 smiteTheWicked uuid iid = SmiteTheWicked $ weaknessAttrs uuid iid "02007"
 
 instance HasModifiersFor env SmiteTheWicked where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env SmiteTheWicked where
   getActions i window (SmiteTheWicked attrs) = getActions i window attrs

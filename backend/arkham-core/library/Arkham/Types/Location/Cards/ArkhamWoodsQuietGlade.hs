@@ -31,7 +31,7 @@ arkhamWoodsQuietGlade = ArkhamWoodsQuietGlade $ base
     [Woods]
 
 instance HasModifiersFor env ArkhamWoodsQuietGlade where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
 ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))

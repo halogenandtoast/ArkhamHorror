@@ -18,7 +18,7 @@ parlor =
     }
 
 instance HasModifiersFor env Parlor where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Parlor where
   getActions iid NonFast (Parlor attrs@Attrs {..}) | locationRevealed = do

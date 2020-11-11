@@ -90,6 +90,7 @@ data Asset
   | ArcaneEnlightenment' ArcaneEnlightenment
   | CelaenoFragments' CelaenoFragments
   | Encyclopedia' Encyclopedia
+  | HigherEducation' HigherEducation
   | WhittonGreene' WhittonGreene
   | LadyEsprit' LadyEsprit
   | BearTrap' BearTrap
@@ -235,6 +236,7 @@ allAssets = mapFromList
   , ("60205", ArcaneEnlightenment' . arcaneEnlightenment)
   , ("60206", CelaenoFragments' . celaenoFragments)
   , ("60208", Encyclopedia' . encyclopedia)
+  , ("60211", HigherEducation' . higherEducation)
   , ("60213", WhittonGreene' . whittonGreene)
   , ("81019", LadyEsprit' . ladyEsprit)
   , ("81020", BearTrap' . bearTrap)
@@ -330,6 +332,7 @@ assetAttrs = \case
   ArcaneEnlightenment' attrs -> coerce attrs
   CelaenoFragments' attrs -> coerce attrs
   Encyclopedia' attrs -> coerce attrs
+  HigherEducation' attrs -> coerce attrs
   WhittonGreene' attrs -> coerce attrs
   LadyEsprit' attrs -> coerce attrs
   BearTrap' attrs -> coerce attrs

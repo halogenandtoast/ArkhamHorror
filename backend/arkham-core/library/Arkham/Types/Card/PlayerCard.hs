@@ -283,6 +283,7 @@ allPlayerCards = HashMap.fromList
   , ("60205", arcaneEnlightenment)
   , ("60206", celaenoFragments)
   , ("60208", encyclopedia)
+  , ("60211", higherEducation)
   , ("60213", whittonGreene)
   , ("81019", ladyEsprit)
   , ("81029", curseOfTheRougarou)
@@ -1158,6 +1159,12 @@ encyclopedia :: CardId -> PlayerCard
 encyclopedia cardId = (asset cardId "60208" "Encyclopedia" 2 Seeker)
   { pcSkills = [SkillWild]
   , pcTraits = setFromList [Item, Tome]
+  }
+
+higherEducation :: CardId -> PlayerCard
+higherEducation cardId = (asset cardId "60211" "Higher Education" 0 Seeker)
+  { pcSkills = [SkillWillpower, SkillIntellect]
+  , pcTraits = setFromList [Talent]
   }
 
 whittonGreene :: CardId -> PlayerCard

@@ -39,13 +39,13 @@ rexMurphy = RexMurphy $ baseAttrs
   [Reporter]
 
 instance ActionRunner env => HasActions env RexMurphy where
-  getActions iid (AfterPassSkillTest You n) (RexMurphy Attrs {..})
+  getActions iid (AfterPassSkillTest source You n) (RexMurphy Attrs {..})
     | iid == investigatorId && n >= 2 = do
       let
         ability = mkAbility
           (InvestigatorSource investigatorId)
           1
-          (ReactionAbility (AfterPassSkillTest You n))
+          (ReactionAbility (AfterPassSkillTest source You n))
       clueCount' <- unClueCount <$> asks (getCount investigatorLocation)
       usedAbilities <- map unUsedAbility <$> asks (getList ())
       pure

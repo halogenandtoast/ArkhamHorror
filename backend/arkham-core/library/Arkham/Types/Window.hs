@@ -15,7 +15,7 @@ data Window
   | AfterEnemyEvaded Who EnemyId
   | AfterFailSkillTest Who Int
   | AfterFailSkillTestAtOrLess Who Int
-  | AfterPassSkillTest Who Int
+  | AfterPassSkillTest Source Who Int
   | AfterPlayCard Who [Trait]
   | AfterTurnBegins Who
   | FastPlayerWindow

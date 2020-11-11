@@ -18,7 +18,7 @@ instance HasModifiersFor env Scavenging where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Scavenging where
-  getActions iid (AfterPassSkillTest You n) (Scavenging a)
+  getActions iid (AfterPassSkillTest source You n) (Scavenging a)
     | ownedBy a iid && n >= 2 = do
       discard <- getDiscardOf iid
       pure
@@ -27,7 +27,7 @@ instance ActionRunner env => HasActions env Scavenging where
             (mkAbility
               (toSource a)
               1
-              (ReactionAbility (AfterPassSkillTest You n))
+              (ReactionAbility (AfterPassSkillTest source You n))
             )
         | any ((Item `member`) . getTraits) discard
         ]

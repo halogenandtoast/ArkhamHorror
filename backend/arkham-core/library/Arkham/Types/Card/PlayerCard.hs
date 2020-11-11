@@ -266,6 +266,7 @@ allPlayerCards = HashMap.fromList
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
   , ("02147", bandolier)
+  , ("04023", toothOfEztli)
   , ("05316", occultLexicon)
   , ("05317", bloodRite)
   , ("06116", scrollOfProphecies)
@@ -1032,6 +1033,12 @@ bandolier :: CardId -> PlayerCard
 bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillWild]
   , pcTraits = setFromList [Item]
+  }
+
+toothOfEztli :: CardId -> PlayerCard
+toothOfEztli cardId = (asset cardId "04023" "Tooth of Eztli" 3 Seeker)
+  { pcSkills = [SkillWillpower]
+  , pcTraits = setFromList [Item, Relic]
   }
 
 occultLexicon :: CardId -> PlayerCard

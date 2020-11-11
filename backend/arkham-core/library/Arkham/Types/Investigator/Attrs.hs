@@ -1505,9 +1505,9 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   After (FailedSkillTest iid _ _ (InvestigatorTarget iid') n)
     | iid == iid' && iid == investigatorId -> do
       a <$ unshiftMessage (CheckWindow iid [AfterFailSkillTest You n])
-  After (PassedSkillTest iid _ _ (InvestigatorTarget iid') n)
+  After (PassedSkillTest iid _ source (InvestigatorTarget iid') n)
     | iid == iid' && iid == investigatorId -> do
-      a <$ unshiftMessage (CheckWindow iid [AfterPassSkillTest You n])
+      a <$ unshiftMessage (CheckWindow iid [AfterPassSkillTest source You n])
   PlayerWindow iid additionalActions | iid == investigatorId -> do
     actions <- join $ asks (getActions iid NonFast)
     fastActions <- join $ asks (getActions iid (DuringTurn You))

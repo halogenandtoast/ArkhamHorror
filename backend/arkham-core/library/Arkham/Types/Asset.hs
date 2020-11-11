@@ -95,6 +95,7 @@ data Asset
   | BearTrap' BearTrap
   | FishingNet' FishingNet
   | MonstrousTransformation' MonstrousTransformation
+  | DaisysToteBagAdvanced' DaisysToteBagAdvanced
   | TheNecronomiconAdvanced' TheNecronomiconAdvanced
   | BaseAsset' BaseAsset
   deriving stock (Show, Generic)
@@ -239,6 +240,7 @@ allAssets = mapFromList
   , ("81020", BearTrap' . bearTrap)
   , ("81021", FishingNet' . fishingNet)
   , ("81030", MonstrousTransformation' . monstrousTransformation)
+  , ("90002", DaisysToteBagAdvanced' . daisysToteBagAdvanced)
   , ("90003", TheNecronomiconAdvanced' . theNecronomiconAdvanced)
   , ("00000", \aid -> baseAsset aid "00000" id)
   ]
@@ -333,5 +335,6 @@ assetAttrs = \case
   BearTrap' attrs -> coerce attrs
   FishingNet' attrs -> coerce attrs
   MonstrousTransformation' attrs -> coerce attrs
+  DaisysToteBagAdvanced' attrs -> coerce attrs
   TheNecronomiconAdvanced' attrs -> coerce attrs
   BaseAsset' attrs -> coerce attrs

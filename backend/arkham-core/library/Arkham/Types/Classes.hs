@@ -14,6 +14,7 @@ import Arkham.Types.Ability
 import Arkham.Types.Action
 import Arkham.Types.AssetId
 import Arkham.Types.Card
+import Arkham.Types.Card.Id
 import Arkham.Types.Classes.HasRecord
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
@@ -222,8 +223,15 @@ class HasStats b a where
 class HasTraits a where
   getTraits :: a -> HashSet Trait
 
+instance HasTraits Card where
+  getTraits (PlayerCard card) = getTraits card
+  getTraits (EncounterCard card) = getTraits card
+
 instance HasTraits PlayerCard where
   getTraits = pcTraits
+
+instance HasTraits EncounterCard where
+  getTraits = ecTraits
 
 class IsAdvanceable a where
   isAdvanceable :: a -> Bool
@@ -288,6 +296,7 @@ type ActionRunner env
     , HasSet InvestigatorId LocationId env
     , HasSet Keyword EnemyId env
     , HasSet Trait EnemyId env
+    , HasSet Trait (InvestigatorId, CardId) env
     , HasSource ForSkillTest env
     )
 

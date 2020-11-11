@@ -287,6 +287,7 @@ allPlayerCards = HashMap.fromList
   , ("81019", ladyEsprit)
   , ("81029", curseOfTheRougarou)
   , ("81030", monstrousTransformation)
+  , ("90002", daisysToteBagAdvanced)
   , ("90003", theNecronomiconAdvanced)
   ]
 
@@ -1184,6 +1185,13 @@ monstrousTransformation cardId =
     { pcTraits = setFromList [Talent]
     , pcFast = True
     , pcWindows = setFromList [DuringTurn You]
+    }
+
+daisysToteBagAdvanced :: CardId -> PlayerCard
+daisysToteBagAdvanced cardId =
+  (asset cardId "90002" "Daisy's Tote Bag" 2 Neutral)
+    { pcSkills = [SkillWillpower, SkillIntellect, SkillWild, SkillWild]
+    , pcTraits = setFromList [Item]
     }
 
 theNecronomiconAdvanced :: CardId -> PlayerCard

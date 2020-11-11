@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: fa114dac0e55b4b948aaa9e58330779a05bca7cbf64af54d7bc601aa485602c1
+-- hash: a2e8f137fc0475ca169941c5b11bbf8db29bee3ad633da671faa239431e08e3d
 
 name:           arkham-core
 version:        0.0.0
@@ -69,6 +69,7 @@ library
       Arkham.Types.Asset.Cards.CatBurgler1
       Arkham.Types.Asset.Cards.CelaenoFragments
       Arkham.Types.Asset.Cards.DaisysToteBag
+      Arkham.Types.Asset.Cards.DaisysToteBagAdvanced
       Arkham.Types.Asset.Cards.DigDeep
       Arkham.Types.Asset.Cards.DigDeep2
       Arkham.Types.Asset.Cards.DiscOfItzamna2

@@ -65,7 +65,7 @@ instance ActionRunner env => HasActions env Parlor where
 
 instance (LocationRunner env) => RunMessage env Parlor where
   runMessage msg l@(Parlor attrs@Attrs {..}) = case msg of
-    RevealLocation lid | lid == locationId -> do
+    RevealLocation _ lid | lid == locationId -> do
       attrs' <- runMessage msg attrs
       pure $ Parlor $ attrs' & blocked .~ False
     UseCardAbility iid source _ 1 | isSource attrs source && locationRevealed ->

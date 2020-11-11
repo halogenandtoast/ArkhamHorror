@@ -283,6 +283,7 @@ allPlayerCards = HashMap.fromList
   , ("60205", arcaneEnlightenment)
   , ("60206", celaenoFragments)
   , ("60208", encyclopedia)
+  , ("60213", whittonGreene)
   , ("81019", ladyEsprit)
   , ("81029", curseOfTheRougarou)
   , ("81030", monstrousTransformation)
@@ -1156,6 +1157,12 @@ encyclopedia :: CardId -> PlayerCard
 encyclopedia cardId = (asset cardId "60208" "Encyclopedia" 2 Seeker)
   { pcSkills = [SkillWild]
   , pcTraits = setFromList [Item, Tome]
+  }
+
+whittonGreene :: CardId -> PlayerCard
+whittonGreene cardId = (asset cardId "60213" "Whitton Greene" 4 Seeker)
+  { pcSkills = [SkillIntellect]
+  , pcTraits = setFromList [Ally, Miskatonic]
   }
 
 ladyEsprit :: CardId -> PlayerCard

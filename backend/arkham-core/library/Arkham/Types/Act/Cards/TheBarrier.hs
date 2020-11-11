@@ -29,7 +29,7 @@ instance (ActRunner env) => RunMessage env TheBarrier where
       pure $ TheBarrier $ attrs & Act.sequence .~ "Act 2b" & flipped .~ True
     AdvanceAct aid | aid == actId && actSequence == "Act 2b" ->
       a <$ unshiftMessages
-        [ RevealLocation "01115"
+        [ RevealLocation Nothing "01115"
         , CreateStoryAssetAt "01117" "01115"
         , CreateEnemyAt "01116" "01112"
         , NextAct aid "01110"

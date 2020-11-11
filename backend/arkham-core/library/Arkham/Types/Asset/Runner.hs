@@ -13,6 +13,7 @@ import Arkham.Types.Trait
 
 type AssetRunner env
   = ( HasQueue env
+    , HasCount AssetCount (InvestigatorId, [Trait]) env
     , HasCount CardCount InvestigatorId env
     , HasCount ClueCount LocationId env
     , HasCount EnemyCount InvestigatorId env

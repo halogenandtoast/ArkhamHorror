@@ -1,4 +1,36 @@
 {
+  "arkham-core/library/Arkham/Types/Asset/Cards/*.hs": {
+    "type": "asset",
+    "alternate": "arkham-core/tests/Arkham/Types/Assets/Cards/{}Spec.hs",
+    "template": [
+      "{open}-# LANGUAGE UndecidableInstances #-{close}",
+      "module Arkham.Types.Asset.Cards.{dot}",
+      "  ( {dot|snakecase|camelcase}",
+      "  , {dot}(..)",
+      "  )",
+      "where",
+      "",
+      "import Arkham.Import",
+      "",
+      "import Arkham.Types.Asset.Attrs",
+      "",
+      "newtype {dot} = {dot} Attrs",
+      "  deriving newtype (Show, ToJSON, FromJSON)",
+      "",
+      "{dot|snakecase|camelcase} :: AssetId -> {dot}",
+      "{dot|snakecase|camelcase} uuid =",
+      "  {dot} $ baseAttrs uuid \"TODO\"",
+      "",
+      "instance HasActions env {dot} where",
+      "  getActions iid window ({dot} attrs) = getActions iid window attrs",
+      "",
+      "instance HasModifiersFor env {dot} where",
+      "  getModifiersFor = noModifiersFor",
+      "",
+      "instance (HasQueue env, HasModifiers env InvestigatorId) => RunMessage env {dot} where",
+      "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"
+    ]
+  },
   "arkham-core/library/Arkham/Types/*.hs": {
     "type": "core",
     "alternate": "arkham-core/tests/Arkham/Types/{}Spec.hs",

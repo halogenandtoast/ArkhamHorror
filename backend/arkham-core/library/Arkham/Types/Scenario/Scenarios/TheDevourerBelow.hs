@@ -129,7 +129,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
         <> [ SetLocationLabel location label
            | (location, label) <- zip woodsLocations woodsLabels
            ]
-        <> [RevealLocation "01149", MoveAllTo "01149"]
+        <> [RevealLocation Nothing "01149", MoveAllTo "01149"]
         <> ghoulPriestMessages
         <> cultistsWhoGotAwayMessages
         <> pastMidnightMessages

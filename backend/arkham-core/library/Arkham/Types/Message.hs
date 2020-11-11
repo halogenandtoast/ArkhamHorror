@@ -136,7 +136,7 @@ data Message
   | AddConnection LocationId LocationSymbol
   | AddConnectionBack LocationId LocationSymbol
   | AddedConnection LocationId LocationId
-  | RevealLocation LocationId
+  | RevealLocation (Maybe InvestigatorId) LocationId
   | RemoveLocation LocationId
   | RemoveEnemy EnemyId
   | MoveAllTo LocationId

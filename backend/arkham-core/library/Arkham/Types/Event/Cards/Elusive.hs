@@ -14,7 +14,7 @@ elusive :: InvestigatorId -> EventId -> Elusive
 elusive iid uuid = Elusive $ baseAttrs iid uuid "01050"
 
 instance HasModifiersFor env Elusive where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env Elusive where
   getActions i window (Elusive attrs) = getActions i window attrs

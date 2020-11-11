@@ -22,7 +22,7 @@ rexsCurse :: TreacheryId -> Maybe InvestigatorId -> RexsCurse
 rexsCurse uuid iid = RexsCurse $ weaknessAttrs uuid iid "02009"
 
 instance HasModifiersFor env RexsCurse where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env RexsCurse where
   getActions _ _ _ = pure []

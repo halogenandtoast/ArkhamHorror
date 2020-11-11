@@ -21,7 +21,7 @@ victoriaDevereux uuid =
     . (evade .~ 2)
 
 instance HasModifiersFor env VictoriaDevereux where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env VictoriaDevereux where
   getModifiers _ (VictoriaDevereux Attrs {..}) =

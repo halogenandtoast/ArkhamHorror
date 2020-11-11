@@ -23,7 +23,7 @@ swampLeech uuid =
     . (evade .~ 0)
 
 instance HasModifiersFor env SwampLeech where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env SwampLeech where
   getModifiers _ (SwampLeech Attrs {..}) =

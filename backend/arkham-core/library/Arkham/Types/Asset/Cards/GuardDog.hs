@@ -17,7 +17,7 @@ guardDog uuid = GuardDog $ (baseAttrs uuid "01021")
   }
 
 instance HasModifiersFor env GuardDog where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env GuardDog where
   getActions i window (GuardDog x) = getActions i window x

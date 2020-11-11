@@ -13,7 +13,7 @@ hotStreak2 :: InvestigatorId -> EventId -> HotStreak2
 hotStreak2 iid uuid = HotStreak2 $ baseAttrs iid uuid "50006"
 
 instance HasModifiersFor env HotStreak2 where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env HotStreak2 where
   getActions i window (HotStreak2 attrs) = getActions i window attrs

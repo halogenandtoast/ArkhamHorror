@@ -15,7 +15,7 @@ heirloomOfHyperborea uuid = HeirloomOfHyperborea
   $ (baseAttrs uuid "01012") { assetSlots = [AccessorySlot] }
 
 instance HasModifiersFor env HeirloomOfHyperborea where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env HeirloomOfHyperborea where
   getActions iid (AfterPlayCard You traits) (HeirloomOfHyperborea a)

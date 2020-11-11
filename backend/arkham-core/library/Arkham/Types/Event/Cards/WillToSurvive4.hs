@@ -12,7 +12,7 @@ willToSurvive4 :: InvestigatorId -> EventId -> WillToSurvive4
 willToSurvive4 iid uuid = WillToSurvive4 $ baseAttrs iid uuid "01085"
 
 instance HasModifiersFor env WillToSurvive4 where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env WillToSurvive4 where
   getActions i window (WillToSurvive4 attrs) = getActions i window attrs

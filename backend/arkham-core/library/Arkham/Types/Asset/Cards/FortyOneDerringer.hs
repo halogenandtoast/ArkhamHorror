@@ -18,7 +18,7 @@ fortyOneDerringer uuid =
   FortyOneDerringer $ (baseAttrs uuid "01047") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env FortyOneDerringer where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env FortyOneDerringer where
   getActions iid window (FortyOneDerringer a) | ownedBy a iid = do

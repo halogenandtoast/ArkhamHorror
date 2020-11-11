@@ -1,17 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy.Cards.RelentlessDarkYoung where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Message
-import Arkham.Types.Prey
-import Arkham.Types.SkillType
-import ClassyPrelude
-import Lens.Micro
 
 newtype RelentlessDarkYoung = RelentlessDarkYoung Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -28,7 +21,7 @@ relentlessDarkYoung uuid =
     . (prey .~ LowestSkill SkillAgility)
 
 instance HasModifiersFor env RelentlessDarkYoung where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env RelentlessDarkYoung where
   getModifiers _ (RelentlessDarkYoung Attrs {..}) =

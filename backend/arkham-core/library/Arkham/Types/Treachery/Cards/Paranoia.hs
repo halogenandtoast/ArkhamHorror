@@ -19,7 +19,7 @@ paranoia :: TreacheryId -> Maybe InvestigatorId -> Paranoia
 paranoia uuid iid = Paranoia $ weaknessAttrs uuid iid "01097"
 
 instance HasModifiersFor env Paranoia where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env Paranoia where
   getActions i window (Paranoia attrs) = getActions i window attrs

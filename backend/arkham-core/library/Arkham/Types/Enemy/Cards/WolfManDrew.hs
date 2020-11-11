@@ -24,7 +24,7 @@ wolfManDrew uuid =
     . (evade .~ 2)
 
 instance HasModifiersFor env WolfManDrew where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env WolfManDrew where
   getModifiers _ (WolfManDrew Attrs {..}) =

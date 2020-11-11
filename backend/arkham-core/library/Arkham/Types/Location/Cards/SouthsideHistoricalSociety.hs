@@ -26,7 +26,7 @@ southsideHistoricalSociety = SouthsideHistoricalSociety $ baseAttrs
   [Arkham]
 
 instance HasModifiersFor env SouthsideHistoricalSociety where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
 ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))

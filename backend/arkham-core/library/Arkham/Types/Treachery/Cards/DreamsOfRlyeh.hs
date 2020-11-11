@@ -14,7 +14,7 @@ dreamsOfRlyeh :: TreacheryId -> a -> DreamsOfRlyeh
 dreamsOfRlyeh uuid _ = DreamsOfRlyeh $ baseAttrs uuid "01182"
 
 instance HasModifiersFor env DreamsOfRlyeh where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env DreamsOfRlyeh where
   getActions iid NonFast (DreamsOfRlyeh Attrs {..}) = do

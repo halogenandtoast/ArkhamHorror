@@ -15,7 +15,7 @@ strayCat uuid = StrayCat
   $ (baseAttrs uuid "01076") { assetSlots = [AllySlot], assetHealth = Just 2 }
 
 instance HasModifiersFor env StrayCat where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env StrayCat where
   getActions iid window (StrayCat a) | ownedBy a iid = do

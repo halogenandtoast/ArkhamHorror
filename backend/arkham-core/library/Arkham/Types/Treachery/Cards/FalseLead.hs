@@ -21,7 +21,7 @@ falseLead :: TreacheryId -> a -> FalseLead
 falseLead uuid _ = FalseLead $ baseAttrs uuid "01136"
 
 instance HasModifiersFor env FalseLead where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env FalseLead where
   getActions i window (FalseLead attrs) = getActions i window attrs

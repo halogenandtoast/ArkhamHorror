@@ -17,7 +17,7 @@ elderSignAmulet3 uuid = ElderSignAmulet3 $ (baseAttrs uuid "01095")
   }
 
 instance HasModifiersFor env ElderSignAmulet3 where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env ElderSignAmulet3 where
   getActions i window (ElderSignAmulet3 x) = getActions i window x

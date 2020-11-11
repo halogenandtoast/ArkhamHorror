@@ -18,7 +18,7 @@ cursedSwamp :: TreacheryId -> a -> CursedSwamp
 cursedSwamp uuid _ = CursedSwamp $ baseAttrs uuid "81024"
 
 instance HasModifiersFor env CursedSwamp where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env CursedSwamp where
   getActions i window (CursedSwamp attrs) = getActions i window attrs

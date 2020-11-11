@@ -15,7 +15,7 @@ finalRhapsody :: TreacheryId -> Maybe InvestigatorId -> FinalRhapsody
 finalRhapsody uuid iid = FinalRhapsody $ weaknessAttrs uuid iid "02013"
 
 instance HasModifiersFor env FinalRhapsody where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env FinalRhapsody where
   getActions i window (FinalRhapsody attrs) = getActions i window attrs

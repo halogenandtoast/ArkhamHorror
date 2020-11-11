@@ -16,7 +16,7 @@ attic = Attic $ (baseAttrs "01113" "Attic" 1 (PerPlayer 2) Triangle [Square] []
   }
 
 instance HasModifiersFor env Attic where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Attic where
   getActions i window (Attic attrs) = getActions i window attrs

@@ -17,7 +17,7 @@ scrollOfProphecies uuid =
   ScrollOfProphecies $ (baseAttrs uuid "06116") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env ScrollOfProphecies where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env ScrollOfProphecies where
   getActions iid NonFast (ScrollOfProphecies a) | ownedBy a iid = do

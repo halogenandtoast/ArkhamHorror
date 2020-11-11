@@ -13,7 +13,7 @@ sneakAttack :: InvestigatorId -> EventId -> SneakAttack
 sneakAttack iid uuid = SneakAttack $ baseAttrs iid uuid "01052"
 
 instance HasModifiersFor env SneakAttack where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env SneakAttack where
   getActions i window (SneakAttack attrs) = getActions i window attrs

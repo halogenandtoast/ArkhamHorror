@@ -19,7 +19,7 @@ jimsTrumpet uuid =
   JimsTrumpet $ (baseAttrs uuid "02012") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env JimsTrumpet where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Who -> Ability
 ability attrs who =

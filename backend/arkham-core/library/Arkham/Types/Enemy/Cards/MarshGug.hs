@@ -22,7 +22,7 @@ marshGug uuid =
     . (evade .~ 3)
 
 instance HasModifiersFor env MarshGug where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env MarshGug where
   getModifiers _ (MarshGug Attrs {..}) =

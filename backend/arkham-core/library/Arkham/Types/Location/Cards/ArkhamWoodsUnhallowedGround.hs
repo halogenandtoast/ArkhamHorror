@@ -27,7 +27,7 @@ arkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround $ base
     [Woods]
 
 instance HasModifiersFor env ArkhamWoodsUnhallowedGround where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env ArkhamWoodsUnhallowedGround where
   getActions i window (ArkhamWoodsUnhallowedGround attrs) =

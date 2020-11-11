@@ -15,7 +15,7 @@ knife :: AssetId -> Knife
 knife uuid = Knife $ (baseAttrs uuid "01086") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env Knife where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Knife where
   getActions iid NonFast (Knife a) | ownedBy a iid = do

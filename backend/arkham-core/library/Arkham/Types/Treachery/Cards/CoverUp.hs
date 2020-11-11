@@ -23,7 +23,7 @@ coverUpClues Attrs { treacheryClues } =
   fromJustNote "must be set" treacheryClues
 
 instance HasModifiersFor env CoverUp where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env CoverUp where
   getActions iid window@(WhenDiscoverClues You YourLocation) (CoverUp a@Attrs {..})

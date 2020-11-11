@@ -21,7 +21,7 @@ obscuringFog :: TreacheryId -> a -> ObscuringFog
 obscuringFog uuid _ = ObscuringFog $ baseAttrs uuid "01168"
 
 instance HasModifiersFor env ObscuringFog where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env ObscuringFog where
   getActions i window (ObscuringFog attrs) = getActions i window attrs

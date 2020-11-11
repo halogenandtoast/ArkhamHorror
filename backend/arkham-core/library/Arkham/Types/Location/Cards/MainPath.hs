@@ -17,7 +17,7 @@ mainPath = MainPath
   $ baseAttrs "01149" "Main Path" 2 (Static 0) Squiggle [Square, Plus] [Woods]
 
 instance HasModifiersFor env MainPath where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env MainPath where
   getActions iid NonFast (MainPath attrs@Attrs {..}) | locationRevealed = do

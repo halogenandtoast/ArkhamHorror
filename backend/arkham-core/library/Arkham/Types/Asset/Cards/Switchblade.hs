@@ -16,7 +16,7 @@ switchblade uuid =
   Switchblade $ (baseAttrs uuid "01044") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env Switchblade where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Switchblade where
   getActions iid window (Switchblade a) | ownedBy a iid = do

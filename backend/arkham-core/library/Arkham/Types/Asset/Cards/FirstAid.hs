@@ -20,7 +20,7 @@ firstAid :: AssetId -> FirstAid
 firstAid uuid = FirstAid $ baseAttrs uuid "01019"
 
 instance HasModifiersFor env FirstAid where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)

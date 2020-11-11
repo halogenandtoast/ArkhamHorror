@@ -21,7 +21,7 @@ rivertown = Rivertown $ baseAttrs
   [Arkham, Central]
 
 instance HasModifiersFor env Rivertown where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Rivertown where
   getActions i window (Rivertown attrs) = getActions i window attrs

@@ -20,7 +20,7 @@ umordhoth uuid =
     . (evade .~ 6)
 
 instance HasModifiersFor env Umordhoth where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env Umordhoth where
   getModifiers _ (Umordhoth Attrs {..}) =

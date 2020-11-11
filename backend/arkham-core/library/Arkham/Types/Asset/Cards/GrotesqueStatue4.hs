@@ -22,7 +22,7 @@ grotesqueStatue4 uuid =
   GrotesqueStatue4 $ (baseAttrs uuid "01071") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env GrotesqueStatue4 where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Source -> Window -> Ability
 ability attrs source window =

@@ -18,7 +18,7 @@ ripplesOnTheSurface :: TreacheryId -> a -> RipplesOnTheSurface
 ripplesOnTheSurface uuid _ = RipplesOnTheSurface $ baseAttrs uuid "81027"
 
 instance HasModifiersFor env RipplesOnTheSurface where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env RipplesOnTheSurface where
   getActions i window (RipplesOnTheSurface attrs) = getActions i window attrs

@@ -13,7 +13,7 @@ baitAndSwitch :: InvestigatorId -> EventId -> BaitAndSwitch
 baitAndSwitch iid uuid = BaitAndSwitch $ baseAttrs iid uuid "02034"
 
 instance HasModifiersFor env BaitAndSwitch where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env BaitAndSwitch where
   getActions i window (BaitAndSwitch attrs) = getActions i window attrs

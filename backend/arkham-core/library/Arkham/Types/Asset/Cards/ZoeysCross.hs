@@ -19,7 +19,7 @@ zoeysCross uuid =
   ZoeysCross $ (baseAttrs uuid "02006") { assetSlots = [AccessorySlot] }
 
 instance HasModifiersFor env ZoeysCross where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 ability :: Attrs -> EnemyId -> Ability
 ability attrs eid = (mkAbility

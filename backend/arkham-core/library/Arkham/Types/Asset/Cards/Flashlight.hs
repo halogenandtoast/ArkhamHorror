@@ -18,7 +18,7 @@ flashlight uuid =
   Flashlight $ (baseAttrs uuid "01087") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env Flashlight where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 investigateAbility :: Attrs -> Ability
 investigateAbility attrs =

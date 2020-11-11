@@ -31,7 +31,7 @@ theRougarou uuid =
     . (evade .~ 3)
 
 instance HasModifiersFor env TheRougarou where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env TheRougarou where
   getModifiers _ (TheRougarou (Attrs {..} `With` _)) =

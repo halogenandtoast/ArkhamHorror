@@ -15,7 +15,7 @@ discOfItzamna2 uuid =
   DiscOfItzamna2 $ (baseAttrs uuid "01059") { assetSlots = [AccessorySlot] }
 
 instance HasModifiersFor env DiscOfItzamna2 where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env DiscOfItzamna2 where
   getActions iid (WhenEnemySpawns YourLocation traits) (DiscOfItzamna2 a)

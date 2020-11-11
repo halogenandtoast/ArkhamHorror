@@ -13,7 +13,7 @@ drawnToTheFlame :: InvestigatorId -> EventId -> DrawnToTheFlame
 drawnToTheFlame iid uuid = DrawnToTheFlame $ baseAttrs iid uuid "01064"
 
 instance HasModifiersFor env DrawnToTheFlame where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env DrawnToTheFlame where
   getActions i window (DrawnToTheFlame attrs) = getActions i window attrs

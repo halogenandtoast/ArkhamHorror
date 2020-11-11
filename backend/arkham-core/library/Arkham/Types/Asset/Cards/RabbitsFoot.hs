@@ -14,7 +14,7 @@ rabbitsFoot uuid =
   RabbitsFoot $ (baseAttrs uuid "01075") { assetSlots = [AccessorySlot] }
 
 instance HasModifiersFor env RabbitsFoot where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env RabbitsFoot where
   getActions iid (AfterFailSkillTest You n) (RabbitsFoot a) | ownedBy a iid =

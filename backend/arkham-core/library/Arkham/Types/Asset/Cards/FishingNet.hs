@@ -20,7 +20,7 @@ fishingNet uuid = FishingNet $ baseAttrs uuid "81021"
 
 -- TODO: Removal of retaliate should maybe be a modifier of some sort
 instance HasModifiersFor env FishingNet where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow)

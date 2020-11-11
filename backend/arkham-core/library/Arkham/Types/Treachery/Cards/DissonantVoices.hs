@@ -21,7 +21,7 @@ dissonantVoices :: TreacheryId -> a -> DissonantVoices
 dissonantVoices uuid _ = DissonantVoices $ baseAttrs uuid "01165"
 
 instance HasModifiersFor env DissonantVoices where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env DissonantVoices where
   getActions i window (DissonantVoices attrs) = getActions i window attrs

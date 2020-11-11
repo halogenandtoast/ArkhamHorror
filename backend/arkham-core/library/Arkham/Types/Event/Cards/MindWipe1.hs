@@ -14,7 +14,7 @@ mindWipe1 :: InvestigatorId -> EventId -> MindWipe1
 mindWipe1 iid uuid = MindWipe1 $ baseAttrs iid uuid "01068"
 
 instance HasModifiersFor env MindWipe1 where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env MindWipe1 where
   getActions i window (MindWipe1 attrs) = getActions i window attrs

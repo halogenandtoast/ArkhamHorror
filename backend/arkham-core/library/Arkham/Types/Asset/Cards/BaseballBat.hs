@@ -23,7 +23,7 @@ baseballBat uuid =
   BaseballBat $ (baseAttrs uuid "01074") { assetSlots = [HandSlot, HandSlot] }
 
 instance HasModifiersFor env BaseballBat where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 fightAbility :: Attrs -> Ability
 fightAbility Attrs { assetId } =

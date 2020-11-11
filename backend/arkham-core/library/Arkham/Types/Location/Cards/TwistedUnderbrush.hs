@@ -25,7 +25,7 @@ twistedUnderbrush = TwistedUnderbrush $ (baseAttrs
   }
 
 instance HasModifiersFor env TwistedUnderbrush where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env TwistedUnderbrush where
   getActions iid NonFast (TwistedUnderbrush attrs@Attrs {..})

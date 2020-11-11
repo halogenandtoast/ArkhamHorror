@@ -25,7 +25,7 @@ ability :: Attrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
 
 instance HasModifiersFor env LadyEsprit where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env LadyEsprit where
   getActions iid NonFast (LadyEsprit a@Attrs {..}) = do

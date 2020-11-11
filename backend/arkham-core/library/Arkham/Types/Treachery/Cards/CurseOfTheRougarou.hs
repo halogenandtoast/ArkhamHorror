@@ -23,7 +23,7 @@ curseOfTheRougarou uuid iid =
   CurseOfTheRougarou . (`with` Metadata False) $ weaknessAttrs uuid iid "81029"
 
 instance HasModifiersFor env CurseOfTheRougarou where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env CurseOfTheRougarou where
   getActions iid window (CurseOfTheRougarou (attrs `With` _)) =

@@ -26,7 +26,7 @@ arkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths $ base
     [Woods]
 
 instance HasModifiersFor env ArkhamWoodsTwistingPaths where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env ArkhamWoodsTwistingPaths where
   getActions i window (ArkhamWoodsTwistingPaths attrs) =

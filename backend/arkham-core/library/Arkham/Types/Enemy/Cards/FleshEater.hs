@@ -20,7 +20,7 @@ fleshEater uuid =
     . (evade .~ 1)
 
 instance HasModifiersFor env FleshEater where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env FleshEater where
   getModifiers _ (FleshEater Attrs {..}) =

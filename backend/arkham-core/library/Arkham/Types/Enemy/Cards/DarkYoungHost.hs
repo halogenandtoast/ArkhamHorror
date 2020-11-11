@@ -22,7 +22,7 @@ darkYoungHost uuid =
     . (evade .~ 2)
 
 instance HasModifiersFor env DarkYoungHost where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env DarkYoungHost where
   getModifiers _ (DarkYoungHost Attrs {..}) =

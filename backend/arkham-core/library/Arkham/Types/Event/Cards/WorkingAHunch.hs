@@ -13,7 +13,7 @@ workingAHunch :: InvestigatorId -> EventId -> WorkingAHunch
 workingAHunch iid uuid = WorkingAHunch $ baseAttrs iid uuid "01037"
 
 instance HasModifiersFor env WorkingAHunch where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env WorkingAHunch where
   getActions i window (WorkingAHunch attrs) = getActions i window attrs

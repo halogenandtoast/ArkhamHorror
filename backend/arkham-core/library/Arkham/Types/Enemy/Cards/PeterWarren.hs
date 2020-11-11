@@ -21,7 +21,7 @@ peterWarren uuid =
     . (evade .~ 3)
 
 instance HasModifiersFor env PeterWarren where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env PeterWarren where
   getModifiers _ (PeterWarren Attrs {..}) =

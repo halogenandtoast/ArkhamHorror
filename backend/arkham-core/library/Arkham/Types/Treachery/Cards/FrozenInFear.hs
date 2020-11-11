@@ -22,7 +22,7 @@ frozenInFear :: TreacheryId -> a -> FrozenInFear
 frozenInFear uuid _ = FrozenInFear $ baseAttrs uuid "01164"
 
 instance HasModifiersFor env FrozenInFear where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env FrozenInFear where
   getActions i window (FrozenInFear attrs) = getActions i window attrs

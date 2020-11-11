@@ -13,7 +13,7 @@ dodge :: InvestigatorId -> EventId -> Dodge
 dodge iid uuid = Dodge $ baseAttrs iid uuid "01023"
 
 instance HasModifiersFor env Dodge where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env Dodge where
   getActions i window (Dodge attrs) = getActions i window attrs

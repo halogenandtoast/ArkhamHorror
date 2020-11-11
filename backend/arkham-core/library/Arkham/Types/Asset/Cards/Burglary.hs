@@ -19,7 +19,7 @@ burglary :: AssetId -> Burglary
 burglary uuid = Burglary $ baseAttrs uuid "01045"
 
 instance HasModifiersFor env Burglary where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
 ability attrs =

@@ -15,7 +15,7 @@ blindingLight :: InvestigatorId -> EventId -> BlindingLight
 blindingLight iid uuid = BlindingLight $ baseAttrs iid uuid "01066"
 
 instance HasModifiersFor env BlindingLight where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasActions env BlindingLight where
   getActions i window (BlindingLight attrs) = getActions i window attrs

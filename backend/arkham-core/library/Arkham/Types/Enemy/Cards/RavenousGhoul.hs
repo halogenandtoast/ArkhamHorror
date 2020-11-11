@@ -21,7 +21,7 @@ ravenousGhoul uuid =
     . (prey .~ LowestRemainingHealth)
 
 instance HasModifiersFor env RavenousGhoul where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env RavenousGhoul where
   getModifiers _ (RavenousGhoul Attrs {..}) =

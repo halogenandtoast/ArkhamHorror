@@ -21,7 +21,7 @@ forgottenMarsh = ForgottenMarsh $ baseAttrs
   [Wilderness, Bayou]
 
 instance HasModifiersFor env ForgottenMarsh where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env ForgottenMarsh where
   getActions i window (ForgottenMarsh attrs) = getActions i window attrs

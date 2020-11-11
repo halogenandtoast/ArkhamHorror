@@ -20,7 +20,7 @@ ghoulMinion uuid =
     . (evade .~ 2)
 
 instance HasModifiersFor env GhoulMinion where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env GhoulMinion where
   getModifiers _ (GhoulMinion Attrs {..}) =

@@ -21,7 +21,7 @@ yithianObserver uuid =
     . (prey .~ FewestCards)
 
 instance HasModifiersFor env YithianObserver where
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance HasModifiers env YithianObserver where
   getModifiers _ (YithianObserver Attrs {..}) =

@@ -40,6 +40,7 @@ import Arkham.Types.Asset.Cards.GuardDog as X
 import Arkham.Types.Asset.Cards.HardKnocks as X
 import Arkham.Types.Asset.Cards.HardKnocks2 as X
 import Arkham.Types.Asset.Cards.HeirloomOfHyperborea as X
+import Arkham.Types.Asset.Cards.HigherEducation as X
 import Arkham.Types.Asset.Cards.HolyRosary as X
 import Arkham.Types.Asset.Cards.Hyperawareness as X
 import Arkham.Types.Asset.Cards.Hyperawareness2 as X

@@ -179,7 +179,7 @@ instance HasSet AssetId (InvestigatorId, UseType) env => HasActions env Astoundi
     secretAssetIds <- asks $ setToList . getSet (iid, Secret)
     pure
       [ Run
-          [ Discard (SearchedCardIdTarget $ getCardId pc)
+          [ Discard (SearchedCardTarget iid $ getCardId pc)
           , chooseOne
             iid
             (TakeResources iid 2 False

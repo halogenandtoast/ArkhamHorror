@@ -1522,11 +1522,17 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
                   , ShuffleAllFocusedIntoDeck iid (InvestigatorTarget iid')
                   ]
               | card <- cards
-              , null traits' || traits' `intersection` getTraits card == traits'
+              , null traits'
+                || not (null $ traits' `intersection` getTraits card)
               ]
           unshiftMessage
-            (chooseOne iid
-            $ if null choices then [Continue "No cards found"] else choices
+            (chooseOne iid $ if null choices
+              then
+                [ Label
+                    "No cards found"
+                    [ShuffleAllFocusedIntoDeck iid (InvestigatorTarget iid')]
+                ]
+              else choices
             )
       actions <- fmap concat <$> for cards $ \card' -> getActions
         iid

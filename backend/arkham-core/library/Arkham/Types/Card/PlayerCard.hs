@@ -36,7 +36,7 @@ newtype DiscardedPlayerCard = DiscardedPlayerCard { unDiscardedPlayerCard :: Pla
 
 data AttackOfOpportunityModifier = DoesNotProvokeAttacksOfOpportunity
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data PlayerCard = MkPlayerCard
   { pcCardCode :: CardCode
@@ -60,6 +60,7 @@ data PlayerCard = MkPlayerCard
   , pcAttackOfOpportunityModifiers :: [AttackOfOpportunityModifier]
   }
   deriving stock (Show, Eq, Generic)
+  deriving anyclass (Hashable)
 
 instance ToJSON PlayerCard where
   toJSON = genericToJSON $ aesonOptions $ Just "pc"

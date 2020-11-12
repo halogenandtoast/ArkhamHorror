@@ -271,6 +271,7 @@ instance HasVictoryPoints PlayerCard where
 type ActionRunner env
   = ( HasQueue env
     , HasActions env (ActionType, env)
+    , HasCount AssetCount (InvestigatorId, [Trait]) env
     , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
     , HasCount ActionTakenCount InvestigatorId env
     , HasCount CardCount InvestigatorId env

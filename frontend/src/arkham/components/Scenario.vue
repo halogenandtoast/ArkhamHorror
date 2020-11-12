@@ -77,12 +77,6 @@
       :activePlayerId="activePlayerId"
       @choose="$emit('choose', $event)"
     />
-
-    <ChoiceModal
-      :game="game"
-      :investigatorId="investigatorId"
-      @choose="$emit('choose', $event)"
-    />
   </div>
 </template>
 
@@ -93,7 +87,6 @@ import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
-import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
 import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
 import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
@@ -109,7 +102,6 @@ export default defineComponent({
     Location,
     StatusBar,
     ChaosBag,
-    ChoiceModal,
     PlayerTabs,
     EncounterDeck,
     PlayerOrder,

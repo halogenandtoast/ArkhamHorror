@@ -1,5 +1,5 @@
 <template>
-  <div class="card-container" v-if="cardAction !== -1">
+  <div class="card-container">
     <img
       :class="{'card--can-interact': cardAction !== -1}"
       class="card"
@@ -33,6 +33,9 @@ export default defineComponent({
 
     function canInteract(c: Message): boolean {
       switch (c.tag) {
+        case MessageType.DISCARD:
+          // TODO: Check the contents tag
+          return c.contents.contents[1] === id.value;
         case MessageType.ADD_FOCUSED_TO_HAND:
           return c.contents[2] === id.value;
         case MessageType.ADD_FOCUSED_TO_TOP_OF_DECK:
@@ -56,8 +59,8 @@ export default defineComponent({
 <style scoped lang="scss">
 
 .card {
-  width: 120px;
-  min-width: 120px;
+  width: 100px;
+  min-width: 100px;
   border-radius: 7px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.23), 0 3px 6px rgba(0,0,0,0.53);
   border-radius: 6px;

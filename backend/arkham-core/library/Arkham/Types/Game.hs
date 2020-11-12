@@ -1645,6 +1645,15 @@ runGameMessage msg g = case msg of
         [ When (EnemyDefeated eid iid cardCode source)
         , Discard (EnemyTarget eid)
         ]
+  Discard (SearchedCardTarget iid cardId) -> do
+    let
+      card = fromJustNote "must exist"
+        $ find ((== cardId) . getCardId) (g ^. focusedCards)
+    case card of
+      PlayerCard pc -> do
+        unshiftMessage (AddToDiscard iid pc)
+        pure $ g & focusedCards %~ filter (/= card)
+      _ -> error "should not be an option for other cards"
   Discard (EnemyTarget eid) -> do
     let
       enemy = getEnemy eid g

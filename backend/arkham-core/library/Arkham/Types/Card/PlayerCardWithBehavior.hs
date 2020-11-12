@@ -125,7 +125,7 @@ instance (HasQueue env) => RunMessage env SureGamble3 where
 
 instance HasActions env SureGamble3 where
   getActions iid (WhenRevealTokenWithNegativeModifier You tid) (SureGamble3 pc)
-    = pure [PlayCard iid (getCardId pc) (Just $ TokenTarget tid) False]
+    = pure [InitiatePlayCard iid (getCardId pc) (Just $ TokenTarget tid) False]
   getActions i window (SureGamble3 pc) =
     getActions i window (DefaultPlayerCard pc)
 
@@ -139,7 +139,7 @@ instance (HasId CardCode EnemyId env, HasSet Trait EnemyId env) => HasActions en
     traits' <- asks (getSet eid)
     cardCode <- asks (getId eid)
     pure
-      [ PlayCard iid (getCardId pc) (Just $ EnemyTarget eid) False
+      [ InitiatePlayCard iid (getCardId pc) (Just $ EnemyTarget eid) False
       | Elite `notMember` traits' && cardCode `elem` keys allEncounterCards
       ]
   getActions i window (CloseCall2 pc) =
@@ -153,7 +153,7 @@ instance (HasQueue env) => RunMessage env LetMeHandleThis where
 instance HasActions env LetMeHandleThis where
   getActions iid (WhenDrawNonPerilTreachery who tid) (LetMeHandleThis pc)
     | who /= You = pure
-      [PlayCard iid (getCardId pc) (Just $ TreacheryTarget tid) False]
+      [InitiatePlayCard iid (getCardId pc) (Just $ TreacheryTarget tid) False]
   getActions i window (LetMeHandleThis pc) =
     getActions i window (DefaultPlayerCard pc)
 
@@ -165,7 +165,8 @@ instance HasQueue env => RunMessage env SecondWind where
 instance HasCount ActionTakenCount InvestigatorId env => HasActions env SecondWind where
   getActions iid (DuringTurn You) (SecondWind pc) = do
     actionsTaken <- asks $ unActionTakenCount . getCount iid
-    pure [ PlayCard iid (getCardId pc) Nothing True | actionsTaken == 0 ]
+    pure
+      [ InitiatePlayCard iid (getCardId pc) Nothing True | actionsTaken == 0 ]
   getActions i window (SecondWind pc) =
     getActions i window (DefaultPlayerCard pc)
 

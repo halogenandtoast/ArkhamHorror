@@ -137,6 +137,17 @@ instance HasSet EnemyId () Investigator where
 instance HasSet TreacheryId () Investigator where
   getSet _ = investigatorTreacheries . investigatorAttrs
 
+instance HasList DiscardableHandCard () Investigator where
+  getList _ =
+    map DiscardableHandCard
+      . filter (not . isWeakness)
+      . investigatorHand
+      . investigatorAttrs
+   where
+    isWeakness = \case
+      PlayerCard pc -> pcWeakness pc
+      EncounterCard _ -> True -- maybe?
+
 instance HasCount ActionTakenCount () Investigator where
   getCount _ i = ActionTakenCount . length $ investigatorActionsTaken a
     where a = investigatorAttrs i

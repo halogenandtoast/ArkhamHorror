@@ -4,6 +4,7 @@ module Arkham.Types.Card
   , DiscardedPlayerCard(..)
   , DeckCard(..)
   , HandCard(..)
+  , DiscardableHandCard(..)
   , InPlayCard(..)
   , PlayerCard(..)
   , EncounterCard(..)
@@ -50,6 +51,10 @@ newtype DeckCard = DeckCard { unDeckCard ::PlayerCard }
   deriving newtype (ToJSON, FromJSON)
 
 newtype HandCard = HandCard { unHandCard ::Card }
+  deriving stock (Show, Generic)
+  deriving newtype (ToJSON, FromJSON)
+
+newtype DiscardableHandCard = DiscardableHandCard { unDiscardableHandCard ::Card }
   deriving stock (Show, Generic)
   deriving newtype (ToJSON, FromJSON)
 

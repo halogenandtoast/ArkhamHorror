@@ -573,6 +573,9 @@ instance HasList InPlayCard InvestigatorId (Game queue) where
 instance HasList HandCard InvestigatorId (Game queue) where
   getList iid = getList () . getInvestigator iid
 
+instance HasList DiscardableHandCard InvestigatorId (Game queue) where
+  getList iid = getList () . getInvestigator iid
+
 instance HasList DiscardedPlayerCard InvestigatorId (Game queue) where
   getList iid = getList () . getInvestigator iid
 

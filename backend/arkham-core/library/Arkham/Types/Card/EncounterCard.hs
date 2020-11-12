@@ -16,7 +16,7 @@ data EncounterCardType
   | EnemyType
   | LocationType
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data EncounterCard = MkEncounterCard
   { ecCardCode :: CardCode
@@ -28,6 +28,7 @@ data EncounterCard = MkEncounterCard
   , ecVictoryPoints :: Maybe Int
   }
   deriving stock (Show, Eq, Generic)
+  deriving anyclass (Hashable)
 
 lookupEncounterCard :: CardCode -> (CardId -> EncounterCard)
 lookupEncounterCard cardCode =

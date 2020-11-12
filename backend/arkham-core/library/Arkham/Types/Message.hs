@@ -8,6 +8,7 @@ module Arkham.Types.Message
   , ActionType(..)
   , messageType
   , chooseOne
+  , chooseOneAtATime
   )
 where
 
@@ -132,6 +133,8 @@ data Message
   | RevertAct ActId
   | NextAdvanceActStep ActId Int
   | AllDrawEncounterCard
+  | DrawEncounterCards Target Int
+  | RequestedEncounterCards Target [EncounterCard]
   | PlaceLocation LocationId
   | PlacedLocation LocationId
   | AddConnection LocationId LocationSymbol
@@ -395,6 +398,9 @@ data Message
 
 chooseOne :: InvestigatorId -> [Message] -> Message
 chooseOne iid msgs = Ask iid (ChooseOne msgs)
+
+chooseOneAtATime :: InvestigatorId -> [Message] -> Message
+chooseOneAtATime iid msgs = Ask iid (ChooseOneAtATime msgs)
 
 data Question
   = ChooseOne [Message]

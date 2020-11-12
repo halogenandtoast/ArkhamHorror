@@ -14,6 +14,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Cards
 import Arkham.Types.Event.Runner
 import Arkham.Types.EventId
+import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import ClassyPrelude
 import Data.Coerce
@@ -52,6 +53,7 @@ data Event
   | LetMeHandleThis' LetMeHandleThis
   | BloodRite' BloodRite
   | AstoundingRevelation' AstoundingRevelation
+  | FirstWatch' FirstWatch
   | DynamiteBlast2' DynamiteBlast2
   | Barricade3' Barricade3
   | HotStreak2' HotStreak2
@@ -61,7 +63,7 @@ data Event
 
 deriving anyclass instance HasActions env Event
 deriving anyclass instance HasModifiersFor env Event
-deriving anyclass instance (EventRunner env) => RunMessage env Event
+deriving anyclass instance EventRunner env => RunMessage env Event
 
 instance HasCardCode Event where
   getCardCode = eventCardCode . eventAttrs
@@ -107,6 +109,7 @@ allEvents = mapFromList
   , ("03022", (LetMeHandleThis' .) . letMeHandleThis)
   , ("05317", (BloodRite' .) . bloodRite)
   , ("06023", (AstoundingRevelation' .) . astoundingRevelation)
+  , ("06110", (FirstWatch' .) . firstWatch)
   , ("50002", (DynamiteBlast2' .) . dynamiteBlast2)
   , ("50004", (Barricade3' .) . barricade3)
   , ("50006", (HotStreak2' .) . hotStreak2)
@@ -150,6 +153,7 @@ eventAttrs = \case
   LetMeHandleThis' attrs -> coerce attrs
   BloodRite' attrs -> coerce attrs
   AstoundingRevelation' attrs -> coerce attrs
+  FirstWatch' (FirstWatch (attrs `With` _)) -> attrs
   DynamiteBlast2' attrs -> coerce attrs
   Barricade3' attrs -> coerce attrs
   HotStreak2' attrs -> coerce attrs

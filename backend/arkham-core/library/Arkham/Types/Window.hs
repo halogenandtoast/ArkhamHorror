@@ -26,6 +26,7 @@ data Window
   | AnyPhaseBegins
   | DuringTurn Who
   | NonFast
+  | WhenAllDrawEncounterCard
   | WhenAmongSearchedCards Who
   | WhenDiscoverClues Who Where
   | WhenDrawToken Who Token

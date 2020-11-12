@@ -18,6 +18,7 @@ import ClassyPrelude hiding (log)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Data.UUID.V4
+import Data.Vector ((!?))
 import Lens.Micro
 
 data Attrs = Attrs
@@ -58,6 +59,14 @@ instance FromJSON Attrs where
 
 instance (CampaignRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
+    StartCampaign ->
+      a <$ unshiftMessage (CampaignStep $ campaignSteps !? campaignStep)
+    CampaignStep Nothing -> a <$ unshiftMessage GameOver -- TODO: move to generic
+    CampaignStep (Just (ScenarioStep sid)) -> do
+      a <$ unshiftMessages [ResetGame, StartScenario sid]
+    NextCampaignStep -> do
+      unshiftMessage (CampaignStep $ campaignSteps !? (campaignStep + 1))
+      pure $ a & step +~ 1
     SetTokensForScenario -> a <$ unshiftMessage (SetTokens campaignChaosBag)
     AddCampaignCardToDeck iid cardCode -> do
       card <- liftIO $ lookupPlayerCard cardCode . CardId <$> nextRandom

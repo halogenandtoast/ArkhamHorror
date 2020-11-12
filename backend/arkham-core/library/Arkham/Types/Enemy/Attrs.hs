@@ -171,15 +171,12 @@ spawnAtEmptyLocation iid eid = do
       unshiftMessage (Ask iid $ ChooseOne [ EnemySpawn lid eid | lid <- lids ])
 
 spawnAt
-  :: (MonadIO m, HasSet LocationId () env, MonadReader env m, HasQueue env)
+  :: (MonadIO m, MonadReader env m, HasQueue env)
   => EnemyId
   -> LocationId
   -> m ()
-spawnAt eid lid = do
-  locations' <- asks (getSet ())
-  if lid `elem` locations'
-    then unshiftMessage (EnemySpawn lid eid)
-    else unshiftMessage (Discard (EnemyTarget eid))
+spawnAt eid lid =
+  unshiftMessages [Will (EnemySpawn lid eid), EnemySpawn lid eid]
 
 spawnAtOneOf
   :: (MonadIO m, HasSet LocationId () env, MonadReader env m, HasQueue env)
@@ -317,30 +314,35 @@ instance EnemyRunner env => RunMessage env Attrs where
             ]
           )
     EnemySpawn lid eid | eid == enemyId -> do
-      when
-          (Keyword.Aloof
-          `notElem` enemyKeywords
-          && Keyword.Massive
-          `notElem` enemyKeywords
-          )
-        $ do
-            preyIds <- asks $ map unPreyId . setToList . getSet (enemyPrey, lid)
-            investigatorIds <- if null preyIds
-              then asks $ setToList . getSet @InvestigatorId lid
-              else pure []
-            leadInvestigatorId <- getLeadInvestigatorId
-            case preyIds <> investigatorIds of
-              [] -> pure ()
-              [iid] -> unshiftMessage (EnemyEngageInvestigator eid iid)
-              iids -> unshiftMessage
-                (Ask leadInvestigatorId $ ChooseOne
-                  [ EnemyEngageInvestigator eid iid | iid <- iids ]
-                )
-      when (Keyword.Massive `elem` enemyKeywords) $ do
-        investigatorIds <- getInvestigatorIds
-        unshiftMessages
-          [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
-      pure $ a & location .~ lid
+      locations' <- asks (getSet ())
+      if lid `notElem` locations'
+        then a <$ unshiftMessage (Discard (EnemyTarget eid))
+        else do
+          when
+              (Keyword.Aloof
+              `notElem` enemyKeywords
+              && Keyword.Massive
+              `notElem` enemyKeywords
+              )
+            $ do
+                preyIds <- asks $ map unPreyId . setToList . getSet
+                  (enemyPrey, lid)
+                investigatorIds <- if null preyIds
+                  then asks $ setToList . getSet @InvestigatorId lid
+                  else pure []
+                leadInvestigatorId <- getLeadInvestigatorId
+                case preyIds <> investigatorIds of
+                  [] -> pure ()
+                  [iid] -> unshiftMessage (EnemyEngageInvestigator eid iid)
+                  iids -> unshiftMessage
+                    (Ask leadInvestigatorId $ ChooseOne
+                      [ EnemyEngageInvestigator eid iid | iid <- iids ]
+                    )
+          when (Keyword.Massive `elem` enemyKeywords) $ do
+            investigatorIds <- getInvestigatorIds
+            unshiftMessages
+              [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
+          pure $ a & location .~ lid
     EnemySpawnedAt lid eid | eid == enemyId -> pure $ a & location .~ lid
     ReadyExhausted -> do
       miid <- asks $ headMay . setToList . getSet enemyLocation

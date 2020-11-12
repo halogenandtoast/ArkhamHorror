@@ -26,6 +26,7 @@ data Act
   | InvestigatingTheTrail' InvestigatingTheTrail
   | IntoTheDarkness' IntoTheDarkness
   | DisruptingTheRitual' DisruptingTheRitual
+  | MysteriousGateway' MysteriousGateway
   | FindingLadyEsprit' FindingLadyEsprit
   | HuntingTheRougarou' HuntingTheRougarou
   deriving stock (Show, Generic)
@@ -51,6 +52,7 @@ allActs = mapFromList $ map
   , InvestigatingTheTrail' investigatingTheTrail
   , IntoTheDarkness' intoTheDarkness
   , DisruptingTheRitual' disruptingTheRitual
+  , MysteriousGateway' mysteriousGateway
   , FindingLadyEsprit' findingLadyEsprit
   , HuntingTheRougarou' huntingTheRougarou
   ]
@@ -64,5 +66,6 @@ actAttrs = \case
   InvestigatingTheTrail' attrs -> coerce attrs
   IntoTheDarkness' attrs -> coerce attrs
   DisruptingTheRitual' attrs -> coerce attrs
+  MysteriousGateway' attrs -> coerce attrs
   FindingLadyEsprit' attrs -> coerce attrs
   HuntingTheRougarou' attrs -> coerce attrs

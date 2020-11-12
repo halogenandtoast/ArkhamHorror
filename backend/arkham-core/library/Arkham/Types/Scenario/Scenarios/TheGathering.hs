@@ -23,6 +23,18 @@ theGathering = TheGathering . baseAttrs
   ["01105", "01106", "01107"]
   ["01108", "01109", "01110"]
 
+theGatheringIntro :: Message
+theGatheringIntro = FlavorText
+  (Just "Part I: The Gathering")
+  [ "You and your partners have been investigating strange events taking place\
+    \ in your home city of Arkham, Massachusetts. Over the past few weeks,\
+    \ several townspeople have mysteriously gone missing. Recently, their\
+    \ corpses turned up in the woods, savaged and half - eaten. The police and\
+    \ newspapers have stated that wild animals are responsible, but you believe\
+    \ there is something else going on. You are gathered together at the lead\
+    \ investigator’s home to discuss these bizarre events."
+  ]
+
 instance (HasTokenValue env InvestigatorId, HasCount EnemyCount (InvestigatorLocation, [Trait]) env, HasQueue env) => HasTokenValue env TheGathering where
   getTokenValue (TheGathering attrs) iid = \case
     Skull -> do
@@ -60,23 +72,7 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
         , MoveAllTo "01111"
         , AskMap
         . mapFromList
-        $ [ ( iid
-            , ChooseOne
-              [ Run
-                  [ Continue "Continue"
-                  , FlavorText
-                    (Just "Part I: The Gathering")
-                    [ "You and your partners have been investigating strange events taking place\
-                      \ in your home city of Arkham, Massachusetts. Over the past few weeks,\
-                      \ several townspeople have mysteriously gone missing. Recently, their\
-                      \ corpses turned up in the woods, savaged and half - eaten. The police and\
-                      \ newspapers have stated that wild animals are responsible, but you believe\
-                      \ there is something else going on. You are gathered together at the lead\
-                      \ investigator’s home to discuss these bizarre events."
-                    ]
-                  ]
-              ]
-            )
+        $ [ (iid, ChooseOne [Run [Continue "Continue", theGatheringIntro]])
           | iid <- investigatorIds
           ]
         ]

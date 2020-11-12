@@ -14,6 +14,7 @@ import Arkham.Types.Helpers
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
+import Arkham.Types.Scenario.Scenarios.ReturnToTheGathering
 import Arkham.Types.Scenario.Scenarios.TheDevourerBelow
 import Arkham.Types.Scenario.Scenarios.TheGathering
 import Arkham.Types.Scenario.Scenarios.TheMidnightMasks
@@ -25,6 +26,7 @@ data Scenario
   = TheGathering' TheGathering
   | TheMidnightMasks' TheMidnightMasks
   | TheDevourerBelow' TheDevourerBelow
+  | ReturnToTheGathering' ReturnToTheGathering
   | CurseOfTheRougarou' CurseOfTheRougarou
   | BaseScenario' BaseScenario
   deriving stock (Show, Generic)
@@ -74,6 +76,7 @@ allScenarios = mapFromList
   [ ("01104", TheGathering' . theGathering)
   , ("01120", TheMidnightMasks' . theMidnightMasks)
   , ("01142", TheDevourerBelow' . theDevourerBelow)
+  , ("50011", ReturnToTheGathering' . returnToTheGathering)
   , ("81001", CurseOfTheRougarou' . curseOfTheRougarou)
   ]
 
@@ -83,4 +86,5 @@ scenarioAttrs = \case
   TheGathering' attrs -> coerce attrs
   TheMidnightMasks' attrs -> coerce attrs
   TheDevourerBelow' attrs -> coerce attrs
+  ReturnToTheGathering' attrs -> coerce attrs
   CurseOfTheRougarou' (CurseOfTheRougarou (attrs `With` _)) -> attrs

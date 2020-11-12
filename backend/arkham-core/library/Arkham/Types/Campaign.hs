@@ -7,6 +7,7 @@ module Arkham.Types.Campaign where
 import Arkham.Json
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Campaigns.NightOfTheZealot
+import Arkham.Types.Campaign.Campaigns.ReturnToNightOfTheZealot
 import Arkham.Types.Campaign.Campaigns.TheDunwichLegacy
 import Arkham.Types.Campaign.Runner
 import Arkham.Types.CampaignId
@@ -19,11 +20,12 @@ import Safe (fromJustNote)
 
 data Campaign
   = NightOfTheZealot' NightOfTheZealot
+  | ReturnToNightOfTheZealot' ReturnToNightOfTheZealot
   | TheDunwichLegacy' TheDunwichLegacy
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance (CampaignRunner env) => RunMessage env Campaign
+deriving anyclass instance CampaignRunner env => RunMessage env Campaign
 
 instance HasRecord Campaign where
   hasRecord key = hasRecord key . campaignLog . campaignAttrs
@@ -33,6 +35,7 @@ allCampaigns :: HashMap CampaignId (Difficulty -> Campaign)
 allCampaigns = mapFromList
   [ ("01", NightOfTheZealot' . nightOfTheZealot)
   , ("02", TheDunwichLegacy' . theDunwichLegacy)
+  , ("50", ReturnToNightOfTheZealot' . returnToNightOfTheZealot)
   ]
 
 lookupCampaign :: CampaignId -> (Difficulty -> Campaign)
@@ -49,3 +52,4 @@ campaignAttrs :: Campaign -> Attrs
 campaignAttrs = \case
   NightOfTheZealot' attrs -> coerce attrs
   TheDunwichLegacy' attrs -> coerce attrs
+  ReturnToNightOfTheZealot' attrs -> coerce attrs

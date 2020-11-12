@@ -20,5 +20,6 @@ type LocationRunner env
     , HasId ActiveInvestigatorId () env
     , HasSet HandCardId (InvestigatorId, PlayerCardType) env
     , HasSet AssetId InvestigatorId env
+    , HasSet LocationId () env
     )
 

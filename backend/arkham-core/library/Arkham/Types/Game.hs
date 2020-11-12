@@ -78,6 +78,7 @@ type GameExternal = Game [Message]
 data Game queue = Game
   { gameMessages :: queue
   , gameMessageHistory :: queue
+  , gameRoundMessageHistory :: queue
   , gameSeed :: Int
   , gameCampaign :: Maybe Campaign
   , gameScenario :: Maybe Scenario
@@ -308,9 +309,11 @@ newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
     <> [StartCampaign]
 
   history <- newIORef []
+  roundHistory <- newIORef []
   pure $ Game
     { gameMessages = ref
     , gameMessageHistory = history
+    , gameRoundMessageHistory = roundHistory
     , gameSeed = seed
     , gameCampaign = campaign'
     , gameScenario = scenario'
@@ -404,6 +407,9 @@ instance HasId LocationId InvestigatorId (Game queue) where
 
 instance HasId LocationId EnemyId (Game queue) where
   getId eid = getId () . getEnemy eid
+
+instance HasCount ActionTakenCount InvestigatorId (Game queue) where
+  getCount iid = getCount () . getInvestigator iid
 
 instance HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) (Game queue) where
   getCount (iid, maction, traits) =
@@ -566,6 +572,9 @@ instance HasList HandCard InvestigatorId (Game queue) where
 
 instance HasList DiscardedPlayerCard InvestigatorId (Game queue) where
   getList iid = getList () . getInvestigator iid
+
+instance HasRoundHistory (Game (IORef [Message])) where
+  getRoundHistory = readIORef . gameRoundMessageHistory
 
 instance HasList Location () (Game queue) where
   getList _ = toList . view locations
@@ -1723,6 +1732,7 @@ runGameMessage msg g = case msg of
       (\(_, Ability {..}) -> abilityLimit /= PerPhase)
   EndRound -> do
     pushMessage BeginRound
+    atomicWriteIORef (gameRoundMessageHistory g) []
     pure $ g & usedAbilities %~ filter
       (\(_, Ability {..}) -> abilityLimit /= PerRound)
   BeginRound -> g <$ pushMessage BeginMythos
@@ -2063,10 +2073,12 @@ toExternalGame
 toExternalGame g@Game {..} mq = do
   queue <- liftIO $ readIORef gameMessages
   history <- liftIO $ readIORef gameMessageHistory
+  roundHistory <- liftIO $ readIORef gameRoundMessageHistory
   hash' <- liftIO nextRandom
   pure $ g
     { gameMessages = queue
     , gameMessageHistory = history
+    , gameRoundMessageHistory = roundHistory
     , gameHash = hash'
     , gameQuestion = mq
     }
@@ -2075,7 +2087,12 @@ toInternalGame :: MonadIO m => GameExternal -> m GameInternal
 toInternalGame g@Game {..} = do
   ref <- newIORef gameMessages
   history <- newIORef gameMessageHistory
-  pure $ g { gameMessages = ref, gameMessageHistory = history }
+  roundHistory <- newIORef gameRoundMessageHistory
+  pure $ g
+    { gameMessages = ref
+    , gameMessageHistory = history
+    , gameRoundMessageHistory = roundHistory
+    }
 
 runMessages :: (MonadIO m, MonadFail m) => GameInternal -> m GameExternal
 runMessages g = if g ^. gameOver || g ^. pending
@@ -2087,6 +2104,9 @@ runMessages g = if g ^. gameOver || g ^. pending
     mmsg <- popMessage
     for_ mmsg $ \msg ->
       atomicModifyIORef' (gameMessageHistory g) (\queue -> (msg : queue, ()))
+    for_ mmsg $ \msg -> atomicModifyIORef'
+      (gameRoundMessageHistory g)
+      (\queue -> (msg : queue, ()))
     case mmsg of
       Nothing -> case gamePhase g of
         CampaignPhase -> toExternalGame g mempty

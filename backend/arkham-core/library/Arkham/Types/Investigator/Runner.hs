@@ -23,6 +23,7 @@ import ClassyPrelude
 type InvestigatorRunner env
   = ( HasCount ClueCount LocationId env
     , HasCount AssetCount (InvestigatorId, [Trait]) env
+    , HasCount ActionTakenCount InvestigatorId env
     , HasSet AssetId (InvestigatorId, UseType) env
     , HasSet DiscardableAssetId InvestigatorId env
     , HasSet HealthDamageableAssetId InvestigatorId env

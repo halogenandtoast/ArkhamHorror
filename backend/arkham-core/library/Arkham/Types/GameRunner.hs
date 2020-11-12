@@ -26,7 +26,8 @@ import ClassyPrelude
 
 type GameRunner env
   = ( HasQueue env
-    , ( HasCount AssetCount (InvestigatorId, [Trait]) env
+    , ( HasCount ActionTakenCount InvestigatorId env
+      , HasCount AssetCount (InvestigatorId, [Trait]) env
       , HasCount CardCount InvestigatorId env
       , HasCount ClueCount InvestigatorId env
       , HasCount ClueCount LocationId env

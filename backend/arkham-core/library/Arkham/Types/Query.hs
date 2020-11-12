@@ -7,6 +7,7 @@ newtype AssetCount = AssetCount { unAssetCount :: Int }
 newtype TreacheryCount = TreacheryCount { unTreacheryCount :: Int }
 newtype EnemyCount = EnemyCount { unEnemyCount :: Int }
 newtype ActionRemainingCount = ActionRemainingCount { unActionRemainingCount :: Int }
+newtype ActionTakenCount = ActionTakenCount { unActionTakenCount :: Int }
 newtype XPCount = XPCount { unXPCount :: Int }
 newtype ClueCount = ClueCount { unClueCount :: Int }
   deriving newtype (Eq, Hashable, Show)

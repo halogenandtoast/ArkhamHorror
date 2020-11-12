@@ -203,6 +203,9 @@ class HasModifiers env a where
 class HasSource b a where
   getSource :: b -> a -> Maybe Source
 
+class HasRoundHistory a where
+  getRoundHistory :: MonadIO m => a -> m [Message]
+
 class HasTarget b a where
   getTarget :: b -> a -> Maybe Target
 
@@ -269,6 +272,7 @@ type ActionRunner env
   = ( HasQueue env
     , HasActions env (ActionType, env)
     , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
+    , HasCount ActionTakenCount InvestigatorId env
     , HasCount CardCount InvestigatorId env
     , HasCount ClueCount LocationId env
     , HasCount HorrorCount InvestigatorId env

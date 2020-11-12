@@ -137,6 +137,10 @@ instance HasSet EnemyId () Investigator where
 instance HasSet TreacheryId () Investigator where
   getSet _ = investigatorTreacheries . investigatorAttrs
 
+instance HasCount ActionTakenCount () Investigator where
+  getCount _ i = ActionTakenCount . length $ investigatorActionsTaken a
+    where a = investigatorAttrs i
+
 instance HasCount ActionRemainingCount (Maybe Action, [Trait]) Investigator where
   getCount (_maction, traits) i =
     let

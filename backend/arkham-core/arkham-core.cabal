@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 35a44f170c3afc4b8896ddd58157a1e50fb8cb29d2473660eaaf62af4f95b1a2
+-- hash: acf003b3fe75bc9a5c2481276592f55dbad4602cf6f384c53675a5cc64df53a5
 
 name:           arkham-core
 version:        0.0.0
@@ -368,6 +368,7 @@ library
       Arkham.Types.Skill.Cards.Overpower
       Arkham.Types.Skill.Cards.Perception
       Arkham.Types.Skill.Cards.SurvivalInstinct
+      Arkham.Types.Skill.Cards.TrueUnderstanding
       Arkham.Types.Skill.Cards.UnexpectedCourage
       Arkham.Types.Skill.Cards.ViciousBlow
       Arkham.Types.Skill.Runner

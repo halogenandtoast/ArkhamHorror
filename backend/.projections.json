@@ -63,6 +63,36 @@
       "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"
     ]
   },
+  "arkham-core/library/Arkham/Types/Skill/Cards/*.hs": {
+    "type": "skill",
+    "alternate": "arkham-core/tests/Arkham/Types/Skill/Cards/{}Spec.hs",
+    "template": [
+      "{open}-# LANGUAGE UndecidableInstances #-{close}",
+      "module Arkham.Types.Skill.Cards.{dot}",
+      "  ( {dot|snakecase|camelcase}",
+      "  , {dot}(..)",
+      "  )",
+      "where",
+      "",
+      "import Arkham.Import",
+      "",
+      "import Arkham.Types.Skill.Attrs",
+      "import Arkham.Types.Skill.Runner",
+      "",
+      "newtype {dot} = {dot} Attrs",
+      "  deriving newtype (Show, ToJSON, FromJSON)",
+      "",
+      "{dot|snakecase|camelcase} :: InvestigatorId -> SkillId -> {dot}",
+      "{dot|snakecase|camelcase} iid uuid =",
+      "  {dot} $ baseAttrs iid uuid \"TODO\"",
+      "",
+      "instance HasActions env {dot} where",
+      "  getActions iid window ({dot} attrs) = getActions iid window attrs",
+      "",
+      "instance SkillRunner env => RunMessage env {dot} where",
+      "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"
+    ]
+  },
   "arkham-core/library/Arkham/Types/*.hs": {
     "type": "core",
     "alternate": "arkham-core/tests/Arkham/Types/{}Spec.hs",

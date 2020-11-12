@@ -269,6 +269,7 @@ allPlayerCards = HashMap.fromList
   , ("03022", letMeHandleThis)
   , ("04023", toothOfEztli)
   , ("04149", secondWind)
+  , ("04153", trueUnderstanding)
   , ("05316", occultLexicon)
   , ("05317", bloodRite)
   , ("06110", firstWatch)
@@ -1064,6 +1065,13 @@ secondWind cardId = (event cardId "04149" "Second Wind" 1 Guardian)
   , pcFast = True -- not fast
   , pcWindows = mempty -- handle via behavior since must be first action
   }
+
+trueUnderstanding :: CardId -> PlayerCard
+trueUnderstanding cardId =
+  (skill cardId "04153" "True Understanding" [SkillWild] Seeker)
+    { pcTraits = setFromList [Innate]
+    , pcCommitRestrictions = [ScenarioAbility]
+    }
 
 occultLexicon :: CardId -> PlayerCard
 occultLexicon cardId = (asset cardId "05316" "Occult Lexicon" 2 Seeker)

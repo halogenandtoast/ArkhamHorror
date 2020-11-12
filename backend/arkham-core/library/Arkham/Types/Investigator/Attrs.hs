@@ -204,6 +204,25 @@ damageValueFor baseValue attrs = do
   applyModifier (DamageDealt m) n = max 0 (n + m)
   applyModifier _ n = n
 
+getIsScenarioAbility
+  :: ( HasSource ForSkillTest env
+     , MonadReader env m
+     , CanBeWeakness TreacheryId env
+     )
+  => m Bool
+getIsScenarioAbility = do
+  source <-
+    asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
+  case source of
+    SkillTestSource _ source' _ -> case source' of
+      EnemySource _ -> pure True
+      AgendaSource _ -> pure True
+      LocationSource _ -> pure True
+      TreacherySource tid -> asks $ not . getIsWeakness tid
+      ActSource _ -> pure True
+      _ -> pure False
+    _ -> pure False
+
 getHandSize
   :: ( MonadReader env m
      , MonadIO m
@@ -1306,6 +1325,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     committedCardIds <- asks $ map unCommittedCardId . setToList . getSet iid
     committedCardCodes <- asks $ HashSet.map unCommittedCardCode . getSet ()
     actions <- join $ asks (getActions iid (WhenSkillTest skillType))
+    isScenarioAbility <- getIsScenarioAbility
     source <-
       asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
     cannotCommitCards <-
@@ -1325,6 +1345,10 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
                  `notElem` pcCommitRestrictions
                  || pcCardCode
                  `notElem` committedCardCodes
+                 )
+              && (ScenarioAbility
+                 `notElem` pcCommitRestrictions
+                 || isScenarioAbility
                  )
           _ -> False
     if not (null committableCards) || not (null committedCardIds) || not
@@ -1351,6 +1375,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure a
   BeforeSkillTest iid skillType | iid /= investigatorId -> do
     locationId' <- asks (getId iid)
+    isScenarioAbility <- getIsScenarioAbility
     when (locationId' == investigatorLocation) $ do
       committedCardIds <-
         asks $ map unCommittedCardId . setToList . getSet investigatorId
@@ -1369,6 +1394,10 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
                    `notElem` pcCommitRestrictions
                    || pcCardCode
                    `notElem` committedCardCodes
+                   )
+                && (ScenarioAbility
+                   `notElem` pcCommitRestrictions
+                   || isScenarioAbility
                    )
             _ -> False
       when (not (null committableCards) || not (null committedCardIds))

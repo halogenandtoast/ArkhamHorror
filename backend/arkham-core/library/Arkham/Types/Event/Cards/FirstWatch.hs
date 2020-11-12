@@ -74,9 +74,14 @@ instance (HasQueue env, HasSet InvestigatorId () env, HasCount PlayerCount () en
             { firstWatchPairings = (iid, card) : firstWatchPairings
             }
           )
+      UseCardAbility _ (EventSource eid) Nothing 3 | eid == eventId ->
+        e <$ unshiftMessages
+          [ InvestigatorDrewEncounterCard iid' card
+          | (iid', card) <- firstWatchPairings
+          ]
       RequestedEncounterCards (EventTarget eid) cards | eid == eventId ->
-        e <$ unshiftMessage
-          (chooseOneAtATime
+        e <$ unshiftMessages
+          [ chooseOneAtATime
             eventOwner
             [ TargetLabel
                 (EncounterCardTarget card)
@@ -88,5 +93,6 @@ instance (HasQueue env, HasSet InvestigatorId () env, HasCount PlayerCount () en
                 ]
             | card <- cards
             ]
-          )
+          , UseCardAbility eventOwner (EventSource eventId) Nothing 3
+          ]
       _ -> FirstWatch . (`with` metadata) <$> runMessage msg attrs

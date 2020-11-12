@@ -37,7 +37,7 @@ data Target
   | ActTarget ActId
   | CardIdTarget CardId
   | CardCodeTarget CardCode
-  | SearchedCardIdTarget CardId
+  | SearchedCardTarget InvestigatorId CardId
   | EventTarget EventId
   | SkillTarget SkillId
   | EnemyJustEvadedTarget

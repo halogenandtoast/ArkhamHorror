@@ -28,6 +28,11 @@
         @choose="$emit('choose', $event)"
       />
     </section>
+    <ChoiceModal
+      :game="game"
+      :investigatorId="investigatorId"
+      @choose="$emit('choose', $event)"
+    />
     <div class="player">
       <Investigator
         :player="player"
@@ -73,6 +78,7 @@ import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
+import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import * as Arkham from '@/arkham/types/Investigator';
 
 export default defineComponent({
@@ -82,6 +88,7 @@ export default defineComponent({
     Asset,
     HandCard,
     Investigator,
+    ChoiceModal,
   },
   props: {
     game: { type: Object as () => Game, required: true },

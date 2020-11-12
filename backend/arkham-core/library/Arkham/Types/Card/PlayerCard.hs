@@ -290,6 +290,7 @@ allPlayerCards = HashMap.fromList
   , ("60208", encyclopedia)
   , ("60211", higherEducation)
   , ("60213", whittonGreene)
+  , ("60504", atychiphobia)
   , ("81019", ladyEsprit)
   , ("81029", curseOfTheRougarou)
   , ("81030", monstrousTransformation)
@@ -1217,6 +1218,12 @@ whittonGreene :: CardId -> PlayerCard
 whittonGreene cardId = (asset cardId "60213" "Whitton Greene" 4 Seeker)
   { pcSkills = [SkillIntellect]
   , pcTraits = setFromList [Ally, Miskatonic]
+  }
+
+atychiphobia :: CardId -> PlayerCard
+atychiphobia cardId = (treachery cardId "60504" "Atychiphobia" 0)
+  { pcTraits = setFromList [Madness]
+  , pcRevelation = True
   }
 
 ladyEsprit :: CardId -> PlayerCard

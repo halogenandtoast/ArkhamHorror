@@ -45,6 +45,7 @@ data Treachery
   | SearchingForIzzie' SearchingForIzzie
   | FinalRhapsody' FinalRhapsody
   | WrackedByNightmares' WrackedByNightmares
+  | Atychiphobia' Atychiphobia
   | CursedSwamp' CursedSwamp
   | SpectralMist' SpectralMist
   | DraggedUnder' DraggedUnder
@@ -114,6 +115,7 @@ allTreacheries = mapFromList
   , ("02011", (SearchingForIzzie' .) . searchingForIzzie)
   , ("02013", (FinalRhapsody' .) . finalRhapsody)
   , ("02015", (WrackedByNightmares' .) . wrackedByNightmares)
+  , ("60504", (Atychiphobia' .) . atychiphobia)
   , ("81024", (CursedSwamp' .) . cursedSwamp)
   , ("81025", (SpectralMist' .) . spectralMist)
   , ("81026", (DraggedUnder' .) . draggedUnder)
@@ -164,6 +166,7 @@ treacheryAttrs = \case
   SearchingForIzzie' attrs -> coerce attrs
   FinalRhapsody' attrs -> coerce attrs
   WrackedByNightmares' attrs -> coerce attrs
+  Atychiphobia' attrs -> coerce attrs
   CursedSwamp' attrs -> coerce attrs
   SpectralMist' attrs -> coerce attrs
   DraggedUnder' attrs -> coerce attrs

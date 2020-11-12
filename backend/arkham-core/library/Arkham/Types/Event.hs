@@ -51,6 +51,7 @@ data Event
   | SearchForTheTruth' SearchForTheTruth
   | BaitAndSwitch' BaitAndSwitch
   | LetMeHandleThis' LetMeHandleThis
+  | SecondWind' SecondWind
   | BloodRite' BloodRite
   | AstoundingRevelation' AstoundingRevelation
   | FirstWatch' FirstWatch
@@ -107,6 +108,7 @@ allEvents = mapFromList
   , ("02008", (SearchForTheTruth' .) . searchForTheTruth)
   , ("02034", (BaitAndSwitch' .) . baitAndSwitch)
   , ("03022", (LetMeHandleThis' .) . letMeHandleThis)
+  , ("04149", (SecondWind' .) . secondWind)
   , ("05317", (BloodRite' .) . bloodRite)
   , ("06023", (AstoundingRevelation' .) . astoundingRevelation)
   , ("06110", (FirstWatch' .) . firstWatch)
@@ -151,6 +153,7 @@ eventAttrs = \case
   SearchForTheTruth' attrs -> coerce attrs
   BaitAndSwitch' attrs -> coerce attrs
   LetMeHandleThis' attrs -> coerce attrs
+  SecondWind' attrs -> coerce attrs
   BloodRite' attrs -> coerce attrs
   AstoundingRevelation' attrs -> coerce attrs
   FirstWatch' (FirstWatch (attrs `With` _)) -> attrs

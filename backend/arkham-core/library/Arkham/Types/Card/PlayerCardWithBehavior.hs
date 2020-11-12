@@ -17,6 +17,7 @@ import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
+import Arkham.Types.Query
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -29,6 +30,7 @@ data PlayerCard'
   | SureGamble3' SureGamble3
   | CloseCall2' CloseCall2
   | LetMeHandleThis' LetMeHandleThis
+  | SecondWind' SecondWind
   | AstoundingRevelation' AstoundingRevelation
   | TheNecronomiconAdvanced' TheNecronomiconAdvanced
   deriving stock (Generic, Show)
@@ -45,6 +47,8 @@ newtype CloseCall2 = CloseCall2 PlayerCard
   deriving newtype Show
 newtype LetMeHandleThis = LetMeHandleThis PlayerCard
   deriving newtype Show
+newtype SecondWind = SecondWind PlayerCard
+  deriving newtype Show
 newtype AstoundingRevelation = AstoundingRevelation PlayerCard
   deriving newtype Show
 newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced PlayerCard
@@ -57,6 +61,7 @@ allPlayerCardsWithBehavior = mapFromList
   , ("01056", SureGamble3' . SureGamble3)
   , ("01083", CloseCall2' . CloseCall2)
   , ("03022", LetMeHandleThis' . LetMeHandleThis)
+  , ("04149", SecondWind' . SecondWind)
   , ("06023", AstoundingRevelation' . AstoundingRevelation)
   , ("90003", TheNecronomiconAdvanced' . TheNecronomiconAdvanced)
   ]
@@ -73,6 +78,7 @@ deriving anyclass instance
   ( HasId CardCode EnemyId env
   , HasSet Trait EnemyId env
   , HasSet AssetId (InvestigatorId, UseType) env
+  , HasCount ActionTakenCount InvestigatorId env
   )
   => HasActions env PlayerCard'
 
@@ -149,6 +155,18 @@ instance HasActions env LetMeHandleThis where
     | who /= You = pure
       [PlayCard iid (getCardId pc) (Just $ TreacheryTarget tid) False]
   getActions i window (LetMeHandleThis pc) =
+    getActions i window (DefaultPlayerCard pc)
+
+instance HasQueue env => RunMessage env SecondWind where
+  runMessage msg (SecondWind pc) = do
+    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
+    pure $ SecondWind pc'
+
+instance HasCount ActionTakenCount InvestigatorId env => HasActions env SecondWind where
+  getActions iid (DuringTurn You) (SecondWind pc) = do
+    actionsTaken <- asks $ unActionTakenCount . getCount iid
+    pure [ PlayCard iid (getCardId pc) Nothing True | actionsTaken == 0 ]
+  getActions i window (SecondWind pc) =
     getActions i window (DefaultPlayerCard pc)
 
 instance (HasQueue env) => RunMessage env AstoundingRevelation where

@@ -268,6 +268,7 @@ allPlayerCards = HashMap.fromList
   , ("02147", bandolier)
   , ("03022", letMeHandleThis)
   , ("04023", toothOfEztli)
+  , ("04149", secondWind)
   , ("05316", occultLexicon)
   , ("05317", bloodRite)
   , ("06110", firstWatch)
@@ -1054,6 +1055,14 @@ toothOfEztli :: CardId -> PlayerCard
 toothOfEztli cardId = (asset cardId "04023" "Tooth of Eztli" 3 Seeker)
   { pcSkills = [SkillWillpower]
   , pcTraits = setFromList [Item, Relic]
+  }
+
+secondWind :: CardId -> PlayerCard
+secondWind cardId = (event cardId "04149" "Second Wind" 1 Guardian)
+  { pcSkills = [SkillIntellect]
+  , pcTraits = setFromList [Spirit, Bold]
+  , pcFast = True -- not fast
+  , pcWindows = mempty -- handle via behavior since must be first action
   }
 
 occultLexicon :: CardId -> PlayerCard

@@ -28,4 +28,5 @@ type EventRunner env
     , HasSet AssetId InvestigatorId env
     , HasCount ClueCount InvestigatorId env
     , HasTarget ForSkillTest env
+    , HasRoundHistory env
     )

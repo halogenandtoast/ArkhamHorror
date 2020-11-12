@@ -8,6 +8,7 @@ import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
 import Arkham.Types.Card.CardCode
+import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
@@ -44,5 +45,6 @@ data Target
   | TokenTarget TokenId
   | DrawnTokenTarget DrawnToken
   | TestTarget
+  | EncounterCardTarget EncounterCard
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

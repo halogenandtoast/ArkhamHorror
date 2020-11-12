@@ -1731,11 +1731,11 @@ runGameMessage msg g = case msg of
       $ [ CheckWindow iid [Fast.AnyPhaseBegins]
         | iid <- g ^. investigators . to keys
         ]
-      <> [ PlaceDoomOnAgenda
-         , AdvanceAgendaIfThresholdSatisfied
-         , AllDrawEncounterCard
-         , EndMythos
+      <> [PlaceDoomOnAgenda, AdvanceAgendaIfThresholdSatisfied]
+      <> [ CheckWindow iid [Fast.WhenAllDrawEncounterCard]
+         | iid <- g ^. investigators . to keys
          ]
+      <> [AllDrawEncounterCard, EndMythos]
     pure $ g & phase .~ MythosPhase
   EndMythos -> do
     unshiftMessage EndPhase
@@ -1855,6 +1855,10 @@ runGameMessage msg g = case msg of
     pure $ g & enemies . at enemyId' ?~ enemy'
   EnemySpawn{} -> pure $ g & activeCard .~ Nothing
   EnemySpawnEngagedWithPrey{} -> pure $ g & activeCard .~ Nothing
+  DrawEncounterCards target n -> do
+    let (cards, encounterDeck') = splitAt n (unDeck $ g ^. encounterDeck)
+    unshiftMessage (RequestedEncounterCards target cards)
+    pure $ g & encounterDeck .~ Deck encounterDeck'
   FindAndDrawEncounterCard iid matcher -> do
     let matchingDiscards = filter (encounterCardMatch matcher) (g ^. discard)
     let

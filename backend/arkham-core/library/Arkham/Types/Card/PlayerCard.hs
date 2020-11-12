@@ -270,6 +270,7 @@ allPlayerCards = HashMap.fromList
   , ("04023", toothOfEztli)
   , ("05316", occultLexicon)
   , ("05317", bloodRite)
+  , ("06110", firstWatch)
   , ("06116", scrollOfProphecies)
   , ("06023", astoundingRevelation)
   , ("50001", physicalTraining2)
@@ -1065,6 +1066,14 @@ bloodRite :: CardId -> PlayerCard
 bloodRite cardId = (event cardId "05317" "Blood Rite" 0 Seeker)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillCombat]
   , pcTraits = setFromList [Spell]
+  }
+
+firstWatch :: CardId -> PlayerCard
+firstWatch cardId = (event cardId "06110" "First Watch" 1 Guardian)
+  { pcSkills = [SkillIntellect, SkillAgility]
+  , pcTraits = setFromList [Tactic]
+  , pcFast = True
+  , pcWindows = setFromList [WhenAllDrawEncounterCard]
   }
 
 scrollOfProphecies :: CardId -> PlayerCard

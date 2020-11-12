@@ -23,6 +23,7 @@ import Arkham.Types.Event.Cards.Elusive as X
 import Arkham.Types.Event.Cards.EmergencyCache as X
 import Arkham.Types.Event.Cards.Evidence as X
 import Arkham.Types.Event.Cards.ExtraAmmunition1 as X
+import Arkham.Types.Event.Cards.FirstWatch as X
 import Arkham.Types.Event.Cards.HotStreak2 as X
 import Arkham.Types.Event.Cards.HotStreak4 as X
 import Arkham.Types.Event.Cards.LetMeHandleThis as X

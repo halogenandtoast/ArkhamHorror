@@ -14,11 +14,13 @@ type EventRunner env
   = ( HasQueue env
     , HasId LocationId InvestigatorId env
     , HasCount ClueCount LocationId env
+    , HasCount PlayerCount () env
     , HasSet InvestigatorId LocationId env
     , HasSet EnemyId LocationId env
     , HasSet ConnectedLocationId LocationId env
     , HasSet EnemyId InvestigatorId env
     , HasSet EmptyLocationId () env
+    , HasSet InvestigatorId () env
     , HasSet RevealedLocationId () env
     , HasSet ExhaustedEnemyId LocationId env
     , HasSet Trait EnemyId env

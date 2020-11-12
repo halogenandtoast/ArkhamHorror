@@ -29,6 +29,7 @@ data Skill
   | Overpower' Overpower
   | ManualDexterity' ManualDexterity
   | UnexpectedCourage' UnexpectedCourage
+  | TrueUnderstanding' TrueUnderstanding
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -54,6 +55,7 @@ allSkills = mapFromList
   , ("01091", (Overpower' .) . overpower)
   , ("01092", (ManualDexterity' .) . manualDexterity)
   , ("01093", (UnexpectedCourage' .) . unexpectedCourage)
+  , ("04153", (TrueUnderstanding' .) . trueUnderstanding)
   ]
 
 ownerOfSkill :: Skill -> InvestigatorId
@@ -71,3 +73,4 @@ skillAttrs = \case
   Overpower' attrs -> coerce attrs
   ManualDexterity' attrs -> coerce attrs
   UnexpectedCourage' attrs -> coerce attrs
+  TrueUnderstanding' attrs -> coerce attrs

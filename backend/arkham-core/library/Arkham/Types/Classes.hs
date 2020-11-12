@@ -373,6 +373,9 @@ class IsScenario scenario where
 class Discardable a where
   canBeDiscarded :: a -> Bool
 
+class CanBeWeakness b a where
+  getIsWeakness :: b -> a -> Bool
+
 class Exhaustable a where
   isExhausted :: a -> Bool
   isReady :: a -> Bool

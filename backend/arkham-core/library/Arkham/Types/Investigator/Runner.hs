@@ -57,4 +57,5 @@ type InvestigatorRunner env
     , HasSet HandCardId InvestigatorId env
     , HasSource ForSkillTest env
     , HasSet Keyword EnemyId env
+    , CanBeWeakness TreacheryId env
     )

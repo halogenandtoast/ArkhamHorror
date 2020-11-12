@@ -118,4 +118,5 @@ type GameRunner env
     , HasActions env (ActionType, env)
     , HasRecord env
     , HasTokenValue env InvestigatorId
+    , CanBeWeakness TreacheryId env
     )

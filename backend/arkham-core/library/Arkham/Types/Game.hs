@@ -353,6 +353,9 @@ newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
   investigatorsMap =
     mapFromList $ map (toFst getInvestigatorId . fst) (toList investigatorsList)
 
+instance CanBeWeakness TreacheryId (Game queue) where
+  getIsWeakness tid = getIsWeakness () . getTreachery tid
+
 instance HasRecord (Game queue) where
   hasRecord key g = case g ^. campaign of
     Nothing -> False

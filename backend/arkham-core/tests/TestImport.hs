@@ -280,6 +280,7 @@ newGame investigator queue = do
     , gameAgendas = mempty
     , gameTreacheries = mempty
     , gameEvents = mempty
+    , gameEffects = mempty
     , gameSkills = mempty
     , gameActs = mempty
     , gameChaosBag = emptyChaosBag

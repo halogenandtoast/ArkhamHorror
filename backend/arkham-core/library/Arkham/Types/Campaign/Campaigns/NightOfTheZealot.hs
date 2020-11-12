@@ -1,42 +1,37 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Campaign.Campaigns.NightOfTheZealot where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Runner
 import Arkham.Types.CampaignId
 import Arkham.Types.CampaignStep
-import Arkham.Types.Classes
 import Arkham.Types.Difficulty
-import Arkham.Types.Message
 import qualified Arkham.Types.Token as Token
-import ClassyPrelude
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
-import Data.Vector ((!?))
-import Lens.Micro
 
 newtype NightOfTheZealot = NightOfTheZealot Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 nightOfTheZealot :: Difficulty -> NightOfTheZealot
 nightOfTheZealot difficulty =
-  NightOfTheZealot
-    $ (baseAttrs
-        (CampaignId "01")
-        "Night of the Zealot"
-        difficulty
-        chaosBagContents
-      )
-        { campaignSteps = fromList
-          [ PrologueStep
-          , ScenarioStep "01104"
-          , ScenarioStep "01120"
-          , ScenarioStep "01142"
-          ]
-        }
- where
-  chaosBagContents = if difficulty `elem` [Easy, Standard]
+  NightOfTheZealot $ (baseAttrs
+                       (CampaignId "01")
+                       "Night of the Zealot"
+                       difficulty
+                       (nightOfTheZealotChaosBagContents difficulty)
+                     )
+    { campaignSteps = fromList
+      [ PrologueStep
+      , ScenarioStep "01104"
+      , ScenarioStep "01120"
+      , ScenarioStep "01142"
+      ]
+    }
+
+nightOfTheZealotChaosBagContents :: Difficulty -> [Token]
+nightOfTheZealotChaosBagContents difficulty =
+  if difficulty `elem` [Easy, Standard]
     then
       [ Token.PlusOne
       , Token.PlusOne
@@ -77,14 +72,11 @@ nightOfTheZealot difficulty =
 
 instance (CampaignRunner env) => RunMessage env NightOfTheZealot where
   runMessage msg c@(NightOfTheZealot attrs@Attrs {..}) = case msg of
-    StartCampaign ->
-      c <$ unshiftMessage (CampaignStep $ campaignSteps !? campaignStep)
-    CampaignStep Nothing -> c <$ unshiftMessage GameOver -- TODO: move to generic
     CampaignStep (Just PrologueStep) -> do
-      investigatorIds <- HashSet.toList <$> asks (getSet ())
+      investigatorIds <- asks $ setToList . getSet ()
       c <$ unshiftMessages
         [ AskMap
-        . HashMap.fromList
+        . mapFromList
         $ [ ( iid
             , ChooseOne
               [ Run
@@ -114,9 +106,4 @@ instance (CampaignRunner env) => RunMessage env NightOfTheZealot where
           ]
         , NextCampaignStep
         ]
-    CampaignStep (Just (ScenarioStep sid)) -> do
-      c <$ unshiftMessages [ResetGame, StartScenario sid]
-    NextCampaignStep -> do
-      unshiftMessage (CampaignStep $ campaignSteps !? (campaignStep + 1))
-      pure $ NightOfTheZealot $ attrs & step +~ 1
     _ -> NightOfTheZealot <$> runMessage msg attrs

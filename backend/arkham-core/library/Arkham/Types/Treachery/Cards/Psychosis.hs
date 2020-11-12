@@ -3,6 +3,7 @@ module Arkham.Types.Treachery.Cards.Psychosis where
 
 import Arkham.Import
 
+import Arkham.Types.Action (Action)
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
@@ -20,6 +21,8 @@ instance ActionRunner env => HasActions env Psychosis where
     case treacheryAttachedInvestigator of
       Nothing -> pure []
       Just tormented -> do
+        canActivate <- asks $ (>= 2) . unActionRemainingCount . getCount
+          (iid, Nothing :: Maybe Action, setToList treacheryTraits)
         investigatorLocationId <- asks $ getId @LocationId iid
         treacheryLocation <- asks (getId tormented)
         pure
@@ -30,7 +33,7 @@ instance ActionRunner env => HasActions env Psychosis where
                 1
                 (ActionAbility 2 Nothing)
               )
-          | treacheryLocation == investigatorLocationId
+          | canActivate && treacheryLocation == investigatorLocationId
           ]
   getActions _ _ _ = pure []
 

@@ -36,6 +36,7 @@ import Arkham.Types.Location.Cards.SouthsideHistoricalSociety as X
 import Arkham.Types.Location.Cards.SouthsideMasBoardingHouse as X
 import Arkham.Types.Location.Cards.StMarysHospital as X
 import Arkham.Types.Location.Cards.Study as X
+import Arkham.Types.Location.Cards.StudyAberrantGateway as X
 import Arkham.Types.Location.Cards.TrappersCabin as X
 import Arkham.Types.Location.Cards.TwistedUnderbrush as X
 import Arkham.Types.Location.Cards.YourHouse as X

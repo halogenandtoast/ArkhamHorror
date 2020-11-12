@@ -30,17 +30,23 @@ instance EventRunner env => RunMessage env BloodRite where
       | isSource attrs source -> if n == 2
         then runMessage (UseCardAbility iid source meta 1) e
         else do
+          cards <- asks $ map unDiscardableHandCard . getList iid
           e <$ unshiftMessage
-            (chooseOne
-              iid
-              [ Run
-                [ ChooseAndDiscardCard iid
-                , PayForCardAbility iid source (Just (IntMetadata $ n + 1)) 1
-                ]
-              , Label
-                ("Continue having discarded " <> tshow n <> " cards")
-                [UseCardAbility iid source meta 1]
+            (chooseOne iid
+            $ [ Run
+                  [ DiscardCard iid (getCardId card)
+                  , PayForCardAbility
+                    iid
+                    source
+                    (Just (IntMetadata $ n + 1))
+                    1
+                  ]
+              | card <- cards
               ]
+            <> [ Label
+                   ("Continue having discarded " <> tshow n <> " cards")
+                   [UseCardAbility iid source meta 1]
+               ]
             )
     UseCardAbility iid source (Just (IntMetadata n)) 1
       | isSource attrs source -> do

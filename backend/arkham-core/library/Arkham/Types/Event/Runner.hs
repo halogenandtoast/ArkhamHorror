@@ -2,6 +2,7 @@
 module Arkham.Types.Event.Runner where
 
 import Arkham.Types.AssetId
+import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
@@ -29,4 +30,5 @@ type EventRunner env
     , HasCount ClueCount InvestigatorId env
     , HasTarget ForSkillTest env
     , HasRoundHistory env
+    , HasList DiscardableHandCard InvestigatorId env
     )

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 51ef0154d8877350765716658f1351d5216c28b84defbe24dc7768dfbbf8ff09
+-- hash: 7e4720312648988d6af4a60d43ee645b6a7ee051b2f8d141b28a62f9ba0c7f42
 
 name:           arkham-core
 version:        0.0.0
@@ -411,6 +411,7 @@ library
       Arkham.Types.Treachery.Cards.AncientEvils
       Arkham.Types.Treachery.Cards.Atychiphobia
       Arkham.Types.Treachery.Cards.BeastOfTheBayou
+      Arkham.Types.Treachery.Cards.ChillFromBelow
       Arkham.Types.Treachery.Cards.CoverUp
       Arkham.Types.Treachery.Cards.CryptChill
       Arkham.Types.Treachery.Cards.CursedSwamp

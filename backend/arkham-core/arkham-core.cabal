@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 48e56306d78e8d2e4dc380b65906aad009fd66123357a6d3fa965c2078b5c731
+-- hash: 97c632f61ad80bea2c7d87d7fb7bda07ec4d0104e9f79e92afaf2e5265e05c74
 
 name:           arkham-core
 version:        0.0.0
@@ -311,6 +311,7 @@ library
       Arkham.Types.Location.Cards.ArkhamWoodsUnhallowedGround
       Arkham.Types.Location.Cards.Attic
       Arkham.Types.Location.Cards.AudubonPark
+      Arkham.Types.Location.Cards.Bedroom
       Arkham.Types.Location.Cards.BrackishWaters
       Arkham.Types.Location.Cards.Broadmoor
       Arkham.Types.Location.Cards.Cellar

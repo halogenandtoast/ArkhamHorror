@@ -23,6 +23,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.CampaignStep
 import Arkham.Types.Card
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBagStepState
 import Arkham.Types.EffectId
@@ -255,8 +256,7 @@ data Message
   | InvestigatorPlaceCluesOnLocation InvestigatorId Int
   | InvestigatorPlaceAllCluesOnLocation InvestigatorId
   -- ^ This message exists in case the number of clues will change
-  | FindAndDrawEncounterCard InvestigatorId
-                         (EncounterCardType, Maybe Trait)
+  | FindAndDrawEncounterCard InvestigatorId EncounterCardMatcher
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
   | AddToEncounterDeck EncounterCard
   | SkillTestEnds
@@ -325,7 +325,7 @@ data Message
   | ShuffleEncounterDiscardBackIn
   | ShuffleAllInEncounterDiscardBackIn CardCode
   | ShuffleDiscardBackIn InvestigatorId
-  | DiscardEncounterUntilFirst Source (EncounterCardType, Maybe Trait)
+  | DiscardEncounterUntilFirst Source EncounterCardMatcher
   | SpendClues Int [InvestigatorId]
   | InvestigatorSpendClues InvestigatorId Int
   | CreateWeaknessInThreatArea CardCode InvestigatorId

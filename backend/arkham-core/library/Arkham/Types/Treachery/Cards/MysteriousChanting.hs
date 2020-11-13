@@ -36,7 +36,10 @@ instance (TreacheryRunner env) => RunMessage env MysteriousChanting where
         (getSet (lid, [Cultist]))
       case enemies of
         [] -> unshiftMessage
-          (FindAndDrawEncounterCard iid (EnemyType, Just Cultist))
+          (FindAndDrawEncounterCard
+            iid
+            (EncounterCardMatchByType (EnemyType, Just Cultist))
+          )
         xs -> unshiftMessage
           (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget eid) 2 | eid <- xs ])
       MysteriousChanting <$> runMessage msg (attrs & resolved .~ True)

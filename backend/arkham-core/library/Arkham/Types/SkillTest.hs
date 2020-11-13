@@ -244,12 +244,8 @@ instance SkillTestRunner env => RunMessage env (SkillTest Message) where
         checkWindowMsgs <- checkWindows
           iid
           (\who -> pure [WhenRevealToken who tokenFace])
-        unshiftMessages
-          $ checkWindowMsgs
-          <> [ When
-               (RevealToken (SkillTestSource siid source maction) iid tokenFace)
-             , RevealToken (SkillTestSource siid source maction) iid tokenFace
-             ]
+        unshiftMessages $ checkWindowMsgs <> resolve
+          (RevealToken (SkillTestSource siid source maction) iid tokenFace)
       pure $ s & (setAsideTokens %~ (tokenFaces <>))
     RevealToken SkillTestSource{} _iid tokenFace -> do
       token' <- flip DrawnToken tokenFace . TokenId <$> liftIO nextRandom

@@ -27,6 +27,7 @@ import Arkham.Types.Location.Cards.GardenDistrict as X
 import Arkham.Types.Location.Cards.Graveyard as X
 import Arkham.Types.Location.Cards.GuestHall as X
 import Arkham.Types.Location.Cards.Hallway as X
+import Arkham.Types.Location.Cards.HoleInTheWall as X
 import Arkham.Types.Location.Cards.MainPath as X
 import Arkham.Types.Location.Cards.MiskatonicUniversity as X
 import Arkham.Types.Location.Cards.Northside as X

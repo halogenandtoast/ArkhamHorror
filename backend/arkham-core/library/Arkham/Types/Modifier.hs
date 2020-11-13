@@ -30,6 +30,7 @@ data Modifier
   | CannotCommitCards
   | CannotDiscoverClues
   | CannotGainResources
+  | CannotTakeAction Action
   | CannotHealHorror
   | CannotInvestigate
   | CannotMove

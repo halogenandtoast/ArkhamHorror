@@ -1597,7 +1597,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
              && CannotGainResources
              `notElem` modifiers'
            ]
-        <> [ DrawCards iid 1 True | canAfford a Action.Draw ]
+        <> [ DrawCards iid 1 True
+           | canAfford a Action.Draw
+             && CannotTakeAction Action.Draw
+             `notElem` modifiers'
+           ]
         <> [ InitiatePlayCard iid (getCardId c) Nothing True
            | c <- investigatorHand
            , canAfford a Action.Play

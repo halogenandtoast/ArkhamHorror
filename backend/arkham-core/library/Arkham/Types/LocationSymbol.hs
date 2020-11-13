@@ -14,5 +14,7 @@ data LocationSymbol
   | Hourglass
   | T
   | Equals
+  | Heart
+  | Star
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

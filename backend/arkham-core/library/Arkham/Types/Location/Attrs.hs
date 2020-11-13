@@ -50,6 +50,10 @@ isSource :: Attrs -> Source -> Bool
 isSource Attrs { locationId } (LocationSource lid) = locationId == lid
 isSource _ _ = False
 
+isTarget :: Attrs -> Target -> Bool
+isTarget Attrs { locationId } (LocationTarget lid) = locationId == lid
+isTarget _ _ = False
+
 toTarget :: Attrs -> Target
 toTarget Attrs { locationId } = LocationTarget locationId
 

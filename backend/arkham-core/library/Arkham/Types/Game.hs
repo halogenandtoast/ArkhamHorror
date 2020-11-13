@@ -1106,6 +1106,14 @@ instance HasSet InvestigatorId () (Game queue) where
 instance HasSet InvestigatorId LocationId (Game queue) where
   getSet lid = getSet () . getLocation lid
 
+instance HasSet InvestigatorId LocationName (Game queue) where
+  getSet locationName g = getSet () location
+   where
+    location =
+      fromJustNote
+          ("no location with name: " <> unpack (unLocationName locationName))
+        $ find ((== locationName) . getLocationName) (toList $ g ^. locations)
+
 instance HasSet InvestigatorId (HashSet LocationId) (Game queue) where
   getSet lids game = unions $ map (`getSet` game) (setToList lids)
 

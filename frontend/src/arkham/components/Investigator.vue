@@ -109,7 +109,18 @@ export default defineComponent({
         || choices.value.findIndex((c) => c.tag === MessageType.INVESTIGATOR_DAMAGE);
     })
 
+    const labelAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.TARGET_LABEL
+          && c.contents[0].tag === "InvestigatorTarget" && c.contents[0].contents === id.value)
+    })
+
     const investigatorAction = computed(() => {
+      if (labelAction.value !== -1) {
+        return labelAction.value
+      }
+
       if (searchTopOfDeckAction.value !== -1) {
         return searchTopOfDeckAction.value
       }

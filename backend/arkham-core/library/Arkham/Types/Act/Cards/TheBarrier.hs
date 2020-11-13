@@ -17,7 +17,7 @@ theBarrier = TheBarrier $ baseAttrs "01109" "The Barrier" "Act 2a"
 instance HasActions env TheBarrier where
   getActions i window (TheBarrier x) = getActions i window x
 
-instance (ActRunner env) => RunMessage env TheBarrier where
+instance ActRunner env => RunMessage env TheBarrier where
   runMessage msg a@(TheBarrier attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && actSequence == "Act 2a" -> do
       investigatorIds <- asks (setToList . getSet (LocationId "01112"))
@@ -36,7 +36,7 @@ instance (ActRunner env) => RunMessage env TheBarrier where
         ]
     EndRoundWindow -> do
       investigatorIds <- asks
-        (setToList . getSet @InvestigatorId (LocationId "01112"))
+        (setToList . getSet @InvestigatorId (LocationName "Hallway"))
       leadInvestigatorId <- getLeadInvestigatorId
       totalSpendableClueCount <- getSpendableClueCount investigatorIds
       requiredClueCount <- getPlayerCountValue (PerPlayer 3)

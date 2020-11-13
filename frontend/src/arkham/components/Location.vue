@@ -25,7 +25,7 @@
       <button
         v-for="ability in abilities"
         :key="ability"
-        class="button ability-button"
+        :class="{button: true, 'ability-button': singleAction(ability), 'double-ability-button': doubleAction(ability) }"
         @click="$emit('choose', ability)"
         >{{abilityLabel(ability)}}</button>
       <Treachery
@@ -213,6 +213,14 @@ export default defineComponent({
 
     const portrait = (cardCode: string) => `/img/arkham/portraits/${cardCode}.jpg`
 
+    function singleAction(idx: number) {
+      return choices.value[idx].contents[1].type.contents[0] == 1
+    }
+
+    function doubleAction(idx: number) {
+      return choices.value[idx].contents[1].type.contents[0] == 2
+    }
+
     return {
       portrait,
       doInvestigate,
@@ -222,7 +230,9 @@ export default defineComponent({
       abilityLabel,
       investigateAction,
       cardAction,
-      image
+      image,
+      singleAction,
+      doubleAction
     }
   }
 })
@@ -283,6 +293,15 @@ export default defineComponent({
   &:before {
     font-family: "arkham";
     content: "\0049";
+    margin-right: 5px;
+  }
+}
+
+.double-ability-button {
+  background-color: #555;
+  &:before {
+    font-family: "arkham";
+    content: "\0049\0049";
     margin-right: 5px;
   }
 }

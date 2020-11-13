@@ -44,7 +44,7 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
         pushMessages
           [ SetEncounterDeck encounterDeck
           , AddAgenda "01105"
-          , AddAct "01108"
+          , AddAct "50012"
           , PlaceLocation "50013"
           , PlaceLocation "50014"
           , PlaceLocation "50015"

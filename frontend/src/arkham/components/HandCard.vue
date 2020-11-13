@@ -44,6 +44,8 @@ export default defineComponent({
       switch (c.tag) {
         case MessageType.PLAY_CARD:
           return c.contents[1] === id.value
+        case MessageType.LEGACY_PLAY_CARD:
+          return c.contents[1] === id.value
         case MessageType.RUN:
           return c.contents.some((c1: Message) => canPlay(c1))
         default:

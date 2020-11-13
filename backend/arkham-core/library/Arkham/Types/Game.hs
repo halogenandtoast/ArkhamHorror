@@ -1463,11 +1463,10 @@ runGameMessage msg g = case msg of
         _ -> pure g
       EncounterCard _ -> pure g
   PlayCard iid cardId mtarget False -> do
-    let
-      investigator = getInvestigator iid g
-      card = fromJustNote "could not find card in hand"
-        $ find ((== cardId) . getCardId) (handOf investigator)
-    runGameMessage (PutCardIntoPlay iid card mtarget) g
+    let investigator = getInvestigator iid g
+    case find ((== cardId) . getCardId) (handOf investigator) of
+      Nothing -> pure g -- card was discarded before playing
+      Just card -> runGameMessage (PutCardIntoPlay iid card mtarget) g
   PutCardIntoPlay iid card mtarget -> do
     let cardId = getCardId card
     case card of

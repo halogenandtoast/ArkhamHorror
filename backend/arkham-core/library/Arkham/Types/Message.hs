@@ -302,7 +302,6 @@ data Message
   | WhenAttackEnemy InvestigatorId EnemyId
   | AttackEnemy InvestigatorId EnemyId Source SkillType [Modifier] [TokenResponse Message]
   | AfterAttackEnemy InvestigatorId EnemyId
-  | AfterEnemyAttacks EnemyId Target
   | WhenEvadeEnemy InvestigatorId EnemyId
   | EvadeEnemy InvestigatorId EnemyId Source SkillType [Message] [Message] [TokenResponse Message] Bool
   | TryEvadeEnemy InvestigatorId EnemyId Source SkillType [Message] [Message] [Modifier] [TokenResponse Message]

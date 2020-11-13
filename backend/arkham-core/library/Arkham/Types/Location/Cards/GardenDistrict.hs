@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.GardenDistrict where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -16,6 +17,7 @@ gardenDistrict :: GardenDistrict
 gardenDistrict = GardenDistrict $ baseAttrs
   "81008"
   "Garden District"
+  EncounterSet.CurseOfTheRougarou
   1
   (Static 0)
   Plus

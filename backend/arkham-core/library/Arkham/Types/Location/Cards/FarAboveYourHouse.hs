@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.FarAboveYourHouse where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -11,19 +12,18 @@ newtype FarAboveYourHouse = FarAboveYourHouse Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 farAboveYourHouse :: FarAboveYourHouse
-farAboveYourHouse =
-  FarAboveYourHouse
-    $ (baseAttrs
-        "50019"
-        "Field of Graves"
-        2
-        (PerPlayer 1)
-        Moon
-        [Triangle]
-        mempty
-      )
-        { locationVictory = Just 1
-        }
+farAboveYourHouse = FarAboveYourHouse $ (baseAttrs
+                                          "50019"
+                                          "Field of Graves"
+                                          EncounterSet.ReturnToTheGathering
+                                          2
+                                          (PerPlayer 1)
+                                          Moon
+                                          [Triangle]
+                                          mempty
+                                        )
+  { locationVictory = Just 1
+  }
 
 instance HasModifiersFor env FarAboveYourHouse where
   getModifiersFor = noModifiersFor

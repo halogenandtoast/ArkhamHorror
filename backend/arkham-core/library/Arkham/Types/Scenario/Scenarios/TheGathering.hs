@@ -77,7 +77,15 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
           | iid <- investigatorIds
           ]
         ]
-      TheGathering <$> runMessage msg attrs
+      let
+        locations' = mapFromList
+          [ ("Study", ["01111"])
+          , ("Hallway", ["01112"])
+          , ("Attic", ["01113"])
+          , ("Cellar", ["01114"])
+          , ("Parlor", ["01115"])
+          ]
+      TheGathering <$> runMessage msg (attrs & locations .~ locations')
     ResolveToken Cultist iid ->
       s <$ when (isHardExpert attrs) (unshiftMessage $ DrawAnotherToken iid)
     ResolveToken Tablet iid -> do

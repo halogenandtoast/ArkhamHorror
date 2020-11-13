@@ -173,10 +173,10 @@ spawnAtEmptyLocation iid eid = do
 spawnAt
   :: (MonadIO m, MonadReader env m, HasQueue env)
   => EnemyId
-  -> LocationId
+  -> LocationName
   -> m ()
-spawnAt eid lid =
-  unshiftMessages [Will (EnemySpawn lid eid), EnemySpawn lid eid]
+spawnAt eid locationName =
+  unshiftMessages $ resolve (EnemySpawnAtLocationNamed locationName eid)
 
 spawnAtOneOf
   :: (MonadIO m, HasSet LocationId () env, MonadReader env m, HasQueue env)

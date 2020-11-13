@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.RitualGrounds where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
@@ -14,6 +15,7 @@ ritualGrounds :: RitualGrounds
 ritualGrounds = RitualGrounds $ (baseAttrs
                                   "81017"
                                   "Ritual Grounds"
+                                  EncounterSet.CurseOfTheRougarou
                                   2
                                   (PerPlayer 1)
                                   Equals

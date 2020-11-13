@@ -697,6 +697,9 @@ instance HasCount RemainingSanity InvestigatorId (Game queue) where
 instance HasSet LocationId () (Game queue) where
   getSet _ = keysSet . view locations
 
+instance HasList LocationName () (Game queue) where
+  getList _ = map getLocationName . toList . view locations
+
 instance HasSet EmptyLocationId () (Game queue) where
   getSet _ =
     HashSet.map EmptyLocationId

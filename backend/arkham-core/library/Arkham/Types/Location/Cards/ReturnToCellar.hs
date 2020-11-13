@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.ReturnToCellar where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
@@ -10,8 +11,15 @@ newtype ReturnToCellar = ReturnToCellar Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 returnToCellar :: ReturnToCellar
-returnToCellar = ReturnToCellar
-  $ baseAttrs "50020" "Cellar" 2 (PerPlayer 1) Plus [Square, Squiggle] mempty
+returnToCellar = ReturnToCellar $ baseAttrs
+  "50020"
+  "Cellar"
+  EncounterSet.ReturnToTheGathering
+  2
+  (PerPlayer 1)
+  Plus
+  [Square, Squiggle]
+  mempty
 
 instance HasModifiersFor env ReturnToCellar where
   getModifiersFor = noModifiersFor

@@ -7,6 +7,7 @@ where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -19,6 +20,7 @@ overgrownCairns :: OvergrownCairns
 overgrownCairns = OvergrownCairns $ baseAttrs
   "81018"
   "Overgrown Cairns"
+  EncounterSet.CurseOfTheRougarou
   4
   (Static 0)
   Equals

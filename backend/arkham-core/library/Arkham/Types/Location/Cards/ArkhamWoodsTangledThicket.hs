@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.ArkhamWoodsTangledThicket where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
@@ -19,6 +20,7 @@ arkhamWoodsTangledThicket = ArkhamWoodsTangledThicket $ base
   base = baseAttrs
     "01154"
     "Arkham Woods: Tangled Thicket"
+    EncounterSet.TheDevourerBelow
     2
     (PerPlayer 1)
     Square

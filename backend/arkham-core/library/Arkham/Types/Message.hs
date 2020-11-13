@@ -141,6 +141,7 @@ data Message
   | DrawEncounterCards Target Int
   | RequestedEncounterCards Target [EncounterCard]
   | PlaceLocation LocationId
+  | PlaceLocationNamed LocationName
   | PlacedLocation LocationId
   | AddConnection LocationId LocationSymbol
   | AddConnectionBack LocationId LocationSymbol
@@ -189,6 +190,7 @@ data Message
   | InvestigatorDrewEncounterCard InvestigatorId EncounterCard
   | InvestigatorDrawEnemy InvestigatorId LocationId EnemyId
   | EnemySpawn LocationId EnemyId
+  | EnemySpawnAtLocationNamed LocationName EnemyId
   | CreateEnemyRequest Source CardCode
   | RequestedEnemy Source EnemyId
   | EnemySpawnedAt LocationId EnemyId

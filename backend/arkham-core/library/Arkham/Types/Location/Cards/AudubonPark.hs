@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.AudubonPark where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
@@ -14,6 +15,7 @@ audubonPark :: AudubonPark
 audubonPark = AudubonPark $ (baseAttrs
                               "81011"
                               "Audubon Park"
+                              EncounterSet.CurseOfTheRougarou
                               3
                               (PerPlayer 1)
                               Squiggle

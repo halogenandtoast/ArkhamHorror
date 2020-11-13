@@ -7,6 +7,7 @@ where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -16,11 +17,18 @@ newtype DowntownArkhamAsylum = DowntownArkhamAsylum Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 downtownArkhamAsylum :: DowntownArkhamAsylum
-downtownArkhamAsylum =
-  DowntownArkhamAsylum
-    $ (baseAttrs "01131" "Downtown" 4 (PerPlayer 2) Triangle [Moon, T] [Arkham])
-        { locationVictory = Just 1
-        }
+downtownArkhamAsylum = DowntownArkhamAsylum $ (baseAttrs
+                                                "01131"
+                                                "Downtown"
+                                                EncounterSet.TheMidnightMasks
+                                                4
+                                                (PerPlayer 2)
+                                                Triangle
+                                                [Moon, T]
+                                                [Arkham]
+                                              )
+  { locationVictory = Just 1
+  }
 
 instance HasModifiersFor env DowntownArkhamAsylum where
   getModifiersFor = noModifiersFor

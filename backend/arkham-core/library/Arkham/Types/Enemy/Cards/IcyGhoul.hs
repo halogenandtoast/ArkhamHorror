@@ -32,5 +32,5 @@ instance ActionRunner env => HasActions env IcyGhoul where
 instance (EnemyRunner env) => RunMessage env IcyGhoul where
   runMessage msg e@(IcyGhoul attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == enemyId ->
-      e <$ spawnAt enemyId "01114"
+      e <$ spawnAt enemyId "Cellar"
     _ -> IcyGhoul <$> runMessage msg attrs

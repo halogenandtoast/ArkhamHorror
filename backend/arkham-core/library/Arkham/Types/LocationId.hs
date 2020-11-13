@@ -4,6 +4,9 @@ import Arkham.Types.Card.CardCode
 import ClassyPrelude
 import Data.Aeson
 
+newtype LocationName = LocationName { unLocationName :: Text }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
+
 newtype LocationId = LocationId { unLocationId :: CardCode }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
 

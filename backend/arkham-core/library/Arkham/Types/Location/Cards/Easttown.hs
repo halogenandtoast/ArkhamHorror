@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.Easttown where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
@@ -14,6 +15,7 @@ easttown :: Easttown
 easttown = Easttown $ baseAttrs
   "01132"
   "Easttown"
+  EncounterSet.TheMidnightMasks
   2
   (PerPlayer 1)
   Moon

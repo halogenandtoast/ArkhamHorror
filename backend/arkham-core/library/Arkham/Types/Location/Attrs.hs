@@ -13,7 +13,7 @@ import qualified Data.HashSet as HashSet
 import qualified Data.Text as T
 
 data Attrs = Attrs
-  { locationName :: Text
+  { locationName :: LocationName
   , locationLabel :: Text
   , locationId :: LocationId
   , locationRevealClues :: GameValue Int
@@ -36,6 +36,7 @@ data Attrs = Attrs
   , locationAssets :: HashSet AssetId
   , locationModifiers :: HashMap Source [Modifier]
   , locationModifiersFor :: HashMap Target [Modifier]
+  , locationEncounterSet :: EncounterSet
   }
   deriving stock (Show, Generic)
 
@@ -104,18 +105,25 @@ modifiers = lens locationModifiers $ \m x -> m { locationModifiers = x }
 
 baseAttrs
   :: LocationId
-  -> Text
+  -> LocationName
+  -> EncounterSet
   -> Int
   -> GameValue Int
   -> LocationSymbol
   -> [LocationSymbol]
   -> [Trait]
   -> Attrs
-baseAttrs lid name shroud' revealClues symbol' connectedSymbols' traits' =
-  Attrs
+baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' traits'
+  = Attrs
     { locationName = name
     , locationLabel =
-      pack . filter isLetter . camelCase . unpack . T.filter (/= ' ') $ name
+      pack
+      . filter isLetter
+      . camelCase
+      . unpack
+      . T.filter (/= ' ')
+      . unLocationName
+      $ name
     , locationId = lid
     , locationRevealClues = revealClues
     , locationClues = 0
@@ -137,6 +145,7 @@ baseAttrs lid name shroud' revealClues symbol' connectedSymbols' traits' =
     , locationAssets = mempty
     , locationModifiers = mempty
     , locationModifiersFor = mempty
+    , locationEncounterSet = encounterSet
     }
 
 clues :: Lens' Attrs Int

@@ -8,6 +8,7 @@ where
 import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -20,6 +21,7 @@ fauborgMarigny :: FauborgMarigny
 fauborgMarigny = FauborgMarigny $ baseAttrs
   "81012"
   "Faurborg Marigny"
+  EncounterSet.CurseOfTheRougarou
   4
   (Static 0)
   Squiggle

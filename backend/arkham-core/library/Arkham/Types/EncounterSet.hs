@@ -7,6 +7,7 @@ where
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import ClassyPrelude
+import Data.Aeson
 import Data.UUID.V4
 import Safe (fromJustNote)
 
@@ -31,6 +32,8 @@ data EncounterSet
   | GhoulsOfUmordhoth
   | TheBayou
   | CurseOfTheRougarou
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 gatherEncounterSet :: MonadIO m => EncounterSet -> m [EncounterCard]
 gatherEncounterSet =

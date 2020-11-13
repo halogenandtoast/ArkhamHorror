@@ -6,6 +6,7 @@ import ClassyPrelude hiding (log)
 import Arkham.Json
 import Arkham.Types.ActId
 import Arkham.Types.AgendaId
+import Arkham.Types.LocationId
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.ScenarioLogKey
@@ -32,6 +33,7 @@ data Attrs = Attrs
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
   , scenarioDeck :: Maybe [EncounterCard]
   , scenarioLog :: HashSet ScenarioLogKey
+  , scenarioLocations :: HashMap LocationName [LocationId]
   }
   deriving stock (Show, Generic)
 
@@ -53,6 +55,9 @@ isHardExpert Attrs { scenarioDifficulty } =
 actStack :: Lens' Attrs [(Int, [ActId])]
 actStack = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
 
+locations :: Lens' Attrs (HashMap LocationName [LocationId])
+locations = lens scenarioLocations $ \m x -> m { scenarioLocations = x }
+
 log :: Lens' Attrs (HashSet ScenarioLogKey)
 log = lens scenarioLog $ \m x -> m { scenarioLog = x }
 
@@ -66,6 +71,7 @@ baseAttrs cardCode name agendaStack actStack' difficulty = Attrs
   , scenarioLocationLayout = Nothing
   , scenarioDeck = Nothing
   , scenarioLog = mempty
+  , scenarioLocations = mempty
   }
 
 instance (HasTokenValue env InvestigatorId, HasQueue env) => HasTokenValue env Attrs where
@@ -87,6 +93,18 @@ instance (HasTokenValue env InvestigatorId, HasQueue env) => HasTokenValue env A
 instance (ScenarioRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     Setup -> a <$ pushMessage BeginInvestigation
+    PlaceLocationNamed locationName ->
+      a <$ case findWithDefault [] locationName scenarioLocations of
+        [] -> error "There were no locations with that name"
+        [lid] -> unshiftMessage (PlaceLocation lid)
+        _ ->
+          error "We want there to be only one location when targetting names"
+    EnemySpawnAtLocationNamed locationName eid ->
+      a <$ case findWithDefault [] locationName scenarioLocations of
+        [] -> error "There were no locations with that name"
+        [lid] -> unshiftMessage (EnemySpawn lid eid)
+        _ ->
+          error "We want there to be only one location when targetting names"
     PlaceDoomOnAgenda -> do
       agendaIds <- HashSet.toList <$> asks (getSet @AgendaId ())
       case agendaIds of

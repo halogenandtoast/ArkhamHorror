@@ -7,6 +7,7 @@ where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -16,19 +17,18 @@ newtype Northside = Northside Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 northside :: Northside
-northside =
-  Northside
-    $ (baseAttrs
-        "01134"
-        "Northside"
-        3
-        (PerPlayer 2)
-        T
-        [Diamond, Triangle]
-        [Arkham]
-      )
-        { locationVictory = Just 1
-        }
+northside = Northside $ (baseAttrs
+                          "01134"
+                          "Northside"
+                          EncounterSet.TheMidnightMasks
+                          3
+                          (PerPlayer 2)
+                          T
+                          [Diamond, Triangle]
+                          [Arkham]
+                        )
+  { locationVictory = Just 1
+  }
 
 instance HasModifiersFor env Northside where
   getModifiersFor = noModifiersFor

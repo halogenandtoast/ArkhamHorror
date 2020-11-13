@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.Graveyard where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
@@ -11,12 +12,18 @@ newtype Graveyard = Graveyard Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 graveyard :: Graveyard
-graveyard =
-  Graveyard
-    $ (baseAttrs "01133" "Graveyard" 1 (PerPlayer 2) Hourglass [Circle] [Arkham]
-      )
-        { locationVictory = Just 1
-        }
+graveyard = Graveyard $ (baseAttrs
+                          "01133"
+                          "Graveyard"
+                          EncounterSet.TheMidnightMasks
+                          1
+                          (PerPlayer 2)
+                          Hourglass
+                          [Circle]
+                          [Arkham]
+                        )
+  { locationVictory = Just 1
+  }
 
 instance HasModifiersFor env Graveyard where
   getModifiersFor = noModifiersFor

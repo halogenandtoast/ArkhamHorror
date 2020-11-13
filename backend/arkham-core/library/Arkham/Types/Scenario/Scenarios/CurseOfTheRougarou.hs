@@ -47,8 +47,8 @@ curseOfTheRougarou difficulty =
           ]
         }
 
-locations :: HashMap Trait [LocationId]
-locations = mapFromList
+locationsByTrait :: HashMap Trait [LocationId]
+locationsByTrait = mapFromList
   [ (NewOrleans, ["81007", "81008", "81009"])
   , (Riverside, ["81010", "81011", "81012"])
   , (Wilderness, ["81013", "81014", "81015"])
@@ -60,7 +60,7 @@ locationsWithLabels trait = do
   shuffled <- liftIO $ shuffleM (before <> after)
   pure $ zip labels (bayou : shuffled)
  where
-  locationSet = findWithDefault [] trait locations
+  locationSet = findWithDefault [] trait locationsByTrait
   labels =
     [ pack (camelCase $ show trait) <> "Bayou"
     , pack (camelCase $ show trait) <> "1"
@@ -94,7 +94,7 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
       Setup -> do
         investigatorIds <- getInvestigatorIds
         encounterDeck <- buildEncounterDeck [EncounterSet.TheBayou]
-        (_ : trait : rest) <- liftIO . shuffleM $ keys locations
+        (_ : trait : rest) <- liftIO . shuffleM $ keys locationsByTrait
         startingLocationsWithLabel <- locationsWithLabels trait
         let
           (_, bayou : _) = break
@@ -140,9 +140,25 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
                | iid <- investigatorIds
                ]
              ]
+
+        let
+          locations' = mapFromList
+            [ ("Cursed Shores", ["81007"])
+            , ("Garden District", ["81008"])
+            , ("Broadmoor", ["81009"])
+            , ("Brackish Waters", ["81010"])
+            , ("Audubon Park", ["81011"])
+            , ("Fauborg Marigny", ["81012"])
+            , ("Forgotten Marsh", ["81013"])
+            , ("Trapper's Cabin", ["81014"])
+            , ("Twisted Underbrush", ["81015"])
+            , ("Foul Swamp", ["81016"])
+            , ("Ritual Grounds", ["81017"])
+            , ("Overgrown Cairns", ["81018"])
+            ]
         CurseOfTheRougarou
           . (`with` metadata { setAsideLocationTraits = setFromList rest })
-          <$> runMessage msg attrs
+          <$> runMessage msg (attrs & locations .~ locations')
       PutSetAsideIntoPlay (SetAsideLocations _) -> do
         setAsideLocationsWithLabels <- concat <$> traverse
           locationsWithLabels

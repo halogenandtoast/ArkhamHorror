@@ -4,6 +4,7 @@ module Arkham.Types.Location.Cards.MainPath where
 import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -13,8 +14,15 @@ newtype MainPath = MainPath Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 mainPath :: MainPath
-mainPath = MainPath
-  $ baseAttrs "01149" "Main Path" 2 (Static 0) Squiggle [Square, Plus] [Woods]
+mainPath = MainPath $ baseAttrs
+  "01149"
+  "Main Path"
+  EncounterSet.TheDevourerBelow
+  2
+  (Static 0)
+  Squiggle
+  [Square, Plus]
+  [Woods]
 
 instance HasModifiersFor env MainPath where
   getModifiersFor = noModifiersFor

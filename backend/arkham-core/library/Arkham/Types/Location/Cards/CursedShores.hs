@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.CursedShores where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -15,6 +16,7 @@ cursedShores :: CursedShores
 cursedShores = CursedShores $ baseAttrs
   "81007"
   "Cursed Shores"
+  EncounterSet.CurseOfTheRougarou
   1
   (Static 0)
   Square

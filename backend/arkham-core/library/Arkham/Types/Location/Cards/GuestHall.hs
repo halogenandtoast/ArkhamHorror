@@ -2,7 +2,9 @@
 module Arkham.Types.Location.Cards.GuestHall where
 
 import Arkham.Import
+
 import Arkham.Types.Action
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
@@ -13,6 +15,7 @@ guestHall :: GuestHall
 guestHall = GuestHall $ baseAttrs
   "50014"
   "Guest Hall"
+  EncounterSet.ReturnToTheGathering
   1
   (Static 0)
   T

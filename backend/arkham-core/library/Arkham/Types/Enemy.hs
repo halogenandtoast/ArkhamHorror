@@ -43,6 +43,8 @@ data Enemy
   | RelentlessDarkYoung' RelentlessDarkYoung
   | GoatSpawn' GoatSpawn
   | YoungDeepOne' YoungDeepOne
+  | CorpseHungryGhoul' CorpseHungryGhoul
+  | GhoulFromTheDepths' GhoulFromTheDepths
   | BogGator' BogGator
   | SwampLeech' SwampLeech
   | TheRougarou' TheRougarou
@@ -153,6 +155,8 @@ allEnemies = mapFromList
   , ("01179", RelentlessDarkYoung' . relentlessDarkYoung)
   , ("01180", GoatSpawn' . goatSpawn)
   , ("01181", YoungDeepOne' . youngDeepOne)
+  , ("50022", CorpseHungryGhoul' . corpseHungryGhoul)
+  , ("50023", GhoulFromTheDepths' . ghoulFromTheDepths)
   , ("81022", BogGator' . bogGator)
   , ("81023", SwampLeech' . swampLeech)
   , ("81028", TheRougarou' . theRougarou)
@@ -209,6 +213,8 @@ enemyAttrs = \case
   RelentlessDarkYoung' attrs -> coerce attrs
   GoatSpawn' attrs -> coerce attrs
   YoungDeepOne' attrs -> coerce attrs
+  CorpseHungryGhoul' attrs -> coerce attrs
+  GhoulFromTheDepths' attrs -> coerce attrs
   BogGator' attrs -> coerce attrs
   SwampLeech' attrs -> coerce attrs
   TheRougarou' (TheRougarou (attrs `With` _)) -> attrs

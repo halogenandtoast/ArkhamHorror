@@ -114,6 +114,8 @@ allEncounterCards = HashMap.fromList
   , ("01180", goatSpawn)
   , ("01181", youngDeepOne)
   , ("01182", dreamsOfRlyeh)
+  , ("50022", corpseHungryGhoul)
+  , ("50023", ghoulFromTheDepths)
   , ("81022", bogGator)
   , ("81023", swampLeech)
   , ("81024", cursedSwamp)
@@ -335,6 +337,20 @@ youngDeepOne cardId = (enemy cardId "01181" "Young Deep One")
 dreamsOfRlyeh :: CardId -> EncounterCard
 dreamsOfRlyeh cardId = (treachery cardId "01182" "Dreams of R'lyeh")
   { ecTraits = setFromList [Omen]
+  }
+
+corpseHungryGhoul :: CardId -> EncounterCard
+corpseHungryGhoul cardId = (enemy cardId "50022" "Corpse-Hungry Ghoul")
+  { ecTraits = setFromList [Humanoid, Monster, Ghoul]
+  , ecKeywords = [Keyword.Hunter]
+  , ecVictoryPoints = Just 1
+  }
+
+ghoulFromTheDepths :: CardId -> EncounterCard
+ghoulFromTheDepths cardId = (enemy cardId "50023" "Ghoul from the Depths")
+  { ecTraits = setFromList [Humanoid, Monster, Ghoul]
+  , ecKeywords = [Keyword.Retaliate]
+  , ecVictoryPoints = Just 1
   }
 
 bogGator :: CardId -> EncounterCard

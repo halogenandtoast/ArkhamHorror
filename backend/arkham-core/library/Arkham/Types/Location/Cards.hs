@@ -23,6 +23,7 @@ import Arkham.Types.Location.Cards.ForgottenMarsh as X
 import Arkham.Types.Location.Cards.FoulSwamp as X
 import Arkham.Types.Location.Cards.GardenDistrict as X
 import Arkham.Types.Location.Cards.Graveyard as X
+import Arkham.Types.Location.Cards.GuestHall as X
 import Arkham.Types.Location.Cards.Hallway as X
 import Arkham.Types.Location.Cards.MainPath as X
 import Arkham.Types.Location.Cards.MiskatonicUniversity as X

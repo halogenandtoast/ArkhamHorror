@@ -54,6 +54,7 @@ data Location
   | ArkhamWoodsTangledThicket' ArkhamWoodsTangledThicket
   | ArkhamWoodsQuietGlade' ArkhamWoodsQuietGlade
   | StudyAberrantGateway' StudyAberrantGateway
+  | GuestHall' GuestHall
   | RitualSite' RitualSite
   | CursedShores' CursedShores
   | GardenDistrict' GardenDistrict
@@ -175,6 +176,7 @@ allLocations = mapFromList $ map
   , ArkhamWoodsTangledThicket' arkhamWoodsTangledThicket
   , ArkhamWoodsQuietGlade' arkhamWoodsQuietGlade
   , StudyAberrantGateway' studyAberrantGateway
+  , GuestHall' guestHall
   , RitualSite' ritualSite
   , CursedShores' cursedShores
   , GardenDistrict' gardenDistrict
@@ -225,6 +227,7 @@ locationAttrs = \case
   ArkhamWoodsTangledThicket' attrs -> coerce attrs
   ArkhamWoodsQuietGlade' attrs -> coerce attrs
   StudyAberrantGateway' attrs -> coerce attrs
+  GuestHall' attrs -> coerce attrs
   RitualSite' attrs -> coerce attrs
   CursedShores' attrs -> coerce attrs
   GardenDistrict' attrs -> coerce attrs

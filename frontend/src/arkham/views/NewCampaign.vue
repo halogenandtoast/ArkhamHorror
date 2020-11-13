@@ -90,7 +90,11 @@ const scenarios = [
 const campaigns = [
   {
     id: '01',
-    name: 'Night of the Zealot',
+    name: 'The Night of the Zealot',
+  },
+  {
+    id: '50',
+    name: 'Return to the Night of the Zealot',
   },
   {
     id: '02',

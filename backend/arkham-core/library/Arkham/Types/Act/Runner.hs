@@ -24,4 +24,5 @@ type ActRunner env
     , HasSet ScenarioLogKey () env
     , HasSet Trait AssetId env
     , HasSet AssetId EnemyId env
+    , HasSet InvestigatorId LocationName env
     )

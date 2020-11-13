@@ -1,6 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 
 export enum MessageType {
+  TARGET_LABEL = 'TargetLabel',
   ASK = 'Ask',
   RUN = 'Run',
   READY = 'Ready',
@@ -13,6 +14,7 @@ export enum MessageType {
   TAKE_RESOURCES = 'TakeResources',
   DRAW_CARDS = 'DrawCards',
   PLAY_CARD = 'InitiatePlayCard',
+  LEGACY_PLAY_CARD = 'PlayCard',
   INVESTIGATE = 'Investigate',
   END_TURN = 'ChooseEndTurn',
   START_SKILL_TEST = 'StartSkillTest',
@@ -67,6 +69,7 @@ export interface Message {
 
 export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
   [
+    JsonDecoder.isExactly('TargetLabel').then(() => JsonDecoder.constant(MessageType.TARGET_LABEL)),
     JsonDecoder.isExactly('Ask').then(() => JsonDecoder.constant(MessageType.ASK)),
     JsonDecoder.isExactly('Run').then(() => JsonDecoder.constant(MessageType.RUN)),
     JsonDecoder.isExactly('Label').then(() => JsonDecoder.constant(MessageType.LABEL)),
@@ -79,6 +82,7 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('TakeResources').then(() => JsonDecoder.constant(MessageType.TAKE_RESOURCES)),
     JsonDecoder.isExactly('DrawCards').then(() => JsonDecoder.constant(MessageType.DRAW_CARDS)),
     JsonDecoder.isExactly('InitiatePlayCard').then(() => JsonDecoder.constant(MessageType.PLAY_CARD)),
+    JsonDecoder.isExactly('PlayCard').then(() => JsonDecoder.constant(MessageType.LEGACY_PLAY_CARD)),
     JsonDecoder.isExactly('Investigate').then(() => JsonDecoder.constant(MessageType.INVESTIGATE)),
     JsonDecoder.isExactly('ChooseEndTurn').then(() => JsonDecoder.constant(MessageType.END_TURN)),
     JsonDecoder.isExactly('StartSkillTest').then(() => JsonDecoder.constant(MessageType.START_SKILL_TEST)),

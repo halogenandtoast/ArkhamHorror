@@ -116,6 +116,7 @@ allEncounterCards = HashMap.fromList
   , ("01182", dreamsOfRlyeh)
   , ("50022", corpseHungryGhoul)
   , ("50023", ghoulFromTheDepths)
+  , ("50024", theZealotsSeal)
   , ("81022", bogGator)
   , ("81023", swampLeech)
   , ("81024", cursedSwamp)
@@ -351,6 +352,11 @@ ghoulFromTheDepths cardId = (enemy cardId "50023" "Ghoul from the Depths")
   { ecTraits = setFromList [Humanoid, Monster, Ghoul]
   , ecKeywords = [Keyword.Retaliate]
   , ecVictoryPoints = Just 1
+  }
+
+theZealotsSeal :: CardId -> EncounterCard
+theZealotsSeal cardId = (treachery cardId "50024" "The Zealot's Seal")
+  { ecTraits = setFromList [Hex]
   }
 
 bogGator :: CardId -> EncounterCard

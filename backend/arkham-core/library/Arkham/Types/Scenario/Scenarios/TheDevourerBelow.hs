@@ -4,6 +4,7 @@ module Arkham.Types.Scenario.Scenarios.TheDevourerBelow where
 import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.CampaignLogKey
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Helpers
@@ -156,9 +157,12 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
       ancientOneCount <- asks $ unEnemyCount . getCount [AncientOne]
       s <$ when (ancientOneCount > 0) (unshiftMessage $ DrawAnotherToken iid)
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _
-      | isHardExpert attrs && drawnTokenFace token == Skull
-      -> s <$ unshiftMessage
-        (FindAndDrawEncounterCard iid (EnemyType, Just Monster))
+      | isHardExpert attrs && drawnTokenFace token == Skull -> s
+      <$ unshiftMessage
+           (FindAndDrawEncounterCard
+             iid
+             (EncounterCardMatchByType (EnemyType, Just Monster))
+           )
     NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
       s <$ unshiftMessage

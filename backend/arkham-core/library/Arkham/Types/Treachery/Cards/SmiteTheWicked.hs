@@ -3,6 +3,7 @@ module Arkham.Types.Treachery.Cards.SmiteTheWicked where
 
 import Arkham.Import
 
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
@@ -21,7 +22,11 @@ instance HasActions env SmiteTheWicked where
 instance (TreacheryRunner env) => RunMessage env SmiteTheWicked where
   runMessage msg t@(SmiteTheWicked attrs@Attrs {..}) = case msg of
     Revelation _iid source | isSource attrs source -> do
-      unshiftMessage (DiscardEncounterUntilFirst source (EnemyType, Nothing))
+      unshiftMessage
+        (DiscardEncounterUntilFirst
+          source
+          (EncounterCardMatchByType (EnemyType, Nothing))
+        )
       SmiteTheWicked <$> runMessage msg (attrs & resolved .~ False)
     RequestedEncounterCard (TreacherySource tid) mcard | tid == treacheryId ->
       do

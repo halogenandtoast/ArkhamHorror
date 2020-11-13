@@ -17,9 +17,11 @@ import Arkham.Types.Location.Cards.BrackishWaters as X
 import Arkham.Types.Location.Cards.Broadmoor as X
 import Arkham.Types.Location.Cards.Cellar as X
 import Arkham.Types.Location.Cards.CursedShores as X
+import Arkham.Types.Location.Cards.DeepBelowYourHouse as X
 import Arkham.Types.Location.Cards.DowntownArkhamAsylum as X
 import Arkham.Types.Location.Cards.DowntownFirstBankOfArkham as X
 import Arkham.Types.Location.Cards.Easttown as X
+import Arkham.Types.Location.Cards.FarAboveYourHouse as X
 import Arkham.Types.Location.Cards.FauborgMarigny as X
 import Arkham.Types.Location.Cards.ForgottenMarsh as X
 import Arkham.Types.Location.Cards.FoulSwamp as X
@@ -33,6 +35,8 @@ import Arkham.Types.Location.Cards.MiskatonicUniversity as X
 import Arkham.Types.Location.Cards.Northside as X
 import Arkham.Types.Location.Cards.OvergrownCairns as X
 import Arkham.Types.Location.Cards.Parlor as X
+import Arkham.Types.Location.Cards.ReturnToAttic as X
+import Arkham.Types.Location.Cards.ReturnToCellar as X
 import Arkham.Types.Location.Cards.RitualGrounds as X
 import Arkham.Types.Location.Cards.RitualSite as X
 import Arkham.Types.Location.Cards.Rivertown as X

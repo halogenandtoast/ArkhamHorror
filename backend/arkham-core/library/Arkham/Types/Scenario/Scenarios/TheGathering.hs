@@ -4,6 +4,7 @@ module Arkham.Types.Scenario.Scenarios.TheGathering where
 import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.CampaignLogKey
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Scenario.Attrs
@@ -92,8 +93,9 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
         )
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _ -> do
       case drawnTokenFace token of
-        Skull | isHardExpert attrs -> unshiftMessage
-          $ FindAndDrawEncounterCard iid (EnemyType, Just Trait.Ghoul)
+        Skull | isHardExpert attrs -> unshiftMessage $ FindAndDrawEncounterCard
+          iid
+          (EncounterCardMatchByType (EnemyType, Just Trait.Ghoul))
         Cultist -> unshiftMessage $ InvestigatorAssignDamage
           iid
           (DrawnTokenSource token)

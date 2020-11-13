@@ -1,8 +1,15 @@
-module Arkham.Types.Card.EncounterCard where
+module Arkham.Types.Card.EncounterCard
+  ( module Arkham.Types.Card.EncounterCard
+  , module Arkham.Types.Card.EncounterCardMatcher
+  , module Arkham.Types.Card.EncounterCardType
+  )
+where
 
 import Arkham.Json
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
+import Arkham.Types.Card.EncounterCardMatcher
+import Arkham.Types.Card.EncounterCardType
 import Arkham.Types.Card.Id
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
@@ -10,13 +17,6 @@ import Arkham.Types.Trait
 import ClassyPrelude
 import qualified Data.HashMap.Strict as HashMap
 import Safe (fromJustNote)
-
-data EncounterCardType
-  = TreacheryType
-  | EnemyType
-  | LocationType
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable)
 
 data EncounterCard = MkEncounterCard
   { ecCardCode :: CardCode
@@ -67,9 +67,11 @@ instance HasCardCode EncounterCard where
 instance HasCardId EncounterCard where
   getCardId = ecId
 
-encounterCardMatch :: (EncounterCardType, Maybe Trait) -> EncounterCard -> Bool
-encounterCardMatch (cardType, mtrait) MkEncounterCard {..} =
-  ecCardType == cardType && maybe True (`elem` ecTraits) mtrait
+encounterCardMatch :: EncounterCardMatcher -> EncounterCard -> Bool
+encounterCardMatch (EncounterCardMatchByType (cardType, mtrait)) MkEncounterCard {..}
+  = ecCardType == cardType && maybe True (`elem` ecTraits) mtrait
+encounterCardMatch (EncounterCardMatchByCardCode cardCode) card =
+  getCardCode card == cardCode
 
 allEncounterCards :: HashMap CardCode (CardId -> EncounterCard)
 allEncounterCards = HashMap.fromList

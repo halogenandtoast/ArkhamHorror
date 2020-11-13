@@ -6,6 +6,7 @@ import Arkham.Import hiding (sequence)
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Trait
 
 newtype RiseOfTheGhouls = RiseOfTheGhouls Attrs
@@ -30,7 +31,7 @@ instance AgendaRunner env => RunMessage env RiseOfTheGhouls where
           [ ShuffleEncounterDiscardBackIn
           , DiscardEncounterUntilFirst
             (AgendaSource aid)
-            (EnemyType, Just Ghoul)
+            (EncounterCardMatchByType (EnemyType, Just Ghoul))
           ]
         )
     RequestedEncounterCard (AgendaSource aid) mcard | aid == agendaId ->

@@ -7,6 +7,7 @@ import Arkham.Types.Act.Attrs
 import qualified Arkham.Types.Act.Attrs as Act
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
+import Arkham.Types.Card.EncounterCardMatcher
 
 newtype IntoTheDarkness = IntoTheDarkness Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -35,13 +36,19 @@ instance ActRunner env => RunMessage env IntoTheDarkness where
       if playerCount > 3
         then a <$ unshiftMessages
           [ ShuffleEncounterDiscardBackIn
-          , DiscardEncounterUntilFirst (ActSource actId) (EnemyType, Nothing)
-          , DiscardEncounterUntilFirst (ActSource actId) (EnemyType, Nothing)
+          , DiscardEncounterUntilFirst
+            (ActSource actId)
+            (EncounterCardMatchByType (EnemyType, Nothing))
+          , DiscardEncounterUntilFirst
+            (ActSource actId)
+            (EncounterCardMatchByType (EnemyType, Nothing))
           , NextAct actId "01148"
           ]
         else a <$ unshiftMessages
           [ ShuffleEncounterDiscardBackIn
-          , DiscardEncounterUntilFirst (ActSource actId) (EnemyType, Nothing)
+          , DiscardEncounterUntilFirst
+            (ActSource actId)
+            (EncounterCardMatchByType (EnemyType, Nothing))
           , NextAct actId "01148"
           ]
     RequestedEncounterCard (ActSource aid) mcard | aid == actId -> case mcard of

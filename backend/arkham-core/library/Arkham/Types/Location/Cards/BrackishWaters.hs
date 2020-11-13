@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.BrackishWaters where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
@@ -16,6 +17,7 @@ brackishWaters :: BrackishWaters
 brackishWaters = BrackishWaters $ baseAttrs
   "81010"
   "Brackish Waters"
+  EncounterSet.CurseOfTheRougarou
   1
   (Static 0)
   Triangle

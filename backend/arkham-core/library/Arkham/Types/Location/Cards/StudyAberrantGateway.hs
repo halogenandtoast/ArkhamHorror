@@ -4,6 +4,7 @@ module Arkham.Types.Location.Cards.StudyAberrantGateway where
 import Arkham.Import
 
 import Arkham.Types.Action (Action)
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -12,8 +13,15 @@ newtype StudyAberrantGateway = StudyAberrantGateway Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 studyAberrantGateway :: StudyAberrantGateway
-studyAberrantGateway = StudyAberrantGateway
-  $ baseAttrs "50013" "Study" 3 (PerPlayer 1) Circle [T] mempty
+studyAberrantGateway = StudyAberrantGateway $ baseAttrs
+  "50013"
+  "Study"
+  EncounterSet.ReturnToTheGathering
+  3
+  (PerPlayer 1)
+  Circle
+  [T]
+  mempty
 
 instance HasModifiersFor env StudyAberrantGateway where
   getModifiersFor = noModifiersFor
@@ -36,7 +44,9 @@ instance LocationRunner env => RunMessage env StudyAberrantGateway where
   runMessage msg l@(StudyAberrantGateway attrs@Attrs {..}) = case msg of
     UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
       l <$ unshiftMessage (DrawCards iid 3 False)
-    Will (EnemySpawn lid _) -> do
-      locations' <- asks (getSet ())
-      l <$ unless (lid `elem` locations') (unshiftMessage (PlaceLocation lid))
+    Will (EnemySpawnAtLocationNamed locationName' _) -> do
+      locations' <- asks (getList @LocationName ())
+      l <$ unless
+        (locationName' `elem` locations')
+        (unshiftMessage (PlaceLocationNamed locationName'))
     _ -> StudyAberrantGateway <$> runMessage msg attrs

@@ -5,11 +5,13 @@ import Arkham.Import
 
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Helpers (sample)
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Scenario.Scenarios.TheGathering
 import Arkham.Types.Trait (Trait)
+import Data.List.NonEmpty (NonEmpty(..))
 
 newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
   deriving newtype (Show, ToJSON, FromJSON)
@@ -55,5 +57,22 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
             | iid <- investigatorIds
             ]
           ]
-        ReturnToTheGathering . TheGathering <$> runMessage msg attrs
+        attic <- liftIO $ sample ("50018" :| ["01113"])
+        cellar <- liftIO $ sample ("50020" :| ["01114"])
+        let
+          locations' = mapFromList
+            [ ("Study", ["50013"])
+            , ("Guest Hall", ["50014"])
+            , ("Bedroom", ["50015"])
+            , ("Bathroom", ["50016"])
+            , ("Hallway", ["50017"])
+            , ("Attic", [attic])
+            , ("Field of Graves", ["50019"])
+            , ("Cellar", [cellar])
+            , ("Ghoul Pits", ["50021"])
+            , ("Parlor", ["01115"])
+            ]
+        ReturnToTheGathering . TheGathering <$> runMessage
+          msg
+          (attrs & locations .~ locations')
       _ -> ReturnToTheGathering <$> runMessage msg theGathering'

@@ -173,7 +173,24 @@ instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
         <> startingLocationMessages
         <> ghoulPriestMessages
         <> spawnAcolyteMessages
-      pure $ TheMidnightMasks (attrs { scenarioDeck = Just cultistDeck' })
+      let
+        locations' = mapFromList
+          [ ("Your House", ["01124"])
+          , ("Rivertown", ["01124"])
+          , ("Southside", [southside])
+          , ("St. Mary's Hospital", ["01128"])
+          , ("Miskatonic University", ["01129"])
+          , ("Downtown", [downtown])
+          , ("Easttown", ["01132"])
+          , ("Graveyard", ["01133"])
+          , ("Northside", ["01134"])
+          ]
+      pure $ TheMidnightMasks
+        (attrs
+          { scenarioDeck = Just cultistDeck'
+          , scenarioLocations = locations'
+          }
+        )
     UseScenarioSpecificAbility iid 1 ->
       case fromJustNote "must be set" scenarioDeck of
         [] -> pure s

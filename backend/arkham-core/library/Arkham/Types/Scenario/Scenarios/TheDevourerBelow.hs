@@ -134,7 +134,13 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
         <> ghoulPriestMessages
         <> cultistsWhoGotAwayMessages
         <> pastMidnightMessages
-      pure s
+      let
+        locations' = mapFromList
+          [ ("Main Path", ["01149"])
+          , ("Arkham Woods", woodsLocations)
+          , ("Ritual Site", ["01156"])
+          ]
+      TheDevourerBelow <$> runMessage msg (attrs & locations .~ locations')
     ResolveToken Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
       closestEnemyIds <- asks $ map unClosestEnemyId . setToList . getSet iid

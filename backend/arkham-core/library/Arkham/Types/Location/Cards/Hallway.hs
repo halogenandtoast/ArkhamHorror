@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.Hallway where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
@@ -13,6 +14,7 @@ hallway :: Hallway
 hallway = Hallway $ baseAttrs
   "01112"
   "Hallway"
+  EncounterSet.TheGathering
   1
   (Static 0)
   Square

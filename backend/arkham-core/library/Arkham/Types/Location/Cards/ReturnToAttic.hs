@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.ReturnToAttic where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
@@ -10,8 +11,15 @@ newtype ReturnToAttic = ReturnToAttic Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 returnToAttic :: ReturnToAttic
-returnToAttic = ReturnToAttic
-  $ baseAttrs "50018" "Attic" 3 (PerPlayer 1) Triangle [Square, Moon] mempty
+returnToAttic = ReturnToAttic $ baseAttrs
+  "50018"
+  "Attic"
+  EncounterSet.ReturnToTheGathering
+  3
+  (PerPlayer 1)
+  Triangle
+  [Square, Moon]
+  mempty
 
 instance HasModifiersFor env ReturnToAttic where
   getModifiersFor = noModifiersFor

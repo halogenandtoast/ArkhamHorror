@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.ArkhamWoodsCliffside where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
@@ -19,6 +20,7 @@ arkhamWoodsCliffside = ArkhamWoodsCliffside $ base
   base = baseAttrs
     "01153"
     "Arkham Woods: Cliffside"
+    EncounterSet.TheDevourerBelow
     2
     (PerPlayer 1)
     Square

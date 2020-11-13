@@ -7,6 +7,7 @@ where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -16,8 +17,15 @@ newtype YourHouse = YourHouse Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 yourHouse :: YourHouse
-yourHouse = YourHouse
-  $ baseAttrs "01124" "Your House" 2 (PerPlayer 1) Squiggle [Circle] [Arkham]
+yourHouse = YourHouse $ baseAttrs
+  "01124"
+  "Your House"
+  EncounterSet.TheMidnightMasks
+  2
+  (PerPlayer 1)
+  Squiggle
+  [Circle]
+  [Arkham]
 
 instance HasModifiersFor env YourHouse where
   getModifiersFor = noModifiersFor

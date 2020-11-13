@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.TwistedUnderbrush where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -15,6 +16,7 @@ twistedUnderbrush :: TwistedUnderbrush
 twistedUnderbrush = TwistedUnderbrush $ (baseAttrs
                                           "81015"
                                           "Twisted Underbrush"
+                                          EncounterSet.CurseOfTheRougarou
                                           3
                                           (PerPlayer 1)
                                           Moon

@@ -30,7 +30,8 @@ instance ActionRunner env => HasActions env RuthTurner where
 
 instance (EnemyRunner env) => RunMessage env RuthTurner where
   runMessage msg e@(RuthTurner attrs@Attrs {..}) = case msg of
-    InvestigatorDrawEnemy _ _ eid | eid == enemyId -> e <$ spawnAt eid "01128"
+    InvestigatorDrawEnemy _ _ eid | eid == enemyId ->
+      e <$ spawnAt eid "St. Mary's Hospital"
     EnemyEvaded _ eid | eid == enemyId ->
       e <$ unshiftMessage (AddToVictory (EnemyTarget enemyId))
     _ -> RuthTurner <$> runMessage msg attrs

@@ -4,6 +4,7 @@ module Arkham.Types.Location.Cards.DeepBelowYourHouse where
 import Arkham.Import
 
 import Arkham.Types.Card.EncounterCardMatcher
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
@@ -11,11 +12,18 @@ newtype DeepBelowYourHouse = DeepBelowYourHouse Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 deepBelowYourHouse :: DeepBelowYourHouse
-deepBelowYourHouse =
-  DeepBelowYourHouse
-    $ (baseAttrs "50021" "Ghoul Pits" 4 (PerPlayer 1) Squiggle [Plus] mempty)
-        { locationVictory = Just 1
-        }
+deepBelowYourHouse = DeepBelowYourHouse $ (baseAttrs
+                                            "50021"
+                                            "Ghoul Pits"
+                                            EncounterSet.ReturnToTheGathering
+                                            4
+                                            (PerPlayer 1)
+                                            Squiggle
+                                            [Plus]
+                                            mempty
+                                          )
+  { locationVictory = Just 1
+  }
 
 instance HasModifiersFor env DeepBelowYourHouse where
   getModifiersFor = noModifiersFor

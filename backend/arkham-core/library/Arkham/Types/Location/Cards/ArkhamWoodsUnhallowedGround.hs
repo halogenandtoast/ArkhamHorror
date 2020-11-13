@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.ArkhamWoodsUnhallowedGround where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
@@ -20,6 +21,7 @@ arkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround $ base
   base = baseAttrs
     "01150"
     "Arkham Woods: Unhallowed Ground"
+    EncounterSet.TheDevourerBelow
     4
     (PerPlayer 1)
     Square

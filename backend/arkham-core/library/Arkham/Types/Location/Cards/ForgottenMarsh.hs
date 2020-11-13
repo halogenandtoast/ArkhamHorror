@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.ForgottenMarsh where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
@@ -14,6 +15,7 @@ forgottenMarsh :: ForgottenMarsh
 forgottenMarsh = ForgottenMarsh $ baseAttrs
   "81013"
   "Forgotten Marsh"
+  EncounterSet.CurseOfTheRougarou
   2
   (Static 0)
   Diamond

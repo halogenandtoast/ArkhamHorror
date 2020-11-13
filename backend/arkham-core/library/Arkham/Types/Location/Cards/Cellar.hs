@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.Cellar where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
@@ -10,7 +11,16 @@ newtype Cellar = Cellar Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 cellar :: Cellar
-cellar = Cellar $ (baseAttrs "01114" "Cellar" 4 (PerPlayer 2) Plus [Square] [])
+cellar = Cellar $ (baseAttrs
+                    "01114"
+                    "Cellar"
+                    EncounterSet.TheGathering
+                    4
+                    (PerPlayer 2)
+                    Plus
+                    [Square]
+                    []
+                  )
   { locationVictory = Just 1
   }
 

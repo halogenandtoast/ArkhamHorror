@@ -7,6 +7,7 @@ where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -20,6 +21,7 @@ foulSwamp :: FoulSwamp
 foulSwamp = FoulSwamp $ baseAttrs
   "81016"
   "Foul Swamp"
+  EncounterSet.CurseOfTheRougarou
   2
   (Static 0)
   Hourglass

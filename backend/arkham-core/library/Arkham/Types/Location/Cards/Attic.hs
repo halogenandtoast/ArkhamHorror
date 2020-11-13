@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.Attic where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
@@ -10,7 +11,15 @@ newtype Attic = Attic Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 attic :: Attic
-attic = Attic $ (baseAttrs "01113" "Attic" 1 (PerPlayer 2) Triangle [Square] []
+attic = Attic $ (baseAttrs
+                  "01113"
+                  "Attic"
+                  EncounterSet.TheGathering
+                  1
+                  (PerPlayer 2)
+                  Triangle
+                  [Square]
+                  []
                 )
   { locationVictory = Just 1
   }

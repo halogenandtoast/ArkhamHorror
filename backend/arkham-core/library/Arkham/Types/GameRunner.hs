@@ -62,6 +62,7 @@ type GameRunner env
       , HasList Enemy () env
       , HasList Location () env
       , HasList UsedAbility () env
+      , HasList LocationName () env
       )
     , (HasModifiers env InvestigatorId, HasModifiers env LocationId)
     , HasModifiersFor env env

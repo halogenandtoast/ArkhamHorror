@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.ArkhamWoodsTwistingPaths where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
@@ -19,6 +20,7 @@ arkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths $ base
   base = baseAttrs
     "01151"
     "Arkham Woods: Twisting Paths"
+    EncounterSet.TheDevourerBelow
     3
     (PerPlayer 1)
     Square

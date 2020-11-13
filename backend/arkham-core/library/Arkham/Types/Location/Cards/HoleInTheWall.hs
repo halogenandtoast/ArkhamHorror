@@ -2,10 +2,10 @@
 module Arkham.Types.Location.Cards.HoleInTheWall where
 
 import Arkham.Import
-import Arkham.Types.Helpers (sample)
+
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Data.List.NonEmpty (NonEmpty(..))
 
 newtype HoleInTheWall = HoleInTheWall Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -14,6 +14,7 @@ holeInTheWall :: HoleInTheWall
 holeInTheWall = HoleInTheWall $ baseAttrs
   "50017"
   "Hole in the Wall"
+  EncounterSet.ReturnToTheGathering
   1
   (Static 0)
   Square
@@ -29,9 +30,10 @@ instance ActionRunner env => HasActions env HoleInTheWall where
 instance (LocationRunner env) => RunMessage env HoleInTheWall where
   runMessage msg (HoleInTheWall attrs) = case msg of
     RevealLocation _ lid | lid == locationId attrs -> do
-      attic <- liftIO $ sample ("50018" :| ["01113"])
-      cellar <- liftIO $ sample ("50020" :| ["01114"])
       unshiftMessages
-        [PlaceLocation attic, PlaceLocation cellar, PlaceLocation "01115"]
+        [ PlaceLocationNamed "Attic"
+        , PlaceLocationNamed "Cellar"
+        , PlaceLocationNamed "Parlor"
+        ]
       HoleInTheWall <$> runMessage msg attrs
     _ -> HoleInTheWall <$> runMessage msg attrs

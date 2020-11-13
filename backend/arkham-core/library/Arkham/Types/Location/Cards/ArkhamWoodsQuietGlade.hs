@@ -7,6 +7,7 @@ where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -24,6 +25,7 @@ arkhamWoodsQuietGlade = ArkhamWoodsQuietGlade $ base
   base = baseAttrs
     "01155"
     "Arkham Woods: Quiet Glade"
+    EncounterSet.TheDevourerBelow
     1
     (Static 0)
     Square

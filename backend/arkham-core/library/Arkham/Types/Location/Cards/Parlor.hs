@@ -4,6 +4,7 @@ module Arkham.Types.Location.Cards.Parlor where
 import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -12,10 +13,18 @@ newtype Parlor = Parlor Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 parlor :: Parlor
-parlor =
-  Parlor $ (baseAttrs "01115" "Parlor" 2 (Static 0) Diamond [Square] mempty)
-    { locationBlocked = True
-    }
+parlor = Parlor $ (baseAttrs
+                    "01115"
+                    "Parlor"
+                    EncounterSet.TheGathering
+                    2
+                    (Static 0)
+                    Diamond
+                    [Square]
+                    mempty
+                  )
+  { locationBlocked = True
+  }
 
 instance HasModifiersFor env Parlor where
   getModifiersFor = noModifiersFor

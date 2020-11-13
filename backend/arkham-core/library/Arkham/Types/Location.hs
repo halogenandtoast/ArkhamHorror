@@ -6,9 +6,11 @@ module Arkham.Types.Location
   , isEmptyLocation
   , isRevealed
   , Location(..)
+  , getLocationName
   )
 where
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Json
 import Arkham.Types.AssetId
 import Arkham.Types.GameValue
@@ -97,15 +99,22 @@ instance LocationRunner env => RunMessage env BaseLocation where
 
 baseLocation
   :: LocationId
-  -> Text
+  -> LocationName
   -> Int
   -> GameValue Int
   -> LocationSymbol
   -> [LocationSymbol]
   -> (Attrs -> Attrs)
   -> Location
-baseLocation a b c d e f func =
-  BaseLocation' . BaseLocation . func $ baseAttrs a b c d e f []
+baseLocation a b c d e f func = BaseLocation' . BaseLocation . func $ baseAttrs
+  a
+  b
+  EncounterSet.TheGathering
+  c
+  d
+  e
+  f
+  []
 
 instance HasTraits Location where
   getTraits = locationTraits . locationAttrs
@@ -151,6 +160,9 @@ instance HasId LocationId () Location where
 
 instance IsLocation Location where
   isBlocked = isBlocked . locationAttrs
+
+getLocationName :: Location -> LocationName
+getLocationName = locationName . locationAttrs
 
 lookupLocation :: LocationId -> Location
 lookupLocation lid =

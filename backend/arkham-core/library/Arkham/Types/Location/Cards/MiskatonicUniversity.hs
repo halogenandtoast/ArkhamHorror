@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.MiskatonicUniversity where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -15,6 +16,7 @@ miskatonicUniversity :: MiskatonicUniversity
 miskatonicUniversity = MiskatonicUniversity $ (baseAttrs
                                                 "01129"
                                                 "Miskatonic University"
+                                                EncounterSet.TheMidnightMasks
                                                 4
                                                 (PerPlayer 2)
                                                 Diamond

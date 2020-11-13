@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.Rivertown where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
@@ -14,6 +15,7 @@ rivertown :: Rivertown
 rivertown = Rivertown $ baseAttrs
   "01125"
   "Rivertown"
+  EncounterSet.TheMidnightMasks
   1
   (PerPlayer 1)
   Circle

@@ -7,6 +7,7 @@ where
 
 import Arkham.Import
 
+import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -19,6 +20,7 @@ southsideMasBoardingHouse :: SouthsideMasBoardingHouse
 southsideMasBoardingHouse = SouthsideMasBoardingHouse $ baseAttrs
   "01127"
   "Southside"
+  EncounterSet.TheMidnightMasks
   2
   (PerPlayer 1)
   Square

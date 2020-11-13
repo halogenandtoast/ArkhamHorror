@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 17a6f92978e671764f0ec9b20698319629889b7dbb2ee41f62912a5aa78d8364
+-- hash: 818b6464757048b16072414d3f43022cd9c5872a607ac2772fd3bf5197dbc079
 
 name:           arkham-core
 version:        0.0.0
@@ -327,6 +327,7 @@ library
       Arkham.Types.Location.Cards.Graveyard
       Arkham.Types.Location.Cards.GuestHall
       Arkham.Types.Location.Cards.Hallway
+      Arkham.Types.Location.Cards.HoleInTheWall
       Arkham.Types.Location.Cards.MainPath
       Arkham.Types.Location.Cards.MiskatonicUniversity
       Arkham.Types.Location.Cards.Northside

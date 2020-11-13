@@ -32,6 +32,7 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
         investigatorIds <- getInvestigatorIds
         encounterDeck <- buildEncounterDeck
           [ EncounterSet.ReturnToTheGathering
+          , EncounterSet.TheGathering
           , EncounterSet.Rats
           , EncounterSet.GhoulsOfUmordhoth
           , EncounterSet.StrikingFear

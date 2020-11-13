@@ -12,6 +12,7 @@ import Arkham.Types.Enemy.Cards.GhoulFromTheDepths as X
 import Arkham.Types.Enemy.Cards.GhoulMinion as X
 import Arkham.Types.Enemy.Cards.GhoulPriest as X
 import Arkham.Types.Enemy.Cards.GoatSpawn as X
+import Arkham.Types.Enemy.Cards.GraveEater as X
 import Arkham.Types.Enemy.Cards.HermanCollins as X
 import Arkham.Types.Enemy.Cards.HuntingNightgaunt as X
 import Arkham.Types.Enemy.Cards.IcyGhoul as X

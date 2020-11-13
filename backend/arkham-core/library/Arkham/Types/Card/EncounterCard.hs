@@ -118,6 +118,7 @@ allEncounterCards = HashMap.fromList
   , ("50023", ghoulFromTheDepths)
   , ("50024", theZealotsSeal)
   , ("50038", graveEater)
+  , ("50039", acolyteOfUmordhoth)
   , ("81022", bogGator)
   , ("81023", swampLeech)
   , ("81024", cursedSwamp)
@@ -362,6 +363,11 @@ theZealotsSeal cardId = (treachery cardId "50024" "The Zealot's Seal")
 
 graveEater :: CardId -> EncounterCard
 graveEater cardId = (enemy cardId "50038" "Grave-Eater")
+  { ecTraits = setFromList [Humanoid, Monster, Ghoul]
+  }
+
+acolyteOfUmordhoth :: CardId -> EncounterCard
+acolyteOfUmordhoth cardId = (enemy cardId "50039" "Acolyte of Umôrdhoth")
   { ecTraits = setFromList [Humanoid, Monster, Ghoul]
   }
 

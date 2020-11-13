@@ -46,6 +46,7 @@ data Treachery
   | FinalRhapsody' FinalRhapsody
   | WrackedByNightmares' WrackedByNightmares
   | TheZealotsSeal' TheZealotsSeal
+  | ChillFromBelow' ChillFromBelow
   | Atychiphobia' Atychiphobia
   | CursedSwamp' CursedSwamp
   | SpectralMist' SpectralMist
@@ -117,6 +118,7 @@ allTreacheries = mapFromList
   , ("02013", (FinalRhapsody' .) . finalRhapsody)
   , ("02015", (WrackedByNightmares' .) . wrackedByNightmares)
   , ("50024", (TheZealotsSeal' .) . theZealotsSeal)
+  , ("50040", (ChillFromBelow' .) . chillFromBelow)
   , ("60504", (Atychiphobia' .) . atychiphobia)
   , ("81024", (CursedSwamp' .) . cursedSwamp)
   , ("81025", (SpectralMist' .) . spectralMist)
@@ -169,6 +171,7 @@ treacheryAttrs = \case
   FinalRhapsody' attrs -> coerce attrs
   WrackedByNightmares' attrs -> coerce attrs
   TheZealotsSeal' attrs -> coerce attrs
+  ChillFromBelow' attrs -> coerce attrs
   Atychiphobia' attrs -> coerce attrs
   CursedSwamp' attrs -> coerce attrs
   SpectralMist' attrs -> coerce attrs

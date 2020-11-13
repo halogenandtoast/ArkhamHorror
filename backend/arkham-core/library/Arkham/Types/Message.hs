@@ -9,6 +9,7 @@ module Arkham.Types.Message
   , messageType
   , chooseOne
   , chooseOneAtATime
+  , resolve
   )
 where
 
@@ -59,6 +60,9 @@ messageType ResolveToken{} = Just ResolveTokenMessage
 messageType EnemySpawn{} = Just EnemySpawnMessage
 messageType RevealToken{} = Just RevealTokenMessage
 messageType _ = Nothing
+
+resolve :: Message -> [Message]
+resolve msg = [When msg, msg, After msg]
 
 data EncounterCardSource = FromDiscard | FromEncounterDeck
   deriving stock (Show, Eq, Generic)
@@ -155,6 +159,7 @@ data Message
   | AskMap (HashMap InvestigatorId Question)
   | TakeAction InvestigatorId Int (Maybe Action)
   | LoseActions InvestigatorId Source Int
+  | SetActions InvestigatorId Source Int
   | GainActions InvestigatorId Source Int
   | ChooseActivateCardAbilityAction InvestigatorId
   | ActivateCardAbilityAction InvestigatorId Ability

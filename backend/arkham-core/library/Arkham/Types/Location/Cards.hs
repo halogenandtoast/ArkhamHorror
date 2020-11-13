@@ -11,6 +11,7 @@ import Arkham.Types.Location.Cards.ArkhamWoodsTwistingPaths as X
 import Arkham.Types.Location.Cards.ArkhamWoodsUnhallowedGround as X
 import Arkham.Types.Location.Cards.Attic as X
 import Arkham.Types.Location.Cards.AudubonPark as X
+import Arkham.Types.Location.Cards.Bathroom as X
 import Arkham.Types.Location.Cards.Bedroom as X
 import Arkham.Types.Location.Cards.BrackishWaters as X
 import Arkham.Types.Location.Cards.Broadmoor as X

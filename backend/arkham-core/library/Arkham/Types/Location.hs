@@ -56,6 +56,7 @@ data Location
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
+  | Bathroom' Bathroom
   | RitualSite' RitualSite
   | CursedShores' CursedShores
   | GardenDistrict' GardenDistrict
@@ -179,6 +180,7 @@ allLocations = mapFromList $ map
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall
   , Bedroom' bedroom
+  , Bathroom' bathroom
   , RitualSite' ritualSite
   , CursedShores' cursedShores
   , GardenDistrict' gardenDistrict
@@ -231,6 +233,7 @@ locationAttrs = \case
   StudyAberrantGateway' attrs -> coerce attrs
   GuestHall' attrs -> coerce attrs
   Bedroom' attrs -> coerce attrs
+  Bathroom' attrs -> coerce attrs
   RitualSite' attrs -> coerce attrs
   CursedShores' attrs -> coerce attrs
   GardenDistrict' attrs -> coerce attrs

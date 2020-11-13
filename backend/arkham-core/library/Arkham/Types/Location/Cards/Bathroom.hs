@@ -1,0 +1,29 @@
+{-# LANGUAGE UndecidableInstances #-}
+module Arkham.Types.Location.Cards.Bathroom where
+
+import Arkham.Import
+import qualified Arkham.Types.Action as Action
+import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Runner
+
+newtype Bathroom = Bathroom Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+bathroom :: Bathroom
+bathroom =
+  Bathroom $ baseAttrs "50016" "Bathroom" 1 (PerPlayer 1) Star [T] mempty
+
+instance HasModifiersFor env Bathroom where
+  getModifiersFor = noModifiersFor
+
+instance ActionRunner env => HasActions env Bathroom where
+  getActions i window (Bathroom attrs) = getActions i window attrs
+
+instance (LocationRunner env) => RunMessage env Bathroom where
+  runMessage msg l@(Bathroom attrs) = case msg of
+    After (RevealToken (SkillTestSource _ source (Just Action.Investigate)) iid tokenFace)
+      | isSource attrs source
+      -> l <$ when
+        (tokenFace `elem` [Skull, Cultist, Tablet, AutoFail])
+        (unshiftMessages [SetActions iid (toSource attrs) 0, ChooseEndTurn iid])
+    _ -> Bathroom <$> runMessage msg attrs

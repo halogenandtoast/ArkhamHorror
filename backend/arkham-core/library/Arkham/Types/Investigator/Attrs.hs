@@ -969,7 +969,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   PayDynamicCardCost iid cardId n beforePlayMessages | iid == investigatorId ->
     do
       let
-        resolve =
+        resolveMessages =
           beforePlayMessages <> [PayedForDynamicCard iid cardId n False]
       if investigatorResources > n
         then a <$ unshiftMessage
@@ -979,11 +979,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
               [ Label
                 "Increase spent resources"
                 [PayDynamicCardCost iid cardId (n + 1) beforePlayMessages]
-              , Label ("Resolve with cost of " <> tshow n) resolve
+              , Label ("Resolve with cost of " <> tshow n) resolveMessages
               ]
             )
           )
-        else a <$ unshiftMessages resolve
+        else a <$ unshiftMessages resolveMessages
   PayedForDynamicCard iid cardId n False | iid == investigatorId -> do
     unshiftMessage (PlayDynamicCard iid cardId n Nothing False)
     pure $ a & resources -~ n
@@ -1445,6 +1445,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       else pure a
   LoseActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActions %~ max 0 . subtract n
+  SetActions iid _ n | iid == investigatorId -> pure $ a & remainingActions .~ n
   GainActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActions +~ n
   TakeAction iid actionCost' maction | iid == investigatorId -> do

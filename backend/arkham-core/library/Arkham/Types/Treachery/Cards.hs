@@ -39,5 +39,6 @@ import Arkham.Types.Treachery.Cards.SearchingForIzzie as X
 import Arkham.Types.Treachery.Cards.SmiteTheWicked as X
 import Arkham.Types.Treachery.Cards.SpectralMist as X
 import Arkham.Types.Treachery.Cards.TheYellowSign as X
+import Arkham.Types.Treachery.Cards.TheZealotsSeal as X
 import Arkham.Types.Treachery.Cards.UmordhothsWrath as X
 import Arkham.Types.Treachery.Cards.WrackedByNightmares as X

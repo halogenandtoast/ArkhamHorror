@@ -18,11 +18,16 @@ newtype TheGathering = TheGathering Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 theGathering :: Difficulty -> TheGathering
-theGathering = TheGathering . baseAttrs
-  "01104"
-  "The Gathering"
-  ["01105", "01106", "01107"]
-  ["01108", "01109", "01110"]
+theGathering difficulty = TheGathering $ (baseAttrs
+                                           "01104"
+                                           "The Gathering"
+                                           ["01105", "01106", "01107"]
+                                           ["01108", "01109", "01110"]
+                                           difficulty
+                                         )
+  { scenarioLocationLayout = Just
+    ["   .   attic   .     ", " study hallway parlor", "   .   cellar  .     "]
+  }
 
 theGatheringIntro :: Message
 theGatheringIntro = FlavorText

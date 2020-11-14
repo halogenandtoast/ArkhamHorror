@@ -17,11 +17,22 @@ newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
   deriving newtype (Show, ToJSON, FromJSON)
 
 returnToTheGathering :: Difficulty -> ReturnToTheGathering
-returnToTheGathering = ReturnToTheGathering . TheGathering . baseAttrs
-  "50011"
-  "Return To The Gathering"
-  ["01105", "01106", "01107"]
-  ["50012", "01109", "01110"]
+returnToTheGathering difficulty =
+  ReturnToTheGathering . TheGathering $ (baseAttrs
+                                          "50011"
+                                          "Return To The Gathering"
+                                          ["01105", "01106", "01107"]
+                                          ["50012", "01109", "01110"]
+                                          difficulty
+                                        )
+    { scenarioLocationLayout = Just
+      [ ".     .         farAboveYourHouse  .     "
+      , ".     bedroom   attic              .     "
+      , "study guestHall hallway            parlor"
+      , ".     bathroom  cellar             .     "
+      , ".     .         deepBelowYourHouse .     "
+      ]
+    }
 
 instance (HasTokenValue env InvestigatorId, HasCount EnemyCount (InvestigatorLocation, [Trait]) env, HasQueue env) => HasTokenValue env ReturnToTheGathering where
   getTokenValue (ReturnToTheGathering theGathering') iid =

@@ -20,6 +20,7 @@ hermanCollins uuid =
     . (fight .~ 3)
     . (health .~ Static 4)
     . (evade .~ 4)
+    . (unique .~ True)
 
 instance HasModifiersFor env HermanCollins where
   getModifiersFor = noModifiersFor

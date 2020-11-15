@@ -19,6 +19,7 @@ victoriaDevereux uuid =
     . (fight .~ 3)
     . (health .~ Static 3)
     . (evade .~ 2)
+    . (unique .~ True)
 
 instance HasModifiersFor env VictoriaDevereux where
   getModifiersFor = noModifiersFor

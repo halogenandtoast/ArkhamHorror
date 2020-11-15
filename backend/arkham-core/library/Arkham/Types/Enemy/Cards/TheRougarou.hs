@@ -29,6 +29,7 @@ theRougarou uuid =
     . (fight .~ 3)
     . (health .~ PerPlayer 5)
     . (evade .~ 3)
+    . (unique .~ True)
 
 instance HasModifiersFor env TheRougarou where
   getModifiersFor = noModifiersFor

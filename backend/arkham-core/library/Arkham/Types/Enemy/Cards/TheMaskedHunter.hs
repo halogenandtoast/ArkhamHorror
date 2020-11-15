@@ -19,6 +19,7 @@ theMaskedHunter uuid =
     . (health .~ Static 4)
     . (evade .~ 2)
     . (prey .~ MostClues)
+    . (unique .~ True)
 
 instance HasModifiersFor env TheMaskedHunter where
   getModifiersFor _ (InvestigatorTarget iid) (TheMaskedHunter Attrs {..}) = do

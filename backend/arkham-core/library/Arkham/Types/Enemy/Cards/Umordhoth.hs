@@ -18,6 +18,7 @@ umordhoth uuid =
     . (fight .~ 5)
     . (health .~ Static 6)
     . (evade .~ 6)
+    . (unique .~ True)
 
 instance HasModifiersFor env Umordhoth where
   getModifiersFor = noModifiersFor

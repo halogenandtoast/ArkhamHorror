@@ -37,7 +37,7 @@ instance (AssetRunner env) => RunMessage env DiscOfItzamna2 where
       menemySpawnMessage <- fromQueue
         $ find ((== Just EnemySpawnMessage) . messageType)
       a <$ case menemySpawnMessage of
-        Just (EnemySpawn _ eid) ->
+        Just (EnemySpawn _ _ eid) ->
           unshiftMessages [Discard (toTarget attrs), Discard (EnemyTarget eid)]
         _ -> pure ()
     _ -> DiscOfItzamna2 <$> runMessage msg attrs

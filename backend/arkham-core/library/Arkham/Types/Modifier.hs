@@ -30,7 +30,7 @@ data Modifier
   | CannotCommitCards
   | CannotDiscoverClues
   | CannotGainResources
-  | CannotTakeAction Action
+  | CannotTakeAction ActionTarget
   | CannotHealHorror
   | CannotInvestigate
   | CannotMove
@@ -66,6 +66,7 @@ data Modifier
 data ActionTarget
   = FirstOneOf [Action]
   | IsAction Action
+  | EnemyAction Action [Trait]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON, Hashable)
 

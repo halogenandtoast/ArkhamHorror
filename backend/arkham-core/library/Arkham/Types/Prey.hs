@@ -5,6 +5,7 @@ where
 
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.SkillType
+import Arkham.Types.Trait
 import ClassyPrelude
 import Data.Aeson
 
@@ -18,5 +19,6 @@ data Prey
   | Bearer BearerId
   | SetToBearer
   | MostClues
+  | NearestToEnemyWithTrait Trait
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

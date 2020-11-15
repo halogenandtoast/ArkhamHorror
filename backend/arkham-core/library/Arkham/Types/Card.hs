@@ -13,6 +13,7 @@ module Arkham.Types.Card
   , HasCardCode(..)
   , HasCardId(..)
   , HasCost(..)
+  , HasSkillIcons(..)
   , HasCard(..)
   , BearerId(..)
   , AttackOfOpportunityModifier(..)
@@ -64,6 +65,10 @@ newtype InPlayCard = InPlayCard { unInPlayCard ::Card }
 
 class HasCard b a where
   getCard :: b -> CardId -> a -> Card
+
+instance HasSkillIcons Card where
+  getSkillIcons (PlayerCard card) = getSkillIcons card
+  getSkillIcons (EncounterCard _) = []
 
 instance HasCardCode Card where
   getCardCode (PlayerCard card) = getCardCode card

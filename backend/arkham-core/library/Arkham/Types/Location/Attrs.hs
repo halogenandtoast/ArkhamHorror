@@ -319,7 +319,7 @@ instance LocationRunner env => RunMessage env Attrs where
     EnemyMove eid _ lid | lid == locationId -> do
       willMove <- canEnterLocation eid lid
       if willMove then pure $ a & enemies %~ HashSet.insert eid else pure a
-    Will next@(EnemySpawn lid eid) | lid == locationId -> do
+    Will next@(EnemySpawn miid lid eid) | lid == locationId -> do
       when (shouldSpawnNonEliteAtConnectingInstead a) $ do
         traits' <- HashSet.toList <$> asks (getSet eid)
         when (Elite `notElem` traits') $ do
@@ -340,13 +340,16 @@ instance LocationRunner env => RunMessage env Attrs where
               (Ask
                 activeInvestigatorId
                 (ChooseOne
-                  [ Run [Will (EnemySpawn lid' eid), EnemySpawn lid' eid]
+                  [ Run
+                      [ Will (EnemySpawn miid lid' eid)
+                      , EnemySpawn miid lid' eid
+                      ]
                   | lid' <- availableLocationIds
                   ]
                 )
               )
       pure a
-    EnemySpawn lid eid | lid == locationId ->
+    EnemySpawn _ lid eid | lid == locationId ->
       pure $ a & enemies %~ HashSet.insert eid
     EnemySpawnedAt lid eid | lid == locationId ->
       pure $ a & enemies %~ HashSet.insert eid

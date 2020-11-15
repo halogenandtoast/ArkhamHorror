@@ -51,10 +51,9 @@ nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
 
 instance (EnemyRunner env) => RunMessage env SlimeCoveredDhole where
   runMessage msg e@(SlimeCoveredDhole attrs@Attrs {..}) = case msg of
-    InvestigatorDrawEnemy _ _ eid | eid == enemyId -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+    InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
       spawnLocations <- setToList <$> nonBayouLocations
-      e <$ spawnAtOneOf leadInvestigatorId enemyId spawnLocations
+      e <$ spawnAtOneOf iid enemyId spawnLocations
     EnemyMove eid _ lid | eid == enemyId -> do
       investigatorIds <- asks $ setToList . getSet @InvestigatorId lid
       e <$ unshiftMessages

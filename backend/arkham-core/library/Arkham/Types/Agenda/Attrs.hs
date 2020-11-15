@@ -12,6 +12,7 @@ data Attrs = Attrs
   , agendaId            :: AgendaId
   , agendaName          :: Text
   , agendaSequence      :: Text
+  , agendaNumber :: Int
   , agendaAbilities :: [Ability]
   , agendaFlipped :: Bool
   }
@@ -23,6 +24,9 @@ instance ToJSON Attrs where
 
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "agenda"
+
+toSource :: Attrs -> Source
+toSource Attrs { agendaId } = AgendaSource agendaId
 
 doom :: Lens' Attrs Int
 doom = lens agendaDoom $ \m x -> m { agendaDoom = x }
@@ -37,8 +41,8 @@ doomThreshold :: Lens' Attrs (GameValue Int)
 doomThreshold =
   lens agendaDoomThreshold $ \m x -> m { agendaDoomThreshold = x }
 
-baseAttrs :: AgendaId -> Text -> Text -> GameValue Int -> Attrs
-baseAttrs aid name seq' threshold = Attrs
+baseAttrs :: AgendaId -> Int -> Text -> Text -> GameValue Int -> Attrs
+baseAttrs aid num name seq' threshold = Attrs
   { agendaDoom = 0
   , agendaDoomThreshold = threshold
   , agendaId = aid
@@ -46,6 +50,7 @@ baseAttrs aid name seq' threshold = Attrs
   , agendaSequence = seq'
   , agendaAbilities = mempty
   , agendaFlipped = False
+  , agendaNumber = num
   }
 
 instance HasActions env Attrs where

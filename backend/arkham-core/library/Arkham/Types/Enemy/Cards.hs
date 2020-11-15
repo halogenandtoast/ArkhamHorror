@@ -8,6 +8,7 @@ import Arkham.Types.Enemy.Cards.AcolyteOfUmordhoth as X
 import Arkham.Types.Enemy.Cards.BogGator as X
 import Arkham.Types.Enemy.Cards.CorpseHungryGhoul as X
 import Arkham.Types.Enemy.Cards.DarkYoungHost as X
+import Arkham.Types.Enemy.Cards.DiscipleOfTheDevourer as X
 import Arkham.Types.Enemy.Cards.FleshEater as X
 import Arkham.Types.Enemy.Cards.GhoulFromTheDepths as X
 import Arkham.Types.Enemy.Cards.GhoulMinion as X
@@ -19,6 +20,7 @@ import Arkham.Types.Enemy.Cards.HuntingNightgaunt as X
 import Arkham.Types.Enemy.Cards.IcyGhoul as X
 import Arkham.Types.Enemy.Cards.MarshGug as X
 import Arkham.Types.Enemy.Cards.MobEnforcer as X
+import Arkham.Types.Enemy.Cards.Narogath as X
 import Arkham.Types.Enemy.Cards.PeterWarren as X
 import Arkham.Types.Enemy.Cards.RavenousGhoul as X
 import Arkham.Types.Enemy.Cards.RelentlessDarkYoung as X

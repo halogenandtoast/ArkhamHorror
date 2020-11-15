@@ -17,8 +17,8 @@ newtype VengeanceAwaits = VengeanceAwaits Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 vengeanceAwaits :: VengeanceAwaits
-vengeanceAwaits =
-  VengeanceAwaits $ baseAttrs "01145" "Vengeance Awaits" "Agenda 3a" (Static 5)
+vengeanceAwaits = VengeanceAwaits
+  $ baseAttrs "01145" 3 "Vengeance Awaits" "Agenda 3a" (Static 5)
 
 instance HasActions env VengeanceAwaits where
   getActions i window (VengeanceAwaits x) = getActions i window x

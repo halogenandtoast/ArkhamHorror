@@ -117,9 +117,12 @@ allEncounterCards = HashMap.fromList
   , ("50022", corpseHungryGhoul)
   , ("50023", ghoulFromTheDepths)
   , ("50024", theZealotsSeal)
+  , ("50026b", narogath)
+  , ("50031", maskedHorrors)
   , ("50038", graveEater)
   , ("50039", acolyteOfUmordhoth)
   , ("50040", chillFromBelow)
+  , ("50041", discipleOfTheDevourer)
   , ("81022", bogGator)
   , ("81023", swampLeech)
   , ("81024", cursedSwamp)
@@ -362,6 +365,18 @@ theZealotsSeal cardId = (treachery cardId "50024" "The Zealot's Seal")
   { ecTraits = setFromList [Hex]
   }
 
+narogath :: CardId -> EncounterCard
+narogath cardId = (enemy cardId "50026b" "Narôgath")
+  { ecTraits = setFromList [Humanoid, Monster, Cultist, Elite]
+  , ecKeywords = [Keyword.Hunter]
+  , ecVictoryPoints = Just 2
+  }
+
+maskedHorrors :: CardId -> EncounterCard
+maskedHorrors cardId = (treachery cardId "50031" "Masked Horrors")
+  { ecTraits = setFromList [Power, Scheme]
+  }
+
 graveEater :: CardId -> EncounterCard
 graveEater cardId = (enemy cardId "50038" "Grave-Eater")
   { ecTraits = setFromList [Humanoid, Monster, Ghoul]
@@ -375,6 +390,12 @@ acolyteOfUmordhoth cardId = (enemy cardId "50039" "Acolyte of Umôrdhoth")
 chillFromBelow :: CardId -> EncounterCard
 chillFromBelow cardId = (treachery cardId "50040" "Chill from Below")
   { ecTraits = setFromList [Hazard]
+  }
+
+discipleOfTheDevourer :: CardId -> EncounterCard
+discipleOfTheDevourer cardId = (enemy cardId "50041" "Disciple of the Devourer"
+                               )
+  { ecTraits = setFromList [Humanoid, Cultist]
   }
 
 bogGator :: CardId -> EncounterCard

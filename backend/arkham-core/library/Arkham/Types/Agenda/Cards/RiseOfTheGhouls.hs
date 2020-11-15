@@ -14,7 +14,7 @@ newtype RiseOfTheGhouls = RiseOfTheGhouls Attrs
 
 riseOfTheGhouls :: RiseOfTheGhouls
 riseOfTheGhouls = RiseOfTheGhouls
-  $ baseAttrs "01106" "Rise of the Ghouls" "Agenda 2a" (Static 7)
+  $ baseAttrs "01106" 2 "Rise of the Ghouls" "Agenda 2a" (Static 7)
 
 instance HasActions env RiseOfTheGhouls where
   getActions i window (RiseOfTheGhouls x) = getActions i window x

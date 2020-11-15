@@ -24,7 +24,10 @@ guestHall = GuestHall $ baseAttrs
 
 instance HasModifiersFor env GuestHall where
   getModifiersFor _ (InvestigatorTarget iid) (GuestHall attrs) = do
-    pure [ CannotTakeAction Draw | iid `elem` locationInvestigators attrs ]
+    pure
+      [ CannotTakeAction (IsAction Draw)
+      | iid `elem` locationInvestigators attrs
+      ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env GuestHall where

@@ -17,7 +17,7 @@ newtype WhatsGoingOn = WhatsGoingOn Attrs
 
 whatsGoingOn :: WhatsGoingOn
 whatsGoingOn =
-  WhatsGoingOn $ baseAttrs "01105" "What's Going On?!" "Agenda 1a" (Static 3)
+  WhatsGoingOn $ baseAttrs "01105" 1 "What's Going On?!" "Agenda 1a" (Static 3)
 
 instance HasActions env WhatsGoingOn where
   getActions i window (WhatsGoingOn x) = getActions i window x

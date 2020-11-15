@@ -40,6 +40,8 @@ import GHC.Stack
 import Lens.Micro hiding (to)
 import Lens.Micro.Extras
 
+newtype Distance = Distance { unDistance :: Int }
+
 class HasQueue a where
   messageQueue :: Lens' a (IORef [Message])
 
@@ -199,6 +201,9 @@ class HasModifiers env a where
   getModifiers :: (MonadReader env m, MonadIO m) => Source -> a -> m [Modifier]
   default getModifiers :: (Generic a, HasModifiers1 env (Rep a), MonadIO m, MonadReader env m) => Source -> a -> m [Modifier]
   getModifiers = defaultGetModifiers
+
+class HasStep c a where
+  getStep ::  a -> c
 
 class HasSource b a where
   getSource :: b -> a -> Maybe Source

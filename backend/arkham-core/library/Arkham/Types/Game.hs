@@ -558,6 +558,11 @@ instance GameRunner env => HasModifiersFor env (Game queue) where
     , maybe (pure []) (getModifiersFor source target) (g ^. skillTest)
     ]
 
+instance HasStep AgendaStep (Game queue) where
+  getStep g = case toList (g ^. agendas) of
+    [agenda] -> getStep agenda
+    _ -> error "wrong number of agendas"
+
 instance HasList InPlayCard InvestigatorId (Game queue) where
   getList iid g = do
     let
@@ -955,6 +960,29 @@ instance HasSet FarthestLocationId InvestigatorId (Game queue) where
     let start = locationFor iid g
     in
       setFromList . map FarthestLocationId $ getLongestPath g start (const True)
+
+instance HasSet FarthestLocationId (InvestigatorId, EmptyLocation) (Game queue) where
+  getSet (iid, _) g =
+    let
+      start = locationFor iid g
+      emptyLocationIds = map unEmptyLocationId . setToList $ getSet () g
+    in setFromList . map FarthestLocationId $ getLongestPath
+      g
+      start
+      (`elem` emptyLocationIds)
+
+instance HasList (InvestigatorId, Distance) EnemyTrait (Game queue) where
+  getList enemyTrait game = flip map iids
+    $ \iid -> (iid, getDistance $ locationFor iid game)
+   where
+    iids = keys $ game ^. investigators
+    hasMatchingEnemy lid = any
+      (\eid -> elem (unEnemyTrait enemyTrait) . getTraits $ getEnemy eid game)
+      (getSet () (getLocation lid game))
+    getDistance start =
+      Distance . fromJustNote "error" . minimumMay . keys $ evalState
+        (markDistances game start hasMatchingEnemy)
+        (LPState (pure start) (singleton start) mempty)
 
 distanceSingletons :: HashMap Int [LocationId] -> HashMap LocationId Int
 distanceSingletons hmap = foldr
@@ -1867,7 +1895,10 @@ runGameMessage msg g = case msg of
       eid = EnemyId $ unCardId (getCardId card)
       enemy' = lookupEnemy (getCardCode card) eid
     unshiftMessages
-      [Will (EnemySpawn lid eid), When (EnemySpawn lid eid), EnemySpawn lid eid]
+      [ Will (EnemySpawn Nothing lid eid)
+      , When (EnemySpawn Nothing lid eid)
+      , EnemySpawn Nothing lid eid
+      ]
     pure $ g & enemies . at eid ?~ enemy'
   CreateEnemyRequest source cardCode -> do
     (enemyId', enemy') <- createEnemy cardCode
@@ -1876,9 +1907,9 @@ runGameMessage msg g = case msg of
   CreateEnemyAt cardCode lid -> do
     (enemyId', enemy') <- createEnemy cardCode
     unshiftMessages
-      [ Will (EnemySpawn lid enemyId')
-      , When (EnemySpawn lid enemyId')
-      , EnemySpawn lid enemyId'
+      [ Will (EnemySpawn Nothing lid enemyId')
+      , When (EnemySpawn Nothing lid enemyId')
+      , EnemySpawn Nothing lid enemyId'
       ]
     pure $ g & enemies . at enemyId' ?~ enemy'
   CreateEnemyEngagedWithPrey cardCode -> do

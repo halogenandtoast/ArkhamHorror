@@ -30,6 +30,6 @@ instance (EnemyRunner env) => RunMessage env Acolyte where
   runMessage msg e@(Acolyte attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAtEmptyLocation iid eid
-    EnemySpawn _ eid | eid == enemyId ->
+    EnemySpawn _ _ eid | eid == enemyId ->
       Acolyte <$> runMessage msg (attrs & doom +~ 1)
     _ -> Acolyte <$> runMessage msg attrs

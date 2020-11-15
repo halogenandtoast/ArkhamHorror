@@ -379,6 +379,7 @@ matchTarget :: Attrs -> ActionTarget -> Action -> Bool
 matchTarget attrs (FirstOneOf as) action =
   action `elem` as && all (`notElem` investigatorActionsTaken attrs) as
 matchTarget _ (IsAction a) action = action == a
+matchTarget _ (EnemyAction a _) action = action == a
 
 actionCost :: Attrs -> Action -> Int
 actionCost attrs a = foldr
@@ -1270,7 +1271,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       (Ask investigatorId
       $ ChooseOne [InvestigatorDrawEncounterCard investigatorId]
       )
-  When (EnemySpawn lid eid) | lid == investigatorLocation -> do
+  When (EnemySpawn _ lid eid) | lid == investigatorLocation -> do
     traits <- asks $ setToList . getSet eid
     a <$ unshiftMessage
       (CheckWindow investigatorId [WhenEnemySpawns YourLocation traits])
@@ -1600,7 +1601,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
            ]
         <> [ DrawCards iid 1 True
            | canAfford a Action.Draw
-             && CannotTakeAction Action.Draw
+             && CannotTakeAction (IsAction Action.Draw)
              `notElem` modifiers'
            ]
         <> [ InitiatePlayCard iid (getCardId c) Nothing True

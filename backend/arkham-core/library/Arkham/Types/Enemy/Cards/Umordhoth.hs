@@ -46,7 +46,7 @@ instance ActionRunner env => HasActions env Umordhoth where
 
 instance (EnemyRunner env) => RunMessage env Umordhoth where
   runMessage msg e@(Umordhoth attrs@Attrs {..}) = case msg of
-    EnemySpawn _ eid | eid == enemyId -> do
+    EnemySpawn _ _ eid | eid == enemyId -> do
       playerCount <- unPlayerCount <$> asks (getCount ())
       Umordhoth
         <$> runMessage msg (attrs & health %~ fmap (+ (4 * playerCount)))

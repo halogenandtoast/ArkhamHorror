@@ -13,6 +13,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Helpers
+import Arkham.Types.Action
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Cards
 import Arkham.Types.Enemy.Runner
@@ -45,8 +46,10 @@ data Enemy
   | YoungDeepOne' YoungDeepOne
   | CorpseHungryGhoul' CorpseHungryGhoul
   | GhoulFromTheDepths' GhoulFromTheDepths
+  | Narogath' Narogath
   | GraveEater' GraveEater
   | AcolyteOfUmordhoth' AcolyteOfUmordhoth
+  | DiscipleOfTheDevourer' DiscipleOfTheDevourer
   | BogGator' BogGator
   | SwampLeech' SwampLeech
   | TheRougarou' TheRougarou
@@ -77,7 +80,40 @@ instance HasModifiers env BaseEnemy where
 instance (EnemyRunner env) => RunMessage env BaseEnemy where
   runMessage msg (BaseEnemy attrs) = BaseEnemy <$> runMessage msg attrs
 
-deriving anyclass instance ActionRunner env => HasActions env Enemy
+actionFromMessage :: Message -> Maybe Action
+actionFromMessage (ActivateCardAbilityAction _ ability) =
+  case abilityType ability of
+    ActionAbility _ maction -> maction
+    _ -> Nothing
+actionFromMessage _ = Nothing
+
+preventedByModifier :: Attrs -> Message -> Modifier -> Bool
+preventedByModifier Attrs {..} msg (CannotTakeAction matcher) =
+  case actionFromMessage msg of
+    Just action -> case matcher of
+      IsAction a -> a == action
+      EnemyAction a traits ->
+        a == action && not (null $ setFromList traits `intersect` enemyTraits)
+      FirstOneOf _ -> False -- TODO: We can't tell here
+    Nothing -> False
+preventedByModifier _ _ _ = False
+
+instance ActionRunner env => HasActions env Enemy where
+  getActions investigator window enemy = do
+    modifiers' <-
+      getModifiersFor
+          (EnemySource $ getId () enemy)
+          (InvestigatorTarget investigator)
+        =<< ask
+    actions <- defaultGetActions investigator window enemy
+
+    -- preventedByModifier :: Attrs -> Modifier -> Action -> Bool
+    pure $ filter
+      (\action ->
+        not $ any (preventedByModifier (enemyAttrs enemy) action) modifiers'
+      )
+      actions
+
 deriving anyclass instance EnemyRunner env => HasModifiersFor env Enemy
 
 instance (EnemyRunner env) => RunMessage env Enemy where
@@ -159,8 +195,10 @@ allEnemies = mapFromList
   , ("01181", YoungDeepOne' . youngDeepOne)
   , ("50022", CorpseHungryGhoul' . corpseHungryGhoul)
   , ("50023", GhoulFromTheDepths' . ghoulFromTheDepths)
+  , ("50026b", Narogath' . narogath)
   , ("50038", GraveEater' . graveEater)
   , ("50039", AcolyteOfUmordhoth' . acolyteOfUmordhoth)
+  , ("50041", DiscipleOfTheDevourer' . discipleOfTheDevourer)
   , ("81022", BogGator' . bogGator)
   , ("81023", SwampLeech' . swampLeech)
   , ("81028", TheRougarou' . theRougarou)
@@ -219,8 +257,10 @@ enemyAttrs = \case
   YoungDeepOne' attrs -> coerce attrs
   CorpseHungryGhoul' attrs -> coerce attrs
   GhoulFromTheDepths' attrs -> coerce attrs
+  Narogath' attrs -> coerce attrs
   GraveEater' attrs -> coerce attrs
   AcolyteOfUmordhoth' attrs -> coerce attrs
+  DiscipleOfTheDevourer' attrs -> coerce attrs
   BogGator' attrs -> coerce attrs
   SwampLeech' attrs -> coerce attrs
   TheRougarou' (TheRougarou (attrs `With` _)) -> attrs

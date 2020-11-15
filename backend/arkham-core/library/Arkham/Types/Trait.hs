@@ -1,10 +1,13 @@
 module Arkham.Types.Trait
   ( Trait(..)
+  , EnemyTrait(..)
   )
 where
 
 import ClassyPrelude
 import Data.Aeson
+
+newtype EnemyTrait = EnemyTrait { unEnemyTrait :: Trait }
 
 data Trait
   = Agency
@@ -93,6 +96,7 @@ data Trait
   | Patron
   | Performer
   | Police
+  | Power
   | Practiced
   | Ranged
   | Relic
@@ -100,6 +104,7 @@ data Trait
   | Research
   | Ritual
   | Riverside
+  | Scheme
   | Scholar
   | Science
   | Serpent

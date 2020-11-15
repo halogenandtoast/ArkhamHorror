@@ -42,7 +42,9 @@ instance (TreacheryRunner env) => RunMessage env SmiteTheWicked where
         [ AttachTreachery treacheryId (EnemyTarget eid)
         , Ask
           ownerId
-          (ChooseOne [ EnemySpawn lid eid | lid <- farthestLocations ])
+          (ChooseOne
+            [ EnemySpawn (Just ownerId) lid eid | lid <- farthestLocations ]
+          )
         ]
     InvestigatorEliminated iid | treacheryOwner == Just iid -> do
       runMessage EndOfGame t >>= \case

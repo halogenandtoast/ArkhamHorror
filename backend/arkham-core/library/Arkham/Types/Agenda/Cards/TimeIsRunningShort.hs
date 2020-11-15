@@ -13,7 +13,7 @@ newtype TimeIsRunningShort = TimeIsRunningShort Attrs
 
 timeIsRunningShort :: TimeIsRunningShort
 timeIsRunningShort = TimeIsRunningShort
-  $ baseAttrs "01122" "Time Is Running Short" "Agenda 2a" (Static 8)
+  $ baseAttrs "01122" 2 "Time Is Running Short" "Agenda 2a" (Static 8)
 
 instance ActionRunner env => HasActions env TimeIsRunningShort where
   getActions iid NonFast (TimeIsRunningShort _) = do

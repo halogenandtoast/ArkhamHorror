@@ -46,21 +46,17 @@ instance ActionRunner env => HasActions env YourHouse where
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction iid (ability attrs)
-         | unused
-           && locationRevealed
-           && iid
-           `member` locationInvestigators
-           && hasActionsRemaining
+         | unused && iid `member` locationInvestigators && hasActionsRemaining
          ]
   getActions _ _ _ = pure []
 
 instance (LocationRunner env) => RunMessage env YourHouse where
   runMessage msg l@(YourHouse attrs@Attrs {..}) = case msg of
-    Will (EnemySpawn _ eid) -> do
+    Will (EnemySpawn miid _ eid) -> do
       cardCode <- asks (getId @CardCode eid)
       when (cardCode == "01116") $ do
         void popMessage
-        unshiftMessage (EnemySpawn "01124" eid)
+        unshiftMessage (EnemySpawn miid "01124" eid)
       YourHouse <$> runMessage msg attrs
     UseCardAbility iid source _ 1 | isSource attrs source ->
       l <$ unshiftMessages [DrawCards iid 1 False, TakeResources iid 1 False]

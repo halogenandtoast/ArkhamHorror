@@ -145,7 +145,7 @@ data Message
   | RevertAct ActId
   | NextAdvanceActStep ActId Int
   | AllDrawEncounterCard
-  | DrawEncounterCards Target Int
+  | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
   | RequestedEncounterCards Target [EncounterCard]
   | PlaceLocation LocationId
   | PlaceLocationNamed LocationName
@@ -170,6 +170,7 @@ data Message
   | LoseActions InvestigatorId Source Int
   | SetActions InvestigatorId Source Int
   | GainActions InvestigatorId Source Int
+  | UseLimitedAbility InvestigatorId Ability
   | ChooseActivateCardAbilityAction InvestigatorId
   | ActivateCardAbilityAction InvestigatorId Ability
   | ActivateCardAbilityActionWithDynamicCost InvestigatorId Ability
@@ -205,7 +206,7 @@ data Message
   | InvestigatorDamageEnemy InvestigatorId EnemyId
   | InvestigatorDamageInvestigator InvestigatorId InvestigatorId
   | EnemyDamage EnemyId InvestigatorId Source Int
-  | EnemyDefeated EnemyId InvestigatorId CardCode Source
+  | EnemyDefeated EnemyId InvestigatorId LocationId CardCode Source [Trait]
   | Damage Target Source Int
   | AddToVictory Target
   | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
@@ -406,6 +407,7 @@ data Message
   | RemoveKeywords Target [Keyword]
   | ChangeCardToFast InvestigatorId CardId
   | CreateEffect Source Target CardCode
+  | CreatedEffect Source Target EffectId
   | DisableEffect EffectId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

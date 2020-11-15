@@ -4,11 +4,15 @@ module Arkham.Types.Location.Cards
 where
 
 import Arkham.Types.Location.Cards.ArkhamWoodsCliffside as X
+import Arkham.Types.Location.Cards.ArkhamWoodsCorpseRiddenClearing as X
+import Arkham.Types.Location.Cards.ArkhamWoodsGreatWillow as X
+import Arkham.Types.Location.Cards.ArkhamWoodsLakeside as X
 import Arkham.Types.Location.Cards.ArkhamWoodsOldHouse as X
 import Arkham.Types.Location.Cards.ArkhamWoodsQuietGlade as X
 import Arkham.Types.Location.Cards.ArkhamWoodsTangledThicket as X
 import Arkham.Types.Location.Cards.ArkhamWoodsTwistingPaths as X
 import Arkham.Types.Location.Cards.ArkhamWoodsUnhallowedGround as X
+import Arkham.Types.Location.Cards.ArkhamWoodsWoodenBridge as X
 import Arkham.Types.Location.Cards.Attic as X
 import Arkham.Types.Location.Cards.AudubonPark as X
 import Arkham.Types.Location.Cards.Bathroom as X

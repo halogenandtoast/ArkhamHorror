@@ -93,5 +93,5 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
     EnemyMove eid lid _ -> do
       isRougarou <- asks $ (== CardCode "81028") . getId eid
       a <$ when isRougarou (unshiftMessage (PlaceClues (LocationTarget lid) 1))
-    EnemyDefeated _ _ "81028" _ -> a <$ unshiftMessage (Resolution 2)
+    EnemyDefeated _ _ _ "81028" _ _ -> a <$ unshiftMessage (Resolution 2)
     _ -> HuntingTheRougarou <$> runMessage msg attrs

@@ -3,4 +3,5 @@ module Arkham.Types.Effect.Effects
   )
 where
 
+import Arkham.Types.Effect.Effects.JeremiahPierce as X
 import Arkham.Types.Effect.Effects.LetMeHandleThis as X

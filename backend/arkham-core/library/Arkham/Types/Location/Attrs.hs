@@ -354,7 +354,7 @@ instance LocationRunner env => RunMessage env Attrs where
     EnemySpawnedAt lid eid | lid == locationId ->
       pure $ a & enemies %~ HashSet.insert eid
     RemoveEnemy eid -> pure $ a & enemies %~ HashSet.delete eid
-    EnemyDefeated eid _ _ _ -> pure $ a & enemies %~ HashSet.delete eid
+    EnemyDefeated eid _ _ _ _ _ -> pure $ a & enemies %~ HashSet.delete eid
     TakeControlOfAsset _ aid -> pure $ a & assets %~ HashSet.delete aid
     PlaceClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & clues +~ n

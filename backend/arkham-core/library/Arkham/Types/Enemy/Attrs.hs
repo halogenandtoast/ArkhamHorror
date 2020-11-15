@@ -43,6 +43,9 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "enemy"
 
+toTarget :: Attrs -> Target
+toTarget Attrs { enemyId } = EnemyTarget enemyId
+
 doom :: Lens' Attrs Int
 doom = lens enemyDoom $ \m x -> m { enemyDoom = x }
 
@@ -233,14 +236,26 @@ modifiedEnemyEvade Attrs {..} = do
   applyModifier (EnemyEvade m) n = max 0 (n + m)
   applyModifier _ n = n
 
-modifiedDamageAmount :: Attrs -> Int -> Int
-modifiedDamageAmount attrs baseAmount = foldr
-  applyModifier
-  baseAmount
-  (concat . toList $ enemyModifiers attrs)
+getModifiedDamageAmount
+  :: ( MonadReader env m
+     , MonadIO m
+     , HasModifiersFor env env
+     , HasSource ForSkillTest env
+     )
+  => Attrs
+  -> Int
+  -> m Int
+getModifiedDamageAmount Attrs {..} baseAmount = do
+  msource <- asks $ getSource ForSkillTest
+  let source = fromMaybe (EnemySource enemyId) msource
+  modifiers' <- getModifiersFor source (EnemyTarget enemyId) =<< ask
+  let updatedAmount = foldr applyModifier baseAmount modifiers'
+  pure $ foldr applyModifierCaps updatedAmount modifiers'
  where
   applyModifier (DamageTaken m) n = max 0 (n + m)
   applyModifier _ n = n
+  applyModifierCaps (MaxDamageTaken m) n = min m n
+  applyModifierCaps _ n = n
 
 canEnterLocation
   :: (EnemyRunner env, MonadReader env m, MonadIO m)
@@ -487,12 +502,21 @@ instance EnemyRunner env => RunMessage env Attrs where
       , After (EnemyAttack iid enemyId)
       ]
     EnemyDamage eid iid source amount | eid == enemyId -> do
-      let amount' = modifiedDamageAmount a amount
+      amount' <- getModifiedDamageAmount a amount
       modifiedHealth <- getModifiedHealth a
       (a & damage +~ amount') <$ when
         (a ^. damage + amount' >= modifiedHealth)
-        (unshiftMessage (EnemyDefeated eid iid enemyCardCode source))
-    EnemyDefeated eid _ _ _ | eid == enemyId -> do
+        (unshiftMessage
+          (EnemyDefeated
+            eid
+            iid
+            enemyLocation
+            enemyCardCode
+            source
+            (setToList enemyTraits)
+          )
+        )
+    EnemyDefeated eid _ _ _ _ _ | eid == enemyId -> do
       unshiftMessages
         [ Discard (TreacheryTarget tid) | tid <- setToList enemyTreacheries ]
       unshiftMessages

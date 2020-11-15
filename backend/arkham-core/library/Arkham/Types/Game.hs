@@ -1345,6 +1345,7 @@ runGameMessage msg g = case msg of
       & (phase .~ InvestigationPhase)
   CreateEffect source target cardCode -> do
     (effectId', effect') <- createEffect cardCode source target
+    unshiftMessage (CreatedEffect source target effectId')
     pure $ g & effects %~ insertMap effectId' effect'
   DisableEffect effectId -> pure $ g & effects %~ deleteMap effectId
   FocusCards cards -> pure $ g & focusedCards .~ cards
@@ -1571,6 +1572,8 @@ runGameMessage msg g = case msg of
     pure $ g & usedAbilities %~ ((iid, ability) :)
   ActivateCardAbilityActionWithDynamicCost iid ability ->
     pure $ g & usedAbilities %~ ((iid, ability) :)
+  UseLimitedAbility iid ability ->
+    pure $ g & usedAbilities %~ ((iid, ability) :)
   DrewPlayerTreachery iid cardCode cardId -> do
     let
       playerCard = lookupPlayerCard cardCode cardId
@@ -1703,18 +1706,17 @@ runGameMessage msg g = case msg of
     unshiftMessage (Discarded (AssetTarget aid) (getCardCode asset))
     pure $ g & assets %~ deleteMap aid
   RemoveFromGame (AssetTarget aid) -> pure $ g & assets %~ deleteMap aid
-  EnemyDefeated eid iid cardCode source -> do
+  EnemyDefeated eid iid _ cardCode _ _ -> do
     broadcastWindow Fast.WhenEnemyDefeated iid g
     let
       enemy = getEnemy eid g
       cardId = CardId (unEnemyId eid)
       card = fromJustNote "no card found" $ lookupCard cardCode <*> pure cardId
     if isJust (getEnemyVictory enemy)
-      then pure $ g & (enemies %~ deleteMap eid) & (victoryDisplay %~ (card :))
-      else g <$ unshiftMessages
-        [ When (EnemyDefeated eid iid cardCode source)
-        , Discard (EnemyTarget eid)
-        ]
+      then do
+        unshiftMessage $ After msg
+        pure $ g & (enemies %~ deleteMap eid) & (victoryDisplay %~ (card :))
+      else g <$ unshiftMessages [When msg, Discard (EnemyTarget eid), After msg]
   Discard (SearchedCardTarget iid cardId) -> do
     let
       card = fromJustNote "must exist"

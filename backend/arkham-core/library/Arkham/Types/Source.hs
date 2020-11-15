@@ -9,6 +9,7 @@ import Arkham.Types.Action (Action)
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
 import Arkham.Types.Card.Id
+import Arkham.Types.EffectId
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
@@ -40,6 +41,7 @@ data Source
   | EndOfTurnSource Source
   | DrawnTokenSource DrawnToken
   | ProxySource Source Source
+  | EffectSource EffectId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 

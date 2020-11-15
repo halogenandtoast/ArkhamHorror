@@ -27,5 +27,6 @@ type LocationRunner env
     , HasSet LocationId () env
     , HasList LocationName () env
     , HasList HandCard InvestigatorId env
+    , HasList UsedAbility () env
     )
 

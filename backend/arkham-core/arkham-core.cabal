@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7e4720312648988d6af4a60d43ee645b6a7ee051b2f8d141b28a62f9ba0c7f42
+-- hash: 33684d25f5405dad820376d279b1bfd5c0e6cfb83f3d693e89574e94e875b6f7
 
 name:           arkham-core
 version:        0.0.0
@@ -39,6 +39,7 @@ library
       Arkham.Types.Agenda.Cards
       Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
       Arkham.Types.Agenda.Cards.PredatorOrPrey
+      Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey
       Arkham.Types.Agenda.Cards.RiseOfTheGhouls
       Arkham.Types.Agenda.Cards.TheArkhamWoods
       Arkham.Types.Agenda.Cards.TheCurseSpreads
@@ -177,6 +178,7 @@ library
       Arkham.Types.Enemy.Cards.BogGator
       Arkham.Types.Enemy.Cards.CorpseHungryGhoul
       Arkham.Types.Enemy.Cards.DarkYoungHost
+      Arkham.Types.Enemy.Cards.DiscipleOfTheDevourer
       Arkham.Types.Enemy.Cards.FleshEater
       Arkham.Types.Enemy.Cards.GhoulFromTheDepths
       Arkham.Types.Enemy.Cards.GhoulMinion
@@ -188,6 +190,7 @@ library
       Arkham.Types.Enemy.Cards.IcyGhoul
       Arkham.Types.Enemy.Cards.MarshGug
       Arkham.Types.Enemy.Cards.MobEnforcer
+      Arkham.Types.Enemy.Cards.Narogath
       Arkham.Types.Enemy.Cards.PeterWarren
       Arkham.Types.Enemy.Cards.RavenousGhoul
       Arkham.Types.Enemy.Cards.RelentlessDarkYoung
@@ -327,6 +330,7 @@ library
       Arkham.Types.Location.Cards.DowntownArkhamAsylum
       Arkham.Types.Location.Cards.DowntownFirstBankOfArkham
       Arkham.Types.Location.Cards.Easttown
+      Arkham.Types.Location.Cards.EasttownArkhamPoliceStation
       Arkham.Types.Location.Cards.FarAboveYourHouse
       Arkham.Types.Location.Cards.FauborgMarigny
       Arkham.Types.Location.Cards.ForgottenMarsh
@@ -338,7 +342,9 @@ library
       Arkham.Types.Location.Cards.HoleInTheWall
       Arkham.Types.Location.Cards.MainPath
       Arkham.Types.Location.Cards.MiskatonicUniversity
+      Arkham.Types.Location.Cards.MiskatonicUniversityMiskatonicMuseum
       Arkham.Types.Location.Cards.Northside
+      Arkham.Types.Location.Cards.NorthsideTrainStation
       Arkham.Types.Location.Cards.OvergrownCairns
       Arkham.Types.Location.Cards.Parlor
       Arkham.Types.Location.Cards.ReturnToAttic
@@ -346,6 +352,7 @@ library
       Arkham.Types.Location.Cards.RitualGrounds
       Arkham.Types.Location.Cards.RitualSite
       Arkham.Types.Location.Cards.Rivertown
+      Arkham.Types.Location.Cards.RivertownAbandonedWarehouse
       Arkham.Types.Location.Cards.SouthsideHistoricalSociety
       Arkham.Types.Location.Cards.SouthsideMasBoardingHouse
       Arkham.Types.Location.Cards.StMarysHospital
@@ -370,6 +377,7 @@ library
       Arkham.Types.Scenario.Runner
       Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
       Arkham.Types.Scenario.Scenarios.ReturnToTheGathering
+      Arkham.Types.Scenario.Scenarios.ReturnToTheMidnightMasks
       Arkham.Types.Scenario.Scenarios.TheDevourerBelow
       Arkham.Types.Scenario.Scenarios.TheGathering
       Arkham.Types.Scenario.Scenarios.TheMidnightMasks
@@ -429,6 +437,7 @@ library
       Arkham.Types.Treachery.Cards.Hypochondria
       Arkham.Types.Treachery.Cards.InsatiableBloodlust
       Arkham.Types.Treachery.Cards.LockedDoor
+      Arkham.Types.Treachery.Cards.MaskedHorrors
       Arkham.Types.Treachery.Cards.MysteriousChanting
       Arkham.Types.Treachery.Cards.ObscuringFog
       Arkham.Types.Treachery.Cards.OfferOfPower

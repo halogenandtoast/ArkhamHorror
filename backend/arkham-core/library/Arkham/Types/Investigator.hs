@@ -234,6 +234,7 @@ isPrey
      , HasSet RemainingSanity () env
      , HasSet ClueCount () env
      , HasSet CardCount () env
+     , HasList (InvestigatorId, Distance) EnemyTrait env
      )
   => Prey
   -> env
@@ -260,6 +261,17 @@ isPrey MostClues env i =
 isPrey FewestCards env i =
   fromMaybe 100 (minimumMay . map unCardCount . toList $ getSet () env)
     == unCardCount (getCount () i)
+isPrey (NearestToEnemyWithTrait trait) env i =
+  let
+    mappings :: [(InvestigatorId, Distance)] = getList (EnemyTrait trait) env
+    mappingsMap :: HashMap InvestigatorId Distance = mapFromList mappings
+    minDistance :: Int =
+      fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
+    investigatorDistance :: Int = unDistance $ findWithDefault
+      (error "investigator not found")
+      (investigatorId $ investigatorAttrs i)
+      mappingsMap
+  in investigatorDistance == minDistance
 isPrey SetToBearer _ _ = error "The bearer was not correctly set"
 
 availableSkillsFor :: Investigator -> SkillType -> [SkillType]

@@ -18,7 +18,7 @@ newtype ACreatureOfTheBayou = ACreatureOfTheBayou Attrs
 
 aCreatureOfTheBayou :: ACreatureOfTheBayou
 aCreatureOfTheBayou = ACreatureOfTheBayou
-  $ baseAttrs "81002" "A Creature of the Bayou" "Agenda 1a" (Static 5)
+  $ baseAttrs "81002" 1 "A Creature of the Bayou" "Agenda 1a" (Static 5)
 
 instance HasActions env ACreatureOfTheBayou where
   getActions i window (ACreatureOfTheBayou x) = getActions i window x

@@ -75,6 +75,9 @@ instance HasCardCode PlayerCard where
 instance HasCardId PlayerCard where
   getCardId = pcId
 
+instance HasSkillIcons PlayerCard where
+  getSkillIcons = pcSkills
+
 instance HasCost PlayerCard where
   getCost c = case pcCost c of
     StaticCost n -> n

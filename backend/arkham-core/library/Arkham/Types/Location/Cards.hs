@@ -21,6 +21,7 @@ import Arkham.Types.Location.Cards.DeepBelowYourHouse as X
 import Arkham.Types.Location.Cards.DowntownArkhamAsylum as X
 import Arkham.Types.Location.Cards.DowntownFirstBankOfArkham as X
 import Arkham.Types.Location.Cards.Easttown as X
+import Arkham.Types.Location.Cards.EasttownArkhamPoliceStation as X
 import Arkham.Types.Location.Cards.FarAboveYourHouse as X
 import Arkham.Types.Location.Cards.FauborgMarigny as X
 import Arkham.Types.Location.Cards.ForgottenMarsh as X
@@ -32,7 +33,9 @@ import Arkham.Types.Location.Cards.Hallway as X
 import Arkham.Types.Location.Cards.HoleInTheWall as X
 import Arkham.Types.Location.Cards.MainPath as X
 import Arkham.Types.Location.Cards.MiskatonicUniversity as X
+import Arkham.Types.Location.Cards.MiskatonicUniversityMiskatonicMuseum as X
 import Arkham.Types.Location.Cards.Northside as X
+import Arkham.Types.Location.Cards.NorthsideTrainStation as X
 import Arkham.Types.Location.Cards.OvergrownCairns as X
 import Arkham.Types.Location.Cards.Parlor as X
 import Arkham.Types.Location.Cards.ReturnToAttic as X
@@ -40,6 +43,7 @@ import Arkham.Types.Location.Cards.ReturnToCellar as X
 import Arkham.Types.Location.Cards.RitualGrounds as X
 import Arkham.Types.Location.Cards.RitualSite as X
 import Arkham.Types.Location.Cards.Rivertown as X
+import Arkham.Types.Location.Cards.RivertownAbandonedWarehouse as X
 import Arkham.Types.Location.Cards.SouthsideHistoricalSociety as X
 import Arkham.Types.Location.Cards.SouthsideMasBoardingHouse as X
 import Arkham.Types.Location.Cards.StMarysHospital as X

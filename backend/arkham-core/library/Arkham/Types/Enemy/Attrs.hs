@@ -166,17 +166,18 @@ spawnAtEmptyLocation iid eid = do
   emptyLocations <- asks $ map unEmptyLocationId . setToList . getSet ()
   case emptyLocations of
     [] -> unshiftMessage (Discard (EnemyTarget eid))
-    [lid] -> unshiftMessage (EnemySpawn lid eid)
-    lids ->
-      unshiftMessage (Ask iid $ ChooseOne [ EnemySpawn lid eid | lid <- lids ])
+    [lid] -> unshiftMessage (EnemySpawn (Just iid) lid eid)
+    lids -> unshiftMessage
+      (Ask iid $ ChooseOne [ EnemySpawn (Just iid) lid eid | lid <- lids ])
 
 spawnAt
   :: (MonadIO m, MonadReader env m, HasQueue env)
-  => EnemyId
+  => Maybe InvestigatorId
+  -> EnemyId
   -> LocationName
   -> m ()
-spawnAt eid locationName =
-  unshiftMessages $ resolve (EnemySpawnAtLocationNamed locationName eid)
+spawnAt miid eid locationName =
+  unshiftMessages $ resolve (EnemySpawnAtLocationNamed miid locationName eid)
 
 spawnAtOneOf
   :: (MonadIO m, HasSet LocationId () env, MonadReader env m, HasQueue env)
@@ -188,9 +189,9 @@ spawnAtOneOf iid eid targetLids = do
   locations' <- asks (getSet ())
   case setToList (setFromList targetLids `intersection` locations') of
     [] -> unshiftMessage (Discard (EnemyTarget eid))
-    [lid] -> unshiftMessage (EnemySpawn lid eid)
-    lids ->
-      unshiftMessage (Ask iid $ ChooseOne [ EnemySpawn lid eid | lid <- lids ])
+    [lid] -> unshiftMessage (EnemySpawn (Just iid) lid eid)
+    lids -> unshiftMessage
+      (Ask iid $ ChooseOne [ EnemySpawn (Just iid) lid eid | lid <- lids ])
 
 modifiedEnemyFight
   :: ( MonadReader env m
@@ -313,7 +314,7 @@ instance EnemyRunner env => RunMessage env Attrs where
             | (iid, lid) <- iids
             ]
           )
-    EnemySpawn lid eid | eid == enemyId -> do
+    EnemySpawn _ lid eid | eid == enemyId -> do
       locations' <- asks (getSet ())
       if lid `notElem` locations'
         then a <$ unshiftMessage (Discard (EnemyTarget eid))
@@ -513,8 +514,8 @@ instance EnemyRunner env => RunMessage env Attrs where
     CheckAttackOfOpportunity iid isFast
       | not isFast && iid `elem` enemyEngagedInvestigators && not enemyExhausted
       -> a <$ unshiftMessage (EnemyWillAttack iid enemyId)
-    InvestigatorDrawEnemy _ lid eid | eid == enemyId -> do
-      unshiftMessage (EnemySpawn lid eid)
+    InvestigatorDrawEnemy iid lid eid | eid == enemyId -> do
+      unshiftMessage (EnemySpawn (Just iid) lid eid)
       pure $ a & location .~ lid
     InvestigatorEliminated iid ->
       pure $ a & engagedInvestigators %~ deleteSet iid

@@ -1,5 +1,6 @@
 module Arkham.Types.Enemy.Runner where
 
+import Arkham.Types.AgendaId
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
@@ -11,6 +12,7 @@ import Arkham.Types.Trait
 
 type EnemyRunner env
   = ( HasQueue env
+    , HasStep AgendaStep env
     , HasCount CardCount InvestigatorId env
     , HasCount PlayerCount () env
     , HasCount RemainingSanity InvestigatorId env
@@ -22,6 +24,7 @@ type EnemyRunner env
     , HasSet ClosestLocationId (LocationId, Prey) env
     , HasSet ConnectedLocationId LocationId env
     , HasSet EmptyLocationId () env
+    , HasSet FarthestLocationId (InvestigatorId, EmptyLocation) env
     , HasSet FarthestLocationId [InvestigatorId] env
     , HasSet FarthestLocationId InvestigatorId env
     , HasSet InvestigatorId () env

@@ -30,6 +30,7 @@ allAgendas = mapFromList $ map
   , TheArkhamWoods' theArkhamWoods
   , TheRitualBegins' theRitualBegins
   , VengeanceAwaits' vengeanceAwaits
+  , ReturnToPredatorOrPrey' returnToPredatorOrPrey
   , ACreatureOfTheBayou' aCreatureOfTheBayou
   , TheRougarouFeeds' theRougarouFeeds
   , TheCurseSpreads' theCurseSpreads
@@ -44,6 +45,9 @@ instance HasCount DoomCount () Agenda where
 instance HasId AgendaId () Agenda where
   getId _ = agendaId . agendaAttrs
 
+instance HasStep AgendaStep Agenda where
+  getStep = AgendaStep . agendaNumber . agendaAttrs
+
 data Agenda
   = WhatsGoingOn' WhatsGoingOn
   | RiseOfTheGhouls' RiseOfTheGhouls
@@ -53,6 +57,7 @@ data Agenda
   | TheArkhamWoods' TheArkhamWoods
   | TheRitualBegins' TheRitualBegins
   | VengeanceAwaits' VengeanceAwaits
+  | ReturnToPredatorOrPrey' ReturnToPredatorOrPrey
   | ACreatureOfTheBayou' ACreatureOfTheBayou
   | TheRougarouFeeds' TheRougarouFeeds
   | TheCurseSpreads' TheCurseSpreads
@@ -68,7 +73,7 @@ newtype BaseAgenda = BaseAgenda Attrs
 
 baseAgenda
   :: AgendaId -> Text -> Text -> GameValue Int -> (Attrs -> Attrs) -> Agenda
-baseAgenda a b c d f = BaseAgenda' . BaseAgenda . f $ baseAttrs a b c d
+baseAgenda a b c d f = BaseAgenda' . BaseAgenda . f $ baseAttrs a 1 b c d
 
 instance HasActions env BaseAgenda where
   getActions iid window (BaseAgenda attrs) = getActions iid window attrs
@@ -86,6 +91,7 @@ agendaAttrs = \case
   TheArkhamWoods' attrs -> coerce attrs
   TheRitualBegins' attrs -> coerce attrs
   VengeanceAwaits' attrs -> coerce attrs
+  ReturnToPredatorOrPrey' attrs -> coerce attrs
   ACreatureOfTheBayou' attrs -> coerce attrs
   TheRougarouFeeds' attrs -> coerce attrs
   TheCurseSpreads' attrs -> coerce attrs

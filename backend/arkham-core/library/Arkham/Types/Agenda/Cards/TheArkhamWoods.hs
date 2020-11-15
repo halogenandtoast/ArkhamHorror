@@ -14,7 +14,7 @@ newtype TheArkhamWoods = TheArkhamWoods Attrs
 
 theArkhamWoods :: TheArkhamWoods
 theArkhamWoods =
-  TheArkhamWoods $ baseAttrs "01143" "The Arkham Woods" "Agenda 1a" (Static 4)
+  TheArkhamWoods $ baseAttrs "01143" 1 "The Arkham Woods" "Agenda 1a" (Static 4)
 
 instance HasActions env TheArkhamWoods where
   getActions i window (TheArkhamWoods x) = getActions i window x

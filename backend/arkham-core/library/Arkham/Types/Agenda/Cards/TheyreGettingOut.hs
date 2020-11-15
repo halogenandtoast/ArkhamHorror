@@ -21,7 +21,7 @@ newtype TheyreGettingOut = TheyreGettingOut Attrs
 
 theyreGettingOut :: TheyreGettingOut
 theyreGettingOut = TheyreGettingOut
-  $ baseAttrs "01107" "They're Getting Out!" "Agenda 3a" (Static 10)
+  $ baseAttrs "01107" 3 "They're Getting Out!" "Agenda 3a" (Static 10)
 
 instance HasActions env TheyreGettingOut where
   getActions i window (TheyreGettingOut x) = getActions i window x

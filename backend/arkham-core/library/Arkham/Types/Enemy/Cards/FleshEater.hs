@@ -31,6 +31,6 @@ instance ActionRunner env => HasActions env FleshEater where
 
 instance (EnemyRunner env) => RunMessage env FleshEater where
   runMessage msg e@(FleshEater attrs@Attrs {..}) = case msg of
-    InvestigatorDrawEnemy _ _ eid | eid == enemyId ->
-      e <$ spawnAt enemyId "Attic"
+    InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
+      e <$ spawnAt (Just iid) enemyId "Attic"
     _ -> FleshEater <$> runMessage msg attrs

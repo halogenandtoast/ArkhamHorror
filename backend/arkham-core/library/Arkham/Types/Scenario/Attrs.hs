@@ -99,10 +99,10 @@ instance (ScenarioRunner env) => RunMessage env Attrs where
         [lid] -> unshiftMessage (PlaceLocation lid)
         _ ->
           error "We want there to be only one location when targetting names"
-    EnemySpawnAtLocationNamed locationName eid ->
+    EnemySpawnAtLocationNamed miid locationName eid ->
       a <$ case findWithDefault [] locationName scenarioLocations of
         [] -> error "There were no locations with that name"
-        [lid] -> unshiftMessage (EnemySpawn lid eid)
+        [lid] -> unshiftMessage (EnemySpawn miid lid eid)
         _ ->
           error "We want there to be only one location when targetting names"
     PlaceDoomOnAgenda -> do

@@ -64,6 +64,10 @@ data Location
   | FarAboveYourHouse' FarAboveYourHouse
   | ReturnToCellar' ReturnToCellar
   | DeepBelowYourHouse' DeepBelowYourHouse
+  | EasttownArkhamPoliceStation' EasttownArkhamPoliceStation
+  | NorthsideTrainStation' NorthsideTrainStation
+  | MiskatonicUniversityMiskatonicMuseum' MiskatonicUniversityMiskatonicMuseum
+  | RivertownAbandonedWarehouse' RivertownAbandonedWarehouse
   | RitualSite' RitualSite
   | CursedShores' CursedShores
   | GardenDistrict' GardenDistrict
@@ -203,6 +207,10 @@ allLocations = mapFromList $ map
   , FarAboveYourHouse' farAboveYourHouse
   , ReturnToCellar' returnToCellar
   , DeepBelowYourHouse' deepBelowYourHouse
+  , EasttownArkhamPoliceStation' easttownArkhamPoliceStation
+  , NorthsideTrainStation' northsideTrainStation
+  , MiskatonicUniversityMiskatonicMuseum' miskatonicUniversityMiskatonicMuseum
+  , RivertownAbandonedWarehouse' rivertownAbandonedWarehouse
   , RitualSite' ritualSite
   , CursedShores' cursedShores
   , GardenDistrict' gardenDistrict
@@ -261,6 +269,10 @@ locationAttrs = \case
   FarAboveYourHouse' attrs -> coerce attrs
   ReturnToCellar' attrs -> coerce attrs
   DeepBelowYourHouse' attrs -> coerce attrs
+  EasttownArkhamPoliceStation' attrs -> coerce attrs
+  NorthsideTrainStation' attrs -> coerce attrs
+  MiskatonicUniversityMiskatonicMuseum' attrs -> coerce attrs
+  RivertownAbandonedWarehouse' attrs -> coerce attrs
   RitualSite' attrs -> coerce attrs
   CursedShores' attrs -> coerce attrs
   GardenDistrict' attrs -> coerce attrs

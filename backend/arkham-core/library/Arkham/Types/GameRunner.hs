@@ -63,6 +63,7 @@ type GameRunner env
       , HasList Location () env
       , HasList UsedAbility () env
       , HasList LocationName () env
+      , HasList HandCard InvestigatorId env
       )
     , (HasModifiers env InvestigatorId, HasModifiers env LocationId)
     , HasModifiersFor env env
@@ -90,6 +91,7 @@ type GameRunner env
       , HasSet EventId () env
       , HasSet EventId LocationId env
       , HasSet ExhaustedAssetId InvestigatorId env
+      , HasSet FarthestLocationId (InvestigatorId, EmptyLocation) env
       , HasSet FarthestLocationId [InvestigatorId] env
       , HasSet FarthestLocationId InvestigatorId env
       , HasSet HandCardId InvestigatorId env
@@ -120,4 +122,5 @@ type GameRunner env
     , HasRecord env
     , HasTokenValue env InvestigatorId
     , CanBeWeakness TreacheryId env
+    , HasStep AgendaStep env
     )

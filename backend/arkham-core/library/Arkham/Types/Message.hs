@@ -10,6 +10,7 @@ module Arkham.Types.Message
   , chooseOne
   , chooseOneAtATime
   , resolve
+  , story
   )
 where
 
@@ -64,6 +65,12 @@ messageType _ = Nothing
 
 resolve :: Message -> [Message]
 resolve msg = [When msg, msg, After msg]
+
+story :: [InvestigatorId] -> Message -> Message
+story iids msg = AskMap
+  (mapFromList
+    [ (iid, ChooseOne [Run [Continue "Continue", msg]]) | iid <- iids ]
+  )
 
 data EncounterCardSource = FromDiscard | FromEncounterDeck
   deriving stock (Show, Eq, Generic)
@@ -189,8 +196,8 @@ data Message
   | InvestigatorDrawEncounterCard InvestigatorId
   | InvestigatorDrewEncounterCard InvestigatorId EncounterCard
   | InvestigatorDrawEnemy InvestigatorId LocationId EnemyId
-  | EnemySpawn LocationId EnemyId
-  | EnemySpawnAtLocationNamed LocationName EnemyId
+  | EnemySpawn (Maybe InvestigatorId) LocationId EnemyId
+  | EnemySpawnAtLocationNamed (Maybe InvestigatorId) LocationName EnemyId
   | CreateEnemyRequest Source CardCode
   | RequestedEnemy Source EnemyId
   | EnemySpawnedAt LocationId EnemyId
@@ -367,6 +374,7 @@ data Message
   | TargetLabel Target [Message]
   | UnengageNonMatching InvestigatorId [Trait]
   | PlaceDoom Target Int
+  | RemoveDoom Target Int
   | Surge InvestigatorId Source
   | RevealInHand CardId
   | RemoveDiscardFromGame InvestigatorId

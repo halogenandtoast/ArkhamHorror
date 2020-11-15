@@ -22,8 +22,8 @@ newtype TheRitualBegins = TheRitualBegins Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 theRitualBegins :: TheRitualBegins
-theRitualBegins =
-  TheRitualBegins $ baseAttrs "01144" "The Ritual Begins" "Agenda 2a" (Static 5)
+theRitualBegins = TheRitualBegins
+  $ baseAttrs "01144" 2 "The Ritual Begins" "Agenda 2a" (Static 5)
 
 instance HasActions env TheRitualBegins where
   getActions i window (TheRitualBegins x) = getActions i window x
@@ -40,7 +40,7 @@ instance (AgendaRunner env) => RunMessage env TheRitualBegins where
           | eid <- enemyIds
           ]
       TheRitualBegins <$> runMessage msg attrs
-    EnemySpawn _ eid -> a <$ unshiftMessage
+    EnemySpawn _ _ eid -> a <$ unshiftMessage
       (AddModifiers
         (EnemyTarget eid)
         (AgendaSource agendaId)

@@ -11,8 +11,8 @@ newtype PredatorOrPrey = PredatorOrPrey Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 predatorOrPrey :: PredatorOrPrey
-predatorOrPrey =
-  PredatorOrPrey $ baseAttrs "01121" "Predator or Prey?" "Agenda 1a" (Static 6)
+predatorOrPrey = PredatorOrPrey
+  $ baseAttrs "01121" 1 "Predator or Prey?" "Agenda 1a" (Static 6)
 
 instance ActionRunner env  => HasActions env PredatorOrPrey where
   getActions iid NonFast (PredatorOrPrey _) = do

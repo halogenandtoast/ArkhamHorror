@@ -68,6 +68,10 @@ data Location
   | NorthsideTrainStation' NorthsideTrainStation
   | MiskatonicUniversityMiskatonicMuseum' MiskatonicUniversityMiskatonicMuseum
   | RivertownAbandonedWarehouse' RivertownAbandonedWarehouse
+  | ArkhamWoodsGreatWillow' ArkhamWoodsGreatWillow
+  | ArkhamWoodsLakeside' ArkhamWoodsLakeside
+  | ArkhamWoodsCorpseRiddenClearing' ArkhamWoodsCorpseRiddenClearing
+  | ArkhamWoodsWoodenBridge' ArkhamWoodsWoodenBridge
   | RitualSite' RitualSite
   | CursedShores' CursedShores
   | GardenDistrict' GardenDistrict
@@ -211,6 +215,10 @@ allLocations = mapFromList $ map
   , NorthsideTrainStation' northsideTrainStation
   , MiskatonicUniversityMiskatonicMuseum' miskatonicUniversityMiskatonicMuseum
   , RivertownAbandonedWarehouse' rivertownAbandonedWarehouse
+  , ArkhamWoodsGreatWillow' arkhamWoodsGreatWillow
+  , ArkhamWoodsLakeside' arkhamWoodsLakeside
+  , ArkhamWoodsCorpseRiddenClearing' arkhamWoodsCorpseRiddenClearing
+  , ArkhamWoodsWoodenBridge' arkhamWoodsWoodenBridge
   , RitualSite' ritualSite
   , CursedShores' cursedShores
   , GardenDistrict' gardenDistrict
@@ -273,6 +281,10 @@ locationAttrs = \case
   NorthsideTrainStation' attrs -> coerce attrs
   MiskatonicUniversityMiskatonicMuseum' attrs -> coerce attrs
   RivertownAbandonedWarehouse' attrs -> coerce attrs
+  ArkhamWoodsGreatWillow' attrs -> coerce attrs
+  ArkhamWoodsLakeside' attrs -> coerce attrs
+  ArkhamWoodsCorpseRiddenClearing' attrs -> coerce attrs
+  ArkhamWoodsWoodenBridge' attrs -> coerce attrs
   RitualSite' attrs -> coerce attrs
   CursedShores' attrs -> coerce attrs
   GardenDistrict' attrs -> coerce attrs

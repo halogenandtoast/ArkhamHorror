@@ -38,5 +38,5 @@ instance (ActRunner env) => RunMessage env WhatHaveYouDone where
         $ attrs
         & (Act.sequence .~ "Act 3b")
         & (flipped .~ True)
-    EnemyDefeated _ _ "01116" _ -> a <$ unshiftMessage (AdvanceAct actId)
+    EnemyDefeated _ _ _ "01116" _ _ -> a <$ unshiftMessage (AdvanceAct actId)
     _ -> WhatHaveYouDone <$> runMessage msg attrs

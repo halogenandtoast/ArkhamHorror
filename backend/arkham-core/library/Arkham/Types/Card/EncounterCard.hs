@@ -125,6 +125,9 @@ allEncounterCards = HashMap.fromList
   , ("50041", discipleOfTheDevourer)
   , ("50042", corpseTaker)
   , ("50043", maskOfUmordhoth)
+  , ("50044", jeremiahPierce)
+  , ("50045", billyCooper)
+  , ("50046", almaHill)
   , ("81022", bogGator)
   , ("81023", swampLeech)
   , ("81024", cursedSwamp)
@@ -408,6 +411,24 @@ corpseTaker cardId = (enemy cardId "50042" "Corpse-Taker")
 maskOfUmordhoth :: CardId -> EncounterCard
 maskOfUmordhoth cardId = (treachery cardId "50043" "Mask of Umôrdhoth")
   { ecTraits = setFromList [Item, Mask]
+  }
+
+jeremiahPierce :: CardId -> EncounterCard
+jeremiahPierce cardId = (enemy cardId "50044" "Jeremiah Pierce")
+  { ecTraits = setFromList [Humanoid, Cultist]
+  , ecVictoryPoints = Just 1
+  }
+
+billyCooper :: CardId -> EncounterCard
+billyCooper cardId = (enemy cardId "50045" "Billy Cooper")
+  { ecTraits = setFromList [Humanoid, Cultist]
+  , ecVictoryPoints = Just 1
+  }
+
+almaHill :: CardId -> EncounterCard
+almaHill cardId = (enemy cardId "50046" "Alma Hill")
+  { ecTraits = setFromList [Humanoid, Cultist]
+  , ecVictoryPoints = Just 1
   }
 
 bogGator :: CardId -> EncounterCard

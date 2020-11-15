@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2351bea9916489914980df23915c0672ad4b0d4d17269f75ec53642c266e5dc5
+-- hash: 5f25bddfaaed638109ec4960f15cd78772988eff8abcb45dcd4688fa8b911ff4
 
 name:           arkham-core
 version:        0.0.0
@@ -167,6 +167,7 @@ library
       Arkham.Types.Effect
       Arkham.Types.Effect.Attrs
       Arkham.Types.Effect.Effects
+      Arkham.Types.Effect.Effects.JeremiahPierce
       Arkham.Types.Effect.Effects.LetMeHandleThis
       Arkham.Types.EffectId
       Arkham.Types.EncounterSet
@@ -175,6 +176,8 @@ library
       Arkham.Types.Enemy.Cards
       Arkham.Types.Enemy.Cards.Acolyte
       Arkham.Types.Enemy.Cards.AcolyteOfUmordhoth
+      Arkham.Types.Enemy.Cards.AlmaHill
+      Arkham.Types.Enemy.Cards.BillyCooper
       Arkham.Types.Enemy.Cards.BogGator
       Arkham.Types.Enemy.Cards.CorpseHungryGhoul
       Arkham.Types.Enemy.Cards.CorpseTaker
@@ -189,6 +192,7 @@ library
       Arkham.Types.Enemy.Cards.HermanCollins
       Arkham.Types.Enemy.Cards.HuntingNightgaunt
       Arkham.Types.Enemy.Cards.IcyGhoul
+      Arkham.Types.Enemy.Cards.JeremiahPierce
       Arkham.Types.Enemy.Cards.MarshGug
       Arkham.Types.Enemy.Cards.MobEnforcer
       Arkham.Types.Enemy.Cards.Narogath
@@ -314,11 +318,15 @@ library
       Arkham.Types.Location.Attrs
       Arkham.Types.Location.Cards
       Arkham.Types.Location.Cards.ArkhamWoodsCliffside
+      Arkham.Types.Location.Cards.ArkhamWoodsCorpseRiddenClearing
+      Arkham.Types.Location.Cards.ArkhamWoodsGreatWillow
+      Arkham.Types.Location.Cards.ArkhamWoodsLakeside
       Arkham.Types.Location.Cards.ArkhamWoodsOldHouse
       Arkham.Types.Location.Cards.ArkhamWoodsQuietGlade
       Arkham.Types.Location.Cards.ArkhamWoodsTangledThicket
       Arkham.Types.Location.Cards.ArkhamWoodsTwistingPaths
       Arkham.Types.Location.Cards.ArkhamWoodsUnhallowedGround
+      Arkham.Types.Location.Cards.ArkhamWoodsWoodenBridge
       Arkham.Types.Location.Cards.Attic
       Arkham.Types.Location.Cards.AudubonPark
       Arkham.Types.Location.Cards.Bathroom
@@ -377,6 +385,7 @@ library
       Arkham.Types.Scenario.Helpers
       Arkham.Types.Scenario.Runner
       Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
+      Arkham.Types.Scenario.Scenarios.ReturnToTheDevourerBelow
       Arkham.Types.Scenario.Scenarios.ReturnToTheGathering
       Arkham.Types.Scenario.Scenarios.ReturnToTheMidnightMasks
       Arkham.Types.Scenario.Scenarios.TheDevourerBelow

@@ -40,6 +40,6 @@ instance (EnemyRunner env) => RunMessage env DarkYoungHost where
     PlaceClues (LocationTarget lid) n | lid == enemyLocation -> do
       unshiftMessage $ RemoveClues (LocationTarget lid) n
       pure . DarkYoungHost $ attrs & clues +~ n
-    When (EnemyDefeated eid _ _ _) | eid == enemyId ->
+    When (EnemyDefeated eid _ _ _ _ _) | eid == enemyId ->
       e <$ unshiftMessage (PlaceClues (LocationTarget enemyLocation) enemyClues)
     _ -> DarkYoungHost <$> runMessage msg attrs

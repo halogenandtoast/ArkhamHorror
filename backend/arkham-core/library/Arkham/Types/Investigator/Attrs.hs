@@ -654,7 +654,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure $ a & engagedEnemies %~ deleteSet eid
   EnemyEngageInvestigator eid iid | iid == investigatorId ->
     pure $ a & engagedEnemies %~ insertSet eid
-  EnemyDefeated eid _ _ _ -> do
+  EnemyDefeated eid _ _ _ _ _ -> do
     unshiftMessage
       (RemoveAllModifiersOnTargetFrom
         (InvestigatorTarget investigatorId)

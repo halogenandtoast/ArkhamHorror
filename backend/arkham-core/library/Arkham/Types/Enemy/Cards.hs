@@ -5,6 +5,8 @@ where
 
 import Arkham.Types.Enemy.Cards.Acolyte as X
 import Arkham.Types.Enemy.Cards.AcolyteOfUmordhoth as X
+import Arkham.Types.Enemy.Cards.AlmaHill as X
+import Arkham.Types.Enemy.Cards.BillyCooper as X
 import Arkham.Types.Enemy.Cards.BogGator as X
 import Arkham.Types.Enemy.Cards.CorpseHungryGhoul as X
 import Arkham.Types.Enemy.Cards.CorpseTaker as X
@@ -19,6 +21,7 @@ import Arkham.Types.Enemy.Cards.GraveEater as X
 import Arkham.Types.Enemy.Cards.HermanCollins as X
 import Arkham.Types.Enemy.Cards.HuntingNightgaunt as X
 import Arkham.Types.Enemy.Cards.IcyGhoul as X
+import Arkham.Types.Enemy.Cards.JeremiahPierce as X
 import Arkham.Types.Enemy.Cards.MarshGug as X
 import Arkham.Types.Enemy.Cards.MobEnforcer as X
 import Arkham.Types.Enemy.Cards.Narogath as X

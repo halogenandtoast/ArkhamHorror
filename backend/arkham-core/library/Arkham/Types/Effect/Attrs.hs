@@ -31,3 +31,10 @@ instance HasActions env Attrs where
 
 instance HasQueue env => RunMessage env Attrs where
   runMessage _ = pure
+
+isSource :: Attrs -> Source -> Bool
+isSource Attrs { effectId } (EffectSource eid) = effectId == eid
+isSource _ _ = False
+
+toSource :: Attrs -> Source
+toSource Attrs { effectId } = EffectSource effectId

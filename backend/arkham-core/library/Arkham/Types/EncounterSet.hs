@@ -30,6 +30,7 @@ data EncounterSet
   | AgentsOfCthulhu
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
+  | ReturnToTheDevourerBelow
   | GhoulsOfUmordhoth
   | TheDevourersCult
   | TheBayou
@@ -68,6 +69,7 @@ setCards = \case
   AgentsOfCthulhu -> replicate 2 "01181" <> replicate 2 "01182"
   ReturnToTheGathering -> ["50022", "50023"] <> replicate 2 "50024"
   ReturnToTheMidnightMasks -> replicate 2 "50031"
+  ReturnToTheDevourerBelow -> replicate 2 "50037"
   GhoulsOfUmordhoth -> replicate 3 "50038" <> ["50039"] <> replicate 3 "50040"
   TheDevourersCult -> replicate 3 "50041" <> ["50042"] <> replicate 2 "50043"
   TheBayou ->

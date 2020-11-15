@@ -30,7 +30,7 @@ instance ActionRunner env => HasActions env GoatSpawn where
 
 instance (EnemyRunner env) => RunMessage env GoatSpawn where
   runMessage msg (GoatSpawn attrs@Attrs {..}) = case msg of
-    EnemyDefeated eid _ _ _ | eid == enemyId -> do
+    EnemyDefeated eid _ _ _ _ _ | eid == enemyId -> do
       investigatorIds <- asks $ setToList . getSet enemyLocation
       unshiftMessages
         [ InvestigatorAssignDamage iid (EnemySource eid) 0 1

@@ -8,7 +8,7 @@ import Arkham.Import
 
 import Arkham.Types.Effect.Effects
 
-data Effect = LetMeHandleThis' LetMeHandleThis
+data Effect = LetMeHandleThis' LetMeHandleThis | JeremiahPierce' JeremiahPierce
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -21,5 +21,7 @@ lookupEffect cardCode =
     $ lookup cardCode allEffects
 
 allEffects :: HashMap CardCode (Source -> Target -> EffectId -> Effect)
-allEffects =
-  mapFromList [("03022", ((LetMeHandleThis' .) .) . letMeHandleThis)]
+allEffects = mapFromList
+  [ ("03022", ((LetMeHandleThis' .) .) . letMeHandleThis)
+  , ("50044", ((JeremiahPierce' .) .) . jeremiahPierce)
+  ]

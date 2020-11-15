@@ -17,6 +17,7 @@ ruthTurner uuid =
     . (fight .~ 2)
     . (health .~ Static 4)
     . (evade .~ 5)
+    . (unique .~ True)
 
 instance HasModifiersFor env RuthTurner where
   getModifiersFor = noModifiersFor

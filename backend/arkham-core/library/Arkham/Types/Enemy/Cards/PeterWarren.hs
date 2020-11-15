@@ -19,6 +19,7 @@ peterWarren uuid =
     . (fight .~ 2)
     . (health .~ Static 3)
     . (evade .~ 3)
+    . (unique .~ True)
 
 instance HasModifiersFor env PeterWarren where
   getModifiersFor = noModifiersFor

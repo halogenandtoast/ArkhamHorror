@@ -32,6 +32,7 @@ data Attrs = Attrs
   , enemyExhausted :: Bool
   , enemyDoom :: Int
   , enemyClues :: Int
+  , enemyUnique :: Bool
   }
   deriving stock (Show, Generic)
 
@@ -75,6 +76,9 @@ fight = lens enemyFight $ \m x -> m { enemyFight = x }
 
 evade :: Lens' Attrs Int
 evade = lens enemyEvade $ \m x -> m { enemyEvade = x }
+
+unique :: Lens' Attrs Bool
+unique = lens enemyUnique $ \m x -> m { enemyUnique = x }
 
 keywords :: Lens' Attrs (HashSet Keyword)
 keywords = lens enemyKeywords $ \m x -> m { enemyKeywords = x }
@@ -122,6 +126,7 @@ baseAttrs eid cardCode f =
       , enemyDoom = 0
       , enemyClues = 0
       , enemyVictory = ecVictoryPoints
+      , enemyUnique = False
       }
 
 weaknessBaseAttrs :: EnemyId -> CardCode -> Attrs
@@ -155,6 +160,7 @@ weaknessBaseAttrs eid cardCode =
       , enemyExhausted = False
       , enemyClues = 0
       , enemyDoom = 0
+      , enemyUnique = False
       }
 
 spawnAtEmptyLocation

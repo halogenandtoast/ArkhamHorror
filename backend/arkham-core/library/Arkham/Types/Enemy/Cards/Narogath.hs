@@ -22,6 +22,7 @@ narogath uuid =
     . (health .~ Static 4)
     . (evade .~ 3)
     . (prey .~ NearestToEnemyWithTrait Trait.Cultist)
+    . (unique .~ True)
 
 instance (HasSet InvestigatorId LocationId env, HasSet ConnectedLocationId LocationId env) => HasModifiersFor env Narogath where
   getModifiersFor _ (InvestigatorTarget iid) (Narogath Attrs {..}) = do

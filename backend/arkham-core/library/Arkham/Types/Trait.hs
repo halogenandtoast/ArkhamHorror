@@ -81,6 +81,7 @@ data Trait
   | Job
   | Lunatic
   | Madness
+  | Mask
   | Medic
   | Melee
   | Miskatonic

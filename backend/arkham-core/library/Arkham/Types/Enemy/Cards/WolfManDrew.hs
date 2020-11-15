@@ -22,6 +22,7 @@ wolfManDrew uuid =
     . (fight .~ 4)
     . (health .~ Static 4)
     . (evade .~ 2)
+    . (unique .~ True)
 
 instance HasModifiersFor env WolfManDrew where
   getModifiersFor = noModifiersFor

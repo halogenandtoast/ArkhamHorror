@@ -13,6 +13,12 @@ newtype StoryEnemyId = StoryEnemyId { unStoryEnemyId :: EnemyId }
 newtype ClosestEnemyId = ClosestEnemyId { unClosestEnemyId :: EnemyId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 
+newtype FarthestEnemyId = FarthestEnemyId { unFarthestEnemyId :: EnemyId }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
+newtype UniqueEnemyId = UniqueEnemyId { unUniqueEnemyId :: EnemyId }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
 newtype AloofEnemyId = AloofEnemyId { unAloofEnemyId :: EnemyId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 

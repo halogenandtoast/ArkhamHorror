@@ -92,6 +92,7 @@ type GameRunner env
       , HasSet EventId () env
       , HasSet EventId LocationId env
       , HasSet ExhaustedAssetId InvestigatorId env
+      , HasSet FarthestEnemyId (InvestigatorId, EnemyTrait) env
       , HasSet FarthestLocationId (InvestigatorId, EmptyLocation) env
       , HasSet FarthestLocationId [InvestigatorId] env
       , HasSet FarthestLocationId InvestigatorId env
@@ -113,6 +114,7 @@ type GameRunner env
       , HasSet Trait EnemyId env
       , HasSet Trait LocationId env
       , HasSet TreacheryId LocationId env
+      , HasSet UniqueEnemyId () env
       , HasSet VictoryDisplayCardCode () env
       )
     , HasSource ForSkillTest env

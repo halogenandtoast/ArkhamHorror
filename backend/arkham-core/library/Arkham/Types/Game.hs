@@ -978,6 +978,20 @@ instance HasSet FarthestLocationId (InvestigatorId, EmptyLocation) (Game queue) 
       start
       (`elem` emptyLocationIds)
 
+instance HasSet FarthestEnemyId (InvestigatorId, EnemyTrait) (Game queue) where
+  getSet (iid, enemyTrait) g =
+    let
+      start = locationFor iid g
+      enemyMatches eid =
+        elem (unEnemyTrait enemyTrait) . getTraits $ getEnemy eid g
+      enemyIdsForLocation lid =
+        setToList . getSet @EnemyId () $ getLocation lid g
+    in
+      setFromList
+      . map FarthestEnemyId
+      . concatMap (filter enemyMatches . enemyIdsForLocation)
+      $ getLongestPath g start (any enemyMatches . enemyIdsForLocation)
+
 instance HasList (InvestigatorId, Distance) EnemyTrait (Game queue) where
   getList enemyTrait game = flip map iids
     $ \iid -> (iid, getDistance $ locationFor iid game)
@@ -1111,6 +1125,14 @@ instance HasSet SanityDamageableAssetId InvestigatorId (Game queue) where
 
 instance HasSet EnemyId () (Game queue) where
   getSet _ = keysSet . view enemies
+
+instance HasSet UniqueEnemyId () (Game queue) where
+  getSet _ =
+    setFromList
+      . map (UniqueEnemyId . getId ())
+      . filter isUnique
+      . toList
+      . view enemies
 
 instance HasSet EnemyId LocationId (Game queue) where
   getSet lid = getSet () . getLocation lid

@@ -48,6 +48,7 @@ data Treachery
   | TheZealotsSeal' TheZealotsSeal
   | MaskedHorrors' MaskedHorrors
   | ChillFromBelow' ChillFromBelow
+  | MaskOfUmordhoth' MaskOfUmordhoth
   | Atychiphobia' Atychiphobia
   | CursedSwamp' CursedSwamp
   | SpectralMist' SpectralMist
@@ -121,6 +122,7 @@ allTreacheries = mapFromList
   , ("50024", (TheZealotsSeal' .) . theZealotsSeal)
   , ("50031", (MaskedHorrors' .) . maskedHorrors)
   , ("50040", (ChillFromBelow' .) . chillFromBelow)
+  , ("50043", (MaskOfUmordhoth' .) . maskOfUmordhoth)
   , ("60504", (Atychiphobia' .) . atychiphobia)
   , ("81024", (CursedSwamp' .) . cursedSwamp)
   , ("81025", (SpectralMist' .) . spectralMist)
@@ -175,6 +177,7 @@ treacheryAttrs = \case
   TheZealotsSeal' attrs -> coerce attrs
   MaskedHorrors' attrs -> coerce attrs
   ChillFromBelow' attrs -> coerce attrs
+  MaskOfUmordhoth' attrs -> coerce attrs
   Atychiphobia' attrs -> coerce attrs
   CursedSwamp' attrs -> coerce attrs
   SpectralMist' attrs -> coerce attrs

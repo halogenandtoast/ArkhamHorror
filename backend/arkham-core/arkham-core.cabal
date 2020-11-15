@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d226bb68cd23d6d23fe8992c9ea44becf6c7f09ad9c1fcddb226ea094d2848e6
+-- hash: 2351bea9916489914980df23915c0672ad4b0d4d17269f75ec53642c266e5dc5
 
 name:           arkham-core
 version:        0.0.0
@@ -439,6 +439,7 @@ library
       Arkham.Types.Treachery.Cards.InsatiableBloodlust
       Arkham.Types.Treachery.Cards.LockedDoor
       Arkham.Types.Treachery.Cards.MaskedHorrors
+      Arkham.Types.Treachery.Cards.MaskOfUmordhoth
       Arkham.Types.Treachery.Cards.MysteriousChanting
       Arkham.Types.Treachery.Cards.ObscuringFog
       Arkham.Types.Treachery.Cards.OfferOfPower

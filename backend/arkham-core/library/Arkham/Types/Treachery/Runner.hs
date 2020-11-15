@@ -37,5 +37,7 @@ type TreacheryRunner env
     , HasSet LocationId TreacheryCardCode env
     , HasSet LocationId [Trait] env
     , HasSet Trait LocationId env
+    , HasSet FarthestEnemyId (InvestigatorId, EnemyTrait) env
+    , HasSet UniqueEnemyId () env
     )
 

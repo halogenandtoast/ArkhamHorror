@@ -303,6 +303,23 @@ isTarget :: Attrs -> Target -> Bool
 isTarget Attrs { enemyId } (EnemyTarget eid) = enemyId == eid
 isTarget _ _ = False
 
+getModifiedHealth
+  :: ( MonadIO m
+     , MonadReader env m
+     , HasModifiersFor env env
+     , HasCount PlayerCount () env
+     )
+  => Attrs
+  -> m Int
+getModifiedHealth Attrs {..} = do
+  playerCount <- getPlayerCount
+  modifiers' <-
+    getModifiersFor (EnemySource enemyId) (EnemyTarget enemyId) =<< ask
+  pure $ foldr applyModifier (fromGameValue enemyHealth playerCount) modifiers'
+ where
+  applyModifier (HealthModifier m) n = max 0 (n + m)
+  applyModifier _ n = n
+
 instance EnemyRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
@@ -471,10 +488,9 @@ instance EnemyRunner env => RunMessage env Attrs where
       ]
     EnemyDamage eid iid source amount | eid == enemyId -> do
       let amount' = modifiedDamageAmount a amount
-      playerCount <- unPlayerCount <$> asks (getCount ())
+      modifiedHealth <- getModifiedHealth a
       (a & damage +~ amount') <$ when
-        (a ^. damage + amount' >= a ^. health . to (`fromGameValue` playerCount)
-        )
+        (a ^. damage + amount' >= modifiedHealth)
         (unshiftMessage (EnemyDefeated eid iid enemyCardCode source))
     EnemyDefeated eid _ _ _ | eid == enemyId -> do
       unshiftMessages

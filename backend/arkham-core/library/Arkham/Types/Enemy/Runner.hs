@@ -9,6 +9,7 @@ import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Trait
+import ClassyPrelude
 
 type EnemyRunner env
   = ( HasQueue env
@@ -36,4 +37,5 @@ type EnemyRunner env
     , HasSet Trait EnemyId env
     , HasSet Trait LocationId env
     , HasSource ForSkillTest env
+    , HasId (Maybe LocationId) LocationName env
     )

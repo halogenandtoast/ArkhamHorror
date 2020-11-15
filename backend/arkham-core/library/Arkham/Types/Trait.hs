@@ -109,6 +109,7 @@ data Trait
   | Science
   | Serpent
   | Service
+  | Servitor
   | SilverTwilight
   | Socialite
   | Song

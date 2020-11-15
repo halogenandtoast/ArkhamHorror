@@ -50,6 +50,7 @@ data Enemy
   | GraveEater' GraveEater
   | AcolyteOfUmordhoth' AcolyteOfUmordhoth
   | DiscipleOfTheDevourer' DiscipleOfTheDevourer
+  | CorpseTaker' CorpseTaker
   | BogGator' BogGator
   | SwampLeech' SwampLeech
   | TheRougarou' TheRougarou
@@ -199,6 +200,7 @@ allEnemies = mapFromList
   , ("50038", GraveEater' . graveEater)
   , ("50039", AcolyteOfUmordhoth' . acolyteOfUmordhoth)
   , ("50041", DiscipleOfTheDevourer' . discipleOfTheDevourer)
+  , ("50042", CorpseTaker' . corpseTaker)
   , ("81022", BogGator' . bogGator)
   , ("81023", SwampLeech' . swampLeech)
   , ("81028", TheRougarou' . theRougarou)
@@ -261,6 +263,7 @@ enemyAttrs = \case
   GraveEater' attrs -> coerce attrs
   AcolyteOfUmordhoth' attrs -> coerce attrs
   DiscipleOfTheDevourer' attrs -> coerce attrs
+  CorpseTaker' attrs -> coerce attrs
   BogGator' attrs -> coerce attrs
   SwampLeech' attrs -> coerce attrs
   TheRougarou' (TheRougarou (attrs `With` _)) -> attrs

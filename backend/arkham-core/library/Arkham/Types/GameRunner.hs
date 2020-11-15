@@ -48,6 +48,7 @@ type GameRunner env
       , HasCount TreacheryCount (LocationId, CardCode) env
       )
     , ( HasId (Maybe AssetId) CardCode env
+      , HasId (Maybe LocationId) LocationName env
       , HasId (Maybe OwnerId) AssetId env
       , HasId (Maybe StoryAssetId) CardCode env
       , HasId (Maybe StoryEnemyId) CardCode env

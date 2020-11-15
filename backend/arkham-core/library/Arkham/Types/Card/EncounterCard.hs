@@ -123,6 +123,7 @@ allEncounterCards = HashMap.fromList
   , ("50039", acolyteOfUmordhoth)
   , ("50040", chillFromBelow)
   , ("50041", discipleOfTheDevourer)
+  , ("50042", corpseTaker)
   , ("81022", bogGator)
   , ("81023", swampLeech)
   , ("81024", cursedSwamp)
@@ -396,6 +397,11 @@ discipleOfTheDevourer :: CardId -> EncounterCard
 discipleOfTheDevourer cardId = (enemy cardId "50041" "Disciple of the Devourer"
                                )
   { ecTraits = setFromList [Humanoid, Cultist]
+  }
+
+corpseTaker :: CardId -> EncounterCard
+corpseTaker cardId = (enemy cardId "50042" "Corpse-Taker")
+  { ecTraits = setFromList [Monster, Servitor, Cultist]
   }
 
 bogGator :: CardId -> EncounterCard

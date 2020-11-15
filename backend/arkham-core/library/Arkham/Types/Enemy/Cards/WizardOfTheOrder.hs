@@ -1,15 +1,14 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Enemy.Cards.WizardOfTheOrder where
+module Arkham.Types.Enemy.Cards.WizardOfTheOrder
+  ( WizardOfTheOrder(..)
+  , wizardOfTheOrder
+  )
+where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Message
-import ClassyPrelude
-import Lens.Micro
 
 newtype WizardOfTheOrder = WizardOfTheOrder Attrs
   deriving newtype (Show, ToJSON, FromJSON)

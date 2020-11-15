@@ -385,6 +385,13 @@ instance HasId (Maybe OwnerId) AssetId (Game queue) where
 instance HasId (Maybe LocationId) AssetId (Game queue) where
   getId aid = getId () . getAsset aid
 
+instance HasId (Maybe LocationId) LocationName (Game queue) where
+  getId locationName =
+    maybe Nothing (Just . getId ())
+      . find ((== locationName) . getLocationName)
+      . toList
+      . view locations
+
 instance HasId (Maybe StoryAssetId) CardCode (Game queue) where
   getId cardCode = (StoryAssetId <$>) . getId cardCode
 

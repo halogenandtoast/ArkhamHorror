@@ -62,6 +62,11 @@
           </select>
         </div>
 
+        <div v-if="selectedCampaign && selectedCampaignReturnToId" class="options">
+          <input type="radio" v-model="returnTo" :value="false" id="normal"> <label for="normal">Normal</label>
+          <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">Return to...</label>
+        </div>
+
         <div>
           <p>Game Name</p>
           <input type="text" v-model="campaignName" :placeholder="currentCampaignName" />
@@ -91,10 +96,7 @@ const campaigns = [
   {
     id: '01',
     name: 'The Night of the Zealot',
-  },
-  {
-    id: '50',
-    name: 'Return to the Night of the Zealot',
+    returnToId: '50'
   },
   {
     id: '02',
@@ -125,10 +127,20 @@ export default defineComponent({
     const selectedCampaign = ref('01')
     const selectedScenario = ref('81001')
     const campaignName = ref<string | null>(null)
+    const returnTo = ref(false)
 
     fetchDecks().then((result) => {
       decks.value = result;
       ready.value = true;
+    })
+
+    const selectedCampaignReturnToId = computed(() => {
+      const campaign = campaigns.find((c) => c.id === selectedCampaign.value);
+      if (campaign) {
+        return campaign.returnToId;
+      }
+
+      return null;
     })
 
     const disabled = computed(() => !deckId.value)
@@ -137,7 +149,8 @@ export default defineComponent({
       const scenario = scenarios.find((c) => c.id === selectedScenario.value);
 
       if (!standalone.value && campaign) {
-        return `${campaign.name}`;
+        const returnToPrefix = returnTo.value ? "Return to " : ""
+        return `${returnToPrefix}${campaign.name}`;
       }
 
       if (standalone.value && scenario) {
@@ -171,10 +184,11 @@ export default defineComponent({
       } else {
         const mcampaign = campaigns.find((campaign) => campaign.id === selectedCampaign.value);
         if (mcampaign && deckId.value && currentCampaignName.value) {
+          const campaignId = returnTo.value && mcampaign.returnToId ? mcampaign.returnToId : mcampaign.id
           newGame(
             deckId.value,
             playerCount.value,
-            mcampaign.id,
+            campaignId,
             null,
             selectedDifficulty.value,
             currentCampaignName.value,
@@ -198,7 +212,9 @@ export default defineComponent({
       playerCount,
       selectedDifficulty,
       selectedScenario,
-      selectedCampaign
+      selectedCampaign,
+      selectedCampaignReturnToId,
+      returnTo
     }
   }
 })

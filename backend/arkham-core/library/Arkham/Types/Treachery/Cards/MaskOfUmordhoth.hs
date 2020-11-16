@@ -24,7 +24,7 @@ instance HasActions env MaskOfUmordhoth where
   getActions i window (MaskOfUmordhoth attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env MaskOfUmordhoth where
-  runMessage msg t@(MaskOfUmordhoth attrs@Attrs {..}) = case msg of
+  runMessage msg (MaskOfUmordhoth attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       enemies <- asks $ map unFarthestEnemyId . setToList . getSet
         (iid, EnemyTrait Cultist)
@@ -47,7 +47,8 @@ instance TreacheryRunner env => RunMessage env MaskOfUmordhoth where
       let
         keyword =
           if eid `elem` uniqueEnemyIds then Keyword.Retaliate else Keyword.Aloof
-      t <$ unshiftMessage (AddKeywords target [keyword])
+      unshiftMessage (AddKeywords target [keyword])
+      MaskOfUmordhoth <$> runMessage msg attrs
     Discard (TreacheryTarget tid) | tid == treacheryId -> do
       case treacheryAttachedEnemy of
         Just eid -> do

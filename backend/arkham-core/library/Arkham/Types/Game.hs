@@ -418,6 +418,16 @@ instance HasId LocationId InvestigatorId (Game queue) where
 instance HasId LocationId EnemyId (Game queue) where
   getId eid = getId () . getEnemy eid
 
+instance HasCount ActsRemainingCount () (Game queue) where
+  getCount _ g = ActsRemainingCount $ length remainingActs
+   where
+    (_, _ : remainingActs) = break (== currentActId) actIds
+    actIds =
+      scenarioActs . fromJustNote "scenario has to be set" $ view scenario g
+    currentActId = case keys (view acts g) of
+      [aid] -> aid
+      _ -> error "Cannot handle multiple acts"
+
 instance HasCount ActionTakenCount InvestigatorId (Game queue) where
   getCount iid = getCount () . getInvestigator iid
 
@@ -1920,6 +1930,10 @@ runGameMessage msg g = case msg of
   CreateWeaknessInThreatArea cardCode iid -> do
     (treacheryId', treachery') <- createTreachery cardCode (Just iid)
     unshiftMessage (AttachTreachery treacheryId' (InvestigatorTarget iid))
+    pure $ g & treacheries . at treacheryId' ?~ treachery'
+  AttachStoryTreacheryTo cardCode target -> do
+    (treacheryId', treachery') <- createTreachery cardCode Nothing
+    unshiftMessage (AttachTreachery treacheryId' target)
     pure $ g & treacheries . at treacheryId' ?~ treachery'
   SpawnEnemyAt card lid -> do
     let

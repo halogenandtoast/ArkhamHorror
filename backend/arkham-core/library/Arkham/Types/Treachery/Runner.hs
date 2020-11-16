@@ -15,9 +15,11 @@ import Arkham.Types.Trait
 
 type TreacheryRunner env
   = ( HasQueue env
+    , HasCount ActsRemainingCount () env
     , HasCount CardCount InvestigatorId env
     , HasCount ClueCount InvestigatorId env
     , HasCount ClueCount LocationId env
+    , HasCount PlayerCount () env
     , HasCount ResourceCount InvestigatorId env
     , HasCount Shroud LocationId env
     , HasCount SpendableClueCount InvestigatorId env
@@ -39,5 +41,6 @@ type TreacheryRunner env
     , HasSet Trait LocationId env
     , HasSet FarthestEnemyId (InvestigatorId, EnemyTrait) env
     , HasSet UniqueEnemyId () env
+    , HasSet EnemyId () env
     )
 

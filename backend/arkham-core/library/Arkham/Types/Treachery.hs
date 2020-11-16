@@ -47,6 +47,8 @@ data Treachery
   | WrackedByNightmares' WrackedByNightmares
   | TheZealotsSeal' TheZealotsSeal
   | MaskedHorrors' MaskedHorrors
+  | VaultOfEarthlyDemise' VaultOfEarthlyDemise
+  | UmordhothsHunger' UmordhothsHunger
   | ChillFromBelow' ChillFromBelow
   | MaskOfUmordhoth' MaskOfUmordhoth
   | Atychiphobia' Atychiphobia
@@ -121,6 +123,8 @@ allTreacheries = mapFromList
   , ("02015", (WrackedByNightmares' .) . wrackedByNightmares)
   , ("50024", (TheZealotsSeal' .) . theZealotsSeal)
   , ("50031", (MaskedHorrors' .) . maskedHorrors)
+  , ("50032b", (VaultOfEarthlyDemise' .) . vaultOfEarthlyDemise)
+  , ("50037", (UmordhothsHunger' .) . umordhothsHunger)
   , ("50040", (ChillFromBelow' .) . chillFromBelow)
   , ("50043", (MaskOfUmordhoth' .) . maskOfUmordhoth)
   , ("60504", (Atychiphobia' .) . atychiphobia)
@@ -176,6 +180,8 @@ treacheryAttrs = \case
   WrackedByNightmares' attrs -> coerce attrs
   TheZealotsSeal' attrs -> coerce attrs
   MaskedHorrors' attrs -> coerce attrs
+  VaultOfEarthlyDemise' attrs -> coerce attrs
+  UmordhothsHunger' attrs -> coerce attrs
   ChillFromBelow' attrs -> coerce attrs
   MaskOfUmordhoth' attrs -> coerce attrs
   Atychiphobia' attrs -> coerce attrs

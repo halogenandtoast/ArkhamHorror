@@ -316,6 +316,8 @@ toSource Attrs { enemyId } = EnemySource enemyId
 
 isTarget :: Attrs -> Target -> Bool
 isTarget Attrs { enemyId } (EnemyTarget eid) = enemyId == eid
+isTarget Attrs { enemyCardCode } (CardCodeTarget cardCode) =
+  enemyCardCode == cardCode
 isTarget _ _ = False
 
 getModifiedHealth
@@ -501,6 +503,8 @@ instance EnemyRunner env => RunMessage env Attrs where
         enemySanityDamage
       , After (EnemyAttack iid enemyId)
       ]
+    HealDamage (EnemyTarget eid) n | eid == enemyId -> do
+      pure $ a & damage %~ max 0 . subtract n
     EnemyDamage eid iid source amount | eid == enemyId -> do
       amount' <- getModifiedDamageAmount a amount
       modifiedHealth <- getModifiedHealth a
@@ -577,7 +581,7 @@ instance EnemyRunner env => RunMessage env Attrs where
       pure $ a & doom +~ amount
     PlaceDoom (EnemyTarget eid) amount | eid == enemyId ->
       pure $ a & doom +~ amount
-    AttachTreachery tid (EnemyTarget eid) | eid == enemyId ->
+    AttachTreachery tid target | isTarget a target ->
       pure $ a & treacheries %~ insertSet tid
     AttachAsset aid (EnemyTarget eid) | eid == enemyId ->
       pure $ a & assets %~ insertSet aid

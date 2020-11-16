@@ -37,8 +37,8 @@ instance (HasTokenValue env InvestigatorId, HasQueue env, HasCount EnemyCount [T
   getTokenValue (ReturnToTheDevourerBelow theDevourerBelow') iid =
     getTokenValue theDevourerBelow' iid
 
-instance (ScenarioRunner env) => RunMessage env ReturnToTheDevourerBelow where
-  runMessage msg (ReturnToTheDevourerBelow theDevourerBelow'@(TheDevourerBelow attrs@Attrs {..}))
+instance ScenarioRunner env => RunMessage env ReturnToTheDevourerBelow where
+  runMessage msg s@(ReturnToTheDevourerBelow theDevourerBelow'@(TheDevourerBelow attrs@Attrs {..}))
     = case msg of
       Setup -> do
         investigatorIds <- getInvestigatorIds
@@ -145,4 +145,7 @@ instance (ScenarioRunner env) => RunMessage env ReturnToTheDevourerBelow where
         ReturnToTheDevourerBelow . TheDevourerBelow <$> runMessage
           msg
           (attrs & locations .~ locations')
+      CreateEnemyAt "01157" "01156" -> do
+        s <$ unshiftMessage
+          (AttachStoryTreacheryTo "50032b" (CardCodeTarget "00157"))
       _ -> ReturnToTheDevourerBelow <$> runMessage msg theDevourerBelow'

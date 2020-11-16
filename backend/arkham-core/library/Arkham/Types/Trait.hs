@@ -51,6 +51,7 @@ data Trait
   | Dreamer
   | Dreamlands
   | Drifter
+  | Eldritch
   | Elite
   | Endtimes
   | Evidence
@@ -92,6 +93,7 @@ data Trait
   | Obstacle
   | Occult
   | Omen
+  | Otherworld
   | Pact
   | Paradox
   | Patron

@@ -119,6 +119,8 @@ allEncounterCards = HashMap.fromList
   , ("50024", theZealotsSeal)
   , ("50026b", narogath)
   , ("50031", maskedHorrors)
+  , ("50032b", vaultOfEarthlyDemise)
+  , ("50037", umordhothsHunger)
   , ("50038", graveEater)
   , ("50039", acolyteOfUmordhoth)
   , ("50040", chillFromBelow)
@@ -380,6 +382,17 @@ narogath cardId = (enemy cardId "50026b" "Narôgath")
 maskedHorrors :: CardId -> EncounterCard
 maskedHorrors cardId = (treachery cardId "50031" "Masked Horrors")
   { ecTraits = setFromList [Power, Scheme]
+  }
+
+vaultOfEarthlyDemise :: CardId -> EncounterCard
+vaultOfEarthlyDemise cardId =
+  (treachery cardId "50032a" "Vault of Earthly Demise")
+    { ecTraits = setFromList [Eldritch, Otherworld]
+    }
+
+umordhothsHunger :: CardId -> EncounterCard
+umordhothsHunger cardId = (treachery cardId "50037" "Umôrdhoth's Hunger")
+  { ecTraits = setFromList [Power]
   }
 
 graveEater :: CardId -> EncounterCard

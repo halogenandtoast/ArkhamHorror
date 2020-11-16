@@ -63,6 +63,8 @@ attachedInvestigator :: Lens' Attrs (Maybe InvestigatorId)
 attachedInvestigator = lens treacheryAttachedInvestigator
   $ \m x -> m { treacheryAttachedInvestigator = x }
 
+resources :: Lens' Attrs (Maybe Int)
+resources = lens treacheryResources $ \m x -> m { treacheryResources = x }
 
 baseAttrs :: TreacheryId -> CardCode -> Attrs
 baseAttrs tid cardCode =

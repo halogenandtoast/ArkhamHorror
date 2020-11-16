@@ -16,7 +16,13 @@ hospitalDebts uuid iid = HospitalDebts
   $ (weaknessAttrs uuid iid "01011") { treacheryResources = Just 0 }
 
 instance HasModifiersFor env HospitalDebts where
-  getModifiersFor = noModifiersFor
+  getModifiersFor _ (InvestigatorTarget iid) (HospitalDebts attrs) = do
+    let resources' = fromJustNote "must be set" $ treacheryResources attrs
+    pure
+      [ XPModifier (-2)
+      | iid `elem` treacheryAttachedInvestigator attrs && resources' < 6
+      ]
+  getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env HospitalDebts where
   getActions iid (DuringTurn You) (HospitalDebts Attrs {..}) =
@@ -49,22 +55,10 @@ instance ActionRunner env => HasActions env HospitalDebts where
 instance (TreacheryRunner env) => RunMessage env HospitalDebts where
   runMessage msg t@(HospitalDebts attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      unshiftMessages
+      t <$ unshiftMessages
         [ RemoveCardFromHand iid "01011"
         , AttachTreachery treacheryId (InvestigatorTarget iid)
         ]
-      HospitalDebts <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
-    EndOfGame | fromJustNote "must be set" treacheryResources < 6 ->
-      let
-        investigator =
-          fromJustNote "missing investigator" treacheryAttachedInvestigator
-      in
-        t <$ unshiftMessage
-          (AddModifiers
-            (InvestigatorTarget investigator)
-            (TreacherySource treacheryId)
-            [XPModifier (-2)]
-          )
     UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId -> do
       unshiftMessage (SpendResources iid 1)
       pure $ HospitalDebts

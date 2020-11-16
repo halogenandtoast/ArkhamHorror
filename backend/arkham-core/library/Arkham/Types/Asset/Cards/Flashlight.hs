@@ -40,9 +40,11 @@ instance (AssetRunner env) => RunMessage env Flashlight where
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       lid <- asks $ getId iid
       unshiftMessages
-        [ AddModifiers (LocationTarget lid) source [ShroudModifier (-2)]
-        , Investigate iid lid source SkillIntellect mempty mempty mempty False
-        , RemoveAllModifiersOnTargetFrom (LocationTarget lid) source
+        [ CreateSkillTestEffect
+          (EffectModifiers [ShroudModifier (-2)])
+          source
+          (LocationTarget lid)
+        , Investigate iid lid source SkillIntellect False
         ]
       pure $ Flashlight $ attrs & uses %~ Resource.use
     _ -> Flashlight <$> runMessage msg attrs

@@ -33,7 +33,7 @@ jennyBarnes = JennyBarnes $ baseAttrs
 instance ActionRunner env => HasActions env JennyBarnes where
   getActions i window (JennyBarnes attrs) = getActions i window attrs
 
-instance InvestigatorRunner env => HasTokenValue env JennyBarnes where
+instance HasTokenValue env JennyBarnes where
   getTokenValue (JennyBarnes attrs) iid ElderSign
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier $ investigatorResources attrs)

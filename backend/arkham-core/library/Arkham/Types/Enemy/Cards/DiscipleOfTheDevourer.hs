@@ -21,10 +21,6 @@ discipleOfTheDevourer uuid =
 instance HasModifiersFor env DiscipleOfTheDevourer where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env DiscipleOfTheDevourer where
-  getModifiers _ (DiscipleOfTheDevourer Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env DiscipleOfTheDevourer where
   getActions i window (DiscipleOfTheDevourer attrs) = getActions i window attrs
 

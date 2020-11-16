@@ -17,7 +17,7 @@ litaChantler uuid = LitaChantler $ (baseAttrs uuid "01117")
   , assetSanity = Just 3
   }
 
-instance (HasId LocationId InvestigatorId env) => HasModifiersFor env LitaChantler where
+instance HasId LocationId InvestigatorId env => HasModifiersFor env LitaChantler where
   getModifiersFor _ (InvestigatorTarget iid) (LitaChantler Attrs {..}) = do
     locationId <- asks $ getId @LocationId iid
     case assetInvestigator of
@@ -43,17 +43,15 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
               iid
               [ Run
                 [ UseCardAbility iid (AssetSource assetId) Nothing 1
-                , AddModifiers
+                , CreateSkillTestEffect
+                  (EffectModifiers [DamageTaken 1])
+                  (toSource attrs)
                   (EnemyTarget eid)
-                  (AssetSource assetId)
-                  [DamageTaken 1]
                 ]
               , Continue "Do not use Lita Chantler's ability"
               ]
             )
           else pure a
       _ -> pure a
-    AfterAttackEnemy _ eid -> a <$ unshiftMessage
-      (RemoveAllModifiersOnTargetFrom (EnemyTarget eid) (AssetSource assetId))
     _ -> LitaChantler <$> runMessage msg attrs
 

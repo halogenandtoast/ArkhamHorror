@@ -24,10 +24,6 @@ darkYoungHost uuid =
 instance HasModifiersFor env DarkYoungHost where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env DarkYoungHost where
-  getModifiers _ (DarkYoungHost Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env DarkYoungHost where
   getActions i window (DarkYoungHost attrs) = getActions i window attrs
 

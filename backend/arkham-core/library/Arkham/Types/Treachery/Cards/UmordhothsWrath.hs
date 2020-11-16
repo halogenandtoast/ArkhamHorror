@@ -27,7 +27,7 @@ instance HasActions env UmordhothsWrath where
 
 instance (TreacheryRunner env) => RunMessage env UmordhothsWrath where
   runMessage msg t@(UmordhothsWrath attrs@Attrs {..}) = case msg of
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget n
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} n
       | tid == treacheryId -> t
       <$ unshiftMessage (HandlePointOfFailure iid (TreacheryTarget tid) n)
     HandlePointOfFailure _ (TreacheryTarget tid) 0 | tid == treacheryId ->
@@ -56,9 +56,5 @@ instance (TreacheryRunner env) => RunMessage env UmordhothsWrath where
         Nothing
         SkillWillpower
         5
-        []
-        []
-        mempty
-        mempty
       )
     _ -> UmordhothsWrath <$> runMessage msg attrs

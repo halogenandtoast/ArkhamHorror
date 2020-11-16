@@ -75,26 +75,26 @@ defaultRunMessage
   -> m a
 defaultRunMessage msg = fmap to . runMessage1 msg . from
 
-class (HasQueue env) => HasTokenValue1 env f where
-  getTokenValue1 :: (MonadIO m, MonadReader env m) => f p -> InvestigatorId -> Token -> m TokenValue
+class HasTokenValue1 env f where
+  getTokenValue1 :: MonadReader env m => f p -> InvestigatorId -> Token -> m TokenValue
 
-instance (HasQueue env, HasTokenValue1 env f) => HasTokenValue1 env (M1 i c f) where
+instance (HasTokenValue1 env f) => HasTokenValue1 env (M1 i c f) where
   getTokenValue1 (M1 x) iid token = getTokenValue1 x iid token
 
-instance (HasQueue env, HasTokenValue1 env l, HasTokenValue1 env r) => HasTokenValue1 env (l :+: r) where
+instance (HasTokenValue1 env l, HasTokenValue1 env r) => HasTokenValue1 env (l :+: r) where
   getTokenValue1 (L1 x) iid token = getTokenValue1 x iid token
   getTokenValue1 (R1 x) iid token = getTokenValue1 x iid token
 
-instance (HasQueue env, HasTokenValue env p) => HasTokenValue1 env (K1 R p) where
+instance (HasTokenValue env p) => HasTokenValue1 env (K1 R p) where
   getTokenValue1 (K1 x) iid token = getTokenValue x iid token
 
-class (HasQueue env) => HasTokenValue env a where
-  getTokenValue :: (MonadIO m, MonadReader env m) => a -> InvestigatorId -> Token -> m TokenValue
-  default getTokenValue :: (Generic a, HasTokenValue1 env (Rep a), MonadIO m, MonadReader env m) => a -> InvestigatorId -> Token -> m TokenValue
+class HasTokenValue env a where
+  getTokenValue :: MonadReader env m => a -> InvestigatorId -> Token -> m TokenValue
+  default getTokenValue :: (Generic a, HasTokenValue1 env (Rep a), MonadReader env m) => a -> InvestigatorId -> Token -> m TokenValue
   getTokenValue = defaultGetTokenValue
 
 defaultGetTokenValue
-  :: (Generic a, HasTokenValue1 env (Rep a), MonadIO m, MonadReader env m)
+  :: (Generic a, HasTokenValue1 env (Rep a), MonadReader env m)
   => a
   -> InvestigatorId
   -> Token
@@ -177,31 +177,6 @@ checkWindows iid f = do
   windowPairings <- pairInvestigatorIdsForWindow iid
   sequence [ CheckWindow iid' <$> f who | (iid', who) <- windowPairings ]
 
-class HasModifiers1 env f where
-  getModifiers1 :: (MonadIO m, MonadReader env m) => Source -> f p -> m [Modifier]
-
-instance HasModifiers1 env f => HasModifiers1 env (M1 i c f) where
-  getModifiers1 source (M1 x) = getModifiers1 source x
-
-instance (HasModifiers1 env l, HasModifiers1 env r) => HasModifiers1 env (l :+: r) where
-  getModifiers1 source (L1 x) = getModifiers1 source x
-  getModifiers1 source (R1 x) = getModifiers1 source x
-
-instance (HasModifiers env p) => HasModifiers1 env (K1 R p) where
-  getModifiers1 source (K1 x) = getModifiers source x
-
-defaultGetModifiers
-  :: (Generic a, HasModifiers1 env (Rep a), MonadIO m, MonadReader env m)
-  => Source
-  -> a
-  -> m [Modifier]
-defaultGetModifiers source = getModifiers1 source . from
-
-class HasModifiers env a where
-  getModifiers :: (MonadReader env m, MonadIO m) => Source -> a -> m [Modifier]
-  default getModifiers :: (Generic a, HasModifiers1 env (Rep a), MonadIO m, MonadReader env m) => Source -> a -> m [Modifier]
-  getModifiers = defaultGetModifiers
-
 class HasStep c a where
   getStep ::  a -> c
 
@@ -227,7 +202,7 @@ class HasCount c b a where
   getCount :: b -> a -> c
 
 class HasStats b a where
-  getStats :: (MonadReader env m, MonadIO m, HasModifiers env InvestigatorId) => b -> Source -> a -> m Stats
+  getStats :: MonadReader env m => b -> Source -> a -> m Stats
 
 class HasTraits a where
   getTraits :: a -> HashSet Trait
@@ -340,7 +315,7 @@ class HasActions env a where
   getActions = defaultGetActions
 
 class HasModifiersFor1 env f where
-  getModifiersFor1 :: (MonadIO m, MonadReader env m) => Source -> Target -> f p -> m [Modifier]
+  getModifiersFor1 :: (MonadReader env m) => Source -> Target -> f p -> m [Modifier]
 
 instance HasModifiersFor1 env f => HasModifiersFor1 env (M1 i c f) where
   getModifiersFor1 source target (M1 x) = getModifiersFor1 source target x
@@ -353,7 +328,7 @@ instance (HasModifiersFor env p) => HasModifiersFor1 env (K1 R p) where
   getModifiersFor1 source target (K1 x) = getModifiersFor source target x
 
 defaultGetModifiersFor
-  :: (Generic a, HasModifiersFor1 env (Rep a), MonadIO m, MonadReader env m)
+  :: (Generic a, HasModifiersFor1 env (Rep a), MonadReader env m)
   => Source
   -> Target
   -> a
@@ -361,8 +336,8 @@ defaultGetModifiersFor
 defaultGetModifiersFor source target = getModifiersFor1 source target . from
 
 class HasModifiersFor env a where
-  getModifiersFor :: (MonadReader env m, MonadIO m) => Source -> Target -> a -> m [Modifier]
-  default getModifiersFor :: (Generic a, HasModifiersFor1 env (Rep a), MonadIO m, MonadReader env m) => Source -> Target -> a -> m [Modifier]
+  getModifiersFor :: (MonadReader env m) => Source -> Target -> a -> m [Modifier]
+  default getModifiersFor :: (Generic a, HasModifiersFor1 env (Rep a), MonadReader env m) => Source -> Target -> a -> m [Modifier]
   getModifiersFor = defaultGetModifiersFor
 
 noModifiersFor :: (MonadReader env m) => Source -> Target -> a -> m [Modifier]
@@ -382,6 +357,12 @@ class Discardable a where
 
 class CanBeWeakness b a where
   getIsWeakness :: b -> a -> Bool
+
+class Entity a where
+  toTarget :: a -> Target
+  isTarget :: a -> Target -> Bool
+  toSource :: a -> Source
+  isSource :: a -> Source -> Bool
 
 class Exhaustable a where
   isExhausted :: a -> Bool

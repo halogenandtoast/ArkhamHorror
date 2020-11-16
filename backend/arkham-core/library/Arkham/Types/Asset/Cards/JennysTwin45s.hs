@@ -36,12 +36,12 @@ instance AssetRunner env => RunMessage env JennysTwin45s where
     InvestigatorPlayDynamicAsset _ aid _ _ n | aid == assetId attrs ->
       JennysTwin45s <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo n)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
-      unshiftMessage $ ChooseFightEnemy
-        iid
-        source
-        SkillCombat
-        [DamageDealt 1, SkillModifier SkillCombat 2]
-        mempty
-        False
+      unshiftMessages
+        [ CreateSkillTestEffect
+          (EffectModifiers [DamageDealt 1, SkillModifier SkillCombat 2])
+          source
+          (InvestigatorTarget iid)
+        , ChooseFightEnemy iid source SkillCombat False
+        ]
       pure $ JennysTwin45s $ attrs & uses %~ Resource.use
     _ -> JennysTwin45s <$> runMessage msg attrs

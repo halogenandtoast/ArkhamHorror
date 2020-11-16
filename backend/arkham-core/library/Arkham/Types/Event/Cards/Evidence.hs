@@ -19,15 +19,14 @@ instance HasActions env Evidence where
   getActions i window (Evidence attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env Evidence where
-  runMessage msg (Evidence attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Evidence attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       currentLocationId <- asks (getId @LocationId iid)
       locationClueCount <- unClueCount <$> asks (getCount currentLocationId)
       if locationClueCount > 0
-        then unshiftMessages
+        then e <$ unshiftMessages
           [ DiscoverCluesAtLocation iid currentLocationId 1
           , Discard (EventTarget eid)
           ]
-        else unshiftMessages [Discard (EventTarget eid)]
-      Evidence <$> runMessage msg (attrs & resolved .~ True)
+        else e <$ unshiftMessages [Discard (EventTarget eid)]
     _ -> Evidence <$> runMessage msg attrs

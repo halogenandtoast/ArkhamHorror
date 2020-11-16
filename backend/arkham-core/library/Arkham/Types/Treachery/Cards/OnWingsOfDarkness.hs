@@ -1,17 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Treachery.Cards.OnWingsOfDarkness where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.SkillType
+import Arkham.Import
+
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
-import ClassyPrelude
-import qualified Data.HashSet as HashSet
-import Lens.Micro
 
 newtype OnWingsOfDarkness = OnWingsOfDarkness Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -25,17 +19,17 @@ instance HasModifiersFor env OnWingsOfDarkness where
 instance HasActions env OnWingsOfDarkness where
   getActions i window (OnWingsOfDarkness attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env OnWingsOfDarkness where
-  runMessage msg (OnWingsOfDarkness attrs@Attrs {..}) = case msg of
+instance TreacheryRunner env => RunMessage env OnWingsOfDarkness where
+  runMessage msg t@(OnWingsOfDarkness attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      centralLocations <- HashSet.toList <$> asks (getSet [Central])
-      unshiftMessage
-        (RevelationSkillTest
-          iid
-          source
-          SkillAgility
-          4
-          []
+      t <$ unshiftMessages
+        [ RevelationSkillTest iid source SkillAgility 4
+        , Discard (toTarget attrs)
+        ]
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _
+      | isSource attrs source -> do
+        centralLocations <- asks $ setToList . getSet [Central]
+        t <$ unshiftMessages
           ([ InvestigatorAssignDamage iid source 1 1
            , UnengageNonMatching iid [Nightgaunt]
            ]
@@ -43,7 +37,4 @@ instance (TreacheryRunner env) => RunMessage env OnWingsOfDarkness where
                  [ MoveTo iid lid | lid <- centralLocations ]
              ]
           )
-          []
-        )
-      OnWingsOfDarkness <$> runMessage msg (attrs & resolved .~ True)
     _ -> OnWingsOfDarkness <$> runMessage msg attrs

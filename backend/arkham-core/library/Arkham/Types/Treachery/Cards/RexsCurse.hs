@@ -32,7 +32,7 @@ instance (TreacheryRunner env) => RunMessage env RexsCurse where
     Revelation iid source | isSource attrs source -> do
       unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
       RexsCurse <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
-    Will (PassedSkillTest iid _ _ SkillTestInitiatorTarget _)
+    Will (PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _)
       | Just iid == treacheryAttachedInvestigator -> do
         let
           ability = (mkAbility (TreacherySource treacheryId) 0 ForcedAbility)

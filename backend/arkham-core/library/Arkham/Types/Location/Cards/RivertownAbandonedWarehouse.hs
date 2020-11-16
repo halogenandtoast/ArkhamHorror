@@ -9,7 +9,6 @@ import Arkham.Import hiding (Cultist)
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
-import Arkham.Types.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait

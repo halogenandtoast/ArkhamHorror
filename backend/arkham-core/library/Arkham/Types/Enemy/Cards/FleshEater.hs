@@ -22,10 +22,6 @@ fleshEater uuid =
 instance HasModifiersFor env FleshEater where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env FleshEater where
-  getModifiers _ (FleshEater Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env FleshEater where
   getActions i window (FleshEater attrs) = getActions i window attrs
 

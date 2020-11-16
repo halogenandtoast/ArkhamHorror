@@ -16,10 +16,6 @@ swarmOfRats uuid =
 instance HasModifiersFor env SwarmOfRats where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env SwarmOfRats where
-  getModifiers _ (SwarmOfRats Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env SwarmOfRats where
   getActions i window (SwarmOfRats attrs) = getActions i window attrs
 

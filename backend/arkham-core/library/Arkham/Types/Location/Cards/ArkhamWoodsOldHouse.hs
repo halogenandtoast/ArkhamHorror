@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env ArkhamWoodsOldHouse where
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsOldHouse where
   runMessage msg (ArkhamWoodsOldHouse attrs@Attrs {..}) = case msg of
-    Investigate iid lid s _ m tr o False | lid == locationId -> do
-      let investigate = Investigate iid lid s SkillWillpower m tr o False
+    Investigate iid lid s _ False | lid == locationId -> do
+      let investigate = Investigate iid lid s SkillWillpower False
       ArkhamWoodsOldHouse <$> runMessage investigate attrs
     _ -> ArkhamWoodsOldHouse <$> runMessage msg attrs

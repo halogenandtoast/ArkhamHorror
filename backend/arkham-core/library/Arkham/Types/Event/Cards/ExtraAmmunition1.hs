@@ -22,7 +22,7 @@ instance HasActions env ExtraAmmunition1 where
   getActions i window (ExtraAmmunition1 attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
-  runMessage msg (ExtraAmmunition1 attrs@Attrs {..}) = case msg of
+  runMessage msg e@(ExtraAmmunition1 attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       locationId <- asks (getId @LocationId iid)
       investigatorIds <- asks $ setToList . getSet @InvestigatorId locationId
@@ -30,12 +30,13 @@ instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
       firearmAssetids <- flip filterM assetIds $ \assetId -> do
         traits <- asks $ setToList . getSet assetId
         pure $ Firearm `elem` traits
-      unshiftMessage
-        (Ask iid $ ChooseOne
+      e <$ unshiftMessages
+        [ chooseOne
+          iid
           [ Run
               [AddUses (AssetTarget aid) Ammo 3, Discard (EventTarget eventId)]
           | aid <- firearmAssetids
           ]
-        )
-      ExtraAmmunition1 <$> runMessage msg (attrs & resolved .~ True)
+        , Discard (toTarget attrs)
+        ]
     _ -> ExtraAmmunition1 <$> runMessage msg attrs

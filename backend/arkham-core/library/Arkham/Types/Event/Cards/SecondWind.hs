@@ -22,7 +22,7 @@ instance HasModifiersFor env SecondWind where
   getModifiersFor = noModifiersFor
 
 instance (HasQueue env, HasRoundHistory env) => RunMessage env SecondWind where
-  runMessage msg (SecondWind attrs@Attrs {..}) = case msg of
+  runMessage msg e@(SecondWind attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       roundHistory <- getRoundHistory =<< ask
       let
@@ -31,9 +31,9 @@ instance (HasQueue env, HasRoundHistory env) => RunMessage env SecondWind where
           DrewPlayerTreachery iid' _ _ -> iid == iid'
           _ -> False
         damageToHeal = if any didDrawTreachery roundHistory then 2 else 1
-      unshiftMessages
+      e <$ unshiftMessages
         [ HealDamage (InvestigatorTarget iid) damageToHeal
         , DrawCards iid 1 False
+        , Discard (toTarget attrs)
         ]
-      SecondWind <$> runMessage msg (attrs & resolved .~ True)
     _ -> SecondWind <$> runMessage msg attrs

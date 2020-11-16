@@ -17,8 +17,18 @@ newtype CursedSwamp = CursedSwamp Attrs
 cursedSwamp :: TreacheryId -> a -> CursedSwamp
 cursedSwamp uuid _ = CursedSwamp $ baseAttrs uuid "81024"
 
-instance HasModifiersFor env CursedSwamp where
-  getModifiersFor = noModifiersFor
+instance
+  ( HasId LocationId InvestigatorId env
+  , HasSet Trait LocationId env
+  )
+  => HasModifiersFor env CursedSwamp where
+  getModifiersFor (SkillTestSource _ source _) (InvestigatorTarget iid) (CursedSwamp attrs)
+    | isSource attrs source
+    = do
+      locationId <- asks $ getId @LocationId iid
+      isBayou <- asks $ member Bayou . getSet locationId
+      pure [ CannotCommitCards | isBayou ]
+  getModifiersFor _ _ _ = pure []
 
 instance HasActions env CursedSwamp where
   getActions i window (CursedSwamp attrs) = getActions i window attrs
@@ -26,21 +36,12 @@ instance HasActions env CursedSwamp where
 instance TreacheryRunner env => RunMessage env CursedSwamp where
   runMessage msg t@(CursedSwamp attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      locationId <- asks $ getId @LocationId iid
-      isBayou <- asks $ member Bayou . getSet locationId
       unshiftMessages
-        [ RevelationSkillTest
-          iid
-          source
-          SkillWillpower
-          3
-          []
-          []
-          [ CannotCommitCards | isBayou ]
+        [ RevelationSkillTest iid source SkillWillpower 3
         , Discard (TreacheryTarget treacheryId)
         ]
       CursedSwamp <$> runMessage msg (attrs & resolved .~ True)
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget n
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} n
       | tid == treacheryId -> t <$ unshiftMessage
         (InvestigatorAssignDamage iid (TreacherySource treacheryId) n 0)
     _ -> CursedSwamp <$> runMessage msg attrs

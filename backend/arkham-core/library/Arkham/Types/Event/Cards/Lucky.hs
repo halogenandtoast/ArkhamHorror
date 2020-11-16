@@ -19,11 +19,9 @@ instance HasActions env Lucky where
   getActions i window (Lucky attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env Lucky where
-  runMessage msg (Lucky attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent _ eid _ | eid == eventId -> do
-      unshiftMessages
-        [ Discard (EventTarget eid)
-        , AddModifiers AfterSkillTestTarget (EventSource eid) [AnySkillValue 2]
-        ]
-      Lucky <$> runMessage msg (attrs & resolved .~ True)
+  runMessage msg e@(Lucky attrs@Attrs {..}) = case msg of
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
+      [ Discard (EventTarget eid)
+      , CreateEffect "01080" Nothing (EventSource eid) (InvestigatorTarget iid)
+      ]
     _ -> Lucky <$> runMessage msg attrs

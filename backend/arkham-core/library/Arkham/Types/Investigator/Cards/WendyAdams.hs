@@ -30,7 +30,7 @@ wendyAdams = WendyAdams $ baseAttrs
     }
   [Drifter]
 
-instance InvestigatorRunner env => HasTokenValue env WendyAdams where
+instance HasTokenValue env WendyAdams where
   getTokenValue (WendyAdams attrs) iid ElderSign | iid == investigatorId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 0)
   getTokenValue (WendyAdams attrs) iid token = getTokenValue attrs iid token

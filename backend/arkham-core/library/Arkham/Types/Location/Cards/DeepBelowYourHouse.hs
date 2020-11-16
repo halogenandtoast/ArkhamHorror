@@ -42,13 +42,9 @@ instance (LocationRunner env) => RunMessage env DeepBelowYourHouse where
           Nothing
           SkillAgility
           3
-          mempty
-          mempty
-          mempty
-          mempty
         )
       DeepBelowYourHouse <$> runMessage msg attrs
-    FailedSkillTest iid _ source SkillTestInitiatorTarget n
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} n
       | isSource attrs source -> do
         l <$ unshiftMessages
           (replicate

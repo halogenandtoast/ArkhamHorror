@@ -31,11 +31,17 @@ instance (AssetRunner env) => RunMessage env DigDeep2 where
     UseCardAbility iid source _ 1 | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
-        , AddModifiers SkillTestTarget source [SkillModifier SkillWillpower 1]
+        , CreateSkillTestEffect
+          (EffectModifiers [SkillModifier SkillWillpower 1])
+          source
+          (InvestigatorTarget iid)
         ]
     UseCardAbility iid source _ 2 | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
-        , AddModifiers SkillTestTarget source [SkillModifier SkillAgility 1]
+        , CreateSkillTestEffect
+          (EffectModifiers [SkillModifier SkillAgility 1])
+          source
+          (InvestigatorTarget iid)
         ]
     _ -> DigDeep2 <$> runMessage msg attrs

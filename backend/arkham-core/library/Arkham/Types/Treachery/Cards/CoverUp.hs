@@ -61,7 +61,7 @@ instance (TreacheryRunner env) => RunMessage env CoverUp where
         investigator =
           fromJustNote "missing investigator" treacheryAttachedInvestigator
       in t <$ unshiftMessage (SufferTrauma investigator 0 1)
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility _ source _ 1 | isSource attrs source -> do
       cluesToRemove <- withQueue $ \queue -> do
         let
           (before, after) = flip break queue $ \case
@@ -72,7 +72,5 @@ instance (TreacheryRunner env) => RunMessage env CoverUp where
             (x : xs) -> (x, xs)
         (before <> remaining, m)
       let remainingClues = max 0 (coverUpClues attrs - cluesToRemove)
-      when (remainingClues == 0) $ unshiftMessage
-        (RemoveAllModifiersOnTargetFrom (InvestigatorTarget iid) source)
       pure $ CoverUp (attrs { treacheryClues = Just remainingClues })
     _ -> CoverUp <$> runMessage msg attrs

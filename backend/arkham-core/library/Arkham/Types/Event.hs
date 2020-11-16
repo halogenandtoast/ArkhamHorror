@@ -66,6 +66,12 @@ deriving anyclass instance HasActions env Event
 deriving anyclass instance HasModifiersFor env Event
 deriving anyclass instance EventRunner env => RunMessage env Event
 
+instance Entity Event where
+  toTarget = toTarget . eventAttrs
+  isTarget = isTarget . eventAttrs
+  toSource = toSource . eventAttrs
+  isSource = isSource . eventAttrs
+
 instance HasCardCode Event where
   getCardCode = eventCardCode . eventAttrs
 

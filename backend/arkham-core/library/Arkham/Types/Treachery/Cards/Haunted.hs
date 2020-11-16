@@ -13,7 +13,9 @@ haunted :: TreacheryId -> Maybe InvestigatorId -> Haunted
 haunted uuid iid = Haunted $ weaknessAttrs uuid iid "01098"
 
 instance HasModifiersFor env Haunted where
-  getModifiersFor = noModifiersFor
+  getModifiersFor _ (InvestigatorTarget iid) (Haunted attrs) =
+    pure [ AnySkillValue (-1) | iid `elem` treacheryAttachedInvestigator attrs ]
+  getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env Haunted where
   getActions iid NonFast (Haunted Attrs {..}) =
@@ -39,14 +41,6 @@ instance (TreacheryRunner env) => RunMessage env Haunted where
     Revelation iid source | isSource attrs source -> do
       unshiftMessage $ AttachTreachery treacheryId (InvestigatorTarget iid)
       Haunted <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
-    AttachTreachery tid (InvestigatorTarget iid) | tid == treacheryId -> do
-      unshiftMessage
-        (AddModifiers
-          (InvestigatorTarget iid)
-          (TreacherySource tid)
-          [AnySkillValue (-1)]
-        )
-      Haunted <$> runMessage msg attrs
     UseCardAbility _ (TreacherySource tid) _ 1 | tid == treacheryId ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
     _ -> Haunted <$> runMessage msg attrs

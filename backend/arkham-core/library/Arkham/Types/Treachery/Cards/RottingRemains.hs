@@ -29,11 +29,11 @@ instance (TreacheryRunner env) => RunMessage env RottingRemains where
   runMessage msg t@(RottingRemains attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       unshiftMessages
-        [ RevelationSkillTest iid source SkillWillpower 3 [] [] []
+        [ RevelationSkillTest iid source SkillWillpower 3
         , Discard (TreacheryTarget treacheryId)
         ]
       RottingRemains <$> runMessage msg (attrs & resolved .~ True)
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget n
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} n
       | tid == treacheryId -> t <$ unshiftMessage
         (InvestigatorAssignDamage iid (TreacherySource treacheryId) 0 n)
     _ -> RottingRemains <$> runMessage msg attrs

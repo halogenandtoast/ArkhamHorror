@@ -56,6 +56,6 @@ spec = describe "Agnes Baker" $ do
           (getId () agnesBaker)
           Nothing
           TestSource
-          SkillTestInitiatorTarget
+          (SkillTestInitiatorTarget TestTarget)
           0
         )

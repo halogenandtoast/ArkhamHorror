@@ -22,10 +22,6 @@ corpseHungryGhoul uuid =
 instance HasModifiersFor env CorpseHungryGhoul where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env CorpseHungryGhoul where
-  getModifiers _ (CorpseHungryGhoul Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env CorpseHungryGhoul where
   getActions i window (CorpseHungryGhoul attrs) = getActions i window attrs
 

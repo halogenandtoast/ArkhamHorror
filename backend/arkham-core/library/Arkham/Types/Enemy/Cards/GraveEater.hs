@@ -22,10 +22,6 @@ graveEater uuid =
 instance HasModifiersFor env GraveEater where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env GraveEater where
-  getModifiers _ (GraveEater Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env GraveEater where
   getActions i window (GraveEater attrs) = getActions i window attrs
 

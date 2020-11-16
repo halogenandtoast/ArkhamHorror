@@ -17,23 +17,18 @@ import Arkham.Types.Stats
 import Arkham.Types.TokenResponse
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
-import qualified Data.List as L
 import Data.Semigroup
 import Data.UUID.V4
 import System.Environment
 
-data SkillTest a = SkillTest
+data SkillTest = SkillTest
   { skillTestInvestigator    :: InvestigatorId
   , skillTestSkillType :: SkillType
   , skillTestDifficulty      :: Int
-  , skillTestOnSuccess       :: [a]
-  , skillTestOnFailure       :: [a]
-  , skillTestOnTokenResponses :: [TokenResponse a]
   , skillTestSetAsideTokens  :: [Token]
   , skillTestRevealedTokens  :: [DrawnToken] -- tokens may change from physical representation
   , skillTestValueModifier :: Int
   , skillTestResult :: SkillTestResult
-  , skillTestModifiers :: HashMap Source [Modifier]
   , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
   , skillTestSource :: Source
   , skillTestTarget :: Target
@@ -42,35 +37,37 @@ data SkillTest a = SkillTest
   }
   deriving stock (Show, Generic)
 
-skillTestToSource :: SkillTest a -> Source
+skillTestToSource :: SkillTest -> Source
 skillTestToSource = toSource
 
-toSource :: SkillTest a -> Source
-toSource SkillTest {..} =
-  SkillTestSource skillTestInvestigator skillTestSource skillTestAction
+instance Entity SkillTest where
+  toSource SkillTest {..} =
+    SkillTestSource skillTestInvestigator skillTestSource skillTestAction
+  toTarget _ = SkillTestTarget
+  isSource _ SkillTestSource{} = True
+  isSource _ _ = False
+  isTarget _ SkillTestTarget = True
+  isTarget _ _ = False
 
-instance ToJSON a => ToJSON (SkillTest a) where
+instance ToJSON SkillTest where
   toJSON = genericToJSON $ aesonOptions $ Just "skillTest"
   toEncoding = genericToEncoding $ aesonOptions $ Just "skillTest"
 
-instance FromJSON a => FromJSON (SkillTest a) where
+instance FromJSON SkillTest where
   parseJSON = genericParseJSON $ aesonOptions $ Just "skillTest"
 
 -- TODO: Cursed Swamp would apply to anyone trying to commit skill cards
-instance HasModifiersFor env (SkillTest a) where
-  getModifiersFor _ (InvestigatorTarget iid) SkillTest {..}
-    | iid == skillTestInvestigator = do
-      pure $ concat (toList skillTestModifiers)
-  getModifiersFor _ _ SkillTest{} = pure []
+instance HasModifiersFor env SkillTest where
+  getModifiersFor = noModifiersFor
 
-instance HasSet CommittedCardId InvestigatorId (SkillTest a) where
+instance HasSet CommittedCardId InvestigatorId SkillTest where
   getSet iid =
     HashSet.map CommittedCardId
       . keysSet
       . filterMap ((== iid) . fst)
       . skillTestCommittedCards
 
-instance HasSet CommittedCardCode () (SkillTest a) where
+instance HasSet CommittedCardCode () SkillTest where
   getSet _ =
     setFromList
       . map (CommittedCardCode . getCardCode . snd)
@@ -85,63 +82,47 @@ initSkillTest
   -> SkillType
   -> Int
   -> Int
-  -> [Message]
-  -> [Message]
-  -> [Modifier]
-  -> [TokenResponse Message]
-  -> SkillTest Message
-initSkillTest iid source target maction skillType' _skillValue' difficulty' onSuccess' onFailure' modifiers' tokenResponses'
-  = SkillTest
+  -> SkillTest
+initSkillTest iid source target maction skillType' _skillValue' difficulty' =
+  SkillTest
     { skillTestInvestigator = iid
     , skillTestSkillType = skillType'
     , skillTestDifficulty = difficulty'
-    , skillTestOnSuccess = onSuccess'
-    , skillTestOnFailure = onFailure'
-    , skillTestOnTokenResponses = tokenResponses'
     , skillTestSetAsideTokens = mempty
     , skillTestRevealedTokens = mempty
     , skillTestValueModifier = 0
     , skillTestResult = Unrun
-    , skillTestModifiers = mapFromList
-      [(SkillTestSource iid source maction, modifiers')]
     , skillTestCommittedCards = mempty
     , skillTestSource = source
     , skillTestTarget = target
     , skillTestAction = maction
-    , skillTestSubscribers = [SkillTestInitiatorTarget, InvestigatorTarget iid]
+    , skillTestSubscribers = [InvestigatorTarget iid]
     }
 
-modifiers :: Lens' (SkillTest a) (HashMap Source [Modifier])
-modifiers = lens skillTestModifiers $ \m x -> m { skillTestModifiers = x }
-
-subscribers :: Lens' (SkillTest a) [Target]
+subscribers :: Lens' SkillTest [Target]
 subscribers =
   lens skillTestSubscribers $ \m x -> m { skillTestSubscribers = x }
 
-valueModifier :: Lens' (SkillTest a) Int
+valueModifier :: Lens' SkillTest Int
 valueModifier =
   lens skillTestValueModifier $ \m x -> m { skillTestValueModifier = x }
 
-setAsideTokens :: Lens' (SkillTest a) [Token]
+setAsideTokens :: Lens' SkillTest [Token]
 setAsideTokens =
   lens skillTestSetAsideTokens $ \m x -> m { skillTestSetAsideTokens = x }
 
-revealedTokens :: Lens' (SkillTest a) [DrawnToken]
+revealedTokens :: Lens' SkillTest [DrawnToken]
 revealedTokens =
   lens skillTestRevealedTokens $ \m x -> m { skillTestRevealedTokens = x }
 
-committedCards :: Lens' (SkillTest a) (HashMap CardId (InvestigatorId, Card))
+committedCards :: Lens' SkillTest (HashMap CardId (InvestigatorId, Card))
 committedCards =
   lens skillTestCommittedCards $ \m x -> m { skillTestCommittedCards = x }
 
-result :: Lens' (SkillTest a) SkillTestResult
+result :: Lens' SkillTest SkillTestResult
 result = lens skillTestResult $ \m x -> m { skillTestResult = x }
 
-onTokenResponses :: Lens' (SkillTest a) [TokenResponse a]
-onTokenResponses =
-  lens skillTestOnTokenResponses $ \m x -> m { skillTestOnTokenResponses = x }
-
-skillIconCount :: SkillTest a -> Int
+skillIconCount :: SkillTest -> Int
 skillIconCount SkillTest {..} = length . filter matches $ concatMap
   (iconsForCard . snd)
   (toList skillTestCommittedCards)
@@ -152,15 +133,10 @@ skillIconCount SkillTest {..} = length . filter matches $ concatMap
   matches s = s == skillTestSkillType
 
 getModifiedSkillTestDifficulty
-  :: (MonadReader env m, MonadIO m, HasModifiersFor env env)
-  => SkillTest a
-  -> m Int
+  :: (MonadReader env m, HasModifiersFor env env) => SkillTest -> m Int
 getModifiedSkillTestDifficulty s = do
   modifiers' <- getModifiersFor (toSource s) SkillTestTarget =<< ask
-  pure $ foldr
-    applyModifier
-    (skillTestDifficulty s)
-    (modifiers' <> concat (toList $ skillTestModifiers s))
+  pure $ foldr applyModifier (skillTestDifficulty s) modifiers'
  where
   applyModifier (Difficulty m) n = max 0 (n + m)
   applyModifier _ n = n
@@ -168,7 +144,6 @@ getModifiedSkillTestDifficulty s = do
 type SkillTestRunner env
   = ( HasQueue env
     , HasCard InvestigatorId env
-    , HasModifiers env InvestigatorId
     , HasStats (InvestigatorId, Maybe Action) env
     , HasSource ForSkillTest env
     , HasModifiersFor env env
@@ -181,12 +156,8 @@ type SkillTestRunner env
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
 getModifiedTokenValue
-  :: ( MonadReader env m
-     , HasModifiersFor env env
-     , HasTokenValue env env
-     , MonadIO m
-     )
-  => SkillTest a
+  :: (MonadReader env m, HasModifiersFor env env, HasTokenValue env env)
+  => SkillTest
   -> DrawnToken
   -> m Int
 getModifiedTokenValue s t = do
@@ -215,8 +186,8 @@ getModifiedTokenValue s t = do
 
 -- really just looking for forced token changes here
 getModifiedTokenFaces
-  :: (HasModifiersFor env env, MonadReader env m, MonadIO m)
-  => SkillTest a
+  :: (HasModifiersFor env env, MonadReader env m)
+  => SkillTest
   -> DrawnToken
   -> m [Token]
 getModifiedTokenFaces s token = do
@@ -227,10 +198,11 @@ getModifiedTokenFaces s token = do
   applyModifier (ForcedTokenChange t ts) [t'] | t == t' = ts
   applyModifier _ ts = ts
 
-instance SkillTestRunner env => RunMessage env (SkillTest Message) where
+instance SkillTestRunner env => RunMessage env SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
     TriggerSkillTest iid -> do
-      modifiers' <- getModifiers (toSource s) iid
+      modifiers' <-
+        getModifiersFor (toSource s) (InvestigatorTarget iid) =<< ask
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
         then s <$ unshiftMessages
           [RunSkillTestSourceNotification iid skillTestSource, RunSkillTest iid]
@@ -254,16 +226,9 @@ instance SkillTestRunner env => RunMessage env (SkillTest Message) where
       revealedTokenFaces <- concatMapM
         (getModifiedTokenFaces s)
         skillTestRevealedTokens
-      onTokenResponses' <-
-        (catMaybes <$>) . for skillTestOnTokenResponses $ \case
-          OnAnyToken tokens' messages
-            | not (null $ revealedTokenFaces `L.intersect` tokens') -> Nothing
-            <$ unshiftMessages messages
-          response -> pure (Just response)
       unshiftMessages [ ResolveToken token iid | token <- revealedTokenFaces ]
       pure
         $ s
-        & (onTokenResponses .~ onTokenResponses')
         & (subscribers
           %~ (<> [ DrawnTokenTarget token'
                  | token' <- skillTestRevealedTokens
@@ -295,7 +260,15 @@ instance SkillTestRunner env => RunMessage env (SkillTest Message) where
               )
           | target <- skillTestSubscribers
           ]
-        <> [ Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
+        <> [ Will
+             (FailedSkillTest
+               skillTestInvestigator
+               skillTestAction
+               skillTestSource
+               (SkillTestInitiatorTarget skillTestTarget)
+               skillTestDifficulty
+             )
+           , Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
            , SkillTestEnds
            ]
       pure $ s & result .~ FailedBy True skillTestDifficulty
@@ -312,48 +285,147 @@ instance SkillTestRunner env => RunMessage env (SkillTest Message) where
       pure $ s & committedCards %~ insertMap cardId (iid, card)
     SkillTestUncommitCard _ cardId ->
       pure $ s & committedCards %~ deleteMap cardId
-    AddModifiers SkillTestTarget source modifiers' ->
-      pure $ s & modifiers %~ insertWith (<>) source modifiers'
     ReturnSkillTestRevealedTokens -> do
       -- Rex's Curse timing keeps effects on stack so we do
       -- not want to remove them as subscribers from the stack
       unshiftMessage $ ResetTokens (toSource s)
       pure $ s & setAsideTokens .~ mempty & revealedTokens .~ mempty
-    SkillTestEnds -> s <$ unshiftMessages
-      [ RemoveAllModifiersOnTargetFrom
-        (InvestigatorTarget skillTestInvestigator)
-        (toSource s)
-      , ResetTokens (toSource s)
-      ]
+    SkillTestEnds -> s <$ unshiftMessage (ResetTokens (toSource s))
     SkillTestResults -> do
       unshiftMessage
         (Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults])
       case skillTestResult of
         SucceededBy _ n -> unshiftMessages
-          [ Will
-              (PassedSkillTest
-                skillTestInvestigator
-                skillTestAction
-                skillTestSource
-                target
-                n
-              )
-          | target <- skillTestSubscribers
-          ]
+          ([ Will
+               (PassedSkillTest
+                 skillTestInvestigator
+                 skillTestAction
+                 skillTestSource
+                 target
+                 n
+               )
+           | target <- skillTestSubscribers
+           ]
+          <> [ Will
+                 (PassedSkillTest
+                   skillTestInvestigator
+                   skillTestAction
+                   skillTestSource
+                   (SkillTestInitiatorTarget skillTestTarget)
+                   n
+                 )
+             ]
+          )
         FailedBy _ n -> unshiftMessages
-          [ Will
-              (FailedSkillTest
-                skillTestInvestigator
-                skillTestAction
-                skillTestSource
-                target
-                n
-              )
-          | target <- skillTestSubscribers
-          ]
+          ([ Will
+               (FailedSkillTest
+                 skillTestInvestigator
+                 skillTestAction
+                 skillTestSource
+                 target
+                 n
+               )
+           | target <- skillTestSubscribers
+           ]
+          <> [ Will
+                 (FailedSkillTest
+                   skillTestInvestigator
+                   skillTestAction
+                   skillTestSource
+                   (SkillTestInitiatorTarget skillTestTarget)
+                   n
+                 )
+             ]
+          )
         Unrun -> pure ()
       pure s
-    AddModifiers AfterSkillTestTarget source modifiers' -> do
+    SkillTestApplyResultsAfter -> do -- ST.7 -- apply results
+      unshiftMessage SkillTestEnds -- -> ST.8 -- Skill test ends
+
+      case skillTestResult of
+        SucceededBy _ n -> unshiftMessages
+          ([ After
+               (PassedSkillTest
+                 skillTestInvestigator
+                 skillTestAction
+                 skillTestSource
+                 target
+                 n
+               )
+           | target <- skillTestSubscribers
+           ]
+          <> [ After
+                 (PassedSkillTest
+                   skillTestInvestigator
+                   skillTestAction
+                   skillTestSource
+                   (SkillTestInitiatorTarget skillTestTarget)
+                   n
+                 )
+             ]
+          )
+        FailedBy _ n -> unshiftMessages
+          ([ After
+               (FailedSkillTest
+                 skillTestInvestigator
+                 skillTestAction
+                 skillTestSource
+                 target
+                 n
+               )
+           | target <- skillTestSubscribers
+           ]
+          <> [ After
+                 (FailedSkillTest
+                   skillTestInvestigator
+                   skillTestAction
+                   skillTestSource
+                   (SkillTestInitiatorTarget skillTestTarget)
+                   n
+                 )
+             ]
+          )
+        Unrun -> pure ()
+      pure s
+    SkillTestApplyResults -> do -- ST.7 Apply Results
+      unshiftMessage SkillTestApplyResultsAfter
+      s <$ case skillTestResult of
+        SucceededBy _ n -> unshiftMessages
+          ([ PassedSkillTest
+               skillTestInvestigator
+               skillTestAction
+               skillTestSource
+               target
+               n
+           | target <- skillTestSubscribers
+           ]
+          <> [ PassedSkillTest
+                 skillTestInvestigator
+                 skillTestAction
+                 skillTestSource
+                 (SkillTestInitiatorTarget skillTestTarget)
+                 n
+             ]
+          )
+        FailedBy _ n -> unshiftMessages
+          ([ FailedSkillTest
+               skillTestInvestigator
+               skillTestAction
+               skillTestSource
+               target
+               n
+           | target <- skillTestSubscribers
+           ]
+          <> [ FailedSkillTest
+                 skillTestInvestigator
+                 skillTestAction
+                 skillTestSource
+                 (SkillTestInitiatorTarget skillTestTarget)
+                 n
+             ]
+          )
+        Unrun -> pure ()
+    RerunSkillTest -> do
       case skillTestResult of
         FailedBy True _ -> pure s
         _ -> do
@@ -367,62 +439,7 @@ instance SkillTestRunner env => RunMessage env (SkillTest Message) where
                   | skillTestInvestigator == skillTestInvestigator' -> False
                 _ -> True
             in (queue', ())
-          unshiftMessage $ RunSkillTest skillTestInvestigator
-          pure $ s & modifiers %~ insertWith (<>) source modifiers'
-    SkillTestApplyResultsAfter -> do -- ST.7 -- apply results
-      unshiftMessage SkillTestEnds -- -> ST.8 -- Skill test ends
-
-      case skillTestResult of
-        SucceededBy _ n ->
-          unshiftMessages
-            $ skillTestOnSuccess
-            <> [ After
-                   (PassedSkillTest
-                     skillTestInvestigator
-                     skillTestAction
-                     skillTestSource
-                     target
-                     n
-                   )
-               | target <- skillTestSubscribers
-               ]
-        FailedBy _ n ->
-          unshiftMessages
-            $ skillTestOnFailure
-            <> [ After
-                   (FailedSkillTest
-                     skillTestInvestigator
-                     skillTestAction
-                     skillTestSource
-                     target
-                     n
-                   )
-               | target <- skillTestSubscribers
-               ]
-        Unrun -> pure ()
-      pure s
-    SkillTestApplyResults -> do -- ST.7 Apply Results
-      unshiftMessage SkillTestApplyResultsAfter
-      s <$ case skillTestResult of
-        SucceededBy _ n -> unshiftMessages
-          [ PassedSkillTest
-              skillTestInvestigator
-              skillTestAction
-              skillTestSource
-              target
-              n
-          | target <- skillTestSubscribers
-          ]
-        FailedBy _ n -> unshiftMessages
-          [ FailedSkillTest
-              skillTestInvestigator
-              skillTestAction
-              skillTestSource
-              target
-              n
-          | target <- skillTestSubscribers
-          ]
-        Unrun -> pure ()
+          s <$ unshiftMessage (RunSkillTest skillTestInvestigator)
     RunSkillTest _ -> do
       tokenValues <- sum
         <$> for skillTestRevealedTokens (getModifiedTokenValue s)

@@ -11,7 +11,6 @@ import Arkham.Import
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Cards
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.Helpers
 import Data.Coerce
 
 lookupAgenda :: AgendaId -> Agenda
@@ -67,6 +66,12 @@ data Agenda
 
 deriving anyclass instance ActionRunner env => HasActions env Agenda
 deriving anyclass instance (AgendaRunner env) => RunMessage env Agenda
+
+instance Entity Agenda where
+  toTarget = toTarget . agendaAttrs
+  isTarget = isTarget . agendaAttrs
+  toSource = toSource . agendaAttrs
+  isSource = isSource . agendaAttrs
 
 newtype BaseAgenda = BaseAgenda Attrs
   deriving newtype (Show, ToJSON, FromJSON)

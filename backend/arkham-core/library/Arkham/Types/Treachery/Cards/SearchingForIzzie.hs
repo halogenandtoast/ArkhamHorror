@@ -58,11 +58,9 @@ instance (TreacheryRunner env) => RunMessage env SearchingForIzzie where
           (Just Action.Investigate)
           SkillIntellect
           shroud
-          [Discard (TreacheryTarget treacheryId)]
-          mempty
-          mempty
-          mempty
         )
+    PassedSkillTest _ _ source _ _ | isSource attrs source ->
+      t <$ unshiftMessage (Discard $ toTarget attrs)
     EndOfGame ->
       let investigator = fromJustNote "missing investigator" treacheryOwner
       in t <$ unshiftMessage (SufferTrauma investigator 0 1)

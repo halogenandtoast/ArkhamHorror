@@ -58,4 +58,4 @@ spec = describe "\"Ashcan\" Pete" $ do
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
       updated game duke `shouldSatisfy` isReady
-      ashcanPete `shouldSatisfy` hasPassedSkillTestBy 2 game
+      ashcanPete `shouldSatisfy` hasPassedSkillTestBy 2 game TestTarget

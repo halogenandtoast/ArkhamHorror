@@ -22,28 +22,13 @@ huntingNightgaunt uuid =
 instance HasModifiersFor env HuntingNightgaunt where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env HuntingNightgaunt where
-  getModifiers _ (HuntingNightgaunt Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env HuntingNightgaunt where
   getActions i window (HuntingNightgaunt attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env HuntingNightgaunt where
   runMessage msg (HuntingNightgaunt attrs@Attrs {..}) = case msg of
-    TryEvadeEnemy iid eid source skillType onSuccess onFailure skillTestModifiers tokenResponses
-      | eid == enemyId
-      -> HuntingNightgaunt
-        <$> runMessage
-              (TryEvadeEnemy
-                iid
-                eid
-                source
-                skillType
-                onSuccess
-                onFailure
-                (DoubleNegativeModifiersOnTokens : skillTestModifiers)
-                tokenResponses
-              )
-              attrs
+    TryEvadeEnemy _ eid _ _ | eid == enemyId -> do
+      unshiftMessage
+        (CreateEffect "01172" Nothing (toSource attrs) SkillTestTarget)
+      HuntingNightgaunt <$> runMessage msg attrs
     _ -> HuntingNightgaunt <$> runMessage msg attrs

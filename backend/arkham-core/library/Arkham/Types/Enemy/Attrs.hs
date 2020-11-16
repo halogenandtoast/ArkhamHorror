@@ -43,9 +43,6 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "enemy"
 
-toTarget :: Attrs -> Target
-toTarget Attrs { enemyId } = EnemyTarget enemyId
-
 doom :: Lens' Attrs Int
 doom = lens enemyDoom $ \m x -> m { enemyDoom = x }
 
@@ -203,11 +200,7 @@ spawnAtOneOf iid eid targetLids = do
       (Ask iid $ ChooseOne [ EnemySpawn (Just iid) lid eid | lid <- lids ])
 
 modifiedEnemyFight
-  :: ( MonadReader env m
-     , MonadIO m
-     , HasModifiersFor env env
-     , HasSource ForSkillTest env
-     )
+  :: (MonadReader env m, HasModifiersFor env env, HasSource ForSkillTest env)
   => Attrs
   -> m Int
 modifiedEnemyFight Attrs {..} = do
@@ -220,11 +213,7 @@ modifiedEnemyFight Attrs {..} = do
   applyModifier _ n = n
 
 modifiedEnemyEvade
-  :: ( MonadReader env m
-     , MonadIO m
-     , HasModifiersFor env env
-     , HasSource ForSkillTest env
-     )
+  :: (MonadReader env m, HasModifiersFor env env, HasSource ForSkillTest env)
   => Attrs
   -> m Int
 modifiedEnemyEvade Attrs {..} = do
@@ -237,11 +226,7 @@ modifiedEnemyEvade Attrs {..} = do
   applyModifier _ n = n
 
 getModifiedDamageAmount
-  :: ( MonadReader env m
-     , MonadIO m
-     , HasModifiersFor env env
-     , HasSource ForSkillTest env
-     )
+  :: (MonadReader env m, HasModifiersFor env env, HasSource ForSkillTest env)
   => Attrs
   -> Int
   -> m Int
@@ -258,13 +243,10 @@ getModifiedDamageAmount Attrs {..} baseAmount = do
   applyModifierCaps _ n = n
 
 canEnterLocation
-  :: (EnemyRunner env, MonadReader env m, MonadIO m)
-  => EnemyId
-  -> LocationId
-  -> m Bool
+  :: (EnemyRunner env, MonadReader env m) => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
   traits <- asks (getSet eid)
-  modifiers' <- getModifiers (EnemySource eid) lid
+  modifiers' <- getModifiersFor (EnemySource eid) (LocationTarget lid) =<< ask
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
@@ -286,46 +268,30 @@ instance ActionRunner env => HasActions env Attrs where
       <> evadeEnemyActions canEvade
    where
     fightEnemyActions canFight =
-      [ FightEnemy
-          iid
-          enemyId
-          (InvestigatorSource iid)
-          SkillCombat
-          []
-          mempty
-          True
+      [ FightEnemy iid enemyId (InvestigatorSource iid) SkillCombat True
       | canFight
       ]
     engageEnemyActions canEngage = [ EngageEnemy iid enemyId True | canEngage ]
     evadeEnemyActions canEvade =
-      [ EvadeEnemy
-          iid
-          enemyId
-          (InvestigatorSource iid)
-          SkillAgility
-          mempty
-          mempty
-          mempty
-          True
+      [ EvadeEnemy iid enemyId (InvestigatorSource iid) SkillAgility True
       | canEvade
       ]
   getActions _ _ _ = pure []
 
-toSource :: Attrs -> Source
-toSource Attrs { enemyId } = EnemySource enemyId
-
-isTarget :: Attrs -> Target -> Bool
-isTarget Attrs { enemyId } (EnemyTarget eid) = enemyId == eid
-isTarget Attrs { enemyCardCode } (CardCodeTarget cardCode) =
-  enemyCardCode == cardCode
-isTarget _ _ = False
+instance Entity Attrs where
+  toSource = EnemySource . enemyId
+  toTarget = EnemyTarget . enemyId
+  isTarget Attrs { enemyId } (EnemyTarget eid) = enemyId == eid
+  isTarget Attrs { enemyCardCode } (CardCodeTarget cardCode) =
+    enemyCardCode == cardCode
+  isTarget _ _ = False
+  isSource Attrs { enemyId } (EnemySource eid) = enemyId == eid
+  isSource Attrs { enemyCardCode } (CardCodeSource cardCode) =
+    enemyCardCode == cardCode
+  isSource _ _ = False
 
 getModifiedHealth
-  :: ( MonadIO m
-     , MonadReader env m
-     , HasModifiersFor env env
-     , HasCount PlayerCount () env
-     )
+  :: (MonadReader env m, HasModifiersFor env env, HasCount PlayerCount () env)
   => Attrs
   -> m Int
 getModifiedHealth Attrs {..} = do
@@ -448,53 +414,47 @@ instance EnemyRunner env => RunMessage env Attrs where
         unshiftMessages $ map (`EnemyWillAttack` enemyId) $ setToList
           enemyEngagedInvestigators
         pure a
-    AttackEnemy iid eid source skillType tempModifiers tokenResponses
-      | eid == enemyId -> do
-        let
-          onFailure = if Keyword.Retaliate `elem` enemyKeywords
-            then [EnemyAttack iid eid, FailedAttackEnemy iid eid]
-            else [FailedAttackEnemy iid eid]
-        enemyFight' <- modifiedEnemyFight a
-        a <$ unshiftMessage
-          (BeginSkillTest
-            iid
-            source
-            (EnemyTarget eid)
-            (Just Action.Fight)
-            skillType
-            enemyFight'
-            [SuccessfulAttackEnemy iid eid, InvestigatorDamageEnemy iid eid]
-            onFailure
-            tempModifiers
-            tokenResponses
-          )
+    AttackEnemy iid eid source skillType | eid == enemyId -> do
+      enemyFight' <- modifiedEnemyFight a
+      a <$ unshiftMessage
+        (BeginSkillTest
+          iid
+          source
+          (EnemyTarget eid)
+          (Just Action.Fight)
+          skillType
+          enemyFight'
+        )
+    PassedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _
+      | isTarget a target
+      -> a <$ unshiftMessages
+        [SuccessfulAttackEnemy iid enemyId, InvestigatorDamageEnemy iid enemyId]
+    FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _
+      | isTarget a target
+      -> if Keyword.Retaliate `elem` enemyKeywords
+        then a <$ unshiftMessage (EnemyAttack iid enemyId)
+        else a <$ unshiftMessage (FailedAttackEnemy iid enemyId)
     EnemyEvaded iid eid | eid == enemyId ->
       pure $ a & engagedInvestigators %~ deleteSet iid & exhausted .~ True
-    TryEvadeEnemy iid eid source skillType onSuccess onFailure skillTestModifiers tokenResponses
-      | eid == enemyId
-      -> do
-        let
-          onFailure' = if Keyword.Alert `elem` enemyKeywords
-            then EnemyAttack iid eid : onFailure
-            else onFailure
-          onSuccess' = flip map onSuccess $ \case
-            Damage EnemyJustEvadedTarget source' n ->
-              EnemyDamage eid iid source' n
-            msg' -> msg'
-        enemyEvade' <- modifiedEnemyEvade a
-        a <$ unshiftMessage
-          (BeginSkillTest
-            iid
-            source
-            (EnemyTarget eid)
-            (Just Action.Evade)
-            skillType
-            enemyEvade'
-            (EnemyEvaded iid eid : onSuccess')
-            onFailure'
-            skillTestModifiers
-            tokenResponses
-          )
+    TryEvadeEnemy iid eid source skillType | eid == enemyId -> do
+      enemyEvade' <- modifiedEnemyEvade a
+      a <$ unshiftMessage
+        (BeginSkillTest
+          iid
+          source
+          (EnemyTarget eid)
+          (Just Action.Evade)
+          skillType
+          enemyEvade'
+        )
+    PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _
+      | isTarget a target
+      -> a <$ unshiftMessage (EnemyEvaded iid enemyId)
+    FailedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _
+      | isTarget a target
+      -> a <$ when
+        (Keyword.Alert `elem` enemyKeywords)
+        (unshiftMessage $ EnemyAttack iid enemyId)
     PerformEnemyAttack iid eid | eid == enemyId -> a <$ unshiftMessages
       [ InvestigatorAssignDamage
         iid
@@ -526,18 +486,6 @@ instance EnemyRunner env => RunMessage env Attrs where
       unshiftMessages
         [ Discard (AssetTarget aid) | aid <- setToList enemyAssets ]
       pure a
-    AddModifiers (EnemyTarget eid) source modifiers' | eid == enemyId -> do
-      when (Blank `elem` modifiers')
-        $ unshiftMessage (RemoveAllModifiersFrom (EnemySource eid))
-      pure $ a & modifiers %~ insertWith (<>) source modifiers'
-    RemoveAllModifiersOnTargetFrom (EnemyTarget eid) source | eid == enemyId ->
-      do
-        when (Blank `elem` fromMaybe [] (lookup source enemyModifiers))
-          $ unshiftMessage (ApplyModifiers (EnemyTarget enemyId))
-        pure $ a & modifiers %~ deleteMap source
-    RemoveAllModifiersFrom source -> runMessage
-      (RemoveAllModifiersOnTargetFrom (EnemyTarget enemyId) source)
-      a
     EnemyEngageInvestigator eid iid | eid == enemyId ->
       pure $ a & engagedInvestigators %~ insertSet iid
     EngageEnemy iid eid False | eid == enemyId ->

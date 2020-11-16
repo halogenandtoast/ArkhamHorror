@@ -5,18 +5,28 @@ import Arkham.Import
 
 data Attrs = Attrs
   { effectId :: EffectId
-  , effectCardCode :: CardCode
+  , effectCardCode :: Maybe CardCode
   , effectTarget :: Target
   , effectSource :: Source
+  , effectMetadata :: Maybe (EffectMetadata Message)
   }
   deriving stock (Show, Generic)
 
-baseAttrs :: EffectId -> CardCode -> Source -> Target -> Attrs
-baseAttrs eid cardCode source target = Attrs
+type EffectArgs = (EffectId, Maybe (EffectMetadata Message), Source, Target)
+
+baseAttrs
+  :: CardCode
+  -> EffectId
+  -> Maybe (EffectMetadata Message)
+  -> Source
+  -> Target
+  -> Attrs
+baseAttrs cardCode eid meffectMetadata source target = Attrs
   { effectId = eid
   , effectSource = source
   , effectTarget = target
-  , effectCardCode = cardCode
+  , effectCardCode = Just cardCode
+  , effectMetadata = meffectMetadata
   }
 
 instance ToJSON Attrs where
@@ -32,9 +42,10 @@ instance HasActions env Attrs where
 instance HasQueue env => RunMessage env Attrs where
   runMessage _ = pure
 
-isSource :: Attrs -> Source -> Bool
-isSource Attrs { effectId } (EffectSource eid) = effectId == eid
-isSource _ _ = False
-
-toSource :: Attrs -> Source
-toSource Attrs { effectId } = EffectSource effectId
+instance Entity Attrs where
+  toSource = EffectSource . effectId
+  isSource Attrs { effectId } (EffectSource eid) = effectId == eid
+  isSource _ _ = False
+  toTarget = EffectTarget . effectId
+  isTarget Attrs { effectId } (EffectTarget eid) = effectId == eid
+  isTarget _ _ = False

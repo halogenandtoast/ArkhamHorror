@@ -41,14 +41,9 @@ instance AssetRunner env => RunMessage env Burglary where
   runMessage msg (Burglary attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       lid <- asks $ getId iid
-      unshiftMessage $ Investigate
-        iid
-        lid
-        (toSource attrs)
-        SkillIntellect
-        mempty
-        mempty
-        [TakeResources iid 3 False]
-        False
+      unshiftMessages
+        [ CreateEffect "01045" Nothing source (LocationTarget lid)
+        , Investigate iid lid (toSource attrs) SkillIntellect False
+        ]
       pure $ Burglary $ attrs & exhausted .~ True
     _ -> Burglary <$> runMessage msg attrs

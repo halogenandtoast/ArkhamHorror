@@ -44,14 +44,16 @@ instance (AssetRunner env) => RunMessage env Rolands38Special where
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- asks $ getId @LocationId iid
       anyClues <- asks $ (/= 0) . unClueCount . getCount locationId
-      unshiftMessage
-        (ChooseFightEnemy
-          iid
+      unshiftMessages
+        [ CreateSkillTestEffect
+          (EffectModifiers
+            [ DamageDealt 1
+            , SkillModifier SkillCombat (if anyClues then 3 else 1)
+            ]
+          )
           source
-          SkillCombat
-          [DamageDealt 1, SkillModifier SkillCombat (if anyClues then 3 else 1)]
-          mempty
-          False
-        )
+          (InvestigatorTarget iid)
+        , ChooseFightEnemy iid source SkillCombat False
+        ]
       pure $ Rolands38Special $ attrs & uses %~ Resource.use
     _ -> Rolands38Special <$> runMessage msg attrs

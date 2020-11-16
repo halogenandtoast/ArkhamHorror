@@ -27,7 +27,7 @@ moveAllTo :: Location -> Message
 moveAllTo = MoveAllTo . getId ()
 
 enemySpawn :: Location -> Enemy -> Message
-enemySpawn l e = EnemySpawn (getId () l) (getId () e)
+enemySpawn l e = EnemySpawn Nothing (getId () l) (getId () e)
 
 loadDeck :: Investigator -> [PlayerCard] -> Message
 loadDeck i cs = LoadDeck (getId () i) cs
@@ -43,7 +43,7 @@ enemyAttack i e = EnemyAttack (getId () i) (getId () e)
 
 fightEnemy :: Investigator -> Enemy -> Message
 fightEnemy i e =
-  FightEnemy (getId () i) (getId () e) TestSource SkillCombat [] [] False
+  FightEnemy (getId () i) (getId () e) TestSource SkillCombat False
 
 engageEnemy :: Investigator -> Enemy -> Message
 engageEnemy i e = EngageEnemy (getId () i) (getId () e) False
@@ -65,25 +65,9 @@ drawCards :: Investigator -> Int -> Message
 drawCards i n = DrawCards (getId () i) n False
 
 investigate :: Investigator -> Location -> Message
-investigate i l = Investigate
-  (getId () i)
-  (getId () l)
-  TestSource
-  SkillIntellect
-  mempty
-  mempty
-  mempty
-  False
+investigate i l =
+  Investigate (getId () i) (getId () l) TestSource SkillIntellect False
 
 beginSkillTest :: Investigator -> SkillType -> Int -> Message
-beginSkillTest i stype difficulty = BeginSkillTest
-  (getId () i)
-  TestSource
-  TestTarget
-  Nothing
-  stype
-  difficulty
-  mempty
-  mempty
-  mempty
-  mempty
+beginSkillTest i stype difficulty =
+  BeginSkillTest (getId () i) TestSource TestTarget Nothing stype difficulty

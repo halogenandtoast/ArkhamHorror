@@ -50,39 +50,31 @@ instance ToPlayerCard Treachery where
     (getCardCode treachery)
     (CardId . unTreacheryId $ getId () treachery)
 
-class Entity a where
-  toTarget :: a -> Target
+class Entity a => TestEntity a where
   updated :: Game queue -> a -> a
 
-instance Entity Agenda where
-  toTarget = AgendaTarget . getId ()
+instance TestEntity Agenda where
   updated g a = g ^?! agendas . ix (getId () a)
 
-instance Entity Treachery where
-  toTarget = TreacheryTarget . getId ()
+instance TestEntity Treachery where
   updated g t = g ^?! treacheries . ix (getId () t)
 
-instance Entity Asset where
-  toTarget = AssetTarget . getId ()
+instance TestEntity Asset where
   updated g a = g ^?! assets . ix (getId () a)
 
-instance Entity Location where
-  toTarget = LocationTarget . getId ()
+instance TestEntity Location where
   updated g a = g ^?! locations . ix (getId () a)
 
-instance Entity Event where
-  toTarget = EventTarget . getId ()
+instance TestEntity Event where
   updated g a = g ^?! events . ix (getId () a)
 
-instance Entity Enemy where
-  toTarget = EnemyTarget . getId ()
+instance TestEntity Enemy where
   updated g a = g ^?! enemies . ix (getId () a)
 
-instance Entity Investigator where
-  toTarget = InvestigatorTarget . getId ()
+instance TestEntity Investigator where
   updated g a = g ^?! investigators . ix (getId () a)
 
-isAttachedTo :: (Entity a, Entity b) => Game queue -> a -> b -> Bool
+isAttachedTo :: (TestEntity a, TestEntity b) => Game queue -> a -> b -> Bool
 isAttachedTo game x y = case toTarget x of
   LocationTarget locId -> case toTarget y of
     EventTarget eventId ->
@@ -150,13 +142,13 @@ hasCardInPlay c i = case c of
     _ -> error "not implemented"
   _ -> error "not implemented"
 
-hasPassedSkillTestBy :: Int -> GameExternal -> Investigator -> Bool
-hasPassedSkillTestBy n game investigator = hasProcessedMessage
+hasPassedSkillTestBy :: Int -> GameExternal -> Target -> Investigator -> Bool
+hasPassedSkillTestBy n game target investigator = hasProcessedMessage
   (PassedSkillTest
     (getId () investigator)
     Nothing
     TestSource
-    SkillTestInitiatorTarget
+    (SkillTestInitiatorTarget target)
     n
   )
   game

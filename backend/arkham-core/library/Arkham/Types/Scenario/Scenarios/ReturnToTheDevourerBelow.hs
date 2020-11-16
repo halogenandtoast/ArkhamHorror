@@ -6,7 +6,6 @@ import Arkham.Import hiding (Cultist)
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Helpers
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
@@ -33,7 +32,7 @@ returnToTheDevourerBelow difficulty =
           ]
         }
 
-instance (HasTokenValue env InvestigatorId, HasQueue env, HasCount EnemyCount [Trait] env) => HasTokenValue env ReturnToTheDevourerBelow where
+instance (HasTokenValue env InvestigatorId, HasCount EnemyCount [Trait] env) => HasTokenValue env ReturnToTheDevourerBelow where
   getTokenValue (ReturnToTheDevourerBelow theDevourerBelow') iid =
     getTokenValue theDevourerBelow' iid
 

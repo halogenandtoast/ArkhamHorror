@@ -17,10 +17,12 @@ import Arkham.Types.Card.Id as X
 import Arkham.Types.Classes as X
 import Arkham.Types.ClassSymbol as X
 import Arkham.Types.EffectId as X
+import Arkham.Types.EffectMetadata as X
 import Arkham.Types.EncounterSet as X (EncounterSet)
 import Arkham.Types.EnemyId as X
 import Arkham.Types.EventId as X
 import Arkham.Types.GameValue as X
+import Arkham.Types.Helpers as X
 import Arkham.Types.InvestigatorId as X
 import Arkham.Types.LocationId as X
 import Arkham.Types.LocationSymbol as X

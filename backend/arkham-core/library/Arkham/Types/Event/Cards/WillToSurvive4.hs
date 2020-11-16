@@ -18,14 +18,10 @@ instance HasActions env WillToSurvive4 where
   getActions i window (WillToSurvive4 attrs) = getActions i window attrs
 
 instance HasQueue env => RunMessage env WillToSurvive4 where
-  runMessage msg (WillToSurvive4 attrs@Attrs {..}) = case msg of
+  runMessage msg e@(WillToSurvive4 attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      unshiftMessages
-        [ AddModifiers
-          (InvestigatorTarget iid)
-          (EndOfTurnSource (EventSource eid))
-          [DoNotDrawChaosTokensForSkillChecks]
+      e <$ unshiftMessages
+        [ CreateEffect "01085" Nothing (toSource attrs) (InvestigatorTarget iid)
         , Discard (EventTarget eid)
         ]
-      WillToSurvive4 <$> runMessage msg (attrs & resolved .~ True)
     _ -> WillToSurvive4 <$> runMessage msg attrs

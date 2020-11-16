@@ -28,10 +28,6 @@ silverTwilightAcolyte uuid =
 instance HasModifiersFor env SilverTwilightAcolyte where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env SilverTwilightAcolyte where
-  getModifiers _ (SilverTwilightAcolyte Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env SilverTwilightAcolyte where
   getActions i window (SilverTwilightAcolyte attrs) = getActions i window attrs
 

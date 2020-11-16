@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 238ae3c2e3815dcdf5ebdc3db4ca7bfdd9fe59a75c02c5d1cc7cd5d2411ed464
+-- hash: 662495dba962b059e3ccb2695fd9152ffd5acff821e5b7626553b8a4df4709c4
 
 name:           arkham-core
 version:        0.0.0
@@ -167,9 +167,30 @@ library
       Arkham.Types.Effect
       Arkham.Types.Effect.Attrs
       Arkham.Types.Effect.Effects
+      Arkham.Types.Effect.Effects.ArkhamWoodsTwistingPaths
+      Arkham.Types.Effect.Effects.BaseballBat
+      Arkham.Types.Effect.Effects.BlindingLight
+      Arkham.Types.Effect.Effects.BlindingLight2
+      Arkham.Types.Effect.Effects.Burglary
+      Arkham.Types.Effect.Effects.CursedShores
+      Arkham.Types.Effect.Effects.CurseOfTheRougarouTabletToken
+      Arkham.Types.Effect.Effects.Deduction
+      Arkham.Types.Effect.Effects.HuntingNightgaunt
       Arkham.Types.Effect.Effects.JeremiahPierce
       Arkham.Types.Effect.Effects.LetMeHandleThis
+      Arkham.Types.Effect.Effects.Lucky
+      Arkham.Types.Effect.Effects.Lucky2
+      Arkham.Types.Effect.Effects.MindOverMatter
+      Arkham.Types.Effect.Effects.MindWipe1
+      Arkham.Types.Effect.Effects.MindWipe3
+      Arkham.Types.Effect.Effects.OnTheLam
+      Arkham.Types.Effect.Effects.PhaseEffect
+      Arkham.Types.Effect.Effects.Shrivelling
+      Arkham.Types.Effect.Effects.SkillTestEffect
+      Arkham.Types.Effect.Effects.SureGamble3
+      Arkham.Types.Effect.Effects.WillToSurvive4
       Arkham.Types.EffectId
+      Arkham.Types.EffectMetadata
       Arkham.Types.EncounterSet
       Arkham.Types.Enemy
       Arkham.Types.Enemy.Attrs

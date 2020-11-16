@@ -19,12 +19,11 @@ instance HasActions env DarkMemory where
   getActions i window (DarkMemory attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env DarkMemory where
-  runMessage msg (DarkMemory attrs@Attrs {..}) = case msg of
+  runMessage msg e@(DarkMemory attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent _ eid _ | eid == eventId -> do
-      unshiftMessages
+      e <$ unshiftMessages
         [ PlaceDoomOnAgenda
         , AdvanceAgendaIfThresholdSatisfied
         , Discard (EventTarget eid)
         ]
-      DarkMemory <$> runMessage msg (attrs & resolved .~ True)
     _ -> DarkMemory <$> runMessage msg attrs

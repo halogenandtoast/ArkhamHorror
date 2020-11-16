@@ -74,7 +74,7 @@ baseAttrs cardCode name agendaStack actStack' difficulty = Attrs
   , scenarioLocations = mempty
   }
 
-instance (HasTokenValue env InvestigatorId, HasQueue env) => HasTokenValue env Attrs where
+instance HasTokenValue env InvestigatorId => HasTokenValue env Attrs where
   getTokenValue _ iid = \case
     ElderSign -> getTokenValue iid iid ElderSign
     AutoFail -> pure $ TokenValue AutoFail AutoFailModifier

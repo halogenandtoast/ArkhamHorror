@@ -55,20 +55,20 @@ instance ActionRunner env => HasActions env ZoeySamaras where
 
   getActions i window (ZoeySamaras attrs) = getActions i window attrs
 
-instance InvestigatorRunner env => HasTokenValue env ZoeySamaras where
+instance HasTokenValue env ZoeySamaras where
   getTokenValue (ZoeySamaras attrs) iid ElderSign
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 1)
   getTokenValue (ZoeySamaras attrs) iid token = getTokenValue attrs iid token
 
-instance (InvestigatorRunner env) => RunMessage env ZoeySamaras where
+instance InvestigatorRunner env => RunMessage env ZoeySamaras where
   runMessage msg i@(ZoeySamaras attrs@Attrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
       i <$ unshiftMessage (TakeResources investigatorId 1 False)
     ResolveToken ElderSign iid | iid == investigatorId -> i <$ unshiftMessage
-      (AddModifiers
-        SkillTestTarget
+      (CreateSkillTestEffect
+        (EffectModifiers [DamageDealt 1])
         (InvestigatorSource investigatorId)
-        [DamageDealt 1]
+        (InvestigatorTarget investigatorId)
       )
     _ -> ZoeySamaras <$> runMessage msg attrs

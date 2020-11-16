@@ -11,9 +11,8 @@ import Arkham.Types.Effect.Attrs
 newtype LetMeHandleThis = LetMeHandleThis Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-letMeHandleThis :: Source -> Target -> EffectId -> LetMeHandleThis
-letMeHandleThis source target eid =
-  LetMeHandleThis $ baseAttrs eid "03022" source target
+letMeHandleThis :: EffectArgs -> LetMeHandleThis
+letMeHandleThis = LetMeHandleThis . uncurry4 (baseAttrs "03022")
 
 instance HasModifiersFor env LetMeHandleThis where
   getModifiersFor source target (LetMeHandleThis Attrs {..})

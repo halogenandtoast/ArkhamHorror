@@ -26,8 +26,7 @@ instance HasActions env Encyclopedia2 where
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Encyclopedia2 where
-  runMessage msg a@(Encyclopedia2 attrs) = case msg of
-    EndPhase -> a <$ unshiftMessage (RemoveAllModifiersFrom (toSource attrs))
+  runMessage msg (Encyclopedia2 attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- asks $ getId @LocationId iid
       investigatorTargets <-
@@ -40,16 +39,32 @@ instance (AssetRunner env) => RunMessage env Encyclopedia2 where
                 iid
                 [ Label
                   "Willpower"
-                  [AddModifiers target source [SkillModifier SkillWillpower 2]]
+                  [ CreatePhaseEffect
+                      (EffectModifiers [SkillModifier SkillWillpower 2])
+                      source
+                      target
+                  ]
                 , Label
                   "Intellect"
-                  [AddModifiers target source [SkillModifier SkillIntellect 2]]
+                  [ CreatePhaseEffect
+                      (EffectModifiers [SkillModifier SkillIntellect 2])
+                      source
+                      target
+                  ]
                 , Label
                   "Combat"
-                  [AddModifiers target source [SkillModifier SkillCombat 2]]
+                  [ CreatePhaseEffect
+                      (EffectModifiers [SkillModifier SkillCombat 2])
+                      source
+                      target
+                  ]
                 , Label
                   "Agility"
-                  [AddModifiers target source [SkillModifier SkillAgility 2]]
+                  [ CreatePhaseEffect
+                      (EffectModifiers [SkillModifier SkillAgility 2])
+                      source
+                      target
+                  ]
                 ]
             ]
         | target <- investigatorTargets

@@ -19,11 +19,10 @@ instance HasActions env LookWhatIFound where
   getActions i window (LookWhatIFound attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env LookWhatIFound where
-  runMessage msg (LookWhatIFound attrs@Attrs {..}) = case msg of
+  runMessage msg e@(LookWhatIFound attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      unshiftMessages
+      e <$ unshiftMessages
         [ InvestigatorDiscoverCluesAtTheirLocation iid 2
         , Discard (EventTarget eid)
         ]
-      LookWhatIFound <$> runMessage msg (attrs & resolved .~ True)
     _ -> LookWhatIFound <$> runMessage msg attrs

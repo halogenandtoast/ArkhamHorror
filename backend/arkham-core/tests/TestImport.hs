@@ -123,7 +123,7 @@ testLocation
 testLocation cardCode f =
   let
     locationId = LocationId cardCode
-    name = unCardCode cardCode
+    name = LocationName $ unCardCode cardCode
   in pure $ baseLocation locationId name 0 (Static 0) Square [] f
 
 testInvestigator
@@ -177,7 +177,7 @@ testUnconnectedLocations f1 f2 = do
   pure (location1, location2)
 
 getActionsOf
-  :: (MonadIO m, HasActions GameInternal a, Entity a)
+  :: (MonadIO m, HasActions GameInternal a, TestEntity a)
   => GameExternal
   -> Investigator
   -> Window

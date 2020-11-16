@@ -19,16 +19,10 @@ instance HasActions env MindOverMatter where
   getActions i window (MindOverMatter attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env MindOverMatter where
-  runMessage msg (MindOverMatter attrs@Attrs {..}) = case msg of
+  runMessage msg e@(MindOverMatter attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      unshiftMessages
-        [ AddModifiers
-          (InvestigatorTarget iid)
-          (EventSource eid)
-          [ UseSkillInPlaceOf SkillCombat SkillIntellect
-          , UseSkillInPlaceOf SkillAgility SkillIntellect
-          ]
+      e <$ unshiftMessages
+        [ CreateEffect "01036" Nothing (toSource attrs) (InvestigatorTarget iid)
         , Discard (EventTarget eid)
         ]
-      MindOverMatter <$> runMessage msg (attrs & resolved .~ True)
     _ -> MindOverMatter <$> runMessage msg attrs

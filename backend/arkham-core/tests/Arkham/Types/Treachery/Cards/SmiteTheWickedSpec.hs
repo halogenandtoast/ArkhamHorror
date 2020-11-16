@@ -71,8 +71,10 @@ spec = describe "Smite the Wicked" $ do
       [ EnemyDefeated
         (getId () updatedEnemy)
         (getId () investigator)
+        (getId () location)
         (getCardCode enemy)
-        (InvestigatorSource (getId () investigator))
+        (toSource investigator)
+        []
       , EndOfGame
       ]
 

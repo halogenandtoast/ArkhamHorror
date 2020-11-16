@@ -22,10 +22,6 @@ ruthTurner uuid =
 instance HasModifiersFor env RuthTurner where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env RuthTurner where
-  getModifiers _ (RuthTurner Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env RuthTurner where
   getActions i window (RuthTurner attrs) = getActions i window attrs
 

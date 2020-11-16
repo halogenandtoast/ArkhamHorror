@@ -25,10 +25,6 @@ wizardOfTheOrder uuid =
 instance HasModifiersFor env WizardOfTheOrder where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env WizardOfTheOrder where
-  getModifiers _ (WizardOfTheOrder Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env WizardOfTheOrder where
   getActions i window (WizardOfTheOrder attrs) = getActions i window attrs
 

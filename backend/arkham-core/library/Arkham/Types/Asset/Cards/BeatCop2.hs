@@ -27,14 +27,7 @@ instance HasActions env BeatCop2 where
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env BeatCop2 where
-  runMessage msg a@(BeatCop2 attrs) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs ->
-      a <$ unshiftMessage
-        (AddModifiers
-          (InvestigatorTarget iid)
-          (toSource attrs)
-          [SkillModifier SkillCombat 1]
-        )
+  runMessage msg (BeatCop2 attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- asks $ getId @LocationId (getInvestigator attrs)
       locationEnemyIds <- asks $ setToList . getSet locationId

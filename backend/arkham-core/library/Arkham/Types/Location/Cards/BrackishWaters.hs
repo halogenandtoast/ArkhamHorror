@@ -4,7 +4,6 @@ module Arkham.Types.Location.Cards.BrackishWaters where
 import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
@@ -75,16 +74,8 @@ instance LocationRunner env => RunMessage env BrackishWaters where
           $ [ Discard (AssetTarget aid) | aid <- assetIds ]
           <> [ DiscardCard iid cid | cid <- handAssetIds ]
           )
-        , BeginSkillTest
-          iid
-          source
-          (toTarget attrs)
-          Nothing
-          SkillAgility
-          3
-          [TakeControlOfSetAsideAsset iid "81021"]
-          mempty
-          mempty
-          mempty
+        , BeginSkillTest iid source (toTarget attrs) Nothing SkillAgility 3
         ]
+    PassedSkillTest iid _ source _ _ | isSource attrs source ->
+      l <$ unshiftMessage (TakeControlOfSetAsideAsset iid "81021")
     _ -> BrackishWaters <$> runMessage msg attrs

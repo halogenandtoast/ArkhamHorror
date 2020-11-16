@@ -28,10 +28,6 @@ instance HasModifiersFor env TheMaskedHunter where
       else pure []
   getModifiersFor _ _ _ = pure []
 
-instance HasModifiers env TheMaskedHunter where
-  getModifiers _ (TheMaskedHunter Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env TheMaskedHunter where
   getActions i window (TheMaskedHunter attrs) = getActions i window attrs
 

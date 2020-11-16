@@ -28,10 +28,9 @@ instance HasActions env Encyclopedia where
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Encyclopedia where
-  runMessage msg a@(Encyclopedia attrs) = case msg of
+  runMessage msg (Encyclopedia attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Encyclopedia <$> runMessage msg (attrs & uses .~ Uses Resource.Secret 5)
-    EndPhase -> a <$ unshiftMessage (RemoveAllModifiersFrom (toSource attrs))
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- asks $ getId @LocationId iid
       investigatorTargets <-
@@ -44,16 +43,32 @@ instance (AssetRunner env) => RunMessage env Encyclopedia where
                 iid
                 [ Label
                   "Willpower"
-                  [AddModifiers target source [SkillModifier SkillWillpower 2]]
+                  [ CreatePhaseEffect
+                      (EffectModifiers [SkillModifier SkillWillpower 2])
+                      source
+                      target
+                  ]
                 , Label
                   "Intellect"
-                  [AddModifiers target source [SkillModifier SkillIntellect 2]]
+                  [ CreatePhaseEffect
+                      (EffectModifiers [SkillModifier SkillIntellect 2])
+                      source
+                      target
+                  ]
                 , Label
                   "Combat"
-                  [AddModifiers target source [SkillModifier SkillCombat 2]]
+                  [ CreatePhaseEffect
+                      (EffectModifiers [SkillModifier SkillCombat 2])
+                      source
+                      target
+                  ]
                 , Label
                   "Agility"
-                  [AddModifiers target source [SkillModifier SkillAgility 2]]
+                  [ CreatePhaseEffect
+                      (EffectModifiers [SkillModifier SkillAgility 2])
+                      source
+                      target
+                  ]
                 ]
             ]
         | target <- investigatorTargets

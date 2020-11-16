@@ -23,10 +23,6 @@ umordhoth uuid =
 instance HasModifiersFor env Umordhoth where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env Umordhoth where
-  getModifiers _ (Umordhoth Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env Umordhoth where
   getActions iid NonFast (Umordhoth attrs@Attrs {..}) = do
     baseActions <- getActions iid NonFast attrs

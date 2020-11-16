@@ -23,10 +23,6 @@ yithianObserver uuid =
 instance HasModifiersFor env YithianObserver where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env YithianObserver where
-  getModifiers _ (YithianObserver Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env YithianObserver where
   getActions i window (YithianObserver attrs) = getActions i window attrs
 

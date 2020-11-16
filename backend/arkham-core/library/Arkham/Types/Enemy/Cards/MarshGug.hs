@@ -24,10 +24,6 @@ marshGug uuid =
 instance HasModifiersFor env MarshGug where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env MarshGug where
-  getModifiers _ (MarshGug Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env MarshGug where
   getActions i window (MarshGug attrs) = getActions i window attrs
 

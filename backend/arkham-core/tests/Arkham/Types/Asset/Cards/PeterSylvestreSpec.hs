@@ -14,7 +14,7 @@ spec = describe "Peter Sylvestre" $ do
       investigator
       [playAsset investigator peterSylvestre]
       (assets %~ insertEntity peterSylvestre)
-    withGame game (getModifiers TestSource $ getInvestigatorId investigator)
+    withGame game (getModifiersFor TestSource (toTarget investigator) =<< ask)
       `shouldReturn` [SkillModifier SkillAgility 1]
   it "removes one horror at the end of your turn" $ do
     investigator <- testInvestigator "00000" id

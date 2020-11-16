@@ -14,7 +14,9 @@ lockedDoor :: TreacheryId -> a -> LockedDoor
 lockedDoor uuid _ = LockedDoor $ baseAttrs uuid "01174"
 
 instance HasModifiersFor env LockedDoor where
-  getModifiersFor = noModifiersFor
+  getModifiersFor _ (LocationTarget lid) (LockedDoor attrs) =
+    pure [ CannotInvestigate | lid `elem` treacheryAttachedLocation attrs ]
+  getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env LockedDoor where
   getActions iid NonFast (LockedDoor Attrs {..}) = do
@@ -62,14 +64,6 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
                       ]
                   )
               LockedDoor <$> runMessage msg attrs
-    AttachTreachery tid (LocationTarget lid) | tid == treacheryId -> do
-      unshiftMessage
-        (AddModifiers
-          (LocationTarget lid)
-          (TreacherySource tid)
-          [CannotInvestigate]
-        )
-      pure . LockedDoor $ attrs & attachedLocation ?~ lid
     UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId -> do
       t <$ unshiftMessage
         (Ask iid $ ChooseOne
@@ -80,10 +74,6 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
             Nothing
             SkillCombat
             4
-            [Discard (TreacheryTarget treacheryId)]
-            mempty
-            mempty
-            mempty
           , BeginSkillTest
             iid
             (TreacherySource treacheryId)
@@ -91,20 +81,8 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
             Nothing
             SkillAgility
             4
-            [Discard (TreacheryTarget treacheryId)]
-            mempty
-            mempty
-            mempty
           ]
         )
-    Discard (TreacheryTarget tid) | tid == treacheryId -> do
-      unshiftMessages
-        [ RemoveAllModifiersOnTargetFrom
-            (LocationTarget $ fromJustNote
-              "had to have been attached"
-              treacheryAttachedLocation
-            )
-            (TreacherySource treacheryId)
-        ]
-      LockedDoor <$> runMessage msg attrs
+    PassedSkillTest _ _ source _ _ | isSource attrs source ->
+      t <$ unshiftMessage (Discard $ toTarget attrs)
     _ -> LockedDoor <$> runMessage msg attrs

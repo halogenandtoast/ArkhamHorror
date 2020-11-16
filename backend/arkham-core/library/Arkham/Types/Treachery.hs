@@ -9,7 +9,7 @@ where
 
 import Arkham.Import
 
-import Arkham.Types.Helpers
+import Arkham.Types.Trait (Trait)
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Cards
 import Arkham.Types.Treachery.Runner
@@ -65,7 +65,18 @@ data Treachery
 
 deriving anyclass instance ActionRunner env => HasActions env Treachery
 deriving anyclass instance TreacheryRunner env => RunMessage env Treachery
-deriving anyclass instance TreacheryRunner env => HasModifiersFor env Treachery
+deriving anyclass instance
+  ( HasCount PlayerCount () env
+  , HasId LocationId InvestigatorId env
+  , HasSet Trait LocationId env
+  )
+  => HasModifiersFor env Treachery
+
+instance Entity Treachery where
+  toTarget = toTarget . treacheryAttrs
+  isTarget = isTarget . treacheryAttrs
+  toSource = toSource . treacheryAttrs
+  isSource = isSource . treacheryAttrs
 
 instance HasCardCode Treachery where
   getCardCode = treacheryCardCode . treacheryAttrs

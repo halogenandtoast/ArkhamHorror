@@ -22,10 +22,6 @@ icyGhoul uuid =
 instance HasModifiersFor env IcyGhoul where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env IcyGhoul where
-  getModifiers _ (IcyGhoul Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env IcyGhoul where
   getActions i window (IcyGhoul attrs) = getActions i window attrs
 

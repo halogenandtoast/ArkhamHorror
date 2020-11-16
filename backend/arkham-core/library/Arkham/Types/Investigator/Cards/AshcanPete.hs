@@ -3,7 +3,6 @@ module Arkham.Types.Investigator.Cards.AshcanPete where
 
 import Arkham.Import
 
-import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
@@ -55,7 +54,7 @@ instance ActionRunner env => HasActions env AshcanPete where
         ]
   getActions i window (AshcanPete attrs) = getActions i window attrs
 
-instance InvestigatorRunner env => HasTokenValue env AshcanPete where
+instance HasTokenValue env AshcanPete where
   getTokenValue (AshcanPete attrs) iid ElderSign | iid == investigatorId attrs =
     pure $ TokenValue ElderSign (PositiveModifier 2)
   getTokenValue (AshcanPete attrs) iid token = getTokenValue attrs iid token

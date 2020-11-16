@@ -10,6 +10,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
+import Arkham.Types.EffectId
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
@@ -26,6 +27,7 @@ data ForSkillTest = ForSkillTest
 data Target
   = AssetTarget AssetId
   | EnemyTarget EnemyId
+  | EffectTarget EffectId
   | InvestigatorTarget InvestigatorId
   | LocationTarget LocationId
   | SetAsideLocations [Trait]
@@ -40,8 +42,7 @@ data Target
   | SearchedCardTarget InvestigatorId CardId
   | EventTarget EventId
   | SkillTarget SkillId
-  | EnemyJustEvadedTarget
-  | SkillTestInitiatorTarget
+  | SkillTestInitiatorTarget Target
   | TokenTarget TokenId
   | DrawnTokenTarget DrawnToken
   | TestTarget

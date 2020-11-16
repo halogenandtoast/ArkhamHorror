@@ -23,10 +23,6 @@ almaHill uuid =
 instance HasModifiersFor env AlmaHill where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env AlmaHill where
-  getModifiers _ (AlmaHill Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env AlmaHill where
   getActions iid NonFast (AlmaHill attrs@Attrs {..}) = do
     baseActions <- getActions iid NonFast attrs

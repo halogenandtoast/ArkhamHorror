@@ -29,10 +29,6 @@ instance (HasCount CardCount InvestigatorId env) => HasModifiersFor env AcolyteO
       pure [ CannotBeEvaded | anyWithoutCards ]
   getModifiersFor _ _ _ = pure []
 
-instance HasModifiers env AcolyteOfUmordhoth where
-  getModifiers _ (AcolyteOfUmordhoth Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env AcolyteOfUmordhoth where
   getActions i window (AcolyteOfUmordhoth attrs) = getActions i window attrs
 

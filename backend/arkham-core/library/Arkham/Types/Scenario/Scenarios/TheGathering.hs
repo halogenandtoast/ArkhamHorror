@@ -41,7 +41,7 @@ theGatheringIntro = FlavorText
     \ investigator’s home to discuss these bizarre events."
   ]
 
-instance (HasTokenValue env InvestigatorId, HasCount EnemyCount (InvestigatorLocation, [Trait]) env, HasQueue env) => HasTokenValue env TheGathering where
+instance (HasTokenValue env InvestigatorId, HasCount EnemyCount (InvestigatorLocation, [Trait]) env) => HasTokenValue env TheGathering where
   getTokenValue (TheGathering attrs) iid = \case
     Skull -> do
       ghoulCount <- asks $ unEnemyCount . getCount

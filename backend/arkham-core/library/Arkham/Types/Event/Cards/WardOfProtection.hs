@@ -18,13 +18,11 @@ instance HasModifiersFor env WardOfProtection where
 instance HasActions env WardOfProtection where
   getActions i window (WardOfProtection attrs) = getActions i window attrs
 
-instance (EventRunner env) => RunMessage env WardOfProtection where
-  runMessage msg (WardOfProtection attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      unshiftMessages
-        [ CancelNext RevelationMessage
-        , InvestigatorAssignDamage iid (EventSource eid) 0 1
-        , Discard (EventTarget eid)
-        ]
-      WardOfProtection <$> runMessage msg (attrs & resolved .~ True)
+instance EventRunner env => RunMessage env WardOfProtection where
+  runMessage msg e@(WardOfProtection attrs@Attrs {..}) = case msg of
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
+      [ CancelNext RevelationMessage
+      , InvestigatorAssignDamage iid (EventSource eid) 0 1
+      , Discard (EventTarget eid)
+      ]
     _ -> WardOfProtection <$> runMessage msg attrs

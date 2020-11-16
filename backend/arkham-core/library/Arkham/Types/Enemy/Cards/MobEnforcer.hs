@@ -24,10 +24,6 @@ mobEnforcer uuid = MobEnforcer $ (weaknessBaseAttrs uuid "01101")
 instance HasModifiersFor env MobEnforcer where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env MobEnforcer where
-  getModifiers _ (MobEnforcer Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env MobEnforcer where
   getActions iid NonFast (MobEnforcer attrs@Attrs {..}) = do
     baseActions <- getActions iid NonFast attrs

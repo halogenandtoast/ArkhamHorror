@@ -21,12 +21,11 @@ instance HasActions env CryptChill where
 instance TreacheryRunner env => RunMessage env CryptChill where
   runMessage msg t@(CryptChill attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      unshiftMessages
-        [ RevelationSkillTest iid source SkillWillpower 4 [] [] []
+      t <$ unshiftMessages
+        [ RevelationSkillTest iid source SkillWillpower 4
         , Discard (TreacheryTarget treacheryId)
         ]
-      CryptChill <$> runMessage msg (attrs & resolved .~ True)
-    FailedSkillTest iid _ source SkillTestInitiatorTarget _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _
       | isSource attrs source -> do
         assetCount <- asks $ length . getSet @DiscardableAssetId iid
         if assetCount > 0

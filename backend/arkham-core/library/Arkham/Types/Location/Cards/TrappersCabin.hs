@@ -53,16 +53,7 @@ instance ActionRunner env => HasActions env TrappersCabin where
 instance (LocationRunner env) => RunMessage env TrappersCabin where
   runMessage msg l@(TrappersCabin attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> l <$ unshiftMessage
-      (BeginSkillTest
-        iid
-        source
-        (toTarget attrs)
-        Nothing
-        SkillIntellect
-        3
-        [TakeControlOfSetAsideAsset iid "81029"]
-        mempty
-        mempty
-        mempty
-      )
+      (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 3)
+    PassedSkillTest iid _ source _ _ | isSource attrs source ->
+      l <$ unshiftMessage (TakeControlOfSetAsideAsset iid "81029")
     _ -> TrappersCabin <$> runMessage msg attrs

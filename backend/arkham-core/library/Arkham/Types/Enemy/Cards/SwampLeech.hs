@@ -25,10 +25,6 @@ swampLeech uuid =
 instance HasModifiersFor env SwampLeech where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env SwampLeech where
-  getModifiers _ (SwampLeech Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 isEvade :: Message -> Bool
 isEvade = \case
   EvadeEnemy{} -> True

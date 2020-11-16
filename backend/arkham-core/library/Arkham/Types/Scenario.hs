@@ -3,6 +3,7 @@ module Arkham.Types.Scenario
   ( lookupScenario
   , baseScenario
   , difficultyOfScenario
+  , scenarioActs
   , Scenario
   )
 where
@@ -70,6 +71,11 @@ lookupScenario = fromJustNote "Unknown scenario" . flip lookup allScenarios
 
 difficultyOfScenario :: Scenario -> Difficulty
 difficultyOfScenario = scenarioDifficulty . scenarioAttrs
+
+scenarioActs :: Scenario -> [ActId]
+scenarioActs s = case scenarioActStack (scenarioAttrs s) of
+  [(_, actIds)] -> actIds
+  _ -> error "Not able to handle multiple act stacks yet"
 
 allScenarios :: HashMap ScenarioId (Difficulty -> Scenario)
 allScenarios = mapFromList

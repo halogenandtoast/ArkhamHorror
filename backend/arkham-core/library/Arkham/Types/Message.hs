@@ -338,6 +338,7 @@ data Message
   | SpendClues Int [InvestigatorId]
   | InvestigatorSpendClues InvestigatorId Int
   | CreateWeaknessInThreatArea CardCode InvestigatorId
+  | AttachStoryTreacheryTo CardCode Target
   | CreateStoryAssetAt CardCode LocationId
   | TakeControlOfAsset InvestigatorId AssetId
   | TakeControlOfSetAsideAsset InvestigatorId CardCode
@@ -346,6 +347,7 @@ data Message
   | GameOver
   | NoResolution
   | Resign InvestigatorId
+  | InvestigatorKilled InvestigatorId
   | InvestigatorWhenDefeated InvestigatorId
   | InvestigatorDefeated InvestigatorId
   | AddAbility Source Ability

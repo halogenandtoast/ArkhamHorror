@@ -1132,6 +1132,9 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   InvestigatorWhenDefeated iid | iid == investigatorId -> do
     unshiftMessage (InvestigatorDefeated iid)
     pure $ a & defeated .~ True & endedTurn .~ True
+  InvestigatorKilled iid | iid == investigatorId -> do
+    unshiftMessage (InvestigatorDefeated iid)
+    pure $ a & defeated .~ True & endedTurn .~ True
   MoveAllTo lid | not (a ^. defeated || a ^. resigned) ->
     a <$ unshiftMessage (MoveTo investigatorId lid)
   MoveTo iid lid | iid == investigatorId -> do

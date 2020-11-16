@@ -21,10 +21,6 @@ goatSpawn uuid =
 instance HasModifiersFor env GoatSpawn where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env GoatSpawn where
-  getModifiers _ (GoatSpawn Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env GoatSpawn where
   getActions i window (GoatSpawn attrs) = getActions i window attrs
 

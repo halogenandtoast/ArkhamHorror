@@ -41,7 +41,7 @@ spec = describe "Arcane Studies (2)" $ do
               _ -> False
             )
       >>= runGameTestOnlyOption "apply results"
-    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game
+    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget
 
   it "Adds 1 to intellect check for each resource spent" $ do
     arcaneStudies2 <- buildAsset "50007"
@@ -75,4 +75,4 @@ spec = describe "Arcane Studies (2)" $ do
               _ -> False
             )
       >>= runGameTestOnlyOption "apply results"
-    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game
+    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget

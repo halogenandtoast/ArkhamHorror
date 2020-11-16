@@ -11,7 +11,6 @@ import Arkham.Import hiding (Cultist)
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Helpers
 import Arkham.Types.Location
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
@@ -69,7 +68,7 @@ locationsWithLabels trait = do
   (before, bayou : after) =
     break (elem Bayou . getTraits . lookupLocation) locationSet
 
-instance (HasTokenValue env InvestigatorId, HasQueue env, HasSet Trait LocationId env, HasId LocationId InvestigatorId env) => HasTokenValue env CurseOfTheRougarou where
+instance (HasTokenValue env InvestigatorId, HasSet Trait LocationId env, HasId LocationId InvestigatorId env) => HasTokenValue env CurseOfTheRougarou where
   getTokenValue (CurseOfTheRougarou (attrs `With` _)) iid = \case
     Skull -> do
       lid <- asks $ getId @LocationId iid
@@ -256,10 +255,11 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
           s <$ for_ mrougarou (unshiftMessage . EnemyWillAttack iid)
       FailedSkillTest iid _ _ (DrawnTokenTarget token) _ -> s <$ when
         (drawnTokenFace token == Tablet)
-        (unshiftMessage $ AddModifiers
-          (InvestigatorTarget iid)
+        (unshiftMessage $ CreateEffect
+          "81001"
+          Nothing
           (DrawnTokenSource token)
-          [CannotMove]
+          (InvestigatorTarget iid)
         )
       NoResolution -> runMessage (Resolution 1) s
       Resolution 1 -> do

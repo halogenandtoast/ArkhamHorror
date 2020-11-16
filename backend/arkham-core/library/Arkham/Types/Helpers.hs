@@ -11,6 +11,9 @@ import qualified Data.List.NonEmpty as NE
 import Data.Text.Lazy (unpack)
 import Data.Text.Lazy.Builder
 
+uncurry4 :: (a -> b -> c -> d -> e) -> (a, b, c, d) -> e
+uncurry4 f ~(a, b, c, d) = f a b c d
+
 toFst :: (a -> b) -> a -> (b, a)
 toFst f a = (f a, a)
 

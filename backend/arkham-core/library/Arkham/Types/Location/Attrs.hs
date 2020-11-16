@@ -8,8 +8,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Trait
 import Data.Char (isLetter)
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
 import qualified Data.Text as T
 
 data Attrs = Attrs
@@ -34,8 +32,6 @@ data Attrs = Attrs
   , locationTreacheries :: HashSet TreacheryId
   , locationEvents :: HashSet EventId
   , locationAssets :: HashSet AssetId
-  , locationModifiers :: HashMap Source [Modifier]
-  , locationModifiersFor :: HashMap Target [Modifier]
   , locationEncounterSet :: EncounterSet
   }
   deriving stock (Show, Generic)
@@ -47,19 +43,13 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "location"
 
-isSource :: Attrs -> Source -> Bool
-isSource Attrs { locationId } (LocationSource lid) = locationId == lid
-isSource _ _ = False
-
-isTarget :: Attrs -> Target -> Bool
-isTarget Attrs { locationId } (LocationTarget lid) = locationId == lid
-isTarget _ _ = False
-
-toTarget :: Attrs -> Target
-toTarget Attrs { locationId } = LocationTarget locationId
-
-toSource :: Attrs -> Source
-toSource Attrs { locationId } = LocationSource locationId
+instance Entity Attrs where
+  toSource Attrs { locationId } = LocationSource locationId
+  toTarget Attrs { locationId } = LocationTarget locationId
+  isSource Attrs { locationId } (LocationSource lid) = locationId == lid
+  isSource _ _ = False
+  isTarget Attrs { locationId } (LocationTarget lid) = locationId == lid
+  isTarget _ _ = False
 
 symbol :: Lens' Attrs LocationSymbol
 symbol = lens locationSymbol $ \m x -> m { locationSymbol = x }
@@ -96,13 +86,6 @@ connectedLocations =
 blocked :: Lens' Attrs Bool
 blocked = lens locationBlocked $ \m x -> m { locationBlocked = x }
 
-modifiersFor :: Lens' Attrs (HashMap Target [Modifier])
-modifiersFor =
-  lens locationModifiersFor $ \m x -> m { locationModifiersFor = x }
-
-modifiers :: Lens' Attrs (HashMap Source [Modifier])
-modifiers = lens locationModifiers $ \m x -> m { locationModifiers = x }
-
 baseAttrs
   :: LocationId
   -> LocationName
@@ -136,15 +119,13 @@ baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' tr
     , locationVictory = Nothing
     , locationSymbol = symbol'
     , locationRevealedSymbol = symbol'
-    , locationConnectedSymbols = HashSet.fromList connectedSymbols'
-    , locationRevealedConnectedSymbols = HashSet.fromList connectedSymbols'
+    , locationConnectedSymbols = setFromList connectedSymbols'
+    , locationRevealedConnectedSymbols = setFromList connectedSymbols'
     , locationConnectedLocations = mempty
     , locationTraits = setFromList traits'
     , locationTreacheries = mempty
     , locationEvents = mempty
     , locationAssets = mempty
-    , locationModifiers = mempty
-    , locationModifiersFor = mempty
     , locationEncounterSet = encounterSet
     }
 
@@ -160,11 +141,11 @@ revealed = lens locationRevealed $ \m x -> m { locationRevealed = x }
 enemies :: Lens' Attrs (HashSet EnemyId)
 enemies = lens locationEnemies $ \m x -> m { locationEnemies = x }
 
-shroudValueFor :: Attrs -> Int
-shroudValueFor Attrs {..} = foldr
-  applyModifier
-  locationShroud
-  (concat . HashMap.elems $ locationModifiers)
+getModifiedShroudValueFor
+  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Int
+getModifiedShroudValueFor attrs = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  pure $ foldr applyModifier (locationShroud attrs) modifiers'
  where
   applyModifier (ShroudModifier m) n = max 0 (n + m)
   applyModifier _ n = n
@@ -175,21 +156,20 @@ instance HasId LocationId () Attrs where
 instance IsLocation Attrs where
   isBlocked Attrs {..} = locationBlocked
 
-investigateAllowed :: Attrs -> Bool
-investigateAllowed Attrs {..} = not
-  (any isCannotInvestigate (concat . HashMap.elems $ locationModifiers))
+getInvestigateAllowed
+  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Bool
+getInvestigateAllowed attrs = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  pure $ not (any isCannotInvestigate modifiers')
  where
   isCannotInvestigate CannotInvestigate{} = True
   isCannotInvestigate _ = False
 
 canEnterLocation
-  :: (LocationRunner env, MonadReader env m, MonadIO m)
-  => EnemyId
-  -> LocationId
-  -> m Bool
+  :: (LocationRunner env, MonadReader env m) => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
   traits' <- asks (getSet eid)
-  modifiers' <- getModifiers (EnemySource eid) lid
+  modifiers' <- getModifiersFor (EnemySource eid) (LocationTarget lid) =<< ask
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits'
     _ -> False
@@ -198,70 +178,56 @@ instance ActionRunner env => HasActions env Attrs where
   getActions iid NonFast location@Attrs {..} = do
     canMoveTo <- getCanMoveTo locationId iid
     canInvestigate <- getCanInvestigate locationId iid
-    pure $ moveActions canMoveTo <> investigateActions canInvestigate
+    investigateAllowed <- getInvestigateAllowed location
+    pure
+      $ moveActions canMoveTo
+      <> investigateActions canInvestigate investigateAllowed
    where
-    investigateActions canInvestigate =
-      [ Investigate
-          iid
-          locationId
-          (InvestigatorSource iid)
-          SkillIntellect
-          mempty
-          mempty
-          mempty
-          True
-      | canInvestigate && investigateAllowed location
+    investigateActions canInvestigate investigateAllowed =
+      [ Investigate iid locationId (InvestigatorSource iid) SkillIntellect True
+      | canInvestigate && investigateAllowed
       ]
     moveActions canMoveTo =
       [ MoveAction iid locationId True | canMoveTo && not locationBlocked ]
   getActions _ _ _ = pure []
 
-shouldSpawnNonEliteAtConnectingInstead :: Attrs -> Bool
-shouldSpawnNonEliteAtConnectingInstead Attrs {..} =
-  flip any (concat . HashMap.elems $ locationModifiers) $ \case
+getShouldSpawnNonEliteAtConnectingInstead
+  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Bool
+getShouldSpawnNonEliteAtConnectingInstead attrs = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  pure $ flip any modifiers' $ \case
     SpawnNonEliteAtConnectingInstead{} -> True
     _ -> False
 
 instance LocationRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
-    Investigate iid lid source skillType modifiers' tokenResponses overrides False
-      | lid == locationId
-      -> do
-        let
-          investigationResult = if null overrides
-            then [InvestigatorDiscoverClues iid lid 1]
-            else overrides
-        a <$ unshiftMessage
-          (BeginSkillTest
-            iid
-            source
-            (LocationTarget lid)
-            (Just Action.Investigate)
-            skillType
-            (shroudValueFor a)
-            (SuccessfulInvestigation iid lid : investigationResult)
-            []
-            modifiers'
-            tokenResponses
-          )
+    Investigate iid lid source skillType False | lid == locationId -> do
+      shroudValue' <- getModifiedShroudValueFor a
+      a <$ unshiftMessage
+        (BeginSkillTest
+          iid
+          source
+          (LocationTarget lid)
+          (Just Action.Investigate)
+          skillType
+          shroudValue'
+        )
+    PassedSkillTest iid (Just Action.Investigate) _ (SkillTestInitiatorTarget target) _
+      | isTarget a target
+      -> a <$ unshiftMessage (SuccessfulInvestigation iid locationId)
+    SuccessfulInvestigation iid lid | lid == locationId ->
+      a <$ unshiftMessage (InvestigatorDiscoverClues iid lid 1)
     SetLocationLabel lid label' | lid == locationId ->
       pure $ a & label .~ label'
-    AddModifiers (LocationTarget lid) source modifiers' | lid == locationId ->
-      pure $ a & modifiers %~ HashMap.insertWith (<>) source modifiers'
-    RemoveAllModifiersOnTargetFrom (LocationTarget lid) source
-      | lid == locationId -> pure $ a & modifiers %~ HashMap.delete source
-    RemoveAllModifiersFrom source ->
-      pure $ a & modifiers %~ HashMap.delete source
     PlacedLocation lid | lid == locationId ->
       a <$ unshiftMessage (AddConnection lid locationSymbol)
     AttachTreachery tid (LocationTarget lid) | lid == locationId ->
-      pure $ a & treacheries %~ HashSet.insert tid
+      pure $ a & treacheries %~ insertSet tid
     AttachEventToLocation eid lid | lid == locationId ->
-      pure $ a & events %~ HashSet.insert eid
-    Discard (TreacheryTarget tid) ->
-      pure $ a & treacheries %~ HashSet.delete tid
-    Discard (EventTarget eid) -> pure $ a & events %~ HashSet.delete eid
-    Discard (EnemyTarget eid) -> pure $ a & enemies %~ HashSet.delete eid
+      pure $ a & events %~ insertSet eid
+    Discard (TreacheryTarget tid) -> pure $ a & treacheries %~ deleteSet tid
+    Discard (EventTarget eid) -> pure $ a & events %~ deleteSet eid
+    Discard (EnemyTarget eid) -> pure $ a & enemies %~ deleteSet eid
     AttachAsset aid (LocationTarget lid) | lid == locationId ->
       pure $ a & assets %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assets %~ deleteSet aid
@@ -277,7 +243,7 @@ instance LocationRunner env => RunMessage env Attrs where
             [ AddConnectionBack locationId locationSymbol
             , AddedConnection locationId lid
             ]
-          pure $ a & connectedLocations %~ HashSet.insert lid
+          pure $ a & connectedLocations %~ insertSet lid
         else a <$ unshiftMessages [AddConnectionBack locationId locationSymbol]
     AddConnectionBack lid symbol' | lid /= locationId -> do
       let
@@ -287,7 +253,7 @@ instance LocationRunner env => RunMessage env Attrs where
       if symbol' `elem` symbols
         then do
           unshiftMessage (AddedConnection locationId lid)
-          pure $ a & connectedLocations %~ HashSet.insert lid
+          pure $ a & connectedLocations %~ insertSet lid
         else pure a
     DiscoverCluesAtLocation iid lid n | lid == locationId -> do
       let discoveredClues = min n locationClues
@@ -304,32 +270,34 @@ instance LocationRunner env => RunMessage env Attrs where
       a <$ unshiftMessages
         (checkWindowMsgs <> [DiscoverClues iid lid discoveredClues])
     AfterDiscoverClues _ lid n | lid == locationId -> pure $ a & clues -~ n
-    InvestigatorEliminated iid ->
-      pure $ a & investigators %~ HashSet.delete iid
+    InvestigatorEliminated iid -> pure $ a & investigators %~ deleteSet iid
     WhenEnterLocation iid lid
       | lid /= locationId && iid `elem` locationInvestigators
-      -> pure $ a & investigators %~ HashSet.delete iid -- TODO: should we broadcast leaving the location
+      -> pure $ a & investigators %~ deleteSet iid -- TODO: should we broadcast leaving the location
     WhenEnterLocation iid lid | lid == locationId -> do
       unless locationRevealed $ unshiftMessage (RevealLocation (Just iid) lid)
-      pure $ a & investigators %~ HashSet.insert iid
-    AddToVictory (EnemyTarget eid) -> pure $ a & enemies %~ HashSet.delete eid
+      pure $ a & investigators %~ insertSet iid
+    AddToVictory (EnemyTarget eid) -> pure $ a & enemies %~ deleteSet eid
     EnemyMove eid lid fromLid | lid == locationId -> do
       willMove <- canEnterLocation eid fromLid
-      if willMove then pure $ a & enemies %~ HashSet.delete eid else pure a
+      if willMove then pure $ a & enemies %~ deleteSet eid else pure a
     EnemyMove eid _ lid | lid == locationId -> do
       willMove <- canEnterLocation eid lid
-      if willMove then pure $ a & enemies %~ HashSet.insert eid else pure a
+      if willMove then pure $ a & enemies %~ insertSet eid else pure a
     Will next@(EnemySpawn miid lid eid) | lid == locationId -> do
-      when (shouldSpawnNonEliteAtConnectingInstead a) $ do
-        traits' <- HashSet.toList <$> asks (getSet eid)
+      shouldSpawnNonEliteAtConnectingInstead <-
+        getShouldSpawnNonEliteAtConnectingInstead a
+      when shouldSpawnNonEliteAtConnectingInstead $ do
+        traits' <- asks $ setToList . getSet eid
         when (Elite `notElem` traits') $ do
           activeInvestigatorId <- unActiveInvestigatorId <$> asks (getId ())
           connectedLocationIds <-
-            HashSet.toList . HashSet.map unConnectedLocationId <$> asks
-              (getSet lid)
+            asks $ map unConnectedLocationId . setToList . getSet lid
           availableLocationIds <-
             flip filterM connectedLocationIds $ \locationId' -> do
-              modifiers' <- getModifiers (EnemySource eid) locationId'
+              modifiers' <-
+                getModifiersFor (EnemySource eid) (LocationTarget locationId')
+                  =<< ask
               pure . not $ flip any modifiers' $ \case
                 SpawnNonEliteAtConnectingInstead{} -> True
                 _ -> False
@@ -350,12 +318,12 @@ instance LocationRunner env => RunMessage env Attrs where
               )
       pure a
     EnemySpawn _ lid eid | lid == locationId ->
-      pure $ a & enemies %~ HashSet.insert eid
+      pure $ a & enemies %~ insertSet eid
     EnemySpawnedAt lid eid | lid == locationId ->
-      pure $ a & enemies %~ HashSet.insert eid
-    RemoveEnemy eid -> pure $ a & enemies %~ HashSet.delete eid
-    EnemyDefeated eid _ _ _ _ _ -> pure $ a & enemies %~ HashSet.delete eid
-    TakeControlOfAsset _ aid -> pure $ a & assets %~ HashSet.delete aid
+      pure $ a & enemies %~ insertSet eid
+    RemoveEnemy eid -> pure $ a & enemies %~ deleteSet eid
+    EnemyDefeated eid _ _ _ _ _ -> pure $ a & enemies %~ deleteSet eid
+    TakeControlOfAsset _ aid -> pure $ a & assets %~ deleteSet aid
     PlaceClues (LocationTarget lid) n | lid == locationId ->
       pure $ a & clues +~ n
     RemoveClues (LocationTarget lid) n | lid == locationId ->
@@ -370,12 +338,5 @@ instance LocationRunner env => RunMessage env Attrs where
           ]
       pure $ a & clues +~ locationClueCount & revealed .~ True
     RevealLocation _ lid | lid /= locationId ->
-      pure $ a & connectedLocations %~ HashSet.delete lid
-    EndRound -> do
-      lingeringEventIds <- asks (getSet ())
-      pure $ a & modifiers %~ HashMap.filterWithKey
-        (\key _ -> case key of
-          EventSource eid -> eid `member` lingeringEventIds
-          _ -> True
-        )
+      pure $ a & connectedLocations %~ deleteSet lid
     _ -> pure a

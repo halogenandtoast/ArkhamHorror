@@ -27,10 +27,10 @@ instance (AssetRunner env) => RunMessage env DiscOfItzamna2 where
   runMessage msg a@(DiscOfItzamna2 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       unshiftMessage
-        (AddModifiers
-          (InvestigatorTarget iid)
+        (CreateSkillTestEffect
+          (EffectModifiers [SkillModifier SkillWillpower 1])
           (toSource attrs)
-          [SkillModifier SkillWillpower 1]
+          (InvestigatorTarget iid)
         )
       DiscOfItzamna2 <$> runMessage msg attrs
     UseCardAbility _ source _ 1 | isSource attrs source -> do

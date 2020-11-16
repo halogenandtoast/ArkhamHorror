@@ -41,7 +41,7 @@ spec = describe "Physical Training" $ do
               _ -> False
             )
       >>= runGameTestOnlyOption "apply results"
-    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game
+    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget
 
   it "Adds 1 to combat check for each resource spent" $ do
     physicalTraining <- buildAsset "01017"
@@ -75,4 +75,4 @@ spec = describe "Physical Training" $ do
               _ -> False
             )
       >>= runGameTestOnlyOption "apply results"
-    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game
+    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget

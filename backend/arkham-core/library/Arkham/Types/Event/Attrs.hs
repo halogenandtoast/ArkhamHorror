@@ -15,9 +15,7 @@ data Attrs = Attrs
   , eventAttachedInvestigator :: Maybe InvestigatorId
   , eventOwner :: InvestigatorId
   , eventWeakness :: Bool
-  , eventResolved :: Bool -- should this be discarded
   , eventDoom :: Int
-  , eventModifiersFor :: HashMap Target [Modifier]
   }
   deriving stock (Show, Generic)
 
@@ -31,11 +29,12 @@ instance FromJSON Attrs where
 instance HasId EventId () Attrs where
   getId _ Attrs {..} = eventId
 
-modifiersFor :: Lens' Attrs (HashMap Target [Modifier])
-modifiersFor = lens eventModifiersFor $ \m x -> m { eventModifiersFor = x }
-
-resolved :: Lens' Attrs Bool
-resolved = lens eventResolved $ \m x -> m { eventResolved = x }
+unshiftEffect
+  :: (HasQueue env, MonadReader env m, MonadIO m) => Attrs -> Target -> m ()
+unshiftEffect attrs target = unshiftMessages
+  [ CreateEffect (eventCardCode attrs) Nothing (toSource attrs) target
+  , Discard $ toTarget attrs
+  ]
 
 attachedLocation :: Lens' Attrs (Maybe LocationId)
 attachedLocation =
@@ -58,10 +57,8 @@ baseAttrs iid eid cardCode =
       , eventAttachedLocation = Nothing
       , eventAttachedInvestigator = Nothing
       , eventWeakness = False
-      , eventResolved = False
       , eventOwner = iid
       , eventDoom = 0
-      , eventModifiersFor = mempty
       }
 
 weaknessAttrs :: InvestigatorId -> EventId -> CardCode -> Attrs
@@ -82,17 +79,16 @@ weaknessAttrs iid eid cardCode =
       , eventAttachedInvestigator = Nothing
       , eventOwner = iid
       , eventWeakness = True
-      , eventResolved = False
       , eventDoom = 0
-      , eventModifiersFor = mempty
       }
 
-isSource :: Attrs -> Source -> Bool
-isSource Attrs { eventId } (EventSource eid) = eventId == eid
-isSource _ _ = False
-
-toSource :: Attrs -> Source
-toSource Attrs { eventId } = EventSource eventId
+instance Entity Attrs where
+  toSource = EventSource . eventId
+  toTarget = EventTarget . eventId
+  isSource Attrs { eventId } (EventSource eid) = eventId == eid
+  isSource _ _ = False
+  isTarget Attrs { eventId } (EventTarget eid) = eventId == eid
+  isTarget _ _ = False
 
 instance HasActions env Attrs where
   getActions _ _ _ = pure []
@@ -101,4 +97,6 @@ instance HasQueue env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     InvestigatorEliminated iid | eventAttachedInvestigator == Just iid ->
       a <$ unshiftMessage (Discard (EventTarget eventId))
+    AttachEventToLocation eid lid | eid == eventId -> do
+      pure $ a & attachedLocation ?~ lid
     _ -> pure a

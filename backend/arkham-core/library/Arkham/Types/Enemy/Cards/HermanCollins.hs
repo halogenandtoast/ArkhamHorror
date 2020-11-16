@@ -25,10 +25,6 @@ hermanCollins uuid =
 instance HasModifiersFor env HermanCollins where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env HermanCollins where
-  getModifiers _ (HermanCollins Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env HermanCollins where
   getActions iid NonFast (HermanCollins attrs@Attrs {..}) = do
     baseActions <- getActions iid NonFast attrs

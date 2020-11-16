@@ -11,7 +11,6 @@ where
 import Arkham.Import
 
 import Arkham.Types.Difficulty
-import Arkham.Types.Helpers
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
@@ -21,6 +20,7 @@ import Arkham.Types.Scenario.Scenarios.TheGathering
 import Arkham.Types.Scenario.Scenarios.TheMidnightMasks
 import Arkham.Types.ScenarioId
 import Arkham.Types.ScenarioLogKey
+import Arkham.Types.Trait (Trait)
 import Data.Coerce
 
 data Scenario
@@ -34,7 +34,17 @@ data Scenario
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance (ScenarioRunner env) => RunMessage env Scenario
-deriving anyclass instance (ScenarioRunner env, HasTokenValue env InvestigatorId) => HasTokenValue env Scenario
+deriving anyclass instance
+  ( HasCount DoomCount () env
+  , HasCount DoomCount EnemyId env
+  , HasCount EnemyCount (InvestigatorLocation, [Trait]) env
+  , HasCount EnemyCount [Trait] env
+  , HasSet EnemyId Trait env
+  , HasSet Trait LocationId env
+  , HasTokenValue env InvestigatorId
+  , HasId LocationId InvestigatorId env
+  )
+  => HasTokenValue env Scenario
 
 instance HasSet ScenarioLogKey () Scenario where
   getSet _ = scenarioLog . scenarioAttrs
@@ -42,7 +52,7 @@ instance HasSet ScenarioLogKey () Scenario where
 newtype BaseScenario = BaseScenario Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-instance (HasTokenValue env InvestigatorId, HasQueue env) => HasTokenValue env BaseScenario where
+instance HasTokenValue env InvestigatorId => HasTokenValue env BaseScenario where
   getTokenValue (BaseScenario attrs) iid = \case
     Skull -> pure $ TokenValue Skull (NegativeModifier 1)
     Cultist -> pure $ TokenValue Cultist (NegativeModifier 1)
@@ -50,7 +60,7 @@ instance (HasTokenValue env InvestigatorId, HasQueue env) => HasTokenValue env B
     ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 1)
     otherFace -> getTokenValue attrs iid otherFace
 
-instance (ScenarioRunner env) => RunMessage env BaseScenario where
+instance ScenarioRunner env => RunMessage env BaseScenario where
   runMessage msg a@(BaseScenario attrs) = case msg of
     NoResolution -> pure a
     _ -> BaseScenario <$> runMessage msg attrs

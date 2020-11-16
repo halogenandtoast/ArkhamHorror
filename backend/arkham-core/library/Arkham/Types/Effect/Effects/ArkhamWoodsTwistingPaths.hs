@@ -1,0 +1,31 @@
+module Arkham.Types.Effect.Effects.ArkhamWoodsTwistingPaths
+  ( arkhamWoodsTwistingPaths
+  , ArkhamWoodsTwistingPaths(..)
+  )
+where
+
+import Arkham.Import
+
+import Arkham.Types.Effect.Attrs
+
+newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+arkhamWoodsTwistingPaths :: EffectArgs -> ArkhamWoodsTwistingPaths
+arkhamWoodsTwistingPaths =
+  ArkhamWoodsTwistingPaths . uncurry4 (baseAttrs "01151")
+
+instance HasModifiersFor env ArkhamWoodsTwistingPaths where
+  getModifiersFor = noModifiersFor
+
+instance HasQueue env => RunMessage env ArkhamWoodsTwistingPaths where
+  runMessage msg e@(ArkhamWoodsTwistingPaths attrs) = case msg of
+    PassedSkillTest _ _ (LocationSource "01151") SkillTestInitiatorTarget{} _
+      -> do
+        let disable = DisableEffect (effectId attrs)
+        e <$ case effectMetadata attrs of
+          Just (EffectMessages msgs) -> unshiftMessages (msgs <> [disable])
+          _ -> unshiftMessage disable
+    FailedSkillTest _ _ (LocationSource "01151") SkillTestInitiatorTarget{} _
+      -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
+    _ -> ArkhamWoodsTwistingPaths <$> runMessage msg attrs

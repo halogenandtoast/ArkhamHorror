@@ -8,8 +8,6 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
-import qualified Arkham.Types.Token as Token
-import Arkham.Types.TokenResponse
 
 newtype Shrivelling = Shrivelling Attrs
   deriving stock (Show, Generic)
@@ -38,20 +36,13 @@ instance AssetRunner env => RunMessage env Shrivelling where
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Shrivelling <$> runMessage msg (attrs & uses .~ Uses Resource.Charge 4)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
-      unshiftMessage $ ChooseFightEnemy
-        iid
-        source
-        SkillWillpower
-        [DamageDealt 1]
-        [ OnAnyToken
-            [ Token.Skull
-            , Token.Cultist
-            , Token.Tablet
-            , Token.ElderThing
-            , Token.AutoFail
-            ]
-            [InvestigatorAssignDamage (getInvestigator attrs) source 0 1]
+      unshiftMessages
+        [ CreateSkillTestEffect
+          (EffectModifiers [DamageDealt 1])
+          source
+          (InvestigatorTarget iid)
+        , CreateEffect "01050" Nothing source (InvestigatorTarget iid)
+        , ChooseFightEnemy iid source SkillWillpower False
         ]
-        False
       pure $ Shrivelling $ attrs & uses %~ Resource.use
     _ -> Shrivelling <$> runMessage msg attrs

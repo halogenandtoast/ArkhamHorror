@@ -19,8 +19,7 @@ instance HasActions env Dodge where
   getActions i window (Dodge attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env Dodge where
-  runMessage msg (Dodge attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Dodge attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent _ eid _ | eid == eventId -> do
-      unshiftMessages [CancelNext AttackMessage, Discard (EventTarget eid)]
-      Dodge <$> runMessage msg (attrs & resolved .~ True)
+      e <$ unshiftMessages [CancelNext AttackMessage, Discard (EventTarget eid)]
     _ -> Dodge <$> runMessage msg attrs

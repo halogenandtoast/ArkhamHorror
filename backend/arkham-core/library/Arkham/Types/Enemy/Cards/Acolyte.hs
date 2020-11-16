@@ -20,9 +20,6 @@ acolyte uuid =
 instance HasModifiersFor env Acolyte where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env Acolyte where
-  getModifiers _ (Acolyte Attrs {..}) = pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env Acolyte where
   getActions i window (Acolyte attrs) = getActions i window attrs
 

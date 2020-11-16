@@ -23,10 +23,6 @@ corpseTaker uuid =
 instance HasModifiersFor env CorpseTaker where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env CorpseTaker where
-  getModifiers _ (CorpseTaker Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env CorpseTaker where
   getActions i window (CorpseTaker attrs) = getActions i window attrs
 

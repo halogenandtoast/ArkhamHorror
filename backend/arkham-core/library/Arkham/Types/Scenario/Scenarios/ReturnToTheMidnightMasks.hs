@@ -7,7 +7,6 @@ import Arkham.Types.CampaignLogKey
 import Arkham.Types.Difficulty
 import Arkham.Types.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Helpers
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
@@ -33,7 +32,7 @@ theMidnightMasks difficulty =
         , scenarioDeck = Just []
         }
 
-instance (HasTokenValue env InvestigatorId, HasQueue env, HasCount DoomCount () env, HasCount DoomCount EnemyId env, HasSet EnemyId Trait env) => HasTokenValue env ReturnToTheMidnightMasks where
+instance (HasTokenValue env InvestigatorId, HasCount DoomCount () env, HasCount DoomCount EnemyId env, HasSet EnemyId Trait env) => HasTokenValue env ReturnToTheMidnightMasks where
   getTokenValue (ReturnToTheMidnightMasks theMidnightMasks') iid =
     getTokenValue theMidnightMasks' iid
 

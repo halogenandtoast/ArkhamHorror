@@ -20,7 +20,7 @@ instance HasActions env DynamiteBlast2 where
 
 instance (EventRunner env) => RunMessage env DynamiteBlast2 where
   -- TODO: Does not provoke attacks of opportunity
-  runMessage msg (DynamiteBlast2 attrs@Attrs {..}) = case msg of
+  runMessage msg e@(DynamiteBlast2 attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       currentLocationId <- asks (getId @LocationId iid)
       connectedLocationIds <-
@@ -33,7 +33,6 @@ instance (EventRunner env) => RunMessage env DynamiteBlast2 where
           <> map
                (\iid' -> InvestigatorAssignDamage iid' (EventSource eid) 3 0)
                investigatorIds
-      unshiftMessages
-        [Ask iid $ ChooseOne $ map Run choices, Discard (EventTarget eid)]
-      DynamiteBlast2 <$> runMessage msg (attrs & resolved .~ True)
+      e <$ unshiftMessages
+        [chooseOne iid $ map Run choices, Discard (EventTarget eid)]
     _ -> DynamiteBlast2 <$> runMessage msg attrs

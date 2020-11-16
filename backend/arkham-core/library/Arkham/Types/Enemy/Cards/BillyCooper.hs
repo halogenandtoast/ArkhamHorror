@@ -23,10 +23,6 @@ billyCooper uuid =
 instance HasModifiersFor env BillyCooper where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env BillyCooper where
-  getModifiers _ (BillyCooper Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env BillyCooper where
   getActions iid window (BillyCooper attrs) = getActions iid window attrs
 

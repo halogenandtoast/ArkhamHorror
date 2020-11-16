@@ -15,7 +15,11 @@ wrackedByNightmares uuid iid =
   WrackedByNightmares $ weaknessAttrs uuid iid "02015"
 
 instance HasModifiersFor env WrackedByNightmares where
-  getModifiersFor = noModifiersFor
+  getModifiersFor _ (InvestigatorTarget iid) (WrackedByNightmares attrs) = pure
+    [ ControlledAssetsCannotReady
+    | iid `elem` treacheryAttachedInvestigator attrs
+    ]
+  getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env WrackedByNightmares where
   getActions iid NonFast (WrackedByNightmares Attrs {..}) =
@@ -44,12 +48,7 @@ instance (TreacheryRunner env) => RunMessage env WrackedByNightmares where
         <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     AttachTreachery tid (InvestigatorTarget iid) | tid == treacheryId -> do
       assetIds <- setToList <$> asks (getSet iid)
-      unshiftMessages
-        $ AddModifiers
-            (InvestigatorTarget iid)
-            (TreacherySource tid)
-            [ControlledAssetsCannotReady]
-        : [ Exhaust (AssetTarget aid) | aid <- assetIds ]
+      unshiftMessages [ Exhaust (AssetTarget aid) | aid <- assetIds ]
       WrackedByNightmares <$> runMessage msg attrs
     UseCardAbility _ (TreacherySource tid) _ 1 | tid == treacheryId ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))

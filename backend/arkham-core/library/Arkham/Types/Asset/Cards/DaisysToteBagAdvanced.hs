@@ -8,6 +8,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
 newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced Attrs
@@ -39,7 +40,7 @@ instance HasModifiersFor env DaisysToteBagAdvanced where
 slot :: Attrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
 
-instance (HasQueue env, HasModifiers env InvestigatorId) => RunMessage env DaisysToteBagAdvanced where
+instance AssetRunner env => RunMessage env DaisysToteBagAdvanced where
   runMessage msg (DaisysToteBagAdvanced attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       unshiftMessages $ replicate 2 (AddSlot iid HandSlot (slot attrs))

@@ -18,6 +18,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Cards
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
+import Arkham.Types.Trait (Trait)
 import Data.Coerce
 
 data Asset
@@ -104,8 +105,20 @@ data Asset
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Asset
-deriving anyclass instance AssetRunner env => HasModifiersFor env Asset
+deriving anyclass instance
+  ( HasId LocationId InvestigatorId env
+  , HasCount ResourceCount InvestigatorId env
+  , HasCount CardCount InvestigatorId env
+  , HasCount AssetCount (InvestigatorId, [Trait]) env
+  )
+  => HasModifiersFor env Asset
 deriving anyclass instance AssetRunner env => RunMessage env Asset
+
+instance Entity Asset where
+  toTarget = toTarget . assetAttrs
+  isTarget = isTarget . assetAttrs
+  toSource = toSource . assetAttrs
+  isSource = isSource . assetAttrs
 
 instance IsCard Asset where
   toCard a = PlayerCard $ lookupPlayerCard (getCardCode a) (getCardId a)

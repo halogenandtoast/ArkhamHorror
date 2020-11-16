@@ -18,13 +18,11 @@ instance HasModifiersFor env SureGamble3 where
 instance HasActions env SureGamble3 where
   getActions i window (SureGamble3 attrs) = getActions i window attrs
 
-instance (EventRunner env) => RunMessage env SureGamble3 where
-  runMessage msg (SureGamble3 attrs@Attrs {..}) = case msg of
+instance EventRunner env => RunMessage env SureGamble3 where
+  runMessage msg e@(SureGamble3 attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent _ eid (Just target@(TokenTarget _))
-      | eid == eventId -> SureGamble3 <$> runMessage
-        msg
-        (attrs
-        & (modifiersFor %~ insertWith (<>) target [NegativeToPositive])
-        & (resolved .~ True)
-        )
+      | eid == eventId -> e <$ unshiftMessages
+        [ CreateEffect "01088" Nothing (toSource attrs) target
+        , Discard (toTarget attrs)
+        ]
     _ -> SureGamble3 <$> runMessage msg attrs

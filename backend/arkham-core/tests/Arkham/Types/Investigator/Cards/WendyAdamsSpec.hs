@@ -29,7 +29,7 @@ spec = describe "Wendy Adams" $ do
               )
         >>= runGameTestOnlyOption "discard card"
         >>= runGameTestOnlyOption "apply results"
-      wendyAdams `shouldSatisfy` hasPassedSkillTestBy 0 game
+      wendyAdams `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget
   context "elder sign" $ do
     it "gives +0" $ do
       let wendyAdams = lookupInvestigator "01005"
@@ -41,7 +41,7 @@ spec = describe "Wendy Adams" $ do
           (scenario ?~ scenario')
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
-      wendyAdams `shouldSatisfy` hasPassedSkillTestBy 0 game
+      wendyAdams `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget
     it "automatically succeeds if Wendy's Amulet is in play" $ do
       let wendyAdams = lookupInvestigator "01005"
       wendysAmulet <- buildAsset "01014"
@@ -56,4 +56,4 @@ spec = describe "Wendy Adams" $ do
           ((scenario ?~ scenario') . (assets %~ insertEntity wendysAmulet))
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
-      wendyAdams `shouldSatisfy` hasPassedSkillTestBy 4 game
+      wendyAdams `shouldSatisfy` hasPassedSkillTestBy 4 game TestTarget

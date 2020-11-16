@@ -5,7 +5,6 @@ where
 
 import TestImport
 
-import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs (Attrs(..))
 
 spec :: Spec
@@ -40,7 +39,7 @@ spec = describe "Lucky! (2)" $ do
         (getId () investigator)
         Nothing
         TestSource
-        SkillTestInitiatorTarget
+        (SkillTestInitiatorTarget TestTarget)
         0
       )
     updated game investigator `shouldSatisfy` handIs [PlayerCard cardToDraw]
@@ -75,7 +74,7 @@ spec = describe "Lucky! (2)" $ do
         (getId () investigator)
         Nothing
         TestSource
-        SkillTestInitiatorTarget
+        (SkillTestInitiatorTarget TestTarget)
         2
       )
     updated game investigator `shouldSatisfy` handIs [PlayerCard cardToDraw]

@@ -19,7 +19,6 @@ type EnemyRunner env
     , HasCount RemainingSanity InvestigatorId env
     , HasId LeadInvestigatorId () env
     , HasId LocationId InvestigatorId env
-    , HasModifiers env LocationId
     , HasModifiersFor env env
     , HasSet ClosestLocationId (LocationId, LocationId) env
     , HasSet ClosestLocationId (LocationId, Prey) env

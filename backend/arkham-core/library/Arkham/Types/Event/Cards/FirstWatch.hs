@@ -9,7 +9,6 @@ import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Game.Helpers
-import Arkham.Types.Helpers
 
 newtype FirstWatchMetadata = FirstWatchMetadata { firstWatchPairings :: [(InvestigatorId, EncounterCard)] }
   deriving newtype (Show, ToJSON, FromJSON)
@@ -38,10 +37,10 @@ instance (HasQueue env, HasSet InvestigatorId () env, HasCount PlayerCount () en
             AllDrawEncounterCard -> (rest, ())
             _ -> error "AllDrawEncounterCard expected"
         playerCount <- getPlayerCount
-        unshiftMessage (DrawEncounterCards (EventTarget eventId) playerCount)
-        FirstWatch . (`with` metadata) <$> runMessage
-          msg
-          (attrs & resolved .~ True)
+        e <$ unshiftMessages
+          [ DrawEncounterCards (EventTarget eventId) playerCount
+          , Discard (toTarget attrs)
+          ]
       UseCardAbility iid (EventSource eid) (Just (TargetMetadata (EncounterCardTarget card))) 1
         | eid == eventId
         -> do

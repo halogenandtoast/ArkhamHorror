@@ -1,24 +1,25 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator
-  ( isPrey
+  ( getIsPrey
   , baseInvestigator
   , getEngagedEnemies
   , investigatorAttrs
   , hasEndedTurn
   , hasResigned
-  , hasSpendableClues
+  , getHasSpendableClues
+  , getInvestigatorSpendableClueCount
   , isDefeated
   , actionsRemaining
   , lookupInvestigator
-  , availableSkillsFor
-  , skillValueOf
+  , getAvailableSkillsFor
+  , getSkillValueOf
   , handOf
   , discardOf
   , deckOf
   , locationOf
-  , remainingHealth
-  , remainingSanity
+  , getRemainingHealth
+  , getRemainingSanity
   , modifiedStatsOf
   , GetInvestigatorId(..)
   , Investigator
@@ -28,7 +29,6 @@ where
 import Arkham.Import
 
 import Arkham.Types.Action (Action)
-import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Cards
 import Arkham.Types.Investigator.Runner
@@ -52,8 +52,8 @@ data Investigator
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance InvestigatorRunner env => HasModifiersFor env Investigator
-deriving anyclass instance InvestigatorRunner env => HasTokenValue env Investigator
+deriving anyclass instance HasCount AssetCount (InvestigatorId, [Trait]) env => HasModifiersFor env Investigator
+deriving anyclass instance HasCount ClueCount LocationId env => HasTokenValue env Investigator
 
 instance Eq Investigator where
   a == b = getInvestigatorId a == getInvestigatorId b
@@ -69,7 +69,7 @@ baseInvestigator
 baseInvestigator a b c d e f =
   BaseInvestigator' . BaseInvestigator . f $ baseAttrs a b c d e
 
-instance InvestigatorRunner env => HasTokenValue env BaseInvestigator where
+instance HasTokenValue env BaseInvestigator where
   getTokenValue (BaseInvestigator attrs) iid token =
     getTokenValue attrs iid token
 
@@ -89,14 +89,15 @@ instance (InvestigatorRunner env) => RunMessage env BaseInvestigator where
 
 instance ActionRunner env => HasActions env Investigator where
   getActions iid window investigator = do
-    modifiers' <- getModifiers (InvestigatorSource iid) investigator
+    modifiers' <-
+      getModifiersFor (toSource investigator) (toTarget investigator) =<< ask
     if any isBlank modifiers'
       then getActions iid window (investigatorAttrs investigator)
       else defaultGetActions iid window investigator
 
 instance (InvestigatorRunner env) => RunMessage env Investigator where
   runMessage msg@(ResolveToken _ iid) i | iid == getInvestigatorId i = do
-    modifiers' <- getModifiers (InvestigatorSource iid) i
+    modifiers' <- getModifiersFor (toSource i) (toTarget i) =<< ask
     if any isBlank modifiers' then pure i else defaultRunMessage msg i
   runMessage msg i = defaultRunMessage msg i
 
@@ -118,10 +119,6 @@ instance HasCard () Investigator where
 
 instance HasCardCode Investigator where
   getCardCode = getCardCode . investigatorAttrs
-
-instance (HasModifiersFor env env) => HasModifiers env Investigator where
-  getModifiers source self =
-    ask >>= getModifiersFor source (InvestigatorTarget $ getInvestigatorId self)
 
 instance HasDamage Investigator where
   getDamage i = (investigatorHealthDamage, investigatorSanityDamage)
@@ -173,10 +170,12 @@ instance HasCount CardCount () Investigator where
 instance HasCount ClueCount () Investigator where
   getCount _ = ClueCount . investigatorClues . investigatorAttrs
 
-instance HasCount SpendableClueCount () Investigator where
-  getCount _ i = if canSpendClues (investigatorAttrs i)
-    then SpendableClueCount . investigatorClues $ investigatorAttrs i
-    else SpendableClueCount 0
+getInvestigatorSpendableClueCount
+  :: (MonadReader env m, HasModifiersFor env env)
+  => Investigator
+  -> m SpendableClueCount
+getInvestigatorSpendableClueCount =
+  (SpendableClueCount <$>) . getSpendableClueCount . investigatorAttrs
 
 instance HasSet AssetId () Investigator where
   getSet _ = investigatorAssets . investigatorAttrs
@@ -228,40 +227,66 @@ getEngagedEnemies :: Investigator -> HashSet EnemyId
 getEngagedEnemies = investigatorEngagedEnemies . investigatorAttrs
 
 -- TODO: This does not work for more than 2 players
-isPrey
+getIsPrey
   :: ( HasSet Int SkillType env
      , HasSet RemainingHealth () env
      , HasSet RemainingSanity () env
      , HasSet ClueCount () env
      , HasSet CardCount () env
      , HasList (InvestigatorId, Distance) EnemyTrait env
+     , MonadReader env m
+     , HasModifiersFor env env
      )
   => Prey
-  -> env
   -> Investigator
-  -> Bool
-isPrey AnyPrey _ _ = True
-isPrey (HighestSkill skillType) env i =
-  fromMaybe 0 (maximumMay . toList $ getSet skillType env)
+  -> m Bool
+getIsPrey AnyPrey _ = pure True
+getIsPrey (HighestSkill skillType) i = do
+  env <- ask
+  pure
+    $ fromMaybe 0 (maximumMay . toList $ getSet skillType env)
     == skillValueFor skillType Nothing [] (investigatorAttrs i)
-isPrey (LowestSkill skillType) env i =
-  fromMaybe 100 (minimumMay . toList $ getSet skillType env)
-    == skillValueFor skillType Nothing [] (investigatorAttrs i)
-isPrey LowestRemainingHealth env i =
-  fromMaybe 100 (minimumMay . map unRemainingHealth . toList $ getSet () env)
-    == remainingHealth i
-isPrey LowestRemainingSanity env i =
-  fromMaybe 100 (minimumMay . map unRemainingSanity . toList $ getSet () env)
-    == remainingSanity i
-isPrey (Bearer bid) _ i =
-  unBearerId bid == unInvestigatorId (investigatorId $ investigatorAttrs i)
-isPrey MostClues env i =
-  fromMaybe 0 (maximumMay . map unClueCount . toList $ getSet () env)
-    == unClueCount (getCount () i)
-isPrey FewestCards env i =
-  fromMaybe 100 (minimumMay . map unCardCount . toList $ getSet () env)
+getIsPrey (LowestSkill skillType) i = do
+  lowestSkillValue <-
+    asks $ fromMaybe 100 . minimumMay . setToList . getSet skillType
+  pure $ lowestSkillValue == skillValueFor
+    skillType
+    Nothing
+    []
+    (investigatorAttrs i)
+getIsPrey LowestRemainingHealth i = do
+  remainingHealth <- getRemainingHealth i
+  lowestRemainingHealth <-
+    asks
+    $ fromMaybe 100
+    . minimumMay
+    . map unRemainingHealth
+    . setToList
+    . getSet ()
+  pure $ lowestRemainingHealth == remainingHealth
+getIsPrey LowestRemainingSanity i = do
+  remainingSanity <- getRemainingSanity i
+  lowestRemainingSanity <-
+    asks
+    $ fromMaybe 100
+    . minimumMay
+    . map unRemainingSanity
+    . setToList
+    . getSet ()
+  pure $ lowestRemainingSanity == remainingSanity
+getIsPrey (Bearer bid) i = pure $ unBearerId bid == unInvestigatorId
+  (investigatorId $ investigatorAttrs i)
+getIsPrey MostClues i = do
+  mostClueCount <-
+    asks $ fromMaybe 0 . maximumMay . map unClueCount . setToList . getSet ()
+  pure $ mostClueCount == unClueCount (getCount () i)
+getIsPrey FewestCards i = do
+  env <- ask
+  pure
+    $ fromMaybe 100 (minimumMay . map unCardCount . toList $ getSet () env)
     == unCardCount (getCount () i)
-isPrey (NearestToEnemyWithTrait trait) env i =
+getIsPrey (NearestToEnemyWithTrait trait) i = do
+  env <- ask
   let
     mappings :: [(InvestigatorId, Distance)] = getList (EnemyTrait trait) env
     mappingsMap :: HashMap InvestigatorId Distance = mapFromList mappings
@@ -271,11 +296,32 @@ isPrey (NearestToEnemyWithTrait trait) env i =
       (error "investigator not found")
       (investigatorId $ investigatorAttrs i)
       mappingsMap
-  in investigatorDistance == minDistance
-isPrey SetToBearer _ _ = error "The bearer was not correctly set"
+  pure $ investigatorDistance == minDistance
+getIsPrey SetToBearer _ = error "The bearer was not correctly set"
 
-availableSkillsFor :: Investigator -> SkillType -> [SkillType]
-availableSkillsFor i s = possibleSkillTypeChoices s (investigatorAttrs i)
+getAvailableSkillsFor
+  :: (MonadReader env m, HasModifiersFor env env)
+  => Investigator
+  -> SkillType
+  -> m [SkillType]
+getAvailableSkillsFor i s = getPossibleSkillTypeChoices s (investigatorAttrs i)
+
+getSkillValueOf
+  :: (MonadReader env m, HasModifiersFor env env)
+  => SkillType
+  -> Investigator
+  -> m Int
+getSkillValueOf skillType i = do
+  modifiers' <- getModifiersFor (toSource i) (toTarget i) =<< ask
+  let
+    mBaseValue = foldr
+      (\modifier current -> case modifier of
+        BaseSkillOf stype n | stype == skillType -> Just n
+        _ -> current
+      )
+      Nothing
+      modifiers'
+  pure $ fromMaybe (skillValueOf skillType i) mBaseValue
 
 skillValueOf :: SkillType -> Investigator -> Int
 skillValueOf SkillWillpower = investigatorWillpower . investigatorAttrs
@@ -296,22 +342,36 @@ deckOf = unDeck . investigatorDeck . investigatorAttrs
 locationOf :: Investigator -> LocationId
 locationOf = investigatorLocation . investigatorAttrs
 
-remainingSanity :: Investigator -> Int
-remainingSanity i = modifiedSanity a - investigatorSanityDamage a
+getRemainingSanity
+  :: (MonadReader env m, HasModifiersFor env env) => Investigator -> m Int
+getRemainingSanity i = do
+  modifiedSanity <- getModifiedSanity a
+  pure $ modifiedSanity - investigatorSanityDamage a
   where a = investigatorAttrs i
 
-remainingHealth :: Investigator -> Int
-remainingHealth i = modifiedHealth a - investigatorHealthDamage a
+getRemainingHealth
+  :: (MonadReader env m, HasModifiersFor env env) => Investigator -> m Int
+getRemainingHealth i = do
+  modifiedHealth <- getModifiedHealth a
+  pure $ modifiedHealth - investigatorHealthDamage a
   where a = investigatorAttrs i
+
+instance Entity Investigator where
+  toSource = toSource . investigatorAttrs
+  toTarget = toTarget . investigatorAttrs
+  isSource = isSource . investigatorAttrs
+  isTarget = isTarget . investigatorAttrs
 
 modifiedStatsOf
-  :: (MonadReader env m, HasModifiers env InvestigatorId, MonadIO m)
+  :: (MonadReader env m, HasModifiersFor env env)
   => Source
   -> Maybe Action
   -> Investigator
   -> m Stats
 modifiedStatsOf source maction i = do
-  modifiers' <- getModifiers source (getInvestigatorId i)
+  modifiers' <- getModifiersFor source (toTarget i) =<< ask
+  remainingHealth <- getRemainingHealth i
+  remainingSanity <- getRemainingSanity i
   let
     a = investigatorAttrs i
     willpower' = skillValueFor SkillWillpower maction modifiers' a
@@ -323,8 +383,8 @@ modifiedStatsOf source maction i = do
     , intellect = intellect'
     , combat = combat'
     , agility = agility'
-    , health = remainingHealth i
-    , sanity = remainingSanity i
+    , health = remainingHealth
+    , sanity = remainingSanity
     }
 
 hasEndedTurn :: Investigator -> Bool
@@ -336,8 +396,11 @@ hasResigned = view resigned . investigatorAttrs
 isDefeated :: Investigator -> Bool
 isDefeated = view defeated . investigatorAttrs
 
-hasSpendableClues :: Investigator -> Bool
-hasSpendableClues i = spendableClueCount (investigatorAttrs i) > 0
+getHasSpendableClues
+  :: (MonadReader env m, HasModifiersFor env env) => Investigator -> m Bool
+getHasSpendableClues i = do
+  spendableClueCount <- getSpendableClueCount (investigatorAttrs i)
+  pure $ spendableClueCount > 0
 
 actionsRemaining :: Investigator -> Int
 actionsRemaining = investigatorRemainingActions . investigatorAttrs

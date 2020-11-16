@@ -42,13 +42,9 @@ instance (LocationRunner env) => RunMessage env FarAboveYourHouse where
           Nothing
           SkillWillpower
           4
-          mempty
-          mempty
-          mempty
-          mempty
         )
       FarAboveYourHouse <$> runMessage msg attrs
-    FailedSkillTest _ _ source SkillTestInitiatorTarget n
+    FailedSkillTest _ _ source SkillTestInitiatorTarget{} n
       | isSource attrs source -> do
         investigatorIds <- getInvestigatorIds
         l <$ unshiftMessages

@@ -23,7 +23,7 @@ getGroupIsUnused ability =
   asks $ notElem ability . map (snd . unUsedAbility) . getList ()
 
 getInvestigatorModifiers
-  :: (MonadReader env m, HasModifiersFor env env, MonadIO m)
+  :: (MonadReader env m, HasModifiersFor env env)
   => InvestigatorId
   -> Source
   -> m [Modifier]
@@ -116,7 +116,6 @@ getCanEvade
      , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
      , HasSet InvestigatorId EnemyId env
      , HasModifiersFor env env
-     , MonadIO m
      )
   => EnemyId
   -> InvestigatorId
@@ -138,7 +137,6 @@ getCanMoveTo
      , HasSet AccessibleLocationId LocationId env
      , HasId LocationId InvestigatorId env
      , HasModifiersFor env env
-     , MonadIO m
      )
   => LocationId
   -> InvestigatorId

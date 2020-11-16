@@ -19,7 +19,7 @@ instance HasActions env DynamiteBlast where
   getActions i window (DynamiteBlast attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env DynamiteBlast where
-  runMessage msg (DynamiteBlast attrs@Attrs {..}) = case msg of
+  runMessage msg e@(DynamiteBlast attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       currentLocationId <- asks (getId @LocationId iid)
       connectedLocationIds <-
@@ -33,9 +33,6 @@ instance (EventRunner env) => RunMessage env DynamiteBlast where
                (\iid' -> InvestigatorAssignDamage iid' (EventSource eid) 3 0)
                investigatorIds
       let availableChoices = filter (not . null) choices
-      unshiftMessages
-        [ Ask iid $ ChooseOne $ map Run availableChoices
-        , Discard (EventTarget eid)
-        ]
-      DynamiteBlast <$> runMessage msg (attrs & resolved .~ True)
+      e <$ unshiftMessages
+        [chooseOne iid $ map Run availableChoices, Discard (EventTarget eid)]
     _ -> DynamiteBlast <$> runMessage msg attrs

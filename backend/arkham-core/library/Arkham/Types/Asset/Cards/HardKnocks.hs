@@ -31,11 +31,17 @@ instance (AssetRunner env) => RunMessage env HardKnocks where
     UseCardAbility iid source _ 1 | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
-        , AddModifiers SkillTestTarget source [SkillModifier SkillCombat 1]
+        , CreateSkillTestEffect
+          (EffectModifiers [SkillModifier SkillCombat 1])
+          source
+          (InvestigatorTarget iid)
         ]
     UseCardAbility iid source _ 2 | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
-        , AddModifiers SkillTestTarget source [SkillModifier SkillAgility 1]
+        , CreateSkillTestEffect
+          (EffectModifiers [SkillModifier SkillAgility 1])
+          source
+          (InvestigatorTarget iid)
         ]
     _ -> HardKnocks <$> runMessage msg attrs

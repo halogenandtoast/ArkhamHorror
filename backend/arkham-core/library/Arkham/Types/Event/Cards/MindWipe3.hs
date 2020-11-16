@@ -20,7 +20,7 @@ instance HasActions env MindWipe3 where
   getActions i window (MindWipe3 attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env MindWipe3 where
-  runMessage msg (MindWipe3 attrs@Attrs {..}) = case msg of
+  runMessage msg e@(MindWipe3 attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       locationId <- asks (getId @LocationId iid)
       enemyIds <- asks $ setToList . getSet locationId
@@ -29,16 +29,15 @@ instance (EventRunner env) => RunMessage env MindWipe3 where
         pure $ Elite `notElem` traits
 
       if null nonEliteEnemyIds
-        then unshiftMessage (Discard (EventTarget eventId))
-        else unshiftMessages
-          [ Ask iid $ ChooseOne
-            [ AddModifiers
+        then e <$ unshiftMessage (Discard (EventTarget eventId))
+        else e <$ unshiftMessages
+          [ chooseOne
+            iid
+            [ TargetLabel
                 (EnemyTarget eid')
-                (EventSource eventId)
-                [Blank, DamageDealt (-1), HorrorDealt (-1)]
+                [CreateEffect "" Nothing (toSource attrs) (EnemyTarget eid')]
             | eid' <- nonEliteEnemyIds
             ]
           , Discard (EventTarget eid)
           ]
-      MindWipe3 <$> runMessage msg (attrs & resolved .~ True)
     _ -> MindWipe3 <$> runMessage msg attrs

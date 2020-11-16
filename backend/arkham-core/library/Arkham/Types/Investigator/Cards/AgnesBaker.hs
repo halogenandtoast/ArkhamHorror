@@ -49,7 +49,7 @@ instance ActionRunner env => HasActions env AgnesBaker where
         ]
   getActions i window (AgnesBaker attrs) = getActions i window attrs
 
-instance InvestigatorRunner env => HasTokenValue env AgnesBaker where
+instance HasTokenValue env AgnesBaker where
   getTokenValue (AgnesBaker attrs) iid ElderSign | iid == investigatorId attrs =
     pure $ TokenValue
       ElderSign

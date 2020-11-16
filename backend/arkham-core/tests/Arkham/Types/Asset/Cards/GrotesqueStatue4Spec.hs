@@ -42,7 +42,7 @@ spec = describe "Grotesque Statue (4)" $ do
           (getId () investigator)
           Nothing
           TestSource
-          SkillTestInitiatorTarget
+          (SkillTestInitiatorTarget TestTarget)
           5
         )
       chaosBagTokensOf game `shouldMatchList` [Zero, AutoFail]

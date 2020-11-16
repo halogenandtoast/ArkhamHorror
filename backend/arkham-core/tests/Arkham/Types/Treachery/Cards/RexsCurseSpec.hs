@@ -35,10 +35,6 @@ spec = describe "Rex's Curse" $ do
           Nothing
           SkillIntellect
           5
-          mempty
-          mempty
-          mempty
-          mempty
         ]
         (scenario ?~ scenario')
       >>= runGameTestOnlyOption "start skill test"
@@ -52,7 +48,7 @@ spec = describe "Rex's Curse" $ do
         (getId () investigator)
         Nothing
         TestSource
-        SkillTestInitiatorTarget
+        (SkillTestInitiatorTarget TestTarget)
         2
       )
   it "is shuffled back into your deck if you fail the test" $ do

@@ -29,10 +29,6 @@ slimeCoveredDhole uuid =
 instance HasModifiersFor env SlimeCoveredDhole where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env SlimeCoveredDhole where
-  getModifiers _ (SlimeCoveredDhole Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env SlimeCoveredDhole where
   getActions i window (SlimeCoveredDhole attrs) = getActions i window attrs
 

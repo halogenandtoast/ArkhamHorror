@@ -19,12 +19,13 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "act"
 
-isSource :: Attrs -> Source -> Bool
-isSource Attrs { actId } (ActSource aid) = actId == aid
-isSource _ _ = False
-
-toSource :: Attrs -> Source
-toSource Attrs { actId } = ActSource actId
+instance Entity Attrs where
+  toSource = ActSource . actId
+  toTarget = ActTarget . actId
+  isSource Attrs { actId } (ActSource aid) = actId == aid
+  isSource _ _ = False
+  isTarget Attrs { actId } (ActTarget aid) = actId == aid
+  isTarget _ _ = False
 
 canAdvance :: Lens' Attrs Bool
 canAdvance = lens actCanAdvance $ \m x -> m { actCanAdvance = x }

@@ -30,18 +30,9 @@ instance TreacheryRunner env => RunMessage env TheZealotsSeal where
         if handCardCount <= 3
           then unshiftMessage
             (InvestigatorAssignDamage iid' (toSource attrs) 1 1)
-          else unshiftMessage
-            (RevelationSkillTest
-              iid'
-              source
-              SkillWillpower
-              2
-              mempty
-              mempty
-              mempty
-            )
+          else unshiftMessage (RevelationSkillTest iid' source SkillWillpower 2)
       TheZealotsSeal <$> runMessage msg (attrs & resolved .~ True)
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget _
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _
       | tid == treacheryId -> t
       <$ unshiftMessages [RandomDiscard iid, RandomDiscard iid]
     _ -> TheZealotsSeal <$> runMessage msg attrs

@@ -18,9 +18,9 @@ instance HasActions env SearchForTheTruth where
   getActions i window (SearchForTheTruth attrs) = getActions i window attrs
 
 instance (HasQueue env, HasCount ClueCount InvestigatorId env) => RunMessage env SearchForTheTruth where
-  runMessage msg (SearchForTheTruth attrs@Attrs {..}) = case msg of
+  runMessage msg e@(SearchForTheTruth attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      clueCount' <- unClueCount <$> asks (getCount iid)
-      unshiftMessage (DrawCards iid (min 5 clueCount') False)
-      SearchForTheTruth <$> runMessage msg (attrs & resolved .~ True)
+      clueCount' <- asks $ unClueCount . getCount iid
+      e <$ unshiftMessages
+        [DrawCards iid (min 5 clueCount') False, Discard (toTarget attrs)]
     _ -> SearchForTheTruth <$> runMessage msg attrs

@@ -24,6 +24,14 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "skill"
 
+instance Entity Attrs where
+  toSource = SkillSource . skillId
+  toTarget = SkillTarget . skillId
+  isSource Attrs { skillId } (SkillSource sid) = skillId == sid
+  isSource _ _ = False
+  isTarget Attrs { skillId } (SkillTarget sid) = skillId == sid
+  isTarget _ _ = False
+
 baseAttrs :: InvestigatorId -> SkillId -> CardCode -> Attrs
 baseAttrs iid eid cardCode =
   let

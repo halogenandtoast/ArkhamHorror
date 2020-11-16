@@ -10,7 +10,6 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.Helpers
 
 newtype TheRougarouMetadata = TheRougarouMetadata { damagePerPhase :: Int }
   deriving stock (Show, Generic)
@@ -33,10 +32,6 @@ theRougarou uuid =
 
 instance HasModifiersFor env TheRougarou where
   getModifiersFor = noModifiersFor
-
-instance HasModifiers env TheRougarou where
-  getModifiers _ (TheRougarou (Attrs {..} `With` _)) =
-    pure . concat . toList $ enemyModifiers
 
 isEngage :: Message -> Bool
 isEngage = \case

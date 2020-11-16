@@ -20,7 +20,7 @@ instance HasActions env Elusive where
   getActions i window (Elusive attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env Elusive where
-  runMessage msg (Elusive attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Elusive attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       enemyIds <- asks $ setToList . getSet iid
       emptyLocations <- asks $ HashSet.map unEmptyLocationId . getSet ()
@@ -29,12 +29,11 @@ instance (EventRunner env) => RunMessage env Elusive where
         candidateLocations =
           setToList $ emptyLocations `intersection` revealedLocations
 
-      unshiftMessages
-        $ [ DisengageEnemy iid enemyId | enemyId <- enemyIds ]
-        <> [ Ask iid $ ChooseOne [ MoveTo iid lid | lid <- candidateLocations ]
+      e <$ unshiftMessages
+        ([ DisengageEnemy iid enemyId | enemyId <- enemyIds ]
+        <> [ chooseOne iid [ MoveTo iid lid | lid <- candidateLocations ]
            | not (null candidateLocations)
            ]
         <> [Discard (EventTarget eventId)]
-
-      Elusive <$> runMessage msg (attrs & resolved .~ True)
+        )
     _ -> Elusive <$> runMessage msg attrs

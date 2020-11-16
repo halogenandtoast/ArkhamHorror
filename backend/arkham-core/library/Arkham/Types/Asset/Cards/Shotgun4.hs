@@ -36,26 +36,32 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Shotgun4 <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo 2)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
-      unshiftMessage
-        (ChooseFightEnemy
-          iid
+      unshiftMessages
+        [ CreateSkillTestEffect
+          (EffectModifiers [SkillModifier SkillCombat 3])
           source
-          SkillCombat
-          [SkillModifier SkillCombat 3]
-          mempty
-          False
-        )
+          (InvestigatorTarget iid)
+        , ChooseFightEnemy iid source SkillCombat False
+        ]
       pure $ Shotgun4 $ attrs & uses %~ Resource.use
-    FailedSkillTest _ _ source SkillTestInitiatorTarget n
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} n
       | isSource attrs source
       -> let val = min 1 (max 5 n)
          in
            a <$ unshiftMessage
-             (AddModifiers SkillTestTarget source [DamageDealt val])
-    PassedSkillTest _ _ source SkillTestInitiatorTarget n
+             (CreateSkillTestEffect
+               (EffectModifiers [DamageDealt val])
+               source
+               (InvestigatorTarget iid)
+             )
+    PassedSkillTest iid _ source SkillTestInitiatorTarget{} n
       | isSource attrs source
       -> let val = min 1 (max 5 n)
          in
            a <$ unshiftMessage
-             (AddModifiers SkillTestTarget source [DamageDealt val])
+             (CreateSkillTestEffect
+               (EffectModifiers [DamageDealt val])
+               source
+               (InvestigatorTarget iid)
+             )
     _ -> Shotgun4 <$> runMessage msg attrs

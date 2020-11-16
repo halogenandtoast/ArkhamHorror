@@ -22,10 +22,6 @@ spec = describe "Jim Culver" $ do
             Nothing
             SkillIntellect
             2
-            mempty
-            mempty
-            mempty
-            mempty
           ]
           (scenario ?~ scenario')
         >>= runGameTestOnlyOption "start skill test"
@@ -56,10 +52,6 @@ spec = describe "Jim Culver" $ do
             Nothing
             SkillIntellect
             2
-            mempty
-            mempty
-            mempty
-            mempty
           ]
           (scenario ?~ scenario')
         >>= runGameTestOnlyOption "start skill test"
@@ -91,10 +83,6 @@ spec = describe "Jim Culver" $ do
             Nothing
             SkillIntellect
             2
-            mempty
-            mempty
-            mempty
-            mempty
           ]
           (scenario ?~ scenario')
         >>= runGameTestOnlyOption "start skill test"

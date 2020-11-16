@@ -1,7 +1,35 @@
 {
+  "arkham-core/library/Arkham/Types/Scenario/Scenarios/*.hs": {
+    "type": "scenario",
+    "alternate": "arkham-core/tests/Arkham/Types/Scenario/Scenarios/{}Spec.hs"
+  },
+  "arkham-core/library/Arkham/Types/Agenda/Cards/*.hs": {
+    "type": "agenda",
+    "alternate": "arkham-core/tests/Arkham/Types/Agenda/Cards/{}Spec.hs"
+  },
+  "arkham-core/library/Arkham/Types/Act/Cards/*.hs": {
+    "type": "act",
+    "alternate": "arkham-core/tests/Arkham/Types/Act/Cards/{}Spec.hs"
+  },
+  "arkham-core/library/Arkham/Types/Effect/Effects/*.hs": {
+    "type": "effect",
+    "alternate": "arkham-core/tests/Arkham/Types/Effect/Effects/{}Spec.hs"
+  },
+  "arkham-core/library/Arkham/Types/Treachery/Cards/*.hs": {
+    "type": "treachery",
+    "alternate": "arkham-core/tests/Arkham/Types/Treachery/Cards/{}Spec.hs"
+  },
+  "arkham-core/library/Arkham/Types/Investigator/Cards/*.hs": {
+    "type": "investigator",
+    "alternate": "arkham-core/tests/Arkham/Types/Investigator/Cards/{}Spec.hs"
+  },
+  "arkham-core/library/Arkham/Types/Enemy/Cards/*.hs": {
+    "type": "enemy",
+    "alternate": "arkham-core/tests/Arkham/Types/Enemy/Cards/{}Spec.hs"
+  },
   "arkham-core/library/Arkham/Types/Asset/Cards/*.hs": {
     "type": "asset",
-    "alternate": "arkham-core/tests/Arkham/Types/Assets/Cards/{}Spec.hs",
+    "alternate": "arkham-core/tests/Arkham/Types/Asset/Cards/{}Spec.hs",
     "template": [
       "{open}-# LANGUAGE UndecidableInstances #-{close}",
       "module Arkham.Types.Asset.Cards.{dot}",
@@ -62,6 +90,10 @@
       "instance HasQueue env => RunMessage env {dot} where",
       "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"
     ]
+  },
+  "arkham-core/library/Arkham/Types/Location/Cards/*.hs": {
+    "type": "location",
+    "alternate": "arkham-core/tests/Arkham/Types/Location/Cards/{}Spec.hs"
   },
   "arkham-core/library/Arkham/Types/Skill/Cards/*.hs": {
     "type": "skill",

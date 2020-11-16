@@ -39,7 +39,7 @@ instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
               <> [Discard (toTarget attrs)]
               )
       BeastOfTheBayou <$> runMessage msg (attrs & resolved .~ True)
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget n
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} n
       | tid == treacheryId -> t <$ unshiftMessage
         (InvestigatorAssignDamage iid (TreacherySource treacheryId) n 0)
     _ -> BeastOfTheBayou <$> runMessage msg attrs

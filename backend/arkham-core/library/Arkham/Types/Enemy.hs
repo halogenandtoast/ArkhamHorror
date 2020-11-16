@@ -13,8 +13,8 @@ where
 
 import Arkham.Import
 
-import Arkham.Types.Helpers
 import Arkham.Types.Action
+import Arkham.Types.Trait (Trait)
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Cards
 import Arkham.Types.Enemy.Runner
@@ -78,10 +78,6 @@ instance ActionRunner env => HasActions env BaseEnemy where
 instance HasModifiersFor env BaseEnemy where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env BaseEnemy where
-  getModifiers _ (BaseEnemy Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance (EnemyRunner env) => RunMessage env BaseEnemy where
   runMessage msg (BaseEnemy attrs) = BaseEnemy <$> runMessage msg attrs
 
@@ -119,11 +115,25 @@ instance ActionRunner env => HasActions env Enemy where
       )
       actions
 
-deriving anyclass instance EnemyRunner env => HasModifiersFor env Enemy
+deriving anyclass instance
+  ( HasId LocationId InvestigatorId env
+  , HasCount RemainingSanity InvestigatorId env
+  , HasCount CardCount InvestigatorId env
+  , HasSet InvestigatorId LocationId env
+  , HasSet ConnectedLocationId LocationId env
+  , HasSet Trait LocationId env
+  )
+  => HasModifiersFor env Enemy
+
+instance Entity Enemy where
+  toSource = toSource . enemyAttrs
+  toTarget = toTarget . enemyAttrs
+  isSource = isSource . enemyAttrs
+  isTarget = isTarget . enemyAttrs
 
 instance (EnemyRunner env) => RunMessage env Enemy where
   runMessage msg e = do
-    modifiers' <- getModifiers (EnemySource (getId () e)) e
+    modifiers' <- getModifiersFor (toSource e) (toTarget e) =<< ask
     if any isBlank modifiers' && not (isBlanked msg)
       then runMessage (Blanked msg) e
       else defaultRunMessage msg e
@@ -157,8 +167,6 @@ instance HasTraits Enemy where
 
 instance HasKeywords Enemy where
   getKeywords = enemyKeywords . enemyAttrs
-
-deriving anyclass instance HasCount RemainingSanity InvestigatorId env => HasModifiers env Enemy
 
 instance HasId EnemyId () Enemy where
   getId _ = enemyId . enemyAttrs

@@ -55,7 +55,7 @@ spec = describe "Arcane Initiate" $ do
       >>= runGameTestOptionMatching
             "no cards found"
             (\case
-              Continue{} -> True
+              Label{} -> True
               _ -> False
             )
     updated game' investigator `shouldSatisfy` handIs []

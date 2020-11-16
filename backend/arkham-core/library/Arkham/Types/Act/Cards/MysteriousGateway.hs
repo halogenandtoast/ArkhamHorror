@@ -54,17 +54,13 @@ instance ActRunner env => RunMessage env MysteriousGateway where
                    Nothing
                    SkillWillpower
                    4
-                   mempty
-                   mempty
-                   mempty
-                   mempty
                  ]
              | iid' <- investigatorIds
              ]
            , NextAct aid "01109"
            ]
         )
-    FailedSkillTest iid _ (ActSource aid) SkillTestInitiatorTarget n
+    FailedSkillTest iid _ (ActSource aid) SkillTestInitiatorTarget{} n
       | aid == actId -> a <$ unshiftMessages (replicate n (RandomDiscard iid))
     PrePlayerWindow -> do
       investigatorIds <- asks

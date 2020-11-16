@@ -40,17 +40,18 @@ instance (LocationRunner env) => RunMessage env ArkhamWoodsTwistingPaths where
       | iid `elem` locationInvestigators && lid /= locationId -> do
         moveFrom <- popMessage -- MoveFrom
         moveTo <- popMessage -- MoveTo
-        l <$ unshiftMessage
-          (BeginSkillTest
+        l <$ unshiftMessages
+          [ CreateEffect
+            "01151"
+            (Just $ EffectMessages (catMaybes [moveFrom, moveTo]))
+            (toSource attrs)
+            (InvestigatorTarget iid)
+          , BeginSkillTest
             iid
             (LocationSource "01151")
             (InvestigatorTarget iid)
             Nothing
             SkillIntellect
             3
-            (catMaybes [moveFrom, moveTo])
-            mempty
-            mempty
-            mempty
-          )
+          ]
     _ -> ArkhamWoodsTwistingPaths <$> runMessage msg attrs

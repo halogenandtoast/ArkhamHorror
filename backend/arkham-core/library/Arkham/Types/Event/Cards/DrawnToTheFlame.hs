@@ -19,12 +19,10 @@ instance HasActions env DrawnToTheFlame where
   getActions i window (DrawnToTheFlame attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env DrawnToTheFlame where
-  runMessage msg (DrawnToTheFlame attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      unshiftMessages
-        [ InvestigatorDrawEncounterCard iid
-        , InvestigatorDiscoverCluesAtTheirLocation iid 2
-        , Discard (EventTarget eid)
-        ]
-      DrawnToTheFlame <$> runMessage msg (attrs & resolved .~ True)
+  runMessage msg e@(DrawnToTheFlame attrs@Attrs {..}) = case msg of
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
+      [ InvestigatorDrawEncounterCard iid
+      , InvestigatorDiscoverCluesAtTheirLocation iid 2
+      , Discard (EventTarget eid)
+      ]
     _ -> DrawnToTheFlame <$> runMessage msg attrs

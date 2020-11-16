@@ -14,7 +14,7 @@ celaenoFragments :: AssetId -> CelaenoFragments
 celaenoFragments uuid =
   CelaenoFragments $ (baseAttrs uuid "60206") { assetSlots = [HandSlot] }
 
-instance AssetRunner env => HasModifiersFor env CelaenoFragments where
+instance HasCount CardCount InvestigatorId env => HasModifiersFor env CelaenoFragments where
   getModifiersFor _ (InvestigatorTarget iid) (CelaenoFragments attrs)
     | ownedBy attrs iid = do
       count' <- asks $ unCardCount . getCount iid

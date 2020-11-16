@@ -35,7 +35,7 @@ spec = describe "Lucky!" $ do
         (getId () investigator)
         Nothing
         TestSource
-        SkillTestInitiatorTarget
+        (SkillTestInitiatorTarget TestTarget)
         0
       )
 
@@ -65,6 +65,6 @@ spec = describe "Lucky!" $ do
         (getId () investigator)
         Nothing
         TestSource
-        SkillTestInitiatorTarget
+        (SkillTestInitiatorTarget TestTarget)
         2
       )

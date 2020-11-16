@@ -20,13 +20,11 @@ instance HasActions env ChillFromBelow where
 
 instance (TreacheryRunner env) => RunMessage env ChillFromBelow where
   runMessage msg t@(ChillFromBelow attrs@Attrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      unshiftMessages
-        [ RevelationSkillTest iid source SkillWillpower 3 [] [] []
-        , Discard (TreacheryTarget treacheryId)
-        ]
-      ChillFromBelow <$> runMessage msg (attrs & resolved .~ True)
-    FailedSkillTest iid _ source SkillTestInitiatorTarget n
+    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+      [ RevelationSkillTest iid source SkillWillpower 3
+      , Discard (TreacheryTarget treacheryId)
+      ]
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} n
       | isSource attrs source -> do
         handCount <- asks $ unCardCount . getCount iid
         if handCount < n

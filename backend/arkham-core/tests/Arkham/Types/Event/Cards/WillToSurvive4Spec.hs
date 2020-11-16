@@ -29,7 +29,7 @@ spec = describe "Will to Survive (4)" $ do
         (getId () investigator)
         Nothing
         TestSource
-        SkillTestInitiatorTarget
+        (SkillTestInitiatorTarget TestTarget)
         0
       )
   it "it is cancelled at the end of the turn" $ do
@@ -53,6 +53,6 @@ spec = describe "Will to Survive (4)" $ do
         (getId () investigator)
         Nothing
         TestSource
-        SkillTestInitiatorTarget
+        (SkillTestInitiatorTarget TestTarget)
         3
       )

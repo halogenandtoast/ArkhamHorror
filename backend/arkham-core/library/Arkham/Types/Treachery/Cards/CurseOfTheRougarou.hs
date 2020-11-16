@@ -7,7 +7,6 @@ where
 
 import Arkham.Import
 
-import Arkham.Types.Helpers
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 

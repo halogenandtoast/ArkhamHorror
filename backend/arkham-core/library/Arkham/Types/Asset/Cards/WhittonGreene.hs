@@ -8,6 +8,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
 newtype WhittonGreene = WhittonGreene Attrs
@@ -38,7 +39,7 @@ instance HasCount AssetCount (InvestigatorId, [Trait]) env => HasModifiersFor en
       pure [ SkillModifier SkillIntellect 1 | active ]
   getModifiersFor _ _ _ = pure []
 
-instance (HasQueue env, HasModifiers env InvestigatorId) => RunMessage env WhittonGreene where
+instance AssetRunner env => RunMessage env WhittonGreene where
   runMessage msg (WhittonGreene attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessage

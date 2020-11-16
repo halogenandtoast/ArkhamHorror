@@ -27,10 +27,6 @@ wolfManDrew uuid =
 instance HasModifiersFor env WolfManDrew where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env WolfManDrew where
-  getModifiers _ (WolfManDrew Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env WolfManDrew where
   getActions i window (WolfManDrew attrs) = getActions i window attrs
 

@@ -18,7 +18,6 @@ type LocationRunner env
     , HasSet InvestigatorId () env
     , HasSet Trait EnemyId env
     , HasSet EnemyId Trait env
-    , HasModifiers env LocationId
     , HasSet ConnectedLocationId LocationId env
     , HasId ActiveInvestigatorId () env
     , HasSet HandCardId (InvestigatorId, PlayerCardType) env
@@ -28,5 +27,6 @@ type LocationRunner env
     , HasList LocationName () env
     , HasList HandCard InvestigatorId env
     , HasList UsedAbility () env
+    , HasModifiersFor env env
     )
 

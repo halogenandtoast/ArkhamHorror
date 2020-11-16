@@ -24,10 +24,6 @@ jeremiahPierce uuid =
 instance HasModifiersFor env JeremiahPierce where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env JeremiahPierce where
-  getModifiers _ (JeremiahPierce Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env JeremiahPierce where
   getActions iid NonFast (JeremiahPierce attrs@Attrs {..}) = do
     baseActions <- getActions iid NonFast attrs
@@ -50,6 +46,10 @@ instance (EnemyRunner env) => RunMessage env JeremiahPierce where
     UseCardAbility iid (EnemySource eid) _ 1 | eid == enemyId ->
       e <$ unshiftMessages
         [ AddToVictory (EnemyTarget enemyId)
-        , CreateEffect (toSource attrs) (InvestigatorTarget iid) enemyCardCode
+        , CreateEffect
+          enemyCardCode
+          Nothing
+          (toSource attrs)
+          (InvestigatorTarget iid)
         ]
     _ -> JeremiahPierce <$> runMessage msg attrs

@@ -1,19 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Skill.Cards.ViciousBlow where
 
-import ClassyPrelude
+import Arkham.Import
 
-import Arkham.Json
 import Arkham.Types.Action
-import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
-import Arkham.Types.SkillId
-import Arkham.Types.Source
-import Arkham.Types.Target
 
 newtype ViciousBlow = ViciousBlow Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -26,7 +18,11 @@ instance HasActions env ViciousBlow where
 
 instance (SkillRunner env) => RunMessage env ViciousBlow where
   runMessage msg s@(ViciousBlow attrs@Attrs {..}) = case msg of
-    PassedSkillTest _ (Just Fight) _ (SkillTarget sid) _ | sid == skillId ->
+    PassedSkillTest iid (Just Fight) _ (SkillTarget sid) _ | sid == skillId ->
       s <$ unshiftMessage
-        (AddModifiers SkillTestTarget (SkillSource skillId) [DamageDealt 1])
+        (CreateSkillTestEffect
+          (EffectModifiers [DamageDealt 1])
+          (SkillSource skillId)
+          (InvestigatorTarget iid)
+        )
     _ -> ViciousBlow <$> runMessage msg attrs

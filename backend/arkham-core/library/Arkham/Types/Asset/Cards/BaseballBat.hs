@@ -11,8 +11,6 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import qualified Arkham.Types.Token as Token
-import Arkham.Types.TokenResponse
 
 newtype BaseballBat = BaseballBat Attrs
   deriving stock (Show, Generic)
@@ -38,16 +36,13 @@ instance ActionRunner env  => HasActions env BaseballBat where
 
 instance (AssetRunner env) => RunMessage env BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> a <$ unshiftMessage
-      (ChooseFightEnemy
-        iid
-        source
-        SkillCombat
-        [SkillModifier SkillCombat 2]
-        [ OnAnyToken
-            [Token.Skull, Token.AutoFail]
-            [Discard (AssetTarget $ assetId attrs)]
+    UseCardAbility iid source _ 1 | isSource attrs source ->
+      a <$ unshiftMessages
+        [ CreateSkillTestEffect
+          (EffectModifiers [SkillModifier SkillCombat 2])
+          source
+          (InvestigatorTarget iid)
+        , CreateEffect "01074" Nothing source (InvestigatorTarget iid)
+        , ChooseFightEnemy iid source SkillCombat False
         ]
-        False
-      )
     _ -> BaseballBat <$> runMessage msg attrs

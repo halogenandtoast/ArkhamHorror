@@ -28,13 +28,13 @@ import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBagStepState
 import Arkham.Types.EffectId
+import Arkham.Types.EffectMetadata
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.LocationSymbol
-import Arkham.Types.Modifier
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.ScenarioId
 import Arkham.Types.ScenarioLogKey
@@ -44,7 +44,6 @@ import Arkham.Types.Slot
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Token
-import Arkham.Types.TokenResponse
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
@@ -180,9 +179,9 @@ data Message
   | PutSetAsideIntoPlay Target
   | AddUses Target UseType Int
   | ResolveToken Token InvestigatorId
-  | Investigate InvestigatorId LocationId Source SkillType [Modifier] [TokenResponse Message] [Message] Bool
-  | ChooseFightEnemy InvestigatorId Source SkillType [Modifier] [TokenResponse Message] Bool
-  | ChooseEvadeEnemy InvestigatorId Source SkillType [Message] [Message] [TokenResponse Message] Bool
+  | Investigate InvestigatorId LocationId Source SkillType Bool
+  | ChooseFightEnemy InvestigatorId Source SkillType Bool
+  | ChooseEvadeEnemy InvestigatorId Source SkillType Bool
   | EngageEnemy InvestigatorId EnemyId Bool
   | DisengageEnemy InvestigatorId EnemyId
   | ChooseEndTurn InvestigatorId
@@ -241,14 +240,13 @@ data Message
   | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int
   | DiscoverClues InvestigatorId LocationId Int
   | AfterDiscoverClues InvestigatorId LocationId Int
-  | BeginSkillTest InvestigatorId Source Target (Maybe Action) SkillType Int [Message]
-                [Message] [Modifier] [TokenResponse Message]
-  | BeginSkillTestAfterFast InvestigatorId Source Target (Maybe Action) SkillType Int [Message]
-                [Message] [Modifier] [TokenResponse Message]
+  | BeginSkillTest InvestigatorId Source Target (Maybe Action) SkillType Int
+  | BeginSkillTestAfterFast InvestigatorId Source Target (Maybe Action) SkillType Int
   | StartSkillTest InvestigatorId
   | BeforeSkillTest InvestigatorId SkillType
   | TriggerSkillTest InvestigatorId
   | RunSkillTest InvestigatorId
+  | RerunSkillTest
   | RunSkillTestSourceNotification InvestigatorId Source
   | HandlePointOfFailure InvestigatorId Target Int -- Really do x n times, does not have to be failure
   | SkillTestResults
@@ -302,17 +300,17 @@ data Message
   | EnemySpawnEngagedWithPrey EnemyId
   | Revelation InvestigatorId Source
   | AfterRevelation InvestigatorId TreacheryId
-  | RevelationSkillTest InvestigatorId Source SkillType Int [Message] [Message] [Modifier]
+  | RevelationSkillTest InvestigatorId Source SkillType Int
   | Discard Target
   | SetEncounterDeck [EncounterCard]
   | ChooseAndDiscardAsset InvestigatorId
-  | FightEnemy InvestigatorId EnemyId Source SkillType [Modifier] [TokenResponse Message] Bool
+  | FightEnemy InvestigatorId EnemyId Source SkillType Bool
   | WhenAttackEnemy InvestigatorId EnemyId
-  | AttackEnemy InvestigatorId EnemyId Source SkillType [Modifier] [TokenResponse Message]
+  | AttackEnemy InvestigatorId EnemyId Source SkillType
   | AfterAttackEnemy InvestigatorId EnemyId
   | WhenEvadeEnemy InvestigatorId EnemyId
-  | EvadeEnemy InvestigatorId EnemyId Source SkillType [Message] [Message] [TokenResponse Message] Bool
-  | TryEvadeEnemy InvestigatorId EnemyId Source SkillType [Message] [Message] [Modifier] [TokenResponse Message]
+  | EvadeEnemy InvestigatorId EnemyId Source SkillType Bool
+  | TryEvadeEnemy InvestigatorId EnemyId Source SkillType
   | EnemyEvaded InvestigatorId EnemyId
   | AfterEvadeEnemy InvestigatorId EnemyId
   | SuccessfulInvestigation InvestigatorId LocationId
@@ -321,12 +319,8 @@ data Message
   | AttachTreachery TreacheryId Target
   | AttachAsset AssetId Target
   | AttachEventToLocation EventId LocationId
-  | AddModifiers Target Source [Modifier]
-  | SetModifiers Target Source [Modifier]
   | AddSlot InvestigatorId SlotType Slot
   | RefillSlots InvestigatorId SlotType [AssetId]
-  | RemoveAllModifiersOnTargetFrom Target Source
-  | RemoveAllModifiersFrom Source
   | RequestedEncounterCard Source (Maybe EncounterCard)
   | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard)
   | ShuffleIntoEncounterDeck [EncounterCard]
@@ -408,8 +402,10 @@ data Message
   | AddKeywords Target [Keyword]
   | RemoveKeywords Target [Keyword]
   | ChangeCardToFast InvestigatorId CardId
-  | CreateEffect Source Target CardCode
-  | CreatedEffect Source Target EffectId
+  | CreateEffect CardCode (Maybe (EffectMetadata Message)) Source Target
+  | CreateSkillTestEffect (EffectMetadata Message) Source Target
+  | CreatePhaseEffect (EffectMetadata Message) Source Target
+  | CreatedEffect EffectId (Maybe (EffectMetadata Message)) Source Target
   | DisableEffect EffectId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)

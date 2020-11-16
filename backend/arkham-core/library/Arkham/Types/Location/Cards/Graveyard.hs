@@ -32,7 +32,7 @@ instance ActionRunner env => HasActions env Graveyard where
   getActions i window (Graveyard attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Graveyard where
-  runMessage msg (Graveyard attrs@Attrs {..}) = case msg of
+  runMessage msg l@(Graveyard attrs@Attrs {..}) = case msg of
     AfterEnterLocation iid lid | lid == locationId -> do
       unshiftMessage
         (BeginSkillTest
@@ -42,17 +42,12 @@ instance (LocationRunner env) => RunMessage env Graveyard where
           Nothing
           SkillWillpower
           3
-          []
-          [ Ask
-              iid
-              (ChooseOne
-                [ InvestigatorAssignDamage iid (LocationSource lid) 0 2
-                , MoveTo iid "01125"
-                ]
-              )
-          ]
-          []
-          mempty
         )
       Graveyard <$> runMessage msg attrs
+    FailedSkillTest iid _ source _ _ | isSource attrs source ->
+      l <$ unshiftMessage
+        (chooseOne
+          iid
+          [InvestigatorAssignDamage iid source 0 2, MoveTo iid "01125"]
+        )
     _ -> Graveyard <$> runMessage msg attrs

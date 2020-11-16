@@ -48,7 +48,7 @@ instance ActionRunner env => HasActions env SkidsOToole where
         ]
   getActions _ _ _ = pure []
 
-instance InvestigatorRunner env => HasTokenValue env SkidsOToole where
+instance HasTokenValue env SkidsOToole where
   getTokenValue (SkidsOToole attrs) iid ElderSign
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 2)

@@ -20,12 +20,11 @@ instance HasActions env BloodRite where
 
 instance EventRunner env => RunMessage env BloodRite where
   runMessage msg e@(BloodRite attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      unshiftMessages
-        [ DrawCards iid 2 False
-        , PayForCardAbility iid (EventSource eid) (Just $ IntMetadata 0) 1
-        ]
-      BloodRite <$> runMessage msg (attrs & resolved .~ True)
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
+      [ DrawCards iid 2 False
+      , PayForCardAbility iid (EventSource eid) (Just $ IntMetadata 0) 1
+      , Discard (toTarget attrs)
+      ]
     PayForCardAbility iid source meta@(Just (IntMetadata n)) 1
       | isSource attrs source -> if n == 2
         then runMessage (UseCardAbility iid source meta 1) e

@@ -23,10 +23,6 @@ youngDeepOne uuid =
 instance HasModifiersFor env YoungDeepOne where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env YoungDeepOne where
-  getModifiers _ (YoungDeepOne Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env YoungDeepOne where
   getActions i window (YoungDeepOne attrs) = getActions i window attrs
 

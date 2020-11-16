@@ -22,10 +22,6 @@ ghoulFromTheDepths uuid =
 instance HasModifiersFor env GhoulFromTheDepths where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env GhoulFromTheDepths where
-  getModifiers _ (GhoulFromTheDepths Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env GhoulFromTheDepths where
   getActions i window (GhoulFromTheDepths attrs) = getActions i window attrs
 

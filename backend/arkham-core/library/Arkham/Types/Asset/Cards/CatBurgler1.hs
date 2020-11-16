@@ -41,10 +41,10 @@ instance ActionRunner env => HasActions env CatBurgler1 where
 instance (AssetRunner env) => RunMessage env CatBurgler1 where
   runMessage msg (CatBurgler1 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
-      unshiftMessage $ AddModifiers
-        (InvestigatorTarget iid)
+      unshiftMessage $ CreateSkillTestEffect
+        (EffectModifiers [SkillModifier SkillAgility 1])
         (toSource attrs)
-        [SkillModifier SkillAgility 1]
+        (InvestigatorTarget iid)
       CatBurgler1 <$> runMessage msg attrs
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       engagedEnemyIds <- asks $ setToList . getSet iid

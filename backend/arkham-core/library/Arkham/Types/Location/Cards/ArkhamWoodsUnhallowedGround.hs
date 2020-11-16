@@ -36,7 +36,7 @@ instance ActionRunner env => HasActions env ArkhamWoodsUnhallowedGround where
     getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsUnhallowedGround where
-  runMessage msg (ArkhamWoodsUnhallowedGround attrs@Attrs {..}) = case msg of
+  runMessage msg l@(ArkhamWoodsUnhallowedGround attrs@Attrs {..}) = case msg of
     MoveTo iid lid | lid == locationId -> do
       unshiftMessage
         (BeginSkillTest
@@ -46,10 +46,9 @@ instance (LocationRunner env) => RunMessage env ArkhamWoodsUnhallowedGround wher
           Nothing
           SkillWillpower
           4
-          []
-          [InvestigatorAssignDamage iid (LocationSource "01150") 1 1]
-          mempty
-          mempty
         )
       ArkhamWoodsUnhallowedGround <$> runMessage msg attrs
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _
+      | isSource attrs source
+      -> l <$ unshiftMessage (InvestigatorAssignDamage iid (toSource attrs) 1 1)
     _ -> ArkhamWoodsUnhallowedGround <$> runMessage msg attrs

@@ -21,16 +21,12 @@ bogGator uuid =
     . (evade .~ 2)
     . (prey .~ LowestSkill SkillAgility)
 
-instance EnemyRunner env => HasModifiersFor env BogGator where
+instance HasSet Trait LocationId env => HasModifiersFor env BogGator where
   getModifiersFor _ (EnemyTarget eid) (BogGator Attrs {..}) | eid == enemyId =
     do
       bayouLocation <- asks $ member Bayou . getSet enemyLocation
       pure $ if bayouLocation then [EnemyFight 2, EnemyEvade 2] else []
   getModifiersFor _ _ _ = pure []
-
-instance HasModifiers env BogGator where
-  getModifiers _ (BogGator Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
 
 instance ActionRunner env => HasActions env BogGator where
   getActions i window (BogGator attrs) = getActions i window attrs

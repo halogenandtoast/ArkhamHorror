@@ -1,19 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Skill.Cards.Deduction where
 
-import ClassyPrelude
+import Arkham.Import
 
-import Arkham.Json
 import qualified Arkham.Types.Action as Action
-import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Modifier
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
-import Arkham.Types.SkillId
-import Arkham.Types.Source
-import Arkham.Types.Target
 
 newtype Deduction = Deduction Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -26,12 +18,13 @@ instance HasActions env Deduction where
 
 instance (SkillRunner env) => RunMessage env Deduction where
   runMessage msg s@(Deduction attrs@Attrs {..}) = case msg of
-    PassedSkillTest _ (Just Action.Investigate) _ (SkillTarget sid) _
+    PassedSkillTest iid (Just Action.Investigate) _ (SkillTarget sid) _
       | sid == skillId -> do
         s <$ unshiftMessage
-          (AddModifiers
-            SkillTestTarget
-            (SkillSource skillId)
-            [DiscoveredClues 1]
+          (CreateEffect
+            "01039"
+            Nothing
+            (toSource attrs)
+            (InvestigatorTarget iid)
           )
     _ -> Deduction <$> runMessage msg attrs

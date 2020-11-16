@@ -9,6 +9,7 @@ import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
+import Arkham.Types.Asset.Runner
 
 newtype HigherEducation = HigherEducation Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -42,16 +43,22 @@ instance
 instance HasModifiersFor env HigherEducation where
   getModifiersFor = noModifiersFor
 
-instance (HasQueue env, HasModifiers env InvestigatorId) => RunMessage env HigherEducation where
+instance AssetRunner env => RunMessage env HigherEducation where
   runMessage msg a@(HigherEducation attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
-        , AddModifiers SkillTestTarget source [SkillModifier SkillWillpower 1]
+        , CreateSkillTestEffect
+          (EffectModifiers [SkillModifier SkillWillpower 1])
+          source
+          (InvestigatorTarget iid)
         ]
     UseCardAbility iid source _ 2 | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
-        , AddModifiers SkillTestTarget source [SkillModifier SkillIntellect 1]
+        , CreateSkillTestEffect
+          (EffectModifiers [SkillModifier SkillIntellect 1])
+          source
+          (InvestigatorTarget iid)
         ]
     _ -> HigherEducation <$> runMessage msg attrs

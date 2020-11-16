@@ -43,7 +43,6 @@ import Arkham.Types.Effect
 import Arkham.Types.Enemy
 import Arkham.Types.Event
 import Arkham.Types.GameRunner
-import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
@@ -57,6 +56,7 @@ import Arkham.Types.SkillTest
 import Arkham.Types.Trait
 import Arkham.Types.Treachery
 import qualified Arkham.Types.Window as Fast
+import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
@@ -94,7 +94,7 @@ data Game queue = Game
   , gameEncounterDeck :: Deck EncounterCard
   , gameDiscard :: [EncounterCard]
   , gameChaosBag :: ChaosBag
-  , gameSkillTest :: Maybe (SkillTest Message)
+  , gameSkillTest :: Maybe SkillTest
   , gameActs :: HashMap ActId Act
   , gameAgendas :: HashMap AgendaId Agenda
   , gameTreacheries :: HashMap TreacheryId Treachery
@@ -209,7 +209,7 @@ scenario = lens gameScenario $ \m x -> m { gameScenario = x }
 campaign :: Lens' (Game queue) (Maybe Campaign)
 campaign = lens gameCampaign $ \m x -> m { gameCampaign = x }
 
-skillTest :: Lens' (Game queue) (Maybe (SkillTest Message))
+skillTest :: Lens' (Game queue) (Maybe SkillTest)
 skillTest = lens gameSkillTest $ \m x -> m { gameSkillTest = x }
 
 getInvestigator :: InvestigatorId -> Game queue -> Investigator
@@ -493,8 +493,9 @@ instance HasCount CardCount InvestigatorId (Game queue) where
 instance HasCount ClueCount InvestigatorId (Game queue) where
   getCount iid = getCount () . getInvestigator iid
 
-instance HasCount SpendableClueCount InvestigatorId (Game queue) where
-  getCount iid = getCount () . getInvestigator iid
+instance (GameRunner env, env ~ Game queue) => HasCount SpendableClueCount InvestigatorId (Game queue) where
+  getCount iid g =
+    runReader (getInvestigatorSpendableClueCount (getInvestigator iid g)) g
 
 instance HasCount ResourceCount InvestigatorId (Game queue) where
   getCount iid = getCount () . getInvestigator iid
@@ -535,37 +536,50 @@ instance HasCount EnemyCount (InvestigatorLocation, [Trait]) (Game queue) where
     g
     where locationId = locationFor iid g
 
-instance HasStats (InvestigatorId, Maybe Action) (Game queue) where
+instance (HasModifiersFor env env, env ~ Game queue) => HasStats (InvestigatorId, Maybe Action) (Game queue) where
   getStats (iid, maction) source g =
-    modifiedStatsOf source maction (getInvestigator iid g)
+    runReaderT (modifiedStatsOf source maction (getInvestigator iid g)) g
 
-instance HasModifiers GameInternal LocationId where
-  getModifiers source lid = asks (getLocation lid) >>= getModifiers source
-
-instance HasModifiers GameInternal InvestigatorId where
-  getModifiers source iid = asks (getInvestigator iid) >>= getModifiers source
-
-instance GameRunner env => HasTokenValue env (Game queue) where
+instance
+  (env ~ Game queue
+  , HasCount DoomCount () env
+  , HasCount DoomCount EnemyId env
+  , HasCount EnemyCount (InvestigatorLocation, [Trait]) env
+  , HasCount EnemyCount [Trait] env
+  , HasSet EnemyId Trait env
+  , HasSet Trait LocationId env
+  , HasTokenValue env InvestigatorId
+  , HasId LocationId InvestigatorId env
+  )
+  => HasTokenValue env (Game queue) where
   getTokenValue game iid token = case game ^. scenario of
     Just scenario' -> getTokenValue scenario' iid token
     Nothing -> error "missing scenario"
 
-instance (GameRunner (Game queue)) => HasTokenValue (Game queue) InvestigatorId where
+instance
+  (env ~ Game queue
+  , HasCount ClueCount LocationId env
+  )
+  => HasTokenValue (Game queue) InvestigatorId where
   getTokenValue iid' iid token = do
     env <- ask
     let investigator = getInvestigator iid' env
     getTokenValue investigator iid token
 
-instance GameRunner env => HasModifiersFor env (Game queue) where
+instance (GameRunner env, env ~ Game queue) => HasModifiersFor env (Game queue) where
   getModifiersFor source target g = concat <$> sequence
     [ concat
       <$> traverse (getModifiersFor source target) (g ^. enemies . to toList)
     , concat
       <$> traverse (getModifiersFor source target) (g ^. assets . to toList)
+    -- , concat
+    --   <$> traverse (getModifiersFor source target) (g ^. agendas . to toList)
     , concat
       <$> traverse (getModifiersFor source target) (g ^. locations . to toList)
     , concat
       <$> traverse (getModifiersFor source target) (g ^. effects . to toList)
+    , concat
+      <$> traverse (getModifiersFor source target) (g ^. events . to toList)
     , concat <$> traverse
       (getModifiersFor source target)
       (g ^. treacheries . to toList)
@@ -617,7 +631,7 @@ instance HasList Ability () (Game queue) where
   getList _ g = g ^. agendas . traverse . to getAbilities
 
 instance HasSource ForSkillTest (Game queue) where
-  getSource _ g = (Just . skillTestToSource @Message) =<< (g ^. skillTest)
+  getSource _ g = (Just . skillTestToSource) =<< (g ^. skillTest)
 
 instance HasTarget ForSkillTest (Game queue) where
   getTarget _ g = g ^? skillTest . traverse . to skillTestTarget
@@ -696,25 +710,27 @@ instance HasSet ClueCount () (Game queue) where
 instance HasSet CardCount () (Game queue) where
   getSet _ = setFromList . map (getCount ()) . toList . view investigators
 
-instance HasSet RemainingHealth () (Game queue) where
-  getSet _ =
+instance (GameRunner env, env ~ Game queue) => HasSet RemainingHealth () (Game queue) where
+  getSet _ g =
     setFromList
-      . map (RemainingHealth . remainingHealth)
+      . map (RemainingHealth . flip runReader g . getRemainingHealth)
       . toList
-      . view investigators
+      $ view investigators g
 
-instance HasSet RemainingSanity () (Game queue) where
-  getSet _ =
+instance (GameRunner env, env ~ Game queue) => HasSet RemainingSanity () (Game queue) where
+  getSet _ g =
     setFromList
-      . map (RemainingSanity . remainingSanity)
+      . map (RemainingSanity . flip runReader g . getRemainingSanity)
       . toList
-      . view investigators
+      $ view investigators g
 
-instance HasCount RemainingHealth InvestigatorId (Game queue) where
-  getCount iid = RemainingHealth . remainingHealth . getInvestigator iid
+instance (GameRunner env, env ~ Game queue) => HasCount RemainingHealth InvestigatorId (Game queue) where
+  getCount iid g =
+    RemainingHealth $ runReader (getRemainingHealth $ getInvestigator iid g) g
 
-instance HasCount RemainingSanity InvestigatorId (Game queue) where
-  getCount iid = RemainingSanity . remainingSanity . getInvestigator iid
+instance (GameRunner env, env ~ Game queue) => HasCount RemainingSanity InvestigatorId (Game queue) where
+  getCount iid g =
+    RemainingSanity $ runReader (getRemainingSanity $ getInvestigator iid g) g
 
 instance HasSet LocationId () (Game queue) where
   getSet _ = keysSet . view locations
@@ -913,7 +929,7 @@ bfs game initialLocation target = do
       Nothing -> fromJustNote "failed bfs on tail" $ tailMay currentPath
       Just parent -> unwindPath parentsMap (parent : currentPath)
 
-instance HasSet ClosestLocationId (LocationId, Prey) (Game queue) where
+instance (GameRunner env, env ~ Game queue) => HasSet ClosestLocationId (LocationId, Prey) (Game queue) where
   getSet (start, prey) g =
     setFromList . map ClosestLocationId $ getShortestPath g start matcher
     where matcher lid = not . null $ getSet @PreyId (prey, lid) g
@@ -1049,20 +1065,21 @@ instance HasSet Int SkillType (Game queue) where
   getSet skillType g =
     setFromList $ map (getSkill skillType) (toList $ g ^. investigators)
 
-instance HasSet PreyId Prey (Game queue) where
+instance (GameRunner env, env ~ Game queue) => HasSet PreyId Prey (Game queue) where
   getSet preyType g = HashSet.map PreyId . keysSet . filterMap matcher $ view
     investigators
     g
-    where matcher i = isPrey preyType g i
+    where matcher i = runReader (getIsPrey preyType i) g
 
 -- TODO: This does not work for more than 2 players
-instance HasSet PreyId (Prey, LocationId) (Game queue) where
+-- TODO: WE NEED TO REWORK THIS, WE HAVE TO DETERMINE PREY IN IO
+instance (GameRunner env, env ~ Game queue) => HasSet PreyId (Prey, LocationId) (Game queue) where
   getSet (preyType, lid) g = HashSet.map PreyId
     $ filterSet matcher investigators'
    where
     location = getLocation lid g
     investigators' = getSet () location
-    matcher iid = isPrey preyType g (getInvestigator iid g)
+    matcher iid = runReader (getIsPrey preyType (getInvestigator iid g)) g
 
 instance HasSet AdvanceableActId () (Game queue) where
   getSet _ g = HashSet.map AdvanceableActId . keysSet $ acts'
@@ -1193,10 +1210,35 @@ createEnemy cardCode = do
   pure (eid, lookupEnemy cardCode eid)
 
 createEffect
-  :: MonadIO m => CardCode -> Source -> Target -> m (EffectId, Effect)
-createEffect cardCode source target = do
+  :: MonadIO m
+  => CardCode
+  -> Maybe (EffectMetadata Message)
+  -> Source
+  -> Target
+  -> m (EffectId, Effect)
+createEffect cardCode meffectMetadata source target = do
   eid <- liftIO $ EffectId <$> nextRandom
-  pure (eid, lookupEffect cardCode source target eid)
+  pure (eid, lookupEffect cardCode eid meffectMetadata source target)
+
+createSkillTestEffect
+  :: MonadIO m
+  => EffectMetadata Message
+  -> Source
+  -> Target
+  -> m (EffectId, Effect)
+createSkillTestEffect effectMetadata source target = do
+  eid <- liftIO $ EffectId <$> nextRandom
+  pure (eid, buildSkillTestEffect eid effectMetadata source target)
+
+createPhaseEffect
+  :: MonadIO m
+  => EffectMetadata Message
+  -> Source
+  -> Target
+  -> m (EffectId, Effect)
+createPhaseEffect effectMetadata source target = do
+  eid <- liftIO $ EffectId <$> nextRandom
+  pure (eid, buildPhaseEffect eid effectMetadata source target)
 
 createAsset :: MonadIO m => CardCode -> m (AssetId, Asset)
 createAsset cardCode = do
@@ -1300,7 +1342,7 @@ runPreGameMessage msg g = case msg of
   _ -> pure g
 
 runGameMessage
-  :: (GameRunner env, MonadReader env m, MonadIO m)
+  :: (GameRunner env, MonadReader env m, MonadIO m, env ~ GameInternal)
   => Message
   -> GameInternal
   -> m GameInternal
@@ -1353,9 +1395,17 @@ runGameMessage msg g = case msg of
       $ g
       & (scenario ?~ lookupScenario sid difficulty')
       & (phase .~ InvestigationPhase)
-  CreateEffect source target cardCode -> do
-    (effectId', effect') <- createEffect cardCode source target
-    unshiftMessage (CreatedEffect source target effectId')
+  CreateEffect cardCode meffectMetadata source target -> do
+    (effectId', effect') <- createEffect cardCode meffectMetadata source target
+    unshiftMessage (CreatedEffect effectId' meffectMetadata source target)
+    pure $ g & effects %~ insertMap effectId' effect'
+  CreateSkillTestEffect effectMetadata source target -> do
+    (effectId', effect') <- createSkillTestEffect effectMetadata source target
+    unshiftMessage (CreatedEffect effectId' (Just effectMetadata) source target)
+    pure $ g & effects %~ insertMap effectId' effect'
+  CreatePhaseEffect effectMetadata source target -> do
+    (effectId', effect') <- createPhaseEffect effectMetadata source target
+    unshiftMessage (CreatedEffect effectId' (Just effectMetadata) source target)
     pure $ g & effects %~ insertMap effectId' effect'
   DisableEffect effectId -> pure $ g & effects %~ deleteMap effectId
   FocusCards cards -> pure $ g & focusedCards .~ cards
@@ -1432,10 +1482,13 @@ runGameMessage msg g = case msg of
     pure $ g & locations %~ deleteMap lid
   SpendClues 0 _ -> pure g
   SpendClues n iids -> do
-    let
-      investigatorsWithClues = keys $ HashMap.filterWithKey
-        (\k v -> k `elem` iids && hasSpendableClues v)
-        (g ^. investigators)
+    investigatorsWithClues <- catMaybes <$> for
+      (mapToList $ g ^. investigators)
+      (\(iid, i) -> do
+        hasSpendableClues <- getHasSpendableClues i
+        pure
+          $ if hasSpendableClues && iid `elem` iids then Just iid else Nothing
+      )
     case investigatorsWithClues of
       [] -> error "someone needed to spend some clues"
       [x] -> g <$ unshiftMessage (InvestigatorSpendClues x n)
@@ -1656,7 +1709,7 @@ runGameMessage msg g = case msg of
       _ -> unshiftMessage (AskMap askMap)
     pure g
   EnemyWillAttack iid eid -> do
-    modifiers' <- getModifiers (EnemySource eid) (getInvestigator iid g)
+    modifiers' <- getModifiersFor (EnemySource eid) (InvestigatorTarget iid) g
     let
       cannotBeAttackedByNonElites = flip any modifiers' $ \case
         CannotBeAttackedByNonElite{} -> True
@@ -1677,9 +1730,10 @@ runGameMessage msg g = case msg of
             unshiftMessage aoo
           Just (EnemyWillAttack iid2 eid2) -> do
             _ <- popMessage
-            modifiers2' <- getModifiers
+            modifiers2' <- getModifiersFor
               (EnemySource eid2)
-              (getInvestigator iid2 g)
+              (InvestigatorTarget iid2)
+              g
             let
               cannotBeAttackedByNonElites2 = flip any modifiers2' $ \case
                 CannotBeAttackedByNonElite{} -> True
@@ -1846,83 +1900,40 @@ runGameMessage msg g = case msg of
     pushMessage BeginInvestigation
     pure $ g & usedAbilities %~ filter
       (\(_, Ability {..}) -> abilityLimit /= PerPhase)
-  BeginSkillTest iid source target maction skillType difficulty onSuccess onFailure skillTestModifiers tokenResponses
-    -> do
-      let
-        availableSkills = availableSkillsFor (getInvestigator iid g) skillType
-      case availableSkills of
-        [] -> g <$ unshiftMessage
-          (BeginSkillTestAfterFast
-            iid
-            source
-            target
-            maction
-            skillType
-            difficulty
-            onSuccess
-            onFailure
-            skillTestModifiers
-            tokenResponses
-          )
-        [_] -> g <$ unshiftMessage
-          (BeginSkillTestAfterFast
-            iid
-            source
-            target
-            maction
-            skillType
-            difficulty
-            onSuccess
-            onFailure
-            skillTestModifiers
-            tokenResponses
-          )
-        xs -> g <$ unshiftMessage
-          (Ask iid $ ChooseOne
-            [ BeginSkillTestAfterFast
-                iid
-                source
-                target
-                maction
-                skillType'
-                difficulty
-                onSuccess
-                onFailure
-                skillTestModifiers
-                tokenResponses
-            | skillType' <- xs
-            ]
-          )
-  BeginSkillTestAfterFast iid source target maction skillType difficulty onSuccess onFailure skillTestModifiers tokenResponses
-    -> do
-      unshiftMessage (BeforeSkillTest iid skillType)
-      let
-        mBaseValue = foldr
-          (\modifier current -> case modifier of
-            BaseSkillOf stype n | stype == skillType -> Just n
-            _ -> current
-          )
-          Nothing
-          skillTestModifiers
-        skillValue = fromMaybe
-          (skillValueOf skillType (getInvestigator iid g))
-          mBaseValue
-      pure
-        $ g
-        & (skillTest
-          ?~ initSkillTest
-               iid
-               source
-               target
-               maction
-               skillType
-               skillValue
-               difficulty
-               onSuccess
-               onFailure
-               skillTestModifiers
-               tokenResponses
-          )
+  BeginSkillTest iid source target maction skillType difficulty -> do
+    availableSkills <- getAvailableSkillsFor (getInvestigator iid g) skillType
+    case availableSkills of
+      [] -> g <$ unshiftMessage
+        (BeginSkillTestAfterFast iid source target maction skillType difficulty)
+      [_] -> g <$ unshiftMessage
+        (BeginSkillTestAfterFast iid source target maction skillType difficulty)
+      xs -> g <$ unshiftMessage
+        (Ask iid $ ChooseOne
+          [ BeginSkillTestAfterFast
+              iid
+              source
+              target
+              maction
+              skillType'
+              difficulty
+          | skillType' <- xs
+          ]
+        )
+  BeginSkillTestAfterFast iid source target maction skillType difficulty -> do
+    unshiftMessage (BeforeSkillTest iid skillType)
+    skillValue <- getSkillValueOf skillType (getInvestigator iid g)
+    pure
+      $ g
+      & (skillTest
+        ?~ initSkillTest
+             iid
+             source
+             target
+             maction
+             skillType
+             skillValue
+             difficulty
+        )
   CreateStoryAssetAt cardCode lid -> do
     (assetId', asset') <- createAsset cardCode
     unshiftMessage $ AttachAsset assetId' (LocationTarget lid)
@@ -2053,27 +2064,22 @@ runGameMessage msg g = case msg of
     encounterDeck' <-
       liftIO . shuffleM $ unDeck (view encounterDeck g) <> toShuffleBackIn
     pure $ g & encounterDeck .~ Deck encounterDeck' & discard .~ discard'
-  RevelationSkillTest iid (TreacherySource tid) skillType difficulty onSuccess onFailure tempModifiers
-    -> do
-      let
-        treachery = getTreachery tid g
-        card = fromJustNote
-          "missing card"
-          (lookup (getCardCode treachery) allEncounterCards)
-          (CardId $ unTreacheryId tid)
+  RevelationSkillTest iid (TreacherySource tid) skillType difficulty -> do
+    let
+      treachery = getTreachery tid g
+      card = fromJustNote
+        "missing card"
+        (lookup (getCardCode treachery) allEncounterCards)
+        (CardId $ unTreacheryId tid)
 
-      unshiftMessage $ BeginSkillTest
-        iid
-        (TreacherySource tid)
-        (InvestigatorTarget iid)
-        Nothing
-        skillType
-        difficulty
-        onSuccess
-        onFailure
-        tempModifiers
-        mempty
-      pure $ g & (activeCard ?~ EncounterCard card)
+    unshiftMessage $ BeginSkillTest
+      iid
+      (TreacherySource tid)
+      (InvestigatorTarget iid)
+      Nothing
+      skillType
+      difficulty
+    pure $ g & (activeCard ?~ EncounterCard card)
   InvestigatorDrewEncounterCard iid card -> case ecCardType card of
     EnemyType -> do
       (enemyId', enemy') <- createEnemy (ecCardCode card)

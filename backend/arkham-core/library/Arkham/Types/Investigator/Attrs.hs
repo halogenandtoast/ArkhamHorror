@@ -8,7 +8,6 @@ import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Card.PlayerCardWithBehavior
 import Arkham.Types.CommitRestriction
-import Arkham.Types.Helpers
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import qualified Arkham.Types.Keyword as Keyword
@@ -50,7 +49,6 @@ data Attrs = Attrs
   , investigatorConnectedLocations :: HashSet LocationId
   , investigatorTraits :: HashSet Trait
   , investigatorTreacheries :: HashSet TreacheryId
-  , investigatorModifiers :: HashMap Source [Modifier]
   , investigatorDefeated :: Bool
   , investigatorResigned :: Bool
   , investigatorSlots :: HashMap SlotType [Slot]
@@ -69,23 +67,20 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "investigator"
 
-locationId :: Lens' Attrs LocationId
-locationId = lens investigatorLocation $ \m x -> m { investigatorLocation = x }
+locationIdL :: Lens' Attrs LocationId
+locationIdL =
+  lens investigatorLocation $ \m x -> m { investigatorLocation = x }
 
-xp :: Lens' Attrs Int
-xp = lens investigatorXP $ \m x -> m { investigatorXP = x }
+xpL :: Lens' Attrs Int
+xpL = lens investigatorXP $ \m x -> m { investigatorXP = x }
 
-physicalTrauma :: Lens' Attrs Int
-physicalTrauma =
+physicalTraumaL :: Lens' Attrs Int
+physicalTraumaL =
   lens investigatorPhysicalTrauma $ \m x -> m { investigatorPhysicalTrauma = x }
 
-mentalTrauma :: Lens' Attrs Int
-mentalTrauma =
+mentalTraumaL :: Lens' Attrs Int
+mentalTraumaL =
   lens investigatorMentalTrauma $ \m x -> m { investigatorMentalTrauma = x }
-
-modifiers :: Lens' Attrs (HashMap Source [Modifier])
-modifiers =
-  lens investigatorModifiers $ \m x -> m { investigatorModifiers = x }
 
 connectedLocations :: Lens' Attrs (HashSet LocationId)
 connectedLocations = lens investigatorConnectedLocations
@@ -147,21 +142,32 @@ hand = lens investigatorHand $ \m x -> m { investigatorHand = x }
 deck :: Lens' Attrs (Deck PlayerCard)
 deck = lens investigatorDeck $ \m x -> m { investigatorDeck = x }
 
-toSource :: Attrs -> Source
-toSource Attrs { investigatorId } = InvestigatorSource investigatorId
+instance Entity Attrs where
+  toSource = InvestigatorSource . investigatorId
+  toTarget = InvestigatorTarget . investigatorId
+  isSource Attrs { investigatorId } (InvestigatorSource iid) =
+    iid == investigatorId
+  isSource _ _ = False
+  isTarget Attrs { investigatorId } (InvestigatorTarget iid) =
+    iid == investigatorId
+  isTarget _ _ = False
 
-facingDefeat :: Attrs -> Bool
-facingDefeat a@Attrs {..} =
-  investigatorHealthDamage
-    >= modifiedHealth a
+getFacingDefeat
+  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Bool
+getFacingDefeat a@Attrs {..} = do
+  modifiedHealth <- getModifiedHealth a
+  modifiedSanity <- getModifiedSanity a
+  pure
+    $ investigatorHealthDamage
+    >= modifiedHealth
     || investigatorSanityDamage
-    >= modifiedSanity a
+    >= modifiedSanity
 
 skillValueFor :: SkillType -> Maybe Action -> [Modifier] -> Attrs -> Int
 skillValueFor skill maction tempModifiers attrs = foldr
   applyModifier
   (baseSkillValueFor skill maction tempModifiers attrs)
-  (concat (HashMap.elems $ investigatorModifiers attrs) <> tempModifiers)
+  tempModifiers
  where
   applyModifier (AnySkillValue m) n = max 0 (n + m)
   applyModifier (SkillModifier skillType m) n =
@@ -174,7 +180,7 @@ baseSkillValueFor :: SkillType -> Maybe Action -> [Modifier] -> Attrs -> Int
 baseSkillValueFor skill _maction tempModifiers attrs = foldr
   applyModifier
   baseSkillValue
-  (concat (HashMap.elems $ investigatorModifiers attrs) <> tempModifiers)
+  tempModifiers
  where
   applyModifier (BaseSkillOf skillType m) _ | skillType == skill = m
   applyModifier _ n = n
@@ -186,11 +192,7 @@ baseSkillValueFor skill _maction tempModifiers attrs = foldr
     SkillWild -> error "investigators do not have wild skills"
 
 damageValueFor
-  :: ( MonadReader env m
-     , MonadIO m
-     , HasModifiersFor env env
-     , HasSource ForSkillTest env
-     )
+  :: (MonadReader env m, HasModifiersFor env env, HasSource ForSkillTest env)
   => Int
   -> Attrs
   -> m Int
@@ -224,11 +226,7 @@ getIsScenarioAbility = do
     _ -> pure False
 
 getHandSize
-  :: ( MonadReader env m
-     , MonadIO m
-     , HasModifiersFor env env
-     , HasSource ForSkillTest env
-     )
+  :: (MonadReader env m, HasModifiersFor env env, HasSource ForSkillTest env)
   => Attrs
   -> m Int
 getHandSize attrs = do
@@ -240,43 +238,47 @@ getHandSize attrs = do
   applyModifier (HandSize m) n = max 0 (n + m)
   applyModifier _ n = n
 
-getActionsForTurn :: Attrs -> Int
-getActionsForTurn Attrs {..} = foldr
-  applyModifier
-  3
-  (concat . HashMap.elems $ investigatorModifiers)
+getActionsForTurn
+  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Int
+getActionsForTurn attrs@Attrs {..} = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  pure $ foldr applyModifier 3 modifiers'
  where
   applyModifier (AdditionalActions m) n = max 0 (n + m)
   applyModifier _ n = n
 
-canDiscoverClues :: Attrs -> Bool
-canDiscoverClues Attrs {..} = not
-  (any match (concat . HashMap.elems $ investigatorModifiers))
+getCanDiscoverClues
+  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Bool
+getCanDiscoverClues attrs@Attrs {..} = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  pure $ not (any match modifiers')
  where
   match CannotDiscoverClues{} = True
   match _ = False
 
-canSpendClues :: Attrs -> Bool
-canSpendClues Attrs {..} = not
-  (any match (concat . HashMap.elems $ investigatorModifiers))
+getCanSpendClues
+  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Bool
+getCanSpendClues attrs@Attrs {..} = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  pure $ not (any match modifiers')
  where
   match CannotSpendClues{} = True
   match _ = False
 
-modifiedHealth :: Attrs -> Int
-modifiedHealth Attrs {..} = foldr
-  applyModifier
-  investigatorHealth
-  (concat . HashMap.elems $ investigatorModifiers)
+getModifiedHealth
+  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Int
+getModifiedHealth attrs@Attrs {..} = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  pure $ foldr applyModifier investigatorHealth modifiers'
  where
   applyModifier (HealthModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-modifiedSanity :: Attrs -> Int
-modifiedSanity Attrs {..} = foldr
-  applyModifier
-  investigatorSanity
-  (concat . HashMap.elems $ investigatorModifiers)
+getModifiedSanity
+  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Int
+getModifiedSanity attrs@Attrs {..} = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  pure $ foldr applyModifier investigatorSanity modifiers'
  where
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
@@ -351,7 +353,6 @@ baseAttrs iid name classSymbol Stats {..} traits = Attrs
   , investigatorConnectedLocations = mempty
   , investigatorTraits = setFromList traits
   , investigatorTreacheries = mempty
-  , investigatorModifiers = mempty
   , investigatorDefeated = False
   , investigatorResigned = False
   , investigatorSlots = HashMap.fromList
@@ -381,36 +382,38 @@ matchTarget attrs (FirstOneOf as) action =
 matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
 
-actionCost :: Attrs -> Action -> Int
-actionCost attrs a = foldr
-  applyModifier
-  1
-  (concat . HashMap.elems $ investigatorModifiers attrs)
+getActionCost
+  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> Action -> m Int
+getActionCost attrs a = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  pure $ foldr applyModifier 1 modifiers'
  where
   applyModifier (ActionCostOf match m) n =
     if matchTarget attrs match a then n + m else n
   applyModifier _ n = n
 
-actionCostModifier :: Attrs -> Maybe Action -> Int
-actionCostModifier _ Nothing = 0
-actionCostModifier attrs (Just a) = foldr
-  applyModifier
-  0
-  (concat . HashMap.elems $ investigatorModifiers attrs)
+getActionCostModifier
+  :: (MonadReader env m, HasModifiersFor env env)
+  => Attrs
+  -> Maybe Action
+  -> m Int
+getActionCostModifier _ Nothing = pure 0
+getActionCostModifier attrs (Just a) = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  pure $ foldr applyModifier 0 modifiers'
  where
   applyModifier (ActionCostOf match m) n =
     if matchTarget attrs match a then n + m else n
   applyModifier _ n = n
 
-spendableClueCount :: Attrs -> Int
-spendableClueCount a = if canSpendClues a then investigatorClues a else 0
+getSpendableClueCount
+  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Int
+getSpendableClueCount a = do
+  canSpendClues <- getCanSpendClues a
+  pure $ if canSpendClues then investigatorClues a else 0
 
 cluesToDiscover
-  :: ( MonadReader env m
-     , MonadIO m
-     , HasModifiersFor env env
-     , HasSource ForSkillTest env
-     )
+  :: (MonadReader env m, HasModifiersFor env env, HasSource ForSkillTest env)
   => Attrs
   -> Int
   -> m Int
@@ -424,27 +427,36 @@ cluesToDiscover attrs startValue = do
   applyModifier (DiscoveredClues m) n = n + m
   applyModifier _ n = n
 
-canAfford :: Attrs -> Action -> Bool
-canAfford a@Attrs {..} actionType =
-  actionCost a actionType <= investigatorRemainingActions
+getCanAfford
+  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> Action -> m Bool
+getCanAfford a@Attrs {..} actionType = do
+  actionCost <- getActionCost a actionType
+  pure $ actionCost <= investigatorRemainingActions
 
-fastIsPlayable :: Attrs -> [Window] -> [Modifier] -> Card -> Bool
-fastIsPlayable _ _ _ (EncounterCard _) = False -- TODO: there might be some playable ones?
-fastIsPlayable a windows modifiers' c@(PlayerCard MkPlayerCard {..}) =
-  (pcFast || canBecomeFast) && isPlayable a windows modifiers' c
+getFastIsPlayable
+  :: (MonadReader env m, HasModifiersFor env env)
+  => Attrs
+  -> [Window]
+  -> Card
+  -> m Bool
+getFastIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
+getFastIsPlayable attrs windows c@(PlayerCard MkPlayerCard {..}) = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  isPlayable <- getIsPlayable attrs windows c
+  pure $ (pcFast || canBecomeFast modifiers') && isPlayable
  where
-  canBecomeFast = foldr applyModifier False modifiers'
+  canBecomeFast modifiers' = foldr applyModifier False modifiers'
   applyModifier (CanBecomeFast (mcardType, traits)) _
     | maybe True (== pcCardType) mcardType
       && not (null (setFromList traits `intersect` pcTraits))
     = True
   applyModifier _ val = val
 
-modifiedCardCost :: Attrs -> Card -> Int
-modifiedCardCost Attrs {..} (PlayerCard MkPlayerCard {..}) = foldr
-  applyModifier
-  startingCost
-  (concat . HashMap.elems $ investigatorModifiers)
+getModifiedCardCost
+  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> Card -> m Int
+getModifiedCardCost attrs (PlayerCard MkPlayerCard {..}) = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  pure $ foldr applyModifier startingCost modifiers'
  where
   startingCost = case pcCost of
     StaticCost n -> n
@@ -454,23 +466,32 @@ modifiedCardCost Attrs {..} (PlayerCard MkPlayerCard {..}) = foldr
   applyModifier (ReduceCostOfCardType cardType m) n | cardType == pcCardType =
     max 0 (n - m)
   applyModifier _ n = n
-modifiedCardCost Attrs {..} (EncounterCard MkEncounterCard {..}) = foldr
-  applyModifier
-  (error "we need so specify ecCost for this to work")
-  (concat . HashMap.elems $ investigatorModifiers)
+getModifiedCardCost attrs (EncounterCard MkEncounterCard {..}) = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  pure $ foldr
+    applyModifier
+    (error "we need so specify ecCost for this to work")
+    modifiers'
  where
   applyModifier (ReduceCostOf traits m) n
     | not (null (setFromList traits `intersection` ecTraits)) = max 0 (n - m)
   applyModifier _ n = n
 
-isPlayable :: Attrs -> [Window] -> [Modifier] -> Card -> Bool
-isPlayable _ _ _ (EncounterCard _) = False -- TODO: there might be some playable ones?
-isPlayable a@Attrs {..} windows modifiers' c@(PlayerCard MkPlayerCard {..}) =
-  (pcCardType /= SkillType)
-    && (modifiedCardCost a c <= investigatorResources)
-    && none prevents (concat . HashMap.elems $ investigatorModifiers)
+getIsPlayable
+  :: (MonadReader env m, HasModifiersFor env env)
+  => Attrs
+  -> [Window]
+  -> Card
+  -> m Bool
+getIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
+getIsPlayable attrs@Attrs {..} windows c@(PlayerCard MkPlayerCard {..}) = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiedCardCost <- getModifiedCardCost attrs c
+  pure
+    $ (pcCardType /= SkillType)
+    && (modifiedCardCost <= investigatorResources)
     && none prevents modifiers'
-    && (not pcFast || (pcFast && cardInWindows windows c a))
+    && (not pcFast || (pcFast && cardInWindows windows c attrs))
     && (pcAction /= Just Action.Evade || not (null investigatorEngagedEnemies))
  where
   none f = not . any f
@@ -492,32 +513,44 @@ cardInWindows windows c _ = case c of
   PlayerCard pc -> not . null $ pcWindows pc `intersect` setFromList windows
   _ -> False
 
-playableCards :: Attrs -> [Window] -> [Modifier] -> [Card]
-playableCards a@Attrs {..} windows modifiers' =
-  filter (fastIsPlayable a windows modifiers') investigatorHand
-    <> playableDiscards a windows modifiers'
+getPlayableCards
+  :: (MonadReader env m, HasModifiersFor env env)
+  => Attrs
+  -> [Window]
+  -> m [Card]
+getPlayableCards a@Attrs {..} windows = do
+  playableDiscards <- getPlayableDiscards a windows
+  playableHandCards <- filterM (getFastIsPlayable a windows) investigatorHand
+  pure $ playableHandCards <> playableDiscards
 
-playableDiscards :: Attrs -> [Window] -> [Modifier] -> [Card]
-playableDiscards a@Attrs {..} windows modifiers' = filter
-  (fastIsPlayable a windows modifiers')
-  possibleCards
+getPlayableDiscards
+  :: (MonadReader env m, HasModifiersFor env env)
+  => Attrs
+  -> [Window]
+  -> m [Card]
+getPlayableDiscards attrs@Attrs {..} windows = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  filterM (getFastIsPlayable attrs windows) (possibleCards modifiers')
  where
-  possibleCards = map (PlayerCard . snd)
-    $ filter canPlayFromDiscard (zip @_ @Int [0 ..] investigatorDiscard)
-  canPlayFromDiscard (n, card) = any
-    (allowsPlayFromDiscard n card)
-    (concat . HashMap.elems $ investigatorModifiers)
+  possibleCards modifiers' = map (PlayerCard . snd) $ filter
+    (canPlayFromDiscard modifiers')
+    (zip @_ @Int [0 ..] investigatorDiscard)
+  canPlayFromDiscard modifiers' (n, card) =
+    any (allowsPlayFromDiscard n card) modifiers'
   allowsPlayFromDiscard 0 MkPlayerCard {..} (CanPlayTopOfDiscard (mcardType, traits))
     = maybe True (== pcCardType) mcardType
       && (null traits || (setFromList traits `HashSet.isSubsetOf` pcTraits))
   allowsPlayFromDiscard _ _ _ = False
 
 
-possibleSkillTypeChoices :: SkillType -> Attrs -> [SkillType]
-possibleSkillTypeChoices skillType attrs = foldr
-  applyModifier
-  [skillType]
-  (concat . toList $ investigatorModifiers attrs)
+getPossibleSkillTypeChoices
+  :: (MonadReader env m, HasModifiersFor env env)
+  => SkillType
+  -> Attrs
+  -> m [SkillType]
+getPossibleSkillTypeChoices skillType attrs = do
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  pure $ foldr applyModifier [skillType] modifiers'
  where
   applyModifier (UseSkillInPlaceOf toReplace toUse) skills
     | toReplace == skillType = toUse : skills
@@ -527,9 +560,7 @@ instance HasId InvestigatorId () Attrs where
   getId _ Attrs {..} = investigatorId
 
 instance HasModifiersFor env Attrs where
-  getModifiersFor _ (InvestigatorTarget iid) Attrs {..}
-    | iid == investigatorId = pure $ concat (toList investigatorModifiers)
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Attrs where
   getActions iid window attrs | iid == investigatorId attrs = concat <$> for
@@ -537,7 +568,7 @@ instance ActionRunner env => HasActions env Attrs where
     (getActions iid window . toPlayerCardWithBehavior)
   getActions _ _ _ = pure []
 
-instance HasQueue env => HasTokenValue env Attrs where
+instance HasTokenValue env Attrs where
   getTokenValue _ _ _ = error "should not be asking this here"
 
 instance InvestigatorRunner env => RunMessage env Attrs where
@@ -553,10 +584,7 @@ _PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
 _PlayerCard _ (EncounterCard ec) = pure (EncounterCard ec)
 
 hasModifier
-  :: (Monad m, MonadReader env m, HasModifiersFor env env, MonadIO m)
-  => Attrs
-  -> Modifier
-  -> m Bool
+  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> Modifier -> m Bool
 hasModifier Attrs { investigatorId } m =
   elem m
     <$> (getModifiersFor
@@ -655,11 +683,6 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   EnemyEngageInvestigator eid iid | iid == investigatorId ->
     pure $ a & engagedEnemies %~ insertSet eid
   EnemyDefeated eid _ _ _ _ _ -> do
-    unshiftMessage
-      (RemoveAllModifiersOnTargetFrom
-        (InvestigatorTarget investigatorId)
-        (EnemySource eid)
-      )
     pure $ a & engagedEnemies %~ deleteSet eid
   RemoveEnemy eid -> pure $ a & engagedEnemies %~ deleteSet eid
   TakeControlOfAsset iid aid | iid == investigatorId ->
@@ -705,78 +728,48 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   RemoveCardFromHand iid cardCode | iid == investigatorId ->
     pure $ a & hand %~ filter ((/= cardCode) . getCardCode)
   ShuffleIntoDeck iid (TreacheryTarget tid) | iid == investigatorId -> do
-    unshiftMessage
-      (RemoveAllModifiersOnTargetFrom
-        (InvestigatorTarget investigatorId)
-        (TreacherySource tid)
-      )
     pure $ a & treacheries %~ deleteSet tid
   Discard (TreacheryTarget tid) -> do
-    unshiftMessage
-      (RemoveAllModifiersOnTargetFrom
-        (InvestigatorTarget investigatorId)
-        (TreacherySource tid)
-      )
     pure $ a & treacheries %~ deleteSet tid
   Discard (EnemyTarget eid) -> do
-    unshiftMessage
-      (RemoveAllModifiersOnTargetFrom
-        (InvestigatorTarget investigatorId)
-        (EnemySource eid)
-      )
     pure $ a & engagedEnemies %~ deleteSet eid
   Discarded (AssetTarget aid) cardCode | aid `elem` investigatorAssets -> do
-    unshiftMessage
-      (RemoveAllModifiersOnTargetFrom
-        (InvestigatorTarget investigatorId)
-        (AssetSource aid)
-      )
     pure
       $ a
       & (assets %~ deleteSet aid)
       & (discard %~ (lookupPlayerCard cardCode (CardId $ unAssetId aid) :))
       & (slots %~ removeFromSlots aid)
-  ChooseFightEnemy iid source skillType tempModifiers tokenResponses isAction
-    | iid == investigatorId -> do
-      enemyIds <- asks (getSet investigatorLocation)
-      aloofEnemyIds <-
-        asks $ HashSet.map unAloofEnemyId . getSet investigatorLocation
-      let
-        fightableEnemyIds =
-          investigatorEngagedEnemies
-            `union` (enemyIds `difference` aloofEnemyIds)
-      a <$ unshiftMessage
-        (Ask iid $ ChooseOne
-          [ FightEnemy
-              iid
-              eid
-              source
-              skillType
-              tempModifiers
-              tokenResponses
-              isAction
-          | eid <- setToList fightableEnemyIds
-          ]
-        )
+  ChooseFightEnemy iid source skillType isAction | iid == investigatorId -> do
+    enemyIds <- asks (getSet investigatorLocation)
+    aloofEnemyIds <-
+      asks $ HashSet.map unAloofEnemyId . getSet investigatorLocation
+    let
+      fightableEnemyIds =
+        investigatorEngagedEnemies `union` (enemyIds `difference` aloofEnemyIds)
+    a <$ unshiftMessage
+      (Ask iid $ ChooseOne
+        [ FightEnemy iid eid source skillType isAction
+        | eid <- setToList fightableEnemyIds
+        ]
+      )
   EngageEnemy iid eid True | iid == investigatorId -> a <$ unshiftMessages
     [TakeAction iid 1 (Just Action.Engage), EngageEnemy iid eid False]
   EngageEnemy iid eid False | iid == investigatorId ->
     pure $ a & engagedEnemies %~ insertSet eid
   EngageEnemy iid eid False | iid /= investigatorId ->
     pure $ a & engagedEnemies %~ deleteSet eid
-  FightEnemy iid eid source skillType tempModifiers tokenResponses True
-    | iid == investigatorId -> a <$ unshiftMessages
+  FightEnemy iid eid source skillType True | iid == investigatorId ->
+    a <$ unshiftMessages
       [ TakeAction iid 1 (Just Action.Fight)
-      , FightEnemy iid eid source skillType tempModifiers tokenResponses False
+      , FightEnemy iid eid source skillType False
       ]
-  FightEnemy iid eid source skillType tempModifiers tokenResponses False
-    | iid == investigatorId -> do
-      unshiftMessages
-        [ WhenAttackEnemy iid eid
-        , AttackEnemy iid eid source skillType tempModifiers tokenResponses
-        , AfterAttackEnemy iid eid
-        ]
-      pure a
+  FightEnemy iid eid source skillType False | iid == investigatorId -> do
+    unshiftMessages
+      [ WhenAttackEnemy iid eid
+      , AttackEnemy iid eid source skillType
+      , AfterAttackEnemy iid eid
+      ]
+    pure a
   FailedAttackEnemy iid eid | iid == investigatorId -> do
     investigatorIds <- asks $ setToList . getSet eid
     case investigatorIds of
@@ -794,47 +787,23 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     unshiftMessage (CheckWindow iid [AfterEnemyEvaded You eid])
     pure $ a & engagedEnemies %~ deleteSet eid
   AddToVictory (EnemyTarget eid) -> pure $ a & engagedEnemies %~ deleteSet eid
-  ChooseEvadeEnemy iid source skillType onSuccess onFailure tokenResponses isAction
-    | iid == investigatorId
-    -> a <$ unshiftMessage
-      (Ask iid $ ChooseOne $ map
-        (\eid -> EvadeEnemy
-          iid
-          eid
-          source
-          skillType
-          onSuccess
-          onFailure
-          tokenResponses
-          isAction
-        )
-        (setToList investigatorEngagedEnemies)
+  ChooseEvadeEnemy iid source skillType isAction | iid == investigatorId ->
+    a <$ unshiftMessage
+      (chooseOne
+        iid
+        [ EvadeEnemy iid eid source skillType isAction
+        | eid <- setToList investigatorEngagedEnemies
+        ]
       )
-  EvadeEnemy iid eid source skillType onSuccess onFailure tokenResponses True
-    | iid == investigatorId -> a <$ unshiftMessages
+  EvadeEnemy iid eid source skillType True | iid == investigatorId ->
+    a <$ unshiftMessages
       [ TakeAction iid 1 (Just Action.Evade)
-      , EvadeEnemy
-        iid
-        eid
-        source
-        skillType
-        onSuccess
-        onFailure
-        tokenResponses
-        False
+      , EvadeEnemy iid eid source skillType False
       ]
-  EvadeEnemy iid eid source skillType onSuccess onFailure tokenResponses False
-    | iid == investigatorId -> a <$ unshiftMessages
+  EvadeEnemy iid eid source skillType False | iid == investigatorId ->
+    a <$ unshiftMessages
       [ WhenEvadeEnemy iid eid
-      , TryEvadeEnemy
-        iid
-        eid
-        source
-        skillType
-        onSuccess
-        onFailure
-        []
-        tokenResponses
+      , TryEvadeEnemy iid eid source skillType
       , AfterEvadeEnemy iid eid
       ]
   MoveAction iid lid True | iid == investigatorId -> a <$ unshiftMessages
@@ -933,24 +902,17 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         else pure []
       a <$ unshiftMessage
         (Ask iid $ ChooseOne $ healthDamageMessages <> sanityDamageMessages)
-  Investigate iid lid source skillType modifiers' tokenResponses overrides True
-    | iid == investigatorId -> a <$ unshiftMessages
+  Investigate iid lid source skillType True | iid == investigatorId ->
+    a <$ unshiftMessages
       [ TakeAction iid 1 (Just Action.Investigate)
       , CheckAttackOfOpportunity iid False
-      , Investigate
-        iid
-        lid
-        source
-        skillType
-        modifiers'
-        tokenResponses
-        overrides
-        False
+      , Investigate iid lid source skillType False
       ]
   InvestigatorDiscoverCluesAtTheirLocation iid n | iid == investigatorId ->
     runMessage (InvestigatorDiscoverClues iid investigatorLocation n) a
-  InvestigatorDiscoverClues iid lid n | iid == investigatorId ->
-    if canDiscoverClues a
+  InvestigatorDiscoverClues iid lid n | iid == investigatorId -> do
+    canDiscoverClues <- getCanDiscoverClues a
+    if canDiscoverClues
       then do
         modifiedCluesToDiscover <- cluesToDiscover a n
         a <$ unshiftMessage
@@ -1016,10 +978,12 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
             && DoesNotProvokeAttacksOfOpportunity
             `notElem` pcAttackOfOpportunityModifiers pc
         _ -> actionProvokesAttackOfOpportunities
-      actionCost' = if isFast then 0 else maybe 1 (actionCost a) maction
       aooMessage = if provokesAttackOfOpportunities
         then [CheckAttackOfOpportunity iid isFast]
         else []
+    actionCost' <- if isFast
+      then pure 0
+      else maybe (pure 1) (getActionCost a) maction
     a <$ unshiftMessages
       [ TakeAction iid actionCost' (Just Action.Play)
       , PayDynamicCardCost iid cardId 0 aooMessage
@@ -1052,10 +1016,12 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
             && DoesNotProvokeAttacksOfOpportunity
             `notElem` pcAttackOfOpportunityModifiers pc
         _ -> actionProvokesAttackOfOpportunities
-      actionCost' = if isFast then 0 else maybe 1 (actionCost a) maction
       aooMessage = if provokesAttackOfOpportunities
         then [CheckAttackOfOpportunity iid isFast]
         else []
+    actionCost' <- if isFast
+      then pure 0
+      else maybe (pure 1) (getActionCost a) maction
     if investigatorRemainingActions
         >= actionCost'
         && investigatorResources
@@ -1115,13 +1081,25 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       & (hand %~ filter ((/= cardCode) . getCardCode))
   InvestigatorDamage iid _ health sanity | iid == investigatorId ->
     pure $ a & healthDamage +~ health & sanityDamage +~ sanity
-  CheckDefeated -> if facingDefeat a
-    then do
-      unshiftMessage (InvestigatorWhenDefeated investigatorId)
-      if investigatorHealthDamage >= modifiedHealth a
-        then pure $ a & physicalTrauma +~ 1
-        else pure $ a & mentalTrauma +~ 1
-    else pure a
+  CheckDefeated -> do
+    facingDefeat <- getFacingDefeat a
+    if facingDefeat
+      then do
+        modifiedHealth <- getModifiedHealth a
+        modifiedSanity <- getModifiedSanity a
+        unshiftMessage (InvestigatorWhenDefeated investigatorId)
+        let
+          physicalTrauma =
+            if investigatorHealthDamage >= modifiedHealth then 1 else 0
+          mentalTrauma =
+            if investigatorSanityDamage >= modifiedSanity then 1 else 0
+        pure
+          $ a
+          & physicalTraumaL
+          +~ physicalTrauma
+          & mentalTraumaL
+          +~ mentalTrauma
+      else pure a
   HealDamage (InvestigatorTarget iid) amount | iid == investigatorId ->
     pure $ a & healthDamage %~ max 0 . subtract amount
   HealHorror (InvestigatorTarget iid) amount | iid == investigatorId -> do
@@ -1140,14 +1118,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   MoveTo iid lid | iid == investigatorId -> do
     connectedLocations' <- asks $ HashSet.map unConnectedLocationId . getSet lid
     unshiftMessages [WhenEnterLocation iid lid, AfterEnterLocation iid lid]
-    pure $ a & locationId .~ lid & connectedLocations .~ connectedLocations'
+    pure $ a & locationIdL .~ lid & connectedLocations .~ connectedLocations'
   AddedConnection lid1 lid2 | lid1 == investigatorLocation ->
     pure $ a & (connectedLocations %~ insertSet lid2)
   AddedConnection lid1 lid2 | lid2 == investigatorLocation ->
     pure $ a & (connectedLocations %~ insertSet lid1)
-  AddModifiers (InvestigatorTarget iid) source modifiers'
-    | iid == investigatorId
-    -> pure $ a & modifiers %~ HashMap.insertWith (<>) source modifiers'
   AddSlot iid slotType slot | iid == investigatorId -> do
     let
       slots' = HashMap.findWithDefault [] slotType investigatorSlots
@@ -1183,47 +1158,16 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
             ]
           )
         pure a
-  RemoveAllModifiersOnTargetFrom (InvestigatorTarget iid) source
-    | iid == investigatorId -> do
-      when (any (any ((source ==) . sourceOfSlot)) investigatorSlots)
-        $ unshiftMessages
-            [ RefillSlots iid slotType (mapMaybe slotItem slots')
-            | (slotType, slots') <- HashMap.toList investigatorSlots
-            ]
-      pure
-        $ a
-        & (modifiers %~ HashMap.delete source)
-        & (slots %~ HashMap.map (filter ((source /=) . sourceOfSlot)))
-  RemoveAllModifiersFrom source -> do
-    when (any (any ((source ==) . sourceOfSlot)) investigatorSlots)
-      $ unshiftMessages
-          [ RefillSlots investigatorId slotType (mapMaybe slotItem slots')
-          | (slotType, slots') <- HashMap.toList investigatorSlots
-          ]
-    pure
-      $ a
-      & (modifiers %~ HashMap.delete source)
-      & (slots %~ HashMap.map (filter ((source /=) . sourceOfSlot)))
   ChooseEndTurn iid | iid == investigatorId -> do
     unshiftMessage (CheckWindow iid [AfterEndTurn You])
-    pure $ a & endedTurn .~ True & modifiers %~ HashMap.filterWithKey
-      (\k _ -> case k of
-        EndOfTurnSource{} -> False
-        _ -> True
-      )
-  BeginRound ->
+    pure $ a & endedTurn .~ True
+  BeginRound -> do
+    actionsForTurn <- getActionsForTurn a
     pure
       $ a
       & (endedTurn .~ False)
-      & (remainingActions .~ getActionsForTurn a)
+      & (remainingActions .~ actionsForTurn)
       & (actionsTaken .~ mempty)
-  EndRound -> do
-    lingeringEventIds <- asks $ getSet ()
-    pure $ a & modifiers %~ HashMap.filterWithKey
-      (\k _ -> case k of
-        EventSource eid -> eid `member` lingeringEventIds
-        _ -> True
-      )
   DrawCards iid n True | iid == investigatorId -> a <$ unshiftMessages
     [ TakeAction iid 1 (Just Action.Draw)
     , CheckAttackOfOpportunity iid False
@@ -1429,20 +1373,17 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   CheckWindow iid windows | iid == investigatorId -> do
     actions <- fmap concat <$> for windows $ \window -> do
       join (asks (getActions iid window))
-    modifiers' <-
-      getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) =<< ask
-    if not (null $ playableCards a windows modifiers') || not (null actions)
+    playableCards <- getPlayableCards a windows
+    if not (null playableCards) || not (null actions)
       then a <$ unshiftMessage
-        (Ask iid
-        $ ChooseOne
-        $ map
-            (\c -> Run
+        (chooseOne iid
+        $ [ Run
               [ PayCardCost iid (getCardId c)
               , PlayCard iid (getCardId c) Nothing False
               , CheckWindow iid windows
               ]
-            )
-            (playableCards a windows modifiers')
+          | c <- playableCards
+          ]
         <> map (Run . (: [CheckWindow iid windows])) actions
         <> [Continue "Skip playing fast cards or using reactions"]
         )
@@ -1453,8 +1394,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   GainActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActions +~ n
   TakeAction iid actionCost' maction | iid == investigatorId -> do
+    costModifier <- getActionCostModifier a maction
     let
-      costModifier = actionCostModifier a maction
       modifiedActionCost = max 0 (actionCost' + costModifier)
       actionsTakenUpdate = case maction of
         Nothing -> id
@@ -1570,8 +1511,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   RemoveFromDiscard iid cardId | iid == investigatorId ->
     pure $ a & discard %~ filter ((/= cardId) . getCardId)
   SufferTrauma iid physical mental | iid == investigatorId ->
-    pure $ a & physicalTrauma +~ physical & mentalTrauma +~ mental
-  GainXP iid amount | iid == investigatorId -> pure $ a & xp +~ amount
+    pure $ a & physicalTraumaL +~ physical & mentalTraumaL +~ mental
+  GainXP iid amount | iid == investigatorId -> pure $ a & xpL +~ amount
   InvestigatorPlaceCluesOnLocation iid n | iid == investigatorId -> do
     let cluesToPlace = min n investigatorClues
     unshiftMessage
@@ -1594,30 +1535,45 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     playerWindowActions <- join $ asks (getActions iid FastPlayerWindow)
     modifiers' <-
       getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) =<< ask
+    canAffordTakeResources <- getCanAfford a Action.Resource
+    canAffordDrawCards <- getCanAfford a Action.Draw
+    canAffordPlayCard <- getCanAfford a Action.Play
+    isPlayableMap :: HashMap Card Bool <- mapFromList <$> for
+      investigatorHand
+      (\c -> do
+        isPlayable <- getIsPlayable a [DuringTurn You] c
+        pure (c, isPlayable)
+      )
+    let isPlayable c = findWithDefault False c isPlayableMap
+    fastIsPlayableMap :: HashMap Card Bool <- mapFromList <$> for
+      investigatorHand
+      (\c -> do
+        fastIsPlayable <- getFastIsPlayable a [DuringTurn You] c
+        pure (c, fastIsPlayable)
+      )
+    let fastIsPlayable c = findWithDefault False c fastIsPlayableMap
     a <$ unshiftMessage
       (Ask iid $ ChooseOne
         (additionalActions
         <> [ TakeResources iid 1 True
-           | canAfford a Action.Resource
+           | canAffordTakeResources
              && CannotGainResources
              `notElem` modifiers'
            ]
         <> [ DrawCards iid 1 True
-           | canAfford a Action.Draw
+           | canAffordDrawCards
              && CannotTakeAction (IsAction Action.Draw)
              `notElem` modifiers'
            ]
         <> [ InitiatePlayCard iid (getCardId c) Nothing True
            | c <- investigatorHand
-           , canAfford a Action.Play
-             || fastIsPlayable a [DuringTurn You] modifiers' c
-           , isPlayable a [DuringTurn You] modifiers' c && not (isDynamic c)
+           , canAffordPlayCard || fastIsPlayable c
+           , isPlayable c && not (isDynamic c)
            ]
         <> [ InitiatePlayDynamicCard iid (getCardId c) 0 Nothing True
            | c <- investigatorHand
-           , canAfford a Action.Play
-             || fastIsPlayable a [DuringTurn You] modifiers' c
-           , isPlayable a [DuringTurn You] modifiers' c && isDynamic c
+           , canAffordPlayCard || fastIsPlayable c
+           , isPlayable c && isDynamic c
            ]
         <> [ChooseEndTurn iid]
         <> actions

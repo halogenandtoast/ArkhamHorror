@@ -57,10 +57,6 @@ instance ActRunner env => RunMessage env DisruptingTheRitual where
             Nothing
             SkillWillpower
             3
-            [PlaceClues (ActTarget actId) 1]
-            mempty
-            mempty
-            mempty
           , BeginSkillTest
             iid
             (ActSource actId)
@@ -68,10 +64,8 @@ instance ActRunner env => RunMessage env DisruptingTheRitual where
             Nothing
             SkillAgility
             3
-            [PlaceClues (ActTarget actId) 1]
-            mempty
-            mempty
-            mempty
           ]
         )
+    PassedSkillTest _ _ source _ _ | isSource attrs source ->
+      a <$ unshiftMessage (PlaceClues (toTarget attrs) 1)
     _ -> DisruptingTheRitual <$> runMessage msg attrs

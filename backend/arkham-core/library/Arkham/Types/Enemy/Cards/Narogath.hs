@@ -37,10 +37,6 @@ instance (HasSet InvestigatorId LocationId env, HasSet ConnectedLocationId Locat
       ]
   getModifiersFor _ _ _ = pure []
 
-instance HasModifiers env Narogath where
-  getModifiers _ (Narogath Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env Narogath where
   getActions i window (Narogath attrs) = getActions i window attrs
 

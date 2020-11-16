@@ -66,14 +66,13 @@ baseAttrs aid cardCode =
       , assetCanLeavePlayByNormalMeans = True
       }
 
-isSource :: Attrs -> Source -> Bool
-isSource = (==) . toSource
-
-toSource :: Attrs -> Source
-toSource Attrs { assetId } = AssetSource assetId
-
-toTarget :: Attrs -> Target
-toTarget Attrs { assetId } = AssetTarget assetId
+instance Entity Attrs where
+  toSource = AssetSource . assetId
+  toTarget = AssetTarget . assetId
+  isSource Attrs { assetId } (AssetSource aid) = assetId == aid
+  isSource _ _ = False
+  isTarget Attrs { assetId } (AssetTarget aid) = assetId == aid
+  isTarget _ _ = False
 
 ownedBy :: Attrs -> InvestigatorId -> Bool
 ownedBy Attrs {..} = (== assetInvestigator) . Just
@@ -119,11 +118,12 @@ is (CardCodeTarget cardCode) a = cardCode == assetCardCode a
 is (CardIdTarget cardId) a = unCardId cardId == unAssetId (assetId a)
 is _ _ = False
 
-instance (HasQueue env, HasModifiers env InvestigatorId) => RunMessage env Attrs where
+instance (HasQueue env, HasModifiersFor env env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     ReadyExhausted -> case assetInvestigator of
       Just iid -> do
-        modifiers <- getModifiers (AssetSource assetId) iid
+        modifiers <-
+          getModifiersFor (toSource a) (InvestigatorTarget iid) =<< ask
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
           else pure $ a & exhausted .~ False
@@ -144,14 +144,8 @@ instance (HasQueue env, HasModifiers env InvestigatorId) => RunMessage env Attrs
       _ -> error "Cannot attach asset to that type"
     RemoveFromGame target | target `is` a ->
       a <$ unshiftMessage (RemovedFromPlay (AssetSource assetId))
-    Discard target | target `is` a -> case assetInvestigator of
-      Nothing -> pure a
-      Just iid -> a <$ unshiftMessages
-        [ RemoveAllModifiersOnTargetFrom
-          (InvestigatorTarget iid)
-          (AssetSource assetId)
-        , RemovedFromPlay (AssetSource assetId)
-        ]
+    Discard target | target `is` a ->
+      a <$ unshiftMessage (RemovedFromPlay $ toSource a)
     InvestigatorPlayAsset iid aid _ _ | aid == assetId ->
       pure $ a & investigator ?~ iid
     TakeControlOfAsset iid aid | aid == assetId ->
@@ -159,7 +153,8 @@ instance (HasQueue env, HasModifiers env InvestigatorId) => RunMessage env Attrs
     Exhaust target | target `is` a -> pure $ a & exhausted .~ True
     Ready target | target `is` a -> case assetInvestigator of
       Just iid -> do
-        modifiers <- getModifiers (AssetSource assetId) iid
+        modifiers <-
+          getModifiersFor (toSource a) (InvestigatorTarget iid) =<< ask
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
           else pure $ a & exhausted .~ False

@@ -35,24 +35,21 @@ instance ActionRunner env => HasActions env Knife where
 
 instance (AssetRunner env) => RunMessage env Knife where
   runMessage msg a@(Knife attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> a <$ unshiftMessage
-      (ChooseFightEnemy
-        iid
-        source
-        SkillCombat
-        [SkillModifier SkillCombat 1]
-        mempty
-        False
-      )
+    UseCardAbility iid source _ 1 | isSource attrs source ->
+      a <$ unshiftMessages
+        [ CreateSkillTestEffect
+          (EffectModifiers [SkillModifier SkillCombat 1])
+          source
+          (InvestigatorTarget iid)
+        , ChooseFightEnemy iid source SkillCombat False
+        ]
     UseCardAbility iid source _ 2 | isSource attrs source ->
       a <$ unshiftMessages
         [ Discard (toTarget attrs)
-        , ChooseFightEnemy
-          iid
+        , CreateSkillTestEffect
+          (EffectModifiers [SkillModifier SkillCombat 2, DamageDealt 1])
           source
-          SkillCombat
-          [SkillModifier SkillCombat 2, DamageDealt 1]
-          mempty
-          False
+          (InvestigatorTarget iid)
+        , ChooseFightEnemy iid source SkillCombat False
         ]
     _ -> Knife <$> runMessage msg attrs

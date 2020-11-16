@@ -21,12 +21,11 @@ instance HasActions env BaitAndSwitch where
 instance (EventRunner env) => RunMessage env BaitAndSwitch where
   runMessage msg e@(BaitAndSwitch attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      unshiftMessages
-        [ ChooseEvadeEnemy iid (EventSource eid) SkillWillpower [] [] [] False
+      e <$ unshiftMessages
+        [ ChooseEvadeEnemy iid (EventSource eid) SkillWillpower False
         , Discard (EventTarget eid)
         ]
-      BaitAndSwitch <$> runMessage msg (attrs & resolved .~ True)
-    PassedSkillTest iid _ (EventSource eid) SkillTestInitiatorTarget _
+    PassedSkillTest iid _ (EventSource eid) SkillTestInitiatorTarget{} _
       | eid == eventId -> do
         lid <- asks (getId iid)
         connectedLocationIds <- map unConnectedLocationId . setToList <$> asks

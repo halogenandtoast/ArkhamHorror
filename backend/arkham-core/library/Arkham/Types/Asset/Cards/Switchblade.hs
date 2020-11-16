@@ -28,13 +28,13 @@ instance ActionRunner env => HasActions env Switchblade where
 
 instance (AssetRunner env) => RunMessage env Switchblade where
   runMessage msg a@(Switchblade attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> a <$ unshiftMessage
-      (ChooseFightEnemy
-        iid
-        source
-        SkillCombat
-        [ModifierIfSucceededBy 2 (DamageDealt 1)]
-        mempty
-        False
-      )
+    UseCardAbility iid source _ 1 | isSource attrs source ->
+      a <$ unshiftMessage (ChooseFightEnemy iid source SkillCombat False)
+    PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} n
+      | n > 2 && isSource attrs source -> a <$ unshiftMessage
+        (CreateSkillTestEffect
+          (EffectModifiers [DamageDealt 1])
+          source
+          (InvestigatorTarget iid)
+        )
     _ -> Switchblade <$> runMessage msg attrs

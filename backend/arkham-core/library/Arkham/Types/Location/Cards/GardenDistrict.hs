@@ -51,16 +51,7 @@ instance ActionRunner env => HasActions env GardenDistrict where
 instance (LocationRunner env) => RunMessage env GardenDistrict where
   runMessage msg l@(GardenDistrict attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> l <$ unshiftMessage
-      (BeginSkillTest
-        iid
-        source
-        (toTarget attrs)
-        Nothing
-        SkillAgility
-        7
-        [Remember FoundAStrangeDoll]
-        mempty
-        mempty
-        mempty
-      )
+      (BeginSkillTest iid source (toTarget attrs) Nothing SkillAgility 7)
+    PassedSkillTest _ _ source _ _ | isSource attrs source ->
+      l <$ unshiftMessage (Remember FoundAStrangeDoll)
     _ -> GardenDistrict <$> runMessage msg attrs

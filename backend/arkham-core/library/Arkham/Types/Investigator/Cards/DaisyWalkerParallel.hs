@@ -28,7 +28,7 @@ daisyWalkerParallel = DaisyWalkerParallel
     , agility = 2
     }
 
-instance InvestigatorRunner env => HasModifiersFor env DaisyWalkerParallel where
+instance HasCount AssetCount (InvestigatorId, [Trait]) env => HasModifiersFor env DaisyWalkerParallel where
   getModifiersFor source target@(InvestigatorTarget iid) (DaisyWalkerParallel attrs@Attrs {..})
     | iid == investigatorId
     = do
@@ -46,7 +46,7 @@ ability attrs = (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow))
   { abilityLimit = PerGame
   }
 
-instance InvestigatorRunner env => HasTokenValue env DaisyWalkerParallel where
+instance HasTokenValue env DaisyWalkerParallel where
   getTokenValue (DaisyWalkerParallel attrs) iid ElderSign
     | iid == investigatorId attrs = pure
     $ TokenValue ElderSign (PositiveModifier 1)

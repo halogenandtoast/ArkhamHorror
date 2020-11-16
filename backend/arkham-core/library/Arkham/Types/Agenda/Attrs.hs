@@ -25,8 +25,13 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "agenda"
 
-toSource :: Attrs -> Source
-toSource Attrs { agendaId } = AgendaSource agendaId
+instance Entity Attrs where
+  toSource = AgendaSource . agendaId
+  toTarget = AgendaTarget . agendaId
+  isSource Attrs { agendaId } (AgendaSource aid) = agendaId == aid
+  isSource _ _ = False
+  isTarget Attrs { agendaId } (AgendaTarget aid) = agendaId == aid
+  isTarget _ _ = False
 
 doom :: Lens' Attrs Int
 doom = lens agendaDoom $ \m x -> m { agendaDoom = x }

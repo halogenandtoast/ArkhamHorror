@@ -14,7 +14,7 @@ newtype SpectralMist = SpectralMist Attrs
 spectralMist :: TreacheryId -> a -> SpectralMist
 spectralMist uuid _ = SpectralMist $ baseAttrs uuid "81025"
 
-instance TreacheryRunner env => HasModifiersFor env SpectralMist where
+instance HasId LocationId InvestigatorId env => HasModifiersFor env SpectralMist where
   getModifiersFor (SkillTestSource iid _ _) _ (SpectralMist Attrs {..}) = do
     lid <- asks $ getId @LocationId iid
     pure [ Difficulty 1 | Just lid == treacheryAttachedLocation ]
@@ -62,19 +62,7 @@ instance (TreacheryRunner env) => RunMessage env SpectralMist where
           Nothing
           SkillIntellect
           2
-          [Discard (TreacheryTarget treacheryId)]
-          mempty
-          mempty
-          mempty
         )
-    Discard (TreacheryTarget tid) | tid == treacheryId -> do
-      unshiftMessages
-        [ RemoveAllModifiersOnTargetFrom
-            (LocationTarget $ fromJustNote
-              "had to have been attached"
-              treacheryAttachedLocation
-            )
-            (TreacherySource treacheryId)
-        ]
-      SpectralMist <$> runMessage msg attrs
+    PassedSkillTest _ _ source _ _ | isSource attrs source ->
+      t <$ unshiftMessage (Discard $ toTarget attrs)
     _ -> SpectralMist <$> runMessage msg attrs

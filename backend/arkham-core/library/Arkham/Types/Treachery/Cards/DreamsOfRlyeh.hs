@@ -14,7 +14,11 @@ dreamsOfRlyeh :: TreacheryId -> a -> DreamsOfRlyeh
 dreamsOfRlyeh uuid _ = DreamsOfRlyeh $ baseAttrs uuid "01182"
 
 instance HasModifiersFor env DreamsOfRlyeh where
-  getModifiersFor = noModifiersFor
+  getModifiersFor _ (InvestigatorTarget iid) (DreamsOfRlyeh attrs) =
+    pure $ if iid `elem` treacheryAttachedInvestigator attrs
+      then [SkillModifier SkillWillpower (-1), SanityModifier (-1)]
+      else []
+  getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env DreamsOfRlyeh where
   getActions iid NonFast (DreamsOfRlyeh Attrs {..}) = do
@@ -33,14 +37,7 @@ instance ActionRunner env => HasActions env DreamsOfRlyeh where
 instance (TreacheryRunner env) => RunMessage env DreamsOfRlyeh where
   runMessage msg t@(DreamsOfRlyeh attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      unshiftMessages
-        [ AttachTreachery treacheryId (InvestigatorTarget iid)
-        , AddModifiers
-          (InvestigatorTarget iid)
-          source
-          [SkillModifier SkillWillpower (-1), SanityModifier (-1)]
-        ]
-      DreamsOfRlyeh <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
+      t <$ unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
     UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId ->
       t <$ unshiftMessage
         (BeginSkillTest
@@ -50,9 +47,7 @@ instance (TreacheryRunner env) => RunMessage env DreamsOfRlyeh where
           Nothing
           SkillWillpower
           3
-          [Discard (TreacheryTarget treacheryId)]
-          mempty
-          mempty
-          mempty
         )
+    PassedSkillTest _ _ source _ _ | isSource attrs source ->
+      t <$ unshiftMessage (Discard $ toTarget attrs)
     _ -> DreamsOfRlyeh <$> runMessage msg attrs

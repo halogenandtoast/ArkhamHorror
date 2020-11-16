@@ -8,6 +8,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Runner
 
 newtype ToothOfEztli = ToothOfEztli Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -30,7 +31,7 @@ instance HasActions env ToothOfEztli where
       pure [ ActivateCardAbilityAction iid ability | not (assetExhausted a) ]
   getActions i window (ToothOfEztli a) = getActions i window a
 
-instance (HasQueue env, HasModifiers env InvestigatorId) => RunMessage env ToothOfEztli where
+instance AssetRunner env => RunMessage env ToothOfEztli where
   runMessage msg (ToothOfEztli attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessage (DrawCards iid 1 False)

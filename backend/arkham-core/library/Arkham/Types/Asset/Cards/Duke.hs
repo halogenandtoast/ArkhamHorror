@@ -52,13 +52,12 @@ instance ActionRunner env => HasActions env Duke where
 
 dukeInvestigate :: Attrs -> InvestigatorId -> LocationId -> Message
 dukeInvestigate attrs iid lid =
-  Investigate iid lid (toSource attrs) SkillIntellect mempty mempty mempty False
+  Investigate iid lid (toSource attrs) SkillIntellect False
 
 instance (AssetRunner env) => RunMessage env Duke where
   runMessage msg (Duke attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
-      unshiftMessage
-        $ ChooseFightEnemy iid source SkillCombat mempty mempty False
+      unshiftMessage $ ChooseFightEnemy iid source SkillCombat False
       pure . Duke $ attrs & exhausted .~ True
     UseCardAbility iid source _ 2 | isSource attrs source -> do
       lid <- asks $ getId iid

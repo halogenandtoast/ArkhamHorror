@@ -41,7 +41,7 @@ spec = describe "Dig Deep" $ do
               _ -> False
             )
       >>= runGameTestOnlyOption "apply results"
-    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game
+    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget
 
   it "Adds 1 to agility check for each resource spent" $ do
     digDeep <- buildAsset "01077"
@@ -75,4 +75,4 @@ spec = describe "Dig Deep" $ do
               _ -> False
             )
       >>= runGameTestOnlyOption "apply results"
-    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game
+    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget

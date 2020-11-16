@@ -24,10 +24,6 @@ peterWarren uuid =
 instance HasModifiersFor env PeterWarren where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env PeterWarren where
-  getModifiers _ (PeterWarren Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env PeterWarren where
   getActions iid NonFast (PeterWarren attrs@Attrs {..}) = do
     baseActions <- getActions iid NonFast attrs

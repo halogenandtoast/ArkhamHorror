@@ -50,10 +50,6 @@ spec = describe "Rex Murphy" $ do
             Nothing
             SkillIntellect
             2
-            mempty
-            mempty
-            mempty
-            mempty
           ]
           (scenario ?~ scenario')
         >>= runGameTestOnlyOption "start skill test"
@@ -83,10 +79,6 @@ spec = describe "Rex Murphy" $ do
             Nothing
             SkillIntellect
             6 -- two higher
-            mempty
-            mempty
-            mempty
-            mempty
           ]
           (scenario ?~ scenario')
         >>= runGameTestOnlyOption "start skill test"
@@ -104,6 +96,6 @@ spec = describe "Rex Murphy" $ do
           (getId () rexMurphy)
           Nothing
           TestSource
-          SkillTestInitiatorTarget
+          (SkillTestInitiatorTarget TestTarget)
           0
         )

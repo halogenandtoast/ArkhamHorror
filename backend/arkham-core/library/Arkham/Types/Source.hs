@@ -8,6 +8,7 @@ import Arkham.Types.ActId
 import Arkham.Types.Action (Action)
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
+import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Id
 import Arkham.Types.EffectId
 import Arkham.Types.EnemyId
@@ -24,6 +25,7 @@ data Source
   = AssetSource AssetId
   | EnemySource EnemyId
   | InvestigatorSource InvestigatorId
+  | CardCodeSource CardCode
   | TokenSource TokenId
   | TokenEffectSource Token
   | AgendaSource AgendaId
@@ -38,7 +40,6 @@ data Source
   | ActSource ActId
   | PlayerCardSource CardId
   | TestSource
-  | EndOfTurnSource Source
   | DrawnTokenSource DrawnToken
   | ProxySource Source Source
   | EffectSource EffectId

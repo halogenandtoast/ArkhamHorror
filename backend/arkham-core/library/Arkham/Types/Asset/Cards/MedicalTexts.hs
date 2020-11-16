@@ -32,7 +32,7 @@ instance ActionRunner env => HasActions env MedicalTexts where
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env MedicalTexts where
-  runMessage msg (MedicalTexts attrs) = case msg of
+  runMessage msg a@(MedicalTexts attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- asks $ getId @LocationId (getInvestigator attrs)
       locationInvestigatorIds <- asks $ setToList . getSet locationId
@@ -46,12 +46,13 @@ instance (AssetRunner env) => RunMessage env MedicalTexts where
               Nothing
               SkillIntellect
               2
-              [HealDamage (InvestigatorTarget iid') 1]
-              [InvestigatorAssignDamage iid' (toSource attrs) 1 0]
-              []
-              mempty
           | iid' <- locationInvestigatorIds
           ]
         )
       MedicalTexts <$> runMessage msg attrs
+    PassedSkillTest _ _ source target _ | isSource attrs source ->
+      a <$ unshiftMessage (HealDamage target 1)
+    FailedSkillTest _ _ source (InvestigatorTarget iid) _
+      | isSource attrs source -> a
+      <$ unshiftMessage (InvestigatorAssignDamage iid source 1 0)
     _ -> MedicalTexts <$> runMessage msg attrs

@@ -19,16 +19,12 @@ stubbornDetective uuid = StubbornDetective $ (weaknessBaseAttrs uuid "01102")
   , enemyPrey = SetToBearer
   }
 
-instance EnemyRunner env => HasModifiersFor env StubbornDetective where
+instance HasId LocationId InvestigatorId env => HasModifiersFor env StubbornDetective where
   getModifiersFor _ (InvestigatorTarget iid) (StubbornDetective Attrs {..}) =
     do
       locationId <- asks $ getId @LocationId iid
       pure [ Blank | locationId == enemyLocation ]
   getModifiersFor _ _ _ = pure []
-
-instance HasModifiers env StubbornDetective where
-  getModifiers _ (StubbornDetective Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
 
 instance ActionRunner env => HasActions env StubbornDetective where
   getActions i window (StubbornDetective attrs) = getActions i window attrs

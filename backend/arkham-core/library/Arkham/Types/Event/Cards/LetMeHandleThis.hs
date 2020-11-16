@@ -21,7 +21,7 @@ instance HasActions env LetMeHandleThis where
   getActions iid window (LetMeHandleThis attrs) = getActions iid window attrs
 
 instance HasQueue env => RunMessage env LetMeHandleThis where
-  runMessage msg (LetMeHandleThis attrs@Attrs {..}) = case msg of
+  runMessage msg e@(LetMeHandleThis attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid (Just (TreacheryTarget tid))
       | eid == eventId -> do
         withQueue $ \queue ->
@@ -34,7 +34,12 @@ instance HasQueue env => RunMessage env LetMeHandleThis where
                 Surge iid (TreacherySource tid')
               other -> other
           in (messages, ())
-        unshiftMessage
-          (CreateEffect (toSource attrs) (InvestigatorTarget iid) eventCardCode)
-        LetMeHandleThis <$> runMessage msg (attrs & resolved .~ True)
+        e <$ unshiftMessages
+          [ CreateEffect
+            eventCardCode
+            Nothing
+            (toSource attrs)
+            (InvestigatorTarget iid)
+          , Discard (toTarget attrs)
+          ]
     _ -> LetMeHandleThis <$> runMessage msg attrs

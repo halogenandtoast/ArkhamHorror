@@ -5,8 +5,6 @@ import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import qualified Arkham.Types.Token as Token
-import Arkham.Types.TokenResponse
 
 newtype BlindingLight = BlindingLight Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -21,26 +19,11 @@ instance HasActions env BlindingLight where
   getActions i window (BlindingLight attrs) = getActions i window attrs
 
 instance (EventRunner env) => RunMessage env BlindingLight where
-  runMessage msg (BlindingLight attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      unshiftMessages
-        [ ChooseEvadeEnemy
-          iid
-          (EventSource eid)
-          SkillWillpower
-          [Damage EnemyJustEvadedTarget (EventSource eid) 1]
-          []
-          [ OnAnyToken
-              [ Token.Skull
-              , Token.Cultist
-              , Token.Tablet
-              , Token.ElderThing
-              , Token.AutoFail
-              ]
-              [LoseActions iid (EventSource eid) 1]
-          ]
-          False
-        , Discard (EventTarget eid)
-        ]
-      BlindingLight <$> runMessage msg (attrs & resolved .~ True)
+  runMessage msg e@(BlindingLight attrs@Attrs {..}) = case msg of
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
+      [ CreateEffect "01066" Nothing (toSource attrs) (InvestigatorTarget iid)
+      , CreateEffect "01066" Nothing (toSource attrs) SkillTestTarget
+      , ChooseEvadeEnemy iid (EventSource eid) SkillWillpower False
+      , Discard (EventTarget eid)
+      ]
     _ -> BlindingLight <$> runMessage msg attrs

@@ -91,7 +91,13 @@ data Location
 
 deriving anyclass instance ActionRunner env => HasActions env Location
 deriving anyclass instance LocationRunner env => RunMessage env Location
-deriving anyclass instance LocationRunner env => HasModifiersFor env Location
+deriving anyclass instance HasModifiersFor env Location
+
+instance Entity Location where
+  toTarget = toTarget . locationAttrs
+  isTarget = isTarget . locationAttrs
+  toSource = toSource . locationAttrs
+  isSource = isSource . locationAttrs
 
 newtype BaseLocation = BaseLocation Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -159,9 +165,6 @@ instance HasSet InvestigatorId () Location where
 instance HasSet ConnectedLocationId () Location where
   getSet _ =
     HashSet.map ConnectedLocationId . locationConnectedLocations . locationAttrs
-
-instance HasModifiers env Location where
-  getModifiers _ = pure . concat . toList . locationModifiers . locationAttrs
 
 instance HasId LocationId () Location where
   getId _ = locationId . locationAttrs

@@ -24,10 +24,6 @@ victoriaDevereux uuid =
 instance HasModifiersFor env VictoriaDevereux where
   getModifiersFor = noModifiersFor
 
-instance HasModifiers env VictoriaDevereux where
-  getModifiers _ (VictoriaDevereux Attrs {..}) =
-    pure . concat . toList $ enemyModifiers
-
 instance ActionRunner env => HasActions env VictoriaDevereux where
   getActions iid NonFast (VictoriaDevereux attrs@Attrs {..}) = do
     baseActions <- getActions iid NonFast attrs

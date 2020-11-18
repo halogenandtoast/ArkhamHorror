@@ -216,7 +216,8 @@ getInvestigator :: InvestigatorId -> Game queue -> Investigator
 getInvestigator iid g = g ^?! investigators . ix iid
 
 getLocation :: LocationId -> Game queue -> Location
-getLocation lid g = g ^?! locations . ix lid
+getLocation lid g =
+  fromJustNote ("Unknown location " <> show lid) $ g ^? locations . ix lid
 
 getEnemy :: EnemyId -> Game queue -> Enemy
 getEnemy eid g = g ^?! enemies . ix eid

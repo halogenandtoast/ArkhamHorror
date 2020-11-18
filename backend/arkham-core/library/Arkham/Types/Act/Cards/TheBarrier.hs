@@ -20,18 +20,22 @@ instance HasActions env TheBarrier where
 instance ActRunner env => RunMessage env TheBarrier where
   runMessage msg a@(TheBarrier attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && actSequence == "Act 2a" -> do
-      investigatorIds <- asks (setToList . getSet (LocationId "01112"))
+      hallwayId <- asks $ fromJustNote "must exist" . getId @(Maybe LocationId)
+        (LocationName "Hallway")
+      investigatorIds <- asks $ getSetList hallwayId
       requiredClueCount <- getPlayerCountValue (PerPlayer 3)
       unshiftMessages
         (SpendClues requiredClueCount investigatorIds
         : [ Ask iid $ ChooseOne [AdvanceAct aid] | iid <- investigatorIds ]
         )
       pure $ TheBarrier $ attrs & Act.sequence .~ "Act 2b" & flipped .~ True
-    AdvanceAct aid | aid == actId && actSequence == "Act 2b" ->
+    AdvanceAct aid | aid == actId && actSequence == "Act 2b" -> do
+      hallwayId <- asks $ fromJustNote "must exist" . getId @(Maybe LocationId)
+        (LocationName "Hallway")
       a <$ unshiftMessages
         [ RevealLocation Nothing "01115"
         , CreateStoryAssetAt "01117" "01115"
-        , CreateEnemyAt "01116" "01112"
+        , CreateEnemyAt "01116" hallwayId
         , NextAct aid "01110"
         ]
     EndRoundWindow -> do

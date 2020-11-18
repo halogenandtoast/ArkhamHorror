@@ -191,6 +191,8 @@ class HasTarget b a where
 
 class HasSet c b a where
   getSet :: b -> a -> HashSet c
+  getSetList :: (Hashable c, Eq c) => b -> a -> [c]
+  getSetList b a = setToList $ getSet b a
 
 class HasList c b a where
   getList :: b -> a -> [c]

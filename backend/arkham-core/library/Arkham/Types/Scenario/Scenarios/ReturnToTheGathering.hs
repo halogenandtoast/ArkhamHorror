@@ -25,11 +25,11 @@ returnToTheGathering difficulty =
                                           difficulty
                                         )
     { scenarioLocationLayout = Just
-      [ ".     .         farAboveYourHouse  .     "
-      , ".     bedroom   attic              .     "
-      , "study guestHall hallway            parlor"
-      , ".     bathroom  cellar             .     "
-      , ".     .         deepBelowYourHouse .     "
+      [ ".     .         fieldOfGraves .     "
+      , ".     bedroom   attic         .     "
+      , "study guestHall hallway       parlor"
+      , ".     bathroom  cellar        .     "
+      , ".     .         ghoulPits     .     "
       ]
     }
 

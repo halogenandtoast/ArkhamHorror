@@ -13,6 +13,7 @@ type ActRunner env
     , HasCount PlayerCount () env
     , HasSet InvestigatorId () env
     , HasId LeadInvestigatorId () env
+    , HasId (Maybe LocationId) LocationName env
     , HasSet VictoryDisplayCardCode () env
     , HasRecord env
     , HasSet LocationId () env

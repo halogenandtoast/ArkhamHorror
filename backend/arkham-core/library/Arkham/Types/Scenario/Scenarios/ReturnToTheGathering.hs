@@ -33,7 +33,7 @@ returnToTheGathering difficulty =
       ]
     }
 
-instance (HasTokenValue env InvestigatorId, HasCount EnemyCount (InvestigatorLocation, [Trait]) env) => HasTokenValue env ReturnToTheGathering where
+instance (HasTokenValue env InvestigatorId, HasCount env EnemyCount (InvestigatorLocation, [Trait])) => HasTokenValue env ReturnToTheGathering where
   getTokenValue (ReturnToTheGathering theGathering') iid =
     getTokenValue theGathering' iid
 

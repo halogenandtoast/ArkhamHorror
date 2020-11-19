@@ -26,7 +26,7 @@ instance (TreacheryRunner env) => RunMessage env ChillFromBelow where
       ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} n
       | isSource attrs source -> do
-        handCount <- asks $ unCardCount . getCount iid
+        handCount <- unCardCount <$> getCount iid
         if handCount < n
           then
             unshiftMessages

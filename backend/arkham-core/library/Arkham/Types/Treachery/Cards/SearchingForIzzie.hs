@@ -49,7 +49,7 @@ instance (TreacheryRunner env) => RunMessage env SearchingForIzzie where
       let
         attachedLocationId =
           fromJustNote "has to be set" treacheryAttachedLocation
-      shroud <- unShroud <$> asks (getCount attachedLocationId)
+      shroud <- unShroud <$> getCount attachedLocationId
       t <$ unshiftMessage
         (BeginSkillTest
           iid

@@ -212,27 +212,40 @@ campaign = lens gameCampaign $ \m x -> m { gameCampaign = x }
 skillTest :: Lens' (Game queue) (Maybe SkillTest)
 skillTest = lens gameSkillTest $ \m x -> m { gameSkillTest = x }
 
-getInvestigator :: InvestigatorId -> Game queue -> Investigator
-getInvestigator iid g = g ^?! investigators . ix iid
+getInvestigator :: MonadReader (Game queue) m => InvestigatorId -> m Investigator
+getInvestigator iid = fromJustNote missingInvestigator . preview (investigators . ix iid) <$> ask
+  where
+    missingInvestigator = error $ "Unknown investigator: " <> show iid
 
-getLocation :: LocationId -> Game queue -> Location
-getLocation lid g =
-  fromJustNote ("Unknown location " <> show lid) $ g ^? locations . ix lid
+getLocation :: MonadReader (Game queue) m => LocationId -> m Location
+getLocation lid = fromJustNote missingLocation . preview (locations . ix lid) <$> ask
+  where
+    missingLocation = error $ "Unknown location: " <> show lid
 
-getEnemy :: EnemyId -> Game queue -> Enemy
-getEnemy eid g = g ^?! enemies . ix eid
+getEnemy :: MonadReader (Game queue) m => EnemyId -> m Enemy
+getEnemy eid = fromJustNote missingEnemy . preview (enemies . ix eid) <$> ask
+  where
+    missingEnemy = error $ "Unknown enemy: " <> show eid
 
-getAgenda :: AgendaId -> Game queue -> Agenda
-getAgenda aid g = g ^?! agendas . ix aid
+getAgenda :: MonadReader (Game queue) m => AgendaId -> m Agenda
+getAgenda aid = fromJustNote missingAgenda . preview (agendas . ix aid) <$> ask
+  where
+    missingAgenda = error $ "Unknown agenda: " <> show aid
 
-getAsset :: AssetId -> Game queue -> Asset
-getAsset aid g = g ^?! assets . ix aid
+getAsset :: MonadReader (Game queue) m => AssetId -> m Asset
+getAsset aid = fromJustNote missingAsset . preview (assets . ix aid) <$> ask
+  where
+    missingAsset = error $ "Unknown asset: " <> show aid
 
-getTreachery :: TreacheryId -> Game queue -> Treachery
-getTreachery tid g = g ^?! treacheries . ix tid
+getTreachery :: MonadReader (Game queue) m => TreacheryId -> m Treachery
+getTreachery tid = fromJustNote missingTreachery . preview (treacheries . ix tid) <$> ask
+  where
+    missingTreachery = error $ "Unknown treachery: " <> show tid
 
-getEvent :: EventId -> Game queue -> Event
-getEvent eid g = g ^?! events . ix eid
+getEvent :: MonadReader (Game queue) m => EventId -> m Event
+getEvent eid = fromJustNote missingEvent . preview (events . ix eid) <$> ask
+  where
+    missingEvent = error $ "Unknown event: " <> show eid
 
 activeInvestigator :: Game queue -> Investigator
 activeInvestigator g = getInvestigator (g ^. activeInvestigatorId) g
@@ -419,134 +432,143 @@ instance HasId LocationId InvestigatorId (Game queue) where
 instance HasId LocationId EnemyId (Game queue) where
   getId eid = getId () . getEnemy eid
 
-instance HasCount ActsRemainingCount () (Game queue) where
-  getCount _ g = ActsRemainingCount $ length remainingActs
+instance HasCount (Game queue) ActsRemainingCount () where
+  getCount _ = do
+    actIds <- scenarioActs . fromJustNote "scenario has to be set" . view scenario <$> ask
+    activeActIds <- keys . view acts <$> ask
+    let
+      currentActId = case activeActIds of
+        [aid] -> aid
+        _ -> error "Cannot handle multiple acts"
+      (_, _ : remainingActs) = break (== currentActId) actIds
+    pure $ ActsRemainingCount $ length remainingActs
+
+instance HasCount (Game queue) ActionTakenCount InvestigatorId where
+  getCount iid = getCount =<< getInvestigator iid
+
+instance HasCount (Game queue) ActionRemainingCount (Maybe Action, [Trait], InvestigatorId) where
+  getCount (maction, traits, iid) =
+    getCount . (maction, traits,) =<< getInvestigator iid
+
+instance HasCount (Game queue) SanityDamageCount EnemyId where
+  getCount eid = getCount =<< getEnemy eid
+
+instance HasCount (Game queue) HealthDamageCount EnemyId where
+  getCount eid = getCount =<< getEnemy eid
+
+instance HasCount (Game queue) HorrorCount InvestigatorId where
+  getCount iid = HorrorCount . snd . getDamage <$> getInvestigator iid
+
+instance HasCount (Game queue) DamageCount EnemyId where
+  getCount eid = DamageCount . snd . getDamage <$> getEnemy eid
+
+instance HasCount (Game queue) TreacheryCount (LocationId, CardCode) where
+  getCount (lid, cardCode) = do
+    g <- ask
+    location <- getLocation lid
+    let treacheries' = getSet () location
+    pure . TreacheryCount $ count (== cardCode) (cardCodes g treacheries')
    where
-    (_, _ : remainingActs) = break (== currentActId) actIds
-    actIds =
-      scenarioActs . fromJustNote "scenario has to be set" $ view scenario g
-    currentActId = case keys (view acts g) of
-      [aid] -> aid
-      _ -> error "Cannot handle multiple acts"
-
-instance HasCount ActionTakenCount InvestigatorId (Game queue) where
-  getCount iid = getCount () . getInvestigator iid
-
-instance HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) (Game queue) where
-  getCount (iid, maction, traits) =
-    getCount (maction, traits) . getInvestigator iid
-
-instance HasCount SanityDamageCount EnemyId GameInternal where
-  getCount eid = getCount () . getEnemy eid
-
-instance HasCount HealthDamageCount EnemyId GameInternal where
-  getCount eid = getCount () . getEnemy eid
-
-instance HasCount HorrorCount InvestigatorId GameInternal where
-  getCount iid = HorrorCount . snd . getDamage . getInvestigator iid
-
-instance HasCount DamageCount EnemyId GameInternal where
-  getCount eid = DamageCount . snd . getDamage . getEnemy eid
-
-instance HasCount TreacheryCount (LocationId, CardCode) (Game queue) where
-  getCount (lid, cardCode) g = TreacheryCount $ count (== cardCode) cardCodes
-   where
-    location = getLocation lid g
-    treacheries' = getSet () location
-    cardCodes =
+    cardCodes g treacheries' =
       [ getCardCode c
       | (i, c) <- mapToList (g ^. treacheries)
       , i `member` treacheries'
       ]
 
-instance HasCount DoomCount EnemyId (Game queue) where
-  getCount eid = getCount () . getEnemy eid
+instance HasCount (Game queue) DoomCount EnemyId where
+  getCount eid = getCount =<< getEnemy eid
 
-instance HasCount DoomCount AgendaId (Game queue) where
-  getCount aid = getCount () . getAgenda aid
+instance HasCount (Game queue) DoomCount AgendaId where
+  getCount aid = getCount =<< getAgenda aid
 
-instance HasCount XPCount () (Game queue) where
-  getCount _ g =
-    XPCount
+instance HasCount (Game queue) XPCount () where
+  getCount _ = do
+    g <- ask
+    pure $ XPCount
       $ (sum . mapMaybe getVictoryPoints $ g ^. victoryDisplay)
       + (sum . mapMaybe getVictoryPoints . toList $ g ^. locations)
 
-instance HasCount DoomCount () (Game queue) where
-  getCount _ g =
-    DoomCount
+instance HasCount (Game queue) DoomCount () where
+  getCount _ = do
+    g <- ask
+    pure $ DoomCount
       . sum
       . map unDoomCount
-      $ (map (getCount ()) . toList $ g ^. enemies)
-      <> (map (getCount ()) . toList $ g ^. locations)
-      <> (map (getCount ()) . toList $ g ^. assets)
-      <> (map (getCount ()) . toList $ g ^. treacheries)
-      <> (map (getCount ()) . toList $ g ^. agendas)
+      $ (map (flip runReader g . getCount) . toList $ g ^. enemies)
+      <> (map (flip runReader g . getCount) . toList $ g ^. locations)
+      <> (map (flip runReader g . getCount) . toList $ g ^. assets)
+      <> (map (flip runReader g . getCount) . toList $ g ^. treacheries)
+      <> (map (flip runReader g . getCount) . toList $ g ^. agendas)
 
-instance HasCount ClueCount LocationId (Game queue) where
-  getCount lid = getCount () . getLocation lid
+instance HasCount (Game queue) ClueCount LocationId where
+  getCount lid = getCount =<< getLocation lid
 
-instance HasCount Shroud LocationId (Game queue) where
-  getCount lid = getCount () . getLocation lid
+instance HasCount (Game queue) Shroud LocationId where
+  getCount lid = getCount =<< getLocation lid
 
-instance HasCount CardCount InvestigatorId (Game queue) where
-  getCount iid = getCount () . getInvestigator iid
+instance HasCount (Game queue) CardCount InvestigatorId where
+  getCount iid = getCount =<< getInvestigator iid
 
-instance HasCount ClueCount InvestigatorId (Game queue) where
-  getCount iid = getCount () . getInvestigator iid
+instance HasCount (Game queue) ClueCount InvestigatorId where
+  getCount iid = getCount =<< getInvestigator iid
 
-instance (GameRunner env, env ~ Game queue) => HasCount SpendableClueCount InvestigatorId (Game queue) where
-  getCount iid g =
-    runReader (getInvestigatorSpendableClueCount (getInvestigator iid g)) g
+instance (HasQueue (Game queue), HasActions (Game queue) (ActionType, Trait), HasActions (Game queue) ActionType) => HasCount (Game queue) SpendableClueCount InvestigatorId where
+  getCount iid = getInvestigatorSpendableClueCount =<< getInvestigator iid
 
-instance HasCount ResourceCount InvestigatorId (Game queue) where
-  getCount iid = getCount () . getInvestigator iid
+instance HasCount (Game queue) ResourceCount InvestigatorId where
+  getCount iid = getCount =<< getInvestigator iid
 
-instance HasCount PlayerCount () (Game queue) where
-  getCount _ = PlayerCount . length . view investigators
+instance HasCount (Game queue) PlayerCount () where
+  getCount _ = PlayerCount . length . view investigators <$> ask
 
-instance HasCount EnemyCount InvestigatorId (Game queue) where
-  getCount iid = getCount () . getInvestigator iid
+instance HasCount (Game queue) EnemyCount InvestigatorId where
+  getCount iid = getCount =<< getInvestigator iid
 
-instance HasCount AssetCount (InvestigatorId, [Trait]) (Game queue) where
-  getCount (iid, traits) g@Game {..} =
-    let investigatorAssets = toList $ getSet () investigator
-    in AssetCount $ count assetMatcher investigatorAssets
+instance HasCount (Game queue) AssetCount (InvestigatorId, [Trait]) where
+  getCount (iid, traits) = do
+    g <- ask
+    let
+      investigator = getInvestigator iid g
+      investigatorAssets = getSetList () investigator
+    pure . AssetCount $ count (assetMatcher g) investigatorAssets
    where
-    investigator = getInvestigator iid g
-    assetMatcher aid = any (`member` (getTraits $ getAsset aid g)) traits
+    assetMatcher g aid = any (`member` (getTraits $ getAsset aid g)) traits
 
-instance HasCount EnemyCount [Trait] (Game queue) where
-  getCount traits g@Game {..} = EnemyCount . length $ filterMap
-    enemyMatcher
-    (view enemies g)
+instance HasCount (Game queue) EnemyCount [Trait] where
+  getCount traits = do
+    g <- ask
+    pure . EnemyCount . length $ filterMap
+      enemyMatcher
+      (view enemies g)
     where enemyMatcher enemy = any (`member` getTraits enemy) traits
 
-instance HasCount EnemyCount (LocationId, [Trait]) (Game queue) where
-  getCount (lid, traits) g@Game {..} = case mlocation of
-    Just location ->
-      let locationEnemies = toList $ getSet () location
-      in EnemyCount $ count enemyMatcher locationEnemies
-    Nothing -> EnemyCount 0
+instance HasCount (Game queue) EnemyCount (LocationId, [Trait]) where
+  getCount (lid, traits) = do
+    mlocation <- asks $ preview (locations . ix lid)
+    g <- ask
+    case mlocation of
+      Just location -> do
+        let locationEnemies = getSetList () location
+         in pure . EnemyCount $ count (enemyMatcher g) locationEnemies
+      Nothing -> pure $ EnemyCount 0
    where
-    mlocation = g ^? locations . ix lid
-    enemyMatcher eid = any (`member` (getTraits $ getEnemy eid g)) traits
+    enemyMatcher g eid = any (`member` (getTraits $ getEnemy eid g)) traits
 
-instance HasCount EnemyCount (InvestigatorLocation, [Trait]) (Game queue) where
-  getCount (InvestigatorLocation iid, traits) g@Game {..} = getCount
-    (locationId, traits)
-    g
-    where locationId = locationFor iid g
+instance HasCount (Game queue) EnemyCount (InvestigatorLocation, [Trait]) where
+  getCount (InvestigatorLocation iid, traits) = do
+    locationId <- locationFor iid <$> ask
+    getCount (locationId, traits)
 
-instance (HasModifiersFor env env, env ~ Game queue) => HasStats (InvestigatorId, Maybe Action) (Game queue) where
-  getStats (iid, maction) source g =
-    runReaderT (modifiedStatsOf source maction (getInvestigator iid g)) g
+instance (HasModifiersFor env env, env ~ Game queue) => HasStats (Game queue) (InvestigatorId, Maybe Action) where
+  getStats (iid, maction) source =
+    modifiedStatsOf source maction =<< (getInvestigator iid <$> ask)
 
 instance
   (env ~ Game queue
-  , HasCount DoomCount () env
-  , HasCount DoomCount EnemyId env
-  , HasCount EnemyCount (InvestigatorLocation, [Trait]) env
-  , HasCount EnemyCount [Trait] env
+  , HasCount env DoomCount ()
+  , HasCount env DoomCount EnemyId
+  , HasCount env EnemyCount (InvestigatorLocation, [Trait])
+  , HasCount env EnemyCount [Trait]
   , HasSet EnemyId Trait env
   , HasSet Trait LocationId env
   , HasTokenValue env InvestigatorId
@@ -559,12 +581,11 @@ instance
 
 instance
   (env ~ Game queue
-  , HasCount ClueCount LocationId env
+  , HasCount env ClueCount LocationId
   )
   => HasTokenValue (Game queue) InvestigatorId where
   getTokenValue iid' iid token = do
-    env <- ask
-    let investigator = getInvestigator iid' env
+    investigator <- asks $ getInvestigator iid'
     getTokenValue investigator iid token
 
 instance (GameRunner env, env ~ Game queue) => HasModifiersFor env (Game queue) where
@@ -599,7 +620,7 @@ instance HasList InPlayCard InvestigatorId (Game queue) where
   getList iid g = do
     let
       investigator = getInvestigator iid g
-      assets' = map (`getAsset` g) . setToList $ getSet () investigator
+      assets' = map (`getAsset` g) $ getSetList () investigator
     map
       (\asset -> InPlayCard . PlayerCard $ lookupPlayerCard
         (getCardCode asset)
@@ -706,10 +727,10 @@ instance HasSet VictoryDisplayCardCode () (Game queue) where
       . view victoryDisplay
 
 instance HasSet ClueCount () (Game queue) where
-  getSet _ = setFromList . map (getCount ()) . toList . view investigators
+  getSet _ g = setFromList . map (flip runReader g . getCount) . toList $ view investigators g
 
 instance HasSet CardCount () (Game queue) where
-  getSet _ = setFromList . map (getCount ()) . toList . view investigators
+  getSet _ g = setFromList . map (flip runReader g . getCount) . toList $ view investigators g
 
 instance (GameRunner env, env ~ Game queue) => HasSet RemainingHealth () (Game queue) where
   getSet _ g =
@@ -725,13 +746,15 @@ instance (GameRunner env, env ~ Game queue) => HasSet RemainingSanity () (Game q
       . toList
       $ view investigators g
 
-instance (GameRunner env, env ~ Game queue) => HasCount RemainingHealth InvestigatorId (Game queue) where
-  getCount iid g =
-    RemainingHealth $ runReader (getRemainingHealth $ getInvestigator iid g) g
+instance (GameRunner env, env ~ Game queue) => HasCount (Game queue) RemainingHealth InvestigatorId where
+  getCount iid = do
+    g <- ask
+    RemainingHealth <$> getRemainingHealth (getInvestigator iid g)
 
-instance (GameRunner env, env ~ Game queue) => HasCount RemainingSanity InvestigatorId (Game queue) where
-  getCount iid g =
-    RemainingSanity $ runReader (getRemainingSanity $ getInvestigator iid g) g
+instance (GameRunner env, env ~ Game queue) => HasCount (Game queue) RemainingSanity InvestigatorId where
+  getCount iid = do
+    g <- ask
+    RemainingSanity <$> getRemainingSanity (getInvestigator iid g)
 
 instance HasSet LocationId () (Game queue) where
   getSet _ = keysSet . view locations
@@ -1280,55 +1303,39 @@ broadcastWindow builder currentInvestigatorId g =
           ]
         )
 
-instance HasActions GameInternal (ActionType, GameInternal) where
-  getActions iid window (actionType, g) = case actionType of
-    EnemyActionType -> concatMapM' (getActions iid window) (g ^. enemies)
-    LocationActionType -> concatMapM' (getActions iid window) (g ^. locations)
-    AssetActionType -> concatMapM' (getActions iid window) (g ^. assets)
-    TreacheryActionType ->
-      concatMapM' (getActions iid window) (g ^. treacheries)
-    ActActionType -> concatMapM' (getActions iid window) (g ^. acts)
-    AgendaActionType -> concatMapM' (getActions iid window) (g ^. agendas)
-    InvestigatorActionType ->
-      concatMapM' (getActions iid window) (g ^. investigators)
+instance HasActions GameInternal ActionType where
+  getActions iid window actionType = do
+    g <- ask
+    case actionType of
+      EnemyActionType -> concatMapM' (getActions iid window) (g ^. enemies)
+      LocationActionType -> concatMapM' (getActions iid window) (g ^. locations)
+      AssetActionType -> concatMapM' (getActions iid window) (g ^. assets)
+      TreacheryActionType ->
+        concatMapM' (getActions iid window) (g ^. treacheries)
+      ActActionType -> concatMapM' (getActions iid window) (g ^. acts)
+      AgendaActionType -> concatMapM' (getActions iid window) (g ^. agendas)
+      InvestigatorActionType ->
+        concatMapM' (getActions iid window) (g ^. investigators)
 
-instance HasActions GameInternal (ActionType, Trait, GameInternal) where
-  getActions iid window (actionType, trait, g) = case actionType of
-    EnemyActionType -> concatMapM'
-      (getActions iid window)
-      (filterMap ((trait `elem`) . getTraits) $ g ^. enemies)
-    LocationActionType -> concatMapM'
-      (getActions iid window)
-      (filterMap ((trait `elem`) . getTraits) $ g ^. locations)
-    AssetActionType -> concatMapM'
-      (getActions iid window)
-      (filterMap ((trait `elem`) . getTraits) $ g ^. assets)
-    TreacheryActionType -> concatMapM'
-      (getActions iid window)
-      (filterMap ((trait `elem`) . getTraits) $ g ^. treacheries)
-    InvestigatorActionType -> pure [] -- do we need these
-    ActActionType -> pure [] -- acts do not have traits
-    AgendaActionType -> pure [] -- agendas do not have traits
-
-instance
-  (HasActions env (ActionType, Game queue))
-  => HasActions env (Game queue) where
-  getActions iid window g = do
-    locationActions <- getActions iid window (LocationActionType, g)
-    enemyActions <- getActions iid window (EnemyActionType, g)
-    assetActions <- getActions iid window (AssetActionType, g)
-    treacheryActions <- getActions iid window (TreacheryActionType, g)
-    actActions <- getActions iid window (ActActionType, g)
-    agendaActions <- getActions iid window (AgendaActionType, g)
-    investigatorActions <- getActions iid window (InvestigatorActionType, g)
-    pure
-      $ enemyActions
-      <> locationActions
-      <> assetActions
-      <> treacheryActions
-      <> actActions
-      <> agendaActions
-      <> investigatorActions
+instance HasActions GameInternal (ActionType, Trait) where
+  getActions iid window (actionType, trait) = do
+    g <- ask
+    case actionType of
+      EnemyActionType -> concatMapM'
+        (getActions iid window)
+        (filterMap ((trait `elem`) . getTraits) $ g ^. enemies)
+      LocationActionType -> concatMapM'
+        (getActions iid window)
+        (filterMap ((trait `elem`) . getTraits) $ g ^. locations)
+      AssetActionType -> concatMapM'
+        (getActions iid window)
+        (filterMap ((trait `elem`) . getTraits) $ g ^. assets)
+      TreacheryActionType -> concatMapM'
+        (getActions iid window)
+        (filterMap ((trait `elem`) . getTraits) $ g ^. treacheries)
+      InvestigatorActionType -> pure [] -- do we need these
+      ActActionType -> pure [] -- acts do not have traits
+      AgendaActionType -> pure [] -- agendas do not have traits
 
 instance (GameRunner (Game queue)) => HasActions (Game queue) AssetId where
   getActions iid window aid = ask >>= getActions iid window . getAsset aid

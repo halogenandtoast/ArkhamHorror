@@ -107,9 +107,9 @@ data Asset
 deriving anyclass instance ActionRunner env => HasActions env Asset
 deriving anyclass instance
   ( HasId LocationId InvestigatorId env
-  , HasCount ResourceCount InvestigatorId env
-  , HasCount CardCount InvestigatorId env
-  , HasCount AssetCount (InvestigatorId, [Trait]) env
+  , HasCount env ResourceCount InvestigatorId
+  , HasCount env CardCount InvestigatorId
+  , HasCount env AssetCount (InvestigatorId, [Trait])
   )
   => HasModifiersFor env Asset
 deriving anyclass instance AssetRunner env => RunMessage env Asset
@@ -166,11 +166,11 @@ instance HasId (Maybe OwnerId) () Asset where
 instance HasId (Maybe LocationId) () Asset where
   getId _ = assetLocation . assetAttrs
 
-instance HasCount DoomCount () Asset where
-  getCount _ = DoomCount . assetDoom . assetAttrs
+instance HasCount env DoomCount Asset where
+  getCount = pure . DoomCount . assetDoom . assetAttrs
 
-instance HasCount UsesCount () Asset where
-  getCount _ asset = case uses' of
+instance HasCount env UsesCount Asset where
+  getCount asset = pure $ case uses' of
     NoUses -> UsesCount 0
     Uses _ n -> UsesCount n
     where uses' = assetUses (assetAttrs asset)

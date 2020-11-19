@@ -31,7 +31,7 @@ instance ActionRunner env => HasActions env StudyAberrantGateway where
     baseActions <- getActions iid NonFast attrs
     leadInvestigatorId <- getLeadInvestigatorId
     canActivate <- asks $ (>= 2) . unActionRemainingCount . getCount
-      (iid, Nothing :: Maybe Action, setToList (locationTraits attrs))
+      (Nothing :: Maybe Action, setToList (locationTraits attrs), iid)
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction

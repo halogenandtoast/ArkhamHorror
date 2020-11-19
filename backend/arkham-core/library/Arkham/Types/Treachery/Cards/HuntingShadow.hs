@@ -1,15 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Treachery.Cards.HuntingShadow where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Query
+import Arkham.Import
+
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
-import ClassyPrelude
-import Lens.Micro
 
 newtype HuntingShadow = HuntingShadow Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -26,7 +21,7 @@ instance HasActions env HuntingShadow where
 instance (TreacheryRunner env) => RunMessage env HuntingShadow where
   runMessage msg (HuntingShadow attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      playerSpendableClueCount <- unSpendableClueCount <$> asks (getCount iid)
+      playerSpendableClueCount <- unSpendableClueCount <$> getCount iid
       if playerSpendableClueCount > 0
         then unshiftMessage
           (Ask iid $ ChooseOne

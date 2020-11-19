@@ -25,7 +25,7 @@ instance (TreacheryRunner env) => RunMessage env ObscuringFog where
     Revelation iid source | isSource attrs source -> do
       currentLocationId <- asks (getId iid)
       obscuringFogCount <- unTreacheryCount
-        <$> asks (getCount (currentLocationId, treacheryCardCode))
+        <$> getCount (currentLocationId, treacheryCardCode)
       if obscuringFogCount > 0
         then pure t -- Revelation did not run
         else do

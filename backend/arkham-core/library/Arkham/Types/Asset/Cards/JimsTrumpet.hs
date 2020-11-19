@@ -51,12 +51,12 @@ instance (AssetRunner env) => RunMessage env JimsTrumpet where
       let ownerId = fromJustNote "must be owned" assetInvestigator
       locationId <- asks $ getId ownerId
       connectedLocationIds <-
-        asks $ map unConnectedLocationId . setToList . getSet locationId
+        asks $ map unConnectedLocationId . getSetList locationId
       investigatorIds <- concat <$> for
         (locationId : connectedLocationIds)
         (asks . (setToList .) . getSet)
       pairings <- for investigatorIds
-        $ \targetId -> asks $ (targetId, ) . unHorrorCount . getCount targetId
+        $ \targetId -> (targetId, ) . unHorrorCount <$> getCount targetId
       let choices = map fst $ filter ((> 0) . snd) pairings
       a <$ unshiftMessage
         (chooseOne

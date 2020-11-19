@@ -52,8 +52,8 @@ data Investigator
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance HasCount AssetCount (InvestigatorId, [Trait]) env => HasModifiersFor env Investigator
-deriving anyclass instance HasCount ClueCount LocationId env => HasTokenValue env Investigator
+deriving anyclass instance HasCount env AssetCount (InvestigatorId, [Trait]) => HasModifiersFor env Investigator
+deriving anyclass instance HasCount env ClueCount LocationId => HasTokenValue env Investigator
 
 instance Eq Investigator where
   a == b = getInvestigatorId a == getInvestigatorId b
@@ -83,7 +83,7 @@ instance HasModifiersFor env BaseInvestigator where
 instance ActionRunner env => HasActions env BaseInvestigator where
   getActions iid window (BaseInvestigator attrs) = getActions iid window attrs
 
-instance (InvestigatorRunner env) => RunMessage env BaseInvestigator where
+instance InvestigatorRunner env => RunMessage env BaseInvestigator where
   runMessage msg (BaseInvestigator attrs) =
     BaseInvestigator <$> runMessage msg attrs
 
@@ -145,30 +145,38 @@ instance HasList DiscardableHandCard () Investigator where
       PlayerCard pc -> pcWeakness pc
       EncounterCard _ -> True -- maybe?
 
-instance HasCount ActionTakenCount () Investigator where
-  getCount _ i = ActionTakenCount . length $ investigatorActionsTaken a
-    where a = investigatorAttrs i
+instance HasCount env ActionTakenCount Investigator where
+  getCount =
+    pure
+      . ActionTakenCount
+      . length
+      . investigatorActionsTaken
+      . investigatorAttrs
 
-instance HasCount ActionRemainingCount (Maybe Action, [Trait]) Investigator where
-  getCount (_maction, traits) i =
+instance HasCount env ActionRemainingCount (Maybe Action, [Trait], Investigator) where
+  getCount (_maction, traits, i) =
     let
       tomeActionCount = if Tome `elem` traits
         then fromMaybe 0 (investigatorTomeActions a)
         else 0
-    in ActionRemainingCount $ investigatorRemainingActions a + tomeActionCount
+    in
+      pure
+      . ActionRemainingCount
+      $ investigatorRemainingActions a
+      + tomeActionCount
     where a = investigatorAttrs i
 
-instance HasCount EnemyCount () Investigator where
-  getCount _ = EnemyCount . length . getSet @EnemyId ()
+instance HasCount env EnemyCount Investigator where
+  getCount = pure . EnemyCount . length . getSet @EnemyId ()
 
-instance HasCount ResourceCount () Investigator where
-  getCount _ = ResourceCount . investigatorResources . investigatorAttrs
+instance HasCount env ResourceCount Investigator where
+  getCount = pure . ResourceCount . investigatorResources . investigatorAttrs
 
-instance HasCount CardCount () Investigator where
-  getCount _ = CardCount . length . investigatorHand . investigatorAttrs
+instance HasCount env CardCount Investigator where
+  getCount = pure . CardCount . length . investigatorHand . investigatorAttrs
 
-instance HasCount ClueCount () Investigator where
-  getCount _ = ClueCount . investigatorClues . investigatorAttrs
+instance HasCount env ClueCount Investigator where
+  getCount = pure . ClueCount . investigatorClues . investigatorAttrs
 
 getInvestigatorSpendableClueCount
   :: (MonadReader env m, HasModifiersFor env env)
@@ -277,14 +285,16 @@ getIsPrey LowestRemainingSanity i = do
 getIsPrey (Bearer bid) i = pure $ unBearerId bid == unInvestigatorId
   (investigatorId $ investigatorAttrs i)
 getIsPrey MostClues i = do
+  clueCount <- unClueCount <$> getCount i
   mostClueCount <-
     asks $ fromMaybe 0 . maximumMay . map unClueCount . setToList . getSet ()
-  pure $ mostClueCount == unClueCount (getCount () i)
+  pure $ mostClueCount == clueCount
 getIsPrey FewestCards i = do
   env <- ask
+  cardCount <- unCardCount <$> getCount i
   pure
     $ fromMaybe 100 (minimumMay . map unCardCount . toList $ getSet () env)
-    == unCardCount (getCount () i)
+    == cardCount
 getIsPrey (NearestToEnemyWithTrait trait) i = do
   env <- ask
   let

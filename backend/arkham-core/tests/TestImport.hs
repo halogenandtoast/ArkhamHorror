@@ -177,7 +177,7 @@ testUnconnectedLocations f1 f2 = do
   pure (location1, location2)
 
 getActionsOf
-  :: (MonadIO m, HasActions GameInternal a, TestEntity a)
+  :: (HasActions GameInternal a, TestEntity a)
   => GameExternal
   -> Investigator
   -> Window

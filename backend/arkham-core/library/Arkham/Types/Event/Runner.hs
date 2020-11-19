@@ -13,22 +13,22 @@ import Arkham.Types.Trait
 
 type EventRunner env
   = ( HasQueue env
+    , HasCount env ClueCount InvestigatorId
+    , HasCount env ClueCount LocationId
+    , HasCount env PlayerCount ()
     , HasId LocationId InvestigatorId env
-    , HasCount ClueCount LocationId env
-    , HasCount PlayerCount () env
-    , HasSet InvestigatorId LocationId env
-    , HasSet EnemyId LocationId env
-    , HasSet ConnectedLocationId LocationId env
-    , HasSet EnemyId InvestigatorId env
-    , HasSet EmptyLocationId () env
-    , HasSet InvestigatorId () env
-    , HasSet RevealedLocationId () env
-    , HasSet ExhaustedEnemyId LocationId env
-    , HasSet Trait EnemyId env
-    , HasSet Trait AssetId env
-    , HasSet AssetId InvestigatorId env
-    , HasCount ClueCount InvestigatorId env
-    , HasTarget ForSkillTest env
-    , HasRoundHistory env
     , HasList DiscardableHandCard InvestigatorId env
+    , HasRoundHistory env
+    , HasSet AssetId InvestigatorId env
+    , HasSet ConnectedLocationId LocationId env
+    , HasSet EmptyLocationId () env
+    , HasSet EnemyId InvestigatorId env
+    , HasSet EnemyId LocationId env
+    , HasSet ExhaustedEnemyId LocationId env
+    , HasSet InvestigatorId () env
+    , HasSet InvestigatorId LocationId env
+    , HasSet RevealedLocationId () env
+    , HasSet Trait AssetId env
+    , HasSet Trait EnemyId env
+    , HasTarget ForSkillTest env
     )

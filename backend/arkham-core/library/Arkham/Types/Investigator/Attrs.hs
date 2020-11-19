@@ -1272,7 +1272,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   BeforeSkillTest iid skillType | iid == investigatorId -> do
     committedCardIds <- asks $ map unCommittedCardId . setToList . getSet iid
     committedCardCodes <- asks $ HashSet.map unCommittedCardCode . getSet ()
-    actions <- join $ asks (getActions iid (WhenSkillTest skillType))
+    actions <- getActions iid (WhenSkillTest skillType) ()
     isScenarioAbility <- getIsScenarioAbility
     source <-
       asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
@@ -1372,7 +1372,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure a
   CheckWindow iid windows | iid == investigatorId -> do
     actions <- fmap concat <$> for windows $ \window -> do
-      join (asks (getActions iid window))
+      getActions iid window ()
     playableCards <- getPlayableCards a windows
     if not (null playableCards) || not (null actions)
       then a <$ unshiftMessage
@@ -1530,9 +1530,9 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     | iid == iid' && iid == investigatorId -> do
       a <$ unshiftMessage (CheckWindow iid [AfterPassSkillTest source You n])
   PlayerWindow iid additionalActions | iid == investigatorId -> do
-    actions <- join $ asks (getActions iid NonFast)
-    fastActions <- join $ asks (getActions iid (DuringTurn You))
-    playerWindowActions <- join $ asks (getActions iid FastPlayerWindow)
+    actions <- getActions iid NonFast ()
+    fastActions <- getActions iid (DuringTurn You) ()
+    playerWindowActions <- getActions iid FastPlayerWindow ()
     modifiers' <-
       getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) =<< ask
     canAffordTakeResources <- getCanAfford a Action.Resource

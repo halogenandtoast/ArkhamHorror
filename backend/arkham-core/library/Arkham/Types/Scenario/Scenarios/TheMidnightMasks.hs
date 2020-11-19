@@ -32,15 +32,15 @@ theMidnightMasks difficulty =
     , scenarioDeck = Just []
     }
 
-instance (HasTokenValue env InvestigatorId, HasCount DoomCount () env, HasCount DoomCount EnemyId env, HasSet EnemyId Trait env) => HasTokenValue env TheMidnightMasks where
+instance (HasTokenValue env InvestigatorId, HasCount env DoomCount (), HasCount env DoomCount EnemyId, HasSet EnemyId Trait env) => HasTokenValue env TheMidnightMasks where
   getTokenValue (TheMidnightMasks attrs) iid = \case
     Skull | isEasyStandard attrs -> do
       cultists <- asks $ setToList . getSet @EnemyId Trait.Cultist
-      doomCounts <- traverse (asks . (unDoomCount .) . getCount) cultists
+      doomCounts <- traverse ((unDoomCount <$>) . getCount) cultists
       let tokenValue' = maximum $ ncons 0 doomCounts
       pure $ TokenValue Skull (NegativeModifier tokenValue')
     Skull | isHardExpert attrs -> do
-      doomCount <- asks $ unDoomCount . getCount ()
+      doomCount <- unDoomCount <$> getCount ()
       pure $ TokenValue Skull (NegativeModifier doomCount)
     Cultist -> pure $ TokenValue Cultist (NegativeModifier 2)
     Tablet -> do
@@ -96,7 +96,7 @@ introPart2 = FlavorText
                            \ cultists we find before midnight, the better.”"
   ]
 
-instance (ScenarioRunner env) => RunMessage env TheMidnightMasks where
+instance ScenarioRunner env => RunMessage env TheMidnightMasks where
   runMessage msg s@(TheMidnightMasks attrs@Attrs {..}) = case msg of
     Setup -> do
       count' <- getPlayerCount

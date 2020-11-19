@@ -26,27 +26,27 @@ import ClassyPrelude
 
 type GameRunner env
   = ( HasQueue env
-    , ( HasCount ActsRemainingCount () env
-      , HasCount ActionTakenCount InvestigatorId env
-      , HasCount AssetCount (InvestigatorId, [Trait]) env
-      , HasCount CardCount InvestigatorId env
-      , HasCount ClueCount InvestigatorId env
-      , HasCount ClueCount LocationId env
-      , HasCount DoomCount () env
-      , HasCount XPCount () env
-      , HasCount DoomCount EnemyId env
-      , HasCount EnemyCount InvestigatorId env
-      , HasCount EnemyCount (InvestigatorLocation, [Trait]) env
-      , HasCount EnemyCount [Trait] env
-      , HasCount HealthDamageCount EnemyId env
-      , HasCount HorrorCount InvestigatorId env
-      , HasCount PlayerCount () env
-      , HasCount RemainingSanity InvestigatorId env
-      , HasCount ResourceCount InvestigatorId env
-      , HasCount SanityDamageCount EnemyId env
-      , HasCount Shroud LocationId env
-      , HasCount SpendableClueCount InvestigatorId env
-      , HasCount TreacheryCount (LocationId, CardCode) env
+    , ( HasCount env ActsRemainingCount ()
+      , HasCount env ActionTakenCount InvestigatorId
+      , HasCount env AssetCount (InvestigatorId, [Trait])
+      , HasCount env CardCount InvestigatorId
+      , HasCount env ClueCount InvestigatorId
+      , HasCount env ClueCount LocationId
+      , HasCount env DoomCount ()
+      , HasCount env XPCount ()
+      , HasCount env DoomCount EnemyId
+      , HasCount env EnemyCount InvestigatorId
+      , HasCount env EnemyCount (InvestigatorLocation, [Trait])
+      , HasCount env EnemyCount [Trait]
+      , HasCount env HealthDamageCount EnemyId
+      , HasCount env HorrorCount InvestigatorId
+      , HasCount env PlayerCount ()
+      , HasCount env RemainingSanity InvestigatorId
+      , HasCount env ResourceCount InvestigatorId
+      , HasCount env SanityDamageCount EnemyId
+      , HasCount env Shroud LocationId
+      , HasCount env SpendableClueCount InvestigatorId
+      , HasCount env TreacheryCount (LocationId, CardCode)
       )
     , ( HasId (Maybe AssetId) CardCode env
       , HasId (Maybe LocationId) LocationName env
@@ -119,10 +119,10 @@ type GameRunner env
       , HasSet VictoryDisplayCardCode () env
       )
     , HasSource ForSkillTest env
-    , HasActions env env
+    , HasActions env ()
     , HasActions env AssetId
-    , HasActions env (ActionType, Trait, env)
-    , HasActions env (ActionType, env)
+    , HasActions env (ActionType, Trait)
+    , HasActions env ActionType
     , HasRecord env
     , HasTokenValue env InvestigatorId
     , CanBeWeakness TreacheryId env

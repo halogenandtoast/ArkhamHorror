@@ -138,14 +138,14 @@ instance HasVictoryPoints Location where
     let Attrs { locationClues, locationVictory } = locationAttrs l
     in if locationClues == 0 then locationVictory else Nothing
 
-instance HasCount ClueCount () Location where
-  getCount _ = ClueCount . locationClues . locationAttrs
+instance HasCount env ClueCount Location where
+  getCount = pure . ClueCount . locationClues . locationAttrs
 
-instance HasCount Shroud () Location where
-  getCount _ = Shroud . locationShroud . locationAttrs
+instance HasCount env Shroud Location where
+  getCount = pure . Shroud . locationShroud . locationAttrs
 
-instance HasCount DoomCount () Location where
-  getCount _ = DoomCount . locationDoom . locationAttrs
+instance HasCount env DoomCount Location where
+  getCount = pure . DoomCount . locationDoom . locationAttrs
 
 instance HasSet EnemyId () Location where
   getSet _ = locationEnemies . locationAttrs

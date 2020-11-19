@@ -22,7 +22,7 @@ instance (EventRunner env) => RunMessage env Evidence where
   runMessage msg e@(Evidence attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       currentLocationId <- asks (getId @LocationId iid)
-      locationClueCount <- unClueCount <$> asks (getCount currentLocationId)
+      locationClueCount <- unClueCount <$> getCount currentLocationId
       if locationClueCount > 0
         then e <$ unshiftMessages
           [ DiscoverCluesAtLocation iid currentLocationId 1

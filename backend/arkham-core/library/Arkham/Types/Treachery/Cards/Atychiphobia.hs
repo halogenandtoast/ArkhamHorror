@@ -25,8 +25,8 @@ instance ActionRunner env => HasActions env Atychiphobia where
     case treacheryAttachedInvestigator of
       Nothing -> pure []
       Just tormented -> do
-        canActivate <- asks $ (>= 2) . unActionRemainingCount . getCount
-          (iid, Nothing :: Maybe Action, setToList treacheryTraits)
+        canActivate <- (>= 2) . unActionRemainingCount <$> getCount
+          (Nothing :: Maybe Action, setToList treacheryTraits, iid)
         investigatorLocationId <- asks $ getId @LocationId iid
         treacheryLocation <- asks (getId tormented)
         pure

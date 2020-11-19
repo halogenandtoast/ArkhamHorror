@@ -19,7 +19,7 @@ higherEducation uuid = HigherEducation $ baseAttrs uuid "60211"
 
 instance
   ( HasList HandCard InvestigatorId env
-  , HasCount ResourceCount InvestigatorId env
+  , HasCount env ResourceCount InvestigatorId
   )
   => HasActions env HigherEducation where
   getActions iid (WhenSkillTest SkillWillpower) (HigherEducation a)

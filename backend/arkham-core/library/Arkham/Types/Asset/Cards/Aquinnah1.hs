@@ -49,8 +49,8 @@ instance AssetRunner env => RunMessage env Aquinnah1 where
       enemyId <- withQueue $ \queue ->
         let PerformEnemyAttack _ eid : queue' = dropUntilAttack queue
         in (queue', eid)
-      healthDamage' <- asks $ unHealthDamageCount . getCount enemyId
-      sanityDamage' <- asks $ unSanityDamageCount . getCount enemyId
+      healthDamage' <- unHealthDamageCount <$> getCount enemyId
+      sanityDamage' <- unSanityDamageCount <$> getCount enemyId
       locationId <- asks $ getId @LocationId iid
       enemyIds <- asks $ filter (/= enemyId) . setToList . getSet locationId
 

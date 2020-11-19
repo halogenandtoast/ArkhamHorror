@@ -38,8 +38,8 @@ allAgendas = mapFromList $ map
 instance HasAbilities Agenda where
   getAbilities = agendaAbilities . agendaAttrs
 
-instance HasCount DoomCount () Agenda where
-  getCount _ = DoomCount . agendaDoom . agendaAttrs
+instance HasCount env DoomCount Agenda where
+  getCount = pure . DoomCount . agendaDoom . agendaAttrs
 
 instance HasId AgendaId () Agenda where
   getId _ = agendaId . agendaAttrs

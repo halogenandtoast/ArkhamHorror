@@ -28,11 +28,11 @@ daisyWalkerParallel = DaisyWalkerParallel
     , agility = 2
     }
 
-instance HasCount AssetCount (InvestigatorId, [Trait]) env => HasModifiersFor env DaisyWalkerParallel where
+instance HasCount env AssetCount (InvestigatorId, [Trait]) => HasModifiersFor env DaisyWalkerParallel where
   getModifiersFor source target@(InvestigatorTarget iid) (DaisyWalkerParallel attrs@Attrs {..})
     | iid == investigatorId
     = do
-      tomeCount <- asks $ unAssetCount . getCount (investigatorId, [Tome])
+      tomeCount <- unAssetCount <$> getCount (investigatorId, [Tome])
       baseModifiers <- getModifiersFor source target attrs
       pure
         $ SkillModifier SkillWillpower tomeCount
@@ -59,7 +59,7 @@ instance ActionRunner env => HasActions env DaisyWalkerParallel where
       baseActions <- getActions iid FastPlayerWindow attrs
       let ability' = (iid, ability attrs)
       unused <- asks $ notElem ability' . map unUsedAbility . getList ()
-      hasTomes <- asks $ (> 0) . unAssetCount . getCount (iid, [Tome])
+      hasTomes <- (> 0) . unAssetCount <$> getCount (iid, [Tome])
       pure
         $ [ uncurry ActivateCardAbilityAction ability' | unused && hasTomes ]
         <> baseActions

@@ -144,7 +144,7 @@ getModifiedSkillTestDifficulty s = do
 type SkillTestRunner env
   = ( HasQueue env
     , HasCard InvestigatorId env
-    , HasStats (InvestigatorId, Maybe Action) env
+    , HasStats env (InvestigatorId, Maybe Action)
     , HasSource ForSkillTest env
     , HasModifiersFor env env
     , HasTokenValue env env
@@ -237,8 +237,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           )
     AddSkillTestSubscriber target -> pure $ s & subscribers %~ (target :)
     PassSkillTest -> do
-      stats <-
-        getStats (skillTestInvestigator, skillTestAction) (toSource s) =<< ask
+      stats <- getStats (skillTestInvestigator, skillTestAction) (toSource s)
       let
         currentSkillValue = statsSkillValue stats skillTestSkillType
         modifiedSkillValue' =
@@ -443,8 +442,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
     RunSkillTest _ -> do
       tokenValues <- sum
         <$> for skillTestRevealedTokens (getModifiedTokenValue s)
-      stats <-
-        getStats (skillTestInvestigator, skillTestAction) (toSource s) =<< ask
+      stats <- getStats (skillTestInvestigator, skillTestAction) (toSource s)
       modifiedSkillTestDifficulty <- getModifiedSkillTestDifficulty s
       let
         currentSkillValue = statsSkillValue stats skillTestSkillType

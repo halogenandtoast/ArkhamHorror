@@ -14,9 +14,9 @@ import ClassyPrelude
 type EnemyRunner env
   = ( HasQueue env
     , HasStep AgendaStep env
-    , HasCount CardCount InvestigatorId env
-    , HasCount PlayerCount () env
-    , HasCount RemainingSanity InvestigatorId env
+    , HasCount env CardCount InvestigatorId
+    , HasCount env PlayerCount ()
+    , HasCount env RemainingSanity InvestigatorId
     , HasId LeadInvestigatorId () env
     , HasId LocationId InvestigatorId env
     , HasModifiersFor env env

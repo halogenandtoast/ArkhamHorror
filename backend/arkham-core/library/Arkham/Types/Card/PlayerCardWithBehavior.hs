@@ -78,7 +78,7 @@ deriving anyclass instance
   ( HasId CardCode EnemyId env
   , HasSet Trait EnemyId env
   , HasSet AssetId (InvestigatorId, UseType) env
-  , HasCount ActionTakenCount InvestigatorId env
+  , HasCount env ActionTakenCount InvestigatorId
   )
   => HasActions env PlayerCard'
 
@@ -162,9 +162,9 @@ instance HasQueue env => RunMessage env SecondWind where
     DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
     pure $ SecondWind pc'
 
-instance HasCount ActionTakenCount InvestigatorId env => HasActions env SecondWind where
+instance HasCount env ActionTakenCount InvestigatorId => HasActions env SecondWind where
   getActions iid (DuringTurn You) (SecondWind pc) = do
-    actionsTaken <- asks $ unActionTakenCount . getCount iid
+    actionsTaken <- unActionTakenCount <$> getCount iid
     pure
       [ InitiatePlayCard iid (getCardId pc) Nothing True | actionsTaken == 0 ]
   getActions i window (SecondWind pc) =

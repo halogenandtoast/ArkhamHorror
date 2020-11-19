@@ -13,7 +13,6 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
 import Arkham.Types.Location
 import Arkham.Types.LocationId
-import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -21,9 +20,9 @@ import Arkham.Types.TreacheryId
 import ClassyPrelude
 
 type InvestigatorRunner env
-  = ( HasCount ClueCount LocationId env
-    , HasCount AssetCount (InvestigatorId, [Trait]) env
-    , HasCount ActionTakenCount InvestigatorId env
+  = ( HasCount env ClueCount LocationId
+    , HasCount env AssetCount (InvestigatorId, [Trait])
+    , HasCount env ActionTakenCount InvestigatorId
     , HasSet AssetId (InvestigatorId, UseType) env
     , HasSet DiscardableAssetId InvestigatorId env
     , HasSet HealthDamageableAssetId InvestigatorId env
@@ -48,9 +47,8 @@ type InvestigatorRunner env
     , HasId (Maybe AssetId) CardCode env
     , HasList Location () env
     , HasList Enemy () env
-    , HasActions env env
+    , HasActions env ()
     , HasActions env AssetId
-    , HasActions env (ActionType, Trait, env)
     , HasSet InvestigatorId () env
     , HasSet ExhaustedAssetId InvestigatorId env
     , HasModifiersFor env env

@@ -41,11 +41,11 @@ theGatheringIntro = FlavorText
     \ investigator’s home to discuss these bizarre events."
   ]
 
-instance (HasTokenValue env InvestigatorId, HasCount EnemyCount (InvestigatorLocation, [Trait]) env) => HasTokenValue env TheGathering where
+instance (HasTokenValue env InvestigatorId, HasCount env EnemyCount (InvestigatorLocation, [Trait])) => HasTokenValue env TheGathering where
   getTokenValue (TheGathering attrs) iid = \case
     Skull -> do
-      ghoulCount <- asks $ unEnemyCount . getCount
-        (InvestigatorLocation iid, [Trait.Ghoul])
+      ghoulCount <- unEnemyCount
+        <$> getCount (InvestigatorLocation iid, [Trait.Ghoul])
       pure $ TokenValue
         Skull
         (NegativeModifier $ if isEasyStandard attrs then ghoulCount else 2)
@@ -57,7 +57,7 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount (InvestigatorLoc
       (NegativeModifier $ if isEasyStandard attrs then 2 else 4)
     otherFace -> getTokenValue attrs iid otherFace
 
-instance (ScenarioRunner env) => RunMessage env TheGathering where
+instance ScenarioRunner env => RunMessage env TheGathering where
   runMessage msg s@(TheGathering attrs@Attrs {..}) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
@@ -94,8 +94,8 @@ instance (ScenarioRunner env) => RunMessage env TheGathering where
     ResolveToken Cultist iid ->
       s <$ when (isHardExpert attrs) (unshiftMessage $ DrawAnotherToken iid)
     ResolveToken Tablet iid -> do
-      ghoulCount <- asks $ unEnemyCount . getCount
-        (InvestigatorLocation iid, [Trait.Ghoul])
+      ghoulCount <- unEnemyCount
+        <$> getCount (InvestigatorLocation iid, [Trait.Ghoul])
       s <$ when
         (ghoulCount > 0)
         (unshiftMessage $ InvestigatorAssignDamage

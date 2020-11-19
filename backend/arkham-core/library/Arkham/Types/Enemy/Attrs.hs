@@ -291,7 +291,7 @@ instance Entity Attrs where
   isSource _ _ = False
 
 getModifiedHealth
-  :: (MonadReader env m, HasModifiersFor env env, HasCount PlayerCount () env)
+  :: (MonadReader env m, HasModifiersFor env env, HasCount env PlayerCount ())
   => Attrs
   -> m Int
 getModifiedHealth Attrs {..} = do

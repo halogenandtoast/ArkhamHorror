@@ -6,7 +6,7 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Trait
 
 type LocationRunner env
-  = ( HasCount PlayerCount () env
+  = ( HasCount env PlayerCount ()
     , HasQueue env
     , HasId (Maybe StoryAssetId) CardCode env
     , HasId (Maybe OwnerId) AssetId env

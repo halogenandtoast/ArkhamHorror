@@ -330,7 +330,7 @@ instance LocationRunner env => RunMessage env Attrs where
       pure $ a & clues %~ max 0 . subtract n
     RevealLocation miid lid | lid == locationId -> do
       locationClueCount <-
-        fromGameValue locationRevealClues . unPlayerCount <$> asks (getCount ())
+        fromGameValue locationRevealClues . unPlayerCount <$> getCount ()
       unshiftMessages
         $ AddConnection lid locationRevealedSymbol
         : [ CheckWindow iid [AfterRevealLocation You]

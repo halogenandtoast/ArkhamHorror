@@ -1,17 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Treachery.Cards.UmordhothsWrath where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
+import Arkham.Import
+
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
-import ClassyPrelude
 
 newtype UmordhothsWrath = UmordhothsWrath Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -25,7 +18,7 @@ instance HasModifiersFor env UmordhothsWrath where
 instance HasActions env UmordhothsWrath where
   getActions i window (UmordhothsWrath attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env UmordhothsWrath where
+instance TreacheryRunner env => RunMessage env UmordhothsWrath where
   runMessage msg t@(UmordhothsWrath attrs@Attrs {..}) = case msg of
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} n
       | tid == treacheryId -> t
@@ -33,7 +26,7 @@ instance (TreacheryRunner env) => RunMessage env UmordhothsWrath where
     HandlePointOfFailure _ (TreacheryTarget tid) 0 | tid == treacheryId ->
       pure t
     HandlePointOfFailure iid (TreacheryTarget tid) n | tid == treacheryId -> do
-      cardCount' <- unCardCount <$> asks (getCount iid)
+      cardCount' <- unCardCount <$> getCount iid
       if cardCount' > 0
         then t <$ unshiftMessages
           [ Ask iid $ ChooseOne

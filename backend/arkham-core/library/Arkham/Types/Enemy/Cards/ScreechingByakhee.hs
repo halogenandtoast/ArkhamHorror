@@ -20,12 +20,11 @@ screechingByakhee uuid =
     . (evade .~ 3)
     . (prey .~ LowestRemainingSanity)
 
-instance HasCount RemainingSanity InvestigatorId env => HasModifiersFor env ScreechingByakhee where
+instance HasCount env RemainingSanity InvestigatorId => HasModifiersFor env ScreechingByakhee where
   getModifiersFor _ target (ScreechingByakhee attrs) | isTarget attrs target =
     do
-      sanities <- map unRemainingSanity <$> traverse
-        (asks . getCount)
-        (setToList $ enemyEngagedInvestigators attrs)
+      sanities <- map unRemainingSanity
+        <$> traverse getCount (setToList $ enemyEngagedInvestigators attrs)
       pure $ if any (<= 4) sanities then [EnemyFight 1, EnemyEvade 1] else []
   getModifiersFor _ _ _ = pure []
 

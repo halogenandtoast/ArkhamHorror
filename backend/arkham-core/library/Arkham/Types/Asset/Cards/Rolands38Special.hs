@@ -37,13 +37,13 @@ instance ActionRunner env => HasActions env Rolands38Special where
       ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env Rolands38Special where
+instance AssetRunner env => RunMessage env Rolands38Special where
   runMessage msg (Rolands38Special attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Rolands38Special <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo 4)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- asks $ getId @LocationId iid
-      anyClues <- asks $ (/= 0) . unClueCount . getCount locationId
+      anyClues <- (/= 0) . unClueCount <$> getCount locationId
       unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers

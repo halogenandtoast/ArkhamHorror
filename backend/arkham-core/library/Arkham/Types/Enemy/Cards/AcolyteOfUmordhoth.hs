@@ -20,12 +20,12 @@ acolyteOfUmordhoth uuid =
     . (evade .~ 2)
     . (prey .~ FewestCards)
 
-instance (HasCount CardCount InvestigatorId env) => HasModifiersFor env AcolyteOfUmordhoth where
+instance HasCount env CardCount InvestigatorId => HasModifiersFor env AcolyteOfUmordhoth where
   getModifiersFor _ (EnemyTarget eid) (AcolyteOfUmordhoth Attrs {..})
     | eid == enemyId = do
       anyWithoutCards <- or <$> for
         (setToList enemyEngagedInvestigators)
-        (\iid -> asks $ (== 0) . unCardCount . getCount iid)
+        (\iid -> (== 0) . unCardCount <$> getCount iid)
       pure [ CannotBeEvaded | anyWithoutCards ]
   getModifiersFor _ _ _ = pure []
 

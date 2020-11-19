@@ -66,7 +66,7 @@ data Treachery
 deriving anyclass instance ActionRunner env => HasActions env Treachery
 deriving anyclass instance TreacheryRunner env => RunMessage env Treachery
 deriving anyclass instance
-  ( HasCount PlayerCount () env
+  ( HasCount env PlayerCount ()
   , HasId LocationId InvestigatorId env
   , HasSet Trait LocationId env
   )
@@ -87,8 +87,8 @@ instance HasTraits Treachery where
 instance HasKeywords Treachery where
   getKeywords = treacheryKeywords . treacheryAttrs
 
-instance HasCount DoomCount () Treachery where
-  getCount _ = DoomCount . treacheryDoom . treacheryAttrs
+instance HasCount env DoomCount Treachery where
+  getCount = pure . DoomCount . treacheryDoom . treacheryAttrs
 
 instance HasId (Maybe OwnerId) () Treachery where
   getId _ = (OwnerId <$>) . treacheryOwner . treacheryAttrs

@@ -18,11 +18,11 @@ instance HasModifiersFor env WorkingAHunch where
 instance HasActions env WorkingAHunch where
   getActions i window (WorkingAHunch attrs) = getActions i window attrs
 
-instance (EventRunner env) => RunMessage env WorkingAHunch where
+instance EventRunner env => RunMessage env WorkingAHunch where
   runMessage msg e@(WorkingAHunch attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       currentLocationId <- asks (getId @LocationId iid)
-      locationClueCount <- unClueCount <$> asks (getCount currentLocationId)
+      locationClueCount <- unClueCount <$> getCount currentLocationId
       if locationClueCount > 0
         then e <$ unshiftMessages
           [ DiscoverCluesAtLocation iid currentLocationId 1

@@ -31,11 +31,11 @@ theDevourerBelow difficulty =
       ]
     }
 
-instance (HasTokenValue env InvestigatorId, HasCount EnemyCount [Trait] env) => HasTokenValue env TheDevourerBelow where
+instance (HasTokenValue env InvestigatorId, HasCount env EnemyCount [Trait]) => HasTokenValue env TheDevourerBelow where
   getTokenValue (TheDevourerBelow attrs) iid = \case
     Skull -> if isEasyStandard attrs
       then do
-        monsterCount <- asks $ unEnemyCount . getCount [Monster]
+        monsterCount <- unEnemyCount <$> getCount [Monster]
         pure $ TokenValue Skull (NegativeModifier monsterCount)
       else pure $ TokenValue Skull (NegativeModifier 3)
     Cultist -> do
@@ -151,15 +151,15 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
       pure s
     ResolveToken Tablet iid -> do
       let horror = if isEasyStandard attrs then 0 else 1
-      monsterCount <- asks $ unEnemyCount . getCount
-        (InvestigatorLocation iid, [Monster])
+      monsterCount <- unEnemyCount
+        <$> getCount (InvestigatorLocation iid, [Monster])
       s <$ when
         (monsterCount > 0)
         (unshiftMessage
         $ InvestigatorAssignDamage iid (TokenEffectSource Tablet) 1 horror
         )
     ResolveToken ElderThing iid -> do
-      ancientOneCount <- asks $ unEnemyCount . getCount [AncientOne]
+      ancientOneCount <- unEnemyCount <$> getCount [AncientOne]
       s <$ when (ancientOneCount > 0) (unshiftMessage $ DrawAnotherToken iid)
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _
       | isHardExpert attrs && drawnTokenFace token == Skull -> s

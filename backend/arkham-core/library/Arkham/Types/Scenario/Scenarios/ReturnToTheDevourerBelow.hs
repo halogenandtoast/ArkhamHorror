@@ -32,7 +32,7 @@ returnToTheDevourerBelow difficulty =
           ]
         }
 
-instance (HasTokenValue env InvestigatorId, HasCount EnemyCount [Trait] env) => HasTokenValue env ReturnToTheDevourerBelow where
+instance (HasTokenValue env InvestigatorId, HasCount env EnemyCount [Trait]) => HasTokenValue env ReturnToTheDevourerBelow where
   getTokenValue (ReturnToTheDevourerBelow theDevourerBelow') iid =
     getTokenValue theDevourerBelow' iid
 

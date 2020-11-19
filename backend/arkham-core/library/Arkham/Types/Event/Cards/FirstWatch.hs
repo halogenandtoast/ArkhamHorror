@@ -27,7 +27,7 @@ instance HasActions env FirstWatch where
 instance HasModifiersFor env FirstWatch where
   getModifiersFor = noModifiersFor
 
-instance (HasQueue env, HasSet InvestigatorId () env, HasCount PlayerCount () env)  => RunMessage env FirstWatch where
+instance (HasQueue env, HasSet InvestigatorId () env, HasCount env PlayerCount ())  => RunMessage env FirstWatch where
   runMessage msg e@(FirstWatch (attrs@Attrs {..} `With` metadata@FirstWatchMetadata {..}))
     = case msg of
       InvestigatorPlayEvent _ eid _ | eid == eventId -> do

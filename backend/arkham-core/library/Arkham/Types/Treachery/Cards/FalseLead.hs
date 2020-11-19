@@ -29,7 +29,7 @@ instance HasActions env FalseLead where
 instance (TreacheryRunner env) => RunMessage env FalseLead where
   runMessage msg t@(FalseLead attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      playerClueCount <- asks $ unClueCount . getCount iid
+      playerClueCount <- unClueCount <$> getCount iid
       if playerClueCount == 0
         then unshiftMessage (Ask iid $ ChooseOne [Surge iid (toSource attrs)])
         else unshiftMessage (RevelationSkillTest iid source SkillIntellect 4)

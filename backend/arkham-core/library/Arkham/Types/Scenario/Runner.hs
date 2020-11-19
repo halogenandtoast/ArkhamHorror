@@ -11,28 +11,28 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 type ScenarioRunner env
-  = ( HasCount EnemyCount (InvestigatorLocation, [Trait]) env
-    , HasCount EnemyCount [Trait] env
-    , HasQueue env
-    , HasSet InScenarioInvestigatorId () env
+  = ( HasCount env DoomCount ()
+    , HasCount env DoomCount EnemyId
+    , HasCount env EnemyCount [Trait]
+    , HasCount env PlayerCount ()
+    , HasCount env XPCount ()
+    , HasCount env EnemyCount (InvestigatorLocation, [Trait])
+    , HasId CardCode EnemyId env
     , HasId LeadInvestigatorId () env
-    , HasSet InvestigatorId () env
-    , HasSet AgendaId () env
+    , HasId LocationId InvestigatorId env
+    , HasQueue env
     , HasRecord env
-    , HasCount PlayerCount () env
-    , HasCount DoomCount EnemyId env
-    , HasCount DoomCount () env
-    , HasCount XPCount () env
-    , HasSet EnemyId Trait env
+    , HasSet AgendaId () env
     , HasSet ClosestEnemyId (InvestigatorId, [Trait]) env
     , HasSet ClosestEnemyId InvestigatorId env
-    , HasSet VictoryDisplayCardCode () env
     , HasSet ConnectedLocationId LocationId env
-    , HasId LocationId InvestigatorId env
-    , HasSource ForSkillTest env
+    , HasSet EnemyId LocationId env
+    , HasSet EnemyId Trait env
+    , HasSet InScenarioInvestigatorId () env
+    , HasSet InvestigatorId () env
     , HasSet LocationId [Trait] env
     , HasSet Trait LocationId env
-    , HasSet EnemyId LocationId env
-    , HasId CardCode EnemyId env
+    , HasSet VictoryDisplayCardCode () env
+    , HasSource ForSkillTest env
     )
 

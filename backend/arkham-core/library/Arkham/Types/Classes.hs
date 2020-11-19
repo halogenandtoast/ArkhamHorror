@@ -200,11 +200,11 @@ class HasList c b a where
 class HasId c b a where
   getId :: HasCallStack => b -> a -> c
 
-class HasCount c b a where
-  getCount :: b -> a -> c
+class HasCount env count a where
+  getCount :: (MonadReader env m) => a -> m count
 
-class HasStats b a where
-  getStats :: MonadReader env m => b -> Source -> a -> m Stats
+class HasStats env a where
+  getStats :: (MonadReader env m) => a -> Source -> m Stats
 
 class HasTraits a where
   getTraits :: a -> HashSet Trait
@@ -252,16 +252,16 @@ instance HasVictoryPoints PlayerCard where
 
 type ActionRunner env
   = ( HasQueue env
-    , HasActions env (ActionType, env)
-    , HasCount AssetCount (InvestigatorId, [Trait]) env
-    , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
-    , HasCount ActionTakenCount InvestigatorId env
-    , HasCount CardCount InvestigatorId env
-    , HasCount ClueCount LocationId env
-    , HasCount HorrorCount InvestigatorId env
-    , HasCount PlayerCount () env
-    , HasCount ResourceCount InvestigatorId env
-    , HasCount SpendableClueCount InvestigatorId env
+    , HasActions env ActionType
+    , HasCount env AssetCount (InvestigatorId, [Trait])
+    , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
+    , HasCount env ActionTakenCount InvestigatorId
+    , HasCount env CardCount InvestigatorId
+    , HasCount env ClueCount LocationId
+    , HasCount env HorrorCount InvestigatorId
+    , HasCount env PlayerCount ()
+    , HasCount env ResourceCount InvestigatorId
+    , HasCount env SpendableClueCount InvestigatorId
     , HasId (Maybe LocationId) AssetId env
     , HasId (Maybe OwnerId) AssetId env
     , HasId (Maybe StoryAssetId) CardCode env
@@ -316,6 +316,24 @@ class HasActions env a where
   default getActions :: (Generic a, HasActions1 env (Rep a), MonadIO m, MonadReader env m) => InvestigatorId -> Window -> a -> m [Message]
   getActions = defaultGetActions
 
+instance HasActions env ActionType => HasActions env () where
+  getActions iid window _ = do
+    locationActions <- getActions iid window LocationActionType
+    enemyActions <- getActions iid window EnemyActionType
+    assetActions <- getActions iid window AssetActionType
+    treacheryActions <- getActions iid window TreacheryActionType
+    actActions <- getActions iid window ActActionType
+    agendaActions <- getActions iid window AgendaActionType
+    investigatorActions <- getActions iid window InvestigatorActionType
+    pure
+      $ enemyActions
+      <> locationActions
+      <> assetActions
+      <> treacheryActions
+      <> actActions
+      <> agendaActions
+      <> investigatorActions
+
 class HasModifiersFor1 env f where
   getModifiersFor1 :: (MonadReader env m) => Source -> Target -> f p -> m [Modifier]
 
@@ -350,9 +368,6 @@ class (HasId LocationId () location) => IsLocation location where
 
 class (HasId EnemyId () enemy) => IsEnemy enemy where
   isAloof :: enemy -> Bool
-
-class IsScenario scenario where
-  tokensWithNegativeModifier :: scenario -> HashSet Token
 
 class Discardable a where
   canBeDiscarded :: a -> Bool

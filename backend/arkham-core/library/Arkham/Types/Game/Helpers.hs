@@ -30,8 +30,8 @@ getInvestigatorModifiers
 getInvestigatorModifiers iid source =
   ask >>= getModifiersFor source (InvestigatorTarget iid)
 
-getXp :: (HasCount XPCount () env, MonadReader env m) => m Int
-getXp = asks $ unXPCount . getCount ()
+getXp :: (HasCount env XPCount (), MonadReader env m) => m Int
+getXp = unXPCount <$> getCount ()
 
 getLeadInvestigatorId
   :: (HasId LeadInvestigatorId () env, MonadReader env m) => m InvestigatorId
@@ -41,11 +41,11 @@ getInvestigatorIds
   :: (HasSet InvestigatorId () env, MonadReader env m) => m [InvestigatorId]
 getInvestigatorIds = asks $ setToList . getSet ()
 
-getPlayerCount :: (HasCount PlayerCount () env, MonadReader env m) => m Int
-getPlayerCount = asks $ unPlayerCount . getCount ()
+getPlayerCount :: (HasCount env PlayerCount (), MonadReader env m) => m Int
+getPlayerCount = unPlayerCount <$> getCount ()
 
 getPlayerCountValue
-  :: (HasCount PlayerCount () env, MonadReader env m) => GameValue Int -> m Int
+  :: (HasCount env PlayerCount (), MonadReader env m) => GameValue Int -> m Int
 getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount
 
 getLocationSet
@@ -53,28 +53,28 @@ getLocationSet
 getLocationSet = asks $ getSet ()
 
 getSpendableClueCount
-  :: (MonadReader env m, HasCount SpendableClueCount InvestigatorId env)
+  :: (MonadReader env m, HasCount env SpendableClueCount InvestigatorId)
   => [InvestigatorId]
   -> m Int
 getSpendableClueCount investigatorIds =
-  sum <$> for investigatorIds (asks . (unSpendableClueCount .) . getCount)
+  sum <$> for investigatorIds ((unSpendableClueCount <$>) . getCount)
 
 getHasActionsRemaining
   :: ( MonadReader env m
-     , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
+     , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
      )
   => InvestigatorId
   -> Maybe Action
   -> [Trait]
   -> m Bool
 getHasActionsRemaining iid maction traits =
-  asks $ (> 0) . unActionRemainingCount . getCount (iid, maction, traits)
+  (> 0) . unActionRemainingCount <$> getCount (maction, traits, iid)
 
 
 -- TODO: canFight _ a@Attrs {..} = canDo Action.Fight a
 getCanFight
   :: ( MonadReader env m
-     , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
+     , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
      , HasSet InvestigatorId EnemyId env
      , HasSet Keyword EnemyId env
      , HasId LocationId InvestigatorId env
@@ -96,7 +96,7 @@ getCanFight eid iid = do
 
 getCanEngage
   :: ( MonadReader env m
-     , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
+     , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
      , HasSet InvestigatorId EnemyId env
      , HasId LocationId InvestigatorId env
      , HasId LocationId EnemyId env
@@ -113,7 +113,7 @@ getCanEngage eid iid = do
 
 getCanEvade
   :: ( MonadReader env m
-     , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
+     , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
      , HasSet InvestigatorId EnemyId env
      , HasModifiersFor env env
      )
@@ -133,7 +133,7 @@ getCanEvade eid iid = do
 
 getCanMoveTo
   :: ( MonadReader env m
-     , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
+     , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
      , HasSet AccessibleLocationId LocationId env
      , HasId LocationId InvestigatorId env
      , HasModifiersFor env env
@@ -159,7 +159,7 @@ getCanMoveTo lid iid = do
 
 getCanInvestigate
   :: ( MonadReader env m
-     , HasCount ActionRemainingCount (InvestigatorId, Maybe Action, [Trait]) env
+     , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
      , HasId LocationId InvestigatorId env
      )
   => LocationId
@@ -174,10 +174,10 @@ getCanInvestigate lid iid = do
   pure $ lid == locationId && hasActionsRemaining
 
 getResourceCount
-  :: (MonadReader env m, HasCount ResourceCount InvestigatorId env)
+  :: (MonadReader env m, HasCount env ResourceCount InvestigatorId)
   => InvestigatorId
   -> m Int
-getResourceCount iid = asks $ unResourceCount . getCount iid
+getResourceCount iid = unResourceCount <$> getCount iid
 
 getDiscardOf
   :: (MonadReader env m, HasList DiscardedPlayerCard InvestigatorId env)
@@ -198,7 +198,7 @@ getInPlayOf
 getInPlayOf iid = asks $ map unInPlayCard . getList iid
 
 getCardCount
-  :: (MonadReader env m, HasCount CardCount InvestigatorId env)
+  :: (MonadReader env m, HasCount env CardCount InvestigatorId)
   => InvestigatorId
   -> m Int
-getCardCount iid = asks $ unCardCount . getCount iid
+getCardCount iid = unCardCount <$> getCount iid

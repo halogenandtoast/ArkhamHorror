@@ -28,10 +28,10 @@ instance ActionRunner env => HasActions env Machete where
       ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env Machete where
+instance AssetRunner env => RunMessage env Machete where
   runMessage msg a@(Machete attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
-      criteriaMet <- asks $ (== 1) . unEnemyCount . getCount iid
+      criteriaMet <- (== 1) . unEnemyCount <$> getCount iid
       a <$ unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers

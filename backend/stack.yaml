@@ -12,7 +12,8 @@ resolver: lts-16.18
 # explicit strategies throughout.
 #
 ghc-options:
-  "$locals": -ddump-to-file
+  "$locals":
+    -ddump-to-file
     -ddump-hi
     -fhide-source-paths
     -Weverything

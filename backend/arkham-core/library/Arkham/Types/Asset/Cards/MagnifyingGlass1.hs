@@ -25,7 +25,7 @@ instance HasModifiersFor env MagnifyingGlass1 where
 instance ActionRunner env => HasActions env MagnifyingGlass1 where
   getActions iid _ (MagnifyingGlass1 a) | ownedBy a iid = do
     locationId <- asks $ getId @LocationId iid
-    clueCount' <- asks $ unClueCount . getCount locationId
+    clueCount' <- unClueCount <$> getCount locationId
     pure [ UseCardAbility iid (toSource a) Nothing 1 | clueCount' == 0 ]
   getActions i window (MagnifyingGlass1 x) = getActions i window x
 

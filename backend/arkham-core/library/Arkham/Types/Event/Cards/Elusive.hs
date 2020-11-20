@@ -22,7 +22,7 @@ instance HasActions env Elusive where
 instance (EventRunner env) => RunMessage env Elusive where
   runMessage msg e@(Elusive attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      enemyIds <- asks $ setToList . getSet iid
+      enemyIds <- getSetList iid
       emptyLocations <- HashSet.map unEmptyLocationId <$> getSet ()
       revealedLocations <- HashSet.map unRevealedLocationId <$> getSet ()
       let

@@ -29,15 +29,15 @@ instance ActionRunner env => HasActions env JimsTrumpet where
   getActions iid (WhenRevealToken who Skull) (JimsTrumpet a) | ownedBy a iid =
     do
       let ability' = (iid, ability a who)
-      locationId <- asks $ getId @LocationId iid
-      connectedLocationIds <-
-        asks $ map unConnectedLocationId . setToList . getSet locationId
+      locationId <- getId @LocationId iid
+      connectedLocationIds <- map unConnectedLocationId
+        <$> getSetList locationId
       investigatorIds <- for
         (locationId : connectedLocationIds)
-        (asks . (setToList .) . getSet @InvestigatorId)
+        (getSetList @InvestigatorId)
       horrorCounts <- for
         (concat investigatorIds)
-        (asks . (unHorrorCount .) . getCount)
+        ((unHorrorCount <$>) . getCount)
       unused <- notElem ability' . map unUsedAbility <$> getList ()
       pure
         [ uncurry ActivateCardAbilityAction ability'
@@ -49,9 +49,9 @@ instance AssetRunner env => RunMessage env JimsTrumpet where
   runMessage msg a@(JimsTrumpet attrs@Attrs {..}) = case msg of
     UseCardAbility _ source _ 1 | isSource attrs source -> do
       let ownerId = fromJustNote "must be owned" assetInvestigator
-      locationId <- asks $ getId ownerId
-      connectedLocationIds <-
-        asks $ map unConnectedLocationId . getSetList locationId
+      locationId <- getId ownerId
+      connectedLocationIds <- map unConnectedLocationId
+        <$> getSetList locationId
       investigatorIds <-
         concat <$> for (locationId : connectedLocationIds) getSetList
       pairings <- for investigatorIds

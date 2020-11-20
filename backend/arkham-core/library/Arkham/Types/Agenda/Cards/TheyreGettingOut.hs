@@ -31,12 +31,12 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
         & flipped
         .~ True
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3b" -> do
-      actIds <- asks (getSet @ActId ())
+      actIds <- getSet @ActId ()
       if ActId "01108" `elem` actIds || ActId "01109" `elem` actIds
         then a <$ unshiftMessage (Resolution 3)
         else a <$ unshiftMessage NoResolution -- TODO: defeated and suffer trauma
     EndEnemy -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unengagedEnemyIds <- HashSet.map unUnengagedEnemyId <$> getSet ()
       ghoulEnemyIds <- getSet Ghoul
       parlorEnemyIds <- getSet (LocationId "01115")
@@ -61,9 +61,9 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
         )
     EndRoundWindow -> do
       parlorGhoulsCount <- unEnemyCount
-        <$> asks (getCount (LocationId "01115", [Ghoul]))
+        <$> getCount (LocationId "01115", [Ghoul])
       hallwayGhoulsCount <- unEnemyCount
-        <$> asks (getCount (LocationId "01112", [Ghoul]))
+        <$> getCount (LocationId "01112", [Ghoul])
       a <$ unshiftMessages
         (replicate (parlorGhoulsCount + hallwayGhoulsCount) PlaceDoomOnAgenda)
     _ -> TheyreGettingOut <$> runMessage msg attrs

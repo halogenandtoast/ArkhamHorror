@@ -245,7 +245,7 @@ getModifiedDamageAmount Attrs {..} baseAmount = do
 canEnterLocation
   :: (EnemyRunner env, MonadReader env m) => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
-  traits <- asks (getSet eid)
+  traits <- getSet eid
   modifiers' <- getModifiersFor (EnemySource eid) (LocationTarget lid) ()
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
@@ -305,9 +305,9 @@ getModifiedHealth Attrs {..} = do
 instance EnemyRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
-      preyIds <- asks $ map unPreyId . setToList . getSet enemyPrey
+      preyIds <- map unPreyId <$> getSetList enemyPrey
       preyIdsWithLocation <- for preyIds
-        $ \iid -> (iid, ) <$> asks (getId @LocationId iid)
+        $ \iid -> (iid, ) <$> getId @LocationId iid
       leadInvestigatorId <- getLeadInvestigatorId
       a <$ case preyIdsWithLocation of
         [] -> pure ()
@@ -320,7 +320,7 @@ instance EnemyRunner env => RunMessage env Attrs where
             ]
           )
     EnemySpawn _ lid eid | eid == enemyId -> do
-      locations' <- asks (getSet ())
+      locations' <- getSet ()
       if lid `notElem` locations'
         then a <$ unshiftMessage (Discard (EnemyTarget eid))
         else do
@@ -331,10 +331,9 @@ instance EnemyRunner env => RunMessage env Attrs where
               `notElem` enemyKeywords
               )
             $ do
-                preyIds <- asks $ map unPreyId . setToList . getSet
-                  (enemyPrey, lid)
+                preyIds <- map unPreyId <$> getSetList (enemyPrey, lid)
                 investigatorIds <- if null preyIds
-                  then asks $ setToList . getSet @InvestigatorId lid
+                  then getSetList @InvestigatorId lid
                   else pure []
                 leadInvestigatorId <- getLeadInvestigatorId
                 case preyIds <> investigatorIds of
@@ -351,7 +350,7 @@ instance EnemyRunner env => RunMessage env Attrs where
           pure $ a & location .~ lid
     EnemySpawnedAt lid eid | eid == enemyId -> pure $ a & location .~ lid
     ReadyExhausted -> do
-      miid <- asks $ headMay . setToList . getSet enemyLocation
+      miid <- headMay <$> getSetList enemyLocation
       case miid of
         Just iid ->
           when
@@ -369,11 +368,10 @@ instance EnemyRunner env => RunMessage env Attrs where
       then pure a
       else do
         leadInvestigatorId <- getLeadInvestigatorId
-        adjacentLocationIds <-
-          asks $ map unConnectedLocationId . setToList . getSet enemyLocation
-        closestLocationIds <-
-          asks $ map unClosestLocationId . setToList . getSet
-            (enemyLocation, lid)
+        adjacentLocationIds <- map unConnectedLocationId
+          <$> getSetList enemyLocation
+        closestLocationIds <- map unClosestLocationId
+          <$> getSetList (enemyLocation, lid)
         if lid `elem` adjacentLocationIds
           then a <$ unshiftMessage
             (chooseOne leadInvestigatorId [EnemyMove enemyId enemyLocation lid])

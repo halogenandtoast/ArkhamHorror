@@ -26,12 +26,12 @@ instance HasModifiersFor env Umordhoth where
 instance ActionRunner env => HasActions env Umordhoth where
   getActions iid NonFast (Umordhoth attrs@Attrs {..}) = do
     baseActions <- getActions iid NonFast attrs
-    maid <- asks (fmap unStoryAssetId <$> getId (CardCode "01117"))
-    locationId <- asks $ getId @LocationId iid
+    maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
+    locationId <- getId @LocationId iid
     case maid of
       Nothing -> pure baseActions
       Just aid -> do
-        miid <- fmap unOwnerId <$> asks (getId aid)
+        miid <- fmap unOwnerId <$> getId aid
         pure
           $ baseActions
           <> [ ActivateCardAbilityAction
@@ -44,7 +44,7 @@ instance ActionRunner env => HasActions env Umordhoth where
 instance (EnemyRunner env) => RunMessage env Umordhoth where
   runMessage msg e@(Umordhoth attrs@Attrs {..}) = case msg of
     EnemySpawn _ _ eid | eid == enemyId -> do
-      playerCount <- unPlayerCount <$> asks (getCount ())
+      playerCount <- unPlayerCount <$> getCount ()
       Umordhoth
         <$> runMessage msg (attrs & health %~ fmap (+ (4 * playerCount)))
     ChooseEndTurn _ -> do

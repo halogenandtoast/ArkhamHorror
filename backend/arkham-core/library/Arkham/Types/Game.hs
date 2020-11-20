@@ -583,7 +583,7 @@ instance
   )
   => HasTokenValue (Game queue) InvestigatorId where
   getTokenValue iid' iid token = do
-    investigator <- asks $ getInvestigator iid'
+    investigator <- getInvestigator iid'
     getTokenValue investigator iid token
 
 instance (GameRunner env, env ~ Game queue) => HasModifiersFor (Game queue) () where
@@ -668,47 +668,44 @@ instance HasSet ScenarioLogKey (Game queue) () where
 
 instance HasSet HandCardId (Game queue) InvestigatorId where
   getSet iid =
-    asks
-      $ setFromList
+      setFromList
       . map (HandCardId . getCardId)
       . handOf
-      . getInvestigator iid
+      <$> getInvestigator iid
 
 instance HasSet HandCardId (Game queue) (InvestigatorId, PlayerCardType) where
   getSet (iid, cardType) =
-    asks
-      $ setFromList
+    setFromList
       . map (HandCardId . getCardId)
       . filter
           (maybe False (playerCardMatch (cardType, Nothing)) . toPlayerCard)
       . handOf
-      . getInvestigator iid
+      <$> getInvestigator iid
 
 instance HasSet Keyword (Game queue) EnemyId where
-  getSet eid = asks $ getKeywords . getEnemy eid
+  getSet eid = getKeywords <$> getEnemy eid
 
 instance HasSet Trait (Game queue) LocationId where
-  getSet lid = asks $ getTraits . getLocation lid
+  getSet lid = getTraits <$> getLocation lid
 
 instance HasSet Trait (Game queue) (InvestigatorId, CardId) where
   getSet (iid, cid) =
-    asks
-      $ maybe mempty getTraits
+    maybe mempty getTraits
       . find ((== cid) . getCardId)
       . handOf
-      . getInvestigator iid
+      <$> getInvestigator iid
 
 instance HasSet Trait (Game queue) AssetId where
-  getSet aid = asks $ getTraits . getAsset aid
+  getSet aid = getTraits <$> getAsset aid
 
 instance HasSet Trait (Game queue) EnemyId where
-  getSet eid = asks $ getTraits . getEnemy eid
+  getSet eid = getTraits <$> getEnemy eid
 
 instance HasSet InvestigatorId (Game queue) EnemyId where
-  getSet eid = asks $ getEngagedInvestigators . getEnemy eid
+  getSet eid = getEngagedInvestigators <$> getEnemy eid
 
 instance HasSet EnemyId (Game queue) InvestigatorId where
-  getSet iid = asks $ getEngagedEnemies . getInvestigator iid
+  getSet iid = getEngagedEnemies <$> getInvestigator iid
 
 instance HasSet ExhaustedAssetId (Game queue) InvestigatorId where
   getSet iid = do
@@ -1530,11 +1527,11 @@ runGameMessage msg g = case msg of
     pure $ g & encounterDeck .~ Deck encounterDeck'
   RemoveEnemy eid -> pure $ g & enemies %~ deleteMap eid
   RemoveLocation lid -> do
-    treacheryIds <- toList <$> asks (getSet lid)
+    treacheryIds <- toList <$> getSet lid
     unshiftMessages [ Discard (TreacheryTarget tid) | tid <- treacheryIds ]
-    enemyIds <- toList <$> asks (getSet lid)
+    enemyIds <- toList <$> getSet lid
     unshiftMessages [ Discard (EnemyTarget eid) | eid <- enemyIds ]
-    eventIds <- toList <$> asks (getSet lid)
+    eventIds <- toList <$> getSet lid
     unshiftMessages [ Discard (EventTarget eid) | eid <- eventIds ]
     pure $ g & locations %~ deleteMap lid
   SpendClues 0 _ -> pure g

@@ -29,7 +29,7 @@ instance ActRunner env => RunMessage env Trapped where
         ]
       pure $ Trapped $ attrs & Act.sequence .~ "Act 1b" & flipped .~ True
     AdvanceAct aid | aid == actId && actSequence == "Act 1b" -> do
-      enemyIds <- asks (setToList . getSet (LocationId "01111"))
+      enemyIds <- getSetList (LocationId "01111")
       a <$ unshiftMessages
         ([ PlaceLocation "01112"
          , PlaceLocation "01114"

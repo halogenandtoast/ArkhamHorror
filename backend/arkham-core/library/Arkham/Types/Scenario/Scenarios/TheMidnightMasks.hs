@@ -185,8 +185,8 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
           unshiftMessage (InvestigatorDrewEncounterCard iid x)
           pure $ TheMidnightMasks (attrs { scenarioDeck = Just xs })
     ResolveToken Cultist iid | isEasyStandard attrs -> do
-      closestCultists <- asks $ map unClosestEnemyId . setToList . getSet
-        (iid, [Trait.Cultist])
+      closestCultists <- map unClosestEnemyId
+        <$> getSetList (iid, [Trait.Cultist])
       case closestCultists of
         [] -> pure ()
         [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
@@ -194,7 +194,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
           (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
       pure s
     ResolveToken Cultist iid | isHardExpert attrs -> do
-      cultists <- asks $ setToList . getSet @EnemyId Trait.Cultist
+      cultists <- getSetList @EnemyId Trait.Cultist
       case cultists of
         [] -> unshiftMessage (DrawAnotherToken iid)
         xs -> unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
@@ -206,7 +206,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
     NoResolution -> s <$ unshiftMessage (Resolution 1)
     Resolution 1 -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      victoryDisplay <- asks $ HashSet.map unVictoryDisplayCardCode . getSet ()
+      victoryDisplay <- HashSet.map unVictoryDisplayCardCode <$> getSet ()
       investigatorIds <- getInvestigatorIds
       xp <- getXp
       let
@@ -238,7 +238,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
         )
     Resolution 2 -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      victoryDisplay <- asks $ HashSet.map unVictoryDisplayCardCode . getSet ()
+      victoryDisplay <- HashSet.map unVictoryDisplayCardCode <$> getSet ()
       investigatorIds <- getInvestigatorIds
       xp <- getXp
       let

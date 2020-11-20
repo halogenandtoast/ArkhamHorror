@@ -29,7 +29,7 @@ instance ActionRunner env => HasActions env HermanCollins where
   getActions iid NonFast (HermanCollins attrs@Attrs {..}) = do
     baseActions <- getActions iid NonFast attrs
     cardCount <- getCardCount iid
-    locationId <- asks $ getId @LocationId iid
+    locationId <- getId @LocationId iid
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction

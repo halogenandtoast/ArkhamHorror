@@ -38,7 +38,7 @@ instance (AssetRunner env) => RunMessage env Flashlight where
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Flashlight <$> runMessage msg (attrs & uses .~ Uses Resource.Supply 3)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
-      lid <- asks $ getId iid
+      lid <- getId iid
       unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers [ShroudModifier (-2)])

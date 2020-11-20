@@ -23,8 +23,8 @@ instance ActionRunner env => HasActions env Psychosis where
       Just tormented -> do
         canActivate <- (>= 2) . unActionRemainingCount <$> getCount
           (Nothing :: Maybe Action, setToList treacheryTraits, iid)
-        investigatorLocationId <- asks $ getId @LocationId iid
-        treacheryLocation <- asks (getId tormented)
+        investigatorLocationId <- getId @LocationId iid
+        treacheryLocation <- getId tormented
         pure
           [ ActivateCardAbilityAction
               iid

@@ -60,7 +60,7 @@ instance AssetRunner env => RunMessage env Duke where
       unshiftMessage $ ChooseFightEnemy iid source SkillCombat False
       pure . Duke $ attrs & exhausted .~ True
     UseCardAbility iid source _ 2 | isSource attrs source -> do
-      lid <- asks $ getId iid
+      lid <- getId iid
       accessibleLocationIds <- map unAccessibleLocationId <$> getSetList lid
       if null accessibleLocationIds
         then unshiftMessage $ dukeInvestigate attrs iid lid

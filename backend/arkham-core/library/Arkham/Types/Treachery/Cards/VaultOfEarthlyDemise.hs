@@ -27,7 +27,7 @@ instance HasActions env VaultOfEarthlyDemise where
 instance TreacheryRunner env => RunMessage env VaultOfEarthlyDemise where
   runMessage msg (VaultOfEarthlyDemise attrs@Attrs {..}) = case msg of
     AttachTreachery tid _ | tid == treacheryId -> do
-      actsRemaining <- asks $ unActsRemainingCount . getCount ()
+      actsRemaining <- unActsRemainingCount <$> getCount ()
       VaultOfEarthlyDemise
         <$> runMessage msg (attrs & resources ?~ actsRemaining)
     Discard (TreacheryTarget tid) | tid == treacheryId ->

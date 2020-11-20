@@ -58,7 +58,7 @@ instance ActionRunner env => HasActions env DaisyWalkerParallel where
     | iid == investigatorId attrs = do
       baseActions <- getActions iid FastPlayerWindow attrs
       let ability' = (iid, ability attrs)
-      unused <- asks $ notElem ability' . map unUsedAbility . getList ()
+      unused <- notElem ability' . map unUsedAbility <$> getList ()
       hasTomes <- (> 0) . unAssetCount <$> getCount (iid, [Tome])
       pure
         $ [ uncurry ActivateCardAbilityAction ability' | unused && hasTomes ]
@@ -70,7 +70,7 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
     UseCardAbility iid (InvestigatorSource iid') _ 1 | investigatorId == iid' ->
       do
         tomeAssets <- filterM
-          (asks . (elem Tome .) . getSet)
+          ((elem Tome <$>) . getSet)
           (setToList investigatorAssets)
         pairs' <- traverse (getActions iid NonFast) tomeAssets
         i <$ unshiftMessage

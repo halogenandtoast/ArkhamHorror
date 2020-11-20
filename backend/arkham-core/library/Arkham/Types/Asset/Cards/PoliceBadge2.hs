@@ -30,7 +30,7 @@ instance HasActions env PoliceBadge2 where
 instance AssetRunner env => RunMessage env PoliceBadge2 where
   runMessage msg a@(PoliceBadge2 attrs) = case msg of
     UseCardAbility _ source _ 1 | isSource attrs source -> do
-      activeInvestigatorId <- asks $ unActiveInvestigatorId . getId ()
+      activeInvestigatorId <- unActiveInvestigatorId <$> getId ()
       a <$ unshiftMessages
         [Discard (toTarget attrs), GainActions activeInvestigatorId source 2]
     _ -> PoliceBadge2 <$> runMessage msg attrs

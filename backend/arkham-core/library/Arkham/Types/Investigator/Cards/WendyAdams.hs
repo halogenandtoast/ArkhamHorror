@@ -46,7 +46,7 @@ instance ActionRunner env => HasActions env WendyAdams where
                   )
           { abilityLimit = PerTestOrAbility
           }
-      usedAbilities <- map unUsedAbility <$> asks (getList ())
+      usedAbilities <- map unUsedAbility <$> getList ()
       pure
         [ ActivateCardAbilityAction investigatorId ability
         | (investigatorId, ability) `notElem` usedAbilities && not
@@ -82,6 +82,6 @@ instance (InvestigatorRunner env) => RunMessage env WendyAdams where
       , UnfocusTokens
       ]
     ResolveToken ElderSign iid | iid == investigatorId -> do
-      maid <- asks (getId @(Maybe AssetId) (CardCode "01014"))
+      maid <- getId @(Maybe AssetId) (CardCode "01014")
       i <$ when (isJust maid) (unshiftMessage PassSkillTest)
     _ -> WendyAdams <$> runMessage msg attrs

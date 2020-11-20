@@ -29,7 +29,7 @@ instance HasActions env BeatCop where
 instance AssetRunner env => RunMessage env BeatCop where
   runMessage msg a@(BeatCop attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
-      locationId <- asks $ getId @LocationId iid
+      locationId <- getId @LocationId iid
       locationEnemyIds <- getSetList locationId
       a <$ unshiftMessages
         [ Discard (toTarget attrs)

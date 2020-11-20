@@ -26,7 +26,7 @@ instance (TreacheryRunner env) => RunMessage env MaskedHorrors where
       targetInvestigators <- map fst . filter ((>= 2) . snd) <$> for
         iids
         (\iid -> do
-          clueCount <- asks $ unClueCount . getCount iid
+          clueCount <- unClueCount <$> getCount iid
           pure (iid, clueCount)
         )
       if null targetInvestigators

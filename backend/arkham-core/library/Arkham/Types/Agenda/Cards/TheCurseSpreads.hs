@@ -25,7 +25,7 @@ instance HasActions env TheCurseSpreads where
 getRougarou
   :: (MonadReader env m, HasId (Maybe StoryEnemyId) env CardCode)
   => m (Maybe EnemyId)
-getRougarou = asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))
+getRougarou = fmap unStoryEnemyId <$> getId (CardCode "81028")
 
 instance AgendaRunner env => RunMessage env TheCurseSpreads where
   runMessage msg a@(TheCurseSpreads attrs@Attrs {..}) = case msg of
@@ -34,7 +34,7 @@ instance AgendaRunner env => RunMessage env TheCurseSpreads where
       case mrougarou of
         Nothing -> pure . TheCurseSpreads $ attrs & doom +~ 1
         Just eid -> do
-          notEngaged <- asks $ null . getSet @InvestigatorId eid
+          notEngaged <- null <$> getSet @InvestigatorId eid
           pure . TheCurseSpreads $ if notEngaged
             then attrs & doom +~ 1
             else attrs

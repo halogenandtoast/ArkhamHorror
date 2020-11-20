@@ -26,7 +26,7 @@ instance HasModifiersFor env AlmaHill where
 instance ActionRunner env => HasActions env AlmaHill where
   getActions iid NonFast (AlmaHill attrs@Attrs {..}) = do
     baseActions <- getActions iid NonFast attrs
-    locationId <- asks $ getId @LocationId iid
+    locationId <- getId @LocationId iid
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction

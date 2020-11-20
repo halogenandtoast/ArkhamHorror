@@ -63,9 +63,8 @@ instance ActionRunner env => HasActions env EasttownArkhamPoliceStation where
 instance LocationRunner env => RunMessage env EasttownArkhamPoliceStation where
   runMessage msg l@(EasttownArkhamPoliceStation attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
-      ammoAssets <- asks $ map (Ammo, ) . setToList . getSet (iid, Ammo)
-      resourceAssets <- asks $ map (Resource, ) . setToList . getSet
-        (iid, Resource)
+      ammoAssets <- map (Ammo, ) <$> getSetList (iid, Ammo)
+      resourceAssets <- map (Resource, ) <$> getSetList (iid, Resource)
       l <$ unshiftMessage
         (chooseOne
           iid

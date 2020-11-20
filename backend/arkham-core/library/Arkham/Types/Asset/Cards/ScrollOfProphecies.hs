@@ -42,7 +42,7 @@ instance AssetRunner env => RunMessage env ScrollOfProphecies where
       ScrollOfProphecies
         <$> runMessage msg (attrs & uses .~ Uses Resource.Secret 4)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
-      locationId <- asks $ getId @LocationId iid
+      locationId <- getId @LocationId iid
       investigatorIds <- getSetList locationId
       unshiftMessage
         (chooseOne

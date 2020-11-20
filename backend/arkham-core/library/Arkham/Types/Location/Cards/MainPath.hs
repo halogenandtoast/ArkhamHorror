@@ -52,7 +52,7 @@ instance (LocationRunner env) => RunMessage env MainPath where
     UseCardAbility iid source _ 1 | isSource attrs source && locationRevealed ->
       l <$ unshiftMessage (Resign iid)
     AddConnection lid _ | locationId /= lid -> do
-      isWoods <- asks $ member Woods . getSet lid
+      isWoods <- member Woods <$> getSet lid
       if isWoods
         then MainPath
           <$> runMessage msg (attrs & connectedLocations %~ insertSet lid)

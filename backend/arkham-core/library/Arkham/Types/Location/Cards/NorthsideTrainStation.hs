@@ -56,7 +56,7 @@ instance ActionRunner env => HasActions env NorthsideTrainStation where
 instance LocationRunner env => RunMessage env NorthsideTrainStation where
   runMessage msg l@(NorthsideTrainStation attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
-      locationIds <- asks $ setToList . getSet [Arkham]
+      locationIds <- getSetList [Arkham]
       l <$ unshiftMessage
         (chooseOne iid [ MoveTo iid lid | lid <- locationIds ])
     _ -> NorthsideTrainStation <$> runMessage msg attrs

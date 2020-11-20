@@ -41,7 +41,7 @@ instance ActionRunner env => HasActions env SkidsOToole where
   getActions iid (DuringTurn You) (SkidsOToole a@Attrs {..})
     | iid == investigatorId = do
       let ability' = (investigatorId, ability a)
-      unused <- asks $ notElem ability' . map unUsedAbility . getList ()
+      unused <- notElem ability' . map unUsedAbility <$> getList ()
       pure
         [ uncurry ActivateCardAbilityAction ability'
         | unused && investigatorResources >= 2

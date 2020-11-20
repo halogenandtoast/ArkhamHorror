@@ -20,9 +20,9 @@ instance HasActions env TheBarrier where
 instance ActRunner env => RunMessage env TheBarrier where
   runMessage msg a@(TheBarrier attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && actSequence == "Act 2a" -> do
-      hallwayId <- asks $ fromJustNote "must exist" . getId @(Maybe LocationId)
-        (LocationName "Hallway")
-      investigatorIds <- asks $ getSetList hallwayId
+      hallwayId <- fromJustNote "must exist"
+        <$> getId @(Maybe LocationId) (LocationName "Hallway")
+      investigatorIds <- getSetList hallwayId
       requiredClueCount <- getPlayerCountValue (PerPlayer 3)
       unshiftMessages
         (SpendClues requiredClueCount investigatorIds
@@ -30,8 +30,8 @@ instance ActRunner env => RunMessage env TheBarrier where
         )
       pure $ TheBarrier $ attrs & Act.sequence .~ "Act 2b" & flipped .~ True
     AdvanceAct aid | aid == actId && actSequence == "Act 2b" -> do
-      hallwayId <- asks $ fromJustNote "must exist" . getId @(Maybe LocationId)
-        (LocationName "Hallway")
+      hallwayId <- fromJustNote "must exist"
+        <$> getId @(Maybe LocationId) (LocationName "Hallway")
       a <$ unshiftMessages
         [ RevealLocation Nothing "01115"
         , CreateStoryAssetAt "01117" "01115"
@@ -39,8 +39,7 @@ instance ActRunner env => RunMessage env TheBarrier where
         , NextAct aid "01110"
         ]
     EndRoundWindow -> do
-      investigatorIds <- asks
-        (setToList . getSet @InvestigatorId (LocationName "Hallway"))
+      investigatorIds <- getSetList @InvestigatorId (LocationName "Hallway")
       leadInvestigatorId <- getLeadInvestigatorId
       totalSpendableClueCount <- getSpendableClueCount investigatorIds
       requiredClueCount <- getPlayerCountValue (PerPlayer 3)

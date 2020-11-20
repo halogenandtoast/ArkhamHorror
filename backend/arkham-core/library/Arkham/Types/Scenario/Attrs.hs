@@ -17,7 +17,6 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.ScenarioId
 import Arkham.Types.Target
 import Arkham.Types.Token
-import qualified Data.HashSet as HashSet
 import Lens.Micro
 
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
@@ -106,7 +105,7 @@ instance ScenarioRunner env => RunMessage env Attrs where
         _ ->
           error "We want there to be only one location when targetting names"
     PlaceDoomOnAgenda -> do
-      agendaIds <- HashSet.toList <$> asks (getSet @AgendaId ())
+      agendaIds <- getSetList @AgendaId ()
       case agendaIds of
         [] -> pure a
         [x] -> a <$ unshiftMessage (PlaceDoom (AgendaTarget x) 1)
@@ -118,7 +117,7 @@ instance ScenarioRunner env => RunMessage env Attrs where
       investigatorIds <- getSet @InScenarioInvestigatorId ()
       if null investigatorIds then a <$ unshiftMessage NoResolution else pure a
     InvestigatorResigned _ -> do
-      investigatorIds <- asks (getSet @InScenarioInvestigatorId ())
+      investigatorIds <- getSet @InScenarioInvestigatorId ()
       if null investigatorIds then a <$ unshiftMessage NoResolution else pure a
     InvestigatorWhenEliminated iid ->
       a <$ unshiftMessage (InvestigatorEliminated iid)

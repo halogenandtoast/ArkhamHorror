@@ -31,7 +31,7 @@ instance ActionRunner env => HasActions env RitualSite where
 instance (LocationRunner env) => RunMessage env RitualSite where
   runMessage msg (RitualSite attrs) = case msg of
     EndRound -> do
-      playerCount <- asks $ unPlayerCount . getCount ()
+      playerCount <- unPlayerCount <$> getCount ()
       RitualSite <$> runMessage
         msg
         (attrs & clues .~ fromGameValue (PerPlayer 2) playerCount)

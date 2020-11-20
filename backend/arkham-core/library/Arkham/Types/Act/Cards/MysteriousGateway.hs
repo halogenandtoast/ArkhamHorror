@@ -22,8 +22,7 @@ instance ActRunner env => RunMessage env MysteriousGateway where
   runMessage msg a@(MysteriousGateway attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && actSequence == "Act 1a" -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- asks
-        (setToList . getSet @InvestigatorId (LocationId "50014"))
+      investigatorIds <- getSetList @InvestigatorId (LocationId "50014")
       requiredClues <- getPlayerCountValue (PerPlayer 3)
       unshiftMessages
         [ SpendClues requiredClues investigatorIds
@@ -38,8 +37,7 @@ instance ActRunner env => RunMessage env MysteriousGateway where
         .~ True
     AdvanceAct aid | aid == actId && actSequence == "Act 1b" -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- asks
-        (setToList . getSet @InvestigatorId (LocationId "50014"))
+      investigatorIds <- getSetList @InvestigatorId (LocationId "50014")
       a <$ unshiftMessages
         ([PlaceLocation "50017"]
         <> [ chooseOne
@@ -63,8 +61,7 @@ instance ActRunner env => RunMessage env MysteriousGateway where
     FailedSkillTest iid _ (ActSource aid) SkillTestInitiatorTarget{} n
       | aid == actId -> a <$ unshiftMessages (replicate n (RandomDiscard iid))
     PrePlayerWindow -> do
-      investigatorIds <- asks
-        (setToList . getSet @InvestigatorId (LocationId "50014"))
+      investigatorIds <- getSetList @InvestigatorId (LocationId "50014")
       totalSpendableClues <- getSpendableClueCount investigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 3)
       pure

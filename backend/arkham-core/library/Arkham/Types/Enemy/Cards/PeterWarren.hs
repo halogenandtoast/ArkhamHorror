@@ -28,7 +28,7 @@ instance ActionRunner env => HasActions env PeterWarren where
   getActions iid NonFast (PeterWarren attrs@Attrs {..}) = do
     baseActions <- getActions iid NonFast attrs
     spendableClueCount <- getSpendableClueCount [iid]
-    locationId <- asks $ getId @LocationId iid
+    locationId <- getId @LocationId iid
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction

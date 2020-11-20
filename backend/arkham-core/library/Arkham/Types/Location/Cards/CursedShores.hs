@@ -52,8 +52,7 @@ instance LocationRunner env => RunMessage env CursedShores where
     WhenEnterLocation iid lid
       | -- TODO: SHOULD WE BROADCAST LRAVING THE LOCATION INSTEAD
         lid /= locationId && iid `elem` locationInvestigators -> do
-        skillCards <- asks $ map unHandCardId . setToList . getSet
-          (iid, SkillType)
+        skillCards <- map unHandCardId <$> getSetList (iid, SkillType)
         case skillCards of
           [] -> pure ()
           [x] -> unshiftMessage (DiscardCard iid x)

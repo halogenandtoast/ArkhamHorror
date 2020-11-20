@@ -32,11 +32,11 @@ instance HasModifiersFor env Aquinnah1 where
 
 instance ActionRunner env => HasActions env Aquinnah1 where
   getActions iid (WhenEnemyAttacks You) (Aquinnah1 a) | ownedBy a iid = do
-    locationId <- asks $ getId @LocationId iid
+    locationId <- getId @LocationId iid
     enemyId <- fromQueue $ \queue ->
       let PerformEnemyAttack iid' eid : _ = dropUntilAttack queue
       in if iid' == iid then eid else error "mismatch"
-    enemyIds <- asks $ filterSet (/= enemyId) . getSet locationId
+    enemyIds <- filterSet (/= enemyId) <$> getSet locationId
     pure
       [ ActivateCardAbilityAction iid (reactionAbility a)
       | not (assetExhausted a) && not (null enemyIds)
@@ -51,7 +51,7 @@ instance AssetRunner env => RunMessage env Aquinnah1 where
         in (queue', eid)
       healthDamage' <- unHealthDamageCount <$> getCount enemyId
       sanityDamage' <- unSanityDamageCount <$> getCount enemyId
-      locationId <- asks $ getId @LocationId iid
+      locationId <- getId @LocationId iid
       enemyIds <- filter (/= enemyId) <$> getSetList locationId
 
       when (null enemyIds) (error "other enemies had to be present")

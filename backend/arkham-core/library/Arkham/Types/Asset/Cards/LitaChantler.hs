@@ -23,7 +23,7 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env LitaChantler
     case assetInvestigator of
       Nothing -> pure []
       Just ownerId -> do
-        sameLocation <- asks $ (== locationId) . getId ownerId
+        sameLocation <- (== locationId) <$> getId ownerId
         pure [ SkillModifier SkillCombat 1 | sameLocation ]
   getModifiersFor _ _ _ = pure []
 
@@ -34,7 +34,7 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
   runMessage msg a@(LitaChantler attrs@Attrs {..}) = case msg of
     SuccessfulAttackEnemy iid eid -> case assetInvestigator of
       Just ownerId -> do
-        locationId <- asks $ getId @LocationId ownerId
+        locationId <- getId @LocationId ownerId
         locationInvestigatorIds <- getSetList locationId
         traits <- getSetList eid
         if iid `elem` locationInvestigatorIds && Monster `elem` traits

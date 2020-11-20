@@ -45,7 +45,7 @@ instance ActRunner env => RunMessage env UncoveringTheConspiracy where
     AdvanceAct aid | aid == actId && actSequence == "Act 1b" -> do
       a <$ unshiftMessage (Resolution 1)
     AddToVictory _ -> do
-      victoryDisplay <- asks $ HashSet.map unVictoryDisplayCardCode . getSet ()
+      victoryDisplay <- HashSet.map unVictoryDisplayCardCode <$> getSet ()
       let
         cultists =
           setFromList ["01121b", "01137", "01138", "01139", "01140", "01141"]

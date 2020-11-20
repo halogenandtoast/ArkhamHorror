@@ -154,7 +154,7 @@ pairInvestigatorIdsForWindow iid = do
   lid <- getId iid
   connectedLocationIds <- HashSet.map unConnectedLocationId <$> getSet lid
   for investigatorIds $ \iid2 -> do
-    lid2 <- asks (getId iid2)
+    lid2 <- getId iid2
     pure $ if iid2 == iid
       then (iid2, Window.You)
       else if lid2 == lid

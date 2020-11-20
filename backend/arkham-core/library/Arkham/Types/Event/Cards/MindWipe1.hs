@@ -22,8 +22,8 @@ instance HasActions env MindWipe1 where
 instance (EventRunner env) => RunMessage env MindWipe1 where
   runMessage msg e@(MindWipe1 attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      locationId <- asks (getId @LocationId iid)
-      enemyIds <- asks $ setToList . getSet locationId
+      locationId <- getId @LocationId iid
+      enemyIds <- getSetList locationId
       nonEliteEnemyIds <- flip filterM enemyIds $ \enemyId -> do
         notElem Elite <$> getSet enemyId
       if null nonEliteEnemyIds

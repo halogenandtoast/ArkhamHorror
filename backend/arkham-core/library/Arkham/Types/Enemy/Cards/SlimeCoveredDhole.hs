@@ -51,7 +51,7 @@ instance (EnemyRunner env) => RunMessage env SlimeCoveredDhole where
       spawnLocations <- setToList <$> nonBayouLocations
       e <$ spawnAtOneOf iid enemyId spawnLocations
     EnemyMove eid _ lid | eid == enemyId -> do
-      investigatorIds <- asks $ setToList . getSet @InvestigatorId lid
+      investigatorIds <- getSetList @InvestigatorId lid
       e <$ unshiftMessages
         [ InvestigatorAssignDamage iid (toSource attrs) 0 1
         | iid <- investigatorIds

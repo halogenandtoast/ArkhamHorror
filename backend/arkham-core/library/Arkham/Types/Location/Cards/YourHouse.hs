@@ -53,7 +53,7 @@ instance ActionRunner env => HasActions env YourHouse where
 instance (LocationRunner env) => RunMessage env YourHouse where
   runMessage msg l@(YourHouse attrs@Attrs {..}) = case msg of
     Will (EnemySpawn miid _ eid) -> do
-      cardCode <- asks (getId @CardCode eid)
+      cardCode <- getId @CardCode eid
       when (cardCode == "01116") $ do
         void popMessage
         unshiftMessage (EnemySpawn miid "01124" eid)

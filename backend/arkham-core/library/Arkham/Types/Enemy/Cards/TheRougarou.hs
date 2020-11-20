@@ -68,8 +68,8 @@ instance EnemyRunner env => RunMessage env TheRougarou where
           investigatorIds <- getInvestigatorIds
           leadInvestigatorId <- getLeadInvestigatorId
           farthestLocationIds <- case investigatorIds of
-            [iid] -> asks $ map unFarthestLocationId . setToList . getSet iid
-            iids -> asks $ map unFarthestLocationId . setToList . getSet iids
+            [iid] -> map unFarthestLocationId <$> getSetList iid
+            iids -> map unFarthestLocationId <$> getSetList iids
           case farthestLocationIds of
             [] -> error "can't happen"
             [x] -> unshiftMessage (MoveUntil x (EnemyTarget enemyId))

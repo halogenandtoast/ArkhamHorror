@@ -22,7 +22,7 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env SpectralMist
 
 instance ActionRunner env => HasActions env SpectralMist where
   getActions iid NonFast (SpectralMist Attrs {..}) = do
-    investigatorLocationId <- asks $ getId @LocationId iid
+    investigatorLocationId <- getId @LocationId iid
     hasActionsRemaining <- getHasActionsRemaining
       iid
       Nothing
@@ -40,10 +40,10 @@ instance ActionRunner env => HasActions env SpectralMist where
 instance (TreacheryRunner env) => RunMessage env SpectralMist where
   runMessage msg t@(SpectralMist attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      exemptLocations <- asks
-        (getSet @LocationId (TreacheryCardCode $ CardCode "81025"))
+      exemptLocations <- getSet @LocationId
+        (TreacheryCardCode $ CardCode "81025")
       targetLocations <-
-        asks $ setToList . (`difference` exemptLocations) . getSet @LocationId
+        setToList . (`difference` exemptLocations) <$> getSet @LocationId
           [Bayou]
       if null targetLocations
         then unshiftMessage (Discard (toTarget attrs))

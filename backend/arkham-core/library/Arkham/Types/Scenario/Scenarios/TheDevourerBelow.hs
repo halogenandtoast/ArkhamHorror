@@ -142,7 +142,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
       TheDevourerBelow <$> runMessage msg (attrs & locations .~ locations')
     ResolveToken Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
-      closestEnemyIds <- asks $ map unClosestEnemyId . setToList . getSet iid
+      closestEnemyIds <- map unClosestEnemyId <$> getSetList iid
       case closestEnemyIds of
         [] -> pure ()
         [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) doom)

@@ -24,11 +24,11 @@ instance TreacheryRunner env => RunMessage env UmordhothsHunger where
     Revelation _ source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       msgs <- for investigatorIds $ \iid -> do
-        handCount <- asks $ unCardCount . getCount iid
+        handCount <- unCardCount <$> getCount iid
         pure $ if handCount == 0
           then InvestigatorKilled iid
           else RandomDiscard iid
-      enemyIds <- asks $ setToList . getSet @EnemyId ()
+      enemyIds <- getSetList @EnemyId ()
       unshiftMessages
         $ msgs
         <> [ HealDamage (EnemyTarget eid) 1 | eid <- enemyIds ]

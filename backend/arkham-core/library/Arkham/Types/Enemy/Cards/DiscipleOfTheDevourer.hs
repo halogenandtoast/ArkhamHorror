@@ -27,9 +27,8 @@ instance ActionRunner env => HasActions env DiscipleOfTheDevourer where
 instance EnemyRunner env => RunMessage env DiscipleOfTheDevourer where
   runMessage msg e@(DiscipleOfTheDevourer attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
-      farthestEmptyLocationIds <-
-        asks $ map unFarthestLocationId . setToList . getSet
-          (iid, EmptyLocation)
+      farthestEmptyLocationIds <- map unFarthestLocationId
+        <$> getSetList (iid, EmptyLocation)
       e <$ spawnAtOneOf iid eid farthestEmptyLocationIds
     EnemySpawn (Just iid) _ eid | eid == enemyId -> do
       let

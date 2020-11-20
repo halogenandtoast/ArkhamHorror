@@ -28,7 +28,7 @@ instance ActionRunner env => HasActions env MobEnforcer where
   getActions iid NonFast (MobEnforcer attrs@Attrs {..}) = do
     baseActions <- getActions iid NonFast attrs
     resourceCount <- getResourceCount iid
-    locationId <- asks $ getId @LocationId iid
+    locationId <- getId @LocationId iid
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction

@@ -674,8 +674,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
     pure $ a & clues .~ 0 & resources .~ 0
   EnemyMove eid _ lid | lid == investigatorLocation -> do
-    keywords <- asks $ getSet eid
-    unengaged <- asks $ null . getSet @InvestigatorId eid
+    keywords <- getSet eid
+    unengaged <- null <$> getSet @InvestigatorId eid
     when
         (Keyword.Aloof
         `notElem` keywords
@@ -693,8 +693,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   TakeControlOfAsset iid aid | iid == investigatorId ->
     pure $ a & assets %~ insertSet aid
   ChooseAndDiscardAsset iid | iid == investigatorId -> do
-    discardableAssetIds <-
-      asks $ map unDiscardableAssetId . setToList . getSet iid
+    discardableAssetIds <- map unDiscardableAssetId <$> getSetList iid
     a <$ unshiftMessage
       (Ask iid $ ChooseOne $ map (Discard . AssetTarget) discardableAssetIds)
   AttachAsset aid _ | aid `member` investigatorAssets ->
@@ -745,9 +744,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       & (discard %~ (lookupPlayerCard cardCode (CardId $ unAssetId aid) :))
       & (slots %~ removeFromSlots aid)
   ChooseFightEnemy iid source skillType isAction | iid == investigatorId -> do
-    enemyIds <- asks (getSet investigatorLocation)
-    aloofEnemyIds <-
-      asks $ HashSet.map unAloofEnemyId . getSet investigatorLocation
+    enemyIds <- getSet investigatorLocation
+    aloofEnemyIds <- HashSet.map unAloofEnemyId <$> getSet investigatorLocation
     let
       fightableEnemyIds =
         investigatorEngagedEnemies `union` (enemyIds `difference` aloofEnemyIds)
@@ -776,7 +774,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       ]
     pure a
   FailedAttackEnemy iid eid | iid == investigatorId -> do
-    investigatorIds <- asks $ setToList . getSet eid
+    investigatorIds <- getSetList eid
     case investigatorIds of
       [x] | x /= iid -> unshiftMessage (InvestigatorDamageInvestigator iid x)
       _ -> pure ()
@@ -861,8 +859,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
               source
               (health - 1)
               sanity
-          healthDamageableAssets <-
-            asks $ map unHealthDamageableAssetId . setToList . getSet iid
+          healthDamageableAssets <- map unHealthDamageableAssetId
+            <$> getSetList iid
           pure
             $ Run
                 [ InvestigatorDamage investigatorId source 1 0
@@ -887,8 +885,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
               source
               health
               (sanity - 1)
-          sanityDamageableAssets <-
-            asks $ map unSanityDamageableAssetId . setToList . getSet iid
+          sanityDamageableAssets <- map unSanityDamageableAssetId
+            <$> getSetList iid
           pure
             $ Run
                 [ InvestigatorDamage investigatorId source 0 1
@@ -1075,7 +1073,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure $ a & hand %~ map updateCard
   RemoveAllCopiesOfCardFromGame iid cardCode | iid == investigatorId -> do
     for_ investigatorAssets $ \assetId -> do
-      cardCode' <- asks $ getId @CardCode assetId
+      cardCode' <- getId @CardCode assetId
       when
         (cardCode == cardCode')
         (unshiftMessage $ RemoveFromGame (AssetTarget assetId))
@@ -1140,7 +1138,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       slots' = HashMap.findWithDefault [] slotType investigatorSlots
       emptiedSlots = sort $ map emptySlot slots'
     assetsWithTraits <- for assetIds $ \assetId -> do
-      traits <- asks $ setToList . getSet assetId
+      traits <- getSetList assetId
       pure (assetId, traits)
     let
       updatedSlots = foldl'
@@ -1224,7 +1222,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       $ ChooseOne [InvestigatorDrawEncounterCard investigatorId]
       )
   When (EnemySpawn _ lid eid) | lid == investigatorLocation -> do
-    traits <- asks $ setToList . getSet eid
+    traits <- getSetList eid
     a <$ unshiftMessage
       (CheckWindow investigatorId [WhenEnemySpawns YourLocation traits])
   ActivateCardAbilityAction iid Ability {..} | iid == investigatorId -> do
@@ -1275,8 +1273,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   InvestigatorCommittedCard iid cardId | iid == investigatorId ->
     pure $ a & hand %~ filter ((/= cardId) . getCardId)
   BeforeSkillTest iid skillType | iid == investigatorId -> do
-    committedCardIds <- asks $ map unCommittedCardId . setToList . getSet iid
-    committedCardCodes <- asks $ HashSet.map unCommittedCardCode . getSet ()
+    committedCardIds <- map unCommittedCardId <$> getSetList iid
+    committedCardCodes <- HashSet.map unCommittedCardCode <$> getSet ()
     actions <- getActions iid (WhenSkillTest skillType) ()
     isScenarioAbility <- getIsScenarioAbility
     source <-
@@ -1327,12 +1325,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       unshiftMessage (SkillTestAsk $ Ask iid $ ChooseOne [triggerMessage])
     pure a
   BeforeSkillTest iid skillType | iid /= investigatorId -> do
-    locationId' <- asks (getId iid)
+    locationId' <- getId iid
     isScenarioAbility <- getIsScenarioAbility
     when (locationId' == investigatorLocation) $ do
-      committedCardIds <-
-        asks $ map unCommittedCardId . setToList . getSet investigatorId
-      committedCardCodes <- asks $ HashSet.map unCommittedCardCode . getSet ()
+      committedCardIds <- map unCommittedCardId <$> getSetList investigatorId
+      committedCardCodes <- HashSet.map unCommittedCardCode <$> getSet ()
       let
         beginMessage = BeforeSkillTest iid skillType
         committableCards = if not (null committedCardIds)

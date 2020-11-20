@@ -34,7 +34,7 @@ instance ActionRunner env => HasActions env TheMaskedHunter where
 instance (EnemyRunner env) => RunMessage env TheMaskedHunter where
   runMessage msg (TheMaskedHunter attrs@Attrs {..}) = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
-      playerCount <- unPlayerCount <$> asks (getCount ())
+      playerCount <- unPlayerCount <$> getCount ()
       TheMaskedHunter
         <$> runMessage msg (attrs & health %~ fmap (+ (2 * playerCount)))
     _ -> TheMaskedHunter <$> runMessage msg attrs

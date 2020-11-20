@@ -35,7 +35,7 @@ instance ActionRunner env => HasActions env ZoeysCross where
     | ownedBy a iid
     = do
       let ability' = (iid, ability a eid)
-      unused <- asks $ notElem ability' . map unUsedAbility . getList ()
+      unused <- notElem ability' . map unUsedAbility <$> getList ()
       resourceCount <- getResourceCount iid
       pure
         [ uncurry ActivateCardAbilityAction ability'

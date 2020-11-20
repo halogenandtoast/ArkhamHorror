@@ -26,7 +26,7 @@ instance TreacheryRunner env => RunMessage env TheZealotsSeal where
       -- we must unshift this first for other effects happen before
       unshiftMessage (Discard $ TreacheryTarget treacheryId)
       for_ investigatorIds $ \iid' -> do
-        handCardCount <- asks $ unCardCount . getCount iid'
+        handCardCount <- unCardCount <$> getCount iid'
         if handCardCount <= 3
           then unshiftMessage
             (InvestigatorAssignDamage iid' (toSource attrs) 1 1)

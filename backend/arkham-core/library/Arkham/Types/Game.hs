@@ -364,7 +364,7 @@ newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
     mapFromList $ map (toFst getInvestigatorId . fst) (toList investigatorsList)
 
 instance CanBeWeakness (Game queue) TreacheryId where
-  getIsWeakness tid = getIsWeakness =<< getTreachery tid
+  getIsWeakness = getIsWeakness <=< getTreachery
 
 instance HasRecord (Game queue) where
   hasRecord key g = case g ^. campaign of
@@ -390,10 +390,10 @@ instance HasId CardCode (Game queue) AssetId where
   getId aid = getCardCode <$> getAsset aid
 
 instance HasId (Maybe OwnerId) (Game queue) AssetId where
-  getId aid = getId =<< getAsset aid
+  getId = getId <=< getAsset
 
 instance HasId (Maybe LocationId) (Game queue) AssetId where
-  getId aid = getId =<< getAsset aid
+  getId = getId <=< getAsset
 
 instance HasId (Maybe LocationId) (Game queue) LocationName where
   getId locationName = do
@@ -427,7 +427,7 @@ instance HasId LocationId (Game queue) InvestigatorId where
   getId iid = locationFor iid <$> ask
 
 instance HasId LocationId (Game queue) EnemyId where
-  getId eid = getId =<< getEnemy eid
+  getId = getId <=< getEnemy
 
 instance HasCount ActsRemainingCount (Game queue) () where
   getCount _ = do
@@ -445,17 +445,17 @@ instance HasCount ActsRemainingCount (Game queue) () where
     pure $ ActsRemainingCount $ length remainingActs
 
 instance HasCount ActionTakenCount (Game queue) InvestigatorId where
-  getCount iid = getCount =<< getInvestigator iid
+  getCount = getCount <=< getInvestigator
 
 instance HasCount ActionRemainingCount (Game queue) (Maybe Action, [Trait], InvestigatorId) where
   getCount (maction, traits, iid) =
     getCount . (maction, traits, ) =<< getInvestigator iid
 
 instance HasCount SanityDamageCount (Game queue) EnemyId where
-  getCount eid = getCount =<< getEnemy eid
+  getCount = getCount <=< getEnemy
 
 instance HasCount HealthDamageCount (Game queue) EnemyId where
-  getCount eid = getCount =<< getEnemy eid
+  getCount = getCount <=< getEnemy
 
 instance HasCount HorrorCount (Game queue) InvestigatorId where
   getCount iid = HorrorCount . snd . getDamage <$> getInvestigator iid
@@ -477,10 +477,10 @@ instance HasCount TreacheryCount (Game queue) (LocationId, CardCode) where
       ]
 
 instance HasCount DoomCount (Game queue) EnemyId where
-  getCount eid = getCount =<< getEnemy eid
+  getCount = getCount <=< getEnemy
 
 instance HasCount DoomCount (Game queue) AgendaId where
-  getCount aid = getCount =<< getAgenda aid
+  getCount = getCount <=< getAgenda
 
 instance HasCount XPCount (Game queue) () where
   getCount _ = do
@@ -504,28 +504,28 @@ instance HasCount DoomCount (Game queue) () where
       <> (map (flip runReader g . getCount) . toList $ g ^. agendas)
 
 instance HasCount ClueCount (Game queue) LocationId where
-  getCount lid = getCount =<< getLocation lid
+  getCount = getCount <=< getLocation
 
 instance HasCount Shroud (Game queue) LocationId where
-  getCount lid = getCount =<< getLocation lid
+  getCount = getCount <=< getLocation
 
 instance HasCount CardCount (Game queue) InvestigatorId where
-  getCount iid = getCount =<< getInvestigator iid
+  getCount = getCount <=< getInvestigator
 
 instance HasCount ClueCount (Game queue) InvestigatorId where
-  getCount iid = getCount =<< getInvestigator iid
+  getCount = getCount <=< getInvestigator
 
 instance (HasQueue (Game queue), HasActions (Game queue) (ActionType, Trait), HasActions (Game queue) ActionType) => HasCount SpendableClueCount (Game queue) InvestigatorId where
-  getCount iid = getInvestigatorSpendableClueCount =<< getInvestigator iid
+  getCount = getInvestigatorSpendableClueCount <=< getInvestigator
 
 instance HasCount ResourceCount (Game queue) InvestigatorId where
-  getCount iid = getCount =<< getInvestigator iid
+  getCount = getCount <=< getInvestigator
 
 instance HasCount PlayerCount (Game queue) () where
   getCount _ = PlayerCount . length . view investigators <$> ask
 
 instance HasCount EnemyCount (Game queue) InvestigatorId where
-  getCount iid = getCount =<< getInvestigator iid
+  getCount = getCount <=< getInvestigator
 
 instance HasCount AssetCount (Game queue) (InvestigatorId, [Trait]) where
   getCount (iid, traits) = do
@@ -634,13 +634,13 @@ instance HasList InPlayCard (Game queue) InvestigatorId where
       assets'
 
 instance HasList HandCard (Game queue) InvestigatorId where
-  getList iid = getList =<< getInvestigator iid
+  getList = getList <=< getInvestigator
 
 instance HasList DiscardableHandCard (Game queue) InvestigatorId where
-  getList iid = getList =<< getInvestigator iid
+  getList = getList <=< getInvestigator
 
 instance HasList DiscardedPlayerCard (Game queue) InvestigatorId where
-  getList iid = getList =<< getInvestigator iid
+  getList = getList <=< getInvestigator
 
 instance HasRoundHistory (Game (IORef [Message])) where
   getRoundHistory = readIORef . gameRoundMessageHistory
@@ -1017,7 +1017,7 @@ instance HasSet ClosestEnemyId (Game queue) LocationId where
     where matcher g lid = not . null $ runReader (getSet @EnemyId lid) g
 
 instance HasSet ClosestEnemyId (Game queue) InvestigatorId where
-  getSet iid = getSet =<< locationFor iid
+  getSet = getSet <=< locationFor
 
 instance HasSet ClosestEnemyId (Game queue) (LocationId, [Trait]) where
   getSet (start, traits) = do
@@ -1147,7 +1147,7 @@ instance HasSet Int (Game queue) SkillType where
 instance (GameRunner env, env ~ Game queue) => HasSet PreyId (Game queue) Prey where
   getSet preyType = do
     investigatorIds <- getSetList ()
-    let matcher iid = getIsPrey preyType =<< getInvestigator iid
+    let matcher = getIsPrey preyType <=< getInvestigator
     setFromList . map PreyId <$> filterM matcher investigatorIds
 
 -- TODO: This does not work for more than 2 players
@@ -1156,7 +1156,7 @@ instance (GameRunner env, env ~ Game queue) => HasSet PreyId (Game queue) (Prey,
   getSet (preyType, lid) = do
     location <- getLocation lid
     investigators' <- getSetList location
-    let matcher iid = getIsPrey preyType =<< getInvestigator iid
+    let matcher = getIsPrey preyType <=< getInvestigator
     setFromList . map PreyId <$> filterM matcher investigators'
 
 instance HasSet AdvanceableActId (Game queue) () where
@@ -1168,7 +1168,7 @@ instance HasSet AdvanceableActId (Game queue) () where
       . view acts
 
 instance HasSet ConnectedLocationId (Game queue) LocationId where
-  getSet lid = getSet =<< getLocation lid
+  getSet = getSet <=< getLocation
 
 instance HasSet AccessibleLocationId (Game queue) LocationId where
   getSet lid = do
@@ -1182,7 +1182,7 @@ instance HasSet AccessibleLocationId (Game queue) LocationId where
       `difference` blockedLocationIds
 
 instance HasSet AssetId (Game queue) InvestigatorId where
-  getSet iid = getSet =<< getInvestigator iid
+  getSet = getSet <=< getInvestigator
 
 instance HasSet AssetId (Game queue) (InvestigatorId, UseType) where
   getSet (iid, useType') = do
@@ -1200,16 +1200,16 @@ instance HasSet DiscardableAssetId (Game queue) InvestigatorId where
       <$> filterM ((canBeDiscarded <$>) . getAsset) assetIds
 
 instance HasSet AssetId (Game queue) EnemyId where
-  getSet eid = getSet =<< getEnemy eid
+  getSet = getSet <=< getEnemy
 
 instance HasSet AssetId (Game queue) LocationId where
-  getSet lid = getSet =<< getLocation lid
+  getSet = getSet <=< getLocation
 
 instance HasSet TreacheryId (Game queue) LocationId where
-  getSet lid = getSet =<< getLocation lid
+  getSet = getSet <=< getLocation
 
 instance HasSet EventId (Game queue) LocationId where
-  getSet lid = getSet =<< getLocation lid
+  getSet = getSet <=< getLocation
 
 instance HasSet EventId (Game queue) () where
   getSet _ = asks $ keysSet . view events
@@ -1248,7 +1248,7 @@ instance HasSet UniqueEnemyId (Game queue) () where
     pure . setFromList $ map UniqueEnemyId enemyIds
 
 instance HasSet EnemyId (Game queue) LocationId where
-  getSet lid = getSet =<< getLocation lid
+  getSet = getSet <=< getLocation
 
 instance HasSet EnemyId (Game queue) ([Trait], LocationId) where
   getSet (traits, lid) = do
@@ -1273,7 +1273,7 @@ instance HasSet InvestigatorId (Game queue) () where
   getSet _ = asks $ keysSet . view investigators
 
 instance HasSet InvestigatorId (Game queue) LocationId where
-  getSet lid = getSet =<< getLocation lid
+  getSet = getSet <=< getLocation
 
 instance HasSet InvestigatorId (Game queue) LocationName where
   getSet locationName = do

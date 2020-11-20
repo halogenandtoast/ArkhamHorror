@@ -22,7 +22,7 @@ instance (EventRunner env) => RunMessage env CrypticResearch4 where
   runMessage msg e@(CrypticResearch4 attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       locationId <- asks (getId @LocationId iid)
-      investigatorIds <- asks $ setToList . getSet locationId
+      investigatorIds <- getSetList locationId
       e <$ unshiftMessages
         [ chooseOne
           iid

@@ -34,14 +34,13 @@ instance ActionRunner env => HasActions env FirstAid where
       ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env FirstAid where
+instance AssetRunner env => RunMessage env FirstAid where
   runMessage msg (FirstAid attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       FirstAid <$> runMessage msg (attrs & uses .~ Uses Resource.Supply 3)
     UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId -> do
       lid <- asks $ getId @LocationId iid
-      investigatorTargets <-
-        asks $ map InvestigatorTarget . setToList . getSet lid
+      investigatorTargets <- map InvestigatorTarget <$> getSetList lid
       unshiftMessage $ chooseOne
         iid
         [ TargetLabel

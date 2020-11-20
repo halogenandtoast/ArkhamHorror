@@ -30,7 +30,7 @@ instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
           connectedLocationIds <-
             asks $ map unConnectedLocationId . setToList . getSet locationId
           investigatorIds <- concat <$> traverse
-            (asks . (setToList .) . getSet @InvestigatorId)
+            (getSetList @InvestigatorId)
             (locationId : connectedLocationIds)
           case investigatorIds of
             [] -> unshiftMessages [PlaceDoomOnAgenda, Discard (toTarget attrs)]

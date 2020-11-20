@@ -24,13 +24,13 @@ instance HasActions env StrayCat where
     pure $ baseActions <> [ActivateCardAbilityAction iid ability]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env StrayCat where
+instance AssetRunner env => RunMessage env StrayCat where
   runMessage msg a@(StrayCat attrs@Attrs {..}) = case msg of
     UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId -> do
       locationId <- asks $ getId @LocationId (getInvestigator attrs)
-      locationEnemyIds <- asks $ setToList . getSet locationId
+      locationEnemyIds <- getSetList locationId
       nonEliteEnemyIds <- filterM
-        (asks . (notMember Elite .) . getSet)
+        ((notMember Elite <$>) . getSet)
         locationEnemyIds
 
       a <$ unshiftMessages

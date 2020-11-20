@@ -36,14 +36,14 @@ instance ActionRunner env => HasActions env ScrollOfProphecies where
       ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env ScrollOfProphecies where
+instance AssetRunner env => RunMessage env ScrollOfProphecies where
   runMessage msg (ScrollOfProphecies attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       ScrollOfProphecies
         <$> runMessage msg (attrs & uses .~ Uses Resource.Secret 4)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- asks $ getId @LocationId iid
-      investigatorIds <- asks $ setToList . getSet locationId
+      investigatorIds <- getSetList locationId
       unshiftMessage
         (chooseOne
           iid

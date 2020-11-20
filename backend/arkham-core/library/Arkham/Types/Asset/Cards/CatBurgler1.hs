@@ -38,7 +38,7 @@ instance ActionRunner env => HasActions env CatBurgler1 where
       ]
   getActions i window (CatBurgler1 x) = getActions i window x
 
-instance (AssetRunner env) => RunMessage env CatBurgler1 where
+instance AssetRunner env => RunMessage env CatBurgler1 where
   runMessage msg (CatBurgler1 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       unshiftMessage $ CreateSkillTestEffect
@@ -49,8 +49,8 @@ instance (AssetRunner env) => RunMessage env CatBurgler1 where
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       engagedEnemyIds <- asks $ setToList . getSet iid
       locationId <- asks $ getId @LocationId iid
-      accessibleLocationIds <-
-        asks $ map unAccessibleLocationId . setToList . getSet locationId
+      accessibleLocationIds <- map unAccessibleLocationId
+        <$> getSetList locationId
       unshiftMessages
         $ [ DisengageEnemy iid eid | eid <- engagedEnemyIds ]
         <> [ chooseOne

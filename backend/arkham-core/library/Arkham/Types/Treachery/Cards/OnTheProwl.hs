@@ -26,14 +26,14 @@ instance HasActions env OnTheProwl where
   getActions i window (OnTheProwl attrs) = getActions i window attrs
 
 bayouLocations
-  :: (MonadReader env m, HasSet LocationId [Trait] env)
+  :: (MonadReader env m, HasSet LocationId env [Trait])
   => m (HashSet LocationId)
-bayouLocations = asks $ getSet [Bayou]
+bayouLocations = getSet [Bayou]
 
 nonBayouLocations
   :: ( MonadReader env m
-     , HasSet LocationId () env
-     , HasSet LocationId [Trait] env
+     , HasSet LocationId env ()
+     , HasSet LocationId env [Trait]
      )
   => m (HashSet LocationId)
 nonBayouLocations = difference <$> getLocationSet <*> bayouLocations

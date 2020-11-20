@@ -128,11 +128,11 @@ instance HasTrauma Investigator where
   getTrauma i = (investigatorPhysicalTrauma, investigatorMentalTrauma)
     where Attrs {..} = investigatorAttrs i
 
-instance HasSet EnemyId () Investigator where
-  getSet _ = investigatorEngagedEnemies . investigatorAttrs
+instance HasSet EnemyId env Investigator where
+  getSet = pure . investigatorEngagedEnemies . investigatorAttrs
 
-instance HasSet TreacheryId () Investigator where
-  getSet _ = investigatorTreacheries . investigatorAttrs
+instance HasSet TreacheryId env Investigator where
+  getSet = pure . investigatorTreacheries . investigatorAttrs
 
 instance HasList DiscardableHandCard () Investigator where
   getList _ =
@@ -166,8 +166,8 @@ instance HasCount env ActionRemainingCount (Maybe Action, [Trait], Investigator)
       + tomeActionCount
     where a = investigatorAttrs i
 
-instance HasCount env EnemyCount Investigator where
-  getCount = pure . EnemyCount . length . getSet @EnemyId ()
+instance HasSet EnemyId env Investigator => HasCount env EnemyCount Investigator where
+  getCount = (EnemyCount . length <$>) . getSet @EnemyId
 
 instance HasCount env ResourceCount Investigator where
   getCount = pure . ResourceCount . investigatorResources . investigatorAttrs
@@ -185,8 +185,8 @@ getInvestigatorSpendableClueCount
 getInvestigatorSpendableClueCount =
   (SpendableClueCount <$>) . getSpendableClueCount . investigatorAttrs
 
-instance HasSet AssetId () Investigator where
-  getSet _ = investigatorAssets . investigatorAttrs
+instance HasSet AssetId env Investigator where
+  getSet = pure . investigatorAssets . investigatorAttrs
 
 instance HasSkill Investigator where
   getSkill skillType = skillValueFor skillType Nothing [] . investigatorAttrs
@@ -236,11 +236,11 @@ getEngagedEnemies = investigatorEngagedEnemies . investigatorAttrs
 
 -- TODO: This does not work for more than 2 players
 getIsPrey
-  :: ( HasSet Int SkillType env
-     , HasSet RemainingHealth () env
-     , HasSet RemainingSanity () env
-     , HasSet ClueCount () env
-     , HasSet CardCount () env
+  :: ( HasSet Int env SkillType
+     , HasSet RemainingHealth env ()
+     , HasSet RemainingSanity env ()
+     , HasSet ClueCount env ()
+     , HasSet CardCount env ()
      , HasList (InvestigatorId, Distance) EnemyTrait env
      , MonadReader env m
      , HasModifiersFor env env
@@ -250,13 +250,14 @@ getIsPrey
   -> m Bool
 getIsPrey AnyPrey _ = pure True
 getIsPrey (HighestSkill skillType) i = do
-  env <- ask
-  pure
-    $ fromMaybe 0 (maximumMay . toList $ getSet skillType env)
-    == skillValueFor skillType Nothing [] (investigatorAttrs i)
+  highestSkill <- fromMaybe 0 . maximumMay <$> getSetList skillType
+  pure $ highestSkill == skillValueFor
+    skillType
+    Nothing
+    []
+    (investigatorAttrs i)
 getIsPrey (LowestSkill skillType) i = do
-  lowestSkillValue <-
-    asks $ fromMaybe 100 . minimumMay . setToList . getSet skillType
+  lowestSkillValue <- fromMaybe 100 . minimumMay <$> getSetList skillType
   pure $ lowestSkillValue == skillValueFor
     skillType
     Nothing
@@ -286,15 +287,12 @@ getIsPrey (Bearer bid) i = pure $ unBearerId bid == unInvestigatorId
   (investigatorId $ investigatorAttrs i)
 getIsPrey MostClues i = do
   clueCount <- unClueCount <$> getCount i
-  mostClueCount <-
-    asks $ fromMaybe 0 . maximumMay . map unClueCount . setToList . getSet ()
+  mostClueCount <- fromMaybe 0 . maximumMay . map unClueCount <$> getSetList ()
   pure $ mostClueCount == clueCount
 getIsPrey FewestCards i = do
-  env <- ask
   cardCount <- unCardCount <$> getCount i
-  pure
-    $ fromMaybe 100 (minimumMay . map unCardCount . toList $ getSet () env)
-    == cardCount
+  minCardCount <- fromMaybe 100 . minimumMay . map unCardCount <$> getSetList ()
+  pure $ minCardCount == cardCount
 getIsPrey (NearestToEnemyWithTrait trait) i = do
   env <- ask
   let

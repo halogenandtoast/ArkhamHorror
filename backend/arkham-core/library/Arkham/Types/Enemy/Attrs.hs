@@ -164,12 +164,12 @@ weaknessBaseAttrs eid cardCode =
       }
 
 spawnAtEmptyLocation
-  :: (MonadIO m, HasSet EmptyLocationId () env, MonadReader env m, HasQueue env)
+  :: (MonadIO m, HasSet EmptyLocationId env (), MonadReader env m, HasQueue env)
   => InvestigatorId
   -> EnemyId
   -> m ()
 spawnAtEmptyLocation iid eid = do
-  emptyLocations <- asks $ map unEmptyLocationId . setToList . getSet ()
+  emptyLocations <- map unEmptyLocationId <$> getSetList ()
   case emptyLocations of
     [] -> unshiftMessage (Discard (EnemyTarget eid))
     [lid] -> unshiftMessage (EnemySpawn (Just iid) lid eid)
@@ -186,13 +186,13 @@ spawnAt miid eid locationName =
   unshiftMessages $ resolve (EnemySpawnAtLocationNamed miid locationName eid)
 
 spawnAtOneOf
-  :: (MonadIO m, HasSet LocationId () env, MonadReader env m, HasQueue env)
+  :: (MonadIO m, HasSet LocationId env (), MonadReader env m, HasQueue env)
   => InvestigatorId
   -> EnemyId
   -> [LocationId]
   -> m ()
 spawnAtOneOf iid eid targetLids = do
-  locations' <- asks (getSet ())
+  locations' <- getSet ()
   case setToList (setFromList targetLids `intersection` locations') of
     [] -> unshiftMessage (Discard (EnemyTarget eid))
     [lid] -> unshiftMessage (EnemySpawn (Just iid) lid eid)
@@ -397,9 +397,8 @@ instance EnemyRunner env => RunMessage env Attrs where
         && null enemyEngagedInvestigators
         && not enemyExhausted
       -> do
-        closestLocationIds <-
-          asks $ map unClosestLocationId . setToList . getSet
-            (enemyLocation, enemyPrey)
+        closestLocationIds <- map unClosestLocationId
+          <$> getSetList (enemyLocation, enemyPrey)
         leadInvestigatorId <- getLeadInvestigatorId
         case closestLocationIds of
           [] -> pure a

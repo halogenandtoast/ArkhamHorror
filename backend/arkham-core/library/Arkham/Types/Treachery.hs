@@ -68,7 +68,7 @@ deriving anyclass instance TreacheryRunner env => RunMessage env Treachery
 deriving anyclass instance
   ( HasCount env PlayerCount ()
   , HasId LocationId InvestigatorId env
-  , HasSet Trait LocationId env
+  , HasSet Trait env LocationId
   )
   => HasModifiersFor env Treachery
 

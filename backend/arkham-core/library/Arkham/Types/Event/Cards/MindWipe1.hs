@@ -25,9 +25,7 @@ instance (EventRunner env) => RunMessage env MindWipe1 where
       locationId <- asks (getId @LocationId iid)
       enemyIds <- asks $ setToList . getSet locationId
       nonEliteEnemyIds <- flip filterM enemyIds $ \enemyId -> do
-        traits <- asks (getSet enemyId)
-        pure $ Elite `notElem` traits
-
+        notElem Elite <$> getSet enemyId
       if null nonEliteEnemyIds
         then e <$ unshiftMessage (Discard (EventTarget eventId))
         else e <$ unshiftMessages

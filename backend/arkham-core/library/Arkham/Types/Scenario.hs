@@ -39,15 +39,15 @@ deriving anyclass instance
   , HasCount env DoomCount EnemyId
   , HasCount env EnemyCount (InvestigatorLocation, [Trait])
   , HasCount env EnemyCount [Trait]
-  , HasSet EnemyId Trait env
-  , HasSet Trait LocationId env
+  , HasSet EnemyId env Trait
+  , HasSet Trait env LocationId
   , HasTokenValue env InvestigatorId
   , HasId LocationId InvestigatorId env
   )
   => HasTokenValue env Scenario
 
-instance HasSet ScenarioLogKey () Scenario where
-  getSet _ = scenarioLog . scenarioAttrs
+instance HasSet ScenarioLogKey env Scenario where
+  getSet = pure . scenarioLog . scenarioAttrs
 
 newtype BaseScenario = BaseScenario Attrs
   deriving newtype (Show, ToJSON, FromJSON)

@@ -22,17 +22,17 @@ type ScenarioRunner env
     , HasId LocationId InvestigatorId env
     , HasQueue env
     , HasRecord env
-    , HasSet AgendaId () env
-    , HasSet ClosestEnemyId (InvestigatorId, [Trait]) env
-    , HasSet ClosestEnemyId InvestigatorId env
-    , HasSet ConnectedLocationId LocationId env
-    , HasSet EnemyId LocationId env
-    , HasSet EnemyId Trait env
-    , HasSet InScenarioInvestigatorId () env
-    , HasSet InvestigatorId () env
-    , HasSet LocationId [Trait] env
-    , HasSet Trait LocationId env
-    , HasSet VictoryDisplayCardCode () env
+    , HasSet AgendaId env ()
+    , HasSet ClosestEnemyId env (InvestigatorId, [Trait])
+    , HasSet ClosestEnemyId env InvestigatorId
+    , HasSet ConnectedLocationId env LocationId
+    , HasSet EnemyId env LocationId
+    , HasSet EnemyId env Trait
+    , HasSet InScenarioInvestigatorId env ()
+    , HasSet InvestigatorId env ()
+    , HasSet LocationId env [Trait]
+    , HasSet Trait env LocationId
+    , HasSet VictoryDisplayCardCode env ()
     , HasSource ForSkillTest env
     )
 

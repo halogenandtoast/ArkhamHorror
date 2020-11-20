@@ -90,7 +90,7 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env Attrs where
     MinusEight -> pure $ TokenValue MinusEight (NegativeModifier 8)
     otherFace -> pure $ TokenValue otherFace NoModifier
 
-instance (ScenarioRunner env) => RunMessage env Attrs where
+instance ScenarioRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     Setup -> a <$ pushMessage BeginInvestigation
     PlaceLocationNamed locationName ->
@@ -115,7 +115,7 @@ instance (ScenarioRunner env) => RunMessage env Attrs where
     -- ^ See: Vengeance Awaits / The Devourer Below - right now the assumption
     -- | is that the act deck has been replaced.
     InvestigatorDefeated _ -> do
-      investigatorIds <- asks (getSet @InScenarioInvestigatorId ())
+      investigatorIds <- getSet @InScenarioInvestigatorId ()
       if null investigatorIds then a <$ unshiftMessage NoResolution else pure a
     InvestigatorResigned _ -> do
       investigatorIds <- asks (getSet @InScenarioInvestigatorId ())

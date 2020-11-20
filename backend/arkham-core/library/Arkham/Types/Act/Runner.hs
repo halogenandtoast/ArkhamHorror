@@ -15,15 +15,15 @@ type ActRunner env
     , HasId CardCode EnemyId env
     , HasId LeadInvestigatorId () env
     , HasRecord env
-    , HasSet AssetId EnemyId env
-    , HasSet EnemyId LocationId env
-    , HasSet InvestigatorId () env
-    , HasSet InvestigatorId (HashSet LocationId) env
-    , HasSet InvestigatorId LocationId env
-    , HasSet InvestigatorId LocationName env
-    , HasSet LocationId () env
-    , HasSet LocationId [Trait] env
-    , HasSet ScenarioLogKey () env
-    , HasSet Trait AssetId env
-    , HasSet VictoryDisplayCardCode () env
+    , HasSet AssetId env EnemyId
+    , HasSet EnemyId env LocationId
+    , HasSet InvestigatorId env ()
+    , HasSet InvestigatorId env (HashSet LocationId)
+    , HasSet InvestigatorId env LocationId
+    , HasSet InvestigatorId env LocationName
+    , HasSet LocationId env ()
+    , HasSet LocationId env [Trait]
+    , HasSet ScenarioLogKey env ()
+    , HasSet Trait env AssetId
+    , HasSet VictoryDisplayCardCode env ()
     )

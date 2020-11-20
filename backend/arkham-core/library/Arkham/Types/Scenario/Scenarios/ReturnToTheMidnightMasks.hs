@@ -32,7 +32,7 @@ theMidnightMasks difficulty =
         , scenarioDeck = Just []
         }
 
-instance (HasTokenValue env InvestigatorId, HasCount env DoomCount (), HasCount env DoomCount EnemyId, HasSet EnemyId Trait env) => HasTokenValue env ReturnToTheMidnightMasks where
+instance (HasTokenValue env InvestigatorId, HasCount env DoomCount (), HasCount env DoomCount EnemyId, HasSet EnemyId env Trait) => HasTokenValue env ReturnToTheMidnightMasks where
   getTokenValue (ReturnToTheMidnightMasks theMidnightMasks') iid =
     getTokenValue theMidnightMasks' iid
 

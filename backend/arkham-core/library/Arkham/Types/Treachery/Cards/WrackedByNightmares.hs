@@ -40,14 +40,14 @@ instance ActionRunner env => HasActions env WrackedByNightmares where
           ]
   getActions _ _ _ = pure []
 
-instance (TreacheryRunner env) => RunMessage env WrackedByNightmares where
+instance TreacheryRunner env => RunMessage env WrackedByNightmares where
   runMessage msg t@(WrackedByNightmares attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       unshiftMessage $ AttachTreachery treacheryId (InvestigatorTarget iid)
       WrackedByNightmares
         <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
     AttachTreachery tid (InvestigatorTarget iid) | tid == treacheryId -> do
-      assetIds <- setToList <$> asks (getSet iid)
+      assetIds <- getSetList iid
       unshiftMessages [ Exhaust (AssetTarget aid) | aid <- assetIds ]
       WrackedByNightmares <$> runMessage msg attrs
     UseCardAbility _ (TreacherySource tid) _ 1 | tid == treacheryId ->

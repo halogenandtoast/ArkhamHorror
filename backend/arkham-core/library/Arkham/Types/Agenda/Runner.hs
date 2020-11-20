@@ -14,15 +14,15 @@ type AgendaRunner env
     , HasId (Maybe StoryEnemyId) CardCode env
     , HasId LocationId EnemyId env
     , HasQueue env
-    , HasSet ActId () env
-    , HasSet ClosestLocationId (LocationId, LocationId) env
-    , HasSet EnemyId () env
-    , HasSet EnemyId LocationId env
-    , HasSet EnemyId Trait env
-    , HasSet InvestigatorId () env
-    , HasSet InvestigatorId EnemyId env
-    , HasSet LocationId () env
-    , HasSet LocationId [Trait] env
-    , HasSet UnengagedEnemyId () env
+    , HasSet ActId env ()
+    , HasSet ClosestLocationId env (LocationId, LocationId)
+    , HasSet EnemyId env ()
+    , HasSet EnemyId env LocationId
+    , HasSet EnemyId env Trait
+    , HasSet InvestigatorId env ()
+    , HasSet InvestigatorId env EnemyId
+    , HasSet LocationId env ()
+    , HasSet LocationId env [Trait]
+    , HasSet UnengagedEnemyId env ()
     )
 

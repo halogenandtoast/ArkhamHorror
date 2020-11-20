@@ -17,10 +17,10 @@ newtype DaisysToteBagAdvanced = DaisysToteBagAdvanced Attrs
 daisysToteBagAdvanced :: AssetId -> DaisysToteBagAdvanced
 daisysToteBagAdvanced uuid = DaisysToteBagAdvanced $ baseAttrs uuid "90002"
 
-instance HasSet Trait (InvestigatorId, CardId) env => HasActions env DaisysToteBagAdvanced where
+instance HasSet Trait env (InvestigatorId, CardId) => HasActions env DaisysToteBagAdvanced where
   getActions iid window@(WhenPlayCard You cardId) (DaisysToteBagAdvanced a)
     | ownedBy a iid = do
-      isTome <- asks $ elem Tome . getSet @Trait (iid, cardId)
+      isTome <- elem Tome <$> getSet @Trait (iid, cardId)
       let
         ability = (mkAbility (toSource a) 1 (ReactionAbility window))
           { abilityMetadata = Just (TargetMetadata $ CardIdTarget cardId)

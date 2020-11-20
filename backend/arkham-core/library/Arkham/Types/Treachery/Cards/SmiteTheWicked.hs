@@ -36,8 +36,7 @@ instance (TreacheryRunner env) => RunMessage env SmiteTheWicked where
             (CreateEnemyRequest (TreacherySource tid) (ecCardCode card))
     RequestedEnemy (TreacherySource tid) eid | tid == treacheryId -> do
       let ownerId = fromJustNote "has to be set" treacheryOwner
-      farthestLocations <-
-        asks $ map unFarthestLocationId . setToList . getSet ownerId
+      farthestLocations <- map unFarthestLocationId <$> getSetList ownerId
       t <$ unshiftMessages
         [ AttachTreachery treacheryId (EnemyTarget eid)
         , Ask

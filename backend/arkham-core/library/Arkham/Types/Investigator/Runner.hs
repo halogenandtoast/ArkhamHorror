@@ -20,40 +20,40 @@ import Arkham.Types.TreacheryId
 import ClassyPrelude
 
 type InvestigatorRunner env
-  = ( HasCount env ClueCount LocationId
-    , HasCount env AssetCount (InvestigatorId, [Trait])
-    , HasCount env ActionTakenCount InvestigatorId
-    , HasSet AssetId (InvestigatorId, UseType) env
-    , HasSet DiscardableAssetId InvestigatorId env
-    , HasSet HealthDamageableAssetId InvestigatorId env
-    , HasSet SanityDamageableAssetId InvestigatorId env
-    , HasSet CommittedCardId InvestigatorId env
-    , HasSet CommittedCardCode () env
-    , HasSet EventId () env
-    , HasQueue env
-    , HasSet AdvanceableActId () env
-    , HasSet ConnectedLocationId LocationId env
-    , HasSet BlockedLocationId () env
-    , HasSet EnemyId LocationId env
-    , HasSet InvestigatorId EnemyId env
-    , HasSet TreacheryId LocationId env
-    , HasSet AloofEnemyId LocationId env
-    , HasSet AssetId LocationId env
-    , HasSet Trait AssetId env
-    , HasSet Trait EnemyId env
-    , HasId LocationId InvestigatorId env
-    , HasId CardCode AssetId env
-    , HasId CardCode EnemyId env
-    , HasId (Maybe AssetId) CardCode env
-    , HasList Location () env
-    , HasList Enemy () env
+  = ( CanBeWeakness TreacheryId env
     , HasActions env ()
     , HasActions env AssetId
-    , HasSet InvestigatorId () env
-    , HasSet ExhaustedAssetId InvestigatorId env
+    , HasCount env ActionTakenCount InvestigatorId
+    , HasCount env AssetCount (InvestigatorId, [Trait])
+    , HasCount env ClueCount LocationId
+    , HasId (Maybe AssetId) CardCode env
+    , HasId CardCode AssetId env
+    , HasId CardCode EnemyId env
+    , HasId LocationId InvestigatorId env
+    , HasList Enemy () env
+    , HasList Location () env
     , HasModifiersFor env env
-    , HasSet HandCardId InvestigatorId env
+    , HasQueue env
+    , HasSet AdvanceableActId env ()
+    , HasSet AloofEnemyId env LocationId
+    , HasSet AssetId env (InvestigatorId, UseType)
+    , HasSet AssetId env LocationId
+    , HasSet BlockedLocationId env ()
+    , HasSet CommittedCardCode env ()
+    , HasSet CommittedCardId env InvestigatorId
+    , HasSet ConnectedLocationId env LocationId
+    , HasSet DiscardableAssetId env InvestigatorId
+    , HasSet EnemyId env LocationId
+    , HasSet EventId env ()
+    , HasSet ExhaustedAssetId env InvestigatorId
+    , HasSet HandCardId env InvestigatorId
+    , HasSet HealthDamageableAssetId env InvestigatorId
+    , HasSet InvestigatorId env ()
+    , HasSet InvestigatorId env EnemyId
+    , HasSet Keyword env EnemyId
+    , HasSet SanityDamageableAssetId env InvestigatorId
+    , HasSet Trait env AssetId
+    , HasSet Trait env EnemyId
+    , HasSet TreacheryId env LocationId
     , HasSource ForSkillTest env
-    , HasSet Keyword EnemyId env
-    , CanBeWeakness TreacheryId env
     )

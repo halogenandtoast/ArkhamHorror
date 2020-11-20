@@ -2,6 +2,7 @@
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Classes
@@ -143,17 +144,16 @@ unshiftMessages msgs = withQueue $ \queue -> (msgs <> queue, ())
 
 pairInvestigatorIdsForWindow
   :: ( MonadReader env m
-     , HasSet InvestigatorId () env
-     , HasSet ConnectedLocationId LocationId env
+     , HasSet InvestigatorId env ()
+     , HasSet ConnectedLocationId env LocationId
      , HasId LocationId InvestigatorId env
      )
   => InvestigatorId
   -> m [(InvestigatorId, Window.Who)]
 pairInvestigatorIdsForWindow iid = do
-  investigatorIds <- setToList <$> asks (getSet @InvestigatorId ())
+  investigatorIds <- getSetList @InvestigatorId ()
   lid <- asks (getId iid)
-  connectedLocationIds <- HashSet.map unConnectedLocationId
-    <$> asks (getSet lid)
+  connectedLocationIds <- HashSet.map unConnectedLocationId <$> getSet lid
   for investigatorIds $ \iid2 -> do
     lid2 <- asks (getId iid2)
     pure $ if iid2 == iid
@@ -166,8 +166,8 @@ pairInvestigatorIdsForWindow iid = do
 
 checkWindows
   :: ( MonadReader env m
-     , HasSet InvestigatorId () env
-     , HasSet ConnectedLocationId LocationId env
+     , HasSet InvestigatorId env ()
+     , HasSet ConnectedLocationId env LocationId
      , HasId LocationId InvestigatorId env
      )
   => InvestigatorId
@@ -189,10 +189,10 @@ class HasRoundHistory a where
 class HasTarget b a where
   getTarget :: b -> a -> Maybe Target
 
-class HasSet c b a where
-  getSet :: b -> a -> HashSet c
-  getSetList :: (Hashable c, Eq c) => b -> a -> [c]
-  getSetList b a = setToList $ getSet b a
+class (Hashable set, Eq set) => HasSet set env a where
+  getSet :: MonadReader env m => a -> m (HashSet set)
+  getSetList :: MonadReader env m => a -> m [set]
+  getSetList a = setToList <$> getSet a
 
 class HasList c b a where
   getList :: b -> a -> [c]
@@ -275,18 +275,18 @@ type ActionRunner env
     , HasList InPlayCard InvestigatorId env
     , HasList UsedAbility () env
     , HasModifiersFor env env
-    , HasSet AccessibleLocationId LocationId env
-    , HasSet AssetId (InvestigatorId, UseType) env
-    , HasSet ConnectedLocationId LocationId env
-    , HasSet EnemyId LocationId env
-    , HasSet ExhaustedAssetId InvestigatorId env
-    , HasSet ExhaustedEnemyId LocationId env
-    , HasSet InvestigatorId () env
-    , HasSet InvestigatorId EnemyId env
-    , HasSet InvestigatorId LocationId env
-    , HasSet Keyword EnemyId env
-    , HasSet Trait EnemyId env
-    , HasSet Trait (InvestigatorId, CardId) env
+    , HasSet AccessibleLocationId env LocationId
+    , HasSet AssetId env (InvestigatorId, UseType)
+    , HasSet ConnectedLocationId env LocationId
+    , HasSet EnemyId env LocationId
+    , HasSet ExhaustedAssetId env InvestigatorId
+    , HasSet ExhaustedEnemyId env LocationId
+    , HasSet InvestigatorId env ()
+    , HasSet InvestigatorId env EnemyId
+    , HasSet InvestigatorId env LocationId
+    , HasSet Keyword env EnemyId
+    , HasSet Trait env EnemyId
+    , HasSet Trait env (InvestigatorId, CardId)
     , HasSource ForSkillTest env
     )
 

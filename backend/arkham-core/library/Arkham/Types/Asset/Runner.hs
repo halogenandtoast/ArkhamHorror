@@ -27,14 +27,14 @@ type AssetRunner env
     , HasId CardCode EnemyId env
     , HasId LocationId InvestigatorId env
     , HasList DeckCard (InvestigatorId, Trait) env
-    , HasSet AccessibleLocationId LocationId env
-    , HasSet AssetId InvestigatorId env
-    , HasSet BlockedLocationId () env
-    , HasSet ConnectedLocationId LocationId env
-    , HasSet EnemyId InvestigatorId env
-    , HasSet EnemyId LocationId env
-    , HasSet InvestigatorId () env
-    , HasSet InvestigatorId LocationId env
-    , HasSet Trait AssetId env
-    , HasSet Trait EnemyId env
+    , HasSet AccessibleLocationId env LocationId
+    , HasSet AssetId env InvestigatorId
+    , HasSet BlockedLocationId env ()
+    , HasSet ConnectedLocationId env LocationId
+    , HasSet EnemyId env InvestigatorId
+    , HasSet EnemyId env LocationId
+    , HasSet InvestigatorId env ()
+    , HasSet InvestigatorId env LocationId
+    , HasSet Trait env AssetId
+    , HasSet Trait env EnemyId
     )

@@ -60,16 +60,18 @@ instance FromJSON SkillTest where
 instance HasModifiersFor env SkillTest where
   getModifiersFor = noModifiersFor
 
-instance HasSet CommittedCardId InvestigatorId SkillTest where
-  getSet iid =
-    HashSet.map CommittedCardId
+instance HasSet CommittedCardId env (InvestigatorId, SkillTest) where
+  getSet (iid, st) =
+    pure
+      . HashSet.map CommittedCardId
       . keysSet
       . filterMap ((== iid) . fst)
-      . skillTestCommittedCards
+      $ skillTestCommittedCards st
 
-instance HasSet CommittedCardCode () SkillTest where
-  getSet _ =
-    setFromList
+instance HasSet CommittedCardCode env SkillTest where
+  getSet =
+    pure
+      . setFromList
       . map (CommittedCardCode . getCardCode . snd)
       . toList
       . skillTestCommittedCards
@@ -149,8 +151,8 @@ type SkillTestRunner env
     , HasModifiersFor env env
     , HasTokenValue env env
     , HasId LocationId InvestigatorId env
-    , HasSet ConnectedLocationId LocationId env
-    , HasSet InvestigatorId () env
+    , HasSet ConnectedLocationId env LocationId
+    , HasSet InvestigatorId env ()
     )
 
 -- per the FAQ the double negative modifier ceases to be active

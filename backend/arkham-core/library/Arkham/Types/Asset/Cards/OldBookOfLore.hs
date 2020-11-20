@@ -34,7 +34,7 @@ instance ActionRunner env => HasActions env OldBookOfLore where
 instance AssetRunner env => RunMessage env OldBookOfLore where
   runMessage msg (OldBookOfLore attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
-      locationId <- asks $ getId @LocationId iid
+      locationId <- getId @LocationId iid
       investigatorIds <- getSetList locationId
       unshiftMessage
         (chooseOne

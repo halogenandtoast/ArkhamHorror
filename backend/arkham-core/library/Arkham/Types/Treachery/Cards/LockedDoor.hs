@@ -20,7 +20,7 @@ instance HasModifiersFor env LockedDoor where
 
 instance ActionRunner env => HasActions env LockedDoor where
   getActions iid NonFast (LockedDoor Attrs {..}) = do
-    investigatorLocationId <- asks $ getId @LocationId iid
+    investigatorLocationId <- getId @LocationId iid
     hasActionsRemaining <- getHasActionsRemaining
       iid
       Nothing
@@ -38,12 +38,12 @@ instance ActionRunner env => HasActions env LockedDoor where
 instance (TreacheryRunner env) => RunMessage env LockedDoor where
   runMessage msg t@(LockedDoor attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      exemptLocations <- asks
-        (getSet @LocationId (TreacheryCardCode $ CardCode "01174"))
-      targetLocations <- setToList . (`difference` exemptLocations) <$> asks
-        (getSet @LocationId ())
+      exemptLocations <- getSet @LocationId
+        (TreacheryCardCode $ CardCode "01174")
+      targetLocations <-
+        setToList . (`difference` exemptLocations) <$> getSet @LocationId ()
       locationsWithClueCounts <- for targetLocations
-        $ \lid -> (lid, ) . unClueCount <$> asks (getCount lid)
+        $ \lid -> (lid, ) . unClueCount <$> getCount lid
       let
         sortedLocationsWithClueCounts =
           sortOn (Down . snd) locationsWithClueCounts

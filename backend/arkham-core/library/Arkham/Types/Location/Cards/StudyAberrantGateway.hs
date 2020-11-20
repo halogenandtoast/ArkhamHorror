@@ -30,7 +30,7 @@ instance ActionRunner env => HasActions env StudyAberrantGateway where
   getActions iid NonFast (StudyAberrantGateway attrs) = do
     baseActions <- getActions iid NonFast attrs
     leadInvestigatorId <- getLeadInvestigatorId
-    canActivate <- asks $ (>= 2) . unActionRemainingCount . getCount
+    canActivate <- (>= 2) . unActionRemainingCount <$> getCount
       (Nothing :: Maybe Action, setToList (locationTraits attrs), iid)
     pure
       $ baseActions

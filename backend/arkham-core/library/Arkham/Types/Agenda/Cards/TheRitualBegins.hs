@@ -25,11 +25,11 @@ instance HasActions env TheRitualBegins where
 instance (AgendaRunner env) => RunMessage env TheRitualBegins where
   runMessage msg a@(TheRitualBegins attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unshiftMessage (chooseOne leadInvestigatorId [AdvanceAgenda agendaId])
       pure $ TheRitualBegins $ attrs & sequence .~ "Agenda 2b" & flipped .~ True
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2b" -> do
-      investigatorIds <- asks $ setToList . getSet ()
+      investigatorIds <- getSetList ()
       a <$ unshiftMessages
         ([ BeginSkillTest
              iid

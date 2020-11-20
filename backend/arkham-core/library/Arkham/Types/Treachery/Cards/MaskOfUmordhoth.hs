@@ -51,7 +51,7 @@ instance TreacheryRunner env => RunMessage env MaskOfUmordhoth where
     Discard (TreacheryTarget tid) | tid == treacheryId -> do
       case treacheryAttachedEnemy of
         Just eid -> do
-          uniqueEnemyIds <- asks $ map unUniqueEnemyId . setToList . getSet ()
+          uniqueEnemyIds <- map unUniqueEnemyId <$> getSetList ()
           let
             keyword = if eid `elem` uniqueEnemyIds
               then Keyword.Retaliate

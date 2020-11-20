@@ -43,7 +43,7 @@ instance ActionRunner env => HasActions env ZoeySamaras where
         (InvestigatorSource investigatorId)
         (InvestigatorTarget investigatorId)
         ()
-      usedAbilities <- map unUsedAbility <$> asks (getList ())
+      usedAbilities <- map unUsedAbility <$> getList ()
       pure
         [ ActivateCardAbilityAction investigatorId ability
         | (investigatorId, ability)

@@ -21,14 +21,14 @@ instance HasActions env BeastOfTheBayou where
 instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
   runMessage msg t@(BeastOfTheBayou attrs@Attrs {..}) = case msg of
     Revelation _iid source | isSource attrs source -> do
-      mrougarou <- asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))
+      mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       case mrougarou of
         Nothing ->
           unshiftMessages [PlaceDoomOnAgenda, Discard (toTarget attrs)]
         Just eid -> do
-          locationId <- asks $ getId @LocationId eid
-          connectedLocationIds <-
-            asks $ map unConnectedLocationId . setToList . getSet locationId
+          locationId <- getId @LocationId eid
+          connectedLocationIds <- map unConnectedLocationId
+            <$> getSetList locationId
           investigatorIds <- concat <$> traverse
             (getSetList @InvestigatorId)
             (locationId : connectedLocationIds)

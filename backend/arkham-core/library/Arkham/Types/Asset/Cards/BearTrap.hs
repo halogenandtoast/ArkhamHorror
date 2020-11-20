@@ -33,10 +33,10 @@ instance HasActions env BearTrap where
 instance AssetRunner env => RunMessage env BearTrap where
   runMessage msg a@(BearTrap attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
-      locationId <- asks $ getId @LocationId iid
+      locationId <- getId @LocationId iid
       a <$ unshiftMessage (AttachAsset assetId (LocationTarget locationId))
     EnemyMove eid _ lid | Just lid == assetLocation -> do
-      isRougarou <- asks $ (== CardCode "81028") . getId eid
+      isRougarou <- (== CardCode "81028") <$> getId eid
       a <$ when
         isRougarou
         (unshiftMessage (AttachAsset assetId (EnemyTarget eid)))

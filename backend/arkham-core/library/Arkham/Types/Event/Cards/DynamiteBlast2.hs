@@ -22,7 +22,7 @@ instance (EventRunner env) => RunMessage env DynamiteBlast2 where
   -- TODO: Does not provoke attacks of opportunity
   runMessage msg e@(DynamiteBlast2 attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      currentLocationId <- asks (getId @LocationId iid)
+      currentLocationId <- getId @LocationId iid
       connectedLocationIds <- map unConnectedLocationId
         <$> getSetList currentLocationId
       choices <- for (currentLocationId : connectedLocationIds) $ \lid -> do

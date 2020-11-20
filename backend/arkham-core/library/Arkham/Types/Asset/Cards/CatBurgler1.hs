@@ -47,8 +47,8 @@ instance AssetRunner env => RunMessage env CatBurgler1 where
         (InvestigatorTarget iid)
       CatBurgler1 <$> runMessage msg attrs
     UseCardAbility iid source _ 1 | isSource attrs source -> do
-      engagedEnemyIds <- asks $ setToList . getSet iid
-      locationId <- asks $ getId @LocationId iid
+      engagedEnemyIds <- getSetList iid
+      locationId <- getId @LocationId iid
       accessibleLocationIds <- map unAccessibleLocationId
         <$> getSetList locationId
       unshiftMessages

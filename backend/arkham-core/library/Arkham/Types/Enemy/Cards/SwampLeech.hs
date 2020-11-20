@@ -38,10 +38,10 @@ instance ActionRunner env => HasActions env SwampLeech where
 instance EnemyRunner env => RunMessage env SwampLeech where
   runMessage msg e@(SwampLeech attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
-      bayouLocations <- asks $ setToList . getSet @LocationId [Bayou]
+      bayouLocations <- getSetList @LocationId [Bayou]
       e <$ spawnAtOneOf iid enemyId bayouLocations
     EnemyMove eid _ lid | eid == enemyId -> do
-      bayouLocations <- asks $ setToList . getSet @LocationId [Bayou]
+      bayouLocations <- getSetList @LocationId [Bayou]
       e <$ when
         (lid `notElem` bayouLocations)
         (unshiftMessage $ Discard (EnemyTarget enemyId))

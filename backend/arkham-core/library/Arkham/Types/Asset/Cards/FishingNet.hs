@@ -27,11 +27,11 @@ ability attrs = mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow)
 
 instance ActionRunner env => HasActions env FishingNet where
   getActions iid FastPlayerWindow (FishingNet attrs) | ownedBy attrs iid = do
-    mrougarou <- asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))
+    mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
     case mrougarou of
       Nothing -> pure []
       Just eid -> do
-        investigatorLocation <- asks $ getId @LocationId iid
+        investigatorLocation <- getId @LocationId iid
         exhaustedEnemies <- map unExhaustedEnemyId
           <$> getSetList investigatorLocation
         pure
@@ -43,7 +43,7 @@ instance ActionRunner env => HasActions env FishingNet where
 instance AssetRunner env => RunMessage env FishingNet where
   runMessage msg a@(FishingNet attrs@Attrs {..}) = case msg of
     UseCardAbility _ source _ 1 | isSource attrs source -> do
-      mrougarou <- asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))
+      mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       case mrougarou of
         Nothing -> error "can not use this ability"
         Just eid -> a <$ unshiftMessage (AttachAsset assetId (EnemyTarget eid))

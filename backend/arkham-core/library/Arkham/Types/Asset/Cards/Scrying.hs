@@ -39,7 +39,7 @@ instance AssetRunner env => RunMessage env Scrying where
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Scrying <$> runMessage msg (attrs & uses .~ Uses Resource.Charge 3)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
-      locationId <- asks $ getId @LocationId iid
+      locationId <- getId @LocationId iid
       targets <- map InvestigatorTarget <$> getSetList locationId
       unshiftMessage
         (chooseOne iid

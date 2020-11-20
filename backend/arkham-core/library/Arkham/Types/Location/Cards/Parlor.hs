@@ -32,13 +32,13 @@ instance HasModifiersFor env Parlor where
 instance ActionRunner env => HasActions env Parlor where
   getActions iid NonFast (Parlor attrs@Attrs {..}) | locationRevealed = do
     baseActions <- getActions iid NonFast attrs
-    maid <- asks (fmap unStoryAssetId <$> getId (CardCode "01117"))
+    maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
     case maid of
       Nothing -> pure []
       Just aid -> do
-        miid <- asks (fmap unOwnerId . getId aid)
-        assetLocationId <- asks (getId aid)
-        investigatorLocationId <- asks $ getId @LocationId iid
+        miid <- fmap unOwnerId <$> getId aid
+        assetLocationId <- getId aid
+        investigatorLocationId <- getId @LocationId iid
         hasResignActionsRemaining <- getHasActionsRemaining
           iid
           (Just Action.Resign)
@@ -81,7 +81,7 @@ instance (LocationRunner env) => RunMessage env Parlor where
       l <$ unshiftMessage (Resign iid)
     UseCardAbility iid (ProxySource _ source) _ 2
       | isSource attrs source && locationRevealed -> do
-        maid <- asks (fmap unStoryAssetId <$> getId (CardCode "01117"))
+        maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
         case maid of
           Nothing -> error "this ability should not be able to be used"
           Just aid -> l <$ unshiftMessage
@@ -94,7 +94,7 @@ instance (LocationRunner env) => RunMessage env Parlor where
               4
             )
     PassedSkillTest iid _ source _ _ | isSource attrs source -> do
-      maid <- asks (fmap unStoryAssetId <$> getId (CardCode "01117"))
+      maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
       case maid of
         Nothing -> error "this ability should not be able to be used"
         Just aid -> l <$ unshiftMessage (TakeControlOfAsset iid aid)

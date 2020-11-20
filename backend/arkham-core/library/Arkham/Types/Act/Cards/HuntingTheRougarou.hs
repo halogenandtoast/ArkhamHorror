@@ -26,10 +26,10 @@ instance ActionRunner env => HasActions env HuntingTheRougarou where
   getActions iid FastPlayerWindow (HuntingTheRougarou a) = do
     baseActions <- getActions iid FastPlayerWindow a
     unused <- getIsUnused iid (ability a)
-    mrougarou <- asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))
+    mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
     engagedWithTheRougarou <- maybe
       (pure False)
-      (asks . (member iid .) . getSet)
+      ((member iid <$>) . getSet)
       mrougarou
     pure
       $ baseActions
@@ -45,7 +45,7 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
     AdvanceAct aid | aid == actId && actSequence == "Act 2a" -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      rougarou <- asks $ unStoryEnemyId . fromJustNote "must be" . getId
+      rougarou <- unStoryEnemyId . fromJustNote "must be" <$> getId
         (CardCode "81028")
 
       requiredClueCount <- getPlayerCountValue (PerPlayer 4)
@@ -54,13 +54,12 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
 
       requiredDamage <- getPlayerCountValue (PerPlayer 1)
       protectedOurselves <-
-        asks $ (>= requiredDamage) . unDamageCount . getCount rougarou
+        (>= requiredDamage) . unDamageCount <$> getCount rougarou
 
-      assetIds <- asks $ setToList . getSet @AssetId rougarou
-      keptItContained <- or
-        <$> for assetIds (asks . ((Trap `member`) .) . getSet)
+      assetIds <- getSetList @AssetId rougarou
+      keptItContained <- or <$> for assetIds ((member Trap <$>) . getSet)
 
-      scenarioLogs <- asks $ getSet ()
+      scenarioLogs <- getSet ()
       let
         calmedItDown = any
           (`member` scenarioLogs)
@@ -91,7 +90,7 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
         & (Act.sequence .~ "Act 2a")
         & (flipped .~ False)
     EnemyMove eid lid _ -> do
-      isRougarou <- asks $ (== CardCode "81028") . getId eid
+      isRougarou <- (== CardCode "81028") <$> getId eid
       a <$ when isRougarou (unshiftMessage (PlaceClues (LocationTarget lid) 1))
     EnemyDefeated _ _ _ "81028" _ _ -> a <$ unshiftMessage (Resolution 2)
     _ -> HuntingTheRougarou <$> runMessage msg attrs

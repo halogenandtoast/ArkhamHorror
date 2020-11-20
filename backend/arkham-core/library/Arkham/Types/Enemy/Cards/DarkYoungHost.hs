@@ -31,7 +31,7 @@ instance (EnemyRunner env) => RunMessage env DarkYoungHost where
   runMessage msg e@(DarkYoungHost attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == enemyId -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      bayouLocations <- asks $ setToList . getSet [Bayou]
+      bayouLocations <- getSetList [Bayou]
       e <$ spawnAtOneOf leadInvestigatorId enemyId bayouLocations
     PlaceClues (LocationTarget lid) n | lid == enemyLocation -> do
       unshiftMessage $ RemoveClues (LocationTarget lid) n

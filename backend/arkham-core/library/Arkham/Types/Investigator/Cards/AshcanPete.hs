@@ -42,9 +42,8 @@ instance ActionRunner env => HasActions env AshcanPete where
             )
             { abilityLimit = PerRound
             }
-      exhaustedAssetIds <- map unExhaustedAssetId . setToList <$> asks
-        (getSet investigatorId)
-      usedAbilities <- map unUsedAbility <$> asks (getList ())
+      exhaustedAssetIds <- map unExhaustedAssetId <$> getSetList investigatorId
+      usedAbilities <- map unUsedAbility <$> getList ()
       pure
         [ ActivateCardAbilityAction investigatorId ability
         | (investigatorId, ability)
@@ -64,8 +63,7 @@ instance (InvestigatorRunner env) => RunMessage env AshcanPete where
     ResolveToken ElderSign iid | iid == investigatorId ->
       i <$ unshiftMessage (Ready $ CardCodeTarget "02014")
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
-      exhaustedAssetIds <- map unExhaustedAssetId . setToList <$> asks
-        (getSet investigatorId)
+      exhaustedAssetIds <- map unExhaustedAssetId <$> getSetList investigatorId
       i <$ unshiftMessages
         [ ChooseAndDiscardCard investigatorId
         , Ask

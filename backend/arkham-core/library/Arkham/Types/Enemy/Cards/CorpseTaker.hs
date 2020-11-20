@@ -1,5 +1,9 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Enemy.Cards.CorpseTaker (CorpseTaker(..), corpseTaker) where
+module Arkham.Types.Enemy.Cards.CorpseTaker
+  ( CorpseTaker(..)
+  , corpseTaker
+  )
+where
 
 import Arkham.Import
 
@@ -29,14 +33,13 @@ instance ActionRunner env => HasActions env CorpseTaker where
 instance EnemyRunner env => RunMessage env CorpseTaker where
   runMessage msg e@(CorpseTaker attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
-      farthestEmptyLocationIds <-
-        asks $ map unFarthestLocationId . setToList . getSet
-          (iid, EmptyLocation)
+      farthestEmptyLocationIds <- map unFarthestLocationId
+        <$> getSetList (iid, EmptyLocation)
       e <$ spawnAtOneOf iid eid farthestEmptyLocationIds
     EndMythos -> pure $ CorpseTaker $ attrs & doom +~ 1
     EndEnemy -> do
-      mrivertown <- asks $ getId (LocationName "Rivertown")
-      mmainPath <- asks $ getId (LocationName "Main Path")
+      mrivertown <- getId (LocationName "Rivertown")
+      mmainPath <- getId (LocationName "Main Path")
       let
         locationId =
           fromJustNote "one of these has to exist" (mrivertown <|> mmainPath)
@@ -46,9 +49,8 @@ instance EnemyRunner env => RunMessage env CorpseTaker where
           pure $ CorpseTaker $ attrs & doom .~ 0
         else do
           leadInvestigatorId <- getLeadInvestigatorId
-          closestLocationIds <-
-            asks $ map unClosestLocationId . setToList . getSet
-              (enemyLocation, locationId)
+          closestLocationIds <- map unClosestLocationId
+            <$> getSetList (enemyLocation, locationId)
           case closestLocationIds of
             [lid] -> e <$ unshiftMessage (EnemyMove enemyId enemyLocation lid)
             lids -> e <$ unshiftMessage

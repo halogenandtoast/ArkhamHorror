@@ -51,7 +51,7 @@ instance InvestigatorRunner env => RunMessage env DaisyWalker where
     ActivateCardAbilityAction iid ability@Ability {..}
       | iid == investigatorId && sourceIsAsset abilitySource -> do
         let (AssetSource aid) = abilitySource
-        traits <- asks (getSet aid)
+        traits <- getSet aid
         if Tome
           `elem` traits
           && fromJustNote "Must be set" investigatorTomeActions
@@ -78,7 +78,7 @@ instance InvestigatorRunner env => RunMessage env DaisyWalker where
     PassedSkillTest iid _ _ (DrawnTokenTarget token) _
       | iid == investigatorId -> case drawnTokenFace token of
         ElderSign -> do
-          tomeCount <- asks $ unAssetCount . getCount (iid, [Tome])
+          tomeCount <- unAssetCount <$> getCount (iid, [Tome])
           i <$ when
             (tomeCount > 0)
             (unshiftMessage $ Ask

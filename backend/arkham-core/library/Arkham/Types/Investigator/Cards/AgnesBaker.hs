@@ -31,8 +31,7 @@ agnesBaker = AgnesBaker
 instance ActionRunner env => HasActions env AgnesBaker where
   getActions iid (AfterAssignedHorror You) (AgnesBaker Attrs {..})
     | iid == investigatorId = do
-      locationEnemyIds <-
-        asks $ setToList . getSet @EnemyId investigatorLocation
+      locationEnemyIds <- getSetList @EnemyId investigatorLocation
       let
         ability = (mkAbility
                     (InvestigatorSource investigatorId)
@@ -41,7 +40,7 @@ instance ActionRunner env => HasActions env AgnesBaker where
                   )
           { abilityLimit = PerPhase
           }
-      usedAbilities <- asks $ map unUsedAbility . getList ()
+      usedAbilities <- map unUsedAbility <$> getList ()
       pure
         [ ActivateCardAbilityAction investigatorId ability
         | (investigatorId, ability) `notElem` usedAbilities && not
@@ -59,8 +58,8 @@ instance HasTokenValue env AgnesBaker where
 instance (InvestigatorRunner env) => RunMessage env AgnesBaker where
   runMessage msg i@(AgnesBaker attrs@Attrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
-      lid <- asks (getId @LocationId investigatorId)
-      locationEnemyIds <- asks $ setToList . getSet lid
+      lid <- getId @LocationId investigatorId
+      locationEnemyIds <- getSetList lid
       i <$ unshiftMessage
         (Ask iid $ ChooseOne
           [ EnemyDamage eid iid (InvestigatorSource investigatorId) 1

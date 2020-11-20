@@ -31,6 +31,6 @@ instance (EnemyRunner env) => RunMessage env MarshGug where
   runMessage msg e@(MarshGug attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == enemyId -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      bayouLocations <- asks $ setToList . getSet [Bayou]
+      bayouLocations <- getSetList [Bayou]
       e <$ spawnAtOneOf leadInvestigatorId enemyId bayouLocations
     _ -> MarshGug <$> runMessage msg attrs

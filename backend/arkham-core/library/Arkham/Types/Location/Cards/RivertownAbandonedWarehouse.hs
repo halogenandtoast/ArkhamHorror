@@ -78,7 +78,7 @@ instance LocationRunner env => RunMessage env RivertownAbandonedWarehouse where
         )
     UseCardAbility iid source (Just (IntMetadata n)) 1
       | isSource attrs source -> do
-        cultists <- asks $ setToList . getSet Cultist
+        cultists <- getSetList Cultist
         l <$ unshiftMessage
           (chooseOne iid [ RemoveDoom (EnemyTarget eid) n | eid <- cultists ])
     _ -> RivertownAbandonedWarehouse <$> runMessage msg attrs

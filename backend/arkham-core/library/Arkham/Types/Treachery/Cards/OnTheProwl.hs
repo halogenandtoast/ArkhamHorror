@@ -41,13 +41,13 @@ nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
 instance TreacheryRunner env => RunMessage env OnTheProwl where
   runMessage msg (OnTheProwl attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      mrougarou <- asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))
+      mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       case mrougarou of
         Nothing -> unshiftMessage (Discard (TreacheryTarget treacheryId))
         Just eid -> do
           locationIds <- setToList <$> nonBayouLocations
           locationsWithClueCounts <- for locationIds
-            $ \lid -> (lid, ) . unClueCount <$> asks (getCount lid)
+            $ \lid -> (lid, ) . unClueCount <$> getCount lid
           let
             sortedLocationsWithClueCounts = sortOn snd locationsWithClueCounts
           case sortedLocationsWithClueCounts of

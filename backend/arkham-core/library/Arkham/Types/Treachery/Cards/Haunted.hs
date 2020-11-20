@@ -22,8 +22,8 @@ instance ActionRunner env => HasActions env Haunted where
     case treacheryAttachedInvestigator of
       Nothing -> pure []
       Just tormented -> do
-        investigatorLocationId <- asks $ getId @LocationId iid
-        treacheryLocation <- asks $ getId tormented
+        investigatorLocationId <- getId @LocationId iid
+        treacheryLocation <- getId tormented
         pure
           [ ActivateCardAbilityAction
               iid

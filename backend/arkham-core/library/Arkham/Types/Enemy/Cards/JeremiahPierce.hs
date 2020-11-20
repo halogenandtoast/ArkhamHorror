@@ -27,7 +27,7 @@ instance HasModifiersFor env JeremiahPierce where
 instance ActionRunner env => HasActions env JeremiahPierce where
   getActions iid NonFast (JeremiahPierce attrs@Attrs {..}) = do
     baseActions <- getActions iid NonFast attrs
-    locationId <- asks $ getId @LocationId iid
+    locationId <- getId @LocationId iid
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction
@@ -40,7 +40,7 @@ instance ActionRunner env => HasActions env JeremiahPierce where
 instance (EnemyRunner env) => RunMessage env JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
-      myourHouse <- asks $ getId @(Maybe LocationId) (LocationName "Your House")
+      myourHouse <- getId @(Maybe LocationId) (LocationName "Your House")
       let spawnLocation = maybe "Rivertown" (const "Your House") myourHouse
       e <$ spawnAt (Just iid) eid spawnLocation
     UseCardAbility iid (EnemySource eid) _ 1 | eid == enemyId ->

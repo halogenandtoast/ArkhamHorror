@@ -23,7 +23,7 @@ instance HasActions env Barricade where
 instance (EventRunner env) => RunMessage env Barricade where
   runMessage msg e@(Barricade attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      lid <- asks (getId iid)
+      lid <- getId iid
       e <$ unshiftMessage (AttachEventToLocation eid lid)
     MoveFrom _ lid | Just lid == eventAttachedLocation ->
       e <$ unshiftMessage (Discard (EventTarget eventId))

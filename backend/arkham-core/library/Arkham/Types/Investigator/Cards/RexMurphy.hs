@@ -46,8 +46,8 @@ instance ActionRunner env => HasActions env RexMurphy where
           (InvestigatorSource investigatorId)
           1
           (ReactionAbility (AfterPassSkillTest source You n))
-      clueCount' <- unClueCount <$> asks (getCount investigatorLocation)
-      usedAbilities <- map unUsedAbility <$> asks (getList ())
+      clueCount' <- unClueCount <$> getCount investigatorLocation
+      usedAbilities <- map unUsedAbility <$> getList ()
       pure
         [ ActivateCardAbilityAction investigatorId ability
         | (investigatorId, ability) `notElem` usedAbilities && clueCount' > 0

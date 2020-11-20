@@ -29,7 +29,7 @@ instance ActionRunner env => HasActions env YithianObserver where
 instance (EnemyRunner env) => RunMessage env YithianObserver where
   runMessage msg e@(YithianObserver attrs@Attrs {..}) = case msg of
     PerformEnemyAttack iid eid | eid == enemyId -> do
-      cardCount' <- unCardCount <$> asks (getCount iid)
+      cardCount' <- unCardCount <$> getCount iid
       if cardCount' == 0
         then e <$ unshiftMessage
           (InvestigatorAssignDamage

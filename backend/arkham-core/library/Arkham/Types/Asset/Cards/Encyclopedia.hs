@@ -32,7 +32,7 @@ instance (AssetRunner env) => RunMessage env Encyclopedia where
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Encyclopedia <$> runMessage msg (attrs & uses .~ Uses Resource.Secret 5)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
-      locationId <- asks $ getId @LocationId iid
+      locationId <- getId @LocationId iid
       investigatorTargets <- map InvestigatorTarget <$> getSetList locationId
       unshiftMessage $ chooseOne
         iid

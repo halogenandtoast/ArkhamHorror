@@ -41,8 +41,8 @@ instance ActionRunner env => HasActions env RolandBanks where
   getActions iid (WhenEnemyDefeated You) (RolandBanks a@Attrs {..})
     | iid == investigatorId = do
       let ability' = (investigatorId, ability a)
-      clueCount' <- asks $ unClueCount . getCount investigatorLocation
-      unused <- asks $ notElem ability' . map unUsedAbility . getList ()
+      clueCount' <- unClueCount <$> getCount investigatorLocation
+      unused <- notElem ability' . map unUsedAbility <$> getList ()
       pure
         [ uncurry ActivateCardAbilityAction ability'
         | unused && clueCount' > 0

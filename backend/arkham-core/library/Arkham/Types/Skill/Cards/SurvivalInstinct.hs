@@ -21,7 +21,7 @@ instance SkillRunner env => RunMessage env SurvivalInstinct where
   runMessage msg s@(SurvivalInstinct attrs@Attrs {..}) = case msg of
     PassedSkillTest iid (Just Evade) _ (SkillTarget sid) _ | sid == skillId ->
       do
-        engagedEnemyIds <- HashSet.toList <$> asks (getSet iid)
+        engagedEnemyIds <- getSetList iid
         locationId <- getId @LocationId iid
         blockedLocationIds <- HashSet.map unBlockedLocationId <$> getSet ()
         connectedLocationIds <- HashSet.map unConnectedLocationId

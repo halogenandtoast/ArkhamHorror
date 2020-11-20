@@ -26,8 +26,8 @@ narogath uuid =
 
 instance (HasSet InvestigatorId env LocationId, HasSet ConnectedLocationId env LocationId) => HasModifiersFor env Narogath where
   getModifiersFor _ (InvestigatorTarget iid) (Narogath Attrs {..}) = do
-    connectedLocationIds <-
-      asks $ map unConnectedLocationId . setToList . getSet enemyLocation
+    connectedLocationIds <- map unConnectedLocationId
+      <$> getSetList enemyLocation
     iids <- concat <$> for (enemyLocation : connectedLocationIds) getSetList
     pure
       [ CannotTakeAction (EnemyAction Parley [Cultist])
@@ -41,6 +41,6 @@ instance ActionRunner env => HasActions env Narogath where
 instance (EnemyRunner env) => RunMessage env Narogath where
   runMessage msg (Narogath attrs@Attrs {..}) = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
-      playerCount <- unPlayerCount <$> asks (getCount ())
+      playerCount <- unPlayerCount <$> getCount ()
       Narogath <$> runMessage msg (attrs & health %~ fmap (+ (3 * playerCount)))
     _ -> Narogath <$> runMessage msg attrs

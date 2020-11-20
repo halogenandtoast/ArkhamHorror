@@ -142,9 +142,9 @@ enemies :: Lens' Attrs (HashSet EnemyId)
 enemies = lens locationEnemies $ \m x -> m { locationEnemies = x }
 
 getModifiedShroudValueFor
-  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Int
+  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Int
 getModifiedShroudValueFor attrs = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ foldr applyModifier (locationShroud attrs) modifiers'
  where
   applyModifier (ShroudModifier m) n = max 0 (n + m)
@@ -157,9 +157,9 @@ instance IsLocation Attrs where
   isBlocked Attrs {..} = locationBlocked
 
 getInvestigateAllowed
-  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Bool
+  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Bool
 getInvestigateAllowed attrs = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ not (any isCannotInvestigate modifiers')
  where
   isCannotInvestigate CannotInvestigate{} = True
@@ -168,8 +168,8 @@ getInvestigateAllowed attrs = do
 canEnterLocation
   :: (LocationRunner env, MonadReader env m) => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
-  traits' <- asks (getSet eid)
-  modifiers' <- getModifiersFor (EnemySource eid) (LocationTarget lid) =<< ask
+  traits' <- getSet eid
+  modifiers' <- getModifiersFor (EnemySource eid) (LocationTarget lid) ()
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits'
     _ -> False
@@ -192,9 +192,9 @@ instance ActionRunner env => HasActions env Attrs where
   getActions _ _ _ = pure []
 
 getShouldSpawnNonEliteAtConnectingInstead
-  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Bool
+  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Bool
 getShouldSpawnNonEliteAtConnectingInstead attrs = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ flip any modifiers' $ \case
     SpawnNonEliteAtConnectingInstead{} -> True
     _ -> False
@@ -295,9 +295,10 @@ instance LocationRunner env => RunMessage env Attrs where
             asks $ map unConnectedLocationId . setToList . getSet lid
           availableLocationIds <-
             flip filterM connectedLocationIds $ \locationId' -> do
-              modifiers' <-
-                getModifiersFor (EnemySource eid) (LocationTarget locationId')
-                  =<< ask
+              modifiers' <- getModifiersFor
+                (EnemySource eid)
+                (LocationTarget locationId')
+                ()
               pure . not $ flip any modifiers' $ \case
                 SpawnNonEliteAtConnectingInstead{} -> True
                 _ -> False

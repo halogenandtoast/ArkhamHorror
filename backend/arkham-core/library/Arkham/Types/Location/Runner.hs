@@ -27,6 +27,6 @@ type LocationRunner env
     , HasList LocationName env ()
     , HasList HandCard env InvestigatorId
     , HasList UsedAbility env ()
-    , HasModifiersFor env env
+    , HasModifiersFor env ()
     )
 

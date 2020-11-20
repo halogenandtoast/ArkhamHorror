@@ -34,6 +34,7 @@ library:
     - microlens
     - microlens-platform
     - microlens-th
+    - microlens-mtl
     - unordered-containers >= 0.2.12.0
     - hashable
     - safe

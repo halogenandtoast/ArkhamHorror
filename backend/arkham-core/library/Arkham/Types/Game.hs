@@ -214,35 +214,34 @@ skillTest = lens gameSkillTest $ \m x -> m { gameSkillTest = x }
 
 getInvestigator
   :: MonadReader (Game queue) m => InvestigatorId -> m Investigator
-getInvestigator iid =
-  fromJustNote missingInvestigator . preview (investigators . ix iid) <$> ask
-  where missingInvestigator = error $ "Unknown investigator: " <> show iid
+getInvestigator iid = fromJustNote missingInvestigator
+  <$> preview (investigators . ix iid)
+  where missingInvestigator = "Unknown investigator: " <> show iid
 
 getLocation :: MonadReader (Game queue) m => LocationId -> m Location
-getLocation lid =
-  fromJustNote missingLocation . preview (locations . ix lid) <$> ask
-  where missingLocation = error $ "Unknown location: " <> show lid
+getLocation lid = fromJustNote missingLocation <$> preview (locations . ix lid)
+  where missingLocation = "Unknown location: " <> show lid
 
 getEnemy :: MonadReader (Game queue) m => EnemyId -> m Enemy
-getEnemy eid = fromJustNote missingEnemy . preview (enemies . ix eid) <$> ask
-  where missingEnemy = error $ "Unknown enemy: " <> show eid
+getEnemy eid = fromJustNote missingEnemy <$> preview (enemies . ix eid)
+  where missingEnemy = "Unknown enemy: " <> show eid
 
 getAgenda :: MonadReader (Game queue) m => AgendaId -> m Agenda
-getAgenda aid = fromJustNote missingAgenda . preview (agendas . ix aid) <$> ask
-  where missingAgenda = error $ "Unknown agenda: " <> show aid
+getAgenda aid = fromJustNote missingAgenda <$> preview (agendas . ix aid)
+  where missingAgenda = "Unknown agenda: " <> show aid
 
 getAsset :: MonadReader (Game queue) m => AssetId -> m Asset
-getAsset aid = fromJustNote missingAsset . preview (assets . ix aid) <$> ask
-  where missingAsset = error $ "Unknown asset: " <> show aid
+getAsset aid = fromJustNote missingAsset <$> preview (assets . ix aid)
+  where missingAsset = "Unknown asset: " <> show aid
 
 getTreachery :: MonadReader (Game queue) m => TreacheryId -> m Treachery
-getTreachery tid =
-  fromJustNote missingTreachery . preview (treacheries . ix tid) <$> ask
-  where missingTreachery = error $ "Unknown treachery: " <> show tid
+getTreachery tid = fromJustNote missingTreachery
+  <$> preview (treacheries . ix tid)
+  where missingTreachery = "Unknown treachery: " <> show tid
 
 getEvent :: MonadReader (Game queue) m => EventId -> m Event
-getEvent eid = fromJustNote missingEvent . preview (events . ix eid) <$> ask
-  where missingEvent = error $ "Unknown event: " <> show eid
+getEvent eid = fromJustNote missingEvent <$> preview (events . ix eid)
+  where missingEvent = "Unknown event: " <> show eid
 
 activeInvestigator :: Game queue -> Investigator
 activeInvestigator g = getInvestigator (g ^. activeInvestigatorId) g
@@ -379,10 +378,10 @@ instance HasCard InvestigatorId (Game queue) where
   getCard iid cardId g = getCard () cardId (getInvestigator iid g)
 
 instance HasId LeadInvestigatorId (Game queue) () where
-  getId _ = asks $ LeadInvestigatorId . view leadInvestigatorId
+  getId _ = LeadInvestigatorId <$> view leadInvestigatorId
 
 instance HasId ActiveInvestigatorId (Game queue) () where
-  getId _ = asks $ ActiveInvestigatorId . view activeInvestigatorId
+  getId _ = ActiveInvestigatorId <$> view activeInvestigatorId
 
 instance HasId CardCode (Game queue) EnemyId where
   getId eid = getCardCode <$> getEnemy eid
@@ -399,33 +398,30 @@ instance HasId (Maybe LocationId) (Game queue) AssetId where
 instance HasId (Maybe LocationId) (Game queue) LocationName where
   getId locationName = do
     g <- ask
-    asks
-      $ maybe Nothing (Just . flip runReader g . getId)
+    maybe Nothing (Just . flip runReader g . getId)
       . find ((== locationName) . getLocationName)
       . toList
-      . view locations
+      <$> view locations
 
 instance HasId (Maybe StoryAssetId) (Game queue) CardCode where
   getId cardCode = fmap StoryAssetId <$> getId cardCode
 
 instance HasId (Maybe AssetId) (Game queue) CardCode where
   getId cardCode =
-    asks
-      $ (fst <$>)
+    (fst <$>)
       . find ((cardCode ==) . getCardCode . snd)
       . mapToList
-      . view assets
+      <$> view assets
 
 instance HasId (Maybe StoryEnemyId) (Game queue) CardCode where
   getId cardCode = fmap StoryEnemyId <$> getId cardCode
 
 instance HasId (Maybe EnemyId) (Game queue) CardCode where
   getId cardCode =
-    asks
-      $ (fst <$>)
+    (fst <$>)
       . find ((cardCode ==) . getCardCode . snd)
       . mapToList
-      . view enemies
+      <$> view enemies
 
 instance HasId LocationId (Game queue) InvestigatorId where
   getId iid = locationFor iid <$> ask
@@ -563,7 +559,7 @@ instance HasCount EnemyCount (Game queue) (InvestigatorLocation, [Trait]) where
     locationId <- locationFor iid <$> ask
     getCount (locationId, traits)
 
-instance (HasModifiersFor env env, env ~ Game queue) => HasStats (Game queue) (InvestigatorId, Maybe Action) where
+instance (HasModifiersFor env (), env ~ Game queue) => HasStats (Game queue) (InvestigatorId, Maybe Action) where
   getStats (iid, maction) source =
     modifiedStatsOf source maction =<< (getInvestigator iid <$> ask)
 
@@ -578,10 +574,12 @@ instance
   , HasTokenValue env InvestigatorId
   , HasId LocationId env InvestigatorId
   )
-  => HasTokenValue env (Game queue) where
-  getTokenValue game iid token = case game ^. scenario of
-    Just scenario' -> getTokenValue scenario' iid token
-    Nothing -> error "missing scenario"
+  => HasTokenValue (Game queue) () where
+  getTokenValue _ iid token = do
+    game <- ask
+    case game ^. scenario of
+      Just scenario' -> getTokenValue scenario' iid token
+      Nothing -> error "missing scenario"
 
 instance
   (env ~ Game queue
@@ -592,28 +590,31 @@ instance
     investigator <- asks $ getInvestigator iid'
     getTokenValue investigator iid token
 
-instance (GameRunner env, env ~ Game queue) => HasModifiersFor env (Game queue) where
-  getModifiersFor source target g = concat <$> sequence
-    [ concat
-      <$> traverse (getModifiersFor source target) (g ^. enemies . to toList)
-    , concat
-      <$> traverse (getModifiersFor source target) (g ^. assets . to toList)
-    -- , concat
-    --   <$> traverse (getModifiersFor source target) (g ^. agendas . to toList)
-    , concat
-      <$> traverse (getModifiersFor source target) (g ^. locations . to toList)
-    , concat
-      <$> traverse (getModifiersFor source target) (g ^. effects . to toList)
-    , concat
-      <$> traverse (getModifiersFor source target) (g ^. events . to toList)
-    , concat <$> traverse
-      (getModifiersFor source target)
-      (g ^. treacheries . to toList)
-    , concat <$> traverse
-      (getModifiersFor source target)
-      (g ^. investigators . to toList)
-    , maybe (pure []) (getModifiersFor source target) (g ^. skillTest)
-    ]
+instance (GameRunner env, env ~ Game queue) => HasModifiersFor (Game queue) () where
+  getModifiersFor source target _ = do
+    g <- ask
+    concat <$> sequence
+      [ concat
+        <$> traverse (getModifiersFor source target) (g ^. enemies . to toList)
+      , concat
+        <$> traverse (getModifiersFor source target) (g ^. assets . to toList)
+      -- , concat
+      --   <$> traverse (getModifiersFor source target) (g ^. agendas . to toList)
+      , concat <$> traverse
+        (getModifiersFor source target)
+        (g ^. locations . to toList)
+      , concat
+        <$> traverse (getModifiersFor source target) (g ^. effects . to toList)
+      , concat
+        <$> traverse (getModifiersFor source target) (g ^. events . to toList)
+      , concat <$> traverse
+        (getModifiersFor source target)
+        (g ^. treacheries . to toList)
+      , concat <$> traverse
+        (getModifiersFor source target)
+        (g ^. investigators . to toList)
+      , maybe (pure []) (getModifiersFor source target) (g ^. skillTest)
+      ]
 
 instance HasStep AgendaStep (Game queue) where
   getStep g = case toList (g ^. agendas) of
@@ -1016,7 +1017,7 @@ instance HasSet ClosestEnemyId (Game queue) LocationId where
     where matcher g lid = not . null $ runReader (getSet @EnemyId lid) g
 
 instance HasSet ClosestEnemyId (Game queue) InvestigatorId where
-  getSet iid = getSet =<< (locationFor iid <$> ask)
+  getSet iid = getSet =<< locationFor iid
 
 instance HasSet ClosestEnemyId (Game queue) (LocationId, [Trait]) where
   getSet (start, traits) = do
@@ -1340,8 +1341,8 @@ createTreachery cardCode miid = do
   tid <- liftIO $ TreacheryId <$> nextRandom
   pure (tid, lookupTreachery cardCode tid miid)
 
-locationFor :: InvestigatorId -> Game queue -> LocationId
-locationFor iid = locationOf . getInvestigator iid
+locationFor :: MonadReader (Game queue) m => InvestigatorId -> m LocationId
+locationFor iid = locationOf <$> getInvestigator iid
 
 broadcastWindow
   :: (MonadReader env m, HasQueue env, MonadIO m)
@@ -1783,7 +1784,7 @@ runGameMessage msg g = case msg of
       _ -> unshiftMessage (AskMap askMap)
     pure g
   EnemyWillAttack iid eid -> do
-    modifiers' <- getModifiersFor (EnemySource eid) (InvestigatorTarget iid) g
+    modifiers' <- getModifiersFor (EnemySource eid) (InvestigatorTarget iid) ()
     let
       cannotBeAttackedByNonElites = flip any modifiers' $ \case
         CannotBeAttackedByNonElite{} -> True
@@ -1807,7 +1808,7 @@ runGameMessage msg g = case msg of
             modifiers2' <- getModifiersFor
               (EnemySource eid2)
               (InvestigatorTarget iid2)
-              g
+              ()
             let
               cannotBeAttackedByNonElites2 = flip any modifiers2' $ \case
                 CannotBeAttackedByNonElite{} -> True

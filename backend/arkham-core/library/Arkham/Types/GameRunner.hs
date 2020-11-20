@@ -66,7 +66,7 @@ type GameRunner env
       , HasList LocationName env ()
       , HasList HandCard env InvestigatorId
       )
-    , HasModifiersFor env env
+    , HasModifiersFor env ()
     , ( HasSet AccessibleLocationId env LocationId
       , HasSet AdvanceableActId env ()
       , HasSet AgendaId env ()

@@ -39,11 +39,10 @@ instance ActionRunner env => HasActions env ZoeySamaras where
           1
           (ReactionAbility (AfterEnemyEngageInvestigator You eid))
 
-      modifiers' <-
-        getModifiersFor
-            (InvestigatorSource investigatorId)
-            (InvestigatorTarget investigatorId)
-          =<< ask
+      modifiers' <- getModifiersFor
+        (InvestigatorSource investigatorId)
+        (InvestigatorTarget investigatorId)
+        ()
       usedAbilities <- map unUsedAbility <$> asks (getList ())
       pure
         [ ActivateCardAbilityAction investigatorId ability

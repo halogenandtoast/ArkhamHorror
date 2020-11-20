@@ -28,7 +28,7 @@ type InvestigatorRunner env
     , HasId CardCode env AssetId
     , HasId CardCode env EnemyId
     , HasId LocationId env InvestigatorId
-    , HasModifiersFor env env
+    , HasModifiersFor env ()
     , HasQueue env
     , HasSet AdvanceableActId env ()
     , HasSet AloofEnemyId env LocationId

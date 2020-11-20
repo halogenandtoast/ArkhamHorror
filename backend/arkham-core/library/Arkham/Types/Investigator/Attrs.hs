@@ -153,7 +153,7 @@ instance Entity Attrs where
   isTarget _ _ = False
 
 getFacingDefeat
-  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Bool
+  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Bool
 getFacingDefeat a@Attrs {..} = do
   modifiedHealth <- getModifiedHealth a
   modifiedSanity <- getModifiedSanity a
@@ -192,15 +192,17 @@ baseSkillValueFor skill _maction tempModifiers attrs = foldr
     SkillWild -> error "investigators do not have wild skills"
 
 damageValueFor
-  :: (MonadReader env m, HasModifiersFor env env, HasSource ForSkillTest env)
+  :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
   => Int
   -> Attrs
   -> m Int
 damageValueFor baseValue attrs = do
   source <-
     asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
-  modifiers' <-
-    getModifiersFor source (InvestigatorTarget $ investigatorId attrs) =<< ask
+  modifiers' <- getModifiersFor
+    source
+    (InvestigatorTarget $ investigatorId attrs)
+    ()
   pure $ foldr applyModifier baseValue modifiers'
  where
   applyModifier (DamageDealt m) n = max 0 (n + m)
@@ -226,58 +228,60 @@ getIsScenarioAbility = do
     _ -> pure False
 
 getHandSize
-  :: (MonadReader env m, HasModifiersFor env env, HasSource ForSkillTest env)
+  :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
   => Attrs
   -> m Int
 getHandSize attrs = do
   source <- asks $ fromMaybe (toSource attrs) . getSource ForSkillTest
-  modifiers' <-
-    getModifiersFor source (InvestigatorTarget $ investigatorId attrs) =<< ask
+  modifiers' <- getModifiersFor
+    source
+    (InvestigatorTarget $ investigatorId attrs)
+    ()
   pure $ foldr applyModifier 8 modifiers'
  where
   applyModifier (HandSize m) n = max 0 (n + m)
   applyModifier _ n = n
 
 getActionsForTurn
-  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Int
+  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Int
 getActionsForTurn attrs@Attrs {..} = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ foldr applyModifier 3 modifiers'
  where
   applyModifier (AdditionalActions m) n = max 0 (n + m)
   applyModifier _ n = n
 
 getCanDiscoverClues
-  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Bool
+  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Bool
 getCanDiscoverClues attrs@Attrs {..} = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ not (any match modifiers')
  where
   match CannotDiscoverClues{} = True
   match _ = False
 
 getCanSpendClues
-  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Bool
+  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Bool
 getCanSpendClues attrs@Attrs {..} = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ not (any match modifiers')
  where
   match CannotSpendClues{} = True
   match _ = False
 
 getModifiedHealth
-  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Int
+  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Int
 getModifiedHealth attrs@Attrs {..} = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ foldr applyModifier investigatorHealth modifiers'
  where
   applyModifier (HealthModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
 getModifiedSanity
-  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Int
+  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Int
 getModifiedSanity attrs@Attrs {..} = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ foldr applyModifier investigatorSanity modifiers'
  where
   applyModifier (SanityModifier m) n = max 0 (n + m)
@@ -383,9 +387,9 @@ matchTarget _ (IsAction a) action = action == a
 matchTarget _ (EnemyAction a _) action = action == a
 
 getActionCost
-  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> Action -> m Int
+  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> Action -> m Int
 getActionCost attrs a = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ foldr applyModifier 1 modifiers'
  where
   applyModifier (ActionCostOf match m) n =
@@ -393,13 +397,13 @@ getActionCost attrs a = do
   applyModifier _ n = n
 
 getActionCostModifier
-  :: (MonadReader env m, HasModifiersFor env env)
+  :: (MonadReader env m, HasModifiersFor env ())
   => Attrs
   -> Maybe Action
   -> m Int
 getActionCostModifier _ Nothing = pure 0
 getActionCostModifier attrs (Just a) = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ foldr applyModifier 0 modifiers'
  where
   applyModifier (ActionCostOf match m) n =
@@ -407,41 +411,43 @@ getActionCostModifier attrs (Just a) = do
   applyModifier _ n = n
 
 getSpendableClueCount
-  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> m Int
+  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Int
 getSpendableClueCount a = do
   canSpendClues <- getCanSpendClues a
   pure $ if canSpendClues then investigatorClues a else 0
 
 cluesToDiscover
-  :: (MonadReader env m, HasModifiersFor env env, HasSource ForSkillTest env)
+  :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
   => Attrs
   -> Int
   -> m Int
 cluesToDiscover attrs startValue = do
   source <-
     asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
-  modifiers' <-
-    getModifiersFor source (InvestigatorTarget $ investigatorId attrs) =<< ask
+  modifiers' <- getModifiersFor
+    source
+    (InvestigatorTarget $ investigatorId attrs)
+    ()
   pure $ foldr applyModifier startValue modifiers'
  where
   applyModifier (DiscoveredClues m) n = n + m
   applyModifier _ n = n
 
 getCanAfford
-  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> Action -> m Bool
+  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> Action -> m Bool
 getCanAfford a@Attrs {..} actionType = do
   actionCost <- getActionCost a actionType
   pure $ actionCost <= investigatorRemainingActions
 
 getFastIsPlayable
-  :: (MonadReader env m, HasModifiersFor env env)
+  :: (MonadReader env m, HasModifiersFor env ())
   => Attrs
   -> [Window]
   -> Card
   -> m Bool
 getFastIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
 getFastIsPlayable attrs windows c@(PlayerCard MkPlayerCard {..}) = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   isPlayable <- getIsPlayable attrs windows c
   pure $ (pcFast || canBecomeFast modifiers') && isPlayable
  where
@@ -453,9 +459,9 @@ getFastIsPlayable attrs windows c@(PlayerCard MkPlayerCard {..}) = do
   applyModifier _ val = val
 
 getModifiedCardCost
-  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> Card -> m Int
+  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> Card -> m Int
 getModifiedCardCost attrs (PlayerCard MkPlayerCard {..}) = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ foldr applyModifier startingCost modifiers'
  where
   startingCost = case pcCost of
@@ -467,7 +473,7 @@ getModifiedCardCost attrs (PlayerCard MkPlayerCard {..}) = do
     max 0 (n - m)
   applyModifier _ n = n
 getModifiedCardCost attrs (EncounterCard MkEncounterCard {..}) = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ foldr
     applyModifier
     (error "we need so specify ecCost for this to work")
@@ -478,14 +484,14 @@ getModifiedCardCost attrs (EncounterCard MkEncounterCard {..}) = do
   applyModifier _ n = n
 
 getIsPlayable
-  :: (MonadReader env m, HasModifiersFor env env)
+  :: (MonadReader env m, HasModifiersFor env ())
   => Attrs
   -> [Window]
   -> Card
   -> m Bool
 getIsPlayable _ _ (EncounterCard _) = pure False -- TODO: there might be some playable ones?
 getIsPlayable attrs@Attrs {..} windows c@(PlayerCard MkPlayerCard {..}) = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   modifiedCardCost <- getModifiedCardCost attrs c
   pure
     $ (pcCardType /= SkillType)
@@ -514,7 +520,7 @@ cardInWindows windows c _ = case c of
   _ -> False
 
 getPlayableCards
-  :: (MonadReader env m, HasModifiersFor env env)
+  :: (MonadReader env m, HasModifiersFor env ())
   => Attrs
   -> [Window]
   -> m [Card]
@@ -524,12 +530,12 @@ getPlayableCards a@Attrs {..} windows = do
   pure $ playableHandCards <> playableDiscards
 
 getPlayableDiscards
-  :: (MonadReader env m, HasModifiersFor env env)
+  :: (MonadReader env m, HasModifiersFor env ())
   => Attrs
   -> [Window]
   -> m [Card]
 getPlayableDiscards attrs@Attrs {..} windows = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   filterM (getFastIsPlayable attrs windows) (possibleCards modifiers')
  where
   possibleCards modifiers' = map (PlayerCard . snd) $ filter
@@ -544,12 +550,12 @@ getPlayableDiscards attrs@Attrs {..} windows = do
 
 
 getPossibleSkillTypeChoices
-  :: (MonadReader env m, HasModifiersFor env env)
+  :: (MonadReader env m, HasModifiersFor env ())
   => SkillType
   -> Attrs
   -> m [SkillType]
 getPossibleSkillTypeChoices skillType attrs = do
-  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) =<< ask
+  modifiers' <- getModifiersFor (toSource attrs) (toTarget attrs) ()
   pure $ foldr applyModifier [skillType] modifiers'
  where
   applyModifier (UseSkillInPlaceOf toReplace toUse) skills
@@ -584,14 +590,13 @@ _PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
 _PlayerCard _ (EncounterCard ec) = pure (EncounterCard ec)
 
 hasModifier
-  :: (MonadReader env m, HasModifiersFor env env) => Attrs -> Modifier -> m Bool
+  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> Modifier -> m Bool
 hasModifier Attrs { investigatorId } m =
   elem m
-    <$> (getModifiersFor
-            (InvestigatorSource investigatorId)
-            (InvestigatorTarget investigatorId)
-        =<< ask
-        )
+    <$> getModifiersFor
+          (InvestigatorSource investigatorId)
+          (InvestigatorTarget investigatorId)
+          ()
 
 runInvestigatorMessage
   :: (InvestigatorRunner env, MonadReader env m, MonadIO m, MonadFail m)
@@ -1278,7 +1283,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       asks $ fromJustNote "damage outside skill test" . getSource ForSkillTest
     cannotCommitCards <-
       elem CannotCommitCards
-        <$> (getModifiersFor source (InvestigatorTarget investigatorId) =<< ask)
+        <$> getModifiersFor source (InvestigatorTarget investigatorId) ()
     let
       triggerMessage = StartSkillTest investigatorId
       beginMessage = BeforeSkillTest iid skillType
@@ -1533,8 +1538,10 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     actions <- getActions iid NonFast ()
     fastActions <- getActions iid (DuringTurn You) ()
     playerWindowActions <- getActions iid FastPlayerWindow ()
-    modifiers' <-
-      getModifiersFor (InvestigatorSource iid) (InvestigatorTarget iid) =<< ask
+    modifiers' <- getModifiersFor
+      (InvestigatorSource iid)
+      (InvestigatorTarget iid)
+      ()
     canAffordTakeResources <- getCanAfford a Action.Resource
     canAffordDrawCards <- getCanAfford a Action.Draw
     canAffordPlayCard <- getCanAfford a Action.Play

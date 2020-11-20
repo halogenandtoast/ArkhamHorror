@@ -273,7 +273,7 @@ type ActionRunner env
     , HasList HandCard env InvestigatorId
     , HasList InPlayCard env InvestigatorId
     , HasList UsedAbility env ()
-    , HasModifiersFor env env
+    , HasModifiersFor env ()
     , HasSet AccessibleLocationId env LocationId
     , HasSet AssetId env (InvestigatorId, UseType)
     , HasSet ConnectedLocationId env LocationId

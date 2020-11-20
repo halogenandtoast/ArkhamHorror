@@ -42,6 +42,6 @@ import Arkham.Types.Window as X
 import Control.Monad.Extra as X (concatMapM)
 import GHC.Stack as X
 import Lens.Micro as X
-import Lens.Micro.Extras as X
+import Lens.Micro.Mtl as X (preview, view)
 import Lens.Micro.Platform as X ()
 import Safe as X (fromJustNote)

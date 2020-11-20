@@ -19,7 +19,7 @@ type EnemyRunner env
     , HasId (Maybe LocationId) env LocationName
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId
-    , HasModifiersFor env env
+    , HasModifiersFor env ()
     , HasSet ClosestLocationId env (LocationId, LocationId)
     , HasSet ClosestLocationId env (LocationId, Prey)
     , HasSet ConnectedLocationId env LocationId

@@ -200,40 +200,40 @@ spawnAtOneOf iid eid targetLids = do
       (Ask iid $ ChooseOne [ EnemySpawn (Just iid) lid eid | lid <- lids ])
 
 modifiedEnemyFight
-  :: (MonadReader env m, HasModifiersFor env env, HasSource ForSkillTest env)
+  :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
   => Attrs
   -> m Int
 modifiedEnemyFight Attrs {..} = do
   msource <- asks $ getSource ForSkillTest
   let source = fromMaybe (EnemySource enemyId) msource
-  modifiers' <- getModifiersFor source (EnemyTarget enemyId) =<< ask
+  modifiers' <- getModifiersFor source (EnemyTarget enemyId) ()
   pure $ foldr applyModifier enemyFight modifiers'
  where
   applyModifier (EnemyFight m) n = max 0 (n + m)
   applyModifier _ n = n
 
 modifiedEnemyEvade
-  :: (MonadReader env m, HasModifiersFor env env, HasSource ForSkillTest env)
+  :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
   => Attrs
   -> m Int
 modifiedEnemyEvade Attrs {..} = do
   msource <- asks $ getSource ForSkillTest
   let source = fromMaybe (EnemySource enemyId) msource
-  modifiers' <- getModifiersFor source (EnemyTarget enemyId) =<< ask
+  modifiers' <- getModifiersFor source (EnemyTarget enemyId) ()
   pure $ foldr applyModifier enemyEvade modifiers'
  where
   applyModifier (EnemyEvade m) n = max 0 (n + m)
   applyModifier _ n = n
 
 getModifiedDamageAmount
-  :: (MonadReader env m, HasModifiersFor env env, HasSource ForSkillTest env)
+  :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
   => Attrs
   -> Int
   -> m Int
 getModifiedDamageAmount Attrs {..} baseAmount = do
   msource <- asks $ getSource ForSkillTest
   let source = fromMaybe (EnemySource enemyId) msource
-  modifiers' <- getModifiersFor source (EnemyTarget enemyId) =<< ask
+  modifiers' <- getModifiersFor source (EnemyTarget enemyId) ()
   let updatedAmount = foldr applyModifier baseAmount modifiers'
   pure $ foldr applyModifierCaps updatedAmount modifiers'
  where
@@ -246,7 +246,7 @@ canEnterLocation
   :: (EnemyRunner env, MonadReader env m) => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
   traits <- asks (getSet eid)
-  modifiers' <- getModifiersFor (EnemySource eid) (LocationTarget lid) =<< ask
+  modifiers' <- getModifiersFor (EnemySource eid) (LocationTarget lid) ()
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
@@ -291,13 +291,12 @@ instance Entity Attrs where
   isSource _ _ = False
 
 getModifiedHealth
-  :: (MonadReader env m, HasModifiersFor env env, HasCount PlayerCount env ())
+  :: (MonadReader env m, HasModifiersFor env (), HasCount PlayerCount env ())
   => Attrs
   -> m Int
 getModifiedHealth Attrs {..} = do
   playerCount <- getPlayerCount
-  modifiers' <-
-    getModifiersFor (EnemySource enemyId) (EnemyTarget enemyId) =<< ask
+  modifiers' <- getModifiersFor (EnemySource enemyId) (EnemyTarget enemyId) ()
   pure $ foldr applyModifier (fromGameValue enemyHealth playerCount) modifiers'
  where
   applyModifier (HealthModifier m) n = max 0 (n + m)

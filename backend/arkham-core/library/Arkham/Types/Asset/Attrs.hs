@@ -121,12 +121,11 @@ is (CardCodeTarget cardCode) a = cardCode == assetCardCode a
 is (CardIdTarget cardId) a = unCardId cardId == unAssetId (assetId a)
 is _ _ = False
 
-instance (HasQueue env, HasModifiersFor env env) => RunMessage env Attrs where
+instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     ReadyExhausted -> case assetInvestigator of
       Just iid -> do
-        modifiers <-
-          getModifiersFor (toSource a) (InvestigatorTarget iid) =<< ask
+        modifiers <- getModifiersFor (toSource a) (InvestigatorTarget iid) ()
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
           else pure $ a & exhausted .~ False
@@ -156,8 +155,7 @@ instance (HasQueue env, HasModifiersFor env env) => RunMessage env Attrs where
     Exhaust target | target `is` a -> pure $ a & exhausted .~ True
     Ready target | target `is` a -> case assetInvestigator of
       Just iid -> do
-        modifiers <-
-          getModifiersFor (toSource a) (InvestigatorTarget iid) =<< ask
+        modifiers <- getModifiersFor (toSource a) (InvestigatorTarget iid) ()
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
           else pure $ a & exhausted .~ False

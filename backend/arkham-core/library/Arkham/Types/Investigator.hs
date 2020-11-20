@@ -89,15 +89,17 @@ instance InvestigatorRunner env => RunMessage env BaseInvestigator where
 
 instance ActionRunner env => HasActions env Investigator where
   getActions iid window investigator = do
-    modifiers' <-
-      getModifiersFor (toSource investigator) (toTarget investigator) =<< ask
+    modifiers' <- getModifiersFor
+      (toSource investigator)
+      (toTarget investigator)
+      ()
     if any isBlank modifiers'
       then getActions iid window (investigatorAttrs investigator)
       else defaultGetActions iid window investigator
 
-instance (InvestigatorRunner env) => RunMessage env Investigator where
+instance InvestigatorRunner env => RunMessage env Investigator where
   runMessage msg@(ResolveToken _ iid) i | iid == getInvestigatorId i = do
-    modifiers' <- getModifiersFor (toSource i) (toTarget i) =<< ask
+    modifiers' <- getModifiersFor (toSource i) (toTarget i) ()
     if any isBlank modifiers' then pure i else defaultRunMessage msg i
   runMessage msg i = defaultRunMessage msg i
 
@@ -181,7 +183,7 @@ instance HasCount ClueCount env Investigator where
   getCount = pure . ClueCount . investigatorClues . investigatorAttrs
 
 getInvestigatorSpendableClueCount
-  :: (MonadReader env m, HasModifiersFor env env)
+  :: (MonadReader env m, HasModifiersFor env ())
   => Investigator
   -> m SpendableClueCount
 getInvestigatorSpendableClueCount =
@@ -245,7 +247,7 @@ getIsPrey
      , HasSet CardCount env ()
      , HasList (InvestigatorId, Distance) env EnemyTrait
      , MonadReader env m
-     , HasModifiersFor env env
+     , HasModifiersFor env ()
      )
   => Prey
   -> Investigator
@@ -309,19 +311,19 @@ getIsPrey (NearestToEnemyWithTrait trait) i = do
 getIsPrey SetToBearer _ = error "The bearer was not correctly set"
 
 getAvailableSkillsFor
-  :: (MonadReader env m, HasModifiersFor env env)
+  :: (MonadReader env m, HasModifiersFor env ())
   => Investigator
   -> SkillType
   -> m [SkillType]
 getAvailableSkillsFor i s = getPossibleSkillTypeChoices s (investigatorAttrs i)
 
 getSkillValueOf
-  :: (MonadReader env m, HasModifiersFor env env)
+  :: (MonadReader env m, HasModifiersFor env ())
   => SkillType
   -> Investigator
   -> m Int
 getSkillValueOf skillType i = do
-  modifiers' <- getModifiersFor (toSource i) (toTarget i) =<< ask
+  modifiers' <- getModifiersFor (toSource i) (toTarget i) ()
   let
     mBaseValue = foldr
       (\modifier current -> case modifier of
@@ -352,14 +354,14 @@ locationOf :: Investigator -> LocationId
 locationOf = investigatorLocation . investigatorAttrs
 
 getRemainingSanity
-  :: (MonadReader env m, HasModifiersFor env env) => Investigator -> m Int
+  :: (MonadReader env m, HasModifiersFor env ()) => Investigator -> m Int
 getRemainingSanity i = do
   modifiedSanity <- getModifiedSanity a
   pure $ modifiedSanity - investigatorSanityDamage a
   where a = investigatorAttrs i
 
 getRemainingHealth
-  :: (MonadReader env m, HasModifiersFor env env) => Investigator -> m Int
+  :: (MonadReader env m, HasModifiersFor env ()) => Investigator -> m Int
 getRemainingHealth i = do
   modifiedHealth <- getModifiedHealth a
   pure $ modifiedHealth - investigatorHealthDamage a
@@ -372,13 +374,13 @@ instance Entity Investigator where
   isTarget = isTarget . investigatorAttrs
 
 modifiedStatsOf
-  :: (MonadReader env m, HasModifiersFor env env)
+  :: (MonadReader env m, HasModifiersFor env ())
   => Source
   -> Maybe Action
   -> Investigator
   -> m Stats
 modifiedStatsOf source maction i = do
-  modifiers' <- getModifiersFor source (toTarget i) =<< ask
+  modifiers' <- getModifiersFor source (toTarget i) ()
   remainingHealth <- getRemainingHealth i
   remainingSanity <- getRemainingSanity i
   let
@@ -406,7 +408,7 @@ isDefeated :: Investigator -> Bool
 isDefeated = view defeated . investigatorAttrs
 
 getHasSpendableClues
-  :: (MonadReader env m, HasModifiersFor env env) => Investigator -> m Bool
+  :: (MonadReader env m, HasModifiersFor env ()) => Investigator -> m Bool
 getHasSpendableClues i = do
   spendableClueCount <- getSpendableClueCount (investigatorAttrs i)
   pure $ spendableClueCount > 0

@@ -101,8 +101,10 @@ preventedByModifier _ _ _ = False
 
 instance ActionRunner env => HasActions env Enemy where
   getActions investigator window enemy = do
-    modifiers' <-
-      getModifiersFor (toSource enemy) (InvestigatorTarget investigator) =<< ask
+    modifiers' <- getModifiersFor
+      (toSource enemy)
+      (InvestigatorTarget investigator)
+      ()
     actions <- defaultGetActions investigator window enemy
 
     -- preventedByModifier :: Attrs -> Modifier -> Action -> Bool
@@ -130,7 +132,7 @@ instance Entity Enemy where
 
 instance (EnemyRunner env) => RunMessage env Enemy where
   runMessage msg e = do
-    modifiers' <- getModifiersFor (toSource e) (toTarget e) =<< ask
+    modifiers' <- getModifiersFor (toSource e) (toTarget e) ()
     if any isBlank modifiers' && not (isBlanked msg)
       then runMessage (Blanked msg) e
       else defaultRunMessage msg e

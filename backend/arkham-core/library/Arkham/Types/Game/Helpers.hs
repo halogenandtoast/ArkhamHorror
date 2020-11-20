@@ -22,12 +22,12 @@ getGroupIsUnused ability =
   notElem ability . map (snd . unUsedAbility) <$> getList ()
 
 getInvestigatorModifiers
-  :: (MonadReader env m, HasModifiersFor env env)
+  :: (MonadReader env m, HasModifiersFor env ())
   => InvestigatorId
   -> Source
   -> m [Modifier]
 getInvestigatorModifiers iid source =
-  ask >>= getModifiersFor source (InvestigatorTarget iid)
+  getModifiersFor source (InvestigatorTarget iid) ()
 
 getXp :: (HasCount XPCount env (), MonadReader env m) => m Int
 getXp = unXPCount <$> getCount ()
@@ -114,15 +114,17 @@ getCanEvade
   :: ( MonadReader env m
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasSet InvestigatorId env EnemyId
-     , HasModifiersFor env env
+     , HasModifiersFor env ()
      )
   => EnemyId
   -> InvestigatorId
   -> m Bool
 getCanEvade eid iid = do
   engaged <- elem iid <$> getSet eid
-  enemyModifiers <-
-    getModifiersFor (InvestigatorSource iid) (EnemyTarget eid) =<< ask
+  enemyModifiers <- getModifiersFor
+    (InvestigatorSource iid)
+    (EnemyTarget eid)
+    ()
   hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Evade) mempty
   pure
     $ engaged
@@ -135,15 +137,14 @@ getCanMoveTo
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasSet AccessibleLocationId env LocationId
      , HasId LocationId env InvestigatorId
-     , HasModifiersFor env env
+     , HasModifiersFor env ()
      )
   => LocationId
   -> InvestigatorId
   -> m Bool
 getCanMoveTo lid iid = do
   locationId <- getId @LocationId iid
-  modifiers' <-
-    getModifiersFor (LocationSource lid) (InvestigatorTarget iid) =<< ask
+  modifiers' <- getModifiersFor (LocationSource lid) (InvestigatorTarget iid) ()
   accessibleLocations <- map unAccessibleLocationId <$> getSetList locationId
   hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Move) mempty
   pure

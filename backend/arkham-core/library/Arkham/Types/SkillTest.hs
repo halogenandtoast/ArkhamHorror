@@ -135,9 +135,9 @@ skillIconCount SkillTest {..} = length . filter matches $ concatMap
   matches s = s == skillTestSkillType
 
 getModifiedSkillTestDifficulty
-  :: (MonadReader env m, HasModifiersFor env env) => SkillTest -> m Int
+  :: (MonadReader env m, HasModifiersFor env ()) => SkillTest -> m Int
 getModifiedSkillTestDifficulty s = do
-  modifiers' <- getModifiersFor (toSource s) SkillTestTarget =<< ask
+  modifiers' <- getModifiersFor (toSource s) SkillTestTarget ()
   pure $ foldr applyModifier (skillTestDifficulty s) modifiers'
  where
   applyModifier (Difficulty m) n = max 0 (n + m)
@@ -148,8 +148,8 @@ type SkillTestRunner env
     , HasCard InvestigatorId env
     , HasStats env (InvestigatorId, Maybe Action)
     , HasSource ForSkillTest env
-    , HasModifiersFor env env
-    , HasTokenValue env env
+    , HasModifiersFor env ()
+    , HasTokenValue env ()
     , HasId LocationId env InvestigatorId
     , HasSet ConnectedLocationId env LocationId
     , HasSet InvestigatorId env ()
@@ -158,18 +158,17 @@ type SkillTestRunner env
 -- per the FAQ the double negative modifier ceases to be active
 -- when Sure Gamble is used so we overwrite both Negative and DoubleNegative
 getModifiedTokenValue
-  :: (MonadReader env m, HasModifiersFor env env, HasTokenValue env env)
+  :: (MonadReader env m, HasModifiersFor env (), HasTokenValue env ())
   => SkillTest
   -> DrawnToken
   -> m Int
 getModifiedTokenValue s t = do
-  env <- ask
-  tokenModifiers' <- getModifiersFor (toSource s) (DrawnTokenTarget t) env
+  tokenModifiers' <- getModifiersFor (toSource s) (DrawnTokenTarget t) ()
   modifiedTokenFaces' <- getModifiedTokenFaces s t
   getSum . mconcat <$> for
     modifiedTokenFaces'
     (\tokenFace -> do
-      baseTokenValue <- getTokenValue env (skillTestInvestigator s) tokenFace
+      baseTokenValue <- getTokenValue () (skillTestInvestigator s) tokenFace
       let
         updatedTokenValue =
           tokenValue $ foldr applyModifier baseTokenValue tokenModifiers'
@@ -188,13 +187,12 @@ getModifiedTokenValue s t = do
 
 -- really just looking for forced token changes here
 getModifiedTokenFaces
-  :: (HasModifiersFor env env, MonadReader env m)
+  :: (HasModifiersFor env (), MonadReader env m)
   => SkillTest
   -> DrawnToken
   -> m [Token]
 getModifiedTokenFaces s token = do
-  tokenModifiers' <-
-    getModifiersFor (toSource s) (DrawnTokenTarget token) =<< ask
+  tokenModifiers' <- getModifiersFor (toSource s) (DrawnTokenTarget token) ()
   pure $ foldr applyModifier [drawnTokenFace token] tokenModifiers'
  where
   applyModifier (ForcedTokenChange t ts) [t'] | t == t' = ts
@@ -203,8 +201,7 @@ getModifiedTokenFaces s token = do
 instance SkillTestRunner env => RunMessage env SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
     TriggerSkillTest iid -> do
-      modifiers' <-
-        getModifiersFor (toSource s) (InvestigatorTarget iid) =<< ask
+      modifiers' <- getModifiersFor (toSource s) (InvestigatorTarget iid) ()
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
         then s <$ unshiftMessages
           [RunSkillTestSourceNotification iid skillTestSource, RunSkillTest iid]

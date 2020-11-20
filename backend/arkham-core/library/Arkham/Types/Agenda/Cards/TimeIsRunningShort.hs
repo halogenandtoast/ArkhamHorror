@@ -36,7 +36,7 @@ instance ActionRunner env => HasActions env TimeIsRunningShort where
 instance (AgendaRunner env) => RunMessage env TimeIsRunningShort where
   runMessage msg (TimeIsRunningShort attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unshiftMessage (Ask leadInvestigatorId $ ChooseOne [Resolution 2])
       pure
         $ TimeIsRunningShort

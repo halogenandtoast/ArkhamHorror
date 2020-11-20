@@ -18,7 +18,7 @@ instance HasModifiersFor env SearchingForIzzie where
 
 instance ActionRunner env => HasActions env SearchingForIzzie where
   getActions iid NonFast (SearchingForIzzie Attrs {..}) = do
-    investigatorLocationId <- asks $ getId @LocationId iid
+    investigatorLocationId <- getId @LocationId iid
     pure
       [ ActivateCardAbilityAction
           iid

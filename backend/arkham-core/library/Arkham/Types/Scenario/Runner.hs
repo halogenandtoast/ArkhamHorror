@@ -17,9 +17,9 @@ type ScenarioRunner env
     , HasCount env PlayerCount ()
     , HasCount env XPCount ()
     , HasCount env EnemyCount (InvestigatorLocation, [Trait])
-    , HasId CardCode EnemyId env
-    , HasId LeadInvestigatorId () env
-    , HasId LocationId InvestigatorId env
+    , HasId CardCode env EnemyId
+    , HasId LeadInvestigatorId env ()
+    , HasId LocationId env InvestigatorId
     , HasQueue env
     , HasRecord env
     , HasSet AgendaId env ()

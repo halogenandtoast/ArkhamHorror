@@ -21,7 +21,7 @@ instance HasActions env TheyreGettingOut where
 instance AgendaRunner env => RunMessage env TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3a" -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unshiftMessage $ Ask leadInvestigatorId (ChooseOne [AdvanceAgenda aid])
       pure
         $ TheyreGettingOut
@@ -45,7 +45,7 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
           (ghoulEnemyIds `intersection` unengagedEnemyIds)
             `difference` parlorEnemyIds
       messages <- for (setToList enemiesToMove) $ \eid -> do
-        locationId <- asks (getId eid)
+        locationId <- getId eid
         closestLocationIds <- map unClosestLocationId
           <$> getSetList (locationId, LocationId "01115")
         case closestLocationIds of

@@ -42,7 +42,7 @@ deriving anyclass instance
   , HasSet EnemyId env Trait
   , HasSet Trait env LocationId
   , HasTokenValue env InvestigatorId
-  , HasId LocationId InvestigatorId env
+  , HasId LocationId env InvestigatorId
   )
   => HasTokenValue env Scenario
 

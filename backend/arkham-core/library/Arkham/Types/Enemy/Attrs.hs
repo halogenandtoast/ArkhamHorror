@@ -251,8 +251,8 @@ canEnterLocation eid lid = do
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
 
-instance HasId EnemyId () Attrs where
-  getId _ Attrs {..} = enemyId
+instance HasId EnemyId env Attrs where
+  getId = pure . enemyId
 
 instance IsEnemy Attrs where
   isAloof Attrs {..} = Keyword.Aloof `elem` enemyKeywords

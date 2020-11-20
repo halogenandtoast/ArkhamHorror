@@ -102,10 +102,7 @@ preventedByModifier _ _ _ = False
 instance ActionRunner env => HasActions env Enemy where
   getActions investigator window enemy = do
     modifiers' <-
-      getModifiersFor
-          (EnemySource $ getId () enemy)
-          (InvestigatorTarget investigator)
-        =<< ask
+      getModifiersFor (toSource enemy) (InvestigatorTarget investigator) =<< ask
     actions <- defaultGetActions investigator window enemy
 
     -- preventedByModifier :: Attrs -> Modifier -> Action -> Bool
@@ -116,7 +113,7 @@ instance ActionRunner env => HasActions env Enemy where
       actions
 
 deriving anyclass instance
-  ( HasId LocationId InvestigatorId env
+  ( HasId LocationId env InvestigatorId
   , HasCount env RemainingSanity InvestigatorId
   , HasCount env CardCount InvestigatorId
   , HasSet InvestigatorId env LocationId
@@ -150,8 +147,8 @@ instance HasCount env HealthDamageCount Enemy where
 instance HasCount env SanityDamageCount Enemy where
   getCount = pure . SanityDamageCount . enemySanityDamage . enemyAttrs
 
-instance HasId LocationId () Enemy where
-  getId _ = enemyLocation . enemyAttrs
+instance HasId LocationId env Enemy where
+  getId = pure . enemyLocation . enemyAttrs
 
 instance HasSet TreacheryId env Enemy where
   getSet = pure . enemyTreacheries . enemyAttrs
@@ -168,8 +165,8 @@ instance HasTraits Enemy where
 instance HasKeywords Enemy where
   getKeywords = enemyKeywords . enemyAttrs
 
-instance HasId EnemyId () Enemy where
-  getId _ = enemyId . enemyAttrs
+instance HasId EnemyId env Enemy where
+  getId = getId . enemyAttrs
 
 instance IsEnemy Enemy where
   isAloof = isAloof . enemyAttrs

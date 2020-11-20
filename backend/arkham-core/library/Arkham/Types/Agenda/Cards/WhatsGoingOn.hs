@@ -1,16 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.WhatsGoingOn where
 
-import Arkham.Json
+import Arkham.Import hiding (sequence)
+
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.Classes
-import Arkham.Types.GameValue
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.Source
-import ClassyPrelude hiding (sequence)
-import Lens.Micro
 
 newtype WhatsGoingOn = WhatsGoingOn Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -22,10 +16,10 @@ whatsGoingOn =
 instance HasActions env WhatsGoingOn where
   getActions i window (WhatsGoingOn x) = getActions i window x
 
-instance (AgendaRunner env) => RunMessage env WhatsGoingOn where
+instance AgendaRunner env => RunMessage env WhatsGoingOn where
   runMessage msg (WhatsGoingOn attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1a" -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
+      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unshiftMessage
         (Ask leadInvestigatorId $ ChooseOne
           [ Label

@@ -21,7 +21,7 @@ instance HasActions env WorkingAHunch where
 instance EventRunner env => RunMessage env WorkingAHunch where
   runMessage msg e@(WorkingAHunch attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      currentLocationId <- asks (getId @LocationId iid)
+      currentLocationId <- getId @LocationId iid
       locationClueCount <- unClueCount <$> getCount currentLocationId
       if locationClueCount > 0
         then e <$ unshiftMessages

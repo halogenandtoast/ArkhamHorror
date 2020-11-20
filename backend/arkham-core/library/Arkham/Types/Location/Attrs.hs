@@ -150,8 +150,8 @@ getModifiedShroudValueFor attrs = do
   applyModifier (ShroudModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-instance HasId LocationId () Attrs where
-  getId _ Attrs {..} = locationId
+instance HasId LocationId env Attrs where
+  getId = pure . locationId
 
 instance IsLocation Attrs where
   isBlocked Attrs {..} = locationBlocked
@@ -290,7 +290,7 @@ instance LocationRunner env => RunMessage env Attrs where
       when shouldSpawnNonEliteAtConnectingInstead $ do
         traits' <- getSetList eid
         when (Elite `notElem` traits') $ do
-          activeInvestigatorId <- unActiveInvestigatorId <$> asks (getId ())
+          activeInvestigatorId <- unActiveInvestigatorId <$> getId ()
           connectedLocationIds <-
             asks $ map unConnectedLocationId . setToList . getSet lid
           availableLocationIds <-

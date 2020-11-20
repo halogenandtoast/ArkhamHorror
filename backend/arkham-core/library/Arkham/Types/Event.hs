@@ -75,8 +75,8 @@ instance Entity Event where
 instance HasCardCode Event where
   getCardCode = eventCardCode . eventAttrs
 
-instance HasId EventId () Event where
-  getId _ = getId () . eventAttrs
+instance HasId EventId env Event where
+  getId = getId . eventAttrs
 
 lookupEvent :: CardCode -> (InvestigatorId -> EventId -> Event)
 lookupEvent cardCode =

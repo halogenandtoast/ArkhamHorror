@@ -8,11 +8,11 @@ import Arkham.Types.Trait
 type LocationRunner env
   = ( HasCount env PlayerCount ()
     , HasQueue env
-    , HasId (Maybe StoryAssetId) CardCode env
-    , HasId (Maybe OwnerId) AssetId env
-    , HasId ActiveInvestigatorId () env
-    , HasId CardCode EnemyId env
-    , HasId LocationId InvestigatorId env
+    , HasId (Maybe StoryAssetId) env CardCode
+    , HasId (Maybe OwnerId) env AssetId
+    , HasId ActiveInvestigatorId env ()
+    , HasId CardCode env EnemyId
+    , HasId LocationId env InvestigatorId
     , HasSet LocationId env [Trait]
     , HasSet Trait env LocationId
     , HasSet EventId env ()

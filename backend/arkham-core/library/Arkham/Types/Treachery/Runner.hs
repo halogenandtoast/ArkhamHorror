@@ -24,9 +24,9 @@ type TreacheryRunner env
     , HasCount env Shroud LocationId
     , HasCount env SpendableClueCount InvestigatorId
     , HasCount env TreacheryCount (LocationId, CardCode)
-    , HasId (Maybe StoryEnemyId) CardCode env
-    , HasId LocationId EnemyId env
-    , HasId LocationId InvestigatorId env
+    , HasId (Maybe StoryEnemyId) env CardCode
+    , HasId LocationId env EnemyId
+    , HasId LocationId env InvestigatorId
     , HasList UsedAbility env ()
     , HasSet AssetId env InvestigatorId
     , HasSet ClosestEnemyId env (LocationId, [Trait])

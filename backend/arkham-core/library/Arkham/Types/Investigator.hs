@@ -102,7 +102,7 @@ instance (InvestigatorRunner env) => RunMessage env Investigator where
   runMessage msg i = defaultRunMessage msg i
 
 instance HasId InvestigatorId () Investigator where
-  getId _ = getId () . investigatorAttrs
+  getId = getId . investigatorAttrs
 
 instance HasList DiscardedPlayerCard env Investigator where
   getList =

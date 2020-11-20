@@ -67,7 +67,7 @@ deriving anyclass instance ActionRunner env => HasActions env Treachery
 deriving anyclass instance TreacheryRunner env => RunMessage env Treachery
 deriving anyclass instance
   ( HasCount env PlayerCount ()
-  , HasId LocationId InvestigatorId env
+  , HasId LocationId env InvestigatorId
   , HasSet Trait env LocationId
   )
   => HasModifiersFor env Treachery
@@ -90,11 +90,11 @@ instance HasKeywords Treachery where
 instance HasCount env DoomCount Treachery where
   getCount = pure . DoomCount . treacheryDoom . treacheryAttrs
 
-instance HasId (Maybe OwnerId) () Treachery where
-  getId _ = (OwnerId <$>) . treacheryOwner . treacheryAttrs
+instance HasId (Maybe OwnerId) env Treachery where
+  getId = pure . (OwnerId <$>) . treacheryOwner . treacheryAttrs
 
-instance HasId TreacheryId () Treachery where
-  getId _ = treacheryId . treacheryAttrs
+instance HasId TreacheryId env Treachery where
+  getId = pure . treacheryId . treacheryAttrs
 
 lookupTreachery
   :: CardCode -> (TreacheryId -> Maybe InvestigatorId -> Treachery)

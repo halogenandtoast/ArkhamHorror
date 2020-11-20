@@ -20,10 +20,10 @@ instance HasModifiersFor env ObscuringFog where
 instance HasActions env ObscuringFog where
   getActions i window (ObscuringFog attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env ObscuringFog where
+instance TreacheryRunner env => RunMessage env ObscuringFog where
   runMessage msg t@(ObscuringFog attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      currentLocationId <- asks (getId iid)
+      currentLocationId <- getId iid
       obscuringFogCount <- unTreacheryCount
         <$> getCount (currentLocationId, treacheryCardCode)
       if obscuringFogCount > 0

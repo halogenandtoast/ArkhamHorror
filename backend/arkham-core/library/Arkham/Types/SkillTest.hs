@@ -150,7 +150,7 @@ type SkillTestRunner env
     , HasSource ForSkillTest env
     , HasModifiersFor env env
     , HasTokenValue env env
-    , HasId LocationId InvestigatorId env
+    , HasId LocationId env InvestigatorId
     , HasSet ConnectedLocationId env LocationId
     , HasSet InvestigatorId env ()
     )

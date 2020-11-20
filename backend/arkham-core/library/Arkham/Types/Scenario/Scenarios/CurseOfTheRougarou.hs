@@ -68,10 +68,10 @@ locationsWithLabels trait = do
   (before, bayou : after) =
     break (elem Bayou . getTraits . lookupLocation) locationSet
 
-instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId LocationId InvestigatorId env) => HasTokenValue env CurseOfTheRougarou where
+instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId LocationId env InvestigatorId) => HasTokenValue env CurseOfTheRougarou where
   getTokenValue (CurseOfTheRougarou (attrs `With` _)) iid = \case
     Skull -> do
-      lid <- asks $ getId @LocationId iid
+      lid <- getId @LocationId iid
       isBayou <- member Bayou <$> getSet lid
       let
         tokenVal
@@ -229,29 +229,23 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
               ]
         s <$ unshiftMessage (SetTokens tokens)
       ResolveToken Cultist iid -> do
-        lid <- asks $ getId @LocationId iid
-        enemyIds <- asks $ setToList . getSet @EnemyId lid
+        lid <- getId @LocationId iid
+        enemyIds <- getSetList @EnemyId lid
         rougarouAtYourLocation <- elem "81028"
-          <$> for enemyIds (asks . getId @CardCode)
+          <$> for enemyIds (getId @CardCode)
         s <$ when rougarouAtYourLocation (unshiftMessage $ DrawAnotherToken iid)
       ResolveToken ElderThing iid -> if isEasyStandard attrs
         then do
-          lid <- asks $ getId @LocationId iid
-          enemyIds <- asks $ setToList . getSet @EnemyId lid
-          mrougarou <- findM
-            (asks . ((== "81028") .) . getId @CardCode)
-            enemyIds
+          lid <- getId @LocationId iid
+          enemyIds <- getSetList @EnemyId lid
+          mrougarou <- findM (((== "81028") <$>) . getId @CardCode) enemyIds
           s <$ for_ mrougarou (unshiftMessage . EnemyWillAttack iid)
         else do
-          lid <- asks $ getId @LocationId iid
-          connectedLocationIds <-
-            asks $ map unConnectedLocationId . setToList . getSet lid
-          enemyIds <- concat <$> for
-            (lid : connectedLocationIds)
-            (\lid' -> asks $ setToList . getSet @EnemyId lid')
-          mrougarou <- findM
-            (asks . ((== "81028") .) . getId @CardCode)
-            enemyIds
+          lid <- getId @LocationId iid
+          connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
+          enemyIds <- concat
+            <$> for (lid : connectedLocationIds) (getSetList @EnemyId)
+          mrougarou <- findM (((== "81028") <$>) . getId @CardCode) enemyIds
           s <$ for_ mrougarou (unshiftMessage . EnemyWillAttack iid)
       FailedSkillTest iid _ _ (DrawnTokenTarget token) _ -> s <$ when
         (drawnTokenFace token == Tablet)

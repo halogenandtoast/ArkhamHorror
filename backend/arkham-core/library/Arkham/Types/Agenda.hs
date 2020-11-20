@@ -41,8 +41,8 @@ instance HasAbilities Agenda where
 instance HasCount env DoomCount Agenda where
   getCount = pure . DoomCount . agendaDoom . agendaAttrs
 
-instance HasId AgendaId () Agenda where
-  getId _ = agendaId . agendaAttrs
+instance HasId AgendaId env Agenda where
+  getId = getId . agendaAttrs
 
 instance HasStep AgendaStep Agenda where
   getStep = AgendaStep . agendaNumber . agendaAttrs

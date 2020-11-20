@@ -58,6 +58,9 @@ baseAttrs aid num name seq' threshold = Attrs
   , agendaNumber = num
   }
 
+instance HasId AgendaId env Attrs where
+  getId = pure . agendaId
+
 instance HasActions env Attrs where
   getActions _ _ _ = pure []
 

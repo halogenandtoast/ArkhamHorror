@@ -18,14 +18,14 @@ ripplesOnTheSurface :: TreacheryId -> a -> RipplesOnTheSurface
 ripplesOnTheSurface uuid _ = RipplesOnTheSurface $ baseAttrs uuid "81027"
 
 instance
-  ( HasId LocationId InvestigatorId env
+  ( HasId LocationId env InvestigatorId
   , HasSet Trait env LocationId
   )
   => HasModifiersFor env RipplesOnTheSurface where
   getModifiersFor (SkillTestSource _ source _) (InvestigatorTarget iid) (RipplesOnTheSurface attrs)
     | isSource attrs source
     = do
-      locationId <- asks $ getId @LocationId iid
+      locationId <- getId @LocationId iid
       isBayou <- member Bayou <$> getSet locationId
       pure [ CannotCommitCards | isBayou ]
   getModifiersFor _ _ _ = pure []

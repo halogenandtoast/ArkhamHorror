@@ -48,17 +48,17 @@ type GameRunner env
       , HasCount env SpendableClueCount InvestigatorId
       , HasCount env TreacheryCount (LocationId, CardCode)
       )
-    , ( HasId (Maybe AssetId) CardCode env
-      , HasId (Maybe LocationId) LocationName env
-      , HasId (Maybe OwnerId) AssetId env
-      , HasId (Maybe StoryAssetId) CardCode env
-      , HasId (Maybe StoryEnemyId) CardCode env
-      , HasId ActiveInvestigatorId () env
-      , HasId LeadInvestigatorId () env
-      , HasId CardCode AssetId env
-      , HasId CardCode EnemyId env
-      , HasId LocationId EnemyId env
-      , HasId LocationId InvestigatorId env
+    , ( HasId (Maybe AssetId) env CardCode
+      , HasId (Maybe LocationId) env LocationName
+      , HasId (Maybe OwnerId) env AssetId
+      , HasId (Maybe StoryAssetId) env CardCode
+      , HasId (Maybe StoryEnemyId) env CardCode
+      , HasId ActiveInvestigatorId env ()
+      , HasId LeadInvestigatorId env ()
+      , HasId CardCode env AssetId
+      , HasId CardCode env EnemyId
+      , HasId LocationId env EnemyId
+      , HasId LocationId env InvestigatorId
       )
     , ( HasList Enemy env ()
       , HasList Location env ()

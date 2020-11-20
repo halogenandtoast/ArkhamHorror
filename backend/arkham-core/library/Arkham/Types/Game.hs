@@ -378,56 +378,60 @@ instance HasRecord (Game queue) where
 instance HasCard InvestigatorId (Game queue) where
   getCard iid cardId g = getCard () cardId (getInvestigator iid g)
 
-instance HasId LeadInvestigatorId () (Game queue) where
-  getId _ = LeadInvestigatorId . view leadInvestigatorId
+instance HasId LeadInvestigatorId (Game queue) () where
+  getId _ = asks $ LeadInvestigatorId . view leadInvestigatorId
 
-instance HasId ActiveInvestigatorId () (Game queue) where
-  getId _ = ActiveInvestigatorId . view activeInvestigatorId
+instance HasId ActiveInvestigatorId (Game queue) () where
+  getId _ = asks $ ActiveInvestigatorId . view activeInvestigatorId
 
-instance HasId CardCode EnemyId (Game queue) where
-  getId eid = getCardCode . getEnemy eid
+instance HasId CardCode (Game queue) EnemyId where
+  getId eid = getCardCode <$> getEnemy eid
 
-instance HasId CardCode AssetId (Game queue) where
-  getId aid = getCardCode . getAsset aid
+instance HasId CardCode (Game queue) AssetId where
+  getId aid = getCardCode <$> getAsset aid
 
-instance HasId (Maybe OwnerId) AssetId (Game queue) where
-  getId aid = getId () . getAsset aid
+instance HasId (Maybe OwnerId) (Game queue) AssetId where
+  getId aid = getId =<< getAsset aid
 
-instance HasId (Maybe LocationId) AssetId (Game queue) where
-  getId aid = getId () . getAsset aid
+instance HasId (Maybe LocationId) (Game queue) AssetId where
+  getId aid = getId =<< getAsset aid
 
-instance HasId (Maybe LocationId) LocationName (Game queue) where
-  getId locationName =
-    maybe Nothing (Just . getId ())
+instance HasId (Maybe LocationId) (Game queue) LocationName where
+  getId locationName = do
+    g <- ask
+    asks
+      $ maybe Nothing (Just . flip runReader g . getId)
       . find ((== locationName) . getLocationName)
       . toList
       . view locations
 
-instance HasId (Maybe StoryAssetId) CardCode (Game queue) where
-  getId cardCode = (StoryAssetId <$>) . getId cardCode
+instance HasId (Maybe StoryAssetId) (Game queue) CardCode where
+  getId cardCode = fmap StoryAssetId <$> getId cardCode
 
-instance HasId (Maybe AssetId) CardCode (Game queue) where
+instance HasId (Maybe AssetId) (Game queue) CardCode where
   getId cardCode =
-    (fst <$>)
+    asks
+      $ (fst <$>)
       . find ((cardCode ==) . getCardCode . snd)
       . mapToList
       . view assets
 
-instance HasId (Maybe StoryEnemyId) CardCode (Game queue) where
-  getId cardCode = (StoryEnemyId <$>) . getId cardCode
+instance HasId (Maybe StoryEnemyId) (Game queue) CardCode where
+  getId cardCode = fmap StoryEnemyId <$> getId cardCode
 
-instance HasId (Maybe EnemyId) CardCode (Game queue) where
+instance HasId (Maybe EnemyId) (Game queue) CardCode where
   getId cardCode =
-    (fst <$>)
+    asks
+      $ (fst <$>)
       . find ((cardCode ==) . getCardCode . snd)
       . mapToList
       . view enemies
 
-instance HasId LocationId InvestigatorId (Game queue) where
-  getId = locationFor
+instance HasId LocationId (Game queue) InvestigatorId where
+  getId iid = locationFor iid <$> ask
 
-instance HasId LocationId EnemyId (Game queue) where
-  getId eid = getId () . getEnemy eid
+instance HasId LocationId (Game queue) EnemyId where
+  getId eid = getId =<< getEnemy eid
 
 instance HasCount (Game queue) ActsRemainingCount () where
   getCount _ = do
@@ -572,7 +576,7 @@ instance
   , HasSet EnemyId env Trait
   , HasSet Trait env LocationId
   , HasTokenValue env InvestigatorId
-  , HasId LocationId InvestigatorId env
+  , HasId LocationId env InvestigatorId
   )
   => HasTokenValue env (Game queue) where
   getTokenValue game iid token = case game ^. scenario of
@@ -620,10 +624,11 @@ instance HasList InPlayCard (Game queue) InvestigatorId where
   getList iid = do
     assetIds <- getSetList =<< getInvestigator iid
     assets' <- traverse getAsset assetIds
+    g <- ask
     pure $ map
       (\asset -> InPlayCard . PlayerCard $ lookupPlayerCard
         (getCardCode asset)
-        (CardId . unAssetId $ getId () asset)
+        (CardId . unAssetId $ runReader (getId asset) g)
       )
       assets'
 
@@ -717,12 +722,16 @@ instance HasSet ExhaustedAssetId (Game queue) InvestigatorId where
 
 instance HasSet ExhaustedEnemyId (Game queue) LocationId where
   getSet lid = do
+    g <- ask
     location <- getLocation lid <$> ask
     locationEnemyIds <- getSet @EnemyId location
     asks
       $ HashSet.map ExhaustedEnemyId
       . keysSet
-      . filterMap (\e -> getId () e `member` locationEnemyIds && isExhausted e)
+      . filterMap
+          (\e ->
+            runReader (getId e) g `member` locationEnemyIds && isExhausted e
+          )
       . view enemies
 
 instance HasSet AgendaId (Game queue) () where
@@ -1232,13 +1241,10 @@ instance HasSet EnemyId (Game queue) () where
   getSet _ = asks $ keysSet . view enemies
 
 instance HasSet UniqueEnemyId (Game queue) () where
-  getSet _ =
-    asks
-      $ setFromList
-      . map (UniqueEnemyId . getId ())
-      . filter isUnique
-      . toList
-      . view enemies
+  getSet _ = do
+    enemies' <- asks $ filter isUnique . toList . view enemies
+    enemyIds <- traverse getId enemies'
+    pure . setFromList $ map UniqueEnemyId enemyIds
 
 instance HasSet EnemyId (Game queue) LocationId where
   getSet lid = getSet =<< getLocation lid
@@ -2209,9 +2215,10 @@ runGameMessage msg g = case msg of
     case encounterCard <|> playerCard of
       Nothing -> error "missing"
       Just (PlayerCard card) -> do
+        treacheryId <- getId treachery
         unshiftMessage
           (AddToDiscard
-            (unOwnerId . fromJustNote "owner was not set" $ getId () treachery)
+            (unOwnerId . fromJustNote "owner was not set" $ treacheryId)
             card
           )
         pure $ g & treacheries %~ deleteMap tid

@@ -75,7 +75,7 @@ toPlayerCardWithBehavior pc = builder pc
 
 deriving anyclass instance (HasSet HandCardId env InvestigatorId, HasQueue env) => RunMessage env PlayerCard'
 deriving anyclass instance
-  ( HasId CardCode EnemyId env
+  ( HasId CardCode env EnemyId
   , HasSet Trait env EnemyId
   , HasSet AssetId env (InvestigatorId, UseType)
   , HasCount env ActionTakenCount InvestigatorId
@@ -134,10 +134,10 @@ instance (HasQueue env) => RunMessage env CloseCall2 where
     DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
     pure $ CloseCall2 pc'
 
-instance (HasId CardCode EnemyId env, HasSet Trait env EnemyId) => HasActions env CloseCall2 where
+instance (HasId CardCode env EnemyId, HasSet Trait env EnemyId) => HasActions env CloseCall2 where
   getActions iid (AfterEnemyEvaded You eid) (CloseCall2 pc) = do
     traits' <- getSet eid
-    cardCode <- asks (getId eid)
+    cardCode <- getId eid
     pure
       [ InitiatePlayCard iid (getCardId pc) (Just $ EnemyTarget eid) False
       | Elite `notMember` traits' && cardCode `elem` keys allEncounterCards

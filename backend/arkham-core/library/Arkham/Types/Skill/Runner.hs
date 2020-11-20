@@ -11,5 +11,5 @@ type SkillRunner env
     , HasSet ConnectedLocationId env LocationId
     , HasSet BlockedLocationId env ()
     , HasSet EnemyId env InvestigatorId
-    , HasId LocationId InvestigatorId env
+    , HasId LocationId env InvestigatorId
     )

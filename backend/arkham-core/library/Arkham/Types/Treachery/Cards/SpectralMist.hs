@@ -14,9 +14,9 @@ newtype SpectralMist = SpectralMist Attrs
 spectralMist :: TreacheryId -> a -> SpectralMist
 spectralMist uuid _ = SpectralMist $ baseAttrs uuid "81025"
 
-instance HasId LocationId InvestigatorId env => HasModifiersFor env SpectralMist where
+instance HasId LocationId env InvestigatorId => HasModifiersFor env SpectralMist where
   getModifiersFor (SkillTestSource iid _ _) _ (SpectralMist Attrs {..}) = do
-    lid <- asks $ getId @LocationId iid
+    lid <- getId @LocationId iid
     pure [ Difficulty 1 | Just lid == treacheryAttachedLocation ]
   getModifiersFor _ _ _ = pure []
 

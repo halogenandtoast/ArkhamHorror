@@ -18,7 +18,7 @@ whatHaveYouDone =
 instance HasActions env WhatHaveYouDone where
   getActions i window (WhatHaveYouDone x) = getActions i window x
 
-instance (ActRunner env) => RunMessage env WhatHaveYouDone where
+instance ActRunner env => RunMessage env WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId -> do
       leadInvestigatorId <- getLeadInvestigatorId

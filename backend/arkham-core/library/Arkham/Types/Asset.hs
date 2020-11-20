@@ -106,7 +106,7 @@ data Asset
 
 deriving anyclass instance ActionRunner env => HasActions env Asset
 deriving anyclass instance
-  ( HasId LocationId InvestigatorId env
+  ( HasId LocationId env InvestigatorId
   , HasCount env ResourceCount InvestigatorId
   , HasCount env CardCount InvestigatorId
   , HasCount env AssetCount (InvestigatorId, [Trait])
@@ -157,14 +157,14 @@ instance HasCardCode Asset where
 instance HasTraits Asset where
   getTraits = assetTraits . assetAttrs
 
-instance HasId AssetId () Asset where
-  getId _ = assetId . assetAttrs
+instance HasId AssetId env Asset where
+  getId = getId . assetAttrs
 
-instance HasId (Maybe OwnerId) () Asset where
-  getId _ = (OwnerId <$>) . assetInvestigator . assetAttrs
+instance HasId (Maybe OwnerId) env Asset where
+  getId = pure . (OwnerId <$>) . assetInvestigator . assetAttrs
 
-instance HasId (Maybe LocationId) () Asset where
-  getId _ = assetLocation . assetAttrs
+instance HasId (Maybe LocationId) env Asset where
+  getId = pure . assetLocation . assetAttrs
 
 instance HasCount env DoomCount Asset where
   getCount = pure . DoomCount . assetDoom . assetAttrs

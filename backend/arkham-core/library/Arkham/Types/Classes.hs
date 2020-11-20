@@ -37,7 +37,6 @@ import ClassyPrelude
 import Control.Monad.Fail
 import qualified Data.HashSet as HashSet
 import GHC.Generics
-import GHC.Stack
 import Lens.Micro hiding (to)
 import Lens.Micro.Extras
 
@@ -146,13 +145,13 @@ pairInvestigatorIdsForWindow
   :: ( MonadReader env m
      , HasSet InvestigatorId env ()
      , HasSet ConnectedLocationId env LocationId
-     , HasId LocationId InvestigatorId env
+     , HasId LocationId env InvestigatorId
      )
   => InvestigatorId
   -> m [(InvestigatorId, Window.Who)]
 pairInvestigatorIdsForWindow iid = do
   investigatorIds <- getSetList @InvestigatorId ()
-  lid <- asks (getId iid)
+  lid <- getId iid
   connectedLocationIds <- HashSet.map unConnectedLocationId <$> getSet lid
   for investigatorIds $ \iid2 -> do
     lid2 <- asks (getId iid2)
@@ -168,7 +167,7 @@ checkWindows
   :: ( MonadReader env m
      , HasSet InvestigatorId env ()
      , HasSet ConnectedLocationId env LocationId
-     , HasId LocationId InvestigatorId env
+     , HasId LocationId env InvestigatorId
      )
   => InvestigatorId
   -> (Who -> m [Window])
@@ -197,8 +196,8 @@ class (Hashable set, Eq set) => HasSet set env a where
 class HasList list env a where
   getList :: (MonadReader env m) => a -> m [list]
 
-class HasId c b a where
-  getId :: HasCallStack => b -> a -> c
+class HasId id env a where
+  getId :: (MonadReader env m) => a -> m id
 
 class HasCount env count a where
   getCount :: (MonadReader env m) => a -> m count
@@ -262,14 +261,14 @@ type ActionRunner env
     , HasCount env PlayerCount ()
     , HasCount env ResourceCount InvestigatorId
     , HasCount env SpendableClueCount InvestigatorId
-    , HasId (Maybe LocationId) AssetId env
-    , HasId (Maybe OwnerId) AssetId env
-    , HasId (Maybe StoryAssetId) CardCode env
-    , HasId (Maybe StoryEnemyId) CardCode env
-    , HasId CardCode EnemyId env
-    , HasId LeadInvestigatorId () env
-    , HasId LocationId InvestigatorId env
-    , HasId LocationId EnemyId env
+    , HasId (Maybe LocationId) env AssetId
+    , HasId (Maybe OwnerId) env AssetId
+    , HasId (Maybe StoryAssetId) env CardCode
+    , HasId (Maybe StoryEnemyId) env CardCode
+    , HasId CardCode env EnemyId
+    , HasId LeadInvestigatorId env ()
+    , HasId LocationId env InvestigatorId
+    , HasId LocationId env EnemyId
     , HasList DiscardedPlayerCard env InvestigatorId
     , HasList HandCard env InvestigatorId
     , HasList InPlayCard env InvestigatorId

@@ -24,9 +24,9 @@ instance HasActions env ACreatureOfTheBayou where
   getActions i window (ACreatureOfTheBayou x) = getActions i window x
 
 getRougarou
-  :: (MonadReader env m, HasId (Maybe StoryEnemyId) CardCode env)
+  :: (MonadReader env m, HasId (Maybe StoryEnemyId) env CardCode)
   => m (Maybe EnemyId)
-getRougarou = asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))
+getRougarou = fmap unStoryEnemyId <$> getId (CardCode "81028")
 
 instance AgendaRunner env => RunMessage env ACreatureOfTheBayou where
   runMessage msg a@(ACreatureOfTheBayou attrs@Attrs {..}) = case msg of
@@ -51,11 +51,11 @@ instance AgendaRunner env => RunMessage env ACreatureOfTheBayou where
         Just eid -> do
           leadInvestigatorId <- getLeadInvestigatorId
           locations <- getLocationSet
-          nonBayouLocations <- asks $ setToList . difference locations . getSet
+          nonBayouLocations <- setToList . difference locations <$> getSet
             [Bayou]
           nonBayouLocationsWithClueCounts <- sortOn snd <$> for
             nonBayouLocations
-            (\lid -> asks $ (lid, ) . unClueCount . getCount lid)
+            (\lid -> (lid, ) . unClueCount <$> getCount lid)
           let
             moveMessage = case nonBayouLocationsWithClueCounts of
               [] -> error "there has to be such a location"

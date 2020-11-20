@@ -23,7 +23,7 @@ instance HasActions env TheCurseSpreads where
   getActions i window (TheCurseSpreads x) = getActions i window x
 
 getRougarou
-  :: (MonadReader env m, HasId (Maybe StoryEnemyId) CardCode env)
+  :: (MonadReader env m, HasId (Maybe StoryEnemyId) env CardCode)
   => m (Maybe EnemyId)
 getRougarou = asks (fmap unStoryEnemyId <$> getId (CardCode "81028"))
 

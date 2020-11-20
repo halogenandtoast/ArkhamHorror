@@ -22,10 +22,10 @@ type AssetRunner env
     , HasCount env HorrorCount InvestigatorId
     , HasCount env ResourceCount InvestigatorId
     , HasCount env SanityDamageCount EnemyId
-    , HasId (Maybe StoryEnemyId) CardCode env
-    , HasId ActiveInvestigatorId () env
-    , HasId CardCode EnemyId env
-    , HasId LocationId InvestigatorId env
+    , HasId (Maybe StoryEnemyId) env CardCode
+    , HasId ActiveInvestigatorId env ()
+    , HasId CardCode env EnemyId
+    , HasId LocationId env InvestigatorId
     , HasSet AccessibleLocationId env LocationId
     , HasSet AssetId env InvestigatorId
     , HasSet BlockedLocationId env ()

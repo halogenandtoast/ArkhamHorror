@@ -26,8 +26,8 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "event"
 
-instance HasId EventId () Attrs where
-  getId _ Attrs {..} = eventId
+instance HasId EventId env Attrs where
+  getId = pure . eventId
 
 unshiftEffect
   :: (HasQueue env, MonadReader env m, MonadIO m) => Attrs -> Target -> m ()

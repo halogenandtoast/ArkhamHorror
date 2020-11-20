@@ -16,7 +16,7 @@ type EventRunner env
     , HasCount env ClueCount InvestigatorId
     , HasCount env ClueCount LocationId
     , HasCount env PlayerCount ()
-    , HasId LocationId InvestigatorId env
+    , HasId LocationId env InvestigatorId
     , HasList DiscardableHandCard env InvestigatorId
     , HasRoundHistory env
     , HasSet AssetId env InvestigatorId

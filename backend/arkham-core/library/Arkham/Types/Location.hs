@@ -169,8 +169,8 @@ instance HasSet ConnectedLocationId env Location where
       . locationConnectedLocations
       . locationAttrs
 
-instance HasId LocationId () Location where
-  getId _ = locationId . locationAttrs
+instance HasId LocationId env Location where
+  getId = getId . locationAttrs
 
 instance IsLocation Location where
   isBlocked = isBlocked . locationAttrs

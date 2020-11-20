@@ -24,10 +24,10 @@ type InvestigatorRunner env
     , HasCount env ActionTakenCount InvestigatorId
     , HasCount env AssetCount (InvestigatorId, [Trait])
     , HasCount env ClueCount LocationId
-    , HasId (Maybe AssetId) CardCode env
-    , HasId CardCode AssetId env
-    , HasId CardCode EnemyId env
-    , HasId LocationId InvestigatorId env
+    , HasId (Maybe AssetId) env CardCode
+    , HasId CardCode env AssetId
+    , HasId CardCode env EnemyId
+    , HasId LocationId env InvestigatorId
     , HasModifiersFor env env
     , HasQueue env
     , HasSet AdvanceableActId env ()

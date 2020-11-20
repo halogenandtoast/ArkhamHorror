@@ -18,14 +18,14 @@ cursedSwamp :: TreacheryId -> a -> CursedSwamp
 cursedSwamp uuid _ = CursedSwamp $ baseAttrs uuid "81024"
 
 instance
-  ( HasId LocationId InvestigatorId env
+  ( HasId LocationId env InvestigatorId
   , HasSet Trait env LocationId
   )
   => HasModifiersFor env CursedSwamp where
   getModifiersFor (SkillTestSource _ source _) (InvestigatorTarget iid) (CursedSwamp attrs)
     | isSource attrs source
     = do
-      locationId <- asks $ getId @LocationId iid
+      locationId <- getId @LocationId iid
       isBayou <- member Bayou <$> getSet locationId
       pure [ CannotCommitCards | isBayou ]
   getModifiersFor _ _ _ = pure []

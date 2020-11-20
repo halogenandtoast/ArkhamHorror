@@ -10,10 +10,10 @@ type ActRunner env
     , HasCount env DamageCount EnemyId
     , HasCount env PlayerCount ()
     , HasCount env SpendableClueCount InvestigatorId
-    , HasId (Maybe LocationId) LocationName env
-    , HasId (Maybe StoryEnemyId) CardCode env
-    , HasId CardCode EnemyId env
-    , HasId LeadInvestigatorId () env
+    , HasId (Maybe LocationId) env LocationName
+    , HasId (Maybe StoryEnemyId) env CardCode
+    , HasId CardCode env EnemyId
+    , HasId LeadInvestigatorId env ()
     , HasRecord env
     , HasSet AssetId env EnemyId
     , HasSet EnemyId env LocationId

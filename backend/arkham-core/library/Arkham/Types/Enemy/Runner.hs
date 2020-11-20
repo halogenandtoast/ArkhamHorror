@@ -13,20 +13,20 @@ import ClassyPrelude
 
 type EnemyRunner env
   = ( HasQueue env
-    , HasStep AgendaStep env
     , HasCount env CardCount InvestigatorId
     , HasCount env PlayerCount ()
     , HasCount env RemainingSanity InvestigatorId
-    , HasId LeadInvestigatorId () env
-    , HasId LocationId InvestigatorId env
+    , HasId (Maybe LocationId) env LocationName
+    , HasId LeadInvestigatorId env ()
+    , HasId LocationId env InvestigatorId
     , HasModifiersFor env env
     , HasSet ClosestLocationId env (LocationId, LocationId)
     , HasSet ClosestLocationId env (LocationId, Prey)
     , HasSet ConnectedLocationId env LocationId
     , HasSet EmptyLocationId env ()
     , HasSet FarthestLocationId env (InvestigatorId, EmptyLocation)
-    , HasSet FarthestLocationId env [InvestigatorId]
     , HasSet FarthestLocationId env InvestigatorId
+    , HasSet FarthestLocationId env [InvestigatorId]
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env LocationId
     , HasSet LocationId env ()
@@ -36,5 +36,5 @@ type EnemyRunner env
     , HasSet Trait env EnemyId
     , HasSet Trait env LocationId
     , HasSource ForSkillTest env
-    , HasId (Maybe LocationId) LocationName env
+    , HasStep AgendaStep env
     )

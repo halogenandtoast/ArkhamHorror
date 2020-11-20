@@ -17,9 +17,9 @@ litaChantler uuid = LitaChantler $ (baseAttrs uuid "01117")
   , assetSanity = Just 3
   }
 
-instance HasId LocationId InvestigatorId env => HasModifiersFor env LitaChantler where
+instance HasId LocationId env InvestigatorId => HasModifiersFor env LitaChantler where
   getModifiersFor _ (InvestigatorTarget iid) (LitaChantler Attrs {..}) = do
-    locationId <- asks $ getId @LocationId iid
+    locationId <- getId @LocationId iid
     case assetInvestigator of
       Nothing -> pure []
       Just ownerId -> do

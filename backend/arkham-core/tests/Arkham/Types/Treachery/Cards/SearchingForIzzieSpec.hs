@@ -13,8 +13,8 @@ spec = describe "Searching for Izzie" $ do
     (location1, location2) <- testConnectedLocations id id
     game <- runGameTest
       investigator
-      [ PlacedLocation (getId () location1)
-      , PlacedLocation (getId () location2)
+      [ PlacedLocation (getLocationId location1)
+      , PlacedLocation (getLocationId location2)
       , loadDeck investigator [searchingForIzzie]
       , drawCards investigator 1
       ]

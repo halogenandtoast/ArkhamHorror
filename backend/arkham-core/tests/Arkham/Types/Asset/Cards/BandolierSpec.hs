@@ -24,4 +24,4 @@ spec = describe "Bandolier" $ do
           ^? Investigator.slots
           . ix HandSlot
     slots `shouldSatisfy` elem
-      (TraitRestrictedSlot (AssetSource $ getId () bandolier) Weapon Nothing)
+      (TraitRestrictedSlot (toSource bandolier) Weapon Nothing)

@@ -7,6 +7,7 @@ module Arkham.Types.Location
   , isRevealed
   , Location(..)
   , getLocationName
+  , getLocationId
   )
 where
 
@@ -170,7 +171,10 @@ instance HasSet ConnectedLocationId env Location where
       . locationAttrs
 
 instance HasId LocationId env Location where
-  getId = getId . locationAttrs
+  getId = pure . getLocationId
+
+getLocationId :: Location -> LocationId
+getLocationId = locationId . locationAttrs
 
 instance IsLocation Location where
   isBlocked = isBlocked . locationAttrs

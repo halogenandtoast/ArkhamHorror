@@ -3,6 +3,7 @@ module Arkham.Types.Agenda
   ( Agenda(..)
   , lookupAgenda
   , baseAgenda
+  , getAgendaId
   )
 where
 
@@ -41,8 +42,11 @@ instance HasAbilities Agenda where
 instance HasCount DoomCount env Agenda where
   getCount = pure . DoomCount . agendaDoom . agendaAttrs
 
+getAgendaId :: Agenda -> AgendaId
+getAgendaId = agendaId . agendaAttrs
+
 instance HasId AgendaId env Agenda where
-  getId = getId . agendaAttrs
+  getId = pure . getAgendaId
 
 instance HasStep AgendaStep Agenda where
   getStep = AgendaStep . agendaNumber . agendaAttrs

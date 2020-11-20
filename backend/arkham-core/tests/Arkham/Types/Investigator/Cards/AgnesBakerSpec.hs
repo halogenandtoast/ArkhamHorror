@@ -17,10 +17,14 @@ spec = describe "Agnes Baker" $ do
       game <-
         runGameTest
           agnesBaker
-          [ PlacedLocation (getId () location)
+          [ PlacedLocation (getLocationId location)
           , enemySpawn location enemy
           , moveTo agnesBaker location
-          , InvestigatorDirectDamage (getId () agnesBaker) TestSource 0 1
+          , InvestigatorDirectDamage
+            (getInvestigatorId agnesBaker)
+            TestSource
+            0
+            1
           ]
           ((enemies %~ insertEntity enemy)
           . (locations %~ insertEntity location)
@@ -43,9 +47,13 @@ spec = describe "Agnes Baker" $ do
         runGameTest
           agnesBaker
           [ SetTokens [ElderSign]
-          , PlacedLocation (getId () location)
+          , PlacedLocation (getLocationId location)
           , moveTo agnesBaker location
-          , InvestigatorDirectDamage (getId () agnesBaker) TestSource 0 2
+          , InvestigatorDirectDamage
+            (getInvestigatorId agnesBaker)
+            TestSource
+            0
+            2
           , beginSkillTest agnesBaker SkillIntellect 4
           ]
           ((scenario ?~ scenario') . (locations %~ insertEntity location))
@@ -53,7 +61,7 @@ spec = describe "Agnes Baker" $ do
         >>= runGameTestOnlyOption "apply results"
       game `shouldSatisfy` hasProcessedMessage
         (PassedSkillTest
-          (getId () agnesBaker)
+          (getInvestigatorId agnesBaker)
           Nothing
           TestSource
           (SkillTestInitiatorTarget TestTarget)

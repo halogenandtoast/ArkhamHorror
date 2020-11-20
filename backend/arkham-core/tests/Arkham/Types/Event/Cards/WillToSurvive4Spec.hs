@@ -26,7 +26,7 @@ spec = describe "Will to Survive (4)" $ do
       >>= runGameTestOnlyOption "apply results"
     game `shouldSatisfy` hasProcessedMessage
       (PassedSkillTest
-        (getId () investigator)
+        (getInvestigatorId investigator)
         Nothing
         TestSource
         (SkillTestInitiatorTarget TestTarget)
@@ -42,7 +42,7 @@ spec = describe "Will to Survive (4)" $ do
         investigator
         [ SetTokens [AutoFail]
         , playEvent investigator willToSurvive4
-        , ChooseEndTurn (getId () investigator)
+        , ChooseEndTurn (getInvestigatorId investigator)
         , beginSkillTest investigator SkillIntellect 3
         ]
         ((scenario ?~ scenario') . (events %~ insertEntity willToSurvive4))
@@ -50,7 +50,7 @@ spec = describe "Will to Survive (4)" $ do
       >>= runGameTestOnlyOption "apply results"
     game `shouldSatisfy` hasProcessedMessage
       (FailedSkillTest
-        (getId () investigator)
+        (getInvestigatorId investigator)
         Nothing
         TestSource
         (SkillTestInitiatorTarget TestTarget)

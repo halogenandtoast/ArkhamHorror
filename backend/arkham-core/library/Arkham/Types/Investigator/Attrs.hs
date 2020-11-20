@@ -562,9 +562,6 @@ getPossibleSkillTypeChoices skillType attrs = do
     | toReplace == skillType = toUse : skills
   applyModifier _ skills = skills
 
-instance HasId InvestigatorId env Attrs where
-  getId = pure . investigatorId
-
 instance HasModifiersFor env Attrs where
   getModifiersFor = noModifiersFor
 

@@ -36,7 +36,7 @@ spec = describe "Lucky! (2)" $ do
       >>= runGameTestOnlyOption "apply results"
     game `shouldSatisfy` hasProcessedMessage
       (PassedSkillTest
-        (getId () investigator)
+        (getInvestigatorId investigator)
         Nothing
         TestSource
         (SkillTestInitiatorTarget TestTarget)
@@ -71,7 +71,7 @@ spec = describe "Lucky! (2)" $ do
       >>= runGameTestOnlyOption "apply results"
     game `shouldSatisfy` hasProcessedMessage
       (FailedSkillTest
-        (getId () investigator)
+        (getInvestigatorId investigator)
         Nothing
         TestSource
         (SkillTestInitiatorTarget TestTarget)

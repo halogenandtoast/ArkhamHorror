@@ -52,12 +52,12 @@ testScenario cardCode f =
 
 insertEntity
   :: (HasId k () v, Eq k, Hashable k) => v -> HashMap k v -> HashMap k v
-insertEntity a = insertMap (getId () a) a
+insertEntity a = insertMap (getId a ()) a
 
 buildEvent :: MonadIO m => CardCode -> Investigator -> m Event
 buildEvent cardCode investigator = do
   eventId <- liftIO $ EventId <$> nextRandom
-  pure $ lookupEvent cardCode (getId () investigator) eventId
+  pure $ lookupEvent cardCode (getInvestigatorId investigator) eventId
 
 buildEnemy :: MonadIO m => CardCode -> m Enemy
 buildEnemy cardCode = do
@@ -177,14 +177,15 @@ testUnconnectedLocations f1 f2 = do
   pure (location1, location2)
 
 getActionsOf
-  :: (HasActions GameInternal a, TestEntity a)
+  :: (HasActions GameInternal a, TestEntity a, MonadIO m)
   => GameExternal
   -> Investigator
   -> Window
   -> a
   -> m [Message]
-getActionsOf game investigator window e =
-  withGame game (getActions (getId () investigator) window (updated game e))
+getActionsOf game investigator window e = withGame
+  game
+  (getActions (getInvestigatorId investigator) window (updated game e))
 
 chaosBagTokensOf :: Game queue -> [Token]
 chaosBagTokensOf g = g ^. chaosBag . ChaosBag.chaosBagTokensLens

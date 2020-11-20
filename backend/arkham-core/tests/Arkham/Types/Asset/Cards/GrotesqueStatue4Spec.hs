@@ -39,7 +39,7 @@ spec = describe "Grotesque Statue (4)" $ do
 
       game `shouldSatisfy` hasProcessedMessage
         (PassedSkillTest
-          (getId () investigator)
+          (getInvestigatorId investigator)
           Nothing
           TestSource
           (SkillTestInitiatorTarget TestTarget)

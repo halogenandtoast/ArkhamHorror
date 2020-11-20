@@ -104,7 +104,7 @@ instance InvestigatorRunner env => RunMessage env Investigator where
   runMessage msg i = defaultRunMessage msg i
 
 instance HasId InvestigatorId () Investigator where
-  getId = getId . investigatorAttrs
+  getId = pure . getInvestigatorId
 
 instance HasList DiscardedPlayerCard env Investigator where
   getList =
@@ -270,20 +270,12 @@ getIsPrey (LowestSkill skillType) i = do
 getIsPrey LowestRemainingHealth i = do
   remainingHealth <- getRemainingHealth i
   lowestRemainingHealth <-
-    fromMaybe 100
-    . minimumMay
-    . map unRemainingHealth
-    . setToList
-    <$> getSet ()
+    fromMaybe 100 . minimumMay . map unRemainingHealth . setToList <$> getSet ()
   pure $ lowestRemainingHealth == remainingHealth
 getIsPrey LowestRemainingSanity i = do
   remainingSanity <- getRemainingSanity i
   lowestRemainingSanity <-
-    fromMaybe 100
-    . minimumMay
-    . map unRemainingSanity
-    . setToList
-    <$> getSet ()
+    fromMaybe 100 . minimumMay . map unRemainingSanity . setToList <$> getSet ()
   pure $ lowestRemainingSanity == remainingSanity
 getIsPrey (Bearer bid) i = pure $ unBearerId bid == unInvestigatorId
   (investigatorId $ investigatorAttrs i)

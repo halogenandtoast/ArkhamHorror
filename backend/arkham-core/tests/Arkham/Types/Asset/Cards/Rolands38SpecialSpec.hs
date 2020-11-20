@@ -22,7 +22,7 @@ spec = describe "Roland's .39 Special" $ do
     game <- runGameTest
       investigator
       [ SetTokens [Zero]
-      , PlacedLocation (getId () location)
+      , PlacedLocation (getLocationId location)
       , enemySpawn location enemy
       , playAsset investigator rolands38Special
       , moveTo investigator location
@@ -55,7 +55,7 @@ spec = describe "Roland's .39 Special" $ do
         game <- runGameTest
           investigator
           [ SetTokens [Zero]
-          , PlacedLocation (getId () location)
+          , PlacedLocation (getLocationId location)
           , enemySpawn location enemy
           , playAsset investigator rolands38Special
           , moveTo investigator location

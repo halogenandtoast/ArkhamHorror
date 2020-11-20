@@ -21,7 +21,11 @@ spec = describe "Duke" $ do
       scenario' <- testScenario "00000" id
       game <- runGameTest
         investigator
-        [SetTokens [Zero], playAsset investigator duke]
+        [ SetTokens [Zero]
+        , playAsset investigator duke
+        , enemySpawn location enemy
+        , moveTo investigator location
+        ]
         ((enemies %~ insertEntity enemy)
         . (locations %~ insertEntity location)
         . (scenario ?~ scenario')
@@ -30,9 +34,7 @@ spec = describe "Duke" $ do
       let dukeAsset = game ^?! assets . to toList . ix 0
       [fightAction, _] <- getActionsOf game investigator NonFast dukeAsset
       game' <-
-        runGameTestMessages
-          game
-          [enemySpawn location enemy, moveTo investigator location, fightAction]
+        runGameTestMessages game [fightAction]
         >>= runGameTestOnlyOption "Fight enemy"
         >>= runGameTestOnlyOption "Start skill test"
         >>= runGameTestOnlyOption "Apply Results"
@@ -72,8 +74,8 @@ spec = describe "Duke" $ do
           scenario' <- testScenario "00000" id
           game <- runGameTest
             investigator
-            [ PlacedLocation (getId () location1)
-            , PlacedLocation (getId () location2)
+            [ PlacedLocation (getLocationId location1)
+            , PlacedLocation (getLocationId location2)
             , SetTokens [Zero]
             , playAsset investigator duke
             ]
@@ -84,7 +86,7 @@ spec = describe "Duke" $ do
             )
           let dukeAsset = game ^?! assets . to toList . ix 0
           [investigateAction] <- toInternalGame game >>= runReaderT
-            (getActions (getId () investigator) NonFast dukeAsset)
+            (getActions (getInvestigatorId investigator) NonFast dukeAsset)
           game' <-
             runGameTestMessages
               game

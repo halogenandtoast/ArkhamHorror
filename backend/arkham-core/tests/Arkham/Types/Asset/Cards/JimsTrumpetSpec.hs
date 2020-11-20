@@ -105,8 +105,8 @@ spec = describe "Jim's Trumpet" $ do
         runGameTest
           investigator
           [ SetTokens [Skull]
-          , PlacedLocation (getId () location1)
-          , PlacedLocation (getId () location2)
+          , PlacedLocation (getLocationId location1)
+          , PlacedLocation (getLocationId location2)
           , playAsset investigator jimsTrumpet
           , moveTo investigator location1
           , moveTo investigator2 location2
@@ -138,8 +138,8 @@ spec = describe "Jim's Trumpet" $ do
         runGameTest
           investigator
           [ SetTokens [Skull]
-          , PlacedLocation (getId () location1)
-          , PlacedLocation (getId () location2)
+          , PlacedLocation (getLocationId location1)
+          , PlacedLocation (getLocationId location2)
           , playAsset investigator jimsTrumpet
           , moveTo investigator location1
           , moveTo investigator2 location2

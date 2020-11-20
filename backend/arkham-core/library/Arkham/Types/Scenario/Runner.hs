@@ -11,12 +11,12 @@ import Arkham.Types.Target
 import Arkham.Types.Trait
 
 type ScenarioRunner env
-  = ( HasCount env DoomCount ()
-    , HasCount env DoomCount EnemyId
-    , HasCount env EnemyCount [Trait]
-    , HasCount env PlayerCount ()
-    , HasCount env XPCount ()
-    , HasCount env EnemyCount (InvestigatorLocation, [Trait])
+  = ( HasCount DoomCount env ()
+    , HasCount DoomCount env EnemyId
+    , HasCount EnemyCount env [Trait]
+    , HasCount PlayerCount env ()
+    , HasCount XPCount env ()
+    , HasCount EnemyCount env (InvestigatorLocation, [Trait])
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId

@@ -31,7 +31,7 @@ theDevourerBelow difficulty =
       ]
     }
 
-instance (HasTokenValue env InvestigatorId, HasCount env EnemyCount [Trait]) => HasTokenValue env TheDevourerBelow where
+instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env [Trait]) => HasTokenValue env TheDevourerBelow where
   getTokenValue (TheDevourerBelow attrs) iid = \case
     Skull -> if isEasyStandard attrs
       then do

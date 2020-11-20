@@ -28,7 +28,7 @@ daisyWalkerParallel = DaisyWalkerParallel
     , agility = 2
     }
 
-instance HasCount env AssetCount (InvestigatorId, [Trait]) => HasModifiersFor env DaisyWalkerParallel where
+instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor env DaisyWalkerParallel where
   getModifiersFor source target@(InvestigatorTarget iid) (DaisyWalkerParallel attrs@Attrs {..})
     | iid == investigatorId
     = do

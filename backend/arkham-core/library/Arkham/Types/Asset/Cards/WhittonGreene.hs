@@ -32,7 +32,7 @@ instance HasActions env WhittonGreene where
       pure [ ActivateCardAbilityAction iid ability | not (assetExhausted a) ]
   getActions iid window (WhittonGreene attrs) = getActions iid window attrs
 
-instance HasCount env AssetCount (InvestigatorId, [Trait]) => HasModifiersFor env WhittonGreene where
+instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor env WhittonGreene where
   getModifiersFor _ (InvestigatorTarget iid) (WhittonGreene a) | ownedBy a iid =
     do
       active <- (> 0) . unAssetCount <$> getCount (iid, [Tome, Relic])

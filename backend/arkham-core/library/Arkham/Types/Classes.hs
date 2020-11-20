@@ -199,7 +199,7 @@ class HasList list env a where
 class HasId id env a where
   getId :: (MonadReader env m) => a -> m id
 
-class HasCount env count a where
+class HasCount count env a where
   getCount :: (MonadReader env m) => a -> m count
 
 class HasStats env a where
@@ -252,15 +252,15 @@ instance HasVictoryPoints PlayerCard where
 type ActionRunner env
   = ( HasQueue env
     , HasActions env ActionType
-    , HasCount env AssetCount (InvestigatorId, [Trait])
-    , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
-    , HasCount env ActionTakenCount InvestigatorId
-    , HasCount env CardCount InvestigatorId
-    , HasCount env ClueCount LocationId
-    , HasCount env HorrorCount InvestigatorId
-    , HasCount env PlayerCount ()
-    , HasCount env ResourceCount InvestigatorId
-    , HasCount env SpendableClueCount InvestigatorId
+    , HasCount AssetCount env (InvestigatorId, [Trait])
+    , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+    , HasCount ActionTakenCount env InvestigatorId
+    , HasCount CardCount env InvestigatorId
+    , HasCount ClueCount env LocationId
+    , HasCount HorrorCount env InvestigatorId
+    , HasCount PlayerCount env ()
+    , HasCount ResourceCount env InvestigatorId
+    , HasCount SpendableClueCount env InvestigatorId
     , HasId (Maybe LocationId) env AssetId
     , HasId (Maybe OwnerId) env AssetId
     , HasId (Maybe StoryAssetId) env CardCode

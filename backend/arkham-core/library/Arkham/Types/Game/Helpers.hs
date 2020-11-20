@@ -29,7 +29,7 @@ getInvestigatorModifiers
 getInvestigatorModifiers iid source =
   ask >>= getModifiersFor source (InvestigatorTarget iid)
 
-getXp :: (HasCount env XPCount (), MonadReader env m) => m Int
+getXp :: (HasCount XPCount env (), MonadReader env m) => m Int
 getXp = unXPCount <$> getCount ()
 
 getLeadInvestigatorId
@@ -40,11 +40,11 @@ getInvestigatorIds
   :: (HasSet InvestigatorId env (), MonadReader env m) => m [InvestigatorId]
 getInvestigatorIds = getSetList ()
 
-getPlayerCount :: (HasCount env PlayerCount (), MonadReader env m) => m Int
+getPlayerCount :: (HasCount PlayerCount env (), MonadReader env m) => m Int
 getPlayerCount = unPlayerCount <$> getCount ()
 
 getPlayerCountValue
-  :: (HasCount env PlayerCount (), MonadReader env m) => GameValue Int -> m Int
+  :: (HasCount PlayerCount env (), MonadReader env m) => GameValue Int -> m Int
 getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount
 
 getLocationSet
@@ -52,7 +52,7 @@ getLocationSet
 getLocationSet = getSet ()
 
 getSpendableClueCount
-  :: (MonadReader env m, HasCount env SpendableClueCount InvestigatorId)
+  :: (MonadReader env m, HasCount SpendableClueCount env InvestigatorId)
   => [InvestigatorId]
   -> m Int
 getSpendableClueCount investigatorIds =
@@ -60,7 +60,7 @@ getSpendableClueCount investigatorIds =
 
 getHasActionsRemaining
   :: ( MonadReader env m
-     , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
+     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      )
   => InvestigatorId
   -> Maybe Action
@@ -73,7 +73,7 @@ getHasActionsRemaining iid maction traits =
 -- TODO: canFight _ a@Attrs {..} = canDo Action.Fight a
 getCanFight
   :: ( MonadReader env m
-     , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
+     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasSet InvestigatorId env EnemyId
      , HasSet Keyword env EnemyId
      , HasId LocationId env InvestigatorId
@@ -95,7 +95,7 @@ getCanFight eid iid = do
 
 getCanEngage
   :: ( MonadReader env m
-     , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
+     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasSet InvestigatorId env EnemyId
      , HasId LocationId env InvestigatorId
      , HasId LocationId env EnemyId
@@ -112,7 +112,7 @@ getCanEngage eid iid = do
 
 getCanEvade
   :: ( MonadReader env m
-     , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
+     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasSet InvestigatorId env EnemyId
      , HasModifiersFor env env
      )
@@ -132,7 +132,7 @@ getCanEvade eid iid = do
 
 getCanMoveTo
   :: ( MonadReader env m
-     , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
+     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasSet AccessibleLocationId env LocationId
      , HasId LocationId env InvestigatorId
      , HasModifiersFor env env
@@ -157,7 +157,7 @@ getCanMoveTo lid iid = do
 
 getCanInvestigate
   :: ( MonadReader env m
-     , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
+     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasId LocationId env InvestigatorId
      )
   => LocationId
@@ -172,7 +172,7 @@ getCanInvestigate lid iid = do
   pure $ lid == locationId && hasActionsRemaining
 
 getResourceCount
-  :: (MonadReader env m, HasCount env ResourceCount InvestigatorId)
+  :: (MonadReader env m, HasCount ResourceCount env InvestigatorId)
   => InvestigatorId
   -> m Int
 getResourceCount iid = unResourceCount <$> getCount iid
@@ -196,7 +196,7 @@ getInPlayOf
 getInPlayOf iid = map unInPlayCard <$> getList iid
 
 getCardCount
-  :: (MonadReader env m, HasCount env CardCount InvestigatorId)
+  :: (MonadReader env m, HasCount CardCount env InvestigatorId)
   => InvestigatorId
   -> m Int
 getCardCount iid = unCardCount <$> getCount iid

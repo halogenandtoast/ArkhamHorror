@@ -433,7 +433,7 @@ instance HasId LocationId (Game queue) InvestigatorId where
 instance HasId LocationId (Game queue) EnemyId where
   getId eid = getId =<< getEnemy eid
 
-instance HasCount (Game queue) ActsRemainingCount () where
+instance HasCount ActsRemainingCount (Game queue) () where
   getCount _ = do
     actIds <-
       scenarioActs
@@ -448,26 +448,26 @@ instance HasCount (Game queue) ActsRemainingCount () where
       (_, _ : remainingActs) = break (== currentActId) actIds
     pure $ ActsRemainingCount $ length remainingActs
 
-instance HasCount (Game queue) ActionTakenCount InvestigatorId where
+instance HasCount ActionTakenCount (Game queue) InvestigatorId where
   getCount iid = getCount =<< getInvestigator iid
 
-instance HasCount (Game queue) ActionRemainingCount (Maybe Action, [Trait], InvestigatorId) where
+instance HasCount ActionRemainingCount (Game queue) (Maybe Action, [Trait], InvestigatorId) where
   getCount (maction, traits, iid) =
     getCount . (maction, traits, ) =<< getInvestigator iid
 
-instance HasCount (Game queue) SanityDamageCount EnemyId where
+instance HasCount SanityDamageCount (Game queue) EnemyId where
   getCount eid = getCount =<< getEnemy eid
 
-instance HasCount (Game queue) HealthDamageCount EnemyId where
+instance HasCount HealthDamageCount (Game queue) EnemyId where
   getCount eid = getCount =<< getEnemy eid
 
-instance HasCount (Game queue) HorrorCount InvestigatorId where
+instance HasCount HorrorCount (Game queue) InvestigatorId where
   getCount iid = HorrorCount . snd . getDamage <$> getInvestigator iid
 
-instance HasCount (Game queue) DamageCount EnemyId where
+instance HasCount DamageCount (Game queue) EnemyId where
   getCount eid = DamageCount . snd . getDamage <$> getEnemy eid
 
-instance HasCount (Game queue) TreacheryCount (LocationId, CardCode) where
+instance HasCount TreacheryCount (Game queue) (LocationId, CardCode) where
   getCount (lid, cardCode) = do
     g <- ask
     location <- getLocation lid
@@ -480,13 +480,13 @@ instance HasCount (Game queue) TreacheryCount (LocationId, CardCode) where
       , i `member` treacheries'
       ]
 
-instance HasCount (Game queue) DoomCount EnemyId where
+instance HasCount DoomCount (Game queue) EnemyId where
   getCount eid = getCount =<< getEnemy eid
 
-instance HasCount (Game queue) DoomCount AgendaId where
+instance HasCount DoomCount (Game queue) AgendaId where
   getCount aid = getCount =<< getAgenda aid
 
-instance HasCount (Game queue) XPCount () where
+instance HasCount XPCount (Game queue) () where
   getCount _ = do
     g <- ask
     pure
@@ -494,7 +494,7 @@ instance HasCount (Game queue) XPCount () where
       $ (sum . mapMaybe getVictoryPoints $ g ^. victoryDisplay)
       + (sum . mapMaybe getVictoryPoints . toList $ g ^. locations)
 
-instance HasCount (Game queue) DoomCount () where
+instance HasCount DoomCount (Game queue) () where
   getCount _ = do
     g <- ask
     pure
@@ -507,31 +507,31 @@ instance HasCount (Game queue) DoomCount () where
       <> (map (flip runReader g . getCount) . toList $ g ^. treacheries)
       <> (map (flip runReader g . getCount) . toList $ g ^. agendas)
 
-instance HasCount (Game queue) ClueCount LocationId where
+instance HasCount ClueCount (Game queue) LocationId where
   getCount lid = getCount =<< getLocation lid
 
-instance HasCount (Game queue) Shroud LocationId where
+instance HasCount Shroud (Game queue) LocationId where
   getCount lid = getCount =<< getLocation lid
 
-instance HasCount (Game queue) CardCount InvestigatorId where
+instance HasCount CardCount (Game queue) InvestigatorId where
   getCount iid = getCount =<< getInvestigator iid
 
-instance HasCount (Game queue) ClueCount InvestigatorId where
+instance HasCount ClueCount (Game queue) InvestigatorId where
   getCount iid = getCount =<< getInvestigator iid
 
-instance (HasQueue (Game queue), HasActions (Game queue) (ActionType, Trait), HasActions (Game queue) ActionType) => HasCount (Game queue) SpendableClueCount InvestigatorId where
+instance (HasQueue (Game queue), HasActions (Game queue) (ActionType, Trait), HasActions (Game queue) ActionType) => HasCount SpendableClueCount (Game queue) InvestigatorId where
   getCount iid = getInvestigatorSpendableClueCount =<< getInvestigator iid
 
-instance HasCount (Game queue) ResourceCount InvestigatorId where
+instance HasCount ResourceCount (Game queue) InvestigatorId where
   getCount iid = getCount =<< getInvestigator iid
 
-instance HasCount (Game queue) PlayerCount () where
+instance HasCount PlayerCount (Game queue) () where
   getCount _ = PlayerCount . length . view investigators <$> ask
 
-instance HasCount (Game queue) EnemyCount InvestigatorId where
+instance HasCount EnemyCount (Game queue) InvestigatorId where
   getCount iid = getCount =<< getInvestigator iid
 
-instance HasCount (Game queue) AssetCount (InvestigatorId, [Trait]) where
+instance HasCount AssetCount (Game queue) (InvestigatorId, [Trait]) where
   getCount (iid, traits) = do
     g <- ask
     investigator <- getInvestigator iid
@@ -540,13 +540,13 @@ instance HasCount (Game queue) AssetCount (InvestigatorId, [Trait]) where
    where
     assetMatcher g aid = any (`member` (getTraits $ getAsset aid g)) traits
 
-instance HasCount (Game queue) EnemyCount [Trait] where
+instance HasCount EnemyCount (Game queue) [Trait] where
   getCount traits = do
     g <- ask
     pure . EnemyCount . length $ filterMap enemyMatcher (view enemies g)
     where enemyMatcher enemy = any (`member` getTraits enemy) traits
 
-instance HasCount (Game queue) EnemyCount (LocationId, [Trait]) where
+instance HasCount EnemyCount (Game queue) (LocationId, [Trait]) where
   getCount (lid, traits) = do
     mlocation <- asks $ preview (locations . ix lid)
     g <- ask
@@ -558,7 +558,7 @@ instance HasCount (Game queue) EnemyCount (LocationId, [Trait]) where
    where
     enemyMatcher g eid = any (`member` (getTraits $ getEnemy eid g)) traits
 
-instance HasCount (Game queue) EnemyCount (InvestigatorLocation, [Trait]) where
+instance HasCount EnemyCount (Game queue) (InvestigatorLocation, [Trait]) where
   getCount (InvestigatorLocation iid, traits) = do
     locationId <- locationFor iid <$> ask
     getCount (locationId, traits)
@@ -569,10 +569,10 @@ instance (HasModifiersFor env env, env ~ Game queue) => HasStats (Game queue) (I
 
 instance
   (env ~ Game queue
-  , HasCount env DoomCount ()
-  , HasCount env DoomCount EnemyId
-  , HasCount env EnemyCount (InvestigatorLocation, [Trait])
-  , HasCount env EnemyCount [Trait]
+  , HasCount DoomCount env ()
+  , HasCount DoomCount env EnemyId
+  , HasCount EnemyCount env (InvestigatorLocation, [Trait])
+  , HasCount EnemyCount env [Trait]
   , HasSet EnemyId env Trait
   , HasSet Trait env LocationId
   , HasTokenValue env InvestigatorId
@@ -585,7 +585,7 @@ instance
 
 instance
   (env ~ Game queue
-  , HasCount env ClueCount LocationId
+  , HasCount ClueCount env LocationId
   )
   => HasTokenValue (Game queue) InvestigatorId where
   getTokenValue iid' iid token = do
@@ -780,12 +780,12 @@ instance (GameRunner env, env ~ Game queue) => HasSet RemainingSanity (Game queu
       . toList
       . view investigators
 
-instance (GameRunner env, env ~ Game queue) => HasCount (Game queue) RemainingHealth InvestigatorId where
+instance (GameRunner env, env ~ Game queue) => HasCount RemainingHealth (Game queue) InvestigatorId where
   getCount iid = do
     g <- ask
     RemainingHealth <$> getRemainingHealth (getInvestigator iid g)
 
-instance (GameRunner env, env ~ Game queue) => HasCount (Game queue) RemainingSanity InvestigatorId where
+instance (GameRunner env, env ~ Game queue) => HasCount RemainingSanity (Game queue) InvestigatorId where
   getCount iid = do
     g <- ask
     RemainingSanity <$> getRemainingSanity (getInvestigator iid g)

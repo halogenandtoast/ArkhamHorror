@@ -20,7 +20,7 @@ screechingByakhee uuid =
     . (evade .~ 3)
     . (prey .~ LowestRemainingSanity)
 
-instance HasCount env RemainingSanity InvestigatorId => HasModifiersFor env ScreechingByakhee where
+instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor env ScreechingByakhee where
   getModifiersFor _ target (ScreechingByakhee attrs) | isTarget attrs target =
     do
       sanities <- map unRemainingSanity

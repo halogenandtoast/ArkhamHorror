@@ -26,27 +26,27 @@ import ClassyPrelude
 
 type GameRunner env
   = ( HasQueue env
-    , ( HasCount env ActsRemainingCount ()
-      , HasCount env ActionTakenCount InvestigatorId
-      , HasCount env AssetCount (InvestigatorId, [Trait])
-      , HasCount env CardCount InvestigatorId
-      , HasCount env ClueCount InvestigatorId
-      , HasCount env ClueCount LocationId
-      , HasCount env DoomCount ()
-      , HasCount env XPCount ()
-      , HasCount env DoomCount EnemyId
-      , HasCount env EnemyCount InvestigatorId
-      , HasCount env EnemyCount (InvestigatorLocation, [Trait])
-      , HasCount env EnemyCount [Trait]
-      , HasCount env HealthDamageCount EnemyId
-      , HasCount env HorrorCount InvestigatorId
-      , HasCount env PlayerCount ()
-      , HasCount env RemainingSanity InvestigatorId
-      , HasCount env ResourceCount InvestigatorId
-      , HasCount env SanityDamageCount EnemyId
-      , HasCount env Shroud LocationId
-      , HasCount env SpendableClueCount InvestigatorId
-      , HasCount env TreacheryCount (LocationId, CardCode)
+    , ( HasCount ActsRemainingCount env ()
+      , HasCount ActionTakenCount env InvestigatorId
+      , HasCount AssetCount env (InvestigatorId, [Trait])
+      , HasCount CardCount env InvestigatorId
+      , HasCount ClueCount env InvestigatorId
+      , HasCount ClueCount env LocationId
+      , HasCount DoomCount env ()
+      , HasCount XPCount env ()
+      , HasCount DoomCount env EnemyId
+      , HasCount EnemyCount env InvestigatorId
+      , HasCount EnemyCount env (InvestigatorLocation, [Trait])
+      , HasCount EnemyCount env [Trait]
+      , HasCount HealthDamageCount env EnemyId
+      , HasCount HorrorCount env InvestigatorId
+      , HasCount PlayerCount env ()
+      , HasCount RemainingSanity env InvestigatorId
+      , HasCount ResourceCount env InvestigatorId
+      , HasCount SanityDamageCount env EnemyId
+      , HasCount Shroud env LocationId
+      , HasCount SpendableClueCount env InvestigatorId
+      , HasCount TreacheryCount env (LocationId, CardCode)
       )
     , ( HasId (Maybe AssetId) env CardCode
       , HasId (Maybe LocationId) env LocationName

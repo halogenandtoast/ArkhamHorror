@@ -32,7 +32,7 @@ theMidnightMasks difficulty =
     , scenarioDeck = Just []
     }
 
-instance (HasTokenValue env InvestigatorId, HasCount env DoomCount (), HasCount env DoomCount EnemyId, HasSet EnemyId env Trait) => HasTokenValue env TheMidnightMasks where
+instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), HasCount DoomCount env EnemyId, HasSet EnemyId env Trait) => HasTokenValue env TheMidnightMasks where
   getTokenValue (TheMidnightMasks attrs) iid = \case
     Skull | isEasyStandard attrs -> do
       cultists <- getSetList @EnemyId Trait.Cultist

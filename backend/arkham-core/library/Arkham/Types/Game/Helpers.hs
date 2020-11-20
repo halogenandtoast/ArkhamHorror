@@ -9,18 +9,17 @@ import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait (Trait)
 
 getIsUnused
-  :: (HasList UsedAbility () env, MonadReader env m)
+  :: (HasList UsedAbility env (), MonadReader env m)
   => InvestigatorId
   -> Ability
   -> m Bool
-getIsUnused iid ability =
-  asks $ notElem ability' . map unUsedAbility . getList ()
+getIsUnused iid ability = notElem ability' . map unUsedAbility <$> getList ()
   where ability' = (iid, ability)
 
 getGroupIsUnused
-  :: (MonadReader env m, HasList UsedAbility () env) => Ability -> m Bool
+  :: (MonadReader env m, HasList UsedAbility env ()) => Ability -> m Bool
 getGroupIsUnused ability =
-  asks $ notElem ability . map (snd . unUsedAbility) . getList ()
+  notElem ability . map (snd . unUsedAbility) <$> getList ()
 
 getInvestigatorModifiers
   :: (MonadReader env m, HasModifiersFor env env)
@@ -179,22 +178,22 @@ getResourceCount
 getResourceCount iid = unResourceCount <$> getCount iid
 
 getDiscardOf
-  :: (MonadReader env m, HasList DiscardedPlayerCard InvestigatorId env)
+  :: (MonadReader env m, HasList DiscardedPlayerCard env InvestigatorId)
   => InvestigatorId
   -> m [PlayerCard]
-getDiscardOf iid = asks $ map unDiscardedPlayerCard . getList iid
+getDiscardOf iid = map unDiscardedPlayerCard <$> getList iid
 
 getHandOf
-  :: (MonadReader env m, HasList HandCard InvestigatorId env)
+  :: (MonadReader env m, HasList HandCard env InvestigatorId)
   => InvestigatorId
   -> m [Card]
-getHandOf iid = asks $ map unHandCard . getList iid
+getHandOf iid = map unHandCard <$> getList iid
 
 getInPlayOf
-  :: (MonadReader env m, HasList InPlayCard InvestigatorId env)
+  :: (MonadReader env m, HasList InPlayCard env InvestigatorId)
   => InvestigatorId
   -> m [Card]
-getInPlayOf iid = asks $ map unInPlayCard . getList iid
+getInPlayOf iid = map unInPlayCard <$> getList iid
 
 getCardCount
   :: (MonadReader env m, HasCount env CardCount InvestigatorId)

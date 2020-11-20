@@ -29,7 +29,7 @@ instance EventRunner env => RunMessage env BloodRite where
       | isSource attrs source -> if n == 2
         then runMessage (UseCardAbility iid source meta 1) e
         else do
-          cards <- asks $ map unDiscardableHandCard . getList iid
+          cards <- map unDiscardableHandCard <$> getList iid
           e <$ unshiftMessage
             (chooseOne iid
             $ [ Run

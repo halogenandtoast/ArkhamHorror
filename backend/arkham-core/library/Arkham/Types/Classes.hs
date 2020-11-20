@@ -194,8 +194,8 @@ class (Hashable set, Eq set) => HasSet set env a where
   getSetList :: MonadReader env m => a -> m [set]
   getSetList a = setToList <$> getSet a
 
-class HasList c b a where
-  getList :: b -> a -> [c]
+class HasList list env a where
+  getList :: (MonadReader env m) => a -> m [list]
 
 class HasId c b a where
   getId :: HasCallStack => b -> a -> c
@@ -270,10 +270,10 @@ type ActionRunner env
     , HasId LeadInvestigatorId () env
     , HasId LocationId InvestigatorId env
     , HasId LocationId EnemyId env
-    , HasList DiscardedPlayerCard InvestigatorId env
-    , HasList HandCard InvestigatorId env
-    , HasList InPlayCard InvestigatorId env
-    , HasList UsedAbility () env
+    , HasList DiscardedPlayerCard env InvestigatorId
+    , HasList HandCard env InvestigatorId
+    , HasList InPlayCard env InvestigatorId
+    , HasList UsedAbility env ()
     , HasModifiersFor env env
     , HasSet AccessibleLocationId env LocationId
     , HasSet AssetId env (InvestigatorId, UseType)

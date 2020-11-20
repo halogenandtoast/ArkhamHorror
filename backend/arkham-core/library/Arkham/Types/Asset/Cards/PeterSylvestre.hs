@@ -32,7 +32,7 @@ ability attrs =
 instance ActionRunner env => HasActions env PeterSylvestre where
   getActions iid (AfterEndTurn You) (PeterSylvestre a) | ownedBy a iid = do
     let ability' = (iid, ability a)
-    unused <- asks $ notElem ability' . map unUsedAbility . getList ()
+    unused <- notElem ability' . map unUsedAbility <$> getList ()
     pure
       [ uncurry ActivateCardAbilityAction ability'
       | unused && assetSanityDamage a > 0

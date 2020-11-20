@@ -6,12 +6,10 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
-import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
-import Arkham.Types.Location
 import Arkham.Types.LocationId
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -30,8 +28,6 @@ type InvestigatorRunner env
     , HasId CardCode AssetId env
     , HasId CardCode EnemyId env
     , HasId LocationId InvestigatorId env
-    , HasList Enemy () env
-    , HasList Location () env
     , HasModifiersFor env env
     , HasQueue env
     , HasSet AdvanceableActId env ()

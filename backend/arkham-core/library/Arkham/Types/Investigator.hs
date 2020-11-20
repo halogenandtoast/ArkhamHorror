@@ -104,11 +104,12 @@ instance (InvestigatorRunner env) => RunMessage env Investigator where
 instance HasId InvestigatorId () Investigator where
   getId _ = getId () . investigatorAttrs
 
-instance HasList DiscardedPlayerCard () Investigator where
-  getList _ = map DiscardedPlayerCard . investigatorDiscard . investigatorAttrs
+instance HasList DiscardedPlayerCard env Investigator where
+  getList =
+    pure . map DiscardedPlayerCard . investigatorDiscard . investigatorAttrs
 
-instance HasList HandCard () Investigator where
-  getList _ = map HandCard . investigatorHand . investigatorAttrs
+instance HasList HandCard env Investigator where
+  getList = pure . map HandCard . investigatorHand . investigatorAttrs
 
 instance HasCard () Investigator where
   getCard _ cardId =
@@ -134,9 +135,10 @@ instance HasSet EnemyId env Investigator where
 instance HasSet TreacheryId env Investigator where
   getSet = pure . investigatorTreacheries . investigatorAttrs
 
-instance HasList DiscardableHandCard () Investigator where
-  getList _ =
-    map DiscardableHandCard
+instance HasList DiscardableHandCard env Investigator where
+  getList =
+    pure
+      . map DiscardableHandCard
       . filter (not . isWeakness)
       . investigatorHand
       . investigatorAttrs
@@ -241,7 +243,7 @@ getIsPrey
      , HasSet RemainingSanity env ()
      , HasSet ClueCount env ()
      , HasSet CardCount env ()
-     , HasList (InvestigatorId, Distance) EnemyTrait env
+     , HasList (InvestigatorId, Distance) env EnemyTrait
      , MonadReader env m
      , HasModifiersFor env env
      )
@@ -294,9 +296,8 @@ getIsPrey FewestCards i = do
   minCardCount <- fromMaybe 100 . minimumMay . map unCardCount <$> getSetList ()
   pure $ minCardCount == cardCount
 getIsPrey (NearestToEnemyWithTrait trait) i = do
-  env <- ask
+  mappings :: [(InvestigatorId, Distance)] <- getList (EnemyTrait trait)
   let
-    mappings :: [(InvestigatorId, Distance)] = getList (EnemyTrait trait) env
     mappingsMap :: HashMap InvestigatorId Distance = mapFromList mappings
     minDistance :: Int =
       fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings

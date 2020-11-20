@@ -616,8 +616,8 @@ instance HasStep AgendaStep (Game queue) where
     [agenda] -> getStep agenda
     _ -> error "wrong number of agendas"
 
-instance HasList InPlayCard InvestigatorId (Game queue) where
-  getList iid g = flip runReader g $ do
+instance HasList InPlayCard (Game queue) InvestigatorId where
+  getList iid = do
     assetIds <- getSetList =<< getInvestigator iid
     assets' <- traverse getAsset assetIds
     pure $ map
@@ -627,29 +627,31 @@ instance HasList InPlayCard InvestigatorId (Game queue) where
       )
       assets'
 
-instance HasList HandCard InvestigatorId (Game queue) where
-  getList iid = getList () . getInvestigator iid
+instance HasList HandCard (Game queue) InvestigatorId where
+  getList iid = getList =<< getInvestigator iid
 
-instance HasList DiscardableHandCard InvestigatorId (Game queue) where
-  getList iid = getList () . getInvestigator iid
+instance HasList DiscardableHandCard (Game queue) InvestigatorId where
+  getList iid = getList =<< getInvestigator iid
 
-instance HasList DiscardedPlayerCard InvestigatorId (Game queue) where
-  getList iid = getList () . getInvestigator iid
+instance HasList DiscardedPlayerCard (Game queue) InvestigatorId where
+  getList iid = getList =<< getInvestigator iid
 
 instance HasRoundHistory (Game (IORef [Message])) where
   getRoundHistory = readIORef . gameRoundMessageHistory
 
-instance HasList Location () (Game queue) where
-  getList _ = toList . view locations
+instance HasList Location (Game queue) () where
+  getList _ = asks $ toList . view locations
 
-instance HasList UsedAbility () (Game queue) where
-  getList _ = map UsedAbility . view usedAbilities
+instance HasList UsedAbility (Game queue) () where
+  getList _ = asks $ map UsedAbility . view usedAbilities
 
-instance HasList Enemy () (Game queue) where
-  getList _ = toList . view enemies
+instance HasList Enemy (Game queue) () where
+  getList _ = asks $ toList . view enemies
 
-instance HasList Ability () (Game queue) where
-  getList _ g = g ^. agendas . traverse . to getAbilities
+instance HasList Ability (Game queue) () where
+  getList _ = do
+    g <- ask
+    pure $ g ^. agendas . traverse . to getAbilities
 
 instance HasSource ForSkillTest (Game queue) where
   getSource _ g = (Just . skillTestToSource) =<< (g ^. skillTest)
@@ -782,8 +784,8 @@ instance (GameRunner env, env ~ Game queue) => HasCount (Game queue) RemainingSa
 instance HasSet LocationId (Game queue) () where
   getSet _ = asks $ keysSet . view locations
 
-instance HasList LocationName () (Game queue) where
-  getList _ = map getLocationName . toList . view locations
+instance HasList LocationName (Game queue) () where
+  getList _ = asks $ map getLocationName . toList . view locations
 
 instance HasSet EmptyLocationId (Game queue) () where
   getSet _ =
@@ -844,13 +846,6 @@ instance HasSet CommittedCardId (Game queue) InvestigatorId where
 
 instance HasSet CommittedCardCode (Game queue) () where
   getSet _ = maybe (pure mempty) getSet =<< asks (view skillTest)
-
-instance HasList DeckCard (InvestigatorId, Trait) (Game queue) where
-  getList (iid, trait) g =
-    let
-      investigator = getInvestigator iid g
-      deck = deckOf investigator
-    in map DeckCard $ filter ((trait `elem`) . pcTraits) deck
 
 instance HasSet BlockedLocationId (Game queue) () where
   getSet _ =
@@ -1086,20 +1081,22 @@ instance HasSet FarthestEnemyId (Game queue) (InvestigatorId, EnemyTrait) where
       . concatMap (filter enemyMatches . enemyIdsForLocation)
       $ getLongestPath g start (any enemyMatches . enemyIdsForLocation)
 
-instance HasList (InvestigatorId, Distance) EnemyTrait (Game queue) where
-  getList enemyTrait game = flip map iids
-    $ \iid -> (iid, getDistance $ locationFor iid game)
+instance HasList (InvestigatorId, Distance) (Game queue) EnemyTrait where
+  getList enemyTrait = do
+    game <- ask
+    iids <- asks $ keys . view investigators
+    pure $ flip map iids $ \iid ->
+      (iid, getDistance game $ locationFor iid game)
    where
-    iids = keys $ game ^. investigators
-    hasMatchingEnemy lid = any
+    hasMatchingEnemy game lid = any
       (\eid -> elem (unEnemyTrait enemyTrait) . getTraits $ runReader
         (getEnemy eid)
         game
       )
       (runReader (getSet =<< getLocation lid) game)
-    getDistance start =
+    getDistance game start =
       Distance . fromJustNote "error" . minimumMay . keys $ evalState
-        (markDistances game start hasMatchingEnemy)
+        (markDistances game start (hasMatchingEnemy game))
         (LPState (pure start) (singleton start) mempty)
 
 distanceSingletons :: HashMap Int [LocationId] -> HashMap LocationId Int

@@ -38,7 +38,7 @@ instance ActionRunner env => HasActions env JimsTrumpet where
       horrorCounts <- for
         (concat investigatorIds)
         (asks . (unHorrorCount .) . getCount)
-      unused <- asks $ notElem ability' . map unUsedAbility . getList ()
+      unused <- notElem ability' . map unUsedAbility <$> getList ()
       pure
         [ uncurry ActivateCardAbilityAction ability'
         | unused && any (> 0) horrorCounts

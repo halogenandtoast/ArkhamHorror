@@ -13,9 +13,9 @@ import Arkham.Types.Trait
 
 type EventRunner env
   = ( HasQueue env
-    , HasCount env ClueCount InvestigatorId
-    , HasCount env ClueCount LocationId
-    , HasCount env PlayerCount ()
+    , HasCount ClueCount env InvestigatorId
+    , HasCount ClueCount env LocationId
+    , HasCount PlayerCount env ()
     , HasId LocationId env InvestigatorId
     , HasList DiscardableHandCard env InvestigatorId
     , HasRoundHistory env

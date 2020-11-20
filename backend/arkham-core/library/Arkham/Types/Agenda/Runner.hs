@@ -6,11 +6,11 @@ import Arkham.Types.Trait
 
 type AgendaRunner env
   = ( HasId LeadInvestigatorId env ()
-    , HasCount env ClueCount InvestigatorId
-    , HasCount env ClueCount LocationId
-    , HasCount env DoomCount ()
-    , HasCount env EnemyCount (LocationId, [Trait])
-    , HasCount env PlayerCount ()
+    , HasCount ClueCount env InvestigatorId
+    , HasCount ClueCount env LocationId
+    , HasCount DoomCount env ()
+    , HasCount EnemyCount env (LocationId, [Trait])
+    , HasCount PlayerCount env ()
     , HasId (Maybe StoryEnemyId) env CardCode
     , HasId LocationId env EnemyId
     , HasQueue env

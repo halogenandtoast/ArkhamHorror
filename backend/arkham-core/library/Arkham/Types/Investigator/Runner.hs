@@ -21,9 +21,9 @@ type InvestigatorRunner env
   = ( CanBeWeakness TreacheryId env
     , HasActions env ()
     , HasActions env AssetId
-    , HasCount env ActionTakenCount InvestigatorId
-    , HasCount env AssetCount (InvestigatorId, [Trait])
-    , HasCount env ClueCount LocationId
+    , HasCount ActionTakenCount env InvestigatorId
+    , HasCount AssetCount env (InvestigatorId, [Trait])
+    , HasCount ClueCount env LocationId
     , HasId (Maybe AssetId) env CardCode
     , HasId CardCode env AssetId
     , HasId CardCode env EnemyId

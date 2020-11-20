@@ -52,8 +52,8 @@ data Investigator
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance HasCount env AssetCount (InvestigatorId, [Trait]) => HasModifiersFor env Investigator
-deriving anyclass instance HasCount env ClueCount LocationId => HasTokenValue env Investigator
+deriving anyclass instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor env Investigator
+deriving anyclass instance HasCount ClueCount env LocationId => HasTokenValue env Investigator
 
 instance Eq Investigator where
   a == b = getInvestigatorId a == getInvestigatorId b
@@ -147,7 +147,7 @@ instance HasList DiscardableHandCard env Investigator where
       PlayerCard pc -> pcWeakness pc
       EncounterCard _ -> True -- maybe?
 
-instance HasCount env ActionTakenCount Investigator where
+instance HasCount ActionTakenCount env Investigator where
   getCount =
     pure
       . ActionTakenCount
@@ -155,7 +155,7 @@ instance HasCount env ActionTakenCount Investigator where
       . investigatorActionsTaken
       . investigatorAttrs
 
-instance HasCount env ActionRemainingCount (Maybe Action, [Trait], Investigator) where
+instance HasCount ActionRemainingCount env (Maybe Action, [Trait], Investigator) where
   getCount (_maction, traits, i) =
     let
       tomeActionCount = if Tome `elem` traits
@@ -168,16 +168,16 @@ instance HasCount env ActionRemainingCount (Maybe Action, [Trait], Investigator)
       + tomeActionCount
     where a = investigatorAttrs i
 
-instance HasSet EnemyId env Investigator => HasCount env EnemyCount Investigator where
+instance HasSet EnemyId env Investigator => HasCount EnemyCount env Investigator where
   getCount = (EnemyCount . length <$>) . getSet @EnemyId
 
-instance HasCount env ResourceCount Investigator where
+instance HasCount ResourceCount env Investigator where
   getCount = pure . ResourceCount . investigatorResources . investigatorAttrs
 
-instance HasCount env CardCount Investigator where
+instance HasCount CardCount env Investigator where
   getCount = pure . CardCount . length . investigatorHand . investigatorAttrs
 
-instance HasCount env ClueCount Investigator where
+instance HasCount ClueCount env Investigator where
   getCount = pure . ClueCount . investigatorClues . investigatorAttrs
 
 getInvestigatorSpendableClueCount

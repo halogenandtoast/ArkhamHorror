@@ -45,7 +45,7 @@ instance ActionRunner env => HasActions env JimsTrumpet where
         ]
   getActions i window (JimsTrumpet x) = getActions i window x
 
-instance (AssetRunner env) => RunMessage env JimsTrumpet where
+instance AssetRunner env => RunMessage env JimsTrumpet where
   runMessage msg a@(JimsTrumpet attrs@Attrs {..}) = case msg of
     UseCardAbility _ source _ 1 | isSource attrs source -> do
       let ownerId = fromJustNote "must be owned" assetInvestigator

@@ -14,14 +14,14 @@ import Arkham.Types.Trait
 type AssetRunner env
   = ( HasQueue env
     , HasModifiersFor env env
-    , HasCount env AssetCount (InvestigatorId, [Trait])
-    , HasCount env CardCount InvestigatorId
-    , HasCount env ClueCount LocationId
-    , HasCount env EnemyCount InvestigatorId
-    , HasCount env HealthDamageCount EnemyId
-    , HasCount env HorrorCount InvestigatorId
-    , HasCount env ResourceCount InvestigatorId
-    , HasCount env SanityDamageCount EnemyId
+    , HasCount AssetCount env (InvestigatorId, [Trait])
+    , HasCount CardCount env InvestigatorId
+    , HasCount ClueCount env LocationId
+    , HasCount EnemyCount env InvestigatorId
+    , HasCount HealthDamageCount env EnemyId
+    , HasCount HorrorCount env InvestigatorId
+    , HasCount ResourceCount env InvestigatorId
+    , HasCount SanityDamageCount env EnemyId
     , HasId (Maybe StoryEnemyId) env CardCode
     , HasId ActiveInvestigatorId env ()
     , HasId CardCode env EnemyId

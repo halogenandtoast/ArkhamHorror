@@ -17,7 +17,7 @@ instance HasModifiersFor env SearchForTheTruth where
 instance HasActions env SearchForTheTruth where
   getActions i window (SearchForTheTruth attrs) = getActions i window attrs
 
-instance (HasQueue env, HasCount env ClueCount InvestigatorId) => RunMessage env SearchForTheTruth where
+instance (HasQueue env, HasCount ClueCount env InvestigatorId) => RunMessage env SearchForTheTruth where
   runMessage msg e@(SearchForTheTruth attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       clueCount' <- unClueCount <$> getCount iid

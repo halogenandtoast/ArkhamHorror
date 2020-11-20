@@ -114,8 +114,8 @@ instance ActionRunner env => HasActions env Enemy where
 
 deriving anyclass instance
   ( HasId LocationId env InvestigatorId
-  , HasCount env RemainingSanity InvestigatorId
-  , HasCount env CardCount InvestigatorId
+  , HasCount RemainingSanity env InvestigatorId
+  , HasCount CardCount env InvestigatorId
   , HasSet InvestigatorId env LocationId
   , HasSet ConnectedLocationId env LocationId
   , HasSet Trait env LocationId
@@ -138,13 +138,13 @@ instance (EnemyRunner env) => RunMessage env Enemy where
 instance HasVictoryPoints Enemy where
   getVictoryPoints = enemyVictory . enemyAttrs
 
-instance HasCount env DoomCount Enemy where
+instance HasCount DoomCount env Enemy where
   getCount = pure . DoomCount . enemyDoom . enemyAttrs
 
-instance HasCount env HealthDamageCount Enemy where
+instance HasCount HealthDamageCount env Enemy where
   getCount = pure . HealthDamageCount . enemyHealthDamage . enemyAttrs
 
-instance HasCount env SanityDamageCount Enemy where
+instance HasCount SanityDamageCount env Enemy where
   getCount = pure . SanityDamageCount . enemySanityDamage . enemyAttrs
 
 instance HasId LocationId env Enemy where

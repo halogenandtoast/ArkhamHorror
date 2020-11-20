@@ -26,7 +26,7 @@ reactionAbility :: Attrs -> SkillType -> Ability
 reactionAbility Attrs { assetId } skillType =
   mkAbility (AssetSource assetId) 2 (ReactionAbility (WhenSkillTest skillType))
 
-instance HasCount env ResourceCount InvestigatorId => HasModifiersFor env FireAxe where
+instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAxe where
   getModifiersFor (SkillTestSource _ source (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)
     | ownedBy a iid && isSource a source
     = do

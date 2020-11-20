@@ -18,7 +18,7 @@ import Arkham.Types.TreacheryId
 import ClassyPrelude
 
 type InvestigatorRunner env
-  = ( CanBeWeakness TreacheryId env
+  = ( CanBeWeakness env TreacheryId
     , HasActions env ()
     , HasActions env AssetId
     , HasCount ActionTakenCount env InvestigatorId

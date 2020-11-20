@@ -209,7 +209,7 @@ damageValueFor baseValue attrs = do
 getIsScenarioAbility
   :: ( HasSource ForSkillTest env
      , MonadReader env m
-     , CanBeWeakness TreacheryId env
+     , CanBeWeakness env TreacheryId
      )
   => m Bool
 getIsScenarioAbility = do
@@ -220,7 +220,7 @@ getIsScenarioAbility = do
       EnemySource _ -> pure True
       AgendaSource _ -> pure True
       LocationSource _ -> pure True
-      TreacherySource tid -> asks $ not . getIsWeakness tid
+      TreacherySource tid -> not <$> getIsWeakness tid
       ActSource _ -> pure True
       _ -> pure False
     _ -> pure False

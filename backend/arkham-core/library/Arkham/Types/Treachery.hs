@@ -152,8 +152,8 @@ allTreacheries = mapFromList
 isWeakness :: Treachery -> Bool
 isWeakness = treacheryWeakness . treacheryAttrs
 
-instance CanBeWeakness () Treachery where
-  getIsWeakness _ = isWeakness
+instance CanBeWeakness env Treachery where
+  getIsWeakness = pure . isWeakness
 
 treacheryLocation :: Treachery -> Maybe LocationId
 treacheryLocation = treacheryAttachedLocation . treacheryAttrs

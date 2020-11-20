@@ -18,7 +18,7 @@ higherEducation :: AssetId -> HigherEducation
 higherEducation uuid = HigherEducation $ baseAttrs uuid "60211"
 
 instance
-  ( HasList HandCard InvestigatorId env
+  ( HasList HandCard env InvestigatorId
   , HasCount env ResourceCount InvestigatorId
   )
   => HasActions env HigherEducation where

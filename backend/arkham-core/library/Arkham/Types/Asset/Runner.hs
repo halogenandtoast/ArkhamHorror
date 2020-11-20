@@ -26,7 +26,6 @@ type AssetRunner env
     , HasId ActiveInvestigatorId () env
     , HasId CardCode EnemyId env
     , HasId LocationId InvestigatorId env
-    , HasList DeckCard (InvestigatorId, Trait) env
     , HasSet AccessibleLocationId env LocationId
     , HasSet AssetId env InvestigatorId
     , HasSet BlockedLocationId env ()

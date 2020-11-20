@@ -38,7 +38,7 @@ instance ActionRunner env => HasActions env HospitalDebts where
               )
               { abilityLimit = PerRound
               }
-        usedAbilities <- map unUsedAbility <$> asks (getList ())
+        usedAbilities <- map unUsedAbility <$> getList ()
         resourceCount <- getResourceCount iid
         pure
           [ ActivateCardAbilityAction iid ability

@@ -27,7 +27,7 @@ type TreacheryRunner env
     , HasId (Maybe StoryEnemyId) CardCode env
     , HasId LocationId EnemyId env
     , HasId LocationId InvestigatorId env
-    , HasList UsedAbility () env
+    , HasList UsedAbility env ()
     , HasSet AssetId env InvestigatorId
     , HasSet ClosestEnemyId env (LocationId, [Trait])
     , HasSet ConnectedLocationId env LocationId

@@ -24,9 +24,9 @@ type LocationRunner env
     , HasSet AssetId env InvestigatorId
     , HasSet AssetId env (InvestigatorId, UseType)
     , HasSet LocationId env ()
-    , HasList LocationName () env
-    , HasList HandCard InvestigatorId env
-    , HasList UsedAbility () env
+    , HasList LocationName env ()
+    , HasList HandCard env InvestigatorId
+    , HasList UsedAbility env ()
     , HasModifiersFor env env
     )
 

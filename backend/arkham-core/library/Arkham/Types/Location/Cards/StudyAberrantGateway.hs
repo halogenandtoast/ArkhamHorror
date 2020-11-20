@@ -47,7 +47,7 @@ instance LocationRunner env => RunMessage env StudyAberrantGateway where
     UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
       l <$ unshiftMessage (DrawCards iid 3 False)
     Will (EnemySpawnAtLocationNamed _ locationName' _) -> do
-      locations' <- asks (getList @LocationName ())
+      locations' <- getList @LocationName ()
       l <$ unless
         (locationName' `elem` locations')
         (unshiftMessage (PlaceLocationNamed locationName'))

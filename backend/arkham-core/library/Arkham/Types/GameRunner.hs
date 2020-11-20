@@ -60,12 +60,11 @@ type GameRunner env
       , HasId LocationId EnemyId env
       , HasId LocationId InvestigatorId env
       )
-    , ( HasList DeckCard (InvestigatorId, Trait) env
-      , HasList Enemy () env
-      , HasList Location () env
-      , HasList UsedAbility () env
-      , HasList LocationName () env
-      , HasList HandCard InvestigatorId env
+    , ( HasList Enemy env ()
+      , HasList Location env ()
+      , HasList UsedAbility env ()
+      , HasList LocationName env ()
+      , HasList HandCard env InvestigatorId
       )
     , HasModifiersFor env env
     , ( HasSet AccessibleLocationId env LocationId

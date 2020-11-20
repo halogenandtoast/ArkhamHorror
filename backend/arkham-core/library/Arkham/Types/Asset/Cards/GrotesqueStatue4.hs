@@ -36,7 +36,7 @@ instance ActionRunner env => HasActions env GrotesqueStatue4 where
     | ownedBy a iid
     = do
       let ability' = (iid, ability a source window)
-      unused <- asks $ notElem ability' . map unUsedAbility . getList ()
+      unused <- notElem ability' . map unUsedAbility <$> getList ()
       pure
         [ uncurry ActivateCardAbilityAction ability'
         | useCount (assetUses a) > 0 && unused

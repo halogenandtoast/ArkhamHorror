@@ -16,7 +16,7 @@ spec = describe "\"Ashcan\" Pete" $ do
       ashcanPete
       [loadDeck ashcanPete (duke : placeholders), SetupInvestigators]
       id
-    updated game ashcanPete `shouldSatisfy` hasCardInPlay (PlayerCard duke)
+    updated game ashcanPete `shouldSatisfy` hasCardInPlay game (PlayerCard duke)
   context "Ability" $ do
     it "allows to discard to ready an asset" $ do
       let ashcanPete = lookupInvestigator "02005"
@@ -29,8 +29,8 @@ spec = describe "\"Ashcan\" Pete" $ do
           [ loadDeck ashcanPete [card]
           , drawCards ashcanPete 1
           , playAsset ashcanPete asset
-          , Exhaust (AssetTarget $ getId () asset)
-          , CheckWindow (getId () ashcanPete) [FastPlayerWindow]
+          , Exhaust (toTarget asset)
+          , CheckWindow (getInvestigatorId ashcanPete) [FastPlayerWindow]
           ]
           ((scenario ?~ scenario') . (assets %~ insertEntity asset))
         >>= runGameTestOptionMatching
@@ -51,7 +51,7 @@ spec = describe "\"Ashcan\" Pete" $ do
         runGameTest
           ashcanPete
           [ SetTokens [ElderSign]
-          , Exhaust (AssetTarget $ getId () duke)
+          , Exhaust (toTarget duke)
           , beginSkillTest ashcanPete SkillIntellect 2
           ]
           ((scenario ?~ scenario') . (assets %~ insertEntity duke))

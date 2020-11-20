@@ -29,7 +29,7 @@ spec = describe "Rex's Curse" $ do
         , loadDeck investigator [rexsCurse]
         , drawCards investigator 1
         , BeginSkillTest
-          (getId () investigator)
+          (getInvestigatorId investigator)
           TestSource
           TestTarget
           Nothing
@@ -45,7 +45,7 @@ spec = describe "Rex's Curse" $ do
                         (PlayerCard rexsCurse)
     game `shouldSatisfy` hasProcessedMessage
       (PassedSkillTest
-        (getId () investigator)
+        (getInvestigatorId investigator)
         Nothing
         TestSource
         (SkillTestInitiatorTarget TestTarget)

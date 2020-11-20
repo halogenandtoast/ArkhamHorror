@@ -32,4 +32,4 @@ spec = do
                   _ -> False
                 )
       game `shouldSatisfy` not . hasProcessedMessage
-        (PerformEnemyAttack "00000" (getId () enemy))
+        (PerformEnemyAttack "00000" (getEnemyId enemy))

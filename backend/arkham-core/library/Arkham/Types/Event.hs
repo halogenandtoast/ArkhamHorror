@@ -4,6 +4,7 @@ module Arkham.Types.Event
   , Event(..)
   , ownerOfEvent
   , eventAttrs
+  , getEventId
   )
 where
 
@@ -75,8 +76,11 @@ instance Entity Event where
 instance HasCardCode Event where
   getCardCode = eventCardCode . eventAttrs
 
+getEventId :: Event -> EventId
+getEventId = eventId . eventAttrs
+
 instance HasId EventId env Event where
-  getId = getId . eventAttrs
+  getId = pure . getEventId
 
 lookupEvent :: CardCode -> (InvestigatorId -> EventId -> Event)
 lookupEvent cardCode =

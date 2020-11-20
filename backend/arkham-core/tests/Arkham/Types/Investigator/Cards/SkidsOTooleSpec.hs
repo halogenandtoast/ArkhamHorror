@@ -12,8 +12,8 @@ spec = describe "\"Skids\" O'Toole" $ do
       let skidsOToole = lookupInvestigator "01003"
       game <- runGameTest
         skidsOToole
-        [ TakeResources (getId () skidsOToole) 2 False
-        , LoseActions (getId () skidsOToole) TestSource 3
+        [ TakeResources (getInvestigatorId skidsOToole) 2 False
+        , LoseActions (getInvestigatorId skidsOToole) TestSource 3
         ]
         id
       let skidsOToole' = updated game skidsOToole
@@ -25,7 +25,11 @@ spec = describe "\"Skids\" O'Toole" $ do
       game' <- runGameTestMessages game [buyAction]
       withGame
           game'
-          (getHasActionsRemaining (getId () skidsOToole') Nothing mempty)
+          (getHasActionsRemaining
+            (getInvestigatorId skidsOToole')
+            Nothing
+            mempty
+          )
         `shouldReturn` True
 
   context "elder sign" $ do

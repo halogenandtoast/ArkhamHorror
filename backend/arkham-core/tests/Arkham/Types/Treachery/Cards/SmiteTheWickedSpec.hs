@@ -16,8 +16,8 @@ spec = describe "Smite the Wicked" $ do
     game <-
       runGameTest
           investigator
-          [ PlacedLocation (getId () location1)
-          , PlacedLocation (getId () location2)
+          [ PlacedLocation (getLocationId location1)
+          , PlacedLocation (getLocationId location2)
           , SetEncounterDeck [treachery, enemy]
           , loadDeck investigator [smiteTheWicked]
           , drawCards investigator 1
@@ -27,7 +27,7 @@ spec = describe "Smite the Wicked" $ do
           )
         >>= runGameTestOnlyOption "place enemy"
     let updatedEnemy = game ^?! enemies . to toList . ix 0
-    updated game location2 `shouldSatisfy` hasEnemy updatedEnemy
+    updated game location2 `shouldSatisfy` hasEnemy game updatedEnemy
     updatedEnemy `shouldSatisfy` hasTreacheryWithMatchingCardCode
       game
       (PlayerCard smiteTheWicked)
@@ -57,7 +57,7 @@ spec = describe "Smite the Wicked" $ do
     game <-
       runGameTest
           investigator
-          [ PlacedLocation (getId () location)
+          [ PlacedLocation (getLocationId location)
           , SetEncounterDeck [enemy]
           , loadDeck investigator [smiteTheWicked]
           , drawCards investigator 1
@@ -69,9 +69,9 @@ spec = describe "Smite the Wicked" $ do
     game' <- runGameTestMessages
       game
       [ EnemyDefeated
-        (getId () updatedEnemy)
-        (getId () investigator)
-        (getId () location)
+        (getEnemyId updatedEnemy)
+        (getInvestigatorId investigator)
+        (getLocationId location)
         (getCardCode enemy)
         (toSource investigator)
         []
@@ -90,11 +90,11 @@ spec = describe "Smite the Wicked" $ do
     game <-
       runGameTest
           investigator
-          [ PlacedLocation (getId () location)
+          [ PlacedLocation (getLocationId location)
           , SetEncounterDeck [enemy]
           , loadDeck investigator [smiteTheWicked]
           , drawCards investigator 1
-          , Resign (getId () investigator)
+          , Resign (getInvestigatorId investigator)
           ]
           ((locations %~ insertEntity location) . (scenario ?~ scenario'))
         >>= runGameTestOnlyOption "place enemy"

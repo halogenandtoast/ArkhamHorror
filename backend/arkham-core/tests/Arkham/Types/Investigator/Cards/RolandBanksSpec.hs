@@ -40,7 +40,7 @@ spec = describe "Roland Banks" $ do
                     Run{} -> True
                     _ -> False
                   )
-          getCount () (updated game rolandBanks) `shouldBe` ClueCount 1
+          getCount (updated game rolandBanks) () `shouldBe` ClueCount 1
   context "elder sign" $ do
     it "gives +1 for each clue on your location" $ do
       let rolandBanks = lookupInvestigator "01001"
@@ -57,4 +57,4 @@ spec = describe "Roland Banks" $ do
           ((locations %~ insertEntity location) . (scenario ?~ scenario'))
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
-      getCount () (updated game rolandBanks) `shouldBe` ClueCount 1
+      getCount (updated game rolandBanks) () `shouldBe` ClueCount 1

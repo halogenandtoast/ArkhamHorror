@@ -29,83 +29,86 @@ isInDiscardOf
   :: (ToPlayerCard entity) => Game queue -> Investigator -> entity -> Bool
 isInDiscardOf game investigator entity = card `elem` discard'
  where
-  discard' = game ^?! investigators . ix (getId () investigator) . to discardOf
-  card = asPlayerCard entity
+  discard' =
+    game ^?! investigators . ix (getInvestigatorId investigator) . to discardOf
+  card = asPlayerCard game entity
 
 class ToPlayerCard a where
-  asPlayerCard :: a -> PlayerCard
+  asPlayerCard :: Game queue -> a -> PlayerCard
 
 class ToEncounterCard a where
-  asEncounterCard :: a -> EncounterCard
+  asEncounterCard :: Game queue -> a -> EncounterCard
 
 instance ToPlayerCard PlayerCard where
-  asPlayerCard = id
+  asPlayerCard _ = id
 
 instance ToPlayerCard Event where
-  asPlayerCard event =
-    lookupPlayerCard (getCardCode event) (CardId . unEventId $ getId () event)
+  asPlayerCard game event =
+    lookupPlayerCard (getCardCode event) (CardId . unEventId $ getId event game)
 
 instance ToPlayerCard Treachery where
-  asPlayerCard treachery = lookupPlayerCard
+  asPlayerCard game treachery = lookupPlayerCard
     (getCardCode treachery)
-    (CardId . unTreacheryId $ getId () treachery)
+    (CardId . unTreacheryId $ getId treachery game)
 
 class Entity a => TestEntity a where
   updated :: Game queue -> a -> a
 
 instance TestEntity Agenda where
-  updated g a = g ^?! agendas . ix (getId () a)
+  updated g a = g ^?! agendas . ix (getAgendaId a)
 
 instance TestEntity Treachery where
-  updated g t = g ^?! treacheries . ix (getId () t)
+  updated g t = g ^?! treacheries . ix (getTreacheryId t)
 
 instance TestEntity Asset where
-  updated g a = g ^?! assets . ix (getId () a)
+  updated g a = g ^?! assets . ix (getAssetId a)
 
 instance TestEntity Location where
-  updated g a = g ^?! locations . ix (getId () a)
+  updated g l = g ^?! locations . ix (getLocationId l)
 
 instance TestEntity Event where
-  updated g a = g ^?! events . ix (getId () a)
+  updated g e = g ^?! events . ix (getEventId e)
 
 instance TestEntity Enemy where
-  updated g a = g ^?! enemies . ix (getId () a)
+  updated g e = g ^?! enemies . ix (getEnemyId e)
 
 instance TestEntity Investigator where
-  updated g a = g ^?! investigators . ix (getId () a)
+  updated g i = g ^?! investigators . ix (getInvestigatorId i)
 
 isAttachedTo :: (TestEntity a, TestEntity b) => Game queue -> a -> b -> Bool
 isAttachedTo game x y = case toTarget x of
   LocationTarget locId -> case toTarget y of
     EventTarget eventId ->
-      eventId `member` (game ^. locations . ix locId . to (getSet ()))
+      eventId `member` (game ^. locations . ix locId . to (`getSet` game))
     _ -> False
   _ -> False
 
 instance ToEncounterCard Enemy where
-  asEncounterCard enemy = lookupEncounterCard
+  asEncounterCard game enemy = lookupEncounterCard
     (getCardCode enemy)
-    (CardId . unEnemyId $ getId () enemy)
+    (CardId . unEnemyId $ getId enemy game)
 
 isInEncounterDiscard :: (ToEncounterCard entity) => Game queue -> entity -> Bool
 isInEncounterDiscard game entity = card `elem` discard'
  where
   discard' = game ^. discard
-  card = asEncounterCard entity
+  card = asEncounterCard game entity
 
 updatedResourceCount :: Game queue -> Investigator -> Int
 updatedResourceCount game investigator =
-  game ^?! investigators . ix (getId () investigator) . to
+  game ^?! investigators . ix (getInvestigatorId investigator) . to
     (Investigator.investigatorResources . investigatorAttrs)
 
 evadedBy :: Game queue -> Investigator -> Enemy -> Bool
 evadedBy game _investigator enemy =
-  let enemy' = game ^?! enemies . ix (getId () enemy)
+  let enemy' = game ^?! enemies . ix (getEnemyId enemy)
   in not (isEngaged enemy') && isExhausted enemy'
 
 hasRemainingActions :: Game queue -> Int -> Investigator -> Bool
 hasRemainingActions game n investigator =
-  let investigator' = game ^?! investigators . ix (getId () investigator)
+  let
+    investigator' =
+      game ^?! investigators . ix (getInvestigatorId investigator)
   in actionsRemaining investigator' == n
 
 hasDamage :: (HasDamage a) => (Int, Int) -> a -> Bool
@@ -132,20 +135,20 @@ deckMatches f i = f (deckOf i)
 hasProcessedMessage :: Message -> Game [Message] -> Bool
 hasProcessedMessage m g = m `elem` gameMessageHistory g
 
-hasEnemy :: Enemy -> Location -> Bool
-hasEnemy e l = getId () e `member` getSet @EnemyId () l
+hasEnemy :: Game queue -> Enemy -> Location -> Bool
+hasEnemy g e l = getId e g `member` getSet @EnemyId l g
 
-hasCardInPlay :: Card -> Investigator -> Bool
-hasCardInPlay c i = case c of
+hasCardInPlay :: Game queue -> Card -> Investigator -> Bool
+hasCardInPlay g c i = case c of
   PlayerCard pc -> case pcCardType pc of
-    AssetType -> AssetId (unCardId $ pcId pc) `member` getSet () i
+    AssetType -> AssetId (unCardId $ pcId pc) `member` getSet i g
     _ -> error "not implemented"
   _ -> error "not implemented"
 
 hasPassedSkillTestBy :: Int -> GameExternal -> Target -> Investigator -> Bool
 hasPassedSkillTestBy n game target investigator = hasProcessedMessage
   (PassedSkillTest
-    (getId () investigator)
+    (getInvestigatorId investigator)
     Nothing
     TestSource
     (SkillTestInitiatorTarget target)
@@ -154,17 +157,21 @@ hasPassedSkillTestBy n game target investigator = hasProcessedMessage
   game
 
 hasTreacheryWithMatchingCardCode
-  :: (HasSet TreacheryId () a) => Game queue -> Card -> a -> Bool
+  :: (HasSet TreacheryId env a, env ~ Game queue)
+  => Game queue
+  -> Card
+  -> a
+  -> Bool
 hasTreacheryWithMatchingCardCode g c a = maybe
   False
-  (\treachery -> getId @TreacheryId () treachery `member` getSet () a)
+  (\treachery -> getId @TreacheryId treachery g `member` getSet a g)
   mtreachery
  where
   mtreachery =
     find ((== getCardCode c) . getCardCode) $ toList (g ^. treacheries)
 
 hasClueCount :: HasCount ClueCount () a => Int -> a -> Bool
-hasClueCount n a = n == unClueCount (getCount () a)
+hasClueCount n a = n == unClueCount (getCount a ())
 
 hasUses :: (HasCount UsesCount () a) => Int -> a -> Bool
-hasUses n a = n == unUsesCount (getCount () a)
+hasUses n a = n == unUsesCount (getCount a ())

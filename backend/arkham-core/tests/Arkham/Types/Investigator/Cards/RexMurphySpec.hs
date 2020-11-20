@@ -44,7 +44,7 @@ spec = describe "Rex Murphy" $ do
           [ SetTokens [ElderSign]
           , loadDeck rexMurphy cards
           , BeginSkillTest
-            (getId () rexMurphy)
+            (getInvestigatorId rexMurphy)
             TestSource
             TestTarget
             Nothing
@@ -73,7 +73,7 @@ spec = describe "Rex Murphy" $ do
           [ SetTokens [ElderSign]
           , loadDeck rexMurphy cards
           , BeginSkillTest
-            (getId () rexMurphy)
+            (getInvestigatorId rexMurphy)
             TestSource
             TestTarget
             Nothing
@@ -93,7 +93,7 @@ spec = describe "Rex Murphy" $ do
       updated game rexMurphy `shouldSatisfy` handIs []
       game `shouldSatisfy` hasProcessedMessage
         (PassedSkillTest
-          (getId () rexMurphy)
+          (getInvestigatorId rexMurphy)
           Nothing
           TestSource
           (SkillTestInitiatorTarget TestTarget)

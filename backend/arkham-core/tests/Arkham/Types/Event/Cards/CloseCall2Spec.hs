@@ -18,7 +18,7 @@ spec = describe "Close Call (2)" $ do
       runGameTest
           investigator
           [ addToHand investigator (PlayerCard closeCall2)
-          , EnemyEvaded (getId () investigator) (getId () enemy)
+          , EnemyEvaded (getInvestigatorId investigator) (getEnemyId enemy)
           ]
           (enemies %~ insertEntity enemy)
         >>= runGameTestOptionMatching
@@ -36,7 +36,7 @@ spec = describe "Close Call (2)" $ do
     game <- runGameTest
       investigator
       [ addToHand investigator (PlayerCard closeCall2)
-      , EnemyEvaded (getId () investigator) (getId () enemy)
+      , EnemyEvaded (getInvestigatorId investigator) (getEnemyId enemy)
       ]
       (enemies %~ insertEntity enemy)
     length (gameMessages game) `shouldBe` 0
@@ -47,7 +47,7 @@ spec = describe "Close Call (2)" $ do
     game <- runGameTest
       investigator
       [ addToHand investigator (PlayerCard closeCall2)
-      , EnemyEvaded (getId () investigator) (getId () enemy)
+      , EnemyEvaded (getInvestigatorId investigator) (getEnemyId enemy)
       ]
       (enemies %~ insertEntity enemy)
     length (gameMessages game) `shouldBe` 0

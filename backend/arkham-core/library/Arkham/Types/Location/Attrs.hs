@@ -291,8 +291,7 @@ instance LocationRunner env => RunMessage env Attrs where
         traits' <- getSetList eid
         when (Elite `notElem` traits') $ do
           activeInvestigatorId <- unActiveInvestigatorId <$> getId ()
-          connectedLocationIds <-
-            map unConnectedLocationId <$> getSetList lid
+          connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
           availableLocationIds <-
             flip filterM connectedLocationIds $ \locationId' -> do
               modifiers' <- getModifiersFor

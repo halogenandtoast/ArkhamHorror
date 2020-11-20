@@ -18,10 +18,10 @@ spec = describe "Jenny Barnes" $ do
       scenario' <- testScenario "00000" id
       game <- runGameTest
         jennyBarnes
-        [TakeResources (getId () jennyBarnes) 5 False]
+        [TakeResources (getInvestigatorId jennyBarnes) 5 False]
         (scenario ?~ scenario')
       token <- withGame game $ getTokenValue
         (updated game jennyBarnes)
-        (getId () jennyBarnes)
+        (getInvestigatorId jennyBarnes)
         ElderSign
       tokenValue token `shouldBe` Just 5

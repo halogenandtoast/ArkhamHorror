@@ -17,7 +17,7 @@ spec = describe "Arcane Initiate" $ do
       investigator
       [playAsset investigator arcaneInitiate]
       (assets %~ insertEntity arcaneInitiate)
-    getCount () (updated game arcaneInitiate) `shouldBe` DoomCount 1
+    getCount (updated game arcaneInitiate) () `shouldBe` DoomCount 1
   it "can be exhausted to search the top 3 cards of your deck for a Spell card"
     $ do
         arcaneInitiate <- buildAsset "01063"

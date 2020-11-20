@@ -64,8 +64,8 @@ spec = describe "Jenny's Twin .45s" $ do
         [ enemySpawn location enemy
         , moveTo investigator location
         , UseCardAbility
-          (getId () investigator)
-          (AssetSource (getId () jennysTwin45sAsset))
+          (getInvestigatorId investigator)
+          (toSource jennysTwin45sAsset)
           Nothing
           1
         ]

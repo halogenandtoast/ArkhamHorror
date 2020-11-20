@@ -124,6 +124,6 @@ type GameRunner env
     , HasActions env ActionType
     , HasRecord env
     , HasTokenValue env InvestigatorId
-    , CanBeWeakness TreacheryId env
+    , CanBeWeakness env TreacheryId
     , HasStep AgendaStep env
     )

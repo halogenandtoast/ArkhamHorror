@@ -371,8 +371,8 @@ class (HasId EnemyId () enemy) => IsEnemy enemy where
 class Discardable a where
   canBeDiscarded :: a -> Bool
 
-class CanBeWeakness b a where
-  getIsWeakness :: b -> a -> Bool
+class CanBeWeakness env a where
+  getIsWeakness :: (MonadReader env m) => a -> m Bool
 
 class Entity a where
   toTarget :: a -> Target

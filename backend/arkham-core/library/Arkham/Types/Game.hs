@@ -432,11 +432,8 @@ instance HasId LocationId (Game queue) EnemyId where
 instance HasCount ActsRemainingCount (Game queue) () where
   getCount _ = do
     actIds <-
-      scenarioActs
-      . fromJustNote "scenario has to be set"
-      . view scenario
-      <$> ask
-    activeActIds <- keys . view acts <$> ask
+      scenarioActs . fromJustNote "scenario has to be set" <$> view scenario
+    activeActIds <- keys <$> view acts
     let
       currentActId = case activeActIds of
         [aid] -> aid
@@ -522,7 +519,7 @@ instance HasCount ResourceCount (Game queue) InvestigatorId where
   getCount = getCount <=< getInvestigator
 
 instance HasCount PlayerCount (Game queue) () where
-  getCount _ = PlayerCount . length . view investigators <$> ask
+  getCount _ = PlayerCount . length <$> view investigators
 
 instance HasCount EnemyCount (Game queue) InvestigatorId where
   getCount = getCount <=< getInvestigator
@@ -538,13 +535,12 @@ instance HasCount AssetCount (Game queue) (InvestigatorId, [Trait]) where
 
 instance HasCount EnemyCount (Game queue) [Trait] where
   getCount traits = do
-    g <- ask
-    pure . EnemyCount . length $ filterMap enemyMatcher (view enemies g)
+    EnemyCount . length . filterMap enemyMatcher <$> view enemies
     where enemyMatcher enemy = any (`member` getTraits enemy) traits
 
 instance HasCount EnemyCount (Game queue) (LocationId, [Trait]) where
   getCount (lid, traits) = do
-    mlocation <- asks $ preview (locations . ix lid)
+    mlocation <- preview (locations . ix lid)
     g <- ask
     case mlocation of
       Just location -> do
@@ -646,13 +642,13 @@ instance HasRoundHistory (Game (IORef [Message])) where
   getRoundHistory = readIORef . gameRoundMessageHistory
 
 instance HasList Location (Game queue) () where
-  getList _ = asks $ toList . view locations
+  getList _ = toList <$> view locations
 
 instance HasList UsedAbility (Game queue) () where
-  getList _ = asks $ map UsedAbility . view usedAbilities
+  getList _ = map UsedAbility <$> view usedAbilities
 
 instance HasList Enemy (Game queue) () where
-  getList _ = asks $ toList . view enemies
+  getList _ = toList <$> view enemies
 
 instance HasList Ability (Game queue) () where
   getList _ = do
@@ -667,7 +663,7 @@ instance HasTarget ForSkillTest (Game queue) where
 
 instance HasSet ScenarioLogKey (Game queue) () where
   getSet _ = do
-    mscenario <- asks $ view scenario
+    mscenario <- view scenario
     maybe (pure mempty) getSet mscenario
 
 instance HasSet HandCardId (Game queue) InvestigatorId where
@@ -726,60 +722,54 @@ instance HasSet ExhaustedEnemyId (Game queue) LocationId where
     g <- ask
     location <- getLocation lid <$> ask
     locationEnemyIds <- getSet @EnemyId location
-    asks
-      $ HashSet.map ExhaustedEnemyId
+    HashSet.map ExhaustedEnemyId
       . keysSet
       . filterMap
           (\e ->
             runReader (getId e) g `member` locationEnemyIds && isExhausted e
           )
-      . view enemies
+      <$> view enemies
 
 instance HasSet AgendaId (Game queue) () where
-  getSet _ = asks $ keysSet . view agendas
+  getSet _ = keysSet <$> view agendas
 
 instance HasSet VictoryDisplayCardCode (Game queue) () where
   getSet _ =
-    asks
-      $ setFromList
+    setFromList
       . map (VictoryDisplayCardCode . getCardCode)
-      . view victoryDisplay
+      <$> view victoryDisplay
 
 instance HasSet ClueCount (Game queue) () where
   getSet _ = do
     g <- ask
-    asks
-      $ setFromList
+    setFromList
       . map (flip runReader g . getCount)
       . toList
-      . view investigators
+      <$> view investigators
 
 instance HasSet CardCount (Game queue) () where
   getSet _ = do
     g <- ask
-    asks
-      $ setFromList
+    setFromList
       . map (flip runReader g . getCount)
       . toList
-      . view investigators
+      <$> view investigators
 
 instance (GameRunner env, env ~ Game queue) => HasSet RemainingHealth (Game queue) () where
   getSet _ = do
     g <- ask
-    asks
-      $ setFromList
+    setFromList
       . map (RemainingHealth . flip runReader g . getRemainingHealth)
       . toList
-      . view investigators
+      <$> view investigators
 
 instance (GameRunner env, env ~ Game queue) => HasSet RemainingSanity (Game queue) () where
   getSet _ = do
     g <- ask
-    asks
-      $ setFromList
+    setFromList
       . map (RemainingSanity . flip runReader g . getRemainingSanity)
       . toList
-      . view investigators
+      <$> view investigators
 
 instance (GameRunner env, env ~ Game queue) => HasCount RemainingHealth (Game queue) InvestigatorId where
   getCount iid = do
@@ -792,78 +782,72 @@ instance (GameRunner env, env ~ Game queue) => HasCount RemainingSanity (Game qu
     RemainingSanity <$> getRemainingSanity (getInvestigator iid g)
 
 instance HasSet LocationId (Game queue) () where
-  getSet _ = asks $ keysSet . view locations
+  getSet _ = keysSet <$> view locations
 
 instance HasList LocationName (Game queue) () where
-  getList _ = asks $ map getLocationName . toList . view locations
+  getList _ = map getLocationName . toList <$> view locations
 
 instance HasSet EmptyLocationId (Game queue) () where
   getSet _ =
-    asks
-      $ HashSet.map EmptyLocationId
+    HashSet.map EmptyLocationId
       . keysSet
       . filterMap isEmptyLocation
-      . view locations
+      <$> view locations
 
 instance HasSet RevealedLocationId (Game queue) () where
   getSet _ =
-    asks
-      $ HashSet.map RevealedLocationId
+    HashSet.map RevealedLocationId
       . keysSet
       . filterMap isRevealed
-      . view locations
+      <$> view locations
 
 instance HasSet LocationId (Game queue) TreacheryCardCode where
   getSet (TreacheryCardCode cc) =
-    asks
-      $ setFromList
+    setFromList
       . mapMaybe treacheryLocation
       . toList
       . filterMap ((== cc) . getCardCode)
-      . view treacheries
+      <$> view treacheries
 
 instance HasSet LocationId (Game queue) [Trait] where
-  getSet traits = asks $ keysSet . filterMap hasMatchingTrait . view locations
+  getSet traits = keysSet . filterMap hasMatchingTrait <$> view locations
    where
     hasMatchingTrait =
       not . null . (setFromList traits `intersection`) . getTraits
 
 instance HasSet ActId (Game queue) () where
-  getSet _ = asks $ keysSet . view acts
+  getSet _ = keysSet <$> view acts
 
 instance HasSet InScenarioInvestigatorId (Game queue) () where
   getSet _ =
-    asks
-      $ HashSet.map InScenarioInvestigatorId
+    HashSet.map InScenarioInvestigatorId
       . keysSet
       . filterMap (not . (\i -> hasResigned i || isDefeated i))
-      . view investigators
+      <$> view investigators
 
 instance HasSet UnengagedEnemyId (Game queue) () where
   getSet _ =
-    asks
-      $ HashSet.map UnengagedEnemyId
+    HashSet.map UnengagedEnemyId
       . keysSet
       . filterMap (not . isEngaged)
-      . view enemies
+      <$> view enemies
 
 instance HasSet EnemyId (Game queue) Trait where
   getSet trait =
-    asks $ keysSet . filterMap ((trait `elem`) . getTraits) . view enemies
+    keysSet . filterMap ((trait `elem`) . getTraits) <$> view enemies
 
 instance HasSet CommittedCardId (Game queue) InvestigatorId where
-  getSet iid = maybe (pure mempty) (getSet . (iid, )) =<< asks (view skillTest)
+  getSet iid = maybe (pure mempty) (getSet . (iid, )) =<< view skillTest
 
 instance HasSet CommittedCardCode (Game queue) () where
-  getSet _ = maybe (pure mempty) getSet =<< asks (view skillTest)
+  getSet _ = maybe (pure mempty) getSet =<< view skillTest
 
 instance HasSet BlockedLocationId (Game queue) () where
   getSet _ =
-    asks
-      $ HashSet.map BlockedLocationId
+    HashSet.map BlockedLocationId
       . keysSet
       . filterMap isBlocked
-      . view locations
+      <$> view locations
 
 data BFSState = BFSState
   { _bfsSearchQueue       :: Seq LocationId
@@ -1094,7 +1078,7 @@ instance HasSet FarthestEnemyId (Game queue) (InvestigatorId, EnemyTrait) where
 instance HasList (InvestigatorId, Distance) (Game queue) EnemyTrait where
   getList enemyTrait = do
     game <- ask
-    iids <- asks $ keys . view investigators
+    iids <- keys <$> view investigators
     pure $ flip map iids $ \iid ->
       (iid, getDistance game $ locationFor iid game)
    where
@@ -1142,7 +1126,7 @@ instance HasSet FarthestLocationId (Game queue) [InvestigatorId] where
 
 instance HasSet Int (Game queue) SkillType where
   getSet skillType =
-    asks $ setFromList . map (getSkill skillType) . toList . view investigators
+    setFromList . map (getSkill skillType) . toList <$> view investigators
 
 instance (GameRunner env, env ~ Game queue) => HasSet PreyId (Game queue) Prey where
   getSet preyType = do
@@ -1161,11 +1145,10 @@ instance (GameRunner env, env ~ Game queue) => HasSet PreyId (Game queue) (Prey,
 
 instance HasSet AdvanceableActId (Game queue) () where
   getSet _ =
-    asks
-      $ HashSet.map AdvanceableActId
+    HashSet.map AdvanceableActId
       . keysSet
       . filterMap isAdvanceable
-      . view acts
+      <$> view acts
 
 instance HasSet ConnectedLocationId (Game queue) LocationId where
   getSet = getSet <=< getLocation
@@ -1212,11 +1195,11 @@ instance HasSet EventId (Game queue) LocationId where
   getSet = getSet <=< getLocation
 
 instance HasSet EventId (Game queue) () where
-  getSet _ = asks $ keysSet . view events
+  getSet _ = keysSet <$> view events
 
 instance HasSet HealthDamageableAssetId (Game queue) InvestigatorId where
   getSet iid = do
-    allAssets' <- asks $ view assets
+    allAssets' <- view assets
     HashSet.map HealthDamageableAssetId
       . keysSet
       . assets' allAssets'
@@ -1228,7 +1211,7 @@ instance HasSet HealthDamageableAssetId (Game queue) InvestigatorId where
 
 instance HasSet SanityDamageableAssetId (Game queue) InvestigatorId where
   getSet iid = do
-    allAssets' <- asks $ view assets
+    allAssets' <- view assets
     HashSet.map SanityDamageableAssetId
       . keysSet
       . assets' allAssets'
@@ -1239,11 +1222,11 @@ instance HasSet SanityDamageableAssetId (Game queue) InvestigatorId where
       allAssets'
 
 instance HasSet EnemyId (Game queue) () where
-  getSet _ = asks $ keysSet . view enemies
+  getSet _ = keysSet <$> view enemies
 
 instance HasSet UniqueEnemyId (Game queue) () where
   getSet _ = do
-    enemies' <- asks $ filter isUnique . toList . view enemies
+    enemies' <- filter isUnique . toList <$> view enemies
     enemyIds <- traverse getId enemies'
     pure . setFromList $ map UniqueEnemyId enemyIds
 
@@ -1270,19 +1253,18 @@ instance HasSet AloofEnemyId (Game queue) LocationId where
       (g ^. enemies)
 
 instance HasSet InvestigatorId (Game queue) () where
-  getSet _ = asks $ keysSet . view investigators
+  getSet _ = keysSet <$> view investigators
 
 instance HasSet InvestigatorId (Game queue) LocationId where
   getSet = getSet <=< getLocation
 
 instance HasSet InvestigatorId (Game queue) LocationName where
   getSet locationName = do
-    location <- asks
-      (fromJustNote missingLocation
+    location <-
+      fromJustNote missingLocation
       . find ((== locationName) . getLocationName)
       . toList
-      . view locations
-      )
+      <$> view locations
     getSet location
    where
     missingLocation =

@@ -1,20 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.TheyreGettingOut where
 
-import Arkham.Json
-import Arkham.Types.ActId
+import Arkham.Import hiding (sequence)
+
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Query
 import Arkham.Types.Trait
-import ClassyPrelude hiding (sequence)
 import qualified Data.HashSet as HashSet
-import Lens.Micro
 
 newtype TheyreGettingOut = TheyreGettingOut Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -26,7 +18,7 @@ theyreGettingOut = TheyreGettingOut
 instance HasActions env TheyreGettingOut where
   getActions i window (TheyreGettingOut x) = getActions i window x
 
-instance (AgendaRunner env) => RunMessage env TheyreGettingOut where
+instance AgendaRunner env => RunMessage env TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3a" -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
@@ -45,18 +37,17 @@ instance (AgendaRunner env) => RunMessage env TheyreGettingOut where
         else a <$ unshiftMessage NoResolution -- TODO: defeated and suffer trauma
     EndEnemy -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> asks (getId ())
-      unengagedEnemyIds <- HashSet.map unUnengagedEnemyId <$> asks (getSet ())
-      ghoulEnemyIds <- asks (getSet Ghoul)
-      parlorEnemyIds <- asks (getSet (LocationId "01115"))
+      unengagedEnemyIds <- HashSet.map unUnengagedEnemyId <$> getSet ()
+      ghoulEnemyIds <- getSet Ghoul
+      parlorEnemyIds <- getSet (LocationId "01115")
       let
         enemiesToMove =
           (ghoulEnemyIds `intersection` unengagedEnemyIds)
             `difference` parlorEnemyIds
-      messages <- for (HashSet.toList enemiesToMove) $ \eid -> do
+      messages <- for (setToList enemiesToMove) $ \eid -> do
         locationId <- asks (getId eid)
-        closestLocationIds <-
-          HashSet.toList . HashSet.map unClosestLocationId <$> asks
-            (getSet (locationId, LocationId "01115"))
+        closestLocationIds <- map unClosestLocationId
+          <$> getSetList (locationId, LocationId "01115")
         case closestLocationIds of
           [] -> pure Nothing
           [x] -> pure $ Just $ EnemyMove eid locationId x

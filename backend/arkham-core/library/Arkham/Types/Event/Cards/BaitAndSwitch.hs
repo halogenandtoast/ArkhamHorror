@@ -28,8 +28,7 @@ instance (EventRunner env) => RunMessage env BaitAndSwitch where
     PassedSkillTest iid _ (EventSource eid) SkillTestInitiatorTarget{} _
       | eid == eventId -> do
         lid <- asks (getId iid)
-        connectedLocationIds <- map unConnectedLocationId . setToList <$> asks
-          (getSet lid)
+        connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
         EnemyTarget enemyId <- fromMaybe (error "missing target")
           <$> asks (getTarget ForSkillTest)
         unless (null connectedLocationIds) $ do

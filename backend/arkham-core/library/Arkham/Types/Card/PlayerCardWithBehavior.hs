@@ -73,11 +73,11 @@ toPlayerCardWithBehavior pc = builder pc
     findWithDefault defaultCard (getCardCode pc) allPlayerCardsWithBehavior
   defaultCard = DefaultPlayerCard' . DefaultPlayerCard
 
-deriving anyclass instance (HasSet HandCardId InvestigatorId env, HasQueue env) => RunMessage env PlayerCard'
+deriving anyclass instance (HasSet HandCardId env InvestigatorId, HasQueue env) => RunMessage env PlayerCard'
 deriving anyclass instance
   ( HasId CardCode EnemyId env
-  , HasSet Trait EnemyId env
-  , HasSet AssetId (InvestigatorId, UseType) env
+  , HasSet Trait env EnemyId
+  , HasSet AssetId env (InvestigatorId, UseType)
   , HasCount env ActionTakenCount InvestigatorId
   )
   => HasActions env PlayerCard'
@@ -99,10 +99,10 @@ instance HasActions env TheNecronomicon where
   getActions i window (TheNecronomicon pc) =
     getActions i window (DefaultPlayerCard pc)
 
-instance (HasSet HandCardId InvestigatorId env, HasQueue env) => RunMessage env DarkMemory where
+instance (HasSet HandCardId env InvestigatorId, HasQueue env) => RunMessage env DarkMemory where
   runMessage (EndTurn iid) c@(DarkMemory pc) = do
     let cardId = getCardId pc
-    cardIds <- map unHandCardId . setToList <$> asks (getSet iid)
+    cardIds <- map unHandCardId <$> getSetList iid
     c <$ when
       (cardId `elem` cardIds)
       (unshiftMessages
@@ -134,9 +134,9 @@ instance (HasQueue env) => RunMessage env CloseCall2 where
     DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
     pure $ CloseCall2 pc'
 
-instance (HasId CardCode EnemyId env, HasSet Trait EnemyId env) => HasActions env CloseCall2 where
+instance (HasId CardCode EnemyId env, HasSet Trait env EnemyId) => HasActions env CloseCall2 where
   getActions iid (AfterEnemyEvaded You eid) (CloseCall2 pc) = do
-    traits' <- asks (getSet eid)
+    traits' <- getSet eid
     cardCode <- asks (getId eid)
     pure
       [ InitiatePlayCard iid (getCardId pc) (Just $ EnemyTarget eid) False
@@ -175,9 +175,9 @@ instance (HasQueue env) => RunMessage env AstoundingRevelation where
     DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
     pure $ AstoundingRevelation pc'
 
-instance HasSet AssetId (InvestigatorId, UseType) env => HasActions env AstoundingRevelation where
+instance HasSet AssetId env (InvestigatorId, UseType) => HasActions env AstoundingRevelation where
   getActions iid (WhenAmongSearchedCards You) (AstoundingRevelation pc) = do
-    secretAssetIds <- asks $ setToList . getSet (iid, Secret)
+    secretAssetIds <- getSetList (iid, Secret)
     pure
       [ Run
           [ Discard (SearchedCardTarget iid $ getCardId pc)

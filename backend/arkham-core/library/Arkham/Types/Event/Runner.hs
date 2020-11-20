@@ -19,16 +19,16 @@ type EventRunner env
     , HasId LocationId InvestigatorId env
     , HasList DiscardableHandCard InvestigatorId env
     , HasRoundHistory env
-    , HasSet AssetId InvestigatorId env
-    , HasSet ConnectedLocationId LocationId env
-    , HasSet EmptyLocationId () env
-    , HasSet EnemyId InvestigatorId env
-    , HasSet EnemyId LocationId env
-    , HasSet ExhaustedEnemyId LocationId env
-    , HasSet InvestigatorId () env
-    , HasSet InvestigatorId LocationId env
-    , HasSet RevealedLocationId () env
-    , HasSet Trait AssetId env
-    , HasSet Trait EnemyId env
+    , HasSet AssetId env InvestigatorId
+    , HasSet ConnectedLocationId env LocationId
+    , HasSet EmptyLocationId env ()
+    , HasSet EnemyId env InvestigatorId
+    , HasSet EnemyId env LocationId
+    , HasSet ExhaustedEnemyId env LocationId
+    , HasSet InvestigatorId env ()
+    , HasSet InvestigatorId env LocationId
+    , HasSet RevealedLocationId env ()
+    , HasSet Trait env AssetId
+    , HasSet Trait env EnemyId
     , HasTarget ForSkillTest env
     )

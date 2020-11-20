@@ -27,7 +27,7 @@ instance TreacheryRunner env => RunMessage env CryptChill where
         ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _
       | isSource attrs source -> do
-        assetCount <- asks $ length . getSet @DiscardableAssetId iid
+        assetCount <- length <$> getSet @DiscardableAssetId iid
         if assetCount > 0
           then t <$ unshiftMessage (ChooseAndDiscardAsset iid)
           else t <$ unshiftMessage (InvestigatorAssignDamage iid source 2 0)

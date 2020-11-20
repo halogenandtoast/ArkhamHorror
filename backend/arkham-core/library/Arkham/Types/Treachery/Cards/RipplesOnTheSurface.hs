@@ -19,14 +19,14 @@ ripplesOnTheSurface uuid _ = RipplesOnTheSurface $ baseAttrs uuid "81027"
 
 instance
   ( HasId LocationId InvestigatorId env
-  , HasSet Trait LocationId env
+  , HasSet Trait env LocationId
   )
   => HasModifiersFor env RipplesOnTheSurface where
   getModifiersFor (SkillTestSource _ source _) (InvestigatorTarget iid) (RipplesOnTheSurface attrs)
     | isSource attrs source
     = do
       locationId <- asks $ getId @LocationId iid
-      isBayou <- asks $ member Bayou . getSet locationId
+      isBayou <- member Bayou <$> getSet locationId
       pure [ CannotCommitCards | isBayou ]
   getModifiersFor _ _ _ = pure []
 

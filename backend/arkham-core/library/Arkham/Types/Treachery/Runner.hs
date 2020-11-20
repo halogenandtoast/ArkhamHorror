@@ -28,19 +28,19 @@ type TreacheryRunner env
     , HasId LocationId EnemyId env
     , HasId LocationId InvestigatorId env
     , HasList UsedAbility () env
-    , HasSet AssetId InvestigatorId env
-    , HasSet ClosestEnemyId (LocationId, [Trait]) env
-    , HasSet ConnectedLocationId LocationId env
-    , HasSet DiscardableAssetId InvestigatorId env
-    , HasSet FarthestLocationId InvestigatorId env
-    , HasSet InvestigatorId LocationId env
-    , HasSet InvestigatorId () env
-    , HasSet LocationId () env
-    , HasSet LocationId TreacheryCardCode env
-    , HasSet LocationId [Trait] env
-    , HasSet Trait LocationId env
-    , HasSet FarthestEnemyId (InvestigatorId, EnemyTrait) env
-    , HasSet UniqueEnemyId () env
-    , HasSet EnemyId () env
+    , HasSet AssetId env InvestigatorId
+    , HasSet ClosestEnemyId env (LocationId, [Trait])
+    , HasSet ConnectedLocationId env LocationId
+    , HasSet DiscardableAssetId env InvestigatorId
+    , HasSet FarthestLocationId env InvestigatorId
+    , HasSet InvestigatorId env LocationId
+    , HasSet InvestigatorId env ()
+    , HasSet LocationId env ()
+    , HasSet LocationId env TreacheryCardCode
+    , HasSet LocationId env [Trait]
+    , HasSet Trait env LocationId
+    , HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait)
+    , HasSet UniqueEnemyId env ()
+    , HasSet EnemyId env ()
     )
 

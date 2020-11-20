@@ -31,11 +31,11 @@ instance ActionRunner env => HasActions env MedicalTexts where
       ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env MedicalTexts where
+instance AssetRunner env => RunMessage env MedicalTexts where
   runMessage msg a@(MedicalTexts attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- asks $ getId @LocationId (getInvestigator attrs)
-      locationInvestigatorIds <- asks $ setToList . getSet locationId
+      locationInvestigatorIds <- getSetList locationId
       unshiftMessage
         (chooseOne
           iid

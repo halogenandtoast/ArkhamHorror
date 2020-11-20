@@ -27,11 +27,10 @@ instance ActionRunner env => HasActions env SearchingForIzzie where
       ]
   getActions _ _ _ = pure []
 
-instance (TreacheryRunner env) => RunMessage env SearchingForIzzie where
+instance TreacheryRunner env => RunMessage env SearchingForIzzie where
   runMessage msg t@(SearchingForIzzie attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      farthestLocations <-
-        asks $ map unFarthestLocationId . setToList . getSet iid
+      farthestLocations <- map unFarthestLocationId <$> getSetList iid
       case farthestLocations of
         [lid] ->
           unshiftMessage (AttachTreachery treacheryId (LocationTarget lid))

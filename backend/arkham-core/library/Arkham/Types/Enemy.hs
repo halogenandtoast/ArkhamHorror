@@ -119,9 +119,9 @@ deriving anyclass instance
   ( HasId LocationId InvestigatorId env
   , HasCount env RemainingSanity InvestigatorId
   , HasCount env CardCount InvestigatorId
-  , HasSet InvestigatorId LocationId env
-  , HasSet ConnectedLocationId LocationId env
-  , HasSet Trait LocationId env
+  , HasSet InvestigatorId env LocationId
+  , HasSet ConnectedLocationId env LocationId
+  , HasSet Trait env LocationId
   )
   => HasModifiersFor env Enemy
 
@@ -153,11 +153,11 @@ instance HasCount env SanityDamageCount Enemy where
 instance HasId LocationId () Enemy where
   getId _ = enemyLocation . enemyAttrs
 
-instance HasSet TreacheryId () Enemy where
-  getSet _ = enemyTreacheries . enemyAttrs
+instance HasSet TreacheryId env Enemy where
+  getSet = pure . enemyTreacheries . enemyAttrs
 
-instance HasSet AssetId () Enemy where
-  getSet _ = enemyAssets . enemyAttrs
+instance HasSet AssetId env Enemy where
+  getSet = pure . enemyAssets . enemyAttrs
 
 instance HasCardCode Enemy where
   getCardCode = enemyCardCode . enemyAttrs

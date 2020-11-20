@@ -29,8 +29,7 @@ instance (AssetRunner env) => RunMessage env Encyclopedia2 where
   runMessage msg (Encyclopedia2 attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- asks $ getId @LocationId iid
-      investigatorTargets <-
-        asks $ map InvestigatorTarget . setToList . getSet locationId
+      investigatorTargets <- map InvestigatorTarget <$> getSetList locationId
       unshiftMessage $ chooseOne
         iid
         [ TargetLabel

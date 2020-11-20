@@ -28,8 +28,7 @@ instance (EventRunner env) => RunMessage env ExtraAmmunition1 where
       investigatorIds <- asks $ setToList . getSet @InvestigatorId locationId
       assetIds <- concatForM investigatorIds (asks . (setToList .) . getSet)
       firearmAssetids <- flip filterM assetIds $ \assetId -> do
-        traits <- asks $ setToList . getSet assetId
-        pure $ Firearm `elem` traits
+        elem Firearm <$> getSetList assetId
       e <$ unshiftMessages
         [ chooseOne
           iid

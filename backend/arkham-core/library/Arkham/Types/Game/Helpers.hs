@@ -38,8 +38,8 @@ getLeadInvestigatorId
 getLeadInvestigatorId = asks $ unLeadInvestigatorId . getId ()
 
 getInvestigatorIds
-  :: (HasSet InvestigatorId () env, MonadReader env m) => m [InvestigatorId]
-getInvestigatorIds = asks $ setToList . getSet ()
+  :: (HasSet InvestigatorId env (), MonadReader env m) => m [InvestigatorId]
+getInvestigatorIds = getSetList ()
 
 getPlayerCount :: (HasCount env PlayerCount (), MonadReader env m) => m Int
 getPlayerCount = unPlayerCount <$> getCount ()
@@ -49,8 +49,8 @@ getPlayerCountValue
 getPlayerCountValue gameValue = fromGameValue gameValue <$> getPlayerCount
 
 getLocationSet
-  :: (HasSet LocationId () env, MonadReader env m) => m (HashSet LocationId)
-getLocationSet = asks $ getSet ()
+  :: (HasSet LocationId env (), MonadReader env m) => m (HashSet LocationId)
+getLocationSet = getSet ()
 
 getSpendableClueCount
   :: (MonadReader env m, HasCount env SpendableClueCount InvestigatorId)
@@ -75,8 +75,8 @@ getHasActionsRemaining iid maction traits =
 getCanFight
   :: ( MonadReader env m
      , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
-     , HasSet InvestigatorId EnemyId env
-     , HasSet Keyword EnemyId env
+     , HasSet InvestigatorId env EnemyId
+     , HasSet Keyword env EnemyId
      , HasId LocationId InvestigatorId env
      , HasId LocationId EnemyId env
      )
@@ -86,9 +86,9 @@ getCanFight
 getCanFight eid iid = do
   locationId <- asks $ getId @LocationId iid
   sameLocation <- asks $ (== locationId) . getId @LocationId eid
-  keywords <- asks $ getSet eid
+  keywords <- getSet eid
   hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Fight) mempty
-  engagedInvestigators <- asks $ getSet eid
+  engagedInvestigators <- getSet eid
   pure
     $ hasActionsRemaining
     && (Keyword.Aloof `notMember` keywords || iid `member` engagedInvestigators)
@@ -97,7 +97,7 @@ getCanFight eid iid = do
 getCanEngage
   :: ( MonadReader env m
      , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
-     , HasSet InvestigatorId EnemyId env
+     , HasSet InvestigatorId env EnemyId
      , HasId LocationId InvestigatorId env
      , HasId LocationId EnemyId env
      )
@@ -107,21 +107,21 @@ getCanEngage
 getCanEngage eid iid = do
   locationId <- asks $ getId @LocationId iid
   sameLocation <- asks $ (== locationId) . getId @LocationId eid
-  notEngaged <- asks $ notElem iid . getSet eid
+  notEngaged <- notElem iid <$> getSet eid
   hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Engage) mempty
   pure $ notEngaged && hasActionsRemaining && sameLocation
 
 getCanEvade
   :: ( MonadReader env m
      , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
-     , HasSet InvestigatorId EnemyId env
+     , HasSet InvestigatorId env EnemyId
      , HasModifiersFor env env
      )
   => EnemyId
   -> InvestigatorId
   -> m Bool
 getCanEvade eid iid = do
-  engaged <- asks $ elem iid . getSet eid
+  engaged <- elem iid <$> getSet eid
   enemyModifiers <-
     getModifiersFor (InvestigatorSource iid) (EnemyTarget eid) =<< ask
   hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Evade) mempty
@@ -134,7 +134,7 @@ getCanEvade eid iid = do
 getCanMoveTo
   :: ( MonadReader env m
      , HasCount env ActionRemainingCount (Maybe Action, [Trait], InvestigatorId)
-     , HasSet AccessibleLocationId LocationId env
+     , HasSet AccessibleLocationId env LocationId
      , HasId LocationId InvestigatorId env
      , HasModifiersFor env env
      )
@@ -145,8 +145,7 @@ getCanMoveTo lid iid = do
   locationId <- asks $ getId @LocationId iid
   modifiers' <-
     getModifiersFor (LocationSource lid) (InvestigatorTarget iid) =<< ask
-  accessibleLocations <-
-    asks $ map unAccessibleLocationId . setToList . getSet locationId
+  accessibleLocations <- map unAccessibleLocationId <$> getSetList locationId
   hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Move) mempty
   pure
     $ lid

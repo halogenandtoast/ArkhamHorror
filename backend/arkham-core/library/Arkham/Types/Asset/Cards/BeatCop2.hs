@@ -30,7 +30,7 @@ instance (AssetRunner env) => RunMessage env BeatCop2 where
   runMessage msg (BeatCop2 attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- asks $ getId @LocationId (getInvestigator attrs)
-      locationEnemyIds <- asks $ setToList . getSet locationId
+      locationEnemyIds <- getSetList locationId
       unshiftMessages
         [ AssetDamage (assetId attrs) (toSource attrs) 1 0
         , chooseOne

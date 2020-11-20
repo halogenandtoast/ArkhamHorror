@@ -24,13 +24,11 @@ narogath uuid =
     . (prey .~ NearestToEnemyWithTrait Trait.Cultist)
     . (unique .~ True)
 
-instance (HasSet InvestigatorId LocationId env, HasSet ConnectedLocationId LocationId env) => HasModifiersFor env Narogath where
+instance (HasSet InvestigatorId env LocationId, HasSet ConnectedLocationId env LocationId) => HasModifiersFor env Narogath where
   getModifiersFor _ (InvestigatorTarget iid) (Narogath Attrs {..}) = do
     connectedLocationIds <-
       asks $ map unConnectedLocationId . setToList . getSet enemyLocation
-    iids <- concat <$> for
-      (enemyLocation : connectedLocationIds)
-      (\locationId -> asks $ setToList . getSet locationId)
+    iids <- concat <$> for (enemyLocation : connectedLocationIds) getSetList
     pure
       [ CannotTakeAction (EnemyAction Parley [Cultist])
       | not enemyExhausted && iid `elem` iids

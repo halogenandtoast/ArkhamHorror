@@ -23,11 +23,11 @@ instance (EventRunner env) => RunMessage env DynamiteBlast2 where
   runMessage msg e@(DynamiteBlast2 attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       currentLocationId <- asks (getId @LocationId iid)
-      connectedLocationIds <-
-        asks $ map unConnectedLocationId . setToList . getSet currentLocationId
+      connectedLocationIds <- map unConnectedLocationId
+        <$> getSetList currentLocationId
       choices <- for (currentLocationId : connectedLocationIds) $ \lid -> do
-        enemyIds <- asks $ setToList . getSet lid
-        investigatorIds <- asks $ setToList . getSet @InvestigatorId lid
+        enemyIds <- getSetList lid
+        investigatorIds <- getSetList @InvestigatorId lid
         pure
           $ map (\enid -> EnemyDamage enid iid (EventSource eid) 3) enemyIds
           <> map

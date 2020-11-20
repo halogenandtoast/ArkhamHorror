@@ -28,7 +28,7 @@ instance TreacheryRunner env => RunMessage env OnWingsOfDarkness where
         ]
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _
       | isSource attrs source -> do
-        centralLocations <- asks $ setToList . getSet [Central]
+        centralLocations <- getSetList [Central]
         t <$ unshiftMessages
           ([ InvestigatorAssignDamage iid source 1 1
            , UnengageNonMatching iid [Nightgaunt]

@@ -70,10 +70,10 @@ nightOfTheZealotChaosBagContents difficulty =
       , Token.ElderSign
       ]
 
-instance (CampaignRunner env) => RunMessage env NightOfTheZealot where
+instance CampaignRunner env => RunMessage env NightOfTheZealot where
   runMessage msg c@(NightOfTheZealot attrs@Attrs {..}) = case msg of
     CampaignStep (Just PrologueStep) -> do
-      investigatorIds <- asks $ setToList . getSet ()
+      investigatorIds <- getSetList ()
       c <$ unshiftMessages
         [ AskMap
         . mapFromList

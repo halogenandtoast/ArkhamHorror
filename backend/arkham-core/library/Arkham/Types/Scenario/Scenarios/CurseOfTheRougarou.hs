@@ -68,11 +68,11 @@ locationsWithLabels trait = do
   (before, bayou : after) =
     break (elem Bayou . getTraits . lookupLocation) locationSet
 
-instance (HasTokenValue env InvestigatorId, HasSet Trait LocationId env, HasId LocationId InvestigatorId env) => HasTokenValue env CurseOfTheRougarou where
+instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId LocationId InvestigatorId env) => HasTokenValue env CurseOfTheRougarou where
   getTokenValue (CurseOfTheRougarou (attrs `With` _)) iid = \case
     Skull -> do
       lid <- asks $ getId @LocationId iid
-      isBayou <- asks $ member Bayou . getSet lid
+      isBayou <- member Bayou <$> getSet lid
       let
         tokenVal
           | isBayou = if isEasyStandard attrs then 4 else 6

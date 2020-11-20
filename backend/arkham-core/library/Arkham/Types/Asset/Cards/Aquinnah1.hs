@@ -52,7 +52,7 @@ instance AssetRunner env => RunMessage env Aquinnah1 where
       healthDamage' <- unHealthDamageCount <$> getCount enemyId
       sanityDamage' <- unSanityDamageCount <$> getCount enemyId
       locationId <- asks $ getId @LocationId iid
-      enemyIds <- asks $ filter (/= enemyId) . setToList . getSet locationId
+      enemyIds <- filter (/= enemyId) <$> getSetList locationId
 
       when (null enemyIds) (error "other enemies had to be present")
 

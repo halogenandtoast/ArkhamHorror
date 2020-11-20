@@ -27,22 +27,21 @@ instance HasActions env FindingLadyEsprit where
 
 investigatorsInABayouLocation
   :: ( MonadReader env m
-     , HasSet LocationId [Trait] env
-     , HasSet InvestigatorId (HashSet LocationId) env
+     , HasSet LocationId env [Trait]
+     , HasSet InvestigatorId env (HashSet LocationId)
      )
   => m [InvestigatorId]
-investigatorsInABayouLocation =
-  bayouLocations >>= asks . (setToList .) . getSet
+investigatorsInABayouLocation = bayouLocations >>= getSetList
 
 bayouLocations
-  :: (MonadReader env m, HasSet LocationId [Trait] env)
+  :: (MonadReader env m, HasSet LocationId env [Trait])
   => m (HashSet LocationId)
-bayouLocations = asks $ getSet [Bayou]
+bayouLocations = getSet [Bayou]
 
 nonBayouLocations
   :: ( MonadReader env m
-     , HasSet LocationId () env
-     , HasSet LocationId [Trait] env
+     , HasSet LocationId env ()
+     , HasSet LocationId env [Trait]
      )
   => m (HashSet LocationId)
 nonBayouLocations = difference <$> getLocationSet <*> bayouLocations

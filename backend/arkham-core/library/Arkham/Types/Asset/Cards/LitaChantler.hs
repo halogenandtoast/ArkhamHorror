@@ -35,8 +35,8 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
     SuccessfulAttackEnemy iid eid -> case assetInvestigator of
       Just ownerId -> do
         locationId <- asks $ getId @LocationId ownerId
-        locationInvestigatorIds <- asks $ setToList . getSet locationId
-        traits <- asks $ setToList . getSet eid
+        locationInvestigatorIds <- getSetList locationId
+        traits <- getSetList eid
         if iid `elem` locationInvestigatorIds && Monster `elem` traits
           then a <$ unshiftMessage
             (chooseOne

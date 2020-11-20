@@ -288,7 +288,7 @@ instance LocationRunner env => RunMessage env Attrs where
       shouldSpawnNonEliteAtConnectingInstead <-
         getShouldSpawnNonEliteAtConnectingInstead a
       when shouldSpawnNonEliteAtConnectingInstead $ do
-        traits' <- asks $ setToList . getSet eid
+        traits' <- getSetList eid
         when (Elite `notElem` traits') $ do
           activeInvestigatorId <- unActiveInvestigatorId <$> asks (getId ())
           connectedLocationIds <-

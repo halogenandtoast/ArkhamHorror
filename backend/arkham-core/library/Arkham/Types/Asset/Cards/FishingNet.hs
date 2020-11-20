@@ -32,11 +32,8 @@ instance ActionRunner env => HasActions env FishingNet where
       Nothing -> pure []
       Just eid -> do
         investigatorLocation <- asks $ getId @LocationId iid
-        exhaustedEnemies <-
-          asks
-          $ map unExhaustedEnemyId
-          . setToList
-          . getSet investigatorLocation
+        exhaustedEnemies <- map unExhaustedEnemyId
+          <$> getSetList investigatorLocation
         pure
           [ ActivateCardAbilityAction iid (ability attrs)
           | eid `elem` exhaustedEnemies

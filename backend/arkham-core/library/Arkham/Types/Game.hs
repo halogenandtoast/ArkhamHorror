@@ -57,7 +57,7 @@ import Arkham.Types.Trait
 import Arkham.Types.Treachery
 import qualified Arkham.Types.Window as Fast
 import Control.Monad.Reader (runReader)
-import Control.Monad.State.Strict
+import Control.Monad.State.Strict hiding (filterM)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Data.List.NonEmpty (NonEmpty(..))
@@ -212,40 +212,37 @@ campaign = lens gameCampaign $ \m x -> m { gameCampaign = x }
 skillTest :: Lens' (Game queue) (Maybe SkillTest)
 skillTest = lens gameSkillTest $ \m x -> m { gameSkillTest = x }
 
-getInvestigator :: MonadReader (Game queue) m => InvestigatorId -> m Investigator
-getInvestigator iid = fromJustNote missingInvestigator . preview (investigators . ix iid) <$> ask
-  where
-    missingInvestigator = error $ "Unknown investigator: " <> show iid
+getInvestigator
+  :: MonadReader (Game queue) m => InvestigatorId -> m Investigator
+getInvestigator iid =
+  fromJustNote missingInvestigator . preview (investigators . ix iid) <$> ask
+  where missingInvestigator = error $ "Unknown investigator: " <> show iid
 
 getLocation :: MonadReader (Game queue) m => LocationId -> m Location
-getLocation lid = fromJustNote missingLocation . preview (locations . ix lid) <$> ask
-  where
-    missingLocation = error $ "Unknown location: " <> show lid
+getLocation lid =
+  fromJustNote missingLocation . preview (locations . ix lid) <$> ask
+  where missingLocation = error $ "Unknown location: " <> show lid
 
 getEnemy :: MonadReader (Game queue) m => EnemyId -> m Enemy
 getEnemy eid = fromJustNote missingEnemy . preview (enemies . ix eid) <$> ask
-  where
-    missingEnemy = error $ "Unknown enemy: " <> show eid
+  where missingEnemy = error $ "Unknown enemy: " <> show eid
 
 getAgenda :: MonadReader (Game queue) m => AgendaId -> m Agenda
 getAgenda aid = fromJustNote missingAgenda . preview (agendas . ix aid) <$> ask
-  where
-    missingAgenda = error $ "Unknown agenda: " <> show aid
+  where missingAgenda = error $ "Unknown agenda: " <> show aid
 
 getAsset :: MonadReader (Game queue) m => AssetId -> m Asset
 getAsset aid = fromJustNote missingAsset . preview (assets . ix aid) <$> ask
-  where
-    missingAsset = error $ "Unknown asset: " <> show aid
+  where missingAsset = error $ "Unknown asset: " <> show aid
 
 getTreachery :: MonadReader (Game queue) m => TreacheryId -> m Treachery
-getTreachery tid = fromJustNote missingTreachery . preview (treacheries . ix tid) <$> ask
-  where
-    missingTreachery = error $ "Unknown treachery: " <> show tid
+getTreachery tid =
+  fromJustNote missingTreachery . preview (treacheries . ix tid) <$> ask
+  where missingTreachery = error $ "Unknown treachery: " <> show tid
 
 getEvent :: MonadReader (Game queue) m => EventId -> m Event
 getEvent eid = fromJustNote missingEvent . preview (events . ix eid) <$> ask
-  where
-    missingEvent = error $ "Unknown event: " <> show eid
+  where missingEvent = error $ "Unknown event: " <> show eid
 
 activeInvestigator :: Game queue -> Investigator
 activeInvestigator g = getInvestigator (g ^. activeInvestigatorId) g
@@ -434,7 +431,11 @@ instance HasId LocationId EnemyId (Game queue) where
 
 instance HasCount (Game queue) ActsRemainingCount () where
   getCount _ = do
-    actIds <- scenarioActs . fromJustNote "scenario has to be set" . view scenario <$> ask
+    actIds <-
+      scenarioActs
+      . fromJustNote "scenario has to be set"
+      . view scenario
+      <$> ask
     activeActIds <- keys . view acts <$> ask
     let
       currentActId = case activeActIds of
@@ -448,7 +449,7 @@ instance HasCount (Game queue) ActionTakenCount InvestigatorId where
 
 instance HasCount (Game queue) ActionRemainingCount (Maybe Action, [Trait], InvestigatorId) where
   getCount (maction, traits, iid) =
-    getCount . (maction, traits,) =<< getInvestigator iid
+    getCount . (maction, traits, ) =<< getInvestigator iid
 
 instance HasCount (Game queue) SanityDamageCount EnemyId where
   getCount eid = getCount =<< getEnemy eid
@@ -466,7 +467,7 @@ instance HasCount (Game queue) TreacheryCount (LocationId, CardCode) where
   getCount (lid, cardCode) = do
     g <- ask
     location <- getLocation lid
-    let treacheries' = getSet () location
+    treacheries' <- getSet location
     pure . TreacheryCount $ count (== cardCode) (cardCodes g treacheries')
    where
     cardCodes g treacheries' =
@@ -484,14 +485,16 @@ instance HasCount (Game queue) DoomCount AgendaId where
 instance HasCount (Game queue) XPCount () where
   getCount _ = do
     g <- ask
-    pure $ XPCount
+    pure
+      $ XPCount
       $ (sum . mapMaybe getVictoryPoints $ g ^. victoryDisplay)
       + (sum . mapMaybe getVictoryPoints . toList $ g ^. locations)
 
 instance HasCount (Game queue) DoomCount () where
   getCount _ = do
     g <- ask
-    pure $ DoomCount
+    pure
+      $ DoomCount
       . sum
       . map unDoomCount
       $ (map (flip runReader g . getCount) . toList $ g ^. enemies)
@@ -527,9 +530,8 @@ instance HasCount (Game queue) EnemyCount InvestigatorId where
 instance HasCount (Game queue) AssetCount (InvestigatorId, [Trait]) where
   getCount (iid, traits) = do
     g <- ask
-    let
-      investigator = getInvestigator iid g
-      investigatorAssets = getSetList () investigator
+    investigator <- getInvestigator iid
+    investigatorAssets <- getSetList investigator
     pure . AssetCount $ count (assetMatcher g) investigatorAssets
    where
     assetMatcher g aid = any (`member` (getTraits $ getAsset aid g)) traits
@@ -537,9 +539,7 @@ instance HasCount (Game queue) AssetCount (InvestigatorId, [Trait]) where
 instance HasCount (Game queue) EnemyCount [Trait] where
   getCount traits = do
     g <- ask
-    pure . EnemyCount . length $ filterMap
-      enemyMatcher
-      (view enemies g)
+    pure . EnemyCount . length $ filterMap enemyMatcher (view enemies g)
     where enemyMatcher enemy = any (`member` getTraits enemy) traits
 
 instance HasCount (Game queue) EnemyCount (LocationId, [Trait]) where
@@ -548,8 +548,8 @@ instance HasCount (Game queue) EnemyCount (LocationId, [Trait]) where
     g <- ask
     case mlocation of
       Just location -> do
-        let locationEnemies = getSetList () location
-         in pure . EnemyCount $ count (enemyMatcher g) locationEnemies
+        locationEnemies <- getSetList location
+        pure . EnemyCount $ count (enemyMatcher g) locationEnemies
       Nothing -> pure $ EnemyCount 0
    where
     enemyMatcher g eid = any (`member` (getTraits $ getEnemy eid g)) traits
@@ -569,8 +569,8 @@ instance
   , HasCount env DoomCount EnemyId
   , HasCount env EnemyCount (InvestigatorLocation, [Trait])
   , HasCount env EnemyCount [Trait]
-  , HasSet EnemyId Trait env
-  , HasSet Trait LocationId env
+  , HasSet EnemyId env Trait
+  , HasSet Trait env LocationId
   , HasTokenValue env InvestigatorId
   , HasId LocationId InvestigatorId env
   )
@@ -617,11 +617,10 @@ instance HasStep AgendaStep (Game queue) where
     _ -> error "wrong number of agendas"
 
 instance HasList InPlayCard InvestigatorId (Game queue) where
-  getList iid g = do
-    let
-      investigator = getInvestigator iid g
-      assets' = map (`getAsset` g) $ getSetList () investigator
-    map
+  getList iid g = flip runReader g $ do
+    assetIds <- getSetList =<< getInvestigator iid
+    assets' <- traverse getAsset assetIds
+    pure $ map
       (\asset -> InPlayCard . PlayerCard $ lookupPlayerCard
         (getCardCode asset)
         (CardId . unAssetId $ getId () asset)
@@ -658,93 +657,117 @@ instance HasSource ForSkillTest (Game queue) where
 instance HasTarget ForSkillTest (Game queue) where
   getTarget _ g = g ^? skillTest . traverse . to skillTestTarget
 
-instance HasSet ScenarioLogKey () (Game queue) where
-  getSet _ g = maybe mempty (getSet ()) (g ^. scenario)
+instance HasSet ScenarioLogKey (Game queue) () where
+  getSet _ = do
+    mscenario <- asks $ view scenario
+    maybe (pure mempty) getSet mscenario
 
-instance HasSet HandCardId InvestigatorId (Game queue) where
+instance HasSet HandCardId (Game queue) InvestigatorId where
   getSet iid =
-    setFromList . map (HandCardId . getCardId) . handOf . getInvestigator iid
+    asks
+      $ setFromList
+      . map (HandCardId . getCardId)
+      . handOf
+      . getInvestigator iid
 
-instance HasSet HandCardId (InvestigatorId, PlayerCardType) (Game queue) where
+instance HasSet HandCardId (Game queue) (InvestigatorId, PlayerCardType) where
   getSet (iid, cardType) =
-    setFromList
+    asks
+      $ setFromList
       . map (HandCardId . getCardId)
       . filter
           (maybe False (playerCardMatch (cardType, Nothing)) . toPlayerCard)
       . handOf
       . getInvestigator iid
 
-instance HasSet Keyword EnemyId (Game queue) where
-  getSet eid = getKeywords . getEnemy eid
+instance HasSet Keyword (Game queue) EnemyId where
+  getSet eid = asks $ getKeywords . getEnemy eid
 
-instance HasSet Trait LocationId (Game queue) where
-  getSet lid = getTraits . getLocation lid
+instance HasSet Trait (Game queue) LocationId where
+  getSet lid = asks $ getTraits . getLocation lid
 
-instance HasSet Trait (InvestigatorId, CardId) (Game queue) where
+instance HasSet Trait (Game queue) (InvestigatorId, CardId) where
   getSet (iid, cid) =
-    maybe mempty getTraits
+    asks
+      $ maybe mempty getTraits
       . find ((== cid) . getCardId)
       . handOf
       . getInvestigator iid
 
-instance HasSet Trait AssetId (Game queue) where
-  getSet aid = getTraits . getAsset aid
+instance HasSet Trait (Game queue) AssetId where
+  getSet aid = asks $ getTraits . getAsset aid
 
-instance HasSet Trait EnemyId (Game queue) where
-  getSet eid = getTraits . getEnemy eid
+instance HasSet Trait (Game queue) EnemyId where
+  getSet eid = asks $ getTraits . getEnemy eid
 
-instance HasSet InvestigatorId EnemyId (Game queue) where
-  getSet eid = getEngagedInvestigators . getEnemy eid
+instance HasSet InvestigatorId (Game queue) EnemyId where
+  getSet eid = asks $ getEngagedInvestigators . getEnemy eid
 
-instance HasSet EnemyId InvestigatorId (Game queue) where
-  getSet iid = getEngagedEnemies . getInvestigator iid
+instance HasSet EnemyId (Game queue) InvestigatorId where
+  getSet iid = asks $ getEngagedEnemies . getInvestigator iid
 
-instance HasSet ExhaustedAssetId InvestigatorId (Game queue) where
-  getSet iid g = HashSet.map ExhaustedAssetId
-    $ filterSet isAssetExhausted assetIds
-   where
-    assetIds = getSet () (getInvestigator iid g)
-    isAssetExhausted assetId = isExhausted $ getAsset assetId g
+instance HasSet ExhaustedAssetId (Game queue) InvestigatorId where
+  getSet iid = do
+    investigator <- getInvestigator iid
+    assetIds <- getSetList investigator
+    setFromList . map ExhaustedAssetId <$> filterM isAssetExhausted assetIds
+    where isAssetExhausted = (isExhausted <$>) . getAsset
 
-instance HasSet ExhaustedEnemyId LocationId (Game queue) where
-  getSet lid g =
-    let
-      location = getLocation lid g
-      locationEnemyIds = getSet @EnemyId () location
-    in
-      HashSet.map ExhaustedEnemyId
+instance HasSet ExhaustedEnemyId (Game queue) LocationId where
+  getSet lid = do
+    location <- getLocation lid <$> ask
+    locationEnemyIds <- getSet @EnemyId location
+    asks
+      $ HashSet.map ExhaustedEnemyId
       . keysSet
       . filterMap (\e -> getId () e `member` locationEnemyIds && isExhausted e)
-      $ view enemies g
+      . view enemies
 
-instance HasSet AgendaId () (Game queue) where
-  getSet _ = keysSet . view agendas
+instance HasSet AgendaId (Game queue) () where
+  getSet _ = asks $ keysSet . view agendas
 
-instance HasSet VictoryDisplayCardCode () (Game queue) where
+instance HasSet VictoryDisplayCardCode (Game queue) () where
   getSet _ =
-    setFromList
+    asks
+      $ setFromList
       . map (VictoryDisplayCardCode . getCardCode)
       . view victoryDisplay
 
-instance HasSet ClueCount () (Game queue) where
-  getSet _ g = setFromList . map (flip runReader g . getCount) . toList $ view investigators g
+instance HasSet ClueCount (Game queue) () where
+  getSet _ = do
+    g <- ask
+    asks
+      $ setFromList
+      . map (flip runReader g . getCount)
+      . toList
+      . view investigators
 
-instance HasSet CardCount () (Game queue) where
-  getSet _ g = setFromList . map (flip runReader g . getCount) . toList $ view investigators g
+instance HasSet CardCount (Game queue) () where
+  getSet _ = do
+    g <- ask
+    asks
+      $ setFromList
+      . map (flip runReader g . getCount)
+      . toList
+      . view investigators
 
-instance (GameRunner env, env ~ Game queue) => HasSet RemainingHealth () (Game queue) where
-  getSet _ g =
-    setFromList
+instance (GameRunner env, env ~ Game queue) => HasSet RemainingHealth (Game queue) () where
+  getSet _ = do
+    g <- ask
+    asks
+      $ setFromList
       . map (RemainingHealth . flip runReader g . getRemainingHealth)
       . toList
-      $ view investigators g
+      . view investigators
 
-instance (GameRunner env, env ~ Game queue) => HasSet RemainingSanity () (Game queue) where
-  getSet _ g =
-    setFromList
+instance (GameRunner env, env ~ Game queue) => HasSet RemainingSanity (Game queue) () where
+  getSet _ = do
+    g <- ask
+    asks
+      $ setFromList
       . map (RemainingSanity . flip runReader g . getRemainingSanity)
       . toList
-      $ view investigators g
+      . view investigators
 
 instance (GameRunner env, env ~ Game queue) => HasCount (Game queue) RemainingHealth InvestigatorId where
   getCount iid = do
@@ -756,66 +779,71 @@ instance (GameRunner env, env ~ Game queue) => HasCount (Game queue) RemainingSa
     g <- ask
     RemainingSanity <$> getRemainingSanity (getInvestigator iid g)
 
-instance HasSet LocationId () (Game queue) where
-  getSet _ = keysSet . view locations
+instance HasSet LocationId (Game queue) () where
+  getSet _ = asks $ keysSet . view locations
 
 instance HasList LocationName () (Game queue) where
   getList _ = map getLocationName . toList . view locations
 
-instance HasSet EmptyLocationId () (Game queue) where
+instance HasSet EmptyLocationId (Game queue) () where
   getSet _ =
-    HashSet.map EmptyLocationId
+    asks
+      $ HashSet.map EmptyLocationId
       . keysSet
       . filterMap isEmptyLocation
       . view locations
 
-instance HasSet RevealedLocationId () (Game queue) where
+instance HasSet RevealedLocationId (Game queue) () where
   getSet _ =
-    HashSet.map RevealedLocationId
+    asks
+      $ HashSet.map RevealedLocationId
       . keysSet
       . filterMap isRevealed
       . view locations
 
-instance HasSet LocationId TreacheryCardCode (Game queue) where
+instance HasSet LocationId (Game queue) TreacheryCardCode where
   getSet (TreacheryCardCode cc) =
-    setFromList
+    asks
+      $ setFromList
       . mapMaybe treacheryLocation
       . toList
       . filterMap ((== cc) . getCardCode)
       . view treacheries
 
-instance HasSet LocationId [Trait] (Game queue) where
-  getSet traits = keysSet . filterMap hasMatchingTrait . view locations
+instance HasSet LocationId (Game queue) [Trait] where
+  getSet traits = asks $ keysSet . filterMap hasMatchingTrait . view locations
    where
     hasMatchingTrait =
       not . null . (setFromList traits `intersection`) . getTraits
 
-instance HasSet ActId () (Game queue) where
-  getSet _ = keysSet . view acts
+instance HasSet ActId (Game queue) () where
+  getSet _ = asks $ keysSet . view acts
 
-instance HasSet InScenarioInvestigatorId () (Game queue) where
+instance HasSet InScenarioInvestigatorId (Game queue) () where
   getSet _ =
-    HashSet.map InScenarioInvestigatorId
+    asks
+      $ HashSet.map InScenarioInvestigatorId
       . keysSet
       . filterMap (not . (\i -> hasResigned i || isDefeated i))
       . view investigators
 
-instance HasSet UnengagedEnemyId () (Game queue) where
+instance HasSet UnengagedEnemyId (Game queue) () where
   getSet _ =
-    HashSet.map UnengagedEnemyId
+    asks
+      $ HashSet.map UnengagedEnemyId
       . keysSet
       . filterMap (not . isEngaged)
       . view enemies
 
-instance HasSet EnemyId Trait (Game queue) where
+instance HasSet EnemyId (Game queue) Trait where
   getSet trait =
-    keysSet . filterMap ((trait `elem`) . getTraits) . view enemies
+    asks $ keysSet . filterMap ((trait `elem`) . getTraits) . view enemies
 
-instance HasSet CommittedCardId InvestigatorId (Game queue) where
-  getSet iid = maybe mempty (getSet iid) . view skillTest
+instance HasSet CommittedCardId (Game queue) InvestigatorId where
+  getSet iid = maybe (pure mempty) (getSet . (iid, )) =<< asks (view skillTest)
 
-instance HasSet CommittedCardCode () (Game queue) where
-  getSet _ = maybe mempty (getSet ()) . view skillTest
+instance HasSet CommittedCardCode (Game queue) () where
+  getSet _ = maybe (pure mempty) getSet =<< asks (view skillTest)
 
 instance HasList DeckCard (InvestigatorId, Trait) (Game queue) where
   getList (iid, trait) g =
@@ -824,9 +852,10 @@ instance HasList DeckCard (InvestigatorId, Trait) (Game queue) where
       deck = deckOf investigator
     in map DeckCard $ filter ((trait `elem`) . pcTraits) deck
 
-instance HasSet BlockedLocationId () (Game queue) where
+instance HasSet BlockedLocationId (Game queue) () where
   getSet _ =
-    HashSet.map BlockedLocationId
+    asks
+      $ HashSet.map BlockedLocationId
       . keysSet
       . filterMap isBlocked
       . view locations
@@ -953,91 +982,106 @@ bfs game initialLocation target = do
       Nothing -> fromJustNote "failed bfs on tail" $ tailMay currentPath
       Just parent -> unwindPath parentsMap (parent : currentPath)
 
-instance (GameRunner env, env ~ Game queue) => HasSet ClosestLocationId (LocationId, Prey) (Game queue) where
-  getSet (start, prey) g =
-    setFromList . map ClosestLocationId $ getShortestPath g start matcher
-    where matcher lid = not . null $ getSet @PreyId (prey, lid) g
+instance (GameRunner env, env ~ Game queue) => HasSet ClosestLocationId (Game queue) (LocationId, Prey) where
+  getSet (start, prey) = do
+    g <- ask
+    pure $ setFromList . map ClosestLocationId $ getShortestPath
+      g
+      start
+      (matcher g)
+    where matcher g lid = not . null $ runReader (getSet @PreyId (prey, lid)) g
 
-instance HasSet ClosestEnemyId LocationId (Game queue) where
-  getSet start g =
-    let locations' = map ClosestLocationId $ getShortestPath g start matcher
-    in
-      case locations' of
-        [] -> mempty
-        lids ->
-          let
-            theSet = HashSet.unions $ map
-              (\lid -> HashSet.map ClosestEnemyId
-                $ getSet (unClosestLocationId lid) g
-              )
-              lids
-          in
-            if null theSet
-              then HashSet.unions
-                $ map (\lid -> getSet (unClosestLocationId lid) g) lids
-              else theSet
-    where matcher lid = not . null $ getSet @EnemyId lid g
+instance HasSet ClosestEnemyId (Game queue) LocationId where
+  getSet start = do
+    g <- ask
+    let
+      locations' = map ClosestLocationId $ getShortestPath g start (matcher g)
+    case locations' of
+      [] -> pure mempty
+      lids -> do
+        theSet <-
+          HashSet.unions
+            <$> traverse
+                  (\lid -> HashSet.map ClosestEnemyId
+                    <$> getSet (unClosestLocationId lid)
+                  )
+                  lids
+        if null theSet
+          then HashSet.unions <$> traverse (getSet . unClosestLocationId) lids
+          else pure theSet
+    where matcher g lid = not . null $ runReader (getSet @EnemyId lid) g
 
-instance HasSet ClosestEnemyId InvestigatorId (Game queue) where
-  getSet iid g = getSet (locationFor iid g) g
+instance HasSet ClosestEnemyId (Game queue) InvestigatorId where
+  getSet iid = getSet =<< (locationFor iid <$> ask)
 
-instance HasSet ClosestEnemyId (LocationId, [Trait]) (Game queue) where
-  getSet (start, traits) g =
-    let locations' = map ClosestLocationId $ getShortestPath g start matcher
-    in
-      case locations' of
-        [] -> mempty
-        lids ->
-          let
-            theSet = HashSet.unions $ map
-              (\lid -> HashSet.map ClosestEnemyId
-                $ getSet (traits, unClosestLocationId lid) g
-              )
-              lids
-          in
-            if null theSet
-              then HashSet.unions $ map
-                (\lid -> getSet (unClosestLocationId lid, traits) g)
-                lids
-              else theSet
-    where matcher lid = not . null $ getSet @EnemyId (traits, lid) g
+instance HasSet ClosestEnemyId (Game queue) (LocationId, [Trait]) where
+  getSet (start, traits) = do
+    g <- ask
+    let
+      locations' = map ClosestLocationId $ getShortestPath g start (matcher g)
+    case locations' of
+      [] -> pure mempty
+      lids -> do
+        theSet <-
+          HashSet.unions
+            <$> traverse
+                  (\lid -> HashSet.map ClosestEnemyId
+                    <$> getSet (traits, unClosestLocationId lid)
+                  )
+                  lids
+        if null theSet
+          then
+            HashSet.unions
+              <$> traverse
+                    (\lid -> getSet (unClosestLocationId lid, traits))
+                    lids
+          else pure theSet
+   where
+    matcher g lid = not . null $ runReader (getSet @EnemyId (traits, lid)) g
 
-instance HasSet ClosestEnemyId (InvestigatorId, [Trait]) (Game queue) where
-  getSet (iid, traits) g = getSet (locationFor iid g, traits) g
+instance HasSet ClosestEnemyId (Game queue) (InvestigatorId, [Trait]) where
+  getSet (iid, traits) = do
+    g <- ask
+    getSet (locationFor iid g, traits)
 
-instance HasSet ClosestLocationId (LocationId, LocationId) (Game queue) where
-  getSet (start, destination) g =
-    setFromList . map ClosestLocationId $ getShortestPath
+instance HasSet ClosestLocationId (Game queue) (LocationId, LocationId) where
+  getSet (start, destination) = do
+    g <- ask
+    pure $ setFromList . map ClosestLocationId $ getShortestPath
       g
       start
       (== destination)
 
-instance HasSet FarthestLocationId InvestigatorId (Game queue) where
-  getSet iid g =
+instance HasSet FarthestLocationId (Game queue) InvestigatorId where
+  getSet iid = do
+    g <- ask
     let start = locationFor iid g
-    in
-      setFromList . map FarthestLocationId $ getLongestPath g start (const True)
+    pure . setFromList . map FarthestLocationId $ getLongestPath
+      g
+      start
+      (const True)
 
-instance HasSet FarthestLocationId (InvestigatorId, EmptyLocation) (Game queue) where
-  getSet (iid, _) g =
-    let
-      start = locationFor iid g
-      emptyLocationIds = map unEmptyLocationId . setToList $ getSet () g
-    in setFromList . map FarthestLocationId $ getLongestPath
+instance HasSet FarthestLocationId (Game queue) (InvestigatorId, EmptyLocation) where
+  getSet (iid, _) = do
+    g <- ask
+    let start = locationFor iid g
+    emptyLocationIds <- map unEmptyLocationId <$> getSetList ()
+    pure . setFromList . map FarthestLocationId $ getLongestPath
       g
       start
       (`elem` emptyLocationIds)
 
-instance HasSet FarthestEnemyId (InvestigatorId, EnemyTrait) (Game queue) where
-  getSet (iid, enemyTrait) g =
+instance HasSet FarthestEnemyId (Game queue) (InvestigatorId, EnemyTrait) where
+  getSet (iid, enemyTrait) = do
+    g <- ask
     let
       start = locationFor iid g
       enemyMatches eid =
         elem (unEnemyTrait enemyTrait) . getTraits $ getEnemy eid g
       enemyIdsForLocation lid =
-        setToList . getSet @EnemyId () $ getLocation lid g
-    in
-      setFromList
+        runReader (getSetList @EnemyId =<< getLocation lid) g
+    pure
+      . setFromList
       . map FarthestEnemyId
       . concatMap (filter enemyMatches . enemyIdsForLocation)
       $ getLongestPath g start (any enemyMatches . enemyIdsForLocation)
@@ -1048,8 +1092,11 @@ instance HasList (InvestigatorId, Distance) EnemyTrait (Game queue) where
    where
     iids = keys $ game ^. investigators
     hasMatchingEnemy lid = any
-      (\eid -> elem (unEnemyTrait enemyTrait) . getTraits $ getEnemy eid game)
-      (getSet () (getLocation lid game))
+      (\eid -> elem (unEnemyTrait enemyTrait) . getTraits $ runReader
+        (getEnemy eid)
+        game
+      )
+      (runReader (getSet =<< getLocation lid) game)
     getDistance start =
       Distance . fromJustNote "error" . minimumMay . keys $ evalState
         (markDistances game start hasMatchingEnemy)
@@ -1065,8 +1112,9 @@ distanceAggregates :: HashMap LocationId Int -> HashMap Int [LocationId]
 distanceAggregates hmap = unionsWith (<>) (map convert $ mapToList hmap)
   where convert = uncurry singletonMap . second pure . swap
 
-instance HasSet FarthestLocationId [InvestigatorId] (Game queue) where
-  getSet iids game =
+instance HasSet FarthestLocationId (Game queue) [InvestigatorId] where
+  getSet iids = do
+    game <- ask
     let
       distances = flip map iids $ \iid ->
         let start = locationFor iid game
@@ -1076,8 +1124,8 @@ instance HasSet FarthestLocationId [InvestigatorId] (Game queue) where
             (LPState (pure start) (singleton start) mempty)
       overallDistances =
         distanceAggregates $ foldr (unionWith min) mempty distances
-    in
-      setFromList
+    pure
+      . setFromList
       . maybe [] (map FarthestLocationId)
       . headMay
       . map snd
@@ -1085,145 +1133,159 @@ instance HasSet FarthestLocationId [InvestigatorId] (Game queue) where
       . mapToList
       $ overallDistances
 
-instance HasSet Int SkillType (Game queue) where
-  getSet skillType g =
-    setFromList $ map (getSkill skillType) (toList $ g ^. investigators)
+instance HasSet Int (Game queue) SkillType where
+  getSet skillType =
+    asks $ setFromList . map (getSkill skillType) . toList . view investigators
 
-instance (GameRunner env, env ~ Game queue) => HasSet PreyId Prey (Game queue) where
-  getSet preyType g = HashSet.map PreyId . keysSet . filterMap matcher $ view
-    investigators
-    g
-    where matcher i = runReader (getIsPrey preyType i) g
+instance (GameRunner env, env ~ Game queue) => HasSet PreyId (Game queue) Prey where
+  getSet preyType = do
+    investigatorIds <- getSetList ()
+    let matcher iid = getIsPrey preyType =<< getInvestigator iid
+    setFromList . map PreyId <$> filterM matcher investigatorIds
 
 -- TODO: This does not work for more than 2 players
 -- TODO: WE NEED TO REWORK THIS, WE HAVE TO DETERMINE PREY IN IO
-instance (GameRunner env, env ~ Game queue) => HasSet PreyId (Prey, LocationId) (Game queue) where
-  getSet (preyType, lid) g = HashSet.map PreyId
-    $ filterSet matcher investigators'
-   where
-    location = getLocation lid g
-    investigators' = getSet () location
-    matcher iid = runReader (getIsPrey preyType (getInvestigator iid g)) g
+instance (GameRunner env, env ~ Game queue) => HasSet PreyId (Game queue) (Prey, LocationId) where
+  getSet (preyType, lid) = do
+    location <- getLocation lid
+    investigators' <- getSetList location
+    let matcher iid = getIsPrey preyType =<< getInvestigator iid
+    setFromList . map PreyId <$> filterM matcher investigators'
 
-instance HasSet AdvanceableActId () (Game queue) where
-  getSet _ g = HashSet.map AdvanceableActId . keysSet $ acts'
-    where acts' = filterMap isAdvanceable (g ^. acts)
+instance HasSet AdvanceableActId (Game queue) () where
+  getSet _ =
+    asks
+      $ HashSet.map AdvanceableActId
+      . keysSet
+      . filterMap isAdvanceable
+      . view acts
 
-instance HasSet ConnectedLocationId LocationId (Game queue) where
-  getSet lid = getSet () . getLocation lid
+instance HasSet ConnectedLocationId (Game queue) LocationId where
+  getSet lid = getSet =<< getLocation lid
 
-instance HasSet AccessibleLocationId LocationId (Game queue) where
-  getSet lid g =
-    let
-      location = getLocation lid g
-      connectedLocationIds =
-        HashSet.map unConnectedLocationId (getSet () location)
-      blockedLocationIds = HashSet.map unBlockedLocationId (getSet () g)
-    in
-      HashSet.map AccessibleLocationId
+instance HasSet AccessibleLocationId (Game queue) LocationId where
+  getSet lid = do
+    location <- getLocation lid
+    connectedLocationIds <- HashSet.map unConnectedLocationId
+      <$> getSet location
+    blockedLocationIds <- HashSet.map unBlockedLocationId <$> getSet ()
+    pure
+      $ HashSet.map AccessibleLocationId
       $ connectedLocationIds
       `difference` blockedLocationIds
 
-instance HasSet AssetId InvestigatorId (Game queue) where
-  getSet iid = getSet () . getInvestigator iid
+instance HasSet AssetId (Game queue) InvestigatorId where
+  getSet iid = getSet =<< getInvestigator iid
 
-instance HasSet AssetId (InvestigatorId, UseType) (Game queue) where
-  getSet (iid, useType') g = setFromList $ filter isCorrectUseType assetIds
-   where
-    investigator = getInvestigator iid g
-    assetIds :: [AssetId] = setToList $ getSet @AssetId () investigator
-    isCorrectUseType aid = useTypeOf (getAsset aid g) == Just useType'
+instance HasSet AssetId (Game queue) (InvestigatorId, UseType) where
+  getSet (iid, useType') = do
+    investigator <- getInvestigator iid
+    assetIds :: [AssetId] <- getSetList @AssetId investigator
+    setFromList <$> filterM ((isCorrectUseType <$>) . getAsset) assetIds
+    where isCorrectUseType asset = useTypeOf asset == Just useType'
 
-instance HasSet DiscardableAssetId InvestigatorId (Game queue) where
-  getSet iid g = setFromList . map DiscardableAssetId $ filter
-    isDiscardable
-    assetIds
-   where
-    investigator = getInvestigator iid g
-    assetIds :: [AssetId] = setToList $ getSet @AssetId () investigator
-    isDiscardable aid = canBeDiscarded $ getAsset aid g
-
-instance HasSet AssetId EnemyId (Game queue) where
-  getSet eid = getSet () . getEnemy eid
-
-instance HasSet AssetId LocationId (Game queue) where
-  getSet lid = getSet () . getLocation lid
-
-instance HasSet TreacheryId LocationId (Game queue) where
-  getSet lid = getSet () . getLocation lid
-
-instance HasSet EventId LocationId (Game queue) where
-  getSet lid = getSet () . getLocation lid
-
-instance HasSet EventId () (Game queue) where
-  getSet _ = keysSet . view events
-
-instance HasSet HealthDamageableAssetId InvestigatorId (Game queue) where
-  getSet iid g = HashSet.map HealthDamageableAssetId . keysSet $ assets'
-   where
-    assetIds = getSet iid g
-    assets' = HashMap.filterWithKey
-      (\k v -> k `elem` assetIds && isHealthDamageable v)
-      (g ^. assets)
-
-instance HasSet SanityDamageableAssetId InvestigatorId (Game queue) where
-  getSet iid g = HashSet.map SanityDamageableAssetId . keysSet $ assets'
-   where
-    assetIds = getSet iid g
-    assets' = HashMap.filterWithKey
-      (\k v -> k `elem` assetIds && isSanityDamageable v)
-      (g ^. assets)
-
-instance HasSet EnemyId () (Game queue) where
-  getSet _ = keysSet . view enemies
-
-instance HasSet UniqueEnemyId () (Game queue) where
-  getSet _ =
+instance HasSet DiscardableAssetId (Game queue) InvestigatorId where
+  getSet iid = do
+    investigator <- getInvestigator iid
+    assetIds :: [AssetId] <- getSetList @AssetId investigator
     setFromList
+      . map DiscardableAssetId
+      <$> filterM ((canBeDiscarded <$>) . getAsset) assetIds
+
+instance HasSet AssetId (Game queue) EnemyId where
+  getSet eid = getSet =<< getEnemy eid
+
+instance HasSet AssetId (Game queue) LocationId where
+  getSet lid = getSet =<< getLocation lid
+
+instance HasSet TreacheryId (Game queue) LocationId where
+  getSet lid = getSet =<< getLocation lid
+
+instance HasSet EventId (Game queue) LocationId where
+  getSet lid = getSet =<< getLocation lid
+
+instance HasSet EventId (Game queue) () where
+  getSet _ = asks $ keysSet . view events
+
+instance HasSet HealthDamageableAssetId (Game queue) InvestigatorId where
+  getSet iid = do
+    allAssets' <- asks $ view assets
+    HashSet.map HealthDamageableAssetId
+      . keysSet
+      . assets' allAssets'
+      <$> getSet iid
+   where
+    assets' allAssets' assetIds = HashMap.filterWithKey
+      (\k v -> k `elem` assetIds && isHealthDamageable v)
+      allAssets'
+
+instance HasSet SanityDamageableAssetId (Game queue) InvestigatorId where
+  getSet iid = do
+    allAssets' <- asks $ view assets
+    HashSet.map SanityDamageableAssetId
+      . keysSet
+      . assets' allAssets'
+      <$> getSet iid
+   where
+    assets' allAssets' assetIds = HashMap.filterWithKey
+      (\k v -> k `elem` assetIds && isSanityDamageable v)
+      allAssets'
+
+instance HasSet EnemyId (Game queue) () where
+  getSet _ = asks $ keysSet . view enemies
+
+instance HasSet UniqueEnemyId (Game queue) () where
+  getSet _ =
+    asks
+      $ setFromList
       . map (UniqueEnemyId . getId ())
       . filter isUnique
       . toList
       . view enemies
 
-instance HasSet EnemyId LocationId (Game queue) where
-  getSet lid = getSet () . getLocation lid
+instance HasSet EnemyId (Game queue) LocationId where
+  getSet lid = getSet =<< getLocation lid
 
-instance HasSet EnemyId ([Trait], LocationId) (Game queue) where
-  getSet (traits, lid) g =
-    filterSet
-        (not
-        . null
-        . (setFromList traits `intersection`)
-        . getTraits
-        . flip getEnemy g
-        )
-      . getSet ()
-      $ getLocation lid g
+instance HasSet EnemyId (Game queue) ([Trait], LocationId) where
+  getSet (traits, lid) = do
+    enemyIds <- getSetList =<< getLocation lid
+    setFromList
+      <$> filterM
+            ((not . null . (setFromList traits `intersection`) . getTraits <$>)
+            . getEnemy
+            )
+            enemyIds
 
-instance HasSet AloofEnemyId LocationId (Game queue) where
-  getSet lid g = HashSet.map AloofEnemyId . keysSet $ enemies'
+instance HasSet AloofEnemyId (Game queue) LocationId where
+  getSet lid = do
+    enemyIds <- getSet lid
+    HashSet.map AloofEnemyId . keysSet . enemies' enemyIds <$> ask
    where
-    enemyIds = getSet lid g
-    enemies' = HashMap.filterWithKey
+    enemies' enemyIds g = HashMap.filterWithKey
       (\k v -> k `elem` enemyIds && Keyword.Aloof `elem` getKeywords v)
       (g ^. enemies)
 
-instance HasSet InvestigatorId () (Game queue) where
-  getSet _ = keysSet . view investigators
+instance HasSet InvestigatorId (Game queue) () where
+  getSet _ = asks $ keysSet . view investigators
 
-instance HasSet InvestigatorId LocationId (Game queue) where
-  getSet lid = getSet () . getLocation lid
+instance HasSet InvestigatorId (Game queue) LocationId where
+  getSet lid = getSet =<< getLocation lid
 
-instance HasSet InvestigatorId LocationName (Game queue) where
-  getSet locationName g = getSet () location
+instance HasSet InvestigatorId (Game queue) LocationName where
+  getSet locationName = do
+    location <- asks
+      (fromJustNote missingLocation
+      . find ((== locationName) . getLocationName)
+      . toList
+      . view locations
+      )
+    getSet location
    where
-    location =
-      fromJustNote
-          ("no location with name: " <> unpack (unLocationName locationName))
-        $ find ((== locationName) . getLocationName) (toList $ g ^. locations)
+    missingLocation =
+      "No location with name: " <> unpack (unLocationName locationName)
 
-instance HasSet InvestigatorId (HashSet LocationId) (Game queue) where
-  getSet lids game = unions $ map (`getSet` game) (setToList lids)
+instance HasSet InvestigatorId (Game queue) (HashSet LocationId) where
+  getSet lids = unions <$> traverse getSet (setToList lids)
 
 instance HasQueue GameInternal where
   messageQueue = lens gameMessages $ \m x -> m { gameMessages = x }
@@ -1308,7 +1370,8 @@ instance HasActions GameInternal ActionType where
     g <- ask
     case actionType of
       EnemyActionType -> concatMapM' (getActions iid window) (g ^. enemies)
-      LocationActionType -> concatMapM' (getActions iid window) (g ^. locations)
+      LocationActionType ->
+        concatMapM' (getActions iid window) (g ^. locations)
       AssetActionType -> concatMapM' (getActions iid window) (g ^. assets)
       TreacheryActionType ->
         concatMapM' (getActions iid window) (g ^. treacheries)

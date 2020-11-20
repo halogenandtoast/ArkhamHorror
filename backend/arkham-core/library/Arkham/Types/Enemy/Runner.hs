@@ -20,21 +20,21 @@ type EnemyRunner env
     , HasId LeadInvestigatorId () env
     , HasId LocationId InvestigatorId env
     , HasModifiersFor env env
-    , HasSet ClosestLocationId (LocationId, LocationId) env
-    , HasSet ClosestLocationId (LocationId, Prey) env
-    , HasSet ConnectedLocationId LocationId env
-    , HasSet EmptyLocationId () env
-    , HasSet FarthestLocationId (InvestigatorId, EmptyLocation) env
-    , HasSet FarthestLocationId [InvestigatorId] env
-    , HasSet FarthestLocationId InvestigatorId env
-    , HasSet InvestigatorId () env
-    , HasSet InvestigatorId LocationId env
-    , HasSet LocationId () env
-    , HasSet LocationId [Trait] env
-    , HasSet PreyId (Prey, LocationId) env
-    , HasSet PreyId Prey env
-    , HasSet Trait EnemyId env
-    , HasSet Trait LocationId env
+    , HasSet ClosestLocationId env (LocationId, LocationId)
+    , HasSet ClosestLocationId env (LocationId, Prey)
+    , HasSet ConnectedLocationId env LocationId
+    , HasSet EmptyLocationId env ()
+    , HasSet FarthestLocationId env (InvestigatorId, EmptyLocation)
+    , HasSet FarthestLocationId env [InvestigatorId]
+    , HasSet FarthestLocationId env InvestigatorId
+    , HasSet InvestigatorId env ()
+    , HasSet InvestigatorId env LocationId
+    , HasSet LocationId env ()
+    , HasSet LocationId env [Trait]
+    , HasSet PreyId env (Prey, LocationId)
+    , HasSet PreyId env Prey
+    , HasSet Trait env EnemyId
+    , HasSet Trait env LocationId
     , HasSource ForSkillTest env
     , HasId (Maybe LocationId) LocationName env
     )

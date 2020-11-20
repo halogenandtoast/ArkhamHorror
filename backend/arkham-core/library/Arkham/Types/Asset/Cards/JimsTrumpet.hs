@@ -52,9 +52,8 @@ instance (AssetRunner env) => RunMessage env JimsTrumpet where
       locationId <- asks $ getId ownerId
       connectedLocationIds <-
         asks $ map unConnectedLocationId . getSetList locationId
-      investigatorIds <- concat <$> for
-        (locationId : connectedLocationIds)
-        (asks . (setToList .) . getSet)
+      investigatorIds <-
+        concat <$> for (locationId : connectedLocationIds) getSetList
       pairings <- for investigatorIds
         $ \targetId -> (targetId, ) . unHorrorCount <$> getCount targetId
       let choices = map fst $ filter ((> 0) . snd) pairings

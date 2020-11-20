@@ -50,7 +50,7 @@ instance EventRunner env => RunMessage env BloodRite where
     UseCardAbility iid source (Just (IntMetadata n)) 1
       | isSource attrs source -> do
         locationId <- asks $ getId @LocationId iid
-        enemyIds <- asks $ setToList . getSet @EnemyId locationId
+        enemyIds <- getSetList @EnemyId locationId
         e <$ unshiftMessages
           (replicate
               n

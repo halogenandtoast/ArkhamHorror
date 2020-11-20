@@ -18,11 +18,11 @@ instance HasModifiersFor env SneakAttack where
 instance HasActions env SneakAttack where
   getActions i window (SneakAttack attrs) = getActions i window attrs
 
-instance (EventRunner env) => RunMessage env SneakAttack where
+instance EventRunner env => RunMessage env SneakAttack where
   runMessage msg e@(SneakAttack attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       lid <- asks (getId @LocationId iid)
-      enemyIds <- asks $ map unExhaustedEnemyId . setToList . getSet lid
+      enemyIds <- map unExhaustedEnemyId <$> getSetList lid
       e <$ unshiftMessages
         ([ EnemyDamage enemyId iid (EventSource eventId) 2
          | enemyId <- enemyIds

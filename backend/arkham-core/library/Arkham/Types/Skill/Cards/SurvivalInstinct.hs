@@ -1,18 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Skill.Cards.SurvivalInstinct where
 
-import ClassyPrelude
+import Arkham.Import
 
-import Arkham.Json
 import Arkham.Types.Action
-import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
-import Arkham.Types.SkillId
-import Arkham.Types.Target
 import qualified Data.HashSet as HashSet
 
 newtype SurvivalInstinct = SurvivalInstinct Attrs
@@ -24,16 +17,15 @@ survivalInstinct iid uuid = SurvivalInstinct $ baseAttrs iid uuid "01081"
 instance HasActions env SurvivalInstinct where
   getActions i window (SurvivalInstinct attrs) = getActions i window attrs
 
-instance (SkillRunner env) => RunMessage env SurvivalInstinct where
+instance SkillRunner env => RunMessage env SurvivalInstinct where
   runMessage msg s@(SurvivalInstinct attrs@Attrs {..}) = case msg of
     PassedSkillTest iid (Just Evade) _ (SkillTarget sid) _ | sid == skillId ->
       do
         engagedEnemyIds <- HashSet.toList <$> asks (getSet iid)
         locationId <- asks (getId @LocationId iid)
-        blockedLocationIds <- HashSet.map unBlockedLocationId
-          <$> asks (getSet ())
+        blockedLocationIds <- HashSet.map unBlockedLocationId <$> getSet ()
         connectedLocationIds <- HashSet.map unConnectedLocationId
-          <$> asks (getSet locationId)
+          <$> getSet locationId
         let
           unblockedConnectedLocationIds =
             HashSet.toList

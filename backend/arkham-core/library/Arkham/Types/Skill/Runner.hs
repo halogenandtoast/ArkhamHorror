@@ -8,8 +8,8 @@ import Arkham.Types.LocationId
 
 type SkillRunner env
   = ( HasQueue env
-    , HasSet ConnectedLocationId LocationId env
-    , HasSet BlockedLocationId () env
-    , HasSet EnemyId InvestigatorId env
+    , HasSet ConnectedLocationId env LocationId
+    , HasSet BlockedLocationId env ()
+    , HasSet EnemyId env InvestigatorId
     , HasId LocationId InvestigatorId env
     )

@@ -34,13 +34,13 @@ instance ActionRunner env => HasActions env Scrying where
         ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env Scrying where
+instance AssetRunner env => RunMessage env Scrying where
   runMessage msg (Scrying attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Scrying <$> runMessage msg (attrs & uses .~ Uses Resource.Charge 3)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- asks $ getId @LocationId iid
-      targets <- asks $ map InvestigatorTarget . setToList . getSet locationId
+      targets <- map InvestigatorTarget <$> getSetList locationId
       unshiftMessage
         (chooseOne iid
         $ SearchTopOfDeck iid EncounterDeckTarget 3 [] PutBackInAnyOrder

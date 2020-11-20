@@ -1,20 +1,12 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Treachery.Cards.MysteriousChanting where
 
-import Arkham.Json
-import Arkham.Types.Card.EncounterCard
-import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.LocationId
-import Arkham.Types.Message
-import Arkham.Types.Target
+import Arkham.Import hiding (Cultist)
+
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
-import ClassyPrelude
-import qualified Data.HashSet as HashSet
-import Lens.Micro
 
 newtype MysteriousChanting = MysteriousChanting Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -32,8 +24,7 @@ instance (TreacheryRunner env) => RunMessage env MysteriousChanting where
   runMessage msg (MysteriousChanting attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- asks (getId @LocationId iid)
-      enemies <- map unClosestEnemyId . HashSet.toList <$> asks
-        (getSet (lid, [Cultist]))
+      enemies <- map unClosestEnemyId <$> getSetList (lid, [Cultist])
       case enemies of
         [] -> unshiftMessage
           (FindAndDrawEncounterCard

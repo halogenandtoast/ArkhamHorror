@@ -147,24 +147,27 @@ instance HasCount env Shroud Location where
 instance HasCount env DoomCount Location where
   getCount = pure . DoomCount . locationDoom . locationAttrs
 
-instance HasSet EnemyId () Location where
-  getSet _ = locationEnemies . locationAttrs
+instance HasSet EnemyId env Location where
+  getSet = pure . locationEnemies . locationAttrs
 
-instance HasSet TreacheryId () Location where
-  getSet _ = locationTreacheries . locationAttrs
+instance HasSet TreacheryId env Location where
+  getSet = pure . locationTreacheries . locationAttrs
 
-instance HasSet EventId () Location where
-  getSet _ = locationEvents . locationAttrs
+instance HasSet EventId env Location where
+  getSet = pure . locationEvents . locationAttrs
 
-instance HasSet AssetId () Location where
-  getSet _ = locationAssets . locationAttrs
+instance HasSet AssetId env Location where
+  getSet = pure . locationAssets . locationAttrs
 
-instance HasSet InvestigatorId () Location where
-  getSet _ = locationInvestigators . locationAttrs
+instance HasSet InvestigatorId env Location where
+  getSet = pure . locationInvestigators . locationAttrs
 
-instance HasSet ConnectedLocationId () Location where
-  getSet _ =
-    HashSet.map ConnectedLocationId . locationConnectedLocations . locationAttrs
+instance HasSet ConnectedLocationId env Location where
+  getSet =
+    pure
+      . HashSet.map ConnectedLocationId
+      . locationConnectedLocations
+      . locationAttrs
 
 instance HasId LocationId () Location where
   getId _ = locationId . locationAttrs

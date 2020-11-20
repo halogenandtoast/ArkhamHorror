@@ -68,55 +68,55 @@ type GameRunner env
       , HasList HandCard InvestigatorId env
       )
     , HasModifiersFor env env
-    , ( HasSet AccessibleLocationId LocationId env
-      , HasSet AdvanceableActId () env
-      , HasSet AgendaId () env
-      , HasSet AloofEnemyId LocationId env
-      , HasSet AssetId (InvestigatorId, UseType) env
-      , HasSet AssetId InvestigatorId env
-      , HasSet AssetId LocationId env
-      , HasSet BlockedLocationId () env
-      , HasSet ClosestEnemyId (LocationId, [Trait]) env
-      , HasSet ClosestEnemyId InvestigatorId env
-      , HasSet ClosestEnemyId (InvestigatorId, [Trait]) env
-      , HasSet ClosestLocationId (LocationId, LocationId) env
-      , HasSet ClosestLocationId (LocationId, Prey) env
-      , HasSet CommittedCardCode () env
-      , HasSet CommittedCardId InvestigatorId env
-      , HasSet ConnectedLocationId LocationId env
-      , HasSet DiscardableAssetId InvestigatorId env
-      , HasSet EmptyLocationId () env
-      , HasSet EnemyId () env
-      , HasSet EnemyId InvestigatorId env
-      , HasSet EnemyId LocationId env
-      , HasSet EnemyId Trait env
-      , HasSet EventId () env
-      , HasSet EventId LocationId env
-      , HasSet ExhaustedAssetId InvestigatorId env
-      , HasSet FarthestEnemyId (InvestigatorId, EnemyTrait) env
-      , HasSet FarthestLocationId (InvestigatorId, EmptyLocation) env
-      , HasSet FarthestLocationId [InvestigatorId] env
-      , HasSet FarthestLocationId InvestigatorId env
-      , HasSet HandCardId InvestigatorId env
-      , HasSet HandCardId (InvestigatorId, PlayerCardType) env
-      , HasSet InvestigatorId () env
-      , HasSet InScenarioInvestigatorId () env
-      , HasSet InvestigatorId EnemyId env
-      , HasSet InvestigatorId LocationId env
-      , HasSet Keyword EnemyId env
-      , HasSet LocationId () env
-      , HasSet LocationId [Trait] env
-      , HasSet LocationId TreacheryCardCode env
-      , HasSet PreyId (Prey, LocationId) env
-      , HasSet PreyId Prey env
-      , HasSet HealthDamageableAssetId InvestigatorId env
-      , HasSet SanityDamageableAssetId InvestigatorId env
-      , HasSet Trait AssetId env
-      , HasSet Trait EnemyId env
-      , HasSet Trait LocationId env
-      , HasSet TreacheryId LocationId env
-      , HasSet UniqueEnemyId () env
-      , HasSet VictoryDisplayCardCode () env
+    , ( HasSet AccessibleLocationId env LocationId
+      , HasSet AdvanceableActId env ()
+      , HasSet AgendaId env ()
+      , HasSet AloofEnemyId env LocationId
+      , HasSet AssetId env (InvestigatorId, UseType)
+      , HasSet AssetId env InvestigatorId
+      , HasSet AssetId env LocationId
+      , HasSet BlockedLocationId env ()
+      , HasSet ClosestEnemyId env (LocationId, [Trait])
+      , HasSet ClosestEnemyId env InvestigatorId
+      , HasSet ClosestEnemyId env (InvestigatorId, [Trait])
+      , HasSet ClosestLocationId env (LocationId, LocationId)
+      , HasSet ClosestLocationId env (LocationId, Prey)
+      , HasSet CommittedCardCode env ()
+      , HasSet CommittedCardId env InvestigatorId
+      , HasSet ConnectedLocationId env LocationId
+      , HasSet DiscardableAssetId env InvestigatorId
+      , HasSet EmptyLocationId env ()
+      , HasSet EnemyId env ()
+      , HasSet EnemyId env InvestigatorId
+      , HasSet EnemyId env LocationId
+      , HasSet EnemyId env Trait
+      , HasSet EventId env ()
+      , HasSet EventId env LocationId
+      , HasSet ExhaustedAssetId env InvestigatorId
+      , HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait)
+      , HasSet FarthestLocationId env (InvestigatorId, EmptyLocation)
+      , HasSet FarthestLocationId env [InvestigatorId]
+      , HasSet FarthestLocationId env InvestigatorId
+      , HasSet HandCardId env InvestigatorId
+      , HasSet HandCardId env (InvestigatorId, PlayerCardType)
+      , HasSet InvestigatorId env ()
+      , HasSet InScenarioInvestigatorId env ()
+      , HasSet InvestigatorId env EnemyId
+      , HasSet InvestigatorId env LocationId
+      , HasSet Keyword env EnemyId
+      , HasSet LocationId env ()
+      , HasSet LocationId env [Trait]
+      , HasSet LocationId env TreacheryCardCode
+      , HasSet PreyId env (Prey, LocationId)
+      , HasSet PreyId env Prey
+      , HasSet HealthDamageableAssetId env InvestigatorId
+      , HasSet SanityDamageableAssetId env InvestigatorId
+      , HasSet Trait env AssetId
+      , HasSet Trait env EnemyId
+      , HasSet Trait env LocationId
+      , HasSet TreacheryId env LocationId
+      , HasSet UniqueEnemyId env ()
+      , HasSet VictoryDisplayCardCode env ()
       )
     , HasSource ForSkillTest env
     , HasActions env ()

@@ -3,6 +3,10 @@
     "type": "scenario",
     "alternate": "arkham-core/tests/Arkham/Types/Scenario/Scenarios/{}Spec.hs"
   },
+  "arkham-core/library/Arkham/Types/Campaign/Campaigns/*.hs": {
+    "type": "campaign",
+    "alternate": "arkham-core/tests/Arkham/Types/Campaign/Campaigns/{}Spec.hs"
+  },
   "arkham-core/library/Arkham/Types/Agenda/Cards/*.hs": {
     "type": "agenda",
     "alternate": "arkham-core/tests/Arkham/Types/Agenda/Cards/{}Spec.hs"

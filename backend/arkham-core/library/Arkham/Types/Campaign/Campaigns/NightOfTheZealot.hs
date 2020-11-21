@@ -96,9 +96,9 @@ instance CampaignRunner env => RunMessage env NightOfTheZealot where
             )
           | iid <- investigatorIds
           ]
-        , NextCampaignStep
+        , NextCampaignStep Nothing
         ]
-    NextCampaignStep -> do
+    NextCampaignStep _ -> do
       let
         nextStep = case campaignStep of
           Just PrologueStep -> Just (ScenarioStep "01104")

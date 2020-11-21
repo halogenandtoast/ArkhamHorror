@@ -95,7 +95,7 @@ data Message
   | StartCampaign
   | ResetGame
   | CampaignStep (Maybe CampaignStep)
-  | NextCampaignStep
+  | NextCampaignStep (Maybe CampaignStep)
   | Remember ScenarioLogKey
   | Record CampaignLogKey
   | CrossOutRecord CampaignLogKey

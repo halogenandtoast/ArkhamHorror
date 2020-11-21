@@ -411,6 +411,8 @@ instance EnemyRunner env => RunMessage env Attrs where
         filteredClosestLocationIds <- flip filterM matchingClosestLocationIds
           $ \lid -> not . null . intersect preyIds <$> getSet lid
 
+        -- If we have any locations with prey, that takes priority, otherwise
+        -- we return all locations which may have matched via AnyPrey
         let
           closestLocationIds = if null filteredClosestLocationIds
             then matchingClosestLocationIds

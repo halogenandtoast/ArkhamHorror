@@ -1067,8 +1067,6 @@ instance (GameRunner env, env ~ Game queue) => HasSet PreyId (Game queue) Prey w
     let matcher = getIsPrey preyType <=< getInvestigator
     setFromList . map PreyId <$> filterM matcher investigatorIds
 
--- TODO: This does not work for more than 2 players
--- TODO: WE NEED TO REWORK THIS, WE HAVE TO DETERMINE PREY IN IO
 instance (HasQueue (Game queue), HasActions (Game queue) (ActionType, Trait), HasActions (Game queue) ActionType) => HasSet PreyId (Game queue) (Prey, LocationId) where
   getSet (preyType, lid) = do
     location <- getLocation lid

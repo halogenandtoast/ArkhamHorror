@@ -23,7 +23,7 @@ returnToNightOfTheZealot difficulty =
 instance (CampaignRunner env) => RunMessage env ReturnToNightOfTheZealot where
   runMessage msg (ReturnToNightOfTheZealot nightOfTheZealot'@(NightOfTheZealot attrs@Attrs {..}))
     = case msg of
-      NextCampaignStep -> do
+      NextCampaignStep _ -> do
         let
           nextStep = case campaignStep of
             Just PrologueStep -> Just (ScenarioStep "50011")

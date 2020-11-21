@@ -1336,7 +1336,7 @@ runGameMessage msg g = case msg of
   EndOfGame -> g <$ pushMessage EndOfScenario
   EndOfScenario -> do
     clearQueue
-    g <$ unshiftMessage NextCampaignStep
+    g <$ unshiftMessage (NextCampaignStep Nothing)
   ResetGame ->
     pure
       $ g

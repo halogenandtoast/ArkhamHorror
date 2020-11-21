@@ -252,6 +252,7 @@ getIsPrey
   => Prey
   -> Investigator
   -> m Bool
+getIsPrey (OnlyPrey prey) i = getIsPrey prey i
 getIsPrey AnyPrey _ = pure True
 getIsPrey (HighestSkill skillType) i = do
   highestSkill <- fromMaybe 0 . maximumMay <$> getSetList skillType
@@ -405,9 +406,7 @@ isDefeated = view defeated . investigatorAttrs
 
 getHasSpendableClues
   :: (MonadReader env m, HasModifiersFor env ()) => Investigator -> m Bool
-getHasSpendableClues i = do
-  spendableClueCount <- getSpendableClueCount (investigatorAttrs i)
-  pure $ spendableClueCount > 0
+getHasSpendableClues i = (> 0) <$> getSpendableClueCount (investigatorAttrs i)
 
 actionsRemaining :: Investigator -> Int
 actionsRemaining = investigatorRemainingActions . investigatorAttrs

@@ -20,5 +20,6 @@ data Prey
   | SetToBearer
   | MostClues
   | NearestToEnemyWithTrait Trait
+  | OnlyPrey Prey
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

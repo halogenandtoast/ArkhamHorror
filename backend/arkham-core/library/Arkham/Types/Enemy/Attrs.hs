@@ -395,8 +395,28 @@ instance EnemyRunner env => RunMessage env Attrs where
         && null enemyEngagedInvestigators
         && not enemyExhausted
       -> do
-        closestLocationIds <- map unClosestLocationId
-          <$> getSetList (enemyLocation, enemyPrey)
+        -- The logic here is an artifact of doing this incorrect
+        -- Prey is only used for breaking ties unless we're dealing
+        -- with the Only keyword for prey, so here we hardcode prey
+        -- to AnyPrey and then find if there are any investigators
+        -- who qualify as prey to filter
+        matchingClosestLocationIds <- case enemyPrey of
+          OnlyPrey prey ->
+            map unClosestLocationId <$> getSetList (enemyLocation, prey)
+          _prey ->
+            map unClosestLocationId <$> getSetList (enemyLocation, AnyPrey)
+
+        preyIds <- setFromList . map unPreyId <$> getSetList enemyPrey
+
+        filteredClosestLocationIds <- flip filterM matchingClosestLocationIds
+          $ \lid -> not . null . intersect preyIds <$> getSet lid
+
+        let
+          closestLocationIds = if null filteredClosestLocationIds
+            then matchingClosestLocationIds
+            else closestLocationIds
+
+
         leadInvestigatorId <- getLeadInvestigatorId
         case closestLocationIds of
           [] -> pure a

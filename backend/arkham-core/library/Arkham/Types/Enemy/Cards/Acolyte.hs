@@ -13,9 +13,9 @@ acolyte :: EnemyId -> Acolyte
 acolyte uuid =
   Acolyte
     $ baseAttrs uuid "01169"
-    $ (healthDamage .~ 1)
-    . (fight .~ 3)
-    . (evade .~ 2)
+    $ (healthDamageL .~ 1)
+    . (fightL .~ 3)
+    . (evadeL .~ 2)
 
 instance HasModifiersFor env Acolyte where
   getModifiersFor = noModifiersFor
@@ -28,5 +28,5 @@ instance (EnemyRunner env) => RunMessage env Acolyte where
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAtEmptyLocation iid eid
     EnemySpawn _ _ eid | eid == enemyId ->
-      Acolyte <$> runMessage msg (attrs & doom +~ 1)
+      Acolyte <$> runMessage msg (attrs & doomL +~ 1)
     _ -> Acolyte <$> runMessage msg attrs

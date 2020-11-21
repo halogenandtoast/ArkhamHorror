@@ -13,16 +13,16 @@ theMaskedHunter :: EnemyId -> TheMaskedHunter
 theMaskedHunter uuid =
   TheMaskedHunter
     $ baseAttrs uuid "01121b"
-    $ (healthDamage .~ 2)
-    . (sanityDamage .~ 1)
-    . (fight .~ 4)
-    . (health .~ Static 4)
-    . (evade .~ 2)
-    . (prey .~ MostClues)
-    . (unique .~ True)
+    $ (healthDamageL .~ 2)
+    . (sanityDamageL .~ 1)
+    . (fightL .~ 4)
+    . (healthL .~ Static 4)
+    . (evadeL .~ 2)
+    . (preyL .~ MostClues)
+    . (uniqueL .~ True)
 
 instance HasModifiersFor env TheMaskedHunter where
-  getModifiersFor _ (InvestigatorTarget iid) (TheMaskedHunter Attrs {..}) = do
+  getModifiersFor _ (InvestigatorTarget iid) (TheMaskedHunter Attrs {..}) =
     if iid `elem` enemyEngagedInvestigators
       then pure [CannotDiscoverClues, CannotSpendClues]
       else pure []
@@ -36,5 +36,5 @@ instance (EnemyRunner env) => RunMessage env TheMaskedHunter where
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       playerCount <- unPlayerCount <$> getCount ()
       TheMaskedHunter
-        <$> runMessage msg (attrs & health %~ fmap (+ (2 * playerCount)))
+        <$> runMessage msg (attrs & healthL %~ fmap (+ (2 * playerCount)))
     _ -> TheMaskedHunter <$> runMessage msg attrs

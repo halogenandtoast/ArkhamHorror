@@ -18,11 +18,11 @@ corpseTaker :: EnemyId -> CorpseTaker
 corpseTaker uuid =
   CorpseTaker
     $ baseAttrs uuid "50042"
-    $ (healthDamage .~ 1)
-    . (sanityDamage .~ 2)
-    . (fight .~ 4)
-    . (health .~ Static 3)
-    . (evade .~ 3)
+    $ (healthDamageL .~ 1)
+    . (sanityDamageL .~ 2)
+    . (fightL .~ 4)
+    . (healthL .~ Static 3)
+    . (evadeL .~ 3)
 
 instance HasModifiersFor env CorpseTaker where
   getModifiersFor = noModifiersFor
@@ -36,7 +36,7 @@ instance EnemyRunner env => RunMessage env CorpseTaker where
       farthestEmptyLocationIds <- map unFarthestLocationId
         <$> getSetList (iid, EmptyLocation)
       e <$ spawnAtOneOf iid eid farthestEmptyLocationIds
-    EndMythos -> pure $ CorpseTaker $ attrs & doom +~ 1
+    EndMythos -> pure $ CorpseTaker $ attrs & doomL +~ 1
     EndEnemy -> do
       mrivertown <- getId (LocationName "Rivertown")
       mmainPath <- getId (LocationName "Main Path")
@@ -46,7 +46,7 @@ instance EnemyRunner env => RunMessage env CorpseTaker where
       if enemyLocation == locationId
         then do
           unshiftMessages (replicate enemyDoom PlaceDoomOnAgenda)
-          pure $ CorpseTaker $ attrs & doom .~ 0
+          pure $ CorpseTaker $ attrs & doomL .~ 0
         else do
           leadInvestigatorId <- getLeadInvestigatorId
           closestLocationIds <- map unClosestLocationId

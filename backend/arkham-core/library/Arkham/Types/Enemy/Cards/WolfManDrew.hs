@@ -18,11 +18,11 @@ wolfManDrew :: EnemyId -> WolfManDrew
 wolfManDrew uuid =
   WolfManDrew
     $ baseAttrs uuid "01137"
-    $ (healthDamage .~ 2)
-    . (fight .~ 4)
-    . (health .~ Static 4)
-    . (evade .~ 2)
-    . (unique .~ True)
+    $ (healthDamageL .~ 2)
+    . (fightL .~ 4)
+    . (healthL .~ Static 4)
+    . (evadeL .~ 2)
+    . (uniqueL .~ True)
 
 instance HasModifiersFor env WolfManDrew where
   getModifiersFor = noModifiersFor
@@ -35,5 +35,5 @@ instance (EnemyRunner env) => RunMessage env WolfManDrew where
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) eid "Downtown"
     PerformEnemyAttack _ eid | eid == enemyId ->
-      WolfManDrew <$> runMessage msg (attrs & damage %~ max 0 . subtract 1)
+      WolfManDrew <$> runMessage msg (attrs & damageL %~ max 0 . subtract 1)
     _ -> WolfManDrew <$> runMessage msg attrs

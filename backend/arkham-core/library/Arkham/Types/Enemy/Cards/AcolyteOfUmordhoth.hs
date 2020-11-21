@@ -13,12 +13,12 @@ acolyteOfUmordhoth :: EnemyId -> AcolyteOfUmordhoth
 acolyteOfUmordhoth uuid =
   AcolyteOfUmordhoth
     $ baseAttrs uuid "50039"
-    $ (healthDamage .~ 1)
-    . (sanityDamage .~ 1)
-    . (fight .~ 3)
-    . (health .~ Static 3)
-    . (evade .~ 2)
-    . (prey .~ FewestCards)
+    $ (healthDamageL .~ 1)
+    . (sanityDamageL .~ 1)
+    . (fightL .~ 3)
+    . (healthL .~ Static 3)
+    . (evadeL .~ 2)
+    . (preyL .~ FewestCards)
 
 instance HasCount CardCount env InvestigatorId => HasModifiersFor env AcolyteOfUmordhoth where
   getModifiersFor _ (EnemyTarget eid) (AcolyteOfUmordhoth Attrs {..})

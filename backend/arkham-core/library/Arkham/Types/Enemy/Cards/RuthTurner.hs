@@ -13,11 +13,11 @@ ruthTurner :: EnemyId -> RuthTurner
 ruthTurner uuid =
   RuthTurner
     $ baseAttrs uuid "01141"
-    $ (healthDamage .~ 1)
-    . (fight .~ 2)
-    . (health .~ Static 4)
-    . (evade .~ 5)
-    . (unique .~ True)
+    $ (healthDamageL .~ 1)
+    . (fightL .~ 2)
+    . (healthL .~ Static 4)
+    . (evadeL .~ 5)
+    . (uniqueL .~ True)
 
 instance HasModifiersFor env RuthTurner where
   getModifiersFor = noModifiersFor

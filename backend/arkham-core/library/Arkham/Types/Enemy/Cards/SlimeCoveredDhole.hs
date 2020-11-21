@@ -19,12 +19,12 @@ slimeCoveredDhole :: EnemyId -> SlimeCoveredDhole
 slimeCoveredDhole uuid =
   SlimeCoveredDhole
     $ baseAttrs uuid "81031"
-    $ (healthDamage .~ 1)
-    . (sanityDamage .~ 1)
-    . (fight .~ 2)
-    . (health .~ Static 3)
-    . (evade .~ 3)
-    . (prey .~ LowestRemainingHealth)
+    $ (healthDamageL .~ 1)
+    . (sanityDamageL .~ 1)
+    . (fightL .~ 2)
+    . (healthL .~ Static 3)
+    . (evadeL .~ 3)
+    . (preyL .~ LowestRemainingHealth)
 
 instance HasModifiersFor env SlimeCoveredDhole where
   getModifiersFor = noModifiersFor

@@ -15,11 +15,11 @@ darkYoungHost :: EnemyId -> DarkYoungHost
 darkYoungHost uuid =
   DarkYoungHost
     $ baseAttrs uuid "81033"
-    $ (healthDamage .~ 2)
-    . (sanityDamage .~ 1)
-    . (fight .~ 4)
-    . (health .~ Static 5)
-    . (evade .~ 2)
+    $ (healthDamageL .~ 2)
+    . (sanityDamageL .~ 1)
+    . (fightL .~ 4)
+    . (healthL .~ Static 5)
+    . (evadeL .~ 2)
 
 instance HasModifiersFor env DarkYoungHost where
   getModifiersFor = noModifiersFor
@@ -35,7 +35,7 @@ instance (EnemyRunner env) => RunMessage env DarkYoungHost where
       e <$ spawnAtOneOf leadInvestigatorId enemyId bayouLocations
     PlaceClues (LocationTarget lid) n | lid == enemyLocation -> do
       unshiftMessage $ RemoveClues (LocationTarget lid) n
-      pure . DarkYoungHost $ attrs & clues +~ n
+      pure . DarkYoungHost $ attrs & cluesL +~ n
     When (EnemyDefeated eid _ _ _ _ _) | eid == enemyId ->
       e <$ unshiftMessage (PlaceClues (LocationTarget enemyLocation) enemyClues)
     _ -> DarkYoungHost <$> runMessage msg attrs

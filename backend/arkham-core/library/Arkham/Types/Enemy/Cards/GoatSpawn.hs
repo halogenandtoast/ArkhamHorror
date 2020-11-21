@@ -13,10 +13,10 @@ goatSpawn :: EnemyId -> GoatSpawn
 goatSpawn uuid =
   GoatSpawn
     $ baseAttrs uuid "01180"
-    $ (healthDamage .~ 1)
-    . (fight .~ 3)
-    . (health .~ Static 3)
-    . (evade .~ 2)
+    $ (healthDamageL .~ 1)
+    . (fightL .~ 3)
+    . (healthL .~ Static 3)
+    . (evadeL .~ 2)
 
 instance HasModifiersFor env GoatSpawn where
   getModifiersFor = noModifiersFor

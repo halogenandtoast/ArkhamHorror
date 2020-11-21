@@ -13,12 +13,12 @@ relentlessDarkYoung :: EnemyId -> RelentlessDarkYoung
 relentlessDarkYoung uuid =
   RelentlessDarkYoung
     $ baseAttrs uuid "01179"
-    $ (healthDamage .~ 2)
-    . (sanityDamage .~ 1)
-    . (fight .~ 4)
-    . (health .~ Static 5)
-    . (evade .~ 2)
-    . (prey .~ LowestSkill SkillAgility)
+    $ (healthDamageL .~ 2)
+    . (sanityDamageL .~ 1)
+    . (fightL .~ 4)
+    . (healthL .~ Static 5)
+    . (evadeL .~ 2)
+    . (preyL .~ LowestSkill SkillAgility)
 
 instance HasModifiersFor env RelentlessDarkYoung where
   getModifiersFor = noModifiersFor
@@ -28,6 +28,6 @@ instance ActionRunner env => HasActions env RelentlessDarkYoung where
 
 instance (EnemyRunner env) => RunMessage env RelentlessDarkYoung where
   runMessage msg (RelentlessDarkYoung attrs) = case msg of
-    EndRound -> do
-      pure $ RelentlessDarkYoung $ attrs & damage %~ max 0 . subtract 2
+    EndRound ->
+      pure $ RelentlessDarkYoung $ attrs & damageL %~ max 0 . subtract 2
     _ -> RelentlessDarkYoung <$> runMessage msg attrs

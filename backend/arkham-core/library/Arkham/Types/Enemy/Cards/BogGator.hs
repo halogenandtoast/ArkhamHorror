@@ -14,12 +14,12 @@ bogGator :: EnemyId -> BogGator
 bogGator uuid =
   BogGator
     $ baseAttrs uuid "81022"
-    $ (healthDamage .~ 1)
-    . (sanityDamage .~ 1)
-    . (fight .~ 2)
-    . (health .~ Static 2)
-    . (evade .~ 2)
-    . (prey .~ LowestSkill SkillAgility)
+    $ (healthDamageL .~ 1)
+    . (sanityDamageL .~ 1)
+    . (fightL .~ 2)
+    . (healthL .~ Static 2)
+    . (evadeL .~ 2)
+    . (preyL .~ LowestSkill SkillAgility)
 
 instance HasSet Trait env LocationId => HasModifiersFor env BogGator where
   getModifiersFor _ (EnemyTarget eid) (BogGator Attrs {..}) | eid == enemyId =

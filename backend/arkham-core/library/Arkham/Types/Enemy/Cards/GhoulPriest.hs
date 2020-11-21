@@ -13,12 +13,12 @@ ghoulPriest :: EnemyId -> GhoulPriest
 ghoulPriest uuid =
   GhoulPriest
     $ baseAttrs uuid "01116"
-    $ (healthDamage .~ 2)
-    . (sanityDamage .~ 2)
-    . (fight .~ 4)
-    . (health .~ PerPlayer 5)
-    . (evade .~ 4)
-    . (prey .~ HighestSkill SkillCombat)
+    $ (healthDamageL .~ 2)
+    . (sanityDamageL .~ 2)
+    . (fightL .~ 4)
+    . (healthL .~ PerPlayer 5)
+    . (evadeL .~ 4)
+    . (preyL .~ HighestSkill SkillCombat)
 
 instance HasModifiersFor env GhoulPriest where
   getModifiersFor = noModifiersFor

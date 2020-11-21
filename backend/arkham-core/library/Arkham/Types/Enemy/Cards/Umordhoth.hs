@@ -13,12 +13,12 @@ umordhoth :: EnemyId -> Umordhoth
 umordhoth uuid =
   Umordhoth
     $ baseAttrs uuid "01157"
-    $ (healthDamage .~ 3)
-    . (sanityDamage .~ 3)
-    . (fight .~ 5)
-    . (health .~ Static 6)
-    . (evade .~ 6)
-    . (unique .~ True)
+    $ (healthDamageL .~ 3)
+    . (sanityDamageL .~ 3)
+    . (fightL .~ 5)
+    . (healthL .~ Static 6)
+    . (evadeL .~ 6)
+    . (uniqueL .~ True)
 
 instance HasModifiersFor env Umordhoth where
   getModifiersFor = noModifiersFor
@@ -46,9 +46,9 @@ instance (EnemyRunner env) => RunMessage env Umordhoth where
     EnemySpawn _ _ eid | eid == enemyId -> do
       playerCount <- unPlayerCount <$> getCount ()
       Umordhoth
-        <$> runMessage msg (attrs & health %~ fmap (+ (4 * playerCount)))
-    ChooseEndTurn _ -> do
-      Umordhoth <$> runMessage msg (attrs & exhausted .~ False)
+        <$> runMessage msg (attrs & healthL %~ fmap (+ (4 * playerCount)))
+    ChooseEndTurn _ ->
+      Umordhoth <$> runMessage msg (attrs & exhaustedL .~ False)
     UseCardAbility _ (EnemySource eid) _ 1 | eid == enemyId ->
       e <$ unshiftMessage (Resolution 3)
     _ -> Umordhoth <$> runMessage msg attrs

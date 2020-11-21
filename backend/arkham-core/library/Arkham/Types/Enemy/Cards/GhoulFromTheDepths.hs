@@ -13,11 +13,11 @@ ghoulFromTheDepths :: EnemyId -> GhoulFromTheDepths
 ghoulFromTheDepths uuid =
   GhoulFromTheDepths
     $ baseAttrs uuid "50023"
-    $ (healthDamage .~ 1)
-    . (sanityDamage .~ 1)
-    . (fight .~ 3)
-    . (health .~ Static 4)
-    . (evade .~ 2)
+    $ (healthDamageL .~ 1)
+    . (sanityDamageL .~ 1)
+    . (fightL .~ 3)
+    . (healthL .~ Static 4)
+    . (evadeL .~ 2)
 
 instance HasModifiersFor env GhoulFromTheDepths where
   getModifiersFor = noModifiersFor

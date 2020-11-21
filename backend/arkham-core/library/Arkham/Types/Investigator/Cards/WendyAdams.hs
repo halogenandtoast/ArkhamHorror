@@ -81,7 +81,7 @@ instance (InvestigatorRunner env) => RunMessage env WendyAdams where
       , CheckWindow investigatorId [WhenDrawToken You token]
       , UnfocusTokens
       ]
-    ResolveToken ElderSign iid | iid == investigatorId -> do
+    ResolveToken _drawnToken ElderSign iid | iid == investigatorId -> do
       maid <- getId @(Maybe AssetId) (CardCode "01014")
       i <$ when (isJust maid) (unshiftMessage PassSkillTest)
     _ -> WendyAdams <$> runMessage msg attrs

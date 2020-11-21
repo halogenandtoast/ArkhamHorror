@@ -228,13 +228,13 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
               , ElderSign
               ]
         s <$ unshiftMessage (SetTokens tokens)
-      ResolveToken Cultist iid -> do
+      ResolveToken _ Cultist iid -> do
         lid <- getId @LocationId iid
         enemyIds <- getSetList @EnemyId lid
         rougarouAtYourLocation <- elem "81028"
           <$> for enemyIds (getId @CardCode)
         s <$ when rougarouAtYourLocation (unshiftMessage $ DrawAnotherToken iid)
-      ResolveToken ElderThing iid -> if isEasyStandard attrs
+      ResolveToken _ ElderThing iid -> if isEasyStandard attrs
         then do
           lid <- getId @LocationId iid
           enemyIds <- getSetList @EnemyId lid

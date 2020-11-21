@@ -140,7 +140,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
           , ("Ritual Site", ["01156"])
           ]
       TheDevourerBelow <$> runMessage msg (attrs & locations .~ locations')
-    ResolveToken Cultist iid -> do
+    ResolveToken _ Cultist iid -> do
       let doom = if isEasyStandard attrs then 1 else 2
       closestEnemyIds <- map unClosestEnemyId <$> getSetList iid
       case closestEnemyIds of
@@ -149,7 +149,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
         xs -> unshiftMessage
           (chooseOne iid [ PlaceDoom (EnemyTarget x) doom | x <- xs ])
       pure s
-    ResolveToken Tablet iid -> do
+    ResolveToken _ Tablet iid -> do
       let horror = if isEasyStandard attrs then 0 else 1
       monsterCount <- unEnemyCount
         <$> getCount (InvestigatorLocation iid, [Monster])
@@ -158,7 +158,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
         (unshiftMessage
         $ InvestigatorAssignDamage iid (TokenEffectSource Tablet) 1 horror
         )
-    ResolveToken ElderThing iid -> do
+    ResolveToken _ ElderThing iid -> do
       ancientOneCount <- unEnemyCount <$> getCount [AncientOne]
       s <$ when (ancientOneCount > 0) (unshiftMessage $ DrawAnotherToken iid)
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _

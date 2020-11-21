@@ -91,9 +91,9 @@ instance ScenarioRunner env => RunMessage env TheGathering where
           , ("Parlor", ["01115"])
           ]
       TheGathering <$> runMessage msg (attrs & locations .~ locations')
-    ResolveToken Cultist iid ->
+    ResolveToken _ Cultist iid ->
       s <$ when (isHardExpert attrs) (unshiftMessage $ DrawAnotherToken iid)
-    ResolveToken Tablet iid -> do
+    ResolveToken _ Tablet iid -> do
       ghoulCount <- unEnemyCount
         <$> getCount (InvestigatorLocation iid, [Trait.Ghoul])
       s <$ when

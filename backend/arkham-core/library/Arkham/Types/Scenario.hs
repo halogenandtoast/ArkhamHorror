@@ -13,12 +13,7 @@ import Arkham.Import
 import Arkham.Types.Difficulty
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Runner
-import Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
-import Arkham.Types.Scenario.Scenarios.ReturnToTheGathering
-import Arkham.Types.Scenario.Scenarios.TheDevourerBelow
-import Arkham.Types.Scenario.Scenarios.TheGathering
-import Arkham.Types.Scenario.Scenarios.TheMidnightMasks
-import Arkham.Types.ScenarioId
+import Arkham.Types.Scenario.Scenarios
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait (Trait)
 import Data.Coerce
@@ -27,7 +22,10 @@ data Scenario
   = TheGathering' TheGathering
   | TheMidnightMasks' TheMidnightMasks
   | TheDevourerBelow' TheDevourerBelow
+  | ExtracurricularActivity' ExtracurricularActivity
   | ReturnToTheGathering' ReturnToTheGathering
+  | ReturnToTheMidnightMasks' ReturnToTheMidnightMasks
+  | ReturnToTheDevourerBelow' ReturnToTheDevourerBelow
   | CurseOfTheRougarou' CurseOfTheRougarou
   | BaseScenario' BaseScenario
   deriving stock (Show, Generic)
@@ -92,7 +90,10 @@ allScenarios = mapFromList
   [ ("01104", TheGathering' . theGathering)
   , ("01120", TheMidnightMasks' . theMidnightMasks)
   , ("01142", TheDevourerBelow' . theDevourerBelow)
+  , ("02041", ExtracurricularActivity' . extracurricularActivity)
   , ("50011", ReturnToTheGathering' . returnToTheGathering)
+  , ("50025", ReturnToTheMidnightMasks' . returnToTheMidnightMasks)
+  , ("50032", ReturnToTheDevourerBelow' . returnToTheDevourerBelow)
   , ("81001", CurseOfTheRougarou' . curseOfTheRougarou)
   ]
 
@@ -102,5 +103,8 @@ scenarioAttrs = \case
   TheGathering' attrs -> coerce attrs
   TheMidnightMasks' attrs -> coerce attrs
   TheDevourerBelow' attrs -> coerce attrs
+  ExtracurricularActivity' attrs -> coerce attrs
   ReturnToTheGathering' attrs -> coerce attrs
+  ReturnToTheMidnightMasks' attrs -> coerce attrs
+  ReturnToTheDevourerBelow' attrs -> coerce attrs
   CurseOfTheRougarou' (CurseOfTheRougarou (attrs `With` _)) -> attrs

@@ -7,6 +7,7 @@ import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.Query
+import Arkham.Types.ScenarioId
 import Arkham.Types.Target
 import Arkham.Types.Trait
 
@@ -25,6 +26,7 @@ type ScenarioRunner env
     , HasSet AgendaId env ()
     , HasSet ClosestEnemyId env (InvestigatorId, [Trait])
     , HasSet ClosestEnemyId env InvestigatorId
+    , HasSet CompletedScenarioId env ()
     , HasSet ConnectedLocationId env LocationId
     , HasSet EnemyId env LocationId
     , HasSet EnemyId env Trait

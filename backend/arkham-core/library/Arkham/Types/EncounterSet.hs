@@ -28,6 +28,16 @@ data EncounterSet
   | AgentsOfYogSothoth
   | AgentsOfShubNiggurath
   | AgentsOfCthulhu
+  | ExtracurricularActivity
+  | Sorcery
+  | BishopsThralls
+  | Dunwich
+  | Whippoorwills
+  | BadLuck
+  | BeastThralls
+  | NaomisCrew
+  | TheBeyond
+  | HideousAbominations
   | ReturnToTheGathering
   | ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow
@@ -67,6 +77,19 @@ setCards = \case
   AgentsOfYogSothoth -> replicate 2 "01177" <> replicate 2 "01178"
   AgentsOfShubNiggurath -> "01179" : replicate 3 "01180"
   AgentsOfCthulhu -> replicate 2 "01181" <> replicate 2 "01182"
+  ExtracurricularActivity -> [] -- all cards are set aside
+  Sorcery -> replicate 3 "02083" <> replicate 3 "02084"
+  BishopsThralls -> replicate 2 "02085" <> replicate 3 "02086" <> ["02087"]
+  Dunwich -> replicate 2 "02088" <> replicate 2 "02089"
+  Whippoorwills -> replicate 3 "02090" <> replicate 2 "02091"
+  BadLuck -> replicate 3 "02092" <> replicate 3 "02093"
+  BeastThralls ->
+    replicate 2 "02094" <> replicate 2 "02095" <> replicate 2 "02096"
+  NaomisCrew ->
+    replicate 2 "02097" <> replicate 2 "02098" <> replicate 2 "02099"
+  TheBeyond ->
+    replicate 2 "02100" <> replicate 2 "02101" <> replicate 2 "02102"
+  HideousAbominations -> replicate 2 "02103" <> ["02104"]
   ReturnToTheGathering -> ["50022", "50023"] <> replicate 2 "50024"
   ReturnToTheMidnightMasks -> replicate 2 "50031"
   ReturnToTheDevourerBelow -> replicate 2 "50037"

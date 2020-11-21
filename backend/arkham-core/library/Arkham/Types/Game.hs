@@ -423,7 +423,7 @@ instance HasId (Maybe EnemyId) (Game queue) CardCode where
       <$> view enemies
 
 instance HasId LocationId (Game queue) InvestigatorId where
-  getId iid = locationFor iid <$> ask
+  getId = locationFor
 
 instance HasId LocationId (Game queue) EnemyId where
   getId = getId <=< getEnemy
@@ -551,12 +551,12 @@ instance HasCount EnemyCount (Game queue) (LocationId, [Trait]) where
 
 instance HasCount EnemyCount (Game queue) (InvestigatorLocation, [Trait]) where
   getCount (InvestigatorLocation iid, traits) = do
-    locationId <- locationFor iid <$> ask
+    locationId <- locationFor iid
     getCount (locationId, traits)
 
 instance (HasModifiersFor env (), env ~ Game queue) => HasStats (Game queue) (InvestigatorId, Maybe Action) where
   getStats (iid, maction) source =
-    modifiedStatsOf source maction =<< (getInvestigator iid <$> ask)
+    modifiedStatsOf source maction =<< getInvestigator iid
 
 instance
   (env ~ Game queue
@@ -571,8 +571,8 @@ instance
   )
   => HasTokenValue (Game queue) () where
   getTokenValue _ iid token = do
-    game <- ask
-    case game ^. scenario of
+    mscenario <- view scenario
+    case mscenario of
       Just scenario' -> getTokenValue scenario' iid token
       Nothing -> error "missing scenario"
 
@@ -650,9 +650,7 @@ instance HasList Enemy (Game queue) () where
   getList _ = toList <$> view enemies
 
 instance HasList Ability (Game queue) () where
-  getList _ = do
-    g <- ask
-    pure $ g ^. agendas . traverse . to getAbilities
+  getList _ = view (agendas . traverse . to getAbilities)
 
 instance HasSource ForSkillTest (Game queue) where
   getSource _ g = (Just . skillTestToSource) =<< (g ^. skillTest)
@@ -661,9 +659,7 @@ instance HasTarget ForSkillTest (Game queue) where
   getTarget _ g = g ^? skillTest . traverse . to skillTestTarget
 
 instance HasSet ScenarioLogKey (Game queue) () where
-  getSet _ = do
-    mscenario <- view scenario
-    maybe (pure mempty) getSet mscenario
+  getSet _ = maybe (pure mempty) getSet =<< view scenario
 
 instance HasSet HandCardId (Game queue) InvestigatorId where
   getSet iid =
@@ -961,9 +957,7 @@ instance HasSet ClosestEnemyId (Game queue) (LocationId, [Trait]) where
     matcher g lid = not . null $ runReader (getSet @EnemyId (traits, lid)) g
 
 instance HasSet ClosestEnemyId (Game queue) (InvestigatorId, [Trait]) where
-  getSet (iid, traits) = do
-    g <- ask
-    getSet (locationFor iid g, traits)
+  getSet (iid, traits) = getSet . (, traits) =<< locationFor iid
 
 instance HasSet ClosestLocationId (Game queue) (LocationId, LocationId) where
   getSet (start, destination) = do
@@ -976,7 +970,7 @@ instance HasSet ClosestLocationId (Game queue) (LocationId, LocationId) where
 instance HasSet FarthestLocationId (Game queue) InvestigatorId where
   getSet iid = do
     g <- ask
-    let start = locationFor iid g
+    start <- locationFor iid
     pure . setFromList . map FarthestLocationId $ getLongestPath
       g
       start
@@ -985,7 +979,7 @@ instance HasSet FarthestLocationId (Game queue) InvestigatorId where
 instance HasSet FarthestLocationId (Game queue) (InvestigatorId, EmptyLocation) where
   getSet (iid, _) = do
     g <- ask
-    let start = locationFor iid g
+    start <- locationFor iid
     emptyLocationIds <- map unEmptyLocationId <$> getSetList ()
     pure . setFromList . map FarthestLocationId $ getLongestPath
       g
@@ -995,8 +989,8 @@ instance HasSet FarthestLocationId (Game queue) (InvestigatorId, EmptyLocation) 
 instance HasSet FarthestEnemyId (Game queue) (InvestigatorId, EnemyTrait) where
   getSet (iid, enemyTrait) = do
     g <- ask
+    start <- locationFor iid
     let
-      start = locationFor iid g
       enemyMatches eid =
         elem (unEnemyTrait enemyTrait) . getTraits $ getEnemy eid g
       enemyIdsForLocation lid =
@@ -1638,11 +1632,11 @@ runGameMessage msg g = case msg of
          ]
     pure $ g & treacheries %~ insertMap treacheryId treachery
   DrewPlayerEnemy iid cardCode cardId -> do
+    investigator <- getInvestigator iid
+    lid <- locationFor iid
     let
-      investigator = getInvestigator iid g
       card = fromJustNote "could not find card in hand"
         $ find ((== cardId) . getCardId) (handOf investigator)
-      lid = locationFor iid g
     (eid, enemy) <- createEnemy cardCode
     let
       bearerMessage = case card of
@@ -2071,7 +2065,7 @@ runGameMessage msg g = case msg of
   InvestigatorDrewEncounterCard iid card -> case ecCardType card of
     EnemyType -> do
       (enemyId', enemy') <- createEnemy (ecCardCode card)
-      let lid = locationFor iid g
+      lid <- locationFor iid
       unshiftMessage (InvestigatorDrawEnemy iid lid enemyId')
       pure
         $ g

@@ -5,7 +5,6 @@ import Arkham.Import
 
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Runner
-import Arkham.Types.CampaignId
 import Arkham.Types.CampaignStep
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.Token as Token
@@ -14,20 +13,13 @@ newtype NightOfTheZealot = NightOfTheZealot Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 nightOfTheZealot :: Difficulty -> NightOfTheZealot
-nightOfTheZealot difficulty =
-  NightOfTheZealot $ (baseAttrs
-                       (CampaignId "01")
-                       "Night of the Zealot"
-                       difficulty
-                       (nightOfTheZealotChaosBagContents difficulty)
-                     )
-    { campaignSteps = fromList
-      [ PrologueStep
-      , ScenarioStep "01104"
-      , ScenarioStep "01120"
-      , ScenarioStep "01142"
-      ]
-    }
+nightOfTheZealot difficulty = NightOfTheZealot
+  (baseAttrs
+    (CampaignId "01")
+    "Night of the Zealot"
+    difficulty
+    (nightOfTheZealotChaosBagContents difficulty)
+  )
 
 nightOfTheZealotChaosBagContents :: Difficulty -> [Token]
 nightOfTheZealotChaosBagContents difficulty =
@@ -106,4 +98,19 @@ instance CampaignRunner env => RunMessage env NightOfTheZealot where
           ]
         , NextCampaignStep
         ]
+    NextCampaignStep -> do
+      let
+        nextStep = case campaignStep of
+          Just PrologueStep -> Just (ScenarioStep "01104")
+          Just (ScenarioStep "01104") -> Just (ScenarioStep "01120")
+          Just (ScenarioStep "01120") -> Just (ScenarioStep "01142")
+          _ -> Nothing
+      unshiftMessage (CampaignStep nextStep)
+      pure
+        . NightOfTheZealot
+        $ attrs
+        & step
+        .~ nextStep
+        & completedSteps
+        %~ completeStep campaignStep
     _ -> NightOfTheZealot <$> runMessage msg attrs

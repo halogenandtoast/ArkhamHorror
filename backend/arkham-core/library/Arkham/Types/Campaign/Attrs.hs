@@ -18,7 +18,6 @@ import ClassyPrelude hiding (log)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Data.UUID.V4
-import Data.Vector ((!?))
 import Lens.Micro
 
 data Attrs = Attrs
@@ -30,8 +29,8 @@ data Attrs = Attrs
   , campaignDifficulty :: Difficulty
   , campaignChaosBag :: [Token]
   , campaignLog :: CampaignLog
-  , campaignSteps :: Vector CampaignStep
-  , campaignStep :: Int
+  , campaignStep :: Maybe CampaignStep
+  , campaignCompletedSteps :: [CampaignStep]
   }
   deriving stock (Show, Generic)
 
@@ -44,11 +43,19 @@ decks = lens campaignDecks $ \m x -> m { campaignDecks = x }
 storyCards :: Lens' Attrs (HashMap InvestigatorId [PlayerCard])
 storyCards = lens campaignStoryCards $ \m x -> m { campaignStoryCards = x }
 
-step :: Lens' Attrs Int
+step :: Lens' Attrs (Maybe CampaignStep)
 step = lens campaignStep $ \m x -> m { campaignStep = x }
+
+completedSteps :: Lens' Attrs [CampaignStep]
+completedSteps =
+  lens campaignCompletedSteps $ \m x -> m { campaignCompletedSteps = x }
 
 log :: Lens' Attrs CampaignLog
 log = lens campaignLog $ \m x -> m { campaignLog = x }
+
+completeStep :: Maybe CampaignStep -> [CampaignStep] -> [CampaignStep]
+completeStep (Just step') steps = step' : steps
+completeStep Nothing steps = steps
 
 instance ToJSON Attrs where
   toJSON = genericToJSON $ aesonOptions $ Just "campaign"
@@ -59,19 +66,15 @@ instance FromJSON Attrs where
 
 instance (CampaignRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
-    StartCampaign ->
-      a <$ unshiftMessage (CampaignStep $ campaignSteps !? campaignStep)
+    StartCampaign -> a <$ unshiftMessage (CampaignStep campaignStep)
     CampaignStep Nothing -> a <$ unshiftMessage GameOver -- TODO: move to generic
-    CampaignStep (Just (ScenarioStep sid)) -> do
+    CampaignStep (Just (ScenarioStep sid)) ->
       a <$ unshiftMessages [ResetGame, StartScenario sid]
-    NextCampaignStep -> do
-      unshiftMessage (CampaignStep $ campaignSteps !? (campaignStep + 1))
-      pure $ a & step +~ 1
     SetTokensForScenario -> a <$ unshiftMessage (SetTokens campaignChaosBag)
     AddCampaignCardToDeck iid cardCode -> do
       card <- liftIO $ lookupPlayerCard cardCode . CardId <$> nextRandom
       pure $ a & storyCards %~ HashMap.insertWith (<>) iid [card]
-    RemoveCampaignCardFromDeck iid cardCode -> do
+    RemoveCampaignCardFromDeck iid cardCode ->
       pure
         $ a
         & storyCards
@@ -108,6 +111,6 @@ baseAttrs campaignId' name difficulty chaosBagContents = Attrs
   , campaignDifficulty = difficulty
   , campaignChaosBag = chaosBagContents
   , campaignLog = mkCampaignLog
-  , campaignSteps = mempty
-  , campaignStep = 0
+  , campaignStep = Just PrologueStep
+  , campaignCompletedSteps = []
   }

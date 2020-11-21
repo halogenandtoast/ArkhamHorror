@@ -1,21 +1,20 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Campaign.Campaigns.TheDunwichLegacy where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Runner
-import Arkham.Types.CampaignId
-import Arkham.Types.Classes
+import Arkham.Types.CampaignStep
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.Token as Token
-import ClassyPrelude
 
 newtype TheDunwichLegacy = TheDunwichLegacy Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 theDunwichLegacy :: Difficulty -> TheDunwichLegacy
 theDunwichLegacy difficulty = TheDunwichLegacy
-  $ baseAttrs (CampaignId "02") "The Dunwich Legacy" difficulty chaosBagContents
+  (baseAttrs (CampaignId "02") "The Dunwich Legacy" difficulty chaosBagContents)
  where
   chaosBagContents = case difficulty of
     Easy ->
@@ -95,5 +94,36 @@ theDunwichLegacy difficulty = TheDunwichLegacy
       ]
 
 instance (CampaignRunner env) => RunMessage env TheDunwichLegacy where
-  runMessage msg (TheDunwichLegacy attrs) =
-    TheDunwichLegacy <$> runMessage msg attrs
+  runMessage msg (TheDunwichLegacy attrs@Attrs {..}) = case msg of
+    NextCampaignStep -> do
+      let
+        nextStep = case campaignStep of
+          Just PrologueStep -> Just (ScenarioStep "02041")
+          Just (ScenarioStep "02041") ->
+            Just
+              . ScenarioStep
+              $ if ScenarioStep "02062" `elem` campaignCompletedSteps
+                  then "02118"
+                  else "02062"
+          Just (ScenarioStep "02062") ->
+            Just
+              . ScenarioStep
+              $ if ScenarioStep "02041" `elem` campaignCompletedSteps
+                  then "02118"
+                  else "02041"
+          Just (ScenarioStep "02118") -> Just (ScenarioStep "02159")
+          Just (ScenarioStep "02159") -> Just (ScenarioStep "02195")
+          Just (ScenarioStep "02195") -> Just (ScenarioStep "02236")
+          Just (ScenarioStep "02236") -> Just (ScenarioStep "02274")
+          Just (ScenarioStep "02274") -> Just (ScenarioStep "02311")
+          Just (ScenarioStep "02311") -> Nothing
+          _ -> Nothing
+      unshiftMessage (CampaignStep nextStep)
+      pure
+        . TheDunwichLegacy
+        $ attrs
+        & step
+        .~ nextStep
+        & completedSteps
+        %~ completeStep campaignStep
+    _ -> TheDunwichLegacy <$> runMessage msg attrs

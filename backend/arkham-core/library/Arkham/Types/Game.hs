@@ -36,7 +36,6 @@ import Arkham.Types.Agenda
 import Arkham.Types.Asset
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.Campaign
-import Arkham.Types.CampaignId
 import Arkham.Types.ChaosBag
 import Arkham.Types.Difficulty
 import Arkham.Types.Effect

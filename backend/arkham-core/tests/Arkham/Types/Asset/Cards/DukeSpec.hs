@@ -14,7 +14,7 @@ spec = describe "Duke" $ do
   context "fight action" $ do
     it "uses a base combat skill of 4 and does +1 damage" $ do
       duke <- buildAsset "02014"
-      enemy <- testEnemy ((Enemy.health .~ Static 3) . (Enemy.fight .~ 4))
+      enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 4))
       investigator <- testInvestigator "00000"
         $ \attrs -> attrs { investigatorCombat = 1 }
       location <- testLocation "00000" id

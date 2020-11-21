@@ -16,7 +16,7 @@ spec = describe "Aquinnah (1)" $ do
       (\attrs ->
         attrs { Enemy.enemyHealthDamage = 2, Enemy.enemySanityDamage = 1 }
       )
-    enemy2 <- testEnemy (Enemy.health .~ Static 3)
+    enemy2 <- testEnemy (Enemy.healthL .~ Static 3)
     location <- testLocation "00000" id
     game <-
       runGameTest

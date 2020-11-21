@@ -19,7 +19,7 @@ spec = do
       tokenValue token `shouldBe` Just 1
     it "elder sign token gives +1 and does +1 damage for attacks" $ do
       let zoeySamaras = lookupInvestigator "02001" -- combat is 4
-      enemy <- testEnemy ((Enemy.health .~ Static 3) . (Enemy.fight .~ 5))
+      enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
       scenario' <- testScenario "00000" id
       location <- testLocation "00000" id
       game <-

@@ -43,7 +43,7 @@ spec = describe "Jenny's Twin .45s" $ do
       , investigatorHand = [PlayerCard jennysTwin45s]
       , investigatorCombat = 3
       }
-    enemy <- testEnemy ((Enemy.health .~ Static 3) . (Enemy.fight .~ 5))
+    enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
     location <- testLocation "00000" id
     scenario' <- testScenario "00000" id
     game <-

@@ -52,7 +52,7 @@ spec = do
     it "Evades aloof enemies at your location" $ do
       investigator <- testInvestigator "00000" id
       location <- testLocation "00000" id
-      enemy <- testEnemy (set EnemyAttrs.keywords (setFromList [Aloof]))
+      enemy <- testEnemy (EnemyAttrs.keywordsL .~ setFromList [Aloof])
       cunningDistraction <- buildEvent "01078" investigator
       game <- runGameTest
         investigator

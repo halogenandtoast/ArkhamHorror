@@ -668,10 +668,7 @@ instance HasSet ScenarioLogKey (Game queue) () where
 
 instance HasSet HandCardId (Game queue) InvestigatorId where
   getSet iid =
-      setFromList
-      . map (HandCardId . getCardId)
-      . handOf
-      <$> getInvestigator iid
+    setFromList . map (HandCardId . getCardId) . handOf <$> getInvestigator iid
 
 instance HasSet HandCardId (Game queue) (InvestigatorId, PlayerCardType) where
   getSet (iid, cardType) =
@@ -846,23 +843,14 @@ instance HasSet BlockedLocationId (Game queue) () where
       . filterMap isBlocked
       <$> view locations
 
-data BFSState = BFSState
-  { _bfsSearchQueue       :: Seq LocationId
-  , _bfsVisistedLocations :: HashSet LocationId
-  , _bfsParents           :: HashMap LocationId LocationId
-  , _bfsFoundAtDepth      :: Bool
-  }
-
 getShortestPath
   :: Game queue -> LocationId -> (LocationId -> Bool) -> [LocationId]
-getShortestPath game initialLocation target = evalState
-  (bfs game initialLocation target)
-  (BFSState
-    (pure initialLocation)
-    (HashSet.singleton initialLocation)
-    mempty
-    False
-  )
+getShortestPath !game !initialLocation !target = do
+  let
+    !state' =
+      LPState (pure initialLocation) (HashSet.singleton initialLocation) mempty
+  let !result = evalState (markDistances game initialLocation target) state'
+  fromMaybe [] . headMay . map snd . sortOn fst . mapToList $ result
 
 data LPState = LPState
   { _lpSearchQueue       :: Seq LocationId
@@ -919,63 +907,11 @@ markDistances game initialLocation target = do
       Nothing -> fromJustNote "failed bfs on tail" $ tailMay currentPath
       Just parent -> unwindPath parentsMap (parent : currentPath)
 
-bfs
-  :: Game queue
-  -> LocationId
-  -> (LocationId -> Bool)
-  -> State BFSState [LocationId]
-bfs game initialLocation target = do
-  BFSState searchQueue visitedSet parentsMap hasFoundAtDepth <- get
-  if Seq.null searchQueue
-    then pure []
-    else do
-      let nextLoc = Seq.index searchQueue 0
-      if target nextLoc
-        then do
-          let
-            newVisitedSet = insertSet nextLoc visitedSet
-            newSearchQueue = Seq.drop 1 searchQueue
-          put (BFSState newSearchQueue newVisitedSet parentsMap True)
-          others <- bfs game initialLocation target
-          pure
-            $ maybe [] pure (headMay $ unwindPath parentsMap [nextLoc])
-            <> others
-        else if hasFoundAtDepth
-          then do
-            let
-              newVisitedSet = insertSet nextLoc visitedSet
-              newSearchQueue = Seq.drop 1 searchQueue
-            put (BFSState newSearchQueue newVisitedSet parentsMap True)
-            bfs game initialLocation target
-          else do
-            let
-              adjacentCells =
-                map unConnectedLocationId . toList $ getSet nextLoc game
-              unvisitedNextCells =
-                filter (\loc -> not (loc `member` visitedSet)) adjacentCells
-              newVisitedSet = foldr insertSet visitedSet unvisitedNextCells
-              newSearchQueue = foldr
-                (flip (Seq.|>))
-                (Seq.drop 1 searchQueue)
-                unvisitedNextCells
-              newParentsMap =
-                foldr (`insertMap` nextLoc) parentsMap unvisitedNextCells
-            put (BFSState newSearchQueue newVisitedSet newParentsMap False)
-            bfs game initialLocation target
- where
-  unwindPath parentsMap currentPath =
-    case lookup (fromJustNote "failed bfs" $ headMay currentPath) parentsMap of
-      Nothing -> fromJustNote "failed bfs on tail" $ tailMay currentPath
-      Just parent -> unwindPath parentsMap (parent : currentPath)
-
 instance (GameRunner env, env ~ Game queue) => HasSet ClosestLocationId (Game queue) (LocationId, Prey) where
   getSet (start, prey) = do
     g <- ask
-    pure $ setFromList . map ClosestLocationId $ getShortestPath
-      g
-      start
-      (matcher g)
-    where matcher g lid = not . null $ runReader (getSet @PreyId (prey, lid)) g
+    let matcher lid = not . null $ getSet @PreyId (prey, lid) g
+    pure $ setFromList . map ClosestLocationId $ getShortestPath g start matcher
 
 instance HasSet ClosestEnemyId (Game queue) LocationId where
   getSet start = do
@@ -1133,7 +1069,7 @@ instance (GameRunner env, env ~ Game queue) => HasSet PreyId (Game queue) Prey w
 
 -- TODO: This does not work for more than 2 players
 -- TODO: WE NEED TO REWORK THIS, WE HAVE TO DETERMINE PREY IN IO
-instance (GameRunner env, env ~ Game queue) => HasSet PreyId (Game queue) (Prey, LocationId) where
+instance (HasQueue (Game queue), HasActions (Game queue) (ActionType, Trait), HasActions (Game queue) ActionType) => HasSet PreyId (Game queue) (Prey, LocationId) where
   getSet (preyType, lid) = do
     location <- getLocation lid
     investigators' <- getSetList location

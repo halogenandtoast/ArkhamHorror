@@ -14,7 +14,7 @@ spec = do
     context "after engaging an enemy" $ do
       it "spend 1 resource and exhaust to deal one damage to that enemy" $ do
         investigator <- testInvestigator "00000" (Investigator.resources .~ 1)
-        enemy <- testEnemy (Enemy.health .~ Static 2)
+        enemy <- testEnemy (Enemy.healthL .~ Static 2)
         location <- testLocation "00000" id
         zoeysCross <- buildAsset "02006"
         game <-

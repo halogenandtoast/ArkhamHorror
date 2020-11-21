@@ -34,7 +34,7 @@ spec = describe "Jim Culver" $ do
         >>= runGameTestOnlyOption "apply results"
       gameMessageHistory game `shouldSatisfy` any
         (\case
-          ResolveToken token _ -> token == Skull
+          ResolveToken _ token _ -> token == Skull
           _ -> False
         )
 

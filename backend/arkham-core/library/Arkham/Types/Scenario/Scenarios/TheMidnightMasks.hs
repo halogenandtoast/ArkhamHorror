@@ -184,7 +184,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
         (x : xs) -> do
           unshiftMessage (InvestigatorDrewEncounterCard iid x)
           pure $ TheMidnightMasks (attrs { scenarioDeck = Just xs })
-    ResolveToken Cultist iid | isEasyStandard attrs -> do
+    ResolveToken _ Cultist iid | isEasyStandard attrs -> do
       closestCultists <- map unClosestEnemyId
         <$> getSetList (iid, [Trait.Cultist])
       case closestCultists of
@@ -193,7 +193,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
         xs -> unshiftMessage
           (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
       pure s
-    ResolveToken Cultist iid | isHardExpert attrs -> do
+    ResolveToken _ Cultist iid | isHardExpert attrs -> do
       cultists <- getSetList @EnemyId Trait.Cultist
       case cultists of
         [] -> unshiftMessage (DrawAnotherToken iid)

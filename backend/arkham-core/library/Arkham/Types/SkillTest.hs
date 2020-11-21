@@ -223,9 +223,12 @@ instance SkillTestRunner env => RunMessage env SkillTest where
       pure $ s & revealedTokens %~ (token' :)
     RevealSkillTestTokens iid -> do
       revealedTokenFaces <- concatMapM
-        (getModifiedTokenFaces s)
+        (\t -> map (t, ) <$> getModifiedTokenFaces s t)
         skillTestRevealedTokens
-      unshiftMessages [ ResolveToken token iid | token <- revealedTokenFaces ]
+      unshiftMessages
+        [ ResolveToken drawnToken tokenFace iid
+        | (drawnToken, tokenFace) <- revealedTokenFaces
+        ]
       pure
         $ s
         & (subscribers

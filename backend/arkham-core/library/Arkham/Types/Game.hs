@@ -48,7 +48,6 @@ import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Location
 import Arkham.Types.Phase
 import Arkham.Types.Scenario
-import Arkham.Types.ScenarioId
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Skill
 import Arkham.Types.SkillTest
@@ -660,6 +659,9 @@ instance HasTarget ForSkillTest (Game queue) where
 
 instance HasSet ScenarioLogKey (Game queue) () where
   getSet _ = maybe (pure mempty) getSet =<< view scenario
+
+instance HasSet CompletedScenarioId (Game queue) () where
+  getSet _ = maybe (pure mempty) getSet =<< view campaign
 
 instance HasSet HandCardId (Game queue) InvestigatorId where
   getSet iid =

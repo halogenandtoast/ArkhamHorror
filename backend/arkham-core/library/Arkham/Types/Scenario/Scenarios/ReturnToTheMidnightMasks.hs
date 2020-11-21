@@ -19,8 +19,8 @@ import System.Random.Shuffle
 newtype ReturnToTheMidnightMasks = ReturnToTheMidnightMasks TheMidnightMasks
   deriving newtype (Show, ToJSON, FromJSON)
 
-theMidnightMasks :: Difficulty -> ReturnToTheMidnightMasks
-theMidnightMasks difficulty =
+returnToTheMidnightMasks :: Difficulty -> ReturnToTheMidnightMasks
+returnToTheMidnightMasks difficulty =
   ReturnToTheMidnightMasks
     . TheMidnightMasks
     $ (baseAttrs "50025" "Return to the Midnight Masks" [] [] difficulty)

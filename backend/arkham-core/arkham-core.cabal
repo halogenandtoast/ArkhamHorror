@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 728fdf202efb32b3cba1b0551ca39264edc8417e7469ba588dcb51cbdf4273ac
+-- hash: 8bb658eb397722d818e2a7fba6ff470597c4c5ed7a6d1c32b72178011be1279c
 
 name:           arkham-core
 version:        0.0.0
@@ -139,6 +139,7 @@ library
       Arkham.Types.AssetId
       Arkham.Types.Campaign
       Arkham.Types.Campaign.Attrs
+      Arkham.Types.Campaign.Campaigns
       Arkham.Types.Campaign.Campaigns.NightOfTheZealot
       Arkham.Types.Campaign.Campaigns.ReturnToNightOfTheZealot
       Arkham.Types.Campaign.Campaigns.TheDunwichLegacy
@@ -405,7 +406,9 @@ library
       Arkham.Types.Scenario.Attrs
       Arkham.Types.Scenario.Helpers
       Arkham.Types.Scenario.Runner
+      Arkham.Types.Scenario.Scenarios
       Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
+      Arkham.Types.Scenario.Scenarios.ExtracurricularActivity
       Arkham.Types.Scenario.Scenarios.ReturnToTheDevourerBelow
       Arkham.Types.Scenario.Scenarios.ReturnToTheGathering
       Arkham.Types.Scenario.Scenarios.ReturnToTheMidnightMasks

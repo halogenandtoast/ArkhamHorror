@@ -4,19 +4,13 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Campaign where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Campaign.Attrs
-import Arkham.Types.Campaign.Campaigns.NightOfTheZealot
-import Arkham.Types.Campaign.Campaigns.ReturnToNightOfTheZealot
-import Arkham.Types.Campaign.Campaigns.TheDunwichLegacy
+import Arkham.Types.Campaign.Campaigns
 import Arkham.Types.Campaign.Runner
-import Arkham.Types.CampaignId
-import Arkham.Types.Classes
 import Arkham.Types.Difficulty
-import Arkham.Types.Token
-import ClassyPrelude
 import Data.Coerce
-import Safe (fromJustNote)
 
 data Campaign
   = NightOfTheZealot' NightOfTheZealot
@@ -30,6 +24,9 @@ deriving anyclass instance CampaignRunner env => RunMessage env Campaign
 instance HasRecord Campaign where
   hasRecord key = hasRecord key . campaignLog . campaignAttrs
   hasRecordSet key = hasRecordSet key . campaignLog . campaignAttrs
+
+instance HasSet CompletedScenarioId env Campaign where
+  getSet = getSet . campaignAttrs
 
 allCampaigns :: HashMap CampaignId (Difficulty -> Campaign)
 allCampaigns = mapFromList

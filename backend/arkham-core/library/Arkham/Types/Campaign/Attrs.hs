@@ -1,24 +1,16 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Campaign.Attrs where
 
-import Arkham.Json
+import Arkham.Import hiding (log)
+
 import Arkham.Types.Campaign.Runner
-import Arkham.Types.CampaignId
 import Arkham.Types.CampaignLog
 import Arkham.Types.CampaignStep
-import Arkham.Types.Card.Id
-import Arkham.Types.Card.PlayerCard
-import Arkham.Types.Classes
 import Arkham.Types.Difficulty
 import Arkham.Types.Investigator
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
-import Arkham.Types.Token
-import ClassyPrelude hiding (log)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Data.UUID.V4
-import Lens.Micro
 
 data Attrs = Attrs
   { campaignId :: CampaignId
@@ -63,6 +55,12 @@ instance ToJSON Attrs where
 
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "campaign"
+
+instance HasSet CompletedScenarioId env Attrs where
+  getSet Attrs {..} =
+    pure . setFromList $ flip mapMaybe campaignCompletedSteps $ \case
+      ScenarioStep scenarioId -> Just $ CompletedScenarioId scenarioId
+      _ -> Nothing
 
 instance (CampaignRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of

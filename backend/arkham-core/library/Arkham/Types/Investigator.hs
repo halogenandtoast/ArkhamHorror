@@ -270,12 +270,18 @@ getIsPrey (LowestSkill skillType) i = do
 getIsPrey LowestRemainingHealth i = do
   remainingHealth <- getRemainingHealth i
   lowestRemainingHealth <-
-    fromMaybe 100 . minimumMay . map unRemainingHealth . setToList <$> getSet ()
+    fromJustNote "has to be"
+    . minimumMay
+    . map unRemainingHealth
+    <$> getSetList ()
   pure $ lowestRemainingHealth == remainingHealth
 getIsPrey LowestRemainingSanity i = do
   remainingSanity <- getRemainingSanity i
   lowestRemainingSanity <-
-    fromMaybe 100 . minimumMay . map unRemainingSanity . setToList <$> getSet ()
+    fromJustNote "has to be"
+    . minimumMay
+    . map unRemainingSanity
+    <$> getSetList ()
   pure $ lowestRemainingSanity == remainingSanity
 getIsPrey (Bearer bid) i = pure $ unBearerId bid == unInvestigatorId
   (investigatorId $ investigatorAttrs i)

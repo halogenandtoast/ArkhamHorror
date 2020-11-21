@@ -1071,8 +1071,9 @@ instance (HasQueue (Game queue), HasActions (Game queue) (ActionType, Trait), Ha
   getSet (preyType, lid) = do
     location <- getLocation lid
     investigators' <- getSetList location
-    let matcher = getIsPrey preyType <=< getInvestigator
-    setFromList . map PreyId <$> filterM matcher investigators'
+    setFromList
+      . map PreyId
+      <$> filterM (getIsPrey preyType <=< getInvestigator) investigators'
 
 instance HasSet AdvanceableActId (Game queue) () where
   getSet _ =

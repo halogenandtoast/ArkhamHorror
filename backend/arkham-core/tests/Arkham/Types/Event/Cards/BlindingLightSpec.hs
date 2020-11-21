@@ -16,7 +16,7 @@ spec = do
       investigator <- testInvestigator "00000"
         $ \attrs -> attrs { investigatorWillpower = 5, investigatorAgility = 3 }
       enemy <- testEnemy
-        (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
+        (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 2))
       blindingLight <- buildEvent "01066" investigator
       location <- testLocation "00000" id
       game <-
@@ -42,7 +42,7 @@ spec = do
       scenario' <- testScenario "00000" id
       investigator <- testInvestigator "01004" id
       enemy <- testEnemy
-        (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
+        ((EnemyAttrs.evadeL .~ 4) . (EnemyAttrs.healthL .~ Static 2))
       blindingLight <- buildEvent "01066" investigator
       location <- testLocation "00000" id
       game <-
@@ -71,7 +71,7 @@ spec = do
           scenario' <- testScenario "00000" id
           investigator <- testInvestigator "01004" id
           enemy <- testEnemy
-            (set EnemyAttrs.evade 4 . set EnemyAttrs.health (Static 2))
+            ((EnemyAttrs.evadeL .~ 4) . (EnemyAttrs.healthL .~ Static 2))
           blindingLight <- buildEvent "01066" investigator
           location <- testLocation "00000" id
           game <-

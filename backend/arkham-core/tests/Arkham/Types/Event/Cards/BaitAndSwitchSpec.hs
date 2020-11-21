@@ -14,7 +14,7 @@ spec = describe "Bait and Switch" $ do
     scenario' <- testScenario "00000" id
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorAgility = 3 }
-    enemy <- testEnemy (set EnemyAttrs.evade 3)
+    enemy <- testEnemy (EnemyAttrs.evadeL .~ 3)
     baitAndSwitch <- buildEvent "02034" investigator
     (location1, location2) <- testConnectedLocations id id
     game <-

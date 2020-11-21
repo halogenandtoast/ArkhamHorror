@@ -143,7 +143,7 @@ weaknessBaseAttrs eid cardCode =
       , enemyId = eid
       , enemyCardCode = cardCode
       , enemyEngagedInvestigators = mempty
-      , enemyLocation = "00000" -- no known location
+      , enemyLocation = "unknown" -- no known location
       , enemyFight = 1
       , enemyHealth = Static 1
       , enemyEvade = 1
@@ -343,6 +343,7 @@ instance EnemyRunner env => RunMessage env Attrs where
                     (Ask leadInvestigatorId $ ChooseOne
                       [ EnemyEngageInvestigator eid iid | iid <- iids ]
                     )
+
           when (Keyword.Massive `elem` enemyKeywords) $ do
             investigatorIds <- getInvestigatorIds
             unshiftMessages

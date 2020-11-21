@@ -18,7 +18,7 @@ spec = do
         $ \attrs -> attrs { investigatorCombat = 1, investigatorAgility = 4 }
       backstab <- buildEvent "01051" investigator
       enemy <- testEnemy
-        (set EnemyAttrs.fight 3 . set EnemyAttrs.health (Static 4))
+        ((EnemyAttrs.fightL .~ 3) . (EnemyAttrs.healthL .~ Static 4))
       game <-
         runGameTest
           investigator

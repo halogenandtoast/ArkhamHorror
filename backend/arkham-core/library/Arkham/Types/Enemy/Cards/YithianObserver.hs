@@ -13,12 +13,12 @@ yithianObserver :: EnemyId -> YithianObserver
 yithianObserver uuid =
   YithianObserver
     $ baseAttrs uuid "01177"
-    $ (healthDamage .~ 1)
-    . (sanityDamage .~ 1)
-    . (fight .~ 4)
-    . (health .~ Static 4)
-    . (evade .~ 3)
-    . (prey .~ FewestCards)
+    $ (healthDamageL .~ 1)
+    . (sanityDamageL .~ 1)
+    . (fightL .~ 4)
+    . (healthL .~ Static 4)
+    . (evadeL .~ 3)
+    . (preyL .~ FewestCards)
 
 instance HasModifiersFor env YithianObserver where
   getModifiersFor = noModifiersFor

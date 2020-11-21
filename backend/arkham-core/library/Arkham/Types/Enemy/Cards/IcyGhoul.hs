@@ -13,11 +13,11 @@ icyGhoul :: EnemyId -> IcyGhoul
 icyGhoul uuid =
   IcyGhoul
     $ baseAttrs uuid "01119"
-    $ (healthDamage .~ 2)
-    . (sanityDamage .~ 1)
-    . (fight .~ 3)
-    . (health .~ Static 4)
-    . (evade .~ 4)
+    $ (healthDamageL .~ 2)
+    . (sanityDamageL .~ 1)
+    . (fightL .~ 3)
+    . (healthL .~ Static 4)
+    . (evadeL .~ 4)
 
 instance HasModifiersFor env IcyGhoul where
   getModifiersFor = noModifiersFor

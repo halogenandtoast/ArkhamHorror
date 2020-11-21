@@ -11,7 +11,7 @@ newtype SwarmOfRats = SwarmOfRats Attrs
 
 swarmOfRats :: EnemyId -> SwarmOfRats
 swarmOfRats uuid =
-  SwarmOfRats $ baseAttrs uuid "01159" $ (healthDamage .~ 1) . (evade .~ 3)
+  SwarmOfRats $ baseAttrs uuid "01159" $ (healthDamageL .~ 1) . (evadeL .~ 3)
 
 instance HasModifiersFor env SwarmOfRats where
   getModifiersFor = noModifiersFor

@@ -13,11 +13,11 @@ corpseHungryGhoul :: EnemyId -> CorpseHungryGhoul
 corpseHungryGhoul uuid =
   CorpseHungryGhoul
     $ baseAttrs uuid "50022"
-    $ (healthDamage .~ 2)
-    . (sanityDamage .~ 2)
-    . (fight .~ 4)
-    . (health .~ Static 3)
-    . (evade .~ 3)
+    $ (healthDamageL .~ 2)
+    . (sanityDamageL .~ 2)
+    . (fightL .~ 4)
+    . (healthL .~ Static 3)
+    . (evadeL .~ 3)
 
 instance HasModifiersFor env CorpseHungryGhoul where
   getModifiersFor = noModifiersFor

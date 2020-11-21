@@ -13,11 +13,11 @@ fleshEater :: EnemyId -> FleshEater
 fleshEater uuid =
   FleshEater
     $ baseAttrs uuid "01118"
-    $ (healthDamage .~ 1)
-    . (sanityDamage .~ 2)
-    . (fight .~ 4)
-    . (health .~ Static 4)
-    . (evade .~ 1)
+    $ (healthDamageL .~ 1)
+    . (sanityDamageL .~ 2)
+    . (fightL .~ 4)
+    . (healthL .~ Static 4)
+    . (evadeL .~ 1)
 
 instance HasModifiersFor env FleshEater where
   getModifiersFor = noModifiersFor

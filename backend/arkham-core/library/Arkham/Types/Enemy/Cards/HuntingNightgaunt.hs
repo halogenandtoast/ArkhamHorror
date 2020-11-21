@@ -13,11 +13,11 @@ huntingNightgaunt :: EnemyId -> HuntingNightgaunt
 huntingNightgaunt uuid =
   HuntingNightgaunt
     $ baseAttrs uuid "01172"
-    $ (healthDamage .~ 1)
-    . (sanityDamage .~ 1)
-    . (fight .~ 3)
-    . (health .~ Static 4)
-    . (evade .~ 1)
+    $ (healthDamageL .~ 1)
+    . (sanityDamageL .~ 1)
+    . (fightL .~ 3)
+    . (healthL .~ Static 4)
+    . (evadeL .~ 1)
 
 instance HasModifiersFor env HuntingNightgaunt where
   getModifiersFor = noModifiersFor

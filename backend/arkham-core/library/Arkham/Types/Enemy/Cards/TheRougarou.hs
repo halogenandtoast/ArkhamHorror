@@ -23,12 +23,12 @@ theRougarou uuid =
   TheRougarou
     . (`with` TheRougarouMetadata 0)
     $ baseAttrs uuid "81028"
-    $ (healthDamage .~ 2)
-    . (sanityDamage .~ 2)
-    . (fight .~ 3)
-    . (health .~ PerPlayer 5)
-    . (evade .~ 3)
-    . (unique .~ True)
+    $ (healthDamageL .~ 2)
+    . (sanityDamageL .~ 2)
+    . (fightL .~ 3)
+    . (healthL .~ PerPlayer 5)
+    . (evadeL .~ 3)
+    . (uniqueL .~ True)
 
 instance HasModifiersFor env TheRougarou where
   getModifiersFor = noModifiersFor

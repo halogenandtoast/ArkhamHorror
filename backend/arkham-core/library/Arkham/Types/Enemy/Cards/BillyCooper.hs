@@ -14,11 +14,11 @@ billyCooper :: EnemyId -> BillyCooper
 billyCooper uuid =
   BillyCooper
     $ baseAttrs uuid "50045"
-    $ (healthDamage .~ 2)
-    . (fight .~ 5)
-    . (health .~ Static 4)
-    . (evade .~ 2)
-    . (unique .~ True)
+    $ (healthDamageL .~ 2)
+    . (fightL .~ 5)
+    . (healthL .~ Static 4)
+    . (evadeL .~ 2)
+    . (uniqueL .~ True)
 
 instance HasModifiersFor env BillyCooper where
   getModifiersFor = noModifiersFor
@@ -31,6 +31,6 @@ instance (EnemyRunner env) => RunMessage env BillyCooper where
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) eid "Easttown"
     After (EnemyDefeated _ _ lid _ _ traits)
-      | lid == enemyLocation && Monster `elem` traits -> do
+      | lid == enemyLocation && Monster `elem` traits ->
         e <$ unshiftMessage (AddToVictory $ toTarget attrs)
     _ -> BillyCooper <$> runMessage msg attrs

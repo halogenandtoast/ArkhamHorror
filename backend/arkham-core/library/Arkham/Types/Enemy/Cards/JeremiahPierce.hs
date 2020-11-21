@@ -14,12 +14,12 @@ jeremiahPierce :: EnemyId -> JeremiahPierce
 jeremiahPierce uuid =
   JeremiahPierce
     $ baseAttrs uuid "50044"
-    $ (healthDamage .~ 1)
-    . (sanityDamage .~ 1)
-    . (fight .~ 4)
-    . (health .~ Static 3)
-    . (evade .~ 4)
-    . (unique .~ True)
+    $ (healthDamageL .~ 1)
+    . (sanityDamageL .~ 1)
+    . (fightL .~ 4)
+    . (healthL .~ Static 3)
+    . (evadeL .~ 4)
+    . (uniqueL .~ True)
 
 instance HasModifiersFor env JeremiahPierce where
   getModifiersFor = noModifiersFor

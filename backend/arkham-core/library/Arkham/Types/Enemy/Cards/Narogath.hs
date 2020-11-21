@@ -16,13 +16,13 @@ narogath :: EnemyId -> Narogath
 narogath uuid =
   Narogath
     $ baseAttrs uuid "50026b"
-    $ (healthDamage .~ 1)
-    . (sanityDamage .~ 2)
-    . (fight .~ 3)
-    . (health .~ Static 4)
-    . (evade .~ 3)
-    . (prey .~ NearestToEnemyWithTrait Trait.Cultist)
-    . (unique .~ True)
+    $ (healthDamageL .~ 1)
+    . (sanityDamageL .~ 2)
+    . (fightL .~ 3)
+    . (healthL .~ Static 4)
+    . (evadeL .~ 3)
+    . (preyL .~ NearestToEnemyWithTrait Trait.Cultist)
+    . (uniqueL .~ True)
 
 instance (HasSet InvestigatorId env LocationId, HasSet ConnectedLocationId env LocationId) => HasModifiersFor env Narogath where
   getModifiersFor _ (InvestigatorTarget iid) (Narogath Attrs {..}) = do
@@ -42,5 +42,6 @@ instance (EnemyRunner env) => RunMessage env Narogath where
   runMessage msg (Narogath attrs@Attrs {..}) = case msg of
     EnemySpawnEngagedWithPrey eid | eid == enemyId -> do
       playerCount <- unPlayerCount <$> getCount ()
-      Narogath <$> runMessage msg (attrs & health %~ fmap (+ (3 * playerCount)))
+      Narogath
+        <$> runMessage msg (attrs & healthL %~ fmap (+ (3 * playerCount)))
     _ -> Narogath <$> runMessage msg attrs

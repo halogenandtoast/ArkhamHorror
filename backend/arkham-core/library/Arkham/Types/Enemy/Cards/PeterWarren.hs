@@ -15,11 +15,11 @@ peterWarren :: EnemyId -> PeterWarren
 peterWarren uuid =
   PeterWarren
     $ baseAttrs uuid "01139"
-    $ (healthDamage .~ 1)
-    . (fight .~ 2)
-    . (health .~ Static 3)
-    . (evade .~ 3)
-    . (unique .~ True)
+    $ (healthDamageL .~ 1)
+    . (fightL .~ 2)
+    . (healthL .~ Static 3)
+    . (evadeL .~ 3)
+    . (uniqueL .~ True)
 
 instance HasModifiersFor env PeterWarren where
   getModifiersFor = noModifiersFor

@@ -13,12 +13,12 @@ screechingByakhee :: EnemyId -> ScreechingByakhee
 screechingByakhee uuid =
   ScreechingByakhee
     $ baseAttrs uuid "01175"
-    $ (healthDamage .~ 1)
-    . (sanityDamage .~ 2)
-    . (fight .~ 3)
-    . (health .~ Static 4)
-    . (evade .~ 3)
-    . (prey .~ LowestRemainingSanity)
+    $ (healthDamageL .~ 1)
+    . (sanityDamageL .~ 2)
+    . (fightL .~ 3)
+    . (healthL .~ Static 4)
+    . (evadeL .~ 3)
+    . (preyL .~ LowestRemainingSanity)
 
 instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor env ScreechingByakhee where
   getModifiersFor _ target (ScreechingByakhee attrs) | isTarget attrs target =

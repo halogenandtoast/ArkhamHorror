@@ -15,11 +15,11 @@ marshGug :: EnemyId -> MarshGug
 marshGug uuid =
   MarshGug
     $ baseAttrs uuid "81032"
-    $ (healthDamage .~ 2)
-    . (sanityDamage .~ 1)
-    . (fight .~ 3)
-    . (health .~ Static 4)
-    . (evade .~ 3)
+    $ (healthDamageL .~ 2)
+    . (sanityDamageL .~ 1)
+    . (fightL .~ 3)
+    . (healthL .~ Static 4)
+    . (evadeL .~ 3)
 
 instance HasModifiersFor env MarshGug where
   getModifiersFor = noModifiersFor

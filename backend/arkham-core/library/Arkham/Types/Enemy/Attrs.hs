@@ -43,57 +43,57 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "enemy"
 
-doom :: Lens' Attrs Int
-doom = lens enemyDoom $ \m x -> m { enemyDoom = x }
+doomL :: Lens' Attrs Int
+doomL = lens enemyDoom $ \m x -> m { enemyDoom = x }
 
-clues :: Lens' Attrs Int
-clues = lens enemyClues $ \m x -> m { enemyClues = x }
+cluesL :: Lens' Attrs Int
+cluesL = lens enemyClues $ \m x -> m { enemyClues = x }
 
-prey :: Lens' Attrs Prey
-prey = lens enemyPrey $ \m x -> m { enemyPrey = x }
+preyL :: Lens' Attrs Prey
+preyL = lens enemyPrey $ \m x -> m { enemyPrey = x }
 
-engagedInvestigators :: Lens' Attrs (HashSet InvestigatorId)
-engagedInvestigators =
+engagedInvestigatorsL :: Lens' Attrs (HashSet InvestigatorId)
+engagedInvestigatorsL =
   lens enemyEngagedInvestigators $ \m x -> m { enemyEngagedInvestigators = x }
 
-location :: Lens' Attrs LocationId
-location = lens enemyLocation $ \m x -> m { enemyLocation = x }
+locationL :: Lens' Attrs LocationId
+locationL = lens enemyLocation $ \m x -> m { enemyLocation = x }
 
-damage :: Lens' Attrs Int
-damage = lens enemyDamage $ \m x -> m { enemyDamage = x }
+damageL :: Lens' Attrs Int
+damageL = lens enemyDamage $ \m x -> m { enemyDamage = x }
 
-health :: Lens' Attrs (GameValue Int)
-health = lens enemyHealth $ \m x -> m { enemyHealth = x }
+healthL :: Lens' Attrs (GameValue Int)
+healthL = lens enemyHealth $ \m x -> m { enemyHealth = x }
 
-healthDamage :: Lens' Attrs Int
-healthDamage = lens enemyHealthDamage $ \m x -> m { enemyHealthDamage = x }
+healthDamageL :: Lens' Attrs Int
+healthDamageL = lens enemyHealthDamage $ \m x -> m { enemyHealthDamage = x }
 
-sanityDamage :: Lens' Attrs Int
-sanityDamage = lens enemySanityDamage $ \m x -> m { enemySanityDamage = x }
+sanityDamageL :: Lens' Attrs Int
+sanityDamageL = lens enemySanityDamage $ \m x -> m { enemySanityDamage = x }
 
-fight :: Lens' Attrs Int
-fight = lens enemyFight $ \m x -> m { enemyFight = x }
+fightL :: Lens' Attrs Int
+fightL = lens enemyFight $ \m x -> m { enemyFight = x }
 
-evade :: Lens' Attrs Int
-evade = lens enemyEvade $ \m x -> m { enemyEvade = x }
+evadeL :: Lens' Attrs Int
+evadeL = lens enemyEvade $ \m x -> m { enemyEvade = x }
 
-unique :: Lens' Attrs Bool
-unique = lens enemyUnique $ \m x -> m { enemyUnique = x }
+uniqueL :: Lens' Attrs Bool
+uniqueL = lens enemyUnique $ \m x -> m { enemyUnique = x }
 
-keywords :: Lens' Attrs (HashSet Keyword)
-keywords = lens enemyKeywords $ \m x -> m { enemyKeywords = x }
+keywordsL :: Lens' Attrs (HashSet Keyword)
+keywordsL = lens enemyKeywords $ \m x -> m { enemyKeywords = x }
 
-modifiers :: Lens' Attrs (HashMap Source [Modifier])
-modifiers = lens enemyModifiers $ \m x -> m { enemyModifiers = x }
+modifiersL :: Lens' Attrs (HashMap Source [Modifier])
+modifiersL = lens enemyModifiers $ \m x -> m { enemyModifiers = x }
 
-treacheries :: Lens' Attrs (HashSet TreacheryId)
-treacheries = lens enemyTreacheries $ \m x -> m { enemyTreacheries = x }
+treacheriesL :: Lens' Attrs (HashSet TreacheryId)
+treacheriesL = lens enemyTreacheries $ \m x -> m { enemyTreacheries = x }
 
-assets :: Lens' Attrs (HashSet AssetId)
-assets = lens enemyAssets $ \m x -> m { enemyAssets = x }
+assetsL :: Lens' Attrs (HashSet AssetId)
+assetsL = lens enemyAssets $ \m x -> m { enemyAssets = x }
 
-exhausted :: Lens' Attrs Bool
-exhausted = lens enemyExhausted $ \m x -> m { enemyExhausted = x }
+exhaustedL :: Lens' Attrs Bool
+exhaustedL = lens enemyExhausted $ \m x -> m { enemyExhausted = x }
 
 baseAttrs :: EnemyId -> CardCode -> (Attrs -> Attrs) -> Attrs
 baseAttrs eid cardCode f =
@@ -347,8 +347,8 @@ instance EnemyRunner env => RunMessage env Attrs where
             investigatorIds <- getInvestigatorIds
             unshiftMessages
               [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
-          pure $ a & location .~ lid
-    EnemySpawnedAt lid eid | eid == enemyId -> pure $ a & location .~ lid
+          pure $ a & locationL .~ lid
+    EnemySpawnedAt lid eid | eid == enemyId -> pure $ a & locationL .~ lid
     ReadyExhausted -> do
       miid <- headMay <$> getSetList enemyLocation
       case miid of
@@ -363,7 +363,7 @@ instance EnemyRunner env => RunMessage env Attrs where
               )
             $ unshiftMessage (EnemyEngageInvestigator enemyId iid)
         Nothing -> pure ()
-      pure $ a & exhausted .~ False
+      pure $ a & exhaustedL .~ False
     MoveUntil lid target | isTarget a target -> if lid == enemyLocation
       then pure a
       else do
@@ -386,7 +386,7 @@ instance EnemyRunner env => RunMessage env Attrs where
     EnemyMove eid _ lid | eid == enemyId -> do
       willMove <- canEnterLocation eid lid
       if willMove
-        then pure $ a & location .~ lid & engagedInvestigators .~ mempty
+        then pure $ a & locationL .~ lid & engagedInvestigatorsL .~ mempty
         else pure a
     HuntersMove
       | Keyword.Hunter
@@ -431,7 +431,7 @@ instance EnemyRunner env => RunMessage env Attrs where
         then a <$ unshiftMessage (EnemyAttack iid enemyId)
         else a <$ unshiftMessage (FailedAttackEnemy iid enemyId)
     EnemyEvaded iid eid | eid == enemyId ->
-      pure $ a & engagedInvestigators %~ deleteSet iid & exhausted .~ True
+      pure $ a & engagedInvestigatorsL %~ deleteSet iid & exhaustedL .~ True
     TryEvadeEnemy iid eid source skillType | eid == enemyId -> do
       enemyEvade' <- modifiedEnemyEvade a
       a <$ unshiftMessage
@@ -459,13 +459,13 @@ instance EnemyRunner env => RunMessage env Attrs where
         enemySanityDamage
       , After (EnemyAttack iid enemyId)
       ]
-    HealDamage (EnemyTarget eid) n | eid == enemyId -> do
-      pure $ a & damage %~ max 0 . subtract n
+    HealDamage (EnemyTarget eid) n | eid == enemyId ->
+      pure $ a & damageL %~ max 0 . subtract n
     EnemyDamage eid iid source amount | eid == enemyId -> do
       amount' <- getModifiedDamageAmount a amount
       modifiedHealth <- getModifiedHealth a
-      (a & damage +~ amount') <$ when
-        (a ^. damage + amount' >= modifiedHealth)
+      (a & damageL +~ amount') <$ when
+        (a ^. damageL + amount' >= modifiedHealth)
         (unshiftMessage
           (EnemyDefeated
             eid
@@ -483,9 +483,9 @@ instance EnemyRunner env => RunMessage env Attrs where
         [ Discard (AssetTarget aid) | aid <- setToList enemyAssets ]
       pure a
     EnemyEngageInvestigator eid iid | eid == enemyId ->
-      pure $ a & engagedInvestigators %~ insertSet iid
+      pure $ a & engagedInvestigatorsL %~ insertSet iid
     EngageEnemy iid eid False | eid == enemyId ->
-      pure $ a & engagedInvestigators .~ singleton iid
+      pure $ a & engagedInvestigatorsL .~ singleton iid
     MoveTo iid lid | iid `elem` enemyEngagedInvestigators ->
       if Keyword.Massive `elem` enemyKeywords
         then pure a
@@ -510,27 +510,27 @@ instance EnemyRunner env => RunMessage env Attrs where
       -> a <$ unshiftMessage (EnemyWillAttack iid enemyId)
     InvestigatorDrawEnemy iid lid eid | eid == enemyId -> do
       unshiftMessage (EnemySpawn (Just iid) lid eid)
-      pure $ a & location .~ lid
+      pure $ a & locationL .~ lid
     InvestigatorEliminated iid ->
-      pure $ a & engagedInvestigators %~ deleteSet iid
+      pure $ a & engagedInvestigatorsL %~ deleteSet iid
     UnengageNonMatching iid traits
       | iid `elem` enemyEngagedInvestigators && null
         (setFromList traits `intersection` enemyTraits)
       -> a <$ unshiftMessage (DisengageEnemy iid enemyId)
-    DisengageEnemy iid eid | eid == enemyId -> do
-      pure $ a & engagedInvestigators %~ deleteSet iid
-    EnemySetBearer eid bid | eid == enemyId -> pure $ a & prey .~ Bearer bid
-    AdvanceAgenda{} -> pure $ a & doom .~ 0
+    DisengageEnemy iid eid | eid == enemyId ->
+      pure $ a & engagedInvestigatorsL %~ deleteSet iid
+    EnemySetBearer eid bid | eid == enemyId -> pure $ a & preyL .~ Bearer bid
+    AdvanceAgenda{} -> pure $ a & doomL .~ 0
     PlaceDoom (CardIdTarget cid) amount | unCardId cid == unEnemyId enemyId ->
-      pure $ a & doom +~ amount
+      pure $ a & doomL +~ amount
     PlaceDoom (EnemyTarget eid) amount | eid == enemyId ->
-      pure $ a & doom +~ amount
+      pure $ a & doomL +~ amount
     AttachTreachery tid target | isTarget a target ->
-      pure $ a & treacheries %~ insertSet tid
+      pure $ a & treacheriesL %~ insertSet tid
     AttachAsset aid (EnemyTarget eid) | eid == enemyId ->
-      pure $ a & assets %~ insertSet aid
-    AttachAsset aid _ -> pure $ a & assets %~ deleteSet aid
+      pure $ a & assetsL %~ insertSet aid
+    AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
     RemoveKeywords (EnemyTarget eid) keywordsToRemove | eid == enemyId ->
-      pure $ a & keywords %~ (`difference` setFromList keywordsToRemove)
+      pure $ a & keywordsL %~ (`difference` setFromList keywordsToRemove)
     Blanked msg' -> runMessage msg' a
     _ -> pure a

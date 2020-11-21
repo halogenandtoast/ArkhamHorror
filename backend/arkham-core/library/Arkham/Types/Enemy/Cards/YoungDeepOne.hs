@@ -13,12 +13,12 @@ youngDeepOne :: EnemyId -> YoungDeepOne
 youngDeepOne uuid =
   YoungDeepOne
     $ baseAttrs uuid "01181"
-    $ (healthDamage .~ 1)
-    . (sanityDamage .~ 1)
-    . (fight .~ 3)
-    . (health .~ Static 3)
-    . (evade .~ 3)
-    . (prey .~ LowestSkill SkillCombat)
+    $ (healthDamageL .~ 1)
+    . (sanityDamageL .~ 1)
+    . (fightL .~ 3)
+    . (healthL .~ Static 3)
+    . (evadeL .~ 3)
+    . (preyL .~ LowestSkill SkillCombat)
 
 instance HasModifiersFor env YoungDeepOne where
   getModifiersFor = noModifiersFor

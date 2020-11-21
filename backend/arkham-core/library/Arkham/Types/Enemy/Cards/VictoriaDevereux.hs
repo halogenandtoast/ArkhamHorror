@@ -15,11 +15,11 @@ victoriaDevereux :: EnemyId -> VictoriaDevereux
 victoriaDevereux uuid =
   VictoriaDevereux
     $ baseAttrs uuid "01140"
-    $ (healthDamage .~ 1)
-    . (fight .~ 3)
-    . (health .~ Static 3)
-    . (evade .~ 2)
-    . (unique .~ True)
+    $ (healthDamageL .~ 1)
+    . (fightL .~ 3)
+    . (healthL .~ Static 3)
+    . (evadeL .~ 2)
+    . (uniqueL .~ True)
 
 instance HasModifiersFor env VictoriaDevereux where
   getModifiersFor = noModifiersFor

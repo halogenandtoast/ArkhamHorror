@@ -17,10 +17,10 @@ swampLeech :: EnemyId -> SwampLeech
 swampLeech uuid =
   SwampLeech
     $ baseAttrs uuid "81023"
-    $ (healthDamage .~ 1)
-    . (fight .~ 4)
-    . (health .~ Static 1)
-    . (evade .~ 0)
+    $ (healthDamageL .~ 1)
+    . (fightL .~ 4)
+    . (healthL .~ Static 1)
+    . (evadeL .~ 0)
 
 instance HasModifiersFor env SwampLeech where
   getModifiersFor = noModifiersFor

@@ -13,12 +13,12 @@ ravenousGhoul :: EnemyId -> RavenousGhoul
 ravenousGhoul uuid =
   RavenousGhoul
     $ baseAttrs uuid "01161"
-    $ (healthDamage .~ 1)
-    . (sanityDamage .~ 1)
-    . (fight .~ 3)
-    . (health .~ Static 3)
-    . (evade .~ 3)
-    . (prey .~ LowestRemainingHealth)
+    $ (healthDamageL .~ 1)
+    . (sanityDamageL .~ 1)
+    . (fightL .~ 3)
+    . (healthL .~ Static 3)
+    . (evadeL .~ 3)
+    . (preyL .~ LowestRemainingHealth)
 
 instance HasModifiersFor env RavenousGhoul where
   getModifiersFor = noModifiersFor

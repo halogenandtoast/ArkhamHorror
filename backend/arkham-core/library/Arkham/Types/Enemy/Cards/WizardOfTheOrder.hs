@@ -17,10 +17,10 @@ wizardOfTheOrder :: EnemyId -> WizardOfTheOrder
 wizardOfTheOrder uuid =
   WizardOfTheOrder
     $ baseAttrs uuid "01170"
-    $ (healthDamage .~ 1)
-    . (fight .~ 4)
-    . (health .~ Static 2)
-    . (evade .~ 2)
+    $ (healthDamageL .~ 1)
+    . (fightL .~ 4)
+    . (healthL .~ Static 2)
+    . (evadeL .~ 2)
 
 instance HasModifiersFor env WizardOfTheOrder where
   getModifiersFor = noModifiersFor
@@ -32,5 +32,5 @@ instance (EnemyRunner env) => RunMessage env WizardOfTheOrder where
   runMessage msg e@(WizardOfTheOrder attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAtEmptyLocation iid eid
-    EndMythos -> pure $ WizardOfTheOrder $ attrs & doom +~ 1
+    EndMythos -> pure $ WizardOfTheOrder $ attrs & doomL +~ 1
     _ -> WizardOfTheOrder <$> runMessage msg attrs

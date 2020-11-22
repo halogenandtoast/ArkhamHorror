@@ -3,7 +3,9 @@ module Arkham.Types.Location.Cards.MiskatonicQuad where
 
 import Arkham.Import
 
+import qualified Arkham.Types.Action as Action
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
@@ -26,8 +28,29 @@ instance HasModifiersFor env MiskatonicQuad where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env MiskatonicQuad where
-  getActions i window (MiskatonicQuad attrs) = getActions i window attrs
+  getActions iid NonFast (MiskatonicQuad attrs@Attrs {..}) | locationRevealed =
+    do
+      baseActions <- getActions iid NonFast attrs
+      hasResignActionsRemaining <- getHasActionsRemaining
+        iid
+        (Just Action.Resign)
+        (setToList locationTraits)
+      pure
+        $ baseActions
+        <> [ ActivateCardAbilityAction
+               iid
+               (mkAbility
+                 (toSource attrs)
+                 1
+                 (ActionAbility 1 (Just Action.Resign))
+               )
+           | iid `member` locationInvestigators && hasResignActionsRemaining
+           ]
+  getActions iid window (MiskatonicQuad attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env MiskatonicQuad where
-  runMessage msg (MiskatonicQuad attrs) =
-    MiskatonicQuad <$> runMessage msg attrs
+  runMessage msg l@(MiskatonicQuad attrs) = case msg of
+    UseCardAbility iid source _ 1
+      | isSource attrs source && locationRevealed attrs -> l
+      <$ unshiftMessage (Resign iid)
+    _ -> MiskatonicQuad <$> runMessage msg attrs

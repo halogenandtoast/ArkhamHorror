@@ -902,9 +902,15 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         else pure []
       a <$ unshiftMessage
         (Ask iid $ ChooseOne $ healthDamageMessages <> sanityDamageMessages)
-  Investigate iid lid source skillType True | iid == investigatorId ->
+  Investigate iid lid source skillType True | iid == investigatorId -> do
+    modifiers' <- getModifiersFor (toSource a) (LocationTarget lid) ()
+    let
+      investigateCost = foldr applyModifier 1 modifiers'
+      applyModifier (ActionCostOf (IsAction Action.Investigate) m) n =
+        max 0 (n + m)
+      applyModifier _ n = n
     a <$ unshiftMessages
-      [ TakeAction iid 1 (Just Action.Investigate)
+      [ TakeAction iid investigateCost (Just Action.Investigate)
       , CheckAttackOfOpportunity iid False
       , Investigate iid lid source skillType False
       ]

@@ -176,6 +176,10 @@ instance HasSet EnemyId env Investigator => HasCount EnemyCount env Investigator
 instance HasCount ResourceCount env Investigator where
   getCount = pure . ResourceCount . investigatorResources . investigatorAttrs
 
+instance HasCount DiscardCount env Investigator where
+  getCount =
+    pure . DiscardCount . length . investigatorDiscard . investigatorAttrs
+
 instance HasCount CardCount env Investigator where
   getCount = pure . CardCount . length . investigatorHand . investigatorAttrs
 

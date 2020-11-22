@@ -442,6 +442,9 @@ instance HasCount ActsRemainingCount (Game queue) () where
 instance HasCount ActionTakenCount (Game queue) InvestigatorId where
   getCount = getCount <=< getInvestigator
 
+instance HasCount DiscardCount (Game queue) InvestigatorId where
+  getCount = getCount <=< getInvestigator
+
 instance HasCount ActionRemainingCount (Game queue) (Maybe Action, [Trait], InvestigatorId) where
   getCount (maction, traits, iid) =
     getCount . (maction, traits, ) =<< getInvestigator iid
@@ -559,6 +562,7 @@ instance (HasModifiersFor env (), env ~ Game queue) => HasStats (Game queue) (In
 
 instance
   (env ~ Game queue
+  , HasCount DiscardCount env InvestigatorId
   , HasCount DoomCount env ()
   , HasCount DoomCount env EnemyId
   , HasCount EnemyCount env (InvestigatorLocation, [Trait])
@@ -1229,6 +1233,12 @@ createSkillTestEffect effectMetadata source target = do
   eid <- liftIO $ EffectId <$> nextRandom
   pure (eid, buildSkillTestEffect eid effectMetadata source target)
 
+createTokenValueEffect
+  :: MonadIO m => Int -> Source -> Target -> m (EffectId, Effect)
+createTokenValueEffect n source target = do
+  eid <- liftIO $ EffectId <$> nextRandom
+  pure (eid, buildTokenValueEffect eid n source target)
+
 createPhaseEffect
   :: MonadIO m
   => EffectMetadata Message
@@ -1386,6 +1396,16 @@ runGameMessage msg g = case msg of
   CreateSkillTestEffect effectMetadata source target -> do
     (effectId', effect') <- createSkillTestEffect effectMetadata source target
     unshiftMessage (CreatedEffect effectId' (Just effectMetadata) source target)
+    pure $ g & effects %~ insertMap effectId' effect'
+  CreateTokenValueEffect n source target -> do
+    (effectId', effect') <- createTokenValueEffect n source target
+    unshiftMessage
+      (CreatedEffect
+        effectId'
+        (Just $ EffectModifiers [TokenValueModifier n])
+        source
+        target
+      )
     pure $ g & effects %~ insertMap effectId' effect'
   CreatePhaseEffect effectMetadata source target -> do
     (effectId', effect') <- createPhaseEffect effectMetadata source target

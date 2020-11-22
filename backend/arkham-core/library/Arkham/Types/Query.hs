@@ -23,6 +23,8 @@ newtype UsesCount = UsesCount { unUsesCount :: Int }
 newtype ResourceCount = ResourceCount { unResourceCount :: Int }
 newtype CardCount = CardCount { unCardCount :: Int }
   deriving newtype (Eq, Hashable)
+newtype DiscardCount = DiscardCount { unDiscardCount :: Int }
+  deriving newtype (Eq, Hashable)
 newtype RemainingHealth = RemainingHealth { unRemainingHealth :: Int }
   deriving newtype (Eq, Hashable)
 newtype RemainingSanity = RemainingSanity { unRemainingSanity :: Int }

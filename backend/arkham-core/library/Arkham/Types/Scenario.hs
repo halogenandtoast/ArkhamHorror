@@ -33,7 +33,8 @@ data Scenario
 
 deriving anyclass instance (ScenarioRunner env) => RunMessage env Scenario
 deriving anyclass instance
-  ( HasCount DoomCount env ()
+  ( HasCount DiscardCount env InvestigatorId
+  , HasCount DoomCount env ()
   , HasCount DoomCount env EnemyId
   , HasCount EnemyCount env (InvestigatorLocation, [Trait])
   , HasCount EnemyCount env [Trait]

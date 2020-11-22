@@ -183,6 +183,10 @@ getModifiedTokenValue s t = do
     = TokenValue token (PositiveModifier n)
   applyModifier DoubleNegativeModifiersOnTokens (TokenValue token (NegativeModifier n))
     = TokenValue token (DoubleNegativeModifier n)
+  applyModifier (TokenValueModifier m) (TokenValue token (PositiveModifier n))
+    = TokenValue token (PositiveModifier (max 0 (n + m)))
+  applyModifier (TokenValueModifier m) (TokenValue token (NegativeModifier n))
+    = TokenValue token (NegativeModifier (max 0 (n - m)))
   applyModifier _ currentTokenValue = currentTokenValue
 
 -- really just looking for forced token changes here

@@ -4,15 +4,12 @@ module Arkham.Types.Scenario.Scenarios.ExtracurricularActivity where
 import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.CampaignLogKey
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Token
-import Arkham.Types.Trait (Trait)
-import qualified Arkham.Types.Trait as Trait
 
 newtype ExtracurricularActivity = ExtracurricularActivity Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -20,46 +17,42 @@ newtype ExtracurricularActivity = ExtracurricularActivity Attrs
 extracurricularActivity :: Difficulty -> ExtracurricularActivity
 extracurricularActivity difficulty =
   ExtracurricularActivity $ (baseAttrs
-                              "01104"
-                              "The Gathering"
-                              ["01105", "01106", "01107"]
-                              ["01108", "01109", "01110"]
+                              "02041"
+                              "Extracurricular Activity"
+                              ["02042", "02043", "02044"]
+                              ["02045", "02046", "02047"]
                               difficulty
                             )
-    { scenarioLocationLayout =
-      Just
-        [ "   .   attic   .     "
-        , " study hallway parlor"
-        , "   .   cellar  .     "
-        ]
+    { scenarioLocationLayout = Just
+      [ "orneLibrary        miskatonicQuad scienceBuilding"
+      , "humanitiesBuilding studentUnion   administrationBuilding"
+      ]
     }
 
 extracurricularActivityIntro :: Message
 extracurricularActivityIntro = FlavorText
-  (Just "Part I: The Gathering")
-  [ "You and your partners have been investigating strange events taking place\
-    \ in your home city of Arkham, Massachusetts. Over the past few weeks,\
-    \ several townspeople have mysteriously gone missing. Recently, their\
-    \ corpses turned up in the woods, savaged and half - eaten. The police and\
-    \ newspapers have stated that wild animals are responsible, but you believe\
-    \ there is something else going on. You are gathered together at the lead\
-    \ investigator’s home to discuss these bizarre events."
+  (Just "Scenario I-A: Extracurricular Activity")
+  [ "Dr. Armitage is worried his colleague, Professor Warren Rice, might be\
+    \ in trouble, so he has asked for your help in finding his friend. He seems\
+    \ unreasonably nervous about his colleague’s disappearance considering\
+    \ Professor Rice has only been “missing” for a matter of hours…"
   ]
 
-instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env (InvestigatorLocation, [Trait])) => HasTokenValue env ExtracurricularActivity where
+instance (HasTokenValue env InvestigatorId, HasCount DiscardCount env InvestigatorId) => HasTokenValue env ExtracurricularActivity where
   getTokenValue (ExtracurricularActivity attrs) iid = \case
-    Skull -> do
-      ghoulCount <- unEnemyCount
-        <$> getCount (InvestigatorLocation iid, [Trait.Ghoul])
+    Skull -> pure $ TokenValue
+      Skull
+      (NegativeModifier $ if isEasyStandard attrs then 1 else 2)
+    Cultist -> do
+      discardCount <- unDiscardCount <$> getCount iid
       pure $ TokenValue
-        Skull
-        (NegativeModifier $ if isEasyStandard attrs then ghoulCount else 2)
-    Cultist -> pure $ TokenValue
-      Cultist
-      (if isEasyStandard attrs then NegativeModifier 1 else NoModifier)
-    Tablet -> pure $ TokenValue
-      Tablet
-      (NegativeModifier $ if isEasyStandard attrs then 2 else 4)
+        Cultist
+        (NegativeModifier $ if discardCount >= 10
+          then (if isEasyStandard attrs then 3 else 5)
+          else 1
+        )
+    ElderThing -> do
+      pure $ TokenValue Tablet (NegativeModifier 0) -- determined by an effect
     otherFace -> getTokenValue attrs iid otherFace
 
 instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
@@ -82,9 +75,14 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
         [ SetEncounterDeck encounterDeck
         , AddAgenda "02042"
         , AddAct "02045"
-        , PlaceLocation "01111"
-        , RevealLocation Nothing "01111"
-        , MoveAllTo "01111"
+        , PlaceLocation "02048"
+        , PlaceLocation "02050"
+        , PlaceLocation "02049"
+        , PlaceLocation "02051"
+        , PlaceLocation "02056"
+        , PlaceLocation "02053"
+        , RevealLocation Nothing "02048"
+        , MoveAllTo "02048"
         , AskMap
         . mapFromList
         $ [ ( iid
@@ -110,31 +108,19 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
           ]
       ExtracurricularActivity
         <$> runMessage msg (attrs & locations .~ locations')
-    ResolveToken _ Cultist iid ->
-      s <$ when (isHardExpert attrs) (unshiftMessage $ DrawAnotherToken iid)
-    ResolveToken _ Tablet iid -> do
-      ghoulCount <- unEnemyCount
-        <$> getCount (InvestigatorLocation iid, [Trait.Ghoul])
-      s <$ when
-        (ghoulCount > 0)
-        (unshiftMessage $ InvestigatorAssignDamage
+    FailedSkillTest iid _ _ target@(DrawnTokenTarget token) _ -> do
+      s <$ case drawnTokenFace token of
+        ElderThing -> unshiftMessage $ DiscardTopOfDeck
           iid
-          (TokenEffectSource Tablet)
-          1
-          (if isEasyStandard attrs then 0 else 1)
-        )
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ -> do
-      case drawnTokenFace token of
-        Skull | isHardExpert attrs -> unshiftMessage $ FindAndDrawEncounterCard
-          iid
-          (EncounterCardMatchByType (EnemyType, Just Trait.Ghoul))
-        Cultist -> unshiftMessage $ InvestigatorAssignDamage
-          iid
-          (DrawnTokenSource token)
-          0
-          (if isEasyStandard attrs then 1 else 2)
+          (if isEasyStandard attrs then 3 else 5)
+          (Just target)
         _ -> pure ()
-      pure s
+    DiscardedTopOfDeck _iid cards target@(DrawnTokenTarget token) -> do
+      s <$ case drawnTokenFace token of
+        ElderThing -> do
+          let n = sum $ map (toPrintedCost . pcCost) cards
+          unshiftMessage $ CreateTokenValueEffect (-n) (toSource attrs) target
+        _ -> pure ()
     NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds

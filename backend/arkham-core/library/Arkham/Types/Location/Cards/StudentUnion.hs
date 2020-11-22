@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards.StudentUnion where
 
 import Arkham.Import
 
+import Arkham.Types.Action
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
@@ -26,8 +27,27 @@ instance HasModifiersFor env StudentUnion where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env StudentUnion where
-  getActions i window (StudentUnion attrs) = getActions i window attrs
+  getActions iid NonFast (StudentUnion attrs@Attrs {..}) | locationRevealed = do
+    baseActions <- getActions iid NonFast attrs
+    actionRemainingCount <- unActionRemainingCount
+      <$> getCount (Nothing :: Maybe Action, setToList locationTraits, iid)
+    let ability = mkAbility (toSource attrs) 1 (ActionAbility 2 Nothing)
+
+    pure
+      $ baseActions
+      <> [ ActivateCardAbilityAction iid ability
+         | iid `elem` locationInvestigators && actionRemainingCount >= 2
+         ]
+  getActions _ _ _ = pure []
 
 instance (LocationRunner env) => RunMessage env StudentUnion where
-  runMessage msg (StudentUnion attrs) =
-    StudentUnion <$> runMessage msg attrs
+  runMessage msg l@(StudentUnion attrs) = case msg of
+    RevealLocation _ lid | lid == locationId attrs -> do
+      unshiftMessage $ PlaceLocationNamed "Dormitories"
+      StudentUnion <$> runMessage msg attrs
+    UseCardAbility iid source _ 1 | isSource attrs source ->
+      l <$ unshiftMessages
+        [ HealDamage (InvestigatorTarget iid) 1
+        , HealHorror (InvestigatorTarget iid) 1
+        ]
+    _ -> StudentUnion <$> runMessage msg attrs

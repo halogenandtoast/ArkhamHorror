@@ -28,6 +28,11 @@ instance HasModifiersFor env HumanitiesBuilding where
 instance ActionRunner env => HasActions env HumanitiesBuilding where
   getActions i window (HumanitiesBuilding attrs) = getActions i window attrs
 
-instance (LocationRunner env) => RunMessage env HumanitiesBuilding where
-  runMessage msg (HumanitiesBuilding attrs) =
-    HumanitiesBuilding <$> runMessage msg attrs
+instance LocationRunner env => RunMessage env HumanitiesBuilding where
+  runMessage msg l@(HumanitiesBuilding attrs) = case msg of
+    EndTurn iid | iid `elem` locationInvestigators attrs -> do
+      horror <- unHorrorCount <$> getCount iid
+      l <$ when
+        (horror > 0)
+        (unshiftMessage $ DiscardTopOfDeck iid horror Nothing)
+    _ -> HumanitiesBuilding <$> runMessage msg attrs

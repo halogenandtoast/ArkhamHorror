@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8bb658eb397722d818e2a7fba6ff470597c4c5ed7a6d1c32b72178011be1279c
+-- hash: 8f9c0cd4bd3c9a1d7bf3b3c2e856078daa88f86db82751fd7e2c4513a39653a8
 
 name:           arkham-core
 version:        0.0.0
@@ -20,6 +20,7 @@ library
       Arkham.Types.Act
       Arkham.Types.Act.Attrs
       Arkham.Types.Act.Cards
+      Arkham.Types.Act.Cards.AfterHours
       Arkham.Types.Act.Cards.DisruptingTheRitual
       Arkham.Types.Act.Cards.FindingLadyEsprit
       Arkham.Types.Act.Cards.HuntingTheRougarou
@@ -39,6 +40,7 @@ library
       Arkham.Types.Agenda.Cards
       Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
       Arkham.Types.Agenda.Cards.PredatorOrPrey
+      Arkham.Types.Agenda.Cards.QuietHalls
       Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey
       Arkham.Types.Agenda.Cards.RiseOfTheGhouls
       Arkham.Types.Agenda.Cards.TheArkhamWoods
@@ -339,6 +341,7 @@ library
       Arkham.Types.Location
       Arkham.Types.Location.Attrs
       Arkham.Types.Location.Cards
+      Arkham.Types.Location.Cards.AdministrationBuilding
       Arkham.Types.Location.Cards.ArkhamWoodsCliffside
       Arkham.Types.Location.Cards.ArkhamWoodsCorpseRiddenClearing
       Arkham.Types.Location.Cards.ArkhamWoodsGreatWillow
@@ -371,11 +374,14 @@ library
       Arkham.Types.Location.Cards.GuestHall
       Arkham.Types.Location.Cards.Hallway
       Arkham.Types.Location.Cards.HoleInTheWall
+      Arkham.Types.Location.Cards.HumanitiesBuilding
       Arkham.Types.Location.Cards.MainPath
+      Arkham.Types.Location.Cards.MiskatonicQuad
       Arkham.Types.Location.Cards.MiskatonicUniversity
       Arkham.Types.Location.Cards.MiskatonicUniversityMiskatonicMuseum
       Arkham.Types.Location.Cards.Northside
       Arkham.Types.Location.Cards.NorthsideTrainStation
+      Arkham.Types.Location.Cards.OrneLibrary
       Arkham.Types.Location.Cards.OvergrownCairns
       Arkham.Types.Location.Cards.Parlor
       Arkham.Types.Location.Cards.ReturnToAttic
@@ -384,9 +390,11 @@ library
       Arkham.Types.Location.Cards.RitualSite
       Arkham.Types.Location.Cards.Rivertown
       Arkham.Types.Location.Cards.RivertownAbandonedWarehouse
+      Arkham.Types.Location.Cards.ScienceBuilding
       Arkham.Types.Location.Cards.SouthsideHistoricalSociety
       Arkham.Types.Location.Cards.SouthsideMasBoardingHouse
       Arkham.Types.Location.Cards.StMarysHospital
+      Arkham.Types.Location.Cards.StudentUnion
       Arkham.Types.Location.Cards.Study
       Arkham.Types.Location.Cards.StudyAberrantGateway
       Arkham.Types.Location.Cards.TrappersCabin

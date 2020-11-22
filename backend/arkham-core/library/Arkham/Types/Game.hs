@@ -1502,6 +1502,9 @@ runGameMessage msg g = case msg of
           xs
         , SpendClues (n - 1) investigatorsWithClues
         ]
+  AdvanceCurrentAgenda -> do
+    aids <- keys <$> view agendas
+    g <$ unshiftMessages [ AdvanceAgenda aid | aid <- aids ]
   NextAgenda aid1 aid2 ->
     pure $ g & agendas %~ deleteMap aid1 & agendas %~ insertMap
       aid2
@@ -2047,6 +2050,9 @@ runGameMessage msg g = case msg of
       when (null encounterDeck') (unshiftMessage ShuffleEncounterDiscardBackIn)
       unshiftMessage (InvestigatorDrewEncounterCard iid card)
       pure $ g & encounterDeck .~ Deck encounterDeck'
+  AddToEncounterDeck card -> do
+    encounterDeck' <- liftIO . shuffleM $ card : unDeck (view encounterDeck g)
+    pure $ g & encounterDeck .~ Deck encounterDeck'
   ShuffleBackIntoEncounterDeck (EnemyTarget eid) -> do
     let
       enemy = getEnemy eid g

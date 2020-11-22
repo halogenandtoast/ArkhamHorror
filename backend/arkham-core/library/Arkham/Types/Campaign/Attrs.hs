@@ -72,6 +72,9 @@ instance (CampaignRunner env) => RunMessage env Attrs where
     AddCampaignCardToDeck iid cardCode -> do
       card <- liftIO $ lookupPlayerCard cardCode . CardId <$> nextRandom
       pure $ a & storyCards %~ HashMap.insertWith (<>) iid [card]
+    AddCampaignCardToEncounterDeck cardCode -> do
+      card <- liftIO $ lookupEncounterCard cardCode . CardId <$> nextRandom
+      a <$ unshiftMessages [AddToEncounterDeck card]
     RemoveCampaignCardFromDeck iid cardCode ->
       pure
         $ a

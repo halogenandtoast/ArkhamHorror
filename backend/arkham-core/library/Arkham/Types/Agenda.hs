@@ -30,6 +30,7 @@ allAgendas = mapFromList $ map
   , TheArkhamWoods' theArkhamWoods
   , TheRitualBegins' theRitualBegins
   , VengeanceAwaits' vengeanceAwaits
+  , QuietHalls' quietHalls
   , ReturnToPredatorOrPrey' returnToPredatorOrPrey
   , ACreatureOfTheBayou' aCreatureOfTheBayou
   , TheRougarouFeeds' theRougarouFeeds
@@ -60,6 +61,7 @@ data Agenda
   | TheArkhamWoods' TheArkhamWoods
   | TheRitualBegins' TheRitualBegins
   | VengeanceAwaits' VengeanceAwaits
+  | QuietHalls' QuietHalls
   | ReturnToPredatorOrPrey' ReturnToPredatorOrPrey
   | ACreatureOfTheBayou' ACreatureOfTheBayou
   | TheRougarouFeeds' TheRougarouFeeds
@@ -100,6 +102,7 @@ agendaAttrs = \case
   TheArkhamWoods' attrs -> coerce attrs
   TheRitualBegins' attrs -> coerce attrs
   VengeanceAwaits' attrs -> coerce attrs
+  QuietHalls' attrs -> coerce attrs
   ReturnToPredatorOrPrey' attrs -> coerce attrs
   ACreatureOfTheBayou' attrs -> coerce attrs
   TheRougarouFeeds' attrs -> coerce attrs

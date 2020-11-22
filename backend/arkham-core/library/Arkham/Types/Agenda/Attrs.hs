@@ -4,7 +4,6 @@ module Arkham.Types.Agenda.Attrs where
 import Arkham.Import
 
 import Arkham.Types.Agenda.Helpers
-import Arkham.Types.Agenda.Runner
 
 data Attrs = Attrs
   { agendaDoom          :: Int
@@ -64,7 +63,7 @@ instance HasId AgendaId env Attrs where
 instance HasActions env Attrs where
   getActions _ _ _ = pure []
 
-instance AgendaRunner env => RunMessage env Attrs where
+instance (HasQueue env, HasCount DoomCount env (), HasCount PlayerCount env ()) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     PlaceDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doom +~ n
     AdvanceAgendaIfThresholdSatisfied -> do

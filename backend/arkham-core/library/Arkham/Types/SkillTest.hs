@@ -429,6 +429,25 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                n
            | target <- skillTestSubscribers
            ]
+          <> [ When
+                 (FailedSkillTest
+                   skillTestInvestigator
+                   skillTestAction
+                   skillTestSource
+                   (SkillTestInitiatorTarget skillTestTarget)
+                   n
+                 )
+             ]
+          <> [ When
+                 (FailedSkillTest
+                   skillTestInvestigator
+                   skillTestAction
+                   skillTestSource
+                   target
+                   n
+                 )
+             | target <- skillTestSubscribers
+             ]
           <> [ FailedSkillTest
                  skillTestInvestigator
                  skillTestAction

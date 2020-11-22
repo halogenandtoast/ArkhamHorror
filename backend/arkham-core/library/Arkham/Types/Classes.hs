@@ -363,9 +363,6 @@ class HasModifiersFor env a where
 noModifiersFor :: (MonadReader env m) => Source -> Target -> a -> m [Modifier]
 noModifiersFor _ _ _ = pure []
 
-class (HasId LocationId () location) => IsLocation location where
-  isBlocked :: location -> Bool
-
 class (HasId EnemyId () enemy) => IsEnemy enemy where
   isAloof :: enemy -> Bool
 

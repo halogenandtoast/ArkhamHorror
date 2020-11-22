@@ -13,21 +13,20 @@ newtype Parlor = Parlor Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 parlor :: Parlor
-parlor = Parlor $ (baseAttrs
-                    "01115"
-                    "Parlor"
-                    EncounterSet.TheGathering
-                    2
-                    (Static 0)
-                    Diamond
-                    [Square]
-                    mempty
-                  )
-  { locationBlocked = True
-  }
+parlor = Parlor $ baseAttrs
+  "01115"
+  "Parlor"
+  EncounterSet.TheGathering
+  2
+  (Static 0)
+  Diamond
+  [Square]
+  mempty
 
 instance HasModifiersFor env Parlor where
-  getModifiersFor = noModifiersFor
+  getModifiersFor _ target (Parlor attrs) | isTarget attrs target =
+    pure [ Blocked | not (locationRevealed attrs) ]
+  getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env Parlor where
   getActions iid NonFast (Parlor attrs@Attrs {..}) | locationRevealed = do
@@ -74,9 +73,6 @@ instance ActionRunner env => HasActions env Parlor where
 
 instance (LocationRunner env) => RunMessage env Parlor where
   runMessage msg l@(Parlor attrs@Attrs {..}) = case msg of
-    RevealLocation _ lid | lid == locationId -> do
-      attrs' <- runMessage msg attrs
-      pure $ Parlor $ attrs' & blocked .~ False
     UseCardAbility iid source _ 1 | isSource attrs source && locationRevealed ->
       l <$ unshiftMessage (Resign iid)
     UseCardAbility iid (ProxySource _ source) _ 2

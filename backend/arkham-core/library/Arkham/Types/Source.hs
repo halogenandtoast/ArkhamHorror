@@ -17,6 +17,7 @@ import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.ScenarioId
 import Arkham.Types.SkillId
+import Arkham.Types.SkillType
 import Arkham.Types.Token
 import Arkham.Types.TreacheryId
 import ClassyPrelude
@@ -32,7 +33,7 @@ data Source
   | TokenEffectSource Token
   | AgendaSource AgendaId
   | LocationSource LocationId
-  | SkillTestSource InvestigatorId Source (Maybe Action)
+  | SkillTestSource InvestigatorId SkillType Source (Maybe Action)
   | TreacherySource TreacheryId
   | EventSource EventId
   | SkillSource SkillId

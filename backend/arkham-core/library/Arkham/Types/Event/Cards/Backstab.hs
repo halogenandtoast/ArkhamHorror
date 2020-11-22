@@ -13,7 +13,7 @@ backstab :: InvestigatorId -> EventId -> Backstab
 backstab iid uuid = Backstab $ baseAttrs iid uuid "01051"
 
 instance HasModifiersFor env Backstab where
-  getModifiersFor (SkillTestSource _ source (Just Fight)) (InvestigatorTarget _) (Backstab attrs)
+  getModifiersFor (SkillTestSource _ _ source (Just Fight)) (InvestigatorTarget _) (Backstab attrs)
     = pure [ DamageDealt 2 | isSource attrs source ]
   getModifiersFor _ _ _ = pure []
 

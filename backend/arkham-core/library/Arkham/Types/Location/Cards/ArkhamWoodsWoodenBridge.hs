@@ -38,7 +38,7 @@ instance ActionRunner env => HasActions env ArkhamWoodsWoodenBridge where
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsWoodenBridge where
   runMessage msg l@(ArkhamWoodsWoodenBridge attrs@Attrs {..}) = case msg of
-    RevealToken (SkillTestSource _ _ (Just Action.Evade)) iid _
+    RevealToken (SkillTestSource _ _ _ (Just Action.Evade)) iid _
       | iid `elem` locationInvestigators -> do
         let
           ability = (mkAbility (toSource attrs) 0 ForcedAbility)

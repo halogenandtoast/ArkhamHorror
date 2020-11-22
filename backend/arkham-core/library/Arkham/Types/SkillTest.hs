@@ -41,8 +41,11 @@ skillTestToSource :: SkillTest -> Source
 skillTestToSource = toSource
 
 instance Entity SkillTest where
-  toSource SkillTest {..} =
-    SkillTestSource skillTestInvestigator skillTestSource skillTestAction
+  toSource SkillTest {..} = SkillTestSource
+    skillTestInvestigator
+    skillTestSkillType
+    skillTestSource
+    skillTestAction
   toTarget _ = SkillTestTarget
   isSource _ SkillTestSource{} = True
   isSource _ _ = False
@@ -213,15 +216,20 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           [RequestTokens (toSource s) iid 1 SetAside, RunSkillTest iid]
     DrawAnotherToken iid -> s <$ unshiftMessages
       [RequestTokens (toSource s) iid 1 SetAside, RunSkillTest iid]
-    RequestedTokens (SkillTestSource siid source maction) iid tokenFaces -> do
-      unshiftMessage (RevealSkillTestTokens iid)
-      for_ tokenFaces $ \tokenFace -> do
-        checkWindowMsgs <- checkWindows
-          iid
-          (\who -> pure [WhenRevealToken who tokenFace])
-        unshiftMessages $ checkWindowMsgs <> resolve
-          (RevealToken (SkillTestSource siid source maction) iid tokenFace)
-      pure $ s & (setAsideTokens %~ (tokenFaces <>))
+    RequestedTokens (SkillTestSource siid skillType source maction) iid tokenFaces
+      -> do
+        unshiftMessage (RevealSkillTestTokens iid)
+        for_ tokenFaces $ \tokenFace -> do
+          checkWindowMsgs <- checkWindows
+            iid
+            (\who -> pure [WhenRevealToken who tokenFace])
+          unshiftMessages $ checkWindowMsgs <> resolve
+            (RevealToken
+              (SkillTestSource siid skillType source maction)
+              iid
+              tokenFace
+            )
+        pure $ s & (setAsideTokens %~ (tokenFaces <>))
     RevealToken SkillTestSource{} _iid tokenFace -> do
       token' <- flip DrawnToken tokenFace . TokenId <$> liftIO nextRandom
       pure $ s & revealedTokens %~ (token' :)

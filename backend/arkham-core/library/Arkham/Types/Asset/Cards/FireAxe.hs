@@ -27,7 +27,7 @@ reactionAbility Attrs { assetId } skillType =
   mkAbility (AssetSource assetId) 2 (ReactionAbility (WhenSkillTest skillType))
 
 instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAxe where
-  getModifiersFor (SkillTestSource _ source (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)
+  getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)
     | ownedBy a iid && isSource a source
     = do
       resourceCount <- getResourceCount iid
@@ -43,7 +43,7 @@ instance ActionRunner env => HasActions env FireAxe where
     msource <- asks $ getSource ForSkillTest
     let
       using = case msource of
-        Just (SkillTestSource _ source (Just Action.Fight))
+        Just (SkillTestSource _ _ source (Just Action.Fight))
           | isSource a source -> True
         _ -> False
     usedCount <- count (== (iid, ability)) . map unUsedAbility <$> getList ()

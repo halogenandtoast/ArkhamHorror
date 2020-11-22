@@ -282,6 +282,8 @@ data Message
   | AddToDiscard InvestigatorId PlayerCard
   | ChooseAndDiscardCard InvestigatorId
   | DiscardCard InvestigatorId CardId
+  | DiscardTopOfDeck InvestigatorId Int (Maybe Target)
+  | DiscardedTopOfDeck InvestigatorId [PlayerCard] Target
   | DrewTreachery InvestigatorId CardCode
   | PayCardCost InvestigatorId CardId
   | PayDynamicCardCost InvestigatorId CardId Int [Message]
@@ -404,6 +406,7 @@ data Message
   | ChangeCardToFast InvestigatorId CardId
   | CreateEffect CardCode (Maybe (EffectMetadata Message)) Source Target
   | CreateSkillTestEffect (EffectMetadata Message) Source Target
+  | CreateTokenValueEffect Int Source Target
   | CreatePhaseEffect (EffectMetadata Message) Source Target
   | CreatedEffect EffectId (Maybe (EffectMetadata Message)) Source Target
   | DisableEffect EffectId

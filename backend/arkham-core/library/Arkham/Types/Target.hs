@@ -15,6 +15,7 @@ import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.ScenarioId
 import Arkham.Types.SkillId
 import Arkham.Types.Token
 import Arkham.Types.Trait
@@ -27,6 +28,7 @@ data ForSkillTest = ForSkillTest
 data Target
   = AssetTarget AssetId
   | EnemyTarget EnemyId
+  | ScenarioTarget ScenarioId
   | EffectTarget EffectId
   | InvestigatorTarget InvestigatorId
   | LocationTarget LocationId

@@ -1,23 +1,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Scenario.Attrs where
 
-import ClassyPrelude hiding (log)
+import Arkham.Import hiding (log)
 
-import Arkham.Json
-import Arkham.Types.ActId
-import Arkham.Types.AgendaId
-import Arkham.Types.LocationId
-import Arkham.Types.Card
-import Arkham.Types.Classes
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Difficulty
-import Arkham.Types.InvestigatorId
-import Arkham.Types.Message
 import Arkham.Types.Scenario.Runner
-import Arkham.Types.ScenarioId
-import Arkham.Types.Target
-import Arkham.Types.Token
-import Lens.Micro
 
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
   deriving newtype (Show, IsString, ToJSON, FromJSON)
@@ -72,6 +60,14 @@ baseAttrs cardCode name agendaStack actStack' difficulty = Attrs
   , scenarioLog = mempty
   , scenarioLocations = mempty
   }
+
+instance Entity Attrs where
+  toSource = ScenarioSource . scenarioId
+  toTarget = ScenarioTarget . scenarioId
+  isSource Attrs { scenarioId } (ScenarioSource sid) = scenarioId == sid
+  isSource _ _ = False
+  isTarget Attrs { scenarioId } (ScenarioTarget sid) = scenarioId == sid
+  isTarget _ _ = False
 
 instance HasTokenValue env InvestigatorId => HasTokenValue env Attrs where
   getTokenValue _ iid = \case

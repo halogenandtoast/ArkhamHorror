@@ -58,6 +58,7 @@ data Modifier
   | SanityModifier Int
   | ShroudModifier Int
   | SkillModifier SkillType Int
+  | TokenValueModifier Int
   | SpawnNonEliteAtConnectingInstead
   | UseSkillInPlaceOf SkillType SkillType
   | XPModifier Int

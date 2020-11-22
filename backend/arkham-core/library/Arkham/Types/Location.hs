@@ -60,6 +60,7 @@ data Location
   | HumanitiesBuilding' HumanitiesBuilding
   | OrneLibrary' OrneLibrary
   | StudentUnion' StudentUnion
+  | Dormitories' Dormitories
   | AdministrationBuilding' AdministrationBuilding
   | ScienceBuilding' ScienceBuilding
   | StudyAberrantGateway' StudyAberrantGateway
@@ -222,6 +223,7 @@ allLocations = mapFromList $ map
   , HumanitiesBuilding' humanitiesBuilding
   , OrneLibrary' orneLibrary
   , StudentUnion' studentUnion
+  , Dormitories' dormitories
   , AdministrationBuilding' administrationBuilding
   , ScienceBuilding' scienceBuilding
   , StudyAberrantGateway' studyAberrantGateway
@@ -294,6 +296,7 @@ locationAttrs = \case
   HumanitiesBuilding' attrs -> coerce attrs
   OrneLibrary' attrs -> coerce attrs
   StudentUnion' attrs -> coerce attrs
+  Dormitories' attrs -> coerce attrs
   AdministrationBuilding' attrs -> coerce attrs
   ScienceBuilding' attrs -> coerce attrs
   StudyAberrantGateway' attrs -> coerce attrs

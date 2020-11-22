@@ -29,5 +29,8 @@ instance ActionRunner env => HasActions env ScienceBuilding where
   getActions i window (ScienceBuilding attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env ScienceBuilding where
-  runMessage msg (ScienceBuilding attrs) =
-    ScienceBuilding <$> runMessage msg attrs
+  runMessage msg (ScienceBuilding attrs) = case msg of
+    RevealLocation _ lid | lid == locationId attrs -> do
+      unshiftMessage $ PlaceLocationNamed "Alchemy Labs"
+      ScienceBuilding <$> runMessage msg attrs
+    _ -> ScienceBuilding <$> runMessage msg attrs

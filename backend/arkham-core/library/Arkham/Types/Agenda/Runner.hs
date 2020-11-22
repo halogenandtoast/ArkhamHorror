@@ -13,8 +13,10 @@ type AgendaRunner env
     , HasCount EnemyCount env (LocationId, [Trait])
     , HasCount PlayerCount env ()
     , HasId (Maybe StoryEnemyId) env CardCode
+    , HasId (Maybe LocationId) env LocationName
     , HasId LocationId env EnemyId
     , HasQueue env
+    , HasList LocationName env ()
     , HasSet ActId env ()
     , HasSet ClosestLocationId env (LocationId, LocationId)
     , HasSet CompletedScenarioId env ()

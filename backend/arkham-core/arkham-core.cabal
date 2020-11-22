@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 763b50a2f464f4e0a8dd48f6a57b1e958eb0e9a7e78d414d66f9776984ff2bee
+-- hash: 12aa42a95d6395ab8b4ee75088f36a9725f398ef51926b65753c0f0e2483eb4b
 
 name:           arkham-core
 version:        0.0.0
@@ -39,11 +39,13 @@ library
       Arkham.Types.Agenda.Attrs
       Arkham.Types.Agenda.Cards
       Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
+      Arkham.Types.Agenda.Cards.DeadOfNight
       Arkham.Types.Agenda.Cards.PredatorOrPrey
       Arkham.Types.Agenda.Cards.QuietHalls
       Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey
       Arkham.Types.Agenda.Cards.RiseOfTheGhouls
       Arkham.Types.Agenda.Cards.TheArkhamWoods
+      Arkham.Types.Agenda.Cards.TheBeastUnleashed
       Arkham.Types.Agenda.Cards.TheCurseSpreads
       Arkham.Types.Agenda.Cards.TheRitualBegins
       Arkham.Types.Agenda.Cards.TheRougarouFeeds
@@ -407,6 +409,7 @@ library
       Arkham.Types.Location.Helpers
       Arkham.Types.Location.Runner
       Arkham.Types.LocationId
+      Arkham.Types.LocationMatcher
       Arkham.Types.LocationSymbol
       Arkham.Types.Message
       Arkham.Types.Modifier

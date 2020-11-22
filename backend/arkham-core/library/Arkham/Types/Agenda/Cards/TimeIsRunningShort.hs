@@ -15,6 +15,9 @@ timeIsRunningShort :: TimeIsRunningShort
 timeIsRunningShort = TimeIsRunningShort
   $ baseAttrs "01122" 2 "Time Is Running Short" "Agenda 2a" (Static 8)
 
+instance HasModifiersFor env TimeIsRunningShort where
+  getModifiersFor = noModifiersFor
+
 instance ActionRunner env => HasActions env TimeIsRunningShort where
   getActions iid NonFast (TimeIsRunningShort _) = do
     hasActionsRemaining <- getHasActionsRemaining

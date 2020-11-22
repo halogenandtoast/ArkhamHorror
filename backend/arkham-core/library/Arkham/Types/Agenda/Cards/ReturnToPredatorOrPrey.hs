@@ -18,6 +18,9 @@ returnToPredatorOrPrey :: ReturnToPredatorOrPrey
 returnToPredatorOrPrey = ReturnToPredatorOrPrey
   $ baseAttrs "50026" 1 "Predator or Prey?" "Agenda 1a" (Static 6)
 
+instance HasModifiersFor env ReturnToPredatorOrPrey where
+  getModifiersFor = noModifiersFor
+
 instance ActionRunner env  => HasActions env ReturnToPredatorOrPrey where
   getActions iid NonFast (ReturnToPredatorOrPrey attrs) = do
     hasActionsRemaining <- getHasActionsRemaining

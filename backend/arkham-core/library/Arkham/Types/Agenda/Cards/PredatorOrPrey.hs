@@ -14,6 +14,9 @@ predatorOrPrey :: PredatorOrPrey
 predatorOrPrey = PredatorOrPrey
   $ baseAttrs "01121" 1 "Predator or Prey?" "Agenda 1a" (Static 6)
 
+instance HasModifiersFor env PredatorOrPrey where
+  getModifiersFor = noModifiersFor
+
 instance ActionRunner env  => HasActions env PredatorOrPrey where
   getActions iid NonFast (PredatorOrPrey _) = do
     hasActionsRemaining <- getHasActionsRemaining

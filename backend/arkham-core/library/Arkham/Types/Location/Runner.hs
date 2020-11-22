@@ -13,6 +13,7 @@ type LocationRunner env
     , HasId (Maybe OwnerId) env AssetId
     , HasId ActiveInvestigatorId env ()
     , HasId CardCode env EnemyId
+    , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId
     , HasSet LocationId env [Trait]
     , HasSet Trait env LocationId

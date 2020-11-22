@@ -31,6 +31,8 @@ allAgendas = mapFromList $ map
   , TheRitualBegins' theRitualBegins
   , VengeanceAwaits' vengeanceAwaits
   , QuietHalls' quietHalls
+  , DeadOfNight' deadOfNight
+  , TheBeastUnleashed' theBeastUnleashed
   , ReturnToPredatorOrPrey' returnToPredatorOrPrey
   , ACreatureOfTheBayou' aCreatureOfTheBayou
   , TheRougarouFeeds' theRougarouFeeds
@@ -62,6 +64,8 @@ data Agenda
   | TheRitualBegins' TheRitualBegins
   | VengeanceAwaits' VengeanceAwaits
   | QuietHalls' QuietHalls
+  | DeadOfNight' DeadOfNight
+  | TheBeastUnleashed' TheBeastUnleashed
   | ReturnToPredatorOrPrey' ReturnToPredatorOrPrey
   | ACreatureOfTheBayou' ACreatureOfTheBayou
   | TheRougarouFeeds' TheRougarouFeeds
@@ -72,6 +76,7 @@ data Agenda
 
 deriving anyclass instance ActionRunner env => HasActions env Agenda
 deriving anyclass instance (AgendaRunner env) => RunMessage env Agenda
+deriving anyclass instance HasModifiersFor env Agenda
 
 instance Entity Agenda where
   toTarget = toTarget . agendaAttrs
@@ -85,6 +90,9 @@ newtype BaseAgenda = BaseAgenda Attrs
 baseAgenda
   :: AgendaId -> Text -> Text -> GameValue Int -> (Attrs -> Attrs) -> Agenda
 baseAgenda a b c d f = BaseAgenda' . BaseAgenda . f $ baseAttrs a 1 b c d
+
+instance HasModifiersFor env BaseAgenda where
+  getModifiersFor = noModifiersFor
 
 instance HasActions env BaseAgenda where
   getActions iid window (BaseAgenda attrs) = getActions iid window attrs
@@ -103,6 +111,8 @@ agendaAttrs = \case
   TheRitualBegins' attrs -> coerce attrs
   VengeanceAwaits' attrs -> coerce attrs
   QuietHalls' attrs -> coerce attrs
+  DeadOfNight' attrs -> coerce attrs
+  TheBeastUnleashed' attrs -> coerce attrs
   ReturnToPredatorOrPrey' attrs -> coerce attrs
   ACreatureOfTheBayou' attrs -> coerce attrs
   TheRougarouFeeds' attrs -> coerce attrs

@@ -46,6 +46,7 @@ import Arkham.Types.Investigator
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Location
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Phase
 import Arkham.Types.Scenario
 import Arkham.Types.ScenarioLogKey
@@ -393,6 +394,10 @@ instance HasId (Maybe OwnerId) (Game queue) AssetId where
 instance HasId (Maybe LocationId) (Game queue) AssetId where
   getId = getId <=< getAsset
 
+instance HasId (Maybe LocationId) (Game queue) LocationMatcher where
+  getId = \case
+    LocationNamed name -> getId name
+
 instance HasId (Maybe LocationId) (Game queue) LocationName where
   getId locationName = do
     g <- ask
@@ -596,8 +601,8 @@ instance (GameRunner env, env ~ Game queue) => HasModifiersFor (Game queue) () w
         <$> traverse (getModifiersFor source target) (g ^. enemies . to toList)
       , concat
         <$> traverse (getModifiersFor source target) (g ^. assets . to toList)
-      -- , concat
-      --   <$> traverse (getModifiersFor source target) (g ^. agendas . to toList)
+      , concat
+        <$> traverse (getModifiersFor source target) (g ^. agendas . to toList)
       , concat <$> traverse
         (getModifiersFor source target)
         (g ^. locations . to toList)

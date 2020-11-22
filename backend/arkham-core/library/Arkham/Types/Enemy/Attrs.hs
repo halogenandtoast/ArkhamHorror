@@ -365,6 +365,29 @@ instance EnemyRunner env => RunMessage env Attrs where
             $ unshiftMessage (EnemyEngageInvestigator enemyId iid)
         Nothing -> pure ()
       pure $ a & exhaustedL .~ False
+    MoveToward target locationMatcher | isTarget a target -> do
+      lid <- fromJustNote "can't move toward" <$> getId locationMatcher
+      if lid == enemyLocation
+        then pure a
+        else do
+          leadInvestigatorId <- getLeadInvestigatorId
+          adjacentLocationIds <- map unConnectedLocationId
+            <$> getSetList enemyLocation
+          closestLocationIds <- map unClosestLocationId
+            <$> getSetList (enemyLocation, lid)
+          if lid `elem` adjacentLocationIds
+            then a <$ unshiftMessage
+              (chooseOne
+                leadInvestigatorId
+                [EnemyMove enemyId enemyLocation lid]
+              )
+            else a <$ unshiftMessages
+              [ chooseOne
+                  leadInvestigatorId
+                  [ EnemyMove enemyId enemyLocation lid'
+                  | lid' <- closestLocationIds
+                  ]
+              ]
     MoveUntil lid target | isTarget a target -> if lid == enemyLocation
       then pure a
       else do

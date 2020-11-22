@@ -16,6 +16,9 @@ theArkhamWoods :: TheArkhamWoods
 theArkhamWoods =
   TheArkhamWoods $ baseAttrs "01143" 1 "The Arkham Woods" "Agenda 1a" (Static 4)
 
+instance HasModifiersFor env TheArkhamWoods where
+  getModifiersFor = noModifiersFor
+
 instance HasActions env TheArkhamWoods where
   getActions i window (TheArkhamWoods x) = getActions i window x
 

@@ -5,6 +5,7 @@ import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.Target
@@ -17,6 +18,7 @@ type EnemyRunner env
     , HasCount PlayerCount env ()
     , HasCount RemainingSanity env InvestigatorId
     , HasId (Maybe LocationId) env LocationName
+    , HasId (Maybe LocationId) env LocationMatcher
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId
     , HasModifiersFor env ()

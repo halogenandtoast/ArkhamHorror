@@ -18,6 +18,9 @@ theyreGettingOut = TheyreGettingOut
 instance HasActions env TheyreGettingOut where
   getActions i window (TheyreGettingOut x) = getActions i window x
 
+instance HasModifiersFor env TheyreGettingOut where
+  getModifiersFor = noModifiersFor
+
 instance AgendaRunner env => RunMessage env TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3a" -> do

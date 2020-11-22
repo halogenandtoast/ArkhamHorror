@@ -34,6 +34,7 @@ import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.ScenarioId
@@ -162,6 +163,7 @@ data Message
   | MoveTo InvestigatorId LocationId
   | MoveFrom InvestigatorId LocationId
   | MoveUntil LocationId Target
+  | MoveToward Target LocationMatcher
   | PrePlayerWindow
   | PostPlayerWindow
   | PlayerWindow InvestigatorId [Message]
@@ -379,6 +381,7 @@ data Message
   | UnengageNonMatching InvestigatorId [Trait]
   | PlaceDoom Target Int
   | RemoveDoom Target Int
+  | RemoveAllDoom
   | Surge InvestigatorId Source
   | RevealInHand CardId
   | RemoveDiscardFromGame InvestigatorId

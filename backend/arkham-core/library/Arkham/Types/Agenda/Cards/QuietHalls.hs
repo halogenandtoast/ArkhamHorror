@@ -15,6 +15,9 @@ quietHalls :: QuietHalls
 quietHalls =
   QuietHalls $ baseAttrs "02042" 1 "Quiet Halls" "Agenda 1a" (Static 7)
 
+instance HasModifiersFor env QuietHalls where
+  getModifiersFor = noModifiersFor
+
 instance HasActions env QuietHalls where
   getActions i window (QuietHalls x) = getActions i window x
 

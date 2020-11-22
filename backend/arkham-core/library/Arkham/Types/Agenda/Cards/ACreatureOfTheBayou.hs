@@ -20,6 +20,9 @@ aCreatureOfTheBayou :: ACreatureOfTheBayou
 aCreatureOfTheBayou = ACreatureOfTheBayou
   $ baseAttrs "81002" 1 "A Creature of the Bayou" "Agenda 1a" (Static 5)
 
+instance HasModifiersFor env ACreatureOfTheBayou where
+  getModifiersFor = noModifiersFor
+
 instance HasActions env ACreatureOfTheBayou where
   getActions i window (ACreatureOfTheBayou x) = getActions i window x
 

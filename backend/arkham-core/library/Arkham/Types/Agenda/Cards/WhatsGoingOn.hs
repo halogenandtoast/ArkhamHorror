@@ -13,6 +13,9 @@ whatsGoingOn :: WhatsGoingOn
 whatsGoingOn =
   WhatsGoingOn $ baseAttrs "01105" 1 "What's Going On?!" "Agenda 1a" (Static 3)
 
+instance HasModifiersFor env WhatsGoingOn where
+  getModifiersFor = noModifiersFor
+
 instance HasActions env WhatsGoingOn where
   getActions i window (WhatsGoingOn x) = getActions i window x
 

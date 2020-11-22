@@ -203,10 +203,10 @@ instance LocationRunner env => RunMessage env Attrs where
           skillType
           shroudValue'
         )
-    PassedSkillTest iid (Just Action.Investigate) _ (SkillTestInitiatorTarget target) _
+    PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget target) _
       | isTarget a target
-      -> a <$ unshiftMessage (SuccessfulInvestigation iid locationId)
-    SuccessfulInvestigation iid lid | lid == locationId ->
+      -> a <$ unshiftMessage (SuccessfulInvestigation iid locationId source)
+    SuccessfulInvestigation iid lid _ | lid == locationId ->
       a <$ unshiftMessage (InvestigatorDiscoverClues iid lid 1)
     SetLocationLabel lid label' | lid == locationId ->
       pure $ a & label .~ label'

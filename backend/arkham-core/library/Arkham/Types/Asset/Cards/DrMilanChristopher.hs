@@ -26,7 +26,7 @@ instance HasActions env DrMilanChristopher where
 
 instance AssetRunner env => RunMessage env DrMilanChristopher where
   runMessage msg a@(DrMilanChristopher attrs) = case msg of
-    SuccessfulInvestigation iid _ | getInvestigator attrs == iid ->
+    SuccessfulInvestigation iid _ _ | getInvestigator attrs == iid ->
       a <$ unshiftMessage
         (chooseOne
           iid

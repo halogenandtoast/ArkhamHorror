@@ -320,7 +320,7 @@ data Message
   | TryEvadeEnemy InvestigatorId EnemyId Source SkillType
   | EnemyEvaded InvestigatorId EnemyId
   | AfterEvadeEnemy InvestigatorId EnemyId
-  | SuccessfulInvestigation InvestigatorId LocationId
+  | SuccessfulInvestigation InvestigatorId LocationId Source
   | SuccessfulAttackEnemy InvestigatorId EnemyId
   | FailedAttackEnemy InvestigatorId EnemyId
   | AttachTreachery TreacheryId Target

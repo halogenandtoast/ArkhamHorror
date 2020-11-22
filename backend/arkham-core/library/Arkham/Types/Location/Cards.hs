@@ -23,6 +23,7 @@ import Arkham.Types.Location.Cards.Broadmoor as X
 import Arkham.Types.Location.Cards.Cellar as X
 import Arkham.Types.Location.Cards.CursedShores as X
 import Arkham.Types.Location.Cards.DeepBelowYourHouse as X
+import Arkham.Types.Location.Cards.Dormitories as X
 import Arkham.Types.Location.Cards.DowntownArkhamAsylum as X
 import Arkham.Types.Location.Cards.DowntownFirstBankOfArkham as X
 import Arkham.Types.Location.Cards.Easttown as X

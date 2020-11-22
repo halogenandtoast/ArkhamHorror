@@ -267,6 +267,9 @@ data Message
   | InvestigatorPlaceAllCluesOnLocation InvestigatorId
   -- ^ This message exists in case the number of clues will change
   | FindAndDrawEncounterCard InvestigatorId EncounterCardMatcher
+  | FindEncounterCard InvestigatorId Target EncounterCardMatcher
+  | FoundEncounterCard InvestigatorId Target EncounterCard
+  | FoundEncounterCardFrom InvestigatorId Target EncounterCardSource EncounterCard
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
   | AddToEncounterDeck EncounterCard
   | SkillTestEnds

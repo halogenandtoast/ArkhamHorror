@@ -3,7 +3,6 @@ module Arkham.Types.Location.Cards.Dormitories where
 
 import Arkham.Import
 
-import qualified Arkham.Types.Action as Action
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Location.Attrs
@@ -43,11 +42,7 @@ instance ActionRunner env => HasActions env Dormitories where
         $ baseActions
         <> [ ActivateCardAbilityAction
                iid
-               (mkAbility
-                 (toSource attrs)
-                 1
-                 (ActionAbility 1 (Just Action.Resign))
-               )
+               (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow))
            | totalSpendableClueCount >= requiredClueCount
            ]
   getActions iid window (Dormitories attrs) = getActions iid window attrs

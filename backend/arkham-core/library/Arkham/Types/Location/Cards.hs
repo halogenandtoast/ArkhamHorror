@@ -28,6 +28,8 @@ import Arkham.Types.Location.Cards.DowntownArkhamAsylum as X
 import Arkham.Types.Location.Cards.DowntownFirstBankOfArkham as X
 import Arkham.Types.Location.Cards.Easttown as X
 import Arkham.Types.Location.Cards.EasttownArkhamPoliceStation as X
+import Arkham.Types.Location.Cards.FacultyOfficesTheHourIsLate as X
+import Arkham.Types.Location.Cards.FacultyOfficesTheNightIsStillYoung as X
 import Arkham.Types.Location.Cards.FarAboveYourHouse as X
 import Arkham.Types.Location.Cards.FauborgMarigny as X
 import Arkham.Types.Location.Cards.ForgottenMarsh as X

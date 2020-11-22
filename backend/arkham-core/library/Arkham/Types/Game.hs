@@ -2004,6 +2004,37 @@ runGameMessage msg g = case msg of
            matchingDeckCards
       )
     pure $ g & focusedCards .~ map EncounterCard matchingDeckCards
+  FindEncounterCard iid target matcher -> do
+    let matchingDiscards = filter (encounterCardMatch matcher) (g ^. discard)
+    let
+      matchingDeckCards =
+        filter (encounterCardMatch matcher) (unDeck $ g ^. encounterDeck)
+    unshiftMessage
+      (Ask iid
+      $ ChooseOne
+      $ map (FoundEncounterCardFrom iid target FromDiscard) matchingDiscards
+      <> map
+           (FoundEncounterCardFrom iid target FromEncounterDeck)
+           matchingDeckCards
+      )
+    pure $ g & focusedCards .~ map EncounterCard matchingDeckCards
+  FoundEncounterCardFrom iid target cardSource card -> do
+    let
+      cardId = getCardId card
+      discard' = case cardSource of
+        FromDiscard -> filter ((/= cardId) . getCardId) (g ^. discard)
+        _ -> g ^. discard
+      encounterDeck' = case cardSource of
+        FromEncounterDeck ->
+          filter ((/= cardId) . getCardId) (unDeck $ g ^. encounterDeck)
+        _ -> unDeck (g ^. encounterDeck)
+    shuffled <- liftIO $ shuffleM encounterDeck'
+    unshiftMessage (FoundEncounterCard iid target card)
+    pure
+      $ g
+      & (encounterDeck .~ Deck shuffled)
+      & (discard .~ discard')
+      & (focusedCards .~ mempty)
   FoundAndDrewEncounterCard iid cardSource card -> do
     let
       cardId = getCardId card

@@ -21,7 +21,7 @@ instance HasModifiersFor env Burglary where
 
 instance HasQueue env => RunMessage env Burglary where
   runMessage msg e@(Burglary attrs) = case msg of
-    SuccessfulInvestigation iid lid
+    SuccessfulInvestigation iid lid _
       | LocationTarget lid == effectTarget attrs -> e <$ unshiftMessages
         [TakeResources iid 3 False, DisableEffect $ effectId attrs]
     SkillTestEnds -> e <$ unshiftMessage (DisableEffect $ effectId attrs)

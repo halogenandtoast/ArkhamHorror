@@ -33,6 +33,6 @@ instance TreacheryRunner env => RunMessage env ObscuringFog where
             $ AttachTreachery treacheryId (LocationTarget currentLocationId)
           ObscuringFog
             <$> runMessage msg (attrs & attachedLocation ?~ currentLocationId)
-    SuccessfulInvestigation _ lid | Just lid == treacheryAttachedLocation ->
+    SuccessfulInvestigation _ lid _ | Just lid == treacheryAttachedLocation ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
     _ -> ObscuringFog <$> runMessage msg attrs

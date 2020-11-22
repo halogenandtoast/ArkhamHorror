@@ -21,6 +21,7 @@ data Attrs = Attrs
   , scenarioDeck :: Maybe [EncounterCard]
   , scenarioLog :: HashSet ScenarioLogKey
   , scenarioLocations :: HashMap LocationName [LocationId]
+  , scenarioSetAsideCards :: [Card]
   }
   deriving stock (Show, Generic)
 
@@ -45,6 +46,10 @@ actStack = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
 locations :: Lens' Attrs (HashMap LocationName [LocationId])
 locations = lens scenarioLocations $ \m x -> m { scenarioLocations = x }
 
+setAsideCards :: Lens' Attrs [Card]
+setAsideCards =
+  lens scenarioSetAsideCards $ \m x -> m { scenarioSetAsideCards = x }
+
 log :: Lens' Attrs (HashSet ScenarioLogKey)
 log = lens scenarioLog $ \m x -> m { scenarioLog = x }
 
@@ -59,6 +64,7 @@ baseAttrs cardCode name agendaStack actStack' difficulty = Attrs
   , scenarioDeck = Nothing
   , scenarioLog = mempty
   , scenarioLocations = mempty
+  , scenarioSetAsideCards = mempty
   }
 
 instance Entity Attrs where

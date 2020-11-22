@@ -285,6 +285,7 @@ type ActionRunner env
     , HasSet InvestigatorId env LocationId
     , HasSet Keyword env EnemyId
     , HasSet Trait env EnemyId
+    , HasSet Trait env LocationId
     , HasSet Trait env (InvestigatorId, CardId)
     , HasSource ForSkillTest env
     )

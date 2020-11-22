@@ -160,17 +160,26 @@ getCanInvestigate
   :: ( MonadReader env m
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasId LocationId env InvestigatorId
+     , HasSet Trait env LocationId
+     , HasModifiersFor env ()
      )
   => LocationId
   -> InvestigatorId
   -> m Bool
 getCanInvestigate lid iid = do
   locationId <- getId @LocationId iid
-  hasActionsRemaining <- getHasActionsRemaining
-    iid
-    (Just Action.Investigate)
-    mempty
-  pure $ lid == locationId && hasActionsRemaining
+  traits <- getSetList @Trait lid
+  actionsRemaining <- unActionRemainingCount
+    <$> getCount (Just Action.Investigate, traits, iid)
+  modifiers' <- getModifiersFor (InvestigatorSource iid) (LocationTarget lid) ()
+
+  let investigateCost = foldr applyModifier 1 modifiers'
+
+  pure $ lid == locationId && actionsRemaining >= investigateCost
+ where
+  applyModifier (ActionCostOf (IsAction Action.Investigate) m) n =
+    max 0 (n + m)
+  applyModifier _ n = n
 
 getResourceCount
   :: (MonadReader env m, HasCount ResourceCount env InvestigatorId)

@@ -28,7 +28,9 @@ dormitories = Dormitories $ (baseAttrs
   }
 
 instance HasModifiersFor env Dormitories where
-  getModifiersFor = noModifiersFor
+  getModifiersFor _ target (Dormitories attrs) | isTarget attrs target =
+    pure [ Blocked | not (locationRevealed attrs) ]
+  getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env Dormitories where
   getActions iid FastPlayerWindow (Dormitories attrs@Attrs {..})

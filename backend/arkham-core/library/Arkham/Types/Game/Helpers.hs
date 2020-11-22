@@ -145,6 +145,10 @@ getCanMoveTo
 getCanMoveTo lid iid = do
   locationId <- getId @LocationId iid
   modifiers' <- getModifiersFor (LocationSource lid) (InvestigatorTarget iid) ()
+  locationModifiers' <- getModifiersFor
+    (InvestigatorSource iid)
+    (LocationTarget lid)
+    ()
   accessibleLocations <- map unAccessibleLocationId <$> getSetList locationId
   hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Move) mempty
   pure
@@ -155,6 +159,8 @@ getCanMoveTo lid iid = do
     /= locationId
     && CannotMove
     `notElem` modifiers'
+    && Blocked
+    `notElem` locationModifiers'
 
 getCanInvestigate
   :: ( MonadReader env m

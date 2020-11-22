@@ -837,12 +837,14 @@ instance HasSet CommittedCardId (Game queue) InvestigatorId where
 instance HasSet CommittedCardCode (Game queue) () where
   getSet _ = maybe (pure mempty) getSet =<< view skillTest
 
-instance HasSet BlockedLocationId (Game queue) () where
-  getSet _ =
-    HashSet.map BlockedLocationId
-      . keysSet
-      . filterMap isBlocked
-      <$> view locations
+instance (HasActions (Game queue) (ActionType, Trait), HasActions (Game queue) ActionType, HasQueue (Game queue)) => HasSet BlockedLocationId (Game queue) () where
+  getSet _ = do
+    locations' <- mapToList <$> view locations
+    setFromList . map (BlockedLocationId . fst) <$> filterM isBlocked locations'
+   where
+    isBlocked (_, location) =
+      elem Blocked
+        <$> getModifiersFor (toSource location) (toTarget location) ()
 
 getShortestPath
   :: Game queue -> LocationId -> (LocationId -> Bool) -> [LocationId]
@@ -1084,7 +1086,7 @@ instance HasSet AdvanceableActId (Game queue) () where
 instance HasSet ConnectedLocationId (Game queue) LocationId where
   getSet = getSet <=< getLocation
 
-instance HasSet AccessibleLocationId (Game queue) LocationId where
+instance (HasActions (Game queue) (ActionType, Trait), HasActions (Game queue) ActionType, HasQueue (Game queue)) => HasSet AccessibleLocationId (Game queue) LocationId where
   getSet lid = do
     location <- getLocation lid
     connectedLocationIds <- HashSet.map unConnectedLocationId

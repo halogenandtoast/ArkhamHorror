@@ -183,9 +183,6 @@ instance HasId LocationId env Location where
 getLocationId :: Location -> LocationId
 getLocationId = locationId . locationAttrs
 
-instance IsLocation Location where
-  isBlocked = isBlocked . locationAttrs
-
 getLocationName :: Location -> LocationName
 getLocationName = locationName . locationAttrs
 

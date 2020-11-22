@@ -20,6 +20,7 @@ data Modifier
   | AnySkillValue Int
   | BaseSkillOf SkillType Int
   | Blank
+  | Blocked
   | CanBecomeFast (Maybe PlayerCardType, [Trait])
   | CanPlayTopOfDiscard (Maybe PlayerCardType, [Trait])
   | CannotBeAttackedByNonElite

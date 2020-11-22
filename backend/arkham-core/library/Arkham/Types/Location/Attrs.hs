@@ -19,7 +19,6 @@ data Attrs = Attrs
   , locationDoom :: Int
   , locationShroud :: Int
   , locationRevealed :: Bool
-  , locationBlocked :: Bool
   , locationInvestigators :: HashSet InvestigatorId
   , locationEnemies :: HashSet EnemyId
   , locationVictory :: Maybe Int
@@ -83,9 +82,6 @@ connectedLocations :: Lens' Attrs (HashSet LocationId)
 connectedLocations =
   lens locationConnectedLocations $ \m x -> m { locationConnectedLocations = x }
 
-blocked :: Lens' Attrs Bool
-blocked = lens locationBlocked $ \m x -> m { locationBlocked = x }
-
 baseAttrs
   :: LocationId
   -> LocationName
@@ -113,7 +109,6 @@ baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' tr
     , locationDoom = 0
     , locationShroud = shroud'
     , locationRevealed = False
-    , locationBlocked = False
     , locationInvestigators = mempty
     , locationEnemies = mempty
     , locationVictory = Nothing
@@ -153,9 +148,6 @@ getModifiedShroudValueFor attrs = do
 instance HasId LocationId env Attrs where
   getId = pure . locationId
 
-instance IsLocation Attrs where
-  isBlocked Attrs {..} = locationBlocked
-
 getInvestigateAllowed
   :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Bool
 getInvestigateAllowed attrs = do
@@ -187,8 +179,7 @@ instance ActionRunner env => HasActions env Attrs where
       [ Investigate iid locationId (InvestigatorSource iid) SkillIntellect True
       | canInvestigate && investigateAllowed
       ]
-    moveActions canMoveTo =
-      [ MoveAction iid locationId True | canMoveTo && not locationBlocked ]
+    moveActions canMoveTo = [ MoveAction iid locationId True | canMoveTo ]
   getActions _ _ _ = pure []
 
 getShouldSpawnNonEliteAtConnectingInstead

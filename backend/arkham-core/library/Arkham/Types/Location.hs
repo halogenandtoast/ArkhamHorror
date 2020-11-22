@@ -62,9 +62,8 @@ data Location
   | StudentUnion' StudentUnion
   | Dormitories' Dormitories
   | AdministrationBuilding' AdministrationBuilding
-  | FacultyOfficesTheNightIsStillYoung' FacultyOfficesTheNightIsStillYoung
-  | FacultyOfficesTheHourIsLate' FacultyOfficesTheHourIsLate
   | ScienceBuilding' ScienceBuilding
+  | AlchemyLabs' AlchemyLabs
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -224,9 +223,8 @@ allLocations = mapFromList $ map
   , StudentUnion' studentUnion
   , Dormitories' dormitories
   , AdministrationBuilding' administrationBuilding
-  , FacultyOfficesTheNightIsStillYoung' facultyOfficesTheNightIsStillYoung
-  , FacultyOfficesTheHourIsLate' facultyOfficesTheHourIsLate
   , ScienceBuilding' scienceBuilding
+  , AlchemyLabs' alchemyLabs
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall
   , Bedroom' bedroom
@@ -299,9 +297,8 @@ locationAttrs = \case
   StudentUnion' attrs -> coerce attrs
   Dormitories' attrs -> coerce attrs
   AdministrationBuilding' attrs -> coerce attrs
-  FacultyOfficesTheNightIsStillYoung' attrs -> coerce attrs
-  FacultyOfficesTheHourIsLate' attrs -> coerce attrs
   ScienceBuilding' attrs -> coerce attrs
+  AlchemyLabs' attrs -> coerce attrs
   StudyAberrantGateway' attrs -> coerce attrs
   GuestHall' attrs -> coerce attrs
   Bedroom' attrs -> coerce attrs

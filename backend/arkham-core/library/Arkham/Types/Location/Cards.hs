@@ -4,6 +4,7 @@ module Arkham.Types.Location.Cards
 where
 
 import Arkham.Types.Location.Cards.AdministrationBuilding as X
+import Arkham.Types.Location.Cards.AlchemyLabs as X
 import Arkham.Types.Location.Cards.ArkhamWoodsCliffside as X
 import Arkham.Types.Location.Cards.ArkhamWoodsCorpseRiddenClearing as X
 import Arkham.Types.Location.Cards.ArkhamWoodsGreatWillow as X

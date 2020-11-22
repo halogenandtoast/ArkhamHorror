@@ -18,7 +18,7 @@ toothOfEztli uuid =
   ToothOfEztli $ (baseAttrs uuid "04023") { assetSlots = [AccessorySlot] }
 
 instance HasModifiersFor env ToothOfEztli where
-  getModifiersFor (SkillTestSource _ (TreacherySource _) _) (InvestigatorTarget iid) (ToothOfEztli a)
+  getModifiersFor (SkillTestSource _ _ (TreacherySource _) _) (InvestigatorTarget iid) (ToothOfEztli a)
     | ownedBy a iid
     = pure [SkillModifier SkillWillpower 1, SkillModifier SkillAgility 1]
   getModifiersFor _ _ _ = pure []

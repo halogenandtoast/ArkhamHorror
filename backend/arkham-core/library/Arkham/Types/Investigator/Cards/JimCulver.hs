@@ -12,7 +12,7 @@ newtype JimCulver = JimCulver Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 instance HasModifiersFor env JimCulver where
-  getModifiersFor (SkillTestSource iid _ _) (DrawnTokenTarget token) (JimCulver attrs)
+  getModifiersFor (SkillTestSource iid _ _ _) (DrawnTokenTarget token) (JimCulver attrs)
     | iid == investigatorId attrs && drawnTokenFace token == Skull
     = pure [ChangeTokenModifier $ PositiveModifier 0]
   getModifiersFor source target (JimCulver attrs) =

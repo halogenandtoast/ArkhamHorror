@@ -10,7 +10,8 @@ import Data.Aeson
 newtype EnemyTrait = EnemyTrait { unEnemyTrait :: Trait }
 
 data Trait
-  = Agency
+  = Abomination
+  | Agency
   | Ally
   | AncientOne
   | Arkham
@@ -70,6 +71,7 @@ data Trait
   | Gug
   | Hazard
   | Hex
+  | Human
   | Humanoid
   | Hunter
   | Illicit

@@ -108,12 +108,18 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
           ]
       ExtracurricularActivity
         <$> runMessage msg (attrs & locations .~ locations')
-    FailedSkillTest iid _ _ target@(DrawnTokenTarget token) _ -> do
+    ResolveToken drawnToken ElderThing iid -> s <$ unshiftMessage
+      (DiscardTopOfDeck
+        iid
+        (if isEasyStandard attrs then 2 else 3)
+        (Just $ DrawnTokenTarget drawnToken)
+      )
+    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ -> do
       s <$ case drawnTokenFace token of
-        ElderThing -> unshiftMessage $ DiscardTopOfDeck
+        Skull -> unshiftMessage $ DiscardTopOfDeck
           iid
           (if isEasyStandard attrs then 3 else 5)
-          (Just target)
+          Nothing
         _ -> pure ()
     DiscardedTopOfDeck _iid cards target@(DrawnTokenTarget token) -> do
       s <$ case drawnTokenFace token of

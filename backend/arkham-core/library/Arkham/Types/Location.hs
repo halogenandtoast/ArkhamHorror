@@ -56,6 +56,12 @@ data Location
   | ArkhamWoodsCliffside' ArkhamWoodsCliffside
   | ArkhamWoodsTangledThicket' ArkhamWoodsTangledThicket
   | ArkhamWoodsQuietGlade' ArkhamWoodsQuietGlade
+  | MiskatonicQuad' MiskatonicQuad
+  | HumanitiesBuilding' HumanitiesBuilding
+  | OrneLibrary' OrneLibrary
+  | StudentUnion' StudentUnion
+  | AdministrationBuilding' AdministrationBuilding
+  | ScienceBuilding' ScienceBuilding
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -212,6 +218,12 @@ allLocations = mapFromList $ map
   , ArkhamWoodsCliffside' arkhamWoodsCliffside
   , ArkhamWoodsTangledThicket' arkhamWoodsTangledThicket
   , ArkhamWoodsQuietGlade' arkhamWoodsQuietGlade
+  , MiskatonicQuad' miskatonicQuad
+  , HumanitiesBuilding' humanitiesBuilding
+  , OrneLibrary' orneLibrary
+  , StudentUnion' studentUnion
+  , AdministrationBuilding' administrationBuilding
+  , ScienceBuilding' scienceBuilding
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall
   , Bedroom' bedroom
@@ -278,6 +290,12 @@ locationAttrs = \case
   ArkhamWoodsCliffside' attrs -> coerce attrs
   ArkhamWoodsTangledThicket' attrs -> coerce attrs
   ArkhamWoodsQuietGlade' attrs -> coerce attrs
+  MiskatonicQuad' attrs -> coerce attrs
+  HumanitiesBuilding' attrs -> coerce attrs
+  OrneLibrary' attrs -> coerce attrs
+  StudentUnion' attrs -> coerce attrs
+  AdministrationBuilding' attrs -> coerce attrs
+  ScienceBuilding' attrs -> coerce attrs
   StudyAberrantGateway' attrs -> coerce attrs
   GuestHall' attrs -> coerce attrs
   Bedroom' attrs -> coerce attrs

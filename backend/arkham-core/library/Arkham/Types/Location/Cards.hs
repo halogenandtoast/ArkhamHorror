@@ -3,6 +3,7 @@ module Arkham.Types.Location.Cards
   )
 where
 
+import Arkham.Types.Location.Cards.AdministrationBuilding as X
 import Arkham.Types.Location.Cards.ArkhamWoodsCliffside as X
 import Arkham.Types.Location.Cards.ArkhamWoodsCorpseRiddenClearing as X
 import Arkham.Types.Location.Cards.ArkhamWoodsGreatWillow as X
@@ -35,11 +36,14 @@ import Arkham.Types.Location.Cards.Graveyard as X
 import Arkham.Types.Location.Cards.GuestHall as X
 import Arkham.Types.Location.Cards.Hallway as X
 import Arkham.Types.Location.Cards.HoleInTheWall as X
+import Arkham.Types.Location.Cards.HumanitiesBuilding as X
 import Arkham.Types.Location.Cards.MainPath as X
+import Arkham.Types.Location.Cards.MiskatonicQuad as X
 import Arkham.Types.Location.Cards.MiskatonicUniversity as X
 import Arkham.Types.Location.Cards.MiskatonicUniversityMiskatonicMuseum as X
 import Arkham.Types.Location.Cards.Northside as X
 import Arkham.Types.Location.Cards.NorthsideTrainStation as X
+import Arkham.Types.Location.Cards.OrneLibrary as X
 import Arkham.Types.Location.Cards.OvergrownCairns as X
 import Arkham.Types.Location.Cards.Parlor as X
 import Arkham.Types.Location.Cards.ReturnToAttic as X
@@ -48,9 +52,11 @@ import Arkham.Types.Location.Cards.RitualGrounds as X
 import Arkham.Types.Location.Cards.RitualSite as X
 import Arkham.Types.Location.Cards.Rivertown as X
 import Arkham.Types.Location.Cards.RivertownAbandonedWarehouse as X
+import Arkham.Types.Location.Cards.ScienceBuilding as X
 import Arkham.Types.Location.Cards.SouthsideHistoricalSociety as X
 import Arkham.Types.Location.Cards.SouthsideMasBoardingHouse as X
 import Arkham.Types.Location.Cards.StMarysHospital as X
+import Arkham.Types.Location.Cards.StudentUnion as X
 import Arkham.Types.Location.Cards.Study as X
 import Arkham.Types.Location.Cards.StudyAberrantGateway as X
 import Arkham.Types.Location.Cards.TrappersCabin as X

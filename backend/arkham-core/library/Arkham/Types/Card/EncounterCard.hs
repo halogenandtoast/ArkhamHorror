@@ -114,6 +114,28 @@ allEncounterCards = HashMap.fromList
   , ("01180", goatSpawn)
   , ("01181", youngDeepOne)
   , ("01182", dreamsOfRlyeh)
+  , ("02083", visionsOfFuturePast)
+  , ("02084", beyondTheVeil)
+  , ("02085", lightOfAforgomon)
+  , ("02086", thrall)
+  , ("02087", wizardOfYogSothoth)
+  , ("02088", unhallowedCountry)
+  , ("02089", sordidAndSilent)
+  , ("02090", whippoorwill)
+  , ("02091", eagerForDeath)
+  , ("02092", cursedLuck)
+  , ("02093", twistOfFate)
+  , ("02094", avianThrall)
+  , ("02095", lupineThrall)
+  , ("02096", alteredBeast)
+  , ("02097", oBannionsThug)
+  , ("02098", mobster)
+  , ("02099", huntedDown)
+  , ("02100", pushedIntoTheBeyond)
+  , ("02101", terrorFromBeyond)
+  , ("02102", arcaneBarrier)
+  , ("02103", conglomerationOfSpheres)
+  , ("02104", servantOfTheLurker)
   , ("50022", corpseHungryGhoul)
   , ("50023", ghoulFromTheDepths)
   , ("50024", theZealotsSeal)
@@ -351,6 +373,127 @@ youngDeepOne cardId = (enemy cardId "01181" "Young Deep One")
 dreamsOfRlyeh :: CardId -> EncounterCard
 dreamsOfRlyeh cardId = (treachery cardId "01182" "Dreams of R'lyeh")
   { ecTraits = setFromList [Omen]
+  }
+
+visionsOfFuturePast :: CardId -> EncounterCard
+visionsOfFuturePast cardId = (treachery cardId "02083" "Visions of Future Past"
+                             )
+  { ecTraits = setFromList [Hex]
+  }
+
+beyondTheVeil :: CardId -> EncounterCard
+beyondTheVeil cardId = (treachery cardId "02084" "Beyond the Veil")
+  { ecTraits = setFromList [Hex]
+  , ecKeywords = [Keyword.Surge]
+  }
+
+lightOfAforgomon :: CardId -> EncounterCard
+lightOfAforgomon cardId = (treachery cardId "02085" "Light of Aforgomon")
+  { ecTraits = setFromList [Pact, Power]
+  , ecKeywords = [Keyword.Peril]
+  }
+
+thrall :: CardId -> EncounterCard
+thrall cardId = (enemy cardId "02086" "Thrall")
+  { ecTraits = setFromList [Humanoid, Monster, Abomination]
+  , ecKeywords = [Keyword.Retaliate]
+  }
+
+wizardOfYogSothoth :: CardId -> EncounterCard
+wizardOfYogSothoth cardId = (enemy cardId "02087" "Wizard of Yog-Sothoth")
+  { ecTraits = setFromList [Humanoid, Sorcerer]
+  , ecKeywords = [Keyword.Hunter]
+  , ecVictoryPoints = Just 1
+  }
+
+unhallowedCountry :: CardId -> EncounterCard
+unhallowedCountry cardId = (treachery cardId "02088" "Unhallowed Country")
+  { ecTraits = setFromList [Terror]
+  }
+
+sordidAndSilent :: CardId -> EncounterCard
+sordidAndSilent cardId = (treachery cardId "02089" "Sordid and Silent")
+  { ecTraits = setFromList [Terror]
+  }
+
+whippoorwill :: CardId -> EncounterCard
+whippoorwill cardId = (enemy cardId "02090" "Whippoorwill")
+  { ecTraits = setFromList [Creature]
+  , ecKeywords = [Keyword.Aloof, Keyword.Hunter]
+  }
+
+eagerForDeath :: CardId -> EncounterCard
+eagerForDeath cardId =
+  (treachery cardId "02091" "Eager for Death") { ecTraits = setFromList [Omen] }
+
+cursedLuck :: CardId -> EncounterCard
+cursedLuck cardId =
+  (treachery cardId "02092" "Cursed Luck") { ecTraits = setFromList [Omen] }
+
+twistOfFate :: CardId -> EncounterCard
+twistOfFate cardId =
+  (treachery cardId "02093" "Twist of Fate") { ecTraits = setFromList [Omen] }
+
+avianThrall :: CardId -> EncounterCard
+avianThrall cardId = (enemy cardId "02094" "Avian Thrall")
+  { ecTraits = setFromList [Creature, Monster, Abomination]
+  , ecKeywords = [Keyword.Hunter]
+  }
+
+lupineThrall :: CardId -> EncounterCard
+lupineThrall cardId = (enemy cardId "02095" "Lupine Thrall")
+  { ecTraits = setFromList [Creature, Monster, Abomination]
+  , ecKeywords = [Keyword.Hunter, Keyword.Retaliate]
+  }
+
+alteredBeast :: CardId -> EncounterCard
+alteredBeast cardId =
+  (treachery cardId "02096" "Altered Beast") { ecTraits = setFromList [Power] }
+
+oBannionsThug :: CardId -> EncounterCard
+oBannionsThug cardId = (enemy cardId "02097" "O'Bannion's Thug")
+  { ecTraits = setFromList [Human, Criminal, Syndicate]
+  }
+
+mobster :: CardId -> EncounterCard
+mobster cardId = (enemy cardId "02098" "Mobster")
+  { ecTraits = setFromList [Human, Criminal, Syndicate]
+  , ecKeywords = [Keyword.Retaliate]
+  }
+
+huntedDown :: CardId -> EncounterCard
+huntedDown cardId =
+  (treachery cardId "02099" "Hunted Down") { ecTraits = setFromList [Tactic] }
+
+pushedIntoTheBeyond :: CardId -> EncounterCard
+pushedIntoTheBeyond cardId = (treachery cardId "02100" "Pushed into the Beyond"
+                             )
+  { ecTraits = setFromList [Hex]
+  }
+
+terrorFromBeyond :: CardId -> EncounterCard
+terrorFromBeyond cardId = (treachery cardId "02101" "Terror from Beyond")
+  { ecTraits = setFromList [Hex, Terror]
+  , ecKeywords = [Keyword.Peril]
+  }
+
+arcaneBarrier :: CardId -> EncounterCard
+arcaneBarrier cardId = (treachery cardId "02102" "Arcane Barrier")
+  { ecTraits = setFromList [Hex, Obstacle]
+  }
+
+conglomerationOfSpheres :: CardId -> EncounterCard
+conglomerationOfSpheres cardId =
+  (enemy cardId "02103" "Conglomeration of Spheres")
+    { ecTraits = setFromList [Monster, Abomination]
+    , ecKeywords = [Keyword.Hunter]
+    }
+
+servantOfTheLurker :: CardId -> EncounterCard
+servantOfTheLurker cardId = (enemy cardId "02104" "Servant of the Lurker")
+  { ecTraits = setFromList [Monster, Abomination]
+  , ecKeywords = [Keyword.Hunter]
+  , ecVictoryPoints = Just 1
   }
 
 corpseHungryGhoul :: CardId -> EncounterCard

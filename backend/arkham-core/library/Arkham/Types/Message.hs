@@ -88,6 +88,7 @@ data Message
   | BeginTurn InvestigatorId
   | AddToken Token
   | AddCampaignCardToDeck InvestigatorId CardCode
+  | AddCampaignCardToEncounterDeck CardCode
   | RemoveCampaignCardFromDeck InvestigatorId CardCode
   | SetLocationLabel LocationId Text
   | EndOfGame
@@ -140,6 +141,7 @@ data Message
   | PlaceDoomOnAgenda
   | AdvanceAgendaIfThresholdSatisfied
   | AdvanceAgenda AgendaId
+  | AdvanceCurrentAgenda
   | AdvanceAct ActId
   | RevertAct ActId
   | NextAdvanceActStep ActId Int

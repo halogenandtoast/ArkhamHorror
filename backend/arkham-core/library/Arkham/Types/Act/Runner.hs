@@ -26,4 +26,7 @@ type ActRunner env
     , HasSet ScenarioLogKey env ()
     , HasSet Trait env AssetId
     , HasSet VictoryDisplayCardCode env ()
+    , HasSet CompletedScenarioId env ()
+    , HasStep AgendaStep env
+    , HasList LocationName env ()
     )

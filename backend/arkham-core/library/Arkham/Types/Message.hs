@@ -88,6 +88,7 @@ data Message
   | ApplyModifiers Target
   | BeginTurn InvestigatorId
   | AddToken Token
+  | CompleteObjective
   | AddCampaignCardToDeck InvestigatorId CardCode
   | AddCampaignCardToEncounterDeck CardCode
   | RemoveCampaignCardFromDeck InvestigatorId CardCode
@@ -305,6 +306,7 @@ data Message
   | EnemyMove EnemyId LocationId LocationId
   | SpawnEnemyAt Card LocationId
   | CreateEnemyAt CardCode LocationId
+  | CreateEnemyAtLocationNamed CardCode LocationName
   | CreateEnemyEngagedWithPrey CardCode
   | EnemySpawnEngagedWithPrey EnemyId
   | Revelation InvestigatorId Source
@@ -343,6 +345,7 @@ data Message
   | CreateWeaknessInThreatArea CardCode InvestigatorId
   | AttachStoryTreacheryTo CardCode Target
   | CreateStoryAssetAt CardCode LocationId
+  | CreateStoryAssetAtLocationNamed CardCode LocationName
   | TakeControlOfAsset InvestigatorId AssetId
   | TakeControlOfSetAsideAsset InvestigatorId CardCode
   | PutCardIntoPlay InvestigatorId Card (Maybe Target)

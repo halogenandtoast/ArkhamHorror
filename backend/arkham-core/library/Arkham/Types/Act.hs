@@ -27,6 +27,7 @@ data Act
   | IntoTheDarkness' IntoTheDarkness
   | DisruptingTheRitual' DisruptingTheRitual
   | AfterHours' AfterHours
+  | RicesWhereabouts' RicesWhereabouts
   | MysteriousGateway' MysteriousGateway
   | FindingLadyEsprit' FindingLadyEsprit
   | HuntingTheRougarou' HuntingTheRougarou
@@ -54,6 +55,7 @@ allActs = mapFromList $ map
   , IntoTheDarkness' intoTheDarkness
   , DisruptingTheRitual' disruptingTheRitual
   , AfterHours' afterHours
+  , RicesWhereabouts' ricesWhereabouts
   , MysteriousGateway' mysteriousGateway
   , FindingLadyEsprit' findingLadyEsprit
   , HuntingTheRougarou' huntingTheRougarou
@@ -69,6 +71,7 @@ actAttrs = \case
   IntoTheDarkness' attrs -> coerce attrs
   DisruptingTheRitual' attrs -> coerce attrs
   AfterHours' attrs -> coerce attrs
+  RicesWhereabouts' attrs -> coerce attrs
   MysteriousGateway' attrs -> coerce attrs
   FindingLadyEsprit' attrs -> coerce attrs
   HuntingTheRougarou' attrs -> coerce attrs

@@ -1948,6 +1948,9 @@ runGameMessage msg g = case msg of
              skillValue
              difficulty
         )
+  CreateStoryAssetAtLocationNamed cardCode locationName -> do
+    lid <- fromJustNote "missing location" <$> getId locationName
+    g <$ unshiftMessage (CreateStoryAssetAt cardCode lid)
   CreateStoryAssetAt cardCode lid -> do
     (assetId', asset') <- createAsset cardCode
     unshiftMessage $ AttachAsset assetId' (LocationTarget lid)
@@ -1974,6 +1977,9 @@ runGameMessage msg g = case msg of
     (enemyId', enemy') <- createEnemy cardCode
     unshiftMessage (RequestedEnemy source enemyId')
     pure $ g & enemies . at enemyId' ?~ enemy'
+  CreateEnemyAtLocationNamed cardCode locationName -> do
+    lid <- fromJustNote "missing location" <$> getId locationName
+    g <$ unshiftMessage (CreateEnemyAt cardCode lid)
   CreateEnemyAt cardCode lid -> do
     (enemyId', enemy') <- createEnemy cardCode
     unshiftMessages

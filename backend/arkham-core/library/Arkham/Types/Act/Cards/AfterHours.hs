@@ -19,7 +19,7 @@ instance HasActions env AfterHours where
 
 instance ActRunner env => RunMessage env AfterHours where
   runMessage msg a@(AfterHours attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && actSequence == "Act 1a" -> do
+    AdvanceAct aid | aid == actId && not actFlipped -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 3)
@@ -28,12 +28,11 @@ instance ActRunner env => RunMessage env AfterHours where
         , chooseOne leadInvestigatorId [AdvanceAct aid]
         ]
       pure $ AfterHours $ attrs & Act.sequence .~ "Act 1b" & flipped .~ True
-    AdvanceAct aid | aid == actId && actSequence == "Act 1b" ->
-      a <$ unshiftMessages
-        [ AddCampaignCardToEncounterDeck "02060"
-        , ShuffleEncounterDiscardBackIn
-        , NextAct aid "02046"
-        ]
+    AdvanceAct aid | aid == actId && actFlipped -> a <$ unshiftMessages
+      [ AddCampaignCardToEncounterDeck "02060"
+      , ShuffleEncounterDiscardBackIn
+      , NextAct aid "02046"
+      ]
     PrePlayerWindow -> do
       totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 3)

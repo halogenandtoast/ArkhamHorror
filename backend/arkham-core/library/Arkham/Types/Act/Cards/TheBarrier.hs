@@ -19,7 +19,7 @@ instance HasActions env TheBarrier where
 
 instance ActRunner env => RunMessage env TheBarrier where
   runMessage msg a@(TheBarrier attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && actSequence == "Act 2a" -> do
+    AdvanceAct aid | aid == actId && not actFlipped -> do
       hallwayId <- fromJustNote "must exist"
         <$> getId @(Maybe LocationId) (LocationName "Hallway")
       investigatorIds <- getSetList hallwayId
@@ -29,7 +29,7 @@ instance ActRunner env => RunMessage env TheBarrier where
         : [ Ask iid $ ChooseOne [AdvanceAct aid] | iid <- investigatorIds ]
         )
       pure $ TheBarrier $ attrs & Act.sequence .~ "Act 2b" & flipped .~ True
-    AdvanceAct aid | aid == actId && actSequence == "Act 2b" -> do
+    AdvanceAct aid | aid == actId && actFlipped -> do
       hallwayId <- fromJustNote "must exist"
         <$> getId @(Maybe LocationId) (LocationName "Hallway")
       a <$ unshiftMessages

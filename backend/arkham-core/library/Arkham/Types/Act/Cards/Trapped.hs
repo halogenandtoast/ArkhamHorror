@@ -19,7 +19,7 @@ instance HasActions env Trapped where
 
 instance ActRunner env => RunMessage env Trapped where
   runMessage msg a@(Trapped attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && actSequence == "Act 1a" -> do
+    AdvanceAct aid | aid == actId && not actFlipped -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 2)
@@ -28,7 +28,7 @@ instance ActRunner env => RunMessage env Trapped where
         , chooseOne leadInvestigatorId [AdvanceAct aid]
         ]
       pure $ Trapped $ attrs & Act.sequence .~ "Act 1b" & flipped .~ True
-    AdvanceAct aid | aid == actId && actSequence == "Act 1b" -> do
+    AdvanceAct aid | aid == actId && actFlipped -> do
       enemyIds <- getSetList (LocationId "01111")
       a <$ unshiftMessages
         ([ PlaceLocation "01112"

@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Act.Cards.WhatHaveYouDone where
 
-import Arkham.Import
+import Arkham.Import hiding (sequence)
 
 import Arkham.Types.Act.Attrs
 import qualified Arkham.Types.Act.Attrs as Act
@@ -20,7 +20,10 @@ instance HasActions env WhatHaveYouDone where
 
 instance ActRunner env => RunMessage env WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId -> do
+    AdvanceAct aid | aid == actId && not actFlipped -> do
+      unshiftMessage (AdvanceAct aid)
+      pure . WhatHaveYouDone $ attrs & sequence .~ "Act 3b" & flipped .~ True
+    AdvanceAct aid | aid == actId && actFlipped -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage
         (chooseOne

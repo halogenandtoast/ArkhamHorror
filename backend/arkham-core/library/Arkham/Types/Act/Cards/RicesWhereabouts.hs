@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Act.Cards.RicesWhereabouts where
 
-import Arkham.Import
+import Arkham.Import hiding (sequence)
 
 import Arkham.Types.Act.Attrs
 import qualified Arkham.Types.Act.Attrs as Act
@@ -20,7 +20,10 @@ instance HasActions env RicesWhereabouts where
 
 instance ActRunner env => RunMessage env RicesWhereabouts where
   runMessage msg (RicesWhereabouts attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && actSequence == "Act 1a" -> do
+    AdvanceAct aid | aid == actId && not actFlipped -> do
+      unshiftMessage (AdvanceAct aid)
+      pure . RicesWhereabouts $ attrs & sequence .~ "Act 2b" & flipped .~ True
+    AdvanceAct aid | aid == actId && actFlipped -> do
       alchemyLabsInPlay <- elem (LocationName "Alchemy Labs") <$> getList ()
       agendaStep <- asks $ unAgendaStep . getStep
       completedTheHouseAlwaysWins <-

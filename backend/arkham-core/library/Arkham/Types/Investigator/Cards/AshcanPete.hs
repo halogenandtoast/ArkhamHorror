@@ -78,6 +78,6 @@ instance (InvestigatorRunner env) => RunMessage env AshcanPete where
         (card : rest) -> do
           unshiftMessage
             (PutCardIntoPlay investigatorId (PlayerCard card) Nothing)
-          AshcanPete <$> runMessage msg (attrs & deck .~ Deck (before <> rest))
+          AshcanPete <$> runMessage msg (attrs & deckL .~ Deck (before <> rest))
         _ -> error "Duke must be in deck"
     _ -> AshcanPete <$> runMessage msg attrs

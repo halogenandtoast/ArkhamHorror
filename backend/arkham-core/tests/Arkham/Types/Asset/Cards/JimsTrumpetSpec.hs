@@ -11,7 +11,7 @@ spec :: Spec
 spec = describe "Jim's Trumpet" $ do
   context "allows you to heal one horror when skull is revealed" $ do
     it "on yourself" $ do
-      investigator <- testInvestigator "00000" (Investigator.sanityDamage .~ 1)
+      investigator <- testInvestigator "00000" (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       location <- testLocation "00000" id
       scenario' <- testScenario "00000" id
@@ -39,7 +39,9 @@ spec = describe "Jim's Trumpet" $ do
 
     it "on an investigator at your location" $ do
       investigator <- testInvestigator "00000" id
-      investigator2 <- testInvestigator "00001" (Investigator.sanityDamage .~ 1)
+      investigator2 <- testInvestigator
+        "00001"
+        (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       location <- testLocation "00000" id
       scenario' <- testScenario "00000" id
@@ -68,7 +70,9 @@ spec = describe "Jim's Trumpet" $ do
 
     it "even when another player draws token" $ do
       investigator <- testInvestigator "00000" id
-      investigator2 <- testInvestigator "00001" (Investigator.sanityDamage .~ 1)
+      investigator2 <- testInvestigator
+        "00001"
+        (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       location <- testLocation "00000" id
       scenario' <- testScenario "00000" id
@@ -97,7 +101,9 @@ spec = describe "Jim's Trumpet" $ do
 
     it "on an investigator at a connected location" $ do
       investigator <- testInvestigator "00000" id
-      investigator2 <- testInvestigator "00001" (Investigator.sanityDamage .~ 1)
+      investigator2 <- testInvestigator
+        "00001"
+        (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       (location1, location2) <- testConnectedLocations id id
       scenario' <- testScenario "00000" id
@@ -130,7 +136,9 @@ spec = describe "Jim's Trumpet" $ do
 
     it "cannot target an investigator at an unconnected location" $ do
       investigator <- testInvestigator "00000" id
-      investigator2 <- testInvestigator "00001" (Investigator.sanityDamage .~ 1)
+      investigator2 <- testInvestigator
+        "00001"
+        (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       (location1, location2) <- testUnconnectedLocations id id
       scenario' <- testScenario "00000" id

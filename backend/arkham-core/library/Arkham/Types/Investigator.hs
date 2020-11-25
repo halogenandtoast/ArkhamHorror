@@ -400,13 +400,13 @@ modifiedStatsOf source maction i = do
     }
 
 hasEndedTurn :: Investigator -> Bool
-hasEndedTurn = view endedTurn . investigatorAttrs
+hasEndedTurn = view endedTurnL . investigatorAttrs
 
 hasResigned :: Investigator -> Bool
-hasResigned = view resigned . investigatorAttrs
+hasResigned = view resignedL . investigatorAttrs
 
 isDefeated :: Investigator -> Bool
-isDefeated = view defeated . investigatorAttrs
+isDefeated = view defeatedL . investigatorAttrs
 
 getHasSpendableClues
   :: (MonadReader env m, HasModifiersFor env ()) => Investigator -> m Bool

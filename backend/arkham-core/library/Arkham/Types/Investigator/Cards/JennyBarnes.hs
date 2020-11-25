@@ -41,6 +41,6 @@ instance HasTokenValue env JennyBarnes where
 
 instance (InvestigatorRunner env) => RunMessage env JennyBarnes where
   runMessage msg (JennyBarnes attrs) = case msg of
-    AllDrawCardAndResource | not (attrs ^. defeated || attrs ^. resigned) ->
-      JennyBarnes <$> runMessage msg (attrs & resources +~ 1)
+    AllDrawCardAndResource | not (attrs ^. defeatedL || attrs ^. resignedL) ->
+      JennyBarnes <$> runMessage msg (attrs & resourcesL +~ 1)
     _ -> JennyBarnes <$> runMessage msg attrs

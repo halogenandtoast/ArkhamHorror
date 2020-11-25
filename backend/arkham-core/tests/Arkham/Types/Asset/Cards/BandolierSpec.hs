@@ -21,7 +21,7 @@ spec = describe "Bandolier" $ do
       slots =
         fromMaybe []
           $ investigatorAttrs (updated game investigator)
-          ^? Investigator.slots
+          ^? Investigator.slotsL
           . ix HandSlot
     slots `shouldSatisfy` elem
       (TraitRestrictedSlot (toSource bandolier) Weapon Nothing)

@@ -12,6 +12,7 @@ module Arkham.Types.Game
   , toInternalGame
   , toExternalGame
   , Game(..)
+  , GameState(..)
   , GameExternal
   , GameInternal
   , events
@@ -79,39 +80,53 @@ data Game queue = Game
   , gameMessageHistory :: queue
   , gameRoundMessageHistory :: queue
   , gameSeed :: Int
-  , gameCampaign :: Maybe Campaign
+  , gameHash :: UUID
+
+  -- Active Scenario/Campaign
+  , gameCampaign :: Maybe Campaign -- should this be an Either
   , gameScenario :: Maybe Scenario
+
+  -- Entities
   , gameLocations :: HashMap LocationId Location
   , gameInvestigators :: HashMap InvestigatorId Investigator
   , gamePlayers :: HashMap Int InvestigatorId
   , gameEnemies :: HashMap EnemyId Enemy
   , gameAssets :: HashMap AssetId Asset
-  , gameActiveInvestigatorId :: InvestigatorId
-  , gameLeadInvestigatorId :: InvestigatorId
-  , gamePlayerOrder :: [InvestigatorId]
-  , gamePhase :: Phase
-  , gameEncounterDeck :: Deck EncounterCard
-  , gameDiscard :: [EncounterCard]
-  , gameChaosBag :: ChaosBag
-  , gameSkillTest :: Maybe SkillTest
   , gameActs :: HashMap ActId Act
   , gameAgendas :: HashMap AgendaId Agenda
   , gameTreacheries :: HashMap TreacheryId Treachery
   , gameEvents :: HashMap EventId Event
   , gameEffects :: HashMap EffectId Effect
   , gameSkills :: HashMap SkillId Skill
-  , gameGameOver :: Bool
-  , gamePending :: Bool
+
+  -- Player Details
   , gamePlayerCount :: Int
+  , gameActiveInvestigatorId :: InvestigatorId
+  , gameLeadInvestigatorId :: InvestigatorId
+  , gamePlayerOrder :: [InvestigatorId]
+
+  -- Game Details
+  , gamePhase :: Phase
+  , gameEncounterDeck :: Deck EncounterCard
+  , gameDiscard :: [EncounterCard]
+  , gameChaosBag :: ChaosBag
+  , gameSkillTest :: Maybe SkillTest
   , gameUsedAbilities :: [(InvestigatorId, Ability)]
   , gameFocusedCards :: [Card]
   , gameFocusedTokens :: [Token]
   , gameActiveCard :: Maybe Card
   , gameVictoryDisplay :: [Card]
+  , gameGameState :: GameState
+
+  -- Active questions
   , gameQuestion :: HashMap InvestigatorId Question
-  , gameHash :: UUID
+
   }
   deriving stock (Generic)
+
+data GameState = IsPending | IsActive | IsOver
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 instance (ToJSON queue) => ToJSON (Game queue) where
   toJSON = genericToJSON $ aesonOptions $ Just "game"
@@ -128,8 +143,8 @@ players = lens gamePlayers $ \m x -> m { gamePlayers = x }
 playerCount :: Lens' (Game queue) Int
 playerCount = lens gamePlayerCount $ \m x -> m { gamePlayerCount = x }
 
-pending :: Lens' (Game queue) Bool
-pending = lens gamePending $ \m x -> m { gamePending = x }
+gameStateL :: Lens' (Game queue) GameState
+gameStateL = lens gameGameState $ \m x -> m { gameGameState = x }
 
 focusedCards :: Lens' (Game queue) [Card]
 focusedCards = lens gameFocusedCards $ \m x -> m { gameFocusedCards = x }
@@ -145,9 +160,6 @@ victoryDisplay = lens gameVictoryDisplay $ \m x -> m { gameVictoryDisplay = x }
 
 playerOrder :: Lens' (Game queue) [InvestigatorId]
 playerOrder = lens gamePlayerOrder $ \m x -> m { gamePlayerOrder = x }
-
-gameOver :: Lens' (Game queue) Bool
-gameOver = lens gameGameOver $ \m x -> m { gameGameOver = x }
 
 phase :: Lens' (Game queue) Phase
 phase = lens gamePhase $ \m x -> m { gamePhase = x }
@@ -247,7 +259,10 @@ activeInvestigator g = getInvestigator (g ^. activeInvestigatorId) g
 
 startGame :: MonadIO m => Game queue -> m (Game queue)
 startGame g =
-  pure $ g & (pending .~ False) & (playerCount .~ length (g ^. investigators))
+  pure
+    $ g
+    & (gameStateL .~ IsActive)
+    & (playerCount .~ length (g ^. investigators))
 
 addInvestigator
   :: (MonadIO m, MonadFail m)
@@ -267,7 +282,9 @@ addInvestigator uid i d g = do
         & (investigators %~ insertMap iid i)
         & (players %~ insertMap uid iid)
         & (playerOrder %~ (<> [iid]))
-  runMessages $ g' & pending .~ (length (g' ^. players) < g' ^. playerCount)
+    gameState =
+      if length (g' ^. players) < g' ^. playerCount then IsPending else IsActive
+  runMessages $ g' & gameStateL .~ gameState
 
 newCampaign
   :: MonadIO m
@@ -345,8 +362,9 @@ newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
     , gameSkills = mempty
     , gameActs = mempty
     , gameChaosBag = emptyChaosBag
-    , gameGameOver = False
-    , gamePending = length investigatorsMap /= playerCount'
+    , gameGameState = if length investigatorsMap /= playerCount'
+      then IsPending
+      else IsActive
     , gameUsedAbilities = mempty
     , gameFocusedCards = mempty
     , gameFocusedTokens = mempty
@@ -1370,7 +1388,7 @@ runGameMessage msg g = case msg of
       & (agendas .~ mempty)
       & (treacheries .~ mempty)
       & (events .~ mempty)
-      & (gameOver .~ False)
+      & (gameStateL .~ IsActive)
       & (usedAbilities .~ mempty)
       & (focusedCards .~ mempty)
       & (activeCard .~ Nothing)
@@ -1476,7 +1494,7 @@ runGameMessage msg g = case msg of
     pure $ g & focusedCards .~ focusedCards'
   GameOver -> do
     clearQueue
-    pure $ g & gameOver .~ True
+    pure $ g & gameStateL .~ IsOver
   PlaceLocation lid -> do
     unshiftMessage (PlacedLocation lid)
     pure $ g & locations . at lid ?~ lookupLocation lid
@@ -2257,7 +2275,7 @@ toInternalGame g@Game {..} = do
     }
 
 runMessages :: (MonadIO m, MonadFail m) => GameInternal -> m GameExternal
-runMessages g = if g ^. gameOver || g ^. pending
+runMessages g = if g ^. gameStateL /= IsActive
   then toExternalGame g mempty
   else flip runReaderT g $ do
     liftIO $ whenM

@@ -77,7 +77,6 @@ type GameExternal = Game [Message]
 
 data Game queue = Game
   { gameMessages :: queue
-  , gameMessageHistory :: queue
   , gameRoundMessageHistory :: queue
   , gameSeed :: Int
   , gameHash :: UUID
@@ -334,11 +333,9 @@ newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
     $ map (uncurry (InitDeck . getInvestigatorId)) (toList investigatorsList)
     <> [StartCampaign]
 
-  history <- newIORef []
   roundHistory <- newIORef []
   pure $ Game
     { gameMessages = ref
-    , gameMessageHistory = history
     , gameRoundMessageHistory = roundHistory
     , gameSeed = seed
     , gameCampaign = campaign'
@@ -2252,12 +2249,10 @@ toExternalGame
   -> m GameExternal
 toExternalGame g@Game {..} mq = do
   queue <- liftIO $ readIORef gameMessages
-  history <- liftIO $ readIORef gameMessageHistory
   roundHistory <- liftIO $ readIORef gameRoundMessageHistory
   hash' <- liftIO nextRandom
   pure $ g
     { gameMessages = queue
-    , gameMessageHistory = history
     , gameRoundMessageHistory = roundHistory
     , gameHash = hash'
     , gameQuestion = mq
@@ -2266,13 +2261,8 @@ toExternalGame g@Game {..} mq = do
 toInternalGame :: MonadIO m => GameExternal -> m GameInternal
 toInternalGame g@Game {..} = do
   ref <- newIORef gameMessages
-  history <- newIORef gameMessageHistory
   roundHistory <- newIORef gameRoundMessageHistory
-  pure $ g
-    { gameMessages = ref
-    , gameMessageHistory = history
-    , gameRoundMessageHistory = roundHistory
-    }
+  pure $ g { gameMessages = ref, gameRoundMessageHistory = roundHistory }
 
 runMessages
   :: (MonadIO m, MonadFail m)
@@ -2286,8 +2276,6 @@ runMessages logger g = if g ^. gameStateL /= IsActive
       (isJust <$> lookupEnv "DEBUG")
       (readIORef (gameMessages g) >>= pPrint >> putStrLn "\n")
     mmsg <- popMessage
-    for_ mmsg $ \msg ->
-      atomicModifyIORef' (gameMessageHistory g) (\queue -> (msg : queue, ()))
     for_ mmsg $ \msg -> atomicModifyIORef'
       (gameRoundMessageHistory g)
       (\queue -> (msg : queue, ()))

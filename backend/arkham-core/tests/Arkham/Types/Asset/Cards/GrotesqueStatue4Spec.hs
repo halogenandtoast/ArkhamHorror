@@ -14,6 +14,14 @@ spec = describe "Grotesque Statue (4)" $ do
       investigator <- testInvestigator "00000" id
       grotestqueStatue <- buildAsset "01071"
       scenario' <- testScenario "00000" id
+      (didRunMessage, logger) <- createMessageMatcher
+        (PassedSkillTest
+          (getInvestigatorId investigator)
+          Nothing
+          TestSource
+          (SkillTestInitiatorTarget TestTarget)
+          5
+        )
       game <-
         runGameTest
           investigator
@@ -35,14 +43,7 @@ spec = describe "Grotesque Statue (4)" $ do
                 ChooseTokenGroups _ _ (Choose 1 _ [[Zero]]) -> True
                 _ -> False
               )
-        >>= runGameTestOnlyOption "apply results"
+        >>= runGameTestOnlyOptionWithLogger "apply results" logger
 
-      game `shouldSatisfy` hasProcessedMessage
-        (PassedSkillTest
-          (getInvestigatorId investigator)
-          Nothing
-          TestSource
-          (SkillTestInitiatorTarget TestTarget)
-          5
-        )
+      readIORef didRunMessage `shouldReturn` True
       chaosBagTokensOf game `shouldMatchList` [Zero, AutoFail]

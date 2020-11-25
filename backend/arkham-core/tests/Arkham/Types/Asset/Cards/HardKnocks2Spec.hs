@@ -14,14 +14,15 @@ spec = describe "Hard Knocks (2)" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorCombat = 1, investigatorResources = 2 }
     scenario' <- testScenario "00000" id
-    game <-
-      runGameTest
-        investigator
-        [ SetTokens [Zero]
-        , playAsset investigator hardKnocks2
-        , beginSkillTest investigator SkillCombat 3
-        ]
-        ((assets %~ insertEntity hardKnocks2) . (scenario ?~ scenario'))
+    (didPassTest, logger) <- didPassSkillTestBy investigator 0
+    void
+      $ runGameTest
+          investigator
+          [ SetTokens [Zero]
+          , playAsset investigator hardKnocks2
+          , beginSkillTest investigator SkillCombat 3
+          ]
+          ((assets %~ insertEntity hardKnocks2) . (scenario ?~ scenario'))
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -40,22 +41,23 @@ spec = describe "Hard Knocks (2)" $ do
               StartSkillTest{} -> True
               _ -> False
             )
-      >>= runGameTestOnlyOption "apply results"
-    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget
+      >>= runGameTestOnlyOptionWithLogger "apply results" logger
+    readIORef didPassTest `shouldReturn` True
 
   it "Adds 1 to agility check for each resource spent" $ do
     hardKnocks2 <- buildAsset "50005"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorAgility = 1, investigatorResources = 2 }
     scenario' <- testScenario "00000" id
-    game <-
-      runGameTest
-        investigator
-        [ SetTokens [Zero]
-        , playAsset investigator hardKnocks2
-        , beginSkillTest investigator SkillAgility 3
-        ]
-        ((assets %~ insertEntity hardKnocks2) . (scenario ?~ scenario'))
+    (didPassTest, logger) <- didPassSkillTestBy investigator 0
+    void
+      $ runGameTest
+          investigator
+          [ SetTokens [Zero]
+          , playAsset investigator hardKnocks2
+          , beginSkillTest investigator SkillAgility 3
+          ]
+          ((assets %~ insertEntity hardKnocks2) . (scenario ?~ scenario'))
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -74,5 +76,5 @@ spec = describe "Hard Knocks (2)" $ do
               StartSkillTest{} -> True
               _ -> False
             )
-      >>= runGameTestOnlyOption "apply results"
-    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget
+      >>= runGameTestOnlyOptionWithLogger "apply results" logger
+    readIORef didPassTest `shouldReturn` True

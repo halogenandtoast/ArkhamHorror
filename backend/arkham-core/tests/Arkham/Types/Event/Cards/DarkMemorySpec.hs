@@ -13,20 +13,27 @@ spec = do
       agenda <- testAgenda "00000" id
       scenario' <- testScenario "00000" id
       darkMemory <- buildEvent "01013" investigator
+      (didAdvanceAgenda, logger) <- createMessageMatcher (AdvanceAgenda "00000")
+
       game <-
-        runGameTest investigator [playEvent investigator darkMemory]
+        runGameTestWithLogger
+          logger
+          investigator
+          [playEvent investigator darkMemory]
         $ (events %~ insertEntity darkMemory)
         . (agendas %~ insertEntity agenda)
         . (scenario ?~ scenario')
       agenda `shouldSatisfy` hasDoom game 1
       darkMemory `shouldSatisfy` isInDiscardOf game investigator
-      game `shouldSatisfy` hasProcessedMessage (AdvanceAgenda "00000")
-
+      readIORef didAdvanceAgenda `shouldReturn` True
     it "is revealed and deals 2 horror if in hand at end of turn" $ do
       investigator <- testInvestigator "00000" id
       darkMemory <- buildPlayerCard "01013"
+      (didReveal, logger) <- createMessageMatcher
+        (RevealInHand $ getCardId darkMemory)
       game <-
-        runGameTest
+        runGameTestWithLogger
+          logger
           investigator
           [ addToHand investigator (PlayerCard darkMemory)
           , chooseEndTurn investigator
@@ -35,5 +42,4 @@ spec = do
         >>= runGameTestOnlyOption "assign first horror"
         >>= runGameTestOnlyOption "assign second horror"
       updated game investigator `shouldSatisfy` hasDamage (0, 2)
-      game `shouldSatisfy` hasProcessedMessage
-        (RevealInHand $ getCardId darkMemory)
+      readIORef didReveal `shouldReturn` True

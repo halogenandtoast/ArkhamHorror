@@ -22,6 +22,15 @@ spec = describe "Rex's Curse" $ do
     investigator <- testInvestigator "00000" id
     rexsCurse <- buildPlayerCard "02009"
     scenario' <- testScenario "00000" id
+
+    (didRunMessage, logger) <- createMessageMatcher
+      (PassedSkillTest
+        (getInvestigatorId investigator)
+        Nothing
+        TestSource
+        (SkillTestInitiatorTarget TestTarget)
+        2
+      )
     game <-
       runGameTest
         investigator
@@ -38,19 +47,12 @@ spec = describe "Rex's Curse" $ do
         ]
         (scenario ?~ scenario')
       >>= runGameTestOnlyOption "start skill test"
-      >>= runGameTestOnlyOption "apply results"
+      >>= runGameTestOnlyOptionWithLogger "apply results" logger
     updated game investigator
       `shouldSatisfy` hasTreacheryWithMatchingCardCode
                         game
                         (PlayerCard rexsCurse)
-    game `shouldSatisfy` hasProcessedMessage
-      (PassedSkillTest
-        (getInvestigatorId investigator)
-        Nothing
-        TestSource
-        (SkillTestInitiatorTarget TestTarget)
-        2
-      )
+    readIORef didRunMessage `shouldReturn` True
   it "is shuffled back into your deck if you fail the test" $ do
     investigator <- testInvestigator "00000" id
     rexsCurse <- buildPlayerCard "02009"

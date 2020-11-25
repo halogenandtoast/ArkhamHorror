@@ -189,24 +189,50 @@ getActionsOf game investigator window e = withGame
 chaosBagTokensOf :: Game queue -> [Token]
 chaosBagTokensOf g = g ^. chaosBag . ChaosBag.chaosBagTokensLens
 
+createMessageMatcher :: MonadIO m => Message -> m (IORef Bool, Message -> m ())
+createMessageMatcher msg = do
+  ref <- liftIO $ newIORef False
+  pure (ref, \msg' -> when (msg == msg') (liftIO $ atomicWriteIORef ref True))
+
+didPassSkillTestBy
+  :: MonadIO m => Investigator -> Int -> m (IORef Bool, Message -> m ())
+didPassSkillTestBy investigator n = createMessageMatcher
+  (PassedSkillTest
+    (getInvestigatorId investigator)
+    Nothing
+    TestSource
+    (SkillTestInitiatorTarget TestTarget)
+    n
+  )
+
 withGame :: MonadIO m => GameExternal -> ReaderT GameInternal m b -> m b
 withGame game f = toInternalGame game >>= runReaderT f
 
 runGameTestOnlyOption
   :: (MonadFail m, MonadIO m) => String -> Game [Message] -> m (Game [Message])
-runGameTestOnlyOption _reason game = case mapToList (gameQuestion game) of
-  [(_, question)] -> case question of
-    ChooseOne [msg] ->
-      toInternalGame (game { gameMessages = msg : gameMessages game })
-        >>= runMessages
-    ChooseOneAtATime [msg] ->
-      toInternalGame (game { gameMessages = msg : gameMessages game })
-        >>= runMessages
-    ChooseN _ [msg] ->
-      toInternalGame (game { gameMessages = msg : gameMessages game })
-        >>= runMessages
-    _ -> error "spec expectation mismatch"
-  _ -> error "There must be only one choice to use this function"
+runGameTestOnlyOption reason game =
+  runGameTestOnlyOptionWithLogger reason (pure . const ()) game
+
+runGameTestOnlyOptionWithLogger
+  :: (MonadFail m, MonadIO m)
+  => String
+  -> (Message -> m ())
+  -> Game [Message]
+  -> m (Game [Message])
+runGameTestOnlyOptionWithLogger _reason logger game =
+  case mapToList (gameQuestion game) of
+    [(_, question)] -> case question of
+      ChooseOne [msg] ->
+        toInternalGame (game { gameMessages = msg : gameMessages game })
+          >>= runMessages logger
+      ChooseOneAtATime [msg] ->
+        toInternalGame (game { gameMessages = msg : gameMessages game })
+          >>= runMessages logger
+      ChooseN _ [msg] ->
+        toInternalGame (game { gameMessages = msg : gameMessages game })
+          >>= runMessages logger
+      _ -> error "spec expectation mismatch"
+    _ -> error "There must be only one choice to use this function"
 
 runGameTestFirstOption
   :: (MonadFail m, MonadIO m) => String -> Game [Message] -> m (Game [Message])
@@ -214,10 +240,10 @@ runGameTestFirstOption _reason game = case mapToList (gameQuestion game) of
   [(_, question)] -> case question of
     ChooseOne (msg : _) ->
       toInternalGame (game { gameMessages = msg : gameMessages game })
-        >>= runMessages
+        >>= runMessages (pure . const ())
     ChooseOneAtATime (msg : _) ->
       toInternalGame (game { gameMessages = msg : gameMessages game })
-        >>= runMessages
+        >>= runMessages (pure . const ())
     _ -> error "spec expectation mismatch"
   _ -> error "There must be at least one option"
 
@@ -228,7 +254,7 @@ runGameTestMessages
   -> m (Game [Message])
 runGameTestMessages game msgs =
   toInternalGame (game { gameMessages = msgs <> gameMessages game })
-    >>= runMessages
+    >>= runMessages (pure . const ())
 
 runGameTestOptionMatching
   :: (MonadFail m, MonadIO m)
@@ -236,24 +262,45 @@ runGameTestOptionMatching
   -> (Message -> Bool)
   -> Game [Message]
   -> m (Game [Message])
-runGameTestOptionMatching _reason f game =
+runGameTestOptionMatching reason f game =
+  runGameTestOptionMatchingWithLogger reason (pure . const ()) f game
+
+runGameTestOptionMatchingWithLogger
+  :: (MonadFail m, MonadIO m)
+  => String
+  -> (Message -> m ())
+  -> (Message -> Bool)
+  -> Game [Message]
+  -> m (Game [Message])
+runGameTestOptionMatchingWithLogger _reason logger f game =
   case mapToList (gameQuestion game) of
     [(_, question)] -> case question of
       ChooseOne msgs -> case find f msgs of
         Just msg ->
           toInternalGame (game { gameMessages = msg : gameMessages game })
-            >>= runMessages
+            >>= runMessages logger
         Nothing -> error "could not find a matching message"
       _ -> error "unsupported questions type"
     _ -> error "There must be only one question to use this function"
 
 runGameTest
-  :: Investigator
+  :: (MonadIO m, MonadFail m)
+  => Investigator
   -> [Message]
   -> (GameInternal -> GameInternal)
-  -> IO GameExternal
+  -> m GameExternal
 runGameTest investigator queue f =
-  newGame investigator queue >>= runMessages . f
+  runGameTestWithLogger (pure . const ()) investigator queue f
+
+runGameTestWithLogger
+  :: (MonadIO m, MonadFail m)
+  => (Message -> m ())
+  -> Investigator
+  -> [Message]
+  -> (GameInternal -> GameInternal)
+  -> m GameExternal
+runGameTestWithLogger logger investigator queue f =
+  newGame investigator queue >>= runMessages logger . f
 
 newGame :: MonadIO m => Investigator -> [Message] -> m GameInternal
 newGame investigator queue = do

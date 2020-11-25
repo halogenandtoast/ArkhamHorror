@@ -43,23 +43,7 @@ spec = describe "Agnes Baker" $ do
       let agnesBaker = lookupInvestigator "01004"
       location <- testLocation "00000" id
       scenario' <- testScenario "00000" id
-      game <-
-        runGameTest
-          agnesBaker
-          [ SetTokens [ElderSign]
-          , PlacedLocation (getLocationId location)
-          , moveTo agnesBaker location
-          , InvestigatorDirectDamage
-            (getInvestigatorId agnesBaker)
-            TestSource
-            0
-            2
-          , beginSkillTest agnesBaker SkillIntellect 4
-          ]
-          ((scenario ?~ scenario') . (locations %~ insertEntity location))
-        >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOnlyOption "apply results"
-      game `shouldSatisfy` hasProcessedMessage
+      (didPassTest, logger) <- createMessageMatcher
         (PassedSkillTest
           (getInvestigatorId agnesBaker)
           Nothing
@@ -67,3 +51,22 @@ spec = describe "Agnes Baker" $ do
           (SkillTestInitiatorTarget TestTarget)
           0
         )
+
+      void
+        $ runGameTest
+            agnesBaker
+            [ SetTokens [ElderSign]
+            , PlacedLocation (getLocationId location)
+            , moveTo agnesBaker location
+            , InvestigatorDirectDamage
+              (getInvestigatorId agnesBaker)
+              TestSource
+              0
+              2
+            , beginSkillTest agnesBaker SkillIntellect 4
+            ]
+            ((scenario ?~ scenario') . (locations %~ insertEntity location))
+        >>= runGameTestOnlyOption "start skill test"
+        >>= runGameTestOnlyOptionWithLogger "apply results" logger
+
+      readIORef didPassTest `shouldReturn` True

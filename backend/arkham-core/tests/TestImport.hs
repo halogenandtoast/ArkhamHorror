@@ -305,11 +305,9 @@ runGameTestWithLogger logger investigator queue f =
 newGame :: MonadIO m => Investigator -> [Message] -> m GameInternal
 newGame investigator queue = do
   ref <- newIORef queue
-  history <- newIORef []
   roundHistory <- newIORef []
   pure $ Game
     { gameMessages = ref
-    , gameMessageHistory = history
     , gameRoundMessageHistory = roundHistory
     , gameSeed = 1
     , gameCampaign = Nothing

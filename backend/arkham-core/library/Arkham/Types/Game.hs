@@ -70,7 +70,7 @@ import System.Environment
 import System.Random
 import System.Random.Shuffle
 import Text.Pretty.Simple
-import Text.Read hiding (get)
+import Text.Read hiding (get, lift)
 
 type GameInternal = Game (IORef [Message])
 type GameExternal = Game [Message]
@@ -284,7 +284,7 @@ addInvestigator uid i d g = do
         & (playerOrder %~ (<> [iid]))
     gameState =
       if length (g' ^. players) < g' ^. playerCount then IsPending else IsActive
-  runMessages $ g' & gameStateL .~ gameState
+  runMessages (const $ pure ()) $ g' & gameStateL .~ gameState
 
 newCampaign
   :: MonadIO m
@@ -2274,8 +2274,12 @@ toInternalGame g@Game {..} = do
     , gameRoundMessageHistory = roundHistory
     }
 
-runMessages :: (MonadIO m, MonadFail m) => GameInternal -> m GameExternal
-runMessages g = if g ^. gameStateL /= IsActive
+runMessages
+  :: (MonadIO m, MonadFail m)
+  => (Message -> m ())
+  -> GameInternal
+  -> m GameExternal
+runMessages logger g = if g ^. gameStateL /= IsActive
   then toExternalGame g mempty
   else flip runReaderT g $ do
     liftIO $ whenM
@@ -2304,16 +2308,20 @@ runMessages g = if g ^. gameStateL /= IsActive
                 )
                 (gamePlayerOrder g)
             of
-              [] -> pushMessage EndInvestigation >> runMessages g
-              (x : _) -> runMessages $ g & activeInvestigatorId .~ x
+              [] -> do
+                pushMessage EndInvestigation
+                runMessages (lift . logger) g
+              (x : _) ->
+                runMessages (lift . logger) $ g & activeInvestigatorId .~ x
           else
             pushMessages
                 [ PrePlayerWindow
                 , PlayerWindow (g ^. activeInvestigatorId) []
                 , PostPlayerWindow
                 ]
-              >> runMessages g
+              >> runMessages (lift . logger) g
       Just msg -> case msg of
         Ask iid q -> toExternalGame g (HashMap.singleton iid q)
         AskMap askMap -> toExternalGame g askMap
-        _ -> runMessage msg g >>= runMessages
+        _ ->
+          lift (logger msg) >> runMessage msg g >>= runMessages (lift . logger)

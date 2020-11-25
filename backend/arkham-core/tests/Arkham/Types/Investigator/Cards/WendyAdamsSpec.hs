@@ -12,14 +12,15 @@ spec = describe "Wendy Adams" $ do
       let wendyAdams = lookupInvestigator "01005"
       scenario' <- testScenario "0000" id
       card <- testPlayerCard id
-      game <-
-        runGameTest
-          wendyAdams
-          [ SetTokens [MinusOne]
-          , AddToHand (getInvestigatorId wendyAdams) (PlayerCard card)
-          , beginSkillTest wendyAdams SkillWillpower 3
-          ]
-          (scenario ?~ scenario')
+      (didPassTest, logger) <- didPassSkillTestBy wendyAdams 0
+      void
+        $ runGameTest
+            wendyAdams
+            [ SetTokens [MinusOne]
+            , AddToHand (getInvestigatorId wendyAdams) (PlayerCard card)
+            , beginSkillTest wendyAdams SkillWillpower 3
+            ]
+            (scenario ?~ scenario')
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatching
               "use ability"
@@ -28,32 +29,36 @@ spec = describe "Wendy Adams" $ do
                 _ -> False
               )
         >>= runGameTestOnlyOption "discard card"
-        >>= runGameTestOnlyOption "apply results"
-      wendyAdams `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget
+        >>= runGameTestOnlyOptionWithLogger "apply results" logger
+      readIORef didPassTest `shouldReturn` True
+
   context "elder sign" $ do
     it "gives +0" $ do
       let wendyAdams = lookupInvestigator "01005"
       scenario' <- testScenario "0000" id
-      game <-
-        runGameTest
-          wendyAdams
-          [SetTokens [ElderSign], beginSkillTest wendyAdams SkillWillpower 4]
-          (scenario ?~ scenario')
+      (didPassTest, logger) <- didPassSkillTestBy wendyAdams 0
+      void
+        $ runGameTest
+            wendyAdams
+            [SetTokens [ElderSign], beginSkillTest wendyAdams SkillWillpower 4]
+            (scenario ?~ scenario')
         >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOnlyOption "apply results"
-      wendyAdams `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget
+        >>= runGameTestOnlyOptionWithLogger "apply results" logger
+      readIORef didPassTest `shouldReturn` True
+
     it "automatically succeeds if Wendy's Amulet is in play" $ do
       let wendyAdams = lookupInvestigator "01005"
       wendysAmulet <- buildAsset "01014"
       scenario' <- testScenario "0000" id
-      game <-
-        runGameTest
-          wendyAdams
-          [ SetTokens [ElderSign]
-          , playAsset wendyAdams wendysAmulet
-          , beginSkillTest wendyAdams SkillWillpower 20
-          ]
-          ((scenario ?~ scenario') . (assets %~ insertEntity wendysAmulet))
+      (didPassTest, logger) <- didPassSkillTestBy wendyAdams 4
+      void
+        $ runGameTest
+            wendyAdams
+            [ SetTokens [ElderSign]
+            , playAsset wendyAdams wendysAmulet
+            , beginSkillTest wendyAdams SkillWillpower 20
+            ]
+            ((scenario ?~ scenario') . (assets %~ insertEntity wendysAmulet))
         >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOnlyOption "apply results"
-      wendyAdams `shouldSatisfy` hasPassedSkillTestBy 4 game TestTarget
+        >>= runGameTestOnlyOptionWithLogger "apply results" logger
+      readIORef didPassTest `shouldReturn` True

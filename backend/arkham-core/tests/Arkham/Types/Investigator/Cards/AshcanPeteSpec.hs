@@ -47,6 +47,7 @@ spec = describe "\"Ashcan\" Pete" $ do
       let ashcanPete = lookupInvestigator "02005"
       duke <- buildAsset "02014"
       scenario' <- testScenario "00000" id
+      (didPassTest, logger) <- didPassSkillTestBy ashcanPete 2
       game <-
         runGameTest
           ashcanPete
@@ -56,6 +57,6 @@ spec = describe "\"Ashcan\" Pete" $ do
           ]
           ((scenario ?~ scenario') . (assets %~ insertEntity duke))
         >>= runGameTestOnlyOption "start skill test"
-        >>= runGameTestOnlyOption "apply results"
+        >>= runGameTestOnlyOptionWithLogger "apply results" logger
       updated game duke `shouldSatisfy` isReady
-      ashcanPete `shouldSatisfy` hasPassedSkillTestBy 2 game TestTarget
+      readIORef didPassTest `shouldReturn` True

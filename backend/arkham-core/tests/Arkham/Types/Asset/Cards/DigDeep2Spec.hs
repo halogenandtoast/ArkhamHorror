@@ -14,14 +14,15 @@ spec = describe "Dig Deep (2)" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorWillpower = 1, investigatorResources = 2 }
     scenario' <- testScenario "00000" id
-    game <-
-      runGameTest
-        investigator
-        [ SetTokens [Zero]
-        , playAsset investigator digDeep2
-        , beginSkillTest investigator SkillWillpower 3
-        ]
-        ((assets %~ insertEntity digDeep2) . (scenario ?~ scenario'))
+    (didPassTest, logger) <- didPassSkillTestBy investigator 0
+    void
+      $ runGameTest
+          investigator
+          [ SetTokens [Zero]
+          , playAsset investigator digDeep2
+          , beginSkillTest investigator SkillWillpower 3
+          ]
+          ((assets %~ insertEntity digDeep2) . (scenario ?~ scenario'))
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -40,22 +41,23 @@ spec = describe "Dig Deep (2)" $ do
               StartSkillTest{} -> True
               _ -> False
             )
-      >>= runGameTestOnlyOption "apply results"
-    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget
+      >>= runGameTestOnlyOptionWithLogger "apply results" logger
+    readIORef didPassTest `shouldReturn` True
 
   it "Adds 1 to agility check for each resource spent" $ do
     digDeep2 <- buildAsset "50009"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorAgility = 1, investigatorResources = 2 }
     scenario' <- testScenario "00000" id
-    game <-
-      runGameTest
-        investigator
-        [ SetTokens [Zero]
-        , playAsset investigator digDeep2
-        , beginSkillTest investigator SkillAgility 3
-        ]
-        ((assets %~ insertEntity digDeep2) . (scenario ?~ scenario'))
+    (didPassTest, logger) <- didPassSkillTestBy investigator 0
+    void
+      $ runGameTest
+          investigator
+          [ SetTokens [Zero]
+          , playAsset investigator digDeep2
+          , beginSkillTest investigator SkillAgility 3
+          ]
+          ((assets %~ insertEntity digDeep2) . (scenario ?~ scenario'))
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -74,5 +76,5 @@ spec = describe "Dig Deep (2)" $ do
               StartSkillTest{} -> True
               _ -> False
             )
-      >>= runGameTestOnlyOption "apply results"
-    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget
+      >>= runGameTestOnlyOptionWithLogger "apply results" logger
+    readIORef didPassTest `shouldReturn` True

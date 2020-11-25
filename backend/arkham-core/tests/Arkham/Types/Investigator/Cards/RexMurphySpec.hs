@@ -67,6 +67,14 @@ spec = describe "Rex Murphy" $ do
       let rexMurphy = lookupInvestigator "02002"
       cards <- testPlayerCards 3
       scenario' <- testScenario "00000" id
+      (didPassTest, logger) <- createMessageMatcher
+        (PassedSkillTest
+          (getInvestigatorId rexMurphy)
+          Nothing
+          TestSource
+          (SkillTestInitiatorTarget TestTarget)
+          0
+        )
       game <-
         runGameTest
           rexMurphy
@@ -89,13 +97,6 @@ spec = describe "Rex Murphy" $ do
                 _ -> True
               )
 
-        >>= runGameTestOnlyOption "apply results"
+        >>= runGameTestOnlyOptionWithLogger "apply results" logger
       updated game rexMurphy `shouldSatisfy` handIs []
-      game `shouldSatisfy` hasProcessedMessage
-        (PassedSkillTest
-          (getInvestigatorId rexMurphy)
-          Nothing
-          TestSource
-          (SkillTestInitiatorTarget TestTarget)
-          0
-        )
+      readIORef didPassTest `shouldReturn` True

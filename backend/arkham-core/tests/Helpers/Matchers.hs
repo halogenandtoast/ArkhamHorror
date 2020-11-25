@@ -16,9 +16,7 @@ import Arkham.Types.Game
 import Arkham.Types.Investigator
 import qualified Arkham.Types.Investigator.Attrs as Investigator
 import Arkham.Types.Location
-import Arkham.Types.Message
 import Arkham.Types.Query
-import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Treachery
 import Arkham.Types.TreacheryId
@@ -132,9 +130,6 @@ handMatches f i = f (handOf i)
 deckMatches :: ([PlayerCard] -> Bool) -> Investigator -> Bool
 deckMatches f i = f (deckOf i)
 
-hasProcessedMessage :: Message -> Game [Message] -> Bool
-hasProcessedMessage m g = m `elem` gameMessageHistory g
-
 hasEnemy :: Game queue -> Enemy -> Location -> Bool
 hasEnemy g e l = getId e g `member` getSet @EnemyId l g
 
@@ -144,17 +139,6 @@ hasCardInPlay g c i = case c of
     AssetType -> AssetId (unCardId $ pcId pc) `member` getSet i g
     _ -> error "not implemented"
   _ -> error "not implemented"
-
-hasPassedSkillTestBy :: Int -> GameExternal -> Target -> Investigator -> Bool
-hasPassedSkillTestBy n game target investigator = hasProcessedMessage
-  (PassedSkillTest
-    (getInvestigatorId investigator)
-    Nothing
-    TestSource
-    (SkillTestInitiatorTarget target)
-    n
-  )
-  game
 
 hasTreacheryWithMatchingCardCode
   :: (HasSet TreacheryId env a, env ~ Game queue)

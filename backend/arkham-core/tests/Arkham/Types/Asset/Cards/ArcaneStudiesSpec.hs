@@ -14,14 +14,15 @@ spec = describe "Arcane Studies" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorWillpower = 1, investigatorResources = 2 }
     scenario' <- testScenario "00000" id
-    game <-
-      runGameTest
-        investigator
-        [ SetTokens [Zero]
-        , playAsset investigator arcaneStudies
-        , beginSkillTest investigator SkillWillpower 3
-        ]
-        ((assets %~ insertEntity arcaneStudies) . (scenario ?~ scenario'))
+    (didPassTest, logger) <- didPassSkillTestBy investigator 0
+    void
+      $ runGameTest
+          investigator
+          [ SetTokens [Zero]
+          , playAsset investigator arcaneStudies
+          , beginSkillTest investigator SkillWillpower 3
+          ]
+          ((assets %~ insertEntity arcaneStudies) . (scenario ?~ scenario'))
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -40,22 +41,23 @@ spec = describe "Arcane Studies" $ do
               StartSkillTest{} -> True
               _ -> False
             )
-      >>= runGameTestOnlyOption "apply results"
-    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget
+      >>= runGameTestOnlyOptionWithLogger "apply results" logger
+    readIORef didPassTest `shouldReturn` True
 
   it "Adds 1 to intellect check for each resource spent" $ do
     arcaneStudies <- buildAsset "01062"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 1, investigatorResources = 2 }
     scenario' <- testScenario "00000" id
-    game <-
-      runGameTest
-        investigator
-        [ SetTokens [Zero]
-        , playAsset investigator arcaneStudies
-        , beginSkillTest investigator SkillIntellect 3
-        ]
-        ((assets %~ insertEntity arcaneStudies) . (scenario ?~ scenario'))
+    (didPassTest, logger) <- didPassSkillTestBy investigator 0
+    void
+      $ runGameTest
+          investigator
+          [ SetTokens [Zero]
+          , playAsset investigator arcaneStudies
+          , beginSkillTest investigator SkillIntellect 3
+          ]
+          ((assets %~ insertEntity arcaneStudies) . (scenario ?~ scenario'))
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -74,5 +76,5 @@ spec = describe "Arcane Studies" $ do
               StartSkillTest{} -> True
               _ -> False
             )
-      >>= runGameTestOnlyOption "apply results"
-    investigator `shouldSatisfy` hasPassedSkillTestBy 0 game TestTarget
+      >>= runGameTestOnlyOptionWithLogger "apply results" logger
+    readIORef didPassTest `shouldReturn` True

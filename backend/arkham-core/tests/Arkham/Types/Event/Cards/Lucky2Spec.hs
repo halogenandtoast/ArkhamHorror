@@ -18,6 +18,14 @@ spec = describe "Lucky! (2)" $ do
       }
     lucky2 <- buildPlayerCard "01084"
     scenario' <- testScenario "00000" id
+    (didPassTest, logger) <- createMessageMatcher
+      (PassedSkillTest
+        (getInvestigatorId investigator)
+        Nothing
+        TestSource
+        (SkillTestInitiatorTarget TestTarget)
+        0
+      )
     game <-
       runGameTest
         investigator
@@ -33,15 +41,8 @@ spec = describe "Lucky! (2)" $ do
               Run{} -> True
               _ -> False
             )
-      >>= runGameTestOnlyOption "apply results"
-    game `shouldSatisfy` hasProcessedMessage
-      (PassedSkillTest
-        (getInvestigatorId investigator)
-        Nothing
-        TestSource
-        (SkillTestInitiatorTarget TestTarget)
-        0
-      )
+      >>= runGameTestOnlyOptionWithLogger "apply results" logger
+    readIORef didPassTest `shouldReturn` True
     updated game investigator `shouldSatisfy` handIs [PlayerCard cardToDraw]
 
   it "does not cause an autofail to pass" $ do
@@ -53,6 +54,14 @@ spec = describe "Lucky! (2)" $ do
       }
     lucky <- buildPlayerCard "01084"
     scenario' <- testScenario "00000" id
+    (didFailTest, logger) <- createMessageMatcher
+      (FailedSkillTest
+        (getInvestigatorId investigator)
+        Nothing
+        TestSource
+        (SkillTestInitiatorTarget TestTarget)
+        2
+      )
     game <-
       runGameTest
         investigator
@@ -68,13 +77,6 @@ spec = describe "Lucky! (2)" $ do
               Run{} -> True
               _ -> False
             )
-      >>= runGameTestOnlyOption "apply results"
-    game `shouldSatisfy` hasProcessedMessage
-      (FailedSkillTest
-        (getInvestigatorId investigator)
-        Nothing
-        TestSource
-        (SkillTestInitiatorTarget TestTarget)
-        2
-      )
+      >>= runGameTestOnlyOptionWithLogger "apply results" logger
+    readIORef didFailTest `shouldReturn` True
     updated game investigator `shouldSatisfy` handIs [PlayerCard cardToDraw]

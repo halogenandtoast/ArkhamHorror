@@ -90,9 +90,11 @@ endedTurnL :: Lens' Attrs Bool
 endedTurnL =
   lens investigatorEndedTurn $ \m x -> m { investigatorEndedTurn = x }
 
-instance IsInvestigator Attrs where
-  resignedL = lens investigatorResigned $ \m x -> m { investigatorResigned = x }
-  defeatedL = lens investigatorDefeated $ \m x -> m { investigatorDefeated = x }
+resignedL :: Lens' Attrs Bool
+resignedL = lens investigatorResigned $ \m x -> m { investigatorResigned = x }
+
+defeatedL :: Lens' Attrs Bool
+defeatedL = lens investigatorDefeated $ \m x -> m { investigatorDefeated = x }
 
 resourcesL :: Lens' Attrs Int
 resourcesL =

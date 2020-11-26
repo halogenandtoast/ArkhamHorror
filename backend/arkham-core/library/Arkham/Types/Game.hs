@@ -1932,9 +1932,7 @@ runGameMessage msg g = case msg of
     pure $ g & phase .~ MythosPhase
   AllDrawEncounterCard -> do
     playerIds <- filterM
-      ((not . uncurry (||) . (view defeatedL &&& view resignedL) <$>)
-      . getInvestigator
-      )
+      ((not . isEliminated <$>) . getInvestigator)
       (view playerTurnOrder g)
     g <$ unshiftMessages
       [ chooseOne iid [InvestigatorDrawEncounterCard iid] | iid <- playerIds ]

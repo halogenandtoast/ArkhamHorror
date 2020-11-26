@@ -70,8 +70,8 @@ baseInvestigator a b c d e f =
   BaseInvestigator' . BaseInvestigator . f $ baseAttrs a b c d e
 
 instance IsInvestigator Investigator where
-  defeatedL = attrsL . defeatedL
-  resignedL = attrsL . resignedL
+  isDefeated = view defeatedL . investigatorAttrs
+  isResigned = view resignedL . investigatorAttrs
 
 instance HasTokenValue env BaseInvestigator where
   getTokenValue (BaseInvestigator attrs) iid token =
@@ -409,9 +409,6 @@ hasEndedTurn = view endedTurnL . investigatorAttrs
 hasResigned :: Investigator -> Bool
 hasResigned = view resignedL . investigatorAttrs
 
-isDefeated :: Investigator -> Bool
-isDefeated = view defeatedL . investigatorAttrs
-
 getHasSpendableClues
   :: (MonadReader env m, HasModifiersFor env ()) => Investigator -> m Bool
 getHasSpendableClues i = (> 0) <$> getSpendableClueCount (investigatorAttrs i)
@@ -433,18 +430,3 @@ investigatorAttrs = \case
   WendyAdams' attrs -> coerce attrs
   ZoeySamaras' attrs -> coerce attrs
   BaseInvestigator' attrs -> coerce attrs
-
-attrsL :: Lens' Investigator Attrs
-attrsL = lens investigatorAttrs $ \m x -> case m of
-  AgnesBaker' _ -> AgnesBaker' (coerce x)
-  AshcanPete' _ -> AshcanPete' (coerce x)
-  DaisyWalker' _ -> DaisyWalker' (coerce x)
-  DaisyWalkerParallel' _ -> DaisyWalkerParallel' (coerce x)
-  JennyBarnes' _ -> JennyBarnes' (coerce x)
-  JimCulver' _ -> JimCulver' (coerce x)
-  RexMurphy' _ -> RexMurphy' (coerce x)
-  RolandBanks' _ -> RolandBanks' (coerce x)
-  SkidsOToole' _ -> SkidsOToole' (coerce x)
-  WendyAdams' _ -> WendyAdams' (coerce x)
-  ZoeySamaras' _ -> ZoeySamaras' (coerce x)
-  BaseInvestigator' _ -> BaseInvestigator' (coerce x)

@@ -337,6 +337,7 @@ newGame investigator queue = do
     , gameFocusedTokens = mempty
     , gameActiveCard = Nothing
     , gamePlayerOrder = [investigatorId]
+    , gamePlayerTurnOrder = [investigatorId]
     , gameVictoryDisplay = mempty
     , gameQuestion = mempty
     , gameHash = UUID.nil

@@ -390,5 +390,7 @@ class IsCard a where
   toCard :: a -> Card
 
 class IsInvestigator a where
-  resignedL :: Lens' a Bool
-  defeatedL :: Lens' a Bool
+  isResigned :: a -> Bool
+  isDefeated :: a -> Bool
+  isEliminated :: a -> Bool
+  isEliminated = uncurry (||) . (isResigned &&& isDefeated)

@@ -99,10 +99,11 @@ data Game queue = Game
   , gameSkills :: HashMap SkillId Skill
 
   -- Player Details
-  , gamePlayerCount :: Int
+  , gamePlayerCount :: Int -- used for determining if game should start
   , gameActiveInvestigatorId :: InvestigatorId
   , gameLeadInvestigatorId :: InvestigatorId
-  , gamePlayerOrder :: [InvestigatorId]
+  , gamePlayerOrder :: [InvestigatorId] -- For "in player order"
+  , gamePlayerTurnOrder :: [InvestigatorId] -- Player order during investigation
 
   -- Game Details
   , gamePhase :: Phase
@@ -159,6 +160,10 @@ victoryDisplay = lens gameVictoryDisplay $ \m x -> m { gameVictoryDisplay = x }
 
 playerOrder :: Lens' (Game queue) [InvestigatorId]
 playerOrder = lens gamePlayerOrder $ \m x -> m { gamePlayerOrder = x }
+
+playerTurnOrder :: Lens' (Game queue) [InvestigatorId]
+playerTurnOrder =
+  lens gamePlayerTurnOrder $ \m x -> m { gamePlayerTurnOrder = x }
 
 phase :: Lens' (Game queue) Phase
 phase = lens gamePhase $ \m x -> m { gamePhase = x }
@@ -367,6 +372,7 @@ newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
     , gameFocusedTokens = mempty
     , gameActiveCard = Nothing
     , gamePlayerOrder = toList playersMap
+    , gamePlayerTurnOrder = toList playersMap
     , gameVictoryDisplay = mempty
     , gameQuestion = mempty
     , gameHash = hash'
@@ -1924,6 +1930,14 @@ runGameMessage msg g = case msg of
          ]
       <> [AllDrawEncounterCard, EndMythos]
     pure $ g & phase .~ MythosPhase
+  AllDrawEncounterCard -> do
+    playerIds <- filterM
+      ((not . uncurry (||) . (view defeatedL &&& view resignedL) <$>)
+      . getInvestigator
+      )
+      (view playerTurnOrder g)
+    g <$ unshiftMessages
+      [ chooseOne iid [InvestigatorDrawEncounterCard iid] | iid <- playerIds ]
   EndMythos -> do
     unshiftMessage EndPhase
     pushMessage BeginInvestigation

@@ -596,10 +596,16 @@ setScenario c (That _) = That c
 setScenario c (These a _) = These a c
 
 scenario :: GameMode -> Maybe Scenario
-scenario = preview _That
+scenario = \case
+  That s -> Just s
+  These _ s -> Just s
+  This _ -> Nothing
 
 campaign :: GameMode -> Maybe Campaign
-campaign = preview _This
+campaign = \case
+  That _ -> Nothing
+  These c _ -> Just c
+  This c -> Just c
 
 instance
   (env ~ Game queue
@@ -2251,8 +2257,8 @@ instance RunMessage GameInternal GameInternal where
   runMessage msg g =
     runPreGameMessage msg g
       >>= traverseOf chaosBag (runMessage msg)
-      >>= traverseOf (mode . _This) (runMessage msg)
-      >>= traverseOf (mode . _That) (runMessage msg)
+      >>= traverseOf (mode . here) (runMessage msg)
+      >>= traverseOf (mode . there) (runMessage msg)
       >>= traverseOf (acts . traverse) (runMessage msg)
       >>= traverseOf (agendas . traverse) (runMessage msg)
       >>= traverseOf (treacheries . traverse) (runMessage msg)

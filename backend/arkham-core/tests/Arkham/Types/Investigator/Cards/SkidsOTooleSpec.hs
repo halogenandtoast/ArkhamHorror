@@ -35,12 +35,11 @@ spec = describe "\"Skids\" O'Toole" $ do
   context "elder sign" $ do
     it "gains 2 resources on success" $ do
       let skidsOToole = lookupInvestigator "01003"
-      scenario' <- testScenario "00000" id
       game <-
         runGameTest
           skidsOToole
           [SetTokens [ElderSign], beginSkillTest skidsOToole SkillAgility 4]
-          (scenario ?~ scenario')
+          id
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
       updatedResourceCount game skidsOToole `shouldBe` 2

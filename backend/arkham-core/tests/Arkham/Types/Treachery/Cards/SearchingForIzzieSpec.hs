@@ -29,7 +29,6 @@ spec = describe "Searching for Izzie" $ do
     investigator <- testInvestigator "00000" id
     searchingForIzzie <- buildPlayerCard "02011"
     location <- testLocation "00000" id
-    scenario' <- testScenario "00000" id
     game <- runGameTest
       investigator
       [ SetTokens [Zero]
@@ -37,7 +36,7 @@ spec = describe "Searching for Izzie" $ do
       , drawCards investigator 1
       , moveTo investigator location
       ]
-      ((locations %~ insertEntity location) . (scenario ?~ scenario'))
+      (locations %~ insertEntity location)
     let updatedSearchingForIzzie = game ^?! treacheries . to toList . ix 0
 
     [searchingForIzzieAction] <- getActionsOf

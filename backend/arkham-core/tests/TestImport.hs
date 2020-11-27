@@ -8,6 +8,7 @@ module TestImport
 where
 
 import Arkham.Import as X
+
 import Arkham.Types.Agenda as X
 import qualified Arkham.Types.Agenda.Attrs as AgendaAttrs
 import Arkham.Types.Asset as X
@@ -34,6 +35,7 @@ import Control.Monad.Fail as X
 import Control.Monad.State hiding (replicateM)
 import Control.Monad.State as X (get)
 import qualified Data.HashMap.Strict as HashMap
+import Data.These
 import qualified Data.UUID as UUID
 import Data.UUID.V4 as X
 import Helpers.Matchers as X
@@ -306,12 +308,12 @@ newGame :: MonadIO m => Investigator -> [Message] -> m GameInternal
 newGame investigator queue = do
   ref <- newIORef queue
   roundHistory <- newIORef []
+  scenario' <- testScenario "00000" id
   pure $ Game
     { gameMessages = ref
     , gameRoundMessageHistory = roundHistory
     , gameSeed = 1
-    , gameCampaign = Nothing
-    , gameScenario = Nothing
+    , gameMode = That scenario'
     , gamePlayerCount = 1
     , gameLocations = mempty
     , gameEnemies = mempty

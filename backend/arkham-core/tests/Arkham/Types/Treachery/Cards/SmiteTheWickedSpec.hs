@@ -86,7 +86,6 @@ spec = describe "Smite the Wicked" $ do
     smiteTheWicked <- buildPlayerCard "02007"
     enemy <- buildTestEnemyEncounterCard
     location <- testLocation "00000" id
-    scenario' <- testScenario "00000" id
     game <-
       runGameTest
           investigator
@@ -96,7 +95,7 @@ spec = describe "Smite the Wicked" $ do
           , drawCards investigator 1
           , Resign (getInvestigatorId investigator)
           ]
-          ((locations %~ insertEntity location) . (scenario ?~ scenario'))
+          (locations %~ insertEntity location)
         >>= runGameTestOnlyOption "place enemy"
 
     updated game investigator `shouldSatisfy` hasTrauma (0, 1)

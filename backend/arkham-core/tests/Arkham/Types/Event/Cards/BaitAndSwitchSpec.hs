@@ -11,7 +11,6 @@ import Arkham.Types.Investigator.Attrs (Attrs(..))
 spec :: Spec
 spec = describe "Bait and Switch" $ do
   it "will move the enemy to a connected location if you succeed" $ do
-    scenario' <- testScenario "00000" id
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorAgility = 3 }
     enemy <- testEnemy (EnemyAttrs.evadeL .~ 3)
@@ -31,7 +30,6 @@ spec = describe "Bait and Switch" $ do
         . (enemies %~ insertEntity enemy)
         . (locations %~ insertEntity location1)
         . (locations %~ insertEntity location2)
-        . (scenario ?~ scenario')
         )
       >>= runGameTestOnlyOption "Evade enemy"
       >>= runGameTestOnlyOption "Run skill check"

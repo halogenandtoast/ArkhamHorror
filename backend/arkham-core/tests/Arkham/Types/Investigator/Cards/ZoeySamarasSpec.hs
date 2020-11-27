@@ -20,7 +20,6 @@ spec = do
     it "elder sign token gives +1 and does +1 damage for attacks" $ do
       let zoeySamaras = lookupInvestigator "02001" -- combat is 4
       enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
-      scenario' <- testScenario "00000" id
       location <- testLocation "00000" id
       game <-
         runGameTest
@@ -32,7 +31,6 @@ spec = do
           ]
           ((enemies %~ insertEntity enemy)
           . (locations %~ insertEntity location)
-          . (scenario ?~ scenario')
           )
         >>= runGameTestOptionMatching
               "skip ability"

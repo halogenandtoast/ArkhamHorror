@@ -30,7 +30,11 @@ module Arkham.Types.Game
   )
 where
 
-import Arkham.Import
+import Arkham.Import hiding (first)
+
+import Data.Align
+import Data.These
+import Data.These.Lens
 import Arkham.Types.Act
 import Arkham.Types.Action (Action)
 import Arkham.Types.Agenda
@@ -82,8 +86,7 @@ data Game queue = Game
   , gameHash :: UUID
 
   -- Active Scenario/Campaign
-  , gameCampaign :: Maybe Campaign -- should this be an Either
-  , gameScenario :: Maybe Scenario
+  , gameMode :: These Campaign Scenario
 
   -- Entities
   , gameLocations :: HashMap LocationId Location
@@ -218,11 +221,8 @@ activeInvestigatorId :: Lens' (Game queue) InvestigatorId
 activeInvestigatorId =
   lens gameActiveInvestigatorId $ \m x -> m { gameActiveInvestigatorId = x }
 
-scenario :: Lens' (Game queue) (Maybe Scenario)
-scenario = lens gameScenario $ \m x -> m { gameScenario = x }
-
-campaign :: Lens' (Game queue) (Maybe Campaign)
-campaign = lens gameCampaign $ \m x -> m { gameCampaign = x }
+mode :: Lens' (Game queue) (These Campaign Scenario)
+mode = lens gameMode $ \m x -> m { gameMode = x }
 
 skillTest :: Lens' (Game queue) (Maybe SkillTest)
 skillTest = lens gameSkillTest $ \m x -> m { gameSkillTest = x }
@@ -328,11 +328,12 @@ newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
       (const Nothing)
       (Just . (`lookupCampaign` difficulty'))
       scenarioOrCampaignId
-  let
     scenario' = either
       (Just . (`lookupScenario` difficulty'))
       (const Nothing)
       scenarioOrCampaignId
+    mode' =
+      fromJustNote "Need campaign or scenario" $ align campaign' scenario'
   ref <-
     newIORef
     $ map (uncurry (InitDeck . getInvestigatorId)) (toList investigatorsList)
@@ -343,8 +344,7 @@ newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
     { gameMessages = ref
     , gameRoundMessageHistory = roundHistory
     , gameSeed = seed
-    , gameCampaign = campaign'
-    , gameScenario = scenario'
+    , gameMode = mode'
     , gamePlayerCount = playerCount'
     , gameLocations = mempty
     , gameEnemies = mempty
@@ -387,10 +387,10 @@ instance CanBeWeakness (Game queue) TreacheryId where
   getIsWeakness = getIsWeakness <=< getTreachery
 
 instance HasRecord (Game queue) where
-  hasRecord key g = case g ^. campaign of
+  hasRecord key g = case campaign $ g ^. mode of
     Nothing -> False
     Just c -> hasRecord key c
-  hasRecordSet key g = case g ^. campaign of
+  hasRecordSet key g = case campaign $ g ^. mode of
     Nothing -> []
     Just c -> hasRecordSet key c
 
@@ -456,7 +456,10 @@ instance HasId LocationId (Game queue) EnemyId where
 instance HasCount ActsRemainingCount (Game queue) () where
   getCount _ = do
     actIds <-
-      scenarioActs . fromJustNote "scenario has to be set" <$> view scenario
+      scenarioActs
+      . fromJustNote "scenario has to be set"
+      . scenario
+      <$> view mode
     activeActIds <- keys <$> view acts
     let
       currentActId = case activeActIds of
@@ -586,6 +589,18 @@ instance (HasModifiersFor env (), env ~ Game queue) => HasStats (Game queue) (In
   getStats (iid, maction) source =
     modifiedStatsOf source maction =<< getInvestigator iid
 
+this :: These a b -> Maybe a
+this = these Just (const Nothing) (const . Just)
+
+that :: These a b -> Maybe b
+that = these (const Nothing) Just (const Just)
+
+scenario :: These Campaign Scenario -> Maybe Scenario
+scenario = that
+
+campaign :: These Campaign Scenario -> Maybe Campaign
+campaign = this
+
 instance
   (env ~ Game queue
   , HasCount DiscardCount env InvestigatorId
@@ -600,7 +615,7 @@ instance
   )
   => HasTokenValue (Game queue) () where
   getTokenValue _ iid token = do
-    mscenario <- view scenario
+    mscenario <- that <$> view mode
     case mscenario of
       Just scenario' -> getTokenValue scenario' iid token
       Nothing -> error "missing scenario"
@@ -688,10 +703,10 @@ instance HasTarget ForSkillTest (Game queue) where
   getTarget _ g = g ^? skillTest . traverse . to skillTestTarget
 
 instance HasSet ScenarioLogKey (Game queue) () where
-  getSet _ = maybe (pure mempty) getSet =<< view scenario
+  getSet _ = maybe (pure mempty) getSet . that =<< view mode
 
 instance HasSet CompletedScenarioId (Game queue) () where
-  getSet _ = maybe (pure mempty) getSet =<< view campaign
+  getSet _ = maybe (pure mempty) getSet . this =<< view mode
 
 instance HasSet HandCardId (Game queue) InvestigatorId where
   getSet iid =
@@ -1398,14 +1413,11 @@ runGameMessage msg g = case msg of
       & (victoryDisplay .~ mempty)
   StartScenario sid -> do
     let
-      difficulty' = maybe
-        (difficultyOfScenario
-        . fromJustNote "missing scenario and campaign"
-        $ g
-        ^. scenario
-        )
+      difficulty' = these
         difficultyOf
-        (g ^. campaign)
+        difficultyOfScenario
+        (const . difficultyOf)
+        (g ^. mode)
     unshiftMessages
       $ [ ChooseLeadInvestigator
         , SetupInvestigators
@@ -1415,7 +1427,7 @@ runGameMessage msg g = case msg of
       <> [Setup]
     pure
       $ g
-      & (scenario ?~ lookupScenario sid difficulty')
+      & (mode %~ second (const $ lookupScenario sid difficulty'))
       & (phase .~ InvestigationPhase)
   CreateEffect cardCode meffectMetadata source target -> do
     (effectId', effect') <- createEffect cardCode meffectMetadata source target
@@ -2239,8 +2251,8 @@ instance RunMessage GameInternal GameInternal where
   runMessage msg g =
     runPreGameMessage msg g
       >>= traverseOf chaosBag (runMessage msg)
-      >>= traverseOf (campaign . traverse) (runMessage msg)
-      >>= traverseOf (scenario . traverse) (runMessage msg)
+      >>= traverseOf (mode . _This) (runMessage msg)
+      >>= traverseOf (mode . _That) (runMessage msg)
       >>= traverseOf (acts . traverse) (runMessage msg)
       >>= traverseOf (agendas . traverse) (runMessage msg)
       >>= traverseOf (treacheries . traverse) (runMessage msg)

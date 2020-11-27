@@ -13,7 +13,6 @@ spec = describe "Hard Knocks" $ do
     hardKnocks <- buildAsset "01049"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorCombat = 1, investigatorResources = 2 }
-    scenario' <- testScenario "00000" id
     (didPassTest, logger) <- didPassSkillTestBy investigator 0
     void
       $ runGameTest
@@ -22,7 +21,7 @@ spec = describe "Hard Knocks" $ do
           , playAsset investigator hardKnocks
           , beginSkillTest investigator SkillCombat 3
           ]
-          ((assets %~ insertEntity hardKnocks) . (scenario ?~ scenario'))
+          (assets %~ insertEntity hardKnocks)
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -48,7 +47,6 @@ spec = describe "Hard Knocks" $ do
     hardKnocks <- buildAsset "01049"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorAgility = 1, investigatorResources = 2 }
-    scenario' <- testScenario "00000" id
     (didPassTest, logger) <- didPassSkillTestBy investigator 0
     void
       $ runGameTest
@@ -57,7 +55,7 @@ spec = describe "Hard Knocks" $ do
           , playAsset investigator hardKnocks
           , beginSkillTest investigator SkillAgility 3
           ]
-          ((assets %~ insertEntity hardKnocks) . (scenario ?~ scenario'))
+          (assets %~ insertEntity hardKnocks)
       >>= runGameTestOptionMatching
             "use ability"
             (\case

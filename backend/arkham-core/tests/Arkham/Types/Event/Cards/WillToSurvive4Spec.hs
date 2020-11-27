@@ -13,8 +13,6 @@ spec = describe "Will to Survive (4)" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 3 }
     willToSurvive4 <- buildEvent "01085" investigator
-    scenario' <- testScenario "00000" id
-
     (didPassTest, logger) <- createMessageMatcher
       (PassedSkillTest
         (getInvestigatorId investigator)
@@ -30,7 +28,7 @@ spec = describe "Will to Survive (4)" $ do
           , playEvent investigator willToSurvive4
           , beginSkillTest investigator SkillIntellect 3
           ]
-          ((scenario ?~ scenario') . (events %~ insertEntity willToSurvive4))
+          (events %~ insertEntity willToSurvive4)
       >>= runGameTestOnlyOption "start skill test"
       >>= runGameTestOnlyOptionWithLogger "apply results" logger
     readIORef didPassTest `shouldReturn` True
@@ -38,7 +36,6 @@ spec = describe "Will to Survive (4)" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 3 }
     willToSurvive4 <- buildEvent "01085" investigator
-    scenario' <- testScenario "00000" id
     (didFailTest, logger) <- createMessageMatcher
       (FailedSkillTest
         (getInvestigatorId investigator)
@@ -55,7 +52,7 @@ spec = describe "Will to Survive (4)" $ do
           , ChooseEndTurn (getInvestigatorId investigator)
           , beginSkillTest investigator SkillIntellect 3
           ]
-          ((scenario ?~ scenario') . (events %~ insertEntity willToSurvive4))
+          (events %~ insertEntity willToSurvive4)
       >>= runGameTestOnlyOption "start skill test"
       >>= runGameTestOnlyOptionWithLogger "apply results" logger
     readIORef didFailTest `shouldReturn` True

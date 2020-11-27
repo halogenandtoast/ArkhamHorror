@@ -12,7 +12,6 @@ spec = describe "Rex Murphy" $ do
   context "special ability" $ do
     it "discovers a clue if succeed a skill test by 2 or more" $ do
       let rexMurphy = lookupInvestigator "02002"
-      scenario' <- testScenario "00000" id
       location <- testLocation "00000" (Location.clues .~ 1)
       game <-
         runGameTest
@@ -21,7 +20,7 @@ spec = describe "Rex Murphy" $ do
           , moveTo rexMurphy location
           , beginSkillTest rexMurphy SkillIntellect 2
           ]
-          ((locations %~ insertEntity location) . (scenario ?~ scenario'))
+          (locations %~ insertEntity location)
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
         >>= runGameTestOptionMatching
@@ -37,7 +36,6 @@ spec = describe "Rex Murphy" $ do
     it "can autofail to draw 3 cards" $ do
       let rexMurphy = lookupInvestigator "02002"
       cards <- testPlayerCards 3
-      scenario' <- testScenario "00000" id
       game <-
         runGameTest
           rexMurphy
@@ -51,7 +49,7 @@ spec = describe "Rex Murphy" $ do
             SkillIntellect
             2
           ]
-          (scenario ?~ scenario')
+          id
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatching
               "automatically fail"
@@ -66,7 +64,6 @@ spec = describe "Rex Murphy" $ do
     it "can resolve normally with +2" $ do
       let rexMurphy = lookupInvestigator "02002"
       cards <- testPlayerCards 3
-      scenario' <- testScenario "00000" id
       (didPassTest, logger) <- createMessageMatcher
         (PassedSkillTest
           (getInvestigatorId rexMurphy)
@@ -88,7 +85,7 @@ spec = describe "Rex Murphy" $ do
             SkillIntellect
             6 -- two higher
           ]
-          (scenario ?~ scenario')
+          id
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatching
               "resolve normally"

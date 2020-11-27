@@ -11,7 +11,6 @@ spec = do
     it "places 1 doom and can advance current agenda" $ do
       investigator <- testInvestigator "00000" id
       agenda <- testAgenda "00000" id
-      scenario' <- testScenario "00000" id
       darkMemory <- buildEvent "01013" investigator
       (didAdvanceAgenda, logger) <- createMessageMatcher (AdvanceAgenda "00000")
 
@@ -22,7 +21,6 @@ spec = do
           [playEvent investigator darkMemory]
         $ (events %~ insertEntity darkMemory)
         . (agendas %~ insertEntity agenda)
-        . (scenario ?~ scenario')
       agenda `shouldSatisfy` hasDoom game 1
       darkMemory `shouldSatisfy` isInDiscardOf game investigator
       readIORef didAdvanceAgenda `shouldReturn` True

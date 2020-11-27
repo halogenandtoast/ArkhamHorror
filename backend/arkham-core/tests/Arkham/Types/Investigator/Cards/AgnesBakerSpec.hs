@@ -42,7 +42,6 @@ spec = describe "Agnes Baker" $ do
     it "gives +1 for each horror on Agnes" $ do
       let agnesBaker = lookupInvestigator "01004"
       location <- testLocation "00000" id
-      scenario' <- testScenario "00000" id
       (didPassTest, logger) <- createMessageMatcher
         (PassedSkillTest
           (getInvestigatorId agnesBaker)
@@ -65,7 +64,7 @@ spec = describe "Agnes Baker" $ do
               2
             , beginSkillTest agnesBaker SkillIntellect 4
             ]
-            ((scenario ?~ scenario') . (locations %~ insertEntity location))
+            (locations %~ insertEntity location)
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOptionWithLogger "apply results" logger
 

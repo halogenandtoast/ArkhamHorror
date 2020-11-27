@@ -10,7 +10,6 @@ spec = describe "Jim Culver" $ do
   context "elder sign" $ do
     it "can be changed to a skull" $ do
       let jimCulver = lookupInvestigator "02004"
-      scenario' <- testScenario "00000" id
       didResolveSkull <- newIORef False
       let
         logger = \case
@@ -30,7 +29,7 @@ spec = describe "Jim Culver" $ do
               SkillIntellect
               2
             ]
-            (scenario ?~ scenario')
+            id
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatchingWithLogger
               "change to skull"
@@ -44,7 +43,6 @@ spec = describe "Jim Culver" $ do
 
     it "is a +1" $ do
       let jimCulver = lookupInvestigator "02004"
-      scenario' <- testScenario "00000" id
       (didPassTest, logger) <- didPassSkillTestBy jimCulver 2
       void
         $ runGameTest
@@ -58,7 +56,7 @@ spec = describe "Jim Culver" $ do
               SkillIntellect
               2
             ]
-            (scenario ?~ scenario')
+            id
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatching
               "resolve elder sign"
@@ -72,7 +70,6 @@ spec = describe "Jim Culver" $ do
   context "ability" $ do
     it "changes skull modifier to 0" $ do
       let jimCulver = lookupInvestigator "02004"
-      scenario' <- testScenario "00000" id
       (didPassTest, logger) <- didPassSkillTestBy jimCulver 1
       void
         $ runGameTest
@@ -86,7 +83,7 @@ spec = describe "Jim Culver" $ do
               SkillIntellect
               2
             ]
-            (scenario ?~ scenario')
+            id
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOptionWithLogger "apply results" logger
       readIORef didPassTest `shouldReturn` True

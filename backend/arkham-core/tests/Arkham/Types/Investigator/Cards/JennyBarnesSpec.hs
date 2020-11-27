@@ -15,11 +15,10 @@ spec = describe "Jenny Barnes" $ do
   context "elder sign token" $ do
     it "modifier is number of resources" $ do
       let jennyBarnes = lookupInvestigator "02003"
-      scenario' <- testScenario "00000" id
       game <- runGameTest
         jennyBarnes
         [TakeResources (getInvestigatorId jennyBarnes) 5 False]
-        (scenario ?~ scenario')
+        id
       token <- withGame game $ getTokenValue
         (updated game jennyBarnes)
         (getInvestigatorId jennyBarnes)

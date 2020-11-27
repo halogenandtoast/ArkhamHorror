@@ -23,7 +23,6 @@ spec = describe "Drawn to the flame" $ do
             attrs { locationTraits = setFromList [Central], locationClues = 2 }
         drawnToTheFlame <- buildEvent "01064" investigator
         onWingsOfDarkness <- buildEncounterCard "01173"
-        scenario' <- testScenario "00000" id
         game <-
           runGameTest
             investigator
@@ -37,7 +36,6 @@ spec = describe "Drawn to the flame" $ do
             ((events %~ insertEntity drawnToTheFlame)
             . (locations %~ insertEntity startLocation)
             . (locations %~ insertEntity centralLocation)
-            . (scenario ?~ scenario')
             )
           >>= runGameTestOnlyOption "start skill test"
           >>= runGameTestOnlyOption "apply results"

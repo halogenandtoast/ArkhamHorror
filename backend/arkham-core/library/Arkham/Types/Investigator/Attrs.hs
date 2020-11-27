@@ -1222,11 +1222,6 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure $ if cannotGainResources then a else a & resourcesL +~ n
   EmptyDeck iid | iid == investigatorId -> a <$ unshiftMessages
     [ShuffleDiscardBackIn iid, InvestigatorDamage iid EmptyDeckSource 0 1]
-  AllDrawEncounterCard | not (a ^. defeatedL || a ^. resignedL) ->
-    a <$ unshiftMessage
-      (Ask investigatorId
-      $ ChooseOne [InvestigatorDrawEncounterCard investigatorId]
-      )
   When (EnemySpawn _ lid eid) | lid == investigatorLocation -> do
     traits <- getSetList eid
     a <$ unshiftMessage

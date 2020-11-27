@@ -595,6 +595,16 @@ this = these Just (const Nothing) (const . Just)
 that :: These a b -> Maybe b
 that = these (const Nothing) Just (const Just)
 
+-- setThis :: c -> These a b -> These c b
+-- setThis c (This _) = This c
+-- setThis c (That b) = These c b
+-- setThis c (These _ b) = These c b
+
+setThat :: c -> These a b -> These a c
+setThat c (This a) = These a c
+setThat c (That _) = That c
+setThat c (These a _) = These a c
+
 scenario :: These Campaign Scenario -> Maybe Scenario
 scenario = that
 
@@ -1427,7 +1437,7 @@ runGameMessage msg g = case msg of
       <> [Setup]
     pure
       $ g
-      & (mode %~ second (const $ lookupScenario sid difficulty'))
+      & (mode %~ setThat (lookupScenario sid difficulty'))
       & (phase .~ InvestigationPhase)
   CreateEffect cardCode meffectMetadata source target -> do
     (effectId', effect') <- createEffect cardCode meffectMetadata source target

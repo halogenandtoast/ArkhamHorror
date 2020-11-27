@@ -1,8 +1,17 @@
 import { JsonDecoder } from 'ts.data.json';
 
+interface Modifier {
+  tag: string;
+}
+
+const modifierDecoder = JsonDecoder.object<Modifier>({
+  tag: JsonDecoder.string
+}, 'Modifier')
+
 export interface Location {
   tag: string;
   contents: LocationContents;
+  modifiers: Modifier[];
 }
 
 export interface LocationContents {
@@ -45,4 +54,5 @@ export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
 export const locationDecoder = JsonDecoder.object<Location>({
   tag: JsonDecoder.string,
   contents: locationContentsDecoder,
+  modifiers: JsonDecoder.array<Modifier>(modifierDecoder, 'Modifier[]'),
 }, 'Location');

@@ -186,10 +186,6 @@ data GameState = IsPending | IsActive | IsOver
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
--- instance (ToJSON queue) => ToJSON (Game queue) where
---   toJSON = genericToJSON $ aesonOptions $ Just "game"
---   toEncoding = genericToEncoding $ aesonOptions $ Just "game"
-
 instance (FromJSON queue) => FromJSON (Game queue) where
   parseJSON = genericParseJSON $ aesonOptions $ Just "game"
 

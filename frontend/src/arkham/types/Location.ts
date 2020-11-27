@@ -12,7 +12,6 @@ export interface LocationContents {
   clues: number;
   shroud: number;
   revealed: boolean;
-  blocked: boolean;
   investigators: string[];
   enemies: string[];
   victory: number | null;
@@ -31,7 +30,6 @@ export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
     clues: JsonDecoder.number,
     shroud: JsonDecoder.number,
     revealed: JsonDecoder.boolean,
-    blocked: JsonDecoder.boolean,
     investigators: JsonDecoder.array<string>(JsonDecoder.string, 'InvestigatorId[]'),
     enemies: JsonDecoder.array<string>(JsonDecoder.string, 'EnemyId[]'),
     victory: JsonDecoder.nullable(JsonDecoder.number),

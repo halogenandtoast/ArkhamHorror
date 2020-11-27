@@ -18,7 +18,6 @@ spec = describe "Roland's .39 Special" $ do
     enemy <- testEnemy
       $ \attrs -> attrs { enemyFight = 2, enemyHealth = Static 3 }
     location <- testLocation "00000" id
-    scenario' <- testScenario "00000" id
     game <- runGameTest
       investigator
       [ SetTokens [Zero]
@@ -30,7 +29,6 @@ spec = describe "Roland's .39 Special" $ do
       ((assets %~ insertEntity rolands38Special)
       . (enemies %~ insertEntity enemy)
       . (locations %~ insertEntity location)
-      . (scenario ?~ scenario')
       )
 
     [fightAction] <- getActionsOf game investigator NonFast rolands38Special
@@ -51,7 +49,6 @@ spec = describe "Roland's .39 Special" $ do
         enemy <- testEnemy
           $ \attrs -> attrs { enemyFight = 4, enemyHealth = Static 3 }
         location <- testLocation "00000" $ \attrs -> attrs { locationClues = 1 }
-        scenario' <- testScenario "00000" id
         game <- runGameTest
           investigator
           [ SetTokens [Zero]
@@ -63,7 +60,6 @@ spec = describe "Roland's .39 Special" $ do
           ((assets %~ insertEntity rolands38Special)
           . (enemies %~ insertEntity enemy)
           . (locations %~ insertEntity location)
-          . (scenario ?~ scenario')
           )
 
         [fightAction] <- getActionsOf game investigator NonFast rolands38Special

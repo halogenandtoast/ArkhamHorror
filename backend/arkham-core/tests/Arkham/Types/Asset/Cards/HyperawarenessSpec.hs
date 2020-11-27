@@ -13,7 +13,6 @@ spec = describe "Hyperawareness" $ do
     hyperawareness <- buildAsset "01034"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 1, investigatorResources = 2 }
-    scenario' <- testScenario "00000" id
     (didPassTest, logger) <- didPassSkillTestBy investigator 0
     void
       $ runGameTest
@@ -22,7 +21,7 @@ spec = describe "Hyperawareness" $ do
           , playAsset investigator hyperawareness
           , beginSkillTest investigator SkillIntellect 3
           ]
-          ((assets %~ insertEntity hyperawareness) . (scenario ?~ scenario'))
+          (assets %~ insertEntity hyperawareness)
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -48,7 +47,6 @@ spec = describe "Hyperawareness" $ do
     hyperawareness <- buildAsset "01034"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorAgility = 1, investigatorResources = 2 }
-    scenario' <- testScenario "00000" id
     (didPassTest, logger) <- didPassSkillTestBy investigator 0
     void
       $ runGameTest
@@ -57,7 +55,7 @@ spec = describe "Hyperawareness" $ do
           , playAsset investigator hyperawareness
           , beginSkillTest investigator SkillAgility 3
           ]
-          ((assets %~ insertEntity hyperawareness) . (scenario ?~ scenario'))
+          (assets %~ insertEntity hyperawareness)
       >>= runGameTestOptionMatching
             "use ability"
             (\case

@@ -13,7 +13,6 @@ spec = describe "Grotesque Statue (4)" $ do
     it "reveals 2 tokens and let's you choose one" $ do
       investigator <- testInvestigator "00000" id
       grotestqueStatue <- buildAsset "01071"
-      scenario' <- testScenario "00000" id
       (didRunMessage, logger) <- createMessageMatcher
         (PassedSkillTest
           (getInvestigatorId investigator)
@@ -29,7 +28,7 @@ spec = describe "Grotesque Statue (4)" $ do
           , playAsset investigator grotestqueStatue
           , beginSkillTest investigator SkillIntellect 0
           ]
-          ((scenario ?~ scenario') . (assets %~ insertEntity grotestqueStatue))
+          (assets %~ insertEntity grotestqueStatue)
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatching
               "use ability"

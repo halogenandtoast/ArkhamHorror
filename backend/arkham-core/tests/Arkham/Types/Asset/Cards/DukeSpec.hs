@@ -18,7 +18,6 @@ spec = describe "Duke" $ do
       investigator <- testInvestigator "00000"
         $ \attrs -> attrs { investigatorCombat = 1 }
       location <- testLocation "00000" id
-      scenario' <- testScenario "00000" id
       game <- runGameTest
         investigator
         [ SetTokens [Zero]
@@ -28,7 +27,6 @@ spec = describe "Duke" $ do
         ]
         ((enemies %~ insertEntity enemy)
         . (locations %~ insertEntity location)
-        . (scenario ?~ scenario')
         . (assets %~ insertEntity duke)
         )
       let dukeAsset = game ^?! assets . to toList . ix 0
@@ -47,14 +45,10 @@ spec = describe "Duke" $ do
       location <- testLocation
         "00000"
         (\attrs -> attrs { locationShroud = 4, locationClues = 1 })
-      scenario' <- testScenario "00000" id
       game <- runGameTest
         investigator
         [SetTokens [Zero], playAsset investigator duke]
-        ((locations %~ insertEntity location)
-        . (scenario ?~ scenario')
-        . (assets %~ insertEntity duke)
-        )
+        ((locations %~ insertEntity location) . (assets %~ insertEntity duke))
       let dukeAsset = game ^?! assets . to toList . ix 0
       [investigateAction] <- getActionsOf game investigator NonFast dukeAsset
       game' <-
@@ -71,7 +65,6 @@ spec = describe "Duke" $ do
             $ \attrs -> attrs { investigatorIntellect = 1 }
           (location1, location2) <- testConnectedLocations id
             $ \attrs -> attrs { locationShroud = 4, locationClues = 1 }
-          scenario' <- testScenario "00000" id
           game <- runGameTest
             investigator
             [ PlacedLocation (getLocationId location1)
@@ -81,7 +74,6 @@ spec = describe "Duke" $ do
             ]
             ((locations %~ insertEntity location1)
             . (locations %~ insertEntity location2)
-            . (scenario ?~ scenario')
             . (assets %~ insertEntity duke)
             )
           let dukeAsset = game ^?! assets . to toList . ix 0

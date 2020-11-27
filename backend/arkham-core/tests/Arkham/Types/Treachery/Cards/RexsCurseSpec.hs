@@ -21,7 +21,6 @@ spec = describe "Rex's Curse" $ do
   it "causes you to reveal another token" $ do
     investigator <- testInvestigator "00000" id
     rexsCurse <- buildPlayerCard "02009"
-    scenario' <- testScenario "00000" id
 
     (didRunMessage, logger) <- createMessageMatcher
       (PassedSkillTest
@@ -45,7 +44,7 @@ spec = describe "Rex's Curse" $ do
           SkillIntellect
           5
         ]
-        (scenario ?~ scenario')
+        id
       >>= runGameTestOnlyOption "start skill test"
       >>= runGameTestOnlyOptionWithLogger "apply results" logger
     updated game investigator
@@ -56,7 +55,6 @@ spec = describe "Rex's Curse" $ do
   it "is shuffled back into your deck if you fail the test" $ do
     investigator <- testInvestigator "00000" id
     rexsCurse <- buildPlayerCard "02009"
-    scenario' <- testScenario "00000" id
     game <-
       runGameTest
         investigator
@@ -65,7 +63,7 @@ spec = describe "Rex's Curse" $ do
         , drawCards investigator 1
         , beginSkillTest investigator SkillIntellect 4
         ]
-        (scenario ?~ scenario')
+        id
       >>= runGameTestOnlyOption "start skill test"
       >>= runGameTestOnlyOption "apply results"
     updated game investigator

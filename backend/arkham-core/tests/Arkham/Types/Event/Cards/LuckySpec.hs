@@ -13,7 +13,6 @@ spec = describe "Lucky!" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 1, investigatorResources = 1 }
     lucky <- buildPlayerCard "01080"
-    scenario' <- testScenario "00000" id
     (didPassTest, logger) <- createMessageMatcher
       (PassedSkillTest
         (getInvestigatorId investigator)
@@ -29,7 +28,7 @@ spec = describe "Lucky!" $ do
           , addToHand investigator (PlayerCard lucky)
           , beginSkillTest investigator SkillIntellect 3
           ]
-          (scenario ?~ scenario')
+          id
       >>= runGameTestOnlyOption "start skill test"
       >>= runGameTestOptionMatching
             "play lucky!"
@@ -43,7 +42,6 @@ spec = describe "Lucky!" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 1, investigatorResources = 1 }
     lucky <- buildPlayerCard "01080"
-    scenario' <- testScenario "00000" id
     (didFailTest, logger) <- createMessageMatcher
       (FailedSkillTest
         (getInvestigatorId investigator)
@@ -59,7 +57,7 @@ spec = describe "Lucky!" $ do
           , addToHand investigator (PlayerCard lucky)
           , beginSkillTest investigator SkillIntellect 2
           ]
-          (scenario ?~ scenario')
+          id
       >>= runGameTestOnlyOption "start skill test"
       >>= runGameTestOptionMatching
             "play lucky!"

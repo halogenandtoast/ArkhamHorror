@@ -13,7 +13,6 @@ spec = describe "Physical Training (2)" $ do
     physicalTraining2 <- buildAsset "50001"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorWillpower = 1, investigatorResources = 2 }
-    scenario' <- testScenario "00000" id
     (didPassTest, logger) <- didPassSkillTestBy investigator 0
     void
       $ runGameTest
@@ -22,7 +21,7 @@ spec = describe "Physical Training (2)" $ do
           , playAsset investigator physicalTraining2
           , beginSkillTest investigator SkillWillpower 3
           ]
-          ((assets %~ insertEntity physicalTraining2) . (scenario ?~ scenario'))
+          (assets %~ insertEntity physicalTraining2)
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -48,7 +47,6 @@ spec = describe "Physical Training (2)" $ do
     physicalTraining2 <- buildAsset "50001"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorCombat = 1, investigatorResources = 2 }
-    scenario' <- testScenario "00000" id
     (didPassTest, logger) <- didPassSkillTestBy investigator 0
     void
       $ runGameTest
@@ -57,7 +55,7 @@ spec = describe "Physical Training (2)" $ do
           , playAsset investigator physicalTraining2
           , beginSkillTest investigator SkillCombat 3
           ]
-          ((assets %~ insertEntity physicalTraining2) . (scenario ?~ scenario'))
+          (assets %~ insertEntity physicalTraining2)
       >>= runGameTestOptionMatching
             "use ability"
             (\case

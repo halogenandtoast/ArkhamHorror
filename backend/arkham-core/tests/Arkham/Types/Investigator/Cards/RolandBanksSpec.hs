@@ -19,7 +19,6 @@ spec = describe "Roland Banks" $ do
             $ \attrs -> attrs { enemyFight = 4, enemyHealth = Static 1 }
           location <- testLocation "00000"
             $ \attrs -> attrs { locationClues = 1 }
-          scenario' <- testScenario "00000" id
           game <-
             runGameTest
               rolandBanks
@@ -30,7 +29,6 @@ spec = describe "Roland Banks" $ do
               ]
               ((enemies %~ insertEntity enemy)
               . (locations %~ insertEntity location)
-              . (scenario ?~ scenario')
               )
             >>= runGameTestOnlyOption "start skill test"
             >>= runGameTestOnlyOption "apply results"
@@ -46,7 +44,6 @@ spec = describe "Roland Banks" $ do
       let rolandBanks = lookupInvestigator "01001"
       location <- testLocation "00000"
         $ \attrs -> attrs { locationClues = 1, locationShroud = 4 }
-      scenario' <- testScenario "00000" id
       game <-
         runGameTest
           rolandBanks
@@ -54,7 +51,7 @@ spec = describe "Roland Banks" $ do
           , moveTo rolandBanks location
           , investigate rolandBanks location
           ]
-          ((locations %~ insertEntity location) . (scenario ?~ scenario'))
+          (locations %~ insertEntity location)
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
       getCount (updated game rolandBanks) () `shouldBe` ClueCount 1

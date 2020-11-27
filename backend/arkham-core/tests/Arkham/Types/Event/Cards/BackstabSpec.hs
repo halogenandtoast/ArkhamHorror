@@ -12,7 +12,6 @@ spec :: Spec
 spec = do
   describe "Backstab" $ do
     it "should use agility and do +2 damage" $ do
-      scenario' <- testScenario "00000" id
       location <- testLocation "00000" id
       investigator <- testInvestigator "00000"
         $ \attrs -> attrs { investigatorCombat = 1, investigatorAgility = 4 }
@@ -30,7 +29,6 @@ spec = do
           ((events %~ insertEntity backstab)
           . (locations %~ insertEntity location)
           . (enemies %~ insertEntity enemy)
-          . (scenario ?~ scenario')
           )
         >>= runGameTestOnlyOption "Fight enemy"
         >>= runGameTestOnlyOption "Run skill check"

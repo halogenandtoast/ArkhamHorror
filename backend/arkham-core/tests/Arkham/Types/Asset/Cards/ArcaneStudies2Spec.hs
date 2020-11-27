@@ -13,7 +13,6 @@ spec = describe "Arcane Studies (2)" $ do
     arcaneStudies2 <- buildAsset "50007"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorWillpower = 1, investigatorResources = 2 }
-    scenario' <- testScenario "00000" id
     (didPassTest, logger) <- didPassSkillTestBy investigator 0
     void
       $ runGameTest
@@ -22,7 +21,7 @@ spec = describe "Arcane Studies (2)" $ do
           , playAsset investigator arcaneStudies2
           , beginSkillTest investigator SkillWillpower 3
           ]
-          ((assets %~ insertEntity arcaneStudies2) . (scenario ?~ scenario'))
+          (assets %~ insertEntity arcaneStudies2)
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -48,7 +47,6 @@ spec = describe "Arcane Studies (2)" $ do
     arcaneStudies2 <- buildAsset "50007"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 1, investigatorResources = 2 }
-    scenario' <- testScenario "00000" id
     (didPassTest, logger) <- didPassSkillTestBy investigator 0
     void
       $ runGameTest
@@ -57,7 +55,7 @@ spec = describe "Arcane Studies (2)" $ do
           , playAsset investigator arcaneStudies2
           , beginSkillTest investigator SkillIntellect 3
           ]
-          ((assets %~ insertEntity arcaneStudies2) . (scenario ?~ scenario'))
+          (assets %~ insertEntity arcaneStudies2)
       >>= runGameTestOptionMatching
             "use ability"
             (\case

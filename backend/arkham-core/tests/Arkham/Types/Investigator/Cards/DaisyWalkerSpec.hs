@@ -32,7 +32,6 @@ spec = describe "Daisy Walker" $ do
       deckCards <- testPlayerCards 2
       tome1 <- testAsset $ \attrs -> attrs { assetTraits = singleton Tome }
       tome2 <- testAsset $ \attrs -> attrs { assetTraits = singleton Tome }
-      scenario' <- testScenario "00000" id
       game <-
         runGameTest
           daisyWalker
@@ -42,10 +41,7 @@ spec = describe "Daisy Walker" $ do
           , playAsset daisyWalker tome2
           , beginSkillTest daisyWalker SkillIntellect 5
           ]
-          ((assets %~ insertEntity tome1)
-          . (assets %~ insertEntity tome2)
-          . (scenario ?~ scenario')
-          )
+          ((assets %~ insertEntity tome1) . (assets %~ insertEntity tome2))
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
         >>= runGameTestOptionMatching

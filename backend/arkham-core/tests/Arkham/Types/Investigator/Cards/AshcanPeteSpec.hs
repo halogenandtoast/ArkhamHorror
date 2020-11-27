@@ -21,7 +21,6 @@ spec = describe "\"Ashcan\" Pete" $ do
     it "allows to discard to ready an asset" $ do
       let ashcanPete = lookupInvestigator "02005"
       asset <- testAsset id
-      scenario' <- testScenario "00000" id
       card <- testPlayerCard id
       game <-
         runGameTest
@@ -32,7 +31,7 @@ spec = describe "\"Ashcan\" Pete" $ do
           , Exhaust (toTarget asset)
           , CheckWindow (getInvestigatorId ashcanPete) [FastPlayerWindow]
           ]
-          ((scenario ?~ scenario') . (assets %~ insertEntity asset))
+          (assets %~ insertEntity asset)
         >>= runGameTestOptionMatching
               "activate ability"
               (\case
@@ -46,7 +45,6 @@ spec = describe "\"Ashcan\" Pete" $ do
     it "gives +2 and readies duke" $ do
       let ashcanPete = lookupInvestigator "02005"
       duke <- buildAsset "02014"
-      scenario' <- testScenario "00000" id
       (didPassTest, logger) <- didPassSkillTestBy ashcanPete 2
       game <-
         runGameTest
@@ -55,7 +53,7 @@ spec = describe "\"Ashcan\" Pete" $ do
           , Exhaust (toTarget duke)
           , beginSkillTest ashcanPete SkillIntellect 2
           ]
-          ((scenario ?~ scenario') . (assets %~ insertEntity duke))
+          (assets %~ insertEntity duke)
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOptionWithLogger "apply results" logger
       updated game duke `shouldSatisfy` isReady

@@ -41,3 +41,6 @@ packages:
 extra-deps:
 - monoidal-containers-0.6.0.1@sha256:7d776942659eb4d70d8b8da5d734396374a6eda8b4622df9e61e26b24e9c8e40,2501
 - unordered-containers-0.2.12.0
+- aeson-1.5.4.1@sha256:6e4da18b16c1a9fb399f5544a357be7c82fe7c4300197de64928cb527b67957a,6906
+- data-fix-0.3.0@sha256:058a266d1e658500e0ffb8babe68195b0ce06a081dcfc3814afc784b083fd9a5,1645
+- strict-0.4@sha256:1b50c7c9c636c3a1bbc7f8873b9be48f6ca0faca4df6eec6a014de6208fb1c0e,4200

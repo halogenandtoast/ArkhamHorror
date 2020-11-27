@@ -12,7 +12,6 @@ spec :: Spec
 spec = do
   describe "Blinding Light 2" $ do
     it "Uses willpower to evade an enemy" $ do
-      scenario' <- testScenario "00000" id
       investigator <- testInvestigator "00000"
         $ \attrs -> attrs { investigatorWillpower = 5, investigatorAgility = 3 }
       enemy <- testEnemy
@@ -30,7 +29,6 @@ spec = do
           ((events %~ insertEntity blindingLight2)
           . (enemies %~ insertEntity enemy)
           . (locations %~ insertEntity location)
-          . (scenario ?~ scenario')
           )
         >>= runGameTestOnlyOption "Evade enemy"
         >>= runGameTestOnlyOption "Run skill check"
@@ -39,7 +37,6 @@ spec = do
       enemy `shouldSatisfy` evadedBy game investigator
 
     it "deals 2 damage to the evaded enemy" $ do
-      scenario' <- testScenario "00000" id
       investigator <- testInvestigator "00000" id
       enemy <- testEnemy
         (set EnemyAttrs.evadeL 4 . set EnemyAttrs.healthL (Static 3))
@@ -56,7 +53,6 @@ spec = do
           ((events %~ insertEntity blindingLight2)
           . (enemies %~ insertEntity enemy)
           . (locations %~ insertEntity location)
-          . (scenario ?~ scenario')
           )
         >>= runGameTestOnlyOption "Evade enemy"
         >>= runGameTestOnlyOption "Run skill check"
@@ -68,7 +64,6 @@ spec = do
         "On Skull, Cultist, Tablet, ElderThing, or AutoFail the investigator loses an action and takes 1 horror"
       $ for_ [Skull, Cultist, Tablet, ElderThing, AutoFail]
       $ \token -> do
-          scenario' <- testScenario "00000" id
           investigator <- testInvestigator "00000" id
           enemy <- testEnemy
             ((EnemyAttrs.evadeL .~ 4) . (EnemyAttrs.healthL .~ Static 3))
@@ -85,7 +80,6 @@ spec = do
               ((events %~ insertEntity blindingLight2)
               . (enemies %~ insertEntity enemy)
               . (locations %~ insertEntity location)
-              . (scenario ?~ scenario')
               )
             >>= runGameTestOnlyOption "Evade enemy"
             >>= runGameTestOnlyOption "Run skill check"

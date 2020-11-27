@@ -17,7 +17,6 @@ spec = describe "Fire Axe" $ do
     enemy <- testEnemy
       $ \attrs -> attrs { enemyHealth = Static 3, enemyFight = 3 }
     location <- testLocation "00000" id
-    scenario' <- testScenario "00000" id
     game <- runGameTest
       investigator
       [ SetTokens [Zero]
@@ -25,8 +24,7 @@ spec = describe "Fire Axe" $ do
       , enemySpawn location enemy
       , moveTo investigator location
       ]
-      ((scenario ?~ scenario')
-      . (enemies %~ insertEntity enemy)
+      ((enemies %~ insertEntity enemy)
       . (assets %~ insertEntity fireAxe)
       . (locations %~ insertEntity location)
       )
@@ -45,7 +43,6 @@ spec = describe "Fire Axe" $ do
     enemy <- testEnemy
       $ \attrs -> attrs { enemyHealth = Static 3, enemyFight = 3 }
     location <- testLocation "00000" id
-    scenario' <- testScenario "00000" id
     game <- runGameTest
       investigator
       [ SetTokens [Zero]
@@ -53,8 +50,7 @@ spec = describe "Fire Axe" $ do
       , enemySpawn location enemy
       , moveTo investigator location
       ]
-      ((scenario ?~ scenario')
-      . (enemies %~ insertEntity enemy)
+      ((enemies %~ insertEntity enemy)
       . (assets %~ insertEntity fireAxe)
       . (locations %~ insertEntity location)
       )
@@ -84,7 +80,6 @@ spec = describe "Fire Axe" $ do
     enemy <- testEnemy
       $ \attrs -> attrs { enemyHealth = Static 3, enemyFight = 3 }
     location <- testLocation "00000" id
-    scenario' <- testScenario "00000" id
     game <- runGameTest
       investigator
       [ SetTokens [Zero]
@@ -92,8 +87,7 @@ spec = describe "Fire Axe" $ do
       , enemySpawn location enemy
       , moveTo investigator location
       ]
-      ((scenario ?~ scenario')
-      . (enemies %~ insertEntity enemy)
+      ((enemies %~ insertEntity enemy)
       . (assets %~ insertEntity fireAxe)
       . (locations %~ insertEntity location)
       )
@@ -123,7 +117,6 @@ spec = describe "Fire Axe" $ do
     enemy <- testEnemy
       $ \attrs -> attrs { enemyHealth = Static 3, enemyFight = 3 }
     location <- testLocation "00000" id
-    scenario' <- testScenario "00000" id
     game <- runGameTest
       investigator
       [ SetTokens [Zero]
@@ -131,8 +124,7 @@ spec = describe "Fire Axe" $ do
       , enemySpawn location enemy
       , moveTo investigator location
       ]
-      ((scenario ?~ scenario')
-      . (enemies %~ insertEntity enemy)
+      ((enemies %~ insertEntity enemy)
       . (assets %~ insertEntity fireAxe)
       . (locations %~ insertEntity location)
       )

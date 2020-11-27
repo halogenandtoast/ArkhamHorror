@@ -14,7 +14,6 @@ spec = describe "Jim's Trumpet" $ do
       investigator <- testInvestigator "00000" (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       location <- testLocation "00000" id
-      scenario' <- testScenario "00000" id
       game <-
         runGameTest
           investigator
@@ -24,7 +23,6 @@ spec = describe "Jim's Trumpet" $ do
           , beginSkillTest investigator SkillIntellect 0
           ]
           ((assets %~ insertEntity jimsTrumpet)
-          . (scenario ?~ scenario')
           . (locations %~ insertEntity location)
           )
         >>= runGameTestOnlyOption "start skill test"
@@ -44,7 +42,6 @@ spec = describe "Jim's Trumpet" $ do
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       location <- testLocation "00000" id
-      scenario' <- testScenario "00000" id
       game <-
         runGameTest
           investigator
@@ -54,7 +51,6 @@ spec = describe "Jim's Trumpet" $ do
           , beginSkillTest investigator SkillIntellect 0
           ]
           ((assets %~ insertEntity jimsTrumpet)
-          . (scenario ?~ scenario')
           . (locations %~ insertEntity location)
           . (investigators %~ insertEntity investigator2)
           )
@@ -75,7 +71,6 @@ spec = describe "Jim's Trumpet" $ do
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       location <- testLocation "00000" id
-      scenario' <- testScenario "00000" id
       game <-
         runGameTest
           investigator
@@ -85,7 +80,6 @@ spec = describe "Jim's Trumpet" $ do
           , beginSkillTest investigator2 SkillIntellect 0
           ]
           ((assets %~ insertEntity jimsTrumpet)
-          . (scenario ?~ scenario')
           . (locations %~ insertEntity location)
           . (investigators %~ insertEntity investigator2)
           )
@@ -106,7 +100,6 @@ spec = describe "Jim's Trumpet" $ do
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       (location1, location2) <- testConnectedLocations id id
-      scenario' <- testScenario "00000" id
       game <-
         runGameTest
           investigator
@@ -119,7 +112,6 @@ spec = describe "Jim's Trumpet" $ do
           , beginSkillTest investigator SkillIntellect 0
           ]
           ((assets %~ insertEntity jimsTrumpet)
-          . (scenario ?~ scenario')
           . (locations %~ insertEntity location1)
           . (locations %~ insertEntity location2)
           . (investigators %~ insertEntity investigator2)
@@ -141,7 +133,6 @@ spec = describe "Jim's Trumpet" $ do
         (Investigator.sanityDamageL .~ 1)
       jimsTrumpet <- buildAsset "02012"
       (location1, location2) <- testUnconnectedLocations id id
-      scenario' <- testScenario "00000" id
       game <-
         runGameTest
           investigator
@@ -154,7 +145,6 @@ spec = describe "Jim's Trumpet" $ do
           , beginSkillTest investigator SkillIntellect 0
           ]
           ((assets %~ insertEntity jimsTrumpet)
-          . (scenario ?~ scenario')
           . (locations %~ insertEntity location1)
           . (locations %~ insertEntity location2)
           . (investigators %~ insertEntity investigator2)

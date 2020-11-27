@@ -45,7 +45,6 @@ spec = describe "Jenny's Twin .45s" $ do
       }
     enemy <- testEnemy ((Enemy.healthL .~ Static 3) . (Enemy.fightL .~ 5))
     location <- testLocation "00000" id
-    scenario' <- testScenario "00000" id
     game <-
       runGameTest
           investigator
@@ -54,7 +53,6 @@ spec = describe "Jenny's Twin .45s" $ do
           ]
           ((enemies %~ insertEntity enemy)
           . (locations %~ insertEntity location)
-          . (scenario ?~ scenario')
           )
         >>= payResource
     let jennysTwin45sAsset = game ^?! assets . to toList . ix 0

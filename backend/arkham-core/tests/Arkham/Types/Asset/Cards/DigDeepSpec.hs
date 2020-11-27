@@ -13,7 +13,6 @@ spec = describe "Dig Deep" $ do
     digDeep <- buildAsset "01077"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorWillpower = 1, investigatorResources = 2 }
-    scenario' <- testScenario "00000" id
     (didPassTest, logger) <- didPassSkillTestBy investigator 0
     void
       $ runGameTest
@@ -22,7 +21,7 @@ spec = describe "Dig Deep" $ do
           , playAsset investigator digDeep
           , beginSkillTest investigator SkillWillpower 3
           ]
-          ((assets %~ insertEntity digDeep) . (scenario ?~ scenario'))
+          (assets %~ insertEntity digDeep)
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -48,7 +47,6 @@ spec = describe "Dig Deep" $ do
     digDeep <- buildAsset "01077"
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorAgility = 1, investigatorResources = 2 }
-    scenario' <- testScenario "00000" id
     (didPassTest, logger) <- didPassSkillTestBy investigator 0
     void
       $ runGameTest
@@ -57,7 +55,7 @@ spec = describe "Dig Deep" $ do
           , playAsset investigator digDeep
           , beginSkillTest investigator SkillAgility 3
           ]
-          ((assets %~ insertEntity digDeep) . (scenario ?~ scenario'))
+          (assets %~ insertEntity digDeep)
       >>= runGameTestOptionMatching
             "use ability"
             (\case

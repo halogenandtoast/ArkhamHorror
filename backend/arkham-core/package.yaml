@@ -28,7 +28,7 @@ default-extensions:
 library:
   source-dirs: library
   dependencies:
-    - aeson
+    - aeson >= 1.5.4.1
     - aeson-casing
     - mtl
     - microlens
@@ -38,6 +38,9 @@ library:
     - unordered-containers >= 0.2.12.0
     - hashable
     - safe
+    - semialign
+    - these
+    - these-lens
     - classy-prelude
     - pretty-simple
     - uuid
@@ -62,6 +65,7 @@ tests:
       - hspec-expectations
       - microlens
       - microlens-mtl
+      - these
       - uuid
       - unordered-containers >= 0.2.12.0
       - mtl

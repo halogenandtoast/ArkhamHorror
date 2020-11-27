@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 16b138ca24b091e666860bcfb2c01d483e0a08022b4a2f8aee33288d0dc42909
+-- hash: 3cf00500312737f2f1a1ec682aa8f7c85d63a896dc5f447c57b3c1891bf42f07
 
 name:           arkham-core
 version:        0.0.0
@@ -520,7 +520,7 @@ library
   default-extensions: NoImplicitPrelude NamedFieldPuns RecordWildCards DerivingStrategies DeriveGeneric DeriveAnyClass LambdaCase FlexibleInstances MultiParamTypeClasses GeneralizedNewtypeDeriving OverloadedStrings TypeApplications TypeOperators TupleSections FlexibleContexts ConstraintKinds StandaloneDeriving DerivingVia TypeFamilies ScopedTypeVariables
   build-depends:
       MonadRandom
-    , aeson
+    , aeson >=1.5.4.1
     , aeson-casing
     , base >=4.7 && <5
     , classy-prelude
@@ -536,7 +536,10 @@ library
     , random
     , random-shuffle
     , safe
+    , semialign
     , text
+    , these
+    , these-lens
     , unordered-containers >=0.2.12.0
     , uuid
     , vector
@@ -620,6 +623,7 @@ test-suite spec
     , microlens-mtl
     , mtl
     , safe
+    , these
     , unordered-containers >=0.2.12.0
     , uuid
   default-language: Haskell2010

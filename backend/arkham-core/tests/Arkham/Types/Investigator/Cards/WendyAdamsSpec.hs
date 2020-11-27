@@ -10,7 +10,6 @@ spec = describe "Wendy Adams" $ do
   context "ability" $ do
     it "allows you to discard a card to redraw a chaos token" $ do
       let wendyAdams = lookupInvestigator "01005"
-      scenario' <- testScenario "0000" id
       card <- testPlayerCard id
       (didPassTest, logger) <- didPassSkillTestBy wendyAdams 0
       void
@@ -20,7 +19,7 @@ spec = describe "Wendy Adams" $ do
             , AddToHand (getInvestigatorId wendyAdams) (PlayerCard card)
             , beginSkillTest wendyAdams SkillWillpower 3
             ]
-            (scenario ?~ scenario')
+            id
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatching
               "use ability"
@@ -35,13 +34,12 @@ spec = describe "Wendy Adams" $ do
   context "elder sign" $ do
     it "gives +0" $ do
       let wendyAdams = lookupInvestigator "01005"
-      scenario' <- testScenario "0000" id
       (didPassTest, logger) <- didPassSkillTestBy wendyAdams 0
       void
         $ runGameTest
             wendyAdams
             [SetTokens [ElderSign], beginSkillTest wendyAdams SkillWillpower 4]
-            (scenario ?~ scenario')
+            id
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOptionWithLogger "apply results" logger
       readIORef didPassTest `shouldReturn` True
@@ -49,7 +47,6 @@ spec = describe "Wendy Adams" $ do
     it "automatically succeeds if Wendy's Amulet is in play" $ do
       let wendyAdams = lookupInvestigator "01005"
       wendysAmulet <- buildAsset "01014"
-      scenario' <- testScenario "0000" id
       (didPassTest, logger) <- didPassSkillTestBy wendyAdams 4
       void
         $ runGameTest
@@ -58,7 +55,7 @@ spec = describe "Wendy Adams" $ do
             , playAsset wendyAdams wendysAmulet
             , beginSkillTest wendyAdams SkillWillpower 20
             ]
-            ((scenario ?~ scenario') . (assets %~ insertEntity wendysAmulet))
+            (assets %~ insertEntity wendysAmulet)
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOptionWithLogger "apply results" logger
       readIORef didPassTest `shouldReturn` True

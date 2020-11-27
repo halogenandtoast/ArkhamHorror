@@ -20,8 +20,10 @@ instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "act"
 
 instance Entity Attrs where
-  toSource = ActSource . actId
-  toTarget = ActTarget . actId
+  type EntityId Attrs = ActId
+  toId = actId
+  toSource = ActSource . toId
+  toTarget = ActTarget . toId
   isSource Attrs { actId } (ActSource aid) = actId == aid
   isSource _ _ = False
   isTarget Attrs { actId } (ActTarget aid) = actId == aid

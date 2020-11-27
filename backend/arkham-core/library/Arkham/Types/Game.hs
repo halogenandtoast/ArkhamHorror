@@ -135,14 +135,13 @@ instance ToJSON ModifierData where
   toJSON = genericToJSON $ aesonOptions $ Just "md"
   toEncoding = genericToEncoding $ aesonOptions $ Just "md"
 
-locationWithModifiers
-  :: (MonadReader env m, HasId LocationId env Location, HasModifiersFor env ())
-  => Location
-  -> m (With Location ModifierData)
-locationWithModifiers l = do
-  lid <- getId l
-  modifiers' <- getModifiersFor (LocationSource lid) (LocationTarget lid) ()
-  pure $ l `with` ModifierData modifiers'
+withModifiers
+  :: (MonadReader env m, Entity a, HasModifiersFor env ())
+  => a
+  -> m (With a ModifierData)
+withModifiers a = do
+  modifiers' <- getModifiersFor (toSource a) (toTarget a) ()
+  pure $ a `with` ModifierData modifiers'
 
 instance (ToJSON queue) => ToJSON (Game queue) where
   toJSON g@Game {..} = object
@@ -151,18 +150,19 @@ instance (ToJSON queue) => ToJSON (Game queue) where
     , "seed" .= toJSON gameSeed
     , "hash" .= toJSON gameHash
     , "mode" .= toJSON gameMode
-    , "locations"
-      .= toJSON (runReader (traverse locationWithModifiers gameLocations) g)
-    , "investigators" .= toJSON gameInvestigators
+    , "locations" .= toJSON (runReader (traverse withModifiers gameLocations) g)
+    , "investigators"
+      .= toJSON (runReader (traverse withModifiers gameInvestigators) g)
     , "players" .= toJSON gamePlayers
-    , "enemies" .= toJSON gameEnemies
-    , "assets" .= toJSON gameAssets
-    , "acts" .= toJSON gameActs
-    , "agendas" .= toJSON gameAgendas
-    , "treacheries" .= toJSON gameTreacheries
-    , "events" .= toJSON gameEvents
-    , "effects" .= toJSON gameEffects
-    , "skills" .= toJSON gameSkills
+    , "enemies" .= toJSON (runReader (traverse withModifiers gameEnemies) g)
+    , "assets" .= toJSON (runReader (traverse withModifiers gameAssets) g)
+    , "acts" .= toJSON (runReader (traverse withModifiers gameActs) g)
+    , "agendas" .= toJSON (runReader (traverse withModifiers gameAgendas) g)
+    , "treacheries"
+      .= toJSON (runReader (traverse withModifiers gameTreacheries) g)
+    , "events" .= toJSON (runReader (traverse withModifiers gameEvents) g)
+    , "effects" .= toJSON gameEffects -- no need for modifiers
+    , "skills" .= toJSON gameSkills -- no need for modifiers... yet
     , "playerCount" .= toJSON gamePlayerCount
     , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
     , "leadInvestigatorId" .= toJSON gameLeadInvestigatorId

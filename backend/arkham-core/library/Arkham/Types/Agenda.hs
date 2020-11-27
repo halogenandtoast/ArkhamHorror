@@ -79,6 +79,8 @@ deriving anyclass instance (AgendaRunner env) => RunMessage env Agenda
 deriving anyclass instance HasModifiersFor env Agenda
 
 instance Entity Agenda where
+  type EntityId Agenda = AgendaId
+  toId = toId . agendaAttrs
   toTarget = toTarget . agendaAttrs
   isTarget = isTarget . agendaAttrs
   toSource = toSource . agendaAttrs

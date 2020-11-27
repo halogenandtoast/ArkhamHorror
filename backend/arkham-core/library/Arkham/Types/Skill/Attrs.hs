@@ -25,6 +25,8 @@ instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "skill"
 
 instance Entity Attrs where
+  type EntityId Attrs = SkillId
+  toId = skillId
   toSource = SkillSource . skillId
   toTarget = SkillTarget . skillId
   isSource Attrs { skillId } (SkillSource sid) = skillId == sid

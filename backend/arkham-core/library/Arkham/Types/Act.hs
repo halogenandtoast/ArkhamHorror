@@ -40,6 +40,14 @@ deriving anyclass instance ActRunner env => RunMessage env Act
 instance IsAdvanceable Act where
   isAdvanceable = actCanAdvance . actAttrs
 
+instance Entity Act where
+  type EntityId Act = ActId
+  toId = toId . actAttrs
+  toSource = toSource . actAttrs
+  toTarget = toTarget . actAttrs
+  isSource = isSource . actAttrs
+  isTarget = isTarget . actAttrs
+
 lookupAct :: ActId -> Act
 lookupAct actId =
   fromJustNote ("Unknown act: " <> show actId) $ lookup actId allActs

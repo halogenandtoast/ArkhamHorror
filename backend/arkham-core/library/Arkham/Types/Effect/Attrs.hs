@@ -43,9 +43,11 @@ instance HasQueue env => RunMessage env Attrs where
   runMessage _ = pure
 
 instance Entity Attrs where
-  toSource = EffectSource . effectId
+  type EntityId Attrs = EffectId
+  toId = effectId
+  toSource = EffectSource . toId
+  toTarget = EffectTarget . toId
   isSource Attrs { effectId } (EffectSource eid) = effectId == eid
   isSource _ _ = False
-  toTarget = EffectTarget . effectId
   isTarget Attrs { effectId } (EffectTarget eid) = effectId == eid
   isTarget _ _ = False

@@ -68,8 +68,10 @@ baseAttrs cardCode name agendaStack actStack' difficulty = Attrs
   }
 
 instance Entity Attrs where
-  toSource = ScenarioSource . scenarioId
-  toTarget = ScenarioTarget . scenarioId
+  type EntityId Attrs = ScenarioId
+  toId = scenarioId
+  toSource = ScenarioSource . toId
+  toTarget = ScenarioTarget . toId
   isSource Attrs { scenarioId } (ScenarioSource sid) = scenarioId == sid
   isSource _ _ = False
   isTarget Attrs { scenarioId } (ScenarioTarget sid) = scenarioId == sid

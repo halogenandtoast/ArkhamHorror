@@ -103,6 +103,8 @@ deriving anyclass instance LocationRunner env => RunMessage env Location
 deriving anyclass instance HasModifiersFor env Location
 
 instance Entity Location where
+  type EntityId Location = LocationId
+  toId = toId . locationAttrs
   toTarget = toTarget . locationAttrs
   isTarget = isTarget . locationAttrs
   toSource = toSource . locationAttrs

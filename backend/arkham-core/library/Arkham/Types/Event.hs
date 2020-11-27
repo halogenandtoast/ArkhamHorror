@@ -68,6 +68,8 @@ deriving anyclass instance HasModifiersFor env Event
 deriving anyclass instance EventRunner env => RunMessage env Event
 
 instance Entity Event where
+  type EntityId Event = EventId
+  toId = eventId . eventAttrs
   toTarget = toTarget . eventAttrs
   isTarget = isTarget . eventAttrs
   toSource = toSource . eventAttrs

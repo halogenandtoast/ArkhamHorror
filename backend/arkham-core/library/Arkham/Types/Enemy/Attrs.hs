@@ -279,8 +279,10 @@ instance ActionRunner env => HasActions env Attrs where
   getActions _ _ _ = pure []
 
 instance Entity Attrs where
-  toSource = EnemySource . enemyId
-  toTarget = EnemyTarget . enemyId
+  type EntityId Attrs = EnemyId
+  toId = enemyId
+  toSource = EnemySource . toId
+  toTarget = EnemyTarget . toId
   isTarget Attrs { enemyId } (EnemyTarget eid) = enemyId == eid
   isTarget Attrs { enemyCardCode } (CardCodeTarget cardCode) =
     enemyCardCode == cardCode

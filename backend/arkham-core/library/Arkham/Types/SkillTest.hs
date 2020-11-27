@@ -41,6 +41,8 @@ skillTestToSource :: SkillTest -> Source
 skillTestToSource = toSource
 
 instance Entity SkillTest where
+  type EntityId SkillTest = ()
+  toId _ = ()
   toSource SkillTest {..} = SkillTestSource
     skillTestInvestigator
     skillTestSkillType

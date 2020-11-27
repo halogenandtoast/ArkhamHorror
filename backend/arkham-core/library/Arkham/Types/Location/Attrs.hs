@@ -43,8 +43,10 @@ instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "location"
 
 instance Entity Attrs where
-  toSource Attrs { locationId } = LocationSource locationId
-  toTarget Attrs { locationId } = LocationTarget locationId
+  type EntityId Attrs = LocationId
+  toId = locationId
+  toSource = LocationSource . toId
+  toTarget = LocationTarget . toId
   isSource Attrs { locationId } (LocationSource lid) = locationId == lid
   isSource _ _ = False
   isTarget Attrs { locationId } (LocationTarget lid) = locationId == lid

@@ -373,6 +373,8 @@ getRemainingHealth i = do
   where a = investigatorAttrs i
 
 instance Entity Investigator where
+  type EntityId Investigator = InvestigatorId
+  toId = toId . investigatorAttrs
   toSource = toSource . investigatorAttrs
   toTarget = toTarget . investigatorAttrs
   isSource = isSource . investigatorAttrs

@@ -373,6 +373,8 @@ class CanBeWeakness env a where
   getIsWeakness :: (MonadReader env m) => a -> m Bool
 
 class Entity a where
+  type EntityId a
+  toId :: a -> EntityId a
   toTarget :: a -> Target
   isTarget :: a -> Target -> Bool
   toSource :: a -> Source

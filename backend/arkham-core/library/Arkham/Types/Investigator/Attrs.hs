@@ -143,8 +143,10 @@ deckL :: Lens' Attrs (Deck PlayerCard)
 deckL = lens investigatorDeck $ \m x -> m { investigatorDeck = x }
 
 instance Entity Attrs where
-  toSource = InvestigatorSource . investigatorId
-  toTarget = InvestigatorTarget . investigatorId
+  type EntityId Attrs = InvestigatorId
+  toId = investigatorId
+  toSource = InvestigatorSource . toId
+  toTarget = InvestigatorTarget . toId
   isSource Attrs { investigatorId } (InvestigatorSource iid) =
     iid == investigatorId
   isSource _ _ = False

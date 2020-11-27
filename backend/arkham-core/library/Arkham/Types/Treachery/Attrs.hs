@@ -35,8 +35,10 @@ instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "treachery"
 
 instance Entity Attrs where
-  toTarget Attrs { treacheryId } = TreacheryTarget treacheryId
-  toSource Attrs { treacheryId } = TreacherySource treacheryId
+  type EntityId Attrs = TreacheryId
+  toId = treacheryId
+  toTarget = TreacheryTarget . toId
+  toSource = TreacherySource . toId
   isSource Attrs { treacheryId } (TreacherySource tid) = treacheryId == tid
   isSource _ _ = False
   isTarget Attrs { treacheryId } (TreacheryTarget tid) = treacheryId == tid

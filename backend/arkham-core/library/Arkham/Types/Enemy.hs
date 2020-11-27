@@ -126,6 +126,8 @@ deriving anyclass instance
   => HasModifiersFor env Enemy
 
 instance Entity Enemy where
+  type EntityId Enemy = EnemyId
+  toId = toId . enemyAttrs
   toSource = toSource . enemyAttrs
   toTarget = toTarget . enemyAttrs
   isSource = isSource . enemyAttrs

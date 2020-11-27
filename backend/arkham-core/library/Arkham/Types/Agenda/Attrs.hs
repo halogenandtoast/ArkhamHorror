@@ -25,8 +25,10 @@ instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "agenda"
 
 instance Entity Attrs where
-  toSource = AgendaSource . agendaId
-  toTarget = AgendaTarget . agendaId
+  type EntityId Attrs = AgendaId
+  toId = agendaId
+  toSource = AgendaSource . toId
+  toTarget = AgendaTarget . toId
   isSource Attrs { agendaId } (AgendaSource aid) = agendaId == aid
   isSource _ _ = False
   isTarget Attrs { agendaId } (AgendaTarget aid) = agendaId == aid

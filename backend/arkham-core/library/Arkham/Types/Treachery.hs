@@ -74,6 +74,8 @@ deriving anyclass instance
   => HasModifiersFor env Treachery
 
 instance Entity Treachery where
+  type EntityId Treachery = TreacheryId
+  toId = toId . treacheryAttrs
   toTarget = toTarget . treacheryAttrs
   isTarget = isTarget . treacheryAttrs
   toSource = toSource . treacheryAttrs

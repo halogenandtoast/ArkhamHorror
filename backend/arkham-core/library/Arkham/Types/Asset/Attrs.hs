@@ -67,8 +67,10 @@ baseAttrs aid cardCode =
       }
 
 instance Entity Attrs where
-  toSource = AssetSource . assetId
-  toTarget = AssetTarget . assetId
+  type EntityId Attrs = AssetId
+  toId = assetId
+  toSource = AssetSource . toId
+  toTarget = AssetTarget . toId
   isSource Attrs { assetId } (AssetSource aid) = assetId == aid
   isSource _ _ = False
   isTarget Attrs { assetId } (AssetTarget aid) = assetId == aid

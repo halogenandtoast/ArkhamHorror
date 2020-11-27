@@ -116,6 +116,8 @@ deriving anyclass instance
 deriving anyclass instance AssetRunner env => RunMessage env Asset
 
 instance Entity Asset where
+  type EntityId Asset = AssetId
+  toId = toId . assetAttrs
   toTarget = toTarget . assetAttrs
   isTarget = isTarget . assetAttrs
   toSource = toSource . assetAttrs

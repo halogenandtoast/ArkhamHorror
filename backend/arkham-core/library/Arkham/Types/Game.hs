@@ -128,68 +128,67 @@ data Game queue = Game
   }
   deriving stock (Generic)
 
---newtype ModifierData = ModifierData { mdModifiers :: [Modifier] }
---  deriving stock (Show, Eq, Generic)
---
---instance ToJSON ModifierData where
---  toJSON = genericToJSON $ aesonOptions $ Just "md"
---  toEncoding = genericToEncoding $ aesonOptions $ Just "md"
---
---locationWithModifiers
---  :: (MonadReader env m, HasId LocationId env Location, HasModifiersFor env ())
---  => Location
---  -> m (With Location ModifierData)
---locationWithModifiers l = do
---  lid <- getId l
---  modifiers' <- getModifiersFor (LocationSource lid) (LocationTarget lid) ()
---  pure $ l `with` ModifierData modifiers'
---
---instance (ToJSON queue, HasActions (Game queue) (ActionType, Trait), HasActions (Game queue) Acti
---nType, HasQueue (Game queue)) => ToJSON (Game queue) where
---  toJSON g@Game {..} = object
---    [ "messages" .= toJSON gameMessages
---    , "roundMessageHistory" .= toJSON gameRoundMessageHistory
---    , "seed" .= toJSON gameSeed
---    , "hash" .= toJSON gameHash
---    , "mode" .= toJSON gameMode
---    , "locations"
---      .= toJSON (runReader (traverse locationWithModifiers gameLocations) g)
---    , "investigators" .= toJSON gameInvestigators
---    , "players" .= toJSON gamePlayers
---    , "enemies" .= toJSON gameEnemies
---    , "assets" .= toJSON gameAssets
---    , "acts" .= toJSON gameActs
---    , "agendas" .= toJSON gameAgendas
---    , "treacheries" .= toJSON gameTreacheries
---    , "events" .= toJSON gameEvents
---    , "effects" .= toJSON gameEffects
---    , "skills" .= toJSON gameSkills
---    , "playerCount" .= toJSON gamePlayerCount
---    , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
---    , "leadInvestigatorId" .= toJSON gameLeadInvestigatorId
---    , "playerOrder" .= toJSON gamePlayerOrder
---    , "playerTurnOrder" .= toJSON gamePlayerTurnOrder
---    , "phase" .= toJSON gamePhase
---    , "encounterDeck" .= toJSON gameEncounterDeck
---    , "discard" .= toJSON gameDiscard
---    , "chaosBag" .= toJSON gameChaosBag
---    , "skillTest" .= toJSON gameSkillTest
---    , "usedAbilities" .= toJSON gameUsedAbilities
---    , "focusedCards" .= toJSON gameFocusedCards
---    , "focusedTokens" .= toJSON gameFocusedTokens
---    , "activeCard" .= toJSON gameActiveCard
---    , "victoryDisplay" .= toJSON gameVictoryDisplay
---    , "gameState" .= toJSON gameGameState
---    , "question" .= toJSON gameQuestion
---    ]
+newtype ModifierData = ModifierData { mdModifiers :: [Modifier] }
+  deriving stock (Show, Eq, Generic)
+
+instance ToJSON ModifierData where
+  toJSON = genericToJSON $ aesonOptions $ Just "md"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "md"
+
+locationWithModifiers
+  :: (MonadReader env m, HasId LocationId env Location, HasModifiersFor env ())
+  => Location
+  -> m (With Location ModifierData)
+locationWithModifiers l = do
+  lid <- getId l
+  modifiers' <- getModifiersFor (LocationSource lid) (LocationTarget lid) ()
+  pure $ l `with` ModifierData modifiers'
+
+instance (ToJSON queue) => ToJSON (Game queue) where
+  toJSON g@Game {..} = object
+    [ "messages" .= toJSON gameMessages
+    , "roundMessageHistory" .= toJSON gameRoundMessageHistory
+    , "seed" .= toJSON gameSeed
+    , "hash" .= toJSON gameHash
+    , "mode" .= toJSON gameMode
+    , "locations"
+      .= toJSON (runReader (traverse locationWithModifiers gameLocations) g)
+    , "investigators" .= toJSON gameInvestigators
+    , "players" .= toJSON gamePlayers
+    , "enemies" .= toJSON gameEnemies
+    , "assets" .= toJSON gameAssets
+    , "acts" .= toJSON gameActs
+    , "agendas" .= toJSON gameAgendas
+    , "treacheries" .= toJSON gameTreacheries
+    , "events" .= toJSON gameEvents
+    , "effects" .= toJSON gameEffects
+    , "skills" .= toJSON gameSkills
+    , "playerCount" .= toJSON gamePlayerCount
+    , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
+    , "leadInvestigatorId" .= toJSON gameLeadInvestigatorId
+    , "playerOrder" .= toJSON gamePlayerOrder
+    , "playerTurnOrder" .= toJSON gamePlayerTurnOrder
+    , "phase" .= toJSON gamePhase
+    , "encounterDeck" .= toJSON gameEncounterDeck
+    , "discard" .= toJSON gameDiscard
+    , "chaosBag" .= toJSON gameChaosBag
+    , "skillTest" .= toJSON gameSkillTest
+    , "usedAbilities" .= toJSON gameUsedAbilities
+    , "focusedCards" .= toJSON gameFocusedCards
+    , "focusedTokens" .= toJSON gameFocusedTokens
+    , "activeCard" .= toJSON gameActiveCard
+    , "victoryDisplay" .= toJSON gameVictoryDisplay
+    , "gameState" .= toJSON gameGameState
+    , "question" .= toJSON gameQuestion
+    ]
 
 data GameState = IsPending | IsActive | IsOver
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-instance (ToJSON queue) => ToJSON (Game queue) where
-  toJSON = genericToJSON $ aesonOptions $ Just "game"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "game"
+-- instance (ToJSON queue) => ToJSON (Game queue) where
+--   toJSON = genericToJSON $ aesonOptions $ Just "game"
+--   toEncoding = genericToEncoding $ aesonOptions $ Just "game"
 
 instance (FromJSON queue) => FromJSON (Game queue) where
   parseJSON = genericParseJSON $ aesonOptions $ Just "game"

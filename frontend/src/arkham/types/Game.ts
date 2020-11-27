@@ -79,8 +79,7 @@ export interface GameState {
   assets: Record<string, Asset>;
   discard: EncounterCardContents[];
   enemies: Record<string, Enemy>;
-  gameOver: boolean;
-  pending: boolean;
+  gameState: string;
   investigators: Record<string, Investigator>;
   leadInvestigatorId: string;
   locations: Record<string, Location>;
@@ -96,6 +95,19 @@ export interface GameState {
   victoryDisplay: Card[];
 }
 
+interface Mode {
+  This?: Campaign;
+  That?: Scenario;
+}
+
+export const modeDecoder = JsonDecoder.object<Mode>(
+  {
+    This: JsonDecoder.optional(campaignDecoder),
+    That: JsonDecoder.optional(scenarioDecoder)
+  },
+  'Mode'
+);
+
 export const gameStateDecoder = JsonDecoder.object<GameState>(
   {
     activeInvestigatorId: JsonDecoder.string,
@@ -105,15 +117,14 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     assets: JsonDecoder.dictionary<Asset>(assetDecoder, 'Dict<UUID, Asset>'),
     discard: JsonDecoder.array<EncounterCardContents>(encounterCardContentsDecoder, 'EncounterCardContents[]'),
     enemies: JsonDecoder.dictionary<Enemy>(enemyDecoder, 'Dict<UUID, Enemy>'),
-    gameOver: JsonDecoder.boolean,
-    pending: JsonDecoder.boolean,
+    gameState: JsonDecoder.string,
     investigators: JsonDecoder.dictionary<Investigator>(investigatorDecoder, 'Dict<UUID, Investigator>'),
     leadInvestigatorId: JsonDecoder.string,
     locations: JsonDecoder.dictionary<Location>(locationDecoder, 'Dict<UUID, Location>'),
     phase: phaseDecoder,
     question: JsonDecoder.dictionary<Question>(questionDecoder, 'Dict<InvestigatorId, Question>'),
-    scenario: JsonDecoder.nullable(scenarioDecoder),
-    campaign: JsonDecoder.nullable(campaignDecoder),
+    scenario: modeDecoder.map(mode => mode.That || null),
+    campaign: modeDecoder.map(mode => mode.This || null),
     skillTest: JsonDecoder.nullable(skillTestDecoder),
     treacheries: JsonDecoder.dictionary<Treachery>(treacheryDecoder, 'Dict<UUID, Treachery>'),
     focusedCards: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
@@ -122,6 +133,10 @@ export const gameStateDecoder = JsonDecoder.object<GameState>(
     victoryDisplay: JsonDecoder.array<Card>(cardDecoder, 'Card[]'),
   },
   'GameState',
+  {
+    scenario: 'mode',
+    campaign: 'mode'
+  }
 );
 
 export const gameDecoder = JsonDecoder.object<Game>(

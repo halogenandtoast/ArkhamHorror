@@ -78,6 +78,7 @@ import Text.Read hiding (get, lift)
 
 type GameInternal = Game (IORef [Message])
 type GameExternal = Game [Message]
+type GameMode = These Campaign Scenario
 
 data Game queue = Game
   { gameMessages :: queue
@@ -86,7 +87,7 @@ data Game queue = Game
   , gameHash :: UUID
 
   -- Active Scenario/Campaign
-  , gameMode :: These Campaign Scenario
+  , gameMode :: GameMode
 
   -- Entities
   , gameLocations :: HashMap LocationId Location
@@ -221,7 +222,7 @@ activeInvestigatorId :: Lens' (Game queue) InvestigatorId
 activeInvestigatorId =
   lens gameActiveInvestigatorId $ \m x -> m { gameActiveInvestigatorId = x }
 
-mode :: Lens' (Game queue) (These Campaign Scenario)
+mode :: Lens' (Game queue) GameMode
 mode = lens gameMode $ \m x -> m { gameMode = x }
 
 skillTest :: Lens' (Game queue) (Maybe SkillTest)
@@ -589,27 +590,16 @@ instance (HasModifiersFor env (), env ~ Game queue) => HasStats (Game queue) (In
   getStats (iid, maction) source =
     modifiedStatsOf source maction =<< getInvestigator iid
 
-this :: These a b -> Maybe a
-this = these Just (const Nothing) (const . Just)
+setScenario :: Scenario -> GameMode -> GameMode
+setScenario c (This a) = These a c
+setScenario c (That _) = That c
+setScenario c (These a _) = These a c
 
-that :: These a b -> Maybe b
-that = these (const Nothing) Just (const Just)
+scenario :: GameMode -> Maybe Scenario
+scenario = preview _That
 
--- setThis :: c -> These a b -> These c b
--- setThis c (This _) = This c
--- setThis c (That b) = These c b
--- setThis c (These _ b) = These c b
-
-setThat :: c -> These a b -> These a c
-setThat c (This a) = These a c
-setThat c (That _) = That c
-setThat c (These a _) = These a c
-
-scenario :: These Campaign Scenario -> Maybe Scenario
-scenario = that
-
-campaign :: These Campaign Scenario -> Maybe Campaign
-campaign = this
+campaign :: GameMode -> Maybe Campaign
+campaign = preview _This
 
 instance
   (env ~ Game queue
@@ -625,7 +615,7 @@ instance
   )
   => HasTokenValue (Game queue) () where
   getTokenValue _ iid token = do
-    mscenario <- that <$> view mode
+    mscenario <- scenario <$> view mode
     case mscenario of
       Just scenario' -> getTokenValue scenario' iid token
       Nothing -> error "missing scenario"
@@ -713,10 +703,10 @@ instance HasTarget ForSkillTest (Game queue) where
   getTarget _ g = g ^? skillTest . traverse . to skillTestTarget
 
 instance HasSet ScenarioLogKey (Game queue) () where
-  getSet _ = maybe (pure mempty) getSet . that =<< view mode
+  getSet _ = maybe (pure mempty) getSet . scenario =<< view mode
 
 instance HasSet CompletedScenarioId (Game queue) () where
-  getSet _ = maybe (pure mempty) getSet . this =<< view mode
+  getSet _ = maybe (pure mempty) getSet . campaign =<< view mode
 
 instance HasSet HandCardId (Game queue) InvestigatorId where
   getSet iid =
@@ -1437,7 +1427,7 @@ runGameMessage msg g = case msg of
       <> [Setup]
     pure
       $ g
-      & (mode %~ setThat (lookupScenario sid difficulty'))
+      & (mode %~ setScenario (lookupScenario sid difficulty'))
       & (phase .~ InvestigationPhase)
   CreateEffect cardCode meffectMetadata source target -> do
     (effectId', effect') <- createEffect cardCode meffectMetadata source target

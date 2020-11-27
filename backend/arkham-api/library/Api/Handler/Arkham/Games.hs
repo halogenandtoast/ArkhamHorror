@@ -48,9 +48,9 @@ gameStream gameId = catchingConnectionException $ do
         ( Map.adjust pred gameId channelClients
         , Map.findWithDefault 1 gameId channelClients - 1
         )
-    when (clientCount == 0) $ do
-      atomicModifyIORef' gameChannelsRef
-        $ \gameChannels' -> (Map.delete gameId gameChannels', ())
+    when (clientCount == 0)
+      $ atomicModifyIORef' gameChannelsRef
+      $ \gameChannels' -> (Map.delete gameId gameChannels', ())
 
 catchingConnectionException :: WebSocketsT Handler () -> WebSocketsT Handler ()
 catchingConnectionException f =
@@ -105,7 +105,7 @@ postApiV1ArkhamGamesR = do
     Just cid -> do
       ge <-
         liftIO
-        $ runMessages
+        $ runMessages (const $ pure ())
         =<< newCampaign cid playerCount investigators difficulty
       key <- runDB $ do
         gameId <- insert $ ArkhamGame campaignName ge
@@ -116,7 +116,7 @@ postApiV1ArkhamGamesR = do
       Just sid -> do
         ge <-
           liftIO
-          $ runMessages
+          $ runMessages (const $ pure ())
           =<< newScenario sid playerCount investigators difficulty
         key <- runDB $ do
           gameId <- insert $ ArkhamGame campaignName ge
@@ -166,7 +166,7 @@ putApiV1ArkhamGameR gameId = do
 
   if gameHash == qrGameHash response
     then do
-      ge <- liftIO $ runMessages =<< toInternalGame
+      ge <- liftIO $ runMessages (const $ pure ()) =<< toInternalGame
         (gameJson { gameMessages = messages <> gameMessages })
 
       writeChannel <- getChannel gameId
@@ -187,7 +187,7 @@ putApiV1ArkhamGameRawR gameId = do
   void $ fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
   response <- requireCheckJsonBody
-  ge <- liftIO $ runMessages =<< toInternalGame
+  ge <- liftIO $ runMessages (const $ pure ()) =<< toInternalGame
     ((gameJson response)
       { gameMessages = Continue "edited" : gameMessages (gameJson response)
       }
@@ -199,9 +199,7 @@ putApiV1ArkhamGameRawR gameId = do
   runDB (replace gameId (ArkhamGame arkhamGameName ge))
 
 deleteApiV1ArkhamGameR :: ArkhamGameId -> Handler ()
-deleteApiV1ArkhamGameR gameId = do
-  void $ runDB $ do
-    delete $ from $ \players -> do
-      where_ $ players ^. ArkhamPlayerArkhamGameId ==. val gameId
-    delete $ from $ \games -> do
-      where_ $ games ^. persistIdField ==. val gameId
+deleteApiV1ArkhamGameR gameId = void $ runDB $ do
+  delete $ from $ \players ->
+    where_ $ players ^. ArkhamPlayerArkhamGameId ==. val gameId
+  delete $ from $ \games -> where_ $ games ^. persistIdField ==. val gameId

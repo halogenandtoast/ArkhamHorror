@@ -24,8 +24,6 @@ export interface LocationContents {
   investigators: string[];
   enemies: string[];
   victory: number | null;
-  // symbol: LocationSymbol;
-  // connectedSymbols: HashSet LocationSymbol;
   connectedLocations: string[];
   treacheries: string[];
   assets: string[];
@@ -42,8 +40,6 @@ export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
     investigators: JsonDecoder.array<string>(JsonDecoder.string, 'InvestigatorId[]'),
     enemies: JsonDecoder.array<string>(JsonDecoder.string, 'EnemyId[]'),
     victory: JsonDecoder.nullable(JsonDecoder.number),
-    // symbol: LocationSymbol,
-    // connectedSymbols: HashSet LocationSymbol,
     connectedLocations: JsonDecoder.array<string>(JsonDecoder.string, 'LocationId[]'),
     treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
     assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),

@@ -41,7 +41,7 @@ instance AssetRunner env => RunMessage env Shrivelling where
           (EffectModifiers [DamageDealt 1])
           source
           (InvestigatorTarget iid)
-        , CreateEffect "01050" Nothing source (InvestigatorTarget iid)
+        , CreateEffect "01060" Nothing source (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillWillpower False
         ]
       pure $ Shrivelling $ attrs & uses %~ Resource.use

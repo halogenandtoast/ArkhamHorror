@@ -248,13 +248,13 @@ getEngagedEnemies = investigatorEngagedEnemies . investigatorAttrs
 
 -- TODO: This does not work for more than 2 players
 getIsPrey
-  :: ( HasSet Int env SkillType
-     , HasSet RemainingHealth env ()
-     , HasSet RemainingSanity env ()
-     , HasSet ClueCount env ()
-     , HasSet CardCount env ()
+  :: ( MonadReader env m
      , HasList (InvestigatorId, Distance) env EnemyTrait
-     , MonadReader env m
+     , HasSet CardCount env ()
+     , HasSet ClueCount env ()
+     , HasSet RemainingSanity env ()
+     , HasSet RemainingHealth env ()
+     , HasSet Int env SkillType -- hmmm
      , HasModifiersFor env ()
      )
   => Prey

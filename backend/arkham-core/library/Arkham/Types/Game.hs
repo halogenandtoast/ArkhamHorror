@@ -128,6 +128,61 @@ data Game queue = Game
   }
   deriving stock (Generic)
 
+--newtype ModifierData = ModifierData { mdModifiers :: [Modifier] }
+--  deriving stock (Show, Eq, Generic)
+--
+--instance ToJSON ModifierData where
+--  toJSON = genericToJSON $ aesonOptions $ Just "md"
+--  toEncoding = genericToEncoding $ aesonOptions $ Just "md"
+--
+--locationWithModifiers
+--  :: (MonadReader env m, HasId LocationId env Location, HasModifiersFor env ())
+--  => Location
+--  -> m (With Location ModifierData)
+--locationWithModifiers l = do
+--  lid <- getId l
+--  modifiers' <- getModifiersFor (LocationSource lid) (LocationTarget lid) ()
+--  pure $ l `with` ModifierData modifiers'
+--
+--instance (ToJSON queue, HasActions (Game queue) (ActionType, Trait), HasActions (Game queue) Acti
+--nType, HasQueue (Game queue)) => ToJSON (Game queue) where
+--  toJSON g@Game {..} = object
+--    [ "messages" .= toJSON gameMessages
+--    , "roundMessageHistory" .= toJSON gameRoundMessageHistory
+--    , "seed" .= toJSON gameSeed
+--    , "hash" .= toJSON gameHash
+--    , "mode" .= toJSON gameMode
+--    , "locations"
+--      .= toJSON (runReader (traverse locationWithModifiers gameLocations) g)
+--    , "investigators" .= toJSON gameInvestigators
+--    , "players" .= toJSON gamePlayers
+--    , "enemies" .= toJSON gameEnemies
+--    , "assets" .= toJSON gameAssets
+--    , "acts" .= toJSON gameActs
+--    , "agendas" .= toJSON gameAgendas
+--    , "treacheries" .= toJSON gameTreacheries
+--    , "events" .= toJSON gameEvents
+--    , "effects" .= toJSON gameEffects
+--    , "skills" .= toJSON gameSkills
+--    , "playerCount" .= toJSON gamePlayerCount
+--    , "activeInvestigatorId" .= toJSON gameActiveInvestigatorId
+--    , "leadInvestigatorId" .= toJSON gameLeadInvestigatorId
+--    , "playerOrder" .= toJSON gamePlayerOrder
+--    , "playerTurnOrder" .= toJSON gamePlayerTurnOrder
+--    , "phase" .= toJSON gamePhase
+--    , "encounterDeck" .= toJSON gameEncounterDeck
+--    , "discard" .= toJSON gameDiscard
+--    , "chaosBag" .= toJSON gameChaosBag
+--    , "skillTest" .= toJSON gameSkillTest
+--    , "usedAbilities" .= toJSON gameUsedAbilities
+--    , "focusedCards" .= toJSON gameFocusedCards
+--    , "focusedTokens" .= toJSON gameFocusedTokens
+--    , "activeCard" .= toJSON gameActiveCard
+--    , "victoryDisplay" .= toJSON gameVictoryDisplay
+--    , "gameState" .= toJSON gameGameState
+--    , "question" .= toJSON gameQuestion
+--    ]
+
 data GameState = IsPending | IsActive | IsOver
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -543,7 +598,7 @@ instance HasCount CardCount (Game queue) InvestigatorId where
 instance HasCount ClueCount (Game queue) InvestigatorId where
   getCount = getCount <=< getInvestigator
 
-instance (HasQueue (Game queue), HasActions (Game queue) (ActionType, Trait), HasActions (Game queue) ActionType) => HasCount SpendableClueCount (Game queue) InvestigatorId where
+instance HasCount SpendableClueCount (Game queue) InvestigatorId where
   getCount = getInvestigatorSpendableClueCount <=< getInvestigator
 
 instance HasCount ResourceCount (Game queue) InvestigatorId where
@@ -586,7 +641,7 @@ instance HasCount EnemyCount (Game queue) (InvestigatorLocation, [Trait]) where
     locationId <- locationFor iid
     getCount (locationId, traits)
 
-instance (HasModifiersFor env (), env ~ Game queue) => HasStats (Game queue) (InvestigatorId, Maybe Action) where
+instance HasStats (Game queue) (InvestigatorId, Maybe Action) where
   getStats (iid, maction) source =
     modifiedStatsOf source maction =<< getInvestigator iid
 
@@ -626,16 +681,12 @@ instance
       Just scenario' -> getTokenValue scenario' iid token
       Nothing -> error "missing scenario"
 
-instance
-  (env ~ Game queue
-  , HasCount ClueCount env LocationId
-  )
-  => HasTokenValue (Game queue) InvestigatorId where
+instance HasTokenValue (Game queue) InvestigatorId where
   getTokenValue iid' iid token = do
     investigator <- getInvestigator iid'
     getTokenValue investigator iid token
 
-instance (GameRunner env, env ~ Game queue) => HasModifiersFor (Game queue) () where
+instance HasModifiersFor (Game queue) () where
   getModifiersFor source target _ = do
     g <- ask
     concat <$> sequence
@@ -797,7 +848,7 @@ instance HasSet CardCount (Game queue) () where
       . toList
       <$> view investigators
 
-instance (GameRunner env, env ~ Game queue) => HasSet RemainingHealth (Game queue) () where
+instance HasSet RemainingHealth (Game queue) () where
   getSet _ = do
     g <- ask
     setFromList
@@ -805,7 +856,7 @@ instance (GameRunner env, env ~ Game queue) => HasSet RemainingHealth (Game queu
       . toList
       <$> view investigators
 
-instance (GameRunner env, env ~ Game queue) => HasSet RemainingSanity (Game queue) () where
+instance HasSet RemainingSanity (Game queue) () where
   getSet _ = do
     g <- ask
     setFromList
@@ -813,12 +864,12 @@ instance (GameRunner env, env ~ Game queue) => HasSet RemainingSanity (Game queu
       . toList
       <$> view investigators
 
-instance (GameRunner env, env ~ Game queue) => HasCount RemainingHealth (Game queue) InvestigatorId where
+instance HasCount RemainingHealth (Game queue) InvestigatorId where
   getCount iid = do
     g <- ask
     RemainingHealth <$> getRemainingHealth (getInvestigator iid g)
 
-instance (GameRunner env, env ~ Game queue) => HasCount RemainingSanity (Game queue) InvestigatorId where
+instance HasCount RemainingSanity (Game queue) InvestigatorId where
   getCount iid = do
     g <- ask
     RemainingSanity <$> getRemainingSanity (getInvestigator iid g)
@@ -884,7 +935,7 @@ instance HasSet CommittedCardId (Game queue) InvestigatorId where
 instance HasSet CommittedCardCode (Game queue) () where
   getSet _ = maybe (pure mempty) getSet =<< view skillTest
 
-instance (HasActions (Game queue) (ActionType, Trait), HasActions (Game queue) ActionType, HasQueue (Game queue)) => HasSet BlockedLocationId (Game queue) () where
+instance HasSet BlockedLocationId (Game queue) () where
   getSet _ = do
     locations' <- mapToList <$> view locations
     setFromList . map (BlockedLocationId . fst) <$> filterM isBlocked locations'
@@ -957,7 +1008,7 @@ markDistances game initialLocation target = do
       Nothing -> fromJustNote "failed bfs on tail" $ tailMay currentPath
       Just parent -> unwindPath parentsMap (parent : currentPath)
 
-instance (GameRunner env, env ~ Game queue) => HasSet ClosestLocationId (Game queue) (LocationId, Prey) where
+instance HasSet ClosestLocationId (Game queue) (LocationId, Prey) where
   getSet (start, prey) = do
     g <- ask
     let matcher lid = not . null $ getSet @PreyId (prey, lid) g
@@ -1109,13 +1160,13 @@ instance HasSet Int (Game queue) SkillType where
   getSet skillType =
     setFromList . map (getSkill skillType) . toList <$> view investigators
 
-instance (GameRunner env, env ~ Game queue) => HasSet PreyId (Game queue) Prey where
+instance HasSet PreyId (Game queue) Prey where
   getSet preyType = do
     investigatorIds <- getSetList ()
     let matcher = getIsPrey preyType <=< getInvestigator
     setFromList . map PreyId <$> filterM matcher investigatorIds
 
-instance (HasQueue (Game queue), HasActions (Game queue) (ActionType, Trait), HasActions (Game queue) ActionType) => HasSet PreyId (Game queue) (Prey, LocationId) where
+instance HasSet PreyId (Game queue) (Prey, LocationId) where
   getSet (preyType, lid) = do
     location <- getLocation lid
     investigators' <- getSetList location
@@ -1133,7 +1184,7 @@ instance HasSet AdvanceableActId (Game queue) () where
 instance HasSet ConnectedLocationId (Game queue) LocationId where
   getSet = getSet <=< getLocation
 
-instance (HasActions (Game queue) (ActionType, Trait), HasActions (Game queue) ActionType, HasQueue (Game queue)) => HasSet AccessibleLocationId (Game queue) LocationId where
+instance HasSet AccessibleLocationId (Game queue) LocationId where
   getSet lid = do
     location <- getLocation lid
     connectedLocationIds <- HashSet.map unConnectedLocationId
@@ -1372,8 +1423,8 @@ instance HasActions GameInternal (ActionType, Trait) where
       ActActionType -> pure [] -- acts do not have traits
       AgendaActionType -> pure [] -- agendas do not have traits
 
-instance (GameRunner (Game queue)) => HasActions (Game queue) AssetId where
-  getActions iid window aid = ask >>= getActions iid window . getAsset aid
+instance (HasQueue (Game queue), HasActions (Game queue) ActionType) => HasActions (Game queue) AssetId where
+  getActions iid window aid = getActions iid window =<< getAsset aid
 
 runPreGameMessage
   :: (GameRunner env, MonadReader env m, MonadIO m)

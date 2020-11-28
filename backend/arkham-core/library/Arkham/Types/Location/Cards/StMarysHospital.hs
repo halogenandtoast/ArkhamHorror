@@ -49,7 +49,7 @@ instance ActionRunner env => HasActions env StMarysHospital where
         <> [ ActivateCardAbilityAction iid (ability attrs)
            | unused && iid `member` locationInvestigators && hasActionsRemaining
            ]
-  getActions _ _ _ = pure []
+  getActions iid window (StMarysHospital attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env StMarysHospital where
   runMessage msg l@(StMarysHospital attrs) = case msg of

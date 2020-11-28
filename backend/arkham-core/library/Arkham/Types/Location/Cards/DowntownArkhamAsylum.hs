@@ -52,7 +52,8 @@ instance ActionRunner env => HasActions env DowntownArkhamAsylum where
         <> [ ActivateCardAbilityAction iid (ability attrs)
            | unused && iid `elem` locationInvestigators && hasActionsRemaining
            ]
-  getActions _ _ _ = pure []
+  getActions iid window (DowntownArkhamAsylum attrs) =
+    getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env DowntownArkhamAsylum where
   runMessage msg l@(DowntownArkhamAsylum attrs) = case msg of

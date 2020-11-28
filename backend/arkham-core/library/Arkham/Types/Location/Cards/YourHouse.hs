@@ -48,7 +48,7 @@ instance ActionRunner env => HasActions env YourHouse where
       <> [ ActivateCardAbilityAction iid (ability attrs)
          | unused && iid `member` locationInvestigators && hasActionsRemaining
          ]
-  getActions _ _ _ = pure []
+  getActions iid window (YourHouse attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env YourHouse where
   runMessage msg l@(YourHouse attrs@Attrs {..}) = case msg of

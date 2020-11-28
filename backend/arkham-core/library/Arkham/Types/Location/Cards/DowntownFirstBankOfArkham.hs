@@ -56,7 +56,8 @@ instance ActionRunner env => HasActions env DowntownFirstBankOfArkham where
              `member` locationInvestigators
              && hasActionsRemaining
            ]
-  getActions _ _ _ = pure []
+  getActions iid window (DowntownFirstBankOfArkham attrs) =
+    getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env DowntownFirstBankOfArkham where
   runMessage msg l@(DowntownFirstBankOfArkham attrs) = case msg of

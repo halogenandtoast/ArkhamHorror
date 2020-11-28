@@ -20,7 +20,7 @@ newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation Attrs
 easttownArkhamPoliceStation :: EasttownArkhamPoliceStation
 easttownArkhamPoliceStation =
   EasttownArkhamPoliceStation $ (baseAttrs
-                                  "50030"
+                                  "50027"
                                   "Easttown"
                                   EncounterSet.ReturnToTheMidnightMasks
                                   4

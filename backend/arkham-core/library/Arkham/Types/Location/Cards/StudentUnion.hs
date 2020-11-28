@@ -38,7 +38,7 @@ instance ActionRunner env => HasActions env StudentUnion where
       <> [ ActivateCardAbilityAction iid ability
          | iid `elem` locationInvestigators && actionRemainingCount >= 2
          ]
-  getActions _ _ _ = pure []
+  getActions iid window (StudentUnion attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env StudentUnion where
   runMessage msg l@(StudentUnion attrs) = case msg of

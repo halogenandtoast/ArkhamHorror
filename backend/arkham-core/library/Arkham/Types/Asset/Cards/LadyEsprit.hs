@@ -51,5 +51,5 @@ instance (AssetRunner env) => RunMessage env LadyEsprit where
         [HealDamage (InvestigatorTarget iid) 2, TakeResources iid 2 False]
       runMessage
         CheckDefeated
-        (LadyEsprit $ attrs & exhausted .~ True & sanityDamage +~ 1)
+        (LadyEsprit $ attrs & exhaustedL .~ True & sanityDamageL +~ 1)
     _ -> LadyEsprit <$> runMessage msg attrs

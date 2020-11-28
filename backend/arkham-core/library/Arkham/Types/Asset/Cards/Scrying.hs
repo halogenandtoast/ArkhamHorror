@@ -37,7 +37,7 @@ instance ActionRunner env => HasActions env Scrying where
 instance AssetRunner env => RunMessage env Scrying where
   runMessage msg (Scrying attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Scrying <$> runMessage msg (attrs & uses .~ Uses Resource.Charge 3)
+      Scrying <$> runMessage msg (attrs & usesL .~ Uses Resource.Charge 3)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- getId @LocationId iid
       targets <- map InvestigatorTarget <$> getSetList locationId
@@ -48,5 +48,5 @@ instance AssetRunner env => RunMessage env Scrying where
           | target <- targets
           ]
         )
-      pure $ Scrying $ attrs & uses %~ Resource.use & exhausted .~ True
+      pure $ Scrying $ attrs & usesL %~ Resource.use & exhaustedL .~ True
     _ -> Scrying <$> runMessage msg attrs

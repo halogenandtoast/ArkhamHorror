@@ -34,7 +34,7 @@ instance ActionRunner env => HasActions env JennysTwin45s where
 instance AssetRunner env => RunMessage env JennysTwin45s where
   runMessage msg (JennysTwin45s attrs) = case msg of
     InvestigatorPlayDynamicAsset _ aid _ _ n | aid == assetId attrs ->
-      JennysTwin45s <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo n)
+      JennysTwin45s <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo n)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessages
         [ CreateSkillTestEffect
@@ -43,5 +43,5 @@ instance AssetRunner env => RunMessage env JennysTwin45s where
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-      pure $ JennysTwin45s $ attrs & uses %~ Resource.use
+      pure $ JennysTwin45s $ attrs & usesL %~ Resource.use
     _ -> JennysTwin45s <$> runMessage msg attrs

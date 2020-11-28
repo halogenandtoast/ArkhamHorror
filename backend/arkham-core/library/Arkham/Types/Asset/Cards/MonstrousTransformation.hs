@@ -45,5 +45,5 @@ instance (AssetRunner env) => RunMessage env MonstrousTransformation where
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-      pure $ MonstrousTransformation $ attrs & exhausted .~ True
+      pure $ MonstrousTransformation $ attrs & exhaustedL .~ True
     _ -> MonstrousTransformation <$> runMessage msg attrs

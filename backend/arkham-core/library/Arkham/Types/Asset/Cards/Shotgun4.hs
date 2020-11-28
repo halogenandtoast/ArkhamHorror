@@ -34,7 +34,7 @@ instance ActionRunner env => HasActions env Shotgun4 where
 instance (AssetRunner env) => RunMessage env Shotgun4 where
   runMessage msg a@(Shotgun4 attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Shotgun4 <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo 2)
+      Shotgun4 <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 2)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessages
         [ CreateSkillTestEffect
@@ -43,7 +43,7 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-      pure $ Shotgun4 $ attrs & uses %~ Resource.use
+      pure $ Shotgun4 $ attrs & usesL %~ Resource.use
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} n
       | isSource attrs source
       -> let val = min 1 (max 5 n)

@@ -43,5 +43,5 @@ instance AssetRunner env => RunMessage env OldBookOfLore where
           | iid' <- investigatorIds
           ]
         )
-      pure $ OldBookOfLore $ attrs & exhausted .~ True
+      pure $ OldBookOfLore $ attrs & exhaustedL .~ True
     _ -> OldBookOfLore <$> runMessage msg attrs

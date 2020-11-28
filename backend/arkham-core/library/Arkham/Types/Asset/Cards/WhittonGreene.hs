@@ -50,5 +50,5 @@ instance AssetRunner env => RunMessage env WhittonGreene where
           [Tome, Relic]
           ShuffleBackIn
         )
-      pure . WhittonGreene $ attrs & exhausted .~ True
+      pure . WhittonGreene $ attrs & exhaustedL .~ True
     _ -> WhittonGreene <$> runMessage msg attrs

@@ -42,5 +42,5 @@ instance ActionRunner env => HasActions env PeterSylvestre where
 instance (AssetRunner env) => RunMessage env PeterSylvestre where
   runMessage msg (PeterSylvestre attrs) = case msg of
     UseCardAbility _ source _ 1 | isSource attrs source ->
-      pure $ PeterSylvestre $ attrs & sanityDamage -~ 1
+      pure $ PeterSylvestre $ attrs & sanityDamageL -~ 1
     _ -> PeterSylvestre <$> runMessage msg attrs

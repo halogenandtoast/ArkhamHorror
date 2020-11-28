@@ -40,7 +40,7 @@ instance AssetRunner env => RunMessage env ScrollOfProphecies where
   runMessage msg (ScrollOfProphecies attrs@Attrs {..}) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId ->
       ScrollOfProphecies
-        <$> runMessage msg (attrs & uses .~ Uses Resource.Secret 4)
+        <$> runMessage msg (attrs & usesL .~ Uses Resource.Secret 4)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- getId @LocationId iid
       investigatorIds <- getSetList locationId
@@ -56,8 +56,8 @@ instance AssetRunner env => RunMessage env ScrollOfProphecies where
       pure
         $ ScrollOfProphecies
         $ attrs
-        & exhausted
+        & exhaustedL
         .~ True
-        & uses
+        & usesL
         %~ Resource.use
     _ -> ScrollOfProphecies <$> runMessage msg attrs

@@ -45,5 +45,5 @@ instance AssetRunner env => RunMessage env Burglary where
         [ CreateEffect "01045" Nothing source (LocationTarget lid)
         , Investigate iid lid (toSource attrs) SkillIntellect False
         ]
-      pure $ Burglary $ attrs & exhausted .~ True
+      pure $ Burglary $ attrs & exhaustedL .~ True
     _ -> Burglary <$> runMessage msg attrs

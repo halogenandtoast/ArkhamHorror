@@ -48,5 +48,5 @@ instance AssetRunner env => RunMessage env DaisysToteBagAdvanced where
     UseCardAbility iid source (Just (TargetMetadata (CardIdTarget cardId))) 1
       | isSource attrs source -> do
         unshiftMessage (ChangeCardToFast iid cardId)
-        pure . DaisysToteBagAdvanced $ attrs & exhausted .~ True
+        pure . DaisysToteBagAdvanced $ attrs & exhaustedL .~ True
     _ -> DaisysToteBagAdvanced <$> runMessage msg attrs

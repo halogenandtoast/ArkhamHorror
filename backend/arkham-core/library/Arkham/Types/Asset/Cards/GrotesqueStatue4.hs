@@ -47,7 +47,7 @@ instance (AssetRunner env) => RunMessage env GrotesqueStatue4 where
   runMessage msg (GrotesqueStatue4 attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       GrotesqueStatue4
-        <$> runMessage msg (attrs & uses .~ Uses Resource.Charge 4)
+        <$> runMessage msg (attrs & usesL .~ Uses Resource.Charge 4)
     UseCardAbility iid source (Just (SourceMetadata drawSource)) 1
       | isSource attrs source -> do
         when (useCount (assetUses attrs) == 1)
@@ -56,5 +56,5 @@ instance (AssetRunner env) => RunMessage env GrotesqueStatue4 where
           drawSource
           iid
           (Choose 1 [Undecided Draw, Undecided Draw] [])
-        pure $ GrotesqueStatue4 $ attrs & uses %~ Resource.use
+        pure $ GrotesqueStatue4 $ attrs & usesL %~ Resource.use
     _ -> GrotesqueStatue4 <$> runMessage msg attrs

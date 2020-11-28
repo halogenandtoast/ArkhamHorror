@@ -31,5 +31,5 @@ instance AssetRunner env => RunMessage env RabbitsFoot where
   runMessage msg (RabbitsFoot attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessage (DrawCards iid 1 False)
-      pure $ RabbitsFoot $ attrs & exhausted .~ True
+      pure $ RabbitsFoot $ attrs & exhaustedL .~ True
     _ -> RabbitsFoot <$> runMessage msg attrs

@@ -47,5 +47,5 @@ instance (AssetRunner env) => RunMessage env BookOfShadows3 where
           iid
           [ AddUses (AssetTarget aid') Charge 1 | aid' <- spellAssetIds ]
         )
-      pure $ BookOfShadows3 $ attrs & exhausted .~ True
+      pure $ BookOfShadows3 $ attrs & exhaustedL .~ True
     _ -> BookOfShadows3 <$> runMessage msg attrs

@@ -36,7 +36,7 @@ instance ActionRunner env => HasActions env Flashlight where
 instance (AssetRunner env) => RunMessage env Flashlight where
   runMessage msg (Flashlight attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Flashlight <$> runMessage msg (attrs & uses .~ Uses Resource.Supply 3)
+      Flashlight <$> runMessage msg (attrs & usesL .~ Uses Resource.Supply 3)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       lid <- getId iid
       unshiftMessages
@@ -46,5 +46,5 @@ instance (AssetRunner env) => RunMessage env Flashlight where
           (LocationTarget lid)
         , Investigate iid lid source SkillIntellect False
         ]
-      pure $ Flashlight $ attrs & uses %~ Resource.use
+      pure $ Flashlight $ attrs & usesL %~ Resource.use
     _ -> Flashlight <$> runMessage msg attrs

@@ -1,19 +1,27 @@
 <template>
-  <div v-if="card" class="card-overlay">
+  <div v-if="card" class="card-overlay" :style="{top, left}">
     <img :src="card" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 
 export default defineComponent({
   setup() {
     const card = ref<string | null>(null);
+    const topPosition = ref(50)
+    const leftPosition = ref(10)
+
+    const top = computed(() => topPosition.value + 'px')
+    const left = computed(() => leftPosition.value + 'px')
 
     document.addEventListener('mousemove', (event) => {
       if (event.target instanceof HTMLImageElement) {
         if (event.target.classList.contains('card')) {
+          console.log(event.target);
+          topPosition.value = Math.max(event.target.y - 300, 50)
+          leftPosition.value = Math.min(event.target.x + 150, window.innerWidth - 300)
           card.value = event.target.src
         } else {
           card.value = null
@@ -23,7 +31,7 @@ export default defineComponent({
       }
     })
 
-    return { card }
+    return { card, top, left }
   }
 })
 </script>
@@ -31,8 +39,6 @@ export default defineComponent({
 <style lang="scss">
 .card-overlay {
   position: fixed;
-  top: 50px;
-  right: 10px;
   img {
     border-radius: 20px;
   }

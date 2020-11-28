@@ -19,9 +19,9 @@ export default defineComponent({
     document.addEventListener('mousemove', (event) => {
       if (event.target instanceof HTMLImageElement) {
         if (event.target.classList.contains('card')) {
-          console.log(event.target);
-          topPosition.value = Math.max(event.target.y - 300, 50)
-          leftPosition.value = Math.min(event.target.x + 150, window.innerWidth - 300)
+          const clientRect = event.target.getBoundingClientRect ();
+          topPosition.value = Math.max(clientRect.top - 300, 50)
+          leftPosition.value = Math.min(clientRect.left + 150, window.innerWidth - 300)
           card.value = event.target.src
         } else {
           card.value = null

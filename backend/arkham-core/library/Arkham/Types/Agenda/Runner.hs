@@ -2,6 +2,7 @@ module Arkham.Types.Agenda.Runner where
 
 import Arkham.Import
 
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Trait
 
 type AgendaRunner env
@@ -11,6 +12,7 @@ type AgendaRunner env
     , HasCount DiscardCount env InvestigatorId
     , HasCount DoomCount env ()
     , HasCount EnemyCount env (LocationId, [Trait])
+    , HasCount EnemyCount env (LocationMatcher, [Trait])
     , HasCount PlayerCount env ()
     , HasId (Maybe StoryEnemyId) env CardCode
     , HasId (Maybe LocationId) env LocationName
@@ -19,6 +21,7 @@ type AgendaRunner env
     , HasList LocationName env ()
     , HasSet ActId env ()
     , HasSet ClosestLocationId env (LocationId, LocationId)
+    , HasSet ClosestLocationId env (LocationId, LocationMatcher)
     , HasSet CompletedScenarioId env ()
     , HasSet EnemyId env ()
     , HasSet EnemyId env LocationId
@@ -28,5 +31,6 @@ type AgendaRunner env
     , HasSet LocationId env ()
     , HasSet LocationId env [Trait]
     , HasSet UnengagedEnemyId env ()
+    , HasSet EnemyId env LocationMatcher
     )
 

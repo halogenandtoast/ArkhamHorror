@@ -27,7 +27,7 @@ instance TreacheryRunner env => RunMessage env ObscuringFog where
       obscuringFogCount <- unTreacheryCount
         <$> getCount (currentLocationId, treacheryCardCode)
       if obscuringFogCount > 0
-        then pure t -- Revelation did not run
+        then t <$ unshiftMessage (Discard $ toTarget attrs)
         else do
           unshiftMessage
             $ AttachTreachery treacheryId (LocationTarget currentLocationId)

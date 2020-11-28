@@ -288,6 +288,11 @@ getLocation :: MonadReader (Game queue) m => LocationId -> m Location
 getLocation lid = fromJustNote missingLocation <$> preview (locations . ix lid)
   where missingLocation = "Unknown location: " <> show lid
 
+getLocationNamed
+  :: MonadReader (Game queue) m => LocationName -> m (Maybe Location)
+getLocationNamed locationName =
+  find ((== locationName) . getLocationName) . toList <$> view locations
+
 getEnemy :: MonadReader (Game queue) m => EnemyId -> m Enemy
 getEnemy eid = fromJustNote missingEnemy <$> preview (enemies . ix eid)
   where missingEnemy = "Unknown enemy: " <> show eid
@@ -478,6 +483,30 @@ instance HasId (Maybe LocationId) (Game queue) LocationName where
       . toList
       <$> view locations
 
+instance HasSet EnemyId (Game queue) LocationMatcher where
+  getSet = \case
+    LocationNamed name -> getSet name
+
+instance HasSet EnemyId (Game queue) LocationName where
+  getSet locationName = do
+    g <- ask
+    maybe mempty (flip runReader g . getSet)
+      . find ((== locationName) . getLocationName)
+      . toList
+      <$> view locations
+
+instance HasSet ClosestLocationId (Game queue) (LocationId, LocationMatcher) where
+  getSet (lid, locationMatcher) = case locationMatcher of
+    LocationNamed name -> getSet (lid, name)
+
+instance HasSet ClosestLocationId (Game queue) (LocationId, LocationName) where
+  getSet (lid, locationName) = do
+    g <- ask
+    maybe mempty (flip runReader g . getSet . (lid, ) . toId)
+      . find ((== locationName) . getLocationName)
+      . toList
+      <$> view locations
+
 instance HasId (Maybe StoryAssetId) (Game queue) CardCode where
   getId cardCode = fmap StoryAssetId <$> getId cardCode
 
@@ -618,6 +647,12 @@ instance HasCount EnemyCount (Game queue) [Trait] where
   getCount traits = do
     EnemyCount . length . filterMap enemyMatcher <$> view enemies
     where enemyMatcher enemy = any (`member` getTraits enemy) traits
+
+instance HasCount EnemyCount (Game queue) (LocationMatcher, [Trait]) where
+  getCount (locationMatcher, traits) = case locationMatcher of
+    LocationNamed name ->
+      maybe (pure (EnemyCount 0)) (getCount . (, traits) . toId)
+        =<< getLocationNamed name
 
 instance HasCount EnemyCount (Game queue) (LocationId, [Trait]) where
   getCount (lid, traits) = do

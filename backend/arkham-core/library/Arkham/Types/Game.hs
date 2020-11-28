@@ -327,7 +327,7 @@ addInvestigator
   -> GameInternal
   -> m GameExternal
 addInvestigator uid i d g = do
-  liftIO $ atomicModifyIORef'
+  atomicModifyIORef'
     (g ^. messageQueue)
     (\queue -> (InitDeck (getInvestigatorId i) d : queue, ()))
   let
@@ -2324,8 +2324,8 @@ toExternalGame
   -> HashMap InvestigatorId Question
   -> m GameExternal
 toExternalGame g@Game {..} mq = do
-  queue <- liftIO $ readIORef gameMessages
-  roundHistory <- liftIO $ readIORef gameRoundMessageHistory
+  queue <- readIORef gameMessages
+  roundHistory <- readIORef gameRoundMessageHistory
   hash' <- liftIO nextRandom
   pure $ g
     { gameMessages = queue

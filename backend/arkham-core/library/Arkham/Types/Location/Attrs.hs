@@ -1,14 +1,13 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Attrs where
 
-import Arkham.Import
+import Arkham.Import hiding (toUpper, toLower)
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Location.Runner
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Trait
-import Data.Char (isLetter)
-import qualified Data.Text as T
+import Data.Char (isLetter, toLower, toUpper)
 
 data Attrs = Attrs
   { locationName :: LocationName
@@ -84,6 +83,20 @@ connectedLocations :: Lens' Attrs (HashSet LocationId)
 connectedLocations =
   lens locationConnectedLocations $ \m x -> m { locationConnectedLocations = x }
 
+toLabel :: String -> String
+toLabel [] = []
+toLabel (x : xs) = toLower x : go xs
+ where
+  go [] = []
+  go (' ' : x' : xs') = toUpper x' : go xs'
+  go (x' : xs') = x' : go xs'
+
+replaceNonLetters :: String -> String
+replaceNonLetters [] = []
+replaceNonLetters (x : xs) = if not (isLetter x)
+  then ' ' : replaceNonLetters xs
+  else x : replaceNonLetters xs
+
 baseAttrs
   :: LocationId
   -> LocationName
@@ -98,13 +111,7 @@ baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' tr
   = Attrs
     { locationName = name
     , locationLabel =
-      pack
-      . filter isLetter
-      . camelCase
-      . unpack
-      . T.filter (/= ' ')
-      . unLocationName
-      $ name
+      pack . toLabel . replaceNonLetters . unpack . unLocationName $ name
     , locationId = lid
     , locationRevealClues = revealClues
     , locationClues = 0

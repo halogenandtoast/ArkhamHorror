@@ -57,7 +57,7 @@ instance ActionRunner env => HasActions env Northside where
            `member` locationInvestigators
            && hasActionsRemaining
          ] -- GROUP LIMIT
-  getActions _ _ _ = pure []
+  getActions iid window (Northside attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env Northside where
   runMessage msg l@(Northside attrs@Attrs {..}) = case msg of

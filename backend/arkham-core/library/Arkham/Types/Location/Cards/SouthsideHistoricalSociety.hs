@@ -49,7 +49,8 @@ instance ActionRunner env => HasActions env SouthsideHistoricalSociety where
         <> [ ActivateCardAbilityAction iid (ability attrs)
            | unused && iid `member` locationInvestigators && hasActionsRemaining
            ]
-  getActions _ _ _ = pure []
+  getActions iid window (SouthsideHistoricalSociety attrs) =
+    getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env SouthsideHistoricalSociety where
   runMessage msg l@(SouthsideHistoricalSociety attrs) = case msg of

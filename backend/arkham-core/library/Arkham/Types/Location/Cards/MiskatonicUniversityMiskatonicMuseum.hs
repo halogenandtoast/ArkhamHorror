@@ -50,7 +50,8 @@ instance ActionRunner env => HasActions env MiskatonicUniversityMiskatonicMuseum
                (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
            | iid `member` locationInvestigators && hasActionsRemaining
            ]
-  getActions _ _ _ = pure []
+  getActions iid window (MiskatonicUniversityMiskatonicMuseum attrs) =
+    getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env MiskatonicUniversityMiskatonicMuseum where
   runMessage msg l@(MiskatonicUniversityMiskatonicMuseum attrs@Attrs {..}) =

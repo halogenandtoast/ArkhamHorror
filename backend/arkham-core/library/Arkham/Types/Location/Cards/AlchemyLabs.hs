@@ -48,7 +48,7 @@ instance ActionRunner env => HasActions env AlchemyLabs where
       <> [ ActivateCardAbilityAction iid ability
          | iid `elem` locationInvestigators && hasActionsRemaining
          ]
-  getActions _ _ _ = pure []
+  getActions iid window (AlchemyLabs attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env AlchemyLabs where
   runMessage msg l@(AlchemyLabs attrs) = case msg of

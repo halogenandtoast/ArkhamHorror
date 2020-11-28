@@ -69,7 +69,7 @@ instance ActionRunner env => HasActions env Parlor where
                == assetLocationId
                && hasParleyActionsRemaining
              ]
-  getActions _ _ _ = pure []
+  getActions iid window (Parlor attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env Parlor where
   runMessage msg l@(Parlor attrs@Attrs {..}) = case msg of

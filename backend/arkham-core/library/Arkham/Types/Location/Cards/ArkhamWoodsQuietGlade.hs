@@ -55,7 +55,8 @@ instance ActionRunner env => HasActions env ArkhamWoodsQuietGlade where
         <> [ ActivateCardAbilityAction iid (ability attrs)
            | unused && iid `elem` locationInvestigators && hasActionsRemaining
            ]
-  getActions _ _ _ = pure []
+  getActions iid window (ArkhamWoodsQuietGlade attrs) =
+    getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsQuietGlade where
   runMessage msg l@(ArkhamWoodsQuietGlade attrs@Attrs {..}) = case msg of

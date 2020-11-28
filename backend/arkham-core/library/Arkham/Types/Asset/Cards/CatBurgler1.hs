@@ -58,5 +58,5 @@ instance AssetRunner env => RunMessage env CatBurgler1 where
                [ MoveAction iid lid False | lid <- accessibleLocationIds ]
            | not (null accessibleLocationIds)
            ]
-      pure $ CatBurgler1 $ attrs & exhausted .~ True
+      pure $ CatBurgler1 $ attrs & exhaustedL .~ True
     _ -> CatBurgler1 <$> runMessage msg attrs

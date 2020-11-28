@@ -40,7 +40,8 @@ instance ActionRunner env => HasActions env Rolands38Special where
 instance AssetRunner env => RunMessage env Rolands38Special where
   runMessage msg (Rolands38Special attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Rolands38Special <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo 4)
+      Rolands38Special
+        <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 4)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- getId @LocationId iid
       anyClues <- (/= 0) . unClueCount <$> getCount locationId
@@ -55,5 +56,5 @@ instance AssetRunner env => RunMessage env Rolands38Special where
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-      pure $ Rolands38Special $ attrs & uses %~ Resource.use
+      pure $ Rolands38Special $ attrs & usesL %~ Resource.use
     _ -> Rolands38Special <$> runMessage msg attrs

@@ -35,7 +35,7 @@ instance AssetRunner env => RunMessage env FortyOneDerringer where
   runMessage msg a@(FortyOneDerringer attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       FortyOneDerringer
-        <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo 3)
+        <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 3)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessages
         [ CreateSkillTestEffect
@@ -44,7 +44,7 @@ instance AssetRunner env => RunMessage env FortyOneDerringer where
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-      pure $ FortyOneDerringer $ attrs & uses %~ Resource.use
+      pure $ FortyOneDerringer $ attrs & usesL %~ Resource.use
     PassedSkillTest iid (Just Action.Fight) source _ n
       | isSource attrs source && n >= 2 -> a <$ unshiftMessage
         (CreateSkillTestEffect

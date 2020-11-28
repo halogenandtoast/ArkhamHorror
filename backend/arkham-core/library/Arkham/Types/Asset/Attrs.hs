@@ -82,32 +82,32 @@ instance HasId AssetId env Attrs where
 ownedBy :: Attrs -> InvestigatorId -> Bool
 ownedBy Attrs {..} = (== assetInvestigator) . Just
 
-doom :: Lens' Attrs Int
-doom = lens assetDoom $ \m x -> m { assetDoom = x }
+doomL :: Lens' Attrs Int
+doomL = lens assetDoom $ \m x -> m { assetDoom = x }
 
-exhausted :: Lens' Attrs Bool
-exhausted = lens assetExhausted $ \m x -> m { assetExhausted = x }
+exhaustedL :: Lens' Attrs Bool
+exhaustedL = lens assetExhausted $ \m x -> m { assetExhausted = x }
 
-uses :: Lens' Attrs Uses
-uses = lens assetUses $ \m x -> m { assetUses = x }
+usesL :: Lens' Attrs Uses
+usesL = lens assetUses $ \m x -> m { assetUses = x }
 
-investigator :: Lens' Attrs (Maybe InvestigatorId)
-investigator = lens assetInvestigator $ \m x -> m { assetInvestigator = x }
+investigatorL :: Lens' Attrs (Maybe InvestigatorId)
+investigatorL = lens assetInvestigator $ \m x -> m { assetInvestigator = x }
 
-location :: Lens' Attrs (Maybe LocationId)
-location = lens assetLocation $ \m x -> m { assetLocation = x }
+locationL :: Lens' Attrs (Maybe LocationId)
+locationL = lens assetLocation $ \m x -> m { assetLocation = x }
 
-enemy :: Lens' Attrs (Maybe EnemyId)
-enemy = lens assetEnemy $ \m x -> m { assetEnemy = x }
+enemyL :: Lens' Attrs (Maybe EnemyId)
+enemyL = lens assetEnemy $ \m x -> m { assetEnemy = x }
 
 getInvestigator :: HasCallStack => Attrs -> InvestigatorId
-getInvestigator = fromJustNote "asset must be owned" . view investigator
+getInvestigator = fromJustNote "asset must be owned" . view investigatorL
 
-healthDamage :: Lens' Attrs Int
-healthDamage = lens assetHealthDamage $ \m x -> m { assetHealthDamage = x }
+healthDamageL :: Lens' Attrs Int
+healthDamageL = lens assetHealthDamage $ \m x -> m { assetHealthDamage = x }
 
-sanityDamage :: Lens' Attrs Int
-sanityDamage = lens assetSanityDamage $ \m x -> m { assetSanityDamage = x }
+sanityDamageL :: Lens' Attrs Int
+sanityDamageL = lens assetSanityDamage $ \m x -> m { assetSanityDamage = x }
 
 defeated :: Attrs -> Bool
 defeated Attrs {..} =
@@ -130,36 +130,37 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
         modifiers <- getModifiersFor (toSource a) (InvestigatorTarget iid) ()
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
-          else pure $ a & exhausted .~ False
-      Nothing -> pure $ a & exhausted .~ False
+          else pure $ a & exhaustedL .~ False
+      Nothing -> pure $ a & exhaustedL .~ False
+    RemoveAllDoom -> pure $ a & doomL .~ 0
     CheckDefeated ->
       a <$ when (defeated a) (unshiftMessage (AssetDefeated assetId))
     AssetDamage aid _ health sanity | aid == assetId ->
-      pure $ a & healthDamage +~ health & sanityDamage +~ sanity
+      pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
     InvestigatorEliminated iid | assetInvestigator == Just iid ->
       a <$ unshiftMessage (Discard (AssetTarget assetId))
     AddUses target useType' n | target `is` a -> case assetUses of
       Uses useType'' m | useType' == useType'' ->
-        pure $ a & uses .~ Uses useType' (n + m)
+        pure $ a & usesL .~ Uses useType' (n + m)
       _ -> error "Trying to add the wrong use type"
     AttachAsset aid target | aid == assetId -> case target of
-      LocationTarget lid -> pure $ a & location ?~ lid
-      EnemyTarget eid -> pure $ a & enemy ?~ eid
+      LocationTarget lid -> pure $ a & locationL ?~ lid
+      EnemyTarget eid -> pure $ a & enemyL ?~ eid
       _ -> error "Cannot attach asset to that type"
     RemoveFromGame target | target `is` a ->
       a <$ unshiftMessage (RemovedFromPlay (AssetSource assetId))
     Discard target | target `is` a ->
       a <$ unshiftMessage (RemovedFromPlay $ toSource a)
     InvestigatorPlayAsset iid aid _ _ | aid == assetId ->
-      pure $ a & investigator ?~ iid
+      pure $ a & investigatorL ?~ iid
     TakeControlOfAsset iid aid | aid == assetId ->
-      pure $ a & investigator ?~ iid
-    Exhaust target | target `is` a -> pure $ a & exhausted .~ True
+      pure $ a & investigatorL ?~ iid
+    Exhaust target | target `is` a -> pure $ a & exhaustedL .~ True
     Ready target | target `is` a -> case assetInvestigator of
       Just iid -> do
         modifiers <- getModifiersFor (toSource a) (InvestigatorTarget iid) ()
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
-          else pure $ a & exhausted .~ False
-      Nothing -> pure $ a & exhausted .~ False
+          else pure $ a & exhaustedL .~ False
+      Nothing -> pure $ a & exhaustedL .~ False
     _ -> pure a

@@ -30,7 +30,7 @@ instance HasActions env Encyclopedia where
 instance (AssetRunner env) => RunMessage env Encyclopedia where
   runMessage msg (Encyclopedia attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Encyclopedia <$> runMessage msg (attrs & uses .~ Uses Resource.Secret 5)
+      Encyclopedia <$> runMessage msg (attrs & usesL .~ Uses Resource.Secret 5)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- getId @LocationId iid
       investigatorTargets <- map InvestigatorTarget <$> getSetList locationId
@@ -72,5 +72,5 @@ instance (AssetRunner env) => RunMessage env Encyclopedia where
             ]
         | target <- investigatorTargets
         ]
-      pure $ Encyclopedia $ attrs & exhausted .~ True & uses %~ Resource.use
+      pure $ Encyclopedia $ attrs & exhaustedL .~ True & usesL %~ Resource.use
     _ -> Encyclopedia <$> runMessage msg attrs

@@ -24,8 +24,8 @@ instance HasModifiersFor env ArcaneInitiate where
   getModifiersFor = noModifiersFor
 
 instance HasActions env ArcaneInitiate where
-  getActions iid window (ArcaneInitiate a) | ownedBy a iid = pure
-    [ ActivateCardAbilityAction iid (fastAbility a window)
+  getActions iid FastPlayerWindow (ArcaneInitiate a) | ownedBy a iid = pure
+    [ ActivateCardAbilityAction iid (fastAbility a FastPlayerWindow)
     | not (assetExhausted a)
     ]
   getActions _ _ _ = pure []
@@ -33,10 +33,10 @@ instance HasActions env ArcaneInitiate where
 instance (AssetRunner env) => RunMessage env ArcaneInitiate where
   runMessage msg (ArcaneInitiate attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      ArcaneInitiate <$> runMessage msg (attrs & doom +~ 1)
+      ArcaneInitiate <$> runMessage msg (attrs & doomL +~ 1)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessage $ chooseOne
         iid
         [SearchTopOfDeck iid (InvestigatorTarget iid) 3 [Spell] ShuffleBackIn]
-      pure $ ArcaneInitiate $ attrs & exhausted .~ True
+      pure $ ArcaneInitiate $ attrs & exhaustedL .~ True
     _ -> ArcaneInitiate <$> runMessage msg attrs

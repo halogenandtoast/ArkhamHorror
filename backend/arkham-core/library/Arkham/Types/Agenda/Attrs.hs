@@ -73,5 +73,5 @@ instance (HasQueue env, HasCount DoomCount env (), HasCount PlayerCount env ()) 
       totalDoom <- unDoomCount <$> getCount ()
       a <$ when
         (totalDoom >= perPlayerDoomThreshold)
-        (unshiftMessage (AdvanceAgenda agendaId))
+        (unshiftMessages [AdvanceAgenda agendaId, RemoveAllDoom])
     _ -> pure a

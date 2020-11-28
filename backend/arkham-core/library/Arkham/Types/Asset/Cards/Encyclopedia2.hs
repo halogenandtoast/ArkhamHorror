@@ -68,5 +68,5 @@ instance (AssetRunner env) => RunMessage env Encyclopedia2 where
             ]
         | target <- investigatorTargets
         ]
-      pure $ Encyclopedia2 $ attrs & exhausted .~ True
+      pure $ Encyclopedia2 $ attrs & exhaustedL .~ True
     _ -> Encyclopedia2 <$> runMessage msg attrs

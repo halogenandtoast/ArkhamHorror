@@ -37,5 +37,5 @@ instance (AssetRunner env) => RunMessage env BeatCop2 where
           iid
           [ EnemyDamage eid iid (toSource attrs) 1 | eid <- locationEnemyIds ]
         ]
-      pure . BeatCop2 $ attrs & exhausted .~ True
+      pure . BeatCop2 $ attrs & exhaustedL .~ True
     _ -> BeatCop2 <$> runMessage msg attrs

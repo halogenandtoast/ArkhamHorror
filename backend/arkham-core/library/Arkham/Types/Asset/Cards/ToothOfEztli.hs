@@ -35,5 +35,5 @@ instance AssetRunner env => RunMessage env ToothOfEztli where
   runMessage msg (ToothOfEztli attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessage (DrawCards iid 1 False)
-      pure . ToothOfEztli $ attrs & exhausted .~ True
+      pure . ToothOfEztli $ attrs & exhaustedL .~ True
     _ -> ToothOfEztli <$> runMessage msg attrs

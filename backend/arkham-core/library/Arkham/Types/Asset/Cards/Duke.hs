@@ -58,7 +58,7 @@ instance AssetRunner env => RunMessage env Duke where
   runMessage msg (Duke attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessage $ ChooseFightEnemy iid source SkillCombat False
-      pure . Duke $ attrs & exhausted .~ True
+      pure . Duke $ attrs & exhaustedL .~ True
     UseCardAbility iid source _ 2 | isSource attrs source -> do
       lid <- getId iid
       accessibleLocationIds <- map unAccessibleLocationId <$> getSetList lid
@@ -71,5 +71,5 @@ instance AssetRunner env => RunMessage env Duke where
             | lid' <- accessibleLocationIds
             ]
           )
-      pure . Duke $ attrs & exhausted .~ True
+      pure . Duke $ attrs & exhaustedL .~ True
     _ -> Duke <$> runMessage msg attrs

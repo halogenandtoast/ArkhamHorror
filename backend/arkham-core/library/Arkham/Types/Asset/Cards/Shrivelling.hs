@@ -34,7 +34,7 @@ instance ActionRunner env => HasActions env Shrivelling where
 instance AssetRunner env => RunMessage env Shrivelling where
   runMessage msg (Shrivelling attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Shrivelling <$> runMessage msg (attrs & uses .~ Uses Resource.Charge 4)
+      Shrivelling <$> runMessage msg (attrs & usesL .~ Uses Resource.Charge 4)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessages
         [ CreateSkillTestEffect
@@ -44,5 +44,5 @@ instance AssetRunner env => RunMessage env Shrivelling where
         , CreateEffect "01060" Nothing source (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillWillpower False
         ]
-      pure $ Shrivelling $ attrs & uses %~ Resource.use
+      pure $ Shrivelling $ attrs & usesL %~ Resource.use
     _ -> Shrivelling <$> runMessage msg attrs

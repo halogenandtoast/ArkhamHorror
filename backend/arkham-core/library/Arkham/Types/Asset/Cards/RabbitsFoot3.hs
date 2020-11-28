@@ -38,5 +38,5 @@ instance AssetRunner env => RunMessage env RabbitsFoot3 where
       | isSource attrs source -> do
         unshiftMessage
           (SearchTopOfDeck iid (InvestigatorTarget iid) x mempty ShuffleBackIn)
-        pure $ RabbitsFoot3 $ attrs & exhausted .~ True
+        pure $ RabbitsFoot3 $ attrs & exhaustedL .~ True
     _ -> RabbitsFoot3 <$> runMessage msg attrs

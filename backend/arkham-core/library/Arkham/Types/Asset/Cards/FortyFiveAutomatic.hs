@@ -35,7 +35,7 @@ instance AssetRunner env => RunMessage env FortyFiveAutomatic where
   runMessage msg (FortyFiveAutomatic attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       FortyFiveAutomatic
-        <$> runMessage msg (attrs & uses .~ Uses Resource.Ammo 4)
+        <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 4)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessages
         [ CreateSkillTestEffect
@@ -44,5 +44,5 @@ instance AssetRunner env => RunMessage env FortyFiveAutomatic where
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-      pure $ FortyFiveAutomatic $ attrs & uses %~ Resource.use
+      pure $ FortyFiveAutomatic $ attrs & usesL %~ Resource.use
     _ -> FortyFiveAutomatic <$> runMessage msg attrs

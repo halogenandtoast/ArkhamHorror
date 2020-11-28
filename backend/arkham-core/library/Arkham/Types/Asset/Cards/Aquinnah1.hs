@@ -65,5 +65,5 @@ instance AssetRunner env => RunMessage env Aquinnah1 where
         | eid <- enemyIds
         ]
 
-      pure $ Aquinnah1 $ attrs & exhausted .~ True
+      pure $ Aquinnah1 $ attrs & exhaustedL .~ True
     _ -> Aquinnah1 <$> runMessage msg attrs

@@ -19,10 +19,10 @@ instance HasModifiersFor env ForbiddenKnowledge where
   getModifiersFor = noModifiersFor
 
 instance HasActions env ForbiddenKnowledge where
-  getActions iid window (ForbiddenKnowledge a) | ownedBy a iid = pure
+  getActions iid FastPlayerWindow (ForbiddenKnowledge a) | ownedBy a iid = pure
     [ ActivateCardAbilityAction
         iid
-        (mkAbility (toSource a) 1 (FastAbility window))
+        (mkAbility (toSource a) 1 (FastAbility FastPlayerWindow))
     | useCount (assetUses a) > 0
     ]
   getActions _ _ _ = pure []

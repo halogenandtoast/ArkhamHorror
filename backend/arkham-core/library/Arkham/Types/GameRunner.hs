@@ -78,8 +78,8 @@ type GameRunner env
       , HasSet ClosestEnemyId env (LocationId, [Trait])
       , HasSet ClosestEnemyId env InvestigatorId
       , HasSet ClosestEnemyId env (InvestigatorId, [Trait])
-      , HasSet ClosestLocationId env (LocationId, LocationId)
-      , HasSet ClosestLocationId env (LocationId, Prey)
+      , HasSet ClosestPathLocationId env (LocationId, LocationId)
+      , HasSet ClosestPathLocationId env (LocationId, Prey)
       , HasSet CommittedCardCode env ()
       , HasSet CommittedCardId env InvestigatorId
       , HasSet ConnectedLocationId env LocationId

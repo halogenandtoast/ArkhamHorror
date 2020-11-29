@@ -375,7 +375,7 @@ instance EnemyRunner env => RunMessage env Attrs where
           leadInvestigatorId <- getLeadInvestigatorId
           adjacentLocationIds <- map unConnectedLocationId
             <$> getSetList enemyLocation
-          closestLocationIds <- map unClosestLocationId
+          closestLocationIds <- map unClosestPathLocationId
             <$> getSetList (enemyLocation, lid)
           if lid `elem` adjacentLocationIds
             then a <$ unshiftMessage
@@ -396,7 +396,7 @@ instance EnemyRunner env => RunMessage env Attrs where
         leadInvestigatorId <- getLeadInvestigatorId
         adjacentLocationIds <- map unConnectedLocationId
           <$> getSetList enemyLocation
-        closestLocationIds <- map unClosestLocationId
+        closestLocationIds <- map unClosestPathLocationId
           <$> getSetList (enemyLocation, lid)
         if lid `elem` adjacentLocationIds
           then a <$ unshiftMessage
@@ -427,9 +427,9 @@ instance EnemyRunner env => RunMessage env Attrs where
         -- who qualify as prey to filter
         matchingClosestLocationIds <- case enemyPrey of
           OnlyPrey prey ->
-            map unClosestLocationId <$> getSetList (enemyLocation, prey)
+            map unClosestPathLocationId <$> getSetList (enemyLocation, prey)
           _prey ->
-            map unClosestLocationId <$> getSetList (enemyLocation, AnyPrey)
+            map unClosestPathLocationId <$> getSetList (enemyLocation, AnyPrey)
 
         preyIds <- setFromList . map unPreyId <$> getSetList enemyPrey
 

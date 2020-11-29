@@ -49,7 +49,7 @@ instance EnemyRunner env => RunMessage env CorpseTaker where
           pure $ CorpseTaker $ attrs & doomL .~ 0
         else do
           leadInvestigatorId <- getLeadInvestigatorId
-          closestLocationIds <- map unClosestLocationId
+          closestLocationIds <- map unClosestPathLocationId
             <$> getSetList (enemyLocation, locationId)
           case closestLocationIds of
             [lid] -> e <$ unshiftMessage (EnemyMove enemyId enemyLocation lid)

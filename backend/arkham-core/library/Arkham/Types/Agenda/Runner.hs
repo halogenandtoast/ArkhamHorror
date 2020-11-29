@@ -20,8 +20,8 @@ type AgendaRunner env
     , HasQueue env
     , HasList LocationName env ()
     , HasSet ActId env ()
-    , HasSet ClosestLocationId env (LocationId, LocationId)
-    , HasSet ClosestLocationId env (LocationId, LocationMatcher)
+    , HasSet ClosestPathLocationId env (LocationId, LocationId)
+    , HasSet ClosestPathLocationId env (LocationId, LocationMatcher)
     , HasSet CompletedScenarioId env ()
     , HasSet EnemyId env ()
     , HasSet EnemyId env LocationId

@@ -441,7 +441,7 @@ instance EnemyRunner env => RunMessage env Attrs where
         let
           closestLocationIds = if null filteredClosestLocationIds
             then matchingClosestLocationIds
-            else closestLocationIds
+            else filteredClosestLocationIds
 
 
         leadInvestigatorId <- getLeadInvestigatorId
@@ -540,7 +540,7 @@ instance EnemyRunner env => RunMessage env Attrs where
         else do
           willMove <- canEnterLocation enemyId lid
           if willMove
-            then a <$ unshiftMessage (EnemyMove enemyId enemyLocation lid)
+            then pure $ a & locationL .~ lid
             else a <$ unshiftMessage (DisengageEnemy iid enemyId)
     AfterEnterLocation iid lid | lid == enemyLocation -> do
       when

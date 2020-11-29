@@ -974,6 +974,8 @@ instance HasSet BlockedLocationId (Game queue) () where
       elem Blocked
         <$> getModifiersFor (toSource location) (toTarget location) ()
 
+-- the results will have the initial location at 0, we need to drop
+-- this otherwise this will only ever return the current location
 getShortestPath
   :: Game queue -> LocationId -> (LocationId -> Bool) -> [LocationId]
 getShortestPath !game !initialLocation !target = do
@@ -981,7 +983,8 @@ getShortestPath !game !initialLocation !target = do
     !state' =
       LPState (pure initialLocation) (HashSet.singleton initialLocation) mempty
   let !result = evalState (markDistances game initialLocation target) state'
-  fromMaybe [] . headMay . map snd . sortOn fst . mapToList $ result
+  error $ show result
+  fromMaybe [] . headMay . drop 1 . map snd . sortOn fst . mapToList $ result
 
 data LPState = LPState
   { _lpSearchQueue       :: Seq LocationId

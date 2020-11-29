@@ -35,6 +35,7 @@ import Arkham.Import hiding (first)
 import Data.Align
 import Data.These
 import Data.These.Lens
+import Data.List.Extra (groupOn)
 import Arkham.Types.Act
 import Arkham.Types.Action (Action)
 import Arkham.Types.Agenda
@@ -495,11 +496,11 @@ instance HasSet EnemyId (Game queue) LocationName where
       . toList
       <$> view locations
 
-instance HasSet ClosestLocationId (Game queue) (LocationId, LocationMatcher) where
+instance HasSet ClosestPathLocationId (Game queue) (LocationId, LocationMatcher) where
   getSet (lid, locationMatcher) = case locationMatcher of
     LocationNamed name -> getSet (lid, name)
 
-instance HasSet ClosestLocationId (Game queue) (LocationId, LocationName) where
+instance HasSet ClosestPathLocationId (Game queue) (LocationId, LocationName) where
   getSet (lid, locationName) = do
     g <- ask
     maybe mempty (flip runReader g . getSet . (lid, ) . toId)
@@ -983,7 +984,7 @@ getShortestPath !game !initialLocation !target = do
     !state' =
       LPState (pure initialLocation) (HashSet.singleton initialLocation) mempty
   let !result = evalState (markDistances game initialLocation target) state'
-  error $ show result
+  void $ error $ show result
   fromMaybe [] . headMay . drop 1 . map snd . sortOn fst . mapToList $ result
 
 data LPState = LPState
@@ -1041,11 +1042,14 @@ markDistances game initialLocation target = do
       Nothing -> fromJustNote "failed bfs on tail" $ tailMay currentPath
       Just parent -> unwindPath parentsMap (parent : currentPath)
 
-instance HasSet ClosestLocationId (Game queue) (LocationId, Prey) where
+instance HasSet ClosestPathLocationId (Game queue) (LocationId, Prey) where
   getSet (start, prey) = do
     g <- ask
     let matcher lid = not . null $ getSet @PreyId (prey, lid) g
-    pure $ setFromList . map ClosestLocationId $ getShortestPath g start matcher
+    pure $ setFromList . map ClosestPathLocationId $ getShortestPath
+      g
+      start
+      matcher
 
 instance HasSet ClosestEnemyId (Game queue) LocationId where
   getSet start = do
@@ -1098,13 +1102,38 @@ instance HasSet ClosestEnemyId (Game queue) (LocationId, [Trait]) where
 instance HasSet ClosestEnemyId (Game queue) (InvestigatorId, [Trait]) where
   getSet (iid, traits) = getSet . (, traits) =<< locationFor iid
 
-instance HasSet ClosestLocationId (Game queue) (LocationId, LocationId) where
+instance HasSet ClosestPathLocationId (Game queue) (LocationId, LocationId) where
   getSet (start, destination) = do
-    g <- ask
-    pure $ setFromList . map ClosestLocationId $ getShortestPath
-      g
-      start
-      (== destination)
+    -- logic is to get each adjacent location and determine which is closest to
+    -- the destination
+    connectedLocationIds <- map unConnectedLocationId <$> getSetList start
+    if start == destination || destination `elem` connectedLocationIds
+      then pure $ singleton (ClosestPathLocationId destination)
+      else do
+        game <- ask
+        let
+          candidates :: [(LocationId, Int)] = mapMaybe
+            (\initialLocation ->
+              let
+                !state' = LPState
+                  (pure initialLocation)
+                  (HashSet.singleton initialLocation)
+                  mempty
+                !result = evalState
+                  (markDistances game initialLocation (== destination))
+                  state'
+                mdistance :: Maybe Int =
+                  headMay . drop 1 . map fst . sortOn fst . mapToList $ result
+              in (initialLocation, ) <$> mdistance
+            )
+            connectedLocationIds
+        pure
+          $ setFromList
+          . map (ClosestPathLocationId . fst)
+          . fromMaybe []
+          . headMay
+          . groupOn snd
+          $ sortOn snd candidates
 
 instance HasSet FarthestLocationId (Game queue) InvestigatorId where
   getSet iid = do

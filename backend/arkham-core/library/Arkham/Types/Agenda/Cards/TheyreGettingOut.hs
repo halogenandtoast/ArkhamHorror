@@ -50,7 +50,7 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
             `difference` parlorEnemyIds
       messages <- for (setToList enemiesToMove) $ \eid -> do
         locationId <- getId eid
-        closestLocationIds <- map unClosestLocationId
+        closestLocationIds <- map unClosestPathLocationId
           <$> getSetList (locationId, LocationNamed "Parlor")
         case closestLocationIds of
           [] -> pure Nothing

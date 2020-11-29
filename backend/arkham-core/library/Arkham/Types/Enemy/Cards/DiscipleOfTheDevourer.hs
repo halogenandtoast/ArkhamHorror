@@ -32,7 +32,8 @@ instance EnemyRunner env => RunMessage env DiscipleOfTheDevourer where
       e <$ spawnAtOneOf iid eid farthestEmptyLocationIds
     EnemySpawn (Just iid) _ eid | eid == enemyId -> do
       let
-        messages = [PlaceDoomOnAgenda, InvestigatorPlaceCluesOnLocation iid 1]
+        messages =
+          [PlaceDoom (toTarget attrs) 1, InvestigatorPlaceCluesOnLocation iid 1]
       step <- asks $ unAgendaStep . getStep
       if step == 1
         then unshiftMessage (chooseOne iid messages)

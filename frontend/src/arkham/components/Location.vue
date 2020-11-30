@@ -107,7 +107,7 @@ export default defineComponent({
       return choices
         .value
         .findIndex((c) => c.tag === MessageType.ENEMY_SPAWN
-          && c.contents[0] === id.value);
+          && c.contents[1] === id.value);
     })
 
     const moveToAction = computed(() => {

@@ -176,7 +176,7 @@ export default defineComponent({
     const spendCluesAction = computed(() => {
       return choices
         .value
-        .findIndex((c) => c.tag === MessageType.INVESTIGATOR_SPEND_CLUES
+        .findIndex((c) => (c.tag === MessageType.INVESTIGATOR_SPEND_CLUES || c.tag === MessageType.INVESTIGATOR_PLACE_CLUES_ON_LOCATION)
           && c.contents[0] === id.value);
     })
 

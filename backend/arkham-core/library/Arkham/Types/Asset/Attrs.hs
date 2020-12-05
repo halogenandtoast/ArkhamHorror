@@ -5,6 +5,7 @@ module Arkham.Types.Asset.Attrs where
 import Arkham.Import
 
 import Arkham.Types.Asset.Uses
+import Arkham.Types.Asset.Class
 import Arkham.Types.Trait
 
 data Attrs = Attrs
@@ -116,6 +117,16 @@ defeated Attrs {..} =
 
 instance HasActions env Attrs where
   getActions _ _ _ = pure []
+
+instance IsAsset Attrs where
+  slotsOf = assetSlots
+  useTypeOf = useType . assetUses
+  isHealthDamageable a = case assetHealth a of
+    Nothing -> False
+    Just n -> n > assetHealthDamage a
+  isSanityDamageable a = case assetSanity a of
+    Nothing -> False
+    Just n -> n > assetSanityDamage a
 
 is :: Target -> Attrs -> Bool
 is (AssetTarget aid) a = aid == assetId a

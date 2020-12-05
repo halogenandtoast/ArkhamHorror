@@ -17,6 +17,7 @@ import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Cards
+import Arkham.Types.Asset.Class
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Trait (Trait)
@@ -267,21 +268,11 @@ allAssets = mapFromList
   , ("00000", \aid -> baseAsset aid "00000" id)
   ]
 
-slotsOf :: Asset -> [SlotType]
-slotsOf = assetSlots . assetAttrs
-
-useTypeOf :: Asset -> Maybe UseType
-useTypeOf = useType . assetUses . assetAttrs
-
-isHealthDamageable :: Asset -> Bool
-isHealthDamageable a = case assetHealth (assetAttrs a) of
-  Nothing -> False
-  Just n -> n > assetHealthDamage (assetAttrs a)
-
-isSanityDamageable :: Asset -> Bool
-isSanityDamageable a = case assetSanity (assetAttrs a) of
-  Nothing -> False
-  Just n -> n > assetSanityDamage (assetAttrs a)
+instance IsAsset Asset where
+  slotsOf = slotsOf . assetAttrs
+  useTypeOf = useTypeOf . assetAttrs
+  isHealthDamageable = isHealthDamageable . assetAttrs
+  isSanityDamageable = isSanityDamageable . assetAttrs
 
 assetAttrs :: Asset -> Attrs
 assetAttrs = \case

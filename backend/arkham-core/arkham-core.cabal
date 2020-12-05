@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3cf00500312737f2f1a1ec682aa8f7c85d63a896dc5f447c57b3c1891bf42f07
+-- hash: 7fe0c0c1e088cb9bf1a064dd61a1379886fdb4835fa9e173d37e7b0825c23d18
 
 name:           arkham-core
 version:        0.0.0
@@ -139,6 +139,7 @@ library
       Arkham.Types.Asset.Cards.WendysAmulet
       Arkham.Types.Asset.Cards.WhittonGreene
       Arkham.Types.Asset.Cards.ZoeysCross
+      Arkham.Types.Asset.Class
       Arkham.Types.Asset.Helpers
       Arkham.Types.Asset.Runner
       Arkham.Types.Asset.Uses

@@ -396,3 +396,26 @@ class IsInvestigator a where
   isDefeated :: a -> Bool
   isEliminated :: a -> Bool
   isEliminated = uncurry (||) . (isResigned &&& isDefeated)
+
+class HasAttrs a where
+  type AttrsT a
+  toAttrs :: a -> AttrsT a
+  default toAttrs :: (Generic a, HasAttrs1 (Rep a)) => a -> AttrsT a
+  toAttrs = toAttrs1 . from
+
+class HasAttrs1 f where
+  type AttrsT1 f
+  toAttrs1 :: f p -> AttrsT1 f
+
+instance HasAttrs1 f => HasAttrs1 (M1 i c f) where
+  type AttrsT1 (M1 i c f) = AttrsT1 f
+  toAttrs1 (M1 x) = M1 <$> toAttrs1 x
+
+instance (HasAttrs1 l, HasAttrs1 r) => HasAttrs1 (l :+: r) where
+  type AttrsT1 (l :+: r) = AttrsT1 l :+: AttrsT1 r
+  toAttrs1 (L1 x) = L1 <$> toAttrs1 x
+  toAttrs1 (R1 x) = R1 <$> toAttrs1 x
+
+instance (HasAttrs p) => HasAttrs1 (K1 R p) where
+  type AttrsT1 (K1 R p) = AttrsT p
+  toAttrs1 (K1 x) = K1 <$> toAttrs x

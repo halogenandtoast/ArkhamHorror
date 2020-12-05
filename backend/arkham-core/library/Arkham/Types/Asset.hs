@@ -4,12 +4,8 @@ module Arkham.Types.Asset
   ( lookupAsset
   , baseAsset
   , allAssets
-  , isHealthDamageable
-  , isSanityDamageable
-  , slotsOf
-  , useTypeOf
+  , IsAsset(..)
   , Asset
-  , getAssetId
   )
 where
 
@@ -161,11 +157,8 @@ instance HasCardCode Asset where
 instance HasTraits Asset where
   getTraits = assetTraits . assetAttrs
 
-getAssetId :: Asset -> AssetId
-getAssetId = assetId . assetAttrs
-
 instance HasId AssetId env Asset where
-  getId = pure . getAssetId
+  getId = pure . assetId . assetAttrs
 
 instance HasId (Maybe OwnerId) env Asset where
   getId = pure . (OwnerId <$>) . assetInvestigator . assetAttrs
@@ -183,7 +176,7 @@ instance HasCount UsesCount env Asset where
     where uses' = assetUses (assetAttrs asset)
 
 lookupAsset :: CardCode -> (AssetId -> Asset)
-lookupAsset = fromJustNote "Unkown asset" . flip lookup allAssets
+lookupAsset = fromJustNote "Unknown asset" . flip lookup allAssets
 
 allAssets :: HashMap CardCode (AssetId -> Asset)
 allAssets = mapFromList

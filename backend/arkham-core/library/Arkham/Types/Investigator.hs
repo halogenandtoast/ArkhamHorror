@@ -21,7 +21,6 @@ module Arkham.Types.Investigator
   , getRemainingHealth
   , getRemainingSanity
   , modifiedStatsOf
-  , GetInvestigatorId(..)
   , Investigator
   )
 where
@@ -56,7 +55,7 @@ deriving anyclass instance HasCount AssetCount env (InvestigatorId, [Trait]) => 
 deriving anyclass instance HasCount ClueCount env LocationId => HasTokenValue env Investigator
 
 instance Eq Investigator where
-  a == b = getInvestigatorId a == getInvestigatorId b
+  a == b = toId a == toId b
 
 baseInvestigator
   :: InvestigatorId
@@ -72,6 +71,8 @@ baseInvestigator a b c d e f =
 instance IsInvestigator Investigator where
   isDefeated = view defeatedL . investigatorAttrs
   isResigned = view resignedL . investigatorAttrs
+  hasEndedTurn = view endedTurnL . investigatorAttrs
+  hasResigned = view resignedL . investigatorAttrs
 
 instance HasTokenValue env BaseInvestigator where
   getTokenValue (BaseInvestigator attrs) iid token =
@@ -102,13 +103,13 @@ instance ActionRunner env => HasActions env Investigator where
       else defaultGetActions iid window investigator
 
 instance InvestigatorRunner env => RunMessage env Investigator where
-  runMessage msg@(ResolveToken _ _ iid) i | iid == getInvestigatorId i = do
+  runMessage msg@(ResolveToken _ _ iid) i | iid == toId i = do
     modifiers' <- getModifiersFor (toSource i) (toTarget i) ()
     if any isBlank modifiers' then pure i else defaultRunMessage msg i
   runMessage msg i = defaultRunMessage msg i
 
 instance HasId InvestigatorId () Investigator where
-  getId = pure . getInvestigatorId
+  getId = pure . toId
 
 instance HasList DiscardedPlayerCard env Investigator where
   getList =
@@ -202,12 +203,6 @@ instance HasSet AssetId env Investigator where
 
 instance HasSkill Investigator where
   getSkill skillType = skillValueFor skillType Nothing [] . investigatorAttrs
-
-class GetInvestigatorId a where
-  getInvestigatorId :: a -> InvestigatorId
-
-instance GetInvestigatorId Investigator where
-  getInvestigatorId = investigatorId . investigatorAttrs
 
 allInvestigators :: HashMap InvestigatorId Investigator
 allInvestigators = mapFromList $ map
@@ -404,12 +399,6 @@ modifiedStatsOf source maction i = do
     , health = remainingHealth
     , sanity = remainingSanity
     }
-
-hasEndedTurn :: Investigator -> Bool
-hasEndedTurn = view endedTurnL . investigatorAttrs
-
-hasResigned :: Investigator -> Bool
-hasResigned = view resignedL . investigatorAttrs
 
 getHasSpendableClues
   :: (MonadReader env m, HasModifiersFor env ()) => Investigator -> m Bool

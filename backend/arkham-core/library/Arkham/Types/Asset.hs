@@ -9,7 +9,6 @@ module Arkham.Types.Asset
   , slotsOf
   , useTypeOf
   , Asset
-  , getAssetId
   )
 where
 
@@ -161,11 +160,8 @@ instance HasCardCode Asset where
 instance HasTraits Asset where
   getTraits = assetTraits . assetAttrs
 
-getAssetId :: Asset -> AssetId
-getAssetId = assetId . assetAttrs
-
 instance HasId AssetId env Asset where
-  getId = pure . getAssetId
+  getId = pure . toId
 
 instance HasId (Maybe OwnerId) env Asset where
   getId = pure . (OwnerId <$>) . assetInvestigator . assetAttrs

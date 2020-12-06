@@ -396,3 +396,5 @@ class IsInvestigator a where
   isDefeated :: a -> Bool
   isEliminated :: a -> Bool
   isEliminated = uncurry (||) . (isResigned &&& isDefeated)
+  hasEndedTurn :: a -> Bool
+  hasResigned :: a -> Bool

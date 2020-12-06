@@ -335,9 +335,9 @@ addInvestigator
 addInvestigator uid i d g = do
   atomicModifyIORef'
     (g ^. messageQueue)
-    (\queue -> (InitDeck (getInvestigatorId i) d : queue, ()))
+    (\queue -> (InitDeck (toId i) d : queue, ()))
   let
-    iid = getInvestigatorId i
+    iid = toId i
     g' =
       g
         & (investigators %~ insertMap iid i)
@@ -393,7 +393,7 @@ newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
       fromJustNote "Need campaign or scenario" $ align campaign' scenario'
   ref <-
     newIORef
-    $ map (uncurry (InitDeck . getInvestigatorId)) (toList investigatorsList)
+    $ map (uncurry (InitDeck . toId)) (toList investigatorsList)
     <> [StartCampaign]
 
   roundHistory <- newIORef []
@@ -436,9 +436,9 @@ newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
     }
  where
   initialInvestigatorId = headNote "No investigators" $ keys investigatorsMap
-  playersMap = map (getInvestigatorId . fst) investigatorsList
+  playersMap = map (toId . fst) investigatorsList
   investigatorsMap =
-    mapFromList $ map (toFst getInvestigatorId . fst) (toList investigatorsList)
+    mapFromList $ map (toFst toId . fst) (toList investigatorsList)
 
 instance CanBeWeakness (Game queue) TreacheryId where
   getIsWeakness = getIsWeakness <=< getTreachery

@@ -317,22 +317,9 @@ class HasActions env a where
   getActions = defaultGetActions
 
 instance HasActions env ActionType => HasActions env () where
-  getActions iid window _ = do
-    locationActions <- getActions iid window LocationActionType
-    enemyActions <- getActions iid window EnemyActionType
-    assetActions <- getActions iid window AssetActionType
-    treacheryActions <- getActions iid window TreacheryActionType
-    actActions <- getActions iid window ActActionType
-    agendaActions <- getActions iid window AgendaActionType
-    investigatorActions <- getActions iid window InvestigatorActionType
-    pure
-      $ enemyActions
-      <> locationActions
-      <> assetActions
-      <> treacheryActions
-      <> actActions
-      <> agendaActions
-      <> investigatorActions
+  getActions iid window _ = concat <$> traverse
+    (getActions iid window)
+    ([minBound .. maxBound] :: [ActionType])
 
 class HasModifiersFor1 env f where
   getModifiersFor1 :: (MonadReader env m) => Source -> Target -> f p -> m [Modifier]

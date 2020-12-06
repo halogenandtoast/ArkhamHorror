@@ -36,6 +36,9 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
+spawned :: Attrs -> Bool
+spawned Attrs { enemyLocation } = enemyLocation /= "unknown"
+
 instance ToJSON Attrs where
   toJSON = genericToJSON $ aesonOptions $ Just "enemy"
   toEncoding = genericToEncoding $ aesonOptions $ Just "enemy"

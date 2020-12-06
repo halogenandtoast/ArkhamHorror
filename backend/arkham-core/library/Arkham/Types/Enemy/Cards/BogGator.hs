@@ -22,8 +22,8 @@ bogGator uuid =
     . (preyL .~ LowestSkill SkillAgility)
 
 instance HasSet Trait env LocationId => HasModifiersFor env BogGator where
-  getModifiersFor _ (EnemyTarget eid) (BogGator Attrs {..}) | eid == enemyId =
-    do
+  getModifiersFor _ (EnemyTarget eid) (BogGator a@Attrs {..})
+    | spawned a && eid == enemyId = do
       bayouLocation <- member Bayou <$> getSet enemyLocation
       pure $ if bayouLocation then [EnemyFight 2, EnemyEvade 2] else []
   getModifiersFor _ _ _ = pure []

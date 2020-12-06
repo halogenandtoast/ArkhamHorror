@@ -20,8 +20,8 @@ stubbornDetective uuid = StubbornDetective $ (weaknessBaseAttrs uuid "01102")
   }
 
 instance HasId LocationId env InvestigatorId => HasModifiersFor env StubbornDetective where
-  getModifiersFor _ (InvestigatorTarget iid) (StubbornDetective Attrs {..}) =
-    do
+  getModifiersFor _ (InvestigatorTarget iid) (StubbornDetective a@Attrs {..})
+    | spawned a = do
       locationId <- getId @LocationId iid
       pure [ Blank | locationId == enemyLocation ]
   getModifiersFor _ _ _ = pure []

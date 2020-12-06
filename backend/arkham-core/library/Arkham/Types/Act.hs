@@ -7,16 +7,12 @@ module Arkham.Types.Act
   )
 where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Cards
 import Arkham.Types.Act.Runner
-import Arkham.Types.ActId
-import Arkham.Types.Classes
-import Arkham.Types.Helpers
-import ClassyPrelude
 import Data.Coerce
-import Safe (fromJustNote)
 
 data Act
   = Trapped' Trapped

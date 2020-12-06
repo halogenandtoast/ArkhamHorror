@@ -7,7 +7,6 @@ module Arkham.Types.Enemy
   , getEngagedInvestigators
   , getBearer
   , getEnemyVictory
-  , getEnemyId
   , Enemy
   )
 where
@@ -169,12 +168,6 @@ instance HasTraits Enemy where
 
 instance HasKeywords Enemy where
   getKeywords = enemyKeywords . enemyAttrs
-
-getEnemyId :: Enemy -> EnemyId
-getEnemyId = enemyId . enemyAttrs
-
-instance HasId EnemyId env Enemy where
-  getId = pure . getEnemyId
 
 instance IsEnemy Enemy where
   isAloof = isAloof . enemyAttrs

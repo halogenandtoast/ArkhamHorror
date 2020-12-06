@@ -227,9 +227,6 @@ class HasSkill a where
 class HasKeywords a where
   getKeywords :: a -> HashSet Keyword
 
-class HasAbilities a where
-  getAbilities :: a -> [Ability]
-
 class HasVictoryPoints a where
   getVictoryPoints :: a -> Maybe Int
 
@@ -350,7 +347,7 @@ class HasModifiersFor env a where
 noModifiersFor :: (MonadReader env m) => Source -> Target -> a -> m [Modifier]
 noModifiersFor _ _ _ = pure []
 
-class (HasId EnemyId () enemy) => IsEnemy enemy where
+class IsEnemy enemy where
   isAloof :: enemy -> Bool
 
 class Discardable a where

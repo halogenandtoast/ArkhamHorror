@@ -145,7 +145,7 @@ instance HasActions env BaseAsset where
 instance HasModifiersFor env BaseAsset where
   getModifiersFor = noModifiersFor
 
-instance (AssetRunner env) => RunMessage env BaseAsset where
+instance AssetRunner env => RunMessage env BaseAsset where
   runMessage msg (BaseAsset attrs) = BaseAsset <$> runMessage msg attrs
 
 instance Exhaustable Asset where
@@ -160,11 +160,8 @@ instance HasCardCode Asset where
 instance HasTraits Asset where
   getTraits = assetTraits . assetAttrs
 
-instance HasId AssetId env Asset where
-  getId = pure . toId
-
 instance HasId (Maybe OwnerId) env Asset where
-  getId = pure . (OwnerId <$>) . assetInvestigator . assetAttrs
+  getId = pure . fmap OwnerId . assetInvestigator . assetAttrs
 
 instance HasId (Maybe LocationId) env Asset where
   getId = pure . assetLocation . assetAttrs

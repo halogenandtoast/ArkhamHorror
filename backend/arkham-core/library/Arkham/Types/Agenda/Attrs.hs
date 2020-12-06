@@ -12,7 +12,6 @@ data Attrs = Attrs
   , agendaName          :: Text
   , agendaSequence      :: Text
   , agendaNumber :: Int
-  , agendaAbilities :: [Ability]
   , agendaFlipped :: Bool
   }
   deriving stock (Show, Generic)
@@ -54,7 +53,6 @@ baseAttrs aid num name seq' threshold = Attrs
   , agendaId = aid
   , agendaName = name
   , agendaSequence = seq'
-  , agendaAbilities = mempty
   , agendaFlipped = False
   , agendaNumber = num
   }
@@ -65,7 +63,13 @@ instance HasId AgendaId env Attrs where
 instance HasActions env Attrs where
   getActions _ _ _ = pure []
 
-instance (HasQueue env, HasCount DoomCount env (), HasCount PlayerCount env ()) => RunMessage env Attrs where
+instance
+  ( HasQueue env
+  , HasCount DoomCount env ()
+  , HasCount PlayerCount env ()
+  )
+  => RunMessage env Attrs
+  where
   runMessage msg a@Attrs {..} = case msg of
     PlaceDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doom +~ n
     AdvanceAgendaIfThresholdSatisfied -> do

@@ -1,13 +1,15 @@
 <template>
   <div class="location-container">
-    <div
-      v-for="cardCode in location.contents.investigators"
-      :key="cardCode"
-    >
-      <img
-        :src="portrait(cardCode)"
-        class="portrait"
-      />
+    <div class="location-investigator-column">
+      <div
+        v-for="cardCode in location.contents.investigators"
+        :key="cardCode"
+      >
+        <img
+          :src="portrait(cardCode)"
+          class="portrait"
+        />
+      </div>
     </div>
     <div class="location-column">
       <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
@@ -48,7 +50,7 @@
         <PoolItem type="clue" :amount="location.contents.clues" />
       </div>
     </div>
-    <div>
+    <div class="location-asset-column">
       <Asset
         v-for="assetId in location.contents.assets"
         :asset="game.currentData.assets[assetId]"
@@ -277,6 +279,7 @@ export default defineComponent({
 .location-container {
   display: flex;
   margin: 0 5px;
+  min-width: 187px;
 }
 
 .button{
@@ -356,5 +359,21 @@ export default defineComponent({
 
 .card-container {
   border-radius: 5px;
+}
+
+.location-investigator-column {
+  min-width: 60px;
+  height: 100%;
+  .portrait {
+    height: 25%;
+  }
+}
+
+.location-asset-column {
+  min-width: 60px;
+  height: 100%;
+  /deep/ .card {
+  width: 60px !important;
+  }
 }
 </style>

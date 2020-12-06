@@ -285,7 +285,8 @@ getInvestigator iid = fromJustNote missingInvestigator
   <$> preview (investigators . ix iid)
   where missingInvestigator = "Unknown investigator: " <> show iid
 
-getLocation :: MonadReader (Game queue) m => LocationId -> m Location
+getLocation
+  :: (HasCallStack, MonadReader (Game queue) m) => LocationId -> m Location
 getLocation lid = fromJustNote missingLocation <$> preview (locations . ix lid)
   where missingLocation = "Unknown location: " <> show lid
 

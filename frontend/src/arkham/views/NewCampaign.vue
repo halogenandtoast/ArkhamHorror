@@ -62,7 +62,7 @@
           </select>
         </div>
 
-        <div v-if="selectedCampaign && selectedCampaignReturnToId" class="options">
+        <div v-if="!standalone && selectedCampaign && selectedCampaignReturnToId" class="options">
           <input type="radio" v-model="returnTo" :value="false" id="normal"> <label for="normal">Normal</label>
           <input type="radio" v-model="returnTo" :value="true" id="returnTo"> <label for="returnTo">Return to...</label>
         </div>

@@ -25,14 +25,15 @@ narogath uuid =
     . (uniqueL .~ True)
 
 instance (HasSet InvestigatorId env LocationId, HasSet ConnectedLocationId env LocationId) => HasModifiersFor env Narogath where
-  getModifiersFor _ (InvestigatorTarget iid) (Narogath Attrs {..}) = do
-    connectedLocationIds <- map unConnectedLocationId
-      <$> getSetList enemyLocation
-    iids <- concat <$> for (enemyLocation : connectedLocationIds) getSetList
-    pure
-      [ CannotTakeAction (EnemyAction Parley [Cultist])
-      | not enemyExhausted && iid `elem` iids
-      ]
+  getModifiersFor _ (InvestigatorTarget iid) (Narogath a@Attrs {..})
+    | spawned a = do
+      connectedLocationIds <- map unConnectedLocationId
+        <$> getSetList enemyLocation
+      iids <- concat <$> for (enemyLocation : connectedLocationIds) getSetList
+      pure
+        [ CannotTakeAction (EnemyAction Parley [Cultist])
+        | not enemyExhausted && iid `elem` iids
+        ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env Narogath where

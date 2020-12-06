@@ -7,16 +7,11 @@ module Arkham.Types.Act
   )
 where
 
-import Arkham.Json
+import Arkham.Import
+
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Cards
 import Arkham.Types.Act.Runner
-import Arkham.Types.ActId
-import Arkham.Types.Classes
-import Arkham.Types.Helpers
-import ClassyPrelude
-import Data.Coerce
-import Safe (fromJustNote)
 
 data Act
   = Trapped' Trapped
@@ -38,15 +33,15 @@ deriving anyclass instance ActionRunner env => HasActions env Act
 deriving anyclass instance ActRunner env => RunMessage env Act
 
 instance IsAdvanceable Act where
-  isAdvanceable = actCanAdvance . actAttrs
+  isAdvanceable = actCanAdvance . toAttrs
 
 instance Entity Act where
   type EntityId Act = ActId
-  toId = toId . actAttrs
-  toSource = toSource . actAttrs
-  toTarget = toTarget . actAttrs
-  isSource = isSource . actAttrs
-  isTarget = isTarget . actAttrs
+  toId = toId . toAttrs
+  toSource = toSource . toAttrs
+  toTarget = toTarget . toAttrs
+  isSource = isSource . toAttrs
+  isTarget = isTarget . toAttrs
 
 lookupAct :: ActId -> Act
 lookupAct actId =
@@ -54,7 +49,7 @@ lookupAct actId =
 
 allActs :: HashMap ActId Act
 allActs = mapFromList $ map
-  (toFst $ actId . actAttrs)
+  (toFst $ actId . toAttrs)
   [ Trapped' trapped
   , TheBarrier' theBarrier
   , WhatHaveYouDone' whatHaveYouDone
@@ -69,17 +64,6 @@ allActs = mapFromList $ map
   , HuntingTheRougarou' huntingTheRougarou
   ]
 
-actAttrs :: Act -> Attrs
-actAttrs = \case
-  Trapped' attrs -> coerce attrs
-  TheBarrier' attrs -> coerce attrs
-  WhatHaveYouDone' attrs -> coerce attrs
-  UncoveringTheConspiracy' attrs -> coerce attrs
-  InvestigatingTheTrail' attrs -> coerce attrs
-  IntoTheDarkness' attrs -> coerce attrs
-  DisruptingTheRitual' attrs -> coerce attrs
-  AfterHours' attrs -> coerce attrs
-  RicesWhereabouts' attrs -> coerce attrs
-  MysteriousGateway' attrs -> coerce attrs
-  FindingLadyEsprit' attrs -> coerce attrs
-  HuntingTheRougarou' attrs -> coerce attrs
+instance HasAttrs Act where
+  type AttrsT Act = Attrs
+  toAttrs = toAttrs . toAttrs

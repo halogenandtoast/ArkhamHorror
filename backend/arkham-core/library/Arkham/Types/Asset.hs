@@ -17,7 +17,6 @@ import Arkham.Types.Asset.Class
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Trait (Trait)
-import Data.Coerce
 
 data Asset
   = Rolands38Special' Rolands38Special
@@ -112,19 +111,23 @@ deriving anyclass instance
   => HasModifiersFor env Asset
 deriving anyclass instance AssetRunner env => RunMessage env Asset
 
+instance HasAttrs Asset where
+  type AttrsT Asset = Attrs
+  toAttrs = toAttrs . toAttrs
+
 instance Entity Asset where
   type EntityId Asset = AssetId
-  toId = toId . assetAttrs
-  toTarget = toTarget . assetAttrs
-  isTarget = isTarget . assetAttrs
-  toSource = toSource . assetAttrs
-  isSource = isSource . assetAttrs
+  toId = toId . toAttrs
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
 
 instance IsCard Asset where
   toCard a = PlayerCard $ lookupPlayerCard (getCardCode a) (getCardId a)
 
 instance HasCardId Asset where
-  getCardId = CardId . unAssetId . assetId . assetAttrs
+  getCardId = CardId . unAssetId . assetId . toAttrs
 
 newtype BaseAsset = BaseAsset Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -134,7 +137,7 @@ baseAsset a b f = BaseAsset' . BaseAsset . f $ baseAttrs a b
 
 instance HasDamage Asset where
   getDamage a =
-    let Attrs {..} = assetAttrs a in (assetHealthDamage, assetSanityDamage)
+    let Attrs {..} = toAttrs a in (assetHealthDamage, assetSanityDamage)
 
 instance HasActions env BaseAsset where
   getActions iid window (BaseAsset attrs) = getActions iid window attrs
@@ -146,34 +149,34 @@ instance (AssetRunner env) => RunMessage env BaseAsset where
   runMessage msg (BaseAsset attrs) = BaseAsset <$> runMessage msg attrs
 
 instance Exhaustable Asset where
-  isExhausted = assetExhausted . assetAttrs
+  isExhausted = assetExhausted . toAttrs
 
 instance Discardable Asset where
-  canBeDiscarded = assetCanLeavePlayByNormalMeans . assetAttrs
+  canBeDiscarded = assetCanLeavePlayByNormalMeans . toAttrs
 
 instance HasCardCode Asset where
-  getCardCode = assetCardCode . assetAttrs
+  getCardCode = assetCardCode . toAttrs
 
 instance HasTraits Asset where
-  getTraits = assetTraits . assetAttrs
+  getTraits = assetTraits . toAttrs
 
 instance HasId AssetId env Asset where
-  getId = pure . assetId . assetAttrs
+  getId = pure . assetId . toAttrs
 
 instance HasId (Maybe OwnerId) env Asset where
-  getId = pure . (OwnerId <$>) . assetInvestigator . assetAttrs
+  getId = pure . (OwnerId <$>) . assetInvestigator . toAttrs
 
 instance HasId (Maybe LocationId) env Asset where
-  getId = pure . assetLocation . assetAttrs
+  getId = pure . assetLocation . toAttrs
 
 instance HasCount DoomCount env Asset where
-  getCount = pure . DoomCount . assetDoom . assetAttrs
+  getCount = pure . DoomCount . assetDoom . toAttrs
 
 instance HasCount UsesCount env Asset where
   getCount asset = pure $ case uses' of
     NoUses -> UsesCount 0
     Uses _ n -> UsesCount n
-    where uses' = assetUses (assetAttrs asset)
+    where uses' = assetUses (toAttrs asset)
 
 lookupAsset :: CardCode -> (AssetId -> Asset)
 lookupAsset = fromJustNote "Unknown asset" . flip lookup allAssets
@@ -262,89 +265,7 @@ allAssets = mapFromList
   ]
 
 instance IsAsset Asset where
-  slotsOf = slotsOf . assetAttrs
-  useTypeOf = useTypeOf . assetAttrs
-  isHealthDamageable = isHealthDamageable . assetAttrs
-  isSanityDamageable = isSanityDamageable . assetAttrs
-
-assetAttrs :: Asset -> Attrs
-assetAttrs = \case
-  Rolands38Special' attrs -> coerce attrs
-  DaisysToteBag' attrs -> coerce attrs
-  TheNecronomicon' attrs -> coerce attrs
-  HeirloomOfHyperborea' attrs -> coerce attrs
-  WendysAmulet' attrs -> coerce attrs
-  FortyFiveAutomatic' attrs -> coerce attrs
-  PhysicalTraining' attrs -> coerce attrs
-  BeatCop' attrs -> coerce attrs
-  FirstAid' attrs -> coerce attrs
-  Machete' attrs -> coerce attrs
-  GuardDog' attrs -> coerce attrs
-  PoliceBadge2' attrs -> coerce attrs
-  BeatCop2' attrs -> coerce attrs
-  Shotgun4' attrs -> coerce attrs
-  MagnifyingGlass' attrs -> coerce attrs
-  OldBookOfLore' attrs -> coerce attrs
-  ResearchLibrarian' attrs -> coerce attrs
-  DrMilanChristopher' attrs -> coerce attrs
-  Hyperawareness' attrs -> coerce attrs
-  MedicalTexts' attrs -> coerce attrs
-  MagnifyingGlass1' attrs -> coerce attrs
-  DiscOfItzamna2' attrs -> coerce attrs
-  Encyclopedia2' attrs -> coerce attrs
-  Switchblade' attrs -> coerce attrs
-  Burglary' attrs -> coerce attrs
-  Pickpocketing' attrs -> coerce attrs
-  FortyOneDerringer' attrs -> coerce attrs
-  LeoDeLuca' attrs -> coerce attrs
-  HardKnocks' attrs -> coerce attrs
-  LeoDeLuca1' attrs -> coerce attrs
-  CatBurgler1' attrs -> coerce attrs
-  ForbiddenKnowledge' attrs -> coerce attrs
-  HolyRosary' attrs -> coerce attrs
-  Shrivelling' attrs -> coerce attrs
-  Scrying' attrs -> coerce attrs
-  ArcaneStudies' attrs -> coerce attrs
-  ArcaneInitiate' attrs -> coerce attrs
-  BookOfShadows3' attrs -> coerce attrs
-  LeatherCoat' attrs -> coerce attrs
-  Scavenging' attrs -> coerce attrs
-  BaseballBat' attrs -> coerce attrs
-  RabbitsFoot' attrs -> coerce attrs
-  StrayCat' attrs -> coerce attrs
-  DigDeep' attrs -> coerce attrs
-  Aquinnah1' attrs -> coerce attrs
-  Knife' attrs -> coerce attrs
-  Flashlight' attrs -> coerce attrs
-  BulletproofVest3' attrs -> coerce attrs
-  ElderSignAmulet3' attrs -> coerce attrs
-  LitaChantler' attrs -> coerce attrs
-  ZoeysCross' attrs -> coerce attrs
-  JennysTwin45s' attrs -> coerce attrs
-  JimsTrumpet' attrs -> coerce attrs
-  Duke' attrs -> coerce attrs
-  FireAxe' attrs -> coerce attrs
-  PeterSylvestre' attrs -> coerce attrs
-  Bandolier' attrs -> coerce attrs
-  ToothOfEztli' attrs -> coerce attrs
-  OccultLexicon' attrs -> coerce attrs
-  ScrollOfProphecies' attrs -> coerce attrs
-  PhysicalTraining2' attrs -> coerce attrs
-  Hyperawareness2' attrs -> coerce attrs
-  HardKnocks2' attrs -> coerce attrs
-  ArcaneStudies2' attrs -> coerce attrs
-  GrotesqueStatue4' attrs -> coerce attrs
-  DigDeep2' attrs -> coerce attrs
-  RabbitsFoot3' attrs -> coerce attrs
-  ArcaneEnlightenment' attrs -> coerce attrs
-  CelaenoFragments' attrs -> coerce attrs
-  Encyclopedia' attrs -> coerce attrs
-  HigherEducation' attrs -> coerce attrs
-  WhittonGreene' attrs -> coerce attrs
-  LadyEsprit' attrs -> coerce attrs
-  BearTrap' attrs -> coerce attrs
-  FishingNet' attrs -> coerce attrs
-  MonstrousTransformation' attrs -> coerce attrs
-  DaisysToteBagAdvanced' attrs -> coerce attrs
-  TheNecronomiconAdvanced' attrs -> coerce attrs
-  BaseAsset' attrs -> coerce attrs
+  slotsOf = slotsOf . toAttrs
+  useTypeOf = useTypeOf . toAttrs
+  isHealthDamageable = isHealthDamageable . toAttrs
+  isSanityDamageable = isSanityDamageable . toAttrs

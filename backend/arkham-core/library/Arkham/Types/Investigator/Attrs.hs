@@ -20,6 +20,10 @@ import Data.List ((\\))
 import System.Random
 import System.Random.Shuffle
 
+instance HasAttrs Attrs where
+  type AttrsT Attrs = Attrs
+  toAttrs = id
+
 instance HasCardCode Attrs where
   getCardCode = unInvestigatorId . investigatorId
 

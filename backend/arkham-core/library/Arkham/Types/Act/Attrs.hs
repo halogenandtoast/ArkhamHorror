@@ -2,6 +2,10 @@ module Arkham.Types.Act.Attrs where
 
 import Arkham.Import
 
+instance HasAttrs Attrs where
+  type AttrsT Attrs = Attrs
+  toAttrs = id
+
 data Attrs = Attrs
   { actCanAdvance :: Bool
   , actId         :: ActId

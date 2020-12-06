@@ -9,6 +9,10 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Trait
 import Data.Char (isLetter, toLower, toUpper)
 
+instance HasAttrs Attrs where
+  type AttrsT Attrs = Attrs
+  toAttrs = id
+
 data Attrs = Attrs
   { locationName :: LocationName
   , locationLabel :: Text

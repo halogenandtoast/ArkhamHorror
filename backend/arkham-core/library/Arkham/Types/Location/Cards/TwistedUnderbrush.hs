@@ -41,7 +41,7 @@ instance ActionRunner env => HasActions env TwistedUnderbrush where
         $ baseActions
         <> [ ActivateCardAbilityAction
                iid
-               (mkAbility (LocationSource "81007") 1 (ActionAbility 1 Nothing))
+               (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
            | iid `member` locationInvestigators && hasActionsRemaining
            ]
   getActions i window (TwistedUnderbrush attrs) = getActions i window attrs

@@ -26,6 +26,16 @@ export default defineComponent({
         } else {
           card.value = null
         }
+
+      } else if (event.target instanceof HTMLDivElement) {
+        if (event.target.classList.contains('card')) {
+          const clientRect = event.target.getBoundingClientRect ();
+          topPosition.value = Math.max(clientRect.top - 300, 50)
+          leftPosition.value = Math.min(clientRect.left + 150, window.innerWidth - 300)
+          card.value = event.target.style.backgroundImage.slice(4, -1).replace(/"/g, "")
+        } else {
+          card.value = null
+        }
       } else {
         card.value = null
       }
@@ -39,8 +49,10 @@ export default defineComponent({
 <style lang="scss">
 .card-overlay {
   position: fixed;
+  width: 100px;
   img {
     border-radius: 20px;
+    width: 250px;
   }
   pointer-events: none;
   z-index: 10000;

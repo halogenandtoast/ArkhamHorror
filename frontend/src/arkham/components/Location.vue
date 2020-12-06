@@ -11,12 +11,20 @@
     </div>
     <div class="location-column">
       <font-awesome-icon v-if="blocked" :icon="['fab', 'expeditedssl']" class="status-icon" />
-      <img
+
+      <div
         :class="{ 'location--can-interact': cardAction !== -1 }"
-        class="card"
-        :src="image"
-        @click="$emit('choose', cardAction)"
-      />
+        class="card-container"
+        @click="$emit('choose', cardAction)">
+        <div
+          class="card location-card"
+          :style="{ backgroundImage: `url(${image})` }"
+          ></div>
+        <div
+          class="card location-connections"
+          :style="{ backgroundImage: `url(${image})` }"
+          ></div>
+      </div>
       <button
         v-if="investigateAction !== -1"
         class="button investigate-button"
@@ -246,7 +254,7 @@ export default defineComponent({
 
 .card {
   width: 100px;
-  border-radius: 10px;
+  border-radius: 3px;
 }
 
 ::v-deep .enemy {
@@ -327,5 +335,26 @@ export default defineComponent({
   position: absolute;
   top: 19px;
   pointer-events: none;
+}
+
+.location-card {
+  height: 107px;
+  width: 125px;
+  background-size: 100%;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.location-connections {
+  height: 27px;
+  width: 125px;
+  background-size: 100%;
+  background-position: bottom;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.card-container {
+  border-radius: 5px;
 }
 </style>

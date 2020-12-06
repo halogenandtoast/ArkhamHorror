@@ -9,6 +9,10 @@ import Arkham.Types.Treachery.Runner
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 
+instance HasAttrs Attrs where
+  type AttrsT Attrs = Attrs
+  toAttrs = id
+
 data Attrs = Attrs
   { treacheryName :: Text
   , treacheryId :: TreacheryId

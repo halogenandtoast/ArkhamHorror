@@ -14,7 +14,6 @@ import Arkham.Types.Trait (Trait)
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Cards
 import Arkham.Types.Treachery.Runner
-import Data.Coerce
 
 data Treachery
   = CoverUp' CoverUp
@@ -75,29 +74,29 @@ deriving anyclass instance
 
 instance Entity Treachery where
   type EntityId Treachery = TreacheryId
-  toId = toId . treacheryAttrs
-  toTarget = toTarget . treacheryAttrs
-  isTarget = isTarget . treacheryAttrs
-  toSource = toSource . treacheryAttrs
-  isSource = isSource . treacheryAttrs
+  toId = toId . toAttrs
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
 
 instance HasCardCode Treachery where
-  getCardCode = treacheryCardCode . treacheryAttrs
+  getCardCode = treacheryCardCode . toAttrs
 
 instance HasTraits Treachery where
-  getTraits = treacheryTraits . treacheryAttrs
+  getTraits = treacheryTraits . toAttrs
 
 instance HasKeywords Treachery where
-  getKeywords = treacheryKeywords . treacheryAttrs
+  getKeywords = treacheryKeywords . toAttrs
 
 instance HasCount DoomCount env Treachery where
-  getCount = pure . DoomCount . treacheryDoom . treacheryAttrs
+  getCount = pure . DoomCount . treacheryDoom . toAttrs
 
 instance HasId (Maybe OwnerId) env Treachery where
-  getId = pure . (OwnerId <$>) . treacheryOwner . treacheryAttrs
+  getId = pure . (OwnerId <$>) . treacheryOwner . toAttrs
 
 getTreacheryId :: Treachery -> TreacheryId
-getTreacheryId = treacheryId . treacheryAttrs
+getTreacheryId = treacheryId . toAttrs
 
 instance HasId TreacheryId env Treachery where
   getId = pure . getTreacheryId
@@ -156,57 +155,14 @@ allTreacheries = mapFromList
   ]
 
 isWeakness :: Treachery -> Bool
-isWeakness = treacheryWeakness . treacheryAttrs
+isWeakness = treacheryWeakness . toAttrs
 
 instance CanBeWeakness env Treachery where
   getIsWeakness = pure . isWeakness
 
 treacheryLocation :: Treachery -> Maybe LocationId
-treacheryLocation = treacheryAttachedLocation . treacheryAttrs
+treacheryLocation = treacheryAttachedLocation . toAttrs
 
-treacheryAttrs :: Treachery -> Attrs
-treacheryAttrs = \case
-  CoverUp' attrs -> coerce attrs
-  HospitalDebts' attrs -> coerce attrs
-  AbandonedAndAlone' attrs -> coerce attrs
-  Amnesia' attrs -> coerce attrs
-  Paranoia' attrs -> coerce attrs
-  Haunted' attrs -> coerce attrs
-  Psychosis' attrs -> coerce attrs
-  Hypochondria' attrs -> coerce attrs
-  HuntingShadow' attrs -> coerce attrs
-  FalseLead' attrs -> coerce attrs
-  UmordhothsWrath' attrs -> coerce attrs
-  GraspingHands' attrs -> coerce attrs
-  AncientEvils' attrs -> coerce attrs
-  RottingRemains' attrs -> coerce attrs
-  FrozenInFear' attrs -> coerce attrs
-  DissonantVoices' attrs -> coerce attrs
-  CryptChill' attrs -> coerce attrs
-  ObscuringFog' attrs -> coerce attrs
-  MysteriousChanting' attrs -> coerce attrs
-  OnWingsOfDarkness' attrs -> coerce attrs
-  LockedDoor' attrs -> coerce attrs
-  TheYellowSign' attrs -> coerce attrs
-  OfferOfPower' attrs -> coerce attrs
-  DreamsOfRlyeh' attrs -> coerce attrs
-  SmiteTheWicked' attrs -> coerce attrs
-  RexsCurse' attrs -> coerce attrs
-  SearchingForIzzie' attrs -> coerce attrs
-  FinalRhapsody' attrs -> coerce attrs
-  WrackedByNightmares' attrs -> coerce attrs
-  TheZealotsSeal' attrs -> coerce attrs
-  MaskedHorrors' attrs -> coerce attrs
-  VaultOfEarthlyDemise' attrs -> coerce attrs
-  UmordhothsHunger' attrs -> coerce attrs
-  ChillFromBelow' attrs -> coerce attrs
-  MaskOfUmordhoth' attrs -> coerce attrs
-  Atychiphobia' attrs -> coerce attrs
-  CursedSwamp' attrs -> coerce attrs
-  SpectralMist' attrs -> coerce attrs
-  DraggedUnder' attrs -> coerce attrs
-  RipplesOnTheSurface' attrs -> coerce attrs
-  CurseOfTheRougarou' (CurseOfTheRougarou (attrs `With` _)) -> attrs
-  OnTheProwl' attrs -> coerce attrs
-  BeastOfTheBayou' attrs -> coerce attrs
-  InsatiableBloodlust' attrs -> coerce attrs
+instance HasAttrs Treachery where
+  type AttrsT Treachery = Attrs
+  toAttrs = toAttrs . toAttrs

@@ -6,17 +6,11 @@ module Arkham.Types.Skill
   )
 where
 
-import Arkham.Json
-import Arkham.Types.Card
-import Arkham.Types.Classes
-import Arkham.Types.InvestigatorId
+import Arkham.Import
+
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Cards
 import Arkham.Types.Skill.Runner
-import Arkham.Types.SkillId
-import ClassyPrelude
-import Data.Coerce
-import Safe (fromJustNote)
 
 data Skill
   = ViciousBlow' ViciousBlow
@@ -37,7 +31,7 @@ deriving anyclass instance ActionRunner env => HasActions env Skill
 deriving anyclass instance SkillRunner env => RunMessage env Skill
 
 instance HasCardCode Skill where
-  getCardCode = skillCardCode . skillAttrs
+  getCardCode = skillCardCode . toAttrs
 
 lookupSkill :: CardCode -> (InvestigatorId -> SkillId -> Skill)
 lookupSkill cardCode =
@@ -59,18 +53,8 @@ allSkills = mapFromList
   ]
 
 ownerOfSkill :: Skill -> InvestigatorId
-ownerOfSkill = skillOwner . skillAttrs
+ownerOfSkill = skillOwner . toAttrs
 
-skillAttrs :: Skill -> Attrs
-skillAttrs = \case
-  ViciousBlow' attrs -> coerce attrs
-  Deduction' attrs -> coerce attrs
-  Opportunist' attrs -> coerce attrs
-  Fearless' attrs -> coerce attrs
-  SurvivalInstinct' attrs -> coerce attrs
-  Guts' attrs -> coerce attrs
-  Perception' attrs -> coerce attrs
-  Overpower' attrs -> coerce attrs
-  ManualDexterity' attrs -> coerce attrs
-  UnexpectedCourage' attrs -> coerce attrs
-  TrueUnderstanding' attrs -> coerce attrs
+instance HasAttrs Skill where
+  type AttrsT Skill = Attrs
+  toAttrs = toAttrs . toAttrs

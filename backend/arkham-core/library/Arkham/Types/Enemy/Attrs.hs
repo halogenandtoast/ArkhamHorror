@@ -10,6 +10,10 @@ import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait
 
+instance HasAttrs Attrs where
+  type AttrsT Attrs = Attrs
+  toAttrs = id
+
 data Attrs = Attrs
   { enemyName :: Text
   , enemyId :: EnemyId

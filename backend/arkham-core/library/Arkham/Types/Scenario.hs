@@ -16,7 +16,6 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.Scenario.Scenarios
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait (Trait)
-import Data.Coerce
 
 data Scenario
   = TheGathering' TheGathering
@@ -46,7 +45,7 @@ deriving anyclass instance
   => HasTokenValue env Scenario
 
 instance HasSet ScenarioLogKey env Scenario where
-  getSet = pure . scenarioLog . scenarioAttrs
+  getSet = pure . scenarioLog . toAttrs
 
 newtype BaseScenario = BaseScenario Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -79,10 +78,10 @@ lookupScenario :: ScenarioId -> Difficulty -> Scenario
 lookupScenario = fromJustNote "Unknown scenario" . flip lookup allScenarios
 
 difficultyOfScenario :: Scenario -> Difficulty
-difficultyOfScenario = scenarioDifficulty . scenarioAttrs
+difficultyOfScenario = scenarioDifficulty . toAttrs
 
 scenarioActs :: Scenario -> [ActId]
-scenarioActs s = case scenarioActStack (scenarioAttrs s) of
+scenarioActs s = case scenarioActStack (toAttrs s) of
   [(_, actIds)] -> actIds
   _ -> error "Not able to handle multiple act stacks yet"
 
@@ -98,14 +97,6 @@ allScenarios = mapFromList
   , ("81001", CurseOfTheRougarou' . curseOfTheRougarou)
   ]
 
-scenarioAttrs :: Scenario -> Attrs
-scenarioAttrs = \case
-  BaseScenario' attrs -> coerce attrs
-  TheGathering' attrs -> coerce attrs
-  TheMidnightMasks' attrs -> coerce attrs
-  TheDevourerBelow' attrs -> coerce attrs
-  ExtracurricularActivity' attrs -> coerce attrs
-  ReturnToTheGathering' attrs -> coerce attrs
-  ReturnToTheMidnightMasks' attrs -> coerce attrs
-  ReturnToTheDevourerBelow' attrs -> coerce attrs
-  CurseOfTheRougarou' (CurseOfTheRougarou (attrs `With` _)) -> attrs
+instance HasAttrs Scenario where
+  type AttrsT Scenario = Attrs
+  toAttrs = toAttrs . toAttrs

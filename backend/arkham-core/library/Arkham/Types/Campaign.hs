@@ -10,7 +10,6 @@ import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Campaigns
 import Arkham.Types.Campaign.Runner
 import Arkham.Types.Difficulty
-import Data.Coerce
 
 data Campaign
   = NightOfTheZealot' NightOfTheZealot
@@ -22,11 +21,11 @@ data Campaign
 deriving anyclass instance CampaignRunner env => RunMessage env Campaign
 
 instance HasRecord Campaign where
-  hasRecord key = hasRecord key . campaignLog . campaignAttrs
-  hasRecordSet key = hasRecordSet key . campaignLog . campaignAttrs
+  hasRecord key = hasRecord key . campaignLog . toAttrs
+  hasRecordSet key = hasRecordSet key . campaignLog . toAttrs
 
 instance HasSet CompletedScenarioId env Campaign where
-  getSet = getSet . campaignAttrs
+  getSet = getSet . toAttrs
 
 allCampaigns :: HashMap CampaignId (Difficulty -> Campaign)
 allCampaigns = mapFromList
@@ -40,13 +39,11 @@ lookupCampaign cid =
   fromJustNote ("Unknown campaign: " <> show cid) $ lookup cid allCampaigns
 
 difficultyOf :: Campaign -> Difficulty
-difficultyOf = campaignDifficulty . campaignAttrs
+difficultyOf = campaignDifficulty . toAttrs
 
 chaosBagOf :: Campaign -> [Token]
-chaosBagOf = campaignChaosBag . campaignAttrs
+chaosBagOf = campaignChaosBag . toAttrs
 
-campaignAttrs :: Campaign -> Attrs
-campaignAttrs = \case
-  NightOfTheZealot' attrs -> coerce attrs
-  TheDunwichLegacy' attrs -> coerce attrs
-  ReturnToNightOfTheZealot' attrs -> coerce attrs
+instance HasAttrs Campaign where
+  type AttrsT Campaign = Attrs
+  toAttrs = toAttrs . toAttrs

@@ -7,6 +7,10 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.Trait
 import qualified Data.HashMap.Strict as HashMap
 
+instance HasAttrs Attrs where
+  type AttrsT Attrs = Attrs
+  toAttrs = id
+
 data Attrs = Attrs
   { skillName :: Text
   , skillId :: SkillId

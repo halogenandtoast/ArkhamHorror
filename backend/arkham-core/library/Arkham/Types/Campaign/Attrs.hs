@@ -12,6 +12,10 @@ import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Data.UUID.V4
 
+instance HasAttrs Attrs where
+  type AttrsT Attrs = Attrs
+  toAttrs = id
+
 data Attrs = Attrs
   { campaignId :: CampaignId
   , campaignName :: Text

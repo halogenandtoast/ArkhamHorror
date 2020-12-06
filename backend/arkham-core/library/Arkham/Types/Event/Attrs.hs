@@ -6,6 +6,10 @@ import Arkham.Import
 import Arkham.Types.Trait
 import qualified Data.HashMap.Strict as HashMap
 
+instance HasAttrs Attrs where
+  type AttrsT Attrs = Attrs
+  toAttrs = id
+
 data Attrs = Attrs
   { eventName :: Text
   , eventId :: EventId
@@ -99,6 +103,6 @@ instance HasQueue env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     InvestigatorEliminated iid | eventAttachedInvestigator == Just iid ->
       a <$ unshiftMessage (Discard (EventTarget eventId))
-    AttachEventToLocation eid lid | eid == eventId -> do
+    AttachEventToLocation eid lid | eid == eventId ->
       pure $ a & attachedLocation ?~ lid
     _ -> pure a

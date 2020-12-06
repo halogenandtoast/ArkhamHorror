@@ -5,6 +5,10 @@ import Arkham.Import
 
 import Arkham.Types.Agenda.Helpers
 
+instance HasAttrs Attrs where
+  type AttrsT Attrs = Attrs
+  toAttrs = id
+
 data Attrs = Attrs
   { agendaDoom          :: Int
   , agendaDoomThreshold :: GameValue Int

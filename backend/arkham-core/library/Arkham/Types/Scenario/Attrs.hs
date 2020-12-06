@@ -10,6 +10,10 @@ import Arkham.Types.Scenario.Runner
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
   deriving newtype (Show, IsString, ToJSON, FromJSON)
 
+instance HasAttrs Attrs where
+  type AttrsT Attrs = Attrs
+  toAttrs = id
+
 data Attrs = Attrs
   { scenarioName        :: Text
   , scenarioId          :: ScenarioId

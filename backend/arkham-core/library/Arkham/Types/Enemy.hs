@@ -19,7 +19,6 @@ import Arkham.Types.Trait (Trait)
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Cards
 import Arkham.Types.Enemy.Runner
-import Data.Coerce
 
 data Enemy
   = MobEnforcer' MobEnforcer
@@ -111,7 +110,7 @@ instance ActionRunner env => HasActions env Enemy where
     -- preventedByModifier :: Attrs -> Modifier -> Action -> Bool
     pure $ filter
       (\action ->
-        not $ any (preventedByModifier (enemyAttrs enemy) action) modifiers'
+        not $ any (preventedByModifier (toAttrs enemy) action) modifiers'
       )
       actions
 
@@ -127,11 +126,11 @@ deriving anyclass instance
 
 instance Entity Enemy where
   type EntityId Enemy = EnemyId
-  toId = toId . enemyAttrs
-  toSource = toSource . enemyAttrs
-  toTarget = toTarget . enemyAttrs
-  isSource = isSource . enemyAttrs
-  isTarget = isTarget . enemyAttrs
+  toId = toId . toAttrs
+  toSource = toSource . toAttrs
+  toTarget = toTarget . toAttrs
+  isSource = isSource . toAttrs
+  isTarget = isTarget . toAttrs
 
 instance (EnemyRunner env) => RunMessage env Enemy where
   runMessage msg e = do
@@ -141,46 +140,46 @@ instance (EnemyRunner env) => RunMessage env Enemy where
       else defaultRunMessage msg e
 
 instance HasVictoryPoints Enemy where
-  getVictoryPoints = enemyVictory . enemyAttrs
+  getVictoryPoints = enemyVictory . toAttrs
 
 instance HasCount DoomCount env Enemy where
-  getCount = pure . DoomCount . enemyDoom . enemyAttrs
+  getCount = pure . DoomCount . enemyDoom . toAttrs
 
 instance HasCount HealthDamageCount env Enemy where
-  getCount = pure . HealthDamageCount . enemyHealthDamage . enemyAttrs
+  getCount = pure . HealthDamageCount . enemyHealthDamage . toAttrs
 
 instance HasCount SanityDamageCount env Enemy where
-  getCount = pure . SanityDamageCount . enemySanityDamage . enemyAttrs
+  getCount = pure . SanityDamageCount . enemySanityDamage . toAttrs
 
 instance HasId LocationId env Enemy where
-  getId = pure . enemyLocation . enemyAttrs
+  getId = pure . enemyLocation . toAttrs
 
 instance HasSet TreacheryId env Enemy where
-  getSet = pure . enemyTreacheries . enemyAttrs
+  getSet = pure . enemyTreacheries . toAttrs
 
 instance HasSet AssetId env Enemy where
-  getSet = pure . enemyAssets . enemyAttrs
+  getSet = pure . enemyAssets . toAttrs
 
 instance HasCardCode Enemy where
-  getCardCode = enemyCardCode . enemyAttrs
+  getCardCode = enemyCardCode . toAttrs
 
 instance HasTraits Enemy where
-  getTraits = enemyTraits . enemyAttrs
+  getTraits = enemyTraits . toAttrs
 
 instance HasKeywords Enemy where
-  getKeywords = enemyKeywords . enemyAttrs
+  getKeywords = enemyKeywords . toAttrs
 
 getEnemyId :: Enemy -> EnemyId
-getEnemyId = enemyId . enemyAttrs
+getEnemyId = enemyId . toAttrs
 
 instance HasId EnemyId env Enemy where
   getId = pure . getEnemyId
 
 instance IsEnemy Enemy where
-  isAloof = isAloof . enemyAttrs
+  isAloof = isAloof . toAttrs
 
 instance HasDamage Enemy where
-  getDamage = (, 0) . enemyDamage . enemyAttrs
+  getDamage = (, 0) . enemyDamage . toAttrs
 
 lookupEnemy :: CardCode -> (EnemyId -> Enemy)
 lookupEnemy = fromJustNote "Unkown enemy" . flip lookup allEnemies
@@ -231,22 +230,22 @@ allEnemies = mapFromList
   ]
 
 isEngaged :: Enemy -> Bool
-isEngaged = not . null . enemyEngagedInvestigators . enemyAttrs
+isEngaged = not . null . enemyEngagedInvestigators . toAttrs
 
 isUnique :: Enemy -> Bool
-isUnique = enemyUnique . enemyAttrs
+isUnique = enemyUnique . toAttrs
 
 instance Exhaustable Enemy where
-  isExhausted = enemyExhausted . enemyAttrs
+  isExhausted = enemyExhausted . toAttrs
 
 getEngagedInvestigators :: Enemy -> HashSet InvestigatorId
-getEngagedInvestigators = enemyEngagedInvestigators . enemyAttrs
+getEngagedInvestigators = enemyEngagedInvestigators . toAttrs
 
 getEnemyVictory :: Enemy -> Maybe Int
-getEnemyVictory = enemyVictory . enemyAttrs
+getEnemyVictory = enemyVictory . toAttrs
 
 getBearer :: Enemy -> Maybe InvestigatorId
-getBearer enemy = case enemyPrey (enemyAttrs enemy) of
+getBearer enemy = case enemyPrey (toAttrs enemy) of
   Bearer iid -> Just (InvestigatorId $ unBearerId iid)
   _ -> Nothing
 
@@ -254,46 +253,6 @@ isBlanked :: Message -> Bool
 isBlanked Blanked{} = True
 isBlanked _ = False
 
-enemyAttrs :: Enemy -> Attrs
-enemyAttrs = \case
-  MobEnforcer' attrs -> coerce attrs
-  SilverTwilightAcolyte' attrs -> coerce attrs
-  StubbornDetective' attrs -> coerce attrs
-  GhoulPriest' attrs -> coerce attrs
-  FleshEater' attrs -> coerce attrs
-  IcyGhoul' attrs -> coerce attrs
-  TheMaskedHunter' attrs -> coerce attrs
-  WolfManDrew' attrs -> coerce attrs
-  HermanCollins' attrs -> coerce attrs
-  PeterWarren' attrs -> coerce attrs
-  VictoriaDevereux' attrs -> coerce attrs
-  RuthTurner' attrs -> coerce attrs
-  Umordhoth' attrs -> coerce attrs
-  SwarmOfRats' attrs -> coerce attrs
-  GhoulMinion' attrs -> coerce attrs
-  RavenousGhoul' attrs -> coerce attrs
-  Acolyte' attrs -> coerce attrs
-  WizardOfTheOrder' attrs -> coerce attrs
-  HuntingNightgaunt' attrs -> coerce attrs
-  ScreechingByakhee' attrs -> coerce attrs
-  YithianObserver' attrs -> coerce attrs
-  RelentlessDarkYoung' attrs -> coerce attrs
-  GoatSpawn' attrs -> coerce attrs
-  YoungDeepOne' attrs -> coerce attrs
-  CorpseHungryGhoul' attrs -> coerce attrs
-  GhoulFromTheDepths' attrs -> coerce attrs
-  Narogath' attrs -> coerce attrs
-  GraveEater' attrs -> coerce attrs
-  AcolyteOfUmordhoth' attrs -> coerce attrs
-  DiscipleOfTheDevourer' attrs -> coerce attrs
-  CorpseTaker' attrs -> coerce attrs
-  JeremiahPierce' attrs -> coerce attrs
-  BillyCooper' attrs -> coerce attrs
-  AlmaHill' attrs -> coerce attrs
-  BogGator' attrs -> coerce attrs
-  SwampLeech' attrs -> coerce attrs
-  TheRougarou' (TheRougarou (attrs `With` _)) -> attrs
-  SlimeCoveredDhole' attrs -> coerce attrs
-  MarshGug' attrs -> coerce attrs
-  DarkYoungHost' attrs -> coerce attrs
-  BaseEnemy' attrs -> coerce attrs
+instance HasAttrs Enemy where
+  type AttrsT Enemy = Attrs
+  toAttrs = toAttrs . toAttrs

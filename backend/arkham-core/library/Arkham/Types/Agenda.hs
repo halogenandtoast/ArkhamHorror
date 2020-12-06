@@ -12,7 +12,6 @@ import Arkham.Import
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Cards
 import Arkham.Types.Agenda.Runner
-import Data.Coerce
 
 lookupAgenda :: AgendaId -> Agenda
 lookupAgenda agendaId =
@@ -21,7 +20,7 @@ lookupAgenda agendaId =
 
 allAgendas :: HashMap AgendaId Agenda
 allAgendas = mapFromList $ map
-  (toFst $ agendaId . agendaAttrs)
+  (toFst $ agendaId . toAttrs)
   [ WhatsGoingOn' whatsGoingOn
   , RiseOfTheGhouls' riseOfTheGhouls
   , TheyreGettingOut' theyreGettingOut
@@ -40,19 +39,19 @@ allAgendas = mapFromList $ map
   ]
 
 instance HasAbilities Agenda where
-  getAbilities = agendaAbilities . agendaAttrs
+  getAbilities = agendaAbilities . toAttrs
 
 instance HasCount DoomCount env Agenda where
-  getCount = pure . DoomCount . agendaDoom . agendaAttrs
+  getCount = pure . DoomCount . agendaDoom . toAttrs
 
 getAgendaId :: Agenda -> AgendaId
-getAgendaId = agendaId . agendaAttrs
+getAgendaId = agendaId . toAttrs
 
 instance HasId AgendaId env Agenda where
   getId = pure . getAgendaId
 
 instance HasStep AgendaStep Agenda where
-  getStep = AgendaStep . agendaNumber . agendaAttrs
+  getStep = AgendaStep . agendaNumber . toAttrs
 
 data Agenda
   = WhatsGoingOn' WhatsGoingOn
@@ -80,11 +79,11 @@ deriving anyclass instance HasModifiersFor env Agenda
 
 instance Entity Agenda where
   type EntityId Agenda = AgendaId
-  toId = toId . agendaAttrs
-  toTarget = toTarget . agendaAttrs
-  isTarget = isTarget . agendaAttrs
-  toSource = toSource . agendaAttrs
-  isSource = isSource . agendaAttrs
+  toId = toId . toAttrs
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
 
 newtype BaseAgenda = BaseAgenda Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -102,21 +101,6 @@ instance HasActions env BaseAgenda where
 instance AgendaRunner env => RunMessage env BaseAgenda where
   runMessage msg (BaseAgenda attrs) = BaseAgenda <$> runMessage msg attrs
 
-agendaAttrs :: Agenda -> Attrs
-agendaAttrs = \case
-  WhatsGoingOn' attrs -> coerce attrs
-  RiseOfTheGhouls' attrs -> coerce attrs
-  TheyreGettingOut' attrs -> coerce attrs
-  PredatorOrPrey' attrs -> coerce attrs
-  TimeIsRunningShort' attrs -> coerce attrs
-  TheArkhamWoods' attrs -> coerce attrs
-  TheRitualBegins' attrs -> coerce attrs
-  VengeanceAwaits' attrs -> coerce attrs
-  QuietHalls' attrs -> coerce attrs
-  DeadOfNight' attrs -> coerce attrs
-  TheBeastUnleashed' attrs -> coerce attrs
-  ReturnToPredatorOrPrey' attrs -> coerce attrs
-  ACreatureOfTheBayou' attrs -> coerce attrs
-  TheRougarouFeeds' attrs -> coerce attrs
-  TheCurseSpreads' attrs -> coerce attrs
-  BaseAgenda' attrs -> coerce attrs
+instance HasAttrs Agenda where
+  type AttrsT Agenda = Attrs
+  toAttrs = toAttrs . toAttrs

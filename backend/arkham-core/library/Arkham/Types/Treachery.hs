@@ -4,7 +4,6 @@ module Arkham.Types.Treachery
   , Treachery(..)
   , isWeakness
   , treacheryLocation
-  , getTreacheryId
   )
 where
 
@@ -95,12 +94,6 @@ instance HasCount DoomCount env Treachery where
 
 instance HasId (Maybe OwnerId) env Treachery where
   getId = pure . (OwnerId <$>) . treacheryOwner . treacheryAttrs
-
-getTreacheryId :: Treachery -> TreacheryId
-getTreacheryId = treacheryId . treacheryAttrs
-
-instance HasId TreacheryId env Treachery where
-  getId = pure . getTreacheryId
 
 lookupTreachery
   :: CardCode -> (TreacheryId -> Maybe InvestigatorId -> Treachery)

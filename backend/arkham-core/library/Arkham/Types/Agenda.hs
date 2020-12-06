@@ -3,7 +3,6 @@ module Arkham.Types.Agenda
   ( Agenda(..)
   , lookupAgenda
   , baseAgenda
-  , getAgendaId
   )
 where
 
@@ -39,17 +38,8 @@ allAgendas = mapFromList $ map
   , TheCurseSpreads' theCurseSpreads
   ]
 
-instance HasAbilities Agenda where
-  getAbilities = agendaAbilities . agendaAttrs
-
 instance HasCount DoomCount env Agenda where
   getCount = pure . DoomCount . agendaDoom . agendaAttrs
-
-getAgendaId :: Agenda -> AgendaId
-getAgendaId = agendaId . agendaAttrs
-
-instance HasId AgendaId env Agenda where
-  getId = pure . getAgendaId
 
 instance HasStep AgendaStep Agenda where
   getStep = AgendaStep . agendaNumber . agendaAttrs
@@ -75,7 +65,7 @@ data Agenda
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Agenda
-deriving anyclass instance (AgendaRunner env) => RunMessage env Agenda
+deriving anyclass instance AgendaRunner env => RunMessage env Agenda
 deriving anyclass instance HasModifiersFor env Agenda
 
 instance Entity Agenda where
@@ -99,7 +89,13 @@ instance HasModifiersFor env BaseAgenda where
 instance HasActions env BaseAgenda where
   getActions iid window (BaseAgenda attrs) = getActions iid window attrs
 
-instance AgendaRunner env => RunMessage env BaseAgenda where
+instance
+  ( HasQueue env
+  , HasCount DoomCount env ()
+  , HasCount PlayerCount env ()
+  )
+  => RunMessage env BaseAgenda
+  where
   runMessage msg (BaseAgenda attrs) = BaseAgenda <$> runMessage msg attrs
 
 agendaAttrs :: Agenda -> Attrs

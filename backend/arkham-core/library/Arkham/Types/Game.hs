@@ -752,11 +752,10 @@ instance HasList InPlayCard (Game queue) InvestigatorId where
   getList iid = do
     assetIds <- getSetList =<< getInvestigator iid
     assets' <- traverse getAsset assetIds
-    g <- ask
     pure $ map
       (\asset -> InPlayCard . PlayerCard $ lookupPlayerCard
         (getCardCode asset)
-        (CardId . unAssetId $ runReader (getId asset) g)
+        (CardId . unAssetId $ toId asset)
       )
       assets'
 
@@ -780,9 +779,6 @@ instance HasList UsedAbility (Game queue) () where
 
 instance HasList Enemy (Game queue) () where
   getList _ = toList <$> view enemies
-
-instance HasList Ability (Game queue) () where
-  getList _ = view (agendas . traverse . to getAbilities)
 
 instance HasSource ForSkillTest (Game queue) where
   getSource _ g = (Just . skillTestToSource) =<< (g ^. skillTest)
@@ -843,15 +839,11 @@ instance HasSet ExhaustedAssetId (Game queue) InvestigatorId where
 
 instance HasSet ExhaustedEnemyId (Game queue) LocationId where
   getSet lid = do
-    g <- ask
     location <- getLocation lid <$> ask
     locationEnemyIds <- getSet @EnemyId location
     HashSet.map ExhaustedEnemyId
       . keysSet
-      . filterMap
-          (\e ->
-            runReader (getId e) g `member` locationEnemyIds && isExhausted e
-          )
+      . filterMap (\e -> toId e `member` locationEnemyIds && isExhausted e)
       <$> view enemies
 
 instance HasSet AgendaId (Game queue) () where
@@ -1129,8 +1121,7 @@ instance HasSet ClosestPathLocationId (Game queue) (LocationId, LocationId) wher
             connectedLocationIds
         pure
           $ setFromList
-          . map (ClosestPathLocationId . fst)
-          . fromMaybe []
+          . maybe [] (map (ClosestPathLocationId . fst))
           . headMay
           . groupOn snd
           $ sortOn snd candidates
@@ -1320,8 +1311,7 @@ instance HasSet EnemyId (Game queue) () where
 instance HasSet UniqueEnemyId (Game queue) () where
   getSet _ = do
     enemies' <- filter isUnique . toList <$> view enemies
-    enemyIds <- traverse getId enemies'
-    pure . setFromList $ map UniqueEnemyId enemyIds
+    pure . setFromList $ map (UniqueEnemyId . toId) enemies'
 
 instance HasSet EnemyId (Game queue) LocationId where
   getSet = getSet <=< getLocation

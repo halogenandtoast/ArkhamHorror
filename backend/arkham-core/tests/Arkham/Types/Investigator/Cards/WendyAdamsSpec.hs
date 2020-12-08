@@ -16,7 +16,7 @@ spec = describe "Wendy Adams" $ do
         $ runGameTest
             wendyAdams
             [ SetTokens [MinusOne]
-            , AddToHand (getInvestigatorId wendyAdams) (PlayerCard card)
+            , AddToHand (toId wendyAdams) (PlayerCard card)
             , beginSkillTest wendyAdams SkillWillpower 3
             ]
             id

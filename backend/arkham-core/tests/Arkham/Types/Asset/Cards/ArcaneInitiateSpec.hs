@@ -18,6 +18,7 @@ spec = describe "Arcane Initiate" $ do
       [playAsset investigator arcaneInitiate]
       (assets %~ insertEntity arcaneInitiate)
     getCount (updated game arcaneInitiate) () `shouldBe` DoomCount 1
+
   it "can be exhausted to search the top 3 cards of your deck for a Spell card"
     $ do
         arcaneInitiate <- buildAsset "01063"
@@ -31,13 +32,18 @@ spec = describe "Arcane Initiate" $ do
           ]
           (assets %~ insertEntity arcaneInitiate)
 
-        [ability] <- getActionsOf game investigator NonFast arcaneInitiate
+        [ability] <- getActionsOf
+          game
+          investigator
+          FastPlayerWindow
+          arcaneInitiate
 
         game' <-
           runGameTestMessages game [ability]
           >>= runGameTestOnlyOption "search top of deck"
           >>= runGameTestOnlyOption "take spell card"
         updated game' investigator `shouldSatisfy` handIs [PlayerCard card]
+
   it "should continue if no Spell card is found" $ do
     arcaneInitiate <- buildAsset "01063"
     investigator <- testInvestigator "00000" id
@@ -47,7 +53,7 @@ spec = describe "Arcane Initiate" $ do
       [playAsset investigator arcaneInitiate, loadDeck investigator cards]
       (assets %~ insertEntity arcaneInitiate)
 
-    [ability] <- getActionsOf game investigator NonFast arcaneInitiate
+    [ability] <- getActionsOf game investigator FastPlayerWindow arcaneInitiate
 
     game' <-
       runGameTestMessages game [ability]

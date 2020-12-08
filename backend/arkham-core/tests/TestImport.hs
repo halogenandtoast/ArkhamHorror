@@ -52,13 +52,16 @@ testScenario cardCode f =
   in pure $ baseScenario cardCode name [] [] Easy f
 
 insertEntity
-  :: (HasId k () v, Eq k, Hashable k) => v -> HashMap k v -> HashMap k v
-insertEntity a = insertMap (getId a ()) a
+  :: (Entity v, EntityId v ~ k, Eq k, Hashable k)
+  => v
+  -> HashMap k v
+  -> HashMap k v
+insertEntity a = insertMap (toId a) a
 
 buildEvent :: MonadIO m => CardCode -> Investigator -> m Event
 buildEvent cardCode investigator = do
   eventId <- liftIO $ EventId <$> nextRandom
-  pure $ lookupEvent cardCode (getInvestigatorId investigator) eventId
+  pure $ lookupEvent cardCode (toId investigator) eventId
 
 buildEnemy :: MonadIO m => CardCode -> m Enemy
 buildEnemy cardCode = do
@@ -184,9 +187,8 @@ getActionsOf
   -> Window
   -> a
   -> m [Message]
-getActionsOf game investigator window e = withGame
-  game
-  (getActions (getInvestigatorId investigator) window (updated game e))
+getActionsOf game investigator window e =
+  withGame game (getActions (toId investigator) window (updated game e))
 
 chaosBagTokensOf :: Game queue -> [Token]
 chaosBagTokensOf g = g ^. chaosBag . ChaosBag.chaosBagTokensLens
@@ -200,7 +202,7 @@ didPassSkillTestBy
   :: MonadIO m => Investigator -> Int -> m (IORef Bool, Message -> m ())
 didPassSkillTestBy investigator n = createMessageMatcher
   (PassedSkillTest
-    (getInvestigatorId investigator)
+    (toId investigator)
     Nothing
     TestSource
     (SkillTestInitiatorTarget TestTarget)
@@ -344,4 +346,4 @@ newGame investigator queue = do
     , gameQuestion = mempty
     , gameHash = UUID.nil
     }
-  where investigatorId = getInvestigatorId investigator
+  where investigatorId = toId investigator

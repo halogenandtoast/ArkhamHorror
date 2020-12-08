@@ -24,7 +24,7 @@ spec = describe "Rex's Curse" $ do
 
     (didRunMessage, logger) <- createMessageMatcher
       (PassedSkillTest
-        (getInvestigatorId investigator)
+        (toId investigator)
         Nothing
         TestSource
         (SkillTestInitiatorTarget TestTarget)
@@ -37,7 +37,7 @@ spec = describe "Rex's Curse" $ do
         , loadDeck investigator [rexsCurse]
         , drawCards investigator 1
         , BeginSkillTest
-          (getInvestigatorId investigator)
+          (toId investigator)
           TestSource
           TestTarget
           Nothing

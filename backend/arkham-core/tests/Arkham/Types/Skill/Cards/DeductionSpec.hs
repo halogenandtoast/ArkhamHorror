@@ -37,7 +37,5 @@ spec = describe "Deduction" $ do
               _ -> False
             )
       >>= runGameTestOnlyOption "apply results"
-    withGame
-        game
-        (asks $ unClueCount . getCount (getInvestigatorId investigator))
+    withGame game (asks $ unClueCount . getCount (toId investigator))
       `shouldReturn` 2

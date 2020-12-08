@@ -15,70 +15,55 @@ import Arkham.Types.Source
 import Arkham.Types.Target
 
 playEvent :: Investigator -> Event -> Message
-playEvent i e =
-  InvestigatorPlayEvent (getInvestigatorId i) (getEventId e) Nothing
+playEvent i e = InvestigatorPlayEvent (toId i) (toId e) Nothing
 
 moveTo :: Investigator -> Location -> Message
-moveTo i l = MoveTo (getInvestigatorId i) (getLocationId l)
+moveTo i l = MoveTo (toId i) (toId l)
 
 moveFrom :: Investigator -> Location -> Message
-moveFrom i l = MoveFrom (getInvestigatorId i) (getLocationId l)
+moveFrom i l = MoveFrom (toId i) (toId l)
 
 moveAllTo :: Location -> Message
 moveAllTo = MoveAllTo . getLocationId
 
 enemySpawn :: Location -> Enemy -> Message
-enemySpawn l e = EnemySpawn Nothing (getLocationId l) (getEnemyId e)
+enemySpawn l e = EnemySpawn Nothing (toId l) (toId e)
 
 loadDeck :: Investigator -> [PlayerCard] -> Message
-loadDeck i cs = LoadDeck (getInvestigatorId i) cs
+loadDeck i cs = LoadDeck (toId i) cs
 
 addToHand :: Investigator -> Card -> Message
-addToHand i card = AddToHand (getInvestigatorId i) card
+addToHand i card = AddToHand (toId i) card
 
 chooseEndTurn :: Investigator -> Message
-chooseEndTurn i = ChooseEndTurn (getInvestigatorId i)
+chooseEndTurn i = ChooseEndTurn (toId i)
 
 enemyAttack :: Investigator -> Enemy -> Message
-enemyAttack i e = EnemyAttack (getInvestigatorId i) (getEnemyId e)
+enemyAttack i e = EnemyAttack (toId i) (toId e)
 
 fightEnemy :: Investigator -> Enemy -> Message
-fightEnemy i e =
-  FightEnemy (getInvestigatorId i) (getEnemyId e) TestSource SkillCombat False
+fightEnemy i e = FightEnemy (toId i) (toId e) TestSource SkillCombat False
 
 engageEnemy :: Investigator -> Enemy -> Message
-engageEnemy i e = EngageEnemy (getInvestigatorId i) (getEnemyId e) False
+engageEnemy i e = EngageEnemy (toId i) (toId e) False
 
 disengageEnemy :: Investigator -> Enemy -> Message
-disengageEnemy i e = DisengageEnemy (getInvestigatorId i) (getEnemyId e)
+disengageEnemy i e = DisengageEnemy (toId i) (toId e)
 
 playAsset :: Investigator -> Asset -> Message
-playAsset i a = InvestigatorPlayAsset
-  (getInvestigatorId i)
-  (getAssetId a)
-  (slotsOf a)
-  (toList $ getTraits a)
+playAsset i a =
+  InvestigatorPlayAsset (toId i) (toId a) (slotsOf a) (toList $ getTraits a)
 
 playDynamicCard :: Investigator -> Card -> Message
-playDynamicCard i c =
-  PlayDynamicCard (getInvestigatorId i) (getCardId c) 0 Nothing True
+playDynamicCard i c = PlayDynamicCard (toId i) (getCardId c) 0 Nothing True
 
 drawCards :: Investigator -> Int -> Message
-drawCards i n = DrawCards (getInvestigatorId i) n False
+drawCards i n = DrawCards (toId i) n False
 
 investigate :: Investigator -> Location -> Message
-investigate i l = Investigate
-  (getInvestigatorId i)
-  (getLocationId l)
-  TestSource
-  SkillIntellect
-  False
+investigate i l =
+  Investigate (toId i) (getLocationId l) TestSource SkillIntellect False
 
 beginSkillTest :: Investigator -> SkillType -> Int -> Message
-beginSkillTest i stype difficulty = BeginSkillTest
-  (getInvestigatorId i)
-  TestSource
-  TestTarget
-  Nothing
-  stype
-  difficulty
+beginSkillTest i stype difficulty =
+  BeginSkillTest (toId i) TestSource TestTarget Nothing stype difficulty

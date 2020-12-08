@@ -78,7 +78,7 @@ spec = describe "Duke" $ do
             )
           let dukeAsset = game ^?! assets . to toList . ix 0
           [investigateAction] <- toInternalGame game >>= runReaderT
-            (getActions (getInvestigatorId investigator) NonFast dukeAsset)
+            (getActions (toId investigator) NonFast dukeAsset)
           game' <-
             runGameTestMessages
               game

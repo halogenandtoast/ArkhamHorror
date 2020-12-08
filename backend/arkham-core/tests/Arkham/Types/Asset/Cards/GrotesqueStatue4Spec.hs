@@ -15,7 +15,7 @@ spec = describe "Grotesque Statue (4)" $ do
       grotestqueStatue <- buildAsset "01071"
       (didRunMessage, logger) <- createMessageMatcher
         (PassedSkillTest
-          (getInvestigatorId investigator)
+          (toId investigator)
           Nothing
           TestSource
           (SkillTestInitiatorTarget TestTarget)

@@ -22,7 +22,7 @@ spec = describe "Jim Culver" $ do
             jimCulver
             [ SetTokens [ElderSign]
             , BeginSkillTest
-              (getInvestigatorId jimCulver)
+              (toId jimCulver)
               TestSource
               TestTarget
               Nothing
@@ -49,7 +49,7 @@ spec = describe "Jim Culver" $ do
             jimCulver
             [ SetTokens [ElderSign]
             , BeginSkillTest
-              (getInvestigatorId jimCulver)
+              (toId jimCulver)
               TestSource
               TestTarget
               Nothing
@@ -76,7 +76,7 @@ spec = describe "Jim Culver" $ do
             jimCulver
             [ SetTokens [Skull]
             , BeginSkillTest
-              (getInvestigatorId jimCulver)
+              (toId jimCulver)
               TestSource
               TestTarget
               Nothing

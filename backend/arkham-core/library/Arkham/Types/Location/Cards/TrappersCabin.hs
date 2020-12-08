@@ -32,7 +32,7 @@ instance ActionRunner env => HasActions env TrappersCabin where
   getActions iid NonFast (TrappersCabin attrs@Attrs {..}) | locationRevealed =
     do
       assetNotTaken <- isNothing
-        <$> getId @(Maybe StoryAssetId) (CardCode "81029")
+        <$> getId @(Maybe StoryAssetId) (CardCode "81020")
       baseActions <- getActions iid NonFast attrs
       resourceCount <- getResourceCount iid
       hasActionsRemaining <- getHasActionsRemaining
@@ -57,6 +57,7 @@ instance (LocationRunner env) => RunMessage env TrappersCabin where
   runMessage msg l@(TrappersCabin attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> l <$ unshiftMessage
       (BeginSkillTest iid source (toTarget attrs) Nothing SkillIntellect 3)
-    PassedSkillTest iid _ source _ _ | isSource attrs source ->
-      l <$ unshiftMessage (TakeControlOfSetAsideAsset iid "81029")
+    PassedSkillTest iid _ source SkillTestInitiatorTarget _
+      | isSource attrs source -> l
+      <$ unshiftMessage (TakeControlOfSetAsideAsset iid "81020")
     _ -> TrappersCabin <$> runMessage msg attrs

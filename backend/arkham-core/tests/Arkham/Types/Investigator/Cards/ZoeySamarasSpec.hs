@@ -15,7 +15,7 @@ spec = do
       game <- runGameTest zoeySamaras [] id
       token <- withGame
         game
-        (getTokenValue zoeySamaras (getInvestigatorId zoeySamaras) ElderSign)
+        (getTokenValue zoeySamaras (toId zoeySamaras) ElderSign)
       tokenValue token `shouldBe` Just 1
     it "elder sign token gives +1 and does +1 damage for attacks" $ do
       let zoeySamaras = lookupInvestigator "02001" -- combat is 4

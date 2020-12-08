@@ -13,9 +13,7 @@ spec = describe "Wracked by Nightmares" $ do
     investigator <- testInvestigator "00000" id
     wrackedByNightmares <- buildPlayerCard "02015"
     asset <- testAsset
-      ((Asset.exhaustedL .~ True)
-      . (Asset.investigatorL ?~ getInvestigatorId investigator)
-      )
+      ((Asset.exhaustedL .~ True) . (Asset.investigatorL ?~ toId investigator))
     game <- runGameTest
       investigator
       [ loadDeck investigator [wrackedByNightmares]
@@ -32,9 +30,7 @@ spec = describe "Wracked by Nightmares" $ do
     investigator <- testInvestigator "00000" id
     wrackedByNightmares <- buildPlayerCard "02015"
     asset <- testAsset
-      ((Asset.exhaustedL .~ True)
-      . (Asset.investigatorL ?~ getInvestigatorId investigator)
-      )
+      ((Asset.exhaustedL .~ True) . (Asset.investigatorL ?~ toId investigator))
     game <- runGameTest
       investigator
       [loadDeck investigator [wrackedByNightmares], drawCards investigator 1]

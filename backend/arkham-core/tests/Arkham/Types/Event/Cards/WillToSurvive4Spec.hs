@@ -15,7 +15,7 @@ spec = describe "Will to Survive (4)" $ do
     willToSurvive4 <- buildEvent "01085" investigator
     (didPassTest, logger) <- createMessageMatcher
       (PassedSkillTest
-        (getInvestigatorId investigator)
+        (toId investigator)
         Nothing
         TestSource
         (SkillTestInitiatorTarget TestTarget)
@@ -38,7 +38,7 @@ spec = describe "Will to Survive (4)" $ do
     willToSurvive4 <- buildEvent "01085" investigator
     (didFailTest, logger) <- createMessageMatcher
       (FailedSkillTest
-        (getInvestigatorId investigator)
+        (toId investigator)
         Nothing
         TestSource
         (SkillTestInitiatorTarget TestTarget)
@@ -49,7 +49,7 @@ spec = describe "Will to Survive (4)" $ do
           investigator
           [ SetTokens [AutoFail]
           , playEvent investigator willToSurvive4
-          , ChooseEndTurn (getInvestigatorId investigator)
+          , ChooseEndTurn (toId investigator)
           , beginSkillTest investigator SkillIntellect 3
           ]
           (events %~ insertEntity willToSurvive4)

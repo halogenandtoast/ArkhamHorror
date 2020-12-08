@@ -16,8 +16,8 @@ spec = describe "Smite the Wicked" $ do
     game <-
       runGameTest
           investigator
-          [ PlacedLocation (getLocationId location1)
-          , PlacedLocation (getLocationId location2)
+          [ PlacedLocation (toId location1)
+          , PlacedLocation (toId location2)
           , SetEncounterDeck [treachery, enemy]
           , loadDeck investigator [smiteTheWicked]
           , drawCards investigator 1
@@ -57,7 +57,7 @@ spec = describe "Smite the Wicked" $ do
     game <-
       runGameTest
           investigator
-          [ PlacedLocation (getLocationId location)
+          [ PlacedLocation (toId location)
           , SetEncounterDeck [enemy]
           , loadDeck investigator [smiteTheWicked]
           , drawCards investigator 1
@@ -69,9 +69,9 @@ spec = describe "Smite the Wicked" $ do
     game' <- runGameTestMessages
       game
       [ EnemyDefeated
-        (getEnemyId updatedEnemy)
-        (getInvestigatorId investigator)
-        (getLocationId location)
+        (toId updatedEnemy)
+        (toId investigator)
+        (toId location)
         (getCardCode enemy)
         (toSource investigator)
         []
@@ -89,11 +89,11 @@ spec = describe "Smite the Wicked" $ do
     game <-
       runGameTest
           investigator
-          [ PlacedLocation (getLocationId location)
+          [ PlacedLocation (toId location)
           , SetEncounterDeck [enemy]
           , loadDeck investigator [smiteTheWicked]
           , drawCards investigator 1
-          , Resign (getInvestigatorId investigator)
+          , Resign (toId investigator)
           ]
           (locations %~ insertEntity location)
         >>= runGameTestOnlyOption "place enemy"

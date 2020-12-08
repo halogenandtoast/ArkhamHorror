@@ -15,7 +15,7 @@ spec = describe "Lucky!" $ do
     lucky <- buildPlayerCard "01080"
     (didPassTest, logger) <- createMessageMatcher
       (PassedSkillTest
-        (getInvestigatorId investigator)
+        (toId investigator)
         Nothing
         TestSource
         (SkillTestInitiatorTarget TestTarget)
@@ -44,7 +44,7 @@ spec = describe "Lucky!" $ do
     lucky <- buildPlayerCard "01080"
     (didFailTest, logger) <- createMessageMatcher
       (FailedSkillTest
-        (getInvestigatorId investigator)
+        (toId investigator)
         Nothing
         TestSource
         (SkillTestInitiatorTarget TestTarget)

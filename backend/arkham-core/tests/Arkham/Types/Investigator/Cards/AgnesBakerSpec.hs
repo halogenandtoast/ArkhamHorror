@@ -20,11 +20,7 @@ spec = describe "Agnes Baker" $ do
           [ PlacedLocation (getLocationId location)
           , enemySpawn location enemy
           , moveTo agnesBaker location
-          , InvestigatorDirectDamage
-            (getInvestigatorId agnesBaker)
-            TestSource
-            0
-            1
+          , InvestigatorDirectDamage (toId agnesBaker) TestSource 0 1
           ]
           ((enemies %~ insertEntity enemy)
           . (locations %~ insertEntity location)
@@ -44,7 +40,7 @@ spec = describe "Agnes Baker" $ do
       location <- testLocation "00000" id
       (didPassTest, logger) <- createMessageMatcher
         (PassedSkillTest
-          (getInvestigatorId agnesBaker)
+          (toId agnesBaker)
           Nothing
           TestSource
           (SkillTestInitiatorTarget TestTarget)
@@ -57,11 +53,7 @@ spec = describe "Agnes Baker" $ do
             [ SetTokens [ElderSign]
             , PlacedLocation (getLocationId location)
             , moveTo agnesBaker location
-            , InvestigatorDirectDamage
-              (getInvestigatorId agnesBaker)
-              TestSource
-              0
-              2
+            , InvestigatorDirectDamage (toId agnesBaker) TestSource 0 2
             , beginSkillTest agnesBaker SkillIntellect 4
             ]
             (locations %~ insertEntity location)

@@ -17,7 +17,7 @@ spec = do
       location <- testLocation "00000" id
       dodge <- buildPlayerCard "01023"
       (didRunMessage, logger) <- createMessageMatcher
-        (PerformEnemyAttack "00000" (getEnemyId enemy))
+        (PerformEnemyAttack "00000" (toId enemy))
       void
         $ runGameTest
             investigator

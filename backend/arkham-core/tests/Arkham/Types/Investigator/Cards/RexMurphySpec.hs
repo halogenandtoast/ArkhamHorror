@@ -42,7 +42,7 @@ spec = describe "Rex Murphy" $ do
           [ SetTokens [ElderSign]
           , loadDeck rexMurphy cards
           , BeginSkillTest
-            (getInvestigatorId rexMurphy)
+            (toId rexMurphy)
             TestSource
             TestTarget
             Nothing
@@ -66,7 +66,7 @@ spec = describe "Rex Murphy" $ do
       cards <- testPlayerCards 3
       (didPassTest, logger) <- createMessageMatcher
         (PassedSkillTest
-          (getInvestigatorId rexMurphy)
+          (toId rexMurphy)
           Nothing
           TestSource
           (SkillTestInitiatorTarget TestTarget)
@@ -78,7 +78,7 @@ spec = describe "Rex Murphy" $ do
           [ SetTokens [ElderSign]
           , loadDeck rexMurphy cards
           , BeginSkillTest
-            (getInvestigatorId rexMurphy)
+            (toId rexMurphy)
             TestSource
             TestTarget
             Nothing

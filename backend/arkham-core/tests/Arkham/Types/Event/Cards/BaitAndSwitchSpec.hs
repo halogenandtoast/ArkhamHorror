@@ -37,5 +37,5 @@ spec = describe "Bait and Switch" $ do
       >>= runGameTestOnlyOption "Move enemy"
     baitAndSwitch `shouldSatisfy` isInDiscardOf game investigator
     enemy `shouldSatisfy` evadedBy game investigator
-    enemyLocation <- withGame game (getId @LocationId =<< getId @EnemyId enemy)
+    enemyLocation <- withGame game (getId @LocationId (toId enemy))
     enemyLocation `shouldBe` getLocationId location2

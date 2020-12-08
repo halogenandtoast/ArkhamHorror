@@ -17,10 +17,8 @@ spec = describe "Jenny Barnes" $ do
       let jennyBarnes = lookupInvestigator "02003"
       game <- runGameTest
         jennyBarnes
-        [TakeResources (getInvestigatorId jennyBarnes) 5 False]
+        [TakeResources (toId jennyBarnes) 5 False]
         id
-      token <- withGame game $ getTokenValue
-        (updated game jennyBarnes)
-        (getInvestigatorId jennyBarnes)
-        ElderSign
+      token <- withGame game
+        $ getTokenValue (updated game jennyBarnes) (toId jennyBarnes) ElderSign
       tokenValue token `shouldBe` Just 5

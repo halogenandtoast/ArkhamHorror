@@ -15,15 +15,11 @@ spec = describe "Daisy Walker" $ do
       let daisyWalker = lookupInvestigator "01002"
       game <- runGameTest
         daisyWalker
-        [LoseActions (getInvestigatorId daisyWalker) TestSource 3]
+        [LoseActions (toId daisyWalker) TestSource 3]
         id
       withGame
           game
-          (getHasActionsRemaining
-            (getInvestigatorId daisyWalker)
-            Nothing
-            (singleton Tome)
-          )
+          (getHasActionsRemaining (toId daisyWalker) Nothing (singleton Tome))
         `shouldReturn` True
 
   context "elder sign" $ do
@@ -36,7 +32,7 @@ spec = describe "Daisy Walker" $ do
         runGameTest
           daisyWalker
           [ SetTokens [ElderSign]
-          , LoadDeck (getInvestigatorId daisyWalker) deckCards
+          , LoadDeck (toId daisyWalker) deckCards
           , playAsset daisyWalker tome1
           , playAsset daisyWalker tome2
           , beginSkillTest daisyWalker SkillIntellect 5

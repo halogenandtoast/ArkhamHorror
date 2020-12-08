@@ -23,8 +23,8 @@ spec = describe "Peter Sylvestre" $ do
       runGameTest
           investigator
           [ playAsset investigator peterSylvestre
-          , AssetDamage (getAssetId peterSylvestre) TestSource 0 2
-          , ChooseEndTurn (getInvestigatorId investigator)
+          , AssetDamage (toId peterSylvestre) TestSource 0 2
+          , ChooseEndTurn (toId investigator)
           ]
           (assets %~ insertEntity peterSylvestre)
         >>= runGameTestOptionMatching

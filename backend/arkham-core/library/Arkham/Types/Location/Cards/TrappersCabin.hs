@@ -31,6 +31,8 @@ instance HasModifiersFor env TrappersCabin where
 instance ActionRunner env => HasActions env TrappersCabin where
   getActions iid NonFast (TrappersCabin attrs@Attrs {..}) | locationRevealed =
     do
+      assetNotTaken <- isNothing
+        <$> getId @(Maybe StoryAssetId) (CardCode "81029")
       baseActions <- getActions iid NonFast attrs
       resourceCount <- getResourceCount iid
       hasActionsRemaining <- getHasActionsRemaining
@@ -47,6 +49,7 @@ instance ActionRunner env => HasActions env TrappersCabin where
              && resourceCount
              >= 5
              && hasActionsRemaining
+             && assetNotTaken
            ]
   getActions i window (TrappersCabin attrs) = getActions i window attrs
 

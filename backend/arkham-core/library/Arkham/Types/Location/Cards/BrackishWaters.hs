@@ -31,6 +31,8 @@ instance HasModifiersFor env BrackishWaters where
 -- TODO: LEFT OFF HERE WITH HAND OF
 instance ActionRunner env => HasActions env BrackishWaters where
   getActions iid NonFast (BrackishWaters attrs@Attrs {..}) = do
+    assetNotTaken <- isNothing
+      <$> getId @(Maybe StoryAssetId) (CardCode "81021")
     baseActions <- getActions iid NonFast attrs
     hand <- getHandOf iid
     inPlayAssetsCount <- getInPlayOf iid <&> count
@@ -58,6 +60,7 @@ instance ActionRunner env => HasActions env BrackishWaters where
            && assetsCount
            >= 2
            && hasActionsRemaining
+           && assetNotTaken
          ]
   getActions i window (BrackishWaters attrs) = getActions i window attrs
 

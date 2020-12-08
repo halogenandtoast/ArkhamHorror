@@ -296,7 +296,8 @@ allPlayerCards = HashMap.fromList
   , ("60213", whittonGreene)
   , ("60504", atychiphobia)
   , ("81019", ladyEsprit)
-  , ("81029", curseOfTheRougarou)
+  , ("81020", bearTrap)
+  , ("81021", fishingNet)
   , ("81030", monstrousTransformation)
   , ("90002", daisysToteBagAdvanced)
   , ("90003", theNecronomiconAdvanced)
@@ -1234,6 +1235,15 @@ ladyEsprit :: CardId -> PlayerCard
 ladyEsprit cardId = (asset cardId "81019" "Lady Espirt" 4 Neutral)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillWild]
   , pcTraits = setFromList [Ally, Sorcerer]
+  }
+
+bearTrap :: CardId -> PlayerCard
+bearTrap cardId =
+  (asset cardId "81020" "Bear Trap" 0 Neutral) { pcTraits = setFromList [Trap] }
+
+fishingNet :: CardId -> PlayerCard
+fishingNet cardId = (asset cardId "81021" "Fishing Net" 0 Neutral)
+  { pcTraits = setFromList [Trap]
   }
 
 curseOfTheRougarou :: CardId -> PlayerCard

@@ -176,7 +176,8 @@ instance HasCount UsesCount env Asset where
     where uses' = assetUses (assetAttrs asset)
 
 lookupAsset :: CardCode -> (AssetId -> Asset)
-lookupAsset = fromJustNote "Unkown asset" . flip lookup allAssets
+lookupAsset cardCode = fromJustNote ("Unknown asset: " <> show cardCode)
+  $ lookup cardCode allAssets
 
 allAssets :: HashMap CardCode (AssetId -> Asset)
 allAssets = mapFromList

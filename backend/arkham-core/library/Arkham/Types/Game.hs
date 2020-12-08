@@ -2112,6 +2112,10 @@ runGameMessage msg g = case msg of
     (treacheryId', treachery') <- createTreachery cardCode Nothing
     unshiftMessage (AttachTreachery treacheryId' target)
     pure $ g & treacheries . at treacheryId' ?~ treachery'
+  TakeControlOfSetAsideAsset iid cardCode -> do
+    (assetId', asset') <- createAsset cardCode
+    unshiftMessage (TakeControlOfAsset iid assetId')
+    pure $ g & assets . at assetId' ?~ asset'
   SpawnEnemyAt card lid -> do
     let
       eid = EnemyId $ unCardId (getCardId card)

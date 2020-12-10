@@ -36,8 +36,11 @@ data Skill
 deriving anyclass instance ActionRunner env => HasActions env Skill
 deriving anyclass instance SkillRunner env => RunMessage env Skill
 
-instance HasCardCode Skill where
-  getCardCode = skillCardCode . skillAttrs
+instance IsCard Skill where
+  getCardId = getCardId . skillAttrs
+  getCardCode = getCardCode . skillAttrs
+  getTraits = getTraits . skillAttrs
+  getKeywords = getKeywords . skillAttrs
 
 lookupSkill :: CardCode -> (InvestigatorId -> SkillId -> Skill)
 lookupSkill cardCode =

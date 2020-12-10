@@ -124,10 +124,11 @@ instance Entity Asset where
   isSource = isSource . assetAttrs
 
 instance IsCard Asset where
-  toCard a = PlayerCard $ lookupPlayerCard (getCardCode a) (getCardId a)
-
-instance HasCardId Asset where
-  getCardId = CardId . unAssetId . assetId . assetAttrs
+  toCard = toCard . assetAttrs
+  getCardId = getCardId . assetAttrs
+  getCardCode = getCardCode . assetAttrs
+  getTraits = getTraits . assetAttrs
+  getKeywords = getKeywords . assetAttrs
 
 newtype BaseAsset = BaseAsset Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -154,12 +155,6 @@ instance Exhaustable Asset where
 instance Discardable Asset where
   canBeDiscarded = assetCanLeavePlayByNormalMeans . assetAttrs
 
-instance HasCardCode Asset where
-  getCardCode = assetCardCode . assetAttrs
-
-instance HasTraits Asset where
-  getTraits = assetTraits . assetAttrs
-
 instance HasId (Maybe OwnerId) env Asset where
   getId = pure . fmap OwnerId . assetInvestigator . assetAttrs
 
@@ -176,8 +171,8 @@ instance HasCount UsesCount env Asset where
     where uses' = assetUses (assetAttrs asset)
 
 lookupAsset :: CardCode -> (AssetId -> Asset)
-lookupAsset cardCode = fromJustNote ("Unknown asset: " <> show cardCode)
-  $ lookup cardCode allAssets
+lookupAsset cardCode =
+  fromJustNote ("Unknown asset: " <> show cardCode) $ lookup cardCode allAssets
 
 allAssets :: HashMap CardCode (AssetId -> Asset)
 allAssets = mapFromList

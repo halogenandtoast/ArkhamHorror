@@ -20,9 +20,6 @@ import Data.List ((\\))
 import System.Random
 import System.Random.Shuffle
 
-instance HasCardCode Attrs where
-  getCardCode = unInvestigatorId . investigatorId
-
 data Attrs = Attrs
   { investigatorName :: Text
   , investigatorClass :: ClassSymbol
@@ -66,6 +63,12 @@ instance ToJSON Attrs where
 
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "investigator"
+
+instance IsCard Attrs where
+  getCardId = error "Investigators are not treated as cards yet"
+  getCardCode = unInvestigatorId . investigatorId
+  getTraits = investigatorTraits
+  getKeywords = mempty
 
 locationIdL :: Lens' Attrs LocationId
 locationIdL =

@@ -80,14 +80,11 @@ instance Entity Treachery where
   toSource = toSource . treacheryAttrs
   isSource = isSource . treacheryAttrs
 
-instance HasCardCode Treachery where
-  getCardCode = treacheryCardCode . treacheryAttrs
-
-instance HasTraits Treachery where
-  getTraits = treacheryTraits . treacheryAttrs
-
-instance HasKeywords Treachery where
-  getKeywords = treacheryKeywords . treacheryAttrs
+instance IsCard Treachery where
+  getCardId = getCardId . treacheryAttrs
+  getCardCode = getCardCode . treacheryAttrs
+  getTraits = getTraits . treacheryAttrs
+  getKeywords = getKeywords . treacheryAttrs
 
 instance HasCount DoomCount env Treachery where
   getCount = pure . DoomCount . treacheryDoom . treacheryAttrs

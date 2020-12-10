@@ -49,7 +49,7 @@ data PlayerCard = MkPlayerCard
   , pcClassSymbol :: ClassSymbol
   , pcSkills :: [SkillType]
   , pcTraits :: HashSet Trait
-  , pcKeywords :: [Keyword]
+  , pcKeywords :: HashSet Keyword
   , pcFast :: Bool
   , pcWindows :: HashSet Window
   , pcId :: CardId
@@ -68,12 +68,6 @@ instance ToJSON PlayerCard where
 
 instance FromJSON PlayerCard where
   parseJSON = genericParseJSON $ aesonOptions $ Just "pc"
-
-instance HasCardCode PlayerCard where
-  getCardCode = pcCardCode
-
-instance HasCardId PlayerCard where
-  getCardId = pcId
 
 instance HasSkillIcons PlayerCard where
   getSkillIcons = pcSkills
@@ -946,20 +940,20 @@ hypochondria cardId = (treachery cardId "01100" "Hypochondria" 0)
 mobEnforcer :: CardId -> PlayerCard
 mobEnforcer cardId = (enemy cardId "01101" "Mob Enforcer" 0)
   { pcTraits = setFromList [Humanoid, Criminal]
-  , pcKeywords = [Keyword.Hunter]
+  , pcKeywords = setFromList [Keyword.Hunter]
   }
 
 silverTwilightAcolyte :: CardId -> PlayerCard
 silverTwilightAcolyte cardId =
   (enemy cardId "01102" "Silver Twilight Acolyte" 0)
     { pcTraits = setFromList [Humanoid, Cultist, SilverTwilight]
-    , pcKeywords = [Keyword.Hunter]
+    , pcKeywords = setFromList [Keyword.Hunter]
     }
 
 stubbornDetective :: CardId -> PlayerCard
 stubbornDetective cardId = (enemy cardId "01103" "Stubborn Detective" 0)
   { pcTraits = setFromList [Humanoid, Detective]
-  , pcKeywords = [Keyword.Hunter]
+  , pcKeywords = setFromList [Keyword.Hunter]
   }
 
 zoeysCross :: CardId -> PlayerCard

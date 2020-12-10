@@ -9,7 +9,6 @@ import ClassyPrelude
 import Arkham.Types.Asset.Uses (UseType(..))
 import Arkham.Types.AssetId
 import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.Class
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard

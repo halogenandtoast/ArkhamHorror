@@ -7,7 +7,6 @@ import Arkham.Types.Trait
 import Arkham.Types.Keyword
 import Arkham.Types.Treachery.Runner
 import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
 
 data Attrs = Attrs
   { treacheryName :: Text
@@ -43,6 +42,12 @@ instance Entity Attrs where
   isSource _ _ = False
   isTarget Attrs { treacheryId } (TreacheryTarget tid) = treacheryId == tid
   isTarget _ _ = False
+
+instance IsCard Attrs where
+  getCardId = CardId . unTreacheryId . treacheryId
+  getCardCode = treacheryCardCode
+  getTraits = treacheryTraits
+  getKeywords = treacheryKeywords
 
 ownedBy :: Attrs -> InvestigatorId -> Bool
 ownedBy Attrs { treacheryAttachedInvestigator } iid =
@@ -80,7 +85,7 @@ baseAttrs tid cardCode =
       , treacheryId = tid
       , treacheryCardCode = ecCardCode
       , treacheryTraits = ecTraits
-      , treacheryKeywords = HashSet.fromList ecKeywords
+      , treacheryKeywords = ecKeywords
       , treacheryAttachedLocation = Nothing
       , treacheryAttachedEnemy = Nothing
       , treacheryAttachedInvestigator = Nothing
@@ -106,7 +111,7 @@ weaknessAttrs tid iid cardCode =
       , treacheryId = tid
       , treacheryCardCode = pcCardCode
       , treacheryTraits = pcTraits
-      , treacheryKeywords = setFromList pcKeywords
+      , treacheryKeywords = pcKeywords
       , treacheryAttachedLocation = Nothing
       , treacheryAttachedEnemy = Nothing
       , treacheryAttachedInvestigator = Nothing

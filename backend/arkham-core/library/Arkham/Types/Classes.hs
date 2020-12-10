@@ -205,27 +205,11 @@ class HasCount count env a where
 class HasStats env a where
   getStats :: (MonadReader env m) => a -> Source -> m Stats
 
-class HasTraits a where
-  getTraits :: a -> HashSet Trait
-
-instance HasTraits Card where
-  getTraits (PlayerCard card) = getTraits card
-  getTraits (EncounterCard card) = getTraits card
-
-instance HasTraits PlayerCard where
-  getTraits = pcTraits
-
-instance HasTraits EncounterCard where
-  getTraits = ecTraits
-
 class IsAdvanceable a where
   isAdvanceable :: a -> Bool
 
 class HasSkill a where
   getSkill :: SkillType -> a -> Int
-
-class HasKeywords a where
-  getKeywords :: a -> HashSet Keyword
 
 class HasVictoryPoints a where
   getVictoryPoints :: a -> Maybe Int
@@ -374,6 +358,37 @@ class Exhaustable a where
 
 class IsCard a where
   toCard :: a -> Card
+  toCard a = lookupCard (getCardCode a) (getCardId a)
+  getCardId :: a -> CardId
+  getCardCode :: a -> CardCode
+  getTraits :: a -> HashSet Trait
+  getKeywords :: a -> HashSet Keyword
+
+instance IsCard Card where
+  getCardCode = \case
+    PlayerCard pc -> getCardCode pc
+    EncounterCard ec -> getCardCode ec
+  getCardId = \case
+    PlayerCard pc -> getCardId pc
+    EncounterCard ec -> getCardId ec
+  getTraits = \case
+    PlayerCard pc -> getTraits pc
+    EncounterCard ec -> getTraits ec
+  getKeywords = \case
+    PlayerCard pc -> getKeywords pc
+    EncounterCard ec -> getKeywords ec
+
+instance IsCard PlayerCard where
+  getCardCode = pcCardCode
+  getCardId = pcId
+  getTraits = pcTraits
+  getKeywords = pcKeywords
+
+instance IsCard EncounterCard where
+  getCardCode = ecCardCode
+  getCardId = ecId
+  getTraits = ecTraits
+  getKeywords = ecKeywords
 
 class IsInvestigator a where
   isResigned :: a -> Bool

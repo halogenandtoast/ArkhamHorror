@@ -34,6 +34,12 @@ instance Entity Attrs where
   isTarget Attrs { skillId } (SkillTarget sid) = skillId == sid
   isTarget _ _ = False
 
+instance IsCard Attrs where
+  getCardId = CardId . unSkillId . skillId
+  getCardCode = skillCardCode
+  getTraits = skillTraits
+  getKeywords = mempty
+
 baseAttrs :: InvestigatorId -> SkillId -> CardCode -> Attrs
 baseAttrs iid eid cardCode =
   let

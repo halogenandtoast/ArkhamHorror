@@ -125,8 +125,11 @@ instance HasCard () Investigator where
       . investigatorHand
       . investigatorAttrs
 
-instance HasCardCode Investigator where
+instance IsCard Investigator where
+  getCardId = getCardId . investigatorAttrs
   getCardCode = getCardCode . investigatorAttrs
+  getTraits = getTraits . investigatorAttrs
+  getKeywords = getKeywords . investigatorAttrs
 
 instance HasDamage Investigator where
   getDamage i = (investigatorHealthDamage, investigatorSanityDamage)

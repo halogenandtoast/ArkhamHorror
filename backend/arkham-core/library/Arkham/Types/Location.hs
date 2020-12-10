@@ -141,8 +141,11 @@ baseLocation a b c d e f func = BaseLocation' . BaseLocation . func $ baseAttrs
   f
   []
 
-instance HasTraits Location where
-  getTraits = locationTraits . locationAttrs
+instance IsCard Location where
+  getCardId = getCardId . locationAttrs
+  getCardCode = getCardCode . locationAttrs
+  getTraits = getTraits . locationAttrs
+  getKeywords = getKeywords . locationAttrs
 
 instance HasVictoryPoints Location where
   getVictoryPoints l =

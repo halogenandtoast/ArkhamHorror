@@ -46,6 +46,12 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "enemy"
 
+instance IsCard Attrs where
+  getCardId = CardId . unEnemyId . enemyId
+  getCardCode = enemyCardCode
+  getTraits = enemyTraits
+  getKeywords = enemyKeywords
+
 doomL :: Lens' Attrs Int
 doomL = lens enemyDoom $ \m x -> m { enemyDoom = x }
 
@@ -122,7 +128,7 @@ baseAttrs eid cardCode f =
       , enemyTraits = ecTraits
       , enemyTreacheries = mempty
       , enemyAssets = mempty
-      , enemyKeywords = setFromList ecKeywords
+      , enemyKeywords = ecKeywords
       , enemyPrey = AnyPrey
       , enemyModifiers = mempty
       , enemyExhausted = False
@@ -157,7 +163,7 @@ weaknessBaseAttrs eid cardCode =
       , enemyTreacheries = mempty
       , enemyAssets = mempty
       , enemyVictory = pcVictoryPoints
-      , enemyKeywords = setFromList pcKeywords
+      , enemyKeywords = pcKeywords
       , enemyPrey = AnyPrey
       , enemyModifiers = mempty
       , enemyExhausted = False

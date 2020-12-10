@@ -160,14 +160,11 @@ instance HasSet TreacheryId env Enemy where
 instance HasSet AssetId env Enemy where
   getSet = pure . enemyAssets . enemyAttrs
 
-instance HasCardCode Enemy where
-  getCardCode = enemyCardCode . enemyAttrs
-
-instance HasTraits Enemy where
-  getTraits = enemyTraits . enemyAttrs
-
-instance HasKeywords Enemy where
-  getKeywords = enemyKeywords . enemyAttrs
+instance IsCard Enemy where
+  getCardId = getCardId . enemyAttrs
+  getCardCode = getCardCode . enemyAttrs
+  getTraits = getTraits . enemyAttrs
+  getKeywords = getKeywords . enemyAttrs
 
 instance IsEnemy Enemy where
   isAloof = isAloof . enemyAttrs

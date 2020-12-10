@@ -1927,12 +1927,11 @@ runGameMessage msg g = case msg of
     unshiftMessage (Discarded (AssetTarget aid) (getCardCode asset))
     pure $ g & assets %~ deleteMap aid
   RemoveFromGame (AssetTarget aid) -> pure $ g & assets %~ deleteMap aid
-  EnemyDefeated eid iid _ cardCode _ _ -> do
+  EnemyDefeated eid iid _ _ _ _ -> do
     broadcastWindow Fast.WhenEnemyDefeated iid g
     let
       enemy = getEnemy eid g
-      cardId = CardId (unEnemyId eid)
-      card = fromJustNote "no card found" $ lookupCard cardCode <*> pure cardId
+      card = toCard enemy
     if isJust (getEnemyVictory enemy)
       then do
         unshiftMessage $ After msg
@@ -1950,11 +1949,7 @@ runGameMessage msg g = case msg of
   Discard (EnemyTarget eid) -> do
     let
       enemy = getEnemy eid g
-      cardId = CardId (unEnemyId eid)
-      card =
-        fromJustNote "no card found"
-          $ lookupCard (getCardCode enemy)
-          <*> pure cardId
+      card = toCard enemy
     case card of
       PlayerCard pc -> do
         case getBearer enemy of

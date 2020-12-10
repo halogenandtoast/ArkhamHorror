@@ -10,8 +10,6 @@ module Arkham.Types.Card
   , EncounterCard(..)
   , PlayerCardType(..)
   , EncounterCardType(..)
-  , HasCardCode(..)
-  , HasCardId(..)
   , HasCost(..)
   , HasSkillIcons(..)
   , HasCard(..)
@@ -40,6 +38,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import ClassyPrelude
 import Data.Aeson
+import Safe (fromJustNote)
 
 data Card
   = PlayerCard PlayerCard
@@ -70,14 +69,6 @@ instance HasSkillIcons Card where
   getSkillIcons (PlayerCard card) = getSkillIcons card
   getSkillIcons (EncounterCard _) = []
 
-instance HasCardCode Card where
-  getCardCode (PlayerCard card) = getCardCode card
-  getCardCode (EncounterCard card) = getCardCode card
-
-instance HasCardId Card where
-  getCardId (PlayerCard card) = getCardId card
-  getCardId (EncounterCard card) = getCardId card
-
 instance HasCost Card where
   getCost (PlayerCard card) = getCost card
   getCost _ = 0
@@ -100,7 +91,7 @@ cardIsWeakness :: Card -> Bool
 cardIsWeakness (EncounterCard _) = False
 cardIsWeakness (PlayerCard pc) = pcWeakness pc
 
-lookupCard :: CardCode -> Maybe (CardId -> Card)
+lookupCard :: CardCode -> (CardId -> Card)
 lookupCard cardCode =
   let
     encounterCard = do
@@ -109,4 +100,7 @@ lookupCard cardCode =
     playerCard = do
       f <- lookup cardCode allPlayerCards
       pure $ PlayerCard . f
-  in encounterCard <|> playerCard
+  in
+    fromJustNote ("Missing card " <> show cardCode)
+    $ encounterCard
+    <|> playerCard

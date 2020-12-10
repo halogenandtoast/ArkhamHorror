@@ -51,6 +51,12 @@ instance Entity Attrs where
   isTarget Attrs { locationId } (LocationTarget lid) = locationId == lid
   isTarget _ _ = False
 
+instance IsCard Attrs where
+  getCardId = error "locations are not treated like cards"
+  getCardCode = unLocationId . locationId
+  getTraits = locationTraits
+  getKeywords = mempty
+
 symbol :: Lens' Attrs LocationSymbol
 symbol = lens locationSymbol $ \m x -> m { locationSymbol = x }
 

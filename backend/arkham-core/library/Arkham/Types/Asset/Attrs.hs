@@ -38,6 +38,12 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "asset"
 
+instance IsCard Attrs where
+  getCardId = CardId . unAssetId . assetId
+  getCardCode = assetCardCode
+  getTraits = assetTraits
+  getKeywords = mempty
+
 baseAttrs :: AssetId -> CardCode -> Attrs
 baseAttrs aid cardCode =
   let

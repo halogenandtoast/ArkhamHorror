@@ -7,7 +7,6 @@ where
 
 import Arkham.Json
 import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.Class
 import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Card.EncounterCardType
 import Arkham.Types.Card.Id
@@ -23,7 +22,7 @@ data EncounterCard = MkEncounterCard
   , ecName :: Text
   , ecCardType :: EncounterCardType
   , ecTraits   :: HashSet Trait
-  , ecKeywords   :: [Keyword]
+  , ecKeywords   :: HashSet Keyword
   , ecId :: CardId
   , ecVictoryPoints :: Maybe Int
   }
@@ -61,17 +60,11 @@ instance ToJSON EncounterCard where
 instance FromJSON EncounterCard where
   parseJSON = genericParseJSON $ aesonOptions $ Just "ec"
 
-instance HasCardCode EncounterCard where
-  getCardCode = ecCardCode
-
-instance HasCardId EncounterCard where
-  getCardId = ecId
-
 encounterCardMatch :: EncounterCardMatcher -> EncounterCard -> Bool
 encounterCardMatch (EncounterCardMatchByType (cardType, mtrait)) MkEncounterCard {..}
   = ecCardType == cardType && maybe True (`elem` ecTraits) mtrait
 encounterCardMatch (EncounterCardMatchByCardCode cardCode) card =
-  getCardCode card == cardCode
+  ecCardCode card == cardCode
 
 allEncounterCards :: HashMap CardCode (CardId -> EncounterCard)
 allEncounterCards = HashMap.fromList
@@ -181,7 +174,7 @@ placeholderTreachery cardId = baseEncounterCard
 ghoulPriest :: CardId -> EncounterCard
 ghoulPriest cardId = (enemy cardId "01116" "Ghoul Priest")
   { ecTraits = setFromList [Humanoid, Monster, Ghoul, Elite]
-  , ecKeywords = [Keyword.Hunter, Keyword.Retaliate]
+  , ecKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
   , ecVictoryPoints = Just 2
   }
 
@@ -200,14 +193,14 @@ icyGhoul cardId = (enemy cardId "01119" "Icy Ghoul")
 theMaskedHunter :: CardId -> EncounterCard
 theMaskedHunter cardId = (enemy cardId "01121b" "The Masked Hunter")
   { ecTraits = setFromList [Humanoid, Cultist, Elite]
-  , ecKeywords = [Keyword.Hunter]
+  , ecKeywords = setFromList [Keyword.Hunter]
   , ecVictoryPoints = Just 2
   }
 
 huntingShadow :: CardId -> EncounterCard
 huntingShadow cardId = (treachery cardId "01135" "Hunting Shadow")
   { ecTraits = setFromList [Curse]
-  , ecKeywords = [Keyword.Peril]
+  , ecKeywords = setFromList [Keyword.Peril]
   }
 
 falseLead :: CardId -> EncounterCard
@@ -246,7 +239,7 @@ ruthTurner cardId = (enemy cardId "01141" "Ruth Turner")
 umordhoth :: CardId -> EncounterCard
 umordhoth cardId = (enemy cardId "01157" "Umôrdhoth")
   { ecTraits = setFromList [AncientOne, Elite]
-  , ecKeywords = [Keyword.Hunter, Keyword.Massive]
+  , ecKeywords = setFromList [Keyword.Hunter, Keyword.Massive]
   }
 
 umordhothsWrath :: CardId -> EncounterCard
@@ -257,7 +250,7 @@ umordhothsWrath cardId = (treachery cardId "01158" "Umôrdhoth's Wrath")
 swarmOfRats :: CardId -> EncounterCard
 swarmOfRats cardId = (enemy cardId "01159" "Swarm of Rats")
   { ecTraits = setFromList [Creature]
-  , ecKeywords = [Keyword.Hunter]
+  , ecKeywords = setFromList [Keyword.Hunter]
   }
 
 ghoulMinion :: CardId -> EncounterCard
@@ -310,7 +303,7 @@ acolyte cardId = (enemy cardId "01169" "Acolyte")
 wizardOfTheOrder :: CardId -> EncounterCard
 wizardOfTheOrder cardId = (enemy cardId "01170" "Wizard of the Order")
   { ecTraits = setFromList [Humanoid, Cultist]
-  , ecKeywords = [Keyword.Retaliate]
+  , ecKeywords = setFromList [Keyword.Retaliate]
   }
 
 mysteriousChanting :: CardId -> EncounterCard
@@ -321,7 +314,7 @@ mysteriousChanting cardId = (treachery cardId "01171" "Mysterious Chanting")
 huntingNightgaunt :: CardId -> EncounterCard
 huntingNightgaunt cardId = (enemy cardId "01172" "Hunting Nightgaunt")
   { ecTraits = setFromList [Monster, Nightgaunt]
-  , ecKeywords = [Keyword.Hunter]
+  , ecKeywords = setFromList [Keyword.Hunter]
   }
 
 onWingsOfDarkness :: CardId -> EncounterCard
@@ -334,7 +327,7 @@ lockedDoor cardId =
 screechingByakhee :: CardId -> EncounterCard
 screechingByakhee cardId = (enemy cardId "01175" "Screeching Byakhee")
   { ecTraits = setFromList [Monster, Byakhee]
-  , ecKeywords = [Keyword.Hunter]
+  , ecKeywords = setFromList [Keyword.Hunter]
   }
 
 theYellowSign :: CardId -> EncounterCard
@@ -349,7 +342,7 @@ yithianObserver cardId = (enemy cardId "01177" "Yithian Observer")
 offerOfPower :: CardId -> EncounterCard
 offerOfPower cardId = (treachery cardId "01178" "Offer of Power")
   { ecTraits = setFromList [Pact]
-  , ecKeywords = [Keyword.Peril]
+  , ecKeywords = setFromList [Keyword.Peril]
   }
 
 relentlessDarkYoung :: CardId -> EncounterCard
@@ -361,13 +354,13 @@ relentlessDarkYoung cardId = (enemy cardId "01179" "Relentless Dark Young")
 goatSpawn :: CardId -> EncounterCard
 goatSpawn cardId = (enemy cardId "01180" "Goat Spawn")
   { ecTraits = setFromList [Humanoid, Monster]
-  , ecKeywords = [Keyword.Hunter, Keyword.Retaliate]
+  , ecKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
   }
 
 youngDeepOne :: CardId -> EncounterCard
 youngDeepOne cardId = (enemy cardId "01181" "Young Deep One")
   { ecTraits = setFromList [Humanoid, Monster, DeepOne]
-  , ecKeywords = [Keyword.Hunter]
+  , ecKeywords = setFromList [Keyword.Hunter]
   }
 
 dreamsOfRlyeh :: CardId -> EncounterCard
@@ -384,25 +377,25 @@ visionsOfFuturePast cardId = (treachery cardId "02083" "Visions of Future Past"
 beyondTheVeil :: CardId -> EncounterCard
 beyondTheVeil cardId = (treachery cardId "02084" "Beyond the Veil")
   { ecTraits = setFromList [Hex]
-  , ecKeywords = [Keyword.Surge]
+  , ecKeywords = setFromList [Keyword.Surge]
   }
 
 lightOfAforgomon :: CardId -> EncounterCard
 lightOfAforgomon cardId = (treachery cardId "02085" "Light of Aforgomon")
   { ecTraits = setFromList [Pact, Power]
-  , ecKeywords = [Keyword.Peril]
+  , ecKeywords = setFromList [Keyword.Peril]
   }
 
 thrall :: CardId -> EncounterCard
 thrall cardId = (enemy cardId "02086" "Thrall")
   { ecTraits = setFromList [Humanoid, Monster, Abomination]
-  , ecKeywords = [Keyword.Retaliate]
+  , ecKeywords = setFromList [Keyword.Retaliate]
   }
 
 wizardOfYogSothoth :: CardId -> EncounterCard
 wizardOfYogSothoth cardId = (enemy cardId "02087" "Wizard of Yog-Sothoth")
   { ecTraits = setFromList [Humanoid, Sorcerer]
-  , ecKeywords = [Keyword.Hunter]
+  , ecKeywords = setFromList [Keyword.Hunter]
   , ecVictoryPoints = Just 1
   }
 
@@ -419,7 +412,7 @@ sordidAndSilent cardId = (treachery cardId "02089" "Sordid and Silent")
 whippoorwill :: CardId -> EncounterCard
 whippoorwill cardId = (enemy cardId "02090" "Whippoorwill")
   { ecTraits = setFromList [Creature]
-  , ecKeywords = [Keyword.Aloof, Keyword.Hunter]
+  , ecKeywords = setFromList [Keyword.Aloof, Keyword.Hunter]
   }
 
 eagerForDeath :: CardId -> EncounterCard
@@ -437,13 +430,13 @@ twistOfFate cardId =
 avianThrall :: CardId -> EncounterCard
 avianThrall cardId = (enemy cardId "02094" "Avian Thrall")
   { ecTraits = setFromList [Creature, Monster, Abomination]
-  , ecKeywords = [Keyword.Hunter]
+  , ecKeywords = setFromList [Keyword.Hunter]
   }
 
 lupineThrall :: CardId -> EncounterCard
 lupineThrall cardId = (enemy cardId "02095" "Lupine Thrall")
   { ecTraits = setFromList [Creature, Monster, Abomination]
-  , ecKeywords = [Keyword.Hunter, Keyword.Retaliate]
+  , ecKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
   }
 
 alteredBeast :: CardId -> EncounterCard
@@ -458,7 +451,7 @@ oBannionsThug cardId = (enemy cardId "02097" "O'Bannion's Thug")
 mobster :: CardId -> EncounterCard
 mobster cardId = (enemy cardId "02098" "Mobster")
   { ecTraits = setFromList [Human, Criminal, Syndicate]
-  , ecKeywords = [Keyword.Retaliate]
+  , ecKeywords = setFromList [Keyword.Retaliate]
   }
 
 huntedDown :: CardId -> EncounterCard
@@ -474,7 +467,7 @@ pushedIntoTheBeyond cardId = (treachery cardId "02100" "Pushed into the Beyond"
 terrorFromBeyond :: CardId -> EncounterCard
 terrorFromBeyond cardId = (treachery cardId "02101" "Terror from Beyond")
   { ecTraits = setFromList [Hex, Terror]
-  , ecKeywords = [Keyword.Peril]
+  , ecKeywords = setFromList [Keyword.Peril]
   }
 
 arcaneBarrier :: CardId -> EncounterCard
@@ -486,27 +479,27 @@ conglomerationOfSpheres :: CardId -> EncounterCard
 conglomerationOfSpheres cardId =
   (enemy cardId "02103" "Conglomeration of Spheres")
     { ecTraits = setFromList [Monster, Abomination]
-    , ecKeywords = [Keyword.Hunter]
+    , ecKeywords = setFromList [Keyword.Hunter]
     }
 
 servantOfTheLurker :: CardId -> EncounterCard
 servantOfTheLurker cardId = (enemy cardId "02104" "Servant of the Lurker")
   { ecTraits = setFromList [Monster, Abomination]
-  , ecKeywords = [Keyword.Hunter]
+  , ecKeywords = setFromList [Keyword.Hunter]
   , ecVictoryPoints = Just 1
   }
 
 corpseHungryGhoul :: CardId -> EncounterCard
 corpseHungryGhoul cardId = (enemy cardId "50022" "Corpse-Hungry Ghoul")
   { ecTraits = setFromList [Humanoid, Monster, Ghoul]
-  , ecKeywords = [Keyword.Hunter]
+  , ecKeywords = setFromList [Keyword.Hunter]
   , ecVictoryPoints = Just 1
   }
 
 ghoulFromTheDepths :: CardId -> EncounterCard
 ghoulFromTheDepths cardId = (enemy cardId "50023" "Ghoul from the Depths")
   { ecTraits = setFromList [Humanoid, Monster, Ghoul]
-  , ecKeywords = [Keyword.Retaliate]
+  , ecKeywords = setFromList [Keyword.Retaliate]
   , ecVictoryPoints = Just 1
   }
 
@@ -518,7 +511,7 @@ theZealotsSeal cardId = (treachery cardId "50024" "The Zealot's Seal")
 narogath :: CardId -> EncounterCard
 narogath cardId = (enemy cardId "50026b" "Narôgath")
   { ecTraits = setFromList [Humanoid, Monster, Cultist, Elite]
-  , ecKeywords = [Keyword.Hunter]
+  , ecKeywords = setFromList [Keyword.Hunter]
   , ecVictoryPoints = Just 2
   }
 
@@ -616,19 +609,19 @@ ripplesOnTheSurface cardId = (treachery cardId "81027" "Ripples on the Surface"
 theRougarou :: CardId -> EncounterCard
 theRougarou cardId = (enemy cardId "81028" "The Rougarou")
   { ecTraits = setFromList [Monster, Creature, Elite]
-  , ecKeywords = [Keyword.Aloof, Keyword.Retaliate]
+  , ecKeywords = setFromList [Keyword.Aloof, Keyword.Retaliate]
   }
 
 slimeCoveredDhole :: CardId -> EncounterCard
 slimeCoveredDhole cardId = (enemy cardId "81031" "Slime-Covered Dhole")
   { ecTraits = setFromList [Monster, Dhole]
-  , ecKeywords = [Keyword.Hunter]
+  , ecKeywords = setFromList [Keyword.Hunter]
   }
 
 marshGug :: CardId -> EncounterCard
 marshGug cardId = (enemy cardId "81032" "Marsh Gug")
   { ecTraits = setFromList [Monster, Gug]
-  , ecKeywords = [Keyword.Hunter]
+  , ecKeywords = setFromList [Keyword.Hunter]
   }
 
 darkYoungHost :: CardId -> EncounterCard
@@ -638,8 +631,9 @@ darkYoungHost cardId = (enemy cardId "81033" "Dark Young Host")
   }
 
 onTheProwl :: CardId -> EncounterCard
-onTheProwl cardId =
-  (treachery cardId "81034" "On the Prowl") { ecKeywords = [Keyword.Surge] }
+onTheProwl cardId = (treachery cardId "81034" "On the Prowl")
+  { ecKeywords = setFromList [Keyword.Surge]
+  }
 
 beastOfTheBayou :: CardId -> EncounterCard
 beastOfTheBayou cardId = treachery cardId "81035" "Beast of the Bayou"

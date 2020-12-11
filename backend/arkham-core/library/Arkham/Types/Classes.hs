@@ -11,6 +11,8 @@ module Arkham.Types.Classes
   )
 where
 
+import ClassyPrelude
+
 import Arkham.Types.Ability
 import Arkham.Types.Action
 import Arkham.Types.Asset.Uses (UseType)
@@ -33,12 +35,10 @@ import Arkham.Types.Token (Token, TokenValue(..))
 import Arkham.Types.Trait
 import Arkham.Types.Window (Who, Window)
 import qualified Arkham.Types.Window as Window
-import ClassyPrelude
+import Control.Lens hiding (from, to)
 import Control.Monad.Fail
 import qualified Data.HashSet as HashSet
 import GHC.Generics
-import Lens.Micro hiding (to)
-import Lens.Micro.Extras
 
 newtype Distance = Distance { unDistance :: Int }
 

@@ -31,6 +31,7 @@ import Arkham.Types.Phase
 import Arkham.Types.Scenario as X
 import qualified Arkham.Types.Scenario.Attrs as ScenarioAttrs
 import Arkham.Types.Stats as X
+import Control.Lens as X (set, (^?!))
 import Control.Monad.Fail as X
 import Control.Monad.State hiding (replicateM)
 import Control.Monad.State as X (get)

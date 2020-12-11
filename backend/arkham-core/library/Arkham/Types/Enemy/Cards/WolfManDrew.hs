@@ -1,15 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy.Cards.WolfManDrew where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Message
-import ClassyPrelude
-import Lens.Micro
 
 newtype WolfManDrew = WolfManDrew Attrs
   deriving newtype (Show, ToJSON, FromJSON)

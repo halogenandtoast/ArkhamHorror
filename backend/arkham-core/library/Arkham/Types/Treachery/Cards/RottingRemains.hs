@@ -1,17 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Treachery.Cards.RottingRemains where
 
-import Arkham.Json
-import Arkham.Types.Classes
-import Arkham.Types.Message
-import Arkham.Types.SkillType
-import Arkham.Types.Source
-import Arkham.Types.Target
+import Arkham.Import
+
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import Arkham.Types.TreacheryId
-import ClassyPrelude
-import Lens.Micro
 
 newtype RottingRemains = RottingRemains Attrs
   deriving newtype (Show, ToJSON, FromJSON)

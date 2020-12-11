@@ -1,13 +1,12 @@
-{-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE TemplateHaskell #-}
 module Arkham.Types.CampaignLog where
+
+import ClassyPrelude
 
 import Arkham.Json
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes.HasRecord
-import ClassyPrelude
-import Lens.Micro.TH
+import Control.Lens
 
 data CampaignLog = CampaignLog
   { campaignLogRecorded :: HashSet CampaignLogKey
@@ -16,7 +15,16 @@ data CampaignLog = CampaignLog
   }
   deriving stock (Show, Generic)
 
-makeFields ''CampaignLog
+recorded :: Lens' CampaignLog (HashSet CampaignLogKey)
+recorded = lens campaignLogRecorded $ \m x -> m { campaignLogRecorded = x }
+
+recordedSets :: Lens' CampaignLog (HashMap CampaignLogKey [CardCode])
+recordedSets =
+  lens campaignLogRecordedSets $ \m x -> m { campaignLogRecordedSets = x }
+
+recordedCounts :: Lens' CampaignLog (HashMap CampaignLogKey Int)
+recordedCounts =
+  lens campaignLogRecordedCounts $ \m x -> m { campaignLogRecordedCounts = x }
 
 instance ToJSON CampaignLog where
   toJSON = genericToJSON $ aesonOptions $ Just "campaignLog"

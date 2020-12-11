@@ -20,8 +20,8 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Treachery
 import Arkham.Types.TreacheryId
+import Control.Lens
 import qualified Data.List as L
-import Lens.Micro
 
 isInDiscardOf
   :: (ToPlayerCard entity) => Game queue -> Investigator -> entity -> Bool

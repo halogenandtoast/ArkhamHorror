@@ -69,7 +69,6 @@ import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.Sequence as Seq
 import Data.UUID (UUID)
 import Data.UUID.V4
-import Lens.Micro.Platform ()
 import Safe (headNote)
 import System.Environment
 import System.Random

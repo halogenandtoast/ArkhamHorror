@@ -41,9 +41,27 @@ import Arkham.Types.Target as X
 import Arkham.Types.Token as X
 import Arkham.Types.TreacheryId as X
 import Arkham.Types.Window as X
+import Control.Lens as X
+  ( Lens'
+  , Traversal'
+  , at
+  , ix
+  , lens
+  , preview
+  , to
+  , traverseOf
+  , traverseOf_
+  , view
+  , (%~)
+  , (&)
+  , (+~)
+  , (-~)
+  , (.~)
+  , (?~)
+  , (^.)
+  , (^..)
+  , (^?)
+  )
 import Control.Monad.Extra as X (concatMapM)
 import GHC.Stack as X
-import Lens.Micro as X
-import Lens.Micro.Mtl as X (preview, view)
-import Lens.Micro.Platform as X ()
 import Safe as X (fromJustNote)

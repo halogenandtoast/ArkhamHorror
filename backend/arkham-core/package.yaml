@@ -31,10 +31,7 @@ library:
     - aeson >= 1.5.4.1
     - aeson-casing
     - mtl
-    - microlens
-    - microlens-platform
-    - microlens-th
-    - microlens-mtl
+    - lens
     - unordered-containers >= 0.2.12.0
     - hashable
     - safe
@@ -63,8 +60,7 @@ tests:
       - hspec
       - hspec-core
       - hspec-expectations
-      - microlens
-      - microlens-mtl
+      - lens
       - these
       - uuid
       - unordered-containers >= 0.2.12.0

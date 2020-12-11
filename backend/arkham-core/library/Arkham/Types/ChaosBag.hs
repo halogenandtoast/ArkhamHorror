@@ -18,7 +18,7 @@ import Arkham.Types.Token
 import Arkham.Types.Window
 import Control.Monad.State
 import qualified Data.List as L
-import Lens.Micro
+import Control.Lens hiding (chosen)
 import System.Random.Shuffle
 
 isUndecided :: ChaosBagStepState -> Bool

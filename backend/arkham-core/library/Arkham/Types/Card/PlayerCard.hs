@@ -15,9 +15,9 @@ import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import Arkham.Types.Window
 import ClassyPrelude
+import Control.Lens
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
-import Lens.Micro
 import Safe (fromJustNote)
 
 data PlayerCardType

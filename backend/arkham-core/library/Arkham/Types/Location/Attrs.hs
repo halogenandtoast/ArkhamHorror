@@ -160,9 +160,6 @@ getModifiedShroudValueFor attrs = do
   applyModifier (ShroudModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-instance HasId LocationId env Attrs where
-  getId = pure . locationId
-
 getInvestigateAllowed
   :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Bool
 getInvestigateAllowed attrs = do

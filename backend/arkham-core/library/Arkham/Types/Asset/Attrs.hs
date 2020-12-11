@@ -83,9 +83,6 @@ instance Entity Attrs where
   isTarget Attrs { assetId } (AssetTarget aid) = assetId == aid
   isTarget _ _ = False
 
-instance HasId AssetId env Attrs where
-  getId = pure . assetId
-
 ownedBy :: Attrs -> InvestigatorId -> Bool
 ownedBy Attrs {..} = (== assetInvestigator) . Just
 

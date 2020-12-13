@@ -30,13 +30,14 @@ module Arkham.Types.Card
   )
 where
 
+import ClassyPrelude
+
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
-import ClassyPrelude
 import Data.Aeson
 import Safe (fromJustNote)
 
@@ -71,21 +72,21 @@ instance HasSkillIcons Card where
 
 instance HasCost Card where
   getCost (PlayerCard card) = getCost card
-  getCost _ = 0
+  getCost (EncounterCard _) = 0
 
 isDynamic :: Card -> Bool
 isDynamic (PlayerCard card) = case pcCost card of
   DynamicCost -> True
   _ -> False
-isDynamic _ = False
+isDynamic (EncounterCard _) = False
 
 toPlayerCard :: Card -> Maybe PlayerCard
 toPlayerCard (PlayerCard pc) = Just pc
-toPlayerCard _ = Nothing
+toPlayerCard (EncounterCard _) = Nothing
 
 toEncounterCard :: Card -> Maybe EncounterCard
 toEncounterCard (EncounterCard ec) = Just ec
-toEncounterCard _ = Nothing
+toEncounterCard (PlayerCard _) = Nothing
 
 cardIsWeakness :: Card -> Bool
 cardIsWeakness (EncounterCard _) = False

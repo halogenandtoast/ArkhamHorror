@@ -3,8 +3,9 @@ module Arkham.Types.ClassSymbol
   )
 where
 
-import Arkham.Json
 import ClassyPrelude
+
+import Arkham.Json
 
 data ClassSymbol
   = Guardian
@@ -15,4 +16,3 @@ data ClassSymbol
   | Neutral
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
-

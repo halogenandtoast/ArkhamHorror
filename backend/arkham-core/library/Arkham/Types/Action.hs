@@ -1,6 +1,7 @@
 module Arkham.Types.Action where
 
 import ClassyPrelude
+
 import Data.Aeson
 
 data Action

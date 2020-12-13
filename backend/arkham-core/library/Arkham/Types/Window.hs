@@ -1,5 +1,7 @@
 module Arkham.Types.Window where
 
+import ClassyPrelude
+
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.SkillType
@@ -7,7 +9,6 @@ import Arkham.Types.Source
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
-import ClassyPrelude
 import Data.Aeson
 
 data Window
@@ -44,7 +45,6 @@ data Window
   | WhenWouldRevealChaosToken Source Who
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)
-
 
 data Where = YourLocation | ConnectedLocation | LocationInGame
   deriving stock (Show, Generic, Eq)

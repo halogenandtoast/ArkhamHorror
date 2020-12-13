@@ -4,6 +4,8 @@ module Arkham.Types.Source
   )
 where
 
+import ClassyPrelude
+
 import Arkham.Types.ActId
 import Arkham.Types.Action (Action)
 import Arkham.Types.AgendaId
@@ -20,7 +22,6 @@ import Arkham.Types.SkillId
 import Arkham.Types.SkillType
 import Arkham.Types.Token
 import Arkham.Types.TreacheryId
-import ClassyPrelude
 import Data.Aeson
 
 data Source

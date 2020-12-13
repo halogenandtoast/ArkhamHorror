@@ -14,6 +14,8 @@ module Arkham.Types.Message
   )
 where
 
+import ClassyPrelude
+
 import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.ActId
@@ -48,9 +50,14 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
-import ClassyPrelude
 
-data MessageType = RevelationMessage | AttackMessage | DrawTokenMessage | RevealTokenMessage | ResolveTokenMessage | EnemySpawnMessage
+data MessageType
+  = RevelationMessage
+  | AttackMessage
+  | DrawTokenMessage
+  | RevealTokenMessage
+  | ResolveTokenMessage
+  | EnemySpawnMessage
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -80,7 +87,14 @@ data LeftoverCardStrategy = ShuffleBackIn | PutBackInAnyOrder
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data ActionType = EnemyActionType | LocationActionType | AssetActionType | TreacheryActionType | ActActionType | AgendaActionType | InvestigatorActionType
+data ActionType
+  = EnemyActionType
+  | LocationActionType
+  | AssetActionType
+  | TreacheryActionType
+  | ActActionType
+  | AgendaActionType
+  | InvestigatorActionType
   deriving stock (Bounded, Enum)
 
 data Message

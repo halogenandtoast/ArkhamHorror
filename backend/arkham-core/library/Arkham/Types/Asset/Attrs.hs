@@ -80,8 +80,11 @@ instance Entity Attrs where
   toTarget = AssetTarget . toId
   isSource Attrs { assetId } (AssetSource aid) = assetId == aid
   isSource _ _ = False
-  isTarget Attrs { assetId } (AssetTarget aid) = assetId == aid
-  isTarget _ _ = False
+  isTarget Attrs {..} = \case
+    AssetTarget aid -> aid == assetId
+    CardCodeTarget cardCode -> assetCardCode == cardCode
+    CardIdTarget cardId -> unCardId cardId == unAssetId assetId
+    _ -> False
 
 ownedBy :: Attrs -> InvestigatorId -> Bool
 ownedBy Attrs {..} = (== assetInvestigator) . Just
@@ -131,12 +134,6 @@ instance IsAsset Attrs where
     Nothing -> False
     Just n -> n > assetSanityDamage a
 
-is :: Target -> Attrs -> Bool
-is (AssetTarget aid) a = aid == assetId a
-is (CardCodeTarget cardCode) a = cardCode == assetCardCode a
-is (CardIdTarget cardId) a = unCardId cardId == unAssetId (assetId a)
-is _ _ = False
-
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     ReadyExhausted -> case assetInvestigator of
@@ -153,7 +150,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
       pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
     InvestigatorEliminated iid | assetInvestigator == Just iid ->
       a <$ unshiftMessage (Discard (AssetTarget assetId))
-    AddUses target useType' n | target `is` a -> case assetUses of
+    AddUses target useType' n | a `isTarget` target -> case assetUses of
       Uses useType'' m | useType' == useType'' ->
         pure $ a & usesL .~ Uses useType' (n + m)
       _ -> error "Trying to add the wrong use type"
@@ -161,16 +158,16 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
       LocationTarget lid -> pure $ a & locationL ?~ lid
       EnemyTarget eid -> pure $ a & enemyL ?~ eid
       _ -> error "Cannot attach asset to that type"
-    RemoveFromGame target | target `is` a ->
+    RemoveFromGame target | a `isTarget` target ->
       a <$ unshiftMessage (RemovedFromPlay (AssetSource assetId))
-    Discard target | target `is` a ->
+    Discard target | a `isTarget` target ->
       a <$ unshiftMessage (RemovedFromPlay $ toSource a)
     InvestigatorPlayAsset iid aid _ _ | aid == assetId ->
       pure $ a & investigatorL ?~ iid
     TakeControlOfAsset iid aid | aid == assetId ->
       pure $ a & investigatorL ?~ iid
-    Exhaust target | target `is` a -> pure $ a & exhaustedL .~ True
-    Ready target | target `is` a -> case assetInvestigator of
+    Exhaust target | a `isTarget` target -> pure $ a & exhaustedL .~ True
+    Ready target | a `isTarget` target -> case assetInvestigator of
       Just iid -> do
         modifiers <- getModifiersFor (toSource a) (InvestigatorTarget iid) ()
         if ControlledAssetsCannotReady `elem` modifiers

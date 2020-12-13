@@ -1,5 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Act
   ( Act(..)
   , lookupAct

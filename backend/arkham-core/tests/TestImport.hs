@@ -1,6 +1,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+
 module TestImport
   ( module X
   , module TestImport
@@ -192,7 +193,7 @@ getActionsOf game investigator window e =
   withGame game (getActions (toId investigator) window (updated game e))
 
 chaosBagTokensOf :: Game queue -> [Token]
-chaosBagTokensOf g = g ^. chaosBag . ChaosBag.chaosBagTokensLens
+chaosBagTokensOf g = g ^. chaosBag . ChaosBag.tokensL
 
 createMessageMatcher :: MonadIO m => Message -> m (IORef Bool, Message -> m ())
 createMessageMatcher msg = do

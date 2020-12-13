@@ -4,6 +4,8 @@ module Arkham.Types.Target
   )
 where
 
+import ClassyPrelude
+
 import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
@@ -20,7 +22,6 @@ import Arkham.Types.SkillId
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
-import ClassyPrelude
 import Data.Aeson
 
 data ForSkillTest = ForSkillTest

@@ -5,12 +5,13 @@ module Arkham.Types.Modifier
   )
 where
 
+import ClassyPrelude
+
 import Arkham.Types.Action
 import Arkham.Types.Card
 import Arkham.Types.SkillType
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import ClassyPrelude
 import Data.Aeson
 
 data Modifier

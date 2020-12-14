@@ -26,6 +26,7 @@ import Arkham.Types.Treachery.Cards.FrozenInFear as X
 import Arkham.Types.Treachery.Cards.GraspingHands as X
 import Arkham.Types.Treachery.Cards.Haunted as X
 import Arkham.Types.Treachery.Cards.HospitalDebts as X
+import Arkham.Types.Treachery.Cards.HuntedDown as X
 import Arkham.Types.Treachery.Cards.HuntingShadow as X
 import Arkham.Types.Treachery.Cards.Hypochondria as X
 import Arkham.Types.Treachery.Cards.InsatiableBloodlust as X

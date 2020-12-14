@@ -51,8 +51,7 @@ instance (HasTokenValue env InvestigatorId, HasCount DiscardCount env Investigat
           then (if isEasyStandard attrs then 3 else 5)
           else 1
         )
-    ElderThing -> do
-      pure $ TokenValue Tablet (NegativeModifier 0) -- determined by an effect
+    ElderThing -> pure $ TokenValue Tablet (NegativeModifier 0) -- determined by an effect
     otherFace -> getTokenValue attrs iid otherFace
 
 instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
@@ -114,14 +113,14 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
         (if isEasyStandard attrs then 2 else 3)
         (Just $ DrawnTokenTarget drawnToken)
       )
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ -> do
+    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ ->
       s <$ case drawnTokenFace token of
         Skull -> unshiftMessage $ DiscardTopOfDeck
           iid
           (if isEasyStandard attrs then 3 else 5)
           Nothing
         _ -> pure ()
-    DiscardedTopOfDeck _iid cards target@(DrawnTokenTarget token) -> do
+    DiscardedTopOfDeck _iid cards target@(DrawnTokenTarget token) ->
       s <$ case drawnTokenFace token of
         ElderThing -> do
           let n = sum $ map (toPrintedCost . pcCost) cards
@@ -138,28 +137,18 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
             $ [ Continue "Continue"
               , FlavorText
                 Nothing
-                [ "You barely manage to escape\
-                  \ your house with your lives. The woman from your parlor\
-                  \ follows you out the front door, slamming it behind her. “You\
-                  \ fools! See what you have done?” She pushes a chair in front of\
-                  \ the door, lodging it beneath the doorknob. “We must get out\
-                  \ of here. Come with me, and I will tell you what I know. We\
-                  \ are the only ones who can stop the threat that lurks beneath\
-                  \ from being unleashed throughout the city.” You’re in no state\
-                  \ to argue. Nodding, you follow the woman as she runs from\
-                  \ your front porch out into the rainy street, toward Rivertown."
+                [ "As you flee from the university,\
+                  \ you hear screaming from the northern end of the campus. An\
+                  \ ambulance passes you by, and you fear the worst. Hours later,\
+                  \ you learn that a ‘rabid dog of some sort’ found its way into\
+                  \ the university dormitories. The creature attacked the students\
+                  \ inside and many were mauled or killed in the attack."
                 ]
-              , Record YourHouseIsStillStanding
-              , Record GhoulPriestIsStillAlive
-              , chooseOne
-                leadInvestigatorId
-                [ Label
-                  "Add Lita Chantler to your deck"
-                  [AddCampaignCardToDeck leadInvestigatorId "01117"]
-                , Label "Do not add Lita Chantler to your deck" []
-                ]
+              , Record ProfessorWarrenRiceWasKidnapped
+              , Record TheInvestigatorsFailedToSaveTheStudents
+              , AddToken Tablet
               ]
-            <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+            <> [ GainXP iid (xp + 1) | iid <- investigatorIds ]
             <> [EndOfGame]
           ]
         )
@@ -174,25 +163,34 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
             $ [ Continue "Continue"
               , FlavorText
                 Nothing
-                [ "You nod and allow the red-haired woman to\
-                  \ set the walls and floor of your house ablaze. The fire spreads\
-                  \ quickly, and you run out the front door to avoid being caught\
-                  \ in the inferno. From the sidewalk, you watch as everything\
-                  \ you own is consumed by the flames. “Come with me,” the\
-                  \ woman says. “You must be told of the threat that lurks below.\
-                  \ Alone, we are surely doomed…but together, we can stop it.”"
+                [ "You find Professor Rice bound and gagged\
+                  \ in the closet of his office. When you free him, he informs you\
+                  \ that the strange men and women wandering around the\
+                  \ campus had been stalking him for hours. They cornered him\
+                  \ in his office and tied him up, although for what purpose, Rice\
+                  \ isn’t sure. You inform him that Dr. Armitage sent you, and\
+                  \ Rice looks relieved, although he suspects that Dr. Morgan\
+                  \ might be in danger as well. Because the strangers on campus\
+                  \ seem to have been targeting Professor Rice, you decide that\
+                  \ the best course of action is to escort him away from the\
+                  \ campus as quickly as possible. As you leave the university,\
+                  \ you hear screaming from the northern end of the campus. An\
+                  \ ambulance passes you by, and you fear the worst. Hours later,\
+                  \ you learn that a ‘rabid dog of some sort’ found its way into\
+                  \ the university dormitories. The creature attacked the students\
+                  \ inside, and many were mauled or killed in the attack."
                 ]
-              , Record YourHouseHasBurnedToTheGround
+              , Record TheInvestigatorsRescuedProfessorWarrenRice
+              , AddToken Tablet
               , chooseOne
                 leadInvestigatorId
                 [ Label
-                  "Add Lita Chantler to your deck"
-                  [AddCampaignCardToDeck leadInvestigatorId "01117"]
-                , Label "Do not add Lita Chantler to your deck" []
+                  "Add Professor Warren Rice to your deck"
+                  [AddCampaignCardToDeck leadInvestigatorId "02061"]
+                , Label "Do not add Professor Warren Rice to your deck" []
                 ]
-              , SufferTrauma leadInvestigatorId 0 1
               ]
-            <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+            <> [ GainXP iid xp | iid <- investigatorIds ]
             <> [EndOfGame]
           ]
         )
@@ -207,48 +205,73 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
             $ [ Continue "Continue"
               , FlavorText
                 Nothing
-                [ "You refuse to follow the overzealous woman’s\
-                  \ order and kick her out of your home for fear that she will set\
-                  \ it ablaze without your permission. “Fools! You are making\
-                  \ a grave mistake!” she warns. “You do not understand the\
-                  \ threat that lurks below…the grave danger we are all in!”\
-                  \ Still shaken by the night’s events, you decide to hear the\
-                  \ woman out. Perhaps she can shed some light on these bizarre\
-                  \ events…but she doesn’t seem to trust you very much."
+                [ "You pull each of the dormitory’s fire alarms\
+                  \ and usher the students out of the building’s north exit,\
+                  \ hoping to make your way off campus. Many of the students\
+                  \ are confused and exhausted, but you believe an attempt to\
+                  \ explain the situation will do more harm than good. Minutes\
+                  \ later, a terrible screech echoes across the campus, piercing\
+                  \ and shrill. You tell the students to wait and head back to the\
+                  \ dormitories to investigate. Oddly, you find no trace of the\
+                  \ strange creature—a prospect that worries you more than it\
+                  \ relieves you. You hurry to the faculty offices to find Professor\
+                  \ Rice, but there is no sign of him anywhere."
                 ]
-              , Record YourHouseIsStillStanding
-              , GainXP leadInvestigatorId 1
+              , Record ProfessorWarrenRiceWasKidnapped
+              , Record TheStudentsWereRescued
               ]
-            <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+            <> [ GainXP iid xp | iid <- investigatorIds ]
             <> [EndOfGame]
           ]
         )
     Resolution 3 -> do
       leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
+      xp <- getXp
       s <$ unshiftMessage
         (chooseOne
           leadInvestigatorId
           [ Run
-              [ Continue "Continue"
+            $ [ Continue "Continue"
               , FlavorText
                 Nothing
-                [ "You run to the hallway to try to find a way to\
-                  \ escape the house, but the burning-hot barrier still blocks your\
-                  \ path. Trapped, the horde of feral creatures that have invaded\
-                  \ your home close in, and you have nowhere to run."
+                [ "After defeating the strange and terrifying\
+                  \ creature from the Department of Alchemy, you rush to the\
+                  \ faculty offices to find Professor Rice. By the time you get to his\
+                  \ office, there is no sign of him anywhere."
                 ]
-              , Record LitaWasForcedToFindOthersToHelpHerCause
-              , Record YourHouseIsStillStanding
-              , Record GhoulPriestIsStillAlive
-              , chooseOne
-                leadInvestigatorId
-                [ Label
-                  "Add Lita Chantler to your deck"
-                  [AddCampaignCardToDeck leadInvestigatorId "01117"]
-                , Label "Do not add Lita Chantler to your deck" []
-                ]
-              , EndOfGame
+              , Record ProfessorWarrenRiceWasKidnapped
+              , Record TheExperimentWasDefeated
               ]
+            <> [ GainXP iid xp | iid <- investigatorIds ]
+            <> [EndOfGame]
+          ]
+        )
+    Resolution 4 -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
+      xp <- getXp
+      s <$ unshiftMessage
+        (chooseOne
+          leadInvestigatorId
+          [ Run
+            $ [ Continue "Continue"
+              , FlavorText
+                Nothing
+                [ "You awaken hours later, exhausted and\
+                  \ injured. You’re not sure what you saw, but the sight of it filled\
+                  \ your mind with terror. From other survivors, you learn that\
+                  \ a ‘rabid dog of some sort’ found its way into the university\
+                  \ dormitories. The creature attacked the students inside, and\
+                  \ many were mauled or killed in the attack."
+                ]
+              , Record InvestigatorsWereUnconsciousForSeveralHours
+              , Record ProfessorWarrenRiceWasKidnapped
+              , Record TheInvestigatorsFailedToSaveTheStudents
+              , AddToken Tablet
+              ]
+            <> [ GainXP iid (xp + 1) | iid <- investigatorIds ]
+            <> [EndOfGame]
           ]
         )
     _ -> ExtracurricularActivity <$> runMessage msg attrs

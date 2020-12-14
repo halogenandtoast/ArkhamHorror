@@ -89,6 +89,9 @@ instance IsCard Treachery where
 instance HasCount DoomCount env Treachery where
   getCount = pure . DoomCount . treacheryDoom . treacheryAttrs
 
+instance HasCount (Maybe ClueCount) env Treachery where
+  getCount = pure . (ClueCount <$>) . treacheryClues . treacheryAttrs
+
 instance HasId (Maybe OwnerId) env Treachery where
   getId = pure . (OwnerId <$>) . treacheryOwner . treacheryAttrs
 

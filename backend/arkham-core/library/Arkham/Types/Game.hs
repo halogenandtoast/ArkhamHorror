@@ -1952,7 +1952,8 @@ runGameMessage msg g = case msg of
       (before <> remaining, ())
     pure g
   EnemyAttack iid eid -> do
-    unshiftMessage (PerformEnemyAttack iid eid)
+    unshiftMessages
+      [PerformEnemyAttack iid eid, After (PerformEnemyAttack iid eid)]
     g <$ broadcastWindow Fast.WhenEnemyAttacks iid g
   EnemyEngageInvestigator eid iid ->
     g <$ broadcastWindow (`Fast.AfterEnemyEngageInvestigator` eid) iid g

@@ -15,6 +15,12 @@ data CampaignLogKey
   | TheRitualToSummonUmordhothWasBroken
   | TheInvestigatorsRepelledUmordoth
   | TheInvestigatorsSacrificedLitaChantlerToUmordhoth
+  | ProfessorWarrenRiceWasKidnapped
+  | TheInvestigatorsRescuedProfessorWarrenRice
+  | TheInvestigatorsFailedToSaveTheStudents
+  | TheStudentsWereRescued
+  | TheExperimentWasDefeated
+  | InvestigatorsWereUnconsciousForSeveralHours
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse

@@ -53,6 +53,7 @@ data Modifier
   | HandSize Int
   | HealthModifier Int
   | HorrorDealt Int
+  | IgnoreText
   | MaxDamageTaken Int
   | ModifierIfSucceededBy Int Modifier
   | NegativeToPositive

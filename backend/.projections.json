@@ -59,7 +59,7 @@
       "instance HasModifiersFor env {dot} where",
       "  getModifiersFor = noModifiersFor",
       "",
-      "instance (HasQueue env, HasModifiers env InvestigatorId) => RunMessage env {dot} where",
+      "instance (HasQueue env, HasModifiersFor env ()) => RunMessage env {dot} where",
       "  runMessage msg ({dot} attrs) = {dot} <$> runMessage msg attrs"
     ]
   },

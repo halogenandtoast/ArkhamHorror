@@ -26,6 +26,7 @@ import Arkham.Types.Enemy.Cards.JeremiahPierce as X
 import Arkham.Types.Enemy.Cards.MarshGug as X
 import Arkham.Types.Enemy.Cards.MobEnforcer as X
 import Arkham.Types.Enemy.Cards.Narogath as X
+import Arkham.Types.Enemy.Cards.OBannionsThug as X
 import Arkham.Types.Enemy.Cards.PeterWarren as X
 import Arkham.Types.Enemy.Cards.RavenousGhoul as X
 import Arkham.Types.Enemy.Cards.RelentlessDarkYoung as X

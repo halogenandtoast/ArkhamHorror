@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 680bd16ef522e5990a373d56a3cfd98aba19a7fb2e470fd3b31cac09ebaf6311
+-- hash: 45e85054d97412c651635da0cab1104b1e9499ebe43e2aff27ce556439765ac6
 
 name:           arkham-core
 version:        0.0.0
@@ -500,6 +500,7 @@ library
       Arkham.Types.Treachery.Cards.ChillFromBelow
       Arkham.Types.Treachery.Cards.CoverUp
       Arkham.Types.Treachery.Cards.CryptChill
+      Arkham.Types.Treachery.Cards.CursedLuck
       Arkham.Types.Treachery.Cards.CursedSwamp
       Arkham.Types.Treachery.Cards.CurseOfTheRougarou
       Arkham.Types.Treachery.Cards.DissonantVoices

@@ -465,28 +465,27 @@ instance SkillTestRunner env => RunMessage env SkillTest where
              ]
           )
         Unrun -> pure ()
-    RerunSkillTest -> do
-      case skillTestResult of
-        FailedBy True _ -> pure s
-        _ -> do
-          withQueue $ \queue ->
-            let
-              queue' = flip filter queue $ \case
-                Will FailedSkillTest{} -> False
-                Will PassedSkillTest{} -> False
-                CheckWindow _ [WhenWouldFailSkillTest _] -> False
-                Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
-                  | skillTestInvestigator == skillTestInvestigator' -> False
-                _ -> True
-            in (queue', ())
-          unshiftMessage (RunSkillTest skillTestInvestigator)
-          -- We need to subtract the current token values to prevent them from
-          -- doubling. However, we need to keep any existing value modifier on
-          -- the stack (such as a token no longer visible who effect still
-          -- persists)
-          tokenValues <- sum
-            <$> for skillTestRevealedTokens (getModifiedTokenValue s)
-          pure $ s & valueModifier %~ subtract tokenValues
+    RerunSkillTest -> case skillTestResult of
+      FailedBy True _ -> pure s
+      _ -> do
+        withQueue $ \queue ->
+          let
+            queue' = flip filter queue $ \case
+              Will FailedSkillTest{} -> False
+              Will PassedSkillTest{} -> False
+              CheckWindow _ [WhenWouldFailSkillTest _] -> False
+              Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
+                | skillTestInvestigator == skillTestInvestigator' -> False
+              _ -> True
+          in (queue', ())
+        unshiftMessage (RunSkillTest skillTestInvestigator)
+        -- We need to subtract the current token values to prevent them from
+        -- doubling. However, we need to keep any existing value modifier on
+        -- the stack (such as a token no longer visible who effect still
+        -- persists)
+        tokenValues <- sum
+          <$> for skillTestRevealedTokens (getModifiedTokenValue s)
+        pure $ s & valueModifier %~ subtract tokenValues
     RunSkillTest _ -> do
       tokenValues <- sum
         <$> for skillTestRevealedTokens (getModifiedTokenValue s)

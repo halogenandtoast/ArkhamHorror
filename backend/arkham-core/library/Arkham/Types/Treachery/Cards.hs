@@ -13,6 +13,7 @@ import Arkham.Types.Treachery.Cards.BeyondTheVeil as X
 import Arkham.Types.Treachery.Cards.ChillFromBelow as X
 import Arkham.Types.Treachery.Cards.CoverUp as X
 import Arkham.Types.Treachery.Cards.CryptChill as X
+import Arkham.Types.Treachery.Cards.CursedLuck as X
 import Arkham.Types.Treachery.Cards.CursedSwamp as X
 import Arkham.Types.Treachery.Cards.CurseOfTheRougarou as X
 import Arkham.Types.Treachery.Cards.DissonantVoices as X

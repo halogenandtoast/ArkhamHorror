@@ -163,6 +163,15 @@ putApiV1ArkhamGameR gameId = do
           (Just m', msgs'') ->
             [m', Ask investigatorId $ ChooseOneAtATime msgs'']
           (Nothing, msgs'') -> [Ask investigatorId $ ChooseOneAtATime msgs'']
+      Just (ChooseSome msgs) -> do
+        let (mm, msgs') = extract (qrChoice response) msgs
+        case (mm, msgs') of
+          (Just Done, _) -> []
+          (Just m', msgs'') -> case msgs'' of
+            [] -> [m']
+            [Done] -> [m']
+            rest -> [m', Ask investigatorId $ ChooseSome rest]
+          (Nothing, msgs'') -> [Ask investigatorId $ ChooseSome msgs'']
       _ -> []
 
   if gameHash == qrGameHash response

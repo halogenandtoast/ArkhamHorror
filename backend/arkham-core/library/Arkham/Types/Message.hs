@@ -9,6 +9,7 @@ module Arkham.Types.Message
   , messageType
   , chooseOne
   , chooseOneAtATime
+  , chooseSome
   , chooseN
   , resolve
   , story
@@ -443,6 +444,7 @@ data Message
   | CreatePhaseEffect (EffectMetadata Message) Source Target
   | CreatedEffect EffectId (Maybe (EffectMetadata Message)) Source Target
   | DisableEffect EffectId
+  | Done
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -452,12 +454,16 @@ chooseOne iid msgs = Ask iid (ChooseOne msgs)
 chooseOneAtATime :: InvestigatorId -> [Message] -> Message
 chooseOneAtATime iid msgs = Ask iid (ChooseOneAtATime msgs)
 
+chooseSome :: InvestigatorId -> [Message] -> Message
+chooseSome iid msgs = Ask iid (ChooseSome $ Done : msgs)
+
 chooseN :: InvestigatorId -> Int -> [Message] -> Message
 chooseN iid n msgs = Ask iid (ChooseN n msgs)
 
 data Question
   = ChooseOne [Message]
   | ChooseN Int [Message]
+  | ChooseSome [Message]
   | ChooseOneAtATime [Message]
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)

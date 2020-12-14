@@ -28,8 +28,10 @@ type TreacheryRunner env
     , HasSet AgendaId env TreacheryCardCode
     , HasSet AssetId env InvestigatorId
     , HasSet ClosestEnemyId env (LocationId, [Trait])
+    , HasSet ClosestPathLocationId env (LocationId, LocationId)
     , HasSet ConnectedLocationId env LocationId
     , HasSet DiscardableAssetId env InvestigatorId
+    , HasSet EnemyId env Trait
     , HasSet FarthestLocationId env InvestigatorId
     , HasSet HandCardId env (InvestigatorId, PlayerCardType)
     , HasSet InvestigatorId env LocationId
@@ -39,6 +41,7 @@ type TreacheryRunner env
     , HasSet LocationId env TreacheryCardCode
     , HasSet LocationId env [Trait]
     , HasSet StoryAssetId env InvestigatorId
+    , HasSet UnengagedEnemyId env ()
     , HasSet Trait env LocationId
     , HasSet FarthestEnemyId env (InvestigatorId, EnemyTrait)
     , HasSet UniqueEnemyId env ()

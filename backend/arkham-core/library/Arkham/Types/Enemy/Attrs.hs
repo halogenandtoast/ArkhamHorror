@@ -491,6 +491,12 @@ instance EnemyRunner env => RunMessage env Attrs where
       -> if Keyword.Retaliate `elem` enemyKeywords
         then a <$ unshiftMessage (EnemyAttack iid enemyId)
         else a <$ unshiftMessage (FailedAttackEnemy iid enemyId)
+    EnemyAttackIfEngaged eid miid | eid == enemyId -> a <$ case miid of
+      Just iid | iid `elem` enemyEngagedInvestigators ->
+        unshiftMessage (EnemyAttack iid enemyId)
+      Just _ -> pure ()
+      Nothing -> unshiftMessages
+        [ EnemyAttack iid enemyId | iid <- setToList enemyEngagedInvestigators ]
     EnemyEvaded iid eid | eid == enemyId ->
       pure $ a & engagedInvestigatorsL %~ deleteSet iid & exhaustedL .~ True
     TryEvadeEnemy iid eid source skillType | eid == enemyId -> do

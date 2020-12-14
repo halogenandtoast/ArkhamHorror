@@ -215,6 +215,7 @@ data Message
   | EnemyWillAttack InvestigatorId EnemyId
   | EnemyAttacks [Message]
   | EnemyAttack InvestigatorId EnemyId
+  | EnemyAttackIfEngaged EnemyId (Maybe InvestigatorId)
   | PerformEnemyAttack InvestigatorId EnemyId
   | InvestigatorDrawEncounterCard InvestigatorId
   | InvestigatorDrewEncounterCard InvestigatorId EncounterCard

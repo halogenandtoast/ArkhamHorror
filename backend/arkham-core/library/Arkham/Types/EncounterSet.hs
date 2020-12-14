@@ -29,6 +29,7 @@ data EncounterSet
   | AgentsOfShubNiggurath
   | AgentsOfCthulhu
   | ExtracurricularActivity
+  | TheHouseAlwaysWins
   | Sorcery
   | BishopsThralls
   | Dunwich
@@ -78,6 +79,7 @@ setCards = \case
   AgentsOfShubNiggurath -> "01179" : replicate 3 "01180"
   AgentsOfCthulhu -> replicate 2 "01181" <> replicate 2 "01182"
   ExtracurricularActivity -> [] -- all cards are set aside
+  TheHouseAlwaysWins -> replicate 2 "02081" <> replicate 2 "02082"
   Sorcery -> replicate 3 "02083" <> replicate 3 "02084"
   BishopsThralls -> replicate 2 "02085" <> replicate 3 "02086" <> ["02087"]
   Dunwich -> replicate 2 "02088" <> replicate 2 "02089"

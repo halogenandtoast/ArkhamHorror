@@ -113,6 +113,8 @@ allEncounterCards = HashMap.fromList
   , ("01182", dreamsOfRlyeh)
   , ("02058", theExperiment)
   , ("02060", jazzMulligan)
+  , ("02081", somethingInTheDrinks)
+  , ("02082", arousingSuspicions)
   , ("02083", visionsOfFuturesPast)
   , ("02084", beyondTheVeil)
   , ("02085", lightOfAforgomon)
@@ -386,6 +388,15 @@ jazzMulligan :: CardId -> EncounterCard
 jazzMulligan cardId = (asset cardId "02060" "\"Jazz\" Mulligan")
   { ecTraits = setFromList [Ally, Miskatonic]
   }
+
+somethingInTheDrinks :: CardId -> EncounterCard
+somethingInTheDrinks cardId =
+  (treachery cardId "02081" "Something in the Drinks")
+    { ecTraits = setFromList [Poison, Illicit]
+    }
+
+arousingSuspicions :: CardId -> EncounterCard
+arousingSuspicions cardId = treachery cardId "02082" "Arousing Suspicions"
 
 visionsOfFuturesPast :: CardId -> EncounterCard
 visionsOfFuturesPast cardId =

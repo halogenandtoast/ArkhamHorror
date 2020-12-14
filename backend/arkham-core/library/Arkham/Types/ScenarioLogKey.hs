@@ -1,10 +1,12 @@
 module Arkham.Types.ScenarioLogKey where
 
-import Arkham.Json
-import ClassyPrelude
+import Arkham.Prelude
+
+import Arkham.Types.InvestigatorId
 
 data ScenarioLogKey
-  = FoundAStrangeDoll
+  = HadADrink InvestigatorId
+  | FoundAStrangeDoll
   | FoundAnAncientBindingStone
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

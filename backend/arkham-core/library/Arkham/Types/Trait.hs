@@ -100,6 +100,7 @@ data Trait
   | Paradox
   | Patron
   | Performer
+  | Poison
   | Police
   | Power
   | Practiced

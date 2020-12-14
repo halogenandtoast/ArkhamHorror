@@ -2,6 +2,7 @@ module Arkham.Types.Treachery.Runner where
 
 import Arkham.Import
 
+import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
 type TreacheryRunner env
@@ -40,6 +41,7 @@ type TreacheryRunner env
     , HasSet LocationId env ()
     , HasSet LocationId env TreacheryCardCode
     , HasSet LocationId env [Trait]
+    , HasSet ScenarioLogKey env ()
     , HasSet StoryAssetId env InvestigatorId
     , HasSet UnengagedEnemyId env ()
     , HasSet Trait env LocationId

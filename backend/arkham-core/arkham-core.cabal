@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 71e9830f61f3ee88f8b54ccbda932d2e5da92248bda4ad8f0fb75af66bae51f5
+-- hash: b46db251d0fd9bb4404e7049249b988a5bf9389667052706a62525626660f20d
 
 name:           arkham-core
 version:        0.0.0
@@ -241,6 +241,7 @@ library
       Arkham.Types.Enemy.Cards.MarshGug
       Arkham.Types.Enemy.Cards.MobEnforcer
       Arkham.Types.Enemy.Cards.Narogath
+      Arkham.Types.Enemy.Cards.OBannionsThug
       Arkham.Types.Enemy.Cards.PeterWarren
       Arkham.Types.Enemy.Cards.RavenousGhoul
       Arkham.Types.Enemy.Cards.RelentlessDarkYoung

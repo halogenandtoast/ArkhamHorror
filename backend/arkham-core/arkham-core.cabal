@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9292f82ba62e162b99b29ae6da1ccf19419f6824f91fb92c1fcdec1147f076d5
+-- hash: 680bd16ef522e5990a373d56a3cfd98aba19a7fb2e470fd3b31cac09ebaf6311
 
 name:           arkham-core
 version:        0.0.0
@@ -85,6 +85,7 @@ library
       Arkham.Types.Asset.Cards.DigDeep
       Arkham.Types.Asset.Cards.DigDeep2
       Arkham.Types.Asset.Cards.DiscOfItzamna2
+      Arkham.Types.Asset.Cards.DrHenryArmitage
       Arkham.Types.Asset.Cards.DrMilanChristopher
       Arkham.Types.Asset.Cards.Duke
       Arkham.Types.Asset.Cards.ElderSignAmulet3

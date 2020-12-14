@@ -267,6 +267,7 @@ allPlayerCards = HashMap.fromList
   , ("02032", fireAxe)
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
+  , ("02040", drHenryArmitage)
   , ("02059", alchemicalConcoction)
   , ("02060", jazzMulligan)
   , ("02061", professorWarrenRice)
@@ -1063,6 +1064,12 @@ baitAndSwitch cardId = (event cardId "02034" "Bait and Switch" 1 Survivor)
   { pcSkills = [SkillIntellect, SkillAgility]
   , pcTraits = setFromList [Trick]
   , pcAction = Just Action.Evade
+  }
+
+drHenryArmitage :: CardId -> PlayerCard
+drHenryArmitage cardId = (asset cardId "02040" "Dr. Henry Armitage" 2 Neutral)
+  { pcSkills = [SkillWild, SkillWild]
+  , pcTraits = setFromList [Ally, Miskatonic]
   }
 
 alchemicalConcoction :: CardId -> PlayerCard

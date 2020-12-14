@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 40c4f858d2dc12b04e9d1c3b0c24e4d4da6dc153d3533a0f1e72e4af372b6a72
+-- hash: 62d2df414d4085625d7f73b6e98ef786f306bf86f98777f2102f81148ecb4f11
 
 name:           arkham-core
 version:        0.0.0
@@ -597,6 +597,7 @@ test-suite spec
       Arkham.Types.Investigator.Cards.WendyAdamsSpec
       Arkham.Types.Investigator.Cards.ZoeySamarasSpec
       Arkham.Types.Skill.Cards.DeductionSpec
+      Arkham.Types.Treachery.Cards.CoverUpSpec
       Arkham.Types.Treachery.Cards.FinalRhapsodySpec
       Arkham.Types.Treachery.Cards.RexsCurseSpec
       Arkham.Types.Treachery.Cards.SearchingForIzzieSpec

@@ -29,30 +29,19 @@ instance TreacheryRunner env => RunMessage env ArcaneBarrier where
       t <$ unshiftMessage (AttachTreachery (toId attrs) (LocationTarget lid))
     Will (MoveTo iid lid) -> do
       investigatorLocation <- getId iid
-      t <$ when
-        (treacheryOnLocation lid attrs
-        || treacheryOnLocation investigatorLocation attrs
-        )
-        (unshiftMessage
-          (BeginSkillTest
-            iid
-            (toSource attrs)
-            (InvestigatorTarget iid)
-            Nothing
-            SkillWillpower
-            4
+      when
+          (treacheryOnLocation lid attrs
+          || treacheryOnLocation investigatorLocation attrs
           )
-        )
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _
-      | isSource attrs source -> t <$ unshiftMessage
-        (chooseOne
-          iid
-          [ Label "Cancel Move" []
-          , Label
-            "Discard top 5 cards of your deck"
-            [DiscardTopOfDeck iid 5 Nothing]
-          ]
-        )
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _
-      | isSource attrs source -> t <$ unshiftMessage (Discard $ toTarget attrs)
+        $ do
+            moveFromMessage <- fromJustNote "missing move from" <$> popMessage
+            moveToMessage <- fromJustNote "missing move to" <$> popMessage
+            unshiftMessage
+              (CreateEffect
+                (CardCode "02102")
+                (Just (EffectMessages [moveFromMessage, moveToMessage]))
+                (toSource attrs)
+                (InvestigatorTarget iid)
+              )
+      pure t
     _ -> ArcaneBarrier <$> runMessage msg attrs

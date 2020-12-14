@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 738040cdff8e8b4f063a86d51a7ccfef46c5fee8284e663bc022f2139404573c
+-- hash: 322fe70fcb486bcad389e3fae81db08075ef8feaf2e3ae7f069ef1e30b00c140
 
 name:           arkham-core
 version:        0.0.0
@@ -180,6 +180,7 @@ library
       Arkham.Types.Effect
       Arkham.Types.Effect.Attrs
       Arkham.Types.Effect.Effects
+      Arkham.Types.Effect.Effects.ArcaneBarrier
       Arkham.Types.Effect.Effects.ArkhamWoodsTwistingPaths
       Arkham.Types.Effect.Effects.BaseballBat
       Arkham.Types.Effect.Effects.BlindingLight

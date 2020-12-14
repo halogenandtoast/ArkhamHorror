@@ -33,6 +33,7 @@ type TreacheryRunner env
     , HasSet ConnectedLocationId env LocationId
     , HasSet DiscardableAssetId env InvestigatorId
     , HasSet EnemyId env Trait
+    , HasSet EnemyId env ([Trait], LocationId)
     , HasSet FarthestLocationId env InvestigatorId
     , HasSet HandCardId env (InvestigatorId, PlayerCardType)
     , HasSet InvestigatorId env LocationId

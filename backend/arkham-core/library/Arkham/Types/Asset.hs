@@ -81,6 +81,7 @@ data Asset
   | Duke' Duke
   | FireAxe' FireAxe
   | PeterSylvestre' PeterSylvestre
+  | JazzMulligan' JazzMulligan
   | BrotherXavier1' BrotherXavier1
   | Bandolier' Bandolier
   | KeenEye3' KeenEye3
@@ -115,6 +116,7 @@ deriving anyclass instance
   , HasCount ResourceCount env InvestigatorId
   , HasCount CardCount env InvestigatorId
   , HasCount AssetCount env (InvestigatorId, [Trait])
+  , HasSet Trait env LocationId
   )
   => HasModifiersFor env Asset
 deriving anyclass instance AssetRunner env => RunMessage env Asset
@@ -237,6 +239,7 @@ allAssets = mapFromList
   , ("02014", Duke' . duke)
   , ("02032", FireAxe' . fireAxe)
   , ("02033", PeterSylvestre' . peterSylvestre)
+  , ("02060", JazzMulligan' . jazzMulligan)
   , ("02106", BrotherXavier1' . brotherXavier1)
   , ("02147", Bandolier' . bandolier)
   , ("02185", KeenEye3' . keenEye3)
@@ -329,6 +332,7 @@ assetAttrs = \case
   Duke' attrs -> coerce attrs
   FireAxe' attrs -> coerce attrs
   PeterSylvestre' attrs -> coerce attrs
+  JazzMulligan' attrs -> coerce attrs
   BrotherXavier1' attrs -> coerce attrs
   Bandolier' attrs -> coerce attrs
   KeenEye3' attrs -> coerce attrs

@@ -45,6 +45,7 @@ import Arkham.Types.Asset.Cards.HigherEducation as X
 import Arkham.Types.Asset.Cards.HolyRosary as X
 import Arkham.Types.Asset.Cards.Hyperawareness as X
 import Arkham.Types.Asset.Cards.Hyperawareness2 as X
+import Arkham.Types.Asset.Cards.JazzMulligan as X
 import Arkham.Types.Asset.Cards.JennysTwin45s as X
 import Arkham.Types.Asset.Cards.JimsTrumpet as X
 import Arkham.Types.Asset.Cards.KeenEye as X

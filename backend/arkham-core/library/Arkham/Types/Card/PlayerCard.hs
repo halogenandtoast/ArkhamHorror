@@ -1053,7 +1053,7 @@ alchemicalConcoction cardId =
     }
 
 jazzMulligan :: CardId -> PlayerCard
-jazzMulligan cardId = (asset cardId "02060" "Jazz Mulligan" 0 Neutral)
+jazzMulligan cardId = (asset cardId "02060" "\"Jazz\" Mulligan" 0 Neutral)
   { pcTraits = setFromList [Ally, Miskatonic]
   }
 

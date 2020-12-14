@@ -383,7 +383,7 @@ theExperiment cardId = (enemy cardId "02058" "The Experiment")
   }
 
 jazzMulligan :: CardId -> EncounterCard
-jazzMulligan cardId = (asset cardId "02060" "Jazz Mulligan")
+jazzMulligan cardId = (asset cardId "02060" "\"Jazz\" Mulligan")
   { ecTraits = setFromList [Ally, Miskatonic]
   }
 

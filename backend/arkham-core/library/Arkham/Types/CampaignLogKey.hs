@@ -1,7 +1,6 @@
 module Arkham.Types.CampaignLogKey where
 
-import Arkham.Json
-import ClassyPrelude
+import Arkham.Prelude
 
 data CampaignLogKey
   = GhoulPriestIsStillAlive
@@ -26,4 +25,3 @@ data CampaignLogKey
   | TheRougarouEscapedAndYouEmbracedTheCurse
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)
-

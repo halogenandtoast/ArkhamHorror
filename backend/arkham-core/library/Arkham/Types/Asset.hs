@@ -86,6 +86,7 @@ data Asset
   | JazzMulligan' JazzMulligan
   | ProfessorWarrenRice' ProfessorWarrenRice
   | PeterClover' PeterClover
+  | DrFrancisMorgan' DrFrancisMorgan
   | BrotherXavier1' BrotherXavier1
   | Bandolier' Bandolier
   | KeenEye3' KeenEye3
@@ -252,6 +253,7 @@ allAssets = mapFromList
   , ("02060", JazzMulligan' . jazzMulligan)
   , ("02061", ProfessorWarrenRice' . professorWarrenRice)
   , ("02079", PeterClover' . peterClover)
+  , ("02080", DrFrancisMorgan' . drFrancisMorgan)
   , ("02106", BrotherXavier1' . brotherXavier1)
   , ("02147", Bandolier' . bandolier)
   , ("02185", KeenEye3' . keenEye3)
@@ -351,6 +353,7 @@ assetAttrs = \case
   JazzMulligan' attrs -> coerce attrs
   ProfessorWarrenRice' attrs -> coerce attrs
   PeterClover' attrs -> coerce attrs
+  DrFrancisMorgan' attrs -> coerce attrs
   BrotherXavier1' attrs -> coerce attrs
   Bandolier' attrs -> coerce attrs
   KeenEye3' attrs -> coerce attrs

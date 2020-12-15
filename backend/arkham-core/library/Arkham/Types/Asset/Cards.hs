@@ -25,6 +25,7 @@ import Arkham.Types.Asset.Cards.DaisysToteBagAdvanced as X
 import Arkham.Types.Asset.Cards.DigDeep as X
 import Arkham.Types.Asset.Cards.DigDeep2 as X
 import Arkham.Types.Asset.Cards.DiscOfItzamna2 as X
+import Arkham.Types.Asset.Cards.DrFrancisMorgan as X
 import Arkham.Types.Asset.Cards.DrHenryArmitage as X
 import Arkham.Types.Asset.Cards.DrMilanChristopher as X
 import Arkham.Types.Asset.Cards.Duke as X

@@ -22,6 +22,7 @@ import Arkham.Types.Location.Cards.Bedroom as X
 import Arkham.Types.Location.Cards.BrackishWaters as X
 import Arkham.Types.Location.Cards.Broadmoor as X
 import Arkham.Types.Location.Cards.Cellar as X
+import Arkham.Types.Location.Cards.CloverClubLounge as X
 import Arkham.Types.Location.Cards.CursedShores as X
 import Arkham.Types.Location.Cards.DeepBelowYourHouse as X
 import Arkham.Types.Location.Cards.Dormitories as X

@@ -67,6 +67,7 @@ data Location
   | ScienceBuilding' ScienceBuilding
   | AlchemyLabs' AlchemyLabs
   | LaBellaLuna' LaBellaLuna
+  | CloverClubLounge' CloverClubLounge
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -236,6 +237,7 @@ allLocations = mapFromList $ map
   , ScienceBuilding' scienceBuilding
   , AlchemyLabs' alchemyLabs
   , LaBellaLuna' laBellaLuna
+  , CloverClubLounge' cloverClubLounge
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall
   , Bedroom' bedroom
@@ -313,6 +315,7 @@ locationAttrs = \case
   ScienceBuilding' attrs -> coerce attrs
   AlchemyLabs' attrs -> coerce attrs
   LaBellaLuna' attrs -> coerce attrs
+  CloverClubLounge' attrs -> coerce attrs
   StudyAberrantGateway' attrs -> coerce attrs
   GuestHall' attrs -> coerce attrs
   Bedroom' attrs -> coerce attrs

@@ -221,6 +221,9 @@ revealedTokensL =
 choiceL :: Lens' ChaosBag (Maybe ChaosBagStepState)
 choiceL = lens chaosBagChoice $ \m x -> m { chaosBagChoice = x }
 
+instance HasList Token env ChaosBag where
+  getList = pure . chaosBagTokens
+
 instance HasQueue env => RunMessage env ChaosBag where
   runMessage msg c@ChaosBag {..} = case msg of
     SetTokens tokens' ->

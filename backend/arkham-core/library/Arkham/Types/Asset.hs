@@ -179,6 +179,9 @@ instance HasId (Maybe LocationId) env Asset where
 instance HasCount DoomCount env Asset where
   getCount = pure . DoomCount . assetDoom . assetAttrs
 
+instance HasCount ClueCount env Asset where
+  getCount = pure . ClueCount . assetClues . assetAttrs
+
 instance HasCount UsesCount env Asset where
   getCount asset = pure $ case uses' of
     NoUses -> UsesCount 0

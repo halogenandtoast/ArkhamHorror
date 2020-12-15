@@ -33,7 +33,7 @@ instance ActionRunner env => HasActions env Parlor where
     baseActions <- getActions iid NonFast attrs
     maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
     case maid of
-      Nothing -> pure []
+      Nothing -> pure baseActions
       Just aid -> do
         miid <- fmap unOwnerId <$> getId aid
         assetLocationId <- getId aid

@@ -8,6 +8,15 @@ import Arkham.Types.Keyword
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait (Trait)
 
+withBaseActions
+  :: (MonadIO m, HasActions env a, MonadReader env m)
+  => InvestigatorId
+  -> Window
+  -> a
+  -> m [Message]
+  -> m [Message]
+withBaseActions iid window a f = (<>) <$> getActions iid window a <*> f
+
 getIsUnused
   :: (HasList UsedAbility env (), MonadReader env m)
   => InvestigatorId

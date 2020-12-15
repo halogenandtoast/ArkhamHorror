@@ -68,7 +68,6 @@ import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.Sequence as Seq
-import Data.UUID (UUID)
 import Data.UUID.V4
 import Safe (headNote)
 import System.Environment
@@ -790,6 +789,11 @@ instance HasModifiersFor (Game queue) () where
 instance HasStep AgendaStep (Game queue) where
   getStep g = case toList (g ^. agendas) of
     [agenda] -> getStep agenda
+    _ -> error "wrong number of agendas"
+
+instance HasStep ActStep (Game queue) where
+  getStep g = case toList (g ^. acts) of
+    [act] -> getStep act
     _ -> error "wrong number of agendas"
 
 instance HasList InPlayCard (Game queue) InvestigatorId where

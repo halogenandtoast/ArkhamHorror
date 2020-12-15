@@ -10,8 +10,6 @@ import Arkham.Import
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
-import Arkham.Types.Action
-import Arkham.Types.Trait
 
 newtype RicesWhereabouts = RicesWhereabouts Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -23,7 +21,7 @@ ricesWhereabouts =
 ability :: Attrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
 
-instance (HasModifiersFor env (), HasCount SpendableClueCount env InvestigatorId, HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)) => HasActions env RicesWhereabouts where
+instance (HasModifiersFor env (), HasCostPayment env) => HasActions env RicesWhereabouts where
   getActions iid NonFast (RicesWhereabouts x) = do
     canAffordClues <- getCanAffordCost iid (toSource x) (ClueCost 1)
     canAffordActions <- getCanAffordCost

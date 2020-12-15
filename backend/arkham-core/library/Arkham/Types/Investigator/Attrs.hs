@@ -597,10 +597,6 @@ instance InvestigatorRunner env => RunMessage env Attrs where
       i
     runInvestigatorMessage msg i
 
-_PlayerCard :: Traversal' Card PlayerCard
-_PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
-_PlayerCard _ (EncounterCard ec) = pure (EncounterCard ec)
-
 hasModifier
   :: (MonadReader env m, HasModifiersFor env ())
   => Attrs

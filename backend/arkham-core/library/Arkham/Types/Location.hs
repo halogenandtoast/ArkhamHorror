@@ -11,8 +11,9 @@ module Arkham.Types.Location
   )
 where
 
+import Arkham.Prelude
+
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Json
 import Arkham.Types.AssetId
 import Arkham.Types.GameValue
 import Arkham.Types.LocationSymbol
@@ -27,10 +28,8 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.Query
 import Arkham.Types.TreacheryId
-import ClassyPrelude
 import Data.Coerce
 import qualified Data.HashSet as HashSet
-import Safe (fromJustNote)
 
 data Location
   = Study' Study

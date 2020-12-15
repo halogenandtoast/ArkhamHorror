@@ -11,7 +11,6 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Action
-import Arkham.Types.Trait
 
 newtype Fold = Fold Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -20,8 +19,7 @@ fold :: Fold
 fold = Fold $ baseAttrs "02069" "Fold" (Act 3 A)
 
 instance
-  ( HasCount SpendableClueCount env InvestigatorId
-  , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+  ( HasCostPayment env
   , HasModifiersFor env ()
   , HasId (Maybe LocationId) env AssetId
   , HasId (Maybe OwnerId) env AssetId

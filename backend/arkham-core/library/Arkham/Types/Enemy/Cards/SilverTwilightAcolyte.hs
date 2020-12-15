@@ -1,15 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy.Cards.SilverTwilightAcolyte where
 
-import Arkham.Json
-import Arkham.Types.Classes
+import Arkham.Import
+
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
-import Arkham.Types.EnemyId
-import Arkham.Types.GameValue
-import Arkham.Types.Message
-import Arkham.Types.Prey
-import ClassyPrelude
 
 newtype SilverTwilightAcolyte = SilverTwilightAcolyte Attrs
   deriving newtype (Show, ToJSON, FromJSON)

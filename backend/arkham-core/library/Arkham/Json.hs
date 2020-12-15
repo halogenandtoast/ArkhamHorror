@@ -5,7 +5,7 @@ module Arkham.Json
   )
 where
 
-import ClassyPrelude
+import Arkham.Prelude
 import Data.Aeson as X
 import Data.Aeson.Casing (camelCase)
 import Data.Aeson.Text as X

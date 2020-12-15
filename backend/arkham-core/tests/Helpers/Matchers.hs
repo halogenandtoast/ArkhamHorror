@@ -1,6 +1,6 @@
 module Helpers.Matchers where
 
-import ClassyPrelude
+import Arkham.Prelude
 
 import Arkham.Types.Agenda
 import Arkham.Types.Asset

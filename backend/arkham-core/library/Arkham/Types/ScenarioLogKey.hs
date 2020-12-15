@@ -6,6 +6,7 @@ import Arkham.Types.InvestigatorId
 
 data ScenarioLogKey
   = HadADrink InvestigatorId
+  | Cheated InvestigatorId
   | FoundAStrangeDoll
   | FoundAnAncientBindingStone
   deriving stock (Eq, Show, Generic)

@@ -23,6 +23,7 @@ data Scenario
   | TheMidnightMasks' TheMidnightMasks
   | TheDevourerBelow' TheDevourerBelow
   | ExtracurricularActivity' ExtracurricularActivity
+  | TheHouseAlwaysWins' TheHouseAlwaysWins
   | ReturnToTheGathering' ReturnToTheGathering
   | ReturnToTheMidnightMasks' ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow' ReturnToTheDevourerBelow
@@ -92,6 +93,7 @@ allScenarios = mapFromList
   , ("01120", TheMidnightMasks' . theMidnightMasks)
   , ("01142", TheDevourerBelow' . theDevourerBelow)
   , ("02041", ExtracurricularActivity' . extracurricularActivity)
+  , ("02062", TheHouseAlwaysWins' . theHouseAlwaysWins)
   , ("50011", ReturnToTheGathering' . returnToTheGathering)
   , ("50025", ReturnToTheMidnightMasks' . returnToTheMidnightMasks)
   , ("50032", ReturnToTheDevourerBelow' . returnToTheDevourerBelow)
@@ -105,6 +107,7 @@ scenarioAttrs = \case
   TheMidnightMasks' attrs -> coerce attrs
   TheDevourerBelow' attrs -> coerce attrs
   ExtracurricularActivity' attrs -> coerce attrs
+  TheHouseAlwaysWins' attrs -> coerce attrs
   ReturnToTheGathering' attrs -> coerce attrs
   ReturnToTheMidnightMasks' attrs -> coerce attrs
   ReturnToTheDevourerBelow' attrs -> coerce attrs

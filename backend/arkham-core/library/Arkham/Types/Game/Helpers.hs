@@ -285,6 +285,7 @@ targetToSource = \case
   SkillTarget sid -> SkillSource sid
   SkillTestInitiatorTarget _ -> error "can not convert"
   TokenTarget tid -> TokenSource tid
+  TokenFaceTarget _ -> error "Not convertable"
   DrawnTokenTarget dt -> DrawnTokenSource dt
   TestTarget -> TestSource
   EncounterCardTarget _ -> error "can not convert"

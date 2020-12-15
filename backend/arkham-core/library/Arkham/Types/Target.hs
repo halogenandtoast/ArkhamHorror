@@ -47,6 +47,7 @@ data Target
   | SkillTarget SkillId
   | SkillTestInitiatorTarget Target
   | TokenTarget TokenId
+  | TokenFaceTarget Token
   | DrawnTokenTarget DrawnToken
   | TestTarget
   | EncounterCardTarget EncounterCard

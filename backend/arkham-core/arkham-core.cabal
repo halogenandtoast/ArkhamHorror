@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d4a073d0a3f2e66b2ce132ed27ee3cce15eb1136939af60244178d6d56344815
+-- hash: a171a9d240af1bc81fdcbe84868f0fa2e0ee2ebc3b3253686f130dcbebb4b143
 
 name:           arkham-core
 version:        0.0.0
@@ -126,6 +126,7 @@ library
       Arkham.Types.Asset.Cards.MonstrousTransformation
       Arkham.Types.Asset.Cards.OccultLexicon
       Arkham.Types.Asset.Cards.OldBookOfLore
+      Arkham.Types.Asset.Cards.PeterClover
       Arkham.Types.Asset.Cards.PeterSylvestre
       Arkham.Types.Asset.Cards.PhysicalTraining
       Arkham.Types.Asset.Cards.PhysicalTraining2

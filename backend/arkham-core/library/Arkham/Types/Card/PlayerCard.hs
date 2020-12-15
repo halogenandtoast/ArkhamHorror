@@ -1090,6 +1090,11 @@ professorWarrenRice cardId =
     , pcTraits = setFromList [Ally, Miskatonic]
     }
 
+peterClover :: CardId -> PlayerCard
+peterClover cardId = (asset cardId "02079" "Peter Clover" 0 Neutral)
+  { pcTraits = setFromList [Humanoid, Criminal]
+  }
+
 brotherXavier1 :: CardId -> PlayerCard
 brotherXavier1 cardId = (asset cardId "02106" "Brother Xavier" 5 Guardian)
   { pcSkills = [SkillWillpower]

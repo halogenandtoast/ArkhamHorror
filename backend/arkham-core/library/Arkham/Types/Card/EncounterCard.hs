@@ -483,12 +483,12 @@ alteredBeast cardId =
 
 oBannionsThug :: CardId -> EncounterCard
 oBannionsThug cardId = (enemy cardId "02097" "O'Bannion's Thug")
-  { ecTraits = setFromList [Human, Criminal, Syndicate]
+  { ecTraits = setFromList [Humanoid, Criminal, Syndicate]
   }
 
 mobster :: CardId -> EncounterCard
 mobster cardId = (enemy cardId "02098" "Mobster")
-  { ecTraits = setFromList [Human, Criminal, Syndicate]
+  { ecTraits = setFromList [Humanoid, Criminal, Syndicate]
   , ecKeywords = setFromList [Keyword.Retaliate]
   }
 

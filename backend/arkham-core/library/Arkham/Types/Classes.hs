@@ -262,6 +262,7 @@ type ActionRunner env
     , HasSet AssetId env (InvestigatorId, UseType)
     , HasSet ConnectedLocationId env LocationId
     , HasSet EnemyId env LocationId
+    , HasSet EnemyId env ([Trait], LocationId)
     , HasSet ExhaustedAssetId env InvestigatorId
     , HasSet ExhaustedEnemyId env LocationId
     , HasSet InvestigatorId env ()

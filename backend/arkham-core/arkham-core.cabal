@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 17fbc94690f1f244ed5041a1861550fd221641e37214da65388324b4ea0d34ae
+-- hash: 2dfa29c8ff93b024759d39841dbd70e1d82fc8b314b583d246e51a45da569a49
 
 name:           arkham-core
 version:        0.0.0
@@ -460,6 +460,7 @@ library
       Arkham.Types.Scenario.Scenarios.ReturnToTheMidnightMasks
       Arkham.Types.Scenario.Scenarios.TheDevourerBelow
       Arkham.Types.Scenario.Scenarios.TheGathering
+      Arkham.Types.Scenario.Scenarios.TheHouseAlwaysWins
       Arkham.Types.Scenario.Scenarios.TheMidnightMasks
       Arkham.Types.ScenarioId
       Arkham.Types.ScenarioLogKey

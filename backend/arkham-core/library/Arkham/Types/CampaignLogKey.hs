@@ -20,6 +20,10 @@ data CampaignLogKey
   | TheStudentsWereRescued
   | TheExperimentWasDefeated
   | InvestigatorsWereUnconsciousForSeveralHours
+  | OBannionGangHasABoneToPickWithTheInvestigators
+  | DrFrancisMorganWasKidnapped
+  | TheInvestigatorsRescuedDrFrancisMorgan
+  | NaomiHasTheInvestigatorsBacks
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse

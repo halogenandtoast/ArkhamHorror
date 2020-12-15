@@ -50,4 +50,3 @@ type TreacheryRunner env
     , HasSet UniqueEnemyId env ()
     , HasSet EnemyId env ()
     )
-

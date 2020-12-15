@@ -41,6 +41,7 @@ import Arkham.Types.Location.Cards.GuestHall as X
 import Arkham.Types.Location.Cards.Hallway as X
 import Arkham.Types.Location.Cards.HoleInTheWall as X
 import Arkham.Types.Location.Cards.HumanitiesBuilding as X
+import Arkham.Types.Location.Cards.LaBellaLuna as X
 import Arkham.Types.Location.Cards.MainPath as X
 import Arkham.Types.Location.Cards.MiskatonicQuad as X
 import Arkham.Types.Location.Cards.MiskatonicUniversity as X

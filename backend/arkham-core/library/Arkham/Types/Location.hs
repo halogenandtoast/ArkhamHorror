@@ -66,6 +66,7 @@ data Location
   | FacultyOfficesTheHourIsLate' FacultyOfficesTheHourIsLate
   | ScienceBuilding' ScienceBuilding
   | AlchemyLabs' AlchemyLabs
+  | LaBellaLuna' LaBellaLuna
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -234,6 +235,7 @@ allLocations = mapFromList $ map
   , FacultyOfficesTheHourIsLate' facultyOfficesTheHourIsLate
   , ScienceBuilding' scienceBuilding
   , AlchemyLabs' alchemyLabs
+  , LaBellaLuna' laBellaLuna
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall
   , Bedroom' bedroom
@@ -310,6 +312,7 @@ locationAttrs = \case
   FacultyOfficesTheHourIsLate' attrs -> coerce attrs
   ScienceBuilding' attrs -> coerce attrs
   AlchemyLabs' attrs -> coerce attrs
+  LaBellaLuna' attrs -> coerce attrs
   StudyAberrantGateway' attrs -> coerce attrs
   GuestHall' attrs -> coerce attrs
   Bedroom' attrs -> coerce attrs

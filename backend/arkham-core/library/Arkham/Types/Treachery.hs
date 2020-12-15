@@ -79,6 +79,7 @@ deriving anyclass instance
   ( HasCount PlayerCount env ()
   , HasId LocationId env InvestigatorId
   , HasSet Trait env LocationId
+  , HasSet UniqueEnemyId env ()
   )
   => HasModifiersFor env Treachery
 

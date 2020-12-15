@@ -9,6 +9,7 @@ import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Keyword
 
 newtype FishingNet = FishingNet Attrs
@@ -18,9 +19,11 @@ newtype FishingNet = FishingNet Attrs
 fishingNet :: AssetId -> FishingNet
 fishingNet uuid = FishingNet $ (baseAttrs uuid "81021") { assetIsStory = True }
 
--- TODO: Removal of retaliate should maybe be a modifier of some sort
 instance HasModifiersFor env FishingNet where
-  getModifiersFor = noModifiersFor
+  getModifiersFor _ (EnemyTarget eid) (FishingNet attrs) = pure $ toModifiers
+    attrs
+    [ RemoveKeyword Retaliate | assetEnemy attrs == Just eid ]
+  getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow)
@@ -47,7 +50,4 @@ instance AssetRunner env => RunMessage env FishingNet where
       case mrougarou of
         Nothing -> error "can not use this ability"
         Just eid -> a <$ unshiftMessage (AttachAsset assetId (EnemyTarget eid))
-    AttachAsset aid target | aid == assetId -> do
-      unshiftMessage $ RemoveKeywords target [Retaliate]
-      FishingNet <$> runMessage msg attrs
     _ -> FishingNet <$> runMessage msg attrs

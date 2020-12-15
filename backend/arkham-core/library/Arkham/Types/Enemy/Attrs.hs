@@ -599,7 +599,5 @@ instance EnemyRunner env => RunMessage env Attrs where
     AttachAsset aid (EnemyTarget eid) | eid == enemyId ->
       pure $ a & assetsL %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
-    RemoveKeywords (EnemyTarget eid) keywordsToRemove | eid == enemyId ->
-      pure $ a & keywordsL %~ (`difference` setFromList keywordsToRemove)
     Blanked msg' -> runMessage msg' a
     _ -> pure a

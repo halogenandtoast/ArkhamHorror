@@ -78,6 +78,7 @@ data ModifierType
   | ChangeTokenModifier TokenModifier
   | ReduceCostOf [Trait] Int
   | ReduceCostOfCardType PlayerCardType Int
+  | RemoveKeyword Keyword
   | SanityModifier Int
   | ShroudModifier Int
   | SkillModifier SkillType Int

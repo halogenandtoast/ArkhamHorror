@@ -16,9 +16,8 @@ module Arkham.Types.Message
   )
 where
 
-import ClassyPrelude
+import Arkham.Prelude
 
-import Arkham.Json
 import Arkham.Types.Ability
 import Arkham.Types.ActId
 import Arkham.Types.Action
@@ -36,7 +35,6 @@ import Arkham.Types.EffectMetadata
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
-import Arkham.Types.Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
@@ -436,8 +434,6 @@ data Message
   | NextChaosBagStep Source InvestigatorId RequestedTokenStrategy
   | AddTraits Target [Trait]
   | RemoveTraits Target [Trait]
-  | AddKeywords Target [Keyword]
-  | RemoveKeywords Target [Keyword]
   | ChangeCardToFast InvestigatorId CardId
   | CreateEffect CardCode (Maybe (EffectMetadata Message)) Source Target
   | CreateSkillTestEffect (EffectMetadata Message) Source Target

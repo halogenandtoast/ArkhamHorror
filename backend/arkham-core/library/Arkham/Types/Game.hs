@@ -845,13 +845,22 @@ instance HasSet Keyword (Game queue) EnemyId where
     modifiers' <-
       map modifierType <$> getModifiersFor GameSource (EnemyTarget eid) ()
     let
-      modifierKeywords = setFromList $ mapMaybe
+      addedKeywords = setFromList $ mapMaybe
         (\case
           AddKeyword keyword -> Just keyword
           _ -> Nothing
         )
         modifiers'
-    union modifierKeywords . getKeywords <$> getEnemy eid
+      removedKeywords = setFromList $ mapMaybe
+        (\case
+          RemoveKeyword keyword -> Just keyword
+          _ -> Nothing
+        )
+        modifiers'
+    (`difference` removedKeywords)
+      . union addedKeywords
+      . getKeywords
+      <$> getEnemy eid
 
 instance HasSet Trait (Game queue) LocationId where
   getSet lid = getTraits <$> getLocation lid

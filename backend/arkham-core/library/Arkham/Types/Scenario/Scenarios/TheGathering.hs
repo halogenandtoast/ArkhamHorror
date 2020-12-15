@@ -120,14 +120,14 @@ instance ScenarioRunner env => RunMessage env TheGathering where
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessage
-        (chooseOne
-          leadInvestigatorId
-          [ Run
-            $ [ Continue "Continue"
-              , FlavorText
-                Nothing
-                [ "You barely manage to escape\
+      s <$ unshiftMessages
+        ([ chooseOne
+           leadInvestigatorId
+           [ Run
+               [ Continue "Continue"
+               , FlavorText
+                 Nothing
+                 [ "You barely manage to escape\
                   \ your house with your lives. The woman from your parlor\
                   \ follows you out the front door, slamming it behind her. “You\
                   \ fools! See what you have done?” She pushes a chair in front of\
@@ -137,66 +137,68 @@ instance ScenarioRunner env => RunMessage env TheGathering where
                   \ from being unleashed throughout the city.” You’re in no state\
                   \ to argue. Nodding, you follow the woman as she runs from\
                   \ your front porch out into the rainy street, toward Rivertown."
-                ]
-              , Record YourHouseIsStillStanding
-              , Record GhoulPriestIsStillAlive
-              , chooseOne
-                leadInvestigatorId
-                [ Label
-                  "Add Lita Chantler to your deck"
-                  [AddCampaignCardToDeck leadInvestigatorId "01117"]
-                , Label "Do not add Lita Chantler to your deck" []
-                ]
-              ]
-            <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
-            <> [EndOfGame]
-          ]
+                 ]
+               ]
+           ]
+         , Record YourHouseIsStillStanding
+         , Record GhoulPriestIsStillAlive
+         , chooseOne
+           leadInvestigatorId
+           [ Label
+             "Add Lita Chantler to your deck"
+             [AddCampaignCardToDeck leadInvestigatorId "01117"]
+           , Label "Do not add Lita Chantler to your deck" []
+           ]
+         ]
+        <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+        <> [EndOfGame]
         )
     Resolution 1 -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessage
-        (chooseOne
-          leadInvestigatorId
-          [ Run
-            $ [ Continue "Continue"
-              , FlavorText
-                Nothing
-                [ "You nod and allow the red-haired woman to\
+      s <$ unshiftMessages
+        ([ chooseOne
+           leadInvestigatorId
+           [ Run
+               [ Continue "Continue"
+               , FlavorText
+                 Nothing
+                 [ "You nod and allow the red-haired woman to\
                   \ set the walls and floor of your house ablaze. The fire spreads\
                   \ quickly, and you run out the front door to avoid being caught\
                   \ in the inferno. From the sidewalk, you watch as everything\
                   \ you own is consumed by the flames. “Come with me,” the\
                   \ woman says. “You must be told of the threat that lurks below.\
                   \ Alone, we are surely doomed…but together, we can stop it.”"
-                ]
-              , Record YourHouseHasBurnedToTheGround
-              , chooseOne
-                leadInvestigatorId
-                [ Label
-                  "Add Lita Chantler to your deck"
-                  [AddCampaignCardToDeck leadInvestigatorId "01117"]
-                , Label "Do not add Lita Chantler to your deck" []
-                ]
-              , SufferTrauma leadInvestigatorId 0 1
-              ]
-            <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
-            <> [EndOfGame]
-          ]
+                 ]
+               ]
+           ]
+         , Record YourHouseHasBurnedToTheGround
+         , chooseOne
+           leadInvestigatorId
+           [ Label
+             "Add Lita Chantler to your deck"
+             [AddCampaignCardToDeck leadInvestigatorId "01117"]
+           , Label "Do not add Lita Chantler to your deck" []
+           ]
+         , SufferTrauma leadInvestigatorId 0 1
+         ]
+        <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+        <> [EndOfGame]
         )
     Resolution 2 -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
-      s <$ unshiftMessage
-        (chooseOne
-          leadInvestigatorId
-          [ Run
-            $ [ Continue "Continue"
-              , FlavorText
-                Nothing
-                [ "You refuse to follow the overzealous woman’s\
+      s <$ unshiftMessages
+        ([ chooseOne
+           leadInvestigatorId
+           [ Run
+               [ Continue "Continue"
+               , FlavorText
+                 Nothing
+                 [ "You refuse to follow the overzealous woman’s\
                   \ order and kick her out of your home for fear that she will set\
                   \ it ablaze without your permission. “Fools! You are making\
                   \ a grave mistake!” she warns. “You do not understand the\
@@ -204,18 +206,19 @@ instance ScenarioRunner env => RunMessage env TheGathering where
                   \ Still shaken by the night’s events, you decide to hear the\
                   \ woman out. Perhaps she can shed some light on these bizarre\
                   \ events…but she doesn’t seem to trust you very much."
-                ]
-              , Record YourHouseIsStillStanding
-              , GainXP leadInvestigatorId 1
-              ]
-            <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
-            <> [EndOfGame]
-          ]
+                 ]
+               ]
+           ]
+         , Record YourHouseIsStillStanding
+         , GainXP leadInvestigatorId 1
+         ]
+        <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+        <> [EndOfGame]
         )
     Resolution 3 -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      s <$ unshiftMessage
-        (chooseOne
+      s <$ unshiftMessages
+        [ chooseOne
           leadInvestigatorId
           [ Run
               [ Continue "Continue"
@@ -226,18 +229,18 @@ instance ScenarioRunner env => RunMessage env TheGathering where
                   \ path. Trapped, the horde of feral creatures that have invaded\
                   \ your home close in, and you have nowhere to run."
                 ]
-              , Record LitaWasForcedToFindOthersToHelpHerCause
-              , Record YourHouseIsStillStanding
-              , Record GhoulPriestIsStillAlive
-              , chooseOne
-                leadInvestigatorId
-                [ Label
-                  "Add Lita Chantler to your deck"
-                  [AddCampaignCardToDeck leadInvestigatorId "01117"]
-                , Label "Do not add Lita Chantler to your deck" []
-                ]
-              , EndOfGame
               ]
           ]
-        )
+        , Record LitaWasForcedToFindOthersToHelpHerCause
+        , Record YourHouseIsStillStanding
+        , Record GhoulPriestIsStillAlive
+        , chooseOne
+          leadInvestigatorId
+          [ Label
+            "Add Lita Chantler to your deck"
+            [AddCampaignCardToDeck leadInvestigatorId "01117"]
+          , Label "Do not add Lita Chantler to your deck" []
+          ]
+        , EndOfGame
+        ]
     _ -> TheGathering <$> runMessage msg attrs

@@ -8,4 +8,5 @@ type CampaignRunner env
   = ( HasQueue env
     , HasSet InvestigatorId env ()
     , HasId LeadInvestigatorId env ()
+    , HasRecord env
     )

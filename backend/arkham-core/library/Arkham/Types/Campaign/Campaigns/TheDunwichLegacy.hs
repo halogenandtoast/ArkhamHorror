@@ -5,6 +5,7 @@ import Arkham.Import
 
 import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Runner
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.CampaignStep
 import Arkham.Types.Difficulty
 import Arkham.Types.Game.Helpers
@@ -145,6 +146,85 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
             [NextCampaignStep (Just $ ScenarioStep "02062")]
           ]
         ]
+    CampaignStep (Just (InterludeStep 1)) -> do
+      unconsciousForSeveralHours <- asks
+        $ hasRecord InvestigatorsWereUnconsciousForSeveralHours
+      investigatorIds <- getSetList ()
+      leadInvestigatorId <- getLeadInvestigatorId
+      if unconsciousForSeveralHours
+        then c <$ unshiftMessages
+          ([ AskMap
+           . mapFromList
+           $ [ ( iid
+               , ChooseOne
+                 [ Run
+                     [ Continue "Continue"
+                     , FlavorText
+                       (Just "Interlude 1: Armitage's Fate")
+                       [ "You are more than a little rattled by your experiences\
+                        \ in the university and the Clover Club. You’re not sure what to make of\
+                        \ whoever—or whatever—was after Rice and Morgan. Worried about Dr.\
+                        \   Armitage, you swiftly make your way back to his home. When you arrive,\
+                        \ you find that the latches of his front door have been busted open, and his\
+                        \ living area and study have been ransacked. Dr. Armitage is nowhere to be\
+                        \ found. Searching his home, you find a journal the intruders didn’t steal\
+                        \ tucked beneath several other documents in the bottom drawer of Armitage’s\
+                        \ desk. The journal appears to be written in a strange language you cannot\
+                        \ decode, using a script you’ve never seen in your entire life. Fortunately, it\
+                        \ seems Dr. Armitage had already gone through the trouble of translating it\
+                        \ into English. Apparently, it belongs to one “Wilbur Whateley.”"
+                       , "The journal—along with Armitage’s many notes—tells a startling\
+                        \ tale, one you would scarcely believe had it not been for your harrowing\
+                        \ experiences earlier tonight…"
+                       ]
+                     ]
+                 ]
+               )
+             | iid <- investigatorIds
+             ]
+           , Record DrHenryArmitageWasKidnapped
+           ]
+          <> [ GainXP iid 2 | iid <- investigatorIds ]
+          <> [NextCampaignStep Nothing]
+          )
+        else c <$ unshiftMessages
+          [ AskMap
+          . mapFromList
+          $ [ ( iid
+              , ChooseOne
+                [ Run
+                    [ Continue "Continue"
+                    , FlavorText
+                      (Just "Interlude 1: Armitage's Fate")
+                      [ "When you arrive at Dr. Armitage’s home in\
+                        \ Southside, you find him sitting at his desk, pale-faced and sweating with\
+                        \ worry. He is grateful to you for searching for his colleagues, but he doesn’t\
+                        \ look relieved. With a long pause, he straightens his glasses and explains:"
+                      , "“I’m afraid I must apologize. There’s something I didn’t mention to you\
+                        \ earlier.” Dr. Armitage then spins a tale you would scarcely believe had it\
+                        \ not been for your harrowing experiences earlier that night…"
+                      ]
+                    ]
+                ]
+              )
+            | iid <- investigatorIds
+            ]
+          , chooseOne
+            leadInvestigatorId
+            [ Label
+              "Add Dr. Henry Armitage to a deck"
+              [ chooseOne
+                  leadInvestigatorId
+                  [ TargetLabel
+                      (InvestigatorTarget iid)
+                      [AddCampaignCardToDeck iid "02040"]
+                  | iid <- investigatorIds
+                  ]
+              ]
+            , Label "Do not add Dr. Henry Armitage to any deck" []
+            ]
+          , NextCampaignStep Nothing
+          ]
     NextCampaignStep mNextCampaignStep -> do
       let
         nextStep = case mNextCampaignStep of
@@ -152,17 +232,14 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
           Nothing -> case campaignStep of
             Just PrologueStep -> error "must be handled"
             Just (ScenarioStep "02041") ->
-              Just
-                . ScenarioStep
-                $ if ScenarioStep "02062" `elem` campaignCompletedSteps
-                    then "02118"
-                    else "02062"
+              if ScenarioStep "02062" `elem` campaignCompletedSteps
+                then Just $ InterludeStep 1
+                else Just $ ScenarioStep "02062"
             Just (ScenarioStep "02062") ->
-              Just
-                . ScenarioStep
-                $ if ScenarioStep "02041" `elem` campaignCompletedSteps
-                    then "02118"
-                    else "02041"
+              if ScenarioStep "02041" `elem` campaignCompletedSteps
+                then Just $ InterludeStep 1
+                else Just $ ScenarioStep "02041"
+            Just (InterludeStep 1) -> Just (ScenarioStep "02118")
             Just (ScenarioStep "02118") -> Just (ScenarioStep "02159")
             Just (ScenarioStep "02159") -> Just (ScenarioStep "02195")
             Just (ScenarioStep "02195") -> Just (ScenarioStep "02236")

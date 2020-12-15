@@ -26,11 +26,14 @@ type AgendaRunner env
     , HasSet EnemyId env ()
     , HasSet EnemyId env LocationId
     , HasSet EnemyId env Trait
+    , HasSet EnemyId env ([Trait], LocationId)
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env EnemyId
+    , HasSet InvestigatorId env LocationName
     , HasSet LocationId env ()
     , HasSet LocationId env [Trait]
     , HasSet UnengagedEnemyId env ()
     , HasSet EnemyId env LocationMatcher
+    , HasSet Trait env EnemyId
     )
 

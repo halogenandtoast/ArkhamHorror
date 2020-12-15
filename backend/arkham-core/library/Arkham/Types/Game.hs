@@ -607,6 +607,9 @@ instance HasCount TreacheryCount (Game queue) (LocationId, CardCode) where
       , i `member` treacheries'
       ]
 
+instance HasCount ClueCount (Game queue) AssetId where
+  getCount = getCount <=< getAsset
+
 instance HasCount DoomCount (Game queue) EnemyId where
   getCount = getCount <=< getEnemy
 
@@ -657,9 +660,12 @@ instance HasCount SpendableClueCount (Game queue) InvestigatorId where
 
 instance HasCount SpendableClueCount (Game queue) () where
   getCount _ =
-    (SpendableClueCount . sum)
-      . traverse getInvestigatorSpendableClueCount
-      <$> view investigators
+    SpendableClueCount
+      . sum
+      . map unSpendableClueCount
+      <$> (traverse getInvestigatorSpendableClueCount
+          =<< (toList <$> view investigators)
+          )
 
 instance HasCount ResourceCount (Game queue) InvestigatorId where
   getCount = getCount <=< getInvestigator
@@ -680,7 +686,7 @@ instance HasCount AssetCount (Game queue) (InvestigatorId, [Trait]) where
     assetMatcher g aid = any (`member` (getTraits $ getAsset aid g)) traits
 
 instance HasCount EnemyCount (Game queue) [Trait] where
-  getCount traits = do
+  getCount traits =
     EnemyCount . length . filterMap enemyMatcher <$> view enemies
     where enemyMatcher enemy = any (`member` getTraits enemy) traits
 
@@ -796,6 +802,9 @@ instance HasList InPlayCard (Game queue) InvestigatorId where
         (CardId . unAssetId $ toId asset)
       )
       assets'
+
+instance HasList Token (Game queue) () where
+  getList _ = getList =<< view chaosBag
 
 instance HasList HandCard (Game queue) InvestigatorId where
   getList = getList <=< getInvestigator

@@ -26,6 +26,7 @@ data Attrs = Attrs
   , assetUses :: Uses
   , assetExhausted :: Bool
   , assetDoom :: Int
+  , assetClues :: Int
   , assetHorror :: Maybe Int
   , assetCanLeavePlayByNormalMeans :: Bool
   , assetIsStory :: Bool
@@ -72,6 +73,7 @@ baseAttrs aid cardCode =
       , assetUses = NoUses
       , assetExhausted = False
       , assetDoom = 0
+      , assetClues = 0
       , assetHorror = Nothing
       , assetCanLeavePlayByNormalMeans = True
       , assetIsStory = False
@@ -95,6 +97,9 @@ ownedBy Attrs {..} = (== assetInvestigator) . Just
 
 doomL :: Lens' Attrs Int
 doomL = lens assetDoom $ \m x -> m { assetDoom = x }
+
+cluesL :: Lens' Attrs Int
+cluesL = lens assetClues $ \m x -> m { assetClues = x }
 
 exhaustedL :: Lens' Attrs Bool
 exhaustedL = lens assetExhausted $ \m x -> m { assetExhausted = x }
@@ -154,8 +159,11 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
           else pure $ a & exhaustedL .~ False
       Nothing -> pure $ a & exhaustedL .~ False
     RemoveAllDoom -> pure $ a & doomL .~ 0
-    CheckDefeated -> a
-      <$ when (defeated a) (unshiftMessages $ resolve $ AssetDefeated assetId)
+    PlaceClues target n | isTarget a target -> pure $ a & cluesL +~ n
+    RemoveClues target n | isTarget a target ->
+      pure $ a & cluesL %~ max 0 . subtract n
+    CheckDefeated ->
+      a <$ when (defeated a) (unshiftMessages $ resolve $ AssetDefeated assetId)
     AssetDamage aid _ health sanity | aid == assetId ->
       pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
     InvestigatorEliminated iid | assetInvestigator == Just iid ->

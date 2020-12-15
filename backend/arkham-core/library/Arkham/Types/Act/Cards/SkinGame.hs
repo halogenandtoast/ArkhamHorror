@@ -1,6 +1,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Act.Cards.SkinGame
-  ( SkinGame
+  ( SkinGame(..)
   , skinGame
   )
 where

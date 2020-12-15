@@ -13,7 +13,7 @@ newtype UncoveringTheConspiracy = UncoveringTheConspiracy Attrs
 
 uncoveringTheConspiracy :: UncoveringTheConspiracy
 uncoveringTheConspiracy = UncoveringTheConspiracy
-  $ baseAttrs "01123" "Uncovering the Conspiracy" "Act 1a"
+  $ baseAttrs "01123" "Uncovering the Conspiracy" (Act 1 A)
 
 instance ActionRunner env => HasActions env UncoveringTheConspiracy where
   getActions iid NonFast (UncoveringTheConspiracy x@Attrs {..}) = do
@@ -36,15 +36,15 @@ instance ActionRunner env => HasActions env UncoveringTheConspiracy where
 
 instance ActRunner env => RunMessage env UncoveringTheConspiracy where
   runMessage msg a@(UncoveringTheConspiracy attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && actSequence == "Act 1a" -> do
+    AdvanceAct aid | aid == actId && actSequence == Act 1 A -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage (chooseOne leadInvestigatorId [AdvanceAct aid])
       pure
         $ UncoveringTheConspiracy
         $ attrs
-        & (sequenceL .~ "Act 1b")
+        & (sequenceL .~ Act 1 B)
         & (flippedL .~ True)
-    AdvanceAct aid | aid == actId && actSequence == "Act 1b" -> do
+    AdvanceAct aid | aid == actId && actSequence == Act 1 B ->
       a <$ unshiftMessage (Resolution 1)
     AddToVictory _ -> do
       victoryDisplay <- HashSet.map unVictoryDisplayCardCode <$> getSet ()

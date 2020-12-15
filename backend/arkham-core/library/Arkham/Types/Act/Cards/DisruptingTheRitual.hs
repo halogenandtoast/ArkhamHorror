@@ -12,7 +12,7 @@ newtype DisruptingTheRitual = DisruptingTheRitual Attrs
 
 disruptingTheRitual :: DisruptingTheRitual
 disruptingTheRitual =
-  DisruptingTheRitual $ (baseAttrs "01148" "Disrupting the Ritual" "Act 3a")
+  DisruptingTheRitual $ (baseAttrs "01148" "Disrupting the Ritual" (Act 3 A))
     { actClues = Just 0
     }
 
@@ -33,41 +33,41 @@ instance ActionRunner env => HasActions env DisruptingTheRitual where
 
 instance ActRunner env => RunMessage env DisruptingTheRitual where
   runMessage msg a@(DisruptingTheRitual attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && actSequence == "Act 3a" -> do
+    AdvanceAct aid | aid == actId && actSequence == Act 3 A -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage (chooseOne leadInvestigatorId [AdvanceAct actId])
       pure
         $ DisruptingTheRitual
         $ attrs
-        & (sequenceL .~ "Act 3b")
+        & (sequenceL .~ Act 3 B)
         & (flippedL .~ True)
-    AdvanceAct aid | aid == actId && actSequence == "Act 3a" ->
+    AdvanceAct aid | aid == actId && actSequence == Act 3 A ->
       a <$ unshiftMessage (Resolution 1)
     PlaceClues (ActTarget aid) n | aid == actId -> do
       requiredClues <- getPlayerCountValue (PerPlayer 2)
       let totalClues = n + fromJustNote "Must be set" actClues
       when (totalClues >= requiredClues) (unshiftMessage (AdvanceAct actId))
       pure $ DisruptingTheRitual (attrs { actClues = Just totalClues })
-    UseCardAbility iid (ActSource aid) _ 1 | aid == actId -> do
+    UseCardAbility iid (ActSource aid) _ 1 | aid == actId ->
       a <$ unshiftMessage
-        (chooseOne
+      (chooseOne
+        iid
+        [ BeginSkillTest
           iid
-          [ BeginSkillTest
-            iid
-            (ActSource actId)
-            (ActTarget actId)
-            Nothing
-            SkillWillpower
-            3
-          , BeginSkillTest
-            iid
-            (ActSource actId)
-            (ActTarget actId)
-            Nothing
-            SkillAgility
-            3
-          ]
-        )
+          (ActSource actId)
+          (ActTarget actId)
+          Nothing
+          SkillWillpower
+          3
+        , BeginSkillTest
+          iid
+          (ActSource actId)
+          (ActTarget actId)
+          Nothing
+          SkillAgility
+          3
+        ]
+      )
     PassedSkillTest _ _ source _ _ | isSource attrs source ->
       a <$ unshiftMessage (PlaceClues (toTarget attrs) 1)
     _ -> DisruptingTheRitual <$> runMessage msg attrs

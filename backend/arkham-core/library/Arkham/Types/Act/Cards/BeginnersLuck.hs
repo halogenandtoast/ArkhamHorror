@@ -17,7 +17,7 @@ newtype BeginnersLuck = BeginnersLuck Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 beginnersLuck :: BeginnersLuck
-beginnersLuck = BeginnersLuck $ baseAttrs "02066" "Beginner's Luck" "Act 1a"
+beginnersLuck = BeginnersLuck $ baseAttrs "02066" "Beginner's Luck" (Act 1 A)
 
 ability :: Window -> Attrs -> Ability
 ability window attrs = (mkAbility (toSource attrs) 1 (ReactionAbility window))
@@ -50,7 +50,7 @@ instance
         [ SpendClues requiredClues investigatorIds
         , chooseOne leadInvestigatorId [AdvanceAct aid]
         ]
-      pure $ BeginnersLuck $ attrs & sequenceL .~ "Act 1b" & flippedL .~ True
+      pure $ BeginnersLuck $ attrs & sequenceL .~ Act 1 B & flippedL .~ True
     AdvanceAct aid | aid == actId && actFlipped -> a <$ unshiftMessages
       [ PlaceLocation "02074"
       , DiscardEncounterUntilFirst

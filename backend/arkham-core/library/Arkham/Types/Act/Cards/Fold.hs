@@ -17,7 +17,7 @@ newtype Fold = Fold Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 fold :: Fold
-fold = Fold $ baseAttrs "02069" "Fold" "Act 3a"
+fold = Fold $ baseAttrs "02069" "Fold" (Act 3 A)
 
 instance
   ( HasCount SpendableClueCount env InvestigatorId
@@ -70,7 +70,7 @@ instance ActRunner env => RunMessage env Fold where
         (SpendClues requiredClueCount investigatorIds
         : [ Ask iid $ ChooseOne [AdvanceAct aid] | iid <- investigatorIds ]
         )
-      pure $ Fold $ attrs & sequenceL .~ "Act 3b" & flippedL .~ True
+      pure $ Fold $ attrs & sequenceL .~ Act 3 B & flippedL .~ True
     AdvanceAct aid | aid == actId && actFlipped -> do
       maid <- fmap unStoryAssetId <$> getId (CardCode "02079")
       a <$ case maid of
@@ -79,7 +79,7 @@ instance ActRunner env => RunMessage env Fold where
           miid <- fmap unOwnerId <$> getId assetId
           unshiftMessage (maybe (Resolution 1) (const (Resolution 2)) miid)
     UseCardAbility iid (ProxySource _ source) _ 1
-      | isSource attrs source && actSequence == "Act 3a" -> do
+      | isSource attrs source && actSequence == Act 3 A -> do
         maid <- fmap unStoryAssetId <$> getId (CardCode "02079")
         case maid of
           Nothing -> error "this ability should not be able to be used"
@@ -93,7 +93,7 @@ instance ActRunner env => RunMessage env Fold where
               3
             )
     PassedSkillTest iid _ source _ _
-      | isSource attrs source && actSequence == "Act 3a" -> do
+      | isSource attrs source && actSequence == Act 3 A -> do
         maid <- fmap unStoryAssetId <$> getId (CardCode "02079")
         case maid of
           Nothing -> error "this ability should not be able to be used"

@@ -1,13 +1,19 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Act.Attrs where
+module Arkham.Types.Act.Attrs
+  ( module Arkham.Types.Act.Attrs
+  , module X
+  )
+where
 
 import Arkham.Import
+
+import Arkham.Types.Act.Sequence as X
 
 data Attrs = Attrs
   { actCanAdvance :: Bool
   , actId         :: ActId
   , actName       :: Text
-  , actSequence   :: Text
+  , actSequence   :: ActSequence
   , actFlipped :: Bool
   , actClues :: Maybe Int
   , actTreacheries :: HashSet TreacheryId
@@ -34,7 +40,7 @@ instance Entity Attrs where
 canAdvanceL :: Lens' Attrs Bool
 canAdvanceL = lens actCanAdvance $ \m x -> m { actCanAdvance = x }
 
-sequenceL :: Lens' Attrs Text
+sequenceL :: Lens' Attrs ActSequence
 sequenceL = lens actSequence $ \m x -> m { actSequence = x }
 
 flippedL :: Lens' Attrs Bool
@@ -43,7 +49,7 @@ flippedL = lens actFlipped $ \m x -> m { actFlipped = x }
 treacheriesL :: Lens' Attrs (HashSet TreacheryId)
 treacheriesL = lens actTreacheries $ \m x -> m { actTreacheries = x }
 
-baseAttrs :: ActId -> Text -> Text -> Attrs
+baseAttrs :: ActId -> Text -> ActSequence -> Attrs
 baseAttrs aid name seq' = Attrs
   { actCanAdvance = False
   , actId = aid

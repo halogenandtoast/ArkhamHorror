@@ -13,22 +13,22 @@ newtype IntoTheDarkness = IntoTheDarkness Attrs
 
 intoTheDarkness :: IntoTheDarkness
 intoTheDarkness =
-  IntoTheDarkness $ baseAttrs "01147" "Into the Darkness" "Act 2a"
+  IntoTheDarkness $ baseAttrs "01147" "Into the Darkness" (Act 2 A)
 
 instance HasActions env IntoTheDarkness where
   getActions i window (IntoTheDarkness x) = getActions i window x
 
 instance ActRunner env => RunMessage env IntoTheDarkness where
   runMessage msg a@(IntoTheDarkness attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && actSequence == "Act 2a" -> do
+    AdvanceAct aid | aid == actId && actSequence == Act 2 A -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage (chooseOne leadInvestigatorId [AdvanceAct aid])
       pure
         $ IntoTheDarkness
         $ attrs
-        & (sequenceL .~ "Act 2b")
+        & (sequenceL .~ Act 2 B)
         & (flippedL .~ True)
-    AdvanceAct aid | aid == actId && actSequence == "Act 2b" -> do
+    AdvanceAct aid | aid == actId && actSequence == Act 2 B -> do
       playerCount <- getPlayerCount
       if playerCount > 3
         then a <$ unshiftMessages

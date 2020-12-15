@@ -11,7 +11,7 @@ newtype CampusSafety = CampusSafety Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 campusSafety :: CampusSafety
-campusSafety = CampusSafety $ baseAttrs "02047" "CampusSafety" "Act 3a"
+campusSafety = CampusSafety $ baseAttrs "02047" "CampusSafety" (Act 3 A)
 
 instance HasActions env CampusSafety where
   getActions i window (CampusSafety x) = getActions i window x
@@ -20,7 +20,7 @@ instance ActRunner env => RunMessage env CampusSafety where
   runMessage msg (CampusSafety attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && not actFlipped -> do
       unshiftMessage (AdvanceAct aid)
-      pure $ CampusSafety $ attrs & sequenceL .~ "Act 1b" & flippedL .~ True
+      pure $ CampusSafety $ attrs & sequenceL .~ Act 3 B & flippedL .~ True
     AdvanceAct aid | aid == actId && actFlipped -> do
       alchemyLabsInPlay <- elem (LocationName "Alchemy Labs") <$> getList ()
       agendaStep <- asks $ unAgendaStep . getStep
@@ -39,7 +39,7 @@ instance ActRunner env => RunMessage env CampusSafety where
            ]
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage $ chooseOne leadInvestigatorId [NextAct aid "02047"]
-      pure $ CampusSafety $ attrs & sequenceL .~ "Act 1b" & flippedL .~ True
+      pure $ CampusSafety $ attrs & sequenceL .~ Act 3 B & flippedL .~ True
     PrePlayerWindow -> do
       totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 3)

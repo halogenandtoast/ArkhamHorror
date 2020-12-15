@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b63d781e98a1bcc5865eeb48e010a5bfee701b78b0eda9a7d17fdb16a95e96bb
+-- hash: f8bfc8c40d283ae347979afb41dd8cdda9894fecf5fbda10ce20263aaa6b94ec
 
 name:           arkham-core
 version:        0.0.0
@@ -40,6 +40,7 @@ library
       Arkham.Types.Act.Cards.WhatHaveYouDone
       Arkham.Types.Act.Helpers
       Arkham.Types.Act.Runner
+      Arkham.Types.Act.Sequence
       Arkham.Types.ActId
       Arkham.Types.Action
       Arkham.Types.Agenda
@@ -403,6 +404,7 @@ library
       Arkham.Types.Location.Cards.BrackishWaters
       Arkham.Types.Location.Cards.Broadmoor
       Arkham.Types.Location.Cards.Cellar
+      Arkham.Types.Location.Cards.CloverClubLounge
       Arkham.Types.Location.Cards.CursedShores
       Arkham.Types.Location.Cards.DeepBelowYourHouse
       Arkham.Types.Location.Cards.Dormitories

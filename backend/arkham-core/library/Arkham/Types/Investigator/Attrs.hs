@@ -1594,11 +1594,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure $ a & cluesL .~ 0
   RemoveDiscardFromGame iid | iid == investigatorId -> pure $ a & discardL .~ []
   After (FailedSkillTest iid _ _ (InvestigatorTarget iid') n)
-    | iid == iid' && iid == investigatorId -> do
-      a <$ unshiftMessage (CheckWindow iid [AfterFailSkillTest You n])
+    | iid == iid' && iid == investigatorId -> a
+    <$ unshiftMessage (CheckWindow iid [AfterFailSkillTest You n])
   After (PassedSkillTest iid _ source (InvestigatorTarget iid') n)
-    | iid == iid' && iid == investigatorId -> do
-      a <$ unshiftMessage (CheckWindow iid [AfterPassSkillTest source You n])
+    | iid == iid' && iid == investigatorId -> a
+    <$ unshiftMessage (CheckWindow iid [AfterPassSkillTest source You n])
   PlayerWindow iid additionalActions | iid == investigatorId -> do
     actions <- getActions iid NonFast ()
     fastActions <- getActions iid (DuringTurn You) ()

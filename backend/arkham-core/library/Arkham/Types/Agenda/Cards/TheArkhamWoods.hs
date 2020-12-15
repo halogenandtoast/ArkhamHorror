@@ -44,10 +44,9 @@ instance AgendaRunner env => RunMessage env TheArkhamWoods where
     RequestedEncounterCard (AgendaSource aid) mcard | aid == agendaId ->
       case mcard of
         Nothing -> a <$ unshiftMessage (NextAgenda aid "01144")
-        Just card -> do
-          a <$ unshiftMessages
-            [ SpawnEnemyAt (EncounterCard card) "01149"
-            , PlaceDoom (CardIdTarget $ getCardId card) 1
-            , NextAgenda aid "01144"
-            ]
+        Just card -> a <$ unshiftMessages
+          [ SpawnEnemyAt (EncounterCard card) "01149"
+          , PlaceDoom (CardIdTarget $ getCardId card) 1
+          , NextAgenda aid "01144"
+          ]
     _ -> TheArkhamWoods <$> runMessage msg attrs

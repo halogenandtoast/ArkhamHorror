@@ -655,6 +655,12 @@ instance HasCount ClueCount (Game queue) InvestigatorId where
 instance HasCount SpendableClueCount (Game queue) InvestigatorId where
   getCount = getInvestigatorSpendableClueCount <=< getInvestigator
 
+instance HasCount SpendableClueCount (Game queue) () where
+  getCount _ =
+    (SpendableClueCount . sum)
+      . traverse getInvestigatorSpendableClueCount
+      <$> view investigators
+
 instance HasCount ResourceCount (Game queue) InvestigatorId where
   getCount = getCount <=< getInvestigator
 

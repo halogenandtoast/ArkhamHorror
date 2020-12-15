@@ -25,6 +25,10 @@ data Act
   | AfterHours' AfterHours
   | RicesWhereabouts' RicesWhereabouts
   | CampusSafety' CampusSafety
+  | BeginnersLuck' BeginnersLuck
+  | SkinGame' SkinGame
+  | AllIn' AllIn
+  | Fold' Fold
   | MysteriousGateway' MysteriousGateway
   | FindingLadyEsprit' FindingLadyEsprit
   | HuntingTheRougarou' HuntingTheRougarou
@@ -62,6 +66,10 @@ allActs = mapFromList $ map
   , AfterHours' afterHours
   , RicesWhereabouts' ricesWhereabouts
   , CampusSafety' campusSafety
+  , BeginnersLuck' beginnersLuck
+  , SkinGame' skinGame
+  , AllIn' allIn
+  , Fold' fold
   , MysteriousGateway' mysteriousGateway
   , FindingLadyEsprit' findingLadyEsprit
   , HuntingTheRougarou' huntingTheRougarou
@@ -79,6 +87,10 @@ actAttrs = \case
   AfterHours' attrs -> coerce attrs
   RicesWhereabouts' attrs -> coerce attrs
   CampusSafety' attrs -> coerce attrs
+  BeginnersLuck' attrs -> coerce attrs
+  SkinGame' attrs -> coerce attrs
+  AllIn' attrs -> coerce attrs
+  Fold' attrs -> coerce attrs
   MysteriousGateway' attrs -> coerce attrs
   FindingLadyEsprit' attrs -> coerce attrs
   HuntingTheRougarou' attrs -> coerce attrs

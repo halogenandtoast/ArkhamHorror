@@ -60,6 +60,9 @@ instance
 
 instance ActRunner env => RunMessage env Fold where
   runMessage msg a@(Fold attrs@Attrs {..}) = case msg of
+    InvestigatorResigned _ -> do
+      investigatorIds <- getSet @InScenarioInvestigatorId ()
+      a <$ when (null investigatorIds) (unshiftMessage $ AdvanceAct actId)
     AdvanceAct aid | aid == actId && not actFlipped -> do
       investigatorIds <- getInvestigatorIds
       requiredClueCount <- getPlayerCountValue (PerPlayer 2)

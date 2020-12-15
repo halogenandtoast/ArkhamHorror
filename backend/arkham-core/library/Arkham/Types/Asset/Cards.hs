@@ -66,6 +66,7 @@ import Arkham.Types.Asset.Cards.MedicalTexts as X
 import Arkham.Types.Asset.Cards.MonstrousTransformation as X
 import Arkham.Types.Asset.Cards.OccultLexicon as X
 import Arkham.Types.Asset.Cards.OldBookOfLore as X
+import Arkham.Types.Asset.Cards.PeterClover as X
 import Arkham.Types.Asset.Cards.PeterSylvestre as X
 import Arkham.Types.Asset.Cards.PhysicalTraining as X
 import Arkham.Types.Asset.Cards.PhysicalTraining2 as X

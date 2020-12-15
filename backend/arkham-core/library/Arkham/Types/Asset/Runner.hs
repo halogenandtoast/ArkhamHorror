@@ -32,6 +32,7 @@ type AssetRunner env
     , HasSet ConnectedLocationId env LocationId
     , HasSet EnemyId env InvestigatorId
     , HasSet EnemyId env LocationId
+    , HasSet EnemyId env ([Trait], LocationId)
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env LocationId
     , HasSet Trait env AssetId

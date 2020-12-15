@@ -841,7 +841,17 @@ instance HasSet HandCardId (Game queue) (InvestigatorId, PlayerCardType) where
       <$> getInvestigator iid
 
 instance HasSet Keyword (Game queue) EnemyId where
-  getSet eid = getKeywords <$> getEnemy eid
+  getSet eid = do
+    modifiers' <-
+      map modifierType <$> getModifiersFor GameSource (EnemyTarget eid) ()
+    let
+      modifierKeywords = setFromList $ mapMaybe
+        (\case
+          AddKeyword keyword -> Just keyword
+          _ -> Nothing
+        )
+        modifiers'
+    union modifierKeywords . getKeywords <$> getEnemy eid
 
 instance HasSet Trait (Game queue) LocationId where
   getSet lid = getTraits <$> getLocation lid
@@ -1441,12 +1451,11 @@ instance HasSet EnemyId (Game queue) ([Trait], LocationId) where
 
 instance HasSet AloofEnemyId (Game queue) LocationId where
   getSet lid = do
-    enemyIds <- getSet lid
-    HashSet.map AloofEnemyId . keysSet . enemies' enemyIds <$> ask
-   where
-    enemies' enemyIds g = HashMap.filterWithKey
-      (\k v -> k `elem` enemyIds && Keyword.Aloof `elem` getKeywords v)
-      (g ^. enemies)
+    enemyIds <- getSetList @EnemyId lid
+    enemiesWithKeywords <- traverse (traverseToSnd getSetList) enemyIds
+    pure $ setFromList $ map (AloofEnemyId . fst) $ filter
+      (elem Keyword.Aloof . snd)
+      enemiesWithKeywords
 
 instance HasSet InvestigatorId (Game queue) () where
   getSet _ = keysSet <$> view investigators

@@ -11,6 +11,7 @@ import Arkham.Import
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Cards
 import Arkham.Types.Agenda.Runner
+import Arkham.Types.Trait (Trait)
 import Data.Coerce
 
 lookupAgenda :: AgendaId -> Agenda
@@ -32,6 +33,9 @@ allAgendas = mapFromList $ map
   , QuietHalls' quietHalls
   , DeadOfNight' deadOfNight
   , TheBeastUnleashed' theBeastUnleashed
+  , TheCloverClub' theCloverClub
+  , UndergroundMuscle' undergroundMuscle
+  , ChaosInTheCloverClub' chaosInTheCloverClub
   , ReturnToPredatorOrPrey' returnToPredatorOrPrey
   , ACreatureOfTheBayou' aCreatureOfTheBayou
   , TheRougarouFeeds' theRougarouFeeds
@@ -56,6 +60,9 @@ data Agenda
   | QuietHalls' QuietHalls
   | DeadOfNight' DeadOfNight
   | TheBeastUnleashed' TheBeastUnleashed
+  | TheCloverClub' TheCloverClub
+  | UndergroundMuscle' UndergroundMuscle
+  | ChaosInTheCloverClub' ChaosInTheCloverClub
   | ReturnToPredatorOrPrey' ReturnToPredatorOrPrey
   | ACreatureOfTheBayou' ACreatureOfTheBayou
   | TheRougarouFeeds' TheRougarouFeeds
@@ -66,7 +73,7 @@ data Agenda
 
 deriving anyclass instance ActionRunner env => HasActions env Agenda
 deriving anyclass instance AgendaRunner env => RunMessage env Agenda
-deriving anyclass instance HasModifiersFor env Agenda
+deriving anyclass instance HasSet Trait env EnemyId => HasModifiersFor env Agenda
 
 instance Entity Agenda where
   type EntityId Agenda = AgendaId
@@ -116,6 +123,9 @@ agendaAttrs = \case
   QuietHalls' attrs -> coerce attrs
   DeadOfNight' attrs -> coerce attrs
   TheBeastUnleashed' attrs -> coerce attrs
+  TheCloverClub' attrs -> coerce attrs
+  UndergroundMuscle' attrs -> coerce attrs
+  ChaosInTheCloverClub' attrs -> coerce attrs
   ReturnToPredatorOrPrey' attrs -> coerce attrs
   ACreatureOfTheBayou' attrs -> coerce attrs
   TheRougarouFeeds' attrs -> coerce attrs

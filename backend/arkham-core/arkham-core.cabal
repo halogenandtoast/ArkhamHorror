@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c08cf6acb427d15db1b728f96d9d131d6c3b45b01446e6893bbf25f905f47152
+-- hash: 9db3c35283ec9afea8f72fa90dcea830e67fdbaeffd4bd5c7e95e87c203c5c81
 
 name:           arkham-core
 version:        0.0.0
@@ -42,6 +42,7 @@ library
       Arkham.Types.Agenda.Attrs
       Arkham.Types.Agenda.Cards
       Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
+      Arkham.Types.Agenda.Cards.ChaosInTheCloverClub
       Arkham.Types.Agenda.Cards.DeadOfNight
       Arkham.Types.Agenda.Cards.PredatorOrPrey
       Arkham.Types.Agenda.Cards.QuietHalls
@@ -49,11 +50,13 @@ library
       Arkham.Types.Agenda.Cards.RiseOfTheGhouls
       Arkham.Types.Agenda.Cards.TheArkhamWoods
       Arkham.Types.Agenda.Cards.TheBeastUnleashed
+      Arkham.Types.Agenda.Cards.TheCloverClub
       Arkham.Types.Agenda.Cards.TheCurseSpreads
       Arkham.Types.Agenda.Cards.TheRitualBegins
       Arkham.Types.Agenda.Cards.TheRougarouFeeds
       Arkham.Types.Agenda.Cards.TheyreGettingOut
       Arkham.Types.Agenda.Cards.TimeIsRunningShort
+      Arkham.Types.Agenda.Cards.UndergroundMuscle
       Arkham.Types.Agenda.Cards.VengeanceAwaits
       Arkham.Types.Agenda.Cards.WhatsGoingOn
       Arkham.Types.Agenda.Helpers

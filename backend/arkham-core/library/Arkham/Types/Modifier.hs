@@ -11,6 +11,7 @@ import Arkham.Prelude
 import Arkham.Json
 import Arkham.Types.Action
 import Arkham.Types.Card
+import Arkham.Types.Keyword
 import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Token
@@ -35,6 +36,7 @@ data ModifierType
   | ActionSkillModifier Action SkillType Int
   | ActionsAreFree
   | AdditionalActions Int
+  | AddKeyword Keyword
   | AnySkillValue Int
   | BaseSkillOf SkillType Int
   | Blank

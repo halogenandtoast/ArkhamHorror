@@ -16,6 +16,7 @@ data Window
   | AfterDiscoveringClues Who Where -- name conflict resolution
   | AfterDrawCard Who CardId
   | AfterEndTurn Who
+  | AfterEnemyDefeated Who
   | AfterEnemyEngageInvestigator Who EnemyId
   | AfterEnemyEvaded Who EnemyId
   | AfterFailSkillTest Who Int

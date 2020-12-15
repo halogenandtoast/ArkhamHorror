@@ -271,6 +271,8 @@ allPlayerCards = HashMap.fromList
   , ("02059", alchemicalConcoction)
   , ("02060", jazzMulligan)
   , ("02061", professorWarrenRice)
+  , ("02079", peterClover)
+  , ("02080", drFrancisMorgan)
   , ("02147", bandolier)
   , ("02185", keenEye3)
   , ("02185", springfieldM19034)
@@ -1093,6 +1095,12 @@ professorWarrenRice cardId =
 peterClover :: CardId -> PlayerCard
 peterClover cardId = (asset cardId "02079" "Peter Clover" 0 Neutral)
   { pcTraits = setFromList [Humanoid, Criminal]
+  }
+
+drFrancisMorgan :: CardId -> PlayerCard
+drFrancisMorgan cardId = (asset cardId "02080 " "Dr. Francis Morgan" 3 Neutral)
+  { pcSkills = [SkillCombat, SkillWild]
+  , pcTraits = setFromList [Ally, Miskatonic]
   }
 
 brotherXavier1 :: CardId -> PlayerCard

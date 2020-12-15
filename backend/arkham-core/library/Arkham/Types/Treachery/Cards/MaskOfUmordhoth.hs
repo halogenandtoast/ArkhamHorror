@@ -16,9 +16,14 @@ newtype MaskOfUmordhoth = MaskOfUmordhoth Attrs
 maskOfUmordhoth :: TreacheryId -> a -> MaskOfUmordhoth
 maskOfUmordhoth uuid _ = MaskOfUmordhoth $ baseAttrs uuid "50043"
 
-instance HasModifiersFor env MaskOfUmordhoth where
-  getModifiersFor _ (EnemyTarget eid) (MaskOfUmordhoth attrs) =
-    pure $ toModifiers attrs [ HealthModifier 2 | treacheryOnEnemy eid attrs ]
+instance HasSet UniqueEnemyId env () => HasModifiersFor env MaskOfUmordhoth where
+  getModifiersFor _ (EnemyTarget eid) (MaskOfUmordhoth attrs)
+    | treacheryOnEnemy eid attrs = do
+      uniqueEnemyIds <- map unUniqueEnemyId <$> getSetList ()
+      let
+        keyword =
+          if eid `elem` uniqueEnemyIds then Keyword.Retaliate else Keyword.Aloof
+      pure $ toModifiers attrs [HealthModifier 2, AddKeyword keyword]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env MaskOfUmordhoth where
@@ -42,20 +47,4 @@ instance TreacheryRunner env => RunMessage env MaskOfUmordhoth where
             [ AttachTreachery treacheryId (EnemyTarget eid) | eid <- eids ]
           )
       MaskOfUmordhoth <$> runMessage msg (attrs & resolved .~ False)
-    AttachTreachery tid target@(EnemyTarget eid) | tid == treacheryId -> do
-      uniqueEnemyIds <- map unUniqueEnemyId <$> getSetList ()
-      let
-        keyword =
-          if eid `elem` uniqueEnemyIds then Keyword.Retaliate else Keyword.Aloof
-      unshiftMessage (AddKeywords target [keyword])
-      MaskOfUmordhoth <$> runMessage msg attrs
-    Discard (TreacheryTarget tid) | tid == treacheryId ->
-      withTreacheryEnemy attrs $ \eid -> do
-        uniqueEnemyIds <- map unUniqueEnemyId <$> getSetList ()
-        let
-          keyword = if eid `elem` uniqueEnemyIds
-            then Keyword.Retaliate
-            else Keyword.Aloof
-        unshiftMessage (RemoveKeywords (EnemyTarget eid) [keyword])
-        MaskOfUmordhoth <$> runMessage msg attrs
     _ -> MaskOfUmordhoth <$> runMessage msg attrs

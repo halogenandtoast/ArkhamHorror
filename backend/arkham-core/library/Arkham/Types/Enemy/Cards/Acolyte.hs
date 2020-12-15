@@ -23,7 +23,7 @@ instance HasModifiersFor env Acolyte where
 instance ActionRunner env => HasActions env Acolyte where
   getActions i window (Acolyte attrs) = getActions i window attrs
 
-instance (EnemyRunner env) => RunMessage env Acolyte where
+instance EnemyRunner env => RunMessage env Acolyte where
   runMessage msg e@(Acolyte attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAtEmptyLocation iid eid

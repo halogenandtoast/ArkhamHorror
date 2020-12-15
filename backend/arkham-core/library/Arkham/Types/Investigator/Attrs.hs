@@ -782,18 +782,21 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         | eid <- setToList fightableEnemyIds
         ]
       )
-  ChooseFightEnemyNotEngagedWithInvestigator iid source skillType isAction | iid == investigatorId -> do
-    enemyIds <- getSet investigatorLocation
-    aloofEnemyIds <- HashSet.map unAloofEnemyId <$> getSet investigatorLocation
-    let
-      fightableEnemyIds =
-        enemyIds `difference` (investigatorEngagedEnemies  `union` aloofEnemyIds)
-    a <$ unshiftMessage
-      (Ask iid $ ChooseOne
-        [ FightEnemy iid eid source skillType isAction
-        | eid <- setToList fightableEnemyIds
-        ]
-      )
+  ChooseFightEnemyNotEngagedWithInvestigator iid source skillType isAction
+    | iid == investigatorId -> do
+      enemyIds <- getSet investigatorLocation
+      aloofEnemyIds <- HashSet.map unAloofEnemyId
+        <$> getSet investigatorLocation
+      let
+        fightableEnemyIds =
+          enemyIds
+            `difference` (investigatorEngagedEnemies `union` aloofEnemyIds)
+      a <$ unshiftMessage
+        (Ask iid $ ChooseOne
+          [ FightEnemy iid eid source skillType isAction
+          | eid <- setToList fightableEnemyIds
+          ]
+        )
   EngageEnemy iid eid True | iid == investigatorId -> a <$ unshiftMessages
     [TakeAction iid 1 (Just Action.Engage), EngageEnemy iid eid False]
   EngageEnemy iid eid False | iid == investigatorId ->
@@ -975,10 +978,13 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
           (DiscoverCluesAtLocation iid lid modifiedCluesToDiscover)
       else pure a
   GainClues iid n | iid == investigatorId -> do
+    unshiftMessage (After (GainClues iid n))
     pure $ a & cluesL +~ n
-  DiscoverClues iid lid n | iid == investigatorId -> do
+  DiscoverClues iid lid n | iid == investigatorId ->
     a <$ unshiftMessage (AfterDiscoverClues iid lid n)
-  AfterDiscoverClues iid _ n | iid == investigatorId -> pure $ a & cluesL +~ n
+  AfterDiscoverClues iid _ n | iid == investigatorId -> do
+    unshiftMessage (After (GainClues iid n))
+    pure $ a & cluesL +~ n
   PayCardCost iid cardId | iid == investigatorId -> do
     let
       card =

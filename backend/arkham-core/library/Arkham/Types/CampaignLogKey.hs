@@ -24,6 +24,7 @@ data CampaignLogKey
   | DrFrancisMorganWasKidnapped
   | TheInvestigatorsRescuedDrFrancisMorgan
   | NaomiHasTheInvestigatorsBacks
+  | DrHenryArmitageWasKidnapped
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse

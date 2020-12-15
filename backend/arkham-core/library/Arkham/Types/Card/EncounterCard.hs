@@ -113,6 +113,7 @@ allEncounterCards = HashMap.fromList
   , ("01182", dreamsOfRlyeh)
   , ("02058", theExperiment)
   , ("02060", jazzMulligan)
+  , ("02078", cloverClubPitBoss)
   , ("02081", somethingInTheDrinks)
   , ("02082", arousingSuspicions)
   , ("02083", visionsOfFuturesPast)
@@ -387,6 +388,13 @@ theExperiment cardId = (enemy cardId "02058" "The Experiment")
 jazzMulligan :: CardId -> EncounterCard
 jazzMulligan cardId = (asset cardId "02060" "\"Jazz\" Mulligan")
   { ecTraits = setFromList [Ally, Miskatonic]
+  }
+
+cloverClubPitBoss :: CardId -> EncounterCard
+cloverClubPitBoss cardId = (enemy cardId "02078" "Clover Club Pit Boxx")
+  { ecTraits = setFromList [Criminal, Elite]
+  , ecKeywords = setFromList [Keyword.Hunter]
+  , ecVictoryPoints = Just 1
   }
 
 somethingInTheDrinks :: CardId -> EncounterCard

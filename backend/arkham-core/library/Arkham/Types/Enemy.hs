@@ -46,6 +46,7 @@ data Enemy
   | GoatSpawn' GoatSpawn
   | YoungDeepOne' YoungDeepOne
   | TheExperiment' TheExperiment
+  | CloverClubPitBoss' CloverClubPitBoss
   | Thrall' Thrall
   | WizardOfYogSothoth' WizardOfYogSothoth
   | Whippoorwill' Whippoorwill
@@ -213,6 +214,7 @@ allEnemies = mapFromList
   , ("01180", GoatSpawn' . goatSpawn)
   , ("01181", YoungDeepOne' . youngDeepOne)
   , ("02058", TheExperiment' . theExperiment)
+  , ("02078", CloverClubPitBoss' . cloverClubPitBoss)
   , ("02086", Thrall' . thrall)
   , ("02087", WizardOfYogSothoth' . wizardOfYogSothoth)
   , ("02090", Whippoorwill' . whippoorwill)
@@ -290,6 +292,7 @@ enemyAttrs = \case
   GoatSpawn' attrs -> coerce attrs
   YoungDeepOne' attrs -> coerce attrs
   TheExperiment' attrs -> coerce attrs
+  CloverClubPitBoss' attrs -> coerce attrs
   Thrall' attrs -> coerce attrs
   WizardOfYogSothoth' attrs -> coerce attrs
   Whippoorwill' attrs -> coerce attrs

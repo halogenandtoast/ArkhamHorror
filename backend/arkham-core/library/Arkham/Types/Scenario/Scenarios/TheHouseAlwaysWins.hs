@@ -141,28 +141,29 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
             )
           <$> getSet ()
       xp <- getXp
-      s <$ unshiftMessage
-        (chooseOne
-          leadInvestigatorId
-          [ Run
-            $ [ Continue "Continue"
-              , FlavorText
-                Nothing
-                [ "You flee to the end of the block and pause to\
+      s <$ unshiftMessages
+        ([ chooseOne
+           leadInvestigatorId
+           [ Run
+               [ Continue "Continue"
+               , FlavorText
+                 Nothing
+                 [ "You flee to the end of the block and pause to\
                   \ recover. Before you can catch your breath, the ground shakes\
                   \ with a thunderous crash. People emerge from their homes and\
                   \ storefronts to see what the ruckus is, and a crowd forms on\
                   \ the street. You head to the front of the crowd and are horrified\
                   \ to see the building from which you fled just minutes earlier\
                   \ reduced to rubble. There is no sign of Dr. Morgan anywhere."
-                ]
-              , Record OBannionGangHasABoneToPickWithTheInvestigators
-              , Record DrFrancisMorganWasKidnapped
-              ]
-            <> [ AddToken Tablet | cheated ]
-            <> [ GainXP iid (xp + 1) | iid <- investigatorIds ]
-            <> [EndOfGame]
-          ]
+                 ]
+               ]
+           ]
+         , Record OBannionGangHasABoneToPickWithTheInvestigators
+         , Record DrFrancisMorganWasKidnapped
+         ]
+        <> [ AddToken Tablet | cheated ]
+        <> [ GainXP iid (xp + 1) | iid <- investigatorIds ]
+        <> [EndOfGame]
         )
     Resolution 2 -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -175,14 +176,14 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
             )
           <$> getSet ()
       xp <- getXp
-      s <$ unshiftMessage
-        (chooseOne
-          leadInvestigatorId
-          [ Run
-            $ [ Continue "Continue"
-              , FlavorText
-                Nothing
-                [ "“What in the world…?” Dr. Morgan finally\
+      s <$ unshiftMessages
+        ([ chooseOne
+           leadInvestigatorId
+           [ Run
+               [ Continue "Continue"
+               , FlavorText
+                 Nothing
+                 [ "“What in the world…?” Dr. Morgan finally\
                   \ breaks out of his daze as you make your way to safety. You ask\
                   \ him what he remembers, and he sputters and shakes his head.\
                   \   “It’s all a haze,” he explains, visibly exhausted. “I was having\
@@ -191,21 +192,29 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
                   \ trails off, and you can tell that his mind is racing. His eyes widen\
                   \ with realization and his face pales. “I may not be in the best\
                   \ shape, but I’ll help with your investigation. Whatever it takes.”"
-                ]
-              , Record OBannionGangHasABoneToPickWithTheInvestigators
-              , Record TheInvestigatorsRescuedDrFrancisMorgan
-              , chooseOne
-                leadInvestigatorId
-                [ Label
-                  "Add Professor Warren Rice to your deck"
-                  [AddCampaignCardToDeck leadInvestigatorId "02061"]
-                , Label "Do not add Professor Warren Rice to your deck" []
-                ]
-              ]
-            <> [ AddToken Tablet | cheated ]
-            <> [ GainXP iid xp | iid <- investigatorIds ]
-            <> [EndOfGame]
-          ]
+                 ]
+               ]
+           ]
+         , Record OBannionGangHasABoneToPickWithTheInvestigators
+         , Record TheInvestigatorsRescuedDrFrancisMorgan
+         , chooseOne
+           leadInvestigatorId
+           [ Label
+             "Add Professor Warren Rice to a deck"
+             [ chooseOne
+                 leadInvestigatorId
+                 [ TargetLabel
+                     (InvestigatorTarget iid)
+                     [AddCampaignCardToDeck iid "02061"]
+                 | iid <- investigatorIds
+                 ]
+             ]
+           , Label "Do not add Professor Warren Rice to any deck" []
+           ]
+         ]
+        <> [ AddToken Tablet | cheated ]
+        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [EndOfGame]
         )
     Resolution 3 -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -218,14 +227,14 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
             )
           <$> getSet ()
       xp <- getXp
-      s <$ unshiftMessage
-        (chooseOne
-          leadInvestigatorId
-          [ Run
-            $ [ Continue "Continue"
-              , FlavorText
-                Nothing
-                [ "Although you were unable to find Dr.\
+      s <$ unshiftMessages
+        ([ chooseOne
+           leadInvestigatorId
+           [ Run
+               [ Continue "Continue"
+               , FlavorText
+                 Nothing
+                 [ "Although you were unable to find Dr.\
                   \ Morgan in the club, the man you rescued is grateful for your\
                   \ help. He introduces himself as Peter Clover, the owner of\
                   \ the establishment you’d just left. Despite the situation, he\
@@ -237,26 +246,27 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
                   \ you. “Peter,” she says with a sigh of relief, “Good, you’re okay.\
                   \   I heard there was trouble?” She turns and glares at you with\
                   \ deadly eyes. “Who are they?”"
-                , "Mr. Clover dusts off his vest, unworried. “Naomi, my dear, these\
+                 , "Mr. Clover dusts off his vest, unworried. “Naomi, my dear, these\
                   \ are friends of mine. They…” he clears his throat. “They escorted\
                   \ me off the premises,” he explains after a short pause. “They have\
                   \ earned our gratitude.” The woman crosses her arms and takes a\
                   \ moment to size you up before giving you a smirk."
-                , "“Very well then. I must thank you for taking care of Peter. Run\
+                 , "“Very well then. I must thank you for taking care of Peter. Run\
                   \ along now; we’ll handle things from here.” She nods to the\
                   \ goons flanking her and they walk past you toward the club’s\
                   \ rear entrance, pulling firearms out from underneath their coats.\
                   \   You’re not sure what ‘handling things’ means, but you’re pretty\
                   \ sure you don’t want to be here when the gunfire starts. You\
                   \ thank Naomi and Peter, and head off."
-                ]
-              , Record NaomiHasTheInvestigatorsBacks
-              , Record DrFrancisMorganWasKidnapped
-              ]
-            <> [ AddToken Tablet | cheated ]
-            <> [ GainXP iid xp | iid <- investigatorIds ]
-            <> [EndOfGame]
-          ]
+                 ]
+               ]
+           ]
+         , Record NaomiHasTheInvestigatorsBacks
+         , Record DrFrancisMorganWasKidnapped
+         ]
+        <> [ AddToken Tablet | cheated ]
+        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [EndOfGame]
         )
     Resolution 4 -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -269,14 +279,14 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
             )
           <$> getSet ()
       xp <- getXp
-      s <$ unshiftMessage
-        (chooseOne
-          leadInvestigatorId
-          [ Run
-            $ [ Continue "Continue"
-              , FlavorText
-                Nothing
-                [ "You are pulled from the debris by several\
+      s <$ unshiftMessages
+        ([ chooseOne
+             leadInvestigatorId
+             [ Run
+                 [ Continue "Continue"
+                 , FlavorText
+                   Nothing
+                   [ "You are pulled from the debris by several\
                   \ firefighters, one of whom exclaims, “We’ve got a live one!”\
                   \ A few of them patch you up, and the cops ask you what\
                   \ happened. You’re certain they wouldn’t believe your story\
@@ -286,13 +296,15 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
                   \ St. Mary’s,” one of the nurses says, pointing to a nearby\
                   \ ambulance. Knowing now how dire the situation is, you slip\
                   \ away while she is distracted by something else in the rubble…"
-                ]
-              , Record OBannionGangHasABoneToPickWithTheInvestigators
-              , Record DrFrancisMorganWasKidnapped
-              ]
-            <> [ AddToken Tablet | cheated ]
-            <> [ GainXP iid (xp + 1) | iid <- investigatorIds ]
-            <> [EndOfGame]
-          ]
+                   ]
+                 , Record OBannionGangHasABoneToPickWithTheInvestigators
+                 , Record DrFrancisMorganWasKidnapped
+                 , Record InvestigatorsWereUnconsciousForSeveralHours
+                 ]
+             ]
+         ]
+        <> [ AddToken Tablet | cheated ]
+        <> [ GainXP iid (xp + 1) | iid <- investigatorIds ]
+        <> [EndOfGame]
         )
     _ -> TheHouseAlwaysWins <$> runMessage msg attrs

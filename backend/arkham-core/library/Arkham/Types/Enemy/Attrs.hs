@@ -365,7 +365,7 @@ instance EnemyRunner env => RunMessage env Attrs where
               [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
           pure $ a & locationL .~ lid
     EnemySpawnedAt lid eid | eid == enemyId -> pure $ a & locationL .~ lid
-    ReadyExhausted -> do
+    Ready target | isTarget a target -> do
       miid <- headMay <$> getSetList enemyLocation
       case miid of
         Just iid ->
@@ -380,6 +380,8 @@ instance EnemyRunner env => RunMessage env Attrs where
             $ unshiftMessage (EnemyEngageInvestigator enemyId iid)
         Nothing -> pure ()
       pure $ a & exhaustedL .~ False
+    ReadyExhausted ->
+      a <$ when enemyExhausted (unshiftMessage (Ready $ toTarget a))
     MoveToward target locationMatcher | isTarget a target -> do
       lid <- fromJustNote "can't move toward" <$> getId locationMatcher
       if lid == enemyLocation

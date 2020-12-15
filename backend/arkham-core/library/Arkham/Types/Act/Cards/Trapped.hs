@@ -11,7 +11,7 @@ newtype Trapped = Trapped Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 trapped :: Trapped
-trapped = Trapped $ baseAttrs "01108" "Trapped" "Act 1a"
+trapped = Trapped $ baseAttrs "01108" "Trapped" (Act 1 A)
 
 instance HasActions env Trapped where
   getActions i window (Trapped x) = getActions i window x
@@ -26,7 +26,7 @@ instance ActRunner env => RunMessage env Trapped where
         [ SpendClues requiredClues investigatorIds
         , chooseOne leadInvestigatorId [AdvanceAct aid]
         ]
-      pure $ Trapped $ attrs & sequenceL .~ "Act 1b" & flippedL .~ True
+      pure $ Trapped $ attrs & sequenceL .~ Act 1 B & flippedL .~ True
     AdvanceAct aid | aid == actId && actFlipped -> do
       enemyIds <- getSetList (LocationId "01111")
       a <$ unshiftMessages

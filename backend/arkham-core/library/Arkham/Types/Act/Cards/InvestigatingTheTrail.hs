@@ -13,14 +13,14 @@ newtype InvestigatingTheTrail = InvestigatingTheTrail Attrs
 
 investigatingTheTrail :: InvestigatingTheTrail
 investigatingTheTrail =
-  InvestigatingTheTrail $ baseAttrs "01146" "Investigating the Trail" "Act 1a"
+  InvestigatingTheTrail $ baseAttrs "01146" "Investigating the Trail" (Act 1 A)
 
 instance HasActions env InvestigatingTheTrail where
   getActions i window (InvestigatingTheTrail x) = getActions i window x
 
 instance ActRunner env => RunMessage env InvestigatingTheTrail where
   runMessage msg a@(InvestigatingTheTrail attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && actSequence == "Act 1a" -> do
+    AdvanceAct aid | aid == actId && actSequence == Act 1 A -> do
       investigatorIds <- getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 3)
       unshiftMessages
@@ -30,9 +30,9 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
       pure
         $ InvestigatingTheTrail
         $ attrs
-        & (sequenceL .~ "Act 1b")
+        & (sequenceL .~ Act 1 B)
         & (flippedL .~ True)
-    AdvanceAct aid | aid == actId && actSequence == "Act 1b" -> do
+    AdvanceAct aid | aid == actId && actSequence == Act 1 B -> do
       locationIds <- setToList <$> getLocationSet
       when ("01156" `notElem` locationIds)
         $ unshiftMessage (PlaceLocation "01156")

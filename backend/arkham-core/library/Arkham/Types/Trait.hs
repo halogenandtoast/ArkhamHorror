@@ -34,6 +34,7 @@ data Trait
   | Civic
   | Clairvoyant
   | Clothing
+  | CloverClub
   | Composure
   | Condition
   | Connection

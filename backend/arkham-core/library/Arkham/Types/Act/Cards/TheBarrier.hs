@@ -11,7 +11,7 @@ newtype TheBarrier = TheBarrier Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 theBarrier :: TheBarrier
-theBarrier = TheBarrier $ baseAttrs "01109" "The Barrier" "Act 2a"
+theBarrier = TheBarrier $ baseAttrs "01109" "The Barrier" (Act 2 A)
 
 instance HasActions env TheBarrier where
   getActions i window (TheBarrier x) = getActions i window x
@@ -27,7 +27,7 @@ instance ActRunner env => RunMessage env TheBarrier where
         (SpendClues requiredClueCount investigatorIds
         : [ Ask iid $ ChooseOne [AdvanceAct aid] | iid <- investigatorIds ]
         )
-      pure $ TheBarrier $ attrs & sequenceL .~ "Act 2b" & flippedL .~ True
+      pure $ TheBarrier $ attrs & sequenceL .~ Act 2 B & flippedL .~ True
     AdvanceAct aid | aid == actId && actFlipped -> do
       hallwayId <- fromJustNote "must exist"
         <$> getId @(Maybe LocationId) (LocationName "Hallway")

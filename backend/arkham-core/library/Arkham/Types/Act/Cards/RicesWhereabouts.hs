@@ -18,7 +18,7 @@ newtype RicesWhereabouts = RicesWhereabouts Attrs
 
 ricesWhereabouts :: RicesWhereabouts
 ricesWhereabouts =
-  RicesWhereabouts $ baseAttrs "02046" "Rice's Whereabouts" "Act 2a"
+  RicesWhereabouts $ baseAttrs "02046" "Rice's Whereabouts" (Act 2 A)
 
 ability :: Attrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
@@ -45,11 +45,8 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
         (unshiftMessage $ AdvanceAct actId)
     Discarded (InvestigatorTarget iid) card
       | getCardCode card == CardCode "02060" -> case card of
-        EncounterCard ec -> do
-          a <$ unshiftMessages
-            [ RemoveFromEncounterDiscard ec
-            , InvestigatorDrewEncounterCard iid ec
-            ]
+        EncounterCard ec -> a <$ unshiftMessages
+          [RemoveFromEncounterDiscard ec, InvestigatorDrewEncounterCard iid ec]
         PlayerCard _ -> throwIO $ InvalidState "not a player card"
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       playerCount <- getPlayerCount
@@ -58,7 +55,7 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
         [SpendClues 1 [iid], DiscardTopOfEncounterDeck iid discardCount Nothing]
     AdvanceAct aid | aid == actId && not actFlipped -> do
       unshiftMessage (AdvanceAct aid)
-      pure . RicesWhereabouts $ attrs & sequenceL .~ "Act 2b" & flippedL .~ True
+      pure . RicesWhereabouts $ attrs & sequenceL .~ Act 2 B & flippedL .~ True
     AdvanceAct aid | aid == actId && actFlipped -> do
       alchemyLabsInPlay <- elem (LocationName "Alchemy Labs") <$> getList ()
       agendaStep <- asks $ unAgendaStep . getStep
@@ -80,7 +77,7 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
       pure
         $ RicesWhereabouts
         $ attrs
-        & (sequenceL .~ "Act 1b")
+        & (sequenceL .~ Act 1 B)
         & (flippedL .~ True)
     PrePlayerWindow -> do
       totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds

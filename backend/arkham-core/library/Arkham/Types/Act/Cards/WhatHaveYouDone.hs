@@ -12,7 +12,7 @@ newtype WhatHaveYouDone = WhatHaveYouDone Attrs
 
 whatHaveYouDone :: WhatHaveYouDone
 whatHaveYouDone =
-  WhatHaveYouDone $ baseAttrs "01110" "What Have You Done?" "Act 3a"
+  WhatHaveYouDone $ baseAttrs "01110" "What Have You Done?" (Act 3 A)
 
 instance HasActions env WhatHaveYouDone where
   getActions i window (WhatHaveYouDone x) = getActions i window x
@@ -21,7 +21,7 @@ instance ActRunner env => RunMessage env WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && not actFlipped -> do
       unshiftMessage (AdvanceAct aid)
-      pure . WhatHaveYouDone $ attrs & sequenceL .~ "Act 3b" & flippedL .~ True
+      pure . WhatHaveYouDone $ attrs & sequenceL .~ Act 3 B & flippedL .~ True
     AdvanceAct aid | aid == actId && actFlipped -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage
@@ -38,7 +38,7 @@ instance ActRunner env => RunMessage env WhatHaveYouDone where
       pure
         $ WhatHaveYouDone
         $ attrs
-        & (sequenceL .~ "Act 3b")
+        & (sequenceL .~ Act 3 B)
         & (flippedL .~ True)
     EnemyDefeated _ _ _ "01116" _ _ -> a <$ unshiftMessage (AdvanceAct actId)
     _ -> WhatHaveYouDone <$> runMessage msg attrs

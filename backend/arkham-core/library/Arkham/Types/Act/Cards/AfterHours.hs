@@ -11,7 +11,7 @@ newtype AfterHours = AfterHours Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 afterHours :: AfterHours
-afterHours = AfterHours $ baseAttrs "02045" "After Hours" "Act 1a"
+afterHours = AfterHours $ baseAttrs "02045" "After Hours" (Act 1 A)
 
 instance HasActions env AfterHours where
   getActions i window (AfterHours x) = getActions i window x
@@ -26,7 +26,7 @@ instance ActRunner env => RunMessage env AfterHours where
         [ SpendClues requiredClues investigatorIds
         , chooseOne leadInvestigatorId [AdvanceAct aid]
         ]
-      pure $ AfterHours $ attrs & sequenceL .~ "Act 1b" & flippedL .~ True
+      pure $ AfterHours $ attrs & sequenceL .~ Act 1 B & flippedL .~ True
     AdvanceAct aid | aid == actId && actFlipped -> a <$ unshiftMessages
       [ AddCampaignCardToEncounterDeck "02060"
       , ShuffleEncounterDiscardBackIn

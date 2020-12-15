@@ -17,7 +17,7 @@ newtype SkinGame = SkinGame Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 skinGame :: SkinGame
-skinGame = SkinGame $ baseAttrs "02067" "Skin Game" "Act 2a"
+skinGame = SkinGame $ baseAttrs "02067" "Skin Game" (Act 2 A)
 
 instance HasActions env SkinGame where
   getActions i window (SkinGame x) = getActions i window x
@@ -33,7 +33,7 @@ instance ActRunner env => RunMessage env SkinGame where
         (SpendClues requiredClueCount investigatorIds
         : [ Ask iid $ ChooseOne [AdvanceAct aid] | iid <- investigatorIds ]
         )
-      pure $ SkinGame $ attrs & sequenceL .~ "Act 2b" & flippedL .~ True
+      pure $ SkinGame $ attrs & sequenceL .~ Act 2 B & flippedL .~ True
     AdvanceAct aid | aid == actId && actFlipped -> do
       completedExtracurricularActivity <-
         elem "02041" . map unCompletedScenarioId <$> getSetList ()

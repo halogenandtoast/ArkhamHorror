@@ -19,7 +19,7 @@ newtype FindingLadyEsprit = FindingLadyEsprit Attrs
 
 findingLadyEsprit :: FindingLadyEsprit
 findingLadyEsprit =
-  FindingLadyEsprit $ baseAttrs "81005" "Finding Lady Esprit" "Act 1a"
+  FindingLadyEsprit $ baseAttrs "81005" "Finding Lady Esprit" (Act 1 A)
 
 instance HasActions env FindingLadyEsprit where
   getActions i window (FindingLadyEsprit x) = getActions i window x
@@ -47,7 +47,7 @@ nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
 
 instance ActRunner env => RunMessage env FindingLadyEsprit where
   runMessage msg a@(FindingLadyEsprit attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && actSequence == "Act 1a" -> do
+    AdvanceAct aid | aid == actId && actSequence == Act 1 A -> do
       investigatorIds <- investigatorsInABayouLocation
       requiredClueCount <- getPlayerCountValue (PerPlayer 1)
       unshiftMessages
@@ -57,16 +57,16 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
       pure
         $ FindingLadyEsprit
         $ attrs
-        & (sequenceL .~ "Act 1b")
+        & (sequenceL .~ Act 1 B)
         & (flippedL .~ True)
-    AdvanceAct aid | aid == actId && actSequence == "Act 1b" -> do
+    AdvanceAct aid | aid == actId && actSequence == Act 1 B -> do
       [ladyEspritSpawnLocation] <- setToList <$> bayouLocations
       a <$ unshiftMessages
         [ CreateStoryAssetAt "81019" ladyEspritSpawnLocation
         , PutSetAsideIntoPlay (SetAsideLocationsTarget mempty)
         , NextAdvanceActStep aid 2
         ]
-    NextAdvanceActStep aid 2 | aid == actId && actSequence == "Act 1b" -> do
+    NextAdvanceActStep aid 2 | aid == actId && actSequence == Act 1 B -> do
       leadInvestigatorId <- getLeadInvestigatorId
       curseOfTheRougarouSet <- gatherEncounterSet
         EncounterSet.CurseOfTheRougarou

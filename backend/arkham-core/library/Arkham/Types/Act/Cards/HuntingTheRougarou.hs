@@ -14,7 +14,7 @@ newtype HuntingTheRougarou = HuntingTheRougarou Attrs
 
 huntingTheRougarou :: HuntingTheRougarou
 huntingTheRougarou =
-  HuntingTheRougarou $ baseAttrs "81006" "Huntin the Rougarou" "Act 2a"
+  HuntingTheRougarou $ baseAttrs "81006" "Huntin the Rougarou" (Act 2 A)
 
 ability :: Attrs -> Ability
 ability attrs = (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow))
@@ -41,7 +41,7 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
   runMessage msg a@(HuntingTheRougarou attrs@Attrs {..}) = case msg of
     UseCardAbility _ source _ 1 | isSource attrs source ->
       runMessage (AdvanceAct actId) a
-    AdvanceAct aid | aid == actId && actSequence == "Act 2a" -> do
+    AdvanceAct aid | aid == actId && actSequence == Act 2 A -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       rougarou <- unStoryEnemyId . fromJustNote "must be" <$> getId
@@ -80,13 +80,13 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
       pure
         $ HuntingTheRougarou
         $ attrs
-        & (sequenceL .~ "Act 2b")
+        & (sequenceL .~ Act 2 B)
         & (flippedL .~ True)
-    RevertAct aid | aid == actId && actSequence == "Act 2b" ->
+    RevertAct aid | aid == actId && actSequence == Act 2 B ->
       pure
         $ HuntingTheRougarou
         $ attrs
-        & (sequenceL .~ "Act 2a")
+        & (sequenceL .~ Act 2 A)
         & (flippedL .~ False)
     EnemyMove eid lid _ -> do
       isRougarou <- (== CardCode "81028") <$> getId eid

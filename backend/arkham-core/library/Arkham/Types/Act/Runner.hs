@@ -27,6 +27,7 @@ type ActRunner env
     , HasSet InvestigatorId env (HashSet LocationId)
     , HasSet InvestigatorId env LocationId
     , HasSet InvestigatorId env LocationName
+    , HasSet InScenarioInvestigatorId env ()
     , HasSet LocationId env ()
     , HasSet LocationId env [Trait]
     , HasSet ScenarioLogKey env ()

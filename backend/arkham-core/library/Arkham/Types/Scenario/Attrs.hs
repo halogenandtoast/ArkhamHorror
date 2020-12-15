@@ -120,9 +120,7 @@ instance ScenarioRunner env => RunMessage env Attrs where
     InvestigatorDefeated _ -> do
       investigatorIds <- getSet @InScenarioInvestigatorId ()
       if null investigatorIds then a <$ unshiftMessage NoResolution else pure a
-    InvestigatorResigned _ -> do
-      investigatorIds <- getSet @InScenarioInvestigatorId ()
-      if null investigatorIds then a <$ unshiftMessage NoResolution else pure a
+    AllInvestigatorsResigned -> a <$ unshiftMessage NoResolution
     InvestigatorWhenEliminated iid ->
       a <$ unshiftMessage (InvestigatorEliminated iid)
     Remember logKey -> pure $ a & log %~ insertSet logKey

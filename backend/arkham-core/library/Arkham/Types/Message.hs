@@ -380,6 +380,7 @@ data Message
   | AddAbility Source Ability
   | RemoveAbilitiesFrom Source
   | InvestigatorResigned InvestigatorId
+  | AllInvestigatorsResigned
   | InvestigatorWhenEliminated InvestigatorId
   | InvestigatorEliminated InvestigatorId
   | CheckWindow InvestigatorId [Window]

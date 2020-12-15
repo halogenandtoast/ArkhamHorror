@@ -1,3 +1,4 @@
+{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Act.Attrs where
 
 import Arkham.Import
@@ -58,5 +59,9 @@ instance HasActions env Attrs where
     pure [ AdvanceAct actId | actCanAdvance ]
   getActions _ _ _ = pure []
 
-instance (HasQueue env) => RunMessage env Attrs where
-  runMessage _msg a@Attrs {..} = pure a
+instance (HasQueue env, HasSet InScenarioInvestigatorId env ()) => RunMessage env Attrs where
+  runMessage msg a@Attrs {..} = case msg of
+    InvestigatorResigned _ -> do
+      investigatorIds <- getSet @InScenarioInvestigatorId ()
+      a <$ when (null investigatorIds) (unshiftMessage AllInvestigatorsResigned)
+    _ -> pure a

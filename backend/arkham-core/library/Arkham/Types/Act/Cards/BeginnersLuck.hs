@@ -38,6 +38,7 @@ instance
   , HasCount SpendableClueCount env ()
   , HasSet InvestigatorId env ()
   , HasId LeadInvestigatorId env ()
+  , HasSet InScenarioInvestigatorId env ()
   )
   => RunMessage env BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs@Attrs {..}) = case msg of

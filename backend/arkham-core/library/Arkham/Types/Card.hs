@@ -1,6 +1,7 @@
 module Arkham.Types.Card
   ( CardCode(..)
   , Card(..)
+  , _PlayerCard
   , DiscardedPlayerCard(..)
   , DeckCard(..)
   , HandCard(..)
@@ -30,7 +31,7 @@ module Arkham.Types.Card
   )
 where
 
-import ClassyPrelude
+import Arkham.Prelude
 
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Class
@@ -38,14 +39,16 @@ import Arkham.Types.Card.Cost
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
-import Data.Aeson
-import Safe (fromJustNote)
 
 data Card
   = PlayerCard PlayerCard
   | EncounterCard EncounterCard
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
+
+_PlayerCard :: Traversal' Card PlayerCard
+_PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
+_PlayerCard _ other = pure other
 
 newtype DeckCard = DeckCard { unDeckCard ::PlayerCard }
   deriving stock (Show, Generic)

@@ -1,6 +1,6 @@
 module Helpers.Message where
 
-import ClassyPrelude
+import Arkham.Prelude
 
 import Arkham.Types.Asset
 import Arkham.Types.Card

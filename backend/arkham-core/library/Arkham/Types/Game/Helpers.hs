@@ -72,6 +72,7 @@ getCanFight
   :: ( MonadReader env m
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasCount SpendableClueCount env InvestigatorId
+     , HasList HandCard env InvestigatorId
      , HasSet InvestigatorId env EnemyId
      , HasSet Keyword env EnemyId
      , HasSet Trait env EnemyId
@@ -101,6 +102,7 @@ getCanEngage
   :: ( MonadReader env m
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasCount SpendableClueCount env InvestigatorId
+     , HasList HandCard env InvestigatorId
      , HasSet InvestigatorId env EnemyId
      , HasSet Trait env EnemyId
      , HasId LocationId env InvestigatorId
@@ -125,6 +127,7 @@ getCanEvade
   :: ( MonadReader env m
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasCount SpendableClueCount env InvestigatorId
+     , HasList HandCard env InvestigatorId
      , HasSet InvestigatorId env EnemyId
      , HasSet Trait env EnemyId
      , HasModifiersFor env ()
@@ -148,6 +151,7 @@ getCanMoveTo
   :: ( MonadReader env m
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasCount SpendableClueCount env InvestigatorId
+     , HasList HandCard env InvestigatorId
      , HasSet AccessibleLocationId env LocationId
      , HasSet Trait env LocationId
      , HasId LocationId env InvestigatorId
@@ -186,6 +190,7 @@ getCanInvestigate
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasCount SpendableClueCount env InvestigatorId
      , HasId LocationId env InvestigatorId
+     , HasList HandCard env InvestigatorId
      , HasSet Trait env LocationId
      , HasModifiersFor env ()
      )
@@ -247,6 +252,7 @@ getCanAffordCost
      , HasModifiersFor env ()
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasCount SpendableClueCount env InvestigatorId
+     , HasList HandCard env InvestigatorId
      )
   => InvestigatorId
   -> Source
@@ -265,6 +271,19 @@ getCanAffordCost iid source = \case
   ClueCost n -> do
     spendableClues <- unSpendableClueCount <$> getCount iid
     pure $ spendableClues >= n
+  DiscardCost n mCardType traits -> do
+    cards <- mapMaybe (preview _PlayerCard) <$> getHandOf iid
+    let
+      cardTypeFilter = case mCardType of
+        Nothing -> const True
+        Just cardType -> (== cardType) . pcCardType
+    let
+      traitFilter = if null traits
+        then const True
+        else not . null . intersect traits . pcTraits
+    pure
+      $ length (filter (and . sequence [traitFilter, cardTypeFilter]) cards)
+      >= n
 
 toModifier :: Entity a => a -> ModifierType -> Modifier
 toModifier = Modifier . toSource

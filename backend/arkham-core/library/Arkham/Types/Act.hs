@@ -41,6 +41,9 @@ deriving anyclass instance ActRunner env => RunMessage env Act
 instance IsAdvanceable Act where
   isAdvanceable = actCanAdvance . actAttrs
 
+instance HasStep ActStep Act where
+  getStep = getStep . actAttrs
+
 instance Entity Act where
   type EntityId Act = ActId
   toId = toId . actAttrs

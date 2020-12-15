@@ -33,21 +33,38 @@ instance HasModifiersFor env CloverClubLounge where
 
 ability :: Attrs -> Ability
 ability attrs =
-  mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Resign))
+  (mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Resign)))
+    { abilityLimit = PerGame
+    }
 
 instance ActionRunner env => HasActions env CloverClubLounge where
   getActions iid NonFast (CloverClubLounge attrs@Attrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
+      step <- unActStep . getStep <$> ask
       canAffordActions <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 (Just Action.Resign) locationTraits)
+        (ActionCost 1 Nothing locationTraits)
+      canAffordDiscard <- getCanAffordCost
+        iid
+        (toSource attrs)
+        (DiscardCost 1 (Just AssetType) (singleton Ally))
+      unused <- getIsUnused iid (ability attrs)
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
-        | iid `member` locationInvestigators && canAffordActions
+        | iid
+          `member` locationInvestigators
+          && canAffordActions
+          && canAffordDiscard
+          && step
+          == 1
+          && unused
         ]
   getActions iid window (CloverClubLounge attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env CloverClubLounge where
-  runMessage msg (CloverClubLounge attrs) =
-    CloverClubLounge <$> runMessage msg attrs
+  runMessage msg l@(CloverClubLounge attrs@Attrs {..}) = case msg of
+    UseCardAbility iid source _ 1 | isSource attrs source && locationRevealed ->
+      -- TODO: cards <- filter (pcgetList iid
+      l <$ unshiftMessages [chooseOne iid [], GainClues iid 2]
+    _ -> CloverClubLounge <$> runMessage msg attrs

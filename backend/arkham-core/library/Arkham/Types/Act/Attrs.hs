@@ -27,6 +27,9 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "act"
 
+instance HasStep ActStep Attrs where
+  getStep = actStep . actSequence
+
 instance Entity Attrs where
   type EntityId Attrs = ActId
   toId = actId

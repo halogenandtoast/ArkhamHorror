@@ -14,6 +14,7 @@ where
 import ClassyPrelude
 
 import Arkham.Types.Ability
+import Arkham.Types.ActId
 import Arkham.Types.Action
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.AssetId
@@ -205,6 +206,12 @@ class HasId id env a where
 class HasCount count env a where
   getCount :: (MonadReader env m) => a -> m count
 
+type HasCostPayment env
+  = ( HasCount SpendableClueCount env InvestigatorId
+    , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+    , HasList HandCard env InvestigatorId
+    )
+
 class HasStats env a where
   getStats :: (MonadReader env m) => a -> Source -> m Stats
 
@@ -273,6 +280,7 @@ type ActionRunner env
     , HasSet Trait env LocationId
     , HasSet Trait env (InvestigatorId, CardId)
     , HasSource ForSkillTest env
+    , HasStep ActStep env
     )
 
 class HasActions1 env f where

@@ -1,8 +1,6 @@
 module Arkham.Types.SkillId where
 
-import ClassyPrelude
-import Data.Aeson
-import Data.UUID
+import Arkham.Prelude
 
 newtype SkillId = SkillId { unSkillId :: UUID }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

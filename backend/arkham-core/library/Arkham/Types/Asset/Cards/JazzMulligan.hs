@@ -27,8 +27,7 @@ ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
 
 instance
   ( HasId LocationId env InvestigatorId
-  , HasCount SpendableClueCount env InvestigatorId
-  , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+  , HasCostPayment env
   , HasModifiersFor env ()
   )
   => HasActions env JazzMulligan where

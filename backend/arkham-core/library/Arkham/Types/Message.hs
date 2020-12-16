@@ -34,6 +34,7 @@ import Arkham.Types.EffectId
 import Arkham.Types.EffectMetadata
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
+import Arkham.Types.Exception
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
@@ -50,6 +51,7 @@ import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 import Arkham.Types.Window
+import Control.Exception
 
 data MessageType
   = RevelationMessage
@@ -450,15 +452,19 @@ data Message
   deriving anyclass (ToJSON, FromJSON)
 
 chooseOne :: InvestigatorId -> [Message] -> Message
+chooseOne _ [] = throw $ InvalidState "No messages"
 chooseOne iid msgs = Ask iid (ChooseOne msgs)
 
 chooseOneAtATime :: InvestigatorId -> [Message] -> Message
+chooseOneAtATime _ [] = throw $ InvalidState "No messages"
 chooseOneAtATime iid msgs = Ask iid (ChooseOneAtATime msgs)
 
 chooseSome :: InvestigatorId -> [Message] -> Message
+chooseSome _ [] = throw $ InvalidState "No messages"
 chooseSome iid msgs = Ask iid (ChooseSome $ Done : msgs)
 
 chooseN :: InvestigatorId -> Int -> [Message] -> Message
+chooseN _ _ [] = throw $ InvalidState "No messages"
 chooseN iid n msgs = Ask iid (ChooseN n msgs)
 
 data Question

@@ -34,6 +34,11 @@ newtype HorrorCount = HorrorCount { unHorrorCount :: Int }
 newtype DamageCount = DamageCount { unDamageCount :: Int }
   deriving newtype (Eq)
 
+newtype MentalTraumaCount = MentalTraumaCount { unMentalTraumaCount :: Int }
+  deriving newtype (Show, Eq)
+newtype PhysicalTraumaCount = PhysicalTraumaCount { unPhysicalTraumaCount :: Int }
+  deriving newtype (Show, Eq)
+
 newtype SanityDamageCount = SanityDamageCount { unSanityDamageCount :: Int }
 
 newtype HealthDamageCount = HealthDamageCount { unHealthDamageCount :: Int }

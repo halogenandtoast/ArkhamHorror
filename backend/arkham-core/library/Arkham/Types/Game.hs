@@ -617,6 +617,12 @@ instance HasCount ClueCount (Game queue) LocationId where
 instance HasCount Shroud (Game queue) LocationId where
   getCount = getCount <=< getLocation
 
+instance HasCount (Maybe ClueCount) (Game queue) TreacheryId where
+  getCount = getCount <=< getTreachery
+
+instance HasCount MentalTraumaCount (Game queue) InvestigatorId where
+  getCount = getCount <=< getInvestigator
+
 instance HasCount CardCount (Game queue) InvestigatorId where
   getCount = getCount <=< getInvestigator
 

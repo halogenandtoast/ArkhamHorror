@@ -157,6 +157,10 @@ instance HasList DiscardableHandCard env Investigator where
       PlayerCard pc -> pcWeakness pc
       EncounterCard _ -> True -- maybe?
 
+instance HasCount MentalTraumaCount env Investigator where
+  getCount =
+    pure . MentalTraumaCount . investigatorMentalTrauma . investigatorAttrs
+
 instance HasCount ActionTakenCount env Investigator where
   getCount =
     pure

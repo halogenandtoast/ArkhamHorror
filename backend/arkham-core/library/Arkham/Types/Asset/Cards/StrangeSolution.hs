@@ -29,16 +29,15 @@ instance HasModifiersFor env StrangeSolution where
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env StrangeSolution where
   runMessage msg a@(StrangeSolution attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
-      a <$ unshiftMessage
-        (BeginSkillTest
-          iid
-          source
-          (InvestigatorTarget iid)
-          Nothing
-          SkillIntellect
-          4
-        )
+    UseCardAbility iid source _ 1 | isSource attrs source -> a <$ unshiftMessage
+      (BeginSkillTest
+        iid
+        source
+        (InvestigatorTarget iid)
+        Nothing
+        SkillIntellect
+        4
+      )
     PassedSkillTest iid _ source _ _ | isSource attrs source ->
       a <$ unshiftMessages
         [ Discard (toTarget attrs)

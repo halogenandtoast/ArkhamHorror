@@ -269,6 +269,7 @@ allPlayerCards = HashMap.fromList
   , ("02020", laboratoryAssistant)
   , ("02021", strangeSolution)
   , ("02022", shortcut)
+  , ("02023", seekingAnswers)
   , ("02032", fireAxe)
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
@@ -1085,6 +1086,12 @@ shortcut cardId = (event cardId "02022" "Shortcut" 0 Seeker)
   , pcTraits = setFromList [Insight, Tactic]
   , pcFast = True
   , pcWindows = setFromList [DuringTurn You]
+  }
+
+seekingAnswers :: CardId -> PlayerCard
+seekingAnswers cardId = (event cardId "02023" "Seeking Answers" 1 Seeker)
+  { pcSkills = [SkillIntellect, SkillAgility]
+  , pcTraits = singleton Insight
   }
 
 fireAxe :: CardId -> PlayerCard

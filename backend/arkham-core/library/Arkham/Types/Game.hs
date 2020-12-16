@@ -786,6 +786,9 @@ instance HasModifiersFor (Game queue) () where
       then filter ((/= targetToSource target) . modifierSource) allModifiers
       else allModifiers
 
+instance HasPhase (Game queue) where
+  getPhase = gamePhase
+
 instance HasStep AgendaStep (Game queue) where
   getStep g = case toList (g ^. agendas) of
     [agenda] -> getStep agenda

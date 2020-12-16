@@ -27,6 +27,7 @@ import Arkham.Types.Keyword
 import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Phase
 import Arkham.Types.Query
 import Arkham.Types.SkillType
 import Arkham.Types.Source
@@ -176,6 +177,9 @@ checkWindows
 checkWindows iid f = do
   windowPairings <- pairInvestigatorIdsForWindow iid
   sequence [ CheckWindow iid' <$> f who | (iid', who) <- windowPairings ]
+
+class HasPhase a where
+  getPhase :: a -> Phase
 
 class HasStep c a where
   getStep ::  a -> c

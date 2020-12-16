@@ -13,3 +13,4 @@ data Cost
   = ActionCost Int (Maybe Action) (HashSet Trait)
   | DiscardCost Int (Maybe PlayerCardType) (HashSet Trait)
   | ClueCost Int
+  | ResourceCost Int

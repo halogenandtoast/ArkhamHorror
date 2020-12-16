@@ -2,7 +2,6 @@ module Arkham.Types.Game.Helpers where
 
 import Arkham.Import
 
-import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Keyword
 import qualified Arkham.Types.Keyword as Keyword
@@ -70,9 +69,7 @@ getSpendableClueCount investigatorIds =
 -- TODO: canFight _ a@Attrs {..} = canDo Action.Fight a
 getCanFight
   :: ( MonadReader env m
-     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
-     , HasCount SpendableClueCount env InvestigatorId
-     , HasList HandCard env InvestigatorId
+     , HasCostPayment env
      , HasSet InvestigatorId env EnemyId
      , HasSet Keyword env EnemyId
      , HasSet Trait env EnemyId
@@ -100,9 +97,7 @@ getCanFight eid iid = do
 
 getCanEngage
   :: ( MonadReader env m
-     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
-     , HasCount SpendableClueCount env InvestigatorId
-     , HasList HandCard env InvestigatorId
+     , HasCostPayment env
      , HasSet InvestigatorId env EnemyId
      , HasSet Trait env EnemyId
      , HasId LocationId env InvestigatorId
@@ -125,9 +120,7 @@ getCanEngage eid iid = do
 
 getCanEvade
   :: ( MonadReader env m
-     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
-     , HasCount SpendableClueCount env InvestigatorId
-     , HasList HandCard env InvestigatorId
+     , HasCostPayment env
      , HasSet InvestigatorId env EnemyId
      , HasSet Trait env EnemyId
      , HasModifiersFor env ()
@@ -149,9 +142,7 @@ getCanEvade eid iid = do
 
 getCanMoveTo
   :: ( MonadReader env m
-     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
-     , HasCount SpendableClueCount env InvestigatorId
-     , HasList HandCard env InvestigatorId
+     , HasCostPayment env
      , HasSet AccessibleLocationId env LocationId
      , HasSet Trait env LocationId
      , HasId LocationId env InvestigatorId
@@ -187,10 +178,8 @@ getCanMoveTo lid iid = do
 
 getCanInvestigate
   :: ( MonadReader env m
-     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
-     , HasCount SpendableClueCount env InvestigatorId
+     , HasCostPayment env
      , HasId LocationId env InvestigatorId
-     , HasList HandCard env InvestigatorId
      , HasSet Trait env LocationId
      , HasModifiersFor env ()
      )
@@ -248,12 +237,7 @@ getCardCount
 getCardCount iid = unCardCount <$> getCount iid
 
 getCanAffordCost
-  :: ( MonadReader env m
-     , HasModifiersFor env ()
-     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
-     , HasCount SpendableClueCount env InvestigatorId
-     , HasList HandCard env InvestigatorId
-     )
+  :: (MonadReader env m, HasModifiersFor env (), HasCostPayment env)
   => InvestigatorId
   -> Source
   -> Cost
@@ -271,6 +255,9 @@ getCanAffordCost iid source = \case
   ClueCost n -> do
     spendableClues <- unSpendableClueCount <$> getCount iid
     pure $ spendableClues >= n
+  ResourceCost n -> do
+    resources <- unResourceCount <$> getCount iid
+    pure $ resources >= n
   DiscardCost n mCardType traits -> do
     cards <- mapMaybe (preview _PlayerCard) <$> getHandOf iid
     let

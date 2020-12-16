@@ -210,6 +210,7 @@ type HasCostPayment env
   = ( HasCount SpendableClueCount env InvestigatorId
     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
     , HasList HandCard env InvestigatorId
+    , HasCount ResourceCount env InvestigatorId
     )
 
 class HasStats env a where

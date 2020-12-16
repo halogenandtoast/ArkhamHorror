@@ -7,7 +7,6 @@ where
 
 import Arkham.Import
 
-import qualified Arkham.Types.Action as Action
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Location.Attrs
@@ -32,10 +31,9 @@ instance HasModifiersFor env CloverClubLounge where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs =
-  (mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Resign)))
-    { abilityLimit = PerGame
-    }
+ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
+  { abilityLimit = PerGame
+  }
 
 instance ActionRunner env => HasActions env CloverClubLounge where
   getActions iid NonFast (CloverClubLounge attrs@Attrs {..})

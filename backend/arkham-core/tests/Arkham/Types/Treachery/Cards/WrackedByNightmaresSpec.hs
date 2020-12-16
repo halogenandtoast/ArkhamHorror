@@ -50,4 +50,3 @@ spec = describe "Wracked by Nightmares" $ do
     updated game' asset `shouldSatisfy` isReady
     wrackedByNightmares `shouldSatisfy` isInDiscardOf game' investigator
     investigator `shouldSatisfy` hasRemainingActions game' 1
-

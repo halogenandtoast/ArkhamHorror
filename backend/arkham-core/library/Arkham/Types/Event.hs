@@ -53,6 +53,7 @@ data Event
   | Taunt' Taunt
   | Teamwork' Teamwork
   | Taunt2' Taunt2
+  | Shortcut' Shortcut
   | BaitAndSwitch' BaitAndSwitch
   | LetMeHandleThis' LetMeHandleThis
   | SecondWind' SecondWind
@@ -125,6 +126,7 @@ allEvents = mapFromList
   , ("02017", (Taunt' .) . taunt)
   , ("02018", (Teamwork' .) . teamwork)
   , ("02019", (Taunt2' .) . taunt2)
+  , ("02022", (Shortcut' .) . shortcut)
   , ("02034", (BaitAndSwitch' .) . baitAndSwitch)
   , ("03022", (LetMeHandleThis' .) . letMeHandleThis)
   , ("04149", (SecondWind' .) . secondWind)
@@ -174,6 +176,7 @@ eventAttrs = \case
   Taunt' attrs -> coerce attrs
   Teamwork' attrs -> coerce attrs
   Taunt2' attrs -> coerce attrs
+  Shortcut' attrs -> coerce attrs
   BaitAndSwitch' attrs -> coerce attrs
   LetMeHandleThis' attrs -> coerce attrs
   SecondWind' attrs -> coerce attrs

@@ -876,8 +876,14 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     , CheckAttackOfOpportunity iid False
     , MoveAction iid lid False
     ]
-  MoveAction iid lid False | iid == investigatorId -> a <$ unshiftMessages
-    [Will (MoveTo iid lid), MoveFrom iid investigatorLocation, MoveTo iid lid]
+  MoveAction iid lid False | iid == investigatorId ->
+    a <$ unshiftMessages (resolve $ Move iid investigatorLocation lid)
+  Move iid fromLocationId toLocationId | iid == investigatorId ->
+    a <$ unshiftMessages
+      [ Will (MoveTo iid toLocationId)
+      , MoveFrom iid fromLocationId
+      , MoveTo iid toLocationId
+      ]
   Will (FailedSkillTest iid _ _ (InvestigatorTarget iid') _)
     | iid == iid' && iid == investigatorId
     -> a <$ unshiftMessage

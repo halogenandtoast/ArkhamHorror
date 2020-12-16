@@ -1,3 +1,5 @@
+{-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Effect
   ( lookupEffect
   , buildSkillTestEffect
@@ -29,6 +31,7 @@ data Effect
   | SureGamble3' SureGamble3
   | ArkhamWoodsTwistingPaths' ArkhamWoodsTwistingPaths
   | HuntingNightgaunt' HuntingNightgaunt
+  | SeekingAnswers' SeekingAnswers
   | PushedIntoTheBeyond' PushedIntoTheBeyond
   | ArcaneBarrier' ArcaneBarrier
   | LetMeHandleThis' LetMeHandleThis
@@ -42,7 +45,7 @@ data Effect
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance HasModifiersFor env Effect
-deriving anyclass instance HasQueue env => RunMessage env Effect
+deriving anyclass instance (HasQueue env, HasSet ConnectedLocationId env LocationId) => RunMessage env Effect
 
 instance HasSet Trait env Effect where
   getSet = const (pure mempty)
@@ -79,6 +82,7 @@ allEffects = mapFromList
   , ("01088", SureGamble3' . sureGamble3)
   , ("01151", ArkhamWoodsTwistingPaths' . arkhamWoodsTwistingPaths)
   , ("01172", HuntingNightgaunt' . huntingNightgaunt)
+  , ("02023", SeekingAnswers' . seekingAnswers)
   , ("02100", PushedIntoTheBeyond' . pushedIntoTheBeyond)
   , ("02102", ArcaneBarrier' . arcaneBarrier)
   , ("03022", LetMeHandleThis' . letMeHandleThis)

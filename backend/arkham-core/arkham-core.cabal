@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a0d41f169054492bc403cee93faff94e7e05f577803bf756ed55715e1e56a987
+-- hash: a757438d568621ca8f12aceec22c7d8d8b49dbef53ac8314e31704b5c18b78ed
 
 name:           arkham-core
 version:        0.0.0
@@ -220,6 +220,7 @@ library
       Arkham.Types.Effect.Effects.OnTheLam
       Arkham.Types.Effect.Effects.PhaseEffect
       Arkham.Types.Effect.Effects.PushedIntoTheBeyond
+      Arkham.Types.Effect.Effects.SeekingAnswers
       Arkham.Types.Effect.Effects.Shrivelling
       Arkham.Types.Effect.Effects.SkillTestEffect
       Arkham.Types.Effect.Effects.SureGamble3
@@ -319,6 +320,7 @@ library
       Arkham.Types.Event.Cards.OnTheLam
       Arkham.Types.Event.Cards.SearchForTheTruth
       Arkham.Types.Event.Cards.SecondWind
+      Arkham.Types.Event.Cards.SeekingAnswers
       Arkham.Types.Event.Cards.Shortcut
       Arkham.Types.Event.Cards.SneakAttack
       Arkham.Types.Event.Cards.SureGamble3

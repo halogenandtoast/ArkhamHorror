@@ -36,6 +36,7 @@ import Arkham.Types.Event.Cards.MindWipe3 as X
 import Arkham.Types.Event.Cards.OnTheLam as X
 import Arkham.Types.Event.Cards.SearchForTheTruth as X
 import Arkham.Types.Event.Cards.SecondWind as X
+import Arkham.Types.Event.Cards.SeekingAnswers as X
 import Arkham.Types.Event.Cards.Shortcut as X
 import Arkham.Types.Event.Cards.SneakAttack as X
 import Arkham.Types.Event.Cards.SureGamble3 as X

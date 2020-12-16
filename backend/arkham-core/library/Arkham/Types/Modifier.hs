@@ -51,6 +51,7 @@ data ModifierType
   | CannotCancelHorror
   | CannotCommitCards
   | CannotDiscoverClues
+  | CannotDrawCards
   | CannotGainResources
   | CannotTakeAction ActionTarget
   | CannotHealHorror

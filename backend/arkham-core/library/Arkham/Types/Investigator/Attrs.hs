@@ -1324,7 +1324,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
             else unshiftMessage (TakeAction iid n actionType)
       pure a
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
-    unshiftMessage (DrawCards investigatorId 1 False)
+    unlessM (hasModifier a CannotDrawCards)
+      $ unshiftMessage (DrawCards investigatorId 1 False)
     pure $ a & resourcesL +~ 1
   LoadDeck iid deck | iid == investigatorId -> do
     shuffled <- liftIO $ shuffleM $ flip map deck $ \card -> if pcWeakness card
@@ -1628,6 +1629,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         <> [ DrawCards iid 1 True
            | canAffordDrawCards
              && CannotTakeAction (IsAction Action.Draw)
+             `notElem` modifiers
+             && CannotDrawCards
              `notElem` modifiers
            ]
         <> [ InitiatePlayCard iid (getCardId c) Nothing True

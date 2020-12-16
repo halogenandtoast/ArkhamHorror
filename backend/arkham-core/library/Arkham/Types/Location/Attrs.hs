@@ -223,8 +223,13 @@ instance LocationRunner env => RunMessage env Attrs where
     PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget target) _
       | isTarget a target
       -> a <$ unshiftMessage (SuccessfulInvestigation iid locationId source)
-    SuccessfulInvestigation iid lid _ | lid == locationId ->
-      a <$ unshiftMessage (InvestigatorDiscoverClues iid lid 1)
+    SuccessfulInvestigation iid lid _ | lid == locationId -> do
+      modifiers' <-
+        map modifierType
+          <$> getModifiersFor (InvestigatorSource iid) (LocationTarget lid) ()
+      a <$ unless
+        (AlternateSuccessfullInvestigation `elem` modifiers')
+        (unshiftMessage (InvestigatorDiscoverClues iid lid 1))
     SetLocationLabel lid label' | lid == locationId ->
       pure $ a & label .~ label'
     PlacedLocation lid | lid == locationId ->

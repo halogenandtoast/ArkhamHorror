@@ -20,10 +20,11 @@ instance (SkillRunner env) => RunMessage env Deduction where
   runMessage msg s@(Deduction attrs@Attrs {..}) = case msg of
     PassedSkillTest iid (Just Action.Investigate) _ (SkillTarget sid) _
       | sid == skillId -> do
+        lid <- getId @LocationId iid
         s <$ unshiftMessage
           (CreateEffect
             "01039"
-            Nothing
+            (Just $ EffectMetaTarget (LocationTarget lid))
             (toSource attrs)
             (InvestigatorTarget iid)
           )

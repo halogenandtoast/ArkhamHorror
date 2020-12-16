@@ -26,8 +26,11 @@ instance (HasQueue env, HasId LocationId env InvestigatorId) => RunMessage env S
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       lid <- getId @LocationId iid
       e <$ unshiftMessages
-        [ CreateEffect "02023" Nothing (toSource attrs) (LocationTarget lid)
-        , Investigate iid lid (toSource attrs) SkillIntellect False
+        [ CreateEffect
+          "02023"
+          Nothing
+          (toSource attrs)
+          (InvestigationTarget iid lid)
         , Discard (toTarget attrs)
         ]
     _ -> SeekingAnswers <$> runMessage msg attrs

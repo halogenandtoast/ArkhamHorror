@@ -26,6 +26,7 @@ import Arkham.Types.Location.Cards.CloverClubBar as X
 import Arkham.Types.Location.Cards.CloverClubCardroom as X
 import Arkham.Types.Location.Cards.CloverClubLounge as X
 import Arkham.Types.Location.Cards.CursedShores as X
+import Arkham.Types.Location.Cards.DarkenedHall as X
 import Arkham.Types.Location.Cards.DeepBelowYourHouse as X
 import Arkham.Types.Location.Cards.Dormitories as X
 import Arkham.Types.Location.Cards.DowntownArkhamAsylum as X

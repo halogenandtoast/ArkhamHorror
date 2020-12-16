@@ -69,6 +69,7 @@ data Location
   | CloverClubLounge' CloverClubLounge
   | CloverClubBar' CloverClubBar
   | CloverClubCardroom' CloverClubCardroom
+  | DarkenedHall' DarkenedHall
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -241,6 +242,7 @@ allLocations = mapFromList $ map
   , CloverClubLounge' cloverClubLounge
   , CloverClubBar' cloverClubBar
   , CloverClubCardroom' cloverClubCardroom
+  , DarkenedHall' darkenedHall
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall
   , Bedroom' bedroom
@@ -321,6 +323,7 @@ locationAttrs = \case
   CloverClubLounge' attrs -> coerce attrs
   CloverClubBar' attrs -> coerce attrs
   CloverClubCardroom' attrs -> coerce attrs
+  DarkenedHall' attrs -> coerce attrs
   StudyAberrantGateway' attrs -> coerce attrs
   GuestHall' attrs -> coerce attrs
   Bedroom' attrs -> coerce attrs

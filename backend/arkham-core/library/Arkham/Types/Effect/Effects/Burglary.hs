@@ -16,14 +16,19 @@ burglary :: EffectArgs -> Burglary
 burglary = Burglary . uncurry4 (baseAttrs "01045")
 
 instance HasModifiersFor env Burglary where
-  getModifiersFor _ target (Burglary attrs) | target == effectTarget attrs =
-    pure [modifier attrs CannotDiscoverClues]
+  getModifiersFor _ (LocationTarget lid) (Burglary attrs@Attrs {..}) =
+    case effectTarget of
+      InvestigationTarget _ lid' | lid == lid' ->
+        pure [modifier attrs AlternateSuccessfullInvestigation]
+      _ -> pure []
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env Burglary where
-  runMessage msg e@(Burglary attrs) = case msg of
-    SuccessfulInvestigation iid lid _
-      | LocationTarget lid == effectTarget attrs -> e <$ unshiftMessages
-        [TakeResources iid 3 False, DisableEffect $ effectId attrs]
-    SkillTestEnds -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
+  runMessage msg e@(Burglary attrs@Attrs {..}) = case msg of
+    CreatedEffect eid _ _ (InvestigationTarget iid lid) | eid == effectId ->
+      e <$ unshiftMessage
+        (Investigate iid lid (toSource attrs) SkillIntellect False)
+    SuccessfulInvestigation iid _ source | isSource attrs source ->
+      e <$ unshiftMessages [TakeResources iid 3 False, DisableEffect effectId]
+    SkillTestEnds -> e <$ unshiftMessage (DisableEffect effectId)
     _ -> Burglary <$> runMessage msg attrs

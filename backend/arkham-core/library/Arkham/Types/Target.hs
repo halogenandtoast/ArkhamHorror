@@ -52,5 +52,6 @@ data Target
   | TestTarget
   | EncounterCardTarget EncounterCard
   | ResourceTarget
+  | InvestigationTarget InvestigatorId LocationId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

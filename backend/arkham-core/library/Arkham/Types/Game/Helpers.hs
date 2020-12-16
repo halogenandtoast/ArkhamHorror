@@ -305,6 +305,7 @@ targetToSource = \case
   TestTarget -> TestSource
   EncounterCardTarget _ -> error "can not convert"
   ResourceTarget -> ResourceSource
+  InvestigationTarget{} -> error "not converted"
 
 sourceToTarget :: Source -> Target
 sourceToTarget = \case

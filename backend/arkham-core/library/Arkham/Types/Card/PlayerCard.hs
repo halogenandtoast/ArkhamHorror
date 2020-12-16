@@ -270,6 +270,7 @@ allPlayerCards = HashMap.fromList
   , ("02021", strangeSolution)
   , ("02022", shortcut)
   , ("02023", seekingAnswers)
+  , ("02024", liquidCourage)
   , ("02032", fireAxe)
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
@@ -1092,6 +1093,12 @@ seekingAnswers :: CardId -> PlayerCard
 seekingAnswers cardId = (event cardId "02023" "Seeking Answers" 1 Seeker)
   { pcSkills = [SkillIntellect, SkillAgility]
   , pcTraits = singleton Insight
+  }
+
+liquidCourage :: CardId -> PlayerCard
+liquidCourage cardId = (asset cardId "02024" "Liquid Courage" 1 Rogue)
+  { pcSkills = [SkillWillpower]
+  , pcTraits = setFromList [Item, Illicit]
   }
 
 fireAxe :: CardId -> PlayerCard

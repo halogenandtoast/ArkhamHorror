@@ -176,6 +176,7 @@ data Message
   | RemoveEnemy EnemyId
   | MoveAllTo LocationId
   | MoveAction InvestigatorId LocationId Bool
+  | Move InvestigatorId LocationId LocationId
   | MoveTo InvestigatorId LocationId
   | MoveFrom InvestigatorId LocationId
   | MoveUntil LocationId Target

@@ -271,6 +271,7 @@ allPlayerCards = HashMap.fromList
   , ("02022", shortcut)
   , ("02023", seekingAnswers)
   , ("02024", liquidCourage)
+  , ("02025", thinkOnYourFeet)
   , ("02032", fireAxe)
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
@@ -1099,6 +1100,14 @@ liquidCourage :: CardId -> PlayerCard
 liquidCourage cardId = (asset cardId "02024" "Liquid Courage" 1 Rogue)
   { pcSkills = [SkillWillpower]
   , pcTraits = setFromList [Item, Illicit]
+  }
+
+thinkOnYourFeet :: CardId -> PlayerCard
+thinkOnYourFeet cardId = (event cardId "02025" "Think on Your Feet" 1 Rogue)
+  { pcSkills = [SkillIntellect, SkillAgility]
+  , pcTraits = singleton Trick
+  , pcFast = True
+  , pcWindows = setFromList [WhenEnemySpawns YourLocation []]
   }
 
 fireAxe :: CardId -> PlayerCard

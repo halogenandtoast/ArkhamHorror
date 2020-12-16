@@ -21,6 +21,7 @@ type EventRunner env
     , HasRoundHistory env
     , HasSet AssetId env InvestigatorId
     , HasSet AssetId env (InvestigatorId, [Trait])
+    , HasSet AccessibleLocationId env LocationId
     , HasSet ConnectedLocationId env LocationId
     , HasSet EmptyLocationId env ()
     , HasSet EnemyId env InvestigatorId

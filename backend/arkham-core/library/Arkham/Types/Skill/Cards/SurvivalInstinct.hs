@@ -14,6 +14,9 @@ newtype SurvivalInstinct = SurvivalInstinct Attrs
 survivalInstinct :: InvestigatorId -> SkillId -> SurvivalInstinct
 survivalInstinct iid uuid = SurvivalInstinct $ baseAttrs iid uuid "01081"
 
+instance HasModifiersFor env SurvivalInstinct where
+  getModifiersFor = noModifiersFor
+
 instance HasActions env SurvivalInstinct where
   getActions i window (SurvivalInstinct attrs) = getActions i window attrs
 

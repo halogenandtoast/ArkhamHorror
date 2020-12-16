@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4709271c4be7fbee77ef829b86193e4064c09dd9e1dac8abc51eefe4b0141a7c
+-- hash: 589eb207e75545d7bd6a4a421a07498f2bfdbd9aca467e44cd343cb49f431dc0
 
 name:           arkham-core
 version:        0.0.0
@@ -496,6 +496,7 @@ library
       Arkham.Types.Skill.Attrs
       Arkham.Types.Skill.Cards
       Arkham.Types.Skill.Cards.Deduction
+      Arkham.Types.Skill.Cards.DoubleOrNothing
       Arkham.Types.Skill.Cards.Fearless
       Arkham.Types.Skill.Cards.Guts
       Arkham.Types.Skill.Cards.ManualDexterity

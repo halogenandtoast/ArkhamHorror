@@ -6,10 +6,14 @@ import Control.Monad.Extra (concatMapM)
 import Control.Monad.Random
 import Data.Foldable (foldrM)
 import qualified Data.HashMap.Strict as HashMap
+import qualified Data.List as L
 import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as NE
 import Data.Text.Lazy (unpack)
 import Data.Text.Lazy.Builder
+
+cycleN :: Int -> [a] -> [a]
+cycleN n as = take n $ L.cycle as
 
 uncurry4 :: (a -> b -> c -> d -> e) -> (a, b, c, d) -> e
 uncurry4 f ~(a, b, c, d) = f a b c d

@@ -4,6 +4,7 @@ module Arkham.Types.Skill.Cards
 where
 
 import Arkham.Types.Skill.Cards.Deduction as X
+import Arkham.Types.Skill.Cards.DoubleOrNothing as X
 import Arkham.Types.Skill.Cards.Fearless as X
 import Arkham.Types.Skill.Cards.Guts as X
 import Arkham.Types.Skill.Cards.ManualDexterity as X

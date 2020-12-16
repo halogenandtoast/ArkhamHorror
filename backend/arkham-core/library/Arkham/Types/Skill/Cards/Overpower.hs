@@ -18,6 +18,9 @@ newtype Overpower = Overpower Attrs
 overpower :: InvestigatorId -> SkillId -> Overpower
 overpower iid uuid = Overpower $ baseAttrs iid uuid "01091"
 
+instance HasModifiersFor env Overpower where
+  getModifiersFor = noModifiersFor
+
 instance HasActions env Overpower where
   getActions i window (Overpower attrs) = getActions i window attrs
 

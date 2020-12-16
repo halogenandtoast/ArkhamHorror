@@ -18,6 +18,9 @@ newtype Opportunist = Opportunist Attrs
 opportunist :: InvestigatorId -> SkillId -> Opportunist
 opportunist iid uuid = Opportunist $ baseAttrs iid uuid "01053"
 
+instance HasModifiersFor env Opportunist where
+  getModifiersFor = noModifiersFor
+
 instance HasActions env Opportunist where
   getActions i window (Opportunist attrs) = getActions i window attrs
 

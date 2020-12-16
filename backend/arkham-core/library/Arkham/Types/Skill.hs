@@ -29,12 +29,14 @@ data Skill
   | Overpower' Overpower
   | ManualDexterity' ManualDexterity
   | UnexpectedCourage' UnexpectedCourage
+  | DoubleOrNothing' DoubleOrNothing
   | TrueUnderstanding' TrueUnderstanding
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Skill
 deriving anyclass instance SkillRunner env => RunMessage env Skill
+deriving anyclass instance HasModifiersFor env Skill
 
 instance IsCard Skill where
   getCardId = getCardId . skillAttrs
@@ -58,6 +60,7 @@ allSkills = mapFromList
   , ("01091", (Overpower' .) . overpower)
   , ("01092", (ManualDexterity' .) . manualDexterity)
   , ("01093", (UnexpectedCourage' .) . unexpectedCourage)
+  , ("02026", (DoubleOrNothing' .) . doubleOrNothing)
   , ("04153", (TrueUnderstanding' .) . trueUnderstanding)
   ]
 
@@ -76,4 +79,5 @@ skillAttrs = \case
   Overpower' attrs -> coerce attrs
   ManualDexterity' attrs -> coerce attrs
   UnexpectedCourage' attrs -> coerce attrs
+  DoubleOrNothing' attrs -> coerce attrs
   TrueUnderstanding' attrs -> coerce attrs

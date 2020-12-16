@@ -8,8 +8,10 @@ where
 import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
+import Arkham.Types.Phase
 import Arkham.Types.Trait hiding (Cultist)
 
 newtype VipArea = VipArea Attrs
@@ -22,19 +24,20 @@ vipArea = VipArea $ (baseAttrs
                       EncounterSet.TheHouseAlwaysWins
                       3
                       (PerPlayer 1)
-                      Diamond
-                      [Triangle]
+                      T
+                      [Diamond]
                       [CloverClub]
                     )
   { locationVictory = Just 1
+  , locationRevealedSymbol = Plus
   }
 
-instance HasModifiersFor env VipArea where
+instance HasPhase env => HasModifiersFor env VipArea where
   getModifiersFor _ (InvestigatorTarget iid) (VipArea attrs)
-    | iid `elem` locationInvestigators = do
-      phase <- getPhase
+    | iid `member` locationInvestigators attrs = do
+      phase <- getPhase <$> ask
       if phase == UpkeepPhase
-        then pure [CannotDrawCards, CannotGainResources]
+        then pure $ toModifiers attrs [CannotDrawCards, CannotGainResources]
         else pure []
   getModifiersFor _ _ _ = pure []
 

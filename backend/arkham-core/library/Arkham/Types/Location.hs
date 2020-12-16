@@ -70,6 +70,8 @@ data Location
   | CloverClubBar' CloverClubBar
   | CloverClubCardroom' CloverClubCardroom
   | DarkenedHall' DarkenedHall
+  | ArtGallery' ArtGallery
+  | VipArea' VipArea
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -106,7 +108,7 @@ data Location
 
 deriving anyclass instance ActionRunner env => HasActions env Location
 deriving anyclass instance LocationRunner env => RunMessage env Location
-deriving anyclass instance HasModifiersFor env Location
+deriving anyclass instance HasPhase env => HasModifiersFor env Location
 
 instance Entity Location where
   type EntityId Location = LocationId
@@ -243,6 +245,8 @@ allLocations = mapFromList $ map
   , CloverClubBar' cloverClubBar
   , CloverClubCardroom' cloverClubCardroom
   , DarkenedHall' darkenedHall
+  , ArtGallery' artGallery
+  , VipArea' vipArea
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall
   , Bedroom' bedroom
@@ -324,6 +328,8 @@ locationAttrs = \case
   CloverClubBar' attrs -> coerce attrs
   CloverClubCardroom' attrs -> coerce attrs
   DarkenedHall' attrs -> coerce attrs
+  ArtGallery' attrs -> coerce attrs
+  VipArea' attrs -> coerce attrs
   StudyAberrantGateway' attrs -> coerce attrs
   GuestHall' attrs -> coerce attrs
   Bedroom' attrs -> coerce attrs

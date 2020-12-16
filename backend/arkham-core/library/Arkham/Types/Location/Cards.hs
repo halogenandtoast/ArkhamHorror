@@ -15,6 +15,7 @@ import Arkham.Types.Location.Cards.ArkhamWoodsTangledThicket as X
 import Arkham.Types.Location.Cards.ArkhamWoodsTwistingPaths as X
 import Arkham.Types.Location.Cards.ArkhamWoodsUnhallowedGround as X
 import Arkham.Types.Location.Cards.ArkhamWoodsWoodenBridge as X
+import Arkham.Types.Location.Cards.ArtGallery as X
 import Arkham.Types.Location.Cards.Attic as X
 import Arkham.Types.Location.Cards.AudubonPark as X
 import Arkham.Types.Location.Cards.Bathroom as X
@@ -70,4 +71,5 @@ import Arkham.Types.Location.Cards.Study as X
 import Arkham.Types.Location.Cards.StudyAberrantGateway as X
 import Arkham.Types.Location.Cards.TrappersCabin as X
 import Arkham.Types.Location.Cards.TwistedUnderbrush as X
+import Arkham.Types.Location.Cards.VipArea as X
 import Arkham.Types.Location.Cards.YourHouse as X

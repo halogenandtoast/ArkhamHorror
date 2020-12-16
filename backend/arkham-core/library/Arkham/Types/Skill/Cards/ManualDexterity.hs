@@ -18,6 +18,9 @@ newtype ManualDexterity = ManualDexterity Attrs
 manualDexterity :: InvestigatorId -> SkillId -> ManualDexterity
 manualDexterity iid uuid = ManualDexterity $ baseAttrs iid uuid "01092"
 
+instance HasModifiersFor env ManualDexterity where
+  getModifiersFor = noModifiersFor
+
 instance HasActions env ManualDexterity where
   getActions i window (ManualDexterity attrs) = getActions i window attrs
 

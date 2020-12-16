@@ -13,6 +13,9 @@ newtype Deduction = Deduction Attrs
 deduction :: InvestigatorId -> SkillId -> Deduction
 deduction iid uuid = Deduction $ baseAttrs iid uuid "01039"
 
+instance HasModifiersFor env Deduction where
+  getModifiersFor = noModifiersFor
+
 instance HasActions env Deduction where
   getActions i window (Deduction attrs) = getActions i window attrs
 

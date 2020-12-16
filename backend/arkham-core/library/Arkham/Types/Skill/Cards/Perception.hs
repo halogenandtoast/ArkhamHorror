@@ -18,6 +18,9 @@ newtype Perception = Perception Attrs
 perception :: InvestigatorId -> SkillId -> Perception
 perception iid uuid = Perception $ baseAttrs iid uuid "01090"
 
+instance HasModifiersFor env Perception where
+  getModifiersFor = noModifiersFor
+
 instance HasActions env Perception where
   getActions i window (Perception attrs) = getActions i window attrs
 

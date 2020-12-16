@@ -18,6 +18,9 @@ newtype Guts = Guts Attrs
 guts :: InvestigatorId -> SkillId -> Guts
 guts iid uuid = Guts $ baseAttrs iid uuid "01089"
 
+instance HasModifiersFor env Guts where
+  getModifiersFor = noModifiersFor
+
 instance HasActions env Guts where
   getActions i window (Guts attrs) = getActions i window attrs
 

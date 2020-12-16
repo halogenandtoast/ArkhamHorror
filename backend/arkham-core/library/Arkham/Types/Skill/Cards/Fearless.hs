@@ -18,6 +18,9 @@ newtype Fearless = Fearless Attrs
 fearless :: InvestigatorId -> SkillId -> Fearless
 fearless iid uuid = Fearless $ baseAttrs iid uuid "01067"
 
+instance HasModifiersFor env Fearless where
+  getModifiersFor = noModifiersFor
+
 instance HasActions env Fearless where
   getActions i window (Fearless attrs) = getActions i window attrs
 

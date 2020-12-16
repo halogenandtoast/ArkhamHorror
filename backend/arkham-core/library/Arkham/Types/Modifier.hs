@@ -68,6 +68,8 @@ data ModifierType
   | DoNotDrawChaosTokensForSkillChecks
   | DoesNotDamageOtherInvestigator
   | DoubleNegativeModifiersOnTokens
+  | DoubleDifficulty
+  | DoubleSuccess
   | EnemyEvade Int
   | EnemyFight Int
   | ForcedTokenChange Token [Token]

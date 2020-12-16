@@ -272,6 +272,7 @@ allPlayerCards = HashMap.fromList
   , ("02023", seekingAnswers)
   , ("02024", liquidCourage)
   , ("02025", thinkOnYourFeet)
+  , ("02026", doubleOrNothing)
   , ("02032", fireAxe)
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
@@ -1109,6 +1110,13 @@ thinkOnYourFeet cardId = (event cardId "02025" "Think on Your Feet" 1 Rogue)
   , pcFast = True
   , pcWindows = setFromList [WhenEnemySpawns YourLocation []]
   }
+
+doubleOrNothing :: CardId -> PlayerCard
+doubleOrNothing cardId =
+  (skill cardId "02026" "Double or Nothing" [SkillWild] Rogue)
+    { pcTraits = singleton Fortune
+    , pcCommitRestrictions = [MaxOnePerTest]
+    }
 
 fireAxe :: CardId -> PlayerCard
 fireAxe cardId = (asset cardId "02032" "Fire Axe" 1 Survivor)

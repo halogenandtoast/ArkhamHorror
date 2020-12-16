@@ -147,6 +147,7 @@ getModifiedSkillTestDifficulty s = do
   pure $ foldr applyModifier (skillTestDifficulty s) modifiers'
  where
   applyModifier (Difficulty m) n = max 0 (n + m)
+  applyModifier DoubleDifficulty n = n * 2
   applyModifier _ n = n
 
 type SkillTestRunner env
@@ -270,6 +271,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         ]
       pure $ s & result .~ SucceededBy True modifiedSkillValue'
     FailSkillTest -> do
+      difficulty <- getModifiedSkillTestDifficulty s
       unshiftMessages
         $ [ Will
               (FailedSkillTest
@@ -277,7 +279,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                 skillTestAction
                 skillTestSource
                 target
-                skillTestDifficulty
+                difficulty
               )
           | target <- skillTestSubscribers
           ]
@@ -287,12 +289,12 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                skillTestAction
                skillTestSource
                (SkillTestInitiatorTarget skillTestTarget)
-               skillTestDifficulty
+               difficulty
              )
            , Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
            , SkillTestEnds
            ]
-      pure $ s & result .~ FailedBy True skillTestDifficulty
+      pure $ s & result .~ FailedBy True difficulty
     StartSkillTest _ -> s <$ unshiftMessages
       (HashMap.foldMapWithKey
           (\k (i, _) -> [CommitCard i k])
@@ -410,8 +412,12 @@ instance SkillTestRunner env => RunMessage env SkillTest where
       pure s
     SkillTestApplyResults -> do -- ST.7 Apply Results
       unshiftMessage SkillTestApplyResultsAfter
+      modifiers' <-
+        map modifierType <$> getModifiersFor (toSource s) (toTarget s) ()
+      let successTimes = if DoubleSuccess `elem` modifiers' then 2 else 1
       s <$ case skillTestResult of
-        SucceededBy _ n -> unshiftMessages
+        SucceededBy _ n -> unshiftMessages $ cycleN
+          successTimes
           ([ PassedSkillTest
                skillTestInvestigator
                skillTestAction

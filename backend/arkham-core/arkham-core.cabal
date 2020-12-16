@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f46ca30c6e287fd6019497caf027b10dde38dc247a2336d1f7139958f2725e5e
+-- hash: 4709271c4be7fbee77ef829b86193e4064c09dd9e1dac8abc51eefe4b0141a7c
 
 name:           arkham-core
 version:        0.0.0
@@ -329,6 +329,7 @@ library
       Arkham.Types.Event.Cards.Taunt2
       Arkham.Types.Event.Cards.Taunt3
       Arkham.Types.Event.Cards.Teamwork
+      Arkham.Types.Event.Cards.ThinkOnYourFeet
       Arkham.Types.Event.Cards.WardOfProtection
       Arkham.Types.Event.Cards.WillToSurvive4
       Arkham.Types.Event.Cards.WorkingAHunch

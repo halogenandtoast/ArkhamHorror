@@ -23,7 +23,7 @@ instance HasModifiersFor env Shortcut where
 
 instance
   ( HasQueue env
-  , HasSet ConnectedLocationId env LocationId
+  , HasSet AccessibleLocationId env LocationId
   , HasSet InvestigatorId env LocationId
   , HasId LocationId env InvestigatorId
   )
@@ -32,8 +32,7 @@ instance
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       lid <- getId @LocationId iid
       investigatorIds <- getSetList lid
-      connectingLocations <- map unConnectedLocationId
-        <$> getSetList @ConnectedLocationId lid
+      connectingLocations <- map unAccessibleLocationId <$> getSetList lid
       e <$ unshiftMessages
         [ chooseOne
           iid

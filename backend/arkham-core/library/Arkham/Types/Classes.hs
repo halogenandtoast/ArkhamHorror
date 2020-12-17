@@ -11,7 +11,7 @@ module Arkham.Types.Classes
   )
 where
 
-import ClassyPrelude
+import Arkham.Prelude hiding (to)
 
 import Arkham.Types.Ability
 import Arkham.Types.ActId
@@ -38,7 +38,6 @@ import Arkham.Types.Token (Token, TokenValue(..))
 import Arkham.Types.Trait
 import Arkham.Types.Window (Who, Window)
 import qualified Arkham.Types.Window as Window
-import Control.Lens hiding (from, to)
 import Control.Monad.Fail
 import qualified Data.HashSet as HashSet
 import GHC.Generics
@@ -49,7 +48,7 @@ class HasQueue a where
   messageQueue :: Lens' a (IORef [Message])
 
 class (HasQueue env) => RunMessage1 env f where
-  runMessage1 :: (MonadIO m, MonadReader env m, MonadFail m) => Message -> f p -> m (f p)
+  runMessage1 :: (MonadIO m, MonadReader env m, MonadRandom m, MonadFail m) => Message -> f p -> m (f p)
 
 instance (HasQueue env, RunMessage1 env f) => RunMessage1 env (M1 i c f) where
   runMessage1 msg (M1 x) = M1 <$> runMessage1 msg x
@@ -62,14 +61,15 @@ instance (HasQueue env, RunMessage env p) => RunMessage1 env (K1 R p) where
   runMessage1 msg (K1 x) = K1 <$> runMessage msg x
 
 class (HasQueue env) => RunMessage env a where
-  runMessage :: (MonadIO m, MonadReader env m, MonadFail m) => Message -> a -> m a
-  default runMessage :: (Generic a, RunMessage1 env (Rep a), MonadIO m, MonadReader env m, MonadFail m) => Message -> a -> m a
+  runMessage :: (MonadIO m, MonadRandom m, MonadReader env m, MonadFail m) => Message -> a -> m a
+  default runMessage :: (Generic a, RunMessage1 env (Rep a), MonadIO m, MonadRandom m, MonadReader env m, MonadFail m) => Message -> a -> m a
   runMessage = defaultRunMessage
 
 defaultRunMessage
   :: ( Generic a
      , RunMessage1 env (Rep a)
      , MonadIO m
+     , MonadRandom m
      , MonadReader env m
      , MonadFail m
      )

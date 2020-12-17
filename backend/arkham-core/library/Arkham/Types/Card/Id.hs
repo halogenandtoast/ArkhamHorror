@@ -1,15 +1,9 @@
 module Arkham.Types.Card.Id where
 
-import ClassyPrelude
-import Data.Aeson
-import Data.UUID
-import Data.UUID.V4
-
-genCardId :: MonadIO m => m CardId
-genCardId = CardId <$> liftIO nextRandom
+import Arkham.Prelude
 
 newtype CardId = CardId { unCardId :: UUID }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
 
 newtype CommittedCardId = CommittedCardId { unCommittedCardId :: CardId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

@@ -49,9 +49,7 @@ theHouseAlwaysWinsIntro = FlavorText
 
 instance HasTokenValue env InvestigatorId => HasTokenValue env TheHouseAlwaysWins where
   getTokenValue (TheHouseAlwaysWins attrs) iid = \case
-    Skull -> pure $ TokenValue
-      Skull
-      (NegativeModifier $ if isEasyStandard attrs then 2 else 3)
+    Skull -> pure $ toTokenValue attrs Skull 2 3
     Cultist -> pure $ TokenValue Cultist (NegativeModifier 3)
     Tablet -> pure $ TokenValue Tablet (NegativeModifier 2)
     otherFace -> getTokenValue attrs iid otherFace

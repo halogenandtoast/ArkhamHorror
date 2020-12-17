@@ -43,9 +43,7 @@ instance (HasTokenValue env InvestigatorId, HasCount DoomCount env (), HasCount 
       doomCount <- unDoomCount <$> getCount ()
       pure $ TokenValue Skull (NegativeModifier doomCount)
     Cultist -> pure $ TokenValue Cultist (NegativeModifier 2)
-    Tablet -> do
-      let tokenValue' = if isEasyStandard attrs then 3 else 4
-      pure $ TokenValue Tablet (NegativeModifier tokenValue')
+    Tablet -> pure $ toTokenValue attrs Tablet 3 4
     otherFace -> getTokenValue attrs iid otherFace
 
 data TheMidnightMasksIntroVersion = TheMidnightMasksIntroOne | TheMidnightMasksIntroTwo

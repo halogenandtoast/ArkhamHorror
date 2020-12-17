@@ -46,15 +46,11 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env (Investigato
     Skull -> do
       ghoulCount <- unEnemyCount
         <$> getCount (InvestigatorLocation iid, [Trait.Ghoul])
-      pure $ TokenValue
-        Skull
-        (NegativeModifier $ if isEasyStandard attrs then ghoulCount else 2)
+      pure $ toTokenValue attrs Skull ghoulCount 2
     Cultist -> pure $ TokenValue
       Cultist
       (if isEasyStandard attrs then NegativeModifier 1 else NoModifier)
-    Tablet -> pure $ TokenValue
-      Tablet
-      (NegativeModifier $ if isEasyStandard attrs then 2 else 4)
+    Tablet -> pure $ toTokenValue attrs Tablet 2 4
     otherFace -> getTokenValue attrs iid otherFace
 
 instance ScenarioRunner env => RunMessage env TheGathering where

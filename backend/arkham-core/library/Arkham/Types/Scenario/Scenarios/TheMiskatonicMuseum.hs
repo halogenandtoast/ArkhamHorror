@@ -13,6 +13,8 @@ import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Token
 import Data.List.NonEmpty (NonEmpty(..))
+import Data.UUID.V4
+import System.Random.Shuffle
 
 newtype TheMiskatonicMuseum = TheMiskatonicMuseum Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -111,7 +113,20 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
       securityOffice <- liftIO $ sample $ "02128" :| ["02129"]
       administrationOffice <- liftIO $ sample $ "02130" :| ["02131"]
 
-      armitageKidnapped <- asks $ hasRecord DrHenryArmitageWasKidnapped
+      armitageKidnapped <- getHasRecord DrHenryArmitageWasKidnapped
+
+      exhibitHalls <- liftIO $ shuffleM =<< for
+        ["02132", "02133", "02134", "02135", "02136"]
+        (\cardCode -> lookupEncounterCard cardCode . CardId <$> nextRandom)
+
+      restrictedHall <-
+        liftIO $ lookupEncounterCard "02137" . CardId <$> nextRandom
+
+      let (bottom, top) = splitAt 2 exhibitHalls
+
+      bottom' <- liftIO $ shuffleM $ restrictedHall : bottom
+
+      let exhibitDeck = top <> bottom'
 
       encounterDeck <- buildEncounterDeck
         [ EncounterSet.TheMiskatonicMuseum
@@ -121,6 +136,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
         , EncounterSet.ChillingCold
         , EncounterSet.LockedDoors
         ]
+
       pushMessages
         [ story investigatorIds theMiskatonicMuseumIntro1
         , story investigatorIds (theMiskatonicMuseumIntro2 armitageKidnapped)
@@ -134,6 +150,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
         , RevealLocation Nothing "02126"
         , MoveAllTo "02126"
         ]
+
       let
         locations' = mapFromList
           [ ("Museum Entrance", ["02126"])
@@ -144,7 +161,9 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
             , ["02132", "02133", "02134", "02135", "02136", "02137"]
             )
           ]
-      TheMiskatonicMuseum <$> runMessage msg (attrs & locations .~ locations')
+      TheMiskatonicMuseum <$> runMessage
+        msg
+        (attrs & locations .~ locations' & deckL ?~ exhibitDeck)
     ResolveToken _ ElderThing iid | isEasyStandard attrs ->
       s <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid 1)
     ResolveToken _ ElderThing iid | isHardExpert attrs -> do
@@ -178,20 +197,17 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
                [ Continue "Continue"
                , FlavorText
                  Nothing
-                 [ "As you flee from the university,\
-                  \ you hear screaming from the northern end of the campus. An\
-                  \ ambulance passes you by, and you fear the worst. Hours later,\
-                  \ you learn that a ‘rabid dog of some sort’ found its way into\
-                  \ the university dormitories. The creature attacked the students\
-                  \ inside and many were mauled or killed in the attack."
+                 [ "Whatever the creature in the\
+                   \ museum was, you had neither the will nor the tools to destroy\
+                   \ it. It seems you must give up any hope of recovering the\
+                   \ Necronomicon. Even so, there are others depending on you.\
+                   \ Gathering your courage, you prepare for your next task."
                  ]
                ]
            ]
-         , Record ProfessorWarrenRiceWasKidnapped
-         , Record TheInvestigatorsFailedToSaveTheStudents
-         , AddToken Tablet
+         , Record TheInvestigatorsFailedToRecoverTheNecronomicon
          ]
-        <> [ GainXP iid (xp + 1) | iid <- investigatorIds ]
+        <> [ GainXP iid xp | iid <- investigatorIds ]
         <> [EndOfGame]
         )
     Resolution 1 -> do
@@ -205,34 +221,20 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
                [ Continue "Continue"
                , FlavorText
                  Nothing
-                 [ "You find Professor Rice bound and gagged\
-                  \ in the closet of his office. When you free him, he informs you\
-                  \ that the strange men and women wandering around the\
-                  \ campus had been stalking him for hours. They cornered him\
-                  \ in his office and tied him up, although for what purpose, Rice\
-                  \ isn’t sure. You inform him that Dr. Armitage sent you, and\
-                  \ Rice looks relieved, although he suspects that Dr. Morgan\
-                  \ might be in danger as well. Because the strangers on campus\
-                  \ seem to have been targeting Professor Rice, you decide that\
-                  \ the best course of action is to escort him away from the\
-                  \ campus as quickly as possible. As you leave the university,\
-                  \ you hear screaming from the northern end of the campus. An\
-                  \ ambulance passes you by, and you fear the worst. Hours later,\
-                  \ you learn that a ‘rabid dog of some sort’ found its way into\
-                  \ the university dormitories. The creature attacked the students\
-                  \ inside, and many were mauled or killed in the attack."
+                 [ "As long as this translation of the\
+                   \ Necronomicon exists, there will be sorcerers and other foul\
+                   \ agents like Whateley seeking it. In the end, you know what\
+                   \ must be done to protect humanity from the threats you’ve seen.\
+                   \ You find a trash bin and fill it with books and documents,\
+                   \ throwing the Necronomicon on top. It takes several matches\
+                   \ to set the contents of the bin alight. The flames fill the room\
+                   \ with heat and the creeping shadows retreat from its light. You\
+                   \ watch the book burn for some time, its pages turning to ash.\
+                   \ You can only hope you’ve made the right decision."
                  ]
                ]
            ]
-         , Record TheInvestigatorsRescuedProfessorWarrenRice
-         , AddToken Tablet
-         , chooseOne
-           leadInvestigatorId
-           [ Label
-             "Add Professor Warren Rice to your deck"
-             [AddCampaignCardToDeck leadInvestigatorId "02061"]
-           , Label "Do not add Professor Warren Rice to your deck" []
-           ]
+         , Record TheInvestigatorsDestroyedTheNecronomicon
          ]
         <> [ GainXP iid xp | iid <- investigatorIds ]
         <> [EndOfGame]
@@ -248,76 +250,36 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
                [ Continue "Continue"
                , FlavorText
                  Nothing
-                 [ "You pull each of the dormitory’s fire alarms\
-                  \ and usher the students out of the building’s north exit,\
-                  \ hoping to make your way off campus. Many of the students\
-                  \ are confused and exhausted, but you believe an attempt to\
-                  \ explain the situation will do more harm than good. Minutes\
-                  \ later, a terrible screech echoes across the campus, piercing\
-                  \ and shrill. You tell the students to wait and head back to the\
-                  \ dormitories to investigate. Oddly, you find no trace of the\
-                  \ strange creature—a prospect that worries you more than it\
-                  \ relieves you. You hurry to the faculty offices to find Professor\
-                  \ Rice, but there is no sign of him anywhere."
+                 [ "The Necronomicon is more than just a book;\
+                   \ it is a tool. Within its pages is a wealth of information about\
+                   \ the forces and creatures you have encountered. Knowing how\
+                   \ useful it could be in your endeavors, how could you possibly\
+                   \ bring yourself to destroy it? Besides, as long as you keep the\
+                   \ book safely in your possession, you will still be foiling those\
+                   \ who wish to use it for nefarious purposes."
                  ]
                ]
            ]
-         , Record ProfessorWarrenRiceWasKidnapped
-         , Record TheStudentsWereRescued
+         , Record TheInvestigatorsTookCustodyOfTheNecronomicon
+         , chooseOne
+           leadInvestigatorId
+           [ Label
+             "Add The Necronomicon (Olaus Wormius Translation) to a deck"
+             [ chooseOne
+                 leadInvestigatorId
+                 [ TargetLabel
+                     (InvestigatorTarget iid)
+                     [AddCampaignCardToDeck iid "02140"]
+                 | iid <- investigatorIds
+                 ]
+             ]
+           , Label
+             "Do not add The Necronomicon (Olaus Wormius Translation) to a deck"
+             []
+           ]
+         , AddToken ElderThing
          ]
         <> [ GainXP iid xp | iid <- investigatorIds ]
-        <> [EndOfGame]
-        )
-    Resolution 3 -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
-      xp <- getXp
-      s <$ unshiftMessages
-        ([ chooseOne
-           leadInvestigatorId
-           [ Run
-               [ Continue "Continue"
-               , FlavorText
-                 Nothing
-                 [ "After defeating the strange and terrifying\
-                  \ creature from the Department of Alchemy, you rush to the\
-                  \ faculty offices to find Professor Rice. By the time you get to his\
-                  \ office, there is no sign of him anywhere."
-                 ]
-               ]
-           ]
-         , Record ProfessorWarrenRiceWasKidnapped
-         , Record TheExperimentWasDefeated
-         ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
-        <> [EndOfGame]
-        )
-    Resolution 4 -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
-      xp <- getXp
-      s <$ unshiftMessages
-        ([ chooseOne
-           leadInvestigatorId
-           [ Run
-               [ Continue "Continue"
-               , FlavorText
-                 Nothing
-                 [ "You awaken hours later, exhausted and\
-                  \ injured. You’re not sure what you saw, but the sight of it filled\
-                  \ your mind with terror. From other survivors, you learn that\
-                  \ a ‘rabid dog of some sort’ found its way into the university\
-                  \ dormitories. The creature attacked the students inside, and\
-                  \ many were mauled or killed in the attack."
-                 ]
-               ]
-           ]
-         , Record InvestigatorsWereUnconsciousForSeveralHours
-         , Record ProfessorWarrenRiceWasKidnapped
-         , Record TheInvestigatorsFailedToSaveTheStudents
-         , AddToken Tablet
-         ]
-        <> [ GainXP iid (xp + 1) | iid <- investigatorIds ]
         <> [EndOfGame]
         )
     _ -> TheMiskatonicMuseum <$> runMessage msg attrs

@@ -25,6 +25,9 @@ data CampaignLogKey
   | TheInvestigatorsRescuedDrFrancisMorgan
   | NaomiHasTheInvestigatorsBacks
   | DrHenryArmitageWasKidnapped
+  | TheInvestigatorsFailedToRecoverTheNecronomicon
+  | TheInvestigatorsDestroyedTheNecronomicon
+  | TheInvestigatorsTookCustodyOfTheNecronomicon
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse

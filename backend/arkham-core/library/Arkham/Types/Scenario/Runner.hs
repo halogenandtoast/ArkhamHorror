@@ -1,5 +1,7 @@
 module Arkham.Types.Scenario.Runner where
 
+import Arkham.Prelude
+
 import Arkham.Types.AgendaId
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
@@ -23,6 +25,7 @@ type ScenarioRunner env
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId
+    , HasId (Maybe StoryEnemyId) env CardCode
     , HasQueue env
     , HasRecord env
     , HasSet AgendaId env ()

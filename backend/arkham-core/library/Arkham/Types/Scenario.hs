@@ -24,6 +24,7 @@ data Scenario
   | TheDevourerBelow' TheDevourerBelow
   | ExtracurricularActivity' ExtracurricularActivity
   | TheHouseAlwaysWins' TheHouseAlwaysWins
+  | TheMiskatonicMuseum' TheMiskatonicMuseum
   | ReturnToTheGathering' ReturnToTheGathering
   | ReturnToTheMidnightMasks' ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow' ReturnToTheDevourerBelow
@@ -40,9 +41,11 @@ deriving anyclass instance
   , HasCount EnemyCount env (InvestigatorLocation, [Trait])
   , HasCount EnemyCount env [Trait]
   , HasSet EnemyId env Trait
+  , HasSet EnemyId env LocationId
   , HasSet Trait env LocationId
   , HasTokenValue env InvestigatorId
   , HasId LocationId env InvestigatorId
+  , HasId CardCode env EnemyId
   )
   => HasTokenValue env Scenario
 
@@ -94,6 +97,7 @@ allScenarios = mapFromList
   , ("01142", TheDevourerBelow' . theDevourerBelow)
   , ("02041", ExtracurricularActivity' . extracurricularActivity)
   , ("02062", TheHouseAlwaysWins' . theHouseAlwaysWins)
+  , ("02118", TheMiskatonicMuseum' . theMiskatonicMuseum)
   , ("50011", ReturnToTheGathering' . returnToTheGathering)
   , ("50025", ReturnToTheMidnightMasks' . returnToTheMidnightMasks)
   , ("50032", ReturnToTheDevourerBelow' . returnToTheDevourerBelow)
@@ -108,6 +112,7 @@ scenarioAttrs = \case
   TheDevourerBelow' attrs -> coerce attrs
   ExtracurricularActivity' attrs -> coerce attrs
   TheHouseAlwaysWins' attrs -> coerce attrs
+  TheMiskatonicMuseum' attrs -> coerce attrs
   ReturnToTheGathering' attrs -> coerce attrs
   ReturnToTheMidnightMasks' attrs -> coerce attrs
   ReturnToTheDevourerBelow' attrs -> coerce attrs

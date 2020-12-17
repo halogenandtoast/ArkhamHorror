@@ -67,8 +67,8 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
             | iid <- investigatorIds
             ]
           ]
-        attic <- liftIO $ sample ("50018" :| ["01113"])
-        cellar <- liftIO $ sample ("50020" :| ["01114"])
+        attic <- sample $ "50018" :| ["01113"]
+        cellar <- sample $ "50020" :| ["01114"]
         let
           locations' = mapFromList
             [ ("Study", ["50013"])

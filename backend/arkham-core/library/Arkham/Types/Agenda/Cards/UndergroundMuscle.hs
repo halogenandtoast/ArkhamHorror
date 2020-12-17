@@ -37,8 +37,7 @@ instance AgendaRunner env => RunMessage env UndergroundMuscle where
         & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      (enemy : rest) <-
-        liftIO $ shuffleM =<< gatherEncounterSet HideousAbominations
+      (enemy : rest) <- shuffleM =<< gatherEncounterSet HideousAbominations
       strikingFear <- gatherEncounterSet StrikingFear
       laBellaLunaInvestigators <- getSetList (LocationName "La Bella Luna")
       unshiftMessage

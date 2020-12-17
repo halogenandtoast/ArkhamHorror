@@ -13,7 +13,6 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.Scenario.Scenarios.TheMidnightMasks
 import Arkham.Types.Trait (Trait)
 import Data.List.NonEmpty (NonEmpty(..))
-import Data.UUID.V4
 import System.Random.Shuffle
 
 newtype ReturnToTheMidnightMasks = ReturnToTheMidnightMasks TheMidnightMasks
@@ -46,23 +45,21 @@ instance (ScenarioRunner env) => RunMessage env ReturnToTheMidnightMasks where
           <$> gatherEncounterSet EncounterSet.TheDevourersCult
         -- ^ we will spawn these disciples of the devourer
 
-        southside <- liftIO $ sample $ "01126" :| ["01127"]
-        downtown <- liftIO $ sample $ "01130" :| ["01131"]
-        easttown <- liftIO $ sample $ "01132" :| ["50027"]
-        northside <- liftIO $ sample $ "01134" :| ["50028"]
-        rivertown <- liftIO $ sample $ "01125" :| ["50030"]
-        miskatonicUniversity <- liftIO $ sample $ "01129" :| ["50029"]
+        southside <- sample $ "01126" :| ["01127"]
+        downtown <- sample $ "01130" :| ["01131"]
+        easttown <- sample $ "01132" :| ["50027"]
+        northside <- sample $ "01134" :| ["50028"]
+        rivertown <- sample $ "01125" :| ["50030"]
+        miskatonicUniversity <- sample $ "01129" :| ["50029"]
+        predatorOrPrey <- sample $ "01121" :| ["50026"]
 
-        predatorOrPrey <- liftIO $ sample $ "01121" :| ["50026"]
-        houseBurnedDown <- asks $ hasRecord YourHouseHasBurnedToTheGround
-        ghoulPriestAlive <- asks $ hasRecord GhoulPriestIsStillAlive
-        litaForcedToFindOthersToHelpHerCause <- asks
-          $ hasRecord LitaWasForcedToFindOthersToHelpHerCause
-        ghoulPriestCard <-
-          liftIO $ lookupEncounterCard "01116" . CardId <$> nextRandom
+        houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround
+        ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
+        litaForcedToFindOthersToHelpHerCause <- getHasRecord
+          LitaWasForcedToFindOthersToHelpHerCause
+        ghoulPriestCard <- lookupEncounterCard "01116" <$> getRandom
         cultistCards <-
-          liftIO
-          $ for
+          for
               [ "01137"
               , "01138"
               , "01139"
@@ -72,8 +69,8 @@ instance (ScenarioRunner env) => RunMessage env ReturnToTheMidnightMasks where
               , "50045"
               , "50046"
               ]
-          $ \cardCode -> lookupEncounterCard cardCode . CardId <$> nextRandom
-        cultistDeck' <- liftIO $ drop 3 <$> shuffleM cultistCards
+            $ \cardCode -> lookupEncounterCard cardCode <$> getRandom
+        cultistDeck' <- drop 3 <$> shuffleM cultistCards
         let
           startingLocationMessages = if houseBurnedDown
             then [RevealLocation Nothing rivertown, MoveAllTo rivertown]
@@ -88,6 +85,9 @@ instance (ScenarioRunner env) => RunMessage env ReturnToTheMidnightMasks where
             [ CreateEnemyAt (getCardCode c) l
             | (c, l) <- zip acolytes [southside, downtown, "01133"]
             ]
+          intro1or2 = if litaForcedToFindOthersToHelpHerCause
+            then TheMidnightMasksIntroOne
+            else TheMidnightMasksIntroTwo
         encounterDeck <- buildEncounterDeckWith
           (<> theDevourersCult)
           [ EncounterSet.ReturnToTheMidnightMasks
@@ -96,10 +96,6 @@ instance (ScenarioRunner env) => RunMessage env ReturnToTheMidnightMasks where
           , EncounterSet.Nightgaunts
           , EncounterSet.LockedDoors
           ]
-        let
-          intro1or2 = if litaForcedToFindOthersToHelpHerCause
-            then TheMidnightMasksIntroOne
-            else TheMidnightMasksIntroTwo
         pushMessages
           $ [ story investigatorIds (introPart1 intro1or2)
             , story investigatorIds introPart2

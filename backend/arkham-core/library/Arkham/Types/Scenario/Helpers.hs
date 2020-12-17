@@ -10,13 +10,13 @@ import Arkham.Types.EncounterSet
 import Arkham.Types.Game.Helpers as X
 import System.Random.Shuffle
 
-buildEncounterDeck :: MonadIO m => [EncounterSet] -> m [EncounterCard]
+buildEncounterDeck :: MonadRandom m => [EncounterSet] -> m [EncounterCard]
 buildEncounterDeck = buildEncounterDeckWith id
 
 buildEncounterDeckWith
-  :: MonadIO m
+  :: MonadRandom m
   => ([EncounterCard] -> [EncounterCard])
   -> [EncounterSet]
   -> m [EncounterCard]
 buildEncounterDeckWith f encounterSets =
-  liftIO $ shuffleM . f . concat =<< traverse gatherEncounterSet encounterSets
+  shuffleM . f . concat =<< traverse gatherEncounterSet encounterSets

@@ -4,12 +4,9 @@ module Arkham.Types.EncounterSet
   )
 where
 
+import Arkham.Prelude
+
 import Arkham.Types.Card
-import Arkham.Types.Card.Id
-import ClassyPrelude
-import Data.Aeson
-import Data.UUID.V4
-import Safe (fromJustNote)
 
 data EncounterSet
   = TheGathering
@@ -50,13 +47,12 @@ data EncounterSet
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-gatherEncounterSet :: MonadIO m => EncounterSet -> m [EncounterCard]
+gatherEncounterSet :: MonadRandom m => EncounterSet -> m [EncounterCard]
 gatherEncounterSet =
   traverse
       (\cid ->
         fromJustNote ("missing card" <> show cid) (lookup cid allEncounterCards)
-          . CardId
-          <$> liftIO nextRandom
+          <$> getRandom
       )
     . setCards
 

@@ -18,7 +18,6 @@ import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Data.List ((\\))
-import System.Random
 import System.Random.Shuffle
 
 data Attrs = Attrs
@@ -694,7 +693,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   AllRandomDiscard | not (a ^. defeatedL || a ^. resignedL) ->
     a <$ unshiftMessage (RandomDiscard investigatorId)
   RandomDiscard iid | iid == investigatorId -> do
-    n <- liftIO $ randomRIO (0, length investigatorHand - 1)
+    n <- getRandomR (0, length investigatorHand - 1)
     case investigatorHand !!? n of
       Nothing -> pure a
       Just c -> a <$ unshiftMessage (DiscardCard investigatorId (getCardId c))
@@ -710,8 +709,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   ShuffleDiscardBackIn iid | iid == investigatorId ->
     if not (null investigatorDiscard)
       then do
-        deck <- liftIO
-          $ shuffleM (investigatorDiscard <> coerce investigatorDeck)
+        deck <- shuffleM (investigatorDiscard <> coerce investigatorDeck)
         pure $ a & discardL .~ [] & deckL .~ Deck deck
       else pure a
   Resign iid | iid == investigatorId -> do
@@ -1377,7 +1375,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       $ unshiftMessage (DrawCards investigatorId 1 False)
     pure $ a & resourcesL +~ 1
   LoadDeck iid deck | iid == investigatorId -> do
-    shuffled <- liftIO $ shuffleM $ flip map deck $ \card -> if pcWeakness card
+    shuffled <- shuffleM $ flip map deck $ \card -> if pcWeakness card
       then card { pcBearer = Just $ BearerId $ unInvestigatorId iid }
       else card
     pure $ a & deckL .~ Deck shuffled
@@ -1529,15 +1527,14 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       _ -> pure ()
     pure $ a & handL %~ (card :)
   ShuffleCardsIntoDeck iid cards | iid == investigatorId -> do
-    deck <- liftIO $ shuffleM (cards <> unDeck investigatorDeck)
+    deck <- shuffleM (cards <> unDeck investigatorDeck)
     pure $ a & deckL .~ Deck deck
   AddToHandFromDeck iid cardId | iid == investigatorId -> do
     let
       card = fromJustNote "card did not exist"
         $ find ((== cardId) . getCardId) (unDeck investigatorDeck)
-    deck <- liftIO $ shuffleM $ filter
-      ((/= cardId) . getCardId)
-      (unDeck investigatorDeck)
+    deck <- shuffleM
+      $ filter ((/= cardId) . getCardId) (unDeck investigatorDeck)
     case card of
       MkPlayerCard {..} -> do
         when (pcCardType == PlayerTreacheryType)
@@ -1545,7 +1542,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         when (pcCardType == PlayerEnemyType)
           $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
     pure $ a & deckL .~ Deck deck & handL %~ (PlayerCard card :)
-  DisengageEnemy iid eid | iid == investigatorId -> do
+  DisengageEnemy iid eid | iid == investigatorId ->
     pure $ a & engagedEnemiesL %~ deleteSet eid
   SearchDeckForTraits iid (InvestigatorTarget iid') traits
     | iid' == investigatorId -> runMessage

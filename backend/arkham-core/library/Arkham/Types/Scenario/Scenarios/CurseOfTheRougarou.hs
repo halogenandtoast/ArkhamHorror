@@ -54,9 +54,9 @@ locationsByTrait = mapFromList
   , (Unhallowed, ["81016", "81017", "81018"])
   ]
 
-locationsWithLabels :: MonadIO m => Trait -> m [(Text, LocationId)]
+locationsWithLabels :: MonadRandom m => Trait -> m [(Text, LocationId)]
 locationsWithLabels trait = do
-  shuffled <- liftIO $ shuffleM (before <> after)
+  shuffled <- shuffleM (before <> after)
   pure $ zip labels (bayou : shuffled)
  where
   locationSet = findWithDefault [] trait locationsByTrait
@@ -89,7 +89,7 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
       Setup -> do
         investigatorIds <- getInvestigatorIds
         encounterDeck <- buildEncounterDeck [EncounterSet.TheBayou]
-        (_ : trait : rest) <- liftIO . shuffleM $ keys locationsByTrait
+        (_ : trait : rest) <- shuffleM $ keys locationsByTrait
         startingLocationsWithLabel <- locationsWithLabels trait
         let
           (_, bayou : _) = break

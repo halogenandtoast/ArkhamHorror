@@ -1538,57 +1538,60 @@ instance HasSet InvestigatorId (Game queue) (HashSet LocationId) where
 instance HasQueue GameInternal where
   messageQueue = lens gameMessages $ \m x -> m { gameMessages = x }
 
-createEnemy :: MonadIO m => CardCode -> m (EnemyId, Enemy)
+createEnemy :: MonadRandom m => CardCode -> m (EnemyId, Enemy)
 createEnemy cardCode = do
-  eid <- liftIO $ EnemyId <$> nextRandom
+  eid <- getRandom
   pure (eid, lookupEnemy cardCode eid)
 
 createEffect
-  :: MonadIO m
+  :: MonadRandom m
   => CardCode
   -> Maybe (EffectMetadata Message)
   -> Source
   -> Target
   -> m (EffectId, Effect)
 createEffect cardCode meffectMetadata source target = do
-  eid <- liftIO $ EffectId <$> nextRandom
+  eid <- getRandom
   pure (eid, lookupEffect cardCode eid meffectMetadata source target)
 
 createSkillTestEffect
-  :: MonadIO m
+  :: MonadRandom m
   => EffectMetadata Message
   -> Source
   -> Target
   -> m (EffectId, Effect)
 createSkillTestEffect effectMetadata source target = do
-  eid <- liftIO $ EffectId <$> nextRandom
+  eid <- getRandom
   pure (eid, buildSkillTestEffect eid effectMetadata source target)
 
 createTokenValueEffect
-  :: MonadIO m => Int -> Source -> Target -> m (EffectId, Effect)
+  :: MonadRandom m => Int -> Source -> Target -> m (EffectId, Effect)
 createTokenValueEffect n source target = do
-  eid <- liftIO $ EffectId <$> nextRandom
+  eid <- getRandom
   pure (eid, buildTokenValueEffect eid n source target)
 
 createPhaseEffect
-  :: MonadIO m
+  :: MonadRandom m
   => EffectMetadata Message
   -> Source
   -> Target
   -> m (EffectId, Effect)
 createPhaseEffect effectMetadata source target = do
-  eid <- liftIO $ EffectId <$> nextRandom
+  eid <- getRandom
   pure (eid, buildPhaseEffect eid effectMetadata source target)
 
-createAsset :: MonadIO m => CardCode -> m (AssetId, Asset)
+createAsset :: MonadRandom m => CardCode -> m (AssetId, Asset)
 createAsset cardCode = do
-  aid <- liftIO $ AssetId <$> nextRandom
+  aid <- getRandom
   pure (aid, lookupAsset cardCode aid)
 
 createTreachery
-  :: MonadIO m => CardCode -> Maybe InvestigatorId -> m (TreacheryId, Treachery)
+  :: MonadRandom m
+  => CardCode
+  -> Maybe InvestigatorId
+  -> m (TreacheryId, Treachery)
 createTreachery cardCode miid = do
-  tid <- liftIO $ TreacheryId <$> nextRandom
+  tid <- getRandom
   pure (tid, lookupTreachery cardCode tid miid)
 
 locationFor :: MonadReader (Game queue) m => InvestigatorId -> m LocationId
@@ -1667,7 +1670,12 @@ runPreGameMessage msg g = case msg of
   _ -> pure g
 
 runGameMessage
-  :: (GameRunner env, MonadReader env m, MonadIO m, env ~ GameInternal)
+  :: ( GameRunner env
+     , MonadReader env m
+     , MonadRandom m
+     , MonadIO m
+     , env ~ GameInternal
+     )
   => Message
   -> GameInternal
   -> m GameInternal
@@ -2413,7 +2421,7 @@ runGameMessage msg g = case msg of
         FromEncounterDeck ->
           filter ((/= cardId) . getCardId) (unDeck $ g ^. encounterDeck)
         _ -> unDeck (g ^. encounterDeck)
-    shuffled <- liftIO $ shuffleM encounterDeck'
+    shuffled <- shuffleM encounterDeck'
     unshiftMessage (FoundEncounterCard iid target card)
     pure
       $ g
@@ -2430,7 +2438,7 @@ runGameMessage msg g = case msg of
         FromEncounterDeck ->
           filter ((/= cardId) . getCardId) (unDeck $ g ^. encounterDeck)
         _ -> unDeck (g ^. encounterDeck)
-    shuffled <- liftIO $ shuffleM encounterDeck'
+    shuffled <- shuffleM encounterDeck'
     unshiftMessage (InvestigatorDrewEncounterCard iid card)
     pure
       $ g
@@ -2438,13 +2446,13 @@ runGameMessage msg g = case msg of
       & (discard .~ discard')
       & (focusedCards .~ mempty)
   SearchCollectionForRandom iid source matcher -> do
-    newCardId <- CardId <$> liftIO nextRandom
+    newCardId <- getRandom
     let
       matches =
         filter (playerCardMatch matcher . ($ newCardId)) (toList allPlayerCards)
     mcard <- case matches of
       [] -> pure Nothing
-      (x : xs) -> liftIO $ Just . ($ newCardId) <$> sample (x :| xs)
+      (x : xs) -> Just . ($ newCardId) <$> sample (x :| xs)
     g <$ unshiftMessage (RequestedPlayerCard iid source mcard)
   DiscardEncounterUntilFirst source matcher -> do
     let
@@ -2453,7 +2461,7 @@ runGameMessage msg g = case msg of
     case remainingDeck of
       [] -> do
         unshiftMessage (RequestedEncounterCard source Nothing)
-        encounterDeck' <- liftIO $ shuffleM (discards <> g ^. discard)
+        encounterDeck' <- shuffleM (discards <> g ^. discard)
         pure $ g & encounterDeck .~ Deck encounterDeck' & discard .~ mempty
       (x : xs) -> do
         unshiftMessage (RequestedEncounterCard source (Just x))
@@ -2469,7 +2477,7 @@ runGameMessage msg g = case msg of
       unshiftMessage (InvestigatorDrewEncounterCard iid card)
       pure $ g & encounterDeck .~ Deck encounterDeck'
   AddToEncounterDeck card -> do
-    encounterDeck' <- liftIO . shuffleM $ card : unDeck (view encounterDeck g)
+    encounterDeck' <- shuffleM $ card : unDeck (view encounterDeck g)
     pure $ g & encounterDeck .~ Deck encounterDeck'
   ShuffleBackIntoEncounterDeck (EnemyTarget eid) -> do
     let
@@ -2479,18 +2487,17 @@ runGameMessage msg g = case msg of
         (lookup (getCardCode enemy) allEncounterCards)
         (CardId $ unEnemyId eid)
     unshiftMessage $ RemoveEnemy eid
-    encounterDeck' <- liftIO . shuffleM $ card : unDeck (view encounterDeck g)
+    encounterDeck' <- shuffleM $ card : unDeck (view encounterDeck g)
     pure $ g & encounterDeck .~ Deck encounterDeck'
   ShuffleEncounterDiscardBackIn -> do
-    encounterDeck' <-
-      liftIO . shuffleM $ unDeck (view encounterDeck g) <> view discard g
+    encounterDeck' <- shuffleM $ unDeck (view encounterDeck g) <> view discard g
     pure $ g & encounterDeck .~ Deck encounterDeck' & discard .~ mempty
   ShuffleAllInEncounterDiscardBackIn cardCode -> do
     let
       (toShuffleBackIn, discard') =
         partition ((== cardCode) . getCardCode) (g ^. discard)
     encounterDeck' <-
-      liftIO . shuffleM $ unDeck (view encounterDeck g) <> toShuffleBackIn
+      shuffleM $ unDeck (view encounterDeck g) <> toShuffleBackIn
     pure $ g & encounterDeck .~ Deck encounterDeck' & discard .~ discard'
   RevelationSkillTest iid (TreacherySource tid) skillType difficulty -> do
     let

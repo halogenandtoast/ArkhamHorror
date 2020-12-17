@@ -3,9 +3,7 @@ module Arkham.Types.RequestedTokenStrategy
   )
 where
 
-import ClassyPrelude
-
-import Arkham.Json
+import Arkham.Prelude
 
 data RequestedTokenStrategy = SetAside | RemoveTokens
   deriving stock (Show, Eq, Generic)

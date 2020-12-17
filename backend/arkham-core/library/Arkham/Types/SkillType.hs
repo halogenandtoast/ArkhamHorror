@@ -1,7 +1,6 @@
 module Arkham.Types.SkillType where
 
-import ClassyPrelude
-import Data.Aeson
+import Arkham.Prelude
 
 data SkillType
   = SkillWillpower

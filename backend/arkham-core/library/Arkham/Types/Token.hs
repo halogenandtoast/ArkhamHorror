@@ -1,8 +1,6 @@
 module Arkham.Types.Token where
 
-import ClassyPrelude
-import Data.Aeson
-import Data.UUID
+import Arkham.Prelude
 
 newtype TokenId = TokenId { getTokenId :: UUID }
   deriving newtype (Show, Eq, ToJSON, FromJSON, Hashable)
@@ -12,7 +10,7 @@ data TokenModifier = PositiveModifier Int | NegativeModifier Int | ZeroModifier 
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
 instance Monoid TokenModifier where
-  mempty = PositiveModifier 0
+  mempty = ZeroModifier
 
 -- TODO: this is a huge bandaid and might not work later
 instance Semigroup TokenModifier where

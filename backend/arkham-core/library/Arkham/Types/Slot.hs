@@ -1,10 +1,10 @@
 module Arkham.Types.Slot where
 
-import Arkham.Json
+import Arkham.Prelude
+
 import Arkham.Types.AssetId
 import Arkham.Types.Source
 import Arkham.Types.Trait
-import ClassyPrelude
 
 data Slot = Slot Source (Maybe AssetId) | TraitRestrictedSlot Source Trait (Maybe AssetId)
   deriving stock (Show, Generic)

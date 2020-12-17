@@ -1,12 +1,11 @@
 module Arkham.Types.CampaignLog where
 
-import ClassyPrelude
+import Arkham.Prelude
 
 import Arkham.Json
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes.HasRecord
-import Control.Lens
 
 data CampaignLog = CampaignLog
   { campaignLogRecorded :: HashSet CampaignLogKey

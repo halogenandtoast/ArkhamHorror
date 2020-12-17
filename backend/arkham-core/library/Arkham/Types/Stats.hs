@@ -4,7 +4,7 @@ module Arkham.Types.Stats
   )
 where
 
-import ClassyPrelude
+import Arkham.Prelude
 
 import Arkham.Types.SkillType
 

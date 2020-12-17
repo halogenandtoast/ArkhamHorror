@@ -3,11 +3,11 @@ module Arkham.Types.Prey
   )
 where
 
+import Arkham.Prelude
+
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
-import ClassyPrelude
-import Data.Aeson
 
 data Prey
   = AnyPrey

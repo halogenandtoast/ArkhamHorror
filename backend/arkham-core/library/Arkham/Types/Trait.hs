@@ -4,8 +4,7 @@ module Arkham.Types.Trait
   )
 where
 
-import ClassyPrelude
-import Data.Aeson
+import Arkham.Prelude
 
 newtype EnemyTrait = EnemyTrait { unEnemyTrait :: Trait }
 

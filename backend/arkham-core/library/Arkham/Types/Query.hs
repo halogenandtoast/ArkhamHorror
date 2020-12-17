@@ -1,7 +1,8 @@
 module Arkham.Types.Query where
 
+import Arkham.Prelude
+
 import Arkham.Types.InvestigatorId
-import ClassyPrelude
 
 newtype AssetCount = AssetCount { unAssetCount :: Int }
 newtype TreacheryCount = TreacheryCount { unTreacheryCount :: Int }

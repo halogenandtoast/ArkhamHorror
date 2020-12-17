@@ -8,7 +8,8 @@ module Arkham.Types.Event
   )
 where
 
-import Arkham.Json
+import Arkham.Prelude
+
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.Event.Attrs
@@ -17,9 +18,7 @@ import Arkham.Types.Event.Runner
 import Arkham.Types.EventId
 import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
-import ClassyPrelude
 import Data.Coerce
-import Safe (fromJustNote)
 
 data Event
   = OnTheLam' OnTheLam

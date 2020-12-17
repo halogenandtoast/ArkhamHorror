@@ -1,8 +1,8 @@
 module Arkham.Types.AgendaId where
 
+import Arkham.Prelude
+
 import Arkham.Types.Card.CardCode
-import ClassyPrelude
-import Data.Aeson
 
 newtype AgendaStep = AgendaStep { unAgendaStep :: Int }
 

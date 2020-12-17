@@ -6,7 +6,8 @@ module Arkham.Types.Skill
   )
 where
 
-import Arkham.Json
+import Arkham.Prelude
+
 import Arkham.Types.Card
 import Arkham.Types.Classes
 import Arkham.Types.InvestigatorId
@@ -14,9 +15,7 @@ import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Cards
 import Arkham.Types.Skill.Runner
 import Arkham.Types.SkillId
-import ClassyPrelude
 import Data.Coerce
-import Safe (fromJustNote)
 
 data Skill
   = ViciousBlow' ViciousBlow

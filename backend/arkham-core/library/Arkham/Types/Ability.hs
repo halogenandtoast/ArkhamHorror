@@ -8,13 +8,14 @@ module Arkham.Types.Ability
   )
 where
 
+import Arkham.Prelude
+
 import Arkham.Json
 import Arkham.Types.Ability.Limit
 import Arkham.Types.Ability.Type
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Source
 import Arkham.Types.Target
-import ClassyPrelude
 
 data Ability = Ability
   { abilitySource :: Source

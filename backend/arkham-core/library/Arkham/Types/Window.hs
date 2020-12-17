@@ -1,6 +1,6 @@
 module Arkham.Types.Window where
 
-import ClassyPrelude
+import Arkham.Prelude
 
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
@@ -10,7 +10,6 @@ import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
-import Data.Aeson
 
 data Window
   = AfterAssignedHorror Who

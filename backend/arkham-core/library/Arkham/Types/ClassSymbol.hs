@@ -3,9 +3,7 @@ module Arkham.Types.ClassSymbol
   )
 where
 
-import ClassyPrelude
-
-import Arkham.Json
+import Arkham.Prelude
 
 data ClassSymbol
   = Guardian

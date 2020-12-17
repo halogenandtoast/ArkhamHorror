@@ -128,7 +128,13 @@ data Asset
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-deriving anyclass instance ActionRunner env => HasActions env Asset
+instance ActionRunner env => HasActions env Asset where
+  getActions iid window asset = do
+    modifiers' <- getModifiersFor (toSource asset) (toTarget asset) ()
+    if any isBlank modifiers'
+      then getActions iid window (assetAttrs asset)
+      else defaultGetActions iid window asset
+
 deriving anyclass instance
   ( HasId LocationId env InvestigatorId
   , HasId CardCode env EnemyId
@@ -137,9 +143,16 @@ deriving anyclass instance
   , HasCount AssetCount env (InvestigatorId, [Trait])
   , HasSet Trait env LocationId
   , HasTarget ForSkillTest env
+  , HasModifiersFor env ()
   )
   => HasModifiersFor env Asset
-deriving anyclass instance AssetRunner env => RunMessage env Asset
+
+instance AssetRunner env => RunMessage env Asset where
+  runMessage msg asset = do
+    modifiers' <- getModifiersFor (toSource asset) (toTarget asset) ()
+    if any isBlank modifiers'
+      then runMessage (Blanked msg) asset
+      else defaultRunMessage msg asset
 
 instance Entity Asset where
   type EntityId Asset = AssetId

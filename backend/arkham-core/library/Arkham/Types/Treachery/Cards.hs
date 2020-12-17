@@ -57,6 +57,7 @@ import Arkham.Types.Treachery.Cards.TheZealotsSeal as X
 import Arkham.Types.Treachery.Cards.TwistOfFate as X
 import Arkham.Types.Treachery.Cards.UmordhothsHunger as X
 import Arkham.Types.Treachery.Cards.UmordhothsWrath as X
+import Arkham.Types.Treachery.Cards.UnhallowedCountry as X
 import Arkham.Types.Treachery.Cards.VaultOfEarthlyDemise as X
 import Arkham.Types.Treachery.Cards.VisionsOfFuturesPast as X
 import Arkham.Types.Treachery.Cards.WrackedByNightmares as X

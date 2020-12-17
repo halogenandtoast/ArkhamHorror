@@ -276,6 +276,7 @@ allPlayerCards = HashMap.fromList
   , ("02027", hiredMuscle1)
   , ("02028", riteOfSeeking)
   , ("02029", ritualCandles)
+  , ("02030", clarityOfMind)
   , ("02032", fireAxe)
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
@@ -1138,6 +1139,12 @@ ritualCandles :: CardId -> PlayerCard
 ritualCandles cardId = (asset cardId "02029" "Ritual Candles" 1 Mystic)
   { pcSkills = [SkillWillpower]
   , pcTraits = singleton Item
+  }
+
+clarityOfMind :: CardId -> PlayerCard
+clarityOfMind cardId = (asset cardId "02030" "Clarity of Mind" 2 Mystic)
+  { pcSkills = [SkillWillpower]
+  , pcTraits = singleton Spell
   }
 
 fireAxe :: CardId -> PlayerCard

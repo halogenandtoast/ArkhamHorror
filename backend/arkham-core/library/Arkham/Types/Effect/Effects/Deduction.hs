@@ -23,5 +23,5 @@ instance HasQueue env => RunMessage env Deduction where
       Just (EffectMetaTarget (LocationTarget lid')) | lid == lid' ->
         e <$ unshiftMessage (InvestigatorDiscoverClues iid lid 1)
       _ -> pure e
-    SkillTestEnds -> e <$ unshiftMessage (DisableEffect effectId)
+    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
     _ -> Deduction <$> runMessage msg attrs

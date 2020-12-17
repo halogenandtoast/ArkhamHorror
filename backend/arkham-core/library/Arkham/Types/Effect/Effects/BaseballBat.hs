@@ -27,5 +27,5 @@ instance HasQueue env => RunMessage env BaseballBat where
             [Discard (AssetTarget assetId), DisableEffect effectId]
           )
         _ -> error "wrong source"
-    SkillTestEnds -> e <$ unshiftMessage (DisableEffect effectId)
+    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
     _ -> BaseballBat <$> runMessage msg attrs

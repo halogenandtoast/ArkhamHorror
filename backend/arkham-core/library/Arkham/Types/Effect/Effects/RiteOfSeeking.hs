@@ -31,7 +31,7 @@ instance (HasQueue env) => RunMessage env RiteOfSeeking where
           (InvestigatorTarget iid)
         )
       _ -> pure e
-    SkillTestEnds -> e <$ case effectTarget of
+    SkillTestEnds _ -> e <$ case effectTarget of
       InvestigatorTarget iid ->
         unshiftMessages [DisableEffect effectId, EndTurn iid]
       _ -> unshiftMessage (DisableEffect effectId)

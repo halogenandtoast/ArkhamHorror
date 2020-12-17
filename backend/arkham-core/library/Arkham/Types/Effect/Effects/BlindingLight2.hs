@@ -33,5 +33,5 @@ instance HasQueue env => RunMessage env BlindingLight2 where
       | SkillTestTarget == effectTarget
       -> e <$ unshiftMessages
         [EnemyDamage eid iid (InvestigatorSource iid) 2, DisableEffect effectId]
-    SkillTestEnds -> e <$ unshiftMessage (DisableEffect effectId)
+    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
     _ -> BlindingLight2 <$> runMessage msg attrs

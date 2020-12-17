@@ -22,7 +22,7 @@ instance HasModifiersFor env CursedShores where
 
 instance HasQueue env => RunMessage env CursedShores where
   runMessage msg e@(CursedShores attrs) = case msg of
-    SkillTestEnds -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
+    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
     EndTurn iid | InvestigatorTarget iid == effectTarget attrs ->
       e <$ unshiftMessage (DisableEffect $ effectId attrs)
     _ -> CursedShores <$> runMessage msg attrs

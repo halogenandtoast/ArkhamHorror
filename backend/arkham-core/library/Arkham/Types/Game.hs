@@ -1863,7 +1863,7 @@ runGameMessage msg g = case msg of
           pure $ g & skills %~ insertMap skillId skill
         _ -> pure g
       _ -> pure g
-  SkillTestEnds -> do
+  SkillTestEnds _ -> do
     let
       skillCardsWithOwner =
         flip map (mapToList $ g ^. skills) $ \(skillId, skill) ->

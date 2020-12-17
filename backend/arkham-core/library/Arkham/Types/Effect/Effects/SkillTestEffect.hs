@@ -31,5 +31,5 @@ instance HasModifiersFor env SkillTestEffect where
 
 instance HasQueue env => RunMessage env SkillTestEffect where
   runMessage msg e@(SkillTestEffect attrs) = case msg of
-    SkillTestEnds -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
+    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
     _ -> SkillTestEffect <$> runMessage msg attrs

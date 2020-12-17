@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 65aeaf5069564652cf16649ed864803b910f8ea2b0fe7a804f93d4cebd37843c
+-- hash: b81bd1dfa737ded4a886b2f95d0f97b7376dea6892ea8cbeed906d17efdf1516
 
 name:           arkham-core
 version:        0.0.0
@@ -582,6 +582,7 @@ library
       Arkham.Types.Treachery.Cards.SearchingForIzzie
       Arkham.Types.Treachery.Cards.SmiteTheWicked
       Arkham.Types.Treachery.Cards.SomethingInTheDrinks
+      Arkham.Types.Treachery.Cards.SordidAndSilent
       Arkham.Types.Treachery.Cards.SpectralMist
       Arkham.Types.Treachery.Cards.TerrorFromBeyond
       Arkham.Types.Treachery.Cards.TheYellowSign

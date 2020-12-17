@@ -15,7 +15,6 @@ import Arkham.Types.Trait (Trait)
 import qualified Arkham.Types.Trait as Trait
 import qualified Data.HashSet as HashSet
 import Data.List.NonEmpty (NonEmpty(..))
-import Data.UUID.V4
 import System.Random.Shuffle
 
 newtype TheMidnightMasks = TheMidnightMasks Attrs
@@ -102,19 +101,16 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
       (acolytes, darkCult) <- splitAt (count' - 1)
         <$> gatherEncounterSet EncounterSet.DarkCult
       -- ^ we will spawn these acolytes
-      southside <- liftIO $ sample $ "01126" :| ["01127"]
-      downtown <- liftIO $ sample $ "01130" :| ["01131"]
-      houseBurnedDown <- asks $ hasRecord YourHouseHasBurnedToTheGround
-      ghoulPriestAlive <- asks $ hasRecord GhoulPriestIsStillAlive
-      litaForcedToFindOthersToHelpHerCause <- asks
-        $ hasRecord LitaWasForcedToFindOthersToHelpHerCause
-      ghoulPriestCard <-
-        liftIO $ lookupEncounterCard "01116" . CardId <$> nextRandom
-      cultistCards <-
-        liftIO
-        $ for ["01137", "01138", "01139", "01140", "01141"]
-        $ \cardCode -> lookupEncounterCard cardCode . CardId <$> nextRandom
-      cultistDeck' <- liftIO $ shuffleM cultistCards
+      southside <- sample $ "01126" :| ["01127"]
+      downtown <- sample $ "01130" :| ["01131"]
+      houseBurnedDown <- getHasRecord YourHouseHasBurnedToTheGround
+      ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
+      litaForcedToFindOthersToHelpHerCause <- getHasRecord
+        LitaWasForcedToFindOthersToHelpHerCause
+      ghoulPriestCard <- lookupEncounterCard "01116" <$> getRandom
+      cultistCards <- for ["01137", "01138", "01139", "01140", "01141"]
+        $ \cardCode -> lookupEncounterCard cardCode <$> getRandom
+      cultistDeck' <- shuffleM cultistCards
       let
         startingLocationMessages = if houseBurnedDown
           then [RevealLocation Nothing "01125", MoveAllTo "01125"]

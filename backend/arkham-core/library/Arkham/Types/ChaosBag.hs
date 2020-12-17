@@ -85,7 +85,7 @@ replaceFirstChooseChoice source miid strategy replacement = \case
     replaceFirstChoice source miid strategy replacement (Decided step) : rest
 
 resolveFirstUnresolved
-  :: ( MonadIO m
+  :: ( MonadRandom m
      , MonadState ChaosBag m
      , MonadReader env m
      , HasId LeadInvestigatorId env ()
@@ -101,7 +101,7 @@ resolveFirstUnresolved source miid strategy = \case
   Decided step -> case step of
     Draw -> do
       bagTokens <- gets chaosBagTokens
-      (drawn, remaining) <- splitAt 1 <$> liftIO (shuffleM bagTokens)
+      (drawn, remaining) <- splitAt 1 <$> shuffleM bagTokens
       modify' ((tokensL .~ remaining) . (setAsideTokensL %~ (drawn <>)))
       pure (Resolved drawn, [])
     Choose n steps tokens' -> if length tokens' == n
@@ -131,7 +131,7 @@ resolveFirstUnresolved source miid strategy = \case
           pure (Decided $ Choose n steps' tokens', msgs)
 
 resolveFirstChooseUnresolved
-  :: ( MonadIO m
+  :: ( MonadRandom m
      , MonadState ChaosBag m
      , MonadReader env m
      , HasId LeadInvestigatorId env ()

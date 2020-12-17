@@ -100,20 +100,20 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
     Setup -> do
       investigatorIds <- getInvestigatorIds
 
-      securityOffice <- liftIO $ sample $ "02128" :| ["02129"]
-      administrationOffice <- liftIO $ sample $ "02130" :| ["02131"]
+      securityOffice <- sample $ "02128" :| ["02129"]
+      administrationOffice <- sample $ "02130" :| ["02131"]
 
       armitageKidnapped <- getHasRecord DrHenryArmitageWasKidnapped
 
-      exhibitHalls <- liftIO $ shuffleM =<< for
+      exhibitHalls <- shuffleM =<< for
         ["02132", "02133", "02134", "02135", "02136"]
         (\cardCode -> lookupEncounterCard cardCode <$> getRandom)
 
-      restrictedHall <- liftIO $ lookupEncounterCard "02137" <$> getRandom
+      restrictedHall <- lookupEncounterCard "02137" <$> getRandom
 
       let (bottom, top) = splitAt 2 exhibitHalls
 
-      bottom' <- liftIO $ shuffleM $ restrictedHall : bottom
+      bottom' <- shuffleM $ restrictedHall : bottom
 
       let exhibitDeck = top <> bottom'
 

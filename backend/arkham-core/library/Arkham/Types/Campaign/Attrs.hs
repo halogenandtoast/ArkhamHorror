@@ -8,9 +8,6 @@ import Arkham.Types.CampaignLog
 import Arkham.Types.CampaignStep
 import Arkham.Types.Difficulty
 import Arkham.Types.Investigator
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
-import Data.UUID.V4
 
 data Attrs = Attrs
   { campaignId :: CampaignId
@@ -62,7 +59,7 @@ instance HasSet CompletedScenarioId env Attrs where
       ScenarioStep scenarioId -> Just $ CompletedScenarioId scenarioId
       _ -> Nothing
 
-instance (CampaignRunner env) => RunMessage env Attrs where
+instance CampaignRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     StartCampaign -> a <$ unshiftMessage (CampaignStep campaignStep)
     CampaignStep Nothing -> a <$ unshiftMessage GameOver -- TODO: move to generic
@@ -70,36 +67,33 @@ instance (CampaignRunner env) => RunMessage env Attrs where
       a <$ unshiftMessages [ResetGame, StartScenario sid]
     SetTokensForScenario -> a <$ unshiftMessage (SetTokens campaignChaosBag)
     AddCampaignCardToDeck iid cardCode -> do
-      card <- liftIO $ lookupPlayerCard cardCode . CardId <$> nextRandom
-      pure $ a & storyCards %~ HashMap.insertWith (<>) iid [card]
+      card <- lookupPlayerCard cardCode <$> getRandom
+      pure $ a & storyCards %~ insertWith (<>) iid [card]
     AddCampaignCardToEncounterDeck cardCode -> do
-      card <- liftIO $ lookupEncounterCard cardCode . CardId <$> nextRandom
+      card <- lookupEncounterCard cardCode <$> getRandom
       a <$ unshiftMessages [AddToEncounterDeck card]
     RemoveCampaignCardFromDeck iid cardCode ->
       pure
         $ a
         & storyCards
-        %~ HashMap.adjust (filter ((/= cardCode) . pcCardCode)) iid
+        %~ adjustMap (filter ((/= cardCode) . pcCardCode)) iid
     AddToken token -> pure $ a & chaosBag %~ (token :)
-    InitDeck iid deck -> pure $ a & decks %~ HashMap.insert iid deck
+    InitDeck iid deck -> pure $ a & decks %~ insertMap iid deck
     ResetGame -> do
-      for_ (HashMap.toList campaignDecks) $ \(iid, deck) -> do
-        let
-          investigatorStoryCards =
-            HashMap.findWithDefault [] iid campaignStoryCards
+      for_ (mapToList campaignDecks) $ \(iid, deck) -> do
+        let investigatorStoryCards = findWithDefault [] iid campaignStoryCards
         unshiftMessage (LoadDeck iid $ deck <> investigatorStoryCards)
       pure a
     CrossOutRecord key ->
       pure
         $ a
-        & (log . recorded %~ HashSet.delete key)
-        & (log . recordedSets %~ HashMap.delete key)
-        & (log . recordedCounts %~ HashMap.delete key)
-    Record key -> pure $ a & log . recorded %~ HashSet.insert key
+        & (log . recorded %~ deleteSet key)
+        & (log . recordedSets %~ deleteMap key)
+        & (log . recordedCounts %~ deleteMap key)
+    Record key -> pure $ a & log . recorded %~ insertSet key
     RecordSet key cardCodes ->
-      pure $ a & log . recordedSets %~ HashMap.insert key cardCodes
-    RecordCount key int ->
-      pure $ a & log . recordedCounts %~ HashMap.insert key int
+      pure $ a & log . recordedSets %~ insertMap key cardCodes
+    RecordCount key int -> pure $ a & log . recordedCounts %~ insertMap key int
     _ -> pure a
 
 baseAttrs :: CampaignId -> Text -> Difficulty -> [Token] -> Attrs

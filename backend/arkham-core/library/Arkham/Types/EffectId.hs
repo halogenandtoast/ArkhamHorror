@@ -1,8 +1,6 @@
 module Arkham.Types.EffectId where
 
-import ClassyPrelude
-import Data.Aeson
-import Data.UUID
+import Arkham.Prelude
 
 newtype EffectId = EffectId { unEffectId :: UUID }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)

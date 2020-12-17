@@ -13,7 +13,6 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.Token
 import Arkham.Types.Trait hiding (Cultist)
 import Data.List.NonEmpty (NonEmpty(..))
-import Data.UUID.V4
 import System.Random.Shuffle
 
 newtype TheDevourerBelow = TheDevourerBelow Attrs
@@ -45,24 +44,22 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
   runMessage msg s@(TheDevourerBelow attrs@Attrs {..}) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
-      pastMidnight <- asks $ hasRecord ItIsPastMidnight
-      ghoulPriestAlive <- asks $ hasRecord GhoulPriestIsStillAlive
-      cultistsWhoGotAway <- asks $ hasRecordSet CultistsWhoGotAway
-      ghoulPriestCard <-
-        liftIO $ lookupEncounterCard "01116" . CardId <$> nextRandom
+      pastMidnight <- getHasRecord ItIsPastMidnight
+      ghoulPriestAlive <- getHasRecord GhoulPriestIsStillAlive
+      cultistsWhoGotAway <- getRecordSet CultistsWhoGotAway
+      ghoulPriestCard <- lookupEncounterCard "01116" <$> getRandom
       let
         arkhamWoods = ["01150", "01151", "01152", "01153", "01154", "01155"]
         woodsLabels = ["woods1", "woods2", "woods3", "woods4"]
         ghoulPriestMessages =
-          if ghoulPriestAlive then [AddToEncounterDeck ghoulPriestCard] else []
+          [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
         pastMidnightMessages =
           if pastMidnight then [AllRandomDiscard, AllRandomDiscard] else []
         cultistsWhoGotAwayMessages =
           replicate ((length cultistsWhoGotAway + 1) `div` 2) PlaceDoomOnAgenda
-      woodsLocations <- liftIO $ take 4 <$> shuffleM arkhamWoods
+      woodsLocations <- take 4 <$> shuffleM arkhamWoods
       randomSet <-
-        liftIO
-        . sample
+        sample
         $ EncounterSet.AgentsOfYogSothoth
         :| [ EncounterSet.AgentsOfShubNiggurath
            , EncounterSet.AgentsOfCthulhu

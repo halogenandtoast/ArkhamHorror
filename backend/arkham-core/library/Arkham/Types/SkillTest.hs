@@ -19,7 +19,6 @@ import Arkham.Types.TokenResponse
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Data.Semigroup
-import Data.UUID.V4
 import System.Environment
 
 data SkillTest = SkillTest
@@ -241,7 +240,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
             )
         pure $ s & (setAsideTokens %~ (tokenFaces <>))
     RevealToken SkillTestSource{} _iid tokenFace -> do
-      token' <- flip DrawnToken tokenFace . TokenId <$> liftIO nextRandom
+      token' <- flip DrawnToken tokenFace . TokenId <$> getRandom
       pure $ s & revealedTokens %~ (token' :)
     RevealSkillTestTokens iid -> do
       revealedTokenFaces <- concatMapM

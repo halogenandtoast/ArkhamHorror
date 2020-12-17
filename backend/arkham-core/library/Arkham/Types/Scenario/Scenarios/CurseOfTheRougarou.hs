@@ -157,7 +157,7 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
             ]
         CurseOfTheRougarou
           . (`with` metadata { setAsideLocationTraits = setFromList rest })
-          <$> runMessage msg (attrs & locations .~ locations')
+          <$> runMessage msg (attrs & locationsL .~ locations')
       PutSetAsideIntoPlay (SetAsideLocationsTarget _) -> do
         setAsideLocationsWithLabels <- concat <$> traverse
           locationsWithLabels

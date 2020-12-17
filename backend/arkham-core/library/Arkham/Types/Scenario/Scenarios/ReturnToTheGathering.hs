@@ -84,5 +84,5 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
             ]
         ReturnToTheGathering . TheGathering <$> runMessage
           msg
-          (attrs & locations .~ locations')
+          (attrs & locationsL .~ locations')
       _ -> ReturnToTheGathering <$> runMessage msg theGathering'

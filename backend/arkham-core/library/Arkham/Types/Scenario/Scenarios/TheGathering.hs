@@ -90,7 +90,7 @@ instance ScenarioRunner env => RunMessage env TheGathering where
           , ("Cellar", ["01114"])
           , ("Parlor", ["01115"])
           ]
-      TheGathering <$> runMessage msg (attrs & locations .~ locations')
+      TheGathering <$> runMessage msg (attrs & locationsL .~ locations')
     ResolveToken _ Cultist iid ->
       s <$ when (isHardExpert attrs) (unshiftMessage $ DrawAnotherToken iid)
     ResolveToken _ Tablet iid -> do

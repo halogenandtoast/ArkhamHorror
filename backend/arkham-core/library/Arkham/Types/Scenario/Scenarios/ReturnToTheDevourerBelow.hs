@@ -143,8 +143,8 @@ instance ScenarioRunner env => RunMessage env ReturnToTheDevourerBelow where
             ]
         ReturnToTheDevourerBelow . TheDevourerBelow <$> runMessage
           msg
-          (attrs & locations .~ locations')
-      CreateEnemyAt "01157" "01156" -> do
+          (attrs & locationsL .~ locations')
+      CreateEnemyAt "01157" "01156" ->
         s <$ unshiftMessage
           (AttachStoryTreacheryTo "50032b" (CardCodeTarget "00157"))
       _ -> ReturnToTheDevourerBelow <$> runMessage msg theDevourerBelow'

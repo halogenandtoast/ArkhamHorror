@@ -96,7 +96,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
           , ("VIP Area", ["02076"])
           , ("Back Alley", ["02077"])
           ]
-      TheHouseAlwaysWins <$> runMessage msg (attrs & locations .~ locations')
+      TheHouseAlwaysWins <$> runMessage msg (attrs & locationsL .~ locations')
     ResolveToken _ Tablet iid -> s <$ unshiftMessage (SpendResources iid 3)
     ResolveToken drawnToken Skull iid -> do
       let requiredResources = if isEasyStandard attrs then 2 else 3

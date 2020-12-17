@@ -106,7 +106,7 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
           , ("Alchemy Labs", ["02057"])
           ]
       ExtracurricularActivity
-        <$> runMessage msg (attrs & locations .~ locations')
+        <$> runMessage msg (attrs & locationsL .~ locations')
     ResolveToken drawnToken ElderThing iid -> s <$ unshiftMessage
       (DiscardTopOfDeck
         iid

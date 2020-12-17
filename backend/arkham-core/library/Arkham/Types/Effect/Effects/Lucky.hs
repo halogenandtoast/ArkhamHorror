@@ -24,5 +24,5 @@ instance HasQueue env => RunMessage env Lucky where
   runMessage msg e@(Lucky attrs) = case msg of
     CreatedEffect eid _ _ (InvestigatorTarget _) | eid == effectId attrs ->
       e <$ unshiftMessage RerunSkillTest
-    SkillTestEnds -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
+    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
     _ -> Lucky <$> runMessage msg attrs

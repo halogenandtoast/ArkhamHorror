@@ -39,7 +39,7 @@ instance HasQueue env => RunMessage env BindMonster2 where
       [ CreateEffect "02031" Nothing (toSource attrs) SkillTestTarget
       , ChooseEvadeEnemy iid (EventSource eid) SkillWillpower False
       ]
-    SkillTestEnds -> e <$ when
+    SkillTestEnds _ -> e <$ when
       (null eventAttachedTarget)
       (unshiftMessage (Discard $ toTarget attrs))
     UseCardAbility iid source _ 1 | isSource attrs source ->

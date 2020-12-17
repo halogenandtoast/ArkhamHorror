@@ -27,5 +27,5 @@ instance HasQueue env => RunMessage env Shrivelling where
           , DisableEffect effectId
           ]
         )
-    SkillTestEnds -> e <$ unshiftMessage (DisableEffect effectId)
+    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
     _ -> Shrivelling <$> runMessage msg attrs

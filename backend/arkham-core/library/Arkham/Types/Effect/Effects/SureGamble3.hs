@@ -22,5 +22,5 @@ instance HasModifiersFor env SureGamble3 where
 
 instance HasQueue env => RunMessage env SureGamble3 where
   runMessage msg e@(SureGamble3 attrs) = case msg of
-    SkillTestEnds -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
+    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
     _ -> SureGamble3 <$> runMessage msg attrs

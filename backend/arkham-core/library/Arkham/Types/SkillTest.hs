@@ -267,7 +267,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           max 0 (currentSkillValue + skillTestValueModifier + skillIconCount s)
       unshiftMessages
         [ Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
-        , SkillTestEnds
+        , SkillTestEnds skillTestSource
         ]
       pure $ s & result .~ SucceededBy True modifiedSkillValue'
     FailSkillTest -> do
@@ -292,7 +292,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                difficulty
              )
            , Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
-           , SkillTestEnds
+           , SkillTestEnds skillTestSource
            ]
       pure $ s & result .~ FailedBy True difficulty
     StartSkillTest _ -> s <$ unshiftMessages
@@ -301,7 +301,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
           skillTestCommittedCards
       <> [TriggerSkillTest skillTestInvestigator]
       )
-    InvestigatorCommittedSkill _ skillId -> do
+    InvestigatorCommittedSkill _ skillId ->
       pure $ s & subscribers %~ (SkillTarget skillId :)
     SkillTestCommitCard iid cardId -> do
       card <- asks (getCard iid cardId)
@@ -313,7 +313,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
       -- not want to remove them as subscribers from the stack
       unshiftMessage $ ResetTokens (toSource s)
       pure $ s & setAsideTokens .~ mempty & revealedTokens .~ mempty
-    SkillTestEnds -> s <$ unshiftMessage (ResetTokens (toSource s))
+    SkillTestEnds _ -> s <$ unshiftMessage (ResetTokens (toSource s))
     SkillTestResults -> do
       unshiftMessage
         (Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults])
@@ -363,7 +363,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         Unrun -> pure ()
       pure s
     SkillTestApplyResultsAfter -> do -- ST.7 -- apply results
-      unshiftMessage SkillTestEnds -- -> ST.8 -- Skill test ends
+      unshiftMessage $ SkillTestEnds skillTestSource -- -> ST.8 -- Skill test ends
 
       case skillTestResult of
         SucceededBy _ n -> unshiftMessages

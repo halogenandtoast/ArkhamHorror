@@ -30,5 +30,5 @@ instance HasQueue env => RunMessage env Burglary where
         (Investigate iid lid (toSource attrs) SkillIntellect False)
     SuccessfulInvestigation iid _ source | isSource attrs source ->
       e <$ unshiftMessages [TakeResources iid 3 False, DisableEffect effectId]
-    SkillTestEnds -> e <$ unshiftMessage (DisableEffect effectId)
+    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
     _ -> Burglary <$> runMessage msg attrs

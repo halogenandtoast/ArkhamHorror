@@ -42,5 +42,5 @@ instance (HasQueue env, HasSet ConnectedLocationId env LocationId) => RunMessage
           ]
         , DisableEffect effectId
         ]
-    SkillTestEnds -> e <$ unshiftMessage (DisableEffect effectId)
+    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
     _ -> SeekingAnswers <$> runMessage msg attrs

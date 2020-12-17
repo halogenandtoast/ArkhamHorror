@@ -300,7 +300,7 @@ data Message
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
   | FoundEnemyInVoid InvestigatorId EnemyId
   | AddToEncounterDeck EncounterCard
-  | SkillTestEnds
+  | SkillTestEnds Source
   | ReturnSkillTestRevealedTokens
   | RevealToken Source InvestigatorId Token
   | RevealSkillTestTokens InvestigatorId

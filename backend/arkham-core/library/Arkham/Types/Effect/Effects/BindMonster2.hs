@@ -34,5 +34,5 @@ instance (HasQueue env, HasSet Trait env EnemyId) => RunMessage env BindMonster2
               [AttachEvent evid (EnemyTarget eid), DisableEffect effectId]
             )
         _ -> pure e
-    SkillTestEnds -> e <$ unshiftMessage (DisableEffect effectId)
+    SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
     _ -> BindMonster2 <$> runMessage msg attrs

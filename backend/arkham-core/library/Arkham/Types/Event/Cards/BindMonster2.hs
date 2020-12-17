@@ -1,8 +1,8 @@
 {-# LANGUAGE UndecidableInstances #-}
 
-module Arkham.Types.Event.Cards.BindMonster
-  ( bindMonster
-  , BindMonster(..)
+module Arkham.Types.Event.Cards.BindMonster2
+  ( bindMonster2
+  , BindMonster2(..)
   )
 where
 
@@ -11,23 +11,23 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Game.Helpers
 
-newtype BindMonster = BindMonster Attrs
+newtype BindMonster2 = BindMonster2 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-bindMonster :: InvestigatorId -> EventId -> BindMonster
-bindMonster iid uuid = BindMonster $ baseAttrs iid uuid "02031"
+bindMonster2 :: InvestigatorId -> EventId -> BindMonster2
+bindMonster2 iid uuid = BindMonster2 $ baseAttrs iid uuid "02031"
 
-instance HasActions env BindMonster where
-  getActions iid window (BindMonster attrs) = getActions iid window attrs
+instance HasActions env BindMonster2 where
+  getActions iid window (BindMonster2 attrs) = getActions iid window attrs
 
-instance HasModifiersFor env BindMonster where
-  getModifiersFor _ target (BindMonster attrs@Attrs {..})
+instance HasModifiersFor env BindMonster2 where
+  getModifiersFor _ target (BindMonster2 attrs@Attrs {..})
     | target `elem` eventAttachedTarget = pure
     $ toModifiers attrs [AlternativeReady (toSource attrs)]
   getModifiersFor _ _ _ = pure []
 
-instance HasQueue env => RunMessage env BindMonster where
-  runMessage msg e@(BindMonster attrs@Attrs {..}) = case msg of
+instance HasQueue env => RunMessage env BindMonster2 where
+  runMessage msg e@(BindMonster2 attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
       [ CreateEffect "02031" Nothing (toSource attrs) SkillTestTarget
       , ChooseEvadeEnemy iid (EventSource eid) SkillWillpower False
@@ -43,4 +43,4 @@ instance HasQueue env => RunMessage env BindMonster where
         Just target@(EnemyTarget _) ->
           e <$ unshiftMessages [Ready target, Discard $ toTarget attrs]
         _ -> error "invalid target"
-    _ -> BindMonster <$> runMessage msg attrs
+    _ -> BindMonster2 <$> runMessage msg attrs

@@ -1,0 +1,43 @@
+{-# LANGUAGE UndecidableInstances #-}
+
+module Arkham.Types.Effect.Effects.RiteOfSeeking
+  ( riteOfSeeking
+  , RiteOfSeeking(..)
+  )
+where
+
+import Arkham.Import
+
+import Arkham.Types.Effect.Attrs
+
+newtype RiteOfSeeking = RiteOfSeeking Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+riteOfSeeking :: EffectArgs -> RiteOfSeeking
+riteOfSeeking = RiteOfSeeking . uncurry4 (baseAttrs "02028")
+
+instance HasModifiersFor env RiteOfSeeking where
+  getModifiersFor = noModifiersFor
+
+instance (HasQueue env) => RunMessage env RiteOfSeeking where
+  runMessage msg e@(RiteOfSeeking attrs@Attrs {..}) = case msg of
+    RevealToken _ iid token -> case effectTarget of
+      InvestigationTarget iid' _ | iid == iid' -> e <$ when
+        (token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
+        (unshiftMessage $ CreateEffect
+          "02028"
+          Nothing
+          (toSource attrs)
+          (InvestigatorTarget iid)
+        )
+      _ -> pure e
+    SkillTestEnds -> e <$ case effectTarget of
+      InvestigatorTarget iid ->
+        unshiftMessages [DisableEffect effectId, EndTurn iid]
+      _ -> unshiftMessage (DisableEffect effectId)
+    SuccessfulInvestigation iid _ source | isSource attrs source ->
+      case effectTarget of
+        InvestigationTarget _ lid' ->
+          e <$ unshiftMessage (DiscoverClues iid lid' 1)
+        _ -> pure e
+    _ -> RiteOfSeeking <$> runMessage msg attrs

@@ -46,6 +46,7 @@ import Arkham.Types.Asset.Cards.HardKnocks as X
 import Arkham.Types.Asset.Cards.HardKnocks2 as X
 import Arkham.Types.Asset.Cards.HeirloomOfHyperborea as X
 import Arkham.Types.Asset.Cards.HigherEducation as X
+import Arkham.Types.Asset.Cards.HiredMuscle1 as X
 import Arkham.Types.Asset.Cards.HolyRosary as X
 import Arkham.Types.Asset.Cards.Hyperawareness as X
 import Arkham.Types.Asset.Cards.Hyperawareness2 as X
@@ -80,6 +81,7 @@ import Arkham.Types.Asset.Cards.ProfessorWarrenRice as X
 import Arkham.Types.Asset.Cards.RabbitsFoot as X
 import Arkham.Types.Asset.Cards.RabbitsFoot3 as X
 import Arkham.Types.Asset.Cards.ResearchLibrarian as X
+import Arkham.Types.Asset.Cards.RiteOfSeeking as X
 import Arkham.Types.Asset.Cards.Rolands38Special as X
 import Arkham.Types.Asset.Cards.Scavenging as X
 import Arkham.Types.Asset.Cards.ScrollOfProphecies as X

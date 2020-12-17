@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 589eb207e75545d7bd6a4a421a07498f2bfdbd9aca467e44cd343cb49f431dc0
+-- hash: af1082f6225382d884e42aead7bb5f6b2b5fffe2421f332bce0ece9ceb812534
 
 name:           arkham-core
 version:        0.0.0
@@ -114,6 +114,7 @@ library
       Arkham.Types.Asset.Cards.HardKnocks2
       Arkham.Types.Asset.Cards.HeirloomOfHyperborea
       Arkham.Types.Asset.Cards.HigherEducation
+      Arkham.Types.Asset.Cards.HiredMuscle1
       Arkham.Types.Asset.Cards.HolyRosary
       Arkham.Types.Asset.Cards.Hyperawareness
       Arkham.Types.Asset.Cards.Hyperawareness2
@@ -148,6 +149,7 @@ library
       Arkham.Types.Asset.Cards.RabbitsFoot
       Arkham.Types.Asset.Cards.RabbitsFoot3
       Arkham.Types.Asset.Cards.ResearchLibrarian
+      Arkham.Types.Asset.Cards.RiteOfSeeking
       Arkham.Types.Asset.Cards.Rolands38Special
       Arkham.Types.Asset.Cards.Scavenging
       Arkham.Types.Asset.Cards.ScrollOfProphecies
@@ -221,6 +223,7 @@ library
       Arkham.Types.Effect.Effects.OnTheLam
       Arkham.Types.Effect.Effects.PhaseEffect
       Arkham.Types.Effect.Effects.PushedIntoTheBeyond
+      Arkham.Types.Effect.Effects.RiteOfSeeking
       Arkham.Types.Effect.Effects.SeekingAnswers
       Arkham.Types.Effect.Effects.Shrivelling
       Arkham.Types.Effect.Effects.SkillTestEffect

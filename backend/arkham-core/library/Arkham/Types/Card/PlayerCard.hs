@@ -273,6 +273,8 @@ allPlayerCards = HashMap.fromList
   , ("02024", liquidCourage)
   , ("02025", thinkOnYourFeet)
   , ("02026", doubleOrNothing)
+  , ("02027", hiredMuscle1)
+  , ("02028", riteOfSeeking)
   , ("02032", fireAxe)
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
@@ -1117,6 +1119,19 @@ doubleOrNothing cardId =
     { pcTraits = singleton Fortune
     , pcCommitRestrictions = [MaxOnePerTest]
     }
+
+hiredMuscle1 :: CardId -> PlayerCard
+hiredMuscle1 cardId = (asset cardId "02027" "Hired Muscle" 1 Rogue)
+  { pcSkills = [SkillCombat]
+  , pcTraits = setFromList [Ally, Criminal]
+  , pcLevel = 1
+  }
+
+riteOfSeeking :: CardId -> PlayerCard
+riteOfSeeking cardId = (asset cardId "02028" "Rite of Seeking" 4 Mystic)
+  { pcSkills = [SkillIntellect]
+  , pcTraits = setFromList [Spell]
+  }
 
 fireAxe :: CardId -> PlayerCard
 fireAxe cardId = (asset cardId "02032" "Fire Axe" 1 Survivor)

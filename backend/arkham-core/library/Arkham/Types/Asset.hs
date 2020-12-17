@@ -84,6 +84,8 @@ data Asset
   | LaboratoryAssistant' LaboratoryAssistant
   | StrangeSolution' StrangeSolution
   | LiquidCourage' LiquidCourage
+  | HiredMuscle1' HiredMuscle1
+  | RiteOfSeeking' RiteOfSeeking
   | FireAxe' FireAxe
   | PeterSylvestre' PeterSylvestre
   | DrHenryArmitage' DrHenryArmitage
@@ -258,6 +260,8 @@ allAssets = mapFromList
   , ("02020", LaboratoryAssistant' . laboratoryAssistant)
   , ("02021", StrangeSolution' . strangeSolution)
   , ("02024", LiquidCourage' . liquidCourage)
+  , ("02027", HiredMuscle1' . hiredMuscle1)
+  , ("02028", RiteOfSeeking' . riteOfSeeking)
   , ("02032", FireAxe' . fireAxe)
   , ("02033", PeterSylvestre' . peterSylvestre)
   , ("02040", DrHenryArmitage' . drHenryArmitage)
@@ -362,6 +366,8 @@ assetAttrs = \case
   LaboratoryAssistant' attrs -> coerce attrs
   StrangeSolution' attrs -> coerce attrs
   LiquidCourage' attrs -> coerce attrs
+  HiredMuscle1' attrs -> coerce attrs
+  RiteOfSeeking' attrs -> coerce attrs
   FireAxe' attrs -> coerce attrs
   PeterSylvestre' attrs -> coerce attrs
   DrHenryArmitage' attrs -> coerce attrs

@@ -99,6 +99,8 @@ data Asset
   | PeterClover' PeterClover
   | DrFrancisMorgan' DrFrancisMorgan
   | BrotherXavier1' BrotherXavier1
+  | AdamLynch' AdamLynch
+  | TheNecronomiconOlausWormiusTranslation' TheNecronomiconOlausWormiusTranslation
   | Bandolier' Bandolier
   | KeenEye3' KeenEye3
   | SpringfieldM19034' SpringfieldM19034
@@ -138,6 +140,7 @@ instance ActionRunner env => HasActions env Asset where
 deriving anyclass instance
   ( HasId LocationId env InvestigatorId
   , HasId CardCode env EnemyId
+  , HasId (Maybe LocationId) env LocationMatcher
   , HasCount ResourceCount env InvestigatorId
   , HasCount CardCount env InvestigatorId
   , HasCount AssetCount env (InvestigatorId, [Trait])
@@ -292,6 +295,11 @@ allAssets = mapFromList
   , ("02079", PeterClover' . peterClover)
   , ("02080", DrFrancisMorgan' . drFrancisMorgan)
   , ("02106", BrotherXavier1' . brotherXavier1)
+  , ("02139", AdamLynch' . adamLynch)
+  , ( "02140"
+    , TheNecronomiconOlausWormiusTranslation'
+      . theNecronomiconOlausWormiusTranslation
+    )
   , ("02147", Bandolier' . bandolier)
   , ("02185", KeenEye3' . keenEye3)
   , ("02226", SpringfieldM19034' . springfieldM19034)
@@ -402,6 +410,8 @@ assetAttrs = \case
   PeterClover' attrs -> coerce attrs
   DrFrancisMorgan' attrs -> coerce attrs
   BrotherXavier1' attrs -> coerce attrs
+  AdamLynch' attrs -> coerce attrs
+  TheNecronomiconOlausWormiusTranslation' attrs -> coerce attrs
   Bandolier' attrs -> coerce attrs
   KeenEye3' attrs -> coerce attrs
   SpringfieldM19034' attrs -> coerce attrs

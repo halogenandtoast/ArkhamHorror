@@ -3,6 +3,7 @@ module Arkham.Types.Asset.Cards
   )
 where
 
+import Arkham.Types.Asset.Cards.AdamLynch as X
 import Arkham.Types.Asset.Cards.AlchemicalConcoction as X
 import Arkham.Types.Asset.Cards.Aquinnah1 as X
 import Arkham.Types.Asset.Cards.ArcaneEnlightenment as X
@@ -98,6 +99,7 @@ import Arkham.Types.Asset.Cards.StrayCat as X
 import Arkham.Types.Asset.Cards.Switchblade as X
 import Arkham.Types.Asset.Cards.TheNecronomicon as X
 import Arkham.Types.Asset.Cards.TheNecronomiconAdvanced as X
+import Arkham.Types.Asset.Cards.TheNecronomiconOlausWormiusTranslation as X
 import Arkham.Types.Asset.Cards.ToothOfEztli as X
 import Arkham.Types.Asset.Cards.WendysAmulet as X
 import Arkham.Types.Asset.Cards.WhittonGreene as X

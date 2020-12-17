@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c1cbbaf020eb6cde80bf547e3baafd6a7c4df74e32f1bc7e21882db1c5aa4cef
+-- hash: 6eb9e500d1a485ff5c33aecb49d9fd3e725ad11916408483f9f3c4f6ad07f996
 
 name:           arkham-core
 version:        0.0.0
@@ -36,6 +36,7 @@ library
       Arkham.Types.Act.Cards.MysteriousGateway
       Arkham.Types.Act.Cards.NightAtTheMuseum
       Arkham.Types.Act.Cards.RicesWhereabouts
+      Arkham.Types.Act.Cards.SearchingForTheTome
       Arkham.Types.Act.Cards.SkinGame
       Arkham.Types.Act.Cards.TheBarrier
       Arkham.Types.Act.Cards.Trapped
@@ -77,6 +78,7 @@ library
       Arkham.Types.Asset
       Arkham.Types.Asset.Attrs
       Arkham.Types.Asset.Cards
+      Arkham.Types.Asset.Cards.AdamLynch
       Arkham.Types.Asset.Cards.AlchemicalConcoction
       Arkham.Types.Asset.Cards.Aquinnah1
       Arkham.Types.Asset.Cards.ArcaneEnlightenment
@@ -172,6 +174,7 @@ library
       Arkham.Types.Asset.Cards.Switchblade
       Arkham.Types.Asset.Cards.TheNecronomicon
       Arkham.Types.Asset.Cards.TheNecronomiconAdvanced
+      Arkham.Types.Asset.Cards.TheNecronomiconOlausWormiusTranslation
       Arkham.Types.Asset.Cards.ToothOfEztli
       Arkham.Types.Asset.Cards.WendysAmulet
       Arkham.Types.Asset.Cards.WhittonGreene

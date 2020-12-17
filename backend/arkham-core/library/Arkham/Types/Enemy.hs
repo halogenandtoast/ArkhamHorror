@@ -50,6 +50,7 @@ data Enemy
   | Thrall' Thrall
   | WizardOfYogSothoth' WizardOfYogSothoth
   | Whippoorwill' Whippoorwill
+  | AvianThrall' AvianThrall
   | OBannionsThug' OBannionsThug
   | Mobster' Mobster
   | ConglomerationOfSpheres' ConglomerationOfSpheres
@@ -130,6 +131,7 @@ deriving anyclass instance
   , HasCount PlayerCount env ()
   , HasSet InvestigatorId env LocationId
   , HasSet ConnectedLocationId env LocationId
+  , HasSet Trait env AssetId
   , HasSet Trait env LocationId
   )
   => HasModifiersFor env Enemy
@@ -218,6 +220,7 @@ allEnemies = mapFromList
   , ("02086", Thrall' . thrall)
   , ("02087", WizardOfYogSothoth' . wizardOfYogSothoth)
   , ("02090", Whippoorwill' . whippoorwill)
+  , ("02094", AvianThrall' . avianThrall)
   , ("02097", OBannionsThug' . oBannionsThug)
   , ("02098", Mobster' . mobster)
   , ("02103", ConglomerationOfSpheres' . conglomerationOfSpheres)
@@ -296,6 +299,7 @@ enemyAttrs = \case
   Thrall' attrs -> coerce attrs
   WizardOfYogSothoth' attrs -> coerce attrs
   Whippoorwill' attrs -> coerce attrs
+  AvianThrall' attrs -> coerce attrs
   OBannionsThug' attrs -> coerce attrs
   Mobster' attrs -> coerce attrs
   ConglomerationOfSpheres' attrs -> coerce attrs

@@ -6,6 +6,7 @@ where
 import Arkham.Types.Enemy.Cards.Acolyte as X
 import Arkham.Types.Enemy.Cards.AcolyteOfUmordhoth as X
 import Arkham.Types.Enemy.Cards.AlmaHill as X
+import Arkham.Types.Enemy.Cards.AvianThrall as X
 import Arkham.Types.Enemy.Cards.BillyCooper as X
 import Arkham.Types.Enemy.Cards.BogGator as X
 import Arkham.Types.Enemy.Cards.CloverClubPitBoss as X

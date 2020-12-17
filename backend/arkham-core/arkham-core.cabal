@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2952e1337160c1da46ccea20ae21ce9e9d4710ae33f5c39ab760a72eb154b310
+-- hash: 287c07044020d0bf9f85afbe6a16a5da99375ace067ec199f465395c153f966b
 
 name:           arkham-core
 version:        0.0.0
@@ -495,6 +495,7 @@ library
       Arkham.Types.RequiredClues
       Arkham.Types.Scenario
       Arkham.Types.Scenario.Attrs
+      Arkham.Types.Scenario.Deck
       Arkham.Types.Scenario.Helpers
       Arkham.Types.Scenario.Runner
       Arkham.Types.Scenario.Scenarios

@@ -1,10 +1,15 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Scenario.Attrs where
+module Arkham.Types.Scenario.Attrs
+  ( module Arkham.Types.Scenario.Attrs
+  , module X
+  )
+where
 
 import Arkham.Import hiding (log)
 
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Difficulty
+import Arkham.Types.Scenario.Deck as X
 import Arkham.Types.Scenario.Runner
 
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
@@ -18,7 +23,7 @@ data Attrs = Attrs
   , scenarioAgendaStack :: [(Int, [AgendaId])] -- These types are to handle complex scenarios with multiple stacks
   , scenarioActStack    :: [(Int, [ActId])]
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
-  , scenarioDeck :: Maybe [EncounterCard]
+  , scenarioDeck :: Maybe ScenarioDeck
   , scenarioLog :: HashSet ScenarioLogKey
   , scenarioLocations :: HashMap LocationName [LocationId]
   , scenarioSetAsideCards :: [Card]
@@ -50,7 +55,7 @@ setAsideCardsL :: Lens' Attrs [Card]
 setAsideCardsL =
   lens scenarioSetAsideCards $ \m x -> m { scenarioSetAsideCards = x }
 
-deckL :: Lens' Attrs (Maybe [EncounterCard])
+deckL :: Lens' Attrs (Maybe ScenarioDeck)
 deckL = lens scenarioDeck $ \m x -> m { scenarioDeck = x }
 
 logL :: Lens' Attrs (HashSet ScenarioLogKey)

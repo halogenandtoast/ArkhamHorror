@@ -160,7 +160,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
           ]
       TheMiskatonicMuseum <$> runMessage
         msg
-        (attrs & locationsL .~ locations' & deckL ?~ exhibitDeck)
+        (attrs & locationsL .~ locations' & deckL ?~ ExhibitDeck exhibitDeck)
     ResolveToken _ ElderThing iid | isEasyStandard attrs ->
       s <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid 1)
     ResolveToken _ ElderThing iid | isHardExpert attrs -> do

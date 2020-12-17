@@ -13,7 +13,7 @@ import Data.Text.Lazy (unpack)
 import Data.Text.Lazy.Builder
 
 cycleN :: Int -> [a] -> [a]
-cycleN n as = take n $ L.cycle as
+cycleN n as = take (length as * n) $ L.cycle as
 
 uncurry4 :: (a -> b -> c -> d -> e) -> (a, b, c, d) -> e
 uncurry4 f ~(a, b, c, d) = f a b c d

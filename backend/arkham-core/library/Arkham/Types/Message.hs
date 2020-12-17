@@ -261,12 +261,12 @@ data Message
   | BeginTrade InvestigatorId Target [InvestigatorId]
   | InvestigatorPlayDynamicEvent InvestigatorId EventId Int
   | GainClues InvestigatorId Int
-  | DiscoverCluesAtLocation InvestigatorId LocationId Int
   | PlaceClues Target Int
   | RemoveClues Target Int
   | InvestigatorDiscoverClues InvestigatorId LocationId Int
   | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int
   | DiscoverClues InvestigatorId LocationId Int
+  | DiscoverCluesAtLocation InvestigatorId LocationId Int
   | AfterDiscoverClues InvestigatorId LocationId Int
   | BeginSkillTest InvestigatorId Source Target (Maybe Action) SkillType Int
   | BeginSkillTestAfterFast InvestigatorId Source Target (Maybe Action) SkillType Int

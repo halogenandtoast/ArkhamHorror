@@ -17,7 +17,8 @@ newtype RiteOfSeeking = RiteOfSeeking Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 riteOfSeeking :: AssetId -> RiteOfSeeking
-riteOfSeeking uuid = RiteOfSeeking $ baseAttrs uuid "02028"
+riteOfSeeking uuid =
+  RiteOfSeeking $ (baseAttrs uuid "02028") { assetSlots = [ArcaneSlot] }
 
 instance ActionRunner env => HasActions env RiteOfSeeking where
   getActions iid window (RiteOfSeeking a) | ownedBy a iid = do

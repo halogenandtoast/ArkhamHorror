@@ -194,4 +194,5 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
           then pure a
           else pure $ a & exhaustedL .~ False
       Nothing -> pure $ a & exhaustedL .~ False
+    Blanked msg' -> runMessage msg' a
     _ -> pure a

@@ -51,6 +51,7 @@ data Treachery
   | VisionsOfFuturesPast' VisionsOfFuturesPast
   | BeyondTheVeil' BeyondTheVeil
   | LightOfAforgomon' LightOfAforgomon
+  | UnhallowedCountry' UnhallowedCountry
   | EagerForDeath' EagerForDeath
   | CursedLuck' CursedLuck
   | TwistOfFate' TwistOfFate
@@ -81,6 +82,7 @@ deriving anyclass instance TreacheryRunner env => RunMessage env Treachery
 deriving anyclass instance
   ( HasCount PlayerCount env ()
   , HasId LocationId env InvestigatorId
+  , HasId (Maybe OwnerId) env AssetId
   , HasSet Trait env LocationId
   , HasSet UniqueEnemyId env ()
   )
@@ -153,6 +155,7 @@ allTreacheries = mapFromList
   , ("02083", (VisionsOfFuturesPast' .) . visionsOfFuturesPast)
   , ("02084", (BeyondTheVeil' .) . beyondTheVeil)
   , ("02085", (LightOfAforgomon' .) . lightOfAforgomon)
+  , ("02088", (UnhallowedCountry' .) . unhallowedCountry)
   , ("02091", (EagerForDeath' .) . eagerForDeath)
   , ("02092", (CursedLuck' .) . cursedLuck)
   , ("02093", (TwistOfFate' .) . twistOfFate)
@@ -223,6 +226,7 @@ treacheryAttrs = \case
   VisionsOfFuturesPast' attrs -> coerce attrs
   BeyondTheVeil' attrs -> coerce attrs
   LightOfAforgomon' attrs -> coerce attrs
+  UnhallowedCountry' attrs -> coerce attrs
   EagerForDeath' attrs -> coerce attrs
   CursedLuck' attrs -> coerce attrs
   TwistOfFate' attrs -> coerce attrs

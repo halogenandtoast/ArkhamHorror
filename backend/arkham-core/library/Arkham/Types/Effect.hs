@@ -33,6 +33,7 @@ data Effect
   | HuntingNightgaunt' HuntingNightgaunt
   | SeekingAnswers' SeekingAnswers
   | RiteOfSeeking' RiteOfSeeking
+  | BindMonster2' BindMonster2
   | PushedIntoTheBeyond' PushedIntoTheBeyond
   | ArcaneBarrier' ArcaneBarrier
   | LetMeHandleThis' LetMeHandleThis
@@ -49,6 +50,7 @@ deriving anyclass instance HasModifiersFor env Effect
 deriving anyclass instance
   ( HasQueue env
   , HasSet ConnectedLocationId env LocationId
+  , HasSet Trait env EnemyId
   )
   => RunMessage env Effect
 
@@ -89,6 +91,7 @@ allEffects = mapFromList
   , ("01172", HuntingNightgaunt' . huntingNightgaunt)
   , ("02023", SeekingAnswers' . seekingAnswers)
   , ("02028", RiteOfSeeking' . riteOfSeeking)
+  , ("02031", BindMonster2' . bindMonster2)
   , ("02100", PushedIntoTheBeyond' . pushedIntoTheBeyond)
   , ("02102", ArcaneBarrier' . arcaneBarrier)
   , ("03022", LetMeHandleThis' . letMeHandleThis)

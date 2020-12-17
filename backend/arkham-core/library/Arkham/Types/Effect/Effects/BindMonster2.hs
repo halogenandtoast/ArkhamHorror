@@ -1,8 +1,8 @@
 {-# LANGUAGE UndecidableInstances #-}
 
-module Arkham.Types.Effect.Effects.BindMonster
-  ( bindMonster
-  , BindMonster(..)
+module Arkham.Types.Effect.Effects.BindMonster2
+  ( bindMonster2
+  , BindMonster2(..)
   )
 where
 
@@ -12,17 +12,17 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Trait
 
-newtype BindMonster = BindMonster Attrs
+newtype BindMonster2 = BindMonster2 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-bindMonster :: EffectArgs -> BindMonster
-bindMonster = BindMonster . uncurry4 (baseAttrs "02031")
+bindMonster2 :: EffectArgs -> BindMonster2
+bindMonster2 = BindMonster2 . uncurry4 (baseAttrs "02031")
 
-instance HasModifiersFor env BindMonster where
+instance HasModifiersFor env BindMonster2 where
   getModifiersFor = noModifiersFor
 
-instance (HasQueue env, HasSet Trait env EnemyId) => RunMessage env BindMonster where
-  runMessage msg e@(BindMonster attrs@Attrs {..}) = case msg of
+instance (HasQueue env, HasSet Trait env EnemyId) => RunMessage env BindMonster2 where
+  runMessage msg e@(BindMonster2 attrs@Attrs {..}) = case msg of
     PassedSkillTest _ (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _
       | SkillTestTarget == effectTarget
       -> case effectSource of
@@ -35,4 +35,4 @@ instance (HasQueue env, HasSet Trait env EnemyId) => RunMessage env BindMonster 
             )
         _ -> pure e
     SkillTestEnds -> e <$ unshiftMessage (DisableEffect effectId)
-    _ -> BindMonster <$> runMessage msg attrs
+    _ -> BindMonster2 <$> runMessage msg attrs

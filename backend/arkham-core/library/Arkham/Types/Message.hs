@@ -310,6 +310,7 @@ data Message
   | DrawCards InvestigatorId Int Bool
   | HealHorror Target Int
   | HealDamage Target Int
+  | HealAllDamage Target
   | DrewPlayerTreachery InvestigatorId CardCode CardId
   | DrewPlayerEnemy InvestigatorId CardCode CardId
   | RemoveCardFromHand InvestigatorId CardCode

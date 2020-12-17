@@ -1399,21 +1399,21 @@ instance HasSet AssetId (Game queue) InvestigatorId where
 instance HasSet AssetId (Game queue) (InvestigatorId, UseType) where
   getSet (iid, useType') = do
     investigator <- getInvestigator iid
-    assetIds :: [AssetId] <- getSetList @AssetId investigator
+    assetIds <- getSetList @AssetId investigator
     setFromList <$> filterM ((isCorrectUseType <$>) . getAsset) assetIds
     where isCorrectUseType asset = useTypeOf asset == Just useType'
 
 instance HasSet Trait (Game queue) AssetId => HasSet AssetId (Game queue) (InvestigatorId, [Trait]) where
   getSet (iid, traits) = do
     investigator <- getInvestigator iid
-    assetIds :: [AssetId] <- getSetList @AssetId investigator
+    assetIds <- getSetList @AssetId investigator
     setFromList <$> filterM matches assetIds
     where matches = (any (`elem` traits) <$>) . getSetList
 
 instance HasSet DiscardableAssetId (Game queue) InvestigatorId where
   getSet iid = do
     investigator <- getInvestigator iid
-    assetIds :: [AssetId] <- getSetList @AssetId investigator
+    assetIds <- getSetList @AssetId investigator
     setFromList
       . map DiscardableAssetId
       <$> filterM ((canBeDiscarded <$>) . getAsset) assetIds
@@ -2684,7 +2684,7 @@ runMessages logger g = if g ^. gameStateL /= IsActive
             pushMessages [PlayerWindow (g ^. activeInvestigatorId) []]
               >> runMessages (lift . logger) g
       Just msg -> case msg of
-        Ask iid q -> toExternalGame g (HashMap.singleton iid q)
+        Ask iid q -> toExternalGame g (singletonMap iid q)
         AskMap askMap -> toExternalGame g askMap
         _ ->
           lift (logger msg) >> runMessage msg g >>= runMessages (lift . logger)

@@ -1,7 +1,6 @@
 module Arkham.Types.Keyword where
 
-import ClassyPrelude
-import Data.Aeson
+import Arkham.Prelude
 
 data Keyword
   = Alert

@@ -1,5 +1,7 @@
 module Arkham.Types.GameRunner where
 
+import Arkham.Prelude
+
 import Arkham.Types.Ability
 import Arkham.Types.AgendaId
 import Arkham.Types.Asset.Uses (UseType)
@@ -21,7 +23,6 @@ import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
-import ClassyPrelude
 
 type GameRunner env
   = ( HasQueue env

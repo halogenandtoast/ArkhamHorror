@@ -1,8 +1,8 @@
 module Arkham.Types.LocationId where
 
+import Arkham.Prelude
+
 import Arkham.Types.Card.CardCode
-import ClassyPrelude
-import Data.Aeson
 
 data EmptyLocation = EmptyLocation
 

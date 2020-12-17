@@ -1,9 +1,8 @@
 module Arkham.Types.ScenarioId where
 
-import ClassyPrelude
+import Arkham.Prelude
 
 import Arkham.Types.Card.CardCode
-import Data.Aeson
 
 newtype ScenarioId = ScenarioId { unScenarioId :: CardCode }
   deriving newtype (Eq, Hashable, Show, ToJSON, FromJSON, IsString)

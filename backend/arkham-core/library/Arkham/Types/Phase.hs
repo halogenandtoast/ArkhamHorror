@@ -3,8 +3,7 @@ module Arkham.Types.Phase
   )
 where
 
-import ClassyPrelude
-import Data.Aeson
+import Arkham.Prelude
 
 data Phase
   = MythosPhase

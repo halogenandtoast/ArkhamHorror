@@ -4,9 +4,8 @@ module Arkham.Types.ChaosBagStepState
   )
 where
 
-import ClassyPrelude
+import Arkham.Prelude
 
-import Arkham.Json
 import Arkham.Types.Token
 
 data ChaosBagStepState = Resolved [Token] | Decided ChaosBagStep | Undecided ChaosBagStep

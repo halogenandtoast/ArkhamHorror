@@ -1,7 +1,6 @@
 module Arkham.Types.CommitRestriction where
 
-import Arkham.Json
-import ClassyPrelude
+import Arkham.Prelude
 
 data CommitRestriction = MaxOnePerTest | OnlyYourTest | ScenarioAbility
   deriving stock (Show, Eq, Generic)

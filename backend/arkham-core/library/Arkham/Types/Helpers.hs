@@ -1,9 +1,8 @@
 module Arkham.Types.Helpers where
 
-import Arkham.Json
-import ClassyPrelude hiding (unpack)
-import Control.Monad.Extra (concatMapM)
-import Control.Monad.Random
+import Arkham.Prelude hiding (unpack)
+
+import Data.Aeson.Text
 import Data.Foldable (foldrM)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.List as L

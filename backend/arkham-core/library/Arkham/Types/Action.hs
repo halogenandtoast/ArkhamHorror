@@ -1,8 +1,6 @@
 module Arkham.Types.Action where
 
-import ClassyPrelude
-
-import Data.Aeson
+import Arkham.Prelude
 
 data Action
   = Ability

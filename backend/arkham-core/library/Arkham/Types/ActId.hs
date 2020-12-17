@@ -1,8 +1,8 @@
 module Arkham.Types.ActId where
 
+import Arkham.Prelude
+
 import Arkham.Types.Card.CardCode
-import ClassyPrelude
-import Data.Aeson
 
 newtype ActStep = ActStep { unActStep :: Int }
 

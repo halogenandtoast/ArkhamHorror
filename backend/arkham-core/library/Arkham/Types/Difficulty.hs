@@ -1,7 +1,6 @@
 module Arkham.Types.Difficulty where
 
-import ClassyPrelude
-import Data.Aeson
+import Arkham.Prelude
 
 data Difficulty
   = Easy

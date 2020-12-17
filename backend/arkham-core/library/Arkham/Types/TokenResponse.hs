@@ -3,9 +3,9 @@ module Arkham.Types.TokenResponse
   )
 where
 
-import Arkham.Json
+import Arkham.Prelude
+
 import Arkham.Types.Token
-import ClassyPrelude
 
 data TokenResponse a = OnAnyToken [Token] [a]
   deriving stock (Show, Eq, Generic)

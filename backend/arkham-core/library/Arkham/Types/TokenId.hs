@@ -1,8 +1,6 @@
 module Arkham.Types.TokenId where
 
-import ClassyPrelude
-import Data.Aeson
-import Data.UUID
+import Arkham.Prelude
 
 newtype TokenId = TokenId { unTokenId :: UUID }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

@@ -154,6 +154,7 @@ data Message
   | ReadyExhausted
   | Exhaust Target
   | Ready Target
+  | ReadyAlternative Source Target
   | AllDrawCardAndResource
   | AllCheckHandSize
   | CheckHandSize InvestigatorId
@@ -355,7 +356,7 @@ data Message
   | FailedAttackEnemy InvestigatorId EnemyId
   | AttachTreachery TreacheryId Target
   | AttachAsset AssetId Target
-  | AttachEventToLocation EventId LocationId
+  | AttachEvent EventId Target
   | AddSlot InvestigatorId SlotType Slot
   | RefillSlots InvestigatorId SlotType [AssetId]
   | RequestedEncounterCard Source (Maybe EncounterCard)

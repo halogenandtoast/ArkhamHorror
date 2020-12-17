@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a016612c756bac510b57a11762e4574aeab8f9432b5e9846e70ab9ac4581e284
+-- hash: 24f2709932fdf8ec29373a7c5021dcc157150d4316a87fbed4b4d8013a9759dd
 
 name:           arkham-core
 version:        0.0.0
@@ -208,6 +208,7 @@ library
       Arkham.Types.Effect.Effects.ArcaneBarrier
       Arkham.Types.Effect.Effects.ArkhamWoodsTwistingPaths
       Arkham.Types.Effect.Effects.BaseballBat
+      Arkham.Types.Effect.Effects.BindMonster
       Arkham.Types.Effect.Effects.BlindingLight
       Arkham.Types.Effect.Effects.BlindingLight2
       Arkham.Types.Effect.Effects.Burglary
@@ -298,6 +299,7 @@ library
       Arkham.Types.Event.Cards.BaitAndSwitch
       Arkham.Types.Event.Cards.Barricade
       Arkham.Types.Event.Cards.Barricade3
+      Arkham.Types.Event.Cards.BindMonster
       Arkham.Types.Event.Cards.BlindingLight
       Arkham.Types.Event.Cards.BlindingLight2
       Arkham.Types.Event.Cards.BloodRite

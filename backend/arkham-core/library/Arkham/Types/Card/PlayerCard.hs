@@ -277,6 +277,7 @@ allPlayerCards = HashMap.fromList
   , ("02028", riteOfSeeking)
   , ("02029", ritualCandles)
   , ("02030", clarityOfMind)
+  , ("02031", bindMonster)
   , ("02032", fireAxe)
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
@@ -1145,6 +1146,14 @@ clarityOfMind :: CardId -> PlayerCard
 clarityOfMind cardId = (asset cardId "02030" "Clarity of Mind" 2 Mystic)
   { pcSkills = [SkillWillpower]
   , pcTraits = singleton Spell
+  }
+
+bindMonster :: CardId -> PlayerCard
+bindMonster cardId = (event cardId "02031" "Bind Monster" 3 Mystic)
+  { pcSkills = [SkillWillpower, SkillIntellect]
+  , pcTraits = singleton Spell
+  , pcAction = Just Action.Evade
+  , pcLevel = 2
   }
 
 fireAxe :: CardId -> PlayerCard

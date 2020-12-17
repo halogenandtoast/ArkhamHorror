@@ -11,8 +11,7 @@ data Attrs = Attrs
   , eventId :: EventId
   , eventCardCode :: CardCode
   , eventTraits :: HashSet Trait
-  , eventAttachedLocation :: Maybe LocationId
-  , eventAttachedInvestigator :: Maybe InvestigatorId
+  , eventAttachedTarget :: Maybe Target
   , eventOwner :: InvestigatorId
   , eventWeakness :: Bool
   , eventDoom :: Int
@@ -39,9 +38,9 @@ unshiftEffect attrs target = unshiftMessages
   , Discard $ toTarget attrs
   ]
 
-attachedLocation :: Lens' Attrs (Maybe LocationId)
-attachedLocation =
-  lens eventAttachedLocation $ \m x -> m { eventAttachedLocation = x }
+attachedTarget :: Lens' Attrs (Maybe Target)
+attachedTarget =
+  lens eventAttachedTarget $ \m x -> m { eventAttachedTarget = x }
 
 baseAttrs :: InvestigatorId -> EventId -> CardCode -> Attrs
 baseAttrs iid eid cardCode =
@@ -57,8 +56,7 @@ baseAttrs iid eid cardCode =
       , eventId = eid
       , eventCardCode = pcCardCode
       , eventTraits = pcTraits
-      , eventAttachedLocation = Nothing
-      , eventAttachedInvestigator = Nothing
+      , eventAttachedTarget = Nothing
       , eventWeakness = False
       , eventOwner = iid
       , eventDoom = 0
@@ -78,8 +76,7 @@ weaknessAttrs iid eid cardCode =
       , eventId = eid
       , eventCardCode = pcCardCode
       , eventTraits = pcTraits
-      , eventAttachedLocation = Nothing
-      , eventAttachedInvestigator = Nothing
+      , eventAttachedTarget = Nothing
       , eventOwner = iid
       , eventWeakness = True
       , eventDoom = 0
@@ -100,8 +97,9 @@ instance HasActions env Attrs where
 
 instance HasQueue env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
-    InvestigatorEliminated iid | eventAttachedInvestigator == Just iid ->
-      a <$ unshiftMessage (Discard (EventTarget eventId))
-    AttachEventToLocation eid lid | eid == eventId -> do
-      pure $ a & attachedLocation ?~ lid
+    InvestigatorEliminated iid
+      | eventAttachedTarget == Just (InvestigatorTarget iid) -> a
+      <$ unshiftMessage (Discard (EventTarget eventId))
+    AttachEvent eid target | eid == eventId ->
+      pure $ a & attachedTarget ?~ target
     _ -> pure a

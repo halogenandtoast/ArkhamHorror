@@ -380,8 +380,20 @@ instance EnemyRunner env => RunMessage env Attrs where
             $ unshiftMessage (EnemyEngageInvestigator enemyId iid)
         Nothing -> pure ()
       pure $ a & exhaustedL .~ False
-    ReadyExhausted ->
-      a <$ when enemyExhausted (unshiftMessage (Ready $ toTarget a))
+    ReadyExhausted -> do
+      modifiers' <-
+        map modifierType <$> getModifiersFor (toSource a) (toTarget a) ()
+      let
+        alternativeSources = mapMaybe
+          (\case
+            AlternativeReady source -> Just source
+            _ -> Nothing
+          )
+          modifiers'
+      case alternativeSources of
+        [] -> a <$ when enemyExhausted (unshiftMessage (Ready $ toTarget a))
+        [source] -> a <$ unshiftMessage (ReadyAlternative source (toTarget a))
+        _ -> error "Can not handle multiple targets yet"
     MoveToward target locationMatcher | isTarget a target -> do
       lid <- fromJustNote "can't move toward" <$> getId locationMatcher
       if lid == enemyLocation

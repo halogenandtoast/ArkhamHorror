@@ -236,7 +236,7 @@ instance LocationRunner env => RunMessage env Attrs where
       a <$ unshiftMessage (AddConnection lid locationSymbol)
     AttachTreachery tid (LocationTarget lid) | lid == locationId ->
       pure $ a & treacheries %~ insertSet tid
-    AttachEventToLocation eid lid | lid == locationId ->
+    AttachEvent eid (LocationTarget lid) | lid == locationId ->
       pure $ a & events %~ insertSet eid
     Discard (TreacheryTarget tid) -> pure $ a & treacheries %~ deleteSet tid
     Discard (EventTarget eid) -> pure $ a & events %~ deleteSet eid

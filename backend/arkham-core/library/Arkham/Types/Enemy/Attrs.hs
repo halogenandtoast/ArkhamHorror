@@ -544,6 +544,7 @@ instance EnemyRunner env => RunMessage env Attrs where
       ]
     HealDamage (EnemyTarget eid) n | eid == enemyId ->
       pure $ a & damageL %~ max 0 . subtract n
+    HealAllDamage (EnemyTarget eid) | eid == enemyId -> pure $ a & damageL .~ 0
     EnemyDamage eid iid source amount | eid == enemyId -> do
       amount' <- getModifiedDamageAmount a amount
       modifiedHealth <- getModifiedHealth a

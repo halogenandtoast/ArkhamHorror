@@ -55,6 +55,7 @@ data Treachery
   | EagerForDeath' EagerForDeath
   | CursedLuck' CursedLuck
   | TwistOfFate' TwistOfFate
+  | AlteredBeast' AlteredBeast
   | HuntedDown' HuntedDown
   | PushedIntoTheBeyond' PushedIntoTheBeyond
   | TerrorFromBeyond' TerrorFromBeyond
@@ -159,6 +160,7 @@ allTreacheries = mapFromList
   , ("02091", (EagerForDeath' .) . eagerForDeath)
   , ("02092", (CursedLuck' .) . cursedLuck)
   , ("02093", (TwistOfFate' .) . twistOfFate)
+  , ("02096", (AlteredBeast' .) . alteredBeast)
   , ("02099", (HuntedDown' .) . huntedDown)
   , ("02100", (PushedIntoTheBeyond' .) . pushedIntoTheBeyond)
   , ("02101", (TerrorFromBeyond' .) . terrorFromBeyond)
@@ -230,6 +232,7 @@ treacheryAttrs = \case
   EagerForDeath' attrs -> coerce attrs
   CursedLuck' attrs -> coerce attrs
   TwistOfFate' attrs -> coerce attrs
+  AlteredBeast' attrs -> coerce attrs
   HuntedDown' attrs -> coerce attrs
   PushedIntoTheBeyond' attrs -> coerce attrs
   TerrorFromBeyond' attrs -> coerce attrs

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b81bd1dfa737ded4a886b2f95d0f97b7376dea6892ea8cbeed906d17efdf1516
+-- hash: ba4e23bde4a6d3b415ca6230c002e21c43636993291b3c411fd9ccabe4ae01bd
 
 name:           arkham-core
 version:        0.0.0
@@ -244,6 +244,7 @@ library
       Arkham.Types.Enemy.Cards.Acolyte
       Arkham.Types.Enemy.Cards.AcolyteOfUmordhoth
       Arkham.Types.Enemy.Cards.AlmaHill
+      Arkham.Types.Enemy.Cards.AvianThrall
       Arkham.Types.Enemy.Cards.BillyCooper
       Arkham.Types.Enemy.Cards.BogGator
       Arkham.Types.Enemy.Cards.CloverClubPitBoss

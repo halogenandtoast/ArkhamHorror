@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Enemy.Cards.Acolyte where
+
+module Arkham.Types.Enemy.Cards.Acolyte
+  ( Acolyte(..)
+  , acolyte
+  )
+where
 
 import Arkham.Import
 

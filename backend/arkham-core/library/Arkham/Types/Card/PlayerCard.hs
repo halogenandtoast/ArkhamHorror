@@ -1,5 +1,7 @@
 module Arkham.Types.Card.PlayerCard where
 
+import Arkham.Prelude
+
 import Arkham.Json
 import Arkham.Types.Action (Action)
 import qualified Arkham.Types.Action as Action
@@ -14,11 +16,8 @@ import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import Arkham.Types.Window
-import ClassyPrelude
-import Control.Lens
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
-import Safe (fromJustNote)
 
 data PlayerCardType
   = AssetType
@@ -81,8 +80,8 @@ instance HasCost PlayerCard where
 traits :: Lens' PlayerCard (HashSet Trait)
 traits = lens pcTraits $ \m x -> m { pcTraits = x }
 
-genPlayerCard :: MonadIO m => CardCode -> m PlayerCard
-genPlayerCard cardCode = lookupPlayerCard cardCode <$> genCardId
+genPlayerCard :: MonadRandom m => CardCode -> m PlayerCard
+genPlayerCard cardCode = lookupPlayerCard cardCode <$> getRandom
 
 lookupPlayerCard :: CardCode -> (CardId -> PlayerCard)
 lookupPlayerCard cardCode =

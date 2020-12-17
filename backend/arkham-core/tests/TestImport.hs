@@ -219,12 +219,15 @@ withGame :: MonadIO m => GameExternal -> ReaderT GameInternal m b -> m b
 withGame game f = toInternalGame game >>= runReaderT f
 
 runGameTestOnlyOption
-  :: (MonadFail m, MonadIO m) => String -> Game [Message] -> m (Game [Message])
+  :: (MonadFail m, MonadIO m, MonadRandom m)
+  => String
+  -> Game [Message]
+  -> m (Game [Message])
 runGameTestOnlyOption reason game =
   runGameTestOnlyOptionWithLogger reason (pure . const ()) game
 
 runGameTestOnlyOptionWithLogger
-  :: (MonadFail m, MonadIO m)
+  :: (MonadFail m, MonadIO m, MonadRandom m)
   => String
   -> (Message -> m ())
   -> Game [Message]
@@ -245,7 +248,10 @@ runGameTestOnlyOptionWithLogger _reason logger game =
     _ -> error "There must be only one choice to use this function"
 
 runGameTestFirstOption
-  :: (MonadFail m, MonadIO m) => String -> Game [Message] -> m (Game [Message])
+  :: (MonadFail m, MonadIO m, MonadRandom m)
+  => String
+  -> Game [Message]
+  -> m (Game [Message])
 runGameTestFirstOption _reason game = case mapToList (gameQuestion game) of
   [(_, question)] -> case question of
     ChooseOne (msg : _) ->
@@ -258,7 +264,7 @@ runGameTestFirstOption _reason game = case mapToList (gameQuestion game) of
   _ -> error "There must be at least one option"
 
 runGameTestMessages
-  :: (MonadFail m, MonadIO m)
+  :: (MonadFail m, MonadIO m, MonadRandom m)
   => Game [Message]
   -> [Message]
   -> m (Game [Message])
@@ -267,7 +273,7 @@ runGameTestMessages game msgs =
     >>= runMessages (pure . const ())
 
 runGameTestOptionMatching
-  :: (MonadFail m, MonadIO m)
+  :: (MonadFail m, MonadIO m, MonadRandom m)
   => String
   -> (Message -> Bool)
   -> Game [Message]
@@ -276,7 +282,7 @@ runGameTestOptionMatching reason f game =
   runGameTestOptionMatchingWithLogger reason (pure . const ()) f game
 
 runGameTestOptionMatchingWithLogger
-  :: (MonadFail m, MonadIO m)
+  :: (MonadFail m, MonadIO m, MonadRandom m)
   => String
   -> (Message -> m ())
   -> (Message -> Bool)
@@ -294,7 +300,7 @@ runGameTestOptionMatchingWithLogger _reason logger f game =
     _ -> error "There must be only one question to use this function"
 
 runGameTest
-  :: (MonadIO m, MonadFail m)
+  :: (MonadIO m, MonadFail m, MonadRandom m)
   => Investigator
   -> [Message]
   -> (GameInternal -> GameInternal)
@@ -303,7 +309,7 @@ runGameTest investigator queue f =
   runGameTestWithLogger (pure . const ()) investigator queue f
 
 runGameTestWithLogger
-  :: (MonadIO m, MonadFail m)
+  :: (MonadIO m, MonadFail m, MonadRandom m)
   => (Message -> m ())
   -> Investigator
   -> [Message]

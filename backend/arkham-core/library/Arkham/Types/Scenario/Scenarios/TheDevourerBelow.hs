@@ -33,20 +33,12 @@ theDevourerBelow difficulty =
 
 instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env [Trait]) => HasTokenValue env TheDevourerBelow where
   getTokenValue (TheDevourerBelow attrs) iid = \case
-    Skull -> if isEasyStandard attrs
-      then do
-        monsterCount <- unEnemyCount <$> getCount [Monster]
-        pure $ TokenValue Skull (NegativeModifier monsterCount)
-      else pure $ TokenValue Skull (NegativeModifier 3)
-    Cultist -> do
-      let tokenValue' = if isEasyStandard attrs then 2 else 4
-      pure $ TokenValue Cultist (NegativeModifier tokenValue')
-    Tablet -> do
-      let tokenValue' = if isEasyStandard attrs then 3 else 5
-      pure $ TokenValue Tablet (NegativeModifier tokenValue')
-    ElderThing -> do
-      let tokenValue' = if isEasyStandard attrs then (-5) else (-7)
-      pure $ TokenValue ElderThing (NegativeModifier tokenValue')
+    Skull -> do
+      monsterCount <- unEnemyCount <$> getCount [Monster]
+      pure $ toTokenValue attrs Skull monsterCount 3
+    Cultist -> pure $ toTokenValue attrs Cultist 2 4
+    Tablet -> pure $ toTokenValue attrs Tablet 3 5
+    ElderThing -> pure $ toTokenValue attrs ElderThing 5 7
     otherFace -> getTokenValue attrs iid otherFace
 
 instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where

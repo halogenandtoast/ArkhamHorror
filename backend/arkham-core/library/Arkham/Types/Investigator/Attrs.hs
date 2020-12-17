@@ -615,7 +615,12 @@ hasModifier Attrs { investigatorId } m =
           ()
 
 runInvestigatorMessage
-  :: (InvestigatorRunner env, MonadReader env m, MonadIO m, MonadFail m)
+  :: ( InvestigatorRunner env
+     , MonadReader env m
+     , MonadRandom m
+     , MonadIO m
+     , MonadFail m
+     )
   => Message
   -> Attrs
   -> m Attrs

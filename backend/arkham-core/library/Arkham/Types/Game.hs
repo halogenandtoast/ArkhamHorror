@@ -341,7 +341,7 @@ startGame g =
     & (playerCount .~ length (g ^. investigators))
 
 addInvestigator
-  :: (MonadIO m, MonadFail m)
+  :: (MonadIO m, MonadFail m, MonadRandom m)
   => Int
   -> Investigator
   -> [PlayerCard]
@@ -2637,7 +2637,7 @@ toInternalGame g@Game {..} = do
     }
 
 runMessages
-  :: (MonadIO m, MonadFail m)
+  :: (MonadIO m, MonadFail m, MonadRandom m)
   => (Message -> m ())
   -> GameInternal
   -> m GameExternal

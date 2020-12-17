@@ -13,7 +13,6 @@ import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Token
 import Data.List.NonEmpty (NonEmpty(..))
-import Data.UUID.V4
 import System.Random.Shuffle
 
 newtype TheMiskatonicMuseum = TheMiskatonicMuseum Attrs
@@ -108,10 +107,9 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
 
       exhibitHalls <- liftIO $ shuffleM =<< for
         ["02132", "02133", "02134", "02135", "02136"]
-        (\cardCode -> lookupEncounterCard cardCode . CardId <$> nextRandom)
+        (\cardCode -> lookupEncounterCard cardCode <$> getRandom)
 
-      restrictedHall <-
-        liftIO $ lookupEncounterCard "02137" . CardId <$> nextRandom
+      restrictedHall <- liftIO $ lookupEncounterCard "02137" <$> getRandom
 
       let (bottom, top) = splitAt 2 exhibitHalls
 

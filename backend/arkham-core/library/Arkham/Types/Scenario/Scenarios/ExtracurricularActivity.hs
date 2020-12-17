@@ -40,9 +40,7 @@ extracurricularActivityIntro = FlavorText
 
 instance (HasTokenValue env InvestigatorId, HasCount DiscardCount env InvestigatorId) => HasTokenValue env ExtracurricularActivity where
   getTokenValue (ExtracurricularActivity attrs) iid = \case
-    Skull -> pure $ TokenValue
-      Skull
-      (NegativeModifier $ if isEasyStandard attrs then 1 else 2)
+    Skull -> pure $ toTokenValue attrs Skull 1 2
     Cultist -> do
       discardCount <- unDiscardCount <$> getCount iid
       pure $ TokenValue

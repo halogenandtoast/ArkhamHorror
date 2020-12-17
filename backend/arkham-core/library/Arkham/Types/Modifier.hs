@@ -38,6 +38,7 @@ data ModifierType
   | AdditionalActions Int
   | AddKeyword Keyword
   | AlternateSuccessfullInvestigation
+  | AlternativeReady Source
   | AnySkillValue Int
   | BaseSkillOf SkillType Int
   | Blank

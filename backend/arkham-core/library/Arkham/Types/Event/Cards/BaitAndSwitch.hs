@@ -20,43 +20,41 @@ instance HasActions env BaitAndSwitch where
 
 instance (EventRunner env) => RunMessage env BaitAndSwitch where
   runMessage msg e@(BaitAndSwitch attrs@Attrs {..}) = case msg of
-    InvestigatorPlayEvent iid eid _ | eid == eventId -> do
-      e <$ unshiftMessages
-        [ ChooseEvadeEnemy iid (EventSource eid) SkillWillpower False
-        , Discard (EventTarget eid)
-        ]
+    InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
+      [ ChooseEvadeEnemy iid (EventSource eid) SkillWillpower False
+      , Discard (EventTarget eid)
+      ]
     PassedSkillTest iid _ (EventSource eid) SkillTestInitiatorTarget{} _
       | eid == eventId -> do
         lid <- getId iid
         connectedLocationIds <- map unConnectedLocationId <$> getSetList lid
         EnemyTarget enemyId <- fromMaybe (error "missing target")
           <$> asks (getTarget ForSkillTest)
-        unless (null connectedLocationIds) $ do
-          withQueue $ \queue ->
-            let
-              (before, rest) = break
-                (\case
-                  AfterEvadeEnemy{} -> True
-                  _ -> False
+        unless (null connectedLocationIds) $ withQueue $ \queue ->
+          let
+            (before, rest) = break
+              (\case
+                AfterEvadeEnemy{} -> True
+                _ -> False
+              )
+              queue
+          in
+            case rest of
+              (x : xs) ->
+                ( before
+                  <> [ x
+                     , Ask
+                       iid
+                       (ChooseOne
+                         [ EnemyMove enemyId lid lid'
+                         | lid' <- connectedLocationIds
+                         ]
+                       )
+                     ]
+                  <> xs
+                , ()
                 )
-                queue
-            in
-              case rest of
-                (x : xs) ->
-                  ( before
-                    <> [ x
-                       , Ask
-                         iid
-                         (ChooseOne
-                           [ EnemyMove enemyId lid lid'
-                           | lid' <- connectedLocationIds
-                           ]
-                         )
-                       ]
-                    <> xs
-                  , ()
-                  )
-                _ -> error "evade missing"
+              _ -> error "evade missing"
 
         pure e
     _ -> BaitAndSwitch <$> runMessage msg attrs

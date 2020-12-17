@@ -27,15 +27,15 @@ instance ActionRunner env => HasActions env FindingAWayInside where
 
 instance ActRunner env => RunMessage env FindingAWayInside where
   runMessage msg a@(FindingAWayInside attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && not actFlipped -> do
+    AdvanceAct aid _ | aid == actId && not actFlipped -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       unshiftMessages
         [ SpendClues 2 investigatorIds
-        , chooseOne leadInvestigatorId [AdvanceAct aid]
+        , chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
         ]
       pure $ FindingAWayInside $ attrs & sequenceL .~ Act 1 B & flippedL .~ True
-    AdvanceAct aid | aid == actId && actFlipped -> do
+    AdvanceAct aid _ | aid == actId && actFlipped -> do
       enemyIds <- getSetList (LocationId "01111")
       a <$ unshiftMessages
         ([ PlaceLocation "01112"

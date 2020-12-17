@@ -43,16 +43,16 @@ instance
   )
   => RunMessage env BeginnersLuck where
   runMessage msg a@(BeginnersLuck attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && not actFlipped -> do
+    AdvanceAct aid _ | aid == actId && not actFlipped -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 4)
       unshiftMessages
         [ SpendClues requiredClues investigatorIds
-        , chooseOne leadInvestigatorId [AdvanceAct aid]
+        , chooseOne leadInvestigatorId [AdvanceAct aid $ toSource attrs]
         ]
       pure $ BeginnersLuck $ attrs & sequenceL .~ Act 1 B & flippedL .~ True
-    AdvanceAct aid | aid == actId && actFlipped -> a <$ unshiftMessages
+    AdvanceAct aid _ | aid == actId && actFlipped -> a <$ unshiftMessages
       [ PlaceLocation "02074"
       , DiscardEncounterUntilFirst
         (toSource attrs)
@@ -97,5 +97,5 @@ instance
       requiredClues <- getPlayerCountValue (PerPlayer 4)
       a <$ when
         (totalClues >= requiredClues)
-        (unshiftMessage $ AdvanceAct actId)
+        (unshiftMessage $ AdvanceAct actId (toSource attrs))
     _ -> BeginnersLuck <$> runMessage msg attrs

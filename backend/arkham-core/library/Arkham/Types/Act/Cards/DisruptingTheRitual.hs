@@ -34,20 +34,23 @@ instance ActionRunner env => HasActions env DisruptingTheRitual where
 
 instance ActRunner env => RunMessage env DisruptingTheRitual where
   runMessage msg a@(DisruptingTheRitual attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && actSequence == Act 3 A -> do
+    AdvanceAct aid _ | aid == actId && actSequence == Act 3 A -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage (chooseOne leadInvestigatorId [AdvanceAct actId])
+      unshiftMessage
+        (chooseOne leadInvestigatorId [AdvanceAct actId (toSource attrs)])
       pure
         $ DisruptingTheRitual
         $ attrs
         & (sequenceL .~ Act 3 B)
         & (flippedL .~ True)
-    AdvanceAct aid | aid == actId && actSequence == Act 3 A ->
+    AdvanceAct aid _ | aid == actId && actSequence == Act 3 A ->
       a <$ unshiftMessage (Resolution 1)
     PlaceClues (ActTarget aid) n | aid == actId -> do
       requiredClues <- getPlayerCountValue (PerPlayer 2)
       let totalClues = n + fromJustNote "Must be set" actClues
-      when (totalClues >= requiredClues) (unshiftMessage (AdvanceAct actId))
+      when
+        (totalClues >= requiredClues)
+        (unshiftMessage (AdvanceAct actId $ toSource attrs))
       pure $ DisruptingTheRitual (attrs { actClues = Just totalClues })
     UseCardAbility iid (ActSource aid) _ 1 | aid == actId -> a <$ unshiftMessage
       (chooseOne

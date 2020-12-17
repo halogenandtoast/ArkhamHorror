@@ -40,7 +40,7 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
       cardCode <- getId assetId
       a <$ when
         (cardCode == CardCode "02060")
-        (unshiftMessage $ AdvanceAct actId)
+        (unshiftMessage $ AdvanceAct actId (toSource attrs))
     Discarded (InvestigatorTarget iid) card
       | getCardCode card == CardCode "02060" -> case card of
         EncounterCard ec -> a <$ unshiftMessages
@@ -51,10 +51,10 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
       let discardCount = if playerCount == 1 then 10 else 5
       a <$ unshiftMessages
         [SpendClues 1 [iid], DiscardTopOfEncounterDeck iid discardCount Nothing]
-    AdvanceAct aid | aid == actId && not actFlipped -> do
-      unshiftMessage (AdvanceAct aid)
+    AdvanceAct aid _ | aid == actId && not actFlipped -> do
+      unshiftMessage (AdvanceAct aid $ toSource attrs)
       pure . RicesWhereabouts $ attrs & sequenceL .~ Act 2 B & flippedL .~ True
-    AdvanceAct aid | aid == actId && actFlipped -> do
+    AdvanceAct aid _ | aid == actId && actFlipped -> do
       alchemyLabsInPlay <- elem (LocationName "Alchemy Labs") <$> getList ()
       agendaStep <- asks $ unAgendaStep . getStep
       completedTheHouseAlwaysWins <-

@@ -19,10 +19,10 @@ instance ActionRunner env => HasActions env WhatHaveYouDone where
 
 instance ActRunner env => RunMessage env WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && not actFlipped -> do
-      unshiftMessage (AdvanceAct aid)
+    AdvanceAct aid _ | aid == actId && not actFlipped -> do
+      unshiftMessage (AdvanceAct aid $ toSource attrs)
       pure . WhatHaveYouDone $ attrs & sequenceL .~ Act 3 B & flippedL .~ True
-    AdvanceAct aid | aid == actId && actFlipped -> do
+    AdvanceAct aid _ | aid == actId && actFlipped -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage
         (chooseOne
@@ -40,5 +40,6 @@ instance ActRunner env => RunMessage env WhatHaveYouDone where
         $ attrs
         & (sequenceL .~ Act 3 B)
         & (flippedL .~ True)
-    EnemyDefeated _ _ _ "01116" _ _ -> a <$ unshiftMessage (AdvanceAct actId)
+    EnemyDefeated _ _ _ "01116" _ _ ->
+      a <$ unshiftMessage (AdvanceAct actId $ toSource attrs)
     _ -> WhatHaveYouDone <$> runMessage msg attrs

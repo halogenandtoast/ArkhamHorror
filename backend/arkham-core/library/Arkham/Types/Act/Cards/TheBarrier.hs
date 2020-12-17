@@ -18,17 +18,19 @@ instance ActionRunner env => HasActions env TheBarrier where
 
 instance ActRunner env => RunMessage env TheBarrier where
   runMessage msg a@(TheBarrier attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && not actFlipped -> do
+    AdvanceAct aid _ | aid == actId && not actFlipped -> do
       hallwayId <- fromJustNote "must exist"
         <$> getId @(Maybe LocationId) (LocationName "Hallway")
       investigatorIds <- getSetList hallwayId
       requiredClueCount <- getPlayerCountValue (PerPlayer 3)
       unshiftMessages
         (SpendClues requiredClueCount investigatorIds
-        : [ Ask iid $ ChooseOne [AdvanceAct aid] | iid <- investigatorIds ]
+        : [ Ask iid $ ChooseOne [AdvanceAct aid $ toSource attrs]
+          | iid <- investigatorIds
+          ]
         )
       pure $ TheBarrier $ attrs & sequenceL .~ Act 2 B & flippedL .~ True
-    AdvanceAct aid | aid == actId && actFlipped -> do
+    AdvanceAct aid _ | aid == actId && actFlipped -> do
       hallwayId <- fromJustNote "must exist"
         <$> getId @(Maybe LocationId) (LocationName "Hallway")
       a <$ unshiftMessages
@@ -46,7 +48,9 @@ instance ActRunner env => RunMessage env TheBarrier where
         then a <$ unshiftMessage
           (chooseOne
             leadInvestigatorId
-            [AdvanceAct actId, Continue "Continue without advancing act"]
+            [ AdvanceAct actId (toSource attrs)
+            , Continue "Continue without advancing act"
+            ]
           )
         else pure a
     _ -> TheBarrier <$> runMessage msg attrs

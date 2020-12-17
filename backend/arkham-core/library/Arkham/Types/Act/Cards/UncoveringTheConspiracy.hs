@@ -36,15 +36,16 @@ instance ActionRunner env => HasActions env UncoveringTheConspiracy where
 
 instance ActRunner env => RunMessage env UncoveringTheConspiracy where
   runMessage msg a@(UncoveringTheConspiracy attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && actSequence == Act 1 A -> do
+    AdvanceAct aid _ | aid == actId && actSequence == Act 1 A -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage (chooseOne leadInvestigatorId [AdvanceAct aid])
+      unshiftMessage
+        (chooseOne leadInvestigatorId [AdvanceAct aid $ toSource attrs])
       pure
         $ UncoveringTheConspiracy
         $ attrs
         & (sequenceL .~ Act 1 B)
         & (flippedL .~ True)
-    AdvanceAct aid | aid == actId && actSequence == Act 1 B ->
+    AdvanceAct aid _ | aid == actId && actSequence == Act 1 B ->
       a <$ unshiftMessage (Resolution 1)
     AddToVictory _ -> do
       victoryDisplay <- HashSet.map unVictoryDisplayCardCode <$> getSet ()
@@ -53,7 +54,7 @@ instance ActRunner env => RunMessage env UncoveringTheConspiracy where
           setFromList ["01121b", "01137", "01138", "01139", "01140", "01141"]
       a <$ when
         (cultists `HashSet.isSubsetOf` victoryDisplay)
-        (unshiftMessage (AdvanceAct actId))
+        (unshiftMessage (AdvanceAct actId $ toSource attrs))
     UseCardAbility iid (ActSource aid) _ 1 | aid == actId -> do
       investigatorIds <- getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 2)

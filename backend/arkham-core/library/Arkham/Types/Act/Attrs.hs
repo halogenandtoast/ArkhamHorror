@@ -63,11 +63,14 @@ baseAttrs aid name seq' mRequiredClues = Attrs
   }
 
 instance ActionRunner env => HasActions env Attrs where
-  getActions _ FastPlayerWindow Attrs {..} = case actRequiredClues of
+  getActions _ FastPlayerWindow attrs@Attrs {..} = case actRequiredClues of
     Just (RequiredClues requiredClues Nothing) -> do
       totalSpendableClues <- unSpendableClueCount <$> getCount ()
       totalRequiredClues <- getPlayerCountValue requiredClues
-      pure [ AdvanceAct actId | totalSpendableClues >= totalRequiredClues ]
+      pure
+        [ AdvanceAct actId (toSource attrs)
+        | totalSpendableClues >= totalRequiredClues
+        ]
     Just (RequiredClues requiredClues (Just locationMatcher)) -> do
       mLocationId <- getId @(Maybe LocationId) locationMatcher
       case mLocationId of
@@ -76,7 +79,10 @@ instance ActionRunner env => HasActions env Attrs where
           totalSpendableClues <- sum
             <$> for iids ((unSpendableClueCount <$>) . getCount)
           totalRequiredClues <- getPlayerCountValue requiredClues
-          pure [ AdvanceAct actId | totalSpendableClues >= totalRequiredClues ]
+          pure
+            [ AdvanceAct actId (toSource attrs)
+            | totalSpendableClues >= totalRequiredClues
+            ]
         Nothing -> pure []
     Nothing -> pure []
   getActions _ _ _ = pure []

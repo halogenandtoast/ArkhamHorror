@@ -3,6 +3,7 @@ module Arkham.Types.Game.Helpers where
 import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.Keyword
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait (Trait)
@@ -15,6 +16,9 @@ withBaseActions
   -> m [Message]
   -> m [Message]
 withBaseActions iid window a f = (<>) <$> getActions iid window a <*> f
+
+getHasRecord :: (HasRecord env, MonadReader env m) => CampaignLogKey -> m Bool
+getHasRecord = asks . hasRecord
 
 getIsUnused
   :: (HasList UsedAbility env (), MonadReader env m)

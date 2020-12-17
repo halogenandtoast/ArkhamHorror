@@ -40,18 +40,21 @@ isHardExpert :: Attrs -> Bool
 isHardExpert Attrs { scenarioDifficulty } =
   scenarioDifficulty `elem` [Hard, Expert]
 
-actStack :: Lens' Attrs [(Int, [ActId])]
-actStack = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
+actStackL :: Lens' Attrs [(Int, [ActId])]
+actStackL = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
 
-locations :: Lens' Attrs (HashMap LocationName [LocationId])
-locations = lens scenarioLocations $ \m x -> m { scenarioLocations = x }
+locationsL :: Lens' Attrs (HashMap LocationName [LocationId])
+locationsL = lens scenarioLocations $ \m x -> m { scenarioLocations = x }
 
-setAsideCards :: Lens' Attrs [Card]
-setAsideCards =
+setAsideCardsl :: Lens' Attrs [Card]
+setAsideCardsl =
   lens scenarioSetAsideCards $ \m x -> m { scenarioSetAsideCards = x }
 
-log :: Lens' Attrs (HashSet ScenarioLogKey)
-log = lens scenarioLog $ \m x -> m { scenarioLog = x }
+deckL :: Lens' Attrs (Maybe [EncounterCard])
+deckL = lens scenarioDeck $ \m x -> m { scenarioDeck = x }
+
+logL :: Lens' Attrs (HashSet ScenarioLogKey)
+logL = lens scenarioLog $ \m x -> m { scenarioLog = x }
 
 baseAttrs :: CardCode -> Text -> [AgendaId] -> [ActId] -> Difficulty -> Attrs
 baseAttrs cardCode name agendaStack actStack' difficulty = Attrs
@@ -114,7 +117,7 @@ instance ScenarioRunner env => RunMessage env Attrs where
         [] -> pure a
         [x] -> a <$ unshiftMessage (PlaceDoom (AgendaTarget x) 1)
         _ -> error "multiple agendas should be handled by the scenario"
-    Discard (ActTarget _) -> pure $ a & actStack .~ []
+    Discard (ActTarget _) -> pure $ a & actStackL .~ []
     -- ^ See: Vengeance Awaits / The Devourer Below - right now the assumption
     -- | is that the act deck has been replaced.
     InvestigatorDefeated _ -> do
@@ -123,7 +126,7 @@ instance ScenarioRunner env => RunMessage env Attrs where
     AllInvestigatorsResigned -> a <$ unshiftMessage NoResolution
     InvestigatorWhenEliminated iid ->
       a <$ unshiftMessage (InvestigatorEliminated iid)
-    Remember logKey -> pure $ a & log %~ insertSet logKey
+    Remember logKey -> pure $ a & logL %~ insertSet logKey
     ResolveToken _drawnToken token _iid | token == AutoFail ->
       a <$ unshiftMessage FailSkillTest
     NoResolution ->

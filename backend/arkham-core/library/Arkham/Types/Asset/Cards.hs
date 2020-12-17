@@ -82,6 +82,7 @@ import Arkham.Types.Asset.Cards.RabbitsFoot as X
 import Arkham.Types.Asset.Cards.RabbitsFoot3 as X
 import Arkham.Types.Asset.Cards.ResearchLibrarian as X
 import Arkham.Types.Asset.Cards.RiteOfSeeking as X
+import Arkham.Types.Asset.Cards.RitualCandles as X
 import Arkham.Types.Asset.Cards.Rolands38Special as X
 import Arkham.Types.Asset.Cards.Scavenging as X
 import Arkham.Types.Asset.Cards.ScrollOfProphecies as X

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: af1082f6225382d884e42aead7bb5f6b2b5fffe2421f332bce0ece9ceb812534
+-- hash: e4619f2ce8a94fe6233a1c090563d0ab37017e7c6199713ed5bdd502e8566492
 
 name:           arkham-core
 version:        0.0.0
@@ -150,6 +150,7 @@ library
       Arkham.Types.Asset.Cards.RabbitsFoot3
       Arkham.Types.Asset.Cards.ResearchLibrarian
       Arkham.Types.Asset.Cards.RiteOfSeeking
+      Arkham.Types.Asset.Cards.RitualCandles
       Arkham.Types.Asset.Cards.Rolands38Special
       Arkham.Types.Asset.Cards.Scavenging
       Arkham.Types.Asset.Cards.ScrollOfProphecies

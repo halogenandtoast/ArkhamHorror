@@ -12,3 +12,4 @@ import Arkham.Types.Scenario.Scenarios.TheDevourerBelow as X
 import Arkham.Types.Scenario.Scenarios.TheGathering as X
 import Arkham.Types.Scenario.Scenarios.TheHouseAlwaysWins as X
 import Arkham.Types.Scenario.Scenarios.TheMidnightMasks as X
+import Arkham.Types.Scenario.Scenarios.TheMiskatonicMuseum as X

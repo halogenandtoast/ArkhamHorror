@@ -38,6 +38,6 @@ instance (HasQueue env) => RunMessage env RiteOfSeeking where
     SuccessfulInvestigation iid _ source | isSource attrs source ->
       case effectTarget of
         InvestigationTarget _ lid' ->
-          e <$ unshiftMessage (DiscoverClues iid lid' 1)
+          e <$ unshiftMessage (InvestigatorDiscoverClues iid lid' 1)
         _ -> pure e
     _ -> RiteOfSeeking <$> runMessage msg attrs

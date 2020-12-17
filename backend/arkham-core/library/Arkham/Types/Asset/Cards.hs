@@ -21,6 +21,7 @@ import Arkham.Types.Asset.Cards.BulletproofVest3 as X
 import Arkham.Types.Asset.Cards.Burglary as X
 import Arkham.Types.Asset.Cards.CatBurgler1 as X
 import Arkham.Types.Asset.Cards.CelaenoFragments as X
+import Arkham.Types.Asset.Cards.ClarityOfMind as X
 import Arkham.Types.Asset.Cards.DaisysToteBag as X
 import Arkham.Types.Asset.Cards.DaisysToteBagAdvanced as X
 import Arkham.Types.Asset.Cards.DigDeep as X

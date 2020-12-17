@@ -87,6 +87,7 @@ data Asset
   | HiredMuscle1' HiredMuscle1
   | RiteOfSeeking' RiteOfSeeking
   | RitualCandles' RitualCandles
+  | ClarityOfMind' ClarityOfMind
   | FireAxe' FireAxe
   | PeterSylvestre' PeterSylvestre
   | DrHenryArmitage' DrHenryArmitage
@@ -264,6 +265,7 @@ allAssets = mapFromList
   , ("02027", HiredMuscle1' . hiredMuscle1)
   , ("02028", RiteOfSeeking' . riteOfSeeking)
   , ("02029", RitualCandles' . ritualCandles)
+  , ("02030", ClarityOfMind' . clarityOfMind)
   , ("02032", FireAxe' . fireAxe)
   , ("02033", PeterSylvestre' . peterSylvestre)
   , ("02040", DrHenryArmitage' . drHenryArmitage)
@@ -371,6 +373,7 @@ assetAttrs = \case
   HiredMuscle1' attrs -> coerce attrs
   RiteOfSeeking' attrs -> coerce attrs
   RitualCandles' attrs -> coerce attrs
+  ClarityOfMind' attrs -> coerce attrs
   FireAxe' attrs -> coerce attrs
   PeterSylvestre' attrs -> coerce attrs
   DrHenryArmitage' attrs -> coerce attrs

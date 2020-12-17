@@ -480,10 +480,10 @@ instance HasId ActiveInvestigatorId (Game queue) () where
   getId _ = ActiveInvestigatorId <$> view activeInvestigatorId
 
 instance HasId CardCode (Game queue) EnemyId where
-  getId eid = getCardCode <$> getEnemy eid
+  getId = (getCardCode <$>) . getEnemy
 
 instance HasId CardCode (Game queue) AssetId where
-  getId aid = getCardCode <$> getAsset aid
+  getId = (getCardCode <$>) . getAsset
 
 instance HasId (Maybe OwnerId) (Game queue) AssetId where
   getId = getId <=< getAsset
@@ -1217,7 +1217,7 @@ instance HasSet ClosestEnemyId (Game queue) LocationId where
         if null theSet
           then HashSet.unions <$> traverse (getSet . unClosestLocationId) lids
           else pure theSet
-    where matcher g lid = not . null $ runReader (getSet @EnemyId lid) g
+    where matcher g lid = not . null $ getSet @EnemyId lid g
 
 instance HasSet ClosestEnemyId (Game queue) InvestigatorId where
   getSet = getSet <=< locationFor
@@ -1244,8 +1244,7 @@ instance HasSet ClosestEnemyId (Game queue) (LocationId, [Trait]) where
                     (\lid -> getSet (unClosestLocationId lid, traits))
                     lids
           else pure theSet
-   where
-    matcher g lid = not . null $ runReader (getSet @EnemyId (traits, lid)) g
+    where matcher g lid = not . null $ getSet @EnemyId (traits, lid) g
 
 instance HasSet ClosestEnemyId (Game queue) (InvestigatorId, [Trait]) where
   getSet (iid, traits) = getSet . (, traits) =<< locationFor iid
@@ -1324,10 +1323,7 @@ instance HasList (InvestigatorId, Distance) (Game queue) EnemyTrait where
       (iid, getDistance game $ locationFor iid game)
    where
     hasMatchingEnemy game lid = any
-      (\eid -> elem (unEnemyTrait enemyTrait) . getTraits $ runReader
-        (getEnemy eid)
-        game
-      )
+      (\eid -> elem (unEnemyTrait enemyTrait) . getTraits $ getEnemy eid game)
       (runReader (getSet =<< getLocation lid) game)
     getDistance game start =
       Distance . fromJustNote "error" . minimumMay . keys $ evalState

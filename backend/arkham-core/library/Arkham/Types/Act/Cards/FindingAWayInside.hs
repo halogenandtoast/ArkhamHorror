@@ -35,19 +35,21 @@ instance ActRunner env => RunMessage env FindingAWayInside where
         , chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
         ]
       pure $ FindingAWayInside $ attrs & sequenceL .~ Act 1 B & flippedL .~ True
-    AdvanceAct aid _ | aid == actId && actFlipped -> do
-      enemyIds <- getSetList (LocationId "01111")
-      a <$ unshiftMessages
-        ([ PlaceLocation "01112"
-         , PlaceLocation "01114"
-         , PlaceLocation "01113"
-         , PlaceLocation "01115"
-         ]
-        <> map (Discard . EnemyTarget) enemyIds
-        <> [ RevealLocation Nothing "01112"
-           , MoveAllTo "01112"
-           , RemoveLocation "01111"
-           , NextAct aid "01109"
-           ]
-        )
+    AdvanceAct aid source
+      | aid == actId && actFlipped && isSource attrs source -> do
+        leadInvestigatorId <- getLeadInvestigatorId
+        investigatorIds <- getInvestigatorIds
+        a <$ unshiftMessages
+          [ chooseOne
+            leadInvestigatorId
+            [ TargetLabel
+                (InvestigatorTarget iid)
+                [AddCampaignCardToDeck iid "02061"]
+            | iid <- investigatorIds
+            ]
+          , RevealLocation Nothing "02127"
+          , NextAct aid "02123"
+          ]
+    AdvanceAct aid _ | aid == actId && actFlipped ->
+      a <$ unshiftMessages [RevealLocation Nothing "02127", NextAct aid "02124"]
     _ -> FindingAWayInside <$> runMessage msg attrs

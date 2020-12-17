@@ -367,9 +367,11 @@ instance EnemyRunner env => RunMessage env Attrs where
           pure $ a & locationL .~ lid
     EnemySpawnedAt lid eid | eid == enemyId -> pure $ a & locationL .~ lid
     Ready target | isTarget a target -> do
-      miid <- headMay <$> getSetList enemyLocation
-      case miid of
-        Just iid ->
+      leadInvestigatorId <- getLeadInvestigatorId
+      iids <- getSetList enemyLocation
+      if null iids
+        then pure ()
+        else
           when
               (Keyword.Aloof
               `notElem` enemyKeywords
@@ -378,8 +380,15 @@ instance EnemyRunner env => RunMessage env Attrs where
                  `elem` enemyKeywords
                  )
               )
-            $ unshiftMessage (EnemyEngageInvestigator enemyId iid)
-        Nothing -> pure ()
+            $ unshiftMessage
+                (chooseOne
+                  leadInvestigatorId
+                  [ TargetLabel
+                      (InvestigatorTarget iid)
+                      [EnemyEngageInvestigator enemyId iid]
+                  | iid <- iids
+                  ]
+                )
       pure $ a & exhaustedL .~ False
     ReadyExhausted -> do
       modifiers' <-

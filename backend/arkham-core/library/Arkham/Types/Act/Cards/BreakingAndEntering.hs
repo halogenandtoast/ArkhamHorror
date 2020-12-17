@@ -33,19 +33,36 @@ instance ActRunner env => RunMessage env BreakingAndEntering where
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      a <$ unshiftMessages
-        [ chooseOne
-          leadInvestigatorId
-          [ TargetLabel
-              (InvestigatorTarget iid)
-              [AddCampaignCardToDeck iid "02138"]
-          | iid <- investigatorIds
+      mHuntingHorror <- fmap unStoryEnemyId <$> getId (CardCode "02141")
+      case mHuntingHorror of
+        Just eid -> do
+          lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
+            <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
+          a <$ unshiftMessages
+            [ chooseOne
+              leadInvestigatorId
+              [ TargetLabel
+                  (InvestigatorTarget iid)
+                  [AddCampaignCardToDeck iid "02138"]
+              | iid <- investigatorIds
+              ]
+            , EnemySpawn Nothing lid eid
+            , Ready (EnemyTarget eid)
+            , NextAct actId "02125"
+            ]
+        Nothing -> a <$ unshiftMessages
+          [ chooseOne
+            leadInvestigatorId
+            [ TargetLabel
+                (InvestigatorTarget iid)
+                [AddCampaignCardToDeck iid "02138"]
+            | iid <- investigatorIds
+            ]
+          , FindEncounterCard
+            leadInvestigatorId
+            (toTarget attrs)
+            (EncounterCardMatchByCardCode "02141")
           ]
-        , FindEncounterCard
-          leadInvestigatorId
-          (toTarget attrs)
-          (EncounterCardMatchByCardCode "02141")
-        ]
     FoundEnemyInVoid _ eid -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
         <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")

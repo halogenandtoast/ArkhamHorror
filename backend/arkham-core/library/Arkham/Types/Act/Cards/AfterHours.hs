@@ -22,16 +22,16 @@ instance ActionRunner env => HasActions env AfterHours where
 
 instance ActRunner env => RunMessage env AfterHours where
   runMessage msg a@(AfterHours attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && not actFlipped -> do
+    AdvanceAct aid _ | aid == actId && not actFlipped -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 3)
       unshiftMessages
         [ SpendClues requiredClues investigatorIds
-        , chooseOne leadInvestigatorId [AdvanceAct aid]
+        , chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
         ]
       pure $ AfterHours $ attrs & sequenceL .~ Act 1 B & flippedL .~ True
-    AdvanceAct aid | aid == actId && actFlipped -> a <$ unshiftMessages
+    AdvanceAct aid _ | aid == actId && actFlipped -> a <$ unshiftMessages
       [ AddCampaignCardToEncounterDeck "02060"
       , ShuffleEncounterDiscardBackIn
       , NextAct aid "02046"

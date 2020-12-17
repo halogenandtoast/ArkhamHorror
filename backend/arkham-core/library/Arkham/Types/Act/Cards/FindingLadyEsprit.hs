@@ -22,12 +22,12 @@ findingLadyEsprit =
   FindingLadyEsprit $ baseAttrs "81005" "Finding Lady Esprit" (Act 1 A) Nothing
 
 instance ActionRunner env => HasActions env FindingLadyEsprit where
-  getActions _ FastPlayerWindow (FindingLadyEsprit Attrs {..}) = do
+  getActions _ FastPlayerWindow (FindingLadyEsprit attrs@Attrs {..}) = do
     investigatorIds <- investigatorsInABayouLocation
     requiredClueCount <- getPlayerCountValue (PerPlayer 1)
     canAdvance' <- (>= requiredClueCount)
       <$> getSpendableClueCount investigatorIds
-    pure [ AdvanceAct actId | canAdvance' ]
+    pure [ AdvanceAct actId (toSource attrs) | canAdvance' ]
   getActions i window (FindingLadyEsprit x) = getActions i window x
 
 investigatorsInABayouLocation
@@ -53,19 +53,21 @@ nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
 
 instance ActRunner env => RunMessage env FindingLadyEsprit where
   runMessage msg a@(FindingLadyEsprit attrs@Attrs {..}) = case msg of
-    AdvanceAct aid | aid == actId && actSequence == Act 1 A -> do
+    AdvanceAct aid _ | aid == actId && actSequence == Act 1 A -> do
       investigatorIds <- investigatorsInABayouLocation
       requiredClueCount <- getPlayerCountValue (PerPlayer 1)
       unshiftMessages
         (SpendClues requiredClueCount investigatorIds
-        : [ chooseOne iid [AdvanceAct aid] | iid <- investigatorIds ]
+        : [ chooseOne iid [AdvanceAct aid (toSource attrs)]
+          | iid <- investigatorIds
+          ]
         )
       pure
         $ FindingLadyEsprit
         $ attrs
         & (sequenceL .~ Act 1 B)
         & (flippedL .~ True)
-    AdvanceAct aid | aid == actId && actSequence == Act 1 B -> do
+    AdvanceAct aid _ | aid == actId && actSequence == Act 1 B -> do
       [ladyEspritSpawnLocation] <- setToList <$> bayouLocations
       a <$ unshiftMessages
         [ CreateStoryAssetAt "81019" ladyEspritSpawnLocation

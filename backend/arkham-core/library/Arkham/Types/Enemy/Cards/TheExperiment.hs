@@ -34,7 +34,7 @@ instance EnemyRunner env => RunMessage env TheExperiment where
   runMessage msg (TheExperiment attrs) = case msg of
     EnemyDefeated eid _ _ _ _ _ | eid == enemyId attrs -> do
       actId <- fromJustNote "missing act" . headMay <$> getSetList ()
-      unshiftMessage (AdvanceAct actId)
+      unshiftMessage (AdvanceAct actId (toSource attrs))
       TheExperiment <$> runMessage msg attrs
     BeginEnemy -> TheExperiment <$> runMessage ReadyExhausted attrs
     _ -> TheExperiment <$> runMessage msg attrs

@@ -40,8 +40,8 @@ instance ActionRunner env => HasActions env HuntingTheRougarou where
 instance ActRunner env => RunMessage env HuntingTheRougarou where
   runMessage msg a@(HuntingTheRougarou attrs@Attrs {..}) = case msg of
     UseCardAbility _ source _ 1 | isSource attrs source ->
-      runMessage (AdvanceAct actId) a
-    AdvanceAct aid | aid == actId && actSequence == Act 2 A -> do
+      runMessage (AdvanceAct actId (toSource attrs)) a
+    AdvanceAct aid _ | aid == actId && actSequence == Act 2 A -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       rougarou <- unStoryEnemyId . fromJustNote "must be" <$> getId

@@ -52,16 +52,20 @@ instance ActRunner env => RunMessage env Fold where
   runMessage msg a@(Fold attrs@Attrs {..}) = case msg of
     InvestigatorResigned _ -> do
       investigatorIds <- getSet @InScenarioInvestigatorId ()
-      a <$ when (null investigatorIds) (unshiftMessage $ AdvanceAct actId)
-    AdvanceAct aid | aid == actId && not actFlipped -> do
+      a <$ when
+        (null investigatorIds)
+        (unshiftMessage $ AdvanceAct actId (toSource attrs))
+    AdvanceAct aid _ | aid == actId && not actFlipped -> do
       investigatorIds <- getInvestigatorIds
       requiredClueCount <- getPlayerCountValue (PerPlayer 2)
       unshiftMessages
         (SpendClues requiredClueCount investigatorIds
-        : [ Ask iid $ ChooseOne [AdvanceAct aid] | iid <- investigatorIds ]
+        : [ Ask iid $ ChooseOne [AdvanceAct aid (toSource attrs)]
+          | iid <- investigatorIds
+          ]
         )
       pure $ Fold $ attrs & sequenceL .~ Act 3 B & flippedL .~ True
-    AdvanceAct aid | aid == actId && actFlipped -> do
+    AdvanceAct aid _ | aid == actId && actFlipped -> do
       maid <- fmap unStoryAssetId <$> getId (CardCode "02079")
       a <$ case maid of
         Nothing -> unshiftMessage (Resolution 1)

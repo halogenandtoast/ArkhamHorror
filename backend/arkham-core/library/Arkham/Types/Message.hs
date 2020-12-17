@@ -163,7 +163,7 @@ data Message
   | AdvanceAgendaIfThresholdSatisfied
   | AdvanceAgenda AgendaId
   | AdvanceCurrentAgenda
-  | AdvanceAct ActId
+  | AdvanceAct ActId Source
   | RevertAct ActId
   | NextAdvanceActStep ActId Int
   | AllDrawEncounterCard

@@ -14,7 +14,7 @@ newtype Dormitories = Dormitories Attrs
 
 dormitories :: Dormitories
 dormitories = Dormitories $ (baseAttrs
-                              "02048"
+                              "02052"
                               "Dormitories"
                               EncounterSet.ExtracurricularActivity
                               1

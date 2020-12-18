@@ -572,6 +572,9 @@ instance HasCount HorrorCount (Game queue) InvestigatorId where
 instance HasCount DamageCount (Game queue) EnemyId where
   getCount eid = DamageCount . snd . getDamage <$> getEnemy eid
 
+instance HasCount DamageCount (Game queue) InvestigatorId where
+  getCount = getCount <=< getInvestigator
+
 instance HasCount TreacheryCount (Game queue) (LocationId, CardCode) where
   getCount (lid, cardCode) = do
     g <- ask

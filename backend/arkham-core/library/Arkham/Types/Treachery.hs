@@ -45,6 +45,7 @@ data Treachery
   | SearchingForIzzie' SearchingForIzzie
   | FinalRhapsody' FinalRhapsody
   | WrackedByNightmares' WrackedByNightmares
+  | EagerForDeath' EagerForDeath
   | TheZealotsSeal' TheZealotsSeal
   | MaskedHorrors' MaskedHorrors
   | VaultOfEarthlyDemise' VaultOfEarthlyDemise
@@ -97,7 +98,9 @@ instance HasId (Maybe OwnerId) env Treachery where
 
 lookupTreachery
   :: CardCode -> (TreacheryId -> Maybe InvestigatorId -> Treachery)
-lookupTreachery = fromJustNote "Unkown treachery" . flip lookup allTreacheries
+lookupTreachery cardCode =
+  fromJustNote ("Unknown treachery: " <> pack (show cardCode))
+    $ lookup cardCode allTreacheries
 
 allTreacheries
   :: HashMap CardCode (TreacheryId -> Maybe InvestigatorId -> Treachery)
@@ -131,6 +134,7 @@ allTreacheries = mapFromList
   , ("02011", (SearchingForIzzie' .) . searchingForIzzie)
   , ("02013", (FinalRhapsody' .) . finalRhapsody)
   , ("02015", (WrackedByNightmares' .) . wrackedByNightmares)
+  , ("02091", (EagerForDeath' .) . eagerForDeath)
   , ("50024", (TheZealotsSeal' .) . theZealotsSeal)
   , ("50031", (MaskedHorrors' .) . maskedHorrors)
   , ("50032b", (VaultOfEarthlyDemise' .) . vaultOfEarthlyDemise)
@@ -188,6 +192,7 @@ treacheryAttrs = \case
   SearchingForIzzie' attrs -> coerce attrs
   FinalRhapsody' attrs -> coerce attrs
   WrackedByNightmares' attrs -> coerce attrs
+  EagerForDeath' attrs -> coerce attrs
   TheZealotsSeal' attrs -> coerce attrs
   MaskedHorrors' attrs -> coerce attrs
   VaultOfEarthlyDemise' attrs -> coerce attrs

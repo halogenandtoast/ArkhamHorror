@@ -20,7 +20,9 @@ instance HasModifiersFor env StrayCat where
 instance HasActions env StrayCat where
   getActions iid window (StrayCat a) | ownedBy a iid = do
     baseActions <- getActions iid window a
-    let ability = mkAbility (toSource a) 1 (FastAbility window)
+    let
+      ability =
+        mkAbility (toSource a) 1 (FastAbility window (DiscardCost $ toTarget a))
     pure $ baseActions <> [ActivateCardAbilityAction iid ability]
   getActions _ _ _ = pure []
 
@@ -33,10 +35,7 @@ instance AssetRunner env => RunMessage env StrayCat where
         ((notMember Elite <$>) . getSet)
         locationEnemyIds
 
-      a <$ unshiftMessages
-        [ Discard (AssetTarget aid)
-        , chooseOne
-          iid
-          [ EnemyEvaded iid enemyId | enemyId <- nonEliteEnemyIds ]
-        ]
+      a <$ unshiftMessage
+        (chooseOne iid [ EnemyEvaded iid enemyId | enemyId <- nonEliteEnemyIds ]
+        )
     _ -> StrayCat <$> runMessage msg attrs

@@ -7,7 +7,10 @@ import Arkham.Prelude
 
 import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
+import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
+import Arkham.Types.LocationMatcher
+import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
 
@@ -38,9 +41,13 @@ decreaseActionCost other _ = other
 data Cost
   = ActionCost Int
   | ClueCost Int
+  | GroupClueCost Int (Maybe LocationMatcher)
   | ExhaustCost Target
   | Costs [Cost]
-  | DiscardCost Int (Maybe PlayerCardType) (HashSet Trait)
+  | DiscardCost Target
+  | DiscardCardCost CardId
+  | HandDiscardCost Int (Maybe PlayerCardType) (HashSet Trait)
+  | HorrorCost Source Target Int
   | Free
   | ResourceCost Int
   | UseCost AssetId UseType Int

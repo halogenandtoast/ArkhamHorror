@@ -191,7 +191,7 @@ data Message
   | AskMap (HashMap InvestigatorId Question)
   | TakeAction InvestigatorId (Maybe Action) Cost
   | TakenAction InvestigatorId Action
-  | PayActionCost InvestigatorId (Maybe Action) Cost
+  | PayAbilityCost InvestigatorId (Maybe Action) Cost
   | LoseActions InvestigatorId Source Int
   | SetActions InvestigatorId Source Int
   | GainActions InvestigatorId Source Int

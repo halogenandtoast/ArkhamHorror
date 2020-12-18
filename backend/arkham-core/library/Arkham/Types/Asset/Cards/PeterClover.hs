@@ -18,7 +18,10 @@ peterClover uuid = PeterClover
   $ (baseAttrs uuid "02079") { assetHealth = Just 3, assetSanity = Just 2 }
 
 ability :: Attrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow)
+ability attrs = mkAbility
+  (toSource attrs)
+  1
+  (FastAbility FastPlayerWindow (ExhaustCost $ toTarget attrs))
 
 instance
   ( HasSet EnemyId env ([Trait], LocationId)
@@ -29,9 +32,7 @@ instance
     lid <- getId @LocationId iid
     criminals <- getSet @EnemyId ([Criminal], lid)
     pure
-      [ ActivateCardAbilityAction iid (ability attrs)
-      | not (assetExhausted attrs) && not (null criminals)
-      ]
+      [ ActivateCardAbilityAction iid (ability attrs) | not (null criminals) ]
   getActions iid window (PeterClover attrs) = getActions iid window attrs
 
 instance HasModifiersFor env PeterClover where
@@ -48,8 +49,8 @@ instance
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       lid <- getId @LocationId iid
       criminals <- getSetList ([Criminal], lid)
-      unshiftMessage (chooseOne iid [ EnemyEvaded iid eid | eid <- criminals ])
-      pure $ PeterClover $ attrs & exhaustedL .~ True
+      a <$ unshiftMessage
+        (chooseOne iid [ EnemyEvaded iid eid | eid <- criminals ])
     BeginEnemy | isNothing assetInvestigator ->
       a <$ unshiftMessage (AssetDamage assetId (toSource attrs) 1 0)
     _ -> PeterClover <$> runMessage msg attrs

@@ -42,7 +42,7 @@ instance ActionRunner env => HasActions env HermanCollins where
               1
               (ActionAbility
                 (Just Parley)
-                (Costs [ActionCost 1, DiscardCost 4 Nothing mempty])
+                (Costs [ActionCost 1, HandDiscardCost 4 Nothing mempty])
               )
             )
         | locationId == enemyLocation

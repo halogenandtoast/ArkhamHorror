@@ -7,7 +7,7 @@ import Arkham.Types.Cost
 import Arkham.Types.Window
 
 data AbilityType
-  = FastAbility Window
+  = FastAbility Window Cost
   | ReactionAbility Window
   | ActionAbility (Maybe Action) Cost
   | ForcedAbility

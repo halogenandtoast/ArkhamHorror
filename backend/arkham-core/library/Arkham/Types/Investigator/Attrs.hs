@@ -1341,7 +1341,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       (UseCardAbility iid abilitySource abilityMetadata abilityIndex) -- We should check action type when added for aoo
     case abilityType of
       ForcedAbility -> pure ()
-      FastAbility _ -> pure ()
+      FastAbility _ cost -> unshiftMessage (PayAbilityCost iid Nothing cost)
       ReactionAbility _ -> pure ()
       ActionAbility mAction cost ->
         if mAction
@@ -1360,7 +1360,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         (PayForCardAbility iid abilitySource abilityMetadata abilityIndex) -- We should check action type when added for aoo
       case abilityType of
         ForcedAbility -> pure ()
-        FastAbility _ -> pure ()
+        FastAbility _ _ -> pure ()
         ReactionAbility _ -> pure ()
         ActionAbility mAction cost ->
           if mAction
@@ -1509,14 +1509,22 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   GainActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActionsL +~ n
   TakeAction iid mAction cost | iid == investigatorId -> a <$ unshiftMessages
-    (PayActionCost iid mAction cost
+    (PayAbilityCost iid mAction cost
     : [ TakenAction iid action | action <- maybeToList mAction ]
     )
   TakenAction iid action | iid == investigatorId ->
     pure $ a & actionsTakenL %~ (<> [action])
-  PayActionCost iid mAction cost | iid == investigatorId -> case cost of
-    Costs xs -> a <$ unshiftMessages [ PayActionCost iid mAction x | x <- xs ]
+  PayAbilityCost iid mAction cost | iid == investigatorId -> case cost of
+    Costs xs -> a <$ unshiftMessages [ PayAbilityCost iid mAction x | x <- xs ]
     ExhaustCost target -> a <$ unshiftMessage (Exhaust target)
+    DiscardCost target -> a <$ unshiftMessage (Discard target)
+    DiscardCardCost cid -> a <$ unshiftMessage (DiscardCard iid cid)
+    HorrorCost source target x -> case target of
+      InvestigatorTarget iid' | iid' == iid ->
+        a <$ unshiftMessage (InvestigatorAssignDamage iid source 0 x)
+      AssetTarget aid -> a <$ unshiftMessage (AssetDamage aid source 0 1)
+      _ -> error "can't target for horror cost"
+    ResourceCost x -> pure $ a & resourcesL %~ max 0 . subtract x
     ActionCost x -> do
       costModifier <- getActionCostModifier a mAction
       let modifiedActionCost = max 0 (x + costModifier)
@@ -1524,8 +1532,17 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     UseCost aid uType n ->
       a <$ unshiftMessage (SpendUses (AssetTarget aid) uType n)
     ClueCost x -> pure $ a & (cluesL %~ max 0 . subtract x)
-    ResourceCost x -> pure $ a & (resourcesL %~ max 0 . subtract x)
-    DiscardCost x mPlayerCardType traits -> do
+    GroupClueCost x Nothing -> do
+      investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()
+      a <$ unshiftMessage (SpendClues x investigatorIds)
+    GroupClueCost x (Just locationMatcher) -> do
+      mLocationId <- getId @(Maybe LocationId) locationMatcher
+      case mLocationId of
+        Just lid -> do
+          iids <- getSetList @InvestigatorId lid
+          a <$ unshiftMessage (SpendClues x iids)
+        Nothing -> error "could not pay cost"
+    HandDiscardCost x mPlayerCardType traits -> do
       let
         cards =
           filter

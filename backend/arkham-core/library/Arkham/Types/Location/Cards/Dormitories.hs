@@ -32,29 +32,27 @@ instance HasModifiersFor env Dormitories where
 
 instance ActionRunner env => HasActions env Dormitories where
   getActions iid FastPlayerWindow (Dormitories attrs@Attrs {..})
-    | locationRevealed = do
-      baseActions <- getActions iid FastPlayerWindow attrs
+    | locationRevealed = withBaseActions iid FastPlayerWindow attrs $ do
       requiredClueCount <- getPlayerCountValue (PerPlayer 3)
-      totalSpendableClueCount <- getSpendableClueCount
-        (setToList locationInvestigators)
       pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction
-               iid
-               (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow))
-           | totalSpendableClueCount >= requiredClueCount
-           ]
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility
+              (toSource attrs)
+              1
+              (FastAbility
+                FastPlayerWindow
+                (GroupClueCost requiredClueCount
+                $ Just (LocationWithTitle "Dormitories")
+                )
+              )
+            )
+        ]
   getActions iid window (Dormitories attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env Dormitories where
   runMessage msg l@(Dormitories attrs) = case msg of
     UseCardAbility _iid source _ 1
-      | isSource attrs source && locationRevealed attrs -> do
-        requiredClueCount <- getPlayerCountValue (PerPlayer 3)
-        l <$ unshiftMessages
-          [ SpendClues
-            requiredClueCount
-            (setToList $ locationInvestigators attrs)
-          , Resolution 2
-          ]
+      | isSource attrs source && locationRevealed attrs -> l
+      <$ unshiftMessage (Resolution 2)
     _ -> Dormitories <$> runMessage msg attrs

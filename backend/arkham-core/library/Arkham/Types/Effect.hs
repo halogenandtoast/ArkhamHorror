@@ -14,6 +14,7 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Effects
 import Arkham.Types.Trait
+import Data.Coerce
 
 data Effect
   = OnTheLam' OnTheLam
@@ -53,6 +54,14 @@ deriving anyclass instance
   , HasSet Trait env EnemyId
   )
   => RunMessage env Effect
+
+instance Entity Effect where
+  type EntityId Effect = EffectId
+  toId = toId . effectAttrs
+  toSource = toSource . effectAttrs
+  toTarget = toTarget . effectAttrs
+  isSource = isSource . effectAttrs
+  isTarget = isTarget . effectAttrs
 
 instance HasSet Trait env Effect where
   getSet = const (pure mempty)
@@ -117,3 +126,33 @@ buildPhaseEffect
   :: EffectId -> EffectMetadata Message -> Source -> Target -> Effect
 buildPhaseEffect eid metadata source target =
   PhaseEffect' $ phaseEffect eid metadata source target
+
+effectAttrs :: Effect -> Attrs
+effectAttrs = \case
+  OnTheLam' attrs -> coerce attrs
+  MindOverMatter' attrs -> coerce attrs
+  Deduction' attrs -> coerce attrs
+  Burglary' attrs -> coerce attrs
+  Shrivelling' attrs -> coerce attrs
+  BlindingLight' attrs -> coerce attrs
+  MindWipe1' attrs -> coerce attrs
+  BlindingLight2' attrs -> coerce attrs
+  BaseballBat' attrs -> coerce attrs
+  Lucky' attrs -> coerce attrs
+  Lucky2' attrs -> coerce attrs
+  WillToSurvive4' attrs -> coerce attrs
+  SureGamble3' attrs -> coerce attrs
+  ArkhamWoodsTwistingPaths' attrs -> coerce attrs
+  HuntingNightgaunt' attrs -> coerce attrs
+  SeekingAnswers' attrs -> coerce attrs
+  RiteOfSeeking' attrs -> coerce attrs
+  BindMonster2' attrs -> coerce attrs
+  PushedIntoTheBeyond' attrs -> coerce attrs
+  ArcaneBarrier' attrs -> coerce attrs
+  LetMeHandleThis' attrs -> coerce attrs
+  MindWipe3' attrs -> coerce attrs
+  JeremiahPierce' attrs -> coerce attrs
+  CurseOfTheRougarouTabletToken' attrs -> coerce attrs
+  CursedShores' attrs -> coerce attrs
+  SkillTestEffect' attrs -> coerce attrs
+  PhaseEffect' attrs -> coerce attrs

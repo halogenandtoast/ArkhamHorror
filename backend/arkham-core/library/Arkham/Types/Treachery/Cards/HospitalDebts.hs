@@ -32,7 +32,8 @@ instance ActionRunner env => HasActions env HospitalDebts where
   getActions iid (DuringTurn You) (HospitalDebts a@Attrs {..}) =
     withTreacheryInvestigator a $ \tormented -> do
       let
-        ability = (mkAbility (toSource a) 1 (FastAbility (DuringTurn You)))
+        ability = (mkAbility (toSource a) 1 (FastAbility (DuringTurn You) Free)
+                  )
           { abilityLimit = PerRound
           }
       usedAbilities <- map unUsedAbility <$> getList ()

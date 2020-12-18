@@ -40,17 +40,15 @@ instance ActionRunner env => HasActions env TrappersCabin where
     withBaseActions iid NonFast attrs $ do
       assetNotTaken <- isNothing
         <$> getId @(Maybe StoryAssetId) (CardCode "81020")
-      resourceCount <- getResourceCount iid
       pure
         [ ActivateCardAbilityAction
             iid
-            (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
+            (mkAbility
+              (toSource attrs)
+              1
+              (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 5])
             )
-        | iid
-          `member` locationInvestigators
-          && resourceCount
-          >= 5
-          && assetNotTaken
+        | iid `member` locationInvestigators && assetNotTaken
         ]
   getActions i window (TrappersCabin attrs) = getActions i window attrs
 

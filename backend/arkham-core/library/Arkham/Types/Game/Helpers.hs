@@ -48,6 +48,11 @@ getCanAffordCost
 getCanAffordCost iid source mAction = \case
   Free -> pure True
   Costs xs -> and <$> traverse (getCanAffordCost iid source mAction) xs
+  ExhaustCost target -> case target of
+    AssetTarget aid -> do
+      exhaustedAssetIds <- fmap unExhaustedAssetId <$> getSetList ()
+      pure $ aid `notElem` exhaustedAssetIds
+    _ -> error "Not handled"
   UseCost aid _uType n -> do
     uses <- unUsesCount <$> getCount aid
     pure $ uses >= n
@@ -90,6 +95,7 @@ instance
   , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
   , HasCount UsesCount env AssetId
   , HasSet Trait env Source
+  , HasSet ExhaustedAssetId env ()
   )
   => HasActions env () where
   getActions iid window _ = do

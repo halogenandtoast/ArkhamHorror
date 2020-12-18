@@ -7,6 +7,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Asset.Class
 import Arkham.Types.Trait
+import Arkham.Types.Action
 
 data Attrs = Attrs
   { assetName :: Text
@@ -94,6 +95,11 @@ instance Entity Attrs where
 
 ownedBy :: Attrs -> InvestigatorId -> Bool
 ownedBy Attrs {..} = (== assetInvestigator) . Just
+
+assetAction :: InvestigatorId -> Attrs -> Int -> Maybe Action -> Cost -> Message
+assetAction iid attrs idx mAction cost =
+  ActivateCardAbilityAction iid
+    $ mkAbility (toSource attrs) idx (ActionAbility mAction cost)
 
 doomL :: Lens' Attrs Int
 doomL = lens assetDoom $ \m x -> m { assetDoom = x }

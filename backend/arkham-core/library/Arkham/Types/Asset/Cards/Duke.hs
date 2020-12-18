@@ -34,24 +34,28 @@ fightAbility :: Attrs -> Ability
 fightAbility attrs = mkAbility
   (toSource attrs)
   1
-  (ActionAbility (Just Action.Fight) (ActionCost 1))
+  (ActionAbility
+    (Just Action.Fight)
+    (Costs [ActionCost 1, ExhaustCost (toTarget attrs)])
+  )
 
 investigateAbility :: Attrs -> Ability
 investigateAbility attrs = mkAbility
   (toSource attrs)
   2
-  (ActionAbility (Just Action.Investigate) (ActionCost 1))
+  (ActionAbility
+    (Just Action.Investigate)
+    (Costs [ActionCost 1, ExhaustCost (toTarget attrs)])
+  )
 
 instance ActionRunner env => HasActions env Duke where
   getActions iid NonFast (Duke a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid NonFast
     investigateAvailable <- hasInvestigateActions iid NonFast
     pure
-      $ [ ActivateCardAbilityAction iid (fightAbility a)
-        | fightAvailable && not (assetExhausted a)
-        ]
+      $ [ ActivateCardAbilityAction iid (fightAbility a) | fightAvailable ]
       <> [ ActivateCardAbilityAction iid (investigateAbility a)
-         | investigateAvailable && not (assetExhausted a)
+         | investigateAvailable
          ]
   getActions i window (Duke x) = getActions i window x
 

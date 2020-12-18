@@ -22,30 +22,28 @@ bookOfShadows3 uuid =
 instance HasModifiersFor env BookOfShadows3 where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
-ability a = mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1)
-
 slot :: Attrs -> Slot
 slot Attrs { assetId } = Slot (AssetSource assetId) Nothing
 
 instance HasActions env BookOfShadows3 where
-  getActions iid NonFast (BookOfShadows3 a) | ownedBy a iid =
-    pure [ ActivateCardAbilityAction iid (ability a) | not (assetExhausted a) ]
+  getActions iid NonFast (BookOfShadows3 a) | ownedBy a iid = pure
+    [ assetAction iid a 1 Nothing
+        $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
+    ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env BookOfShadows3 where
-  runMessage msg (BookOfShadows3 attrs) = case msg of
+instance AssetRunner env => RunMessage env BookOfShadows3 where
+  runMessage msg a@(BookOfShadows3 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       unshiftMessage (AddSlot iid ArcaneSlot (slot attrs))
       BookOfShadows3 <$> runMessage msg attrs
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       assetIds <- getSetList iid
       spellAssetIds <- filterM ((member Spell <$>) . getSet) assetIds
-      unless
+      a <$ unless
         (null spellAssetIds)
         (unshiftMessage $ chooseOne
           iid
           [ AddUses (AssetTarget aid') Charge 1 | aid' <- spellAssetIds ]
         )
-      pure $ BookOfShadows3 $ attrs & exhaustedL .~ True
     _ -> BookOfShadows3 <$> runMessage msg attrs

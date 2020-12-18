@@ -8,6 +8,7 @@ import Arkham.Prelude
 import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
 import Arkham.Types.Card.PlayerCard
+import Arkham.Types.Target
 import Arkham.Types.Trait
 
 totalActionCost :: Cost -> Int
@@ -36,12 +37,13 @@ decreaseActionCost other _ = other
 
 data Cost
   = ActionCost Int
-  | DiscardCost Int (Maybe PlayerCardType) (HashSet Trait)
   | ClueCost Int
+  | ExhaustCost Target
+  | Costs [Cost]
+  | DiscardCost Int (Maybe PlayerCardType) (HashSet Trait)
+  | Free
   | ResourceCost Int
   | UseCost AssetId UseType Int
-  | Costs [Cost]
-  | Free
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

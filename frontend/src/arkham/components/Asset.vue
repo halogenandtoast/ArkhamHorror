@@ -86,7 +86,9 @@ export default defineComponent({
           return c.contents[1].source.contents === id.value
             && (c.contents[1].type.tag === 'ReactionAbility' || c.contents[1].type.tag === 'FastAbility')
         case MessageType.RUN:
-          return c.contents.some((c1: Message) => canInteract(c1));
+          return c.contents.some((c1: Message) => canInteract(c1))
+        case MessageType.TARGET_LABEL:
+          return c.contents[0].tag === "AssetTarget" && c.contents[0].contents === id.value
         default:
           return false;
       }

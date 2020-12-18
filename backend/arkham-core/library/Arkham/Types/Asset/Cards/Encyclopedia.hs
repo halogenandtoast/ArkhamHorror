@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.Encyclopedia where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
@@ -18,13 +19,21 @@ encyclopedia uuid =
 instance HasModifiersFor env Encyclopedia where
   getModifiersFor = noModifiersFor
 
-instance HasActions env Encyclopedia where
-  getActions iid NonFast (Encyclopedia a) | ownedBy a iid = pure
-    [ ActivateCardAbilityAction
-        iid
-        (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
-    | not (assetExhausted a) && useCount (assetUses a) > 0
-    ]
+instance ActionRunner env => HasActions env Encyclopedia where
+  getActions iid NonFast (Encyclopedia a) | ownedBy a iid = do
+    hasActionsRemaining <- getHasActionsRemaining
+      iid
+      Nothing
+      (setToList $ assetTraits a)
+    pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
+      | not (assetExhausted a)
+        && useCount (assetUses a)
+        > 0
+        && hasActionsRemaining
+      ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Encyclopedia where

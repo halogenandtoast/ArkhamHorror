@@ -27,18 +27,19 @@ instance HasModifiersFor env StudyAberrantGateway where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env StudyAberrantGateway where
-  getActions iid NonFast (StudyAberrantGateway attrs) = do
-    baseActions <- getActions iid NonFast attrs
-    leadInvestigatorId <- getLeadInvestigatorId
-    canActivate <- (>= 2) . unActionRemainingCount <$> getCount
-      (Nothing :: Maybe Action, setToList (locationTraits attrs), iid)
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction
-             iid
-             (mkAbility (toSource attrs) 1 (ActionAbility 2 Nothing))
-         | canActivate && leadInvestigatorId == iid
-         ]
+  getActions iid NonFast (StudyAberrantGateway attrs)
+    | iid `elem` locationInvestigators attrs = do
+      baseActions <- getActions iid NonFast attrs
+      leadInvestigatorId <- getLeadInvestigatorId
+      canActivate <- (>= 2) . unActionRemainingCount <$> getCount
+        (Nothing :: Maybe Action, setToList (locationTraits attrs), iid)
+      pure
+        $ baseActions
+        <> [ ActivateCardAbilityAction
+               iid
+               (mkAbility (toSource attrs) 1 (ActionAbility 2 Nothing))
+           | canActivate && leadInvestigatorId == iid
+           ]
   getActions iid window (StudyAberrantGateway attrs) =
     getActions iid window attrs
 

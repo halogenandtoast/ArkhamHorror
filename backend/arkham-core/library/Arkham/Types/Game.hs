@@ -35,7 +35,7 @@ import Arkham.Import hiding (first)
 import Data.Align
 import Data.These
 import Data.These.Lens
-import Data.List.Extra (groupOn)
+import Data.List.Extra (groupOn, cycle)
 import Arkham.Types.Act
 import Arkham.Types.Action (Action)
 import Arkham.Types.Agenda
@@ -343,6 +343,7 @@ addInvestigator uid i d g = do
         & (investigators %~ insertMap iid i)
         & (players %~ insertMap uid iid)
         & (playerOrder %~ (<> [iid]))
+        & (playerTurnOrder %~ (<> [iid]))
     gameState =
       if length (g' ^. players) < g' ^. playerCount then IsPending else IsActive
   runMessages (const $ pure ()) $ g' & gameStateL .~ gameState
@@ -982,7 +983,6 @@ getShortestPath !game !initialLocation !target = do
     !state' =
       LPState (pure initialLocation) (HashSet.singleton initialLocation) mempty
   let !result = evalState (markDistances game initialLocation target) state'
-  void $ error $ show result
   fromMaybe [] . headMay . drop 1 . map snd . sortOn fst . mapToList $ result
 
 data LPState = LPState
@@ -1578,7 +1578,12 @@ runGameMessage msg g = case msg of
         | iid <- g ^. investigators . to keys
         ]
       )
-  ChoosePlayer iid SetLeadInvestigator -> pure $ g & leadInvestigatorId .~ iid
+  ChoosePlayer iid SetLeadInvestigator -> do
+    let
+      allPlayers = view playerTurnOrder g
+      playerTurnOrder' =
+        take (length allPlayers) $ dropWhile (/= iid) $ cycle allPlayers
+    pure $ g & leadInvestigatorId .~ iid & playerTurnOrder .~ playerTurnOrder'
   SearchTopOfDeck iid EncounterDeckTarget n _traits strategy -> do
     let (cards, encounterDeck') = splitAt n $ unDeck (gameEncounterDeck g)
     case strategy of

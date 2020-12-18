@@ -48,7 +48,9 @@ baseAttrs :: AssetId -> CardCode -> Attrs
 baseAttrs aid cardCode =
   let
     MkPlayerCard {..} =
-      fromJustNote "missing player card" (lookup cardCode allPlayerCards)
+      fromJustNote
+          ("missing player card" <> unpack (unCardCode cardCode))
+          (lookup cardCode allPlayerCards)
         $ CardId (unAssetId aid)
   in
     Attrs

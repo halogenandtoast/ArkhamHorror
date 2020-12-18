@@ -1517,6 +1517,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure $ a & actionsTakenL %~ (<> [action])
   PayActionCost iid mAction cost | iid == investigatorId -> case cost of
     Costs xs -> a <$ unshiftMessages [ PayActionCost iid mAction x | x <- xs ]
+    ExhaustCost target -> a <$ unshiftMessage (Exhaust target)
     ActionCost x -> do
       costModifier <- getActionCostModifier a mAction
       let modifiedActionCost = max 0 (x + costModifier)

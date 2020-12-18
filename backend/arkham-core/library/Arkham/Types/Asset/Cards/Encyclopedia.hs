@@ -11,8 +11,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses (Uses(..), useCount)
-import qualified Arkham.Types.Asset.Uses as Resource
+import Arkham.Types.Asset.Uses
 
 newtype Encyclopedia = Encyclopedia Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -26,65 +25,65 @@ instance HasModifiersFor env Encyclopedia where
 
 instance HasActions env Encyclopedia where
   getActions iid NonFast (Encyclopedia a) | ownedBy a iid = pure
-    [ ActivateCardAbilityAction
-        iid
-        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
-    | not (assetExhausted a) && useCount (assetUses a) > 0
+    [ assetAction iid a 1 Nothing
+        $ Costs
+            [ActionCost 1, ExhaustCost (toTarget a), UseCost (toId a) Secret 1]
     ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env Encyclopedia where
-  runMessage msg (Encyclopedia attrs) = case msg of
+instance AssetRunner env => RunMessage env Encyclopedia where
+  runMessage msg a@(Encyclopedia attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Encyclopedia <$> runMessage msg (attrs & usesL .~ Uses Resource.Secret 5)
+      Encyclopedia <$> runMessage msg (attrs & usesL .~ Uses Secret 5)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- getId @LocationId iid
       investigatorTargets <- map InvestigatorTarget <$> getSetList locationId
-      unshiftMessage $ chooseOne
-        iid
-        [ TargetLabel
-            target
-            [ chooseOne
-                iid
-                [ Label
-                  "Willpower"
-                  [ CreatePhaseEffect
-                      (EffectModifiers
-                      $ toModifiers attrs [SkillModifier SkillWillpower 2]
-                      )
-                      source
-                      target
+      a <$ unshiftMessage
+        (chooseOne
+          iid
+          [ TargetLabel
+              target
+              [ chooseOne
+                  iid
+                  [ Label
+                    "Willpower"
+                    [ CreatePhaseEffect
+                        (EffectModifiers
+                        $ toModifiers attrs [SkillModifier SkillWillpower 2]
+                        )
+                        source
+                        target
+                    ]
+                  , Label
+                    "Intellect"
+                    [ CreatePhaseEffect
+                        (EffectModifiers
+                        $ toModifiers attrs [SkillModifier SkillIntellect 2]
+                        )
+                        source
+                        target
+                    ]
+                  , Label
+                    "Combat"
+                    [ CreatePhaseEffect
+                        (EffectModifiers
+                        $ toModifiers attrs [SkillModifier SkillCombat 2]
+                        )
+                        source
+                        target
+                    ]
+                  , Label
+                    "Agility"
+                    [ CreatePhaseEffect
+                        (EffectModifiers
+                        $ toModifiers attrs [SkillModifier SkillAgility 2]
+                        )
+                        source
+                        target
+                    ]
                   ]
-                , Label
-                  "Intellect"
-                  [ CreatePhaseEffect
-                      (EffectModifiers
-                      $ toModifiers attrs [SkillModifier SkillIntellect 2]
-                      )
-                      source
-                      target
-                  ]
-                , Label
-                  "Combat"
-                  [ CreatePhaseEffect
-                      (EffectModifiers
-                      $ toModifiers attrs [SkillModifier SkillCombat 2]
-                      )
-                      source
-                      target
-                  ]
-                , Label
-                  "Agility"
-                  [ CreatePhaseEffect
-                      (EffectModifiers
-                      $ toModifiers attrs [SkillModifier SkillAgility 2]
-                      )
-                      source
-                      target
-                  ]
-                ]
-            ]
-        | target <- investigatorTargets
-        ]
-      pure $ Encyclopedia $ attrs & exhaustedL .~ True & usesL %~ Resource.use
+              ]
+          | target <- investigatorTargets
+          ]
+        )
     _ -> Encyclopedia <$> runMessage msg attrs

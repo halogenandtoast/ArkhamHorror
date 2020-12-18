@@ -964,6 +964,12 @@ instance HasSet ExhaustedEnemyId (Game queue) LocationId where
       . filterMap (\e -> toId e `member` locationEnemyIds && isExhausted e)
       <$> view enemies
 
+instance HasSet ExhaustedAssetId (Game queue) () where
+  getSet () = do
+    assetIds <- keys <$> view assets
+    setFromList . map ExhaustedAssetId <$> filterM isAssetExhausted assetIds
+    where isAssetExhausted = (isExhausted <$>) . getAsset
+
 instance HasSet AgendaId (Game queue) () where
   getSet _ = keysSet <$> view agendas
 

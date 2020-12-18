@@ -24,10 +24,8 @@ instance HasModifiersFor env Encyclopedia2 where
 
 instance HasActions env Encyclopedia2 where
   getActions iid NonFast (Encyclopedia2 a) | ownedBy a iid = pure
-    [ ActivateCardAbilityAction
-        iid
-        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
-    | not (assetExhausted a)
+    [ assetAction iid a 1 Nothing
+        $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
     ]
   getActions _ _ _ = pure []
 

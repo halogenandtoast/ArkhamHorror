@@ -43,7 +43,7 @@ instance ActionRunner env => HasActions env GrotesqueStatue4 where
         ]
   getActions _ _ _ = pure []
 
-instance (AssetRunner env) => RunMessage env GrotesqueStatue4 where
+instance AssetRunner env => RunMessage env GrotesqueStatue4 where
   runMessage msg (GrotesqueStatue4 attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       GrotesqueStatue4

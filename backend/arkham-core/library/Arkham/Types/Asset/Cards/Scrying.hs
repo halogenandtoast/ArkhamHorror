@@ -23,33 +23,25 @@ instance HasModifiersFor env Scrying where
   getModifiersFor = noModifiersFor
 
 instance HasActions env Scrying where
-  getActions iid NonFast (Scrying a) | ownedBy a iid && not (assetExhausted a) =
-    pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility
-            (toSource a)
-            1
-            (ActionAbility Nothing
-            $ Costs [ActionCost 1, UseCost (toId a) Charge 1]
-            )
-          )
-      ]
+  getActions iid NonFast (Scrying a) | ownedBy a iid = pure
+    [ assetAction iid a 1 Nothing
+        $ Costs
+            [ActionCost 1, UseCost (toId a) Charge 1, ExhaustCost (toTarget a)]
+    ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Scrying where
-  runMessage msg (Scrying attrs) = case msg of
+  runMessage msg a@(Scrying attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Scrying <$> runMessage msg (attrs & usesL .~ Uses Charge 3)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- getId @LocationId iid
       targets <- map InvestigatorTarget <$> getSetList locationId
-      unshiftMessage
+      a <$ unshiftMessage
         (chooseOne iid
         $ SearchTopOfDeck iid EncounterDeckTarget 3 [] PutBackInAnyOrder
         : [ SearchTopOfDeck iid target 3 [] PutBackInAnyOrder
           | target <- targets
           ]
         )
-      pure $ Scrying $ attrs & exhaustedL .~ True
     _ -> Scrying <$> runMessage msg attrs

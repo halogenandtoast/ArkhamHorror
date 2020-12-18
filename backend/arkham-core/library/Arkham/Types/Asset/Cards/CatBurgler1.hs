@@ -27,13 +27,11 @@ instance HasModifiersFor env CatBurgler1 where
     pure $ toModifiers a [ SkillModifier SkillAgility 1 | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
-ability :: Attrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
-
 instance HasActions env CatBurgler1 where
-  getActions iid NonFast (CatBurgler1 a) | ownedBy a iid =
-    pure [ ActivateCardAbilityAction iid (ability a) | not (assetExhausted a) ]
+  getActions iid NonFast (CatBurgler1 a) | ownedBy a iid = pure
+    [ assetAction iid a 1 Nothing
+        $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
+    ]
   getActions i window (CatBurgler1 x) = getActions i window x
 
 instance AssetRunner env => RunMessage env CatBurgler1 where

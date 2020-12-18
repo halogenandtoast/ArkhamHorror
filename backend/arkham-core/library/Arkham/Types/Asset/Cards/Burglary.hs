@@ -21,15 +21,11 @@ burglary uuid = Burglary $ baseAttrs uuid "01045"
 instance HasModifiersFor env Burglary where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Ability
-ability attrs = mkAbility
-  (toSource attrs)
-  1
-  (ActionAbility (Just Action.Investigate) (ActionCost 1))
-
 instance HasActions env Burglary where
-  getActions iid NonFast (Burglary a) | ownedBy a iid = do
-    pure [ ActivateCardAbilityAction iid (ability a) | not (assetExhausted a) ]
+  getActions iid NonFast (Burglary a) | ownedBy a iid = pure
+    [ assetAction iid a 1 (Just Action.Investigate)
+        $ Costs [ActionCost 1, ExhaustCost (toTarget a)]
+    ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Burglary where

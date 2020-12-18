@@ -218,6 +218,7 @@ type HasCostPayment env
     , HasList HandCard env InvestigatorId
     , HasCount ResourceCount env InvestigatorId
     , HasCount UsesCount env AssetId
+    , HasSet ExhaustedAssetId env ()
     )
 
 class HasStats env a where
@@ -279,6 +280,7 @@ type ActionRunner env
     , HasSet EnemyId env LocationId
     , HasSet EnemyId env ([Trait], LocationId)
     , HasSet ExhaustedAssetId env InvestigatorId
+    , HasSet ExhaustedAssetId env ()
     , HasSet ExhaustedEnemyId env LocationId
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env EnemyId

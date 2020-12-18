@@ -620,7 +620,13 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     , investigatorHealthDamage = investigatorPhysicalTrauma
     }
   SetupInvestigators -> do
-    let (discard, hand, deck) = drawOpeningHand a 5
+    let
+      (permanentCards, deck') = partition pcPermanent (unDeck investigatorDeck)
+      (discard, hand, deck) = drawOpeningHand (a & deckL .~ Deck deck') 5
+    unshiftMessages
+      [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing
+      | card <- permanentCards
+      ]
     pure
       $ a
       & (resourcesL .~ 5)

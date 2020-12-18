@@ -23,15 +23,15 @@ instance HasModifiersFor env ReturnToPredatorOrPrey where
 
 instance ActionRunner env  => HasActions env ReturnToPredatorOrPrey where
   getActions iid NonFast (ReturnToPredatorOrPrey attrs) = do
-    hasActionsRemaining <- getHasActionsRemaining
+    canAffordActions <- getCanAffordCost
       iid
-      (Just Action.Resign)
-      mempty
+      (toSource attrs)
+      (ActionCost 1 (Just Action.Resign) mempty)
     pure
       [ ActivateCardAbilityAction
           iid
           (mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Resign)))
-      | hasActionsRemaining
+      | canAffordActions
       ]
   getActions _ _ _ = pure []
 

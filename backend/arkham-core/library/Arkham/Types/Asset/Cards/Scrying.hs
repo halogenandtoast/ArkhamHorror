@@ -22,15 +22,15 @@ instance HasModifiersFor env Scrying where
 instance ActionRunner env => HasActions env Scrying where
   getActions iid NonFast (Scrying a) | ownedBy a iid && not (assetExhausted a) =
     do
-      hasActionsRemaining <- getHasActionsRemaining
+      canAffordActions <- getCanAffordCost
         iid
-        Nothing
-        (setToList $ assetTraits a)
+        (toSource a)
+        (ActionCost 1 Nothing (assetTraits a))
       pure
         [ ActivateCardAbilityAction
             iid
             (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
-        | useCount (assetUses a) > 0 && hasActionsRemaining
+        | useCount (assetUses a) > 0 && canAffordActions
         ]
   getActions _ _ _ = pure []
 

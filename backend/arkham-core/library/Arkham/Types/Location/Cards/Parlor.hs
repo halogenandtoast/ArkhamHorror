@@ -38,14 +38,14 @@ instance ActionRunner env => HasActions env Parlor where
         miid <- fmap unOwnerId <$> getId aid
         assetLocationId <- getId aid
         investigatorLocationId <- getId @LocationId iid
-        hasResignActionsRemaining <- getHasActionsRemaining
+        hasResignActionsRemaining <- getCanAffordCost
           iid
-          (Just Action.Resign)
-          (setToList locationTraits)
-        hasParleyActionsRemaining <- getHasActionsRemaining
+          (toSource attrs)
+          (ActionCost 1 (Just Action.Resign) locationTraits)
+        hasParleyActionsRemaining <- getCanAffordCost
           iid
-          (Just Action.Parley)
-          (setToList locationTraits)
+          (toSource attrs)
+          (ActionCost 1 (Just Action.Parley) locationTraits)
         pure
           $ baseActions
           <> [ ActivateCardAbilityAction

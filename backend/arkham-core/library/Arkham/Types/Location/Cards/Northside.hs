@@ -43,10 +43,10 @@ instance ActionRunner env => HasActions env Northside where
     baseActions <- getActions iid NonFast attrs
     unused <- getGroupIsUnused (ability attrs)
     resourceCount <- getResourceCount iid
-    hasActionsRemaining <- getHasActionsRemaining
+    canAffordActions <- getCanAffordCost
       iid
-      Nothing
-      (setToList locationTraits)
+      (toSource attrs)
+      (ActionCost 1 Nothing locationTraits)
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction iid (ability attrs)
@@ -55,7 +55,7 @@ instance ActionRunner env => HasActions env Northside where
            && unused
            && iid
            `member` locationInvestigators
-           && hasActionsRemaining
+           && canAffordActions
          ] -- GROUP LIMIT
   getActions iid window (Northside attrs) = getActions iid window attrs
 

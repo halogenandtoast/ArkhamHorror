@@ -31,10 +31,10 @@ instance ActionRunner env => HasActions env GardenDistrict where
   getActions iid NonFast (GardenDistrict attrs@Attrs {..}) | locationRevealed =
     do
       baseActions <- getActions iid NonFast attrs
-      hasActionsRemaining <- getHasActionsRemaining
+      canAffordActions <- getCanAffordCost
         iid
-        Nothing
-        (setToList locationTraits)
+        (toSource attrs)
+        (ActionCost 1 Nothing locationTraits)
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction
@@ -44,7 +44,7 @@ instance ActionRunner env => HasActions env GardenDistrict where
                  1
                  (ActionAbility 1 Nothing)
                )
-           | iid `member` locationInvestigators && hasActionsRemaining
+           | iid `member` locationInvestigators && canAffordActions
            ]
   getActions i window (GardenDistrict attrs) = getActions i window attrs
 

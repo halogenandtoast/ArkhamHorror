@@ -21,19 +21,19 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env SpectralMist
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env SpectralMist where
-  getActions iid NonFast (SpectralMist Attrs {..}) = do
+  getActions iid NonFast (SpectralMist a@Attrs {..}) = do
     investigatorLocationId <- getId @LocationId iid
-    hasActionsRemaining <- getHasActionsRemaining
+    canAffordActions <- getCanAffordCost
       iid
-      Nothing
-      (setToList treacheryTraits)
+      (toSource a)
+      (ActionCost 1 Nothing treacheryTraits)
     pure
       [ ActivateCardAbilityAction
           iid
           (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 1 Nothing))
       | Just investigatorLocationId
         == treacheryAttachedLocation
-        && hasActionsRemaining
+        && canAffordActions
       ]
   getActions _ _ _ = pure []
 

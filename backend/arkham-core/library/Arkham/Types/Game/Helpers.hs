@@ -58,26 +58,16 @@ getSpendableClueCount
 getSpendableClueCount investigatorIds =
   sum <$> for investigatorIds ((unSpendableClueCount <$>) . getCount)
 
-getHasActionsRemaining
-  :: ( MonadReader env m
-     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
-     )
-  => InvestigatorId
-  -> Maybe Action
-  -> [Trait]
-  -> m Bool
-getHasActionsRemaining iid maction traits =
-  (> 0) . unActionRemainingCount <$> getCount (maction, traits, iid)
-
-
 -- TODO: canFight _ a@Attrs {..} = canDo Action.Fight a
 getCanFight
   :: ( MonadReader env m
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasSet InvestigatorId env EnemyId
      , HasSet Keyword env EnemyId
+     , HasSet Trait env EnemyId
      , HasId LocationId env InvestigatorId
      , HasId LocationId env EnemyId
+     , HasModifiersFor env ()
      )
   => EnemyId
   -> InvestigatorId
@@ -86,10 +76,14 @@ getCanFight eid iid = do
   locationId <- getId @LocationId iid
   sameLocation <- (== locationId) <$> getId @LocationId eid
   keywords <- getSet eid
-  hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Fight) mempty
+  traits <- getSet eid
+  canAffordActions <- getCanAffordCost
+    iid
+    (EnemySource eid)
+    (ActionCost 1 (Just Action.Fight) traits)
   engagedInvestigators <- getSet eid
   pure
-    $ hasActionsRemaining
+    $ canAffordActions
     && (Keyword.Aloof `notMember` keywords || iid `member` engagedInvestigators)
     && sameLocation
 
@@ -97,8 +91,10 @@ getCanEngage
   :: ( MonadReader env m
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasSet InvestigatorId env EnemyId
+     , HasSet Trait env EnemyId
      , HasId LocationId env InvestigatorId
      , HasId LocationId env EnemyId
+     , HasModifiersFor env ()
      )
   => EnemyId
   -> InvestigatorId
@@ -107,13 +103,18 @@ getCanEngage eid iid = do
   locationId <- getId @LocationId iid
   sameLocation <- (== locationId) <$> getId @LocationId eid
   notEngaged <- notElem iid <$> getSet eid
-  hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Engage) mempty
-  pure $ notEngaged && hasActionsRemaining && sameLocation
+  traits <- getSet eid
+  canAffordActions <- getCanAffordCost
+    iid
+    (EnemySource eid)
+    (ActionCost 1 (Just Action.Engage) traits)
+  pure $ notEngaged && canAffordActions && sameLocation
 
 getCanEvade
   :: ( MonadReader env m
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasSet InvestigatorId env EnemyId
+     , HasSet Trait env EnemyId
      , HasModifiersFor env ()
      )
   => EnemyId
@@ -125,17 +126,18 @@ getCanEvade eid iid = do
     (InvestigatorSource iid)
     (EnemyTarget eid)
     ()
-  hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Evade) mempty
-  pure
-    $ engaged
-    && hasActionsRemaining
-    && CannotBeEvaded
-    `notElem` enemyModifiers
+  traits <- getSet eid
+  canAffordActions <- getCanAffordCost
+    iid
+    (EnemySource eid)
+    (ActionCost 1 (Just Action.Evade) traits)
+  pure $ engaged && canAffordActions && CannotBeEvaded `notElem` enemyModifiers
 
 getCanMoveTo
   :: ( MonadReader env m
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
      , HasSet AccessibleLocationId env LocationId
+     , HasSet Trait env LocationId
      , HasId LocationId env InvestigatorId
      , HasModifiersFor env ()
      )
@@ -150,11 +152,15 @@ getCanMoveTo lid iid = do
     (LocationTarget lid)
     ()
   accessibleLocations <- map unAccessibleLocationId <$> getSetList locationId
-  hasActionsRemaining <- getHasActionsRemaining iid (Just Action.Move) mempty
+  traits <- getSet lid
+  canAffordActions <- getCanAffordCost
+    iid
+    (LocationSource lid)
+    (ActionCost 1 (Just Action.Move) traits)
   pure
     $ lid
     `elem` accessibleLocations
-    && hasActionsRemaining
+    && canAffordActions
     && lid
     /= locationId
     && CannotMove
@@ -174,14 +180,17 @@ getCanInvestigate
   -> m Bool
 getCanInvestigate lid iid = do
   locationId <- getId @LocationId iid
-  traits <- getSetList @Trait lid
-  actionsRemaining <- unActionRemainingCount
-    <$> getCount (Just Action.Investigate, traits, iid)
+  traits <- getSet @Trait lid
   modifiers' <- getModifiersFor (InvestigatorSource iid) (LocationTarget lid) ()
 
   let investigateCost = foldr applyModifier 1 modifiers'
 
-  pure $ lid == locationId && actionsRemaining >= investigateCost
+  canAffordActions <- getCanAffordCost
+    iid
+    (LocationSource lid)
+    (ActionCost investigateCost (Just Action.Investigate) traits)
+
+  pure $ lid == locationId && canAffordActions
  where
   applyModifier (ActionCostOf (IsAction Action.Investigate) m) n =
     max 0 (n + m)

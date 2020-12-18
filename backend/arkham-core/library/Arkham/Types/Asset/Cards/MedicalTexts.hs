@@ -19,15 +19,15 @@ instance HasModifiersFor env MedicalTexts where
 
 instance ActionRunner env => HasActions env MedicalTexts where
   getActions iid NonFast (MedicalTexts a) | ownedBy a iid = do
-    hasActionsRemaining <- getHasActionsRemaining
+    canAffordActions <- getCanAffordCost
       iid
-      Nothing
-      (setToList $ assetTraits a)
+      (toSource a)
+      (ActionCost 1 Nothing (assetTraits a))
     pure
       [ ActivateCardAbilityAction
           iid
           (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
-      | hasActionsRemaining
+      | canAffordActions
       ]
   getActions _ _ _ = pure []
 

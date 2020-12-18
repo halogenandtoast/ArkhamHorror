@@ -40,10 +40,10 @@ instance ActionRunner env => HasActions env BrackishWaters where
         PlayerCard pc -> pcCardType pc == AssetType
         EncounterCard _ -> False
       )
-    hasActionsRemaining <- getHasActionsRemaining
+    canAffordActions <- getCanAffordCost
       iid
-      Nothing
-      (setToList locationTraits)
+      (toSource attrs)
+      (ActionCost 1 Nothing locationTraits)
     let
       assetsCount =
         count
@@ -59,7 +59,7 @@ instance ActionRunner env => HasActions env BrackishWaters where
            `member` locationInvestigators
            && assetsCount
            >= 2
-           && hasActionsRemaining
+           && canAffordActions
            && assetNotTaken
          ]
   getActions i window (BrackishWaters attrs) = getActions i window attrs

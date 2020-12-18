@@ -18,7 +18,10 @@ uncoveringTheConspiracy = UncoveringTheConspiracy
 
 instance ActionRunner env => HasActions env UncoveringTheConspiracy where
   getActions iid NonFast (UncoveringTheConspiracy x@Attrs {..}) = do
-    hasActionsRemaining <- getHasActionsRemaining iid Nothing mempty
+    canAffordActions <- getCanAffordCost
+      iid
+      (toSource x)
+      (ActionCost 1 Nothing mempty)
     requiredClues <- getPlayerCountValue (PerPlayer 2)
     totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds
     if totalSpendableClues >= requiredClues
@@ -26,7 +29,7 @@ instance ActionRunner env => HasActions env UncoveringTheConspiracy where
         [ ActivateCardAbilityAction
             iid
             (mkAbility (ActSource actId) 1 (ActionAbility 1 Nothing))
-        | hasActionsRemaining
+        | canAffordActions
         ]
       else getActions iid NonFast x
   getActions iid window (UncoveringTheConspiracy attrs) =

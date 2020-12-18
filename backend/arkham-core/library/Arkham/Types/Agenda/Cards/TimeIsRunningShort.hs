@@ -19,11 +19,11 @@ instance HasModifiersFor env TimeIsRunningShort where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env TimeIsRunningShort where
-  getActions iid NonFast (TimeIsRunningShort _) = do
-    hasActionsRemaining <- getHasActionsRemaining
+  getActions iid NonFast (TimeIsRunningShort attrs) = do
+    canAffordActions <- getCanAffordCost
       iid
-      (Just Action.Resign)
-      mempty
+      (toSource attrs)
+      (ActionCost 1 (Just Action.Resign) mempty)
     pure
       [ ActivateCardAbilityAction
           iid
@@ -32,7 +32,7 @@ instance ActionRunner env => HasActions env TimeIsRunningShort where
             1
             (ActionAbility 1 (Just Action.Resign))
           )
-      | hasActionsRemaining
+      | canAffordActions
       ]
   getActions _ _ _ = pure []
 

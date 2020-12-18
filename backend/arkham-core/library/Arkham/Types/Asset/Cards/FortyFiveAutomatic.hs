@@ -12,8 +12,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses (Uses(..), useCount)
-import qualified Arkham.Types.Asset.Uses as Resource
+import Arkham.Types.Asset.Uses
 
 newtype FortyFiveAutomatic = FortyFiveAutomatic Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -34,19 +33,21 @@ instance ActionRunner env => HasActions env FortyFiveAutomatic where
           (mkAbility
             (toSource a)
             1
-            (ActionAbility (Just Action.Fight) (ActionCost 1))
+            (ActionAbility
+              (Just Action.Fight)
+              (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
+            )
           )
-      | useCount (assetUses a) > 0 && fightAvailable
+      | fightAvailable
       ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env FortyFiveAutomatic where
-  runMessage msg (FortyFiveAutomatic attrs) = case msg of
+  runMessage msg a@(FortyFiveAutomatic attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      FortyFiveAutomatic
-        <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 4)
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
-      unshiftMessages
+      FortyFiveAutomatic <$> runMessage msg (attrs & usesL .~ Uses Ammo 4)
+    UseCardAbility iid source _ 1 | isSource attrs source ->
+      a <$ unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers
           $ toModifiers attrs [DamageDealt 1, SkillModifier SkillCombat 1]
@@ -55,5 +56,4 @@ instance AssetRunner env => RunMessage env FortyFiveAutomatic where
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-      pure $ FortyFiveAutomatic $ attrs & usesL %~ Resource.use
     _ -> FortyFiveAutomatic <$> runMessage msg attrs

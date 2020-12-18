@@ -40,7 +40,10 @@ instance ActionRunner env => HasActions env MobEnforcer where
             (mkAbility
               (toSource attrs)
               1
-              (ActionAbility (Just Parley) (ActionCost 1))
+              (ActionAbility
+                (Just Parley)
+                (Costs [ActionCost 1, ResourceCost 4])
+              )
             )
         | resourceCount >= 4 && locationId == enemyLocation
         ]
@@ -48,6 +51,6 @@ instance ActionRunner env => HasActions env MobEnforcer where
 
 instance (EnemyRunner env) => RunMessage env MobEnforcer where
   runMessage msg e@(MobEnforcer attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (EnemySource eid) _ 1 | eid == enemyId ->
-      e <$ unshiftMessages [SpendResources iid 4, Discard (EnemyTarget enemyId)]
+    UseCardAbility _ (EnemySource eid) _ 1 | eid == enemyId ->
+      e <$ unshiftMessage (Discard $ toTarget attrs)
     _ -> MobEnforcer <$> runMessage msg attrs

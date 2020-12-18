@@ -12,8 +12,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses (Uses(..))
-import qualified Arkham.Types.Asset.Uses as Resource
+import Arkham.Types.Asset.Uses
 
 newtype Rolands38Special = Rolands38Special Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -31,7 +30,7 @@ fightAbility attrs = mkAbility
   1
   (ActionAbility
     (Just Action.Fight)
-    (Costs [ActionCost 1, UseCost (assetId attrs) Resource.Ammo 1])
+    (Costs [ActionCost 1, UseCost (toId attrs) Ammo 1])
   )
 
 instance ActionRunner env => HasActions env Rolands38Special where
@@ -43,8 +42,7 @@ instance ActionRunner env => HasActions env Rolands38Special where
 instance AssetRunner env => RunMessage env Rolands38Special where
   runMessage msg a@(Rolands38Special attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Rolands38Special
-        <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 4)
+      Rolands38Special <$> runMessage msg (attrs & usesL .~ Uses Ammo 4)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       locationId <- getId @LocationId iid
       anyClues <- (/= 0) . unClueCount <$> getCount locationId

@@ -32,7 +32,6 @@ instance HasModifiersFor env PeterWarren where
 instance ActionRunner env => HasActions env PeterWarren where
   getActions iid NonFast (PeterWarren attrs@Attrs {..}) =
     withBaseActions iid NonFast attrs $ do
-      spendableClueCount <- getSpendableClueCount [iid]
       locationId <- getId @LocationId iid
       pure
         [ ActivateCardAbilityAction
@@ -40,12 +39,9 @@ instance ActionRunner env => HasActions env PeterWarren where
             (mkAbility
               (toSource attrs)
               1
-              (ActionAbility (Just Parley) (ActionCost 1))
+              (ActionAbility (Just Parley) (Costs [ActionCost 1, ClueCost 2]))
             )
-        | spendableClueCount
-          >= 2
-          && locationId
-          == enemyLocation
+        | locationId == enemyLocation
         ]
   getActions _ _ _ = pure []
 
@@ -53,7 +49,6 @@ instance (EnemyRunner env) => RunMessage env PeterWarren where
   runMessage msg e@(PeterWarren attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) eid (LocationWithTitle "Miskatonic University")
-    UseCardAbility iid (EnemySource eid) _ 1 | eid == enemyId ->
-      e <$ unshiftMessages
-        [SpendClues 2 [iid], AddToVictory (EnemyTarget enemyId)]
+    UseCardAbility _ (EnemySource eid) _ 1 | eid == enemyId ->
+      e <$ unshiftMessage (AddToVictory $ toTarget attrs)
     _ -> PeterWarren <$> runMessage msg attrs

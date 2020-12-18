@@ -32,7 +32,6 @@ instance HasModifiersFor env VictoriaDevereux where
 instance ActionRunner env => HasActions env VictoriaDevereux where
   getActions iid NonFast (VictoriaDevereux attrs@Attrs {..}) =
     withBaseActions iid NonFast attrs $ do
-      resourceCount <- getResourceCount iid
       locationId <- getId @LocationId iid
       pure
         [ ActivateCardAbilityAction
@@ -40,9 +39,12 @@ instance ActionRunner env => HasActions env VictoriaDevereux where
             (mkAbility
               (EnemySource enemyId)
               1
-              (ActionAbility (Just Parley) (ActionCost 1))
+              (ActionAbility
+                (Just Parley)
+                (Costs [ActionCost 1, ResourceCost 5])
+              )
             )
-        | resourceCount >= 5 && locationId == enemyLocation
+        | locationId == enemyLocation
         ]
   getActions _ _ _ = pure []
 
@@ -50,7 +52,6 @@ instance (EnemyRunner env) => RunMessage env VictoriaDevereux where
   runMessage msg e@(VictoriaDevereux attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) eid (LocationWithTitle "Northside")
-    UseCardAbility iid (EnemySource eid) _ 1 | eid == enemyId ->
-      e <$ unshiftMessages
-        [SpendResources iid 5, AddToVictory (EnemyTarget enemyId)]
+    UseCardAbility _ (EnemySource eid) _ 1 | eid == enemyId ->
+      e <$ unshiftMessage (AddToVictory $ toTarget attrs)
     _ -> VictoriaDevereux <$> runMessage msg attrs

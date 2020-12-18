@@ -12,8 +12,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses (Uses(..), useCount)
-import qualified Arkham.Types.Asset.Uses as Resource
+import Arkham.Types.Asset.Uses
 
 newtype JennysTwin45s = JennysTwin45s Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -34,18 +33,21 @@ instance ActionRunner env => HasActions env JennysTwin45s where
           (mkAbility
             (toSource a)
             1
-            (ActionAbility (Just Action.Fight) (ActionCost 1))
+            (ActionAbility
+              (Just Action.Fight)
+              (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
+            )
           )
-      | useCount (assetUses a) > 0 && fightAvailable
+      | fightAvailable
       ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env JennysTwin45s where
-  runMessage msg (JennysTwin45s attrs) = case msg of
+  runMessage msg a@(JennysTwin45s attrs) = case msg of
     InvestigatorPlayDynamicAsset _ aid _ _ n | aid == assetId attrs ->
-      JennysTwin45s <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo n)
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
-      unshiftMessages
+      JennysTwin45s <$> runMessage msg (attrs & usesL .~ Uses Ammo n)
+    UseCardAbility iid source _ 1 | isSource attrs source ->
+      a <$ unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers
           $ toModifiers attrs [DamageDealt 1, SkillModifier SkillCombat 2]
@@ -54,5 +56,4 @@ instance AssetRunner env => RunMessage env JennysTwin45s where
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-      pure $ JennysTwin45s $ attrs & usesL %~ Resource.use
     _ -> JennysTwin45s <$> runMessage msg attrs

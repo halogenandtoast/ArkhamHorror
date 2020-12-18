@@ -12,8 +12,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses (Uses(..), useCount)
-import qualified Arkham.Types.Asset.Uses as Resource
+import Arkham.Types.Asset.Uses
 
 newtype Shrivelling = Shrivelling Attrs
   deriving stock (Show, Generic)
@@ -35,18 +34,21 @@ instance ActionRunner env => HasActions env Shrivelling where
           (mkAbility
             (toSource a)
             1
-            (ActionAbility (Just Action.Fight) (ActionCost 1))
+            (ActionAbility
+              (Just Action.Fight)
+              (Costs [ActionCost 1, UseCost (toId a) Charge 1])
+            )
           )
-      | useCount (assetUses a) > 0 && fightAvailable
+      | fightAvailable
       ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Shrivelling where
-  runMessage msg (Shrivelling attrs) = case msg of
+  runMessage msg a@(Shrivelling attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Shrivelling <$> runMessage msg (attrs & usesL .~ Uses Resource.Charge 4)
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
-      unshiftMessages
+      Shrivelling <$> runMessage msg (attrs & usesL .~ Uses Charge 4)
+    UseCardAbility iid source _ 1 | isSource attrs source ->
+      a <$ unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers $ toModifiers attrs [DamageDealt 1])
           source
@@ -54,5 +56,4 @@ instance AssetRunner env => RunMessage env Shrivelling where
         , CreateEffect "01060" Nothing source (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillWillpower False
         ]
-      pure $ Shrivelling $ attrs & usesL %~ Resource.use
     _ -> Shrivelling <$> runMessage msg attrs

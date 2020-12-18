@@ -1290,10 +1290,21 @@ instance HasSet EventId (Game queue) () where
 instance HasSet HealthDamageableAssetId (Game queue) InvestigatorId where
   getSet iid = do
     allAssets' <- view assets
-    HashSet.map HealthDamageableAssetId
-      . keysSet
-      . assets' allAssets'
-      <$> getSet iid
+    investigatorAssets <- getSet iid
+    let otherAssetIds = filter (`member` investigatorAssets) $ keys allAssets'
+    otherDamageableAssetIds <-
+      setFromList
+      . map fst
+      . filter (elem CanBeAssignedDamage . snd)
+      <$> traverse
+            (\a ->
+              (a, )
+                <$> getModifiersFor (InvestigatorSource iid) (AssetTarget a) ()
+            )
+            otherAssetIds
+    pure $ HashSet.map HealthDamageableAssetId . keysSet $ assets'
+      allAssets'
+      (investigatorAssets <> otherDamageableAssetIds)
    where
     assets' allAssets' assetIds = HashMap.filterWithKey
       (\k v -> k `elem` assetIds && isHealthDamageable v)
@@ -1302,10 +1313,21 @@ instance HasSet HealthDamageableAssetId (Game queue) InvestigatorId where
 instance HasSet SanityDamageableAssetId (Game queue) InvestigatorId where
   getSet iid = do
     allAssets' <- view assets
-    HashSet.map SanityDamageableAssetId
-      . keysSet
-      . assets' allAssets'
-      <$> getSet iid
+    investigatorAssets <- getSet iid
+    let otherAssetIds = filter (`member` investigatorAssets) $ keys allAssets'
+    otherDamageableAssetIds <-
+      setFromList
+      . map fst
+      . filter (elem CanBeAssignedDamage . snd)
+      <$> traverse
+            (\a ->
+              (a, )
+                <$> getModifiersFor (InvestigatorSource iid) (AssetTarget a) ()
+            )
+            otherAssetIds
+    pure $ HashSet.map SanityDamageableAssetId . keysSet $ assets'
+      allAssets'
+      (investigatorAssets <> otherDamageableAssetIds)
    where
     assets' allAssets' assetIds = HashMap.filterWithKey
       (\k v -> k `elem` assetIds && isSanityDamageable v)
@@ -1932,6 +1954,10 @@ runGameMessage msg g = case msg of
       _ ->
         unshiftMessage (Ask (gameLeadInvestigatorId g) $ ChooseOneAtATime as)
     pure g
+  When (AssetDefeated aid) -> g <$ unshiftMessages
+    [ CheckWindow iid [Fast.WhenDefeated (AssetSource aid)]
+    | iid <- keys (view investigators g)
+    ]
   AssetDefeated aid -> do
     let asset = getAsset aid g
     unshiftMessage (Discarded (AssetTarget aid) (getCardCode asset))

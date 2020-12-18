@@ -80,6 +80,7 @@ data Asset
   | Duke' Duke
   | FireAxe' FireAxe
   | PeterSylvestre' PeterSylvestre
+  | BrotherXavier1' BrotherXavier1
   | Bandolier' Bandolier
   | ToothOfEztli' ToothOfEztli
   | OccultLexicon' OccultLexicon
@@ -233,6 +234,7 @@ allAssets = mapFromList
   , ("02014", Duke' . duke)
   , ("02032", FireAxe' . fireAxe)
   , ("02033", PeterSylvestre' . peterSylvestre)
+  , ("02106", BrotherXavier1' . brotherXavier1)
   , ("02147", Bandolier' . bandolier)
   , ("04023", ToothOfEztli' . toothOfEztli)
   , ("05316", OccultLexicon' . occultLexicon)
@@ -321,6 +323,7 @@ assetAttrs = \case
   Duke' attrs -> coerce attrs
   FireAxe' attrs -> coerce attrs
   PeterSylvestre' attrs -> coerce attrs
+  BrotherXavier1' attrs -> coerce attrs
   Bandolier' attrs -> coerce attrs
   ToothOfEztli' attrs -> coerce attrs
   OccultLexicon' attrs -> coerce attrs

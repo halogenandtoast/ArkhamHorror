@@ -40,17 +40,16 @@ ability attrs =
         [ActionCost 1, HandDiscardCost 1 (Just AssetType) (singleton Ally)]
       )
     )
-    { abilityLimit = PerGame
+    { abilityLimit = PlayerLimit PerGame 1
     }
 
 instance ActionRunner env => HasActions env CloverClubLounge where
   getActions iid NonFast (CloverClubLounge attrs@Attrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       step <- unActStep . getStep <$> ask
-      unused <- getIsUnused iid (ability attrs)
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
-        | iid `member` locationInvestigators && step == 1 && unused
+        | iid `member` locationInvestigators && step == 1
         ]
   getActions iid window (CloverClubLounge attrs) = getActions iid window attrs
 

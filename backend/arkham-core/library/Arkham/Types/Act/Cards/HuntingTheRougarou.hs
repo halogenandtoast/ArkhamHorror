@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Act.Cards.HuntingTheRougarou where
 
 import Arkham.Import
@@ -19,22 +20,19 @@ huntingTheRougarou = HuntingTheRougarou
 ability :: Attrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow Free))
-    { abilityLimit = PerPhase
+    { abilityLimit = PlayerLimit PerPhase 1
     }
 
 instance ActionRunner env => HasActions env HuntingTheRougarou where
   getActions iid FastPlayerWindow (HuntingTheRougarou a) =
     withBaseActions iid FastPlayerWindow a $ do
-      unused <- getIsUnused iid (ability a)
       mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       engagedWithTheRougarou <- maybe
         (pure False)
         ((member iid <$>) . getSet)
         mrougarou
       pure
-        [ ActivateCardAbilityAction iid (ability a)
-        | unused && engagedWithTheRougarou
-        ]
+        [ ActivateCardAbilityAction iid (ability a) | engagedWithTheRougarou ]
   getActions i window (HuntingTheRougarou x) = getActions i window x
 
 instance ActRunner env => RunMessage env HuntingTheRougarou where

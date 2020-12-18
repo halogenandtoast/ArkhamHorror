@@ -44,11 +44,7 @@ instance ActionRunner env => HasActions env RexMurphy where
           1
           (ReactionAbility (AfterPassSkillTest source You n) Free)
       clueCount' <- unClueCount <$> getCount investigatorLocation
-      usedAbilities <- map unUsedAbility <$> getList ()
-      pure
-        [ ActivateCardAbilityAction investigatorId ability
-        | (investigatorId, ability) `notElem` usedAbilities && clueCount' > 0
-        ]
+      pure [ ActivateCardAbilityAction investigatorId ability | clueCount' > 0 ]
   getActions i window (RexMurphy attrs) = getActions i window attrs
 
 instance HasTokenValue env RexMurphy where

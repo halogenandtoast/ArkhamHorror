@@ -32,23 +32,19 @@ instance HasModifiersFor env OvergrownCairns where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs = (mkAbility
-                  (toSource attrs)
-                  1
-                  (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2]
-                  )
-                )
-  { abilityLimit = PerGame
-  }
+ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }
+ where
+  base = mkAbility
+    (toSource attrs)
+    1
+    (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
 
 instance ActionRunner env => HasActions env OvergrownCairns where
   getActions iid NonFast (OvergrownCairns attrs@Attrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ do
-      unused <- getIsUnused iid (ability attrs)
-      pure
-        [ ActivateCardAbilityAction iid (ability attrs)
-        | unused && iid `member` locationInvestigators
-        ]
+    withBaseActions iid NonFast attrs $ pure
+      [ ActivateCardAbilityAction iid (ability attrs)
+      | iid `member` locationInvestigators
+      ]
   getActions i window (OvergrownCairns attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env OvergrownCairns where

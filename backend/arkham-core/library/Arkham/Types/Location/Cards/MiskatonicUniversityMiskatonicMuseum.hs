@@ -36,12 +36,15 @@ miskatonicUniversityMiskatonicMuseum =
 instance HasModifiersFor env MiskatonicUniversityMiskatonicMuseum where
   getModifiersFor = noModifiersFor
 
+ability :: Attrs -> Ability
+ability attrs = base { abilityLimit = PlayerLimit PerGame 1 }
+ where
+  base = mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
+
 instance ActionRunner env => HasActions env MiskatonicUniversityMiskatonicMuseum where
   getActions iid NonFast (MiskatonicUniversityMiskatonicMuseum attrs@Attrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+      [ ActivateCardAbilityAction iid (ability attrs)
       | iid `member` locationInvestigators
       ]
   getActions iid window (MiskatonicUniversityMiskatonicMuseum attrs) =

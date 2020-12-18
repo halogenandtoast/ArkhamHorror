@@ -34,20 +34,19 @@ instance HasModifiersFor env DowntownFirstBankOfArkham where
 ability :: Attrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-    { abilityLimit = PerGame
+    { abilityLimit = PlayerLimit PerGame 1
     }
 
 instance ActionRunner env => HasActions env DowntownFirstBankOfArkham where
   getActions iid NonFast (DowntownFirstBankOfArkham attrs@Attrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
-      unused <- getIsUnused iid (ability attrs)
       canGainResources <-
         notElem CannotGainResources
         . map modifierType
         <$> getInvestigatorModifiers iid (toSource attrs)
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
-        | unused && canGainResources && iid `member` locationInvestigators
+        | canGainResources && iid `member` locationInvestigators
         ]
   getActions iid window (DowntownFirstBankOfArkham attrs) =
     getActions iid window attrs

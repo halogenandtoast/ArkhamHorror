@@ -36,17 +36,15 @@ instance HasModifiersFor env DowntownArkhamAsylum where
 ability :: Attrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-    { abilityLimit = PerGame
+    { abilityLimit = PlayerLimit PerGame 1
     }
 
 instance ActionRunner env => HasActions env DowntownArkhamAsylum where
   getActions iid NonFast (DowntownArkhamAsylum attrs@Attrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ do
-      unused <- getIsUnused iid (ability attrs)
-      pure
-        [ ActivateCardAbilityAction iid (ability attrs)
-        | unused && iid `elem` locationInvestigators
-        ]
+    | locationRevealed = withBaseActions iid NonFast attrs $ pure
+      [ ActivateCardAbilityAction iid (ability attrs)
+      | iid `elem` locationInvestigators
+      ]
   getActions iid window (DowntownArkhamAsylum attrs) =
     getActions iid window attrs
 

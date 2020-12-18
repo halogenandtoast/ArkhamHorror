@@ -22,24 +22,21 @@ instance HasModifiersFor env ZoeysCross where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> EnemyId -> Ability
-ability attrs eid =
-  (mkAbility
-      (toSource attrs)
-      1
-      (ReactionAbility (AfterEnemyEngageInvestigator You eid)
-      $ Costs [ExhaustCost (toTarget attrs), ResourceCost 1]
-      )
+ability attrs eid = base
+  { abilityMetadata = Just (TargetMetadata (EnemyTarget eid))
+  }
+ where
+  base = mkAbility
+    (toSource attrs)
+    1
+    (ReactionAbility (AfterEnemyEngageInvestigator You eid)
+    $ Costs [ExhaustCost (toTarget attrs), ResourceCost 1]
     )
-    { abilityMetadata = Just (TargetMetadata (EnemyTarget eid))
-    }
 
-instance ActionRunner env => HasActions env ZoeysCross where
+instance HasActions env ZoeysCross where
   getActions iid (AfterEnemyEngageInvestigator You eid) (ZoeysCross a@Attrs {..})
     | ownedBy a iid
-    = do
-      let ability' = (iid, ability a eid)
-      unused <- notElem ability' . map unUsedAbility <$> getList ()
-      pure [ uncurry ActivateCardAbilityAction ability' | unused ]
+    = pure [ActivateCardAbilityAction iid (ability a eid)]
   getActions i window (ZoeysCross x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env ZoeysCross where

@@ -39,17 +39,16 @@ ability attrs = (mkAbility
                   (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2]
                   )
                 )
-  { abilityLimit = PerGame
+  { abilityLimit = PlayerLimit PerGame 1
   }
 
 instance ActionRunner env => HasActions env CloverClubBar where
   getActions iid NonFast (CloverClubBar attrs@Attrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ do
       step <- unActStep . getStep <$> ask
-      unused <- getIsUnused iid (ability attrs)
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
-        | iid `member` locationInvestigators && step == 1 && unused
+        | iid `member` locationInvestigators && step == 1
         ]
   getActions iid window (CloverClubBar attrs) = getActions iid window attrs
 

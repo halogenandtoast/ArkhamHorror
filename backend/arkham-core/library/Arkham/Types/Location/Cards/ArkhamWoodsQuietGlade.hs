@@ -39,17 +39,15 @@ instance HasModifiersFor env ArkhamWoodsQuietGlade where
 ability :: Attrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-    { abilityLimit = PerTurn
+    { abilityLimit = PlayerLimit PerTurn 1
     }
 
 instance ActionRunner env => HasActions env ArkhamWoodsQuietGlade where
   getActions iid NonFast (ArkhamWoodsQuietGlade attrs@Attrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ do
-      unused <- getIsUnused iid (ability attrs)
-      pure
-        [ ActivateCardAbilityAction iid (ability attrs)
-        | unused && iid `elem` locationInvestigators
-        ]
+    | locationRevealed = withBaseActions iid NonFast attrs $ pure
+      [ ActivateCardAbilityAction iid (ability attrs)
+      | iid `elem` locationInvestigators
+      ]
   getActions iid window (ArkhamWoodsQuietGlade attrs) =
     getActions iid window attrs
 

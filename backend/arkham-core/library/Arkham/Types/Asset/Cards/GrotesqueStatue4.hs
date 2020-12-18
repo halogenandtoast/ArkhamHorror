@@ -25,24 +25,20 @@ instance HasModifiersFor env GrotesqueStatue4 where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Source -> Window -> Ability
-ability attrs source window = (mkAbility
-                                (toSource attrs)
-                                1
-                                (ReactionAbility window
-                                $ UseCost (toId attrs) Charge 1
-                                )
-                              )
+ability attrs source window = base
   { abilityMetadata = Just (SourceMetadata source)
-  , abilityLimit = PerTestOrAbility
+  , abilityLimit = PlayerLimit PerTestOrAbility 1 -- TODO: not a real limit
   }
+ where
+  base = mkAbility
+    (toSource attrs)
+    1
+    (ReactionAbility window $ UseCost (toId attrs) Charge 1)
 
-instance ActionRunner env => HasActions env GrotesqueStatue4 where
+instance HasActions env GrotesqueStatue4 where
   getActions iid window@(WhenWouldRevealChaosToken source You) (GrotesqueStatue4 a)
     | ownedBy a iid
-    = do
-      let ability' = (iid, ability a source window)
-      unused <- notElem ability' . map unUsedAbility <$> getList ()
-      pure [ uncurry ActivateCardAbilityAction ability' | unused ]
+    = pure [ActivateCardAbilityAction iid (ability a source window)]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env GrotesqueStatue4 where

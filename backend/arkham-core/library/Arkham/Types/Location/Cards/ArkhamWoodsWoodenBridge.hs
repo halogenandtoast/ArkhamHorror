@@ -42,9 +42,9 @@ instance (LocationRunner env) => RunMessage env ArkhamWoodsWoodenBridge where
       | iid `elem` locationInvestigators -> do
         let
           ability = (mkAbility (toSource attrs) 0 ForcedAbility)
-            { abilityLimit = PerTestOrAbility
+            { abilityLimit = PlayerLimit PerTestOrAbility 1
             }
-        unused <- getIsUnused iid ability
+        unused <- getIsUnused' iid ability
         l <$ when
           unused
           (unshiftMessages [UseLimitedAbility iid ability, DrawAnotherToken iid]

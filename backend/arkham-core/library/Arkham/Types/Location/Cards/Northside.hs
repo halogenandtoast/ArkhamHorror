@@ -34,23 +34,19 @@ instance HasModifiersFor env Northside where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs = (mkAbility
-                  (toSource attrs)
-                  1
-                  (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 5]
-                  )
-                )
-  { abilityLimit = PerGame
-  }
+ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
+ where
+  base = mkAbility
+    (toSource attrs)
+    1
+    (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 5])
 
 instance ActionRunner env => HasActions env Northside where
   getActions iid NonFast (Northside attrs@Attrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ do
-      unused <- getGroupIsUnused (ability attrs)
-      pure
-        [ ActivateCardAbilityAction iid (ability attrs)
-        | unused && iid `member` locationInvestigators
-        ] -- GROUP LIMIT
+    withBaseActions iid NonFast attrs $ pure
+      [ ActivateCardAbilityAction iid (ability attrs)
+      | iid `member` locationInvestigators
+      ]
   getActions iid window (Northside attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env Northside where

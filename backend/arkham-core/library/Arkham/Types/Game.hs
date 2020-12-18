@@ -37,6 +37,7 @@ import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Act
 import Arkham.Types.Action (Action)
 import Arkham.Types.Agenda
+import Arkham.Types.Ability.Limit
 import Arkham.Types.Asset
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.Campaign
@@ -1872,7 +1873,9 @@ runGameMessage msg g = case msg of
     unshiftMessages
       [ AddToDiscard iid card | (card, iid) <- skillCardsWithOwner ]
     pure $ g & skills .~ mempty & skillTest .~ Nothing & usedAbilities %~ filter
-      (\(_, Ability {..}) -> abilityLimit /= PerTestOrAbility)
+      (\(_, Ability {..}) ->
+        abilityLimitType abilityLimit /= Just PerTestOrAbility
+      )
   ReturnToHand iid (SkillTarget skillId) -> do
     let
       skill =
@@ -2192,13 +2195,15 @@ runGameMessage msg g = case msg of
   ChooseEndTurn iid -> do
     g <$ unshiftMessage (EndTurn iid)
   EndTurn iid -> pure $ g & usedAbilities %~ filter
-    (\(iid', Ability {..}) -> iid' /= iid && abilityLimit /= PerTurn)
+    (\(iid', Ability {..}) ->
+      iid' /= iid && abilityLimitType abilityLimit /= Just PerTurn
+    )
   EndInvestigation -> do
     atomicWriteIORef (gamePhaseMessageHistory g) []
     unshiftMessage EndPhase
     pushMessage BeginEnemy
     pure $ g & usedAbilities %~ filter
-      (\(_, Ability {..}) -> abilityLimit /= PerPhase)
+      (\(_, Ability {..}) -> abilityLimitType abilityLimit /= Just PerPhase)
   BeginEnemy -> do
     pushMessages
       $ [ CheckWindow iid [Fast.AnyPhaseBegins]
@@ -2211,7 +2216,7 @@ runGameMessage msg g = case msg of
     unshiftMessage EndPhase
     pushMessage BeginUpkeep
     pure $ g & usedAbilities %~ filter
-      (\(_, Ability {..}) -> abilityLimit /= PerPhase)
+      (\(_, Ability {..}) -> abilityLimitType abilityLimit /= Just PerPhase)
   BeginUpkeep -> do
     pushMessages
       $ [ CheckWindow iid [Fast.AnyPhaseBegins]
@@ -2224,12 +2229,12 @@ runGameMessage msg g = case msg of
     unshiftMessage EndPhase
     pushMessages [EndRoundWindow, EndRound]
     pure $ g & usedAbilities %~ filter
-      (\(_, Ability {..}) -> abilityLimit /= PerPhase)
+      (\(_, Ability {..}) -> abilityLimitType abilityLimit /= Just PerPhase)
   EndRound -> do
     pushMessage BeginRound
     atomicWriteIORef (gameRoundMessageHistory g) []
     pure $ g & usedAbilities %~ filter
-      (\(_, Ability {..}) -> abilityLimit /= PerRound)
+      (\(_, Ability {..}) -> abilityLimitType abilityLimit /= Just PerRound)
   BeginRound -> g <$ pushMessage BeginMythos
   BeginMythos -> do
     pushMessages
@@ -2253,7 +2258,7 @@ runGameMessage msg g = case msg of
     unshiftMessage EndPhase
     pushMessage BeginInvestigation
     pure $ g & usedAbilities %~ filter
-      (\(_, Ability {..}) -> abilityLimit /= PerPhase)
+      (\(_, Ability {..}) -> abilityLimitType abilityLimit /= Just PerPhase)
   BeginSkillTest iid source target maction skillType difficulty -> do
     availableSkills <- getAvailableSkillsFor (getInvestigator iid g) skillType
     case availableSkills of

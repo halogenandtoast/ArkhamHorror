@@ -34,17 +34,15 @@ instance HasModifiersFor env SouthsideHistoricalSociety where
 ability :: Attrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-    { abilityLimit = PerGame
+    { abilityLimit = PlayerLimit PerGame 1
     }
 
 instance ActionRunner env => HasActions env SouthsideHistoricalSociety where
   getActions iid NonFast (SouthsideHistoricalSociety attrs@Attrs {..})
-    | locationRevealed = withBaseActions iid NonFast attrs $ do
-      unused <- getIsUnused iid (ability attrs)
-      pure
-        [ ActivateCardAbilityAction iid (ability attrs)
-        | unused && iid `member` locationInvestigators
-        ]
+    | locationRevealed = withBaseActions iid NonFast attrs $ pure
+      [ ActivateCardAbilityAction iid (ability attrs)
+      | iid `member` locationInvestigators
+      ]
   getActions iid window (SouthsideHistoricalSociety attrs) =
     getActions iid window attrs
 

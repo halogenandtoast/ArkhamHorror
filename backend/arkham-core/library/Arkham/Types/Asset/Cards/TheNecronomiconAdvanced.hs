@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.TheNecronomiconAdvanced where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import qualified Arkham.Types.Token as Token
 
@@ -13,9 +14,10 @@ newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced Attrs
 
 theNecronomiconAdvanced :: AssetId -> TheNecronomiconAdvanced
 theNecronomiconAdvanced uuid =
-  TheNecronomiconAdvanced $ (baseAttrs uuid "80003")
+  TheNecronomiconAdvanced $ (baseAttrs uuid "90003")
     { assetSlots = [HandSlot]
     , assetHorror = Just 3
+    , assetCanLeavePlayByNormalMeans = False
     }
 
 instance HasModifiersFor env TheNecronomiconAdvanced where
@@ -27,13 +29,18 @@ instance HasModifiersFor env TheNecronomiconAdvanced where
     ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env TheNecronomiconAdvanced where
-  getActions iid NonFast (TheNecronomiconAdvanced a) | ownedBy a iid = pure
-    [ ActivateCardAbilityAction
-        iid
-        (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
-    | fromJustNote "Must be set" (assetHorror a) > 0
-    ]
+instance ActionRunner env => HasActions env TheNecronomiconAdvanced where
+  getActions iid NonFast (TheNecronomiconAdvanced a) | ownedBy a iid = do
+    hasActionsRemaining <- getHasActionsRemaining
+      iid
+      Nothing
+      (setToList $ assetTraits a)
+    pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
+      | fromJustNote "Must be set" (assetHorror a) > 0 && hasActionsRemaining
+      ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env TheNecronomiconAdvanced where

@@ -72,15 +72,21 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
         tomeAssets <- filterM
           ((elem Tome <$>) . getSet)
           (setToList investigatorAssets)
-        pairs' <- traverse (getActions iid NonFast) tomeAssets
-        i <$ unshiftMessage
-          (Ask iid . ChooseOneAtATime . map (chooseOne iid) $ filter
-            (not . null)
-            pairs'
-          )
+        pairs' <-
+          filter (not . null . snd)
+            <$> traverse (\a -> (a, ) <$> getActions iid NonFast a) tomeAssets
+        if null pairs'
+          then pure i
+          else i <$ unshiftMessage
+            (Ask iid . ChooseOneAtATime $ map
+              (\(tome, actions) ->
+                TargetLabel (AssetTarget tome) [Run [chooseOne iid actions]]
+              )
+              pairs'
+            )
     UseCardAbility iid (TokenEffectSource ElderSign) _ 2
-      | iid == investigatorId -> i
-      <$ unshiftMessage (SearchDiscard iid (InvestigatorTarget iid) [Tome])
+      | iid == investigatorId
+      -> i <$ unshiftMessage (SearchDiscard iid (InvestigatorTarget iid) [Tome])
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
       i <$ unshiftMessage
         (chooseOne

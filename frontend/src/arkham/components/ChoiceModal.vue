@@ -60,12 +60,11 @@ export default defineComponent({
   background: white;
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-direction: column;
   padding: 10px 0;
 }
 
 .focused-cards {
   flex-direction: row;
+  overflow-x: auto;
 }
 </style>

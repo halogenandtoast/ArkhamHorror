@@ -17,6 +17,9 @@ uncurry4 f ~(a, b, c, d) = f a b c d
 toFst :: (a -> b) -> a -> (b, a)
 toFst f a = (f a, a)
 
+toSnd :: (a -> b) -> a -> (a, b)
+toSnd f a = (a, f a)
+
 concatMapM'
   :: (Monad m, MonoFoldable mono) => (Element mono -> m [b]) -> mono -> m [b]
 concatMapM' f xs = concatMapM f (toList xs)

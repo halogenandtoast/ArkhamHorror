@@ -3,7 +3,6 @@ module Arkham.Types.Location.Cards.StudyAberrantGateway where
 
 import Arkham.Import
 
-import Arkham.Types.Action (Action)
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Location.Attrs
@@ -31,8 +30,10 @@ instance ActionRunner env => HasActions env StudyAberrantGateway where
     | iid `elem` locationInvestigators attrs = do
       baseActions <- getActions iid NonFast attrs
       leadInvestigatorId <- getLeadInvestigatorId
-      canActivate <- (>= 2) . unActionRemainingCount <$> getCount
-        (Nothing :: Maybe Action, setToList (locationTraits attrs), iid)
+      canActivate <- getCanAffordCost
+        iid
+        (toSource attrs)
+        (ActionCost 2 Nothing (locationTraits attrs))
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction

@@ -3,8 +3,8 @@ module Arkham.Types.Treachery.Cards.WrackedByNightmares where
 
 import Arkham.Import
 
-import Arkham.Types.Action (Action)
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype WrackedByNightmares = WrackedByNightmares Attrs
@@ -23,14 +23,16 @@ instance HasModifiersFor env WrackedByNightmares where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env WrackedByNightmares where
-  getActions iid NonFast (WrackedByNightmares Attrs {..}) =
+  getActions iid NonFast (WrackedByNightmares a@Attrs {..}) =
     case treacheryAttachedInvestigator of
       Nothing -> pure []
       Just tormented -> do
         treacheryLocation <- getId tormented
         investigatorLocationId <- getId @LocationId iid
-        actionRemainingCount <- unActionRemainingCount
-          <$> getCount (Nothing :: Maybe Action, setToList treacheryTraits, iid)
+        canAffordActions <- getCanAffordCost
+          iid
+          (toSource a)
+          (ActionCost 2 Nothing treacheryTraits)
         pure
           [ ActivateCardAbilityAction
               iid
@@ -39,10 +41,7 @@ instance ActionRunner env => HasActions env WrackedByNightmares where
                 1
                 (ActionAbility 2 Nothing)
               )
-          | treacheryLocation
-            == investigatorLocationId
-            && actionRemainingCount
-            >= 2
+          | treacheryLocation == investigatorLocationId && canAffordActions
           ]
   getActions _ _ _ = pure []
 

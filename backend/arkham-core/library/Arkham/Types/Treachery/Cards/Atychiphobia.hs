@@ -7,8 +7,8 @@ where
 
 import Arkham.Import
 
-import Arkham.Types.Action (Action)
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype Atychiphobia = Atychiphobia Attrs
@@ -21,12 +21,14 @@ instance HasModifiersFor env Atychiphobia where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Atychiphobia where
-  getActions iid NonFast (Atychiphobia Attrs {..}) =
+  getActions iid NonFast (Atychiphobia a@Attrs {..}) =
     case treacheryAttachedInvestigator of
       Nothing -> pure []
       Just tormented -> do
-        canActivate <- (>= 2) . unActionRemainingCount <$> getCount
-          (Nothing :: Maybe Action, setToList treacheryTraits, iid)
+        canActivate <- getCanAffordCost
+          iid
+          (toSource a)
+          (ActionCost 2 Nothing treacheryTraits)
         investigatorLocationId <- getId @LocationId iid
         treacheryLocation <- getId tormented
         pure

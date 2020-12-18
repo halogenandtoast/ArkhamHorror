@@ -12,8 +12,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses (Uses(..), useCount)
-import qualified Arkham.Types.Asset.Uses as Resource
+import Arkham.Types.Asset.Uses
 
 newtype FortyOneDerringer = FortyOneDerringer Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -34,26 +33,27 @@ instance ActionRunner env => HasActions env FortyOneDerringer where
           (mkAbility
             (toSource a)
             1
-            (ActionAbility (Just Action.Fight) (ActionCost 1))
+            (ActionAbility
+              (Just Action.Fight)
+              (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
+            )
           )
-      | useCount (assetUses a) > 0 && fightAvailable
+      | fightAvailable
       ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env FortyOneDerringer where
   runMessage msg a@(FortyOneDerringer attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      FortyOneDerringer
-        <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 3)
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
-      unshiftMessages
+      FortyOneDerringer <$> runMessage msg (attrs & usesL .~ Uses Ammo 3)
+    UseCardAbility iid source _ 1 | isSource attrs source ->
+      a <$ unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
           source
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-      pure $ FortyOneDerringer $ attrs & usesL %~ Resource.use
     PassedSkillTest iid (Just Action.Fight) source _ n
       | isSource attrs source && n >= 2 -> a <$ unshiftMessage
         (CreateSkillTestEffect

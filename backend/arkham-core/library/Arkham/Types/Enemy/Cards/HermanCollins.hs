@@ -33,7 +33,6 @@ instance HasModifiersFor env HermanCollins where
 instance ActionRunner env => HasActions env HermanCollins where
   getActions iid NonFast (HermanCollins attrs@Attrs {..}) =
     withBaseActions iid NonFast attrs $ do
-      cardCount <- getCardCount iid
       locationId <- getId @LocationId iid
       pure
         [ ActivateCardAbilityAction
@@ -41,9 +40,12 @@ instance ActionRunner env => HasActions env HermanCollins where
             (mkAbility
               (toSource attrs)
               1
-              (ActionAbility (Just Parley) (ActionCost 1))
+              (ActionAbility
+                (Just Parley)
+                (Costs [ActionCost 1, DiscardCost 4 Nothing mempty])
+              )
             )
-        | cardCount >= 4 && locationId == enemyLocation
+        | locationId == enemyLocation
         ]
   getActions _ _ _ = pure []
 
@@ -51,9 +53,6 @@ instance EnemyRunner env => RunMessage env HermanCollins where
   runMessage msg e@(HermanCollins attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) eid (LocationWithTitle "Graveyard")
-    UseCardAbility iid (EnemySource eid) _ 1 | eid == enemyId ->
-      e <$ unshiftMessages
-        (replicate 4 (ChooseAndDiscardCard iid)
-        <> [AddToVictory (EnemyTarget enemyId)]
-        )
+    UseCardAbility _ source _ 1 | isSource attrs source ->
+      e <$ unshiftMessage (AddToVictory $ toTarget attrs)
     _ -> HermanCollins <$> runMessage msg attrs

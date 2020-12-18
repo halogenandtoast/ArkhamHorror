@@ -18,41 +18,43 @@ newtype Northside = Northside Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 northside :: Northside
-northside = Northside $ (baseAttrs
-                          "01134"
-                          (LocationName "Northside" Nothing)
-                          EncounterSet.TheMidnightMasks
-                          3
-                          (PerPlayer 2)
-                          T
-                          [Diamond, Triangle]
-                          [Arkham]
-                        )
-  { locationVictory = Just 1
-  }
+northside = Northside $ base { locationVictory = Just 1 }
+ where
+  base = baseAttrs
+    "01134"
+    (LocationName "Northside" Nothing)
+    EncounterSet.TheMidnightMasks
+    3
+    (PerPlayer 2)
+    T
+    [Diamond, Triangle]
+    [Arkham]
 
 instance HasModifiersFor env Northside where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs =
-  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-    { abilityLimit = PerGame
-    }
+ability attrs = (mkAbility
+                  (toSource attrs)
+                  1
+                  (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 5]
+                  )
+                )
+  { abilityLimit = PerGame
+  }
 
 instance ActionRunner env => HasActions env Northside where
   getActions iid NonFast (Northside attrs@Attrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ do
       unused <- getGroupIsUnused (ability attrs)
-      resourceCount <- getResourceCount iid
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
-        | resourceCount >= 5 && unused && iid `member` locationInvestigators
+        | unused && iid `member` locationInvestigators
         ] -- GROUP LIMIT
   getActions iid window (Northside attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env Northside where
   runMessage msg l@(Northside attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source ->
-      l <$ unshiftMessages [SpendResources iid 5, GainClues iid 2]
+      l <$ unshiftMessage (GainClues iid 2)
     _ -> Northside <$> runMessage msg attrs

@@ -12,8 +12,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Asset.Uses (Uses(..), useCount)
-import qualified Arkham.Types.Asset.Uses as Resource
+import Arkham.Types.Asset.Uses
 
 newtype Shotgun4 = Shotgun4 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -34,25 +33,27 @@ instance ActionRunner env => HasActions env Shotgun4 where
           (mkAbility
             (toSource a)
             1
-            (ActionAbility (Just Action.Fight) (ActionCost 1))
+            (ActionAbility
+              (Just Action.Fight)
+              (Costs [ActionCost 1, UseCost (toId a) Ammo 1])
+            )
           )
-      | useCount (assetUses a) > 0 && fightAvailable
+      | fightAvailable
       ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Shotgun4 where
   runMessage msg a@(Shotgun4 attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      Shotgun4 <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 2)
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
-      unshiftMessages
+      Shotgun4 <$> runMessage msg (attrs & usesL .~ Uses Ammo 2)
+    UseCardAbility iid source _ 1 | isSource attrs source ->
+      a <$ unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 3])
           source
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-      pure $ Shotgun4 $ attrs & usesL %~ Resource.use
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} n
       | isSource attrs source
       -> let val = min 1 (max 5 n)

@@ -9,8 +9,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Uses (Uses(..), useCount)
-import qualified Arkham.Types.Asset.Uses as Resource
+import Arkham.Types.Asset.Uses
 
 newtype LiquidCourage = LiquidCourage Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -19,11 +18,17 @@ liquidCourage :: AssetId -> LiquidCourage
 liquidCourage uuid = LiquidCourage $ baseAttrs uuid "02024"
 
 instance HasActions env LiquidCourage where
-  getActions iid NonFast (LiquidCourage a) | ownedBy a iid = pure
+  getActions iid NonFast (LiquidCourage a) = pure
     [ ActivateCardAbilityAction
         iid
-        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
-    | useCount (assetUses a) > 0
+        (mkAbility
+          (toSource a)
+          1
+          (ActionAbility Nothing
+          $ Costs [ActionCost 1, UseCost (toId a) Supply 1]
+          )
+        )
+    | ownedBy a iid
     ]
   getActions iid window (LiquidCourage attrs) = getActions iid window attrs
 
@@ -39,7 +44,7 @@ instance
   => RunMessage env LiquidCourage where
   runMessage msg a@(LiquidCourage attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      LiquidCourage <$> runMessage msg (attrs & usesL .~ Uses Resource.Supply 4)
+      LiquidCourage <$> runMessage msg (attrs & usesL .~ Uses Supply 4)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       lid <- getId @LocationId iid
       iids <- getSetList @InvestigatorId lid
@@ -54,7 +59,7 @@ instance
             SkillWillpower
             2
           ]
-      case iids of
+      a <$ case iids of
         [] -> pure ()
         [iid'] -> unshiftMessages $ abilityEffect iid'
         _ -> unshiftMessage
@@ -64,7 +69,6 @@ instance
             | iid' <- iids
             ]
           )
-      pure $ LiquidCourage $ attrs & usesL %~ Resource.use
     PassedSkillTest iid _ source _ _ | isSource attrs source ->
       a <$ unshiftMessage (HealHorror (InvestigatorTarget iid) 1)
     FailedSkillTest iid _ source _ _ | isSource attrs source ->

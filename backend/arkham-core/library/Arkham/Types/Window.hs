@@ -29,6 +29,7 @@ data Window
   | NonFast
   | WhenAllDrawEncounterCard
   | WhenAmongSearchedCards Who
+  | WhenDefeated Source
   | WhenDiscoverClues Who Where
   | WhenDrawToken Who Token
   | WhenDrawTreachery Who

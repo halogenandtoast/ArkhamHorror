@@ -4,6 +4,7 @@ module Arkham.Types.Treachery
   , Treachery(..)
   , isWeakness
   , treacheryLocation
+  , treacheryInvestigator
   )
 where
 
@@ -45,6 +46,8 @@ data Treachery
   | SearchingForIzzie' SearchingForIzzie
   | FinalRhapsody' FinalRhapsody
   | WrackedByNightmares' WrackedByNightmares
+  | VisionsOfFuturesPast' VisionsOfFuturesPast
+  | BeyondTheVeil' BeyondTheVeil
   | EagerForDeath' EagerForDeath
   | TheZealotsSeal' TheZealotsSeal
   | MaskedHorrors' MaskedHorrors
@@ -163,6 +166,9 @@ instance CanBeWeakness env Treachery where
 treacheryLocation :: Treachery -> Maybe LocationId
 treacheryLocation = treacheryAttachedLocation . treacheryAttrs
 
+treacheryInvestigator :: Treachery -> Maybe InvestigatorId
+treacheryInvestigator = treacheryAttachedInvestigator . treacheryAttrs
+
 treacheryAttrs :: Treachery -> Attrs
 treacheryAttrs = \case
   CoverUp' attrs -> coerce attrs
@@ -194,6 +200,8 @@ treacheryAttrs = \case
   SearchingForIzzie' attrs -> coerce attrs
   FinalRhapsody' attrs -> coerce attrs
   WrackedByNightmares' attrs -> coerce attrs
+  VisionsOfFuturesPast' attrs -> coerce attrs
+  BeyondTheVeil' attrs -> coerce attrs
   EagerForDeath' attrs -> coerce attrs
   TheZealotsSeal' attrs -> coerce attrs
   MaskedHorrors' attrs -> coerce attrs

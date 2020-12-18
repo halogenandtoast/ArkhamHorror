@@ -296,6 +296,7 @@ data Message
   | RevealSkillTestTokens InvestigatorId
   | DrawToken InvestigatorId Token
   | EmptyDeck InvestigatorId
+  | DeckHasNoCards InvestigatorId
   | DrawCards InvestigatorId Int Bool
   | HealHorror Target Int
   | HealDamage Target Int

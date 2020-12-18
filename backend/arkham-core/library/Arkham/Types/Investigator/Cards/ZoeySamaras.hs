@@ -38,8 +38,7 @@ instance ActionRunner env => HasActions env ZoeySamaras where
         ability = mkAbility
           (InvestigatorSource investigatorId)
           1
-          (ReactionAbility (AfterEnemyEngageInvestigator You eid))
-
+          (ReactionAbility (AfterEnemyEngageInvestigator You eid) Free)
       modifiers' <-
         map modifierType
           <$> getModifiersFor

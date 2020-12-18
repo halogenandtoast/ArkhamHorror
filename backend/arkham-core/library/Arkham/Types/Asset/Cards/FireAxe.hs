@@ -26,8 +26,10 @@ fightAbility Attrs { assetId } = mkAbility
   (ActionAbility (Just Action.Fight) (ActionCost 1))
 
 reactionAbility :: Attrs -> SkillType -> Ability
-reactionAbility Attrs { assetId } skillType =
-  mkAbility (AssetSource assetId) 2 (ReactionAbility (WhenSkillTest skillType))
+reactionAbility Attrs { assetId } skillType = mkAbility
+  (AssetSource assetId)
+  2
+  (ReactionAbility (WhenSkillTest skillType) $ ResourceCost 1)
 
 instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAxe where
   getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)
@@ -40,21 +42,17 @@ instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAx
 instance ActionRunner env => HasActions env FireAxe where
   getActions iid NonFast (FireAxe a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid NonFast
-    pure $ [ ActivateCardAbilityAction iid (fightAbility a) | fightAvailable ]
+    pure [ ActivateCardAbilityAction iid (fightAbility a) | fightAvailable ]
   getActions iid (WhenSkillTest skillType) (FireAxe a) | ownedBy a iid = do
-    let ability = reactionAbility a skillType
     msource <- asks $ getSource ForSkillTest
     let
+      ability = reactionAbility a skillType
       using = case msource of
         Just (SkillTestSource _ _ source (Just Action.Fight))
           | isSource a source -> True
         _ -> False
     usedCount <- count (== (iid, ability)) . map unUsedAbility <$> getList ()
-    resourceCount <- getResourceCount iid
-    pure
-      [ ActivateCardAbilityAction iid ability
-      | resourceCount > 0 && using && usedCount < 3
-      ]
+    pure [ ActivateCardAbilityAction iid ability | using && usedCount < 3 ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env FireAxe where
@@ -67,12 +65,10 @@ instance (AssetRunner env) => RunMessage env FireAxe where
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-    UseCardAbility iid source _ 2 | isSource attrs source ->
-      a <$ unshiftMessages
-        [ SpendResources iid 1
-        , CreateSkillTestEffect
-          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
-          source
-          (InvestigatorTarget iid)
-        ]
+    UseCardAbility iid source _ 2 | isSource attrs source -> a <$ unshiftMessage
+      (CreateSkillTestEffect
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
+        source
+        (InvestigatorTarget iid)
+      )
     _ -> FireAxe <$> runMessage msg attrs

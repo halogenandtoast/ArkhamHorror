@@ -18,7 +18,7 @@ bindMonster2 iid uuid = BindMonster2 $ baseAttrs iid uuid "02031"
 
 ability :: Window -> Target -> Attrs -> Ability
 ability window target attrs =
-  (mkAbility (toSource attrs) 1 (ReactionAbility window))
+  (mkAbility (toSource attrs) 1 (ReactionAbility window Free))
     { abilityMetadata = Just (TargetMetadata target)
     }
 

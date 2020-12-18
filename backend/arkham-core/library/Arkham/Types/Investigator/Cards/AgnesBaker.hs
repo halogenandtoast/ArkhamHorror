@@ -42,7 +42,7 @@ instance ActionRunner env => HasActions env AgnesBaker where
           (mkAbility
               (toSource attrs)
               1
-              (ReactionAbility (AfterAssignedHorror You))
+              (ReactionAbility (AfterAssignedHorror You) Free)
             )
             { abilityLimit = PerPhase
             }

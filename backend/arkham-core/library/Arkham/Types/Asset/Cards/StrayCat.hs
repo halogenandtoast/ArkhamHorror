@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.StrayCat where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
@@ -18,12 +19,14 @@ instance HasModifiersFor env StrayCat where
   getModifiersFor = noModifiersFor
 
 instance HasActions env StrayCat where
-  getActions iid window (StrayCat a) | ownedBy a iid = do
-    baseActions <- getActions iid window a
-    let
-      ability =
-        mkAbility (toSource a) 1 (FastAbility window (DiscardCost $ toTarget a))
-    pure $ baseActions <> [ActivateCardAbilityAction iid ability]
+  getActions iid window (StrayCat a) | ownedBy a iid =
+    withBaseActions iid window a $ do
+      let
+        ability = mkAbility
+          (toSource a)
+          1
+          (FastAbility window (DiscardCost $ toTarget a))
+      pure [ActivateCardAbilityAction iid ability]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env StrayCat where

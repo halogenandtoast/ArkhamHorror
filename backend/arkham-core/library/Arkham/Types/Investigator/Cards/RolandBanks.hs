@@ -36,7 +36,8 @@ rolandBanks = RolandBanks
 ability :: Attrs -> Ability
 ability attrs = base { abilityLimit = PerRound }
  where
-  base = mkAbility (toSource attrs) 1 (ReactionAbility (WhenEnemyDefeated You))
+  base =
+    mkAbility (toSource attrs) 1 (ReactionAbility (WhenEnemyDefeated You) Free)
 
 instance ActionRunner env => HasActions env RolandBanks where
   getActions iid (WhenEnemyDefeated You) (RolandBanks a@Attrs {..})

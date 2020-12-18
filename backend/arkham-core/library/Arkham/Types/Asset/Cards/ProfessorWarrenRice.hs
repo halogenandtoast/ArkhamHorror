@@ -24,21 +24,23 @@ instance HasModifiersFor env ProfessorWarrenRice where
 
 instance ActionRunner env => HasActions env ProfessorWarrenRice where
   getActions iid window@(AfterDiscoveringClues You YourLocation) (ProfessorWarrenRice a@Attrs {..})
-    | ownedBy a iid
     = do
       lid <- getId @LocationId iid
       lastClue <- (== 0) . unClueCount <$> getCount lid
       pure
         [ ActivateCardAbilityAction
             iid
-            (mkAbility (toSource a) 1 (ReactionAbility window))
-        | lastClue && not assetExhausted
+            (mkAbility
+              (toSource a)
+              1
+              (ReactionAbility window $ ExhaustCost (toTarget a))
+            )
+        | lastClue && ownedBy a iid
         ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env ProfessorWarrenRice where
-  runMessage msg (ProfessorWarrenRice attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
-      unshiftMessage (DrawCards iid 1 False)
-      pure $ ProfessorWarrenRice $ attrs & exhaustedL .~ True
+  runMessage msg a@(ProfessorWarrenRice attrs) = case msg of
+    UseCardAbility iid source _ 1 | isSource attrs source ->
+      a <$ unshiftMessage (DrawCards iid 1 False)
     _ -> ProfessorWarrenRice <$> runMessage msg attrs

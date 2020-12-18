@@ -18,7 +18,8 @@ ritualCandles uuid =
   RitualCandles $ (baseAttrs uuid "02029") { assetSlots = [HandSlot] }
 
 ability :: Window -> Attrs -> Ability
-ability window attrs = mkAbility (toSource attrs) 1 (ReactionAbility window)
+ability window attrs =
+  mkAbility (toSource attrs) 1 (ReactionAbility window Free)
 
 instance HasActions env RitualCandles where
   getActions iid window@(WhenRevealToken You token) (RitualCandles x) = pure

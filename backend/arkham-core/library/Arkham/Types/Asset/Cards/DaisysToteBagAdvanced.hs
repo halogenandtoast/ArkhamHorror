@@ -23,13 +23,15 @@ instance HasSet Trait env (InvestigatorId, CardId) => HasActions env DaisysToteB
     | ownedBy a iid = do
       isTome <- elem Tome <$> getSet @Trait (iid, cardId)
       let
-        ability = (mkAbility (toSource a) 1 (ReactionAbility window))
-          { abilityMetadata = Just (TargetMetadata $ CardIdTarget cardId)
-          }
-      pure
-        [ ActivateCardAbilityAction iid ability
-        | not (assetExhausted a) && isTome
-        ]
+        ability =
+          (mkAbility
+              (toSource a)
+              1
+              (ReactionAbility window $ ExhaustCost (toTarget a))
+            )
+            { abilityMetadata = Just (TargetMetadata $ CardIdTarget cardId)
+            }
+      pure [ ActivateCardAbilityAction iid ability | isTome ]
   getActions iid window (DaisysToteBagAdvanced attrs) =
     getActions iid window attrs
 
@@ -43,12 +45,11 @@ slot :: Attrs -> Slot
 slot attrs = TraitRestrictedSlot (toSource attrs) Tome Nothing
 
 instance AssetRunner env => RunMessage env DaisysToteBagAdvanced where
-  runMessage msg (DaisysToteBagAdvanced attrs) = case msg of
+  runMessage msg a@(DaisysToteBagAdvanced attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       unshiftMessages $ replicate 2 (AddSlot iid HandSlot (slot attrs))
       DaisysToteBagAdvanced <$> runMessage msg attrs
     UseCardAbility iid source (Just (TargetMetadata (CardIdTarget cardId))) 1
-      | isSource attrs source -> do
-        unshiftMessage (ChangeCardToFast iid cardId)
-        pure . DaisysToteBagAdvanced $ attrs & exhaustedL .~ True
+      | isSource attrs source -> a
+      <$ unshiftMessage (ChangeCardToFast iid cardId)
     _ -> DaisysToteBagAdvanced <$> runMessage msg attrs

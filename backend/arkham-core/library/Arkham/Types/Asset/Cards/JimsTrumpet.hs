@@ -22,8 +22,10 @@ instance HasModifiersFor env JimsTrumpet where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Who -> Ability
-ability attrs who =
-  mkAbility (toSource attrs) 1 (ReactionAbility (WhenDrawToken who Skull))
+ability attrs who = mkAbility
+  (toSource attrs)
+  1
+  (ReactionAbility (WhenDrawToken who Skull) $ ExhaustCost (toTarget attrs))
 
 instance ActionRunner env => HasActions env JimsTrumpet where
   getActions iid (WhenRevealToken who Skull) (JimsTrumpet a) | ownedBy a iid =

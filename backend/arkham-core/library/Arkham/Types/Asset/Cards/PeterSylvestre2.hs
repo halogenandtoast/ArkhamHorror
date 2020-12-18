@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.PeterSylvestre2
   ( PeterSylvestre2(..)
   , peterSylvestre2
@@ -30,7 +31,7 @@ instance HasModifiersFor env PeterSylvestre2 where
 
 ability :: Attrs -> Ability
 ability attrs =
-  mkAbility (toSource attrs) 1 (ReactionAbility (AfterEndTurn You))
+  mkAbility (toSource attrs) 1 (ReactionAbility (AfterEndTurn You) Free)
 
 instance ActionRunner env => HasActions env PeterSylvestre2 where
   getActions iid (AfterEndTurn You) (PeterSylvestre2 a) | ownedBy a iid = do

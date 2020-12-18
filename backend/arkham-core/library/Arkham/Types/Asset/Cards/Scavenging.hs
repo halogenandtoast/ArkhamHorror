@@ -18,26 +18,23 @@ scavenging uuid = Scavenging $ baseAttrs uuid "01073"
 instance HasModifiersFor env Scavenging where
   getModifiersFor = noModifiersFor
 
+ability :: Window -> Attrs -> Ability
+ability window a =
+  mkAbility (toSource a) 1 (ReactionAbility window $ ExhaustCost (toTarget a))
+
 instance ActionRunner env => HasActions env Scavenging where
-  getActions iid (AfterPassSkillTest source@(SkillTestSource _ _ _ (Just Action.Investigate)) You n) (Scavenging a)
+  getActions iid window@(AfterPassSkillTest (SkillTestSource _ _ _ (Just Action.Investigate)) You n) (Scavenging a)
     | ownedBy a iid && n >= 2
     = do
       discard <- getDiscardOf iid
       pure
-        [ ActivateCardAbilityAction
-            iid
-            (mkAbility
-              (toSource a)
-              1
-              (ReactionAbility (AfterPassSkillTest source You n))
-            )
+        [ ActivateCardAbilityAction iid (ability window a)
         | any ((Item `member`) . getTraits) discard
         ]
   getActions i window (Scavenging x) = getActions i window x
 
 instance AssetRunner env => RunMessage env Scavenging where
-  runMessage msg (Scavenging attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
-      unshiftMessage (SearchDiscard iid (InvestigatorTarget iid) [Item])
-      pure $ Scavenging $ attrs & exhaustedL .~ True
+  runMessage msg a@(Scavenging attrs) = case msg of
+    UseCardAbility iid source _ 1 | isSource attrs source ->
+      a <$ unshiftMessage (SearchDiscard iid (InvestigatorTarget iid) [Item])
     _ -> Scavenging <$> runMessage msg attrs

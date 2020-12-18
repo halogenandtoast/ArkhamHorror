@@ -58,14 +58,13 @@ instance HasTokenValue env DaisyWalkerParallel where
 
 instance ActionRunner env => HasActions env DaisyWalkerParallel where
   getActions iid FastPlayerWindow (DaisyWalkerParallel attrs)
-    | iid == investigatorId attrs = do
-      baseActions <- getActions iid FastPlayerWindow attrs
-      let ability' = (iid, ability attrs)
-      unused <- notElem ability' . map unUsedAbility <$> getList ()
-      hasTomes <- (> 0) . unAssetCount <$> getCount (iid, [Tome])
-      pure
-        $ [ uncurry ActivateCardAbilityAction ability' | unused && hasTomes ]
-        <> baseActions
+    | iid == investigatorId attrs = withBaseActions iid FastPlayerWindow attrs
+    $ do
+        let ability' = (iid, ability attrs)
+        unused <- notElem ability' . map unUsedAbility <$> getList ()
+        hasTomes <- (> 0) . unAssetCount <$> getCount (iid, [Tome])
+        pure
+          [ uncurry ActivateCardAbilityAction ability' | unused && hasTomes ]
   getActions i window (DaisyWalkerParallel attrs) = getActions i window attrs
 
 instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where

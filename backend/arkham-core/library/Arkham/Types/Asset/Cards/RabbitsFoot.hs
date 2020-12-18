@@ -17,19 +17,21 @@ instance HasModifiersFor env RabbitsFoot where
   getModifiersFor = noModifiersFor
 
 instance HasActions env RabbitsFoot where
-  getActions iid (AfterFailSkillTest You n) (RabbitsFoot a) | ownedBy a iid =
-    pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility (toSource a) 1 (ReactionAbility (AfterFailSkillTest You n))
+  getActions iid (AfterFailSkillTest You n) (RabbitsFoot a) = pure
+    [ ActivateCardAbilityAction
+        iid
+        (mkAbility
+          (toSource a)
+          1
+          (ReactionAbility (AfterFailSkillTest You n) $ ExhaustCost (toTarget a)
           )
-      | not (assetExhausted a)
-      ]
+        )
+    | ownedBy a iid
+    ]
   getActions i window (RabbitsFoot x) = getActions i window x
 
 instance AssetRunner env => RunMessage env RabbitsFoot where
-  runMessage msg (RabbitsFoot attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
-      unshiftMessage (DrawCards iid 1 False)
-      pure $ RabbitsFoot $ attrs & exhaustedL .~ True
+  runMessage msg a@(RabbitsFoot attrs) = case msg of
+    UseCardAbility iid source _ 1 | isSource attrs source ->
+      a <$ unshiftMessage (DrawCards iid 1 False)
     _ -> RabbitsFoot <$> runMessage msg attrs

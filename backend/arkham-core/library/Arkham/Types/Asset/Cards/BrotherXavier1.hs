@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.BrotherXavier1
   ( brotherXavier1
   , BrotherXavier1(..)
@@ -36,8 +37,10 @@ instance (HasId LocationId env InvestigatorId) => HasModifiersFor env BrotherXav
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (ReactionAbility (WhenDefeated $ toSource attrs))
+ability attrs = mkAbility
+  (toSource attrs)
+  1
+  (ReactionAbility (WhenDefeated $ toSource attrs) Free)
 
 instance HasActions env BrotherXavier1 where
   getActions iid (WhenDefeated source) (BrotherXavier1 a) | isSource a source =

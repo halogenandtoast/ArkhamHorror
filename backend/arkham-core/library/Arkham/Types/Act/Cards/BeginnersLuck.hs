@@ -21,9 +21,10 @@ beginnersLuck =
   BeginnersLuck $ baseAttrs "02066" "Beginner's Luck" (Act 1 A) Nothing
 
 ability :: Window -> Attrs -> Ability
-ability window attrs = (mkAbility (toSource attrs) 1 (ReactionAbility window))
-  { abilityLimit = PerRound
-  }
+ability window attrs =
+  (mkAbility (toSource attrs) 1 (ReactionAbility window Free))
+    { abilityLimit = PerRound
+    }
 
 instance ActionRunner env => HasActions env BeginnersLuck where
   getActions iid window@(WhenRevealToken You _) (BeginnersLuck x) = do

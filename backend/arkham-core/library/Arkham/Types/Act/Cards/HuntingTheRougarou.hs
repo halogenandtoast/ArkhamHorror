@@ -17,24 +17,24 @@ huntingTheRougarou = HuntingTheRougarou
   $ baseAttrs "81006" "Hunting the Rougarou" (Act 2 A) Nothing
 
 ability :: Attrs -> Ability
-ability attrs = (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow))
-  { abilityLimit = PerPhase
-  }
+ability attrs =
+  (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow Free))
+    { abilityLimit = PerPhase
+    }
 
 instance ActionRunner env => HasActions env HuntingTheRougarou where
-  getActions iid FastPlayerWindow (HuntingTheRougarou a) = do
-    baseActions <- getActions iid FastPlayerWindow a
-    unused <- getIsUnused iid (ability a)
-    mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
-    engagedWithTheRougarou <- maybe
-      (pure False)
-      ((member iid <$>) . getSet)
-      mrougarou
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction iid (ability a)
-         | unused && engagedWithTheRougarou
-         ]
+  getActions iid FastPlayerWindow (HuntingTheRougarou a) =
+    withBaseActions iid FastPlayerWindow a $ do
+      unused <- getIsUnused iid (ability a)
+      mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
+      engagedWithTheRougarou <- maybe
+        (pure False)
+        ((member iid <$>) . getSet)
+        mrougarou
+      pure
+        [ ActivateCardAbilityAction iid (ability a)
+        | unused && engagedWithTheRougarou
+        ]
   getActions i window (HuntingTheRougarou x) = getActions i window x
 
 instance ActRunner env => RunMessage env HuntingTheRougarou where

@@ -41,18 +41,23 @@ instance HasModifiersFor env FacultyOfficesTheNightIsStillYoung where
 instance ActionRunner env => HasActions env FacultyOfficesTheNightIsStillYoung where
   getActions iid FastPlayerWindow (FacultyOfficesTheNightIsStillYoung attrs@Attrs {..})
     | locationRevealed
-    = do
-      baseActions <- getActions iid FastPlayerWindow attrs
+    = withBaseActions iid FastPlayerWindow attrs $ do
       requiredClueCount <- getPlayerCountValue (PerPlayer 2)
-      totalSpendableClueCount <- getSpendableClueCount
-        (setToList locationInvestigators)
       pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction
-               iid
-               (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow))
-           | totalSpendableClueCount >= requiredClueCount
-           ]
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility
+              (toSource attrs)
+              1
+              (FastAbility
+                FastPlayerWindow
+                (GroupClueCost
+                  requiredClueCount
+                  (Just $ LocationWithTitle "Faculty Offices")
+                )
+              )
+            )
+        ]
   getActions iid window (FacultyOfficesTheNightIsStillYoung attrs) =
     getActions iid window attrs
 
@@ -68,12 +73,6 @@ instance LocationRunner env => RunMessage env FacultyOfficesTheNightIsStillYoung
     FoundEncounterCard _iid target card | isTarget attrs target ->
       l <$ unshiftMessage (SpawnEnemyAt (EncounterCard card) (locationId attrs))
     UseCardAbility _iid source _ 1
-      | isSource attrs source && locationRevealed attrs -> do
-        requiredClueCount <- getPlayerCountValue (PerPlayer 2)
-        l <$ unshiftMessages
-          [ SpendClues
-            requiredClueCount
-            (setToList $ locationInvestigators attrs)
-          , Resolution 1
-          ]
+      | isSource attrs source && locationRevealed attrs -> l
+      <$ unshiftMessage (Resolution 1)
     _ -> FacultyOfficesTheNightIsStillYoung <$> runMessage msg attrs

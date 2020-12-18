@@ -39,17 +39,21 @@ instance ActionRunner env => HasActions env AshcanPete where
   getActions iid FastPlayerWindow (AshcanPete attrs@Attrs {..})
     | iid == investigatorId = do
       let
-        ability = (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow))
+        ability = (mkAbility
+                    (toSource attrs)
+                    1
+                    (FastAbility FastPlayerWindow
+                    $ HandDiscardCost 1 Nothing mempty
+                    )
+                  )
           { abilityLimit = PerRound
           }
       exhaustedAssetIds <- map unExhaustedAssetId <$> getSetList investigatorId
       usedAbilities <- map unUsedAbility <$> getList ()
       pure
         [ ActivateCardAbilityAction investigatorId ability
-        | (investigatorId, ability)
-          `notElem` usedAbilities
-          && not (null exhaustedAssetIds)
-          && not (null investigatorHand)
+        | (investigatorId, ability) `notElem` usedAbilities && not
+          (null exhaustedAssetIds)
         ]
   getActions i window (AshcanPete attrs) = getActions i window attrs
 
@@ -64,12 +68,11 @@ instance (InvestigatorRunner env) => RunMessage env AshcanPete where
       i <$ unshiftMessage (Ready $ CardCodeTarget "02014")
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
       exhaustedAssetIds <- map unExhaustedAssetId <$> getSetList investigatorId
-      i <$ unshiftMessages
-        [ ChooseAndDiscardCard investigatorId
-        , Ask
+      i <$ unshiftMessage
+        (chooseOne
           investigatorId
-          (ChooseOne [ Ready (AssetTarget aid) | aid <- exhaustedAssetIds ])
-        ]
+          [ Ready (AssetTarget aid) | aid <- exhaustedAssetIds ]
+        )
     SetupInvestigators -> do
       let
         (before, after) =

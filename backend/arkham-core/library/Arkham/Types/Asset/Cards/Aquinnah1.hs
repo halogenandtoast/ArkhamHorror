@@ -21,8 +21,14 @@ aquinnah1 uuid = Aquinnah1 $ (baseAttrs uuid "01082")
   }
 
 reactionAbility :: Attrs -> Ability
-reactionAbility attrs =
-  mkAbility (toSource attrs) 1 (FastAbility (WhenEnemyAttacks You))
+reactionAbility attrs = mkAbility
+  (toSource attrs)
+  1
+  (FastAbility (WhenEnemyAttacks You) $ Costs
+    [ ExhaustCost (toTarget attrs)
+    , HorrorCost (toSource attrs) (toTarget attrs) 1
+    ]
+  )
 
 dropUntilAttack :: [Message] -> [Message]
 dropUntilAttack = dropWhile (notElem AttackMessage . messageType)
@@ -39,12 +45,12 @@ instance ActionRunner env => HasActions env Aquinnah1 where
     enemyIds <- filterSet (/= enemyId) <$> getSet locationId
     pure
       [ ActivateCardAbilityAction iid (reactionAbility a)
-      | not (assetExhausted a) && not (null enemyIds)
+      | not (null enemyIds)
       ]
   getActions i window (Aquinnah1 x) = getActions i window x
 
 instance AssetRunner env => RunMessage env Aquinnah1 where
-  runMessage msg (Aquinnah1 attrs) = case msg of
+  runMessage msg a@(Aquinnah1 attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       enemyId <- withQueue $ \queue ->
         let PerformEnemyAttack _ eid : queue' = dropUntilAttack queue
@@ -56,14 +62,18 @@ instance AssetRunner env => RunMessage env Aquinnah1 where
 
       when (null enemyIds) (error "other enemies had to be present")
 
-      unshiftMessage $ chooseOne
-        iid
-        [ Run
-            [ EnemyDamage eid iid source healthDamage'
-            , InvestigatorAssignDamage iid (EnemySource enemyId) 0 sanityDamage'
-            ]
-        | eid <- enemyIds
-        ]
-
-      pure $ Aquinnah1 $ attrs & exhaustedL .~ True
+      a <$ unshiftMessage
+        (chooseOne
+          iid
+          [ Run
+              [ EnemyDamage eid iid source healthDamage'
+              , InvestigatorAssignDamage
+                iid
+                (EnemySource enemyId)
+                0
+                sanityDamage'
+              ]
+          | eid <- enemyIds
+          ]
+        )
     _ -> Aquinnah1 <$> runMessage msg attrs

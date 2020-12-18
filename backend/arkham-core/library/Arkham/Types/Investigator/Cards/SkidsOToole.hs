@@ -36,17 +36,15 @@ skidsOToole = SkidsOToole $ baseAttrs
   [Criminal]
 
 ability :: Attrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (FastAbility (DuringTurn You))
+ability attrs =
+  mkAbility (toSource attrs) 1 (FastAbility (DuringTurn You) (ResourceCost 2))
 
 instance ActionRunner env => HasActions env SkidsOToole where
   getActions iid (DuringTurn You) (SkidsOToole a@Attrs {..})
     | iid == investigatorId = do
       let ability' = (investigatorId, ability a)
       unused <- notElem ability' . map unUsedAbility <$> getList ()
-      pure
-        [ uncurry ActivateCardAbilityAction ability'
-        | unused && investigatorResources >= 2
-        ]
+      pure [ uncurry ActivateCardAbilityAction ability' | unused ]
   getActions _ _ _ = pure []
 
 instance HasTokenValue env SkidsOToole where
@@ -58,7 +56,7 @@ instance HasTokenValue env SkidsOToole where
 instance (InvestigatorRunner env) => RunMessage env SkidsOToole where
   runMessage msg i@(SkidsOToole attrs@Attrs {..}) = case msg of
     UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
-      pure . SkidsOToole $ attrs & resourcesL -~ 2 & remainingActionsL +~ 1
+      pure . SkidsOToole $ attrs & remainingActionsL +~ 1
     PassedSkillTest iid _ _ (DrawnTokenTarget token) _
       | iid == investigatorId && drawnTokenFace token == ElderSign -> i
       <$ unshiftMessage (TakeResources iid 2 False)

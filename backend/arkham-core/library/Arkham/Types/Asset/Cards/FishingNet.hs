@@ -26,7 +26,8 @@ instance HasModifiersFor env FishingNet where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow)
+ability attrs =
+  mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow Free)
 
 instance ActionRunner env => HasActions env FishingNet where
   getActions iid FastPlayerWindow (FishingNet attrs) | ownedBy attrs iid = do

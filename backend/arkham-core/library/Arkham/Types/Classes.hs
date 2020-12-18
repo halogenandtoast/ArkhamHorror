@@ -214,11 +214,14 @@ class HasCount count env a where
 
 type HasCostPayment env
   = ( HasCount SpendableClueCount env InvestigatorId
+    , HasCount SpendableClueCount env ()
     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
     , HasList HandCard env InvestigatorId
     , HasCount ResourceCount env InvestigatorId
     , HasCount UsesCount env AssetId
     , HasSet ExhaustedAssetId env ()
+    , HasSet InvestigatorId env LocationId
+    , HasId (Maybe LocationId) env LocationMatcher
     )
 
 class HasStats env a where

@@ -10,6 +10,7 @@ import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Query
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -24,6 +25,7 @@ type InvestigatorRunner env
     , HasCount AssetCount env (InvestigatorId, [Trait])
     , HasCount ClueCount env LocationId
     , HasId (Maybe AssetId) env CardCode
+    , HasId (Maybe LocationId) env LocationMatcher
     , HasId CardCode env AssetId
     , HasId CardCode env EnemyId
     , HasId LocationId env InvestigatorId
@@ -44,6 +46,8 @@ type InvestigatorRunner env
     , HasSet HealthDamageableAssetId env InvestigatorId
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env EnemyId
+    , HasSet InvestigatorId env LocationId
+    , HasSet InScenarioInvestigatorId env ()
     , HasSet Keyword env EnemyId
     , HasSet SanityDamageableAssetId env InvestigatorId
     , HasSet Trait env AssetId

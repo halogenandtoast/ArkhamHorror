@@ -44,9 +44,10 @@ instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor en
     getModifiersFor source target attrs
 
 ability :: Attrs -> Ability
-ability attrs = (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow))
-  { abilityLimit = PerGame
-  }
+ability attrs =
+  (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow Free))
+    { abilityLimit = PerGame
+    }
 
 instance HasTokenValue env DaisyWalkerParallel where
   getTokenValue (DaisyWalkerParallel attrs) iid ElderSign

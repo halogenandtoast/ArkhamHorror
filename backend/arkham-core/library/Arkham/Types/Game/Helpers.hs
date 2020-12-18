@@ -69,10 +69,25 @@ getCanAffordCost iid source mAction = \case
   ClueCost n -> do
     spendableClues <- unSpendableClueCount <$> getCount iid
     pure $ spendableClues >= n
+  GroupClueCost n Nothing -> do
+    totalSpendableClues <- unSpendableClueCount <$> getCount ()
+    pure $ totalSpendableClues >= n
+  GroupClueCost n (Just locationMatcher) -> do
+    mLocationId <- getId @(Maybe LocationId) locationMatcher
+    case mLocationId of
+      Just lid -> do
+        iids <- getSetList @InvestigatorId lid
+        totalSpendableClues <- sum
+          <$> for iids ((unSpendableClueCount <$>) . getCount)
+        pure $ totalSpendableClues >= n
+      Nothing -> pure False
   ResourceCost n -> do
     resources <- unResourceCount <$> getCount iid
     pure $ resources >= n
-  DiscardCost n mCardType traits -> do
+  DiscardCost _ -> pure True -- TODO: Make better
+  DiscardCardCost _ -> pure True -- TODO: Make better
+  HorrorCost{} -> pure True -- TODO: Make better
+  HandDiscardCost n mCardType traits -> do
     cards <- mapMaybe (preview _PlayerCard) <$> getHandOf iid
     let
       cardTypeFilter = case mCardType of
@@ -89,13 +104,8 @@ getCanAffordCost iid source mAction = \case
 instance
   ( HasActions env ActionType
   , HasModifiersFor env ()
-  , HasList HandCard env InvestigatorId
-  , HasCount ResourceCount env InvestigatorId
-  , HasCount SpendableClueCount env InvestigatorId
-  , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
-  , HasCount UsesCount env AssetId
+  , HasCostPayment env
   , HasSet Trait env Source
-  , HasSet ExhaustedAssetId env ()
   )
   => HasActions env () where
   getActions iid window _ = do

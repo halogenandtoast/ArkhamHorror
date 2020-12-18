@@ -80,6 +80,7 @@ import Text.Read hiding (get, lift)
 type GameInternal = Game (IORef [Message])
 type GameExternal = Game [Message]
 type GameMode = These Campaign Scenario
+type EntityMap a = HashMap (EntityId a) a
 
 data Game queue = Game
   { gameMessages :: queue
@@ -90,20 +91,20 @@ data Game queue = Game
 
   -- Active Scenario/Campaign
   , gameMode :: GameMode
+  , gamePlayers :: HashMap Int InvestigatorId
 
   -- Entities
-  , gameLocations :: HashMap LocationId Location
-  , gameInvestigators :: HashMap InvestigatorId Investigator
-  , gamePlayers :: HashMap Int InvestigatorId
-  , gameEnemies :: HashMap EnemyId Enemy
-  , gameEnemiesInVoid :: HashMap EnemyId Enemy
-  , gameAssets :: HashMap AssetId Asset
-  , gameActs :: HashMap ActId Act
-  , gameAgendas :: HashMap AgendaId Agenda
-  , gameTreacheries :: HashMap TreacheryId Treachery
-  , gameEvents :: HashMap EventId Event
-  , gameEffects :: HashMap EffectId Effect
-  , gameSkills :: HashMap SkillId Skill
+  , gameLocations :: EntityMap Location
+  , gameInvestigators :: EntityMap Investigator
+  , gameEnemies :: EntityMap Enemy
+  , gameEnemiesInVoid :: EntityMap Enemy
+  , gameAssets :: EntityMap Asset
+  , gameActs :: EntityMap Act
+  , gameAgendas :: EntityMap Agenda
+  , gameTreacheries :: EntityMap Treachery
+  , gameEvents :: EntityMap Event
+  , gameEffects :: EntityMap Effect
+  , gameSkills :: EntityMap Skill
 
   -- Player Details
   , gamePlayerCount :: Int -- used for determining if game should start

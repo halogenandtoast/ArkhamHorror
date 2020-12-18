@@ -25,7 +25,8 @@ instance HasModifiersFor env BearTrap where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow)
+ability attrs =
+  mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow Free)
 
 instance HasActions env BearTrap where
   getActions iid FastPlayerWindow (BearTrap attrs) | ownedBy attrs iid =

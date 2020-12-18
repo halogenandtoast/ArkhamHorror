@@ -37,6 +37,14 @@ deriving anyclass instance ActionRunner env => HasActions env Skill
 deriving anyclass instance SkillRunner env => RunMessage env Skill
 deriving anyclass instance HasModifiersFor env Skill
 
+instance Entity Skill where
+  type EntityId Skill = SkillId
+  toId = toId . skillAttrs
+  toSource = toSource . skillAttrs
+  toTarget = toTarget . skillAttrs
+  isSource = isSource . skillAttrs
+  isTarget = isTarget . skillAttrs
+
 instance IsCard Skill where
   getCardId = getCardId . skillAttrs
   getCardCode = getCardCode . skillAttrs

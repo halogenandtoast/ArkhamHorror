@@ -26,11 +26,14 @@ ability :: Attrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
 
 instance ActionRunner env => HasActions env FirstAid where
-  getActions iid window (FirstAid a) | ownedBy a iid = do
-    investigateAvailable <- hasInvestigateActions iid window
+  getActions iid NonFast (FirstAid a) | ownedBy a iid = do
+    canAffordActions <- getCanAffordCost
+      iid
+      (toSource a)
+      (ActionCost 1 Nothing (assetTraits a))
     pure
       [ ActivateCardAbilityAction iid (ability a)
-      | useCount (assetUses a) > 0 && investigateAvailable
+      | useCount (assetUses a) > 0 && canAffordActions
       ]
   getActions _ _ _ = pure []
 

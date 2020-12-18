@@ -4,6 +4,7 @@ module Arkham.Types.Treachery.Cards.Haunted where
 import Arkham.Import
 
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype Haunted = Haunted Attrs
@@ -18,12 +19,16 @@ instance HasModifiersFor env Haunted where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env Haunted where
-  getActions iid NonFast (Haunted Attrs {..}) =
+  getActions iid NonFast (Haunted a@Attrs {..}) =
     case treacheryAttachedInvestigator of
       Nothing -> pure []
       Just tormented -> do
         investigatorLocationId <- getId @LocationId iid
         treacheryLocation <- getId tormented
+        canAffordActions <- getCanAffordCost
+          iid
+          (toSource a)
+          (ActionCost 2 Nothing treacheryTraits)
         pure
           [ ActivateCardAbilityAction
               iid
@@ -32,7 +37,7 @@ instance ActionRunner env => HasActions env Haunted where
                 1
                 (ActionAbility 2 Nothing)
               )
-          | treacheryLocation == investigatorLocationId
+          | treacheryLocation == investigatorLocationId && canAffordActions
           ]
   getActions _ _ _ = pure []
 

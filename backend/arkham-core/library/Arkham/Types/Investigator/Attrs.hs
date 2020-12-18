@@ -738,8 +738,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure $ a & engagedEnemiesL %~ deleteSet eid
   EnemyEngageInvestigator eid iid | iid == investigatorId ->
     pure $ a & engagedEnemiesL %~ insertSet eid
-  EnemyDefeated eid _ _ _ _ _ -> do
-    pure $ a & engagedEnemiesL %~ deleteSet eid
+  EnemyDefeated eid _ _ _ _ _ -> pure $ a & engagedEnemiesL %~ deleteSet eid
   RemoveEnemy eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   TakeControlOfAsset iid aid | iid == investigatorId ->
     pure $ a & assetsL %~ insertSet aid
@@ -1134,7 +1133,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         && investigatorResources
         >= getCost card
       then a <$ unshiftMessages
-        ([ TakeAction iid (Just Action.Play) (ActionCost 1)
+        ([ TakeAction iid (Just Action.Play) (ActionCost actionCost)
          , PayCardCost iid cardId
          ]
         <> aooMessage

@@ -35,6 +35,7 @@ type TreacheryRunner env
     , HasSet DiscardableAssetId env InvestigatorId
     , HasSet FarthestLocationId env InvestigatorId
     , HasSet InvestigatorId env LocationId
+    , HasSet InvestigatorId env TreacheryCardCode
     , HasSet InvestigatorId env ()
     , HasSet LocationId env ()
     , HasSet LocationId env TreacheryCardCode

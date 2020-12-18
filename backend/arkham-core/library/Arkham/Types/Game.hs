@@ -935,6 +935,14 @@ instance HasSet LocationId (Game queue) TreacheryCardCode where
       . filterMap ((== cc) . getCardCode)
       <$> view treacheries
 
+instance HasSet InvestigatorId (Game queue) TreacheryCardCode where
+  getSet (TreacheryCardCode cc) =
+    setFromList
+      . mapMaybe treacheryInvestigator
+      . toList
+      . filterMap ((== cc) . getCardCode)
+      <$> view treacheries
+
 instance HasSet LocationId (Game queue) [Trait] where
   getSet traits = keysSet . filterMap hasMatchingTrait <$> view locations
    where

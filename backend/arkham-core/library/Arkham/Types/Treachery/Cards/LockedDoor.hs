@@ -39,7 +39,7 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
   runMessage msg t@(LockedDoor attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       exemptLocations <- getSet @LocationId
-        (TreacheryCardCode $ CardCode "01174")
+        (TreacheryCardCode treacheryCardCode)
       targetLocations <-
         setToList . (`difference` exemptLocations) <$> getSet @LocationId ()
       locationsWithClueCounts <- for targetLocations

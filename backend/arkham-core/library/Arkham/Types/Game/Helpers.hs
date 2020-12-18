@@ -48,6 +48,9 @@ getCanAffordCost
 getCanAffordCost iid source mAction = \case
   Free -> pure True
   Costs xs -> and <$> traverse (getCanAffordCost iid source mAction) xs
+  UseCost aid _uType n -> do
+    uses <- unUsesCount <$> getCount aid
+    pure $ uses >= n
   ActionCost n -> do
     modifiers <-
       map modifierType <$> getModifiersFor source (InvestigatorTarget iid) ()
@@ -85,6 +88,7 @@ instance
   , HasCount ResourceCount env InvestigatorId
   , HasCount SpendableClueCount env InvestigatorId
   , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+  , HasCount UsesCount env AssetId
   , HasSet Trait env Source
   )
   => HasActions env () where

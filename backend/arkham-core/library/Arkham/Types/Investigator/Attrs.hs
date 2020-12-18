@@ -600,11 +600,6 @@ instance InvestigatorRunner env => RunMessage env Attrs where
       i
     runInvestigatorMessage msg i
 
-toActionCount :: Cost -> Int
-toActionCount (ActionCost n) = n
-toActionCount (Costs xs) = sum $ map toActionCount xs
-toActionCount _ = 0
-
 hasModifier
   :: (MonadReader env m, HasModifiersFor env ())
   => Attrs
@@ -1514,17 +1509,35 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure $ a & remainingActionsL .~ n
   GainActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActionsL +~ n
-  TakeAction iid mAction actionCost | iid == investigatorId -> do
-    costModifier <- getActionCostModifier a mAction
-    let
-      modifiedActionCost = max 0 (toActionCount actionCost + costModifier)
-      actionsTakenUpdate = case mAction of
-        Nothing -> id
-        Just action -> (<> [action])
-    pure
-      $ a
-      & (remainingActionsL %~ max 0 . subtract modifiedActionCost)
-      & (actionsTakenL %~ actionsTakenUpdate)
+  TakeAction iid mAction cost | iid == investigatorId -> a <$ unshiftMessages
+    (PayActionCost iid mAction cost
+    : [ TakenAction iid action | action <- maybeToList mAction ]
+    )
+  TakenAction iid action | iid == investigatorId ->
+    pure $ a & actionsTakenL %~ (<> [action])
+  PayActionCost iid mAction cost | iid == investigatorId -> case cost of
+    Costs xs -> a <$ unshiftMessages [ PayActionCost iid mAction x | x <- xs ]
+    ActionCost x -> do
+      costModifier <- getActionCostModifier a mAction
+      let modifiedActionCost = max 0 (x + costModifier)
+      pure $ a & (remainingActionsL %~ max 0 . subtract modifiedActionCost)
+    UseCost aid uType n ->
+      a <$ unshiftMessage (SpendUses (AssetTarget aid) uType n)
+    ClueCost x -> pure $ a & (cluesL %~ max 0 . subtract x)
+    ResourceCost x -> pure $ a & (resourcesL %~ max 0 . subtract x)
+    DiscardCost x mPlayerCardType traits -> do
+      let
+        cards =
+          filter
+              (and . sequence
+                [ maybe (const True) (==) mPlayerCardType . pcCardType
+                , (|| null traits) . not . null . intersection traits . pcTraits
+                ]
+              )
+            $ mapMaybe (preview _PlayerCard) investigatorHand
+      a <$ unshiftMessage
+        (chooseN iid x [ DiscardCard iid (getCardId card) | card <- cards ])
+    Free -> pure a
   PutOnTopOfDeck iid card | iid == investigatorId ->
     pure $ a & deckL %~ Deck . (card :) . unDeck
   AddToHand iid card | iid == investigatorId -> do

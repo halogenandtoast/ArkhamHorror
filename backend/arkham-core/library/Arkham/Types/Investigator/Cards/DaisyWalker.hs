@@ -61,14 +61,14 @@ instance InvestigatorRunner env => RunMessage env DaisyWalker where
             ForcedAbility -> DaisyWalker <$> runMessage msg attrs
             FastAbility _ -> DaisyWalker <$> runMessage msg attrs
             ReactionAbility _ -> DaisyWalker <$> runMessage msg attrs
-            ActionAbility mAction cost -> if totalActions cost > 0
+            ActionAbility mAction cost -> if totalActionCost cost > 0
               then DaisyWalker <$> runMessage
                 (ActivateCardAbilityAction
                   iid
                   (ability
                     { abilityType = ActionAbility
                       mAction
-                      (decreaseActions cost 1)
+                      (decreaseActionCost cost 1)
                     }
                   )
                 )

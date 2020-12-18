@@ -38,11 +38,7 @@ instance ActionRunner env => HasActions env MiskatonicUniversity where
     | locationRevealed = withBaseActions iid NonFast attrs $ pure
       [ ActivateCardAbilityAction
           iid
-          (mkAbility
-            (LocationSource "01129")
-            1
-            (ActionAbility Nothing $ ActionCost 1)
-          )
+          (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
       | iid `member` locationInvestigators
       ]
   getActions iid window (MiskatonicUniversity attrs) =

@@ -172,6 +172,10 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
       Uses useType'' m | useType' == useType'' ->
         pure $ a & usesL .~ Uses useType' (n + m)
       _ -> error "Trying to add the wrong use type"
+    SpendUses target useType' n | isTarget a target -> case assetUses of
+      Uses useType'' m | useType' == useType'' ->
+        pure $ a & usesL .~ Uses useType' (max 0 (m - n))
+      _ -> error "Trying to use the wrong use type"
     AttachAsset aid target | aid == assetId -> case target of
       LocationTarget lid -> pure $ a & locationL ?~ lid
       EnemyTarget eid -> pure $ a & enemyL ?~ eid

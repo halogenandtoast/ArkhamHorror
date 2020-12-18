@@ -4,6 +4,7 @@ module Arkham.Types.Enemy.Cards.Umordhoth where
 import Arkham.Import
 
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
 newtype Umordhoth = Umordhoth Attrs
@@ -32,12 +33,20 @@ instance ActionRunner env => HasActions env Umordhoth where
       Nothing -> pure baseActions
       Just aid -> do
         miid <- fmap unOwnerId <$> getId aid
+        canAffordActions <- getCanAffordCost
+          iid
+          (toSource attrs)
+          (ActionCost 1 Nothing enemyTraits)
         pure
           $ baseActions
           <> [ ActivateCardAbilityAction
                  iid
                  (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 Nothing))
-             | locationId == enemyLocation && miid == Just iid
+             | canAffordActions
+               && locationId
+               == enemyLocation
+               && miid
+               == Just iid
              ]
   getActions i window (Umordhoth attrs) = getActions i window attrs
 

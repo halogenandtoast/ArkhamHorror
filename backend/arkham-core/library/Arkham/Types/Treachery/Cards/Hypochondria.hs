@@ -4,6 +4,7 @@ module Arkham.Types.Treachery.Cards.Hypochondria where
 import Arkham.Import
 
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype Hypochondria = Hypochondria Attrs
@@ -16,12 +17,16 @@ instance HasModifiersFor env Hypochondria where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Hypochondria where
-  getActions iid NonFast (Hypochondria Attrs {..}) =
+  getActions iid NonFast (Hypochondria a@Attrs {..}) =
     case treacheryAttachedInvestigator of
       Nothing -> pure []
       Just tormented -> do
         treacheryLocation <- getId tormented
         investigatorLocationId <- getId @LocationId iid
+        canAffordActions <- getCanAffordCost
+          iid
+          (toSource a)
+          (ActionCost 2 Nothing treacheryTraits)
         pure
           [ ActivateCardAbilityAction
               iid
@@ -30,7 +35,7 @@ instance ActionRunner env => HasActions env Hypochondria where
                 1
                 (ActionAbility 2 Nothing)
               )
-          | treacheryLocation == investigatorLocationId
+          | canAffordActions && treacheryLocation == investigatorLocationId
           ]
   getActions _ _ _ = pure []
 

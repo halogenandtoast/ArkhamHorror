@@ -29,12 +29,16 @@ instance ActionRunner env => HasActions env VictoriaDevereux where
     baseActions <- getActions iid NonFast attrs
     resourceCount <- getResourceCount iid
     locationId <- getId @LocationId iid
+    canAffordActions <- getCanAffordCost
+      iid
+      (toSource attrs)
+      (ActionCost 1 (Just Parley) enemyTraits)
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction
              iid
              (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 (Just Parley)))
-         | resourceCount >= 5 && locationId == enemyLocation
+         | canAffordActions && resourceCount >= 5 && locationId == enemyLocation
          ]
   getActions _ _ _ = pure []
 

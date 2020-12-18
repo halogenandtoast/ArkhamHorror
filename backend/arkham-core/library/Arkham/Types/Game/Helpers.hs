@@ -216,3 +216,22 @@ getCardCount
   => InvestigatorId
   -> m Int
 getCardCount iid = unCardCount <$> getCount iid
+
+getCanAffordCost
+  :: ( MonadReader env m
+     , HasModifiersFor env ()
+     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+     )
+  => InvestigatorId
+  -> Source
+  -> Cost
+  -> m Bool
+getCanAffordCost iid source = \case
+  ActionCost n mAction traits -> do
+    modifiers <- getModifiersFor source (InvestigatorTarget iid) ()
+    if ActionsAreFree `elem` modifiers
+      then pure True
+      else do
+        actionCount <- unActionRemainingCount
+          <$> getCount (mAction, setToList traits, iid)
+        pure $ actionCount >= n

@@ -17,6 +17,7 @@ import Data.Aeson
 data Modifier
   = ActionCostOf ActionTarget Int
   | ActionSkillModifier Action SkillType Int
+  | ActionsAreFree
   | AdditionalActions Int
   | AnySkillValue Int
   | BaseSkillOf SkillType Int

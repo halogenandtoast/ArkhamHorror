@@ -17,6 +17,7 @@ import Arkham.Types.Card.Cost as X
 import Arkham.Types.Card.Id as X
 import Arkham.Types.Classes as X
 import Arkham.Types.ClassSymbol as X
+import Arkham.Types.Cost as X
 import Arkham.Types.EffectId as X
 import Arkham.Types.EffectMetadata as X
 import Arkham.Types.EncounterSet as X (EncounterSet)

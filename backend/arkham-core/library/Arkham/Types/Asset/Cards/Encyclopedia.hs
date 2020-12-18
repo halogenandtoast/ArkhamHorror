@@ -21,18 +21,15 @@ instance HasModifiersFor env Encyclopedia where
 
 instance ActionRunner env => HasActions env Encyclopedia where
   getActions iid NonFast (Encyclopedia a) | ownedBy a iid = do
-    hasActionsRemaining <- getHasActionsRemaining
+    canAffordActions <- getCanAffordCost
       iid
-      Nothing
-      (setToList $ assetTraits a)
+      (toSource a)
+      (ActionCost 1 Nothing (assetTraits a))
     pure
       [ ActivateCardAbilityAction
           iid
           (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
-      | not (assetExhausted a)
-        && useCount (assetUses a)
-        > 0
-        && hasActionsRemaining
+      | not (assetExhausted a) && useCount (assetUses a) > 0 && canAffordActions
       ]
   getActions _ _ _ = pure []
 

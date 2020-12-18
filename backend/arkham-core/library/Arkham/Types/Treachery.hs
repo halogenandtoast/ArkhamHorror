@@ -134,6 +134,8 @@ allTreacheries = mapFromList
   , ("02011", (SearchingForIzzie' .) . searchingForIzzie)
   , ("02013", (FinalRhapsody' .) . finalRhapsody)
   , ("02015", (WrackedByNightmares' .) . wrackedByNightmares)
+  , ("02083", (VisionsOfFuturesPast' .) . visionsOfFuturesPast)
+  , ("02084", (BeyondTheVeil' .) . beyondTheVeil)
   , ("02091", (EagerForDeath' .) . eagerForDeath)
   , ("50024", (TheZealotsSeal' .) . theZealotsSeal)
   , ("50031", (MaskedHorrors' .) . maskedHorrors)

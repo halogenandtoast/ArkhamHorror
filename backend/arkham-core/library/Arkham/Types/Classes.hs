@@ -217,6 +217,7 @@ type HasCostPayment env
     , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
     , HasList HandCard env InvestigatorId
     , HasCount ResourceCount env InvestigatorId
+    , HasCount UsesCount env AssetId
     )
 
 class HasStats env a where
@@ -257,6 +258,7 @@ type ActionRunner env
     , HasCount ResourceCount env InvestigatorId
     , HasCount SpendableClueCount env InvestigatorId
     , HasCount SpendableClueCount env ()
+    , HasCount UsesCount env AssetId
     , HasId (Maybe LocationId) env AssetId
     , HasId (Maybe LocationId) env LocationMatcher
     , HasId (Maybe OwnerId) env AssetId

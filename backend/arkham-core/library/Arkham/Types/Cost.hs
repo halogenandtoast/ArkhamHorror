@@ -5,28 +5,41 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Types.Asset.Uses
+import Arkham.Types.AssetId
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Trait
 
-totalActions :: Cost -> Int
-totalActions (ActionCost n) = n
-totalActions (Costs xs) = sum $ map totalActions xs
-totalActions _ = 0
+totalActionCost :: Cost -> Int
+totalActionCost (ActionCost n) = n
+totalActionCost (Costs xs) = sum $ map totalActionCost xs
+totalActionCost _ = 0
 
-decreaseActions :: Cost -> Int -> Cost
-decreaseActions (ActionCost x) y = ActionCost $ max 0 (x - y)
-decreaseActions (Costs (a : as)) y = case a of
+totalResourceCost :: Cost -> Int
+totalResourceCost (ResourceCost n) = n
+totalResourceCost (Costs xs) = sum $ map totalResourceCost xs
+totalResourceCost _ = 0
+
+totalClueCost :: Cost -> Int
+totalClueCost (ClueCost n) = n
+totalClueCost (Costs xs) = sum $ map totalClueCost xs
+totalClueCost _ = 0
+
+decreaseActionCost :: Cost -> Int -> Cost
+decreaseActionCost (ActionCost x) y = ActionCost $ max 0 (x - y)
+decreaseActionCost (Costs (a : as)) y = case a of
   ActionCost x | x >= y -> Costs (ActionCost (x - y) : as)
   ActionCost x ->
-    ActionCost (max 0 (x - y)) <> decreaseActions (Costs as) (y - x)
-  _ -> a <> decreaseActions (Costs as) y
-decreaseActions other _ = other
+    ActionCost (max 0 (x - y)) <> decreaseActionCost (Costs as) (y - x)
+  _ -> a <> decreaseActionCost (Costs as) y
+decreaseActionCost other _ = other
 
 data Cost
   = ActionCost Int
   | DiscardCost Int (Maybe PlayerCardType) (HashSet Trait)
   | ClueCost Int
   | ResourceCost Int
+  | UseCost AssetId UseType Int
   | Costs [Cost]
   | Free
   deriving stock (Show, Eq, Generic)

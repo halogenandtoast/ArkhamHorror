@@ -491,6 +491,9 @@ instance HasId CardCode (Game queue) EnemyId where
 instance HasId CardCode (Game queue) AssetId where
   getId = (getCardCode <$>) . getAsset
 
+instance HasCount UsesCount (Game queue) AssetId where
+  getCount = getCount <=< getAsset
+
 instance HasId (Maybe OwnerId) (Game queue) AssetId where
   getId = getId <=< getAsset
 

@@ -14,6 +14,10 @@ use :: Uses -> Uses
 use NoUses = NoUses
 use (Uses useType' n) = Uses useType' (max 0 (n - 1))
 
+useN :: Int -> Uses -> Uses
+useN _ NoUses = NoUses
+useN n (Uses useType' m) = Uses useType' (max 0 (m - n))
+
 useType :: Uses -> Maybe UseType
 useType NoUses = Nothing
 useType (Uses useType' _) = Just useType'

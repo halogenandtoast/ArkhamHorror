@@ -46,7 +46,7 @@ instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor en
 ability :: Attrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow Free))
-    { abilityLimit = PerGame
+    { abilityLimit = PlayerLimit PerGame 1
     }
 
 instance HasTokenValue env DaisyWalkerParallel where
@@ -60,11 +60,8 @@ instance ActionRunner env => HasActions env DaisyWalkerParallel where
   getActions iid FastPlayerWindow (DaisyWalkerParallel attrs)
     | iid == investigatorId attrs = withBaseActions iid FastPlayerWindow attrs
     $ do
-        let ability' = (iid, ability attrs)
-        unused <- notElem ability' . map unUsedAbility <$> getList ()
         hasTomes <- (> 0) . unAssetCount <$> getCount (iid, [Tome])
-        pure
-          [ uncurry ActivateCardAbilityAction ability' | unused && hasTomes ]
+        pure [ ActivateCardAbilityAction iid (ability attrs) | hasTomes ]
   getActions i window (DaisyWalkerParallel attrs) = getActions i window attrs
 
 instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where

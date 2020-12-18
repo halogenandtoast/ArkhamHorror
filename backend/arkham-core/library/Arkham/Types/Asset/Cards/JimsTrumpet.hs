@@ -30,7 +30,6 @@ ability attrs who = mkAbility
 instance ActionRunner env => HasActions env JimsTrumpet where
   getActions iid (WhenRevealToken who Skull) (JimsTrumpet a) | ownedBy a iid =
     do
-      let ability' = (iid, ability a who)
       locationId <- getId @LocationId iid
       connectedLocationIds <- map unConnectedLocationId
         <$> getSetList locationId
@@ -40,10 +39,9 @@ instance ActionRunner env => HasActions env JimsTrumpet where
       horrorCounts <- for
         (concat investigatorIds)
         ((unHorrorCount <$>) . getCount)
-      unused <- notElem ability' . map unUsedAbility <$> getList ()
       pure
-        [ uncurry ActivateCardAbilityAction ability'
-        | unused && any (> 0) horrorCounts
+        [ ActivateCardAbilityAction iid (ability a who)
+        | any (> 0) horrorCounts
         ]
   getActions i window (JimsTrumpet x) = getActions i window x
 

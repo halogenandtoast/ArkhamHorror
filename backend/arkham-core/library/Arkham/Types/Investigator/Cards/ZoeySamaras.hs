@@ -45,13 +45,9 @@ instance ActionRunner env => HasActions env ZoeySamaras where
                 (InvestigatorSource investigatorId)
                 (InvestigatorTarget investigatorId)
                 ()
-      usedAbilities <- map unUsedAbility <$> getList ()
       pure
         [ ActivateCardAbilityAction investigatorId ability
-        | (investigatorId, ability)
-          `notElem` usedAbilities
-          && CannotGainResources
-          `notElem` modifiers'
+        | CannotGainResources `notElem` modifiers'
         ]
 
   getActions i window (ZoeySamaras attrs) = getActions i window attrs

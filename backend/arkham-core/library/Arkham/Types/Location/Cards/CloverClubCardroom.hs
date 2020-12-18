@@ -33,23 +33,18 @@ instance HasModifiersFor env CloverClubCardroom where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs = (mkAbility
-                  (toSource attrs)
-                  1
-                  (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2]
-                  )
-                )
-  { abilityLimit = PerGame
-  }
+ability attrs = mkAbility
+  (toSource attrs)
+  1
+  (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
 
 instance ActionRunner env => HasActions env CloverClubCardroom where
   getActions iid NonFast (CloverClubCardroom attrs@Attrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       step <- unActStep . getStep <$> ask
-      unused <- getIsUnused iid (ability attrs)
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
-        | iid `member` locationInvestigators && step == 1 && unused
+        | iid `member` locationInvestigators && step == 1
         ]
   getActions iid window (CloverClubCardroom attrs) =
     getActions iid window attrs

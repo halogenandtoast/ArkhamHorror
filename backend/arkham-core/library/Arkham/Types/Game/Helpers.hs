@@ -26,13 +26,45 @@ getCanAffordAbility
      , HasModifiersFor env ()
      , HasCostPayment env
      , HasSet Trait env Source
+     , HasList UsedAbility env ()
      )
   => InvestigatorId
   -> Ability
   -> m Bool
-getCanAffordAbility iid Ability {..} = case abilityType of
+getCanAffordAbility iid ability =
+  (&&) <$> getCanAffordUse iid ability <*> getCanAffordAbilityCost iid ability
+
+getCanAffordAbilityCost
+  :: ( MonadReader env m
+     , HasModifiersFor env ()
+     , HasCostPayment env
+     , HasSet Trait env Source
+     )
+  => InvestigatorId
+  -> Ability
+  -> m Bool
+getCanAffordAbilityCost iid Ability {..} = case abilityType of
   ActionAbility mAction cost -> getCanAffordCost iid abilitySource mAction cost
-  _ -> pure True
+  ReactionAbility _ cost -> getCanAffordCost iid abilitySource Nothing cost
+  FastAbility _ cost -> getCanAffordCost iid abilitySource Nothing cost
+  ForcedAbility -> pure True
+
+getCanAffordUse
+  :: (MonadReader env m, HasCostPayment env, HasList UsedAbility env ())
+  => InvestigatorId
+  -> Ability
+  -> m Bool
+getCanAffordUse iid ability@Ability {..} = case abilityLimit of
+  NoLimit -> case abilityType of
+    ReactionAbility _ _ ->
+      notElem (iid, ability) . map unUsedAbility <$> getList ()
+    ForcedAbility -> notElem (iid, ability) . map unUsedAbility <$> getList ()
+    ActionAbility _ _ -> pure True
+    FastAbility _ _ -> pure True
+  PlayerLimit _ n ->
+    (< n) . count (== (iid, ability)) . map unUsedAbility <$> getList ()
+  GroupLimit _ n ->
+    (< n) . count (== ability) . map (snd . unUsedAbility) <$> getList ()
 
 getCanAffordCost
   :: ( MonadReader env m
@@ -106,6 +138,7 @@ instance
   , HasModifiersFor env ()
   , HasCostPayment env
   , HasSet Trait env Source
+  , HasList UsedAbility env ()
   )
   => HasActions env () where
   getActions iid window _ = do
@@ -140,12 +173,12 @@ getRecordSet
   :: (HasRecord env, MonadReader env m) => CampaignLogKey -> m [CardCode]
 getRecordSet = asks . hasRecordSet
 
-getIsUnused
+getIsUnused'
   :: (HasList UsedAbility env (), MonadReader env m)
   => InvestigatorId
   -> Ability
   -> m Bool
-getIsUnused iid ability = notElem ability' . map unUsedAbility <$> getList ()
+getIsUnused' iid ability = notElem ability' . map unUsedAbility <$> getList ()
   where ability' = (iid, ability)
 
 getGroupIsUnused

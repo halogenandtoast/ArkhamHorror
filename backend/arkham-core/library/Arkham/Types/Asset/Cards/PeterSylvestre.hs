@@ -31,14 +31,9 @@ ability :: Attrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ReactionAbility (AfterEndTurn You) Free)
 
-instance ActionRunner env => HasActions env PeterSylvestre where
-  getActions iid (AfterEndTurn You) (PeterSylvestre a) | ownedBy a iid = do
-    let ability' = (iid, ability a)
-    unused <- notElem ability' . map unUsedAbility <$> getList ()
-    pure
-      [ uncurry ActivateCardAbilityAction ability'
-      | unused && assetSanityDamage a > 0
-      ]
+instance HasActions env PeterSylvestre where
+  getActions iid (AfterEndTurn You) (PeterSylvestre a) | ownedBy a iid =
+    pure [ ActivateCardAbilityAction iid (ability a) | assetSanityDamage a > 0 ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env PeterSylvestre where

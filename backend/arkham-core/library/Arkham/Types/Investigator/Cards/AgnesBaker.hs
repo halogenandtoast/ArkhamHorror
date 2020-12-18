@@ -33,24 +33,21 @@ agnesBaker = AgnesBaker
     , agility = 3
     }
 
+ability :: Attrs -> Ability
+ability attrs = base { abilityLimit = PlayerLimit PerPhase 1 }
+ where
+  base = mkAbility
+    (toSource attrs)
+    1
+    (ReactionAbility (AfterAssignedHorror You) Free)
+
 instance ActionRunner env => HasActions env AgnesBaker where
   getActions iid (AfterAssignedHorror You) (AgnesBaker attrs@Attrs {..})
     | iid == investigatorId = do
       locationEnemyIds <- getSetList @EnemyId investigatorLocation
-      let
-        ability =
-          (mkAbility
-              (toSource attrs)
-              1
-              (ReactionAbility (AfterAssignedHorror You) Free)
-            )
-            { abilityLimit = PerPhase
-            }
-      usedAbilities <- map unUsedAbility <$> getList ()
       pure
-        [ ActivateCardAbilityAction investigatorId ability
-        | (investigatorId, ability) `notElem` usedAbilities && not
-          (null locationEnemyIds)
+        [ ActivateCardAbilityAction investigatorId (ability attrs)
+        | not (null locationEnemyIds)
         ]
   getActions i window (AgnesBaker attrs) = getActions i window attrs
 

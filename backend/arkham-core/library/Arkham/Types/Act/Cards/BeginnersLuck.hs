@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Act.Cards.BeginnersLuck
   ( BeginnersLuck(..)
   , beginnersLuck
@@ -23,14 +24,13 @@ beginnersLuck =
 ability :: Window -> Attrs -> Ability
 ability window attrs =
   (mkAbility (toSource attrs) 1 (ReactionAbility window Free))
-    { abilityLimit = PerRound
+    { abilityLimit = GroupLimit PerRound 1
     }
 
 instance ActionRunner env => HasActions env BeginnersLuck where
   getActions iid window@(WhenRevealToken You _) (BeginnersLuck x) = do
     let ab = ability window x
-    unused <- getGroupIsUnused ab
-    pure [ ActivateCardAbilityAction iid ab | unused ]
+    pure [ActivateCardAbilityAction iid ab]
   getActions iid window (BeginnersLuck x) = getActions iid window x
 
 instance

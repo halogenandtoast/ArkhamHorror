@@ -41,7 +41,7 @@ instance (LocationRunner env) => RunMessage env ArkhamWoodsLakeside where
       | isSource attrs source && iid `elem` locationInvestigators -> do
         let
           ability = (mkAbility (toSource attrs) 0 ForcedAbility)
-            { abilityLimit = PerRound
+            { abilityLimit = PlayerLimit PerRound 1
             }
         unused <- getGroupIsUnused ability
         l <$ when

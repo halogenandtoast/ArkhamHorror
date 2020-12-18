@@ -34,7 +34,7 @@ instance HasModifiersFor env RivertownAbandonedWarehouse where
 ability :: Attrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-    { abilityLimit = PerGame
+    { abilityLimit = GroupLimit PerGame 1
     }
 
 instance ActionRunner env => HasActions env RivertownAbandonedWarehouse where
@@ -42,13 +42,9 @@ instance ActionRunner env => HasActions env RivertownAbandonedWarehouse where
     | locationRevealed attrs = withBaseActions iid NonFast attrs $ do
       hasWillpowerCards <- any (elem SkillWillpower . getSkillIcons)
         <$> getHandOf iid
-      unused <- getGroupIsUnused (ability attrs)
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
-        | unused
-          && iid
-          `member` locationInvestigators attrs
-          && hasWillpowerCards
+        | iid `member` locationInvestigators attrs && hasWillpowerCards
         ]
   getActions iid window (RivertownAbandonedWarehouse attrs) =
     getActions iid window attrs

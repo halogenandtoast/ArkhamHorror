@@ -28,26 +28,20 @@ instance HasModifiersFor env HospitalDebts where
       [ XPModifier (-2) | treacheryOnInvestigator iid attrs && resources' < 6 ]
   getModifiersFor _ _ _ = pure []
 
+ability :: Attrs -> Ability
+ability a = (mkAbility (toSource a) 1 (FastAbility (DuringTurn You) Free))
+  { abilityLimit = PlayerLimit PerRound 2
+  }
+
 instance ActionRunner env => HasActions env HospitalDebts where
   getActions iid (DuringTurn You) (HospitalDebts a@Attrs {..}) =
     withTreacheryInvestigator a $ \tormented -> do
-      let
-        ability = (mkAbility (toSource a) 1 (FastAbility (DuringTurn You) Free)
-                  )
-          { abilityLimit = PerRound
-          }
-      usedAbilities <- map unUsedAbility <$> getList ()
       resourceCount <- getResourceCount iid
       treacheryLocationId <- getId tormented
       investigatorLocationId <- getId @LocationId iid
       pure
-        [ ActivateCardAbilityAction iid ability
-        | resourceCount
-          > 0
-          && treacheryLocationId
-          == investigatorLocationId
-          && length (filter (== (iid, ability)) usedAbilities)
-          < 2
+        [ ActivateCardAbilityAction iid (ability a)
+        | resourceCount > 0 && treacheryLocationId == investigatorLocationId
         ]
   getActions _ _ _ = pure []
 

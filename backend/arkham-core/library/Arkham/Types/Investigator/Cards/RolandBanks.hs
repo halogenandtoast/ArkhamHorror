@@ -34,7 +34,7 @@ rolandBanks = RolandBanks
     }
 
 ability :: Attrs -> Ability
-ability attrs = base { abilityLimit = PerRound }
+ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
  where
   base =
     mkAbility (toSource attrs) 1 (ReactionAbility (WhenEnemyDefeated You) Free)
@@ -44,11 +44,7 @@ instance ActionRunner env => HasActions env RolandBanks where
     | iid == investigatorId = do
       let ability' = (investigatorId, ability a)
       clueCount' <- unClueCount <$> getCount investigatorLocation
-      unused <- notElem ability' . map unUsedAbility <$> getList ()
-      pure
-        [ uncurry ActivateCardAbilityAction ability'
-        | unused && clueCount' > 0
-        ]
+      pure [ uncurry ActivateCardAbilityAction ability' | clueCount' > 0 ]
   getActions _ _ _ = pure []
 
 instance HasCount ClueCount env LocationId => HasTokenValue env RolandBanks where

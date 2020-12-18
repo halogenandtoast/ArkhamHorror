@@ -34,17 +34,15 @@ instance HasModifiersFor env YourHouse where
 ability :: Attrs -> Ability
 ability attrs =
   (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-    { abilityLimit = PerTurn
+    { abilityLimit = PlayerLimit PerTurn 1
     }
 
 instance ActionRunner env => HasActions env YourHouse where
   getActions iid NonFast (YourHouse attrs@Attrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ do
-      unused <- getIsUnused iid (ability attrs)
-      pure
-        [ ActivateCardAbilityAction iid (ability attrs)
-        | unused && iid `member` locationInvestigators
-        ]
+    withBaseActions iid NonFast attrs $ pure
+      [ ActivateCardAbilityAction iid (ability attrs)
+      | iid `member` locationInvestigators
+      ]
   getActions iid window (YourHouse attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env YourHouse where

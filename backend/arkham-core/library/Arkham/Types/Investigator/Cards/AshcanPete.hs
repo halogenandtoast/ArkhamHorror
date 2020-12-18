@@ -35,25 +35,21 @@ ashcanPete = AshcanPete $ baseAttrs
     }
   [Drifter]
 
+ability :: Attrs -> Ability
+ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
+ where
+  base = mkAbility
+    (toSource attrs)
+    1
+    (FastAbility FastPlayerWindow $ HandDiscardCost 1 Nothing mempty)
+
 instance ActionRunner env => HasActions env AshcanPete where
   getActions iid FastPlayerWindow (AshcanPete attrs@Attrs {..})
     | iid == investigatorId = do
-      let
-        ability = (mkAbility
-                    (toSource attrs)
-                    1
-                    (FastAbility FastPlayerWindow
-                    $ HandDiscardCost 1 Nothing mempty
-                    )
-                  )
-          { abilityLimit = PerRound
-          }
       exhaustedAssetIds <- map unExhaustedAssetId <$> getSetList investigatorId
-      usedAbilities <- map unUsedAbility <$> getList ()
       pure
-        [ ActivateCardAbilityAction investigatorId ability
-        | (investigatorId, ability) `notElem` usedAbilities && not
-          (null exhaustedAssetIds)
+        [ ActivateCardAbilityAction investigatorId (ability attrs)
+        | not (null exhaustedAssetIds)
         ]
   getActions i window (AshcanPete attrs) = getActions i window attrs
 

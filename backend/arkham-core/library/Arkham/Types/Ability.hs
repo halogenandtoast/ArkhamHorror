@@ -2,6 +2,7 @@ module Arkham.Types.Ability
   ( Ability(..)
   , AbilityType(..)
   , AbilityLimit(..)
+  , AbilityLimitType(..)
   , UsedAbility(..)
   , AbilityMetadata(..)
   , mkAbility

@@ -26,10 +26,14 @@ fightAbility Attrs { assetId } = mkAbility
   (ActionAbility (Just Action.Fight) (ActionCost 1))
 
 reactionAbility :: Attrs -> SkillType -> Ability
-reactionAbility Attrs { assetId } skillType = mkAbility
-  (AssetSource assetId)
-  2
-  (ReactionAbility (WhenSkillTest skillType) $ ResourceCost 1)
+reactionAbility Attrs { assetId } skillType = base
+  { abilityLimit = PlayerLimit PerTestOrAbility 3 -- per attack
+  }
+ where
+  base = mkAbility
+    (AssetSource assetId)
+    2
+    (ReactionAbility (WhenSkillTest skillType) $ ResourceCost 1)
 
 instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAxe where
   getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) (InvestigatorTarget iid) (FireAxe a)
@@ -46,13 +50,11 @@ instance ActionRunner env => HasActions env FireAxe where
   getActions iid (WhenSkillTest skillType) (FireAxe a) | ownedBy a iid = do
     msource <- asks $ getSource ForSkillTest
     let
-      ability = reactionAbility a skillType
       using = case msource of
         Just (SkillTestSource _ _ source (Just Action.Fight))
           | isSource a source -> True
         _ -> False
-    usedCount <- count (== (iid, ability)) . map unUsedAbility <$> getList ()
-    pure [ ActivateCardAbilityAction iid ability | using && usedCount < 3 ]
+    pure [ ActivateCardAbilityAction iid (reactionAbility a skillType) | using ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env FireAxe where

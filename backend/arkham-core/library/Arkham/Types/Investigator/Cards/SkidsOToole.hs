@@ -36,15 +36,14 @@ skidsOToole = SkidsOToole $ baseAttrs
   [Criminal]
 
 ability :: Attrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (FastAbility (DuringTurn You) (ResourceCost 2))
+ability attrs = base { abilityLimit = PlayerLimit PerTurn 1 }
+ where
+  base =
+    mkAbility (toSource attrs) 1 (FastAbility (DuringTurn You) (ResourceCost 2))
 
 instance ActionRunner env => HasActions env SkidsOToole where
   getActions iid (DuringTurn You) (SkidsOToole a@Attrs {..})
-    | iid == investigatorId = do
-      let ability' = (investigatorId, ability a)
-      unused <- notElem ability' . map unUsedAbility <$> getList ()
-      pure [ uncurry ActivateCardAbilityAction ability' | unused ]
+    | iid == investigatorId = pure [ActivateCardAbilityAction iid (ability a)]
   getActions _ _ _ = pure []
 
 instance HasTokenValue env SkidsOToole where

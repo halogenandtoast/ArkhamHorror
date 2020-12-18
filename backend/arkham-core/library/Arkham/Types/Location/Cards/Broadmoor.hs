@@ -33,10 +33,10 @@ instance HasModifiersFor env Broadmoor where
 instance ActionRunner env => HasActions env Broadmoor where
   getActions iid NonFast (Broadmoor attrs@Attrs {..}) = do
     baseActions <- getActions iid NonFast attrs
-    hasActionsRemaining <- getHasActionsRemaining
+    canAffordActions <- getCanAffordCost
       iid
-      (Just Action.Resign)
-      (setToList locationTraits)
+      (toSource attrs)
+      (ActionCost 1 (Just Action.Resign) locationTraits)
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction
@@ -46,7 +46,7 @@ instance ActionRunner env => HasActions env Broadmoor where
                1
                (ActionAbility 1 (Just Action.Resign))
              )
-         | iid `member` locationInvestigators && hasActionsRemaining
+         | iid `member` locationInvestigators && canAffordActions
          ]
   getActions i window (Broadmoor attrs) = getActions i window attrs
 

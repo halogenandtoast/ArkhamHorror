@@ -31,10 +31,10 @@ instance ActionRunner env => HasActions env MiskatonicQuad where
   getActions iid NonFast (MiskatonicQuad attrs@Attrs {..}) | locationRevealed =
     do
       baseActions <- getActions iid NonFast attrs
-      hasResignActionsRemaining <- getHasActionsRemaining
+      canAffordActions <- getCanAffordCost
         iid
-        (Just Action.Resign)
-        (setToList locationTraits)
+        (toSource attrs)
+        (ActionCost 1 (Just Action.Resign) locationTraits)
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction
@@ -44,7 +44,7 @@ instance ActionRunner env => HasActions env MiskatonicQuad where
                  1
                  (ActionAbility 1 (Just Action.Resign))
                )
-           | iid `member` locationInvestigators && hasResignActionsRemaining
+           | iid `member` locationInvestigators && canAffordActions
            ]
   getActions iid window (MiskatonicQuad attrs) = getActions iid window attrs
 

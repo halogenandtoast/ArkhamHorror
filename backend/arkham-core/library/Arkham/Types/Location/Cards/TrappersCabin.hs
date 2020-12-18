@@ -35,10 +35,10 @@ instance ActionRunner env => HasActions env TrappersCabin where
         <$> getId @(Maybe StoryAssetId) (CardCode "81020")
       baseActions <- getActions iid NonFast attrs
       resourceCount <- getResourceCount iid
-      hasActionsRemaining <- getHasActionsRemaining
+      canAffordActions <- getCanAffordCost
         iid
-        Nothing
-        (setToList locationTraits)
+        (toSource attrs)
+        (ActionCost 1 Nothing locationTraits)
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction
@@ -48,7 +48,7 @@ instance ActionRunner env => HasActions env TrappersCabin where
              `member` locationInvestigators
              && resourceCount
              >= 5
-             && hasActionsRemaining
+             && canAffordActions
              && assetNotTaken
            ]
   getActions i window (TrappersCabin attrs) = getActions i window attrs

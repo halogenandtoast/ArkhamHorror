@@ -33,16 +33,16 @@ instance ActionRunner env => HasActions env MiskatonicUniversity where
   getActions iid NonFast (MiskatonicUniversity attrs@Attrs {..})
     | locationRevealed = do
       baseActions <- getActions iid NonFast attrs
-      hasActionsRemaining <- getHasActionsRemaining
+      canAffordActions <- getCanAffordCost
         iid
-        Nothing
-        (setToList locationTraits)
+        (toSource attrs)
+        (ActionCost 1 Nothing locationTraits)
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction
                iid
                (mkAbility (LocationSource "01129") 1 (ActionAbility 1 Nothing))
-           | iid `member` locationInvestigators && hasActionsRemaining
+           | iid `member` locationInvestigators && canAffordActions
            ]
   getActions iid window (MiskatonicUniversity attrs) =
     getActions iid window attrs

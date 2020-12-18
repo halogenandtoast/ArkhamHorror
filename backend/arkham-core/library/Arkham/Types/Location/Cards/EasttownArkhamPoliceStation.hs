@@ -44,10 +44,10 @@ instance ActionRunner env => HasActions env EasttownArkhamPoliceStation where
   getActions iid NonFast (EasttownArkhamPoliceStation attrs)
     | locationRevealed attrs = do
       baseActions <- getActions iid NonFast attrs
-      hasActionsRemaining <- getHasActionsRemaining
+      canAffordActions <- getCanAffordCost
         iid
-        Nothing
-        (setToList $ locationTraits attrs)
+        (toSource attrs)
+        (ActionCost 1 Nothing (locationTraits attrs))
       unused <- getIsUnused iid (ability attrs)
       pure
         $ baseActions
@@ -55,7 +55,7 @@ instance ActionRunner env => HasActions env EasttownArkhamPoliceStation where
            | unused
              && iid
              `member` locationInvestigators attrs
-             && hasActionsRemaining
+             && canAffordActions
            ]
   getActions iid window (EasttownArkhamPoliceStation attrs) =
     getActions iid window attrs

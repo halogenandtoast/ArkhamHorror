@@ -19,7 +19,11 @@ spec = describe "Daisy Walker" $ do
         id
       withGame
           game
-          (getHasActionsRemaining (toId daisyWalker) Nothing (singleton Tome))
+          (getCanAffordCost
+            (toId daisyWalker)
+            TestSource
+            (ActionCost 1 Nothing (singleton Tome))
+          )
         `shouldReturn` True
 
   context "elder sign" $ do

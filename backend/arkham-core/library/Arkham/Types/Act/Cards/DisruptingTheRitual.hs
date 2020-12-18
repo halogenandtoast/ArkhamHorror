@@ -18,14 +18,17 @@ disruptingTheRitual =
     }
 
 instance ActionRunner env => HasActions env DisruptingTheRitual where
-  getActions iid NonFast (DisruptingTheRitual Attrs {..}) = do
-    hasActionsRemaining <- getHasActionsRemaining iid Nothing mempty
+  getActions iid NonFast (DisruptingTheRitual a@Attrs {..}) = do
+    canAffordActions <- getCanAffordCost
+      iid
+      (toSource a)
+      (ActionCost 1 Nothing mempty)
     spendableClueCount <- getSpendableClueCount [iid]
     pure
       [ ActivateCardAbilityAction
           iid
           (mkAbility (ActSource actId) 1 (ActionAbility 1 Nothing))
-      | hasActionsRemaining && spendableClueCount > 0
+      | canAffordActions && spendableClueCount > 0
       ]
   getActions i window (DisruptingTheRitual x) = getActions i window x
 

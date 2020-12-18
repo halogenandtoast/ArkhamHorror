@@ -41,10 +41,10 @@ instance ActionRunner env => HasActions env OvergrownCairns where
       unused <- getIsUnused iid (ability attrs)
       baseActions <- getActions iid NonFast attrs
       resourceCount <- getResourceCount iid
-      hasActionsRemaining <- getHasActionsRemaining
+      canAffordActions <- getCanAffordCost
         iid
-        Nothing
-        (setToList locationTraits)
+        (toSource attrs)
+        (ActionCost 1 Nothing locationTraits)
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction iid (ability attrs)
@@ -53,7 +53,7 @@ instance ActionRunner env => HasActions env OvergrownCairns where
              `member` locationInvestigators
              && resourceCount
              >= 2
-             && hasActionsRemaining
+             && canAffordActions
            ]
   getActions i window (OvergrownCairns attrs) = getActions i window attrs
 

@@ -31,15 +31,15 @@ instance HasModifiersFor env TheNecronomiconAdvanced where
 
 instance ActionRunner env => HasActions env TheNecronomiconAdvanced where
   getActions iid NonFast (TheNecronomiconAdvanced a) | ownedBy a iid = do
-    hasActionsRemaining <- getHasActionsRemaining
+    canAffordActions <- getCanAffordCost
       iid
-      Nothing
-      (setToList $ assetTraits a)
+      (toSource a)
+      (ActionCost 1 Nothing (assetTraits a))
     pure
       [ ActivateCardAbilityAction
           iid
           (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
-      | fromJustNote "Must be set" (assetHorror a) > 0 && hasActionsRemaining
+      | fromJustNote "Must be set" (assetHorror a) > 0 && canAffordActions
       ]
   getActions _ _ _ = pure []
 

@@ -42,14 +42,14 @@ ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
 instance ActionRunner env => HasActions env FoulSwamp where
   getActions iid NonFast (FoulSwamp attrs@Attrs {..}) | locationRevealed = do
     baseActions <- getActions iid NonFast attrs
-    hasActionsRemaining <- getHasActionsRemaining
+    canAffordActions <- getCanAffordCost
       iid
-      Nothing
-      (setToList locationTraits)
+      (toSource attrs)
+      (ActionCost 1 Nothing locationTraits)
     pure
       $ baseActions
       <> [ ActivateCardAbilityActionWithDynamicCost iid (ability attrs)
-         | iid `member` locationInvestigators && hasActionsRemaining
+         | iid `member` locationInvestigators && canAffordActions
          ]
   getActions i window (FoulSwamp attrs) = getActions i window attrs
 

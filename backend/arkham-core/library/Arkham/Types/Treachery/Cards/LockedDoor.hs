@@ -19,19 +19,19 @@ instance HasModifiersFor env LockedDoor where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env LockedDoor where
-  getActions iid NonFast (LockedDoor Attrs {..}) = do
+  getActions iid NonFast (LockedDoor a@Attrs {..}) = do
     investigatorLocationId <- getId @LocationId iid
-    hasActionsRemaining <- getHasActionsRemaining
+    canAffordActions <- getCanAffordCost
       iid
-      Nothing
-      (setToList treacheryTraits)
+      (toSource a)
+      (ActionCost 1 Nothing treacheryTraits)
     pure
       [ ActivateCardAbilityAction
           iid
           (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 1 Nothing))
       | Just investigatorLocationId
         == treacheryAttachedLocation
-        && hasActionsRemaining
+        && canAffordActions
       ]
   getActions _ _ _ = pure []
 

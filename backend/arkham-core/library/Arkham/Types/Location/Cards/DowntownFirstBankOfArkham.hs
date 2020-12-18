@@ -40,10 +40,10 @@ instance ActionRunner env => HasActions env DowntownFirstBankOfArkham where
     | locationRevealed = do
       baseActions <- getActions iid NonFast attrs
       unused <- getIsUnused iid (ability attrs)
-      hasActionsRemaining <- getHasActionsRemaining
+      canAffordActions <- getCanAffordCost
         iid
-        Nothing
-        (setToList locationTraits)
+        (toSource attrs)
+        (ActionCost 1 Nothing locationTraits)
       canGainResources <-
         notElem CannotGainResources
           <$> getInvestigatorModifiers iid (toSource attrs)
@@ -54,7 +54,7 @@ instance ActionRunner env => HasActions env DowntownFirstBankOfArkham where
              && canGainResources
              && iid
              `member` locationInvestigators
-             && hasActionsRemaining
+             && canAffordActions
            ]
   getActions iid window (DowntownFirstBankOfArkham attrs) =
     getActions iid window attrs

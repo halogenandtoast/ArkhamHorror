@@ -23,7 +23,13 @@ spec = describe "\"Skids\" O'Toole" $ do
         (DuringTurn You)
         skidsOToole'
       game' <- runGameTestMessages game [buyAction]
-      withGame game' (getHasActionsRemaining (toId skidsOToole') Nothing mempty)
+      withGame
+          game'
+          (getCanAffordCost
+            (toId skidsOToole')
+            TestSource
+            (ActionCost 1 Nothing mempty)
+          )
         `shouldReturn` True
 
   context "elder sign" $ do

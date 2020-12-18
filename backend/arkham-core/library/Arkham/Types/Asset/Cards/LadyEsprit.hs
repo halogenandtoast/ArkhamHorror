@@ -29,17 +29,17 @@ instance HasModifiersFor env LadyEsprit where
 
 instance ActionRunner env => HasActions env LadyEsprit where
   getActions iid NonFast (LadyEsprit a@Attrs {..}) = do
-    hasActionsRemaining <- getHasActionsRemaining iid Nothing mempty
+    canAffordActions <- getCanAffordCost
+      iid
+      (toSource a)
+      (ActionCost 1 Nothing assetTraits)
     locationId <- getId @LocationId iid
     assetLocationId <- case assetInvestigator of
       Nothing -> pure $ fromJustNote "must be set" assetLocation
       Just iid' -> getId iid'
     pure
       [ ActivateCardAbilityAction iid (ability a)
-      | not assetExhausted
-        && locationId
-        == assetLocationId
-        && hasActionsRemaining
+      | not assetExhausted && locationId == assetLocationId && canAffordActions
       ]
   getActions _ _ _ = pure []
 

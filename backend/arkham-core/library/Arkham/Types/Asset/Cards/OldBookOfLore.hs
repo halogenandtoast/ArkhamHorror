@@ -19,15 +19,15 @@ instance HasModifiersFor env OldBookOfLore where
 
 instance ActionRunner env => HasActions env OldBookOfLore where
   getActions iid NonFast (OldBookOfLore a) | ownedBy a iid = do
-    hasActionsRemaining <- getHasActionsRemaining
+    canAffordActions <- getCanAffordCost
       iid
-      Nothing
-      (setToList $ assetTraits a)
+      (toSource a)
+      (ActionCost 1 Nothing (assetTraits a))
     pure
       [ ActivateCardAbilityAction
           iid
           (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
-      | not (assetExhausted a) && hasActionsRemaining
+      | not (assetExhausted a) && canAffordActions
       ]
   getActions _ _ _ = pure []
 

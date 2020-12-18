@@ -27,13 +27,13 @@ ability attrs =
 
 instance ActionRunner env => HasActions env Burglary where
   getActions iid NonFast (Burglary a) | ownedBy a iid = do
-    hasActionsRemaining <- getHasActionsRemaining
+    canAffordActions <- getCanAffordCost
       iid
-      (Just Action.Investigate)
-      (setToList $ assetTraits a)
+      (toSource a)
+      (ActionCost 1 (Just Action.Investigate) (assetTraits a))
     pure
       [ ActivateCardAbilityAction iid (ability a)
-      | not (assetExhausted a) && hasActionsRemaining
+      | not (assetExhausted a) && canAffordActions
       ]
   getActions _ _ _ = pure []
 

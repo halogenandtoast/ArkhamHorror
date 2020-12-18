@@ -21,18 +21,15 @@ instance HasModifiersFor env ScrollOfProphecies where
 
 instance ActionRunner env => HasActions env ScrollOfProphecies where
   getActions iid NonFast (ScrollOfProphecies a) | ownedBy a iid = do
-    hasActionsRemaining <- getHasActionsRemaining
+    canAffordActions <- getCanAffordCost
       iid
-      Nothing
-      (setToList $ assetTraits a)
+      (toSource a)
+      (ActionCost 1 Nothing (assetTraits a))
     pure
       [ ActivateCardAbilityAction
           iid
           (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
-      | not (assetExhausted a)
-        && hasActionsRemaining
-        && useCount (assetUses a)
-        > 0
+      | not (assetExhausted a) && canAffordActions && useCount (assetUses a) > 0
       ]
   getActions _ _ _ = pure []
 

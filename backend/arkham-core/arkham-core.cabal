@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.2.
 --
 -- see: https://github.com/sol/hpack
 --
@@ -105,6 +105,8 @@ library
       Arkham.Types.Asset.Cards.Hyperawareness2
       Arkham.Types.Asset.Cards.JennysTwin45s
       Arkham.Types.Asset.Cards.JimsTrumpet
+      Arkham.Types.Asset.Cards.KeenEye
+      Arkham.Types.Asset.Cards.KeenEye3
       Arkham.Types.Asset.Cards.Knife
       Arkham.Types.Asset.Cards.LadyEsprit
       Arkham.Types.Asset.Cards.LeatherCoat

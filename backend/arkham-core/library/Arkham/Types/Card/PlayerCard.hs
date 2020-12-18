@@ -58,6 +58,7 @@ data PlayerCard = MkPlayerCard
   , pcVictoryPoints :: Maybe Int
   , pcCommitRestrictions :: [CommitRestriction]
   , pcAttackOfOpportunityModifiers :: [AttackOfOpportunityModifier]
+  , pcPermanent :: Bool
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (Hashable)
@@ -116,6 +117,7 @@ basePlayerCard cardId cardCode name cost cardType classSymbol = MkPlayerCard
   , pcVictoryPoints = Nothing
   , pcCommitRestrictions = mempty
   , pcAttackOfOpportunityModifiers = mempty
+  , pcPermanent = False
   }
 
 asset :: CardId -> CardCode -> Text -> Int -> ClassSymbol -> PlayerCard
@@ -264,15 +266,17 @@ allPlayerCards = HashMap.fromList
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
   , ("02147", bandolier)
+  , ("02185", keenEye3)
   , ("03022", letMeHandleThis)
   , ("04023", toothOfEztli)
   , ("04149", secondWind)
   , ("04153", trueUnderstanding)
   , ("05316", occultLexicon)
   , ("05317", bloodRite)
+  , ("06023", astoundingRevelation)
   , ("06110", firstWatch)
   , ("06116", scrollOfProphecies)
-  , ("06023", astoundingRevelation)
+  , ("07152", keenEye)
   , ("50001", physicalTraining2)
   , ("50002", dynamiteBlast2)
   , ("50003", hyperawareness2)
@@ -1050,6 +1054,13 @@ bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)
   , pcTraits = setFromList [Item]
   }
 
+keenEye3 :: CardId -> PlayerCard
+keenEye3 cardId = (asset cardId "02185" "Keen Eye" 0 Guardian)
+  { pcTraits = setFromList [Talent]
+  , pcPermanent = True
+  , pcLevel = 3
+  }
+
 letMeHandleThis :: CardId -> PlayerCard
 letMeHandleThis cardId =
   (event cardId "03022" "\"Let me handle this!\"" 0 Guardian)
@@ -1115,6 +1126,13 @@ astoundingRevelation cardId =
     , pcFast = True
     , pcWindows = mempty -- cannot be played
     }
+
+keenEye :: CardId -> PlayerCard
+keenEye cardId = (asset cardId "02185" "Keen Eye" 2 Guardian)
+  { pcTraits = setFromList [Talent]
+  , pcSkills = [SkillIntellect, SkillCombat]
+  }
+
 
 litaChantler :: CardId -> PlayerCard
 litaChantler cardId = (asset cardId "01117" "Lita Chantler" 0 Neutral)

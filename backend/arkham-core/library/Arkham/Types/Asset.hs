@@ -82,9 +82,11 @@ data Asset
   | PeterSylvestre' PeterSylvestre
   | BrotherXavier1' BrotherXavier1
   | Bandolier' Bandolier
+  | KeenEye3' KeenEye3
   | ToothOfEztli' ToothOfEztli
   | OccultLexicon' OccultLexicon
   | ScrollOfProphecies' ScrollOfProphecies
+  | KeenEye' KeenEye
   | PhysicalTraining2' PhysicalTraining2
   | Hyperawareness2' Hyperawareness2
   | HardKnocks2' HardKnocks2
@@ -236,9 +238,11 @@ allAssets = mapFromList
   , ("02033", PeterSylvestre' . peterSylvestre)
   , ("02106", BrotherXavier1' . brotherXavier1)
   , ("02147", Bandolier' . bandolier)
+  , ("02185", KeenEye3' . keenEye3)
   , ("04023", ToothOfEztli' . toothOfEztli)
   , ("05316", OccultLexicon' . occultLexicon)
   , ("06116", ScrollOfProphecies' . scrollOfProphecies)
+  , ("07152", KeenEye' . keenEye)
   , ("50001", PhysicalTraining2' . physicalTraining2)
   , ("50003", Hyperawareness2' . hyperawareness2)
   , ("50005", HardKnocks2' . hardKnocks2)
@@ -325,9 +329,11 @@ assetAttrs = \case
   PeterSylvestre' attrs -> coerce attrs
   BrotherXavier1' attrs -> coerce attrs
   Bandolier' attrs -> coerce attrs
+  KeenEye3' attrs -> coerce attrs
   ToothOfEztli' attrs -> coerce attrs
   OccultLexicon' attrs -> coerce attrs
   ScrollOfProphecies' attrs -> coerce attrs
+  KeenEye' attrs -> coerce attrs
   PhysicalTraining2' attrs -> coerce attrs
   Hyperawareness2' attrs -> coerce attrs
   HardKnocks2' attrs -> coerce attrs

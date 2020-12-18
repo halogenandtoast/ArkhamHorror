@@ -3,8 +3,8 @@ module Arkham.Types.Treachery.Cards.Psychosis where
 
 import Arkham.Import
 
-import Arkham.Types.Action (Action)
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype Psychosis = Psychosis Attrs
@@ -17,12 +17,14 @@ instance HasModifiersFor env Psychosis where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Psychosis where
-  getActions iid NonFast (Psychosis Attrs {..}) =
+  getActions iid NonFast (Psychosis a@Attrs {..}) =
     case treacheryAttachedInvestigator of
       Nothing -> pure []
       Just tormented -> do
-        canActivate <- (>= 2) . unActionRemainingCount <$> getCount
-          (Nothing :: Maybe Action, setToList treacheryTraits, iid)
+        canActivate <- getCanAffordCost
+          iid
+          (toSource a)
+          (ActionCost 2 Nothing treacheryTraits)
         investigatorLocationId <- getId @LocationId iid
         treacheryLocation <- getId tormented
         pure

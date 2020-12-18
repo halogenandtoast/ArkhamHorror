@@ -1037,6 +1037,13 @@ baitAndSwitch cardId = (event cardId "02034" "Bait and Switch" 1 Survivor)
   , pcAction = Just Action.Evade
   }
 
+brotherXavier1 :: CardId -> PlayerCard
+brotherXavier1 cardId = (asset cardId "02106" "Brother Xavier" 5 Guardian)
+  { pcSkills = [SkillWillpower]
+  , pcTraits = setFromList [Ally]
+  , pcLevel = 1
+  }
+
 bandolier :: CardId -> PlayerCard
 bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillWild]

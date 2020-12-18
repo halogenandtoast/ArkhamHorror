@@ -146,8 +146,8 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
           else pure $ a & exhaustedL .~ False
       Nothing -> pure $ a & exhaustedL .~ False
     RemoveAllDoom -> pure $ a & doomL .~ 0
-    CheckDefeated ->
-      a <$ when (defeated a) (unshiftMessage (AssetDefeated assetId))
+    CheckDefeated -> a
+      <$ when (defeated a) (unshiftMessages $ resolve $ AssetDefeated assetId)
     AssetDamage aid _ health sanity | aid == assetId ->
       pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
     InvestigatorEliminated iid | assetInvestigator == Just iid ->

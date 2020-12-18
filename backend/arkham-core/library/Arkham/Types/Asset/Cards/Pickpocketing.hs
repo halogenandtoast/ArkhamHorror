@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.Pickpocketing where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype Pickpocketing = Pickpocketing Attrs
@@ -16,18 +17,18 @@ instance HasModifiersFor env Pickpocketing where
   getModifiersFor = noModifiersFor
 
 instance HasActions env Pickpocketing where
-  getActions iid window@(WhenEnemyEvaded You) (Pickpocketing a)
-    | ownedBy a iid = do
-      baseActions <- getActions iid window a
-      let ability = mkAbility (toSource a) 1 (ReactionAbility window)
-      pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction iid ability | not (assetExhausted a) ]
+  getActions iid window@(WhenEnemyEvaded You) (Pickpocketing a) =
+    withBaseActions iid window a $ do
+      let
+        ability = mkAbility
+          (toSource a)
+          1
+          (ReactionAbility window $ ExhaustCost (toTarget a))
+      pure [ ActivateCardAbilityAction iid ability | ownedBy a iid ]
   getActions i window (Pickpocketing a) = getActions i window a
 
 instance AssetRunner env => RunMessage env Pickpocketing where
-  runMessage msg (Pickpocketing attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
-      unshiftMessage (DrawCards iid 1 False)
-      pure $ Pickpocketing $ attrs & exhaustedL .~ True
+  runMessage msg a@(Pickpocketing attrs) = case msg of
+    UseCardAbility iid source _ 1 | isSource attrs source ->
+      a <$ unshiftMessage (DrawCards iid 1 False)
     _ -> Pickpocketing <$> runMessage msg attrs

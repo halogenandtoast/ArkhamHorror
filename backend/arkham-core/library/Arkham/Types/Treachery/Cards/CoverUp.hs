@@ -42,7 +42,7 @@ instance ActionRunner env => HasActions env CoverUp where
       pure
         [ ActivateCardAbilityAction
             iid
-            (mkAbility (toSource a) 1 (ReactionAbility window))
+            (mkAbility (toSource a) 1 (ReactionAbility window Free))
         | treacheryLocationId
           == investigatorLocationId
           && coverUpClues a

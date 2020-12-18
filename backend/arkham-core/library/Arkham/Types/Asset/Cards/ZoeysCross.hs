@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.ZoeysCross
   ( ZoeysCross(..)
   , zoeysCross
@@ -8,7 +9,6 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype ZoeysCross = ZoeysCross Attrs
@@ -22,13 +22,16 @@ instance HasModifiersFor env ZoeysCross where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> EnemyId -> Ability
-ability attrs eid = (mkAbility
-                      (toSource attrs)
-                      1
-                      (ReactionAbility (AfterEnemyEngageInvestigator You eid))
-                    )
-  { abilityMetadata = Just (TargetMetadata (EnemyTarget eid))
-  }
+ability attrs eid =
+  (mkAbility
+      (toSource attrs)
+      1
+      (ReactionAbility (AfterEnemyEngageInvestigator You eid)
+      $ Costs [ExhaustCost (toTarget attrs), ResourceCost 1]
+      )
+    )
+    { abilityMetadata = Just (TargetMetadata (EnemyTarget eid))
+    }
 
 instance ActionRunner env => HasActions env ZoeysCross where
   getActions iid (AfterEnemyEngageInvestigator You eid) (ZoeysCross a@Attrs {..})
@@ -36,11 +39,7 @@ instance ActionRunner env => HasActions env ZoeysCross where
     = do
       let ability' = (iid, ability a eid)
       unused <- notElem ability' . map unUsedAbility <$> getList ()
-      resourceCount <- getResourceCount iid
-      pure
-        [ uncurry ActivateCardAbilityAction ability'
-        | unused && resourceCount > 0
-        ]
+      pure [ uncurry ActivateCardAbilityAction ability' | unused ]
   getActions i window (ZoeysCross x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env ZoeysCross where

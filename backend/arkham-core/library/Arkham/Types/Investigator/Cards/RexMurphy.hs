@@ -42,7 +42,7 @@ instance ActionRunner env => HasActions env RexMurphy where
         ability = mkAbility
           (toSource attrs)
           1
-          (ReactionAbility (AfterPassSkillTest source You n))
+          (ReactionAbility (AfterPassSkillTest source You n) Free)
       clueCount' <- unClueCount <$> getCount investigatorLocation
       usedAbilities <- map unUsedAbility <$> getList ()
       pure

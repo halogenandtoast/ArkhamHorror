@@ -1342,7 +1342,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     case abilityType of
       ForcedAbility -> pure ()
       FastAbility _ cost -> unshiftMessage (PayAbilityCost iid Nothing cost)
-      ReactionAbility _ -> pure ()
+      ReactionAbility _ cost ->
+        unshiftMessage (PayAbilityCost iid Nothing cost)
       ActionAbility mAction cost ->
         if mAction
             `notElem` [ Just Action.Fight
@@ -1361,7 +1362,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       case abilityType of
         ForcedAbility -> pure ()
         FastAbility _ _ -> pure ()
-        ReactionAbility _ -> pure ()
+        ReactionAbility _ _ -> pure ()
         ActionAbility mAction cost ->
           if mAction
               `notElem` [ Just Action.Fight

@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.DrFrancisMorgan
   ( drFrancisMorgan
   , DrFrancisMorgan(..)
@@ -21,15 +22,14 @@ drFrancisMorgan uuid = DrFrancisMorgan $ (baseAttrs uuid "02080")
   }
 
 ability :: Attrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (ReactionAbility (AfterEnemyDefeated You))
+ability attrs = mkAbility
+  (toSource attrs)
+  1
+  (ReactionAbility (AfterEnemyDefeated You) $ ExhaustCost (toTarget attrs))
 
 instance HasActions env DrFrancisMorgan where
-  getActions iid (AfterEnemyDefeated You) (DrFrancisMorgan attrs)
-    | ownedBy attrs iid = pure
-      [ ActivateCardAbilityAction iid (ability attrs)
-      | not (assetExhausted attrs)
-      ]
+  getActions iid (AfterEnemyDefeated You) (DrFrancisMorgan attrs) =
+    pure [ ActivateCardAbilityAction iid (ability attrs) | ownedBy attrs iid ]
   getActions iid window (DrFrancisMorgan attrs) = getActions iid window attrs
 
 instance HasModifiersFor env DrFrancisMorgan where
@@ -38,8 +38,7 @@ instance HasModifiersFor env DrFrancisMorgan where
   getModifiersFor _ _ _ = pure []
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env DrFrancisMorgan where
-  runMessage msg (DrFrancisMorgan attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
-      unshiftMessage (DrawCards iid 1 False)
-      pure $ DrFrancisMorgan $ attrs & exhaustedL .~ True
+  runMessage msg a@(DrFrancisMorgan attrs) = case msg of
+    UseCardAbility iid source _ 1 | isSource attrs source ->
+      a <$ unshiftMessage (DrawCards iid 1 False)
     _ -> DrFrancisMorgan <$> runMessage msg attrs

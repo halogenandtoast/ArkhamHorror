@@ -25,11 +25,19 @@ whittonGreene uuid = WhittonGreene $ (baseAttrs uuid "60213")
 instance HasActions env WhittonGreene where
   getActions iid window@(AfterRevealLocation You) (WhittonGreene a)
     | ownedBy a iid = do
-      let ability = mkAbility (toSource a) 1 (ReactionAbility window)
+      let
+        ability = mkAbility
+          (toSource a)
+          1
+          (ReactionAbility window $ ExhaustCost (toTarget a))
       pure [ ActivateCardAbilityAction iid ability | not (assetExhausted a) ]
   getActions iid window@(AfterPutLocationIntoPlay You) (WhittonGreene a)
     | ownedBy a iid = do
-      let ability = mkAbility (toSource a) 1 (ReactionAbility window)
+      let
+        ability = mkAbility
+          (toSource a)
+          1
+          (ReactionAbility window $ ExhaustCost (toTarget a))
       pure [ ActivateCardAbilityAction iid ability | not (assetExhausted a) ]
   getActions iid window (WhittonGreene attrs) = getActions iid window attrs
 
@@ -41,15 +49,13 @@ instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor en
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env WhittonGreene where
-  runMessage msg (WhittonGreene attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
-      unshiftMessage
-        (SearchTopOfDeck
-          iid
-          (InvestigatorTarget iid)
-          6
-          [Tome, Relic]
-          ShuffleBackIn
-        )
-      pure . WhittonGreene $ attrs & exhaustedL .~ True
+  runMessage msg a@(WhittonGreene attrs@Attrs {..}) = case msg of
+    UseCardAbility iid source _ 1 | isSource attrs source -> a <$ unshiftMessage
+      (SearchTopOfDeck
+        iid
+        (InvestigatorTarget iid)
+        6
+        [Tome, Relic]
+        ShuffleBackIn
+      )
     _ -> WhittonGreene <$> runMessage msg attrs

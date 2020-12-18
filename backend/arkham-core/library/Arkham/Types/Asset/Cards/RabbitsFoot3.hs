@@ -21,22 +21,24 @@ instance HasModifiersFor env RabbitsFoot3 where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Int -> Ability
-ability attrs n =
-  (mkAbility (toSource attrs) 1 (ReactionAbility (AfterFailSkillTest You n)))
-    { abilityMetadata = Just (IntMetadata n)
-    }
+ability attrs n = (mkAbility
+                    (toSource attrs)
+                    1
+                    (ReactionAbility (AfterFailSkillTest You n)
+                    $ ExhaustCost (toTarget attrs)
+                    )
+                  )
+  { abilityMetadata = Just (IntMetadata n)
+  }
 
 instance HasActions env RabbitsFoot3 where
   getActions iid (AfterFailSkillTest You n) (RabbitsFoot3 a) | ownedBy a iid =
-    pure
-      [ ActivateCardAbilityAction iid (ability a n) | not (assetExhausted a) ]
+    pure [ActivateCardAbilityAction iid (ability a n)]
   getActions i window (RabbitsFoot3 x) = getActions i window x
 
 instance AssetRunner env => RunMessage env RabbitsFoot3 where
-  runMessage msg (RabbitsFoot3 attrs) = case msg of
+  runMessage msg a@(RabbitsFoot3 attrs) = case msg of
     UseCardAbility iid source (Just (IntMetadata x)) 1
-      | isSource attrs source -> do
-        unshiftMessage
-          (SearchTopOfDeck iid (InvestigatorTarget iid) x mempty ShuffleBackIn)
-        pure $ RabbitsFoot3 $ attrs & exhaustedL .~ True
+      | isSource attrs source -> a <$ unshiftMessage
+        (SearchTopOfDeck iid (InvestigatorTarget iid) x mempty ShuffleBackIn)
     _ -> RabbitsFoot3 <$> runMessage msg attrs

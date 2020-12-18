@@ -184,7 +184,7 @@ export default defineComponent({
     })
 
     function abilityLabel(idx: number) {
-      return choices.value[idx].contents[1].type.contents[1];
+      return choices.value[idx].contents[1].type.contents[0];
     }
 
     const abilities = computed(() => {
@@ -224,11 +224,11 @@ export default defineComponent({
     const portrait = (cardCode: string) => `/img/arkham/portraits/${cardCode}.jpg`
 
     function singleAction(idx: number) {
-      return choices.value[idx].contents[1].type.contents[0] == 1
+      return choices.value[idx].contents[1].type.contents[1].contents == 1
     }
 
     function doubleAction(idx: number) {
-      return choices.value[idx].contents[1].type.contents[0] == 2
+      return choices.value[idx].contents[1].type.contents[1].contents == 2
     }
 
     return {

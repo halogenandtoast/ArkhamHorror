@@ -198,6 +198,9 @@ instance HasCount CardCount env Investigator where
 instance HasCount ClueCount env Investigator where
   getCount = pure . ClueCount . investigatorClues . investigatorAttrs
 
+instance HasCount DamageCount env Investigator where
+  getCount = pure . DamageCount . investigatorHealthDamage . investigatorAttrs
+
 getInvestigatorSpendableClueCount
   :: (MonadReader env m, HasModifiersFor env ())
   => Investigator

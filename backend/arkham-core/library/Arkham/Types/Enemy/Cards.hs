@@ -39,6 +39,7 @@ import Arkham.Types.Enemy.Cards.TheMaskedHunter as X
 import Arkham.Types.Enemy.Cards.TheRougarou as X
 import Arkham.Types.Enemy.Cards.Umordhoth as X
 import Arkham.Types.Enemy.Cards.VictoriaDevereux as X
+import Arkham.Types.Enemy.Cards.Whippoorwill as X
 import Arkham.Types.Enemy.Cards.WizardOfTheOrder as X
 import Arkham.Types.Enemy.Cards.WolfManDrew as X
 import Arkham.Types.Enemy.Cards.YithianObserver as X

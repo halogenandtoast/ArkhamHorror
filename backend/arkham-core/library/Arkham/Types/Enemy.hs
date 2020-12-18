@@ -45,6 +45,7 @@ data Enemy
   | RelentlessDarkYoung' RelentlessDarkYoung
   | GoatSpawn' GoatSpawn
   | YoungDeepOne' YoungDeepOne
+  | Whippoorwill' Whippoorwill
   | CorpseHungryGhoul' CorpseHungryGhoul
   | GhoulFromTheDepths' GhoulFromTheDepths
   | Narogath' Narogath
@@ -173,7 +174,9 @@ instance HasDamage Enemy where
   getDamage = (, 0) . enemyDamage . enemyAttrs
 
 lookupEnemy :: CardCode -> (EnemyId -> Enemy)
-lookupEnemy = fromJustNote "Unkown enemy" . flip lookup allEnemies
+lookupEnemy cardCode =
+  fromJustNote ("Unknown enemy: " <> pack (show cardCode))
+    $ lookup cardCode allEnemies
 
 allEnemies :: HashMap CardCode (EnemyId -> Enemy)
 allEnemies = mapFromList
@@ -201,6 +204,7 @@ allEnemies = mapFromList
   , ("01179", RelentlessDarkYoung' . relentlessDarkYoung)
   , ("01180", GoatSpawn' . goatSpawn)
   , ("01181", YoungDeepOne' . youngDeepOne)
+  , ("02090", Whippoorwill' . whippoorwill)
   , ("50022", CorpseHungryGhoul' . corpseHungryGhoul)
   , ("50023", GhoulFromTheDepths' . ghoulFromTheDepths)
   , ("50026b", Narogath' . narogath)
@@ -270,6 +274,7 @@ enemyAttrs = \case
   RelentlessDarkYoung' attrs -> coerce attrs
   GoatSpawn' attrs -> coerce attrs
   YoungDeepOne' attrs -> coerce attrs
+  Whippoorwill' attrs -> coerce attrs
   CorpseHungryGhoul' attrs -> coerce attrs
   GhoulFromTheDepths' attrs -> coerce attrs
   Narogath' attrs -> coerce attrs

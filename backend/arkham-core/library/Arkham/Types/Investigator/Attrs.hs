@@ -1188,6 +1188,15 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       & (endedTurnL .~ False)
       & (remainingActionsL .~ actionsForTurn)
       & (actionsTakenL .~ mempty)
+  DiscardTopOfDeck iid 0 _ | iid == investigatorId -> pure a
+  DiscardTopOfDeck iid n target | iid == investigatorId ->
+    case unDeck investigatorDeck of
+      [] -> pure a
+      (c : deck') -> do
+        unshiftMessages
+          $ [ DeckHasNoCards investigatorId | null deck' ]
+          <> [DiscardTopOfDeck iid (n - 1) target]
+        pure $ a & deckL .~ Deck deck' & discardL %~ (c :)
   DrawCards iid n True | iid == investigatorId -> a <$ unshiftMessages
     [ TakeAction iid 1 (Just Action.Draw)
     , CheckAttackOfOpportunity iid False
@@ -1198,8 +1207,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     if null (unDeck investigatorDeck)
       then if null investigatorDiscard
         then pure a
-        else a
-          <$ unshiftMessages [ShuffleDiscardBackIn iid, DrawCards iid n False]
+        else a <$ unshiftMessages [EmptyDeck iid, DrawCards iid n False]
       else do
         let
           (mcard, deck) = drawCard (coerce investigatorDeck)
@@ -1216,7 +1224,9 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
                 (toPlayerCardWithBehavior card)
               )
           Nothing -> pure ()
-        unshiftMessage (DrawCards iid (n - 1) False)
+        unshiftMessages
+          $ [ DeckHasNoCards iid | null deck ]
+          <> [DrawCards iid (n - 1) False]
         pure $ a & handL %~ handUpdate & deckL .~ Deck deck
   InvestigatorSpendClues iid n | iid == investigatorId -> pure $ a & cluesL -~ n
   SpendResources iid n | iid == investigatorId ->

@@ -107,7 +107,7 @@ allEncounterCards = HashMap.fromList
   , ("01180", goatSpawn)
   , ("01181", youngDeepOne)
   , ("01182", dreamsOfRlyeh)
-  , ("02083", visionsOfFuturePast)
+  , ("02083", visionsOfFuturesPast)
   , ("02084", beyondTheVeil)
   , ("02085", lightOfAforgomon)
   , ("02086", thrall)
@@ -368,11 +368,11 @@ dreamsOfRlyeh cardId = (treachery cardId "01182" "Dreams of R'lyeh")
   { ecTraits = setFromList [Omen]
   }
 
-visionsOfFuturePast :: CardId -> EncounterCard
-visionsOfFuturePast cardId = (treachery cardId "02083" "Visions of Future Past"
-                             )
-  { ecTraits = setFromList [Hex]
-  }
+visionsOfFuturesPast :: CardId -> EncounterCard
+visionsOfFuturesPast cardId =
+  (treachery cardId "02083" "Visions of Futures Past")
+    { ecTraits = setFromList [Hex]
+    }
 
 beyondTheVeil :: CardId -> EncounterCard
 beyondTheVeil cardId = (treachery cardId "02084" "Beyond the Veil")

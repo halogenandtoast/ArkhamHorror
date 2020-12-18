@@ -8,6 +8,7 @@ import Arkham.Types.Treachery.Cards.Amnesia as X
 import Arkham.Types.Treachery.Cards.AncientEvils as X
 import Arkham.Types.Treachery.Cards.Atychiphobia as X
 import Arkham.Types.Treachery.Cards.BeastOfTheBayou as X
+import Arkham.Types.Treachery.Cards.BeyondTheVeil as X
 import Arkham.Types.Treachery.Cards.ChillFromBelow as X
 import Arkham.Types.Treachery.Cards.CoverUp as X
 import Arkham.Types.Treachery.Cards.CryptChill as X
@@ -47,4 +48,5 @@ import Arkham.Types.Treachery.Cards.TheZealotsSeal as X
 import Arkham.Types.Treachery.Cards.UmordhothsHunger as X
 import Arkham.Types.Treachery.Cards.UmordhothsWrath as X
 import Arkham.Types.Treachery.Cards.VaultOfEarthlyDemise as X
+import Arkham.Types.Treachery.Cards.VisionsOfFuturesPast as X
 import Arkham.Types.Treachery.Cards.WrackedByNightmares as X

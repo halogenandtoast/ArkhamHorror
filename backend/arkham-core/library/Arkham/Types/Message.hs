@@ -215,6 +215,7 @@ data Message
   | PerformEnemyAttack InvestigatorId EnemyId
   | InvestigatorDrawEncounterCard InvestigatorId
   | InvestigatorDrewEncounterCard InvestigatorId EncounterCard
+  | InvestigatorDrewPlayerCard InvestigatorId PlayerCard
   | InvestigatorDrawEnemy InvestigatorId LocationId EnemyId
   | EnemySpawn (Maybe InvestigatorId) LocationId EnemyId
   | EnemySpawnAtLocationNamed (Maybe InvestigatorId) LocationName EnemyId

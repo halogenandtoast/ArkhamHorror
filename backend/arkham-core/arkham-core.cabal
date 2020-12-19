@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2214e524ff74288d367fb3c386db4a377d245f1102da28add3b4581f84cbdc46
+-- hash: ed45dd4909eb1604d13a1759bac6764d08a8cf36fa0fc8ebbeb323f5e20c98c4
 
 name:           arkham-core
 version:        0.0.0
@@ -242,10 +242,12 @@ library
       Arkham.Types.Enemy.Cards.SwarmOfRats
       Arkham.Types.Enemy.Cards.TheMaskedHunter
       Arkham.Types.Enemy.Cards.TheRougarou
+      Arkham.Types.Enemy.Cards.Thrall
       Arkham.Types.Enemy.Cards.Umordhoth
       Arkham.Types.Enemy.Cards.VictoriaDevereux
       Arkham.Types.Enemy.Cards.Whippoorwill
       Arkham.Types.Enemy.Cards.WizardOfTheOrder
+      Arkham.Types.Enemy.Cards.WizardOfYogSothoth
       Arkham.Types.Enemy.Cards.WolfManDrew
       Arkham.Types.Enemy.Cards.YithianObserver
       Arkham.Types.Enemy.Cards.YoungDeepOne

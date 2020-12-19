@@ -45,6 +45,8 @@ data Enemy
   | RelentlessDarkYoung' RelentlessDarkYoung
   | GoatSpawn' GoatSpawn
   | YoungDeepOne' YoungDeepOne
+  | Thrall' Thrall
+  | WizardOfYogSothoth' WizardOfYogSothoth
   | Whippoorwill' Whippoorwill
   | CorpseHungryGhoul' CorpseHungryGhoul
   | GhoulFromTheDepths' GhoulFromTheDepths
@@ -204,6 +206,8 @@ allEnemies = mapFromList
   , ("01179", RelentlessDarkYoung' . relentlessDarkYoung)
   , ("01180", GoatSpawn' . goatSpawn)
   , ("01181", YoungDeepOne' . youngDeepOne)
+  , ("02086", Thrall' . thrall)
+  , ("02087", WizardOfYogSothoth' . wizardOfYogSothoth)
   , ("02090", Whippoorwill' . whippoorwill)
   , ("50022", CorpseHungryGhoul' . corpseHungryGhoul)
   , ("50023", GhoulFromTheDepths' . ghoulFromTheDepths)
@@ -274,6 +278,8 @@ enemyAttrs = \case
   RelentlessDarkYoung' attrs -> coerce attrs
   GoatSpawn' attrs -> coerce attrs
   YoungDeepOne' attrs -> coerce attrs
+  Thrall' attrs -> coerce attrs
+  WizardOfYogSothoth' attrs -> coerce attrs
   Whippoorwill' attrs -> coerce attrs
   CorpseHungryGhoul' attrs -> coerce attrs
   GhoulFromTheDepths' attrs -> coerce attrs

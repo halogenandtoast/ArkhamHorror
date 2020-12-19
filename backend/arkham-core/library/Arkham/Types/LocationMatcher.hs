@@ -1,6 +1,6 @@
 module Arkham.Types.LocationMatcher where
 
-import ClassyPrelude
+import Arkham.Prelude
 
 import Arkham.Types.LocationId
 import Data.Aeson

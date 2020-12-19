@@ -20,6 +20,15 @@ toFst f a = (f a, a)
 toSnd :: (a -> b) -> a -> (a, b)
 toSnd f a = (a, f a)
 
+traverseToSnd :: Functor m => (a -> m b) -> a -> m (a, b)
+traverseToSnd f a = (a, ) <$> f a
+
+maxes :: [(a, Int)] -> [a]
+maxes ps = case sortedPairs of
+  [] -> []
+  ((_, c) : _) -> map fst $ takeWhile ((== c) . snd) sortedPairs
+  where sortedPairs = sortOn (Down . snd) ps
+
 concatMapM'
   :: (Monad m, MonoFoldable mono) => (Element mono -> m [b]) -> mono -> m [b]
 concatMapM' f xs = concatMapM f (toList xs)

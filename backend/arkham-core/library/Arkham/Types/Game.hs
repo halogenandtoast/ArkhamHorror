@@ -83,6 +83,7 @@ type GameMode = These Campaign Scenario
 data Game queue = Game
   { gameMessages :: queue
   , gameRoundMessageHistory :: queue
+  , gamePhaseMessageHistory :: queue
   , gameSeed :: Int
   , gameHash :: UUID
 
@@ -147,6 +148,7 @@ instance (ToJSON queue) => ToJSON (Game queue) where
   toJSON g@Game {..} = object
     [ "messages" .= toJSON gameMessages
     , "roundMessageHistory" .= toJSON gameRoundMessageHistory
+    , "phaseMessageHistory" .= toJSON gamePhaseMessageHistory
     , "seed" .= toJSON gameSeed
     , "hash" .= toJSON gameHash
     , "mode" .= toJSON gameMode
@@ -398,9 +400,11 @@ newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
     <> [StartCampaign]
 
   roundHistory <- newIORef []
+  phaseHistory <- newIORef []
   pure $ Game
     { gameMessages = ref
     , gameRoundMessageHistory = roundHistory
+    , gamePhaseMessageHistory = phaseHistory
     , gameSeed = seed
     , gameMode = mode'
     , gamePlayerCount = playerCount'
@@ -508,6 +512,15 @@ instance HasSet ClosestPathLocationId (Game queue) (LocationId, LocationName) wh
       . find ((== locationName) . getLocationName)
       . toList
       <$> view locations
+
+instance HasSet StoryAssetId (Game queue) InvestigatorId where
+  getSet iid = do
+    assetIds <- getSet =<< getInvestigator iid
+    setFromList
+      . map (StoryAssetId . toId)
+      . filter (\a -> toId a `member` assetIds && isStory a)
+      . toList
+      <$> view assets
 
 instance HasId (Maybe StoryAssetId) (Game queue) CardCode where
   getId cardCode = fmap StoryAssetId <$> getId cardCode
@@ -780,6 +793,9 @@ instance HasList DiscardedPlayerCard (Game queue) InvestigatorId where
 
 instance HasRoundHistory (Game (IORef [Message])) where
   getRoundHistory = readIORef . gameRoundMessageHistory
+
+instance HasPhaseHistory (Game (IORef [Message])) where
+  getPhaseHistory = readIORef . gamePhaseMessageHistory
 
 instance HasList Location (Game queue) () where
   getList _ = toList <$> view locations
@@ -2065,6 +2081,7 @@ runGameMessage msg g = case msg of
   EndTurn iid -> pure $ g & usedAbilities %~ filter
     (\(iid', Ability {..}) -> iid' /= iid && abilityLimit /= PerTurn)
   EndInvestigation -> do
+    atomicWriteIORef (gamePhaseMessageHistory g) []
     unshiftMessage EndPhase
     pushMessage BeginEnemy
     pure $ g & usedAbilities %~ filter
@@ -2077,6 +2094,7 @@ runGameMessage msg g = case msg of
       <> [HuntersMove, EnemiesAttack, EndEnemy]
     pure $ g & phase .~ EnemyPhase
   EndEnemy -> do
+    atomicWriteIORef (gamePhaseMessageHistory g) []
     unshiftMessage EndPhase
     pushMessage BeginUpkeep
     pure $ g & usedAbilities %~ filter
@@ -2089,6 +2107,7 @@ runGameMessage msg g = case msg of
       <> [ReadyExhausted, AllDrawCardAndResource, AllCheckHandSize, EndUpkeep]
     pure $ g & phase .~ UpkeepPhase
   EndUpkeep -> do
+    atomicWriteIORef (gamePhaseMessageHistory g) []
     unshiftMessage EndPhase
     pushMessages [EndRoundWindow, EndRound]
     pure $ g & usedAbilities %~ filter
@@ -2117,6 +2136,7 @@ runGameMessage msg g = case msg of
     g <$ unshiftMessages
       [ chooseOne iid [InvestigatorDrawEncounterCard iid] | iid <- playerIds ]
   EndMythos -> do
+    atomicWriteIORef (gamePhaseMessageHistory g) []
     unshiftMessage EndPhase
     pushMessage BeginInvestigation
     pure $ g & usedAbilities %~ filter
@@ -2446,10 +2466,12 @@ toExternalGame
 toExternalGame g@Game {..} mq = do
   queue <- readIORef gameMessages
   roundHistory <- readIORef gameRoundMessageHistory
+  phaseHistory <- readIORef gamePhaseMessageHistory
   hash' <- liftIO nextRandom
   pure $ g
     { gameMessages = queue
     , gameRoundMessageHistory = roundHistory
+    , gamePhaseMessageHistory = phaseHistory
     , gameHash = hash'
     , gameQuestion = mq
     }
@@ -2458,7 +2480,12 @@ toInternalGame :: MonadIO m => GameExternal -> m GameInternal
 toInternalGame g@Game {..} = do
   ref <- newIORef gameMessages
   roundHistory <- newIORef gameRoundMessageHistory
-  pure $ g { gameMessages = ref, gameRoundMessageHistory = roundHistory }
+  phaseHistory <- newIORef gamePhaseMessageHistory
+  pure $ g
+    { gameMessages = ref
+    , gameRoundMessageHistory = roundHistory
+    , gamePhaseMessageHistory = phaseHistory
+    }
 
 runMessages
   :: (MonadIO m, MonadFail m)
@@ -2472,9 +2499,13 @@ runMessages logger g = if g ^. gameStateL /= IsActive
       (isJust <$> lookupEnv "DEBUG")
       (readIORef (gameMessages g) >>= pPrint >> putStrLn "\n")
     mmsg <- popMessage
-    for_ mmsg $ \msg -> atomicModifyIORef'
-      (gameRoundMessageHistory g)
-      (\queue -> (msg : queue, ()))
+    for_ mmsg $ \msg -> do
+      atomicModifyIORef'
+        (gameRoundMessageHistory g)
+        (\queue -> (msg : queue, ()))
+      atomicModifyIORef'
+        (gamePhaseMessageHistory g)
+        (\queue -> (msg : queue, ()))
     case mmsg of
       Nothing -> case gamePhase g of
         CampaignPhase -> toExternalGame g mempty

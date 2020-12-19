@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ed45dd4909eb1604d13a1759bac6764d08a8cf36fa0fc8ebbeb323f5e20c98c4
+-- hash: 738040cdff8e8b4f063a86d51a7ccfef46c5fee8284e663bc022f2139404573c
 
 name:           arkham-core
 version:        0.0.0
@@ -198,6 +198,7 @@ library
       Arkham.Types.Effect.Effects.MindWipe3
       Arkham.Types.Effect.Effects.OnTheLam
       Arkham.Types.Effect.Effects.PhaseEffect
+      Arkham.Types.Effect.Effects.PushedIntoTheBeyond
       Arkham.Types.Effect.Effects.Shrivelling
       Arkham.Types.Effect.Effects.SkillTestEffect
       Arkham.Types.Effect.Effects.SureGamble3
@@ -478,6 +479,7 @@ library
       Arkham.Types.Treachery.Cards.AbandonedAndAlone
       Arkham.Types.Treachery.Cards.Amnesia
       Arkham.Types.Treachery.Cards.AncientEvils
+      Arkham.Types.Treachery.Cards.ArcaneBarrier
       Arkham.Types.Treachery.Cards.Atychiphobia
       Arkham.Types.Treachery.Cards.BeastOfTheBayou
       Arkham.Types.Treachery.Cards.BeyondTheVeil
@@ -510,12 +512,14 @@ library
       Arkham.Types.Treachery.Cards.OnWingsOfDarkness
       Arkham.Types.Treachery.Cards.Paranoia
       Arkham.Types.Treachery.Cards.Psychosis
+      Arkham.Types.Treachery.Cards.PushedIntoTheBeyond
       Arkham.Types.Treachery.Cards.RexsCurse
       Arkham.Types.Treachery.Cards.RipplesOnTheSurface
       Arkham.Types.Treachery.Cards.RottingRemains
       Arkham.Types.Treachery.Cards.SearchingForIzzie
       Arkham.Types.Treachery.Cards.SmiteTheWicked
       Arkham.Types.Treachery.Cards.SpectralMist
+      Arkham.Types.Treachery.Cards.TerrorFromBeyond
       Arkham.Types.Treachery.Cards.TheYellowSign
       Arkham.Types.Treachery.Cards.TheZealotsSeal
       Arkham.Types.Treachery.Cards.UmordhothsHunger

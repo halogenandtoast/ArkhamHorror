@@ -21,6 +21,7 @@ import Arkham.Types.Effect.Effects.MindWipe1 as X
 import Arkham.Types.Effect.Effects.MindWipe3 as X
 import Arkham.Types.Effect.Effects.OnTheLam as X
 import Arkham.Types.Effect.Effects.PhaseEffect as X
+import Arkham.Types.Effect.Effects.PushedIntoTheBeyond as X
 import Arkham.Types.Effect.Effects.Shrivelling as X
 import Arkham.Types.Effect.Effects.SkillTestEffect as X
 import Arkham.Types.Effect.Effects.SureGamble3 as X

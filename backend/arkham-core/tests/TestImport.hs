@@ -312,10 +312,12 @@ newGame :: MonadIO m => Investigator -> [Message] -> m GameInternal
 newGame investigator queue = do
   ref <- newIORef queue
   roundHistory <- newIORef []
+  phaseHistory <- newIORef []
   scenario' <- testScenario "00000" id
   pure $ Game
     { gameMessages = ref
     , gameRoundMessageHistory = roundHistory
+    , gamePhaseMessageHistory = phaseHistory
     , gameSeed = 1
     , gameMode = That scenario'
     , gamePlayerCount = 1

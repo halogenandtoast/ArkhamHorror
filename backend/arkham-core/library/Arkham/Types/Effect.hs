@@ -28,6 +28,7 @@ data Effect
   | SureGamble3' SureGamble3
   | ArkhamWoodsTwistingPaths' ArkhamWoodsTwistingPaths
   | HuntingNightgaunt' HuntingNightgaunt
+  | PushedIntoTheBeyond' PushedIntoTheBeyond
   | LetMeHandleThis' LetMeHandleThis
   | MindWipe3' MindWipe3
   | JeremiahPierce' JeremiahPierce
@@ -73,6 +74,7 @@ allEffects = mapFromList
   , ("01088", SureGamble3' . sureGamble3)
   , ("01151", ArkhamWoodsTwistingPaths' . arkhamWoodsTwistingPaths)
   , ("01172", HuntingNightgaunt' . huntingNightgaunt)
+  , ("02100", PushedIntoTheBeyond' . pushedIntoTheBeyond)
   , ("03022", LetMeHandleThis' . letMeHandleThis)
   , ("50008", MindWipe3' . mindWipe3)
   , ("50044", JeremiahPierce' . jeremiahPierce)

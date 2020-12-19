@@ -185,6 +185,9 @@ class HasSource b a where
 class HasRoundHistory a where
   getRoundHistory :: MonadIO m => a -> m [Message]
 
+class HasPhaseHistory a where
+  getPhaseHistory :: MonadIO m => a -> m [Message]
+
 class HasTarget b a where
   getTarget :: b -> a -> Maybe Target
 

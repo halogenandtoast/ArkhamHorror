@@ -12,7 +12,8 @@ newtype MonstrousTransformation = MonstrousTransformation Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 monstrousTransformation :: AssetId -> MonstrousTransformation
-monstrousTransformation uuid = MonstrousTransformation $ baseAttrs uuid "81030"
+monstrousTransformation uuid =
+  MonstrousTransformation $ (baseAttrs uuid "81030") { assetIsStory = True }
 
 instance HasModifiersFor env MonstrousTransformation where
   getModifiersFor _ (InvestigatorTarget iid) (MonstrousTransformation a)

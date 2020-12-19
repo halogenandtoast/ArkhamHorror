@@ -49,6 +49,9 @@ data Treachery
   | BeyondTheVeil' BeyondTheVeil
   | LightOfAforgomon' LightOfAforgomon
   | EagerForDeath' EagerForDeath
+  | PushedIntoTheBeyond' PushedIntoTheBeyond
+  | TerrorFromBeyond' TerrorFromBeyond
+  | ArcaneBarrier' ArcaneBarrier
   | TheZealotsSeal' TheZealotsSeal
   | MaskedHorrors' MaskedHorrors
   | VaultOfEarthlyDemise' VaultOfEarthlyDemise
@@ -141,6 +144,9 @@ allTreacheries = mapFromList
   , ("02084", (BeyondTheVeil' .) . beyondTheVeil)
   , ("02085", (LightOfAforgomon' .) . lightOfAforgomon)
   , ("02091", (EagerForDeath' .) . eagerForDeath)
+  , ("02100", (PushedIntoTheBeyond' .) . pushedIntoTheBeyond)
+  , ("02101", (TerrorFromBeyond' .) . terrorFromBeyond)
+  , ("02102", (ArcaneBarrier' .) . arcaneBarrier)
   , ("50024", (TheZealotsSeal' .) . theZealotsSeal)
   , ("50031", (MaskedHorrors' .) . maskedHorrors)
   , ("50032b", (VaultOfEarthlyDemise' .) . vaultOfEarthlyDemise)
@@ -202,6 +208,9 @@ treacheryAttrs = \case
   BeyondTheVeil' attrs -> coerce attrs
   LightOfAforgomon' attrs -> coerce attrs
   EagerForDeath' attrs -> coerce attrs
+  PushedIntoTheBeyond' attrs -> coerce attrs
+  TerrorFromBeyond' attrs -> coerce attrs
+  ArcaneBarrier' attrs -> coerce attrs
   TheZealotsSeal' attrs -> coerce attrs
   MaskedHorrors' attrs -> coerce attrs
   VaultOfEarthlyDemise' attrs -> coerce attrs

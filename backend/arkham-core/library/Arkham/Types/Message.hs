@@ -9,6 +9,7 @@ module Arkham.Types.Message
   , messageType
   , chooseOne
   , chooseOneAtATime
+  , chooseN
   , resolve
   , story
   )
@@ -446,6 +447,9 @@ chooseOne iid msgs = Ask iid (ChooseOne msgs)
 
 chooseOneAtATime :: InvestigatorId -> [Message] -> Message
 chooseOneAtATime iid msgs = Ask iid (ChooseOneAtATime msgs)
+
+chooseN :: InvestigatorId -> Int -> [Message] -> Message
+chooseN iid n msgs = Ask iid (ChooseN n msgs)
 
 data Question
   = ChooseOne [Message]

@@ -6,6 +6,7 @@ where
 import Arkham.Types.Treachery.Cards.AbandonedAndAlone as X
 import Arkham.Types.Treachery.Cards.Amnesia as X
 import Arkham.Types.Treachery.Cards.AncientEvils as X
+import Arkham.Types.Treachery.Cards.ArcaneBarrier as X
 import Arkham.Types.Treachery.Cards.Atychiphobia as X
 import Arkham.Types.Treachery.Cards.BeastOfTheBayou as X
 import Arkham.Types.Treachery.Cards.BeyondTheVeil as X
@@ -38,12 +39,14 @@ import Arkham.Types.Treachery.Cards.OnTheProwl as X
 import Arkham.Types.Treachery.Cards.OnWingsOfDarkness as X
 import Arkham.Types.Treachery.Cards.Paranoia as X
 import Arkham.Types.Treachery.Cards.Psychosis as X
+import Arkham.Types.Treachery.Cards.PushedIntoTheBeyond as X
 import Arkham.Types.Treachery.Cards.RexsCurse as X
 import Arkham.Types.Treachery.Cards.RipplesOnTheSurface as X
 import Arkham.Types.Treachery.Cards.RottingRemains as X
 import Arkham.Types.Treachery.Cards.SearchingForIzzie as X
 import Arkham.Types.Treachery.Cards.SmiteTheWicked as X
 import Arkham.Types.Treachery.Cards.SpectralMist as X
+import Arkham.Types.Treachery.Cards.TerrorFromBeyond as X
 import Arkham.Types.Treachery.Cards.TheYellowSign as X
 import Arkham.Types.Treachery.Cards.TheZealotsSeal as X
 import Arkham.Types.Treachery.Cards.UmordhothsHunger as X

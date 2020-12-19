@@ -1232,6 +1232,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
           Nothing -> pure ()
         unshiftMessages
           $ [ DeckHasNoCards iid | null deck ]
+          <> [ InvestigatorDrewPlayerCard iid card | card <- maybeToList mcard ]
           <> [DrawCards iid (n - 1) False]
         pure $ a & handL %~ handUpdate & deckL .~ Deck deck
   InvestigatorSpendClues iid n | iid == investigatorId -> pure $ a & cluesL -~ n

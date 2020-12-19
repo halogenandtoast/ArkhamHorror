@@ -40,42 +40,33 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
         (TreacheryCardCode treacheryCardCode)
       targetLocations <-
         setToList . (`difference` exemptLocations) <$> getSet @LocationId ()
-      locationsWithClueCounts <- for targetLocations
-        $ \lid -> (lid, ) . unClueCount <$> getCount lid
-      let
-        sortedLocationsWithClueCounts =
-          sortOn (Down . snd) locationsWithClueCounts
-      case sortedLocationsWithClueCounts of
-        [] -> pure t -- Revelation whiffed
-        ((_, c) : _) ->
-          let (matches, _) = span ((== c) . snd) sortedLocationsWithClueCounts
-          in
-            do
-              case matches of
-                [(x, _)] -> unshiftMessages
-                  [AttachTreachery treacheryId (LocationTarget x)]
-                xs -> unshiftMessage
-                  (Ask iid
-                  $ ChooseOne
-                      [ AttachTreachery treacheryId (LocationTarget x)
-                      | (x, _) <- xs
-                      ]
-                  )
-              LockedDoor <$> runMessage msg attrs
+      locations <- for
+        targetLocations
+        (traverseToSnd $ (unClueCount <$>) . getCount)
+      case maxes locations of
+        [] -> pure ()
+        [x] -> unshiftMessages [AttachTreachery treacheryId (LocationTarget x)]
+        xs -> unshiftMessage
+          (chooseOne
+            iid
+            [ AttachTreachery treacheryId (LocationTarget x) | x <- xs ]
+          )
+      LockedDoor <$> runMessage msg attrs
     UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId -> do
       t <$ unshiftMessage
-        (Ask iid $ ChooseOne
+        (chooseOne
+          iid
           [ BeginSkillTest
             iid
-            (TreacherySource treacheryId)
-            (TreacheryTarget treacheryId)
+            (toSource attrs)
+            (toTarget attrs)
             Nothing
             SkillCombat
             4
           , BeginSkillTest
             iid
-            (TreacherySource treacheryId)
-            (TreacheryTarget treacheryId)
+            (toSource attrs)
+            (toTarget attrs)
             Nothing
             SkillAgility
             4

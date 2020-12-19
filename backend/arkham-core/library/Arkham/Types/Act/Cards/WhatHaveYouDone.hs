@@ -1,10 +1,9 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Act.Cards.WhatHaveYouDone where
 
-import Arkham.Import hiding (sequence)
+import Arkham.Import
 
 import Arkham.Types.Act.Attrs
-import qualified Arkham.Types.Act.Attrs as Act
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
@@ -22,7 +21,7 @@ instance ActRunner env => RunMessage env WhatHaveYouDone where
   runMessage msg a@(WhatHaveYouDone attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && not actFlipped -> do
       unshiftMessage (AdvanceAct aid)
-      pure . WhatHaveYouDone $ attrs & sequence .~ "Act 3b" & flipped .~ True
+      pure . WhatHaveYouDone $ attrs & sequenceL .~ "Act 3b" & flippedL .~ True
     AdvanceAct aid | aid == actId && actFlipped -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage
@@ -39,7 +38,7 @@ instance ActRunner env => RunMessage env WhatHaveYouDone where
       pure
         $ WhatHaveYouDone
         $ attrs
-        & (Act.sequence .~ "Act 3b")
-        & (flipped .~ True)
+        & (sequenceL .~ "Act 3b")
+        & (flippedL .~ True)
     EnemyDefeated _ _ _ "01116" _ _ -> a <$ unshiftMessage (AdvanceAct actId)
     _ -> WhatHaveYouDone <$> runMessage msg attrs

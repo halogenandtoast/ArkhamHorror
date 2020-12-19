@@ -29,18 +29,15 @@ instance HasActions env CurseOfTheRougarou where
     getActions iid window attrs
 
 instance (TreacheryRunner env) => RunMessage env CurseOfTheRougarou where
-  runMessage msg (CurseOfTheRougarou (attrs@Attrs {..} `With` metadata)) =
+  runMessage msg t@(CurseOfTheRougarou (attrs@Attrs {..} `With` metadata)) =
     case msg of
       Revelation iid source | isSource attrs source -> do
-        unshiftMessage $ AttachTreachery treacheryId (InvestigatorTarget iid)
-        CurseOfTheRougarou . (`with` metadata) <$> runMessage
-          msg
-          (attrs & attachedInvestigator ?~ iid)
-      EnemyDamage _ iid _ n
-        | Just iid == treacheryAttachedInvestigator && n > 0
-        -> CurseOfTheRougarou . (`with` Metadata True) <$> runMessage msg attrs
+        t <$ unshiftMessage
+          (AttachTreachery treacheryId $ InvestigatorTarget iid)
+      EnemyDamage _ iid _ n | treacheryOnInvestigator iid attrs && n > 0 ->
+        CurseOfTheRougarou . (`with` Metadata True) <$> runMessage msg attrs
       InvestigatorAssignDamage _ (InvestigatorSource iid) n 0
-        | Just iid == treacheryAttachedInvestigator && n > 0
+        | treacheryOnInvestigator iid attrs && n > 0
         -> CurseOfTheRougarou . (`with` Metadata True) <$> runMessage msg attrs
       EndTurn iid -> do
         unless

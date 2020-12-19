@@ -4,7 +4,6 @@
 module Arkham.Types.Act
   ( Act(..)
   , lookupAct
-  , canAdvance
   )
 where
 

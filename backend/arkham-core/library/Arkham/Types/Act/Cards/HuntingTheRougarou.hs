@@ -4,7 +4,6 @@ module Arkham.Types.Act.Cards.HuntingTheRougarou where
 import Arkham.Import
 
 import Arkham.Types.Act.Attrs
-import qualified Arkham.Types.Act.Attrs as Act
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.ScenarioLogKey
@@ -81,14 +80,14 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
       pure
         $ HuntingTheRougarou
         $ attrs
-        & (Act.sequence .~ "Act 2b")
-        & (flipped .~ True)
+        & (sequenceL .~ "Act 2b")
+        & (flippedL .~ True)
     RevertAct aid | aid == actId && actSequence == "Act 2b" ->
       pure
         $ HuntingTheRougarou
         $ attrs
-        & (Act.sequence .~ "Act 2a")
-        & (flipped .~ False)
+        & (sequenceL .~ "Act 2a")
+        & (flippedL .~ False)
     EnemyMove eid lid _ -> do
       isRougarou <- (== CardCode "81028") <$> getId eid
       a <$ when isRougarou (unshiftMessage (PlaceClues (LocationTarget lid) 1))

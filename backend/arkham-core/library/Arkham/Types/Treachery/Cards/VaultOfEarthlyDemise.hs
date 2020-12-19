@@ -14,8 +14,8 @@ vaultOfEarthlyDemise :: TreacheryId -> a -> VaultOfEarthlyDemise
 vaultOfEarthlyDemise uuid _ = VaultOfEarthlyDemise $ baseAttrs uuid "50032b"
 
 instance HasCount PlayerCount env () => HasModifiersFor env VaultOfEarthlyDemise where
-  getModifiersFor _ (EnemyTarget eid) (VaultOfEarthlyDemise attrs)
-    | Just eid == treacheryAttachedEnemy attrs = do
+  getModifiersFor _ target@(EnemyTarget _) (VaultOfEarthlyDemise attrs)
+    | Just target == treacheryAttachedTarget attrs = do
       let x = fromJustNote "had to be set" (treacheryResources attrs)
       additionalHealth <- getPlayerCountValue (PerPlayer x)
       pure [HealthModifier additionalHealth, EnemyFight x]

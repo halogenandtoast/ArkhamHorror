@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.RiseOfTheGhouls where
 
-import Arkham.Import hiding (sequence)
+import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
@@ -27,7 +27,11 @@ instance AgendaRunner env => RunMessage env RiseOfTheGhouls where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage (chooseOne leadInvestigatorId [AdvanceAgenda aid])
-      pure $ RiseOfTheGhouls $ attrs & sequence .~ "Agenda 2b" & flipped .~ True
+      pure
+        $ RiseOfTheGhouls
+        $ attrs
+        & (sequenceL .~ "Agenda 2b")
+        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2b" ->
       a <$ unshiftMessage
         (Run

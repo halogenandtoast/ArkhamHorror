@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.DeadOfNight where
 
-import Arkham.Import hiding (sequence)
+import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -38,5 +38,5 @@ instance AgendaRunner env => RunMessage env DeadOfNight where
            ]
         <> [ CreateEnemyAt "02058" scienceBuildingId | isNothing mExperimentId ]
         <> [NextAgenda agendaId "02044"]
-      pure . DeadOfNight $ attrs & sequence .~ "Agenda 2b" & flipped .~ True
+      pure . DeadOfNight $ attrs & sequenceL .~ "Agenda 2b" & flippedL .~ True
     _ -> DeadOfNight <$> runMessage msg attrs

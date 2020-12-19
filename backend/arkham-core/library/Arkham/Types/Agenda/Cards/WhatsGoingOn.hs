@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.WhatsGoingOn where
 
-import Arkham.Import hiding (sequence)
+import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -35,5 +35,5 @@ instance AgendaRunner env => RunMessage env WhatsGoingOn where
             ]
           ]
         )
-      pure $ WhatsGoingOn $ attrs & sequence .~ "Agenda 1b" & flipped .~ True
+      pure $ WhatsGoingOn $ attrs & sequenceL .~ "Agenda 1b" & flippedL .~ True
     _ -> WhatsGoingOn <$> runMessage msg attrs

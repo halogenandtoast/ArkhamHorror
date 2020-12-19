@@ -1,10 +1,9 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Act.Cards.RicesWhereabouts where
 
-import Arkham.Import hiding (sequence)
+import Arkham.Import
 
 import Arkham.Types.Act.Attrs
-import qualified Arkham.Types.Act.Attrs as Act
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
@@ -22,7 +21,7 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
   runMessage msg (RicesWhereabouts attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && not actFlipped -> do
       unshiftMessage (AdvanceAct aid)
-      pure . RicesWhereabouts $ attrs & sequence .~ "Act 2b" & flipped .~ True
+      pure . RicesWhereabouts $ attrs & sequenceL .~ "Act 2b" & flippedL .~ True
     AdvanceAct aid | aid == actId && actFlipped -> do
       alchemyLabsInPlay <- elem (LocationName "Alchemy Labs") <$> getList ()
       agendaStep <- asks $ unAgendaStep . getStep
@@ -44,16 +43,13 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
       pure
         $ RicesWhereabouts
         $ attrs
-        & Act.sequence
-        .~ "Act 1b"
-        & flipped
-        .~ True
+        & (sequenceL .~ "Act 1b")
+        & (flippedL .~ True)
     PrePlayerWindow -> do
       totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 3)
       pure
         $ RicesWhereabouts
         $ attrs
-        & canAdvance
-        .~ (totalSpendableClues >= requiredClues)
+        & (canAdvanceL .~ (totalSpendableClues >= requiredClues))
     _ -> RicesWhereabouts <$> runMessage msg attrs

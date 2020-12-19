@@ -13,8 +13,8 @@ insatiableBloodlust :: TreacheryId -> a -> InsatiableBloodlust
 insatiableBloodlust uuid _ = InsatiableBloodlust $ baseAttrs uuid "81036"
 
 instance HasModifiersFor env InsatiableBloodlust where
-  getModifiersFor _ (EnemyTarget eid) (InsatiableBloodlust Attrs {..})
-    | Just eid == treacheryAttachedEnemy = pure
+  getModifiersFor _ (EnemyTarget eid) (InsatiableBloodlust attrs)
+    | treacheryOnEnemy eid attrs = pure
       [EnemyFight 1, DamageDealt 1, HorrorDealt 1, CannotBeEvaded]
   getModifiersFor _ _ _ = pure []
 

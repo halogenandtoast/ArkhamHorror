@@ -8,7 +8,6 @@ where
 import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
-import qualified Arkham.Types.Agenda.Attrs as Agenda
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Trait
@@ -39,10 +38,8 @@ instance AgendaRunner env => RunMessage env TheRougarouFeeds where
       pure
         $ TheRougarouFeeds
         $ attrs
-        & Agenda.sequence
-        .~ "Agenda 2b"
-        & flipped
-        .~ True
+        & (sequenceL .~ "Agenda 2b")
+        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2b" -> do
       mrougarou <- getRougarou
       case mrougarou of

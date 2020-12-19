@@ -4,7 +4,6 @@ module Arkham.Types.Act.Cards.CampusSafety where
 import Arkham.Import
 
 import Arkham.Types.Act.Attrs
-import qualified Arkham.Types.Act.Attrs as Act
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
@@ -21,7 +20,7 @@ instance ActRunner env => RunMessage env CampusSafety where
   runMessage msg (CampusSafety attrs@Attrs {..}) = case msg of
     AdvanceAct aid | aid == actId && not actFlipped -> do
       unshiftMessage (AdvanceAct aid)
-      pure $ CampusSafety $ attrs & Act.sequence .~ "Act 1b" & flipped .~ True
+      pure $ CampusSafety $ attrs & sequenceL .~ "Act 1b" & flippedL .~ True
     AdvanceAct aid | aid == actId && actFlipped -> do
       alchemyLabsInPlay <- elem (LocationName "Alchemy Labs") <$> getList ()
       agendaStep <- asks $ unAgendaStep . getStep
@@ -40,13 +39,13 @@ instance ActRunner env => RunMessage env CampusSafety where
            ]
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage $ chooseOne leadInvestigatorId [NextAct aid "02047"]
-      pure $ CampusSafety $ attrs & Act.sequence .~ "Act 1b" & flipped .~ True
+      pure $ CampusSafety $ attrs & sequenceL .~ "Act 1b" & flippedL .~ True
     PrePlayerWindow -> do
       totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 3)
       pure
         $ CampusSafety
         $ attrs
-        & canAdvance
+        & canAdvanceL
         .~ (totalSpendableClues >= requiredClues)
     _ -> CampusSafety <$> runMessage msg attrs

@@ -19,37 +19,34 @@ instance HasModifiersFor env HospitalDebts where
   getModifiersFor _ (InvestigatorTarget iid) (HospitalDebts attrs) = do
     let resources' = fromJustNote "must be set" $ treacheryResources attrs
     pure
-      [ XPModifier (-2)
-      | iid `elem` treacheryAttachedInvestigator attrs && resources' < 6
-      ]
+      [ XPModifier (-2) | treacheryOnInvestigator iid attrs && resources' < 6 ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env HospitalDebts where
-  getActions iid (DuringTurn You) (HospitalDebts Attrs {..}) =
-    case treacheryAttachedInvestigator of
-      Nothing -> pure []
-      Just attachedInvestigator' -> do
-        let
-          ability =
-            (mkAbility
-                (TreacherySource treacheryId)
-                1
-                (FastAbility (DuringTurn You))
-              )
-              { abilityLimit = PerRound
-              }
-        usedAbilities <- map unUsedAbility <$> getList ()
-        resourceCount <- getResourceCount iid
-        pure
-          [ ActivateCardAbilityAction iid ability
-          | resourceCount
-            > 0
-            && iid
-            == attachedInvestigator'
-            && length
-                 (filter (== (attachedInvestigator', ability)) usedAbilities)
-            < 2
-          ]
+  getActions iid (DuringTurn You) (HospitalDebts a@Attrs {..}) =
+    withTreacheryInvestigator a $ \tormented -> do
+      let
+        ability =
+          (mkAbility
+              (TreacherySource treacheryId)
+              1
+              (FastAbility (DuringTurn You))
+            )
+            { abilityLimit = PerRound
+            }
+      usedAbilities <- map unUsedAbility <$> getList ()
+      resourceCount <- getResourceCount iid
+      treacheryLocationId <- getId tormented
+      investigatorLocationId <- getId @LocationId iid
+      pure
+        [ ActivateCardAbilityAction iid ability
+        | resourceCount
+          > 0
+          && treacheryLocationId
+          == investigatorLocationId
+          && length (filter (== (iid, ability)) usedAbilities)
+          < 2
+        ]
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env HospitalDebts where

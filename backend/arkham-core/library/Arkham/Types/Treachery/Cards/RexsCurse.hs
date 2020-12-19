@@ -21,11 +21,10 @@ instance HasActions env RexsCurse where
 
 instance TreacheryRunner env => RunMessage env RexsCurse where
   runMessage msg t@(RexsCurse attrs@Attrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
-      RexsCurse <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
+    Revelation iid source | isSource attrs source ->
+      t <$ unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
     Will (PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _)
-      | Just iid == treacheryAttachedInvestigator -> do
+      | treacheryOnInvestigator iid attrs -> do
         let
           ability = (mkAbility (TreacherySource treacheryId) 0 ForcedAbility)
             { abilityLimit = PerTestOrAbility

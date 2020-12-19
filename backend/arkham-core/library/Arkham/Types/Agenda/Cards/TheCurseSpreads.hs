@@ -8,7 +8,6 @@ where
 import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
-import qualified Arkham.Types.Agenda.Attrs as Agenda
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 
@@ -35,11 +34,11 @@ instance AgendaRunner env => RunMessage env TheCurseSpreads where
     EndInvestigation -> do
       mrougarou <- getRougarou
       case mrougarou of
-        Nothing -> pure . TheCurseSpreads $ attrs & doom +~ 1
+        Nothing -> pure . TheCurseSpreads $ attrs & doomL +~ 1
         Just eid -> do
           notEngaged <- null <$> getSet @InvestigatorId eid
           pure . TheCurseSpreads $ if notEngaged
-            then attrs & doom +~ 1
+            then attrs & doomL +~ 1
             else attrs
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3a" -> do
       leadInvestigatorId <- getLeadInvestigatorId
@@ -47,10 +46,8 @@ instance AgendaRunner env => RunMessage env TheCurseSpreads where
       pure
         $ TheCurseSpreads
         $ attrs
-        & Agenda.sequence
-        .~ "Agenda 2b"
-        & flipped
-        .~ True
+        & (sequenceL .~ "Agenda 2b")
+        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3b" ->
       a <$ unshiftMessage (Resolution 1)
     _ -> TheCurseSpreads <$> runMessage msg attrs

@@ -13,6 +13,7 @@ data Attrs = Attrs
   , agendaSequence      :: Text
   , agendaNumber :: Int
   , agendaFlipped :: Bool
+  , agendaTreacheries :: HashSet TreacheryId
   }
   deriving stock (Show, Generic)
 
@@ -33,18 +34,21 @@ instance Entity Attrs where
   isTarget Attrs { agendaId } (AgendaTarget aid) = agendaId == aid
   isTarget _ _ = False
 
-doom :: Lens' Attrs Int
-doom = lens agendaDoom $ \m x -> m { agendaDoom = x }
+doomL :: Lens' Attrs Int
+doomL = lens agendaDoom $ \m x -> m { agendaDoom = x }
 
-sequence :: Lens' Attrs Text
-sequence = lens agendaSequence $ \m x -> m { agendaSequence = x }
+sequenceL :: Lens' Attrs Text
+sequenceL = lens agendaSequence $ \m x -> m { agendaSequence = x }
 
-flipped :: Lens' Attrs Bool
-flipped = lens agendaFlipped $ \m x -> m { agendaFlipped = x }
+flippedL :: Lens' Attrs Bool
+flippedL = lens agendaFlipped $ \m x -> m { agendaFlipped = x }
 
-doomThreshold :: Lens' Attrs (GameValue Int)
-doomThreshold =
+doomThresholdL :: Lens' Attrs (GameValue Int)
+doomThresholdL =
   lens agendaDoomThreshold $ \m x -> m { agendaDoomThreshold = x }
+
+treacheriesL :: Lens' Attrs (HashSet TreacheryId)
+treacheriesL = lens agendaTreacheries $ \m x -> m { agendaTreacheries = x }
 
 baseAttrs :: AgendaId -> Int -> Text -> Text -> GameValue Int -> Attrs
 baseAttrs aid num name seq' threshold = Attrs
@@ -55,6 +59,7 @@ baseAttrs aid num name seq' threshold = Attrs
   , agendaSequence = seq'
   , agendaFlipped = False
   , agendaNumber = num
+  , agendaTreacheries = mempty
   }
 
 instance HasActions env Attrs where
@@ -68,9 +73,9 @@ instance
   => RunMessage env Attrs
   where
   runMessage msg a@Attrs {..} = case msg of
-    PlaceDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doom +~ n
+    PlaceDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doomL +~ n
     AdvanceAgendaIfThresholdSatisfied -> do
-      perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThreshold)
+      perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
       totalDoom <- unDoomCount <$> getCount ()
       a <$ when
         (totalDoom >= perPlayerDoomThreshold)

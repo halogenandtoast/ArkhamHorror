@@ -4,7 +4,6 @@ module Arkham.Types.Act.Cards.IntoTheDarkness where
 import Arkham.Import
 
 import Arkham.Types.Act.Attrs
-import qualified Arkham.Types.Act.Attrs as Act
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card.EncounterCardMatcher
@@ -27,10 +26,8 @@ instance ActRunner env => RunMessage env IntoTheDarkness where
       pure
         $ IntoTheDarkness
         $ attrs
-        & Act.sequence
-        .~ "Act 2b"
-        & flipped
-        .~ True
+        & (sequenceL .~ "Act 2b")
+        & (flippedL .~ True)
     AdvanceAct aid | aid == actId && actSequence == "Act 2b" -> do
       playerCount <- getPlayerCount
       if playerCount > 3

@@ -1,16 +1,7 @@
 module Arkham.Types.Treachery.Runner where
 
-import ClassyPrelude
+import Arkham.Import
 
-import Arkham.Types.Ability
-import Arkham.Types.AssetId
-import Arkham.Types.Card
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
-import Arkham.Types.Query
 import Arkham.Types.Trait
 
 type TreacheryRunner env
@@ -29,6 +20,10 @@ type TreacheryRunner env
     , HasId LocationId env EnemyId
     , HasId LocationId env InvestigatorId
     , HasList UsedAbility env ()
+    , HasSet ActId env ()
+    , HasSet ActId env TreacheryCardCode
+    , HasSet AgendaId env ()
+    , HasSet AgendaId env TreacheryCardCode
     , HasSet AssetId env InvestigatorId
     , HasSet ClosestEnemyId env (LocationId, [Trait])
     , HasSet ConnectedLocationId env LocationId

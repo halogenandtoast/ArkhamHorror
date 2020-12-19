@@ -14,9 +14,7 @@ data Attrs = Attrs
   , treacheryCardCode :: CardCode
   , treacheryTraits :: HashSet Trait
   , treacheryKeywords :: HashSet Keyword
-  , treacheryAttachedLocation :: Maybe LocationId
-  , treacheryAttachedInvestigator :: Maybe InvestigatorId
-  , treacheryAttachedEnemy :: Maybe EnemyId
+  , treacheryAttachedTarget :: Maybe Target
   , treacheryOwner :: Maybe InvestigatorId
   , treacheryWeakness :: Bool
   , treacheryResolved :: Bool -- should this be discarded
@@ -49,24 +47,50 @@ instance IsCard Attrs where
   getTraits = treacheryTraits
   getKeywords = treacheryKeywords
 
-ownedBy :: Attrs -> InvestigatorId -> Bool
-ownedBy Attrs { treacheryAttachedInvestigator } iid =
-  treacheryAttachedInvestigator == Just iid
+-- ownedBy :: Attrs -> InvestigatorId -> Bool
+-- ownedBy Attrs { treacheryOwner } iid = treacheryOwner == Just iid
 
 resolved :: Lens' Attrs Bool
 resolved = lens treacheryResolved $ \m x -> m { treacheryResolved = x }
 
-attachedLocation :: Lens' Attrs (Maybe LocationId)
-attachedLocation =
-  lens treacheryAttachedLocation $ \m x -> m { treacheryAttachedLocation = x }
+treacheryOn :: Target -> Attrs -> Bool
+treacheryOn t Attrs { treacheryAttachedTarget } =
+  t `elem` treacheryAttachedTarget
 
-attachedEnemy :: Lens' Attrs (Maybe EnemyId)
-attachedEnemy =
-  lens treacheryAttachedEnemy $ \m x -> m { treacheryAttachedEnemy = x }
+treacheryOnInvestigator :: InvestigatorId -> Attrs -> Bool
+treacheryOnInvestigator = treacheryOn . InvestigatorTarget
 
-attachedInvestigator :: Lens' Attrs (Maybe InvestigatorId)
-attachedInvestigator = lens treacheryAttachedInvestigator
-  $ \m x -> m { treacheryAttachedInvestigator = x }
+treacheryOnEnemy :: EnemyId -> Attrs -> Bool
+treacheryOnEnemy = treacheryOn . EnemyTarget
+
+treacheryOnLocation :: LocationId -> Attrs -> Bool
+treacheryOnLocation = treacheryOn . LocationTarget
+
+withTreacheryEnemy :: MonadIO m => Attrs -> (EnemyId -> m a) -> m a
+withTreacheryEnemy attrs f = case treacheryAttachedTarget attrs of
+  Just (EnemyTarget eid) -> f eid
+  _ -> throwIO
+    (InvalidState $ treacheryName attrs <> " must be attached to an enemy")
+
+withTreacheryLocation :: MonadIO m => Attrs -> (LocationId -> m a) -> m a
+withTreacheryLocation attrs f = case treacheryAttachedTarget attrs of
+  Just (LocationTarget lid) -> f lid
+  _ -> throwIO
+    (InvalidState $ treacheryName attrs <> " must be attached to a location")
+
+withTreacheryInvestigator
+  :: MonadIO m => Attrs -> (InvestigatorId -> m a) -> m a
+withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
+  Just (InvestigatorTarget iid) -> f iid
+  _ -> throwIO
+    (InvalidState
+    $ treacheryName attrs
+    <> " must be attached to an investigator"
+    )
+
+attachedTarget :: Lens' Attrs (Maybe Target)
+attachedTarget =
+  lens treacheryAttachedTarget $ \m x -> m { treacheryAttachedTarget = x }
 
 resources :: Lens' Attrs (Maybe Int)
 resources = lens treacheryResources $ \m x -> m { treacheryResources = x }
@@ -86,9 +110,7 @@ baseAttrs tid cardCode =
       , treacheryCardCode = ecCardCode
       , treacheryTraits = ecTraits
       , treacheryKeywords = ecKeywords
-      , treacheryAttachedLocation = Nothing
-      , treacheryAttachedEnemy = Nothing
-      , treacheryAttachedInvestigator = Nothing
+      , treacheryAttachedTarget = Nothing
       , treacheryOwner = Nothing
       , treacheryWeakness = False
       , treacheryResolved = False
@@ -112,9 +134,7 @@ weaknessAttrs tid iid cardCode =
       , treacheryCardCode = pcCardCode
       , treacheryTraits = pcTraits
       , treacheryKeywords = pcKeywords
-      , treacheryAttachedLocation = Nothing
-      , treacheryAttachedEnemy = Nothing
-      , treacheryAttachedInvestigator = Nothing
+      , treacheryAttachedTarget = Nothing
       , treacheryOwner = iid
       , treacheryWeakness = True
       , treacheryResolved = False
@@ -134,14 +154,11 @@ is _ _ = False
 
 instance (TreacheryRunner env) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
-    InvestigatorEliminated iid | treacheryAttachedInvestigator == Just iid ->
-      a <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
-    AttachTreachery tid (InvestigatorTarget iid) | tid == treacheryId ->
-      pure $ a & attachedInvestigator ?~ iid
-    AttachTreachery tid (LocationTarget lid) | tid == treacheryId ->
-      pure $ a & attachedLocation ?~ lid
-    AttachTreachery tid (EnemyTarget eid) | tid == treacheryId ->
-      pure $ a & attachedEnemy ?~ eid
+    InvestigatorEliminated iid
+      | treacheryAttachedTarget == Just (InvestigatorTarget iid) -> a
+      <$ unshiftMessage (Discard $ TreacheryTarget treacheryId)
+    AttachTreachery tid target | tid == treacheryId ->
+      pure $ a & attachedTarget ?~ target
     AfterRevelation _iid tid | treacheryId == tid -> a <$ when
       treacheryResolved
       (unshiftMessage (Discard (TreacheryTarget treacheryId)))

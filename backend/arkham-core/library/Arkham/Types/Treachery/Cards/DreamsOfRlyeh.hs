@@ -15,7 +15,7 @@ dreamsOfRlyeh uuid _ = DreamsOfRlyeh $ baseAttrs uuid "01182"
 
 instance HasModifiersFor env DreamsOfRlyeh where
   getModifiersFor _ (InvestigatorTarget iid) (DreamsOfRlyeh attrs) =
-    pure $ if iid `elem` treacheryAttachedInvestigator attrs
+    pure $ if treacheryOnInvestigator iid attrs
       then [SkillModifier SkillWillpower (-1), SanityModifier (-1)]
       else []
   getModifiersFor _ _ _ = pure []
@@ -30,7 +30,7 @@ instance ActionRunner env => HasActions env DreamsOfRlyeh where
       [ ActivateCardAbilityAction
           iid
           (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 1 Nothing))
-      | treacheryAttachedInvestigator == Just iid && canAffordActions
+      | treacheryOnInvestigator iid a && canAffordActions
       ]
   getActions _ _ _ = pure []
 

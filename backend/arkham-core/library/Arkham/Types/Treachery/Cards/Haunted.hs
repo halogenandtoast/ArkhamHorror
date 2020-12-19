@@ -15,37 +15,31 @@ haunted uuid iid = Haunted $ weaknessAttrs uuid iid "01098"
 
 instance HasModifiersFor env Haunted where
   getModifiersFor _ (InvestigatorTarget iid) (Haunted attrs) =
-    pure [ AnySkillValue (-1) | iid `elem` treacheryAttachedInvestigator attrs ]
+    pure [ AnySkillValue (-1) | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env Haunted where
   getActions iid NonFast (Haunted a@Attrs {..}) =
-    case treacheryAttachedInvestigator of
-      Nothing -> pure []
-      Just tormented -> do
-        investigatorLocationId <- getId @LocationId iid
-        treacheryLocation <- getId tormented
-        canAffordActions <- getCanAffordCost
-          iid
-          (toSource a)
-          (ActionCost 2 Nothing treacheryTraits)
-        pure
-          [ ActivateCardAbilityAction
-              iid
-              (mkAbility
-                (TreacherySource treacheryId)
-                1
-                (ActionAbility 2 Nothing)
-              )
-          | treacheryLocation == investigatorLocationId && canAffordActions
-          ]
+    withTreacheryInvestigator a $ \tormented -> do
+      investigatorLocationId <- getId @LocationId iid
+      treacheryLocation <- getId tormented
+      canAffordActions <- getCanAffordCost
+        iid
+        (toSource a)
+        (ActionCost 2 Nothing treacheryTraits)
+      pure
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 2 Nothing)
+            )
+        | treacheryLocation == investigatorLocationId && canAffordActions
+        ]
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Haunted where
   runMessage msg t@(Haunted attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      unshiftMessage $ AttachTreachery treacheryId (InvestigatorTarget iid)
-      Haunted <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
+      t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     UseCardAbility _ (TreacherySource tid) _ 1 | tid == treacheryId ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
     _ -> Haunted <$> runMessage msg attrs

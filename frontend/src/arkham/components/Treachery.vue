@@ -48,7 +48,7 @@ export default defineComponent({
         case MessageType.ACTIVATE_ABILITY:
           return c.contents[1].source.contents === id.value;
         case MessageType.USE_CARD_ABILITY:
-          return c.contents[1][0].contents === id.value;
+          return c.contents[1].contents === id.value;
         case MessageType.RUN:
           return c.contents.some((c1: Message) => canInteract(c1));
         default:

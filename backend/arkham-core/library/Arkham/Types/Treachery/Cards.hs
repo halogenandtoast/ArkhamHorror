@@ -27,6 +27,7 @@ import Arkham.Types.Treachery.Cards.HospitalDebts as X
 import Arkham.Types.Treachery.Cards.HuntingShadow as X
 import Arkham.Types.Treachery.Cards.Hypochondria as X
 import Arkham.Types.Treachery.Cards.InsatiableBloodlust as X
+import Arkham.Types.Treachery.Cards.LightOfAforgomon as X
 import Arkham.Types.Treachery.Cards.LockedDoor as X
 import Arkham.Types.Treachery.Cards.MaskedHorrors as X
 import Arkham.Types.Treachery.Cards.MaskOfUmordhoth as X

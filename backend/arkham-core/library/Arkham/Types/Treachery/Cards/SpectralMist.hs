@@ -15,9 +15,9 @@ spectralMist :: TreacheryId -> a -> SpectralMist
 spectralMist uuid _ = SpectralMist $ baseAttrs uuid "81025"
 
 instance HasId LocationId env InvestigatorId => HasModifiersFor env SpectralMist where
-  getModifiersFor (SkillTestSource iid _ _ _) _ (SpectralMist Attrs {..}) = do
+  getModifiersFor (SkillTestSource iid _ _ _) _ (SpectralMist a) = do
     lid <- getId @LocationId iid
-    pure [ Difficulty 1 | Just lid == treacheryAttachedLocation ]
+    pure [ Difficulty 1 | treacheryOnLocation lid a ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env SpectralMist where
@@ -31,9 +31,7 @@ instance ActionRunner env => HasActions env SpectralMist where
       [ ActivateCardAbilityAction
           iid
           (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 1 Nothing))
-      | Just investigatorLocationId
-        == treacheryAttachedLocation
-        && canAffordActions
+      | treacheryOnLocation investigatorLocationId a && canAffordActions
       ]
   getActions _ _ _ = pure []
 

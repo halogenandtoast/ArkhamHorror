@@ -3,8 +3,7 @@ module Arkham.Types.Treachery
   ( lookupTreachery
   , Treachery(..)
   , isWeakness
-  , treacheryLocation
-  , treacheryInvestigator
+  , treacheryTarget
   )
 where
 
@@ -48,6 +47,7 @@ data Treachery
   | WrackedByNightmares' WrackedByNightmares
   | VisionsOfFuturesPast' VisionsOfFuturesPast
   | BeyondTheVeil' BeyondTheVeil
+  | LightOfAforgomon' LightOfAforgomon
   | EagerForDeath' EagerForDeath
   | TheZealotsSeal' TheZealotsSeal
   | MaskedHorrors' MaskedHorrors
@@ -139,6 +139,7 @@ allTreacheries = mapFromList
   , ("02015", (WrackedByNightmares' .) . wrackedByNightmares)
   , ("02083", (VisionsOfFuturesPast' .) . visionsOfFuturesPast)
   , ("02084", (BeyondTheVeil' .) . beyondTheVeil)
+  , ("02085", (LightOfAforgomon' .) . lightOfAforgomon)
   , ("02091", (EagerForDeath' .) . eagerForDeath)
   , ("50024", (TheZealotsSeal' .) . theZealotsSeal)
   , ("50031", (MaskedHorrors' .) . maskedHorrors)
@@ -163,11 +164,8 @@ isWeakness = treacheryWeakness . treacheryAttrs
 instance CanBeWeakness env Treachery where
   getIsWeakness = pure . isWeakness
 
-treacheryLocation :: Treachery -> Maybe LocationId
-treacheryLocation = treacheryAttachedLocation . treacheryAttrs
-
-treacheryInvestigator :: Treachery -> Maybe InvestigatorId
-treacheryInvestigator = treacheryAttachedInvestigator . treacheryAttrs
+treacheryTarget :: Treachery -> Maybe Target
+treacheryTarget = treacheryAttachedTarget . treacheryAttrs
 
 treacheryAttrs :: Treachery -> Attrs
 treacheryAttrs = \case
@@ -202,6 +200,7 @@ treacheryAttrs = \case
   WrackedByNightmares' attrs -> coerce attrs
   VisionsOfFuturesPast' attrs -> coerce attrs
   BeyondTheVeil' attrs -> coerce attrs
+  LightOfAforgomon' attrs -> coerce attrs
   EagerForDeath' attrs -> coerce attrs
   TheZealotsSeal' attrs -> coerce attrs
   MaskedHorrors' attrs -> coerce attrs

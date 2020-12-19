@@ -14,9 +14,7 @@ dissonantVoices uuid _ = DissonantVoices $ baseAttrs uuid "01165"
 
 instance HasModifiersFor env DissonantVoices where
   getModifiersFor _ (InvestigatorTarget iid) (DissonantVoices attrs) = pure
-    [ CannotPlay [AssetType, EventType]
-    | iid `elem` treacheryAttachedInvestigator attrs
-    ]
+    [ CannotPlay [AssetType, EventType] | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env DissonantVoices where

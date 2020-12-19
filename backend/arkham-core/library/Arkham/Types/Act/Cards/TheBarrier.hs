@@ -4,7 +4,6 @@ module Arkham.Types.Act.Cards.TheBarrier where
 import Arkham.Import
 
 import Arkham.Types.Act.Attrs
-import qualified Arkham.Types.Act.Attrs as Act
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
@@ -28,7 +27,7 @@ instance ActRunner env => RunMessage env TheBarrier where
         (SpendClues requiredClueCount investigatorIds
         : [ Ask iid $ ChooseOne [AdvanceAct aid] | iid <- investigatorIds ]
         )
-      pure $ TheBarrier $ attrs & Act.sequence .~ "Act 2b" & flipped .~ True
+      pure $ TheBarrier $ attrs & sequenceL .~ "Act 2b" & flippedL .~ True
     AdvanceAct aid | aid == actId && actFlipped -> do
       hallwayId <- fromJustNote "must exist"
         <$> getId @(Maybe LocationId) (LocationName "Hallway")

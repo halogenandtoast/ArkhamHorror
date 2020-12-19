@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.TheyreGettingOut where
 
-import Arkham.Import hiding (sequence)
+import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -30,10 +30,8 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
       pure
         $ TheyreGettingOut
         $ attrs
-        & sequence
-        .~ "Agenda 3b"
-        & flipped
-        .~ True
+        & (sequenceL .~ "Agenda 3b")
+        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3b" -> do
       actIds <- getSet @ActId ()
       if ActId "01108" `elem` actIds || ActId "01109" `elem` actIds

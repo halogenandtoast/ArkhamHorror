@@ -8,7 +8,6 @@ where
 import Arkham.Import
 
 import Arkham.Types.Act.Attrs
-import qualified Arkham.Types.Act.Attrs as Act
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.EncounterSet (gatherEncounterSet)
@@ -58,8 +57,8 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
       pure
         $ FindingLadyEsprit
         $ attrs
-        & (Act.sequence .~ "Act 1b")
-        & (flipped .~ True)
+        & (sequenceL .~ "Act 1b")
+        & (flippedL .~ True)
     AdvanceAct aid | aid == actId && actSequence == "Act 1b" -> do
       [ladyEspritSpawnLocation] <- setToList <$> bayouLocations
       a <$ unshiftMessages
@@ -89,5 +88,5 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
       requiredClueCount <- getPlayerCountValue (PerPlayer 1)
       canAdvance' <- (>= requiredClueCount)
         <$> getSpendableClueCount investigatorIds
-      pure $ FindingLadyEsprit $ attrs & canAdvance .~ canAdvance'
+      pure $ FindingLadyEsprit $ attrs & canAdvanceL .~ canAdvance'
     _ -> FindingLadyEsprit <$> runMessage msg attrs

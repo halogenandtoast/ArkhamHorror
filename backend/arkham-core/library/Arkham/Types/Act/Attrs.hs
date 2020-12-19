@@ -9,6 +9,7 @@ data Attrs = Attrs
   , actSequence   :: Text
   , actFlipped :: Bool
   , actClues :: Maybe Int
+  , actTreacheries :: HashSet TreacheryId
   }
   deriving stock (Show, Generic)
 
@@ -29,14 +30,17 @@ instance Entity Attrs where
   isTarget Attrs { actId } (ActTarget aid) = actId == aid
   isTarget _ _ = False
 
-canAdvance :: Lens' Attrs Bool
-canAdvance = lens actCanAdvance $ \m x -> m { actCanAdvance = x }
+canAdvanceL :: Lens' Attrs Bool
+canAdvanceL = lens actCanAdvance $ \m x -> m { actCanAdvance = x }
 
-sequence :: Lens' Attrs Text
-sequence = lens actSequence $ \m x -> m { actSequence = x }
+sequenceL :: Lens' Attrs Text
+sequenceL = lens actSequence $ \m x -> m { actSequence = x }
 
-flipped :: Lens' Attrs Bool
-flipped = lens actFlipped $ \m x -> m { actFlipped = x }
+flippedL :: Lens' Attrs Bool
+flippedL = lens actFlipped $ \m x -> m { actFlipped = x }
+
+treacheriesL :: Lens' Attrs (HashSet TreacheryId)
+treacheriesL = lens actTreacheries $ \m x -> m { actTreacheries = x }
 
 baseAttrs :: ActId -> Text -> Text -> Attrs
 baseAttrs aid name seq' = Attrs
@@ -46,6 +50,7 @@ baseAttrs aid name seq' = Attrs
   , actSequence = seq'
   , actFlipped = False
   , actClues = Nothing
+  , actTreacheries = mempty
   }
 
 instance HasActions env Attrs where

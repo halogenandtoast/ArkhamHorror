@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.VengeanceAwaits where
 
-import Arkham.Import hiding (sequence)
+import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -35,5 +35,9 @@ instance AgendaRunner env => RunMessage env VengeanceAwaits where
             $ [ Discard (EnemyTarget eid) | eid <- enemyIds ]
             <> [CreateEnemyAt "01157" "01156"]
             <> [ Discard (ActTarget actId) | actId <- actIds ]
-      pure $ VengeanceAwaits $ attrs & sequence .~ "Agenda 3b" & flipped .~ True
+      pure
+        $ VengeanceAwaits
+        $ attrs
+        & (sequenceL .~ "Agenda 3b")
+        & (flippedL .~ True)
     _ -> VengeanceAwaits <$> runMessage msg attrs

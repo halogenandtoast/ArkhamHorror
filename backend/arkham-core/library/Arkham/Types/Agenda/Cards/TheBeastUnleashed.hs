@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.TheBeastUnleashed where
 
-import Arkham.Import hiding (sequence)
+import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -47,8 +47,6 @@ instance AgendaRunner env => RunMessage env TheBeastUnleashed where
       pure
         . TheBeastUnleashed
         $ attrs
-        & sequence
-        .~ "Agenda 2b"
-        & flipped
-        .~ True
+        & (sequenceL .~ "Agenda 2b")
+        & (flippedL .~ True)
     _ -> TheBeastUnleashed <$> runMessage msg attrs

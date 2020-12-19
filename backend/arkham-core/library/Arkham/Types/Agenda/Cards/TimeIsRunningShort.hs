@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.TimeIsRunningShort where
 
-import Arkham.Import hiding (sequence)
+import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
@@ -44,8 +44,8 @@ instance (AgendaRunner env) => RunMessage env TimeIsRunningShort where
       pure
         $ TimeIsRunningShort
         $ attrs
-        & (sequence .~ "Agenda 2b")
-        & (flipped .~ True)
+        & (sequenceL .~ "Agenda 2b")
+        & (flippedL .~ True)
     UseCardAbility iid (AgendaSource aid) _ 1 | aid == agendaId -> do
       unshiftMessage (Resign iid)
       TimeIsRunningShort <$> runMessage msg attrs

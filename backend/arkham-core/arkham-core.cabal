@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0f3325cafe7254f78e8ceda19b6667ebc812781c4eacbafd2f56f57ba9487f0a
+-- hash: 2214e524ff74288d367fb3c386db4a377d245f1102da28add3b4581f84cbdc46
 
 name:           arkham-core
 version:        0.0.0
@@ -14,6 +14,7 @@ library
   exposed-modules:
       Arkham.Import
       Arkham.Json
+      Arkham.Prelude
       Arkham.Types.Ability
       Arkham.Types.Ability.Limit
       Arkham.Types.Ability.Type
@@ -294,6 +295,7 @@ library
       Arkham.Types.Event.Cards.WorkingAHunch
       Arkham.Types.Event.Runner
       Arkham.Types.EventId
+      Arkham.Types.Exception
       Arkham.Types.Game
       Arkham.Types.Game.Helpers
       Arkham.Types.GameRunner
@@ -495,6 +497,7 @@ library
       Arkham.Types.Treachery.Cards.HuntingShadow
       Arkham.Types.Treachery.Cards.Hypochondria
       Arkham.Types.Treachery.Cards.InsatiableBloodlust
+      Arkham.Types.Treachery.Cards.LightOfAforgomon
       Arkham.Types.Treachery.Cards.LockedDoor
       Arkham.Types.Treachery.Cards.MaskedHorrors
       Arkham.Types.Treachery.Cards.MaskOfUmordhoth

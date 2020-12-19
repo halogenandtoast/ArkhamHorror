@@ -927,21 +927,37 @@ instance HasSet RevealedLocationId (Game queue) () where
       . filterMap isRevealed
       <$> view locations
 
+findTreacheries
+  :: (MonadReader (Game queue) m, Hashable a, Eq a)
+  => (Target -> Maybe a)
+  -> TreacheryCardCode
+  -> m (HashSet a)
+findTreacheries f (TreacheryCardCode cc) =
+  setFromList
+    . mapMaybe (f <=< treacheryTarget)
+    . toList
+    . filterMap ((== cc) . getCardCode)
+    <$> view treacheries
+
+instance HasSet ActId (Game queue) TreacheryCardCode where
+  getSet = findTreacheries $ \case
+    ActTarget aid -> Just aid
+    _ -> Nothing
+
+instance HasSet AgendaId (Game queue) TreacheryCardCode where
+  getSet = findTreacheries $ \case
+    AgendaTarget aid -> Just aid
+    _ -> Nothing
+
 instance HasSet LocationId (Game queue) TreacheryCardCode where
-  getSet (TreacheryCardCode cc) =
-    setFromList
-      . mapMaybe treacheryLocation
-      . toList
-      . filterMap ((== cc) . getCardCode)
-      <$> view treacheries
+  getSet = findTreacheries $ \case
+    LocationTarget lid -> Just lid
+    _ -> Nothing
 
 instance HasSet InvestigatorId (Game queue) TreacheryCardCode where
-  getSet (TreacheryCardCode cc) =
-    setFromList
-      . mapMaybe treacheryInvestigator
-      . toList
-      . filterMap ((== cc) . getCardCode)
-      <$> view treacheries
+  getSet = findTreacheries $ \case
+    InvestigatorTarget iid -> Just iid
+    _ -> Nothing
 
 instance HasSet LocationId (Game queue) [Trait] where
   getSet traits = keysSet . filterMap hasMatchingTrait <$> view locations

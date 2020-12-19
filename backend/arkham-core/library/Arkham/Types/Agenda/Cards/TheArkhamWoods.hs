@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.TheArkhamWoods where
 
-import Arkham.Import hiding (sequence)
+import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
@@ -27,7 +27,11 @@ instance AgendaRunner env => RunMessage env TheArkhamWoods where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1a" -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage (chooseOne leadInvestigatorId [AdvanceAgenda aid])
-      pure $ TheArkhamWoods $ attrs & sequence .~ "Agenda 1b" & flipped .~ True
+      pure
+        $ TheArkhamWoods
+        $ attrs
+        & (sequenceL .~ "Agenda 1b")
+        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1b" ->
       a <$ unshiftMessage
         (Run

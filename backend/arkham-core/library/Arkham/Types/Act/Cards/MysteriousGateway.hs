@@ -4,7 +4,6 @@ module Arkham.Types.Act.Cards.MysteriousGateway where
 import Arkham.Import
 
 import Arkham.Types.Act.Attrs
-import qualified Arkham.Types.Act.Attrs as Act
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
@@ -31,10 +30,8 @@ instance ActRunner env => RunMessage env MysteriousGateway where
       pure
         $ MysteriousGateway
         $ attrs
-        & Act.sequence
-        .~ "Act 1b"
-        & flipped
-        .~ True
+        & (sequenceL .~ "Act 1b")
+        & (flippedL .~ True)
     AdvanceAct aid | aid == actId && actSequence == "Act 1b" -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getSetList @InvestigatorId (LocationId "50014")
@@ -67,6 +64,5 @@ instance ActRunner env => RunMessage env MysteriousGateway where
       pure
         $ MysteriousGateway
         $ attrs
-        & canAdvance
-        .~ (totalSpendableClues >= requiredClues)
+        & (canAdvanceL .~ (totalSpendableClues >= requiredClues))
     _ -> MysteriousGateway <$> runMessage msg attrs

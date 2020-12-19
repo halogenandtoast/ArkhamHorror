@@ -22,33 +22,27 @@ instance HasModifiersFor env Atychiphobia where
 
 instance ActionRunner env => HasActions env Atychiphobia where
   getActions iid NonFast (Atychiphobia a@Attrs {..}) =
-    case treacheryAttachedInvestigator of
-      Nothing -> pure []
-      Just tormented -> do
-        canActivate <- getCanAffordCost
-          iid
-          (toSource a)
-          (ActionCost 2 Nothing treacheryTraits)
-        investigatorLocationId <- getId @LocationId iid
-        treacheryLocation <- getId tormented
-        pure
-          [ ActivateCardAbilityAction
-              iid
-              (mkAbility
-                (TreacherySource treacheryId)
-                1
-                (ActionAbility 2 Nothing)
-              )
-          | treacheryLocation == investigatorLocationId && canActivate
-          ]
+    withTreacheryInvestigator a $ \tormented -> do
+      canActivate <- getCanAffordCost
+        iid
+        (toSource a)
+        (ActionCost 2 Nothing treacheryTraits)
+      investigatorLocationId <- getId @LocationId iid
+      treacheryLocation <- getId tormented
+      pure
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 2 Nothing)
+            )
+        | treacheryLocation == investigatorLocationId && canActivate
+        ]
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Atychiphobia where
   runMessage msg t@(Atychiphobia attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      unshiftMessage $ AttachTreachery treacheryId (InvestigatorTarget iid)
-      Atychiphobia <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
-    FailedSkillTest iid _ _ _ _ | Just iid == treacheryAttachedInvestigator ->
+      t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
+    FailedSkillTest iid _ _ _ _ | treacheryOnInvestigator iid attrs ->
       t <$ unshiftMessage
         (InvestigatorAssignDamage iid (TreacherySource treacheryId) 0 1)
     UseCardAbility _ (TreacherySource tid) _ 1 | tid == treacheryId ->

@@ -14,7 +14,7 @@ obscuringFog uuid _ = ObscuringFog $ baseAttrs uuid "01168"
 
 instance HasModifiersFor env ObscuringFog where
   getModifiersFor _ (LocationTarget lid) (ObscuringFog attrs) =
-    pure [ ShroudModifier 2 | lid `elem` treacheryAttachedLocation attrs ]
+    pure [ ShroudModifier 2 | treacheryOnLocation lid attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env ObscuringFog where
@@ -29,10 +29,8 @@ instance TreacheryRunner env => RunMessage env ObscuringFog where
       if obscuringFogCount > 0
         then t <$ unshiftMessage (Discard $ toTarget attrs)
         else do
-          unshiftMessage
-            $ AttachTreachery treacheryId (LocationTarget currentLocationId)
-          ObscuringFog
-            <$> runMessage msg (attrs & attachedLocation ?~ currentLocationId)
-    SuccessfulInvestigation _ lid _ | Just lid == treacheryAttachedLocation ->
+          t <$ unshiftMessage
+            (AttachTreachery treacheryId $ LocationTarget currentLocationId)
+    SuccessfulInvestigation _ lid _ | treacheryOnLocation lid attrs ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
     _ -> ObscuringFog <$> runMessage msg attrs

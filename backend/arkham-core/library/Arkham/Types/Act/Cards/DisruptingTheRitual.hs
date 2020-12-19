@@ -4,7 +4,6 @@ module Arkham.Types.Act.Cards.DisruptingTheRitual where
 import Arkham.Import
 
 import Arkham.Types.Act.Attrs
-import qualified Arkham.Types.Act.Attrs as Act
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
@@ -40,8 +39,8 @@ instance ActRunner env => RunMessage env DisruptingTheRitual where
       pure
         $ DisruptingTheRitual
         $ attrs
-        & (Act.sequence .~ "Act 3b")
-        & (flipped .~ True)
+        & (sequenceL .~ "Act 3b")
+        & (flippedL .~ True)
     AdvanceAct aid | aid == actId && actSequence == "Act 3a" ->
       a <$ unshiftMessage (Resolution 1)
     PlaceClues (ActTarget aid) n | aid == actId -> do

@@ -52,11 +52,17 @@ instance ActionRunner env => HasActions env YourHouse where
 
 instance (LocationRunner env) => RunMessage env YourHouse where
   runMessage msg l@(YourHouse attrs@Attrs {..}) = case msg of
-    Will (EnemySpawn miid _ eid) -> do
+    Will spawnMsg@(EnemySpawn miid _ eid) -> do
       cardCode <- getId @CardCode eid
       when (cardCode == "01116") $ do
-        void popMessage
-        unshiftMessage (EnemySpawn miid "01124" eid)
+        withQueue $ \queue ->
+          ( filter (and . sequence [(/= After spawnMsg), (/= spawnMsg)]) queue
+          , ()
+          )
+        unshiftMessages
+          [ EnemySpawn miid locationId eid
+          , After (EnemySpawn miid locationId eid)
+          ]
       YourHouse <$> runMessage msg attrs
     UseCardAbility iid source _ 1 | isSource attrs source ->
       l <$ unshiftMessages [DrawCards iid 1 False, TakeResources iid 1 False]

@@ -4,7 +4,6 @@ module Arkham.Types.Act.Cards.UncoveringTheConspiracy where
 import Arkham.Import
 
 import Arkham.Types.Act.Attrs
-import qualified Arkham.Types.Act.Attrs as Act
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import qualified Data.HashSet as HashSet
@@ -43,8 +42,8 @@ instance ActRunner env => RunMessage env UncoveringTheConspiracy where
       pure
         $ UncoveringTheConspiracy
         $ attrs
-        & (Act.sequence .~ "Act 1b")
-        & (flipped .~ True)
+        & (sequenceL .~ "Act 1b")
+        & (flippedL .~ True)
     AdvanceAct aid | aid == actId && actSequence == "Act 1b" -> do
       a <$ unshiftMessage (Resolution 1)
     AddToVictory _ -> do

@@ -27,8 +27,9 @@ instance HasModifiersFor env CoverUp where
 
 instance ActionRunner env => HasActions env CoverUp where
   getActions iid window@(WhenDiscoverClues You YourLocation) (CoverUp a@Attrs {..})
-    | Just iid == treacheryAttachedInvestigator
-    = do
+    = withTreacheryInvestigator a $ \tormented -> do
+      treacheryLocationId <- getId @LocationId tormented
+      investigatorLocationId <- getId @LocationId iid
       cluesToDiscover <- fromQueue $ \queue -> do
         let
           mDiscoverClues = flip find queue $ \case
@@ -41,26 +42,27 @@ instance ActionRunner env => HasActions env CoverUp where
         [ ActivateCardAbilityAction
             iid
             (mkAbility (toSource a) 1 (ReactionAbility window))
-        | coverUpClues a > 0 && cluesToDiscover > 0
+        | treacheryLocationId
+          == investigatorLocationId
+          && coverUpClues a
+          > 0
+          && cluesToDiscover
+          > 0
         ]
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env CoverUp where
   runMessage msg t@(CoverUp attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      unshiftMessages
+      t <$ unshiftMessages
         [ RemoveCardFromHand iid "01007"
         , AttachTreachery treacheryId (InvestigatorTarget iid)
         ]
-      CoverUp <$> runMessage msg (attrs & attachedInvestigator ?~ iid)
-    InvestigatorEliminated iid | ownedBy attrs iid -> do
+    InvestigatorEliminated iid | treacheryOnInvestigator iid attrs -> do
       runMessage EndOfGame t >>= \case
         CoverUp attrs' -> CoverUp <$> runMessage msg attrs'
-    EndOfGame | coverUpClues attrs > 0 ->
-      let
-        investigator =
-          fromJustNote "missing investigator" treacheryAttachedInvestigator
-      in t <$ unshiftMessage (SufferTrauma investigator 0 1)
+    EndOfGame | coverUpClues attrs > 0 -> withTreacheryInvestigator attrs
+      $ \tormented -> t <$ unshiftMessage (SufferTrauma tormented 0 1)
     UseCardAbility _ source _ 1 | isSource attrs source -> do
       cluesToRemove <- withQueue $ \queue -> do
         let

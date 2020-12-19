@@ -63,6 +63,7 @@ data Modifier
   | ShroudModifier Int
   | SkillModifier SkillType Int
   | TokenValueModifier Int
+  | TreatAllDamageAsDirect
   | SpawnNonEliteAtConnectingInstead
   | UseSkillInPlaceOf SkillType SkillType
   | XPModifier Int

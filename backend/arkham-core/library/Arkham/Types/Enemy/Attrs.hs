@@ -563,7 +563,7 @@ instance EnemyRunner env => RunMessage env Attrs where
       | not isFast && iid `elem` enemyEngagedInvestigators && not enemyExhausted
       -> a <$ unshiftMessage (EnemyWillAttack iid enemyId)
     InvestigatorDrawEnemy iid lid eid | eid == enemyId -> do
-      unshiftMessage (EnemySpawn (Just iid) lid eid)
+      unshiftMessages $ resolve (EnemySpawn (Just iid) lid eid)
       pure $ a & locationL .~ lid
     InvestigatorEliminated iid ->
       pure $ a & engagedInvestigatorsL %~ deleteSet iid

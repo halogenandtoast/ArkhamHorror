@@ -15,7 +15,7 @@ lockedDoor uuid _ = LockedDoor $ baseAttrs uuid "01174"
 
 instance HasModifiersFor env LockedDoor where
   getModifiersFor _ (LocationTarget lid) (LockedDoor attrs) =
-    pure [ CannotInvestigate | lid `elem` treacheryAttachedLocation attrs ]
+    pure [ CannotInvestigate | treacheryOnLocation lid attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env LockedDoor where
@@ -29,9 +29,7 @@ instance ActionRunner env => HasActions env LockedDoor where
       [ ActivateCardAbilityAction
           iid
           (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 1 Nothing))
-      | Just investigatorLocationId
-        == treacheryAttachedLocation
-        && canAffordActions
+      | treacheryOnLocation investigatorLocationId a && canAffordActions
       ]
   getActions _ _ _ = pure []
 

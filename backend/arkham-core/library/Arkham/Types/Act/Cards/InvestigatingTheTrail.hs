@@ -4,7 +4,6 @@ module Arkham.Types.Act.Cards.InvestigatingTheTrail where
 import Arkham.Import
 
 import Arkham.Types.Act.Attrs
-import qualified Arkham.Types.Act.Attrs as Act
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.CampaignLogKey
@@ -31,8 +30,8 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
       pure
         $ InvestigatingTheTrail
         $ attrs
-        & (Act.sequence .~ "Act 1b")
-        & (flipped .~ True)
+        & (sequenceL .~ "Act 1b")
+        & (flippedL .~ True)
     AdvanceAct aid | aid == actId && actSequence == "Act 1b" -> do
       locationIds <- setToList <$> getLocationSet
       when ("01156" `notElem` locationIds)
@@ -48,5 +47,5 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
       pure
         $ InvestigatingTheTrail
         $ attrs
-        & (canAdvance .~ (totalSpendableClueCount >= requiredClues))
+        & (canAdvanceL .~ (totalSpendableClueCount >= requiredClues))
     _ -> InvestigatingTheTrail <$> runMessage msg attrs

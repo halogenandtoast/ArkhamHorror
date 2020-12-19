@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.QuietHalls where
 
-import Arkham.Import hiding (sequence)
+import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -51,5 +51,5 @@ instance AgendaRunner env => RunMessage env QuietHalls where
 
       unshiftMessage
         (Ask leadInvestigatorId $ ChooseOne [Label "Continue" continueMessages])
-      pure $ QuietHalls $ attrs & sequence .~ "Agenda 1b" & flipped .~ True
+      pure $ QuietHalls $ attrs & sequenceL .~ "Agenda 1b" & flippedL .~ True
     _ -> QuietHalls <$> runMessage msg attrs

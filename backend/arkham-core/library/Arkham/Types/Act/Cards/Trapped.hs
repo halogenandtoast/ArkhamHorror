@@ -4,7 +4,6 @@ module Arkham.Types.Act.Cards.Trapped where
 import Arkham.Import
 
 import Arkham.Types.Act.Attrs
-import qualified Arkham.Types.Act.Attrs as Act
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
@@ -27,7 +26,7 @@ instance ActRunner env => RunMessage env Trapped where
         [ SpendClues requiredClues investigatorIds
         , chooseOne leadInvestigatorId [AdvanceAct aid]
         ]
-      pure $ Trapped $ attrs & Act.sequence .~ "Act 1b" & flipped .~ True
+      pure $ Trapped $ attrs & sequenceL .~ "Act 1b" & flippedL .~ True
     AdvanceAct aid | aid == actId && actFlipped -> do
       enemyIds <- getSetList (LocationId "01111")
       a <$ unshiftMessages
@@ -49,6 +48,5 @@ instance ActRunner env => RunMessage env Trapped where
       pure
         $ Trapped
         $ attrs
-        & canAdvance
-        .~ (totalSpendableClues >= requiredClues)
+        & (canAdvanceL .~ (totalSpendableClues >= requiredClues))
     _ -> Trapped <$> runMessage msg attrs

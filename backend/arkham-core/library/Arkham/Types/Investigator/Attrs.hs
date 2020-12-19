@@ -842,12 +842,18 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   InvestigatorAssignDamage iid source damage horror
     | iid == investigatorId && not
       (investigatorDefeated || investigatorResigned)
-    -> a <$ unshiftMessages
-      ([ InvestigatorDoAssignDamage iid source damage horror [] []
-       , CheckDefeated
-       ]
-      <> [After (InvestigatorTakeDamage iid source damage horror)]
-      )
+    -> do
+      modifiers <- getModifiersFor (toSource a) (toTarget a) ()
+      if TreatAllDamageAsDirect `elem` modifiers
+        then
+          a <$ unshiftMessage
+            (InvestigatorDirectDamage iid source damage horror)
+        else a <$ unshiftMessages
+          ([ InvestigatorDoAssignDamage iid source damage horror [] []
+           , CheckDefeated
+           ]
+          <> [After (InvestigatorTakeDamage iid source damage horror)]
+          )
   InvestigatorDoAssignDamage iid source 0 0 damageTargets horrorTargets
     | iid == investigatorId -> a <$ unshiftMessages
       ([ DidReceiveDamage target source

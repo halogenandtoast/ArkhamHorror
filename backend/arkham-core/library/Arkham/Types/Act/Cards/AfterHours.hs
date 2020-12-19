@@ -4,7 +4,6 @@ module Arkham.Types.Act.Cards.AfterHours where
 import Arkham.Import
 
 import Arkham.Types.Act.Attrs
-import qualified Arkham.Types.Act.Attrs as Act
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
@@ -27,7 +26,7 @@ instance ActRunner env => RunMessage env AfterHours where
         [ SpendClues requiredClues investigatorIds
         , chooseOne leadInvestigatorId [AdvanceAct aid]
         ]
-      pure $ AfterHours $ attrs & Act.sequence .~ "Act 1b" & flipped .~ True
+      pure $ AfterHours $ attrs & sequenceL .~ "Act 1b" & flippedL .~ True
     AdvanceAct aid | aid == actId && actFlipped -> a <$ unshiftMessages
       [ AddCampaignCardToEncounterDeck "02060"
       , ShuffleEncounterDiscardBackIn
@@ -39,6 +38,6 @@ instance ActRunner env => RunMessage env AfterHours where
       pure
         $ AfterHours
         $ attrs
-        & canAdvance
+        & canAdvanceL
         .~ (totalSpendableClues >= requiredClues)
     _ -> AfterHours <$> runMessage msg attrs

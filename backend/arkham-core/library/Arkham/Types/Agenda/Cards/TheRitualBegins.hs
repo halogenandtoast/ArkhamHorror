@@ -1,7 +1,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.TheRitualBegins where
 
-import Arkham.Import hiding (sequence)
+import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
@@ -27,7 +27,11 @@ instance (AgendaRunner env) => RunMessage env TheRitualBegins where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unshiftMessage (chooseOne leadInvestigatorId [AdvanceAgenda agendaId])
-      pure $ TheRitualBegins $ attrs & sequence .~ "Agenda 2b" & flipped .~ True
+      pure
+        $ TheRitualBegins
+        $ attrs
+        & (sequenceL .~ "Agenda 2b")
+        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2b" -> do
       investigatorIds <- getSetList ()
       a <$ unshiftMessages

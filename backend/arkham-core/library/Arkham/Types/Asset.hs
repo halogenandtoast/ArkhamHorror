@@ -6,6 +6,7 @@ module Arkham.Types.Asset
   , allAssets
   , isHealthDamageable
   , isSanityDamageable
+  , isStory
   , slotsOf
   , useTypeOf
   , Asset
@@ -268,6 +269,7 @@ instance IsAsset Asset where
   useTypeOf = useTypeOf . assetAttrs
   isHealthDamageable = isHealthDamageable . assetAttrs
   isSanityDamageable = isSanityDamageable . assetAttrs
+  isStory = isStory . assetAttrs
 
 assetAttrs :: Asset -> Attrs
 assetAttrs = \case

@@ -19,6 +19,7 @@ ladyEsprit uuid = LadyEsprit $ (baseAttrs uuid "81019")
   { assetSlots = [AllySlot]
   , assetHealth = Just 2
   , assetSanity = Just 4
+  , assetIsStory = True
   }
 
 ability :: Attrs -> Ability

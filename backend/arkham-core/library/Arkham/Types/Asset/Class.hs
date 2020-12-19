@@ -11,3 +11,4 @@ class IsAsset a where
   useTypeOf :: a -> Maybe UseType
   isHealthDamageable :: a -> Bool
   isSanityDamageable :: a -> Bool
+  isStory :: a -> Bool

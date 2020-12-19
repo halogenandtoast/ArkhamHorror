@@ -28,6 +28,7 @@ data Attrs = Attrs
   , assetDoom :: Int
   , assetHorror :: Maybe Int
   , assetCanLeavePlayByNormalMeans :: Bool
+  , assetIsStory :: Bool
   }
   deriving stock (Show, Generic)
 
@@ -73,6 +74,7 @@ baseAttrs aid cardCode =
       , assetDoom = 0
       , assetHorror = Nothing
       , assetCanLeavePlayByNormalMeans = True
+      , assetIsStory = False
       }
 
 instance Entity Attrs where
@@ -96,6 +98,9 @@ doomL = lens assetDoom $ \m x -> m { assetDoom = x }
 
 exhaustedL :: Lens' Attrs Bool
 exhaustedL = lens assetExhausted $ \m x -> m { assetExhausted = x }
+
+isStoryL :: Lens' Attrs Bool
+isStoryL = lens assetIsStory $ \m x -> m { assetIsStory = x }
 
 usesL :: Lens' Attrs Uses
 usesL = lens assetUses $ \m x -> m { assetUses = x }
@@ -135,6 +140,7 @@ instance IsAsset Attrs where
   isSanityDamageable a = case assetSanity a of
     Nothing -> False
     Just n -> n > assetSanityDamage a
+  isStory = assetIsStory
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of

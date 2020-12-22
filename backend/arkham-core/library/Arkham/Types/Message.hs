@@ -202,6 +202,7 @@ data Message
   | ResolveToken DrawnToken Token InvestigatorId
   | Investigate InvestigatorId LocationId Source SkillType Bool
   | ChooseFightEnemy InvestigatorId Source SkillType Bool
+  | ChooseFightEnemyNotEngagedWithInvestigator InvestigatorId Source SkillType Bool
   | ChooseEvadeEnemy InvestigatorId Source SkillType Bool
   | EngageEnemy InvestigatorId EnemyId Bool
   | DisengageEnemy InvestigatorId EnemyId

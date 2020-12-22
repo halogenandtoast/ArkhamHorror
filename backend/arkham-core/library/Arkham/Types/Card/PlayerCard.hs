@@ -267,6 +267,7 @@ allPlayerCards = HashMap.fromList
   , ("02034", baitAndSwitch)
   , ("02147", bandolier)
   , ("02185", keenEye3)
+  , ("02185", springfieldM19034)
   , ("03022", letMeHandleThis)
   , ("04023", toothOfEztli)
   , ("04149", secondWind)
@@ -1059,6 +1060,13 @@ keenEye3 cardId = (asset cardId "02185" "Keen Eye" 0 Guardian)
   { pcTraits = setFromList [Talent]
   , pcPermanent = True
   , pcLevel = 3
+  }
+
+springfieldM19034 :: CardId -> PlayerCard
+springfieldM19034 cardId = (asset cardId "02226" "Springfiled M1903" 4 Guardian)
+  { pcTraits = setFromList [Item, Weapon, Firearm]
+  , pcLevel = 4
+  , pcSkills = [SkillCombat, SkillAgility]
   }
 
 letMeHandleThis :: CardId -> PlayerCard

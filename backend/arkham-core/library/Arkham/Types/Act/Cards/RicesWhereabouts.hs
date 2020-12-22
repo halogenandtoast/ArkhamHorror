@@ -1,11 +1,17 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Act.Cards.RicesWhereabouts where
+module Arkham.Types.Act.Cards.RicesWhereabouts
+  ( RicesWhereabouts(..)
+  , ricesWhereabouts
+  )
+where
 
 import Arkham.Import
 
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
+import Arkham.Types.Action
+import Arkham.Types.Trait
 
 newtype RicesWhereabouts = RicesWhereabouts Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -14,11 +20,30 @@ ricesWhereabouts :: RicesWhereabouts
 ricesWhereabouts =
   RicesWhereabouts $ baseAttrs "02046" "Rice's Whereabouts" "Act 2a"
 
-instance HasActions env RicesWhereabouts where
-  getActions i window (RicesWhereabouts x) = getActions i window x
+ability :: Attrs -> Ability
+ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
+
+instance (HasModifiersFor env (), HasCount SpendableClueCount env InvestigatorId, HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)) => HasActions env RicesWhereabouts where
+  getActions iid NonFast (RicesWhereabouts x) = do
+    canAfford <- getCanAffordCost iid (toSource x) (ClueCost 1)
+    pure [ ActivateCardAbilityAction iid (ability x) | canAfford ]
+  getActions iid window (RicesWhereabouts x) = getActions iid window x
 
 instance ActRunner env => RunMessage env RicesWhereabouts where
-  runMessage msg (RicesWhereabouts attrs@Attrs {..}) = case msg of
+  runMessage msg a@(RicesWhereabouts attrs@Attrs {..}) = case msg of
+    Discarded (InvestigatorTarget iid) card
+      | getCardCode card == CardCode "02060" -> case card of
+        EncounterCard ec -> do
+          a <$ unshiftMessages
+            [ RemoveFromEncounterDiscard ec
+            , InvestigatorDrewEncounterCard iid ec
+            ]
+        PlayerCard _ -> throwIO $ InvalidState "not a player card"
+    UseCardAbility iid source _ 1 | isSource attrs source -> do
+      playerCount <- getPlayerCount
+      let discardCount = if playerCount == 1 then 10 else 5
+      a <$ unshiftMessages
+        [SpendClues 1 [iid], DiscardTopOfEncounterDeck iid discardCount Nothing]
     AdvanceAct aid | aid == actId && not actFlipped -> do
       unshiftMessage (AdvanceAct aid)
       pure . RicesWhereabouts $ attrs & sequenceL .~ "Act 2b" & flippedL .~ True

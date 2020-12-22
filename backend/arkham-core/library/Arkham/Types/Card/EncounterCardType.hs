@@ -7,5 +7,6 @@ data EncounterCardType
   = TreacheryType
   | EnemyType
   | LocationType
+  | EncounterAssetType
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)

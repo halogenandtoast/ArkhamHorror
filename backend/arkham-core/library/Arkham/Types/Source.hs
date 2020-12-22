@@ -43,6 +43,7 @@ data Source
   | GameSource
   | ActSource ActId
   | PlayerCardSource CardId
+  | EncounterCardSource CardId
   | TestSource
   | DrawnTokenSource DrawnToken
   | ProxySource Source Source

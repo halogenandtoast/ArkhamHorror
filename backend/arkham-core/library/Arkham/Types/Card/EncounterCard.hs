@@ -49,6 +49,10 @@ baseEncounterCard cardId cardCode name encounterCardType = MkEncounterCard
 enemy :: CardId -> CardCode -> Text -> EncounterCard
 enemy cardId cardCode name = baseEncounterCard cardId cardCode name EnemyType
 
+asset :: CardId -> CardCode -> Text -> EncounterCard
+asset cardId cardCode name =
+  baseEncounterCard cardId cardCode name EncounterAssetType
+
 treachery :: CardId -> CardCode -> Text -> EncounterCard
 treachery cardId cardCode name =
   baseEncounterCard cardId cardCode name TreacheryType
@@ -366,6 +370,11 @@ youngDeepOne cardId = (enemy cardId "01181" "Young Deep One")
 dreamsOfRlyeh :: CardId -> EncounterCard
 dreamsOfRlyeh cardId = (treachery cardId "01182" "Dreams of R'lyeh")
   { ecTraits = setFromList [Omen]
+  }
+
+jazzMulligan :: CardId -> EncounterCard
+jazzMulligan cardId = (treachery cardId "02060" "Jazz Mulligan")
+  { ecTraits = setFromList [Ally, Miskatonic]
   }
 
 visionsOfFuturesPast :: CardId -> EncounterCard

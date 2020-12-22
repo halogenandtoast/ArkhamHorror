@@ -479,7 +479,14 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                   | skillTestInvestigator == skillTestInvestigator' -> False
                 _ -> True
             in (queue', ())
-          s <$ unshiftMessage (RunSkillTest skillTestInvestigator)
+          unshiftMessage (RunSkillTest skillTestInvestigator)
+          -- We need to subtract the current token values to prevent them from
+          -- doubling. However, we need to keep any existing value modifier on
+          -- the stack (such as a token no longer visible who effect still
+          -- persists)
+          tokenValues <- sum
+            <$> for skillTestRevealedTokens (getModifiedTokenValue s)
+          pure $ s & valueModifier %~ subtract tokenValues
     RunSkillTest _ -> do
       tokenValues <- sum
         <$> for skillTestRevealedTokens (getModifiedTokenValue s)

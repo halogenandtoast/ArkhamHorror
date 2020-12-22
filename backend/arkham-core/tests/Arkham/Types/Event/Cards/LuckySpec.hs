@@ -24,9 +24,9 @@ spec = describe "Lucky!" $ do
     void
       $ runGameTest
           investigator
-          [ SetTokens [Zero]
+          [ SetTokens [MinusOne]
           , addToHand investigator (PlayerCard lucky)
-          , beginSkillTest investigator SkillIntellect 3
+          , beginSkillTest investigator SkillIntellect 2
           ]
           id
       >>= runGameTestOnlyOption "start skill test"

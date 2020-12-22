@@ -1,9 +1,9 @@
 <template>
   <div class="agenda-container">
     <img
-      :class="{ 'agenda--can-progress': advanceAgendaAction !== -1 }"
+      :class="{ 'agenda--can-progress': interactAction !== -1 }"
       class="card card--sideways"
-      @click="$emit('choose', advanceAgendaAction)"
+      @click="$emit('choose', interactAction)"
       :src="image"
     />
     <button
@@ -25,7 +25,7 @@
 import { defineComponent, computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
-import { MessageType } from '@/arkham/types/Message';
+import { Message, MessageType } from '@/arkham/types/Message';
 import PoolItem from '@/arkham/components/PoolItem.vue';
 import * as Arkham from '@/arkham/types/Agenda';
 
@@ -48,7 +48,20 @@ export default defineComponent({
 
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-    const advanceAgendaAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.ADVANCE_AGENDA))
+    function canInteract(c: Message): boolean {
+      switch (c.tag) {
+        case MessageType.ADVANCE_AGENDA:
+          return true;
+        case MessageType.ATTACH_TREACHERY:
+          return c.contents[1].contents == id.value;
+        case MessageType.RUN:
+          return c.contents.some((c1: Message) => canInteract(c1));
+        default:
+          return false;
+      }
+    }
+
+    const interactAction = computed(() => choices.value.findIndex(canInteract));
 
     function abilityLabel(idx: number) {
       return choices.value[idx].contents[1].type.contents[1];
@@ -66,7 +79,7 @@ export default defineComponent({
         }, [])
     })
 
-    return { abilities, abilityLabel, advanceAgendaAction, image, id }
+    return { abilities, abilityLabel, interactAction, image, id }
   }
 })
 </script>

@@ -3,6 +3,7 @@ module Arkham.Types.Asset.Cards
   )
 where
 
+import Arkham.Types.Asset.Cards.AlchemicalConcoction as X
 import Arkham.Types.Asset.Cards.Aquinnah1 as X
 import Arkham.Types.Asset.Cards.ArcaneEnlightenment as X
 import Arkham.Types.Asset.Cards.ArcaneInitiate as X
@@ -69,6 +70,7 @@ import Arkham.Types.Asset.Cards.PhysicalTraining as X
 import Arkham.Types.Asset.Cards.PhysicalTraining2 as X
 import Arkham.Types.Asset.Cards.Pickpocketing as X
 import Arkham.Types.Asset.Cards.PoliceBadge2 as X
+import Arkham.Types.Asset.Cards.ProfessorWarrenRice as X
 import Arkham.Types.Asset.Cards.RabbitsFoot as X
 import Arkham.Types.Asset.Cards.RabbitsFoot3 as X
 import Arkham.Types.Asset.Cards.ResearchLibrarian as X

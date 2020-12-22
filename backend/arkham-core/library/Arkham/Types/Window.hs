@@ -13,6 +13,7 @@ import Data.Aeson
 
 data Window
   = AfterAssignedHorror Who
+  | AfterDiscoveringClues Who Where -- name conflict resolution
   | AfterEndTurn Who
   | AfterEnemyEngageInvestigator Who EnemyId
   | AfterEnemyEvaded Who EnemyId

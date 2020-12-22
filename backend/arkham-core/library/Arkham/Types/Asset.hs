@@ -81,7 +81,9 @@ data Asset
   | Duke' Duke
   | FireAxe' FireAxe
   | PeterSylvestre' PeterSylvestre
+  | AlchemicalConcoction' AlchemicalConcoction
   | JazzMulligan' JazzMulligan
+  | ProfessorWarrenRice' ProfessorWarrenRice
   | BrotherXavier1' BrotherXavier1
   | Bandolier' Bandolier
   | KeenEye3' KeenEye3
@@ -115,10 +117,12 @@ data Asset
 deriving anyclass instance ActionRunner env => HasActions env Asset
 deriving anyclass instance
   ( HasId LocationId env InvestigatorId
+  , HasId CardCode env EnemyId
   , HasCount ResourceCount env InvestigatorId
   , HasCount CardCount env InvestigatorId
   , HasCount AssetCount env (InvestigatorId, [Trait])
   , HasSet Trait env LocationId
+  , HasTarget ForSkillTest env
   )
   => HasModifiersFor env Asset
 deriving anyclass instance AssetRunner env => RunMessage env Asset
@@ -241,7 +245,9 @@ allAssets = mapFromList
   , ("02014", Duke' . duke)
   , ("02032", FireAxe' . fireAxe)
   , ("02033", PeterSylvestre' . peterSylvestre)
+  , ("02059", AlchemicalConcoction' . alchemicalConcoction)
   , ("02060", JazzMulligan' . jazzMulligan)
+  , ("02061", ProfessorWarrenRice' . professorWarrenRice)
   , ("02106", BrotherXavier1' . brotherXavier1)
   , ("02147", Bandolier' . bandolier)
   , ("02185", KeenEye3' . keenEye3)
@@ -336,7 +342,9 @@ assetAttrs = \case
   Duke' attrs -> coerce attrs
   FireAxe' attrs -> coerce attrs
   PeterSylvestre' attrs -> coerce attrs
+  AlchemicalConcoction' attrs -> coerce attrs
   JazzMulligan' attrs -> coerce attrs
+  ProfessorWarrenRice' attrs -> coerce attrs
   BrotherXavier1' attrs -> coerce attrs
   Bandolier' attrs -> coerce attrs
   KeenEye3' attrs -> coerce attrs

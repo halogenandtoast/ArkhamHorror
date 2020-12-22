@@ -277,7 +277,19 @@ instance LocationRunner env => RunMessage env Attrs where
 
       a <$ unshiftMessages
         (checkWindowMsgs <> [DiscoverClues iid lid discoveredClues])
-    AfterDiscoverClues _ lid n | lid == locationId -> pure $ a & clues -~ n
+    AfterDiscoverClues iid lid n | lid == locationId -> do
+      checkWindowMsgs <- checkWindows
+        iid
+        (\who -> pure $ case who of
+          You -> [AfterDiscoveringClues You YourLocation]
+          InvestigatorAtYourLocation ->
+            [AfterDiscoveringClues who YourLocation]
+          InvestigatorAtAConnectedLocation ->
+            [AfterDiscoveringClues who ConnectedLocation]
+          InvestigatorInGame -> [AfterDiscoveringClues who LocationInGame]
+        )
+      unshiftMessages checkWindowMsgs
+      pure $ a & clues -~ n
     InvestigatorEliminated iid -> pure $ a & investigators %~ deleteSet iid
     WhenEnterLocation iid lid
       | lid /= locationId && iid `elem` locationInvestigators

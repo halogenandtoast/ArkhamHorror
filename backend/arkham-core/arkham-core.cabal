@@ -1,8 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
+--
+-- hash: e0c2aaaf1497db2159cb4ade19e8f3e486049cec800d9d97191274182a680d91
 
 name:           arkham-core
 version:        0.0.0
@@ -245,6 +247,7 @@ library
       Arkham.Types.Enemy.Cards.StubbornDetective
       Arkham.Types.Enemy.Cards.SwampLeech
       Arkham.Types.Enemy.Cards.SwarmOfRats
+      Arkham.Types.Enemy.Cards.TheExperiment
       Arkham.Types.Enemy.Cards.TheMaskedHunter
       Arkham.Types.Enemy.Cards.TheRougarou
       Arkham.Types.Enemy.Cards.Thrall

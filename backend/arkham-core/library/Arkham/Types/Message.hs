@@ -389,6 +389,7 @@ data Message
   | Continue Text
   | AddToHandFromDeck InvestigatorId CardId
   | FocusCards [Card]
+  | UnfocusCards
   | AddFocusedToHand InvestigatorId Target CardId
   | AddFocusedToTopOfDeck InvestigatorId Target CardId
   | ShuffleAllFocusedIntoDeck InvestigatorId Target

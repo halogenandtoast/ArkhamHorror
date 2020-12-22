@@ -169,9 +169,10 @@ getFacingDefeat a@Attrs {..} = do
     >= modifiedSanity
 
 skillValueFor :: SkillType -> Maybe Action -> [Modifier] -> Attrs -> Int
-skillValueFor skill maction tempModifiers attrs = foldr (
-  applyModifier . modifierType)
-  (baseSkillValueFor skill maction tempModifiers attrs) tempModifiers
+skillValueFor skill maction tempModifiers attrs = foldr
+  (applyModifier . modifierType)
+  (baseSkillValueFor skill maction tempModifiers attrs)
+  tempModifiers
  where
   applyModifier (AnySkillValue m) n = max 0 (n + m)
   applyModifier (SkillModifier skillType m) n =
@@ -1564,6 +1565,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
           [ Run
               [ AddFocusedToHand iid (InvestigatorTarget iid') (getCardId card)
               , RemoveFromDiscard iid (getCardId card)
+              , UnfocusCards
               ]
           | card <- investigatorDiscard
           , null traits' || traits' `intersection` getTraits card == traits'

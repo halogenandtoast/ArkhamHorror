@@ -38,6 +38,11 @@ instance (HasModifiersFor env (), HasCount SpendableClueCount env InvestigatorId
 
 instance ActRunner env => RunMessage env RicesWhereabouts where
   runMessage msg a@(RicesWhereabouts attrs@Attrs {..}) = case msg of
+    TakeControlOfAsset _ assetId -> do
+      cardCode <- getId assetId
+      a <$ when
+        (cardCode == CardCode "02060")
+        (unshiftMessage $ AdvanceAct actId)
     Discarded (InvestigatorTarget iid) card
       | getCardCode card == CardCode "02060" -> case card of
         EncounterCard ec -> do

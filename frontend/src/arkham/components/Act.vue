@@ -45,6 +45,8 @@ export default defineComponent({
       switch (c.tag) {
         case MessageType.ADVANCE_ACT:
           return true;
+        case MessageType.NEXT_ACT:
+          return true;
         case MessageType.ATTACH_TREACHERY:
           return c.contents[1].contents == id.value;
         case MessageType.RUN:

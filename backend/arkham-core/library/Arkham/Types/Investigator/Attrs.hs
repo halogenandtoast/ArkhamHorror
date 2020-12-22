@@ -748,11 +748,13 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure $ a & treacheriesL %~ deleteSet tid
   Discard (EnemyTarget eid) -> do
     pure $ a & engagedEnemiesL %~ deleteSet eid
-  Discarded (AssetTarget aid) cardCode | aid `elem` investigatorAssets -> do
+  Discarded (AssetTarget aid) card | aid `elem` investigatorAssets -> do
     pure
       $ a
       & (assetsL %~ deleteSet aid)
-      & (discardL %~ (lookupPlayerCard cardCode (CardId $ unAssetId aid) :))
+      & (discardL
+        %~ (lookupPlayerCard (getCardCode card) (CardId $ unAssetId aid) :)
+        )
       & (slotsL %~ removeFromSlots aid)
   ChooseFightEnemy iid source skillType isAction | iid == investigatorId -> do
     enemyIds <- getSet investigatorLocation

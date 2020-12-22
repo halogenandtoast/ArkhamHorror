@@ -248,7 +248,7 @@ data Message
   | SufferTrauma InvestigatorId Int Int
   | AssetDamage AssetId Source Int Int
   | AssetDefeated AssetId
-  | Discarded Target CardCode
+  | Discarded Target Card
   | InvestigatorDamage InvestigatorId Source Int Int
   | InvestigatorPlayAsset InvestigatorId AssetId [SlotType] [Trait]
   | InvestigatorPlayDynamicAsset InvestigatorId AssetId [SlotType] [Trait] Int
@@ -309,6 +309,8 @@ data Message
   | ChooseAndDiscardCard InvestigatorId
   | DiscardCard InvestigatorId CardId
   | DiscardTopOfDeck InvestigatorId Int (Maybe Target)
+  | DiscardTopOfEncounterDeck InvestigatorId Int (Maybe Target)
+  | RemoveFromEncounterDiscard EncounterCard
   | DiscardedTopOfDeck InvestigatorId [PlayerCard] Target
   | DrewTreachery InvestigatorId CardCode
   | PayCardCost InvestigatorId CardId

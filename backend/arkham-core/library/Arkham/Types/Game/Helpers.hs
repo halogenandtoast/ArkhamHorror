@@ -62,6 +62,7 @@ getSpendableClueCount investigatorIds =
 getCanFight
   :: ( MonadReader env m
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+     , HasCount SpendableClueCount env InvestigatorId
      , HasSet InvestigatorId env EnemyId
      , HasSet Keyword env EnemyId
      , HasSet Trait env EnemyId
@@ -90,6 +91,7 @@ getCanFight eid iid = do
 getCanEngage
   :: ( MonadReader env m
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+     , HasCount SpendableClueCount env InvestigatorId
      , HasSet InvestigatorId env EnemyId
      , HasSet Trait env EnemyId
      , HasId LocationId env InvestigatorId
@@ -113,6 +115,7 @@ getCanEngage eid iid = do
 getCanEvade
   :: ( MonadReader env m
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+     , HasCount SpendableClueCount env InvestigatorId
      , HasSet InvestigatorId env EnemyId
      , HasSet Trait env EnemyId
      , HasModifiersFor env ()
@@ -136,6 +139,7 @@ getCanEvade eid iid = do
 getCanMoveTo
   :: ( MonadReader env m
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+     , HasCount SpendableClueCount env InvestigatorId
      , HasSet AccessibleLocationId env LocationId
      , HasSet Trait env LocationId
      , HasId LocationId env InvestigatorId
@@ -171,6 +175,7 @@ getCanMoveTo lid iid = do
 getCanInvestigate
   :: ( MonadReader env m
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+     , HasCount SpendableClueCount env InvestigatorId
      , HasId LocationId env InvestigatorId
      , HasSet Trait env LocationId
      , HasModifiersFor env ()
@@ -230,6 +235,7 @@ getCanAffordCost
   :: ( MonadReader env m
      , HasModifiersFor env ()
      , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+     , HasCount SpendableClueCount env InvestigatorId
      )
   => InvestigatorId
   -> Source
@@ -244,3 +250,6 @@ getCanAffordCost iid source = \case
         actionCount <- unActionRemainingCount
           <$> getCount (mAction, setToList traits, iid)
         pure $ actionCount >= n
+  ClueCost n -> do
+    spendableClues <- unSpendableClueCount <$> getCount iid
+    pure $ spendableClues >= n

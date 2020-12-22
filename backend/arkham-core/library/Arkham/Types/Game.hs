@@ -2003,7 +2003,7 @@ runGameMessage msg g = case msg of
     ]
   AssetDefeated aid -> do
     let asset = getAsset aid g
-    unshiftMessage (Discarded (AssetTarget aid) (getCardCode asset))
+    unshiftMessage (Discarded (AssetTarget aid) (toCard asset))
     pure $ g & assets %~ deleteMap aid
   RemoveFromGame (AssetTarget aid) -> pure $ g & assets %~ deleteMap aid
   EnemyDefeated eid iid _ _ _ _ -> do
@@ -2228,6 +2228,14 @@ runGameMessage msg g = case msg of
     pure $ g & enemies . at enemyId' ?~ enemy'
   EnemySpawn{} -> pure $ g & activeCard .~ Nothing
   EnemySpawnEngagedWithPrey{} -> pure $ g & activeCard .~ Nothing
+  DiscardTopOfEncounterDeck _ 0 _ -> pure g
+  DiscardTopOfEncounterDeck iid n mtarget -> do
+    let (card : cards) = unDeck $ g ^. encounterDeck
+    unshiftMessages
+      $ Discarded (InvestigatorTarget iid) (EncounterCard card)
+      : [ ShuffleEncounterDiscardBackIn | null cards ]
+      <> [DiscardTopOfEncounterDeck iid (n - 1) mtarget]
+    pure $ g & discard %~ (card :) & encounterDeck .~ Deck cards
   DrawEncounterCards target n -> do
     let (cards, encounterDeck') = splitAt n (unDeck $ g ^. encounterDeck)
     unshiftMessage (RequestedEncounterCards target cards)
@@ -2365,6 +2373,7 @@ runGameMessage msg g = case msg of
       skillType
       difficulty
     pure $ g & (activeCard ?~ EncounterCard card)
+  RemoveFromEncounterDiscard ec -> pure $ g & discard %~ filter (/= ec)
   InvestigatorDrewEncounterCard iid card -> case ecCardType card of
     EnemyType -> do
       (enemyId', enemy') <- createEnemy (ecCardCode card)
@@ -2375,6 +2384,11 @@ runGameMessage msg g = case msg of
         & (enemies . at enemyId' ?~ enemy')
         & (activeCard ?~ EncounterCard card)
     TreacheryType -> g <$ unshiftMessage (DrewTreachery iid (ecCardCode card))
+    EncounterAssetType -> do
+      (assetId', asset') <- createAsset (ecCardCode card)
+      -- Asset is assumed to have a revelation ability if drawn from encounter deck
+      unshiftMessage (Revelation iid (EncounterCardSource (ecId card)))
+      pure $ g & (assets . at assetId' ?~ asset')
     LocationType -> pure g
   DrewTreachery iid cardCode -> do
     (treacheryId', treachery') <- createTreachery cardCode (Just iid)
@@ -2401,7 +2415,7 @@ runGameMessage msg g = case msg of
   AfterRevelation{} -> pure $ g & activeCard .~ Nothing
   Discard (AssetTarget aid) -> do
     let asset = getAsset aid g
-    unshiftMessage (Discarded (AssetTarget aid) (getCardCode asset))
+    unshiftMessage (Discarded (AssetTarget aid) (toCard asset))
     pure $ g & assets %~ deleteMap aid
   Discard (EventTarget eid) -> do
     let

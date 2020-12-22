@@ -7,5 +7,6 @@ import Arkham.Types.Action
 import Arkham.Types.Trait
 import ClassyPrelude
 
-data Cost =
-  ActionCost Int (Maybe Action) (HashSet Trait)
+data Cost
+  = ActionCost Int (Maybe Action) (HashSet Trait)
+  | ClueCost Int

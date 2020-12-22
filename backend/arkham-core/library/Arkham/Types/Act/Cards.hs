@@ -4,6 +4,7 @@ module Arkham.Types.Act.Cards
 where
 
 import Arkham.Types.Act.Cards.AfterHours as X
+import Arkham.Types.Act.Cards.CampusSafety as X
 import Arkham.Types.Act.Cards.DisruptingTheRitual as X
 import Arkham.Types.Act.Cards.FindingLadyEsprit as X
 import Arkham.Types.Act.Cards.HuntingTheRougarou as X

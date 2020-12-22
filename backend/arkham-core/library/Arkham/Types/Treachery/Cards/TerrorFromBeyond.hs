@@ -28,12 +28,14 @@ instance TreacheryRunner env => RunMessage env TerrorFromBeyond where
       iids <- getSetList ()
       phaseHistory <- getPhaseHistory =<< ask
       let
-        secondCopy = any
-          (\case
-            DrewTreachery _ (CardCode "02101") -> True
-            _ -> False
-          )
-          phaseHistory
+        secondCopy =
+          count
+              (\case
+                DrewTreachery _ (CardCode "02101") -> True
+                _ -> False
+              )
+              phaseHistory
+            >= 2
       iidsWithAssets <- traverse
         (traverseToSnd $ (map unHandCardId <$>) . getSetList . (, AssetType))
         iids

@@ -1,5 +1,6 @@
 module Arkham.Types.Enemy.Runner where
 
+import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
@@ -23,6 +24,7 @@ type EnemyRunner env
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId
     , HasModifiersFor env ()
+    , HasSet ActId env ()
     , HasSet ClosestPathLocationId env (LocationId, LocationId)
     , HasSet ClosestPathLocationId env (LocationId, Prey)
     , HasSet ConnectedLocationId env LocationId

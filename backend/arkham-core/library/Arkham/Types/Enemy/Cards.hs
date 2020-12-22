@@ -35,6 +35,7 @@ import Arkham.Types.Enemy.Cards.SlimeCoveredDhole as X
 import Arkham.Types.Enemy.Cards.StubbornDetective as X
 import Arkham.Types.Enemy.Cards.SwampLeech as X
 import Arkham.Types.Enemy.Cards.SwarmOfRats as X
+import Arkham.Types.Enemy.Cards.TheExperiment as X
 import Arkham.Types.Enemy.Cards.TheMaskedHunter as X
 import Arkham.Types.Enemy.Cards.TheRougarou as X
 import Arkham.Types.Enemy.Cards.Thrall as X

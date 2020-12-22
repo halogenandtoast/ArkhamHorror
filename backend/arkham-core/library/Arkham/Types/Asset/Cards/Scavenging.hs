@@ -3,6 +3,7 @@ module Arkham.Types.Asset.Cards.Scavenging where
 
 import Arkham.Import
 
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
@@ -18,8 +19,9 @@ instance HasModifiersFor env Scavenging where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Scavenging where
-  getActions iid (AfterPassSkillTest source You n) (Scavenging a)
-    | ownedBy a iid && n >= 2 = do
+  getActions iid (AfterPassSkillTest source@(SkillTestSource _ _ _ (Just Action.Investigate)) You n) (Scavenging a)
+    | ownedBy a iid && n >= 2
+    = do
       discard <- getDiscardOf iid
       pure
         [ ActivateCardAbilityAction

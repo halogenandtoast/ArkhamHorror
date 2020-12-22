@@ -45,6 +45,7 @@ data Enemy
   | RelentlessDarkYoung' RelentlessDarkYoung
   | GoatSpawn' GoatSpawn
   | YoungDeepOne' YoungDeepOne
+  | TheExperiment' TheExperiment
   | Thrall' Thrall
   | WizardOfYogSothoth' WizardOfYogSothoth
   | Whippoorwill' Whippoorwill
@@ -121,6 +122,7 @@ deriving anyclass instance
   ( HasId LocationId env InvestigatorId
   , HasCount RemainingSanity env InvestigatorId
   , HasCount CardCount env InvestigatorId
+  , HasCount PlayerCount env ()
   , HasSet InvestigatorId env LocationId
   , HasSet ConnectedLocationId env LocationId
   , HasSet Trait env LocationId
@@ -206,6 +208,7 @@ allEnemies = mapFromList
   , ("01179", RelentlessDarkYoung' . relentlessDarkYoung)
   , ("01180", GoatSpawn' . goatSpawn)
   , ("01181", YoungDeepOne' . youngDeepOne)
+  , ("02058", TheExperiment' . theExperiment)
   , ("02086", Thrall' . thrall)
   , ("02087", WizardOfYogSothoth' . wizardOfYogSothoth)
   , ("02090", Whippoorwill' . whippoorwill)
@@ -278,6 +281,7 @@ enemyAttrs = \case
   RelentlessDarkYoung' attrs -> coerce attrs
   GoatSpawn' attrs -> coerce attrs
   YoungDeepOne' attrs -> coerce attrs
+  TheExperiment' attrs -> coerce attrs
   Thrall' attrs -> coerce attrs
   WizardOfYogSothoth' attrs -> coerce attrs
   Whippoorwill' attrs -> coerce attrs

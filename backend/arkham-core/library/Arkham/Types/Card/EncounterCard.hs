@@ -111,6 +111,7 @@ allEncounterCards = HashMap.fromList
   , ("01180", goatSpawn)
   , ("01181", youngDeepOne)
   , ("01182", dreamsOfRlyeh)
+  , ("02058", theExperiment)
   , ("02060", jazzMulligan)
   , ("02083", visionsOfFuturesPast)
   , ("02084", beyondTheVeil)
@@ -372,6 +373,13 @@ youngDeepOne cardId = (enemy cardId "01181" "Young Deep One")
 dreamsOfRlyeh :: CardId -> EncounterCard
 dreamsOfRlyeh cardId = (treachery cardId "01182" "Dreams of R'lyeh")
   { ecTraits = setFromList [Omen]
+  }
+
+theExperiment :: CardId -> EncounterCard
+theExperiment cardId = (enemy cardId "02058" "The Experiment")
+  { ecTraits = setFromList [Monster, Abomination, Elite]
+  , ecKeywords = setFromList [Keyword.Massive]
+  , ecVictoryPoints = Just 2
   }
 
 jazzMulligan :: CardId -> EncounterCard

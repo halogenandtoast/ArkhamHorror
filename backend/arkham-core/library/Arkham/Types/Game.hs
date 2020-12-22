@@ -1669,6 +1669,7 @@ runGameMessage msg g = case msg of
     pure $ g & effects %~ insertMap effectId' effect'
   DisableEffect effectId -> pure $ g & effects %~ deleteMap effectId
   FocusCards cards -> pure $ g & focusedCards .~ cards
+  UnfocusCards -> pure $ g & focusedCards .~ mempty
   FocusTokens tokens -> pure $ g & focusedTokens .~ tokens
   UnfocusTokens -> pure $ g & focusedTokens .~ mempty
   ChooseLeadInvestigator -> if length (g ^. investigators) == 1

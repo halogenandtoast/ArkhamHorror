@@ -49,28 +49,36 @@ instance (AssetRunner env) => RunMessage env Encyclopedia where
                 [ Label
                   "Willpower"
                   [ CreatePhaseEffect
-                      (EffectModifiers [SkillModifier SkillWillpower 2])
+                      (EffectModifiers
+                      $ toModifiers attrs [SkillModifier SkillWillpower 2]
+                      )
                       source
                       target
                   ]
                 , Label
                   "Intellect"
                   [ CreatePhaseEffect
-                      (EffectModifiers [SkillModifier SkillIntellect 2])
+                      (EffectModifiers
+                      $ toModifiers attrs [SkillModifier SkillIntellect 2]
+                      )
                       source
                       target
                   ]
                 , Label
                   "Combat"
                   [ CreatePhaseEffect
-                      (EffectModifiers [SkillModifier SkillCombat 2])
+                      (EffectModifiers
+                      $ toModifiers attrs [SkillModifier SkillCombat 2]
+                      )
                       source
                       target
                   ]
                 , Label
                   "Agility"
                   [ CreatePhaseEffect
-                      (EffectModifiers [SkillModifier SkillAgility 2])
+                      (EffectModifiers
+                      $ toModifiers attrs [SkillModifier SkillAgility 2]
+                      )
                       source
                       target
                   ]

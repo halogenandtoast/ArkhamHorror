@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.LeoDeLuca where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype LeoDeLuca = LeoDeLuca Attrs
@@ -18,7 +19,7 @@ leoDeLuca uuid = LeoDeLuca $ (baseAttrs uuid "01048")
 
 instance HasModifiersFor env LeoDeLuca where
   getModifiersFor _ (InvestigatorTarget iid) (LeoDeLuca a) =
-    pure [ AdditionalActions 1 | ownedBy a iid ]
+    pure [ toModifier a (AdditionalActions 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env LeoDeLuca where

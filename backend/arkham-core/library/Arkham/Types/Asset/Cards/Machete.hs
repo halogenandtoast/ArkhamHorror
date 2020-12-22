@@ -34,7 +34,8 @@ instance AssetRunner env => RunMessage env Machete where
       criteriaMet <- (== 1) . unEnemyCount <$> getCount iid
       a <$ unshiftMessages
         [ CreateSkillTestEffect
-          (EffectModifiers
+          (EffectModifiers $ toModifiers
+            attrs
             ([ DamageDealt 1 | criteriaMet ] <> [SkillModifier SkillCombat 1])
           )
           source

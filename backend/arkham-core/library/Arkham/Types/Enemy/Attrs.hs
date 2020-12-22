@@ -215,7 +215,8 @@ modifiedEnemyFight
 modifiedEnemyFight Attrs {..} = do
   msource <- asks $ getSource ForSkillTest
   let source = fromMaybe (EnemySource enemyId) msource
-  modifiers' <- getModifiersFor source (EnemyTarget enemyId) ()
+  modifiers' <-
+    map modifierType <$> getModifiersFor source (EnemyTarget enemyId) ()
   pure $ foldr applyModifier enemyFight modifiers'
  where
   applyModifier (EnemyFight m) n = max 0 (n + m)
@@ -228,7 +229,8 @@ modifiedEnemyEvade
 modifiedEnemyEvade Attrs {..} = do
   msource <- asks $ getSource ForSkillTest
   let source = fromMaybe (EnemySource enemyId) msource
-  modifiers' <- getModifiersFor source (EnemyTarget enemyId) ()
+  modifiers' <-
+    map modifierType <$> getModifiersFor source (EnemyTarget enemyId) ()
   pure $ foldr applyModifier enemyEvade modifiers'
  where
   applyModifier (EnemyEvade m) n = max 0 (n + m)
@@ -242,7 +244,8 @@ getModifiedDamageAmount
 getModifiedDamageAmount Attrs {..} baseAmount = do
   msource <- asks $ getSource ForSkillTest
   let source = fromMaybe (EnemySource enemyId) msource
-  modifiers' <- getModifiersFor source (EnemyTarget enemyId) ()
+  modifiers' <-
+    map modifierType <$> getModifiersFor source (EnemyTarget enemyId) ()
   let updatedAmount = foldr applyModifier baseAmount modifiers'
   pure $ foldr applyModifierCaps updatedAmount modifiers'
  where
@@ -255,7 +258,9 @@ canEnterLocation
   :: (EnemyRunner env, MonadReader env m) => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
   traits <- getSet eid
-  modifiers' <- getModifiersFor (EnemySource eid) (LocationTarget lid) ()
+  modifiers' <-
+    map modifierType
+      <$> getModifiersFor (EnemySource eid) (LocationTarget lid) ()
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
@@ -304,7 +309,9 @@ getModifiedHealth
   -> m Int
 getModifiedHealth Attrs {..} = do
   playerCount <- getPlayerCount
-  modifiers' <- getModifiersFor (EnemySource enemyId) (EnemyTarget enemyId) ()
+  modifiers' <-
+    map modifierType
+      <$> getModifiersFor (EnemySource enemyId) (EnemyTarget enemyId) ()
   pure $ foldr applyModifier (fromGameValue enemyHealth playerCount) modifiers'
  where
   applyModifier (HealthModifier m) n = max 0 (n + m)

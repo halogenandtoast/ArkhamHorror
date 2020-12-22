@@ -41,7 +41,7 @@ instance (AssetRunner env) => RunMessage env Flashlight where
       lid <- getId iid
       unshiftMessages
         [ CreateSkillTestEffect
-          (EffectModifiers [ShroudModifier (-2)])
+          (EffectModifiers $ toModifiers attrs [ShroudModifier (-2)])
           source
           (LocationTarget lid)
         , Investigate iid lid source SkillIntellect False

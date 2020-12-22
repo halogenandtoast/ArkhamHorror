@@ -20,13 +20,13 @@ keenEye uuid = KeenEye $ baseAttrs uuid "07152"
 instance
   (HasCount ResourceCount env InvestigatorId)
   => HasActions env KeenEye where
-  getActions iid (FastPlayerWindow) (KeenEye a)
-    | ownedBy a iid = do
-      resourceCount <- getResourceCount iid
-      pure
-        [ UseCardAbility iid (toSource a) Nothing abilityNumber | abilityNumber <- [1..2]
-        , resourceCount > 1
-        ]
+  getActions iid FastPlayerWindow (KeenEye a) | ownedBy a iid = do
+    resourceCount <- getResourceCount iid
+    pure
+      [ UseCardAbility iid (toSource a) Nothing abilityNumber
+      | resourceCount > 1
+      , abilityNumber <- [1 .. 2]
+      ]
   getActions _ _ _ = pure []
 
 instance HasModifiersFor env KeenEye where
@@ -38,7 +38,7 @@ instance AssetRunner env => RunMessage env KeenEye where
       a <$ unshiftMessages
         [ SpendResources iid 2
         , CreatePhaseEffect
-          (EffectModifiers [SkillModifier SkillIntellect 1])
+          (EffectModifiers $ toModifiers attrs [SkillModifier SkillIntellect 1])
           source
           (InvestigatorTarget iid)
         ]
@@ -46,7 +46,7 @@ instance AssetRunner env => RunMessage env KeenEye where
       a <$ unshiftMessages
         [ SpendResources iid 1
         , CreatePhaseEffect
-          (EffectModifiers [SkillModifier SkillCombat 1])
+          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
           source
           (InvestigatorTarget iid)
         ]

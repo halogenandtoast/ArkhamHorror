@@ -10,6 +10,7 @@ import Arkham.Import
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Trait
 
 newtype DaisyWalkerParallel = DaisyWalkerParallel Attrs
@@ -33,8 +34,9 @@ instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor en
     | iid == investigatorId
     = do
       tomeCount <- unAssetCount <$> getCount (investigatorId, [Tome])
-      baseModifiers <- getModifiersFor source target attrs
+      baseModifiers <- map modifierType <$> getModifiersFor source target attrs
       pure
+        $ toModifiers attrs
         $ SkillModifier SkillWillpower tomeCount
         : SanityModifier tomeCount
         : baseModifiers

@@ -4,6 +4,7 @@ module Arkham.Types.Enemy.Cards.StubbornDetective where
 import Arkham.Import
 
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
 newtype StubbornDetective = StubbornDetective Attrs
@@ -23,7 +24,7 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env StubbornDete
   getModifiersFor _ (InvestigatorTarget iid) (StubbornDetective a@Attrs {..})
     | spawned a = do
       locationId <- getId @LocationId iid
-      pure [ Blank | locationId == enemyLocation ]
+      pure $ toModifiers a [ Blank | locationId == enemyLocation ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env StubbornDetective where

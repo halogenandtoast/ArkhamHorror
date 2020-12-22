@@ -8,6 +8,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
 newtype Whippoorwill = Whippoorwill Attrs
@@ -25,7 +26,9 @@ whippoorwill uuid =
 instance HasId LocationId env InvestigatorId => HasModifiersFor env Whippoorwill where
   getModifiersFor _ (InvestigatorTarget iid) (Whippoorwill attrs) = do
     locationId <- getId iid
-    pure [ AnySkillValue (-1) | locationId == enemyLocation attrs ]
+    pure $ toModifiers
+      attrs
+      [ AnySkillValue (-1) | locationId == enemyLocation attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env Whippoorwill where

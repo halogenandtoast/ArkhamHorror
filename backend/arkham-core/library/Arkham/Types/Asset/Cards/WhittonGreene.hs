@@ -8,6 +8,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
@@ -36,7 +37,7 @@ instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor en
   getModifiersFor _ (InvestigatorTarget iid) (WhittonGreene a) | ownedBy a iid =
     do
       active <- (> 0) . unAssetCount <$> getCount (iid, [Tome, Relic])
-      pure [ SkillModifier SkillIntellect 1 | active ]
+      pure $ toModifiers a [ SkillModifier SkillIntellect 1 | active ]
   getModifiersFor _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env WhittonGreene where

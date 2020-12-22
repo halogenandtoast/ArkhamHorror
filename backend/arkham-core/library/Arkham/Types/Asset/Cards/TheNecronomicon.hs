@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.TheNecronomicon where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import qualified Arkham.Types.Token as Token
 
@@ -19,8 +20,10 @@ theNecronomicon uuid = TheNecronomicon $ (baseAttrs uuid "01009")
   }
 
 instance HasModifiersFor env TheNecronomicon where
-  getModifiersFor _ (InvestigatorTarget iid) (TheNecronomicon a) =
-    pure [ ForcedTokenChange Token.ElderSign [Token.AutoFail] | ownedBy a iid ]
+  getModifiersFor _ (InvestigatorTarget iid) (TheNecronomicon a) = pure
+    [ toModifier a (ForcedTokenChange Token.ElderSign [Token.AutoFail])
+    | ownedBy a iid
+    ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env TheNecronomicon where

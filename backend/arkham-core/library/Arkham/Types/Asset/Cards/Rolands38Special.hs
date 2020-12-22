@@ -47,7 +47,8 @@ instance AssetRunner env => RunMessage env Rolands38Special where
       anyClues <- (/= 0) . unClueCount <$> getCount locationId
       unshiftMessages
         [ CreateSkillTestEffect
-          (EffectModifiers
+          (EffectModifiers $ toModifiers
+            attrs
             [ DamageDealt 1
             , SkillModifier SkillCombat (if anyClues then 3 else 1)
             ]

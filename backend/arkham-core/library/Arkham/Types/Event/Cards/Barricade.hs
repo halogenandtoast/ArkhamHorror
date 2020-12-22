@@ -4,6 +4,7 @@ module Arkham.Types.Event.Cards.Barricade where
 import Arkham.Import
 
 import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Helpers
 import Arkham.Types.Event.Runner
 
 newtype Barricade = Barricade Attrs
@@ -13,8 +14,9 @@ barricade :: InvestigatorId -> EventId -> Barricade
 barricade iid uuid = Barricade $ baseAttrs iid uuid "01038"
 
 instance HasModifiersFor env Barricade where
-  getModifiersFor _ (LocationTarget lid) (Barricade attrs) =
-    pure [ CannotBeEnteredByNonElite | lid `elem` eventAttachedLocation attrs ]
+  getModifiersFor _ (LocationTarget lid) (Barricade attrs) = pure $ modifiers
+    attrs
+    [ CannotBeEnteredByNonElite | lid `elem` eventAttachedLocation attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env Barricade where

@@ -15,7 +15,9 @@ lockedDoor uuid _ = LockedDoor $ baseAttrs uuid "01174"
 
 instance HasModifiersFor env LockedDoor where
   getModifiersFor _ (LocationTarget lid) (LockedDoor attrs) =
-    pure [ CannotInvestigate | treacheryOnLocation lid attrs ]
+    pure $ toModifiers
+      attrs
+      [ CannotInvestigate | treacheryOnLocation lid attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env LockedDoor where

@@ -5,6 +5,7 @@ import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype FrozenInFear = FrozenInFear Attrs
@@ -14,10 +15,12 @@ frozenInFear :: TreacheryId -> a -> FrozenInFear
 frozenInFear uuid _ = FrozenInFear $ baseAttrs uuid "01164"
 
 instance HasModifiersFor env FrozenInFear where
-  getModifiersFor _ (InvestigatorTarget iid) (FrozenInFear attrs) = pure
-    [ ActionCostOf (FirstOneOf [Action.Move, Action.Fight, Action.Evade]) 1
-    | treacheryOnInvestigator iid attrs
-    ]
+  getModifiersFor _ (InvestigatorTarget iid) (FrozenInFear attrs) =
+    pure $ toModifiers
+      attrs
+      [ ActionCostOf (FirstOneOf [Action.Move, Action.Fight, Action.Evade]) 1
+      | treacheryOnInvestigator iid attrs
+      ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env FrozenInFear where

@@ -5,6 +5,7 @@ import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
@@ -24,7 +25,8 @@ facultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate $ baseAttrs
 
 instance HasModifiersFor env FacultyOfficesTheHourIsLate where
   getModifiersFor _ target (FacultyOfficesTheHourIsLate attrs)
-    | isTarget attrs target = pure [ Blocked | not (locationRevealed attrs) ]
+    | isTarget attrs target = pure
+    $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env FacultyOfficesTheHourIsLate where

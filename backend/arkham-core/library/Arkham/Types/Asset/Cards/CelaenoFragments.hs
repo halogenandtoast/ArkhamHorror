@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.CelaenoFragments where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype CelaenoFragments = CelaenoFragments Attrs
@@ -19,6 +20,7 @@ instance HasCount CardCount env InvestigatorId => HasModifiersFor env CelaenoFra
     | ownedBy attrs iid = do
       count' <- unCardCount <$> getCount iid
       pure
+        . toModifiers attrs
         $ [ SkillModifier SkillIntellect 1 | count' >= 5 ]
         <> [ SkillModifier SkillWillpower 1 | count' >= 10 ]
         <> [ SkillModifier SkillIntellect 1 | count' >= 15 ]

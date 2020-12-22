@@ -31,7 +31,7 @@ foulSwamp = FoulSwamp $ baseAttrs
 instance HasModifiersFor env FoulSwamp where
   getModifiersFor _ (InvestigatorTarget iid) (FoulSwamp attrs)
     | iid `member` locationInvestigators attrs = pure
-      [CannotHealHorror, CannotCancelHorror]
+    $ toModifiers attrs [CannotHealHorror, CannotCancelHorror]
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
@@ -73,7 +73,7 @@ instance LocationRunner env => RunMessage env FoulSwamp where
     UseCardAbility iid source (Just (IntMetadata n)) 1
       | isSource attrs source -> l <$ unshiftMessages
         [ CreateSkillTestEffect
-          (EffectModifiers [SkillModifier SkillWillpower n])
+          (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower n])
           source
           (InvestigatorTarget iid)
         , BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 7

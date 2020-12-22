@@ -92,7 +92,7 @@ actionFromMessage (ActivateCardAbilityAction _ ability) =
 actionFromMessage _ = Nothing
 
 preventedByModifier :: Attrs -> Message -> Modifier -> Bool
-preventedByModifier Attrs {..} msg (CannotTakeAction matcher) =
+preventedByModifier Attrs {..} msg (Modifier _ (CannotTakeAction matcher)) =
   case actionFromMessage msg of
     Just action -> case matcher of
       IsAction a -> a == action

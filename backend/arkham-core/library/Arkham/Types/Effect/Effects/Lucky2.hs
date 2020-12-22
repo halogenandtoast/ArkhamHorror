@@ -7,6 +7,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
+import Arkham.Types.Effect.Helpers
 
 newtype Lucky2 = Lucky2 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -15,8 +16,8 @@ lucky2 :: EffectArgs -> Lucky2
 lucky2 = Lucky2 . uncurry4 (baseAttrs "01084")
 
 instance HasModifiersFor env Lucky2 where
-  getModifiersFor _ target (Lucky2 Attrs {..}) | target == effectTarget =
-    pure [AnySkillValue 2]
+  getModifiersFor _ target (Lucky2 a@Attrs {..}) | target == effectTarget =
+    pure [modifier a $ AnySkillValue 2]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env Lucky2 where

@@ -7,6 +7,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
+import Arkham.Types.Effect.Helpers
 
 newtype WillToSurvive4 = WillToSurvive4 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -15,8 +16,9 @@ willToSurvive4 :: EffectArgs -> WillToSurvive4
 willToSurvive4 = WillToSurvive4 . uncurry4 (baseAttrs "01085")
 
 instance HasModifiersFor env WillToSurvive4 where
-  getModifiersFor _ target (WillToSurvive4 Attrs {..})
-    | target == effectTarget = pure [DoNotDrawChaosTokensForSkillChecks]
+  getModifiersFor _ target (WillToSurvive4 a@Attrs {..})
+    | target == effectTarget = pure
+      [modifier a DoNotDrawChaosTokensForSkillChecks]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env WillToSurvive4 where

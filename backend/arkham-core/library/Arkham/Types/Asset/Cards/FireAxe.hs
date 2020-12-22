@@ -31,7 +31,7 @@ instance HasCount ResourceCount env InvestigatorId => HasModifiersFor env FireAx
     | ownedBy a iid && isSource a source
     = do
       resourceCount <- getResourceCount iid
-      pure [ DamageDealt 1 | resourceCount == 0 ]
+      pure $ toModifiers a [ DamageDealt 1 | resourceCount == 0 ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env FireAxe where
@@ -59,7 +59,7 @@ instance (AssetRunner env) => RunMessage env FireAxe where
     UseCardAbility iid source _ 1 | isSource attrs source ->
       a <$ unshiftMessages
         [ CreateSkillTestEffect
-          (EffectModifiers [SkillModifier SkillCombat 1])
+          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
           source
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
@@ -68,7 +68,7 @@ instance (AssetRunner env) => RunMessage env FireAxe where
       a <$ unshiftMessages
         [ SpendResources iid 1
         , CreateSkillTestEffect
-          (EffectModifiers [SkillModifier SkillCombat 2])
+          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
           source
           (InvestigatorTarget iid)
         ]

@@ -4,6 +4,7 @@ module Arkham.Types.Treachery.Cards.DissonantVoices where
 import Arkham.Import
 
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype DissonantVoices= DissonantVoices Attrs
@@ -13,8 +14,10 @@ dissonantVoices :: TreacheryId -> a -> DissonantVoices
 dissonantVoices uuid _ = DissonantVoices $ baseAttrs uuid "01165"
 
 instance HasModifiersFor env DissonantVoices where
-  getModifiersFor _ (InvestigatorTarget iid) (DissonantVoices attrs) = pure
-    [ CannotPlay [AssetType, EventType] | treacheryOnInvestigator iid attrs ]
+  getModifiersFor _ (InvestigatorTarget iid) (DissonantVoices attrs) =
+    pure $ toModifiers
+      attrs
+      [ CannotPlay [AssetType, EventType] | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env DissonantVoices where

@@ -333,7 +333,8 @@ getSkillValueOf
   -> Investigator
   -> m Int
 getSkillValueOf skillType i = do
-  modifiers' <- getModifiersFor (toSource i) (toTarget i) ()
+  modifiers' <-
+    map modifierType <$> getModifiersFor (toSource i) (toTarget i) ()
   let
     mBaseValue = foldr
       (\modifier current -> case modifier of

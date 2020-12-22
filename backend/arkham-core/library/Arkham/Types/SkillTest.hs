@@ -142,7 +142,8 @@ skillIconCount SkillTest {..} = length . filter matches $ concatMap
 getModifiedSkillTestDifficulty
   :: (MonadReader env m, HasModifiersFor env ()) => SkillTest -> m Int
 getModifiedSkillTestDifficulty s = do
-  modifiers' <- getModifiersFor (toSource s) SkillTestTarget ()
+  modifiers' <-
+    map modifierType <$> getModifiersFor (toSource s) SkillTestTarget ()
   pure $ foldr applyModifier (skillTestDifficulty s) modifiers'
  where
   applyModifier (Difficulty m) n = max 0 (n + m)
@@ -168,7 +169,8 @@ getModifiedTokenValue
   -> DrawnToken
   -> m Int
 getModifiedTokenValue s t = do
-  tokenModifiers' <- getModifiersFor (toSource s) (DrawnTokenTarget t) ()
+  tokenModifiers' <-
+    map modifierType <$> getModifiersFor (toSource s) (DrawnTokenTarget t) ()
   modifiedTokenFaces' <- getModifiedTokenFaces s t
   getSum . mconcat <$> for
     modifiedTokenFaces'
@@ -201,7 +203,9 @@ getModifiedTokenFaces
   -> DrawnToken
   -> m [Token]
 getModifiedTokenFaces s token = do
-  tokenModifiers' <- getModifiersFor (toSource s) (DrawnTokenTarget token) ()
+  tokenModifiers' <-
+    map modifierType
+      <$> getModifiersFor (toSource s) (DrawnTokenTarget token) ()
   pure $ foldr applyModifier [drawnTokenFace token] tokenModifiers'
  where
   applyModifier (ForcedTokenChange t ts) [t'] | t == t' = ts
@@ -210,7 +214,9 @@ getModifiedTokenFaces s token = do
 instance SkillTestRunner env => RunMessage env SkillTest where
   runMessage msg s@SkillTest {..} = case msg of
     TriggerSkillTest iid -> do
-      modifiers' <- getModifiersFor (toSource s) (InvestigatorTarget iid) ()
+      modifiers' <-
+        map modifierType
+          <$> getModifiersFor (toSource s) (InvestigatorTarget iid) ()
       if DoNotDrawChaosTokensForSkillChecks `elem` modifiers'
         then s <$ unshiftMessages
           [RunSkillTestSourceNotification iid skillTestSource, RunSkillTest iid]

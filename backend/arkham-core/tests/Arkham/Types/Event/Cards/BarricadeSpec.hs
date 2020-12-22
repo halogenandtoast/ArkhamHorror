@@ -18,7 +18,11 @@ spec = do
           [moveTo investigator location, playEvent investigator barricade]
         $ (events %~ insertEntity barricade)
         . (locations %~ insertEntity location)
-      withGame game (getModifiersFor TestSource (toTarget location) ())
+      withGame
+          game
+          (map modifierType
+          <$> getModifiersFor TestSource (toTarget location) ()
+          )
         `shouldReturn` [CannotBeEnteredByNonElite]
       barricade `shouldSatisfy` isAttachedTo game location
 

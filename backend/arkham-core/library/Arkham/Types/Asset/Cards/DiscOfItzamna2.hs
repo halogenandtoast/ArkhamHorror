@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.DiscOfItzamna2 where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
@@ -28,7 +29,7 @@ instance (AssetRunner env) => RunMessage env DiscOfItzamna2 where
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       unshiftMessage
         (CreateSkillTestEffect
-          (EffectModifiers [SkillModifier SkillWillpower 1])
+          (EffectModifiers [toModifier attrs $ SkillModifier SkillWillpower 1])
           (toSource attrs)
           (InvestigatorTarget iid)
         )

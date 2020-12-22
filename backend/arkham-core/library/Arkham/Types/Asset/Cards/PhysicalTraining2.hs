@@ -33,7 +33,7 @@ instance (AssetRunner env) => RunMessage env PhysicalTraining2 where
       a <$ unshiftMessages
         [ SpendResources iid 1
         , CreateSkillTestEffect
-          (EffectModifiers [SkillModifier SkillWillpower 1])
+          (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower 1])
           source
           (InvestigatorTarget iid)
         ]
@@ -41,7 +41,7 @@ instance (AssetRunner env) => RunMessage env PhysicalTraining2 where
       a <$ unshiftMessages
         [ SpendResources iid 1
         , CreateSkillTestEffect
-          (EffectModifiers [SkillModifier SkillCombat 1])
+          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
           source
           (InvestigatorTarget iid)
         ]

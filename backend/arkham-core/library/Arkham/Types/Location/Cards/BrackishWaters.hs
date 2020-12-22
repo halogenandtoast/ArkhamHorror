@@ -25,7 +25,9 @@ brackishWaters = BrackishWaters $ baseAttrs
 
 instance HasModifiersFor env BrackishWaters where
   getModifiersFor _ (InvestigatorTarget iid) (BrackishWaters attrs) =
-    pure [ CannotPlay [AssetType] | iid `elem` locationInvestigators attrs ]
+    pure $ toModifiers
+      attrs
+      [ CannotPlay [AssetType] | iid `elem` locationInvestigators attrs ]
   getModifiersFor _ _ _ = pure []
 
 -- TODO: LEFT OFF HERE WITH HAND OF

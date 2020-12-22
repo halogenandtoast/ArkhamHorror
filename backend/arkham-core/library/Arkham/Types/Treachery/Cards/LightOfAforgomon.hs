@@ -8,6 +8,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype LightOfAforgomon = LightOfAforgomon Attrs
@@ -17,8 +18,8 @@ lightOfAforgomon :: TreacheryId -> a -> LightOfAforgomon
 lightOfAforgomon uuid _ = LightOfAforgomon $ baseAttrs uuid "02085"
 
 instance HasModifiersFor env LightOfAforgomon where
-  getModifiersFor _ (InvestigatorTarget _) (LightOfAforgomon _) =
-    pure [TreatAllDamageAsDirect]
+  getModifiersFor _ (InvestigatorTarget _) (LightOfAforgomon attrs) =
+    pure $ toModifiers attrs [TreatAllDamageAsDirect]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env LightOfAforgomon where

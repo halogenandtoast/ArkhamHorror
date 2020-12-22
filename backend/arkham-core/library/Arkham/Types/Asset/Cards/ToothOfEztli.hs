@@ -8,6 +8,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype ToothOfEztli = ToothOfEztli Attrs
@@ -20,7 +21,9 @@ toothOfEztli uuid =
 instance HasModifiersFor env ToothOfEztli where
   getModifiersFor (SkillTestSource _ _ (TreacherySource _) _) (InvestigatorTarget iid) (ToothOfEztli a)
     | ownedBy a iid
-    = pure [SkillModifier SkillWillpower 1, SkillModifier SkillAgility 1]
+    = pure $ toModifiers
+      a
+      [SkillModifier SkillWillpower 1, SkillModifier SkillAgility 1]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env ToothOfEztli where

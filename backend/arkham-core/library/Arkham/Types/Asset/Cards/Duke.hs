@@ -23,10 +23,10 @@ duke uuid =
 instance HasModifiersFor env Duke where
   getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) (InvestigatorTarget iid) (Duke a)
     | ownedBy a iid && isSource a source
-    = pure [BaseSkillOf SkillCombat 4, DamageDealt 1]
+    = pure $ toModifiers a [BaseSkillOf SkillCombat 4, DamageDealt 1]
   getModifiersFor (SkillTestSource _ _ source (Just Action.Investigate)) (InvestigatorTarget iid) (Duke a)
     | ownedBy a iid && isSource a source
-    = pure [BaseSkillOf SkillIntellect 4]
+    = pure $ toModifiers a [BaseSkillOf SkillIntellect 4]
   getModifiersFor _ _ _ = pure []
 
 fightAbility :: Attrs -> Ability

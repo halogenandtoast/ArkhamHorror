@@ -9,6 +9,7 @@ import Arkham.Import
 
 import Arkham.Types.Action
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Trait
 
 newtype JazzMulligan = JazzMulligan Attrs
@@ -36,11 +37,11 @@ instance HasId LocationId env InvestigatorId => HasActions env JazzMulligan wher
   getActions iid window (JazzMulligan attrs) = getActions iid window attrs
 
 instance HasSet Trait env LocationId => HasModifiersFor env JazzMulligan where
-  getModifiersFor (LocationSource lid) (InvestigatorTarget iid) (JazzMulligan attrs)
+  getModifiersFor (InvestigatorSource iid) (LocationTarget lid) (JazzMulligan attrs)
     | ownedBy attrs iid
     = do
       traits <- getSet lid
-      pure [ IgnoreText | Miskatonic `member` traits ]
+      pure [ toModifier attrs Blank | Miskatonic `member` traits ]
   getModifiersFor _ _ _ = pure []
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env JazzMulligan where

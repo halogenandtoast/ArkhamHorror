@@ -46,7 +46,8 @@ instance ActionRunner env => HasActions env DowntownFirstBankOfArkham where
         (ActionCost 1 Nothing locationTraits)
       canGainResources <-
         notElem CannotGainResources
-          <$> getInvestigatorModifiers iid (toSource attrs)
+        . map modifierType
+        <$> getInvestigatorModifiers iid (toSource attrs)
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction iid (ability attrs)

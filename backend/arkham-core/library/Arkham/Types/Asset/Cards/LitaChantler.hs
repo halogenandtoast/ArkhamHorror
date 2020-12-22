@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.LitaChantler where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
@@ -18,13 +19,13 @@ litaChantler uuid = LitaChantler $ (baseAttrs uuid "01117")
   }
 
 instance HasId LocationId env InvestigatorId => HasModifiersFor env LitaChantler where
-  getModifiersFor _ (InvestigatorTarget iid) (LitaChantler Attrs {..}) = do
+  getModifiersFor _ (InvestigatorTarget iid) (LitaChantler a@Attrs {..}) = do
     locationId <- getId @LocationId iid
     case assetInvestigator of
       Nothing -> pure []
       Just ownerId -> do
         sameLocation <- (== locationId) <$> getId ownerId
-        pure [ SkillModifier SkillCombat 1 | sameLocation ]
+        pure [ toModifier a (SkillModifier SkillCombat 1) | sameLocation ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env LitaChantler where
@@ -44,7 +45,7 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
               [ Run
                 [ UseCardAbility iid (AssetSource assetId) Nothing 1
                 , CreateSkillTestEffect
-                  (EffectModifiers [DamageTaken 1])
+                  (EffectModifiers [toModifier attrs (DamageTaken 1)])
                   (toSource attrs)
                   (EnemyTarget eid)
                 ]

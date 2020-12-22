@@ -8,6 +8,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype BearTrap = BearTrap Attrs
@@ -18,8 +19,9 @@ bearTrap :: AssetId -> BearTrap
 bearTrap uuid = BearTrap $ (baseAttrs uuid "81020") { assetIsStory = True }
 
 instance HasModifiersFor env BearTrap where
-  getModifiersFor _ (EnemyTarget eid) (BearTrap Attrs {..})
-    | Just eid == assetEnemy = pure [EnemyFight (-1), EnemyEvade (-1)]
+  getModifiersFor _ (EnemyTarget eid) (BearTrap attrs@Attrs {..})
+    | Just eid == assetEnemy = pure
+    $ toModifiers attrs [EnemyFight (-1), EnemyEvade (-1)]
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability

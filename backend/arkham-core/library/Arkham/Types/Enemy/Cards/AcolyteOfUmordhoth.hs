@@ -4,6 +4,7 @@ module Arkham.Types.Enemy.Cards.AcolyteOfUmordhoth where
 import Arkham.Import
 
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
 newtype AcolyteOfUmordhoth = AcolyteOfUmordhoth Attrs
@@ -21,12 +22,12 @@ acolyteOfUmordhoth uuid =
     . (preyL .~ FewestCards)
 
 instance HasCount CardCount env InvestigatorId => HasModifiersFor env AcolyteOfUmordhoth where
-  getModifiersFor _ (EnemyTarget eid) (AcolyteOfUmordhoth Attrs {..})
+  getModifiersFor _ (EnemyTarget eid) (AcolyteOfUmordhoth a@Attrs {..})
     | eid == enemyId = do
       anyWithoutCards <- or <$> for
         (setToList enemyEngagedInvestigators)
         (\iid -> (== 0) . unCardCount <$> getCount iid)
-      pure [ CannotBeEvaded | anyWithoutCards ]
+      pure $ toModifiers a [ CannotBeEvaded | anyWithoutCards ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env AcolyteOfUmordhoth where

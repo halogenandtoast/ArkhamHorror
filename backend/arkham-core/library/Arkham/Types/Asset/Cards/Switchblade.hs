@@ -33,7 +33,7 @@ instance (AssetRunner env) => RunMessage env Switchblade where
     PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} n
       | n > 2 && isSource attrs source -> a <$ unshiftMessage
         (CreateSkillTestEffect
-          (EffectModifiers [DamageDealt 1])
+          (EffectModifiers $ toModifiers attrs [DamageDealt 1])
           source
           (InvestigatorTarget iid)
         )

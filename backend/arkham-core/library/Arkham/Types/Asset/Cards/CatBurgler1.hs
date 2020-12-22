@@ -23,7 +23,7 @@ catBurgler1 uuid = CatBurgler1 $ (baseAttrs uuid "01055")
 
 instance HasModifiersFor env CatBurgler1 where
   getModifiersFor _ (InvestigatorTarget iid) (CatBurgler1 a) =
-    pure [ SkillModifier SkillAgility 1 | ownedBy a iid ]
+    pure $ toModifiers a [ SkillModifier SkillAgility 1 | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
@@ -45,7 +45,7 @@ instance AssetRunner env => RunMessage env CatBurgler1 where
   runMessage msg (CatBurgler1 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       unshiftMessage $ CreateSkillTestEffect
-        (EffectModifiers [SkillModifier SkillAgility 1])
+        (EffectModifiers $ toModifiers attrs [SkillModifier SkillAgility 1])
         (toSource attrs)
         (InvestigatorTarget iid)
       CatBurgler1 <$> runMessage msg attrs

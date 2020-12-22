@@ -6,6 +6,7 @@ import Arkham.Import
 import Arkham.Types.Action
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 
 newtype GuestHall = GuestHall Attrs
@@ -24,7 +25,8 @@ guestHall = GuestHall $ baseAttrs
 
 instance HasModifiersFor env GuestHall where
   getModifiersFor _ (InvestigatorTarget iid) (GuestHall attrs) = do
-    pure
+    pure $ toModifiers
+      attrs
       [ CannotTakeAction (IsAction Draw)
       | iid `elem` locationInvestigators attrs
       ]

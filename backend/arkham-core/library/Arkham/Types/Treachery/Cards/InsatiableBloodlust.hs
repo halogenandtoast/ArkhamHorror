@@ -4,6 +4,7 @@ module Arkham.Types.Treachery.Cards.InsatiableBloodlust where
 import Arkham.Import
 
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype InsatiableBloodlust = InsatiableBloodlust Attrs
@@ -14,7 +15,8 @@ insatiableBloodlust uuid _ = InsatiableBloodlust $ baseAttrs uuid "81036"
 
 instance HasModifiersFor env InsatiableBloodlust where
   getModifiersFor _ (EnemyTarget eid) (InsatiableBloodlust attrs)
-    | treacheryOnEnemy eid attrs = pure
+    | treacheryOnEnemy eid attrs = pure $ toModifiers
+      attrs
       [EnemyFight 1, DamageDealt 1, HorrorDealt 1, CannotBeEvaded]
   getModifiersFor _ _ _ = pure []
 

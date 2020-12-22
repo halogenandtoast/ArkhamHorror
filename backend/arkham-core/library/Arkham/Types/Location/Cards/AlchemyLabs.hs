@@ -9,8 +9,8 @@ import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
@@ -30,7 +30,7 @@ alchemyLabs = AlchemyLabs $ baseAttrs
 
 instance HasModifiersFor env AlchemyLabs where
   getModifiersFor _ target (AlchemyLabs attrs) | isTarget attrs target =
-    pure [ Blocked | not (locationRevealed attrs) ]
+    pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env AlchemyLabs where

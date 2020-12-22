@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.PoliceBadge2 where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype PoliceBadge2 = PoliceBadge2 Attrs
@@ -15,7 +16,7 @@ policeBadge2 uuid =
 
 instance HasModifiersFor env PoliceBadge2 where
   getModifiersFor _ (InvestigatorTarget iid) (PoliceBadge2 a) =
-    pure [ SkillModifier SkillWillpower 1 | ownedBy a iid ]
+    pure [ toModifier a (SkillModifier SkillWillpower 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env PoliceBadge2 where

@@ -7,8 +7,8 @@ where
 
 import Arkham.Import
 
-import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Sequence as X
+import Arkham.Types.Game.Helpers
 
 data Attrs = Attrs
   { agendaDoom          :: Int

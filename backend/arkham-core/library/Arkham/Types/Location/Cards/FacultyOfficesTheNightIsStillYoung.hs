@@ -34,7 +34,8 @@ facultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung
 
 instance HasModifiersFor env FacultyOfficesTheNightIsStillYoung where
   getModifiersFor _ target (FacultyOfficesTheNightIsStillYoung attrs)
-    | isTarget attrs target = pure [ Blocked | not (locationRevealed attrs) ]
+    | isTarget attrs target = pure
+    $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env FacultyOfficesTheNightIsStillYoung where

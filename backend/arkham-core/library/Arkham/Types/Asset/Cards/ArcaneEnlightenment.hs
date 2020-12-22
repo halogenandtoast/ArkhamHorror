@@ -8,6 +8,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
@@ -21,7 +22,7 @@ arcaneEnlightenment uuid =
 
 instance HasModifiersFor env ArcaneEnlightenment where
   getModifiersFor _ (InvestigatorTarget iid) (ArcaneEnlightenment attrs) =
-    pure [ HandSize 1 | ownedBy attrs iid ]
+    pure [ toModifier attrs (HandSize 1) | ownedBy attrs iid ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env ArcaneEnlightenment where

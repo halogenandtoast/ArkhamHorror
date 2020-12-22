@@ -25,7 +25,7 @@ parlor = Parlor $ baseAttrs
 
 instance HasModifiersFor env Parlor where
   getModifiersFor _ target (Parlor attrs) | isTarget attrs target =
-    pure [ Blocked | not (locationRevealed attrs) ]
+    pure $ toModifiers attrs [ Blocked | not (locationRevealed attrs) ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env Parlor where

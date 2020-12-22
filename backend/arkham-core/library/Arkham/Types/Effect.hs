@@ -90,8 +90,11 @@ buildSkillTestEffect eid metadata source target =
   SkillTestEffect' $ skillTestEffect eid metadata source target
 
 buildTokenValueEffect :: EffectId -> Int -> Source -> Target -> Effect
-buildTokenValueEffect eid n source target = SkillTestEffect'
-  $ skillTestEffect eid (EffectModifiers [TokenValueModifier n]) source target
+buildTokenValueEffect eid n source target = SkillTestEffect' $ skillTestEffect
+  eid
+  (EffectModifiers [Modifier source $ TokenValueModifier n])
+  source
+  target
 
 buildPhaseEffect
   :: EffectId -> EffectMetadata Message -> Source -> Target -> Effect

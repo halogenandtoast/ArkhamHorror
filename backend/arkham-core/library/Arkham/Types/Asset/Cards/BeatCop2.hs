@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.BeatCop2 where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype BeatCop2 = BeatCop2 Attrs
@@ -18,7 +19,7 @@ beatCop2 uuid = BeatCop2 $ (baseAttrs uuid "01018")
 
 instance HasModifiersFor env BeatCop2 where
   getModifiersFor _ (InvestigatorTarget iid) (BeatCop2 a) =
-    pure [ SkillModifier SkillCombat 1 | ownedBy a iid ]
+    pure [ toModifier a (SkillModifier SkillCombat 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env BeatCop2 where

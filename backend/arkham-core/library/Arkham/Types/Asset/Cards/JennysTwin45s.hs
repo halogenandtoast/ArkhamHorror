@@ -38,7 +38,9 @@ instance AssetRunner env => RunMessage env JennysTwin45s where
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessages
         [ CreateSkillTestEffect
-          (EffectModifiers [DamageDealt 1, SkillModifier SkillCombat 2])
+          (EffectModifiers
+          $ toModifiers attrs [DamageDealt 1, SkillModifier SkillCombat 2]
+          )
           source
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False

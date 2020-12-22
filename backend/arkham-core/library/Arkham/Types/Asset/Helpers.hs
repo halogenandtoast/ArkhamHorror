@@ -6,12 +6,13 @@ module Arkham.Types.Asset.Helpers
   )
 where
 
+import Arkham.Prelude
+
 import Arkham.Types.Classes
 import Arkham.Types.Game.Helpers as X
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 import Arkham.Types.Window
-import ClassyPrelude
 
 hasFightActions
   :: forall env m

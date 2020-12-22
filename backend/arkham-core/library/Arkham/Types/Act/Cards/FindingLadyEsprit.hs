@@ -63,7 +63,7 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
       [ladyEspritSpawnLocation] <- setToList <$> bayouLocations
       a <$ unshiftMessages
         [ CreateStoryAssetAt "81019" ladyEspritSpawnLocation
-        , PutSetAsideIntoPlay (SetAsideLocations mempty)
+        , PutSetAsideIntoPlay (SetAsideLocationsTarget mempty)
         , NextAdvanceActStep aid 2
         ]
     NextAdvanceActStep aid 2 | aid == actId && actSequence == "Act 1b" -> do

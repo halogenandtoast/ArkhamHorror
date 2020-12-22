@@ -38,7 +38,7 @@ instance (AssetRunner env) => RunMessage env Knife where
     UseCardAbility iid source _ 1 | isSource attrs source ->
       a <$ unshiftMessages
         [ CreateSkillTestEffect
-          (EffectModifiers [SkillModifier SkillCombat 1])
+          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
           source
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
@@ -47,7 +47,9 @@ instance (AssetRunner env) => RunMessage env Knife where
       a <$ unshiftMessages
         [ Discard (toTarget attrs)
         , CreateSkillTestEffect
-          (EffectModifiers [SkillModifier SkillCombat 2, DamageDealt 1])
+          (EffectModifiers
+          $ toModifiers attrs [SkillModifier SkillCombat 2, DamageDealt 1]
+          )
           source
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False

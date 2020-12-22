@@ -5,6 +5,7 @@ import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
@@ -29,7 +30,9 @@ arkhamWoodsCorpseRiddenClearing = ArkhamWoodsCorpseRiddenClearing $ base
 
 instance HasModifiersFor env ArkhamWoodsCorpseRiddenClearing where
   getModifiersFor _ (EnemyTarget eid) (ArkhamWoodsCorpseRiddenClearing attrs) =
-    pure [ MaxDamageTaken 1 | eid `elem` locationEnemies attrs ]
+    pure $ toModifiers
+      attrs
+      [ MaxDamageTaken 1 | eid `elem` locationEnemies attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env ArkhamWoodsCorpseRiddenClearing where

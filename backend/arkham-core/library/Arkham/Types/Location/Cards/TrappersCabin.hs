@@ -25,7 +25,9 @@ trappersCabin = TrappersCabin $ baseAttrs
 
 instance HasModifiersFor env TrappersCabin where
   getModifiersFor _ (InvestigatorTarget iid) (TrappersCabin attrs) =
-    pure [ CannotGainResources | iid `member` locationInvestigators attrs ]
+    pure $ toModifiers
+      attrs
+      [ CannotGainResources | iid `member` locationInvestigators attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env TrappersCabin where

@@ -146,7 +146,9 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     ReadyExhausted -> case assetInvestigator of
       Just iid -> do
-        modifiers <- getModifiersFor (toSource a) (InvestigatorTarget iid) ()
+        modifiers <-
+          map modifierType
+            <$> getModifiersFor (toSource a) (InvestigatorTarget iid) ()
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
           else pure $ a & exhaustedL .~ False
@@ -177,7 +179,9 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
     Exhaust target | a `isTarget` target -> pure $ a & exhaustedL .~ True
     Ready target | a `isTarget` target -> case assetInvestigator of
       Just iid -> do
-        modifiers <- getModifiersFor (toSource a) (InvestigatorTarget iid) ()
+        modifiers <-
+          map modifierType
+            <$> getModifiersFor (toSource a) (InvestigatorTarget iid) ()
         if ControlledAssetsCannotReady `elem` modifiers
           then pure a
           else pure $ a & exhaustedL .~ False

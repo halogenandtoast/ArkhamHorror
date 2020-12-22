@@ -743,7 +743,7 @@ instance HasTokenValue (Game queue) InvestigatorId where
 instance HasModifiersFor (Game queue) () where
   getModifiersFor source target _ = do
     g <- ask
-    concat <$> sequence
+    allModifiers <- concat <$> sequence
       [ concat
         <$> traverse (getModifiersFor source target) (g ^. enemies . to toList)
       , concat
@@ -765,6 +765,35 @@ instance HasModifiersFor (Game queue) () where
         (g ^. investigators . to toList)
       , maybe (pure []) (getModifiersFor source target) (g ^. skillTest)
       ]
+    pure $ if any isBlank allModifiers
+      then filter ((/= targetToSource target) . modifierSource) allModifiers
+      else allModifiers
+
+targetToSource :: Target -> Source
+targetToSource = \case
+  InvestigatorTarget iid -> InvestigatorSource iid
+  AssetTarget aid -> AssetSource aid
+  EnemyTarget eid -> EnemySource eid
+  ScenarioTarget sid -> ScenarioSource sid
+  EffectTarget eid -> EffectSource eid
+  LocationTarget lid -> LocationSource lid
+  (SetAsideLocationsTarget _) -> error "can not convert"
+  SkillTestTarget -> error "can not convert"
+  AfterSkillTestTarget -> AfterSkillTestSource
+  TreacheryTarget tid -> TreacherySource tid
+  EncounterDeckTarget -> error "can not covert"
+  AgendaTarget aid -> AgendaSource aid
+  ActTarget aid -> ActSource aid
+  CardIdTarget _ -> error "can not convert"
+  CardCodeTarget _ -> error "can not convert"
+  SearchedCardTarget _ _ -> error "can not convert"
+  EventTarget eid -> EventSource eid
+  SkillTarget sid -> SkillSource sid
+  SkillTestInitiatorTarget _ -> error "can not convert"
+  TokenTarget tid -> TokenSource tid
+  DrawnTokenTarget dt -> DrawnTokenSource dt
+  TestTarget -> TestSource
+  EncounterCardTarget _ -> error "can not convert"
 
 instance HasStep AgendaStep (Game queue) where
   getStep g = case toList (g ^. agendas) of
@@ -1015,6 +1044,7 @@ instance HasSet BlockedLocationId (Game queue) () where
    where
     isBlocked (_, location) =
       elem Blocked
+        . map modifierType
         <$> getModifiersFor (toSource location) (toTarget location) ()
 
 -- the results will have the initial location at 0, we need to drop
@@ -1342,6 +1372,7 @@ instance HasSet HealthDamageableAssetId (Game queue) InvestigatorId where
       <$> traverse
             (\a ->
               (a, )
+                . map modifierType
                 <$> getModifiersFor (InvestigatorSource iid) (AssetTarget a) ()
             )
             otherAssetIds
@@ -1365,6 +1396,7 @@ instance HasSet SanityDamageableAssetId (Game queue) InvestigatorId where
       <$> traverse
             (\a ->
               (a, )
+                . map modifierType
                 <$> getModifiersFor (InvestigatorSource iid) (AssetTarget a) ()
             )
             otherAssetIds
@@ -1622,7 +1654,7 @@ runGameMessage msg g = case msg of
     unshiftMessage
       (CreatedEffect
         effectId'
-        (Just $ EffectModifiers [TokenValueModifier n])
+        (Just $ EffectModifiers [Modifier source $ TokenValueModifier n])
         source
         target
       )
@@ -1941,7 +1973,9 @@ runGameMessage msg g = case msg of
       _ -> unshiftMessage (AskMap askMap)
     pure g
   EnemyWillAttack iid eid -> do
-    modifiers' <- getModifiersFor (EnemySource eid) (InvestigatorTarget iid) ()
+    modifiers' <-
+      map modifierType
+        <$> getModifiersFor (EnemySource eid) (InvestigatorTarget iid) ()
     let
       cannotBeAttackedByNonElites = flip any modifiers' $ \case
         CannotBeAttackedByNonElite{} -> True
@@ -1962,10 +1996,12 @@ runGameMessage msg g = case msg of
             unshiftMessage aoo
           Just (EnemyWillAttack iid2 eid2) -> do
             _ <- popMessage
-            modifiers2' <- getModifiersFor
-              (EnemySource eid2)
-              (InvestigatorTarget iid2)
-              ()
+            modifiers2' <-
+              map modifierType
+                <$> getModifiersFor
+                      (EnemySource eid2)
+                      (InvestigatorTarget iid2)
+                      ()
             let
               cannotBeAttackedByNonElites2 = flip any modifiers2' $ \case
                 CannotBeAttackedByNonElite{} -> True

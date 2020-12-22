@@ -1,20 +1,28 @@
 module Arkham.Types.Modifier
   ( Modifier(..)
+  , ModifierType(..)
   , ActionTarget(..)
   , isBlank
   )
 where
 
-import ClassyPrelude
+import Arkham.Prelude
 
 import Arkham.Types.Action
 import Arkham.Types.Card
 import Arkham.Types.SkillType
+import Arkham.Types.Source
 import Arkham.Types.Token
 import Arkham.Types.Trait
-import Data.Aeson
 
-data Modifier
+data Modifier = Modifier
+  { modifierSource :: Source
+  , modifierType :: ModifierType
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (FromJSON, ToJSON, Hashable)
+
+data ModifierType
   = ActionCostOf ActionTarget Int
   | ActionSkillModifier Action SkillType Int
   | ActionsAreFree
@@ -79,5 +87,5 @@ data ActionTarget
   deriving anyclass (FromJSON, ToJSON, Hashable)
 
 isBlank :: Modifier -> Bool
-isBlank Blank{} = True
+isBlank (Modifier _ Blank{}) = True
 isBlank _ = False

@@ -7,6 +7,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
+import Arkham.Types.Effect.Helpers
 
 newtype Burglary = Burglary Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -16,7 +17,7 @@ burglary = Burglary . uncurry4 (baseAttrs "01045")
 
 instance HasModifiersFor env Burglary where
   getModifiersFor _ target (Burglary attrs) | target == effectTarget attrs =
-    pure [CannotDiscoverClues]
+    pure [modifier attrs CannotDiscoverClues]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env Burglary where

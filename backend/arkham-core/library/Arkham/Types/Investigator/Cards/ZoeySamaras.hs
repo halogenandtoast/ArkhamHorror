@@ -3,6 +3,7 @@ module Arkham.Types.Investigator.Cards.ZoeySamaras where
 
 import Arkham.Import
 
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
@@ -39,10 +40,12 @@ instance ActionRunner env => HasActions env ZoeySamaras where
           1
           (ReactionAbility (AfterEnemyEngageInvestigator You eid))
 
-      modifiers' <- getModifiersFor
-        (InvestigatorSource investigatorId)
-        (InvestigatorTarget investigatorId)
-        ()
+      modifiers' <-
+        map modifierType
+          <$> getModifiersFor
+                (InvestigatorSource investigatorId)
+                (InvestigatorTarget investigatorId)
+                ()
       usedAbilities <- map unUsedAbility <$> getList ()
       pure
         [ ActivateCardAbilityAction investigatorId ability
@@ -67,7 +70,7 @@ instance InvestigatorRunner env => RunMessage env ZoeySamaras where
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
       i <$ unshiftMessage
         (CreateSkillTestEffect
-          (EffectModifiers [DamageDealt 1])
+          (EffectModifiers $ toModifiers attrs [DamageDealt 1])
           (InvestigatorSource investigatorId)
           (InvestigatorTarget investigatorId)
         )

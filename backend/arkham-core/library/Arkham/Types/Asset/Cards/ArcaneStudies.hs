@@ -37,7 +37,7 @@ instance AssetRunner env => RunMessage env ArcaneStudies where
       a <$ unshiftMessages
         [ SpendResources iid 1
         , CreateSkillTestEffect
-          (EffectModifiers [SkillModifier SkillWillpower 1])
+          (EffectModifiers [toModifier attrs $ SkillModifier SkillWillpower 1])
           source
           (InvestigatorTarget iid)
         ]
@@ -45,7 +45,7 @@ instance AssetRunner env => RunMessage env ArcaneStudies where
       a <$ unshiftMessages
         [ SpendResources iid 1
         , CreateSkillTestEffect
-          (EffectModifiers [SkillModifier SkillIntellect 1])
+          (EffectModifiers [toModifier attrs $ SkillModifier SkillIntellect 1])
           source
           (InvestigatorTarget iid)
         ]

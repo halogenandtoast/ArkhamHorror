@@ -4,6 +4,7 @@ module Arkham.Types.Agenda.Cards.TheRitualBegins where
 import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Trait
 
@@ -16,7 +17,8 @@ theRitualBegins = TheRitualBegins
 
 instance HasModifiersFor env TheRitualBegins where
   getModifiersFor _ (EnemyTarget _) (TheRitualBegins attrs)
-    | agendaSequence attrs == Agenda 2 A = pure [EnemyFight 1, EnemyEvade 1]
+    | agendaSequence attrs == Agenda 2 A = pure
+    $ toModifiers attrs [EnemyFight 1, EnemyEvade 1]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env TheRitualBegins where

@@ -17,7 +17,9 @@ wrackedByNightmares uuid iid =
 
 instance HasModifiersFor env WrackedByNightmares where
   getModifiersFor _ (InvestigatorTarget iid) (WrackedByNightmares attrs) =
-    pure [ ControlledAssetsCannotReady | treacheryOnInvestigator iid attrs ]
+    pure $ toModifiers
+      attrs
+      [ ControlledAssetsCannotReady | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env WrackedByNightmares where

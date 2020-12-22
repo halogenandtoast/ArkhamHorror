@@ -7,6 +7,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
+import Arkham.Types.Effect.Helpers
 
 newtype MindWipe1 = MindWipe1 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -15,8 +16,8 @@ mindWipe1 :: EffectArgs -> MindWipe1
 mindWipe1 = MindWipe1 . uncurry4 (baseAttrs "01068")
 
 instance HasModifiersFor env MindWipe1 where
-  getModifiersFor _ target (MindWipe1 Attrs {..}) | target == effectTarget =
-    pure [Blank]
+  getModifiersFor _ target (MindWipe1 a@Attrs {..}) | target == effectTarget =
+    pure [modifier a Blank]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env MindWipe1 where

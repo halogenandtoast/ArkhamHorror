@@ -23,7 +23,7 @@ baseballBat uuid =
 instance HasModifiersFor env BaseballBat where
   getModifiersFor (SkillTestSource _ _ source (Just Action.Fight)) (InvestigatorTarget iid) (BaseballBat a)
     | ownedBy a iid && isSource a source
-    = pure [DamageDealt 1]
+    = pure $ toModifiers a [DamageDealt 1]
   getModifiersFor _ _ _ = pure []
 
 fightAbility :: Attrs -> Ability
@@ -42,7 +42,7 @@ instance (AssetRunner env) => RunMessage env BaseballBat where
     UseCardAbility iid source _ 1 | isSource attrs source ->
       a <$ unshiftMessages
         [ CreateSkillTestEffect
-          (EffectModifiers [SkillModifier SkillCombat 2])
+          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
           source
           (InvestigatorTarget iid)
         , CreateEffect "01074" Nothing source (InvestigatorTarget iid)

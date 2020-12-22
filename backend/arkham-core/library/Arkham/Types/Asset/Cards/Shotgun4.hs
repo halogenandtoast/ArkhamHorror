@@ -38,7 +38,7 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessages
         [ CreateSkillTestEffect
-          (EffectModifiers [SkillModifier SkillCombat 3])
+          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 3])
           source
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
@@ -50,7 +50,7 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
          in
            a <$ unshiftMessage
              (CreateSkillTestEffect
-               (EffectModifiers [DamageDealt val])
+               (EffectModifiers $ toModifiers attrs [DamageDealt val])
                source
                (InvestigatorTarget iid)
              )
@@ -60,7 +60,7 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
          in
            a <$ unshiftMessage
              (CreateSkillTestEffect
-               (EffectModifiers [DamageDealt val])
+               (EffectModifiers $ toModifiers attrs [DamageDealt val])
                source
                (InvestigatorTarget iid)
              )

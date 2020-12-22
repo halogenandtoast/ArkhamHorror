@@ -9,6 +9,7 @@ import Arkham.Import
 
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype RipplesOnTheSurface = RipplesOnTheSurface Attrs
@@ -27,7 +28,7 @@ instance
     = do
       locationId <- getId @LocationId iid
       isBayou <- member Bayou <$> getSet locationId
-      pure [ CannotCommitCards | isBayou ]
+      pure $ toModifiers attrs [ CannotCommitCards | isBayou ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env RipplesOnTheSurface where

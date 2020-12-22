@@ -125,10 +125,9 @@ getCanEvade
   -> m Bool
 getCanEvade eid iid = do
   engaged <- elem iid <$> getSet eid
-  enemyModifiers <- getModifiersFor
-    (InvestigatorSource iid)
-    (EnemyTarget eid)
-    ()
+  enemyModifiers <-
+    map modifierType
+      <$> getModifiersFor (InvestigatorSource iid) (EnemyTarget eid) ()
   traits <- getSet eid
   canAffordActions <- getCanAffordCost
     iid
@@ -150,11 +149,12 @@ getCanMoveTo
   -> m Bool
 getCanMoveTo lid iid = do
   locationId <- getId @LocationId iid
-  modifiers' <- getModifiersFor (LocationSource lid) (InvestigatorTarget iid) ()
-  locationModifiers' <- getModifiersFor
-    (InvestigatorSource iid)
-    (LocationTarget lid)
-    ()
+  modifiers' <-
+    map modifierType
+      <$> getModifiersFor (LocationSource lid) (InvestigatorTarget iid) ()
+  locationModifiers' <-
+    map modifierType
+      <$> getModifiersFor (InvestigatorSource iid) (LocationTarget lid) ()
   accessibleLocations <- map unAccessibleLocationId <$> getSetList locationId
   traits <- getSet lid
   canAffordActions <- getCanAffordCost
@@ -186,7 +186,9 @@ getCanInvestigate
 getCanInvestigate lid iid = do
   locationId <- getId @LocationId iid
   traits <- getSet @Trait lid
-  modifiers' <- getModifiersFor (InvestigatorSource iid) (LocationTarget lid) ()
+  modifiers' <-
+    map modifierType
+      <$> getModifiersFor (InvestigatorSource iid) (LocationTarget lid) ()
 
   let investigateCost = foldr applyModifier 1 modifiers'
 
@@ -243,7 +245,8 @@ getCanAffordCost
   -> m Bool
 getCanAffordCost iid source = \case
   ActionCost n mAction traits -> do
-    modifiers <- getModifiersFor source (InvestigatorTarget iid) ()
+    modifiers <-
+      map modifierType <$> getModifiersFor source (InvestigatorTarget iid) ()
     if ActionsAreFree `elem` modifiers
       then pure True
       else do
@@ -253,3 +256,9 @@ getCanAffordCost iid source = \case
   ClueCost n -> do
     spendableClues <- unSpendableClueCount <$> getCount iid
     pure $ spendableClues >= n
+
+toModifier :: Entity a => a -> ModifierType -> Modifier
+toModifier = Modifier . toSource
+
+toModifiers :: Entity a => a -> [ModifierType] -> [Modifier]
+toModifiers = map . toModifier

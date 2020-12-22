@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.Encyclopedia2 where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype Encyclopedia2 = Encyclopedia2 Attrs
@@ -39,28 +40,36 @@ instance (AssetRunner env) => RunMessage env Encyclopedia2 where
                 [ Label
                   "Willpower"
                   [ CreatePhaseEffect
-                      (EffectModifiers [SkillModifier SkillWillpower 2])
+                      (EffectModifiers
+                      $ toModifiers attrs [SkillModifier SkillWillpower 2]
+                      )
                       source
                       target
                   ]
                 , Label
                   "Intellect"
                   [ CreatePhaseEffect
-                      (EffectModifiers [SkillModifier SkillIntellect 2])
+                      (EffectModifiers
+                      $ toModifiers attrs [SkillModifier SkillIntellect 2]
+                      )
                       source
                       target
                   ]
                 , Label
                   "Combat"
                   [ CreatePhaseEffect
-                      (EffectModifiers [SkillModifier SkillCombat 2])
+                      (EffectModifiers
+                      $ toModifiers attrs [SkillModifier SkillCombat 2]
+                      )
                       source
                       target
                   ]
                 , Label
                   "Agility"
                   [ CreatePhaseEffect
-                      (EffectModifiers [SkillModifier SkillAgility 2])
+                      (EffectModifiers
+                      $ toModifiers attrs [SkillModifier SkillAgility 2]
+                      )
                       source
                       target
                   ]

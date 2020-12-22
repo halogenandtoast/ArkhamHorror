@@ -15,7 +15,9 @@ haunted uuid iid = Haunted $ weaknessAttrs uuid iid "01098"
 
 instance HasModifiersFor env Haunted where
   getModifiersFor _ (InvestigatorTarget iid) (Haunted attrs) =
-    pure [ AnySkillValue (-1) | treacheryOnInvestigator iid attrs ]
+    pure $ toModifiers
+      attrs
+      [ AnySkillValue (-1) | treacheryOnInvestigator iid attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env Haunted where

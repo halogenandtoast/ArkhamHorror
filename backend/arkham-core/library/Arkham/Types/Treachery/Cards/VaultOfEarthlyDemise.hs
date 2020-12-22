@@ -18,7 +18,7 @@ instance HasCount PlayerCount env () => HasModifiersFor env VaultOfEarthlyDemise
     | Just target == treacheryAttachedTarget attrs = do
       let x = fromJustNote "had to be set" (treacheryResources attrs)
       additionalHealth <- getPlayerCountValue (PerPlayer x)
-      pure [HealthModifier additionalHealth, EnemyFight x]
+      pure $ toModifiers attrs [HealthModifier additionalHealth, EnemyFight x]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env VaultOfEarthlyDemise where

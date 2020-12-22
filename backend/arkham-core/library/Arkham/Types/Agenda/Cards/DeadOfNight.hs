@@ -4,6 +4,7 @@ module Arkham.Types.Agenda.Cards.DeadOfNight where
 import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
+import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.LocationMatcher
 
@@ -18,8 +19,8 @@ instance HasActions env DeadOfNight where
   getActions i window (DeadOfNight x) = getActions i window x
 
 instance HasModifiersFor env DeadOfNight where
-  getModifiersFor _ (InvestigatorTarget _) (DeadOfNight _) =
-    pure [HandSize (-3)]
+  getModifiersFor _ (InvestigatorTarget _) (DeadOfNight a) =
+    pure $ toModifiers a [HandSize (-3)]
   getModifiersFor _ _ _ = pure []
 
 instance AgendaRunner env => RunMessage env DeadOfNight where

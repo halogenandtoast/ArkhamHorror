@@ -4,6 +4,7 @@ module Arkham.Types.Enemy.Cards.BogGator where
 import Arkham.Import
 
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
@@ -25,7 +26,9 @@ instance HasSet Trait env LocationId => HasModifiersFor env BogGator where
   getModifiersFor _ (EnemyTarget eid) (BogGator a@Attrs {..})
     | spawned a && eid == enemyId = do
       bayouLocation <- member Bayou <$> getSet enemyLocation
-      pure $ if bayouLocation then [EnemyFight 2, EnemyEvade 2] else []
+      pure $ toModifiers a $ if bayouLocation
+        then [EnemyFight 2, EnemyEvade 2]
+        else []
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env BogGator where

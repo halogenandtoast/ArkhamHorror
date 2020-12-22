@@ -39,7 +39,7 @@ instance AssetRunner env => RunMessage env FortyOneDerringer where
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessages
         [ CreateSkillTestEffect
-          (EffectModifiers [SkillModifier SkillCombat 2])
+          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
           source
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
@@ -48,7 +48,7 @@ instance AssetRunner env => RunMessage env FortyOneDerringer where
     PassedSkillTest iid (Just Action.Fight) source _ n
       | isSource attrs source && n >= 2 -> a <$ unshiftMessage
         (CreateSkillTestEffect
-          (EffectModifiers [DamageDealt 1])
+          (EffectModifiers $ toModifiers attrs [DamageDealt 1])
           source
           (InvestigatorTarget iid)
         )

@@ -4,6 +4,7 @@ module Arkham.Types.Enemy.Cards.ScreechingByakhee where
 import Arkham.Import
 
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
 newtype ScreechingByakhee = ScreechingByakhee Attrs
@@ -25,7 +26,9 @@ instance HasCount RemainingSanity env InvestigatorId => HasModifiersFor env Scre
     do
       sanities <- map unRemainingSanity
         <$> traverse getCount (setToList $ enemyEngagedInvestigators attrs)
-      pure $ if any (<= 4) sanities then [EnemyFight 1, EnemyEvade 1] else []
+      pure $ toModifiers attrs $ if any (<= 4) sanities
+        then [EnemyFight 1, EnemyEvade 1]
+        else []
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env ScreechingByakhee where

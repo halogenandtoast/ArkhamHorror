@@ -4,6 +4,7 @@ module Arkham.Types.Treachery.Cards.ObscuringFog where
 import Arkham.Import
 
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype ObscuringFog = ObscuringFog Attrs
@@ -14,7 +15,8 @@ obscuringFog uuid _ = ObscuringFog $ baseAttrs uuid "01168"
 
 instance HasModifiersFor env ObscuringFog where
   getModifiersFor _ (LocationTarget lid) (ObscuringFog attrs) =
-    pure [ ShroudModifier 2 | treacheryOnLocation lid attrs ]
+    pure
+      $ toModifiers attrs [ ShroudModifier 2 | treacheryOnLocation lid attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env ObscuringFog where

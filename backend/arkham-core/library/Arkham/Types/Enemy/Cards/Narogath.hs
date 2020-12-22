@@ -5,6 +5,7 @@ import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.Action
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 import qualified Arkham.Types.Trait as Trait
@@ -30,7 +31,8 @@ instance (HasSet InvestigatorId env LocationId, HasSet ConnectedLocationId env L
       connectedLocationIds <- map unConnectedLocationId
         <$> getSetList enemyLocation
       iids <- concat <$> for (enemyLocation : connectedLocationIds) getSetList
-      pure
+      pure $ toModifiers
+        a
         [ CannotTakeAction (EnemyAction Parley [Cultist])
         | not enemyExhausted && iid `elem` iids
         ]

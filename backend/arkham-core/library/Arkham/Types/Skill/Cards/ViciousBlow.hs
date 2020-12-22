@@ -4,6 +4,7 @@ module Arkham.Types.Skill.Cards.ViciousBlow where
 import Arkham.Import
 
 import Arkham.Types.Action
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 
@@ -21,7 +22,7 @@ instance (SkillRunner env) => RunMessage env ViciousBlow where
     PassedSkillTest iid (Just Fight) _ (SkillTarget sid) _ | sid == skillId ->
       s <$ unshiftMessage
         (CreateSkillTestEffect
-          (EffectModifiers [DamageDealt 1])
+          (EffectModifiers $ toModifiers attrs [DamageDealt 1])
           (SkillSource skillId)
           (InvestigatorTarget iid)
         )

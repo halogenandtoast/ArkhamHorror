@@ -38,7 +38,7 @@ instance AssetRunner env => RunMessage env Shrivelling where
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessages
         [ CreateSkillTestEffect
-          (EffectModifiers [DamageDealt 1])
+          (EffectModifiers $ toModifiers attrs [DamageDealt 1])
           source
           (InvestigatorTarget iid)
         , CreateEffect "01060" Nothing source (InvestigatorTarget iid)

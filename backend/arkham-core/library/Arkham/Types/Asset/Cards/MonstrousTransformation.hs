@@ -17,7 +17,8 @@ monstrousTransformation uuid =
 
 instance HasModifiersFor env MonstrousTransformation where
   getModifiersFor _ (InvestigatorTarget iid) (MonstrousTransformation a)
-    | ownedBy a iid = pure
+    | ownedBy a iid = pure $ toModifiers
+      a
       [ BaseSkillOf SkillWillpower 2
       , BaseSkillOf SkillIntellect 2
       , BaseSkillOf SkillCombat 5
@@ -41,7 +42,7 @@ instance (AssetRunner env) => RunMessage env MonstrousTransformation where
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessages
         [ CreateSkillTestEffect
-          (EffectModifiers [DamageDealt 1])
+          (EffectModifiers $ toModifiers attrs [DamageDealt 1])
           source
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False

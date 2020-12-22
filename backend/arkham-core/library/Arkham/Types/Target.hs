@@ -33,7 +33,7 @@ data Target
   | EffectTarget EffectId
   | InvestigatorTarget InvestigatorId
   | LocationTarget LocationId
-  | SetAsideLocations [Trait]
+  | SetAsideLocationsTarget [Trait]
   | SkillTestTarget
   | AfterSkillTestTarget
   | TreacheryTarget TreacheryId

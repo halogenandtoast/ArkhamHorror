@@ -18,7 +18,8 @@ hospitalDebts uuid iid = HospitalDebts
 instance HasModifiersFor env HospitalDebts where
   getModifiersFor _ (InvestigatorTarget iid) (HospitalDebts attrs) = do
     let resources' = fromJustNote "must be set" $ treacheryResources attrs
-    pure
+    pure $ toModifiers
+      attrs
       [ XPModifier (-2) | treacheryOnInvestigator iid attrs && resources' < 6 ]
   getModifiersFor _ _ _ = pure []
 

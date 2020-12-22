@@ -5,6 +5,7 @@ import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
@@ -24,7 +25,9 @@ easttown = Easttown $ baseAttrs
 
 instance HasModifiersFor env Easttown where
   getModifiersFor _ (InvestigatorTarget iid) (Easttown attrs) =
-    pure [ ReduceCostOf [Ally] 2 | iid `member` locationInvestigators attrs ]
+    pure $ toModifiers
+      attrs
+      [ ReduceCostOf [Ally] 2 | iid `member` locationInvestigators attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env Easttown where

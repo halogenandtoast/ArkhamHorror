@@ -15,7 +15,11 @@ spec = describe "The Masked Hunter" $ do
         investigator
         [engageEnemy investigator theMaskedHunter]
         (enemies %~ insertEntity theMaskedHunter)
-      withGame game (getModifiersFor TestSource (toTarget investigator) ())
+      withGame
+          game
+          (map modifierType
+          <$> getModifiersFor TestSource (toTarget investigator) ()
+          )
         `shouldReturn` [CannotDiscoverClues, CannotSpendClues]
 
     it

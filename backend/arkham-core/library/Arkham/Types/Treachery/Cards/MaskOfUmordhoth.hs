@@ -7,6 +7,7 @@ import Arkham.Types.Card.EncounterCardMatcher
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype MaskOfUmordhoth = MaskOfUmordhoth Attrs
@@ -17,7 +18,7 @@ maskOfUmordhoth uuid _ = MaskOfUmordhoth $ baseAttrs uuid "50043"
 
 instance HasModifiersFor env MaskOfUmordhoth where
   getModifiersFor _ (EnemyTarget eid) (MaskOfUmordhoth attrs) =
-    pure [ HealthModifier 2 | treacheryOnEnemy eid attrs ]
+    pure $ toModifiers attrs [ HealthModifier 2 | treacheryOnEnemy eid attrs ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env MaskOfUmordhoth where

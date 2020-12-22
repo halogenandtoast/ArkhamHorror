@@ -29,10 +29,12 @@ fauborgMarigny = FauborgMarigny $ baseAttrs
   [Riverside]
 
 instance HasModifiersFor env FauborgMarigny where
-  getModifiersFor _ (InvestigatorTarget iid) (FauborgMarigny attrs) = pure
-    [ ReduceCostOfCardType AssetType 1
-    | iid `member` locationInvestigators attrs
-    ]
+  getModifiersFor _ (InvestigatorTarget iid) (FauborgMarigny attrs) =
+    pure $ toModifiers
+      attrs
+      [ ReduceCostOfCardType AssetType 1
+      | iid `member` locationInvestigators attrs
+      ]
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability

@@ -5,6 +5,7 @@ import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype MagnifyingGlass1 = MagnifyingGlass1 Attrs
@@ -15,11 +16,10 @@ magnifyingGlass1 uuid =
   MagnifyingGlass1 $ (baseAttrs uuid "01040") { assetSlots = [HandSlot] }
 
 instance HasModifiersFor env MagnifyingGlass1 where
-  getModifiersFor _ (InvestigatorTarget iid) (MagnifyingGlass1 a) =
-    pure
-      [ ActionSkillModifier Action.Investigate SkillIntellect 1
-      | ownedBy a iid
-      ]
+  getModifiersFor _ (InvestigatorTarget iid) (MagnifyingGlass1 a) = pure
+    [ toModifier a $ ActionSkillModifier Action.Investigate SkillIntellect 1
+    | ownedBy a iid
+    ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env MagnifyingGlass1 where

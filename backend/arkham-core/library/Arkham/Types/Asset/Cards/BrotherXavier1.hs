@@ -8,6 +8,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype BrotherXavier1 = BrotherXavier1 Attrs
@@ -22,14 +23,14 @@ brotherXavier1 uuid = BrotherXavier1 $ (baseAttrs uuid "02106")
 
 instance (HasId LocationId env InvestigatorId) => HasModifiersFor env BrotherXavier1 where
   getModifiersFor _ (InvestigatorTarget iid) (BrotherXavier1 a)
-    | ownedBy a iid = pure [SkillModifier SkillWillpower 1]
+    | ownedBy a iid = pure $ toModifiers a [SkillModifier SkillWillpower 1]
   getModifiersFor (InvestigatorSource iid) target (BrotherXavier1 a)
     | isTarget a target = do
       locationId <- getId @LocationId iid
       assetLocationId <- getId @LocationId
         $ fromJustNote "unowned" (assetInvestigator a)
       pure
-        [ CanBeAssignedDamage
+        [ toModifier a CanBeAssignedDamage
         | locationId == assetLocationId && Just iid /= assetInvestigator a
         ]
   getModifiersFor _ _ _ = pure []

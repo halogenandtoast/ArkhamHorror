@@ -8,6 +8,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
@@ -34,7 +35,8 @@ instance HasSet Trait env (InvestigatorId, CardId) => HasActions env DaisysToteB
 
 instance HasModifiersFor env DaisysToteBagAdvanced where
   getModifiersFor _ (InvestigatorTarget iid) (DaisysToteBagAdvanced a)
-    | ownedBy a iid = pure [CanBecomeFast (Just AssetType, [Tome])]
+    | ownedBy a iid = pure
+      [toModifier a $ CanBecomeFast (Just AssetType, [Tome])]
   getModifiersFor _ _ _ = pure []
 
 slot :: Attrs -> Slot

@@ -4,6 +4,7 @@ module Arkham.Types.Enemy.Cards.TheMaskedHunter where
 import Arkham.Import
 
 import Arkham.Types.Enemy.Attrs
+import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
 newtype TheMaskedHunter = TheMaskedHunter Attrs
@@ -22,9 +23,9 @@ theMaskedHunter uuid =
     . (uniqueL .~ True)
 
 instance HasModifiersFor env TheMaskedHunter where
-  getModifiersFor _ (InvestigatorTarget iid) (TheMaskedHunter Attrs {..}) =
+  getModifiersFor _ (InvestigatorTarget iid) (TheMaskedHunter a@Attrs {..}) =
     if iid `elem` enemyEngagedInvestigators
-      then pure [CannotDiscoverClues, CannotSpendClues]
+      then pure $ toModifiers a [CannotDiscoverClues, CannotSpendClues]
       else pure []
   getModifiersFor _ _ _ = pure []
 

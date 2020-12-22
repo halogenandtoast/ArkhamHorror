@@ -3,6 +3,7 @@ module Arkham.Types.Investigator.Cards.JimCulver where
 
 import Arkham.Import
 
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
@@ -14,7 +15,7 @@ newtype JimCulver = JimCulver Attrs
 instance HasModifiersFor env JimCulver where
   getModifiersFor (SkillTestSource iid _ _ _) (DrawnTokenTarget token) (JimCulver attrs)
     | iid == investigatorId attrs && drawnTokenFace token == Skull
-    = pure [ChangeTokenModifier $ PositiveModifier 0]
+    = pure $ toModifiers attrs [ChangeTokenModifier $ PositiveModifier 0]
   getModifiersFor source target (JimCulver attrs) =
     getModifiersFor source target attrs
 

@@ -7,6 +7,7 @@ where
 import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
+import Arkham.Types.Effect.Helpers
 
 newtype CursedShores = CursedShores Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -15,8 +16,8 @@ cursedShores :: EffectArgs -> CursedShores
 cursedShores = CursedShores . uncurry4 (baseAttrs "81007")
 
 instance HasModifiersFor env CursedShores where
-  getModifiersFor SkillTestSource{} target (CursedShores Attrs {..})
-    | target == effectTarget = pure [AnySkillValue 2]
+  getModifiersFor SkillTestSource{} target (CursedShores a@Attrs {..})
+    | target == effectTarget = pure [modifier a (AnySkillValue 2)]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env CursedShores where

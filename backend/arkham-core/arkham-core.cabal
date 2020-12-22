@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bc5b2394911d9aebc508477300979131f1bb44b12741fd08e4d24e75a882560b
+-- hash: 5597ee41a087ca2f11f14727929f1446d6efb80cceb25233e87b3fa667d42ee6
 
 name:           arkham-core
 version:        0.0.0
@@ -206,6 +206,7 @@ library
       Arkham.Types.Effect.Effects.SkillTestEffect
       Arkham.Types.Effect.Effects.SureGamble3
       Arkham.Types.Effect.Effects.WillToSurvive4
+      Arkham.Types.Effect.Helpers
       Arkham.Types.EffectId
       Arkham.Types.EffectMetadata
       Arkham.Types.EncounterSet
@@ -299,6 +300,7 @@ library
       Arkham.Types.Event.Cards.WardOfProtection
       Arkham.Types.Event.Cards.WillToSurvive4
       Arkham.Types.Event.Cards.WorkingAHunch
+      Arkham.Types.Event.Helpers
       Arkham.Types.Event.Runner
       Arkham.Types.EventId
       Arkham.Types.Exception

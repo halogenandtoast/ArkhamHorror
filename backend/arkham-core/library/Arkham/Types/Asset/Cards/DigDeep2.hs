@@ -32,7 +32,7 @@ instance (AssetRunner env) => RunMessage env DigDeep2 where
       a <$ unshiftMessages
         [ SpendResources iid 1
         , CreateSkillTestEffect
-          (EffectModifiers [SkillModifier SkillWillpower 1])
+          (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower 1])
           source
           (InvestigatorTarget iid)
         ]
@@ -40,7 +40,7 @@ instance (AssetRunner env) => RunMessage env DigDeep2 where
       a <$ unshiftMessages
         [ SpendResources iid 1
         , CreateSkillTestEffect
-          (EffectModifiers [SkillModifier SkillAgility 1])
+          (EffectModifiers $ toModifiers attrs [SkillModifier SkillAgility 1])
           source
           (InvestigatorTarget iid)
         ]

@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.DrMilanChristopher where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype DrMilanChristopher = DrMilanChristopher Attrs
@@ -18,7 +19,7 @@ drMilanChristopher uuid = DrMilanChristopher $ (baseAttrs uuid "01033")
 
 instance HasModifiersFor env DrMilanChristopher where
   getModifiersFor _ (InvestigatorTarget iid) (DrMilanChristopher a) =
-    pure [ SkillModifier SkillIntellect 1 | ownedBy a iid ]
+    pure [ toModifier a (SkillModifier SkillIntellect 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env DrMilanChristopher where

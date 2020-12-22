@@ -5,6 +5,7 @@ import Arkham.Import
 
 import Arkham.Types.Action
 import Arkham.Types.Event.Attrs
+import Arkham.Types.Event.Helpers
 
 newtype Backstab = Backstab Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -14,7 +15,7 @@ backstab iid uuid = Backstab $ baseAttrs iid uuid "01051"
 
 instance HasModifiersFor env Backstab where
   getModifiersFor (SkillTestSource _ _ source (Just Fight)) (InvestigatorTarget _) (Backstab attrs)
-    = pure [ DamageDealt 2 | isSource attrs source ]
+    = pure $ modifiers attrs [ DamageDealt 2 | isSource attrs source ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env Backstab where

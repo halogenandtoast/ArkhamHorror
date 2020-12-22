@@ -4,6 +4,7 @@ module Arkham.Types.Asset.Cards.HolyRosary where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
+import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype HolyRosary = HolyRosary Attrs
@@ -17,7 +18,7 @@ holyRosary uuid = HolyRosary $ (baseAttrs uuid "01059")
 
 instance HasModifiersFor env  HolyRosary where
   getModifiersFor _ (InvestigatorTarget iid) (HolyRosary a) =
-    pure [ SkillModifier SkillWillpower 1 | ownedBy a iid ]
+    pure [ toModifier a (SkillModifier SkillWillpower 1) | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env HolyRosary where

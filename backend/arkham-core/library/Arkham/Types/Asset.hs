@@ -85,6 +85,7 @@ data Asset
   | BrotherXavier1' BrotherXavier1
   | Bandolier' Bandolier
   | KeenEye3' KeenEye3
+  | LightningGun5' LightningGun5
   | ToothOfEztli' ToothOfEztli
   | OccultLexicon' OccultLexicon
   | ScrollOfProphecies' ScrollOfProphecies
@@ -243,6 +244,7 @@ allAssets = mapFromList
   , ("02106", BrotherXavier1' . brotherXavier1)
   , ("02147", Bandolier' . bandolier)
   , ("02185", KeenEye3' . keenEye3)
+  , ("02301", LightningGun5' . lightningGun5)
   , ("04023", ToothOfEztli' . toothOfEztli)
   , ("05316", OccultLexicon' . occultLexicon)
   , ("06116", ScrollOfProphecies' . scrollOfProphecies)
@@ -336,6 +338,7 @@ assetAttrs = \case
   BrotherXavier1' attrs -> coerce attrs
   Bandolier' attrs -> coerce attrs
   KeenEye3' attrs -> coerce attrs
+  LightningGun5' attrs -> coerce attrs
   ToothOfEztli' attrs -> coerce attrs
   OccultLexicon' attrs -> coerce attrs
   ScrollOfProphecies' attrs -> coerce attrs

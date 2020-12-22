@@ -205,7 +205,7 @@ export default defineComponent({
         .filter((e) => props.game.currentData.enemies[e].contents.engagedInvestigators.length === 0);
     })
 
-    const blocked = computed(() => props.location.modifiers.some(modifier => modifier.tag == "Blocked"))
+    const blocked = computed(() => props.location.modifiers.some(modifier => modifier.type.tag == "Blocked"))
 
     function warnAction(msg: string, action: number) {
       if (window.confirm(msg)) { // eslint-disable-line

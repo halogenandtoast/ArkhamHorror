@@ -2423,7 +2423,7 @@ runGameMessage msg g = case msg of
     EncounterAssetType -> do
       (assetId', asset') <- createAsset (ecCardCode card)
       -- Asset is assumed to have a revelation ability if drawn from encounter deck
-      unshiftMessage (Revelation iid (EncounterCardSource (ecId card)))
+      unshiftMessage (Revelation iid $ AssetSource assetId')
       pure $ g & (assets . at assetId' ?~ asset')
     LocationType -> pure g
   DrewTreachery iid cardCode -> do

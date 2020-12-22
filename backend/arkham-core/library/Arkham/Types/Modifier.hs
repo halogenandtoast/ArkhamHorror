@@ -8,6 +8,7 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Json
 import Arkham.Types.Action
 import Arkham.Types.Card
 import Arkham.Types.SkillType
@@ -20,7 +21,14 @@ data Modifier = Modifier
   , modifierType :: ModifierType
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (FromJSON, ToJSON, Hashable)
+  deriving anyclass Hashable
+
+instance ToJSON Modifier where
+  toJSON = genericToJSON $ aesonOptions $ Just "modifier"
+  toEncoding = genericToEncoding $ aesonOptions $ Just "modifier"
+
+instance FromJSON Modifier where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "modifier"
 
 data ModifierType
   = ActionCostOf ActionTarget Int

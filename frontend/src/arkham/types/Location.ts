@@ -1,11 +1,19 @@
 import { JsonDecoder } from 'ts.data.json';
 
-interface Modifier {
+interface ModifierType {
   tag: string;
 }
 
-const modifierDecoder = JsonDecoder.object<Modifier>({
+interface Modifier {
+  type: ModifierType;
+}
+
+const modifierTypeDecoder = JsonDecoder.object<ModifierType>({
   tag: JsonDecoder.string
+}, 'ModifierType')
+
+const modifierDecoder = JsonDecoder.object<Modifier>({
+  type: modifierTypeDecoder
 }, 'Modifier')
 
 export interface Location {

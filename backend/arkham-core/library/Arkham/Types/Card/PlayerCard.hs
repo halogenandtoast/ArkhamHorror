@@ -265,6 +265,7 @@ allPlayerCards = HashMap.fromList
   , ("02032", fireAxe)
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
+  , ("02060", jazzMulligan)
   , ("02147", bandolier)
   , ("02185", keenEye3)
   , ("03022", letMeHandleThis)
@@ -1039,6 +1040,11 @@ baitAndSwitch cardId = (event cardId "02034" "Bait and Switch" 1 Survivor)
   { pcSkills = [SkillIntellect, SkillAgility]
   , pcTraits = setFromList [Trick]
   , pcAction = Just Action.Evade
+  }
+
+jazzMulligan :: CardId -> PlayerCard
+jazzMulligan cardId = (asset cardId "02060" "Jazz Mulligan" 0 Neutral)
+  { pcTraits = setFromList [Ally, Miskatonic]
   }
 
 brotherXavier1 :: CardId -> PlayerCard

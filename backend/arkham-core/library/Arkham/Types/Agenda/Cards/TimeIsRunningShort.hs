@@ -13,7 +13,7 @@ newtype TimeIsRunningShort = TimeIsRunningShort Attrs
 
 timeIsRunningShort :: TimeIsRunningShort
 timeIsRunningShort = TimeIsRunningShort
-  $ baseAttrs "01122" 2 "Time Is Running Short" "Agenda 2a" (Static 8)
+  $ baseAttrs "01122" "Time Is Running Short" (Agenda 2 A) (Static 8)
 
 instance HasModifiersFor env TimeIsRunningShort where
   getModifiersFor = noModifiersFor
@@ -38,13 +38,13 @@ instance ActionRunner env => HasActions env TimeIsRunningShort where
 
 instance (AgendaRunner env) => RunMessage env TimeIsRunningShort where
   runMessage msg (TimeIsRunningShort attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 A -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unshiftMessage (Ask leadInvestigatorId $ ChooseOne [Resolution 2])
       pure
         $ TimeIsRunningShort
         $ attrs
-        & (sequenceL .~ "Agenda 2b")
+        & (sequenceL .~ Agenda 2 B)
         & (flippedL .~ True)
     UseCardAbility iid (AgendaSource aid) _ 1 | aid == agendaId -> do
       unshiftMessage (Resign iid)

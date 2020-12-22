@@ -17,7 +17,7 @@ newtype ACreatureOfTheBayou = ACreatureOfTheBayou Attrs
 
 aCreatureOfTheBayou :: ACreatureOfTheBayou
 aCreatureOfTheBayou = ACreatureOfTheBayou
-  $ baseAttrs "81002" 1 "A Creature of the Bayou" "Agenda 1a" (Static 5)
+  $ baseAttrs "81002" "A Creature of the Bayou" (Agenda 1 A) (Static 5)
 
 instance HasModifiersFor env ACreatureOfTheBayou where
   getModifiersFor = noModifiersFor
@@ -32,15 +32,15 @@ getRougarou = fmap unStoryEnemyId <$> getId (CardCode "81028")
 
 instance AgendaRunner env => RunMessage env ACreatureOfTheBayou where
   runMessage msg a@(ACreatureOfTheBayou attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1a" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 A -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage $ chooseOne leadInvestigatorId [AdvanceAgenda aid]
       pure
         $ ACreatureOfTheBayou
         $ attrs
-        & (sequenceL .~ "Agenda 1b")
+        & (sequenceL .~ Agenda 1 B)
         & (flippedL .~ True)
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1b" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       mrougarou <- getRougarou
       case mrougarou of
         Nothing -> a <$ unshiftMessages

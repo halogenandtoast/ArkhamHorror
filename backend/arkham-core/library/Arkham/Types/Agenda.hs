@@ -39,10 +39,10 @@ allAgendas = mapFromList $ map
   ]
 
 instance HasCount DoomCount env Agenda where
-  getCount = pure . DoomCount . agendaDoom . agendaAttrs
+  getCount = getCount . agendaAttrs
 
 instance HasStep AgendaStep Agenda where
-  getStep = AgendaStep . agendaNumber . agendaAttrs
+  getStep = getStep . agendaAttrs
 
 data Agenda
   = WhatsGoingOn' WhatsGoingOn
@@ -80,8 +80,13 @@ newtype BaseAgenda = BaseAgenda Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 baseAgenda
-  :: AgendaId -> Text -> Text -> GameValue Int -> (Attrs -> Attrs) -> Agenda
-baseAgenda a b c d f = BaseAgenda' . BaseAgenda . f $ baseAttrs a 1 b c d
+  :: AgendaId
+  -> Text
+  -> AgendaSequence
+  -> GameValue Int
+  -> (Attrs -> Attrs)
+  -> Agenda
+baseAgenda a b c d f = BaseAgenda' . BaseAgenda . f $ baseAttrs a b c d
 
 instance HasModifiersFor env BaseAgenda where
   getModifiersFor = noModifiersFor

@@ -118,8 +118,12 @@ testAgenda
   => CardCode
   -> (AgendaAttrs.Attrs -> AgendaAttrs.Attrs)
   -> m Agenda
-testAgenda cardCode f =
-  pure $ baseAgenda (AgendaId cardCode) "Agenda" "1A" (Static 1) f
+testAgenda cardCode f = pure $ baseAgenda
+  (AgendaId cardCode)
+  "Agenda"
+  (AgendaAttrs.Agenda 1 AgendaAttrs.A)
+  (Static 1)
+  f
 
 testLocation
   :: MonadIO m

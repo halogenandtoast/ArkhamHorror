@@ -14,7 +14,7 @@ newtype RiseOfTheGhouls = RiseOfTheGhouls Attrs
 
 riseOfTheGhouls :: RiseOfTheGhouls
 riseOfTheGhouls = RiseOfTheGhouls
-  $ baseAttrs "01106" 2 "Rise of the Ghouls" "Agenda 2a" (Static 7)
+  $ baseAttrs "01106" "Rise of the Ghouls" (Agenda 2 A) (Static 7)
 
 instance HasModifiersFor env RiseOfTheGhouls where
   getModifiersFor = noModifiersFor
@@ -24,15 +24,15 @@ instance HasActions env RiseOfTheGhouls where
 
 instance AgendaRunner env => RunMessage env RiseOfTheGhouls where
   runMessage msg a@(RiseOfTheGhouls attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 A -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage (chooseOne leadInvestigatorId [AdvanceAgenda aid])
       pure
         $ RiseOfTheGhouls
         $ attrs
-        & (sequenceL .~ "Agenda 2b")
+        & (sequenceL .~ Agenda 2 B)
         & (flippedL .~ True)
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2b" ->
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B ->
       a <$ unshiftMessage
         (Run
           [ ShuffleEncounterDiscardBackIn

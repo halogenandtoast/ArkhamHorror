@@ -13,7 +13,7 @@ newtype TheBeastUnleashed = TheBeastUnleashed Attrs
 
 theBeastUnleashed :: TheBeastUnleashed
 theBeastUnleashed = TheBeastUnleashed
-  $ baseAttrs "02044" 3 "The Beast Unleashed" "Agenda 3a" (Static 2)
+  $ baseAttrs "02044" "The Beast Unleashed" (Agenda 3 A) (Static 2)
 
 instance HasActions env TheBeastUnleashed where
   getActions i window (TheBeastUnleashed x) = getActions i window x
@@ -37,7 +37,7 @@ instance AgendaRunner env => RunMessage env TheBeastUnleashed where
             (LocationNamed $ LocationName "Dormitories")
           ]
         )
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 A -> do
       investigatorIds <- getInvestigatorIds
       unshiftMessages
         $ [ InvestigatorAssignDamage iid (toSource attrs) 0 3
@@ -47,6 +47,6 @@ instance AgendaRunner env => RunMessage env TheBeastUnleashed where
       pure
         . TheBeastUnleashed
         $ attrs
-        & (sequenceL .~ "Agenda 2b")
+        & (sequenceL .~ Agenda 2 B)
         & (flippedL .~ True)
     _ -> TheBeastUnleashed <$> runMessage msg attrs

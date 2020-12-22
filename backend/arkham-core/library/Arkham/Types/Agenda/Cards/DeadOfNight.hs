@@ -12,7 +12,7 @@ newtype DeadOfNight = DeadOfNight Attrs
 
 deadOfNight :: DeadOfNight
 deadOfNight =
-  DeadOfNight $ baseAttrs "02043" 2 "Dead of Night" "Agenda 2a" (Static 3)
+  DeadOfNight $ baseAttrs "02043" "Dead of Night" (Agenda 2 A) (Static 3)
 
 instance HasActions env DeadOfNight where
   getActions i window (DeadOfNight x) = getActions i window x
@@ -24,7 +24,7 @@ instance HasModifiersFor env DeadOfNight where
 
 instance AgendaRunner env => RunMessage env DeadOfNight where
   runMessage msg (DeadOfNight attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 A -> do
       dormitoriesInPlay <- elem (LocationName "Dormitories") <$> getList ()
       mExperimentId <- fmap unStoryEnemyId <$> getId (CardCode "02058")
       scienceBuildingId <- fromJustNote "missing science building"
@@ -38,5 +38,5 @@ instance AgendaRunner env => RunMessage env DeadOfNight where
            ]
         <> [ CreateEnemyAt "02058" scienceBuildingId | isNothing mExperimentId ]
         <> [NextAgenda agendaId "02044"]
-      pure . DeadOfNight $ attrs & sequenceL .~ "Agenda 2b" & flippedL .~ True
+      pure . DeadOfNight $ attrs & sequenceL .~ Agenda 2 B & flippedL .~ True
     _ -> DeadOfNight <$> runMessage msg attrs

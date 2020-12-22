@@ -10,7 +10,7 @@ import Arkham.Import
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
-import Arkham.Types.Asset.Uses (Uses(..))
+import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
 
 newtype LightningGun5 = LightningGun5 Attrs
@@ -28,7 +28,7 @@ instance ActionRunner env => HasActions env LightningGun5 where
         ActivateCardAbilityAction
           iid
           (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight)))
-        | fightAvailable
+        | useCount (assetUses a) > 0 && fightAvailable
       ]
   getActions _ _ _ = pure []
 
@@ -51,5 +51,3 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env LightningGun5 
         ]
       pure $ LightningGun5 $ attrs & usesL %~ Resource.use
     _ -> LightningGun5 <$> runMessage msg attrs
-
-

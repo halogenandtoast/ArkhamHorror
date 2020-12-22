@@ -25,8 +25,15 @@ ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
 
 instance (HasModifiersFor env (), HasCount SpendableClueCount env InvestigatorId, HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)) => HasActions env RicesWhereabouts where
   getActions iid NonFast (RicesWhereabouts x) = do
-    canAfford <- getCanAffordCost iid (toSource x) (ClueCost 1)
-    pure [ ActivateCardAbilityAction iid (ability x) | canAfford ]
+    canAffordClues <- getCanAffordCost iid (toSource x) (ClueCost 1)
+    canAffordActions <- getCanAffordCost
+      iid
+      (toSource x)
+      (ActionCost 1 Nothing mempty)
+    pure
+      [ ActivateCardAbilityAction iid (ability x)
+      | canAffordClues && canAffordActions
+      ]
   getActions iid window (RicesWhereabouts x) = getActions iid window x
 
 instance ActRunner env => RunMessage env RicesWhereabouts where

@@ -111,6 +111,7 @@ allEncounterCards = HashMap.fromList
   , ("01180", goatSpawn)
   , ("01181", youngDeepOne)
   , ("01182", dreamsOfRlyeh)
+  , ("02060", jazzMulligan)
   , ("02083", visionsOfFuturesPast)
   , ("02084", beyondTheVeil)
   , ("02085", lightOfAforgomon)
@@ -373,7 +374,7 @@ dreamsOfRlyeh cardId = (treachery cardId "01182" "Dreams of R'lyeh")
   }
 
 jazzMulligan :: CardId -> EncounterCard
-jazzMulligan cardId = (treachery cardId "02060" "Jazz Mulligan")
+jazzMulligan cardId = (asset cardId "02060" "Jazz Mulligan")
   { ecTraits = setFromList [Ally, Miskatonic]
   }
 

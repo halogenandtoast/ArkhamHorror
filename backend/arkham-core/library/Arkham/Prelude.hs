@@ -27,5 +27,6 @@ import Control.Lens as X
   , (^?)
   )
 import Control.Monad.Extra as X (concatMapM)
+import Data.Aeson as X
 import GHC.Stack as X
 import Safe as X (fromJustNote)

@@ -14,7 +14,7 @@ newtype TheyreGettingOut = TheyreGettingOut Attrs
 
 theyreGettingOut :: TheyreGettingOut
 theyreGettingOut = TheyreGettingOut
-  $ baseAttrs "01107" 3 "They're Getting Out!" "Agenda 3a" (Static 10)
+  $ baseAttrs "01107" "They're Getting Out!" (Agenda 3 A) (Static 10)
 
 instance HasActions env TheyreGettingOut where
   getActions i window (TheyreGettingOut x) = getActions i window x
@@ -24,15 +24,15 @@ instance HasModifiersFor env TheyreGettingOut where
 
 instance AgendaRunner env => RunMessage env TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3a" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 A -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unshiftMessage $ Ask leadInvestigatorId (ChooseOne [AdvanceAgenda aid])
       pure
         $ TheyreGettingOut
         $ attrs
-        & (sequenceL .~ "Agenda 3b")
+        & (sequenceL .~ Agenda 3 B)
         & (flippedL .~ True)
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3b" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       actIds <- getSet @ActId ()
       if ActId "01108" `elem` actIds || ActId "01109" `elem` actIds
         then a <$ unshiftMessage (Resolution 3)

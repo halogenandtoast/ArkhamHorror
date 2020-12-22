@@ -11,7 +11,7 @@ newtype WhatsGoingOn = WhatsGoingOn Attrs
 
 whatsGoingOn :: WhatsGoingOn
 whatsGoingOn =
-  WhatsGoingOn $ baseAttrs "01105" 1 "What's Going On?!" "Agenda 1a" (Static 3)
+  WhatsGoingOn $ baseAttrs "01105" "What's Going On?!" (Agenda 1 A) (Static 3)
 
 instance HasModifiersFor env WhatsGoingOn where
   getModifiersFor = noModifiersFor
@@ -21,7 +21,7 @@ instance HasActions env WhatsGoingOn where
 
 instance AgendaRunner env => RunMessage env WhatsGoingOn where
   runMessage msg (WhatsGoingOn attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1a" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 A -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unshiftMessage
         (Ask leadInvestigatorId $ ChooseOne
@@ -35,5 +35,5 @@ instance AgendaRunner env => RunMessage env WhatsGoingOn where
             ]
           ]
         )
-      pure $ WhatsGoingOn $ attrs & sequenceL .~ "Agenda 1b" & flippedL .~ True
+      pure $ WhatsGoingOn $ attrs & sequenceL .~ Agenda 1 B & flippedL .~ True
     _ -> WhatsGoingOn <$> runMessage msg attrs

@@ -13,7 +13,7 @@ newtype QuietHalls = QuietHalls Attrs
 
 quietHalls :: QuietHalls
 quietHalls =
-  QuietHalls $ baseAttrs "02042" 1 "Quiet Halls" "Agenda 1a" (Static 7)
+  QuietHalls $ baseAttrs "02042" "Quiet Halls" (Agenda 1 A) (Static 7)
 
 instance HasModifiersFor env QuietHalls where
   getModifiersFor = noModifiersFor
@@ -23,7 +23,7 @@ instance HasActions env QuietHalls where
 
 instance AgendaRunner env => RunMessage env QuietHalls where
   runMessage msg (QuietHalls attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1a" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 A -> do
       investigatorIds <- getInvestigatorIds
       messages <- flip mapMaybeM investigatorIds $ \iid -> do
         discardCount <- unDiscardCount <$> getCount iid
@@ -51,5 +51,5 @@ instance AgendaRunner env => RunMessage env QuietHalls where
 
       unshiftMessage
         (Ask leadInvestigatorId $ ChooseOne [Label "Continue" continueMessages])
-      pure $ QuietHalls $ attrs & sequenceL .~ "Agenda 1b" & flippedL .~ True
+      pure $ QuietHalls $ attrs & sequenceL .~ Agenda 1 B & flippedL .~ True
     _ -> QuietHalls <$> runMessage msg attrs

@@ -17,7 +17,7 @@ newtype TheRougarouFeeds = TheRougarouFeeds Attrs
 
 theRougarouFeeds :: TheRougarouFeeds
 theRougarouFeeds = TheRougarouFeeds
-  $ baseAttrs "81003" 2 "The Rougarou Feeds" "Agenda 2a" (Static 6)
+  $ baseAttrs "81003" "The Rougarou Feeds" (Agenda 2 A) (Static 6)
 
 instance HasModifiersFor env TheRougarouFeeds where
   getModifiersFor = noModifiersFor
@@ -32,15 +32,15 @@ getRougarou = fmap unStoryEnemyId <$> getId (CardCode "81028")
 
 instance AgendaRunner env => RunMessage env TheRougarouFeeds where
   runMessage msg a@(TheRougarouFeeds attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 A -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage $ chooseOne leadInvestigatorId [AdvanceAgenda aid]
       pure
         $ TheRougarouFeeds
         $ attrs
-        & (sequenceL .~ "Agenda 2b")
+        & (sequenceL .~ Agenda 2 B)
         & (flippedL .~ True)
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2b" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       mrougarou <- getRougarou
       case mrougarou of
         Nothing -> a <$ unshiftMessages

@@ -16,7 +16,7 @@ newtype TheCurseSpreads = TheCurseSpreads Attrs
 
 theCurseSpreads :: TheCurseSpreads
 theCurseSpreads = TheCurseSpreads
-  $ baseAttrs "81004" 3 "The Curse Spreads" "Agenda 3a" (Static 8)
+  $ baseAttrs "81004" "The Curse Spreads" (Agenda 3 A) (Static 8)
 
 instance HasModifiersFor env TheCurseSpreads where
   getModifiersFor = noModifiersFor
@@ -40,14 +40,14 @@ instance AgendaRunner env => RunMessage env TheCurseSpreads where
           pure . TheCurseSpreads $ if notEngaged
             then attrs & doomL +~ 1
             else attrs
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3a" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 A -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage $ chooseOne leadInvestigatorId [AdvanceAgenda aid]
       pure
         $ TheCurseSpreads
         $ attrs
-        & (sequenceL .~ "Agenda 2b")
+        & (sequenceL .~ Agenda 2 B)
         & (flippedL .~ True)
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 3b" ->
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B ->
       a <$ unshiftMessage (Resolution 1)
     _ -> TheCurseSpreads <$> runMessage msg attrs

@@ -14,7 +14,7 @@ newtype TheArkhamWoods = TheArkhamWoods Attrs
 
 theArkhamWoods :: TheArkhamWoods
 theArkhamWoods =
-  TheArkhamWoods $ baseAttrs "01143" 1 "The Arkham Woods" "Agenda 1a" (Static 4)
+  TheArkhamWoods $ baseAttrs "01143" "The Arkham Woods" (Agenda 1 A) (Static 4)
 
 instance HasModifiersFor env TheArkhamWoods where
   getModifiersFor = noModifiersFor
@@ -24,15 +24,15 @@ instance HasActions env TheArkhamWoods where
 
 instance AgendaRunner env => RunMessage env TheArkhamWoods where
   runMessage msg a@(TheArkhamWoods attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1a" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 A -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage (chooseOne leadInvestigatorId [AdvanceAgenda aid])
       pure
         $ TheArkhamWoods
         $ attrs
-        & (sequenceL .~ "Agenda 1b")
+        & (sequenceL .~ Agenda 1 B)
         & (flippedL .~ True)
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 1b" ->
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->
       a <$ unshiftMessage
         (Run
           [ ShuffleEncounterDiscardBackIn

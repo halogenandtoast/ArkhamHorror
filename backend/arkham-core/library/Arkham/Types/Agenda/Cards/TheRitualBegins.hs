@@ -12,11 +12,11 @@ newtype TheRitualBegins = TheRitualBegins Attrs
 
 theRitualBegins :: TheRitualBegins
 theRitualBegins = TheRitualBegins
-  $ baseAttrs "01144" 2 "The Ritual Begins" "Agenda 2a" (Static 5)
+  $ baseAttrs "01144" "The Ritual Begins" (Agenda 2 A) (Static 5)
 
 instance HasModifiersFor env TheRitualBegins where
   getModifiersFor _ (EnemyTarget _) (TheRitualBegins attrs)
-    | agendaSequence attrs == "Agenda 2a" = pure [EnemyFight 1, EnemyEvade 1]
+    | agendaSequence attrs == Agenda 2 A = pure [EnemyFight 1, EnemyEvade 1]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env TheRitualBegins where
@@ -24,15 +24,15 @@ instance HasActions env TheRitualBegins where
 
 instance (AgendaRunner env) => RunMessage env TheRitualBegins where
   runMessage msg a@(TheRitualBegins attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2a" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 A -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unshiftMessage (chooseOne leadInvestigatorId [AdvanceAgenda agendaId])
       pure
         $ TheRitualBegins
         $ attrs
-        & (sequenceL .~ "Agenda 2b")
+        & (sequenceL .~ Agenda 2 B)
         & (flippedL .~ True)
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == "Agenda 2b" -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       investigatorIds <- getSetList ()
       a <$ unshiftMessages
         ([ BeginSkillTest

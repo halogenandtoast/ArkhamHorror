@@ -10,7 +10,6 @@ export interface AgendaContents {
   // doomThreshold: GameValue;
   id: string;
   name: string;
-  sequence: string;
   flipped: boolean;
 }
 
@@ -19,7 +18,6 @@ export const agendaContentsDecoder = JsonDecoder.object<AgendaContents>({
   // doomThreshold: gameValueDecoder,
   id: JsonDecoder.string,
   name: JsonDecoder.string,
-  sequence: JsonDecoder.string,
   flipped: JsonDecoder.boolean,
 }, 'Attrs');
 

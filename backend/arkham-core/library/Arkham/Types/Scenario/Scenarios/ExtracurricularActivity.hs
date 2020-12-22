@@ -24,8 +24,8 @@ extracurricularActivity difficulty =
                               difficulty
                             )
     { scenarioLocationLayout = Just
-      [ "orneLibrary        miskatonicQuad scienceBuilding"
-      , "humanitiesBuilding studentUnion   administrationBuilding"
+      [ "orneLibrary        miskatonicQuad scienceBuilding alchemyLabs"
+      , "humanitiesBuilding studentUnion   administrationBuilding facultyOffices"
       ]
     }
 

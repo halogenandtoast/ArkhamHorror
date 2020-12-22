@@ -29,7 +29,9 @@ alchemyLabs = AlchemyLabs $ baseAttrs
   [Miskatonic]
 
 instance HasModifiersFor env AlchemyLabs where
-  getModifiersFor = noModifiersFor
+  getModifiersFor _ target (AlchemyLabs attrs) | isTarget attrs target =
+    pure [ Blocked | not (locationRevealed attrs) ]
+  getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env AlchemyLabs where
   getActions iid NonFast (AlchemyLabs attrs@Attrs {..}) | locationRevealed = do

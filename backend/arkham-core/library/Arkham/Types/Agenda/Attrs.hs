@@ -1,17 +1,21 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Agenda.Attrs where
+module Arkham.Types.Agenda.Attrs
+  ( module Arkham.Types.Agenda.Attrs
+  , module X
+  )
+where
 
 import Arkham.Import
 
 import Arkham.Types.Agenda.Helpers
+import Arkham.Types.Agenda.Sequence as X
 
 data Attrs = Attrs
   { agendaDoom          :: Int
   , agendaDoomThreshold :: GameValue Int
   , agendaId            :: AgendaId
   , agendaName          :: Text
-  , agendaSequence      :: Text
-  , agendaNumber :: Int
+  , agendaSequence      :: AgendaSequence
   , agendaFlipped :: Bool
   , agendaTreacheries :: HashSet TreacheryId
   }
@@ -37,7 +41,7 @@ instance Entity Attrs where
 doomL :: Lens' Attrs Int
 doomL = lens agendaDoom $ \m x -> m { agendaDoom = x }
 
-sequenceL :: Lens' Attrs Text
+sequenceL :: Lens' Attrs AgendaSequence
 sequenceL = lens agendaSequence $ \m x -> m { agendaSequence = x }
 
 flippedL :: Lens' Attrs Bool
@@ -50,20 +54,25 @@ doomThresholdL =
 treacheriesL :: Lens' Attrs (HashSet TreacheryId)
 treacheriesL = lens agendaTreacheries $ \m x -> m { agendaTreacheries = x }
 
-baseAttrs :: AgendaId -> Int -> Text -> Text -> GameValue Int -> Attrs
-baseAttrs aid num name seq' threshold = Attrs
+baseAttrs :: AgendaId -> Text -> AgendaSequence -> GameValue Int -> Attrs
+baseAttrs aid name seq' threshold = Attrs
   { agendaDoom = 0
   , agendaDoomThreshold = threshold
   , agendaId = aid
   , agendaName = name
   , agendaSequence = seq'
   , agendaFlipped = False
-  , agendaNumber = num
   , agendaTreacheries = mempty
   }
 
 instance HasActions env Attrs where
   getActions _ _ _ = pure []
+
+instance HasStep AgendaStep Attrs where
+  getStep = agendaStep . agendaSequence
+
+instance HasCount DoomCount env Attrs where
+  getCount = pure . DoomCount . agendaDoom
 
 instance
   ( HasQueue env

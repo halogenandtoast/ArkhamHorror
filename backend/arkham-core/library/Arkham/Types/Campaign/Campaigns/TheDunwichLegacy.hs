@@ -32,7 +32,6 @@ theDunwichLegacy difficulty = TheDunwichLegacy
       , Token.Skull
       , Token.Skull
       , Token.Cultist
-      , Token.Tablet
       , Token.AutoFail
       , Token.ElderSign
       ]
@@ -50,7 +49,6 @@ theDunwichLegacy difficulty = TheDunwichLegacy
       , Token.Skull
       , Token.Skull
       , Token.Cultist
-      , Token.Tablet
       , Token.AutoFail
       , Token.ElderSign
       ]
@@ -69,7 +67,6 @@ theDunwichLegacy difficulty = TheDunwichLegacy
       , Token.Skull
       , Token.Skull
       , Token.Cultist
-      , Token.Tablet
       , Token.AutoFail
       , Token.ElderSign
       ]
@@ -89,7 +86,6 @@ theDunwichLegacy difficulty = TheDunwichLegacy
       , Token.Skull
       , Token.Skull
       , Token.Cultist
-      , Token.Tablet
       , Token.AutoFail
       , Token.ElderSign
       ]

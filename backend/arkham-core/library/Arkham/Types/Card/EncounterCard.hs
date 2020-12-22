@@ -342,6 +342,7 @@ theYellowSign cardId =
 yithianObserver :: CardId -> EncounterCard
 yithianObserver cardId = (enemy cardId "01177" "Yithian Observer")
   { ecTraits = setFromList [Monster, Yithian]
+  , ecVictoryPoints = Just 1
   }
 
 offerOfPower :: CardId -> EncounterCard

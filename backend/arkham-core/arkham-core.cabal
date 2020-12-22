@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5597ee41a087ca2f11f14727929f1446d6efb80cceb25233e87b3fa667d42ee6
+-- hash: 1ee822423e4076ee6fa10128bf14f5dc004fbd609096afeb6ff1b882eaaefc38
 
 name:           arkham-core
 version:        0.0.0
@@ -115,6 +115,7 @@ library
       Arkham.Types.Asset.Cards.LeatherCoat
       Arkham.Types.Asset.Cards.LeoDeLuca
       Arkham.Types.Asset.Cards.LeoDeLuca1
+      Arkham.Types.Asset.Cards.LightningGun5
       Arkham.Types.Asset.Cards.LitaChantler
       Arkham.Types.Asset.Cards.Machete
       Arkham.Types.Asset.Cards.MagnifyingGlass

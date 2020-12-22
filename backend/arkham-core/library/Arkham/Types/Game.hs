@@ -137,11 +137,12 @@ instance ToJSON ModifierData where
   toEncoding = genericToEncoding $ aesonOptions $ Just "md"
 
 withModifiers
-  :: (MonadReader env m, Entity a, HasModifiersFor env ())
+  :: (MonadReader env m, Entity a, HasModifiersFor env (), env ~ Game queue)
   => a
   -> m (With a ModifierData)
 withModifiers a = do
-  modifiers' <- getModifiersFor (toSource a) (toTarget a) ()
+  source <- InvestigatorSource <$> view activeInvestigatorId
+  modifiers' <- getModifiersFor source (toTarget a) ()
   pure $ a `with` ModifierData modifiers'
 
 instance (ToJSON queue) => ToJSON (Game queue) where
@@ -1039,13 +1040,16 @@ instance HasSet CommittedCardCode (Game queue) () where
 
 instance HasSet BlockedLocationId (Game queue) () where
   getSet _ = do
+    source <- InvestigatorSource <$> view activeInvestigatorId
     locations' <- mapToList <$> view locations
-    setFromList . map (BlockedLocationId . fst) <$> filterM isBlocked locations'
+    setFromList
+      . map (BlockedLocationId . fst)
+      <$> filterM (isBlocked source) locations'
    where
-    isBlocked (_, location) =
+    isBlocked source (_, location) =
       elem Blocked
         . map modifierType
-        <$> getModifiersFor (toSource location) (toTarget location) ()
+        <$> getModifiersFor source (toTarget location) ()
 
 -- the results will have the initial location at 0, we need to drop
 -- this otherwise this will only ever return the current location

@@ -1,9 +1,9 @@
 <template>
   <div class="act-container">
     <img
-      :class="{ 'act--can-progress': advanceActAction !== -1 }"
+      :class="{ 'act--can-progress': interactAction !== -1 }"
       class="card card--sideways"
-      @click="$emit('choose', advanceActAction)"
+      @click="$emit('choose', interactAction)"
       :src="image"
     />
     <button
@@ -41,18 +41,20 @@ export default defineComponent({
 
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
 
-    function canAdvance(c: Message): boolean {
+    function canInteract(c: Message): boolean {
       switch (c.tag) {
         case MessageType.ADVANCE_ACT:
           return true;
+        case MessageType.ATTACH_TREACHERY:
+          return c.contents[1].contents == id.value;
         case MessageType.RUN:
-          return c.contents.some((c1: Message) => canAdvance(c1));
+          return c.contents.some((c1: Message) => canInteract(c1));
         default:
           return false;
       }
     }
 
-    const advanceActAction = computed(() => choices.value.findIndex(canAdvance));
+    const interactAction = computed(() => choices.value.findIndex(canInteract));
 
     function abilityLabel(idx: number) {
       return choices.value[idx].contents[1].type.contents[1];
@@ -69,7 +71,7 @@ export default defineComponent({
         }, [])
     })
 
-    return { abilities, abilityLabel, advanceActAction, choices, image, id }
+    return { abilities, abilityLabel, interactAction, choices, image, id }
   }
 })
 </script>

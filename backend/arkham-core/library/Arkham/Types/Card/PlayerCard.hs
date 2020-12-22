@@ -262,6 +262,8 @@ allPlayerCards = HashMap.fromList
   , ("02013", finalRhapsody)
   , ("02014", duke)
   , ("02015", wrackedByNightmares)
+  , ("02017", taunt)
+  , ("02019", taunt2)
   , ("02032", fireAxe)
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
@@ -292,6 +294,7 @@ allPlayerCards = HashMap.fromList
   , ("50008", mindWipe3)
   , ("50009", digDeep2)
   , ("50010", rabbitsFoot3)
+  , ("60130", taunt3)
   , ("60205", arcaneEnlightenment)
   , ("60206", celaenoFragments)
   , ("60208", encyclopedia)
@@ -1027,6 +1030,22 @@ wrackedByNightmares cardId =
     , pcRevelation = True
     }
 
+taunt :: CardId -> PlayerCard
+taunt cardId = (event cardId "02017" "Taunt" 1 Guardian)
+  { pcTraits = setFromList [Tactic]
+  , pcFast = True
+  , pcWindows = setFromList [DuringTurn You]
+  , pcSkills = [SkillWillpower, SkillCombat]
+  }
+
+taunt2 :: CardId -> PlayerCard
+taunt2 cardId = (event cardId "02019" "Taunt" 1 Guardian)
+  { pcTraits = setFromList [Tactic]
+  , pcFast = True
+  , pcWindows = setFromList [DuringTurn You]
+  , pcSkills = [SkillWillpower, SkillCombat, SkillAgility]
+  }
+
 fireAxe :: CardId -> PlayerCard
 fireAxe cardId = (asset cardId "02032" "Fire Axe" 1 Survivor)
   { pcSkills = [SkillCombat]
@@ -1249,6 +1268,14 @@ rabbitsFoot3 cardId = (asset cardId "50010" "Rabbit's Foot" 1 Survivor)
   { pcSkills = [SkillWild]
   , pcTraits = setFromList [Item, Charm]
   , pcLevel = 3
+  }
+
+taunt3 :: CardId -> PlayerCard
+taunt3 cardId = (event cardId "60130" "Taunt" 1 Guardian)
+  { pcTraits = setFromList [Tactic]
+  , pcFast = True
+  , pcWindows = setFromList [FastPlayerWindow]
+  , pcSkills = [SkillWillpower, SkillWillpower, SkillCombat, SkillAgility]
   }
 
 arcaneEnlightenment :: CardId -> PlayerCard

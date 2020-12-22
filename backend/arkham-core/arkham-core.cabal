@@ -302,6 +302,9 @@ library
       Arkham.Types.Event.Cards.SecondWind
       Arkham.Types.Event.Cards.SneakAttack
       Arkham.Types.Event.Cards.SureGamble3
+      Arkham.Types.Event.Cards.Taunt
+      Arkham.Types.Event.Cards.Taunt2
+      Arkham.Types.Event.Cards.Taunt3
       Arkham.Types.Event.Cards.WardOfProtection
       Arkham.Types.Event.Cards.WillToSurvive4
       Arkham.Types.Event.Cards.WorkingAHunch

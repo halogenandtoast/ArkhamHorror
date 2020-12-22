@@ -55,6 +55,7 @@ import Arkham.Types.Asset.Cards.LadyEsprit as X
 import Arkham.Types.Asset.Cards.LeatherCoat as X
 import Arkham.Types.Asset.Cards.LeoDeLuca as X
 import Arkham.Types.Asset.Cards.LeoDeLuca1 as X
+import Arkham.Types.Asset.Cards.LightningGun5 as X
 import Arkham.Types.Asset.Cards.LitaChantler as X
 import Arkham.Types.Asset.Cards.Machete as X
 import Arkham.Types.Asset.Cards.MagnifyingGlass as X
@@ -77,6 +78,7 @@ import Arkham.Types.Asset.Cards.ScrollOfProphecies as X
 import Arkham.Types.Asset.Cards.Scrying as X
 import Arkham.Types.Asset.Cards.Shotgun4 as X
 import Arkham.Types.Asset.Cards.Shrivelling as X
+import Arkham.Types.Asset.Cards.SpringfieldM19034 as X
 import Arkham.Types.Asset.Cards.StrayCat as X
 import Arkham.Types.Asset.Cards.Switchblade as X
 import Arkham.Types.Asset.Cards.TheNecronomicon as X

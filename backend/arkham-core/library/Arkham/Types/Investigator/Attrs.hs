@@ -781,6 +781,18 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         | eid <- setToList fightableEnemyIds
         ]
       )
+  ChooseFightEnemyNotEngagedWithInvestigator iid source skillType isAction | iid == investigatorId -> do
+    enemyIds <- getSet investigatorLocation
+    aloofEnemyIds <- HashSet.map unAloofEnemyId <$> getSet investigatorLocation
+    let
+      fightableEnemyIds =
+        enemyIds `difference` (investigatorEngagedEnemies  `union` aloofEnemyIds)
+    a <$ unshiftMessage
+      (Ask iid $ ChooseOne
+        [ FightEnemy iid eid source skillType isAction
+        | eid <- setToList fightableEnemyIds
+        ]
+      )
   EngageEnemy iid eid True | iid == investigatorId -> a <$ unshiftMessages
     [TakeAction iid 1 (Just Action.Engage), EngageEnemy iid eid False]
   EngageEnemy iid eid False | iid == investigatorId ->

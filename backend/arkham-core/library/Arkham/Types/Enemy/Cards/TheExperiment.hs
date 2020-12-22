@@ -19,6 +19,7 @@ theExperiment uuid =
     . (fightL .~ 4)
     . (healthL .~ Static 7)
     . (evadeL .~ 2)
+    . (uniqueL .~ True)
 
 instance HasCount PlayerCount env () => HasModifiersFor env TheExperiment where
   getModifiersFor _ target (TheExperiment attrs) | isTarget attrs target = do

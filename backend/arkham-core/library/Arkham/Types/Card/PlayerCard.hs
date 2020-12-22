@@ -265,7 +265,9 @@ allPlayerCards = HashMap.fromList
   , ("02032", fireAxe)
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
+  , ("02059", alchemicalConcoction)
   , ("02060", jazzMulligan)
+  , ("02061", professorWarrenRice)
   , ("02147", bandolier)
   , ("02185", keenEye3)
   , ("02185", springfieldM19034)
@@ -1044,10 +1046,23 @@ baitAndSwitch cardId = (event cardId "02034" "Bait and Switch" 1 Survivor)
   , pcAction = Just Action.Evade
   }
 
+alchemicalConcoction :: CardId -> PlayerCard
+alchemicalConcoction cardId =
+  (asset cardId "02059" "Alchemical Concoction" 0 Neutral)
+    { pcTraits = setFromList [Item, Science]
+    }
+
 jazzMulligan :: CardId -> PlayerCard
 jazzMulligan cardId = (asset cardId "02060" "Jazz Mulligan" 0 Neutral)
   { pcTraits = setFromList [Ally, Miskatonic]
   }
+
+professorWarrenRice :: CardId -> PlayerCard
+professorWarrenRice cardId =
+  (asset cardId "02061" "Progressor Warren Rice" 3 Neutral)
+    { pcSkills = [SkillIntellect, SkillWild]
+    , pcTraits = setFromList [Ally, Miskatonic]
+    }
 
 brotherXavier1 :: CardId -> PlayerCard
 brotherXavier1 cardId = (asset cardId "02106" "Brother Xavier" 5 Guardian)
@@ -1070,7 +1085,8 @@ keenEye3 cardId = (asset cardId "02185" "Keen Eye" 0 Guardian)
   }
 
 springfieldM19034 :: CardId -> PlayerCard
-springfieldM19034 cardId = (asset cardId "02226" "Springfiled M1903" 4 Guardian)
+springfieldM19034 cardId = (asset cardId "02226" "Springfiled M1903" 4 Guardian
+                           )
   { pcTraits = setFromList [Item, Weapon, Firearm]
   , pcLevel = 4
   , pcSkills = [SkillCombat, SkillAgility]

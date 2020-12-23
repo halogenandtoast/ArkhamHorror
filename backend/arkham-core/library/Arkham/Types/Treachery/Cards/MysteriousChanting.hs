@@ -20,18 +20,20 @@ instance HasModifiersFor env MysteriousChanting where
 instance HasActions env MysteriousChanting where
   getActions i window (MysteriousChanting attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env MysteriousChanting where
-  runMessage msg (MysteriousChanting attrs@Attrs {..}) = case msg of
+instance TreacheryRunner env => RunMessage env MysteriousChanting where
+  runMessage msg t@(MysteriousChanting attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       lid <- getId @LocationId iid
       enemies <- map unClosestEnemyId <$> getSetList (lid, [Cultist])
       case enemies of
-        [] -> unshiftMessage
-          (FindAndDrawEncounterCard
+        [] -> t <$ unshiftMessages
+          [ FindAndDrawEncounterCard
             iid
             (EncounterCardMatchByType (EnemyType, Just Cultist))
-          )
-        xs -> unshiftMessage
-          (Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget eid) 2 | eid <- xs ])
-      MysteriousChanting <$> runMessage msg (attrs & resolved .~ True)
+          , Discard $ toTarget attrs
+          ]
+        xs -> t <$ unshiftMessages
+          [ Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget eid) 2 | eid <- xs ]
+          , Discard $ toTarget attrs
+          ]
     _ -> MysteriousChanting <$> runMessage msg attrs

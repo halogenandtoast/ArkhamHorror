@@ -50,6 +50,7 @@ import Arkham.Types.Treachery.Cards.SpectralMist as X
 import Arkham.Types.Treachery.Cards.TerrorFromBeyond as X
 import Arkham.Types.Treachery.Cards.TheYellowSign as X
 import Arkham.Types.Treachery.Cards.TheZealotsSeal as X
+import Arkham.Types.Treachery.Cards.TwistOfFate as X
 import Arkham.Types.Treachery.Cards.UmordhothsHunger as X
 import Arkham.Types.Treachery.Cards.UmordhothsWrath as X
 import Arkham.Types.Treachery.Cards.VaultOfEarthlyDemise as X

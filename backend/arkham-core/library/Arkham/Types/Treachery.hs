@@ -50,6 +50,7 @@ data Treachery
   | LightOfAforgomon' LightOfAforgomon
   | EagerForDeath' EagerForDeath
   | CursedLuck' CursedLuck
+  | TwistOfFate' TwistOfFate
   | PushedIntoTheBeyond' PushedIntoTheBeyond
   | TerrorFromBeyond' TerrorFromBeyond
   | ArcaneBarrier' ArcaneBarrier
@@ -146,6 +147,7 @@ allTreacheries = mapFromList
   , ("02085", (LightOfAforgomon' .) . lightOfAforgomon)
   , ("02091", (EagerForDeath' .) . eagerForDeath)
   , ("02092", (CursedLuck' .) . cursedLuck)
+  , ("02093", (TwistOfFate' .) . twistOfFate)
   , ("02100", (PushedIntoTheBeyond' .) . pushedIntoTheBeyond)
   , ("02101", (TerrorFromBeyond' .) . terrorFromBeyond)
   , ("02102", (ArcaneBarrier' .) . arcaneBarrier)
@@ -211,6 +213,7 @@ treacheryAttrs = \case
   LightOfAforgomon' attrs -> coerce attrs
   EagerForDeath' attrs -> coerce attrs
   CursedLuck' attrs -> coerce attrs
+  TwistOfFate' attrs -> coerce attrs
   PushedIntoTheBeyond' attrs -> coerce attrs
   TerrorFromBeyond' attrs -> coerce attrs
   ArcaneBarrier' attrs -> coerce attrs

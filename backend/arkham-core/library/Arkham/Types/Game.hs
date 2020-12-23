@@ -60,6 +60,7 @@ import Arkham.Types.Skill
 import Arkham.Types.SkillTest
 import Arkham.Types.Trait
 import Arkham.Types.Treachery
+import Arkham.Types.Game.Helpers
 import qualified Arkham.Types.Window as Fast
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM)
@@ -317,6 +318,10 @@ getTreachery tid = fromJustNote missingTreachery
 getEvent :: MonadReader (Game queue) m => EventId -> m Event
 getEvent eid = fromJustNote missingEvent <$> preview (events . ix eid)
   where missingEvent = "Unknown event: " <> show eid
+
+getEffect :: MonadReader (Game queue) m => EffectId -> m Effect
+getEffect eid = fromJustNote missingEffect <$> preview (effects . ix eid)
+  where missingEffect = "Unknown effect: " <> show eid
 
 activeInvestigator :: Game queue -> Investigator
 activeInvestigator g = getInvestigator (g ^. activeInvestigatorId) g
@@ -770,32 +775,6 @@ instance HasModifiersFor (Game queue) () where
       then filter ((/= targetToSource target) . modifierSource) allModifiers
       else allModifiers
 
-targetToSource :: Target -> Source
-targetToSource = \case
-  InvestigatorTarget iid -> InvestigatorSource iid
-  AssetTarget aid -> AssetSource aid
-  EnemyTarget eid -> EnemySource eid
-  ScenarioTarget sid -> ScenarioSource sid
-  EffectTarget eid -> EffectSource eid
-  LocationTarget lid -> LocationSource lid
-  (SetAsideLocationsTarget _) -> error "can not convert"
-  SkillTestTarget -> error "can not convert"
-  AfterSkillTestTarget -> AfterSkillTestSource
-  TreacheryTarget tid -> TreacherySource tid
-  EncounterDeckTarget -> error "can not covert"
-  AgendaTarget aid -> AgendaSource aid
-  ActTarget aid -> ActSource aid
-  CardIdTarget _ -> error "can not convert"
-  CardCodeTarget _ -> error "can not convert"
-  SearchedCardTarget _ _ -> error "can not convert"
-  EventTarget eid -> EventSource eid
-  SkillTarget sid -> SkillSource sid
-  SkillTestInitiatorTarget _ -> error "can not convert"
-  TokenTarget tid -> TokenSource tid
-  DrawnTokenTarget dt -> DrawnTokenSource dt
-  TestTarget -> TestSource
-  EncounterCardTarget _ -> error "can not convert"
-
 instance HasStep AgendaStep (Game queue) where
   getStep g = case toList (g ^. agendas) of
     [agenda] -> getStep agenda
@@ -866,6 +845,33 @@ instance HasSet Keyword (Game queue) EnemyId where
 
 instance HasSet Trait (Game queue) LocationId where
   getSet lid = getTraits <$> getLocation lid
+
+instance HasSet Trait (Game queue) Source where
+  getSet = \case
+    AssetSource aid -> getTraits <$> getAsset aid
+    EventSource eid -> getTraits <$> getEvent eid
+    EffectSource eid -> getSet =<< getEffect eid
+    EnemySource eid -> getTraits <$> getEnemy eid
+    ScenarioSource _ -> pure mempty
+    InvestigatorSource iid -> getTraits <$> getInvestigator iid
+    CardCodeSource _ -> pure mempty
+    TokenSource _ -> pure mempty
+    TokenEffectSource _ -> pure mempty
+    AgendaSource _ -> pure mempty
+    LocationSource lid -> getTraits <$> getLocation lid
+    SkillTestSource{} -> pure mempty
+    AfterSkillTestSource -> pure mempty
+    TreacherySource tid -> getTraits <$> getTreachery tid
+    SkillSource _ -> pure mempty -- TODO: should this return traits
+    EmptyDeckSource -> pure mempty
+    DeckSource -> pure mempty
+    GameSource -> pure mempty
+    ActSource _ -> pure mempty
+    PlayerCardSource _ -> pure mempty
+    EncounterCardSource _ -> pure mempty
+    TestSource -> pure mempty
+    DrawnTokenSource _ -> pure mempty
+    ProxySource _ _ -> pure mempty
 
 instance HasSet Trait (Game queue) (InvestigatorId, CardId) where
   getSet (iid, cid) =

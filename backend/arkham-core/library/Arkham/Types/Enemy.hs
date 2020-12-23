@@ -49,6 +49,8 @@ data Enemy
   | Thrall' Thrall
   | WizardOfYogSothoth' WizardOfYogSothoth
   | Whippoorwill' Whippoorwill
+  | ConglomerationOfSpheres' ConglomerationOfSpheres
+  | ServantOfTheLurker' ServantOfTheLurker
   | CorpseHungryGhoul' CorpseHungryGhoul
   | GhoulFromTheDepths' GhoulFromTheDepths
   | Narogath' Narogath
@@ -212,6 +214,8 @@ allEnemies = mapFromList
   , ("02086", Thrall' . thrall)
   , ("02087", WizardOfYogSothoth' . wizardOfYogSothoth)
   , ("02090", Whippoorwill' . whippoorwill)
+  , ("02103", ConglomerationOfSpheres' . conglomerationOfSpheres)
+  , ("02104", ServantOfTheLurker' . servantOfTheLurker)
   , ("50022", CorpseHungryGhoul' . corpseHungryGhoul)
   , ("50023", GhoulFromTheDepths' . ghoulFromTheDepths)
   , ("50026b", Narogath' . narogath)
@@ -285,6 +289,8 @@ enemyAttrs = \case
   Thrall' attrs -> coerce attrs
   WizardOfYogSothoth' attrs -> coerce attrs
   Whippoorwill' attrs -> coerce attrs
+  ConglomerationOfSpheres' attrs -> coerce attrs
+  ServantOfTheLurker' attrs -> coerce attrs
   CorpseHungryGhoul' attrs -> coerce attrs
   GhoulFromTheDepths' attrs -> coerce attrs
   Narogath' attrs -> coerce attrs

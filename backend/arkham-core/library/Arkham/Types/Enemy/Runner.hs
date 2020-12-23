@@ -1,17 +1,9 @@
 module Arkham.Types.Enemy.Runner where
 
-import Arkham.Types.ActId
-import Arkham.Types.AgendaId
-import Arkham.Types.Classes
-import Arkham.Types.EnemyId
-import Arkham.Types.InvestigatorId
-import Arkham.Types.LocationId
+import Arkham.Import
+
 import Arkham.Types.LocationMatcher
-import Arkham.Types.Prey
-import Arkham.Types.Query
-import Arkham.Types.Target
 import Arkham.Types.Trait
-import ClassyPrelude
 
 type EnemyRunner env
   = ( HasQueue env
@@ -40,6 +32,7 @@ type EnemyRunner env
     , HasSet PreyId env Prey
     , HasSet Trait env EnemyId
     , HasSet Trait env LocationId
+    , HasSet Trait env Source
     , HasSource ForSkillTest env
     , HasStep AgendaStep env
     )

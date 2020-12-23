@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b9c1b73d96202aef7ff3946ca4790c11378f070b0b0f439c26428ef10f7b69ed
+-- hash: 71e9830f61f3ee88f8b54ccbda932d2e5da92248bda4ad8f0fb75af66bae51f5
 
 name:           arkham-core
 version:        0.0.0
@@ -223,6 +223,7 @@ library
       Arkham.Types.Enemy.Cards.AlmaHill
       Arkham.Types.Enemy.Cards.BillyCooper
       Arkham.Types.Enemy.Cards.BogGator
+      Arkham.Types.Enemy.Cards.ConglomerationOfSpheres
       Arkham.Types.Enemy.Cards.CorpseHungryGhoul
       Arkham.Types.Enemy.Cards.CorpseTaker
       Arkham.Types.Enemy.Cards.DarkYoungHost
@@ -245,6 +246,7 @@ library
       Arkham.Types.Enemy.Cards.RelentlessDarkYoung
       Arkham.Types.Enemy.Cards.RuthTurner
       Arkham.Types.Enemy.Cards.ScreechingByakhee
+      Arkham.Types.Enemy.Cards.ServantOfTheLurker
       Arkham.Types.Enemy.Cards.SilverTwilightAcolyte
       Arkham.Types.Enemy.Cards.SlimeCoveredDhole
       Arkham.Types.Enemy.Cards.StubbornDetective

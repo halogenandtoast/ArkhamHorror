@@ -11,6 +11,7 @@ import Arkham.Import
 
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Effects
+import Arkham.Types.Trait
 
 data Effect
   = OnTheLam' OnTheLam
@@ -42,6 +43,9 @@ data Effect
 
 deriving anyclass instance HasModifiersFor env Effect
 deriving anyclass instance HasQueue env => RunMessage env Effect
+
+instance HasSet Trait env Effect where
+  getSet = const (pure mempty)
 
 lookupEffect
   :: CardCode

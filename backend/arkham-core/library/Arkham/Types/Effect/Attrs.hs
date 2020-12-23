@@ -3,11 +3,14 @@ module Arkham.Types.Effect.Attrs where
 
 import Arkham.Import
 
+import Arkham.Types.Trait
+
 data Attrs = Attrs
   { effectId :: EffectId
   , effectCardCode :: Maybe CardCode
   , effectTarget :: Target
   , effectSource :: Source
+  , effectTraits :: HashSet Trait
   , effectMetadata :: Maybe (EffectMetadata Message)
   }
   deriving stock (Show, Generic)
@@ -27,6 +30,7 @@ baseAttrs cardCode eid meffectMetadata source target = Attrs
   , effectTarget = target
   , effectCardCode = Just cardCode
   , effectMetadata = meffectMetadata
+  , effectTraits = mempty
   }
 
 instance ToJSON Attrs where

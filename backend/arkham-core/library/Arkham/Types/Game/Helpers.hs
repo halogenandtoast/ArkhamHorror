@@ -262,3 +262,56 @@ toModifier = Modifier . toSource
 
 toModifiers :: Entity a => a -> [ModifierType] -> [Modifier]
 toModifiers = map . toModifier
+
+targetToSource :: Target -> Source
+targetToSource = \case
+  InvestigatorTarget iid -> InvestigatorSource iid
+  AssetTarget aid -> AssetSource aid
+  EnemyTarget eid -> EnemySource eid
+  ScenarioTarget sid -> ScenarioSource sid
+  EffectTarget eid -> EffectSource eid
+  LocationTarget lid -> LocationSource lid
+  (SetAsideLocationsTarget _) -> error "can not convert"
+  SkillTestTarget -> error "can not convert"
+  AfterSkillTestTarget -> AfterSkillTestSource
+  TreacheryTarget tid -> TreacherySource tid
+  EncounterDeckTarget -> error "can not covert"
+  AgendaTarget aid -> AgendaSource aid
+  ActTarget aid -> ActSource aid
+  CardIdTarget _ -> error "can not convert"
+  CardCodeTarget _ -> error "can not convert"
+  SearchedCardTarget _ _ -> error "can not convert"
+  EventTarget eid -> EventSource eid
+  SkillTarget sid -> SkillSource sid
+  SkillTestInitiatorTarget _ -> error "can not convert"
+  TokenTarget tid -> TokenSource tid
+  DrawnTokenTarget dt -> DrawnTokenSource dt
+  TestTarget -> TestSource
+  EncounterCardTarget _ -> error "can not convert"
+
+sourceToTarget :: Source -> Target
+sourceToTarget = \case
+  AssetSource aid -> AssetTarget aid
+  EnemySource eid -> EnemyTarget eid
+  ScenarioSource sid -> ScenarioTarget sid
+  InvestigatorSource iid -> InvestigatorTarget iid
+  CardCodeSource cid -> CardCodeTarget cid
+  TokenSource t -> TokenTarget t
+  TokenEffectSource _ -> error "not implemented"
+  AgendaSource aid -> AgendaTarget aid
+  LocationSource lid -> LocationTarget lid
+  SkillTestSource{} -> SkillTestTarget
+  AfterSkillTestSource -> AfterSkillTestTarget
+  TreacherySource tid -> TreacheryTarget tid
+  EventSource eid -> EventTarget eid
+  SkillSource sid -> SkillTarget sid
+  EmptyDeckSource -> error "not implemented"
+  DeckSource -> error "not implemented"
+  GameSource -> error "not implemented"
+  ActSource aid -> ActTarget aid
+  PlayerCardSource _ -> error "not implemented"
+  EncounterCardSource _ -> error "not implemented"
+  TestSource -> TestTarget
+  DrawnTokenSource dt -> DrawnTokenTarget dt
+  ProxySource _ _ -> error "not implemented"
+  EffectSource eid -> EffectTarget eid

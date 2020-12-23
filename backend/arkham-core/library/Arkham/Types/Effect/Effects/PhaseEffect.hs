@@ -19,6 +19,7 @@ phaseEffect eid metadata source target = PhaseEffect $ Attrs
   , effectTarget = target
   , effectCardCode = Nothing
   , effectMetadata = Just metadata
+  , effectTraits = mempty
   }
 
 instance HasModifiersFor env PhaseEffect where

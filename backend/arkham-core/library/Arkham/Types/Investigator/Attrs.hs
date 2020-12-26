@@ -654,6 +654,24 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         | card <- investigatorHand
         ]
       )
+  BeginTrade iid (AssetTarget aid) iids | iid == investigatorId ->
+    a <$ unshiftMessage
+      (chooseOne
+        iid
+        [ TargetLabel (InvestigatorTarget iid') [TakeControlOfAsset iid' aid]
+        | iid' <- iids
+        ]
+      )
+  BeginTrade iid ResourceTarget iids | iid == investigatorId ->
+    a <$ unshiftMessage
+      (chooseOne
+        iid
+        [ TargetLabel
+            (InvestigatorTarget iid')
+            [TakeResources iid' 1 False, SpendResources iid 1]
+        | iid' <- iids
+        ]
+      )
   AllRandomDiscard | not (a ^. defeatedL || a ^. resignedL) ->
     a <$ unshiftMessage (RandomDiscard investigatorId)
   RandomDiscard iid | iid == investigatorId -> do
@@ -708,6 +726,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   RemoveEnemy eid -> pure $ a & engagedEnemiesL %~ deleteSet eid
   TakeControlOfAsset iid aid | iid == investigatorId ->
     pure $ a & assetsL %~ insertSet aid
+  TakeControlOfAsset iid aid | iid /= investigatorId ->
+    pure $ a & assetsL %~ deleteSet aid
   ChooseAndDiscardAsset iid | iid == investigatorId -> do
     discardableAssetIds <- map unDiscardableAssetId <$> getSetList iid
     a <$ unshiftMessage

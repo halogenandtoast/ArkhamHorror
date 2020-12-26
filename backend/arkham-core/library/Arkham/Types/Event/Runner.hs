@@ -20,6 +20,7 @@ type EventRunner env
     , HasList DiscardableHandCard env InvestigatorId
     , HasRoundHistory env
     , HasSet AssetId env InvestigatorId
+    , HasSet AssetId env (InvestigatorId, [Trait])
     , HasSet ConnectedLocationId env LocationId
     , HasSet EmptyLocationId env ()
     , HasSet EnemyId env InvestigatorId

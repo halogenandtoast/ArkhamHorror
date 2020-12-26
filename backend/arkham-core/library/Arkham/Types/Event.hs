@@ -50,6 +50,9 @@ data Event
   | WillToSurvive4' WillToSurvive4
   | EmergencyCache' EmergencyCache
   | SearchForTheTruth' SearchForTheTruth
+  | Taunt' Taunt
+  | Teamwork' Teamwork
+  | Taunt2' Taunt2
   | BaitAndSwitch' BaitAndSwitch
   | LetMeHandleThis' LetMeHandleThis
   | SecondWind' SecondWind
@@ -60,6 +63,7 @@ data Event
   | Barricade3' Barricade3
   | HotStreak2' HotStreak2
   | MindWipe3' MindWipe3
+  | Taunt3' Taunt3
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -118,6 +122,9 @@ allEvents = mapFromList
   , ("01085", (WillToSurvive4' .) . willToSurvive4)
   , ("01088", (EmergencyCache' .) . emergencyCache)
   , ("02008", (SearchForTheTruth' .) . searchForTheTruth)
+  , ("02017", (Taunt' .) . taunt)
+  , ("02018", (Teamwork' .) . teamwork)
+  , ("02019", (Taunt2' .) . taunt2)
   , ("02034", (BaitAndSwitch' .) . baitAndSwitch)
   , ("03022", (LetMeHandleThis' .) . letMeHandleThis)
   , ("04149", (SecondWind' .) . secondWind)
@@ -128,6 +135,7 @@ allEvents = mapFromList
   , ("50004", (Barricade3' .) . barricade3)
   , ("50006", (HotStreak2' .) . hotStreak2)
   , ("50008", (MindWipe3' .) . mindWipe3)
+  , ("60130", (Taunt3' .) . taunt3)
   ]
 
 ownerOfEvent :: Event -> InvestigatorId
@@ -163,6 +171,9 @@ eventAttrs = \case
   WillToSurvive4' attrs -> coerce attrs
   EmergencyCache' attrs -> coerce attrs
   SearchForTheTruth' attrs -> coerce attrs
+  Taunt' attrs -> coerce attrs
+  Teamwork' attrs -> coerce attrs
+  Taunt2' attrs -> coerce attrs
   BaitAndSwitch' attrs -> coerce attrs
   LetMeHandleThis' attrs -> coerce attrs
   SecondWind' attrs -> coerce attrs
@@ -173,3 +184,4 @@ eventAttrs = \case
   Barricade3' attrs -> coerce attrs
   HotStreak2' attrs -> coerce attrs
   MindWipe3' attrs -> coerce attrs
+  Taunt3' attrs -> coerce attrs

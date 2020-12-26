@@ -1,6 +1,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.Taunt3
-  ( taunt
+  ( taunt3
   , Taunt3(..)
   )
 where
@@ -13,8 +13,8 @@ import Arkham.Types.Event.Runner
 newtype Taunt3 = Taunt3 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-taunt :: InvestigatorId -> EventId -> Taunt3
-taunt iid uuid = Taunt3 $ baseAttrs iid uuid "60130"
+taunt3 :: InvestigatorId -> EventId -> Taunt3
+taunt3 iid uuid = Taunt3 $ baseAttrs iid uuid "60130"
 
 instance HasActions env Taunt3 where
   getActions iid window (Taunt3 attrs) = getActions iid window attrs

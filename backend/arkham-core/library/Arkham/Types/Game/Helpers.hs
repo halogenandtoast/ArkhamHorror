@@ -304,6 +304,7 @@ targetToSource = \case
   DrawnTokenTarget dt -> DrawnTokenSource dt
   TestTarget -> TestSource
   EncounterCardTarget _ -> error "can not convert"
+  ResourceTarget -> ResourceSource
 
 sourceToTarget :: Source -> Target
 sourceToTarget = \case
@@ -331,3 +332,4 @@ sourceToTarget = \case
   DrawnTokenSource dt -> DrawnTokenTarget dt
   ProxySource _ _ -> error "not implemented"
   EffectSource eid -> EffectTarget eid
+  ResourceSource -> ResourceTarget

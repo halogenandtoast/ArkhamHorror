@@ -79,6 +79,7 @@ data Asset
   | JennysTwin45s' JennysTwin45s
   | JimsTrumpet' JimsTrumpet
   | Duke' Duke
+  | Blackjack' Blackjack
   | FireAxe' FireAxe
   | PeterSylvestre' PeterSylvestre
   | DrHenryArmitage' DrHenryArmitage
@@ -249,6 +250,7 @@ allAssets = mapFromList
   , ("02010", JennysTwin45s' . jennysTwin45s)
   , ("02012", JimsTrumpet' . jimsTrumpet)
   , ("02014", Duke' . duke)
+  , ("02016", Blackjack' . blackjack)
   , ("02032", FireAxe' . fireAxe)
   , ("02033", PeterSylvestre' . peterSylvestre)
   , ("02040", DrHenryArmitage' . drHenryArmitage)
@@ -349,6 +351,7 @@ assetAttrs = \case
   JennysTwin45s' attrs -> coerce attrs
   JimsTrumpet' attrs -> coerce attrs
   Duke' attrs -> coerce attrs
+  Blackjack' attrs -> coerce attrs
   FireAxe' attrs -> coerce attrs
   PeterSylvestre' attrs -> coerce attrs
   DrHenryArmitage' attrs -> coerce attrs

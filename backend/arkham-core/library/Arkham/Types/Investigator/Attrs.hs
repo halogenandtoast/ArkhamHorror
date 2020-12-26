@@ -812,10 +812,14 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       ]
     pure a
   FailedAttackEnemy iid eid | iid == investigatorId -> do
-    investigatorIds <- getSetList eid
-    case investigatorIds of
-      [x] | x /= iid -> unshiftMessage (InvestigatorDamageInvestigator iid x)
-      _ -> pure ()
+    doesNotDamageOtherInvestigators <- hasModifier
+      a
+      DoesNotDamageOtherInvestigator
+    unless doesNotDamageOtherInvestigators $ do
+      investigatorIds <- getSetList eid
+      case investigatorIds of
+        [x] | x /= iid -> unshiftMessage (InvestigatorDamageInvestigator iid x)
+        _ -> pure ()
     pure a
   InvestigatorDamageInvestigator iid xid | iid == investigatorId -> do
     damage <- damageValueFor 1 a

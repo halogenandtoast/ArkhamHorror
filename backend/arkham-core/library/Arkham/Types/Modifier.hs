@@ -65,6 +65,7 @@ data ModifierType
   | Difficulty Int
   | DiscoveredClues Int
   | DoNotDrawChaosTokensForSkillChecks
+  | DoesNotDamageOtherInvestigator
   | DoubleNegativeModifiersOnTokens
   | EnemyEvade Int
   | EnemyFight Int

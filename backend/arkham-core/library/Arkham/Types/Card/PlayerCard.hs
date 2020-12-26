@@ -262,6 +262,7 @@ allPlayerCards = HashMap.fromList
   , ("02013", finalRhapsody)
   , ("02014", duke)
   , ("02015", wrackedByNightmares)
+  , ("02016", blackjack)
   , ("02017", taunt)
   , ("02019", taunt2)
   , ("02032", fireAxe)
@@ -1032,6 +1033,12 @@ wrackedByNightmares cardId =
     { pcTraits = setFromList [Madness]
     , pcRevelation = True
     }
+
+blackjack :: CardId -> PlayerCard
+blackjack cardId = (asset cardId "02016" "Blackjack" 1 Guardian)
+  { pcTraits = setFromList [Item, Weapon, Melee]
+  , pcSkills = [SkillCombat]
+  }
 
 taunt :: CardId -> PlayerCard
 taunt cardId = (event cardId "02017" "Taunt" 1 Guardian)

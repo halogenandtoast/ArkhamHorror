@@ -14,6 +14,7 @@ import Arkham.Types.Asset.Cards.BaseballBat as X
 import Arkham.Types.Asset.Cards.BearTrap as X
 import Arkham.Types.Asset.Cards.BeatCop as X
 import Arkham.Types.Asset.Cards.BeatCop2 as X
+import Arkham.Types.Asset.Cards.Blackjack as X
 import Arkham.Types.Asset.Cards.BookOfShadows3 as X
 import Arkham.Types.Asset.Cards.BrotherXavier1 as X
 import Arkham.Types.Asset.Cards.BulletproofVest3 as X

@@ -254,6 +254,8 @@ data Message
   | InvestigatorPlayAsset InvestigatorId AssetId [SlotType] [Trait]
   | InvestigatorPlayDynamicAsset InvestigatorId AssetId [SlotType] [Trait] Int
   | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target)
+  | ResolveEvent InvestigatorId EventId (Maybe Target)
+  | BeginTrade InvestigatorId Target [InvestigatorId]
   | InvestigatorPlayDynamicEvent InvestigatorId EventId Int
   | GainClues InvestigatorId Int
   | DiscoverCluesAtLocation InvestigatorId LocationId Int

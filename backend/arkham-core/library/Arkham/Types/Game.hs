@@ -913,6 +913,7 @@ instance HasSet Trait (Game queue) Source where
     TestSource -> pure mempty
     DrawnTokenSource _ -> pure mempty
     ProxySource _ _ -> pure mempty
+    ResourceSource -> pure mempty
 
 instance HasSet Trait (Game queue) (InvestigatorId, CardId) where
   getSet (iid, cid) =
@@ -1387,6 +1388,13 @@ instance HasSet AssetId (Game queue) (InvestigatorId, UseType) where
     assetIds :: [AssetId] <- getSetList @AssetId investigator
     setFromList <$> filterM ((isCorrectUseType <$>) . getAsset) assetIds
     where isCorrectUseType asset = useTypeOf asset == Just useType'
+
+instance HasSet Trait (Game queue) AssetId => HasSet AssetId (Game queue) (InvestigatorId, [Trait]) where
+  getSet (iid, traits) = do
+    investigator <- getInvestigator iid
+    assetIds :: [AssetId] <- getSetList @AssetId investigator
+    setFromList <$> filterM matches assetIds
+    where matches = (any (`elem` traits) <$>) . getSetList
 
 instance HasSet DiscardableAssetId (Game queue) InvestigatorId where
   getSet iid = do

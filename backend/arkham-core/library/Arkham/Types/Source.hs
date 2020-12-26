@@ -48,6 +48,7 @@ data Source
   | DrawnTokenSource DrawnToken
   | ProxySource Source Source
   | EffectSource EffectId
+  | ResourceSource
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 

@@ -264,6 +264,7 @@ allPlayerCards = HashMap.fromList
   , ("02015", wrackedByNightmares)
   , ("02016", blackjack)
   , ("02017", taunt)
+  , ("02018", teamwork)
   , ("02019", taunt2)
   , ("02032", fireAxe)
   , ("02033", peterSylvestre)
@@ -1046,6 +1047,12 @@ taunt cardId = (event cardId "02017" "Taunt" 1 Guardian)
   , pcFast = True
   , pcWindows = setFromList [DuringTurn You]
   , pcSkills = [SkillWillpower, SkillCombat]
+  }
+
+teamwork :: CardId -> PlayerCard
+teamwork cardId = (event cardId "02018" "Teamwork" 0 Guardian)
+  { pcTraits = setFromList [Tactic]
+  , pcSkills = [SkillWild]
   }
 
 taunt2 :: CardId -> PlayerCard

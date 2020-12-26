@@ -38,6 +38,10 @@ import Arkham.Types.Event.Cards.SearchForTheTruth as X
 import Arkham.Types.Event.Cards.SecondWind as X
 import Arkham.Types.Event.Cards.SneakAttack as X
 import Arkham.Types.Event.Cards.SureGamble3 as X
+import Arkham.Types.Event.Cards.Taunt as X
+import Arkham.Types.Event.Cards.Taunt2 as X
+import Arkham.Types.Event.Cards.Taunt3 as X
+import Arkham.Types.Event.Cards.Teamwork as X
 import Arkham.Types.Event.Cards.WardOfProtection as X
 import Arkham.Types.Event.Cards.WillToSurvive4 as X
 import Arkham.Types.Event.Cards.WorkingAHunch as X

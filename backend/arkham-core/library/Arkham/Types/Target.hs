@@ -51,5 +51,6 @@ data Target
   | DrawnTokenTarget DrawnToken
   | TestTarget
   | EncounterCardTarget EncounterCard
+  | ResourceTarget
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

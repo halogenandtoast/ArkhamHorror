@@ -282,6 +282,7 @@ allPlayerCards = HashMap.fromList
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
   , ("02035", peterSylvestre2)
+  , ("02036", kukri)
   , ("02040", drHenryArmitage)
   , ("02059", alchemicalConcoction)
   , ("02060", jazzMulligan)
@@ -1181,6 +1182,12 @@ peterSylvestre2 cardId = (asset cardId "02035" "Peter Sylvestre" 3 Survivor)
   { pcSkills = [SkillWillpower]
   , pcTraits = setFromList [Ally, Miskatonic]
   , pcLevel = 2
+  }
+
+kukri :: CardId -> PlayerCard
+kukri cardId = (asset cardId "02036" "Kukri" 2 Neutral)
+  { pcSkills = [SkillCombat]
+  , pcTraits = setFromList [Item, Weapon, Melee]
   }
 
 drHenryArmitage :: CardId -> PlayerCard

@@ -11,6 +11,7 @@ import Arkham.Types.Treachery.Cards.Atychiphobia as X
 import Arkham.Types.Treachery.Cards.BeastOfTheBayou as X
 import Arkham.Types.Treachery.Cards.BeyondTheVeil as X
 import Arkham.Types.Treachery.Cards.ChillFromBelow as X
+import Arkham.Types.Treachery.Cards.Chronophobia as X
 import Arkham.Types.Treachery.Cards.CoverUp as X
 import Arkham.Types.Treachery.Cards.CryptChill as X
 import Arkham.Types.Treachery.Cards.CursedLuck as X
@@ -31,6 +32,7 @@ import Arkham.Types.Treachery.Cards.HuntingShadow as X
 import Arkham.Types.Treachery.Cards.Hypochondria as X
 import Arkham.Types.Treachery.Cards.Indebted as X
 import Arkham.Types.Treachery.Cards.InsatiableBloodlust as X
+import Arkham.Types.Treachery.Cards.InternalInjury as X
 import Arkham.Types.Treachery.Cards.LightOfAforgomon as X
 import Arkham.Types.Treachery.Cards.LockedDoor as X
 import Arkham.Types.Treachery.Cards.MaskedHorrors as X

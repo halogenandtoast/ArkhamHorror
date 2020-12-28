@@ -284,6 +284,8 @@ allPlayerCards = HashMap.fromList
   , ("02035", peterSylvestre2)
   , ("02036", kukri)
   , ("02037", indebted)
+  , ("02038", internalInjury)
+  , ("02039", chronophobia)
   , ("02040", drHenryArmitage)
   , ("02059", alchemicalConcoction)
   , ("02060", jazzMulligan)
@@ -1196,6 +1198,18 @@ indebted cardId = (treachery cardId "02037" "Indebted" 0)
   { pcTraits = singleton Flaw
   , pcRevelation = True
   , pcPermanent = True
+  }
+
+internalInjury :: CardId -> PlayerCard
+internalInjury cardId = (treachery cardId "02038" "Internal Injury" 0)
+  { pcTraits = singleton Injury
+  , pcRevelation = True
+  }
+
+chronophobia :: CardId -> PlayerCard
+chronophobia cardId = (treachery cardId "02039" "Chronophobia" 0)
+  { pcTraits = singleton Madness
+  , pcRevelation = True
   }
 
 drHenryArmitage :: CardId -> PlayerCard

@@ -71,6 +71,9 @@ instance IsCard Attrs where
   getTraits = investigatorTraits
   getKeywords = mempty
 
+instance HasCount ActionRemainingCount env Attrs where
+  getCount = pure . ActionRemainingCount . investigatorRemainingActions
+
 locationIdL :: Lens' Attrs LocationId
 locationIdL =
   lens investigatorLocation $ \m x -> m { investigatorLocation = x }

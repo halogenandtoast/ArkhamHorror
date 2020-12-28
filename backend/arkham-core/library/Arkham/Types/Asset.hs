@@ -91,6 +91,7 @@ data Asset
   | FireAxe' FireAxe
   | PeterSylvestre' PeterSylvestre
   | PeterSylvestre2' PeterSylvestre2
+  | Kukri' Kukri
   | DrHenryArmitage' DrHenryArmitage
   | AlchemicalConcoction' AlchemicalConcoction
   | JazzMulligan' JazzMulligan
@@ -270,6 +271,7 @@ allAssets = mapFromList
   , ("02032", FireAxe' . fireAxe)
   , ("02033", PeterSylvestre' . peterSylvestre)
   , ("02035", PeterSylvestre2' . peterSylvestre2)
+  , ("02036", Kukri' . kukri)
   , ("02040", DrHenryArmitage' . drHenryArmitage)
   , ("02059", AlchemicalConcoction' . alchemicalConcoction)
   , ("02060", JazzMulligan' . jazzMulligan)
@@ -379,6 +381,7 @@ assetAttrs = \case
   FireAxe' attrs -> coerce attrs
   PeterSylvestre' attrs -> coerce attrs
   PeterSylvestre2' attrs -> coerce attrs
+  Kukri' attrs -> coerce attrs
   DrHenryArmitage' attrs -> coerce attrs
   AlchemicalConcoction' attrs -> coerce attrs
   JazzMulligan' attrs -> coerce attrs

@@ -578,6 +578,9 @@ instance HasCount ActionRemainingCount (Game queue) (Maybe Action, [Trait], Inve
   getCount (maction, traits, iid) =
     getCount . (maction, traits, ) =<< getInvestigator iid
 
+instance HasCount ActionRemainingCount (Game queue) InvestigatorId where
+  getCount = getCount <=< getInvestigator
+
 instance HasCount SanityDamageCount (Game queue) EnemyId where
   getCount = getCount <=< getEnemy
 

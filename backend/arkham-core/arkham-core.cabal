@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 68ee67c6fbcd3b9b45d30a51b5deaf4812a632a84ac2f6ed778910559f25848c
+-- hash: 5aeaf7896df0a8477ed1f61d9e3f77f901743f3a2a384fc7f6d9e9be7a29c910
 
 name:           arkham-core
 version:        0.0.0
@@ -154,6 +154,7 @@ library
       Arkham.Types.Asset.Cards.Shotgun4
       Arkham.Types.Asset.Cards.Shrivelling
       Arkham.Types.Asset.Cards.SpringfieldM19034
+      Arkham.Types.Asset.Cards.StrangeSolution
       Arkham.Types.Asset.Cards.StrayCat
       Arkham.Types.Asset.Cards.Switchblade
       Arkham.Types.Asset.Cards.TheNecronomicon

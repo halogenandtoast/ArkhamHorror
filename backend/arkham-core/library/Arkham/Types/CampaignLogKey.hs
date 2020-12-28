@@ -28,5 +28,6 @@ data CampaignLogKey
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse
+  | YouHaveIdentifiedTheSolution
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

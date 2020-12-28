@@ -86,6 +86,7 @@ import Arkham.Types.Asset.Cards.Scrying as X
 import Arkham.Types.Asset.Cards.Shotgun4 as X
 import Arkham.Types.Asset.Cards.Shrivelling as X
 import Arkham.Types.Asset.Cards.SpringfieldM19034 as X
+import Arkham.Types.Asset.Cards.StrangeSolution as X
 import Arkham.Types.Asset.Cards.StrayCat as X
 import Arkham.Types.Asset.Cards.Switchblade as X
 import Arkham.Types.Asset.Cards.TheNecronomicon as X

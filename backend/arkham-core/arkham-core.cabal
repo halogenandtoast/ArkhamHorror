@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2586f97f3d7762d2a81d398a67aaddd3add6cb159d9200203b98e2996c83968d
+-- hash: 04bb03a35fff1345baf8f5427139a6eb355d22c835dd7dc49ed60b2c51f63227
 
 name:           arkham-core
 version:        0.0.0
@@ -560,6 +560,7 @@ library
       Arkham.Types.Treachery.Cards.HuntedDown
       Arkham.Types.Treachery.Cards.HuntingShadow
       Arkham.Types.Treachery.Cards.Hypochondria
+      Arkham.Types.Treachery.Cards.Indebted
       Arkham.Types.Treachery.Cards.InsatiableBloodlust
       Arkham.Types.Treachery.Cards.LightOfAforgomon
       Arkham.Types.Treachery.Cards.LockedDoor

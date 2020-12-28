@@ -45,6 +45,7 @@ data Treachery
   | SearchingForIzzie' SearchingForIzzie
   | FinalRhapsody' FinalRhapsody
   | WrackedByNightmares' WrackedByNightmares
+  | Indebted' Indebted
   | VisionsOfFuturesPast' VisionsOfFuturesPast
   | BeyondTheVeil' BeyondTheVeil
   | LightOfAforgomon' LightOfAforgomon
@@ -144,6 +145,7 @@ allTreacheries = mapFromList
   , ("02011", (SearchingForIzzie' .) . searchingForIzzie)
   , ("02013", (FinalRhapsody' .) . finalRhapsody)
   , ("02015", (WrackedByNightmares' .) . wrackedByNightmares)
+  , ("02037", (Indebted' .) . indebted)
   , ("02083", (VisionsOfFuturesPast' .) . visionsOfFuturesPast)
   , ("02084", (BeyondTheVeil' .) . beyondTheVeil)
   , ("02085", (LightOfAforgomon' .) . lightOfAforgomon)
@@ -211,6 +213,7 @@ treacheryAttrs = \case
   SearchingForIzzie' attrs -> coerce attrs
   FinalRhapsody' attrs -> coerce attrs
   WrackedByNightmares' attrs -> coerce attrs
+  Indebted' attrs -> coerce attrs
   VisionsOfFuturesPast' attrs -> coerce attrs
   BeyondTheVeil' attrs -> coerce attrs
   LightOfAforgomon' attrs -> coerce attrs

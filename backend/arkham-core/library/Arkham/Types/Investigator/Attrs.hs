@@ -638,15 +638,25 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       (permanentCards, deck') = partition pcPermanent (unDeck investigatorDeck)
       (discard, hand, deck) = drawOpeningHand (a & deckL .~ Deck deck') 5
     unshiftMessages
-      [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing
-      | card <- permanentCards
-      ]
-    pure
-      $ a
-      & (resourcesL .~ 5)
-      & (discardL .~ discard)
-      & (handL .~ hand)
-      & (deckL .~ Deck deck)
+      $ [ PutCardIntoPlay investigatorId (PlayerCard card) Nothing
+        | card <- permanentCards
+        ]
+      <> [TakeStartingResources investigatorId]
+    pure $ a & (discardL .~ discard) & (handL .~ hand) & (deckL .~ Deck deck)
+  TakeStartingResources iid | iid == investigatorId -> do
+    modifiers' <-
+      map modifierType <$> getModifiersFor (toSource a) (toTarget a) ()
+    let
+      startingResources = foldl'
+        (\total ->
+          (\case
+            StartingResources n -> max 0 (total + n)
+            _ -> total
+          )
+        )
+        5
+        modifiers'
+    pure $ a & resourcesL .~ startingResources
   InvestigatorMulligan iid | iid == investigatorId -> if null investigatorHand
     then a <$ unshiftMessage (FinishedWithMulligan investigatorId)
     else a <$ unshiftMessage

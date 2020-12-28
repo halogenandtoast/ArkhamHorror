@@ -123,6 +123,7 @@ data Message
   | RecordSet CampaignLogKey [CardCode]
   | StartScenario ScenarioId
   | SetupInvestigators
+  | TakeStartingResources InvestigatorId
   | FlavorText (Maybe Text) [Text]
   | InvestigatorMulligan InvestigatorId
   | FinishedWithMulligan InvestigatorId

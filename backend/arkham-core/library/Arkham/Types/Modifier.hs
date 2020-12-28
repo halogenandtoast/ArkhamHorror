@@ -88,6 +88,7 @@ data ModifierType
   | SanityModifier Int
   | ShroudModifier Int
   | SkillModifier SkillType Int
+  | StartingResources Int
   | TokenValueModifier Int
   | TreatAllDamageAsDirect
   | SpawnNonEliteAtConnectingInstead

@@ -283,6 +283,7 @@ allPlayerCards = HashMap.fromList
   , ("02034", baitAndSwitch)
   , ("02035", peterSylvestre2)
   , ("02036", kukri)
+  , ("02037", indebted)
   , ("02040", drHenryArmitage)
   , ("02059", alchemicalConcoction)
   , ("02060", jazzMulligan)
@@ -1188,6 +1189,13 @@ kukri :: CardId -> PlayerCard
 kukri cardId = (asset cardId "02036" "Kukri" 2 Neutral)
   { pcSkills = [SkillCombat]
   , pcTraits = setFromList [Item, Weapon, Melee]
+  }
+
+indebted :: CardId -> PlayerCard
+indebted cardId = (treachery cardId "02037" "Indebted" 0)
+  { pcTraits = singleton Flaw
+  , pcRevelation = True
+  , pcPermanent = True
   }
 
 drHenryArmitage :: CardId -> PlayerCard

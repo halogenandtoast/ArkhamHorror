@@ -266,6 +266,7 @@ allPlayerCards = HashMap.fromList
   , ("02017", taunt)
   , ("02018", teamwork)
   , ("02019", taunt2)
+  , ("02020", laboratoryAssistant)
   , ("02032", fireAxe)
   , ("02033", peterSylvestre)
   , ("02034", baitAndSwitch)
@@ -1062,6 +1063,13 @@ taunt2 cardId = (event cardId "02019" "Taunt" 1 Guardian)
   , pcWindows = setFromList [DuringTurn You]
   , pcSkills = [SkillWillpower, SkillCombat, SkillAgility]
   }
+
+laboratoryAssistant :: CardId -> PlayerCard
+laboratoryAssistant cardId =
+  (asset cardId "02020" "Laboratory Assistant" 2 Guardian)
+    { pcSkills = [SkillIntellect]
+    , pcTraits = setFromList [Ally, Miskatonic, Science]
+    }
 
 fireAxe :: CardId -> PlayerCard
 fireAxe cardId = (asset cardId "02032" "Fire Axe" 1 Survivor)

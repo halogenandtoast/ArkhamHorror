@@ -55,6 +55,7 @@ import Arkham.Types.Asset.Cards.JimsTrumpet as X
 import Arkham.Types.Asset.Cards.KeenEye as X
 import Arkham.Types.Asset.Cards.KeenEye3 as X
 import Arkham.Types.Asset.Cards.Knife as X
+import Arkham.Types.Asset.Cards.LaboratoryAssistant as X
 import Arkham.Types.Asset.Cards.LadyEsprit as X
 import Arkham.Types.Asset.Cards.LeatherCoat as X
 import Arkham.Types.Asset.Cards.LeoDeLuca as X

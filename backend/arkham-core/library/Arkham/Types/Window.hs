@@ -6,6 +6,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.SkillType
 import Arkham.Types.Source
+import Arkham.Types.Target
 import Arkham.Types.Token
 import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
@@ -41,6 +42,7 @@ data Window
   | WhenEnemySpawns Where [Trait]
   | WhenEnemyDefeated Who
   | WhenEnemyEvaded Who
+  | WhenWouldReady Target
   | WhenPlayCard Who CardId
   | WhenRevealTokenWithNegativeModifier Who TokenId
   | WhenRevealToken Who Token

@@ -391,7 +391,9 @@ instance EnemyRunner env => RunMessage env Attrs where
           )
           modifiers'
       case alternativeSources of
-        [] -> a <$ when enemyExhausted (unshiftMessage (Ready $ toTarget a))
+        [] -> a <$ when
+          enemyExhausted
+          (unshiftMessages $ resolve (Ready $ toTarget a))
         [source] -> a <$ unshiftMessage (ReadyAlternative source (toTarget a))
         _ -> error "Can not handle multiple targets yet"
     MoveToward target locationMatcher | isTarget a target -> do

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e324d23659b5d7f0821627842fc77654a5be39df0d07854fc2eb1b401122d1b8
+-- hash: ba5349fd7d4590d47af1fe6f2574c408ec4db620914633ec5864529c407511c3
 
 name:           arkham-core
 version:        0.0.0
@@ -142,6 +142,7 @@ library
       Arkham.Types.Asset.Cards.OldBookOfLore
       Arkham.Types.Asset.Cards.PeterClover
       Arkham.Types.Asset.Cards.PeterSylvestre
+      Arkham.Types.Asset.Cards.PeterSylvestre2
       Arkham.Types.Asset.Cards.PhysicalTraining
       Arkham.Types.Asset.Cards.PhysicalTraining2
       Arkham.Types.Asset.Cards.Pickpocketing

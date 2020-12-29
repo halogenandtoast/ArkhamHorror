@@ -303,6 +303,9 @@ instance LocationRunner env => RunMessage env Attrs where
       unless locationRevealed $ unshiftMessage (RevealLocation (Just iid) lid)
       pure $ a & investigators %~ insertSet iid
     AddToVictory (EnemyTarget eid) -> pure $ a & enemies %~ deleteSet eid
+    EnemyEngageInvestigator eid iid -> do
+      lid <- getId @LocationId iid
+      if lid == locationId then pure $ a & enemies %~ insertSet eid else pure a
     EnemyMove eid fromLid lid | fromLid == locationId -> do
       willMove <- canEnterLocation eid lid
       pure $ if willMove then a & enemies %~ deleteSet eid else a

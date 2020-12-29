@@ -566,8 +566,9 @@ instance EnemyRunner env => RunMessage env Attrs where
       unshiftMessages
         [ Discard (AssetTarget aid) | aid <- setToList enemyAssets ]
       pure a
-    EnemyEngageInvestigator eid iid | eid == enemyId ->
-      pure $ a & engagedInvestigatorsL %~ insertSet iid
+    EnemyEngageInvestigator eid iid | eid == enemyId -> do
+      lid <- getId @LocationId iid
+      pure $ a & engagedInvestigatorsL %~ insertSet iid & locationL .~ lid
     EngageEnemy iid eid False | eid == enemyId ->
       pure $ a & engagedInvestigatorsL .~ singleton iid
     MoveTo iid lid | iid `elem` enemyEngagedInvestigators ->

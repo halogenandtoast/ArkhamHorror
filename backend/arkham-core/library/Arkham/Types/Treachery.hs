@@ -60,6 +60,7 @@ data Treachery
   | PushedIntoTheBeyond' PushedIntoTheBeyond
   | TerrorFromBeyond' TerrorFromBeyond
   | ArcaneBarrier' ArcaneBarrier
+  | StalkedInTheDark' StalkedInTheDark
   | PassageIntoTheVeil' PassageIntoTheVeil
   | EphemeralExhibits' EphemeralExhibits
   | SlitheringBehindYou' SlitheringBehindYou
@@ -168,6 +169,7 @@ allTreacheries = mapFromList
   , ("02100", (PushedIntoTheBeyond' .) . pushedIntoTheBeyond)
   , ("02101", (TerrorFromBeyond' .) . terrorFromBeyond)
   , ("02102", (ArcaneBarrier' .) . arcaneBarrier)
+  , ("02143", (StalkedInTheDark' .) . stalkedInTheDark)
   , ("02144", (PassageIntoTheVeil' .) . passageIntoTheVeil)
   , ("02145", (EphemeralExhibits' .) . ephemeralExhibits)
   , ("02146", (SlitheringBehindYou' .) . slitheringBehindYou)
@@ -243,6 +245,7 @@ treacheryAttrs = \case
   PushedIntoTheBeyond' attrs -> coerce attrs
   TerrorFromBeyond' attrs -> coerce attrs
   ArcaneBarrier' attrs -> coerce attrs
+  StalkedInTheDark' attrs -> coerce attrs
   PassageIntoTheVeil' attrs -> coerce attrs
   EphemeralExhibits' attrs -> coerce attrs
   SlitheringBehindYou' attrs -> coerce attrs

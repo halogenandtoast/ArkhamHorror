@@ -55,6 +55,7 @@ import Arkham.Types.Treachery.Cards.SearchingForIzzie as X
 import Arkham.Types.Treachery.Cards.SlitheringBehindYou as X
 import Arkham.Types.Treachery.Cards.SmiteTheWicked as X
 import Arkham.Types.Treachery.Cards.SpectralMist as X
+import Arkham.Types.Treachery.Cards.StalkedInTheDark as X
 import Arkham.Types.Treachery.Cards.TerrorFromBeyond as X
 import Arkham.Types.Treachery.Cards.TheYellowSign as X
 import Arkham.Types.Treachery.Cards.TheZealotsSeal as X

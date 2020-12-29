@@ -19,6 +19,7 @@ type TreacheryRunner env
     , HasCount TreacheryCount env (LocationId, CardCode)
     , HasId (Maybe StoryEnemyId) env CardCode
     , HasId CardCode env AssetId
+    , HasId CardCode env EnemyId
     , HasId LocationId env EnemyId
     , HasId LocationId env InvestigatorId
     , HasList UsedAbility env ()

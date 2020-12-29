@@ -17,6 +17,20 @@ withBaseActions
   -> m [Message]
 withBaseActions iid window a f = (<>) <$> getActions iid window a <*> f
 
+enemyAtInvestigatorLocation
+  :: ( MonadReader env m
+     , HasId CardCode env EnemyId
+     , HasId LocationId env InvestigatorId
+     , HasSet EnemyId env LocationId
+     )
+  => CardCode
+  -> InvestigatorId
+  -> m Bool
+enemyAtInvestigatorLocation cardCode iid = do
+  lid <- getId @LocationId iid
+  enemyIds <- getSetList @EnemyId lid
+  elem cardCode <$> for enemyIds (getId @CardCode)
+
 getHasRecord :: (HasRecord env, MonadReader env m) => CampaignLogKey -> m Bool
 getHasRecord = asks . hasRecord
 

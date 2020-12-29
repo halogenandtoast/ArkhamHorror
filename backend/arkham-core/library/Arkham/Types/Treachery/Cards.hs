@@ -45,6 +45,7 @@ import Arkham.Types.Treachery.Cards.OfferOfPower as X
 import Arkham.Types.Treachery.Cards.OnTheProwl as X
 import Arkham.Types.Treachery.Cards.OnWingsOfDarkness as X
 import Arkham.Types.Treachery.Cards.Paranoia as X
+import Arkham.Types.Treachery.Cards.PassageIntoTheVeil as X
 import Arkham.Types.Treachery.Cards.Psychosis as X
 import Arkham.Types.Treachery.Cards.PushedIntoTheBeyond as X
 import Arkham.Types.Treachery.Cards.RexsCurse as X

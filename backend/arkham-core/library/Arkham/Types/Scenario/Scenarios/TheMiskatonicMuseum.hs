@@ -87,10 +87,7 @@ instance
   => HasTokenValue env TheMiskatonicMuseum where
   getTokenValue (TheMiskatonicMuseum attrs) iid = \case
     Skull -> do
-      lid <- getId @LocationId iid
-      enemyIds <- getSetList @EnemyId lid
-      huntingHorrorAtYourLocation <- elem "02141"
-        <$> for enemyIds (getId @CardCode)
+      huntingHorrorAtYourLocation <- enemyAtInvestigatorLocation "02141" iid
       pure . TokenValue Skull . NegativeModifier $ if isEasyStandard attrs
         then (if huntingHorrorAtYourLocation then 3 else 1)
         else (if huntingHorrorAtYourLocation then 4 else 2)

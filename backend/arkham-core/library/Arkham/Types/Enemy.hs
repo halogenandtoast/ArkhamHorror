@@ -51,6 +51,7 @@ data Enemy
   | WizardOfYogSothoth' WizardOfYogSothoth
   | Whippoorwill' Whippoorwill
   | AvianThrall' AvianThrall
+  | LupineThrall' LupineThrall
   | OBannionsThug' OBannionsThug
   | Mobster' Mobster
   | ConglomerationOfSpheres' ConglomerationOfSpheres
@@ -221,6 +222,7 @@ allEnemies = mapFromList
   , ("02087", WizardOfYogSothoth' . wizardOfYogSothoth)
   , ("02090", Whippoorwill' . whippoorwill)
   , ("02094", AvianThrall' . avianThrall)
+  , ("02095", LupineThrall' . lupineThrall)
   , ("02097", OBannionsThug' . oBannionsThug)
   , ("02098", Mobster' . mobster)
   , ("02103", ConglomerationOfSpheres' . conglomerationOfSpheres)
@@ -300,6 +302,7 @@ enemyAttrs = \case
   WizardOfYogSothoth' attrs -> coerce attrs
   Whippoorwill' attrs -> coerce attrs
   AvianThrall' attrs -> coerce attrs
+  LupineThrall' attrs -> coerce attrs
   OBannionsThug' attrs -> coerce attrs
   Mobster' attrs -> coerce attrs
   ConglomerationOfSpheres' attrs -> coerce attrs

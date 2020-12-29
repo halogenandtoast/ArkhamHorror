@@ -138,6 +138,12 @@ allEncounterCards = HashMap.fromList
   , ("02102", arcaneBarrier)
   , ("02103", conglomerationOfSpheres)
   , ("02104", servantOfTheLurker)
+  , ("02141", huntingHorror)
+  , ("02142", shadowSpawned)
+  , ("02143", stalkedInTheDark)
+  , ("02144", passageIntoTheVeil)
+  , ("02145", ephemeralExhibits)
+  , ("02146", slitheringBehindYou)
   , ("50022", corpseHungryGhoul)
   , ("50023", ghoulFromTheDepths)
   , ("50024", theZealotsSeal)
@@ -526,6 +532,34 @@ servantOfTheLurker cardId = (enemy cardId "02104" "Servant of the Lurker")
   , ecKeywords = setFromList [Keyword.Hunter]
   , ecVictoryPoints = Just 1
   }
+
+huntingHorror :: CardId -> EncounterCard
+huntingHorror cardId = (enemy cardId "02141" "Hunting Horror")
+  { ecTraits = setFromList [Monster, Elite]
+  , ecKeywords = setFromList [Keyword.Hunter, Keyword.Retaliate]
+  }
+
+shadowSpawned :: CardId -> EncounterCard
+shadowSpawned cardId =
+  (treachery cardId "02142" "Shadow-spawned") { ecTraits = singleton Power }
+
+stalkedInTheDark :: CardId -> EncounterCard
+stalkedInTheDark cardId = (treachery cardId "02143" "Stalked in the Dark")
+  { ecTraits = singleton Tactic
+  }
+
+passageIntoTheVeil :: CardId -> EncounterCard
+passageIntoTheVeil cardId = (treachery cardId "02144" "Passage into the Veil")
+  { ecTraits = singleton Power
+  }
+
+ephemeralExhibits :: CardId -> EncounterCard
+ephemeralExhibits cardId = (treachery cardId "02145" "Ephemeral Exhibits")
+  { ecTraits = singleton Terror
+  }
+
+slitheringBehindYou :: CardId -> EncounterCard
+slitheringBehindYou cardId = treachery cardId "02146" "Slithering Behind You"
 
 corpseHungryGhoul :: CardId -> EncounterCard
 corpseHungryGhoul cardId = (enemy cardId "50022" "Corpse-Hungry Ghoul")

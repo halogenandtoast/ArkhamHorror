@@ -31,6 +31,9 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "treachery"
 
+instance HasCount ResourceCount env Attrs where
+  getCount = pure . ResourceCount . fromMaybe 0 . treacheryResources
+
 instance Entity Attrs where
   type EntityId Attrs = TreacheryId
   toId = treacheryId

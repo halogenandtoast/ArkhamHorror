@@ -672,6 +672,9 @@ instance HasCount SpendableClueCount (Game queue) () where
 instance HasCount ResourceCount (Game queue) InvestigatorId where
   getCount = getCount <=< getInvestigator
 
+instance HasCount ResourceCount (Game queue) TreacheryId where
+  getCount = getCount <=< getTreachery
+
 instance HasCount PlayerCount (Game queue) () where
   getCount _ = PlayerCount . length <$> view investigators
 

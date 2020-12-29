@@ -1,0 +1,37 @@
+{-# LANGUAGE UndecidableInstances #-}
+
+module Arkham.Types.Treachery.Cards.ShadowSpawned
+  ( shadowSpawned
+  , ShadowSpawned(..)
+  )
+where
+
+import Arkham.Import
+
+import Arkham.Types.Game.Helpers
+import qualified Arkham.Types.Keyword as Keyword
+import Arkham.Types.Treachery.Attrs
+import Arkham.Types.Treachery.Runner
+
+newtype ShadowSpawned = ShadowSpawned Attrs
+  deriving newtype (Show, ToJSON, FromJSON)
+
+shadowSpawned :: TreacheryId -> a -> ShadowSpawned
+shadowSpawned uuid _ = ShadowSpawned $ baseAttrs uuid "02142"
+
+instance HasCount ResourceCount env TreacheryId => HasModifiersFor env ShadowSpawned where
+  getModifiersFor _ (EnemyTarget eid) (ShadowSpawned attrs)
+    | treacheryOnEnemy eid attrs = do
+      n <- unResourceCount <$> getCount (treacheryId attrs)
+      pure $ toModifiers
+        attrs
+        ([EnemyFight n, HealthModifier n, EnemyEvade n]
+        <> [ AddKeyword Keyword.Massive | n >= 3 ]
+        )
+  getModifiersFor _ _ _ = pure []
+
+instance HasActions env ShadowSpawned where
+  getActions i window (ShadowSpawned attrs) = getActions i window attrs
+
+instance TreacheryRunner env => RunMessage env ShadowSpawned where
+  runMessage msg (ShadowSpawned attrs) = ShadowSpawned <$> runMessage msg attrs

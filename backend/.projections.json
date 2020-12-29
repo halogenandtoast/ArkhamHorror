@@ -49,7 +49,7 @@
       "  getActions i window ({dot} attrs) = getActions i window attrs",
       "",
       "instance TreacheryRunner env => RunMessage env {dot} where",
-      "  runMessage msg t@({dot} attrs@Attrs {..}) = case msg of",
+      "  runMessage msg t@({dot} attrs@Attrs {open}..{close}) = case msg of",
       "    Revelation _iid source | isSource attrs source -> pure t",
       "    _ -> {dot} <$> runMessage msg attrs"
     ]

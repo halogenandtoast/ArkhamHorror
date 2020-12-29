@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0346886b4783a6563986fdb88f40a5386b2fb56e07ee0efdaedd17d2ee5b107c
+-- hash: 7fabceb4d138316aaf09cc936a08e9b1b3794aab5adf11fb0651e23624dd64dd
 
 name:           arkham-core
 version:        0.0.0
@@ -556,6 +556,7 @@ library
       Arkham.Types.Treachery.Cards.DraggedUnder
       Arkham.Types.Treachery.Cards.DreamsOfRlyeh
       Arkham.Types.Treachery.Cards.EagerForDeath
+      Arkham.Types.Treachery.Cards.EphemeralExhibits
       Arkham.Types.Treachery.Cards.FalseLead
       Arkham.Types.Treachery.Cards.FinalRhapsody
       Arkham.Types.Treachery.Cards.FrozenInFear

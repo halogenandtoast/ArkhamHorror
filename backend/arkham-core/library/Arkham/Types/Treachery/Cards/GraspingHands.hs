@@ -1,5 +1,9 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Treachery.Cards.GraspingHands where
+module Arkham.Types.Treachery.Cards.GraspingHands
+  ( GraspingHands(..)
+  , graspingHands
+  )
+where
 
 import Arkham.Import
 
@@ -18,7 +22,7 @@ instance HasModifiersFor env GraspingHands where
 instance HasActions env GraspingHands where
   getActions i window (GraspingHands attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env GraspingHands where
+instance TreacheryRunner env => RunMessage env GraspingHands where
   runMessage msg t@(GraspingHands attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       unshiftMessages

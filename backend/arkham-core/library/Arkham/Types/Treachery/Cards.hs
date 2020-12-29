@@ -50,6 +50,7 @@ import Arkham.Types.Treachery.Cards.RexsCurse as X
 import Arkham.Types.Treachery.Cards.RipplesOnTheSurface as X
 import Arkham.Types.Treachery.Cards.RottingRemains as X
 import Arkham.Types.Treachery.Cards.SearchingForIzzie as X
+import Arkham.Types.Treachery.Cards.SlitheringBehindYou as X
 import Arkham.Types.Treachery.Cards.SmiteTheWicked as X
 import Arkham.Types.Treachery.Cards.SpectralMist as X
 import Arkham.Types.Treachery.Cards.TerrorFromBeyond as X

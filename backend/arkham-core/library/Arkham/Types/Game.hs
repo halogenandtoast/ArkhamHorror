@@ -2303,6 +2303,16 @@ runGameMessage msg g = case msg of
       , EnemySpawn Nothing lid eid
       ]
     pure $ g & enemies . at eid ?~ enemy'
+  SpawnEnemyAtEngagedWith card lid iid -> do
+    let
+      eid = EnemyId $ unCardId (getCardId card)
+      enemy' = lookupEnemy (getCardCode card) eid
+    unshiftMessages
+      [ Will (EnemySpawn (Just iid) lid eid)
+      , When (EnemySpawn (Just iid) lid eid)
+      , EnemySpawn (Just iid) lid eid
+      ]
+    pure $ g & enemies . at eid ?~ enemy'
   CreateEnemyRequest source cardCode -> do
     (enemyId', enemy') <- createEnemy cardCode
     unshiftMessage (RequestedEnemy source enemyId')

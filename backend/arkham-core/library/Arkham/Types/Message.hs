@@ -334,6 +334,7 @@ data Message
   | AfterEnterLocation InvestigatorId LocationId
   | EnemyMove EnemyId LocationId LocationId
   | SpawnEnemyAt Card LocationId
+  | SpawnEnemyAtEngagedWith Card LocationId InvestigatorId
   | CreateEnemyAt CardCode LocationId
   | CreateEnemyAtLocationNamed CardCode LocationName
   | CreateEnemyEngagedWithPrey CardCode

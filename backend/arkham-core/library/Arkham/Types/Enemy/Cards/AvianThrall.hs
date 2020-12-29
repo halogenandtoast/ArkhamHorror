@@ -25,6 +25,7 @@ avianThrall uuid =
     . (fightL .~ 5)
     . (healthL .~ Static 4)
     . (evadeL .~ 3)
+    . (preyL .~ LowestSkill SkillIntellect)
 
 instance HasSet Trait env AssetId => HasModifiersFor env AvianThrall where
   getModifiersFor (AssetSource aid) target (AvianThrall attrs)

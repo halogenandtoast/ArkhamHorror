@@ -14,7 +14,7 @@ newtype AudubonPark = AudubonPark Attrs
 audubonPark :: AudubonPark
 audubonPark = AudubonPark $ (baseAttrs
                               "81011"
-                              "Audubon Park"
+                              (LocationName "Audubon Park" Nothing)
                               EncounterSet.CurseOfTheRougarou
                               3
                               (PerPlayer 1)

@@ -15,7 +15,7 @@ newtype CursedShores = CursedShores Attrs
 cursedShores :: CursedShores
 cursedShores = CursedShores $ baseAttrs
   "81007"
-  "Cursed Shores"
+  (LocationName "Cursed Shores" Nothing)
   EncounterSet.CurseOfTheRougarou
   1
   (Static 0)

@@ -14,7 +14,7 @@ newtype DeepBelowYourHouse = DeepBelowYourHouse Attrs
 deepBelowYourHouse :: DeepBelowYourHouse
 deepBelowYourHouse = DeepBelowYourHouse $ (baseAttrs
                                             "50021"
-                                            "Ghoul Pits"
+                                            (LocationName "Ghoul Pits" Nothing)
                                             EncounterSet.ReturnToTheGathering
                                             4
                                             (PerPlayer 1)

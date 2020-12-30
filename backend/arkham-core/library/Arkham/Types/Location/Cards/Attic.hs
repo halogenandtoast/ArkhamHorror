@@ -13,7 +13,7 @@ newtype Attic = Attic Attrs
 attic :: Attic
 attic = Attic $ (baseAttrs
                   "01113"
-                  "Attic"
+                  (LocationName "Attic" Nothing)
                   EncounterSet.TheGathering
                   1
                   (PerPlayer 2)

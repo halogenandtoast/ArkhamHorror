@@ -53,44 +53,44 @@ introPart1 version = FlavorText (Just "Part II: The MidnightMasks") body
   body = case version of
     TheMidnightMasksIntroOne ->
       [ "The woman came to you in a panic, raving about monsters emerging\
-                              \ from the ground in a home near Rivertown. “I managed to trap them,” she\
-                              \ explains, “but there are others. Other pits. Other domains.” Only last week,\
-                              \ you would have thought she was a lunatic. Recent events, however, have\
-                              \ challenged your preconceptions of normality. You decide to hear her out."
+        \ from the ground in a home near Rivertown. “I managed to trap them,” she\
+        \ explains, “but there are others. Other pits. Other domains.” Only last week,\
+        \ you would have thought she was a lunatic. Recent events, however, have\
+        \ challenged your preconceptions of normality. You decide to hear her out."
       , "She introduces herself as Lita Chantler and lays out a tale that strains\
-                              \ the limits of your belief. “The creatures I speak of ,” she claims, “are called\
-                              \ ghouls—cruel beings who plague the crypts, caverns, and tunnels beneath the\
-                              \ city of Arkham…”"
+        \ the limits of your belief. “The creatures I speak of ,” she claims, “are called\
+        \ ghouls—cruel beings who plague the crypts, caverns, and tunnels beneath the\
+        \ city of Arkham…”"
       ]
     TheMidnightMasksIntroTwo ->
       [ "In the wake of the disaster at your home, Lita Chantler, the\
-                              \ red-haired woman from your parlor, lays out a tale that—even in light of\
-                              \ what you have just witnessed—strains the limits of your belief. “The creatures\
-                              \ in your home,” she claims, “are called ghouls—cruel beings who plague the\
-                              \ crypts, caverns, and tunnels beneath the city of Arkham…”"
+        \ red-haired woman from your parlor, lays out a tale that—even in light of\
+        \ what you have just witnessed—strains the limits of your belief. “The creatures\
+        \ in your home,” she claims, “are called ghouls—cruel beings who plague the\
+        \ crypts, caverns, and tunnels beneath the city of Arkham…”"
       ]
 
 introPart2 :: Message
 introPart2 = FlavorText
   (Just "Part II: The MidnightMasks")
   [ "“These creatures feed on the corpses of humans, and they are served\
-                           \ by a dark cult within Arkham whose members have inexplicably come to\
-                           \ worship the ancient master of the ghouls. This cult has been killing innocent\
-                           \ people and feeding them to the ghouls, satiating a monstrous hunger. A dark\
-                           \ balance was maintained. Until now. Recently,” Lita continues, “one of their\
-                           \ lairs, where the corpses were stored, was destroyed. Since then, the ghouls have\
-                           \ been more active than usual. I have tracked their movements and tried my\
-                           \ best to stop them from running amok throughout the city. But I think there\
-                           \ is something worse going on. The cult has been planning something darker,\
-                           \ and more ominous, than anything I have yet observed. Indications are that\
-                           \ this plan shall come to fruition tonight, shortly after midnight. Beyond that, I\
-                           \ cannot fathom what to expect."
+    \ by a dark cult within Arkham whose members have inexplicably come to\
+    \ worship the ancient master of the ghouls. This cult has been killing innocent\
+    \ people and feeding them to the ghouls, satiating a monstrous hunger. A dark\
+    \ balance was maintained. Until now. Recently,” Lita continues, “one of their\
+    \ lairs, where the corpses were stored, was destroyed. Since then, the ghouls have\
+    \ been more active than usual. I have tracked their movements and tried my\
+    \ best to stop them from running amok throughout the city. But I think there\
+    \ is something worse going on. The cult has been planning something darker,\
+    \ and more ominous, than anything I have yet observed. Indications are that\
+    \ this plan shall come to fruition tonight, shortly after midnight. Beyond that, I\
+    \ cannot fathom what to expect."
   , "“Many of the cultists,” Lita continues, “will seem like everyday people, despite\
-                           \ their foul intentions. Whenever the cult meets, its members don masks shaped\
-                           \ like the skulls of various animals to protect their identities from one another.\
-                           \ These masks are our mark. Symbols of death and decay. We must unmask the\
-                           \ cultists to expose and derail their plans. We have but a few hours. The more\
-                           \ cultists we find before midnight, the better.”"
+    \ their foul intentions. Whenever the cult meets, its members don masks shaped\
+    \ like the skulls of various animals to protect their identities from one another.\
+    \ These masks are our mark. Symbols of death and decay. We must unmask the\
+    \ cultists to expose and derail their plans. We have but a few hours. The more\
+    \ cultists we find before midnight, the better.”"
   ]
 
 instance ScenarioRunner env => RunMessage env TheMidnightMasks where
@@ -155,16 +155,17 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
         <> ghoulPriestMessages
         <> spawnAcolyteMessages
       let
-        locations' = mapFromList
-          [ ("Your House", ["01124"])
-          , ("Rivertown", ["01124"])
-          , ("Southside", [southside])
-          , ("St. Mary's Hospital", ["01128"])
-          , ("Miskatonic University", ["01129"])
-          , ("Downtown", [downtown])
-          , ("Easttown", ["01132"])
-          , ("Graveyard", ["01133"])
-          , ("Northside", ["01134"])
+        locations' = mapFromList $ map
+          (second pure . toFst (getLocationName . lookupLocation))
+          [ "01124"
+          , "01124"
+          , southside
+          , "01128"
+          , "01129"
+          , downtown
+          , "01132"
+          , "01133"
+          , "01134"
           ]
       pure $ TheMidnightMasks
         (attrs

@@ -11,6 +11,7 @@ import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Difficulty
 import Arkham.Types.Scenario.Deck as X
 import Arkham.Types.Scenario.Runner
+import Arkham.Types.Location as X
 
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
   deriving newtype (Show, IsString, ToJSON, FromJSON)
@@ -106,17 +107,37 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env Attrs where
     MinusEight -> pure $ TokenValue MinusEight (NegativeModifier 8)
     otherFace -> pure $ TokenValue otherFace NoModifier
 
+findLocationKey
+  :: LocationMatcher -> HashMap LocationName [LocationId] -> Maybe LocationName
+findLocationKey locationMatcher locations = find matchKey $ keys locations
+ where
+  matchKey (LocationName title msubtitle) = case locationMatcher of
+    LocationWithTitle title' -> title == title'
+    LocationWithFullTitle title' subtitle' ->
+      title == title' && Just subtitle' == msubtitle
+
+
 instance ScenarioRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     Setup -> a <$ pushMessage BeginInvestigation
-    PlaceLocationNamed locationName ->
-      a <$ case findWithDefault [] locationName scenarioLocations of
+    PlaceLocationMatching locationMatcher -> do
+      let
+        locations =
+          fromMaybe []
+            $ findLocationKey locationMatcher scenarioLocations
+            >>= flip lookup scenarioLocations
+      a <$ case locations of
         [] -> error "There were no locations with that name"
         [lid] -> unshiftMessage (PlaceLocation lid)
         _ ->
           error "We want there to be only one location when targetting names"
-    EnemySpawnAtLocationNamed miid locationName eid ->
-      a <$ case findWithDefault [] locationName scenarioLocations of
+    EnemySpawnAtLocationMatching miid locationMatcher eid -> do
+      let
+        locations =
+          fromMaybe []
+            $ findLocationKey locationMatcher scenarioLocations
+            >>= flip lookup scenarioLocations
+      a <$ case locations of
         [] -> error "There were no locations with that name"
         [lid] -> unshiftMessage (EnemySpawn miid lid eid)
         _ ->

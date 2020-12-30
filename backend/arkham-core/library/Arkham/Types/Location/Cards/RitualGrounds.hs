@@ -14,7 +14,7 @@ newtype RitualGrounds = RitualGrounds Attrs
 ritualGrounds :: RitualGrounds
 ritualGrounds = RitualGrounds $ (baseAttrs
                                   "81017"
-                                  "Ritual Grounds"
+                                  (LocationName "Ritual Grounds" Nothing)
                                   EncounterSet.CurseOfTheRougarou
                                   2
                                   (PerPlayer 1)

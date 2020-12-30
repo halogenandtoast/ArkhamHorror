@@ -6,7 +6,6 @@ import Arkham.Import
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Game.Helpers
-import Arkham.Types.LocationMatcher
 
 newtype TheBeastUnleashed = TheBeastUnleashed Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -34,7 +33,7 @@ instance AgendaRunner env => RunMessage env TheBeastUnleashed where
           [ RemoveAllDoom
           , MoveToward
             (EnemyTarget experimentId)
-            (LocationNamed $ LocationName "Dormitories")
+            (LocationWithTitle "Dormitories")
           ]
         )
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 A -> do

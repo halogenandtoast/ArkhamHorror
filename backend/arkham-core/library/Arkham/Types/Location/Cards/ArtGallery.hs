@@ -19,7 +19,7 @@ newtype ArtGallery = ArtGallery Attrs
 artGallery :: ArtGallery
 artGallery = ArtGallery $ (baseAttrs
                             "02075"
-                            "Art Gallery"
+                            (LocationName "Art Gallery" Nothing)
                             EncounterSet.TheHouseAlwaysWins
                             2
                             (PerPlayer 1)

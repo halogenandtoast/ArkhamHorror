@@ -190,10 +190,10 @@ spawnAt
   :: (MonadIO m, MonadReader env m, HasQueue env)
   => Maybe InvestigatorId
   -> EnemyId
-  -> LocationName
+  -> LocationMatcher
   -> m ()
-spawnAt miid eid locationName =
-  unshiftMessages $ resolve (EnemySpawnAtLocationNamed miid locationName eid)
+spawnAt miid eid locationMatcher = unshiftMessages
+  $ resolve (EnemySpawnAtLocationMatching miid locationMatcher eid)
 
 spawnAtOneOf
   :: (MonadIO m, HasSet LocationId env (), MonadReader env m, HasQueue env)

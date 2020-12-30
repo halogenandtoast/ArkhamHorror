@@ -18,19 +18,18 @@ newtype BackAlley = BackAlley Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 backAlley :: BackAlley
-backAlley = BackAlley $ (baseAttrs
-                          "02077"
-                          "Back Alley"
-                          EncounterSet.TheHouseAlwaysWins
-                          1
-                          (PerPlayer 1)
-                          T
-                          [Diamond]
-                          [CloverClub]
-                        )
-  { locationVictory = Just 1
-  , locationRevealedSymbol = Squiggle
-  }
+backAlley = BackAlley
+  $ base { locationVictory = Just 1, locationRevealedSymbol = Squiggle }
+ where
+  base = baseAttrs
+    "02077"
+    (LocationName "Back Alley" Nothing)
+    EncounterSet.TheHouseAlwaysWins
+    1
+    (PerPlayer 1)
+    T
+    [Diamond]
+    [CloverClub]
 
 instance HasModifiersFor env BackAlley where
   getModifiersFor = noModifiersFor

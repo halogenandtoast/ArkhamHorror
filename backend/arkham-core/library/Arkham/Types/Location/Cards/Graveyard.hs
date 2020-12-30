@@ -14,7 +14,7 @@ newtype Graveyard = Graveyard Attrs
 graveyard :: Graveyard
 graveyard = Graveyard $ (baseAttrs
                           "01133"
-                          "Graveyard"
+                          (LocationName "Graveyard" Nothing)
                           EncounterSet.TheMidnightMasks
                           1
                           (PerPlayer 2)

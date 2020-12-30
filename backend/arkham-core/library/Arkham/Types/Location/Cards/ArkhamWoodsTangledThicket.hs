@@ -19,7 +19,7 @@ arkhamWoodsTangledThicket = ArkhamWoodsTangledThicket $ base
  where
   base = baseAttrs
     "01154"
-    "Arkham Woods: Tangled Thicket"
+    (LocationName "Arkham Woods" (Just "Tangled Thicket"))
     EncounterSet.TheDevourerBelow
     2
     (PerPlayer 1)

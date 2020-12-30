@@ -29,8 +29,8 @@ instance ActionRunner env => HasActions env BillyCooper where
 instance (EnemyRunner env) => RunMessage env BillyCooper where
   runMessage msg e@(BillyCooper attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
-      e <$ spawnAt (Just iid) eid "Easttown"
+      e <$ spawnAt (Just iid) eid (LocationWithTitle "Easttown")
     After (EnemyDefeated _ _ lid _ _ traits)
-      | lid == enemyLocation && Monster `elem` traits ->
-        e <$ unshiftMessage (AddToVictory $ toTarget attrs)
+      | lid == enemyLocation && Monster `elem` traits -> e
+      <$ unshiftMessage (AddToVictory $ toTarget attrs)
     _ -> BillyCooper <$> runMessage msg attrs

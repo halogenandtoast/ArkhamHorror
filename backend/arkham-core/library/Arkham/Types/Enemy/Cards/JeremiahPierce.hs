@@ -40,8 +40,10 @@ instance ActionRunner env => HasActions env JeremiahPierce where
 instance (EnemyRunner env) => RunMessage env JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
-      myourHouse <- getId @(Maybe LocationId) (LocationName "Your House")
-      let spawnLocation = maybe "Rivertown" (const "Your House") myourHouse
+      myourHouse <- getId @(Maybe LocationId) (LocationWithTitle "Your House")
+      let
+        spawnLocation =
+          LocationWithTitle $ maybe "Rivertown" (const "Your House") myourHouse
       e <$ spawnAt (Just iid) eid spawnLocation
     UseCardAbility iid (EnemySource eid) _ 1 | eid == enemyId ->
       e <$ unshiftMessages

@@ -84,15 +84,16 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
           ]
         ]
       let
-        locations' = mapFromList
-          [ ("La Bella Luna", ["02070"])
-          , ("Clover Club Lounge", ["02071"])
-          , ("Clover Club Bar", ["02072"])
-          , ("Clover Club Cardroom", ["02073"])
-          , ("Darkened Hall", ["02074"])
-          , ("Art Gallery", ["02075"])
-          , ("VIP Area", ["02076"])
-          , ("Back Alley", ["02077"])
+        locations' = mapFromList $ map
+          (second pure . toFst (getLocationName . lookupLocation))
+          [ "02070"
+          , "02071"
+          , "02072"
+          , "02073"
+          , "02074"
+          , "02075"
+          , "02076"
+          , "02077"
           ]
       TheHouseAlwaysWins <$> runMessage msg (attrs & locationsL .~ locations')
     ResolveToken _ Tablet iid -> s <$ unshiftMessage (SpendResources iid 3)

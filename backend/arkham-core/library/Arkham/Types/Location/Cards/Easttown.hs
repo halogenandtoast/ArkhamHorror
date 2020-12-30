@@ -15,7 +15,7 @@ newtype Easttown = Easttown Attrs
 easttown :: Easttown
 easttown = Easttown $ baseAttrs
   "01132"
-  "Easttown"
+  (LocationName "Easttown" Nothing)
   EncounterSet.TheMidnightMasks
   2
   (PerPlayer 1)

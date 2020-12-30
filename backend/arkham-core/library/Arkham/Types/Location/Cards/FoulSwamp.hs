@@ -20,7 +20,7 @@ newtype FoulSwamp = FoulSwamp Attrs
 foulSwamp :: FoulSwamp
 foulSwamp = FoulSwamp $ baseAttrs
   "81016"
-  "Foul Swamp"
+  (LocationName "Foul Swamp" Nothing)
   EncounterSet.CurseOfTheRougarou
   2
   (Static 0)

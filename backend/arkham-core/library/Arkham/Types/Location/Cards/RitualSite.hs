@@ -14,7 +14,7 @@ newtype RitualSite = RitualSite Attrs
 ritualSite :: RitualSite
 ritualSite = RitualSite $ baseAttrs
   "01156"
-  "Ritual Site"
+  (LocationName "Ritual Site" Nothing)
   EncounterSet.TheDevourerBelow
   3
   (PerPlayer 2)

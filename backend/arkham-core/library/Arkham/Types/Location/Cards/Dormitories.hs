@@ -13,18 +13,17 @@ newtype Dormitories = Dormitories Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 dormitories :: Dormitories
-dormitories = Dormitories $ (baseAttrs
-                              "02052"
-                              "Dormitories"
-                              EncounterSet.ExtracurricularActivity
-                              1
-                              (PerPlayer 3)
-                              Equals
-                              [Diamond]
-                              [Miskatonic]
-                            )
-  { locationVictory = Just 1
-  }
+dormitories = Dormitories $ base { locationVictory = Just 1 }
+ where
+  base = baseAttrs
+    "02052"
+    (LocationName "Dormitories" Nothing)
+    EncounterSet.ExtracurricularActivity
+    1
+    (PerPlayer 3)
+    Equals
+    [Diamond]
+    [Miskatonic]
 
 instance HasModifiersFor env Dormitories where
   getModifiersFor _ target (Dormitories attrs) | isTarget attrs target =

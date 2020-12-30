@@ -13,18 +13,17 @@ newtype TwistedUnderbrush = TwistedUnderbrush Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 twistedUnderbrush :: TwistedUnderbrush
-twistedUnderbrush = TwistedUnderbrush $ (baseAttrs
-                                          "81015"
-                                          "Twisted Underbrush"
-                                          EncounterSet.CurseOfTheRougarou
-                                          3
-                                          (PerPlayer 1)
-                                          Moon
-                                          [Diamond, Moon]
-                                          [Wilderness]
-                                        )
-  { locationVictory = Just 1
-  }
+twistedUnderbrush = TwistedUnderbrush $ base { locationVictory = Just 1 }
+ where
+  base = baseAttrs
+    "81015"
+    (LocationName "Twisted Underbrush" Nothing)
+    EncounterSet.CurseOfTheRougarou
+    3
+    (PerPlayer 1)
+    Moon
+    [Diamond, Moon]
+    [Wilderness]
 
 instance HasModifiersFor env TwistedUnderbrush where
   getModifiersFor = noModifiersFor

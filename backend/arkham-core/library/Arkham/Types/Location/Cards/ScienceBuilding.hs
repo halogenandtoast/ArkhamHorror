@@ -14,7 +14,7 @@ newtype ScienceBuilding = ScienceBuilding Attrs
 scienceBuilding :: ScienceBuilding
 scienceBuilding = ScienceBuilding $ baseAttrs
   "02056"
-  "Science Building"
+  (LocationName "Science Building" Nothing)
   EncounterSet.ExtracurricularActivity
   2
   (PerPlayer 1)
@@ -31,7 +31,7 @@ instance ActionRunner env => HasActions env ScienceBuilding where
 instance (LocationRunner env) => RunMessage env ScienceBuilding where
   runMessage msg l@(ScienceBuilding attrs) = case msg of
     RevealLocation _ lid | lid == locationId attrs -> do
-      unshiftMessage $ PlaceLocationNamed "Alchemy Labs"
+      unshiftMessage $ PlaceLocationMatching (LocationWithTitle "Alchemy Labs")
       ScienceBuilding <$> runMessage msg attrs
     FailedSkillTest iid _ (SkillTestSource _ SkillWillpower _ _) SkillTestInitiatorTarget{} _
       | iid `elem` locationInvestigators attrs

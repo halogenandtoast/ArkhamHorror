@@ -141,14 +141,18 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
         ]
 
       let
-        locations' = mapFromList
-          [ ("Museum Entrance", ["02126"])
-          , ("Museum Halls", ["02127"])
-          , ("Security Office", [securityOffice])
-          , ("Administration Office", [administrationOffice])
-          , ( "Exhibit Hall"
-            , ["02132", "02133", "02134", "02135", "02136", "02137"]
-            )
+        locations' = mapFromList $ map
+          (second pure . toFst (getLocationName . lookupLocation))
+          [ "02126"
+          , "02127"
+          , securityOffice
+          , administrationOffice
+          , "02132"
+          , "02133"
+          , "02134"
+          , "02135"
+          , "02136"
+          , "02137"
           ]
       TheMiskatonicMuseum <$> runMessage
         msg

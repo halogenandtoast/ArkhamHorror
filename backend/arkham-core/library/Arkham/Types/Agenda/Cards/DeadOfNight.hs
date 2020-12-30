@@ -6,7 +6,6 @@ import Arkham.Import
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.LocationMatcher
 
 newtype DeadOfNight = DeadOfNight Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -26,15 +25,16 @@ instance HasModifiersFor env DeadOfNight where
 instance AgendaRunner env => RunMessage env DeadOfNight where
   runMessage msg (DeadOfNight attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 A -> do
-      dormitoriesInPlay <- elem (LocationName "Dormitories") <$> getList ()
+      dormitoriesInPlay <- isJust
+        <$> getId @(Maybe LocationId) (LocationWithTitle "Dormitories")
       mExperimentId <- fmap unStoryEnemyId <$> getId (CardCode "02058")
       scienceBuildingId <- fromJustNote "missing science building"
-        <$> getId (LocationName "Science Building")
+        <$> getId (LocationWithTitle "Science Building")
       unshiftMessages
-        $ [ PlaceLocationNamed "Dormitories" | not dormitoriesInPlay ]
-        <> [ MoveToward
-               (EnemyTarget eid)
-               (LocationNamed $ LocationName "Dormitories")
+        $ [ PlaceLocationMatching (LocationWithTitle "Dormitories")
+          | not dormitoriesInPlay
+          ]
+        <> [ MoveToward (EnemyTarget eid) (LocationWithTitle "Dormitories")
            | eid <- maybeToList mExperimentId
            ]
         <> [ CreateEnemyAt "02058" scienceBuildingId | isNothing mExperimentId ]

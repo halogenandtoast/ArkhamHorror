@@ -16,7 +16,7 @@ newtype Broadmoor = Broadmoor Attrs
 broadmoor :: Broadmoor
 broadmoor = Broadmoor $ (baseAttrs
                           "81009"
-                          "Broadmoor"
+                          (LocationName "Broadmoor" Nothing)
                           EncounterSet.CurseOfTheRougarou
                           3
                           (PerPlayer 1)

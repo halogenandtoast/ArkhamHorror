@@ -21,7 +21,7 @@ facultyOfficesTheNightIsStillYoung :: FacultyOfficesTheNightIsStillYoung
 facultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung
   (baseAttrs
       "02054"
-      "Faculty Offices"
+      (LocationName "Faculty Offices" (Just "The Night is Still Young"))
       EncounterSet.ExtracurricularActivity
       2
       (PerPlayer 2)

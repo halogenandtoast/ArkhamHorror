@@ -2,7 +2,6 @@ module Arkham.Types.Agenda.Runner where
 
 import Arkham.Import
 
-import Arkham.Types.LocationMatcher
 import Arkham.Types.Trait
 
 type AgendaRunner env
@@ -14,7 +13,7 @@ type AgendaRunner env
     , HasCount EnemyCount env (LocationId, [Trait])
     , HasCount EnemyCount env (LocationMatcher, [Trait])
     , HasCount PlayerCount env ()
-    , HasId (Maybe LocationId) env LocationName
+    , HasId (Maybe LocationId) env LocationMatcher
     , HasId (Maybe StoryEnemyId) env CardCode
     , HasId (Maybe StoryTreacheryId) env CardCode
     , HasId CardCode env EnemyId
@@ -33,7 +32,7 @@ type AgendaRunner env
     , HasSet InScenarioInvestigatorId env ()
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env EnemyId
-    , HasSet InvestigatorId env LocationName
+    , HasSet InvestigatorId env LocationMatcher
     , HasSet LocationId env ()
     , HasSet LocationId env [Trait]
     , HasSet Trait env EnemyId

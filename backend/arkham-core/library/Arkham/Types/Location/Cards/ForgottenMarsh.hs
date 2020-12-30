@@ -14,7 +14,7 @@ newtype ForgottenMarsh = ForgottenMarsh Attrs
 forgottenMarsh :: ForgottenMarsh
 forgottenMarsh = ForgottenMarsh $ baseAttrs
   "81013"
-  "Forgotten Marsh"
+  (LocationName "Forgotten Marsh" Nothing)
   EncounterSet.CurseOfTheRougarou
   2
   (Static 0)

@@ -18,16 +18,17 @@ newtype TheGathering = TheGathering Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 theGathering :: Difficulty -> TheGathering
-theGathering difficulty = TheGathering $ (baseAttrs
-                                           "01104"
-                                           "The Gathering"
-                                           ["01105", "01106", "01107"]
-                                           ["01108", "01109", "01110"]
-                                           difficulty
-                                         )
+theGathering difficulty = TheGathering $ base
   { scenarioLocationLayout = Just
     ["   .   attic   .     ", " study hallway parlor", "   .   cellar  .     "]
   }
+ where
+  base = baseAttrs
+    "01104"
+    "The Gathering"
+    ["01105", "01106", "01107"]
+    ["01108", "01109", "01110"]
+    difficulty
 
 theGatheringIntro :: Message
 theGatheringIntro = FlavorText
@@ -79,13 +80,9 @@ instance ScenarioRunner env => RunMessage env TheGathering where
           ]
         ]
       let
-        locations' = mapFromList
-          [ ("Study", ["01111"])
-          , ("Hallway", ["01112"])
-          , ("Attic", ["01113"])
-          , ("Cellar", ["01114"])
-          , ("Parlor", ["01115"])
-          ]
+        locations' = mapFromList $ map
+          (second pure . toFst (getLocationName . lookupLocation))
+          ["01111", "01112", "01113", "01114", "01115"]
       TheGathering <$> runMessage msg (attrs & locationsL .~ locations')
     ResolveToken _ Cultist iid ->
       s <$ when (isHardExpert attrs) (unshiftMessage $ DrawAnotherToken iid)

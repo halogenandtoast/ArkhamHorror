@@ -90,18 +90,17 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
           ]
         ]
       let
-        locations' = mapFromList
-          [ ("Miskatonic Quad", ["02048"])
-          , ("Humanities Building", ["02049"])
-          , ("Orne Library", ["02050"])
-          , ("Student Union", ["02051"])
-          , ("Dormitories", ["02052"])
-          , ("Administration Building", ["02053"])
-          , ( "Faculty Offices"
-            , [if completedTheHouseAlwaysWins then "02055" else "02054"]
-            )
-          , ("Science Building", ["02056"])
-          , ("Alchemy Labs", ["02057"])
+        locations' = mapFromList $ map
+          (second pure . toFst (getLocationName . lookupLocation))
+          [ "02048"
+          , "02049"
+          , "02050"
+          , "02051"
+          , "02052"
+          , "02053"
+          , if completedTheHouseAlwaysWins then "02055" else "02054"
+          , "02056"
+          , "02057"
           ]
       ExtracurricularActivity
         <$> runMessage msg (attrs & locationsL .~ locations')

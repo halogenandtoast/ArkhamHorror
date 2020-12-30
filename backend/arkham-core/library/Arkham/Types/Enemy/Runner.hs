@@ -2,7 +2,6 @@ module Arkham.Types.Enemy.Runner where
 
 import Arkham.Import
 
-import Arkham.Types.LocationMatcher
 import Arkham.Types.Trait
 
 type EnemyRunner env
@@ -11,7 +10,6 @@ type EnemyRunner env
     , HasCount ClueCount env LocationId
     , HasCount PlayerCount env ()
     , HasCount RemainingSanity env InvestigatorId
-    , HasId (Maybe LocationId) env LocationName
     , HasId (Maybe LocationId) env LocationMatcher
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId

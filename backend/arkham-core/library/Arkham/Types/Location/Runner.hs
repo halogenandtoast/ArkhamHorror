@@ -10,6 +10,7 @@ type LocationRunner env
     , HasCount HorrorCount env InvestigatorId
     , HasQueue env
     , HasId (Maybe StoryAssetId) env CardCode
+    , HasId (Maybe LocationId) env LocationMatcher
     , HasId (Maybe OwnerId) env AssetId
     , HasId ActiveInvestigatorId env ()
     , HasId CardCode env EnemyId

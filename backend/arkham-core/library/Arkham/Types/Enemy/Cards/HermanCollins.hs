@@ -46,7 +46,7 @@ instance ActionRunner env => HasActions env HermanCollins where
 instance EnemyRunner env => RunMessage env HermanCollins where
   runMessage msg e@(HermanCollins attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
-      e <$ spawnAt (Just iid) eid "Graveyard"
+      e <$ spawnAt (Just iid) eid (LocationWithTitle "Graveyard")
     UseCardAbility iid (EnemySource eid) _ 1 | eid == enemyId ->
       e <$ unshiftMessages
         (replicate 4 (ChooseAndDiscardCard iid)

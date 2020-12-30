@@ -19,7 +19,9 @@ newtype DowntownArkhamAsylum = DowntownArkhamAsylum Attrs
 downtownArkhamAsylum :: DowntownArkhamAsylum
 downtownArkhamAsylum = DowntownArkhamAsylum $ (baseAttrs
                                                 "01131"
-                                                "Downtown"
+                                                (LocationName "Downtown"
+                                                $ Just "Arkham Asylum"
+                                                )
                                                 EncounterSet.TheMidnightMasks
                                                 4
                                                 (PerPlayer 2)

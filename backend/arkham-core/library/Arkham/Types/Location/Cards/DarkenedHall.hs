@@ -18,7 +18,7 @@ newtype DarkenedHall = DarkenedHall Attrs
 darkenedHall :: DarkenedHall
 darkenedHall = DarkenedHall $ (baseAttrs
                                 "02074"
-                                "Darkened Hall"
+                                (LocationName "Darkened Hall" Nothing)
                                 EncounterSet.TheHouseAlwaysWins
                                 4
                                 (Static 0)

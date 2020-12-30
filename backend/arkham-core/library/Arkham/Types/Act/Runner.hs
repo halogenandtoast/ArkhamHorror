@@ -12,7 +12,7 @@ type ActRunner env
     , HasCount PlayerCount env ()
     , HasCount SpendableClueCount env InvestigatorId
     , HasCount SpendableClueCount env ()
-    , HasId (Maybe LocationId) env LocationName
+    , HasId (Maybe LocationId) env LocationMatcher
     , HasId (Maybe OwnerId) env AssetId
     , HasId (Maybe StoryAssetId) env CardCode
     , HasId (Maybe StoryEnemyId) env CardCode
@@ -26,7 +26,7 @@ type ActRunner env
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env (HashSet LocationId)
     , HasSet InvestigatorId env LocationId
-    , HasSet InvestigatorId env LocationName
+    , HasSet InvestigatorId env LocationMatcher
     , HasSet InScenarioInvestigatorId env ()
     , HasSet LocationId env ()
     , HasSet LocationId env [Trait]

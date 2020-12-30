@@ -13,18 +13,17 @@ newtype MiskatonicUniversity = MiskatonicUniversity Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 miskatonicUniversity :: MiskatonicUniversity
-miskatonicUniversity = MiskatonicUniversity $ (baseAttrs
-                                                "01129"
-                                                "Miskatonic University"
-                                                EncounterSet.TheMidnightMasks
-                                                4
-                                                (PerPlayer 2)
-                                                Diamond
-                                                [T, Plus, Circle, Square]
-                                                [Arkham]
-                                              )
-  { locationVictory = Just 1
-  }
+miskatonicUniversity = MiskatonicUniversity $ base { locationVictory = Just 1 }
+ where
+  base = baseAttrs
+    "01129"
+    (LocationName "Miskatonic University" Nothing)
+    EncounterSet.TheMidnightMasks
+    4
+    (PerPlayer 2)
+    Diamond
+    [T, Plus, Circle, Square]
+    [Arkham]
 
 instance HasModifiersFor env MiskatonicUniversity where
   getModifiersFor = noModifiersFor

@@ -19,7 +19,7 @@ newtype Northside = Northside Attrs
 northside :: Northside
 northside = Northside $ (baseAttrs
                           "01134"
-                          "Northside"
+                          (LocationName "Northside" Nothing)
                           EncounterSet.TheMidnightMasks
                           3
                           (PerPlayer 2)

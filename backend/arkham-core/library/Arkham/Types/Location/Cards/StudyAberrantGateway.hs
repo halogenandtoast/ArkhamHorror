@@ -14,7 +14,7 @@ newtype StudyAberrantGateway = StudyAberrantGateway Attrs
 studyAberrantGateway :: StudyAberrantGateway
 studyAberrantGateway = StudyAberrantGateway $ baseAttrs
   "50013"
-  "Study"
+  (LocationName "Study" (Just "Aberrant Gateway"))
   EncounterSet.ReturnToTheGathering
   3
   (PerPlayer 1)
@@ -48,9 +48,9 @@ instance LocationRunner env => RunMessage env StudyAberrantGateway where
   runMessage msg l@(StudyAberrantGateway attrs@Attrs {..}) = case msg of
     UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
       l <$ unshiftMessage (DrawCards iid 3 False)
-    When (EnemySpawnAtLocationNamed _ locationName' _) -> do
-      locations' <- getList @LocationName ()
+    When (EnemySpawnAtLocationMatching _ locationMatcher _) -> do
+      inPlay <- isJust <$> getId @(Maybe LocationId) locationMatcher
       l <$ unless
-        (locationName' `elem` locations')
-        (unshiftMessage (PlaceLocationNamed locationName'))
+        inPlay
+        (unshiftMessage (PlaceLocationMatching locationMatcher))
     _ -> StudyAberrantGateway <$> runMessage msg attrs

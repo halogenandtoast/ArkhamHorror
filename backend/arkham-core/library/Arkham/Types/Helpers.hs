@@ -1,6 +1,6 @@
 module Arkham.Types.Helpers where
 
-import Arkham.Prelude hiding (unpack)
+import Arkham.Prelude hiding (unpack, toUpper, toLower)
 
 import Data.Aeson.Text
 import Data.Foldable (foldrM)
@@ -10,6 +10,21 @@ import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as NE
 import Data.Text.Lazy (unpack)
 import Data.Text.Lazy.Builder
+import Data.Char (isLetter, toLower, toUpper)
+
+toLabel :: String -> String
+toLabel [] = []
+toLabel (x : xs) = toLower x : go xs
+ where
+  go [] = []
+  go (' ' : x' : xs') = toUpper x' : go xs'
+  go (x' : xs') = x' : go xs'
+
+replaceNonLetters :: String -> String
+replaceNonLetters [] = []
+replaceNonLetters (x : xs) = if not (isLetter x)
+  then ' ' : replaceNonLetters xs
+  else x : replaceNonLetters xs
 
 cycleN :: Int -> [a] -> [a]
 cycleN n as = take (length as * n) $ L.cycle as

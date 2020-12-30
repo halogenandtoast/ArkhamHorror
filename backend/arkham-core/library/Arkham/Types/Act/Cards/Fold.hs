@@ -55,7 +55,7 @@ instance ActRunner env => RunMessage env Fold where
       a <$ when
         (null investigatorIds)
         (unshiftMessage $ AdvanceAct actId (toSource attrs))
-    AdvanceAct aid _ | aid == actId && not actFlipped -> do
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       investigatorIds <- getInvestigatorIds
       requiredClueCount <- getPlayerCountValue (PerPlayer 2)
       unshiftMessages
@@ -64,8 +64,8 @@ instance ActRunner env => RunMessage env Fold where
           | iid <- investigatorIds
           ]
         )
-      pure $ Fold $ attrs & sequenceL .~ Act 3 B & flippedL .~ True
-    AdvanceAct aid _ | aid == actId && actFlipped -> do
+      pure $ Fold $ attrs & sequenceL .~ Act 3 B
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       maid <- fmap unStoryAssetId <$> getId (CardCode "02079")
       a <$ case maid of
         Nothing -> unshiftMessage (Resolution 1)

@@ -19,12 +19,11 @@ allIn :: AllIn
 allIn = AllIn $ baseAttrs "02068" "All In" (Act 3 A) Nothing
 
 instance ActionRunner env => HasActions env AllIn where
-  getActions iid NonFast (AllIn attrs) = do
-    baseActions <- getActions iid NonFast attrs
+  getActions iid NonFast (AllIn attrs) = withBaseActions iid NonFast attrs $ do
     investigatorLocationId <- getId @LocationId iid
     maid <- fmap unStoryAssetId <$> getId (CardCode "02080")
     case maid of
-      Nothing -> pure baseActions
+      Nothing -> pure []
       Just aid -> do
         miid <- fmap unOwnerId <$> getId aid
         assetLocationId <- getId aid
@@ -33,19 +32,18 @@ instance ActionRunner env => HasActions env AllIn where
           (toSource attrs)
           (ActionCost 1 (Just Parley) mempty)
         pure
-          $ baseActions
-          <> [ ActivateCardAbilityAction
-                 iid
-                 (mkAbility
-                   (ProxySource (AssetSource aid) (toSource attrs))
-                   1
-                   (ActionAbility 1 (Just Parley))
-                 )
-             | isNothing miid
-               && Just investigatorLocationId
-               == assetLocationId
-               && hasParleyActionsRemaining
-             ]
+          [ ActivateCardAbilityAction
+              iid
+              (mkAbility
+                (ProxySource (AssetSource aid) (toSource attrs))
+                1
+                (ActionAbility 1 (Just Parley))
+              )
+          | isNothing miid
+            && Just investigatorLocationId
+            == assetLocationId
+            && hasParleyActionsRemaining
+          ]
   getActions i window (AllIn x) = getActions i window x
 
 instance ActRunner env => RunMessage env AllIn where
@@ -55,7 +53,7 @@ instance ActRunner env => RunMessage env AllIn where
       a <$ when
         (null investigatorIds)
         (unshiftMessage $ AdvanceAct actId (toSource attrs))
-    AdvanceAct aid _ | aid == actId && not actFlipped -> do
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       investigatorIds <- getInvestigatorIds
       requiredClueCount <- getPlayerCountValue (PerPlayer 2)
       unshiftMessages
@@ -64,8 +62,8 @@ instance ActRunner env => RunMessage env AllIn where
           | iid <- investigatorIds
           ]
         )
-      pure $ AllIn $ attrs & sequenceL .~ Act 3 B & flippedL .~ True
-    AdvanceAct aid _ | aid == actId && actFlipped -> do
+      pure $ AllIn $ attrs & sequenceL .~ Act 3 B
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       maid <- fmap unStoryAssetId <$> getId (CardCode "02080")
       a <$ case maid of
         Nothing -> unshiftMessage (Resolution 1)
@@ -73,7 +71,7 @@ instance ActRunner env => RunMessage env AllIn where
           miid <- fmap unOwnerId <$> getId assetId
           unshiftMessage (maybe (Resolution 1) (const (Resolution 2)) miid)
     UseCardAbility iid (ProxySource _ source) _ 1
-      | isSource attrs source && actSequence == Act 3 A -> do
+      | isSource attrs source && onSide A attrs -> do
         maid <- fmap unStoryAssetId <$> getId (CardCode "02080")
         case maid of
           Nothing -> error "this ability should not be able to be used"
@@ -87,7 +85,7 @@ instance ActRunner env => RunMessage env AllIn where
               3
             )
     PassedSkillTest iid _ source _ _
-      | isSource attrs source && actSequence == Act 3 A -> do
+      | isSource attrs source && onSide A attrs -> do
         maid <- fmap unStoryAssetId <$> getId (CardCode "02080")
         case maid of
           Nothing -> error "this ability should not be able to be used"

@@ -53,7 +53,7 @@ nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
 
 instance ActRunner env => RunMessage env FindingLadyEsprit where
   runMessage msg a@(FindingLadyEsprit attrs@Attrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && actSequence == Act 1 A -> do
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       investigatorIds <- investigatorsInABayouLocation
       requiredClueCount <- getPlayerCountValue (PerPlayer 1)
       unshiftMessages
@@ -62,19 +62,15 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
           | iid <- investigatorIds
           ]
         )
-      pure
-        $ FindingLadyEsprit
-        $ attrs
-        & (sequenceL .~ Act 1 B)
-        & (flippedL .~ True)
-    AdvanceAct aid _ | aid == actId && actSequence == Act 1 B -> do
+      pure $ FindingLadyEsprit $ attrs & (sequenceL .~ Act 1 B)
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       [ladyEspritSpawnLocation] <- setToList <$> bayouLocations
       a <$ unshiftMessages
         [ CreateStoryAssetAt "81019" ladyEspritSpawnLocation
         , PutSetAsideIntoPlay (SetAsideLocationsTarget mempty)
         , NextAdvanceActStep aid 2
         ]
-    NextAdvanceActStep aid 2 | aid == actId && actSequence == Act 1 B -> do
+    NextAdvanceActStep aid 2 | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       curseOfTheRougarouSet <- gatherEncounterSet
         EncounterSet.CurseOfTheRougarou

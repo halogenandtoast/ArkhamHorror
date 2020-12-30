@@ -22,10 +22,10 @@ instance ActionRunner env => HasActions env CampusSafety where
 
 instance ActRunner env => RunMessage env CampusSafety where
   runMessage msg (CampusSafety attrs@Attrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && not actFlipped -> do
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       unshiftMessage (AdvanceAct aid $ toSource attrs)
-      pure $ CampusSafety $ attrs & sequenceL .~ Act 3 B & flippedL .~ True
-    AdvanceAct aid _ | aid == actId && actFlipped -> do
+      pure $ CampusSafety $ attrs & sequenceL .~ Act 3 B
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       alchemyLabsInPlay <- elem (LocationName "Alchemy Labs") <$> getList ()
       agendaStep <- asks $ unAgendaStep . getStep
       completedTheHouseAlwaysWins <-
@@ -43,5 +43,5 @@ instance ActRunner env => RunMessage env CampusSafety where
            ]
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage $ chooseOne leadInvestigatorId [NextAct aid "02047"]
-      pure $ CampusSafety $ attrs & sequenceL .~ Act 3 B & flippedL .~ True
+      pure $ CampusSafety $ attrs & sequenceL .~ Act 3 B
     _ -> CampusSafety <$> runMessage msg attrs

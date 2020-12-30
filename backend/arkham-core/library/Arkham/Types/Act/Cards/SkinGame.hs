@@ -29,7 +29,7 @@ instance ActionRunner env => HasActions env SkinGame where
 
 instance ActRunner env => RunMessage env SkinGame where
   runMessage msg a@(SkinGame attrs@Attrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && not actFlipped -> do
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       vipAreaId <- fromJustNote "must exist"
         <$> getId @(Maybe LocationId) (LocationName "VIP Area")
       investigatorIds <- getSetList vipAreaId
@@ -40,8 +40,8 @@ instance ActRunner env => RunMessage env SkinGame where
           | iid <- investigatorIds
           ]
         )
-      pure $ SkinGame $ attrs & sequenceL .~ Act 2 B & flippedL .~ True
-    AdvanceAct aid _ | aid == actId && actFlipped -> do
+      pure $ SkinGame $ attrs & sequenceL .~ Act 2 B
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       completedExtracurricularActivity <-
         elem "02041" . map unCompletedScenarioId <$> getSetList ()
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()

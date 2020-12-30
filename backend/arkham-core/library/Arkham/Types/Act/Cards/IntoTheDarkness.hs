@@ -20,16 +20,12 @@ instance ActionRunner env => HasActions env IntoTheDarkness where
 
 instance ActRunner env => RunMessage env IntoTheDarkness where
   runMessage msg a@(IntoTheDarkness attrs@Attrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && actSequence == Act 2 A -> do
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage
         (chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)])
-      pure
-        $ IntoTheDarkness
-        $ attrs
-        & (sequenceL .~ Act 2 B)
-        & (flippedL .~ True)
-    AdvanceAct aid _ | aid == actId && actSequence == Act 2 B -> do
+      pure $ IntoTheDarkness $ attrs & (sequenceL .~ Act 2 B)
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       playerCount <- getPlayerCount
       if playerCount > 3
         then a <$ unshiftMessages

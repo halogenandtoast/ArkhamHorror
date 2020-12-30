@@ -36,16 +36,12 @@ instance ActionRunner env => HasActions env UncoveringTheConspiracy where
 
 instance ActRunner env => RunMessage env UncoveringTheConspiracy where
   runMessage msg a@(UncoveringTheConspiracy attrs@Attrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && actSequence == Act 1 A -> do
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage
         (chooseOne leadInvestigatorId [AdvanceAct aid $ toSource attrs])
-      pure
-        $ UncoveringTheConspiracy
-        $ attrs
-        & (sequenceL .~ Act 1 B)
-        & (flippedL .~ True)
-    AdvanceAct aid _ | aid == actId && actSequence == Act 1 B ->
+      pure $ UncoveringTheConspiracy $ attrs & sequenceL .~ Act 1 B
+    AdvanceAct aid _ | aid == actId && onSide B attrs ->
       a <$ unshiftMessage (Resolution 1)
     AddToVictory _ -> do
       victoryDisplay <- HashSet.map unVictoryDisplayCardCode <$> getSet ()

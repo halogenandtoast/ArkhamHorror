@@ -12,10 +12,13 @@ newtype InvestigatingTheTrail = InvestigatingTheTrail Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 investigatingTheTrail :: InvestigatingTheTrail
-investigatingTheTrail =
-  InvestigatingTheTrail $ baseAttrs "01146" "Investigating the Trail" (Act 1 A)
+investigatingTheTrail = InvestigatingTheTrail $ baseAttrs
+  "01146"
+  "Investigating the Trail"
+  (Act 1 A)
+  (Just $ RequiredClues (PerPlayer 3) Nothing)
 
-instance HasActions env InvestigatingTheTrail where
+instance ActionRunner env => HasActions env InvestigatingTheTrail where
   getActions i window (InvestigatingTheTrail x) = getActions i window x
 
 instance ActRunner env => RunMessage env InvestigatingTheTrail where
@@ -41,11 +44,4 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
         ([ CreateEnemyAt cardCode "01149" | cardCode <- cultistsWhoGotAway ]
         <> [NextAct aid "01147"]
         )
-    PrePlayerWindow -> do
-      totalSpendableClueCount <- getSpendableClueCount =<< getInvestigatorIds
-      requiredClues <- getPlayerCountValue (PerPlayer 3)
-      pure
-        $ InvestigatingTheTrail
-        $ attrs
-        & (canAdvanceL .~ (totalSpendableClueCount >= requiredClues))
     _ -> InvestigatingTheTrail <$> runMessage msg attrs

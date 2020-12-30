@@ -1,6 +1,5 @@
 module Arkham.Types.Investigator.Runner where
 
-import Arkham.Types.ActId
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.AssetId
 import Arkham.Types.Card.CardCode
@@ -30,7 +29,6 @@ type InvestigatorRunner env
     , HasId LocationId env InvestigatorId
     , HasModifiersFor env ()
     , HasQueue env
-    , HasSet AdvanceableActId env ()
     , HasSet AloofEnemyId env LocationId
     , HasSet AssetId env (InvestigatorId, UseType)
     , HasSet AssetId env LocationId

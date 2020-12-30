@@ -8,6 +8,7 @@ import Arkham.Types.Act.Cards.AllIn as X
 import Arkham.Types.Act.Cards.BeginnersLuck as X
 import Arkham.Types.Act.Cards.CampusSafety as X
 import Arkham.Types.Act.Cards.DisruptingTheRitual as X
+import Arkham.Types.Act.Cards.FindingAWayInside as X
 import Arkham.Types.Act.Cards.FindingLadyEsprit as X
 import Arkham.Types.Act.Cards.Fold as X
 import Arkham.Types.Act.Cards.HuntingTheRougarou as X

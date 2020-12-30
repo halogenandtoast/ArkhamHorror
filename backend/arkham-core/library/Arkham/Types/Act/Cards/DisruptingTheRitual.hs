@@ -12,9 +12,10 @@ newtype DisruptingTheRitual = DisruptingTheRitual Attrs
 
 disruptingTheRitual :: DisruptingTheRitual
 disruptingTheRitual =
-  DisruptingTheRitual $ (baseAttrs "01148" "Disrupting the Ritual" (Act 3 A))
-    { actClues = Just 0
-    }
+  DisruptingTheRitual
+    $ (baseAttrs "01148" "Disrupting the Ritual" (Act 3 A) Nothing)
+        { actClues = Just 0
+        }
 
 instance ActionRunner env => HasActions env DisruptingTheRitual where
   getActions iid NonFast (DisruptingTheRitual a@Attrs {..}) = do
@@ -48,8 +49,7 @@ instance ActRunner env => RunMessage env DisruptingTheRitual where
       let totalClues = n + fromJustNote "Must be set" actClues
       when (totalClues >= requiredClues) (unshiftMessage (AdvanceAct actId))
       pure $ DisruptingTheRitual (attrs { actClues = Just totalClues })
-    UseCardAbility iid (ActSource aid) _ 1 | aid == actId ->
-      a <$ unshiftMessage
+    UseCardAbility iid (ActSource aid) _ 1 | aid == actId -> a <$ unshiftMessage
       (chooseOne
         iid
         [ BeginSkillTest

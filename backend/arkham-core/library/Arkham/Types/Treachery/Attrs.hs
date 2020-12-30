@@ -155,7 +155,7 @@ is (CardCodeTarget cardCode) t = cardCode == treacheryCardCode t
 is (CardIdTarget cardId) t = unCardId cardId == unTreacheryId (treacheryId t)
 is _ _ = False
 
-instance (TreacheryRunner env) => RunMessage env Attrs where
+instance TreacheryRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     InvestigatorEliminated iid
       | treacheryAttachedTarget == Just (InvestigatorTarget iid) -> a
@@ -165,4 +165,9 @@ instance (TreacheryRunner env) => RunMessage env Attrs where
     AfterRevelation _iid tid | treacheryId == tid -> a <$ when
       treacheryResolved
       (unshiftMessage (Discard (TreacheryTarget treacheryId)))
+    PlaceResources target n | isTarget a target -> do
+      let amount = fromMaybe 0 treacheryResources + n
+      pure $ a & resources ?~ amount
+    PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget ->
+      a <$ unshiftMessage (Discard $ toTarget a)
     _ -> pure a

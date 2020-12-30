@@ -11,9 +11,9 @@ newtype TheBarrier = TheBarrier Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 theBarrier :: TheBarrier
-theBarrier = TheBarrier $ baseAttrs "01109" "The Barrier" (Act 2 A)
+theBarrier = TheBarrier $ baseAttrs "01109" "The Barrier" (Act 2 A) Nothing
 
-instance HasActions env TheBarrier where
+instance ActionRunner env => HasActions env TheBarrier where
   getActions i window (TheBarrier x) = getActions i window x
 
 instance ActRunner env => RunMessage env TheBarrier where

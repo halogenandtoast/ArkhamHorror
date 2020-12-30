@@ -12,9 +12,9 @@ newtype WhatHaveYouDone = WhatHaveYouDone Attrs
 
 whatHaveYouDone :: WhatHaveYouDone
 whatHaveYouDone =
-  WhatHaveYouDone $ baseAttrs "01110" "What Have You Done?" (Act 3 A)
+  WhatHaveYouDone $ baseAttrs "01110" "What Have You Done?" (Act 3 A) Nothing
 
-instance HasActions env WhatHaveYouDone where
+instance ActionRunner env => HasActions env WhatHaveYouDone where
   getActions i window (WhatHaveYouDone x) = getActions i window x
 
 instance ActRunner env => RunMessage env WhatHaveYouDone where

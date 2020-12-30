@@ -13,9 +13,9 @@ newtype IntoTheDarkness = IntoTheDarkness Attrs
 
 intoTheDarkness :: IntoTheDarkness
 intoTheDarkness =
-  IntoTheDarkness $ baseAttrs "01147" "Into the Darkness" (Act 2 A)
+  IntoTheDarkness $ baseAttrs "01147" "Into the Darkness" (Act 2 A) Nothing
 
-instance HasActions env IntoTheDarkness where
+instance ActionRunner env => HasActions env IntoTheDarkness where
   getActions i window (IntoTheDarkness x) = getActions i window x
 
 instance ActRunner env => RunMessage env IntoTheDarkness where

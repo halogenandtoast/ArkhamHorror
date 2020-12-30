@@ -11,9 +11,13 @@ newtype CampusSafety = CampusSafety Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 campusSafety :: CampusSafety
-campusSafety = CampusSafety $ baseAttrs "02047" "CampusSafety" (Act 3 A)
+campusSafety = CampusSafety $ baseAttrs
+  "02047"
+  "CampusSafety"
+  (Act 3 A)
+  (Just $ RequiredClues (PerPlayer 3) Nothing)
 
-instance HasActions env CampusSafety where
+instance ActionRunner env => HasActions env CampusSafety where
   getActions i window (CampusSafety x) = getActions i window x
 
 instance ActRunner env => RunMessage env CampusSafety where
@@ -40,12 +44,4 @@ instance ActRunner env => RunMessage env CampusSafety where
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage $ chooseOne leadInvestigatorId [NextAct aid "02047"]
       pure $ CampusSafety $ attrs & sequenceL .~ Act 3 B & flippedL .~ True
-    PrePlayerWindow -> do
-      totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds
-      requiredClues <- getPlayerCountValue (PerPlayer 3)
-      pure
-        $ CampusSafety
-        $ attrs
-        & canAdvanceL
-        .~ (totalSpendableClues >= requiredClues)
     _ -> CampusSafety <$> runMessage msg attrs

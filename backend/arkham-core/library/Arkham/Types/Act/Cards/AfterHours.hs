@@ -11,9 +11,13 @@ newtype AfterHours = AfterHours Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 afterHours :: AfterHours
-afterHours = AfterHours $ baseAttrs "02045" "After Hours" (Act 1 A)
+afterHours = AfterHours $ baseAttrs
+  "02045"
+  "After Hours"
+  (Act 1 A)
+  (Just $ RequiredClues (PerPlayer 3) Nothing)
 
-instance HasActions env AfterHours where
+instance ActionRunner env => HasActions env AfterHours where
   getActions i window (AfterHours x) = getActions i window x
 
 instance ActRunner env => RunMessage env AfterHours where
@@ -32,12 +36,4 @@ instance ActRunner env => RunMessage env AfterHours where
       , ShuffleEncounterDiscardBackIn
       , NextAct aid "02046"
       ]
-    PrePlayerWindow -> do
-      totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds
-      requiredClues <- getPlayerCountValue (PerPlayer 3)
-      pure
-        $ AfterHours
-        $ attrs
-        & canAdvanceL
-        .~ (totalSpendableClues >= requiredClues)
     _ -> AfterHours <$> runMessage msg attrs

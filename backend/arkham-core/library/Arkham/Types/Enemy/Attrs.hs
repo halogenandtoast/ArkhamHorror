@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Enemy.Attrs where
 
 import Arkham.Import

@@ -16,17 +16,9 @@ newtype Fold = Fold Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 fold :: Fold
-fold = Fold $ baseAttrs "02069" "Fold" (Act 3 A)
+fold = Fold $ baseAttrs "02069" "Fold" (Act 3 A) Nothing
 
-instance
-  ( HasCostPayment env
-  , HasModifiersFor env ()
-  , HasId (Maybe LocationId) env AssetId
-  , HasId (Maybe OwnerId) env AssetId
-  , HasId (Maybe StoryAssetId) env CardCode
-  , HasId LocationId env InvestigatorId
-  )
-  => HasActions env Fold where
+instance ActionRunner env => HasActions env Fold where
   getActions iid NonFast (Fold attrs) = do
     baseActions <- getActions iid NonFast attrs
     investigatorLocationId <- getId @LocationId iid

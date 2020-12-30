@@ -8,13 +8,15 @@ where
 import Arkham.Import
 
 import Arkham.Types.Act.Sequence as X
+import Arkham.Types.Game.Helpers
+import Arkham.Types.RequiredClues as X
 
 data Attrs = Attrs
-  { actCanAdvance :: Bool
-  , actId         :: ActId
+  { actId         :: ActId
   , actName       :: Text
   , actSequence   :: ActSequence
   , actFlipped :: Bool
+  , actRequiredClues :: Maybe RequiredClues
   , actClues :: Maybe Int
   , actTreacheries :: HashSet TreacheryId
   }
@@ -40,9 +42,6 @@ instance Entity Attrs where
   isTarget Attrs { actId } (ActTarget aid) = actId == aid
   isTarget _ _ = False
 
-canAdvanceL :: Lens' Attrs Bool
-canAdvanceL = lens actCanAdvance $ \m x -> m { actCanAdvance = x }
-
 sequenceL :: Lens' Attrs ActSequence
 sequenceL = lens actSequence $ \m x -> m { actSequence = x }
 
@@ -52,20 +51,34 @@ flippedL = lens actFlipped $ \m x -> m { actFlipped = x }
 treacheriesL :: Lens' Attrs (HashSet TreacheryId)
 treacheriesL = lens actTreacheries $ \m x -> m { actTreacheries = x }
 
-baseAttrs :: ActId -> Text -> ActSequence -> Attrs
-baseAttrs aid name seq' = Attrs
-  { actCanAdvance = False
-  , actId = aid
+baseAttrs :: ActId -> Text -> ActSequence -> Maybe RequiredClues -> Attrs
+baseAttrs aid name seq' mRequiredClues = Attrs
+  { actId = aid
   , actName = name
   , actSequence = seq'
   , actFlipped = False
   , actClues = Nothing
+  , actRequiredClues = mRequiredClues
   , actTreacheries = mempty
   }
 
-instance HasActions env Attrs where
-  getActions _ FastPlayerWindow Attrs {..} =
-    pure [ AdvanceAct actId | actCanAdvance ]
+instance ActionRunner env => HasActions env Attrs where
+  getActions _ FastPlayerWindow Attrs {..} = case actRequiredClues of
+    Just (RequiredClues requiredClues Nothing) -> do
+      totalSpendableClues <- unSpendableClueCount <$> getCount ()
+      totalRequiredClues <- getPlayerCountValue requiredClues
+      pure [ AdvanceAct actId | totalSpendableClues >= totalRequiredClues ]
+    Just (RequiredClues requiredClues (Just locationMatcher)) -> do
+      mLocationId <- getId @(Maybe LocationId) locationMatcher
+      case mLocationId of
+        Just lid -> do
+          iids <- getSetList @InvestigatorId lid
+          totalSpendableClues <- sum
+            <$> for iids ((unSpendableClueCount <$>) . getCount)
+          totalRequiredClues <- getPlayerCountValue requiredClues
+          pure [ AdvanceAct actId | totalSpendableClues >= totalRequiredClues ]
+        Nothing -> pure []
+    Nothing -> pure []
   getActions _ _ _ = pure []
 
 instance (HasQueue env, HasSet InScenarioInvestigatorId env ()) => RunMessage env Attrs where

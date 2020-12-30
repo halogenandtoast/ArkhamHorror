@@ -222,10 +222,10 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         then s <$ unshiftMessages
           [RunSkillTestSourceNotification iid skillTestSource, RunSkillTest iid]
         else s <$ unshiftMessages
-          [RequestTokens (toSource s) iid 1 SetAside, RunSkillTest iid]
+          [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
     DrawAnotherToken iid -> s <$ unshiftMessages
-      [RequestTokens (toSource s) iid 1 SetAside, RunSkillTest iid]
-    RequestedTokens (SkillTestSource siid skillType source maction) iid tokenFaces
+      [RequestTokens (toSource s) (Just iid) 1 SetAside, RunSkillTest iid]
+    RequestedTokens (SkillTestSource siid skillType source maction) (Just iid) tokenFaces
       -> do
         unshiftMessage (RevealSkillTestTokens iid)
         for_ tokenFaces $ \tokenFace -> do

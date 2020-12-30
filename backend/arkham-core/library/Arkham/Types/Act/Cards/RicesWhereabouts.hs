@@ -16,12 +16,12 @@ newtype RicesWhereabouts = RicesWhereabouts Attrs
 
 ricesWhereabouts :: RicesWhereabouts
 ricesWhereabouts =
-  RicesWhereabouts $ baseAttrs "02046" "Rice's Whereabouts" (Act 2 A)
+  RicesWhereabouts $ baseAttrs "02046" "Rice's Whereabouts" (Act 2 A) Nothing
 
 ability :: Attrs -> Ability
 ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
 
-instance (HasModifiersFor env (), HasCostPayment env) => HasActions env RicesWhereabouts where
+instance ActionRunner env => HasActions env RicesWhereabouts where
   getActions iid NonFast (RicesWhereabouts x) = do
     canAffordClues <- getCanAffordCost iid (toSource x) (ClueCost 1)
     canAffordActions <- getCanAffordCost
@@ -77,11 +77,4 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
         $ attrs
         & (sequenceL .~ Act 1 B)
         & (flippedL .~ True)
-    PrePlayerWindow -> do
-      totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds
-      requiredClues <- getPlayerCountValue (PerPlayer 3)
-      pure
-        $ RicesWhereabouts
-        $ attrs
-        & (canAdvanceL .~ (totalSpendableClues >= requiredClues))
     _ -> RicesWhereabouts <$> runMessage msg attrs

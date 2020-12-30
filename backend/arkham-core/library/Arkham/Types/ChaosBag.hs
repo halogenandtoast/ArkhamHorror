@@ -1,3 +1,5 @@
+{-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.ChaosBag
   ( ChaosBag
   , emptyChaosBag
@@ -5,18 +7,19 @@ module Arkham.Types.ChaosBag
   )
 where
 
-import ClassyPrelude
+import Arkham.Prelude
 
 import Arkham.Json
 import Arkham.Types.ChaosBagStepState
 import Arkham.Types.Classes
+import Arkham.Types.Game.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
+import Arkham.Types.Query
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Source
 import Arkham.Types.Token
 import Arkham.Types.Window
-import Control.Lens hiding (chosen)
 import Control.Monad.State
 import qualified Data.List as L
 import System.Random.Shuffle
@@ -48,12 +51,12 @@ toGroups steps tokens' = go steps []
 
 replaceFirstChoice
   :: Source
-  -> InvestigatorId
+  -> Maybe InvestigatorId
   -> RequestedTokenStrategy
   -> ChaosBagStep
   -> ChaosBagStepState
   -> ChaosBagStepState
-replaceFirstChoice source iid strategy replacement = \case
+replaceFirstChoice source miid strategy replacement = \case
   Undecided _ -> error "should not be ran with undecided"
   Resolved tokens' -> Resolved tokens'
   Decided step -> case step of
@@ -62,33 +65,37 @@ replaceFirstChoice source iid strategy replacement = \case
       then Decided replacement
       else Decided $ Choose
         n
-        (replaceFirstChooseChoice source iid strategy replacement steps)
+        (replaceFirstChooseChoice source miid strategy replacement steps)
         tokens'
 
 replaceFirstChooseChoice
   :: Source
-  -> InvestigatorId
+  -> Maybe InvestigatorId
   -> RequestedTokenStrategy
   -> ChaosBagStep
   -> [ChaosBagStepState]
   -> [ChaosBagStepState]
-replaceFirstChooseChoice source iid strategy replacement = \case
+replaceFirstChooseChoice source miid strategy replacement = \case
   [] -> []
   (Undecided _ : _) -> error "should not be ran with undecided"
   (Resolved tokens' : rest) ->
     Resolved tokens'
-      : replaceFirstChooseChoice source iid strategy replacement rest
+      : replaceFirstChooseChoice source miid strategy replacement rest
   (Decided step : rest) ->
-    replaceFirstChoice source iid strategy replacement (Decided step) : rest
+    replaceFirstChoice source miid strategy replacement (Decided step) : rest
 
 resolveFirstUnresolved
-  :: (MonadIO m, MonadState ChaosBag m)
+  :: ( MonadIO m
+     , MonadState ChaosBag m
+     , MonadReader env m
+     , HasId LeadInvestigatorId env ()
+     )
   => Source
-  -> InvestigatorId
+  -> Maybe InvestigatorId
   -> RequestedTokenStrategy
   -> ChaosBagStepState
   -> m (ChaosBagStepState, [Message])
-resolveFirstUnresolved source iid strategy = \case
+resolveFirstUnresolved source miid strategy = \case
   Undecided _ -> error "should not be ran with undecided"
   Resolved tokens' -> pure (Resolved tokens', [])
   Decided step -> case step of
@@ -102,86 +109,93 @@ resolveFirstUnresolved source iid strategy = \case
       else if all isResolved steps
         then if length steps == n
           then pure (Resolved $ concatMap toTokens steps, [])
-          else pure
-            ( Decided (Choose n steps tokens')
-            , [ Ask
-                  iid
-                  (ChooseOne
-                    [ ChooseTokenGroups source iid (Choose n remaining chosen)
-                    | (remaining, chosen) <- toGroups steps tokens'
-                    ]
-                  )
-              ]
-            )
+          else do
+            iid <- maybe getLeadInvestigatorId pure miid
+            pure
+              ( Decided (Choose n steps tokens')
+              , [ Ask
+                    iid
+                    (ChooseOne
+                      [ ChooseTokenGroups source iid (Choose n remaining chosen)
+                      | (remaining, chosen) <- toGroups steps tokens'
+                      ]
+                    )
+                ]
+              )
         else do
           (steps', msgs) <- resolveFirstChooseUnresolved
             source
-            iid
+            miid
             strategy
             steps
           pure (Decided $ Choose n steps' tokens', msgs)
 
 resolveFirstChooseUnresolved
-  :: (MonadIO m, MonadState ChaosBag m)
+  :: ( MonadIO m
+     , MonadState ChaosBag m
+     , MonadReader env m
+     , HasId LeadInvestigatorId env ()
+     )
   => Source
-  -> InvestigatorId
+  -> Maybe InvestigatorId
   -> RequestedTokenStrategy
   -> [ChaosBagStepState]
   -> m ([ChaosBagStepState], [Message])
-resolveFirstChooseUnresolved source iid strategy = \case
+resolveFirstChooseUnresolved source miid strategy = \case
   [] -> pure ([], [])
   (Undecided _ : _) -> error "should not be called with undecided"
   (Resolved tokens' : rest) -> do
-    (rest', msgs) <- resolveFirstChooseUnresolved source iid strategy rest
+    (rest', msgs) <- resolveFirstChooseUnresolved source miid strategy rest
     pure (Resolved tokens' : rest', msgs)
   (Decided step : rest) -> do
-    (step', msgs) <- resolveFirstUnresolved source iid strategy (Decided step)
+    (step', msgs) <- resolveFirstUnresolved source miid strategy (Decided step)
     pure (step' : rest, msgs)
 
 decideFirstUndecided
   :: Source
-  -> InvestigatorId
+  -> Maybe InvestigatorId
   -> RequestedTokenStrategy
   -> (ChaosBagStepState -> ChaosBagStepState)
   -> ChaosBagStepState
   -> (ChaosBagStepState, [Message])
-decideFirstUndecided source iid strategy f = \case
+decideFirstUndecided source miid strategy f = \case
   Decided step -> (Decided step, [])
   Resolved tokens' -> (Resolved tokens', [])
   Undecided step -> case step of
     Draw ->
       ( f $ Undecided Draw
       , [ CheckWindow iid [WhenWouldRevealChaosToken source You]
-        , NextChaosBagStep source iid strategy
+        | iid <- maybeToList miid
         ]
+        <> [NextChaosBagStep source miid strategy]
       )
     Choose n steps tokens' -> if any isUndecided steps
       then
         let
           (steps', msgs) =
-            decideFirstChooseUndecided source iid strategy f steps
+            decideFirstChooseUndecided source miid strategy f steps
         in (Undecided $ Choose n steps' tokens', msgs)
       else (f $ Undecided (Choose n steps tokens'), [])
 
 decideFirstChooseUndecided
   :: Source
-  -> InvestigatorId
+  -> Maybe InvestigatorId
   -> RequestedTokenStrategy
   -> (ChaosBagStepState -> ChaosBagStepState)
   -> [ChaosBagStepState]
   -> ([ChaosBagStepState], [Message])
-decideFirstChooseUndecided source iid strategy f = \case
+decideFirstChooseUndecided source miid strategy f = \case
   [] -> ([], [])
   (Decided step : rest) ->
-    let (rest', msgs) = decideFirstChooseUndecided source iid strategy f rest
+    let (rest', msgs) = decideFirstChooseUndecided source miid strategy f rest
     in (Decided step : rest', msgs)
   (Resolved tokens' : rest) ->
-    let (rest', msgs) = decideFirstChooseUndecided source iid strategy f rest
+    let (rest', msgs) = decideFirstChooseUndecided source miid strategy f rest
     in (Resolved tokens' : rest', msgs)
   (Undecided step : rest) ->
     let
       (step', msgs) =
-        decideFirstUndecided source iid strategy f (Undecided step)
+        decideFirstUndecided source miid strategy f (Undecided step)
     in (step' : rest, msgs)
 
 data ChaosBag = ChaosBag
@@ -224,7 +238,7 @@ choiceL = lens chaosBagChoice $ \m x -> m { chaosBagChoice = x }
 instance HasList Token env ChaosBag where
   getList = pure . chaosBagTokens
 
-instance HasQueue env => RunMessage env ChaosBag where
+instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env ChaosBag where
   runMessage msg c@ChaosBag {..} = case msg of
     SetTokens tokens' ->
       pure $ c & tokensL .~ tokens' & setAsideTokensL .~ mempty
@@ -235,8 +249,8 @@ instance HasQueue env => RunMessage env ChaosBag where
         %~ (<> chaosBagSetAsideTokens)
         & setAsideTokensL
         .~ mempty
-    RequestTokens source iid n strategy -> do
-      unshiftMessage (RunBag source iid strategy)
+    RequestTokens source miid n strategy -> do
+      unshiftMessage (RunBag source miid strategy)
       case n of
         0 -> pure $ c & revealedTokensL .~ []
         1 -> pure $ c & choiceL ?~ Undecided Draw & revealedTokensL .~ []
@@ -246,7 +260,7 @@ instance HasQueue env => RunMessage env ChaosBag where
             & (choiceL ?~ Undecided (Choose x (replicate x (Undecided Draw)) [])
               )
             & (revealedTokensL .~ [])
-    RunBag source iid strategy -> do
+    RunBag source miid strategy -> do
       case chaosBagChoice of
         Nothing -> error "unexpected"
         Just choice' -> do
@@ -254,18 +268,18 @@ instance HasQueue env => RunMessage env ChaosBag where
             then do
               let
                 (choice'', msgs) =
-                  decideFirstUndecided source iid strategy id choice'
-              unshiftMessage (RunBag source iid strategy)
+                  decideFirstUndecided source miid strategy id choice'
+              unshiftMessage (RunBag source miid strategy)
               unshiftMessages msgs
               pure $ c & choiceL ?~ choice''
-            else c <$ unshiftMessage (RunDrawFromBag source iid strategy)
-    NextChaosBagStep source iid strategy -> do
+            else c <$ unshiftMessage (RunDrawFromBag source miid strategy)
+    NextChaosBagStep source miid strategy -> do
       case chaosBagChoice of
         Nothing -> error "unexpected"
         Just choice' -> do
           let
             (updatedChoice, messages) =
-              decideFirstUndecided source iid strategy toDecided choice'
+              decideFirstUndecided source miid strategy toDecided choice'
           unless (null messages) $ unshiftMessages messages
           pure $ c & choiceL ?~ updatedChoice
     ReplaceCurrentDraw source iid step -> do
@@ -275,24 +289,24 @@ instance HasQueue env => RunMessage env ChaosBag where
           let
             (updatedChoice, messages) = decideFirstUndecided
               source
-              iid
+              (Just iid)
               SetAside
               (const (Undecided step))
               choice'
           unless (null messages) $ unshiftMessages messages
           pure $ c & choiceL ?~ updatedChoice
-    RunDrawFromBag source iid strategy -> do
+    RunDrawFromBag source miid strategy -> do
       case chaosBagChoice of
         Nothing -> error "unexpected"
         Just choice' -> do
           case choice' of
             Resolved tokenFaces' ->
-              c <$ unshiftMessage (RequestedTokens source iid tokenFaces')
+              c <$ unshiftMessage (RequestedTokens source miid tokenFaces')
             _ -> do
               ((choice'', msgs), c') <- runStateT
-                (resolveFirstUnresolved source iid strategy choice')
+                (resolveFirstUnresolved source miid strategy choice')
                 c
-              unshiftMessage (RunDrawFromBag source iid strategy)
+              unshiftMessage (RunDrawFromBag source miid strategy)
               unshiftMessages msgs
               pure $ c' & choiceL ?~ choice''
     ChooseTokenGroups source iid groupChoice -> do
@@ -301,7 +315,7 @@ instance HasQueue env => RunMessage env ChaosBag where
         Just choice' -> do
           let
             updatedChoice =
-              replaceFirstChoice source iid SetAside groupChoice choice'
+              replaceFirstChoice source (Just iid) SetAside groupChoice choice'
           pure $ c & choiceL ?~ updatedChoice
     RevealToken _source _iid token ->
       -- TODO: we may need a map of source to tokens here

@@ -4,8 +4,7 @@ module Arkham.Types.GameValue
   )
 where
 
-import ClassyPrelude
-import Data.Aeson
+import Arkham.Prelude
 
 data GameValue a
   = Static a

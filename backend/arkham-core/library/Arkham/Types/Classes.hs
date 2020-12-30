@@ -25,6 +25,7 @@ import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
 import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
 import Arkham.Types.Phase
@@ -220,9 +221,6 @@ type HasCostPayment env
 class HasStats env a where
   getStats :: (MonadReader env m) => a -> Source -> m Stats
 
-class IsAdvanceable a where
-  isAdvanceable :: a -> Bool
-
 class HasSkill a where
   getSkill :: SkillType -> a -> Int
 
@@ -257,7 +255,9 @@ type ActionRunner env
     , HasCount PlayerCount env ()
     , HasCount ResourceCount env InvestigatorId
     , HasCount SpendableClueCount env InvestigatorId
+    , HasCount SpendableClueCount env ()
     , HasId (Maybe LocationId) env AssetId
+    , HasId (Maybe LocationId) env LocationMatcher
     , HasId (Maybe OwnerId) env AssetId
     , HasId (Maybe StoryAssetId) env CardCode
     , HasId (Maybe StoryEnemyId) env CardCode
@@ -280,6 +280,8 @@ type ActionRunner env
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env EnemyId
     , HasSet InvestigatorId env LocationId
+    , HasSet InvestigatorId env (HashSet LocationId)
+    , HasSet LocationId env [Trait]
     , HasSet Keyword env EnemyId
     , HasSet Trait env EnemyId
     , HasSet Trait env LocationId

@@ -81,7 +81,7 @@ story iids msg = AskMap
     [ (iid, ChooseOne [Run [Continue "Continue", msg]]) | iid <- iids ]
   )
 
-data EncounterCardSource = FromDiscard | FromEncounterDeck
+data EncounterCardSource = FromDiscard | FromEncounterDeck | FromTheVoid
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -185,8 +185,6 @@ data Message
   | MoveFrom InvestigatorId LocationId
   | MoveUntil LocationId Target
   | MoveToward Target LocationMatcher
-  | PrePlayerWindow
-  | PostPlayerWindow
   | PlayerWindow InvestigatorId [Message]
   | Ask InvestigatorId Question
   | AskMap (HashMap InvestigatorId Question)
@@ -265,6 +263,7 @@ data Message
   | GainClues InvestigatorId Int
   | PlaceClues Target Int
   | RemoveClues Target Int
+  | PlaceResources Target Int
   | InvestigatorDiscoverClues InvestigatorId LocationId Int
   | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int
   | DiscoverClues InvestigatorId LocationId Int
@@ -299,6 +298,7 @@ data Message
   | FoundEncounterCard InvestigatorId Target EncounterCard
   | FoundEncounterCardFrom InvestigatorId Target EncounterCardSource EncounterCard
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
+  | FoundEnemyInVoid InvestigatorId EnemyId
   | AddToEncounterDeck EncounterCard
   | SkillTestEnds
   | ReturnSkillTestRevealedTokens
@@ -435,13 +435,13 @@ data Message
   | SetTokensForScenario
   | ResetTokens Source
   | ReturnTokens [Token]
-  | RequestTokens Source InvestigatorId Int RequestedTokenStrategy
-  | RunBag Source InvestigatorId RequestedTokenStrategy
-  | RunDrawFromBag Source InvestigatorId RequestedTokenStrategy
-  | RequestedTokens Source InvestigatorId [Token]
+  | RequestTokens Source (Maybe InvestigatorId) Int RequestedTokenStrategy
+  | RunBag Source (Maybe InvestigatorId) RequestedTokenStrategy
+  | RunDrawFromBag Source (Maybe InvestigatorId) RequestedTokenStrategy
+  | RequestedTokens Source (Maybe InvestigatorId) [Token]
   | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep
   | ChooseTokenGroups Source InvestigatorId ChaosBagStep
-  | NextChaosBagStep Source InvestigatorId RequestedTokenStrategy
+  | NextChaosBagStep Source (Maybe InvestigatorId) RequestedTokenStrategy
   | AddTraits Target [Trait]
   | RemoveTraits Target [Trait]
   | ChangeCardToFast InvestigatorId CardId
@@ -452,6 +452,7 @@ data Message
   | CreatedEffect EffectId (Maybe (EffectMetadata Message)) Source Target
   | DisableEffect EffectId
   | Done
+  | PlaceEnemyInVoid EnemyId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

@@ -327,6 +327,7 @@ newGame investigator queue = do
     , gamePlayerCount = 1
     , gameLocations = mempty
     , gameEnemies = mempty
+    , gameEnemiesInVoid = mempty
     , gameAssets = mempty
     , gameInvestigators = HashMap.singleton investigatorId investigator
     , gamePlayers = HashMap.singleton 1 investigatorId

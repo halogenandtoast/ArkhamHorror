@@ -13,8 +13,8 @@ newtype HuntingTheRougarou = HuntingTheRougarou Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 huntingTheRougarou :: HuntingTheRougarou
-huntingTheRougarou =
-  HuntingTheRougarou $ baseAttrs "81006" "Huntin the Rougarou" (Act 2 A)
+huntingTheRougarou = HuntingTheRougarou
+  $ baseAttrs "81006" "Hunting the Rougarou" (Act 2 A) Nothing
 
 ability :: Attrs -> Ability
 ability attrs = (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow))

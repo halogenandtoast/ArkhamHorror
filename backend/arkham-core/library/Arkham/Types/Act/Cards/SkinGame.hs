@@ -11,15 +11,20 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card.EncounterCardMatcher
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Trait
 
 newtype SkinGame = SkinGame Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 skinGame :: SkinGame
-skinGame = SkinGame $ baseAttrs "02067" "Skin Game" (Act 2 A)
+skinGame = SkinGame $ baseAttrs
+  "02067"
+  "Skin Game"
+  (Act 2 A)
+  (Just $ RequiredClues (PerPlayer 2) (Just $ LocationNamed "VIP Area"))
 
-instance HasActions env SkinGame where
+instance ActionRunner env => HasActions env SkinGame where
   getActions i window (SkinGame x) = getActions i window x
 
 instance ActRunner env => RunMessage env SkinGame where
@@ -51,12 +56,4 @@ instance ActRunner env => RunMessage env SkinGame where
           [CreateStoryAssetAt "02080" "02076", NextAct actId "02068"]
     FoundEncounterCard _ target ec | isTarget attrs target ->
       a <$ unshiftMessage (SpawnEnemyAt (EncounterCard ec) "02072")
-    PrePlayerWindow -> do
-      vipAreaId <- fromJustNote "must exist"
-        <$> getId @(Maybe LocationId) (LocationName "VIP Area")
-      investigatorIds <- getSetList vipAreaId
-      requiredClueCount <- getPlayerCountValue (PerPlayer 2)
-      canAdvance' <- (>= requiredClueCount)
-        <$> getSpendableClueCount investigatorIds
-      pure $ SkinGame $ attrs & canAdvanceL .~ canAdvance'
     _ -> SkinGame <$> runMessage msg attrs

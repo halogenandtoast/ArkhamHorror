@@ -1,7 +1,6 @@
 module Arkham.Types.GameRunner where
 
 import Arkham.Types.Ability
-import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.AssetId
@@ -68,7 +67,6 @@ type GameRunner env
       )
     , HasModifiersFor env ()
     , ( HasSet AccessibleLocationId env LocationId
-      , HasSet AdvanceableActId env ()
       , HasSet AgendaId env ()
       , HasSet AloofEnemyId env LocationId
       , HasSet AssetId env (InvestigatorId, UseType)

@@ -56,6 +56,7 @@ data Enemy
   | Mobster' Mobster
   | ConglomerationOfSpheres' ConglomerationOfSpheres
   | ServantOfTheLurker' ServantOfTheLurker
+  | HuntingHorror' HuntingHorror
   | CorpseHungryGhoul' CorpseHungryGhoul
   | GhoulFromTheDepths' GhoulFromTheDepths
   | Narogath' Narogath
@@ -227,6 +228,7 @@ allEnemies = mapFromList
   , ("02098", Mobster' . mobster)
   , ("02103", ConglomerationOfSpheres' . conglomerationOfSpheres)
   , ("02104", ServantOfTheLurker' . servantOfTheLurker)
+  , ("02141", HuntingHorror' . huntingHorror)
   , ("50022", CorpseHungryGhoul' . corpseHungryGhoul)
   , ("50023", GhoulFromTheDepths' . ghoulFromTheDepths)
   , ("50026b", Narogath' . narogath)
@@ -307,6 +309,7 @@ enemyAttrs = \case
   Mobster' attrs -> coerce attrs
   ConglomerationOfSpheres' attrs -> coerce attrs
   ServantOfTheLurker' attrs -> coerce attrs
+  HuntingHorror' attrs -> coerce attrs
   CorpseHungryGhoul' attrs -> coerce attrs
   GhoulFromTheDepths' attrs -> coerce attrs
   Narogath' attrs -> coerce attrs

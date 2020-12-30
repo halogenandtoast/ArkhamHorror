@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b5ae75ab37ef98061f49a8f260ec1b31759ef744f7bd438a810b06b909dacad5
+-- hash: 2952e1337160c1da46ccea20ae21ce9e9d4710ae33f5c39ab760a72eb154b310
 
 name:           arkham-core
 version:        0.0.0
@@ -26,6 +26,7 @@ library
       Arkham.Types.Act.Cards.BeginnersLuck
       Arkham.Types.Act.Cards.CampusSafety
       Arkham.Types.Act.Cards.DisruptingTheRitual
+      Arkham.Types.Act.Cards.FindingAWayInside
       Arkham.Types.Act.Cards.FindingLadyEsprit
       Arkham.Types.Act.Cards.Fold
       Arkham.Types.Act.Cards.HuntingTheRougarou
@@ -49,10 +50,13 @@ library
       Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
       Arkham.Types.Agenda.Cards.ChaosInTheCloverClub
       Arkham.Types.Agenda.Cards.DeadOfNight
+      Arkham.Types.Agenda.Cards.InEveryShadow
       Arkham.Types.Agenda.Cards.PredatorOrPrey
       Arkham.Types.Agenda.Cards.QuietHalls
+      Arkham.Types.Agenda.Cards.RestrictedAccess
       Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey
       Arkham.Types.Agenda.Cards.RiseOfTheGhouls
+      Arkham.Types.Agenda.Cards.ShadowsDeepen
       Arkham.Types.Agenda.Cards.TheArkhamWoods
       Arkham.Types.Agenda.Cards.TheBeastUnleashed
       Arkham.Types.Agenda.Cards.TheCloverClub
@@ -260,6 +264,7 @@ library
       Arkham.Types.Enemy.Cards.GoatSpawn
       Arkham.Types.Enemy.Cards.GraveEater
       Arkham.Types.Enemy.Cards.HermanCollins
+      Arkham.Types.Enemy.Cards.HuntingHorror
       Arkham.Types.Enemy.Cards.HuntingNightgaunt
       Arkham.Types.Enemy.Cards.IcyGhoul
       Arkham.Types.Enemy.Cards.JeremiahPierce
@@ -487,6 +492,7 @@ library
       Arkham.Types.Prey
       Arkham.Types.Query
       Arkham.Types.RequestedTokenStrategy
+      Arkham.Types.RequiredClues
       Arkham.Types.Scenario
       Arkham.Types.Scenario.Attrs
       Arkham.Types.Scenario.Helpers

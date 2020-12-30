@@ -17,14 +17,15 @@ newtype BeginnersLuck = BeginnersLuck Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 beginnersLuck :: BeginnersLuck
-beginnersLuck = BeginnersLuck $ baseAttrs "02066" "Beginner's Luck" (Act 1 A)
+beginnersLuck =
+  BeginnersLuck $ baseAttrs "02066" "Beginner's Luck" (Act 1 A) Nothing
 
 ability :: Window -> Attrs -> Ability
 ability window attrs = (mkAbility (toSource attrs) 1 (ReactionAbility window))
   { abilityLimit = PerRound
   }
 
-instance HasList UsedAbility env () => HasActions env BeginnersLuck where
+instance ActionRunner env => HasActions env BeginnersLuck where
   getActions iid window@(WhenRevealToken You _) (BeginnersLuck x) = do
     let ab = ability window x
     unused <- getGroupIsUnused ab

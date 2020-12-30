@@ -65,8 +65,8 @@ instance ActionRunner env => HasActions env CloverClubCardroom where
 instance LocationRunner env => RunMessage env CloverClubCardroom where
   runMessage msg l@(CloverClubCardroom attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source && locationRevealed ->
-      l <$ unshiftMessage (RequestTokens source iid 1 SetAside)
-    RequestedTokens source iid tokens | isSource attrs source -> do
+      l <$ unshiftMessage (RequestTokens source (Just iid) 1 SetAside)
+    RequestedTokens source (Just iid) tokens | isSource attrs source -> do
       let
         msgs = concatMap
           (\case

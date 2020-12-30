@@ -6,7 +6,7 @@ import Arkham.Types.LocationMatcher
 import Arkham.Types.Trait
 
 type AgendaRunner env
-  = ( HasId LeadInvestigatorId env ()
+  = ( HasQueue env
     , HasCount ClueCount env InvestigatorId
     , HasCount ClueCount env LocationId
     , HasCount DiscardCount env InvestigatorId
@@ -14,26 +14,29 @@ type AgendaRunner env
     , HasCount EnemyCount env (LocationId, [Trait])
     , HasCount EnemyCount env (LocationMatcher, [Trait])
     , HasCount PlayerCount env ()
-    , HasId (Maybe StoryEnemyId) env CardCode
     , HasId (Maybe LocationId) env LocationName
+    , HasId (Maybe StoryEnemyId) env CardCode
+    , HasId (Maybe StoryTreacheryId) env CardCode
+    , HasId CardCode env EnemyId
+    , HasId LeadInvestigatorId env ()
     , HasId LocationId env EnemyId
-    , HasQueue env
     , HasList LocationName env ()
     , HasSet ActId env ()
     , HasSet ClosestPathLocationId env (LocationId, LocationId)
     , HasSet ClosestPathLocationId env (LocationId, LocationMatcher)
     , HasSet CompletedScenarioId env ()
     , HasSet EnemyId env ()
-    , HasSet EnemyId env LocationId
-    , HasSet EnemyId env Trait
     , HasSet EnemyId env ([Trait], LocationId)
+    , HasSet EnemyId env LocationId
+    , HasSet EnemyId env LocationMatcher
+    , HasSet EnemyId env Trait
+    , HasSet InScenarioInvestigatorId env ()
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env EnemyId
     , HasSet InvestigatorId env LocationName
     , HasSet LocationId env ()
     , HasSet LocationId env [Trait]
-    , HasSet UnengagedEnemyId env ()
-    , HasSet EnemyId env LocationMatcher
     , HasSet Trait env EnemyId
+    , HasSet UnengagedEnemyId env ()
     )
 

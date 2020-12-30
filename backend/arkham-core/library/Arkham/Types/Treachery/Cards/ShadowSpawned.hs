@@ -34,4 +34,7 @@ instance HasActions env ShadowSpawned where
   getActions i window (ShadowSpawned attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env ShadowSpawned where
-  runMessage msg (ShadowSpawned attrs) = ShadowSpawned <$> runMessage msg attrs
+  runMessage msg t@(ShadowSpawned attrs) = case msg of
+    PlaceEnemyInVoid eid
+      | EnemyTarget eid `elem` treacheryAttachedTarget attrs -> pure t
+    _ -> ShadowSpawned <$> runMessage msg attrs

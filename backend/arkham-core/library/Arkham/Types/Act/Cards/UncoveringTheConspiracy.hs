@@ -13,7 +13,7 @@ newtype UncoveringTheConspiracy = UncoveringTheConspiracy Attrs
 
 uncoveringTheConspiracy :: UncoveringTheConspiracy
 uncoveringTheConspiracy = UncoveringTheConspiracy
-  $ baseAttrs "01123" "Uncovering the Conspiracy" (Act 1 A)
+  $ baseAttrs "01123" "Uncovering the Conspiracy" (Act 1 A) Nothing
 
 instance ActionRunner env => HasActions env UncoveringTheConspiracy where
   getActions iid NonFast (UncoveringTheConspiracy x@Attrs {..}) = do

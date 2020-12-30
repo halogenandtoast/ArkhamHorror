@@ -3,6 +3,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Game
   ( runMessages
   , newCampaign
@@ -32,10 +33,7 @@ where
 
 import Arkham.Import hiding (first)
 
-import Data.Align
-import Data.These
-import Data.These.Lens
-import Data.List.Extra (groupOn, cycle)
+import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Act
 import Arkham.Types.Action (Action)
 import Arkham.Types.Agenda
@@ -64,6 +62,10 @@ import Arkham.Types.Game.Helpers
 import qualified Arkham.Types.Window as Fast
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM)
+import Data.Align
+import Data.These
+import Data.These.Lens
+import Data.List.Extra (groupOn, cycle)
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
 import Data.List.NonEmpty (NonEmpty(..))
@@ -95,6 +97,7 @@ data Game queue = Game
   , gameInvestigators :: HashMap InvestigatorId Investigator
   , gamePlayers :: HashMap Int InvestigatorId
   , gameEnemies :: HashMap EnemyId Enemy
+  , gameEnemiesInVoid :: HashMap EnemyId Enemy
   , gameAssets :: HashMap AssetId Asset
   , gameActs :: HashMap ActId Act
   , gameAgendas :: HashMap AgendaId Agenda
@@ -158,6 +161,8 @@ instance (ToJSON queue) => ToJSON (Game queue) where
       .= toJSON (runReader (traverse withModifiers gameInvestigators) g)
     , "players" .= toJSON gamePlayers
     , "enemies" .= toJSON (runReader (traverse withModifiers gameEnemies) g)
+    , "enemiesInVoid"
+      .= toJSON (runReader (traverse withModifiers gameEnemiesInVoid) g)
     , "assets" .= toJSON (runReader (traverse withModifiers gameAssets) g)
     , "acts" .= toJSON (runReader (traverse withModifiers gameActs) g)
     , "agendas" .= toJSON (runReader (traverse withModifiers gameAgendas) g)
@@ -251,6 +256,9 @@ investigators = lens gameInvestigators $ \m x -> m { gameInvestigators = x }
 
 enemies :: Lens' (Game queue) (HashMap EnemyId Enemy)
 enemies = lens gameEnemies $ \m x -> m { gameEnemies = x }
+
+enemiesInVoidL :: Lens' (Game queue) (HashMap EnemyId Enemy)
+enemiesInVoidL = lens gameEnemiesInVoid $ \m x -> m { gameEnemiesInVoid = x }
 
 assets :: Lens' (Game queue) (HashMap AssetId Asset)
 assets = lens gameAssets $ \m x -> m { gameAssets = x }
@@ -415,6 +423,7 @@ newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
     , gamePlayerCount = playerCount'
     , gameLocations = mempty
     , gameEnemies = mempty
+    , gameEnemiesInVoid = mempty
     , gameAssets = mempty
     , gameInvestigators = investigatorsMap
     , gamePlayers = playersMap
@@ -530,12 +539,22 @@ instance HasSet StoryAssetId (Game queue) InvestigatorId where
 instance HasId (Maybe StoryAssetId) (Game queue) CardCode where
   getId cardCode = fmap StoryAssetId <$> getId cardCode
 
+instance HasId (Maybe StoryTreacheryId) (Game queue) CardCode where
+  getId cardCode = fmap StoryTreacheryId <$> getId cardCode
+
 instance HasId (Maybe AssetId) (Game queue) CardCode where
   getId cardCode =
     (fst <$>)
       . find ((cardCode ==) . getCardCode . snd)
       . mapToList
       <$> view assets
+
+instance HasId (Maybe TreacheryId) (Game queue) CardCode where
+  getId cardCode =
+    (fst <$>)
+      . find ((cardCode ==) . getCardCode . snd)
+      . mapToList
+      <$> view treacheries
 
 instance HasId (Maybe StoryEnemyId) (Game queue) CardCode where
   getId cardCode = fmap StoryEnemyId <$> getId cardCode
@@ -1364,13 +1383,6 @@ instance HasSet PreyId (Game queue) (Prey, LocationId) where
       . map PreyId
       <$> filterM (getIsPrey preyType <=< getInvestigator) investigators'
 
-instance HasSet AdvanceableActId (Game queue) () where
-  getSet _ =
-    HashSet.map AdvanceableActId
-      . keysSet
-      . filterMap isAdvanceable
-      <$> view acts
-
 instance HasSet ConnectedLocationId (Game queue) LocationId where
   getSet = getSet <=< getLocation
 
@@ -2108,6 +2120,9 @@ runGameMessage msg g = case msg of
     unshiftMessage (Discarded (AssetTarget aid) (toCard asset))
     pure $ g & assets %~ deleteMap aid
   RemoveFromGame (AssetTarget aid) -> pure $ g & assets %~ deleteMap aid
+  PlaceEnemyInVoid eid -> do
+    enemy <- getEnemy eid
+    pure $ g & enemies %~ deleteMap eid & enemiesInVoidL %~ insertMap eid enemy
   EnemyDefeated eid iid _ _ _ _ -> do
     broadcastWindow Fast.WhenEnemyDefeated iid g
     let
@@ -2338,8 +2353,10 @@ runGameMessage msg g = case msg of
       , EnemySpawnEngagedWithPrey enemyId'
       ]
     pure $ g & enemies . at enemyId' ?~ enemy'
-  EnemySpawn{} -> pure $ g & activeCard .~ Nothing
-  EnemySpawnEngagedWithPrey{} -> pure $ g & activeCard .~ Nothing
+  EnemySpawn _ _ eid ->
+    pure $ g & activeCard .~ Nothing & enemiesInVoidL %~ deleteMap eid
+  EnemySpawnEngagedWithPrey eid ->
+    pure $ g & activeCard .~ Nothing & enemiesInVoidL %~ deleteMap eid
   DiscardTopOfEncounterDeck _ 0 _ -> pure g
   DiscardTopOfEncounterDeck iid n mtarget -> do
     let (card : cards) = unDeck $ g ^. encounterDeck
@@ -2353,10 +2370,15 @@ runGameMessage msg g = case msg of
     unshiftMessage (RequestedEncounterCards target cards)
     pure $ g & encounterDeck .~ Deck encounterDeck'
   FindAndDrawEncounterCard iid matcher -> do
-    let matchingDiscards = filter (encounterCardMatch matcher) (g ^. discard)
     let
+      matchingDiscards = filter (encounterCardMatch matcher) (g ^. discard)
       matchingDeckCards =
         filter (encounterCardMatch matcher) (unDeck $ g ^. encounterDeck)
+    matchingVoidEnemies <- case matcher of
+      EncounterCardMatchByCardCode cardCode ->
+        filter ((== cardCode) . getCardCode) . toList <$> view enemiesInVoidL
+      _ -> pure []
+
     unshiftMessage
       (Ask iid
       $ ChooseOne
@@ -2364,6 +2386,7 @@ runGameMessage msg g = case msg of
       <> map
            (FoundAndDrewEncounterCard iid FromEncounterDeck)
            matchingDeckCards
+      <> map (FoundEnemyInVoid iid . toId) matchingVoidEnemies
       )
     pure $ g & focusedCards .~ map EncounterCard matchingDeckCards
   FindEncounterCard iid target matcher -> do
@@ -2655,11 +2678,7 @@ runMessages logger g = if g ^. gameStateL /= IsActive
               (x : _) ->
                 runMessages (lift . logger) $ g & activeInvestigatorId .~ x
           else
-            pushMessages
-                [ PrePlayerWindow
-                , PlayerWindow (g ^. activeInvestigatorId) []
-                , PostPlayerWindow
-                ]
+            pushMessages [PlayerWindow (g ^. activeInvestigatorId) []]
               >> runMessages (lift . logger) g
       Just msg -> case msg of
         Ask iid q -> toExternalGame g (HashMap.singleton iid q)

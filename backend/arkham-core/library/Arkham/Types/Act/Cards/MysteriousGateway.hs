@@ -6,15 +6,19 @@ import Arkham.Import
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
+import Arkham.Types.LocationMatcher
 
 newtype MysteriousGateway = MysteriousGateway Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 mysteriousGateway :: MysteriousGateway
-mysteriousGateway =
-  MysteriousGateway $ baseAttrs "50012" "Mysterious Gateway" (Act 1 A)
+mysteriousGateway = MysteriousGateway $ baseAttrs
+  "50012"
+  "Mysterious Gateway"
+  (Act 1 A)
+  (Just $ RequiredClues (PerPlayer 3) (Just $ LocationNamed "Guest Hall"))
 
-instance HasActions env MysteriousGateway where
+instance ActionRunner env => HasActions env MysteriousGateway where
   getActions i window (MysteriousGateway x) = getActions i window x
 
 instance ActRunner env => RunMessage env MysteriousGateway where
@@ -57,12 +61,4 @@ instance ActRunner env => RunMessage env MysteriousGateway where
         )
     FailedSkillTest iid _ (ActSource aid) SkillTestInitiatorTarget{} n
       | aid == actId -> a <$ unshiftMessages (replicate n (RandomDiscard iid))
-    PrePlayerWindow -> do
-      investigatorIds <- getSetList @InvestigatorId (LocationId "50014")
-      totalSpendableClues <- getSpendableClueCount investigatorIds
-      requiredClues <- getPlayerCountValue (PerPlayer 3)
-      pure
-        $ MysteriousGateway
-        $ attrs
-        & (canAdvanceL .~ (totalSpendableClues >= requiredClues))
     _ -> MysteriousGateway <$> runMessage msg attrs

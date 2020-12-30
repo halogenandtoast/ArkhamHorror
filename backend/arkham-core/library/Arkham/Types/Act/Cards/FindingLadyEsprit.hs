@@ -19,9 +19,15 @@ newtype FindingLadyEsprit = FindingLadyEsprit Attrs
 
 findingLadyEsprit :: FindingLadyEsprit
 findingLadyEsprit =
-  FindingLadyEsprit $ baseAttrs "81005" "Finding Lady Esprit" (Act 1 A)
+  FindingLadyEsprit $ baseAttrs "81005" "Finding Lady Esprit" (Act 1 A) Nothing
 
-instance HasActions env FindingLadyEsprit where
+instance ActionRunner env => HasActions env FindingLadyEsprit where
+  getActions _ FastPlayerWindow (FindingLadyEsprit Attrs {..}) = do
+    investigatorIds <- investigatorsInABayouLocation
+    requiredClueCount <- getPlayerCountValue (PerPlayer 1)
+    canAdvance' <- (>= requiredClueCount)
+      <$> getSpendableClueCount investigatorIds
+    pure [ AdvanceAct actId | canAdvance' ]
   getActions i window (FindingLadyEsprit x) = getActions i window x
 
 investigatorsInABayouLocation
@@ -83,10 +89,4 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
            , NextAct aid "81006"
            ]
         )
-    PrePlayerWindow -> do
-      investigatorIds <- investigatorsInABayouLocation
-      requiredClueCount <- getPlayerCountValue (PerPlayer 1)
-      canAdvance' <- (>= requiredClueCount)
-        <$> getSpendableClueCount investigatorIds
-      pure $ FindingLadyEsprit $ attrs & canAdvanceL .~ canAdvance'
     _ -> FindingLadyEsprit <$> runMessage msg attrs

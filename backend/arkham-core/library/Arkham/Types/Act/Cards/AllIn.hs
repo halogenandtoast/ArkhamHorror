@@ -16,17 +16,9 @@ newtype AllIn = AllIn Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 allIn :: AllIn
-allIn = AllIn $ baseAttrs "02068" "All In" (Act 3 A)
+allIn = AllIn $ baseAttrs "02068" "All In" (Act 3 A) Nothing
 
-instance
-  ( HasCostPayment env
-  , HasModifiersFor env ()
-  , HasId (Maybe LocationId) env AssetId
-  , HasId (Maybe OwnerId) env AssetId
-  , HasId (Maybe StoryAssetId) env CardCode
-  , HasId LocationId env InvestigatorId
-  )
-  => HasActions env AllIn where
+instance ActionRunner env => HasActions env AllIn where
   getActions iid NonFast (AllIn attrs) = do
     baseActions <- getActions iid NonFast attrs
     investigatorLocationId <- getId @LocationId iid

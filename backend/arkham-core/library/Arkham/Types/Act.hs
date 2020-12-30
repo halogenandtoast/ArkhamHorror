@@ -29,6 +29,7 @@ data Act
   | SkinGame' SkinGame
   | AllIn' AllIn
   | Fold' Fold
+  | FindingAWayInside' FindingAWayInside
   | MysteriousGateway' MysteriousGateway
   | FindingLadyEsprit' FindingLadyEsprit
   | HuntingTheRougarou' HuntingTheRougarou
@@ -37,9 +38,6 @@ data Act
 
 deriving anyclass instance ActionRunner env => HasActions env Act
 deriving anyclass instance ActRunner env => RunMessage env Act
-
-instance IsAdvanceable Act where
-  isAdvanceable = actCanAdvance . actAttrs
 
 instance HasStep ActStep Act where
   getStep = getStep . actAttrs
@@ -73,6 +71,7 @@ allActs = mapFromList $ map
   , SkinGame' skinGame
   , AllIn' allIn
   , Fold' fold
+  , FindingAWayInside' findingAWayInside
   , MysteriousGateway' mysteriousGateway
   , FindingLadyEsprit' findingLadyEsprit
   , HuntingTheRougarou' huntingTheRougarou
@@ -94,6 +93,7 @@ actAttrs = \case
   SkinGame' attrs -> coerce attrs
   AllIn' attrs -> coerce attrs
   Fold' attrs -> coerce attrs
+  FindingAWayInside' attrs -> coerce attrs
   MysteriousGateway' attrs -> coerce attrs
   FindingLadyEsprit' attrs -> coerce attrs
   HuntingTheRougarou' attrs -> coerce attrs

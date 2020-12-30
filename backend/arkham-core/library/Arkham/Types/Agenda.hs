@@ -36,6 +36,9 @@ allAgendas = mapFromList $ map
   , TheCloverClub' theCloverClub
   , UndergroundMuscle' undergroundMuscle
   , ChaosInTheCloverClub' chaosInTheCloverClub
+  , RestrictedAccess' restrictedAccess
+  , ShadowsDeepen' shadowsDeepen
+  , InEveryShadow' inEveryShadow
   , ReturnToPredatorOrPrey' returnToPredatorOrPrey
   , ACreatureOfTheBayou' aCreatureOfTheBayou
   , TheRougarouFeeds' theRougarouFeeds
@@ -63,6 +66,9 @@ data Agenda
   | TheCloverClub' TheCloverClub
   | UndergroundMuscle' UndergroundMuscle
   | ChaosInTheCloverClub' ChaosInTheCloverClub
+  | RestrictedAccess' RestrictedAccess
+  | ShadowsDeepen' ShadowsDeepen
+  | InEveryShadow' InEveryShadow
   | ReturnToPredatorOrPrey' ReturnToPredatorOrPrey
   | ACreatureOfTheBayou' ACreatureOfTheBayou
   | TheRougarouFeeds' TheRougarouFeeds
@@ -126,6 +132,9 @@ agendaAttrs = \case
   TheCloverClub' attrs -> coerce attrs
   UndergroundMuscle' attrs -> coerce attrs
   ChaosInTheCloverClub' attrs -> coerce attrs
+  RestrictedAccess' attrs -> coerce attrs
+  ShadowsDeepen' attrs -> coerce attrs
+  InEveryShadow' attrs -> coerce attrs
   ReturnToPredatorOrPrey' attrs -> coerce attrs
   ACreatureOfTheBayou' attrs -> coerce attrs
   TheRougarouFeeds' attrs -> coerce attrs

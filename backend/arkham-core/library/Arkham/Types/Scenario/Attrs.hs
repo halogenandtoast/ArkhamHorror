@@ -46,8 +46,8 @@ actStackL = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
 locationsL :: Lens' Attrs (HashMap LocationName [LocationId])
 locationsL = lens scenarioLocations $ \m x -> m { scenarioLocations = x }
 
-setAsideCardsl :: Lens' Attrs [Card]
-setAsideCardsl =
+setAsideCardsL :: Lens' Attrs [Card]
+setAsideCardsL =
   lens scenarioSetAsideCards $ \m x -> m { scenarioSetAsideCards = x }
 
 deckL :: Lens' Attrs (Maybe [EncounterCard])

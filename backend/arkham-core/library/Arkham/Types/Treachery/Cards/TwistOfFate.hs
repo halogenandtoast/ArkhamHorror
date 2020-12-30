@@ -26,8 +26,8 @@ instance HasActions env TwistOfFate where
 instance (TreacheryRunner env) => RunMessage env TwistOfFate where
   runMessage msg t@(TwistOfFate attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
-      t <$ unshiftMessage (RequestTokens source iid 1 SetAside)
-    RequestedTokens source iid tokens | isSource attrs source -> do
+      t <$ unshiftMessage (RequestTokens source (Just iid) 1 SetAside)
+    RequestedTokens source (Just iid) tokens | isSource attrs source -> do
       let
         msgs = mapMaybe
           (\case

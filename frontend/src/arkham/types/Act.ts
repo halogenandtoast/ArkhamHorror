@@ -5,21 +5,26 @@ export interface Act {
   contents: ActContents;
 }
 
-export interface ActContents {
-  canAdvance: boolean;
-  flipped: boolean;
-  id: string;
-  name: string;
-  sequence: string;
+export interface ActSequence {
+  number: number;
+  side: string;
 }
 
+export interface ActContents {
+  id: string;
+  name: string;
+  sequence: ActSequence;
+}
+
+export const actSequenceDecoder = JsonDecoder.
+  tuple([JsonDecoder.number, JsonDecoder.string], '[number, string]').
+  map(([number, side]) => { return { number, side } })
+
 export const actContentsDecoder = JsonDecoder.object<ActContents>({
-  canAdvance: JsonDecoder.boolean,
-  flipped: JsonDecoder.boolean,
   id: JsonDecoder.string,
   name: JsonDecoder.string,
-  sequence: JsonDecoder.string,
-}, 'Attrs');
+  sequence: actSequenceDecoder,
+}, 'ActContents');
 
 export const actDecoder = JsonDecoder.object<Act>({
   tag: JsonDecoder.string,

@@ -73,15 +73,11 @@ instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId L
     Skull -> do
       lid <- getId @LocationId iid
       isBayou <- member Bayou <$> getSet lid
-      let
-        tokenVal
-          | isBayou = if isEasyStandard attrs then 4 else 6
-          | otherwise = if isEasyStandard attrs then 2 else 3
-      pure $ TokenValue Skull (NegativeModifier tokenVal)
-    Cultist -> pure $ TokenValue
-      Cultist
-      (NegativeModifier $ if isEasyStandard attrs then 2 else 3)
-    Tablet -> pure $ TokenValue Tablet (PositiveModifier 0)
+      pure $ if isBayou
+        then toTokenValue attrs Skull 4 6
+        else toTokenValue attrs Skull 2 3
+    Cultist -> pure $ toTokenValue attrs Cultist 2 3
+    Tablet -> pure $ TokenValue Tablet ZeroModifier
     ElderThing -> pure $ TokenValue ElderThing (NegativeModifier 4)
     otherFace -> getTokenValue attrs iid otherFace
 

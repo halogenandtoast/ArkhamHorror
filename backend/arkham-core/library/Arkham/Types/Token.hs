@@ -7,7 +7,7 @@ import Data.UUID
 newtype TokenId = TokenId { getTokenId :: UUID }
   deriving newtype (Show, Eq, ToJSON, FromJSON, Hashable)
 
-data TokenModifier = PositiveModifier Int | NegativeModifier Int | DoubleNegativeModifier Int | AutoFailModifier | NoModifier
+data TokenModifier = PositiveModifier Int | NegativeModifier Int | ZeroModifier | DoubleNegativeModifier Int | AutoFailModifier | NoModifier
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON, Hashable)
 
@@ -44,6 +44,7 @@ tokenModifierToInt = \case
   DoubleNegativeModifier n -> Just (-(n * 2))
   AutoFailModifier -> Nothing
   NoModifier -> Just 0
+  ZeroModifier -> Just 0
 
 tokenModifier :: TokenValue -> TokenModifier
 tokenModifier (TokenValue _ x) = x

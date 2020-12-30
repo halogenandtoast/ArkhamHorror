@@ -23,7 +23,7 @@ instance ActionRunner env => HasActions env InvestigatingTheTrail where
 
 instance ActRunner env => RunMessage env InvestigatingTheTrail where
   runMessage msg a@(InvestigatingTheTrail attrs@Attrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && actSequence == Act 1 A -> do
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       investigatorIds <- getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 3)
       unshiftMessages
@@ -32,12 +32,8 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
           | iid <- investigatorIds
           ]
         )
-      pure
-        $ InvestigatingTheTrail
-        $ attrs
-        & (sequenceL .~ Act 1 B)
-        & (flippedL .~ True)
-    AdvanceAct aid _ | aid == actId && actSequence == Act 1 B -> do
+      pure $ InvestigatingTheTrail $ attrs & (sequenceL .~ Act 1 B)
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       locationIds <- setToList <$> getLocationSet
       when ("01156" `notElem` locationIds)
         $ unshiftMessage (PlaceLocation "01156")

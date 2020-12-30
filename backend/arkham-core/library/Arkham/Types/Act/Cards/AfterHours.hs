@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Act.Cards.AfterHours where
 
 import Arkham.Import
@@ -22,7 +23,7 @@ instance ActionRunner env => HasActions env AfterHours where
 
 instance ActRunner env => RunMessage env AfterHours where
   runMessage msg a@(AfterHours attrs@Attrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && not actFlipped -> do
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 3)
@@ -30,8 +31,8 @@ instance ActRunner env => RunMessage env AfterHours where
         [ SpendClues requiredClues investigatorIds
         , chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
         ]
-      pure $ AfterHours $ attrs & sequenceL .~ Act 1 B & flippedL .~ True
-    AdvanceAct aid _ | aid == actId && actFlipped -> a <$ unshiftMessages
+      pure $ AfterHours $ attrs & sequenceL .~ Act 1 B
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> a <$ unshiftMessages
       [ AddCampaignCardToEncounterDeck "02060"
       , ShuffleEncounterDiscardBackIn
       , NextAct aid "02046"

@@ -15,7 +15,6 @@ data Attrs = Attrs
   { actId         :: ActId
   , actName       :: Text
   , actSequence   :: ActSequence
-  , actFlipped :: Bool
   , actRequiredClues :: Maybe RequiredClues
   , actClues :: Maybe Int
   , actTreacheries :: HashSet TreacheryId
@@ -42,11 +41,11 @@ instance Entity Attrs where
   isTarget Attrs { actId } (ActTarget aid) = actId == aid
   isTarget _ _ = False
 
+onSide :: ActSide -> Attrs -> Bool
+onSide side Attrs {..} = actSide actSequence == side
+
 sequenceL :: Lens' Attrs ActSequence
 sequenceL = lens actSequence $ \m x -> m { actSequence = x }
-
-flippedL :: Lens' Attrs Bool
-flippedL = lens actFlipped $ \m x -> m { actFlipped = x }
 
 treacheriesL :: Lens' Attrs (HashSet TreacheryId)
 treacheriesL = lens actTreacheries $ \m x -> m { actTreacheries = x }
@@ -56,7 +55,6 @@ baseAttrs aid name seq' mRequiredClues = Attrs
   { actId = aid
   , actName = name
   , actSequence = seq'
-  , actFlipped = False
   , actClues = Nothing
   , actRequiredClues = mRequiredClues
   , actTreacheries = mempty

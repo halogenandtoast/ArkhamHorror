@@ -41,7 +41,7 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
   runMessage msg a@(HuntingTheRougarou attrs@Attrs {..}) = case msg of
     UseCardAbility _ source _ 1 | isSource attrs source ->
       runMessage (AdvanceAct actId (toSource attrs)) a
-    AdvanceAct aid _ | aid == actId && actSequence == Act 2 A -> do
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       rougarou <- unStoryEnemyId . fromJustNote "must be" <$> getId
@@ -77,17 +77,9 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
             leadInvestigatorId
             [Label "Flip back to a side" [RevertAct actId]]
           )
-      pure
-        $ HuntingTheRougarou
-        $ attrs
-        & (sequenceL .~ Act 2 B)
-        & (flippedL .~ True)
-    RevertAct aid | aid == actId && actSequence == Act 2 B ->
-      pure
-        $ HuntingTheRougarou
-        $ attrs
-        & (sequenceL .~ Act 2 A)
-        & (flippedL .~ False)
+      pure $ HuntingTheRougarou $ attrs & (sequenceL .~ Act 2 B)
+    RevertAct aid | aid == actId && onSide B attrs ->
+      pure $ HuntingTheRougarou $ attrs & (sequenceL .~ Act 2 A)
     EnemyMove eid lid _ -> do
       isRougarou <- (== CardCode "81028") <$> getId eid
       a <$ when isRougarou (unshiftMessage (PlaceClues (LocationTarget lid) 1))

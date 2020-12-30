@@ -23,7 +23,7 @@ instance ActionRunner env => HasActions env MysteriousGateway where
 
 instance ActRunner env => RunMessage env MysteriousGateway where
   runMessage msg a@(MysteriousGateway attrs@Attrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && actSequence == Act 1 A -> do
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getSetList @InvestigatorId (LocationId "50014")
       requiredClues <- getPlayerCountValue (PerPlayer 3)
@@ -31,12 +31,8 @@ instance ActRunner env => RunMessage env MysteriousGateway where
         [ SpendClues requiredClues investigatorIds
         , chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
         ]
-      pure
-        $ MysteriousGateway
-        $ attrs
-        & (sequenceL .~ Act 1 B)
-        & (flippedL .~ True)
-    AdvanceAct aid _ | aid == actId && actSequence == Act 1 B -> do
+      pure $ MysteriousGateway $ attrs & (sequenceL .~ Act 1 B)
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getSetList @InvestigatorId (LocationId "50014")
       a <$ unshiftMessages

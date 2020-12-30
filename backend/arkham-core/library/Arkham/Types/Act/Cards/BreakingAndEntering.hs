@@ -25,16 +25,12 @@ instance ActionRunner env => HasActions env BreakingAndEntering where
 
 instance ActRunner env => RunMessage env BreakingAndEntering where
   runMessage msg a@(BreakingAndEntering attrs@Attrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && actSequence == Act 2 A -> do
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage
         (chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)])
-      pure
-        $ BreakingAndEntering
-        $ attrs
-        & (sequenceL .~ Act 2 B)
-        & (flippedL .~ True)
-    AdvanceAct aid _ | aid == actId && actSequence == Act 2 B -> do
+      pure $ BreakingAndEntering $ attrs & sequenceL .~ Act 2 B
+    AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       a <$ unshiftMessages

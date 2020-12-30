@@ -34,16 +34,12 @@ instance ActionRunner env => HasActions env DisruptingTheRitual where
 
 instance ActRunner env => RunMessage env DisruptingTheRitual where
   runMessage msg a@(DisruptingTheRitual attrs@Attrs {..}) = case msg of
-    AdvanceAct aid _ | aid == actId && actSequence == Act 3 A -> do
+    AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage
         (chooseOne leadInvestigatorId [AdvanceAct actId (toSource attrs)])
-      pure
-        $ DisruptingTheRitual
-        $ attrs
-        & (sequenceL .~ Act 3 B)
-        & (flippedL .~ True)
-    AdvanceAct aid _ | aid == actId && actSequence == Act 3 A ->
+      pure $ DisruptingTheRitual $ attrs & (sequenceL .~ Act 3 B)
+    AdvanceAct aid _ | aid == actId && onSide B attrs ->
       a <$ unshiftMessage (Resolution 1)
     PlaceClues (ActTarget aid) n | aid == actId -> do
       requiredClues <- getPlayerCountValue (PerPlayer 2)

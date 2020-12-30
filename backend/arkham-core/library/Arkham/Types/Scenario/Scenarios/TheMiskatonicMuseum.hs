@@ -88,18 +88,12 @@ instance
   getTokenValue (TheMiskatonicMuseum attrs) iid = \case
     Skull -> do
       huntingHorrorAtYourLocation <- enemyAtInvestigatorLocation "02141" iid
-      pure . TokenValue Skull . NegativeModifier $ if isEasyStandard attrs
-        then (if huntingHorrorAtYourLocation then 3 else 1)
-        else (if huntingHorrorAtYourLocation then 4 else 2)
-    Cultist -> pure $ TokenValue
-      Cultist
-      (NegativeModifier $ if isEasyStandard attrs then 1 else 3)
-    Tablet -> pure $ TokenValue
-      Tablet
-      (NegativeModifier $ if isEasyStandard attrs then 2 else 4)
-    ElderThing -> pure $ TokenValue
-      Tablet
-      (NegativeModifier $ if isEasyStandard attrs then 3 else 5)
+      pure $ if huntingHorrorAtYourLocation
+        then toTokenValue attrs Skull 3 4
+        else toTokenValue attrs Skull 1 2
+    Cultist -> pure $ toTokenValue attrs Cultist 1 3
+    Tablet -> pure $ toTokenValue attrs Tablet 2 4
+    ElderThing -> pure $ toTokenValue attrs ElderThing 3 5
     otherFace -> getTokenValue attrs iid otherFace
 
 instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where

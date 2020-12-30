@@ -37,6 +37,11 @@ instance ToJSON Attrs where
 instance FromJSON Attrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "scenario"
 
+toTokenValue :: Attrs -> Token -> Int -> Int -> TokenValue
+toTokenValue attrs t esVal heVal = TokenValue
+  t
+  (NegativeModifier $ if isEasyStandard attrs then esVal else heVal)
+
 isEasyStandard :: Attrs -> Bool
 isEasyStandard Attrs { scenarioDifficulty } =
   scenarioDifficulty `elem` [Easy, Standard]

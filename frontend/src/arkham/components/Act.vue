@@ -32,11 +32,8 @@ export default defineComponent({
   setup(props) {
     const id = computed(() => props.act.contents.id)
     const image = computed(() => {
-      if (props.act.contents.flipped) {
-        return `/img/arkham/cards/${id.value}b.jpg`;
-      }
-
-      return `/img/arkham/cards/${id.value}.jpg`;
+      const side = props.act.contents.sequence.side.toLowerCase().replace('a', '')
+      return `/img/arkham/cards/${id.value}${side}.jpg`
     })
 
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))

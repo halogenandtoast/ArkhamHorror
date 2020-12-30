@@ -15,7 +15,7 @@ newtype TrappersCabin = TrappersCabin Attrs
 trappersCabin :: TrappersCabin
 trappersCabin = TrappersCabin $ baseAttrs
   "81014"
-  "Trapper's Cabin"
+  (LocationName "Trapper's Cabin" Nothing)
   EncounterSet.CurseOfTheRougarou
   3
   (Static 0)

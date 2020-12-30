@@ -3,11 +3,22 @@ module Arkham.Types.LocationId where
 import Arkham.Prelude
 
 import Arkham.Types.Card.CardCode
+import Arkham.Types.Helpers
+import Data.Text (toTitle)
 
 data EmptyLocation = EmptyLocation
 
-newtype LocationName = LocationName { unLocationName :: Text }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
+data LocationName = LocationName
+  { locationNameTitle :: Text
+  , locationNameSubtitle :: Maybe Text
+  }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
+locationNameToLabel :: LocationName -> Text
+locationNameToLabel (LocationName title subtitle) =
+  (pack . toLabel . replaceNonLetters . unpack $ title)
+    <> maybe "" (toTitle . pack . toLabel . replaceNonLetters . unpack) subtitle
 
 newtype LocationId = LocationId { unLocationId :: CardCode }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)

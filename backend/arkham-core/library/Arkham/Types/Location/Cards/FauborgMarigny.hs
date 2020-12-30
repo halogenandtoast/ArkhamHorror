@@ -20,7 +20,7 @@ newtype FauborgMarigny = FauborgMarigny Attrs
 fauborgMarigny :: FauborgMarigny
 fauborgMarigny = FauborgMarigny $ baseAttrs
   "81012"
-  "Faurborg Marigny"
+  (LocationName "Faurborg Marigny" Nothing)
   EncounterSet.CurseOfTheRougarou
   4
   (Static 0)

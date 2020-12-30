@@ -19,7 +19,7 @@ newtype RivertownAbandonedWarehouse = RivertownAbandonedWarehouse Attrs
 rivertownAbandonedWarehouse :: RivertownAbandonedWarehouse
 rivertownAbandonedWarehouse = RivertownAbandonedWarehouse $ baseAttrs
   "50030"
-  "Rivertown"
+  (LocationName "Rivertown" (Just "Abandoned Warehouse"))
   EncounterSet.ReturnToTheMidnightMasks
   4
   (PerPlayer 1)

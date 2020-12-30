@@ -48,11 +48,11 @@ instance ActRunner env => RunMessage env BreakingAndEntering where
         ]
     FoundEnemyInVoid _ eid -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
-        <$> getId (LocationName "Restricted Hall")
+        <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
       a <$ unshiftMessages [EnemySpawn Nothing lid eid, NextAct actId "02125"]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- fromJustNote "Exibit Hall (Restricted Hall) missing"
-        <$> getId (LocationName "Restricted Hall")
+        <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
       a <$ unshiftMessages
         [SpawnEnemyAt (EncounterCard ec) lid, NextAct actId "02125"]
     WhenEnterLocation _ "02137" ->

@@ -20,7 +20,7 @@ arkhamWoodsCorpseRiddenClearing = ArkhamWoodsCorpseRiddenClearing $ base
  where
   base = baseAttrs
     "50035"
-    "Arkham Woods: Corpse-Ridden Clearing"
+    (LocationName "Arkham Woods" (Just "Corpse-Ridden Clearing"))
     EncounterSet.ReturnToTheDevourerBelow
     3
     (PerPlayer 1)

@@ -18,19 +18,18 @@ newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 easttownArkhamPoliceStation :: EasttownArkhamPoliceStation
-easttownArkhamPoliceStation =
-  EasttownArkhamPoliceStation $ (baseAttrs
-                                  "50027"
-                                  "Easttown"
-                                  EncounterSet.ReturnToTheMidnightMasks
-                                  4
-                                  (PerPlayer 2)
-                                  Moon
-                                  [Circle, Triangle]
-                                  [Arkham]
-                                )
-    { locationVictory = Just 1
-    }
+easttownArkhamPoliceStation = EasttownArkhamPoliceStation
+  $ base { locationVictory = Just 1 }
+ where
+  base = baseAttrs
+    "50027"
+    (LocationName "Easttown" (Just "Arkham Police Station"))
+    EncounterSet.ReturnToTheMidnightMasks
+    4
+    (PerPlayer 2)
+    Moon
+    [Circle, Triangle]
+    [Arkham]
 
 instance HasModifiersFor env EasttownArkhamPoliceStation where
   getModifiersFor _ _ _ = pure []

@@ -14,7 +14,7 @@ newtype AdministrationBuilding = AdministrationBuilding Attrs
 administrationBuilding :: AdministrationBuilding
 administrationBuilding = AdministrationBuilding $ baseAttrs
   "02053"
-  "Administration Building"
+  (LocationName "Administration Building" Nothing)
   EncounterSet.ExtracurricularActivity
   4
   (PerPlayer 1)
@@ -32,7 +32,8 @@ instance ActionRunner env => HasActions env AdministrationBuilding where
 instance (LocationRunner env) => RunMessage env AdministrationBuilding where
   runMessage msg l@(AdministrationBuilding attrs) = case msg of
     RevealLocation _ lid | lid == locationId attrs -> do
-      unshiftMessage $ PlaceLocationNamed "Faculty Offices"
+      unshiftMessage
+        $ PlaceLocationMatching (LocationWithTitle "Faculty Offices")
       AdministrationBuilding <$> runMessage msg attrs
     EndTurn iid | iid `elem` locationInvestigators attrs ->
       l <$ unshiftMessage (DiscardTopOfDeck iid 1 Nothing)

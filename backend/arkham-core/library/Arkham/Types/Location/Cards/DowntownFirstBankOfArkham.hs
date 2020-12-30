@@ -19,7 +19,7 @@ newtype DowntownFirstBankOfArkham = DowntownFirstBankOfArkham Attrs
 downtownFirstBankOfArkham :: DowntownFirstBankOfArkham
 downtownFirstBankOfArkham = DowntownFirstBankOfArkham $ baseAttrs
   "01130"
-  "Downtown"
+  (LocationName "Downtown" $ Just "First Bank of Arkham")
   EncounterSet.TheMidnightMasks
   3
   (PerPlayer 1)

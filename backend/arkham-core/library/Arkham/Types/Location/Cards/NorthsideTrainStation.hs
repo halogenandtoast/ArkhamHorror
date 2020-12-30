@@ -20,7 +20,7 @@ northsideTrainStation :: NorthsideTrainStation
 northsideTrainStation = NorthsideTrainStation
   (baseAttrs
     "50028"
-    "Northside"
+    (LocationName "Northside" $ Just "Train Station")
     EncounterSet.TheMidnightMasks
     2
     (PerPlayer 1)

@@ -26,19 +26,24 @@ instance ActRunner env => RunMessage env CampusSafety where
       unshiftMessage (AdvanceAct aid $ toSource attrs)
       pure $ CampusSafety $ attrs & sequenceL .~ Act 3 B
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      alchemyLabsInPlay <- elem (LocationName "Alchemy Labs") <$> getList ()
+      alchemyLabsInPlay <- isJust
+        <$> getId @(Maybe LocationId) (LocationWithTitle "Alchemy Labs")
       agendaStep <- asks $ unAgendaStep . getStep
       completedTheHouseAlwaysWins <-
         elem "02062" . map unCompletedScenarioId <$> getSetList ()
 
       unshiftMessages
-        $ [ PlaceLocationNamed "Alchemy Labs" | not alchemyLabsInPlay ]
-        <> [ CreateEnemyAtLocationNamed "02058" (LocationName "Alchemy Labs")
+        $ [ PlaceLocationMatching (LocationWithTitle "Alchemy Labs")
+          | not alchemyLabsInPlay
+          ]
+        <> [ CreateEnemyAtLocationMatching
+               "02058"
+               (LocationWithTitle "Alchemy Labs")
            | agendaStep <= 2
            ]
-        <> [ CreateStoryAssetAtLocationNamed
+        <> [ CreateStoryAssetAtLocationMatching
                "02059"
-               (LocationName "Alchemy Labs")
+               (LocationWithTitle "Alchemy Labs")
            | completedTheHouseAlwaysWins
            ]
       leadInvestigatorId <- getLeadInvestigatorId

@@ -19,7 +19,7 @@ newtype StMarysHospital = StMarysHospital Attrs
 stMarysHospital :: StMarysHospital
 stMarysHospital = StMarysHospital $ baseAttrs
   "01128"
-  "St. Mary's Hospital"
+  (LocationName "St. Mary's Hospital" Nothing)
   EncounterSet.TheMidnightMasks
   2
   (PerPlayer 1)

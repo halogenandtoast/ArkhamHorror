@@ -132,11 +132,9 @@ instance ScenarioRunner env => RunMessage env ReturnToTheDevourerBelow where
           <> cultistsWhoGotAwayMessages
           <> pastMidnightMessages
         let
-          locations' = mapFromList
-            [ ("Main Path", ["01149"])
-            , ("Arkham Woods", woodsLocations)
-            , ("Ritual Site", ["01156"])
-            ]
+          locations' = mapFromList $ map
+            (second pure . toFst (getLocationName . lookupLocation))
+            (["01149", "01156"] <> woodsLocations)
         ReturnToTheDevourerBelow . TheDevourerBelow <$> runMessage
           msg
           (attrs & locationsL .~ locations')

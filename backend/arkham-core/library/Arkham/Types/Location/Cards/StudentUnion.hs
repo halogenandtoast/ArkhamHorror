@@ -15,7 +15,7 @@ newtype StudentUnion = StudentUnion Attrs
 studentUnion :: StudentUnion
 studentUnion = StudentUnion $ baseAttrs
   "02051"
-  "Student Union"
+  (LocationName "Student Union" Nothing)
   EncounterSet.ExtracurricularActivity
   1
   (Static 2)
@@ -45,7 +45,7 @@ instance ActionRunner env => HasActions env StudentUnion where
 instance (LocationRunner env) => RunMessage env StudentUnion where
   runMessage msg l@(StudentUnion attrs) = case msg of
     RevealLocation _ lid | lid == locationId attrs -> do
-      unshiftMessage $ PlaceLocationNamed "Dormitories"
+      unshiftMessage $ PlaceLocationMatching (LocationWithTitle "Dormitories")
       StudentUnion <$> runMessage msg attrs
     UseCardAbility iid source _ 1 | isSource attrs source ->
       l <$ unshiftMessages

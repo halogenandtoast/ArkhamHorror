@@ -7,7 +7,6 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Location.Runner
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Trait
-import Data.Char (isLetter, toLower, toUpper)
 
 data Attrs = Attrs
   { locationName :: LocationName
@@ -89,20 +88,6 @@ connectedLocations :: Lens' Attrs (HashSet LocationId)
 connectedLocations =
   lens locationConnectedLocations $ \m x -> m { locationConnectedLocations = x }
 
-toLabel :: String -> String
-toLabel [] = []
-toLabel (x : xs) = toLower x : go xs
- where
-  go [] = []
-  go (' ' : x' : xs') = toUpper x' : go xs'
-  go (x' : xs') = x' : go xs'
-
-replaceNonLetters :: String -> String
-replaceNonLetters [] = []
-replaceNonLetters (x : xs) = if not (isLetter x)
-  then ' ' : replaceNonLetters xs
-  else x : replaceNonLetters xs
-
 baseAttrs
   :: LocationId
   -> LocationName
@@ -116,8 +101,7 @@ baseAttrs
 baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' traits'
   = Attrs
     { locationName = name
-    , locationLabel =
-      pack . toLabel . replaceNonLetters . unpack . unLocationName $ name
+    , locationLabel = locationNameToLabel name
     , locationId = lid
     , locationRevealClues = revealClues
     , locationClues = 0

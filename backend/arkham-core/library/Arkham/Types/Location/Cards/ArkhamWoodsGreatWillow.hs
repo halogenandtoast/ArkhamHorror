@@ -20,7 +20,7 @@ arkhamWoodsGreatWillow = ArkhamWoodsGreatWillow $ base
  where
   base = baseAttrs
     "50033"
-    "Arkham Woods: Great Willow"
+    (LocationName "Arkham Woods" $ Just "Great Willow")
     EncounterSet.ReturnToTheDevourerBelow
     4
     (PerPlayer 1)

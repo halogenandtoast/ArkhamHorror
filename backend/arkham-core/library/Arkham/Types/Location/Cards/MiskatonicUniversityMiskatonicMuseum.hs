@@ -21,7 +21,7 @@ miskatonicUniversityMiskatonicMuseum =
   MiskatonicUniversityMiskatonicMuseum
     $ (baseAttrs
         "50029"
-        "Miskatonic University"
+        (LocationName "Miskatonic University" $ Just "Miskatonic Museum")
         EncounterSet.ReturnToTheMidnightMasks
         3
         (PerPlayer 1)

@@ -39,15 +39,15 @@ instance AgendaRunner env => RunMessage env UndergroundMuscle where
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       (enemy : rest) <- shuffleM =<< gatherEncounterSet HideousAbominations
       strikingFear <- gatherEncounterSet StrikingFear
-      laBellaLunaInvestigators <- getSetList (LocationName "La Bella Luna")
+      laBellaLunaInvestigators <- getSetList (LocationWithTitle "La Bella Luna")
       unshiftMessage
         (chooseOne
           leadInvestigatorId
           [ Label
               "Continue"
-              ([ CreateEnemyAtLocationNamed
+              ([ CreateEnemyAtLocationMatching
                  (getCardCode enemy)
-                 (LocationName "Clover Club Lounge")
+                 (LocationWithTitle "Clover Club Lounge")
                , ShuffleEncounterDiscardBackIn
                , ShuffleIntoEncounterDeck $ rest <> strikingFear
                ]

@@ -12,18 +12,17 @@ newtype FarAboveYourHouse = FarAboveYourHouse Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 farAboveYourHouse :: FarAboveYourHouse
-farAboveYourHouse = FarAboveYourHouse $ (baseAttrs
-                                          "50019"
-                                          "Field of Graves"
-                                          EncounterSet.ReturnToTheGathering
-                                          2
-                                          (PerPlayer 1)
-                                          Moon
-                                          [Triangle]
-                                          mempty
-                                        )
-  { locationVictory = Just 1
-  }
+farAboveYourHouse = FarAboveYourHouse $ base { locationVictory = Just 1 }
+ where
+  base = baseAttrs
+    "50019"
+    (LocationName "Field of Graves" Nothing)
+    EncounterSet.ReturnToTheGathering
+    2
+    (PerPlayer 1)
+    Moon
+    [Triangle]
+    mempty
 
 instance HasModifiersFor env FarAboveYourHouse where
   getModifiersFor = noModifiersFor

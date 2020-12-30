@@ -16,7 +16,7 @@ newtype OrneLibrary = OrneLibrary Attrs
 orneLibrary :: OrneLibrary
 orneLibrary = OrneLibrary $ (baseAttrs
                               "02050"
-                              "Orne Library"
+                              (LocationName "Orne Library" Nothing)
                               EncounterSet.ExtracurricularActivity
                               3
                               (PerPlayer 1)

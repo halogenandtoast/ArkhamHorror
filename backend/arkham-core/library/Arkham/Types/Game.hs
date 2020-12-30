@@ -50,7 +50,6 @@ import Arkham.Types.Investigator
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Location
-import Arkham.Types.LocationMatcher
 import Arkham.Types.Phase
 import Arkham.Types.Scenario
 import Arkham.Types.ScenarioLogKey
@@ -300,10 +299,17 @@ getLocation
 getLocation lid = fromJustNote missingLocation <$> preview (locations . ix lid)
   where missingLocation = "Unknown location: " <> show lid
 
-getLocationNamed
-  :: MonadReader (Game queue) m => LocationName -> m (Maybe Location)
-getLocationNamed locationName =
-  find ((== locationName) . getLocationName) . toList <$> view locations
+getLocationMatching
+  :: MonadReader (Game queue) m => LocationMatcher -> m (Maybe Location)
+getLocationMatching = \case
+  LocationWithTitle title ->
+    find ((== title) . locationNameTitle . getLocationName)
+      . toList
+      <$> view locations
+  LocationWithFullTitle title subtitle ->
+    find ((== LocationName title (Just subtitle)) . getLocationName)
+      . toList
+      <$> view locations
 
 getEnemy :: MonadReader (Game queue) m => EnemyId -> m Enemy
 getEnemy eid = fromJustNote missingEnemy <$> preview (enemies . ix eid)
@@ -492,40 +498,21 @@ instance HasId (Maybe LocationId) (Game queue) AssetId where
   getId = getId <=< getAsset
 
 instance HasId (Maybe LocationId) (Game queue) LocationMatcher where
-  getId = \case
-    LocationNamed name -> getId name
-
-instance HasId (Maybe LocationId) (Game queue) LocationName where
-  getId locationName = do
-    g <- ask
-    maybe Nothing (Just . flip runReader g . getId)
-      . find ((== locationName) . getLocationName)
-      . toList
-      <$> view locations
+  getId = (fmap toId <$>) . getLocationMatching
 
 instance HasSet EnemyId (Game queue) LocationMatcher where
-  getSet = \case
-    LocationNamed name -> getSet name
-
-instance HasSet EnemyId (Game queue) LocationName where
-  getSet locationName = do
-    g <- ask
-    maybe mempty (flip runReader g . getSet)
-      . find ((== locationName) . getLocationName)
-      . toList
-      <$> view locations
+  getSet locationMatcher = do
+    location <- fromJustNote missingLocation
+      <$> getLocationMatching locationMatcher
+    getSet location
+   where
+    missingLocation = "No location with matching: " <> show locationMatcher
 
 instance HasSet ClosestPathLocationId (Game queue) (LocationId, LocationMatcher) where
-  getSet (lid, locationMatcher) = case locationMatcher of
-    LocationNamed name -> getSet (lid, name)
-
-instance HasSet ClosestPathLocationId (Game queue) (LocationId, LocationName) where
-  getSet (lid, locationName) = do
+  getSet (lid, locationMatcher) = do
     g <- ask
     maybe mempty (flip runReader g . getSet . (lid, ) . toId)
-      . find ((== locationName) . getLocationName)
-      . toList
-      <$> view locations
+      <$> getLocationMatching locationMatcher
 
 instance HasSet StoryAssetId (Game queue) InvestigatorId where
   getSet iid = do
@@ -715,10 +702,9 @@ instance HasCount EnemyCount (Game queue) [Trait] where
     where enemyMatcher enemy = any (`member` getTraits enemy) traits
 
 instance HasCount EnemyCount (Game queue) (LocationMatcher, [Trait]) where
-  getCount (locationMatcher, traits) = case locationMatcher of
-    LocationNamed name ->
-      maybe (pure (EnemyCount 0)) (getCount . (, traits) . toId)
-        =<< getLocationNamed name
+  getCount (locationMatcher, traits) =
+    maybe (pure (EnemyCount 0)) (getCount . (, traits) . toId)
+      =<< getLocationMatching locationMatcher
 
 instance HasCount EnemyCount (Game queue) (LocationId, [Trait]) where
   getCount (lid, traits) = do
@@ -1516,17 +1502,13 @@ instance HasSet InvestigatorId (Game queue) () where
 instance HasSet InvestigatorId (Game queue) LocationId where
   getSet = getSet <=< getLocation
 
-instance HasSet InvestigatorId (Game queue) LocationName where
-  getSet locationName = do
-    location <-
-      fromJustNote missingLocation
-      . find ((== locationName) . getLocationName)
-      . toList
-      <$> view locations
+instance HasSet InvestigatorId (Game queue) LocationMatcher where
+  getSet locationMatcher = do
+    location <- fromJustNote missingLocation
+      <$> getLocationMatching locationMatcher
     getSet location
    where
-    missingLocation =
-      "No location with name: " <> unpack (unLocationName locationName)
+    missingLocation = "No location with matching: " <> show locationMatcher
 
 instance HasSet InvestigatorId (Game queue) (HashSet LocationId) where
   getSet lids = unions <$> traverse getSet (setToList lids)
@@ -2296,8 +2278,8 @@ runGameMessage msg g = case msg of
              skillValue
              difficulty
         )
-  CreateStoryAssetAtLocationNamed cardCode locationName -> do
-    lid <- fromJustNote "missing location" <$> getId locationName
+  CreateStoryAssetAtLocationMatching cardCode locationMatcher -> do
+    lid <- fromJustNote "missing location" <$> getId locationMatcher
     g <$ unshiftMessage (CreateStoryAssetAt cardCode lid)
   CreateStoryAssetAt cardCode lid -> do
     (assetId', asset') <- createAsset cardCode
@@ -2339,8 +2321,8 @@ runGameMessage msg g = case msg of
     (enemyId', enemy') <- createEnemy cardCode
     unshiftMessage (RequestedEnemy source enemyId')
     pure $ g & enemies . at enemyId' ?~ enemy'
-  CreateEnemyAtLocationNamed cardCode locationName -> do
-    lid <- fromJustNote "missing location" <$> getId locationName
+  CreateEnemyAtLocationMatching cardCode locationMatcher -> do
+    lid <- fromJustNote "missing location" <$> getId locationMatcher
     g <$ unshiftMessage (CreateEnemyAt cardCode lid)
   CreateEnemyAt cardCode lid -> do
     (enemyId', enemy') <- createEnemy cardCode

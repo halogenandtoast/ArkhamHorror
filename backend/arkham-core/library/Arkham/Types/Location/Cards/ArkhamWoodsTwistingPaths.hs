@@ -19,7 +19,7 @@ arkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths $ base
  where
   base = baseAttrs
     "01151"
-    "Arkham Woods: Twisting Paths"
+    (LocationName "Arkham Woods" (Just "Twisting Paths"))
     EncounterSet.TheDevourerBelow
     3
     (PerPlayer 1)

@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.ReturnToAttic where
 
 import Arkham.Import
@@ -13,7 +14,7 @@ newtype ReturnToAttic = ReturnToAttic Attrs
 returnToAttic :: ReturnToAttic
 returnToAttic = ReturnToAttic $ baseAttrs
   "50018"
-  "Attic"
+  (LocationName "Attic" Nothing)
   EncounterSet.ReturnToTheGathering
   3
   (PerPlayer 1)

@@ -6,7 +6,6 @@ import Arkham.Import
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
-import Arkham.Types.LocationMatcher
 
 newtype MysteriousGateway = MysteriousGateway Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -16,7 +15,7 @@ mysteriousGateway = MysteriousGateway $ baseAttrs
   "50012"
   "Mysterious Gateway"
   (Act 1 A)
-  (Just $ RequiredClues (PerPlayer 3) (Just $ LocationNamed "Guest Hall"))
+  (Just $ RequiredClues (PerPlayer 3) (Just $ LocationWithTitle "Guest Hall"))
 
 instance ActionRunner env => HasActions env MysteriousGateway where
   getActions i window (MysteriousGateway x) = getActions i window x

@@ -133,7 +133,7 @@ testLocation
 testLocation cardCode f =
   let
     locationId = LocationId cardCode
-    name = LocationName $ unCardCode cardCode
+    name = LocationName (unCardCode cardCode) Nothing
   in pure $ baseLocation locationId name 0 (Static 0) Square [] f
 
 testInvestigator

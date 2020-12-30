@@ -13,7 +13,7 @@ newtype Hallway = Hallway Attrs
 hallway :: Hallway
 hallway = Hallway $ baseAttrs
   "01112"
-  "Hallway"
+  (LocationName "Hallway" Nothing)
   EncounterSet.TheGathering
   1
   (Static 0)

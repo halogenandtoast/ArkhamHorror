@@ -13,7 +13,7 @@ newtype HoleInTheWall = HoleInTheWall Attrs
 holeInTheWall :: HoleInTheWall
 holeInTheWall = HoleInTheWall $ baseAttrs
   "50017"
-  "Hallway"
+  (LocationName "Hallway" Nothing)
   EncounterSet.ReturnToTheGathering
   1
   (Static 0)
@@ -31,9 +31,9 @@ instance (LocationRunner env) => RunMessage env HoleInTheWall where
   runMessage msg (HoleInTheWall attrs) = case msg of
     RevealLocation _ lid | lid == locationId attrs -> do
       unshiftMessages
-        [ PlaceLocationNamed "Attic"
-        , PlaceLocationNamed "Cellar"
-        , PlaceLocationNamed "Parlor"
+        [ PlaceLocationMatching (LocationWithTitle "Attic")
+        , PlaceLocationMatching (LocationWithTitle "Cellar")
+        , PlaceLocationMatching (LocationWithTitle "Parlor")
         ]
       HoleInTheWall <$> runMessage msg attrs
     _ -> HoleInTheWall <$> runMessage msg attrs

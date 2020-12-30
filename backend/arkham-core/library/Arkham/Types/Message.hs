@@ -170,7 +170,7 @@ data Message
   | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
   | RequestedEncounterCards Target [EncounterCard]
   | PlaceLocation LocationId
-  | PlaceLocationNamed LocationName
+  | PlaceLocationMatching LocationMatcher
   | PlacedLocation LocationId
   | AddConnection LocationId LocationSymbol
   | AddConnectionBack LocationId LocationSymbol
@@ -223,7 +223,7 @@ data Message
   | InvestigatorDrewPlayerCard InvestigatorId PlayerCard
   | InvestigatorDrawEnemy InvestigatorId LocationId EnemyId
   | EnemySpawn (Maybe InvestigatorId) LocationId EnemyId
-  | EnemySpawnAtLocationNamed (Maybe InvestigatorId) LocationName EnemyId
+  | EnemySpawnAtLocationMatching (Maybe InvestigatorId) LocationMatcher EnemyId
   | CreateEnemyRequest Source CardCode
   | RequestedEnemy Source EnemyId
   | EnemySpawnedAt LocationId EnemyId
@@ -336,7 +336,7 @@ data Message
   | SpawnEnemyAt Card LocationId
   | SpawnEnemyAtEngagedWith Card LocationId InvestigatorId
   | CreateEnemyAt CardCode LocationId
-  | CreateEnemyAtLocationNamed CardCode LocationName
+  | CreateEnemyAtLocationMatching CardCode LocationMatcher
   | CreateEnemyEngagedWithPrey CardCode
   | EnemySpawnEngagedWithPrey EnemyId
   | Revelation InvestigatorId Source
@@ -375,7 +375,7 @@ data Message
   | CreateWeaknessInThreatArea CardCode InvestigatorId
   | AttachStoryTreacheryTo CardCode Target
   | CreateStoryAssetAt CardCode LocationId
-  | CreateStoryAssetAtLocationNamed CardCode LocationName
+  | CreateStoryAssetAtLocationMatching CardCode LocationMatcher
   | TakeControlOfAsset InvestigatorId AssetId
   | TakeControlOfSetAsideAsset InvestigatorId CardCode
   | PutCardIntoPlay InvestigatorId Card (Maybe Target)

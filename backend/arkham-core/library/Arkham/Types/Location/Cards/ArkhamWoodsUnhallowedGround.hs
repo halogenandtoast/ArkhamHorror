@@ -20,7 +20,7 @@ arkhamWoodsUnhallowedGround = ArkhamWoodsUnhallowedGround $ base
  where
   base = baseAttrs
     "01150"
-    "Arkham Woods: Unhallowed Ground"
+    (LocationName "Arkham Woods" (Just "Unhallowed Ground"))
     EncounterSet.TheDevourerBelow
     4
     (PerPlayer 1)

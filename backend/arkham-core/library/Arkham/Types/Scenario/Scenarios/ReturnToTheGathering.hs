@@ -16,22 +16,22 @@ newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
   deriving newtype (Show, ToJSON, FromJSON)
 
 returnToTheGathering :: Difficulty -> ReturnToTheGathering
-returnToTheGathering difficulty =
-  ReturnToTheGathering . TheGathering $ (baseAttrs
-                                          "50011"
-                                          "Return To The Gathering"
-                                          ["01105", "01106", "01107"]
-                                          ["50012", "01109", "01110"]
-                                          difficulty
-                                        )
-    { scenarioLocationLayout = Just
-      [ ".     .         fieldOfGraves .     "
-      , ".     bedroom   attic         .     "
-      , "study guestHall hallway       parlor"
-      , ".     bathroom  cellar        .     "
-      , ".     .         ghoulPits     .     "
-      ]
-    }
+returnToTheGathering difficulty = ReturnToTheGathering . TheGathering $ base
+  { scenarioLocationLayout = Just
+    [ ".     .         fieldOfGraves .     "
+    , ".     bedroom   attic         .     "
+    , "study guestHall hallway       parlor"
+    , ".     bathroom  cellar        .     "
+    , ".     .         ghoulPits     .     "
+    ]
+  }
+ where
+  base = baseAttrs
+    "50011"
+    "Return To The Gathering"
+    ["01105", "01106", "01107"]
+    ["50012", "01109", "01110"]
+    difficulty
 
 instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env (InvestigatorLocation, [Trait])) => HasTokenValue env ReturnToTheGathering where
   getTokenValue (ReturnToTheGathering theGathering') iid =
@@ -70,17 +70,18 @@ instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
         attic <- sample $ "50018" :| ["01113"]
         cellar <- sample $ "50020" :| ["01114"]
         let
-          locations' = mapFromList
-            [ ("Study", ["50013"])
-            , ("Guest Hall", ["50014"])
-            , ("Bedroom", ["50015"])
-            , ("Bathroom", ["50016"])
-            , ("Hallway", ["50017"])
-            , ("Attic", [attic])
-            , ("Field of Graves", ["50019"])
-            , ("Cellar", [cellar])
-            , ("Ghoul Pits", ["50021"])
-            , ("Parlor", ["01115"])
+          locations' = mapFromList $ map
+            (second pure . toFst (getLocationName . lookupLocation))
+            [ "50013"
+            , "50014"
+            , "50015"
+            , "50016"
+            , "50017"
+            , attic
+            , "50019"
+            , cellar
+            , "50021"
+            , "01115"
             ]
         ReturnToTheGathering . TheGathering <$> runMessage
           msg

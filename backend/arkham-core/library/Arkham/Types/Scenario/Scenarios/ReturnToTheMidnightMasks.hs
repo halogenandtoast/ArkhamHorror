@@ -115,16 +115,17 @@ instance (ScenarioRunner env) => RunMessage env ReturnToTheMidnightMasks where
           <> ghoulPriestMessages
           <> spawnAcolyteMessages
         let
-          locations' = mapFromList
-            [ ("Your House", ["01124"])
-            , ("Rivertown", [rivertown])
-            , ("Southside", [southside])
-            , ("St. Mary's Hospital", ["01128"])
-            , ("Miskatonic University", [miskatonicUniversity])
-            , ("Downtown", [downtown])
-            , ("Easttown", [easttown])
-            , ("Graveyard", ["01133"])
-            , ("Northside", [northside])
+          locations' = mapFromList $ map
+            (second pure . toFst (getLocationName . lookupLocation))
+            [ "01124"
+            , rivertown
+            , southside
+            , "01128"
+            , miskatonicUniversity
+            , downtown
+            , easttown
+            , "01133"
+            , northside
             ]
         ReturnToTheMidnightMasks . TheMidnightMasks <$> runMessage
           msg

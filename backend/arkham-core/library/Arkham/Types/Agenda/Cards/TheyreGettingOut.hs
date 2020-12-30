@@ -5,7 +5,6 @@ import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
-import Arkham.Types.LocationMatcher
 import Arkham.Types.Trait
 import qualified Data.HashSet as HashSet
 
@@ -41,7 +40,7 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unengagedEnemyIds <- HashSet.map unUnengagedEnemyId <$> getSet ()
       ghoulEnemyIds <- getSet Ghoul
-      parlorEnemyIds <- getSet (LocationNamed "Parlor")
+      parlorEnemyIds <- getSet (LocationWithTitle "Parlor")
       let
         enemiesToMove =
           (ghoulEnemyIds `intersection` unengagedEnemyIds)
@@ -49,7 +48,7 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
       messages <- for (setToList enemiesToMove) $ \eid -> do
         locationId <- getId eid
         closestLocationIds <- map unClosestPathLocationId
-          <$> getSetList (locationId, LocationNamed "Parlor")
+          <$> getSetList (locationId, LocationWithTitle "Parlor")
         case closestLocationIds of
           [] -> pure Nothing
           [x] -> pure $ Just $ EnemyMove eid locationId x
@@ -63,9 +62,9 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
         )
     EndRoundWindow -> do
       parlorGhoulsCount <- unEnemyCount
-        <$> getCount (LocationNamed "Parlor", [Ghoul])
+        <$> getCount (LocationWithTitle "Parlor", [Ghoul])
       hallwayGhoulsCount <- unEnemyCount
-        <$> getCount (LocationNamed "Hallway", [Ghoul])
+        <$> getCount (LocationWithTitle "Hallway", [Ghoul])
       a <$ unshiftMessages
         (replicate (parlorGhoulsCount + hallwayGhoulsCount) PlaceDoomOnAgenda)
     _ -> TheyreGettingOut <$> runMessage msg attrs

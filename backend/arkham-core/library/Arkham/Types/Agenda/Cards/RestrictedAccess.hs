@@ -56,12 +56,12 @@ instance AgendaRunner env => RunMessage env RestrictedAccess where
           (EncounterCardMatchByCardCode "02141")
     FoundEnemyInVoid _ eid -> do
       lid <- fromJustNote "Museum Halls missing"
-        <$> getId (LocationName "Museum Halls")
+        <$> getId (LocationWithTitle "Museum Halls")
       a <$ unshiftMessages
         [EnemySpawn Nothing lid eid, NextAgenda agendaId "02120"]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- fromJustNote "Museum Halls missing"
-        <$> getId (LocationName "Museum Halls")
+        <$> getId (LocationWithTitle "Museum Halls")
       a <$ unshiftMessages
         [SpawnEnemyAt (EncounterCard ec) lid, NextAgenda agendaId "02120"]
     _ -> RestrictedAccess <$> runMessage msg attrs

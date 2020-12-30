@@ -15,7 +15,7 @@ newtype BrackishWaters = BrackishWaters Attrs
 brackishWaters :: BrackishWaters
 brackishWaters = BrackishWaters $ baseAttrs
   "81010"
-  "Brackish Waters"
+  (LocationName "Brackish Waters" Nothing)
   EncounterSet.CurseOfTheRougarou
   1
   (Static 0)

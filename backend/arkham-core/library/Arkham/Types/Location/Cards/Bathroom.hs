@@ -14,7 +14,7 @@ newtype Bathroom = Bathroom Attrs
 bathroom :: Bathroom
 bathroom = Bathroom $ baseAttrs
   "50016"
-  "Bathroom"
+  (LocationName "Bathroom" Nothing)
   EncounterSet.CurseOfTheRougarou
   1
   (PerPlayer 1)

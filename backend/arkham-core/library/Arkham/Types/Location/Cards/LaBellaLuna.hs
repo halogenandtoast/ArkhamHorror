@@ -20,7 +20,7 @@ newtype LaBellaLuna = LaBellaLuna Attrs
 laBellaLuna :: LaBellaLuna
 laBellaLuna = LaBellaLuna $ baseAttrs
   "02070"
-  "La Bella Luna"
+  (LocationName "La Bella Luna" Nothing)
   EncounterSet.TheHouseAlwaysWins
   2
   (PerPlayer 1)

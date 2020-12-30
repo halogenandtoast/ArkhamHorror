@@ -15,7 +15,7 @@ newtype GuestHall = GuestHall Attrs
 guestHall :: GuestHall
 guestHall = GuestHall $ baseAttrs
   "50014"
-  "Guest Hall"
+  (LocationName "Guest Hall" Nothing)
   EncounterSet.ReturnToTheGathering
   1
   (Static 0)

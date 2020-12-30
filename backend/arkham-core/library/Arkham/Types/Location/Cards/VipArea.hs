@@ -20,7 +20,7 @@ newtype VipArea = VipArea Attrs
 vipArea :: VipArea
 vipArea = VipArea $ (baseAttrs
                       "02076"
-                      "VIP Area"
+                      (LocationName "VIP Area" Nothing)
                       EncounterSet.TheHouseAlwaysWins
                       3
                       (PerPlayer 1)

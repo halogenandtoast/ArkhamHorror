@@ -11,7 +11,6 @@ import Arkham.Import hiding (Cultist)
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
-import Arkham.Types.Location
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
@@ -137,19 +136,20 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
              ]
 
         let
-          locations' = mapFromList
-            [ ("Cursed Shores", ["81007"])
-            , ("Garden District", ["81008"])
-            , ("Broadmoor", ["81009"])
-            , ("Brackish Waters", ["81010"])
-            , ("Audubon Park", ["81011"])
-            , ("Fauborg Marigny", ["81012"])
-            , ("Forgotten Marsh", ["81013"])
-            , ("Trapper's Cabin", ["81014"])
-            , ("Twisted Underbrush", ["81015"])
-            , ("Foul Swamp", ["81016"])
-            , ("Ritual Grounds", ["81017"])
-            , ("Overgrown Cairns", ["81018"])
+          locations' = mapFromList $ map
+            (second pure . toFst (getLocationName . lookupLocation))
+            [ "81007"
+            , "81008"
+            , "81009"
+            , "81010"
+            , "81011"
+            , "81012"
+            , "81013"
+            , "81014"
+            , "81015"
+            , "81016"
+            , "81017"
+            , "81018"
             ]
         CurseOfTheRougarou
           . (`with` metadata { setAsideLocationTraits = setFromList rest })

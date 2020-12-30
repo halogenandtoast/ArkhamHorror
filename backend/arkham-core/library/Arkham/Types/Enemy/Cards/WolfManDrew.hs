@@ -28,7 +28,7 @@ instance ActionRunner env => HasActions env WolfManDrew where
 instance (EnemyRunner env) => RunMessage env WolfManDrew where
   runMessage msg e@(WolfManDrew attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
-      e <$ spawnAt (Just iid) eid "Downtown"
+      e <$ spawnAt (Just iid) eid (LocationWithTitle "Downtown")
     PerformEnemyAttack _ eid | eid == enemyId ->
       WolfManDrew <$> runMessage msg (attrs & damageL %~ max 0 . subtract 1)
     _ -> WolfManDrew <$> runMessage msg attrs

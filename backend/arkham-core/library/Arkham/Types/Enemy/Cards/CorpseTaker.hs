@@ -38,8 +38,8 @@ instance EnemyRunner env => RunMessage env CorpseTaker where
       e <$ spawnAtOneOf iid eid farthestEmptyLocationIds
     EndMythos -> pure $ CorpseTaker $ attrs & doomL +~ 1
     EndEnemy -> do
-      mrivertown <- getId (LocationName "Rivertown")
-      mmainPath <- getId (LocationName "Main Path")
+      mrivertown <- getId (LocationWithTitle "Rivertown")
+      mmainPath <- getId (LocationWithTitle "Main Path")
       let
         locationId =
           fromJustNote "one of these has to exist" (mrivertown <|> mmainPath)

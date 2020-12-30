@@ -11,7 +11,6 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card.EncounterCardMatcher
-import Arkham.Types.LocationMatcher
 import Arkham.Types.Trait
 
 newtype SkinGame = SkinGame Attrs
@@ -22,7 +21,7 @@ skinGame = SkinGame $ baseAttrs
   "02067"
   "Skin Game"
   (Act 2 A)
-  (Just $ RequiredClues (PerPlayer 2) (Just $ LocationNamed "VIP Area"))
+  (Just $ RequiredClues (PerPlayer 2) (Just $ LocationWithTitle "VIP Area"))
 
 instance ActionRunner env => HasActions env SkinGame where
   getActions i window (SkinGame x) = getActions i window x
@@ -31,7 +30,7 @@ instance ActRunner env => RunMessage env SkinGame where
   runMessage msg a@(SkinGame attrs@Attrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       vipAreaId <- fromJustNote "must exist"
-        <$> getId @(Maybe LocationId) (LocationName "VIP Area")
+        <$> getId @(Maybe LocationId) (LocationWithTitle "VIP Area")
       investigatorIds <- getSetList vipAreaId
       requiredClueCount <- getPlayerCountValue (PerPlayer 2)
       unshiftMessages

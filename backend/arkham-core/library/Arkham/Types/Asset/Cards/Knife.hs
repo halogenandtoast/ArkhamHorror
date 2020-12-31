@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.Knife where
+
+module Arkham.Types.Asset.Cards.Knife
+  ( Knife(..)
+  , knife
+  )
+where
 
 import Arkham.Import
 
@@ -23,12 +28,20 @@ instance ActionRunner env => HasActions env Knife where
     pure
       $ [ ActivateCardAbilityAction
             iid
-            (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight)))
+            (mkAbility
+              (toSource a)
+              1
+              (ActionAbility (Just Action.Fight) (ActionCost 1))
+            )
         | fightAvailable
         ]
       <> [ ActivateCardAbilityAction
              iid
-             (mkAbility (toSource a) 2 (ActionAbility 1 (Just Action.Fight)))
+             (mkAbility
+               (toSource a)
+               2
+               (ActionAbility (Just Action.Fight) (ActionCost 1))
+             )
          | fightAvailable
          ]
   getActions _ _ _ = pure []

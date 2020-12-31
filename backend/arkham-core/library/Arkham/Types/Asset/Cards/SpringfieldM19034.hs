@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.SpringfieldM19034
   ( springfieldM19034
   , SpringfieldM19034(..)
@@ -17,18 +18,21 @@ newtype SpringfieldM19034 = SpringfieldM19034 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 springfieldM19034 :: AssetId -> SpringfieldM19034
-springfieldM19034 uuid =
-  SpringfieldM19034 $ (baseAttrs uuid "02226") { assetSlots = [HandSlot, HandSlot] }
+springfieldM19034 uuid = SpringfieldM19034
+  $ (baseAttrs uuid "02226") { assetSlots = [HandSlot, HandSlot] }
 
 instance ActionRunner env => HasActions env SpringfieldM19034 where
   getActions iid window (SpringfieldM19034 a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     pure
-      [
-        ActivateCardAbilityAction
+      [ ActivateCardAbilityAction
           iid
-          (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight)))
-        | useCount (assetUses a) > 0 && fightAvailable
+          (mkAbility
+            (toSource a)
+            1
+            (ActionAbility (Just Action.Fight) (ActionCost 1))
+          )
+      | useCount (assetUses a) > 0 && fightAvailable
       ]
   getActions _ _ _ = pure []
 
@@ -38,16 +42,21 @@ instance HasModifiersFor env SpringfieldM19034 where
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SpringfieldM19034 where
   runMessage msg (SpringfieldM19034 attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
-      SpringfieldM19034 <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 3)
+      SpringfieldM19034
+        <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 3)
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessages
         [ CreateSkillTestEffect
-            (EffectModifiers
-            $ toModifiers attrs [DamageDealt 2, SkillModifier SkillCombat 3]
-            )
-            source
-            (InvestigatorTarget iid)
-        , ChooseFightEnemyNotEngagedWithInvestigator iid source SkillCombat False
+          (EffectModifiers
+          $ toModifiers attrs [DamageDealt 2, SkillModifier SkillCombat 3]
+          )
+          source
+          (InvestigatorTarget iid)
+        , ChooseFightEnemyNotEngagedWithInvestigator
+          iid
+          source
+          SkillCombat
+          False
         ]
       pure $ SpringfieldM19034 $ attrs & usesL %~ Resource.use
     _ -> SpringfieldM19034 <$> runMessage msg attrs

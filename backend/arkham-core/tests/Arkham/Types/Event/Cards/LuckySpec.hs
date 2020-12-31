@@ -13,14 +13,7 @@ spec = describe "Lucky!" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 1, investigatorResources = 1 }
     lucky <- buildPlayerCard "01080"
-    (didPassTest, logger) <- createMessageMatcher
-      (PassedSkillTest
-        (toId investigator)
-        Nothing
-        TestSource
-        (SkillTestInitiatorTarget TestTarget)
-        0
-      )
+    (didPassTest, logger) <- didPassSkillTestBy investigator 0
     void
       $ runGameTest
           investigator
@@ -42,14 +35,7 @@ spec = describe "Lucky!" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 1, investigatorResources = 1 }
     lucky <- buildPlayerCard "01080"
-    (didFailTest, logger) <- createMessageMatcher
-      (FailedSkillTest
-        (toId investigator)
-        Nothing
-        TestSource
-        (SkillTestInitiatorTarget TestTarget)
-        2
-      )
+    (didFailTest, logger) <- didFailSkillTestBy investigator 2
     void
       $ runGameTest
           investigator

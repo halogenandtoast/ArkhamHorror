@@ -13,14 +13,7 @@ spec = describe "Grotesque Statue (4)" $ do
     it "reveals 2 tokens and let's you choose one" $ do
       investigator <- testInvestigator "00000" id
       grotestqueStatue <- buildAsset "01071"
-      (didRunMessage, logger) <- createMessageMatcher
-        (PassedSkillTest
-          (toId investigator)
-          Nothing
-          TestSource
-          (SkillTestInitiatorTarget TestTarget)
-          5
-        )
+      (didRunMessage, logger) <- didPassSkillTestBy investigator 5
       game <-
         runGameTest
           investigator

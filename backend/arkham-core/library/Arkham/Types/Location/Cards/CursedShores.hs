@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.CursedShores where
+
+module Arkham.Types.Location.Cards.CursedShores
+  ( CursedShores(..)
+  , cursedShores
+  )
+where
 
 import Arkham.Import
 
@@ -27,19 +32,20 @@ instance HasModifiersFor env CursedShores where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env CursedShores where
-  getActions iid NonFast (CursedShores attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions iid NonFast attrs
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource attrs)
-      (ActionCost 1 Nothing locationTraits)
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction
-             iid
-             (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
-         | iid `member` locationInvestigators && canAffordActions
-         ]
+  getActions iid NonFast (CursedShores attrs@Attrs {..}) | locationRevealed =
+    withBaseActions iid NonFast attrs $ do
+      canAffordActions <- getCanAffordCost
+        iid
+        (toSource attrs)
+        Nothing
+        (ActionCost 1)
+      pure
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
+            )
+        | iid `member` locationInvestigators && canAffordActions
+        ]
   getActions i window (CursedShores attrs) = getActions i window attrs
 
 instance LocationRunner env => RunMessage env CursedShores where

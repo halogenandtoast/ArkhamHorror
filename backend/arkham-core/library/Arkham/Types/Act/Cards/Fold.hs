@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Act.Cards.Fold
   ( Fold(..)
   , fold
@@ -19,33 +20,32 @@ fold :: Fold
 fold = Fold $ baseAttrs "02069" "Fold" (Act 3 A) Nothing
 
 instance ActionRunner env => HasActions env Fold where
-  getActions iid NonFast (Fold attrs) = do
-    baseActions <- getActions iid NonFast attrs
+  getActions iid NonFast (Fold attrs) = withBaseActions iid NonFast attrs $ do
     investigatorLocationId <- getId @LocationId iid
     maid <- fmap unStoryAssetId <$> getId (CardCode "02079")
     case maid of
-      Nothing -> pure baseActions
+      Nothing -> pure []
       Just aid -> do
         miid <- fmap unOwnerId <$> getId aid
         assetLocationId <- getId aid
         hasParleyActionsRemaining <- getCanAffordCost
           iid
           (toSource attrs)
-          (ActionCost 1 (Just Parley) mempty)
+          (Just Parley)
+          (ActionCost 1)
         pure
-          $ baseActions
-          <> [ ActivateCardAbilityAction
-                 iid
-                 (mkAbility
-                   (ProxySource (AssetSource aid) (toSource attrs))
-                   1
-                   (ActionAbility 1 (Just Parley))
-                 )
-             | isNothing miid
-               && Just investigatorLocationId
-               == assetLocationId
-               && hasParleyActionsRemaining
-             ]
+          [ ActivateCardAbilityAction
+              iid
+              (mkAbility
+                (ProxySource (AssetSource aid) (toSource attrs))
+                1
+                (ActionAbility (Just Parley) $ ActionCost 1)
+              )
+          | isNothing miid
+            && Just investigatorLocationId
+            == assetLocationId
+            && hasParleyActionsRemaining
+          ]
   getActions i window (Fold x) = getActions i window x
 
 instance ActRunner env => RunMessage env Fold where

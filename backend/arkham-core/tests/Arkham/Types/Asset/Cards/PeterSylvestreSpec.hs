@@ -17,7 +17,7 @@ spec = describe "Peter Sylvestre" $ do
     withGame
         game
         (map modifierType
-        <$> getModifiersFor TestSource (toTarget investigator) ()
+        <$> getModifiersFor (TestSource mempty) (toTarget investigator) ()
         )
       `shouldReturn` [SkillModifier SkillAgility 1]
   it "removes one horror at the end of your turn" $ do
@@ -27,7 +27,7 @@ spec = describe "Peter Sylvestre" $ do
       runGameTest
           investigator
           [ playAsset investigator peterSylvestre
-          , AssetDamage (toId peterSylvestre) TestSource 0 2
+          , AssetDamage (toId peterSylvestre) (TestSource mempty) 0 2
           , ChooseEndTurn (toId investigator)
           ]
           (assets %~ insertEntity peterSylvestre)

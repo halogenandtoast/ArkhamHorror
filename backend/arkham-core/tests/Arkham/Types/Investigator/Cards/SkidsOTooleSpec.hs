@@ -13,7 +13,7 @@ spec = describe "\"Skids\" O'Toole" $ do
       game <- runGameTest
         skidsOToole
         [ TakeResources (toId skidsOToole) 2 False
-        , LoseActions (toId skidsOToole) TestSource 3
+        , LoseActions (toId skidsOToole) (TestSource mempty) 3
         ]
         id
       let skidsOToole' = updated game skidsOToole
@@ -27,8 +27,9 @@ spec = describe "\"Skids\" O'Toole" $ do
           game'
           (getCanAffordCost
             (toId skidsOToole')
-            TestSource
-            (ActionCost 1 Nothing mempty)
+            (TestSource mempty)
+            Nothing
+            (ActionCost 1)
           )
         `shouldReturn` True
 

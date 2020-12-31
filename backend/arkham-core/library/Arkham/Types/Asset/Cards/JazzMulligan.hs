@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.JazzMulligan
   ( jazzMulligan
   , JazzMulligan(..)
@@ -23,12 +24,14 @@ jazzMulligan uuid = JazzMulligan $ (baseAttrs uuid "02060")
   }
 
 ability :: Attrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
+ability attrs =
+  mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
 
 instance
   ( HasId LocationId env InvestigatorId
   , HasCostPayment env
   , HasModifiersFor env ()
+  , HasSet Trait env Source
   )
   => HasActions env JazzMulligan where
   getActions iid NonFast (JazzMulligan attrs) = do
@@ -36,7 +39,8 @@ instance
     canAfford <- getCanAffordCost
       iid
       (toSource attrs)
-      (ActionCost 1 (Just Parley) $ assetTraits attrs)
+      (Just Parley)
+      (ActionCost 1)
     case assetLocation attrs of
       Just location -> pure
         [ ActivateCardAbilityAction iid (ability attrs)

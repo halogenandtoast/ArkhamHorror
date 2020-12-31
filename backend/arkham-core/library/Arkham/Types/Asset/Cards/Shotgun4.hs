@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.Shotgun4 where
+
+module Arkham.Types.Asset.Cards.Shotgun4
+  ( Shotgun4(..)
+  , shotgun4
+  )
+where
 
 import Arkham.Import
 
@@ -26,7 +31,11 @@ instance ActionRunner env => HasActions env Shotgun4 where
     pure
       [ ActivateCardAbilityAction
           iid
-          (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight)))
+          (mkAbility
+            (toSource a)
+            1
+            (ActionAbility (Just Action.Fight) (ActionCost 1))
+          )
       | useCount (assetUses a) > 0 && fightAvailable
       ]
   getActions _ _ _ = pure []

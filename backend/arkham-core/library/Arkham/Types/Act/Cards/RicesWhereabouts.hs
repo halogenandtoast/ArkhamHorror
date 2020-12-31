@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Act.Cards.RicesWhereabouts
   ( RicesWhereabouts(..)
   , ricesWhereabouts
@@ -19,19 +20,17 @@ ricesWhereabouts =
   RicesWhereabouts $ baseAttrs "02046" "Rice's Whereabouts" (Act 2 A) Nothing
 
 ability :: Attrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
+ability attrs =
+  mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
 
 instance ActionRunner env => HasActions env RicesWhereabouts where
   getActions iid NonFast (RicesWhereabouts x) = do
-    canAffordClues <- getCanAffordCost iid (toSource x) (ClueCost 1)
-    canAffordActions <- getCanAffordCost
+    canAfford <- getCanAffordCost
       iid
       (toSource x)
-      (ActionCost 1 Nothing mempty)
-    pure
-      [ ActivateCardAbilityAction iid (ability x)
-      | canAffordClues && canAffordActions
-      ]
+      Nothing
+      (Costs [ActionCost 1, ClueCost 1])
+    pure [ ActivateCardAbilityAction iid (ability x) | canAfford ]
   getActions iid window (RicesWhereabouts x) = getActions iid window x
 
 instance ActRunner env => RunMessage env RicesWhereabouts where

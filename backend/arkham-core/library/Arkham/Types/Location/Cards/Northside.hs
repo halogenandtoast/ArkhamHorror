@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.Northside
   ( Northside(..)
   , northside
@@ -34,9 +35,10 @@ instance HasModifiersFor env Northside where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
-  { abilityLimit = PerGame
-  }
+ability attrs =
+  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+    { abilityLimit = PerGame
+    }
 
 instance ActionRunner env => HasActions env Northside where
   getActions iid NonFast (Northside attrs@Attrs {..}) | locationRevealed = do
@@ -46,7 +48,8 @@ instance ActionRunner env => HasActions env Northside where
     canAffordActions <- getCanAffordCost
       iid
       (toSource attrs)
-      (ActionCost 1 Nothing locationTraits)
+      Nothing
+      (ActionCost 1)
     pure
       $ baseActions
       <> [ ActivateCardAbilityAction iid (ability attrs)

@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Treachery.Cards.Haunted where
+
+module Arkham.Types.Treachery.Cards.Haunted
+  ( Haunted(..)
+  , haunted
+  )
+where
 
 import Arkham.Import
 
@@ -28,19 +33,19 @@ instance ActionRunner env => HasActions env Haunted where
       canAffordActions <- getCanAffordCost
         iid
         (toSource a)
-        (ActionCost 2 Nothing treacheryTraits)
+        Nothing
+        (ActionCost 2)
       pure
         [ ActivateCardAbilityAction
             iid
-            (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 2 Nothing)
-            )
+            (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 2))
         | treacheryLocation == investigatorLocationId && canAffordActions
         ]
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Haunted where
   runMessage msg t@(Haunted attrs@Attrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     UseCardAbility _ (TreacherySource tid) _ 1 | tid == treacheryId ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))

@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Treachery.Cards.HospitalDebts where
+
+module Arkham.Types.Treachery.Cards.HospitalDebts
+  ( HospitalDebts(..)
+  , hospitalDebts
+  )
+where
 
 import Arkham.Import
 
@@ -27,14 +32,9 @@ instance ActionRunner env => HasActions env HospitalDebts where
   getActions iid (DuringTurn You) (HospitalDebts a@Attrs {..}) =
     withTreacheryInvestigator a $ \tormented -> do
       let
-        ability =
-          (mkAbility
-              (TreacherySource treacheryId)
-              1
-              (FastAbility (DuringTurn You))
-            )
-            { abilityLimit = PerRound
-            }
+        ability = (mkAbility (toSource a) 1 (FastAbility (DuringTurn You)))
+          { abilityLimit = PerRound
+          }
       usedAbilities <- map unUsedAbility <$> getList ()
       resourceCount <- getResourceCount iid
       treacheryLocationId <- getId tormented
@@ -52,11 +52,10 @@ instance ActionRunner env => HasActions env HospitalDebts where
 
 instance (TreacheryRunner env) => RunMessage env HospitalDebts where
   runMessage msg t@(HospitalDebts attrs@Attrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      t <$ unshiftMessages
-        [ RemoveCardFromHand iid "01011"
-        , AttachTreachery treacheryId (InvestigatorTarget iid)
-        ]
+    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+      [ RemoveCardFromHand iid "01011"
+      , AttachTreachery treacheryId (InvestigatorTarget iid)
+      ]
     UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId -> do
       unshiftMessage (SpendResources iid 1)
       pure $ HospitalDebts

@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.TrappersCabin where
+
+module Arkham.Types.Location.Cards.TrappersCabin
+  ( TrappersCabin(..)
+  , trappersCabin
+  )
+where
 
 import Arkham.Import
 
@@ -40,12 +45,17 @@ instance ActionRunner env => HasActions env TrappersCabin where
       canAffordActions <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 Nothing locationTraits)
+        Nothing
+        (ActionCost 1)
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction
                iid
-               (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
+               (mkAbility
+                 (toSource attrs)
+                 1
+                 (ActionAbility Nothing $ ActionCost 1)
+               )
            | iid
              `member` locationInvestigators
              && resourceCount

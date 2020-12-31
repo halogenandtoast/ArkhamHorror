@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Treachery.Cards.SearchingForIzzie where
+
+module Arkham.Types.Treachery.Cards.SearchingForIzzie
+  ( SearchingForIzzie(..)
+  , searchingForIzzie
+  )
+where
 
 import Arkham.Import
 
@@ -22,7 +27,7 @@ instance ActionRunner env => HasActions env SearchingForIzzie where
     pure
       [ ActivateCardAbilityAction
           iid
-          (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 2 Nothing))
+          (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2))
       | treacheryOnLocation investigatorLocationId attrs
       ]
   getActions _ _ _ = pure []

@@ -30,6 +30,7 @@ import Arkham.Types.Card
 import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBagStepState
+import Arkham.Types.Cost
 import Arkham.Types.EffectId
 import Arkham.Types.EffectMetadata
 import Arkham.Types.EnemyId
@@ -188,7 +189,7 @@ data Message
   | PlayerWindow InvestigatorId [Message]
   | Ask InvestigatorId Question
   | AskMap (HashMap InvestigatorId Question)
-  | TakeAction InvestigatorId Int (Maybe Action)
+  | TakeAction InvestigatorId (Maybe Action) Cost
   | LoseActions InvestigatorId Source Int
   | SetActions InvestigatorId Source Int
   | GainActions InvestigatorId Source Int

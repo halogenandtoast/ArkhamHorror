@@ -1,7 +1,13 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.Shrivelling where
+
+module Arkham.Types.Asset.Cards.Shrivelling
+  ( Shrivelling(..)
+  , shrivelling
+  )
+where
 
 import Arkham.Import
+
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
@@ -26,7 +32,11 @@ instance ActionRunner env => HasActions env Shrivelling where
     pure
       [ ActivateCardAbilityAction
           iid
-          (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight)))
+          (mkAbility
+            (toSource a)
+            1
+            (ActionAbility (Just Action.Fight) (ActionCost 1))
+          )
       | useCount (assetUses a) > 0 && fightAvailable
       ]
   getActions _ _ _ = pure []

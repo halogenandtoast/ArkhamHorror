@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.Broadmoor where
+
+module Arkham.Types.Location.Cards.Broadmoor
+  ( Broadmoor(..)
+  , broadmoor
+  )
+where
 
 import Arkham.Import
 
@@ -14,40 +19,39 @@ newtype Broadmoor = Broadmoor Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 broadmoor :: Broadmoor
-broadmoor = Broadmoor $ (baseAttrs
-                          "81009"
-                          (LocationName "Broadmoor" Nothing)
-                          EncounterSet.CurseOfTheRougarou
-                          3
-                          (PerPlayer 1)
-                          Plus
-                          [Square, Plus]
-                          [NewOrleans]
-                        )
-  { locationVictory = Just 1
-  }
+broadmoor = Broadmoor $ base { locationVictory = Just 1 }
+ where
+  base = baseAttrs
+    "81009"
+    (LocationName "Broadmoor" Nothing)
+    EncounterSet.CurseOfTheRougarou
+    3
+    (PerPlayer 1)
+    Plus
+    [Square, Plus]
+    [NewOrleans]
 
 instance HasModifiersFor env Broadmoor where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Broadmoor where
-  getActions iid NonFast (Broadmoor attrs@Attrs {..}) = do
-    baseActions <- getActions iid NonFast attrs
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource attrs)
-      (ActionCost 1 (Just Action.Resign) locationTraits)
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction
-             iid
-             (mkAbility
-               (toSource attrs)
-               1
-               (ActionAbility 1 (Just Action.Resign))
-             )
-         | iid `member` locationInvestigators && canAffordActions
-         ]
+  getActions iid NonFast (Broadmoor attrs@Attrs {..}) =
+    withBaseActions iid NonFast attrs $ do
+      canAffordActions <- getCanAffordCost
+        iid
+        (toSource attrs)
+        (Just Action.Resign)
+        (ActionCost 1)
+      pure
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility
+              (toSource attrs)
+              1
+              (ActionAbility (Just Action.Resign) (ActionCost 1))
+            )
+        | iid `member` locationInvestigators && canAffordActions
+        ]
   getActions i window (Broadmoor attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env Broadmoor where

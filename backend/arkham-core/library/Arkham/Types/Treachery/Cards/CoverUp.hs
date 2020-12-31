@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.CoverUp
   ( CoverUp(..)
   , coverUp
@@ -53,12 +54,11 @@ instance ActionRunner env => HasActions env CoverUp where
 
 instance (TreacheryRunner env) => RunMessage env CoverUp where
   runMessage msg t@(CoverUp attrs@Attrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      t <$ unshiftMessages
-        [ RemoveCardFromHand iid "01007"
-        , AttachTreachery treacheryId (InvestigatorTarget iid)
-        ]
-    InvestigatorEliminated iid | treacheryOnInvestigator iid attrs -> do
+    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+      [ RemoveCardFromHand iid "01007"
+      , AttachTreachery treacheryId (InvestigatorTarget iid)
+      ]
+    InvestigatorEliminated iid | treacheryOnInvestigator iid attrs ->
       runMessage EndOfGame t >>= \case
         CoverUp attrs' -> CoverUp <$> runMessage msg attrs'
     EndOfGame | coverUpClues attrs > 0 -> withTreacheryInvestigator attrs

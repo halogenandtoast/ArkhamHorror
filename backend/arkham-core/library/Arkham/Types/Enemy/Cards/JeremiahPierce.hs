@@ -1,11 +1,17 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Enemy.Cards.JeremiahPierce where
+
+module Arkham.Types.Enemy.Cards.JeremiahPierce
+  ( JeremiahPierce(..)
+  , jeremiahPierce
+  )
+where
 
 import Arkham.Import
 
 import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.Game.Helpers
 
 newtype JeremiahPierce = JeremiahPierce Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -25,16 +31,19 @@ instance HasModifiersFor env JeremiahPierce where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env JeremiahPierce where
-  getActions iid NonFast (JeremiahPierce attrs@Attrs {..}) = do
-    baseActions <- getActions iid NonFast attrs
-    locationId <- getId @LocationId iid
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction
-             iid
-             (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 (Just Parley)))
-         | locationId == enemyLocation
-         ]
+  getActions iid NonFast (JeremiahPierce attrs@Attrs {..}) =
+    withBaseActions iid NonFast attrs $ do
+      locationId <- getId @LocationId iid
+      pure
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility
+              (EnemySource enemyId)
+              1
+              (ActionAbility (Just Parley) (ActionCost 1))
+            )
+        | locationId == enemyLocation
+        ]
   getActions _ _ _ = pure []
 
 instance (EnemyRunner env) => RunMessage env JeremiahPierce where

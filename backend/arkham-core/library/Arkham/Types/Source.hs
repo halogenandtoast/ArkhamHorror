@@ -21,6 +21,7 @@ import Arkham.Types.ScenarioId
 import Arkham.Types.SkillId
 import Arkham.Types.SkillType
 import Arkham.Types.Token
+import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 
 data Source
@@ -44,7 +45,7 @@ data Source
   | ActSource ActId
   | PlayerCardSource CardId
   | EncounterCardSource CardId
-  | TestSource
+  | TestSource (HashSet Trait)
   | DrawnTokenSource DrawnToken
   | ProxySource Source Source
   | EffectSource EffectId

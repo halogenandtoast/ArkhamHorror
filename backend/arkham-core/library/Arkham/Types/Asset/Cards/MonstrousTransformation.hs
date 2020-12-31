@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.MonstrousTransformation where
+
+module Arkham.Types.Asset.Cards.MonstrousTransformation
+  ( MonstrousTransformation(..)
+  , monstrousTransformation
+  )
+where
 
 import Arkham.Import
 
@@ -32,7 +37,11 @@ instance ActionRunner env => HasActions env MonstrousTransformation where
     pure
       [ ActivateCardAbilityAction
           iid
-          (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight)))
+          (mkAbility
+            (toSource a)
+            1
+            (ActionAbility (Just Action.Fight) (ActionCost 1))
+          )
       | not (assetExhausted a) && fightAvailable
       ]
   getActions _ _ _ = pure []

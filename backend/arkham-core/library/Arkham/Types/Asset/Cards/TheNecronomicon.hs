@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.TheNecronomicon where
+
+module Arkham.Types.Asset.Cards.TheNecronomicon
+  ( TheNecronomicon(..)
+  , theNecronomicon
+  )
+where
 
 import Arkham.Import
 
@@ -30,7 +35,7 @@ instance HasActions env TheNecronomicon where
   getActions iid NonFast (TheNecronomicon a) | ownedBy a iid = pure
     [ ActivateCardAbilityAction
         iid
-        (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
+        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
     | fromJustNote "Must be set" (assetHorror a) > 0
     ]
   getActions _ _ _ = pure []

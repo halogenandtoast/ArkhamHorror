@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.FirstAid
   ( FirstAid(..)
   , firstAid
@@ -23,14 +24,12 @@ instance HasModifiersFor env FirstAid where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
+ability attrs =
+  mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
 
 instance ActionRunner env => HasActions env FirstAid where
   getActions iid NonFast (FirstAid a) | ownedBy a iid = do
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource a)
-      (ActionCost 1 Nothing (assetTraits a))
+    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
     pure
       [ ActivateCardAbilityAction iid (ability a)
       | useCount (assetUses a) > 0 && canAffordActions

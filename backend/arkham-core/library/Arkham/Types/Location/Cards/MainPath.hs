@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.MainPath where
+
+module Arkham.Types.Location.Cards.MainPath
+  ( MainPath(..)
+  , mainPath
+  )
+where
 
 import Arkham.Import
 
@@ -28,23 +33,23 @@ instance HasModifiersFor env MainPath where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env MainPath where
-  getActions iid NonFast (MainPath attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions iid NonFast attrs
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource attrs)
-      (ActionCost 1 (Just Action.Resign) locationTraits)
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction
-             iid
-             (mkAbility
-               (toSource attrs)
-               1
-               (ActionAbility 1 (Just Action.Resign))
-             )
-         | iid `member` locationInvestigators && canAffordActions
-         ]
+  getActions iid NonFast (MainPath attrs@Attrs {..}) | locationRevealed =
+    withBaseActions iid NonFast attrs $ do
+      canAffordActions <- getCanAffordCost
+        iid
+        (toSource attrs)
+        (Just Action.Resign)
+        (ActionCost 1)
+      pure
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility
+              (toSource attrs)
+              1
+              (ActionAbility (Just Action.Resign) (ActionCost 1))
+            )
+        | iid `member` locationInvestigators && canAffordActions
+        ]
   getActions i window (MainPath attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env MainPath where

@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.Rolands38Special
   ( Rolands38Special(..)
   , rolands38Special
@@ -25,8 +26,10 @@ instance HasModifiersFor env Rolands38Special where
   getModifiersFor = noModifiersFor
 
 fightAbility :: Attrs -> Ability
-fightAbility Attrs { assetId } =
-  mkAbility (AssetSource assetId) 1 (ActionAbility 1 (Just Action.Fight))
+fightAbility attrs = mkAbility
+  (toSource attrs)
+  1
+  (ActionAbility (Just Action.Fight) (ActionCost 1))
 
 instance ActionRunner env => HasActions env Rolands38Special where
   getActions iid window (Rolands38Special a) | ownedBy a iid = do

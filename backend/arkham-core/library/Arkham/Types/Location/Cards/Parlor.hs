@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.Parlor where
 
 import Arkham.Import
@@ -41,11 +42,13 @@ instance ActionRunner env => HasActions env Parlor where
         hasResignActionsRemaining <- getCanAffordCost
           iid
           (toSource attrs)
-          (ActionCost 1 (Just Action.Resign) locationTraits)
+          (Just Action.Resign)
+          (ActionCost 1)
         hasParleyActionsRemaining <- getCanAffordCost
           iid
           (toSource attrs)
-          (ActionCost 1 (Just Action.Parley) locationTraits)
+          (Just Action.Parley)
+          (ActionCost 1)
         pure
           $ baseActions
           <> [ ActivateCardAbilityAction
@@ -53,7 +56,7 @@ instance ActionRunner env => HasActions env Parlor where
                  (mkAbility
                    (LocationSource "01115")
                    1
-                   (ActionAbility 1 (Just Action.Resign))
+                   (ActionAbility (Just Action.Resign) $ ActionCost 1)
                  )
              | iid `member` locationInvestigators && hasResignActionsRemaining
              ]
@@ -62,7 +65,7 @@ instance ActionRunner env => HasActions env Parlor where
                  (mkAbility
                    (ProxySource (AssetSource aid) (LocationSource "01115"))
                    2
-                   (ActionAbility 1 (Just Action.Parley))
+                   (ActionAbility (Just Action.Parley) $ ActionCost 1)
                  )
              | isNothing miid
                && Just investigatorLocationId

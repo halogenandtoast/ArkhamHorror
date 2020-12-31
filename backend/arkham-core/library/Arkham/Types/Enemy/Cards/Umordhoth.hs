@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Enemy.Cards.Umordhoth where
+
+module Arkham.Types.Enemy.Cards.Umordhoth
+  ( Umordhoth(..)
+  , umordhoth
+  )
+where
 
 import Arkham.Import
 
@@ -25,29 +30,33 @@ instance HasModifiersFor env Umordhoth where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env Umordhoth where
-  getActions iid NonFast (Umordhoth attrs@Attrs {..}) = do
-    baseActions <- getActions iid NonFast attrs
-    maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
-    locationId <- getId @LocationId iid
-    case maid of
-      Nothing -> pure baseActions
-      Just aid -> do
-        miid <- fmap unOwnerId <$> getId aid
-        canAffordActions <- getCanAffordCost
-          iid
-          (toSource attrs)
-          (ActionCost 1 Nothing enemyTraits)
-        pure
-          $ baseActions
-          <> [ ActivateCardAbilityAction
-                 iid
-                 (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 Nothing))
-             | canAffordActions
-               && locationId
-               == enemyLocation
-               && miid
-               == Just iid
-             ]
+  getActions iid NonFast (Umordhoth attrs@Attrs {..}) =
+    withBaseActions iid NonFast attrs $ do
+      maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
+      locationId <- getId @LocationId iid
+      case maid of
+        Nothing -> pure []
+        Just aid -> do
+          miid <- fmap unOwnerId <$> getId aid
+          canAffordActions <- getCanAffordCost
+            iid
+            (toSource attrs)
+            Nothing
+            (ActionCost 1)
+          pure
+            [ ActivateCardAbilityAction
+                iid
+                (mkAbility
+                  (EnemySource enemyId)
+                  1
+                  (ActionAbility Nothing $ ActionCost 1)
+                )
+            | canAffordActions
+              && locationId
+              == enemyLocation
+              && miid
+              == Just iid
+            ]
   getActions i window (Umordhoth attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env Umordhoth where

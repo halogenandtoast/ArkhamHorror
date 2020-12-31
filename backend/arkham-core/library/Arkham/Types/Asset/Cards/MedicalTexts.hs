@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.MedicalTexts where
+
+module Arkham.Types.Asset.Cards.MedicalTexts
+  ( MedicalTexts(..)
+  , medicalTexts
+  )
+where
 
 import Arkham.Import
 
@@ -19,14 +24,11 @@ instance HasModifiersFor env MedicalTexts where
 
 instance ActionRunner env => HasActions env MedicalTexts where
   getActions iid NonFast (MedicalTexts a) | ownedBy a iid = do
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource a)
-      (ActionCost 1 Nothing (assetTraits a))
+    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
     pure
       [ ActivateCardAbilityAction
           iid
-          (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
+          (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
       | canAffordActions
       ]
   getActions _ _ _ = pure []

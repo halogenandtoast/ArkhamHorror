@@ -22,7 +22,7 @@ instance HasActions env LiquidCourage where
   getActions iid NonFast (LiquidCourage a) | ownedBy a iid = pure
     [ ActivateCardAbilityAction
         iid
-        (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
+        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
     | useCount (assetUses a) > 0
     ]
   getActions iid window (LiquidCourage attrs) = getActions iid window attrs

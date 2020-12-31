@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Enemy.Cards.MobEnforcer where
+
+module Arkham.Types.Enemy.Cards.MobEnforcer
+  ( MobEnforcer(..)
+  , mobEnforcer
+  )
+where
 
 import Arkham.Import
 
@@ -25,17 +30,20 @@ instance HasModifiersFor env MobEnforcer where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env MobEnforcer where
-  getActions iid NonFast (MobEnforcer attrs@Attrs {..}) = do
-    baseActions <- getActions iid NonFast attrs
-    resourceCount <- getResourceCount iid
-    locationId <- getId @LocationId iid
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction
-             iid
-             (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 (Just Parley)))
-         | resourceCount >= 4 && locationId == enemyLocation
-         ]
+  getActions iid NonFast (MobEnforcer attrs@Attrs {..}) =
+    withBaseActions iid NonFast attrs $ do
+      resourceCount <- getResourceCount iid
+      locationId <- getId @LocationId iid
+      pure
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility
+              (toSource attrs)
+              1
+              (ActionAbility (Just Parley) (ActionCost 1))
+            )
+        | resourceCount >= 4 && locationId == enemyLocation
+        ]
   getActions i window (MobEnforcer attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env MobEnforcer where

@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.Switchblade where
+
+module Arkham.Types.Asset.Cards.Switchblade
+  ( Switchblade(..)
+  , switchblade
+  )
+where
 
 import Arkham.Import
 
@@ -21,7 +26,10 @@ instance HasModifiersFor env Switchblade where
 instance ActionRunner env => HasActions env Switchblade where
   getActions iid window (Switchblade a) | ownedBy a iid = do
     let
-      ability = mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight))
+      ability = mkAbility
+        (toSource a)
+        1
+        (ActionAbility (Just Action.Fight) (ActionCost 1))
     fightAvailable <- hasFightActions iid window
     pure [ ActivateCardAbilityAction iid ability | fightAvailable ]
   getActions _ _ _ = pure []

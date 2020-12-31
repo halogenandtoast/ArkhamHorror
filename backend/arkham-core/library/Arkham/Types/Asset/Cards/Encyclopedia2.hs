@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.Encyclopedia2 where
+
+module Arkham.Types.Asset.Cards.Encyclopedia2
+  ( Encyclopedia2(..)
+  , encyclopedia2
+  )
+where
 
 import Arkham.Import
 
@@ -21,7 +26,7 @@ instance HasActions env Encyclopedia2 where
   getActions iid NonFast (Encyclopedia2 a) | ownedBy a iid = pure
     [ ActivateCardAbilityAction
         iid
-        (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
+        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
     | not (assetExhausted a)
     ]
   getActions _ _ _ = pure []

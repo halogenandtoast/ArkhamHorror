@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.LightningGun5
   ( lightningGun5
   , LightningGun5(..)
@@ -24,11 +25,14 @@ instance ActionRunner env => HasActions env LightningGun5 where
   getActions iid window (LightningGun5 a) | ownedBy a iid = do
     fightAvailable <- hasFightActions iid window
     pure
-      [
-        ActivateCardAbilityAction
+      [ ActivateCardAbilityAction
           iid
-          (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight)))
-        | useCount (assetUses a) > 0 && fightAvailable
+          (mkAbility
+            (toSource a)
+            1
+            (ActionAbility (Just Action.Fight) (ActionCost 1))
+          )
+      | useCount (assetUses a) > 0 && fightAvailable
       ]
   getActions _ _ _ = pure []
 
@@ -42,11 +46,11 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env LightningGun5 
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       unshiftMessages
         [ CreateSkillTestEffect
-            (EffectModifiers
-            $ toModifiers attrs [DamageDealt 2, SkillModifier SkillCombat 5]
-            )
-            source
-            (InvestigatorTarget iid)
+          (EffectModifiers
+          $ toModifiers attrs [DamageDealt 2, SkillModifier SkillCombat 5]
+          )
+          source
+          (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
       pure $ LightningGun5 $ attrs & usesL %~ Resource.use

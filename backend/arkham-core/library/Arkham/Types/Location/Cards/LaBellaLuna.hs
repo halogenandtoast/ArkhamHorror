@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.LaBellaLuna
   ( laBellaLuna
   , LaBellaLuna(..)
@@ -32,8 +33,10 @@ instance HasModifiersFor env LaBellaLuna where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Resign))
+ability attrs = mkAbility
+  (toSource attrs)
+  1
+  (ActionAbility (Just Action.Resign) (ActionCost 1))
 
 instance ActionRunner env => HasActions env LaBellaLuna where
   getActions iid NonFast (LaBellaLuna attrs@Attrs {..}) | locationRevealed =
@@ -41,7 +44,8 @@ instance ActionRunner env => HasActions env LaBellaLuna where
       canAffordActions <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 (Just Action.Resign) locationTraits)
+        (Just Action.Resign)
+        (ActionCost 1)
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
         | iid `member` locationInvestigators && canAffordActions

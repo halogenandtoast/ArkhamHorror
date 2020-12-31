@@ -210,7 +210,18 @@ didPassSkillTestBy investigator n = createMessageMatcher
   (PassedSkillTest
     (toId investigator)
     Nothing
-    TestSource
+    (TestSource mempty)
+    (SkillTestInitiatorTarget TestTarget)
+    n
+  )
+
+didFailSkillTestBy
+  :: MonadIO m => Investigator -> Int -> m (IORef Bool, Message -> m ())
+didFailSkillTestBy investigator n = createMessageMatcher
+  (FailedSkillTest
+    (toId investigator)
+    Nothing
+    (TestSource mempty)
     (SkillTestInitiatorTarget TestTarget)
     n
   )

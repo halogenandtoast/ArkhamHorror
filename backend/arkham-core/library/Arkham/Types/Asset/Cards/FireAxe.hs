@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.FireAxe
   ( FireAxe(..)
   , fireAxe
@@ -19,8 +20,10 @@ fireAxe :: AssetId -> FireAxe
 fireAxe uuid = FireAxe $ (baseAttrs uuid "02032") { assetSlots = [HandSlot] }
 
 fightAbility :: Attrs -> Ability
-fightAbility Attrs { assetId } =
-  mkAbility (AssetSource assetId) 1 (ActionAbility 1 (Just Action.Fight))
+fightAbility Attrs { assetId } = mkAbility
+  (AssetSource assetId)
+  1
+  (ActionAbility (Just Action.Fight) (ActionCost 1))
 
 reactionAbility :: Attrs -> SkillType -> Ability
 reactionAbility Attrs { assetId } skillType =

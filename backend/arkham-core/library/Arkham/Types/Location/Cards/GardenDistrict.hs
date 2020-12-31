@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.GardenDistrict where
+
+module Arkham.Types.Location.Cards.GardenDistrict
+  ( GardenDistrict(..)
+  , gardenDistrict
+  )
+where
 
 import Arkham.Import
 
@@ -29,23 +34,22 @@ instance HasModifiersFor env GardenDistrict where
 
 instance ActionRunner env => HasActions env GardenDistrict where
   getActions iid NonFast (GardenDistrict attrs@Attrs {..}) | locationRevealed =
-    do
-      baseActions <- getActions iid NonFast attrs
+    withBaseActions iid NonFast attrs $ do
       canAffordActions <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 Nothing locationTraits)
+        Nothing
+        (ActionCost 1)
       pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction
-               iid
-               (mkAbility
-                 (LocationSource locationId)
-                 1
-                 (ActionAbility 1 Nothing)
-               )
-           | iid `member` locationInvestigators && canAffordActions
-           ]
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility
+              (LocationSource locationId)
+              1
+              (ActionAbility Nothing $ ActionCost 1)
+            )
+        | iid `member` locationInvestigators && canAffordActions
+        ]
   getActions i window (GardenDistrict attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env GardenDistrict where

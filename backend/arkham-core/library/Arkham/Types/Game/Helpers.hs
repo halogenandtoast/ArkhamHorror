@@ -2,6 +2,7 @@ module Arkham.Types.Game.Helpers where
 
 import Arkham.Import
 
+import Arkham.Types.Action
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Keyword
@@ -94,7 +95,7 @@ getCanFight
      , HasCostPayment env
      , HasSet InvestigatorId env EnemyId
      , HasSet Keyword env EnemyId
-     , HasSet Trait env EnemyId
+     , HasSet Trait env Source
      , HasId LocationId env InvestigatorId
      , HasId LocationId env EnemyId
      , HasModifiersFor env ()
@@ -106,11 +107,11 @@ getCanFight eid iid = do
   locationId <- getId @LocationId iid
   sameLocation <- (== locationId) <$> getId @LocationId eid
   keywords <- getSet eid
-  traits <- getSet eid
   canAffordActions <- getCanAffordCost
     iid
     (EnemySource eid)
-    (ActionCost 1 (Just Action.Fight) traits)
+    (Just Action.Fight)
+    (ActionCost 1)
   engagedInvestigators <- getSet eid
   pure
     $ canAffordActions
@@ -121,7 +122,7 @@ getCanEngage
   :: ( MonadReader env m
      , HasCostPayment env
      , HasSet InvestigatorId env EnemyId
-     , HasSet Trait env EnemyId
+     , HasSet Trait env Source
      , HasId LocationId env InvestigatorId
      , HasId LocationId env EnemyId
      , HasModifiersFor env ()
@@ -133,18 +134,18 @@ getCanEngage eid iid = do
   locationId <- getId @LocationId iid
   sameLocation <- (== locationId) <$> getId @LocationId eid
   notEngaged <- notElem iid <$> getSet eid
-  traits <- getSet eid
   canAffordActions <- getCanAffordCost
     iid
     (EnemySource eid)
-    (ActionCost 1 (Just Action.Engage) traits)
+    (Just Action.Engage)
+    (ActionCost 1)
   pure $ notEngaged && canAffordActions && sameLocation
 
 getCanEvade
   :: ( MonadReader env m
      , HasCostPayment env
      , HasSet InvestigatorId env EnemyId
-     , HasSet Trait env EnemyId
+     , HasSet Trait env Source
      , HasModifiersFor env ()
      )
   => EnemyId
@@ -155,18 +156,18 @@ getCanEvade eid iid = do
   enemyModifiers <-
     map modifierType
       <$> getModifiersFor (InvestigatorSource iid) (EnemyTarget eid) ()
-  traits <- getSet eid
   canAffordActions <- getCanAffordCost
     iid
     (EnemySource eid)
-    (ActionCost 1 (Just Action.Evade) traits)
+    (Just Action.Evade)
+    (ActionCost 1)
   pure $ engaged && canAffordActions && CannotBeEvaded `notElem` enemyModifiers
 
 getCanMoveTo
   :: ( MonadReader env m
      , HasCostPayment env
      , HasSet AccessibleLocationId env LocationId
-     , HasSet Trait env LocationId
+     , HasSet Trait env Source
      , HasId LocationId env InvestigatorId
      , HasModifiersFor env ()
      )
@@ -182,11 +183,11 @@ getCanMoveTo lid iid = do
     map modifierType
       <$> getModifiersFor (InvestigatorSource iid) (LocationTarget lid) ()
   accessibleLocations <- map unAccessibleLocationId <$> getSetList locationId
-  traits <- getSet lid
   canAffordActions <- getCanAffordCost
     iid
     (LocationSource lid)
-    (ActionCost 1 (Just Action.Move) traits)
+    (Just Action.Move)
+    (ActionCost 1)
   pure
     $ lid
     `elem` accessibleLocations
@@ -202,7 +203,7 @@ getCanInvestigate
   :: ( MonadReader env m
      , HasCostPayment env
      , HasId LocationId env InvestigatorId
-     , HasSet Trait env LocationId
+     , HasSet Trait env Source
      , HasModifiersFor env ()
      )
   => LocationId
@@ -210,7 +211,6 @@ getCanInvestigate
   -> m Bool
 getCanInvestigate lid iid = do
   locationId <- getId @LocationId iid
-  traits <- getSet @Trait lid
   modifiers' <-
     map modifierType
       <$> getModifiersFor (InvestigatorSource iid) (LocationTarget lid) ()
@@ -220,7 +220,8 @@ getCanInvestigate lid iid = do
   canAffordActions <- getCanAffordCost
     iid
     (LocationSource lid)
-    (ActionCost investigateCost (Just Action.Investigate) traits)
+    (Just Action.Investigate)
+    (ActionCost investigateCost)
 
   pure $ lid == locationId && canAffordActions
  where
@@ -259,21 +260,28 @@ getCardCount
 getCardCount iid = unCardCount <$> getCount iid
 
 getCanAffordCost
-  :: (MonadReader env m, HasModifiersFor env (), HasCostPayment env)
+  :: ( MonadReader env m
+     , HasModifiersFor env ()
+     , HasCostPayment env
+     , HasSet Trait env Source
+     )
   => InvestigatorId
   -> Source
+  -> Maybe Action
   -> Cost
   -> m Bool
-getCanAffordCost iid source = \case
-  Costs xs -> and <$> traverse (getCanAffordCost iid source) xs
-  ActionCost n mAction traits -> do
+getCanAffordCost iid source mAction = \case
+  Free -> pure True
+  Costs xs -> and <$> traverse (getCanAffordCost iid source mAction) xs
+  ActionCost n -> do
     modifiers <-
       map modifierType <$> getModifiersFor source (InvestigatorTarget iid) ()
     if ActionsAreFree `elem` modifiers
       then pure True
       else do
+        traits <- getSetList @Trait source
         actionCount <- unActionRemainingCount
-          <$> getCount (mAction, setToList traits, iid)
+          <$> getCount (mAction, traits, iid)
         pure $ actionCount >= n
   ClueCost n -> do
     spendableClues <- unSpendableClueCount <$> getCount iid
@@ -325,7 +333,7 @@ targetToSource = \case
   TokenTarget tid -> TokenSource tid
   TokenFaceTarget _ -> error "Not convertable"
   DrawnTokenTarget dt -> DrawnTokenSource dt
-  TestTarget -> TestSource
+  TestTarget -> TestSource mempty
   EncounterCardTarget _ -> error "can not convert"
   ResourceTarget -> ResourceSource
   InvestigationTarget{} -> error "not converted"
@@ -352,7 +360,7 @@ sourceToTarget = \case
   ActSource aid -> ActTarget aid
   PlayerCardSource _ -> error "not implemented"
   EncounterCardSource _ -> error "not implemented"
-  TestSource -> TestTarget
+  TestSource{} -> TestTarget
   DrawnTokenSource dt -> DrawnTokenTarget dt
   ProxySource _ _ -> error "not implemented"
   EffectSource eid -> EffectTarget eid

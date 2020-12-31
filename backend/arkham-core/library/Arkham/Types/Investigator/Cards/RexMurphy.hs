@@ -1,20 +1,17 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Investigator.Cards.RexMurphy where
 
-import Arkham.Types.Ability
-import Arkham.Types.Classes
-import Arkham.Types.ClassSymbol
+module Arkham.Types.Investigator.Cards.RexMurphy
+  ( RexMurphy(..)
+  , rexMurphy
+  )
+where
+
+import Arkham.Import
+
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
-import Arkham.Types.Message
-import Arkham.Types.Query
-import Arkham.Types.Source
 import Arkham.Types.Stats
-import Arkham.Types.Token
 import Arkham.Types.Trait
-import Arkham.Types.Window
-import ClassyPrelude
-import Data.Aeson
 
 newtype RexMurphy = RexMurphy Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -39,11 +36,11 @@ rexMurphy = RexMurphy $ baseAttrs
   [Reporter]
 
 instance ActionRunner env => HasActions env RexMurphy where
-  getActions iid (AfterPassSkillTest source You n) (RexMurphy Attrs {..})
+  getActions iid (AfterPassSkillTest source You n) (RexMurphy attrs@Attrs {..})
     | iid == investigatorId && n >= 2 = do
       let
         ability = mkAbility
-          (InvestigatorSource investigatorId)
+          (toSource attrs)
           1
           (ReactionAbility (AfterPassSkillTest source You n))
       clueCount' <- unClueCount <$> getCount investigatorLocation

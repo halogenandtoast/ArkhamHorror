@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Act.Cards.UncoveringTheConspiracy where
+
+module Arkham.Types.Act.Cards.UncoveringTheConspiracy
+  ( UncoveringTheConspiracy(..)
+  , uncoveringTheConspiracy
+  )
+where
 
 import Arkham.Import
 
@@ -17,17 +22,18 @@ uncoveringTheConspiracy = UncoveringTheConspiracy
 
 instance ActionRunner env => HasActions env UncoveringTheConspiracy where
   getActions iid NonFast (UncoveringTheConspiracy x@Attrs {..}) = do
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource x)
-      (ActionCost 1 Nothing mempty)
+    canAffordActions <- getCanAffordCost iid (toSource x) Nothing (ActionCost 1)
     requiredClues <- getPlayerCountValue (PerPlayer 2)
     totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds
     if totalSpendableClues >= requiredClues
       then pure
         [ ActivateCardAbilityAction
             iid
-            (mkAbility (ActSource actId) 1 (ActionAbility 1 Nothing))
+            (mkAbility
+              (ActSource actId)
+              1
+              (ActionAbility Nothing $ ActionCost 1)
+            )
         | canAffordActions
         ]
       else getActions iid NonFast x

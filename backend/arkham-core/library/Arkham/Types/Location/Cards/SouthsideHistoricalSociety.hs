@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.SouthsideHistoricalSociety
   ( SouthsideHistoricalSociety(..)
   , southsideHistoricalSociety
@@ -31,9 +32,10 @@ instance HasModifiersFor env SouthsideHistoricalSociety where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
-  { abilityLimit = PerGame
-  }
+ability attrs =
+  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+    { abilityLimit = PerGame
+    }
 
 instance ActionRunner env => HasActions env SouthsideHistoricalSociety where
   getActions iid NonFast (SouthsideHistoricalSociety attrs@Attrs {..})
@@ -43,7 +45,8 @@ instance ActionRunner env => HasActions env SouthsideHistoricalSociety where
       canAffordActions <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 Nothing locationTraits)
+        Nothing
+        (ActionCost 1)
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction iid (ability attrs)

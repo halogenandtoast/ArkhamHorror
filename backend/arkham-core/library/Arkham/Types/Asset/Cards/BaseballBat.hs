@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.BaseballBat
   ( BaseballBat(..)
   , baseballBat
@@ -27,8 +28,10 @@ instance HasModifiersFor env BaseballBat where
   getModifiersFor _ _ _ = pure []
 
 fightAbility :: Attrs -> Ability
-fightAbility Attrs { assetId } =
-  mkAbility (AssetSource assetId) 1 (ActionAbility 1 (Just Action.Fight))
+fightAbility Attrs { assetId } = mkAbility
+  (AssetSource assetId)
+  1
+  (ActionAbility (Just Action.Fight) (ActionCost 1))
 
 instance ActionRunner env  => HasActions env BaseballBat where
   getActions iid window (BaseballBat a@Attrs {..}) | ownedBy a iid = do

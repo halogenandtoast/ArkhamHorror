@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Treachery.Cards.SpectralMist where
+
+module Arkham.Types.Treachery.Cards.SpectralMist
+  ( SpectralMist(..)
+  , spectralMist
+  )
+where
 
 import Arkham.Import
 
@@ -23,14 +28,11 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env SpectralMist
 instance ActionRunner env => HasActions env SpectralMist where
   getActions iid NonFast (SpectralMist a@Attrs {..}) = do
     investigatorLocationId <- getId @LocationId iid
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource a)
-      (ActionCost 1 Nothing treacheryTraits)
+    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
     pure
       [ ActivateCardAbilityAction
           iid
-          (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 1 Nothing))
+          (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
       | treacheryOnLocation investigatorLocationId a && canAffordActions
       ]
   getActions _ _ _ = pure []
@@ -51,7 +53,7 @@ instance (TreacheryRunner env) => RunMessage env SpectralMist where
           | x <- targetLocations
           ]
       SpectralMist <$> runMessage msg attrs
-    UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId -> do
+    UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId ->
       t <$ unshiftMessage
         (BeginSkillTest
           iid

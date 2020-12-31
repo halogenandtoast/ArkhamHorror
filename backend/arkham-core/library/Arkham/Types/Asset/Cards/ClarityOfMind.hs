@@ -22,7 +22,7 @@ instance HasActions env ClarityOfMind where
   getActions iid NonFast (ClarityOfMind a) | ownedBy a iid = pure
     [ ActivateCardAbilityAction
         iid
-        (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
+        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
     | useCount (assetUses a) > 0
     ]
   getActions _ _ _ = pure []

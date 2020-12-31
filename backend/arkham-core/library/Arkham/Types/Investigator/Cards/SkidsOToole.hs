@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Investigator.Cards.SkidsOToole
   ( SkidsOToole(..)
   , skidsOToole

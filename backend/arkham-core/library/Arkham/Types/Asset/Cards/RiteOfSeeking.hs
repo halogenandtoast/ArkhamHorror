@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.RiteOfSeeking
   ( riteOfSeeking
   , RiteOfSeeking(..)
@@ -26,7 +27,11 @@ instance ActionRunner env => HasActions env RiteOfSeeking where
     pure
       [ ActivateCardAbilityAction
           iid
-          (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Investigate)))
+          (mkAbility
+            (toSource a)
+            1
+            (ActionAbility (Just Action.Investigate) (ActionCost 1))
+          )
       | useCount (assetUses a) > 0 && investigateAvailable
       ]
   getActions _ _ _ = pure []

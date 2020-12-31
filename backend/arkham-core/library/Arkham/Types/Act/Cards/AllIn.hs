@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Act.Cards.AllIn
   ( AllIn(..)
   , allIn
@@ -30,14 +31,15 @@ instance ActionRunner env => HasActions env AllIn where
         hasParleyActionsRemaining <- getCanAffordCost
           iid
           (toSource attrs)
-          (ActionCost 1 (Just Parley) mempty)
+          (Just Parley)
+          (ActionCost 1)
         pure
           [ ActivateCardAbilityAction
               iid
               (mkAbility
                 (ProxySource (AssetSource aid) (toSource attrs))
                 1
-                (ActionAbility 1 (Just Parley))
+                (ActionAbility (Just Parley) $ ActionCost 1)
               )
           | isNothing miid
             && Just investigatorLocationId

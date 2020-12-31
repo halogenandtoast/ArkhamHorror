@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.Duke
   ( Duke(..)
   , duke
@@ -30,12 +31,16 @@ instance HasModifiersFor env Duke where
   getModifiersFor _ _ _ = pure []
 
 fightAbility :: Attrs -> Ability
-fightAbility attrs =
-  mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Fight))
+fightAbility attrs = mkAbility
+  (toSource attrs)
+  1
+  (ActionAbility (Just Action.Fight) (ActionCost 1))
 
 investigateAbility :: Attrs -> Ability
-investigateAbility attrs =
-  mkAbility (toSource attrs) 2 (ActionAbility 1 (Just Action.Investigate))
+investigateAbility attrs = mkAbility
+  (toSource attrs)
+  2
+  (ActionAbility (Just Action.Investigate) (ActionCost 1))
 
 instance ActionRunner env => HasActions env Duke where
   getActions iid NonFast (Duke a) | ownedBy a iid = do

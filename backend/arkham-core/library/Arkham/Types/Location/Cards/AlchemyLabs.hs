@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.AlchemyLabs
   ( alchemyLabs
   , AlchemyLabs(..)
@@ -34,21 +35,22 @@ instance HasModifiersFor env AlchemyLabs where
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env AlchemyLabs where
-  getActions iid NonFast (AlchemyLabs attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions iid NonFast attrs
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource attrs)
-      (ActionCost 1 Nothing locationTraits)
-    let
-      ability =
-        mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Investigate))
-
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction iid ability
-         | iid `elem` locationInvestigators && canAffordActions
-         ]
+  getActions iid NonFast (AlchemyLabs attrs@Attrs {..}) | locationRevealed =
+    withBaseActions iid NonFast attrs $ do
+      canAffordActions <- getCanAffordCost
+        iid
+        (toSource attrs)
+        Nothing
+        (ActionCost 1)
+      let
+        ability = mkAbility
+          (toSource attrs)
+          1
+          (ActionAbility (Just Action.Investigate) (ActionCost 1))
+      pure
+        [ ActivateCardAbilityAction iid ability
+        | iid `elem` locationInvestigators && canAffordActions
+        ]
   getActions iid window (AlchemyLabs attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env AlchemyLabs where

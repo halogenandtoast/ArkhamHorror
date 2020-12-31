@@ -14,3 +14,4 @@ data Cost
   | DiscardCost Int (Maybe PlayerCardType) (HashSet Trait)
   | ClueCost Int
   | ResourceCost Int
+  | Costs [Cost]

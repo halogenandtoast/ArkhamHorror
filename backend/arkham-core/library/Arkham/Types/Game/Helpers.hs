@@ -265,6 +265,7 @@ getCanAffordCost
   -> Cost
   -> m Bool
 getCanAffordCost iid source = \case
+  Costs xs -> and <$> traverse (getCanAffordCost iid source) xs
   ActionCost n mAction traits -> do
     modifiers <-
       map modifierType <$> getModifiersFor source (InvestigatorTarget iid) ()

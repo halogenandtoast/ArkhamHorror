@@ -121,7 +121,7 @@ export default defineComponent({
     const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
     function abilityLabel(idx: number) {
-      return choices.value[idx].contents[1].type.contents[1];
+      return choices.value[idx].contents[1].type.contents[0];
     }
 
     const abilities = computed(() => {

@@ -9,7 +9,6 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype OldBookOfLore = OldBookOfLore Attrs
@@ -22,15 +21,13 @@ oldBookOfLore uuid =
 instance HasModifiersFor env OldBookOfLore where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env OldBookOfLore where
-  getActions iid NonFast (OldBookOfLore a) | ownedBy a iid = do
-    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
-    pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
-      | not (assetExhausted a) && canAffordActions
-      ]
+instance HasActions env OldBookOfLore where
+  getActions iid NonFast (OldBookOfLore a) | ownedBy a iid = pure
+    [ ActivateCardAbilityAction
+        iid
+        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
+    | not (assetExhausted a)
+    ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env OldBookOfLore where

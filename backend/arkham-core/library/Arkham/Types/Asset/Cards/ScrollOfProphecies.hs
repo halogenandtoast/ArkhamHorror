@@ -9,7 +9,6 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
@@ -24,15 +23,13 @@ scrollOfProphecies uuid =
 instance HasModifiersFor env ScrollOfProphecies where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env ScrollOfProphecies where
-  getActions iid NonFast (ScrollOfProphecies a) | ownedBy a iid = do
-    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
-    pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
-      | not (assetExhausted a) && canAffordActions && useCount (assetUses a) > 0
-      ]
+instance HasActions env ScrollOfProphecies where
+  getActions iid NonFast (ScrollOfProphecies a) | ownedBy a iid = pure
+    [ ActivateCardAbilityAction
+        iid
+        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
+    | not (assetExhausted a) && useCount (assetUses a) > 0
+    ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env ScrollOfProphecies where

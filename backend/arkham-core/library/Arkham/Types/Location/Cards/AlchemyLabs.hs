@@ -37,11 +37,6 @@ instance HasModifiersFor env AlchemyLabs where
 instance ActionRunner env => HasActions env AlchemyLabs where
   getActions iid NonFast (AlchemyLabs attrs@Attrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ do
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        Nothing
-        (ActionCost 1)
       let
         ability = mkAbility
           (toSource attrs)
@@ -49,7 +44,7 @@ instance ActionRunner env => HasActions env AlchemyLabs where
           (ActionAbility (Just Action.Investigate) (ActionCost 1))
       pure
         [ ActivateCardAbilityAction iid ability
-        | iid `elem` locationInvestigators && canAffordActions
+        | iid `elem` locationInvestigators
         ]
   getActions iid window (AlchemyLabs attrs) = getActions iid window attrs
 

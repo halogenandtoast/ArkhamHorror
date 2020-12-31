@@ -46,16 +46,10 @@ ability attrs = mkAbility
 
 instance ActionRunner env => HasActions env FauborgMarigny where
   getActions iid NonFast (FauborgMarigny attrs@Attrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ do
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        (Just Action.Resign)
-        (ActionCost 1)
-      pure
-        [ ActivateCardAbilityAction iid (ability attrs)
-        | iid `member` locationInvestigators && canAffordActions
-        ]
+    withBaseActions iid NonFast attrs $ pure
+      [ ActivateCardAbilityAction iid (ability attrs)
+      | iid `member` locationInvestigators
+      ]
   getActions i window (FauborgMarigny attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env FauborgMarigny where

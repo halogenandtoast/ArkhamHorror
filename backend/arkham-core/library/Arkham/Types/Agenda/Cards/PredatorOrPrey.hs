@@ -9,7 +9,6 @@ where
 import Arkham.Import
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 
 newtype PredatorOrPrey = PredatorOrPrey Attrs
@@ -22,23 +21,16 @@ predatorOrPrey =
 instance HasModifiersFor env PredatorOrPrey where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env  => HasActions env PredatorOrPrey where
-  getActions iid NonFast (PredatorOrPrey attrs) = do
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource attrs)
-      (Just Action.Resign)
-      (ActionCost 1)
-    pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility
-            (toSource attrs)
-            1
-            (ActionAbility (Just Action.Resign) (ActionCost 1))
-          )
-      | canAffordActions
-      ]
+instance HasActions env PredatorOrPrey where
+  getActions iid NonFast (PredatorOrPrey attrs) = pure
+    [ ActivateCardAbilityAction
+        iid
+        (mkAbility
+          (toSource attrs)
+          1
+          (ActionAbility (Just Action.Resign) (ActionCost 1))
+        )
+    ]
   getActions _ _ _ = pure []
 
 instance (AgendaRunner env) => RunMessage env PredatorOrPrey where

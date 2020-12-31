@@ -32,16 +32,11 @@ instance ActionRunner env => HasActions env WrackedByNightmares where
     withTreacheryInvestigator a $ \tormented -> do
       treacheryLocation <- getId tormented
       investigatorLocationId <- getId @LocationId iid
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource a)
-        Nothing
-        (ActionCost 2)
       pure
         [ ActivateCardAbilityAction
             iid
             (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 2))
-        | treacheryLocation == investigatorLocationId && canAffordActions
+        | treacheryLocation == investigatorLocationId
         ]
   getActions _ _ _ = pure []
 

@@ -27,24 +27,13 @@ ability :: Attrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
 
-instance
-  ( HasId LocationId env InvestigatorId
-  , HasCostPayment env
-  , HasModifiersFor env ()
-  , HasSet Trait env Source
-  )
-  => HasActions env JazzMulligan where
+instance HasId LocationId env InvestigatorId => HasActions env JazzMulligan where
   getActions iid NonFast (JazzMulligan attrs) = do
     lid <- getId iid
-    canAfford <- getCanAffordCost
-      iid
-      (toSource attrs)
-      (Just Parley)
-      (ActionCost 1)
     case assetLocation attrs of
       Just location -> pure
         [ ActivateCardAbilityAction iid (ability attrs)
-        | lid == location && isNothing (assetInvestigator attrs) && canAfford
+        | lid == location && isNothing (assetInvestigator attrs)
         ]
       _ -> pure mempty
   getActions iid window (JazzMulligan attrs) = getActions iid window attrs

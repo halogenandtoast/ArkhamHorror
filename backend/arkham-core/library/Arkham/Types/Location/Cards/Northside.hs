@@ -41,25 +41,14 @@ ability attrs =
     }
 
 instance ActionRunner env => HasActions env Northside where
-  getActions iid NonFast (Northside attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions iid NonFast attrs
-    unused <- getGroupIsUnused (ability attrs)
-    resourceCount <- getResourceCount iid
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource attrs)
-      Nothing
-      (ActionCost 1)
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction iid (ability attrs)
-         | resourceCount
-           >= 5
-           && unused
-           && iid
-           `member` locationInvestigators
-           && canAffordActions
-         ] -- GROUP LIMIT
+  getActions iid NonFast (Northside attrs@Attrs {..}) | locationRevealed =
+    withBaseActions iid NonFast attrs $ do
+      unused <- getGroupIsUnused (ability attrs)
+      resourceCount <- getResourceCount iid
+      pure
+        [ ActivateCardAbilityAction iid (ability attrs)
+        | resourceCount >= 5 && unused && iid `member` locationInvestigators
+        ] -- GROUP LIMIT
   getActions iid window (Northside attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env Northside where

@@ -41,22 +41,13 @@ instance ActionRunner env => HasActions env DowntownFirstBankOfArkham where
   getActions iid NonFast (DowntownFirstBankOfArkham attrs@Attrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       unused <- getIsUnused iid (ability attrs)
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        Nothing
-        (ActionCost 1)
       canGainResources <-
         notElem CannotGainResources
         . map modifierType
         <$> getInvestigatorModifiers iid (toSource attrs)
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
-        | unused
-          && canGainResources
-          && iid
-          `member` locationInvestigators
-          && canAffordActions
+        | unused && canGainResources && iid `member` locationInvestigators
         ]
   getActions iid window (DowntownFirstBankOfArkham attrs) =
     getActions iid window attrs

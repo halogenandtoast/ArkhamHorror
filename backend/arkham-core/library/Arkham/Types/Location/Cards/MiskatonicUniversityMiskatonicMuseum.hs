@@ -38,24 +38,12 @@ instance HasModifiersFor env MiskatonicUniversityMiskatonicMuseum where
 
 instance ActionRunner env => HasActions env MiskatonicUniversityMiskatonicMuseum where
   getActions iid NonFast (MiskatonicUniversityMiskatonicMuseum attrs@Attrs {..})
-    | locationRevealed = do
-      baseActions <- getActions iid NonFast attrs
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        Nothing
-        (ActionCost 1)
-      pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction
-               iid
-               (mkAbility
-                 (toSource attrs)
-                 1
-                 (ActionAbility Nothing $ ActionCost 1)
-               )
-           | iid `member` locationInvestigators && canAffordActions
-           ]
+    | locationRevealed = withBaseActions iid NonFast attrs $ pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+      | iid `member` locationInvestigators
+      ]
   getActions iid window (MiskatonicUniversityMiskatonicMuseum attrs) =
     getActions iid window attrs
 

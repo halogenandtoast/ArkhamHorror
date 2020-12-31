@@ -38,11 +38,6 @@ instance ActionRunner env => HasActions env Umordhoth where
         Nothing -> pure []
         Just aid -> do
           miid <- fmap unOwnerId <$> getId aid
-          canAffordActions <- getCanAffordCost
-            iid
-            (toSource attrs)
-            Nothing
-            (ActionCost 1)
           pure
             [ ActivateCardAbilityAction
                 iid
@@ -51,11 +46,7 @@ instance ActionRunner env => HasActions env Umordhoth where
                   1
                   (ActionAbility Nothing $ ActionCost 1)
                 )
-            | canAffordActions
-              && locationId
-              == enemyLocation
-              && miid
-              == Just iid
+            | locationId == enemyLocation && miid == Just iid
             ]
   getActions i window (Umordhoth attrs) = getActions i window attrs
 

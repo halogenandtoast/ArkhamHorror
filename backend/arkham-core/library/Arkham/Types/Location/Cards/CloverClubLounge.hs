@@ -33,7 +33,13 @@ instance HasModifiersFor env CloverClubLounge where
 
 ability :: Attrs -> Ability
 ability attrs =
-  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+  (mkAbility
+      (toSource attrs)
+      1
+      (ActionAbility Nothing
+      $ Costs [ActionCost 1, DiscardCost 1 (Just AssetType) (singleton Ally)]
+      )
+    )
     { abilityLimit = PerGame
     }
 
@@ -41,15 +47,10 @@ instance ActionRunner env => HasActions env CloverClubLounge where
   getActions iid NonFast (CloverClubLounge attrs@Attrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       step <- unActStep . getStep <$> ask
-      canAfford <- getCanAffordCost
-        iid
-        (toSource attrs)
-        Nothing
-        (Costs [ActionCost 1, DiscardCost 1 (Just AssetType) (singleton Ally)])
       unused <- getIsUnused iid (ability attrs)
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
-        | iid `member` locationInvestigators && canAfford && step == 1 && unused
+        | iid `member` locationInvestigators && step == 1 && unused
         ]
   getActions iid window (CloverClubLounge attrs) = getActions iid window attrs
 

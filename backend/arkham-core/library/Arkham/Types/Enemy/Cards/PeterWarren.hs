@@ -34,11 +34,6 @@ instance ActionRunner env => HasActions env PeterWarren where
     withBaseActions iid NonFast attrs $ do
       spendableClueCount <- getSpendableClueCount [iid]
       locationId <- getId @LocationId iid
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        (Just Parley)
-        (ActionCost 1)
       pure
         [ ActivateCardAbilityAction
             iid
@@ -47,8 +42,7 @@ instance ActionRunner env => HasActions env PeterWarren where
               1
               (ActionAbility (Just Parley) (ActionCost 1))
             )
-        | canAffordActions
-          && spendableClueCount
+        | spendableClueCount
           >= 2
           && locationId
           == enemyLocation

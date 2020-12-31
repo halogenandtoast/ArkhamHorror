@@ -35,24 +35,14 @@ instance HasModifiersFor env TwistedUnderbrush where
 
 instance ActionRunner env => HasActions env TwistedUnderbrush where
   getActions iid NonFast (TwistedUnderbrush attrs@Attrs {..})
-    | locationRevealed = do
-      baseActions <- getActions iid NonFast attrs
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        Nothing
-        (ActionCost 1)
+    | locationRevealed = withBaseActions iid NonFast attrs $ do
       pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction
-               iid
-               (mkAbility
-                 (toSource attrs)
-                 1
-                 (ActionAbility Nothing $ ActionCost 1)
-               )
-           | iid `member` locationInvestigators && canAffordActions
-           ]
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
+            )
+        | iid `member` locationInvestigators
+        ]
   getActions i window (TwistedUnderbrush attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env TwistedUnderbrush where

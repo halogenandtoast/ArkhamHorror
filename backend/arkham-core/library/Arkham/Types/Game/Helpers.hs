@@ -1,8 +1,11 @@
+{-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
 module Arkham.Types.Game.Helpers where
 
 import Arkham.Import
 
-import Arkham.Types.Action
+import Arkham.Types.Action hiding (Ability)
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.CampaignLogKey
 import Arkham.Types.Keyword
@@ -17,6 +20,84 @@ withBaseActions
   -> m [Message]
   -> m [Message]
 withBaseActions iid window a f = (<>) <$> getActions iid window a <*> f
+
+getCanAffordAbility
+  :: ( MonadReader env m
+     , HasModifiersFor env ()
+     , HasCostPayment env
+     , HasSet Trait env Source
+     )
+  => InvestigatorId
+  -> Ability
+  -> m Bool
+getCanAffordAbility iid Ability {..} = case abilityType of
+  ActionAbility mAction cost -> getCanAffordCost iid abilitySource mAction cost
+  _ -> pure True
+
+getCanAffordCost
+  :: ( MonadReader env m
+     , HasModifiersFor env ()
+     , HasCostPayment env
+     , HasSet Trait env Source
+     )
+  => InvestigatorId
+  -> Source
+  -> Maybe Action
+  -> Cost
+  -> m Bool
+getCanAffordCost iid source mAction = \case
+  Free -> pure True
+  Costs xs -> and <$> traverse (getCanAffordCost iid source mAction) xs
+  ActionCost n -> do
+    modifiers <-
+      map modifierType <$> getModifiersFor source (InvestigatorTarget iid) ()
+    if ActionsAreFree `elem` modifiers
+      then pure True
+      else do
+        traits <- getSetList @Trait source
+        actionCount <- unActionRemainingCount
+          <$> getCount (mAction, traits, iid)
+        pure $ actionCount >= n
+  ClueCost n -> do
+    spendableClues <- unSpendableClueCount <$> getCount iid
+    pure $ spendableClues >= n
+  ResourceCost n -> do
+    resources <- unResourceCount <$> getCount iid
+    pure $ resources >= n
+  DiscardCost n mCardType traits -> do
+    cards <- mapMaybe (preview _PlayerCard) <$> getHandOf iid
+    let
+      cardTypeFilter = case mCardType of
+        Nothing -> const True
+        Just cardType -> (== cardType) . pcCardType
+    let
+      traitFilter = if null traits
+        then const True
+        else not . null . intersect traits . pcTraits
+    pure
+      $ length (filter (and . sequence [traitFilter, cardTypeFilter]) cards)
+      >= n
+
+instance
+  ( HasActions env ActionType
+  , HasModifiersFor env ()
+  , HasList HandCard env InvestigatorId
+  , HasCount ResourceCount env InvestigatorId
+  , HasCount SpendableClueCount env InvestigatorId
+  , HasCount ActionRemainingCount env (Maybe Action, [Trait], InvestigatorId)
+  , HasSet Trait env Source
+  )
+  => HasActions env () where
+  getActions iid window _ = do
+    actions' <- concat <$> traverse
+      (getActions iid window)
+      ([minBound .. maxBound] :: [ActionType])
+    let
+      canAffordAction = \case
+        ActivateCardAbilityAction _ ability -> getCanAffordAbility iid ability
+        _ -> pure True
+    filterM canAffordAction actions'
+
 
 enemyAtInvestigatorLocation
   :: ( MonadReader env m
@@ -258,50 +339,6 @@ getCardCount
   => InvestigatorId
   -> m Int
 getCardCount iid = unCardCount <$> getCount iid
-
-getCanAffordCost
-  :: ( MonadReader env m
-     , HasModifiersFor env ()
-     , HasCostPayment env
-     , HasSet Trait env Source
-     )
-  => InvestigatorId
-  -> Source
-  -> Maybe Action
-  -> Cost
-  -> m Bool
-getCanAffordCost iid source mAction = \case
-  Free -> pure True
-  Costs xs -> and <$> traverse (getCanAffordCost iid source mAction) xs
-  ActionCost n -> do
-    modifiers <-
-      map modifierType <$> getModifiersFor source (InvestigatorTarget iid) ()
-    if ActionsAreFree `elem` modifiers
-      then pure True
-      else do
-        traits <- getSetList @Trait source
-        actionCount <- unActionRemainingCount
-          <$> getCount (mAction, traits, iid)
-        pure $ actionCount >= n
-  ClueCost n -> do
-    spendableClues <- unSpendableClueCount <$> getCount iid
-    pure $ spendableClues >= n
-  ResourceCost n -> do
-    resources <- unResourceCount <$> getCount iid
-    pure $ resources >= n
-  DiscardCost n mCardType traits -> do
-    cards <- mapMaybe (preview _PlayerCard) <$> getHandOf iid
-    let
-      cardTypeFilter = case mCardType of
-        Nothing -> const True
-        Just cardType -> (== cardType) . pcCardType
-    let
-      traitFilter = if null traits
-        then const True
-        else not . null . intersect traits . pcTraits
-    pure
-      $ length (filter (and . sequence [traitFilter, cardTypeFilter]) cards)
-      >= n
 
 toModifier :: Entity a => a -> ModifierType -> Modifier
 toModifier = Modifier . toSource

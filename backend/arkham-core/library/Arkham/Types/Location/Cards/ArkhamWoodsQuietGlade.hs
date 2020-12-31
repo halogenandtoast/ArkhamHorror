@@ -46,14 +46,9 @@ instance ActionRunner env => HasActions env ArkhamWoodsQuietGlade where
   getActions iid NonFast (ArkhamWoodsQuietGlade attrs@Attrs {..})
     | locationRevealed = withBaseActions iid NonFast attrs $ do
       unused <- getIsUnused iid (ability attrs)
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        Nothing
-        (ActionCost 1)
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
-        | unused && iid `elem` locationInvestigators && canAffordActions
+        | unused && iid `elem` locationInvestigators
         ]
   getActions iid window (ArkhamWoodsQuietGlade attrs) =
     getActions iid window attrs

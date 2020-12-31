@@ -37,22 +37,16 @@ instance HasModifiersFor env BackAlley where
 
 instance ActionRunner env => HasActions env BackAlley where
   getActions iid NonFast (BackAlley attrs@Attrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ do
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        (Just Action.Resign)
-        (ActionCost 1)
-      pure
-        [ ActivateCardAbilityAction
-            iid
-            (mkAbility
-              (toSource attrs)
-              1
-              (ActionAbility (Just Action.Resign) (ActionCost 1))
-            )
-        | iid `member` locationInvestigators && canAffordActions
-        ]
+    withBaseActions iid NonFast attrs $ pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility
+            (toSource attrs)
+            1
+            (ActionAbility (Just Action.Resign) (ActionCost 1))
+          )
+      | iid `member` locationInvestigators
+      ]
   getActions iid window (BackAlley attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env BackAlley where

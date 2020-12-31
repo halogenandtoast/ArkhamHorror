@@ -20,19 +20,13 @@ theNecronomiconOlausWormiusTranslation uuid =
   TheNecronomiconOlausWormiusTranslation
     $ (baseAttrs uuid "02140") { assetSlots = [HandSlot] }
 
-instance ActionRunner env => HasActions env TheNecronomiconOlausWormiusTranslation where
+instance HasActions env TheNecronomiconOlausWormiusTranslation where
   getActions iid NonFast (TheNecronomiconOlausWormiusTranslation a)
     | ownedBy a iid = do
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource a)
-        Nothing
-        (ActionCost 1)
       pure
         [ ActivateCardAbilityAction
             iid
             (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
-        | canAffordActions
         ]
   getActions _ _ _ = pure []
 

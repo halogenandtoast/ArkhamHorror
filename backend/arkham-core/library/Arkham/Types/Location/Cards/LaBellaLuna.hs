@@ -40,16 +40,10 @@ ability attrs = mkAbility
 
 instance ActionRunner env => HasActions env LaBellaLuna where
   getActions iid NonFast (LaBellaLuna attrs@Attrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ do
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        (Just Action.Resign)
-        (ActionCost 1)
-      pure
-        [ ActivateCardAbilityAction iid (ability attrs)
-        | iid `member` locationInvestigators && canAffordActions
-        ]
+    withBaseActions iid NonFast attrs $ pure
+      [ ActivateCardAbilityAction iid (ability attrs)
+      | iid `member` locationInvestigators
+      ]
   getActions iid window (LaBellaLuna attrs) = getActions iid window attrs
 
 instance LocationRunner env => RunMessage env LaBellaLuna where

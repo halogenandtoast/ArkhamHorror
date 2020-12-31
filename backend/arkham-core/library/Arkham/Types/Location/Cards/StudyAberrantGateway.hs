@@ -35,17 +35,12 @@ instance ActionRunner env => HasActions env StudyAberrantGateway where
     | iid `elem` locationInvestigators attrs
     = withBaseActions iid NonFast attrs $ do
       leadInvestigatorId <- getLeadInvestigatorId
-      canActivate <- getCanAffordCost
-        iid
-        (toSource attrs)
-        Nothing
-        (ActionCost 2)
       pure
         [ ActivateCardAbilityAction
             iid
             (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2)
             )
-        | canActivate && leadInvestigatorId == iid
+        | leadInvestigatorId == iid
         ]
   getActions iid window (StudyAberrantGateway attrs) =
     getActions iid window attrs

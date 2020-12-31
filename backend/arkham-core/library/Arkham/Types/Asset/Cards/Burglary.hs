@@ -10,7 +10,6 @@ import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype Burglary = Burglary Attrs
@@ -28,17 +27,9 @@ ability attrs = mkAbility
   1
   (ActionAbility (Just Action.Investigate) (ActionCost 1))
 
-instance ActionRunner env => HasActions env Burglary where
+instance HasActions env Burglary where
   getActions iid NonFast (Burglary a) | ownedBy a iid = do
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource a)
-      (Just Action.Investigate)
-      (ActionCost 1)
-    pure
-      [ ActivateCardAbilityAction iid (ability a)
-      | not (assetExhausted a) && canAffordActions
-      ]
+    pure [ ActivateCardAbilityAction iid (ability a) | not (assetExhausted a) ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Burglary where

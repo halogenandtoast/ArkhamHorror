@@ -34,22 +34,16 @@ instance HasModifiersFor env GardenDistrict where
 
 instance ActionRunner env => HasActions env GardenDistrict where
   getActions iid NonFast (GardenDistrict attrs@Attrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ do
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        Nothing
-        (ActionCost 1)
-      pure
-        [ ActivateCardAbilityAction
-            iid
-            (mkAbility
-              (LocationSource locationId)
-              1
-              (ActionAbility Nothing $ ActionCost 1)
-            )
-        | iid `member` locationInvestigators && canAffordActions
-        ]
+    withBaseActions iid NonFast attrs $ pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility
+            (LocationSource locationId)
+            1
+            (ActionAbility Nothing $ ActionCost 1)
+          )
+      | iid `member` locationInvestigators
+      ]
   getActions i window (GardenDistrict attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env GardenDistrict where

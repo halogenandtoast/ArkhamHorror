@@ -15,7 +15,7 @@ import Arkham.Prelude hiding (to)
 
 import Arkham.Types.Ability
 import Arkham.Types.ActId
-import Arkham.Types.Action
+import Arkham.Types.Action hiding (Ability)
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.AssetId
 import Arkham.Types.Card
@@ -317,11 +317,6 @@ class HasActions env a where
   getActions :: (MonadReader env m, MonadIO m) => InvestigatorId -> Window -> a -> m [Message]
   default getActions :: (Generic a, HasActions1 env (Rep a), MonadIO m, MonadReader env m) => InvestigatorId -> Window -> a -> m [Message]
   getActions = defaultGetActions
-
-instance HasActions env ActionType => HasActions env () where
-  getActions iid window _ = concat <$> traverse
-    (getActions iid window)
-    ([minBound .. maxBound] :: [ActionType])
 
 class HasModifiersFor1 env f where
   getModifiersFor1 :: (MonadReader env m) => Source -> Target -> f p -> m [Modifier]

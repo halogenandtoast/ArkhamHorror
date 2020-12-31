@@ -31,13 +31,9 @@ ability :: Attrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
 
-instance ActionRunner env => HasActions env CatBurgler1 where
-  getActions iid NonFast (CatBurgler1 a) | ownedBy a iid = do
-    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
-    pure
-      [ ActivateCardAbilityAction iid (ability a)
-      | not (assetExhausted a) && canAffordActions
-      ]
+instance HasActions env CatBurgler1 where
+  getActions iid NonFast (CatBurgler1 a) | ownedBy a iid =
+    pure [ ActivateCardAbilityAction iid (ability a) | not (assetExhausted a) ]
   getActions i window (CatBurgler1 x) = getActions i window x
 
 instance AssetRunner env => RunMessage env CatBurgler1 where

@@ -28,11 +28,6 @@ instance ActionRunner env => HasActions env AllIn where
       Just aid -> do
         miid <- fmap unOwnerId <$> getId aid
         assetLocationId <- getId aid
-        hasParleyActionsRemaining <- getCanAffordCost
-          iid
-          (toSource attrs)
-          (Just Parley)
-          (ActionCost 1)
         pure
           [ ActivateCardAbilityAction
               iid
@@ -41,10 +36,7 @@ instance ActionRunner env => HasActions env AllIn where
                 1
                 (ActionAbility (Just Parley) $ ActionCost 1)
               )
-          | isNothing miid
-            && Just investigatorLocationId
-            == assetLocationId
-            && hasParleyActionsRemaining
+          | isNothing miid && Just investigatorLocationId == assetLocationId
           ]
   getActions i window (AllIn x) = getActions i window x
 

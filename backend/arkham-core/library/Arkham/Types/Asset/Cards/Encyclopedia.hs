@@ -24,15 +24,13 @@ encyclopedia uuid =
 instance HasModifiersFor env Encyclopedia where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env Encyclopedia where
-  getActions iid NonFast (Encyclopedia a) | ownedBy a iid = do
-    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
-    pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
-      | not (assetExhausted a) && useCount (assetUses a) > 0 && canAffordActions
-      ]
+instance HasActions env Encyclopedia where
+  getActions iid NonFast (Encyclopedia a) | ownedBy a iid = pure
+    [ ActivateCardAbilityAction
+        iid
+        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
+    | not (assetExhausted a) && useCount (assetUses a) > 0
+    ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env Encyclopedia where

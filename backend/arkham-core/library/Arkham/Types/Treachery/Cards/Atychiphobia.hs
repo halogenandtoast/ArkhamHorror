@@ -9,7 +9,6 @@ where
 import Arkham.Import
 
 import Arkham.Types.Treachery.Attrs
-import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype Atychiphobia = Atychiphobia Attrs
@@ -24,14 +23,13 @@ instance HasModifiersFor env Atychiphobia where
 instance ActionRunner env => HasActions env Atychiphobia where
   getActions iid NonFast (Atychiphobia a@Attrs {..}) =
     withTreacheryInvestigator a $ \tormented -> do
-      canActivate <- getCanAffordCost iid (toSource a) Nothing (ActionCost 2)
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
       pure
         [ ActivateCardAbilityAction
             iid
             (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 2))
-        | treacheryLocation == investigatorLocationId && canActivate
+        | treacheryLocation == investigatorLocationId
         ]
   getActions _ _ _ = pure []
 

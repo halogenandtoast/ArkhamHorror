@@ -22,7 +22,6 @@ uncoveringTheConspiracy = UncoveringTheConspiracy
 
 instance ActionRunner env => HasActions env UncoveringTheConspiracy where
   getActions iid NonFast (UncoveringTheConspiracy x@Attrs {..}) = do
-    canAffordActions <- getCanAffordCost iid (toSource x) Nothing (ActionCost 1)
     requiredClues <- getPlayerCountValue (PerPlayer 2)
     totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds
     if totalSpendableClues >= requiredClues
@@ -34,7 +33,6 @@ instance ActionRunner env => HasActions env UncoveringTheConspiracy where
               1
               (ActionAbility Nothing $ ActionCost 1)
             )
-        | canAffordActions
         ]
       else getActions iid NonFast x
   getActions iid window (UncoveringTheConspiracy attrs) =

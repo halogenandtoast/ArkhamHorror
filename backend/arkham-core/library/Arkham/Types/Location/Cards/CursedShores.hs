@@ -33,19 +33,12 @@ instance HasModifiersFor env CursedShores where
 
 instance ActionRunner env => HasActions env CursedShores where
   getActions iid NonFast (CursedShores attrs@Attrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ do
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        Nothing
-        (ActionCost 1)
-      pure
-        [ ActivateCardAbilityAction
-            iid
-            (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
-            )
-        | iid `member` locationInvestigators && canAffordActions
-        ]
+    withBaseActions iid NonFast attrs $ pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+      | iid `member` locationInvestigators
+      ]
   getActions i window (CursedShores attrs) = getActions i window attrs
 
 instance LocationRunner env => RunMessage env CursedShores where

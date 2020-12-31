@@ -20,17 +20,14 @@ ricesWhereabouts =
   RicesWhereabouts $ baseAttrs "02046" "Rice's Whereabouts" (Act 2 A) Nothing
 
 ability :: Attrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
+ability attrs = mkAbility
+  (toSource attrs)
+  1
+  (ActionAbility Nothing $ Costs [ActionCost 1, ClueCost 1])
 
 instance ActionRunner env => HasActions env RicesWhereabouts where
-  getActions iid NonFast (RicesWhereabouts x) = do
-    canAfford <- getCanAffordCost
-      iid
-      (toSource x)
-      Nothing
-      (Costs [ActionCost 1, ClueCost 1])
-    pure [ ActivateCardAbilityAction iid (ability x) | canAfford ]
+  getActions iid NonFast (RicesWhereabouts x) =
+    pure [ActivateCardAbilityAction iid (ability x)]
   getActions iid window (RicesWhereabouts x) = getActions iid window x
 
 instance ActRunner env => RunMessage env RicesWhereabouts where

@@ -25,15 +25,13 @@ instance HasModifiersFor env DreamsOfRlyeh where
       else []
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env DreamsOfRlyeh where
-  getActions iid NonFast (DreamsOfRlyeh a@Attrs {..}) = do
-    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
-    pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
-      | treacheryOnInvestigator iid a && canAffordActions
-      ]
+instance HasActions env DreamsOfRlyeh where
+  getActions iid NonFast (DreamsOfRlyeh a@Attrs {..}) = pure
+    [ ActivateCardAbilityAction
+        iid
+        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
+    | treacheryOnInvestigator iid a
+    ]
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env DreamsOfRlyeh where

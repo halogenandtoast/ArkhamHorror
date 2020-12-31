@@ -37,32 +37,21 @@ instance HasModifiersFor env TrappersCabin where
 
 instance ActionRunner env => HasActions env TrappersCabin where
   getActions iid NonFast (TrappersCabin attrs@Attrs {..}) | locationRevealed =
-    do
+    withBaseActions iid NonFast attrs $ do
       assetNotTaken <- isNothing
         <$> getId @(Maybe StoryAssetId) (CardCode "81020")
-      baseActions <- getActions iid NonFast attrs
       resourceCount <- getResourceCount iid
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        Nothing
-        (ActionCost 1)
       pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction
-               iid
-               (mkAbility
-                 (toSource attrs)
-                 1
-                 (ActionAbility Nothing $ ActionCost 1)
-               )
-           | iid
-             `member` locationInvestigators
-             && resourceCount
-             >= 5
-             && canAffordActions
-             && assetNotTaken
-           ]
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
+            )
+        | iid
+          `member` locationInvestigators
+          && resourceCount
+          >= 5
+          && assetNotTaken
+        ]
   getActions i window (TrappersCabin attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env TrappersCabin where

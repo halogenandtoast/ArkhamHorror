@@ -9,7 +9,6 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
@@ -27,13 +26,9 @@ ability :: Attrs -> Ability
 ability attrs =
   mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
 
-instance ActionRunner env => HasActions env FirstAid where
-  getActions iid NonFast (FirstAid a) | ownedBy a iid = do
-    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
-    pure
-      [ ActivateCardAbilityAction iid (ability a)
-      | useCount (assetUses a) > 0 && canAffordActions
-      ]
+instance HasActions env FirstAid where
+  getActions iid NonFast (FirstAid a) | ownedBy a iid = pure
+    [ ActivateCardAbilityAction iid (ability a) | useCount (assetUses a) > 0 ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env FirstAid where

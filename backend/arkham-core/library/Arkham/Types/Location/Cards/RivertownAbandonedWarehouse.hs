@@ -40,11 +40,6 @@ ability attrs =
 instance ActionRunner env => HasActions env RivertownAbandonedWarehouse where
   getActions iid NonFast (RivertownAbandonedWarehouse attrs)
     | locationRevealed attrs = withBaseActions iid NonFast attrs $ do
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        Nothing
-        (ActionCost 1)
       hasWillpowerCards <- any (elem SkillWillpower . getSkillIcons)
         <$> getHandOf iid
       unused <- getGroupIsUnused (ability attrs)
@@ -53,7 +48,6 @@ instance ActionRunner env => HasActions env RivertownAbandonedWarehouse where
         | unused
           && iid
           `member` locationInvestigators attrs
-          && canAffordActions
           && hasWillpowerCards
         ]
   getActions iid window (RivertownAbandonedWarehouse attrs) =

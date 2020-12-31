@@ -9,7 +9,6 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype MedicalTexts = MedicalTexts Attrs
@@ -22,15 +21,12 @@ medicalTexts uuid =
 instance HasModifiersFor env MedicalTexts where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env MedicalTexts where
-  getActions iid NonFast (MedicalTexts a) | ownedBy a iid = do
-    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
-    pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
-      | canAffordActions
-      ]
+instance HasActions env MedicalTexts where
+  getActions iid NonFast (MedicalTexts a) | ownedBy a iid = pure
+    [ ActivateCardAbilityAction
+        iid
+        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
+    ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env MedicalTexts where

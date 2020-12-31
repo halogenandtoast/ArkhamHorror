@@ -9,7 +9,6 @@ where
 import Arkham.Import
 
 import Arkham.Types.Treachery.Attrs
-import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype Hypochondria = Hypochondria Attrs
@@ -26,16 +25,11 @@ instance ActionRunner env => HasActions env Hypochondria where
     withTreacheryInvestigator a $ \tormented -> do
       treacheryLocation <- getId tormented
       investigatorLocationId <- getId @LocationId iid
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource a)
-        Nothing
-        (ActionCost 2)
       pure
         [ ActivateCardAbilityAction
             iid
             (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 2))
-        | canAffordActions && treacheryLocation == investigatorLocationId
+        | treacheryLocation == investigatorLocationId
         ]
   getActions _ _ _ = pure []
 

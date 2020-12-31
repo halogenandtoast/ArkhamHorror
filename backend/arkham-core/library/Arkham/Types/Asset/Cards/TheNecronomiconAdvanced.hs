@@ -36,15 +36,13 @@ instance HasModifiersFor env TheNecronomiconAdvanced where
       ]
   getModifiersFor _ _ _ = pure []
 
-instance ActionRunner env => HasActions env TheNecronomiconAdvanced where
-  getActions iid NonFast (TheNecronomiconAdvanced a) | ownedBy a iid = do
-    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
-    pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
-      | fromJustNote "Must be set" (assetHorror a) > 0 && canAffordActions
-      ]
+instance HasActions env TheNecronomiconAdvanced where
+  getActions iid NonFast (TheNecronomiconAdvanced a) | ownedBy a iid = pure
+    [ ActivateCardAbilityAction
+        iid
+        (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
+    | fromJustNote "Must be set" (assetHorror a) > 0
+    ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env TheNecronomiconAdvanced where

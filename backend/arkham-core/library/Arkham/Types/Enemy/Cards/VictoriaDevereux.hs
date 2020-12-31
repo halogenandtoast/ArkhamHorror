@@ -34,11 +34,6 @@ instance ActionRunner env => HasActions env VictoriaDevereux where
     withBaseActions iid NonFast attrs $ do
       resourceCount <- getResourceCount iid
       locationId <- getId @LocationId iid
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        (Just Parley)
-        (ActionCost 1)
       pure
         [ ActivateCardAbilityAction
             iid
@@ -47,7 +42,7 @@ instance ActionRunner env => HasActions env VictoriaDevereux where
               1
               (ActionAbility (Just Parley) (ActionCost 1))
             )
-        | canAffordActions && resourceCount >= 5 && locationId == enemyLocation
+        | resourceCount >= 5 && locationId == enemyLocation
         ]
   getActions _ _ _ = pure []
 

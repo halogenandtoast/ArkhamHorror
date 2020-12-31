@@ -39,19 +39,12 @@ ability attrs =
 
 instance ActionRunner env => HasActions env StMarysHospital where
   getActions iid NonFast (StMarysHospital attrs@Attrs {..}) | locationRevealed =
-    do
-      baseActions <- getActions iid NonFast attrs
+    withBaseActions iid NonFast attrs $ do
       unused <- getIsUnused iid (ability attrs)
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        Nothing
-        (ActionCost 1)
       pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction iid (ability attrs)
-           | unused && iid `member` locationInvestigators && canAffordActions
-           ]
+        [ ActivateCardAbilityAction iid (ability attrs)
+        | unused && iid `member` locationInvestigators
+        ]
   getActions iid window (StMarysHospital attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env StMarysHospital where

@@ -10,7 +10,6 @@ import Arkham.Import
 
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 
 newtype TimeIsRunningShort = TimeIsRunningShort Attrs
@@ -23,23 +22,16 @@ timeIsRunningShort = TimeIsRunningShort
 instance HasModifiersFor env TimeIsRunningShort where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env TimeIsRunningShort where
-  getActions iid NonFast (TimeIsRunningShort attrs) = do
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource attrs)
-      (Just Action.Resign)
-      (ActionCost 1)
-    pure
-      [ ActivateCardAbilityAction
-          iid
-          (mkAbility
-            (AgendaSource "01122")
-            1
-            (ActionAbility (Just Action.Resign) (ActionCost 1))
-          )
-      | canAffordActions
-      ]
+instance HasActions env TimeIsRunningShort where
+  getActions iid NonFast (TimeIsRunningShort _) = pure
+    [ ActivateCardAbilityAction
+        iid
+        (mkAbility
+          (AgendaSource "01122")
+          1
+          (ActionAbility (Just Action.Resign) (ActionCost 1))
+        )
+    ]
   getActions _ _ _ = pure []
 
 instance (AgendaRunner env) => RunMessage env TimeIsRunningShort where

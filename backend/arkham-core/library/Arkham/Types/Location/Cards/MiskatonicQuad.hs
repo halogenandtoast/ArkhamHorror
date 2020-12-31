@@ -34,22 +34,16 @@ instance HasModifiersFor env MiskatonicQuad where
 
 instance ActionRunner env => HasActions env MiskatonicQuad where
   getActions iid NonFast (MiskatonicQuad attrs@Attrs {..}) | locationRevealed =
-    withBaseActions iid NonFast attrs $ do
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        (Just Action.Resign)
-        (ActionCost 1)
-      pure
-        [ ActivateCardAbilityAction
-            iid
-            (mkAbility
-              (toSource attrs)
-              1
-              (ActionAbility (Just Action.Resign) (ActionCost 1))
-            )
-        | iid `member` locationInvestigators && canAffordActions
-        ]
+    withBaseActions iid NonFast attrs $ pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility
+            (toSource attrs)
+            1
+            (ActionAbility (Just Action.Resign) (ActionCost 1))
+          )
+      | iid `member` locationInvestigators
+      ]
   getActions iid window (MiskatonicQuad attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env MiskatonicQuad where

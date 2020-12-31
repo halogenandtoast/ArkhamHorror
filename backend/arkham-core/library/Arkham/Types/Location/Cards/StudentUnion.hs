@@ -32,22 +32,15 @@ instance HasModifiersFor env StudentUnion where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env StudentUnion where
-  getActions iid NonFast (StudentUnion attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions iid NonFast attrs
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource attrs)
-      Nothing
-      (ActionCost 2)
-    let
-      ability =
-        mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2)
-
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction iid ability
-         | iid `elem` locationInvestigators && canAffordActions
-         ]
+  getActions iid NonFast (StudentUnion attrs@Attrs {..}) | locationRevealed =
+    withBaseActions iid NonFast attrs $ do
+      let
+        ability =
+          mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2)
+      pure
+        [ ActivateCardAbilityAction iid ability
+        | iid `elem` locationInvestigators
+        ]
   getActions iid window (StudentUnion attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env StudentUnion where

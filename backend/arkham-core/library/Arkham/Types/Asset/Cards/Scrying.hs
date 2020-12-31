@@ -9,7 +9,6 @@ where
 import Arkham.Import
 
 import Arkham.Types.Asset.Attrs
-import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
@@ -24,20 +23,14 @@ scrying uuid = Scrying $ (baseAttrs uuid "01061") { assetSlots = [ArcaneSlot] }
 instance HasModifiersFor env Scrying where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env Scrying where
+instance HasActions env Scrying where
   getActions iid NonFast (Scrying a) | ownedBy a iid && not (assetExhausted a) =
-    do
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource a)
-        Nothing
-        (ActionCost 1)
-      pure
-        [ ActivateCardAbilityAction
-            iid
-            (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
-        | useCount (assetUses a) > 0 && canAffordActions
-        ]
+    pure
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
+      | useCount (assetUses a) > 0
+      ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env Scrying where

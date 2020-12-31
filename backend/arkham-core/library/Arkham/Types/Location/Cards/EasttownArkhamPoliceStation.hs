@@ -44,15 +44,10 @@ ability attrs =
 instance ActionRunner env => HasActions env EasttownArkhamPoliceStation where
   getActions iid NonFast (EasttownArkhamPoliceStation attrs)
     | locationRevealed attrs = withBaseActions iid NonFast attrs $ do
-      canAffordActions <- getCanAffordCost
-        iid
-        (toSource attrs)
-        Nothing
-        (ActionCost 1)
       unused <- getIsUnused iid (ability attrs)
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
-        | unused && iid `member` locationInvestigators attrs && canAffordActions
+        | unused && iid `member` locationInvestigators attrs
         ]
   getActions iid window (EasttownArkhamPoliceStation attrs) =
     getActions iid window attrs

@@ -22,8 +22,25 @@ export interface Location {
   modifiers: Modifier[];
 }
 
+export interface LocationName {
+  title: string;
+  subtitle: string | null;
+}
+
+export const locationNameDecoder = JsonDecoder.object<LocationName>(
+  {
+    title: JsonDecoder.string,
+    subtitle: JsonDecoder.nullable(JsonDecoder.string),
+  },
+  'LocationName',
+  {
+    title: 'locationNameTitle',
+    subtitle: 'locationNameSubtitle',
+  }
+);
+
 export interface LocationContents {
-  name: string;
+  name: LocationName;
   label: string;
   id: string;
   clues: number;
@@ -39,7 +56,7 @@ export interface LocationContents {
 
 export const locationContentsDecoder = JsonDecoder.object<LocationContents>(
   {
-    name: JsonDecoder.string,
+    name: locationNameDecoder,
     label: JsonDecoder.string,
     id: JsonDecoder.string,
     clues: JsonDecoder.number,

@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.Burglary
   ( Burglary(..)
   , burglary
@@ -22,15 +23,18 @@ instance HasModifiersFor env Burglary where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Investigate))
+ability attrs = mkAbility
+  (toSource attrs)
+  1
+  (ActionAbility (Just Action.Investigate) (ActionCost 1))
 
 instance ActionRunner env => HasActions env Burglary where
   getActions iid NonFast (Burglary a) | ownedBy a iid = do
     canAffordActions <- getCanAffordCost
       iid
       (toSource a)
-      (ActionCost 1 (Just Action.Investigate) (assetTraits a))
+      (Just Action.Investigate)
+      (ActionCost 1)
     pure
       [ ActivateCardAbilityAction iid (ability a)
       | not (assetExhausted a) && canAffordActions

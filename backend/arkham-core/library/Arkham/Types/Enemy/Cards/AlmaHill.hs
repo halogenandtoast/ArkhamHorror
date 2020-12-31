@@ -1,11 +1,17 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Enemy.Cards.AlmaHill where
+
+module Arkham.Types.Enemy.Cards.AlmaHill
+  ( AlmaHill(..)
+  , almaHill
+  )
+where
 
 import Arkham.Import
 
 import Arkham.Types.Action
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
+import Arkham.Types.Game.Helpers
 
 newtype AlmaHill = AlmaHill Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -24,16 +30,19 @@ instance HasModifiersFor env AlmaHill where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env AlmaHill where
-  getActions iid NonFast (AlmaHill attrs@Attrs {..}) = do
-    baseActions <- getActions iid NonFast attrs
-    locationId <- getId @LocationId iid
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction
-             iid
-             (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 (Just Parley)))
-         | locationId == enemyLocation
-         ]
+  getActions iid NonFast (AlmaHill attrs@Attrs {..}) =
+    withBaseActions iid NonFast attrs $ do
+      locationId <- getId @LocationId iid
+      pure
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility
+              (EnemySource enemyId)
+              1
+              (ActionAbility (Just Parley) (ActionCost 1))
+            )
+        | locationId == enemyLocation
+        ]
   getActions _ _ _ = pure []
 
 instance (EnemyRunner env) => RunMessage env AlmaHill where

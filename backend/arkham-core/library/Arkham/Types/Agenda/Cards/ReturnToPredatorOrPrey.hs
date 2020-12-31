@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey
   ( ReturnToPredatorOrPrey(..)
   , returnToPredatorOrPrey
@@ -6,6 +7,7 @@ module Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey
 where
 
 import Arkham.Import
+
 import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
@@ -26,11 +28,16 @@ instance ActionRunner env  => HasActions env ReturnToPredatorOrPrey where
     canAffordActions <- getCanAffordCost
       iid
       (toSource attrs)
-      (ActionCost 1 (Just Action.Resign) mempty)
+      (Just Action.Resign)
+      (ActionCost 1)
     pure
       [ ActivateCardAbilityAction
           iid
-          (mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Resign)))
+          (mkAbility
+            (toSource attrs)
+            1
+            (ActionAbility (Just Action.Resign) (ActionCost 1))
+          )
       | canAffordActions
       ]
   getActions _ _ _ = pure []

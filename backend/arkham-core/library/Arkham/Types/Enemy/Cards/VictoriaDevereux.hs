@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Enemy.Cards.VictoriaDevereux where
+
+module Arkham.Types.Enemy.Cards.VictoriaDevereux
+  ( VictoriaDevereux(..)
+  , victoriaDevereux
+  )
+where
 
 import Arkham.Import
 
@@ -25,21 +30,25 @@ instance HasModifiersFor env VictoriaDevereux where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env VictoriaDevereux where
-  getActions iid NonFast (VictoriaDevereux attrs@Attrs {..}) = do
-    baseActions <- getActions iid NonFast attrs
-    resourceCount <- getResourceCount iid
-    locationId <- getId @LocationId iid
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource attrs)
-      (ActionCost 1 (Just Parley) enemyTraits)
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction
-             iid
-             (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 (Just Parley)))
-         | canAffordActions && resourceCount >= 5 && locationId == enemyLocation
-         ]
+  getActions iid NonFast (VictoriaDevereux attrs@Attrs {..}) =
+    withBaseActions iid NonFast attrs $ do
+      resourceCount <- getResourceCount iid
+      locationId <- getId @LocationId iid
+      canAffordActions <- getCanAffordCost
+        iid
+        (toSource attrs)
+        (Just Parley)
+        (ActionCost 1)
+      pure
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility
+              (EnemySource enemyId)
+              1
+              (ActionAbility (Just Parley) (ActionCost 1))
+            )
+        | canAffordActions && resourceCount >= 5 && locationId == enemyLocation
+        ]
   getActions _ _ _ = pure []
 
 instance (EnemyRunner env) => RunMessage env VictoriaDevereux where

@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.CloverClubBar
   ( cloverClubBar
   , CloverClubBar(..)
@@ -32,32 +33,24 @@ instance HasModifiersFor env CloverClubBar where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
-  { abilityLimit = PerGame
-  }
+ability attrs =
+  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+    { abilityLimit = PerGame
+    }
 
 instance ActionRunner env => HasActions env CloverClubBar where
   getActions iid NonFast (CloverClubBar attrs@Attrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ do
       step <- unActStep . getStep <$> ask
-      canAffordActions <- getCanAffordCost
+      canAfford <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 Nothing locationTraits)
-      canAffordResources <- getCanAffordCost
-        iid
-        (toSource attrs)
-        (ResourceCost 2)
+        Nothing
+        (Costs [ActionCost 1, ResourceCost 2])
       unused <- getIsUnused iid (ability attrs)
       pure
         [ ActivateCardAbilityAction iid (ability attrs)
-        | iid
-          `member` locationInvestigators
-          && canAffordActions
-          && canAffordResources
-          && step
-          == 1
-          && unused
+        | iid `member` locationInvestigators && canAfford && step == 1 && unused
         ]
   getActions iid window (CloverClubBar attrs) = getActions iid window attrs
 

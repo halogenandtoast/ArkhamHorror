@@ -20,7 +20,7 @@ instance HasActions env StrangeSolution where
   getActions iid NonFast (StrangeSolution attrs) | ownedBy attrs iid = pure
     [ ActivateCardAbilityAction
         iid
-        (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
+        (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
     ]
   getActions iid window (StrangeSolution attrs) = getActions iid window attrs
 

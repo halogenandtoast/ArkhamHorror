@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.MiskatonicUniversity where
+
+module Arkham.Types.Location.Cards.MiskatonicUniversity
+  ( MiskatonicUniversity(..)
+  , miskatonicUniversity
+  )
+where
 
 import Arkham.Import
 
@@ -30,19 +35,22 @@ instance HasModifiersFor env MiskatonicUniversity where
 
 instance ActionRunner env => HasActions env MiskatonicUniversity where
   getActions iid NonFast (MiskatonicUniversity attrs@Attrs {..})
-    | locationRevealed = do
-      baseActions <- getActions iid NonFast attrs
+    | locationRevealed = withBaseActions iid NonFast attrs $ do
       canAffordActions <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 Nothing locationTraits)
+        Nothing
+        (ActionCost 1)
       pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction
-               iid
-               (mkAbility (LocationSource "01129") 1 (ActionAbility 1 Nothing))
-           | iid `member` locationInvestigators && canAffordActions
-           ]
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility
+              (LocationSource "01129")
+              1
+              (ActionAbility Nothing $ ActionCost 1)
+            )
+        | iid `member` locationInvestigators && canAffordActions
+        ]
   getActions iid window (MiskatonicUniversity attrs) =
     getActions iid window attrs
 

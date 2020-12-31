@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Treachery.Cards.LockedDoor where
+
+module Arkham.Types.Treachery.Cards.LockedDoor
+  ( LockedDoor(..)
+  , lockedDoor
+  )
+where
 
 import Arkham.Import
 
@@ -23,14 +28,11 @@ instance HasModifiersFor env LockedDoor where
 instance ActionRunner env => HasActions env LockedDoor where
   getActions iid NonFast (LockedDoor a@Attrs {..}) = do
     investigatorLocationId <- getId @LocationId iid
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource a)
-      (ActionCost 1 Nothing treacheryTraits)
+    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
     pure
       [ ActivateCardAbilityAction
           iid
-          (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 1 Nothing))
+          (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
       | treacheryOnLocation investigatorLocationId a && canAffordActions
       ]
   getActions _ _ _ = pure []
@@ -54,7 +56,7 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
             [ AttachTreachery treacheryId (LocationTarget x) | x <- xs ]
           )
       LockedDoor <$> runMessage msg attrs
-    UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId -> do
+    UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId ->
       t <$ unshiftMessage
         (chooseOne
           iid

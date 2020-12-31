@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.EasttownArkhamPoliceStation
   ( EasttownArkhamPoliceStation(..)
   , easttownArkhamPoliceStation
@@ -35,27 +36,24 @@ instance HasModifiersFor env EasttownArkhamPoliceStation where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
-ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
-  { abilityLimit = PerGame
-  }
+ability attrs =
+  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+    { abilityLimit = PerGame
+    }
 
 instance ActionRunner env => HasActions env EasttownArkhamPoliceStation where
   getActions iid NonFast (EasttownArkhamPoliceStation attrs)
-    | locationRevealed attrs = do
-      baseActions <- getActions iid NonFast attrs
+    | locationRevealed attrs = withBaseActions iid NonFast attrs $ do
       canAffordActions <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 Nothing (locationTraits attrs))
+        Nothing
+        (ActionCost 1)
       unused <- getIsUnused iid (ability attrs)
       pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction iid (ability attrs)
-           | unused
-             && iid
-             `member` locationInvestigators attrs
-             && canAffordActions
-           ]
+        [ ActivateCardAbilityAction iid (ability attrs)
+        | unused && iid `member` locationInvestigators attrs && canAffordActions
+        ]
   getActions iid window (EasttownArkhamPoliceStation attrs) =
     getActions iid window attrs
 

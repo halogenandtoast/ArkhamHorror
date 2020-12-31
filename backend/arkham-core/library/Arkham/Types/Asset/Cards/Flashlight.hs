@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.Flashlight where
+
+module Arkham.Types.Asset.Cards.Flashlight
+  ( Flashlight(..)
+  , flashlight
+  )
+where
 
 import Arkham.Import
 
@@ -21,8 +26,10 @@ instance HasModifiersFor env Flashlight where
   getModifiersFor = noModifiersFor
 
 investigateAbility :: Attrs -> Ability
-investigateAbility attrs =
-  mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Investigate))
+investigateAbility attrs = mkAbility
+  (toSource attrs)
+  1
+  (ActionAbility (Just Action.Investigate) (ActionCost 1))
 
 instance ActionRunner env => HasActions env Flashlight where
   getActions iid window (Flashlight a) | ownedBy a iid = do

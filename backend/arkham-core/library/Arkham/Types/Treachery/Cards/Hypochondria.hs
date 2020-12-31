@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Treachery.Cards.Hypochondria where
+
+module Arkham.Types.Treachery.Cards.Hypochondria
+  ( Hypochondria(..)
+  , hypochondria
+  )
+where
 
 import Arkham.Import
 
@@ -24,12 +29,12 @@ instance ActionRunner env => HasActions env Hypochondria where
       canAffordActions <- getCanAffordCost
         iid
         (toSource a)
-        (ActionCost 2 Nothing treacheryTraits)
+        Nothing
+        (ActionCost 2)
       pure
         [ ActivateCardAbilityAction
             iid
-            (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 2 Nothing)
-            )
+            (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 2))
         | canAffordActions && treacheryLocation == investigatorLocationId
         ]
   getActions _ _ _ = pure []

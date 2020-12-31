@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Enemy.Cards.HermanCollins where
+
+module Arkham.Types.Enemy.Cards.HermanCollins
+  ( HermanCollins(..)
+  , hermanCollins
+  )
+where
 
 import Arkham.Import
 
@@ -26,21 +31,25 @@ instance HasModifiersFor env HermanCollins where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env HermanCollins where
-  getActions iid NonFast (HermanCollins attrs@Attrs {..}) = do
-    baseActions <- getActions iid NonFast attrs
-    cardCount <- getCardCount iid
-    locationId <- getId @LocationId iid
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource attrs)
-      (ActionCost 1 (Just Parley) enemyTraits)
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction
-             iid
-             (mkAbility (EnemySource enemyId) 1 (ActionAbility 1 (Just Parley)))
-         | canAffordActions && cardCount >= 4 && locationId == enemyLocation
-         ]
+  getActions iid NonFast (HermanCollins attrs@Attrs {..}) =
+    withBaseActions iid NonFast attrs $ do
+      cardCount <- getCardCount iid
+      locationId <- getId @LocationId iid
+      canAffordActions <- getCanAffordCost
+        iid
+        (toSource attrs)
+        (Just Parley)
+        (ActionCost 1)
+      pure
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility
+              (toSource attrs)
+              1
+              (ActionAbility (Just Parley) (ActionCost 1))
+            )
+        | canAffordActions && cardCount >= 4 && locationId == enemyLocation
+        ]
   getActions _ _ _ = pure []
 
 instance EnemyRunner env => RunMessage env HermanCollins where

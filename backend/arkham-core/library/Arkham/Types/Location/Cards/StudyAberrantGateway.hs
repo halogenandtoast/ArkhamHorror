@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.StudyAberrantGateway where
+
+module Arkham.Types.Location.Cards.StudyAberrantGateway
+  ( StudyAberrantGateway(..)
+  , studyAberrantGateway
+  )
+where
 
 import Arkham.Import
 
@@ -27,20 +32,21 @@ instance HasModifiersFor env StudyAberrantGateway where
 
 instance ActionRunner env => HasActions env StudyAberrantGateway where
   getActions iid NonFast (StudyAberrantGateway attrs)
-    | iid `elem` locationInvestigators attrs = do
-      baseActions <- getActions iid NonFast attrs
+    | iid `elem` locationInvestigators attrs
+    = withBaseActions iid NonFast attrs $ do
       leadInvestigatorId <- getLeadInvestigatorId
       canActivate <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 2 Nothing (locationTraits attrs))
+        Nothing
+        (ActionCost 2)
       pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction
-               iid
-               (mkAbility (toSource attrs) 1 (ActionAbility 2 Nothing))
-           | canActivate && leadInvestigatorId == iid
-           ]
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2)
+            )
+        | canActivate && leadInvestigatorId == iid
+        ]
   getActions iid window (StudyAberrantGateway attrs) =
     getActions iid window attrs
 

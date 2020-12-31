@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.RivertownAbandonedWarehouse
   ( RivertownAbandonedWarehouse(..)
   , rivertownAbandonedWarehouse
@@ -31,30 +32,30 @@ instance HasModifiersFor env RivertownAbandonedWarehouse where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
-ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
-  { abilityLimit = PerGame
-  }
+ability attrs =
+  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+    { abilityLimit = PerGame
+    }
 
 instance ActionRunner env => HasActions env RivertownAbandonedWarehouse where
   getActions iid NonFast (RivertownAbandonedWarehouse attrs)
-    | locationRevealed attrs = do
-      baseActions <- getActions iid NonFast attrs
+    | locationRevealed attrs = withBaseActions iid NonFast attrs $ do
       canAffordActions <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 Nothing (locationTraits attrs))
+        Nothing
+        (ActionCost 1)
       hasWillpowerCards <- any (elem SkillWillpower . getSkillIcons)
         <$> getHandOf iid
       unused <- getGroupIsUnused (ability attrs)
       pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction iid (ability attrs)
-           | unused
-             && iid
-             `member` locationInvestigators attrs
-             && canAffordActions
-             && hasWillpowerCards
-           ]
+        [ ActivateCardAbilityAction iid (ability attrs)
+        | unused
+          && iid
+          `member` locationInvestigators attrs
+          && canAffordActions
+          && hasWillpowerCards
+        ]
   getActions iid window (RivertownAbandonedWarehouse attrs) =
     getActions iid window attrs
 

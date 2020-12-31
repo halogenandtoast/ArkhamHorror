@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.BrackishWaters where
+
+module Arkham.Types.Location.Cards.BrackishWaters
+  ( BrackishWaters(..)
+  , brackishWaters
+  )
+where
 
 import Arkham.Import
 
@@ -32,38 +37,40 @@ instance HasModifiersFor env BrackishWaters where
 
 -- TODO: LEFT OFF HERE WITH HAND OF
 instance ActionRunner env => HasActions env BrackishWaters where
-  getActions iid NonFast (BrackishWaters attrs@Attrs {..}) = do
-    assetNotTaken <- isNothing
-      <$> getId @(Maybe StoryAssetId) (CardCode "81021")
-    baseActions <- getActions iid NonFast attrs
-    hand <- getHandOf iid
-    inPlayAssetsCount <- getInPlayOf iid <&> count
-      (\case
-        PlayerCard pc -> pcCardType pc == AssetType
-        EncounterCard _ -> False
-      )
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource attrs)
-      (ActionCost 1 Nothing locationTraits)
-    let
-      assetsCount =
-        count
-            (maybe False (playerCardMatch (AssetType, Nothing)) . toPlayerCard)
-            hand
-          + inPlayAssetsCount
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityAction
-             iid
-             (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
-         | iid
-           `member` locationInvestigators
-           && assetsCount
-           >= 2
-           && canAffordActions
-           && assetNotTaken
-         ]
+  getActions iid NonFast (BrackishWaters attrs@Attrs {..}) =
+    withBaseActions iid NonFast attrs $ do
+      assetNotTaken <- isNothing
+        <$> getId @(Maybe StoryAssetId) (CardCode "81021")
+      hand <- getHandOf iid
+      inPlayAssetsCount <- getInPlayOf iid <&> count
+        (\case
+          PlayerCard pc -> pcCardType pc == AssetType
+          EncounterCard _ -> False
+        )
+      canAffordActions <- getCanAffordCost
+        iid
+        (toSource attrs)
+        Nothing
+        (ActionCost 1)
+      let
+        assetsCount =
+          count
+              (maybe False (playerCardMatch (AssetType, Nothing)) . toPlayerCard
+              )
+              hand
+            + inPlayAssetsCount
+      pure
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
+            )
+        | iid
+          `member` locationInvestigators
+          && assetsCount
+          >= 2
+          && canAffordActions
+          && assetNotTaken
+        ]
   getActions i window (BrackishWaters attrs) = getActions i window attrs
 
 instance LocationRunner env => RunMessage env BrackishWaters where

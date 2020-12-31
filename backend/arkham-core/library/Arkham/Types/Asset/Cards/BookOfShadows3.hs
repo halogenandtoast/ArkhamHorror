@@ -23,7 +23,7 @@ instance HasModifiersFor env BookOfShadows3 where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability a = mkAbility (toSource a) 1 (ActionAbility 1 Nothing)
+ability a = mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1)
 
 slot :: Attrs -> Slot
 slot Attrs { assetId } = Slot (AssetSource assetId) Nothing

@@ -600,6 +600,11 @@ instance InvestigatorRunner env => RunMessage env Attrs where
       i
     runInvestigatorMessage msg i
 
+toActionCount :: Cost -> Int
+toActionCount (ActionCost n) = n
+toActionCount (Costs xs) = sum $ map toActionCount xs
+toActionCount _ = 0
+
 hasModifier
   :: (MonadReader env m, HasModifiersFor env ())
   => Attrs
@@ -831,14 +836,16 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
           ]
         )
   EngageEnemy iid eid True | iid == investigatorId -> a <$ unshiftMessages
-    [TakeAction iid 1 (Just Action.Engage), EngageEnemy iid eid False]
+    [ TakeAction iid (Just Action.Engage) (ActionCost 1)
+    , EngageEnemy iid eid False
+    ]
   EngageEnemy iid eid False | iid == investigatorId ->
     pure $ a & engagedEnemiesL %~ insertSet eid
   EngageEnemy iid eid False | iid /= investigatorId ->
     pure $ a & engagedEnemiesL %~ deleteSet eid
   FightEnemy iid eid source skillType True | iid == investigatorId ->
     a <$ unshiftMessages
-      [ TakeAction iid 1 (Just Action.Fight)
+      [ TakeAction iid (Just Action.Fight) (ActionCost 1)
       , FightEnemy iid eid source skillType False
       ]
   FightEnemy iid eid source skillType False | iid == investigatorId -> do
@@ -879,7 +886,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       )
   EvadeEnemy iid eid source skillType True | iid == investigatorId ->
     a <$ unshiftMessages
-      [ TakeAction iid 1 (Just Action.Evade)
+      [ TakeAction iid (Just Action.Evade) (ActionCost 1)
       , EvadeEnemy iid eid source skillType False
       ]
   EvadeEnemy iid eid source skillType False | iid == investigatorId ->
@@ -889,7 +896,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       , AfterEvadeEnemy iid eid
       ]
   MoveAction iid lid True | iid == investigatorId -> a <$ unshiftMessages
-    [ TakeAction iid 1 (Just Action.Move)
+    [ TakeAction iid (Just Action.Move) (ActionCost 1)
     , CheckAttackOfOpportunity iid False
     , MoveAction iid lid False
     ]
@@ -1006,7 +1013,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         max 0 (n + m)
       applyModifier _ n = n
     a <$ unshiftMessages
-      [ TakeAction iid investigateCost (Just Action.Investigate)
+      [ TakeAction iid (Just Action.Investigate) (ActionCost investigateCost)
       , CheckAttackOfOpportunity iid False
       , Investigate iid lid source skillType False
       ]
@@ -1090,7 +1097,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       then pure 0
       else maybe (pure 1) (getActionCost a) maction
     a <$ unshiftMessages
-      [ TakeAction iid actionCost (Just Action.Play)
+      [ TakeAction iid (Just Action.Play) (ActionCost actionCost)
       , PayDynamicCardCost iid cardId 0 aooMessage
       ]
   InitiatePlayCard iid cardId mtarget asAction | iid == investigatorId ->
@@ -1132,12 +1139,14 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         && investigatorResources
         >= getCost card
       then a <$ unshiftMessages
-        ([TakeAction iid actionCost (Just Action.Play), PayCardCost iid cardId]
+        ([ TakeAction iid (Just Action.Play) (ActionCost 1)
+         , PayCardCost iid cardId
+         ]
         <> aooMessage
         <> [PlayCard iid cardId mtarget False]
         )
       else pure a
-  PlayedCard iid cardId | iid == investigatorId -> do
+  PlayedCard iid cardId | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardId) . getCardId)
   InvestigatorPlayAsset iid aid slotTypes traits | iid == investigatorId -> do
     let assetsUpdate = assetsL %~ insertSet aid
@@ -1283,7 +1292,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
           <> [DiscardTopOfDeck iid (n - 1) target]
         pure $ a & deckL .~ Deck deck' & discardL %~ (c :)
   DrawCards iid n True | iid == investigatorId -> a <$ unshiftMessages
-    [ TakeAction iid 1 (Just Action.Draw)
+    [ TakeAction iid (Just Action.Draw) (ActionCost 1)
     , CheckAttackOfOpportunity iid False
     , DrawCards iid n False
     ]
@@ -1319,7 +1328,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure $ a & resourcesL %~ max 0 . subtract n
   TakeResources iid n True | iid == investigatorId -> do
     unlessM (hasModifier a CannotGainResources) $ unshiftMessages
-      [ TakeAction iid 1 (Just Action.Resource)
+      [ TakeAction iid (Just Action.Resource) (ActionCost 1)
       , CheckAttackOfOpportunity iid False
       , TakeResources iid n False
       ]
@@ -1340,16 +1349,16 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       ForcedAbility -> pure ()
       FastAbility _ -> pure ()
       ReactionAbility _ -> pure ()
-      ActionAbility n actionType ->
-        if actionType
+      ActionAbility mAction cost ->
+        if mAction
             `notElem` [ Just Action.Fight
                       , Just Action.Evade
                       , Just Action.Resign
                       , Just Action.Parley
                       ]
           then unshiftMessages
-            [TakeAction iid n actionType, CheckAttackOfOpportunity iid False]
-          else unshiftMessage (TakeAction iid n actionType)
+            [TakeAction iid mAction cost, CheckAttackOfOpportunity iid False]
+          else unshiftMessage (TakeAction iid mAction cost)
     pure a
   ActivateCardAbilityActionWithDynamicCost iid Ability {..}
     | iid == investigatorId -> do
@@ -1359,16 +1368,16 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         ForcedAbility -> pure ()
         FastAbility _ -> pure ()
         ReactionAbility _ -> pure ()
-        ActionAbility n actionType ->
-          if actionType
+        ActionAbility mAction cost ->
+          if mAction
               `notElem` [ Just Action.Fight
                         , Just Action.Evade
                         , Just Action.Resign
                         , Just Action.Parley
                         ]
             then unshiftMessages
-              [TakeAction iid n actionType, CheckAttackOfOpportunity iid False]
-            else unshiftMessage (TakeAction iid n actionType)
+              [TakeAction iid mAction cost, CheckAttackOfOpportunity iid False]
+            else unshiftMessage (TakeAction iid mAction cost)
       pure a
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
     unlessM (hasModifier a CannotDrawCards)
@@ -1483,8 +1492,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
             )
     pure a
   CheckWindow iid windows | iid == investigatorId -> do
-    actions <- fmap concat <$> for windows $ \window -> do
-      getActions iid window ()
+    actions <- fmap concat <$> for windows $ \window -> getActions iid window ()
     playableCards <- getPlayableCards a windows
     if not (null playableCards) || not (null actions)
       then a <$ unshiftMessage
@@ -1506,11 +1514,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure $ a & remainingActionsL .~ n
   GainActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActionsL +~ n
-  TakeAction iid actionCost maction | iid == investigatorId -> do
-    costModifier <- getActionCostModifier a maction
+  TakeAction iid mAction actionCost | iid == investigatorId -> do
+    costModifier <- getActionCostModifier a mAction
     let
-      modifiedActionCost = max 0 (actionCost + costModifier)
-      actionsTakenUpdate = case maction of
+      modifiedActionCost = max 0 (toActionCount actionCost + costModifier)
+      actionsTakenUpdate = case mAction of
         Nothing -> id
         Just action -> (<> [action])
     pure

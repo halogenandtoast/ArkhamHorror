@@ -17,14 +17,7 @@ spec = describe "Lucky! (2)" $ do
       , investigatorDeck = Deck [cardToDraw]
       }
     lucky2 <- buildPlayerCard "01084"
-    (didPassTest, logger) <- createMessageMatcher
-      (PassedSkillTest
-        (toId investigator)
-        Nothing
-        TestSource
-        (SkillTestInitiatorTarget TestTarget)
-        0
-      )
+    (didPassTest, logger) <- didPassSkillTestBy investigator 0
     game <-
       runGameTest
         investigator
@@ -52,14 +45,7 @@ spec = describe "Lucky! (2)" $ do
       , investigatorDeck = Deck [cardToDraw]
       }
     lucky <- buildPlayerCard "01084"
-    (didFailTest, logger) <- createMessageMatcher
-      (FailedSkillTest
-        (toId investigator)
-        Nothing
-        TestSource
-        (SkillTestInitiatorTarget TestTarget)
-        2
-      )
+    (didFailTest, logger) <- didFailSkillTestBy investigator 2
     game <-
       runGameTest
         investigator

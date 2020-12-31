@@ -921,7 +921,7 @@ instance HasSet Trait (Game queue) Source where
     ActSource _ -> pure mempty
     PlayerCardSource _ -> pure mempty
     EncounterCardSource _ -> pure mempty
-    TestSource -> pure mempty
+    TestSource traits -> pure traits
     DrawnTokenSource _ -> pure mempty
     ProxySource _ _ -> pure mempty
     ResourceSource -> pure mempty

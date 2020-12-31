@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.FoulSwamp
   ( FoulSwamp(..)
   , foulSwamp
@@ -35,22 +36,23 @@ instance HasModifiersFor env FoulSwamp where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
-ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
-  { abilityMetadata = Just (IntMetadata 0)
-  }
+ability attrs =
+  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+    { abilityMetadata = Just (IntMetadata 0)
+    }
 
 instance ActionRunner env => HasActions env FoulSwamp where
-  getActions iid NonFast (FoulSwamp attrs@Attrs {..}) | locationRevealed = do
-    baseActions <- getActions iid NonFast attrs
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource attrs)
-      (ActionCost 1 Nothing locationTraits)
-    pure
-      $ baseActions
-      <> [ ActivateCardAbilityActionWithDynamicCost iid (ability attrs)
-         | iid `member` locationInvestigators && canAffordActions
-         ]
+  getActions iid NonFast (FoulSwamp attrs@Attrs {..}) | locationRevealed =
+    withBaseActions iid NonFast attrs $ do
+      canAffordActions <- getCanAffordCost
+        iid
+        (toSource attrs)
+        Nothing
+        (ActionCost 1)
+      pure
+        [ ActivateCardAbilityActionWithDynamicCost iid (ability attrs)
+        | iid `member` locationInvestigators && canAffordActions
+        ]
   getActions i window (FoulSwamp attrs) = getActions i window attrs
 
 instance LocationRunner env => RunMessage env FoulSwamp where

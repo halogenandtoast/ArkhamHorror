@@ -13,14 +13,7 @@ spec = describe "Will to Survive (4)" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 3 }
     willToSurvive4 <- buildEvent "01085" investigator
-    (didPassTest, logger) <- createMessageMatcher
-      (PassedSkillTest
-        (toId investigator)
-        Nothing
-        TestSource
-        (SkillTestInitiatorTarget TestTarget)
-        0
-      )
+    (didPassTest, logger) <- didPassSkillTestBy investigator 0
     void
       $ runGameTest
           investigator
@@ -36,14 +29,7 @@ spec = describe "Will to Survive (4)" $ do
     investigator <- testInvestigator "00000"
       $ \attrs -> attrs { investigatorIntellect = 3 }
     willToSurvive4 <- buildEvent "01085" investigator
-    (didFailTest, logger) <- createMessageMatcher
-      (FailedSkillTest
-        (toId investigator)
-        Nothing
-        TestSource
-        (SkillTestInitiatorTarget TestTarget)
-        3
-      )
+    (didFailTest, logger) <- didFailSkillTestBy investigator 3
     void
       $ runGameTest
           investigator

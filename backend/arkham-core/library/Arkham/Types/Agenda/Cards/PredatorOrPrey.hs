@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Agenda.Cards.PredatorOrPrey where
+
+module Arkham.Types.Agenda.Cards.PredatorOrPrey
+  ( PredatorOrPrey(..)
+  , predatorOrPrey
+  )
+where
 
 import Arkham.Import
 import qualified Arkham.Types.Action as Action
@@ -22,11 +27,16 @@ instance ActionRunner env  => HasActions env PredatorOrPrey where
     canAffordActions <- getCanAffordCost
       iid
       (toSource attrs)
-      (ActionCost 1 (Just Action.Resign) mempty)
+      (Just Action.Resign)
+      (ActionCost 1)
     pure
       [ ActivateCardAbilityAction
           iid
-          (mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Resign)))
+          (mkAbility
+            (toSource attrs)
+            1
+            (ActionAbility (Just Action.Resign) (ActionCost 1))
+          )
       | canAffordActions
       ]
   getActions _ _ _ = pure []

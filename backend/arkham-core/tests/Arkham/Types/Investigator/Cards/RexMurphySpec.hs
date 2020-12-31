@@ -43,7 +43,7 @@ spec = describe "Rex Murphy" $ do
           , loadDeck rexMurphy cards
           , BeginSkillTest
             (toId rexMurphy)
-            TestSource
+            (TestSource mempty)
             TestTarget
             Nothing
             SkillIntellect
@@ -64,14 +64,7 @@ spec = describe "Rex Murphy" $ do
     it "can resolve normally with +2" $ do
       let rexMurphy = lookupInvestigator "02002"
       cards <- testPlayerCards 3
-      (didPassTest, logger) <- createMessageMatcher
-        (PassedSkillTest
-          (toId rexMurphy)
-          Nothing
-          TestSource
-          (SkillTestInitiatorTarget TestTarget)
-          0
-        )
+      (didPassTest, logger) <- didPassSkillTestBy rexMurphy 0
       game <-
         runGameTest
           rexMurphy
@@ -79,7 +72,7 @@ spec = describe "Rex Murphy" $ do
           , loadDeck rexMurphy cards
           , BeginSkillTest
             (toId rexMurphy)
-            TestSource
+            (TestSource mempty)
             TestTarget
             Nothing
             SkillIntellect

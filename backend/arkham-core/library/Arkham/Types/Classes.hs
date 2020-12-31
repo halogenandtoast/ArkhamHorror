@@ -7,7 +7,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Classes
   ( module Arkham.Types.Classes
-  , module Arkham.Types.Classes.HasRecord
+  , module X
   )
 where
 
@@ -20,7 +20,8 @@ import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
-import Arkham.Types.Classes.HasRecord
+import Arkham.Types.Classes.Entity as X
+import Arkham.Types.Classes.HasRecord as X
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword
@@ -285,6 +286,7 @@ type ActionRunner env
     , HasSet Keyword env EnemyId
     , HasSet Trait env EnemyId
     , HasSet Trait env LocationId
+    , HasSet Trait env Source
     , HasSet Trait env (InvestigatorId, CardId)
     , HasSource ForSkillTest env
     , HasStep ActStep env
@@ -358,14 +360,6 @@ class Discardable a where
 
 class CanBeWeakness env a where
   getIsWeakness :: (MonadReader env m) => a -> m Bool
-
-class Entity a where
-  type EntityId a
-  toId :: a -> EntityId a
-  toTarget :: a -> Target
-  isTarget :: a -> Target -> Bool
-  toSource :: a -> Source
-  isSource :: a -> Source -> Bool
 
 class Exhaustable a where
   isExhausted :: a -> Bool

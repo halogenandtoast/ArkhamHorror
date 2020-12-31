@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Investigator.Cards.WendyAdams where
+
+module Arkham.Types.Investigator.Cards.WendyAdams
+  ( WendyAdams(..)
+  , wendyAdams
+  )
+where
 
 import Arkham.Import
 
@@ -39,13 +44,14 @@ instance ActionRunner env => HasActions env WendyAdams where
   getActions iid (WhenRevealToken You token) (WendyAdams attrs@Attrs {..})
     | iid == investigatorId = do
       let
-        ability = (mkAbility
-                    (InvestigatorSource investigatorId)
-                    1
-                    (ReactionAbility (WhenRevealToken You token))
-                  )
-          { abilityLimit = PerTestOrAbility
-          }
+        ability =
+          (mkAbility
+              (toSource attrs)
+              1
+              (ReactionAbility (WhenRevealToken You token))
+            )
+            { abilityLimit = PerTestOrAbility
+            }
       usedAbilities <- map unUsedAbility <$> getList ()
       pure
         [ ActivateCardAbilityAction investigatorId ability

@@ -42,7 +42,8 @@ enemyAttack :: Investigator -> Enemy -> Message
 enemyAttack i e = EnemyAttack (toId i) (toId e)
 
 fightEnemy :: Investigator -> Enemy -> Message
-fightEnemy i e = FightEnemy (toId i) (toId e) TestSource SkillCombat False
+fightEnemy i e =
+  FightEnemy (toId i) (toId e) (TestSource mempty) SkillCombat False
 
 engageEnemy :: Investigator -> Enemy -> Message
 engageEnemy i e = EngageEnemy (toId i) (toId e) False
@@ -61,9 +62,18 @@ drawCards :: Investigator -> Int -> Message
 drawCards i n = DrawCards (toId i) n False
 
 investigate :: Investigator -> Location -> Message
-investigate i l =
-  Investigate (toId i) (getLocationId l) TestSource SkillIntellect False
+investigate i l = Investigate
+  (toId i)
+  (getLocationId l)
+  (TestSource mempty)
+  SkillIntellect
+  False
 
 beginSkillTest :: Investigator -> SkillType -> Int -> Message
-beginSkillTest i stype difficulty =
-  BeginSkillTest (toId i) TestSource TestTarget Nothing stype difficulty
+beginSkillTest i stype difficulty = BeginSkillTest
+  (toId i)
+  (TestSource mempty)
+  TestTarget
+  Nothing
+  stype
+  difficulty

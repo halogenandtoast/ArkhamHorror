@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.OvergrownCairns
   ( OvergrownCairns(..)
   , overgrownCairns
@@ -31,9 +32,10 @@ instance HasModifiersFor env OvergrownCairns where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
-  { abilityLimit = PerGame
-  }
+ability attrs =
+  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+    { abilityLimit = PerGame
+    }
 
 instance ActionRunner env => HasActions env OvergrownCairns where
   getActions iid NonFast (OvergrownCairns attrs@Attrs {..}) | locationRevealed =
@@ -44,7 +46,8 @@ instance ActionRunner env => HasActions env OvergrownCairns where
       canAffordActions <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 Nothing locationTraits)
+        Nothing
+        (ActionCost 1)
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction iid (ability attrs)

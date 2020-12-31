@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.MiskatonicQuad where
+
+module Arkham.Types.Location.Cards.MiskatonicQuad
+  ( MiskatonicQuad(..)
+  , miskatonicQuad
+  )
+where
 
 import Arkham.Import
 
@@ -29,23 +34,22 @@ instance HasModifiersFor env MiskatonicQuad where
 
 instance ActionRunner env => HasActions env MiskatonicQuad where
   getActions iid NonFast (MiskatonicQuad attrs@Attrs {..}) | locationRevealed =
-    do
-      baseActions <- getActions iid NonFast attrs
+    withBaseActions iid NonFast attrs $ do
       canAffordActions <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 (Just Action.Resign) locationTraits)
+        (Just Action.Resign)
+        (ActionCost 1)
       pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction
-               iid
-               (mkAbility
-                 (toSource attrs)
-                 1
-                 (ActionAbility 1 (Just Action.Resign))
-               )
-           | iid `member` locationInvestigators && canAffordActions
-           ]
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility
+              (toSource attrs)
+              1
+              (ActionAbility (Just Action.Resign) (ActionCost 1))
+            )
+        | iid `member` locationInvestigators && canAffordActions
+        ]
   getActions iid window (MiskatonicQuad attrs) = getActions iid window attrs
 
 instance (LocationRunner env) => RunMessage env MiskatonicQuad where

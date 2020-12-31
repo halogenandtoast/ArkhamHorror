@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Treachery.Cards.WrackedByNightmares where
+
+module Arkham.Types.Treachery.Cards.WrackedByNightmares
+  ( WrackedByNightmares(..)
+  , wrackedByNightmares
+  )
+where
 
 import Arkham.Import
 
@@ -30,19 +35,19 @@ instance ActionRunner env => HasActions env WrackedByNightmares where
       canAffordActions <- getCanAffordCost
         iid
         (toSource a)
-        (ActionCost 2 Nothing treacheryTraits)
+        Nothing
+        (ActionCost 2)
       pure
         [ ActivateCardAbilityAction
             iid
-            (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 2 Nothing)
-            )
+            (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 2))
         | treacheryLocation == investigatorLocationId && canAffordActions
         ]
   getActions _ _ _ = pure []
 
 instance TreacheryRunner env => RunMessage env WrackedByNightmares where
   runMessage msg t@(WrackedByNightmares attrs@Attrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     AttachTreachery tid (InvestigatorTarget iid) | tid == treacheryId -> do
       assetIds <- getSetList iid

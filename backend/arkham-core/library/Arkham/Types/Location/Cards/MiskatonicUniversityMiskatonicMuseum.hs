@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.MiskatonicUniversityMiskatonicMuseum
   ( MiskatonicUniversityMiskatonicMuseum(..)
   , miskatonicUniversityMiskatonicMuseum
@@ -42,12 +43,17 @@ instance ActionRunner env => HasActions env MiskatonicUniversityMiskatonicMuseum
       canAffordActions <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 Nothing locationTraits)
+        Nothing
+        (ActionCost 1)
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction
                iid
-               (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
+               (mkAbility
+                 (toSource attrs)
+                 1
+                 (ActionAbility Nothing $ ActionCost 1)
+               )
            | iid `member` locationInvestigators && canAffordActions
            ]
   getActions iid window (MiskatonicUniversityMiskatonicMuseum attrs) =

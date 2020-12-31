@@ -15,14 +15,15 @@ spec = describe "Daisy Walker" $ do
       let daisyWalker = lookupInvestigator "01002"
       game <- runGameTest
         daisyWalker
-        [LoseActions (toId daisyWalker) TestSource 3]
+        [LoseActions (toId daisyWalker) (TestSource mempty) 3]
         id
       withGame
           game
           (getCanAffordCost
             (toId daisyWalker)
-            TestSource
-            (ActionCost 1 Nothing (singleton Tome))
+            (TestSource $ singleton Tome)
+            Nothing
+            (ActionCost 1)
           )
         `shouldReturn` True
 

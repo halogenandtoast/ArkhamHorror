@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Treachery.Cards.RexsCurse where
+
+module Arkham.Types.Treachery.Cards.RexsCurse
+  ( RexsCurse(..)
+  , rexsCurse
+  )
+where
 
 import Arkham.Import
 
@@ -26,7 +31,7 @@ instance TreacheryRunner env => RunMessage env RexsCurse where
     Will (PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _)
       | treacheryOnInvestigator iid attrs -> do
         let
-          ability = (mkAbility (TreacherySource treacheryId) 0 ForcedAbility)
+          ability = (mkAbility (toSource attrs) 0 ForcedAbility)
             { abilityLimit = PerTestOrAbility
             }
         usedAbilities <- map unUsedAbility <$> getList ()
@@ -52,6 +57,6 @@ instance TreacheryRunner env => RunMessage env RexsCurse where
                , DrawAnotherToken iid
                ]
         pure t
-    FailedSkillTest iid _ _ (TreacheryTarget tid) _ | tid == treacheryId -> do
+    FailedSkillTest iid _ _ (TreacheryTarget tid) _ | tid == treacheryId ->
       t <$ unshiftMessage (ShuffleIntoDeck iid (TreacheryTarget treacheryId))
     _ -> RexsCurse <$> runMessage msg attrs

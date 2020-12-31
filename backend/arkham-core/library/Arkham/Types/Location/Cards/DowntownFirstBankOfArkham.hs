@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.DowntownFirstBankOfArkham
   ( DowntownFirstBankOfArkham(..)
   , downtownFirstBankOfArkham
@@ -31,32 +32,32 @@ instance HasModifiersFor env DowntownFirstBankOfArkham where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
-  { abilityLimit = PerGame
-  }
+ability attrs =
+  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+    { abilityLimit = PerGame
+    }
 
 instance ActionRunner env => HasActions env DowntownFirstBankOfArkham where
   getActions iid NonFast (DowntownFirstBankOfArkham attrs@Attrs {..})
-    | locationRevealed = do
-      baseActions <- getActions iid NonFast attrs
+    | locationRevealed = withBaseActions iid NonFast attrs $ do
       unused <- getIsUnused iid (ability attrs)
       canAffordActions <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 Nothing locationTraits)
+        Nothing
+        (ActionCost 1)
       canGainResources <-
         notElem CannotGainResources
         . map modifierType
         <$> getInvestigatorModifiers iid (toSource attrs)
       pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction iid (ability attrs)
-           | unused
-             && canGainResources
-             && iid
-             `member` locationInvestigators
-             && canAffordActions
-           ]
+        [ ActivateCardAbilityAction iid (ability attrs)
+        | unused
+          && canGainResources
+          && iid
+          `member` locationInvestigators
+          && canAffordActions
+        ]
   getActions iid window (DowntownFirstBankOfArkham attrs) =
     getActions iid window attrs
 

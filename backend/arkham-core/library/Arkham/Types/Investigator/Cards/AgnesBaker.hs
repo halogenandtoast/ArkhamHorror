@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Investigator.Cards.AgnesBaker where
+
+module Arkham.Types.Investigator.Cards.AgnesBaker
+  ( AgnesBaker(..)
+  , agnesBaker
+  )
+where
 
 import Arkham.Import
 
@@ -29,17 +34,18 @@ agnesBaker = AgnesBaker
     }
 
 instance ActionRunner env => HasActions env AgnesBaker where
-  getActions iid (AfterAssignedHorror You) (AgnesBaker Attrs {..})
+  getActions iid (AfterAssignedHorror You) (AgnesBaker attrs@Attrs {..})
     | iid == investigatorId = do
       locationEnemyIds <- getSetList @EnemyId investigatorLocation
       let
-        ability = (mkAbility
-                    (InvestigatorSource investigatorId)
-                    1
-                    (ReactionAbility (AfterAssignedHorror You))
-                  )
-          { abilityLimit = PerPhase
-          }
+        ability =
+          (mkAbility
+              (toSource attrs)
+              1
+              (ReactionAbility (AfterAssignedHorror You))
+            )
+            { abilityLimit = PerPhase
+            }
       usedAbilities <- map unUsedAbility <$> getList ()
       pure
         [ ActivateCardAbilityAction investigatorId ability

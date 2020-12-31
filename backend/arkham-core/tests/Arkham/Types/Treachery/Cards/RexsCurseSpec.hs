@@ -22,14 +22,7 @@ spec = describe "Rex's Curse" $ do
     investigator <- testInvestigator "00000" id
     rexsCurse <- buildPlayerCard "02009"
 
-    (didRunMessage, logger) <- createMessageMatcher
-      (PassedSkillTest
-        (toId investigator)
-        Nothing
-        TestSource
-        (SkillTestInitiatorTarget TestTarget)
-        2
-      )
+    (didRunMessage, logger) <- didPassSkillTestBy investigator 2
     game <-
       runGameTest
         investigator
@@ -38,7 +31,7 @@ spec = describe "Rex's Curse" $ do
         , drawCards investigator 1
         , BeginSkillTest
           (toId investigator)
-          TestSource
+          (TestSource mempty)
           TestTarget
           Nothing
           SkillIntellect

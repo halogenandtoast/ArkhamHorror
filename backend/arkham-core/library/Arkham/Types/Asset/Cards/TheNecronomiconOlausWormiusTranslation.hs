@@ -26,11 +26,12 @@ instance ActionRunner env => HasActions env TheNecronomiconOlausWormiusTranslati
       canAffordActions <- getCanAffordCost
         iid
         (toSource a)
-        (ActionCost 1 Nothing (assetTraits a))
+        Nothing
+        (ActionCost 1)
       pure
         [ ActivateCardAbilityAction
             iid
-            (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
+            (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
         | canAffordActions
         ]
   getActions _ _ _ = pure []

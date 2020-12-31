@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.PoliceBadge2 where
+
+module Arkham.Types.Asset.Cards.PoliceBadge2
+  ( PoliceBadge2(..)
+  , policeBadge2
+  )
+where
 
 import Arkham.Import
 
@@ -24,7 +29,7 @@ instance HasActions env PoliceBadge2 where
     | ownedBy a iid = pure
       [ ActivateCardAbilityAction
           iid
-          (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
+          (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
       ]
   getActions _ _ _ = pure []
 

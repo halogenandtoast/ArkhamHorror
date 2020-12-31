@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.LadyEsprit
   ( LadyEsprit(..)
   , ladyEsprit
@@ -23,17 +24,15 @@ ladyEsprit uuid = LadyEsprit $ (baseAttrs uuid "81019")
   }
 
 ability :: Attrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
+ability attrs =
+  mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
 
 instance HasModifiersFor env LadyEsprit where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env LadyEsprit where
   getActions iid NonFast (LadyEsprit a@Attrs {..}) = do
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource a)
-      (ActionCost 1 Nothing assetTraits)
+    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
     locationId <- getId @LocationId iid
     assetLocationId <- case assetInvestigator of
       Nothing -> pure $ fromJustNote "must be set" assetLocation

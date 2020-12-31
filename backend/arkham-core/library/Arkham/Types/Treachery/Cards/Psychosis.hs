@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Treachery.Cards.Psychosis where
+
+module Arkham.Types.Treachery.Cards.Psychosis
+  ( Psychosis(..)
+  , psychosis
+  )
+where
 
 import Arkham.Import
 
@@ -19,24 +24,20 @@ instance HasModifiersFor env Psychosis where
 instance ActionRunner env => HasActions env Psychosis where
   getActions iid NonFast (Psychosis a@Attrs {..}) =
     withTreacheryInvestigator a $ \tormented -> do
-      canActivate <- getCanAffordCost
-        iid
-        (toSource a)
-        (ActionCost 2 Nothing treacheryTraits)
+      canActivate <- getCanAffordCost iid (toSource a) Nothing (ActionCost 2)
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
       pure
         [ ActivateCardAbilityAction
             iid
-            (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 2 Nothing)
-            )
+            (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 2))
         | canActivate && treacheryLocation == investigatorLocationId
         ]
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Psychosis where
   runMessage msg t@(Psychosis attrs@Attrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     After (InvestigatorTakeDamage iid _ _ n)
       | treacheryOnInvestigator iid attrs && n > 0 -> t <$ unshiftMessage

@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Location.Cards.StudentUnion where
+
+module Arkham.Types.Location.Cards.StudentUnion
+  ( StudentUnion(..)
+  , studentUnion
+  )
+where
 
 import Arkham.Import
 
@@ -32,8 +37,11 @@ instance ActionRunner env => HasActions env StudentUnion where
     canAffordActions <- getCanAffordCost
       iid
       (toSource attrs)
-      (ActionCost 2 Nothing locationTraits)
-    let ability = mkAbility (toSource attrs) 1 (ActionAbility 2 Nothing)
+      Nothing
+      (ActionCost 2)
+    let
+      ability =
+        mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 2)
 
     pure
       $ baseActions

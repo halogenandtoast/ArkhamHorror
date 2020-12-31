@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Treachery.Cards.DreamsOfRlyeh where
+
+module Arkham.Types.Treachery.Cards.DreamsOfRlyeh
+  ( DreamsOfRlyeh(..)
+  , dreamsOfRlyeh
+  )
+where
 
 import Arkham.Import
 
@@ -22,21 +27,18 @@ instance HasModifiersFor env DreamsOfRlyeh where
 
 instance ActionRunner env => HasActions env DreamsOfRlyeh where
   getActions iid NonFast (DreamsOfRlyeh a@Attrs {..}) = do
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource a)
-      (ActionCost 1 Nothing treacheryTraits)
+    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
     pure
       [ ActivateCardAbilityAction
           iid
-          (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 1 Nothing))
+          (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
       | treacheryOnInvestigator iid a && canAffordActions
       ]
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env DreamsOfRlyeh where
   runMessage msg t@(DreamsOfRlyeh attrs@Attrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
     UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId ->
       t <$ unshiftMessage

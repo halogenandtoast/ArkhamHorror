@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Agenda.Cards.TimeIsRunningShort where
+
+module Arkham.Types.Agenda.Cards.TimeIsRunningShort
+  ( TimeIsRunningShort(..)
+  , timeIsRunningShort
+  )
+where
 
 import Arkham.Import
 
@@ -23,14 +28,15 @@ instance ActionRunner env => HasActions env TimeIsRunningShort where
     canAffordActions <- getCanAffordCost
       iid
       (toSource attrs)
-      (ActionCost 1 (Just Action.Resign) mempty)
+      (Just Action.Resign)
+      (ActionCost 1)
     pure
       [ ActivateCardAbilityAction
           iid
           (mkAbility
             (AgendaSource "01122")
             1
-            (ActionAbility 1 (Just Action.Resign))
+            (ActionAbility (Just Action.Resign) (ActionCost 1))
           )
       | canAffordActions
       ]

@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Cards.CatBurgler1
   ( CatBurgler1(..)
   , catBurgler1
@@ -27,14 +28,12 @@ instance HasModifiersFor env CatBurgler1 where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
-ability attrs = mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing)
+ability attrs =
+  mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
 
 instance ActionRunner env => HasActions env CatBurgler1 where
   getActions iid NonFast (CatBurgler1 a) | ownedBy a iid = do
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource a)
-      (ActionCost 1 Nothing (assetTraits a))
+    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
     pure
       [ ActivateCardAbilityAction iid (ability a)
       | not (assetExhausted a) && canAffordActions

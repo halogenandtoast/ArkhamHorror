@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Investigator.Cards.AshcanPete where
+
+module Arkham.Types.Investigator.Cards.AshcanPete
+  ( AshcanPete(..)
+  , ashcanPete
+  )
+where
 
 import Arkham.Import
 
@@ -31,17 +36,12 @@ ashcanPete = AshcanPete $ baseAttrs
   [Drifter]
 
 instance ActionRunner env => HasActions env AshcanPete where
-  getActions iid FastPlayerWindow (AshcanPete Attrs {..})
+  getActions iid FastPlayerWindow (AshcanPete attrs@Attrs {..})
     | iid == investigatorId = do
       let
-        ability =
-          (mkAbility
-              (InvestigatorSource investigatorId)
-              1
-              (FastAbility FastPlayerWindow)
-            )
-            { abilityLimit = PerRound
-            }
+        ability = (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow))
+          { abilityLimit = PerRound
+          }
       exhaustedAssetIds <- map unExhaustedAssetId <$> getSetList investigatorId
       usedAbilities <- map unUsedAbility <$> getList ()
       pure

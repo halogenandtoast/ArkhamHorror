@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.Machete where
+
+module Arkham.Types.Asset.Cards.Machete
+  ( Machete(..)
+  , machete
+  )
+where
 
 import Arkham.Import
 
@@ -23,7 +28,11 @@ instance ActionRunner env => HasActions env Machete where
     pure
       [ ActivateCardAbilityAction
           iid
-          (mkAbility (toSource a) 1 (ActionAbility 1 (Just Action.Fight)))
+          (mkAbility
+            (toSource a)
+            1
+            (ActionAbility (Just Action.Fight) (ActionCost 1))
+          )
       | fightAvailable
       ]
   getActions _ _ _ = pure []

@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Enemy
   ( lookupEnemy
   , baseEnemy
@@ -96,7 +97,7 @@ instance (EnemyRunner env) => RunMessage env BaseEnemy where
 actionFromMessage :: Message -> Maybe Action
 actionFromMessage (ActivateCardAbilityAction _ ability) =
   case abilityType ability of
-    ActionAbility _ maction -> maction
+    ActionAbility maction _ -> maction
     _ -> Nothing
 actionFromMessage _ = Nothing
 

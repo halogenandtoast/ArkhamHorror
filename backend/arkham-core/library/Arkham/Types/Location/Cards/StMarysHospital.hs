@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.StMarysHospital
   ( StMarysHospital(..)
   , stMarysHospital
@@ -31,9 +32,10 @@ instance HasModifiersFor env StMarysHospital where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
-  { abilityLimit = PerGame
-  }
+ability attrs =
+  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+    { abilityLimit = PerGame
+    }
 
 instance ActionRunner env => HasActions env StMarysHospital where
   getActions iid NonFast (StMarysHospital attrs@Attrs {..}) | locationRevealed =
@@ -43,7 +45,8 @@ instance ActionRunner env => HasActions env StMarysHospital where
       canAffordActions <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 Nothing locationTraits)
+        Nothing
+        (ActionCost 1)
       pure
         $ baseActions
         <> [ ActivateCardAbilityAction iid (ability attrs)

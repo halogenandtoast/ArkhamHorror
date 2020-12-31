@@ -1,14 +1,15 @@
 module Arkham.Types.Ability.Type where
 
-import Arkham.Json
-import Arkham.Types.Action hiding (Ability)
+import Arkham.Prelude
+
+import Arkham.Types.Action
+import Arkham.Types.Cost
 import Arkham.Types.Window
-import ClassyPrelude
 
 data AbilityType
   = FastAbility Window
   | ReactionAbility Window
-  | ActionAbility Int (Maybe Action)
+  | ActionAbility (Maybe Action) Cost
   | ForcedAbility
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON)

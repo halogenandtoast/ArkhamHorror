@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.ArkhamWoodsQuietGlade
   ( ArkhamWoodsQuietGlade(..)
   , arkhamWoodsQuietGlade
@@ -36,24 +37,24 @@ instance HasModifiersFor env ArkhamWoodsQuietGlade where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs = (mkAbility (toSource attrs) 1 (ActionAbility 1 Nothing))
-  { abilityLimit = PerTurn
-  }
+ability attrs =
+  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
+    { abilityLimit = PerTurn
+    }
 
 instance ActionRunner env => HasActions env ArkhamWoodsQuietGlade where
   getActions iid NonFast (ArkhamWoodsQuietGlade attrs@Attrs {..})
-    | locationRevealed = do
-      baseActions <- getActions iid NonFast attrs
+    | locationRevealed = withBaseActions iid NonFast attrs $ do
       unused <- getIsUnused iid (ability attrs)
       canAffordActions <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 Nothing locationTraits)
+        Nothing
+        (ActionCost 1)
       pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction iid (ability attrs)
-           | unused && iid `elem` locationInvestigators && canAffordActions
-           ]
+        [ ActivateCardAbilityAction iid (ability attrs)
+        | unused && iid `elem` locationInvestigators && canAffordActions
+        ]
   getActions iid window (ArkhamWoodsQuietGlade attrs) =
     getActions iid window attrs
 

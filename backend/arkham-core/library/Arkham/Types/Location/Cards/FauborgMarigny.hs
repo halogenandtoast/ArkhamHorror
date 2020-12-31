@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Location.Cards.FauborgMarigny
   ( FauborgMarigny(..)
   , fauborgMarigny
@@ -38,22 +39,23 @@ instance HasModifiersFor env FauborgMarigny where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
-ability attrs =
-  mkAbility (toSource attrs) 1 (ActionAbility 1 (Just Action.Resign))
+ability attrs = mkAbility
+  (toSource attrs)
+  1
+  (ActionAbility (Just Action.Resign) (ActionCost 1))
 
 instance ActionRunner env => HasActions env FauborgMarigny where
   getActions iid NonFast (FauborgMarigny attrs@Attrs {..}) | locationRevealed =
-    do
-      baseActions <- getActions iid NonFast attrs
+    withBaseActions iid NonFast attrs $ do
       canAffordActions <- getCanAffordCost
         iid
         (toSource attrs)
-        (ActionCost 1 (Just Action.Resign) locationTraits)
+        (Just Action.Resign)
+        (ActionCost 1)
       pure
-        $ baseActions
-        <> [ ActivateCardAbilityAction iid (ability attrs)
-           | iid `member` locationInvestigators && canAffordActions
-           ]
+        [ ActivateCardAbilityAction iid (ability attrs)
+        | iid `member` locationInvestigators && canAffordActions
+        ]
   getActions i window (FauborgMarigny attrs) = getActions i window attrs
 
 instance (LocationRunner env) => RunMessage env FauborgMarigny where

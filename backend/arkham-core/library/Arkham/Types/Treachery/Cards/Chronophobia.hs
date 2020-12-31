@@ -24,24 +24,20 @@ instance HasModifiersFor env Chronophobia where
 instance ActionRunner env => HasActions env Chronophobia where
   getActions iid NonFast (Chronophobia a@Attrs {..}) =
     withTreacheryInvestigator a $ \tormented -> do
-      canActivate <- getCanAffordCost
-        iid
-        (toSource a)
-        (ActionCost 2 Nothing treacheryTraits)
+      canActivate <- getCanAffordCost iid (toSource a) Nothing (ActionCost 2)
       investigatorLocationId <- getId @LocationId iid
       treacheryLocation <- getId tormented
       pure
         [ ActivateCardAbilityAction
             iid
-            (mkAbility (TreacherySource treacheryId) 1 (ActionAbility 2 Nothing)
-            )
+            (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 2))
         | treacheryLocation == investigatorLocationId && canActivate
         ]
   getActions _ _ _ = pure []
 
 instance (TreacheryRunner env) => RunMessage env Chronophobia where
   runMessage msg t@(Chronophobia attrs@Attrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     EndTurn iid | InvestigatorTarget iid `elem` treacheryAttachedTarget ->
       t <$ unshiftMessage (InvestigatorDirectDamage iid (toSource attrs) 0 1)

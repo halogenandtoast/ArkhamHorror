@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.TheNecronomiconAdvanced where
+
+module Arkham.Types.Asset.Cards.TheNecronomiconAdvanced
+  ( TheNecronomiconAdvanced(..)
+  , theNecronomiconAdvanced
+  )
+where
 
 import Arkham.Import
 
@@ -33,14 +38,11 @@ instance HasModifiersFor env TheNecronomiconAdvanced where
 
 instance ActionRunner env => HasActions env TheNecronomiconAdvanced where
   getActions iid NonFast (TheNecronomiconAdvanced a) | ownedBy a iid = do
-    canAffordActions <- getCanAffordCost
-      iid
-      (toSource a)
-      (ActionCost 1 Nothing (assetTraits a))
+    canAffordActions <- getCanAffordCost iid (toSource a) Nothing (ActionCost 1)
     pure
       [ ActivateCardAbilityAction
           iid
-          (mkAbility (toSource a) 1 (ActionAbility 1 Nothing))
+          (mkAbility (toSource a) 1 (ActionAbility Nothing $ ActionCost 1))
       | fromJustNote "Must be set" (assetHorror a) > 0 && canAffordActions
       ]
   getActions _ _ _ = pure []

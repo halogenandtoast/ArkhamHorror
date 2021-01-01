@@ -18,6 +18,7 @@ import Arkham.Types.Event.Runner
 import Arkham.Types.EventId
 import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Query
 import Data.Coerce
 
 data Event
@@ -57,6 +58,7 @@ data Event
   | ThinkOnYourFeet' ThinkOnYourFeet
   | BindMonster2' BindMonster2
   | BaitAndSwitch' BaitAndSwitch
+  | IveGotAPlan' IveGotAPlan
   | LetMeHandleThis' LetMeHandleThis
   | SecondWind' SecondWind
   | BloodRite' BloodRite
@@ -67,11 +69,12 @@ data Event
   | HotStreak2' HotStreak2
   | MindWipe3' MindWipe3
   | Taunt3' Taunt3
+  | IveGotAPlan2' IveGotAPlan2
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance HasActions env Event
-deriving anyclass instance HasModifiersFor env Event
+deriving anyclass instance (HasCount ClueCount env InvestigatorId) => HasModifiersFor env Event
 deriving anyclass instance EventRunner env => RunMessage env Event
 
 instance Entity Event where
@@ -133,6 +136,7 @@ allEvents = mapFromList
   , ("02025", (ThinkOnYourFeet' .) . thinkOnYourFeet)
   , ("02031", (BindMonster2' .) . bindMonster2)
   , ("02034", (BaitAndSwitch' .) . baitAndSwitch)
+  , ("02107", (IveGotAPlan' .) . iveGotAPlan)
   , ("03022", (LetMeHandleThis' .) . letMeHandleThis)
   , ("04149", (SecondWind' .) . secondWind)
   , ("05317", (BloodRite' .) . bloodRite)
@@ -143,6 +147,7 @@ allEvents = mapFromList
   , ("50006", (HotStreak2' .) . hotStreak2)
   , ("50008", (MindWipe3' .) . mindWipe3)
   , ("60130", (Taunt3' .) . taunt3)
+  , ("60255", (IveGotAPlan2' .) . iveGotAPlan2)
   ]
 
 ownerOfEvent :: Event -> InvestigatorId
@@ -186,6 +191,7 @@ eventAttrs = \case
   ThinkOnYourFeet' attrs -> coerce attrs
   BindMonster2' attrs -> coerce attrs
   BaitAndSwitch' attrs -> coerce attrs
+  IveGotAPlan' attrs -> coerce attrs
   LetMeHandleThis' attrs -> coerce attrs
   SecondWind' attrs -> coerce attrs
   BloodRite' attrs -> coerce attrs
@@ -196,3 +202,4 @@ eventAttrs = \case
   HotStreak2' attrs -> coerce attrs
   MindWipe3' attrs -> coerce attrs
   Taunt3' attrs -> coerce attrs
+  IveGotAPlan2' attrs -> coerce attrs

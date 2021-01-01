@@ -291,6 +291,7 @@ allPlayerCards = HashMap.fromList
   , ("02061", professorWarrenRice)
   , ("02079", peterClover)
   , ("02080", drFrancisMorgan)
+  , ("02107", iveGotAPlan)
   , ("02139", adamLynch)
   , ("02140", theNecronomiconOlausWormiusTranslation)
   , ("02147", bandolier)
@@ -323,6 +324,7 @@ allPlayerCards = HashMap.fromList
   , ("60208", encyclopedia)
   , ("60211", higherEducation)
   , ("60213", whittonGreene)
+  , ("60225", iveGotAPlan2)
   , ("60504", atychiphobia)
   , ("81019", ladyEsprit)
   , ("81020", bearTrap)
@@ -1248,6 +1250,12 @@ drFrancisMorgan cardId = (asset cardId "02080" "Dr. Francis Morgan" 3 Neutral)
   , pcTraits = setFromList [Ally, Miskatonic]
   }
 
+iveGotAPlan :: CardId -> PlayerCard
+iveGotAPlan cardId = (event cardId "02107" "\"I've Got a Plan!\"" 3 Seeker)
+  { pcSkills = [SkillIntellect, SkillCombat]
+  , pcTraits = setFromList [Insight, Tactic]
+  }
+
 adamLynch :: CardId -> PlayerCard
 adamLynch cardId = (asset cardId "02139" "Adam Lynch" 0 Neutral)
   { pcTraits = setFromList [Ally, Miskatonic]
@@ -1484,6 +1492,12 @@ whittonGreene :: CardId -> PlayerCard
 whittonGreene cardId = (asset cardId "60213" "Whitton Greene" 4 Seeker)
   { pcSkills = [SkillIntellect]
   , pcTraits = setFromList [Ally, Miskatonic]
+  }
+
+iveGotAPlan2 :: CardId -> PlayerCard
+iveGotAPlan2 cardId = (event cardId "60225" "\"I've Got a Plan!\"" 2 Seeker)
+  { pcSkills = [SkillIntellect, SkillIntellect, SkillCombat]
+  , pcTraits = setFromList [Insight, Tactic]
   }
 
 atychiphobia :: CardId -> PlayerCard

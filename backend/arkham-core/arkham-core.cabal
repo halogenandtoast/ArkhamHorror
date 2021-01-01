@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6dac72d5056b8ebc15b5b00b536bf19bf232ddbd7d2f8ca59b59fba30d053bdc
+-- hash: 0271e2baef30c89211c18585d76699bd8a40225862fe9e6da26ea5e4eed0e483
 
 name:           arkham-core
 version:        0.0.0
@@ -333,6 +333,8 @@ library
       Arkham.Types.Event.Cards.FirstWatch
       Arkham.Types.Event.Cards.HotStreak2
       Arkham.Types.Event.Cards.HotStreak4
+      Arkham.Types.Event.Cards.IveGotAPlan
+      Arkham.Types.Event.Cards.IveGotAPlan2
       Arkham.Types.Event.Cards.LetMeHandleThis
       Arkham.Types.Event.Cards.LookWhatIFound
       Arkham.Types.Event.Cards.Lucky

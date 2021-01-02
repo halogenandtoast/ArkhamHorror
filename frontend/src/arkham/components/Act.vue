@@ -46,6 +46,9 @@ export default defineComponent({
           return true;
         case MessageType.ATTACH_TREACHERY:
           return c.contents[1].contents == id.value;
+        case MessageType.ACTIVATE_ABILITY:
+          return c.contents[1].source.contents === id.value
+            && (c.contents[1].type.tag === 'ReactionAbility')
         case MessageType.RUN:
           return c.contents.some((c1: Message) => canInteract(c1));
         default:

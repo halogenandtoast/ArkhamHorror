@@ -64,6 +64,12 @@ export default defineComponent({
         .findIndex((c) => c.tag === MessageType.ENEMY_ATTACK && c.contents[1] === id.value)
     })
 
+    const labelAction = computed(() => {
+      return choices
+        .value
+        .findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.contents[0].contents === id.value)
+    })
+
     const moveAction = computed(() => {
       return choices
         .value
@@ -92,6 +98,10 @@ export default defineComponent({
     })
 
     const cardAction = computed(() => {
+      if (labelAction.value !== -1) {
+        return labelAction.value;
+      }
+
       if (attackAction.value !== -1) {
         return attackAction.value;
       }

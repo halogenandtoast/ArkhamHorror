@@ -300,8 +300,15 @@ instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env Chaos
         Nothing -> error "unexpected"
         Just choice' -> do
           case choice' of
-            Resolved tokenFaces' ->
-              c <$ unshiftMessage (RequestedTokens source miid tokenFaces')
+            Resolved tokenFaces' -> c <$ unshiftMessages
+              (FocusTokens tokenFaces'
+              : [ CheckWindow
+                    iid
+                    [ WhenRevealToken You token | token <- tokenFaces' ]
+                | iid <- maybeToList miid
+                ]
+              <> [RequestedTokens source miid tokenFaces', UnfocusTokens]
+              )
             _ -> do
               ((choice'', msgs), c') <- runStateT
                 (resolveFirstUnresolved source miid strategy choice')

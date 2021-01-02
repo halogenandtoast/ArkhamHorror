@@ -28,9 +28,8 @@ ability window attrs =
     }
 
 instance ActionRunner env => HasActions env BeginnersLuck where
-  getActions iid window@(WhenRevealToken You _) (BeginnersLuck x) = do
-    let ab = ability window x
-    pure [ActivateCardAbilityAction iid ab]
+  getActions iid window@(WhenRevealToken You _) (BeginnersLuck x) =
+    pure [ActivateCardAbilityAction iid (ability window x)]
   getActions iid window (BeginnersLuck x) = getActions iid window x
 
 instance
@@ -87,12 +86,15 @@ instance
               When (RevealToken s i _) -> When (RevealToken s i token)
               RevealToken s i _ -> RevealToken s i token
               After (RevealToken s i _) -> After (RevealToken s i token)
+              RequestedTokens source' miid [_] ->
+                RequestedTokens source' miid [token]
+              RequestedTokens{} -> error "not setup for multiple tokens"
               m -> m
             )
             queue
           , ()
           )
-        a <$ unshiftMessages [UnfocusTokens, Remember $ Cheated iid]
+        a <$ unshiftMessages [FocusTokens [token], Remember $ Cheated iid]
     After (GainClues _ _) -> do
       totalClues <- unSpendableClueCount <$> getCount ()
       requiredClues <- getPlayerCountValue (PerPlayer 4)

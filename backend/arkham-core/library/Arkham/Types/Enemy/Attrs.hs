@@ -466,45 +466,47 @@ instance EnemyRunner env => RunMessage env Attrs where
       if willMove
         then pure $ a & locationL .~ lid & engagedInvestigatorsL .~ mempty
         else pure a
-    HuntersMove
-      | Keyword.Hunter
-        `elem` enemyKeywords
-        && null enemyEngagedInvestigators
-        && not enemyExhausted
-      -> do
-        -- The logic here is an artifact of doing this incorrect
-        -- Prey is only used for breaking ties unless we're dealing
-        -- with the Only keyword for prey, so here we hardcode prey
-        -- to AnyPrey and then find if there are any investigators
-        -- who qualify as prey to filter
-        matchingClosestLocationIds <- case enemyPrey of
-          OnlyPrey prey ->
-            map unClosestPathLocationId <$> getSetList (enemyLocation, prey)
-          _prey ->
-            map unClosestPathLocationId <$> getSetList (enemyLocation, AnyPrey)
+    HuntersMove | null enemyEngagedInvestigators && not enemyExhausted -> do
+      keywords <- getModifiedKeywords a
+      if Keyword.Hunter `notElem` keywords
+        then pure a
+        else do
+          -- The logic here is an artifact of doing this incorrect
+          -- Prey is only used for breaking ties unless we're dealing
+          -- with the Only keyword for prey, so here we hardcode prey
+          -- to AnyPrey and then find if there are any investigators
+          -- who qualify as prey to filter
+          matchingClosestLocationIds <- case enemyPrey of
+            OnlyPrey prey ->
+              map unClosestPathLocationId <$> getSetList (enemyLocation, prey)
+            _prey -> map unClosestPathLocationId
+              <$> getSetList (enemyLocation, AnyPrey)
 
-        preyIds <- setFromList . map unPreyId <$> getSetList enemyPrey
+          preyIds <- setFromList . map unPreyId <$> getSetList enemyPrey
 
-        filteredClosestLocationIds <- flip filterM matchingClosestLocationIds
-          $ \lid -> not . null . intersect preyIds <$> getSet lid
+          filteredClosestLocationIds <- flip filterM matchingClosestLocationIds
+            $ \lid -> not . null . intersect preyIds <$> getSet lid
 
-        -- If we have any locations with prey, that takes priority, otherwise
-        -- we return all locations which may have matched via AnyPrey
-        let
-          closestLocationIds = if null filteredClosestLocationIds
-            then matchingClosestLocationIds
-            else filteredClosestLocationIds
+          -- If we have any locations with prey, that takes priority, otherwise
+          -- we return all locations which may have matched via AnyPrey
+          let
+            destinationLocationIds = if null filteredClosestLocationIds
+              then matchingClosestLocationIds
+              else filteredClosestLocationIds
 
-
-        leadInvestigatorId <- getLeadInvestigatorId
-        case closestLocationIds of
-          [] -> pure a
-          [lid] -> a <$ unshiftMessage (EnemyMove enemyId enemyLocation lid)
-          ls -> a <$ unshiftMessage
-            (Ask leadInvestigatorId $ ChooseOne $ map
-              (EnemyMove enemyId enemyLocation)
-              ls
-            )
+          leadInvestigatorId <- getLeadInvestigatorId
+          pathIds <-
+            map unClosestPathLocationId
+            . concat
+            <$> traverse (getSetList . (enemyLocation, )) destinationLocationIds
+          case pathIds of
+            [] -> pure a
+            [lid] -> a <$ unshiftMessage (EnemyMove enemyId enemyLocation lid)
+            ls -> a <$ unshiftMessage
+              (Ask leadInvestigatorId $ ChooseOne $ map
+                (EnemyMove enemyId enemyLocation)
+                ls
+              )
     EnemiesAttack
       | not (null enemyEngagedInvestigators) && not enemyExhausted -> do
         unshiftMessages $ map (`EnemyWillAttack` enemyId) $ setToList

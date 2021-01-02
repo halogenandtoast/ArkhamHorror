@@ -76,7 +76,7 @@ instance LocationRunner env => RunMessage env CloverClubCardroom where
           )
           tokens
       l <$ unshiftMessages
-        ([FocusTokens tokens, chooseOne iid [Continue "Apply results"]]
+        ([chooseOne iid [Continue "Apply results"]]
         <> msgs
         <> [ResetTokens source]
         )

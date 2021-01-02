@@ -122,7 +122,8 @@ export default defineComponent({
     const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
     function abilityLabel(idx: number) {
-      return choices.value[idx].contents[1].type.contents[0].contents;
+      const label = choices.value[idx].contents[1].type.contents[0]
+      return typeof label === "string" ? label : label.contents
     }
 
     function isActionAbility(idx: number) {

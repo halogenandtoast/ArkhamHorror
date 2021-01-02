@@ -44,12 +44,14 @@ instance TreacheryRunner env => RunMessage env HuntedDown where
               [] -> pure Nothing
               [x] -> pure $ Just $ TargetLabel
                 (EnemyTarget eid)
-                [ EnemyMove eid locationId x
-                , EnemyAttackIfEngaged eid (Just iid)
-                ]
+                ([ EnemyMove eid locationId x | locationId /= x ]
+                <> [EnemyAttackIfEngaged eid (Just iid)]
+                )
               xs -> pure $ Just $ TargetLabel
                 (EnemyTarget eid)
-                [ chooseOne iid $ map (EnemyMove eid locationId) xs
+                [ chooseOne
+                  iid
+                  [ EnemyMove eid locationId x | x <- xs, x /= locationId ]
                 , EnemyAttackIfEngaged eid (Just iid)
                 ]
 

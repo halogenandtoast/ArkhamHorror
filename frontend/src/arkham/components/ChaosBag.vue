@@ -5,17 +5,24 @@
       class="portrait"
       :src="investigatorPortrait"
     />
+    <template v-for="(revealedToken, index) in revealedTokens" :key="index">
+      <img
+        v-if="revealedTokenAction(revealedToken) !== -1"
+        class="token active-token"
+        :src="imageFor(revealedToken)"
+        @click="$emit('choose', revealedTokenAction(revealedToken))"
+      />
+      <img
+        v-else
+        class="token"
+        :src="imageFor(revealedToken)"
+      />
+    </template>
     <img
-      v-for="(revealedToken, index) in revealedTokens"
-      class="token"
-      :key="index"
-      :src="imageFor(revealedToken)"
-    />
-    <img
-      v-if="drawTokenAction !== -1"
+      v-if="tokenAction !== -1"
       class="token token--can-draw"
       src="/img/arkham/ct_blank.png"
-      @click="$emit('choose', drawTokenAction)"
+      @click="$emit('choose', tokenAction)"
     />
   </div>
 </template>
@@ -87,7 +94,12 @@ export default defineComponent({
     })
 
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
-    const drawTokenAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.START_SKILL_TEST))
+
+    function revealedTokenAction(token: string) {
+      return choices.value.findIndex((c) => c.tag === MessageType.TARGET_LABEL && c.contents[0].contents == token)
+    }
+
+    const tokenAction = computed(() => choices.value.findIndex((c) => c.tag === MessageType.START_SKILL_TEST))
 
     const investigatorPortrait = computed(() => {
       const choice = choices.value.find((c) => c.tag === MessageType.START_SKILL_TEST);
@@ -102,7 +114,7 @@ export default defineComponent({
       return null;
     })
 
-    return { revealedTokens, drawTokenAction, investigatorPortrait, imageFor }
+    return { revealedTokens, tokenAction, revealedTokenAction, investigatorPortrait, imageFor }
   }
 })
 </script>
@@ -121,5 +133,11 @@ export default defineComponent({
 
 .portrait {
   width: 100px;
+}
+
+.active-token {
+  border: 5px solid #ff00ff;
+  border-radius: 500px;
+  cursor: pointer;
 }
 </style>

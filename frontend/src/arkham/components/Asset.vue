@@ -9,7 +9,8 @@
     <button
       v-for="ability in abilities"
       :key="ability"
-      class="button ability-button"
+      class="button"
+      :class="{ 'ability-button': isActionAbility(ability), 'fast-ability-button': isFastActionAbility(ability) }"
       @click="$emit('choose', ability)"
       >{{abilityLabel(ability)}}</button>
     <div v-if="hasPool" class="pool">
@@ -84,7 +85,7 @@ export default defineComponent({
           return c.contents[1].contents === id.value
         case MessageType.ACTIVATE_ABILITY:
           return c.contents[1].source.contents === id.value
-            && (c.contents[1].type.tag === 'ReactionAbility' || c.contents[1].type.tag === 'FastAbility')
+            && (c.contents[1].type.tag === 'ReactionAbility')
         case MessageType.RUN:
           return c.contents.some((c1: Message) => canInteract(c1))
         case MessageType.TARGET_LABEL:
@@ -121,7 +122,15 @@ export default defineComponent({
     const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
     function abilityLabel(idx: number) {
-      return choices.value[idx].contents[1].type.contents[0];
+      return choices.value[idx].contents[1].type.contents[0].contents;
+    }
+
+    function isActionAbility(idx: number) {
+      return choices.value[idx].contents[1].type.tag !== "FastAbility";
+    }
+
+    function isFastActionAbility(idx: number) {
+      return choices.value[idx].contents[1].type.tag === "FastAbility";
     }
 
     const abilities = computed(() => {
@@ -146,7 +155,7 @@ export default defineComponent({
         }, []);
     })
 
-    return { id, hasPool, exhausted, image, abilities, abilityLabel, sanityAction, healthAction, cardAction }
+    return { id, hasPool, exhausted, image, abilities, abilityLabel, sanityAction, healthAction, cardAction, isActionAbility, isFastActionAbility }
   }
 })
 </script>
@@ -193,6 +202,15 @@ export default defineComponent({
   &:before {
     font-family: "arkham";
     content: "\0049";
+    margin-right: 5px;
+  }
+}
+
+.fast-ability-button {
+  background-color: #555;
+  &:before {
+    font-family: "arkham";
+    content: "\0075";
     margin-right: 5px;
   }
 }

@@ -255,6 +255,20 @@ getModifiedDamageAmount Attrs {..} baseAmount = do
   applyModifierCaps (MaxDamageTaken m) n = min m n
   applyModifierCaps _ n = n
 
+getModifiedKeywords
+  :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
+  => Attrs
+  -> m (HashSet Keyword)
+getModifiedKeywords Attrs {..} = do
+  msource <- asks $ getSource ForSkillTest
+  let source = fromMaybe (EnemySource enemyId) msource
+  modifiers' <-
+    map modifierType <$> getModifiersFor source (EnemyTarget enemyId) ()
+  pure $ foldr applyModifier enemyKeywords modifiers'
+ where
+  applyModifier (AddKeyword k) n = insertSet k n
+  applyModifier _ n = n
+
 canEnterLocation
   :: (EnemyRunner env, MonadReader env m) => EnemyId -> LocationId -> m Bool
 canEnterLocation eid lid = do
@@ -265,9 +279,6 @@ canEnterLocation eid lid = do
   pure $ not $ flip any modifiers' $ \case
     CannotBeEnteredByNonElite{} -> Elite `notMember` traits
     _ -> False
-
-instance IsEnemy Attrs where
-  isAloof Attrs {..} = Keyword.Aloof `elem` enemyKeywords
 
 instance ActionRunner env => HasActions env Attrs where
   getActions iid NonFast Attrs {..} = do
@@ -337,14 +348,15 @@ instance EnemyRunner env => RunMessage env Attrs where
           )
     EnemySpawn _ lid eid | eid == enemyId -> do
       locations' <- getSet ()
+      keywords <- getModifiedKeywords a
       if lid `notElem` locations'
         then a <$ unshiftMessage (Discard (EnemyTarget eid))
         else do
           when
               (Keyword.Aloof
-              `notElem` enemyKeywords
+              `notElem` keywords
               && Keyword.Massive
-              `notElem` enemyKeywords
+              `notElem` keywords
               )
             $ do
                 preyIds <- map unPreyId <$> getSetList (enemyPrey, lid)
@@ -369,15 +381,16 @@ instance EnemyRunner env => RunMessage env Attrs where
     Ready target | isTarget a target -> do
       leadInvestigatorId <- getLeadInvestigatorId
       iids <- getSetList enemyLocation
+      keywords <- getModifiedKeywords a
       if null iids
         then pure ()
         else
           when
               (Keyword.Aloof
-              `notElem` enemyKeywords
+              `notElem` keywords
               && (null enemyEngagedInvestigators
                  || Keyword.Massive
-                 `elem` enemyKeywords
+                 `elem` keywords
                  )
               )
             $ unshiftMessage
@@ -590,12 +603,13 @@ instance EnemyRunner env => RunMessage env Attrs where
             then pure $ a & locationL .~ lid
             else a <$ unshiftMessage (DisengageEnemy iid enemyId)
     AfterEnterLocation iid lid | lid == enemyLocation -> do
+      keywords <- getModifiedKeywords a
       when
           (Keyword.Aloof
-          `notElem` enemyKeywords
+          `notElem` keywords
           && (null enemyEngagedInvestigators
              || Keyword.Massive
-             `elem` enemyKeywords
+             `elem` keywords
              )
           )
         $ unshiftMessage (EnemyEngageInvestigator enemyId iid)

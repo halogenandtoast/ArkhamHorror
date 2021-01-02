@@ -181,9 +181,6 @@ instance IsCard Enemy where
   getTraits = getTraits . enemyAttrs
   getKeywords = getKeywords . enemyAttrs
 
-instance IsEnemy Enemy where
-  isAloof = isAloof . enemyAttrs
-
 instance HasDamage Enemy where
   getDamage = (, 0) . enemyDamage . enemyAttrs
 

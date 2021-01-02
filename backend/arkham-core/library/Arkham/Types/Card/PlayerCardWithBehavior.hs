@@ -164,9 +164,8 @@ instance
     StrayCat . unDefaultPlayerCard <$> runMessage msg (DefaultPlayerCard pc)
 
 instance (HasQueue env) => RunMessage env CloseCall2 where
-  runMessage msg (CloseCall2 pc) = do
-    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
-    pure $ CloseCall2 pc'
+  runMessage msg (CloseCall2 pc) =
+    CloseCall2 . unDefaultPlayerCard <$> runMessage msg (DefaultPlayerCard pc)
 
 instance (HasId CardCode env EnemyId, HasSet Trait env EnemyId) => HasActions env CloseCall2 where
   getActions iid (AfterEnemyEvaded You eid) (CloseCall2 pc) = do

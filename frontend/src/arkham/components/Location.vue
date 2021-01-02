@@ -74,6 +74,7 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
+import { Cost } from '@/arkham/types/Cost';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
 import Enemy from '@/arkham/components/Enemy.vue';
@@ -224,11 +225,21 @@ export default defineComponent({
     const portrait = (cardCode: string) => `/img/arkham/portraits/${cardCode}.jpg`
 
     function singleAction(idx: number) {
-      return choices.value[idx].contents[1].type.contents[1].contents == 1
+      const { contents } = choices.value[idx].contents[1].type.contents[1]
+      if (typeof contents.some == 'function') {
+        return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 1)
+      } else {
+        return contents === 1
+      }
     }
 
     function doubleAction(idx: number) {
-      return choices.value[idx].contents[1].type.contents[1].contents == 2
+      const { contents } = choices.value[idx].contents[1].type.contents[1]
+      if (typeof contents.some == 'function') {
+        return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 2)
+      } else {
+        return contents === 2
+      }
     }
 
     return {

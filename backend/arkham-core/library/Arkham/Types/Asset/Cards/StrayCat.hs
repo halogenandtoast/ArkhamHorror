@@ -1,5 +1,10 @@
 {-# LANGUAGE UndecidableInstances #-}
-module Arkham.Types.Asset.Cards.StrayCat where
+
+module Arkham.Types.Asset.Cards.StrayCat
+  ( StrayCat(..)
+  , strayCat
+  )
+where
 
 import Arkham.Import
 
@@ -17,15 +22,16 @@ strayCat uuid = StrayCat
 instance HasModifiersFor env StrayCat where
   getModifiersFor = noModifiersFor
 
+ability :: Attrs -> Ability
+ability a = mkAbility
+  (toSource a)
+  1
+  (FastAbility FastPlayerWindow (DiscardCost $ toTarget a))
+
 instance HasActions env StrayCat where
-  getActions iid window (StrayCat a) | ownedBy a iid =
-    withBaseActions iid window a $ do
-      let
-        ability = mkAbility
-          (toSource a)
-          1
-          (FastAbility window (DiscardCost $ toTarget a))
-      pure [ActivateCardAbilityAction iid ability]
+  getActions iid FastPlayerWindow (StrayCat a) | ownedBy a iid =
+    withBaseActions iid FastPlayerWindow a
+      $ pure [ActivateCardAbilityAction iid (ability a)]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env StrayCat where

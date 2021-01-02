@@ -36,7 +36,7 @@ data PlayerCard'
   | TheNecronomiconAdvanced' TheNecronomiconAdvanced
   deriving stock (Generic, Show)
 
-newtype DefaultPlayerCard = DefaultPlayerCard PlayerCard
+newtype DefaultPlayerCard = DefaultPlayerCard { unDefaultPlayerCard :: PlayerCard }
   deriving newtype Show
 newtype TheNecronomicon = TheNecronomicon PlayerCard
   deriving newtype Show
@@ -101,36 +101,35 @@ instance HasActions env DefaultPlayerCard where
   getActions _ _ _ = pure []
 
 instance HasQueue env => RunMessage env TheNecronomicon where
-  runMessage (HandCardMessage (Revelation iid (PlayerCardSource cid))) c@(TheNecronomicon pc)
+  runMessage (InHand (Revelation iid (PlayerCardSource cid))) c@(TheNecronomicon pc)
     | getCardId pc == cid
     = c <$ unshiftMessage (PlayCard iid cid Nothing False)
-  runMessage msg (TheNecronomicon pc) = do
-    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
-    pure $ TheNecronomicon pc'
+  runMessage msg (TheNecronomicon pc) =
+    TheNecronomicon . unDefaultPlayerCard <$> runMessage
+      msg
+      (DefaultPlayerCard pc)
 
 instance HasActions env TheNecronomicon where
   getActions i window (TheNecronomicon pc) =
     getActions i window (DefaultPlayerCard pc)
 
 instance HasQueue env => RunMessage env DarkMemory where
-  runMessage (HandCardMessage (EndTurn iid)) c@(DarkMemory pc) = do
+  runMessage (InHand (EndTurn iid)) c@(DarkMemory pc) = do
     let cardId = getCardId pc
     c <$ unshiftMessages
       [ RevealInHand cardId
       , InvestigatorAssignDamage iid (PlayerCardSource cardId) 0 2
       ]
-  runMessage msg (DarkMemory pc) = do
-    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
-    pure $ DarkMemory pc'
+  runMessage msg (DarkMemory pc) =
+    DarkMemory . unDefaultPlayerCard <$> runMessage msg (DefaultPlayerCard pc)
 
 instance HasActions env DarkMemory where
   getActions i window (DarkMemory pc) =
     getActions i window (DefaultPlayerCard pc)
 
 instance HasQueue env => RunMessage env SureGamble3 where
-  runMessage msg (SureGamble3 pc) = do
-    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
-    pure $ SureGamble3 pc'
+  runMessage msg (SureGamble3 pc) =
+    SureGamble3 . unDefaultPlayerCard <$> runMessage msg (DefaultPlayerCard pc)
 
 instance HasActions env SureGamble3 where
   getActions iid (WhenRevealTokenWithNegativeModifier You tid) (SureGamble3 pc)
@@ -149,7 +148,7 @@ instance
   , HasId LocationId env InvestigatorId
   )
   => RunMessage env StrayCat where
-  runMessage (DiscardCardMessage (UseCardAbility iid (AssetSource aid) _ 1)) c@(StrayCat pc)
+  runMessage (InDiscard (UseCardAbility iid (AssetSource aid) _ 1)) c@(StrayCat pc)
     | unAssetId aid == unCardId (getCardId pc)
     = do
       locationId <- getId @LocationId iid
@@ -161,9 +160,8 @@ instance
       c <$ unshiftMessage
         (chooseOne iid [ EnemyEvaded iid enemyId | enemyId <- nonEliteEnemyIds ]
         )
-  runMessage msg (StrayCat pc) = do
-    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
-    pure $ StrayCat pc'
+  runMessage msg (StrayCat pc) =
+    StrayCat . unDefaultPlayerCard <$> runMessage msg (DefaultPlayerCard pc)
 
 instance (HasQueue env) => RunMessage env CloseCall2 where
   runMessage msg (CloseCall2 pc) = do
@@ -182,9 +180,10 @@ instance (HasId CardCode env EnemyId, HasSet Trait env EnemyId) => HasActions en
     getActions i window (DefaultPlayerCard pc)
 
 instance (HasQueue env) => RunMessage env LetMeHandleThis where
-  runMessage msg (LetMeHandleThis pc) = do
-    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
-    pure $ LetMeHandleThis pc'
+  runMessage msg (LetMeHandleThis pc) =
+    LetMeHandleThis . unDefaultPlayerCard <$> runMessage
+      msg
+      (DefaultPlayerCard pc)
 
 instance HasActions env LetMeHandleThis where
   getActions iid (WhenDrawNonPerilTreachery who tid) (LetMeHandleThis pc)
@@ -194,9 +193,8 @@ instance HasActions env LetMeHandleThis where
     getActions i window (DefaultPlayerCard pc)
 
 instance HasQueue env => RunMessage env SecondWind where
-  runMessage msg (SecondWind pc) = do
-    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
-    pure $ SecondWind pc'
+  runMessage msg (SecondWind pc) =
+    SecondWind . unDefaultPlayerCard <$> runMessage msg (DefaultPlayerCard pc)
 
 instance HasCount ActionTakenCount env InvestigatorId => HasActions env SecondWind where
   getActions iid (DuringTurn You) (SecondWind pc) = do
@@ -206,10 +204,11 @@ instance HasCount ActionTakenCount env InvestigatorId => HasActions env SecondWi
   getActions i window (SecondWind pc) =
     getActions i window (DefaultPlayerCard pc)
 
-instance (HasQueue env) => RunMessage env AstoundingRevelation where
-  runMessage msg (AstoundingRevelation pc) = do
-    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
-    pure $ AstoundingRevelation pc'
+instance HasQueue env => RunMessage env AstoundingRevelation where
+  runMessage msg (AstoundingRevelation pc) =
+    AstoundingRevelation . unDefaultPlayerCard <$> runMessage
+      msg
+      (DefaultPlayerCard pc)
 
 instance HasSet AssetId env (InvestigatorId, UseType) => HasActions env AstoundingRevelation where
   getActions iid (WhenAmongSearchedCards You) (AstoundingRevelation pc) = do
@@ -228,12 +227,13 @@ instance HasSet AssetId env (InvestigatorId, UseType) => HasActions env Astoundi
     getActions i window (DefaultPlayerCard pc)
 
 instance HasQueue env => RunMessage env TheNecronomiconAdvanced where
-  runMessage (HandCardMessage (Revelation iid (PlayerCardSource cid))) c@(TheNecronomiconAdvanced pc)
+  runMessage (InHand (Revelation iid (PlayerCardSource cid))) c@(TheNecronomiconAdvanced pc)
     | getCardId pc == cid
     = c <$ unshiftMessage (PlayCard iid cid Nothing False)
-  runMessage msg (TheNecronomiconAdvanced pc) = do
-    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
-    pure $ TheNecronomiconAdvanced pc'
+  runMessage msg (TheNecronomiconAdvanced pc) =
+    TheNecronomiconAdvanced . unDefaultPlayerCard <$> runMessage
+      msg
+      (DefaultPlayerCard pc)
 
 instance HasActions env TheNecronomiconAdvanced where
   getActions i window (TheNecronomiconAdvanced pc) =

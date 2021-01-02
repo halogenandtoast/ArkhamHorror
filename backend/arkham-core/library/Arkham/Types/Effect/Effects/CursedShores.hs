@@ -17,7 +17,7 @@ cursedShores = CursedShores . uncurry4 (baseAttrs "81007")
 
 instance HasModifiersFor env CursedShores where
   getModifiersFor SkillTestSource{} target (CursedShores a@Attrs {..})
-    | target == effectTarget = pure [modifier a (AnySkillValue 2)]
+    | target == effectTarget = pure [toModifier a (AnySkillValue 2)]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env CursedShores where

@@ -17,7 +17,7 @@ mindOverMatter = MindOverMatter . uncurry4 (baseAttrs "01036")
 
 instance HasModifiersFor env MindOverMatter where
   getModifiersFor _ target (MindOverMatter a@Attrs {..})
-    | target == effectTarget = pure $ modifiers
+    | target == effectTarget = pure $ toModifiers
       a
       [ UseSkillInPlaceOf SkillCombat SkillIntellect
       , UseSkillInPlaceOf SkillAgility SkillIntellect

@@ -18,7 +18,7 @@ curseOfTheRougarouTabletToken =
 
 instance HasModifiersFor env CurseOfTheRougarouTabletToken where
   getModifiersFor _ target (CurseOfTheRougarouTabletToken a@Attrs {..})
-    | target == effectTarget = pure [modifier a CannotMove]
+    | target == effectTarget = pure [toModifier a CannotMove]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env CurseOfTheRougarouTabletToken where

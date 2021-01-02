@@ -18,7 +18,7 @@ letMeHandleThis = LetMeHandleThis . uncurry4 (baseAttrs "03022")
 instance HasModifiersFor env LetMeHandleThis where
   getModifiersFor source target (LetMeHandleThis a@Attrs {..})
     | source == effectSource && target == effectTarget = pure
-      [modifier a $ AnySkillValue 2]
+      [toModifier a $ AnySkillValue 2]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env LetMeHandleThis where

@@ -74,7 +74,7 @@ data Event
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance HasActions env Event
-deriving anyclass instance (HasCount ClueCount env InvestigatorId) => HasModifiersFor env Event
+deriving anyclass instance HasCount ClueCount env InvestigatorId => HasModifiersFor env Event
 deriving anyclass instance EventRunner env => RunMessage env Event
 
 instance Entity Event where

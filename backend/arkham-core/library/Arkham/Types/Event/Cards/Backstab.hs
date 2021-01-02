@@ -15,7 +15,7 @@ backstab iid uuid = Backstab $ baseAttrs iid uuid "01051"
 
 instance HasModifiersFor env Backstab where
   getModifiersFor (SkillTestSource _ _ source (Just Fight)) (InvestigatorTarget _) (Backstab attrs)
-    = pure $ modifiers attrs [ DamageDealt 2 | isSource attrs source ]
+    = pure $ toModifiers attrs [ DamageDealt 2 | isSource attrs source ]
   getModifiersFor _ _ _ = pure []
 
 instance HasActions env Backstab where

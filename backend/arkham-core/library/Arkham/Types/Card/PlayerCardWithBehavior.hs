@@ -15,6 +15,7 @@ import Arkham.Types.Card.PlayerCard
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
+import Arkham.Types.LocationId
 import Arkham.Types.Message
 import Arkham.Types.Query
 import Arkham.Types.Source
@@ -27,6 +28,7 @@ data PlayerCard'
   | TheNecronomicon' TheNecronomicon
   | DarkMemory' DarkMemory
   | SureGamble3' SureGamble3
+  | StrayCat' StrayCat
   | CloseCall2' CloseCall2
   | LetMeHandleThis' LetMeHandleThis
   | SecondWind' SecondWind
@@ -41,6 +43,8 @@ newtype TheNecronomicon = TheNecronomicon PlayerCard
 newtype DarkMemory = DarkMemory PlayerCard
   deriving newtype Show
 newtype SureGamble3 = SureGamble3 PlayerCard
+  deriving newtype Show
+newtype StrayCat = StrayCat PlayerCard
   deriving newtype Show
 newtype CloseCall2 = CloseCall2 PlayerCard
   deriving newtype Show
@@ -58,6 +62,7 @@ allPlayerCardsWithBehavior = mapFromList
   [ ("01009", TheNecronomicon' . TheNecronomicon)
   , ("01013", DarkMemory' . DarkMemory)
   , ("01056", SureGamble3' . SureGamble3)
+  , ("01076", StrayCat' . StrayCat)
   , ("01083", CloseCall2' . CloseCall2)
   , ("03022", LetMeHandleThis' . LetMeHandleThis)
   , ("04149", SecondWind' . SecondWind)
@@ -72,7 +77,15 @@ toPlayerCardWithBehavior pc = builder pc
     findWithDefault defaultCard (getCardCode pc) allPlayerCardsWithBehavior
   defaultCard = DefaultPlayerCard' . DefaultPlayerCard
 
-deriving anyclass instance (HasSet HandCardId env InvestigatorId, HasQueue env) => RunMessage env PlayerCard'
+deriving anyclass instance
+  ( HasSet HandCardId env InvestigatorId
+  , HasQueue env
+  , HasSet Trait env EnemyId
+  , HasSet EnemyId env LocationId
+  , HasId LocationId env InvestigatorId
+  )
+  => RunMessage env PlayerCard'
+
 deriving anyclass instance
   ( HasId CardCode env EnemyId
   , HasSet Trait env EnemyId
@@ -88,8 +101,9 @@ instance HasActions env DefaultPlayerCard where
   getActions _ _ _ = pure []
 
 instance HasQueue env => RunMessage env TheNecronomicon where
-  runMessage (Revelation iid (PlayerCardSource cid)) c@(TheNecronomicon pc)
-    | getCardId pc == cid = c <$ unshiftMessage (PlayCard iid cid Nothing False)
+  runMessage (HandCardMessage (Revelation iid (PlayerCardSource cid))) c@(TheNecronomicon pc)
+    | getCardId pc == cid
+    = c <$ unshiftMessage (PlayCard iid cid Nothing False)
   runMessage msg (TheNecronomicon pc) = do
     DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
     pure $ TheNecronomicon pc'
@@ -98,17 +112,13 @@ instance HasActions env TheNecronomicon where
   getActions i window (TheNecronomicon pc) =
     getActions i window (DefaultPlayerCard pc)
 
-instance (HasSet HandCardId env InvestigatorId, HasQueue env) => RunMessage env DarkMemory where
-  runMessage (EndTurn iid) c@(DarkMemory pc) = do
+instance HasQueue env => RunMessage env DarkMemory where
+  runMessage (HandCardMessage (EndTurn iid)) c@(DarkMemory pc) = do
     let cardId = getCardId pc
-    cardIds <- map unHandCardId <$> getSetList iid
-    c <$ when
-      (cardId `elem` cardIds)
-      (unshiftMessages
-        [ RevealInHand cardId
-        , InvestigatorAssignDamage iid (PlayerCardSource cardId) 0 2
-        ]
-      )
+    c <$ unshiftMessages
+      [ RevealInHand cardId
+      , InvestigatorAssignDamage iid (PlayerCardSource cardId) 0 2
+      ]
   runMessage msg (DarkMemory pc) = do
     DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
     pure $ DarkMemory pc'
@@ -117,7 +127,7 @@ instance HasActions env DarkMemory where
   getActions i window (DarkMemory pc) =
     getActions i window (DefaultPlayerCard pc)
 
-instance (HasQueue env) => RunMessage env SureGamble3 where
+instance HasQueue env => RunMessage env SureGamble3 where
   runMessage msg (SureGamble3 pc) = do
     DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
     pure $ SureGamble3 pc'
@@ -127,6 +137,33 @@ instance HasActions env SureGamble3 where
     = pure [InitiatePlayCard iid (getCardId pc) (Just $ TokenTarget tid) False]
   getActions i window (SureGamble3 pc) =
     getActions i window (DefaultPlayerCard pc)
+
+instance HasActions env StrayCat where
+  getActions i window (StrayCat pc) =
+    getActions i window (DefaultPlayerCard pc)
+
+instance
+  ( HasQueue env
+  , HasSet Trait env EnemyId
+  , HasSet EnemyId env LocationId
+  , HasId LocationId env InvestigatorId
+  )
+  => RunMessage env StrayCat where
+  runMessage (DiscardCardMessage (UseCardAbility iid (AssetSource aid) _ 1)) c@(StrayCat pc)
+    | unAssetId aid == unCardId (getCardId pc)
+    = do
+      locationId <- getId @LocationId iid
+      locationEnemyIds <- getSetList locationId
+      nonEliteEnemyIds <- filterM
+        ((notMember Elite <$>) . getSet)
+        locationEnemyIds
+
+      c <$ unshiftMessage
+        (chooseOne iid [ EnemyEvaded iid enemyId | enemyId <- nonEliteEnemyIds ]
+        )
+  runMessage msg (StrayCat pc) = do
+    DefaultPlayerCard pc' <- runMessage msg (DefaultPlayerCard pc)
+    pure $ StrayCat pc'
 
 instance (HasQueue env) => RunMessage env CloseCall2 where
   runMessage msg (CloseCall2 pc) = do
@@ -191,7 +228,7 @@ instance HasSet AssetId env (InvestigatorId, UseType) => HasActions env Astoundi
     getActions i window (DefaultPlayerCard pc)
 
 instance HasQueue env => RunMessage env TheNecronomiconAdvanced where
-  runMessage (Revelation iid (PlayerCardSource cid)) c@(TheNecronomiconAdvanced pc)
+  runMessage (HandCardMessage (Revelation iid (PlayerCardSource cid))) c@(TheNecronomiconAdvanced pc)
     | getCardId pc == cid
     = c <$ unshiftMessage (PlayCard iid cid Nothing False)
   runMessage msg (TheNecronomiconAdvanced pc) = do

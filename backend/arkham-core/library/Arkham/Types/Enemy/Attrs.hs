@@ -372,7 +372,7 @@ instance EnemyRunner env => RunMessage env Attrs where
                       [ EnemyEngageInvestigator eid iid | iid <- iids ]
                     )
 
-          when (Keyword.Massive `elem` enemyKeywords) $ do
+          when (Keyword.Massive `elem` keywords) $ do
             investigatorIds <- getInvestigatorIds
             unshiftMessages
               [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
@@ -529,9 +529,11 @@ instance EnemyRunner env => RunMessage env Attrs where
         [SuccessfulAttackEnemy iid enemyId, InvestigatorDamageEnemy iid enemyId]
     FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _
       | isTarget a target
-      -> if Keyword.Retaliate `elem` enemyKeywords
-        then a <$ unshiftMessage (EnemyAttack iid enemyId)
-        else a <$ unshiftMessage (FailedAttackEnemy iid enemyId)
+      -> do
+        keywords <- getModifiedKeywords a
+        if Keyword.Retaliate `elem` keywords
+          then a <$ unshiftMessage (EnemyAttack iid enemyId)
+          else a <$ unshiftMessage (FailedAttackEnemy iid enemyId)
     EnemyAttackIfEngaged eid miid | eid == enemyId -> a <$ case miid of
       Just iid | iid `elem` enemyEngagedInvestigators ->
         unshiftMessage (EnemyAttack iid enemyId)
@@ -556,9 +558,11 @@ instance EnemyRunner env => RunMessage env Attrs where
       -> a <$ unshiftMessage (EnemyEvaded iid enemyId)
     FailedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _
       | isTarget a target
-      -> a <$ when
-        (Keyword.Alert `elem` enemyKeywords)
-        (unshiftMessage $ EnemyAttack iid enemyId)
+      -> do
+        keywords <- getModifiedKeywords a
+        a <$ when
+          (Keyword.Alert `elem` keywords)
+          (unshiftMessage $ EnemyAttack iid enemyId)
     PerformEnemyAttack iid eid | eid == enemyId -> a <$ unshiftMessages
       [ InvestigatorAssignDamage
         iid
@@ -596,8 +600,9 @@ instance EnemyRunner env => RunMessage env Attrs where
       pure $ a & engagedInvestigatorsL %~ insertSet iid & locationL .~ lid
     EngageEnemy iid eid False | eid == enemyId ->
       pure $ a & engagedInvestigatorsL .~ singleton iid
-    MoveTo iid lid | iid `elem` enemyEngagedInvestigators ->
-      if Keyword.Massive `elem` enemyKeywords
+    MoveTo iid lid | iid `elem` enemyEngagedInvestigators -> do
+      keywords <- getModifiedKeywords a
+      if Keyword.Massive `elem` keywords
         then pure a
         else do
           willMove <- canEnterLocation enemyId lid

@@ -17,7 +17,7 @@ lucky = Lucky . uncurry4 (baseAttrs "01080")
 
 instance HasModifiersFor env Lucky where
   getModifiersFor _ target (Lucky a@Attrs {..}) | target == effectTarget =
-    pure [modifier a $ AnySkillValue 2]
+    pure [toModifier a $ AnySkillValue 2]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env Lucky where

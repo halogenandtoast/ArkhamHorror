@@ -14,7 +14,7 @@ barricade :: InvestigatorId -> EventId -> Barricade
 barricade iid uuid = Barricade $ baseAttrs iid uuid "01038"
 
 instance HasModifiersFor env Barricade where
-  getModifiersFor _ (LocationTarget lid) (Barricade attrs) = pure $ modifiers
+  getModifiersFor _ (LocationTarget lid) (Barricade attrs) = pure $ toModifiers
     attrs
     [ CannotBeEnteredByNonElite
     | LocationTarget lid `elem` eventAttachedTarget attrs

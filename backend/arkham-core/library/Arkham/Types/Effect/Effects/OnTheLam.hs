@@ -17,7 +17,7 @@ onTheLam = OnTheLam . uncurry4 (baseAttrs "01010")
 
 instance HasModifiersFor env OnTheLam where
   getModifiersFor _ target (OnTheLam a@Attrs {..}) | target == effectTarget =
-    pure [modifier a CannotBeAttackedByNonElite]
+    pure [toModifier a CannotBeAttackedByNonElite]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env OnTheLam where

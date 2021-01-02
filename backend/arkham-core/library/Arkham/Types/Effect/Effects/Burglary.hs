@@ -19,7 +19,7 @@ instance HasModifiersFor env Burglary where
   getModifiersFor _ (LocationTarget lid) (Burglary attrs@Attrs {..}) =
     case effectTarget of
       InvestigationTarget _ lid' | lid == lid' ->
-        pure [modifier attrs AlternateSuccessfullInvestigation]
+        pure [toModifier attrs AlternateSuccessfullInvestigation]
       _ -> pure []
   getModifiersFor _ _ _ = pure []
 

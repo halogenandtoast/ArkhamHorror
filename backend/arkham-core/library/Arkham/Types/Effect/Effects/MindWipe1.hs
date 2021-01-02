@@ -17,7 +17,7 @@ mindWipe1 = MindWipe1 . uncurry4 (baseAttrs "01068")
 
 instance HasModifiersFor env MindWipe1 where
   getModifiersFor _ target (MindWipe1 a@Attrs {..}) | target == effectTarget =
-    pure [modifier a Blank]
+    pure [toModifier a Blank]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env MindWipe1 where

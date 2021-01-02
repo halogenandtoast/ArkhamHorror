@@ -17,7 +17,7 @@ mindWipe3 = MindWipe3 . uncurry4 (baseAttrs "50008")
 
 instance HasModifiersFor env MindWipe3 where
   getModifiersFor _ target (MindWipe3 a@Attrs {..}) | target == effectTarget =
-    pure $ modifiers a [Blank, DamageDealt (-1), HorrorDealt (-1)]
+    pure $ toModifiers a [Blank, DamageDealt (-1), HorrorDealt (-1)]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env MindWipe3 where

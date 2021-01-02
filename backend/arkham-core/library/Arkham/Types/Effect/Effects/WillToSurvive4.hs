@@ -18,7 +18,7 @@ willToSurvive4 = WillToSurvive4 . uncurry4 (baseAttrs "01085")
 instance HasModifiersFor env WillToSurvive4 where
   getModifiersFor _ target (WillToSurvive4 a@Attrs {..})
     | target == effectTarget = pure
-      [modifier a DoNotDrawChaosTokensForSkillChecks]
+      [toModifier a DoNotDrawChaosTokensForSkillChecks]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env WillToSurvive4 where

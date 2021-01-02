@@ -16,7 +16,7 @@ barricade3 iid uuid = Barricade3 $ baseAttrs iid uuid "50004"
 instance HasModifiersFor env Barricade3 where
   getModifiersFor _ (LocationTarget lid) (Barricade3 attrs) =
     if LocationTarget lid `elem` eventAttachedTarget attrs
-      then pure $ modifiers
+      then pure $ toModifiers
         attrs
         [CannotBeEnteredByNonElite, SpawnNonEliteAtConnectingInstead]
       else pure []

@@ -17,7 +17,7 @@ sureGamble3 = SureGamble3 . uncurry4 (baseAttrs "01088")
 
 instance HasModifiersFor env SureGamble3 where
   getModifiersFor _ target (SureGamble3 a@Attrs {..}) | target == effectTarget =
-    pure [modifier a NegativeToPositive]
+    pure [toModifier a NegativeToPositive]
   getModifiersFor _ _ _ = pure []
 
 instance HasQueue env => RunMessage env SureGamble3 where

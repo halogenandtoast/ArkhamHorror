@@ -457,6 +457,8 @@ data Message
   | DisableEffect EffectId
   | Done
   | PlaceEnemyInVoid EnemyId
+  | HandCardMessage Message
+  | DiscardCardMessage Message
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

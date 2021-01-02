@@ -596,7 +596,11 @@ instance InvestigatorRunner env => RunMessage env Attrs where
   runMessage msg i = do
     traverseOf_
       (handL . traverse . _PlayerCard)
-      (runMessage msg . toPlayerCardWithBehavior)
+      (runMessage (HandCardMessage msg) . toPlayerCardWithBehavior)
+      i
+    traverseOf_
+      (discardL . traverse)
+      (runMessage (DiscardCardMessage msg) . toPlayerCardWithBehavior)
       i
     runInvestigatorMessage msg i
 

@@ -6,7 +6,6 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
-import Arkham.Types.Trait
 
 newtype StrayCat = StrayCat Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -30,15 +29,4 @@ instance HasActions env StrayCat where
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env StrayCat where
-  runMessage msg a@(StrayCat attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (AssetSource aid) _ 1 | aid == assetId -> do
-      locationId <- getId @LocationId (getInvestigator attrs)
-      locationEnemyIds <- getSetList locationId
-      nonEliteEnemyIds <- filterM
-        ((notMember Elite <$>) . getSet)
-        locationEnemyIds
-
-      a <$ unshiftMessage
-        (chooseOne iid [ EnemyEvaded iid enemyId | enemyId <- nonEliteEnemyIds ]
-        )
-    _ -> StrayCat <$> runMessage msg attrs
+  runMessage msg (StrayCat attrs) = StrayCat <$> runMessage msg attrs

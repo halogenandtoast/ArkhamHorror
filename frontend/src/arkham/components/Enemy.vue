@@ -117,7 +117,7 @@ export default defineComponent({
     const evadeAction = computed(() => {
       return choices
         .value
-        .findIndex((c) => c.tag === MessageType.EVADE_ENEMY && c.contents[1] === id.value);
+        .findIndex((c) => (c.tag === MessageType.EVADE_ENEMY || c.tag === MessageType.ENEMY_EVADED) && c.contents[1] === id.value);
     })
 
     const engageAction = computed(() => {

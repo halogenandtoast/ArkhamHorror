@@ -11,13 +11,13 @@ newtype OBannionsThug = OBannionsThug Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 oBannionsThug :: EnemyId -> OBannionsThug
-oBannionsThug uuid = OBannionsThug $ (weaknessBaseAttrs uuid "02097")
-  { enemyHealthDamage = 2
-  , enemySanityDamage = 0
-  , enemyFight = 4
-  , enemyHealth = Static 2
-  , enemyEvade = 2
-  }
+oBannionsThug uuid =
+  OBannionsThug
+    $ baseAttrs uuid "02097"
+    $ (healthDamageL .~ 2)
+    . (fightL .~ 4)
+    . (healthL .~ Static 2)
+    . (evadeL .~ 2)
 
 instance HasModifiersFor env OBannionsThug where
   getModifiersFor _ (InvestigatorTarget iid) (OBannionsThug a@Attrs {..})

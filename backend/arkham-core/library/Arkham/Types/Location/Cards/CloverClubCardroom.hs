@@ -33,10 +33,12 @@ instance HasModifiersFor env CloverClubCardroom where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability attrs = mkAbility
-  (toSource attrs)
-  1
-  (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
+ability attrs = base { abilityLimit = GroupLimit PerRound 1 }
+ where
+  base = mkAbility
+    (toSource attrs)
+    1
+    (ActionAbility Nothing $ Costs [ActionCost 1, ResourceCost 2])
 
 instance ActionRunner env => HasActions env CloverClubCardroom where
   getActions iid NonFast (CloverClubCardroom attrs@Attrs {..})

@@ -8,6 +8,7 @@ import Arkham.Types.Treachery.Cards.AlteredBeast as X
 import Arkham.Types.Treachery.Cards.Amnesia as X
 import Arkham.Types.Treachery.Cards.AncientEvils as X
 import Arkham.Types.Treachery.Cards.ArcaneBarrier as X
+import Arkham.Types.Treachery.Cards.ArousingSuspicions as X
 import Arkham.Types.Treachery.Cards.Atychiphobia as X
 import Arkham.Types.Treachery.Cards.BeastOfTheBayou as X
 import Arkham.Types.Treachery.Cards.BeyondTheVeil as X
@@ -54,6 +55,7 @@ import Arkham.Types.Treachery.Cards.RottingRemains as X
 import Arkham.Types.Treachery.Cards.SearchingForIzzie as X
 import Arkham.Types.Treachery.Cards.SlitheringBehindYou as X
 import Arkham.Types.Treachery.Cards.SmiteTheWicked as X
+import Arkham.Types.Treachery.Cards.SomethingInTheDrinks as X
 import Arkham.Types.Treachery.Cards.SpectralMist as X
 import Arkham.Types.Treachery.Cards.StalkedInTheDark as X
 import Arkham.Types.Treachery.Cards.TerrorFromBeyond as X

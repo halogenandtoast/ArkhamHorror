@@ -36,10 +36,16 @@ instance AgendaRunner env => RunMessage env UndergroundMuscle where
         & (sequenceL .~ Agenda 2 B)
         & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
+      laBellaLunaId <- fromJustNote "La Bella Luna is missing"
+        <$> getId (LocationWithTitle "La Bella Luna")
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       (enemy : rest) <- shuffleM =<< gatherEncounterSet HideousAbominations
       strikingFear <- gatherEncounterSet StrikingFear
-      laBellaLunaInvestigators <- getSetList (LocationWithTitle "La Bella Luna")
+      laBellaLunaInvestigators <- getSetList laBellaLunaId
+      laBellaLunaEnemies <- getSetList @EnemyId laBellaLunaId
+      unEngagedEnemiesAtLaBellaLuna <- filterM
+        (\eid -> null <$> getSetList @InvestigatorId eid)
+        laBellaLunaEnemies
       unshiftMessage
         (chooseOne
           leadInvestigatorId
@@ -54,6 +60,10 @@ instance AgendaRunner env => RunMessage env UndergroundMuscle where
               <> [ MoveAction iid "02070" False
                  | iid <- laBellaLunaInvestigators
                  ]
+              <> [ EnemyMove eid laBellaLunaId "02070"
+                 | eid <- unEngagedEnemiesAtLaBellaLuna
+                 ]
+              <> [RemoveLocation laBellaLunaId, NextAgenda agendaId "02065"]
               )
           ]
         )

@@ -760,12 +760,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       )
     pure a
   AddToDiscard iid pc | iid == investigatorId -> pure $ a & discardL %~ (pc :)
-  ChooseAndDiscardCard iid | iid == investigatorId -> do
-    a <$ unshiftMessage
-      (Ask iid
-      $ ChooseOne
-      $ [ DiscardCard iid (getCardId card) | card <- discardableCards a ]
-      )
+  ChooseAndDiscardCard iid | iid == investigatorId -> a <$ unshiftMessage
+    (Ask iid
+    $ ChooseOne
+    $ [ DiscardCard iid (getCardId card) | card <- discardableCards a ]
+    )
   DiscardCard iid cardId | iid == investigatorId -> do
     let
       card = fromJustNote "must be in hand"
@@ -781,13 +780,16 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       EncounterCard _ -> pure $ a & handL %~ filter ((/= cardId) . getCardId) -- TODO: This should discard to the encounter discard
   RemoveCardFromHand iid cardCode | iid == investigatorId ->
     pure $ a & handL %~ filter ((/= cardCode) . getCardCode)
-  ShuffleIntoDeck iid (TreacheryTarget tid) | iid == investigatorId -> do
+  ShuffleIntoDeck iid (TreacheryTarget tid) | iid == investigatorId ->
     pure $ a & treacheriesL %~ deleteSet tid
-  Discard (TreacheryTarget tid) -> do
-    pure $ a & treacheriesL %~ deleteSet tid
-  Discard (EnemyTarget eid) -> do
-    pure $ a & engagedEnemiesL %~ deleteSet eid
-  Discarded (AssetTarget aid) card | aid `elem` investigatorAssets -> do
+  ShuffleIntoDeck iid (AssetTarget aid) | iid == investigatorId -> do
+    card <- fromJustNote "missing card" <$> getPlayerCard aid
+    deck' <- shuffleM (card : unDeck investigatorDeck)
+    unshiftMessage $ After msg
+    pure $ a & assetsL %~ deleteSet aid & deckL .~ Deck deck'
+  Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
+  Discard (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
+  Discarded (AssetTarget aid) card | aid `elem` investigatorAssets ->
     pure
       $ a
       & (assetsL %~ deleteSet aid)

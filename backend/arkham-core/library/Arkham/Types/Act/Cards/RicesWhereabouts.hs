@@ -45,8 +45,7 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       playerCount <- getPlayerCount
       let discardCount = if playerCount == 1 then 10 else 5
-      a <$ unshiftMessages
-        [SpendClues 1 [iid], DiscardTopOfEncounterDeck iid discardCount Nothing]
+      a <$ unshiftMessage (DiscardTopOfEncounterDeck iid discardCount Nothing)
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       unshiftMessage (AdvanceAct aid $ toSource attrs)
       pure . RicesWhereabouts $ attrs & sequenceL .~ Act 2 B

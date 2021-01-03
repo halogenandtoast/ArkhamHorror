@@ -39,6 +39,7 @@ instance TreacheryRunner env => RunMessage env PushedIntoTheBeyond where
                 (Just (EffectCardCode cardCode))
                 (toSource attrs)
                 (InvestigatorTarget iid)
+              , Discard (toTarget attrs)
               ]
           | (aid, cardCode) <- targets
           ]

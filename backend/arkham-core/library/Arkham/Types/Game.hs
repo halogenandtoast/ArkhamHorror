@@ -823,6 +823,9 @@ instance HasStep ActStep (Game queue) where
     [act] -> getStep act
     _ -> error "wrong number of agendas"
 
+instance HasPlayerCard (Game queue) AssetId where
+  getPlayerCard aid = preview _PlayerCard . toCard <$> getAsset aid
+
 instance HasList InPlayCard (Game queue) InvestigatorId where
   getList iid = do
     assetIds <- getSetList =<< getInvestigator iid
@@ -1899,6 +1902,8 @@ runGameMessage msg g = case msg of
         (CardId $ unSkillId skillId)
     unshiftMessage (AddToHand iid (PlayerCard card))
     pure $ g & skills %~ deleteMap skillId
+  After (ShuffleIntoDeck _ (AssetTarget aid)) ->
+    pure $ g & assets %~ deleteMap aid
   ShuffleIntoDeck iid (TreacheryTarget treacheryId) -> do
     let
       treachery = getTreachery treacheryId g

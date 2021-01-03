@@ -25,7 +25,7 @@ jazzMulligan uuid = JazzMulligan $ (baseAttrs uuid "02060")
 
 ability :: Attrs -> Ability
 ability attrs =
-  mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
+  mkAbility (toSource attrs) 1 (ActionAbility (Just Parley) $ ActionCost 1)
 
 instance HasId LocationId env InvestigatorId => HasActions env JazzMulligan where
   getActions iid NonFast (JazzMulligan attrs) = do

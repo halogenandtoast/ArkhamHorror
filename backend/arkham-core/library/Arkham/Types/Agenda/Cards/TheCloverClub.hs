@@ -39,13 +39,14 @@ instance AgendaRunner env => RunMessage env TheCloverClub where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 A -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       enemyIds <- getSetList Criminal
-      unshiftMessage $ Ask
+      unshiftMessage $ chooseOne
         leadInvestigatorId
-        (ChooseOne
-          [ AdvanceAgenda aid
-          , Run [ EnemyCheckEngagement enemyId | enemyId <- enemyIds ]
-          ]
-        )
+        [ TargetLabel
+            (AgendaTarget agendaId)
+            (AdvanceAgenda aid
+            : [ EnemyCheckEngagement enemyId | enemyId <- enemyIds ]
+            )
+        ]
       pure
         $ TheCloverClub
         $ attrs

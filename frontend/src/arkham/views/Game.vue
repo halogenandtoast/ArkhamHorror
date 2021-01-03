@@ -39,6 +39,7 @@ import * as Arkham from '@/arkham/types/Game'
 import { fetchGame, updateGame } from '@/arkham/api'
 import Scenario from '@/arkham/components/Scenario.vue'
 import Campaign from '@/arkham/components/Campaign.vue'
+import { onBeforeRouteLeave } from 'vue-router'
 
 export default defineComponent({
   components: { Scenario, Campaign },
@@ -88,6 +89,8 @@ export default defineComponent({
     async function update(state: Arkham.Game) {
       game.value = state;
     }
+
+    onBeforeRouteLeave(() => { if (socket.value) { socket.value.close() } })
 
     return { socketError, ready, game, investigatorId, choose, update }
   }

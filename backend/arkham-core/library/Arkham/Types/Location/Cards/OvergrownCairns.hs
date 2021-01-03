@@ -50,6 +50,5 @@ instance ActionRunner env => HasActions env OvergrownCairns where
 instance (LocationRunner env) => RunMessage env OvergrownCairns where
   runMessage msg l@(OvergrownCairns attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source ->
-      l <$ unshiftMessages
-        [SpendResources iid 2, HealHorror (InvestigatorTarget iid) 2]
+      l <$ unshiftMessages [HealHorror (InvestigatorTarget iid) 2]
     _ -> OvergrownCairns <$> runMessage msg attrs

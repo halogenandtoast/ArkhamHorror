@@ -11,7 +11,6 @@ import Arkham.Types.Card.PlayerCardWithBehavior
 import Arkham.Types.CommitRestriction
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
-import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait
 import Control.Monad.Fail
 import Data.Coerce

@@ -459,6 +459,7 @@ data Message
   | PlaceEnemyInVoid EnemyId
   | InHand Message
   | InDiscard Message
+  | EnemyCheckEngagement EnemyId
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

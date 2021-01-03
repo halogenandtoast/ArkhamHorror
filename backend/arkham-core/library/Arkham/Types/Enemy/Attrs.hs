@@ -463,9 +463,33 @@ instance EnemyRunner env => RunMessage env Attrs where
             ]
     EnemyMove eid _ lid | eid == enemyId -> do
       willMove <- canEnterLocation eid lid
+      unshiftMessage $ EnemyCheckEngagement eid
       if willMove
         then pure $ a & locationL .~ lid & engagedInvestigatorsL .~ mempty
         else pure a
+    EnemyCheckEngagement eid | eid == enemyId -> do
+      keywords <- getModifiedKeywords a
+      investigatorIds <- getSetList enemyLocation
+      leadInvestigatorId <- getLeadInvestigatorId
+      let unengaged = null enemyEngagedInvestigators
+      a <$ when
+        (Keyword.Aloof
+        `notElem` keywords
+        && (unengaged || Keyword.Massive `elem` keywords)
+        )
+        (if Keyword.Massive `elem` keywords
+          then unshiftMessages
+            [ EnemyEngageInvestigator eid investigatorId
+            | investigatorId <- investigatorIds
+            ]
+          else unshiftMessage
+            (chooseOne
+              leadInvestigatorId
+              [ EnemyEngageInvestigator eid investigatorId
+              | investigatorId <- investigatorIds
+              ]
+            )
+        )
     HuntersMove | null enemyEngagedInvestigators && not enemyExhausted -> do
       keywords <- getModifiedKeywords a
       if Keyword.Hunter `notElem` keywords

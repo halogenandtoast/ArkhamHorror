@@ -407,6 +407,7 @@ somethingInTheDrinks :: CardId -> EncounterCard
 somethingInTheDrinks cardId =
   (treachery cardId "02081" "Something in the Drinks")
     { ecTraits = setFromList [Poison, Illicit]
+    , ecKeywords = setFromList [Keyword.Surge]
     }
 
 arousingSuspicions :: CardId -> EncounterCard

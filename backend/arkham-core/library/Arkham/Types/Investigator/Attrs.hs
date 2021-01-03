@@ -716,7 +716,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         pure $ a & discardL .~ [] & deckL .~ Deck deck
       else pure a
   Resign iid | iid == investigatorId -> do
-    unshiftMessage (InvestigatorResigned iid)
+    unshiftMessage $ InvestigatorResigned iid
     pure $ a & resignedL .~ True
   InvestigatorDefeated iid | iid == investigatorId ->
     a <$ unshiftMessage (InvestigatorWhenEliminated iid)

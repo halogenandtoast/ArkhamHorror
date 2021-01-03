@@ -1,5 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Asset.Attrs where
 
 import Arkham.Import
@@ -172,6 +173,8 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
       a <$ when (defeated a) (unshiftMessages $ resolve $ AssetDefeated assetId)
     AssetDamage aid _ health sanity | aid == assetId ->
       pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
+    InvestigatorResigned iid | assetInvestigator == Just iid ->
+      a <$ unshiftMessage (ResignWith (AssetTarget assetId))
     InvestigatorEliminated iid | assetInvestigator == Just iid ->
       a <$ unshiftMessage (Discard (AssetTarget assetId))
     AddUses target useType' n | a `isTarget` target -> case assetUses of

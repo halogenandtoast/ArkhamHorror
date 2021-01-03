@@ -28,7 +28,10 @@ theHouseAlwaysWins difficulty =
                          difficulty
                        )
     { scenarioLocationLayout = Just
-      ["laBellaLuna cloverClubLounge cloverClubBar cloverClubCardroom"]
+      [ ". . . . backHallDoorway1"
+      , "laBellaLuna cloverClubLounge cloverClubBar cloverClubCardroom darkenedHall backHallDoorway2"
+      , ". . . . backHallDoorway3"
+      ]
     }
 
 theHouseAlwaysWinsIntro :: Message

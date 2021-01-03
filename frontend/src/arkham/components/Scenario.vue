@@ -137,7 +137,7 @@ export default defineComponent({
       if (locationLayout) {
         return {
           display: 'grid',
-          'grid-template-areas': locationLayout.map((row) => `'${row}'`).join(' '),
+          'grid-template-areas': locationLayout.map((row) => `"${row}"`).join(' '),
           'grid-template-rows': 'repeat(100, minmax(min-content, 0px) 0fr 0fr)',
           'grid-template-columns': 'min-content 0fr',
           'grid-row-gap': '10px',

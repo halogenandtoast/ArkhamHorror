@@ -11,24 +11,26 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait hiding (Cultist)
+import System.Random.Shuffle
 
 newtype DarkenedHall = DarkenedHall Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 darkenedHall :: DarkenedHall
-darkenedHall = DarkenedHall $ (baseAttrs
-                                "02074"
-                                (LocationName "Darkened Hall" Nothing)
-                                EncounterSet.TheHouseAlwaysWins
-                                4
-                                (Static 0)
-                                Diamond
-                                [Triangle]
-                                [CloverClub]
-                              )
+darkenedHall = DarkenedHall $ base
   { locationRevealedConnectedSymbols = setFromList
     [Triangle, T, Hourglass, Plus, Squiggle]
   }
+ where
+  base = baseAttrs
+    "02074"
+    (LocationName "Darkened Hall" Nothing)
+    EncounterSet.TheHouseAlwaysWins
+    4
+    (Static 0)
+    Diamond
+    [Triangle]
+    [CloverClub]
 
 instance HasModifiersFor env DarkenedHall where
   getModifiersFor = noModifiersFor
@@ -39,7 +41,12 @@ instance ActionRunner env => HasActions env DarkenedHall where
 instance LocationRunner env => RunMessage env DarkenedHall where
   runMessage msg (DarkenedHall attrs@Attrs {..}) = case msg of
     RevealLocation _ lid | lid == locationId -> do
-      unshiftMessages
-        [PlaceLocation "02075", PlaceLocation "02076", PlaceLocation "02077"]
+      locations <- shuffleM ["02075", "02076", "02077"]
+      unshiftMessages $ concat
+        [ [PlaceLocation location, SetLocationLabel location label']
+        | (label', location) <- zip
+          ["backHallDoorway1", "backHallDoorway2", "backHallDoorway3"]
+          locations
+        ]
       DarkenedHall <$> runMessage msg attrs
     _ -> DarkenedHall <$> runMessage msg attrs

@@ -48,6 +48,8 @@ data Treachery
   | Indebted' Indebted
   | InternalInjury' InternalInjury
   | Chronophobia' Chronophobia
+  | SomethingInTheDrinks' SomethingInTheDrinks
+  | ArousingSuspicions' ArousingSuspicions
   | VisionsOfFuturesPast' VisionsOfFuturesPast
   | BeyondTheVeil' BeyondTheVeil
   | LightOfAforgomon' LightOfAforgomon
@@ -160,6 +162,8 @@ allTreacheries = mapFromList
   , ("02037", (Indebted' .) . indebted)
   , ("02038", (InternalInjury' .) . internalInjury)
   , ("02039", (Chronophobia' .) . chronophobia)
+  , ("02081", (SomethingInTheDrinks' .) . somethingInTheDrinks)
+  , ("02082", (ArousingSuspicions' .) . arousingSuspicions)
   , ("02083", (VisionsOfFuturesPast' .) . visionsOfFuturesPast)
   , ("02084", (BeyondTheVeil' .) . beyondTheVeil)
   , ("02085", (LightOfAforgomon' .) . lightOfAforgomon)
@@ -236,6 +240,8 @@ treacheryAttrs = \case
   Indebted' attrs -> coerce attrs
   InternalInjury' attrs -> coerce attrs
   Chronophobia' attrs -> coerce attrs
+  SomethingInTheDrinks' attrs -> coerce attrs
+  ArousingSuspicions' attrs -> coerce attrs
   VisionsOfFuturesPast' attrs -> coerce attrs
   BeyondTheVeil' attrs -> coerce attrs
   LightOfAforgomon' attrs -> coerce attrs

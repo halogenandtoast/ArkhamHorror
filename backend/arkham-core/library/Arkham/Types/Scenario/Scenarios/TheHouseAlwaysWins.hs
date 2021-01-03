@@ -202,7 +202,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
          , chooseOne
            leadInvestigatorId
            [ Label
-             "Add Professor Warren Rice to a deck"
+             "Add Dr. Francis Morgan to a deck"
              [ chooseOne
                  leadInvestigatorId
                  [ TargetLabel
@@ -211,7 +211,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
                  | iid <- investigatorIds
                  ]
              ]
-           , Label "Do not add Professor Warren Rice to any deck" []
+           , Label "Do not add Dr. Francis Morgan to any deck" []
            ]
          ]
         <> [ AddToken Tablet | cheated ]

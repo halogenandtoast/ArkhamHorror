@@ -173,7 +173,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
       a <$ when (defeated a) (unshiftMessages $ resolve $ AssetDefeated assetId)
     AssetDamage aid _ health sanity | aid == assetId ->
       pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
-    InvestigatorResigned iid | assetInvestigator == Just iid ->
+    When (InvestigatorResigned iid) | assetInvestigator == Just iid ->
       a <$ unshiftMessage (ResignWith (AssetTarget assetId))
     InvestigatorEliminated iid | assetInvestigator == Just iid ->
       a <$ unshiftMessage (Discard (AssetTarget assetId))

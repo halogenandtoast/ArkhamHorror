@@ -48,22 +48,15 @@ instance ActRunner env => RunMessage env AllIn where
         (null investigatorIds)
         (unshiftMessage $ AdvanceAct actId (toSource attrs))
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
-      investigatorIds <- getInvestigatorIds
-      requiredClueCount <- getPlayerCountValue (PerPlayer 2)
-      unshiftMessages
-        (SpendClues requiredClueCount investigatorIds
-        : [ Ask iid $ ChooseOne [AdvanceAct aid (toSource attrs)]
-          | iid <- investigatorIds
-          ]
-        )
+      leadInvestigatorId <- getLeadInvestigatorId
+      unshiftMessage
+        $ chooseOne leadInvestigatorId [AdvanceAct aid (toSource attrs)]
       pure $ AllIn $ attrs & sequenceL .~ Act 3 B
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      maid <- fmap unStoryAssetId <$> getId (CardCode "02080")
-      a <$ case maid of
-        Nothing -> unshiftMessage (Resolution 1)
-        Just assetId -> do
-          miid <- fmap unOwnerId <$> getId assetId
-          unshiftMessage (maybe (Resolution 1) (const (Resolution 2)) miid)
+      resignedWithDrFrancisMorgan <- elem (ResignedCardCode $ CardCode "02080")
+        <$> getList ()
+      a <$ unshiftMessage
+        (Resolution $ if resignedWithDrFrancisMorgan then 2 else 1)
     UseCardAbility iid (ProxySource _ source) _ 1
       | isSource attrs source && onSide A attrs -> do
         maid <- fmap unStoryAssetId <$> getId (CardCode "02080")

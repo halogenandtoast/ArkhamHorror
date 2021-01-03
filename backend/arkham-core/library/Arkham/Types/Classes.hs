@@ -199,8 +199,8 @@ class HasTarget b a where
   getTarget :: b -> a -> Maybe Target
 
 class (Hashable set, Eq set) => HasSet set env a where
-  getSet :: MonadReader env m => a -> m (HashSet set)
-  getSetList :: MonadReader env m => a -> m [set]
+  getSet :: (HasCallStack, MonadReader env m) => a -> m (HashSet set)
+  getSetList :: (HasCallStack, MonadReader env m) => a -> m [set]
   getSetList a = setToList <$> getSet a
 
 class HasList list env a where

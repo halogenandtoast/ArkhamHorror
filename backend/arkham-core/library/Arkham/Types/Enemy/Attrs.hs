@@ -482,8 +482,8 @@ instance EnemyRunner env => RunMessage env Attrs where
             [ EnemyEngageInvestigator eid investigatorId
             | investigatorId <- investigatorIds
             ]
-          else unshiftMessage
-            (chooseOne
+          else unless (null investigatorIds)
+            (unshiftMessage $ chooseOne
               leadInvestigatorId
               [ EnemyEngageInvestigator eid investigatorId
               | investigatorId <- investigatorIds

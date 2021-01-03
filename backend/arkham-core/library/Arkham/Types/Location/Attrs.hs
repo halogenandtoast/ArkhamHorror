@@ -353,4 +353,5 @@ instance LocationRunner env => RunMessage env Attrs where
       pure $ a & clues +~ locationClueCount & revealed .~ True
     RevealLocation _ lid | lid /= locationId ->
       pure $ a & connectedLocations %~ deleteSet lid
+    RemoveLocation lid -> pure $ a & connectedLocations %~ deleteSet lid
     _ -> pure a

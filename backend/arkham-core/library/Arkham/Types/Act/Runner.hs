@@ -20,6 +20,7 @@ type ActRunner env
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()
     , HasList Token env ()
+    , HasList ResignedCardCode env ()
     , HasRecord env
     , HasSet AssetId env EnemyId
     , HasSet EnemyId env LocationId

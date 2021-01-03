@@ -122,6 +122,7 @@ data Game queue = Game
   , gameChaosBag :: ChaosBag
   , gameSkillTest :: Maybe SkillTest
   , gameUsedAbilities :: [(InvestigatorId, Ability)]
+  , gameResignedCardCodes :: [CardCode]
   , gameFocusedCards :: [Card]
   , gameFocusedTokens :: [Token]
   , gameActiveCard :: Maybe Card
@@ -184,6 +185,7 @@ instance (ToJSON queue) => ToJSON (Game queue) where
     , "chaosBag" .= toJSON gameChaosBag
     , "skillTest" .= toJSON gameSkillTest
     , "usedAbilities" .= toJSON gameUsedAbilities
+    , "resignedCardCodes" .= toJSON gameResignedCardCodes
     , "focusedCards" .= toJSON gameFocusedCards
     , "focusedTokens" .= toJSON gameFocusedTokens
     , "activeCard" .= toJSON gameActiveCard
@@ -273,6 +275,10 @@ discard = lens gameDiscard $ \m x -> m { gameDiscard = x }
 
 usedAbilities :: Lens' (Game queue) [(InvestigatorId, Ability)]
 usedAbilities = lens gameUsedAbilities $ \m x -> m { gameUsedAbilities = x }
+
+resignedCardCodes :: Lens' (Game queue) [CardCode]
+resignedCardCodes =
+  lens gameResignedCardCodes $ \m x -> m { gameResignedCardCodes = x }
 
 chaosBag :: Lens' (Game queue) ChaosBag
 chaosBag = lens gameChaosBag $ \m x -> m { gameChaosBag = x }
@@ -453,6 +459,7 @@ newGame scenarioOrCampaignId playerCount' investigatorsList difficulty' = do
       then IsPending
       else IsActive
     , gameUsedAbilities = mempty
+    , gameResignedCardCodes = mempty
     , gameFocusedCards = mempty
     , gameFocusedTokens = mempty
     , gameActiveCard = Nothing
@@ -826,6 +833,9 @@ instance HasList InPlayCard (Game queue) InvestigatorId where
         (CardId . unAssetId $ toId asset)
       )
       assets'
+
+instance HasList ResignedCardCode (Game queue) () where
+  getList _ = map ResignedCardCode <$> view resignedCardCodes
 
 instance HasList Token (Game queue) () where
   getList _ = getList =<< view chaosBag
@@ -2549,6 +2559,9 @@ runGameMessage msg g = case msg of
           (lookupEncounterCard cardCode (CardId $ unTreacheryId treacheryId'))
         )
   AfterRevelation{} -> pure $ g & activeCard .~ Nothing
+  ResignWith (AssetTarget aid) -> do
+    let asset = getAsset aid g
+    pure $ g & resignedCardCodes %~ (getCardCode asset :)
   Discard (AssetTarget aid) -> do
     let asset = getAsset aid g
     unshiftMessage (Discarded (AssetTarget aid) (toCard asset))

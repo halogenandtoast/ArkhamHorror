@@ -387,6 +387,7 @@ data Message
   | GameOver
   | NoResolution
   | Resign InvestigatorId
+  | ResignWith Target
   | InvestigatorKilled InvestigatorId
   | InvestigatorWhenDefeated InvestigatorId
   | InvestigatorDefeated InvestigatorId

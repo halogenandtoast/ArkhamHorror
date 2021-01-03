@@ -728,16 +728,6 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     unshiftMessage
       (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
     pure $ a & cluesL .~ 0 & resourcesL .~ 0
-  EnemyMove eid _ lid | lid == investigatorLocation -> do
-    keywords <- getSet eid
-    unengaged <- null <$> getSet @InvestigatorId eid
-    when
-        (Keyword.Aloof
-        `notElem` keywords
-        && (unengaged || Keyword.Massive `elem` keywords)
-        )
-      $ unshiftMessage (EnemyEngageInvestigator eid investigatorId)
-    pure a
   EnemyMove eid _ lid | lid /= investigatorLocation ->
     pure $ a & engagedEnemiesL %~ deleteSet eid
   EnemyEngageInvestigator eid iid | iid == investigatorId ->

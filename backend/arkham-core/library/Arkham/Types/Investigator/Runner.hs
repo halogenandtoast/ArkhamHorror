@@ -54,4 +54,5 @@ type InvestigatorRunner env
     , HasSet Trait env EnemyId
     , HasSet TreacheryId env LocationId
     , HasSource ForSkillTest env
+    , HasPlayerCard env AssetId
     )

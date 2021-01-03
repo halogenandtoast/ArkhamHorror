@@ -54,6 +54,8 @@ export default defineComponent({
           return true;
         case MessageType.ATTACH_TREACHERY:
           return c.contents[1].contents == id.value;
+        case MessageType.TARGET_LABEL:
+          return c.contents[0].tag === "AgendaTarget" && c.contents[0].contents === id.value
         case MessageType.RUN:
           return c.contents.some((c1: Message) => canInteract(c1));
         default:

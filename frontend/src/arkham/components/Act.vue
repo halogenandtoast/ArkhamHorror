@@ -49,6 +49,8 @@ export default defineComponent({
         case MessageType.ACTIVATE_ABILITY:
           return c.contents[1].source.contents === id.value
             && (c.contents[1].type.tag === 'ReactionAbility')
+        case MessageType.TARGET_LABEL:
+          return c.contents[0].tag === "ActTarget" && c.contents[0].contents === id.value
         case MessageType.RUN:
           return c.contents.some((c1: Message) => canInteract(c1));
         default:
@@ -59,7 +61,7 @@ export default defineComponent({
     const interactAction = computed(() => choices.value.findIndex(canInteract));
 
     function abilityLabel(idx: number) {
-      return choices.value[idx].contents[1].type.contents[1];
+      return choices.value[idx].label
     }
 
     const abilities = computed(() => {

@@ -66,6 +66,12 @@ getCanAffordUse iid ability@Ability {..} = case abilityLimit of
   GroupLimit _ n ->
     (< n) . count (== ability) . map (snd . unUsedAbility) <$> getList ()
 
+applyActionCostModifier :: Maybe Action -> ModifierType -> Int -> Int
+applyActionCostModifier (Just action) (ActionCostOf (IsAction action') m) n
+  | action == action' = n + m
+applyActionCostModifier _ (ActionCostModifier m) n = n + m
+applyActionCostModifier _ _ n = n
+
 getCanAffordCost
   :: ( MonadReader env m
      , HasModifiersFor env ()
@@ -94,10 +100,13 @@ getCanAffordCost iid source mAction = \case
     if ActionsAreFree `elem` modifiers
       then pure True
       else do
+        let
+          modifiedActionCost =
+            foldr (applyActionCostModifier mAction) n modifiers
         traits <- getSetList @Trait source
         actionCount <- unActionRemainingCount
           <$> getCount (mAction, traits, iid)
-        pure $ actionCount >= n
+        pure $ actionCount >= modifiedActionCost
   ClueCost n -> do
     spendableClues <- unSpendableClueCount <$> getCount iid
     pure $ spendableClues >= n

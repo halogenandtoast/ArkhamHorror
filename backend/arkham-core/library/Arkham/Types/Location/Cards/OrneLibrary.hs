@@ -14,18 +14,17 @@ newtype OrneLibrary = OrneLibrary Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 orneLibrary :: OrneLibrary
-orneLibrary = OrneLibrary $ (baseAttrs
-                              "02050"
-                              (LocationName "Orne Library" Nothing)
-                              EncounterSet.ExtracurricularActivity
-                              3
-                              (PerPlayer 1)
-                              Triangle
-                              [Plus, Square]
-                              [Miskatonic]
-                            )
-  { locationVictory = Just 1
-  }
+orneLibrary = OrneLibrary $ base { locationVictory = Just 1 }
+ where
+  base = baseAttrs
+    "02050"
+    (LocationName "Orne Library" Nothing)
+    EncounterSet.ExtracurricularActivity
+    3
+    (PerPlayer 1)
+    Triangle
+    [Plus, Square]
+    [Miskatonic]
 
 instance HasModifiersFor env OrneLibrary where
   getModifiersFor _ target (OrneLibrary attrs) | isTarget attrs target =

@@ -34,6 +34,6 @@ instance TreacheryRunner env => RunMessage env SomethingInTheDrinks where
          | iid <- investigatorIds
          , HadADrink iid `member` scenarioLogs
          ]
-        <> [Discard $ toTarget attrs]
+        <> [Discard $ toTarget attrs, Surge iid (toTarget t)]
         )
     _ -> SomethingInTheDrinks <$> runMessage msg attrs

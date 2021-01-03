@@ -212,6 +212,9 @@ class HasId id env a where
 class HasCount count env a where
   getCount :: (MonadReader env m) => a -> m count
 
+class HasPlayerCard env a where
+  getPlayerCard :: (MonadReader env m) => a -> m (Maybe PlayerCard)
+
 type HasCostPayment env
   = ( HasCount SpendableClueCount env InvestigatorId
     , HasCount SpendableClueCount env ()

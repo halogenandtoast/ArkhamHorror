@@ -27,8 +27,8 @@ instance HasModifiersFor env CoverUp where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env CoverUp where
-  getActions iid window@(WhenDiscoverClues You YourLocation) (CoverUp a@Attrs {..})
-    = withTreacheryInvestigator a $ \tormented -> do
+  getActions iid (WhenDiscoverClues You YourLocation) (CoverUp a@Attrs {..}) =
+    withTreacheryInvestigator a $ \tormented -> do
       treacheryLocationId <- getId @LocationId tormented
       investigatorLocationId <- getId @LocationId iid
       cluesToDiscover <- fromQueue $ \queue -> do
@@ -42,7 +42,7 @@ instance ActionRunner env => HasActions env CoverUp where
       pure
         [ ActivateCardAbilityAction
             iid
-            (mkAbility (toSource a) 1 (ReactionAbility window Free))
+            (mkAbility (toSource a) 1 (ReactionAbility Free))
         | treacheryLocationId
           == investigatorLocationId
           && coverUpClues a

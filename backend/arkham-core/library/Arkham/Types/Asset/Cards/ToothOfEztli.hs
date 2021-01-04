@@ -26,13 +26,13 @@ instance HasModifiersFor env ToothOfEztli where
       [SkillModifier SkillWillpower 1, SkillModifier SkillAgility 1]
   getModifiersFor _ _ _ = pure []
 
-ability :: Window -> Attrs -> Ability
-ability window a =
-  mkAbility (toSource a) 1 (ReactionAbility window $ ExhaustCost (toTarget a))
+ability :: Attrs -> Ability
+ability a =
+  mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
 
 instance HasActions env ToothOfEztli where
-  getActions iid window@(AfterPassSkillTest _ (TreacherySource _) You _) (ToothOfEztli a)
-    = pure [ ActivateCardAbilityAction iid (ability window a) | ownedBy a iid ]
+  getActions iid (AfterPassSkillTest _ (TreacherySource _) You _) (ToothOfEztli a)
+    = pure [ ActivateCardAbilityAction iid (ability a) | ownedBy a iid ]
   getActions i window (ToothOfEztli a) = getActions i window a
 
 instance AssetRunner env => RunMessage env ToothOfEztli where

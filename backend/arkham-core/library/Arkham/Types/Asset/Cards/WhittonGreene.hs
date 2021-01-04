@@ -23,22 +23,18 @@ whittonGreene uuid = WhittonGreene $ (baseAttrs uuid "60213")
   }
 
 instance HasActions env WhittonGreene where
-  getActions iid window@(AfterRevealLocation You) (WhittonGreene a)
+  getActions iid (AfterRevealLocation You) (WhittonGreene a) | ownedBy a iid =
+    do
+      let
+        ability =
+          mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
+      pure [ActivateCardAbilityAction iid ability]
+  getActions iid (AfterPutLocationIntoPlay You) (WhittonGreene a)
     | ownedBy a iid = do
       let
-        ability = mkAbility
-          (toSource a)
-          1
-          (ReactionAbility window $ ExhaustCost (toTarget a))
-      pure [ ActivateCardAbilityAction iid ability | not (assetExhausted a) ]
-  getActions iid window@(AfterPutLocationIntoPlay You) (WhittonGreene a)
-    | ownedBy a iid = do
-      let
-        ability = mkAbility
-          (toSource a)
-          1
-          (ReactionAbility window $ ExhaustCost (toTarget a))
-      pure [ ActivateCardAbilityAction iid ability | not (assetExhausted a) ]
+        ability =
+          mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
+      pure [ActivateCardAbilityAction iid ability]
   getActions iid window (WhittonGreene attrs) = getActions iid window attrs
 
 instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor env WhittonGreene where

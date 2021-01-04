@@ -1331,9 +1331,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       (UseCardAbility iid abilitySource abilityMetadata abilityIndex) -- We should check action type when added for aoo
     case abilityType of
       ForcedAbility -> pure ()
-      FastAbility _ cost -> unshiftMessage (PayAbilityCost iid Nothing cost)
-      ReactionAbility _ cost ->
-        unshiftMessage (PayAbilityCost iid Nothing cost)
+      FastAbility cost -> unshiftMessage (PayAbilityCost iid Nothing cost)
+      ReactionAbility cost -> unshiftMessage (PayAbilityCost iid Nothing cost)
       ActionAbility mAction cost ->
         if mAction
             `notElem` [ Just Action.Fight
@@ -1351,8 +1350,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         (PayForCardAbility iid abilitySource abilityMetadata abilityIndex) -- We should check action type when added for aoo
       case abilityType of
         ForcedAbility -> pure ()
-        FastAbility _ _ -> pure ()
-        ReactionAbility _ _ -> pure ()
+        FastAbility _ -> pure ()
+        ReactionAbility _ -> pure ()
         ActionAbility mAction cost ->
           if mAction
               `notElem` [ Just Action.Fight

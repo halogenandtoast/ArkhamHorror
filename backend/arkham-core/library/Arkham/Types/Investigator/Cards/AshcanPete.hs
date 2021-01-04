@@ -41,7 +41,7 @@ ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
   base = mkAbility
     (toSource attrs)
     1
-    (FastAbility FastPlayerWindow $ HandDiscardCost 1 Nothing mempty)
+    (FastAbility $ HandDiscardCost 1 Nothing mempty)
 
 instance ActionRunner env => HasActions env AshcanPete where
   getActions iid FastPlayerWindow (AshcanPete attrs@Attrs {..})

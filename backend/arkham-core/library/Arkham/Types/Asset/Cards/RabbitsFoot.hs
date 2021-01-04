@@ -17,15 +17,10 @@ instance HasModifiersFor env RabbitsFoot where
   getModifiersFor = noModifiersFor
 
 instance HasActions env RabbitsFoot where
-  getActions iid (AfterFailSkillTest You n) (RabbitsFoot a) = pure
+  getActions iid (AfterFailSkillTest You _) (RabbitsFoot a) = pure
     [ ActivateCardAbilityAction
         iid
-        (mkAbility
-          (toSource a)
-          1
-          (ReactionAbility (AfterFailSkillTest You n) $ ExhaustCost (toTarget a)
-          )
-        )
+        (mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a)))
     | ownedBy a iid
     ]
   getActions i window (RabbitsFoot x) = getActions i window x

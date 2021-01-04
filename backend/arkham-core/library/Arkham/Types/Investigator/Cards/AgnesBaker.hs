@@ -35,11 +35,7 @@ agnesBaker = AgnesBaker
 
 ability :: Attrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerPhase 1 }
- where
-  base = mkAbility
-    (toSource attrs)
-    1
-    (ReactionAbility (AfterAssignedHorror You) Free)
+  where base = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance ActionRunner env => HasActions env AgnesBaker where
   getActions iid (AfterAssignedHorror You) (AgnesBaker attrs@Attrs {..})

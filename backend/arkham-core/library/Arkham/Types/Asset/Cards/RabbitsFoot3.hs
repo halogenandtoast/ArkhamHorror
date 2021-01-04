@@ -21,15 +21,11 @@ instance HasModifiersFor env RabbitsFoot3 where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Int -> Ability
-ability attrs n = (mkAbility
-                    (toSource attrs)
-                    1
-                    (ReactionAbility (AfterFailSkillTest You n)
-                    $ ExhaustCost (toTarget attrs)
-                    )
-                  )
-  { abilityMetadata = Just (IntMetadata n)
-  }
+ability attrs n =
+  (mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
+    )
+    { abilityMetadata = Just (IntMetadata n)
+    }
 
 instance HasActions env RabbitsFoot3 where
   getActions iid (AfterFailSkillTest You n) (RabbitsFoot3 a) | ownedBy a iid =

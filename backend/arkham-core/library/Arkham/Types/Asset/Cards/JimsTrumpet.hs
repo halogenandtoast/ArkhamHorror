@@ -21,28 +21,21 @@ jimsTrumpet uuid =
 instance HasModifiersFor env JimsTrumpet where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Who -> Ability
-ability attrs who = mkAbility
-  (toSource attrs)
-  1
-  (ReactionAbility (WhenDrawToken who Skull) $ ExhaustCost (toTarget attrs))
+ability :: Attrs -> Ability
+ability attrs =
+  mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
 
 instance ActionRunner env => HasActions env JimsTrumpet where
-  getActions iid (WhenRevealToken who Skull) (JimsTrumpet a) | ownedBy a iid =
-    do
-      locationId <- getId @LocationId iid
-      connectedLocationIds <- map unConnectedLocationId
-        <$> getSetList locationId
-      investigatorIds <- for
-        (locationId : connectedLocationIds)
-        (getSetList @InvestigatorId)
-      horrorCounts <- for
-        (concat investigatorIds)
-        ((unHorrorCount <$>) . getCount)
-      pure
-        [ ActivateCardAbilityAction iid (ability a who)
-        | any (> 0) horrorCounts
-        ]
+  getActions iid (WhenRevealToken _ Skull) (JimsTrumpet a) | ownedBy a iid = do
+    locationId <- getId @LocationId iid
+    connectedLocationIds <- map unConnectedLocationId <$> getSetList locationId
+    investigatorIds <- for
+      (locationId : connectedLocationIds)
+      (getSetList @InvestigatorId)
+    horrorCounts <- for
+      (concat investigatorIds)
+      ((unHorrorCount <$>) . getCount)
+    pure [ ActivateCardAbilityAction iid (ability a) | any (> 0) horrorCounts ]
   getActions i window (JimsTrumpet x) = getActions i window x
 
 instance AssetRunner env => RunMessage env JimsTrumpet where

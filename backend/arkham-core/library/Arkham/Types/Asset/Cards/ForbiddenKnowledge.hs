@@ -24,7 +24,7 @@ instance HasActions env ForbiddenKnowledge where
         (mkAbility
           (toSource a)
           1
-          (FastAbility FastPlayerWindow $ Costs
+          (FastAbility $ Costs
             [ UseCost (toId a) Secret 1
             , HorrorCost (toSource a) (InvestigatorTarget iid) 1
             ]

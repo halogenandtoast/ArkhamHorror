@@ -45,8 +45,8 @@ getCanAffordAbilityCost
   -> m Bool
 getCanAffordAbilityCost iid Ability {..} = case abilityType of
   ActionAbility mAction cost -> getCanAffordCost iid abilitySource mAction cost
-  ReactionAbility _ cost -> getCanAffordCost iid abilitySource Nothing cost
-  FastAbility _ cost -> getCanAffordCost iid abilitySource Nothing cost
+  ReactionAbility cost -> getCanAffordCost iid abilitySource Nothing cost
+  FastAbility cost -> getCanAffordCost iid abilitySource Nothing cost
   ForcedAbility -> pure True
 
 getCanAffordUse
@@ -56,11 +56,11 @@ getCanAffordUse
   -> m Bool
 getCanAffordUse iid ability@Ability {..} = case abilityLimit of
   NoLimit -> case abilityType of
-    ReactionAbility _ _ ->
+    ReactionAbility _ ->
       notElem (iid, ability) . map unUsedAbility <$> getList ()
     ForcedAbility -> notElem (iid, ability) . map unUsedAbility <$> getList ()
     ActionAbility _ _ -> pure True
-    FastAbility _ _ -> pure True
+    FastAbility _ -> pure True
   PlayerLimit _ n ->
     (< n) . count (== (iid, ability)) . map unUsedAbility <$> getList ()
   GroupLimit _ n ->

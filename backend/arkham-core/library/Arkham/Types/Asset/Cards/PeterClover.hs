@@ -18,10 +18,8 @@ peterClover uuid = PeterClover
   $ (baseAttrs uuid "02079") { assetHealth = Just 3, assetSanity = Just 2 }
 
 ability :: Attrs -> Ability
-ability attrs = mkAbility
-  (toSource attrs)
-  1
-  (FastAbility FastPlayerWindow (ExhaustCost $ toTarget attrs))
+ability attrs =
+  mkAbility (toSource attrs) 1 (FastAbility $ ExhaustCost (toTarget attrs))
 
 instance
   ( HasSet EnemyId env ([Trait], LocationId)

@@ -16,16 +16,15 @@ newtype BindMonster2 = BindMonster2 Attrs
 bindMonster2 :: InvestigatorId -> EventId -> BindMonster2
 bindMonster2 iid uuid = BindMonster2 $ baseAttrs iid uuid "02031"
 
-ability :: Window -> Target -> Attrs -> Ability
-ability window target attrs =
-  (mkAbility (toSource attrs) 1 (ReactionAbility window Free))
-    { abilityMetadata = Just (TargetMetadata target)
-    }
+ability :: Target -> Attrs -> Ability
+ability target attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
+  { abilityMetadata = Just (TargetMetadata target)
+  }
 
 instance HasActions env BindMonster2 where
-  getActions iid window@(WhenWouldReady target) (BindMonster2 attrs@Attrs {..})
+  getActions iid (WhenWouldReady target) (BindMonster2 attrs@Attrs {..})
     | iid == eventOwner = pure
-      [ ActivateCardAbilityAction eventOwner (ability window target attrs)
+      [ ActivateCardAbilityAction eventOwner (ability target attrs)
       | target `elem` eventAttachedTarget
       ]
   getActions iid window (BindMonster2 attrs) = getActions iid window attrs

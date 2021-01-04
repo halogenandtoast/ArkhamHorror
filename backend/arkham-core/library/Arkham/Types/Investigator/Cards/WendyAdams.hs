@@ -40,20 +40,18 @@ instance HasTokenValue env WendyAdams where
     pure $ TokenValue ElderSign (PositiveModifier 0)
   getTokenValue (WendyAdams attrs) iid token = getTokenValue attrs iid token
 
-ability :: Token -> Attrs -> Ability
-ability token attrs = base { abilityLimit = PlayerLimit PerTestOrAbility 1 }
+ability :: Attrs -> Ability
+ability attrs = base { abilityLimit = PlayerLimit PerTestOrAbility 1 }
  where
   base = mkAbility
     (toSource attrs)
     1
-    (ReactionAbility (WhenRevealToken You token)
-    $ HandDiscardCost 1 Nothing mempty
-    )
+    (ReactionAbility $ HandDiscardCost 1 Nothing mempty)
 
 instance ActionRunner env => HasActions env WendyAdams where
-  getActions iid (WhenRevealToken You token) (WendyAdams attrs@Attrs {..})
+  getActions iid (WhenRevealToken You _) (WendyAdams attrs@Attrs {..})
     | iid == investigatorId = pure
-      [ ActivateCardAbilityAction investigatorId $ ability token attrs
+      [ ActivateCardAbilityAction investigatorId $ ability attrs
       | not (null $ discardableCards attrs)
       ]
   getActions i window (WendyAdams attrs) = getActions i window attrs

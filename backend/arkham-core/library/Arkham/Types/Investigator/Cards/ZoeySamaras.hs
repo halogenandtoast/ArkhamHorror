@@ -32,13 +32,11 @@ zoeySamaras = ZoeySamaras $ baseAttrs
   [Believer, Hunter]
 
 instance ActionRunner env => HasActions env ZoeySamaras where
-  getActions iid (AfterEnemyEngageInvestigator You eid) (ZoeySamaras Attrs {..})
+  getActions iid (AfterEnemyEngageInvestigator You _) (ZoeySamaras Attrs {..})
     | iid == investigatorId = do
       let
-        ability = mkAbility
-          (InvestigatorSource investigatorId)
-          1
-          (ReactionAbility (AfterEnemyEngageInvestigator You eid) Free)
+        ability =
+          mkAbility (InvestigatorSource investigatorId) 1 (ReactionAbility Free)
       modifiers' <-
         map modifierType
           <$> getModifiersFor

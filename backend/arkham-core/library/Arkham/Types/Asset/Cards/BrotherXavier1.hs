@@ -37,10 +37,7 @@ instance (HasId LocationId env InvestigatorId) => HasModifiersFor env BrotherXav
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
-ability attrs = mkAbility
-  (toSource attrs)
-  1
-  (ReactionAbility (WhenDefeated $ toSource attrs) Free)
+ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance HasActions env BrotherXavier1 where
   getActions iid (WhenDefeated source) (BrotherXavier1 a) | isSource a source =

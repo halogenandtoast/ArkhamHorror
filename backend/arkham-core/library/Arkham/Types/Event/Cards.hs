@@ -21,6 +21,7 @@ import Arkham.Types.Event.Cards.DrawnToTheFlame as X
 import Arkham.Types.Event.Cards.DynamiteBlast as X
 import Arkham.Types.Event.Cards.DynamiteBlast2 as X
 import Arkham.Types.Event.Cards.Elusive as X
+import Arkham.Types.Event.Cards.EmergencyAid as X
 import Arkham.Types.Event.Cards.EmergencyCache as X
 import Arkham.Types.Event.Cards.Evidence as X
 import Arkham.Types.Event.Cards.ExtraAmmunition1 as X

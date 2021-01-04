@@ -1,9 +1,7 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.EmergencyAid
   ( emergencyAid
   , EmergencyAid(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -14,8 +12,7 @@ newtype EmergencyAid = EmergencyAid Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 emergencyAid :: InvestigatorId -> EventId -> EmergencyAid
-emergencyAid iid uuid =
-  EmergencyAid $ baseAttrs iid uuid "02105"
+emergencyAid iid uuid = EmergencyAid $ baseAttrs iid uuid "02105"
 
 instance HasActions env EmergencyAid where
   getActions iid window (EmergencyAid attrs) = getActions iid window attrs
@@ -37,14 +34,11 @@ instance
       let investigatorTargets = map InvestigatorTarget investigatorIds
       allyTargets <- map AssetTarget . concat <$> for
         investigatorIds
-          (getSetList . (,[Ally]))
+        (getSetList . (, [Ally]))
       e <$ unshiftMessage
         (chooseOne
           iid
-          [
-            TargetLabel
-              target
-              [HealDamage target 2]
+          [ TargetLabel target [HealDamage target 2]
           | target <- investigatorTargets <> allyTargets
           ]
         )

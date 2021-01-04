@@ -1,5 +1,6 @@
 module Arkham.Types.Event.Runner where
 
+import Arkham.Types.Asset.Uses
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
@@ -15,12 +16,14 @@ type EventRunner env
     , HasCount ClueCount env InvestigatorId
     , HasCount ClueCount env LocationId
     , HasCount PlayerCount env ()
+    , HasCount UsesCount env AssetId
     , HasId LocationId env InvestigatorId
     , HasList DiscardableHandCard env InvestigatorId
     , HasRoundHistory env
-    , HasSet AssetId env InvestigatorId
-    , HasSet AssetId env (InvestigatorId, [Trait])
     , HasSet AccessibleLocationId env LocationId
+    , HasSet AssetId env (InvestigatorId, UseType)
+    , HasSet AssetId env (InvestigatorId, [Trait])
+    , HasSet AssetId env InvestigatorId
     , HasSet ConnectedLocationId env LocationId
     , HasSet EmptyLocationId env ()
     , HasSet EnemyId env InvestigatorId

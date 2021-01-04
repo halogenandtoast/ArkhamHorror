@@ -293,6 +293,7 @@ allPlayerCards = mapFromList
   , ("02106", brotherXavier1)
   , ("02107", iveGotAPlan)
   , ("02108", pathfinder1)
+  , ("02109", contraband)
   , ("02139", adamLynch)
   , ("02140", theNecronomiconOlausWormiusTranslation)
   , ("02147", bandolier)
@@ -319,6 +320,7 @@ allPlayerCards = mapFromList
   , ("50008", mindWipe3)
   , ("50009", digDeep2)
   , ("50010", rabbitsFoot3)
+  , ("51005", contraband2)
   , ("60130", taunt3)
   , ("60205", arcaneEnlightenment)
   , ("60206", celaenoFragments)
@@ -1278,6 +1280,12 @@ pathfinder1 cardId = (asset cardId "02108" "Pathfinder" 3 Seeker)
   , pcLevel = 1
   }
 
+contraband :: CardId -> PlayerCard
+contraband cardId = (event cardId "02109" "Contraband" 4 Rogue)
+  { pcSkills = [SkillWillpower, SkillIntellect]
+  , pcTraits = setFromList [Supply, Illicit]
+  }
+
 adamLynch :: CardId -> PlayerCard
 adamLynch cardId = (asset cardId "02139" "Adam Lynch" 0 Neutral)
   { pcTraits = setFromList [Ally, Miskatonic]
@@ -1467,6 +1475,13 @@ rabbitsFoot3 cardId = (asset cardId "50010" "Rabbit's Foot" 1 Survivor)
   { pcSkills = [SkillWild]
   , pcTraits = setFromList [Item, Charm]
   , pcLevel = 3
+  }
+
+contraband2 :: CardId -> PlayerCard
+contraband2 cardId = (event cardId "51005" "Contraband" 3 Rogue)
+  { pcSkills = [SkillWillpower, SkillIntellect, SkillIntellect]
+  , pcTraits = setFromList [Supply, Illicit]
+  , pcLevel = 2
   }
 
 taunt3 :: CardId -> PlayerCard

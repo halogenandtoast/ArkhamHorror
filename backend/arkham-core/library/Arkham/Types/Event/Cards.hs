@@ -13,6 +13,8 @@ import Arkham.Types.Event.Cards.BlindingLight as X
 import Arkham.Types.Event.Cards.BlindingLight2 as X
 import Arkham.Types.Event.Cards.BloodRite as X
 import Arkham.Types.Event.Cards.CloseCall2 as X
+import Arkham.Types.Event.Cards.Contraband as X
+import Arkham.Types.Event.Cards.Contraband2 as X
 import Arkham.Types.Event.Cards.CrypticResearch4 as X
 import Arkham.Types.Event.Cards.CunningDistraction as X
 import Arkham.Types.Event.Cards.DarkMemory as X

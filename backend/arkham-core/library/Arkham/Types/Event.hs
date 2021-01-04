@@ -54,6 +54,7 @@ data Event
   | BaitAndSwitch' BaitAndSwitch
   | EmergencyAid' EmergencyAid
   | IveGotAPlan' IveGotAPlan
+  | Contraband' Contraband
   | LetMeHandleThis' LetMeHandleThis
   | SecondWind' SecondWind
   | BloodRite' BloodRite
@@ -63,6 +64,7 @@ data Event
   | Barricade3' Barricade3
   | HotStreak2' HotStreak2
   | MindWipe3' MindWipe3
+  | Contraband2' Contraband2
   | Taunt3' Taunt3
   | IveGotAPlan2' IveGotAPlan2
   deriving stock (Show, Generic)
@@ -133,6 +135,7 @@ allEvents = mapFromList
   , ("02034", (BaitAndSwitch' .) . baitAndSwitch)
   , ("02105", (EmergencyAid' .) . emergencyAid)
   , ("02107", (IveGotAPlan' .) . iveGotAPlan)
+  , ("02109", (Contraband' .) . contraband)
   , ("03022", (LetMeHandleThis' .) . letMeHandleThis)
   , ("04149", (SecondWind' .) . secondWind)
   , ("05317", (BloodRite' .) . bloodRite)
@@ -142,6 +145,7 @@ allEvents = mapFromList
   , ("50004", (Barricade3' .) . barricade3)
   , ("50006", (HotStreak2' .) . hotStreak2)
   , ("50008", (MindWipe3' .) . mindWipe3)
+  , ("51005", (Contraband2' .) . contraband2)
   , ("60130", (Taunt3' .) . taunt3)
   , ("60255", (IveGotAPlan2' .) . iveGotAPlan2)
   ]
@@ -189,6 +193,7 @@ eventAttrs = \case
   BaitAndSwitch' attrs -> coerce attrs
   EmergencyAid' attrs -> coerce attrs
   IveGotAPlan' attrs -> coerce attrs
+  Contraband' attrs -> coerce attrs
   LetMeHandleThis' attrs -> coerce attrs
   SecondWind' attrs -> coerce attrs
   BloodRite' attrs -> coerce attrs
@@ -198,5 +203,6 @@ eventAttrs = \case
   Barricade3' attrs -> coerce attrs
   HotStreak2' attrs -> coerce attrs
   MindWipe3' attrs -> coerce attrs
+  Contraband2' attrs -> coerce attrs
   Taunt3' attrs -> coerce attrs
   IveGotAPlan2' attrs -> coerce attrs

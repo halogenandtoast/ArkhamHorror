@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Types.Campaign.Attrs where
 
 import Arkham.Import hiding (log)
@@ -22,24 +24,7 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
-chaosBag :: Lens' Attrs [Token]
-chaosBag = lens campaignChaosBag $ \m x -> m { campaignChaosBag = x }
-
-decks :: Lens' Attrs (HashMap InvestigatorId [PlayerCard])
-decks = lens campaignDecks $ \m x -> m { campaignDecks = x }
-
-storyCards :: Lens' Attrs (HashMap InvestigatorId [PlayerCard])
-storyCards = lens campaignStoryCards $ \m x -> m { campaignStoryCards = x }
-
-step :: Lens' Attrs (Maybe CampaignStep)
-step = lens campaignStep $ \m x -> m { campaignStep = x }
-
-completedSteps :: Lens' Attrs [CampaignStep]
-completedSteps =
-  lens campaignCompletedSteps $ \m x -> m { campaignCompletedSteps = x }
-
-log :: Lens' Attrs CampaignLog
-log = lens campaignLog $ \m x -> m { campaignLog = x }
+makeLensesWith suffixedFields ''Attrs
 
 completeStep :: Maybe CampaignStep -> [CampaignStep] -> [CampaignStep]
 completeStep (Just step') steps = step' : steps
@@ -67,17 +52,17 @@ instance CampaignRunner env => RunMessage env Attrs where
     SetTokensForScenario -> a <$ unshiftMessage (SetTokens campaignChaosBag)
     AddCampaignCardToDeck iid cardCode -> do
       card <- lookupPlayerCard cardCode <$> getRandom
-      pure $ a & storyCards %~ insertWith (<>) iid [card]
+      pure $ a & storyCardsL %~ insertWith (<>) iid [card]
     AddCampaignCardToEncounterDeck cardCode -> do
       card <- lookupEncounterCard cardCode <$> getRandom
       a <$ unshiftMessages [AddToEncounterDeck card]
     RemoveCampaignCardFromDeck iid cardCode ->
       pure
         $ a
-        & storyCards
+        & storyCardsL
         %~ adjustMap (filter ((/= cardCode) . pcCardCode)) iid
-    AddToken token -> pure $ a & chaosBag %~ (token :)
-    InitDeck iid deck -> pure $ a & decks %~ insertMap iid deck
+    AddToken token -> pure $ a & chaosBagL %~ (token :)
+    InitDeck iid deck -> pure $ a & decksL %~ insertMap iid deck
     ResetGame -> do
       for_ (mapToList campaignDecks) $ \(iid, deck) -> do
         let investigatorStoryCards = findWithDefault [] iid campaignStoryCards
@@ -86,13 +71,14 @@ instance CampaignRunner env => RunMessage env Attrs where
     CrossOutRecord key ->
       pure
         $ a
-        & (log . recorded %~ deleteSet key)
-        & (log . recordedSets %~ deleteMap key)
-        & (log . recordedCounts %~ deleteMap key)
-    Record key -> pure $ a & log . recorded %~ insertSet key
+        & (logL . recorded %~ deleteSet key)
+        & (logL . recordedSets %~ deleteMap key)
+        & (logL . recordedCounts %~ deleteMap key)
+    Record key -> pure $ a & logL . recorded %~ insertSet key
     RecordSet key cardCodes ->
-      pure $ a & log . recordedSets %~ insertMap key cardCodes
-    RecordCount key int -> pure $ a & log . recordedCounts %~ insertMap key int
+      pure $ a & logL . recordedSets %~ insertMap key cardCodes
+    RecordCount key int ->
+      pure $ a & logL . recordedCounts %~ insertMap key int
     _ -> pure a
 
 baseAttrs :: CampaignId -> Text -> Difficulty -> [Token] -> Attrs

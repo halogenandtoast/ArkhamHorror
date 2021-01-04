@@ -28,7 +28,7 @@ instance TreacheryRunner env => RunMessage env VaultOfEarthlyDemise where
     AttachTreachery tid _ | tid == treacheryId -> do
       actsRemaining <- unActsRemainingCount <$> getCount ()
       VaultOfEarthlyDemise
-        <$> runMessage msg (attrs & resources ?~ actsRemaining)
+        <$> runMessage msg (attrs & resourcesL ?~ actsRemaining)
     Discard (TreacheryTarget tid) | tid == treacheryId ->
       error "this cannot leave play"
     _ -> VaultOfEarthlyDemise <$> runMessage msg attrs

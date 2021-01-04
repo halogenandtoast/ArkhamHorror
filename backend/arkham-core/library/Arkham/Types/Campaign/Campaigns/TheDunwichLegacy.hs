@@ -250,8 +250,6 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
       pure
         . TheDunwichLegacy
         $ attrs
-        & step
-        .~ nextStep
-        & completedSteps
-        %~ completeStep campaignStep
+        & (stepL .~ nextStep)
+        & (completedStepsL %~ completeStep campaignStep)
     _ -> TheDunwichLegacy <$> runMessage msg attrs

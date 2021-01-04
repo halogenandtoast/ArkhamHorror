@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Types.Enemy.Attrs where
 
 import Arkham.Import
@@ -35,6 +37,8 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
+makeLensesWith suffixedFields ''Attrs
+
 spawned :: Attrs -> Bool
 spawned Attrs { enemyLocation } = enemyLocation /= "unknown"
 
@@ -50,58 +54,6 @@ instance IsCard Attrs where
   getCardCode = enemyCardCode
   getTraits = enemyTraits
   getKeywords = enemyKeywords
-
-doomL :: Lens' Attrs Int
-doomL = lens enemyDoom $ \m x -> m { enemyDoom = x }
-
-cluesL :: Lens' Attrs Int
-cluesL = lens enemyClues $ \m x -> m { enemyClues = x }
-
-preyL :: Lens' Attrs Prey
-preyL = lens enemyPrey $ \m x -> m { enemyPrey = x }
-
-engagedInvestigatorsL :: Lens' Attrs (HashSet InvestigatorId)
-engagedInvestigatorsL =
-  lens enemyEngagedInvestigators $ \m x -> m { enemyEngagedInvestigators = x }
-
-locationL :: Lens' Attrs LocationId
-locationL = lens enemyLocation $ \m x -> m { enemyLocation = x }
-
-damageL :: Lens' Attrs Int
-damageL = lens enemyDamage $ \m x -> m { enemyDamage = x }
-
-healthL :: Lens' Attrs (GameValue Int)
-healthL = lens enemyHealth $ \m x -> m { enemyHealth = x }
-
-healthDamageL :: Lens' Attrs Int
-healthDamageL = lens enemyHealthDamage $ \m x -> m { enemyHealthDamage = x }
-
-sanityDamageL :: Lens' Attrs Int
-sanityDamageL = lens enemySanityDamage $ \m x -> m { enemySanityDamage = x }
-
-fightL :: Lens' Attrs Int
-fightL = lens enemyFight $ \m x -> m { enemyFight = x }
-
-evadeL :: Lens' Attrs Int
-evadeL = lens enemyEvade $ \m x -> m { enemyEvade = x }
-
-uniqueL :: Lens' Attrs Bool
-uniqueL = lens enemyUnique $ \m x -> m { enemyUnique = x }
-
-keywordsL :: Lens' Attrs (HashSet Keyword)
-keywordsL = lens enemyKeywords $ \m x -> m { enemyKeywords = x }
-
-modifiersL :: Lens' Attrs (HashMap Source [Modifier])
-modifiersL = lens enemyModifiers $ \m x -> m { enemyModifiers = x }
-
-treacheriesL :: Lens' Attrs (HashSet TreacheryId)
-treacheriesL = lens enemyTreacheries $ \m x -> m { enemyTreacheries = x }
-
-assetsL :: Lens' Attrs (HashSet AssetId)
-assetsL = lens enemyAssets $ \m x -> m { enemyAssets = x }
-
-exhaustedL :: Lens' Attrs Bool
-exhaustedL = lens enemyExhausted $ \m x -> m { enemyExhausted = x }
 
 baseAttrs :: EnemyId -> CardCode -> (Attrs -> Attrs) -> Attrs
 baseAttrs eid cardCode f =

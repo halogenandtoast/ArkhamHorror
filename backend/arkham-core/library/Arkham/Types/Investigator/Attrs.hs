@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Types.Investigator.Attrs where
 
 import Arkham.Import
@@ -42,13 +44,15 @@ data Attrs = Attrs
   , investigatorDefeated :: Bool
   , investigatorResigned :: Bool
   , investigatorSlots :: HashMap SlotType [Slot]
-  , investigatorXP :: Int
+  , investigatorXp :: Int
   , investigatorPhysicalTrauma :: Int
   , investigatorMentalTrauma :: Int
   -- investigator-specific fields
   , investigatorTomeActions :: Maybe Int
   }
   deriving stock (Show, Generic)
+
+makeLensesWith suffixedFields ''Attrs
 
 instance ToJSON Attrs where
   toJSON = genericToJSON $ aesonOptions $ Just "investigator"
@@ -65,81 +69,6 @@ instance IsCard Attrs where
 
 instance HasCount ActionRemainingCount env Attrs where
   getCount = pure . ActionRemainingCount . investigatorRemainingActions
-
-locationIdL :: Lens' Attrs LocationId
-locationIdL =
-  lens investigatorLocation $ \m x -> m { investigatorLocation = x }
-
-xpL :: Lens' Attrs Int
-xpL = lens investigatorXP $ \m x -> m { investigatorXP = x }
-
-physicalTraumaL :: Lens' Attrs Int
-physicalTraumaL =
-  lens investigatorPhysicalTrauma $ \m x -> m { investigatorPhysicalTrauma = x }
-
-mentalTraumaL :: Lens' Attrs Int
-mentalTraumaL =
-  lens investigatorMentalTrauma $ \m x -> m { investigatorMentalTrauma = x }
-
-connectedLocationsL :: Lens' Attrs (HashSet LocationId)
-connectedLocationsL = lens investigatorConnectedLocations
-  $ \m x -> m { investigatorConnectedLocations = x }
-
-endedTurnL :: Lens' Attrs Bool
-endedTurnL =
-  lens investigatorEndedTurn $ \m x -> m { investigatorEndedTurn = x }
-
-resignedL :: Lens' Attrs Bool
-resignedL = lens investigatorResigned $ \m x -> m { investigatorResigned = x }
-
-defeatedL :: Lens' Attrs Bool
-defeatedL = lens investigatorDefeated $ \m x -> m { investigatorDefeated = x }
-
-resourcesL :: Lens' Attrs Int
-resourcesL =
-  lens investigatorResources $ \m x -> m { investigatorResources = x }
-
-cluesL :: Lens' Attrs Int
-cluesL = lens investigatorClues $ \m x -> m { investigatorClues = x }
-
-slotsL :: Lens' Attrs (HashMap SlotType [Slot])
-slotsL = lens investigatorSlots $ \m x -> m { investigatorSlots = x }
-
-remainingActionsL :: Lens' Attrs Int
-remainingActionsL = lens investigatorRemainingActions
-  $ \m x -> m { investigatorRemainingActions = x }
-
-actionsTakenL :: Lens' Attrs [Action]
-actionsTakenL =
-  lens investigatorActionsTaken $ \m x -> m { investigatorActionsTaken = x }
-
-engagedEnemiesL :: Lens' Attrs (HashSet EnemyId)
-engagedEnemiesL =
-  lens investigatorEngagedEnemies $ \m x -> m { investigatorEngagedEnemies = x }
-
-assetsL :: Lens' Attrs (HashSet AssetId)
-assetsL = lens investigatorAssets $ \m x -> m { investigatorAssets = x }
-
-treacheriesL :: Lens' Attrs (HashSet TreacheryId)
-treacheriesL =
-  lens investigatorTreacheries $ \m x -> m { investigatorTreacheries = x }
-
-healthDamageL :: Lens' Attrs Int
-healthDamageL =
-  lens investigatorHealthDamage $ \m x -> m { investigatorHealthDamage = x }
-
-sanityDamageL :: Lens' Attrs Int
-sanityDamageL =
-  lens investigatorSanityDamage $ \m x -> m { investigatorSanityDamage = x }
-
-discardL :: Lens' Attrs [PlayerCard]
-discardL = lens investigatorDiscard $ \m x -> m { investigatorDiscard = x }
-
-handL :: Lens' Attrs [Card]
-handL = lens investigatorHand $ \m x -> m { investigatorHand = x }
-
-deckL :: Lens' Attrs (Deck PlayerCard)
-deckL = lens investigatorDeck $ \m x -> m { investigatorDeck = x }
 
 instance Entity Attrs where
   type EntityId Attrs = InvestigatorId
@@ -378,7 +307,7 @@ baseAttrs iid name classSymbol Stats {..} traits = Attrs
         ]
       )
     ]
-  , investigatorXP = 0
+  , investigatorXp = 0
   , investigatorPhysicalTrauma = 0
   , investigatorMentalTrauma = 0
   , investigatorTomeActions = Nothing
@@ -628,7 +557,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
                         (getAttrStats a)
                         (setToList investigatorTraits)
                       )
-    { investigatorXP = investigatorXP
+    { investigatorXp = investigatorXp
     , investigatorPhysicalTrauma = investigatorPhysicalTrauma
     , investigatorMentalTrauma = investigatorMentalTrauma
     , investigatorSanityDamage = investigatorMentalTrauma
@@ -1207,7 +1136,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   MoveTo iid lid | iid == investigatorId -> do
     connectedLocations <- asks $ mapSet unConnectedLocationId . getSet lid
     unshiftMessages [WhenEnterLocation iid lid, AfterEnterLocation iid lid]
-    pure $ a & locationIdL .~ lid & connectedLocationsL .~ connectedLocations
+    pure $ a & locationL .~ lid & connectedLocationsL .~ connectedLocations
   AddedConnection lid1 lid2 | lid1 == investigatorLocation ->
     pure $ a & (connectedLocationsL %~ insertSet lid2)
   AddedConnection lid1 lid2 | lid2 == investigatorLocation ->

@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Types.Event.Attrs where
 
 import Arkham.Import
@@ -16,6 +18,8 @@ data Attrs = Attrs
   , eventDoom :: Int
   }
   deriving stock (Show, Generic)
+
+makeLensesWith suffixedFields ''Attrs
 
 instance ToJSON Attrs where
   toJSON = genericToJSON $ aesonOptions $ Just "event"
@@ -36,10 +40,6 @@ unshiftEffect attrs target = unshiftMessages
   [ CreateEffect (eventCardCode attrs) Nothing (toSource attrs) target
   , Discard $ toTarget attrs
   ]
-
-attachedTarget :: Lens' Attrs (Maybe Target)
-attachedTarget =
-  lens eventAttachedTarget $ \m x -> m { eventAttachedTarget = x }
 
 baseAttrs :: InvestigatorId -> EventId -> CardCode -> Attrs
 baseAttrs iid eid cardCode =
@@ -100,5 +100,5 @@ instance HasQueue env => RunMessage env Attrs where
       | eventAttachedTarget == Just (InvestigatorTarget iid) -> a
       <$ unshiftMessage (Discard (EventTarget eventId))
     AttachEvent eid target | eid == eventId ->
-      pure $ a & attachedTarget ?~ target
+      pure $ a & attachedTargetL ?~ target
     _ -> pure a

@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Types.Game
   ( module Arkham.Types.Game
   )
@@ -53,6 +55,10 @@ type GameExternal = Game [Message]
 type GameMode = These Campaign Scenario
 type EntityMap a = HashMap (EntityId a) a
 
+data GameState = IsPending | IsActive | IsOver
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data Game queue = Game
   { gameMessages :: queue
   , gameRoundMessageHistory :: queue
@@ -103,6 +109,8 @@ data Game queue = Game
 
   }
   deriving stock Generic
+
+makeLensesWith suffixedFields ''Game
 
 newtype ModifierData = ModifierData { mdModifiers :: [Modifier] }
   deriving stock (Show, Eq, Generic)
@@ -167,105 +175,6 @@ instance FromJSON queue => FromJSON (Game queue) where
   parseJSON = genericParseJSON $ aesonOptions $ Just "game"
 
 deriving stock instance Show queue => Show (Game queue)
-
-data GameState = IsPending | IsActive | IsOver
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
-playersL :: Lens' (Game queue) (HashMap Int InvestigatorId)
-playersL = lens gamePlayers $ \m x -> m { gamePlayers = x }
-
-playerCountL :: Lens' (Game queue) Int
-playerCountL = lens gamePlayerCount $ \m x -> m { gamePlayerCount = x }
-
-gameStateL :: Lens' (Game queue) GameState
-gameStateL = lens gameGameState $ \m x -> m { gameGameState = x }
-
-focusedCardsL :: Lens' (Game queue) [Card]
-focusedCardsL = lens gameFocusedCards $ \m x -> m { gameFocusedCards = x }
-
-focusedTokensL :: Lens' (Game queue) [Token]
-focusedTokensL = lens gameFocusedTokens $ \m x -> m { gameFocusedTokens = x }
-
-activeCardL :: Lens' (Game queue) (Maybe Card)
-activeCardL = lens gameActiveCard $ \m x -> m { gameActiveCard = x }
-
-victoryDisplayL :: Lens' (Game queue) [Card]
-victoryDisplayL =
-  lens gameVictoryDisplay $ \m x -> m { gameVictoryDisplay = x }
-
-playerOrderL :: Lens' (Game queue) [InvestigatorId]
-playerOrderL = lens gamePlayerOrder $ \m x -> m { gamePlayerOrder = x }
-
-playerTurnOrderL :: Lens' (Game queue) [InvestigatorId]
-playerTurnOrderL =
-  lens gamePlayerTurnOrder $ \m x -> m { gamePlayerTurnOrder = x }
-
-phaseL :: Lens' (Game queue) Phase
-phaseL = lens gamePhase $ \m x -> m { gamePhase = x }
-
-actsL :: Lens' (Game queue) (HashMap ActId Act)
-actsL = lens gameActs $ \m x -> m { gameActs = x }
-
-agendasL :: Lens' (Game queue) (HashMap AgendaId Agenda)
-agendasL = lens gameAgendas $ \m x -> m { gameAgendas = x }
-
-treacheriesL :: Lens' (Game queue) (HashMap TreacheryId Treachery)
-treacheriesL = lens gameTreacheries $ \m x -> m { gameTreacheries = x }
-
-eventsL :: Lens' (Game queue) (HashMap EventId Event)
-eventsL = lens gameEvents $ \m x -> m { gameEvents = x }
-
-effectsL :: Lens' (Game queue) (HashMap EffectId Effect)
-effectsL = lens gameEffects $ \m x -> m { gameEffects = x }
-
-skillsL :: Lens' (Game queue) (HashMap SkillId Skill)
-skillsL = lens gameSkills $ \m x -> m { gameSkills = x }
-
-locationsL :: Lens' (Game queue) (HashMap LocationId Location)
-locationsL = lens gameLocations $ \m x -> m { gameLocations = x }
-
-investigatorsL :: Lens' (Game queue) (HashMap InvestigatorId Investigator)
-investigatorsL = lens gameInvestigators $ \m x -> m { gameInvestigators = x }
-
-enemiesL :: Lens' (Game queue) (HashMap EnemyId Enemy)
-enemiesL = lens gameEnemies $ \m x -> m { gameEnemies = x }
-
-enemiesInVoidL :: Lens' (Game queue) (HashMap EnemyId Enemy)
-enemiesInVoidL = lens gameEnemiesInVoid $ \m x -> m { gameEnemiesInVoid = x }
-
-assetsL :: Lens' (Game queue) (HashMap AssetId Asset)
-assetsL = lens gameAssets $ \m x -> m { gameAssets = x }
-
-encounterDeckL :: Lens' (Game queue) (Deck EncounterCard)
-encounterDeckL = lens gameEncounterDeck $ \m x -> m { gameEncounterDeck = x }
-
-discardL :: Lens' (Game queue) [EncounterCard]
-discardL = lens gameDiscard $ \m x -> m { gameDiscard = x }
-
-usedAbilitiesL :: Lens' (Game queue) [(InvestigatorId, Ability)]
-usedAbilitiesL = lens gameUsedAbilities $ \m x -> m { gameUsedAbilities = x }
-
-resignedCardCodesL :: Lens' (Game queue) [CardCode]
-resignedCardCodesL =
-  lens gameResignedCardCodes $ \m x -> m { gameResignedCardCodes = x }
-
-chaosBagL :: Lens' (Game queue) ChaosBag
-chaosBagL = lens gameChaosBag $ \m x -> m { gameChaosBag = x }
-
-leadInvestigatorIdL :: Lens' (Game queue) InvestigatorId
-leadInvestigatorIdL =
-  lens gameLeadInvestigatorId $ \m x -> m { gameLeadInvestigatorId = x }
-
-activeInvestigatorIdL :: Lens' (Game queue) InvestigatorId
-activeInvestigatorIdL =
-  lens gameActiveInvestigatorId $ \m x -> m { gameActiveInvestigatorId = x }
-
-modeL :: Lens' (Game queue) GameMode
-modeL = lens gameMode $ \m x -> m { gameMode = x }
-
-skillTestL :: Lens' (Game queue) (Maybe SkillTest)
-skillTestL = lens gameSkillTest $ \m x -> m { gameSkillTest = x }
 
 getInvestigator
   :: MonadReader (Game queue) m => InvestigatorId -> m Investigator

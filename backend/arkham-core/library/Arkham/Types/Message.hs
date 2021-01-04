@@ -13,7 +13,8 @@ module Arkham.Types.Message
   , chooseN
   , resolve
   , story
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -199,8 +200,6 @@ data Message
   | CrossOutRecord CampaignLogKey
   | Damage Target Source Int
   | DeckHasNoCards InvestigatorId
-  | DidReceiveDamage Target Source
-  | DidReceiveHorror Target Source
   | DisableEffect EffectId
   | Discard Target
   | DiscardCard InvestigatorId CardId

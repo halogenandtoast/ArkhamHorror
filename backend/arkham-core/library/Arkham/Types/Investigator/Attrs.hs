@@ -223,8 +223,7 @@ getModifiedSanity attrs@Attrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-removeFromSlots
-  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> Attrs -> Bool
@@ -851,12 +850,11 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
           <> [After (InvestigatorTakeDamage iid source damage horror)]
           )
   InvestigatorDoAssignDamage iid source 0 0 damageTargets horrorTargets
-    | iid == investigatorId -> a <$ unshiftMessages
-      ([ DidReceiveDamage target source | target <- nub damageTargets ]
-      <> [ DidReceiveHorror target source | target <- nub horrorTargets ]
+    | iid == investigatorId -> a <$ unshiftMessage
+      (CheckWindow iid
+      $ [ WhenDealtDamage source target | target <- nub damageTargets ]
+      <> [ WhenDealtHorror source target | target <- nub horrorTargets ]
       )
-  DidReceiveHorror (InvestigatorTarget iid) _ | iid == investigatorId ->
-    a <$ unshiftMessage (CheckWindow iid [AfterAssignedHorror You])
   InvestigatorDoAssignDamage iid source health sanity damageTargets horrorTargets
     | iid == investigatorId
     -> do

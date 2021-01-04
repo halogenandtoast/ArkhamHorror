@@ -1,4 +1,8 @@
-module Arkham.Types.Asset.Cards.BeatCop where
+module Arkham.Types.Asset.Cards.BeatCop
+  ( BeatCop(..)
+  , beatCop
+  )
+where
 
 import Arkham.Import
 
@@ -18,12 +22,16 @@ beatCop uuid = BeatCop $ (baseAttrs uuid "01018")
 
 instance HasModifiersFor env BeatCop where
   getModifiersFor _ (InvestigatorTarget iid) (BeatCop a) =
-    pure [ toModifier a (SkillModifier SkillCombat 1) | ownedBy a iid ]
+    pure $ toModifiers a [ SkillModifier SkillCombat 1 | ownedBy a iid ]
   getModifiersFor _ _ _ = pure []
+
+ability :: Attrs -> Ability
+ability a =
+  mkAbility (toSource a) 1 $ ActionAbility Nothing (DiscardCost $ toTarget a)
 
 instance HasActions env BeatCop where
   getActions iid _ (BeatCop a) | ownedBy a iid =
-    pure [UseCardAbility iid (toSource a) Nothing 1 NoPayment]
+    pure [ActivateCardAbilityAction iid (ability a)]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env BeatCop where
@@ -31,10 +39,9 @@ instance AssetRunner env => RunMessage env BeatCop where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       locationEnemyIds <- getSetList locationId
-      a <$ unshiftMessages
-        [ Discard (toTarget attrs)
-        , chooseOne
+      a <$ unshiftMessage
+        (chooseOne
           iid
           [ EnemyDamage eid iid source 1 | eid <- locationEnemyIds ]
-        ]
+        )
     _ -> BeatCop <$> runMessage msg attrs

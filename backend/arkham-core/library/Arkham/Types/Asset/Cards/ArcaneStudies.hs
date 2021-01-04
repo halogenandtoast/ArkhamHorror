@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.ArcaneStudies
   ( ArcaneStudies(..)
   , arcaneStudies
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -22,9 +23,9 @@ ability :: Int -> Attrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
 
 instance HasActions env ArcaneStudies where
-  getActions iid (WhenSkillTest SkillWillpower) (ArcaneStudies a) = do
+  getActions iid (WhenSkillTest SkillWillpower) (ArcaneStudies a) =
     pure [ ActivateCardAbilityAction iid (ability 1 a) | ownedBy a iid ]
-  getActions iid (WhenSkillTest SkillIntellect) (ArcaneStudies a) = do
+  getActions iid (WhenSkillTest SkillIntellect) (ArcaneStudies a) =
     pure [ ActivateCardAbilityAction iid (ability 2 a) | ownedBy a iid ]
   getActions _ _ _ = pure []
 

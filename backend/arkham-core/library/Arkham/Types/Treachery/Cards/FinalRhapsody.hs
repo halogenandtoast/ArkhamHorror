@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.FinalRhapsody where
 
 import Arkham.Import
@@ -19,16 +20,15 @@ instance HasModifiersFor env FinalRhapsody where
 instance HasActions env FinalRhapsody where
   getActions i window (FinalRhapsody attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env FinalRhapsody where
+instance TreacheryRunner env => RunMessage env FinalRhapsody where
   runMessage msg t@(FinalRhapsody attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      unshiftMessages [RequestTokens source (Just iid) 5 SetAside]
-      FinalRhapsody <$> runMessage msg (attrs & resolved .~ False)
+      t <$ unshiftMessage (RequestTokens source (Just iid) 5 SetAside)
     RequestedTokens source (Just iid) faces | isSource attrs source -> do
       let damageCount = count (`elem` [Skull, AutoFail]) faces
       t <$ unshiftMessages
         [ InvestigatorAssignDamage iid source damageCount damageCount
         , ResetTokens source
-        , Discard (TreacheryTarget treacheryId)
+        , Discard $ toTarget attrs
         ]
     _ -> FinalRhapsody <$> runMessage msg attrs

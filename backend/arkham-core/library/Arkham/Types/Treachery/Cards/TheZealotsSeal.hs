@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.TheZealotsSeal where
 
 import Arkham.Import
@@ -25,13 +26,16 @@ instance TreacheryRunner env => RunMessage env TheZealotsSeal where
       investigatorIds <- getInvestigatorIds
       -- we must unshift this first for other effects happen before
       unshiftMessage (Discard $ TreacheryTarget treacheryId)
-      for_ investigatorIds $ \iid' -> do
-        handCardCount <- unCardCount <$> getCount iid'
-        if handCardCount <= 3
-          then unshiftMessage
-            (InvestigatorAssignDamage iid' (toSource attrs) 1 1)
-          else unshiftMessage (RevelationSkillTest iid' source SkillWillpower 2)
-      TheZealotsSeal <$> runMessage msg (attrs & resolved .~ True)
+      t <$ for_
+        investigatorIds
+        (\iid' -> do
+          handCardCount <- unCardCount <$> getCount iid'
+          if handCardCount <= 3
+            then unshiftMessage
+              (InvestigatorAssignDamage iid' (toSource attrs) 1 1)
+            else unshiftMessage
+              (RevelationSkillTest iid' source SkillWillpower 2)
+        )
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _
       | tid == treacheryId -> t
       <$ unshiftMessages [RandomDiscard iid, RandomDiscard iid]

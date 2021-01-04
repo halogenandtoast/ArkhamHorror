@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.VisionsOfFuturesPast
   ( VisionsOfFuturesPast(..)
   , visionsOfFuturesPast
@@ -22,14 +23,13 @@ instance HasModifiersFor env VisionsOfFuturesPast where
 instance HasActions env VisionsOfFuturesPast where
   getActions i window (VisionsOfFuturesPast attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env VisionsOfFuturesPast where
+instance TreacheryRunner env => RunMessage env VisionsOfFuturesPast where
   runMessage msg t@(VisionsOfFuturesPast attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      unshiftMessages
+      t <$ unshiftMessages
         [ RevelationSkillTest iid source SkillWillpower 5
         , Discard (TreacheryTarget treacheryId)
         ]
-      VisionsOfFuturesPast <$> runMessage msg (attrs & resolved .~ True)
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} n
       | tid == treacheryId -> t
       <$ unshiftMessage (DiscardTopOfDeck iid n Nothing)

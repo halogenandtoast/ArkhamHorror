@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.AncientEvils where
 
 import Arkham.Import
@@ -18,13 +19,12 @@ instance HasModifiersFor env AncientEvils where
 instance HasActions env AncientEvils where
   getActions i window (AncientEvils attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env AncientEvils where
-  runMessage msg (AncientEvils attrs@Attrs {..}) = case msg of
+instance TreacheryRunner env => RunMessage env AncientEvils where
+  runMessage msg t@(AncientEvils attrs@Attrs {..}) = case msg of
     Revelation _ source | isSource attrs source -> do
-      unshiftMessages
+      t <$ unshiftMessages
         [ PlaceDoomOnAgenda
         , AdvanceAgendaIfThresholdSatisfied
         , Discard (TreacheryTarget treacheryId)
         ]
-      AncientEvils <$> runMessage msg (attrs & resolved .~ True)
     _ -> AncientEvils <$> runMessage msg attrs

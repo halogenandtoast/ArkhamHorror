@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.HuntingShadow where
 
 import Arkham.Import
@@ -18,17 +19,19 @@ instance HasModifiersFor env HuntingShadow where
 instance HasActions env HuntingShadow where
   getActions i window (HuntingShadow attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env HuntingShadow where
-  runMessage msg (HuntingShadow attrs@Attrs {..}) = case msg of
+instance TreacheryRunner env => RunMessage env HuntingShadow where
+  runMessage msg t@(HuntingShadow attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       playerSpendableClueCount <- unSpendableClueCount <$> getCount iid
       if playerSpendableClueCount > 0
-        then unshiftMessage
-          (Ask iid $ ChooseOne
+        then t <$ unshiftMessages
+          [ chooseOne
+            iid
             [ Label "Spend 1 clue" [SpendClues 1 [iid]]
             , Label "Take 2 damage" [InvestigatorAssignDamage iid source 2 0]
             ]
-          )
-        else unshiftMessage (InvestigatorAssignDamage iid source 2 0)
-      HuntingShadow <$> runMessage msg (attrs & resolved .~ True)
+          , Discard $ toTarget attrs
+          ]
+        else t <$ unshiftMessages
+          [InvestigatorAssignDamage iid source 2 0, Discard $ toTarget attrs]
     _ -> HuntingShadow <$> runMessage msg attrs

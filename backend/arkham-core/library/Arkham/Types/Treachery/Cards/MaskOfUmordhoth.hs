@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.MaskOfUmordhoth where
 
 import Arkham.Import hiding (Cultist)
@@ -30,10 +31,10 @@ instance HasActions env MaskOfUmordhoth where
   getActions i window (MaskOfUmordhoth attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env MaskOfUmordhoth where
-  runMessage msg (MaskOfUmordhoth attrs@Attrs {..}) = case msg of
+  runMessage msg t@(MaskOfUmordhoth attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       enemies <- map unFarthestEnemyId <$> getSetList (iid, EnemyTrait Cultist)
-      case enemies of
+      t <$ case enemies of
         [] -> unshiftMessages
           [ FindAndDrawEncounterCard
             iid
@@ -46,5 +47,4 @@ instance TreacheryRunner env => RunMessage env MaskOfUmordhoth where
             iid
             [ AttachTreachery treacheryId (EnemyTarget eid) | eid <- eids ]
           )
-      MaskOfUmordhoth <$> runMessage msg (attrs & resolved .~ False)
     _ -> MaskOfUmordhoth <$> runMessage msg attrs

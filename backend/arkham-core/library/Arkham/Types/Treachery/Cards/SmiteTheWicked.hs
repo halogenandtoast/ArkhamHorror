@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.SmiteTheWicked where
 
 import Arkham.Import
@@ -19,15 +20,14 @@ instance HasModifiersFor env SmiteTheWicked where
 instance HasActions env SmiteTheWicked where
   getActions i window (SmiteTheWicked attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env SmiteTheWicked where
+instance TreacheryRunner env => RunMessage env SmiteTheWicked where
   runMessage msg t@(SmiteTheWicked attrs@Attrs {..}) = case msg of
     Revelation _iid source | isSource attrs source -> do
-      unshiftMessage
+      t <$ unshiftMessage
         (DiscardEncounterUntilFirst
           source
           (EncounterCardMatchByType (EnemyType, Nothing))
         )
-      SmiteTheWicked <$> runMessage msg (attrs & resolved .~ False)
     RequestedEncounterCard (TreacherySource tid) mcard | tid == treacheryId ->
       do
         case mcard of

@@ -3,7 +3,7 @@ module Arkham.Prelude
   )
 where
 
-import ClassyPrelude as X hiding ((\\))
+import ClassyPrelude as X hiding (on, (\\))
 
 import Control.Lens as X
   ( Lens'

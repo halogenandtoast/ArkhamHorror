@@ -289,6 +289,8 @@ allPlayerCards = mapFromList
   , ("02061", professorWarrenRice)
   , ("02079", peterClover)
   , ("02080", drFrancisMorgan)
+  , ("02105", emergencyAid)
+  , ("02106", brotherXavier1)
   , ("02107", iveGotAPlan)
   , ("02108", pathfinder1)
   , ("02139", adamLynch)
@@ -1250,6 +1252,19 @@ drFrancisMorgan cardId = (asset cardId "02080" "Dr. Francis Morgan" 3 Neutral)
   , pcTraits = setFromList [Ally, Miskatonic]
   }
 
+emergencyAid :: CardId -> PlayerCard
+emergencyAid cardId = (event cardId "02105" "Emergency Aid" 2 Guardian)
+  { pcSkills = [SkillIntellect, SkillAgility]
+  , pcTraits = setFromList [Insight, Science]
+  }
+
+brotherXavier1 :: CardId -> PlayerCard
+brotherXavier1 cardId = (asset cardId "02106" "Brother Xavier" 5 Guardian)
+  { pcSkills = [SkillWillpower]
+  , pcTraits = setFromList [Ally]
+  , pcLevel = 1
+  }
+
 iveGotAPlan :: CardId -> PlayerCard
 iveGotAPlan cardId = (event cardId "02107" "\"I've Got a Plan!\"" 3 Seeker)
   { pcSkills = [SkillIntellect, SkillCombat]
@@ -1268,19 +1283,18 @@ adamLynch cardId = (asset cardId "02139" "Adam Lynch" 0 Neutral)
   { pcTraits = setFromList [Ally, Miskatonic]
   }
 
+keenEye :: CardId -> PlayerCard
+keenEye cardId = (asset cardId "02185" "Keen Eye" 2 Guardian)
+  { pcTraits = setFromList [Talent]
+  , pcSkills = [SkillIntellect, SkillCombat]
+  }
+
 theNecronomiconOlausWormiusTranslation :: CardId -> PlayerCard
 theNecronomiconOlausWormiusTranslation cardId =
   (asset cardId "02140" "The Necronomicon" 2 Neutral)
     { pcSkills = [SkillIntellect]
     , pcTraits = setFromList [Item, Tome]
     }
-
-brotherXavier1 :: CardId -> PlayerCard
-brotherXavier1 cardId = (asset cardId "02106" "Brother Xavier" 5 Guardian)
-  { pcSkills = [SkillWillpower]
-  , pcTraits = setFromList [Ally]
-  , pcLevel = 1
-  }
 
 bandolier :: CardId -> PlayerCard
 bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)
@@ -1375,13 +1389,6 @@ astoundingRevelation cardId =
     , pcFast = True
     , pcWindows = mempty -- cannot be played
     }
-
-keenEye :: CardId -> PlayerCard
-keenEye cardId = (asset cardId "02185" "Keen Eye" 2 Guardian)
-  { pcTraits = setFromList [Talent]
-  , pcSkills = [SkillIntellect, SkillCombat]
-  }
-
 
 litaChantler :: CardId -> PlayerCard
 litaChantler cardId = (asset cardId "01117" "Lita Chantler" 0 Neutral)

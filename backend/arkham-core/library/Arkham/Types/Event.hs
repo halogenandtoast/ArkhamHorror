@@ -52,6 +52,7 @@ data Event
   | ThinkOnYourFeet' ThinkOnYourFeet
   | BindMonster2' BindMonster2
   | BaitAndSwitch' BaitAndSwitch
+  | EmergencyAid' EmergencyAid
   | IveGotAPlan' IveGotAPlan
   | LetMeHandleThis' LetMeHandleThis
   | SecondWind' SecondWind
@@ -130,6 +131,7 @@ allEvents = mapFromList
   , ("02025", (ThinkOnYourFeet' .) . thinkOnYourFeet)
   , ("02031", (BindMonster2' .) . bindMonster2)
   , ("02034", (BaitAndSwitch' .) . baitAndSwitch)
+  , ("02105", (EmergencyAid' .) . emergencyAid)
   , ("02107", (IveGotAPlan' .) . iveGotAPlan)
   , ("03022", (LetMeHandleThis' .) . letMeHandleThis)
   , ("04149", (SecondWind' .) . secondWind)
@@ -185,6 +187,7 @@ eventAttrs = \case
   ThinkOnYourFeet' attrs -> coerce attrs
   BindMonster2' attrs -> coerce attrs
   BaitAndSwitch' attrs -> coerce attrs
+  EmergencyAid' attrs -> coerce attrs
   IveGotAPlan' attrs -> coerce attrs
   LetMeHandleThis' attrs -> coerce attrs
   SecondWind' attrs -> coerce attrs

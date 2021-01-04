@@ -23,8 +23,6 @@
     "type": "treachery",
     "alternate": "arkham-core/tests/Arkham/Types/Treachery/Cards/{}Spec.hs",
     "template": [
-      "{open}-# LANGUAGE UndecidableInstances #-{close}",
-      "",
       "module Arkham.Types.Treachery.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
       "  , {dot}(..)",
@@ -66,7 +64,6 @@
     "type": "asset",
     "alternate": "arkham-core/tests/Arkham/Types/Asset/Cards/{}Spec.hs",
     "template": [
-      "{open}-# LANGUAGE UndecidableInstances #-{close}",
       "module Arkham.Types.Asset.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
       "  , {dot}(..)",
@@ -98,7 +95,6 @@
     "type": "event",
     "alternate": "arkham-core/tests/Arkham/Types/Events/Cards/{}Spec.hs",
     "template": [
-      "{open}-# LANGUAGE UndecidableInstances #-{close}",
       "module Arkham.Types.Event.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
       "  , {dot}(..)",
@@ -130,7 +126,6 @@
     "type": "location",
     "alternate": "arkham-core/tests/Arkham/Types/Location/Cards/{}Spec.hs",
     "template": [
-      "{open}-# LANGUAGE UndecidableInstances #-{close}",
       "module Arkham.Types.Location.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
       "  , {dot}(..)",
@@ -173,7 +168,6 @@
     "type": "skill",
     "alternate": "arkham-core/tests/Arkham/Types/Skill/Cards/{}Spec.hs",
     "template": [
-      "{open}-# LANGUAGE UndecidableInstances #-{close}",
       "module Arkham.Types.Skill.Cards.{dot}",
       "  ( {dot|snakecase|camelcase}",
       "  , {dot}(..)",

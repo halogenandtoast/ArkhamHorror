@@ -52,6 +52,7 @@ import Arkham.Types.Location.Cards.MainPath as X
 import Arkham.Types.Location.Cards.MiskatonicQuad as X
 import Arkham.Types.Location.Cards.MiskatonicUniversity as X
 import Arkham.Types.Location.Cards.MiskatonicUniversityMiskatonicMuseum as X
+import Arkham.Types.Location.Cards.MuseumEntrance as X
 import Arkham.Types.Location.Cards.Northside as X
 import Arkham.Types.Location.Cards.NorthsideTrainStation as X
 import Arkham.Types.Location.Cards.OrneLibrary as X

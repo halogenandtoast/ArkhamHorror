@@ -18,8 +18,8 @@ spec = describe "Searching for Izzie" $ do
       , loadDeck investigator [searchingForIzzie]
       , drawCards investigator 1
       ]
-      ((locations %~ insertEntity location1)
-      . (locations %~ insertEntity location2)
+      ((locationsL %~ insertEntity location1)
+      . (locationsL %~ insertEntity location2)
       )
     updated game location2 `shouldSatisfy` hasTreacheryWithMatchingCardCode
       game
@@ -36,7 +36,7 @@ spec = describe "Searching for Izzie" $ do
       , drawCards investigator 1
       , moveTo investigator location
       ]
-      (locations %~ insertEntity location)
+      (locationsL %~ insertEntity location)
     let updatedSearchingForIzzie = game ^?! treacheries . to toList . ix 0
 
     [searchingForIzzieAction] <- getActionsOf
@@ -66,5 +66,5 @@ spec = describe "Searching for Izzie" $ do
       , drawCards investigator 1
       , EndOfGame
       ]
-      (locations %~ insertEntity location)
+      (locationsL %~ insertEntity location)
     updated game investigator `shouldSatisfy` hasTrauma (0, 1)

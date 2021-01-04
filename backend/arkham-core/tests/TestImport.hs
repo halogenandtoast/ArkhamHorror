@@ -21,7 +21,7 @@ import Arkham.Types.Difficulty
 import Arkham.Types.Enemy as X
 import qualified Arkham.Types.Enemy.Attrs as Enemy
 import Arkham.Types.Event as X
-import Arkham.Types.Game as X
+import Arkham.Types.Game as X hiding (newGame)
 import Arkham.Types.Game.Helpers as X
 import Arkham.Types.Investigator as X
 import qualified Arkham.Types.Investigator.Attrs as InvestigatorAttrs
@@ -133,7 +133,7 @@ testLocation
 testLocation cardCode f =
   let
     locationId = LocationId cardCode
-    name = LocationName (unCardCode cardCode) Nothing
+    name = Name (unCardCode cardCode) Nothing
   in pure $ baseLocation locationId name 0 (Static 0) Square [] f
 
 testInvestigator
@@ -197,7 +197,7 @@ getActionsOf game investigator window e =
   withGame game (getActions (toId investigator) window (updated game e))
 
 chaosBagTokensOf :: Game queue -> [Token]
-chaosBagTokensOf g = g ^. chaosBag . ChaosBag.tokensL
+chaosBagTokensOf g = g ^. chaosBagL . ChaosBag.tokensL
 
 createMessageMatcher :: MonadIO m => Message -> m (IORef Bool, Message -> m ())
 createMessageMatcher msg = do

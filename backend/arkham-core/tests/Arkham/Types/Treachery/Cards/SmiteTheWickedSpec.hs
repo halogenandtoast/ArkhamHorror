@@ -22,11 +22,11 @@ spec = describe "Smite the Wicked" $ do
           , loadDeck investigator [smiteTheWicked]
           , drawCards investigator 1
           ]
-          ((locations %~ insertEntity location1)
-          . (locations %~ insertEntity location2)
+          ((locationsL %~ insertEntity location1)
+          . (locationsL %~ insertEntity location2)
           )
         >>= runGameTestOnlyOption "place enemy"
-    let updatedEnemy = game ^?! enemies . to toList . ix 0
+    let updatedEnemy = game ^?! enemiesL . to toList . ix 0
     updated game location2 `shouldSatisfy` hasEnemy game updatedEnemy
     updatedEnemy `shouldSatisfy` hasTreacheryWithMatchingCardCode
       game
@@ -45,7 +45,7 @@ spec = describe "Smite the Wicked" $ do
           , drawCards investigator 1
           , EndOfGame
           ]
-          (locations %~ insertEntity location)
+          (locationsL %~ insertEntity location)
         >>= runGameTestOnlyOption "place enemy"
     updated game investigator `shouldSatisfy` hasTrauma (0, 1)
 
@@ -62,9 +62,9 @@ spec = describe "Smite the Wicked" $ do
           , loadDeck investigator [smiteTheWicked]
           , drawCards investigator 1
           ]
-          (locations %~ insertEntity location)
+          (locationsL %~ insertEntity location)
         >>= runGameTestOnlyOption "place enemy"
-    let updatedEnemy = game ^?! enemies . to toList . ix 0
+    let updatedEnemy = game ^?! enemiesL . to toList . ix 0
 
     game' <- runGameTestMessages
       game
@@ -95,7 +95,7 @@ spec = describe "Smite the Wicked" $ do
           , drawCards investigator 1
           , Resign (toId investigator)
           ]
-          (locations %~ insertEntity location)
+          (locationsL %~ insertEntity location)
         >>= runGameTestOnlyOption "place enemy"
 
     updated game investigator `shouldSatisfy` hasTrauma (0, 1)

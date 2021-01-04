@@ -12,6 +12,36 @@ import Arkham.Types.Keyword
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait (Trait)
 
+cancelToken :: (HasQueue env, MonadReader env m, MonadIO m) => Token -> m ()
+cancelToken token = withQueue $ \queue ->
+  ( filter
+    (\case
+      When (RevealToken _ _ token') | token == token' -> False
+      RevealToken _ _ token' | token == token' -> False
+      After (RevealToken _ _ token') | token == token' -> False
+      RequestedTokens _ _ [token'] | token == token' -> False
+      RequestedTokens{} -> error "not setup for multiple tokens"
+      _ -> True
+    )
+    queue
+  , ()
+  )
+
+replaceToken :: (HasQueue env, MonadReader env m, MonadIO m) => Token -> m ()
+replaceToken token = withQueue $ \queue ->
+  ( map
+    (\case
+      When (RevealToken s i _) -> When (RevealToken s i token)
+      RevealToken s i _ -> RevealToken s i token
+      After (RevealToken s i _) -> After (RevealToken s i token)
+      RequestedTokens source' miid [_] -> RequestedTokens source' miid [token]
+      RequestedTokens{} -> error "not setup for multiple tokens"
+      m -> m
+    )
+    queue
+  , ()
+  )
+
 withBaseActions
   :: (MonadIO m, HasActions env a, MonadReader env m)
   => InvestigatorId

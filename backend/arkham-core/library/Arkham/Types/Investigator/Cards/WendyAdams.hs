@@ -8,6 +8,7 @@ where
 
 import Arkham.Import
 
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
@@ -40,8 +41,11 @@ instance HasTokenValue env WendyAdams where
     pure $ TokenValue ElderSign (PositiveModifier 0)
   getTokenValue (WendyAdams attrs) iid token = getTokenValue attrs iid token
 
-ability :: Attrs -> Ability
-ability attrs = base { abilityLimit = PlayerLimit PerTestOrAbility 1 }
+ability :: Attrs -> Token -> Ability
+ability attrs token = base
+  { abilityLimit = PlayerLimit PerTestOrAbility 1
+  , abilityMetadata = Just (TargetMetadata $ TokenFaceTarget token)
+  }
  where
   base = mkAbility
     (toSource attrs)
@@ -49,32 +53,24 @@ ability attrs = base { abilityLimit = PlayerLimit PerTestOrAbility 1 }
     (ReactionAbility $ HandDiscardCost 1 Nothing mempty)
 
 instance ActionRunner env => HasActions env WendyAdams where
-  getActions iid (WhenRevealToken You _) (WendyAdams attrs@Attrs {..})
+  getActions iid (WhenRevealToken You token) (WendyAdams attrs@Attrs {..})
     | iid == investigatorId = pure
-      [ActivateCardAbilityAction investigatorId $ ability attrs]
+      [ActivateCardAbilityAction investigatorId $ ability attrs token]
   getActions i window (WendyAdams attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env WendyAdams where
   runMessage msg i@(WendyAdams attrs@Attrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
-      mResolveToken <- withQueue $ \queue ->
-        (queue, find ((== Just RevealTokenMessage) . messageType) queue)
-      case mResolveToken of
-        Just (RevealToken _ _ token) -> do
-          void
-            $ withQueue
-            $ \queue ->
-                ( filter (/= CheckWindow iid [WhenRevealToken You token]) queue
-                , ()
-                )
-          i <$ unshiftMessages
-            [ CancelNext DrawTokenMessage
-            , CancelNext RevealTokenMessage
-            , ReturnTokens [token]
-            , UnfocusTokens
-            , DrawAnotherToken iid
-            ]
-        _ -> error "we expect resolve token to be on the stack"
+    UseCardAbility _ (InvestigatorSource iid) (Just (TargetMetadata (TokenFaceTarget token))) 1
+      | iid == investigatorId
+      -> do
+        cancelToken token
+        i <$ unshiftMessages
+          [ CancelNext DrawTokenMessage
+          , CancelNext RevealTokenMessage
+          , ReturnTokens [token]
+          , UnfocusTokens
+          , DrawAnotherToken iid
+          ]
     When (DrawToken iid token) | iid == investigatorId -> i <$ unshiftMessages
       [ FocusTokens [token]
       , CheckWindow investigatorId [WhenDrawToken You token]

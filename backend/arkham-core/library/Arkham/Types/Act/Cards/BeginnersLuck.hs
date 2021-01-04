@@ -79,20 +79,7 @@ instance
         ]
     UseCardAbility iid source (Just (TargetMetadata (TokenFaceTarget token))) 1
       | isSource attrs source -> do
-        withQueue $ \queue ->
-          ( map
-            (\case
-              When (RevealToken s i _) -> When (RevealToken s i token)
-              RevealToken s i _ -> RevealToken s i token
-              After (RevealToken s i _) -> After (RevealToken s i token)
-              RequestedTokens source' miid [_] ->
-                RequestedTokens source' miid [token]
-              RequestedTokens{} -> error "not setup for multiple tokens"
-              m -> m
-            )
-            queue
-          , ()
-          )
+        replaceToken token
         a <$ unshiftMessages [FocusTokens [token], Remember $ Cheated iid]
     After (GainClues _ _) -> do
       totalClues <- unSpendableClueCount <$> getCount ()

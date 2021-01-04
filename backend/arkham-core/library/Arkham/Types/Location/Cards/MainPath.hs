@@ -46,7 +46,7 @@ instance ActionRunner env => HasActions env MainPath where
 
 instance (LocationRunner env) => RunMessage env MainPath where
   runMessage msg l@(MainPath attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source && locationRevealed ->
+    UseCardAbility iid source _ 1 | isSource attrs source ->
       l <$ unshiftMessage (Resign iid)
     AddConnection lid _ | locationId /= lid -> do
       isWoods <- member Woods <$> getSet lid

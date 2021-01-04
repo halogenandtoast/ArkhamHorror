@@ -71,6 +71,7 @@ data Location
   | ArtGallery' ArtGallery
   | VipArea' VipArea
   | BackAlley' BackAlley
+  | MuseumEntrance' MuseumEntrance
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -247,6 +248,7 @@ allLocations = mapFromList $ map
   , ArtGallery' artGallery
   , VipArea' vipArea
   , BackAlley' backAlley
+  , MuseumEntrance' museumEntrance
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall
   , Bedroom' bedroom
@@ -331,6 +333,7 @@ locationAttrs = \case
   ArtGallery' attrs -> coerce attrs
   VipArea' attrs -> coerce attrs
   BackAlley' attrs -> coerce attrs
+  MuseumEntrance' attrs -> coerce attrs
   StudyAberrantGateway' attrs -> coerce attrs
   GuestHall' attrs -> coerce attrs
   Bedroom' attrs -> coerce attrs

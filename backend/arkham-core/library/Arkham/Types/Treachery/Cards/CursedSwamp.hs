@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.CursedSwamp
   ( CursedSwamp(..)
   , cursedSwamp
@@ -37,11 +38,10 @@ instance HasActions env CursedSwamp where
 instance TreacheryRunner env => RunMessage env CursedSwamp where
   runMessage msg t@(CursedSwamp attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      unshiftMessages
+      t <$ unshiftMessages
         [ RevelationSkillTest iid source SkillWillpower 3
         , Discard (TreacheryTarget treacheryId)
         ]
-      CursedSwamp <$> runMessage msg (attrs & resolved .~ True)
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} n
       | tid == treacheryId -> t <$ unshiftMessage
         (InvestigatorAssignDamage iid (TreacherySource treacheryId) n 0)

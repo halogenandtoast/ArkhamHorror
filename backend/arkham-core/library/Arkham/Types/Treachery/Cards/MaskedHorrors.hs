@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.MaskedHorrors where
 
 import Arkham.Import
@@ -19,8 +20,8 @@ instance HasModifiersFor env MaskedHorrors where
 instance HasActions env MaskedHorrors where
   getActions i window (MaskedHorrors attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env MaskedHorrors where
-  runMessage msg (MaskedHorrors attrs@Attrs {..}) = case msg of
+instance TreacheryRunner env => RunMessage env MaskedHorrors where
+  runMessage msg t@(MaskedHorrors attrs@Attrs {..}) = case msg of
     Revelation _ source | isSource attrs source -> do
       iids <- getInvestigatorIds
       targetInvestigators <- map fst . filter ((>= 2) . snd) <$> for
@@ -29,7 +30,7 @@ instance (TreacheryRunner env) => RunMessage env MaskedHorrors where
           clueCount <- unClueCount <$> getCount iid
           pure (iid, clueCount)
         )
-      if null targetInvestigators
+      t <$ if null targetInvestigators
         then unshiftMessages
           ([ InvestigatorAssignDamage iid source 0 2
            | iid <- targetInvestigators
@@ -41,5 +42,4 @@ instance (TreacheryRunner env) => RunMessage env MaskedHorrors where
           , AdvanceAgendaIfThresholdSatisfied
           , Discard (TreacheryTarget treacheryId)
           ]
-      MaskedHorrors <$> runMessage msg (attrs & resolved .~ True)
     _ -> MaskedHorrors <$> runMessage msg attrs

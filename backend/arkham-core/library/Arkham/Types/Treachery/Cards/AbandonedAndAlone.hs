@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.AbandonedAndAlone where
 
 import Arkham.Import
@@ -18,10 +19,12 @@ instance HasModifiersFor env AbandonedAndAlone where
 instance HasActions env AbandonedAndAlone where
   getActions i window (AbandonedAndAlone attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env AbandonedAndAlone where
-  runMessage msg (AbandonedAndAlone attrs@Attrs {..}) = case msg of
+instance TreacheryRunner env => RunMessage env AbandonedAndAlone where
+  runMessage msg t@(AbandonedAndAlone attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      unshiftMessages
-        [InvestigatorDirectDamage iid source 0 2, RemoveDiscardFromGame iid]
-      AbandonedAndAlone <$> runMessage msg (attrs & resolved .~ True)
+      t <$ unshiftMessages
+        [ InvestigatorDirectDamage iid source 0 2
+        , RemoveDiscardFromGame iid
+        , Discard $ toTarget attrs
+        ]
     _ -> AbandonedAndAlone <$> runMessage msg attrs

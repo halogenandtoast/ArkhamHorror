@@ -1,5 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.OnTheProwl
   ( OnTheProwl(..)
   , onTheProwl
@@ -39,10 +40,10 @@ nonBayouLocations
 nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
 
 instance TreacheryRunner env => RunMessage env OnTheProwl where
-  runMessage msg (OnTheProwl attrs@Attrs {..}) = case msg of
+  runMessage msg t@(OnTheProwl attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
-      case mrougarou of
+      t <$ case mrougarou of
         Nothing -> unshiftMessage (Discard (TreacheryTarget treacheryId))
         Just eid -> do
           locationIds <- setToList <$> nonBayouLocations
@@ -68,5 +69,4 @@ instance TreacheryRunner env => RunMessage env OnTheProwl where
                       [ MoveUntil x (EnemyTarget eid) | (x, _) <- xs ]
                     , Discard (TreacheryTarget treacheryId)
                     ]
-      OnTheProwl <$> runMessage msg (attrs & resolved .~ True)
     _ -> OnTheProwl <$> runMessage msg attrs

@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.Amnesia where
 
 import Arkham.Import
@@ -18,10 +19,12 @@ instance HasModifiersFor env Amnesia where
 instance HasActions env Amnesia where
   getActions i window (Amnesia attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env Amnesia where
-  runMessage msg (Amnesia attrs@Attrs {..}) = case msg of
+instance TreacheryRunner env => RunMessage env Amnesia where
+  runMessage msg t@(Amnesia attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       cardCount' <- unCardCount <$> getCount iid
-      unshiftMessages $ replicate (cardCount' - 1) (ChooseAndDiscardCard iid)
-      Amnesia <$> runMessage msg (attrs & resolved .~ True)
+      t <$ unshiftMessages
+        (replicate (cardCount' - 1) (ChooseAndDiscardCard iid)
+        <> [Discard $ toTarget attrs]
+        )
     _ -> Amnesia <$> runMessage msg attrs

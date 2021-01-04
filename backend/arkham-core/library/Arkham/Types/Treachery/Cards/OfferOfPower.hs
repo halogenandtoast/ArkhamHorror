@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.OfferOfPower where
 
 import Arkham.Import
@@ -18,11 +19,12 @@ instance HasModifiersFor env OfferOfPower where
 instance HasActions env OfferOfPower where
   getActions i window (OfferOfPower attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env OfferOfPower where
-  runMessage msg (OfferOfPower attrs@Attrs {..}) = case msg of
+instance TreacheryRunner env => RunMessage env OfferOfPower where
+  runMessage msg t@(OfferOfPower attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      unshiftMessage
-        (Ask iid $ ChooseOne
+      t <$ unshiftMessages
+        [ chooseOne
+          iid
           [ Label
             "Draw 2 cards and place 2 doom on agenda"
             [ DrawCards iid 2 False
@@ -32,6 +34,6 @@ instance (TreacheryRunner env) => RunMessage env OfferOfPower where
             ]
           , Label "Take 2 horror" [InvestigatorAssignDamage iid source 0 2]
           ]
-        )
-      OfferOfPower <$> runMessage msg (attrs & resolved .~ True)
+        , Discard $ toTarget attrs
+        ]
     _ -> OfferOfPower <$> runMessage msg attrs

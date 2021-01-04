@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.UmordhothsHunger where
 
 import Arkham.Import
@@ -20,7 +21,7 @@ instance HasActions env UmordhothsHunger where
   getActions i window (UmordhothsHunger attrs) = getActions i window attrs
 
 instance TreacheryRunner env => RunMessage env UmordhothsHunger where
-  runMessage msg (UmordhothsHunger attrs@Attrs {..}) = case msg of
+  runMessage msg t@(UmordhothsHunger attrs@Attrs {..}) = case msg of
     Revelation _ source | isSource attrs source -> do
       investigatorIds <- getInvestigatorIds
       msgs <- for investigatorIds $ \iid -> do
@@ -29,8 +30,9 @@ instance TreacheryRunner env => RunMessage env UmordhothsHunger where
           then InvestigatorKilled iid
           else RandomDiscard iid
       enemyIds <- getSetList @EnemyId ()
-      unshiftMessages
-        $ msgs
+      t <$ unshiftMessages
+        (msgs
         <> [ HealDamage (EnemyTarget eid) 1 | eid <- enemyIds ]
-      UmordhothsHunger <$> runMessage msg (attrs & resolved .~ True)
+        <> [Discard $ toTarget attrs]
+        )
     _ -> UmordhothsHunger <$> runMessage msg attrs

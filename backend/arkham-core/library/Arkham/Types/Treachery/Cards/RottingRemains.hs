@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.RottingRemains where
 
 import Arkham.Import
@@ -18,14 +19,13 @@ instance HasModifiersFor env RottingRemains where
 instance HasActions env RottingRemains where
   getActions i window (RottingRemains attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env RottingRemains where
+instance TreacheryRunner env => RunMessage env RottingRemains where
   runMessage msg t@(RottingRemains attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
-      unshiftMessages
+      t <$ unshiftMessages
         [ RevelationSkillTest iid source SkillWillpower 3
         , Discard (TreacheryTarget treacheryId)
         ]
-      RottingRemains <$> runMessage msg (attrs & resolved .~ True)
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} n
       | tid == treacheryId -> t <$ unshiftMessage
         (InvestigatorAssignDamage iid (TreacherySource treacheryId) 0 n)

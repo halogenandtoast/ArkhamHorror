@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.BeastOfTheBayou where
 
 import Arkham.Import
@@ -22,7 +23,7 @@ instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
   runMessage msg t@(BeastOfTheBayou attrs@Attrs {..}) = case msg of
     Revelation _iid source | isSource attrs source -> do
       mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
-      case mrougarou of
+      t <$ case mrougarou of
         Nothing ->
           unshiftMessages [PlaceDoomOnAgenda, Discard (toTarget attrs)]
         Just eid -> do
@@ -38,7 +39,6 @@ instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
               ([ EnemyAttack iid' eid | iid' <- xs ]
               <> [Discard (toTarget attrs)]
               )
-      BeastOfTheBayou <$> runMessage msg (attrs & resolved .~ True)
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} n
       | tid == treacheryId -> t <$ unshiftMessage
         (InvestigatorAssignDamage iid (TreacherySource treacheryId) n 0)

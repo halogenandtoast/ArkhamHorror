@@ -17,7 +17,6 @@ data Attrs = Attrs
   , treacheryAttachedTarget :: Maybe Target
   , treacheryOwner :: Maybe InvestigatorId
   , treacheryWeakness :: Bool
-  , treacheryResolved :: Bool -- should this be discarded
   , treacheryDoom :: Int
   , treacheryClues :: Maybe Int
   , treacheryResources :: Maybe Int
@@ -52,9 +51,6 @@ instance IsCard Attrs where
 
 -- ownedBy :: Attrs -> InvestigatorId -> Bool
 -- ownedBy Attrs { treacheryOwner } iid = treacheryOwner == Just iid
-
-resolved :: Lens' Attrs Bool
-resolved = lens treacheryResolved $ \m x -> m { treacheryResolved = x }
 
 treacheryOn :: Target -> Attrs -> Bool
 treacheryOn t Attrs { treacheryAttachedTarget } =
@@ -116,7 +112,6 @@ baseAttrs tid cardCode =
       , treacheryAttachedTarget = Nothing
       , treacheryOwner = Nothing
       , treacheryWeakness = False
-      , treacheryResolved = False
       , treacheryDoom = 0
       , treacheryClues = Nothing
       , treacheryResources = Nothing
@@ -140,7 +135,6 @@ weaknessAttrs tid iid cardCode =
       , treacheryAttachedTarget = Nothing
       , treacheryOwner = iid
       , treacheryWeakness = True
-      , treacheryResolved = False
       , treacheryDoom = 0
       , treacheryClues = Nothing
       , treacheryResources = Nothing
@@ -162,9 +156,6 @@ instance TreacheryRunner env => RunMessage env Attrs where
       <$ unshiftMessage (Discard $ TreacheryTarget treacheryId)
     AttachTreachery tid target | tid == treacheryId ->
       pure $ a & attachedTarget ?~ target
-    AfterRevelation _iid tid | treacheryId == tid -> a <$ when
-      treacheryResolved
-      (unshiftMessage (Discard (TreacheryTarget treacheryId)))
     PlaceResources target n | isTarget a target -> do
       let amount = fromMaybe 0 treacheryResources + n
       pure $ a & resources ?~ amount

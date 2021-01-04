@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Arkham.Types.Treachery.Cards.Paranoia where
 
 import Arkham.Import
@@ -18,10 +19,10 @@ instance HasModifiersFor env Paranoia where
 instance HasActions env Paranoia where
   getActions i window (Paranoia attrs) = getActions i window attrs
 
-instance (TreacheryRunner env) => RunMessage env Paranoia where
-  runMessage msg (Paranoia attrs@Attrs {..}) = case msg of
+instance TreacheryRunner env => RunMessage env Paranoia where
+  runMessage msg t@(Paranoia attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       resourceCount' <- unResourceCount <$> getCount iid
-      unshiftMessage (SpendResources iid resourceCount')
-      Paranoia <$> runMessage msg (attrs & resolved .~ True)
+      t <$ unshiftMessages
+        [SpendResources iid resourceCount', Discard $ toTarget attrs]
     _ -> Paranoia <$> runMessage msg attrs

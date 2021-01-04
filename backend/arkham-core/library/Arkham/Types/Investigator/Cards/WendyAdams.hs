@@ -51,9 +51,7 @@ ability attrs = base { abilityLimit = PlayerLimit PerTestOrAbility 1 }
 instance ActionRunner env => HasActions env WendyAdams where
   getActions iid (WhenRevealToken You _) (WendyAdams attrs@Attrs {..})
     | iid == investigatorId = pure
-      [ ActivateCardAbilityAction investigatorId $ ability attrs
-      | not (null $ discardableCards attrs)
-      ]
+      [ActivateCardAbilityAction investigatorId $ ability attrs]
   getActions i window (WendyAdams attrs) = getActions i window attrs
 
 instance (InvestigatorRunner env) => RunMessage env WendyAdams where
@@ -70,8 +68,7 @@ instance (InvestigatorRunner env) => RunMessage env WendyAdams where
                 , ()
                 )
           i <$ unshiftMessages
-            [ ChooseAndDiscardCard iid
-            , CancelNext DrawTokenMessage
+            [ CancelNext DrawTokenMessage
             , CancelNext RevealTokenMessage
             , ReturnTokens [token]
             , UnfocusTokens

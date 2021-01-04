@@ -190,6 +190,9 @@ getShouldSpawnNonEliteAtConnectingInstead attrs = do
     SpawnNonEliteAtConnectingInstead{} -> True
     _ -> False
 
+on :: InvestigatorId -> Attrs -> Bool
+on iid Attrs { locationInvestigators } = iid `member` locationInvestigators
+
 instance LocationRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     Investigate iid lid source skillType False | lid == locationId -> do
@@ -353,4 +356,6 @@ instance LocationRunner env => RunMessage env Attrs where
     RevealLocation _ lid | lid /= locationId ->
       pure $ a & connectedLocations %~ deleteSet lid
     RemoveLocation lid -> pure $ a & connectedLocations %~ deleteSet lid
+    UseCardAbility iid source _ 99 | isSource a source ->
+      a <$ unshiftMessage (Resign iid)
     _ -> pure a

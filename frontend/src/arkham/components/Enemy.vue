@@ -5,6 +5,14 @@
       class="card enemy"
       @click="$emit('choose', cardAction)"
     />
+    <Treachery
+      v-for="treacheryId in enemy.contents.treacheries"
+      :key="treacheryId"
+      :treachery="game.currentData.treacheries[treacheryId]"
+      :game="game"
+      :investigatorId="investigatorId"
+      @choose="$emit('choose', $event)"
+    />
     <button
       v-if="fightAction !== -1"
       class="button fight-button"
@@ -39,10 +47,11 @@ import { Game } from '@/arkham/types/Game'
 import * as ArkhamGame from '@/arkham/types/Game'
 import { MessageType } from '@/arkham/types/Message'
 import PoolItem from '@/arkham/components/PoolItem.vue'
+import Treachery from '@/arkham/components/Treachery.vue';
 import * as Arkham from '@/arkham/types/Enemy'
 
 export default defineComponent({
-  components: { PoolItem },
+  components: { PoolItem, Treachery },
   props: {
     game: { type: Object as () => Game, required: true },
     enemy: { type: Object as () => Arkham.Enemy, required: true },
@@ -242,5 +251,12 @@ export default defineComponent({
     content: "\0049";
     margin-right: 5px;
   }
+}
+
+::v-deep .treachery {
+  object-fit: cover;
+  object-position: 0 -74px;
+  height: 68px;
+  margin-top: 2px;
 }
 </style>

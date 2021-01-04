@@ -13,7 +13,7 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
-import Arkham.Types.Trait
+import Arkham.Types.Trait hiding (Supply)
 
 newtype EasttownArkhamPoliceStation = EasttownArkhamPoliceStation Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -54,12 +54,12 @@ instance LocationRunner env => RunMessage env EasttownArkhamPoliceStation where
   runMessage msg l@(EasttownArkhamPoliceStation attrs) = case msg of
     UseCardAbility iid source _ 1 | isSource attrs source -> do
       ammoAssets <- map (Ammo, ) <$> getSetList (iid, Ammo)
-      resourceAssets <- map (Resource, ) <$> getSetList (iid, Resource)
+      supplyAssets <- map (Supply, ) <$> getSetList (iid, Supply)
       l <$ unshiftMessage
         (chooseOne
           iid
           [ AddUses (AssetTarget assetId) useType' 2
-          | (useType', assetId) <- ammoAssets <> resourceAssets
+          | (useType', assetId) <- ammoAssets <> supplyAssets
           ]
         )
     _ -> EasttownArkhamPoliceStation <$> runMessage msg attrs

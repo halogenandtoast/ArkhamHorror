@@ -11,18 +11,17 @@ newtype AudubonPark = AudubonPark Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 audubonPark :: AudubonPark
-audubonPark = AudubonPark $ (baseAttrs
-                              "81011"
-                              (LocationName "Audubon Park" Nothing)
-                              EncounterSet.CurseOfTheRougarou
-                              3
-                              (PerPlayer 1)
-                              Squiggle
-                              [Triangle, Squiggle]
-                              [Riverside]
-                            )
-  { locationVictory = Just 1
-  }
+audubonPark = AudubonPark $ base { locationVictory = Just 1 }
+ where
+  base = baseAttrs
+    "81011"
+    (Name "Audubon Park" Nothing)
+    EncounterSet.CurseOfTheRougarou
+    3
+    (PerPlayer 1)
+    Squiggle
+    [Triangle, Squiggle]
+    [Riverside]
 
 instance HasModifiersFor env AudubonPark where
   getModifiersFor = noModifiersFor

@@ -12,7 +12,6 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.Token
 import Arkham.Types.Trait hiding (Cultist)
 import Data.List.NonEmpty (NonEmpty(..))
-import System.Random.Shuffle
 
 newtype TheDevourerBelow = TheDevourerBelow Attrs
   deriving newtype (Show, ToJSON, FromJSON)

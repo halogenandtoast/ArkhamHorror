@@ -17,19 +17,18 @@ newtype VipArea = VipArea Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 vipArea :: VipArea
-vipArea = VipArea $ (baseAttrs
-                      "02076"
-                      (LocationName "VIP Area" Nothing)
-                      EncounterSet.TheHouseAlwaysWins
-                      3
-                      (PerPlayer 1)
-                      T
-                      [Diamond]
-                      [CloverClub]
-                    )
-  { locationVictory = Just 1
-  , locationRevealedSymbol = Plus
-  }
+vipArea = VipArea
+  $ base { locationVictory = Just 1, locationRevealedSymbol = Plus }
+ where
+  base = baseAttrs
+    "02076"
+    (Name "VIP Area" Nothing)
+    EncounterSet.TheHouseAlwaysWins
+    3
+    (PerPlayer 1)
+    T
+    [Diamond]
+    [CloverClub]
 
 instance HasPhase env => HasModifiersFor env VipArea where
   getModifiersFor _ (InvestigatorTarget iid) (VipArea attrs)

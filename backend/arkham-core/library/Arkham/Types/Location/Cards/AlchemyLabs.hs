@@ -19,7 +19,7 @@ newtype AlchemyLabs = AlchemyLabs Attrs
 alchemyLabs :: AlchemyLabs
 alchemyLabs = AlchemyLabs $ baseAttrs
   "02057"
-  (LocationName "Alchemy Labs" Nothing)
+  (Name "Alchemy Labs" Nothing)
   EncounterSet.ExtracurricularActivity
   5
   (Static 0)

@@ -19,7 +19,7 @@ newtype CloverClubBar = CloverClubBar Attrs
 cloverClubBar :: CloverClubBar
 cloverClubBar = CloverClubBar $ baseAttrs
   "02072"
-  (LocationName "Clover Club Bar" Nothing)
+  (Name "Clover Club Bar" Nothing)
   EncounterSet.TheHouseAlwaysWins
   3
   (Static 0)

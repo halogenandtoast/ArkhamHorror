@@ -20,7 +20,7 @@ northside = Northside $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
     "01134"
-    (LocationName "Northside" Nothing)
+    (Name "Northside" Nothing)
     EncounterSet.TheMidnightMasks
     3
     (PerPlayer 2)

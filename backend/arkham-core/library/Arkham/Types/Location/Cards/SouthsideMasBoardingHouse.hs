@@ -18,7 +18,7 @@ newtype SouthsideMasBoardingHouse = SouthsideMasBoardingHouse Attrs
 southsideMasBoardingHouse :: SouthsideMasBoardingHouse
 southsideMasBoardingHouse = SouthsideMasBoardingHouse $ baseAttrs
   "01127"
-  (LocationName "Southside" $ Just "Ma's Boarding House")
+  (Name "Southside" $ Just "Ma's Boarding House")
   EncounterSet.TheMidnightMasks
   2
   (PerPlayer 1)

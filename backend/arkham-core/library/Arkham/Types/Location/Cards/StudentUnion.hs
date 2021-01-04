@@ -18,7 +18,7 @@ newtype StudentUnion = StudentUnion Attrs
 studentUnion :: StudentUnion
 studentUnion = StudentUnion $ baseAttrs
   "02051"
-  (LocationName "Student Union" Nothing)
+  (Name "Student Union" Nothing)
   EncounterSet.ExtracurricularActivity
   1
   (Static 2)

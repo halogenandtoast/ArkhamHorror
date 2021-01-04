@@ -1,7 +1,5 @@
 module Arkham.Types.Agenda
-  ( Agenda(..)
-  , lookupAgenda
-  , baseAgenda
+  ( module Arkham.Types.Agenda
   )
 where
 
@@ -11,7 +9,6 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Cards
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Trait (Trait)
-import Data.Coerce
 
 lookupAgenda :: AgendaId -> Agenda
 lookupAgenda agendaId =

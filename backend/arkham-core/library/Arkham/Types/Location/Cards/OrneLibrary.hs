@@ -17,7 +17,7 @@ orneLibrary = OrneLibrary $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
     "02050"
-    (LocationName "Orne Library" Nothing)
+    (Name "Orne Library" Nothing)
     EncounterSet.ExtracurricularActivity
     3
     (PerPlayer 1)

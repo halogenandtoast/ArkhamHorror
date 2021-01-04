@@ -10,7 +10,6 @@ import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait hiding (Cultist)
-import System.Random.Shuffle
 
 newtype DarkenedHall = DarkenedHall Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -23,7 +22,7 @@ darkenedHall = DarkenedHall $ base
  where
   base = baseAttrs
     "02074"
-    (LocationName "Darkened Hall" Nothing)
+    (Name "Darkened Hall" Nothing)
     EncounterSet.TheHouseAlwaysWins
     4
     (Static 0)

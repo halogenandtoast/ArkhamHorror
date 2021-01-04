@@ -1,25 +1,5 @@
 module Arkham.Types.Investigator
-  ( getIsPrey
-  , baseInvestigator
-  , getEngagedEnemies
-  , investigatorAttrs
-  , hasEndedTurn
-  , hasResigned
-  , getHasSpendableClues
-  , getInvestigatorSpendableClueCount
-  , isDefeated
-  , actionsRemaining
-  , lookupInvestigator
-  , getAvailableSkillsFor
-  , getSkillValueOf
-  , handOf
-  , discardOf
-  , deckOf
-  , locationOf
-  , getRemainingHealth
-  , getRemainingSanity
-  , modifiedStatsOf
-  , Investigator
+  ( module Arkham.Types.Investigator
   )
 where
 
@@ -31,7 +11,6 @@ import Arkham.Types.Investigator.Cards
 import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
-import Data.Coerce
 
 data Investigator
   = AgnesBaker' AgnesBaker

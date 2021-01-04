@@ -9,7 +9,6 @@ import Arkham.Import
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.EncounterSet
-import System.Random.Shuffle
 
 newtype UndergroundMuscle = UndergroundMuscle Attrs
   deriving newtype (Show, ToJSON, FromJSON)

@@ -19,8 +19,6 @@ import Arkham.Types.Source
 import Arkham.Types.Token
 import Arkham.Types.Window
 import Control.Monad.State
-import qualified Data.List as L
-import System.Random.Shuffle
 
 isUndecided :: ChaosBagStepState -> Bool
 isUndecided (Undecided _) = True
@@ -258,74 +256,67 @@ instance (HasQueue env, HasId LeadInvestigatorId env ()) => RunMessage env Chaos
             & (choiceL ?~ Undecided (Choose x (replicate x (Undecided Draw)) [])
               )
             & (revealedTokensL .~ [])
-    RunBag source miid strategy -> do
-      case chaosBagChoice of
-        Nothing -> error "unexpected"
-        Just choice' -> do
-          if isUndecided choice'
-            then do
-              let
-                (choice'', msgs) =
-                  decideFirstUndecided source miid strategy id choice'
-              unshiftMessage (RunBag source miid strategy)
-              unshiftMessages msgs
-              pure $ c & choiceL ?~ choice''
-            else c <$ unshiftMessage (RunDrawFromBag source miid strategy)
-    NextChaosBagStep source miid strategy -> do
-      case chaosBagChoice of
-        Nothing -> error "unexpected"
-        Just choice' -> do
+    RunBag source miid strategy -> case chaosBagChoice of
+      Nothing -> error "unexpected"
+      Just choice' -> if isUndecided choice'
+        then do
           let
-            (updatedChoice, messages) =
-              decideFirstUndecided source miid strategy toDecided choice'
-          unless (null messages) $ unshiftMessages messages
-          pure $ c & choiceL ?~ updatedChoice
-    ReplaceCurrentDraw source iid step -> do
-      case chaosBagChoice of
-        Nothing -> error "unexpected"
-        Just choice' -> do
-          let
-            (updatedChoice, messages) = decideFirstUndecided
-              source
-              (Just iid)
-              SetAside
-              (const (Undecided step))
-              choice'
-          unless (null messages) $ unshiftMessages messages
-          pure $ c & choiceL ?~ updatedChoice
-    RunDrawFromBag source miid strategy -> do
-      case chaosBagChoice of
-        Nothing -> error "unexpected"
-        Just choice' -> do
-          case choice' of
-            Resolved tokenFaces' -> c <$ unshiftMessages
-              (FocusTokens tokenFaces'
-              : [ CheckWindow
-                    iid
-                    [ WhenRevealToken You token | token <- tokenFaces' ]
-                | iid <- maybeToList miid
-                ]
-              <> [RequestedTokens source miid tokenFaces', UnfocusTokens]
-              )
-            _ -> do
-              ((choice'', msgs), c') <- runStateT
-                (resolveFirstUnresolved source miid strategy choice')
-                c
-              unshiftMessage (RunDrawFromBag source miid strategy)
-              unshiftMessages msgs
-              pure $ c' & choiceL ?~ choice''
-    ChooseTokenGroups source iid groupChoice -> do
-      case chaosBagChoice of
-        Nothing -> error "unexpected"
-        Just choice' -> do
-          let
-            updatedChoice =
-              replaceFirstChoice source (Just iid) SetAside groupChoice choice'
-          pure $ c & choiceL ?~ updatedChoice
+            (choice'', msgs) =
+              decideFirstUndecided source miid strategy id choice'
+          unshiftMessage (RunBag source miid strategy)
+          unshiftMessages msgs
+          pure $ c & choiceL ?~ choice''
+        else c <$ unshiftMessage (RunDrawFromBag source miid strategy)
+    NextChaosBagStep source miid strategy -> case chaosBagChoice of
+      Nothing -> error "unexpected"
+      Just choice' -> do
+        let
+          (updatedChoice, messages) =
+            decideFirstUndecided source miid strategy toDecided choice'
+        unless (null messages) $ unshiftMessages messages
+        pure $ c & choiceL ?~ updatedChoice
+    ReplaceCurrentDraw source iid step -> case chaosBagChoice of
+      Nothing -> error "unexpected"
+      Just choice' -> do
+        let
+          (updatedChoice, messages) = decideFirstUndecided
+            source
+            (Just iid)
+            SetAside
+            (const (Undecided step))
+            choice'
+        unless (null messages) $ unshiftMessages messages
+        pure $ c & choiceL ?~ updatedChoice
+    RunDrawFromBag source miid strategy -> case chaosBagChoice of
+      Nothing -> error "unexpected"
+      Just choice' -> case choice' of
+        Resolved tokenFaces' -> c <$ unshiftMessages
+          (FocusTokens tokenFaces'
+          : [ CheckWindow
+                iid
+                [ WhenRevealToken You token | token <- tokenFaces' ]
+            | iid <- maybeToList miid
+            ]
+          <> [RequestedTokens source miid tokenFaces', UnfocusTokens]
+          )
+        _ -> do
+          ((choice'', msgs), c') <- runStateT
+            (resolveFirstUnresolved source miid strategy choice')
+            c
+          unshiftMessage (RunDrawFromBag source miid strategy)
+          unshiftMessages msgs
+          pure $ c' & choiceL ?~ choice''
+    ChooseTokenGroups source iid groupChoice -> case chaosBagChoice of
+      Nothing -> error "unexpected"
+      Just choice' -> do
+        let
+          updatedChoice =
+            replaceFirstChoice source (Just iid) SetAside groupChoice choice'
+        pure $ c & choiceL ?~ updatedChoice
     RevealToken _source _iid token ->
       -- TODO: we may need a map of source to tokens here
       pure $ c & revealedTokensL %~ (token :)
     ReturnTokens tokens' ->
-      pure $ c & tokensL %~ (<> tokens') & setAsideTokensL %~ (L.\\ tokens')
+      pure $ c & tokensL %~ (<> tokens') & setAsideTokensL %~ (\\ tokens')
     AddToken token -> pure $ c & tokensL %~ (token :)
     _ -> pure c

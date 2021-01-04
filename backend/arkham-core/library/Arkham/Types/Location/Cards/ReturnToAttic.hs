@@ -12,7 +12,7 @@ newtype ReturnToAttic = ReturnToAttic Attrs
 returnToAttic :: ReturnToAttic
 returnToAttic = ReturnToAttic $ baseAttrs
   "50018"
-  (LocationName "Attic" Nothing)
+  (Name "Attic" Nothing)
   EncounterSet.ReturnToTheGathering
   3
   (PerPlayer 1)

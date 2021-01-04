@@ -14,7 +14,7 @@ newtype Parlor = Parlor Attrs
 parlor :: Parlor
 parlor = Parlor $ baseAttrs
   "01115"
-  (LocationName "Parlor" Nothing)
+  (Name "Parlor" Nothing)
   EncounterSet.TheGathering
   2
   (Static 0)

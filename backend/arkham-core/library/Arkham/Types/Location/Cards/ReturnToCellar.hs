@@ -12,7 +12,7 @@ newtype ReturnToCellar = ReturnToCellar Attrs
 returnToCellar :: ReturnToCellar
 returnToCellar = ReturnToCellar $ baseAttrs
   "50020"
-  (LocationName "Cellar" Nothing)
+  (Name "Cellar" Nothing)
   EncounterSet.ReturnToTheGathering
   2
   (PerPlayer 1)

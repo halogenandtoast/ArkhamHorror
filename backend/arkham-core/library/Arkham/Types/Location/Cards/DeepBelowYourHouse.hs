@@ -11,18 +11,17 @@ newtype DeepBelowYourHouse = DeepBelowYourHouse Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 deepBelowYourHouse :: DeepBelowYourHouse
-deepBelowYourHouse = DeepBelowYourHouse $ (baseAttrs
-                                            "50021"
-                                            (LocationName "Ghoul Pits" Nothing)
-                                            EncounterSet.ReturnToTheGathering
-                                            4
-                                            (PerPlayer 1)
-                                            Squiggle
-                                            [Plus]
-                                            mempty
-                                          )
-  { locationVictory = Just 1
-  }
+deepBelowYourHouse = DeepBelowYourHouse $ base { locationVictory = Just 1 }
+ where
+  base = baseAttrs
+    "50021"
+    (Name "Ghoul Pits" Nothing)
+    EncounterSet.ReturnToTheGathering
+    4
+    (PerPlayer 1)
+    Squiggle
+    [Plus]
+    mempty
 
 instance HasModifiersFor env DeepBelowYourHouse where
   getModifiersFor = noModifiersFor
@@ -44,11 +43,11 @@ instance (LocationRunner env) => RunMessage env DeepBelowYourHouse where
         )
       DeepBelowYourHouse <$> runMessage msg attrs
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} n
-      | isSource attrs source -> do
+      | isSource attrs source ->
         l <$ unshiftMessages
-          (replicate
-            n
-            (FindAndDrawEncounterCard iid (EncounterCardMatchByCardCode "01159")
-            )
-          )
+      (replicate
+        n
+        (FindAndDrawEncounterCard iid (EncounterCardMatchByCardCode "01159")
+        )
+      )
     _ -> DeepBelowYourHouse <$> runMessage msg attrs

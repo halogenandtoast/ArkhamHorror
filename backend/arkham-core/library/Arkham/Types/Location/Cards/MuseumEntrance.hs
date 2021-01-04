@@ -18,7 +18,7 @@ newtype MuseumEntrance = MuseumEntrance Attrs
 museumEntrance :: MuseumEntrance
 museumEntrance = MuseumEntrance $ baseAttrs
   "02126"
-  (LocationName "Museum Entrance" Nothing)
+  (Name "Museum Entrance" Nothing)
   EncounterSet.TheMiskatonicMuseum
   3
   (Static 2)
@@ -27,16 +27,17 @@ museumEntrance = MuseumEntrance $ baseAttrs
   (singleton Miskatonic)
 
 instance HasModifiersFor env MuseumEntrance where
-  getModifiersFor _ (InvestigatorTarget iid) (MuseumEntrance attrs) =
-    pure $ toModifiers attrs [ CannotGainResources | iid `on` attrs ]
+  getModifiersFor _ (InvestigatorTarget iid) (MuseumEntrance location) =
+    pure $ toModifiers location [ CannotGainResources | iid `on` location ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env MuseumEntrance where
-  getActions iid NonFast (MuseumEntrance attrs) | locationRevealed attrs =
-    withBaseActions iid NonFast attrs
-      $ pure [ resignAction iid attrs | iid `on` attrs ]
-  getActions i window (MuseumEntrance attrs) = getActions i window attrs
+  getActions iid NonFast (MuseumEntrance location) | locationRevealed location =
+    withBaseActions iid NonFast location
+      $ pure [ resignAction iid location | iid `on` location ]
+  getActions i window (MuseumEntrance location) = getActions i window location
+
 
 instance LocationRunner env => RunMessage env MuseumEntrance where
-  runMessage msg (MuseumEntrance attrs) =
-    MuseumEntrance <$> runMessage msg attrs
+  runMessage msg (MuseumEntrance location) =
+    MuseumEntrance <$> runMessage msg location

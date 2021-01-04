@@ -13,7 +13,7 @@ newtype AdministrationBuilding = AdministrationBuilding Attrs
 administrationBuilding :: AdministrationBuilding
 administrationBuilding = AdministrationBuilding $ baseAttrs
   "02053"
-  (LocationName "Administration Building" Nothing)
+  (Name "Administration Building" Nothing)
   EncounterSet.ExtracurricularActivity
   4
   (PerPlayer 1)

@@ -45,7 +45,6 @@ import Data.UUID.V4
 import Safe (headNote)
 import System.Environment
 import System.Random
-import System.Random.Shuffle
 import Text.Pretty.Simple
 import Text.Read hiding (get, lift)
 
@@ -284,11 +283,11 @@ getLocationMatching
   :: MonadReader (Game queue) m => LocationMatcher -> m (Maybe Location)
 getLocationMatching = \case
   LocationWithTitle title ->
-    find ((== title) . locationNameTitle . getLocationName)
+    find ((== title) . nameTitle . unLocationName . getLocationName)
       . toList
       <$> view locationsL
   LocationWithFullTitle title subtitle ->
-    find ((== LocationName title (Just subtitle)) . getLocationName)
+    find ((== Name title (Just subtitle)) . unLocationName . getLocationName)
       . toList
       <$> view locationsL
 

@@ -15,7 +15,6 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.Token
 import Arkham.Types.Trait hiding (Cultist)
 import Control.Monad.Extra (findM)
-import System.Random.Shuffle
 
 newtype CurseOfTheRougarouMetadata = CurseOfTheRougarouMetadata { setAsideLocationTraits :: HashSet Trait }
   deriving stock (Show, Generic)

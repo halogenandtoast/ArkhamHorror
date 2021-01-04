@@ -13,7 +13,6 @@ import Arkham.Types.Token
 import Arkham.Types.Trait (Trait)
 import qualified Arkham.Types.Trait as Trait
 import Data.List.NonEmpty (NonEmpty(..))
-import System.Random.Shuffle
 
 newtype TheMidnightMasks = TheMidnightMasks Attrs
   deriving newtype (Show, ToJSON, FromJSON)

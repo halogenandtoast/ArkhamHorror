@@ -13,7 +13,7 @@ newtype HumanitiesBuilding = HumanitiesBuilding Attrs
 humanitiesBuilding :: HumanitiesBuilding
 humanitiesBuilding = HumanitiesBuilding $ baseAttrs
   "02049"
-  (LocationName "Humanities Building" Nothing)
+  (Name "Humanities Building" Nothing)
   EncounterSet.ExtracurricularActivity
   3
   (PerPlayer 2)

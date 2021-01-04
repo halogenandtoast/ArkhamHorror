@@ -23,7 +23,7 @@ arkhamWoodsQuietGlade = ArkhamWoodsQuietGlade $ base
  where
   base = baseAttrs
     "01155"
-    (LocationName "Arkham Woods" (Just "Quiet Glade"))
+    (Name "Arkham Woods" (Just "Quiet Glade"))
     EncounterSet.TheDevourerBelow
     1
     (Static 0)

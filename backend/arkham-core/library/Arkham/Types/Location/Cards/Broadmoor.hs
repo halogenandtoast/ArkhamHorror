@@ -21,7 +21,7 @@ broadmoor = Broadmoor $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
     "81009"
-    (LocationName "Broadmoor" Nothing)
+    (Name "Broadmoor" Nothing)
     EncounterSet.CurseOfTheRougarou
     3
     (PerPlayer 1)

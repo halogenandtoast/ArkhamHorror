@@ -10,11 +10,8 @@ import Arkham.Types.Investigator.Runner
 import Arkham.Types.Stats
 import Arkham.Types.Trait
 import Control.Monad.Fail
-import Data.Coerce
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.HashSet as HashSet
-import Data.List (nub, (\\))
-import System.Random.Shuffle
 
 data Attrs = Attrs
   { investigatorName :: Text

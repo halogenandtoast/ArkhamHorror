@@ -13,7 +13,7 @@ newtype ScienceBuilding = ScienceBuilding Attrs
 scienceBuilding :: ScienceBuilding
 scienceBuilding = ScienceBuilding $ baseAttrs
   "02056"
-  (LocationName "Science Building" Nothing)
+  (Name "Science Building" Nothing)
   EncounterSet.ExtracurricularActivity
   2
   (PerPlayer 1)

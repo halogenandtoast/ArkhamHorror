@@ -22,7 +22,7 @@ facultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung
  where
   base = baseAttrs
     "02054"
-    (LocationName "Faculty Offices" (Just "The Night is Still Young"))
+    (Name "Faculty Offices" (Just "The Night is Still Young"))
     EncounterSet.ExtracurricularActivity
     2
     (PerPlayer 2)

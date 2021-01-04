@@ -12,7 +12,7 @@ newtype Cellar = Cellar Attrs
 cellar :: Cellar
 cellar = Cellar $ (baseAttrs
                     "01114"
-                    (LocationName "Cellar" Nothing)
+                    (Name "Cellar" Nothing)
                     EncounterSet.TheGathering
                     4
                     (PerPlayer 2)

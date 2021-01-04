@@ -13,7 +13,7 @@ newtype Rivertown = Rivertown Attrs
 rivertown :: Rivertown
 rivertown = Rivertown $ baseAttrs
   "01125"
-  (LocationName "Rivertown" Nothing)
+  (Name "Rivertown" Nothing)
   EncounterSet.TheMidnightMasks
   1
   (PerPlayer 1)

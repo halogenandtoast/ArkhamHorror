@@ -110,7 +110,7 @@ findLocationKey
   :: LocationMatcher -> HashMap LocationName [LocationId] -> Maybe LocationName
 findLocationKey locationMatcher locations = find matchKey $ keys locations
  where
-  matchKey (LocationName title msubtitle) = case locationMatcher of
+  matchKey (LocationName (Name title msubtitle)) = case locationMatcher of
     LocationWithTitle title' -> title == title'
     LocationWithFullTitle title' subtitle' ->
       title == title' && Just subtitle' == msubtitle

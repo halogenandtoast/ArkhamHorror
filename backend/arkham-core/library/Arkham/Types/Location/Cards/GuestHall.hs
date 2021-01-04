@@ -14,7 +14,7 @@ newtype GuestHall = GuestHall Attrs
 guestHall :: GuestHall
 guestHall = GuestHall $ baseAttrs
   "50014"
-  (LocationName "Guest Hall" Nothing)
+  (Name "Guest Hall" Nothing)
   EncounterSet.ReturnToTheGathering
   1
   (Static 0)
@@ -23,12 +23,12 @@ guestHall = GuestHall $ baseAttrs
   mempty
 
 instance HasModifiersFor env GuestHall where
-  getModifiersFor _ (InvestigatorTarget iid) (GuestHall attrs) = do
+  getModifiersFor _ (InvestigatorTarget iid) (GuestHall attrs) =
     pure $ toModifiers
-      attrs
-      [ CannotTakeAction (IsAction Draw)
-      | iid `elem` locationInvestigators attrs
-      ]
+    attrs
+    [ CannotTakeAction (IsAction Draw)
+    | iid `elem` locationInvestigators attrs
+    ]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env GuestHall where

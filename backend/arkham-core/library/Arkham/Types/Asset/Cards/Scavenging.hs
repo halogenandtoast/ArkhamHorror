@@ -23,7 +23,7 @@ ability window a =
   mkAbility (toSource a) 1 (ReactionAbility window $ ExhaustCost (toTarget a))
 
 instance ActionRunner env => HasActions env Scavenging where
-  getActions iid window@(AfterPassSkillTest (SkillTestSource _ _ _ (Just Action.Investigate)) You n) (Scavenging a)
+  getActions iid window@(AfterPassSkillTest (Just Action.Investigate) _ You n) (Scavenging a)
     | ownedBy a iid && n >= 2
     = do
       discard <- getDiscardOf iid

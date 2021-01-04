@@ -2,6 +2,7 @@ module Arkham.Types.Window where
 
 import Arkham.Prelude
 
+import Arkham.Types.Action
 import Arkham.Types.Card.Id
 import Arkham.Types.EnemyId
 import Arkham.Types.SkillType
@@ -21,7 +22,7 @@ data Window
   | AfterEnemyEvaded Who EnemyId
   | AfterFailSkillTest Who Int
   | AfterFailSkillTestAtOrLess Who Int
-  | AfterPassSkillTest Source Who Int
+  | AfterPassSkillTest (Maybe Action) Source Who Int
   | AfterPlayCard Who [Trait]
   | AfterPutLocationIntoPlay Who
   | AfterRevealLocation Who

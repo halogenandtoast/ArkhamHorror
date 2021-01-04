@@ -354,23 +354,13 @@ getCanInvestigate
   -> m Bool
 getCanInvestigate lid iid = do
   locationId <- getId @LocationId iid
-  modifiers' <-
-    map modifierType
-      <$> getModifiersFor (InvestigatorSource iid) (LocationTarget lid) ()
-
-  let investigateCost = foldr applyModifier 1 modifiers'
-
   canAffordActions <- getCanAffordCost
     iid
     (LocationSource lid)
     (Just Action.Investigate)
-    (ActionCost investigateCost)
+    (ActionCost 1)
 
   pure $ lid == locationId && canAffordActions
- where
-  applyModifier (ActionCostOf (IsAction Action.Investigate) m) n =
-    max 0 (n + m)
-  applyModifier _ n = n
 
 getResourceCount
   :: (MonadReader env m, HasCount ResourceCount env InvestigatorId)

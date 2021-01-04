@@ -655,11 +655,9 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       map modifierType <$> getModifiersFor (toSource a) (toTarget a) ()
     let
       startingResources = foldl'
-        (\total ->
-          (\case
-            StartingResources n -> max 0 (total + n)
-            _ -> total
-          )
+        (\total -> \case
+          StartingResources n -> max 0 (total + n)
+          _ -> total
         )
         5
         modifiers'
@@ -1271,15 +1269,12 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       & (endedTurnL .~ False)
       & (remainingActionsL .~ actionsForTurn)
       & (actionsTakenL .~ mempty)
-  DiscardTopOfDeck iid 0 _ | iid == investigatorId -> pure a
-  DiscardTopOfDeck iid n target | iid == investigatorId ->
-    case unDeck investigatorDeck of
-      [] -> pure a
-      (c : deck') -> do
-        unshiftMessages
-          $ [ DeckHasNoCards investigatorId | null deck' ]
-          <> [DiscardTopOfDeck iid (n - 1) target]
-        pure $ a & deckL .~ Deck deck' & discardL %~ (c :)
+  DiscardTopOfDeck iid n mTarget | iid == investigatorId -> do
+    let (cs, deck') = splitAt n (unDeck investigatorDeck)
+    unshiftMessages
+      $ [ DeckHasNoCards investigatorId | null deck' ]
+      <> [ DiscardedTopOfDeck iid cs target | target <- maybeToList mTarget ]
+    pure $ a & deckL .~ Deck deck' & discardL %~ (reverse cs <>)
   DrawCards iid n True | iid == investigatorId -> a <$ unshiftMessages
     [ TakeAction iid (Just Action.Draw) (ActionCost 1)
     , CheckAttackOfOpportunity iid False
@@ -1673,9 +1668,9 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   After (FailedSkillTest iid _ _ (InvestigatorTarget iid') n)
     | iid == iid' && iid == investigatorId -> a
     <$ unshiftMessage (CheckWindow iid [AfterFailSkillTest You n])
-  After (PassedSkillTest iid _ source (InvestigatorTarget iid') n)
-    | iid == iid' && iid == investigatorId -> a
-    <$ unshiftMessage (CheckWindow iid [AfterPassSkillTest source You n])
+  After (PassedSkillTest iid mAction source (InvestigatorTarget iid') n)
+    | iid == iid' && iid == investigatorId -> a <$ unshiftMessage
+      (CheckWindow iid [AfterPassSkillTest mAction source You n])
   PlayerWindow iid additionalActions | iid == investigatorId -> do
     actions <- getActions iid NonFast ()
     fastActions <- getActions iid (DuringTurn You) ()

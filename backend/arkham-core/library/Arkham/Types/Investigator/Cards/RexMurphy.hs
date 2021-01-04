@@ -36,13 +36,14 @@ rexMurphy = RexMurphy $ baseAttrs
   [Reporter]
 
 instance ActionRunner env => HasActions env RexMurphy where
-  getActions iid (AfterPassSkillTest source You n) (RexMurphy attrs@Attrs {..})
-    | iid == investigatorId && n >= 2 = do
+  getActions iid (AfterPassSkillTest mAction source You n) (RexMurphy attrs@Attrs {..})
+    | iid == investigatorId && n >= 2
+    = do
       let
         ability = mkAbility
           (toSource attrs)
           1
-          (ReactionAbility (AfterPassSkillTest source You n) Free)
+          (ReactionAbility (AfterPassSkillTest mAction source You n) Free)
       clueCount' <- unClueCount <$> getCount investigatorLocation
       pure [ ActivateCardAbilityAction investigatorId ability | clueCount' > 0 ]
   getActions i window (RexMurphy attrs) = getActions i window attrs

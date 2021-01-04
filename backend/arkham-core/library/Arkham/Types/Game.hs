@@ -2397,29 +2397,40 @@ runGameMessage msg g = case msg of
       _ -> pure []
 
     unshiftMessage
-      (Ask iid
-      $ ChooseOne
+      (chooseOne iid
       $ map (FoundAndDrewEncounterCard iid FromDiscard) matchingDiscards
       <> map
            (FoundAndDrewEncounterCard iid FromEncounterDeck)
            matchingDeckCards
       <> map (FoundEnemyInVoid iid . toId) matchingVoidEnemies
       )
-    pure $ g & focusedCards .~ map EncounterCard matchingDeckCards
+    -- TODO: show where focused cards are from
+    pure
+      $ g
+      & focusedCards
+      .~ (map EncounterCard matchingDeckCards
+         <> map EncounterCard matchingDiscards
+         <> map toCard matchingVoidEnemies
+         )
   FindEncounterCard iid target matcher -> do
     let matchingDiscards = filter (encounterCardMatch matcher) (g ^. discard)
     let
       matchingDeckCards =
         filter (encounterCardMatch matcher) (unDeck $ g ^. encounterDeck)
     unshiftMessage
-      (Ask iid
-      $ ChooseOne
+      (chooseOne iid
       $ map (FoundEncounterCardFrom iid target FromDiscard) matchingDiscards
       <> map
            (FoundEncounterCardFrom iid target FromEncounterDeck)
            matchingDeckCards
       )
-    pure $ g & focusedCards .~ map EncounterCard matchingDeckCards
+    -- TODO: show where focused cards are from
+    pure
+      $ g
+      & focusedCards
+      .~ (map EncounterCard matchingDeckCards
+         <> map EncounterCard matchingDiscards
+         )
   FoundEncounterCardFrom iid target cardSource card -> do
     let
       cardId = getCardId card

@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 module Arkham.Types.Enemy.Attrs where
 
@@ -364,7 +365,7 @@ instance EnemyRunner env => RunMessage env Attrs where
                   then getSetList @InvestigatorId lid
                   else pure []
                 leadInvestigatorId <- getLeadInvestigatorId
-                case traceShowId preyIds <> traceShowId investigatorIds of
+                case preyIds <> investigatorIds of
                   [] -> pure ()
                   [iid] -> unshiftMessage (EnemyEngageInvestigator eid iid)
                   iids -> unshiftMessage
@@ -373,7 +374,7 @@ instance EnemyRunner env => RunMessage env Attrs where
                     )
 
           when (Keyword.Massive `elem` keywords) $ do
-            investigatorIds <- getInvestigatorIds
+            investigatorIds <- getSetList @InvestigatorId lid
             unshiftMessages
               [ EnemyEngageInvestigator eid iid | iid <- investigatorIds ]
           pure $ a & locationL .~ lid

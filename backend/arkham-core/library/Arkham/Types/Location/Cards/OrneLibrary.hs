@@ -29,6 +29,9 @@ orneLibrary = OrneLibrary $ base { locationVictory = Just 1 }
 instance HasModifiersFor env OrneLibrary where
   getModifiersFor _ target (OrneLibrary attrs) | isTarget attrs target =
     pure $ toModifiers attrs [ActionCostOf (IsAction Action.Investigate) 1]
+  getModifiersFor _ (InvestigatorTarget iid) (OrneLibrary attrs)
+    | iid `elem` locationInvestigators attrs = pure
+    $ toModifiers attrs [ActionCostOf (IsAction Action.Investigate) 1]
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env OrneLibrary where

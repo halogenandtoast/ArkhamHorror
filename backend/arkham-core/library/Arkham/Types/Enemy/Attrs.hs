@@ -616,17 +616,9 @@ instance EnemyRunner env => RunMessage env Attrs where
           )
         )
     EnemyDefeated eid _ _ _ _ _ | eid == enemyId -> do
-      unshiftMessages
-        [ Discard (TreacheryTarget tid) | tid <- setToList enemyTreacheries ]
-      unshiftMessages
+      -- TODO: Move this out to part of the discard effect
+      a <$ unshiftMessages
         [ Discard (AssetTarget aid) | aid <- setToList enemyAssets ]
-      pure a
-    Discard (EnemyTarget eid) | eid == enemyId -> do
-      unshiftMessages
-        [ Discard (TreacheryTarget tid) | tid <- setToList enemyTreacheries ]
-      unshiftMessages
-        [ Discard (AssetTarget aid) | aid <- setToList enemyAssets ]
-      pure a
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
       lid <- getId @LocationId iid
       pure $ a & engagedInvestigatorsL %~ insertSet iid & locationL .~ lid

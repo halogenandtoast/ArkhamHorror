@@ -152,13 +152,15 @@ is _ _ = False
 instance TreacheryRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     InvestigatorEliminated iid
-      | treacheryAttachedTarget == Just (InvestigatorTarget iid) -> a
-      <$ unshiftMessage (Discard $ TreacheryTarget treacheryId)
+      | InvestigatorTarget iid `elem` treacheryAttachedTarget -> a
+      <$ unshiftMessage (Discard $ toTarget a)
     AttachTreachery tid target | tid == treacheryId ->
       pure $ a & attachedTarget ?~ target
     PlaceResources target n | isTarget a target -> do
       let amount = fromMaybe 0 treacheryResources + n
       pure $ a & resources ?~ amount
     PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget ->
+      a <$ unshiftMessage (Discard $ toTarget a)
+    Discard target | target `elem` treacheryAttachedTarget ->
       a <$ unshiftMessage (Discard $ toTarget a)
     _ -> pure a

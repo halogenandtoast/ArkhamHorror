@@ -13,15 +13,18 @@ newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 facultyOfficesTheHourIsLate :: FacultyOfficesTheHourIsLate
-facultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate $ baseAttrs
-  "02055"
-  (LocationName "Faculty Offices" $ Just "The House is Late")
-  EncounterSet.ExtracurricularActivity
-  2
-  (Static 0)
-  T
-  [Circle]
-  [Miskatonic]
+facultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate
+  $ base { locationLabel = "facultyOffices" }
+ where
+  base = baseAttrs
+    "02055"
+    (LocationName "Faculty Offices" $ Just "The House is Late")
+    EncounterSet.ExtracurricularActivity
+    2
+    (Static 0)
+    T
+    [Circle]
+    [Miskatonic]
 
 instance HasModifiersFor env FacultyOfficesTheHourIsLate where
   getModifiersFor _ target (FacultyOfficesTheHourIsLate attrs)

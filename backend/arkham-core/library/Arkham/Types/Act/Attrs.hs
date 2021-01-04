@@ -87,6 +87,8 @@ instance ActionRunner env => HasActions env Attrs where
 
 instance (HasQueue env, HasSet InScenarioInvestigatorId env ()) => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
+    AttachTreachery tid (ActTarget aid) | aid == actId ->
+      pure $ a & treacheriesL %~ insertSet tid
     InvestigatorResigned _ -> do
       investigatorIds <- getSet @InScenarioInvestigatorId ()
       a <$ when (null investigatorIds) (unshiftMessage AllInvestigatorsResigned)

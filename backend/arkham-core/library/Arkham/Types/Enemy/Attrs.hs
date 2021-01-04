@@ -364,7 +364,7 @@ instance EnemyRunner env => RunMessage env Attrs where
                   then getSetList @InvestigatorId lid
                   else pure []
                 leadInvestigatorId <- getLeadInvestigatorId
-                case preyIds <> investigatorIds of
+                case traceShowId preyIds <> traceShowId investigatorIds of
                   [] -> pure ()
                   [iid] -> unshiftMessage (EnemyEngageInvestigator eid iid)
                   iids -> unshiftMessage
@@ -482,7 +482,8 @@ instance EnemyRunner env => RunMessage env Attrs where
             [ EnemyEngageInvestigator eid investigatorId
             | investigatorId <- investigatorIds
             ]
-          else unless (null investigatorIds)
+          else unless
+            (null investigatorIds)
             (unshiftMessage $ chooseOne
               leadInvestigatorId
               [ EnemyEngageInvestigator eid investigatorId

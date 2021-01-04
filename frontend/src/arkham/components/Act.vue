@@ -6,6 +6,14 @@
       @click="$emit('choose', interactAction)"
       :src="image"
     />
+    <Treachery
+      v-for="treacheryId in act.contents.treacheries"
+      :key="treacheryId"
+      :treachery="game.currentData.treacheries[treacheryId]"
+      :game="game"
+      :investigatorId="investigatorId"
+      @choose="$emit('choose', $event)"
+    />
     <button
       v-for="ability in abilities"
       :key="ability"

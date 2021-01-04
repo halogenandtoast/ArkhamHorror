@@ -27,7 +27,7 @@ isInDiscardOf
   :: (ToPlayerCard entity) => Game queue -> Investigator -> entity -> Bool
 isInDiscardOf game investigator entity = card `elem` discard'
  where
-  discard' = game ^?! investigators . ix (toId investigator) . to discardOf
+  discard' = game ^?! investigatorsL . ix (toId investigator) . to discardOf
   card = asPlayerCard entity
 
 class ToPlayerCard a where
@@ -52,31 +52,31 @@ class Entity a => TestEntity a where
   updated :: Game queue -> a -> a
 
 instance TestEntity Agenda where
-  updated g a = g ^?! agendas . ix (toId a)
+  updated g a = g ^?! agendasL . ix (toId a)
 
 instance TestEntity Treachery where
-  updated g t = g ^?! treacheries . ix (toId t)
+  updated g t = g ^?! treacheriesL . ix (toId t)
 
 instance TestEntity Asset where
-  updated g a = g ^?! assets . ix (toId a)
+  updated g a = g ^?! assetsL . ix (toId a)
 
 instance TestEntity Location where
-  updated g l = g ^?! locations . ix (toId l)
+  updated g l = g ^?! locationsL . ix (toId l)
 
 instance TestEntity Event where
-  updated g e = g ^?! events . ix (toId e)
+  updated g e = g ^?! eventsL . ix (toId e)
 
 instance TestEntity Enemy where
-  updated g e = g ^?! enemies . ix (toId e)
+  updated g e = g ^?! enemiesL . ix (toId e)
 
 instance TestEntity Investigator where
-  updated g i = g ^?! investigators . ix (toId i)
+  updated g i = g ^?! investigatorsL . ix (toId i)
 
 isAttachedTo :: (TestEntity a, TestEntity b) => Game queue -> a -> b -> Bool
 isAttachedTo game x y = case toTarget x of
   LocationTarget locId -> case toTarget y of
     EventTarget eventId ->
-      eventId `member` (game ^. locations . ix locId . to (`getSet` game))
+      eventId `member` (game ^. locationsL . ix locId . to (`getSet` game))
     _ -> False
   _ -> False
 
@@ -87,22 +87,22 @@ instance ToEncounterCard Enemy where
 isInEncounterDiscard :: (ToEncounterCard entity) => Game queue -> entity -> Bool
 isInEncounterDiscard game entity = card `elem` discard'
  where
-  discard' = game ^. discard
+  discard' = game ^. discardL
   card = asEncounterCard entity
 
 updatedResourceCount :: Game queue -> Investigator -> Int
 updatedResourceCount game investigator =
-  game ^?! investigators . ix (toId investigator) . to
+  game ^?! investigatorsL . ix (toId investigator) . to
     (Investigator.investigatorResources . investigatorAttrs)
 
 evadedBy :: Game queue -> Investigator -> Enemy -> Bool
 evadedBy game _investigator enemy =
-  let enemy' = game ^?! enemies . ix (toId enemy)
+  let enemy' = game ^?! enemiesL . ix (toId enemy)
   in not (isEngaged enemy') && isExhausted enemy'
 
 hasRemainingActions :: Game queue -> Int -> Investigator -> Bool
 hasRemainingActions game n investigator =
-  let investigator' = game ^?! investigators . ix (toId investigator)
+  let investigator' = game ^?! investigatorsL . ix (toId investigator)
   in actionsRemaining investigator' == n
 
 hasDamage :: (HasDamage a) => (Int, Int) -> a -> Bool
@@ -148,7 +148,7 @@ hasTreacheryWithMatchingCardCode g c a = maybe
   mtreachery
  where
   mtreachery =
-    find ((== getCardCode c) . getCardCode) $ toList (g ^. treacheries)
+    find ((== getCardCode c) . getCardCode) $ toList (g ^. treacheriesL)
 
 hasClueCount :: HasCount ClueCount () a => Int -> a -> Bool
 hasClueCount n a = n == unClueCount (getCount a ())

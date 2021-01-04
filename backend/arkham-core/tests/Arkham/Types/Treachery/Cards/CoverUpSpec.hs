@@ -16,7 +16,7 @@ spec = describe "Cover Up" $ do
       investigator
       [loadDeck investigator [coverUp], drawCards investigator 1]
       id
-    let coverUpTreachery = game ^?! treacheries . to toList . ix 0
+    let coverUpTreachery = game ^?! treacheriesL . to toList . ix 0
     withGame game (getCount coverUpTreachery) `shouldReturn` Just (ClueCount 3)
 
   it "allows you to remove a clue instead of discovering clues" $ do
@@ -31,7 +31,7 @@ spec = describe "Cover Up" $ do
           , moveTo investigator location
           , DiscoverCluesAtLocation (toId investigator) (toId location) 1
           ]
-          (locations %~ insertEntity location)
+          (locationsL %~ insertEntity location)
         >>= runGameTestOptionMatching
               "Use ability"
               (\case
@@ -66,14 +66,14 @@ spec = describe "Cover Up" $ do
           , DiscoverCluesAtLocation (toId investigator) (toId location) 3
           , EndOfGame
           ]
-          (locations %~ insertEntity location)
+          (locationsL %~ insertEntity location)
         >>= runGameTestOptionMatching
               "Use ability"
               (\case
                 Run{} -> True
                 _ -> False
               )
-    let coverUpTreachery = game ^?! treacheries . to toList . ix 0
+    let coverUpTreachery = game ^?! treacheriesL . to toList . ix 0
     withGame game (getCount $ toId coverUpTreachery)
       `shouldReturn` Just (ClueCount 0)
     withGame game (getCount $ toId investigator)

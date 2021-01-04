@@ -20,7 +20,7 @@ spec = describe "Wracked by Nightmares" $ do
       , drawCards investigator 1
       , ReadyExhausted
       ]
-      (assets %~ insertEntity asset)
+      (assetsL %~ insertEntity asset)
     updated game investigator `shouldSatisfy` hasTreacheryWithMatchingCardCode
       game
       (PlayerCard wrackedByNightmares)
@@ -34,8 +34,8 @@ spec = describe "Wracked by Nightmares" $ do
     game <- runGameTest
       investigator
       [loadDeck investigator [wrackedByNightmares], drawCards investigator 1]
-      (assets %~ insertEntity asset)
-    let wrackedByNightmaresTreachery = game ^?! treacheries . to toList . ix 0
+      (assetsL %~ insertEntity asset)
+    let wrackedByNightmaresTreachery = game ^?! treacheriesL . to toList . ix 0
     [discardWrackedByNightmares] <- getActionsOf
       game
       investigator

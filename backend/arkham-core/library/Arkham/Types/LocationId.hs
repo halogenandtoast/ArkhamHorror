@@ -18,9 +18,6 @@ data LocationName = LocationName
 locationNameToLabel :: LocationName -> Text
 locationNameToLabel (LocationName title _) =
   pack . toLabel . replaceNonLetters . unpack $ title
- where
-  capitalize (x : xs) = Char.toUpper x : xs
-  capitalize [] = ""
 
 newtype LocationId = LocationId { unLocationId :: CardCode }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)

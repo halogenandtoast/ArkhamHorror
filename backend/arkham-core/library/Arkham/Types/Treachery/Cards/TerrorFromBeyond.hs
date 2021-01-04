@@ -45,8 +45,8 @@ instance TreacheryRunner env => RunMessage env TerrorFromBeyond where
       iidsWithSkills <- traverse
         (traverseToSnd $ (map unHandCardId <$>) . getSetList . (, SkillType))
         iids
-      t <$ unshiftMessage
-        (chooseN
+      t <$ unshiftMessages
+        [ chooseN
           iid
           (if secondCopy then 2 else 1)
           [ Label
@@ -65,5 +65,6 @@ instance TreacheryRunner env => RunMessage env TerrorFromBeyond where
             | (iid', skills) <- iidsWithSkills
             ]
           ]
-        )
+        , Discard $ TreacheryTarget (treacheryId attrs)
+        ]
     _ -> TerrorFromBeyond <$> runMessage msg attrs

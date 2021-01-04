@@ -61,6 +61,7 @@ export enum MessageType {
   ATTACH_TREACHERY = 'AttachTreachery',
   PLACE_DOOM = 'PlaceDoom',
   FOUND_AND_DREW_ENCOUNTER_CARD = 'FoundAndDrewEncounterCard',
+  FOUND_ENCOUNTER_CARD_FROM = 'FoundEncounterCardFrom',
   LABEL = 'Label',
 }
 
@@ -131,6 +132,7 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('InvestigatorDrawEncounterCard').then(() => JsonDecoder.constant(MessageType.INVESTIGATOR_DRAW_ENCOUNTER_CARD)),
     JsonDecoder.isExactly('Surge').then(() => JsonDecoder.constant(MessageType.SURGE)),
     JsonDecoder.isExactly('FoundAndDrewEncounterCard').then(() => JsonDecoder.constant(MessageType.FOUND_AND_DREW_ENCOUNTER_CARD)),
+    JsonDecoder.isExactly('FoundEncounterCardFrom').then(() => JsonDecoder.constant(MessageType.FOUND_ENCOUNTER_CARD_FROM)),
     JsonDecoder.isExactly('PlaceDoom').then(() => JsonDecoder.constant(MessageType.PLACE_DOOM)),
     JsonDecoder.isExactly('Ready').then(() => JsonDecoder.constant(MessageType.READY)),
   ],

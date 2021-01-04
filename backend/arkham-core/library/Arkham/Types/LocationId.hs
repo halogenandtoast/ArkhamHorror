@@ -4,7 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Helpers
-import Data.Text (toTitle)
+import qualified Data.Char as Char
 
 data EmptyLocation = EmptyLocation
 
@@ -18,7 +18,13 @@ data LocationName = LocationName
 locationNameToLabel :: LocationName -> Text
 locationNameToLabel (LocationName title subtitle) =
   (pack . toLabel . replaceNonLetters . unpack $ title)
-    <> maybe "" (toTitle . pack . toLabel . replaceNonLetters . unpack) subtitle
+    <> maybe
+         ""
+         (pack . capitalize . toLabel . replaceNonLetters . unpack)
+         subtitle
+ where
+  capitalize (x : xs) = Char.toUpper x : xs
+  capitalize [] = ""
 
 newtype LocationId = LocationId { unLocationId :: CardCode }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)

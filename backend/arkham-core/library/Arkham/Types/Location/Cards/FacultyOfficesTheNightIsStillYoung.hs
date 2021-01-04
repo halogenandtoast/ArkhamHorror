@@ -19,18 +19,17 @@ newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung 
 
 facultyOfficesTheNightIsStillYoung :: FacultyOfficesTheNightIsStillYoung
 facultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung
-  (baseAttrs
-      "02054"
-      (LocationName "Faculty Offices" (Just "The Night is Still Young"))
-      EncounterSet.ExtracurricularActivity
-      2
-      (PerPlayer 2)
-      T
-      [Circle]
-      [Miskatonic]
-    )
-    { locationVictory = Just 1
-    }
+  $ base { locationVictory = Just 1, locationLabel = "facultyOffices" }
+ where
+  base = baseAttrs
+    "02054"
+    (LocationName "Faculty Offices" (Just "The Night is Still Young"))
+    EncounterSet.ExtracurricularActivity
+    2
+    (PerPlayer 2)
+    T
+    [Circle]
+    [Miskatonic]
 
 instance HasModifiersFor env FacultyOfficesTheNightIsStillYoung where
   getModifiersFor _ target (FacultyOfficesTheNightIsStillYoung attrs)

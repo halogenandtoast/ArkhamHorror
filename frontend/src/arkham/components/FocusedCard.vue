@@ -42,6 +42,8 @@ export default defineComponent({
           return c.contents[2] === id.value;
         case MessageType.FOUND_AND_DREW_ENCOUNTER_CARD:
           return c.contents[2].id === id.value;
+        case MessageType.FOUND_ENCOUNTER_CARD_FROM:
+          return c.contents[3].id === id.value;
         case MessageType.RUN:
           return c.contents.some((c1: Message) => canInteract(c1));
         default:

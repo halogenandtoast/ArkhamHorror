@@ -83,6 +83,8 @@ instance
   where
   runMessage msg a@Attrs {..} = case msg of
     PlaceDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doomL +~ n
+    AttachTreachery tid (AgendaTarget aid) | aid == agendaId ->
+      pure $ a & treacheriesL %~ insertSet tid
     AdvanceAgendaIfThresholdSatisfied -> do
       perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
       totalDoom <- unDoomCount <$> getCount ()

@@ -29,7 +29,7 @@ instance HasModifiersFor env HospitalDebts where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
-ability a = (mkAbility (toSource a) 1 (FastAbility (DuringTurn You) Free))
+ability a = (mkAbility (toSource a) 1 (FastAbility Free))
   { abilityLimit = PlayerLimit PerRound 2
   }
 

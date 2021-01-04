@@ -37,9 +37,7 @@ skidsOToole = SkidsOToole $ baseAttrs
 
 ability :: Attrs -> Ability
 ability attrs = base { abilityLimit = PlayerLimit PerTurn 1 }
- where
-  base =
-    mkAbility (toSource attrs) 1 (FastAbility (DuringTurn You) (ResourceCost 2))
+  where base = mkAbility (toSource attrs) 1 (FastAbility $ ResourceCost 2)
 
 instance ActionRunner env => HasActions env SkidsOToole where
   getActions iid (DuringTurn You) (SkidsOToole a@Attrs {..})

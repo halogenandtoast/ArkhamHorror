@@ -41,7 +41,6 @@ instance ActionRunner env => HasActions env Dormitories where
               (toSource attrs)
               1
               (FastAbility
-                FastPlayerWindow
                 (GroupClueCost requiredClueCount
                 $ Just (LocationWithTitle "Dormitories")
                 )

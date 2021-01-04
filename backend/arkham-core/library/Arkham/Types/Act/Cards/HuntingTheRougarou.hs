@@ -18,10 +18,9 @@ huntingTheRougarou = HuntingTheRougarou
   $ baseAttrs "81006" "Hunting the Rougarou" (Act 2 A) Nothing
 
 ability :: Attrs -> Ability
-ability attrs =
-  (mkAbility (toSource attrs) 1 (FastAbility FastPlayerWindow Free))
-    { abilityLimit = PlayerLimit PerPhase 1
-    }
+ability attrs = (mkAbility (toSource attrs) 1 (FastAbility Free))
+  { abilityLimit = PlayerLimit PerPhase 1
+  }
 
 instance ActionRunner env => HasActions env HuntingTheRougarou where
   getActions iid FastPlayerWindow (HuntingTheRougarou a) =

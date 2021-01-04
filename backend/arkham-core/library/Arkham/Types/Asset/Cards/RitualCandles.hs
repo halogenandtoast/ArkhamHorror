@@ -17,13 +17,12 @@ ritualCandles :: AssetId -> RitualCandles
 ritualCandles uuid =
   RitualCandles $ (baseAttrs uuid "02029") { assetSlots = [HandSlot] }
 
-ability :: Window -> Attrs -> Ability
-ability window attrs =
-  mkAbility (toSource attrs) 1 (ReactionAbility window Free)
+ability :: Attrs -> Ability
+ability attrs = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance HasActions env RitualCandles where
-  getActions iid window@(WhenRevealToken You token) (RitualCandles x) = pure
-    [ ActivateCardAbilityAction iid (ability window x)
+  getActions iid (WhenRevealToken You token) (RitualCandles x) = pure
+    [ ActivateCardAbilityAction iid (ability x)
     | token `elem` [Skull, Cultist, Tablet, ElderSign]
     ]
   getActions iid window (RitualCandles x) = getActions iid window x

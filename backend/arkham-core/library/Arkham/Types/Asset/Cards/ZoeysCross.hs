@@ -29,9 +29,7 @@ ability attrs eid = base
   base = mkAbility
     (toSource attrs)
     1
-    (ReactionAbility (AfterEnemyEngageInvestigator You eid)
-    $ Costs [ExhaustCost (toTarget attrs), ResourceCost 1]
-    )
+    (ReactionAbility $ Costs [ExhaustCost (toTarget attrs), ResourceCost 1])
 
 instance HasActions env ZoeysCross where
   getActions iid (AfterEnemyEngageInvestigator You eid) (ZoeysCross a@Attrs {..})

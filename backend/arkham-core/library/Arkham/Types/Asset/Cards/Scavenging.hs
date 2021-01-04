@@ -18,17 +18,17 @@ scavenging uuid = Scavenging $ baseAttrs uuid "01073"
 instance HasModifiersFor env Scavenging where
   getModifiersFor = noModifiersFor
 
-ability :: Window -> Attrs -> Ability
-ability window a =
-  mkAbility (toSource a) 1 (ReactionAbility window $ ExhaustCost (toTarget a))
+ability :: Attrs -> Ability
+ability a =
+  mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
 
 instance ActionRunner env => HasActions env Scavenging where
-  getActions iid window@(AfterPassSkillTest (Just Action.Investigate) _ You n) (Scavenging a)
+  getActions iid (AfterPassSkillTest (Just Action.Investigate) _ You n) (Scavenging a)
     | ownedBy a iid && n >= 2
     = do
       discard <- getDiscardOf iid
       pure
-        [ ActivateCardAbilityAction iid (ability window a)
+        [ ActivateCardAbilityAction iid (ability a)
         | any ((Item `member`) . getTraits) discard
         ]
   getActions i window (Scavenging x) = getActions i window x

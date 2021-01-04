@@ -23,10 +23,7 @@ instance HasModifiersFor env StrayCat where
   getModifiersFor = noModifiersFor
 
 ability :: Attrs -> Ability
-ability a = mkAbility
-  (toSource a)
-  1
-  (FastAbility FastPlayerWindow (DiscardCost $ toTarget a))
+ability a = mkAbility (toSource a) 1 (FastAbility (DiscardCost $ toTarget a))
 
 instance HasActions env StrayCat where
   getActions iid FastPlayerWindow (StrayCat a) | ownedBy a iid =

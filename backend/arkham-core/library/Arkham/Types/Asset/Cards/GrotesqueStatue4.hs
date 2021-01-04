@@ -24,8 +24,8 @@ grotesqueStatue4 uuid =
 instance HasModifiersFor env GrotesqueStatue4 where
   getModifiersFor = noModifiersFor
 
-ability :: Attrs -> Source -> Window -> Ability
-ability attrs source window = base
+ability :: Attrs -> Source -> Ability
+ability attrs source = base
   { abilityMetadata = Just (SourceMetadata source)
   , abilityLimit = PlayerLimit PerTestOrAbility 1 -- TODO: not a real limit
   }
@@ -33,12 +33,11 @@ ability attrs source window = base
   base = mkAbility
     (toSource attrs)
     1
-    (ReactionAbility window $ UseCost (toId attrs) Charge 1)
+    (ReactionAbility $ UseCost (toId attrs) Charge 1)
 
 instance HasActions env GrotesqueStatue4 where
-  getActions iid window@(WhenWouldRevealChaosToken source You) (GrotesqueStatue4 a)
-    | ownedBy a iid
-    = pure [ActivateCardAbilityAction iid (ability a source window)]
+  getActions iid (WhenWouldRevealChaosToken source You) (GrotesqueStatue4 a)
+    | ownedBy a iid = pure [ActivateCardAbilityAction iid (ability a source)]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env GrotesqueStatue4 where

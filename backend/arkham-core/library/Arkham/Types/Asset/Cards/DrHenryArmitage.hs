@@ -20,19 +20,18 @@ drHenryArmitage uuid = DrHenryArmitage $ (baseAttrs uuid "02040")
   , assetSanity = Just 2
   }
 
-fastAbility :: Attrs -> Window -> CardId -> Ability
-fastAbility a window cid = mkAbility
+fastAbility :: Attrs -> CardId -> Ability
+fastAbility a cid = mkAbility
   (toSource a)
   1
-  (FastAbility window $ Costs [DiscardCardCost cid, ExhaustCost (toTarget a)])
+  (FastAbility $ Costs [DiscardCardCost cid, ExhaustCost (toTarget a)])
 
 instance HasModifiersFor env DrHenryArmitage where
   getModifiersFor = noModifiersFor
 
 instance HasActions env DrHenryArmitage where
-  getActions iid window@(AfterDrawCard You cid) (DrHenryArmitage a)
-    | ownedBy a iid = pure
-      [ActivateCardAbilityAction iid (fastAbility a window cid)]
+  getActions iid (AfterDrawCard You cid) (DrHenryArmitage a) | ownedBy a iid =
+    pure [ActivateCardAbilityAction iid (fastAbility a cid)]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env DrHenryArmitage where

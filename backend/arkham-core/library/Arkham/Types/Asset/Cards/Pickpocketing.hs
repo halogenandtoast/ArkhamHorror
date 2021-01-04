@@ -17,13 +17,11 @@ instance HasModifiersFor env Pickpocketing where
   getModifiersFor = noModifiersFor
 
 instance HasActions env Pickpocketing where
-  getActions iid window@(WhenEnemyEvaded You) (Pickpocketing a) =
-    withBaseActions iid window a $ do
+  getActions iid (WhenEnemyEvaded You) (Pickpocketing a) =
+    withBaseActions iid (WhenEnemyEvaded You) a $ do
       let
-        ability = mkAbility
-          (toSource a)
-          1
-          (ReactionAbility window $ ExhaustCost (toTarget a))
+        ability =
+          mkAbility (toSource a) 1 (ReactionAbility $ ExhaustCost (toTarget a))
       pure [ ActivateCardAbilityAction iid ability | ownedBy a iid ]
   getActions i window (Pickpocketing a) = getActions i window a
 

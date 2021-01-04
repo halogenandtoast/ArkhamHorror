@@ -24,7 +24,7 @@ reactionAbility :: Attrs -> Ability
 reactionAbility attrs = mkAbility
   (toSource attrs)
   1
-  (FastAbility (WhenEnemyAttacks You) $ Costs
+  (FastAbility $ Costs
     [ ExhaustCost (toTarget attrs)
     , HorrorCost (toSource attrs) (toTarget attrs) 1
     ]

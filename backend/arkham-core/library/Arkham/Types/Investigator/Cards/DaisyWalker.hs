@@ -59,8 +59,8 @@ instance InvestigatorRunner env => RunMessage env DaisyWalker where
         then
           case abilityType of
             ForcedAbility -> DaisyWalker <$> runMessage msg attrs
-            FastAbility _ _ -> DaisyWalker <$> runMessage msg attrs
-            ReactionAbility _ _ -> DaisyWalker <$> runMessage msg attrs
+            FastAbility _ -> DaisyWalker <$> runMessage msg attrs
+            ReactionAbility _ -> DaisyWalker <$> runMessage msg attrs
             ActionAbility mAction cost -> if totalActionCost cost > 0
               then DaisyWalker <$> runMessage
                 (ActivateCardAbilityAction

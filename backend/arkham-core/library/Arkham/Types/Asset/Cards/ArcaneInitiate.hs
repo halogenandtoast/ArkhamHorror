@@ -17,16 +17,16 @@ arcaneInitiate uuid = ArcaneInitiate $ (baseAttrs uuid "01063")
   , assetSanity = Just 2
   }
 
-fastAbility :: Attrs -> Window -> Ability
-fastAbility a window =
-  mkAbility (toSource a) 1 (FastAbility window $ ExhaustCost (toTarget a))
+fastAbility :: Attrs -> Ability
+fastAbility a =
+  mkAbility (toSource a) 1 (FastAbility $ ExhaustCost (toTarget a))
 
 instance HasModifiersFor env ArcaneInitiate where
   getModifiersFor = noModifiersFor
 
 instance HasActions env ArcaneInitiate where
   getActions iid FastPlayerWindow (ArcaneInitiate a) | ownedBy a iid =
-    pure [ActivateCardAbilityAction iid (fastAbility a FastPlayerWindow)]
+    pure [ActivateCardAbilityAction iid $ fastAbility a]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env ArcaneInitiate where

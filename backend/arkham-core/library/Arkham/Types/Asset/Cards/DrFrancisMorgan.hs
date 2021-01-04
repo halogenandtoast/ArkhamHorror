@@ -22,10 +22,8 @@ drFrancisMorgan uuid = DrFrancisMorgan $ (baseAttrs uuid "02080")
   }
 
 ability :: Attrs -> Ability
-ability attrs = mkAbility
-  (toSource attrs)
-  1
-  (ReactionAbility (AfterEnemyDefeated You) $ ExhaustCost (toTarget attrs))
+ability attrs =
+  mkAbility (toSource attrs) 1 (ReactionAbility $ ExhaustCost (toTarget attrs))
 
 instance HasActions env DrFrancisMorgan where
   getActions iid (AfterEnemyDefeated You) (DrFrancisMorgan attrs) =

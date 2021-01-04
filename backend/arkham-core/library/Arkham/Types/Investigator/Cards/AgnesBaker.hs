@@ -1,7 +1,8 @@
 module Arkham.Types.Investigator.Cards.AgnesBaker
   ( AgnesBaker(..)
   , agnesBaker
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -35,8 +36,8 @@ ability attrs = base { abilityLimit = PlayerLimit PerPhase 1 }
   where base = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance ActionRunner env => HasActions env AgnesBaker where
-  getActions iid (AfterAssignedHorror You) (AgnesBaker attrs)
-    | iid == toId attrs = do
+  getActions iid (WhenDealtHorror _ target) (AgnesBaker attrs)
+    | isTarget attrs target = do
       enemyIds <- getSet @EnemyId $ investigatorLocation attrs
       pure
         [ ActivateCardAbilityAction iid (ability attrs) | not (null enemyIds) ]

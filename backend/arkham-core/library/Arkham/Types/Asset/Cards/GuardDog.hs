@@ -1,4 +1,8 @@
-module Arkham.Types.Asset.Cards.GuardDog where
+module Arkham.Types.Asset.Cards.GuardDog
+  ( GuardDog(..)
+  , guardDog
+  )
+where
 
 import Arkham.Import
 
@@ -18,20 +22,30 @@ guardDog uuid = GuardDog $ (baseAttrs uuid "01021")
 instance HasModifiersFor env GuardDog where
   getModifiersFor = noModifiersFor
 
+ability :: Source -> Attrs -> Ability
+ability source attrs = base
+  { abilityLimit = PlayerLimit PerTestOrAbility 1
+  , abilityMetadata = Just (SourceMetadata source)
+  }
+  where base = mkAbility (toSource attrs) 1 (ReactionAbility Free)
+
 instance HasActions env GuardDog where
-  getActions i window (GuardDog x) = getActions i window x
+  getActions iid (WhenDealtDamage source@(EnemySource _) target) (GuardDog attrs)
+    | isTarget attrs target
+    = pure
+      [ ActivateCardAbilityAction iid (ability source attrs)
+      | ownedBy attrs iid
+      ]
+  getActions i window (GuardDog attrs) = getActions i window attrs
 
 instance (AssetRunner env) => RunMessage env GuardDog where
-  runMessage msg (GuardDog attrs@Attrs {..}) = case msg of
-    DidReceiveDamage (AssetTarget aid) (EnemySource eid) | aid == assetId -> do
-      -- we must unshift the asset destroyed first before unshifting the question
-      -- this is necessary to keep the asset as a valid investigator source of damage
-      -- for any additional effects, such as triggering Roland's ability.
-      result <- runMessage msg attrs
-      unshiftMessage $ chooseOne
-        (getInvestigator attrs)
-        [ EnemyDamage eid (getInvestigator attrs) (AssetSource aid) 1
-        , Continue "Do not use Guard Dog's ability"
-        ]
-      pure $ GuardDog result
+  runMessage msg a@(GuardDog attrs@Attrs {..}) = case msg of
+    UseCardAbility _ source (Just (SourceMetadata (EnemySource eid))) 1 _
+      | isSource attrs source -> a <$ unshiftMessage
+        (chooseOne
+          (getInvestigator attrs)
+          [ EnemyDamage eid (getInvestigator attrs) (toSource attrs) 1
+          , Continue "Do not use Guard Dog's ability"
+          ]
+        )
     _ -> GuardDog <$> runMessage msg attrs

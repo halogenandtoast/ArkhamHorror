@@ -33,6 +33,8 @@ data Window
   | NonFast
   | WhenAllDrawEncounterCard
   | WhenAmongSearchedCards Who
+  | WhenDealtDamage Source Target
+  | WhenDealtHorror Source Target
   | WhenDefeated Source
   | WhenDiscoverClues Who Where
   | WhenDrawToken Who Token

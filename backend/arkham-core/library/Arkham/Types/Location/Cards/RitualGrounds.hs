@@ -11,18 +11,17 @@ newtype RitualGrounds = RitualGrounds Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 ritualGrounds :: RitualGrounds
-ritualGrounds = RitualGrounds $ (baseAttrs
-                                  "81017"
-                                  (LocationName "Ritual Grounds" Nothing)
-                                  EncounterSet.CurseOfTheRougarou
-                                  2
-                                  (PerPlayer 1)
-                                  Equals
-                                  [Hourglass, Equals]
-                                  [Unhallowed]
-                                )
-  { locationVictory = Just 1
-  }
+ritualGrounds = RitualGrounds $ base { locationVictory = Just 1 }
+ where
+  base = baseAttrs
+    "81017"
+    (Name "Ritual Grounds" Nothing)
+    EncounterSet.CurseOfTheRougarou
+    2
+    (PerPlayer 1)
+    Equals
+    [Hourglass, Equals]
+    [Unhallowed]
 
 instance HasModifiersFor env RitualGrounds where
   getModifiersFor = noModifiersFor

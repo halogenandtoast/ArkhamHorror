@@ -20,7 +20,7 @@ downtownArkhamAsylum = DowntownArkhamAsylum $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
     "01131"
-    (LocationName "Downtown" $ Just "Arkham Asylum")
+    (Name "Downtown" $ Just "Arkham Asylum")
     EncounterSet.TheMidnightMasks
     4
     (PerPlayer 2)

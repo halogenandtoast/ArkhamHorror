@@ -18,7 +18,7 @@ newtype CursedShores = CursedShores Attrs
 cursedShores :: CursedShores
 cursedShores = CursedShores $ baseAttrs
   "81007"
-  (LocationName "Cursed Shores" Nothing)
+  (Name "Cursed Shores" Nothing)
   EncounterSet.CurseOfTheRougarou
   1
   (Static 0)
@@ -41,11 +41,11 @@ instance ActionRunner env => HasActions env CursedShores where
 
 instance LocationRunner env => RunMessage env CursedShores where
   runMessage msg l@(CursedShores attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 | isSource attrs source ->
       l <$ unshiftMessages
-        [ InvestigatorAssignDamage iid source 1 0
-        , CreateEffect "81007" Nothing (toSource attrs) (InvestigatorTarget iid)
-        ]
+      [ InvestigatorAssignDamage iid source 1 0
+      , CreateEffect "81007" Nothing (toSource attrs) (InvestigatorTarget iid)
+      ]
     WhenEnterLocation iid lid
       | -- TODO: SHOULD WE BROADCAST LRAVING THE LOCATION INSTEAD
         lid /= locationId && iid `elem` locationInvestigators -> do

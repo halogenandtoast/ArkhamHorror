@@ -12,7 +12,7 @@ newtype Study = Study Attrs
 study :: Study
 study = Study $ baseAttrs
   "01111"
-  (LocationName "Study" Nothing)
+  (Name "Study" Nothing)
   EncounterSet.TheGathering
   2
   (PerPlayer 2)

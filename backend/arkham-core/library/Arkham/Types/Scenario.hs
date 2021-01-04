@@ -1,9 +1,5 @@
 module Arkham.Types.Scenario
-  ( lookupScenario
-  , baseScenario
-  , difficultyOfScenario
-  , scenarioActs
-  , Scenario
+  ( module Arkham.Types.Scenario
   )
 where
 
@@ -15,7 +11,6 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.Scenario.Scenarios
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait (Trait)
-import Data.Coerce
 
 data Scenario
   = TheGathering' TheGathering

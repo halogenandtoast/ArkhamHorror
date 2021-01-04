@@ -18,7 +18,7 @@ newtype SouthsideHistoricalSociety = SouthsideHistoricalSociety Attrs
 southsideHistoricalSociety :: SouthsideHistoricalSociety
 southsideHistoricalSociety = SouthsideHistoricalSociety $ baseAttrs
   "01126"
-  (LocationName "Southside" $ Just "Historical Society")
+  (Name "Southside" $ Just "Historical Society")
   EncounterSet.TheMidnightMasks
   3
   (PerPlayer 1)

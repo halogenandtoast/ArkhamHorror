@@ -17,7 +17,6 @@ import Arkham.Types.Trait (Trait)
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Cards
 import Arkham.Types.Enemy.Runner
-import Data.Coerce
 
 data Enemy
   = MobEnforcer' MobEnforcer

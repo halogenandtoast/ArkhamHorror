@@ -18,7 +18,7 @@ newtype OvergrownCairns = OvergrownCairns Attrs
 overgrownCairns :: OvergrownCairns
 overgrownCairns = OvergrownCairns $ baseAttrs
   "81018"
-  (LocationName "Overgrown Cairns" Nothing)
+  (Name "Overgrown Cairns" Nothing)
   EncounterSet.CurseOfTheRougarou
   4
   (Static 0)

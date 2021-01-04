@@ -19,7 +19,7 @@ newtype GardenDistrict = GardenDistrict Attrs
 gardenDistrict :: GardenDistrict
 gardenDistrict = GardenDistrict $ baseAttrs
   "81008"
-  (LocationName "Garden District" Nothing)
+  (Name "Garden District" Nothing)
   EncounterSet.CurseOfTheRougarou
   1
   (Static 0)

@@ -13,7 +13,7 @@ newtype Bedroom = Bedroom Attrs
 bedroom :: Bedroom
 bedroom = Bedroom $ baseAttrs
   "50015"
-  (LocationName "Bedroom" Nothing)
+  (Name "Bedroom" Nothing)
   EncounterSet.ReturnToTheGathering
   2
   (PerPlayer 1)

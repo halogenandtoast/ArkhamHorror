@@ -19,7 +19,7 @@ newtype MainPath = MainPath Attrs
 mainPath :: MainPath
 mainPath = MainPath $ baseAttrs
   "01149"
-  (LocationName "Main Path" Nothing)
+  (Name "Main Path" Nothing)
   EncounterSet.TheDevourerBelow
   2
   (Static 0)

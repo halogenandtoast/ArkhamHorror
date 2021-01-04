@@ -17,7 +17,7 @@ newtype MuseumHalls = MuseumHalls Attrs
 museumHalls :: MuseumHalls
 museumHalls = MuseumHalls $ baseAttrs
   "02127"
-  (LocationName "Museum Halls" Nothing)
+  (Name "Museum Halls" Nothing)
   EncounterSet.TheMiskatonicMuseum
   2
   (Static 0)

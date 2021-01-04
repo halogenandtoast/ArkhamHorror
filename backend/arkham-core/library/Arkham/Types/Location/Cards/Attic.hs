@@ -10,18 +10,17 @@ newtype Attic = Attic Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 attic :: Attic
-attic = Attic $ (baseAttrs
-                  "01113"
-                  (LocationName "Attic" Nothing)
-                  EncounterSet.TheGathering
-                  1
-                  (PerPlayer 2)
-                  Triangle
-                  [Square]
-                  []
-                )
-  { locationVictory = Just 1
-  }
+attic = Attic $ base { locationVictory = Just 1 }
+ where
+  base = baseAttrs
+    "01113"
+    (Name "Attic" Nothing)
+    EncounterSet.TheGathering
+    1
+    (PerPlayer 2)
+    Triangle
+    [Square]
+    []
 
 instance HasModifiersFor env Attic where
   getModifiersFor = noModifiersFor

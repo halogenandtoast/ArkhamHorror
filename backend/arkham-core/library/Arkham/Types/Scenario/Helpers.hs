@@ -8,7 +8,6 @@ import Arkham.Import
 
 import Arkham.Types.EncounterSet
 import Arkham.Types.Game.Helpers as X
-import System.Random.Shuffle
 
 buildEncounterDeck :: MonadRandom m => [EncounterSet] -> m [EncounterCard]
 buildEncounterDeck = buildEncounterDeckWith id

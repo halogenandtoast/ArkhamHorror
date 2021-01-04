@@ -22,7 +22,7 @@ easttownArkhamPoliceStation = EasttownArkhamPoliceStation
  where
   base = baseAttrs
     "50027"
-    (LocationName "Easttown" (Just "Arkham Police Station"))
+    (Name "Easttown" (Just "Arkham Police Station"))
     EncounterSet.ReturnToTheMidnightMasks
     4
     (PerPlayer 2)

@@ -19,7 +19,7 @@ newtype MiskatonicQuad = MiskatonicQuad Attrs
 miskatonicQuad :: MiskatonicQuad
 miskatonicQuad = MiskatonicQuad $ baseAttrs
   "02048"
-  (LocationName "Miskatonic Quad" Nothing)
+  (Name "Miskatonic Quad" Nothing)
   EncounterSet.ExtracurricularActivity
   3
   (Static 0)

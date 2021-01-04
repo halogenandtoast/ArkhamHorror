@@ -16,7 +16,7 @@ dormitories = Dormitories $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
     "02052"
-    (LocationName "Dormitories" Nothing)
+    (Name "Dormitories" Nothing)
     EncounterSet.ExtracurricularActivity
     1
     (PerPlayer 3)

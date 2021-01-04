@@ -9,7 +9,6 @@ import Arkham.Import hiding (fold)
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Cards
 import Arkham.Types.Act.Runner
-import Data.Coerce
 
 data Act
   = Trapped' Trapped

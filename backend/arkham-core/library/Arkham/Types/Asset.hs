@@ -19,7 +19,6 @@ import Arkham.Types.Asset.Class
 import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 import Arkham.Types.Trait (Trait)
-import Data.Coerce
 
 data Asset
   = Rolands38Special' Rolands38Special

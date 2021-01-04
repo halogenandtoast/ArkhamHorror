@@ -22,7 +22,7 @@ backAlley = BackAlley
  where
   base = baseAttrs
     "02077"
-    (LocationName "Back Alley" Nothing)
+    (Name "Back Alley" Nothing)
     EncounterSet.TheHouseAlwaysWins
     1
     (PerPlayer 1)

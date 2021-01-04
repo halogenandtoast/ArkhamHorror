@@ -20,7 +20,7 @@ miskatonicUniversity = MiskatonicUniversity $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
     "01129"
-    (LocationName "Miskatonic University" Nothing)
+    (Name "Miskatonic University" Nothing)
     EncounterSet.TheMidnightMasks
     4
     (PerPlayer 2)

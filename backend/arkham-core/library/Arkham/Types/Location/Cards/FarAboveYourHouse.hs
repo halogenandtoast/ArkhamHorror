@@ -15,7 +15,7 @@ farAboveYourHouse = FarAboveYourHouse $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
     "50019"
-    (LocationName "Field of Graves" Nothing)
+    (Name "Field of Graves" Nothing)
     EncounterSet.ReturnToTheGathering
     2
     (PerPlayer 1)

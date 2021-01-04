@@ -8,7 +8,6 @@ import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Trait
-import Data.List ((\\))
 
 newtype Teamwork = Teamwork Attrs
   deriving newtype (Show, ToJSON, FromJSON)

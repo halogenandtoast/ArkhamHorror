@@ -18,7 +18,7 @@ newtype YourHouse = YourHouse Attrs
 yourHouse :: YourHouse
 yourHouse = YourHouse $ baseAttrs
   "01124"
-  (LocationName "Your House" Nothing)
+  (Name "Your House" Nothing)
   EncounterSet.TheMidnightMasks
   2
   (PerPlayer 1)

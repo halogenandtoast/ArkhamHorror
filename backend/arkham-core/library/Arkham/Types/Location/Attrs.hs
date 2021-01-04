@@ -89,7 +89,7 @@ connectedLocations =
 
 baseAttrs
   :: LocationId
-  -> LocationName
+  -> Name
   -> EncounterSet
   -> Int
   -> GameValue Int
@@ -99,8 +99,8 @@ baseAttrs
   -> Attrs
 baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' traits'
   = Attrs
-    { locationName = name
-    , locationLabel = locationNameToLabel name
+    { locationName = LocationName name
+    , locationLabel = nameToLabel name
     , locationId = lid
     , locationRevealClues = revealClues
     , locationClues = 0

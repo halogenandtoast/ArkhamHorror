@@ -16,19 +16,18 @@ newtype ArtGallery = ArtGallery Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 artGallery :: ArtGallery
-artGallery = ArtGallery $ (baseAttrs
-                            "02075"
-                            (LocationName "Art Gallery" Nothing)
-                            EncounterSet.TheHouseAlwaysWins
-                            2
-                            (PerPlayer 1)
-                            T
-                            [Diamond]
-                            [CloverClub]
-                          )
-  { locationVictory = Just 1
-  , locationRevealedSymbol = Hourglass
-  }
+artGallery = ArtGallery
+  $ base { locationVictory = Just 1, locationRevealedSymbol = Hourglass }
+ where
+  base = baseAttrs
+    "02075"
+    (Name "Art Gallery" Nothing)
+    EncounterSet.TheHouseAlwaysWins
+    2
+    (PerPlayer 1)
+    T
+    [Diamond]
+    [CloverClub]
 
 instance HasModifiersFor env ArtGallery where
   getModifiersFor = noModifiersFor

@@ -11,18 +11,17 @@ newtype Graveyard = Graveyard Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 graveyard :: Graveyard
-graveyard = Graveyard $ (baseAttrs
-                          "01133"
-                          (LocationName "Graveyard" Nothing)
-                          EncounterSet.TheMidnightMasks
-                          1
-                          (PerPlayer 2)
-                          Hourglass
-                          [Circle]
-                          [Arkham]
-                        )
-  { locationVictory = Just 1
-  }
+graveyard = Graveyard $ base { locationVictory = Just 1 }
+ where
+  base = baseAttrs
+    "01133"
+    (Name "Graveyard" Nothing)
+    EncounterSet.TheMidnightMasks
+    1
+    (PerPlayer 2)
+    Hourglass
+    [Circle]
+    [Arkham]
 
 instance HasModifiersFor env Graveyard where
   getModifiersFor = noModifiersFor

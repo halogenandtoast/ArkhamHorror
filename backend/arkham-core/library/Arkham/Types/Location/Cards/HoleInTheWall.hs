@@ -12,7 +12,7 @@ newtype HoleInTheWall = HoleInTheWall Attrs
 holeInTheWall :: HoleInTheWall
 holeInTheWall = HoleInTheWall $ baseAttrs
   "50017"
-  (LocationName "Hallway" Nothing)
+  (Name "Hallway" Nothing)
   EncounterSet.ReturnToTheGathering
   1
   (Static 0)

@@ -12,7 +12,6 @@ import Arkham.Types.Trait (Trait)
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Cards
 import Arkham.Types.Treachery.Runner
-import Data.Coerce
 
 data Treachery
   = CoverUp' CoverUp

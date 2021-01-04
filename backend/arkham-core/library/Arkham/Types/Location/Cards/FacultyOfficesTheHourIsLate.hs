@@ -14,7 +14,7 @@ newtype FacultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate Attrs
 facultyOfficesTheHourIsLate :: FacultyOfficesTheHourIsLate
 facultyOfficesTheHourIsLate = FacultyOfficesTheHourIsLate $ baseAttrs
   "02055"
-  (LocationName "Faculty Offices" $ Just "The House is Late")
+  (Name "Faculty Offices" $ Just "The House is Late")
   EncounterSet.ExtracurricularActivity
   2
   (Static 0)

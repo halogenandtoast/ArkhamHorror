@@ -16,9 +16,9 @@ import Arkham.Types.EventId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Keyword (Keyword)
 import Arkham.Types.Location
-import Arkham.Types.Location.Name
 import Arkham.Types.LocationId
 import Arkham.Types.Message
+import Arkham.Types.Name
 import Arkham.Types.Prey
 import Arkham.Types.Query
 import Arkham.Types.Target

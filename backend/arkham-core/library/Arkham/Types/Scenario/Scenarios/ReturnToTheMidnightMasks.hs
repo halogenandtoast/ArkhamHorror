@@ -12,7 +12,6 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.Scenario.Scenarios.TheMidnightMasks
 import Arkham.Types.Trait (Trait)
 import Data.List.NonEmpty (NonEmpty(..))
-import System.Random.Shuffle
 
 newtype ReturnToTheMidnightMasks = ReturnToTheMidnightMasks TheMidnightMasks
   deriving newtype (Show, ToJSON, FromJSON)

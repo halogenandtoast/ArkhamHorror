@@ -1,9 +1,5 @@
 module Arkham.Types.Event
-  ( lookupEvent
-  , Event(..)
-  , ownerOfEvent
-  , eventAttrs
-  , getEventId
+  ( module Arkham.Types.Event
   )
 where
 
@@ -18,7 +14,6 @@ import Arkham.Types.EventId
 import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Query
-import Data.Coerce
 
 data Event
   = OnTheLam' OnTheLam

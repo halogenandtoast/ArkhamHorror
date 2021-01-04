@@ -1,11 +1,5 @@
 module Arkham.Types.Location
-  ( lookupLocation
-  , baseLocation
-  , isEmptyLocation
-  , isRevealed
-  , Location(..)
-  , getLocationName
-  , getLocationId
+  ( module Arkham.Types.Location
   )
 where
 
@@ -22,12 +16,11 @@ import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Cards
-import Arkham.Types.Location.Name
+import Arkham.Types.Name
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.Query
 import Arkham.Types.TreacheryId
-import Data.Coerce
 
 data Location
   = Study' Study
@@ -133,7 +126,7 @@ instance LocationRunner env => RunMessage env BaseLocation where
 
 baseLocation
   :: LocationId
-  -> LocationName
+  -> Name
   -> Int
   -> GameValue Int
   -> LocationSymbol

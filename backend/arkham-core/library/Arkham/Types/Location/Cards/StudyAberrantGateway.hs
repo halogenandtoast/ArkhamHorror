@@ -17,7 +17,7 @@ newtype StudyAberrantGateway = StudyAberrantGateway Attrs
 studyAberrantGateway :: StudyAberrantGateway
 studyAberrantGateway = StudyAberrantGateway $ baseAttrs
   "50013"
-  (LocationName "Study" (Just "Aberrant Gateway"))
+  (Name "Study" (Just "Aberrant Gateway"))
   EncounterSet.ReturnToTheGathering
   3
   (PerPlayer 1)

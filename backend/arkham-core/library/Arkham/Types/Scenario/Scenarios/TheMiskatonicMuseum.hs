@@ -11,7 +11,6 @@ import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Token
 import Data.List.NonEmpty (NonEmpty(..))
-import System.Random.Shuffle
 
 newtype TheMiskatonicMuseum = TheMiskatonicMuseum Attrs
   deriving newtype (Show, ToJSON, FromJSON)

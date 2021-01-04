@@ -14,7 +14,6 @@ import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Cards
 import Arkham.Types.Skill.Runner
 import Arkham.Types.SkillId
-import Data.Coerce
 
 data Skill
   = ViciousBlow' ViciousBlow

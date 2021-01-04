@@ -6,7 +6,6 @@ import Arkham.Types.Campaign.Attrs
 import Arkham.Types.Campaign.Campaigns
 import Arkham.Types.Campaign.Runner
 import Arkham.Types.Difficulty
-import Data.Coerce
 
 data Campaign
   = NightOfTheZealot' NightOfTheZealot

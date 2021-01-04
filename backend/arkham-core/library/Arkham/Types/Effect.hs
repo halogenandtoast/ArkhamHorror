@@ -12,7 +12,6 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Effects
 import Arkham.Types.Trait
-import Data.Coerce
 
 data Effect
   = OnTheLam' OnTheLam

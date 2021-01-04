@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Types.Treachery.Attrs where
 
 import Arkham.Import
@@ -21,6 +23,8 @@ data Attrs = Attrs
   , treacheryResources :: Maybe Int
   }
   deriving stock (Show, Generic)
+
+makeLensesWith suffixedFields ''Attrs
 
 instance ToJSON Attrs where
   toJSON = genericToJSON $ aesonOptions $ Just "treachery"
@@ -86,13 +90,6 @@ withTreacheryInvestigator attrs f = case treacheryAttachedTarget attrs of
     <> " must be attached to an investigator"
     )
 
-attachedTarget :: Lens' Attrs (Maybe Target)
-attachedTarget =
-  lens treacheryAttachedTarget $ \m x -> m { treacheryAttachedTarget = x }
-
-resources :: Lens' Attrs (Maybe Int)
-resources = lens treacheryResources $ \m x -> m { treacheryResources = x }
-
 baseAttrs :: TreacheryId -> CardCode -> Attrs
 baseAttrs tid cardCode =
   let
@@ -154,10 +151,10 @@ instance TreacheryRunner env => RunMessage env Attrs where
       | InvestigatorTarget iid `elem` treacheryAttachedTarget -> a
       <$ unshiftMessage (Discard $ toTarget a)
     AttachTreachery tid target | tid == treacheryId ->
-      pure $ a & attachedTarget ?~ target
+      pure $ a & attachedTargetL ?~ target
     PlaceResources target n | isTarget a target -> do
       let amount = fromMaybe 0 treacheryResources + n
-      pure $ a & resources ?~ amount
+      pure $ a & resourcesL ?~ amount
     PlaceEnemyInVoid eid | EnemyTarget eid `elem` treacheryAttachedTarget ->
       a <$ unshiftMessage (Discard $ toTarget a)
     Discard target | target `elem` treacheryAttachedTarget ->

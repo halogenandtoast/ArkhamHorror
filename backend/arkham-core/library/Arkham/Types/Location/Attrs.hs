@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Types.Location.Attrs where
 
 import Arkham.Import hiding (toUpper, toLower)
@@ -32,6 +34,8 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
+makeLensesWith suffixedFields ''Attrs
+
 instance ToJSON Attrs where
   toJSON = genericToJSON $ aesonOptions $ Just "location"
   toEncoding = genericToEncoding $ aesonOptions $ Just "location"
@@ -60,38 +64,6 @@ unrevealed = not . locationRevealed
 
 revealed :: Attrs -> Bool
 revealed = locationRevealed
-
-symbolL :: Lens' Attrs LocationSymbol
-symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }
-
-revealedSymbolL :: Lens' Attrs LocationSymbol
-revealedSymbolL =
-  lens locationRevealedSymbol $ \m x -> m { locationRevealedSymbol = x }
-
-connectedSymbolsL :: Lens' Attrs (HashSet LocationSymbol)
-connectedSymbolsL =
-  lens locationConnectedSymbols $ \m x -> m { locationConnectedSymbols = x }
-
-revealedConnectedSymbolsL :: Lens' Attrs (HashSet LocationSymbol)
-revealedConnectedSymbolsL = lens locationRevealedConnectedSymbols
-  $ \m x -> m { locationRevealedConnectedSymbols = x }
-
-investigatorsL :: Lens' Attrs (HashSet InvestigatorId)
-investigatorsL =
-  lens locationInvestigators $ \m x -> m { locationInvestigators = x }
-
-treacheriesL :: Lens' Attrs (HashSet TreacheryId)
-treacheriesL = lens locationTreacheries $ \m x -> m { locationTreacheries = x }
-
-eventsL :: Lens' Attrs (HashSet EventId)
-eventsL = lens locationEvents $ \m x -> m { locationEvents = x }
-
-assetsL :: Lens' Attrs (HashSet AssetId)
-assetsL = lens locationAssets $ \m x -> m { locationAssets = x }
-
-connectedLocationsL :: Lens' Attrs (HashSet LocationId)
-connectedLocationsL =
-  lens locationConnectedLocations $ \m x -> m { locationConnectedLocations = x }
 
 baseAttrs
   :: LocationId
@@ -127,18 +99,6 @@ baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' tr
     , locationAssets = mempty
     , locationEncounterSet = encounterSet
     }
-
-cluesL :: Lens' Attrs Int
-cluesL = lens locationClues $ \m x -> m { locationClues = x }
-
-labelL :: Lens' Attrs Text
-labelL = lens locationLabel $ \m x -> m { locationLabel = x }
-
-revealedL :: Lens' Attrs Bool
-revealedL = lens locationRevealed $ \m x -> m { locationRevealed = x }
-
-enemiesL :: Lens' Attrs (HashSet EnemyId)
-enemiesL = lens locationEnemies $ \m x -> m { locationEnemies = x }
 
 getModifiedShroudValueFor
   :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Int

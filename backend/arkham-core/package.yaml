@@ -51,6 +51,7 @@ library:
     - vector
     - MonadRandom
     - extra
+    - template-haskell
 
 tests:
   spec:

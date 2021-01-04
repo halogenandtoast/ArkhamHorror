@@ -34,8 +34,6 @@ instance (CampaignRunner env) => RunMessage env ReturnToNightOfTheZealot where
           . ReturnToNightOfTheZealot
           . NightOfTheZealot
           $ attrs
-          & step
-          .~ nextStep
-          & completedSteps
-          %~ completeStep campaignStep
+          & (stepL .~ nextStep)
+          & (completedStepsL %~ completeStep campaignStep)
       _ -> ReturnToNightOfTheZealot <$> runMessage msg nightOfTheZealot'

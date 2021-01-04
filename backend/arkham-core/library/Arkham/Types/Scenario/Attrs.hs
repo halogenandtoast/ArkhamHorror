@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Types.Scenario.Attrs
   ( module Arkham.Types.Scenario.Attrs
   , module X
@@ -30,6 +32,8 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
+makeLensesWith suffixedFields ''Attrs
+
 instance ToJSON Attrs where
   toJSON = genericToJSON $ aesonOptions $ Just "scenario"
   toEncoding = genericToEncoding $ aesonOptions $ Just "scenario"
@@ -49,22 +53,6 @@ isEasyStandard Attrs { scenarioDifficulty } =
 isHardExpert :: Attrs -> Bool
 isHardExpert Attrs { scenarioDifficulty } =
   scenarioDifficulty `elem` [Hard, Expert]
-
-actStackL :: Lens' Attrs [(Int, [ActId])]
-actStackL = lens scenarioActStack $ \m x -> m { scenarioActStack = x }
-
-locationsL :: Lens' Attrs (HashMap LocationName [LocationId])
-locationsL = lens scenarioLocations $ \m x -> m { scenarioLocations = x }
-
-setAsideCardsL :: Lens' Attrs [Card]
-setAsideCardsL =
-  lens scenarioSetAsideCards $ \m x -> m { scenarioSetAsideCards = x }
-
-deckL :: Lens' Attrs (Maybe ScenarioDeck)
-deckL = lens scenarioDeck $ \m x -> m { scenarioDeck = x }
-
-logL :: Lens' Attrs (HashSet ScenarioLogKey)
-logL = lens scenarioLog $ \m x -> m { scenarioLog = x }
 
 baseAttrs :: CardCode -> Text -> [AgendaId] -> [ActId] -> Difficulty -> Attrs
 baseAttrs cardCode name agendaStack actStack' difficulty = Attrs

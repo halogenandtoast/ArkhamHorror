@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Types.Effect.Attrs where
 
 import Arkham.Import
@@ -13,6 +15,8 @@ data Attrs = Attrs
   , effectMetadata :: Maybe (EffectMetadata Message)
   }
   deriving stock (Show, Generic)
+
+makeLensesWith suffixedFields ''Attrs
 
 type EffectArgs = (EffectId, Maybe (EffectMetadata Message), Source, Target)
 

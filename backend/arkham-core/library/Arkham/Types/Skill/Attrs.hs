@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Types.Skill.Attrs where
 
 import Arkham.Import
@@ -15,6 +17,8 @@ data Attrs = Attrs
   , skillWeakness :: Bool
   }
   deriving stock (Show, Generic)
+
+makeLensesWith suffixedFields ''Attrs
 
 instance ToJSON Attrs where
   toJSON = genericToJSON $ aesonOptions $ Just "skill"

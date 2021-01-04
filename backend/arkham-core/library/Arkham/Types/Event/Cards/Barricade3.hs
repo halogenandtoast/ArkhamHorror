@@ -32,5 +32,5 @@ instance (EventRunner env) => RunMessage env Barricade3 where
     MoveFrom _ lid | LocationTarget lid `elem` eventAttachedTarget ->
       e <$ unshiftMessage (Discard (EventTarget eventId))
     AttachEvent eid target | eid == eventId ->
-      pure . Barricade3 $ attrs & attachedTarget ?~ target
+      pure . Barricade3 $ attrs & attachedTargetL ?~ target
     _ -> Barricade3 <$> runMessage msg attrs

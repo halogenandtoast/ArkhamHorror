@@ -108,8 +108,6 @@ instance CampaignRunner env => RunMessage env NightOfTheZealot where
       pure
         . NightOfTheZealot
         $ attrs
-        & step
-        .~ nextStep
-        & completedSteps
-        %~ completeStep campaignStep
+        & (stepL .~ nextStep)
+        & (completedStepsL %~ completeStep campaignStep)
     _ -> NightOfTheZealot <$> runMessage msg attrs

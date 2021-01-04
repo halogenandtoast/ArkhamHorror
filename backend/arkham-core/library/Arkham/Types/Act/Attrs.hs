@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Types.Act.Attrs
   ( module Arkham.Types.Act.Attrs
   , module X
@@ -19,6 +21,8 @@ data Attrs = Attrs
   , actTreacheries :: HashSet TreacheryId
   }
   deriving stock (Show, Generic)
+
+makeLensesWith suffixedFields ''Attrs
 
 instance ToJSON Attrs where
   toJSON = genericToJSON $ aesonOptions $ Just "act"
@@ -42,12 +46,6 @@ instance Entity Attrs where
 
 onSide :: ActSide -> Attrs -> Bool
 onSide side Attrs {..} = actSide actSequence == side
-
-sequenceL :: Lens' Attrs ActSequence
-sequenceL = lens actSequence $ \m x -> m { actSequence = x }
-
-treacheriesL :: Lens' Attrs (HashSet TreacheryId)
-treacheriesL = lens actTreacheries $ \m x -> m { actTreacheries = x }
 
 baseAttrs :: ActId -> Text -> ActSequence -> Maybe RequiredClues -> Attrs
 baseAttrs aid name seq' mRequiredClues = Attrs

@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Types.Asset.Attrs where
 
 import Arkham.Import
@@ -31,6 +33,8 @@ data Attrs = Attrs
   , assetIsStory :: Bool
   }
   deriving stock (Show, Generic)
+
+makeLensesWith suffixedFields ''Attrs
 
 instance ToJSON Attrs where
   toJSON = genericToJSON $ aesonOptions $ Just "asset"
@@ -99,38 +103,8 @@ assetAction iid attrs idx mAction cost =
   ActivateCardAbilityAction iid
     $ mkAbility (toSource attrs) idx (ActionAbility mAction cost)
 
-doomL :: Lens' Attrs Int
-doomL = lens assetDoom $ \m x -> m { assetDoom = x }
-
-cluesL :: Lens' Attrs Int
-cluesL = lens assetClues $ \m x -> m { assetClues = x }
-
-exhaustedL :: Lens' Attrs Bool
-exhaustedL = lens assetExhausted $ \m x -> m { assetExhausted = x }
-
-isStoryL :: Lens' Attrs Bool
-isStoryL = lens assetIsStory $ \m x -> m { assetIsStory = x }
-
-usesL :: Lens' Attrs Uses
-usesL = lens assetUses $ \m x -> m { assetUses = x }
-
-investigatorL :: Lens' Attrs (Maybe InvestigatorId)
-investigatorL = lens assetInvestigator $ \m x -> m { assetInvestigator = x }
-
-locationL :: Lens' Attrs (Maybe LocationId)
-locationL = lens assetLocation $ \m x -> m { assetLocation = x }
-
-enemyL :: Lens' Attrs (Maybe EnemyId)
-enemyL = lens assetEnemy $ \m x -> m { assetEnemy = x }
-
 getInvestigator :: HasCallStack => Attrs -> InvestigatorId
 getInvestigator = fromJustNote "asset must be owned" . view investigatorL
-
-healthDamageL :: Lens' Attrs Int
-healthDamageL = lens assetHealthDamage $ \m x -> m { assetHealthDamage = x }
-
-sanityDamageL :: Lens' Attrs Int
-sanityDamageL = lens assetSanityDamage $ \m x -> m { assetSanityDamage = x }
 
 defeated :: Attrs -> Bool
 defeated Attrs {..} =

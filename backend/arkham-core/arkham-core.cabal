@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 30f8c1a1105e313a51b634225c593beb6cb096c6b464445658773d1cf48fa6b7
+-- hash: 60d1009d689c24682b381053b9ae9acf3655e5b0928ca02dc309430be91342c3
 
 name:           arkham-core
 version:        0.0.0
@@ -646,6 +646,7 @@ library
     , random-shuffle
     , safe
     , semialign
+    , template-haskell
     , text
     , these
     , these-lens

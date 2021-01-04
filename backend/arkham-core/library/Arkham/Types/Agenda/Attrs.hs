@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Types.Agenda.Attrs
   ( module Arkham.Types.Agenda.Attrs
   , module X
@@ -20,6 +22,8 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
+makeLensesWith suffixedFields ''Attrs
+
 instance ToJSON Attrs where
   toJSON = genericToJSON $ aesonOptions $ Just "agenda"
   toEncoding = genericToEncoding $ aesonOptions $ Just "agenda"
@@ -36,22 +40,6 @@ instance Entity Attrs where
   isSource _ _ = False
   isTarget Attrs { agendaId } (AgendaTarget aid) = agendaId == aid
   isTarget _ _ = False
-
-doomL :: Lens' Attrs Int
-doomL = lens agendaDoom $ \m x -> m { agendaDoom = x }
-
-sequenceL :: Lens' Attrs AgendaSequence
-sequenceL = lens agendaSequence $ \m x -> m { agendaSequence = x }
-
-flippedL :: Lens' Attrs Bool
-flippedL = lens agendaFlipped $ \m x -> m { agendaFlipped = x }
-
-doomThresholdL :: Lens' Attrs (GameValue Int)
-doomThresholdL =
-  lens agendaDoomThreshold $ \m x -> m { agendaDoomThreshold = x }
-
-treacheriesL :: Lens' Attrs (HashSet TreacheryId)
-treacheriesL = lens agendaTreacheries $ \m x -> m { agendaTreacheries = x }
 
 baseAttrs :: AgendaId -> Text -> AgendaSequence -> GameValue Int -> Attrs
 baseAttrs aid name seq' threshold = Attrs

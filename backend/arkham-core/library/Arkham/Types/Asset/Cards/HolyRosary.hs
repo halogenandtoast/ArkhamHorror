@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.HolyRosary where
 
 import Arkham.Import

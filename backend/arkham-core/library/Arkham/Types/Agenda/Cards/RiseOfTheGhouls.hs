@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.RiseOfTheGhouls where
 
 import Arkham.Import

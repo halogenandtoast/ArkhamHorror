@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.BookOfShadows3
   ( BookOfShadows3(..)
   , bookOfShadows3

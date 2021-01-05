@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Act.Cards.AfterHours where
 
 import Arkham.Import

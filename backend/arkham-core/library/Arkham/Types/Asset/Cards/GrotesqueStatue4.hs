@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Asset.Cards.GrotesqueStatue4
   ( GrotesqueStatue4(..)
   , grotesqueStatue4

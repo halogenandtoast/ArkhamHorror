@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location
   ( lookupLocation
   , baseLocation

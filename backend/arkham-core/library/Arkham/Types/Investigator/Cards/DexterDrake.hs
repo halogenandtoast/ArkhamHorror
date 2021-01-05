@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.DexterDrake where
 
 import Arkham.Import

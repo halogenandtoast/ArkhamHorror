@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy.Cards.RuthTurner where
 
 import Arkham.Import

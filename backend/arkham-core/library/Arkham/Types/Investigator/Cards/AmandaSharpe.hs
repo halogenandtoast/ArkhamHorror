@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.AmandaSharpe where
 
 import Arkham.Import

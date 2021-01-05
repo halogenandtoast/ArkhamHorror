@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.SearchForTheTruth where
 
 import Arkham.Import

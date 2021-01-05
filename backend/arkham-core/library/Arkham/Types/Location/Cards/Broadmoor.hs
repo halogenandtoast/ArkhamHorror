@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Location.Cards.Broadmoor
   ( Broadmoor(..)
   , broadmoor

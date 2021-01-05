@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.MinhThiPhan where
 
 import Arkham.Import

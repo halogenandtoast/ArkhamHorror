@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Treachery.Cards.Paranoia where
 
 import Arkham.Import

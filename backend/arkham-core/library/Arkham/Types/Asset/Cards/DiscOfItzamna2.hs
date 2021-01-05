@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.DiscOfItzamna2 where
 
 import Arkham.Import

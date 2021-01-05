@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Act.Cards.MysteriousGateway where
 
 import Arkham.Import

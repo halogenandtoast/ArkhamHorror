@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Asset.Cards.Encyclopedia2
   ( Encyclopedia2(..)
   , encyclopedia2

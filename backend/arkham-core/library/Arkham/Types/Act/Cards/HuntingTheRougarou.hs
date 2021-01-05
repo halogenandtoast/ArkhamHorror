@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Act.Cards.HuntingTheRougarou where
 
 import Arkham.Import

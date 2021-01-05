@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Enemy.Cards.AcolyteOfUmordhoth where
 
 import Arkham.Import

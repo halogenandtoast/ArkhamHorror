@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.Elusive where
 
 import Arkham.Import

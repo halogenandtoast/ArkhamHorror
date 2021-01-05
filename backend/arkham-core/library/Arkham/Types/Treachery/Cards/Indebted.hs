@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Treachery.Cards.Indebted
   ( Indebted(..)
   , indebted

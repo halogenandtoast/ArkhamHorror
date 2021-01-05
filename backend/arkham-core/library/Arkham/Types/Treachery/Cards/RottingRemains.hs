@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Treachery.Cards.RottingRemains where
 
 import Arkham.Import

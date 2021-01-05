@@ -1,6 +1,3 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Treachery.Cards.OnTheProwl
   ( OnTheProwl(..)
   , onTheProwl

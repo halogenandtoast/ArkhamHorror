@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.ExtraAmmunition1 where
 
 import Arkham.Import

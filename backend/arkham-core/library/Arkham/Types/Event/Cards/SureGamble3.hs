@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.SureGamble3 where
 
 import Arkham.Import

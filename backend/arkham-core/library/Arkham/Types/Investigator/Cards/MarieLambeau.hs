@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Investigator.Cards.MarieLambeau where
 
 import Arkham.Import

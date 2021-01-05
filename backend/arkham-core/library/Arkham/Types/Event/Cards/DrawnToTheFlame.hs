@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.DrawnToTheFlame where
 
 import Arkham.Import

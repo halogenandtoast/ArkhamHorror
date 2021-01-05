@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Asset.Cards.Scrying
   ( Scrying(..)
   , scrying

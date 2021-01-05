@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Cards.OrneLibrary where
 
 import Arkham.Import

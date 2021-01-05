@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.UndergroundMuscle
   ( UndergroundMuscle(..)
   , undergroundMuscle

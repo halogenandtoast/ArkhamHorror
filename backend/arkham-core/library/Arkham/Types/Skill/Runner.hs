@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Skill.Runner where
 
 import Arkham.Types.Classes

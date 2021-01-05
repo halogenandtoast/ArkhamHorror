@@ -1,6 +1,3 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Investigator.Attrs where
 
 import Arkham.Import

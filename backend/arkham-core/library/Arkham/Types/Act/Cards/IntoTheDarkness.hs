@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Act.Cards.IntoTheDarkness where
 
 import Arkham.Import

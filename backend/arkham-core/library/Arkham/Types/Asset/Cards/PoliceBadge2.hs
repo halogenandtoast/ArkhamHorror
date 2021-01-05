@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Asset.Cards.PoliceBadge2
   ( PoliceBadge2(..)
   , policeBadge2

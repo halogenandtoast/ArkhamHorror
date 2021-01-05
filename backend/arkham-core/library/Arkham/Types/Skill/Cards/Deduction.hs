@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Skill.Cards.Deduction where
 
 import Arkham.Import

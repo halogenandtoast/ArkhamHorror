@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Enemy.Cards.HuntingHorror where
 
 import Arkham.Import

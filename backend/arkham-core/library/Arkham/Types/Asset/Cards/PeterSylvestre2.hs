@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Asset.Cards.PeterSylvestre2
   ( PeterSylvestre2(..)
   , peterSylvestre2

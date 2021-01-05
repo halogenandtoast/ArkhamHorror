@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey
   ( ReturnToPredatorOrPrey(..)
   , returnToPredatorOrPrey

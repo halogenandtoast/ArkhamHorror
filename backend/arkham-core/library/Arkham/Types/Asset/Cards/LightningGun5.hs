@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Asset.Cards.LightningGun5
   ( lightningGun5
   , LightningGun5(..)

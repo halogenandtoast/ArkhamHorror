@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Treachery.Cards.BeyondTheVeil
   ( BeyondTheVeil(..)
   , beyondTheVeil

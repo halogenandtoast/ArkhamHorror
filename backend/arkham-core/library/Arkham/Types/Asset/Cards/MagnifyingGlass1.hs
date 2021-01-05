@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.MagnifyingGlass1 where
 
 import Arkham.Import

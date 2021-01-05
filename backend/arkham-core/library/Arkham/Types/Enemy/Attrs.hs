@@ -1,6 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-{-# OPTIONS_GHC -Wno-deprecations #-}
-
 module Arkham.Types.Enemy.Attrs where
 
 import Arkham.Import

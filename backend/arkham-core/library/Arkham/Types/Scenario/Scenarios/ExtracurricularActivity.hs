@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Scenario.Scenarios.ExtracurricularActivity where
 
 import Arkham.Import hiding (Cultist)

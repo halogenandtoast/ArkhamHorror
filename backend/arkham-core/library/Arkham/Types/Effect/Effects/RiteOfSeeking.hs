@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Effect.Effects.RiteOfSeeking
   ( riteOfSeeking
   , RiteOfSeeking(..)

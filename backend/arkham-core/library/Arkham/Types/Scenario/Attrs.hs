@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Scenario.Attrs
   ( module Arkham.Types.Scenario.Attrs
   , module X

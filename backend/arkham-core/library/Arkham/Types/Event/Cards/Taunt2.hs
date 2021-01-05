@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.Taunt2
   ( taunt2
   , Taunt2(..)

@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.Aquinnah1
   ( Aquinnah1(..)
   , aquinnah1

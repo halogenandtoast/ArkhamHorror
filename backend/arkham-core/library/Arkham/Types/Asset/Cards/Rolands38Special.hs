@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Asset.Cards.Rolands38Special
   ( Rolands38Special(..)
   , rolands38Special

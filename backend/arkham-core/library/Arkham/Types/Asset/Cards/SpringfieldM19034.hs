@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Asset.Cards.SpringfieldM19034
   ( springfieldM19034
   , SpringfieldM19034(..)

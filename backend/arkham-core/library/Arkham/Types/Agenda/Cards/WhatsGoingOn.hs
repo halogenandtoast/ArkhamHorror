@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Agenda.Cards.WhatsGoingOn where
 
 import Arkham.Import

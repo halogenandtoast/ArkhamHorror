@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Act.Cards.Fold
   ( Fold(..)
   , fold

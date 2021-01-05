@@ -12,7 +12,7 @@ where
 import Api.Arkham.Helpers
 import Arkham.Types.CampaignId
 import Arkham.Types.Difficulty
-import Arkham.Types.Game hiding (investigators)
+import Arkham.Types.Game
 import Arkham.Types.Helpers
 import Arkham.Types.Investigator
 import Arkham.Types.InvestigatorId

@@ -49,22 +49,23 @@ instance
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-    PassedSkillTest iid _ source _ _ | isSource attrs source -> do
-      actionRemainingCount <- unActionRemainingCount <$> getCount iid
-      if actionRemainingCount > 0
-        then a <$ unshiftMessage
-          (chooseOne
-            iid
-            [ Label
-              "Spend 1 action to deal +1 damage"
-              [ LoseActions iid source 1
-              , CreateSkillTestEffect
-                (EffectModifiers $ toModifiers attrs [DamageDealt 1])
-                source
-                (InvestigatorTarget iid)
+    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _
+      | isSource attrs source -> do
+        actionRemainingCount <- unActionRemainingCount <$> getCount iid
+        if actionRemainingCount > 0
+          then a <$ unshiftMessage
+            (chooseOne
+              iid
+              [ Label
+                "Spend 1 action to deal +1 damage"
+                [ LoseActions iid source 1
+                , CreateSkillTestEffect
+                  (EffectModifiers $ toModifiers attrs [DamageDealt 1])
+                  source
+                  (InvestigatorTarget iid)
+                ]
+              , Label "Skip additional Kukri damage" []
               ]
-            , Label "Skip additional Kukri damage" []
-            ]
-          )
-        else pure a
+            )
+          else pure a
     _ -> Kukri <$> runMessage msg attrs

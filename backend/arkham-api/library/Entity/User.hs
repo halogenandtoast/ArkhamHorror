@@ -1,6 +1,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-missing-deriving-strategies #-}
 module Entity.User where
 
 import ClassyPrelude
@@ -13,5 +14,6 @@ User json sql=users
     passwordDigest Text
     UniqueUsername username
     UniqueEmail email
-    deriving Show
 |]
+
+deriving stock instance Show User

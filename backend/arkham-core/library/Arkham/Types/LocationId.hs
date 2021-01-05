@@ -16,12 +16,8 @@ data LocationName = LocationName
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
 
 locationNameToLabel :: LocationName -> Text
-locationNameToLabel (LocationName title subtitle) =
-  (pack . toLabel . replaceNonLetters . unpack $ title)
-    <> maybe
-         ""
-         (pack . capitalize . toLabel . replaceNonLetters . unpack)
-         subtitle
+locationNameToLabel (LocationName title _) =
+  pack . toLabel . replaceNonLetters . unpack $ title
  where
   capitalize (x : xs) = Char.toUpper x : xs
   capitalize [] = ""

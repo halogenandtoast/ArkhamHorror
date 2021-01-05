@@ -18,7 +18,7 @@ newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung 
 
 facultyOfficesTheNightIsStillYoung :: FacultyOfficesTheNightIsStillYoung
 facultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung
-  $ base { locationVictory = Just 1, locationLabel = "facultyOffices" }
+  $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
     "02054"

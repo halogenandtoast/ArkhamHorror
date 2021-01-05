@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Location.Attrs where
 
 import Arkham.Import hiding (toUpper, toLower)

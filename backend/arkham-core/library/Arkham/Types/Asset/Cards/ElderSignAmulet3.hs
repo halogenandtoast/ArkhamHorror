@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.ElderSignAmulet3 where
 
 import Arkham.Import

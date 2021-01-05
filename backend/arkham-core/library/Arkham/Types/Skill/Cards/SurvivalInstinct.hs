@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Skill.Cards.SurvivalInstinct where
 
 import Arkham.Import

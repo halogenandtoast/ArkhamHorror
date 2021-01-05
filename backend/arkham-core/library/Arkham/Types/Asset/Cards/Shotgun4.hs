@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Asset.Cards.Shotgun4
   ( Shotgun4(..)
   , shotgun4

@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Asset.Cards.CatBurgler1
   ( CatBurgler1(..)
   , catBurgler1

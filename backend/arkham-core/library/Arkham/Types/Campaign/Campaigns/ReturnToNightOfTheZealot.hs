@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Campaign.Campaigns.ReturnToNightOfTheZealot where
 
 import Arkham.Import hiding (Cultist)

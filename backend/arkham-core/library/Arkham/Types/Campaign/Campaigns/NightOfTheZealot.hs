@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Campaign.Campaigns.NightOfTheZealot where
 
 import Arkham.Import

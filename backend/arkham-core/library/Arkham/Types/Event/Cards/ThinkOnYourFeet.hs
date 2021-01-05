@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Event.Cards.ThinkOnYourFeet
   ( thinkOnYourFeet
   , ThinkOnYourFeet(..)

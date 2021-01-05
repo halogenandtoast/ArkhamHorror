@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Campaign.Attrs where
 
 import Arkham.Import hiding (log)

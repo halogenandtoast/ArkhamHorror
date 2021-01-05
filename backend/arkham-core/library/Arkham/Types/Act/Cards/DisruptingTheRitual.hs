@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Act.Cards.DisruptingTheRitual where
 
 import Arkham.Import

@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Event.Cards.IveGotAPlan2
   ( iveGotAPlan2
   , IveGotAPlan2(..)

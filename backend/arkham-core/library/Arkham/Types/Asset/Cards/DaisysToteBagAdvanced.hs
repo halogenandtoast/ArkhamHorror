@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Asset.Cards.DaisysToteBagAdvanced
   ( daisysToteBagAdvanced
   , DaisysToteBagAdvanced(..)

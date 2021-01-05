@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Scenario.Scenarios.TheDevourerBelow where
 
 import Arkham.Import hiding (Cultist)

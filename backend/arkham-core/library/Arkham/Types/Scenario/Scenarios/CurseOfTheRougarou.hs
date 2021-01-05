@@ -1,5 +1,3 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
   ( CurseOfTheRougarou(..)
   , curseOfTheRougarou

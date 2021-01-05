@@ -1,6 +1,3 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Asset
   ( lookupAsset
   , baseAsset

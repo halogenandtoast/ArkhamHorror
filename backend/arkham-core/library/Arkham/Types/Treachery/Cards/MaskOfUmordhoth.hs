@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Treachery.Cards.MaskOfUmordhoth where
 
 import Arkham.Import hiding (Cultist)

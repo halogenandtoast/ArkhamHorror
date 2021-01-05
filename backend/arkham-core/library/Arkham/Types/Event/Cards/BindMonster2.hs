@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Event.Cards.BindMonster2
   ( bindMonster2
   , BindMonster2(..)

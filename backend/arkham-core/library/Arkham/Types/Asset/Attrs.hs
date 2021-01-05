@@ -1,14 +1,11 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Asset.Attrs where
 
 import Arkham.Import
 
-import Arkham.Types.Asset.Uses
-import Arkham.Types.Asset.Class
-import Arkham.Types.Trait
 import Arkham.Types.Action
+import Arkham.Types.Asset.Class
+import Arkham.Types.Asset.Uses
+import Arkham.Types.Trait
 
 data Attrs = Attrs
   { assetName :: Text

@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Location.Cards.Parlor where
 
 import Arkham.Import

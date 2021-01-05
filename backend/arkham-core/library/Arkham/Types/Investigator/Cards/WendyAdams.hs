@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Investigator.Cards.WendyAdams
   ( WendyAdams(..)
   , wendyAdams

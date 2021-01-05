@@ -1,4 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
 module Arkham.Types.Campaign.Campaigns.TheDunwichLegacy where
 
 import Arkham.Import

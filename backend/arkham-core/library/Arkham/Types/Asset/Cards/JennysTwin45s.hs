@@ -1,5 +1,3 @@
-{-# LANGUAGE UndecidableInstances #-}
-
 module Arkham.Types.Asset.Cards.JennysTwin45s
   ( JennysTwin45s(..)
   , jennysTwin45s

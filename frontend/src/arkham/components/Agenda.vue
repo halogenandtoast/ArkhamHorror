@@ -66,7 +66,12 @@ export default defineComponent({
     const interactAction = computed(() => choices.value.findIndex(canInteract));
 
     function abilityLabel(idx: number) {
-      return choices.value[idx].contents[1].type.contents[1];
+      const label = choices.value[idx].contents[1].type.contents[0]
+      if (label) {
+        return typeof label === "string" ? label : label.contents
+      }
+
+      return ""
     }
 
     const abilities = computed(() => {

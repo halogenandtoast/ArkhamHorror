@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0271e2baef30c89211c18585d76699bd8a40225862fe9e6da26ea5e4eed0e483
+-- hash: 2fb9ddfb95a1aadd120de52e16b1970c82f35d3d4c76cda83d51cbfe6e3d1f76
 
 name:           arkham-core
 version:        0.0.0
@@ -626,7 +626,7 @@ library
       Paths_arkham_core
   hs-source-dirs:
       library
-  default-extensions: NoImplicitPrelude NamedFieldPuns RecordWildCards DerivingStrategies DeriveGeneric DeriveAnyClass LambdaCase FlexibleInstances MultiParamTypeClasses GeneralizedNewtypeDeriving OverloadedStrings TypeApplications TypeOperators TupleSections FlexibleContexts ConstraintKinds StandaloneDeriving DerivingVia TypeFamilies ScopedTypeVariables
+  default-extensions: BangPatterns ConstraintKinds DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NamedFieldPuns NoImplicitPrelude OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeOperators UndecidableInstances
   build-depends:
       MonadRandom
     , aeson >=1.5.4.1
@@ -717,7 +717,7 @@ test-suite spec
       Paths_arkham_core
   hs-source-dirs:
       tests
-  default-extensions: NoImplicitPrelude NamedFieldPuns RecordWildCards DerivingStrategies DeriveGeneric DeriveAnyClass LambdaCase FlexibleInstances MultiParamTypeClasses GeneralizedNewtypeDeriving OverloadedStrings TypeApplications TypeOperators TupleSections FlexibleContexts ConstraintKinds StandaloneDeriving DerivingVia TypeFamilies ScopedTypeVariables
+  default-extensions: BangPatterns ConstraintKinds DeriveAnyClass DeriveGeneric DerivingStrategies DerivingVia FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase MultiParamTypeClasses NamedFieldPuns NoImplicitPrelude OverloadedStrings RankNTypes RecordWildCards ScopedTypeVariables StandaloneDeriving TupleSections TypeApplications TypeFamilies TypeOperators UndecidableInstances
   ghc-options: -threaded -rtsopts -O0 "-with-rtsopts=-N"
   build-depends:
       arkham-core

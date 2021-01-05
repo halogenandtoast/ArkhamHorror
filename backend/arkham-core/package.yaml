@@ -4,26 +4,29 @@ dependencies:
 - base >= 4.7 && < 5
 
 default-extensions:
-- NoImplicitPrelude
-- NamedFieldPuns
-- RecordWildCards
-- DerivingStrategies
-- DeriveGeneric
-- DeriveAnyClass
-- LambdaCase
-- FlexibleInstances
-- MultiParamTypeClasses
-- GeneralizedNewtypeDeriving
-- OverloadedStrings
-- TypeApplications
-- TypeOperators
-- TupleSections
-- FlexibleContexts
+- BangPatterns
 - ConstraintKinds
-- StandaloneDeriving
+- DeriveAnyClass
+- DeriveGeneric
+- DerivingStrategies
 - DerivingVia
-- TypeFamilies
+- FlexibleContexts
+- FlexibleInstances
+- GeneralizedNewtypeDeriving
+- LambdaCase
+- MultiParamTypeClasses
+- NamedFieldPuns
+- NoImplicitPrelude
+- OverloadedStrings
+- RankNTypes
+- RecordWildCards
 - ScopedTypeVariables
+- StandaloneDeriving
+- TupleSections
+- TypeApplications
+- TypeFamilies
+- TypeOperators
+- UndecidableInstances
 
 library:
   source-dirs: library

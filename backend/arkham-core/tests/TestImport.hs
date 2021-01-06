@@ -157,18 +157,18 @@ testConnectedLocations f1 f2 = do
   location1 <- testLocation
     "00000"
     (f1
-    . (Location.symbol .~ Square)
-    . (Location.revealedSymbol .~ Square)
-    . (Location.connectedSymbols .~ setFromList [Triangle])
-    . (Location.revealedConnectedSymbols .~ setFromList [Triangle])
+    . (Location.symbolL .~ Square)
+    . (Location.revealedSymbolL .~ Square)
+    . (Location.connectedSymbolsL .~ setFromList [Triangle])
+    . (Location.revealedConnectedSymbolsL .~ setFromList [Triangle])
     )
   location2 <- testLocation
     "00001"
     (f2
-    . (Location.symbol .~ Triangle)
-    . (Location.revealedSymbol .~ Triangle)
-    . (Location.connectedSymbols .~ setFromList [Square])
-    . (Location.revealedConnectedSymbols .~ setFromList [Square])
+    . (Location.symbolL .~ Triangle)
+    . (Location.revealedSymbolL .~ Triangle)
+    . (Location.connectedSymbolsL .~ setFromList [Square])
+    . (Location.revealedConnectedSymbolsL .~ setFromList [Square])
     )
   pure (location1, location2)
 
@@ -180,10 +180,13 @@ testUnconnectedLocations
 testUnconnectedLocations f1 f2 = do
   location1 <- testLocation
     "00000"
-    (f1 . (Location.symbol .~ Square) . (Location.revealedSymbol .~ Square))
+    (f1 . (Location.symbolL .~ Square) . (Location.revealedSymbolL .~ Square))
   location2 <- testLocation
     "00001"
-    (f2 . (Location.symbol .~ Triangle) . (Location.revealedSymbol .~ Triangle))
+    (f2
+    . (Location.symbolL .~ Triangle)
+    . (Location.revealedSymbolL .~ Triangle)
+    )
   pure (location1, location2)
 
 getActionsOf

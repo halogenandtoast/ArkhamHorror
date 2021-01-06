@@ -55,36 +55,42 @@ instance IsCard Attrs where
   getTraits = locationTraits
   getKeywords = mempty
 
-symbol :: Lens' Attrs LocationSymbol
-symbol = lens locationSymbol $ \m x -> m { locationSymbol = x }
+unrevealed :: Attrs -> Bool
+unrevealed = not . locationRevealed
 
-revealedSymbol :: Lens' Attrs LocationSymbol
-revealedSymbol =
+revealed :: Attrs -> Bool
+revealed = locationRevealed
+
+symbolL :: Lens' Attrs LocationSymbol
+symbolL = lens locationSymbol $ \m x -> m { locationSymbol = x }
+
+revealedSymbolL :: Lens' Attrs LocationSymbol
+revealedSymbolL =
   lens locationRevealedSymbol $ \m x -> m { locationRevealedSymbol = x }
 
-connectedSymbols :: Lens' Attrs (HashSet LocationSymbol)
-connectedSymbols =
+connectedSymbolsL :: Lens' Attrs (HashSet LocationSymbol)
+connectedSymbolsL =
   lens locationConnectedSymbols $ \m x -> m { locationConnectedSymbols = x }
 
-revealedConnectedSymbols :: Lens' Attrs (HashSet LocationSymbol)
-revealedConnectedSymbols = lens locationRevealedConnectedSymbols
+revealedConnectedSymbolsL :: Lens' Attrs (HashSet LocationSymbol)
+revealedConnectedSymbolsL = lens locationRevealedConnectedSymbols
   $ \m x -> m { locationRevealedConnectedSymbols = x }
 
-investigators :: Lens' Attrs (HashSet InvestigatorId)
-investigators =
+investigatorsL :: Lens' Attrs (HashSet InvestigatorId)
+investigatorsL =
   lens locationInvestigators $ \m x -> m { locationInvestigators = x }
 
-treacheries :: Lens' Attrs (HashSet TreacheryId)
-treacheries = lens locationTreacheries $ \m x -> m { locationTreacheries = x }
+treacheriesL :: Lens' Attrs (HashSet TreacheryId)
+treacheriesL = lens locationTreacheries $ \m x -> m { locationTreacheries = x }
 
-events :: Lens' Attrs (HashSet EventId)
-events = lens locationEvents $ \m x -> m { locationEvents = x }
+eventsL :: Lens' Attrs (HashSet EventId)
+eventsL = lens locationEvents $ \m x -> m { locationEvents = x }
 
-assets :: Lens' Attrs (HashSet AssetId)
-assets = lens locationAssets $ \m x -> m { locationAssets = x }
+assetsL :: Lens' Attrs (HashSet AssetId)
+assetsL = lens locationAssets $ \m x -> m { locationAssets = x }
 
-connectedLocations :: Lens' Attrs (HashSet LocationId)
-connectedLocations =
+connectedLocationsL :: Lens' Attrs (HashSet LocationId)
+connectedLocationsL =
   lens locationConnectedLocations $ \m x -> m { locationConnectedLocations = x }
 
 baseAttrs
@@ -122,17 +128,17 @@ baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' tr
     , locationEncounterSet = encounterSet
     }
 
-clues :: Lens' Attrs Int
-clues = lens locationClues $ \m x -> m { locationClues = x }
+cluesL :: Lens' Attrs Int
+cluesL = lens locationClues $ \m x -> m { locationClues = x }
 
-label :: Lens' Attrs Text
-label = lens locationLabel $ \m x -> m { locationLabel = x }
+labelL :: Lens' Attrs Text
+labelL = lens locationLabel $ \m x -> m { locationLabel = x }
 
-revealed :: Lens' Attrs Bool
-revealed = lens locationRevealed $ \m x -> m { locationRevealed = x }
+revealedL :: Lens' Attrs Bool
+revealedL = lens locationRevealed $ \m x -> m { locationRevealed = x }
 
-enemies :: Lens' Attrs (HashSet EnemyId)
-enemies = lens locationEnemies $ \m x -> m { locationEnemies = x }
+enemiesL :: Lens' Attrs (HashSet EnemyId)
+enemiesL = lens locationEnemies $ \m x -> m { locationEnemies = x }
 
 getModifiedShroudValueFor
   :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Int
@@ -217,19 +223,19 @@ instance LocationRunner env => RunMessage env Attrs where
         (AlternateSuccessfullInvestigation `elem` modifiers')
         (unshiftMessage (InvestigatorDiscoverClues iid lid 1))
     SetLocationLabel lid label' | lid == locationId ->
-      pure $ a & label .~ label'
+      pure $ a & labelL .~ label'
     PlacedLocation lid | lid == locationId ->
       a <$ unshiftMessage (AddConnection lid locationSymbol)
     AttachTreachery tid (LocationTarget lid) | lid == locationId ->
-      pure $ a & treacheries %~ insertSet tid
+      pure $ a & treacheriesL %~ insertSet tid
     AttachEvent eid (LocationTarget lid) | lid == locationId ->
-      pure $ a & events %~ insertSet eid
-    Discard (TreacheryTarget tid) -> pure $ a & treacheries %~ deleteSet tid
-    Discard (EventTarget eid) -> pure $ a & events %~ deleteSet eid
-    Discard (EnemyTarget eid) -> pure $ a & enemies %~ deleteSet eid
+      pure $ a & eventsL %~ insertSet eid
+    Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
+    Discard (EventTarget eid) -> pure $ a & eventsL %~ deleteSet eid
+    Discard (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
     AttachAsset aid (LocationTarget lid) | lid == locationId ->
-      pure $ a & assets %~ insertSet aid
-    AttachAsset aid _ -> pure $ a & assets %~ deleteSet aid
+      pure $ a & assetsL %~ insertSet aid
+    AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
     AddConnection lid symbol' | lid /= locationId -> do
       -- | Since connections can be one directional we need to check both cases
       let
@@ -242,7 +248,7 @@ instance LocationRunner env => RunMessage env Attrs where
             [ AddConnectionBack locationId locationSymbol
             , AddedConnection locationId lid
             ]
-          pure $ a & connectedLocations %~ insertSet lid
+          pure $ a & connectedLocationsL %~ insertSet lid
         else a <$ unshiftMessages [AddConnectionBack locationId locationSymbol]
     AddConnectionBack lid symbol' | lid /= locationId -> do
       let
@@ -252,7 +258,7 @@ instance LocationRunner env => RunMessage env Attrs where
       if symbol' `elem` symbols
         then do
           unshiftMessage (AddedConnection locationId lid)
-          pure $ a & connectedLocations %~ insertSet lid
+          pure $ a & connectedLocationsL %~ insertSet lid
         else pure a
     DiscoverCluesAtLocation iid lid n | lid == locationId -> do
       let discoveredClues = min n locationClues
@@ -280,24 +286,24 @@ instance LocationRunner env => RunMessage env Attrs where
           InvestigatorInGame -> [AfterDiscoveringClues who LocationInGame]
         )
       unshiftMessages checkWindowMsgs
-      pure $ a & clues -~ n
-    InvestigatorEliminated iid -> pure $ a & investigators %~ deleteSet iid
+      pure $ a & cluesL -~ n
+    InvestigatorEliminated iid -> pure $ a & investigatorsL %~ deleteSet iid
     WhenEnterLocation iid lid
       | lid /= locationId && iid `elem` locationInvestigators
-      -> pure $ a & investigators %~ deleteSet iid -- TODO: should we broadcast leaving the location
+      -> pure $ a & investigatorsL %~ deleteSet iid -- TODO: should we broadcast leaving the location
     WhenEnterLocation iid lid | lid == locationId -> do
       unless locationRevealed $ unshiftMessage (RevealLocation (Just iid) lid)
-      pure $ a & investigators %~ insertSet iid
-    AddToVictory (EnemyTarget eid) -> pure $ a & enemies %~ deleteSet eid
+      pure $ a & investigatorsL %~ insertSet iid
+    AddToVictory (EnemyTarget eid) -> pure $ a & enemiesL %~ deleteSet eid
     EnemyEngageInvestigator eid iid -> do
       lid <- getId @LocationId iid
-      if lid == locationId then pure $ a & enemies %~ insertSet eid else pure a
+      if lid == locationId then pure $ a & enemiesL %~ insertSet eid else pure a
     EnemyMove eid fromLid lid | fromLid == locationId -> do
       willMove <- canEnterLocation eid lid
-      pure $ if willMove then a & enemies %~ deleteSet eid else a
+      pure $ if willMove then a & enemiesL %~ deleteSet eid else a
     EnemyMove eid _ lid | lid == locationId -> do
       willMove <- canEnterLocation eid lid
-      pure $ if willMove then a & enemies %~ insertSet eid else a
+      pure $ if willMove then a & enemiesL %~ insertSet eid else a
     Will next@(EnemySpawn miid lid eid) | lid == locationId -> do
       shouldSpawnNonEliteAtConnectingInstead <-
         getShouldSpawnNonEliteAtConnectingInstead a
@@ -334,16 +340,16 @@ instance LocationRunner env => RunMessage env Attrs where
               )
       pure a
     EnemySpawn _ lid eid | lid == locationId ->
-      pure $ a & enemies %~ insertSet eid
+      pure $ a & enemiesL %~ insertSet eid
     EnemySpawnedAt lid eid | lid == locationId ->
-      pure $ a & enemies %~ insertSet eid
-    RemoveEnemy eid -> pure $ a & enemies %~ deleteSet eid
-    EnemyDefeated eid _ _ _ _ _ -> pure $ a & enemies %~ deleteSet eid
-    TakeControlOfAsset _ aid -> pure $ a & assets %~ deleteSet aid
+      pure $ a & enemiesL %~ insertSet eid
+    RemoveEnemy eid -> pure $ a & enemiesL %~ deleteSet eid
+    EnemyDefeated eid _ _ _ _ _ -> pure $ a & enemiesL %~ deleteSet eid
+    TakeControlOfAsset _ aid -> pure $ a & assetsL %~ deleteSet aid
     PlaceClues (LocationTarget lid) n | lid == locationId ->
-      pure $ a & clues +~ n
+      pure $ a & cluesL +~ n
     RemoveClues (LocationTarget lid) n | lid == locationId ->
-      pure $ a & clues %~ max 0 . subtract n
+      pure $ a & cluesL %~ max 0 . subtract n
     RevealLocation miid lid | lid == locationId -> do
       locationClueCount <-
         fromGameValue locationRevealClues . unPlayerCount <$> getCount ()
@@ -352,10 +358,10 @@ instance LocationRunner env => RunMessage env Attrs where
         : [ CheckWindow iid [AfterRevealLocation You]
           | iid <- maybeToList miid
           ]
-      pure $ a & clues +~ locationClueCount & revealed .~ True
+      pure $ a & cluesL +~ locationClueCount & revealedL .~ True
     RevealLocation _ lid | lid /= locationId ->
-      pure $ a & connectedLocations %~ deleteSet lid
-    RemoveLocation lid -> pure $ a & connectedLocations %~ deleteSet lid
+      pure $ a & connectedLocationsL %~ deleteSet lid
+    RemoveLocation lid -> pure $ a & connectedLocationsL %~ deleteSet lid
     UseCardAbility iid source _ 99 | isSource a source ->
       a <$ unshiftMessage (Resign iid)
     _ -> pure a

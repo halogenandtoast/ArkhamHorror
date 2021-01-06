@@ -33,5 +33,5 @@ instance (LocationRunner env) => RunMessage env RitualSite where
       playerCount <- unPlayerCount <$> getCount ()
       RitualSite <$> runMessage
         msg
-        (attrs & clues .~ fromGameValue (PerPlayer 2) playerCount)
+        (attrs & cluesL .~ fromGameValue (PerPlayer 2) playerCount)
     _ -> RitualSite <$> runMessage msg attrs

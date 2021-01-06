@@ -9,7 +9,6 @@ import Arkham.Import
 import Arkham.Types.Trait
 import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
-import qualified Data.HashSet as HashSet
 
 newtype HuntedDown = HuntedDown Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -27,7 +26,7 @@ instance TreacheryRunner env => RunMessage env HuntedDown where
   runMessage msg t@(HuntedDown attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source -> do
       destinationId <- getId @LocationId iid
-      unengagedEnemyIds <- HashSet.map unUnengagedEnemyId <$> getSet ()
+      unengagedEnemyIds <- mapSet unUnengagedEnemyId <$> getSet ()
       criminalEnemyIds <- getSet Criminal
       let enemiesToMove = criminalEnemyIds `intersection` unengagedEnemyIds
       if null enemiesToMove

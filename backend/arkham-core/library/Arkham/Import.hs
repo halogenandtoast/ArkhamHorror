@@ -27,6 +27,7 @@ import Arkham.Types.Exception as X
 import Arkham.Types.GameValue as X
 import Arkham.Types.Helpers as X
 import Arkham.Types.InvestigatorId as X
+import Arkham.Types.Location.Name as X
 import Arkham.Types.LocationId as X
 import Arkham.Types.LocationMatcher as X
 import Arkham.Types.LocationSymbol as X

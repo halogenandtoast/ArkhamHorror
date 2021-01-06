@@ -5,7 +5,6 @@ import Arkham.Import
 import Arkham.Types.Action
 import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
-import qualified Data.HashSet as HashSet
 
 newtype SurvivalInstinct = SurvivalInstinct Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -25,14 +24,12 @@ instance SkillRunner env => RunMessage env SurvivalInstinct where
       do
         engagedEnemyIds <- getSetList iid
         locationId <- getId @LocationId iid
-        blockedLocationIds <- HashSet.map unBlockedLocationId <$> getSet ()
-        connectedLocationIds <- HashSet.map unConnectedLocationId
+        blockedLocationIds <- mapSet unBlockedLocationId <$> getSet ()
+        connectedLocationIds <- mapSet unConnectedLocationId
           <$> getSet locationId
         let
           unblockedConnectedLocationIds =
-            HashSet.toList
-              $ connectedLocationIds
-              `difference` blockedLocationIds
+            setToList $ connectedLocationIds `difference` blockedLocationIds
           moveOptions = Ask
             iid
             (ChooseOne

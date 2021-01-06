@@ -5,12 +5,16 @@ import Arkham.Prelude hiding (unpack, toUpper, toLower)
 import Data.Aeson.Text
 import Data.Foldable (foldrM)
 import qualified Data.HashMap.Strict as HashMap
+import qualified Data.HashSet as HashSet
 import qualified Data.List as L
 import Data.List.NonEmpty (NonEmpty)
 import qualified Data.List.NonEmpty as NE
 import Data.Text.Lazy (unpack)
 import Data.Text.Lazy.Builder
 import Data.Char (isLetter, toLower, toUpper)
+
+mapSet :: (Hashable b, Eq b) => (a -> b) -> HashSet a -> HashSet b
+mapSet = HashSet.map
 
 toLabel :: String -> String
 toLabel [] = []

@@ -15,7 +15,6 @@ import Arkham.Types.SkillTestResult
 import Arkham.Types.Stats
 import Arkham.Types.TokenResponse
 import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
 import Data.Semigroup
 import System.Environment
 
@@ -66,7 +65,7 @@ instance HasModifiersFor env SkillTest where
 instance HasSet CommittedCardId env (InvestigatorId, SkillTest) where
   getSet (iid, st) =
     pure
-      . HashSet.map CommittedCardId
+      . mapSet CommittedCardId
       . keysSet
       . filterMap ((== iid) . fst)
       $ skillTestCommittedCards st

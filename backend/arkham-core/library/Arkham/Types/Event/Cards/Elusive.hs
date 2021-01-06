@@ -4,7 +4,6 @@ import Arkham.Import
 
 import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
-import qualified Data.HashSet as HashSet
 
 newtype Elusive = Elusive Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -22,8 +21,8 @@ instance (EventRunner env) => RunMessage env Elusive where
   runMessage msg e@(Elusive attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> do
       enemyIds <- getSetList iid
-      emptyLocations <- HashSet.map unEmptyLocationId <$> getSet ()
-      revealedLocations <- HashSet.map unRevealedLocationId <$> getSet ()
+      emptyLocations <- mapSet unEmptyLocationId <$> getSet ()
+      revealedLocations <- mapSet unRevealedLocationId <$> getSet ()
       let
         candidateLocations =
           setToList $ emptyLocations `intersection` revealedLocations

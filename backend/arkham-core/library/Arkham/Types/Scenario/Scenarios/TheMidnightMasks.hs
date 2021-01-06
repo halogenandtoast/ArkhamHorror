@@ -12,7 +12,6 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.Token
 import Arkham.Types.Trait (Trait)
 import qualified Arkham.Types.Trait as Trait
-import qualified Data.HashSet as HashSet
 import Data.List.NonEmpty (NonEmpty(..))
 import System.Random.Shuffle
 
@@ -202,7 +201,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
     NoResolution -> s <$ unshiftMessage (Resolution 1)
     Resolution 1 -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      victoryDisplay <- HashSet.map unVictoryDisplayCardCode <$> getSet ()
+      victoryDisplay <- mapSet unVictoryDisplayCardCode <$> getSet ()
       investigatorIds <- getInvestigatorIds
       xp <- getXp
       let
@@ -234,7 +233,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
         )
     Resolution 2 -> do
       leadInvestigatorId <- getLeadInvestigatorId
-      victoryDisplay <- HashSet.map unVictoryDisplayCardCode <$> getSet ()
+      victoryDisplay <- mapSet unVictoryDisplayCardCode <$> getSet ()
       investigatorIds <- getInvestigatorIds
       xp <- getXp
       let

@@ -16,8 +16,6 @@ import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.SkillType
 import Arkham.Types.Trait
 import Arkham.Types.Window
-import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
 
 data PlayerCardType
   = AssetType
@@ -86,7 +84,7 @@ genPlayerCard cardCode = lookupPlayerCard cardCode <$> getRandom
 lookupPlayerCard :: CardCode -> (CardId -> PlayerCard)
 lookupPlayerCard cardCode =
   fromJustNote ("Unknown card: " <> show cardCode)
-    $ HashMap.lookup cardCode allPlayerCards
+    $ lookup cardCode allPlayerCards
 
 basePlayerCard
   :: CardId
@@ -150,7 +148,7 @@ playerCardMatch (cardType, mtrait) MkPlayerCard {..} =
   pcCardType == cardType && maybe True (`elem` pcTraits) mtrait
 
 allPlayerCards :: HashMap CardCode (CardId -> PlayerCard)
-allPlayerCards = HashMap.fromList
+allPlayerCards = mapFromList
   [ ("asset", placeholderAsset)
   , ("01006", rolands38Special)
   , ("01007", coverUp)
@@ -368,7 +366,7 @@ onTheLam cardId = (event cardId "01010" "On the Lam" 1 Neutral)
   { pcTraits = setFromList [Tactic]
   , pcSkills = [SkillIntellect, SkillAgility, SkillWild, SkillWild]
   , pcFast = True
-  , pcWindows = HashSet.fromList [AfterTurnBegins You, DuringTurn You]
+  , pcWindows = setFromList [AfterTurnBegins You, DuringTurn You]
   }
 
 hospitalDebts :: CardId -> PlayerCard
@@ -443,7 +441,7 @@ evidence cardId = (event cardId "01022" "Evidence!" 1 Guardian)
   { pcSkills = [SkillIntellect, SkillIntellect]
   , pcTraits = setFromList [Insight]
   , pcFast = True
-  , pcWindows = HashSet.fromList [WhenEnemyDefeated You]
+  , pcWindows = setFromList [WhenEnemyDefeated You]
   }
 
 dodge :: CardId -> PlayerCard
@@ -451,7 +449,7 @@ dodge cardId = (event cardId "01023" "Dodge" 1 Guardian)
   { pcSkills = [SkillWillpower, SkillAgility]
   , pcTraits = setFromList [Tactic]
   , pcFast = True
-  , pcWindows = HashSet.fromList [WhenEnemyAttacks InvestigatorAtYourLocation]
+  , pcWindows = setFromList [WhenEnemyAttacks InvestigatorAtYourLocation]
   }
 
 dynamiteBlast :: CardId -> PlayerCard
@@ -499,7 +497,7 @@ magnifyingGlass cardId = (asset cardId "01030" "Magnifying Glass" 1 Seeker)
   { pcSkills = [SkillIntellect]
   , pcTraits = setFromList [Item, Tool]
   , pcFast = True
-  , pcWindows = HashSet.fromList [DuringTurn You]
+  , pcWindows = setFromList [DuringTurn You]
   }
 
 oldBookOfLore :: CardId -> PlayerCard
@@ -538,7 +536,7 @@ mindOverMatter cardId = (event cardId "01036" "Mind over Matter" 1 Seeker)
   { pcSkills = [SkillCombat, SkillAgility]
   , pcTraits = setFromList [Insight]
   , pcFast = True
-  , pcWindows = HashSet.fromList [DuringTurn You]
+  , pcWindows = setFromList [DuringTurn You]
   }
 
 workingAHunch :: CardId -> PlayerCard
@@ -565,7 +563,7 @@ magnifyingGlass1 cardId = (asset cardId "01040" "Magnifying Glass" 0 Seeker)
   { pcSkills = [SkillIntellect]
   , pcTraits = setFromList [Item, Tool]
   , pcFast = True
-  , pcWindows = HashSet.fromList [DuringTurn You]
+  , pcWindows = setFromList [DuringTurn You]
   , pcLevel = 1
   }
 
@@ -588,7 +586,7 @@ crypticResearch4 cardId = (event cardId "01043" "Cryptic Research" 0 Seeker)
   { pcTraits = setFromList [Insight]
   , pcLevel = 4
   , pcFast = True
-  , pcWindows = HashSet.fromList [DuringTurn You]
+  , pcWindows = setFromList [DuringTurn You]
   }
 
 switchblade :: CardId -> PlayerCard
@@ -596,7 +594,7 @@ switchblade cardId = (asset cardId "01044" "Switchbalde" 1 Rogue)
   { pcSkills = [SkillAgility]
   , pcTraits = setFromList [Item, Weapon, Melee, Illicit]
   , pcFast = True
-  , pcWindows = HashSet.fromList [DuringTurn You]
+  , pcWindows = setFromList [DuringTurn You]
   }
 
 burglary :: CardId -> PlayerCard
@@ -634,7 +632,7 @@ elusive cardId = (event cardId "01050" "Elusive" 2 Rogue)
   { pcSkills = [SkillIntellect, SkillAgility]
   , pcTraits = setFromList [Tactic]
   , pcFast = True
-  , pcWindows = HashSet.fromList [DuringTurn You]
+  , pcWindows = setFromList [DuringTurn You]
   }
 
 backstab :: CardId -> PlayerCard
@@ -733,7 +731,7 @@ wardOfProtection cardId = (event cardId "01065" "Ward of Protection" 1 Mystic)
   { pcSkills = [SkillWild]
   , pcTraits = setFromList [Spell, Spirit]
   , pcFast = True
-  , pcWindows = HashSet.fromList [WhenDrawTreachery You]
+  , pcWindows = setFromList [WhenDrawTreachery You]
   }
 
 blindingLight :: CardId -> PlayerCard
@@ -754,7 +752,7 @@ mindWipe1 cardId = (event cardId "01068" "Mind Wipe" 1 Mystic)
   , pcTraits = setFromList [Spell]
   , pcLevel = 1
   , pcFast = True
-  , pcWindows = HashSet.fromList [AnyPhaseBegins]
+  , pcWindows = setFromList [AnyPhaseBegins]
   }
 
 blindingLight2 :: CardId -> PlayerCard
@@ -829,7 +827,7 @@ lookWhatIFound cardId =
     { pcSkills = [SkillIntellect, SkillIntellect]
     , pcTraits = setFromList [Fortune]
     , pcFast = True
-    , pcWindows = HashSet.fromList [ AfterFailSkillTest You n | n <- [0 .. 2] ]
+    , pcWindows = setFromList [ AfterFailSkillTest You n | n <- [0 .. 2] ]
     }
 
 lucky :: CardId -> PlayerCard
@@ -1438,7 +1436,7 @@ mindWipe3 cardId = (event cardId "50008" "Mind Wipe" 1 Mystic)
   , pcTraits = setFromList [Spell]
   , pcLevel = 3
   , pcFast = True
-  , pcWindows = HashSet.fromList [AnyPhaseBegins]
+  , pcWindows = setFromList [AnyPhaseBegins]
   }
 
 digDeep2 :: CardId -> PlayerCard

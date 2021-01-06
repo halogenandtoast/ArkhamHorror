@@ -5,7 +5,6 @@ import Arkham.Import
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Trait
-import qualified Data.HashSet as HashSet
 
 newtype TheyreGettingOut = TheyreGettingOut Attrs
   deriving newtype (Show, ToJSON, FromJSON)
@@ -37,7 +36,7 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
         else a <$ unshiftMessage NoResolution -- TODO: defeated and suffer trauma
     EndEnemy -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      unengagedEnemyIds <- HashSet.map unUnengagedEnemyId <$> getSet ()
+      unengagedEnemyIds <- mapSet unUnengagedEnemyId <$> getSet ()
       ghoulEnemyIds <- getSet Ghoul
       parlorEnemyIds <- getSet (LocationWithTitle "Parlor")
       let

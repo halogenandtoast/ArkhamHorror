@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2fb9ddfb95a1aadd120de52e16b1970c82f35d3d4c76cda83d51cbfe6e3d1f76
+-- hash: d4b2f060ef5e50e8c471a486276fa8f769bc7ced3544cb96305e9d3b069f943e
 
 name:           arkham-core
 version:        0.0.0
@@ -490,6 +490,7 @@ library
       Arkham.Types.Location.Cards.VipArea
       Arkham.Types.Location.Cards.YourHouse
       Arkham.Types.Location.Helpers
+      Arkham.Types.Location.Name
       Arkham.Types.Location.Runner
       Arkham.Types.LocationId
       Arkham.Types.LocationMatcher

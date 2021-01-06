@@ -39,7 +39,6 @@ import Data.These
 import Data.These.Lens
 import Data.List.Extra (groupOn, cycle)
 import qualified Data.HashMap.Strict as HashMap
-import qualified Data.HashSet as HashSet
 import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.Sequence as Seq
 import Data.UUID.V4
@@ -948,7 +947,7 @@ instance HasSet ExhaustedEnemyId (Game queue) LocationId where
   getSet lid = do
     location <- getLocation lid <$> ask
     locationEnemyIds <- getSet @EnemyId location
-    HashSet.map ExhaustedEnemyId
+    mapSet ExhaustedEnemyId
       . keysSet
       . filterMap (\e -> toId e `member` locationEnemyIds && isExhausted e)
       <$> view enemiesL
@@ -1018,14 +1017,14 @@ instance HasList LocationName (Game queue) () where
 
 instance HasSet EmptyLocationId (Game queue) () where
   getSet _ =
-    HashSet.map EmptyLocationId
+    mapSet EmptyLocationId
       . keysSet
       . filterMap isEmptyLocation
       <$> view locationsL
 
 instance HasSet RevealedLocationId (Game queue) () where
   getSet _ =
-    HashSet.map RevealedLocationId
+    mapSet RevealedLocationId
       . keysSet
       . filterMap isRevealed
       <$> view locationsL
@@ -1073,14 +1072,14 @@ instance HasSet ActId (Game queue) () where
 
 instance HasSet InScenarioInvestigatorId (Game queue) () where
   getSet _ =
-    HashSet.map InScenarioInvestigatorId
+    mapSet InScenarioInvestigatorId
       . keysSet
       . filterMap (not . (\i -> hasResigned i || isDefeated i))
       <$> view investigatorsL
 
 instance HasSet UnengagedEnemyId (Game queue) () where
   getSet _ =
-    HashSet.map UnengagedEnemyId
+    mapSet UnengagedEnemyId
       . keysSet
       . filterMap (not . isEngaged)
       <$> view enemiesL
@@ -1114,8 +1113,7 @@ getShortestPath
   :: Game queue -> LocationId -> (LocationId -> Bool) -> [LocationId]
 getShortestPath !game !initialLocation !target = do
   let
-    !state' =
-      LPState (pure initialLocation) (HashSet.singleton initialLocation) mempty
+    !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
   let !result = evalState (markDistances game initialLocation target) state'
   fromMaybe [] . headMay . drop 1 . map snd . sortOn fst . mapToList $ result
 
@@ -1129,8 +1127,7 @@ getLongestPath
   :: Game queue -> LocationId -> (LocationId -> Bool) -> [LocationId]
 getLongestPath !game !initialLocation !target = do
   let
-    !state' =
-      LPState (pure initialLocation) (HashSet.singleton initialLocation) mempty
+    !state' = LPState (pure initialLocation) (singleton initialLocation) mempty
   let !result = evalState (markDistances game initialLocation target) state'
   fromMaybe [] . headMay . map snd . sortOn (Down . fst) . mapToList $ result
 
@@ -1191,14 +1188,14 @@ instance HasSet ClosestEnemyId (Game queue) LocationId where
       [] -> pure mempty
       lids -> do
         theSet <-
-          HashSet.unions
+          unions
             <$> traverse
-                  (\lid -> HashSet.map ClosestEnemyId
-                    <$> getSet (unClosestLocationId lid)
+                  (\lid ->
+                    mapSet ClosestEnemyId <$> getSet (unClosestLocationId lid)
                   )
                   lids
         if null theSet
-          then HashSet.unions <$> traverse (getSet . unClosestLocationId) lids
+          then unions <$> traverse (getSet . unClosestLocationId) lids
           else pure theSet
     where matcher g lid = not . null $ getSet @EnemyId lid g
 
@@ -1213,15 +1210,15 @@ instance HasSet ClosestEnemyId (Game queue) (LocationId, [Trait]) where
       [] -> pure mempty
       lids -> do
         theSet <-
-          HashSet.unions
+          unions
             <$> traverse
-                  (\lid -> HashSet.map ClosestEnemyId
+                  (\lid -> mapSet ClosestEnemyId
                     <$> getSet (traits, unClosestLocationId lid)
                   )
                   lids
         if null theSet
           then
-            HashSet.unions
+            unions
               <$> traverse
                     (\lid -> getSet (unClosestLocationId lid, traits))
                     lids
@@ -1246,7 +1243,7 @@ instance HasSet ClosestPathLocationId (Game queue) (LocationId, LocationId) wher
               let
                 !state' = LPState
                   (pure initialLocation)
-                  (HashSet.singleton initialLocation)
+                  (singleton initialLocation)
                   mempty
                 !result = evalState
                   (markDistances game initialLocation (== destination))
@@ -1367,11 +1364,10 @@ instance HasSet ConnectedLocationId (Game queue) LocationId where
 instance HasSet AccessibleLocationId (Game queue) LocationId where
   getSet lid = do
     location <- getLocation lid
-    connectedLocationIds <- HashSet.map unConnectedLocationId
-      <$> getSet location
-    blockedLocationIds <- HashSet.map unBlockedLocationId <$> getSet ()
+    connectedLocationIds <- mapSet unConnectedLocationId <$> getSet location
+    blockedLocationIds <- mapSet unBlockedLocationId <$> getSet ()
     pure
-      $ HashSet.map AccessibleLocationId
+      $ mapSet AccessibleLocationId
       $ connectedLocationIds
       `difference` blockedLocationIds
 
@@ -1431,7 +1427,7 @@ instance HasSet HealthDamageableAssetId (Game queue) InvestigatorId where
                 <$> getModifiersFor (InvestigatorSource iid) (AssetTarget a) ()
             )
             otherAssetIds
-    pure $ HashSet.map HealthDamageableAssetId . keysSet $ assets'
+    pure $ mapSet HealthDamageableAssetId . keysSet $ assets'
       allAssets'
       (investigatorAssets <> otherDamageableAssetIds)
    where
@@ -1455,7 +1451,7 @@ instance HasSet SanityDamageableAssetId (Game queue) InvestigatorId where
                 <$> getModifiersFor (InvestigatorSource iid) (AssetTarget a) ()
             )
             otherAssetIds
-    pure $ HashSet.map SanityDamageableAssetId . keysSet $ assets'
+    pure $ mapSet SanityDamageableAssetId . keysSet $ assets'
       allAssets'
       (investigatorAssets <> otherDamageableAssetIds)
    where

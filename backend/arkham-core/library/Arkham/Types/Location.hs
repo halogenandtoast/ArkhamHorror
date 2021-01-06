@@ -22,12 +22,12 @@ import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Cards
+import Arkham.Types.Location.Name
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
 import Arkham.Types.Query
 import Arkham.Types.TreacheryId
 import Data.Coerce
-import qualified Data.HashSet as HashSet
 
 data Location
   = Study' Study
@@ -186,7 +186,7 @@ instance HasSet InvestigatorId env Location where
 instance HasSet ConnectedLocationId env Location where
   getSet =
     pure
-      . HashSet.map ConnectedLocationId
+      . mapSet ConnectedLocationId
       . locationConnectedLocations
       . locationAttrs
 

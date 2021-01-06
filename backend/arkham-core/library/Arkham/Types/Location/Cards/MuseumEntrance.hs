@@ -37,7 +37,6 @@ instance ActionRunner env => HasActions env MuseumEntrance where
       $ pure [ resignAction iid location | iid `on` location ]
   getActions i window (MuseumEntrance location) = getActions i window location
 
-
 instance LocationRunner env => RunMessage env MuseumEntrance where
   runMessage msg (MuseumEntrance location) =
     MuseumEntrance <$> runMessage msg location

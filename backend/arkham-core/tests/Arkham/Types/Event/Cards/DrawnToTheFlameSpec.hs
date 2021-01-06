@@ -33,9 +33,9 @@ spec = describe "Drawn to the flame" $ do
             , moveTo investigator startLocation
             , playEvent investigator drawnToTheFlame
             ]
-            ((events %~ insertEntity drawnToTheFlame)
-            . (locations %~ insertEntity startLocation)
-            . (locations %~ insertEntity centralLocation)
+            ((eventsL %~ insertEntity drawnToTheFlame)
+            . (locationsL %~ insertEntity startLocation)
+            . (locationsL %~ insertEntity centralLocation)
             )
           >>= runGameTestOnlyOption "start skill test"
           >>= runGameTestOnlyOption "apply results"

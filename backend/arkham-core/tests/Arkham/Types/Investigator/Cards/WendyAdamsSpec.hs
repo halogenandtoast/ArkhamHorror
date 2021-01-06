@@ -55,7 +55,7 @@ spec = describe "Wendy Adams" $ do
             , playAsset wendyAdams wendysAmulet
             , beginSkillTest wendyAdams SkillWillpower 20
             ]
-            (assets %~ insertEntity wendysAmulet)
+            (assetsL %~ insertEntity wendysAmulet)
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOptionWithLogger "apply results" logger
       readIORef didPassTest `shouldReturn` True

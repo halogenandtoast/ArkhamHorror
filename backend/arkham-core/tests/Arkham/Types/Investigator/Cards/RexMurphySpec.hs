@@ -20,7 +20,7 @@ spec = describe "Rex Murphy" $ do
           , moveTo rexMurphy location
           , beginSkillTest rexMurphy SkillIntellect 2
           ]
-          (locations %~ insertEntity location)
+          (locationsL %~ insertEntity location)
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
         >>= runGameTestOptionMatching

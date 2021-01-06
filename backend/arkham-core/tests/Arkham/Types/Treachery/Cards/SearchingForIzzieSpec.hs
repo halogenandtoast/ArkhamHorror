@@ -37,7 +37,7 @@ spec = describe "Searching for Izzie" $ do
       , moveTo investigator location
       ]
       (locationsL %~ insertEntity location)
-    let updatedSearchingForIzzie = game ^?! treacheries . to toList . ix 0
+    let updatedSearchingForIzzie = game ^?! treacheriesL . to toList . ix 0
 
     [searchingForIzzieAction] <- getActionsOf
       game

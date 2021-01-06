@@ -21,7 +21,7 @@ spec = describe "Physical Training (2)" $ do
           , playAsset investigator physicalTraining2
           , beginSkillTest investigator SkillWillpower 3
           ]
-          (assets %~ insertEntity physicalTraining2)
+          (assetsL %~ insertEntity physicalTraining2)
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -55,7 +55,7 @@ spec = describe "Physical Training (2)" $ do
           , playAsset investigator physicalTraining2
           , beginSkillTest investigator SkillCombat 3
           ]
-          (assets %~ insertEntity physicalTraining2)
+          (assetsL %~ insertEntity physicalTraining2)
       >>= runGameTestOptionMatching
             "use ability"
             (\case

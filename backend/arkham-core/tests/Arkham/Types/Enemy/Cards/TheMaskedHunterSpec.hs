@@ -14,7 +14,7 @@ spec = describe "The Masked Hunter" $ do
       game <- runGameTest
         investigator
         [engageEnemy investigator theMaskedHunter]
-        (enemies %~ insertEntity theMaskedHunter)
+        (enemiesL %~ insertEntity theMaskedHunter)
       withGame
           game
           (map modifierType
@@ -32,7 +32,7 @@ spec = describe "The Masked Hunter" $ do
             [ engageEnemy investigator theMaskedHunter
             , disengageEnemy investigator theMaskedHunter
             ]
-            (enemies %~ insertEntity theMaskedHunter)
+            (enemiesL %~ insertEntity theMaskedHunter)
           withGame
               game
               (getModifiersFor (TestSource mempty) (toTarget investigator) ())

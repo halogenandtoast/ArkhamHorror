@@ -16,7 +16,7 @@ spec = describe "Arcane Initiate" $ do
     game <- runGameTest
       investigator
       [playAsset investigator arcaneInitiate]
-      (assets %~ insertEntity arcaneInitiate)
+      (assetsL %~ insertEntity arcaneInitiate)
     getCount (updated game arcaneInitiate) () `shouldBe` DoomCount 1
 
   it "can be exhausted to search the top 3 cards of your deck for a Spell card"
@@ -30,7 +30,7 @@ spec = describe "Arcane Initiate" $ do
           [ playAsset investigator arcaneInitiate
           , loadDeck investigator (card : otherCards)
           ]
-          (assets %~ insertEntity arcaneInitiate)
+          (assetsL %~ insertEntity arcaneInitiate)
 
         [ability] <- getActionsOf
           game
@@ -51,7 +51,7 @@ spec = describe "Arcane Initiate" $ do
     game <- runGameTest
       investigator
       [playAsset investigator arcaneInitiate, loadDeck investigator cards]
-      (assets %~ insertEntity arcaneInitiate)
+      (assetsL %~ insertEntity arcaneInitiate)
 
     [ability] <- getActionsOf game investigator FastPlayerWindow arcaneInitiate
 

@@ -26,9 +26,9 @@ spec = describe "Roland's .39 Special" $ do
       , playAsset investigator rolands38Special
       , moveTo investigator location
       ]
-      ((assets %~ insertEntity rolands38Special)
-      . (enemies %~ insertEntity enemy)
-      . (locations %~ insertEntity location)
+      ((assetsL %~ insertEntity rolands38Special)
+      . (enemiesL %~ insertEntity enemy)
+      . (locationsL %~ insertEntity location)
       )
 
     [fightAction] <- getActionsOf game investigator NonFast rolands38Special
@@ -57,9 +57,9 @@ spec = describe "Roland's .39 Special" $ do
           , playAsset investigator rolands38Special
           , moveTo investigator location
           ]
-          ((assets %~ insertEntity rolands38Special)
-          . (enemies %~ insertEntity enemy)
-          . (locations %~ insertEntity location)
+          ((assetsL %~ insertEntity rolands38Special)
+          . (enemiesL %~ insertEntity enemy)
+          . (locationsL %~ insertEntity location)
           )
 
         [fightAction] <- getActionsOf game investigator NonFast rolands38Special

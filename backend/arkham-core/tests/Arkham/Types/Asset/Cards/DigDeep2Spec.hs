@@ -21,7 +21,7 @@ spec = describe "Dig Deep (2)" $ do
           , playAsset investigator digDeep2
           , beginSkillTest investigator SkillWillpower 3
           ]
-          (assets %~ insertEntity digDeep2)
+          (assetsL %~ insertEntity digDeep2)
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -55,7 +55,7 @@ spec = describe "Dig Deep (2)" $ do
           , playAsset investigator digDeep2
           , beginSkillTest investigator SkillAgility 3
           ]
-          (assets %~ insertEntity digDeep2)
+          (assetsL %~ insertEntity digDeep2)
       >>= runGameTestOptionMatching
             "use ability"
             (\case

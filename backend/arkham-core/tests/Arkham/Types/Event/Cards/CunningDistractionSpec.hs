@@ -22,9 +22,9 @@ spec = do
         , moveTo investigator location
         , playEvent investigator cunningDistraction
         ]
-        ((events %~ insertEntity cunningDistraction)
-        . (locations %~ insertEntity location)
-        . (enemies %~ insertEntity enemy)
+        ((eventsL %~ insertEntity cunningDistraction)
+        . (locationsL %~ insertEntity location)
+        . (enemiesL %~ insertEntity enemy)
         )
       cunningDistraction `shouldSatisfy` isInDiscardOf game investigator
       enemy `shouldSatisfy` evadedBy game investigator
@@ -42,9 +42,9 @@ spec = do
         , moveTo investigator location
         , playEvent investigator cunningDistraction
         ]
-        ((events %~ insertEntity cunningDistraction)
-        . (locations %~ insertEntity location)
-        . (enemies %~ insertEntity enemy)
+        ((eventsL %~ insertEntity cunningDistraction)
+        . (locationsL %~ insertEntity location)
+        . (enemiesL %~ insertEntity enemy)
         )
       cunningDistraction `shouldSatisfy` isInDiscardOf game investigator
       enemy `shouldSatisfy` evadedBy game investigator2
@@ -60,9 +60,9 @@ spec = do
         , moveTo investigator location
         , playEvent investigator cunningDistraction
         ]
-        ((events %~ insertEntity cunningDistraction)
-        . (locations %~ insertEntity location)
-        . (enemies %~ insertEntity enemy)
+        ((eventsL %~ insertEntity cunningDistraction)
+        . (locationsL %~ insertEntity location)
+        . (enemiesL %~ insertEntity enemy)
         )
       cunningDistraction `shouldSatisfy` isInDiscardOf game investigator
       enemy `shouldSatisfy` evadedBy game investigator

@@ -21,7 +21,7 @@ spec = describe "Arcane Studies (2)" $ do
           , playAsset investigator arcaneStudies2
           , beginSkillTest investigator SkillWillpower 3
           ]
-          (assets %~ insertEntity arcaneStudies2)
+          (assetsL %~ insertEntity arcaneStudies2)
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -55,7 +55,7 @@ spec = describe "Arcane Studies (2)" $ do
           , playAsset investigator arcaneStudies2
           , beginSkillTest investigator SkillIntellect 3
           ]
-          (assets %~ insertEntity arcaneStudies2)
+          (assetsL %~ insertEntity arcaneStudies2)
       >>= runGameTestOptionMatching
             "use ability"
             (\case

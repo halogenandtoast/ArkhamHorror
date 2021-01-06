@@ -22,8 +22,8 @@ spec = describe "Agnes Baker" $ do
           , moveTo agnesBaker location
           , InvestigatorDirectDamage (toId agnesBaker) (TestSource mempty) 0 1
           ]
-          ((enemies %~ insertEntity enemy)
-          . (locations %~ insertEntity location)
+          ((enemiesL %~ insertEntity enemy)
+          . (locationsL %~ insertEntity location)
           )
         >>= runGameTestOptionMatching
               "use ability"
@@ -48,7 +48,7 @@ spec = describe "Agnes Baker" $ do
             , InvestigatorDirectDamage (toId agnesBaker) (TestSource mempty) 0 2
             , beginSkillTest agnesBaker SkillIntellect 4
             ]
-            (locations %~ insertEntity location)
+            (locationsL %~ insertEntity location)
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOptionWithLogger "apply results" logger
 

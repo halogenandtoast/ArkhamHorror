@@ -20,8 +20,8 @@ spec = do
             , moveTo investigator location
             , playEvent investigator crypticResearch4
             ]
-            ((events %~ insertEntity crypticResearch4)
-            . (locations %~ insertEntity location)
+            ((eventsL %~ insertEntity crypticResearch4)
+            . (locationsL %~ insertEntity location)
             )
           >>= runGameTestOnlyOption "choose self"
       crypticResearch4 `shouldSatisfy` isInDiscardOf game investigator
@@ -40,9 +40,9 @@ spec = do
             , moveAllTo location
             , playEvent investigator crypticResearch4
             ]
-            ((events %~ insertEntity crypticResearch4)
-            . (locations %~ insertEntity location)
-            . (investigators %~ insertEntity investigator2)
+            ((eventsL %~ insertEntity crypticResearch4)
+            . (locationsL %~ insertEntity location)
+            . (investigatorsL %~ insertEntity investigator2)
             )
           >>= runGameTestOptionMatching
                 "choose other investigator"

@@ -26,9 +26,9 @@ spec = do
           , moveTo investigator location
           , playEvent investigator backstab
           ]
-          ((events %~ insertEntity backstab)
-          . (locations %~ insertEntity location)
-          . (enemies %~ insertEntity enemy)
+          ((eventsL %~ insertEntity backstab)
+          . (locationsL %~ insertEntity location)
+          . (enemiesL %~ insertEntity enemy)
           )
         >>= runGameTestOnlyOption "Fight enemy"
         >>= runGameTestOnlyOption "Run skill check"

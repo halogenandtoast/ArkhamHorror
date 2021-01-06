@@ -21,7 +21,7 @@ spec = describe "Grotesque Statue (4)" $ do
           , playAsset investigator grotestqueStatue
           , beginSkillTest investigator SkillIntellect 0
           ]
-          (assets %~ insertEntity grotestqueStatue)
+          (assetsL %~ insertEntity grotestqueStatue)
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatching
               "use ability"

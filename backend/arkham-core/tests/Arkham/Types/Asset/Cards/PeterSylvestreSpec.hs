@@ -13,7 +13,7 @@ spec = describe "Peter Sylvestre" $ do
     game <- runGameTest
       investigator
       [playAsset investigator peterSylvestre]
-      (assets %~ insertEntity peterSylvestre)
+      (assetsL %~ insertEntity peterSylvestre)
     withGame
         game
         (map modifierType
@@ -30,7 +30,7 @@ spec = describe "Peter Sylvestre" $ do
           , AssetDamage (toId peterSylvestre) (TestSource mempty) 0 2
           , ChooseEndTurn (toId investigator)
           ]
-          (assets %~ insertEntity peterSylvestre)
+          (assetsL %~ insertEntity peterSylvestre)
         >>= runGameTestOptionMatching
               "use ability"
               (\case

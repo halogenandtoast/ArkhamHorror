@@ -26,9 +26,9 @@ spec = do
           , moveTo investigator location
           , playEvent investigator blindingLight
           ]
-          ((events %~ insertEntity blindingLight)
-          . (enemies %~ insertEntity enemy)
-          . (locations %~ insertEntity location)
+          ((eventsL %~ insertEntity blindingLight)
+          . (enemiesL %~ insertEntity enemy)
+          . (locationsL %~ insertEntity location)
           )
         >>= runGameTestOnlyOption "Evade enemy"
         >>= runGameTestOnlyOption "Run skill check"
@@ -50,9 +50,9 @@ spec = do
           , moveTo investigator location
           , playEvent investigator blindingLight
           ]
-          ((events %~ insertEntity blindingLight)
-          . (enemies %~ insertEntity enemy)
-          . (locations %~ insertEntity location)
+          ((eventsL %~ insertEntity blindingLight)
+          . (enemiesL %~ insertEntity enemy)
+          . (locationsL %~ insertEntity location)
           )
         >>= runGameTestOnlyOption "Evade enemy"
         >>= runGameTestOnlyOption "Run skill check"
@@ -77,9 +77,9 @@ spec = do
               , moveTo investigator location
               , playEvent investigator blindingLight
               ]
-              ((events %~ insertEntity blindingLight)
-              . (enemies %~ insertEntity enemy)
-              . (locations %~ insertEntity location)
+              ((eventsL %~ insertEntity blindingLight)
+              . (enemiesL %~ insertEntity enemy)
+              . (locationsL %~ insertEntity location)
               )
             >>= runGameTestOnlyOption "Evade enemy"
             >>= runGameTestOnlyOption "Run skill check"

@@ -21,7 +21,7 @@ spec = describe "Hyperawareness" $ do
           , playAsset investigator hyperawareness
           , beginSkillTest investigator SkillIntellect 3
           ]
-          (assets %~ insertEntity hyperawareness)
+          (assetsL %~ insertEntity hyperawareness)
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -55,7 +55,7 @@ spec = describe "Hyperawareness" $ do
           , playAsset investigator hyperawareness
           , beginSkillTest investigator SkillAgility 3
           ]
-          (assets %~ insertEntity hyperawareness)
+          (assetsL %~ insertEntity hyperawareness)
       >>= runGameTestOptionMatching
             "use ability"
             (\case

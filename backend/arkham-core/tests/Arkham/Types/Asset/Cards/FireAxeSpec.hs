@@ -24,9 +24,9 @@ spec = describe "Fire Axe" $ do
       , enemySpawn location enemy
       , moveTo investigator location
       ]
-      ((enemies %~ insertEntity enemy)
-      . (assets %~ insertEntity fireAxe)
-      . (locations %~ insertEntity location)
+      ((enemiesL %~ insertEntity enemy)
+      . (assetsL %~ insertEntity fireAxe)
+      . (locationsL %~ insertEntity location)
       )
     [fightAction] <- getActionsOf game investigator NonFast fireAxe
     game' <-
@@ -50,9 +50,9 @@ spec = describe "Fire Axe" $ do
       , enemySpawn location enemy
       , moveTo investigator location
       ]
-      ((enemies %~ insertEntity enemy)
-      . (assets %~ insertEntity fireAxe)
-      . (locations %~ insertEntity location)
+      ((enemiesL %~ insertEntity enemy)
+      . (assetsL %~ insertEntity fireAxe)
+      . (locationsL %~ insertEntity location)
       )
     [fightAction] <- getActionsOf game investigator NonFast fireAxe
     game' <-
@@ -87,9 +87,9 @@ spec = describe "Fire Axe" $ do
       , enemySpawn location enemy
       , moveTo investigator location
       ]
-      ((enemies %~ insertEntity enemy)
-      . (assets %~ insertEntity fireAxe)
-      . (locations %~ insertEntity location)
+      ((enemiesL %~ insertEntity enemy)
+      . (assetsL %~ insertEntity fireAxe)
+      . (locationsL %~ insertEntity location)
       )
     [fightAction] <- getActionsOf game investigator NonFast fireAxe
     game' <-
@@ -124,9 +124,9 @@ spec = describe "Fire Axe" $ do
       , enemySpawn location enemy
       , moveTo investigator location
       ]
-      ((enemies %~ insertEntity enemy)
-      . (assets %~ insertEntity fireAxe)
-      . (locations %~ insertEntity location)
+      ((enemiesL %~ insertEntity enemy)
+      . (assetsL %~ insertEntity fireAxe)
+      . (locationsL %~ insertEntity location)
       )
     [fightAction] <- getActionsOf game investigator NonFast fireAxe
     game' <-

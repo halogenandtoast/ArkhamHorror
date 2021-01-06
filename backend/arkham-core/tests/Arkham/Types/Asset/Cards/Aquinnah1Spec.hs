@@ -27,10 +27,10 @@ spec = describe "Aquinnah (1)" $ do
         , moveTo investigator location
         , enemyAttack investigator enemy1
         ]
-        ((enemies %~ insertEntity enemy1)
-        . (enemies %~ insertEntity enemy2)
-        . (locations %~ insertEntity location)
-        . (assets %~ insertEntity aquinnah)
+        ((enemiesL %~ insertEntity enemy1)
+        . (enemiesL %~ insertEntity enemy2)
+        . (locationsL %~ insertEntity location)
+        . (assetsL %~ insertEntity aquinnah)
         )
       >>= runGameTestOptionMatching
             "use ability"

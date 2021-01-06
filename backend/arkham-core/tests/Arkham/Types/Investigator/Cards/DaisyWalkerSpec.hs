@@ -42,7 +42,7 @@ spec = describe "Daisy Walker" $ do
           , playAsset daisyWalker tome2
           , beginSkillTest daisyWalker SkillIntellect 5
           ]
-          ((assets %~ insertEntity tome1) . (assets %~ insertEntity tome2))
+          ((assetsL %~ insertEntity tome1) . (assetsL %~ insertEntity tome2))
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
         >>= runGameTestOptionMatching

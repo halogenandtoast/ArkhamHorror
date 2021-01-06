@@ -27,8 +27,8 @@ spec = describe "Roland Banks" $ do
               , moveTo rolandBanks location
               , fightEnemy rolandBanks enemy
               ]
-              ((enemies %~ insertEntity enemy)
-              . (locations %~ insertEntity location)
+              ((enemiesL %~ insertEntity enemy)
+              . (locationsL %~ insertEntity location)
               )
             >>= runGameTestOnlyOption "start skill test"
             >>= runGameTestOnlyOption "apply results"
@@ -51,7 +51,7 @@ spec = describe "Roland Banks" $ do
           , moveTo rolandBanks location
           , investigate rolandBanks location
           ]
-          (locations %~ insertEntity location)
+          (locationsL %~ insertEntity location)
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"
       getCount (updated game rolandBanks) () `shouldBe` ClueCount 1

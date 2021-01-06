@@ -23,7 +23,7 @@ spec = describe "Deduction" $ do
         , addToHand investigator (PlayerCard deduction)
         , investigate investigator location
         ]
-        (locations %~ insertEntity location)
+        (locationsL %~ insertEntity location)
       >>= runGameTestOptionMatching
             "commit skill card"
             (\case

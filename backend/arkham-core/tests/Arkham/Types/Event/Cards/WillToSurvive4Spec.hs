@@ -21,7 +21,7 @@ spec = describe "Will to Survive (4)" $ do
           , playEvent investigator willToSurvive4
           , beginSkillTest investigator SkillIntellect 3
           ]
-          (events %~ insertEntity willToSurvive4)
+          (eventsL %~ insertEntity willToSurvive4)
       >>= runGameTestOnlyOption "start skill test"
       >>= runGameTestOnlyOptionWithLogger "apply results" logger
     readIORef didPassTest `shouldReturn` True
@@ -38,7 +38,7 @@ spec = describe "Will to Survive (4)" $ do
           , ChooseEndTurn (toId investigator)
           , beginSkillTest investigator SkillIntellect 3
           ]
-          (events %~ insertEntity willToSurvive4)
+          (eventsL %~ insertEntity willToSurvive4)
       >>= runGameTestOnlyOption "start skill test"
       >>= runGameTestOnlyOptionWithLogger "apply results" logger
     readIORef didFailTest `shouldReturn` True

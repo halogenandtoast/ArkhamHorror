@@ -16,7 +16,7 @@ spec = describe "Bandolier" $ do
     game <- runGameTest
       investigator
       [playAsset investigator bandolier]
-      (assets %~ insertEntity bandolier)
+      (assetsL %~ insertEntity bandolier)
     let
       slots =
         fromMaybe []

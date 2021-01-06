@@ -34,7 +34,7 @@ spec = describe "Jenny's Twin .45s" $ do
       >>= payResource
       >>= payResource
       >>= payResource
-    let updatedJennysTwin45s = game ^?! assets . to toList . ix 0
+    let updatedJennysTwin45s = game ^?! assetsL . to toList . ix 0
     updatedJennysTwin45s `shouldSatisfy` hasUses 5
   it "gives +2 combat and does +1 damage" $ do
     jennysTwin45s <- buildPlayerCard "02010"
@@ -51,11 +51,11 @@ spec = describe "Jenny's Twin .45s" $ do
           [ SetTokens [Zero]
           , playDynamicCard investigator (PlayerCard jennysTwin45s)
           ]
-          ((enemies %~ insertEntity enemy)
-          . (locations %~ insertEntity location)
+          ((enemiesL %~ insertEntity enemy)
+          . (locationsL %~ insertEntity location)
           )
         >>= payResource
-    let jennysTwin45sAsset = game ^?! assets . to toList . ix 0
+    let jennysTwin45sAsset = game ^?! assetsL . to toList . ix 0
     game' <-
       runGameTestMessages
         game

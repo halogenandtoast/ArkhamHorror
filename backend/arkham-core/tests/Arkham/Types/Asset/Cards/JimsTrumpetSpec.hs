@@ -22,8 +22,8 @@ spec = describe "Jim's Trumpet" $ do
           , moveTo investigator location
           , beginSkillTest investigator SkillIntellect 0
           ]
-          ((assets %~ insertEntity jimsTrumpet)
-          . (locations %~ insertEntity location)
+          ((assetsL %~ insertEntity jimsTrumpet)
+          . (locationsL %~ insertEntity location)
           )
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatching
@@ -50,9 +50,9 @@ spec = describe "Jim's Trumpet" $ do
           , moveAllTo location
           , beginSkillTest investigator SkillIntellect 0
           ]
-          ((assets %~ insertEntity jimsTrumpet)
-          . (locations %~ insertEntity location)
-          . (investigators %~ insertEntity investigator2)
+          ((assetsL %~ insertEntity jimsTrumpet)
+          . (locationsL %~ insertEntity location)
+          . (investigatorsL %~ insertEntity investigator2)
           )
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatching
@@ -79,9 +79,9 @@ spec = describe "Jim's Trumpet" $ do
           , moveAllTo location
           , beginSkillTest investigator2 SkillIntellect 0
           ]
-          ((assets %~ insertEntity jimsTrumpet)
-          . (locations %~ insertEntity location)
-          . (investigators %~ insertEntity investigator2)
+          ((assetsL %~ insertEntity jimsTrumpet)
+          . (locationsL %~ insertEntity location)
+          . (investigatorsL %~ insertEntity investigator2)
           )
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatching
@@ -111,10 +111,10 @@ spec = describe "Jim's Trumpet" $ do
           , moveTo investigator2 location2
           , beginSkillTest investigator SkillIntellect 0
           ]
-          ((assets %~ insertEntity jimsTrumpet)
-          . (locations %~ insertEntity location1)
-          . (locations %~ insertEntity location2)
-          . (investigators %~ insertEntity investigator2)
+          ((assetsL %~ insertEntity jimsTrumpet)
+          . (locationsL %~ insertEntity location1)
+          . (locationsL %~ insertEntity location2)
+          . (investigatorsL %~ insertEntity investigator2)
           )
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOptionMatching
@@ -144,10 +144,10 @@ spec = describe "Jim's Trumpet" $ do
           , moveTo investigator2 location2
           , beginSkillTest investigator SkillIntellect 0
           ]
-          ((assets %~ insertEntity jimsTrumpet)
-          . (locations %~ insertEntity location1)
-          . (locations %~ insertEntity location2)
-          . (investigators %~ insertEntity investigator2)
+          ((assetsL %~ insertEntity jimsTrumpet)
+          . (locationsL %~ insertEntity location1)
+          . (locationsL %~ insertEntity location2)
+          . (investigatorsL %~ insertEntity investigator2)
           )
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOption "apply results"

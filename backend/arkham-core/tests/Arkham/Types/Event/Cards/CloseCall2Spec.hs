@@ -20,15 +20,15 @@ spec = describe "Close Call (2)" $ do
           [ addToHand investigator (PlayerCard closeCall2)
           , EnemyEvaded (toId investigator) (toId enemy)
           ]
-          (enemies %~ insertEntity enemy)
+          (enemiesL %~ insertEntity enemy)
         >>= runGameTestOptionMatching
               "Play card"
               (\case
                 Run{} -> True
                 _ -> False
               )
-    length (game ^. encounterDeck . to unDeck) `shouldBe` 1
-    length (game ^. enemies) `shouldBe` 0
+    length (game ^. encounterDeckL . to unDeck) `shouldBe` 1
+    length (game ^. enemiesL) `shouldBe` 0
   it "does not work on Elite enemies" $ do
     investigator <- testInvestigator "00000" id
     closeCall2 <- buildPlayerCard "01083"
@@ -38,7 +38,7 @@ spec = describe "Close Call (2)" $ do
       [ addToHand investigator (PlayerCard closeCall2)
       , EnemyEvaded (toId investigator) (toId enemy)
       ]
-      (enemies %~ insertEntity enemy)
+      (enemiesL %~ insertEntity enemy)
     length (gameMessages game) `shouldBe` 0
   it "does not work on weakness enemies" $ do
     investigator <- testInvestigator "00000" id
@@ -49,5 +49,5 @@ spec = describe "Close Call (2)" $ do
       [ addToHand investigator (PlayerCard closeCall2)
       , EnemyEvaded (toId investigator) (toId enemy)
       ]
-      (enemies %~ insertEntity enemy)
+      (enemiesL %~ insertEntity enemy)
     length (gameMessages game) `shouldBe` 0

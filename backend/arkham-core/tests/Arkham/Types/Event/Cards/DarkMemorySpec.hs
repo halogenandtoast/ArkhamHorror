@@ -19,8 +19,8 @@ spec = do
           logger
           investigator
           [playEvent investigator darkMemory]
-        $ (events %~ insertEntity darkMemory)
-        . (agendas %~ insertEntity agenda)
+        $ (eventsL %~ insertEntity darkMemory)
+        . (agendasL %~ insertEntity agenda)
       agenda `shouldSatisfy` hasDoom game 1
       darkMemory `shouldSatisfy` isInDiscardOf game investigator
       readIORef didAdvanceAgenda `shouldReturn` True

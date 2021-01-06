@@ -24,8 +24,8 @@ spec = do
             [ addToHand investigator (PlayerCard dodge)
             , enemyAttack investigator enemy
             ]
-            ((enemies %~ insertEntity enemy)
-            . (locations %~ insertEntity location)
+            ((enemiesL %~ insertEntity enemy)
+            . (locationsL %~ insertEntity location)
             )
         >>= runGameTestOptionMatchingWithLogger
               "Play Dodge"

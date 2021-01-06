@@ -11,5 +11,5 @@ spec = do
       game <- runGameTest
         investigator
         [playEvent investigator emergencyCache]
-        (events %~ insertEntity emergencyCache)
+        (eventsL %~ insertEntity emergencyCache)
       updatedResourceCount game investigator `shouldBe` 3

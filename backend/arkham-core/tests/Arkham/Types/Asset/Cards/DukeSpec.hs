@@ -25,11 +25,11 @@ spec = describe "Duke" $ do
         , enemySpawn location enemy
         , moveTo investigator location
         ]
-        ((enemies %~ insertEntity enemy)
-        . (locations %~ insertEntity location)
-        . (assets %~ insertEntity duke)
+        ((enemiesL %~ insertEntity enemy)
+        . (locationsL %~ insertEntity location)
+        . (assetsL %~ insertEntity duke)
         )
-      let dukeAsset = game ^?! assets . to toList . ix 0
+      let dukeAsset = game ^?! assetsL . to toList . ix 0
       [fightAction, _] <- getActionsOf game investigator NonFast dukeAsset
       game' <-
         runGameTestMessages game [fightAction]
@@ -48,8 +48,8 @@ spec = describe "Duke" $ do
       game <- runGameTest
         investigator
         [SetTokens [Zero], playAsset investigator duke]
-        ((locations %~ insertEntity location) . (assets %~ insertEntity duke))
-      let dukeAsset = game ^?! assets . to toList . ix 0
+        ((locationsL %~ insertEntity location) . (assetsL %~ insertEntity duke))
+      let dukeAsset = game ^?! assetsL . to toList . ix 0
       [investigateAction] <- getActionsOf game investigator NonFast dukeAsset
       game' <-
         runGameTestMessages
@@ -72,13 +72,13 @@ spec = describe "Duke" $ do
             , SetTokens [Zero]
             , playAsset investigator duke
             ]
-            ((locations %~ insertEntity location1)
-            . (locations %~ insertEntity location2)
-            . (assets %~ insertEntity duke)
+            ((locationsL %~ insertEntity location1)
+            . (locationsL %~ insertEntity location2)
+            . (assetsL %~ insertEntity duke)
             )
-          let dukeAsset = game ^?! assets . to toList . ix 0
-          [investigateAction] <- toInternalGame game >>= runReaderT
-            (getActions (toId investigator) NonFast dukeAsset)
+          let dukeAsset = game ^?! assetsL . to toList . ix 0
+          [investigateAction] <- toInternalGame game
+            >>= runReaderT (getActions (toId investigator) NonFast dukeAsset)
           game' <-
             runGameTestMessages
               game

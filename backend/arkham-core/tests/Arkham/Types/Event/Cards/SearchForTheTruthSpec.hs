@@ -18,7 +18,7 @@ spec = describe "Search for the Truth" $ do
       [ loadDeck investigator playerCards
       , playEvent investigator searchForTheTruth
       ]
-      (events %~ insertEntity searchForTheTruth)
+      (eventsL %~ insertEntity searchForTheTruth)
     updated game investigator
       `shouldSatisfy` handIs (map PlayerCard playerCards)
 
@@ -31,5 +31,5 @@ spec = describe "Search for the Truth" $ do
       [ loadDeck investigator playerCards
       , playEvent investigator searchForTheTruth
       ]
-      (events %~ insertEntity searchForTheTruth)
+      (eventsL %~ insertEntity searchForTheTruth)
     updated game investigator `shouldSatisfy` handMatches ((== 5) . length)

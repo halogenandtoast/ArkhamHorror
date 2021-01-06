@@ -24,9 +24,9 @@ spec = do
               , enemySpawn location enemy
               , moveTo investigator location
               ]
-              ((assets %~ insertEntity zoeysCross)
-              . (enemies %~ insertEntity enemy)
-              . (locations %~ insertEntity location)
+              ((assetsL %~ insertEntity zoeysCross)
+              . (enemiesL %~ insertEntity enemy)
+              . (locationsL %~ insertEntity location)
               )
             >>= runGameTestOptionMatching
                   "use ability"

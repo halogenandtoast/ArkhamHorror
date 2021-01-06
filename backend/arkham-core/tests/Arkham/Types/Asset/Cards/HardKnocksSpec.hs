@@ -21,7 +21,7 @@ spec = describe "Hard Knocks" $ do
           , playAsset investigator hardKnocks
           , beginSkillTest investigator SkillCombat 3
           ]
-          (assets %~ insertEntity hardKnocks)
+          (assetsL %~ insertEntity hardKnocks)
       >>= runGameTestOptionMatching
             "use ability"
             (\case
@@ -55,7 +55,7 @@ spec = describe "Hard Knocks" $ do
           , playAsset investigator hardKnocks
           , beginSkillTest investigator SkillAgility 3
           ]
-          (assets %~ insertEntity hardKnocks)
+          (assetsL %~ insertEntity hardKnocks)
       >>= runGameTestOptionMatching
             "use ability"
             (\case

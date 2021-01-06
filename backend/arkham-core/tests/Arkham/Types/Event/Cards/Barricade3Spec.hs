@@ -18,8 +18,8 @@ spec = do
             runGameTest
               investigator
               [moveTo investigator location, playEvent investigator barricade3]
-            $ (events %~ insertEntity barricade3)
-            . (locations %~ insertEntity location)
+            $ (eventsL %~ insertEntity barricade3)
+            . (locationsL %~ insertEntity location)
           withGame
               game
               (map modifierType
@@ -42,9 +42,9 @@ spec = do
           , playEvent investigator barricade3
           , moveFrom investigator2 location
           ]
-        $ (events %~ insertEntity barricade3)
-        . (locations %~ insertEntity location)
-        . (investigators %~ insertEntity investigator2)
+        $ (eventsL %~ insertEntity barricade3)
+        . (locationsL %~ insertEntity location)
+        . (investigatorsL %~ insertEntity investigator2)
       withGame game (getModifiersFor (TestSource mempty) (toTarget location) ())
         `shouldReturn` []
       barricade3 `shouldSatisfy` not . isAttachedTo game location

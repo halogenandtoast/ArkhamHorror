@@ -31,7 +31,7 @@ spec = describe "\"Ashcan\" Pete" $ do
           , Exhaust (toTarget asset)
           , CheckWindow (toId ashcanPete) [FastPlayerWindow]
           ]
-          (assets %~ insertEntity asset)
+          (assetsL %~ insertEntity asset)
         >>= runGameTestOptionMatching
               "activate ability"
               (\case
@@ -53,7 +53,7 @@ spec = describe "\"Ashcan\" Pete" $ do
           , Exhaust (toTarget duke)
           , beginSkillTest ashcanPete SkillIntellect 2
           ]
-          (assets %~ insertEntity duke)
+          (assetsL %~ insertEntity duke)
         >>= runGameTestOnlyOption "start skill test"
         >>= runGameTestOnlyOptionWithLogger "apply results" logger
       updated game duke `shouldSatisfy` isReady

@@ -26,10 +26,10 @@ spec = describe "Bait and Switch" $ do
         , moveTo investigator location1
         , playEvent investigator baitAndSwitch
         ]
-        ((events %~ insertEntity baitAndSwitch)
-        . (enemies %~ insertEntity enemy)
-        . (locations %~ insertEntity location1)
-        . (locations %~ insertEntity location2)
+        ((eventsL %~ insertEntity baitAndSwitch)
+        . (enemiesL %~ insertEntity enemy)
+        . (locationsL %~ insertEntity location1)
+        . (locationsL %~ insertEntity location2)
         )
       >>= runGameTestOnlyOption "Evade enemy"
       >>= runGameTestOnlyOption "Run skill check"

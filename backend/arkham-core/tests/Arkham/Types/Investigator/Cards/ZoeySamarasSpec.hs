@@ -29,8 +29,8 @@ spec = do
           , moveTo zoeySamaras location
           , fightEnemy zoeySamaras enemy
           ]
-          ((enemies %~ insertEntity enemy)
-          . (locations %~ insertEntity location)
+          ((enemiesL %~ insertEntity enemy)
+          . (locationsL %~ insertEntity location)
           )
         >>= runGameTestOptionMatching
               "skip ability"
@@ -54,9 +54,9 @@ spec = do
               , moveTo zoeySamaras location
               , enemySpawn location enemy2
               ]
-              ((locations %~ insertEntity location)
-              . (enemies %~ insertEntity enemy1)
-              . (enemies %~ insertEntity enemy2)
+              ((locationsL %~ insertEntity location)
+              . (enemiesL %~ insertEntity enemy1)
+              . (enemiesL %~ insertEntity enemy2)
               )
             >>= runGameTestOptionMatching
                   "use ability"

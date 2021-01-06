@@ -52,6 +52,6 @@ instance (LocationRunner env) => RunMessage env MainPath where
       isWoods <- member Woods <$> getSet lid
       if isWoods
         then MainPath
-          <$> runMessage msg (attrs & connectedLocations %~ insertSet lid)
+          <$> runMessage msg (attrs & connectedLocationsL %~ insertSet lid)
         else MainPath <$> runMessage msg attrs
     _ -> MainPath <$> runMessage msg attrs

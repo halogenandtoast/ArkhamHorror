@@ -6,30 +6,31 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.Trait
 
 type LocationRunner env
-  = ( HasCount PlayerCount env ()
+  = ( HasQueue env
     , HasCount HorrorCount env InvestigatorId
-    , HasQueue env
-    , HasId (Maybe StoryAssetId) env CardCode
+    , HasCount PlayerCount env ()
     , HasId (Maybe LocationId) env LocationMatcher
     , HasId (Maybe OwnerId) env AssetId
+    , HasId (Maybe StoryAssetId) env CardCode
     , HasId ActiveInvestigatorId env ()
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId
-    , HasSet LocationId env [Trait]
-    , HasSet Trait env LocationId
-    , HasSet EventId env ()
-    , HasSet InvestigatorId env ()
-    , HasSet Trait env EnemyId
-    , HasSet EnemyId env Trait
-    , HasSet ConnectedLocationId env LocationId
-    , HasSet HandCardId env (InvestigatorId, PlayerCardType)
-    , HasSet AssetId env InvestigatorId
-    , HasSet AssetId env (InvestigatorId, UseType)
-    , HasSet LocationId env ()
-    , HasList LocationName env ()
     , HasList HandCard env InvestigatorId
+    , HasList LocationName env ()
     , HasList UsedAbility env ()
     , HasModifiersFor env ()
+    , HasSet ActId env ()
+    , HasSet AssetId env (InvestigatorId, UseType)
+    , HasSet AssetId env InvestigatorId
+    , HasSet ConnectedLocationId env LocationId
+    , HasSet EnemyId env Trait
+    , HasSet EventId env ()
+    , HasSet HandCardId env (InvestigatorId, PlayerCardType)
+    , HasSet InvestigatorId env ()
+    , HasSet LocationId env ()
+    , HasSet LocationId env [Trait]
+    , HasSet Trait env EnemyId
+    , HasSet Trait env LocationId
     )
 

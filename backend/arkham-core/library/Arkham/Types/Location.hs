@@ -131,6 +131,9 @@ newtype BaseLocation = BaseLocation Attrs
 instance HasModifiersFor env BaseLocation where
   getModifiersFor = noModifiersFor
 
+instance HasName env Location where
+  getName = getName . locationAttrs
+
 instance ActionRunner env => HasActions env BaseLocation where
   getActions iid window (BaseLocation attrs) = getActions iid window attrs
 

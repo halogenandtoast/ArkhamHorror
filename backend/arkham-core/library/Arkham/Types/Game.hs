@@ -392,6 +392,9 @@ instance HasCount UsesCount (Game queue) AssetId where
 instance HasId (Maybe OwnerId) (Game queue) AssetId where
   getId = getId <=< getAsset
 
+instance HasName (Game queue) LocationId where
+  getName = getName <=< getLocation
+
 instance HasId (Maybe LocationId) (Game queue) AssetId where
   getId = getId <=< getAsset
 

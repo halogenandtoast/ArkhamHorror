@@ -22,6 +22,7 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.Message
 import Arkham.Types.Modifier
+import Arkham.Types.Name
 import Arkham.Types.Phase
 import Arkham.Types.Query
 import Arkham.Types.SkillType
@@ -205,6 +206,9 @@ class HasId id env a where
 
 class HasCount count env a where
   getCount :: (MonadReader env m) => a -> m count
+
+class HasName env a where
+  getName :: (MonadReader env m) => a -> m Name
 
 class HasPlayerCard env a where
   getPlayerCard :: (MonadReader env m) => a -> m (Maybe PlayerCard)

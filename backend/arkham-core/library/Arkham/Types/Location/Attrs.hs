@@ -111,11 +111,17 @@ getModifiedShroudValueFor attrs = do
   applyModifier _ n = n
 
 getInvestigateAllowed
-  :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Bool
-getInvestigateAllowed attrs = do
-  modifiers' <-
+  :: (MonadReader env m, HasModifiersFor env ())
+  => InvestigatorId
+  -> Attrs
+  -> m Bool
+getInvestigateAllowed iid attrs = do
+  modifiers1' <-
     map modifierType <$> getModifiersFor (toSource attrs) (toTarget attrs) ()
-  pure $ not (any isCannotInvestigate modifiers')
+  modifiers2' <-
+    map modifierType
+      <$> getModifiersFor (InvestigatorSource iid) (toTarget attrs) ()
+  pure $ not (any isCannotInvestigate $ modifiers1' <> modifiers2')
  where
   isCannotInvestigate CannotInvestigate{} = True
   isCannotInvestigate _ = False
@@ -135,7 +141,7 @@ instance ActionRunner env => HasActions env Attrs where
   getActions iid NonFast location@Attrs {..} = do
     canMoveTo <- getCanMoveTo locationId iid
     canInvestigate <- getCanInvestigate locationId iid
-    investigateAllowed <- getInvestigateAllowed location
+    investigateAllowed <- getInvestigateAllowed iid location
     pure
       $ moveActions canMoveTo
       <> investigateActions canInvestigate investigateAllowed

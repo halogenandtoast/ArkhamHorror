@@ -56,6 +56,7 @@ data Trait
   | Elite
   | Endtimes
   | Evidence
+  | Exhibit
   | Expert
   | Extradimensional
   | Fated

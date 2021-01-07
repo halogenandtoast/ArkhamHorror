@@ -2,8 +2,7 @@ module Arkham.Types.Card.EncounterCard
   ( module Arkham.Types.Card.EncounterCard
   , module Arkham.Types.Card.EncounterCardMatcher
   , module Arkham.Types.Card.EncounterCardType
-  )
-where
+  ) where
 
 import Arkham.Json
 import Arkham.Types.Card.CardCode
@@ -21,13 +20,13 @@ data EncounterCard = MkEncounterCard
   { ecCardCode :: CardCode
   , ecName :: Text
   , ecCardType :: EncounterCardType
-  , ecTraits   :: HashSet Trait
-  , ecKeywords   :: HashSet Keyword
+  , ecTraits :: HashSet Trait
+  , ecKeywords :: HashSet Keyword
   , ecId :: CardId
   , ecVictoryPoints :: Maybe Int
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (Hashable)
+  deriving anyclass Hashable
 
 lookupEncounterCard :: CardCode -> (CardId -> EncounterCard)
 lookupEncounterCard cardCode =
@@ -35,8 +34,8 @@ lookupEncounterCard cardCode =
     $ HashMap.lookup cardCode allEncounterCards
 
 baseEncounterCard
-  :: CardId -> CardCode -> Text -> EncounterCardType -> EncounterCard
-baseEncounterCard cardId cardCode name encounterCardType = MkEncounterCard
+  :: EncounterCardType -> CardId -> CardCode -> Text -> EncounterCard
+baseEncounterCard encounterCardType cardId cardCode name = MkEncounterCard
   { ecCardCode = cardCode
   , ecId = cardId
   , ecName = name
@@ -47,15 +46,16 @@ baseEncounterCard cardId cardCode name encounterCardType = MkEncounterCard
   }
 
 enemy :: CardId -> CardCode -> Text -> EncounterCard
-enemy cardId cardCode name = baseEncounterCard cardId cardCode name EnemyType
+enemy = baseEncounterCard EnemyType
 
 asset :: CardId -> CardCode -> Text -> EncounterCard
-asset cardId cardCode name =
-  baseEncounterCard cardId cardCode name EncounterAssetType
+asset = baseEncounterCard EncounterAssetType
 
 treachery :: CardId -> CardCode -> Text -> EncounterCard
-treachery cardId cardCode name =
-  baseEncounterCard cardId cardCode name TreacheryType
+treachery = baseEncounterCard TreacheryType
+
+location :: CardId -> CardCode -> Text -> EncounterCard
+location = baseEncounterCard LocationType
 
 instance ToJSON EncounterCard where
   toJSON = genericToJSON $ aesonOptions $ Just "ec"
@@ -176,15 +176,11 @@ allEncounterCards = HashMap.fromList
   ]
 
 placeholderEnemy :: CardId -> EncounterCard
-placeholderEnemy cardId =
-  baseEncounterCard cardId "enemy" "Placeholder Enemy Card" EnemyType
+placeholderEnemy cardId = enemy cardId "enemy" "Placeholder Enemy Card"
 
 placeholderTreachery :: CardId -> EncounterCard
-placeholderTreachery cardId = baseEncounterCard
-  cardId
-  "treachery"
-  "Placeholder Treachery Card"
-  TreacheryType
+placeholderTreachery cardId =
+  treachery cardId "treachery" "Placeholder Treachery Card"
 
 ghoulPriest :: CardId -> EncounterCard
 ghoulPriest cardId = (enemy cardId "01116" "Ghoul Priest")

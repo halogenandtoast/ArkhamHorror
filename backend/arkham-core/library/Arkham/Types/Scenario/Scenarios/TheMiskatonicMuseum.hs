@@ -94,20 +94,19 @@ instance
 
 instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
   runMessage msg s@(TheMiskatonicMuseum attrs@Attrs {..}) = case msg of
-    UseScenarioSpecificAbility iid 1 ->
+    UseScenarioSpecificAbility _ 1 ->
       case fromJustNote "must be set" scenarioDeck of
         ExhibitDeck [] -> pure s
         ExhibitDeck (x : xs) -> do
-          unshiftMessage (InvestigatorDrewEncounterCard iid x)
-          pure $ TheMiskatonicMuseum
-            (attrs { scenarioDeck = Just $ ExhibitDeck xs })
+          unshiftMessage (PlaceLocation x)
+          pure $ TheMiskatonicMuseum $ attrs & deckL ?~ ExhibitDeck xs
         _ -> error "Wrong deck"
     LookAtTopOfDeck _ ScenarioDeckTarget n -> do
       case fromJustNote "must be set" scenarioDeck of
         ExhibitDeck xs -> do
-          let cards = map EncounterCard $ take n xs
+          let lids = map LocationTarget $ take n xs
           s <$ unshiftMessages
-            [FocusCards cards, Label "Continue" [UnfocusCards]]
+            [FocusTargets lids, Label "Continue" [UnfocusTargets]]
         _ -> error "Wrong deck"
     Setup -> do
       investigatorIds <- getInvestigatorIds
@@ -117,15 +116,11 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
 
       armitageKidnapped <- getHasRecord DrHenryArmitageWasKidnapped
 
-      exhibitHalls <- shuffleM =<< for
-        ["02132", "02133", "02134", "02135", "02136"]
-        (\cardCode -> lookupEncounterCard cardCode <$> getRandom)
-
-      restrictedHall <- lookupEncounterCard "02137" <$> getRandom
+      exhibitHalls <- shuffleM ["02132", "02133", "02134", "02135", "02136"]
 
       let (bottom, top) = splitAt 2 exhibitHalls
 
-      bottom' <- shuffleM $ restrictedHall : bottom
+      bottom' <- shuffleM $ "02137" : bottom -- 02137 is the restricted hall
 
       let exhibitDeck = top <> bottom'
 

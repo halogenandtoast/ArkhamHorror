@@ -5,8 +5,7 @@
 module TestImport
   ( module X
   , module TestImport
-  )
-where
+  ) where
 
 import Arkham.Import as X
 
@@ -368,6 +367,7 @@ newGame investigator queue = do
     , gameResignedCardCodes = mempty
     , gameUsedAbilities = mempty
     , gameFocusedCards = mempty
+    , gameFocusedTargets = mempty
     , gameFocusedTokens = mempty
     , gameActiveCard = Nothing
     , gamePlayerOrder = [investigatorId]

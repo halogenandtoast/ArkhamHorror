@@ -380,6 +380,14 @@ instance HasId LeadInvestigatorId (Game queue) () where
 instance HasId ActiveInvestigatorId (Game queue) () where
   getId _ = ActiveInvestigatorId <$> view activeInvestigatorIdL
 
+instance HasId (Maybe CampaignId) (Game queue) () where
+  getId _ = do
+    mode <- view modeL
+    pure $ case mode of
+      This campaign -> Just $ toCampaignId campaign
+      These campaign _ -> Just $ toCampaignId campaign
+      That _ -> Nothing
+
 instance HasId CardCode (Game queue) EnemyId where
   getId = (getCardCode <$>) . getEnemy
 
@@ -2305,10 +2313,6 @@ runGameMessage msg g = case msg of
       matchingDiscards = filter (encounterCardMatch matcher) (g ^. discardL)
       matchingDeckCards =
         filter (encounterCardMatch matcher) (unDeck $ g ^. encounterDeckL)
-    matchingVoidEnemies <- case matcher of
-      EncounterCardMatchByCardCode cardCode ->
-        filter ((== cardCode) . getCardCode) . toList <$> view enemiesInVoidL
-      _ -> pure []
 
     unshiftMessage
       (chooseOne iid
@@ -2316,7 +2320,6 @@ runGameMessage msg g = case msg of
       <> map
            (FoundAndDrewEncounterCard iid FromEncounterDeck)
            matchingDeckCards
-      <> map (FoundEnemyInVoid iid . toId) matchingVoidEnemies
       )
     -- TODO: show where focused cards are from
     pure
@@ -2324,26 +2327,35 @@ runGameMessage msg g = case msg of
       & focusedCardsL
       .~ (map EncounterCard matchingDeckCards
          <> map EncounterCard matchingDiscards
-         <> map toCard matchingVoidEnemies
          )
   FindEncounterCard iid target matcher -> do
-    let matchingDiscards = filter (encounterCardMatch matcher) (g ^. discardL)
     let
+      matchingDiscards = filter (encounterCardMatch matcher) (g ^. discardL)
       matchingDeckCards =
         filter (encounterCardMatch matcher) (unDeck $ g ^. encounterDeckL)
+
+    matchingVoidEnemies <- case matcher of
+      EncounterCardMatchByCardCode cardCode ->
+        filter ((== cardCode) . getCardCode) . toList <$> view enemiesInVoidL
+      _ -> pure []
+
     unshiftMessage
       (chooseOne iid
       $ map (FoundEncounterCardFrom iid target FromDiscard) matchingDiscards
       <> map
            (FoundEncounterCardFrom iid target FromEncounterDeck)
            matchingDeckCards
+      <> map (FoundEnemyInVoid iid target . toId) matchingVoidEnemies
       )
+
     -- TODO: show where focused cards are from
+
     pure
       $ g
       & focusedCardsL
       .~ (map EncounterCard matchingDeckCards
          <> map EncounterCard matchingDiscards
+         <> map toCard matchingVoidEnemies
          )
   FoundEncounterCardFrom iid target cardSource card -> do
     let

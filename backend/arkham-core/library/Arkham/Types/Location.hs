@@ -9,6 +9,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.GameValue
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Classes
+import Arkham.Types.Card.CardCode
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.Helpers
@@ -74,6 +75,7 @@ data Location
   | ExhibitHallNatureExhibit' ExhibitHallNatureExhibit
   | ExhibitHallEgyptianExhibit' ExhibitHallEgyptianExhibit
   | ExhibitHallHallOfTheDead' ExhibitHallHallOfTheDead
+  | ExhibitHallRestrictedHall' ExhibitHallRestrictedHall
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -114,6 +116,7 @@ deriving anyclass instance
   ( HasPhase env
   , HasCount CardCount env InvestigatorId
   , HasCount ResourceCount env InvestigatorId
+  , HasId (Maybe StoryEnemyId) env CardCode
   )
   => HasModifiersFor env Location
 
@@ -269,6 +272,7 @@ allLocations = mapFromList $ map
   , ExhibitHallNatureExhibit' exhibitHallNatureExhibit
   , ExhibitHallEgyptianExhibit' exhibitHallEgyptianExhibit
   , ExhibitHallHallOfTheDead' exhibitHallHallOfTheDead
+  , ExhibitHallRestrictedHall' exhibitHallRestrictedHall
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall
   , Bedroom' bedroom
@@ -364,6 +368,7 @@ locationAttrs = \case
   ExhibitHallNatureExhibit' attrs -> coerce attrs
   ExhibitHallEgyptianExhibit' attrs -> coerce attrs
   ExhibitHallHallOfTheDead' attrs -> coerce attrs
+  ExhibitHallRestrictedHall' attrs -> coerce attrs
   StudyAberrantGateway' attrs -> coerce attrs
   GuestHall' attrs -> coerce attrs
   Bedroom' attrs -> coerce attrs

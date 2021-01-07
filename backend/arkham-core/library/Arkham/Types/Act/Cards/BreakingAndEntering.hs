@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.BreakingAndEntering
   ( BreakingAndEntering(..)
   , breakingAndEntering
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -53,7 +52,7 @@ instance ActRunner env => RunMessage env BreakingAndEntering where
             leadInvestigatorId
             [ TargetLabel
                 (InvestigatorTarget iid)
-                [AddCampaignCardToDeck iid "02138"]
+                [TakeControlOfSetAsideAsset iid "02138"]
             | iid <- investigatorIds
             ]
           , FindEncounterCard
@@ -61,7 +60,7 @@ instance ActRunner env => RunMessage env BreakingAndEntering where
             (toTarget attrs)
             (EncounterCardMatchByCardCode "02141")
           ]
-    FoundEnemyInVoid _ eid -> do
+    FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
         <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
       a <$ unshiftMessages [EnemySpawn Nothing lid eid, NextAct actId "02125"]

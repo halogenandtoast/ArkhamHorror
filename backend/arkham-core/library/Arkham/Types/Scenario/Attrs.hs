@@ -106,6 +106,14 @@ findLocationKey locationMatcher locations = find matchKey $ keys locations
 instance ScenarioRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     Setup -> a <$ pushMessage BeginInvestigation
+    StartCampaign -> do
+      standalone <- isNothing <$> getId @(Maybe CampaignId) ()
+      a <$ if standalone
+        then unshiftMessage $ StartScenario scenarioId
+        else pure ()
+    InitDeck iid deck -> do
+      standalone <- isNothing <$> getId @(Maybe CampaignId) ()
+      a <$ if standalone then unshiftMessage $ LoadDeck iid deck else pure ()
     PlaceLocationMatching locationMatcher -> do
       let
         locations =

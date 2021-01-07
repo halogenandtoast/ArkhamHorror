@@ -19,8 +19,8 @@ exhibitHallHallOfTheDead = ExhibitHallHallOfTheDead
   $ base { locationVictory = Just 1 }
  where
   base = baseAttrs
-    "02135"
-    (Name "ExhibitHall" $ Just "Hall of the Dead")
+    "02136"
+    (Name "Exhibit Hall" $ Just "Hall of the Dead")
     EncounterSet.TheMiskatonicMuseum
     3
     (PerPlayer 2)

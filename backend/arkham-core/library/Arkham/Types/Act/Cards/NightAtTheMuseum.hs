@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.NightAtTheMuseum
   ( NightAtTheMuseum(..)
   , nightAtTheMuseum
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -46,7 +45,7 @@ instance ActRunner env => RunMessage env NightAtTheMuseum where
             (toTarget attrs)
             (EncounterCardMatchByCardCode "02141")
           )
-    FoundEnemyInVoid _ eid -> do
+    FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
         <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
       a <$ unshiftMessages [EnemySpawn Nothing lid eid, NextAct actId "02125"]

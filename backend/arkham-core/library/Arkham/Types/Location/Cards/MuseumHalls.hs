@@ -83,7 +83,7 @@ instance LocationRunner env => RunMessage env MuseumHalls where
             SkillCombat
             5
           )
-    UseCardAbility iid (ProxySource _ source) _ 1
+    UseCardAbility iid source _ 1
       | isSource location source && revealed location -> l
       <$ unshiftMessage (UseScenarioSpecificAbility iid 1)
     PassedSkillTest _ _ source _ _ | isSource location source -> do

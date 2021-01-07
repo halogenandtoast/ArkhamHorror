@@ -87,6 +87,10 @@ import { Difficulty } from '@/arkham/types/Difficulty';
 
 const scenarios = [
   {
+    id: '02118',
+    name: 'The Miskatonic Museum',
+  },
+  {
     id: '81001',
     name: 'Curse of the Rougarou',
   },

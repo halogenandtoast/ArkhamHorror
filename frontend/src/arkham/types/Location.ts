@@ -32,11 +32,7 @@ export const locationNameDecoder = JsonDecoder.object<LocationName>(
     title: JsonDecoder.string,
     subtitle: JsonDecoder.nullable(JsonDecoder.string),
   },
-  'LocationName',
-  {
-    title: 'locationNameTitle',
-    subtitle: 'locationNameSubtitle',
-  }
+  'LocationName'
 );
 
 export interface LocationContents {

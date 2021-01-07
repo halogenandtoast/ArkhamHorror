@@ -1,7 +1,6 @@
 module Arkham.Types.Treachery.Cards
   ( module X
-  )
-where
+  ) where
 
 import Arkham.Types.Treachery.Cards.AbandonedAndAlone as X
 import Arkham.Types.Treachery.Cards.AlteredBeast as X
@@ -53,6 +52,7 @@ import Arkham.Types.Treachery.Cards.RexsCurse as X
 import Arkham.Types.Treachery.Cards.RipplesOnTheSurface as X
 import Arkham.Types.Treachery.Cards.RottingRemains as X
 import Arkham.Types.Treachery.Cards.SearchingForIzzie as X
+import Arkham.Types.Treachery.Cards.ShadowSpawned as X
 import Arkham.Types.Treachery.Cards.SlitheringBehindYou as X
 import Arkham.Types.Treachery.Cards.SmiteTheWicked as X
 import Arkham.Types.Treachery.Cards.SomethingInTheDrinks as X

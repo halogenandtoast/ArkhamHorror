@@ -23,6 +23,9 @@ instance HasRecord Campaign where
 instance HasSet CompletedScenarioId env Campaign where
   getSet = getSet . campaignAttrs
 
+toCampaignId :: Campaign -> CampaignId
+toCampaignId = campaignId . campaignAttrs
+
 allCampaigns :: HashMap CampaignId (Difficulty -> Campaign)
 allCampaigns = mapFromList
   [ ("01", NightOfTheZealot' . nightOfTheZealot)

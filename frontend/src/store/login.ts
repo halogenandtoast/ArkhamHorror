@@ -1,4 +1,5 @@
 import { GetterTree, ActionTree, MutationTree } from 'vuex';
+import { AxiosError } from 'axios'
 import {
   RootState,
   LoginState,
@@ -41,11 +42,11 @@ const actions: ActionTree<LoginState, RootState> = {
     return api.get<User>('whoami').then(
       (whoami) => {
         commit('signIn', whoami.data);
-      },
-      () => {
-        dispatch('logout');
-      },
-    );
+      }).catch((reason: AxiosError) => {
+        if (reason.response && reason.response.status == 401) {
+          dispatch('logout');
+        }
+      });
   },
   loadUserFromStorage({ dispatch }): Promise<void> {
     const token = localStorage.getItem('token');

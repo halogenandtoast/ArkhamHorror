@@ -3,8 +3,7 @@ module Arkham.Types.Treachery
   , Treachery(..)
   , isWeakness
   , treacheryTarget
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -60,6 +59,7 @@ data Treachery
   | PushedIntoTheBeyond' PushedIntoTheBeyond
   | TerrorFromBeyond' TerrorFromBeyond
   | ArcaneBarrier' ArcaneBarrier
+  | ShadowSpawned' ShadowSpawned
   | StalkedInTheDark' StalkedInTheDark
   | PassageIntoTheVeil' PassageIntoTheVeil
   | EphemeralExhibits' EphemeralExhibits
@@ -90,6 +90,7 @@ deriving anyclass instance
   , HasId (Maybe OwnerId) env AssetId
   , HasSet Trait env LocationId
   , HasSet UniqueEnemyId env ()
+  , HasCount ResourceCount env TreacheryId
   )
   => HasModifiersFor env Treachery
 
@@ -174,6 +175,7 @@ allTreacheries = mapFromList
   , ("02100", (PushedIntoTheBeyond' .) . pushedIntoTheBeyond)
   , ("02101", (TerrorFromBeyond' .) . terrorFromBeyond)
   , ("02102", (ArcaneBarrier' .) . arcaneBarrier)
+  , ("02142", (ShadowSpawned' .) . shadowSpawned)
   , ("02143", (StalkedInTheDark' .) . stalkedInTheDark)
   , ("02144", (PassageIntoTheVeil' .) . passageIntoTheVeil)
   , ("02145", (EphemeralExhibits' .) . ephemeralExhibits)
@@ -252,6 +254,7 @@ treacheryAttrs = \case
   PushedIntoTheBeyond' attrs -> coerce attrs
   TerrorFromBeyond' attrs -> coerce attrs
   ArcaneBarrier' attrs -> coerce attrs
+  ShadowSpawned' attrs -> coerce attrs
   StalkedInTheDark' attrs -> coerce attrs
   PassageIntoTheVeil' attrs -> coerce attrs
   EphemeralExhibits' attrs -> coerce attrs

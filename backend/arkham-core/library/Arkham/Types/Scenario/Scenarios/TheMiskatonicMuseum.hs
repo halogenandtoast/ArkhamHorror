@@ -16,12 +16,23 @@ newtype TheMiskatonicMuseum = TheMiskatonicMuseum Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 theMiskatonicMuseum :: Difficulty -> TheMiskatonicMuseum
-theMiskatonicMuseum difficulty = TheMiskatonicMuseum $ baseAttrs
-  "02118"
-  "The Miskatonic Museum"
-  ["02119", "02120", "02121"]
-  ["02122", "02123", "02124", "02125"]
-  difficulty
+theMiskatonicMuseum difficulty = TheMiskatonicMuseum $ base
+  { scenarioLocationLayout = Just
+    [ ".     .     .                    .                    hall1 hall1          hall2          hall2 .                  .              .     ."
+    , ".     .     hall3                hall3                hall1 hall1          hall2          hall2 hall4              hall4          .     ."
+    , "hall5 hall5 hall3                hall3                .     museumHalls    museumHalls    .     hall4              hall4          hall6 hall6"
+    , "hall5 hall5 .                    .                    .     museumHalls    museumHalls    .     .                  .              hall6 hall6"
+    , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
+    , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
+    ]
+  }
+ where
+  base = baseAttrs
+    "02118"
+    "The Miskatonic Museum"
+    ["02119", "02120", "02121"]
+    ["02122", "02123", "02124", "02125"]
+    difficulty
 
 theMiskatonicMuseumIntro1 :: Message
 theMiskatonicMuseumIntro1 = FlavorText
@@ -92,8 +103,34 @@ instance
     ElderThing -> pure $ toTokenValue attrs ElderThing 3 5
     otherFace -> getTokenValue attrs iid otherFace
 
+standaloneTokens :: [Token]
+standaloneTokens =
+  [ PlusOne
+  , Zero
+  , Zero
+  , MinusOne
+  , MinusOne
+  , MinusOne
+  , MinusTwo
+  , MinusTwo
+  , MinusThree
+  , MinusFour
+  , Skull
+  , Skull
+  , Cultist
+  , Tablet
+  , ElderThing
+  , AutoFail
+  , ElderSign
+  ]
+
 instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
   runMessage msg s@(TheMiskatonicMuseum attrs@Attrs {..}) = case msg of
+    SetTokensForScenario -> do
+      standalone <- isNothing <$> getId @(Maybe CampaignId) ()
+      s <$ if standalone
+        then unshiftMessage (SetTokens standaloneTokens)
+        else pure ()
     UseScenarioSpecificAbility _ 1 ->
       case fromJustNote "must be set" scenarioDeck of
         ExhibitDeck [] -> pure s
@@ -109,12 +146,15 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
             [FocusTargets lids, Label "Continue" [UnfocusTargets]]
         _ -> error "Wrong deck"
     Setup -> do
+      standalone <- isNothing <$> getId @(Maybe CampaignId) ()
       investigatorIds <- getInvestigatorIds
 
       securityOffice <- sample $ "02128" :| ["02129"]
       administrationOffice <- sample $ "02130" :| ["02131"]
 
-      armitageKidnapped <- getHasRecord DrHenryArmitageWasKidnapped
+      armitageKidnapped <- if standalone
+        then pure True
+        else getHasRecord DrHenryArmitageWasKidnapped
 
       exhibitHalls <- shuffleM ["02132", "02133", "02134", "02135", "02136"]
 
@@ -164,6 +204,14 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
       TheMiskatonicMuseum <$> runMessage
         msg
         (attrs & locationsL .~ locations' & deckL ?~ ExhibitDeck exhibitDeck)
+    PlacedLocation lid -> do
+      name <- nameTitle <$> getName lid
+      s <$ if name == "Exhibit Hall"
+        then do
+          hallCount <- length
+            <$> getSet @LocationId (LocationWithTitle "Exhibit Hall")
+          unshiftMessage (SetLocationLabel lid $ "hall" <> tshow hallCount)
+        else pure ()
     ResolveToken _ ElderThing iid | isEasyStandard attrs ->
       s <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid 1)
     ResolveToken _ ElderThing iid | isHardExpert attrs -> do

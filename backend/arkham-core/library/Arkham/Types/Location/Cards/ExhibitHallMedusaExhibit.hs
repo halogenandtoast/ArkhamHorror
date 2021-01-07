@@ -20,7 +20,7 @@ exhibitHallMedusaExhibit = ExhibitHallMedusaExhibit
  where
   base = baseAttrs
     "02133"
-    (Name "ExhibitHall" $ Just "Medusa Exhibit")
+    (Name "Exhibit Hall" $ Just "Medusa Exhibit")
     EncounterSet.TheMiskatonicMuseum
     2
     (PerPlayer 1)

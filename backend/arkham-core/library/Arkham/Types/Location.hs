@@ -67,6 +67,8 @@ data Location
   | MuseumHalls' MuseumHalls
   | SecurityOffice_128' SecurityOffice_128
   | SecurityOffice_129' SecurityOffice_129
+  | AdministrationOffice_130' AdministrationOffice_130
+  | AdministrationOffice_131' AdministrationOffice_131
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -103,7 +105,12 @@ data Location
 
 deriving anyclass instance ActionRunner env => HasActions env Location
 deriving anyclass instance LocationRunner env => RunMessage env Location
-deriving anyclass instance HasPhase env => HasModifiersFor env Location
+deriving anyclass instance
+  ( HasPhase env
+  , HasCount CardCount env InvestigatorId
+  , HasCount ResourceCount env InvestigatorId
+  )
+  => HasModifiersFor env Location
 
 instance Entity Location where
   type EntityId Location = LocationId
@@ -247,6 +254,8 @@ allLocations = mapFromList $ map
   , MuseumHalls' museumHalls
   , SecurityOffice_128' securityOffice_128
   , SecurityOffice_129' securityOffice_129
+  , AdministrationOffice_130' administrationOffice_130
+  , AdministrationOffice_131' administrationOffice_131
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall
   , Bedroom' bedroom
@@ -335,6 +344,8 @@ locationAttrs = \case
   MuseumHalls' attrs -> coerce attrs
   SecurityOffice_128' attrs -> coerce attrs
   SecurityOffice_129' attrs -> coerce attrs
+  AdministrationOffice_130' attrs -> coerce attrs
+  AdministrationOffice_131' attrs -> coerce attrs
   StudyAberrantGateway' attrs -> coerce attrs
   GuestHall' attrs -> coerce attrs
   Bedroom' attrs -> coerce attrs

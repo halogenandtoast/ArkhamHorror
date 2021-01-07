@@ -69,6 +69,11 @@ data Location
   | SecurityOffice_129' SecurityOffice_129
   | AdministrationOffice_130' AdministrationOffice_130
   | AdministrationOffice_131' AdministrationOffice_131
+  | ExhibitHallAthabaskanExhibit' ExhibitHallAthabaskanExhibit
+  | ExhibitHallMedusaExhibit' ExhibitHallMedusaExhibit
+  | ExhibitHallNatureExhibit' ExhibitHallNatureExhibit
+  | ExhibitHallEgyptianExhibit' ExhibitHallEgyptianExhibit
+  | ExhibitHallHallOfTheDead' ExhibitHallHallOfTheDead
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -256,6 +261,11 @@ allLocations = mapFromList $ map
   , SecurityOffice_129' securityOffice_129
   , AdministrationOffice_130' administrationOffice_130
   , AdministrationOffice_131' administrationOffice_131
+  , ExhibitHallAthabaskanExhibit' exhibitHallAthabaskanExhibit
+  , ExhibitHallMedusaExhibit' exhibitHallMedusaExhibit
+  , ExhibitHallNatureExhibit' exhibitHallNatureExhibit
+  , ExhibitHallEgyptianExhibit' exhibitHallEgyptianExhibit
+  , ExhibitHallHallOfTheDead' exhibitHallHallOfTheDead
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall
   , Bedroom' bedroom
@@ -346,6 +356,11 @@ locationAttrs = \case
   SecurityOffice_129' attrs -> coerce attrs
   AdministrationOffice_130' attrs -> coerce attrs
   AdministrationOffice_131' attrs -> coerce attrs
+  ExhibitHallAthabaskanExhibit' attrs -> coerce attrs
+  ExhibitHallMedusaExhibit' attrs -> coerce attrs
+  ExhibitHallNatureExhibit' attrs -> coerce attrs
+  ExhibitHallEgyptianExhibit' attrs -> coerce attrs
+  ExhibitHallHallOfTheDead' attrs -> coerce attrs
   StudyAberrantGateway' attrs -> coerce attrs
   GuestHall' attrs -> coerce attrs
   Bedroom' attrs -> coerce attrs

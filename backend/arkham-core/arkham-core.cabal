@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d62d9669c6becbb550a5d0e097a5e897483208a185158cf1c6b05960a8d3e2b4
+-- hash: 5143dfec471ed9e8339cd4737239cb5d80e1cf253cd0d901ff7bcc227ba1c44c
 
 name:           arkham-core
 version:        0.0.0
@@ -452,6 +452,12 @@ library
       Arkham.Types.Location.Cards.DowntownFirstBankOfArkham
       Arkham.Types.Location.Cards.Easttown
       Arkham.Types.Location.Cards.EasttownArkhamPoliceStation
+      Arkham.Types.Location.Cards.ExhibitHallAthabaskanExhibit
+      Arkham.Types.Location.Cards.ExhibitHallEgyptianExhibit
+      Arkham.Types.Location.Cards.ExhibitHallHallOfTheDead
+      Arkham.Types.Location.Cards.ExhibitHallMedusaExhibit
+      Arkham.Types.Location.Cards.ExhibitHallNatureExhibit
+      Arkham.Types.Location.Cards.ExhibitHallRestrictedHall
       Arkham.Types.Location.Cards.FacultyOfficesTheHourIsLate
       Arkham.Types.Location.Cards.FacultyOfficesTheNightIsStillYoung
       Arkham.Types.Location.Cards.FarAboveYourHouse

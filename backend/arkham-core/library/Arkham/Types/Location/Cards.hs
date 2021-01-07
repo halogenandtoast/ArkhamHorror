@@ -36,6 +36,11 @@ import Arkham.Types.Location.Cards.DowntownArkhamAsylum as X
 import Arkham.Types.Location.Cards.DowntownFirstBankOfArkham as X
 import Arkham.Types.Location.Cards.Easttown as X
 import Arkham.Types.Location.Cards.EasttownArkhamPoliceStation as X
+import Arkham.Types.Location.Cards.ExhibitHallAthabaskanExhibit as X
+import Arkham.Types.Location.Cards.ExhibitHallEgyptianExhibit as X
+import Arkham.Types.Location.Cards.ExhibitHallHallOfTheDead as X
+import Arkham.Types.Location.Cards.ExhibitHallMedusaExhibit as X
+import Arkham.Types.Location.Cards.ExhibitHallNatureExhibit as X
 import Arkham.Types.Location.Cards.FacultyOfficesTheHourIsLate as X
 import Arkham.Types.Location.Cards.FacultyOfficesTheNightIsStillYoung as X
 import Arkham.Types.Location.Cards.FarAboveYourHouse as X

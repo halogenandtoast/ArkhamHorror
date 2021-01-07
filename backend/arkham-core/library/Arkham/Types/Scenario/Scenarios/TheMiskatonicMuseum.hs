@@ -94,6 +94,21 @@ instance
 
 instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
   runMessage msg s@(TheMiskatonicMuseum attrs@Attrs {..}) = case msg of
+    UseScenarioSpecificAbility iid 1 ->
+      case fromJustNote "must be set" scenarioDeck of
+        ExhibitDeck [] -> pure s
+        ExhibitDeck (x : xs) -> do
+          unshiftMessage (InvestigatorDrewEncounterCard iid x)
+          pure $ TheMiskatonicMuseum
+            (attrs { scenarioDeck = Just $ ExhibitDeck xs })
+        _ -> error "Wrong deck"
+    LookAtTopOfDeck _ ScenarioDeckTarget n -> do
+      case fromJustNote "must be set" scenarioDeck of
+        ExhibitDeck xs -> do
+          let cards = map EncounterCard $ take n xs
+          s <$ unshiftMessages
+            [FocusCards cards, Label "Continue" [UnfocusCards]]
+        _ -> error "Wrong deck"
     Setup -> do
       investigatorIds <- getInvestigatorIds
 

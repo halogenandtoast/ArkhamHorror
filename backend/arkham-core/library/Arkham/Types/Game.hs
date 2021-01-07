@@ -2,8 +2,7 @@
 
 module Arkham.Types.Game
   ( module Arkham.Types.Game
-  )
-where
+  ) where
 
 import Arkham.Import hiding (first)
 
@@ -106,7 +105,6 @@ data Game queue = Game
 
   -- Active questions
   , gameQuestion :: HashMap InvestigatorId Question
-
   }
   deriving stock Generic
 
@@ -190,13 +188,17 @@ getLocation lid = fromJustNote missingLocation
 
 getLocationMatching
   :: MonadReader (Game queue) m => LocationMatcher -> m (Maybe Location)
-getLocationMatching = \case
+getLocationMatching = (listToMaybe <$>) . getLocationsMatching
+
+getLocationsMatching
+  :: MonadReader (Game queue) m => LocationMatcher -> m [Location]
+getLocationsMatching = \case
   LocationWithTitle title ->
-    find ((== title) . nameTitle . unLocationName . getLocationName)
+    filter ((== title) . nameTitle . unLocationName . getLocationName)
       . toList
       <$> view locationsL
   LocationWithFullTitle title subtitle ->
-    find ((== Name title (Just subtitle)) . unLocationName . getLocationName)
+    filter ((== Name title (Just subtitle)) . unLocationName . getLocationName)
       . toList
       <$> view locationsL
 
@@ -920,6 +922,9 @@ instance HasCount RemainingSanity (Game queue) InvestigatorId where
 instance HasSet LocationId (Game queue) () where
   getSet _ = keysSet <$> view locationsL
 
+instance HasSet LocationId (Game queue) LocationMatcher where
+  getSet = (setFromList . map toId <$>) . getLocationsMatching
+
 instance HasList LocationName (Game queue) () where
   getList _ = map getLocationName . toList <$> view locationsL
 
@@ -936,6 +941,19 @@ instance HasSet RevealedLocationId (Game queue) () where
       . keysSet
       . filterMap isRevealed
       <$> view locationsL
+
+instance HasSet UnrevealedLocationId (Game queue) () where
+  getSet _ =
+    mapSet UnrevealedLocationId
+      . keysSet
+      . filterMap (not . isRevealed)
+      <$> view locationsL
+
+instance HasSet UnrevealedLocationId (Game queue) LocationMatcher where
+  getSet matcher = liftM2
+    intersection
+    (getSet ())
+    (mapSet UnrevealedLocationId <$> getSet matcher)
 
 findTreacheries
   :: (MonadReader (Game queue) m, Hashable a, Eq a)
@@ -1026,9 +1044,9 @@ getShortestPath !game !initialLocation !target = do
   fromMaybe [] . headMay . drop 1 . map snd . sortOn fst . mapToList $ result
 
 data LPState = LPState
-  { _lpSearchQueue       :: Seq LocationId
+  { _lpSearchQueue :: Seq LocationId
   , _lpVisistedLocations :: HashSet LocationId
-  , _lpParents           :: HashMap LocationId LocationId
+  , _lpParents :: HashMap LocationId LocationId
   }
 
 getLongestPath
@@ -1644,18 +1662,23 @@ runGameMessage msg g = case msg of
       playerTurnOrder =
         take (length allPlayers) $ dropWhile (/= iid) $ cycle allPlayers
     pure $ g & leadInvestigatorIdL .~ iid & playerTurnOrderL .~ playerTurnOrder
+  LookAtTopOfDeck _ EncounterDeckTarget n -> do
+    let cards = map EncounterCard . take n $ unDeck (gameEncounterDeck g)
+    g <$ unshiftMessages [FocusCards cards, Label "Continue" [UnfocusCards]]
   SearchTopOfDeck iid EncounterDeckTarget n _traits strategy -> do
     let (cards, encounterDeck) = splitAt n $ unDeck (gameEncounterDeck g)
     case strategy of
-      PutBackInAnyOrder -> unshiftMessage
-        (Ask iid $ ChooseOneAtATime
-          [ AddFocusedToTopOfDeck iid EncounterDeckTarget (getCardId card)
-          | card <- cards
+      PutBackInAnyOrder -> do
+        unshiftMessages
+          [ FocusCards (map EncounterCard cards)
+          , chooseOneAtATime
+            iid
+            [ AddFocusedToTopOfDeck iid EncounterDeckTarget (getCardId card)
+            | card <- cards
+            ]
           ]
-        )
+        pure $ g & encounterDeckL .~ Deck encounterDeck
       ShuffleBackIn -> error "this is not handled yet"
-    unshiftMessage (FocusCards $ map EncounterCard cards)
-    pure $ g & encounterDeckL .~ Deck encounterDeck
   ShuffleAllFocusedIntoDeck _ (InvestigatorTarget iid') -> do
     let cards = mapMaybe toPlayerCard (g ^. focusedCardsL)
     unshiftMessage (ShuffleCardsIntoDeck iid' cards)
@@ -2435,7 +2458,8 @@ runGameMessage msg g = case msg of
       -- Asset is assumed to have a revelation ability if drawn from encounter deck
       unshiftMessage (Revelation iid $ AssetSource assetId)
       pure $ g & (assetsL . at assetId ?~ asset)
-    LocationType -> pure g
+    LocationType ->
+      g <$ unshiftMessage (PlaceLocation . LocationId $ ecCardCode card)
   DrewTreachery iid cardCode -> do
     (treacheryId, treachery) <- createTreachery cardCode (Just iid)
     checkWindowMessages <- checkWindows iid $ \who ->

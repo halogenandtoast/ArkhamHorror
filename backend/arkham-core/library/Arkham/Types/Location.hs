@@ -1,7 +1,6 @@
 module Arkham.Types.Location
   ( module Arkham.Types.Location
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -66,6 +65,8 @@ data Location
   | BackAlley' BackAlley
   | MuseumEntrance' MuseumEntrance
   | MuseumHalls' MuseumHalls
+  | SecurityOffice_128' SecurityOffice_128
+  | SecurityOffice_129' SecurityOffice_129
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -244,6 +245,8 @@ allLocations = mapFromList $ map
   , BackAlley' backAlley
   , MuseumEntrance' museumEntrance
   , MuseumHalls' museumHalls
+  , SecurityOffice_128' securityOffice_128
+  , SecurityOffice_129' securityOffice_129
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall
   , Bedroom' bedroom
@@ -330,6 +333,8 @@ locationAttrs = \case
   BackAlley' attrs -> coerce attrs
   MuseumEntrance' attrs -> coerce attrs
   MuseumHalls' attrs -> coerce attrs
+  SecurityOffice_128' attrs -> coerce attrs
+  SecurityOffice_129' attrs -> coerce attrs
   StudyAberrantGateway' attrs -> coerce attrs
   GuestHall' attrs -> coerce attrs
   Bedroom' attrs -> coerce attrs

@@ -13,8 +13,7 @@ module Arkham.Types.Message
   , chooseN
   , resolve
   , story
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -130,6 +129,7 @@ data Message
   | FinishedWithMulligan InvestigatorId
   | SearchCollectionForRandom InvestigatorId Source (PlayerCardType, Maybe Trait)
   | SearchDeckForTraits InvestigatorId Target [Trait]
+  | LookAtTopOfDeck InvestigatorId Target Int
   | SearchTopOfDeck InvestigatorId Target Int [Trait] LeftoverCardStrategy
   | SearchDiscard InvestigatorId Target [Trait]
   | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
@@ -177,6 +177,7 @@ data Message
   | AddConnectionBack LocationId LocationSymbol
   | AddedConnection LocationId LocationId
   | RevealLocation (Maybe InvestigatorId) LocationId
+  | LookAtRevealed LocationId
   | RemoveLocation LocationId
   | RemoveEnemy EnemyId
   | MoveAllTo LocationId
@@ -461,6 +462,7 @@ data Message
   | InHand Message
   | InDiscard Message
   | EnemyCheckEngagement EnemyId
+  | Force Message
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -488,7 +490,6 @@ data Question
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
-data ChoosePlayerChoice
-  = SetLeadInvestigator
+data ChoosePlayerChoice = SetLeadInvestigator
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)

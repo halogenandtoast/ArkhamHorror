@@ -98,6 +98,7 @@ data Game queue = Game
   , gameUsedAbilities :: [(InvestigatorId, Ability)]
   , gameResignedCardCodes :: [CardCode]
   , gameFocusedCards :: [Card]
+  , gameFocusedTargets :: [Target]
   , gameFocusedTokens :: [Token]
   , gameActiveCard :: Maybe Card
   , gameVictoryDisplay :: [Card]
@@ -162,6 +163,7 @@ instance ToJSON queue => ToJSON (Game queue) where
     , "usedAbilities" .= toJSON gameUsedAbilities
     , "resignedCardCodes" .= toJSON gameResignedCardCodes
     , "focusedCards" .= toJSON gameFocusedCards
+    , "focusedTargets" .= toJSON gameFocusedTargets
     , "focusedTokens" .= toJSON gameFocusedTokens
     , "activeCard" .= toJSON gameActiveCard
     , "victoryDisplay" .= toJSON gameVictoryDisplay
@@ -343,6 +345,7 @@ newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
     , gameUsedAbilities = mempty
     , gameResignedCardCodes = mempty
     , gameFocusedCards = mempty
+    , gameFocusedTargets = mempty
     , gameFocusedTokens = mempty
     , gameActiveCard = Nothing
     , gamePlayerOrder = toList playersMap
@@ -1646,6 +1649,8 @@ runGameMessage msg g = case msg of
   DisableEffect effectId -> pure $ g & effectsL %~ deleteMap effectId
   FocusCards cards -> pure $ g & focusedCardsL .~ cards
   UnfocusCards -> pure $ g & focusedCardsL .~ mempty
+  FocusTargets targets -> pure $ g & focusedTargetsL .~ targets
+  UnfocusTargets -> pure $ g & focusedTargetsL .~ mempty
   FocusTokens tokens -> pure $ g & focusedTokensL .~ tokens
   UnfocusTokens -> pure $ g & focusedTokensL .~ mempty
   ChooseLeadInvestigator -> if length (g ^. investigatorsL) == 1

@@ -184,10 +184,20 @@ instance
       (getActions iid window)
       ([minBound .. maxBound] :: [ActionType])
     let
-      canAffordAction = \case
-        ActivateCardAbilityAction _ ability -> getCanAffordAbility iid ability
-        _ -> pure True
-    filterM canAffordAction actions'
+      isForcedAction = \case
+        Force _ -> True
+        _ -> False
+      forcedActions = filter isForcedAction actions'
+    if null forcedActions
+      then do
+        let
+          canAffordAction = \case
+            ActivateCardAbilityAction _ ability ->
+              getCanAffordAbility iid ability
+            _ -> pure True
+        filterM canAffordAction actions'
+      else pure forcedActions
+
 
 
 enemyAtInvestigatorLocation
@@ -440,6 +450,7 @@ targetToSource = \case
   AfterSkillTestTarget -> AfterSkillTestSource
   TreacheryTarget tid -> TreacherySource tid
   EncounterDeckTarget -> error "can not covert"
+  ScenarioDeckTarget -> error "can not covert"
   AgendaTarget aid -> AgendaSource aid
   ActTarget aid -> ActSource aid
   CardIdTarget _ -> error "can not convert"

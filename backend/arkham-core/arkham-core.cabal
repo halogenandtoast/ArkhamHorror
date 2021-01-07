@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 60d1009d689c24682b381053b9ae9acf3655e5b0928ca02dc309430be91342c3
+-- hash: 09758e9bc87b3e037a15ff0a4faeb86178bae441a6a7237b5db10f7e64ecc3fd
 
 name:           arkham-core
 version:        0.0.0
@@ -481,6 +481,8 @@ library
       Arkham.Types.Location.Cards.Rivertown
       Arkham.Types.Location.Cards.RivertownAbandonedWarehouse
       Arkham.Types.Location.Cards.ScienceBuilding
+      Arkham.Types.Location.Cards.SecurityOffice_128
+      Arkham.Types.Location.Cards.SecurityOffice_129
       Arkham.Types.Location.Cards.SouthsideHistoricalSociety
       Arkham.Types.Location.Cards.SouthsideMasBoardingHouse
       Arkham.Types.Location.Cards.StMarysHospital

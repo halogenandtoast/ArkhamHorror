@@ -3,8 +3,7 @@
 module Arkham.Types.Scenario.Attrs
   ( module Arkham.Types.Scenario.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Import hiding (log)
 
@@ -18,12 +17,12 @@ newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
   deriving newtype (Show, IsString, ToJSON, FromJSON)
 
 data Attrs = Attrs
-  { scenarioName        :: Text
-  , scenarioId          :: ScenarioId
-  , scenarioDifficulty  :: Difficulty
+  { scenarioName :: Text
+  , scenarioId :: ScenarioId
+  , scenarioDifficulty :: Difficulty
   -- These types are to handle complex scenarios with multiple stacks
   , scenarioAgendaStack :: [(Int, [AgendaId])] -- These types are to handle complex scenarios with multiple stacks
-  , scenarioActStack    :: [(Int, [ActId])]
+  , scenarioActStack :: [(Int, [ActId])]
   , scenarioLocationLayout :: Maybe [GridTemplateRow]
   , scenarioDeck :: Maybe ScenarioDeck
   , scenarioLog :: HashSet ScenarioLogKey
@@ -154,4 +153,6 @@ instance ScenarioRunner env => RunMessage env Attrs where
     UseScenarioSpecificAbility{} ->
       error
         "The scenario should specify what to do for a scenario specific ability."
+    LookAtTopOfDeck _ ScenarioDeckTarget _ ->
+      error "The scenario should handle looking at the top of the scenario deck"
     _ -> pure a

@@ -319,6 +319,11 @@ instance LocationRunner env => RunMessage env Attrs where
           | iid <- maybeToList miid
           ]
       pure $ a & cluesL +~ locationClueCount & revealedL .~ True
+    LookAtRevealed lid | lid == locationId -> do
+      unshiftMessage (Label "Continue" [After (LookAtRevealed lid)])
+      pure $ a & revealedL .~ True
+    After (LookAtRevealed lid) | lid == locationId -> do
+      pure $ a & revealedL .~ False
     RevealLocation _ lid | lid /= locationId ->
       pure $ a & connectedLocationsL %~ deleteSet lid
     RemoveLocation lid -> pure $ a & connectedLocationsL %~ deleteSet lid

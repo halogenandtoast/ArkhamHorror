@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.SearchingForTheTome
   ( SearchingForTheTome(..)
   , searchingForTheTome
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -18,7 +17,16 @@ searchingForTheTome = SearchingForTheTome
   $ baseAttrs "02125" "Searching for the Tome" (Act 3 A) Nothing
 
 instance ActionRunner env => HasActions env SearchingForTheTome where
-  getActions i window (SearchingForTheTome x) = getActions i window x
+  getActions i window (SearchingForTheTome x) = do
+    mRestrictedHall <- getId @(Maybe LocationId)
+      (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
+    case mRestrictedHall of
+      Just restrictedHall -> do
+        mustAdvance <- (== 0) . unClueCount <$> getCount restrictedHall
+        if mustAdvance
+          then pure [Force $ AdvanceAct (actId x) (toSource x)]
+          else getActions i window x
+      Nothing -> getActions i window x
 
 instance ActRunner env => RunMessage env SearchingForTheTome where
   runMessage msg a@(SearchingForTheTome attrs@Attrs {..}) = case msg of

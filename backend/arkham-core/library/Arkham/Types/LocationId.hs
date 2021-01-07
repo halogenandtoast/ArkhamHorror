@@ -33,3 +33,6 @@ newtype EmptyLocationId = EmptyLocationId { unEmptyLocationId :: LocationId }
 
 newtype RevealedLocationId = RevealedLocationId { unRevealedLocationId :: LocationId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+
+newtype UnrevealedLocationId = UnrevealedLocationId { unUnrevealedLocationId :: LocationId }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

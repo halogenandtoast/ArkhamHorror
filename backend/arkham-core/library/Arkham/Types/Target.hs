@@ -1,8 +1,7 @@
 module Arkham.Types.Target
   ( Target(..)
   , ForSkillTest(..)
-  )
-where
+  ) where
 
 import ClassyPrelude
 
@@ -38,6 +37,7 @@ data Target
   | AfterSkillTestTarget
   | TreacheryTarget TreacheryId
   | EncounterDeckTarget
+  | ScenarioDeckTarget
   | AgendaTarget AgendaId
   | ActTarget ActId
   | CardIdTarget CardId

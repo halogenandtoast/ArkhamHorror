@@ -2,8 +2,7 @@
 module Arkham.Types.Classes
   ( module Arkham.Types.Classes
   , module X
-  )
-where
+  ) where
 
 import Arkham.Prelude hiding (to)
 
@@ -119,7 +118,8 @@ popMessage = withQueue $ \case
 clearQueue :: (MonadIO m, MonadReader env m, HasQueue env) => m ()
 clearQueue = withQueue $ const ([], ())
 
-peekMessage :: (MonadIO m, MonadReader env m, HasQueue env) => m (Maybe Message)
+peekMessage
+  :: (MonadIO m, MonadReader env m, HasQueue env) => m (Maybe Message)
 peekMessage = withQueue $ \case
   [] -> ([], Nothing)
   (m : ms) -> (m : ms, Just m)

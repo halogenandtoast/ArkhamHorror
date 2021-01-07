@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.MuseumHalls
   ( museumHalls
   , MuseumHalls(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -16,8 +15,9 @@ newtype MuseumHalls = MuseumHalls Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 museumHalls :: MuseumHalls
-museumHalls = MuseumHalls
-  $ base { locationConnectedSymbols = setFromList [Circle, Diamond, Triangle] }
+museumHalls = MuseumHalls $ base
+  { locationConnectedSymbols = setFromList [Circle, Diamond, Triangle]
+  }
  where
   base = baseAttrs
     "02127"
@@ -89,4 +89,10 @@ instance LocationRunner env => RunMessage env MuseumHalls where
     PassedSkillTest _ _ source _ _ | isSource location source -> do
       actId <- fromJustNote "missing act" . headMay <$> getSetList ()
       l <$ unshiftMessage (AdvanceAct actId source)
+    AddConnection lid _ | locationId location /= lid -> do
+      name <- nameTitle <$> getName lid
+      if name == "Exhibit Hall"
+        then MuseumHalls
+          <$> runMessage msg (location & connectedLocationsL %~ insertSet lid)
+        else MuseumHalls <$> runMessage msg location
     _ -> MuseumHalls <$> runMessage msg location

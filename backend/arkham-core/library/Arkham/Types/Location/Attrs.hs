@@ -59,6 +59,9 @@ instance IsCard Attrs where
   getTraits = locationTraits
   getKeywords = mempty
 
+instance HasName env Attrs where
+  getName = pure . unLocationName . locationName
+
 unrevealed :: Attrs -> Bool
 unrevealed = not . locationRevealed
 

@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
   ( CurseOfTheRougarou(..)
   , curseOfTheRougarou
-  )
-where
+  ) where
 
 import Arkham.Import hiding (Cultist)
 
@@ -80,8 +79,6 @@ instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId L
 instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
   runMessage msg s@(CurseOfTheRougarou (attrs@Attrs {..} `With` metadata)) =
     case msg of
-      InitDeck iid deck -> s <$ unshiftMessage (LoadDeck iid deck)
-      StartCampaign -> s <$ unshiftMessages [StartScenario "81001"]
       Setup -> do
         investigatorIds <- getInvestigatorIds
         encounterDeck <- buildEncounterDeck [EncounterSet.TheBayou]

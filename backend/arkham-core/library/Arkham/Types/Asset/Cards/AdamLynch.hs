@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.AdamLynch
   ( adamLynch
   , AdamLynch(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -13,7 +12,8 @@ newtype AdamLynch = AdamLynch Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 adamLynch :: AssetId -> AdamLynch
-adamLynch uuid = AdamLynch $ baseAttrs uuid "02139"
+adamLynch uuid = AdamLynch
+  $ (baseAttrs uuid "02139") { assetHealth = Just 1, assetSanity = Just 1 }
 
 instance HasActions env AdamLynch where
   getActions iid window (AdamLynch attrs) = getActions iid window attrs

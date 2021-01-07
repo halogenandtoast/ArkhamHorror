@@ -9,6 +9,11 @@
       @choose="$emit('choose', $event)"
     />
     <div class="scenario-cards">
+      <img
+        v-if="scenarioDeck"
+        :src="scenarioDeck"
+        class="card"
+      />
       <VictoryDisplay :game="game" />
       <div v-if="topOfEncounterDiscard" class="discard">
         <img
@@ -128,6 +133,22 @@ export default defineComponent({
       return `/img/arkham/cards/${id}${difficultySuffix}.jpg`;
     })
 
+    const scenarioDeck = computed(() => {
+      const { scenario } = props.game.currentData;
+      if (!scenario || !scenario.contents.deck) {
+        return null;
+      }
+
+      const { tag } = scenario.contents.deck;
+
+      switch(tag) {
+        case 'ExhibitDeck':
+          return `/img/arkham/cards/02132b.jpg`;
+        default:
+          return null;
+      }
+    })
+
     const locationStyles = computed(() => {
       const { scenario } = props.game.currentData;
       if (!scenario) {
@@ -138,7 +159,6 @@ export default defineComponent({
         return {
           display: 'grid',
           'grid-template-areas': locationLayout.map((row) => `"${row}"`).join(' '),
-          'grid-template-rows': 'repeat(100, minmax(min-content, 0px) 0fr 0fr)',
           'grid-template-columns': 'min-content 0fr',
           'grid-row-gap': '10px',
         };
@@ -180,7 +200,8 @@ export default defineComponent({
       players,
       activeCard,
       locationStyles,
-      scenarioGuide
+      scenarioGuide,
+      scenarioDeck
     }
   }
 })

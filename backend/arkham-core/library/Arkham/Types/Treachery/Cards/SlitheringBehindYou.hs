@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.SlitheringBehindYou
   ( SlitheringBehindYou(..)
   , slitheringBehindYou
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -39,6 +38,9 @@ instance TreacheryRunner env => RunMessage env SlitheringBehindYou where
             (EncounterCardMatchByCardCode "02141")
           )
     FoundEncounterCard iid target ec | isTarget attrs target -> do
+      lid <- getId @LocationId iid
+      t <$ unshiftMessage (SpawnEnemyAtEngagedWith (EncounterCard ec) lid iid)
+    FoundEnemyInVoid iid target eid | isTarget attrs target -> do
       lid <- getId @LocationId iid
       t <$ unshiftMessage (SpawnEnemyAtEngagedWith (EncounterCard ec) lid iid)
     _ -> SlitheringBehindYou <$> runMessage msg attrs

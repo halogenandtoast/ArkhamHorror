@@ -303,7 +303,7 @@ data Message
   | FoundEncounterCard InvestigatorId Target EncounterCard
   | FoundEncounterCardFrom InvestigatorId Target EncounterCardSource EncounterCard
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
-  | FoundEnemyInVoid InvestigatorId EnemyId
+  | FoundEnemyInVoid InvestigatorId Target EnemyId
   | AddToEncounterDeck EncounterCard
   | SkillTestEnds Source
   | ReturnSkillTestRevealedTokens

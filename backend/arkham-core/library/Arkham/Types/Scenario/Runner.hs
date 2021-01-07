@@ -3,11 +3,13 @@ module Arkham.Types.Scenario.Runner where
 import Arkham.Prelude
 
 import Arkham.Types.AgendaId
+import Arkham.Types.CampaignId
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
+import Arkham.Types.LocationMatcher
 import Arkham.Types.Query
 import Arkham.Types.ScenarioId
 import Arkham.Types.ScenarioLogKey
@@ -25,7 +27,9 @@ type ScenarioRunner env
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId
+    , HasId (Maybe CampaignId) env ()
     , HasId (Maybe StoryEnemyId) env CardCode
+    , HasName env LocationId
     , HasQueue env
     , HasRecord env
     , HasSet AgendaId env ()
@@ -38,6 +42,7 @@ type ScenarioRunner env
     , HasSet InScenarioInvestigatorId env ()
     , HasSet InvestigatorId env ()
     , HasSet LocationId env [Trait]
+    , HasSet LocationId env LocationMatcher
     , HasSet ScenarioLogKey env ()
     , HasSet Trait env LocationId
     , HasSet VictoryDisplayCardCode env ()

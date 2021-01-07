@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.FindingAWayInside
   ( FindingAWayInside(..)
   , findingAWayInside
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -42,7 +41,7 @@ instance ActRunner env => RunMessage env FindingAWayInside where
             leadInvestigatorId
             [ TargetLabel
                 (InvestigatorTarget iid)
-                [AddCampaignCardToDeck iid "02061"]
+                [TakeControlOfSetAsideAsset iid "02139"]
             | iid <- investigatorIds
             ]
           , RevealLocation Nothing "02127"

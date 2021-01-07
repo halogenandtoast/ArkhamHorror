@@ -20,7 +20,7 @@ securityOffice_129 = SecurityOffice_129 $ baseAttrs
   (Name "Security Office" Nothing)
   EncounterSet.TheMiskatonicMuseum
   3
-  (PerPlayer 0)
+  (PerPlayer 2)
   Diamond
   [Square]
   (singleton Miskatonic)
@@ -37,7 +37,7 @@ ability attrs =
 instance ActionRunner env => HasActions env SecurityOffice_129 where
   getActions iid NonFast (SecurityOffice_129 attrs) =
     withBaseActions iid NonFast attrs
-      $ pure [ActivateCardAbilityAction iid (ability attrs)]
+      $ pure [ ActivateCardAbilityAction iid (ability attrs) | iid `on` attrs ]
   getActions iid window (SecurityOffice_129 attrs) =
     getActions iid window attrs
 

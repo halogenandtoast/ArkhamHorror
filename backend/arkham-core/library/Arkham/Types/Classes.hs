@@ -56,7 +56,7 @@ instance (HasQueue env, RunMessage env p) => RunMessage1 env (K1 R p) where
   runMessage1 msg (K1 x) = K1 <$> runMessage msg x
 
 class (HasQueue env) => RunMessage env a where
-  runMessage :: (MonadIO m, MonadRandom m, MonadReader env m, MonadFail m) => Message -> a -> m a
+  runMessage :: (HasCallStack, MonadIO m, MonadRandom m, MonadReader env m, MonadFail m) => Message -> a -> m a
   default runMessage :: (Generic a, RunMessage1 env (Rep a), MonadIO m, MonadRandom m, MonadReader env m, MonadFail m) => Message -> a -> m a
   runMessage = defaultRunMessage
 

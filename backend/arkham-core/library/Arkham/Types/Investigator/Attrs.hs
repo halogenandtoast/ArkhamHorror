@@ -220,7 +220,8 @@ getModifiedSanity attrs@Attrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots
+  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> Attrs -> Bool
@@ -718,6 +719,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         %~ (lookupPlayerCard (getCardCode card) (CardId $ unAssetId aid) :)
         )
       & (slotsL %~ removeFromSlots aid)
+  RemoveFromGame (AssetTarget aid) -> pure $ a & assetsL %~ deleteSet aid
   ChooseFightEnemy iid source skillType isAction | iid == investigatorId -> do
     enemyIds <- getSet investigatorLocation
     aloofEnemyIds <- mapSet unAloofEnemyId <$> getSet investigatorLocation

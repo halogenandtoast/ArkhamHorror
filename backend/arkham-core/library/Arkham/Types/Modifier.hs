@@ -3,8 +3,7 @@ module Arkham.Types.Modifier
   , ModifierType(..)
   , ActionTarget(..)
   , isBlank
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -34,6 +33,7 @@ instance FromJSON Modifier where
 data ModifierType
   = ActionCostOf ActionTarget Int
   | ActionCostModifier Int
+  | ActionCostSetToModifier Int
   | ActionSkillModifier Action SkillType Int
   | ActionsAreFree
   | AdditionalActions Int

@@ -55,7 +55,7 @@ instance AgendaRunner env => RunMessage env ShadowsDeepen where
       lid <- fromJustNote "Museum Halls missing"
         <$> getId (LocationWithTitle "Museum Halls")
       a <$ unshiftMessages
-        [EnemySpawn Nothing lid eid, NextAgenda agendaId "02121"]
+        [EnemySpawnFromVoid Nothing lid eid, NextAgenda agendaId "02121"]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- fromJustNote "Museum Halls missing"
         <$> getId (LocationWithTitle "Museum Halls")

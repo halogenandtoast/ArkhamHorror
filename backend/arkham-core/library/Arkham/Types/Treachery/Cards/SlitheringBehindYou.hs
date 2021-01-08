@@ -42,5 +42,5 @@ instance TreacheryRunner env => RunMessage env SlitheringBehindYou where
       t <$ unshiftMessage (SpawnEnemyAtEngagedWith (EncounterCard ec) lid iid)
     FoundEnemyInVoid iid target eid | isTarget attrs target -> do
       lid <- getId @LocationId iid
-      t <$ unshiftMessage (SpawnEnemyAtEngagedWith (EncounterCard ec) lid iid)
+      t <$ unshiftMessage (EnemySpawnFromVoid (Just iid) lid eid)
     _ -> SlitheringBehindYou <$> runMessage msg attrs

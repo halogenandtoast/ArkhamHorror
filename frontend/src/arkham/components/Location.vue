@@ -196,6 +196,10 @@ export default defineComponent({
             return [i, ...acc];
           }
 
+          if (v.tag === 'ActivateCardAbilityAction' && v.contents[1].source.tag === 'ProxySource' && v.contents[1].source.contents[0].tag === 'LocationSource' && v.contents[1].source.contents[0].contents === id.value) {
+            return [...acc, i];
+          }
+
           return acc;
         }, []);
     })

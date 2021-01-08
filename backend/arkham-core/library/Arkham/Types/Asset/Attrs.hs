@@ -98,7 +98,8 @@ instance Entity Attrs where
 ownedBy :: Attrs -> InvestigatorId -> Bool
 ownedBy Attrs {..} = (== assetInvestigator) . Just
 
-assetAction :: InvestigatorId -> Attrs -> Int -> Maybe Action -> Cost -> Message
+assetAction
+  :: InvestigatorId -> Attrs -> Int -> Maybe Action -> Cost -> Message
 assetAction iid attrs idx mAction cost =
   ActivateCardAbilityAction iid
     $ mkAbility (toSource attrs) idx (ActionAbility mAction cost)
@@ -142,6 +143,8 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
       pure $ a & cluesL %~ max 0 . subtract n
     CheckDefeated ->
       a <$ when (defeated a) (unshiftMessages $ resolve $ AssetDefeated assetId)
+    AssetDefeated aid | aid == assetId ->
+      a <$ unshiftMessage (Discard $ toTarget a)
     AssetDamage aid _ health sanity | aid == assetId ->
       pure $ a & healthDamageL +~ health & sanityDamageL +~ sanity
     When (InvestigatorResigned iid) | assetInvestigator == Just iid ->
@@ -161,9 +164,9 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Attrs where
       EnemyTarget eid -> pure $ a & enemyL ?~ eid
       _ -> error "Cannot attach asset to that type"
     RemoveFromGame target | a `isTarget` target ->
-      a <$ unshiftMessage (RemovedFromPlay (AssetSource assetId))
-    Discard target | a `isTarget` target ->
       a <$ unshiftMessage (RemovedFromPlay $ toSource a)
+    Discard target | a `isTarget` target -> a <$ unshiftMessages
+      [RemovedFromPlay $ toSource a, Discarded target (toCard a)]
     InvestigatorPlayAsset iid aid _ _ | aid == assetId ->
       pure $ a & investigatorL ?~ iid
     TakeControlOfAsset iid aid | aid == assetId ->

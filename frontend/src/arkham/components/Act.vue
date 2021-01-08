@@ -26,11 +26,13 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 import { Game } from '@/arkham/types/Game'
+import Treachery from '@/arkham/components/Treachery.vue';
 import * as ArkhamGame from '@/arkham/types/Game'
 import { Message, MessageType } from '@/arkham/types/Message'
 import * as Arkham from '@/arkham/types/Act'
 
 export default defineComponent({
+  components: { Treachery },
   props: {
     act: { type: Object as () => Arkham.Act, required: true },
     game: { type: Object as () => Game, required: true },

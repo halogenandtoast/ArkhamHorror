@@ -48,9 +48,10 @@ instance ActRunner env => RunMessage env NightAtTheMuseum where
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
         <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
-      a <$ unshiftMessages [EnemySpawn Nothing lid eid, NextAct actId "02125"]
+      a <$ unshiftMessages
+        [EnemySpawnFromVoid Nothing lid eid, NextAct actId "02125"]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
-      lid <- fromJustNote "Exibit Hall (Restricted Hall) missing"
+      lid <- fromJustNote "Exhibit Hall (Restricted Hall) missing"
         <$> getId (LocationWithFullTitle "Exhibit Hall" "Restricted Hall")
       a <$ unshiftMessages
         [SpawnEnemyAt (EncounterCard ec) lid, NextAct actId "02125"]

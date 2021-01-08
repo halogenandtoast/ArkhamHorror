@@ -619,5 +619,13 @@ instance EnemyRunner env => RunMessage env Attrs where
     AttachAsset aid (EnemyTarget eid) | eid == enemyId ->
       pure $ a & assetsL %~ insertSet aid
     AttachAsset aid _ -> pure $ a & assetsL %~ deleteSet aid
+    PlaceEnemyInVoid eid | eid == enemyId ->
+      pure
+        $ a
+        & (damageL .~ 0)
+        & (engagedInvestigatorsL %~ mempty)
+        & (exhaustedL .~ False)
+        & (doomL .~ 0)
+        & (cluesL .~ 0)
     Blanked msg' -> runMessage msg' a
     _ -> pure a

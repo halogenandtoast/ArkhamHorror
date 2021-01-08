@@ -12,8 +12,11 @@ newtype AdamLynch = AdamLynch Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 adamLynch :: AssetId -> AdamLynch
-adamLynch uuid = AdamLynch
-  $ (baseAttrs uuid "02139") { assetHealth = Just 1, assetSanity = Just 1 }
+adamLynch uuid = AdamLynch $ (baseAttrs uuid "02139")
+  { assetHealth = Just 1
+  , assetSanity = Just 1
+  , assetIsStory = True
+  }
 
 instance HasActions env AdamLynch where
   getActions iid window (AdamLynch attrs) = getActions iid window attrs
@@ -25,11 +28,11 @@ instance HasId (Maybe LocationId) env LocationMatcher => HasModifiersFor env Ada
         <$> getId @(Maybe LocationId) (LocationWithTitle "Security Office")
       pure $ toModifiers
         attrs
-        [ ActionCostModifier (-1) | isSecurityOffice && ownedBy attrs iid ]
+        [ ActionCostSetToModifier 1 | isSecurityOffice && ownedBy attrs iid ]
   getModifiersFor _ _ _ = pure []
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AdamLynch where
   runMessage msg a@(AdamLynch attrs) = case msg of
-    AssetDefeated aid | aid == assetId attrs ->
-      a <$ unshiftMessages [AddToken Tablet, RemoveFromGame (AssetTarget aid)]
+    Discard target | isTarget attrs target ->
+      a <$ unshiftMessages [AddToken Tablet, RemoveFromGame target]
     _ -> AdamLynch <$> runMessage msg attrs

@@ -10,7 +10,6 @@ import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Act
 import Arkham.Types.Action (Action)
 import Arkham.Types.Agenda
-import Arkham.Types.Ability.Limit
 import Arkham.Types.Asset
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.Campaign
@@ -177,7 +176,9 @@ instance FromJSON queue => FromJSON (Game queue) where
 deriving stock instance Show queue => Show (Game queue)
 
 getInvestigator
-  :: MonadReader (Game queue) m => InvestigatorId -> m Investigator
+  :: (HasCallStack, MonadReader (Game queue) m)
+  => InvestigatorId
+  -> m Investigator
 getInvestigator iid = fromJustNote missingInvestigator
   <$> preview (investigatorsL . ix iid)
   where missingInvestigator = "Unknown investigator: " <> show iid
@@ -204,28 +205,29 @@ getLocationsMatching = \case
       . toList
       <$> view locationsL
 
-getEnemy :: MonadReader (Game queue) m => EnemyId -> m Enemy
+getEnemy :: (HasCallStack, MonadReader (Game queue) m) => EnemyId -> m Enemy
 getEnemy eid = fromJustNote missingEnemy <$> preview (enemiesL . ix eid)
   where missingEnemy = "Unknown enemy: " <> show eid
 
-getAgenda :: MonadReader (Game queue) m => AgendaId -> m Agenda
+getAgenda :: (HasCallStack, MonadReader (Game queue) m) => AgendaId -> m Agenda
 getAgenda aid = fromJustNote missingAgenda <$> preview (agendasL . ix aid)
   where missingAgenda = "Unknown agenda: " <> show aid
 
-getAsset :: MonadReader (Game queue) m => AssetId -> m Asset
+getAsset :: (HasCallStack, MonadReader (Game queue) m) => AssetId -> m Asset
 getAsset aid = fromJustNote missingAsset <$> preview (assetsL . ix aid)
   where missingAsset = "Unknown asset: " <> show aid
 
-getTreachery :: MonadReader (Game queue) m => TreacheryId -> m Treachery
+getTreachery
+  :: (HasCallStack, MonadReader (Game queue) m) => TreacheryId -> m Treachery
 getTreachery tid = fromJustNote missingTreachery
   <$> preview (treacheriesL . ix tid)
   where missingTreachery = "Unknown treachery: " <> show tid
 
-getEvent :: MonadReader (Game queue) m => EventId -> m Event
+getEvent :: (HasCallStack, MonadReader (Game queue) m) => EventId -> m Event
 getEvent eid = fromJustNote missingEvent <$> preview (eventsL . ix eid)
   where missingEvent = "Unknown event: " <> show eid
 
-getEffect :: MonadReader (Game queue) m => EffectId -> m Effect
+getEffect :: (HasCallStack, MonadReader (Game queue) m) => EffectId -> m Effect
 getEffect eid = fromJustNote missingEffect <$> preview (effectsL . ix eid)
   where missingEffect = "Unknown effect: " <> show eid
 
@@ -2052,14 +2054,20 @@ runGameMessage msg g = case msg of
     [ CheckWindow iid [Fast.WhenDefeated (AssetSource aid)]
     | iid <- keys (view investigatorsL g)
     ]
-  AssetDefeated aid -> do
-    let asset = getAsset aid g
-    unshiftMessage (Discarded (AssetTarget aid) (toCard asset))
-    pure $ g & assetsL %~ deleteMap aid
   RemoveFromGame (AssetTarget aid) -> pure $ g & assetsL %~ deleteMap aid
   PlaceEnemyInVoid eid -> do
     enemy <- getEnemy eid
     pure $ g & enemiesL %~ deleteMap eid & enemiesInVoidL %~ insertMap eid enemy
+  EnemySpawnFromVoid miid lid eid -> do
+    unshiftMessage (EnemySpawn miid lid eid)
+    case lookup eid (g ^. enemiesInVoidL) of
+      Just enemy ->
+        pure
+          $ g
+          & (activeCardL .~ Nothing)
+          & (enemiesInVoidL %~ deleteMap eid)
+          & (enemiesL %~ insertMap eid enemy)
+      Nothing -> error "enemy was not in void"
   EnemyDefeated eid iid _ _ _ _ -> do
     broadcastWindow Fast.WhenEnemyDefeated iid g
     let
@@ -2292,8 +2300,6 @@ runGameMessage msg g = case msg of
       , EnemySpawnEngagedWithPrey enemyId
       ]
     pure $ g & enemiesL . at enemyId ?~ enemy
-  EnemySpawn _ _ eid ->
-    pure $ g & activeCardL .~ Nothing & enemiesInVoidL %~ deleteMap eid
   EnemySpawnEngagedWithPrey eid ->
     pure $ g & activeCardL .~ Nothing & enemiesInVoidL %~ deleteMap eid
   DiscardTopOfEncounterDeck _ 0 _ -> pure g
@@ -2506,10 +2512,7 @@ runGameMessage msg g = case msg of
   ResignWith (AssetTarget aid) -> do
     let asset = getAsset aid g
     pure $ g & resignedCardCodesL %~ (getCardCode asset :)
-  Discard (AssetTarget aid) -> do
-    let asset = getAsset aid g
-    unshiftMessage (Discarded (AssetTarget aid) (toCard asset))
-    pure $ g & assetsL %~ deleteMap aid
+  Discarded (AssetTarget aid) _ -> pure $ g & assetsL %~ deleteMap aid
   Discard (EventTarget eid) -> do
     let
       event = getEvent eid g

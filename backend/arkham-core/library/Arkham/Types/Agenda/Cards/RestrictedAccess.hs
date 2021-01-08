@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.RestrictedAccess
   ( RestrictedAccess(..)
   , restrictedAccess
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -56,7 +55,7 @@ instance AgendaRunner env => RunMessage env RestrictedAccess where
       lid <- fromJustNote "Museum Halls missing"
         <$> getId (LocationWithTitle "Museum Halls")
       a <$ unshiftMessages
-        [EnemySpawn Nothing lid eid, NextAgenda agendaId "02120"]
+        [EnemySpawnFromVoid Nothing lid eid, NextAgenda agendaId "02120"]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- fromJustNote "Museum Halls missing"
         <$> getId (LocationWithTitle "Museum Halls")

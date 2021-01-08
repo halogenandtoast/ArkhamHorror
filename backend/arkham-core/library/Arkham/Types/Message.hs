@@ -304,6 +304,7 @@ data Message
   | FoundEncounterCardFrom InvestigatorId Target EncounterCardSource EncounterCard
   | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
   | FoundEnemyInVoid InvestigatorId Target EnemyId
+  | EnemySpawnFromVoid (Maybe InvestigatorId) LocationId EnemyId
   | AddToEncounterDeck EncounterCard
   | SkillTestEnds Source
   | ReturnSkillTestRevealedTokens

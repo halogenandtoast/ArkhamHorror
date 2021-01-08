@@ -1,22 +1,17 @@
 module Arkham.Types.Ability
-  ( Ability(..)
-  , AbilityType(..)
-  , AbilityLimit(..)
-  , AbilityLimitType(..)
-  , UsedAbility(..)
-  , AbilityMetadata(..)
-  , mkAbility
-  )
-where
+  ( module Arkham.Types.Ability
+  , module X
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Json
-import Arkham.Types.Ability.Limit
-import Arkham.Types.Ability.Type
+import Arkham.Types.Ability.Limit as X
+import Arkham.Types.Ability.Type as X
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Source
 import Arkham.Types.Target
+import Arkham.Types.Modifier
 
 data Ability = Ability
   { abilitySource :: Source
@@ -52,3 +47,7 @@ mkAbility source idx type' = Ability
   , abilityLimit = NoLimit
   , abilityMetadata = Nothing
   }
+
+applyAbilityModifiers :: Ability -> [Modifier] -> Ability
+applyAbilityModifiers a@Ability { abilityType } modifiers =
+  a { abilityType = applyAbilityTypeModifiers abilityType modifiers }

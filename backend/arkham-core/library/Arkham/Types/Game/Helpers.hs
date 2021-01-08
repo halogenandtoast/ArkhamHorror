@@ -183,11 +183,21 @@ instance
     actions' <- concat <$> traverse
       (getActions iid window)
       ([minBound .. maxBound] :: [ActionType])
+    actions'' <- for actions' $ \case
+      ActivateCardAbilityAction iid' ability -> do
+        modifiers' <- getModifiersFor
+          (InvestigatorSource iid)
+          (sourceToTarget $ abilitySource ability)
+          ()
+        pure $ ActivateCardAbilityAction
+          iid'
+          (applyAbilityModifiers ability modifiers')
+      other -> pure other -- TODO: dynamic abilities
     let
       isForcedAction = \case
         Force _ -> True
         _ -> False
-      forcedActions = filter isForcedAction actions'
+      forcedActions = filter isForcedAction actions''
     if null forcedActions
       then do
         let
@@ -195,7 +205,7 @@ instance
             ActivateCardAbilityAction _ ability ->
               getCanAffordAbility iid ability
             _ -> pure True
-        filterM canAffordAction actions'
+        filterM canAffordAction actions''
       else pure forcedActions
 
 
@@ -491,6 +501,6 @@ sourceToTarget = \case
   EncounterCardSource _ -> error "not implemented"
   TestSource{} -> TestTarget
   DrawnTokenSource dt -> DrawnTokenTarget dt
-  ProxySource _ _ -> error "not implemented"
+  ProxySource _ source -> sourceToTarget source
   EffectSource eid -> EffectTarget eid
   ResourceSource -> ResourceTarget

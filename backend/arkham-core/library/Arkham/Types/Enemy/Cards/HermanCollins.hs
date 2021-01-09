@@ -51,6 +51,6 @@ instance EnemyRunner env => RunMessage env HermanCollins where
   runMessage msg e@(HermanCollins attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) eid (LocationWithTitle "Graveyard")
-    UseCardAbility _ source _ 1 | isSource attrs source ->
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
       e <$ unshiftMessage (AddToVictory $ toTarget attrs)
     _ -> HermanCollins <$> runMessage msg attrs

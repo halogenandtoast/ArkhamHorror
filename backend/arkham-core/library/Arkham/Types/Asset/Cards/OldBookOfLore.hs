@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.OldBookOfLore
   ( OldBookOfLore(..)
   , oldBookOfLore
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -28,7 +27,7 @@ instance HasActions env OldBookOfLore where
 
 instance AssetRunner env => RunMessage env OldBookOfLore where
   runMessage msg a@(OldBookOfLore attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       investigatorIds <- getSetList locationId
       a <$ unshiftMessage

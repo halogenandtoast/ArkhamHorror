@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.PeterSylvestre
   ( PeterSylvestre(..)
   , peterSylvestre
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -35,6 +34,6 @@ instance HasActions env PeterSylvestre where
 
 instance (AssetRunner env) => RunMessage env PeterSylvestre where
   runMessage msg (PeterSylvestre attrs) = case msg of
-    UseCardAbility _ source _ 1 | isSource attrs source ->
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
       pure $ PeterSylvestre $ attrs & sanityDamageL -~ 1
     _ -> PeterSylvestre <$> runMessage msg attrs

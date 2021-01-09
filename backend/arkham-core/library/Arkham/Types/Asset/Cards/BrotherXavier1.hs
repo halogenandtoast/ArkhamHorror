@@ -44,7 +44,7 @@ instance HasActions env BrotherXavier1 where
 
 instance AssetRunner env => RunMessage env BrotherXavier1 where
   runMessage msg a@(BrotherXavier1 attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId (getInvestigator attrs)
       locationEnemyIds <- getSetList locationId
       a <$ unshiftMessages

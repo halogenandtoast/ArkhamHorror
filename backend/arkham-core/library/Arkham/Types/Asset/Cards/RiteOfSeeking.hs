@@ -43,7 +43,7 @@ instance (HasQueue env, HasModifiersFor env (), HasId LocationId env Investigato
   runMessage msg a@(RiteOfSeeking attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       RiteOfSeeking <$> runMessage msg (attrs & usesL .~ Uses Charge 3)
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid
       a <$ unshiftMessages
         [ CreateEffect "02028" Nothing source (InvestigationTarget iid lid)

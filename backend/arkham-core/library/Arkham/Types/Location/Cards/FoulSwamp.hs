@@ -56,7 +56,7 @@ instance LocationRunner env => RunMessage env FoulSwamp where
   runMessage msg l@(FoulSwamp attrs) = case msg of
     PayForCardAbility iid source meta@(Just (IntMetadata n)) 1
       | isSource attrs source -> if n == 3
-        then runMessage (UseCardAbility iid source meta 1) l
+        then runMessage (UseCardAbility iid source meta 1 NoPayment) l
         else do
           unshiftMessage $ chooseOne
             iid
@@ -66,10 +66,10 @@ instance LocationRunner env => RunMessage env FoulSwamp where
               ]
             , Label
               ("Test with +" <> tshow n <> " Willpower")
-              [UseCardAbility iid source meta 1]
+              [UseCardAbility iid source meta 1 NoPayment]
             ]
           pure l
-    UseCardAbility iid source (Just (IntMetadata n)) 1
+    UseCardAbility iid source (Just (IntMetadata n)) 1 _
       | isSource attrs source -> l <$ unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower n])

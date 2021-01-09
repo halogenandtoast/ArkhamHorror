@@ -35,6 +35,6 @@ instance HasModifiersFor env TheNecronomiconOlausWormiusTranslation where
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env TheNecronomiconOlausWormiusTranslation where
   runMessage msg a@(TheNecronomiconOlausWormiusTranslation attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage (TakeResources iid 2 False)
     _ -> TheNecronomiconOlausWormiusTranslation <$> runMessage msg attrs

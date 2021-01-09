@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.EasttownArkhamPoliceStation
   ( EasttownArkhamPoliceStation(..)
   , easttownArkhamPoliceStation
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -50,7 +49,7 @@ instance ActionRunner env => HasActions env EasttownArkhamPoliceStation where
 
 instance LocationRunner env => RunMessage env EasttownArkhamPoliceStation where
   runMessage msg l@(EasttownArkhamPoliceStation attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       ammoAssets <- map (Ammo, ) <$> getSetList (iid, Ammo)
       supplyAssets <- map (Supply, ) <$> getSetList (iid, Supply)
       l <$ unshiftMessage

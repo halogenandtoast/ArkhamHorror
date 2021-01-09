@@ -42,7 +42,7 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
             (chooseOne
               iid
               [ Run
-                [ UseCardAbility iid (AssetSource assetId) Nothing 1
+                [ UseCardAbility iid (AssetSource assetId) Nothing 1 NoPayment
                 , CreateSkillTestEffect
                   (EffectModifiers [toModifier attrs (DamageTaken 1)])
                   (toSource attrs)

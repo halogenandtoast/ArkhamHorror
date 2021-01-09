@@ -42,7 +42,7 @@ instance (AgendaRunner env) => RunMessage env TimeIsRunningShort where
         $ attrs
         & (sequenceL .~ Agenda 2 B)
         & (flippedL .~ True)
-    UseCardAbility iid (AgendaSource aid) _ 1 | aid == agendaId -> do
+    UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do
       unshiftMessage (Resign iid)
       TimeIsRunningShort <$> runMessage msg attrs
     _ -> TimeIsRunningShort <$> runMessage msg attrs

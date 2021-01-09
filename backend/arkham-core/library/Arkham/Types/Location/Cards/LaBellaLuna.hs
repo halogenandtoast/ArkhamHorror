@@ -46,7 +46,7 @@ instance ActionRunner env => HasActions env LaBellaLuna where
 
 instance LocationRunner env => RunMessage env LaBellaLuna where
   runMessage msg l@(LaBellaLuna attrs) = case msg of
-    UseCardAbility iid source _ 1
+    UseCardAbility iid source _ 1 _
       | isSource attrs source && locationRevealed attrs -> l
       <$ unshiftMessage (Resign iid)
     _ -> LaBellaLuna <$> runMessage msg attrs

@@ -43,7 +43,7 @@ instance ActionRunner env => HasActions env SecurityOffice_129 where
 
 instance LocationRunner env => RunMessage env SecurityOffice_129 where
   runMessage msg l@(SecurityOffice_129 attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       unrevealedExhibitHalls <- map unUnrevealedLocationId
         <$> getSetList (LocationWithTitle "ExhibitHall")
       l <$ unshiftMessage

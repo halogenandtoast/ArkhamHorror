@@ -42,7 +42,7 @@ instance AssetRunner env => RunMessage env GrotesqueStatue4 where
   runMessage msg a@(GrotesqueStatue4 attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       GrotesqueStatue4 <$> runMessage msg (attrs & usesL .~ Uses Charge 4)
-    UseCardAbility iid source (Just (SourceMetadata drawSource)) 1
+    UseCardAbility iid source (Just (SourceMetadata drawSource)) 1 _
       | isSource attrs source -> do
         when (useCount (assetUses attrs) == 1)
           $ unshiftMessage (Discard (toTarget attrs))

@@ -52,7 +52,7 @@ instance (EnemyRunner env) => RunMessage env JeremiahPierce where
         spawnLocation =
           LocationWithTitle $ maybe "Rivertown" (const "Your House") myourHouse
       e <$ spawnAt (Just iid) eid spawnLocation
-    UseCardAbility iid (EnemySource eid) _ 1 | eid == enemyId ->
+    UseCardAbility iid (EnemySource eid) _ 1 _ | eid == enemyId ->
       e <$ unshiftMessages
         [ AddToVictory (EnemyTarget enemyId)
         , CreateEffect

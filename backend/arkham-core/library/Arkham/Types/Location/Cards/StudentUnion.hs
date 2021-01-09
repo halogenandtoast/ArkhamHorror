@@ -46,7 +46,7 @@ instance (LocationRunner env) => RunMessage env StudentUnion where
     RevealLocation _ lid | lid == locationId attrs -> do
       unshiftMessage $ PlaceLocationMatching (LocationWithTitle "Dormitories")
       StudentUnion <$> runMessage msg attrs
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessages
         [ HealDamage (InvestigatorTarget iid) 1
         , HealHorror (InvestigatorTarget iid) 1

@@ -46,7 +46,7 @@ instance (HasId CardCode env EnemyId, HasTarget ForSkillTest env) => HasModifier
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AlchemicalConcoction where
   runMessage msg a@(AlchemicalConcoction attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers $ toModifiers attrs [DamageDealt 1])

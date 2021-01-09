@@ -37,7 +37,7 @@ instance HasActions env ZoeysCross where
 
 instance (AssetRunner env) => RunMessage env ZoeysCross where
   runMessage msg a@(ZoeysCross attrs) = case msg of
-    UseCardAbility iid source (Just (TargetMetadata (EnemyTarget eid))) 1
+    UseCardAbility iid source (Just (TargetMetadata (EnemyTarget eid))) 1 _
       | isSource attrs source -> a
       <$ unshiftMessage (EnemyDamage eid iid source 1)
     _ -> ZoeysCross <$> runMessage msg attrs

@@ -45,7 +45,7 @@ instance ActionRunner env => HasActions env TwistedUnderbrush where
 
 instance (LocationRunner env) => RunMessage env TwistedUnderbrush where
   runMessage msg l@(TwistedUnderbrush attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessages
         [TakeResources iid 2 False, InvestigatorAssignDamage iid source 0 1]
     _ -> TwistedUnderbrush <$> runMessage msg attrs

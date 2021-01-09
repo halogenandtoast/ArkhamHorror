@@ -33,7 +33,7 @@ instance HasActions env RabbitsFoot3 where
 
 instance AssetRunner env => RunMessage env RabbitsFoot3 where
   runMessage msg a@(RabbitsFoot3 attrs) = case msg of
-    UseCardAbility iid source (Just (IntMetadata x)) 1
+    UseCardAbility iid source (Just (IntMetadata x)) 1 _
       | isSource attrs source -> a <$ unshiftMessage
         (SearchTopOfDeck iid (InvestigatorTarget iid) x mempty ShuffleBackIn)
     _ -> RabbitsFoot3 <$> runMessage msg attrs

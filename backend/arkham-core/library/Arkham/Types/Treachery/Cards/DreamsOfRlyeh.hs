@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.DreamsOfRlyeh
   ( DreamsOfRlyeh(..)
   , dreamsOfRlyeh
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -36,7 +35,7 @@ instance (TreacheryRunner env) => RunMessage env DreamsOfRlyeh where
   runMessage msg t@(DreamsOfRlyeh attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
-    UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId ->
+    UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId ->
       t <$ unshiftMessage
         (BeginSkillTest
           iid

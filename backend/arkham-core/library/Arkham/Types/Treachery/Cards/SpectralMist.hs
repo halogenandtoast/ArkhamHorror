@@ -50,7 +50,7 @@ instance (TreacheryRunner env) => RunMessage env SpectralMist where
           | x <- targetLocations
           ]
       SpectralMist <$> runMessage msg attrs
-    UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId ->
+    UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId ->
       t <$ unshiftMessage
         (BeginSkillTest
           iid

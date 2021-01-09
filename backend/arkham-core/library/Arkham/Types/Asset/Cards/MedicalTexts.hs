@@ -29,7 +29,7 @@ instance HasActions env MedicalTexts where
 
 instance AssetRunner env => RunMessage env MedicalTexts where
   runMessage msg a@(MedicalTexts attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId (getInvestigator attrs)
       locationInvestigatorIds <- getSetList locationId
       unshiftMessage

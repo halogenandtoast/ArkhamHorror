@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.LockedDoor
   ( LockedDoor(..)
   , lockedDoor
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -53,7 +52,7 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
             [ AttachTreachery treacheryId (LocationTarget x) | x <- xs ]
           )
       LockedDoor <$> runMessage msg attrs
-    UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId ->
+    UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId ->
       t <$ unshiftMessage
         (chooseOne
           iid

@@ -49,6 +49,6 @@ instance ActionRunner env => HasActions env BackAlley where
 
 instance LocationRunner env => RunMessage env BackAlley where
   runMessage msg l@(BackAlley attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source && locationRevealed ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source && locationRevealed ->
       l <$ unshiftMessage (Resign iid)
     _ -> BackAlley <$> runMessage msg attrs

@@ -43,7 +43,7 @@ instance
   runMessage msg a@(LiquidCourage attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       LiquidCourage <$> runMessage msg (attrs & usesL .~ Uses Supply 4)
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid
       iids <- getSetList @InvestigatorId lid
       let

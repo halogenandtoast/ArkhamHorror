@@ -1,8 +1,7 @@
 module Arkham.Types.Investigator.Cards.DaisyWalkerParallel
   ( DaisyWalkerParallel(..)
   , daisyWalkerParallel
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -64,8 +63,8 @@ instance ActionRunner env => HasActions env DaisyWalkerParallel where
 
 instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
   runMessage msg i@(DaisyWalkerParallel attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (InvestigatorSource iid') _ 1 | investigatorId == iid' ->
-      do
+    UseCardAbility iid (InvestigatorSource iid') _ 1 _
+      | investigatorId == iid' -> do
         tomeAssets <- filterM
           ((elem Tome <$>) . getSet)
           (setToList investigatorAssets)
@@ -81,14 +80,14 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
               )
               pairs'
             )
-    UseCardAbility iid (TokenEffectSource ElderSign) _ 2
+    UseCardAbility iid (TokenEffectSource ElderSign) _ 2 _
       | iid == investigatorId
       -> i <$ unshiftMessage (SearchDiscard iid (InvestigatorTarget iid) [Tome])
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
       i <$ unshiftMessage
         (chooseOne
           iid
-          [ UseCardAbility iid (TokenEffectSource ElderSign) Nothing 2
+          [ UseCardAbility iid (TokenEffectSource ElderSign) Nothing 2 NoPayment
           , Continue "Do not use Daisy's ability"
           ]
         )

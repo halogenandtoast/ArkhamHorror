@@ -40,6 +40,6 @@ instance ActionRunner env => HasActions env ProfessorWarrenRice where
 
 instance AssetRunner env => RunMessage env ProfessorWarrenRice where
   runMessage msg a@(ProfessorWarrenRice attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage (DrawCards iid 1 False)
     _ -> ProfessorWarrenRice <$> runMessage msg attrs

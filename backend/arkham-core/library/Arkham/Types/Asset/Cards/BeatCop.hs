@@ -23,12 +23,12 @@ instance HasModifiersFor env BeatCop where
 
 instance HasActions env BeatCop where
   getActions iid _ (BeatCop a) | ownedBy a iid =
-    pure [UseCardAbility iid (toSource a) Nothing 1]
+    pure [UseCardAbility iid (toSource a) Nothing 1 NoPayment]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env BeatCop where
   runMessage msg a@(BeatCop attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       locationEnemyIds <- getSetList locationId
       a <$ unshiftMessages

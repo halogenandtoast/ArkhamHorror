@@ -42,7 +42,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SpringfieldM19
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       SpringfieldM19034
         <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 3)
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers

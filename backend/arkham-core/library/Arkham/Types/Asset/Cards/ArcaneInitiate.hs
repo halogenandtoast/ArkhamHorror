@@ -32,7 +32,7 @@ instance (AssetRunner env) => RunMessage env ArcaneInitiate where
   runMessage msg a@(ArcaneInitiate attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       ArcaneInitiate <$> runMessage msg (attrs & doomL +~ 1)
-    UseCardAbility iid source _ 1 | isSource attrs source -> a <$ unshiftMessage
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ unshiftMessage
       (chooseOne
         iid
         [SearchTopOfDeck iid (InvestigatorTarget iid) 3 [Spell] ShuffleBackIn]

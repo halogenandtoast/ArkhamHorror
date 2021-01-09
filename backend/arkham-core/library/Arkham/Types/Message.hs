@@ -463,7 +463,7 @@ data Message
   | UnfocusCards
   | UnfocusTargets
   | UnfocusTokens
-  | UseCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int
+  | UseCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int Payment
   | UseLimitedAbility InvestigatorId Ability
   | UseScenarioSpecificAbility InvestigatorId Int
   | When Message

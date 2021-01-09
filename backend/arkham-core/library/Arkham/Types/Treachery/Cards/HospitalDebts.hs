@@ -49,7 +49,7 @@ instance (TreacheryRunner env) => RunMessage env HospitalDebts where
       [ RemoveCardFromHand iid "01011"
       , AttachTreachery treacheryId (InvestigatorTarget iid)
       ]
-    UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId -> do
+    UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId -> do
       unshiftMessage (SpendResources iid 1)
       pure $ HospitalDebts
         (attrs { treacheryResources = (+ 1) <$> treacheryResources })

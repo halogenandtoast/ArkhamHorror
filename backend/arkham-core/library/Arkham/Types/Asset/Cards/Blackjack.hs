@@ -37,7 +37,7 @@ instance HasModifiersFor env Blackjack where
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env Blackjack where
   runMessage msg a@(Blackjack attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers $ toModifiers

@@ -61,7 +61,7 @@ instance (TreacheryRunner env) => RunMessage env CoverUp where
         CoverUp attrs' -> CoverUp <$> runMessage msg attrs'
     EndOfGame | coverUpClues attrs > 0 -> withTreacheryInvestigator attrs
       $ \tormented -> t <$ unshiftMessage (SufferTrauma tormented 0 1)
-    UseCardAbility _ source _ 1 | isSource attrs source -> do
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       cluesToRemove <- withQueue $ \queue -> do
         let
           (before, after) = flip break queue $ \case

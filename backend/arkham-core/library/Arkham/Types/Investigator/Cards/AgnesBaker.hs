@@ -1,8 +1,7 @@
 module Arkham.Types.Investigator.Cards.AgnesBaker
   ( AgnesBaker(..)
   , agnesBaker
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -54,13 +53,14 @@ instance HasTokenValue env AgnesBaker where
 
 instance (InvestigatorRunner env) => RunMessage env AgnesBaker where
   runMessage msg i@(AgnesBaker attrs@Attrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
-      lid <- getId @LocationId investigatorId
-      locationEnemyIds <- getSetList lid
-      i <$ unshiftMessage
-        (Ask iid $ ChooseOne
-          [ EnemyDamage eid iid (InvestigatorSource investigatorId) 1
-          | eid <- locationEnemyIds
-          ]
-        )
+    UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
+      do
+        lid <- getId @LocationId investigatorId
+        locationEnemyIds <- getSetList lid
+        i <$ unshiftMessage
+          (Ask iid $ ChooseOne
+            [ EnemyDamage eid iid (InvestigatorSource investigatorId) 1
+            | eid <- locationEnemyIds
+            ]
+          )
     _ -> AgnesBaker <$> runMessage msg attrs

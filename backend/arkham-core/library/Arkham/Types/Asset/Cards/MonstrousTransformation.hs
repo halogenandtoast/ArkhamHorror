@@ -46,7 +46,7 @@ instance ActionRunner env => HasActions env MonstrousTransformation where
 
 instance (AssetRunner env) => RunMessage env MonstrousTransformation where
   runMessage msg (MonstrousTransformation attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers $ toModifiers attrs [DamageDealt 1])

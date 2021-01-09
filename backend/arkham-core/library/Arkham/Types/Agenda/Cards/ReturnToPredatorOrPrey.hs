@@ -37,7 +37,7 @@ instance AgendaRunner env => RunMessage env ReturnToPredatorOrPrey where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 A ->
       a <$ unshiftMessages
         [CreateEnemyEngagedWithPrey "50026b", NextAgenda aid "01122"]
-    UseCardAbility iid (AgendaSource aid) _ 1 | aid == agendaId -> do
+    UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do
       unshiftMessage (Resign iid)
       ReturnToPredatorOrPrey <$> runMessage msg attrs
     _ -> ReturnToPredatorOrPrey <$> runMessage msg attrs

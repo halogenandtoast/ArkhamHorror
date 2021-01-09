@@ -48,6 +48,6 @@ instance ActionRunner env => HasActions env DowntownArkhamAsylum where
 
 instance (LocationRunner env) => RunMessage env DowntownArkhamAsylum where
   runMessage msg l@(DowntownArkhamAsylum attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessage (HealHorror (InvestigatorTarget iid) 3)
     _ -> DowntownArkhamAsylum <$> runMessage msg attrs

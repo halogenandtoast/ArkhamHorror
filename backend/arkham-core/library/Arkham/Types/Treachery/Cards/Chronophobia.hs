@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.Chronophobia
   ( chronophobia
   , Chronophobia(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -37,6 +36,6 @@ instance (TreacheryRunner env) => RunMessage env Chronophobia where
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     EndTurn iid | InvestigatorTarget iid `elem` treacheryAttachedTarget ->
       t <$ unshiftMessage (InvestigatorDirectDamage iid (toSource attrs) 0 1)
-    UseCardAbility _ (TreacherySource tid) _ 1 | tid == treacheryId ->
+    UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->
       t <$ unshiftMessage (Discard $ toTarget attrs)
     _ -> Chronophobia <$> runMessage msg attrs

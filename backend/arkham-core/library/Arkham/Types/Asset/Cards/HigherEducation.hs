@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.HigherEducation
   ( higherEducation
   , HigherEducation(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -26,7 +25,7 @@ instance
       resourceCount <- getResourceCount iid
       active <- (>= 5) . length <$> getHandOf iid
       pure
-        [ UseCardAbility iid (toSource a) Nothing 1
+        [ UseCardAbility iid (toSource a) Nothing 1 NoPayment
         | active && resourceCount > 0
         ]
   getActions iid (WhenSkillTest SkillIntellect) (HigherEducation a)
@@ -34,7 +33,7 @@ instance
       resourceCount <- getResourceCount iid
       active <- (>= 5) . length <$> getHandOf iid
       pure
-        [ UseCardAbility iid (toSource a) Nothing 2
+        [ UseCardAbility iid (toSource a) Nothing 2 NoPayment
         | active && resourceCount > 0
         ]
   getActions _ _ _ = pure []
@@ -44,7 +43,7 @@ instance HasModifiersFor env HigherEducation where
 
 instance AssetRunner env => RunMessage env HigherEducation where
   runMessage msg a@(HigherEducation attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , CreateSkillTestEffect
@@ -52,7 +51,7 @@ instance AssetRunner env => RunMessage env HigherEducation where
           source
           (InvestigatorTarget iid)
         ]
-    UseCardAbility iid source _ 2 | isSource attrs source ->
+    UseCardAbility iid source _ 2 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , CreateSkillTestEffect

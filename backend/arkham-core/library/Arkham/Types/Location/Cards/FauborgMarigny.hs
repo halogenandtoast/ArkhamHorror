@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.FauborgMarigny
   ( FauborgMarigny(..)
   , fauborgMarigny
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -52,6 +51,6 @@ instance ActionRunner env => HasActions env FauborgMarigny where
 
 instance (LocationRunner env) => RunMessage env FauborgMarigny where
   runMessage msg l@(FauborgMarigny attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessage (Resign iid)
     _ -> FauborgMarigny <$> runMessage msg attrs

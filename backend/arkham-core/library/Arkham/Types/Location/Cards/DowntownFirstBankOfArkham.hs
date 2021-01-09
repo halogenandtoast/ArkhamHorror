@@ -51,6 +51,6 @@ instance ActionRunner env => HasActions env DowntownFirstBankOfArkham where
 
 instance (LocationRunner env) => RunMessage env DowntownFirstBankOfArkham where
   runMessage msg l@(DowntownFirstBankOfArkham attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessage (TakeResources iid 3 False)
     _ -> DowntownFirstBankOfArkham <$> runMessage msg attrs

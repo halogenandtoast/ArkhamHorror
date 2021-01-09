@@ -44,7 +44,7 @@ instance
   runMessage msg a@(ClarityOfMind attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       ClarityOfMind <$> runMessage msg (attrs & usesL .~ Uses Charge 3)
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid
       iids <- getSetList @InvestigatorId lid
       a <$ unshiftMessage

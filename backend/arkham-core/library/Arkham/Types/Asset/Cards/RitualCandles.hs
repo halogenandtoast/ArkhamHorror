@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.RitualCandles
   ( ritualCandles
   , RitualCandles(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -31,7 +30,7 @@ instance HasModifiersFor env RitualCandles where
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env RitualCandles where
   runMessage msg a@(RitualCandles attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ CreateSkillTestEffect
             (EffectModifiers $ toModifiers attrs [AnySkillValue 1])

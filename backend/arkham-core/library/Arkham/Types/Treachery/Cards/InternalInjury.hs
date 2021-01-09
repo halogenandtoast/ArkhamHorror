@@ -37,6 +37,6 @@ instance (TreacheryRunner env) => RunMessage env InternalInjury where
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     EndTurn iid | InvestigatorTarget iid `elem` treacheryAttachedTarget ->
       t <$ unshiftMessage (InvestigatorDirectDamage iid (toSource attrs) 1 0)
-    UseCardAbility _ (TreacherySource tid) _ 1 | tid == treacheryId ->
+    UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->
       t <$ unshiftMessage (Discard $ toTarget attrs)
     _ -> InternalInjury <$> runMessage msg attrs

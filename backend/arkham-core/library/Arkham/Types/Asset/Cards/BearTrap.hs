@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.BearTrap
   ( BearTrap(..)
   , bearTrap
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -33,7 +32,7 @@ instance HasActions env BearTrap where
 
 instance AssetRunner env => RunMessage env BearTrap where
   runMessage msg a@(BearTrap attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       a <$ unshiftMessage (AttachAsset assetId (LocationTarget locationId))
     EnemyMove eid _ lid | Just lid == assetLocation -> do

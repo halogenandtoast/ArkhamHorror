@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Rolands38Special
   ( Rolands38Special(..)
   , rolands38Special
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -41,7 +40,7 @@ instance AssetRunner env => RunMessage env Rolands38Special where
   runMessage msg a@(Rolands38Special attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Rolands38Special <$> runMessage msg (attrs & usesL .~ Uses Ammo 4)
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       anyClues <- (/= 0) . unClueCount <$> getCount locationId
       a <$ unshiftMessages

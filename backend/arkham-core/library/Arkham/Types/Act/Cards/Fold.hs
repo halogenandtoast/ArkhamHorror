@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.Fold
   ( Fold(..)
   , fold
-  )
-where
+  ) where
 
 import Arkham.Import hiding (fold)
 
@@ -62,7 +61,7 @@ instance ActRunner env => RunMessage env Fold where
         Just assetId -> do
           miid <- fmap unOwnerId <$> getId assetId
           unshiftMessage (maybe (Resolution 1) (const (Resolution 2)) miid)
-    UseCardAbility iid (ProxySource _ source) _ 1
+    UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource attrs source && actSequence == Act 3 A -> do
         maid <- fmap unStoryAssetId <$> getId (CardCode "02079")
         case maid of

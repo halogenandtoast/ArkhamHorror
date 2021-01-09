@@ -34,7 +34,7 @@ instance ActionRunner env => HasActions env HuntingTheRougarou where
 
 instance ActRunner env => RunMessage env HuntingTheRougarou where
   runMessage msg a@(HuntingTheRougarou attrs@Attrs {..}) = case msg of
-    UseCardAbility _ source _ 1 | isSource attrs source ->
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
       runMessage (AdvanceAct actId (toSource attrs)) a
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId

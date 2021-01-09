@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.RivertownAbandonedWarehouse
   ( RivertownAbandonedWarehouse(..)
   , rivertownAbandonedWarehouse
-  )
-where
+  ) where
 
 import Arkham.Import hiding (Cultist)
 
@@ -49,7 +48,7 @@ instance ActionRunner env => HasActions env RivertownAbandonedWarehouse where
 
 instance LocationRunner env => RunMessage env RivertownAbandonedWarehouse where
   runMessage msg l@(RivertownAbandonedWarehouse attrs) = case msg of
-    UseCardAbility iid source Nothing 1 | isSource attrs source -> do
+    UseCardAbility iid source Nothing 1 _ | isSource attrs source -> do
       willpowerCards <- filter (elem SkillWillpower . getSkillIcons)
         <$> getHandOf iid
       let
@@ -60,12 +59,12 @@ instance LocationRunner env => RunMessage env RivertownAbandonedWarehouse where
           iid
           [ Run
               [ DiscardCard iid (getCardId card)
-              , UseCardAbility iid source (Just $ IntMetadata n) 1
+              , UseCardAbility iid source (Just $ IntMetadata n) 1 NoPayment
               ]
           | (n, card) <- cardsWithCount
           ]
         )
-    UseCardAbility iid source (Just (IntMetadata n)) 1
+    UseCardAbility iid source (Just (IntMetadata n)) 1 _
       | isSource attrs source -> do
         cultists <- getSetList Cultist
         l <$ unshiftMessage

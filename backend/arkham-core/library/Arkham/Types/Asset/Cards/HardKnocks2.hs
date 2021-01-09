@@ -19,16 +19,22 @@ instance ActionRunner env => HasActions env HardKnocks2 where
   getActions iid (WhenSkillTest SkillCombat) (HardKnocks2 a) | ownedBy a iid =
     do
       resourceCount <- getResourceCount iid
-      pure [ UseCardAbility iid (toSource a) Nothing 1 | resourceCount > 0 ]
+      pure
+        [ UseCardAbility iid (toSource a) Nothing 1 NoPayment
+        | resourceCount > 0
+        ]
   getActions iid (WhenSkillTest SkillAgility) (HardKnocks2 a) | ownedBy a iid =
     do
       resourceCount <- getResourceCount iid
-      pure [ UseCardAbility iid (toSource a) Nothing 2 | resourceCount > 0 ]
+      pure
+        [ UseCardAbility iid (toSource a) Nothing 2 NoPayment
+        | resourceCount > 0
+        ]
   getActions _ _ _ = pure []
 
 instance AssetRunner env => RunMessage env HardKnocks2 where
   runMessage msg a@(HardKnocks2 attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , CreateSkillTestEffect
@@ -36,7 +42,7 @@ instance AssetRunner env => RunMessage env HardKnocks2 where
           source
           (InvestigatorTarget iid)
         ]
-    UseCardAbility iid source _ 2 | isSource attrs source ->
+    UseCardAbility iid source _ 2 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , CreateSkillTestEffect

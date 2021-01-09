@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.BookOfShadows3
   ( BookOfShadows3(..)
   , bookOfShadows3
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -36,7 +35,7 @@ instance AssetRunner env => RunMessage env BookOfShadows3 where
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       unshiftMessage (AddSlot iid ArcaneSlot (slot attrs))
       BookOfShadows3 <$> runMessage msg attrs
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       assetIds <- getSetList iid
       spellAssetIds <- filterM ((member Spell <$>) . getSet) assetIds
       a <$ unless

@@ -41,7 +41,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env LightningGun5 
   runMessage msg (LightningGun5 attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       LightningGun5 <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 3)
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers

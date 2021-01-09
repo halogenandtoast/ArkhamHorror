@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.UncoveringTheConspiracy
   ( UncoveringTheConspiracy(..)
   , uncoveringTheConspiracy
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -53,7 +52,7 @@ instance ActRunner env => RunMessage env UncoveringTheConspiracy where
       a <$ when
         (cultists `HashSet.isSubsetOf` victoryDisplay)
         (unshiftMessage (AdvanceAct actId $ toSource attrs))
-    UseCardAbility iid (ActSource aid) _ 1 | aid == actId -> do
+    UseCardAbility iid (ActSource aid) _ 1 _ | aid == actId -> do
       investigatorIds <- getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 2)
       a <$ unshiftMessages

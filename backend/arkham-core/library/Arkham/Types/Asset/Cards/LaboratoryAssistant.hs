@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.LaboratoryAssistant
   ( LaboratoryAssistant(..)
   , laboratoryAssistant
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -34,11 +33,11 @@ instance (AssetRunner env) => RunMessage env LaboratoryAssistant where
       unshiftMessage
         (chooseOne
           iid
-          [ UseCardAbility iid (toSource attrs) Nothing 1
+          [ UseCardAbility iid (toSource attrs) Nothing 1 NoPayment
           , Continue "Do not use ability"
           ]
         )
       LaboratoryAssistant <$> runMessage msg attrs
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage (DrawCards iid 2 False)
     _ -> LaboratoryAssistant <$> runMessage msg attrs

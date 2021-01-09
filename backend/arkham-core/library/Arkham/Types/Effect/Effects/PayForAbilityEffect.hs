@@ -155,7 +155,7 @@ instance
     PayAbilityCostFinished source iid -> case effectMetadata attrs of
       Just (EffectAbility Ability {..}) -> e <$ unshiftMessages
         [ DisableEffect $ toId attrs
-        , UseCardAbility iid source abilityMetadata abilityIndex
+        , UseCardAbility iid source abilityMetadata abilityIndex payments
         ]
       _ -> e <$ unshiftMessage (DisableEffect $ toId attrs)
     _ -> PayForAbilityEffect . (`with` payments) <$> runMessage msg attrs

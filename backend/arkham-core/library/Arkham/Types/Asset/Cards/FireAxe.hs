@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.FireAxe
   ( FireAxe(..)
   , fireAxe
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -51,7 +50,7 @@ instance ActionRunner env => HasActions env FireAxe where
 
 instance (AssetRunner env) => RunMessage env FireAxe where
   runMessage msg a@(FireAxe attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
@@ -59,10 +58,11 @@ instance (AssetRunner env) => RunMessage env FireAxe where
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-    UseCardAbility iid source _ 2 | isSource attrs source -> a <$ unshiftMessage
-      (CreateSkillTestEffect
-        (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
-        source
-        (InvestigatorTarget iid)
-      )
+    UseCardAbility iid source _ 2 _ | isSource attrs source ->
+      a <$ unshiftMessage
+        (CreateSkillTestEffect
+          (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
+          source
+          (InvestigatorTarget iid)
+        )
     _ -> FireAxe <$> runMessage msg attrs

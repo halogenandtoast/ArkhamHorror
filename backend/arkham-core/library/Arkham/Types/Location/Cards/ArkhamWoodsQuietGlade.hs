@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.ArkhamWoodsQuietGlade
   ( ArkhamWoodsQuietGlade(..)
   , arkhamWoodsQuietGlade
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -51,7 +50,7 @@ instance ActionRunner env => HasActions env ArkhamWoodsQuietGlade where
 
 instance (LocationRunner env) => RunMessage env ArkhamWoodsQuietGlade where
   runMessage msg l@(ArkhamWoodsQuietGlade attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
+    UseCardAbility iid (LocationSource lid) _ 1 _ | lid == locationId ->
       l <$ unshiftMessages
         [ HealDamage (InvestigatorTarget iid) 1
         , HealHorror (InvestigatorTarget iid) 1

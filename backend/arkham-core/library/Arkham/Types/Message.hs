@@ -99,373 +99,378 @@ data ActionType
   | InvestigatorActionType
   deriving stock (Bounded, Enum)
 
+-- TODO: Better handle in play and out of play
+-- Out of play refers to player's hand, in any deck,
+-- in any discard pile, the victory display, and
+-- cards that have been set aside
+
 data Message
-  = Setup
-  | SetupStep Int
-  | ApplyModifiers Target
-  | BeginTurn InvestigatorId
-  | AddToken Token
-  | CompleteObjective
-  | AddCampaignCardToDeck InvestigatorId CardCode
-  | AddCampaignCardToEncounterDeck CardCode
-  | RemoveCampaignCardFromDeck InvestigatorId CardCode
-  | SetLocationLabel LocationId Text
-  | EndOfGame
-  | EndOfScenario -- used by the game to clear queue
-  | StartCampaign
-  | ResetGame
-  | CampaignStep (Maybe CampaignStep)
-  | NextCampaignStep (Maybe CampaignStep)
-  | Remember ScenarioLogKey
-  | Record CampaignLogKey
-  | CrossOutRecord CampaignLogKey
-  | RecordCount CampaignLogKey Int
-  | RecordSet CampaignLogKey [CardCode]
-  | StartScenario ScenarioId
-  | SetupInvestigators
-  | TakeStartingResources InvestigatorId
-  | FlavorText (Maybe Text) [Text]
-  | InvestigatorMulligan InvestigatorId
-  | FinishedWithMulligan InvestigatorId
-  | SearchCollectionForRandom InvestigatorId Source (PlayerCardType, Maybe Trait)
-  | SearchDeckForTraits InvestigatorId Target [Trait]
-  | LookAtTopOfDeck InvestigatorId Target Int
-  | SearchTopOfDeck InvestigatorId Target Int [Trait] LeftoverCardStrategy
-  | SearchDiscard InvestigatorId Target [Trait]
-  | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
-  | RemovedFromPlay Source
-  | RemoveFromGame Target
-  | RemoveFromDiscard InvestigatorId CardId
-  | InitDeck InvestigatorId [PlayerCard] -- used to initialize the deck for the campaign
-  | LoadDeck InvestigatorId [PlayerCard] -- used to reset the deck of the investigator
-  | EndPhase
-  | BeginRound
-  | EndRoundWindow
-  | EndRound
-  | BeginMythos
-  | EndMythos
-  | BeginInvestigation
-  | ChoosePlayerOrder [InvestigatorId] [InvestigatorId]
-  | EndInvestigation
-  | BeginEnemy
-  | EndEnemy
-  | BeginUpkeep
-  | EndUpkeep
-  | HuntersMove
-  | EnemiesAttack
-  | ReadyExhausted
-  | Exhaust Target
-  | Ready Target
-  | ReadyAlternative Source Target
-  | AllDrawCardAndResource
-  | AllCheckHandSize
-  | CheckHandSize InvestigatorId
-  | PlaceDoomOnAgenda
-  | AdvanceAgendaIfThresholdSatisfied
-  | AdvanceAgenda AgendaId
-  | AdvanceCurrentAgenda
-  | AdvanceAct ActId Source
-  | RevertAct ActId
-  | NextAdvanceActStep ActId Int
-  | AllDrawEncounterCard
-  | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
-  | RequestedEncounterCards Target [EncounterCard]
-  | PlaceLocation LocationId
-  | PlaceLocationMatching LocationMatcher
-  | PlacedLocation LocationId
-  | AddConnection LocationId LocationSymbol
-  | AddConnectionBack LocationId LocationSymbol
-  | AddedConnection LocationId LocationId
-  | RevealLocation (Maybe InvestigatorId) LocationId
-  | LookAtRevealed LocationId
-  | RemoveLocation LocationId
-  | RemoveEnemy EnemyId
-  | MoveAllTo LocationId
-  | MoveAction InvestigatorId LocationId Bool
-  | Move InvestigatorId LocationId LocationId
-  | MoveTo InvestigatorId LocationId
-  | MoveFrom InvestigatorId LocationId
-  | MoveUntil LocationId Target
-  | MoveToward Target LocationMatcher
-  | PlayerWindow InvestigatorId [Message]
-  | Ask InvestigatorId Question
-  | AskMap (HashMap InvestigatorId Question)
-  | TakeAction InvestigatorId (Maybe Action) Cost
-  | TakenAction InvestigatorId Action
-  | PayAbilityCost InvestigatorId (Maybe Action) Cost
-  | LoseActions InvestigatorId Source Int
-  | SetActions InvestigatorId Source Int
-  | GainActions InvestigatorId Source Int
-  | UseLimitedAbility InvestigatorId Ability
-  | ChooseActivateCardAbilityAction InvestigatorId
-  | ActivateCardAbilityAction InvestigatorId Ability
-  | ActivateCardAbilityActionWithDynamicCost InvestigatorId Ability
-  | UseCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int
-  | PayForCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int
-  | UseScenarioSpecificAbility InvestigatorId Int
-  | PutSetAsideIntoPlay Target
-  | AddUses Target UseType Int
-  | SpendUses Target UseType Int
-  | ResolveToken DrawnToken Token InvestigatorId
-  | Investigate InvestigatorId LocationId Source SkillType Bool
-  | ChooseFightEnemy InvestigatorId Source SkillType Bool
-  | ChooseFightEnemyNotEngagedWithInvestigator InvestigatorId Source SkillType Bool
-  | ChooseEvadeEnemy InvestigatorId Source SkillType Bool
-  | EngageEnemy InvestigatorId EnemyId Bool
-  | DisengageEnemy InvestigatorId EnemyId
-  | ChooseEndTurn InvestigatorId
-  | EndTurn InvestigatorId
-  | CheckAttackOfOpportunity InvestigatorId Bool
-  | TakeResources InvestigatorId Int Bool
-  | SpendResources InvestigatorId Int
-  | EnemyWillAttack InvestigatorId EnemyId
-  | EnemyAttacks [Message]
-  | EnemyAttack InvestigatorId EnemyId
-  | EnemyAttackIfEngaged EnemyId (Maybe InvestigatorId)
-  | PerformEnemyAttack InvestigatorId EnemyId
-  | InvestigatorDrawEncounterCard InvestigatorId
-  | InvestigatorDrewEncounterCard InvestigatorId EncounterCard
-  | InvestigatorDrewPlayerCard InvestigatorId PlayerCard
-  | InvestigatorDrawEnemy InvestigatorId LocationId EnemyId
-  | EnemySpawn (Maybe InvestigatorId) LocationId EnemyId
-  | EnemySpawnAtLocationMatching (Maybe InvestigatorId) LocationMatcher EnemyId
-  | CreateEnemyRequest Source CardCode
-  | RequestedEnemy Source EnemyId
-  | EnemySpawnedAt LocationId EnemyId
-  | EnemyEngageInvestigator EnemyId InvestigatorId
-  | InvestigatorDamageEnemy InvestigatorId EnemyId
-  | InvestigatorDamageInvestigator InvestigatorId InvestigatorId
-  | EnemyDamage EnemyId InvestigatorId Source Int
-  | EnemyDefeated EnemyId InvestigatorId LocationId CardCode Source [Trait]
-  | Damage Target Source Int
-  | AddToVictory Target
-  | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
-  | PlayCard InvestigatorId CardId (Maybe Target) Bool
-  | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
-  | PlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
-  | PlayedCard InvestigatorId CardId
-  | PayedForDynamicCard InvestigatorId CardId Int Bool
-  | InvestigatorTakeDamage InvestigatorId Source Int Int
-  | InvestigatorDirectDamage InvestigatorId Source Int Int
-  | InvestigatorAssignDamage InvestigatorId Source Int Int
-  -- ^ uses the internal method and then checks defeat
-  | InvestigatorDoAssignDamage InvestigatorId Source Int Int [Target] [Target]
-  -- ^ meant to be used internally by investigators          ^ damage ^ horror
-  | DidReceiveDamage Target Source
-  | DidReceiveHorror Target Source
-  | GainXP InvestigatorId Int
-  | SufferTrauma InvestigatorId Int Int
-  | AssetDamage AssetId Source Int Int
-  | AssetDefeated AssetId
-  | Discarded Target Card
-  | InvestigatorDamage InvestigatorId Source Int Int
-  | InvestigatorPlayAsset InvestigatorId AssetId [SlotType] [Trait]
-  | InvestigatorPlayDynamicAsset InvestigatorId AssetId [SlotType] [Trait] Int
-  | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target)
-  | ResolveEvent InvestigatorId EventId (Maybe Target)
-  | BeginTrade InvestigatorId Target [InvestigatorId]
-  | InvestigatorPlayDynamicEvent InvestigatorId EventId Int
-  | GainClues InvestigatorId Int
-  | PlaceClues Target Int
-  | RemoveClues Target Int
-  | PlaceResources Target Int
-  | InvestigatorDiscoverClues InvestigatorId LocationId Int
-  | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int
-  | DiscoverClues InvestigatorId LocationId Int
-  | DiscoverCluesAtLocation InvestigatorId LocationId Int
-  | AfterDiscoverClues InvestigatorId LocationId Int
-  | BeginSkillTest InvestigatorId Source Target (Maybe Action) SkillType Int
-  | BeginSkillTestAfterFast InvestigatorId Source Target (Maybe Action) SkillType Int
-  | StartSkillTest InvestigatorId
-  | BeforeSkillTest InvestigatorId SkillType
-  | TriggerSkillTest InvestigatorId
-  | RunSkillTest InvestigatorId
-  | RerunSkillTest
-  | RunSkillTestSourceNotification InvestigatorId Source
-  | HandlePointOfFailure InvestigatorId Target Int -- Really do x n times, does not have to be failure
-  | SkillTestResults
-  | SkillTestApplyResults
-  | SkillTestApplyResultsAfter
-  | SkillTestCommitCard InvestigatorId CardId
-  | CommitCard InvestigatorId CardId
-  | InvestigatorCommittedCard InvestigatorId CardId
-  | InvestigatorCommittedSkill InvestigatorId SkillId
-  | SkillTestAsk Message
-  | SkillTestUncommitCard InvestigatorId CardId
-  | AddSkillTestSubscriber Target
-  | PassSkillTest
-  | FailSkillTest
-  | InvestigatorPlaceCluesOnLocation InvestigatorId Int
-  | InvestigatorPlaceAllCluesOnLocation InvestigatorId
-  -- ^ This message exists in case the number of clues will change
-  | FindAndDrawEncounterCard InvestigatorId EncounterCardMatcher
-  | FindEncounterCard InvestigatorId Target EncounterCardMatcher
-  | FoundEncounterCard InvestigatorId Target EncounterCard
-  | FoundEncounterCardFrom InvestigatorId Target EncounterCardSource EncounterCard
-  | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
-  | FoundEnemyInVoid InvestigatorId Target EnemyId
-  | EnemySpawnFromVoid (Maybe InvestigatorId) LocationId EnemyId
-  | AddToEncounterDeck EncounterCard
-  | SkillTestEnds Source
-  | ReturnSkillTestRevealedTokens
-  | RevealToken Source InvestigatorId Token
-  | RevealSkillTestTokens InvestigatorId
-  | DrawToken InvestigatorId Token
-  | EmptyDeck InvestigatorId
-  | DeckHasNoCards InvestigatorId
-  | DrawCards InvestigatorId Int Bool
-  | HealHorror Target Int
-  | HealDamage Target Int
-  | HealAllDamage Target
-  | DrewPlayerTreachery InvestigatorId CardCode CardId
-  | DrewPlayerEnemy InvestigatorId CardCode CardId
-  | RemoveCardFromHand InvestigatorId CardCode
-  | AddToDiscard InvestigatorId PlayerCard
-  | ChooseAndDiscardCard InvestigatorId
-  | DiscardCard InvestigatorId CardId
-  | DiscardTopOfDeck InvestigatorId Int (Maybe Target)
-  | DiscardTopOfEncounterDeck InvestigatorId Int (Maybe Target)
-  | RemoveFromEncounterDiscard EncounterCard
-  | DiscardedTopOfDeck InvestigatorId [PlayerCard] Target
-  | DrewTreachery InvestigatorId CardCode
-  | PayCardCost InvestigatorId CardId
-  | PayDynamicCardCost InvestigatorId CardId Int [Message]
+  = ActivateCardAbilityAction InvestigatorId Ability
+  | AddAbility Source Ability
   | AddAct ActId
   | AddAgenda AgendaId
-  | AllRandomDiscard
-  | RandomDiscard InvestigatorId
-  | NextAgenda AgendaId AgendaId
-  | NextAct ActId ActId
-  | WhenEnterLocation InvestigatorId LocationId
+  | AddCampaignCardToDeck InvestigatorId CardCode
+  | AddCampaignCardToEncounterDeck CardCode
+  | AddConnection LocationId LocationSymbol
+  | AddConnectionBack LocationId LocationSymbol
+  | AddFocusedToHand InvestigatorId Target CardId
+  | AddFocusedToTopOfDeck InvestigatorId Target CardId
+  | AddSkillTestSubscriber Target
+  | AddSlot InvestigatorId SlotType Slot
+  | AddToDiscard InvestigatorId PlayerCard
+  | AddToEncounterDeck EncounterCard
+  | AddToHand InvestigatorId Card
+  | AddToHandFromDeck InvestigatorId CardId
+  | AddToVictory Target
+  | AddToken Token
+  | AddTraits Target [Trait]
+  | AddUses Target UseType Int
+  | AddedConnection LocationId LocationId
+  | AdvanceAct ActId Source
+  | AdvanceAgenda AgendaId
+  | AdvanceAgendaIfThresholdSatisfied
+  | AdvanceCurrentAgenda
+  | After Message
+  | AfterAttackEnemy InvestigatorId EnemyId
+  | AfterDiscoverClues InvestigatorId LocationId Int
   | AfterEnterLocation InvestigatorId LocationId
-  | EnemyMove EnemyId LocationId LocationId
-  | SpawnEnemyAt Card LocationId
-  | SpawnEnemyAtEngagedWith Card LocationId InvestigatorId
+  | AfterEvadeEnemy InvestigatorId EnemyId
+  | AfterRevelation InvestigatorId TreacheryId
+  | AllCheckHandSize
+  | AllDrawCardAndResource
+  | AllDrawEncounterCard
+  | AllInvestigatorsResigned
+  | AllRandomDiscard
+  | ApplyModifiers Target
+  | Ask InvestigatorId Question
+  | AskMap (HashMap InvestigatorId Question)
+  | AssetDamage AssetId Source Int Int
+  | AssetDefeated AssetId
+  | AttachAsset AssetId Target
+  | AttachEvent EventId Target
+  | AttachStoryTreacheryTo CardCode Target
+  | AttachTreachery TreacheryId Target
+  | AttackEnemy InvestigatorId EnemyId Source SkillType
+  | BeforeSkillTest InvestigatorId SkillType
+  | BeginEnemy
+  | BeginInvestigation
+  | BeginMythos
+  | BeginRound
+  | BeginSkillTest InvestigatorId Source Target (Maybe Action) SkillType Int
+  | BeginSkillTestAfterFast InvestigatorId Source Target (Maybe Action) SkillType Int
+  | BeginTrade InvestigatorId Target [InvestigatorId]
+  | BeginTurn InvestigatorId
+  | BeginUpkeep
+  | Blanked Message
+  | CampaignStep (Maybe CampaignStep)
+  | CancelNext MessageType
+  | ChangeCardToFast InvestigatorId CardId
+  | CheckAttackOfOpportunity InvestigatorId Bool
+  | CheckDefeated
+  | CheckHandSize InvestigatorId
+  | CheckWindow InvestigatorId [Window]
+  | ChooseActivateCardAbilityAction InvestigatorId
+  | ChooseAndDiscardAsset InvestigatorId
+  | ChooseAndDiscardCard InvestigatorId
+  | ChooseEndTurn InvestigatorId
+  | ChooseEvadeEnemy InvestigatorId Source SkillType Bool
+  | ChooseFightEnemy InvestigatorId Source SkillType Bool
+  | ChooseFightEnemyNotEngagedWithInvestigator InvestigatorId Source SkillType Bool
+  | ChooseLeadInvestigator
+  | ChoosePlayer InvestigatorId ChoosePlayerChoice
+  | ChoosePlayerOrder [InvestigatorId] [InvestigatorId]
+  | ChooseTokenGroups Source InvestigatorId ChaosBagStep
+  | CommitCard InvestigatorId CardId
+  | CompleteObjective
+  | Continue Text
+  | CreateEffect CardCode (Maybe (EffectMetadata Message)) Source Target
   | CreateEnemyAt CardCode LocationId
   | CreateEnemyAtLocationMatching CardCode LocationMatcher
   | CreateEnemyEngagedWithPrey CardCode
-  | EnemySpawnEngagedWithPrey EnemyId
-  | Revelation InvestigatorId Source
-  | AfterRevelation InvestigatorId TreacheryId
-  | RevelationSkillTest InvestigatorId Source SkillType Int
-  | Discard Target
-  | SetEncounterDeck [EncounterCard]
-  | ChooseAndDiscardAsset InvestigatorId
-  | FightEnemy InvestigatorId EnemyId Source SkillType Bool
-  | WhenAttackEnemy InvestigatorId EnemyId
-  | AttackEnemy InvestigatorId EnemyId Source SkillType
-  | AfterAttackEnemy InvestigatorId EnemyId
-  | WhenEvadeEnemy InvestigatorId EnemyId
-  | EvadeEnemy InvestigatorId EnemyId Source SkillType Bool
-  | TryEvadeEnemy InvestigatorId EnemyId Source SkillType
-  | EnemyEvaded InvestigatorId EnemyId
-  | AfterEvadeEnemy InvestigatorId EnemyId
-  | SuccessfulInvestigation InvestigatorId LocationId Source
-  | SuccessfulAttackEnemy InvestigatorId EnemyId
-  | FailedAttackEnemy InvestigatorId EnemyId
-  | AttachTreachery TreacheryId Target
-  | AttachAsset AssetId Target
-  | AttachEvent EventId Target
-  | AddSlot InvestigatorId SlotType Slot
-  | RefillSlots InvestigatorId SlotType [AssetId]
-  | RequestedEncounterCard Source (Maybe EncounterCard)
-  | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard)
-  | ShuffleIntoEncounterDeck [EncounterCard]
-  | ShuffleBackIntoEncounterDeck Target
-  | ShuffleEncounterDiscardBackIn
-  | ShuffleAllInEncounterDiscardBackIn CardCode
-  | ShuffleDiscardBackIn InvestigatorId
-  | DiscardEncounterUntilFirst Source EncounterCardMatcher
-  | SpendClues Int [InvestigatorId]
-  | InvestigatorSpendClues InvestigatorId Int
-  | CreateWeaknessInThreatArea CardCode InvestigatorId
-  | AttachStoryTreacheryTo CardCode Target
+  | CreateEnemyRequest Source CardCode
+  | CreatePayAbilityCostEffect (Maybe Ability) Source Target
+  | CreatePhaseEffect (EffectMetadata Message) Source Target
+  | CreateSkillTestEffect (EffectMetadata Message) Source Target
   | CreateStoryAssetAt CardCode LocationId
   | CreateStoryAssetAtLocationMatching CardCode LocationMatcher
-  | TakeControlOfAsset InvestigatorId AssetId
-  | TakeControlOfSetAsideAsset InvestigatorId CardCode
-  | PutCardIntoPlay InvestigatorId Card (Maybe Target)
-  | Resolution Int
-  | GameOver
-  | NoResolution
-  | Resign InvestigatorId
-  | ResignWith Target
-  | InvestigatorKilled InvestigatorId
-  | InvestigatorWhenDefeated InvestigatorId
-  | InvestigatorDefeated InvestigatorId
-  | AddAbility Source Ability
-  | RemoveAbilitiesFrom Source
-  | InvestigatorResigned InvestigatorId
-  | AllInvestigatorsResigned
-  | InvestigatorWhenEliminated InvestigatorId
-  | InvestigatorEliminated InvestigatorId
-  | CheckWindow InvestigatorId [Window]
+  | CreateTokenValueEffect Int Source Target
+  | CreateWeaknessInThreatArea CardCode InvestigatorId
+  | CreatedEffect EffectId (Maybe (EffectMetadata Message)) Source Target
+  | CrossOutRecord CampaignLogKey
+  | Damage Target Source Int
+  | DeckHasNoCards InvestigatorId
+  | DidReceiveDamage Target Source
+  | DidReceiveHorror Target Source
+  | DisableEffect EffectId
+  | Discard Target
+  | DiscardCard InvestigatorId CardId
+  | DiscardEncounterUntilFirst Source EncounterCardMatcher
+  | DiscardTopOfDeck InvestigatorId Int (Maybe Target)
+  | DiscardTopOfEncounterDeck InvestigatorId Int (Maybe Target)
+  | Discarded Target Card
+  | DiscardedTopOfDeck InvestigatorId [PlayerCard] Target
+  | DiscoverClues InvestigatorId LocationId Int
+  | DiscoverCluesAtLocation InvestigatorId LocationId Int
+  | DisengageEnemy InvestigatorId EnemyId
+  | Done
+  | DrawAnotherToken InvestigatorId
+  | DrawCards InvestigatorId Int Bool
+  | DrawEncounterCards Target Int -- Meant to allow events to handle (e.g. first watch)
+  | DrawToken InvestigatorId Token
+  | DrewPlayerEnemy InvestigatorId CardCode CardId
+  | DrewPlayerTreachery InvestigatorId CardCode CardId
+  | DrewTreachery InvestigatorId CardCode
+  | EmptyDeck InvestigatorId
   | EndCheckWindow
-  | CancelNext MessageType
-  | Run [Message]
-  | Continue Text
-  | AddToHandFromDeck InvestigatorId CardId
+  | EndEnemy
+  | EndInvestigation
+  | EndMythos
+  | EndOfGame
+  | EndOfScenario -- used by the game to clear queue
+  | EndPhase
+  | EndRound
+  | EndRoundWindow
+  | EndTurn InvestigatorId
+  | EndUpkeep
+  | EnemiesAttack
+  | EnemyAttack InvestigatorId EnemyId
+  | EnemyAttackIfEngaged EnemyId (Maybe InvestigatorId)
+  | EnemyAttacks [Message]
+  | EnemyCheckEngagement EnemyId
+  | EnemyDamage EnemyId InvestigatorId Source Int
+  | EnemyDefeated EnemyId InvestigatorId LocationId CardCode Source [Trait]
+  | EnemyEngageInvestigator EnemyId InvestigatorId
+  | EnemyEvaded InvestigatorId EnemyId
+  | EnemyMove EnemyId LocationId LocationId
+  | EnemySetBearer EnemyId BearerId
+  | EnemySpawn (Maybe InvestigatorId) LocationId EnemyId
+  | EnemySpawnAtLocationMatching (Maybe InvestigatorId) LocationMatcher EnemyId
+  | EnemySpawnEngagedWithPrey EnemyId
+  | EnemySpawnFromVoid (Maybe InvestigatorId) LocationId EnemyId
+  | EnemySpawnedAt LocationId EnemyId
+  | EnemyWillAttack InvestigatorId EnemyId
+  | EngageEnemy InvestigatorId EnemyId Bool
+  | EvadeEnemy InvestigatorId EnemyId Source SkillType Bool
+  | Exhaust Target
+  | FailSkillTest
+  | FailedAttackEnemy InvestigatorId EnemyId
+  | FailedSkillTest InvestigatorId (Maybe Action) Source Target Int
+  | FightEnemy InvestigatorId EnemyId Source SkillType Bool
+  | FindAndDrawEncounterCard InvestigatorId EncounterCardMatcher
+  | FindEncounterCard InvestigatorId Target EncounterCardMatcher
+  | FinishedWithMulligan InvestigatorId
+  | FlavorText (Maybe Text) [Text]
   | FocusCards [Card]
-  | UnfocusCards
   | FocusTargets [Target]
-  | UnfocusTargets
-  | AddFocusedToHand InvestigatorId Target CardId
-  | AddFocusedToTopOfDeck InvestigatorId Target CardId
-  | ShuffleAllFocusedIntoDeck InvestigatorId Target
-  | ShuffleCardsIntoDeck InvestigatorId [PlayerCard]
+  | FocusTokens [Token]
+  | Force Message
+  | FoundAndDrewEncounterCard InvestigatorId EncounterCardSource EncounterCard
+  | FoundEncounterCard InvestigatorId Target EncounterCard
+  | FoundEncounterCardFrom InvestigatorId Target EncounterCardSource EncounterCard
+  | FoundEnemyInVoid InvestigatorId Target EnemyId
+  | GainActions InvestigatorId Source Int
+  | GainClues InvestigatorId Int
+  | GainXP InvestigatorId Int
+  | GameOver
+  | HandlePointOfFailure InvestigatorId Target Int -- Really do x n times, does not have to be failure
+  | HealAllDamage Target
+  | HealDamage Target Int
+  | HealHorror Target Int
+  | HuntersMove
+  | InDiscard Message
+  | InHand Message
+  | InitDeck InvestigatorId [PlayerCard] -- used to initialize the deck for the campaign
+  | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
+  | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
+  | Investigate InvestigatorId LocationId Source SkillType Bool
+  | InvestigatorAssignDamage InvestigatorId Source Int Int -- ^ uses the internal method and then checks defeat
+  | InvestigatorCommittedCard InvestigatorId CardId
+  | InvestigatorCommittedSkill InvestigatorId SkillId
+  | InvestigatorDamage InvestigatorId Source Int Int
+  | InvestigatorDamageEnemy InvestigatorId EnemyId
+  | InvestigatorDamageInvestigator InvestigatorId InvestigatorId
+  | InvestigatorDefeated InvestigatorId
+  | InvestigatorDirectDamage InvestigatorId Source Int Int
+  | InvestigatorDiscoverClues InvestigatorId LocationId Int
+  | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int
+  | InvestigatorDoAssignDamage InvestigatorId Source Int Int [Target] [Target] -- ^ meant to be used internally by investigators          ^ damage ^ horror
+  | InvestigatorDrawEncounterCard InvestigatorId
+  | InvestigatorDrawEnemy InvestigatorId LocationId EnemyId
+  | InvestigatorDrewEncounterCard InvestigatorId EncounterCard
+  | InvestigatorDrewPlayerCard InvestigatorId PlayerCard
+  | InvestigatorEliminated InvestigatorId
+  | InvestigatorKilled InvestigatorId
+  | InvestigatorMulligan InvestigatorId
+  | InvestigatorPlaceAllCluesOnLocation InvestigatorId -- ^ This message exists in case the number of clues will change
+  | InvestigatorPlaceCluesOnLocation InvestigatorId Int
+  | InvestigatorPlayAsset InvestigatorId AssetId [SlotType] [Trait]
+  | InvestigatorPlayDynamicAsset InvestigatorId AssetId [SlotType] [Trait] Int
+  | InvestigatorPlayDynamicEvent InvestigatorId EventId Int
+  | InvestigatorPlayEvent InvestigatorId EventId (Maybe Target)
+  | InvestigatorResigned InvestigatorId
+  | InvestigatorSpendClues InvestigatorId Int
+  | InvestigatorTakeDamage InvestigatorId Source Int Int
+  | InvestigatorWhenDefeated InvestigatorId
+  | InvestigatorWhenEliminated InvestigatorId
+  | Label Text [Message]
+  | LoadDeck InvestigatorId [PlayerCard] -- used to reset the deck of the investigator
+  | LookAtRevealed LocationId
+  | LookAtTopOfDeck InvestigatorId Target Int
+  | LoseActions InvestigatorId Source Int
+  | SpendActions InvestigatorId Source Int
+  | Move InvestigatorId LocationId LocationId
+  | MoveAction InvestigatorId LocationId Bool
+  | MoveAllTo LocationId
+  | MoveFrom InvestigatorId LocationId
+  | MoveTo InvestigatorId LocationId
+  | MoveToward Target LocationMatcher
+  | MoveUntil LocationId Target
+  | NextAct ActId ActId
+  | NextAdvanceActStep ActId Int
+  | NextAgenda AgendaId AgendaId
+  | NextCampaignStep (Maybe CampaignStep)
+  | NextChaosBagStep Source (Maybe InvestigatorId) RequestedTokenStrategy
+  | NoResolution
+  | PassSkillTest
+  | PassedSkillTest InvestigatorId (Maybe Action) Source Target Int
+  | PayAbilityCost Source InvestigatorId (Maybe Action) Cost
+  | PayAbilityCostFinished Source InvestigatorId
+  | PaidAbilityCost InvestigatorId (Maybe Action) Payment
+  | PayCardCost InvestigatorId CardId
+  | PayDynamicCardCost InvestigatorId CardId Int [Message]
+  | PayForCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int
+  | PayedForDynamicCard InvestigatorId CardId Int Bool
+  | PerformEnemyAttack InvestigatorId EnemyId
+  | PlaceClues Target Int
+  | PlaceDoom Target Int
+  | PlaceDoomOnAgenda
+  | PlaceEnemyInVoid EnemyId
+  | PlaceLocation LocationId
+  | PlaceLocationMatching LocationMatcher
+  | PlaceResources Target Int
+  | PlacedLocation LocationId
+  | PlayCard InvestigatorId CardId (Maybe Target) Bool
+  | PlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
+  | PlayedCard InvestigatorId CardId
+  | PlayerWindow InvestigatorId [Message]
+  | PutCardIntoPlay InvestigatorId Card (Maybe Target)
   | PutOnTopOfDeck InvestigatorId PlayerCard
   | PutOnTopOfEncounterDeck InvestigatorId EncounterCard
-  | AddToHand InvestigatorId Card
-  | EnemySetBearer EnemyId BearerId
-  | CheckDefeated
-  | ChooseLeadInvestigator
-  | ChoosePlayer InvestigatorId ChoosePlayerChoice
-  | Label Text [Message]
-  | TargetLabel Target [Message]
-  | UnengageNonMatching InvestigatorId [Trait]
-  | PlaceDoom Target Int
-  | RemoveDoom Target Int
+  | PutSetAsideIntoPlay Target
+  | RandomDiscard InvestigatorId
+  | Ready Target
+  | ReadyAlternative Source Target
+  | ReadyExhausted
+  | Record CampaignLogKey
+  | RecordCount CampaignLogKey Int
+  | RecordSet CampaignLogKey [CardCode]
+  | RefillSlots InvestigatorId SlotType [AssetId]
+  | Remember ScenarioLogKey
+  | RemoveAbilitiesFrom Source
+  | RemoveAllCopiesOfCardFromGame InvestigatorId CardCode
   | RemoveAllDoom
-  | Surge InvestigatorId Source
-  | RevealInHand CardId
+  | RemoveCampaignCardFromDeck InvestigatorId CardCode
+  | RemoveCardFromHand InvestigatorId CardCode
+  | RemoveClues Target Int
   | RemoveDiscardFromGame InvestigatorId
-  | FailedSkillTest InvestigatorId (Maybe Action) Source Target Int
-  | PassedSkillTest InvestigatorId (Maybe Action) Source Target Int
-  | ReturnToHand InvestigatorId Target
-  | ShuffleIntoDeck InvestigatorId Target
-  | FocusTokens [Token]
-  | UnfocusTokens
-  | Will Message
-  | When Message
-  | After Message
-  | Blanked Message
-  | DrawAnotherToken InvestigatorId
-  | SetTokens [Token]
-  | SetTokensForScenario
-  | ResetTokens Source
-  | ReturnTokens [Token]
+  | RemoveDoom Target Int
+  | RemoveEnemy EnemyId
+  | RemoveFromDiscard InvestigatorId CardId
+  | RemoveFromEncounterDiscard EncounterCard
+  | RemoveFromGame Target
+  | RemoveLocation LocationId
+  | RemoveTraits Target [Trait]
+  | RemovedFromPlay Source
+  | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep
   | RequestTokens Source (Maybe InvestigatorId) Int RequestedTokenStrategy
+  | RequestedEncounterCard Source (Maybe EncounterCard)
+  | RequestedEncounterCards Target [EncounterCard]
+  | RequestedEnemy Source EnemyId
+  | RequestedPlayerCard InvestigatorId Source (Maybe PlayerCard)
+  | RequestedTokens Source (Maybe InvestigatorId) [Token]
+  | RerunSkillTest
+  | ResetGame
+  | ResetTokens Source
+  | Resign InvestigatorId
+  | ResignWith Target
+  | Resolution Int
+  | ResolveEvent InvestigatorId EventId (Maybe Target)
+  | ResolveToken DrawnToken Token InvestigatorId
+  | ReturnSkillTestRevealedTokens
+  | ReturnToHand InvestigatorId Target
+  | ReturnTokens [Token]
+  | RevealInHand CardId
+  | RevealLocation (Maybe InvestigatorId) LocationId
+  | RevealSkillTestTokens InvestigatorId
+  | RevealToken Source InvestigatorId Token
+  | Revelation InvestigatorId Source
+  | RevelationSkillTest InvestigatorId Source SkillType Int
+  | RevertAct ActId
+  | Run [Message]
   | RunBag Source (Maybe InvestigatorId) RequestedTokenStrategy
   | RunDrawFromBag Source (Maybe InvestigatorId) RequestedTokenStrategy
-  | RequestedTokens Source (Maybe InvestigatorId) [Token]
-  | ReplaceCurrentDraw Source InvestigatorId ChaosBagStep
-  | ChooseTokenGroups Source InvestigatorId ChaosBagStep
-  | NextChaosBagStep Source (Maybe InvestigatorId) RequestedTokenStrategy
-  | AddTraits Target [Trait]
-  | RemoveTraits Target [Trait]
-  | ChangeCardToFast InvestigatorId CardId
-  | CreateEffect CardCode (Maybe (EffectMetadata Message)) Source Target
-  | CreateSkillTestEffect (EffectMetadata Message) Source Target
-  | CreateTokenValueEffect Int Source Target
-  | CreatePhaseEffect (EffectMetadata Message) Source Target
-  | CreatedEffect EffectId (Maybe (EffectMetadata Message)) Source Target
-  | DisableEffect EffectId
-  | Done
-  | PlaceEnemyInVoid EnemyId
-  | InHand Message
-  | InDiscard Message
-  | EnemyCheckEngagement EnemyId
-  | Force Message
+  | RunSkillTest InvestigatorId
+  | RunSkillTestSourceNotification InvestigatorId Source
+  | SearchCollectionForRandom InvestigatorId Source (PlayerCardType, Maybe Trait)
+  | SearchDeckForTraits InvestigatorId Target [Trait]
+  | SearchDiscard InvestigatorId Target [Trait]
+  | SearchTopOfDeck InvestigatorId Target Int [Trait] LeftoverCardStrategy
+  | SetActions InvestigatorId Source Int
+  | SetEncounterDeck [EncounterCard]
+  | SetLocationLabel LocationId Text
+  | SetTokens [Token]
+  | SetTokensForScenario
+  | Setup
+  | SetupInvestigators
+  | SetupStep Int
+  | ShuffleAllFocusedIntoDeck InvestigatorId Target
+  | ShuffleAllInEncounterDiscardBackIn CardCode
+  | ShuffleBackIntoEncounterDeck Target
+  | ShuffleCardsIntoDeck InvestigatorId [PlayerCard]
+  | ShuffleDiscardBackIn InvestigatorId
+  | ShuffleEncounterDiscardBackIn
+  | ShuffleIntoDeck InvestigatorId Target
+  | ShuffleIntoEncounterDeck [EncounterCard]
+  | SkillTestApplyResults
+  | SkillTestApplyResultsAfter
+  | SkillTestAsk Message
+  | SkillTestCommitCard InvestigatorId CardId
+  | SkillTestEnds Source
+  | SkillTestResults
+  | SkillTestUncommitCard InvestigatorId CardId
+  | SpawnEnemyAt Card LocationId
+  | SpawnEnemyAtEngagedWith Card LocationId InvestigatorId
+  | SpendClues Int [InvestigatorId]
+  | SpendResources InvestigatorId Int
+  | SpendUses Target UseType Int
+  | StartCampaign
+  | StartScenario ScenarioId
+  | StartSkillTest InvestigatorId
+  | SuccessfulAttackEnemy InvestigatorId EnemyId
+  | SuccessfulInvestigation InvestigatorId LocationId Source
+  | SufferTrauma InvestigatorId Int Int
+  | Surge InvestigatorId Source
+  | TakeAction InvestigatorId (Maybe Action) Cost
+  | TakeControlOfAsset InvestigatorId AssetId
+  | TakeControlOfSetAsideAsset InvestigatorId CardCode
+  | TakeResources InvestigatorId Int Bool
+  | TakeStartingResources InvestigatorId
+  | TakenAction InvestigatorId Action
+  | TargetLabel Target [Message]
+  | TriggerSkillTest InvestigatorId
+  | TryEvadeEnemy InvestigatorId EnemyId Source SkillType
+  | UnengageNonMatching InvestigatorId [Trait]
+  | UnfocusCards
+  | UnfocusTargets
+  | UnfocusTokens
+  | UseCardAbility InvestigatorId Source (Maybe AbilityMetadata) Int
+  | UseLimitedAbility InvestigatorId Ability
+  | UseScenarioSpecificAbility InvestigatorId Int
+  | When Message
+  | WhenAttackEnemy InvestigatorId EnemyId
+  | WhenEnterLocation InvestigatorId LocationId
+  | WhenEvadeEnemy InvestigatorId EnemyId
+  | Will Message
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 

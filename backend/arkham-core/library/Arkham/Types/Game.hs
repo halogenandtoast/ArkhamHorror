@@ -8,7 +8,7 @@ import Arkham.Import hiding (first)
 
 import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Act
-import Arkham.Types.Action (Action)
+import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.Agenda
 import Arkham.Types.Asset
 import Arkham.Types.Asset.Uses (UseType)
@@ -490,6 +490,9 @@ instance HasCount ActionTakenCount (Game queue) InvestigatorId where
 
 instance HasCount DiscardCount (Game queue) InvestigatorId where
   getCount = getCount <=< getInvestigator
+
+instance HasList TakenAction (Game queue) InvestigatorId where
+  getList = getList <=< getInvestigator
 
 instance HasCount ActionRemainingCount (Game queue) (Maybe Action, [Trait], InvestigatorId) where
   getCount (maction, traits, iid) =
@@ -1492,6 +1495,12 @@ createPhaseEffect effectMetadata source target = do
   eid <- getRandom
   pure (eid, buildPhaseEffect eid effectMetadata source target)
 
+createPayForAbilityEffect
+  :: MonadRandom m => Maybe Ability -> Source -> Target -> m (EffectId, Effect)
+createPayForAbilityEffect mAbility source target = do
+  eid <- getRandom
+  pure (eid, buildPayForAbilityEffect eid mAbility source target)
+
 createAsset :: MonadRandom m => CardCode -> m (AssetId, Asset)
 createAsset cardCode = do
   aid <- getRandom
@@ -1654,6 +1663,11 @@ runGameMessage msg g = case msg of
         source
         target
       )
+    pure $ g & effectsL %~ insertMap effectId effect
+  CreatePayAbilityCostEffect mAbility source target -> do
+    (effectId, effect) <- createPayForAbilityEffect mAbility source target
+    unshiftMessage
+      (CreatedEffect effectId (EffectAbility <$> mAbility) source target)
     pure $ g & effectsL %~ insertMap effectId effect
   CreatePhaseEffect effectMetadata source target -> do
     (effectId, effect) <- createPhaseEffect effectMetadata source target
@@ -1912,8 +1926,6 @@ runGameMessage msg g = case msg of
         _ -> pure g
       EncounterCard _ -> pure g
   ActivateCardAbilityAction iid ability ->
-    pure $ g & usedAbilitiesL %~ ((iid, ability) :)
-  ActivateCardAbilityActionWithDynamicCost iid ability ->
     pure $ g & usedAbilitiesL %~ ((iid, ability) :)
   UseLimitedAbility iid ability ->
     pure $ g & usedAbilitiesL %~ ((iid, ability) :)

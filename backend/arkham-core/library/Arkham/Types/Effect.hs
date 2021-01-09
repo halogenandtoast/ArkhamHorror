@@ -1,14 +1,10 @@
 module Arkham.Types.Effect
-  ( lookupEffect
-  , buildSkillTestEffect
-  , buildTokenValueEffect
-  , buildPhaseEffect
-  , Effect(..)
-  )
-where
+  ( module Arkham.Types.Effect
+  ) where
 
 import Arkham.Import
 
+import Arkham.Types.Action
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Effects
 import Arkham.Types.Trait
@@ -41,6 +37,7 @@ data Effect
   | CursedShores' CursedShores
   | SkillTestEffect' SkillTestEffect
   | PhaseEffect' PhaseEffect
+  | PayForAbilityEffect' PayForAbilityEffect
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -49,6 +46,11 @@ deriving anyclass instance
   ( HasQueue env
   , HasSet ConnectedLocationId env LocationId
   , HasSet Trait env EnemyId
+  , HasCostPayment env
+  , HasSet InScenarioInvestigatorId env ()
+  , HasSet Trait env Source
+  , HasModifiersFor env ()
+  , HasList TakenAction env InvestigatorId
   )
   => RunMessage env Effect
 
@@ -124,6 +126,11 @@ buildPhaseEffect
 buildPhaseEffect eid metadata source target =
   PhaseEffect' $ phaseEffect eid metadata source target
 
+buildPayForAbilityEffect
+  :: EffectId -> Maybe Ability -> Source -> Target -> Effect
+buildPayForAbilityEffect eid mAbility source target =
+  PayForAbilityEffect' $ payForAbilityEffect eid mAbility source target
+
 effectAttrs :: Effect -> Attrs
 effectAttrs = \case
   OnTheLam' attrs -> coerce attrs
@@ -153,3 +160,4 @@ effectAttrs = \case
   CursedShores' attrs -> coerce attrs
   SkillTestEffect' attrs -> coerce attrs
   PhaseEffect' attrs -> coerce attrs
+  PayForAbilityEffect' (PayForAbilityEffect (attrs `With` _)) -> coerce attrs

@@ -2,6 +2,10 @@ module Arkham.Types.Action where
 
 import Arkham.Prelude
 
+newtype TakenAction = TakenAction { unTakenAction :: Action }
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable)
+
 data Action
   = Ability
   | Draw

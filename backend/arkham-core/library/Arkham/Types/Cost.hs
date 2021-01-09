@@ -1,7 +1,6 @@
 module Arkham.Types.Cost
   ( module Arkham.Types.Cost
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -38,6 +37,20 @@ decreaseActionCost (Costs (a : as)) y = case a of
   _ -> a <> decreaseActionCost (Costs as) y
 decreaseActionCost other _ = other
 
+data Payment
+  = ActionPayment Int
+  | CluePayment Int
+  | ResourcePayment Int
+  | DiscardPayment [PlayerCard]
+  | ExhaustPayment [Target]
+  | UsesPayment Int
+  | HorrorPayment Int
+  | DamagePayment Int
+  | Payments [Payment]
+  | NoPayment
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
+
 data Cost
   = ActionCost Int
   | ClueCost Int
@@ -51,6 +64,7 @@ data Cost
   | Free
   | ResourceCost Int
   | UseCost AssetId UseType Int
+  | UpTo Int Cost
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
@@ -59,3 +73,11 @@ instance Semigroup Cost where
   Costs xs <> a = Costs (a : xs)
   a <> Costs xs = Costs (a : xs)
   a <> b = Costs [a, b]
+
+instance Semigroup Payment where
+  NoPayment <> a = a
+  a <> NoPayment = a
+  Payments xs <> Payments ys = Payments (xs <> ys)
+  Payments xs <> a = Payments (a : xs)
+  a <> Payments xs = Payments (a : xs)
+  a <> b = Payments [a, b]

@@ -30,3 +30,4 @@ import Arkham.Types.Effect.Effects.Shrivelling as X
 import Arkham.Types.Effect.Effects.SkillTestEffect as X
 import Arkham.Types.Effect.Effects.SureGamble3 as X
 import Arkham.Types.Effect.Effects.WillToSurvive4 as X
+import Arkham.Types.Effect.Effects.PayForAbilityEffect as X

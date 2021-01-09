@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.FoulSwamp
   ( FoulSwamp(..)
   , foulSwamp
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -33,16 +32,22 @@ instance HasModifiersFor env FoulSwamp where
     $ toModifiers attrs [CannotHealHorror, CannotCancelHorror]
   getModifiersFor _ _ _ = pure []
 
-ability :: Attrs -> Ability
-ability attrs =
-  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-    { abilityMetadata = Just (IntMetadata 0)
-    }
+ability :: InvestigatorId -> Attrs -> Ability
+ability iid attrs = base { abilityMetadata = Just (IntMetadata 0) }
+ where
+  base = mkAbility
+    (toSource attrs)
+    1
+    (ActionAbility Nothing $ Costs
+      [ ActionCost 1
+      , UpTo 3 (HorrorCost (toSource attrs) (InvestigatorTarget iid) 1)
+      ]
+    )
 
 instance ActionRunner env => HasActions env FoulSwamp where
   getActions iid NonFast (FoulSwamp attrs@Attrs {..}) | locationRevealed =
     withBaseActions iid NonFast attrs $ pure
-      [ ActivateCardAbilityActionWithDynamicCost iid (ability attrs)
+      [ ActivateCardAbilityAction iid (ability iid attrs)
       | iid `member` locationInvestigators
       ]
   getActions i window (FoulSwamp attrs) = getActions i window attrs

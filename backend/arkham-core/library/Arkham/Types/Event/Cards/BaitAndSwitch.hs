@@ -20,7 +20,7 @@ instance HasActions env BaitAndSwitch where
 instance (EventRunner env) => RunMessage env BaitAndSwitch where
   runMessage msg e@(BaitAndSwitch attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
-      [ ChooseEvadeEnemy iid (EventSource eid) SkillWillpower False
+      [ ChooseEvadeEnemy iid (EventSource eid) SkillAgility False
       , Discard (EventTarget eid)
       ]
     PassedSkillTest iid _ (EventSource eid) SkillTestInitiatorTarget{} _

@@ -114,6 +114,7 @@ getCanAffordCost
   -> m Bool
 getCanAffordCost iid source mAction = \case
   Free -> pure True
+  UpTo{} -> pure True
   Costs xs -> and <$> traverse (getCanAffordCost iid source mAction) xs
   ExhaustCost target -> case target of
     AssetTarget aid -> do

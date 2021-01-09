@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.HardKnocks
   ( HardKnocks(..)
   , hardKnocks
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -21,10 +22,10 @@ instance HasModifiersFor env HardKnocks where
 ability :: Int -> Attrs -> Ability
 ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
 
-instance ActionRunner env => HasActions env HardKnocks where
-  getActions iid (WhenSkillTest SkillCombat) (HardKnocks a) = do
+instance HasActions env HardKnocks where
+  getActions iid (WhenSkillTest SkillCombat) (HardKnocks a) =
     pure [ ActivateCardAbilityAction iid (ability 1 a) | ownedBy a iid ]
-  getActions iid (WhenSkillTest SkillAgility) (HardKnocks a) = do
+  getActions iid (WhenSkillTest SkillAgility) (HardKnocks a) =
     pure [ ActivateCardAbilityAction iid (ability 2 a) | ownedBy a iid ]
   getActions _ _ _ = pure []
 

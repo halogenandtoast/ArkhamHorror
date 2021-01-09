@@ -362,6 +362,7 @@ newGame investigator queue = do
     , gameEffects = mempty
     , gameSkills = mempty
     , gameActs = mempty
+    , gameOutOfPlay = mempty
     , gameChaosBag = emptyChaosBag
     , gameGameState = IsActive
     , gameResignedCardCodes = mempty

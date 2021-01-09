@@ -57,14 +57,6 @@ data GameState = IsPending | IsActive | IsOver
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-data OutOfPlayZone = OutOfPlay | TheVoid
-  deriving stock (Eq, Show, Generic)
-  deriving anyclass (ToJSON, FromJSON, FromJSONKey, ToJSONKey, Hashable)
-
-data OutOfPlayElem = OutOfPlayCard Card | OutOfPlayEnemy Enemy
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
-
 data Game queue = Game
   { gameMessages :: queue
   , gameRoundMessageHistory :: queue
@@ -88,9 +80,6 @@ data Game queue = Game
   , gameEvents :: EntityMap Event
   , gameEffects :: EntityMap Effect
   , gameSkills :: EntityMap Skill
-
-  -- Other game details
-  , gameOutOfPlay :: HashMap OutOfPlayZone [OutOfPlayElem]
 
   -- Player Details
   , gamePlayerCount :: Int -- used for determining if game should start
@@ -352,7 +341,6 @@ newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
     , gameSkills = mempty
     , gameActs = mempty
     , gameChaosBag = emptyChaosBag
-    , gameOutOfPlay = mempty
     , gameGameState = if length investigatorsMap /= playerCount
       then IsPending
       else IsActive

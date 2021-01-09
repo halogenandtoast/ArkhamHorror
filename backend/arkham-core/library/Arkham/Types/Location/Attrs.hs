@@ -336,6 +336,6 @@ instance LocationRunner env => RunMessage env Attrs where
     RevealLocation _ lid | lid /= locationId ->
       pure $ a & connectedLocationsL %~ deleteSet lid
     RemoveLocation lid -> pure $ a & connectedLocationsL %~ deleteSet lid
-    UseCardAbility iid source _ 99 | isSource a source ->
+    UseCardAbility iid source _ 99 _ | isSource a source ->
       a <$ unshiftMessage (Resign iid)
     _ -> pure a

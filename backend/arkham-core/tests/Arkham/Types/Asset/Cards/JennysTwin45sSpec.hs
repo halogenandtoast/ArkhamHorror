@@ -66,6 +66,7 @@ spec = describe "Jenny's Twin .45s" $ do
           (toSource jennysTwin45sAsset)
           Nothing
           1
+          (UsesPayment 1)
         ]
       >>= runGameTestOnlyOption "choose enemy"
       >>= runGameTestOnlyOption "start skill test"

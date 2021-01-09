@@ -51,7 +51,7 @@ instance ActionRunner env => HasActions env MiskatonicUniversityMiskatonicMuseum
 instance (LocationRunner env) => RunMessage env MiskatonicUniversityMiskatonicMuseum where
   runMessage msg l@(MiskatonicUniversityMiskatonicMuseum attrs@Attrs {..}) =
     case msg of
-      UseCardAbility iid source _ 1 | isSource attrs source ->
+      UseCardAbility iid source _ 1 _ | isSource attrs source ->
         l <$ unshiftMessages
           [InvestigatorAssignDamage iid source 0 2, GainClues iid 1]
       _ -> MiskatonicUniversityMiskatonicMuseum <$> runMessage msg attrs

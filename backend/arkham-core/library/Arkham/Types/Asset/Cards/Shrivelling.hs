@@ -45,7 +45,7 @@ instance AssetRunner env => RunMessage env Shrivelling where
   runMessage msg a@(Shrivelling attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Shrivelling <$> runMessage msg (attrs & usesL .~ Uses Charge 4)
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers $ toModifiers attrs [DamageDealt 1])

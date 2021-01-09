@@ -1,4 +1,7 @@
-module Arkham.Types.Asset.Cards.PhysicalTraining where
+module Arkham.Types.Asset.Cards.PhysicalTraining
+  ( PhysicalTraining(..)
+  , physicalTraining
+  ) where
 
 import Arkham.Import
 
@@ -15,33 +18,30 @@ physicalTraining uuid = PhysicalTraining $ baseAttrs uuid "01017"
 instance HasModifiersFor env PhysicalTraining where
   getModifiersFor = noModifiersFor
 
-instance ActionRunner env => HasActions env PhysicalTraining where
-  getActions iid (WhenSkillTest SkillWillpower) (PhysicalTraining a)
-    | ownedBy a iid = do
-      resourceCount <- getResourceCount iid
-      pure [ UseCardAbility iid (toSource a) Nothing 1 | resourceCount > 0 ]
-  getActions iid (WhenSkillTest SkillCombat) (PhysicalTraining a)
-    | ownedBy a iid = do
-      resourceCount <- getResourceCount iid
-      pure [ UseCardAbility iid (toSource a) Nothing 2 | resourceCount > 0 ]
+ability :: Int -> Attrs -> Ability
+ability idx a = mkAbility (toSource a) idx (FastAbility $ ResourceCost 1)
+
+instance HasActions env PhysicalTraining where
+  getActions iid (WhenSkillTest SkillWillpower) (PhysicalTraining a) =
+    pure [ ActivateCardAbilityAction iid (ability 1 a) | ownedBy a iid ]
+  getActions iid (WhenSkillTest SkillCombat) (PhysicalTraining a) =
+    pure [ ActivateCardAbilityAction iid (ability 2 a) | ownedBy a iid ]
   getActions _ _ _ = pure []
 
 instance (AssetRunner env) => RunMessage env PhysicalTraining where
   runMessage msg a@(PhysicalTraining attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
-      a <$ unshiftMessages
-        [ SpendResources iid 1
-        , CreateSkillTestEffect
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      a <$ unshiftMessage
+        (CreateSkillTestEffect
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower 1])
           source
           (InvestigatorTarget iid)
-        ]
-    UseCardAbility iid source _ 2 | isSource attrs source ->
-      a <$ unshiftMessages
-        [ SpendResources iid 1
-        , CreateSkillTestEffect
+        )
+    UseCardAbility iid source _ 2 _ | isSource attrs source ->
+      a <$ unshiftMessage
+        (CreateSkillTestEffect
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
           source
           (InvestigatorTarget iid)
-        ]
+        )
     _ -> PhysicalTraining <$> runMessage msg attrs

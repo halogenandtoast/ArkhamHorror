@@ -57,7 +57,7 @@ instance HasTokenValue env ZoeySamaras where
 
 instance InvestigatorRunner env => RunMessage env ZoeySamaras where
   runMessage msg i@(ZoeySamaras attrs@Attrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
+    UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
       i <$ unshiftMessage (TakeResources investigatorId 1 False)
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
       i <$ unshiftMessage

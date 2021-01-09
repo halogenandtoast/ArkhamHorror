@@ -1,4 +1,7 @@
-module Arkham.Types.Asset.Cards.Scavenging where
+module Arkham.Types.Asset.Cards.Scavenging
+  ( Scavenging(..)
+  , scavenging
+  ) where
 
 import Arkham.Import
 
@@ -34,6 +37,6 @@ instance ActionRunner env => HasActions env Scavenging where
 
 instance AssetRunner env => RunMessage env Scavenging where
   runMessage msg a@(Scavenging attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage (SearchDiscard iid (InvestigatorTarget iid) [Item])
     _ -> Scavenging <$> runMessage msg attrs

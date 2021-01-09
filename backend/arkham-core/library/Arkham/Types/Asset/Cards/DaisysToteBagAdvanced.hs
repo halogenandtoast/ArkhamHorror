@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.DaisysToteBagAdvanced
   ( daisysToteBagAdvanced
   , DaisysToteBagAdvanced(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -45,7 +44,7 @@ instance AssetRunner env => RunMessage env DaisysToteBagAdvanced where
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
       unshiftMessages $ replicate 2 (AddSlot iid HandSlot (slot attrs))
       DaisysToteBagAdvanced <$> runMessage msg attrs
-    UseCardAbility iid source (Just (TargetMetadata (CardIdTarget cardId))) 1
-      | isSource attrs source -> a
-      <$ unshiftMessage (ChangeCardToFast iid cardId)
+    UseCardAbility iid source (Just (TargetMetadata (CardIdTarget cardId))) 1 _
+      | isSource attrs source
+      -> a <$ unshiftMessage (ChangeCardToFast iid cardId)
     _ -> DaisysToteBagAdvanced <$> runMessage msg attrs

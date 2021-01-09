@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Duke
   ( Duke(..)
   , duke
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -63,10 +62,10 @@ dukeInvestigate attrs iid lid =
 
 instance AssetRunner env => RunMessage env Duke where
   runMessage msg (Duke attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       unshiftMessage $ ChooseFightEnemy iid source SkillCombat False
       pure . Duke $ attrs & exhaustedL .~ True
-    UseCardAbility iid source _ 2 | isSource attrs source -> do
+    UseCardAbility iid source _ 2 _ | isSource attrs source -> do
       lid <- getId iid
       accessibleLocationIds <- map unAccessibleLocationId <$> getSetList lid
       if null accessibleLocationIds

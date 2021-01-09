@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.DrFrancisMorgan
   ( drFrancisMorgan
   , DrFrancisMorgan(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -35,6 +34,6 @@ instance HasModifiersFor env DrFrancisMorgan where
 
 instance (HasQueue env, HasModifiersFor env ()) => RunMessage env DrFrancisMorgan where
   runMessage msg a@(DrFrancisMorgan attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage (DrawCards iid 1 False)
     _ -> DrFrancisMorgan <$> runMessage msg attrs

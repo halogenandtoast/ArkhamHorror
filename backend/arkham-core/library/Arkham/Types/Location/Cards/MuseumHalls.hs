@@ -70,7 +70,7 @@ instance ActionRunner env => HasActions env MuseumHalls where
 
 instance LocationRunner env => RunMessage env MuseumHalls where
   runMessage msg l@(MuseumHalls location) = case msg of
-    UseCardAbility iid (ProxySource _ source) _ 1
+    UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource location source && unrevealed location -> do
         museumEntrance <- fromJustNote "missing location"
           <$> getId (LocationWithTitle "Museum Entrance")
@@ -83,7 +83,7 @@ instance LocationRunner env => RunMessage env MuseumHalls where
             SkillCombat
             5
           )
-    UseCardAbility iid source _ 1
+    UseCardAbility iid source _ 1 _
       | isSource location source && revealed location -> l
       <$ unshiftMessage (UseScenarioSpecificAbility iid 1)
     PassedSkillTest _ _ source _ _ | isSource location source -> do

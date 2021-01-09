@@ -46,6 +46,6 @@ instance TreacheryRunner env => RunMessage env WrackedByNightmares where
       assetIds <- getSetList iid
       unshiftMessages [ Exhaust (AssetTarget aid) | aid <- assetIds ]
       WrackedByNightmares <$> runMessage msg attrs
-    UseCardAbility _ (TreacherySource tid) _ 1 | tid == treacheryId ->
+    UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
     _ -> WrackedByNightmares <$> runMessage msg attrs

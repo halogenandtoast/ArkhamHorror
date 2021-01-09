@@ -1,8 +1,7 @@
 module Arkham.Types.Investigator.Cards.RolandBanks
   ( RolandBanks(..)
   , rolandBanks
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -36,23 +35,20 @@ ability attrs = base { abilityLimit = PlayerLimit PerRound 1 }
   where base = mkAbility (toSource attrs) 1 (ReactionAbility Free)
 
 instance ActionRunner env => HasActions env RolandBanks where
-  getActions iid (WhenEnemyDefeated You) (RolandBanks a@Attrs {..})
-    | iid == investigatorId = do
-      let ability' = (investigatorId, ability a)
-      clueCount' <- unClueCount <$> getCount investigatorLocation
-      pure [ uncurry ActivateCardAbilityAction ability' | clueCount' > 0 ]
+  getActions iid (WhenEnemyDefeated You) (RolandBanks a) | iid == toId a = do
+    clueCount <- unClueCount <$> getCount (investigatorLocation a)
+    pure [ ActivateCardAbilityAction iid (ability a) | clueCount > 0 ]
   getActions _ _ _ = pure []
 
 instance HasCount ClueCount env LocationId => HasTokenValue env RolandBanks where
-  getTokenValue (RolandBanks attrs) iid ElderSign
-    | iid == investigatorId attrs = do
-      locationClueCount <- unClueCount <$> getCount (investigatorLocation attrs)
-      pure $ TokenValue ElderSign (PositiveModifier locationClueCount)
+  getTokenValue (RolandBanks attrs) iid ElderSign | iid == toId attrs = do
+    locationClueCount <- unClueCount <$> getCount (investigatorLocation attrs)
+    pure $ TokenValue ElderSign (PositiveModifier locationClueCount)
   getTokenValue (RolandBanks attrs) iid token = getTokenValue attrs iid token
 
 instance InvestigatorRunner env => RunMessage env RolandBanks where
   runMessage msg rb@(RolandBanks attrs@Attrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
+    UseCardAbility _ source _ 1 _ | isSource attrs source ->
       rb <$ unshiftMessage
-        (DiscoverCluesAtLocation investigatorId investigatorLocation 1)
+        (DiscoverCluesAtLocation (toId attrs) investigatorLocation 1)
     _ -> RolandBanks <$> runMessage msg attrs

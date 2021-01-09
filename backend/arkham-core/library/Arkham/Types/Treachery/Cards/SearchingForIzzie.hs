@@ -44,7 +44,7 @@ instance TreacheryRunner env => RunMessage env SearchingForIzzie where
               [ AttachTreachery treacheryId (LocationTarget lid) | lid <- lids ]
             )
           )
-    UseCardAbility iid (TreacherySource tid) _ 1 | tid == treacheryId ->
+    UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId ->
       withTreacheryLocation attrs $ \attachedLocationId -> do
         shroud <- unShroud <$> getCount attachedLocationId
         t <$ unshiftMessage

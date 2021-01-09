@@ -20,7 +20,9 @@ instance HasModifiersFor env DiscOfItzamna2 where
 instance HasActions env DiscOfItzamna2 where
   getActions iid (WhenEnemySpawns YourLocation traits) (DiscOfItzamna2 a)
     | ownedBy a iid = pure
-      [ UseCardAbility iid (toSource a) Nothing 1 | Elite `notElem` traits ]
+      [ UseCardAbility iid (toSource a) Nothing 1 NoPayment
+      | Elite `notElem` traits
+      ]
   getActions i window (DiscOfItzamna2 x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env DiscOfItzamna2 where
@@ -33,7 +35,7 @@ instance (AssetRunner env) => RunMessage env DiscOfItzamna2 where
           (InvestigatorTarget iid)
         )
       DiscOfItzamna2 <$> runMessage msg attrs
-    UseCardAbility _ source _ 1 | isSource attrs source -> do
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       menemySpawnMessage <- fromQueue
         $ find ((== Just EnemySpawnMessage) . messageType)
       a <$ case menemySpawnMessage of

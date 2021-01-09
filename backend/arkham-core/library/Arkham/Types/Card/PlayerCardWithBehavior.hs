@@ -147,7 +147,7 @@ instance
   , HasId LocationId env InvestigatorId
   )
   => RunMessage env StrayCat where
-  runMessage (InDiscard (UseCardAbility iid (AssetSource aid) _ 1)) c@(StrayCat pc)
+  runMessage (InDiscard (UseCardAbility iid (AssetSource aid) _ 1 _)) c@(StrayCat pc)
     | unAssetId aid == unCardId (getCardId pc)
     = do
       locationId <- getId @LocationId iid

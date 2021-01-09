@@ -1,8 +1,7 @@
 module Arkham.Types.Investigator.Cards.RexMurphy
   ( RexMurphy(..)
   , rexMurphy
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -48,7 +47,7 @@ instance HasTokenValue env RexMurphy where
 
 instance (InvestigatorRunner env) => RunMessage env RexMurphy where
   runMessage msg i@(RexMurphy attrs@Attrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId ->
+    UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
       i <$ unshiftMessage
         (DiscoverCluesAtLocation investigatorId investigatorLocation 1)
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->

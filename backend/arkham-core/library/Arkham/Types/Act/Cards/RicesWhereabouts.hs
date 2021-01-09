@@ -40,7 +40,7 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
         EncounterCard ec -> a <$ unshiftMessages
           [RemoveFromEncounterDiscard ec, InvestigatorDrewEncounterCard iid ec]
         PlayerCard _ -> throwIO $ InvalidState "not a player card"
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       playerCount <- getPlayerCount
       let discardCount = if playerCount == 1 then 10 else 5
       a <$ unshiftMessage (DiscardTopOfEncounterDeck iid discardCount Nothing)

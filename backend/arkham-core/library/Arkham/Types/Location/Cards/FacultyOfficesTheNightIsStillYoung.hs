@@ -69,7 +69,7 @@ instance LocationRunner env => RunMessage env FacultyOfficesTheNightIsStillYoung
       FacultyOfficesTheNightIsStillYoung <$> runMessage msg attrs
     FoundEncounterCard _iid target card | isTarget attrs target ->
       l <$ unshiftMessage (SpawnEnemyAt (EncounterCard card) (locationId attrs))
-    UseCardAbility _iid source _ 1
+    UseCardAbility _iid source _ 1 _
       | isSource attrs source && locationRevealed attrs -> l
       <$ unshiftMessage (Resolution 1)
     _ -> FacultyOfficesTheNightIsStillYoung <$> runMessage msg attrs

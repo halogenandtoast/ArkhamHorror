@@ -1,8 +1,7 @@
 module Arkham.Types.Investigator.Cards.AshcanPete
   ( AshcanPete(..)
   , ashcanPete
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -60,13 +59,15 @@ instance (InvestigatorRunner env) => RunMessage env AshcanPete where
   runMessage msg i@(AshcanPete attrs@Attrs {..}) = case msg of
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
       i <$ unshiftMessage (Ready $ CardCodeTarget "02014")
-    UseCardAbility _ (InvestigatorSource iid) _ 1 | iid == investigatorId -> do
-      exhaustedAssetIds <- map unExhaustedAssetId <$> getSetList investigatorId
-      i <$ unshiftMessage
-        (chooseOne
-          investigatorId
-          [ Ready (AssetTarget aid) | aid <- exhaustedAssetIds ]
-        )
+    UseCardAbility _ (InvestigatorSource iid) _ 1 _ | iid == investigatorId ->
+      do
+        exhaustedAssetIds <- map unExhaustedAssetId
+          <$> getSetList investigatorId
+        i <$ unshiftMessage
+          (chooseOne
+            investigatorId
+            [ Ready (AssetTarget aid) | aid <- exhaustedAssetIds ]
+          )
     SetupInvestigators -> do
       let
         (before, after) =

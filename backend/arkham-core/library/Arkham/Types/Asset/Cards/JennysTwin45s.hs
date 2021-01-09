@@ -44,7 +44,7 @@ instance AssetRunner env => RunMessage env JennysTwin45s where
   runMessage msg a@(JennysTwin45s attrs) = case msg of
     InvestigatorPlayDynamicAsset _ aid _ _ n | aid == assetId attrs ->
       JennysTwin45s <$> runMessage msg (attrs & usesL .~ Uses Ammo n)
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers

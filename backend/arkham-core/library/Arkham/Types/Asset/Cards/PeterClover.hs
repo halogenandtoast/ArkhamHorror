@@ -43,7 +43,7 @@ instance
   )
   => RunMessage env PeterClover where
   runMessage msg a@(PeterClover attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId @LocationId iid
       criminals <- getSetList ([Criminal], lid)
       a <$ unshiftMessage

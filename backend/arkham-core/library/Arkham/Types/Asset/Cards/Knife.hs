@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Knife
   ( Knife(..)
   , knife
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -46,7 +45,7 @@ instance ActionRunner env => HasActions env Knife where
 
 instance (AssetRunner env) => RunMessage env Knife where
   runMessage msg a@(Knife attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
@@ -54,7 +53,7 @@ instance (AssetRunner env) => RunMessage env Knife where
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-    UseCardAbility iid source _ 2 | isSource attrs source ->
+    UseCardAbility iid source _ 2 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ Discard (toTarget attrs)
         , CreateSkillTestEffect

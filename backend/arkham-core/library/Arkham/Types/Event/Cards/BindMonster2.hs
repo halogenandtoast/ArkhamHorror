@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.BindMonster2
   ( bindMonster2
   , BindMonster2(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -39,7 +38,7 @@ instance HasQueue env => RunMessage env BindMonster2 where
     SkillTestEnds _ -> e <$ when
       (null eventAttachedTarget)
       (unshiftMessage (Discard $ toTarget attrs))
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       case eventAttachedTarget of
         Just target -> e <$ unshiftMessage
           (BeginSkillTest iid source target Nothing SkillWillpower 3)

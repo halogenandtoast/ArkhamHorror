@@ -50,6 +50,6 @@ instance (EnemyRunner env) => RunMessage env VictoriaDevereux where
   runMessage msg e@(VictoriaDevereux attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) eid (LocationWithTitle "Northside")
-    UseCardAbility _ (EnemySource eid) _ 1 | eid == enemyId ->
+    UseCardAbility _ (EnemySource eid) _ 1 _ | eid == enemyId ->
       e <$ unshiftMessage (AddToVictory $ toTarget attrs)
     _ -> VictoriaDevereux <$> runMessage msg attrs

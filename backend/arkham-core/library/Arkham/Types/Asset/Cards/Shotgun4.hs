@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Shotgun4
   ( Shotgun4(..)
   , shotgun4
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -44,7 +43,7 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
   runMessage msg a@(Shotgun4 attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Shotgun4 <$> runMessage msg (attrs & usesL .~ Uses Ammo 2)
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 3])

@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.TheNecronomicon
   ( TheNecronomicon(..)
   , theNecronomicon
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -40,7 +39,7 @@ instance HasActions env TheNecronomicon where
 
 instance (AssetRunner env) => RunMessage env TheNecronomicon where
   runMessage msg a@(TheNecronomicon attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       unshiftMessage $ InvestigatorDamage iid source 0 1
       if fromJustNote "Must be set" (assetHorror attrs) == 1
         then a <$ unshiftMessage (Discard (toTarget attrs))

@@ -44,7 +44,7 @@ instance ActionRunner env => HasActions env FishingNet where
 
 instance AssetRunner env => RunMessage env FishingNet where
   runMessage msg a@(FishingNet attrs@Attrs {..}) = case msg of
-    UseCardAbility _ source _ 1 | isSource attrs source -> do
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       mrougarou <- fmap unStoryEnemyId <$> getId (CardCode "81028")
       case mrougarou of
         Nothing -> error "can not use this ability"

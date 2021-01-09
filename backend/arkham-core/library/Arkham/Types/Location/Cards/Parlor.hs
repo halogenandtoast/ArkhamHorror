@@ -62,9 +62,10 @@ instance ActionRunner env => HasActions env Parlor where
 
 instance (LocationRunner env) => RunMessage env Parlor where
   runMessage msg l@(Parlor attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source && locationRevealed ->
-      l <$ unshiftMessage (Resign iid)
-    UseCardAbility iid (ProxySource _ source) _ 2
+    UseCardAbility iid source _ 1 _
+      | isSource attrs source && locationRevealed -> l
+      <$ unshiftMessage (Resign iid)
+    UseCardAbility iid (ProxySource _ source) _ 2 _
       | isSource attrs source && locationRevealed -> do
         maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
         case maid of

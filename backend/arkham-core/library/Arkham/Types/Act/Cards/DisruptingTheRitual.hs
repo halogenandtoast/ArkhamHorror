@@ -44,25 +44,26 @@ instance ActRunner env => RunMessage env DisruptingTheRitual where
         (totalClues >= requiredClues)
         (unshiftMessage (AdvanceAct actId $ toSource attrs))
       pure $ DisruptingTheRitual (attrs { actClues = Just totalClues })
-    UseCardAbility iid (ActSource aid) _ 1 | aid == actId -> a <$ unshiftMessage
-      (chooseOne
-        iid
-        [ BeginSkillTest
+    UseCardAbility iid (ActSource aid) _ 1 _ | aid == actId ->
+      a <$ unshiftMessage
+        (chooseOne
           iid
-          (ActSource actId)
-          (ActTarget actId)
-          Nothing
-          SkillWillpower
-          3
-        , BeginSkillTest
-          iid
-          (ActSource actId)
-          (ActTarget actId)
-          Nothing
-          SkillAgility
-          3
-        ]
-      )
+          [ BeginSkillTest
+            iid
+            (ActSource actId)
+            (ActTarget actId)
+            Nothing
+            SkillWillpower
+            3
+          , BeginSkillTest
+            iid
+            (ActSource actId)
+            (ActTarget actId)
+            Nothing
+            SkillAgility
+            3
+          ]
+        )
     PassedSkillTest _ _ source _ _ | isSource attrs source ->
       a <$ unshiftMessage (PlaceClues (toTarget attrs) 1)
     _ -> DisruptingTheRitual <$> runMessage msg attrs

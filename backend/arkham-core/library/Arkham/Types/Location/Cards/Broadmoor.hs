@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.Broadmoor
   ( Broadmoor(..)
   , broadmoor
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -48,6 +47,6 @@ instance ActionRunner env => HasActions env Broadmoor where
 
 instance (LocationRunner env) => RunMessage env Broadmoor where
   runMessage msg l@(Broadmoor attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessage (Resign iid)
     _ -> Broadmoor <$> runMessage msg attrs

@@ -41,7 +41,7 @@ instance ActionRunner env => HasActions env CursedShores where
 
 instance LocationRunner env => RunMessage env CursedShores where
   runMessage msg l@(CursedShores attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessages
       [ InvestigatorAssignDamage iid source 1 0
       , CreateEffect "81007" Nothing (toSource attrs) (InvestigatorTarget iid)

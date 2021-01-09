@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.MiskatonicQuad
   ( MiskatonicQuad(..)
   , miskatonicQuad
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -46,7 +45,7 @@ instance ActionRunner env => HasActions env MiskatonicQuad where
 
 instance (LocationRunner env) => RunMessage env MiskatonicQuad where
   runMessage msg l@(MiskatonicQuad attrs) = case msg of
-    UseCardAbility iid source _ 1
+    UseCardAbility iid source _ 1 _
       | isSource attrs source && locationRevealed attrs -> l
       <$ unshiftMessage (Resign iid)
     _ -> MiskatonicQuad <$> runMessage msg attrs

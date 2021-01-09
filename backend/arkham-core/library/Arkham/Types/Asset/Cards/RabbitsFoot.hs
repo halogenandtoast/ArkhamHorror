@@ -26,6 +26,6 @@ instance HasActions env RabbitsFoot where
 
 instance AssetRunner env => RunMessage env RabbitsFoot where
   runMessage msg a@(RabbitsFoot attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage (DrawCards iid 1 False)
     _ -> RabbitsFoot <$> runMessage msg attrs

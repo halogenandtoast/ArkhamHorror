@@ -1,8 +1,7 @@
 module Arkham.Types.Investigator.Cards.WendyAdams
   ( WendyAdams(..)
   , wendyAdams
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -58,7 +57,7 @@ instance ActionRunner env => HasActions env WendyAdams where
 
 instance (InvestigatorRunner env) => RunMessage env WendyAdams where
   runMessage msg i@(WendyAdams attrs@Attrs {..}) = case msg of
-    UseCardAbility _ (InvestigatorSource iid) (Just (TargetMetadata (TokenFaceTarget token))) 1
+    UseCardAbility _ (InvestigatorSource iid) (Just (TargetMetadata (TokenFaceTarget token))) 1 _
       | iid == investigatorId
       -> do
         cancelToken token

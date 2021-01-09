@@ -50,7 +50,7 @@ instance ActionRunner env => HasActions env Aquinnah1 where
 
 instance AssetRunner env => RunMessage env Aquinnah1 where
   runMessage msg a@(Aquinnah1 attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       enemyId <- withQueue $ \queue ->
         let PerformEnemyAttack _ eid : queue' = dropUntilAttack queue
         in (queue', eid)

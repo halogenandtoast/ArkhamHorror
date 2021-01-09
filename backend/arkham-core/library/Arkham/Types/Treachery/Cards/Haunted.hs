@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.Haunted
   ( Haunted(..)
   , haunted
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -40,6 +39,6 @@ instance (TreacheryRunner env) => RunMessage env Haunted where
   runMessage msg t@(Haunted attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
-    UseCardAbility _ (TreacherySource tid) _ 1 | tid == treacheryId ->
+    UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
     _ -> Haunted <$> runMessage msg attrs

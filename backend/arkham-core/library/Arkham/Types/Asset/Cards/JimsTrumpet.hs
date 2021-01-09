@@ -39,7 +39,7 @@ instance ActionRunner env => HasActions env JimsTrumpet where
 
 instance AssetRunner env => RunMessage env JimsTrumpet where
   runMessage msg a@(JimsTrumpet attrs@Attrs {..}) = case msg of
-    UseCardAbility _ source _ 1 | isSource attrs source -> do
+    UseCardAbility _ source _ 1 _ | isSource attrs source -> do
       let ownerId = fromJustNote "must be owned" assetInvestigator
       locationId <- getId ownerId
       connectedLocationIds <- map unConnectedLocationId

@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.KeenEye
   ( keenEye
   , KeenEye(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -22,7 +21,7 @@ instance
   getActions iid FastPlayerWindow (KeenEye a) | ownedBy a iid = do
     resourceCount <- getResourceCount iid
     pure
-      [ UseCardAbility iid (toSource a) Nothing abilityNumber
+      [ UseCardAbility iid (toSource a) Nothing abilityNumber NoPayment
       | resourceCount > 1
       , abilityNumber <- [1 .. 2]
       ]
@@ -33,7 +32,7 @@ instance HasModifiersFor env KeenEye where
 
 instance AssetRunner env => RunMessage env KeenEye where
   runMessage msg a@(KeenEye attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 2
         , CreatePhaseEffect
@@ -41,7 +40,7 @@ instance AssetRunner env => RunMessage env KeenEye where
           source
           (InvestigatorTarget iid)
         ]
-    UseCardAbility iid source _ 2 | isSource attrs source ->
+    UseCardAbility iid source _ 2 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
         , CreatePhaseEffect

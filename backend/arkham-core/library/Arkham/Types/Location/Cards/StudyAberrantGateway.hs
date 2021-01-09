@@ -45,7 +45,7 @@ instance ActionRunner env => HasActions env StudyAberrantGateway where
 
 instance LocationRunner env => RunMessage env StudyAberrantGateway where
   runMessage msg l@(StudyAberrantGateway attrs@Attrs {..}) = case msg of
-    UseCardAbility iid (LocationSource lid) _ 1 | lid == locationId ->
+    UseCardAbility iid (LocationSource lid) _ 1 _ | lid == locationId ->
       l <$ unshiftMessage (DrawCards iid 3 False)
     When (EnemySpawnAtLocationMatching _ locationMatcher _) -> do
       inPlay <- isJust <$> getId @(Maybe LocationId) locationMatcher

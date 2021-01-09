@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.BeginnersLuck
   ( BeginnersLuck(..)
   , beginnersLuck
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -58,7 +57,7 @@ instance
       ]
     RequestedEncounterCard source (Just ec) | isSource attrs source ->
       a <$ unshiftMessage (SpawnEnemyAt (EncounterCard ec) "02074")
-    UseCardAbility iid source Nothing 1 | isSource attrs source -> do
+    UseCardAbility iid source Nothing 1 payments | isSource attrs source -> do
       tokensInBag <- getList @Token ()
       a <$ unshiftMessages
         [ FocusTokens tokensInBag
@@ -71,12 +70,14 @@ instance
                   source
                   (Just . TargetMetadata $ TokenFaceTarget token)
                   1
+                  payments
               ]
           | token <- tokensInBag
           ]
         ]
-    UseCardAbility iid source (Just (TargetMetadata (TokenFaceTarget token))) 1
-      | isSource attrs source -> do
+    UseCardAbility iid source (Just (TargetMetadata (TokenFaceTarget token))) 1 _
+      | isSource attrs source
+      -> do
         replaceToken token
         a <$ unshiftMessages [FocusTokens [token], Remember $ Cheated iid]
     After (GainClues _ _) -> do

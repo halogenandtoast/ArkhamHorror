@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Flashlight
   ( Flashlight(..)
   , flashlight
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -44,7 +43,7 @@ instance (AssetRunner env) => RunMessage env Flashlight where
   runMessage msg a@(Flashlight attrs) = case msg of
     InvestigatorPlayAsset _ aid _ _ | aid == assetId attrs ->
       Flashlight <$> runMessage msg (attrs & usesL .~ Uses Supply 3)
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId iid
       a <$ unshiftMessages
         [ CreateSkillTestEffect

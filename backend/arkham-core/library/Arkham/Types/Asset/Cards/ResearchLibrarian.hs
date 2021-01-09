@@ -28,12 +28,12 @@ instance (AssetRunner env) => RunMessage env ResearchLibrarian where
       unshiftMessage
         (chooseOne
           iid
-          [ UseCardAbility iid (toSource attrs) Nothing 1
+          [ UseCardAbility iid (toSource attrs) Nothing 1 NoPayment
           , Continue "Do not use ability"
           ]
         )
       ResearchLibrarian <$> runMessage msg attrs
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage
         (SearchDeckForTraits iid (InvestigatorTarget iid) [Tome])
     _ -> ResearchLibrarian <$> runMessage msg attrs

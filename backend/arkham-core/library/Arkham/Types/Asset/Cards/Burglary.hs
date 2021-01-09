@@ -28,7 +28,7 @@ instance HasActions env Burglary where
 
 instance AssetRunner env => RunMessage env Burglary where
   runMessage msg (Burglary attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId iid
       unshiftMessage
         $ CreateEffect "01045" Nothing source (InvestigationTarget iid lid)

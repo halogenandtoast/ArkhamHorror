@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.AllIn
   ( AllIn(..)
   , allIn
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -55,7 +54,7 @@ instance ActRunner env => RunMessage env AllIn where
         <$> getList ()
       a <$ unshiftMessage
         (Resolution $ if resignedWithDrFrancisMorgan then 2 else 1)
-    UseCardAbility iid (ProxySource _ source) _ 1
+    UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource attrs source && onSide A attrs -> do
         maid <- fmap unStoryAssetId <$> getId (CardCode "02080")
         case maid of

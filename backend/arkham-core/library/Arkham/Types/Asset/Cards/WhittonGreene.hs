@@ -45,7 +45,7 @@ instance HasCount AssetCount env (InvestigatorId, [Trait]) => HasModifiersFor en
 
 instance AssetRunner env => RunMessage env WhittonGreene where
   runMessage msg a@(WhittonGreene attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> a <$ unshiftMessage
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ unshiftMessage
       (SearchTopOfDeck
         iid
         (InvestigatorTarget iid)

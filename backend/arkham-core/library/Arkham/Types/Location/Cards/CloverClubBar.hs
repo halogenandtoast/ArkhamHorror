@@ -52,7 +52,7 @@ instance ActionRunner env => HasActions env CloverClubBar where
 
 instance LocationRunner env => RunMessage env CloverClubBar where
   runMessage msg l@(CloverClubBar attrs@Attrs {..}) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source && locationRevealed ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source && locationRevealed ->
       l <$ unshiftMessages
         [GainClues iid 2, DrawCards iid 2 False, Remember $ HadADrink iid]
     _ -> CloverClubBar <$> runMessage msg attrs

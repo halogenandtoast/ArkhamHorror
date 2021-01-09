@@ -67,7 +67,7 @@ instance ActionRunner env => HasActions env BrackishWaters where
 
 instance LocationRunner env => RunMessage env BrackishWaters where
   runMessage msg l@(BrackishWaters attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       assetIds <- getSetList @AssetId iid
       handAssetIds <- map unHandCardId <$> getSetList (iid, AssetType)
       l <$ unshiftMessages

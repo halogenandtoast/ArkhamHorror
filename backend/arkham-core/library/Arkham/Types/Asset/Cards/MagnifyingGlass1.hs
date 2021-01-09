@@ -25,11 +25,12 @@ instance ActionRunner env => HasActions env MagnifyingGlass1 where
   getActions iid _ (MagnifyingGlass1 a) | ownedBy a iid = do
     locationId <- getId @LocationId iid
     clueCount' <- unClueCount <$> getCount locationId
-    pure [ UseCardAbility iid (toSource a) Nothing 1 | clueCount' == 0 ]
+    pure
+      [ UseCardAbility iid (toSource a) Nothing 1 NoPayment | clueCount' == 0 ]
   getActions i window (MagnifyingGlass1 x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env MagnifyingGlass1 where
   runMessage msg a@(MagnifyingGlass1 attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source ->
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage (ReturnToHand iid (toTarget attrs))
     _ -> MagnifyingGlass1 <$> runMessage msg attrs

@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Encyclopedia2
   ( Encyclopedia2(..)
   , encyclopedia2
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -29,7 +28,7 @@ instance HasActions env Encyclopedia2 where
 
 instance (AssetRunner env) => RunMessage env Encyclopedia2 where
   runMessage msg (Encyclopedia2 attrs) = case msg of
-    UseCardAbility iid source _ 1 | isSource attrs source -> do
+    UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
       investigatorTargets <- map InvestigatorTarget <$> getSetList locationId
       unshiftMessage $ chooseOne

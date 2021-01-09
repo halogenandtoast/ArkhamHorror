@@ -1,8 +1,7 @@
 module Arkham.Types.Event.Cards.FirstWatch
   ( firstWatch
   , FirstWatch(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -40,7 +39,7 @@ instance (HasQueue env, HasSet InvestigatorId env (), HasCount PlayerCount env (
           [ DrawEncounterCards (EventTarget eventId) playerCount
           , Discard (toTarget attrs)
           ]
-      UseCardAbility iid (EventSource eid) (Just (TargetMetadata (EncounterCardTarget card))) 1
+      UseCardAbility iid (EventSource eid) (Just (TargetMetadata (EncounterCardTarget card))) 1 _
         | eid == eventId
         -> do
           investigatorIds <- getSet @InvestigatorId ()
@@ -61,18 +60,19 @@ instance (HasQueue env, HasSet InvestigatorId env (), HasCount PlayerCount env (
                       (EventSource eid)
                       (Just (TargetMetadata (EncounterCardTarget card)))
                       2
+                      NoPayment
                   ]
               | iid' <- remainingInvestigatorIds
               ]
             )
-      UseCardAbility iid (EventSource eid) (Just (TargetMetadata (EncounterCardTarget card))) 2
+      UseCardAbility iid (EventSource eid) (Just (TargetMetadata (EncounterCardTarget card))) 2 _
         | eid == eventId
         -> pure $ FirstWatch
           (attrs `with` FirstWatchMetadata
             { firstWatchPairings = (iid, card) : firstWatchPairings
             }
           )
-      UseCardAbility _ (EventSource eid) Nothing 3 | eid == eventId ->
+      UseCardAbility _ (EventSource eid) Nothing 3 _ | eid == eventId ->
         e <$ unshiftMessages
           [ InvestigatorDrewEncounterCard iid' card
           | (iid', card) <- firstWatchPairings
@@ -88,9 +88,10 @@ instance (HasQueue env, HasSet InvestigatorId env (), HasCount PlayerCount env (
                     (EventSource eventId)
                     (Just (TargetMetadata (EncounterCardTarget card)))
                     1
+                    NoPayment
                 ]
             | card <- cards
             ]
-          , UseCardAbility eventOwner (EventSource eventId) Nothing 3
+          , UseCardAbility eventOwner (EventSource eventId) Nothing 3 NoPayment
           ]
       _ -> FirstWatch . (`with` metadata) <$> runMessage msg attrs

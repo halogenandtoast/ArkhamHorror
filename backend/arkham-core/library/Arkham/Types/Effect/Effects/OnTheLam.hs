@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.OnTheLam
   ( onTheLam
   , OnTheLam(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -16,11 +15,10 @@ onTheLam :: EffectArgs -> OnTheLam
 onTheLam = OnTheLam . uncurry4 (baseAttrs "01010")
 
 instance HasModifiersFor env OnTheLam where
-  getModifiersFor _ target (OnTheLam a@Attrs {..}) | target == effectTarget =
-    pure [toModifier a CannotBeAttackedByNonElite]
-  getModifiersFor _ _ _ = pure []
+  getModifiersFor _ target (OnTheLam a@Attrs {..}) =
+    pure $ toModifiers a [ CannotBeAttackedByNonElite | target == effectTarget ]
 
 instance HasQueue env => RunMessage env OnTheLam where
   runMessage msg e@(OnTheLam attrs) = case msg of
-    EndRound -> e <$ unshiftMessage (DisableEffect $ effectId attrs)
+    EndRound -> e <$ unshiftMessage (DisableEffect $ toId attrs)
     _ -> OnTheLam <$> runMessage msg attrs

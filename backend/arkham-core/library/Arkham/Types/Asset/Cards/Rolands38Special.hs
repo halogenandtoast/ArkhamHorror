@@ -42,7 +42,7 @@ instance AssetRunner env => RunMessage env Rolands38Special where
       Rolands38Special <$> runMessage msg (attrs & usesL .~ Uses Ammo 4)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       locationId <- getId @LocationId iid
-      anyClues <- (/= 0) . unClueCount <$> getCount locationId
+      anyClues <- (> 0) . unClueCount <$> getCount locationId
       a <$ unshiftMessages
         [ CreateSkillTestEffect
           (EffectModifiers $ toModifiers

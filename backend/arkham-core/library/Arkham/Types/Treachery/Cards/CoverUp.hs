@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.CoverUp
   ( CoverUp(..)
   , coverUp
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -41,12 +40,9 @@ instance ActionRunner env => HasActions env CoverUp where
         [ ActivateCardAbilityAction
             iid
             (mkAbility (toSource a) 1 (ReactionAbility Free))
-        | treacheryLocationId
-          == investigatorLocationId
-          && coverUpClues a
-          > 0
-          && cluesToDiscover
-          > 0
+        | (treacheryLocationId == investigatorLocationId)
+          && (coverUpClues a > 0)
+          && (cluesToDiscover > 0)
         ]
   getActions _ _ _ = pure []
 

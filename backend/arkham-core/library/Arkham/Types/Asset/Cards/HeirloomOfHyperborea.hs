@@ -16,11 +16,20 @@ heirloomOfHyperborea uuid = HeirloomOfHyperborea
 instance HasModifiersFor env HeirloomOfHyperborea where
   getModifiersFor = noModifiersFor
 
+reactionAbility :: Attrs -> Ability
+reactionAbility attrs = mkAbility (toSource attrs) 1 (FastAbility Free)
+
 instance HasActions env HeirloomOfHyperborea where
   getActions iid (AfterPlayCard You traits) (HeirloomOfHyperborea a)
-    | ownedBy a iid = pure [ DrawCards iid 1 False | Spell `elem` traits ]
+    | ownedBy a iid
+    = pure
+      [ ActivateCardAbilityAction iid (reactionAbility a)
+      | Spell `elem` traits
+      ]
   getActions i window (HeirloomOfHyperborea x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env HeirloomOfHyperborea where
-  runMessage msg (HeirloomOfHyperborea attrs@Attrs {..}) =
-    HeirloomOfHyperborea <$> runMessage msg attrs
+  runMessage msg a@(HeirloomOfHyperborea attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      a <$ unshiftMessage (DrawCards iid 1 False)
+    _ -> HeirloomOfHyperborea <$> runMessage msg attrs

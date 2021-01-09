@@ -70,6 +70,9 @@ instance IsCard Attrs where
 instance HasCount ActionRemainingCount env Attrs where
   getCount = pure . ActionRemainingCount . investigatorRemainingActions
 
+instance HasList Action.TakenAction env Attrs where
+  getList = pure . map Action.TakenAction . investigatorActionsTaken
+
 instance Entity Attrs where
   type EntityId Attrs = InvestigatorId
   toId = investigatorId
@@ -1245,43 +1248,9 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     traits <- getSetList eid
     a <$ unshiftMessage
       (CheckWindow investigatorId [WhenEnemySpawns YourLocation traits])
-  ActivateCardAbilityAction iid Ability {..} | iid == investigatorId -> do
-    unshiftMessage
-      (UseCardAbility iid abilitySource abilityMetadata abilityIndex) -- We should check action type when added for aoo
-    case abilityType of
-      ForcedAbility -> pure ()
-      FastAbility cost -> unshiftMessage (PayAbilityCost iid Nothing cost)
-      ReactionAbility cost -> unshiftMessage (PayAbilityCost iid Nothing cost)
-      ActionAbility mAction cost ->
-        if mAction
-            `notElem` [ Just Action.Fight
-                      , Just Action.Evade
-                      , Just Action.Resign
-                      , Just Action.Parley
-                      ]
-          then unshiftMessages
-            [TakeAction iid mAction cost, CheckAttackOfOpportunity iid False]
-          else unshiftMessage (TakeAction iid mAction cost)
-    pure a
-  ActivateCardAbilityActionWithDynamicCost iid Ability {..}
-    | iid == investigatorId -> do
-      unshiftMessage
-        (PayForCardAbility iid abilitySource abilityMetadata abilityIndex) -- We should check action type when added for aoo
-      case abilityType of
-        ForcedAbility -> pure ()
-        FastAbility _ -> pure ()
-        ReactionAbility _ -> pure ()
-        ActionAbility mAction cost ->
-          if mAction
-              `notElem` [ Just Action.Fight
-                        , Just Action.Evade
-                        , Just Action.Resign
-                        , Just Action.Parley
-                        ]
-            then unshiftMessages
-              [TakeAction iid mAction cost, CheckAttackOfOpportunity iid False]
-            else unshiftMessage (TakeAction iid mAction cost)
-      pure a
+  ActivateCardAbilityAction iid ability@Ability {..} | iid == investigatorId ->
+    a <$ unshiftMessage
+      (CreatePayAbilityCostEffect (Just ability) abilitySource (toTarget a))
   AllDrawCardAndResource | not (a ^. defeatedL || a ^. resignedL) -> do
     unlessM (hasModifier a CannotDrawCards)
       $ unshiftMessage (DrawCards investigatorId 1 False)
@@ -1411,6 +1380,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         <> [Continue "Skip playing fast cards or using reactions"]
         )
       else pure a
+  SpendActions iid _ n | iid == investigatorId ->
+    pure $ a & remainingActionsL %~ max 0 . subtract n
   LoseActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActionsL %~ max 0 . subtract n
   SetActions iid _ n | iid == investigatorId ->
@@ -1418,52 +1389,14 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   GainActions iid _ n | iid == investigatorId ->
     pure $ a & remainingActionsL +~ n
   TakeAction iid mAction cost | iid == investigatorId -> a <$ unshiftMessages
-    (PayAbilityCost iid mAction cost
-    : [ TakenAction iid action | action <- maybeToList mAction ]
+    ([ CreatePayAbilityCostEffect Nothing (toSource a) (toTarget a)
+     , PayAbilityCost (toSource a) iid mAction cost
+     , PayAbilityCostFinished (toSource a) iid
+     ]
+    <> [ TakenAction iid action | action <- maybeToList mAction ]
     )
   TakenAction iid action | iid == investigatorId ->
     pure $ a & actionsTakenL %~ (<> [action])
-  PayAbilityCost iid mAction cost | iid == investigatorId -> case cost of
-    Costs xs -> a <$ unshiftMessages [ PayAbilityCost iid mAction x | x <- xs ]
-    ExhaustCost target -> a <$ unshiftMessage (Exhaust target)
-    DiscardCost target -> a <$ unshiftMessage (Discard target)
-    DiscardCardCost cid -> a <$ unshiftMessage (DiscardCard iid cid)
-    HorrorCost source target x -> case target of
-      InvestigatorTarget iid' | iid' == iid ->
-        a <$ unshiftMessage (InvestigatorAssignDamage iid source 0 x)
-      AssetTarget aid -> a <$ unshiftMessage (AssetDamage aid source 0 1)
-      _ -> error "can't target for horror cost"
-    ResourceCost x -> pure $ a & resourcesL %~ max 0 . subtract x
-    ActionCost x -> do
-      costModifier <- getActionCostModifier a mAction
-      let modifiedActionCost = max 0 (x + costModifier)
-      pure $ a & (remainingActionsL %~ max 0 . subtract modifiedActionCost)
-    UseCost aid uType n ->
-      a <$ unshiftMessage (SpendUses (AssetTarget aid) uType n)
-    ClueCost x -> pure $ a & (cluesL %~ max 0 . subtract x)
-    GroupClueCost x Nothing -> do
-      investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()
-      a <$ unshiftMessage (SpendClues x investigatorIds)
-    GroupClueCost x (Just locationMatcher) -> do
-      mLocationId <- getId @(Maybe LocationId) locationMatcher
-      case mLocationId of
-        Just lid -> do
-          iids <- getSetList @InvestigatorId lid
-          a <$ unshiftMessage (SpendClues x iids)
-        Nothing -> error "could not pay cost"
-    HandDiscardCost x mPlayerCardType traits -> do
-      let
-        cards =
-          filter
-              (and . sequence
-                [ maybe (const True) (==) mPlayerCardType . pcCardType
-                , (|| null traits) . not . null . intersection traits . pcTraits
-                ]
-              )
-            $ mapMaybe (preview _PlayerCard) investigatorHand
-      a <$ unshiftMessage
-        (chooseN iid x [ DiscardCard iid (getCardId card) | card <- cards ])
-    Free -> pure a
   PutOnTopOfDeck iid card | iid == investigatorId ->
     pure $ a & deckL %~ Deck . (card :) . unDeck
   AddToHand iid card | iid == investigatorId -> do

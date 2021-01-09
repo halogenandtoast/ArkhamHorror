@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 050422c13d0e38b26fdfdcf321af3694417f25bef261d6d7d27c9edce7fff2d4
+-- hash: 15c82b3aca0ebf8b1bb9bcfe6a680e5f43252bb084c70402fd884cd9875583a8
 
 name:           arkham-core
 version:        0.0.0
@@ -237,6 +237,7 @@ library
       Arkham.Types.Effect.Effects.MindWipe1
       Arkham.Types.Effect.Effects.MindWipe3
       Arkham.Types.Effect.Effects.OnTheLam
+      Arkham.Types.Effect.Effects.PayForAbilityEffect
       Arkham.Types.Effect.Effects.PhaseEffect
       Arkham.Types.Effect.Effects.PushedIntoTheBeyond
       Arkham.Types.Effect.Effects.RiteOfSeeking

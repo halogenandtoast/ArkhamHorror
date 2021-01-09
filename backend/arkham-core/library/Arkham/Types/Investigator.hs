@@ -1,11 +1,10 @@
 module Arkham.Types.Investigator
   ( module Arkham.Types.Investigator
-  )
-where
+  ) where
 
 import Arkham.Import
 
-import Arkham.Types.Action (Action)
+import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.Investigator.Attrs
 import Arkham.Types.Investigator.Cards
 import Arkham.Types.Investigator.Runner
@@ -87,6 +86,9 @@ instance InvestigatorRunner env => RunMessage env Investigator where
 
 instance HasId InvestigatorId () Investigator where
   getId = pure . toId
+
+instance HasList TakenAction env Investigator where
+  getList = getList . investigatorAttrs
 
 instance HasList DiscardedPlayerCard env Investigator where
   getList =

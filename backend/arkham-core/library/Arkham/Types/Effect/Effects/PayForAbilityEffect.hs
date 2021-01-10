@@ -154,7 +154,7 @@ instance
               , (|| null skillTypes)
               . not
               . null
-              . intersection skillTypes
+              . intersection (insertSet SkillWild skillTypes)
               . setFromList
               . pcSkills
               ]

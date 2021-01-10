@@ -158,6 +158,7 @@ getCanAffordCost iid source mAction = \case
   DiscardCost _ -> pure True -- TODO: Make better
   DiscardCardCost _ -> pure True -- TODO: Make better
   HorrorCost{} -> pure True -- TODO: Make better
+  DamageCost{} -> pure True -- TODO: Make better
   HandDiscardCost n mCardType traits -> do
     cards <- mapMaybe (preview _PlayerCard) <$> getHandOf iid
     let

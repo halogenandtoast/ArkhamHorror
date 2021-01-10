@@ -28,11 +28,13 @@
         @choose="$emit('choose', $event)"
       />
     </section>
+
     <ChoiceModal
       :game="game"
       :investigatorId="investigatorId"
       @choose="$emit('choose', $event)"
     />
+
     <div class="player">
       <Investigator
         :player="player"
@@ -40,13 +42,16 @@
         :investigatorId="investigatorId"
         @choose="$emit('choose', $event)"
       />
+
       <div class="discard">
         <img
           v-if="topOfDiscard"
           :src="topOfDiscard"
           class="card"
         />
+        <button v-if="discards.length > 0" class="view-discard-button" @click="toggleDiscard">{{viewDiscardLabel}}</button>
       </div>
+
       <img
         :class="{ 'deck--can-draw': drawCardsAction !== -1 }"
         class="deck"
@@ -65,11 +70,20 @@
         />
       </section>
     </div>
+
+    <Discard
+      v-if="viewingDiscard"
+      :game="game"
+      :investigatorId="investigatorId"
+      :cards="discards"
+      @choose="$emit('choose', $event)"
+    />
+
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, ref } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import * as ArkhamGame from '@/arkham/types/Game';
 import { MessageType } from '@/arkham/types/Message';
@@ -77,6 +91,7 @@ import Enemy from '@/arkham/components/Enemy.vue';
 import Treachery from '@/arkham/components/Treachery.vue';
 import Asset from '@/arkham/components/Asset.vue';
 import HandCard from '@/arkham/components/HandCard.vue';
+import Discard from '@/arkham/components/Discard.vue';
 import Investigator from '@/arkham/components/Investigator.vue';
 import ChoiceModal from '@/arkham/components/ChoiceModal.vue';
 import * as Arkham from '@/arkham/types/Investigator';
@@ -89,6 +104,7 @@ export default defineComponent({
     HandCard,
     Investigator,
     ChoiceModal,
+    Discard,
   },
   props: {
     game: { type: Object as () => Game, required: true },
@@ -97,14 +113,22 @@ export default defineComponent({
     canTakeActions: { type: Boolean, required: true },
   },
   setup(props) {
+
+    const discards = computed(() => props.player.contents.discard)
+
     const topOfDiscard = computed(() => {
-      if (props.player.contents.discard[0]) {
-        const { cardCode } = props.player.contents.discard[0];
+      if (discards.value.length > 0) {
+        const { cardCode } = discards.value[0];
         return `/img/arkham/cards/${cardCode}.jpg`;
       }
 
       return null;
     })
+
+
+    const viewingDiscard = ref(false)
+    const toggleDiscard = function() { viewingDiscard.value = !viewingDiscard.value }
+    const viewDiscardLabel = computed(() => viewingDiscard.value ? "Close" : `${discards.value.length} Cards`)
 
     const id = computed(() => props.player.contents.id)
     const choices = computed(() => ArkhamGame.choices(props.game, props.investigatorId))
@@ -115,7 +139,7 @@ export default defineComponent({
         .findIndex((c) => c.tag === MessageType.DRAW_CARDS && c.contents[0] === id.value);
     })
 
-    return { topOfDiscard, drawCardsAction }
+    return { discards, topOfDiscard, drawCardsAction, toggleDiscard, viewingDiscard, viewDiscardLabel }
   }
 })
 </script>
@@ -188,5 +212,9 @@ export default defineComponent({
   height: 100%;
   display: flex;
   padding-top: 10px;
+}
+
+.view-discard-button {
+  width: 100%;
 }
 </style>

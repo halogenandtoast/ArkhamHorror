@@ -170,7 +170,12 @@ getCanAffordCost iid source mAction = \case
         else not . null . intersect traits . pcTraits
       skillTypeFilter = if null skillTypes
         then const True
-        else not . null . intersect skillTypes . setFromList . pcSkills
+        else
+          not
+          . null
+          . intersect (insertSet SkillWild skillTypes)
+          . setFromList
+          . pcSkills
     pure
       $ length
           (filter

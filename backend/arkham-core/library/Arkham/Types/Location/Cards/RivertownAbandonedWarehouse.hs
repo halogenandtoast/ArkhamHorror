@@ -58,9 +58,12 @@ instance LocationRunner env => RunMessage env RivertownAbandonedWarehouse where
     UseCardAbility iid source Nothing 1 payments | isSource attrs source -> do
       let doomToRemove = willpowerCount payments
       cultists <- getSetList Cultist
-      l <$ unshiftMessage
-        (chooseOne
-          iid
-          [ RemoveDoom (EnemyTarget eid) doomToRemove | eid <- cultists ]
+      l <$ unless
+        (null cultists)
+        (unshiftMessage
+          (chooseOne
+            iid
+            [ RemoveDoom (EnemyTarget eid) doomToRemove | eid <- cultists ]
+          )
         )
     _ -> RivertownAbandonedWarehouse <$> runMessage msg attrs

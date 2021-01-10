@@ -144,13 +144,19 @@ instance
             iids <- getSetList @InvestigatorId lid
             e <$ unshiftMessage (SpendClues x iids)
           Nothing -> error "could not pay cost"
-      HandDiscardCost x mPlayerCardType traits -> do
+      HandDiscardCost x mPlayerCardType traits skillTypes -> do
         handCards <- mapMaybe (preview _PlayerCard . unHandCard) <$> getList iid
         let
           cards = filter
             (and . sequence
               [ maybe (const True) (==) mPlayerCardType . pcCardType
               , (|| null traits) . not . null . intersection traits . pcTraits
+              , (|| null skillTypes)
+              . not
+              . null
+              . intersection skillTypes
+              . setFromList
+              . pcSkills
               ]
             )
             handCards

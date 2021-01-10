@@ -159,18 +159,24 @@ getCanAffordCost iid source mAction = \case
   DiscardCardCost _ -> pure True -- TODO: Make better
   HorrorCost{} -> pure True -- TODO: Make better
   DamageCost{} -> pure True -- TODO: Make better
-  HandDiscardCost n mCardType traits -> do
+  HandDiscardCost n mCardType traits skillTypes -> do
     cards <- mapMaybe (preview _PlayerCard) <$> getHandOf iid
     let
       cardTypeFilter = case mCardType of
         Nothing -> const True
         Just cardType -> (== cardType) . pcCardType
-    let
       traitFilter = if null traits
         then const True
         else not . null . intersect traits . pcTraits
+      skillTypeFilter = if null skillTypes
+        then const True
+        else not . null . intersect skillTypes . setFromList . pcSkills
     pure
-      $ length (filter (and . sequence [traitFilter, cardTypeFilter]) cards)
+      $ length
+          (filter
+            (and . sequence [traitFilter, cardTypeFilter, skillTypeFilter])
+            cards
+          )
       >= n
 
 instance

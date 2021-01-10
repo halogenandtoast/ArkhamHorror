@@ -15,15 +15,13 @@ newtype KeenEye3 = KeenEye3 Attrs
 keenEye3 :: AssetId -> KeenEye3
 keenEye3 uuid = KeenEye3 $ baseAttrs uuid "02185"
 
-instance
-  (HasCount ResourceCount env InvestigatorId)
-  => HasActions env KeenEye3 where
+instance HasActions env KeenEye3 where
   getActions iid FastPlayerWindow (KeenEye3 a) | ownedBy a iid = do
-    resourceCount <- getResourceCount iid
     pure
-      [ UseCardAbility iid (toSource a) Nothing abilityNumber NoPayment
-      | resourceCount > 1
-      , abilityNumber <- [1 .. 2]
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility (toSource a) idx (FastAbility $ ResourceCost 2))
+      | idx <- [1 .. 2]
       ]
   getActions _ _ _ = pure []
 
@@ -33,19 +31,17 @@ instance HasModifiersFor env KeenEye3 where
 instance AssetRunner env => RunMessage env KeenEye3 where
   runMessage msg a@(KeenEye3 attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ SpendResources iid 2
-        , CreatePhaseEffect
+      a <$ unshiftMessage
+        (CreatePhaseEffect
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillIntellect 1])
           source
           (InvestigatorTarget iid)
-        ]
+        )
     UseCardAbility iid source _ 2 _ | isSource attrs source ->
-      a <$ unshiftMessages
-        [ SpendResources iid 1
-        , CreatePhaseEffect
+      a <$ unshiftMessage
+        (CreatePhaseEffect
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
           source
           (InvestigatorTarget iid)
-        ]
+        )
     _ -> KeenEye3 <$> runMessage msg attrs

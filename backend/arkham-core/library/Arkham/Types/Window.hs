@@ -25,6 +25,8 @@ data Window
   | AfterPlayCard Who [Trait]
   | AfterPutLocationIntoPlay Who
   | AfterRevealLocation Who
+  | AfterSuccessfulInvestigation Who Where
+  | AfterSuccessfulAttackEnemy Who EnemyId
   | AfterTurnBegins Who
   | FastPlayerWindow
   | AnyPhaseBegins
@@ -49,6 +51,8 @@ data Window
   | WhenRevealTokenWithNegativeModifier Who TokenId
   | WhenRevealToken Who Token
   | WhenSkillTest SkillType
+  | WhenSuccessfulAttackEnemy Who EnemyId
+  | WhenSuccessfulInvestigation Who Where
   | WhenWouldFailSkillTest Who
   | WhenWouldRevealChaosToken Source Who
   deriving stock (Show, Generic, Eq)

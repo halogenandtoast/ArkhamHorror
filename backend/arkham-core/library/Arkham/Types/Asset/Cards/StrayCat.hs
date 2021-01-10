@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.StrayCat
   ( StrayCat(..)
   , strayCat
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -29,5 +28,6 @@ instance HasActions env StrayCat where
       $ pure [ActivateCardAbilityAction iid (ability a)]
   getActions _ _ _ = pure []
 
+-- | See: PlayerCardWithBehavior
 instance AssetRunner env => RunMessage env StrayCat where
   runMessage msg (StrayCat attrs) = StrayCat <$> runMessage msg attrs

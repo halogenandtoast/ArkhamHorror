@@ -190,7 +190,12 @@ instance LocationRunner env => RunMessage env Attrs where
           <$> getModifiersFor (InvestigatorSource iid) (LocationTarget lid) ()
       a <$ unless
         (AlternateSuccessfullInvestigation `elem` modifiers')
-        (unshiftMessage (InvestigatorDiscoverClues iid lid 1))
+        (unshiftMessages
+          [ CheckWindow iid [WhenSuccessfulInvestigation You YourLocation]
+          , InvestigatorDiscoverClues iid lid 1
+          , CheckWindow iid [AfterSuccessfulInvestigation You YourLocation]
+          ]
+        )
     SetLocationLabel lid label' | lid == locationId ->
       pure $ a & labelL .~ label'
     PlacedLocation lid | lid == locationId ->

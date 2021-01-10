@@ -57,6 +57,7 @@ data Cost
   | GroupClueCost Int (Maybe LocationMatcher)
   | ExhaustCost Target
   | Costs [Cost]
+  | DamageCost Source Target Int
   | DiscardCost Target
   | DiscardCardCost CardId
   | HandDiscardCost Int (Maybe PlayerCardType) (HashSet Trait)

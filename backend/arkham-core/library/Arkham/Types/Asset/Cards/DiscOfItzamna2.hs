@@ -20,7 +20,9 @@ instance HasModifiersFor env DiscOfItzamna2 where
 instance HasActions env DiscOfItzamna2 where
   getActions iid (WhenEnemySpawns YourLocation traits) (DiscOfItzamna2 a)
     | ownedBy a iid = pure
-      [ UseCardAbility iid (toSource a) Nothing 1 NoPayment
+      [ ActivateCardAbilityAction
+          iid
+          (mkAbility (toSource a) 1 (ReactionAbility Free))
       | Elite `notElem` traits
       ]
   getActions i window (DiscOfItzamna2 x) = getActions i window x

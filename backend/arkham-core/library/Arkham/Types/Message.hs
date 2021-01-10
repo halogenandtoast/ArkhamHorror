@@ -13,8 +13,7 @@ module Arkham.Types.Message
   , chooseN
   , resolve
   , story
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -445,7 +444,6 @@ data Message
   | StartCampaign
   | StartScenario ScenarioId
   | StartSkillTest InvestigatorId
-  | SuccessfulAttackEnemy InvestigatorId EnemyId
   | SuccessfulInvestigation InvestigatorId LocationId Source
   | SufferTrauma InvestigatorId Int Int
   | Surge InvestigatorId Source

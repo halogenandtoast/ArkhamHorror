@@ -119,8 +119,13 @@ instance
       HorrorCost _ target x -> case target of
         InvestigatorTarget iid' | iid' == iid ->
           e <$ unshiftMessage (InvestigatorAssignDamage iid source 0 x)
-        AssetTarget aid -> e <$ unshiftMessage (AssetDamage aid source 0 1)
+        AssetTarget aid -> e <$ unshiftMessage (AssetDamage aid source 0 x)
         _ -> error "can't target for horror cost"
+      DamageCost _ target x -> case target of
+        InvestigatorTarget iid' | iid' == iid ->
+          e <$ unshiftMessage (InvestigatorAssignDamage iid source x 0)
+        AssetTarget aid -> e <$ unshiftMessage (AssetDamage aid source x 0)
+        _ -> error "can't target for damage cost"
       ResourceCost x -> e <$ unshiftMessage (SpendResources iid x)
       ActionCost x -> do
         costModifier <- getActionCostModifier iid mAction

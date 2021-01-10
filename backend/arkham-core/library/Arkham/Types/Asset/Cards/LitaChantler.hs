@@ -27,31 +27,28 @@ instance HasId LocationId env InvestigatorId => HasModifiersFor env LitaChantler
         pure [ toModifier a (SkillModifier SkillCombat 1) | sameLocation ]
   getModifiersFor _ _ _ = pure []
 
-instance HasActions env LitaChantler where
-  getActions i window (LitaChantler x) = getActions i window x
+ability :: EnemyId -> Attrs -> Ability
+ability eid a = (mkAbility (toSource a) 1 (ReactionAbility Free))
+  { abilityMetadata = Just $ TargetMetadata (EnemyTarget eid)
+  }
+
+instance HasSet Trait env EnemyId => HasActions env LitaChantler where
+  getActions i (WhenSuccessfulAttackEnemy who eid) (LitaChantler a)
+    | ownedBy a i && who `elem` [You, InvestigatorAtYourLocation] = do
+      traits <- getSetList eid
+      pure
+        [ ActivateCardAbilityAction i (ability eid a) | Monster `elem` traits ]
+  getActions i window (LitaChantler a) = getActions i window a
 
 instance (AssetRunner env) => RunMessage env LitaChantler where
   runMessage msg a@(LitaChantler attrs@Attrs {..}) = case msg of
-    SuccessfulAttackEnemy iid eid -> case assetInvestigator of
-      Just ownerId -> do
-        locationId <- getId @LocationId ownerId
-        locationInvestigatorIds <- getSetList locationId
-        traits <- getSetList eid
-        if iid `elem` locationInvestigatorIds && Monster `elem` traits
-          then a <$ unshiftMessage
-            (chooseOne
-              iid
-              [ Run
-                [ UseCardAbility iid (AssetSource assetId) Nothing 1 NoPayment
-                , CreateSkillTestEffect
-                  (EffectModifiers [toModifier attrs (DamageTaken 1)])
-                  (toSource attrs)
-                  (EnemyTarget eid)
-                ]
-              , Continue "Do not use Lita Chantler's ability"
-              ]
-            )
-          else pure a
-      _ -> pure a
+    UseCardAbility _ source (Just (TargetMetadata target)) 1 _
+      | isSource attrs source -> do
+        a <$ unshiftMessage
+          (CreateSkillTestEffect
+            (EffectModifiers [toModifier attrs (DamageTaken 1)])
+            source
+            target
+          )
     _ -> LitaChantler <$> runMessage msg attrs
 

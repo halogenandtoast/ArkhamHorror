@@ -1,7 +1,6 @@
 module Arkham.Types.Card.PlayerCardWithBehavior
   ( toPlayerCardWithBehavior
-  )
-where
+  ) where
 
 import ClassyPrelude
 
@@ -26,6 +25,7 @@ data PlayerCard'
   = DefaultPlayerCard' DefaultPlayerCard
   | TheNecronomicon' TheNecronomicon
   | DarkMemory' DarkMemory
+  | BeatCop' BeatCop
   | SureGamble3' SureGamble3
   | StrayCat' StrayCat
   | CloseCall2' CloseCall2
@@ -40,6 +40,8 @@ newtype DefaultPlayerCard = DefaultPlayerCard { unDefaultPlayerCard :: PlayerCar
 newtype TheNecronomicon = TheNecronomicon PlayerCard
   deriving newtype Show
 newtype DarkMemory = DarkMemory PlayerCard
+  deriving newtype Show
+newtype BeatCop = BeatCop PlayerCard
   deriving newtype Show
 newtype SureGamble3 = SureGamble3 PlayerCard
   deriving newtype Show
@@ -60,6 +62,7 @@ allPlayerCardsWithBehavior :: HashMap CardCode (PlayerCard -> PlayerCard')
 allPlayerCardsWithBehavior = mapFromList
   [ ("01009", TheNecronomicon' . TheNecronomicon)
   , ("01013", DarkMemory' . DarkMemory)
+  , ("01018", BeatCop' . BeatCop)
   , ("01056", SureGamble3' . SureGamble3)
   , ("01076", StrayCat' . StrayCat)
   , ("01083", CloseCall2' . CloseCall2)
@@ -125,6 +128,28 @@ instance HasQueue env => RunMessage env DarkMemory where
 instance HasActions env DarkMemory where
   getActions i window (DarkMemory pc) =
     getActions i window (DefaultPlayerCard pc)
+
+instance HasActions env BeatCop where
+  getActions i window (BeatCop pc) = getActions i window (DefaultPlayerCard pc)
+
+instance
+  ( HasQueue env
+  , HasId LocationId env InvestigatorId
+  , HasSet EnemyId env LocationId
+  )
+  => RunMessage env BeatCop where
+  runMessage (InDiscard (UseCardAbility iid source@(AssetSource aid) _ 1 _)) c@(BeatCop pc)
+    | unAssetId aid == unCardId (getCardId pc)
+    = do
+      locationId <- getId @LocationId iid
+      locationEnemyIds <- getSetList locationId
+      c <$ unshiftMessage
+        (chooseOne
+          iid
+          [ EnemyDamage eid iid source 1 | eid <- locationEnemyIds ]
+        )
+  runMessage msg (BeatCop pc) =
+    BeatCop . unDefaultPlayerCard <$> runMessage msg (DefaultPlayerCard pc)
 
 instance HasQueue env => RunMessage env SureGamble3 where
   runMessage msg (SureGamble3 pc) =

@@ -500,8 +500,15 @@ instance EnemyRunner env => RunMessage env Attrs where
         )
     PassedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _
       | isTarget a target
-      -> a <$ unshiftMessages
-        [SuccessfulAttackEnemy iid enemyId, InvestigatorDamageEnemy iid enemyId]
+      -> do
+        whenWindows <- checkWindows
+          iid
+          (\who -> pure [WhenSuccessfulAttackEnemy who enemyId])
+        afterWindows <- checkWindows
+          iid
+          (\who -> pure [AfterSuccessfulAttackEnemy who enemyId])
+        a <$ unshiftMessages
+          (whenWindows <> [InvestigatorDamageEnemy iid enemyId] <> afterWindows)
     FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _
       | isTarget a target
       -> do

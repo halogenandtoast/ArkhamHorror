@@ -13,8 +13,7 @@ import Arkham.Types.Trait
 import Arkham.Types.TreacheryId
 
 data Window
-  = AfterAssignedHorror Who
-  | AfterDiscoveringClues Who Where -- name conflict resolution
+  = AfterDiscoveringClues Who Where -- name conflict resolution
   | AfterDrawCard Who CardId
   | AfterEndTurn Who
   | AfterEnemyDefeated Who

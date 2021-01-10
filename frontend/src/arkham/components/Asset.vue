@@ -10,7 +10,7 @@
       v-for="ability in abilities"
       :key="ability"
       class="button"
-      :class="{ 'ability-button': isActionAbility(ability), 'fast-ability-button': isFastActionAbility(ability) }"
+      :class="{ 'ability-button': isActionAbility(ability), 'fast-ability-button': isFastActionAbility(ability), 'reaction-ability-button': isReactionAbility(ability) }"
       @click="$emit('choose', ability)"
       >{{abilityLabel(ability)}}</button>
     <div v-if="hasPool" class="pool">
@@ -83,9 +83,9 @@ export default defineComponent({
           return c.contents.contents === id.value
         case MessageType.USE_CARD_ABILITY:
           return c.contents[1].contents === id.value
-        case MessageType.ACTIVATE_ABILITY:
-          return c.contents[1].source.contents === id.value
-            && (c.contents[1].type.tag === 'ReactionAbility')
+        // case MessageType.ACTIVATE_ABILITY:
+        //   return c.contents[1].source.contents === id.value
+        //     && (c.contents[1].type.tag === 'ReactionAbility')
         case MessageType.RUN:
           return c.contents.some((c1: Message) => canInteract(c1))
         case MessageType.TARGET_LABEL:
@@ -122,7 +122,9 @@ export default defineComponent({
     const sanityAction = computed(() => choices.value.findIndex(canAdjustSanity))
 
     function abilityLabel(idx: number) {
-      const label = choices.value[idx].contents[1].type.contents[0]
+      const label = choices.value[idx].tag === 'Run'
+        ? choices.value[idx].contents[0].contents[1].type.contents[0]
+        : choices.value[idx].contents[1].type.contents[0]
       if (label) {
         return typeof label === "string" ? label : label.contents
       }
@@ -131,28 +133,54 @@ export default defineComponent({
     }
 
     function isActionAbility(idx: number) {
-      return choices.value[idx].contents[1].type.tag !== "FastAbility";
+      if (choices.value[idx].tag == 'Run') {
+        return choices.value[idx].contents[0].contents[1].type.tag === "ActionAbility";
+      } else {
+        return choices.value[idx].contents[1].type.tag === "ActionAbility";
+      }
     }
 
     function isFastActionAbility(idx: number) {
-      return choices.value[idx].contents[1].type.tag === "FastAbility";
+      if (choices.value[idx].tag == 'Run') {
+        return choices.value[idx].contents[0].contents[1].type.tag === "FastAbility";
+      } else {
+        return choices.value[idx].contents[1].type.tag === "FastAbility";
+      }
+    }
+
+    function isReactionAbility(idx: number) {
+      if (choices.value[idx].tag == 'Run') {
+        return choices.value[idx].contents[0].contents[1].type.tag === "ReactionAbility";
+      } else {
+        return choices.value[idx].contents[1].type.tag === "ReactionAbility";
+      }
+    }
+
+    function isActivate(v: Message) {
+      if (v.tag !== 'ActivateCardAbilityAction') {
+        return false
+      }
+
+      const { tag, contents } = v.contents[1].source;
+
+      if (tag === 'AssetSource' && contents === id.value) {
+        return true
+      }
+
+      if (tag === 'ProxySource' && contents[0].tag === 'AssetSource' && contents[0].contents === id.value) {
+        return true
+      }
+
+      return false
     }
 
     const abilities = computed(() => {
       return choices
         .value
         .reduce<number[]>((acc, v, i) => {
-          if (v.tag !== 'ActivateCardAbilityAction') {
-            return acc;
-          }
-
-          const { tag, contents } = v.contents[1].source;
-
-          if (tag === 'AssetSource' && contents === id.value) {
+          if (v.tag === 'Run' && isActivate(v.contents[0])) {
             return [...acc, i];
-          }
-
-          if (tag === 'ProxySource' && contents[0].tag === 'AssetSource' && contents[0].contents === id.value) {
+          } else if (isActivate(v)) {
             return [...acc, i];
           }
 
@@ -160,7 +188,7 @@ export default defineComponent({
         }, []);
     })
 
-    return { id, hasPool, exhausted, image, abilities, abilityLabel, sanityAction, healthAction, cardAction, isActionAbility, isFastActionAbility }
+    return { id, hasPool, exhausted, image, abilities, abilityLabel, sanityAction, healthAction, cardAction, isActionAbility, isFastActionAbility, isReactionAbility }
   }
 })
 </script>
@@ -216,6 +244,15 @@ export default defineComponent({
   &:before {
     font-family: "arkham";
     content: "\0075";
+    margin-right: 5px;
+  }
+}
+
+.reaction-ability-button {
+  background-color: #A02ECB;
+  &:before {
+    font-family: "arkham";
+    content: "\0059";
     margin-right: 5px;
   }
 }

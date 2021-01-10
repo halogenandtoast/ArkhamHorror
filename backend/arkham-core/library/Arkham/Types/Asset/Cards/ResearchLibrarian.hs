@@ -20,19 +20,16 @@ instance HasModifiersFor env ResearchLibrarian where
   getModifiersFor = noModifiersFor
 
 instance HasActions env ResearchLibrarian where
+  getActions i (WhenEnterPlay target) (ResearchLibrarian x)
+    | isTarget x target = pure
+      [ ActivateCardAbilityAction
+          i
+          (mkAbility (toSource x) 1 (ReactionAbility Free))
+      ]
   getActions i window (ResearchLibrarian x) = getActions i window x
 
 instance (AssetRunner env) => RunMessage env ResearchLibrarian where
   runMessage msg a@(ResearchLibrarian attrs) = case msg of
-    InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
-      unshiftMessage
-        (chooseOne
-          iid
-          [ UseCardAbility iid (toSource attrs) Nothing 1 NoPayment
-          , Continue "Do not use ability"
-          ]
-        )
-      ResearchLibrarian <$> runMessage msg attrs
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage
         (SearchDeckForTraits iid (InvestigatorTarget iid) [Tome])

@@ -44,6 +44,7 @@ data Window
   | WhenEnemySpawns Where [Trait]
   | WhenEnemyDefeated Who
   | WhenEnemyEvaded Who
+  | WhenEnterPlay Target
   | WhenWouldReady Target
   | WhenPlayCard Who CardId
   | WhenRevealTokenWithNegativeModifier Who TokenId

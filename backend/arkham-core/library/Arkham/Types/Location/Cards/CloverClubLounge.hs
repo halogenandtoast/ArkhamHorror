@@ -33,8 +33,11 @@ ability attrs =
   (mkAbility
       (toSource attrs)
       1
-      (ActionAbility Nothing $ Costs
-        [ActionCost 1, HandDiscardCost 1 (Just AssetType) (singleton Ally)]
+      (ActionAbility Nothing
+      $ Costs
+          [ ActionCost 1
+          , HandDiscardCost 1 (Just AssetType) (singleton Ally) mempty
+          ]
       )
     )
     { abilityLimit = PlayerLimit PerGame 1

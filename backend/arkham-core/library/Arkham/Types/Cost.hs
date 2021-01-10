@@ -9,6 +9,7 @@ import Arkham.Types.AssetId
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
 import Arkham.Types.LocationMatcher
+import Arkham.Types.SkillType
 import Arkham.Types.Source
 import Arkham.Types.Target
 import Arkham.Types.Trait
@@ -60,7 +61,7 @@ data Cost
   | DamageCost Source Target Int
   | DiscardCost Target
   | DiscardCardCost CardId
-  | HandDiscardCost Int (Maybe PlayerCardType) (HashSet Trait)
+  | HandDiscardCost Int (Maybe PlayerCardType) (HashSet Trait) (HashSet SkillType)
   | HorrorCost Source Target Int
   | Free
   | ResourceCost Int

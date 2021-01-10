@@ -1745,9 +1745,11 @@ runGameMessage msg g = case msg of
   GameOver -> do
     clearQueue
     pure $ g & gameStateL .~ IsOver
-  PlaceLocation lid -> do
-    unshiftMessage (PlacedLocation lid)
-    pure $ g & locationsL . at lid ?~ lookupLocation lid
+  PlaceLocation lid -> if isNothing $ g ^. locationsL . at lid
+    then do
+      unshiftMessage (PlacedLocation lid)
+      pure $ g & locationsL . at lid ?~ lookupLocation lid
+    else pure g
   SetEncounterDeck encounterDeck ->
     pure $ g & encounterDeckL .~ Deck encounterDeck
   RemoveEnemy eid -> pure $ g & enemiesL %~ deleteMap eid

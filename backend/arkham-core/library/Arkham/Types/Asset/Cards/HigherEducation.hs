@@ -15,26 +15,24 @@ newtype HigherEducation = HigherEducation Attrs
 higherEducation :: AssetId -> HigherEducation
 higherEducation uuid = HigherEducation $ baseAttrs uuid "60211"
 
-instance
-  ( HasList HandCard env InvestigatorId
-  , HasCount ResourceCount env InvestigatorId
-  )
-  => HasActions env HigherEducation where
+instance HasList HandCard env InvestigatorId => HasActions env HigherEducation where
   getActions iid (WhenSkillTest SkillWillpower) (HigherEducation a)
     | ownedBy a iid = do
-      resourceCount <- getResourceCount iid
       active <- (>= 5) . length <$> getHandOf iid
       pure
-        [ UseCardAbility iid (toSource a) Nothing 1 NoPayment
-        | active && resourceCount > 0
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility (toSource a) 1 (FastAbility $ ResourceCost 1))
+        | active
         ]
   getActions iid (WhenSkillTest SkillIntellect) (HigherEducation a)
     | ownedBy a iid = do
-      resourceCount <- getResourceCount iid
       active <- (>= 5) . length <$> getHandOf iid
       pure
-        [ UseCardAbility iid (toSource a) Nothing 2 NoPayment
-        | active && resourceCount > 0
+        [ ActivateCardAbilityAction
+            iid
+            (mkAbility (toSource a) 2 (FastAbility $ ResourceCost 1))
+        | active
         ]
   getActions _ _ _ = pure []
 

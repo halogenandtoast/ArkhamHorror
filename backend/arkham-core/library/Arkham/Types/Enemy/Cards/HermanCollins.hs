@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.HermanCollins
   ( HermanCollins(..)
   , hermanCollins
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -40,7 +39,7 @@ instance ActionRunner env => HasActions env HermanCollins where
               1
               (ActionAbility
                 (Just Parley)
-                (Costs [ActionCost 1, HandDiscardCost 4 Nothing mempty])
+                (Costs [ActionCost 1, HandDiscardCost 4 Nothing mempty mempty])
               )
             )
         | locationId == enemyLocation

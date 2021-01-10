@@ -29,44 +29,38 @@ instance HasModifiersFor env RivertownAbandonedWarehouse where
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability
-ability attrs =
-  (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1))
-    { abilityLimit = GroupLimit PerGame 1
-    }
+ability attrs = base { abilityLimit = GroupLimit PerGame 1 }
+ where
+  base = mkAbility
+    (toSource attrs)
+    1
+    (ActionAbility Nothing $ Costs
+      [ ActionCost 1
+      , HandDiscardCost 1 Nothing mempty (singleton SkillWillpower)
+      ]
+    )
 
 instance ActionRunner env => HasActions env RivertownAbandonedWarehouse where
   getActions iid NonFast (RivertownAbandonedWarehouse attrs)
     | locationRevealed attrs = withBaseActions iid NonFast attrs $ do
-      hasWillpowerCards <- any (elem SkillWillpower . getSkillIcons)
-        <$> getHandOf iid
-      pure
-        [ ActivateCardAbilityAction iid (ability attrs)
-        | iid `member` locationInvestigators attrs && hasWillpowerCards
-        ]
+      pure [ ActivateCardAbilityAction iid (ability attrs) | iid `on` attrs ]
   getActions iid window (RivertownAbandonedWarehouse attrs) =
     getActions iid window attrs
 
+willpowerCount :: Payment -> Int
+willpowerCount (DiscardPayment cards) =
+  sum $ map (count (== SkillWillpower) . pcSkills) cards
+willpowerCount (Payments xs) = sum $ map willpowerCount xs
+willpowerCount _ = 0
+
 instance LocationRunner env => RunMessage env RivertownAbandonedWarehouse where
   runMessage msg l@(RivertownAbandonedWarehouse attrs) = case msg of
-    UseCardAbility iid source Nothing 1 _ | isSource attrs source -> do
-      willpowerCards <- filter (elem SkillWillpower . getSkillIcons)
-        <$> getHandOf iid
-      let
-        cardsWithCount =
-          map (toFst (count (== SkillWillpower) . getSkillIcons)) willpowerCards
+    UseCardAbility iid source Nothing 1 payments | isSource attrs source -> do
+      let doomToRemove = willpowerCount payments
+      cultists <- getSetList Cultist
       l <$ unshiftMessage
         (chooseOne
           iid
-          [ Run
-              [ DiscardCard iid (getCardId card)
-              , UseCardAbility iid source (Just $ IntMetadata n) 1 NoPayment
-              ]
-          | (n, card) <- cardsWithCount
-          ]
+          [ RemoveDoom (EnemyTarget eid) doomToRemove | eid <- cultists ]
         )
-    UseCardAbility iid source (Just (IntMetadata n)) 1 _
-      | isSource attrs source -> do
-        cultists <- getSetList Cultist
-        l <$ unshiftMessage
-          (chooseOne iid [ RemoveDoom (EnemyTarget eid) n | eid <- cultists ])
     _ -> RivertownAbandonedWarehouse <$> runMessage msg attrs

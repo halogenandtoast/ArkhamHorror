@@ -172,16 +172,20 @@ on iid Attrs { locationInvestigators } = iid `member` locationInvestigators
 instance LocationRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     Investigate iid lid source skillType False | lid == locationId -> do
-      shroudValue' <- getModifiedShroudValueFor a
-      a <$ unshiftMessage
-        (BeginSkillTest
-          iid
-          source
-          (LocationTarget lid)
-          (Just Action.Investigate)
-          skillType
-          shroudValue'
-        )
+      allowed <- getCanInvestigate lid iid
+      if allowed
+        then do
+          shroudValue' <- getModifiedShroudValueFor a
+          a <$ unshiftMessage
+            (BeginSkillTest
+              iid
+              source
+              (LocationTarget lid)
+              (Just Action.Investigate)
+              skillType
+              shroudValue'
+            )
+        else pure a
     PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget target) _
       | isTarget a target
       -> a <$ unshiftMessage (SuccessfulInvestigation iid locationId source)

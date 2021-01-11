@@ -235,9 +235,9 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
     FoundEncounterCard iid target ec | isTarget attrs target -> do
       lid <- getId @LocationId iid
       s <$ unshiftMessage (SpawnEnemyAt (EncounterCard ec) lid)
-    FoundEnemyInVoid iid target ec | isTarget attrs target -> do
+    FoundEnemyInVoid iid target eid | isTarget attrs target -> do
       lid <- getId @LocationId iid
-      t <$ unshiftMessage (EnemySpawnFromVoid Nothing lid eid)
+      s <$ unshiftMessage (EnemySpawnFromVoid Nothing lid eid)
     NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds

@@ -42,7 +42,7 @@ instance EnemyRunner env => RunMessage env HuntingHorror where
     When (Discard target) | isTarget attrs target -> do
       _ <- popMessage
       e <$ unshiftMessages (resolve $ PlaceEnemyInVoid enemyId)
-    PlaceEnemyInVoid eid | eid == enemyId ->
+    When (PlaceEnemyInVoid eid) | eid == enemyId ->
       pure
         . HuntingHorror
         $ attrs

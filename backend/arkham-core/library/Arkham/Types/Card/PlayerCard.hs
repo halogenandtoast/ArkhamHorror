@@ -827,7 +827,7 @@ lookWhatIFound cardId =
     { pcSkills = [SkillIntellect, SkillIntellect]
     , pcTraits = setFromList [Fortune]
     , pcFast = True
-    , pcWindows = setFromList [ AfterFailSkillTest You n | n <- [0 .. 2] ]
+    , pcWindows = setFromList [ AfterFailInvestigationSkillTest You n | n <- [0 .. 2] ]
     }
 
 lucky :: CardId -> PlayerCard

@@ -172,7 +172,7 @@ on iid Attrs { locationInvestigators } = iid `member` locationInvestigators
 instance LocationRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     Investigate iid lid source skillType False | lid == locationId -> do
-      allowed <- getCanInvestigate lid iid
+      allowed <- getInvestigateAllowed iid a
       if allowed
         then do
           shroudValue' <- getModifiedShroudValueFor a

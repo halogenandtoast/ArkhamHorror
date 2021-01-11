@@ -1517,9 +1517,17 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
     pure $ a & cluesL .~ 0
   RemoveDiscardFromGame iid | iid == investigatorId -> pure $ a & discardL .~ []
-  After (FailedSkillTest iid _ _ (InvestigatorTarget iid') n)
-    | iid == iid' && iid == investigatorId -> a
-    <$ unshiftMessage (CheckWindow iid [AfterFailSkillTest You n])
+  After (FailedSkillTest iid mAction _ (InvestigatorTarget iid') n)
+    | iid == iid' && iid == investigatorId -> do
+      let
+        windows = maybe
+          []
+          (\case
+            Action.Investigate -> [AfterFailInvestigationSkillTest You n]
+            _ -> []
+          )
+          mAction
+      a <$ unshiftMessage (CheckWindow iid (AfterFailSkillTest You n : windows))
   After (PassedSkillTest iid mAction source (InvestigatorTarget iid') n)
     | iid == iid' && iid == investigatorId -> a <$ unshiftMessage
       (CheckWindow iid [AfterPassSkillTest mAction source You n])

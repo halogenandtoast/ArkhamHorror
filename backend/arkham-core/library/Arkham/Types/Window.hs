@@ -20,6 +20,7 @@ data Window
   | AfterEnemyEngageInvestigator Who EnemyId
   | AfterEnemyEvaded Who EnemyId
   | AfterFailSkillTest Who Int
+  | AfterFailInvestigationSkillTest Who Int
   | AfterFailSkillTestAtOrLess Who Int
   | AfterPassSkillTest (Maybe Action) Source Who Int
   | AfterPlayCard Who [Trait]

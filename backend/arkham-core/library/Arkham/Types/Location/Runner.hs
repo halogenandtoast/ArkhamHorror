@@ -34,7 +34,10 @@ type LocationRunner env
     , HasSet LocationId env [Trait]
     , HasSet Trait env EnemyId
     , HasSet Trait env LocationId
+    , HasSet Trait env Source
+    , HasSet InvestigatorId env LocationId
     , HasSet UnrevealedLocationId env ()
     , HasSet UnrevealedLocationId env LocationMatcher
+    , HasCostPayment env
     )
 

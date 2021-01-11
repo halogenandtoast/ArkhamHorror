@@ -207,10 +207,10 @@ instance
           (applyAbilityModifiers ability modifiers')
       other -> pure other -- TODO: dynamic abilities
     let
-      isForcedAction = \case
-        Force _ -> True
-        _ -> False
-      forcedActions = filter isForcedAction actions''
+      fromForcedAction = \case
+        Force msg -> Just msg
+        _ -> Nothing
+      forcedActions = mapMaybe fromForcedAction actions''
     if null forcedActions
       then do
         let

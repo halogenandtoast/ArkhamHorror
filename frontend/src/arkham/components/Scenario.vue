@@ -9,6 +9,14 @@
       @choose="$emit('choose', $event)"
     />
     <div class="scenario-cards">
+      <div v-if="topEnemyInVoid">
+        <Enemy
+          :enemy="topEnemyInVoid"
+          :game="game"
+          :investigatorId="investigatorId"
+          @choose="$emit('choose', $event)"
+        />
+      </div>
       <img
         v-if="scenarioDeck"
         :src="scenarioDeck"
@@ -90,6 +98,7 @@ import { defineComponent, computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import Act from '@/arkham/components/Act.vue';
 import Agenda from '@/arkham/components/Agenda.vue';
+import Enemy from '@/arkham/components/Enemy.vue';
 import StatusBar from '@/arkham/components/StatusBar.vue';
 import ChaosBag from '@/arkham/components/ChaosBag.vue';
 import PlayerTabs from '@/arkham/components/PlayerTabs.vue';
@@ -113,6 +122,7 @@ export default defineComponent({
     PlayerSelector,
     CardOverlay,
     VictoryDisplay,
+    Enemy,
   },
   props: {
     game: { type: Object as () => Game, required: true },
@@ -187,6 +197,7 @@ export default defineComponent({
       return null;
     })
 
+    const topEnemyInVoid = computed(() => Object.values(props.game.currentData.enemiesInVoid)[0])
     const activePlayerId = computed(() => props.game.currentData.activeInvestigatorId)
 
     function update(game: Game) {
@@ -201,7 +212,8 @@ export default defineComponent({
       activeCard,
       locationStyles,
       scenarioGuide,
-      scenarioDeck
+      scenarioDeck,
+      topEnemyInVoid
     }
   }
 })

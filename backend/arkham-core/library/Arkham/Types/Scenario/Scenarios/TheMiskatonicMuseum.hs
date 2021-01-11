@@ -164,7 +164,8 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
 
       let exhibitDeck = top <> bottom'
 
-      encounterDeck <- buildEncounterDeck
+      encounterDeck <- buildEncounterDeckExcluding
+        ["02142"]
         [ EncounterSet.TheMiskatonicMuseum
         , EncounterSet.BadLuck
         , EncounterSet.Sorcery

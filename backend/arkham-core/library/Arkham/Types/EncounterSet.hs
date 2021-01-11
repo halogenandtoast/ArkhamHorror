@@ -1,8 +1,7 @@
 module Arkham.Types.EncounterSet
   ( EncounterSet(..)
   , gatherEncounterSet
-  )
-where
+  ) where
 
 import Arkham.Prelude
 

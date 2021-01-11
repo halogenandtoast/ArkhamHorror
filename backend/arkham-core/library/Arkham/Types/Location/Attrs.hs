@@ -51,6 +51,7 @@ instance Entity Attrs where
   isSource Attrs { locationId } (LocationSource lid) = locationId == lid
   isSource _ _ = False
   isTarget Attrs { locationId } (LocationTarget lid) = locationId == lid
+  isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
 
 instance IsCard Attrs where

@@ -83,6 +83,7 @@ instance Entity Attrs where
   isSource _ _ = False
   isTarget Attrs { investigatorId } (InvestigatorTarget iid) =
     iid == investigatorId
+  isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
 
 getFacingDefeat

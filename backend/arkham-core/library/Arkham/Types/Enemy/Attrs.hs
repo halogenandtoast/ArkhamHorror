@@ -259,6 +259,7 @@ instance Entity Attrs where
   isTarget Attrs { enemyId } (EnemyTarget eid) = enemyId == eid
   isTarget Attrs { enemyCardCode } (CardCodeTarget cardCode) =
     enemyCardCode == cardCode
+  isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
   isSource Attrs { enemyId } (EnemySource eid) = enemyId == eid
   isSource Attrs { enemyCardCode } (CardCodeSource cardCode) =

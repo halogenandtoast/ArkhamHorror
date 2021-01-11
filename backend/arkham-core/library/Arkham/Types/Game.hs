@@ -2,7 +2,8 @@
 
 module Arkham.Types.Game
   ( module Arkham.Types.Game
-  ) where
+  )
+where
 
 import Arkham.Import hiding (first)
 
@@ -2079,6 +2080,7 @@ runGameMessage msg g = case msg of
         pure
           $ g
           & (activeCardL .~ Nothing)
+          & (focusedCardsL .~ mempty)
           & (enemiesInVoidL %~ deleteMap eid)
           & (enemiesL %~ insertMap eid enemy)
       Nothing -> error "enemy was not in void"
@@ -2539,6 +2541,7 @@ runGameMessage msg g = case msg of
         unshiftMessage (AddToDiscard (ownerOfEvent event) pc)
         pure $ g & eventsL %~ deleteMap eid
   Discard (TreacheryTarget tid) -> do
+    withQueue $ \queue -> (filter (/= msg) queue, ())
     let
       treachery = getTreachery tid g
       encounterCard = do

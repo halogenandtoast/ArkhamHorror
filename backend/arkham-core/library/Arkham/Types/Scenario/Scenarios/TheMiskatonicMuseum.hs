@@ -18,10 +18,10 @@ newtype TheMiskatonicMuseum = TheMiskatonicMuseum Attrs
 theMiskatonicMuseum :: Difficulty -> TheMiskatonicMuseum
 theMiskatonicMuseum difficulty = TheMiskatonicMuseum $ base
   { scenarioLocationLayout = Just
-    [ ".     .     .                    .                    hall1 hall1          hall2          hall2 .                  .              .     ."
-    , ".     .     hall3                hall3                hall1 hall1          hall2          hall2 hall4              hall4          .     ."
-    , "hall5 hall5 hall3                hall3                .     museumHalls    museumHalls    .     hall4              hall4          hall6 hall6"
-    , "hall5 hall5 .                    .                    .     museumHalls    museumHalls    .     .                  .              hall6 hall6"
+    [ ".     .     .                    .                    hall3 hall3          hall4          hall4 .                  .              .     ."
+    , ".     .     hall2                hall2                hall3 hall3          hall4          hall4 hall5              hall5          .     ."
+    , "hall1 hall1 hall2                hall2                .     museumHalls    museumHalls    .     hall5              hall5          hall6 hall6"
+    , "hall1 hall1 .                    .                    .     museumHalls    museumHalls    .     .                  .              hall6 hall6"
     , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
     , ".     .     administrationOffice administrationOffice .     museumEntrance museumEntrance .     securityOffice     securityOffice .     ."
     ]
@@ -138,7 +138,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
           unshiftMessage (PlaceLocation x)
           pure $ TheMiskatonicMuseum $ attrs & deckL ?~ ExhibitDeck xs
         _ -> error "Wrong deck"
-    LookAtTopOfDeck _ ScenarioDeckTarget n -> do
+    LookAtTopOfDeck _ ScenarioDeckTarget n ->
       case fromJustNote "must be set" scenarioDeck of
         ExhibitDeck xs -> do
           let lids = map LocationTarget $ take n xs
@@ -213,9 +213,9 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
             <$> getSet @LocationId (LocationWithTitle "Exhibit Hall")
           unshiftMessage (SetLocationLabel lid $ "hall" <> tshow hallCount)
         else pure ()
-    ResolveToken _ ElderThing iid | isEasyStandard attrs ->
+    ResolveToken _ Cultist iid | isEasyStandard attrs ->
       s <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid 1)
-    ResolveToken _ ElderThing iid | isHardExpert attrs -> do
+    ResolveToken _ Cultist iid | isHardExpert attrs -> do
       lid <- getId @LocationId iid
       enemyIds <- getSetList @EnemyId lid
       mHuntingHorrorId <- fmap unStoryEnemyId <$> getId (CardCode "02141")

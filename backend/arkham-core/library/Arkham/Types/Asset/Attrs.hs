@@ -89,10 +89,11 @@ instance Entity Attrs where
   toTarget = AssetTarget . toId
   isSource Attrs { assetId } (AssetSource aid) = assetId == aid
   isSource _ _ = False
-  isTarget Attrs {..} = \case
+  isTarget attrs@Attrs {..} = \case
     AssetTarget aid -> aid == assetId
     CardCodeTarget cardCode -> assetCardCode == cardCode
     CardIdTarget cardId -> unCardId cardId == unAssetId assetId
+    SkillTestInitiatorTarget target -> isTarget attrs target
     _ -> False
 
 ownedBy :: Attrs -> InvestigatorId -> Bool

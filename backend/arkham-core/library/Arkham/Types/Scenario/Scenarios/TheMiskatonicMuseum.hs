@@ -213,9 +213,9 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
             <$> getSet @LocationId (LocationWithTitle "Exhibit Hall")
           unshiftMessage (SetLocationLabel lid $ "hall" <> tshow hallCount)
         else pure ()
-    ResolveToken _ Cultist iid | isEasyStandard attrs ->
+    ResolveToken _ Tablet iid | isEasyStandard attrs ->
       s <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid 1)
-    ResolveToken _ Cultist iid | isHardExpert attrs -> do
+    ResolveToken _ Tablet iid | isHardExpert attrs -> do
       lid <- getId @LocationId iid
       enemyIds <- getSetList @EnemyId lid
       mHuntingHorrorId <- fmap unStoryEnemyId <$> getId (CardCode "02141")

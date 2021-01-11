@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Helpers
   ( module Arkham.Types.Scenario.Helpers
   , module X
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -11,6 +10,11 @@ import Arkham.Types.Game.Helpers as X
 
 buildEncounterDeck :: MonadRandom m => [EncounterSet] -> m [EncounterCard]
 buildEncounterDeck = buildEncounterDeckWith id
+
+buildEncounterDeckExcluding
+  :: MonadRandom m => [CardCode] -> [EncounterSet] -> m [EncounterCard]
+buildEncounterDeckExcluding cardCodes =
+  buildEncounterDeckWith (filter ((`notElem` cardCodes) . ecCardCode))
 
 buildEncounterDeckWith
   :: MonadRandom m

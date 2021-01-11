@@ -2,8 +2,7 @@
 
 module Arkham.Types.Game
   ( module Arkham.Types.Game
-  )
-where
+  ) where
 
 import Arkham.Import hiding (first)
 
@@ -770,7 +769,7 @@ instance HasList Enemy (Game queue) () where
   getList _ = toList <$> view enemiesL
 
 instance HasSource ForSkillTest (Game queue) where
-  getSource _ g = (Just . skillTestToSource) =<< (g ^. skillTestL)
+  getSource _ g = (Just . toSource) =<< (g ^. skillTestL)
 
 instance HasTarget ForSkillTest (Game queue) where
   getTarget _ g = g ^? skillTestL . traverse . to skillTestTarget

@@ -1,11 +1,8 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Arkham.Types.SkillTest
-  ( SkillTest(..)
-  , SkillTestResult(..)
-  , TokenResponse(..)
-  , initSkillTest
-  , skillTestToSource
-  )
-where
+  ( module Arkham.Types.SkillTest
+  ) where
 
 import Arkham.Import
 
@@ -13,17 +10,16 @@ import Arkham.Types.Action (Action)
 import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.SkillTestResult
 import Arkham.Types.Stats
-import Arkham.Types.TokenResponse
 import qualified Data.HashMap.Strict as HashMap
 import Data.Semigroup
 import System.Environment
 
 data SkillTest = SkillTest
-  { skillTestInvestigator    :: InvestigatorId
+  { skillTestInvestigator :: InvestigatorId
   , skillTestSkillType :: SkillType
-  , skillTestDifficulty      :: Int
-  , skillTestSetAsideTokens  :: [Token]
-  , skillTestRevealedTokens  :: [DrawnToken] -- tokens may change from physical representation
+  , skillTestDifficulty :: Int
+  , skillTestSetAsideTokens :: [Token]
+  , skillTestRevealedTokens :: [DrawnToken] -- tokens may change from physical representation
   , skillTestValueModifier :: Int
   , skillTestResult :: SkillTestResult
   , skillTestCommittedCards :: HashMap CardId (InvestigatorId, Card)
@@ -34,8 +30,7 @@ data SkillTest = SkillTest
   }
   deriving stock (Show, Generic)
 
-skillTestToSource :: SkillTest -> Source
-skillTestToSource = toSource
+makeLensesWith (suffixedWithFields "skillTest") ''SkillTest
 
 instance Entity SkillTest where
   type EntityId SkillTest = ()
@@ -102,29 +97,6 @@ initSkillTest iid source target maction skillType' _skillValue' difficulty' =
     , skillTestAction = maction
     , skillTestSubscribers = [InvestigatorTarget iid]
     }
-
-subscribers :: Lens' SkillTest [Target]
-subscribers =
-  lens skillTestSubscribers $ \m x -> m { skillTestSubscribers = x }
-
-valueModifier :: Lens' SkillTest Int
-valueModifier =
-  lens skillTestValueModifier $ \m x -> m { skillTestValueModifier = x }
-
-setAsideTokens :: Lens' SkillTest [Token]
-setAsideTokens =
-  lens skillTestSetAsideTokens $ \m x -> m { skillTestSetAsideTokens = x }
-
-revealedTokens :: Lens' SkillTest [DrawnToken]
-revealedTokens =
-  lens skillTestRevealedTokens $ \m x -> m { skillTestRevealedTokens = x }
-
-committedCards :: Lens' SkillTest (HashMap CardId (InvestigatorId, Card))
-committedCards =
-  lens skillTestCommittedCards $ \m x -> m { skillTestCommittedCards = x }
-
-result :: Lens' SkillTest SkillTestResult
-result = lens skillTestResult $ \m x -> m { skillTestResult = x }
 
 skillIconCount :: SkillTest -> Int
 skillIconCount SkillTest {..} = length . filter matches $ concatMap
@@ -235,10 +207,10 @@ instance SkillTestRunner env => RunMessage env SkillTest where
               iid
               tokenFace
             )
-        pure $ s & (setAsideTokens %~ (tokenFaces <>))
+        pure $ s & (setAsideTokensL %~ (tokenFaces <>))
     RevealToken SkillTestSource{} _iid tokenFace -> do
       token' <- flip DrawnToken tokenFace . TokenId <$> getRandom
-      pure $ s & revealedTokens %~ (token' :)
+      pure $ s & revealedTokensL %~ (token' :)
     RevealSkillTestTokens iid -> do
       revealedTokenFaces <- concatMapM
         (\t -> map (t, ) <$> getModifiedTokenFaces s t)
@@ -249,13 +221,13 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         ]
       pure
         $ s
-        & (subscribers
+        & (subscribersL
           %~ (<> [ DrawnTokenTarget token'
                  | token' <- skillTestRevealedTokens
                  ]
              )
           )
-    AddSkillTestSubscriber target -> pure $ s & subscribers %~ (target :)
+    AddSkillTestSubscriber target -> pure $ s & subscribersL %~ (target :)
     PassSkillTest -> do
       stats <- getStats (skillTestInvestigator, skillTestAction) (toSource s)
       let
@@ -266,7 +238,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         [ Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
         , SkillTestEnds skillTestSource
         ]
-      pure $ s & result .~ SucceededBy True modifiedSkillValue'
+      pure $ s & resultL .~ SucceededBy True modifiedSkillValue'
     FailSkillTest -> do
       difficulty <- getModifiedSkillTestDifficulty s
       unshiftMessages
@@ -291,7 +263,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
            , Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
            , SkillTestEnds skillTestSource
            ]
-      pure $ s & result .~ FailedBy True difficulty
+      pure $ s & resultL .~ FailedBy True difficulty
     StartSkillTest _ -> s <$ unshiftMessages
       (HashMap.foldMapWithKey
           (\k (i, _) -> [CommitCard i k])
@@ -299,18 +271,30 @@ instance SkillTestRunner env => RunMessage env SkillTest where
       <> [TriggerSkillTest skillTestInvestigator]
       )
     InvestigatorCommittedSkill _ skillId ->
-      pure $ s & subscribers %~ (SkillTarget skillId :)
+      pure $ s & subscribersL %~ (SkillTarget skillId :)
     SkillTestCommitCard iid cardId -> do
       card <- asks (getCard iid cardId)
-      pure $ s & committedCards %~ insertMap cardId (iid, card)
+      pure $ s & committedCardsL %~ insertMap cardId (iid, card)
     SkillTestUncommitCard _ cardId ->
-      pure $ s & committedCards %~ deleteMap cardId
+      pure $ s & committedCardsL %~ deleteMap cardId
     ReturnSkillTestRevealedTokens -> do
       -- Rex's Curse timing keeps effects on stack so we do
       -- not want to remove them as subscribers from the stack
       unshiftMessage $ ResetTokens (toSource s)
-      pure $ s & setAsideTokens .~ mempty & revealedTokens .~ mempty
-    SkillTestEnds _ -> s <$ unshiftMessage (ResetTokens (toSource s))
+      pure $ s & setAsideTokensL .~ mempty & revealedTokensL .~ mempty
+    SkillTestEnds _ -> do
+      -- Skill Cards are in the environment and will be discarded normally
+      -- However, all other cards need to be discarded here.
+      let
+        discards = mapMaybe
+          (\case
+            (iid, PlayerCard pc) ->
+              (iid, pc) <$ guard (pcCardType pc /= SkillType)
+            (_, EncounterCard _) -> Nothing
+          )
+          (s ^. committedCardsL . to toList)
+      s <$ unshiftMessages
+        (ResetTokens (toSource s) : map (uncurry AddToDiscard) discards)
     SkillTestResults -> do
       unshiftMessage
         (Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults])
@@ -488,7 +472,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         -- persists)
         tokenValues <- sum
           <$> for skillTestRevealedTokens (getModifiedTokenValue s)
-        pure $ s & valueModifier %~ subtract tokenValues
+        pure $ s & valueModifierL %~ subtract tokenValues
     RunSkillTest _ -> do
       tokenValues <- sum
         <$> for skillTestRevealedTokens (getModifiedTokenValue s)
@@ -522,17 +506,17 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         then
           pure
           $ s
-          & (result .~ SucceededBy
+          & (resultL .~ SucceededBy
               False
               (modifiedSkillValue' - modifiedSkillTestDifficulty)
             )
-          & (valueModifier .~ totaledTokenValues)
+          & (valueModifierL .~ totaledTokenValues)
         else
           pure
           $ s
-          & (result .~ FailedBy
+          & (resultL .~ FailedBy
               False
               (modifiedSkillTestDifficulty - modifiedSkillValue')
             )
-          & (valueModifier .~ totaledTokenValues)
+          & (valueModifierL .~ totaledTokenValues)
     _ -> pure s

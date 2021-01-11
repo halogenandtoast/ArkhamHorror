@@ -1,8 +1,7 @@
 module Arkham.Prelude
   ( module X
   , module Arkham.Prelude
-  )
-where
+  ) where
 
 import ClassyPrelude as X hiding (on, (\\))
 
@@ -46,6 +45,15 @@ suffixedNamer :: FieldNamer
 suffixedNamer _ _ n = case dropWhile C.isLower (nameBase n) of
   x : xs -> [TopName (mkName ((C.toLower x : xs) ++ "L"))]
   _ -> []
+
+suffixedWithNamer :: String -> FieldNamer
+suffixedWithNamer str _ _ n = case drop (length str) (nameBase n) of
+  x : xs -> [TopName (mkName ((C.toLower x : xs) ++ "L"))]
+  _ -> []
+
+suffixedWithFields :: String -> LensRules
+suffixedWithFields suffix =
+  defaultFieldRules & lensField .~ suffixedWithNamer suffix
 
 suffixedFields :: LensRules
 suffixedFields = defaultFieldRules & lensField .~ suffixedNamer

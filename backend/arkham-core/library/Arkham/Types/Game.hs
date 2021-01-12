@@ -2129,6 +2129,21 @@ runGameMessage msg g = case msg of
           $ g
           & (enemiesL %~ deleteMap eid)
           & (victoryDisplayL %~ (EncounterCard ec :))
+  AddToVictory (EventTarget eid) -> do
+    let
+      event = getEvent eid g
+      cardId = CardId (unEventId eid)
+      playerCard = do
+        f <- lookup (getCardCode event) allPlayerCards
+        pure $ PlayerCard $ f cardId
+    case playerCard of
+      Nothing -> error "missing"
+      Just (PlayerCard pc) ->
+        pure
+          $ g
+          & (eventsL %~ deleteMap eid)
+          & (victoryDisplayL %~ (PlayerCard pc :))
+      Just (EncounterCard _) -> error "can not be encounter card"
   BeginInvestigation -> do
     unshiftMessages
       $ [ CheckWindow iid [Fast.AnyPhaseBegins]

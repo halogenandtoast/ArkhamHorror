@@ -58,7 +58,7 @@ data PlayerCard = MkPlayerCard
   , pcPermanent :: Bool
   }
   deriving stock (Show, Eq, Generic)
-  deriving anyclass (Hashable)
+  deriving anyclass Hashable
 
 instance ToJSON PlayerCard where
   toJSON = genericToJSON $ aesonOptions $ Just "pc"
@@ -290,6 +290,7 @@ allPlayerCards = mapFromList
   , ("02079", peterClover)
   , ("02080", drFrancisMorgan)
   , ("02107", iveGotAPlan)
+  , ("02108", pathfinder1)
   , ("02139", adamLynch)
   , ("02140", theNecronomiconOlausWormiusTranslation)
   , ("02147", bandolier)
@@ -827,7 +828,8 @@ lookWhatIFound cardId =
     { pcSkills = [SkillIntellect, SkillIntellect]
     , pcTraits = setFromList [Fortune]
     , pcFast = True
-    , pcWindows = setFromList [ AfterFailInvestigationSkillTest You n | n <- [0 .. 2] ]
+    , pcWindows = setFromList
+      [ AfterFailInvestigationSkillTest You n | n <- [0 .. 2] ]
     }
 
 lucky :: CardId -> PlayerCard
@@ -1252,6 +1254,13 @@ iveGotAPlan :: CardId -> PlayerCard
 iveGotAPlan cardId = (event cardId "02107" "\"I've Got a Plan!\"" 3 Seeker)
   { pcSkills = [SkillIntellect, SkillCombat]
   , pcTraits = setFromList [Insight, Tactic]
+  }
+
+pathfinder1 :: CardId -> PlayerCard
+pathfinder1 cardId = (asset cardId "02108" "Pathfinder" 3 Seeker)
+  { pcSkills = [SkillAgility]
+  , pcTraits = singleton Talent
+  , pcLevel = 1
   }
 
 adamLynch :: CardId -> PlayerCard

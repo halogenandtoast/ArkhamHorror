@@ -18,6 +18,7 @@ import Arkham.Types.Event.Cards.Contraband2 as X
 import Arkham.Types.Event.Cards.CrypticResearch4 as X
 import Arkham.Types.Event.Cards.CunningDistraction as X
 import Arkham.Types.Event.Cards.DarkMemory as X
+import Arkham.Types.Event.Cards.DelveTooDeep as X
 import Arkham.Types.Event.Cards.Dodge as X
 import Arkham.Types.Event.Cards.DrawnToTheFlame as X
 import Arkham.Types.Event.Cards.DynamiteBlast as X

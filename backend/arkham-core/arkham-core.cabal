@@ -169,6 +169,7 @@ library
       Arkham.Types.Asset.Cards.Scrying
       Arkham.Types.Asset.Cards.Shotgun4
       Arkham.Types.Asset.Cards.Shrivelling
+      Arkham.Types.Asset.Cards.SongOfTheDead
       Arkham.Types.Asset.Cards.SpringfieldM19034
       Arkham.Types.Asset.Cards.StrangeSolution
       Arkham.Types.Asset.Cards.StrayCat
@@ -244,6 +245,7 @@ library
       Arkham.Types.Effect.Effects.SeekingAnswers
       Arkham.Types.Effect.Effects.Shrivelling
       Arkham.Types.Effect.Effects.SkillTestEffect
+      Arkham.Types.Effect.Effects.SongOfTheDead
       Arkham.Types.Effect.Effects.SureGamble3
       Arkham.Types.Effect.Effects.WillToSurvive4
       Arkham.Types.Effect.Helpers

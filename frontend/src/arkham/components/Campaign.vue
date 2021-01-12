@@ -1,5 +1,9 @@
 <template>
-  <div v-if="!game.currentData.gameOver && !game.currentData.pending" id="game" class="game">
+
+  <div v-if="upgradeDeck" id="game" class="game">
+    <UpgradeDeck :game="game" :investigatorId="investigatorId" />
+  </div>
+  <div v-else-if="!game.currentData.gameOver && !game.currentData.pending" id="game" class="game">
     <Scenario
       v-if="game.currentData.scenario"
 
@@ -32,11 +36,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
 import { Game } from '@/arkham/types/Game';
 import StatusBar from '@/arkham/components/StatusBar.vue';
 import PlayerOrder from '@/arkham/components/PlayerOrder.vue';
 import Scenario from '@/arkham/components/Scenario.vue';
+import UpgradeDeck from '@/arkham/components/UpgradeDeck.vue';
 import PlayerSelector from '@/arkham/components/PlayerSelector.vue';
 import CardOverlay from '@/arkham/components/CardOverlay.vue';
 
@@ -47,6 +52,7 @@ export default defineComponent({
     PlayerSelector,
     CardOverlay,
     Scenario,
+    UpgradeDeck,
   },
   props: {
     game: { type: Object as () => Game, required: true },
@@ -59,7 +65,9 @@ export default defineComponent({
       emit('update', game);
     }
 
-    return { inviteLink, update }
+    const upgradeDeck = computed(() => props.game.currentData.campaign && props.game.currentData.campaign.contents.step.tag === 'UpgradeDeckStep')
+
+    return { inviteLink, update, upgradeDeck }
   }
 })
 </script>

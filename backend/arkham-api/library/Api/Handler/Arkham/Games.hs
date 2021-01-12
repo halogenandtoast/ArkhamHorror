@@ -6,8 +6,7 @@ module Api.Handler.Arkham.Games
   , putApiV1ArkhamGameR
   , deleteApiV1ArkhamGameR
   , putApiV1ArkhamGameRawR
-  )
-where
+  ) where
 
 import Api.Arkham.Helpers
 import Arkham.Types.CampaignId
@@ -56,9 +55,12 @@ catchingConnectionException :: WebSocketsT Handler () -> WebSocketsT Handler ()
 catchingConnectionException f =
   f `catch` \e -> $(logWarn) $ pack $ show (e :: ConnectionException)
 
-data GetGameJson = GetGameJson { investigatorId :: Maybe InvestigatorId, game :: Entity ArkhamGame }
+data GetGameJson = GetGameJson
+  { investigatorId :: Maybe InvestigatorId
+  , game :: Entity ArkhamGame
+  }
   deriving stock (Show, Generic)
-  deriving anyclass (ToJSON)
+  deriving anyclass ToJSON
 
 getApiV1ArkhamGameR :: ArkhamGameId -> Handler GetGameJson
 getApiV1ArkhamGameR gameId = do
@@ -88,7 +90,7 @@ data CreateGamePost = CreateGamePost
   , campaignName :: Text
   }
   deriving stock (Show, Generic)
-  deriving anyclass (FromJSON)
+  deriving anyclass FromJSON
 
 postApiV1ArkhamGamesR :: Handler (Entity ArkhamGame)
 postApiV1ArkhamGamesR = do
@@ -125,8 +127,11 @@ postApiV1ArkhamGamesR = do
         pure $ Entity key (ArkhamGame campaignName ge)
       Nothing -> error "missing either campaign id or scenario id"
 
-data QuestionReponse = QuestionResponse { qrChoice :: Int, qrGameHash :: UUID }
-  deriving stock (Generic)
+data QuestionReponse = QuestionResponse
+  { qrChoice :: Int
+  , qrGameHash :: UUID
+  }
+  deriving stock Generic
 
 instance FromJSON QuestionReponse where
   parseJSON = genericParseJSON $ aesonOptions $ Just "qr"
@@ -188,18 +193,22 @@ putApiV1ArkhamGameR gameId = do
     else invalidArgs ["Hash mismatch"]
 
 
-newtype PutRawGameJson = PutRawGameJson { gameJson :: GameExternal }
+data RawGameJsonPut = RawGameJsonPut
+  { gameJson :: GameExternal
+  , gameMessage :: Maybe Message
+  }
   deriving stock (Show, Generic)
-  deriving anyclass (FromJSON)
+  deriving anyclass FromJSON
 
 putApiV1ArkhamGameRawR :: ArkhamGameId -> Handler ()
 putApiV1ArkhamGameRawR gameId = do
   void $ fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
   response <- requireCheckJsonBody
+  let message = fromMaybe (Continue "edited") (gameMessage response)
   ge <- liftIO $ runMessages (const $ pure ()) =<< toInternalGame
     ((gameJson response)
-      { gameMessages = Continue "edited" : gameMessages (gameJson response)
+      { gameMessages = message : gameMessages (gameJson response)
       }
     )
   writeChannel <- getChannel gameId

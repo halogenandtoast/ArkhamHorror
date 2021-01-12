@@ -2,7 +2,7 @@ import { JsonDecoder } from 'ts.data.json';
 import { Message, messageDecoder } from '@/arkham/types/Message';
 import { Source, sourceDecoder } from '@/arkham/types/Source';
 
-export type Question = ChooseOne | ChooseN | ChooseOneAtATime | ChooseOneFromSource;
+export type Question = ChooseOne | ChooseN | ChooseOneAtATime | ChooseOneFromSource | ChooseUpgradeDeck;
 
 export interface ChooseOne {
   tag: 'ChooseOne';
@@ -28,6 +28,17 @@ export interface ChooseOneFromSource {
   tag: 'ChooseOneFromSource';
   contents: ChooseOneFromSourceContents;
 }
+
+export interface ChooseUpgradeDeck {
+  tag: 'ChooseUpgradeDeck';
+}
+
+export const chooseUpgradeDeckDecoder = JsonDecoder.object<ChooseUpgradeDeck>(
+  {
+    tag: JsonDecoder.isExactly('ChooseUpgradeDeck'),
+  },
+  'ChooseUpgradeDeck',
+);
 
 export const chooseOneDecoder = JsonDecoder.object<ChooseOne>(
   {
@@ -75,6 +86,7 @@ export const questionDecoder = JsonDecoder.oneOf<Question>(
     chooseNDecoder,
     chooseOneAtATimeDecoder,
     chooseOneFromSourceDecoder,
+    chooseUpgradeDeckDecoder,
   ],
   'Question',
 );

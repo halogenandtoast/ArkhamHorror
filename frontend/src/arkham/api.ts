@@ -2,6 +2,7 @@ import api from '@/api';
 import { gameDecoder } from '@/arkham/types/Game';
 import { deckDecoder } from '@/arkham/types/Deck';
 import { Difficulty } from '@/arkham/types/Difficulty';
+import { Message } from '@/arkham/types/Message';
 import { JsonDecoder } from 'ts.data.json';
 
 export const fetchGame = (gameId: string) => api
@@ -40,6 +41,9 @@ export const updateGame = (gameId: string, choice: number, gameHash: string) => 
   .put(`arkham/games/${gameId}`, { choice, gameHash })
   .then((resp) => gameDecoder.decodePromise(resp.data));
 
+export const upgradeDeck = (gameId: string, deckUrl: string) => api
+  .put(`arkham/games/${gameId}/decks`, { deckUrl });
+
 export const deleteGame = (gameId: string) => api
   .delete(`arkham/games/${gameId}`);
 
@@ -47,8 +51,8 @@ export const fetchGameRaw = (gameId: string) => api
   .get(`arkham/games/${gameId}`)
   .then((resp) => resp.data);
 
-export const updateGameRaw = (gameId: string, gameJson: string) => api
-  .put(`arkham/games/${gameId}/raw`, { gameJson });
+export const updateGameRaw = (gameId: string, gameJson: string, gameMessage: Message | null) => api
+  .put(`arkham/games/${gameId}/raw`, { gameJson, gameMessage });
 
 export const newGame = (
   deckId: string,

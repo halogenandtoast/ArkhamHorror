@@ -295,6 +295,7 @@ allPlayerCards = mapFromList
   , ("02108", pathfinder1)
   , ("02109", contraband)
   , ("02110", adaptable1)
+  , ("02111", delveTooDeep)
   , ("02139", adamLynch)
   , ("02140", theNecronomiconOlausWormiusTranslation)
   , ("02147", bandolier)
@@ -1291,6 +1292,12 @@ adaptable1 :: CardId -> PlayerCard
 adaptable1 cardId = (asset cardId "02110" "Adaptable" 0 Rogue)
   { pcPermanent = True
   , pcTraits = setFromList [Talent]
+  }
+
+delveTooDeep :: CardId -> PlayerCard
+delveTooDeep cardId = (event cardId "02111" "Delve Too Deep" 1 Mystic)
+  { pcTraits = setFromList [Insight]
+  , pcVictoryPoints = Just 1
   }
 
 adamLynch :: CardId -> PlayerCard

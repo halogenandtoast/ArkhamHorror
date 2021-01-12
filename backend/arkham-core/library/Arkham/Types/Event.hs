@@ -55,6 +55,7 @@ data Event
   | EmergencyAid' EmergencyAid
   | IveGotAPlan' IveGotAPlan
   | Contraband' Contraband
+  | DelveTooDeep' DelveTooDeep
   | LetMeHandleThis' LetMeHandleThis
   | SecondWind' SecondWind
   | BloodRite' BloodRite
@@ -136,6 +137,7 @@ allEvents = mapFromList
   , ("02105", (EmergencyAid' .) . emergencyAid)
   , ("02107", (IveGotAPlan' .) . iveGotAPlan)
   , ("02109", (Contraband' .) . contraband)
+  , ("02111", (DelveTooDeep' .) . delveTooDeep)
   , ("03022", (LetMeHandleThis' .) . letMeHandleThis)
   , ("04149", (SecondWind' .) . secondWind)
   , ("05317", (BloodRite' .) . bloodRite)
@@ -194,6 +196,7 @@ eventAttrs = \case
   EmergencyAid' attrs -> coerce attrs
   IveGotAPlan' attrs -> coerce attrs
   Contraband' attrs -> coerce attrs
+  DelveTooDeep' attrs -> coerce attrs
   LetMeHandleThis' attrs -> coerce attrs
   SecondWind' attrs -> coerce attrs
   BloodRite' attrs -> coerce attrs

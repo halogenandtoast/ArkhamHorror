@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Adaptable1
   ( adaptable1
   , Adaptable1(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -12,8 +11,7 @@ newtype Adaptable1 = Adaptable1 Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 adaptable1 :: AssetId -> Adaptable1
-adaptable1 uuid =
-  Adaptable1 $ baseAttrs uuid "02110"
+adaptable1 uuid = Adaptable1 $ baseAttrs uuid "02110"
 
 instance HasActions env Adaptable1 where
   getActions iid window (Adaptable1 attrs) = getActions iid window attrs

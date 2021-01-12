@@ -326,6 +326,7 @@ library
       Arkham.Types.Event.Cards.CrypticResearch4
       Arkham.Types.Event.Cards.CunningDistraction
       Arkham.Types.Event.Cards.DarkMemory
+      Arkham.Types.Event.Cards.DelveTooDeep
       Arkham.Types.Event.Cards.Dodge
       Arkham.Types.Event.Cards.DrawnToTheFlame
       Arkham.Types.Event.Cards.DynamiteBlast

@@ -294,6 +294,7 @@ allPlayerCards = mapFromList
   , ("02107", iveGotAPlan)
   , ("02108", pathfinder1)
   , ("02109", contraband)
+  , ("02110", adaptable1)
   , ("02139", adamLynch)
   , ("02140", theNecronomiconOlausWormiusTranslation)
   , ("02147", bandolier)
@@ -1284,6 +1285,12 @@ contraband :: CardId -> PlayerCard
 contraband cardId = (event cardId "02109" "Contraband" 4 Rogue)
   { pcSkills = [SkillWillpower, SkillIntellect]
   , pcTraits = setFromList [Supply, Illicit]
+  }
+
+adaptable1 :: CardId -> PlayerCard
+adaptable1 cardId = (asset cardId "02110" "Adaptable" 0 Rogue)
+  { pcPermanent = True
+  , pcTraits = setFromList [Talent]
   }
 
 adamLynch :: CardId -> PlayerCard

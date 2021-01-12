@@ -95,6 +95,7 @@ data Asset
   | DrFrancisMorgan' DrFrancisMorgan
   | BrotherXavier1' BrotherXavier1
   | Pathfinder1' Pathfinder1
+  | Adaptable1' Adaptable1
   | HaroldWalsted' HaroldWalsted
   | AdamLynch' AdamLynch
   | TheNecronomiconOlausWormiusTranslation' TheNecronomiconOlausWormiusTranslation
@@ -293,6 +294,7 @@ allAssets = mapFromList
   , ("02080", DrFrancisMorgan' . drFrancisMorgan)
   , ("02106", BrotherXavier1' . brotherXavier1)
   , ("02108", Pathfinder1' . pathfinder1)
+  , ("02110", Adaptable1' . adaptable1)
   , ("02138", HaroldWalsted' . haroldWalsted)
   , ("02139", AdamLynch' . adamLynch)
   , ( "02140"
@@ -410,6 +412,7 @@ assetAttrs = \case
   DrFrancisMorgan' attrs -> coerce attrs
   BrotherXavier1' attrs -> coerce attrs
   Pathfinder1' attrs -> coerce attrs
+  Adaptable1' attrs -> coerce attrs
   HaroldWalsted' attrs -> coerce attrs
   AdamLynch' attrs -> coerce attrs
   TheNecronomiconOlausWormiusTranslation' attrs -> coerce attrs

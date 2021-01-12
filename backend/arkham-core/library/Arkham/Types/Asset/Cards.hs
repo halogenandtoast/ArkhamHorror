@@ -3,6 +3,7 @@ module Arkham.Types.Asset.Cards
   ) where
 
 import Arkham.Types.Asset.Cards.AdamLynch as X
+import Arkham.Types.Asset.Cards.Adaptable1 as X
 import Arkham.Types.Asset.Cards.AlchemicalConcoction as X
 import Arkham.Types.Asset.Cards.Aquinnah1 as X
 import Arkham.Types.Asset.Cards.ArcaneEnlightenment as X

@@ -101,8 +101,11 @@ instance CampaignRunner env => RunMessage env NightOfTheZealot where
       let
         nextStep = case campaignStep of
           Just PrologueStep -> Just (ScenarioStep "01104")
-          Just (ScenarioStep "01104") -> Just (ScenarioStep "01120")
-          Just (ScenarioStep "01120") -> Just (ScenarioStep "01142")
+          Just (ScenarioStep "01104") ->
+            Just (UpgradeDeckStep $ ScenarioStep "01120")
+          Just (ScenarioStep "01120") ->
+            Just (UpgradeDeckStep $ ScenarioStep "01142")
+          Just (UpgradeDeckStep nextStep') -> Just nextStep'
           _ -> Nothing
       unshiftMessage (CampaignStep nextStep)
       pure

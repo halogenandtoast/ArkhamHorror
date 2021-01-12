@@ -1,19 +1,24 @@
 <template>
   <div id="edit-game" class="edit-game" v-if="ready">
+    <input :v-model="rawGameMessage" type="text" />
     <button @click="save">Save</button>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, computed } from 'vue'
 import { fetchGameRaw, updateGameRaw } from '@/arkham/api'
+import { Message, messageDecoder } from '@/arkham/types/Message'
 
 export default defineComponent({
   props: { gameId: { type: String, required: true } },
   setup(props) {
-    const ready = ref(false);
-    const socket = ref<WebSocket | null>(null);
-    const json = ref<string | null>(null);
+    const ready = ref(false)
+    const socket = ref<WebSocket | null>(null)
+    const json = ref<string | null>(null)
+    const rawGameMessage = ref("")
+
+    const gameMessage = computed(() => messageDecoder.onDecode(rawGameMessage.value, (res: Message) => res, () => null))
 
     fetchGameRaw(props.gameId).then(({ game }) => {
       json.value = game.currentData;
@@ -27,7 +32,7 @@ export default defineComponent({
 
     async function save() {
       if (json.value) {
-        updateGameRaw(props.gameId, json.value);
+        updateGameRaw(props.gameId, json.value, gameMessage.value);
       }
     }
 

@@ -48,6 +48,7 @@ export interface InvestigatorContents {
   defeated: boolean;
   resigned: boolean;
   tomeActions?: number;
+  xp: number;
 }
 
 export const investigatorContentsDecoder = JsonDecoder.object<InvestigatorContents>({
@@ -78,6 +79,7 @@ export const investigatorContentsDecoder = JsonDecoder.object<InvestigatorConten
   defeated: JsonDecoder.boolean,
   resigned: JsonDecoder.boolean,
   tomeActions: JsonDecoder.optional(JsonDecoder.number),
+  xp: JsonDecoder.number,
 }, 'Attrs');
 
 export const investigatorDecoder = JsonDecoder.object<Investigator>({

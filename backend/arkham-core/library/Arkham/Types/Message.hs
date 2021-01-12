@@ -278,6 +278,7 @@ data Message
   | InDiscard Message
   | InHand Message
   | InitDeck InvestigatorId [PlayerCard] -- used to initialize the deck for the campaign
+  | UpgradeDeck InvestigatorId [PlayerCard] -- used to upgrade deck during campaign
   | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
   | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
   | Investigate InvestigatorId LocationId Source SkillType Bool
@@ -492,6 +493,7 @@ data Question
   | ChooseN Int [Message]
   | ChooseSome [Message]
   | ChooseOneAtATime [Message]
+  | ChooseUpgradeDeck
   deriving stock (Show, Eq, Generic)
   deriving anyclass (FromJSON, ToJSON)
 

@@ -2,11 +2,13 @@ module Api.Handler.Arkham.Decks
   ( getApiV1ArkhamDecksR
   , postApiV1ArkhamDecksR
   , deleteApiV1ArkhamDeckR
-  )
-where
+  , putApiV1ArkhamGameDecksR
+  ) where
 
 import Import hiding (delete, on, (==.))
 
+import Api.Arkham.Helpers
+import Arkham.Types.Game
 import Database.Esqueleto
 import Json
 import Network.HTTP.Conduit (simpleHttp)
@@ -25,7 +27,15 @@ data CreateDeckPost = CreateDeckPost
   , deckUrl :: Text
   }
   deriving stock (Show, Generic)
-  deriving anyclass (FromJSON)
+  deriving anyclass FromJSON
+
+newtype UpgradeDeckPost = UpgradeDeckPost
+  { udpDeckUrl :: Text
+  }
+  deriving stock (Show, Generic)
+
+instance FromJSON UpgradeDeckPost where
+  parseJSON = genericParseJSON $ aesonOptions $ Just "udp"
 
 postApiV1ArkhamDecksR :: Handler (Entity ArkhamDeck)
 postApiV1ArkhamDecksR = do
@@ -38,11 +48,34 @@ postApiV1ArkhamDecksR = do
       deckId <- runDB (insert deck)
       pure $ Entity deckId deck
 
+putApiV1ArkhamGameDecksR :: ArkhamGameId -> Handler ()
+putApiV1ArkhamGameDecksR gameId = do
+  userId <- fromJustNote "Not authenticated" <$> getRequestUserId
+  ArkhamGame {..} <- runDB $ get404 gameId
+  postData <- requireCheckJsonBody
+  edecklist <- getDeckList (udpDeckUrl postData)
+  case edecklist of
+    Left err -> error $ show err
+    Right decklist -> do
+      let
+        Game {..} = arkhamGameCurrentData
+        investigatorId = fromJustNote "Missing"
+          $ lookup (fromIntegral $ fromSqlKey userId) gamePlayers
+      cards <- liftIO $ loadDecklistCards decklist
+      ge <-
+        liftIO
+        $ upgradeDeck investigatorId cards
+        =<< toInternalGame arkhamGameCurrentData
+      writeChannel <- getChannel gameId
+      liftIO $ atomically $ writeTChan
+        writeChannel
+        (encode (Entity gameId (ArkhamGame arkhamGameName ge)))
+      void $ runDB (replace gameId (ArkhamGame arkhamGameName ge))
+
 fromPostData
   :: (MonadIO m) => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)
 fromPostData userId CreateDeckPost {..} = do
-  edecklist <- liftIO $ eitherDecode @ArkhamDBDecklist <$> simpleHttp
-    (unpack deckUrl)
+  edecklist <- getDeckList deckUrl
   pure $ case edecklist of
     Left err -> Left err
     Right decklist -> Right $ ArkhamDeck
@@ -51,6 +84,9 @@ fromPostData userId CreateDeckPost {..} = do
       , arkhamDeckName = deckName
       , arkhamDeckList = decklist
       }
+
+getDeckList :: MonadIO m => Text -> m (Either String ArkhamDBDecklist)
+getDeckList url = liftIO $ eitherDecode <$> simpleHttp (unpack url)
 
 deleteApiV1ArkhamDeckR :: ArkhamDeckId -> Handler ()
 deleteApiV1ArkhamDeckR deckId = do

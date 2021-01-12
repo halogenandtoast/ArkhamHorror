@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TupleSections #-}
 module Api.Arkham.Helpers where
 
 import Arkham.Types.Card
@@ -27,20 +27,22 @@ newtype ArkhamDBDecklistMeta = ArkhamDBDecklistMeta { alternate_front :: Investi
   deriving stock (Generic, Show)
   deriving anyclass (FromJSON)
 
-loadDecklist :: ArkhamDeck -> IO (InvestigatorId, [PlayerCard])
-loadDecklist arkhamDeck = do
-  let
-    decklist = arkhamDeckList arkhamDeck
-    investigatorId = case meta decklist of
-      Nothing -> investigator_code decklist
-      Just meta' ->
-        case decode @ArkhamDBDecklistMeta (encodeUtf8 $ fromStrict meta') of
-          Nothing -> investigator_code decklist
-          Just ArkhamDBDecklistMeta {..} -> alternate_front
-  cards <- flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count' ->
+loadDecklistCards :: ArkhamDBDecklist -> IO [PlayerCard]
+loadDecklistCards decklist =
+  flip HashMap.foldMapWithKey (slots decklist) $ \cardCode count' ->
     if cardCode /= "01000"
       then replicateM
         count'
         ((<$> (CardId <$> nextRandom)) (lookupPlayerCard cardCode))
       else pure []
-  pure (investigatorId, cards)
+
+loadDecklist :: ArkhamDeck -> IO (InvestigatorId, [PlayerCard])
+loadDecklist arkhamDeck = (investigatorId, ) <$> loadDecklistCards decklist
+ where
+  decklist = arkhamDeckList arkhamDeck
+  investigatorId = case meta decklist of
+    Nothing -> investigator_code decklist
+    Just meta' ->
+      case decode @ArkhamDBDecklistMeta (encodeUtf8 $ fromStrict meta') of
+        Nothing -> investigator_code decklist
+        Just ArkhamDBDecklistMeta {..} -> alternate_front

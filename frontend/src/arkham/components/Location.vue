@@ -35,7 +35,7 @@
       <button
         v-for="ability in abilities"
         :key="ability"
-        :class="{button: true, 'ability-button': singleAction(ability), 'double-ability-button': doubleAction(ability) }"
+        :class="{button: true, 'ability-button': singleAction(ability), 'double-ability-button': doubleAction(ability), 'fast-ability-button': fastAction(ability) }"
         @click="$emit('choose', ability)"
         >{{abilityLabel(ability)}}</button>
       <Treachery
@@ -229,6 +229,9 @@ export default defineComponent({
     const portrait = (cardCode: string) => `/img/arkham/portraits/${cardCode}.jpg`
 
     function singleAction(idx: number) {
+      if (choices.value[idx].contents[1].type.contents.tag !== "ActionAbility") {
+        return false
+      }
       const { contents } = choices.value[idx].contents[1].type.contents[1]
       if (typeof contents.some == 'function') {
         return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 1)
@@ -238,12 +241,19 @@ export default defineComponent({
     }
 
     function doubleAction(idx: number) {
+      if (choices.value[idx].contents[1].type.contents.tag !== "ActionAbility") {
+        return false
+      }
       const { contents } = choices.value[idx].contents[1].type.contents[1]
       if (typeof contents.some == 'function') {
         return contents.some((cost: Cost) => cost.tag == "ActionCost" && cost.contents == 2)
       } else {
         return contents === 2
       }
+    }
+
+    function fastAction(idx: number) {
+      return choices.value[idx].contents[1].type.tag === "FastAbility"
     }
 
     return {
@@ -257,7 +267,8 @@ export default defineComponent({
       cardAction,
       image,
       singleAction,
-      doubleAction
+      doubleAction,
+      fastAction
     }
   }
 })
@@ -328,6 +339,15 @@ export default defineComponent({
   &:before {
     font-family: "arkham";
     content: "\0049\0049";
+    margin-right: 5px;
+  }
+}
+
+.fast-ability-button {
+  background-color: #555;
+  &:before {
+    font-family: "arkham";
+    content: "\0075";
     margin-right: 5px;
   }
 }

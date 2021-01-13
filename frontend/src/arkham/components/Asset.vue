@@ -81,6 +81,8 @@ export default defineComponent({
           return c.contents.contents === id.value
         case MessageType.READY:
           return c.contents.contents === id.value
+        case MessageType.ADD_USES:
+          return c.contents[0].contents === id.value
         case MessageType.USE_CARD_ABILITY:
           return c.contents[1].contents === id.value
         // case MessageType.ACTIVATE_ABILITY:

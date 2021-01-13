@@ -64,6 +64,7 @@ export enum MessageType {
   FOUND_ENCOUNTER_CARD_FROM = 'FoundEncounterCardFrom',
   FOUND_ENEMY_IN_VOID = 'FoundEnemyInVoid',
   LABEL = 'Label',
+  ADD_USES = 'AddUses',
 }
 
 export interface Message {
@@ -137,6 +138,7 @@ export const messageTypeDecoder = JsonDecoder.oneOf<MessageType>(
     JsonDecoder.isExactly('FoundEnemyInVoid').then(() => JsonDecoder.constant(MessageType.FOUND_ENEMY_IN_VOID)),
     JsonDecoder.isExactly('PlaceDoom').then(() => JsonDecoder.constant(MessageType.PLACE_DOOM)),
     JsonDecoder.isExactly('Ready').then(() => JsonDecoder.constant(MessageType.READY)),
+    JsonDecoder.isExactly('AddUses').then(() => JsonDecoder.constant(MessageType.ADD_USES)),
   ],
   'MessageType',
 );

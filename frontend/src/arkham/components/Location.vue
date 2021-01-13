@@ -229,7 +229,7 @@ export default defineComponent({
     const portrait = (cardCode: string) => `/img/arkham/portraits/${cardCode}.jpg`
 
     function singleAction(idx: number) {
-      if (choices.value[idx].contents[1].type.contents.tag !== "ActionAbility") {
+      if (choices.value[idx].contents[1].type.tag !== "ActionAbility") {
         return false
       }
       const { contents } = choices.value[idx].contents[1].type.contents[1]
@@ -241,7 +241,7 @@ export default defineComponent({
     }
 
     function doubleAction(idx: number) {
-      if (choices.value[idx].contents[1].type.contents.tag !== "ActionAbility") {
+      if (choices.value[idx].contents[1].type.tag !== "ActionAbility") {
         return false
       }
       const { contents } = choices.value[idx].contents[1].type.contents[1]

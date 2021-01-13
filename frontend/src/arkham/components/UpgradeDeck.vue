@@ -22,6 +22,7 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
 import { upgradeDeck } from '@/arkham/api';
+import { Game } from '@/arkham/types/Game';
 
 export default defineComponent({
   props: {

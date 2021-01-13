@@ -2,8 +2,7 @@
 
 module Arkham.Types.Game
   ( module Arkham.Types.Game
-  )
-where
+  ) where
 
 import Arkham.Import hiding (first)
 
@@ -358,18 +357,6 @@ newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
     (const Nothing)
     scenarioOrCampaignId
   mode = fromJustNote "Need campaign or scenario" $ align campaign scenario
-
-upgradeDeck
-  :: (MonadFail m, MonadIO m, MonadRandom m)
-  => InvestigatorId
-  -> [PlayerCard]
-  -> GameInternal
-  -> m GameExternal
-upgradeDeck iid d g = do
-  atomicModifyIORef'
-    (g ^. messageQueue)
-    (\queue -> (UpgradeDeck iid d : queue, ()))
-  runMessages (const $ pure ()) g
 
 instance CanBeWeakness (Game queue) TreacheryId where
   getIsWeakness = getIsWeakness <=< getTreachery

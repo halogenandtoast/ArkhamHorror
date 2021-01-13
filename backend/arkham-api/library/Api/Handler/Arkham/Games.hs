@@ -107,7 +107,7 @@ postApiV1ArkhamGamesR = do
     Just cid -> do
       ge <-
         liftIO
-        $ runMessages (const $ pure ())
+        $ runMessages noLogger
         =<< newCampaign cid playerCount investigators difficulty
       key <- runDB $ do
         gameId <- insert $ ArkhamGame campaignName ge
@@ -118,7 +118,7 @@ postApiV1ArkhamGamesR = do
       Just sid -> do
         ge <-
           liftIO
-          $ runMessages (const $ pure ())
+          $ runMessages noLogger
           =<< newScenario sid playerCount investigators difficulty
         key <- runDB $ do
           gameId <- insert $ ArkhamGame campaignName ge
@@ -181,7 +181,7 @@ putApiV1ArkhamGameR gameId = do
 
   if gameHash == qrGameHash response
     then do
-      ge <- liftIO $ runMessages (const $ pure ()) =<< toInternalGame
+      ge <- liftIO $ runMessages noLogger =<< toInternalGame
         (gameJson { gameMessages = messages <> gameMessages })
 
       writeChannel <- getChannel gameId
@@ -206,7 +206,7 @@ putApiV1ArkhamGameRawR gameId = do
   ArkhamGame {..} <- runDB $ get404 gameId
   response <- requireCheckJsonBody
   let message = fromMaybe (Continue "edited") (gameMessage response)
-  ge <- liftIO $ runMessages (const $ pure ()) =<< toInternalGame
+  ge <- liftIO $ runMessages noLogger =<< toInternalGame
     ((gameJson response)
       { gameMessages = message : gameMessages (gameJson response)
       }

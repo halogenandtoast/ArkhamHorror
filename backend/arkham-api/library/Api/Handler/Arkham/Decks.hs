@@ -9,6 +9,7 @@ import Import hiding (delete, on, (==.))
 
 import Api.Arkham.Helpers
 import Arkham.Types.Game
+import Arkham.Types.Message
 import Database.Esqueleto
 import Json
 import Network.HTTP.Conduit (simpleHttp)
@@ -62,10 +63,11 @@ putApiV1ArkhamGameDecksR gameId = do
         investigatorId = fromJustNote "Missing"
           $ lookup (fromIntegral $ fromSqlKey userId) gamePlayers
       cards <- liftIO $ loadDecklistCards decklist
-      ge <-
-        liftIO
-        $ upgradeDeck investigatorId cards
-        =<< toInternalGame arkhamGameCurrentData
+      ge <- liftIO $ runMessages noLogger =<< toInternalGame
+        (arkhamGameCurrentData
+          { gameMessages = UpgradeDeck investigatorId cards : gameMessages
+          }
+        )
       writeChannel <- getChannel gameId
       liftIO $ atomically $ writeTChan
         writeChannel

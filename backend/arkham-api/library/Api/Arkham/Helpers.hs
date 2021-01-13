@@ -4,12 +4,16 @@ module Api.Arkham.Helpers where
 import Arkham.Types.Card
 import Arkham.Types.Card.Id
 import Arkham.Types.InvestigatorId
+import Arkham.Types.Message
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HashMap
 import qualified Data.Map.Strict as Map
 import Data.UUID.V4
 import Import
 import Json
+
+noLogger :: Applicative m => Message -> m ()
+noLogger = const (pure ())
 
 getChannel :: ArkhamGameId -> Handler (TChan BSL.ByteString)
 getChannel gameId = do

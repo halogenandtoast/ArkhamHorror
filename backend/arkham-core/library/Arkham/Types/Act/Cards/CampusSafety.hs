@@ -10,11 +10,8 @@ newtype CampusSafety = CampusSafety Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 campusSafety :: CampusSafety
-campusSafety = CampusSafety $ baseAttrs
-  "02047"
-  "CampusSafety"
-  (Act 3 A)
-  (Just $ RequiredClues (PerPlayer 3) Nothing)
+campusSafety =
+  CampusSafety $ baseAttrs "02047" "CampusSafety" (Act 3 A) Nothing
 
 instance ActionRunner env => HasActions env CampusSafety where
   getActions i window (CampusSafety x) = getActions i window x

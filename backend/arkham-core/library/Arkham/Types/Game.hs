@@ -2,7 +2,8 @@
 
 module Arkham.Types.Game
   ( module Arkham.Types.Game
-  ) where
+  )
+where
 
 import Arkham.Import hiding (first)
 
@@ -266,48 +267,35 @@ addInvestigator uid i d g = do
   runMessages (const $ pure ()) $ g' & gameStateL .~ gameState
 
 newCampaign
-  :: MonadIO m
+  :: (MonadIO m, MonadRandom m)
   => CampaignId
   -> Int
   -> HashMap Int (Investigator, [PlayerCard])
   -> Difficulty
   -> m GameInternal
-newCampaign campaignId = newGame (Right campaignId)
+newCampaign = newGame . Right
 
 newScenario
-  :: MonadIO m
+  :: (MonadIO m, MonadRandom m)
   => ScenarioId
   -> Int
   -> HashMap Int (Investigator, [PlayerCard])
   -> Difficulty
   -> m GameInternal
-newScenario scenarioId = newGame (Left scenarioId)
+newScenario = newGame . Left
 
 newGame
-  :: MonadIO m
+  :: (MonadIO m, MonadRandom m)
   => Either ScenarioId CampaignId
   -> Int
   -> HashMap Int (Investigator, [PlayerCard])
   -> Difficulty
   -> m GameInternal
 newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
-  hash' <- liftIO nextRandom
-  mseed <- liftIO $ lookupEnv "SEED"
-  seed <- maybe
-    (liftIO $ randomIO @Int)
-    (pure . fromJustNote "invalid seed" . readMaybe)
-    mseed
+  hash' <- getRandom
+  mseed <- liftIO $ fmap readMaybe <$> lookupEnv "SEED"
+  seed <- maybe getRandom (pure . fromJustNote "invalid seed") mseed
   liftIO $ setStdGen (mkStdGen seed)
-  let
-    campaign = either
-      (const Nothing)
-      (Just . (`lookupCampaign` difficulty))
-      scenarioOrCampaignId
-    scenario = either
-      (Just . (`lookupScenario` difficulty))
-      (const Nothing)
-      scenarioOrCampaignId
-    mode = fromJustNote "Need campaign or scenario" $ align campaign scenario
   ref <-
     newIORef
     $ map (uncurry (InitDeck . toId)) (toList investigatorsList)
@@ -361,6 +349,15 @@ newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
   playersMap = map (toId . fst) investigatorsList
   investigatorsMap =
     mapFromList $ map (toFst toId . fst) (toList investigatorsList)
+  campaign = either
+    (const Nothing)
+    (Just . (`lookupCampaign` difficulty))
+    scenarioOrCampaignId
+  scenario = either
+    (Just . (`lookupScenario` difficulty))
+    (const Nothing)
+    scenarioOrCampaignId
+  mode = fromJustNote "Need campaign or scenario" $ align campaign scenario
 
 instance CanBeWeakness (Game queue) TreacheryId where
   getIsWeakness = getIsWeakness <=< getTreachery

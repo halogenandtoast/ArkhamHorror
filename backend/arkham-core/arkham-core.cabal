@@ -1,8 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.3.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
+--
+-- hash: 91a9b649c557bffedb9e6ff9d5dc7d2cf2ac8ec2f8e2a69be6610118404b3817
 
 name:           arkham-core
 version:        0.0.0

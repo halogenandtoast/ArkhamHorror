@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
   ( TheEssexCountyExpress(..)
   , theEssexCountyExpress
-  ) where
+  )
+where
 
 import Arkham.Import hiding (Cultist)
 
@@ -194,6 +195,7 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
 
       let
         start = fromJustNote "No train cars?" $ headMay trainCars
+        end = fromJustNote "No train cars?" $ headMay $ reverse trainCars
         allCars = trainCars <> [engineCar]
         token = case scenarioDifficulty of
           Easy -> MinusTwo
@@ -201,7 +203,7 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
           Hard -> MinusFour
           Expert -> MinusFive
 
-      pushMessages
+      unshiftMessages
         $ [ story investigatorIds theEssexCountyExpressIntro
           , AddToken token
           , SetEncounterDeck encounterDeck
@@ -217,7 +219,16 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
         <> [ PlacedLocationDirection lid1 LeftOf lid2
            | (lid1, lid2) <- zip allCars (drop 1 allCars)
            ]
-        <> [RevealLocation Nothing start, MoveAllTo start]
+        <> [ PlaceLocation engineCar
+           , PlacedLocationDirection engineCar RightOf end
+           , CreateWindowModifierEffect
+             EffectSetupWindow
+             (EffectModifiers [Modifier (ScenarioSource scenarioId) Blank])
+             (ScenarioSource scenarioId)
+             (LocationTarget start)
+           , RevealLocation Nothing start
+           , MoveAllTo start
+           ]
 
       let
         locations' = mapFromList $ map
@@ -241,9 +252,9 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
         Cultist ->
           unshiftMessages [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
         ElderThing | isEasyStandard attrs ->
-          unshiftMessage $ ChooseAndDiscardAsset iid
+          unshiftMessage $ ChooseAndDiscardCard iid
         ElderThing | isHardExpert attrs ->
-          unshiftMessages $ replicate n (ChooseAndDiscardAsset iid)
+          unshiftMessages $ replicate n (ChooseAndDiscardCard iid)
         _ -> pure ()
     NoResolution -> s <$ unshiftMessages [Resolution 2]
     Resolution 1 -> do

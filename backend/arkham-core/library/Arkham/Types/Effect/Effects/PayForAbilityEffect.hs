@@ -1,7 +1,8 @@
 module Arkham.Types.Effect.Effects.PayForAbilityEffect
   ( payForAbilityEffect
   , PayForAbilityEffect(..)
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -184,7 +185,7 @@ instance
                 ]
             )
             cards
-        e <$ unshiftMessage (chooseN iid x cardMsgs)
+        e <$ unshiftMessage (chooseOne iid cardMsgs)
       Free -> pure e
     PayAbilityCostFinished source iid -> case effectMetadata attrs of
       Just (EffectAbility Ability {..}) -> e <$ unshiftMessages

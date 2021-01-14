@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.PassengerCar_169
   ( passengerCar_169
   , PassengerCar_169(..)
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -30,14 +31,13 @@ passengerCar_169 = PassengerCar_169
 
 instance HasCount ClueCount env LocationId => HasModifiersFor env PassengerCar_169 where
   getModifiersFor _ target (PassengerCar_169 location@Attrs {..})
-    | isTarget location target = do
-      let
-        leftLocation =
-          fromJustNote "no left location" $ lookup LeftOf locationDirections
-      clueCount <- unClueCount <$> getCount leftLocation
-      pure $ toModifiers
-        location
-        [ Blocked | not locationRevealed && clueCount > 0 ]
+    | isTarget location target = case lookup LeftOf locationDirections of
+      Just leftLocation -> do
+        clueCount <- unClueCount <$> getCount leftLocation
+        pure $ toModifiers
+          location
+          [ Blocked | not locationRevealed && clueCount > 0 ]
+      Nothing -> pure []
   getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env PassengerCar_169 where
@@ -53,8 +53,8 @@ instance LocationRunner env => RunMessage env PassengerCar_169 where
           (chooseOne
             iid
             [ Label
-              "Take 2 damage"
-              [InvestigatorAssignDamage iid (toSource attrs) DamageAny 2 0]
+              "Take 2 horror"
+              [InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2]
             , Label
               "Discard cards with at least 2 {willpower} icons"
               [ CreatePayAbilityCostEffect

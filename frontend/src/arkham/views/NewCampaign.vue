@@ -91,6 +91,10 @@ const scenarios = [
     name: 'The Miskatonic Museum',
   },
   {
+    id: '02159',
+    name: 'The Essex County Express',
+  },
+  {
     id: '81001',
     name: 'Curse of the Rougarou',
   },

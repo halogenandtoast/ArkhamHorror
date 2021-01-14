@@ -3,7 +3,7 @@
   <div v-if="upgradeDeck" id="game" class="game">
     <UpgradeDeck :game="game" :investigatorId="investigatorId" />
   </div>
-  <div v-else-if="!game.currentData.gameOver && !game.currentData.pending" id="game" class="game">
+  <div v-else-if="game.currentData.gameState === 'IsActive'" id="game" class="game">
     <Scenario
       v-if="game.currentData.scenario"
 
@@ -27,10 +27,12 @@
       />
     </template>
   </div>
-  <div v-else-if="game.currentData.pending">
-    <p>Waiting for more players</p>
-    <div v-if="investigatorId == game.currentData.leadInvestigatorId">
-      <p>Invite them with this url: {{inviteLink}}</p>
+  <div v-else-if="game.currentData.gameState === 'IsPending'">
+    <div id='invite'>
+      <h3>Waiting for more players</h3>
+      <div v-if="investigatorId == game.currentData.leadInvestigatorId">
+        <p>Invite them with this url: {{inviteLink}}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -125,6 +127,16 @@ export default defineComponent({
   background-image: linear-gradient(darken(#E5EAEC, 10), #E5EAEC);
   width: 100%;
   z-index: 1;
+}
+
+#invite {
+  background: #FFF;
+  padding: 5px 10px;
+  width: 800px;
+  margin: 0 auto;
+  margin-top: 50px;
+  border-radius: 5px;
+  text-align: center;
 }
 
 .location-cards {

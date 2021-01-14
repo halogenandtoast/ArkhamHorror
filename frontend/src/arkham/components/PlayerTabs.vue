@@ -13,6 +13,7 @@
       v-for="(player, index) in players"
       :key="index"
       :index="index"
+      :selectedTab="selectedTab"
       :playerClass="player.contents.class"
       :title="player.contents.name"
       :investigatorId="index"

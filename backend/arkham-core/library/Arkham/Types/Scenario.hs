@@ -18,6 +18,7 @@ data Scenario
   | ExtracurricularActivity' ExtracurricularActivity
   | TheHouseAlwaysWins' TheHouseAlwaysWins
   | TheMiskatonicMuseum' TheMiskatonicMuseum
+  | TheEssexCountyExpress' TheEssexCountyExpress
   | ReturnToTheGathering' ReturnToTheGathering
   | ReturnToTheMidnightMasks' ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow' ReturnToTheDevourerBelow
@@ -39,6 +40,7 @@ deriving anyclass instance
   , HasTokenValue env InvestigatorId
   , HasId LocationId env InvestigatorId
   , HasId CardCode env EnemyId
+  , HasStep AgendaStep env
   )
   => HasTokenValue env Scenario
 
@@ -91,6 +93,7 @@ allScenarios = mapFromList
   , ("02041", ExtracurricularActivity' . extracurricularActivity)
   , ("02062", TheHouseAlwaysWins' . theHouseAlwaysWins)
   , ("02118", TheMiskatonicMuseum' . theMiskatonicMuseum)
+  , ("02159", TheEssexCountyExpress' . theEssexCountyExpress)
   , ("50011", ReturnToTheGathering' . returnToTheGathering)
   , ("50025", ReturnToTheMidnightMasks' . returnToTheMidnightMasks)
   , ("50032", ReturnToTheDevourerBelow' . returnToTheDevourerBelow)
@@ -106,6 +109,7 @@ scenarioAttrs = \case
   ExtracurricularActivity' attrs -> coerce attrs
   TheHouseAlwaysWins' attrs -> coerce attrs
   TheMiskatonicMuseum' attrs -> coerce attrs
+  TheEssexCountyExpress' attrs -> coerce attrs
   ReturnToTheGathering' attrs -> coerce attrs
   ReturnToTheMidnightMasks' attrs -> coerce attrs
   ReturnToTheDevourerBelow' attrs -> coerce attrs

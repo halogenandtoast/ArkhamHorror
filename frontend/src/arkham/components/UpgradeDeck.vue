@@ -25,9 +25,8 @@
   <Prompt
     v-if="skipping"
     prompt="Are you sure you want to delete this deck?"
-    :yesFun="skip"
-    :noFun="() => skipping = false"
-    :cancelFun="() => skipping = false"
+    :yes="skip"
+    :no="() => skipping = false"
   />
 </template>
 

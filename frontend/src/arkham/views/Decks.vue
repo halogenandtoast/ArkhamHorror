@@ -28,9 +28,8 @@
     <Prompt
       v-if="deleteId"
       prompt="Are you sure you want to delete this deck?"
-      :yesFun="deleteDeckEvent"
-      :noFun="() => deleteId = null"
-      :cancelFun="() => deleteId = null"
+      :yes="deleteDeckEvent"
+      :no="() => deleteId = null"
     />
   </div>
 </template>

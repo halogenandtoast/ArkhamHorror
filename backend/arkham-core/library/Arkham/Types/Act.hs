@@ -1,7 +1,8 @@
 module Arkham.Types.Act
   ( Act(..)
   , lookupAct
-  ) where
+  )
+where
 
 import Arkham.Import hiding (fold)
 
@@ -28,6 +29,7 @@ data Act
   | NightAtTheMuseum' NightAtTheMuseum
   | BreakingAndEntering' BreakingAndEntering
   | SearchingForTheTome' SearchingForTheTome
+  | RunExclaim' RunExclaim
   | MysteriousGateway' MysteriousGateway
   | FindingLadyEsprit' FindingLadyEsprit
   | HuntingTheRougarou' HuntingTheRougarou
@@ -73,6 +75,7 @@ allActs = mapFromList $ map
   , NightAtTheMuseum' nightAtTheMuseum
   , BreakingAndEntering' breakingAndEntering
   , SearchingForTheTome' searchingForTheTome
+  , RunExclaim' runExclaim
   , MysteriousGateway' mysteriousGateway
   , FindingLadyEsprit' findingLadyEsprit
   , HuntingTheRougarou' huntingTheRougarou
@@ -98,6 +101,7 @@ actAttrs = \case
   NightAtTheMuseum' attrs -> coerce attrs
   BreakingAndEntering' attrs -> coerce attrs
   SearchingForTheTome' attrs -> coerce attrs
+  RunExclaim' attrs -> coerce attrs
   MysteriousGateway' attrs -> coerce attrs
   FindingLadyEsprit' attrs -> coerce attrs
   HuntingTheRougarou' attrs -> coerce attrs

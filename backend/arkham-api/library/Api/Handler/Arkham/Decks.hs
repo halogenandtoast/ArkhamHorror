@@ -31,7 +31,7 @@ data CreateDeckPost = CreateDeckPost
   deriving anyclass FromJSON
 
 newtype UpgradeDeckPost = UpgradeDeckPost
-  { udpDeckUrl :: Text
+  { udpDeckUrl :: Maybe Text
   }
   deriving stock (Show, Generic)
 
@@ -54,25 +54,27 @@ putApiV1ArkhamGameDecksR gameId = do
   userId <- fromJustNote "Not authenticated" <$> getRequestUserId
   ArkhamGame {..} <- runDB $ get404 gameId
   postData <- requireCheckJsonBody
-  edecklist <- getDeckList (udpDeckUrl postData)
-  case edecklist of
-    Left err -> error $ show err
-    Right decklist -> do
-      let
-        Game {..} = arkhamGameCurrentData
-        investigatorId = fromJustNote "Missing"
-          $ lookup (fromIntegral $ fromSqlKey userId) gamePlayers
-      cards <- liftIO $ loadDecklistCards decklist
-      ge <- liftIO $ runMessages noLogger =<< toInternalGame
-        (arkhamGameCurrentData
-          { gameMessages = UpgradeDeck investigatorId cards : gameMessages
-          }
-        )
-      writeChannel <- getChannel gameId
-      liftIO $ atomically $ writeTChan
-        writeChannel
-        (encode (Entity gameId (ArkhamGame arkhamGameName ge)))
-      void $ runDB (replace gameId (ArkhamGame arkhamGameName ge))
+  let
+    Game {..} = arkhamGameCurrentData
+    investigatorId = fromJustNote "Missing"
+      $ lookup (fromIntegral $ fromSqlKey userId) gamePlayers
+  msg <- case udpDeckUrl postData of
+    Nothing -> pure Done
+    Just deckUrl -> do
+      edecklist <- getDeckList deckUrl
+      case edecklist of
+        Left err -> error $ show err
+        Right decklist -> do
+          cards <- liftIO $ loadDecklistCards decklist
+          pure $ UpgradeDeck investigatorId cards
+
+  ge <- liftIO $ runMessages noLogger =<< toInternalGame
+    (arkhamGameCurrentData { gameMessages = msg : gameMessages })
+  writeChannel <- getChannel gameId
+  liftIO $ atomically $ writeTChan
+    writeChannel
+    (encode (Entity gameId (ArkhamGame arkhamGameName ge)))
+  void $ runDB (replace gameId (ArkhamGame arkhamGameName ge))
 
 fromPostData
   :: (MonadIO m) => UserId -> CreateDeckPost -> m (Either String ArkhamDeck)

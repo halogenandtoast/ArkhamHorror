@@ -4,11 +4,11 @@ module Arkham.Types.Campaign.Attrs where
 
 import Arkham.Import hiding (log)
 
-import Arkham.Types.Game.Helpers
 import Arkham.Types.Campaign.Runner
 import Arkham.Types.CampaignLog
 import Arkham.Types.CampaignStep
 import Arkham.Types.Difficulty
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator
 
 data Attrs = Attrs
@@ -54,7 +54,8 @@ instance CampaignRunner env => RunMessage env Attrs where
       investigatorIds <- getInvestigatorIds
       a <$ unshiftMessages
         (ResetGame
-        : [AskMap . mapFromList $ (, ChooseUpgradeDeck) <$> investigatorIds]
+        : map chooseUpgradeDeck investigatorIds
+        <> [FinishedUpgradingDecks]
         )
     SetTokensForScenario -> a <$ unshiftMessage (SetTokens campaignChaosBag)
     AddCampaignCardToDeck iid cardCode -> do
@@ -70,10 +71,11 @@ instance CampaignRunner env => RunMessage env Attrs where
         %~ adjustMap (filter ((/= cardCode) . pcCardCode)) iid
     AddToken token -> pure $ a & chaosBagL %~ (token :)
     InitDeck iid deck -> pure $ a & decksL %~ insertMap iid deck
-    UpgradeDeck iid deck -> case a ^. stepL of
+    UpgradeDeck iid deck -> pure $ a & decksL %~ insertMap iid deck
+    FinishedUpgradingDecks -> case a ^. stepL of
       Just (UpgradeDeckStep nextStep) -> do
         unshiftMessage (CampaignStep $ Just nextStep)
-        pure $ a & decksL %~ insertMap iid deck & stepL ?~ nextStep
+        pure $ a & stepL ?~ nextStep
       _ -> error "invalid state"
     ResetGame -> do
       for_ (mapToList campaignDecks) $ \(iid, deck) -> do

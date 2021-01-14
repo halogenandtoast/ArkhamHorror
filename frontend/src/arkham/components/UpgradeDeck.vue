@@ -2,7 +2,7 @@
   <div id="upgrade-deck">
     <div>
       <h2>Upgrade Deck ({{xp}} xp)</h2>
-      <div class="upgrade-deck">
+      <div v-if="!waiting" class="upgrade-deck">
         <img class="portrait" :src="`/img/arkham/portraits/${investigatorId}.jpg`" />
         <div class="fields">
           <input
@@ -13,18 +13,32 @@
             placeholder="ArkhamDB deck url"
           />
           <button @click.prevent="upgrade">Upgrade</button>
+          <button @click.prevent="skipping = true">Do not Upgrade</button>
         </div>
+      </div>
+      <div v-else class="upgrade-deck">
+        Waiting for other players to upgrade deck.
       </div>
     </div>
   </div>
+
+  <Prompt
+    v-if="skipping"
+    prompt="Are you sure you want to delete this deck?"
+    :yesFun="skip"
+    :noFun="() => skipping = false"
+    :cancelFun="() => skipping = false"
+  />
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
 import { upgradeDeck } from '@/arkham/api';
 import { Game } from '@/arkham/types/Game';
+import Prompt from '@/arkham/components/Prompt.vue';
 
 export default defineComponent({
+  components: { Prompt },
   props: {
     game: { type: Object as () => Game, required: true },
     investigatorId: { type: String, required: true }
@@ -36,6 +50,7 @@ export default defineComponent({
     const investigator = computed(() => props.game.currentData.investigators[props.investigatorId])
 
     const xp = computed(() => investigator.value.contents.xp)
+    const skipping = ref(false)
 
     function loadDeck() {
       if (!deck.value) {
@@ -69,7 +84,11 @@ export default defineComponent({
       }
     }
 
-    return { pasteDeck, upgrade, deck, loadDeck, investigator, xp }
+    async function skip() {
+      upgradeDeck(props.game.id).then(() => waiting.value = true);
+    }
+
+    return { pasteDeck, upgrade, deck, loadDeck, investigator, xp, skip, skipping, waiting }
   }
 })
 </script>

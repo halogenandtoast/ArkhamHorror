@@ -5,6 +5,7 @@ where
 
 import Arkham.Prelude
 
+import Arkham.Types.Modifier
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.AssetId
 import Arkham.Types.Direction
@@ -18,6 +19,7 @@ import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Cards
+import Arkham.Types.Message
 import Arkham.Types.Name
 import Arkham.Types.Location.Runner
 import Arkham.Types.LocationId
@@ -124,7 +126,6 @@ data Location
   deriving anyclass (ToJSON, FromJSON)
 
 deriving anyclass instance ActionRunner env => HasActions env Location
-deriving anyclass instance LocationRunner env => RunMessage env Location
 deriving anyclass instance
   ( HasPhase env
   , HasCount CardCount env InvestigatorId
@@ -133,6 +134,17 @@ deriving anyclass instance
   , HasId (Maybe StoryEnemyId) env CardCode
   )
   => HasModifiersFor env Location
+
+isBlanked :: Message -> Bool
+isBlanked Blanked{} = True
+isBlanked _ = False
+
+instance LocationRunner env => RunMessage env Location where
+  runMessage msg l = do
+    modifiers' <- getModifiersFor (toSource l) (toTarget l) ()
+    if any isBlank modifiers' && not (isBlanked msg)
+      then runMessage (Blanked msg) l
+      else defaultRunMessage msg l
 
 instance Entity Location where
   type EntityId Location = LocationId

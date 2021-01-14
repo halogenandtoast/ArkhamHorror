@@ -403,4 +403,5 @@ instance LocationRunner env => RunMessage env Attrs where
         (/= lid)
     UseCardAbility iid source _ 99 _ | isSource a source ->
       a <$ unshiftMessage (Resign iid)
+    Blanked msg' -> runMessage msg' a
     _ -> pure a

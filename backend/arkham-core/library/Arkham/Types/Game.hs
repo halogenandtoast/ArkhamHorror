@@ -1649,7 +1649,7 @@ runGameMessage msg g = case msg of
         , SetTokensForScenario -- (chaosBagOf campaign')
         ]
       <> [ InvestigatorMulligan iid | iid <- keys $ g ^. investigatorsL ]
-      <> [Setup]
+      <> [Setup, EndSetup]
     pure
       $ g
       & (modeL %~ setScenario (lookupScenario sid difficulty))

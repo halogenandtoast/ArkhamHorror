@@ -431,6 +431,7 @@ data Message
   | SetTokens [Token]
   | SetTokensForScenario
   | Setup
+  | EndSetup
   | SetupInvestigators
   | SetupStep Int
   | ShuffleAllFocusedIntoDeck InvestigatorId Target

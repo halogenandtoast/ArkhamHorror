@@ -3,7 +3,8 @@
 module Arkham.Types.Effect.Attrs
   ( module Arkham.Types.Effect.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -54,6 +55,8 @@ instance HasActions env Attrs where
 
 instance HasQueue env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
+    EndSetup | EffectSetupWindow `elem` effectWindow ->
+      a <$ unshiftMessage (DisableEffect effectId)
     EndPhase | EffectPhaseWindow `elem` effectWindow ->
       a <$ unshiftMessage (DisableEffect effectId)
     EndRound | EffectRoundWindow `elem` effectWindow ->

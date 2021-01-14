@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.ClawsOfSteam
   ( clawsOfSteam
   , ClawsOfSteam(..)
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -30,7 +31,7 @@ instance TreacheryRunner env => RunMessage env ClawsOfSteam where
     FailedSkillTest iid _ source SkillTestInitiatorTarget{} _
       | isSource attrs source -> t <$ unshiftMessages
         [ CreateWindowModifierEffect
-          EffectPhaseWindow
+          EffectRoundWindow
           (EffectModifiers $ toModifiers attrs [CannotMove])
           source
           (InvestigatorTarget iid)

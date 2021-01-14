@@ -2,8 +2,7 @@
 
 module Arkham.Types.Game
   ( module Arkham.Types.Game
-  )
-where
+  ) where
 
 import Arkham.Import hiding (first)
 
@@ -1625,6 +1624,7 @@ runGameMessage msg g = case msg of
       & (focusedCardsL .~ mempty)
       & (activeCardL .~ Nothing)
       & (victoryDisplayL .~ mempty)
+      & (playerOrderL .~ (g ^. playersL . to toList))
   StartScenario sid -> do
     let
       difficulty = these

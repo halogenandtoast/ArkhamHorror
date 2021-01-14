@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.TheCurseSpreads
   ( TheCurseSpreads(..)
   , theCurseSpreads
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -45,7 +44,7 @@ instance AgendaRunner env => RunMessage env TheCurseSpreads where
       pure
         $ TheCurseSpreads
         $ attrs
-        & (sequenceL .~ Agenda 2 B)
+        & (sequenceL .~ Agenda 3 B)
         & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B ->
       a <$ unshiftMessage (Resolution 1)

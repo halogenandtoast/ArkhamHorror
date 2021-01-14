@@ -181,18 +181,16 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
     ResolveToken _ Cultist iid | isEasyStandard attrs -> do
       closestCultists <- map unClosestEnemyId
         <$> getSetList (iid, [Trait.Cultist])
-      case closestCultists of
+      s <$ case closestCultists of
         [] -> pure ()
         [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
         xs -> unshiftMessage
           (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
-      pure s
     ResolveToken _ Cultist iid | isHardExpert attrs -> do
       cultists <- getSetList @EnemyId Trait.Cultist
-      case cultists of
+      s <$ case cultists of
         [] -> unshiftMessage (DrawAnotherToken iid)
         xs -> unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
-      pure s
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _
       | drawnTokenFace token == Tablet -> if isEasyStandard attrs
         then s <$ unshiftMessage (InvestigatorPlaceAllCluesOnLocation iid)

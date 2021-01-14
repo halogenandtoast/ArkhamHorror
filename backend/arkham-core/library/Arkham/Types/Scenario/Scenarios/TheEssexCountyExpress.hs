@@ -7,13 +7,13 @@ where
 import Arkham.Import hiding (Cultist)
 
 import Arkham.Types.CampaignLogKey
-import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Token
+import qualified Arkham.Types.Trait as Trait
 import Data.List.NonEmpty (NonEmpty(..))
 
 newtype TheEssexCountyExpress = TheEssexCountyExpress Attrs
@@ -163,8 +163,17 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
           (engineCar : trainCars)
       TheEssexCountyExpress
         <$> runMessage msg (attrs & locationsL .~ locations')
-    ResolveToken _ Tablet iid | isEasyStandard attrs ->
-      s <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid 1)
+    ResolveToken _ Tablet iid | isEasyStandard attrs -> do
+      closestCultists <- map unClosestEnemyId
+        <$> getSetList (iid, [Trait.Cultist])
+      s <$ case closestCultists of
+        [] -> pure ()
+        [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
+        xs -> unshiftMessage
+          (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
+    ResolveToken _ Cultist _ | isHardExpert attrs -> do
+      cultists <- getSetList @EnemyId Trait.Cultist
+      s <$ unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- cultists ]
     ResolveToken _ Tablet iid | isHardExpert attrs -> do
       lid <- getId @LocationId iid
       enemyIds <- getSetList @EnemyId lid
@@ -176,10 +185,8 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
         Nothing -> pure s
     FailedSkillTest iid _ _ (DrawnTokenTarget token) _ ->
       s <$ case drawnTokenFace token of
-        Cultist -> unshiftMessage $ FindEncounterCard
-          iid
-          (toTarget attrs)
-          (EncounterCardMatchByCardCode "02141")
+        Cultist ->
+          unshiftMessages [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
         ElderThing -> unshiftMessage $ ChooseAndDiscardAsset iid
         _ -> pure ()
     NoResolution -> do

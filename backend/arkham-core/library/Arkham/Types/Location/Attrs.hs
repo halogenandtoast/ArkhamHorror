@@ -32,6 +32,7 @@ data Attrs = Attrs
   , locationAssets :: HashSet AssetId
   , locationEncounterSet :: EncounterSet
   , locationDirections :: HashMap Direction LocationId
+  , locationConnectsTo :: HashSet Direction
   }
   deriving stock (Show, Generic)
 
@@ -104,6 +105,7 @@ baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' tr
     , locationAssets = mempty
     , locationEncounterSet = encounterSet
     , locationDirections = mempty
+    , locationConnectsTo = mempty
     }
 
 getModifiedShroudValueFor
@@ -207,6 +209,52 @@ instance LocationRunner env => RunMessage env Attrs where
       pure $ a & labelL .~ label'
     PlacedLocation lid | lid == locationId ->
       a <$ unshiftMessage (AddConnection lid locationSymbol)
+    PlacedLocationDirection lid direction lid2 | lid == locationId ->
+      case direction of
+        LeftOf | RightOf `member` locationConnectsTo ->
+          pure
+            $ a
+            & (connectedLocationsL %~ insertSet lid2)
+            & (directionsL %~ insertMap RightOf lid2)
+        RightOf | LeftOf `member` locationConnectsTo ->
+          pure
+            $ a
+            & (connectedLocationsL %~ insertSet lid2)
+            & (directionsL %~ insertMap LeftOf lid2)
+        Above | Below `member` locationConnectsTo ->
+          pure
+            $ a
+            & (connectedLocationsL %~ insertSet lid2)
+            & (directionsL %~ insertMap Below lid2)
+        Below | Above `member` locationConnectsTo ->
+          pure
+            $ a
+            & (connectedLocationsL %~ insertSet lid2)
+            & (directionsL %~ insertMap Above lid2)
+        _ -> pure a
+    PlacedLocationDirection lid direction lid2 | lid2 == locationId ->
+      case direction of
+        LeftOf | LeftOf `member` locationConnectsTo ->
+          pure
+            $ a
+            & (connectedLocationsL %~ insertSet lid)
+            & (directionsL %~ insertMap LeftOf lid)
+        RightOf | RightOf `member` locationConnectsTo ->
+          pure
+            $ a
+            & (connectedLocationsL %~ insertSet lid)
+            & (directionsL %~ insertMap RightOf lid)
+        Above | Above `member` locationConnectsTo ->
+          pure
+            $ a
+            & (connectedLocationsL %~ insertSet lid)
+            & (directionsL %~ insertMap Above lid)
+        Below | Below `member` locationConnectsTo ->
+          pure
+            $ a
+            & (connectedLocationsL %~ insertSet lid2)
+            & (directionsL %~ insertMap Below lid2)
+        _ -> pure a
     AttachTreachery tid (LocationTarget lid) | lid == locationId ->
       pure $ a & treacheriesL %~ insertSet tid
     AttachEvent eid (LocationTarget lid) | lid == locationId ->

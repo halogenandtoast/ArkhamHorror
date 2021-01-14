@@ -13,6 +13,14 @@
       :investigatorId="investigatorId"
       @choose="$emit('choose', $event)"
     />
+    <Asset
+      v-for="assetId in enemy.contents.assets"
+      :key="assetId"
+      :asset="game.currentData.assets[assetId]"
+      :game="game"
+      :investigatorId="investigatorId"
+      @choose="$emit('choose', $event)"
+    />
     <button
       v-if="fightAction !== -1"
       class="button fight-button"
@@ -48,10 +56,11 @@ import * as ArkhamGame from '@/arkham/types/Game'
 import { MessageType } from '@/arkham/types/Message'
 import PoolItem from '@/arkham/components/PoolItem.vue'
 import Treachery from '@/arkham/components/Treachery.vue';
+import Asset from '@/arkham/components/Asset.vue';
 import * as Arkham from '@/arkham/types/Enemy'
 
 export default defineComponent({
-  components: { PoolItem, Treachery },
+  components: { PoolItem, Treachery, Asset },
   props: {
     game: { type: Object as () => Game, required: true },
     enemy: { type: Object as () => Arkham.Enemy, required: true },

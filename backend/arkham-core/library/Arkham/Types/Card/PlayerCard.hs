@@ -334,6 +334,7 @@ allPlayerCards = mapFromList
   , ("81019", ladyEsprit)
   , ("81020", bearTrap)
   , ("81021", fishingNet)
+  , ("81029", curseOfTheRougarou)
   , ("81030", monstrousTransformation)
   , ("90002", daisysToteBagAdvanced)
   , ("90003", theNecronomiconAdvanced)

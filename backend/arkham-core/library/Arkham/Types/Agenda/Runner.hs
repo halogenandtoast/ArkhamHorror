@@ -14,11 +14,13 @@ type AgendaRunner env
     , HasCount EnemyCount env (LocationMatcher, [Trait])
     , HasCount PlayerCount env ()
     , HasId (Maybe LocationId) env LocationMatcher
+    , HasId (Maybe LocationId) env (Direction, LocationId)
     , HasId (Maybe StoryEnemyId) env CardCode
     , HasId (Maybe StoryTreacheryId) env CardCode
     , HasId CardCode env EnemyId
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env EnemyId
+    , HasId LocationId env InvestigatorId
     , HasList LocationName env ()
     , HasSet ActId env ()
     , HasSet ClosestPathLocationId env (LocationId, LocationId)

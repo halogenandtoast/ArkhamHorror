@@ -224,8 +224,7 @@ getModifiedSanity attrs@Attrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-removeFromSlots
-  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> Attrs -> Bool
@@ -957,6 +956,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   AfterDiscoverClues iid _ n | iid == investigatorId -> do
     unshiftMessage (After (GainClues iid n))
     pure $ a & cluesL +~ n
+  InvestigatorDiscardAllClues iid | iid == investigatorId ->
+    pure $ a & cluesL .~ 0
   PayCardCost iid cardId | iid == investigatorId -> do
     let
       card =

@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
   ( TheEssexCountyExpress(..)
   , theEssexCountyExpress
-  ) where
+  )
+where
 
 import Arkham.Import hiding (Cultist)
 
@@ -113,7 +114,6 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
         then unshiftMessage (SetTokens standaloneTokens)
         else pure ()
     Setup -> do
-      _standalone <- isNothing <$> getId @(Maybe CampaignId) ()
       investigatorIds <- getInvestigatorIds
 
       engineCar <- sample $ "02175" :| ["02176", "02177"]
@@ -124,6 +124,12 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
       let
         start = fromJustNote "No train cars?" $ headMay trainCars
         allCars = trainCars <> [engineCar]
+        token = case scenarioDifficulty of
+          Easy -> MinusTwo
+          Standard -> MinusThree
+          Hard -> MinusFour
+          Expert -> MinusFive
+
 
       encounterDeck <- buildEncounterDeck
         [ EncounterSet.TheEssexCountyExpress
@@ -135,6 +141,7 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
 
       pushMessages
         $ [ story investigatorIds theEssexCountyExpressIntro
+          , AddToken token
           , SetEncounterDeck encounterDeck
           , AddAgenda "02160"
           , AddAct "02165"

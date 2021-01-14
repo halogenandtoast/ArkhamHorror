@@ -27,6 +27,7 @@ data EncounterSet
   | ExtracurricularActivity
   | TheHouseAlwaysWins
   | TheMiskatonicMuseum
+  | TheEssexCountyExpress
   | Sorcery
   | BishopsThralls
   | Dunwich
@@ -82,6 +83,12 @@ setCards = \case
       <> replicate 3 "02144"
       <> replicate 2 "02145"
       <> replicate 2 "02146"
+  TheEssexCountyExpress ->
+    replicate 3 "02179"
+      <> replicate 3 "02180"
+      <> replicate 3 "02181"
+      <> replicate 2 "02182"
+      <> replicate 2 "02183"
   Sorcery -> replicate 3 "02083" <> replicate 3 "02084"
   BishopsThralls -> replicate 2 "02085" <> replicate 3 "02086" <> ["02087"]
   Dunwich -> replicate 2 "02088" <> replicate 2 "02089"

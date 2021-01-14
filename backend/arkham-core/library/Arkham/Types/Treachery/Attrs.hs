@@ -113,12 +113,13 @@ baseAttrs tid cardCode =
       , treacheryResources = Nothing
       }
 
-weaknessAttrs :: TreacheryId -> Maybe InvestigatorId -> CardCode -> Attrs
+weaknessAttrs
+  :: HasCallStack => TreacheryId -> Maybe InvestigatorId -> CardCode -> Attrs
 weaknessAttrs tid iid cardCode =
   let
     MkPlayerCard {..} =
       fromJustNote
-          "missing weakness card"
+          ("missing weakness card: " <> show cardCode)
           (HashMap.lookup cardCode allPlayerCards)
         $ CardId (unTreacheryId tid)
   in

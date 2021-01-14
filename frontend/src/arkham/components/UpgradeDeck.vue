@@ -47,7 +47,6 @@ export default defineComponent({
     const deck = ref<string | null>(null)
     const deckUrl = ref<string | null>(null)
     const investigator = computed(() => props.game.currentData.investigators[props.investigatorId])
-
     const xp = computed(() => investigator.value.contents.xp)
     const skipping = ref(false)
 
@@ -57,6 +56,7 @@ export default defineComponent({
       }
 
       const matches = deck.value.match(/\/(deck(list)?)(\/view)?\/([^/]+)/);
+
       if (matches) {
         deckUrl.value = `https://arkhamdb.com/api/public/${matches[1]}/${matches[4]}`
         fetch(deckUrl.value)

@@ -38,9 +38,8 @@
     <Prompt
       v-if="deleteId"
       prompt="Are you sure you want to delete this game?"
-      :yesFun="deleteGameEvent"
-      :noFun="() => deleteId = null"
-      :cancelFun="() => deleteId = null"
+      :yes="deleteGameEvent"
+      :no="() => deleteId = null"
     />
   </div>
 

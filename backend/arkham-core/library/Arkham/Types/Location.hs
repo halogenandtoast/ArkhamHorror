@@ -1,6 +1,7 @@
 module Arkham.Types.Location
   ( module Arkham.Types.Location
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -83,6 +84,8 @@ data Location
   | PassengerCar_170' PassengerCar_170
   | PassengerCar_171' PassengerCar_171
   | SleepingCar' SleepingCar
+  | DiningCar' DiningCar
+  | ParlorCar' ParlorCar
   | EngineCar_175' EngineCar_175
   | EngineCar_176' EngineCar_176
   | EngineCar_177' EngineCar_177
@@ -293,6 +296,8 @@ allLocations = mapFromList $ map
   , PassengerCar_170' passengerCar_170
   , PassengerCar_171' passengerCar_171
   , SleepingCar' sleepingCar
+  , DiningCar' diningCar
+  , ParlorCar' parlorCar
   , EngineCar_175' engineCar_175
   , EngineCar_176' engineCar_176
   , EngineCar_177' engineCar_177
@@ -398,6 +403,8 @@ locationAttrs = \case
   PassengerCar_170' attrs -> coerce attrs
   PassengerCar_171' attrs -> coerce attrs
   SleepingCar' attrs -> coerce attrs
+  DiningCar' attrs -> coerce attrs
+  ParlorCar' attrs -> coerce attrs
   EngineCar_175' attrs -> coerce attrs
   EngineCar_176' attrs -> coerce attrs
   EngineCar_177' attrs -> coerce attrs

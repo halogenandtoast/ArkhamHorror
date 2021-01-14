@@ -1,6 +1,7 @@
 module Arkham.Types.Location.Cards
   ( module X
-  ) where
+  )
+where
 
 import Arkham.Types.Location.Cards.AdministrationBuilding as X
 import Arkham.Types.Location.Cards.AdministrationOffice_130 as X
@@ -31,6 +32,7 @@ import Arkham.Types.Location.Cards.CloverClubLounge as X
 import Arkham.Types.Location.Cards.CursedShores as X
 import Arkham.Types.Location.Cards.DarkenedHall as X
 import Arkham.Types.Location.Cards.DeepBelowYourHouse as X
+import Arkham.Types.Location.Cards.DiningCar as X
 import Arkham.Types.Location.Cards.Dormitories as X
 import Arkham.Types.Location.Cards.DowntownArkhamAsylum as X
 import Arkham.Types.Location.Cards.DowntownFirstBankOfArkham as X
@@ -69,6 +71,7 @@ import Arkham.Types.Location.Cards.NorthsideTrainStation as X
 import Arkham.Types.Location.Cards.OrneLibrary as X
 import Arkham.Types.Location.Cards.OvergrownCairns as X
 import Arkham.Types.Location.Cards.Parlor as X
+import Arkham.Types.Location.Cards.ParlorCar as X
 import Arkham.Types.Location.Cards.PassengerCar_167 as X
 import Arkham.Types.Location.Cards.PassengerCar_168 as X
 import Arkham.Types.Location.Cards.PassengerCar_169 as X

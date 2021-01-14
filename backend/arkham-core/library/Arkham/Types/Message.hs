@@ -11,6 +11,7 @@ module Arkham.Types.Message
   , chooseOneAtATime
   , chooseSome
   , chooseN
+  , chooseUpgradeDeck
   , resolve
   , story
   ) where
@@ -279,6 +280,7 @@ data Message
   | InHand Message
   | InitDeck InvestigatorId [PlayerCard] -- used to initialize the deck for the campaign
   | UpgradeDeck InvestigatorId [PlayerCard] -- used to upgrade deck during campaign
+  | FinishedUpgradingDecks
   | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
   | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
   | Investigate InvestigatorId LocationId Source SkillType Bool
@@ -487,6 +489,9 @@ chooseSome iid msgs = Ask iid (ChooseSome $ Done : msgs)
 chooseN :: InvestigatorId -> Int -> [Message] -> Message
 chooseN _ _ [] = throw $ InvalidState "No messages"
 chooseN iid n msgs = Ask iid (ChooseN n msgs)
+
+chooseUpgradeDeck :: InvestigatorId -> Message
+chooseUpgradeDeck iid = Ask iid ChooseUpgradeDeck
 
 data Question
   = ChooseOne [Message]

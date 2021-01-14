@@ -41,7 +41,7 @@ export const updateGame = (gameId: string, choice: number, gameHash: string) => 
   .put(`arkham/games/${gameId}`, { choice, gameHash })
   .then((resp) => gameDecoder.decodePromise(resp.data));
 
-export const upgradeDeck = (gameId: string, deckUrl: string) => api
+export const upgradeDeck = (gameId: string, deckUrl?: string) => api
   .put(`arkham/games/${gameId}/decks`, { deckUrl });
 
 export const deleteGame = (gameId: string) => api

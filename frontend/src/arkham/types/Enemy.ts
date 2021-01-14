@@ -8,6 +8,7 @@ export interface EnemyContents {
   doom: number;
   engagedInvestigators: string[];
   treacheries: string[];
+  assets: string[];
 }
 
 export const enemyContentsDecoder = JsonDecoder.object<EnemyContents>({
@@ -18,6 +19,7 @@ export const enemyContentsDecoder = JsonDecoder.object<EnemyContents>({
   doom: JsonDecoder.number,
   engagedInvestigators: JsonDecoder.array<string>(JsonDecoder.string, 'InvestigatorIds[]'),
   treacheries: JsonDecoder.array<string>(JsonDecoder.string, 'TreacheryId[]'),
+  assets: JsonDecoder.array<string>(JsonDecoder.string, 'AssetId[]'),
 }, 'EnemyContents');
 
 export interface Enemy {

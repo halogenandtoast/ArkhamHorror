@@ -2,7 +2,8 @@
 
 module Arkham.Types.Game
   ( module Arkham.Types.Game
-  ) where
+  )
+where
 
 import Arkham.Import hiding (first)
 
@@ -1767,6 +1768,10 @@ runGameMessage msg g = case msg of
     unshiftMessages [ Discard (EnemyTarget eid) | eid <- enemyIds ]
     eventIds <- toList <$> getSet lid
     unshiftMessages [ Discard (EventTarget eid) | eid <- eventIds ]
+    assetIds <- toList <$> getSet lid
+    unshiftMessages [ Discard (AssetTarget aid) | aid <- assetIds ]
+    investigatorIds <- toList <$> getSet lid
+    unshiftMessages [ InvestigatorDefeated iid | iid <- investigatorIds ]
     pure $ g & locationsL %~ deleteMap lid
   SpendClues 0 _ -> pure g
   SpendClues n iids -> do

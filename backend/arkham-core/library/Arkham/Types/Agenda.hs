@@ -35,6 +35,11 @@ allAgendas = mapFromList $ map
   , RestrictedAccess' restrictedAccess
   , ShadowsDeepen' shadowsDeepen
   , InEveryShadow' inEveryShadow
+  , ATearInReality' aTearInReality
+  , TheMawWidens' theMawWidens
+  , RollingBackwards' rollingBackwards
+  , DrawnIn' drawnIn
+  , OutOfTime' outOfTime
   , ReturnToPredatorOrPrey' returnToPredatorOrPrey
   , ACreatureOfTheBayou' aCreatureOfTheBayou
   , TheRougarouFeeds' theRougarouFeeds
@@ -65,6 +70,11 @@ data Agenda
   | RestrictedAccess' RestrictedAccess
   | ShadowsDeepen' ShadowsDeepen
   | InEveryShadow' InEveryShadow
+  | ATearInReality' ATearInReality
+  | TheMawWidens' TheMawWidens
+  | RollingBackwards' RollingBackwards
+  | DrawnIn' DrawnIn
+  | OutOfTime' OutOfTime
   | ReturnToPredatorOrPrey' ReturnToPredatorOrPrey
   | ACreatureOfTheBayou' ACreatureOfTheBayou
   | TheRougarouFeeds' TheRougarouFeeds
@@ -131,6 +141,11 @@ agendaAttrs = \case
   RestrictedAccess' attrs -> coerce attrs
   ShadowsDeepen' attrs -> coerce attrs
   InEveryShadow' attrs -> coerce attrs
+  ATearInReality' attrs -> coerce attrs
+  TheMawWidens' attrs -> coerce attrs
+  RollingBackwards' attrs -> coerce attrs
+  DrawnIn' attrs -> coerce attrs
+  OutOfTime' attrs -> coerce attrs
   ReturnToPredatorOrPrey' attrs -> coerce attrs
   ACreatureOfTheBayou' attrs -> coerce attrs
   TheRougarouFeeds' attrs -> coerce attrs

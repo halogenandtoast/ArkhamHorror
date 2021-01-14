@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 504dbf134dc14bc4b3ad5b1db01bcde70ed23c7bc1cc75a9c911e0b78a46cc6c
+-- hash: 6166641c84c48aa892ae579bb60c63282fe53c6094379933f07406017a54f136
 
 name:           arkham-core
 version:        0.0.0
@@ -51,19 +51,24 @@ library
       Arkham.Types.Agenda.Attrs
       Arkham.Types.Agenda.Cards
       Arkham.Types.Agenda.Cards.ACreatureOfTheBayou
+      Arkham.Types.Agenda.Cards.ATearInReality
       Arkham.Types.Agenda.Cards.ChaosInTheCloverClub
       Arkham.Types.Agenda.Cards.DeadOfNight
+      Arkham.Types.Agenda.Cards.DrawnIn
       Arkham.Types.Agenda.Cards.InEveryShadow
+      Arkham.Types.Agenda.Cards.OutOfTime
       Arkham.Types.Agenda.Cards.PredatorOrPrey
       Arkham.Types.Agenda.Cards.QuietHalls
       Arkham.Types.Agenda.Cards.RestrictedAccess
       Arkham.Types.Agenda.Cards.ReturnToPredatorOrPrey
       Arkham.Types.Agenda.Cards.RiseOfTheGhouls
+      Arkham.Types.Agenda.Cards.RollingBackwards
       Arkham.Types.Agenda.Cards.ShadowsDeepen
       Arkham.Types.Agenda.Cards.TheArkhamWoods
       Arkham.Types.Agenda.Cards.TheBeastUnleashed
       Arkham.Types.Agenda.Cards.TheCloverClub
       Arkham.Types.Agenda.Cards.TheCurseSpreads
+      Arkham.Types.Agenda.Cards.TheMawWidens
       Arkham.Types.Agenda.Cards.TheRitualBegins
       Arkham.Types.Agenda.Cards.TheRougarouFeeds
       Arkham.Types.Agenda.Cards.TheyreGettingOut

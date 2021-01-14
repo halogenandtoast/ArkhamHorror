@@ -15,7 +15,8 @@ module Arkham.Types.Message
   , chooseUpgradeDeck
   , resolve
   , story
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -298,6 +299,7 @@ data Message
   | InvestigatorDamageInvestigator InvestigatorId InvestigatorId
   | InvestigatorDefeated InvestigatorId
   | InvestigatorDirectDamage InvestigatorId Source Int Int
+  | InvestigatorDiscardAllClues InvestigatorId
   | InvestigatorDiscoverClues InvestigatorId LocationId Int
   | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int
   | InvestigatorDoAssignDamage InvestigatorId Source DamageStrategy Int Int [Target] [Target] -- ^ meant to be used internally by investigators                  ^ damage ^ horror

@@ -38,7 +38,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import * as Arkham from '@/arkham/types/Deck';
-import Prompt from '@/arkham/components/Prompt.vue';
+import Prompt from '@/components/Prompt.vue';
 import { fetchDecks, newDeck, deleteDeck } from '@/arkham/api';
 
 export default defineComponent({

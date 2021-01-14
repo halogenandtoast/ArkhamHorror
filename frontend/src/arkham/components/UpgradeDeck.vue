@@ -35,7 +35,7 @@
 import { defineComponent, ref, computed } from 'vue';
 import { upgradeDeck } from '@/arkham/api';
 import { Game } from '@/arkham/types/Game';
-import Prompt from '@/arkham/components/Prompt.vue';
+import Prompt from '@/components/Prompt.vue';
 
 export default defineComponent({
   components: { Prompt },

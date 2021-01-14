@@ -50,7 +50,7 @@
 import { defineComponent, ref, computed, Ref } from 'vue';
 import { useStore } from 'vuex';
 import { deleteGame, fetchGames } from '@/arkham/api';
-import Prompt from '@/arkham/components/Prompt.vue';
+import Prompt from '@/components/Prompt.vue';
 import { Game } from '@/arkham/types/Game';
 import { User } from '@/types';
 

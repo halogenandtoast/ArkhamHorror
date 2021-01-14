@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.FishingNet
   ( FishingNet(..)
   , fishingNet
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -38,7 +37,7 @@ instance ActionRunner env => HasActions env FishingNet where
           <$> getSetList investigatorLocation
         pure
           [ ActivateCardAbilityAction iid (ability attrs)
-          | eid `elem` exhaustedEnemies
+          | eid `elem` exhaustedEnemies && isNothing (assetEnemy attrs)
           ]
   getActions iid window (FishingNet x) = getActions iid window x
 

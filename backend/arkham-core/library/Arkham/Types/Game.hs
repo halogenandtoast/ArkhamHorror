@@ -2,7 +2,8 @@
 
 module Arkham.Types.Game
   ( module Arkham.Types.Game
-  ) where
+  )
+where
 
 import Arkham.Import hiding (first)
 
@@ -2164,8 +2165,7 @@ runGameMessage msg g = case msg of
       | iid <- investigatorIds
       ]
     pure g
-  ChooseEndTurn iid -> do
-    g <$ unshiftMessage (EndTurn iid)
+  ChooseEndTurn iid -> g <$ unshiftMessage (EndTurn iid)
   EndTurn iid -> pure $ g & usedAbilitiesL %~ filter
     (\(iid', Ability {..}) ->
       iid' /= iid && abilityLimitType abilityLimit /= Just PerTurn
@@ -2445,6 +2445,7 @@ runGameMessage msg g = case msg of
         unshiftMessage (RequestedEncounterCard source (Just x))
         pure $ g & encounterDeckL .~ Deck xs & discardL %~ (reverse discards <>)
   Surge iid _ -> g <$ unshiftMessage (InvestigatorDrawEncounterCard iid)
+  InvestigatorEliminated iid -> pure $ g & playerOrderL %~ filter (/= iid)
   InvestigatorDrawEncounterCard iid -> if null (unDeck $ g ^. encounterDeckL)
     then g <$ unshiftMessages
       [ShuffleEncounterDiscardBackIn, InvestigatorDrawEncounterCard iid]

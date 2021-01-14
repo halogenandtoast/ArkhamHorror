@@ -21,7 +21,11 @@
         </div>
         <div>
           <span>Investigators: </span>
-          <span v-for="investigator in game.currentData.investigators" :key="investigator.contents.id">
+          <span
+            v-for="investigator in game.currentData.investigators"
+            :key="investigator.contents.id"
+            class="investigator-name"
+          >
             {{investigator.contents.name}}
           </span>
         </div>
@@ -258,6 +262,10 @@ export default defineComponent({
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
+}
+
+.investigator-name {
+  margin-right: 10px;
 }
 
 </style>

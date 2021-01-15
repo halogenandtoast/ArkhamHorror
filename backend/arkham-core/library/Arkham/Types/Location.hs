@@ -82,6 +82,7 @@ data Location
   | PassengerCar_169' PassengerCar_169
   | PassengerCar_170' PassengerCar_170
   | PassengerCar_171' PassengerCar_171
+  | SleepingCar' SleepingCar
   | EngineCar_175' EngineCar_175
   | EngineCar_176' EngineCar_176
   | EngineCar_177' EngineCar_177
@@ -291,6 +292,7 @@ allLocations = mapFromList $ map
   , PassengerCar_169' passengerCar_169
   , PassengerCar_170' passengerCar_170
   , PassengerCar_171' passengerCar_171
+  , SleepingCar' sleepingCar
   , EngineCar_175' engineCar_175
   , EngineCar_176' engineCar_176
   , EngineCar_177' engineCar_177
@@ -395,6 +397,7 @@ locationAttrs = \case
   PassengerCar_169' attrs -> coerce attrs
   PassengerCar_170' attrs -> coerce attrs
   PassengerCar_171' attrs -> coerce attrs
+  SleepingCar' attrs -> coerce attrs
   EngineCar_175' attrs -> coerce attrs
   EngineCar_176' attrs -> coerce attrs
   EngineCar_177' attrs -> coerce attrs

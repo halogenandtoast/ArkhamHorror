@@ -9,5 +9,6 @@ data ScenarioLogKey
   | Cheated InvestigatorId
   | FoundAStrangeDoll
   | FoundAnAncientBindingStone
+  | StolenAPassengersLuggage
   deriving stock (Eq, Show, Generic)
   deriving anyclass (ToJSON, FromJSON, ToJSONKey, Hashable, FromJSONKey)

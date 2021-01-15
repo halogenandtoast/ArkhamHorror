@@ -83,6 +83,7 @@ import Arkham.Types.Location.Cards.RivertownAbandonedWarehouse as X
 import Arkham.Types.Location.Cards.ScienceBuilding as X
 import Arkham.Types.Location.Cards.SecurityOffice_128 as X
 import Arkham.Types.Location.Cards.SecurityOffice_129 as X
+import Arkham.Types.Location.Cards.SleepingCar as X
 import Arkham.Types.Location.Cards.SouthsideHistoricalSociety as X
 import Arkham.Types.Location.Cards.SouthsideMasBoardingHouse as X
 import Arkham.Types.Location.Cards.StMarysHospital as X

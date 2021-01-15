@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 02cd2377e98a8f282a63f59f931cf5705414af5bfd693153b991629facc8c03b
+-- hash: 504dbf134dc14bc4b3ad5b1db01bcde70ed23c7bc1cc75a9c911e0b78a46cc6c
 
 name:           arkham-core
 version:        0.0.0
@@ -459,6 +459,7 @@ library
       Arkham.Types.Location.Cards.CursedShores
       Arkham.Types.Location.Cards.DarkenedHall
       Arkham.Types.Location.Cards.DeepBelowYourHouse
+      Arkham.Types.Location.Cards.DiningCar
       Arkham.Types.Location.Cards.Dormitories
       Arkham.Types.Location.Cards.DowntownArkhamAsylum
       Arkham.Types.Location.Cards.DowntownFirstBankOfArkham
@@ -497,6 +498,7 @@ library
       Arkham.Types.Location.Cards.OrneLibrary
       Arkham.Types.Location.Cards.OvergrownCairns
       Arkham.Types.Location.Cards.Parlor
+      Arkham.Types.Location.Cards.ParlorCar
       Arkham.Types.Location.Cards.PassengerCar_167
       Arkham.Types.Location.Cards.PassengerCar_168
       Arkham.Types.Location.Cards.PassengerCar_169
@@ -511,6 +513,7 @@ library
       Arkham.Types.Location.Cards.ScienceBuilding
       Arkham.Types.Location.Cards.SecurityOffice_128
       Arkham.Types.Location.Cards.SecurityOffice_129
+      Arkham.Types.Location.Cards.SleepingCar
       Arkham.Types.Location.Cards.SouthsideHistoricalSociety
       Arkham.Types.Location.Cards.SouthsideMasBoardingHouse
       Arkham.Types.Location.Cards.StMarysHospital

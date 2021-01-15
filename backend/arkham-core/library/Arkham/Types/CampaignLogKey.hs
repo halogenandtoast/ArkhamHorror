@@ -28,6 +28,8 @@ data CampaignLogKey
   | TheInvestigatorsFailedToRecoverTheNecronomicon
   | TheInvestigatorsDestroyedTheNecronomicon
   | TheInvestigatorsTookCustodyOfTheNecronomicon
+  | TheNecronomiconWasStolen
+  | TheInvestigatorsWereDelayedOnTheirWayToDunwich
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse

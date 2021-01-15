@@ -3,6 +3,7 @@ module Arkham.Types.Card
   , Card(..)
   , _PlayerCard
   , DiscardedPlayerCard(..)
+  , CampaignStoryCard(..)
   , DeckCard(..)
   , HandCard(..)
   , DiscardableHandCard(..)
@@ -28,8 +29,7 @@ module Arkham.Types.Card
   , toEncounterCard
   , cardIsWeakness
   , isDynamic
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -39,6 +39,7 @@ import Arkham.Types.Card.Cost
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
+import Arkham.Types.InvestigatorId
 
 data Card
   = PlayerCard PlayerCard
@@ -49,6 +50,11 @@ data Card
 _PlayerCard :: Traversal' Card PlayerCard
 _PlayerCard f (PlayerCard pc) = PlayerCard <$> f pc
 _PlayerCard _ other = pure other
+
+data CampaignStoryCard = CampaignStoryCard
+  { campaignStoryCardInvestigatorId :: InvestigatorId
+  , campaignStoryCardPlayerCard :: PlayerCard
+  }
 
 newtype DeckCard = DeckCard { unDeckCard ::PlayerCard }
   deriving stock (Show, Generic)

@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.TheEssexCountyExpress
   ( TheEssexCountyExpress(..)
   , theEssexCountyExpress
-  )
-where
+  ) where
 
 import Arkham.Import hiding (Cultist)
 
@@ -106,6 +105,73 @@ standaloneTokens =
   , ElderSign
   ]
 
+investigatorDefeat
+  :: ( MonadReader env m
+     , HasSet DefeatedInvestigatorId env ()
+     , HasId LeadInvestigatorId env ()
+     , HasList CampaignStoryCard env ()
+     )
+  => Attrs
+  -> m [Message]
+investigatorDefeat Attrs {..} = do
+  campaignStoryCards <- getList ()
+  leadInvestigatorId <- getLeadInvestigatorId
+  defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
+  let
+    findOwner cardCode =
+      (\iid -> iid <$ guard (iid `elem` defeatedInvestigatorIds))
+        . campaignStoryCardInvestigatorId
+        =<< find
+              ((== cardCode) . getCardCode . campaignStoryCardPlayerCard)
+              campaignStoryCards
+    mNecronomiconOwner = findOwner "02140"
+    mDrHenryArmitageOwner = findOwner "02040"
+    mProfessorWarrenRiceOwner = findOwner "02061"
+    mDrFrancisMorganOwner = findOwner "02080"
+  if null defeatedInvestigatorIds
+    then pure []
+    else
+      pure
+      $ [ chooseOne
+            leadInvestigatorId
+            [ Run
+                [ Continue "Continue"
+                , FlavorText
+                  Nothing
+                  [ "Your experience beyond the gate is\
+                   \ simultaneously terrifying and impossible to recall with clarity.\
+                   \ A hypnotic spectacle of lights, otherworldly sensations, and\
+                   \ altered geometry dances at the tattered edges of your mind. An\
+                   \ unearthly voice from beyond rings in your ears, its significance\
+                   \ an enigma. When you awaken, you find yourself in the woods,\
+                   \ several miles from the Miskatonic River. Destroyed train cars\
+                   \ surround you. They are crumpled as if from a severe impact;\
+                   \ they are also decayed as if years of rust and squalor have\
+                   \ claimed them. There is no sign of the other passengers."
+                  ]
+                ]
+            ]
+        ]
+      <> [ Record TheNecronomiconWasStolen | isJust mNecronomiconOwner ]
+      <> [ RemoveCampaignCardFromDeck owner "02140"
+         | owner <- maybeToList mNecronomiconOwner
+         ]
+      <> [ Record DrHenryArmitageWasKidnapped | isJust mDrHenryArmitageOwner ]
+      <> [ RemoveCampaignCardFromDeck owner "02040"
+         | owner <- maybeToList mDrHenryArmitageOwner
+         ]
+      <> [ Record ProfessorWarrenRiceWasKidnapped
+         | isJust mProfessorWarrenRiceOwner
+         ]
+      <> [ RemoveCampaignCardFromDeck owner "02061"
+         | owner <- maybeToList mProfessorWarrenRiceOwner
+         ]
+      <> [ Record DrFrancisMorganWasKidnapped | isJust mDrFrancisMorganOwner ]
+      <> [ RemoveCampaignCardFromDeck owner "02080"
+         | owner <- maybeToList mDrFrancisMorganOwner
+         ]
+      <> [ AddCampaignCardToDeck iid "02178" | iid <- defeatedInvestigatorIds ]
+
 instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
   runMessage msg s@(TheEssexCountyExpress attrs@Attrs {..}) = case msg of
     SetTokensForScenario -> do
@@ -115,11 +181,16 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
         else pure ()
     Setup -> do
       investigatorIds <- getInvestigatorIds
-
       engineCar <- sample $ "02175" :| ["02176", "02177"]
       trainCars <- take 6 <$> shuffleM
         ["02167", "02168", "02169", "02170", "02171", "02172", "02173", "02174"]
-
+      encounterDeck <- buildEncounterDeck
+        [ EncounterSet.TheEssexCountyExpress
+        , EncounterSet.TheBeyond
+        , EncounterSet.StrikingFear
+        , EncounterSet.AncientEvils
+        , EncounterSet.DarkCult
+        ]
 
       let
         start = fromJustNote "No train cars?" $ headMay trainCars
@@ -129,15 +200,6 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
           Standard -> MinusThree
           Hard -> MinusFour
           Expert -> MinusFive
-
-
-      encounterDeck <- buildEncounterDeck
-        [ EncounterSet.TheEssexCountyExpress
-        , EncounterSet.TheBeyond
-        , EncounterSet.StrikingFear
-        , EncounterSet.AncientEvils
-        , EncounterSet.DarkCult
-        ]
 
       pushMessages
         $ [ story investigatorIds theEssexCountyExpressIntro
@@ -171,118 +233,79 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
         [x] -> unshiftMessage (PlaceDoom (EnemyTarget x) 1)
         xs -> unshiftMessage
           (chooseOne iid [ PlaceDoom (EnemyTarget x) 1 | x <- xs ])
-    ResolveToken _ Cultist _ | isHardExpert attrs -> do
+    ResolveToken _ Tablet _ | isHardExpert attrs -> do
       cultists <- getSetList @EnemyId Trait.Cultist
       s <$ unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- cultists ]
-    ResolveToken _ Tablet iid | isHardExpert attrs -> do
-      lid <- getId @LocationId iid
-      enemyIds <- getSetList @EnemyId lid
-      mHuntingHorrorId <- fmap unStoryEnemyId <$> getId (CardCode "02141")
-      case mHuntingHorrorId of
-        Just huntingHorrorId -> s <$ when
-          (huntingHorrorId `elem` enemyIds)
-          (unshiftMessage $ EnemyAttack iid huntingHorrorId)
-        Nothing -> pure s
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ ->
+    FailedSkillTest iid _ _ (DrawnTokenTarget token) n ->
       s <$ case drawnTokenFace token of
         Cultist ->
           unshiftMessages [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]
-        ElderThing -> unshiftMessage $ ChooseAndDiscardAsset iid
+        ElderThing | isEasyStandard attrs ->
+          unshiftMessage $ ChooseAndDiscardAsset iid
+        ElderThing | isHardExpert attrs ->
+          unshiftMessages $ replicate n (ChooseAndDiscardAsset iid)
         _ -> pure ()
-    NoResolution -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      investigatorIds <- getInvestigatorIds
-      xp <- getXp
-      s <$ unshiftMessages
-        ([ chooseOne
-           leadInvestigatorId
-           [ Run
-               [ Continue "Continue"
-               , FlavorText
-                 Nothing
-                 [ "Whatever the creature in the\
-                   \ museum was, you had neither the will nor the tools to destroy\
-                   \ it. It seems you must give up any hope of recovering the\
-                   \ Necronomicon. Even so, there are others depending on you.\
-                   \ Gathering your courage, you prepare for your next task."
-                 ]
-               ]
-           ]
-         , Record TheInvestigatorsFailedToRecoverTheNecronomicon
-         ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
-        <> [EndOfGame]
-        )
+    NoResolution -> s <$ unshiftMessages [Resolution 2]
     Resolution 1 -> do
+      msgs <- investigatorDefeat attrs
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
+      defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
       xp <- getXp
       s <$ unshiftMessages
-        ([ chooseOne
-           leadInvestigatorId
-           [ Run
-               [ Continue "Continue"
-               , FlavorText
-                 Nothing
-                 [ "As long as this translation of the\
-                   \ Necronomicon exists, there will be sorcerers and other foul\
-                   \ agents like Whateley seeking it. In the end, you know what\
-                   \ must be done to protect humanity from the threats you’ve seen.\
-                   \ You find a trash bin and fill it with books and documents,\
-                   \ throwing the Necronomicon on top. It takes several matches\
-                   \ to set the contents of the bin alight. The flames fill the room\
-                   \ with heat and the creeping shadows retreat from its light. You\
-                   \ watch the book burn for some time, its pages turning to ash.\
-                   \ You can only hope you’ve made the right decision."
-                 ]
+        (msgs
+        <> [ chooseOne
+               leadInvestigatorId
+               [ Run
+                   [ Continue "Continue"
+                   , FlavorText
+                     Nothing
+                     [ "You breathe a sigh of relief as the gate behind\
+                     \ the train collapses harmlessly upon itself. The few passengers\
+                     \ who survived the ordeal seem unable to comprehend what\
+                     \ just happened. One passenger mentions “a pipe bursting in\
+                     \ the rear car,” and that quickly becomes the explanation for\
+                     \ the innocent and ignorant, those who either cannot or choose\
+                     \ not to delve further into the mystery. You, on the other hand,\
+                     \ know better… although in hindsight, you wish you didn’t."
+                     ]
+                   ]
                ]
            ]
-         , Record TheInvestigatorsDestroyedTheNecronomicon
-         ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP
+               iid
+               (xp + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
+           | iid <- investigatorIds
+           ]
         <> [EndOfGame]
         )
     Resolution 2 -> do
+      msgs <- investigatorDefeat attrs
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
+      defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
       xp <- getXp
       s <$ unshiftMessages
-        ([ chooseOne
-           leadInvestigatorId
-           [ Run
-               [ Continue "Continue"
-               , FlavorText
-                 Nothing
-                 [ "The Necronomicon is more than just a book;\
-                   \ it is a tool. Within its pages is a wealth of information about\
-                   \ the forces and creatures you have encountered. Knowing how\
-                   \ useful it could be in your endeavors, how could you possibly\
-                   \ bring yourself to destroy it? Besides, as long as you keep the\
-                   \ book safely in your possession, you will still be foiling those\
-                   \ who wish to use it for nefarious purposes."
-                 ]
-               ]
-           ]
-         , Record TheInvestigatorsTookCustodyOfTheNecronomicon
-         , chooseOne
-           leadInvestigatorId
-           [ Label
-             "Add The Necronomicon (Olaus Wormius Translation) to a deck"
-             [ chooseOne
-                 leadInvestigatorId
-                 [ TargetLabel
-                     (InvestigatorTarget iid)
-                     [AddCampaignCardToDeck iid "02140"]
-                 | iid <- investigatorIds
+        (msgs
+        <> [ chooseOne
+             leadInvestigatorId
+             [ Run
+                 [ Continue "Continue"
+                 , FlavorText
+                   Nothing
+                   [ "Rattled,\
+                     \ you begin walking alongside the train tracks, making your\
+                     \ way towards Dunwich."
+                   ]
                  ]
              ]
-           , Label
-             "Do not add The Necronomicon (Olaus Wormius Translation) to a deck"
-             []
+           , Record TheInvestigatorsWereDelayedOnTheirWayToDunwich
            ]
-         , AddToken ElderThing
-         ]
-        <> [ GainXP iid xp | iid <- investigatorIds ]
+        <> [ GainXP
+               iid
+               (xp + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
+           | iid <- investigatorIds
+           ]
         <> [EndOfGame]
         )
     _ -> TheEssexCountyExpress <$> runMessage msg attrs

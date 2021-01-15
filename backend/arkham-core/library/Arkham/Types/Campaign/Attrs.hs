@@ -44,6 +44,11 @@ instance HasSet CompletedScenarioId env Attrs where
       ScenarioStep scenarioId -> Just $ CompletedScenarioId scenarioId
       _ -> Nothing
 
+instance HasList CampaignStoryCard env Attrs where
+  getList Attrs {..} =
+    pure $ concatMap (uncurry (map . CampaignStoryCard)) $ mapToList
+      campaignStoryCards
+
 instance CampaignRunner env => RunMessage env Attrs where
   runMessage msg a@Attrs {..} = case msg of
     StartCampaign -> a <$ unshiftMessage (CampaignStep campaignStep)

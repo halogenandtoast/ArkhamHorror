@@ -4,6 +4,7 @@ import Arkham.Prelude
 
 import Arkham.Types.AgendaId
 import Arkham.Types.CampaignId
+import Arkham.Types.Card
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
@@ -29,6 +30,7 @@ type ScenarioRunner env
     , HasId LocationId env InvestigatorId
     , HasId (Maybe CampaignId) env ()
     , HasId (Maybe StoryEnemyId) env CardCode
+    , HasList CampaignStoryCard env ()
     , HasName env LocationId
     , HasQueue env
     , HasRecord env
@@ -37,6 +39,7 @@ type ScenarioRunner env
     , HasSet ClosestEnemyId env InvestigatorId
     , HasSet CompletedScenarioId env ()
     , HasSet ConnectedLocationId env LocationId
+    , HasSet DefeatedInvestigatorId env ()
     , HasSet EnemyId env LocationId
     , HasSet EnemyId env Trait
     , HasSet InScenarioInvestigatorId env ()

@@ -740,7 +740,13 @@ instance HasList ResignedCardCode (Game queue) () where
 instance HasList Token (Game queue) () where
   getList _ = getList =<< view chaosBagL
 
+instance HasList CampaignStoryCard (Game queue) () where
+  getList _ = maybe (pure mempty) getList . modeCampaign =<< view modeL
+
 instance HasList HandCard (Game queue) InvestigatorId where
+  getList = getList <=< getInvestigator
+
+instance HasList DeckCard (Game queue) InvestigatorId where
   getList = getList <=< getInvestigator
 
 instance HasList DiscardableHandCard (Game queue) InvestigatorId where
@@ -1431,6 +1437,13 @@ instance HasSet AloofEnemyId (Game queue) LocationId where
 
 instance HasSet InvestigatorId (Game queue) () where
   getSet _ = keysSet <$> view investigatorsL
+
+instance HasSet DefeatedInvestigatorId (Game queue) () where
+  getSet _ =
+    mapSet DefeatedInvestigatorId
+      . keysSet
+      . filterMap isDefeated
+      <$> view investigatorsL
 
 instance HasSet InvestigatorId (Game queue) LocationId where
   getSet = getSet <=< getLocation

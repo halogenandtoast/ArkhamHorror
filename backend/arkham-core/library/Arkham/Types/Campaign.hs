@@ -23,6 +23,9 @@ instance HasRecord Campaign where
 instance HasSet CompletedScenarioId env Campaign where
   getSet = getSet . campaignAttrs
 
+instance HasList CampaignStoryCard env Campaign where
+  getList = getList . campaignAttrs
+
 toCampaignId :: Campaign -> CampaignId
 toCampaignId = campaignId . campaignAttrs
 

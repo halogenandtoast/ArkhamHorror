@@ -10,6 +10,9 @@ newtype InvestigatorId = InvestigatorId { unInvestigatorId :: CardCode }
 newtype InScenarioInvestigatorId = InScenarioInvestigatorId { unInScenarioInvestigatorId :: InvestigatorId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
 
+newtype DefeatedInvestigatorId = DefeatedInvestigatorId { unDefeatedInvestigatorId :: InvestigatorId }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
+
 newtype PreyId = PreyId { unPreyId :: InvestigatorId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, IsString)
 

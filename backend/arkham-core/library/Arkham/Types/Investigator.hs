@@ -97,6 +97,9 @@ instance HasList DiscardedPlayerCard env Investigator where
 instance HasList HandCard env Investigator where
   getList = pure . map HandCard . investigatorHand . investigatorAttrs
 
+instance HasList DeckCard env Investigator where
+  getList = pure . map DeckCard . unDeck . investigatorDeck . investigatorAttrs
+
 instance HasCard () Investigator where
   getCard _ cardId =
     fromJustNote "player does not have this card"

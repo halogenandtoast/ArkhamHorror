@@ -9,10 +9,6 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Trait
 
-data Direction = Above | Below | Left | Right
-  deriving stock (Show, Eq, Generic)
-  deriving anyclass (ToJSON, FromJSON, Hashable, ToJSONKey, FromJSONKey)
-
 data Attrs = Attrs
   { locationName :: LocationName
   , locationLabel :: Text

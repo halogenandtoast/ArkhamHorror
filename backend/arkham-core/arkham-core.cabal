@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4e705a4c366f3c4cb3bcc46163e84fae1fc3002a53c6c8c5bcd270d29477dbf0
+-- hash: fefae1e97dab71732c3713725a5b356b07cf15c7a65a8836440541ad7702bc1d
 
 name:           arkham-core
 version:        0.0.0
@@ -217,6 +217,7 @@ library
       Arkham.Types.CommitRestriction
       Arkham.Types.Cost
       Arkham.Types.Difficulty
+      Arkham.Types.Direction
       Arkham.Types.Effect
       Arkham.Types.Effect.Attrs
       Arkham.Types.Effect.Effects

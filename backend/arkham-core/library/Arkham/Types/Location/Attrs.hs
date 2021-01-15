@@ -9,6 +9,10 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Location.Helpers
 import Arkham.Types.Trait
 
+data Direction = Above | Below | Left | Right
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON, Hashable, ToJSONKey, FromJSONKey)
+
 data Attrs = Attrs
   { locationName :: LocationName
   , locationLabel :: Text
@@ -31,6 +35,7 @@ data Attrs = Attrs
   , locationEvents :: HashSet EventId
   , locationAssets :: HashSet AssetId
   , locationEncounterSet :: EncounterSet
+  , locationDirections :: HashMap Direction LocationId
   }
   deriving stock (Show, Generic)
 
@@ -102,6 +107,7 @@ baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' tr
     , locationEvents = mempty
     , locationAssets = mempty
     , locationEncounterSet = encounterSet
+    , locationDirections = mempty
     }
 
 getModifiedShroudValueFor

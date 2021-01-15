@@ -299,6 +299,7 @@ allPlayerCards = mapFromList
   , ("02139", adamLynch)
   , ("02140", theNecronomiconOlausWormiusTranslation)
   , ("02147", bandolier)
+  , ("02178", acrossSpaceAndTime)
   , ("02185", keenEye3)
   , ("02185", springfieldM19034)
   , ("02301", lightningGun5)
@@ -1323,6 +1324,13 @@ bandolier :: CardId -> PlayerCard
 bandolier cardId = (asset cardId "02147" "Bandolier" 2 Guardian)
   { pcSkills = [SkillWillpower, SkillIntellect, SkillWild]
   , pcTraits = setFromList [Item]
+  }
+
+acrossSpaceAndTime :: CardId -> PlayerCard
+acrossSpaceAndTime cardId = (treachery cardId "02178" "Across Space and Time" 0
+                            )
+  { pcTraits = singleton Madness
+  , pcRevelation = True
   }
 
 keenEye3 :: CardId -> PlayerCard

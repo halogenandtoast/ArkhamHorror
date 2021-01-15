@@ -17,5 +17,6 @@ data LocationSymbol
   | Heart
   | Star
   | Droplet
+  | NoSymbol
   deriving stock (Show, Generic, Eq)
   deriving anyclass (ToJSON, FromJSON, Hashable)

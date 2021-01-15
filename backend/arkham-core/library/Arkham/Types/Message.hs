@@ -1,6 +1,7 @@
 module Arkham.Types.Message
   ( Message(..)
   , Question(..)
+  , DamageStrategy(..)
   , EncounterCardSource(..)
   , LeftoverCardStrategy(..)
   , ChoosePlayerChoice(..)
@@ -32,6 +33,7 @@ import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBagStepState
 import Arkham.Types.Cost
 import Arkham.Types.Direction
+import Arkham.Types.Effect.Window
 import Arkham.Types.EffectId
 import Arkham.Types.EffectMetadata
 import Arkham.Types.EnemyId
@@ -82,6 +84,10 @@ story iids msg = AskMap
   (mapFromList
     [ (iid, ChooseOne [Run [Continue "Continue", msg]]) | iid <- iids ]
   )
+
+data DamageStrategy = DamageAny | DamageAssetsFirst
+  deriving stock (Show, Eq, Generic)
+  deriving anyclass (ToJSON, FromJSON)
 
 data EncounterCardSource = FromDiscard | FromEncounterDeck | FromTheVoid
   deriving stock (Show, Eq, Generic)
@@ -191,8 +197,7 @@ data Message
   | CreateEnemyEngagedWithPrey CardCode
   | CreateEnemyRequest Source CardCode
   | CreatePayAbilityCostEffect (Maybe Ability) Source Target
-  | CreatePhaseEffect (EffectMetadata Message) Source Target
-  | CreateSkillTestEffect (EffectMetadata Message) Source Target
+  | CreateWindowModifierEffect EffectWindow (EffectMetadata Message) Source Target
   | CreateStoryAssetAt CardCode LocationId
   | CreateStoryAssetAtLocationMatching CardCode LocationMatcher
   | CreateTokenValueEffect Int Source Target
@@ -285,7 +290,7 @@ data Message
   | InitiatePlayCard InvestigatorId CardId (Maybe Target) Bool
   | InitiatePlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
   | Investigate InvestigatorId LocationId Source SkillType Bool
-  | InvestigatorAssignDamage InvestigatorId Source Int Int -- ^ uses the internal method and then checks defeat
+  | InvestigatorAssignDamage InvestigatorId Source DamageStrategy Int Int -- ^ uses the internal method and then checks defeat
   | InvestigatorCommittedCard InvestigatorId CardId
   | InvestigatorCommittedSkill InvestigatorId SkillId
   | InvestigatorDamage InvestigatorId Source Int Int
@@ -295,7 +300,7 @@ data Message
   | InvestigatorDirectDamage InvestigatorId Source Int Int
   | InvestigatorDiscoverClues InvestigatorId LocationId Int
   | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int
-  | InvestigatorDoAssignDamage InvestigatorId Source Int Int [Target] [Target] -- ^ meant to be used internally by investigators          ^ damage ^ horror
+  | InvestigatorDoAssignDamage InvestigatorId Source DamageStrategy Int Int [Target] [Target] -- ^ meant to be used internally by investigators                  ^ damage ^ horror
   | InvestigatorDrawEncounterCard InvestigatorId
   | InvestigatorDrawEnemy InvestigatorId LocationId EnemyId
   | InvestigatorDrewEncounterCard InvestigatorId EncounterCard

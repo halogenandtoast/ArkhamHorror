@@ -43,7 +43,7 @@ instance LocationRunner env => RunMessage env CursedShores where
   runMessage msg l@(CursedShores attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessages
-      [ InvestigatorAssignDamage iid source 1 0
+      [ InvestigatorAssignDamage iid source DamageAny 1 0
       , CreateEffect "81007" Nothing (toSource attrs) (InvestigatorTarget iid)
       ]
     WhenEnterLocation iid lid

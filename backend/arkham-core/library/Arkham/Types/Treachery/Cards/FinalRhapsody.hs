@@ -25,7 +25,7 @@ instance TreacheryRunner env => RunMessage env FinalRhapsody where
     RequestedTokens source (Just iid) faces | isSource attrs source -> do
       let damageCount = count (`elem` [Skull, AutoFail]) faces
       t <$ unshiftMessages
-        [ InvestigatorAssignDamage iid source damageCount damageCount
+        [ InvestigatorAssignDamage iid source DamageAny damageCount damageCount
         , ResetTokens source
         , Discard $ toTarget attrs
         ]

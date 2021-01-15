@@ -53,5 +53,5 @@ instance (LocationRunner env) => RunMessage env MiskatonicUniversityMiskatonicMu
     case msg of
       UseCardAbility iid source _ 1 _ | isSource attrs source ->
         l <$ unshiftMessages
-          [InvestigatorAssignDamage iid source 0 2, GainClues iid 1]
+          [InvestigatorAssignDamage iid source DamageAny 0 2, GainClues iid 1]
       _ -> MiskatonicUniversityMiskatonicMuseum <$> runMessage msg attrs

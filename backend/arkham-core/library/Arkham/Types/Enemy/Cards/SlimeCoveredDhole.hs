@@ -52,7 +52,7 @@ instance (EnemyRunner env) => RunMessage env SlimeCoveredDhole where
     EnemyMove eid _ lid | eid == enemyId -> do
       investigatorIds <- getSetList @InvestigatorId lid
       e <$ unshiftMessages
-        [ InvestigatorAssignDamage iid (toSource attrs) 0 1
+        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
         | iid <- investigatorIds
         ]
     _ -> SlimeCoveredDhole <$> runMessage msg attrs

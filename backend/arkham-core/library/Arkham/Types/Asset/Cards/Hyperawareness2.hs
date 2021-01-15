@@ -32,14 +32,14 @@ instance (AssetRunner env) => RunMessage env Hyperawareness2 where
   runMessage msg a@(Hyperawareness2 attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage
-        (CreateSkillTestEffect
+        (CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillIntellect 1])
           source
           (InvestigatorTarget iid)
         )
     UseCardAbility iid source _ 2 _ | isSource attrs source ->
       a <$ unshiftMessage
-        (CreateSkillTestEffect
+        (CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillAgility 1])
           source
           (InvestigatorTarget iid)

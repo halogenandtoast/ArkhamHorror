@@ -61,7 +61,7 @@ instance InvestigatorRunner env => RunMessage env ZoeySamaras where
       i <$ unshiftMessage (TakeResources investigatorId 1 False)
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
       i <$ unshiftMessage
-        (CreateSkillTestEffect
+        (CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [DamageDealt 1])
           (InvestigatorSource investigatorId)
           (InvestigatorTarget investigatorId)

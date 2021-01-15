@@ -30,7 +30,7 @@ instance TreacheryRunner env => RunMessage env TheZealotsSeal where
           handCardCount <- unCardCount <$> getCount iid'
           if handCardCount <= 3
             then unshiftMessage
-              (InvestigatorAssignDamage iid' (toSource attrs) 1 1)
+              (InvestigatorAssignDamage iid' (toSource attrs) DamageAny 1 1)
             else unshiftMessage
               (RevelationSkillTest iid' source SkillWillpower 2)
         )

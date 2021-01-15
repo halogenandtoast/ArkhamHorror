@@ -28,7 +28,7 @@ instance (EnemyRunner env) => RunMessage env GoatSpawn where
     EnemyDefeated eid _ _ _ _ _ | eid == enemyId -> do
       investigatorIds <- getSetList enemyLocation
       unshiftMessages
-        [ InvestigatorAssignDamage iid (EnemySource eid) 0 1
+        [ InvestigatorAssignDamage iid (EnemySource eid) DamageAny 0 1
         | iid <- investigatorIds
         ]
       GoatSpawn <$> runMessage msg attrs

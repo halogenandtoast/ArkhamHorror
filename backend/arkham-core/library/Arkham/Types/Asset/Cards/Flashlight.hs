@@ -46,7 +46,7 @@ instance (AssetRunner env) => RunMessage env Flashlight where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       lid <- getId iid
       a <$ unshiftMessages
-        [ CreateSkillTestEffect
+        [ CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [ShroudModifier (-2)])
           source
           (LocationTarget lid)

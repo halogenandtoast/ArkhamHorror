@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3b61fc0db7228f45e4b6ff2d5c0ae13395820199eea3e960f94466e3a5842d5a
+-- hash: 551e2e2fa0381ec8ca8300475a3272cd5823116e74d6c847ef8270312c89b8fe
 
 name:           arkham-core
 version:        0.0.0
@@ -241,15 +241,15 @@ library
       Arkham.Types.Effect.Effects.MindWipe3
       Arkham.Types.Effect.Effects.OnTheLam
       Arkham.Types.Effect.Effects.PayForAbilityEffect
-      Arkham.Types.Effect.Effects.PhaseEffect
       Arkham.Types.Effect.Effects.PushedIntoTheBeyond
       Arkham.Types.Effect.Effects.RiteOfSeeking
       Arkham.Types.Effect.Effects.SeekingAnswers
       Arkham.Types.Effect.Effects.Shrivelling
-      Arkham.Types.Effect.Effects.SkillTestEffect
       Arkham.Types.Effect.Effects.SureGamble3
       Arkham.Types.Effect.Effects.WillToSurvive4
+      Arkham.Types.Effect.Effects.WindowModifierEffect
       Arkham.Types.Effect.Helpers
+      Arkham.Types.Effect.Window
       Arkham.Types.EffectId
       Arkham.Types.EffectMetadata
       Arkham.Types.EncounterSet
@@ -585,8 +585,10 @@ library
       Arkham.Types.Treachery.Cards.Atychiphobia
       Arkham.Types.Treachery.Cards.BeastOfTheBayou
       Arkham.Types.Treachery.Cards.BeyondTheVeil
+      Arkham.Types.Treachery.Cards.BrokenRails
       Arkham.Types.Treachery.Cards.ChillFromBelow
       Arkham.Types.Treachery.Cards.Chronophobia
+      Arkham.Types.Treachery.Cards.ClawsOfSteam
       Arkham.Types.Treachery.Cards.CoverUp
       Arkham.Types.Treachery.Cards.CryptChill
       Arkham.Types.Treachery.Cards.CursedLuck

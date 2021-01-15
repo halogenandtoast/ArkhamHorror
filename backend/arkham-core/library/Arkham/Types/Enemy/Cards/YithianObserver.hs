@@ -34,6 +34,7 @@ instance (EnemyRunner env) => RunMessage env YithianObserver where
           (InvestigatorAssignDamage
             iid
             (EnemySource enemyId)
+            DamageAny
             (enemyHealthDamage + 1)
             (enemySanityDamage + 1)
           )
@@ -42,6 +43,7 @@ instance (EnemyRunner env) => RunMessage env YithianObserver where
           , InvestigatorAssignDamage
             iid
             (EnemySource enemyId)
+            DamageAny
             enemyHealthDamage
             enemySanityDamage
           ]

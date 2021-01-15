@@ -120,7 +120,7 @@ instance HasQueue env => RunMessage env DarkMemory where
     let cardId = getCardId pc
     c <$ unshiftMessages
       [ RevealInHand cardId
-      , InvestigatorAssignDamage iid (PlayerCardSource cardId) 0 2
+      , InvestigatorAssignDamage iid (PlayerCardSource cardId) DamageAny 0 2
       ]
   runMessage msg (DarkMemory pc) =
     DarkMemory . unDefaultPlayerCard <$> runMessage msg (DefaultPlayerCard pc)

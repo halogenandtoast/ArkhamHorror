@@ -1481,31 +1481,25 @@ createEffect cardCode meffectMetadata source target = do
   eid <- getRandom
   pure (eid, lookupEffect cardCode eid meffectMetadata source target)
 
-createSkillTestEffect
-  :: MonadRandom m
-  => EffectMetadata Message
-  -> Source
-  -> Target
-  -> m (EffectId, Effect)
-createSkillTestEffect effectMetadata source target = do
-  eid <- getRandom
-  pure (eid, buildSkillTestEffect eid effectMetadata source target)
-
 createTokenValueEffect
   :: MonadRandom m => Int -> Source -> Target -> m (EffectId, Effect)
 createTokenValueEffect n source target = do
   eid <- getRandom
   pure (eid, buildTokenValueEffect eid n source target)
 
-createPhaseEffect
+createWindowModifierEffect
   :: MonadRandom m
-  => EffectMetadata Message
+  => EffectWindow
+  -> EffectMetadata Message
   -> Source
   -> Target
   -> m (EffectId, Effect)
-createPhaseEffect effectMetadata source target = do
+createWindowModifierEffect effectWindow effectMetadata source target = do
   eid <- getRandom
-  pure (eid, buildPhaseEffect eid effectMetadata source target)
+  pure
+    ( eid
+    , buildWindowModifierEffect eid effectMetadata effectWindow source target
+    )
 
 createPayForAbilityEffect
   :: MonadRandom m => Maybe Ability -> Source -> Target -> m (EffectId, Effect)
@@ -1663,10 +1657,6 @@ runGameMessage msg g = case msg of
     (effectId, effect) <- createEffect cardCode meffectMetadata source target
     unshiftMessage (CreatedEffect effectId meffectMetadata source target)
     pure $ g & effectsL %~ insertMap effectId effect
-  CreateSkillTestEffect effectMetadata source target -> do
-    (effectId, effect) <- createSkillTestEffect effectMetadata source target
-    unshiftMessage (CreatedEffect effectId (Just effectMetadata) source target)
-    pure $ g & effectsL %~ insertMap effectId effect
   CreateTokenValueEffect n source target -> do
     (effectId, effect) <- createTokenValueEffect n source target
     unshiftMessage
@@ -1682,8 +1672,12 @@ runGameMessage msg g = case msg of
     unshiftMessage
       (CreatedEffect effectId (EffectAbility <$> mAbility) source target)
     pure $ g & effectsL %~ insertMap effectId effect
-  CreatePhaseEffect effectMetadata source target -> do
-    (effectId, effect) <- createPhaseEffect effectMetadata source target
+  CreateWindowModifierEffect effectWindow effectMetadata source target -> do
+    (effectId, effect) <- createWindowModifierEffect
+      effectWindow
+      effectMetadata
+      source
+      target
     unshiftMessage (CreatedEffect effectId (Just effectMetadata) source target)
     pure $ g & effectsL %~ insertMap effectId effect
   DisableEffect effectId -> pure $ g & effectsL %~ deleteMap effectId

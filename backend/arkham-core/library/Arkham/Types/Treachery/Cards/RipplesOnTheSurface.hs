@@ -42,5 +42,5 @@ instance TreacheryRunner env => RunMessage env RipplesOnTheSurface where
         ]
     FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} n
       | tid == treacheryId -> t <$ unshiftMessage
-        (InvestigatorAssignDamage iid (TreacherySource treacheryId) 0 n)
+        (InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny 0 n)
     _ -> RipplesOnTheSurface <$> runMessage msg attrs

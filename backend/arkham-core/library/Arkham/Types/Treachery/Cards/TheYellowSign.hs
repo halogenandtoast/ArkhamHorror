@@ -33,7 +33,7 @@ instance (TreacheryRunner env) => RunMessage env TheYellowSign where
         ]
     FailedSkillTest iid _ source _ _ | isSource attrs source ->
       t <$ unshiftMessages
-        [ InvestigatorAssignDamage iid (TreacherySource treacheryId) 0 2
+        [ InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny 0 2
         , SearchDeckForTraits iid (InvestigatorTarget iid) [Madness] -- TODO: We may need to specify weakness
         ]
     _ -> TheYellowSign <$> runMessage msg attrs

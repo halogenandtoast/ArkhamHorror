@@ -34,5 +34,6 @@ instance (LocationRunner env) => RunMessage env ScienceBuilding where
       ScienceBuilding <$> runMessage msg attrs
     FailedSkillTest iid _ (SkillTestSource _ SkillWillpower _ _) SkillTestInitiatorTarget{} _
       | iid `elem` locationInvestigators attrs
-      -> l <$ unshiftMessage (InvestigatorAssignDamage iid (toSource attrs) 1 0)
+      -> l <$ unshiftMessage
+        (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0)
     _ -> ScienceBuilding <$> runMessage msg attrs

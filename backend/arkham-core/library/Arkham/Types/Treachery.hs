@@ -64,6 +64,8 @@ data Treachery
   | PassageIntoTheVeil' PassageIntoTheVeil
   | EphemeralExhibits' EphemeralExhibits
   | SlitheringBehindYou' SlitheringBehindYou
+  | ClawsOfSteam' ClawsOfSteam
+  | BrokenRails' BrokenRails
   | TheZealotsSeal' TheZealotsSeal
   | MaskedHorrors' MaskedHorrors
   | VaultOfEarthlyDemise' VaultOfEarthlyDemise
@@ -180,6 +182,8 @@ allTreacheries = mapFromList
   , ("02144", (PassageIntoTheVeil' .) . passageIntoTheVeil)
   , ("02145", (EphemeralExhibits' .) . ephemeralExhibits)
   , ("02146", (SlitheringBehindYou' .) . slitheringBehindYou)
+  , ("02180", (ClawsOfSteam' .) . clawsOfSteam)
+  , ("02181", (BrokenRails' .) . brokenRails)
   , ("50024", (TheZealotsSeal' .) . theZealotsSeal)
   , ("50031", (MaskedHorrors' .) . maskedHorrors)
   , ("50032b", (VaultOfEarthlyDemise' .) . vaultOfEarthlyDemise)
@@ -259,6 +263,8 @@ treacheryAttrs = \case
   PassageIntoTheVeil' attrs -> coerce attrs
   EphemeralExhibits' attrs -> coerce attrs
   SlitheringBehindYou' attrs -> coerce attrs
+  ClawsOfSteam' attrs -> coerce attrs
+  BrokenRails' attrs -> coerce attrs
   TheZealotsSeal' attrs -> coerce attrs
   MaskedHorrors' attrs -> coerce attrs
   VaultOfEarthlyDemise' attrs -> coerce attrs

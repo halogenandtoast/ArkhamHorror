@@ -28,9 +28,9 @@ instance ActionRunner env => HasActions env YoungDeepOne where
 instance (EnemyRunner env) => RunMessage env YoungDeepOne where
   runMessage msg (YoungDeepOne attrs@Attrs {..}) = case msg of
     EnemyEngageInvestigator eid iid | eid == enemyId -> do
-      unshiftMessage (InvestigatorAssignDamage iid (EnemySource eid) 0 1)
+      unshiftMessage (InvestigatorAssignDamage iid (EnemySource eid) DamageAny 0 1)
       YoungDeepOne <$> runMessage msg attrs
     EngageEnemy iid eid False | eid == enemyId -> do
-      unshiftMessage (InvestigatorAssignDamage iid (EnemySource eid) 0 1)
+      unshiftMessage (InvestigatorAssignDamage iid (EnemySource eid) DamageAny 0 1)
       YoungDeepOne <$> runMessage msg attrs
     _ -> YoungDeepOne <$> runMessage msg attrs

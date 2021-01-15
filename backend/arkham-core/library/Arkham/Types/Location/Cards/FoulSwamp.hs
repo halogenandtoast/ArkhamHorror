@@ -61,7 +61,7 @@ instance LocationRunner env => RunMessage env FoulSwamp where
           unshiftMessage $ chooseOne
             iid
             [ Run
-              [ InvestigatorAssignDamage iid (toSource attrs) 0 1
+              [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
               , PayForCardAbility iid source (Just (IntMetadata $ n + 1)) 1
               ]
             , Label
@@ -71,7 +71,7 @@ instance LocationRunner env => RunMessage env FoulSwamp where
           pure l
     UseCardAbility iid source (Just (IntMetadata n)) 1 _
       | isSource attrs source -> l <$ unshiftMessages
-        [ CreateSkillTestEffect
+        [ CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower n])
           source
           (InvestigatorTarget iid)

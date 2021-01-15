@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.CurseOfTheRougarou
   ( CurseOfTheRougarou(..)
   , curseOfTheRougarou
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -35,12 +34,12 @@ instance (TreacheryRunner env) => RunMessage env CurseOfTheRougarou where
           (AttachTreachery treacheryId $ InvestigatorTarget iid)
       EnemyDamage _ iid _ n | treacheryOnInvestigator iid attrs && n > 0 ->
         CurseOfTheRougarou . (`with` Metadata True) <$> runMessage msg attrs
-      InvestigatorAssignDamage _ (InvestigatorSource iid) n 0
+      InvestigatorAssignDamage _ (InvestigatorSource iid) _ n 0
         | treacheryOnInvestigator iid attrs && n > 0
         -> CurseOfTheRougarou . (`with` Metadata True) <$> runMessage msg attrs
       EndTurn iid -> do
         unless
           (dealtDamageThisTurn metadata)
-          (unshiftMessage $ InvestigatorAssignDamage iid (toSource attrs) 0 1)
+          (unshiftMessage $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1)
         CurseOfTheRougarou . (`with` Metadata False) <$> runMessage msg attrs
       _ -> CurseOfTheRougarou . (`with` metadata) <$> runMessage msg attrs

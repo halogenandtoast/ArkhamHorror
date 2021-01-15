@@ -40,7 +40,7 @@ instance AssetRunner env => RunMessage env Machete where
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       criteriaMet <- (== 1) . unEnemyCount <$> getCount iid
       a <$ unshiftMessages
-        [ CreateSkillTestEffect
+        [ CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers $ toModifiers
             attrs
             ([ DamageDealt 1 | criteriaMet ] <> [SkillModifier SkillCombat 1])

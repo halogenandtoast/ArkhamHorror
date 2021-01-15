@@ -25,6 +25,6 @@ instance HasQueue env => RunMessage env PushedIntoTheBeyond where
       case effectMetadata of
         Just (EffectCardCode x) -> e <$ when
           (x `elem` map pcCardCode cards)
-          (unshiftMessage (InvestigatorAssignDamage iid effectSource 0 2))
+          (unshiftMessage (InvestigatorAssignDamage iid effectSource DamageAny 0 2))
         _ -> throwIO (InvalidState "Must have one card as the target")
     _ -> PushedIntoTheBeyond <$> runMessage msg attrs

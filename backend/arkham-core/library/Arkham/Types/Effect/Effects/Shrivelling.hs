@@ -1,8 +1,7 @@
 module Arkham.Types.Effect.Effects.Shrivelling
   ( shrivelling
   , Shrivelling(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -23,7 +22,7 @@ instance HasQueue env => RunMessage env Shrivelling where
       e <$ when
         (token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
         (unshiftMessages
-          [ InvestigatorAssignDamage iid effectSource 0 1
+          [ InvestigatorAssignDamage iid effectSource DamageAny 0 1
           , DisableEffect effectId
           ]
         )

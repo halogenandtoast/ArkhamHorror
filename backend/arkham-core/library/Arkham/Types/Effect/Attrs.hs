@@ -1,10 +1,14 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Arkham.Types.Effect.Attrs where
+module Arkham.Types.Effect.Attrs
+  ( module Arkham.Types.Effect.Attrs
+  , module X
+  ) where
 
 import Arkham.Import
 
 import Arkham.Types.Trait
+import Arkham.Types.Effect.Window as X
 
 data Attrs = Attrs
   { effectId :: EffectId
@@ -13,6 +17,7 @@ data Attrs = Attrs
   , effectSource :: Source
   , effectTraits :: HashSet Trait
   , effectMetadata :: Maybe (EffectMetadata Message)
+  , effectWindow :: Maybe EffectWindow
   }
   deriving stock (Show, Generic)
 
@@ -34,6 +39,7 @@ baseAttrs cardCode eid meffectMetadata source target = Attrs
   , effectCardCode = Just cardCode
   , effectMetadata = meffectMetadata
   , effectTraits = mempty
+  , effectWindow = Nothing
   }
 
 instance ToJSON Attrs where
@@ -47,7 +53,14 @@ instance HasActions env Attrs where
   getActions _ _ _ = pure []
 
 instance HasQueue env => RunMessage env Attrs where
-  runMessage _ = pure
+  runMessage msg a@Attrs {..} = case msg of
+    EndPhase | EffectPhaseWindow `elem` effectWindow ->
+      a <$ unshiftMessage (DisableEffect effectId)
+    EndRound | EffectRoundWindow `elem` effectWindow ->
+      a <$ unshiftMessage (DisableEffect effectId)
+    SkillTestEnds _ | EffectSkillTestWindow `elem` effectWindow ->
+      a <$ unshiftMessage (DisableEffect effectId)
+    _ -> pure a
 
 instance Entity Attrs where
   type EntityId Attrs = EffectId

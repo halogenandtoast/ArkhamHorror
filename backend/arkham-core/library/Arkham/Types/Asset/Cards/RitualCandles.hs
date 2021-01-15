@@ -32,7 +32,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env RitualCandles 
   runMessage msg a@(RitualCandles attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
-        [ CreateSkillTestEffect
+        [ CreateWindowModifierEffect EffectSkillTestWindow
             (EffectModifiers $ toModifiers attrs [AnySkillValue 1])
             source
             (InvestigatorTarget iid)

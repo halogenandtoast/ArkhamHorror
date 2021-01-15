@@ -11,8 +11,10 @@ import Arkham.Types.Treachery.Cards.ArousingSuspicions as X
 import Arkham.Types.Treachery.Cards.Atychiphobia as X
 import Arkham.Types.Treachery.Cards.BeastOfTheBayou as X
 import Arkham.Types.Treachery.Cards.BeyondTheVeil as X
+import Arkham.Types.Treachery.Cards.BrokenRails as X
 import Arkham.Types.Treachery.Cards.ChillFromBelow as X
 import Arkham.Types.Treachery.Cards.Chronophobia as X
+import Arkham.Types.Treachery.Cards.ClawsOfSteam as X
 import Arkham.Types.Treachery.Cards.CoverUp as X
 import Arkham.Types.Treachery.Cards.CryptChill as X
 import Arkham.Types.Treachery.Cards.CursedLuck as X

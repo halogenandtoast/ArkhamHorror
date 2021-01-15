@@ -29,5 +29,5 @@ instance TreacheryRunner env => RunMessage env CryptChill where
         assetCount <- length <$> getSet @DiscardableAssetId iid
         if assetCount > 0
           then t <$ unshiftMessage (ChooseAndDiscardAsset iid)
-          else t <$ unshiftMessage (InvestigatorAssignDamage iid source 2 0)
+          else t <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny 2 0)
     _ -> CryptChill <$> runMessage msg attrs

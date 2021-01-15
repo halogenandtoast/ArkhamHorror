@@ -32,14 +32,14 @@ instance (AssetRunner env) => RunMessage env PhysicalTraining where
   runMessage msg a@(PhysicalTraining attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage
-        (CreateSkillTestEffect
+        (CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower 1])
           source
           (InvestigatorTarget iid)
         )
     UseCardAbility iid source _ 2 _ | isSource attrs source ->
       a <$ unshiftMessage
-        (CreateSkillTestEffect
+        (CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
           source
           (InvestigatorTarget iid)

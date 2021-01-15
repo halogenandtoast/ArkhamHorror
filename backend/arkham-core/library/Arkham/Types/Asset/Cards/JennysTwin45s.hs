@@ -46,7 +46,7 @@ instance AssetRunner env => RunMessage env JennysTwin45s where
       JennysTwin45s <$> runMessage msg (attrs & usesL .~ Uses Ammo n)
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
-        [ CreateSkillTestEffect
+        [ CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers
           $ toModifiers attrs [DamageDealt 1, SkillModifier SkillCombat 2]
           )

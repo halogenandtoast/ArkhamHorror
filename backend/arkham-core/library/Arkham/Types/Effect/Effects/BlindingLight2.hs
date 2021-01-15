@@ -25,7 +25,7 @@ instance HasQueue env => RunMessage env BlindingLight2 where
         (token `elem` [Skull, Cultist, Tablet, ElderThing, AutoFail])
         (unshiftMessages
           [ LoseActions iid (toSource attrs) 1
-          , InvestigatorAssignDamage iid (toSource attrs) 0 1
+          , InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
           , DisableEffect effectId
           ]
         )

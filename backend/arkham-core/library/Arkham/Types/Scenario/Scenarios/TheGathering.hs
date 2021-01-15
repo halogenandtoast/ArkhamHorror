@@ -93,6 +93,7 @@ instance ScenarioRunner env => RunMessage env TheGathering where
         (unshiftMessage $ InvestigatorAssignDamage
           iid
           (TokenEffectSource Tablet)
+          DamageAny
           1
           (if isEasyStandard attrs then 0 else 1)
         )
@@ -104,6 +105,7 @@ instance ScenarioRunner env => RunMessage env TheGathering where
         Cultist -> unshiftMessage $ InvestigatorAssignDamage
           iid
           (DrawnTokenSource token)
+          DamageAny
           0
           (if isEasyStandard attrs then 1 else 2)
         _ -> pure ()

@@ -42,7 +42,7 @@ instance (AssetRunner env) => RunMessage env BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
-        [ CreateSkillTestEffect
+        [ CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
           source
           (InvestigatorTarget iid)

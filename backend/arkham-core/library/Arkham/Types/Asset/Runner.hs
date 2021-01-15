@@ -5,6 +5,7 @@ import ClassyPrelude
 import Arkham.Types.AssetId
 import Arkham.Types.Card
 import Arkham.Types.Classes
+import Arkham.Types.Direction
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId
 import Arkham.Types.LocationId
@@ -23,6 +24,7 @@ type AssetRunner env
     , HasCount HorrorCount env InvestigatorId
     , HasCount ResourceCount env InvestigatorId
     , HasCount SanityDamageCount env EnemyId
+    , HasId (Maybe LocationId) env (Direction, LocationId)
     , HasId (Maybe StoryEnemyId) env CardCode
     , HasId ActiveInvestigatorId env ()
     , HasId CardCode env EnemyId
@@ -31,9 +33,10 @@ type AssetRunner env
     , HasSet AssetId env InvestigatorId
     , HasSet BlockedLocationId env ()
     , HasSet ConnectedLocationId env LocationId
+    , HasSet EnemyId env ([Trait], LocationId)
     , HasSet EnemyId env InvestigatorId
     , HasSet EnemyId env LocationId
-    , HasSet EnemyId env ([Trait], LocationId)
+    , HasSet InScenarioInvestigatorId env ()
     , HasSet InvestigatorId env ()
     , HasSet InvestigatorId env LocationId
     , HasSet Trait env AssetId

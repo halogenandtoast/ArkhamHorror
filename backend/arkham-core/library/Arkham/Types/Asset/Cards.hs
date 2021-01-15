@@ -48,6 +48,7 @@ import Arkham.Types.Asset.Cards.HardKnocks as X
 import Arkham.Types.Asset.Cards.HardKnocks2 as X
 import Arkham.Types.Asset.Cards.HaroldWalsted as X
 import Arkham.Types.Asset.Cards.HeirloomOfHyperborea as X
+import Arkham.Types.Asset.Cards.HelplessPassenger as X
 import Arkham.Types.Asset.Cards.HigherEducation as X
 import Arkham.Types.Asset.Cards.HiredMuscle1 as X
 import Arkham.Types.Asset.Cards.HolyRosary as X

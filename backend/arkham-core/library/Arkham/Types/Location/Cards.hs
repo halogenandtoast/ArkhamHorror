@@ -69,6 +69,11 @@ import Arkham.Types.Location.Cards.NorthsideTrainStation as X
 import Arkham.Types.Location.Cards.OrneLibrary as X
 import Arkham.Types.Location.Cards.OvergrownCairns as X
 import Arkham.Types.Location.Cards.Parlor as X
+import Arkham.Types.Location.Cards.PassengerCar_167 as X
+import Arkham.Types.Location.Cards.PassengerCar_168 as X
+import Arkham.Types.Location.Cards.PassengerCar_169 as X
+import Arkham.Types.Location.Cards.PassengerCar_170 as X
+import Arkham.Types.Location.Cards.PassengerCar_171 as X
 import Arkham.Types.Location.Cards.ReturnToAttic as X
 import Arkham.Types.Location.Cards.ReturnToCellar as X
 import Arkham.Types.Location.Cards.RitualGrounds as X

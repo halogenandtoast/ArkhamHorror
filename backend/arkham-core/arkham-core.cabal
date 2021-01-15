@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 88efdf047f84d1e2801d194fab10e0086c20ed74c60177e0207b7838b5840ee3
+-- hash: 02cd2377e98a8f282a63f59f931cf5705414af5bfd693153b991629facc8c03b
 
 name:           arkham-core
 version:        0.0.0
@@ -497,6 +497,11 @@ library
       Arkham.Types.Location.Cards.OrneLibrary
       Arkham.Types.Location.Cards.OvergrownCairns
       Arkham.Types.Location.Cards.Parlor
+      Arkham.Types.Location.Cards.PassengerCar_167
+      Arkham.Types.Location.Cards.PassengerCar_168
+      Arkham.Types.Location.Cards.PassengerCar_169
+      Arkham.Types.Location.Cards.PassengerCar_170
+      Arkham.Types.Location.Cards.PassengerCar_171
       Arkham.Types.Location.Cards.ReturnToAttic
       Arkham.Types.Location.Cards.ReturnToCellar
       Arkham.Types.Location.Cards.RitualGrounds

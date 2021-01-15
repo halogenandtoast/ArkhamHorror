@@ -7,6 +7,7 @@ import Arkham.Types.Trait
 
 type LocationRunner env
   = ( HasQueue env
+    , HasCostPayment env
     , HasCount HorrorCount env InvestigatorId
     , HasCount PlayerCount env ()
     , HasId (Maybe LocationId) env LocationMatcher
@@ -32,6 +33,7 @@ type LocationRunner env
     , HasSet LocationId env ()
     , HasSet LocationId env LocationMatcher
     , HasSet LocationId env [Trait]
+    , HasSet Trait env Source
     , HasSet Trait env EnemyId
     , HasSet Trait env LocationId
     , HasSet UnrevealedLocationId env ()

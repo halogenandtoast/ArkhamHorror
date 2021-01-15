@@ -159,6 +159,13 @@ getCanAffordCost iid source mAction = \case
   DiscardCardCost _ -> pure True -- TODO: Make better
   HorrorCost{} -> pure True -- TODO: Make better
   DamageCost{} -> pure True -- TODO: Make better
+  SkillIconCost n skillTypes -> do
+    handCards <- mapMaybe (preview _PlayerCard) <$> getHandOf iid
+    let
+      total = sum $ map
+        (count (`member` insertSet SkillWild skillTypes) . pcSkills)
+        handCards
+    pure $ total >= n
   HandDiscardCost n mCardType traits skillTypes -> do
     cards <- mapMaybe (preview _PlayerCard) <$> getHandOf iid
     let

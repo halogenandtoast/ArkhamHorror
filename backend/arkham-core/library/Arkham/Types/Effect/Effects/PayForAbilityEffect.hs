@@ -119,12 +119,14 @@ instance
       DiscardCardCost cid -> e <$ unshiftMessage (DiscardCard iid cid)
       HorrorCost _ target x -> case target of
         InvestigatorTarget iid' | iid' == iid ->
-          e <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny 0 x)
+          e <$ unshiftMessage
+            (InvestigatorAssignDamage iid source DamageAny 0 x)
         AssetTarget aid -> e <$ unshiftMessage (AssetDamage aid source 0 x)
         _ -> error "can't target for horror cost"
       DamageCost _ target x -> case target of
         InvestigatorTarget iid' | iid' == iid ->
-          e <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny x 0)
+          e <$ unshiftMessage
+            (InvestigatorAssignDamage iid source DamageAny x 0)
         AssetTarget aid -> e <$ unshiftMessage (AssetDamage aid source x 0)
         _ -> error "can't target for damage cost"
       ResourceCost x -> e <$ unshiftMessage (SpendResources iid x)
@@ -163,6 +165,26 @@ instance
             handCards
         e <$ unshiftMessage
           (chooseN iid x [ DiscardCard iid (getCardId card) | card <- cards ])
+      SkillIconCost x skillTypes -> do
+        handCards <- mapMaybe (preview _PlayerCard . unHandCard) <$> getList iid
+        let
+          cards = filter ((> 0) . fst) $ map
+            (toFst (count (`member` insertSet SkillWild skillTypes) . pcSkills))
+            handCards
+          cardMsgs = map
+            (\(n, card) -> if n >= x
+              then DiscardCard iid (getCardId card)
+              else Run
+                [ DiscardCard iid (getCardId card)
+                , PayAbilityCost
+                  source
+                  iid
+                  mAction
+                  (SkillIconCost (x - n) skillTypes)
+                ]
+            )
+            cards
+        e <$ unshiftMessage (chooseN iid x cardMsgs)
       Free -> pure e
     PayAbilityCostFinished source iid -> case effectMetadata attrs of
       Just (EffectAbility Ability {..}) -> e <$ unshiftMessages

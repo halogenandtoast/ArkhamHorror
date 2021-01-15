@@ -77,6 +77,11 @@ data Location
   | ExhibitHallEgyptianExhibit' ExhibitHallEgyptianExhibit
   | ExhibitHallHallOfTheDead' ExhibitHallHallOfTheDead
   | ExhibitHallRestrictedHall' ExhibitHallRestrictedHall
+  | PassengerCar_167' PassengerCar_167
+  | PassengerCar_168' PassengerCar_168
+  | PassengerCar_169' PassengerCar_169
+  | PassengerCar_170' PassengerCar_170
+  | PassengerCar_171' PassengerCar_171
   | EngineCar_175' EngineCar_175
   | EngineCar_176' EngineCar_176
   | EngineCar_177' EngineCar_177
@@ -281,6 +286,11 @@ allLocations = mapFromList $ map
   , ExhibitHallEgyptianExhibit' exhibitHallEgyptianExhibit
   , ExhibitHallHallOfTheDead' exhibitHallHallOfTheDead
   , ExhibitHallRestrictedHall' exhibitHallRestrictedHall
+  , PassengerCar_167' passengerCar_167
+  , PassengerCar_168' passengerCar_168
+  , PassengerCar_169' passengerCar_169
+  , PassengerCar_170' passengerCar_170
+  , PassengerCar_171' passengerCar_171
   , EngineCar_175' engineCar_175
   , EngineCar_176' engineCar_176
   , EngineCar_177' engineCar_177
@@ -380,6 +390,11 @@ locationAttrs = \case
   ExhibitHallEgyptianExhibit' attrs -> coerce attrs
   ExhibitHallHallOfTheDead' attrs -> coerce attrs
   ExhibitHallRestrictedHall' attrs -> coerce attrs
+  PassengerCar_167' attrs -> coerce attrs
+  PassengerCar_168' attrs -> coerce attrs
+  PassengerCar_169' attrs -> coerce attrs
+  PassengerCar_170' attrs -> coerce attrs
+  PassengerCar_171' attrs -> coerce attrs
   EngineCar_175' attrs -> coerce attrs
   EngineCar_176' attrs -> coerce attrs
   EngineCar_177' attrs -> coerce attrs

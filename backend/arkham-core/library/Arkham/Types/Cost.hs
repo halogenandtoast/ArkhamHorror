@@ -62,6 +62,7 @@ data Cost
   | DiscardCost Target
   | DiscardCardCost CardId
   | HandDiscardCost Int (Maybe PlayerCardType) (HashSet Trait) (HashSet SkillType)
+  | SkillIconCost Int (HashSet SkillType)
   | HorrorCost Source Target Int
   | Free
   | ResourceCost Int

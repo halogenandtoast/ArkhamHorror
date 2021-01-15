@@ -31,6 +31,7 @@ import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Card.Id
 import Arkham.Types.ChaosBagStepState
 import Arkham.Types.Cost
+import Arkham.Types.Direction
 import Arkham.Types.EffectId
 import Arkham.Types.EffectMetadata
 import Arkham.Types.EnemyId
@@ -350,6 +351,7 @@ data Message
   | PlaceLocationMatching LocationMatcher
   | PlaceResources Target Int
   | PlacedLocation LocationId
+  | PlacedLocationDirection LocationId Direction LocationId
   | PlayCard InvestigatorId CardId (Maybe Target) Bool
   | PlayDynamicCard InvestigatorId CardId Int (Maybe Target) Bool -- Int is unused for Bool True
   | PlayedCard InvestigatorId CardId

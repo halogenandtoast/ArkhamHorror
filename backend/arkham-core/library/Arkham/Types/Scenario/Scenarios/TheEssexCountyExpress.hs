@@ -120,7 +120,10 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
       trainCars <- take 6 <$> shuffleM
         ["02167", "02168", "02169", "02170", "02171", "02172", "02173", "02174"]
 
-      let start = fromJustNote "No train cars?" $ headMay trainCars
+
+      let
+        start = fromJustNote "No train cars?" $ headMay trainCars
+        allCars = trainCars <> [engineCar]
 
       encounterDeck <- buildEncounterDeck
         [ EncounterSet.TheEssexCountyExpress
@@ -142,6 +145,9 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
                ]
              | (n, location) <- zip [6, 5 ..] trainCars
              ]
+        <> [ PlacedLocationDirection lid1 LeftOf lid2
+           | (lid1, lid2) <- zip allCars (drop 1 allCars)
+           ]
         <> [RevealLocation Nothing start, MoveAllTo start]
 
       let

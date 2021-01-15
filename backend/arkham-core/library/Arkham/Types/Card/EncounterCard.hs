@@ -144,6 +144,8 @@ allEncounterCards = HashMap.fromList
   , ("02144", passageIntoTheVeil)
   , ("02145", ephemeralExhibits)
   , ("02146", slitheringBehindYou)
+  , ("02182", grapplingHorror)
+  , ("02183", emergentMonstrosity)
   , ("50022", corpseHungryGhoul)
   , ("50023", ghoulFromTheDepths)
   , ("50024", theZealotsSeal)
@@ -557,6 +559,18 @@ ephemeralExhibits cardId = (treachery cardId "02145" "Ephemeral Exhibits")
 
 slitheringBehindYou :: CardId -> EncounterCard
 slitheringBehindYou cardId = treachery cardId "02146" "Slithering Behind You"
+
+grapplingHorror :: CardId -> EncounterCard
+grapplingHorror cardId = (enemy cardId "02182" "Grappling Horror")
+  { ecTraits = setFromList [Monster, Abomination]
+  , ecKeywords = setFromList [Keyword.Hunter]
+  }
+
+emergentMonstrosity :: CardId -> EncounterCard
+emergentMonstrosity cardId = (enemy cardId "02183" "Emergent Monstrosity")
+  { ecTraits = setFromList [Monster, Abomination]
+  , ecVictoryPoints = Just 1
+  }
 
 corpseHungryGhoul :: CardId -> EncounterCard
 corpseHungryGhoul cardId = (enemy cardId "50022" "Corpse-Hungry Ghoul")

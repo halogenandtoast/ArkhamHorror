@@ -1,7 +1,6 @@
 module Arkham.Types.Enemy.Cards
   ( module X
-  )
-where
+  ) where
 
 import Arkham.Types.Enemy.Cards.Acolyte as X
 import Arkham.Types.Enemy.Cards.AcolyteOfUmordhoth as X
@@ -15,11 +14,13 @@ import Arkham.Types.Enemy.Cards.CorpseHungryGhoul as X
 import Arkham.Types.Enemy.Cards.CorpseTaker as X
 import Arkham.Types.Enemy.Cards.DarkYoungHost as X
 import Arkham.Types.Enemy.Cards.DiscipleOfTheDevourer as X
+import Arkham.Types.Enemy.Cards.EmergentMonstrosity as X
 import Arkham.Types.Enemy.Cards.FleshEater as X
 import Arkham.Types.Enemy.Cards.GhoulFromTheDepths as X
 import Arkham.Types.Enemy.Cards.GhoulMinion as X
 import Arkham.Types.Enemy.Cards.GhoulPriest as X
 import Arkham.Types.Enemy.Cards.GoatSpawn as X
+import Arkham.Types.Enemy.Cards.GrapplingHorror as X
 import Arkham.Types.Enemy.Cards.GraveEater as X
 import Arkham.Types.Enemy.Cards.HermanCollins as X
 import Arkham.Types.Enemy.Cards.HuntingHorror as X

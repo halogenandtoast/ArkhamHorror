@@ -7,8 +7,7 @@ module Arkham.Types.Enemy
   , getBearer
   , getEnemyVictory
   , Enemy
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -55,6 +54,8 @@ data Enemy
   | ConglomerationOfSpheres' ConglomerationOfSpheres
   | ServantOfTheLurker' ServantOfTheLurker
   | HuntingHorror' HuntingHorror
+  | GrapplingHorror' GrapplingHorror
+  | EmergentMonstrosity' EmergentMonstrosity
   | CorpseHungryGhoul' CorpseHungryGhoul
   | GhoulFromTheDepths' GhoulFromTheDepths
   | Narogath' Narogath
@@ -116,8 +117,6 @@ instance ActionRunner env => HasActions env Enemy where
       (InvestigatorTarget investigator)
       ()
     actions <- defaultGetActions investigator window enemy
-
-    -- preventedByModifier :: Attrs -> Modifier -> Action -> Bool
     pure $ filter
       (\action ->
         not $ any (preventedByModifier (enemyAttrs enemy) action) modifiers'
@@ -224,6 +223,8 @@ allEnemies = mapFromList
   , ("02103", ConglomerationOfSpheres' . conglomerationOfSpheres)
   , ("02104", ServantOfTheLurker' . servantOfTheLurker)
   , ("02141", HuntingHorror' . huntingHorror)
+  , ("02182", GrapplingHorror' . grapplingHorror)
+  , ("02183", EmergentMonstrosity' . emergentMonstrosity)
   , ("50022", CorpseHungryGhoul' . corpseHungryGhoul)
   , ("50023", GhoulFromTheDepths' . ghoulFromTheDepths)
   , ("50026b", Narogath' . narogath)
@@ -305,6 +306,8 @@ enemyAttrs = \case
   ConglomerationOfSpheres' attrs -> coerce attrs
   ServantOfTheLurker' attrs -> coerce attrs
   HuntingHorror' attrs -> coerce attrs
+  GrapplingHorror' attrs -> coerce attrs
+  EmergentMonstrosity' attrs -> coerce attrs
   CorpseHungryGhoul' attrs -> coerce attrs
   GhoulFromTheDepths' attrs -> coerce attrs
   Narogath' attrs -> coerce attrs

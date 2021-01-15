@@ -1,4 +1,7 @@
-module Arkham.Types.Enemy.Cards.GhoulFromTheDepths where
+module Arkham.Types.Enemy.Cards.GhoulFromTheDepths
+  ( GhoulFromTheDepths(..)
+  , ghoulFromTheDepths
+  ) where
 
 import Arkham.Import
 

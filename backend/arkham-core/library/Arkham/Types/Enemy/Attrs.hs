@@ -308,6 +308,7 @@ instance EnemyRunner env => RunMessage env Attrs where
               `notElem` keywords
               && Keyword.Massive
               `notElem` keywords
+              && not enemyExhausted
               )
             $ do
                 preyIds <- map unPreyId <$> getSetList (enemyPrey, lid)
@@ -427,6 +428,7 @@ instance EnemyRunner env => RunMessage env Attrs where
         (Keyword.Aloof
         `notElem` keywords
         && (unengaged || Keyword.Massive `elem` keywords)
+        && not enemyExhausted
         )
         (if Keyword.Massive `elem` keywords
           then unshiftMessages
@@ -599,6 +601,7 @@ instance EnemyRunner env => RunMessage env Attrs where
              || Keyword.Massive
              `elem` keywords
              )
+          && not enemyExhausted
           )
         $ unshiftMessage (EnemyEngageInvestigator enemyId iid)
       pure a

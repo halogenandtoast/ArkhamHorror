@@ -22,7 +22,7 @@ instance (TreacheryRunner env) => RunMessage env DraggedUnder where
     Revelation iid source | isSource attrs source -> do
       t <$ unshiftMessage (RevelationSkillTest iid source SkillAgility 3)
     MoveFrom iid _ | treacheryOnInvestigator iid attrs -> t <$ unshiftMessages
-      [ InvestigatorAssignDamage iid (TreacherySource treacheryId) 2 0
+      [ InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny 2 0
       , Discard (TreacheryTarget treacheryId)
       ]
     EndTurn iid | treacheryOnInvestigator iid attrs -> t <$ unshiftMessage

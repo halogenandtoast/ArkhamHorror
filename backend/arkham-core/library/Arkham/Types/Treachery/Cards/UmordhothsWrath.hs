@@ -32,12 +32,18 @@ instance TreacheryRunner env => RunMessage env UmordhothsWrath where
             [ Label "Discard a card from your hand" [RandomDiscard iid]
             , Label
               "Take 1 damage and 1 horror"
-              [InvestigatorAssignDamage iid (TreacherySource treacheryId) 1 1]
+              [ InvestigatorAssignDamage
+                  iid
+                  (TreacherySource treacheryId)
+                  DamageAny
+                  1
+                  1
+              ]
             ]
           , HandlePointOfFailure iid (TreacheryTarget treacheryId) (n - 1)
           ]
         else t <$ unshiftMessages
-          [ InvestigatorAssignDamage iid (TreacherySource treacheryId) 1 1
+          [ InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny 1 1
           , HandlePointOfFailure iid (TreacheryTarget treacheryId) (n - 1)
           ]
     Revelation iid source | isSource attrs source -> t <$ unshiftMessage

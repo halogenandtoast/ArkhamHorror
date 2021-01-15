@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.CatBurgler1
   ( CatBurgler1(..)
   , catBurgler1
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -35,7 +34,8 @@ instance HasActions env CatBurgler1 where
 instance AssetRunner env => RunMessage env CatBurgler1 where
   runMessage msg (CatBurgler1 attrs) = case msg of
     InvestigatorPlayAsset iid aid _ _ | aid == assetId attrs -> do
-      unshiftMessage $ CreateSkillTestEffect
+      unshiftMessage $ CreateWindowModifierEffect
+        EffectSkillTestWindow
         (EffectModifiers $ toModifiers attrs [SkillModifier SkillAgility 1])
         (toSource attrs)
         (InvestigatorTarget iid)

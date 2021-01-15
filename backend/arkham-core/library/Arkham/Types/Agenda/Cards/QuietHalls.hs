@@ -31,6 +31,7 @@ instance AgendaRunner env => RunMessage env QuietHalls where
             (InvestigatorAssignDamage
               iid
               (toSource attrs)
+              DamageAny
               0
               (if discardCount >= 10 then 2 else 1)
             )

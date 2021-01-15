@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.AlchemicalConcoction
   ( alchemicalConcoction
   , AlchemicalConcoction(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -48,7 +47,8 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env AlchemicalConc
   runMessage msg a@(AlchemicalConcoction attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       a <$ unshiftMessages
-        [ CreateSkillTestEffect
+        [ CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [DamageDealt 1])
           source
           (InvestigatorTarget iid)

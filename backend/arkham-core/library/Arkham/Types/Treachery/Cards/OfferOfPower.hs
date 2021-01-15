@@ -30,7 +30,7 @@ instance TreacheryRunner env => RunMessage env OfferOfPower where
             , PlaceDoomOnAgenda
             , AdvanceAgendaIfThresholdSatisfied
             ]
-          , Label "Take 2 horror" [InvestigatorAssignDamage iid source 0 2]
+          , Label "Take 2 horror" [InvestigatorAssignDamage iid source DamageAny 0 2]
           ]
         , Discard $ toTarget attrs
         ]

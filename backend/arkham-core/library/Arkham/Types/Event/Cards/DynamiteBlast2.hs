@@ -30,7 +30,9 @@ instance (EventRunner env) => RunMessage env DynamiteBlast2 where
         pure
           $ map (\enid -> EnemyDamage enid iid (EventSource eid) 3) enemyIds
           <> map
-               (\iid' -> InvestigatorAssignDamage iid' (EventSource eid) 3 0)
+               (\iid' ->
+                 InvestigatorAssignDamage iid' (EventSource eid) DamageAny 3 0
+               )
                investigatorIds
       e <$ unshiftMessages
         [chooseOne iid $ map Run choices, Discard (EventTarget eid)]

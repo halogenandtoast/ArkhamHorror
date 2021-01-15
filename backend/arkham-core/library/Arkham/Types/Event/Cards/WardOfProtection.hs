@@ -21,7 +21,7 @@ instance EventRunner env => RunMessage env WardOfProtection where
   runMessage msg e@(WardOfProtection attrs@Attrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
       [ CancelNext RevelationMessage
-      , InvestigatorAssignDamage iid (EventSource eid) 0 1
+      , InvestigatorAssignDamage iid (EventSource eid) DamageAny 0 1
       , Discard (EventTarget eid)
       ]
     _ -> WardOfProtection <$> runMessage msg attrs

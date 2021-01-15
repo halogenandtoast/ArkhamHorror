@@ -26,10 +26,12 @@ instance TreacheryRunner env => RunMessage env HuntingShadow where
           [ chooseOne
             iid
             [ Label "Spend 1 clue" [SpendClues 1 [iid]]
-            , Label "Take 2 damage" [InvestigatorAssignDamage iid source 2 0]
+            , Label
+              "Take 2 damage"
+              [InvestigatorAssignDamage iid source DamageAny 2 0]
             ]
           , Discard $ toTarget attrs
           ]
         else t <$ unshiftMessages
-          [InvestigatorAssignDamage iid source 2 0, Discard $ toTarget attrs]
+          [InvestigatorAssignDamage iid source DamageAny 2 0, Discard $ toTarget attrs]
     _ -> HuntingShadow <$> runMessage msg attrs

@@ -783,7 +783,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   InvestigatorDamageInvestigator iid xid | iid == investigatorId -> do
     damage <- damageValueFor 1 a
     a <$ unshiftMessage
-      (InvestigatorAssignDamage xid (InvestigatorSource iid) damage 0)
+      (InvestigatorAssignDamage xid (InvestigatorSource iid) DamageAny damage 0)
   InvestigatorDamageEnemy iid eid | iid == investigatorId -> do
     damage <- damageValueFor 1 a
     a <$ unshiftMessage (EnemyDamage eid iid (InvestigatorSource iid) damage)
@@ -837,7 +837,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
          | horror > 0
          ]
       )
-  InvestigatorAssignDamage iid source damage horror
+  InvestigatorAssignDamage iid source strategy damage horror
     | iid == investigatorId && not
       (investigatorDefeated || investigatorResigned)
     -> do
@@ -848,71 +848,81 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
           a <$ unshiftMessage
             (InvestigatorDirectDamage iid source damage horror)
         else a <$ unshiftMessages
-          ([ InvestigatorDoAssignDamage iid source damage horror [] []
+          ([ InvestigatorDoAssignDamage iid source strategy damage horror [] []
            , CheckDefeated
            ]
           <> [After (InvestigatorTakeDamage iid source damage horror)]
           )
-  InvestigatorDoAssignDamage iid source 0 0 damageTargets horrorTargets
+  InvestigatorDoAssignDamage iid source _ 0 0 damageTargets horrorTargets
     | iid == investigatorId -> a <$ unshiftMessage
       (CheckWindow iid
       $ [ WhenDealtDamage source target | target <- nub damageTargets ]
       <> [ WhenDealtHorror source target | target <- nub horrorTargets ]
       )
-  InvestigatorDoAssignDamage iid source health sanity damageTargets horrorTargets
+  InvestigatorDoAssignDamage iid source strategy health sanity damageTargets horrorTargets
     | iid == investigatorId
     -> do
       healthDamageMessages <- if health > 0
         then do
+          healthDamageableAssets <- map unHealthDamageableAssetId
+            <$> getSetList iid
           let
             assignRestOfHealthDamage = InvestigatorDoAssignDamage
               investigatorId
               source
+              strategy
               (health - 1)
               sanity
-          healthDamageableAssets <- map unHealthDamageableAssetId
-            <$> getSetList iid
+            mustAssignDamageToAssets =
+              strategy == DamageAssetsFirst && not (null healthDamageableAssets)
           pure
-            $ Run
-                [ InvestigatorDamage investigatorId source 1 0
-                , assignRestOfHealthDamage
-                  (InvestigatorTarget investigatorId : damageTargets)
-                  horrorTargets
-                ]
-            : [ Run
-                  [ AssetDamage aid source 1 0
+            $ [ Run
+                  [ InvestigatorDamage investigatorId source 1 0
                   , assignRestOfHealthDamage
-                    (AssetTarget aid : damageTargets)
+                    (InvestigatorTarget investigatorId : damageTargets)
                     horrorTargets
                   ]
-              | aid <- healthDamageableAssets
+              | not mustAssignDamageToAssets
               ]
+            <> [ Run
+                   [ AssetDamage aid source 1 0
+                   , assignRestOfHealthDamage
+                     (AssetTarget aid : damageTargets)
+                     horrorTargets
+                   ]
+               | aid <- healthDamageableAssets
+               ]
         else pure []
       sanityDamageMessages <- if sanity > 0
         then do
+          sanityDamageableAssets <- map unSanityDamageableAssetId
+            <$> getSetList iid
           let
             assignRestOfSanityDamage = InvestigatorDoAssignDamage
               investigatorId
               source
+              strategy
               health
               (sanity - 1)
-          sanityDamageableAssets <- map unSanityDamageableAssetId
-            <$> getSetList iid
+            mustAssignDamageToAssets =
+              strategy == DamageAssetsFirst && not (null sanityDamageableAssets)
           pure
-            $ Run
-                [ InvestigatorDamage investigatorId source 0 1
-                , assignRestOfSanityDamage
-                  damageTargets
-                  (InvestigatorTarget investigatorId : horrorTargets)
-                ]
-            : [ Run
-                  [ AssetDamage aid source 0 1
+            $ [ Run
+                  [ InvestigatorDamage investigatorId source 0 1
                   , assignRestOfSanityDamage
                     damageTargets
-                    (AssetTarget aid : horrorTargets)
+                    (InvestigatorTarget investigatorId : horrorTargets)
                   ]
-              | aid <- sanityDamageableAssets
+              | not mustAssignDamageToAssets
               ]
+            <> [ Run
+                   [ AssetDamage aid source 0 1
+                   , assignRestOfSanityDamage
+                     damageTargets
+                     (AssetTarget aid : horrorTargets)
+                   ]
+               | aid <- sanityDamageableAssets
+               ]
         else pure []
       a <$ unshiftMessage
         (Ask iid $ ChooseOne $ healthDamageMessages <> sanityDamageMessages)

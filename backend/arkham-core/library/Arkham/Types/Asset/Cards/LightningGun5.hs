@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.LightningGun5
   ( lightningGun5
   , LightningGun5(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -43,7 +42,8 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env LightningGun5 
       LightningGun5 <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       unshiftMessages
-        [ CreateSkillTestEffect
+        [ CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers
           $ toModifiers attrs [DamageDealt 2, SkillModifier SkillCombat 5]
           )

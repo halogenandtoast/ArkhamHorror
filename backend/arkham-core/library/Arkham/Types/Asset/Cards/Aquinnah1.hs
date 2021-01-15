@@ -69,6 +69,7 @@ instance AssetRunner env => RunMessage env Aquinnah1 where
               , InvestigatorAssignDamage
                 iid
                 (EnemySource enemyId)
+                DamageAny
                 0
                 sanityDamage'
               ]

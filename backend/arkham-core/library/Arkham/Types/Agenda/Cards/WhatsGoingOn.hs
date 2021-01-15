@@ -29,7 +29,12 @@ instance AgendaRunner env => RunMessage env WhatsGoingOn where
             [AllRandomDiscard, NextAgenda aid "01106"]
           , Label
             "The lead investigator takes 2 horror"
-            [ InvestigatorAssignDamage leadInvestigatorId (AgendaSource aid) 0 2
+            [ InvestigatorAssignDamage
+              leadInvestigatorId
+              (AgendaSource aid)
+              DamageAny
+              0
+              2
             , NextAgenda aid "01106"
             ]
           ]

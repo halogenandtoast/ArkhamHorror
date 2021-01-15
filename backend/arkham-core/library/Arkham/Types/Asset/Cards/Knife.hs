@@ -47,7 +47,7 @@ instance (AssetRunner env) => RunMessage env Knife where
   runMessage msg a@(Knife attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
-        [ CreateSkillTestEffect
+        [ CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
           source
           (InvestigatorTarget iid)
@@ -56,7 +56,7 @@ instance (AssetRunner env) => RunMessage env Knife where
     UseCardAbility iid source _ 2 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ Discard (toTarget attrs)
-        , CreateSkillTestEffect
+        , CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers
           $ toModifiers attrs [SkillModifier SkillCombat 2, DamageDealt 1]
           )

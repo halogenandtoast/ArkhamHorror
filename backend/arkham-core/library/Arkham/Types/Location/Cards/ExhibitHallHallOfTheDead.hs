@@ -39,5 +39,5 @@ instance LocationRunner env => RunMessage env ExhibitHallHallOfTheDead where
   runMessage msg l@(ExhibitHallHallOfTheDead attrs) = case msg of
     After (FailedSkillTest iid (Just Action.Investigate) _ target _)
       | isTarget attrs target -> l
-      <$ unshiftMessage (InvestigatorAssignDamage iid (toSource attrs) 0 1)
+      <$ unshiftMessage (InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1)
     _ -> ExhibitHallHallOfTheDead <$> runMessage msg attrs

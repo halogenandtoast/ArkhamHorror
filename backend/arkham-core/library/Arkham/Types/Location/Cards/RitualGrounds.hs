@@ -32,5 +32,5 @@ instance ActionRunner env => HasActions env RitualGrounds where
 instance (LocationRunner env) => RunMessage env RitualGrounds where
   runMessage msg l@(RitualGrounds attrs@Attrs {..}) = case msg of
     EndTurn iid | iid `elem` locationInvestigators -> l <$ unshiftMessages
-      [DrawCards iid 1 False, InvestigatorAssignDamage iid (toSource attrs) 0 1]
+      [DrawCards iid 1 False, InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1]
     _ -> RitualGrounds <$> runMessage msg attrs

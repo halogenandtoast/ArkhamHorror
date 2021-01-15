@@ -24,6 +24,7 @@ payForAbilityEffect eid mAbility source target =
     , effectCardCode = Nothing
     , effectMetadata = EffectAbility <$> mAbility
     , effectTraits = mempty
+    , effectWindow = Nothing
     }
 
 instance HasModifiersFor env PayForAbilityEffect where
@@ -118,12 +119,12 @@ instance
       DiscardCardCost cid -> e <$ unshiftMessage (DiscardCard iid cid)
       HorrorCost _ target x -> case target of
         InvestigatorTarget iid' | iid' == iid ->
-          e <$ unshiftMessage (InvestigatorAssignDamage iid source 0 x)
+          e <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny 0 x)
         AssetTarget aid -> e <$ unshiftMessage (AssetDamage aid source 0 x)
         _ -> error "can't target for horror cost"
       DamageCost _ target x -> case target of
         InvestigatorTarget iid' | iid' == iid ->
-          e <$ unshiftMessage (InvestigatorAssignDamage iid source x 0)
+          e <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny x 0)
         AssetTarget aid -> e <$ unshiftMessage (AssetDamage aid source x 0)
         _ -> error "can't target for damage cost"
       ResourceCost x -> e <$ unshiftMessage (SpendResources iid x)

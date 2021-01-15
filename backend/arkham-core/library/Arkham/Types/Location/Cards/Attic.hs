@@ -31,5 +31,5 @@ instance ActionRunner env => HasActions env Attic where
 instance (LocationRunner env) => RunMessage env Attic where
   runMessage msg a@(Attic attrs@Attrs { locationId }) = case msg of
     AfterEnterLocation iid lid | lid == locationId -> a <$ unshiftMessage
-      (InvestigatorAssignDamage iid (LocationSource locationId) 0 1)
+      (InvestigatorAssignDamage iid (LocationSource locationId) DamageAny 0 1)
     _ -> Attic <$> runMessage msg attrs

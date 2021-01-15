@@ -30,7 +30,7 @@ instance TreacheryRunner env => RunMessage env MaskedHorrors where
         )
       t <$ if null targetInvestigators
         then unshiftMessages
-          ([ InvestigatorAssignDamage iid source 0 2
+          ([ InvestigatorAssignDamage iid source DamageAny 0 2
            | iid <- targetInvestigators
            ]
           <> [Discard (TreacheryTarget treacheryId)]

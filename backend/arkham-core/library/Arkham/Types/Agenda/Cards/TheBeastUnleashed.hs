@@ -38,7 +38,7 @@ instance AgendaRunner env => RunMessage env TheBeastUnleashed where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 A -> do
       investigatorIds <- getInvestigatorIds
       unshiftMessages
-        $ [ InvestigatorAssignDamage iid (toSource attrs) 0 3
+        $ [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 3
           | iid <- investigatorIds
           ]
         <> [Label "Resolution 3" [Resolution 3]]

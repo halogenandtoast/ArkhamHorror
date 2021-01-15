@@ -44,7 +44,7 @@ instance AssetRunner env => RunMessage env Rolands38Special where
       locationId <- getId @LocationId iid
       anyClues <- (> 0) . unClueCount <$> getCount locationId
       a <$ unshiftMessages
-        [ CreateSkillTestEffect
+        [ CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers $ toModifiers
             attrs
             [ DamageDealt 1

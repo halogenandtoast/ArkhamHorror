@@ -45,7 +45,7 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
       Shotgun4 <$> runMessage msg (attrs & usesL .~ Uses Ammo 2)
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
-        [ CreateSkillTestEffect
+        [ CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 3])
           source
           (InvestigatorTarget iid)
@@ -56,7 +56,7 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
       -> let val = min 1 (max 5 n)
          in
            a <$ unshiftMessage
-             (CreateSkillTestEffect
+             (CreateWindowModifierEffect EffectSkillTestWindow
                (EffectModifiers $ toModifiers attrs [DamageDealt val])
                source
                (InvestigatorTarget iid)
@@ -66,7 +66,7 @@ instance (AssetRunner env) => RunMessage env Shotgun4 where
       -> let val = min 1 (max 5 n)
          in
            a <$ unshiftMessage
-             (CreateSkillTestEffect
+             (CreateWindowModifierEffect EffectSkillTestWindow
                (EffectModifiers $ toModifiers attrs [DamageDealt val])
                source
                (InvestigatorTarget iid)

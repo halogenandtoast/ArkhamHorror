@@ -45,7 +45,8 @@ instance (AssetRunner env) => RunMessage env LitaChantler where
     UseCardAbility _ source (Just (TargetMetadata target)) 1 _
       | isSource attrs source -> do
         a <$ unshiftMessage
-          (CreateSkillTestEffect
+          (CreateWindowModifierEffect
+            EffectSkillTestWindow
             (EffectModifiers [toModifier attrs (DamageTaken 1)])
             source
             target

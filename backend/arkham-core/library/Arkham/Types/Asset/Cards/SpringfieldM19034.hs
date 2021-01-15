@@ -44,7 +44,7 @@ instance (HasQueue env, HasModifiersFor env ()) => RunMessage env SpringfieldM19
         <$> runMessage msg (attrs & usesL .~ Uses Resource.Ammo 3)
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
       unshiftMessages
-        [ CreateSkillTestEffect
+        [ CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers
           $ toModifiers attrs [DamageDealt 2, SkillModifier SkillCombat 3]
           )

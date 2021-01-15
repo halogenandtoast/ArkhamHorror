@@ -35,8 +35,7 @@ data Effect
   | JeremiahPierce' JeremiahPierce
   | CurseOfTheRougarouTabletToken' CurseOfTheRougarouTabletToken
   | CursedShores' CursedShores
-  | SkillTestEffect' SkillTestEffect
-  | PhaseEffect' PhaseEffect
+  | WindowModifierEffect' WindowModifierEffect
   | PayForAbilityEffect' PayForAbilityEffect
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
@@ -109,22 +108,24 @@ allEffects = mapFromList
   , ("81007", CursedShores' . cursedShores)
   ]
 
-buildSkillTestEffect
-  :: EffectId -> EffectMetadata Message -> Source -> Target -> Effect
-buildSkillTestEffect eid metadata source target =
-  SkillTestEffect' $ skillTestEffect eid metadata source target
-
 buildTokenValueEffect :: EffectId -> Int -> Source -> Target -> Effect
-buildTokenValueEffect eid n source target = SkillTestEffect' $ skillTestEffect
+buildTokenValueEffect eid n source target = buildWindowModifierEffect
   eid
   (EffectModifiers [Modifier source $ TokenValueModifier n])
+  EffectSkillTestWindow
   source
   target
 
-buildPhaseEffect
-  :: EffectId -> EffectMetadata Message -> Source -> Target -> Effect
-buildPhaseEffect eid metadata source target =
-  PhaseEffect' $ phaseEffect eid metadata source target
+buildWindowModifierEffect
+  :: EffectId
+  -> EffectMetadata Message
+  -> EffectWindow
+  -> Source
+  -> Target
+  -> Effect
+buildWindowModifierEffect eid metadata effectWindow source target =
+  WindowModifierEffect'
+    $ windowModifierEffect eid metadata effectWindow source target
 
 buildPayForAbilityEffect
   :: EffectId -> Maybe Ability -> Source -> Target -> Effect
@@ -158,6 +159,5 @@ effectAttrs = \case
   JeremiahPierce' attrs -> coerce attrs
   CurseOfTheRougarouTabletToken' attrs -> coerce attrs
   CursedShores' attrs -> coerce attrs
-  SkillTestEffect' attrs -> coerce attrs
-  PhaseEffect' attrs -> coerce attrs
+  WindowModifierEffect' attrs -> coerce attrs
   PayForAbilityEffect' (PayForAbilityEffect (attrs `With` _)) -> coerce attrs

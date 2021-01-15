@@ -144,6 +144,8 @@ allEncounterCards = HashMap.fromList
   , ("02144", passageIntoTheVeil)
   , ("02145", ephemeralExhibits)
   , ("02146", slitheringBehindYou)
+  , ("02180", clawsOfSteam)
+  , ("02181", brokenRails)
   , ("02182", grapplingHorror)
   , ("02183", emergentMonstrosity)
   , ("50022", corpseHungryGhoul)
@@ -559,6 +561,14 @@ ephemeralExhibits cardId = (treachery cardId "02145" "Ephemeral Exhibits")
 
 slitheringBehindYou :: CardId -> EncounterCard
 slitheringBehindYou cardId = treachery cardId "02146" "Slithering Behind You"
+
+clawsOfSteam :: CardId -> EncounterCard
+clawsOfSteam cardId =
+  (treachery cardId "02180" "Claws of Steam") { ecTraits = singleton Power }
+
+brokenRails :: CardId -> EncounterCard
+brokenRails cardId =
+  (treachery cardId "02181" "Broken Rails") { ecTraits = singleton Hazard }
 
 grapplingHorror :: CardId -> EncounterCard
 grapplingHorror cardId = (enemy cardId "02182" "Grappling Horror")

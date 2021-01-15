@@ -32,7 +32,7 @@ instance TreacheryRunner env => RunMessage env BeyondTheVeil where
           (AttachTreachery treacheryId (InvestigatorTarget iid))
     DeckHasNoCards iid | treacheryOnInvestigator iid attrs ->
       t <$ unshiftMessages
-        [ InvestigatorAssignDamage iid (toSource attrs) 10 0
+        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 10 0
         , Discard $ toTarget attrs
         ]
     _ -> BeyondTheVeil <$> runMessage msg attrs

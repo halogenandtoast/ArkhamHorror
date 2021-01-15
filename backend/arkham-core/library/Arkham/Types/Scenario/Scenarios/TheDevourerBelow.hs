@@ -141,7 +141,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
       s <$ when
         (monsterCount > 0)
         (unshiftMessage
-        $ InvestigatorAssignDamage iid (TokenEffectSource Tablet) 1 horror
+        $ InvestigatorAssignDamage iid (TokenEffectSource Tablet) DamageAny 1 horror
         )
     ResolveToken _ ElderThing iid -> do
       ancientOneCount <- unEnemyCount <$> getCount [AncientOne]

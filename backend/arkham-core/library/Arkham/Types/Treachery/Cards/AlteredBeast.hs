@@ -49,11 +49,11 @@ instance (TreacheryRunner env) => RunMessage env AlteredBeast where
         if lid == lid'
           then
             t <$ unshiftMessage
-              (InvestigatorAssignDamage iid (toSource attrs) 0 1)
+              (InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1)
           else pure t
       _ -> pure t
     EnemyMove eid _ lid | EnemyTarget eid `elem` treacheryAttachedTarget -> do
       iids <- getSetList @InvestigatorId lid
       t <$ unshiftMessages
-        [ InvestigatorAssignDamage iid (toSource attrs) 0 1 | iid <- iids ]
+        [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1 | iid <- iids ]
     _ -> AlteredBeast <$> runMessage msg attrs

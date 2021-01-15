@@ -552,6 +552,7 @@ instance EnemyRunner env => RunMessage env Attrs where
       [ InvestigatorAssignDamage
         iid
         (EnemySource enemyId)
+        DamageAny
         enemyHealthDamage
         enemySanityDamage
       , After (EnemyAttack iid enemyId)

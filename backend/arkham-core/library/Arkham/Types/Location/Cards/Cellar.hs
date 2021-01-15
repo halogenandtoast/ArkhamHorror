@@ -32,5 +32,5 @@ instance ActionRunner env => HasActions env Cellar where
 instance (LocationRunner env) => RunMessage env Cellar where
   runMessage msg a@(Cellar attrs@Attrs {..}) = case msg of
     AfterEnterLocation iid lid | lid == locationId ->
-      a <$ unshiftMessage (InvestigatorAssignDamage iid (toSource attrs) 1 0)
+      a <$ unshiftMessage (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 0)
     _ -> Cellar <$> runMessage msg attrs

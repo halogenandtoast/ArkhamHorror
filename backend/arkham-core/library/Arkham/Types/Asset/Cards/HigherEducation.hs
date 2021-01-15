@@ -44,7 +44,7 @@ instance AssetRunner env => RunMessage env HigherEducation where
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
-        , CreateSkillTestEffect
+        , CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower 1])
           source
           (InvestigatorTarget iid)
@@ -52,7 +52,7 @@ instance AssetRunner env => RunMessage env HigherEducation where
     UseCardAbility iid source _ 2 _ | isSource attrs source ->
       a <$ unshiftMessages
         [ SpendResources iid 1
-        , CreateSkillTestEffect
+        , CreateWindowModifierEffect EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillIntellect 1])
           source
           (InvestigatorTarget iid)

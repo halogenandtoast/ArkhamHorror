@@ -29,7 +29,7 @@ instance TreacheryRunner env => RunMessage env OnWingsOfDarkness where
       | isSource attrs source -> do
         centralLocations <- getSetList [Central]
         t <$ unshiftMessages
-          ([ InvestigatorAssignDamage iid source 1 1
+          ([ InvestigatorAssignDamage iid source DamageAny 1 1
            , UnengageNonMatching iid [Nightgaunt]
            ]
           <> [ Ask iid $ ChooseOne

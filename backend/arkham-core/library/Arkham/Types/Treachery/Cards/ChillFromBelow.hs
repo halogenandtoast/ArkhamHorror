@@ -30,7 +30,7 @@ instance (TreacheryRunner env) => RunMessage env ChillFromBelow where
           then
             unshiftMessages
             $ replicate handCount (RandomDiscard iid)
-            <> [InvestigatorAssignDamage iid source (n - handCount) 0]
+            <> [InvestigatorAssignDamage iid source DamageAny (n - handCount) 0]
           else unshiftMessages $ replicate n (RandomDiscard iid)
         pure t
     _ -> ChillFromBelow <$> runMessage msg attrs

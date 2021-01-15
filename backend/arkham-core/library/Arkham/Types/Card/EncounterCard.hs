@@ -144,6 +144,7 @@ allEncounterCards = HashMap.fromList
   , ("02144", passageIntoTheVeil)
   , ("02145", ephemeralExhibits)
   , ("02146", slitheringBehindYou)
+  , ("02179", helplessPassenger)
   , ("02180", clawsOfSteam)
   , ("02181", brokenRails)
   , ("02182", grapplingHorror)
@@ -561,6 +562,12 @@ ephemeralExhibits cardId = (treachery cardId "02145" "Ephemeral Exhibits")
 
 slitheringBehindYou :: CardId -> EncounterCard
 slitheringBehindYou cardId = treachery cardId "02146" "Slithering Behind You"
+
+helplessPassenger :: CardId -> EncounterCard
+helplessPassenger cardId = (asset cardId "02179" "Helpless Passenger")
+  { ecTraits = setFromList [Ally, Bystander]
+  , ecKeywords = singleton Keyword.Surge
+  }
 
 clawsOfSteam :: CardId -> EncounterCard
 clawsOfSteam cardId =

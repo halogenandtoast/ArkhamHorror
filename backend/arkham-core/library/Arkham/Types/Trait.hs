@@ -1,8 +1,7 @@
 module Arkham.Types.Trait
   ( Trait(..)
   , EnemyTrait(..)
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -26,6 +25,7 @@ data Trait
   | Bold
   | Boon
   | Byakhee
+  | Bystander
   | Cave
   | Central
   | Charm

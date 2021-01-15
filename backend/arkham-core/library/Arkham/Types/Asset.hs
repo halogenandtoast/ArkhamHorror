@@ -100,6 +100,7 @@ data Asset
   | AdamLynch' AdamLynch
   | TheNecronomiconOlausWormiusTranslation' TheNecronomiconOlausWormiusTranslation
   | Bandolier' Bandolier
+  | HelplessPassenger' HelplessPassenger
   | KeenEye3' KeenEye3
   | SpringfieldM19034' SpringfieldM19034
   | LightningGun5' LightningGun5
@@ -302,6 +303,7 @@ allAssets = mapFromList
       . theNecronomiconOlausWormiusTranslation
     )
   , ("02147", Bandolier' . bandolier)
+  , ("02179", HelplessPassenger' . helplessPassenger)
   , ("02185", KeenEye3' . keenEye3)
   , ("02226", SpringfieldM19034' . springfieldM19034)
   , ("02301", LightningGun5' . lightningGun5)
@@ -417,6 +419,7 @@ assetAttrs = \case
   AdamLynch' attrs -> coerce attrs
   TheNecronomiconOlausWormiusTranslation' attrs -> coerce attrs
   Bandolier' attrs -> coerce attrs
+  HelplessPassenger' attrs -> coerce attrs
   KeenEye3' attrs -> coerce attrs
   SpringfieldM19034' attrs -> coerce attrs
   LightningGun5' attrs -> coerce attrs

@@ -36,6 +36,9 @@ import Arkham.Types.Location.Cards.DowntownArkhamAsylum as X
 import Arkham.Types.Location.Cards.DowntownFirstBankOfArkham as X
 import Arkham.Types.Location.Cards.Easttown as X
 import Arkham.Types.Location.Cards.EasttownArkhamPoliceStation as X
+import Arkham.Types.Location.Cards.EngineCar_175 as X
+import Arkham.Types.Location.Cards.EngineCar_176 as X
+import Arkham.Types.Location.Cards.EngineCar_177 as X
 import Arkham.Types.Location.Cards.ExhibitHallAthabaskanExhibit as X
 import Arkham.Types.Location.Cards.ExhibitHallEgyptianExhibit as X
 import Arkham.Types.Location.Cards.ExhibitHallHallOfTheDead as X

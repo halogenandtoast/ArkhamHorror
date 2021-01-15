@@ -134,6 +134,7 @@ data Trait
   | Tindalos
   | Tome
   | Tool
+  | Train
   | Trap
   | Trick
   | Upgrade

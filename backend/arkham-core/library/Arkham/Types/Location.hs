@@ -77,6 +77,9 @@ data Location
   | ExhibitHallEgyptianExhibit' ExhibitHallEgyptianExhibit
   | ExhibitHallHallOfTheDead' ExhibitHallHallOfTheDead
   | ExhibitHallRestrictedHall' ExhibitHallRestrictedHall
+  | EngineCar_175' EngineCar_175
+  | EngineCar_176' EngineCar_176
+  | EngineCar_177' EngineCar_177
   | StudyAberrantGateway' StudyAberrantGateway
   | GuestHall' GuestHall
   | Bedroom' Bedroom
@@ -116,6 +119,7 @@ deriving anyclass instance LocationRunner env => RunMessage env Location
 deriving anyclass instance
   ( HasPhase env
   , HasCount CardCount env InvestigatorId
+  , HasCount ClueCount env LocationId
   , HasCount ResourceCount env InvestigatorId
   , HasId (Maybe StoryEnemyId) env CardCode
   )
@@ -277,6 +281,9 @@ allLocations = mapFromList $ map
   , ExhibitHallEgyptianExhibit' exhibitHallEgyptianExhibit
   , ExhibitHallHallOfTheDead' exhibitHallHallOfTheDead
   , ExhibitHallRestrictedHall' exhibitHallRestrictedHall
+  , EngineCar_175' engineCar_175
+  , EngineCar_176' engineCar_176
+  , EngineCar_177' engineCar_177
   , StudyAberrantGateway' studyAberrantGateway
   , GuestHall' guestHall
   , Bedroom' bedroom
@@ -373,6 +380,9 @@ locationAttrs = \case
   ExhibitHallEgyptianExhibit' attrs -> coerce attrs
   ExhibitHallHallOfTheDead' attrs -> coerce attrs
   ExhibitHallRestrictedHall' attrs -> coerce attrs
+  EngineCar_175' attrs -> coerce attrs
+  EngineCar_176' attrs -> coerce attrs
+  EngineCar_177' attrs -> coerce attrs
   StudyAberrantGateway' attrs -> coerce attrs
   GuestHall' attrs -> coerce attrs
   Bedroom' attrs -> coerce attrs

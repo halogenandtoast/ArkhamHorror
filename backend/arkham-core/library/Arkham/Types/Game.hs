@@ -404,6 +404,9 @@ instance HasName (Game queue) LocationId where
 instance HasId (Maybe LocationId) (Game queue) AssetId where
   getId = getId <=< getAsset
 
+instance HasId (Maybe LocationId) (Game queue) (Direction, LocationId) where
+  getId (dir, lid) = getId . (dir, ) =<< getLocation lid
+
 instance HasId (Maybe LocationId) (Game queue) LocationMatcher where
   getId = (fmap toId <$>) . getLocationMatching
 

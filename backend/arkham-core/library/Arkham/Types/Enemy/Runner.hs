@@ -11,6 +11,7 @@ type EnemyRunner env
     , HasCount PlayerCount env ()
     , HasCount RemainingSanity env InvestigatorId
     , HasId (Maybe LocationId) env LocationMatcher
+    , HasId (Maybe LocationId) env (Direction, LocationId)
     , HasId LeadInvestigatorId env ()
     , HasId LocationId env InvestigatorId
     , HasModifiersFor env ()

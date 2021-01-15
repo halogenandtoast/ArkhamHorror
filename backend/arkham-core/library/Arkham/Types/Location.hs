@@ -6,6 +6,7 @@ import Arkham.Prelude
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.AssetId
+import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Classes
@@ -206,6 +207,9 @@ instance HasSet ConnectedLocationId env Location where
 
 instance HasId LocationId env Location where
   getId = pure . getLocationId
+
+instance HasId (Maybe LocationId) env (Direction, Location) where
+  getId (dir, location) = getId (dir, locationAttrs location)
 
 getLocationId :: Location -> LocationId
 getLocationId = locationId . locationAttrs

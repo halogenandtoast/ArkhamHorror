@@ -65,6 +65,9 @@ instance IsCard Attrs where
 instance HasName env Attrs where
   getName = pure . unLocationName . locationName
 
+instance HasId (Maybe LocationId) env (Direction, Attrs) where
+  getId (dir, Attrs {..}) = pure $ lookup dir locationDirections
+
 unrevealed :: Attrs -> Bool
 unrevealed = not . locationRevealed
 

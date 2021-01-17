@@ -42,6 +42,6 @@ instance AgendaRunner env => RunMessage env DrawnIn where
         (RemoveLocation lid
         : RemoveLocation rlid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
-        <> [chooseOne leadInvestigatorId [NextAgenda agendaId "02164"]]
+        <> [NextAgenda agendaId "02164"]
         )
     _ -> DrawnIn <$> runMessage msg attrs

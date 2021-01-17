@@ -711,7 +711,14 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     card <- fromJustNote "missing card" <$> getPlayerCard aid
     deck' <- shuffleM (card : unDeck investigatorDeck)
     unshiftMessage $ After msg
-    pure $ a & assetsL %~ deleteSet aid & deckL .~ Deck deck'
+    pure
+      $ a
+      & assetsL
+      %~ deleteSet aid
+      & deckL
+      .~ Deck deck'
+      & slotsL
+      %~ removeFromSlots aid
   Discard (TreacheryTarget tid) -> pure $ a & treacheriesL %~ deleteSet tid
   Discard (EnemyTarget eid) -> pure $ a & engagedEnemiesL %~ deleteSet eid
   Discarded (AssetTarget aid) card | aid `elem` investigatorAssets ->

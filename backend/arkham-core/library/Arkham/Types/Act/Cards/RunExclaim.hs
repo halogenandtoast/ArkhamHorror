@@ -24,16 +24,16 @@ instance ActRunner env => RunMessage env RunExclaim where
       engineCar <- getId (LocationWithTitle "Engine Car")
       if engineCar == Just lid
         then do
-          unshiftMessage
+          unshiftMessages
             (chooseOne
-              iid
-              [ Label "Attempt to dodge the creature" []
-              , Label "Attempt to endure the creature's extreme heat" []
-              ]
+                iid
+                [ Label "Attempt to dodge the creature" []
+                , Label "Attempt to endure the creature's extreme heat" []
+                ]
+            : [NextAct actId "02166"]
             )
           pure $ RunExclaim $ attrs & sequenceL .~ Act 1 B
         else pure a
-    AdvanceAct aid _ | aid == actId && onSide A attrs -> pure a
     FailedSkillTest iid _ source _ _
       | isSource attrs source && actSequence == Act 1 A -> a
       <$ unshiftMessage (SufferTrauma iid 1 0)

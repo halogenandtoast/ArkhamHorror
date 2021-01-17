@@ -29,7 +29,8 @@ data Act
   | NightAtTheMuseum' NightAtTheMuseum
   | BreakingAndEntering' BreakingAndEntering
   | SearchingForTheTome' SearchingForTheTome
-  | RunExclaim' RunExclaim
+  | Run' Run
+  | GetTheEngineRunning' GetTheEngineRunning
   | MysteriousGateway' MysteriousGateway
   | FindingLadyEsprit' FindingLadyEsprit
   | HuntingTheRougarou' HuntingTheRougarou
@@ -75,7 +76,8 @@ allActs = mapFromList $ map
   , NightAtTheMuseum' nightAtTheMuseum
   , BreakingAndEntering' breakingAndEntering
   , SearchingForTheTome' searchingForTheTome
-  , RunExclaim' runExclaim
+  , Run' run
+  , GetTheEngineRunning' getTheEngineRunning
   , MysteriousGateway' mysteriousGateway
   , FindingLadyEsprit' findingLadyEsprit
   , HuntingTheRougarou' huntingTheRougarou
@@ -101,7 +103,8 @@ actAttrs = \case
   NightAtTheMuseum' attrs -> coerce attrs
   BreakingAndEntering' attrs -> coerce attrs
   SearchingForTheTome' attrs -> coerce attrs
-  RunExclaim' attrs -> coerce attrs
+  Run' attrs -> coerce attrs
+  GetTheEngineRunning' attrs -> coerce attrs
   MysteriousGateway' attrs -> coerce attrs
   FindingLadyEsprit' attrs -> coerce attrs
   HuntingTheRougarou' attrs -> coerce attrs

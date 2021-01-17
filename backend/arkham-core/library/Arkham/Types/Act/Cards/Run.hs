@@ -1,25 +1,25 @@
-module Arkham.Types.Act.Cards.RunExclaim
-  ( RunExclaim(..)
-  , runExclaim
+module Arkham.Types.Act.Cards.Run
+  ( Run(..)
+  , run
   )
 where
 
-import Arkham.Import
+import Arkham.Import hiding (Run)
 
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 
-newtype RunExclaim = RunExclaim Attrs
+newtype Run= Run Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
-runExclaim :: RunExclaim
-runExclaim = RunExclaim $ baseAttrs "02165" "Run!" (Act 1 A) Nothing
+run :: Run
+run = Run $ baseAttrs "02165" "Run!" (Act 1 A) Nothing
 
-instance ActionRunner env => HasActions env RunExclaim where
-  getActions iid window (RunExclaim attrs) = getActions iid window attrs
+instance ActionRunner env => HasActions env Run where
+  getActions iid window (Run attrs) = getActions iid window attrs
 
-instance ActRunner env => RunMessage env RunExclaim where
-  runMessage msg a@(RunExclaim attrs@Attrs {..}) = case msg of
+instance ActRunner env => RunMessage env Run where
+  runMessage msg a@(Run attrs@Attrs {..}) = case msg of
     WhenEnterLocation iid lid -> do
       engineCar <- getId (LocationWithTitle "Engine Car")
       if engineCar == Just lid
@@ -32,9 +32,9 @@ instance ActRunner env => RunMessage env RunExclaim where
                 ]
             : [NextAct actId "02166"]
             )
-          pure $ RunExclaim $ attrs & sequenceL .~ Act 1 B
+          pure $ Run $ attrs & sequenceL .~ Act 1 B
         else pure a
     FailedSkillTest iid _ source _ _
       | isSource attrs source && actSequence == Act 1 A -> a
       <$ unshiftMessage (SufferTrauma iid 1 0)
-    _ -> RunExclaim <$> runMessage msg attrs
+    _ -> Run <$> runMessage msg attrs

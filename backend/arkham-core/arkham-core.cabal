@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 73e277f80842cfe81f7ec8226921f70874f85f5fa1cc751c281c9852e652baca
+-- hash: 5a382c05c9679211c0371efd56ce0f09e27a2e139644ff79f1ee189b2f24e6c6
 
 name:           arkham-core
 version:        0.0.0
@@ -37,7 +37,7 @@ library
       Arkham.Types.Act.Cards.MysteriousGateway
       Arkham.Types.Act.Cards.NightAtTheMuseum
       Arkham.Types.Act.Cards.RicesWhereabouts
-      Arkham.Types.Act.Cards.RunExclaim
+      Arkham.Types.Act.Cards.Run
       Arkham.Types.Act.Cards.SearchingForTheTome
       Arkham.Types.Act.Cards.SkinGame
       Arkham.Types.Act.Cards.TheBarrier

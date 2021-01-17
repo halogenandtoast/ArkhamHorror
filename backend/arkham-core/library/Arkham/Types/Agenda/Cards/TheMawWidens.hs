@@ -41,6 +41,6 @@ instance AgendaRunner env => RunMessage env TheMawWidens where
       a <$ unshiftMessages
         (RemoveLocation lid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
-        <> [chooseOne leadInvestigatorId [NextAgenda agendaId "02162"]]
+        <> [NextAgenda agendaId "02162"]
         )
     _ -> TheMawWidens <$> runMessage msg attrs

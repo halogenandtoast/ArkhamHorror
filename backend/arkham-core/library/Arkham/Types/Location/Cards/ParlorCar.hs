@@ -38,8 +38,10 @@ instance HasCount ClueCount env LocationId => HasModifiersFor env ParlorCar wher
         clueCount <- unClueCount <$> getCount leftLocation
         pure $ toModifiers
           location
-          [ Blocked | not locationRevealed && clueCount > 0 ]
-      Nothing -> pure []
+          (CannotInvestigate
+          : [ Blocked | not locationRevealed && clueCount > 0 ]
+          )
+      Nothing -> pure $ toModifiers location [CannotInvestigate]
   getModifiersFor _ _ _ = pure []
 
 ability :: Attrs -> Ability

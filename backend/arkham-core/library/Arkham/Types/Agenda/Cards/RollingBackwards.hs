@@ -23,13 +23,13 @@ instance HasModifiersFor env RollingBackwards where
 instance HasActions env RollingBackwards where
   getActions i window (RollingBackwards x) = getActions i window x
 
-leftMostLocation
+leftmostLocation
   :: (MonadReader env m, HasId (Maybe LocationId) env (Direction, LocationId))
   => LocationId
   -> m LocationId
-leftMostLocation lid = do
+leftmostLocation lid = do
   mlid' <- getId (LeftOf, lid)
-  maybe (pure lid) leftMostLocation mlid'
+  maybe (pure lid) leftmostLocation mlid'
 
 instance AgendaRunner env => RunMessage env RollingBackwards where
   runMessage msg (RollingBackwards attrs@Attrs {..}) = case msg of
@@ -37,12 +37,13 @@ instance AgendaRunner env => RunMessage env RollingBackwards where
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       investigatorIds <- getInvestigatorIds
       locationId <- getId @LocationId leadInvestigatorId
-      lid <- leftMostLocation locationId
+      lid <- leftmostLocation locationId
       rlid <- fromJustNote "missing right" <$> getId (RightOf, lid)
       unshiftMessages
         $ RemoveLocation lid
         : RemoveLocation rlid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
+        <> [NextAgenda agendaId "02163"]
       pure
         $ RollingBackwards
         $ attrs

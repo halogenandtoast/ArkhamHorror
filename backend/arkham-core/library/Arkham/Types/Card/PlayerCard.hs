@@ -300,6 +300,7 @@ allPlayerCards = mapFromList
   , ("02140", theNecronomiconOlausWormiusTranslation)
   , ("02147", bandolier)
   , ("02178", acrossSpaceAndTime)
+  , ("02179", helplessPassenger)
   , ("02185", keenEye3)
   , ("02185", springfieldM19034)
   , ("02301", lightningGun5)
@@ -1331,6 +1332,13 @@ acrossSpaceAndTime cardId = (treachery cardId "02178" "Across Space and Time" 0
                             )
   { pcTraits = singleton Madness
   , pcRevelation = True
+  }
+
+helplessPassenger :: CardId -> PlayerCard
+helplessPassenger cardId = (asset cardId "02179" "Helpless Passenger" 0 Neutral
+                           )
+  { pcTraits = setFromList [Ally, Bystander]
+  , pcKeywords = singleton Keyword.Surge
   }
 
 keenEye3 :: CardId -> PlayerCard

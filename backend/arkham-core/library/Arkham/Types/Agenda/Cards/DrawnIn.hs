@@ -22,13 +22,13 @@ instance HasModifiersFor env DrawnIn where
 instance HasActions env DrawnIn where
   getActions i window (DrawnIn x) = getActions i window x
 
-leftMostLocation
+leftmostLocation
   :: (MonadReader env m, HasId (Maybe LocationId) env (Direction, LocationId))
   => LocationId
   -> m LocationId
-leftMostLocation lid = do
+leftmostLocation lid = do
   mlid' <- getId (LeftOf, lid)
-  maybe (pure lid) leftMostLocation mlid'
+  maybe (pure lid) leftmostLocation mlid'
 
 instance AgendaRunner env => RunMessage env DrawnIn where
   runMessage msg (DrawnIn attrs@Attrs {..}) = case msg of
@@ -36,11 +36,12 @@ instance AgendaRunner env => RunMessage env DrawnIn where
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       investigatorIds <- getInvestigatorIds
       locationId <- getId @LocationId leadInvestigatorId
-      lid <- leftMostLocation locationId
+      lid <- leftmostLocation locationId
       rlid <- fromJustNote "missing right" <$> getId (RightOf, lid)
       unshiftMessages
         $ RemoveLocation lid
         : RemoveLocation rlid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
+        <> [NextAgenda agendaId "02164"]
       pure $ DrawnIn $ attrs & sequenceL .~ Agenda 3 B & flippedL .~ True
     _ -> DrawnIn <$> runMessage msg attrs

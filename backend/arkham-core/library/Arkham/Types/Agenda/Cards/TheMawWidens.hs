@@ -32,15 +32,15 @@ leftmostLocation lid = do
   maybe (pure lid) leftmostLocation mlid'
 
 instance AgendaRunner env => RunMessage env TheMawWidens where
-  runMessage msg (TheMawWidens attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 A -> do
+  runMessage msg a@(TheMawWidens attrs@Attrs {..}) = case msg of
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       investigatorIds <- getInvestigatorIds
       locationId <- getId @LocationId leadInvestigatorId
       lid <- leftmostLocation locationId
-      unshiftMessages
-        $ RemoveLocation lid
+      a <$ unshiftMessages
+        (RemoveLocation lid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
-        <> [NextAgenda agendaId "02162"]
-      pure $ TheMawWidens $ attrs & sequenceL .~ Agenda 2 B & flippedL .~ True
+        <> [chooseOne leadInvestigatorId [NextAgenda agendaId "02162"]]
+        )
     _ -> TheMawWidens <$> runMessage msg attrs

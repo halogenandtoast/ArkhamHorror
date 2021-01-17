@@ -65,6 +65,7 @@ instance
   ( HasQueue env
   , HasCount DoomCount env ()
   , HasCount PlayerCount env ()
+  , HasId LeadInvestigatorId env ()
   )
   => RunMessage env Attrs
   where
@@ -72,6 +73,13 @@ instance
     PlaceDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doomL +~ n
     AttachTreachery tid (AgendaTarget aid) | aid == agendaId ->
       pure $ a & treacheriesL %~ insertSet tid
+    AdvanceAgenda aid | aid == agendaId && agendaSide agendaSequence == A -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      unshiftMessage $ chooseOne leadInvestigatorId [AdvanceAgenda agendaId]
+      pure
+        $ a
+        & (sequenceL .~ Agenda (unAgendaStep $ agendaStep agendaSequence) B)
+        & (flippedL .~ True)
     AdvanceAgendaIfThresholdSatisfied -> do
       perPlayerDoomThreshold <- getPlayerCountValue (a ^. doomThresholdL)
       totalDoom <- unDoomCount <$> getCount ()

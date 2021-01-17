@@ -117,6 +117,7 @@ instance
   ( HasQueue env
   , HasCount DoomCount env ()
   , HasCount PlayerCount env ()
+  , HasId LeadInvestigatorId env ()
   )
   => RunMessage env BaseAgenda
   where

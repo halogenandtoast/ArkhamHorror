@@ -31,17 +31,17 @@ leftmostLocation lid = do
   maybe (pure lid) leftmostLocation mlid'
 
 instance AgendaRunner env => RunMessage env DrawnIn where
-  runMessage msg (DrawnIn attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 A -> do
+  runMessage msg a@(DrawnIn attrs@Attrs {..}) = case msg of
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       investigatorIds <- getInvestigatorIds
       locationId <- getId @LocationId leadInvestigatorId
       lid <- leftmostLocation locationId
       rlid <- fromJustNote "missing right" <$> getId (RightOf, lid)
-      unshiftMessages
-        $ RemoveLocation lid
+      a <$ unshiftMessages
+        (RemoveLocation lid
         : RemoveLocation rlid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
-        <> [NextAgenda agendaId "02164"]
-      pure $ DrawnIn $ attrs & sequenceL .~ Agenda 3 B & flippedL .~ True
+        <> [chooseOne leadInvestigatorId [NextAgenda agendaId "02164"]]
+        )
     _ -> DrawnIn <$> runMessage msg attrs

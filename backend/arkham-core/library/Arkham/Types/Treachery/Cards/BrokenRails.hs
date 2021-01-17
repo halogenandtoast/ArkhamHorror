@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.BrokenRails
   ( brokenRails
   , BrokenRails(..)
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -12,7 +13,7 @@ newtype BrokenRails = BrokenRails Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 brokenRails :: TreacheryId -> a -> BrokenRails
-brokenRails uuid _ = BrokenRails $ baseAttrs uuid "02180"
+brokenRails uuid _ = BrokenRails $ baseAttrs uuid "02181"
 
 instance HasModifiersFor env BrokenRails where
   getModifiersFor = noModifiersFor

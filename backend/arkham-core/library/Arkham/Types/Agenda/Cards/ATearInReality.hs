@@ -23,13 +23,13 @@ instance HasModifiersFor env ATearInReality where
 instance HasActions env ATearInReality where
   getActions i window (ATearInReality x) = getActions i window x
 
-leftMostLocation
+leftmostLocation
   :: (MonadReader env m, HasId (Maybe LocationId) env (Direction, LocationId))
   => LocationId
   -> m LocationId
-leftMostLocation lid = do
+leftmostLocation lid = do
   mlid' <- getId (LeftOf, lid)
-  maybe (pure lid) leftMostLocation mlid'
+  maybe (pure lid) leftmostLocation mlid'
 
 instance AgendaRunner env => RunMessage env ATearInReality where
   runMessage msg (ATearInReality attrs@Attrs {..}) = case msg of
@@ -37,9 +37,10 @@ instance AgendaRunner env => RunMessage env ATearInReality where
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       investigatorIds <- getInvestigatorIds
       locationId <- getId @LocationId leadInvestigatorId
-      lid <- leftMostLocation locationId
+      lid <- leftmostLocation locationId
       unshiftMessages
         $ RemoveLocation lid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
+        <> [NextAgenda agendaId "02161"]
       pure $ ATearInReality $ attrs & sequenceL .~ Agenda 1 B & flippedL .~ True
     _ -> ATearInReality <$> runMessage msg attrs

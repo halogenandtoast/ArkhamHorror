@@ -67,5 +67,5 @@ instance LocationRunner env => RunMessage env PassengerCar_171 where
             ]
           )
         else unshiftMessage
-          (InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 2)
+          (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1)
     _ -> PassengerCar_171 <$> runMessage msg attrs

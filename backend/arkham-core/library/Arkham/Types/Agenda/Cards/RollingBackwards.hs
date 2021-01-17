@@ -32,23 +32,17 @@ leftmostLocation lid = do
   maybe (pure lid) leftmostLocation mlid'
 
 instance AgendaRunner env => RunMessage env RollingBackwards where
-  runMessage msg (RollingBackwards attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 A -> do
+  runMessage msg a@(RollingBackwards attrs@Attrs {..}) = case msg of
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       investigatorIds <- getInvestigatorIds
       locationId <- getId @LocationId leadInvestigatorId
       lid <- leftmostLocation locationId
       rlid <- fromJustNote "missing right" <$> getId (RightOf, lid)
-      unshiftMessages
-        $ RemoveLocation lid
+      a <$ unshiftMessages
+        (RemoveLocation lid
         : RemoveLocation rlid
         : [ InvestigatorDiscardAllClues iid | iid <- investigatorIds ]
-        <> [NextAgenda agendaId "02163"]
-      pure
-        $ RollingBackwards
-        $ attrs
-        & sequenceL
-        .~ Agenda 3 B
-        & flippedL
-        .~ True
+        <> [chooseOne leadInvestigatorId [NextAgenda agendaId "02163"]]
+        )
     _ -> RollingBackwards <$> runMessage msg attrs

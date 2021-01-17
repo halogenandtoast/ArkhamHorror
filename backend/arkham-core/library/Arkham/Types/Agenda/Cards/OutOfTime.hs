@@ -23,7 +23,7 @@ instance HasActions env OutOfTime where
 
 instance AgendaRunner env => RunMessage env OutOfTime where
   runMessage msg (OutOfTime attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 5 A -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 5 B -> do
       investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()
       unshiftMessages
         $ [ InvestigatorDefeated iid | iid <- investigatorIds ]

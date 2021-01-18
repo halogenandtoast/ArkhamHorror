@@ -23,14 +23,6 @@ instance HasActions env RiseOfTheGhouls where
 
 instance AgendaRunner env => RunMessage env RiseOfTheGhouls where
   runMessage msg a@(RiseOfTheGhouls attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 A -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage (chooseOne leadInvestigatorId [AdvanceAgenda aid])
-      pure
-        $ RiseOfTheGhouls
-        $ attrs
-        & (sequenceL .~ Agenda 2 B)
-        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B ->
       a <$ unshiftMessage
         (Run

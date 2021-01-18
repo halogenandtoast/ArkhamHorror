@@ -41,6 +41,9 @@ instance Entity Attrs where
   isTarget Attrs { agendaId } (AgendaTarget aid) = agendaId == aid
   isTarget _ _ = False
 
+onSide :: AgendaSide -> Attrs -> Bool
+onSide side Attrs {..} = agendaSide agendaSequence == side
+
 baseAttrs :: AgendaId -> Text -> AgendaSequence -> GameValue Int -> Attrs
 baseAttrs aid name seq' threshold = Attrs
   { agendaDoom = 0

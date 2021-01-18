@@ -31,14 +31,6 @@ instance AgendaRunner env => RunMessage env ChaosInTheCloverClub where
       criminals <-
         concat <$> traverse (getSetList . ([Criminal], )) abominationLocations
       a <$ unshiftMessages [ Discard $ EnemyTarget eid | eid <- criminals ]
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 A -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      unshiftMessage $ Ask leadInvestigatorId (ChooseOne [AdvanceAgenda aid])
-      pure
-        $ ChaosInTheCloverClub
-        $ attrs
-        & (sequenceL .~ Agenda 3 B)
-        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       a <$ unshiftMessage

@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.ShadowsDeepen
   ( ShadowsDeepen(..)
   , shadowsDeepen
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -33,14 +34,6 @@ instance AgendaRunner env => RunMessage env ShadowsDeepen where
           Nothing ->
             unshiftMessage $ AttachStoryTreacheryTo "02142" (EnemyTarget eid)
       pure a
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 A -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      unshiftMessage $ Ask leadInvestigatorId (ChooseOne [AdvanceAgenda aid])
-      pure
-        $ ShadowsDeepen
-        $ attrs
-        & (sequenceL .~ Agenda 2 B)
-        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       mHuntingHorrorId <- fmap unStoryEnemyId <$> getId (CardCode "02141")

@@ -3,7 +3,6 @@ module Arkham.Types.Agenda.Cards.TheArkhamWoods where
 import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Trait
@@ -23,14 +22,6 @@ instance HasActions env TheArkhamWoods where
 
 instance AgendaRunner env => RunMessage env TheArkhamWoods where
   runMessage msg a@(TheArkhamWoods attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 A -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage (chooseOne leadInvestigatorId [AdvanceAgenda aid])
-      pure
-        $ TheArkhamWoods
-        $ attrs
-        & (sequenceL .~ Agenda 1 B)
-        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->
       a <$ unshiftMessage
         (Run

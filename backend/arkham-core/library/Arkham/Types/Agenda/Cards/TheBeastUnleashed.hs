@@ -35,16 +35,12 @@ instance AgendaRunner env => RunMessage env TheBeastUnleashed where
             (LocationWithTitle "Dormitories")
           ]
         )
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 A -> do
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       investigatorIds <- getInvestigatorIds
-      unshiftMessages
-        $ [ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 3
-          | iid <- investigatorIds
-          ]
+      a <$ unshiftMessages
+        ([ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 3
+         | iid <- investigatorIds
+         ]
         <> [Label "Resolution 3" [Resolution 3]]
-      pure
-        . TheBeastUnleashed
-        $ attrs
-        & (sequenceL .~ Agenda 2 B)
-        & (flippedL .~ True)
+        )
     _ -> TheBeastUnleashed <$> runMessage msg attrs

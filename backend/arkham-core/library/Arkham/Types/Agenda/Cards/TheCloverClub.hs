@@ -23,9 +23,10 @@ instance HasActions env TheCloverClub where
   getActions i window (TheCloverClub x) = getActions i window x
 
 instance HasSet Trait env EnemyId => HasModifiersFor env TheCloverClub where
-  getModifiersFor _ (EnemyTarget eid) (TheCloverClub attrs) = do
-    traits <- getSet eid
-    pure $ toModifiers attrs [ AddKeyword Aloof | Criminal `member` traits ]
+  getModifiersFor _ (EnemyTarget eid) (TheCloverClub attrs) | onSide A attrs =
+    do
+      traits <- getSet eid
+      pure $ toModifiers attrs [ AddKeyword Aloof | Criminal `member` traits ]
   getModifiersFor _ _ _ = pure []
 
 instance AgendaRunner env => RunMessage env TheCloverClub where
@@ -35,33 +36,19 @@ instance AgendaRunner env => RunMessage env TheCloverClub where
       a <$ when
         (Criminal `member` traits)
         (unshiftMessage $ AdvanceAgenda agendaId)
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 A -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      enemyIds <- getSetList Criminal
-      unshiftMessage $ chooseOne
-        leadInvestigatorId
-        [ TargetLabel
-            (AgendaTarget agendaId)
-            (AdvanceAgenda aid
-            : [ EnemyCheckEngagement enemyId | enemyId <- enemyIds ]
-            )
-        ]
-      pure
-        $ TheCloverClub
-        $ attrs
-        & (sequenceL .~ Agenda 1 B)
-        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       completedExtracurricularActivity <-
         elem "02041" . map unCompletedScenarioId <$> getSetList ()
+      enemyIds <- getSetList Criminal
 
       let
         continueMessages =
           [ShuffleEncounterDiscardBackIn, NextAgenda aid "02064"]
             <> [ AdvanceCurrentAgenda | completedExtracurricularActivity ]
 
-      unshiftMessage
-        (Ask leadInvestigatorId $ ChooseOne [Label "Continue" continueMessages])
-      pure $ TheCloverClub $ attrs & sequenceL .~ Agenda 1 B & flippedL .~ True
+      a <$ unshiftMessages
+        (map EnemyCheckEngagement enemyIds
+        <> [chooseOne leadInvestigatorId [Label "Continue" continueMessages]]
+        )
     _ -> TheCloverClub <$> runMessage msg attrs

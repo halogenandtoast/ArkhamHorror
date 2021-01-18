@@ -27,10 +27,10 @@ instance HasActions env FrozenInFear where
 
 instance (TreacheryRunner env) => RunMessage env FrozenInFear where
   runMessage msg t@(FrozenInFear attrs@Attrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
     ChooseEndTurn iid | treacheryOnInvestigator iid attrs -> t <$ unshiftMessage
       (RevelationSkillTest iid (TreacherySource treacheryId) SkillWillpower 3)
-    PassedSkillTest _ _ source _ _ | isSource attrs source ->
+    PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
       t <$ unshiftMessage (Discard $ toTarget attrs)
     _ -> FrozenInFear <$> runMessage msg attrs

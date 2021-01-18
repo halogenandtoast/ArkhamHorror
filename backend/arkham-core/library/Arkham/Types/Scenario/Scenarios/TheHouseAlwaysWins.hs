@@ -120,12 +120,12 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
           ]
         else pure ()
       s <$ unshiftMessage (SpendResources iid 3)
-    PassedSkillTest iid _ _ (DrawnTokenTarget token) _ ->
+    PassedSkillTest iid _ _ (DrawnTokenTarget token) _ _ ->
       s <$ case drawnTokenFace token of
         Cultist | isEasyStandard attrs ->
           unshiftMessage $ TakeResources iid 3 False
         _ -> pure ()
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ ->
+    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ ->
       s <$ case drawnTokenFace token of
         Cultist | isHardExpert attrs -> unshiftMessage $ SpendResources iid 3
         Tablet | isEasyStandard attrs -> unshiftMessage $ SpendResources iid 3

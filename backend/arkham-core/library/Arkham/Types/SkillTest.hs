@@ -2,7 +2,8 @@
 
 module Arkham.Types.SkillTest
   ( module Arkham.Types.SkillTest
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -248,6 +249,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                 skillTestAction
                 skillTestSource
                 target
+                skillTestSkillType
                 difficulty
               )
           | target <- skillTestSubscribers
@@ -258,6 +260,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                skillTestAction
                skillTestSource
                (SkillTestInitiatorTarget skillTestTarget)
+               skillTestSkillType
                difficulty
              )
            , Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
@@ -306,6 +309,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                  skillTestAction
                  skillTestSource
                  target
+                 skillTestSkillType
                  n
                )
            | target <- skillTestSubscribers
@@ -316,6 +320,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                    skillTestAction
                    skillTestSource
                    (SkillTestInitiatorTarget skillTestTarget)
+                   skillTestSkillType
                    n
                  )
              ]
@@ -327,6 +332,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                  skillTestAction
                  skillTestSource
                  target
+                 skillTestSkillType
                  n
                )
            | target <- skillTestSubscribers
@@ -337,6 +343,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                    skillTestAction
                    skillTestSource
                    (SkillTestInitiatorTarget skillTestTarget)
+                   skillTestSkillType
                    n
                  )
              ]
@@ -354,6 +361,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                  skillTestAction
                  skillTestSource
                  target
+                 skillTestSkillType
                  n
                )
            | target <- skillTestSubscribers
@@ -364,6 +372,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                    skillTestAction
                    skillTestSource
                    (SkillTestInitiatorTarget skillTestTarget)
+                   skillTestSkillType
                    n
                  )
              ]
@@ -375,6 +384,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                  skillTestAction
                  skillTestSource
                  target
+                 skillTestSkillType
                  n
                )
            | target <- skillTestSubscribers
@@ -385,6 +395,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                    skillTestAction
                    skillTestSource
                    (SkillTestInitiatorTarget skillTestTarget)
+                   skillTestSkillType
                    n
                  )
              ]
@@ -404,6 +415,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                skillTestAction
                skillTestSource
                target
+               skillTestSkillType
                n
            | target <- skillTestSubscribers
            ]
@@ -412,6 +424,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                  skillTestAction
                  skillTestSource
                  (SkillTestInitiatorTarget skillTestTarget)
+                 skillTestSkillType
                  n
              ]
           )
@@ -422,6 +435,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                  skillTestAction
                  skillTestSource
                  (SkillTestInitiatorTarget skillTestTarget)
+                 skillTestSkillType
                  n
                )
            ]
@@ -431,6 +445,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                    skillTestAction
                    skillTestSource
                    target
+                   skillTestSkillType
                    n
                  )
              | target <- skillTestSubscribers
@@ -440,6 +455,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                  skillTestAction
                  skillTestSource
                  target
+                 skillTestSkillType
                  n
              | target <- skillTestSubscribers
              ]
@@ -448,6 +464,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                  skillTestAction
                  skillTestSource
                  (SkillTestInitiatorTarget skillTestTarget)
+                 skillTestSkillType
                  n
              ]
           )

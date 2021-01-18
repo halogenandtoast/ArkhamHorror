@@ -1,7 +1,8 @@
 module Arkham.Types.Investigator.Cards.DaisyWalker
   ( DaisyWalker(..)
   , daisyWalker
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -57,7 +58,7 @@ instance InvestigatorRunner env => RunMessage env DaisyWalker where
               }
             )
           else DaisyWalker <$> runMessage msg attrs
-    PassedSkillTest iid _ _ (DrawnTokenTarget token) _
+    PassedSkillTest iid _ _ (DrawnTokenTarget token) _ _
       | iid == investigatorId -> case drawnTokenFace token of
         ElderSign -> do
           tomeCount <- unAssetCount <$> getCount (iid, [Tome])

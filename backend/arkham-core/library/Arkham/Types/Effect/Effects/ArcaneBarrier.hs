@@ -29,7 +29,7 @@ instance HasQueue env => RunMessage env ArcaneBarrier where
           SkillWillpower
           4
         )
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         let
           moveMessages = case effectMetadata of
@@ -45,7 +45,7 @@ instance HasQueue env => RunMessage env ArcaneBarrier where
             ]
           , DisableEffect effectId
           ]
-    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _
+    PassedSkillTest _ _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         let
           moveMessages = case effectMetadata of

@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.LockedDoor
   ( LockedDoor(..)
   , lockedDoor
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -72,6 +73,6 @@ instance (TreacheryRunner env) => RunMessage env LockedDoor where
             4
           ]
         )
-    PassedSkillTest _ _ source _ _ | isSource attrs source ->
+    PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
       t <$ unshiftMessage (Discard $ toTarget attrs)
     _ -> LockedDoor <$> runMessage msg attrs

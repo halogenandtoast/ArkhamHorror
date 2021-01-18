@@ -19,7 +19,7 @@ instance HasActions env UmordhothsWrath where
 
 instance TreacheryRunner env => RunMessage env UmordhothsWrath where
   runMessage msg t@(UmordhothsWrath attrs@Attrs {..}) = case msg of
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} n
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
       | tid == treacheryId -> t
       <$ unshiftMessage (HandlePointOfFailure iid (TreacheryTarget tid) n)
     HandlePointOfFailure _ (TreacheryTarget tid) 0 | tid == treacheryId ->
@@ -43,7 +43,12 @@ instance TreacheryRunner env => RunMessage env UmordhothsWrath where
           , HandlePointOfFailure iid (TreacheryTarget treacheryId) (n - 1)
           ]
         else t <$ unshiftMessages
-          [ InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny 1 1
+          [ InvestigatorAssignDamage
+            iid
+            (TreacherySource treacheryId)
+            DamageAny
+            1
+            1
           , HandlePointOfFailure iid (TreacheryTarget treacheryId) (n - 1)
           ]
     Revelation iid source | isSource attrs source -> t <$ unshiftMessage

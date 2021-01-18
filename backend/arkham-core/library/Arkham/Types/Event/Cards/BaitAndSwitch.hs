@@ -23,7 +23,7 @@ instance (EventRunner env) => RunMessage env BaitAndSwitch where
       [ ChooseEvadeEnemy iid (EventSource eid) SkillAgility False
       , Discard (EventTarget eid)
       ]
-    PassedSkillTest iid _ (EventSource eid) SkillTestInitiatorTarget{} _
+    PassedSkillTest iid _ (EventSource eid) SkillTestInitiatorTarget{} _ _
       | eid == eventId -> do
         lid <- getId iid
         connectedLocationIds <- map unConnectedLocationId <$> getSetList lid

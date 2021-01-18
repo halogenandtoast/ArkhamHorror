@@ -42,10 +42,12 @@ instance (LocationRunner env) => RunMessage env Graveyard where
           3
         )
       Graveyard <$> runMessage msg attrs
-    FailedSkillTest iid _ source _ _ | isSource attrs source ->
+    FailedSkillTest iid _ source _ _ _ | isSource attrs source ->
       l <$ unshiftMessage
         (chooseOne
           iid
-          [InvestigatorAssignDamage iid source DamageAny 0 2, MoveTo iid "01125"]
+          [ InvestigatorAssignDamage iid source DamageAny 0 2
+          , MoveTo iid "01125"
+          ]
         )
     _ -> Graveyard <$> runMessage msg attrs

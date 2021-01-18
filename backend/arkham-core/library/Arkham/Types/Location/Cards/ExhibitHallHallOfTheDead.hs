@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.ExhibitHallHallOfTheDead
   ( exhibitHallHallOfTheDead
   , ExhibitHallHallOfTheDead(..)
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -37,7 +38,7 @@ instance ActionRunner env => HasActions env ExhibitHallHallOfTheDead where
 
 instance LocationRunner env => RunMessage env ExhibitHallHallOfTheDead where
   runMessage msg l@(ExhibitHallHallOfTheDead attrs) = case msg of
-    After (FailedSkillTest iid (Just Action.Investigate) _ target _)
-      | isTarget attrs target -> l
-      <$ unshiftMessage (InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1)
+    After (FailedSkillTest iid (Just Action.Investigate) _ target _ _)
+      | isTarget attrs target -> l <$ unshiftMessage
+        (InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1)
     _ -> ExhibitHallHallOfTheDead <$> runMessage msg attrs

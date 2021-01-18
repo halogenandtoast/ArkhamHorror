@@ -37,7 +37,13 @@ instance TreacheryRunner env => RunMessage env BeastOfTheBayou where
               ([ EnemyAttack iid' eid | iid' <- xs ]
               <> [Discard (toTarget attrs)]
               )
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} n
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
       | tid == treacheryId -> t <$ unshiftMessage
-        (InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny n 0)
+        (InvestigatorAssignDamage
+          iid
+          (TreacherySource treacheryId)
+          DamageAny
+          n
+          0
+        )
     _ -> BeastOfTheBayou <$> runMessage msg attrs

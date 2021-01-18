@@ -79,7 +79,7 @@ instance (LocationRunner env) => RunMessage env Parlor where
               SkillIntellect
               4
             )
-    PassedSkillTest iid _ source _ _ | isSource attrs source -> do
+    PassedSkillTest iid _ source _ _ _ | isSource attrs source -> do
       maid <- fmap unStoryAssetId <$> getId (CardCode "01117")
       case maid of
         Nothing -> error "this ability should not be able to be used"

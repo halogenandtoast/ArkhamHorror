@@ -20,7 +20,7 @@ instance HasActions env SurvivalInstinct where
 
 instance SkillRunner env => RunMessage env SurvivalInstinct where
   runMessage msg s@(SurvivalInstinct attrs@Attrs {..}) = case msg of
-    PassedSkillTest iid (Just Evade) _ (SkillTarget sid) _ | sid == skillId ->
+    PassedSkillTest iid (Just Evade) _ (SkillTarget sid) _ _ | sid == skillId ->
       do
         engagedEnemyIds <- getSetList iid
         locationId <- getId @LocationId iid

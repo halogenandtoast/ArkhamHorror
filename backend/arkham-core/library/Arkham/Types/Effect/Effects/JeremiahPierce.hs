@@ -31,7 +31,7 @@ instance HasQueue env => RunMessage env JeremiahPierce where
           4
         , DisableEffect $ effectId attrs
         ]
-    FailedSkillTest _ _ source SkillTestInitiatorTarget{} n
+    FailedSkillTest _ _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> e <$ unshiftMessages
         (replicate n PlaceDoomOnAgenda <> [AdvanceAgendaIfThresholdSatisfied])
     _ -> JeremiahPierce <$> runMessage msg attrs

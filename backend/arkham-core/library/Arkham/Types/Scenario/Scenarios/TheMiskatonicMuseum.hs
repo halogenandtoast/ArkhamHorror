@@ -224,7 +224,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
           (huntingHorrorId `elem` enemyIds)
           (unshiftMessage $ EnemyAttack iid huntingHorrorId)
         Nothing -> pure s
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ ->
+    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ ->
       s <$ case drawnTokenFace token of
         Cultist -> unshiftMessage $ FindEncounterCard
           iid

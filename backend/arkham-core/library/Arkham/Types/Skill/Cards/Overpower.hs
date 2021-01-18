@@ -25,6 +25,6 @@ instance HasActions env Overpower where
 
 instance (SkillRunner env) => RunMessage env Overpower where
   runMessage msg s@(Overpower attrs@Attrs {..}) = case msg of
-    PassedSkillTest _ _ _ (SkillTarget sid) _ | sid == skillId ->
+    PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ unshiftMessage (DrawCards skillOwner 1 False)
     _ -> Overpower <$> runMessage msg attrs

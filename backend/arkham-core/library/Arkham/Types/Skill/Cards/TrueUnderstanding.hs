@@ -23,6 +23,6 @@ instance HasActions env TrueUnderstanding where
 
 instance SkillRunner env => RunMessage env TrueUnderstanding where
   runMessage msg s@(TrueUnderstanding attrs@Attrs {..}) = case msg of
-    PassedSkillTest iid _ _ (SkillTarget sid) _ | sid == skillId ->
+    PassedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ unshiftMessage (InvestigatorDiscoverCluesAtTheirLocation iid 1)
     _ -> TrueUnderstanding <$> runMessage msg attrs

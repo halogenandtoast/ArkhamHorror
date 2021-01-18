@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.GardenDistrict
   ( GardenDistrict(..)
   , gardenDistrict
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -48,6 +49,6 @@ instance (LocationRunner env) => RunMessage env GardenDistrict where
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       l <$ unshiftMessage
         (BeginSkillTest iid source (toTarget attrs) Nothing SkillAgility 7)
-    PassedSkillTest _ _ source _ _ | isSource attrs source ->
+    PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
       l <$ unshiftMessage (Remember FoundAStrangeDoll)
     _ -> GardenDistrict <$> runMessage msg attrs

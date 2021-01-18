@@ -110,7 +110,7 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
         (if isEasyStandard attrs then 2 else 3)
         (Just $ DrawnTokenTarget drawnToken)
       )
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ ->
+    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ ->
       s <$ case drawnTokenFace token of
         Skull -> unshiftMessage $ DiscardTopOfDeck
           iid

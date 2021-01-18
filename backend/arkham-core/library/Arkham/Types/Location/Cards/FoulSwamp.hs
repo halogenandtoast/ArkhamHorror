@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.FoulSwamp
   ( FoulSwamp(..)
   , foulSwamp
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -71,12 +72,13 @@ instance LocationRunner env => RunMessage env FoulSwamp where
           pure l
     UseCardAbility iid source (Just (IntMetadata n)) 1 _
       | isSource attrs source -> l <$ unshiftMessages
-        [ CreateWindowModifierEffect EffectSkillTestWindow
+        [ CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillWillpower n])
           source
           (InvestigatorTarget iid)
         , BeginSkillTest iid source (toTarget attrs) Nothing SkillWillpower 7
         ]
-    PassedSkillTest _ _ source _ _ | isSource attrs source ->
+    PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
       l <$ unshiftMessage (Remember FoundAnAncientBindingStone)
     _ -> FoulSwamp <$> runMessage msg attrs

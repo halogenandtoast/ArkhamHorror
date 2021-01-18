@@ -140,13 +140,17 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
         <$> getCount (InvestigatorLocation iid, [Monster])
       s <$ when
         (monsterCount > 0)
-        (unshiftMessage
-        $ InvestigatorAssignDamage iid (TokenEffectSource Tablet) DamageAny 1 horror
+        (unshiftMessage $ InvestigatorAssignDamage
+          iid
+          (TokenEffectSource Tablet)
+          DamageAny
+          1
+          horror
         )
     ResolveToken _ ElderThing iid -> do
       ancientOneCount <- unEnemyCount <$> getCount [AncientOne]
       s <$ when (ancientOneCount > 0) (unshiftMessage $ DrawAnotherToken iid)
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _
+    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _
       | isHardExpert attrs && drawnTokenFace token == Skull -> s
       <$ unshiftMessage
            (FindAndDrawEncounterCard

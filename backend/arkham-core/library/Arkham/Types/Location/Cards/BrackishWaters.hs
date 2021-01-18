@@ -79,7 +79,7 @@ instance LocationRunner env => RunMessage env BrackishWaters where
           )
         , BeginSkillTest iid source (toTarget attrs) Nothing SkillAgility 3
         ]
-    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _
+    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> l
       <$ unshiftMessage (TakeControlOfSetAsideAsset iid "81021")
     _ -> BrackishWaters <$> runMessage msg attrs

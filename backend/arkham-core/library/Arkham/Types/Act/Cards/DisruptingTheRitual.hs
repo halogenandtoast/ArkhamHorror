@@ -64,6 +64,6 @@ instance ActRunner env => RunMessage env DisruptingTheRitual where
             3
           ]
         )
-    PassedSkillTest _ _ source _ _ | isSource attrs source ->
+    PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
       a <$ unshiftMessage (PlaceClues (toTarget attrs) 1)
     _ -> DisruptingTheRitual <$> runMessage msg attrs

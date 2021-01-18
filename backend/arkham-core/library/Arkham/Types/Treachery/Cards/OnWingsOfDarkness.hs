@@ -20,12 +20,9 @@ instance HasActions env OnWingsOfDarkness where
 
 instance TreacheryRunner env => RunMessage env OnWingsOfDarkness where
   runMessage msg t@(OnWingsOfDarkness attrs@Attrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      t <$ unshiftMessages
-        [ RevelationSkillTest iid source SkillAgility 4
-        , Discard (toTarget attrs)
-        ]
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _
+    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+      [RevelationSkillTest iid source SkillAgility 4, Discard (toTarget attrs)]
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         centralLocations <- getSetList [Central]
         t <$ unshiftMessages

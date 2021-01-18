@@ -25,6 +25,6 @@ instance HasActions env Perception where
 
 instance (SkillRunner env) => RunMessage env Perception where
   runMessage msg s@(Perception attrs@Attrs {..}) = case msg of
-    PassedSkillTest _ _ _ (SkillTarget sid) _ | sid == skillId ->
+    PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ unshiftMessage (DrawCards skillOwner 1 False)
     _ -> Perception <$> runMessage msg attrs

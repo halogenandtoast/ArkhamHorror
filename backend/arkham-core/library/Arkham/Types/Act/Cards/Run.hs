@@ -27,14 +27,35 @@ instance ActRunner env => RunMessage env Run where
           unshiftMessages
             (chooseOne
                 iid
-                [ Label "Attempt to dodge the creature" []
-                , Label "Attempt to endure the creature's extreme heat" []
+                [ Label
+                  "Attempt to dodge the creature"
+                  [ BeginSkillTest
+                      iid
+                      (ActSource actId)
+                      (ActTarget actId)
+                      Nothing
+                      SkillAgility
+                      3
+                  ]
+                , Label
+                  "Attempt to endure the creature's extreme heat"
+                  [ BeginSkillTest
+                      iid
+                      (ActSource actId)
+                      (ActTarget actId)
+                      Nothing
+                      SkillCombat
+                      3
+                  ]
                 ]
             : [NextAct actId "02166"]
             )
           pure $ Run $ attrs & sequenceL .~ Act 1 B
         else pure a
-    FailedSkillTest iid _ source _ _
-      | isSource attrs source && actSequence == Act 1 A -> a
+    FailedSkillTest iid _ source _ SkillAgility _
+      | isSource attrs source && actSequence == Act 1 B -> a
+      <$ unshiftMessage (SufferTrauma iid 1 0)
+    FailedSkillTest iid _ source _ SkillCombat _
+      | isSource attrs source && actSequence == Act 1 B -> a
       <$ unshiftMessage (SufferTrauma iid 1 0)
     _ -> Run <$> runMessage msg attrs

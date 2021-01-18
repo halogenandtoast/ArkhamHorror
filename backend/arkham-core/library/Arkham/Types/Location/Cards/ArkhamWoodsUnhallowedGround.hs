@@ -47,7 +47,7 @@ instance (LocationRunner env) => RunMessage env ArkhamWoodsUnhallowedGround wher
           4
         )
       ArkhamWoodsUnhallowedGround <$> runMessage msg attrs
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _
-      | isSource attrs source
-      -> l <$ unshiftMessage (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1)
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
+      | isSource attrs source -> l <$ unshiftMessage
+        (InvestigatorAssignDamage iid (toSource attrs) DamageAny 1 1)
     _ -> ArkhamWoodsUnhallowedGround <$> runMessage msg attrs

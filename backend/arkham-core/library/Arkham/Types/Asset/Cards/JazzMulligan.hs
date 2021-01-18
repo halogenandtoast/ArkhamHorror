@@ -49,10 +49,17 @@ instance (HasQueue env, HasModifiersFor env (), HasId LocationId env Investigato
     Revelation iid source | isSource attrs source -> do
       lid <- getId iid
       a <$ unshiftMessage (AttachAsset assetId (LocationTarget lid))
-    UseCardAbility iid source _ 1 _ | isSource attrs source -> a <$ unshiftMessage
-      (BeginSkillTest iid source (toTarget attrs) (Just Parley) SkillIntellect 3
-      )
-    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      a <$ unshiftMessage
+        (BeginSkillTest
+          iid
+          source
+          (toTarget attrs)
+          (Just Parley)
+          SkillIntellect
+          3
+        )
+    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> a
       <$ unshiftMessage (TakeControlOfAsset iid assetId)
     _ -> JazzMulligan <$> runMessage msg attrs

@@ -35,12 +35,17 @@ instance HasActions env RipplesOnTheSurface where
 
 instance TreacheryRunner env => RunMessage env RipplesOnTheSurface where
   runMessage msg t@(RipplesOnTheSurface attrs@Attrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      t <$ unshiftMessages
-        [ RevelationSkillTest iid source SkillWillpower 3
-        , Discard (TreacheryTarget treacheryId)
-        ]
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} n
+    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+      [ RevelationSkillTest iid source SkillWillpower 3
+      , Discard (TreacheryTarget treacheryId)
+      ]
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
       | tid == treacheryId -> t <$ unshiftMessage
-        (InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny 0 n)
+        (InvestigatorAssignDamage
+          iid
+          (TreacherySource treacheryId)
+          DamageAny
+          0
+          n
+        )
     _ -> RipplesOnTheSurface <$> runMessage msg attrs

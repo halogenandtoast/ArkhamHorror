@@ -67,8 +67,8 @@ instance
             | iid' <- iids
             ]
           )
-    PassedSkillTest iid _ source _ _ | isSource attrs source ->
+    PassedSkillTest iid _ source _ _ _ | isSource attrs source ->
       a <$ unshiftMessage (HealHorror (InvestigatorTarget iid) 1)
-    FailedSkillTest iid _ source _ _ | isSource attrs source ->
+    FailedSkillTest iid _ source _ _ _ | isSource attrs source ->
       a <$ unshiftMessage (RandomDiscard iid)
     _ -> LiquidCourage <$> runMessage msg attrs

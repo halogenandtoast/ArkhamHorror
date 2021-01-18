@@ -23,12 +23,11 @@ instance HasActions env VisionsOfFuturesPast where
 
 instance TreacheryRunner env => RunMessage env VisionsOfFuturesPast where
   runMessage msg t@(VisionsOfFuturesPast attrs@Attrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
-      t <$ unshiftMessages
-        [ RevelationSkillTest iid source SkillWillpower 5
-        , Discard (TreacheryTarget treacheryId)
-        ]
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} n
+    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+      [ RevelationSkillTest iid source SkillWillpower 5
+      , Discard (TreacheryTarget treacheryId)
+      ]
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ n
       | tid == treacheryId -> t
       <$ unshiftMessage (DiscardTopOfDeck iid n Nothing)
     _ -> VisionsOfFuturesPast <$> runMessage msg attrs

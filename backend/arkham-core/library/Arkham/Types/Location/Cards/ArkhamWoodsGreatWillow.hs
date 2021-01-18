@@ -37,7 +37,7 @@ instance ActionRunner env => HasActions env ArkhamWoodsGreatWillow where
 -- | Unused here is on a forced ability
 instance LocationRunner env => RunMessage env ArkhamWoodsGreatWillow where
   runMessage msg l@(ArkhamWoodsGreatWillow attrs@Attrs {..}) = case msg of
-    PassedSkillTest iid _ source@(TreacherySource _) _ _
+    PassedSkillTest iid _ source@(TreacherySource _) _ _ _
       | iid `elem` locationInvestigators -> do
         let
           ability = (mkAbility (toSource attrs) 0 ForcedAbility)

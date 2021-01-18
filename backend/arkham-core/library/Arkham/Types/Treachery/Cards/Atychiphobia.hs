@@ -35,9 +35,15 @@ instance (TreacheryRunner env) => RunMessage env Atychiphobia where
   runMessage msg t@(Atychiphobia attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId $ InvestigatorTarget iid)
-    FailedSkillTest iid _ _ _ _ | treacheryOnInvestigator iid attrs ->
+    FailedSkillTest iid _ _ _ _ _ | treacheryOnInvestigator iid attrs ->
       t <$ unshiftMessage
-        (InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny 0 1)
+        (InvestigatorAssignDamage
+          iid
+          (TreacherySource treacheryId)
+          DamageAny
+          0
+          1
+        )
     UseCardAbility _ (TreacherySource tid) _ 1 _ | tid == treacheryId ->
       t <$ unshiftMessage (Discard (TreacheryTarget treacheryId))
     _ -> Atychiphobia <$> runMessage msg attrs

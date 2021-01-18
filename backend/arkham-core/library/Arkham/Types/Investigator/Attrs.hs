@@ -829,7 +829,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       , MoveFrom iid fromLocationId
       , MoveTo iid toLocationId
       ]
-  Will (FailedSkillTest iid _ _ (InvestigatorTarget iid') _)
+  Will (FailedSkillTest iid _ _ (InvestigatorTarget iid') _ _)
     | iid == iid' && iid == investigatorId
     -> a <$ unshiftMessage
       (CheckWindow investigatorId [WhenWouldFailSkillTest You])
@@ -1536,7 +1536,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       (PlaceClues (LocationTarget investigatorLocation) investigatorClues)
     pure $ a & cluesL .~ 0
   RemoveDiscardFromGame iid | iid == investigatorId -> pure $ a & discardL .~ []
-  After (FailedSkillTest iid mAction _ (InvestigatorTarget iid') n)
+  After (FailedSkillTest iid mAction _ (InvestigatorTarget iid') _ n)
     | iid == iid' && iid == investigatorId -> do
       let
         windows = maybe
@@ -1547,7 +1547,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
           )
           mAction
       a <$ unshiftMessage (CheckWindow iid (AfterFailSkillTest You n : windows))
-  After (PassedSkillTest iid mAction source (InvestigatorTarget iid') n)
+  After (PassedSkillTest iid mAction source (InvestigatorTarget iid') _ n)
     | iid == iid' && iid == investigatorId -> a <$ unshiftMessage
       (CheckWindow iid [AfterPassSkillTest mAction source You n])
   PlayerWindow iid additionalActions | iid == investigatorId -> do

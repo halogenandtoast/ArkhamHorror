@@ -191,7 +191,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
       s <$ case cultists of
         [] -> unshiftMessage (DrawAnotherToken iid)
         xs -> unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- xs ]
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _
+    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _
       | drawnTokenFace token == Tablet -> if isEasyStandard attrs
         then s <$ unshiftMessage (InvestigatorPlaceAllCluesOnLocation iid)
         else s <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid 1)

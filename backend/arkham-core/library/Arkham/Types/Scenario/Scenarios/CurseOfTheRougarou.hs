@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
   ( CurseOfTheRougarou(..)
   , curseOfTheRougarou
-  ) where
+  )
+where
 
 import Arkham.Import hiding (Cultist)
 
@@ -237,7 +238,7 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
             <$> for (lid : connectedLocationIds) (getSetList @EnemyId)
           mrougarou <- findM (((== "81028") <$>) . getId @CardCode) enemyIds
           s <$ for_ mrougarou (unshiftMessage . EnemyWillAttack iid)
-      FailedSkillTest iid _ _ (DrawnTokenTarget token) _ -> s <$ when
+      FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ -> s <$ when
         (drawnTokenFace token == Tablet)
         (unshiftMessage $ CreateEffect
           "81001"

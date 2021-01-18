@@ -32,6 +32,6 @@ instance TreacheryRunner env => RunMessage env EphemeralExhibits where
         SkillIntellect
         3
       )
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} n
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> t <$ unshiftMessage (LoseActions iid source n)
     _ -> EphemeralExhibits <$> runMessage msg attrs

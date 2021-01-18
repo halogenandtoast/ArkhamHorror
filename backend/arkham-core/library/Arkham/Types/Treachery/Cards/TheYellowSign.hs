@@ -20,20 +20,24 @@ instance HasActions env TheYellowSign where
 
 instance (TreacheryRunner env) => RunMessage env TheYellowSign where
   runMessage msg t@(TheYellowSign attrs@Attrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid source | isSource attrs source -> t <$ unshiftMessages
+      [ BeginSkillTest
+        iid
+        source
+        (InvestigatorTarget iid)
+        Nothing
+        SkillWillpower
+        4
+      , Discard $ toTarget attrs
+      ]
+    FailedSkillTest iid _ source _ _ _ | isSource attrs source ->
       t <$ unshiftMessages
-        [ BeginSkillTest
+        [ InvestigatorAssignDamage
           iid
-          source
-          (InvestigatorTarget iid)
-          Nothing
-          SkillWillpower
-          4
-        , Discard $ toTarget attrs
-        ]
-    FailedSkillTest iid _ source _ _ | isSource attrs source ->
-      t <$ unshiftMessages
-        [ InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny 0 2
+          (TreacherySource treacheryId)
+          DamageAny
+          0
+          2
         , SearchDeckForTraits iid (InvestigatorTarget iid) [Madness] -- TODO: We may need to specify weakness
         ]
     _ -> TheYellowSign <$> runMessage msg attrs

@@ -1763,15 +1763,16 @@ runGameMessage msg g = case msg of
   RemoveEnemy eid -> pure $ g & enemiesL %~ deleteMap eid
   RemoveLocation lid -> do
     treacheryIds <- toList <$> getSet lid
-    unshiftMessages [ Discard (TreacheryTarget tid) | tid <- treacheryIds ]
+    unshiftMessages
+      $ concatMap (resolve . Discard . TreacheryTarget) treacheryIds
     enemyIds <- toList <$> getSet lid
-    unshiftMessages [ Discard (EnemyTarget eid) | eid <- enemyIds ]
+    unshiftMessages $ concatMap (resolve . Discard . EnemyTarget) enemyIds
     eventIds <- toList <$> getSet lid
-    unshiftMessages [ Discard (EventTarget eid) | eid <- eventIds ]
+    unshiftMessages $ concatMap (resolve . Discard . EventTarget) eventIds
     assetIds <- toList <$> getSet lid
-    unshiftMessages [ Discard (AssetTarget aid) | aid <- assetIds ]
+    unshiftMessages $ concatMap (resolve . Discard . AssetTarget) assetIds
     investigatorIds <- toList <$> getSet lid
-    unshiftMessages [ InvestigatorDefeated iid | iid <- investigatorIds ]
+    unshiftMessages $ concatMap (resolve . InvestigatorDefeated) investigatorIds
     pure $ g & locationsL %~ deleteMap lid
   SpendClues 0 _ -> pure g
   SpendClues n iids -> do

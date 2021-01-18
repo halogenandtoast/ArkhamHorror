@@ -193,7 +193,7 @@ instance LocationRunner env => RunMessage env Attrs where
               shroudValue'
             )
         else pure a
-    PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget target) _
+    PassedSkillTest iid (Just Action.Investigate) source (SkillTestInitiatorTarget target) _ _
       | isTarget a target
       -> a <$ unshiftMessage (SuccessfulInvestigation iid locationId source)
     SuccessfulInvestigation iid lid _ | lid == locationId -> do

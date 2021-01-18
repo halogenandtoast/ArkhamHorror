@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.Fold
   ( Fold(..)
   , fold
-  ) where
+  )
+where
 
 import Arkham.Import hiding (fold)
 
@@ -75,7 +76,7 @@ instance ActRunner env => RunMessage env Fold where
               SkillWillpower
               3
             )
-    PassedSkillTest iid _ source _ _
+    PassedSkillTest iid _ source _ _ _
       | isSource attrs source && actSequence == Act 3 A -> do
         maid <- fmap unStoryAssetId <$> getId (CardCode "02079")
         case maid of

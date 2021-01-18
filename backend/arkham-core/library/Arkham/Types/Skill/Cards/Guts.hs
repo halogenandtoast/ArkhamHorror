@@ -25,6 +25,6 @@ instance HasActions env Guts where
 
 instance (SkillRunner env) => RunMessage env Guts where
   runMessage msg s@(Guts attrs@Attrs {..}) = case msg of
-    PassedSkillTest _ _ _ (SkillTarget sid) _ | sid == skillId ->
+    PassedSkillTest _ _ _ (SkillTarget sid) _ _ | sid == skillId ->
       s <$ unshiftMessage (DrawCards skillOwner 1 False)
     _ -> Guts <$> runMessage msg attrs

@@ -97,7 +97,7 @@ instance ScenarioRunner env => RunMessage env TheGathering where
           1
           (if isEasyStandard attrs then 0 else 1)
         )
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ -> do
+    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ _ -> do
       case drawnTokenFace token of
         Skull | isHardExpert attrs -> unshiftMessage $ FindAndDrawEncounterCard
           iid

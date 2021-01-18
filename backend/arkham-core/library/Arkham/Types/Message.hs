@@ -260,7 +260,7 @@ data Message
   | Exhaust Target
   | FailSkillTest
   | FailedAttackEnemy InvestigatorId EnemyId
-  | FailedSkillTest InvestigatorId (Maybe Action) Source Target Int
+  | FailedSkillTest InvestigatorId (Maybe Action) Source Target SkillType Int
   | FightEnemy InvestigatorId EnemyId Source SkillType Bool
   | FindAndDrawEncounterCard InvestigatorId EncounterCardMatcher
   | FindEncounterCard InvestigatorId Target EncounterCardMatcher
@@ -341,7 +341,7 @@ data Message
   | NextChaosBagStep Source (Maybe InvestigatorId) RequestedTokenStrategy
   | NoResolution
   | PassSkillTest
-  | PassedSkillTest InvestigatorId (Maybe Action) Source Target Int
+  | PassedSkillTest InvestigatorId (Maybe Action) Source Target SkillType Int
   | PayAbilityCost Source InvestigatorId (Maybe Action) Cost
   | PayAbilityCostFinished Source InvestigatorId
   | PaidAbilityCost InvestigatorId (Maybe Action) Payment

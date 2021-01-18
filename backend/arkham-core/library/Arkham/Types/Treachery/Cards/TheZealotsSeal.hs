@@ -34,7 +34,7 @@ instance TreacheryRunner env => RunMessage env TheZealotsSeal where
             else unshiftMessage
               (RevelationSkillTest iid' source SkillWillpower 2)
         )
-    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _
+    FailedSkillTest iid _ (TreacherySource tid) SkillTestInitiatorTarget{} _ _
       | tid == treacheryId -> t
       <$ unshiftMessages [RandomDiscard iid, RandomDiscard iid]
     _ -> TheZealotsSeal <$> runMessage msg attrs

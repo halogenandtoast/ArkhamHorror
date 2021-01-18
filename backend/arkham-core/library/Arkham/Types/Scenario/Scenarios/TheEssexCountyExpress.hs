@@ -247,7 +247,7 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
     ResolveToken _ Tablet _ | isHardExpert attrs -> do
       cultists <- getSetList @EnemyId Trait.Cultist
       s <$ unshiftMessages [ PlaceDoom (EnemyTarget eid) 1 | eid <- cultists ]
-    FailedSkillTest iid _ _ (DrawnTokenTarget token) n ->
+    FailedSkillTest iid _ _ (DrawnTokenTarget token) _ n ->
       s <$ case drawnTokenFace token of
         Cultist ->
           unshiftMessages [SetActions iid (toSource attrs) 0, ChooseEndTurn iid]

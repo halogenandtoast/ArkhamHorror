@@ -501,7 +501,7 @@ instance EnemyRunner env => RunMessage env Attrs where
           skillType
           enemyFight'
         )
-    PassedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _
+    PassedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _
       | isTarget a target
       -> do
         whenWindows <- checkWindows
@@ -512,7 +512,7 @@ instance EnemyRunner env => RunMessage env Attrs where
           (\who -> pure [AfterSuccessfulAttackEnemy who enemyId])
         a <$ unshiftMessages
           (whenWindows <> [InvestigatorDamageEnemy iid enemyId] <> afterWindows)
-    FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _
+    FailedSkillTest iid (Just Action.Fight) _ (SkillTestInitiatorTarget target) _ _
       | isTarget a target
       -> do
         keywords <- getModifiedKeywords a
@@ -538,10 +538,10 @@ instance EnemyRunner env => RunMessage env Attrs where
           skillType
           enemyEvade'
         )
-    PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _
+    PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _ _
       | isTarget a target
       -> a <$ unshiftMessage (EnemyEvaded iid enemyId)
-    FailedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _
+    FailedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget target) _ _
       | isTarget a target
       -> do
         keywords <- getModifiedKeywords a

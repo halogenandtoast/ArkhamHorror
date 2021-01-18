@@ -29,7 +29,7 @@ instance TreacheryRunner env => RunMessage env EagerForDeath where
         [ RevelationSkillTest iid source SkillWillpower difficulty
         , Discard (toTarget attrs)
         ]
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t
       <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny 2 0)
     _ -> EagerForDeath <$> runMessage msg attrs

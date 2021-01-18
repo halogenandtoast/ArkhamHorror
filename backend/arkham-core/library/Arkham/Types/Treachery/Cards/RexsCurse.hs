@@ -26,7 +26,7 @@ instance TreacheryRunner env => RunMessage env RexsCurse where
   runMessage msg t@(RexsCurse attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
-    Will (PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _)
+    Will (PassedSkillTest iid _ _ SkillTestInitiatorTarget{} _ _)
       | treacheryOnInvestigator iid attrs -> do
         let
           ability = (mkAbility (toSource attrs) 0 ForcedAbility)
@@ -55,6 +55,6 @@ instance TreacheryRunner env => RunMessage env RexsCurse where
                , DrawAnotherToken iid
                ]
         pure t
-    FailedSkillTest iid _ _ (TreacheryTarget tid) _ | tid == treacheryId ->
+    FailedSkillTest iid _ _ (TreacheryTarget tid) _ _ | tid == treacheryId ->
       t <$ unshiftMessage (ShuffleIntoDeck iid (TreacheryTarget treacheryId))
     _ -> RexsCurse <$> runMessage msg attrs

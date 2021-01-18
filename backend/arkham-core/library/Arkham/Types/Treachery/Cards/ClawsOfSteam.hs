@@ -28,7 +28,7 @@ instance TreacheryRunner env => RunMessage env ClawsOfSteam where
       [ RevelationSkillTest iid source SkillWillpower 3
       , Discard (toTarget attrs)
       ]
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> t <$ unshiftMessages
         [ CreateWindowModifierEffect
           EffectRoundWindow

@@ -56,7 +56,7 @@ instance TreacheryRunner env => RunMessage env SearchingForIzzie where
             SkillIntellect
             shroud
           )
-    PassedSkillTest _ _ source _ _ | isSource attrs source ->
+    PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
       t <$ unshiftMessage (Discard $ toTarget attrs)
     EndOfGame ->
       let investigator = fromJustNote "missing investigator" treacheryOwner

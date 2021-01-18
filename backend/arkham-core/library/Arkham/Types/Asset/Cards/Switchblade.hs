@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.Switchblade
   ( Switchblade(..)
   , switchblade
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -35,8 +36,9 @@ instance (AssetRunner env) => RunMessage env Switchblade where
   runMessage msg a@(Switchblade attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessage (ChooseFightEnemy iid source SkillCombat False)
-    PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} n
-      | n > 2 && isSource attrs source -> a <$ unshiftMessage
+    PassedSkillTest iid (Just Action.Fight) source SkillTestInitiatorTarget{} _ n
+      | n > 2 && isSource attrs source
+      -> a <$ unshiftMessage
         (CreateWindowModifierEffect
           EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [DamageDealt 1])

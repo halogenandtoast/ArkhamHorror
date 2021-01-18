@@ -1,7 +1,8 @@
 module Arkham.Types.Asset.Cards.FortyOneDerringer
   ( FortyOneDerringer(..)
   , fortyOneDerringer
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -52,7 +53,7 @@ instance AssetRunner env => RunMessage env FortyOneDerringer where
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-    PassedSkillTest iid (Just Action.Fight) source _ n
+    PassedSkillTest iid (Just Action.Fight) source _ _ n
       | isSource attrs source && n >= 2 -> a <$ unshiftMessage
         (CreateWindowModifierEffect
           EffectSkillTestWindow

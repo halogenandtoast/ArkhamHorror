@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.DreamsOfRlyeh
   ( DreamsOfRlyeh(..)
   , dreamsOfRlyeh
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -45,6 +46,6 @@ instance (TreacheryRunner env) => RunMessage env DreamsOfRlyeh where
           SkillWillpower
           3
         )
-    PassedSkillTest _ _ source _ _ | isSource attrs source ->
+    PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
       t <$ unshiftMessage (Discard $ toTarget attrs)
     _ -> DreamsOfRlyeh <$> runMessage msg attrs

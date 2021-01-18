@@ -46,9 +46,9 @@ instance AssetRunner env => RunMessage env MedicalTexts where
           ]
         )
       MedicalTexts <$> runMessage msg attrs
-    PassedSkillTest _ _ source target _ | isSource attrs source ->
+    PassedSkillTest _ _ source target _ _ | isSource attrs source ->
       a <$ unshiftMessage (HealDamage target 1)
-    FailedSkillTest _ _ source (InvestigatorTarget iid) _
+    FailedSkillTest _ _ source (InvestigatorTarget iid) _ _
       | isSource attrs source -> a
       <$ unshiftMessage (InvestigatorAssignDamage iid source DamageAny 1 0)
     _ -> MedicalTexts <$> runMessage msg attrs

@@ -1833,15 +1833,13 @@ runGameMessage msg g = case msg of
       [ AddToDiscard iid card | (card, iid) <- skillCardsWithOwner ]
     pure
       $ g
-      & skillsL
-      .~ mempty
-      & skillTestL
-      .~ Nothing
-      & usedAbilitiesL
-      %~ filter
-           (\(_, Ability {..}) ->
-             abilityLimitType abilityLimit /= Just PerTestOrAbility
-           )
+      & (skillsL .~ mempty)
+      & (skillTestL .~ Nothing)
+      & (usedAbilitiesL %~ filter
+          (\(_, Ability {..}) ->
+            abilityLimitType abilityLimit /= Just PerTestOrAbility
+          )
+        )
   ReturnToHand iid (SkillTarget skillId) -> do
     let
       skill =
@@ -2183,7 +2181,7 @@ runGameMessage msg g = case msg of
   ChooseEndTurn iid -> g <$ unshiftMessage (EndTurn iid)
   EndTurn iid -> pure $ g & usedAbilitiesL %~ filter
     (\(iid', Ability {..}) ->
-      iid' /= iid && abilityLimitType abilityLimit /= Just PerTurn
+      iid' /= iid || abilityLimitType abilityLimit /= Just PerTurn
     )
   EndInvestigation -> do
     atomicWriteIORef (gamePhaseMessageHistory g) []

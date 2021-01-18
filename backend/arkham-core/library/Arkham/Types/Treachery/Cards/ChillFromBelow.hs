@@ -23,7 +23,7 @@ instance (TreacheryRunner env) => RunMessage env ChillFromBelow where
       [ RevelationSkillTest iid source SkillWillpower 3
       , Discard (TreacheryTarget treacheryId)
       ]
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} n
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ n
       | isSource attrs source -> do
         handCount <- unCardCount <$> getCount iid
         if handCount < n

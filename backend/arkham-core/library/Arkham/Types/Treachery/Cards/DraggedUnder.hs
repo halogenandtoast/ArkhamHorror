@@ -19,7 +19,7 @@ instance HasActions env DraggedUnder where
 
 instance (TreacheryRunner env) => RunMessage env DraggedUnder where
   runMessage msg t@(DraggedUnder attrs@Attrs {..}) = case msg of
-    Revelation iid source | isSource attrs source -> do
+    Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (RevelationSkillTest iid source SkillAgility 3)
     MoveFrom iid _ | treacheryOnInvestigator iid attrs -> t <$ unshiftMessages
       [ InvestigatorAssignDamage iid (TreacherySource treacheryId) DamageAny 2 0
@@ -34,9 +34,9 @@ instance (TreacheryRunner env) => RunMessage env DraggedUnder where
         SkillAgility
         3
       )
-    FailedSkillTest iid _ source _ _ | isSource attrs source -> t <$ when
+    FailedSkillTest iid _ source _ _ _ | isSource attrs source -> t <$ when
       (isNothing treacheryAttachedTarget)
       (unshiftMessage $ AttachTreachery treacheryId (InvestigatorTarget iid))
-    PassedSkillTest _ _ source _ _ | isSource attrs source ->
+    PassedSkillTest _ _ source _ _ _ | isSource attrs source ->
       t <$ unshiftMessage (Discard $ toTarget attrs)
     _ -> DraggedUnder <$> runMessage msg attrs

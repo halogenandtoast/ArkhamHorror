@@ -30,7 +30,7 @@ instance TreacheryRunner env => RunMessage env CursedLuck where
   runMessage msg t@(CursedLuck attrs@Attrs {..}) = case msg of
     Revelation iid source | isSource attrs source ->
       t <$ unshiftMessage (AttachTreachery treacheryId (InvestigatorTarget iid))
-    PassedSkillTest iid _ _ (SkillTestInitiatorTarget _) n
+    PassedSkillTest iid _ _ (SkillTestInitiatorTarget _) _ n
       | treacheryOnInvestigator iid attrs && n >= 1 -> t
       <$ unshiftMessage (Discard $ toTarget attrs)
     _ -> CursedLuck <$> runMessage msg attrs

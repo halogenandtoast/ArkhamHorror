@@ -43,13 +43,14 @@ instance
   runMessage msg a@(Kukri attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
-        [ CreateWindowModifierEffect EffectSkillTestWindow
+        [ CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 1])
           source
           (InvestigatorTarget iid)
         , ChooseFightEnemy iid source SkillCombat False
         ]
-    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _
+    PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         actionRemainingCount <- unActionRemainingCount <$> getCount iid
         if actionRemainingCount > 0
@@ -59,7 +60,8 @@ instance
               [ Label
                 "Spend 1 action to deal +1 damage"
                 [ LoseActions iid source 1
-                , CreateWindowModifierEffect EffectSkillTestWindow
+                , CreateWindowModifierEffect
+                  EffectSkillTestWindow
                   (EffectModifiers $ toModifiers attrs [DamageDealt 1])
                   source
                   (InvestigatorTarget iid)

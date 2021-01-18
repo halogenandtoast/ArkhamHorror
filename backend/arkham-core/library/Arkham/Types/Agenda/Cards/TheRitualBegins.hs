@@ -47,14 +47,14 @@ instance (AgendaRunner env) => RunMessage env TheRitualBegins where
          ]
         <> [NextAgenda agendaId "01145"]
         )
-    FailedSkillTest iid _ source _ _ | isSource attrs source ->
+    FailedSkillTest iid _ source _ _ _ | isSource attrs source ->
       a <$ unshiftMessage
         (SearchCollectionForRandom
           iid
           (AgendaSource agendaId)
           (PlayerTreacheryType, Just Madness)
         )
-    RequestedPlayerCard iid (AgendaSource aid) mcard | aid == agendaId -> do
+    RequestedPlayerCard iid (AgendaSource aid) mcard | aid == agendaId ->
       case mcard of
         Nothing -> pure a
         Just card -> a <$ unshiftMessages

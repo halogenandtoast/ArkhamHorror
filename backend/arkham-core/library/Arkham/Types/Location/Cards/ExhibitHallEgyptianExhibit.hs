@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.ExhibitHallEgyptianExhibit
   ( exhibitHallEgyptianExhibit
   , ExhibitHallEgyptianExhibit(..)
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -37,7 +38,7 @@ instance ActionRunner env => HasActions env ExhibitHallEgyptianExhibit where
 
 instance LocationRunner env => RunMessage env ExhibitHallEgyptianExhibit where
   runMessage msg l@(ExhibitHallEgyptianExhibit attrs) = case msg of
-    After (FailedSkillTest iid (Just Action.Investigate) _ target _)
+    After (FailedSkillTest iid (Just Action.Investigate) _ target _ _)
       | isTarget attrs target -> l
       <$ unshiftMessage (LoseActions iid (toSource attrs) 1)
     _ -> ExhibitHallEgyptianExhibit <$> runMessage msg attrs

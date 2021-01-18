@@ -53,6 +53,6 @@ instance ActRunner env => RunMessage env MysteriousGateway where
            , NextAct aid "01109"
            ]
         )
-    FailedSkillTest iid _ (ActSource aid) SkillTestInitiatorTarget{} n
+    FailedSkillTest iid _ (ActSource aid) SkillTestInitiatorTarget{} _ n
       | aid == actId -> a <$ unshiftMessages (replicate n (RandomDiscard iid))
     _ -> MysteriousGateway <$> runMessage msg attrs

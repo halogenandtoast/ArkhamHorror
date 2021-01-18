@@ -35,7 +35,7 @@ instance TreacheryRunner env => RunMessage env PassageIntoTheVeil where
           SkillWillpower
           (if huntingHorrorAtYourLocation then 5 else 3)
         )
-    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _
+    FailedSkillTest iid _ source SkillTestInitiatorTarget{} _ _
       | isSource attrs source -> do
         assetIds <- getSetList @AssetId iid
         t <$ unshiftMessage

@@ -26,7 +26,7 @@ instance HasQueue env => RunMessage env BlindingLight where
         (unshiftMessages
           [LoseActions iid (toSource attrs) 1, DisableEffect effectId]
         )
-    PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _
+    PassedSkillTest iid (Just Action.Evade) _ (SkillTestInitiatorTarget (EnemyTarget eid)) _ _
       | SkillTestTarget == effectTarget
       -> e <$ unshiftMessages
         [EnemyDamage eid iid (InvestigatorSource iid) 1, DisableEffect effectId]

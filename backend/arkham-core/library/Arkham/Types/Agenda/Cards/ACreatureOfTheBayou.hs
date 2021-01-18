@@ -31,14 +31,6 @@ getRougarou = fmap unStoryEnemyId <$> getId (CardCode "81028")
 
 instance AgendaRunner env => RunMessage env ACreatureOfTheBayou where
   runMessage msg a@(ACreatureOfTheBayou attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 A -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage $ chooseOne leadInvestigatorId [AdvanceAgenda aid]
-      pure
-        $ ACreatureOfTheBayou
-        $ attrs
-        & (sequenceL .~ Agenda 1 B)
-        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       mrougarou <- getRougarou
       case mrougarou of

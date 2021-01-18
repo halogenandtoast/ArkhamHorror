@@ -25,14 +25,6 @@ instance HasActions env TheRitualBegins where
 
 instance (AgendaRunner env) => RunMessage env TheRitualBegins where
   runMessage msg a@(TheRitualBegins attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 A -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      unshiftMessage (chooseOne leadInvestigatorId [AdvanceAgenda agendaId])
-      pure
-        $ TheRitualBegins
-        $ attrs
-        & (sequenceL .~ Agenda 2 B)
-        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       investigatorIds <- getSetList ()
       a <$ unshiftMessages

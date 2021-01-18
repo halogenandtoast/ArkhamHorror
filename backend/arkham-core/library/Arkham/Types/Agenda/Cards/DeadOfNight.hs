@@ -22,21 +22,23 @@ instance HasModifiersFor env DeadOfNight where
   getModifiersFor _ _ _ = pure []
 
 instance AgendaRunner env => RunMessage env DeadOfNight where
-  runMessage msg (DeadOfNight attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 A -> do
+  runMessage msg a@(DeadOfNight attrs@Attrs {..}) = case msg of
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       dormitoriesInPlay <- isJust
         <$> getId @(Maybe LocationId) (LocationWithTitle "Dormitories")
       mExperimentId <- fmap unStoryEnemyId <$> getId (CardCode "02058")
       scienceBuildingId <- fromJustNote "missing science building"
         <$> getId (LocationWithTitle "Science Building")
-      unshiftMessages
-        $ [ PlaceLocationMatching (LocationWithTitle "Dormitories")
-          | not dormitoriesInPlay
-          ]
+      a <$ unshiftMessages
+        ([ PlaceLocationMatching (LocationWithTitle "Dormitories")
+         | not dormitoriesInPlay
+         ]
         <> [ MoveToward (EnemyTarget eid) (LocationWithTitle "Dormitories")
            | eid <- maybeToList mExperimentId
            ]
-        <> [ CreateEnemyAt "02058" scienceBuildingId | isNothing mExperimentId ]
+        <> [ CreateEnemyAt "02058" scienceBuildingId
+           | isNothing mExperimentId
+           ]
         <> [NextAgenda agendaId "02044"]
-      pure . DeadOfNight $ attrs & sequenceL .~ Agenda 2 B & flippedL .~ True
+        )
     _ -> DeadOfNight <$> runMessage msg attrs

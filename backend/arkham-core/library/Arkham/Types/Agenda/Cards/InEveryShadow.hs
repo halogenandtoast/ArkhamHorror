@@ -33,14 +33,6 @@ instance AgendaRunner env => RunMessage env InEveryShadow where
           Nothing ->
             unshiftMessage $ AttachStoryTreacheryTo "02142" (EnemyTarget eid)
       pure a
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 A -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      unshiftMessage $ Ask leadInvestigatorId (ChooseOne [AdvanceAgenda aid])
-      pure
-        $ InEveryShadow
-        $ attrs
-        & (sequenceL .~ Agenda 3 B)
-        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       iids <- map unInScenarioInvestigatorId <$> getSetList ()
       a <$ unshiftMessages

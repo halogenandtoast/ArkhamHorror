@@ -21,14 +21,6 @@ instance HasModifiersFor env TheyreGettingOut where
 
 instance AgendaRunner env => RunMessage env TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 A -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      unshiftMessage $ Ask leadInvestigatorId (ChooseOne [AdvanceAgenda aid])
-      pure
-        $ TheyreGettingOut
-        $ attrs
-        & (sequenceL .~ Agenda 3 B)
-        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       actIds <- getSet @ActId ()
       if ActId "01108" `elem` actIds || ActId "01109" `elem` actIds

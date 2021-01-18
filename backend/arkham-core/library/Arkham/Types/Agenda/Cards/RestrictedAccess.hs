@@ -1,7 +1,8 @@
 module Arkham.Types.Agenda.Cards.RestrictedAccess
   ( RestrictedAccess(..)
   , restrictedAccess
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -33,14 +34,6 @@ instance AgendaRunner env => RunMessage env RestrictedAccess where
           Nothing ->
             unshiftMessage $ AttachStoryTreacheryTo "02142" (EnemyTarget eid)
       pure a
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 A -> do
-      leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
-      unshiftMessage $ Ask leadInvestigatorId (ChooseOne [AdvanceAgenda aid])
-      pure
-        $ RestrictedAccess
-        $ attrs
-        & (sequenceL .~ Agenda 1 B)
-        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       mHuntingHorrorId <- fmap unStoryEnemyId <$> getId (CardCode "02141")

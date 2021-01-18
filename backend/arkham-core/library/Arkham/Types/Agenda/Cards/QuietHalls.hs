@@ -21,8 +21,8 @@ instance HasActions env QuietHalls where
   getActions i window (QuietHalls x) = getActions i window x
 
 instance AgendaRunner env => RunMessage env QuietHalls where
-  runMessage msg (QuietHalls attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 A -> do
+  runMessage msg a@(QuietHalls attrs@Attrs {..}) = case msg of
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       investigatorIds <- getInvestigatorIds
       messages <- flip mapMaybeM investigatorIds $ \iid -> do
         discardCount <- unDiscardCount <$> getCount iid
@@ -49,7 +49,6 @@ instance AgendaRunner env => RunMessage env QuietHalls where
           then [NextAgenda aid "02043", AdvanceCurrentAgenda]
           else [NextAgenda aid "02043"]
 
-      unshiftMessage
-        (Ask leadInvestigatorId $ ChooseOne [Label "Continue" continueMessages])
-      pure $ QuietHalls $ attrs & sequenceL .~ Agenda 1 B & flippedL .~ True
+      a <$ unshiftMessage
+        (chooseOne leadInvestigatorId [Label "Continue" continueMessages])
     _ -> QuietHalls <$> runMessage msg attrs

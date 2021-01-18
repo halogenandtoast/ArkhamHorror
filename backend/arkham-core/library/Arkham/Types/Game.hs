@@ -1762,16 +1762,16 @@ runGameMessage msg g = case msg of
     pure $ g & encounterDeckL .~ Deck encounterDeck
   RemoveEnemy eid -> pure $ g & enemiesL %~ deleteMap eid
   RemoveLocation lid -> do
-    treacheryIds <- toList <$> getSet lid
+    treacheryIds <- getSetList lid
     unshiftMessages
       $ concatMap (resolve . Discard . TreacheryTarget) treacheryIds
-    enemyIds <- toList <$> getSet lid
+    enemyIds <- getSetList lid
     unshiftMessages $ concatMap (resolve . Discard . EnemyTarget) enemyIds
-    eventIds <- toList <$> getSet lid
+    eventIds <- getSetList lid
     unshiftMessages $ concatMap (resolve . Discard . EventTarget) eventIds
-    assetIds <- toList <$> getSet lid
+    assetIds <- getSetList lid
     unshiftMessages $ concatMap (resolve . Discard . AssetTarget) assetIds
-    investigatorIds <- toList <$> getSet lid
+    investigatorIds <- getSetList lid
     unshiftMessages $ concatMap (resolve . InvestigatorDefeated) investigatorIds
     pure $ g & locationsL %~ deleteMap lid
   SpendClues 0 _ -> pure g

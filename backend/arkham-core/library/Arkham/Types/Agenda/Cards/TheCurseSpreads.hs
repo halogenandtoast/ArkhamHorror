@@ -1,12 +1,12 @@
 module Arkham.Types.Agenda.Cards.TheCurseSpreads
   ( TheCurseSpreads(..)
   , theCurseSpreads
-  ) where
+  )
+where
 
 import Arkham.Import
 
 import Arkham.Types.Agenda.Attrs
-import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 
 newtype TheCurseSpreads = TheCurseSpreads Attrs
@@ -38,14 +38,6 @@ instance AgendaRunner env => RunMessage env TheCurseSpreads where
           pure . TheCurseSpreads $ if notEngaged
             then attrs & doomL +~ 1
             else attrs
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 A -> do
-      leadInvestigatorId <- getLeadInvestigatorId
-      unshiftMessage $ chooseOne leadInvestigatorId [AdvanceAgenda aid]
-      pure
-        $ TheCurseSpreads
-        $ attrs
-        & (sequenceL .~ Agenda 3 B)
-        & (flippedL .~ True)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B ->
       a <$ unshiftMessage (Resolution 1)
     _ -> TheCurseSpreads <$> runMessage msg attrs

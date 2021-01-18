@@ -33,7 +33,7 @@ instance HasActions env PredatorOrPrey where
 
 instance (AgendaRunner env) => RunMessage env PredatorOrPrey where
   runMessage msg a@(PredatorOrPrey attrs@Attrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 A ->
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->
       a <$ unshiftMessages
         [CreateEnemyEngagedWithPrey "01121b", NextAgenda aid "01122"]
     UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do

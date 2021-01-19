@@ -821,6 +821,9 @@ instance HasSet Keyword (Game queue) EnemyId where
       . getKeywords
       <$> getEnemy eid
 
+instance HasSet UnderneathCardId (Game queue) LocationId where
+  getSet = getSet <=< getLocation
+
 instance HasSet Trait (Game queue) LocationId where
   getSet lid = getTraits <$> getLocation lid
 

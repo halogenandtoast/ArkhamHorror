@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 5a382c05c9679211c0371efd56ce0f09e27a2e139644ff79f1ee189b2f24e6c6
+-- hash: 087f34add911e1946670bc9b0d8985c91299db53d83afccd7f087f62b6953102
 
 name:           arkham-core
 version:        0.0.0
@@ -550,6 +550,7 @@ library
       Arkham.Types.Scenario.Helpers
       Arkham.Types.Scenario.Runner
       Arkham.Types.Scenario.Scenarios
+      Arkham.Types.Scenario.Scenarios.BloodOnTheAltar
       Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
       Arkham.Types.Scenario.Scenarios.ExtracurricularActivity
       Arkham.Types.Scenario.Scenarios.ReturnToTheDevourerBelow

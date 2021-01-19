@@ -61,6 +61,9 @@ foldTokens s tokens f = foldrM (flip f) s tokens
 count :: (a -> Bool) -> [a] -> Int
 count = (length .) . filter
 
+countM :: Monad m => (a -> m Bool) -> [a] -> m Int
+countM = ((length <$>) .) . filterM
+
 sample :: MonadRandom m => NonEmpty a -> m a
 sample xs = do
   idx <- getRandomR (0, NE.length xs - 1)

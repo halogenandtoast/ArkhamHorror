@@ -1,6 +1,7 @@
 module Arkham.Types.Scenario
   ( module Arkham.Types.Scenario
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -19,6 +20,7 @@ data Scenario
   | TheHouseAlwaysWins' TheHouseAlwaysWins
   | TheMiskatonicMuseum' TheMiskatonicMuseum
   | TheEssexCountyExpress' TheEssexCountyExpress
+  | BloodOnTheAltar' BloodOnTheAltar
   | ReturnToTheGathering' ReturnToTheGathering
   | ReturnToTheMidnightMasks' ReturnToTheMidnightMasks
   | ReturnToTheDevourerBelow' ReturnToTheDevourerBelow
@@ -36,7 +38,9 @@ deriving anyclass instance
   , HasCount EnemyCount env [Trait]
   , HasSet EnemyId env Trait
   , HasSet EnemyId env LocationId
+  , HasSet LocationId env ()
   , HasSet Trait env LocationId
+  , HasSet UnderneathCardId env LocationId
   , HasTokenValue env InvestigatorId
   , HasId LocationId env InvestigatorId
   , HasId CardCode env EnemyId
@@ -94,6 +98,7 @@ allScenarios = mapFromList
   , ("02062", TheHouseAlwaysWins' . theHouseAlwaysWins)
   , ("02118", TheMiskatonicMuseum' . theMiskatonicMuseum)
   , ("02159", TheEssexCountyExpress' . theEssexCountyExpress)
+  , ("02195", BloodOnTheAltar' . bloodOnTheAltar)
   , ("50011", ReturnToTheGathering' . returnToTheGathering)
   , ("50025", ReturnToTheMidnightMasks' . returnToTheMidnightMasks)
   , ("50032", ReturnToTheDevourerBelow' . returnToTheDevourerBelow)
@@ -110,6 +115,7 @@ scenarioAttrs = \case
   TheHouseAlwaysWins' attrs -> coerce attrs
   TheMiskatonicMuseum' attrs -> coerce attrs
   TheEssexCountyExpress' attrs -> coerce attrs
+  BloodOnTheAltar' attrs -> coerce attrs
   ReturnToTheGathering' attrs -> coerce attrs
   ReturnToTheMidnightMasks' attrs -> coerce attrs
   ReturnToTheDevourerBelow' attrs -> coerce attrs

@@ -1,7 +1,8 @@
 module Arkham.Types.EncounterSet
   ( EncounterSet(..)
   , gatherEncounterSet
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -28,6 +29,7 @@ data EncounterSet
   | TheHouseAlwaysWins
   | TheMiskatonicMuseum
   | TheEssexCountyExpress
+  | BloodOnTheAltar
   | Sorcery
   | BishopsThralls
   | Dunwich
@@ -89,6 +91,12 @@ setCards = \case
       <> replicate 3 "02181"
       <> replicate 2 "02182"
       <> replicate 2 "02183"
+  BloodOnTheAltar ->
+    replicate 3 "02220"
+      <> replicate 2 "02221"
+      <> replicate 2 "02222"
+      <> replicate 3 "02223"
+      <> replicate 3 "02224"
   Sorcery -> replicate 3 "02083" <> replicate 3 "02084"
   BishopsThralls -> replicate 2 "02085" <> replicate 3 "02086" <> ["02087"]
   Dunwich -> replicate 2 "02088" <> replicate 2 "02089"

@@ -33,6 +33,7 @@ data Attrs = Attrs
   , locationEncounterSet :: EncounterSet
   , locationDirections :: HashMap Direction LocationId
   , locationConnectsTo :: HashSet Direction
+  , locationCardsUnderneath :: [Card]
   }
   deriving stock (Show, Generic)
 
@@ -67,6 +68,13 @@ instance HasName env Attrs where
 
 instance HasId (Maybe LocationId) env (Direction, Attrs) where
   getId (dir, Attrs {..}) = pure $ lookup dir locationDirections
+
+instance HasSet UnderneathCardId env Attrs where
+  getSet =
+    pure
+      . setFromList
+      . map (UnderneathCardId . getCardId)
+      . locationCardsUnderneath
 
 unrevealed :: Attrs -> Bool
 unrevealed = not . locationRevealed
@@ -109,6 +117,7 @@ baseAttrs lid name encounterSet shroud' revealClues symbol' connectedSymbols' tr
     , locationEncounterSet = encounterSet
     , locationDirections = mempty
     , locationConnectsTo = mempty
+    , locationCardsUnderneath = mempty
     }
 
 getModifiedShroudValueFor

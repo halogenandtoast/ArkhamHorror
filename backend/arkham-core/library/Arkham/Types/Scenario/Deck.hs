@@ -2,6 +2,6 @@ module Arkham.Types.Scenario.Deck where
 
 import Arkham.Import
 
-data ScenarioDeck = CultistDeck [EncounterCard] | ExhibitDeck [LocationId]
+data ScenarioDeck = CultistDeck [EncounterCard] | ExhibitDeck [LocationId] | PotentialSacrifices [Card]
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)

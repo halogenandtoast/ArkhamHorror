@@ -1,7 +1,8 @@
 module Arkham.Prelude
   ( module X
   , module Arkham.Prelude
-  ) where
+  )
+where
 
 import ClassyPrelude as X hiding (on, (\\))
 
@@ -40,6 +41,9 @@ import GHC.Stack as X
 import Language.Haskell.TH hiding (location)
 import Safe as X (fromJustNote)
 import System.Random.Shuffle as X
+
+guardM :: (Alternative m, Monad m) => m Bool -> m ()
+guardM p = p >>= guard
 
 suffixedNamer :: FieldNamer
 suffixedNamer _ _ n = case dropWhile C.isLower (nameBase n) of

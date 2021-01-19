@@ -122,6 +122,27 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
         , EncounterSet.AncientEvils
         ]
 
+      professorWarrenRiceKidnapped <- getHasRecord
+        ProfessorWarrenRiceWasKidnapped
+      drFrancisMorganKidnapped <- getHasRecord DrFrancisMorganWasKidnapped
+      drHenryArmitageKidnapped <- getHasRecord DrHenryArmitageWasKidnapped
+
+      professorWarrenRice <- if professorWarrenRiceKidnapped
+        then Just . PlayerCard . lookupPlayerCard "02061" <$> getRandom
+        else pure Nothing
+      drFrancisMorgan <- if drFrancisMorganKidnapped
+        then Just . PlayerCard . lookupPlayerCard "02080" <$> getRandom
+        else pure Nothing
+      drHenryArmitage <- if drHenryArmitageKidnapped
+        then Just . PlayerCard . lookupPlayerCard "02040" <$> getRandom
+        else pure Nothing
+      zebulonWhateley <- PlayerCard . lookupPlayerCard "02217" <$> getRandom
+      earlSawyer <- PlayerCard . lookupPlayerCard "02218" <$> getRandom
+
+      let
+        potentialSacrifices = [zebulonWhateley, earlSawyer]
+          <> catMaybes [professorWarrenRice, drFrancisMorgan, drHenryArmitage]
+
       unshiftMessages
         [ story investigatorIds bloodOnTheAltarIntro
         , SetEncounterDeck encounterDeck
@@ -150,7 +171,14 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
           , schoolhouse
           , "02214"
           ]
-      BloodOnTheAltar <$> runMessage msg (attrs & locationsL .~ locations')
+      BloodOnTheAltar <$> runMessage
+        msg
+        (attrs
+        & locationsL
+        .~ locations'
+        & deckL
+        ?~ PotentialSacrifices potentialSacrifices
+        )
     ResolveToken _ Tablet iid -> do
       lid <- getId @LocationId iid
       matches <- (== "Hidden Chamber") . nameTitle <$> getName lid

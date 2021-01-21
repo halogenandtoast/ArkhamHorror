@@ -146,15 +146,14 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
             [FocusTargets lids, Label "Continue" [UnfocusTargets]]
         _ -> error "Wrong deck"
     Setup -> do
-      standalone <- isNothing <$> getId @(Maybe CampaignId) ()
       investigatorIds <- getInvestigatorIds
 
       securityOffice <- sample $ "02128" :| ["02129"]
       administrationOffice <- sample $ "02130" :| ["02131"]
 
-      armitageKidnapped <- if standalone
-        then pure True
-        else getHasRecord DrHenryArmitageWasKidnapped
+      armitageKidnapped <- getHasRecordOrStandalone
+        DrHenryArmitageWasKidnapped
+        True
 
       exhibitHalls <- shuffleM ["02132", "02133", "02134", "02135", "02136"]
 

@@ -1,12 +1,23 @@
 module Arkham.Types.Scenario.Helpers
   ( module Arkham.Types.Scenario.Helpers
   , module X
-  ) where
+  )
+where
 
 import Arkham.Import
 
+import Arkham.Types.CampaignLogKey
 import Arkham.Types.EncounterSet
 import Arkham.Types.Game.Helpers as X
+
+getHasRecordOrStandalone
+  :: (MonadReader env m, HasRecord env, HasId (Maybe CampaignId) env ())
+  => CampaignLogKey
+  -> Bool
+  -> m Bool
+getHasRecordOrStandalone key def = do
+  standalone <- isNothing <$> getId @(Maybe CampaignId) ()
+  if standalone then pure def else getHasRecord key
 
 buildEncounterDeck :: MonadRandom m => [EncounterSet] -> m [EncounterCard]
 buildEncounterDeck = buildEncounterDeckWith id

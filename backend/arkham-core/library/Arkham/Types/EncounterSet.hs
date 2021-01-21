@@ -92,7 +92,8 @@ setCards = \case
       <> replicate 2 "02182"
       <> replicate 2 "02183"
   BloodOnTheAltar ->
-    replicate 3 "02220"
+    "02216"
+      : replicate 3 "02220"
       <> replicate 2 "02221"
       <> replicate 2 "02222"
       <> replicate 3 "02223"

@@ -114,18 +114,30 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
       congregationalChurch <- sample $ "02208" :| ["02209"]
       houseInTheReeds <- sample $ "02210" :| ["02211"]
       schoolhouse <- sample $ "02212" :| ["02213"]
-      encounterDeck <- buildEncounterDeck
-        [ EncounterSet.BloodOnTheAltar
-        , EncounterSet.Dunwich
-        , EncounterSet.Whippoorwills
-        , EncounterSet.Nightgaunts
-        , EncounterSet.AncientEvils
-        ]
 
-      professorWarrenRiceKidnapped <- getHasRecord
+      oBannionGangHasABoneToPick <- getHasRecordOrStandalone
+        OBannionGangHasABoneToPickWithTheInvestigators
+        False
+
+      encounterDeck <-
+        buildEncounterDeckExcluding ["02216"]
+        $ [ EncounterSet.BloodOnTheAltar
+          , EncounterSet.Dunwich
+          , EncounterSet.Whippoorwills
+          , EncounterSet.Nightgaunts
+          , EncounterSet.AncientEvils
+          ]
+        <> [ EncounterSet.NaomisCrew | oBannionGangHasABoneToPick ]
+
+      professorWarrenRiceKidnapped <- getHasRecordOrStandalone
         ProfessorWarrenRiceWasKidnapped
-      drFrancisMorganKidnapped <- getHasRecord DrFrancisMorganWasKidnapped
-      drHenryArmitageKidnapped <- getHasRecord DrHenryArmitageWasKidnapped
+        True
+      drFrancisMorganKidnapped <- getHasRecordOrStandalone
+        DrFrancisMorganWasKidnapped
+        True
+      drHenryArmitageKidnapped <- getHasRecordOrStandalone
+        DrHenryArmitageWasKidnapped
+        True
 
       professorWarrenRice <- if professorWarrenRiceKidnapped
         then Just . PlayerCard . lookupPlayerCard "02061" <$> getRandom
@@ -139,25 +151,31 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
       zebulonWhateley <- PlayerCard . lookupPlayerCard "02217" <$> getRandom
       earlSawyer <- PlayerCard . lookupPlayerCard "02218" <$> getRandom
 
+      delayedOnTheirWayToDunwich <- getHasRecordOrStandalone
+        TheInvestigatorsWereDelayedOnTheirWayToDunwich
+        False
+
       let
         potentialSacrifices = [zebulonWhateley, earlSawyer]
           <> catMaybes [professorWarrenRice, drFrancisMorgan, drHenryArmitage]
 
       unshiftMessages
-        [ story investigatorIds bloodOnTheAltarIntro
-        , SetEncounterDeck encounterDeck
-        , AddAgenda "02196"
-        , AddAct "02199"
-        , PlaceLocation "02201"
-        , PlaceLocation bishopsBrook
-        , PlaceLocation burnedRuins
-        , PlaceLocation osbornsGeneralStore
-        , PlaceLocation congregationalChurch
-        , PlaceLocation houseInTheReeds
-        , PlaceLocation schoolhouse
-        , RevealLocation Nothing "02201"
-        , MoveAllTo "02201"
-        ]
+        $ [ story investigatorIds bloodOnTheAltarIntro
+          , SetEncounterDeck encounterDeck
+          , AddAgenda "02196"
+          ]
+        <> [ PlaceDoomOnAgenda | delayedOnTheirWayToDunwich ]
+        <> [ AddAct "02199"
+           , PlaceLocation "02201"
+           , PlaceLocation bishopsBrook
+           , PlaceLocation burnedRuins
+           , PlaceLocation osbornsGeneralStore
+           , PlaceLocation congregationalChurch
+           , PlaceLocation houseInTheReeds
+           , PlaceLocation schoolhouse
+           , RevealLocation Nothing "02201"
+           , MoveAllTo "02201"
+           ]
 
       let
         locations' = mapFromList $ map

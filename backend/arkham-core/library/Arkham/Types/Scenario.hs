@@ -40,7 +40,7 @@ deriving anyclass instance
   , HasSet EnemyId env LocationId
   , HasSet LocationId env ()
   , HasSet Trait env LocationId
-  , HasSet UnderneathCardId env LocationId
+  , HasList UnderneathCard env LocationId
   , HasTokenValue env InvestigatorId
   , HasId LocationId env InvestigatorId
   , HasId CardCode env EnemyId

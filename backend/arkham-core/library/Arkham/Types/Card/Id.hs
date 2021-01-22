@@ -13,6 +13,3 @@ newtype HandCardId = HandCardId { unHandCardId :: CardId }
 
 newtype DeckCardId = DeckCardId { unDeckCardId :: CardId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
-
-newtype UnderneathCardId = UnderneathCardId { unUnderneathCardId :: CardId }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)

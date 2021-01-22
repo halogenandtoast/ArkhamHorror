@@ -12,8 +12,7 @@ import Arkham.Types.Direction
 import Arkham.Types.GameValue
 import Arkham.Types.LocationSymbol
 import Arkham.Types.Classes
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.Id
+import Arkham.Types.Card
 import Arkham.Types.EnemyId
 import Arkham.Types.EventId
 import Arkham.Types.Helpers
@@ -209,8 +208,8 @@ instance HasCount Shroud env Location where
 instance HasCount DoomCount env Location where
   getCount = pure . DoomCount . locationDoom . locationAttrs
 
-instance HasSet UnderneathCardId env Location where
-  getSet = getSet . locationAttrs
+instance HasList UnderneathCard env Location where
+  getList = getList . locationAttrs
 
 instance HasSet EnemyId env Location where
   getSet = pure . locationEnemies . locationAttrs

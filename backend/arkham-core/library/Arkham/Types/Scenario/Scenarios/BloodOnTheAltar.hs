@@ -64,12 +64,12 @@ bloodOnTheAltarIntro = FlavorText
 instance
   ( HasTokenValue env InvestigatorId
   , HasSet LocationId env ()
-  , HasSet UnderneathCardId env LocationId
+  , HasList UnderneathCard env LocationId
   )
   => HasTokenValue env BloodOnTheAltar where
   getTokenValue (BloodOnTheAltar attrs) iid = \case
     Skull -> do
-      numLocations <- countM ((null <$>) . getSetList @UnderneathCardId)
+      numLocations <- countM ((null <$>) . getList @UnderneathCard)
         =<< getSetList @LocationId ()
       pure $ toTokenValue attrs Skull (min 4 numLocations) numLocations
     Cultist -> pure $ toTokenValue attrs Cultist 2 4
@@ -99,6 +99,49 @@ standaloneTokens =
   , ElderSign
   ]
 
+findOwner
+  :: (MonadReader env m, HasList CampaignStoryCard env ())
+  => CardCode
+  -> m (Maybe InvestigatorId)
+findOwner cardCode = do
+  campaignStoryCards <- getList ()
+  pure
+    $ campaignStoryCardInvestigatorId
+    <$> find
+          ((== cardCode) . getCardCode . campaignStoryCardPlayerCard)
+          campaignStoryCards
+
+getRemoveSacrificedMessages
+  :: (MonadReader env m, HasList CampaignStoryCard env ())
+  => [CardCode]
+  -> m [Message]
+getRemoveSacrificedMessages sacrifices = do
+  sacrificedOwnerPairs <- catMaybes <$> for
+    sacrifices
+    (\sacrifice -> do
+      mOwner <- findOwner sacrifice
+      pure $ (sacrifice, ) <$> mOwner
+    )
+  pure
+    [ RemoveCampaignCardFromDeck owner sacrificed
+    | (sacrificed, owner) <- sacrificedOwnerPairs
+    ]
+
+getRemoveNecronomicon
+  :: ( MonadReader env m
+     , HasList CampaignStoryCard env ()
+     , HasSet DefeatedInvestigatorId env ()
+     )
+  => m [Message]
+getRemoveNecronomicon = do
+  defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
+  mNecronomiconOwner <- findOwner "02140"
+  pure
+    [ RemoveCampaignCardFromDeck owner "02140"
+    | owner <- maybeToList mNecronomiconOwner
+    , owner `elem` defeatedInvestigatorIds
+    ]
+
 instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
   runMessage msg s@(BloodOnTheAltar attrs@Attrs {..}) = case msg of
     SetTokensForScenario -> do
@@ -119,15 +162,26 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
         OBannionGangHasABoneToPickWithTheInvestigators
         False
 
-      encounterDeck <-
-        buildEncounterDeckExcluding ["02216"]
-        $ [ EncounterSet.BloodOnTheAltar
-          , EncounterSet.Dunwich
-          , EncounterSet.Whippoorwills
-          , EncounterSet.Nightgaunts
-          , EncounterSet.AncientEvils
-          ]
-        <> [ EncounterSet.NaomisCrew | oBannionGangHasABoneToPick ]
+      (encounterCardsToPutUnderneath, encounterDeck) <-
+        splitAt 3 <$> buildEncounterDeckExcluding
+          ["02216"]
+          ([ EncounterSet.BloodOnTheAltar
+           , EncounterSet.Dunwich
+           , EncounterSet.Whippoorwills
+           , EncounterSet.Nightgaunts
+           , EncounterSet.AncientEvils
+           ]
+          <> [ EncounterSet.NaomisCrew | oBannionGangHasABoneToPick ]
+          )
+
+      keyToTheChamber <- PlayerCard . lookupPlayerCard "02215" <$> getRandom
+      theHiddenChamber <-
+        EncounterCard . lookupEncounterCard "02216" <$> getRandom
+      cardsToPutUnderneath <-
+        shuffleM
+        $ keyToTheChamber
+        : theHiddenChamber
+        : map EncounterCard encounterCardsToPutUnderneath
 
       professorWarrenRiceKidnapped <- getHasRecordOrStandalone
         ProfessorWarrenRiceWasKidnapped
@@ -155,7 +209,17 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
         TheInvestigatorsWereDelayedOnTheirWayToDunwich
         False
 
+      locations <- drop 1 <$> shuffleM
+        [ bishopsBrook
+        , burnedRuins
+        , osbornsGeneralStore
+        , congregationalChurch
+        , houseInTheReeds
+        , schoolhouse
+        ]
+
       let
+        locationCardPairs = zip locations cardsToPutUnderneath
         potentialSacrifices = [zebulonWhateley, earlSawyer]
           <> catMaybes [professorWarrenRice, drFrancisMorgan, drHenryArmitage]
 
@@ -165,17 +229,14 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
           , AddAgenda "02196"
           ]
         <> [ PlaceDoomOnAgenda | delayedOnTheirWayToDunwich ]
-        <> [ AddAct "02199"
-           , PlaceLocation "02201"
-           , PlaceLocation bishopsBrook
-           , PlaceLocation burnedRuins
-           , PlaceLocation osbornsGeneralStore
-           , PlaceLocation congregationalChurch
-           , PlaceLocation houseInTheReeds
-           , PlaceLocation schoolhouse
-           , RevealLocation Nothing "02201"
-           , MoveAllTo "02201"
-           ]
+        <> [AddAct "02199", PlaceLocation "02201"]
+        <> concat
+             [ [ PlaceLocation location
+               , PlaceUnderneath (LocationTarget location) [card]
+               ]
+             | (location, card) <- locationCardPairs
+             ]
+        <> [RevealLocation Nothing "02201", MoveAllTo "02201"]
 
       let
         locations' = mapFromList $ map
@@ -216,63 +277,157 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
             fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
           unshiftMessage (PlaceDoom (AgendaTarget agendaId) 1)
         _ -> pure ()
-    NoResolution -> s <$ unshiftMessages [Resolution 2]
-    Resolution 1 -> do
+    NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
+      agendaId <- fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
+      cardsUnderAgenda <- map unUnderneathCard
+        <$> getList @UnderneathCard agendaId
       xp <- getXp
+      let
+        potentialSacrifices = case scenarioDeck of
+          Just (PotentialSacrifices xs) -> xs
+          _ -> error "missing deck"
+        sacrificedToYogSothoth =
+          map getCardCode potentialSacrifices
+            <> map getCardCode cardsUnderAgenda
+      removeSacrificedMessages <- getRemoveSacrificedMessages
+        sacrificedToYogSothoth
+      removeNecronomicon <- getRemoveNecronomicon
       s <$ unshiftMessages
         ([ chooseOne
              leadInvestigatorId
              [ Run
-                 [ Continue "Continue"
+               $ [ Continue "Continue"
                  , FlavorText
                    Nothing
-                   [ "You breathe a sigh of relief as the gate behind\
-                     \ the train collapses harmlessly upon itself. The few passengers\
-                     \ who survived the ordeal seem unable to comprehend what\
-                     \ just happened. One passenger mentions “a pipe bursting in\
-                     \ the rear car,” and that quickly becomes the explanation for\
-                     \ the innocent and ignorant, those who either cannot or choose\
-                     \ not to delve further into the mystery. You, on the other hand,\
-                     \ know better… although in hindsight, you wish you didn’t."
+                   [ "The cries of the whippoorwills\
+                     \ fade into the distance, and the town of Dunwich is filled with\
+                     \ an eerie silence. All that can be heard is the dry whistle of the\
+                     \ chill wind and the slow rustling of dead leaves. There is no sign\
+                     \ of the missing townsfolk, nor will there be ever again."
                    ]
+                 , Record TheRitualWasCompleted
+                 , PlaceUnderneath (AgendaTarget agendaId) potentialSacrifices
                  ]
+               <> removeSacrificedMessages
+               <> removeNecronomicon
              ]
          ]
-        <> [ GainXP
-               iid
-               (xp + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
-           | iid <- investigatorIds
-           ]
+        <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+        <> [EndOfGame]
+        )
+    Resolution 1 -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
+      agendaId <- fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
+      cardsUnderAgenda <- map unUnderneathCard
+        <$> getList @UnderneathCard agendaId
+      xp <- getXp
+      let sacrificedToYogSothoth = map getCardCode cardsUnderAgenda
+      removeSacrificedMessages <- getRemoveSacrificedMessages
+        sacrificedToYogSothoth
+      removeNecronomicon <- getRemoveNecronomicon
+      s <$ unshiftMessages
+        ([ chooseOne
+             leadInvestigatorId
+             [ Run
+               $ [ Continue "Continue"
+                 , FlavorText
+                   Nothing
+                   [ "As you land the finishing blow, the creature’s\
+                     \ body explodes into hundreds of squirming ropelike\
+                     \ appendages, wriggling across the ground and climbing up the\
+                     \ walls. You’re so startled that you aren’t fast enough to prevent\
+                     \ them from escaping the room. Even so, whatever that creature\
+                     \ was, you’re glad it’s now dead."
+                   ]
+                 , Record TheInvestigatorsPutSilasBishopOutOfHisMisery
+                 ]
+               <> removeSacrificedMessages
+               <> removeNecronomicon
+             ]
+         ]
+        <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
         <> [EndOfGame]
         )
     Resolution 2 -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
-      defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
+      agendaId <- fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
+      cardsUnderAgenda <- map unUnderneathCard
+        <$> getList @UnderneathCard agendaId
       xp <- getXp
+      let sacrificedToYogSothoth = map getCardCode cardsUnderAgenda
+      removeSacrificedMessages <- getRemoveSacrificedMessages
+        sacrificedToYogSothoth
       s <$ unshiftMessages
         ([ chooseOne
-           leadInvestigatorId
-           [ Run
-               [ Continue "Continue"
-               , FlavorText
-                 Nothing
-                 [ "Rattled,\
-                     \ you begin walking alongside the train tracks, making your\
-                     \ way towards Dunwich."
+             leadInvestigatorId
+             [ Run
+               $ [ Continue "Continue"
+                 , FlavorText
+                   Nothing
+                   [ "With the creature that once was Silas\
+                     \ lashing out at you from its chains, you have little time to\
+                     \ react. Knowing that the Necronomicon might have a spell\
+                     \ or incantation that could subdue Silas, you fend off the\
+                     \ abomination long enough to find a passage that can help.\
+                     \ With no time to spare, you recite the Latin incantation,\
+                     \ and find that the words come effortlessly to your tongue, as\
+                     \ though recalled from an earlier memory. The creature’s body\
+                     \ begins to shrink and melt away as the incantation builds, its\
+                     \ cries terrifying and haunting. In the end, all that is left is the\
+                     \ disfigured corpse of a man—Silas Bishop. You find a silver\
+                     \ pendant emblazoned with an odd constellation tucked into\
+                     \ his shirt. You take it with you, hoping to find a use for it."
+                   ]
+                 , Record TheInvestigatorsRestoredSilasBishop
                  ]
-               ]
-           ]
-         , Record TheInvestigatorsWereDelayedOnTheirWayToDunwich
+               <> removeSacrificedMessages
+             ]
          ]
-        <> [ GainXP
-               iid
-               (xp + (if iid `elem` defeatedInvestigatorIds then 1 else 0))
-           | iid <- investigatorIds
-           ]
+        <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
+        <> [EndOfGame]
+        )
+    Resolution 3 -> do
+      leadInvestigatorId <- getLeadInvestigatorId
+      investigatorIds <- getInvestigatorIds
+      agendaId <- fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
+      cardsUnderAgenda <- map unUnderneathCard
+        <$> getList @UnderneathCard agendaId
+      xp <- getXp
+      let sacrificedToYogSothoth = map getCardCode cardsUnderAgenda
+      removeSacrificedMessages <- getRemoveSacrificedMessages
+        sacrificedToYogSothoth
+      removeNecronomicon <- getRemoveNecronomicon
+      s <$ unshiftMessages
+        ([ chooseOne
+             leadInvestigatorId
+             [ Run
+               $ [ Continue "Continue"
+                 , FlavorText
+                   Nothing
+                   [ "With the creature that once was Silas lashing\
+                     \ out at you from its chains, you have little time to react.\
+                     \ Hoping there is something in the chamber you can use to your\
+                     \ advantage, you fend off the abomination long enough to find a\
+                     \ journal; many of its passages are written in Latin. It appears\
+                     \ to be a handwritten excerpt from the Necronomicon, its\
+                     \ purpose unknown. With no time to spare, you recite the\
+                     \ incantation, stumbling over the words and feeling your throat\
+                     \ tighten with each sentence. The creature’s body begins to\
+                     \ shrink and melt away as the incantation continues, its cries\
+                     \ terrifying and haunting. In the end, all that is left is a pile of\
+                     \ wet and sticky ichor, and a rotten stench."
+                   ]
+                 , Record TheInvestigatorsBanishedSilasBishop
+                 ]
+               <> removeSacrificedMessages
+               <> removeNecronomicon
+             ]
+         ]
+        <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
         <> [EndOfGame]
         )
     _ -> BloodOnTheAltar <$> runMessage msg attrs

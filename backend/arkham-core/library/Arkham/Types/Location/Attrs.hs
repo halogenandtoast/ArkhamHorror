@@ -69,12 +69,8 @@ instance HasName env Attrs where
 instance HasId (Maybe LocationId) env (Direction, Attrs) where
   getId (dir, Attrs {..}) = pure $ lookup dir locationDirections
 
-instance HasSet UnderneathCardId env Attrs where
-  getSet =
-    pure
-      . setFromList
-      . map (UnderneathCardId . getCardId)
-      . locationCardsUnderneath
+instance HasList UnderneathCard env Attrs where
+  getList = pure . map UnderneathCard . locationCardsUnderneath
 
 unrevealed :: Attrs -> Bool
 unrevealed = not . locationRevealed
@@ -217,6 +213,8 @@ instance LocationRunner env => RunMessage env Attrs where
           , CheckWindow iid [AfterSuccessfulInvestigation You YourLocation]
           ]
         )
+    PlaceUnderneath target cards | isTarget a target ->
+      pure $ a & cardsUnderneathL %~ (<> cards)
     SetLocationLabel lid label' | lid == locationId ->
       pure $ a & labelL .~ label'
     PlacedLocation lid | lid == locationId ->

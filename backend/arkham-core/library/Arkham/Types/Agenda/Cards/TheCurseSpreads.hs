@@ -39,5 +39,5 @@ instance AgendaRunner env => RunMessage env TheCurseSpreads where
             then attrs & doomL +~ 1
             else attrs
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B ->
-      a <$ unshiftMessage (Resolution 1)
+      a <$ unshiftMessage (ScenarioResolution $ Resolution 1)
     _ -> TheCurseSpreads <$> runMessage msg attrs

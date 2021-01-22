@@ -157,7 +157,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
              iid
              (EncounterCardMatchByType (EnemyType, Just Monster))
            )
-    NoResolution -> do
+    ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
       s <$ unshiftMessage
         (chooseOne
@@ -179,7 +179,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
             <> [EndOfGame]
           ]
         )
-    Resolution 1 -> do
+    ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       s <$ unshiftMessage
         (chooseOne
@@ -200,7 +200,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
             <> [EndOfGame]
           ]
         )
-    Resolution 2 -> do
+    ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       s <$ unshiftMessage
         (chooseOne
@@ -227,7 +227,7 @@ instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
             <> [EndOfGame]
           ]
         )
-    Resolution 3 -> do
+    ScenarioResolution (Resolution 3) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       s <$ unshiftMessage
         (chooseOne

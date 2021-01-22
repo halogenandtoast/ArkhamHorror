@@ -36,7 +36,7 @@ instance ActRunner env => RunMessage env DisruptingTheRitual where
         (chooseOne leadInvestigatorId [AdvanceAct actId (toSource attrs)])
       pure $ DisruptingTheRitual $ attrs & (sequenceL .~ Act 3 B)
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
-      a <$ unshiftMessage (Resolution 1)
+      a <$ unshiftMessage (ScenarioResolution $ Resolution 1)
     PlaceClues (ActTarget aid) n | aid == actId -> do
       requiredClues <- getPlayerCountValue (PerPlayer 2)
       let totalClues = n + fromJustNote "Must be set" actClues

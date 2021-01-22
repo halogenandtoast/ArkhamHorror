@@ -21,6 +21,7 @@ where
 import Arkham.Prelude
 
 import Arkham.Types.Ability
+import Arkham.Types.Resolution
 import Arkham.Types.ActId
 import Arkham.Types.Action
 import Arkham.Types.AgendaId
@@ -232,7 +233,8 @@ data Message
   | EndInvestigation
   | EndMythos
   | EndOfGame
-  | EndOfScenario -- used by the game to clear queue
+  | ScenarioResolution Resolution
+  | EndOfScenario
   | EndPhase
   | EndRound
   | EndRoundWindow
@@ -339,7 +341,6 @@ data Message
   | NextAgenda AgendaId AgendaId
   | NextCampaignStep (Maybe CampaignStep)
   | NextChaosBagStep Source (Maybe InvestigatorId) RequestedTokenStrategy
-  | NoResolution
   | PassSkillTest
   | PassedSkillTest InvestigatorId (Maybe Action) Source Target SkillType Int
   | PayAbilityCost Source InvestigatorId (Maybe Action) Cost
@@ -404,7 +405,6 @@ data Message
   | ResetTokens Source
   | Resign InvestigatorId
   | ResignWith Target
-  | Resolution Int
   | ResolveEvent InvestigatorId EventId (Maybe Target)
   | ResolveToken DrawnToken Token InvestigatorId
   | ReturnSkillTestRevealedTokens

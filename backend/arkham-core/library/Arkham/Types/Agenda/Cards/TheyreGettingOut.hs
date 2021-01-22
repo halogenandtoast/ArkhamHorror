@@ -24,8 +24,8 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       actIds <- getSet @ActId ()
       if ActId "01108" `elem` actIds || ActId "01109" `elem` actIds
-        then a <$ unshiftMessage (Resolution 3)
-        else a <$ unshiftMessage NoResolution -- TODO: defeated and suffer trauma
+        then a <$ unshiftMessage (ScenarioResolution $ Resolution 3)
+        else a <$ unshiftMessage (ScenarioResolution NoResolution) -- TODO: defeated and suffer trauma
     EndEnemy -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unengagedEnemyIds <- mapSet unUnengagedEnemyId <$> getSet ()

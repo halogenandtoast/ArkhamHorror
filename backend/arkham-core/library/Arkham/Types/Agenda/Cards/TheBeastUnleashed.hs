@@ -41,6 +41,6 @@ instance AgendaRunner env => RunMessage env TheBeastUnleashed where
         ([ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 3
          | iid <- investigatorIds
          ]
-        <> [Label "Resolution 3" [Resolution 3]]
+        <> [Label "Resolution 3" [ScenarioResolution $ Resolution 3]]
         )
     _ -> TheBeastUnleashed <$> runMessage msg attrs

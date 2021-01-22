@@ -237,7 +237,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
     FoundEnemyInVoid iid target eid | isTarget attrs target -> do
       lid <- getId @LocationId iid
       s <$ unshiftMessage (EnemySpawnFromVoid Nothing lid eid)
-    NoResolution -> do
+    ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
@@ -261,7 +261,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
         <> [ GainXP iid xp | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    Resolution 1 -> do
+    ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
@@ -290,7 +290,7 @@ instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
         <> [ GainXP iid xp | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    Resolution 2 -> do
+    ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp

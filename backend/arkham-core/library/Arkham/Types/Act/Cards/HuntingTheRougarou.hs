@@ -66,7 +66,10 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
           , calmedItDown
           ]
         then unshiftMessage
-          (chooseOne leadInvestigatorId [Label "Resolution 3" [Resolution 3]])
+          (chooseOne
+            leadInvestigatorId
+            [Label "Resolution 3" [ScenarioResolution $ Resolution 3]]
+          )
         else unshiftMessage
           (chooseOne
             leadInvestigatorId
@@ -78,5 +81,6 @@ instance ActRunner env => RunMessage env HuntingTheRougarou where
     EnemyMove eid lid _ -> do
       isRougarou <- (== CardCode "81028") <$> getId eid
       a <$ when isRougarou (unshiftMessage (PlaceClues (LocationTarget lid) 1))
-    EnemyDefeated _ _ _ "81028" _ _ -> a <$ unshiftMessage (Resolution 2)
+    EnemyDefeated _ _ _ "81028" _ _ ->
+      a <$ unshiftMessage (ScenarioResolution $ Resolution 2)
     _ -> HuntingTheRougarou <$> runMessage msg attrs

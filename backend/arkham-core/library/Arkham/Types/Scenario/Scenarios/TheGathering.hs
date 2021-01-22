@@ -110,7 +110,7 @@ instance ScenarioRunner env => RunMessage env TheGathering where
           (if isEasyStandard attrs then 1 else 2)
         _ -> pure ()
       pure s
-    NoResolution -> do
+    ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
@@ -147,7 +147,7 @@ instance ScenarioRunner env => RunMessage env TheGathering where
         <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    Resolution 1 -> do
+    ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
@@ -181,7 +181,7 @@ instance ScenarioRunner env => RunMessage env TheGathering where
         <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    Resolution 2 -> do
+    ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
@@ -209,7 +209,7 @@ instance ScenarioRunner env => RunMessage env TheGathering where
         <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    Resolution 3 -> do
+    ScenarioResolution (Resolution 3) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       s <$ unshiftMessages
         [ chooseOne

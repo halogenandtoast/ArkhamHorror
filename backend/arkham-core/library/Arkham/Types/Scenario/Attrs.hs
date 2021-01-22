@@ -3,7 +3,8 @@
 module Arkham.Types.Scenario.Attrs
   ( module Arkham.Types.Scenario.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Import hiding (log)
 
@@ -147,17 +148,23 @@ instance ScenarioRunner env => RunMessage env Attrs where
     -- | is that the act deck has been replaced.
     InvestigatorDefeated _ -> do
       investigatorIds <- getSet @InScenarioInvestigatorId ()
-      if null investigatorIds then a <$ unshiftMessage NoResolution else pure a
-    AllInvestigatorsResigned -> a <$ unshiftMessage NoResolution
+      if null investigatorIds
+        then do
+          clearQueue
+          a <$ unshiftMessage (ScenarioResolution NoResolution)
+        else pure a
+    AllInvestigatorsResigned ->
+      a <$ unshiftMessage (ScenarioResolution NoResolution)
     InvestigatorWhenEliminated iid ->
       a <$ unshiftMessage (InvestigatorEliminated iid)
     Remember logKey -> pure $ a & logL %~ insertSet logKey
     ResolveToken _drawnToken token _iid | token == AutoFail ->
       a <$ unshiftMessage FailSkillTest
-    NoResolution ->
+    EndOfScenario -> do
+      clearQueue
+      a <$ unshiftMessage (NextCampaignStep Nothing)
+    ScenarioResolution _ ->
       error "The scenario should specify what to do for no resolution"
-    Resolution _ ->
-      error "The scenario should specify what to do for the resolution"
     UseScenarioSpecificAbility{} ->
       error
         "The scenario should specify what to do for a scenario specific ability."

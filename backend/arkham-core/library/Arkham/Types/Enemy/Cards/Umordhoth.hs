@@ -57,5 +57,5 @@ instance (EnemyRunner env) => RunMessage env Umordhoth where
     ChooseEndTurn _ ->
       Umordhoth <$> runMessage msg (attrs & exhaustedL .~ False)
     UseCardAbility _ (EnemySource eid) _ 1 _ | eid == enemyId ->
-      e <$ unshiftMessage (Resolution 3)
+      e <$ unshiftMessage (ScenarioResolution $ Resolution 3)
     _ -> Umordhoth <$> runMessage msg attrs

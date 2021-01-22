@@ -35,7 +35,7 @@ instance HasActions env TimeIsRunningShort where
 instance (AgendaRunner env) => RunMessage env TimeIsRunningShort where
   runMessage msg a@(TimeIsRunningShort attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B ->
-      a <$ unshiftMessage (Resolution 2)
+      a <$ unshiftMessage (ScenarioResolution $ Resolution 2)
     UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do
       unshiftMessage (Resign iid)
       TimeIsRunningShort <$> runMessage msg attrs

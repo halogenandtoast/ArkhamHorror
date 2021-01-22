@@ -34,5 +34,8 @@ instance AgendaRunner env => RunMessage env ChaosInTheCloverClub where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       a <$ unshiftMessage
-        (chooseOne leadInvestigatorId [Label "Continue" [Resolution 4]])
+        (chooseOne
+          leadInvestigatorId
+          [Label "Continue" [ScenarioResolution $ Resolution 4]]
+        )
     _ -> ChaosInTheCloverClub <$> runMessage msg attrs

@@ -224,6 +224,7 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
             ]
           , NextCampaignStep Nothing
           ]
+    CampaignStep (Just (InterludeStep 2)) -> error "TODO: not implemented yet"
     NextCampaignStep mNextCampaignStep -> do
       let
         nextStep = case mNextCampaignStep of
@@ -241,7 +242,11 @@ instance CampaignRunner env => RunMessage env TheDunwichLegacy where
             Just (InterludeStep 1) -> Just (ScenarioStep "02118")
             Just (ScenarioStep "02118") -> Just (ScenarioStep "02159")
             Just (ScenarioStep "02159") -> Just (ScenarioStep "02195")
-            Just (ScenarioStep "02195") -> Just (ScenarioStep "02236")
+            Just (ScenarioStep "02195") ->
+              case lookup "02195" campaignResolutions of
+                Just NoResolution -> Just (ScenarioStep "02236")
+                _ -> Just $ InterludeStep 2
+            Just (InterludeStep 2) -> Just (ScenarioStep "02236")
             Just (ScenarioStep "02236") -> Just (ScenarioStep "02274")
             Just (ScenarioStep "02274") -> Just (ScenarioStep "02311")
             Just (ScenarioStep "02311") -> Nothing

@@ -20,7 +20,8 @@ instance HasActions env VengeanceAwaits where
 
 instance AgendaRunner env => RunMessage env VengeanceAwaits where
   runMessage msg a@(VengeanceAwaits attrs@Attrs {..}) = case msg of
-    EnemyDefeated _ _ _ "01156" _ _ -> a <$ unshiftMessage (Resolution 2)
+    EnemyDefeated _ _ _ "01156" _ _ ->
+      a <$ unshiftMessage (ScenarioResolution $ Resolution 2)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       actIds <- getSetList ()
       a <$ if "01146" `elem` actIds

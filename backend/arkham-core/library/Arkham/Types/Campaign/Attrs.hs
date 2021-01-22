@@ -22,6 +22,7 @@ data Attrs = Attrs
   , campaignLog :: CampaignLog
   , campaignStep :: Maybe CampaignStep
   , campaignCompletedSteps :: [CampaignStep]
+  , campaignResolutions :: HashMap ScenarioId Resolution
   }
   deriving stock (Show, Generic)
 
@@ -98,6 +99,9 @@ instance CampaignRunner env => RunMessage env Attrs where
       pure $ a & logL . recordedSets %~ insertMap key cardCodes
     RecordCount key int ->
       pure $ a & logL . recordedCounts %~ insertMap key int
+    ScenarioResolution r -> case campaignStep of
+      Just (ScenarioStep sid) -> pure $ a & resolutionsL %~ insertMap sid r
+      _ -> error "must be called in a scenario"
     _ -> pure a
 
 baseAttrs :: CampaignId -> Text -> Difficulty -> [Token] -> Attrs
@@ -112,4 +116,5 @@ baseAttrs campaignId' name difficulty chaosBagContents = Attrs
   , campaignLog = mkCampaignLog
   , campaignStep = Just PrologueStep
   , campaignCompletedSteps = []
+  , campaignResolutions = mempty
   }

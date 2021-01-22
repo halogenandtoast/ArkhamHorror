@@ -277,7 +277,7 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
             fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
           unshiftMessage (PlaceDoom (AgendaTarget agendaId) 1)
         _ -> pure ()
-    NoResolution -> do
+    ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       agendaId <- fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
@@ -317,7 +317,7 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
         <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    Resolution 1 -> do
+    ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       agendaId <- fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
@@ -351,7 +351,7 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
         <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    Resolution 2 -> do
+    ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       agendaId <- fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()
@@ -390,7 +390,7 @@ instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
         <> [ GainXP iid (xp + 2) | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    Resolution 3 -> do
+    ScenarioResolution (Resolution 3) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       agendaId <- fromJustNote "no agenda" . headMay <$> getSetList @AgendaId ()

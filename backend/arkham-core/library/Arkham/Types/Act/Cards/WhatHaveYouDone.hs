@@ -28,10 +28,10 @@ instance ActRunner env => RunMessage env WhatHaveYouDone where
           leadInvestigatorId
           [ Label
             "It was never much of a home. Burn it down! (-> R1)"
-            [Resolution 1]
+            [ScenarioResolution $ Resolution 1]
           , Label
             "This \"hell-pit\" is my home! No way we are burning it! (-> R2)"
-            [Resolution 2]
+            [ScenarioResolution $ Resolution 2]
           ]
         )
       pure $ WhatHaveYouDone $ attrs & sequenceL .~ Act 3 B

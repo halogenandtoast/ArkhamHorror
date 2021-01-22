@@ -130,8 +130,9 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
         Cultist | isHardExpert attrs -> unshiftMessage $ SpendResources iid 3
         Tablet | isEasyStandard attrs -> unshiftMessage $ SpendResources iid 3
         _ -> pure ()
-    NoResolution -> s <$ unshiftMessage (Resolution 1)
-    Resolution 1 -> do
+    ScenarioResolution NoResolution ->
+      s <$ unshiftMessage (ScenarioResolution $ Resolution 1)
+    ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       cheated <-
@@ -166,7 +167,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
         <> [ GainXP iid (xp + 1) | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    Resolution 2 -> do
+    ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       cheated <-
@@ -217,7 +218,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
         <> [ GainXP iid xp | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    Resolution 3 -> do
+    ScenarioResolution (Resolution 3) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       cheated <-
@@ -269,7 +270,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
         <> [ GainXP iid xp | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    Resolution 4 -> do
+    ScenarioResolution (Resolution 4) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       cheated <-

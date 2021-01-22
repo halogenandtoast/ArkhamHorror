@@ -1619,9 +1619,6 @@ runGameMessage msg g = case msg of
   TargetLabel _ msgs -> g <$ unshiftMessages msgs
   Continue _ -> pure g
   EndOfGame -> g <$ pushMessage EndOfScenario
-  EndOfScenario -> do
-    clearQueue
-    g <$ unshiftMessage (NextCampaignStep Nothing)
   ResetGame ->
     pure
       $ g

@@ -1,6 +1,7 @@
 module Arkham.Import
   ( module X
-  ) where
+  )
+where
 
 import Arkham.Prelude as X
 
@@ -36,6 +37,7 @@ import Arkham.Types.Modifier as X
 import Arkham.Types.Name as X
 import Arkham.Types.Prey as X
 import Arkham.Types.Query as X
+import Arkham.Types.Resolution as X
 import Arkham.Types.ScenarioId as X
 import Arkham.Types.SkillId as X
 import Arkham.Types.SkillType as X

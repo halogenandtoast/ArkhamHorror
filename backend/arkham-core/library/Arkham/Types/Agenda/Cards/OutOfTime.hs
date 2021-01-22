@@ -28,6 +28,6 @@ instance AgendaRunner env => RunMessage env OutOfTime where
       unshiftMessages
         $ [ InvestigatorDefeated iid | iid <- investigatorIds ]
         <> [ SufferTrauma iid 0 1 | iid <- investigatorIds ]
-        <> [Resolution 2]
+        <> [ScenarioResolution $ Resolution 2]
       pure $ OutOfTime $ attrs & sequenceL .~ Agenda 5 B & flippedL .~ True
     _ -> OutOfTime <$> runMessage msg attrs

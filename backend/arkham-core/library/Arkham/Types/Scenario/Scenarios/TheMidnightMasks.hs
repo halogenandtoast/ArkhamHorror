@@ -195,8 +195,9 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
       | drawnTokenFace token == Tablet -> if isEasyStandard attrs
         then s <$ unshiftMessage (InvestigatorPlaceAllCluesOnLocation iid)
         else s <$ unshiftMessage (InvestigatorPlaceCluesOnLocation iid 1)
-    NoResolution -> s <$ unshiftMessage (Resolution 1)
-    Resolution 1 -> do
+    ScenarioResolution NoResolution ->
+      s <$ unshiftMessage (ScenarioResolution $ Resolution 1)
+    ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       victoryDisplay <- mapSet unVictoryDisplayCardCode <$> getSet ()
       investigatorIds <- getInvestigatorIds
@@ -228,7 +229,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
             <> [EndOfGame]
           ]
         )
-    Resolution 2 -> do
+    ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       victoryDisplay <- mapSet unVictoryDisplayCardCode <$> getSet ()
       investigatorIds <- getInvestigatorIds

@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.UncoveringTheConspiracy
   ( UncoveringTheConspiracy(..)
   , uncoveringTheConspiracy
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -43,7 +44,7 @@ instance ActRunner env => RunMessage env UncoveringTheConspiracy where
         (chooseOne leadInvestigatorId [AdvanceAct aid $ toSource attrs])
       pure $ UncoveringTheConspiracy $ attrs & sequenceL .~ Act 1 B
     AdvanceAct aid _ | aid == actId && onSide B attrs ->
-      a <$ unshiftMessage (Resolution 1)
+      a <$ unshiftMessage (ScenarioResolution $ Resolution 1)
     AddToVictory _ -> do
       victoryDisplay <- mapSet unVictoryDisplayCardCode <$> getSet ()
       let

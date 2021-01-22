@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 087f34add911e1946670bc9b0d8985c91299db53d83afccd7f087f62b6953102
+-- hash: 6fdd58bdfee5b0b53deb6559bda396af5b1660a975994d1408d80075d0b854b7
 
 name:           arkham-core
 version:        0.0.0
@@ -544,6 +544,7 @@ library
       Arkham.Types.Query
       Arkham.Types.RequestedTokenStrategy
       Arkham.Types.RequiredClues
+      Arkham.Types.Resolution
       Arkham.Types.Scenario
       Arkham.Types.Scenario.Attrs
       Arkham.Types.Scenario.Deck

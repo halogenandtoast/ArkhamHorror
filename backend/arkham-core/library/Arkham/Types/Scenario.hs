@@ -64,7 +64,7 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env BaseScenario wher
 
 instance ScenarioRunner env => RunMessage env BaseScenario where
   runMessage msg a@(BaseScenario attrs) = case msg of
-    NoResolution -> pure a
+    ScenarioResolution NoResolution -> pure a
     _ -> BaseScenario <$> runMessage msg attrs
 
 baseScenario

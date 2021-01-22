@@ -58,10 +58,13 @@ instance ActRunner env => RunMessage env Fold where
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       maid <- fmap unStoryAssetId <$> getId (CardCode "02079")
       a <$ case maid of
-        Nothing -> unshiftMessage (Resolution 1)
+        Nothing -> unshiftMessage (ScenarioResolution $ Resolution 1)
         Just assetId -> do
           miid <- fmap unOwnerId <$> getId assetId
-          unshiftMessage (maybe (Resolution 1) (const (Resolution 2)) miid)
+          unshiftMessage
+            (ScenarioResolution
+            $ maybe (Resolution 1) (const (Resolution 2)) miid
+            )
     UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource attrs source && actSequence == Act 3 A -> do
         maid <- fmap unStoryAssetId <$> getId (CardCode "02079")

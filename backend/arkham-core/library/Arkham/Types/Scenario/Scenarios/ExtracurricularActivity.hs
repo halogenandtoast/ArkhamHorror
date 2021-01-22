@@ -123,7 +123,7 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
           let n = sum $ map (toPrintedCost . pcCost) cards
           unshiftMessage $ CreateTokenValueEffect (-n) (toSource attrs) target
         _ -> pure ()
-    NoResolution -> do
+    ScenarioResolution NoResolution -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
@@ -150,7 +150,7 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
         <> [ GainXP iid (xp + 1) | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    Resolution 1 -> do
+    ScenarioResolution (Resolution 1) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
@@ -193,7 +193,7 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
         <> [ GainXP iid xp | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    Resolution 2 -> do
+    ScenarioResolution (Resolution 2) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
@@ -224,7 +224,7 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
         <> [ GainXP iid xp | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    Resolution 3 -> do
+    ScenarioResolution (Resolution 3) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp
@@ -248,7 +248,7 @@ instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
         <> [ GainXP iid xp | iid <- investigatorIds ]
         <> [EndOfGame]
         )
-    Resolution 4 -> do
+    ScenarioResolution (Resolution 4) -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
       xp <- getXp

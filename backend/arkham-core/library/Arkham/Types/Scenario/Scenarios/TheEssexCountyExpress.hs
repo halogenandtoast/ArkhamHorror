@@ -256,8 +256,9 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
         ElderThing | isHardExpert attrs ->
           unshiftMessages $ replicate n (ChooseAndDiscardCard iid)
         _ -> pure ()
-    NoResolution -> s <$ unshiftMessages [Resolution 2]
-    Resolution 1 -> do
+    ScenarioResolution NoResolution ->
+      s <$ unshiftMessages [ScenarioResolution $ Resolution 2]
+    ScenarioResolution (Resolution 1) -> do
       msgs <- investigatorDefeat attrs
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds
@@ -290,7 +291,7 @@ instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
            ]
         <> [EndOfGame]
         )
-    Resolution 2 -> do
+    ScenarioResolution (Resolution 2) -> do
       msgs <- investigatorDefeat attrs
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds

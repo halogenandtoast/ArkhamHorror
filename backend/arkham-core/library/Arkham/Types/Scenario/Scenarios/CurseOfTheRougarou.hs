@@ -246,8 +246,9 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
           (DrawnTokenSource token)
           (InvestigatorTarget iid)
         )
-      NoResolution -> runMessage (Resolution 1) s
-      Resolution 1 -> do
+      ScenarioResolution NoResolution ->
+        runMessage (ScenarioResolution $ Resolution 1) s
+      ScenarioResolution (Resolution 1) -> do
         leadInvestigatorId <- getLeadInvestigatorId
         investigatorIds <- getInvestigatorIds
         xp <- getXp
@@ -271,7 +272,7 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
               <> [EndOfGame]
             ]
           )
-      Resolution 2 -> do
+      ScenarioResolution (Resolution 2) -> do
         leadInvestigatorId <- getLeadInvestigatorId
         investigatorIds <- getInvestigatorIds
         xp <- getXp
@@ -306,7 +307,7 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
               <> [EndOfGame]
             ]
           )
-      Resolution 3 -> do
+      ScenarioResolution (Resolution 3) -> do
         leadInvestigatorId <- getLeadInvestigatorId
         investigatorIds <- getInvestigatorIds
         xp <- getXp

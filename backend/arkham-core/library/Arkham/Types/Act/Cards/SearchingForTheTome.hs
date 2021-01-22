@@ -1,7 +1,8 @@
 module Arkham.Types.Act.Cards.SearchingForTheTome
   ( SearchingForTheTome(..)
   , searchingForTheTome
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -40,10 +41,10 @@ instance ActRunner env => RunMessage env SearchingForTheTome where
           leadInvestigatorId
           [ Label
             "It's too dangerous to keep around. We have to destroy it. (-> R1)"
-            [Resolution 1]
+            [ScenarioResolution $ Resolution 1]
           , Label
             "It's too valuable to destroy. We have to keep it safe. (-> R2)"
-            [Resolution 2]
+            [ScenarioResolution $ Resolution 2]
           ]
         )
     _ -> SearchingForTheTome <$> runMessage msg attrs

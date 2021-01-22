@@ -357,6 +357,7 @@ data Message
   | PlaceLocation LocationId
   | PlaceLocationMatching LocationMatcher
   | PlaceResources Target Int
+  | PlaceUnderneath Target [Card]
   | PlacedLocation LocationId
   | PlacedLocationDirection LocationId Direction LocationId
   | PlayCard InvestigatorId CardId (Maybe Target) Bool

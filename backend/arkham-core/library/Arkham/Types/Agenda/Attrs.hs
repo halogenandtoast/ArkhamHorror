@@ -19,6 +19,7 @@ data Attrs = Attrs
   , agendaSequence      :: AgendaSequence
   , agendaFlipped :: Bool
   , agendaTreacheries :: HashSet TreacheryId
+  , agendaCardsUnderneath :: [Card]
   }
   deriving stock (Show, Generic)
 
@@ -53,6 +54,7 @@ baseAttrs aid name seq' threshold = Attrs
   , agendaSequence = seq'
   , agendaFlipped = False
   , agendaTreacheries = mempty
+  , agendaCardsUnderneath = mempty
   }
 
 instance HasActions env Attrs where
@@ -60,6 +62,9 @@ instance HasActions env Attrs where
 
 instance HasStep AgendaStep Attrs where
   getStep = agendaStep . agendaSequence
+
+instance HasList UnderneathCard env Attrs where
+  getList = pure . map UnderneathCard . agendaCardsUnderneath
 
 instance HasCount DoomCount env Attrs where
   getCount = pure . DoomCount . agendaDoom
@@ -73,6 +78,8 @@ instance
   => RunMessage env Attrs
   where
   runMessage msg a@Attrs {..} = case msg of
+    PlaceUnderneath target cards | isTarget a target ->
+      pure $ a & cardsUnderneathL %~ (<> cards)
     PlaceDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doomL +~ n
     AttachTreachery tid (AgendaTarget aid) | aid == agendaId ->
       pure $ a & treacheriesL %~ insertSet tid

@@ -31,6 +31,7 @@ type ScenarioRunner env
     , HasId (Maybe CampaignId) env ()
     , HasId (Maybe StoryEnemyId) env CardCode
     , HasList CampaignStoryCard env ()
+    , HasList UnderneathCard env AgendaId
     , HasName env LocationId
     , HasQueue env
     , HasRecord env

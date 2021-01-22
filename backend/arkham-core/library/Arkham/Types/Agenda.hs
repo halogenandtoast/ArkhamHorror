@@ -46,6 +46,9 @@ allAgendas = mapFromList $ map
   , TheCurseSpreads' theCurseSpreads
   ]
 
+instance HasList UnderneathCard env Agenda where
+  getList = getList . agendaAttrs
+
 instance HasCount DoomCount env Agenda where
   getCount = getCount . agendaAttrs
 

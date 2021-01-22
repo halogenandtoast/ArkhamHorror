@@ -6,6 +6,7 @@ module Arkham.Types.Card
   , CampaignStoryCard(..)
   , DeckCard(..)
   , HandCard(..)
+  , UnderneathCard(..)
   , DiscardableHandCard(..)
   , InPlayCard(..)
   , PlayerCard(..)
@@ -29,7 +30,8 @@ module Arkham.Types.Card
   , toEncounterCard
   , cardIsWeakness
   , isDynamic
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -61,6 +63,10 @@ newtype DeckCard = DeckCard { unDeckCard ::PlayerCard }
   deriving newtype (ToJSON, FromJSON)
 
 newtype HandCard = HandCard { unHandCard ::Card }
+  deriving stock (Show, Generic)
+  deriving newtype (ToJSON, FromJSON)
+
+newtype UnderneathCard = UnderneathCard { unUnderneathCard ::Card }
   deriving stock (Show, Generic)
   deriving newtype (ToJSON, FromJSON)
 

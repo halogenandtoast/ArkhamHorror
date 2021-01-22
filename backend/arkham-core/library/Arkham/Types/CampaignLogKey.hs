@@ -30,6 +30,10 @@ data CampaignLogKey
   | TheInvestigatorsTookCustodyOfTheNecronomicon
   | TheNecronomiconWasStolen
   | TheInvestigatorsWereDelayedOnTheirWayToDunwich
+  | TheRitualWasCompleted
+  | TheInvestigatorsPutSilasBishopOutOfHisMisery
+  | TheInvestigatorsRestoredSilasBishop
+  | TheInvestigatorsBanishedSilasBishop
   | TheRougarouContinuesToHauntTheBayou
   | TheRougarouIsDestroyed
   | TheRougarouEscapedAndYouEmbracedTheCurse

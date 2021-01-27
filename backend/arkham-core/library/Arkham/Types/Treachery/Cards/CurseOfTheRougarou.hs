@@ -37,9 +37,11 @@ instance (TreacheryRunner env) => RunMessage env CurseOfTheRougarou where
       InvestigatorAssignDamage _ (InvestigatorSource iid) _ n 0
         | treacheryOnInvestigator iid attrs && n > 0
         -> CurseOfTheRougarou . (`with` Metadata True) <$> runMessage msg attrs
-      EndTurn iid -> do
+      EndTurn iid | treacheryOnInvestigator iid attrs -> do
         unless
           (dealtDamageThisTurn metadata)
-          (unshiftMessage $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1)
+          (unshiftMessage
+          $ InvestigatorAssignDamage iid (toSource attrs) DamageAny 0 1
+          )
         CurseOfTheRougarou . (`with` Metadata False) <$> runMessage msg attrs
       _ -> CurseOfTheRougarou . (`with` metadata) <$> runMessage msg attrs

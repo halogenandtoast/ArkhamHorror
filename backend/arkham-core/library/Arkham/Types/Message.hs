@@ -15,13 +15,11 @@ module Arkham.Types.Message
   , chooseUpgradeDeck
   , resolve
   , story
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
 import Arkham.Types.Ability
-import Arkham.Types.Resolution
 import Arkham.Types.ActId
 import Arkham.Types.Action
 import Arkham.Types.AgendaId
@@ -46,6 +44,7 @@ import Arkham.Types.LocationId
 import Arkham.Types.LocationMatcher
 import Arkham.Types.LocationSymbol
 import Arkham.Types.RequestedTokenStrategy
+import Arkham.Types.Resolution
 import Arkham.Types.ScenarioId
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.SkillId
@@ -485,19 +484,19 @@ data Message
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-chooseOne :: InvestigatorId -> [Message] -> Message
+chooseOne :: HasCallStack => InvestigatorId -> [Message] -> Message
 chooseOne _ [] = throw $ InvalidState "No messages"
 chooseOne iid msgs = Ask iid (ChooseOne msgs)
 
-chooseOneAtATime :: InvestigatorId -> [Message] -> Message
+chooseOneAtATime :: HasCallStack => InvestigatorId -> [Message] -> Message
 chooseOneAtATime _ [] = throw $ InvalidState "No messages"
 chooseOneAtATime iid msgs = Ask iid (ChooseOneAtATime msgs)
 
-chooseSome :: InvestigatorId -> [Message] -> Message
+chooseSome :: HasCallStack => InvestigatorId -> [Message] -> Message
 chooseSome _ [] = throw $ InvalidState "No messages"
 chooseSome iid msgs = Ask iid (ChooseSome $ Done : msgs)
 
-chooseN :: InvestigatorId -> Int -> [Message] -> Message
+chooseN :: HasCallStack => InvestigatorId -> Int -> [Message] -> Message
 chooseN _ _ [] = throw $ InvalidState "No messages"
 chooseN iid n msgs = Ask iid (ChooseN n msgs)
 

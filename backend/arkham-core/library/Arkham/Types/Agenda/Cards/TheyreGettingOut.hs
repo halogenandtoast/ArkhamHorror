@@ -29,16 +29,19 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
     EndEnemy -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unengagedEnemyIds <- mapSet unUnengagedEnemyId <$> getSet ()
+      mParlor <- getId @(Maybe LocationId) (LocationWithTitle "Parlor")
       ghoulEnemyIds <- getSet Ghoul
-      parlorEnemyIds <- getSet (LocationWithTitle "Parlor")
+      parlorEnemyIds <- maybe (pure mempty) getSet mParlor
       let
         enemiesToMove =
           (ghoulEnemyIds `intersection` unengagedEnemyIds)
             `difference` parlorEnemyIds
       messages <- for (setToList enemiesToMove) $ \eid -> do
         locationId <- getId eid
-        closestLocationIds <- map unClosestPathLocationId
-          <$> getSetList (locationId, LocationWithTitle "Parlor")
+        closestLocationIds <- case mParlor of
+          Just parlor ->
+            map unClosestPathLocationId <$> getSetList (locationId, parlor)
+          Nothing -> pure mempty
         case closestLocationIds of
           [] -> pure Nothing
           [x] -> pure $ Just $ EnemyMove eid locationId x
@@ -51,10 +54,15 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
           (Ask leadInvestigatorId $ ChooseOneAtATime (catMaybes messages))
         )
     EndRoundWindow -> do
-      parlorGhoulsCount <- unEnemyCount
-        <$> getCount (LocationWithTitle "Parlor", [Ghoul])
-      hallwayGhoulsCount <- unEnemyCount
-        <$> getCount (LocationWithTitle "Hallway", [Ghoul])
+
+      mParlor <- getId @(Maybe LocationId) (LocationWithTitle "Parlor")
+      mHallway <- getId @(Maybe LocationId) (LocationWithTitle "Hallway")
+      parlorGhoulsCount <- case mParlor of
+        Just parlor -> unEnemyCount <$> getCount (parlor, [Ghoul])
+        Nothing -> pure 0
+      hallwayGhoulsCount <- case mHallway of
+        Just hallway -> unEnemyCount <$> getCount (hallway, [Ghoul])
+        Nothing -> pure 0
       a <$ unshiftMessages
         (replicate (parlorGhoulsCount + hallwayGhoulsCount) PlaceDoomOnAgenda)
     _ -> TheyreGettingOut <$> runMessage msg attrs

@@ -56,16 +56,6 @@ instance ActionRunner env => HasActions env CloverClubLounge where
 instance LocationRunner env => RunMessage env CloverClubLounge where
   runMessage msg l@(CloverClubLounge attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 _
-      | isSource attrs source && locationRevealed -> do
-        cards <-
-          filter
-            (and
-            . sequence [(== AssetType) . pcCardType, member Ally . pcTraits]
-            )
-          . mapMaybe (preview _PlayerCard)
-          <$> getHandOf iid
-        l <$ unshiftMessages
-          [ chooseOne iid [ DiscardCard iid (getCardId card) | card <- cards ]
-          , GainClues iid 2
-          ]
+      | isSource attrs source && locationRevealed -> l
+      <$ unshiftMessage (GainClues iid 2)
     _ -> CloverClubLounge <$> runMessage msg attrs

@@ -61,14 +61,13 @@ dukeInvestigate attrs iid lid =
   Investigate iid lid (toSource attrs) SkillIntellect False
 
 instance AssetRunner env => RunMessage env Duke where
-  runMessage msg (Duke attrs@Attrs {..}) = case msg of
+  runMessage msg a@(Duke attrs@Attrs {..}) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source -> do
-      unshiftMessage $ ChooseFightEnemy iid source SkillCombat False
-      pure . Duke $ attrs & exhaustedL .~ True
+      a <$ unshiftMessage (ChooseFightEnemy iid source SkillCombat False)
     UseCardAbility iid source _ 2 _ | isSource attrs source -> do
       lid <- getId iid
       accessibleLocationIds <- map unAccessibleLocationId <$> getSetList lid
-      if null accessibleLocationIds
+      a <$ if null accessibleLocationIds
         then unshiftMessage $ dukeInvestigate attrs iid lid
         else unshiftMessage
           (chooseOne iid
@@ -77,5 +76,4 @@ instance AssetRunner env => RunMessage env Duke where
             | lid' <- accessibleLocationIds
             ]
           )
-      pure . Duke $ attrs & exhaustedL .~ True
     _ -> Duke <$> runMessage msg attrs

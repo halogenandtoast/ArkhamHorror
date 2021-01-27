@@ -224,7 +224,8 @@ getModifiedSanity attrs@Attrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots
+  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> Attrs -> Bool
@@ -1238,11 +1239,9 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
               $ unshiftMessage (DrewPlayerTreachery iid pcCardCode pcId)
             when (pcCardType == PlayerEnemyType)
               $ unshiftMessage (DrewPlayerEnemy iid pcCardCode pcId)
-            when (pcCardType /= PlayerTreacheryType && pcWeakness) $ void
-              (runMessage
-                (Revelation iid (PlayerCardSource $ getCardId card))
-                (toPlayerCardWithBehavior card)
-              )
+            when (pcCardType /= PlayerTreacheryType && pcWeakness)
+              $ unshiftMessage
+                  (Revelation iid (PlayerCardSource $ getCardId card))
           Nothing -> pure ()
         unshiftMessages
           $ [ DeckHasNoCards iid | null deck ]

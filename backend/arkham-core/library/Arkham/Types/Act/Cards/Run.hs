@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.Run
   ( Run(..)
   , run
-  )
-where
+  ) where
 
 import Arkham.Import hiding (Run)
 
@@ -21,8 +20,8 @@ instance ActionRunner env => HasActions env Run where
 instance ActRunner env => RunMessage env Run where
   runMessage msg a@(Run attrs@Attrs {..}) = case msg of
     WhenEnterLocation iid lid -> do
-      engineCar <- getId (LocationWithTitle "Engine Car")
-      if engineCar == Just lid
+      isEngineCar <- elem lid <$> getLocationIdWithTitle "Engine Car"
+      if isEngineCar
         then do
           unshiftMessages
             (chooseOne

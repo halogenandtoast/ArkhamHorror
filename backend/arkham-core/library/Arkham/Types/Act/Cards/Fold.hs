@@ -50,7 +50,7 @@ instance ActRunner env => RunMessage env Fold where
       requiredClueCount <- getPlayerCountValue (PerPlayer 2)
       unshiftMessages
         (SpendClues requiredClueCount investigatorIds
-        : [ Ask iid $ ChooseOne [AdvanceAct aid (toSource attrs)]
+        : [ chooseOne iid [AdvanceAct aid (toSource attrs)]
           | iid <- investigatorIds
           ]
         )

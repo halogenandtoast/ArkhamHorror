@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.BrackishWaters
   ( BrackishWaters(..)
   , brackishWaters
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -71,12 +70,9 @@ instance LocationRunner env => RunMessage env BrackishWaters where
       assetIds <- getSetList @AssetId iid
       handAssetIds <- map unHandCardId <$> getSetList (iid, AssetType)
       l <$ unshiftMessages
-        [ Ask
-          iid
-          (ChooseN 2
-          $ [ Discard (AssetTarget aid) | aid <- assetIds ]
-          <> [ DiscardCard iid cid | cid <- handAssetIds ]
-          )
+        [ chooseN iid 2
+        $ [ Discard (AssetTarget aid) | aid <- assetIds ]
+        <> [ DiscardCard iid cid | cid <- handAssetIds ]
         , BeginSkillTest iid source (toTarget attrs) Nothing SkillAgility 3
         ]
     PassedSkillTest iid _ source SkillTestInitiatorTarget{} _ _

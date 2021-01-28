@@ -27,7 +27,7 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
       requiredClues <- getPlayerCountValue (PerPlayer 3)
       unshiftMessages
         (SpendClues requiredClues investigatorIds
-        : [ Ask iid $ ChooseOne [AdvanceAct aid (toSource attrs)]
+        : [ chooseOne iid [AdvanceAct aid (toSource attrs)]
           | iid <- investigatorIds
           ]
         )

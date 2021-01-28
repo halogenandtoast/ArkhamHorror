@@ -19,19 +19,19 @@ instance ActRunner env => RunMessage env TheBarrier where
   runMessage msg a@(TheBarrier attrs@Attrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       hallwayId <- fromJustNote "must exist"
-        <$> getId @(Maybe LocationId) (LocationWithTitle "Hallway")
+        <$> getLocationIdWithTitle "Hallway"
       investigatorIds <- getSetList hallwayId
       requiredClueCount <- getPlayerCountValue (PerPlayer 3)
       unshiftMessages
         (SpendClues requiredClueCount investigatorIds
-        : [ Ask iid $ ChooseOne [AdvanceAct aid $ toSource attrs]
+        : [ chooseOne iid [AdvanceAct aid $ toSource attrs]
           | iid <- investigatorIds
           ]
         )
       pure $ TheBarrier $ attrs & sequenceL .~ Act 2 B
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       hallwayId <- fromJustNote "must exist"
-        <$> getId @(Maybe LocationId) (LocationWithTitle "Hallway")
+        <$> getLocationIdWithTitle "Hallway"
       a <$ unshiftMessages
         [ RevealLocation Nothing "01115"
         , CreateStoryAssetAt "01117" "01115"

@@ -30,14 +30,12 @@ instance SkillRunner env => RunMessage env SurvivalInstinct where
         let
           unblockedConnectedLocationIds =
             setToList $ connectedLocationIds `difference` blockedLocationIds
-          moveOptions = Ask
+          moveOptions = chooseOne
             iid
-            (ChooseOne
-              ([Label "Do not move to a connecting location" []]
-              <> [ MoveAction iid lid False
-                 | lid <- unblockedConnectedLocationIds
-                 ]
-              )
+            ([Label "Do not move to a connecting location" []]
+            <> [ MoveAction iid lid False
+               | lid <- unblockedConnectedLocationIds
+               ]
             )
 
         s <$ case engagedEnemyIds of
@@ -45,7 +43,8 @@ instance SkillRunner env => RunMessage env SurvivalInstinct where
             then pure ()
             else unshiftMessage moveOptions
           es -> unshiftMessages
-            ([ Ask iid $ ChooseOne
+            ([ chooseOne
+                 iid
                  [ Label
                    "Disengage from each other enemy"
                    [ DisengageEnemy iid eid | eid <- es ]

@@ -24,8 +24,7 @@ instance HasActions env AdamLynch where
 instance HasId (Maybe LocationId) env LocationMatcher => HasModifiersFor env AdamLynch where
   getModifiersFor (InvestigatorSource iid) (LocationTarget lid) (AdamLynch attrs)
     = do
-      isSecurityOffice <- elem lid
-        <$> getId @(Maybe LocationId) (LocationWithTitle "Security Office")
+      isSecurityOffice <- elem lid <$> getLocationIdWithTitle "Security Office"
       pure $ toModifiers
         attrs
         [ ActionCostSetToModifier 1 | isSecurityOffice && ownedBy attrs iid ]

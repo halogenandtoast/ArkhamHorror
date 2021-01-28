@@ -28,7 +28,8 @@ instance TreacheryRunner env => RunMessage env UmordhothsWrath where
       cardCount' <- unCardCount <$> getCount iid
       if cardCount' > 0
         then t <$ unshiftMessages
-          [ Ask iid $ ChooseOne
+          [ chooseOne
+            iid
             [ Label "Discard a card from your hand" [RandomDiscard iid]
             , Label
               "Take 1 damage and 1 horror"

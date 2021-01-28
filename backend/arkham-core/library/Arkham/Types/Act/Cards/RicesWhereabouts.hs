@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.RicesWhereabouts
   ( RicesWhereabouts(..)
   , ricesWhereabouts
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -48,8 +47,7 @@ instance ActRunner env => RunMessage env RicesWhereabouts where
       unshiftMessage (AdvanceAct aid $ toSource attrs)
       pure . RicesWhereabouts $ attrs & sequenceL .~ Act 2 B
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
-      alchemyLabsInPlay <- isJust
-        <$> getId @(Maybe LocationId) (LocationWithTitle "Alchemy Labs")
+      alchemyLabsInPlay <- isJust <$> getLocationIdWithTitle "Alchemy Labs"
       agendaStep <- asks $ unAgendaStep . getStep
       completedTheHouseAlwaysWins <-
         elem "02062" . map unCompletedScenarioId <$> getSetList ()

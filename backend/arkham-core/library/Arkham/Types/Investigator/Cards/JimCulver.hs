@@ -46,12 +46,10 @@ instance InvestigatorRunner env => RunMessage env JimCulver where
     When (RevealToken source iid ElderSign) | iid == investigatorId -> do
       Just RevealToken{} <- popMessage
       i <$ unshiftMessage
-        (Ask
+        (chooseOne
           iid
-          (ChooseOne
-            [ Label "Resolve as Elder Sign" [RevealToken source iid ElderSign]
-            , Label "Resolve as Skull" [RevealToken source iid Skull]
-            ]
-          )
+          [ Label "Resolve as Elder Sign" [RevealToken source iid ElderSign]
+          , Label "Resolve as Skull" [RevealToken source iid Skull]
+          ]
         )
     _ -> JimCulver <$> runMessage msg attrs

@@ -29,8 +29,6 @@ instance TreacheryRunner env => RunMessage env OnWingsOfDarkness where
           ([ InvestigatorAssignDamage iid source DamageAny 1 1
            , UnengageNonMatching iid [Nightgaunt]
            ]
-          <> [ Ask iid $ ChooseOne
-                 [ MoveTo iid lid | lid <- centralLocations ]
-             ]
+          <> [chooseOne iid [ MoveTo iid lid | lid <- centralLocations ]]
           )
     _ -> OnWingsOfDarkness <$> runMessage msg attrs

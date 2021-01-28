@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.GetTheEngineRunning
   ( GetTheEngineRunning(..)
   , getTheEngineRunning
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -19,7 +18,7 @@ getTheEngineRunning = GetTheEngineRunning
 
 instance ActionRunner env => HasActions env GetTheEngineRunning where
   getActions i window (GetTheEngineRunning x) = do
-    mEngineCar <- getId @(Maybe LocationId) (LocationWithTitle "Engine Car")
+    mEngineCar <- getLocationIdWithTitle "Engine Car"
     case mEngineCar of
       Just engineCar -> do
         mustAdvance <- (== 0) . unClueCount <$> getCount engineCar

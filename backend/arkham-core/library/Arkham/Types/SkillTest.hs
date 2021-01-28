@@ -2,8 +2,7 @@
 
 module Arkham.Types.SkillTest
   ( module Arkham.Types.SkillTest
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -236,7 +235,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
         modifiedSkillValue' =
           max 0 (currentSkillValue + skillTestValueModifier + skillIconCount s)
       unshiftMessages
-        [ Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
+        [ chooseOne skillTestInvestigator [SkillTestApplyResults]
         , SkillTestEnds skillTestSource
         ]
       pure $ s & resultL .~ SucceededBy True modifiedSkillValue'
@@ -263,7 +262,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
                skillTestSkillType
                difficulty
              )
-           , Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults]
+           , chooseOne skillTestInvestigator [SkillTestApplyResults]
            , SkillTestEnds skillTestSource
            ]
       pure $ s & resultL .~ FailedBy True difficulty
@@ -299,8 +298,7 @@ instance SkillTestRunner env => RunMessage env SkillTest where
       s <$ unshiftMessages
         (ResetTokens (toSource s) : map (uncurry AddToDiscard) discards)
     SkillTestResults -> do
-      unshiftMessage
-        (Ask skillTestInvestigator $ ChooseOne [SkillTestApplyResults])
+      unshiftMessage (chooseOne skillTestInvestigator [SkillTestApplyResults])
       case skillTestResult of
         SucceededBy _ n -> unshiftMessages
           ([ Will

@@ -23,13 +23,15 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
   runMessage msg a@(TheyreGettingOut attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       actIds <- getSet @ActId ()
-      if ActId "01108" `elem` actIds || ActId "01109" `elem` actIds
-        then a <$ unshiftMessage (ScenarioResolution $ Resolution 3)
-        else a <$ unshiftMessage (ScenarioResolution NoResolution) -- TODO: defeated and suffer trauma
+      let
+        resolution = if any ((`elem` actIds) . ActId) ["01108", "01109"]
+          then Resolution 3
+          else NoResolution
+      a <$ unshiftMessage (ScenarioResolution resolution)
     EndEnemy -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       unengagedEnemyIds <- mapSet unUnengagedEnemyId <$> getSet ()
-      mParlor <- getId @(Maybe LocationId) (LocationWithTitle "Parlor")
+      mParlor <- getLocationIdWithTitle "Parlor"
       ghoulEnemyIds <- getSet Ghoul
       parlorEnemyIds <- maybe (pure mempty) getSet mParlor
       let
@@ -45,18 +47,17 @@ instance AgendaRunner env => RunMessage env TheyreGettingOut where
         case closestLocationIds of
           [] -> pure Nothing
           [x] -> pure $ Just $ EnemyMove eid locationId x
-          xs -> pure $ Just $ Ask leadInvestigatorId $ ChooseOne $ map
+          xs -> pure $ Just $ chooseOne leadInvestigatorId $ map
             (EnemyMove eid locationId)
             xs
       a <$ unless
         (null enemiesToMove || null (catMaybes messages))
         (unshiftMessage
-          (Ask leadInvestigatorId $ ChooseOneAtATime (catMaybes messages))
+          (chooseOneAtATime leadInvestigatorId $ catMaybes messages)
         )
     EndRoundWindow -> do
-
-      mParlor <- getId @(Maybe LocationId) (LocationWithTitle "Parlor")
-      mHallway <- getId @(Maybe LocationId) (LocationWithTitle "Hallway")
+      mParlor <- getLocationIdWithTitle "Parlor"
+      mHallway <- getLocationIdWithTitle "Hallway"
       parlorGhoulsCount <- case mParlor of
         Just parlor -> unEnemyCount <$> getCount (parlor, [Ghoul])
         Nothing -> pure 0

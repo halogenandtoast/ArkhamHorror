@@ -2,8 +2,7 @@
 
 module Arkham.Types.Game
   ( module Arkham.Types.Game
-  )
-where
+  ) where
 
 import Arkham.Import hiding (first)
 
@@ -1694,7 +1693,8 @@ runGameMessage msg g = case msg of
   ChooseLeadInvestigator -> if length (g ^. investigatorsL) == 1
     then pure g
     else g <$ unshiftMessage
-      (Ask (g ^. leadInvestigatorIdL) $ ChooseOne
+      (chooseOne
+        (g ^. leadInvestigatorIdL)
         [ ChoosePlayer iid SetLeadInvestigator
         | iid <- g ^. investigatorsL . to keys
         ]
@@ -1790,9 +1790,8 @@ runGameMessage msg g = case msg of
       [] -> error "someone needed to spend some clues"
       [x] -> g <$ unshiftMessage (InvestigatorSpendClues x n)
       xs -> g <$ unshiftMessages
-        [ Ask (gameLeadInvestigatorId g) $ ChooseOne $ map
-          (`InvestigatorSpendClues` 1)
-          xs
+        [ chooseOne (gameLeadInvestigatorId g)
+          $ map (`InvestigatorSpendClues` 1) xs
         , SpendClues (n - 1) investigatorsWithClues
         ]
   AdvanceCurrentAgenda -> do
@@ -1999,7 +1998,7 @@ runGameMessage msg g = case msg of
           (SkillTestAsk
             (AskMap $ mapFromList [(iid1, ChooseOne c1), (iid2, ChooseOne c2)])
           )
-      _ -> unshiftMessage (Ask iid1 $ ChooseOne c1)
+      _ -> unshiftMessage (chooseOne iid1 c1)
     pure g
   SkillTestAsk (AskMap askMap) -> do
     mNextMessage <- peekMessage
@@ -2075,8 +2074,7 @@ runGameMessage msg g = case msg of
       Just (EnemyWillAttack iid2 eid2) -> do
         _ <- popMessage
         unshiftMessage (EnemyAttacks (EnemyAttack iid2 eid2 : as))
-      _ ->
-        unshiftMessage (Ask (gameLeadInvestigatorId g) $ ChooseOneAtATime as)
+      _ -> unshiftMessage (chooseOneAtATime (gameLeadInvestigatorId g) as)
     pure g
   When (AssetDefeated aid) -> g <$ unshiftMessages
     [ CheckWindow iid [Fast.WhenDefeated (AssetSource aid)]
@@ -2175,7 +2173,8 @@ runGameMessage msg g = case msg of
     unshiftMessages [BeginTurn x, After (BeginTurn x)]
     pure $ g & playerOrderL .~ (x : (xs <> [y])) & activeInvestigatorIdL .~ x
   ChoosePlayerOrder investigatorIds orderedInvestigatorIds -> do
-    unshiftMessage $ Ask (gameLeadInvestigatorId g) $ ChooseOne
+    unshiftMessage $ chooseOne
+      (gameLeadInvestigatorId g)
       [ ChoosePlayerOrder
           (filter (/= iid) investigatorIds)
           (orderedInvestigatorIds <> [iid])
@@ -2256,7 +2255,8 @@ runGameMessage msg g = case msg of
       [_] -> g <$ unshiftMessage
         (BeginSkillTestAfterFast iid source target maction skillType difficulty)
       xs -> g <$ unshiftMessage
-        (Ask iid $ ChooseOne
+        (chooseOne
+          iid
           [ BeginSkillTestAfterFast
               iid
               source

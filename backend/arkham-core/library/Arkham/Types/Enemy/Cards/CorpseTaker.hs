@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.CorpseTaker
   ( CorpseTaker(..)
   , corpseTaker
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -37,11 +36,11 @@ instance EnemyRunner env => RunMessage env CorpseTaker where
       e <$ spawnAtOneOf iid eid farthestEmptyLocationIds
     EndMythos -> pure $ CorpseTaker $ attrs & doomL +~ 1
     EndEnemy -> do
-      mrivertown <- getId (LocationWithTitle "Rivertown")
-      mmainPath <- getId (LocationWithTitle "Main Path")
+      mRivertown <- getLocationIdWithTitle "Rivertown"
+      mMainPath <- getLocationIdWithTitle "Main Path"
       let
         locationId =
-          fromJustNote "one of these has to exist" (mrivertown <|> mmainPath)
+          fromJustNote "one of these has to exist" (mRivertown <|> mMainPath)
       if enemyLocation == locationId
         then do
           unshiftMessages (replicate enemyDoom PlaceDoomOnAgenda)

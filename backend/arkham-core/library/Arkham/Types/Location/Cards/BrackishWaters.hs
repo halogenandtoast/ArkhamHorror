@@ -32,7 +32,8 @@ instance HasModifiersFor env BrackishWaters where
       [ CannotPlay [AssetType] | iid `elem` locationInvestigators attrs ]
   getModifiersFor _ _ _ = pure []
 
--- TODO: LEFT OFF HERE WITH HAND OF
+-- TODO: Cost is an OR and we should be able to capture this
+-- first idea is change discard to take a source @DiscardCost 1 [DiscardFromHand, DiscardFromPlay] (Just AssetType) mempty mempty@
 instance ActionRunner env => HasActions env BrackishWaters where
   getActions iid NonFast (BrackishWaters attrs@Attrs {..}) =
     withBaseActions iid NonFast attrs $ do
@@ -56,10 +57,8 @@ instance ActionRunner env => HasActions env BrackishWaters where
             iid
             (mkAbility (toSource attrs) 1 (ActionAbility Nothing $ ActionCost 1)
             )
-        | iid
-          `member` locationInvestigators
-          && assetsCount
-          >= 2
+        | (iid `member` locationInvestigators)
+          && (assetsCount >= 2)
           && assetNotTaken
         ]
   getActions i window (BrackishWaters attrs) = getActions i window attrs

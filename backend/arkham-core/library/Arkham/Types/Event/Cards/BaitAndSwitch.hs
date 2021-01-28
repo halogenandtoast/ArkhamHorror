@@ -42,13 +42,11 @@ instance (EventRunner env) => RunMessage env BaitAndSwitch where
               (x : xs) ->
                 ( before
                   <> [ x
-                     , Ask
+                     , chooseOne
                        iid
-                       (ChooseOne
-                         [ EnemyMove enemyId lid lid'
-                         | lid' <- connectedLocationIds
-                         ]
-                       )
+                       [ EnemyMove enemyId lid lid'
+                       | lid' <- connectedLocationIds
+                       ]
                      ]
                   <> xs
                 , ()

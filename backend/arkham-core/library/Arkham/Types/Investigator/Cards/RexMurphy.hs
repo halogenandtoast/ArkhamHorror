@@ -52,7 +52,8 @@ instance (InvestigatorRunner env) => RunMessage env RexMurphy where
         (DiscoverCluesAtLocation investigatorId investigatorLocation 1)
     ResolveToken _drawnToken ElderSign iid | iid == investigatorId ->
       i <$ unshiftMessage
-        (Ask iid $ ChooseOne
+        (chooseOne
+          iid
           [ Label
             "Automatically fail to draw 3"
             [FailSkillTest, DrawCards iid 3 False]

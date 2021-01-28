@@ -2,8 +2,7 @@ module Arkham.Types.ChaosBag
   ( ChaosBag
   , emptyChaosBag
   , tokensL
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -109,13 +108,11 @@ resolveFirstUnresolved source miid strategy = \case
             iid <- maybe getLeadInvestigatorId pure miid
             pure
               ( Decided (Choose n steps tokens')
-              , [ Ask
+              , [ chooseOne
                     iid
-                    (ChooseOne
-                      [ ChooseTokenGroups source iid (Choose n remaining chosen)
-                      | (remaining, chosen) <- toGroups steps tokens'
-                      ]
-                    )
+                    [ ChooseTokenGroups source iid (Choose n remaining chosen)
+                    | (remaining, chosen) <- toGroups steps tokens'
+                    ]
                 ]
               )
         else do
@@ -163,7 +160,7 @@ decideFirstUndecided source miid strategy f = \case
       , [ CheckWindow iid [WhenWouldRevealChaosToken source You]
         | iid <- maybeToList miid
         ]
-        <> [NextChaosBagStep source miid strategy]
+      <> [NextChaosBagStep source miid strategy]
       )
     Choose n steps tokens' -> if any isUndecided steps
       then

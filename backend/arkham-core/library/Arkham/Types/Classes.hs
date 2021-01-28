@@ -204,6 +204,12 @@ class HasList list env a where
 class HasId id env a where
   getId :: (MonadReader env m) => a -> m id
 
+getLocationIdWithTitle
+  :: (MonadReader env m, HasId (Maybe LocationId) env LocationMatcher)
+  => Text
+  -> m (Maybe LocationId)
+getLocationIdWithTitle = getId . LocationWithTitle
+
 class HasCount count env a where
   getCount :: (MonadReader env m) => a -> m count
 

@@ -74,7 +74,7 @@ instance InvestigatorRunner env => RunMessage env DaisyWalkerParallel where
         if null pairs'
           then pure i
           else i <$ unshiftMessage
-            (Ask iid . ChooseOneAtATime $ map
+            (chooseOneAtATime iid $ map
               (\(tome, actions) ->
                 TargetLabel (AssetTarget tome) [Run [chooseOne iid actions]]
               )

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Cards.MuseumHalls
   ( museumHalls
   , MuseumHalls(..)
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -16,8 +15,9 @@ newtype MuseumHalls = MuseumHalls Attrs
   deriving newtype (Show, ToJSON, FromJSON)
 
 museumHalls :: MuseumHalls
-museumHalls = MuseumHalls
-  $ base { locationConnectedSymbols = setFromList [Circle, Diamond, Triangle] }
+museumHalls = MuseumHalls $ base
+  { locationConnectedSymbols = setFromList [Circle, Diamond, Triangle]
+  }
  where
   base = baseAttrs
     "02127"
@@ -38,7 +38,7 @@ instance ActionRunner env => HasActions env MuseumHalls where
   getActions iid NonFast (MuseumHalls location) | unrevealed location =
     withBaseActions iid NonFast location $ do
       lid <- fromJustNote "missing location"
-        <$> getId (LocationWithTitle "Museum Entrance")
+        <$> getLocationIdWithTitle "Museum Entrance"
       pure
         [ ActivateCardAbilityAction
             iid
@@ -73,7 +73,7 @@ instance LocationRunner env => RunMessage env MuseumHalls where
     UseCardAbility iid (ProxySource _ source) _ 1 _
       | isSource location source && unrevealed location -> do
         museumEntrance <- fromJustNote "missing location"
-          <$> getId (LocationWithTitle "Museum Entrance")
+          <$> getLocationIdWithTitle "Museum Entrance"
         l <$ unshiftMessage
           (BeginSkillTest
             iid

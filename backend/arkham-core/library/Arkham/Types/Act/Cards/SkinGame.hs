@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.SkinGame
   ( SkinGame(..)
   , skinGame
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -29,12 +28,12 @@ instance ActRunner env => RunMessage env SkinGame where
   runMessage msg a@(SkinGame attrs@Attrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       vipAreaId <- fromJustNote "must exist"
-        <$> getId @(Maybe LocationId) (LocationWithTitle "VIP Area")
+        <$> getLocationIdWithTitle "VIP Area"
       investigatorIds <- getSetList vipAreaId
       requiredClueCount <- getPlayerCountValue (PerPlayer 2)
       unshiftMessages
         (SpendClues requiredClueCount investigatorIds
-        : [ Ask iid $ ChooseOne [AdvanceAct aid (toSource attrs)]
+        : [ chooseOne iid [AdvanceAct aid (toSource attrs)]
           | iid <- investigatorIds
           ]
         )

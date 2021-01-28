@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.ShadowsDeepen
   ( ShadowsDeepen(..)
   , shadowsDeepen
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -46,12 +45,12 @@ instance AgendaRunner env => RunMessage env ShadowsDeepen where
           (EncounterCardMatchByCardCode "02141")
     FoundEnemyInVoid _ target eid | isTarget attrs target -> do
       lid <- fromJustNote "Museum Halls missing"
-        <$> getId (LocationWithTitle "Museum Halls")
+        <$> getLocationIdWithTitle "Museum Halls"
       a <$ unshiftMessages
         [EnemySpawnFromVoid Nothing lid eid, NextAgenda agendaId "02121"]
     FoundEncounterCard _ target ec | isTarget attrs target -> do
       lid <- fromJustNote "Museum Halls missing"
-        <$> getId (LocationWithTitle "Museum Halls")
+        <$> getLocationIdWithTitle "Museum Halls"
       a <$ unshiftMessages
         [SpawnEnemyAt (EncounterCard ec) lid, NextAgenda agendaId "02121"]
     _ -> ShadowsDeepen <$> runMessage msg attrs

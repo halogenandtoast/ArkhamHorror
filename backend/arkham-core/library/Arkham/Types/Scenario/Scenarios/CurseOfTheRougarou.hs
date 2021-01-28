@@ -1,8 +1,7 @@
 module Arkham.Types.Scenario.Scenarios.CurseOfTheRougarou
   ( CurseOfTheRougarou(..)
   , curseOfTheRougarou
-  )
-where
+  ) where
 
 import Arkham.Import hiding (Cultist)
 
@@ -293,15 +292,13 @@ instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
                   ]
                 , Record TheRougarouIsDestroyed
                 , RemoveCampaignCardFromDeck leadInvestigatorId "81029"
-                , Ask
+                , chooseOne
                   leadInvestigatorId
-                  (ChooseOne
-                    [ Label
-                      "Add Lady Esprit to your deck"
-                      [AddCampaignCardToDeck leadInvestigatorId "81019"]
-                    , Label "Do not add Lady Esprit to your deck" []
-                    ]
-                  )
+                  [ Label
+                    "Add Lady Esprit to your deck"
+                    [AddCampaignCardToDeck leadInvestigatorId "81019"]
+                  , Label "Do not add Lady Esprit to your deck" []
+                  ]
                 ]
               <> [ GainXP iid xp | iid <- investigatorIds ]
               <> [EndOfGame]

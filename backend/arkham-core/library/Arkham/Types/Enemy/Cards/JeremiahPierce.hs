@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.JeremiahPierce
   ( JeremiahPierce(..)
   , jeremiahPierce
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -47,10 +46,10 @@ instance ActionRunner env => HasActions env JeremiahPierce where
 instance (EnemyRunner env) => RunMessage env JeremiahPierce where
   runMessage msg e@(JeremiahPierce attrs@Attrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
-      myourHouse <- getId @(Maybe LocationId) (LocationWithTitle "Your House")
+      mYourHouse <- getLocationIdWithTitle "Your House"
       let
         spawnLocation =
-          LocationWithTitle $ maybe "Rivertown" (const "Your House") myourHouse
+          LocationWithTitle $ maybe "Rivertown" (const "Your House") mYourHouse
       e <$ spawnAt (Just iid) eid spawnLocation
     UseCardAbility iid (EnemySource eid) _ 1 _ | eid == enemyId ->
       e <$ unshiftMessages

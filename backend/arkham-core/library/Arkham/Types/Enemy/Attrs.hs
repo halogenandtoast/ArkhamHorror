@@ -134,7 +134,7 @@ spawnAtEmptyLocation iid eid = do
     [] -> unshiftMessage (Discard (EnemyTarget eid))
     [lid] -> unshiftMessage (EnemySpawn (Just iid) lid eid)
     lids -> unshiftMessage
-      (Ask iid $ ChooseOne [ EnemySpawn (Just iid) lid eid | lid <- lids ])
+      (chooseOne iid [ EnemySpawn (Just iid) lid eid | lid <- lids ])
 
 spawnAt
   :: (MonadIO m, MonadReader env m, HasQueue env)
@@ -157,7 +157,7 @@ spawnAtOneOf iid eid targetLids = do
     [] -> unshiftMessage (Discard (EnemyTarget eid))
     [lid] -> unshiftMessage (EnemySpawn (Just iid) lid eid)
     lids -> unshiftMessage
-      (Ask iid $ ChooseOne [ EnemySpawn (Just iid) lid eid | lid <- lids ])
+      (chooseOne iid [ EnemySpawn (Just iid) lid eid | lid <- lids ])
 
 modifiedEnemyFight
   :: (MonadReader env m, HasModifiersFor env (), HasSource ForSkillTest env)
@@ -292,7 +292,8 @@ instance EnemyRunner env => RunMessage env Attrs where
         [(iid, lid)] -> unshiftMessages
           [EnemySpawnedAt lid eid, EnemyEngageInvestigator eid iid]
         iids -> unshiftMessage
-          (Ask leadInvestigatorId $ ChooseOne
+          (chooseOne
+            leadInvestigatorId
             [ Run [EnemySpawnedAt lid eid, EnemyEngageInvestigator eid iid]
             | (iid, lid) <- iids
             ]
@@ -320,7 +321,8 @@ instance EnemyRunner env => RunMessage env Attrs where
                   [] -> pure ()
                   [iid] -> unshiftMessage (EnemyEngageInvestigator eid iid)
                   iids -> unshiftMessage
-                    (Ask leadInvestigatorId $ ChooseOne
+                    (chooseOne
+                      leadInvestigatorId
                       [ EnemyEngageInvestigator eid iid | iid <- iids ]
                     )
 
@@ -481,9 +483,8 @@ instance EnemyRunner env => RunMessage env Attrs where
             [] -> pure a
             [lid] -> a <$ unshiftMessage (EnemyMove enemyId enemyLocation lid)
             ls -> a <$ unshiftMessage
-              (Ask leadInvestigatorId $ ChooseOne $ map
-                (EnemyMove enemyId enemyLocation)
-                ls
+              (chooseOne leadInvestigatorId
+              $ map (EnemyMove enemyId enemyLocation) ls
               )
     EnemiesAttack
       | not (null enemyEngagedInvestigators) && not enemyExhausted -> do

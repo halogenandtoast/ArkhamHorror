@@ -484,19 +484,19 @@ data Message
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-chooseOne :: HasCallStack => InvestigatorId -> [Message] -> Message
+chooseOne :: InvestigatorId -> [Message] -> Message
 chooseOne _ [] = throw $ InvalidState "No messages"
 chooseOne iid msgs = Ask iid (ChooseOne msgs)
 
-chooseOneAtATime :: HasCallStack => InvestigatorId -> [Message] -> Message
+chooseOneAtATime :: InvestigatorId -> [Message] -> Message
 chooseOneAtATime _ [] = throw $ InvalidState "No messages"
 chooseOneAtATime iid msgs = Ask iid (ChooseOneAtATime msgs)
 
-chooseSome :: HasCallStack => InvestigatorId -> [Message] -> Message
+chooseSome :: InvestigatorId -> [Message] -> Message
 chooseSome _ [] = throw $ InvalidState "No messages"
 chooseSome iid msgs = Ask iid (ChooseSome $ Done : msgs)
 
-chooseN :: HasCallStack => InvestigatorId -> Int -> [Message] -> Message
+chooseN :: InvestigatorId -> Int -> [Message] -> Message
 chooseN _ _ [] = throw $ InvalidState "No messages"
 chooseN iid n msgs = Ask iid (ChooseN n msgs)
 

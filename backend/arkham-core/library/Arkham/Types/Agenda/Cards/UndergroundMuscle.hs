@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.UndergroundMuscle
   ( UndergroundMuscle(..)
   , undergroundMuscle
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -27,7 +26,7 @@ instance AgendaRunner env => RunMessage env UndergroundMuscle where
   runMessage msg (UndergroundMuscle attrs@Attrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       laBellaLunaId <- fromJustNote "La Bella Luna is missing"
-        <$> getId (LocationWithTitle "La Bella Luna")
+        <$> getLocationIdWithTitle "La Bella Luna"
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       (enemy : rest) <- shuffleM =<< gatherEncounterSet HideousAbominations
       strikingFear <- gatherEncounterSet StrikingFear

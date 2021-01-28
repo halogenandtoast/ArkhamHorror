@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.SearchingForIzzie
   ( SearchingForIzzie(..)
   , searchingForIzzie
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -38,11 +37,9 @@ instance TreacheryRunner env => RunMessage env SearchingForIzzie where
         [lid] ->
           unshiftMessage (AttachTreachery treacheryId (LocationTarget lid))
         lids -> unshiftMessage
-          (Ask
+          (chooseOne
             iid
-            (ChooseOne
-              [ AttachTreachery treacheryId (LocationTarget lid) | lid <- lids ]
-            )
+            [ AttachTreachery treacheryId (LocationTarget lid) | lid <- lids ]
           )
     UseCardAbility iid (TreacherySource tid) _ 1 _ | tid == treacheryId ->
       withTreacheryLocation attrs $ \attachedLocationId -> do

@@ -32,7 +32,7 @@ instance TreacheryRunner env => RunMessage env MysteriousChanting where
           , Discard $ toTarget attrs
           ]
         xs -> t <$ unshiftMessages
-          [ Ask iid $ ChooseOne [ PlaceDoom (EnemyTarget eid) 2 | eid <- xs ]
+          [ chooseOne iid [ PlaceDoom (EnemyTarget eid) 2 | eid <- xs ]
           , Discard $ toTarget attrs
           ]
     _ -> MysteriousChanting <$> runMessage msg attrs

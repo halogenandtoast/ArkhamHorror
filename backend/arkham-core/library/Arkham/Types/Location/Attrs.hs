@@ -366,16 +366,12 @@ instance LocationRunner env => RunMessage env Attrs where
           if null availableLocationIds
             then unshiftMessage (Discard (EnemyTarget eid))
             else unshiftMessage
-              (Ask
+              (chooseOne
                 activeInvestigatorId
-                (ChooseOne
-                  [ Run
-                      [ Will (EnemySpawn miid lid' eid)
-                      , EnemySpawn miid lid' eid
-                      ]
-                  | lid' <- availableLocationIds
-                  ]
-                )
+                [ Run
+                    [Will (EnemySpawn miid lid' eid), EnemySpawn miid lid' eid]
+                | lid' <- availableLocationIds
+                ]
               )
       pure a
     EnemySpawn _ lid eid | lid == locationId ->

@@ -593,8 +593,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   InvestigatorMulligan iid | iid == investigatorId -> if null investigatorHand
     then a <$ unshiftMessage (FinishedWithMulligan investigatorId)
     else a <$ unshiftMessage
-      (Ask iid
-      $ ChooseOne
+      (chooseOne iid
       $ Run
           [Continue "Done With Mulligan", FinishedWithMulligan investigatorId]
       : [ Run [DiscardCard iid (getCardId card), InvestigatorMulligan iid]
@@ -666,7 +665,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   ChooseAndDiscardAsset iid | iid == investigatorId -> do
     discardableAssetIds <- map unDiscardableAssetId <$> getSetList iid
     a <$ unshiftMessage
-      (Ask iid $ ChooseOne $ map (Discard . AssetTarget) discardableAssetIds)
+      (chooseOne iid $ map (Discard . AssetTarget) discardableAssetIds)
   AttachAsset aid _ | aid `member` investigatorAssets ->
     pure $ a & assetsL %~ deleteSet aid
   AttachTreachery tid (InvestigatorTarget iid) | iid == investigatorId ->
@@ -679,7 +678,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
   CheckHandSize iid | iid == investigatorId -> do
     handSize <- getHandSize a
     when (length investigatorHand > handSize) $ unshiftMessage
-      (Ask iid $ ChooseOne
+      (chooseOne
+        iid
         [ Run [DiscardCard iid (getCardId card), CheckHandSize iid]
         | card <- investigatorHand
         ]
@@ -687,8 +687,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     pure a
   AddToDiscard iid pc | iid == investigatorId -> pure $ a & discardL %~ (pc :)
   ChooseAndDiscardCard iid | iid == investigatorId -> a <$ unshiftMessage
-    (Ask iid
-    $ ChooseOne
+    (chooseOne iid
     $ [ DiscardCard iid (getCardId card) | card <- discardableCards a ]
     )
   DiscardCard iid cardId | iid == investigatorId -> do
@@ -738,7 +737,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       fightableEnemyIds =
         investigatorEngagedEnemies `union` (enemyIds `difference` aloofEnemyIds)
     a <$ unshiftMessage
-      (Ask iid $ ChooseOne
+      (chooseOne
+        iid
         [ FightEnemy iid eid source skillType isAction
         | eid <- setToList fightableEnemyIds
         ]
@@ -752,7 +752,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
           enemyIds
             `difference` (investigatorEngagedEnemies `union` aloofEnemyIds)
       a <$ unshiftMessage
-        (Ask iid $ ChooseOne
+        (chooseOne
+          iid
           [ FightEnemy iid eid source skillType isAction
           | eid <- setToList fightableEnemyIds
           ]
@@ -932,7 +933,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
                ]
         else pure []
       a <$ unshiftMessage
-        (Ask iid $ ChooseOne $ healthDamageMessages <> sanityDamageMessages)
+        (chooseOne iid $ healthDamageMessages <> sanityDamageMessages)
   Investigate iid lid source skillType True | iid == investigatorId -> do
     modifiers <-
       map modifierType <$> getModifiersFor (toSource a) (LocationTarget lid) ()
@@ -979,15 +980,13 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
           beforePlayMessages <> [PayedForDynamicCard iid cardId n False]
       if investigatorResources > n
         then a <$ unshiftMessage
-          (Ask
+          (chooseOne
             iid
-            (ChooseOne
-              [ Label
-                "Increase spent resources"
-                [PayDynamicCardCost iid cardId (n + 1) beforePlayMessages]
-              , Label ("Resolve with cost of " <> tshow n) resolveMessages
-              ]
-            )
+            [ Label
+              "Increase spent resources"
+              [PayDynamicCardCost iid cardId (n + 1) beforePlayMessages]
+            , Label ("Resolve with cost of " <> tshow n) resolveMessages
+            ]
           )
         else a <$ unshiftMessages resolveMessages
   PayedForDynamicCard iid cardId n False | iid == investigatorId -> do
@@ -1096,7 +1095,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
           assetsThatCanProvideSlots =
             nub $ concatMap (`discardableAssets` a) missingSlotTypes
         a <$ unshiftMessage
-          (Ask iid $ ChooseOne
+          (chooseOne
+            iid
             [ Run
                 [ Discard (AssetTarget aid')
                 , InvestigatorPlayAsset iid aid slotTypes traits
@@ -1193,7 +1193,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       then pure $ a & slotsL %~ HashMap.insert slotType updatedSlots
       else do
         unshiftMessage
-          (Ask iid $ ChooseOne
+          (chooseOne
+            iid
             [ Run
                 [ Discard (AssetTarget aid')
                 , RefillSlots iid slotType (filter (/= aid') assetIds)
@@ -1316,7 +1317,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       (null actions)
     then
       unshiftMessage
-        (SkillTestAsk $ Ask iid $ ChooseOne
+        (SkillTestAsk $ chooseOne
+          iid
           (map
               (\card ->
                 Run [SkillTestCommitCard iid (getCardId card), beginMessage]
@@ -1332,7 +1334,7 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
           )
         )
     else
-      unshiftMessage (SkillTestAsk $ Ask iid $ ChooseOne [triggerMessage])
+      unshiftMessage (SkillTestAsk $ chooseOne iid [triggerMessage])
     pure a
   BeforeSkillTest iid skillType | iid /= investigatorId -> do
     locationId <- getId iid
@@ -1362,7 +1364,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
             _ -> False
       when (not (null committableCards) || not (null committedCardIds))
         $ unshiftMessage
-            (SkillTestAsk $ Ask investigatorId $ ChooseOne
+            (SkillTestAsk $ chooseOne
+              investigatorId
               (map
                   (\card ->
                     Run
@@ -1460,7 +1463,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
         traits' = setFromList traits
       case strategy of
         PutBackInAnyOrder -> unshiftMessage
-          (Ask iid $ ChooseOneAtATime
+          (chooseOneAtATime
+            iid
             [ AddFocusedToTopOfDeck
                 iid
                 (InvestigatorTarget iid')
@@ -1509,7 +1513,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
     do
       let traits' = setFromList traits
       unshiftMessage
-        (Ask iid $ ChooseOne
+        (chooseOne
+          iid
           [ Run
               [ AddFocusedToHand iid (InvestigatorTarget iid') (getCardId card)
               , RemoveFromDiscard iid (getCardId card)
@@ -1574,7 +1579,8 @@ runInvestigatorMessage msg a@Attrs {..} = case msg of
       )
     let fastIsPlayable c = findWithDefault False c fastIsPlayableMap
     a <$ unshiftMessage
-      (Ask iid $ ChooseOne
+      (chooseOne
+        iid
         (additionalActions
         <> [ TakeResources iid 1 True
            | canAffordTakeResources && CannotGainResources `notElem` modifiers

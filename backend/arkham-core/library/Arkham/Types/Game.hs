@@ -2,7 +2,8 @@
 
 module Arkham.Types.Game
   ( module Arkham.Types.Game
-  ) where
+  )
+where
 
 import Arkham.Import hiding (first)
 
@@ -419,10 +420,8 @@ instance HasSet EnemyId (Game queue) LocationMatcher where
     missingLocation = "No location with matching: " <> show locationMatcher
 
 instance HasSet ClosestPathLocationId (Game queue) (LocationId, LocationMatcher) where
-  getSet (lid, locationMatcher) = do
-    g <- ask
-    maybe mempty (flip runReader g . getSet . (lid, ) . toId)
-      <$> getLocationMatching locationMatcher
+  getSet (lid, locationMatcher) = maybe (pure mempty) (getSet . (lid, ) . toId)
+    =<< getLocationMatching locationMatcher
 
 instance HasSet StoryAssetId (Game queue) InvestigatorId where
   getSet iid = do

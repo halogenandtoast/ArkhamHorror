@@ -58,7 +58,7 @@ instance SourceEntity TreacheryAttrs where
   isSource _ _ = False
 
 instance IsCard TreacheryAttrs where
-  getCardId = CardId . unTreacheryId . treacheryId
+  getCardId = unTreacheryId . treacheryId
   getCardCode = treacheryCardCode
   getTraits = treacheryTraits
   getKeywords = treacheryKeywords
@@ -109,7 +109,7 @@ baseAttrs tid cardCode =
       fromJustNote
           ("missing encounter card: " <> unpack (unCardCode cardCode))
           (HashMap.lookup cardCode allEncounterCards)
-        $ CardId (unTreacheryId tid)
+        $ unTreacheryId tid
   in
     TreacheryAttrs
       { treacheryName = ecName
@@ -137,7 +137,7 @@ weaknessAttrs tid iid cardCode =
       fromJustNote
           ("missing weakness card: " <> show cardCode)
           (HashMap.lookup cardCode allPlayerCards)
-        $ CardId (unTreacheryId tid)
+        $ unTreacheryId tid
   in
     TreacheryAttrs
       { treacheryName = pcName
@@ -159,7 +159,7 @@ instance HasActions env TreacheryAttrs where
 is :: Target -> TreacheryAttrs -> Bool
 is (TreacheryTarget tid) t = tid == treacheryId t
 is (CardCodeTarget cardCode) t = cardCode == treacheryCardCode t
-is (CardIdTarget cardId) t = unCardId cardId == unTreacheryId (treacheryId t)
+is (CardIdTarget cardId) t = cardId == unTreacheryId (treacheryId t)
 is _ _ = False
 
 instance TreacheryRunner env => RunMessage env TreacheryAttrs where

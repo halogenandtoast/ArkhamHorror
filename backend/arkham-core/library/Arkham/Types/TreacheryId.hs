@@ -2,7 +2,9 @@ module Arkham.Types.TreacheryId where
 
 import Arkham.Prelude
 
-newtype TreacheryId = TreacheryId { unTreacheryId :: UUID }
+import Arkham.Types.Card.Id
+
+newtype TreacheryId = TreacheryId { unTreacheryId :: CardId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
 
 newtype StoryTreacheryId = StoryTreacheryId { unStoryTreacheryId :: TreacheryId }

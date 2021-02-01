@@ -47,7 +47,7 @@ instance SourceEntity SkillAttrs where
   isSource _ _ = False
 
 instance IsCard SkillAttrs where
-  getCardId = CardId . unSkillId . skillId
+  getCardId = unSkillId . skillId
   getCardCode = skillCardCode
   getTraits = skillTraits
   getKeywords = mempty
@@ -59,7 +59,7 @@ baseAttrs iid eid cardCode =
       fromJustNote
           ("missing player card: " <> unpack (unCardCode cardCode))
           (HashMap.lookup cardCode allPlayerCards)
-        $ CardId (unSkillId eid)
+        $ unSkillId eid
   in
     SkillAttrs
       { skillName = pcName
@@ -77,7 +77,7 @@ weaknessAttrs iid eid cardCode =
       fromJustNote
           "missing weakness card"
           (HashMap.lookup cardCode allPlayerCards)
-        $ CardId (unSkillId eid)
+        $ unSkillId eid
   in
     SkillAttrs
       { skillName = pcName

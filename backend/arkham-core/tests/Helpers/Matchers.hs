@@ -6,12 +6,10 @@ import Arkham.Types.Agenda
 import Arkham.Types.Asset
 import Arkham.Types.AssetId
 import Arkham.Types.Card
-import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Enemy
 import Arkham.Types.EnemyId
 import Arkham.Types.Event
-import Arkham.Types.EventId
 import Arkham.Types.Game
 import Arkham.Types.Investigator
 import qualified Arkham.Types.Investigator.Attrs as Investigator
@@ -40,13 +38,11 @@ instance ToPlayerCard PlayerCard where
   asPlayerCard = id
 
 instance ToPlayerCard Event where
-  asPlayerCard event =
-    lookupPlayerCard (getCardCode event) (CardId . unEventId $ toId event)
+  asPlayerCard event = lookupPlayerCard (getCardCode event) (getCardId event)
 
 instance ToPlayerCard Treachery where
-  asPlayerCard treachery = lookupPlayerCard
-    (getCardCode treachery)
-    (CardId . unTreacheryId $ toId treachery)
+  asPlayerCard treachery =
+    lookupPlayerCard (getCardCode treachery) (getCardId treachery)
 
 class (Entity a, TargetEntity a) => TestEntity a where
   updated :: Game queue -> a -> a
@@ -82,10 +78,9 @@ isAttachedTo game x y = case toTarget x of
 
 instance ToEncounterCard Enemy where
   asEncounterCard enemy =
-    lookupEncounterCard (getCardCode enemy) (CardId . unEnemyId $ toId enemy)
+    lookupEncounterCard (getCardCode enemy) (getCardId enemy)
 
-isInEncounterDiscard
-  :: (ToEncounterCard entity) => Game queue -> entity -> Bool
+isInEncounterDiscard :: (ToEncounterCard entity) => Game queue -> entity -> Bool
 isInEncounterDiscard game entity = card `elem` discard'
  where
   discard' = game ^. discardL

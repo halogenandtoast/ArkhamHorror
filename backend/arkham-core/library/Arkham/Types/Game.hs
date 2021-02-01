@@ -1611,7 +1611,7 @@ runGameMessage msg g = case msg of
       PlayerCard pc -> case pcCardType pc of
         SkillType -> do
           let
-            skillId = SkillId $ unCardId cardId
+            skillId = SkillId cardId
             skill = lookupSkill (pcCardCode pc) iid skillId
           unshiftMessage (InvestigatorCommittedSkill iid skillId)
           pure $ g & skillsL %~ insertMap skillId skill
@@ -1624,7 +1624,7 @@ runGameMessage msg g = case msg of
           ( fromJustNote
             "missing skill"
             (lookup (getCardCode skill) allPlayerCards)
-            (CardId $ unSkillId skillId)
+            (unSkillId skillId)
           , ownerOfSkill skill
           )
     unshiftMessages
@@ -1647,7 +1647,7 @@ runGameMessage msg g = case msg of
       card = fromJustNote
         "no such skill"
         (lookup (getCardCode skill) allPlayerCards)
-        (CardId $ unSkillId skillId)
+        (unSkillId skillId)
     unshiftMessage (AddToHand iid (PlayerCard card))
     pure $ g & skillsL %~ deleteMap skillId
   After (ShuffleIntoDeck _ (AssetTarget aid)) ->
@@ -1658,7 +1658,7 @@ runGameMessage msg g = case msg of
       card = fromJustNote
         "no such treachery"
         (lookup (getCardCode treachery) allPlayerCards)
-        (CardId $ unTreacheryId treacheryId)
+        (unTreacheryId treacheryId)
     unshiftMessage (ShuffleCardsIntoDeck iid [card])
     pure $ g & treacheriesL %~ deleteMap treacheryId
   PlayDynamicCard iid cardId n _mtarget False -> do
@@ -1688,7 +1688,7 @@ runGameMessage msg g = case msg of
           pure $ g & assetsL %~ insertMap aid asset
         EventType -> do
           let
-            eid = EventId $ unCardId cardId
+            eid = EventId cardId
             event = lookupEvent (pcCardCode pc) iid eid
           unshiftMessages
             [PlayedCard iid cardId, InvestigatorPlayDynamicEvent iid eid n]
@@ -1706,7 +1706,7 @@ runGameMessage msg g = case msg of
       PlayerCard pc -> case pcCardType pc of
         PlayerTreacheryType -> do
           let
-            tid = TreacheryId $ unCardId cardId
+            tid = TreacheryId cardId
             treachery = lookupTreachery (pcCardCode pc) tid Nothing
           unshiftMessages [Revelation iid (TreacherySource tid)]
           pure $ g & treacheriesL %~ insertMap tid treachery
@@ -1728,7 +1728,7 @@ runGameMessage msg g = case msg of
           pure $ g & assetsL %~ insertMap aid asset
         EventType -> do
           let
-            eid = EventId $ unCardId cardId
+            eid = EventId cardId
             event = lookupEvent (pcCardCode pc) iid eid
           unshiftMessages
             [PlayedCard iid cardId, InvestigatorPlayEvent iid eid mtarget]
@@ -1742,7 +1742,7 @@ runGameMessage msg g = case msg of
   DrewPlayerTreachery iid cardCode cardId -> do
     let
       playerCard = lookupPlayerCard cardCode cardId
-      treacheryId = TreacheryId (unCardId cardId)
+      treacheryId = TreacheryId cardId
       treachery = lookupTreachery cardCode treacheryId (Just iid)
     -- player treacheries will not trigger draw treachery windows
     unshiftMessages
@@ -1924,7 +1924,7 @@ runGameMessage msg g = case msg of
   AddToVictory (EnemyTarget eid) -> do
     let
       enemy = getEnemy eid g
-      cardId = CardId (unEnemyId eid)
+      cardId = unEnemyId eid
       encounterCard = do
         f <- lookup (getCardCode enemy) allEncounterCards
         pure $ EncounterCard $ f cardId
@@ -1939,7 +1939,7 @@ runGameMessage msg g = case msg of
   AddToVictory (EventTarget eid) -> do
     let
       event = getEvent eid g
-      cardId = CardId (unEventId eid)
+      cardId = unEventId eid
       playerCard = do
         f <- lookup (getCardCode event) allPlayerCards
         pure $ PlayerCard $ f cardId
@@ -2098,7 +2098,7 @@ runGameMessage msg g = case msg of
     pure $ g & assetsL . at assetId ?~ asset
   SpawnEnemyAt card lid -> do
     let
-      eid = EnemyId $ unCardId (getCardId card)
+      eid = EnemyId (getCardId card)
       enemy = lookupEnemy (getCardCode card) eid
     unshiftMessages
       [ Will (EnemySpawn Nothing lid eid)
@@ -2108,7 +2108,7 @@ runGameMessage msg g = case msg of
     pure $ g & enemiesL . at eid ?~ enemy
   SpawnEnemyAtEngagedWith card lid iid -> do
     let
-      eid = EnemyId $ unCardId (getCardId card)
+      eid = EnemyId (getCardId card)
       enemy = lookupEnemy (getCardCode card) eid
     unshiftMessages
       [ Will (EnemySpawn (Just iid) lid eid)
@@ -2276,7 +2276,7 @@ runGameMessage msg g = case msg of
       card = fromJustNote
         "missing card"
         (lookup (getCardCode enemy) allEncounterCards)
-        (CardId $ unEnemyId eid)
+        (unEnemyId eid)
     unshiftMessage $ RemoveEnemy eid
     encounterDeck <- shuffleM $ card : unDeck (view encounterDeckL g)
     pure $ g & encounterDeckL .~ Deck encounterDeck
@@ -2297,7 +2297,7 @@ runGameMessage msg g = case msg of
       card = fromJustNote
         "missing card"
         (lookup (getCardCode treachery) allEncounterCards)
-        (CardId $ unTreacheryId tid)
+        (unTreacheryId tid)
 
     unshiftMessage $ BeginSkillTest
       iid
@@ -2349,7 +2349,7 @@ runGameMessage msg g = case msg of
       $ g
       & (treacheriesL . at treacheryId ?~ treachery)
       & (activeCardL ?~ EncounterCard
-          (lookupEncounterCard cardCode (CardId $ unTreacheryId treacheryId))
+          (lookupEncounterCard cardCode (unTreacheryId treacheryId))
         )
   AfterRevelation{} -> pure $ g & activeCardL .~ Nothing
   ResignWith (AssetTarget aid) -> do
@@ -2361,7 +2361,7 @@ runGameMessage msg g = case msg of
       event = getEvent eid g
       mPlayerCard = do
         f <- lookup (getCardCode event) allPlayerCards
-        pure $ f (CardId $ unEventId eid)
+        pure $ f (unEventId eid)
     case mPlayerCard of
       Nothing -> error "missing"
       Just pc -> do
@@ -2373,10 +2373,10 @@ runGameMessage msg g = case msg of
       treachery = getTreachery tid g
       encounterCard = do
         f <- lookup (getCardCode treachery) allEncounterCards
-        pure $ EncounterCard $ f (CardId $ unTreacheryId tid)
+        pure $ EncounterCard $ f (unTreacheryId tid)
       playerCard = do
         f <- lookup (getCardCode treachery) allPlayerCards
-        pure $ PlayerCard $ f (CardId $ unTreacheryId tid)
+        pure $ PlayerCard $ f (unTreacheryId tid)
     case encounterCard <|> playerCard of
       Nothing -> error "missing"
       Just (PlayerCard card) -> do

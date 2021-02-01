@@ -5,7 +5,8 @@
 module TestImport
   ( module X
   , module TestImport
-  ) where
+  )
+where
 
 import Arkham.Import as X
 
@@ -57,15 +58,12 @@ insertEntity
   -> HashMap k v
 insertEntity a = insertMap (toId a) a
 
-buildEvent :: MonadIO m => CardCode -> Investigator -> m Event
-buildEvent cardCode investigator = do
-  eventId <- liftIO $ EventId <$> nextRandom
-  pure $ lookupEvent cardCode (toId investigator) eventId
+buildEvent :: MonadRandom m => CardCode -> Investigator -> m Event
+buildEvent cardCode investigator =
+  lookupEvent cardCode (toId investigator) <$> getRandom
 
-buildEnemy :: MonadIO m => CardCode -> m Enemy
-buildEnemy cardCode = do
-  enemyId <- liftIO $ EnemyId <$> nextRandom
-  pure $ lookupEnemy cardCode enemyId
+buildEnemy :: MonadRandom m => CardCode -> m Enemy
+buildEnemy cardCode = lookupEnemy cardCode <$> getRandom
 
 buildAsset :: MonadRandom m => CardCode -> m Asset
 buildAsset cardCode = lookupAsset cardCode <$> getRandom
@@ -98,9 +96,9 @@ buildTestTreacheryEncounterCard = do
   cardId <- CardId <$> liftIO nextRandom
   pure $ lookupEncounterCard "treachery" cardId
 
-testEnemy :: MonadIO m => (EnemyAttrs -> EnemyAttrs) -> m Enemy
+testEnemy :: MonadRandom m => (EnemyAttrs -> EnemyAttrs) -> m Enemy
 testEnemy f = do
-  enemyId <- liftIO $ EnemyId <$> nextRandom
+  enemyId <- getRandom
   pure $ baseEnemy enemyId "enemy" f
 
 testAsset :: MonadRandom m => (AssetAttrs -> AssetAttrs) -> m Asset

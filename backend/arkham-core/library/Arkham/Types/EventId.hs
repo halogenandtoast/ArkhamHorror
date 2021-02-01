@@ -2,5 +2,7 @@ module Arkham.Types.EventId where
 
 import Arkham.Prelude
 
-newtype EventId = EventId { unEventId :: UUID }
-  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable)
+import Arkham.Types.Card.Id
+
+newtype EventId = EventId { unEventId :: CardId }
+  deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)

@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 
-newtype InEveryShadow = InEveryShadow Attrs
+newtype InEveryShadow = InEveryShadow AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 inEveryShadow :: InEveryShadow
@@ -23,7 +23,7 @@ instance HasModifiersFor env InEveryShadow where
   getModifiersFor = noModifiersFor
 
 instance AgendaRunner env => RunMessage env InEveryShadow where
-  runMessage msg a@(InEveryShadow attrs@Attrs {..}) = case msg of
+  runMessage msg a@(InEveryShadow attrs@AgendaAttrs {..}) = case msg of
     EnemySpawn _ _ eid -> do
       cardCode <- getId @CardCode eid
       when (cardCode == CardCode "02141") $ do

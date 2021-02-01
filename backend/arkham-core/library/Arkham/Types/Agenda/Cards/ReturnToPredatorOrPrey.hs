@@ -10,7 +10,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 
-newtype ReturnToPredatorOrPrey = ReturnToPredatorOrPrey Attrs
+newtype ReturnToPredatorOrPrey = ReturnToPredatorOrPrey AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 returnToPredatorOrPrey :: ReturnToPredatorOrPrey
@@ -33,7 +33,7 @@ instance HasActions env ReturnToPredatorOrPrey where
   getActions _ _ _ = pure []
 
 instance AgendaRunner env => RunMessage env ReturnToPredatorOrPrey where
-  runMessage msg a@(ReturnToPredatorOrPrey attrs@Attrs {..}) = case msg of
+  runMessage msg a@(ReturnToPredatorOrPrey attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->
       a <$ unshiftMessages
         [CreateEnemyEngagedWithPrey "50026b", NextAgenda aid "01122"]

@@ -10,7 +10,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Trait
 
-newtype ChaosInTheCloverClub = ChaosInTheCloverClub Attrs
+newtype ChaosInTheCloverClub = ChaosInTheCloverClub AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 chaosInTheCloverClub :: ChaosInTheCloverClub
@@ -24,7 +24,7 @@ instance HasModifiersFor env ChaosInTheCloverClub where
   getModifiersFor = noModifiersFor
 
 instance AgendaRunner env => RunMessage env ChaosInTheCloverClub where
-  runMessage msg a@(ChaosInTheCloverClub attrs@Attrs {..}) = case msg of
+  runMessage msg a@(ChaosInTheCloverClub attrs@AgendaAttrs {..}) = case msg of
     BeginEnemy | agendaSequence == Agenda 3 A -> do
       abominations <- getSetList @EnemyId Abomination
       abominationLocations <- traverse (getId @LocationId) abominations

@@ -9,7 +9,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card.EncounterCardMatcher
 
-newtype RestrictedAccess = RestrictedAccess Attrs
+newtype RestrictedAccess = RestrictedAccess AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 restrictedAccess :: RestrictedAccess
@@ -23,7 +23,7 @@ instance HasModifiersFor env RestrictedAccess where
   getModifiersFor = noModifiersFor
 
 instance AgendaRunner env => RunMessage env RestrictedAccess where
-  runMessage msg a@(RestrictedAccess attrs@Attrs {..}) = case msg of
+  runMessage msg a@(RestrictedAccess attrs@AgendaAttrs {..}) = case msg of
     EnemySpawn _ _ eid -> do
       cardCode <- getId @CardCode eid
       when (cardCode == CardCode "02141") $ do

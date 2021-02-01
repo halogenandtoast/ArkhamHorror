@@ -12,7 +12,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Keyword
 import Arkham.Types.Trait
 
-newtype TheCloverClub = TheCloverClub Attrs
+newtype TheCloverClub = TheCloverClub AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theCloverClub :: TheCloverClub
@@ -30,7 +30,7 @@ instance HasSet Trait env EnemyId => HasModifiersFor env TheCloverClub where
   getModifiersFor _ _ _ = pure []
 
 instance AgendaRunner env => RunMessage env TheCloverClub where
-  runMessage msg a@(TheCloverClub attrs@Attrs {..}) = case msg of
+  runMessage msg a@(TheCloverClub attrs@AgendaAttrs {..}) = case msg of
     InvestigatorDamageEnemy _ eid | agendaSequence == Agenda 1 A -> do
       traits <- getSet eid
       a <$ when

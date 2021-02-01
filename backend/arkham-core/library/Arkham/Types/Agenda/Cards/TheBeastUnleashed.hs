@@ -6,7 +6,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Game.Helpers
 
-newtype TheBeastUnleashed = TheBeastUnleashed Attrs
+newtype TheBeastUnleashed = TheBeastUnleashed AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theBeastUnleashed :: TheBeastUnleashed
@@ -20,7 +20,7 @@ instance HasModifiersFor env TheBeastUnleashed where
   getModifiersFor = noModifiersFor
 
 instance AgendaRunner env => RunMessage env TheBeastUnleashed where
-  runMessage msg a@(TheBeastUnleashed attrs@Attrs {..}) = case msg of
+  runMessage msg a@(TheBeastUnleashed attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgendaIfThresholdSatisfied -> do
       perPlayerDoomThreshold <- getPlayerCountValue agendaDoomThreshold
       totalDoom <- unDoomCount <$> getCount ()

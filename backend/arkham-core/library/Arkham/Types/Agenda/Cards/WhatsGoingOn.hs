@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 
-newtype WhatsGoingOn = WhatsGoingOn Attrs
+newtype WhatsGoingOn = WhatsGoingOn AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 whatsGoingOn :: WhatsGoingOn
@@ -19,7 +19,7 @@ instance HasActions env WhatsGoingOn where
   getActions i window (WhatsGoingOn x) = getActions i window x
 
 instance AgendaRunner env => RunMessage env WhatsGoingOn where
-  runMessage msg a@(WhatsGoingOn attrs@Attrs {..}) = case msg of
+  runMessage msg a@(WhatsGoingOn attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       a <$ unshiftMessage

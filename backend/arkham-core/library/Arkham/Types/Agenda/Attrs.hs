@@ -3,14 +3,15 @@
 module Arkham.Types.Agenda.Attrs
   ( module Arkham.Types.Agenda.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Import
 
 import Arkham.Types.Agenda.Sequence as X
 import Arkham.Types.Game.Helpers
 
-data Attrs = Attrs
+data AgendaAttrs = AgendaAttrs
   { agendaDoom :: Int
   , agendaDoomThreshold :: GameValue Int
   , agendaId :: AgendaId
@@ -22,39 +23,39 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
-makeLensesWith suffixedFields ''Attrs
+makeLensesWith suffixedFields ''AgendaAttrs
 
-instance ToJSON Attrs where
+instance ToJSON AgendaAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "agenda"
   toEncoding = genericToEncoding $ aesonOptions $ Just "agenda"
 
-instance FromJSON Attrs where
+instance FromJSON AgendaAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "agenda"
 
-instance Entity Attrs where
-  type EntityId Attrs = AgendaId
-  type EntityAttrs Attrs = Attrs
+instance Entity AgendaAttrs where
+  type EntityId AgendaAttrs = AgendaId
+  type EntityAttrs AgendaAttrs = AgendaAttrs
   toId = agendaId
   toAttrs = id
 
-instance NamedEntity Attrs where
+instance NamedEntity AgendaAttrs where
   toName = mkName . agendaName
 
-instance TargetEntity Attrs where
+instance TargetEntity AgendaAttrs where
   toTarget = AgendaTarget . toId
-  isTarget Attrs { agendaId } (AgendaTarget aid) = agendaId == aid
+  isTarget AgendaAttrs { agendaId } (AgendaTarget aid) = agendaId == aid
   isTarget _ _ = False
 
-instance SourceEntity Attrs where
+instance SourceEntity AgendaAttrs where
   toSource = AgendaSource . toId
-  isSource Attrs { agendaId } (AgendaSource aid) = agendaId == aid
+  isSource AgendaAttrs { agendaId } (AgendaSource aid) = agendaId == aid
   isSource _ _ = False
 
-onSide :: AgendaSide -> Attrs -> Bool
-onSide side Attrs {..} = agendaSide agendaSequence == side
+onSide :: AgendaSide -> AgendaAttrs -> Bool
+onSide side AgendaAttrs {..} = agendaSide agendaSequence == side
 
-baseAttrs :: AgendaId -> Text -> AgendaSequence -> GameValue Int -> Attrs
-baseAttrs aid name seq' threshold = Attrs
+baseAttrs :: AgendaId -> Text -> AgendaSequence -> GameValue Int -> AgendaAttrs
+baseAttrs aid name seq' threshold = AgendaAttrs
   { agendaDoom = 0
   , agendaDoomThreshold = threshold
   , agendaId = aid
@@ -65,16 +66,16 @@ baseAttrs aid name seq' threshold = Attrs
   , agendaCardsUnderneath = mempty
   }
 
-instance HasActions env Attrs where
+instance HasActions env AgendaAttrs where
   getActions _ _ _ = pure []
 
-instance HasStep AgendaStep Attrs where
+instance HasStep AgendaStep AgendaAttrs where
   getStep = agendaStep . agendaSequence
 
-instance HasList UnderneathCard env Attrs where
+instance HasList UnderneathCard env AgendaAttrs where
   getList = pure . map UnderneathCard . agendaCardsUnderneath
 
-instance HasCount DoomCount env Attrs where
+instance HasCount DoomCount env AgendaAttrs where
   getCount = pure . DoomCount . agendaDoom
 
 instance
@@ -83,9 +84,9 @@ instance
   , HasCount PlayerCount env ()
   , HasId LeadInvestigatorId env ()
   )
-  => RunMessage env Attrs
+  => RunMessage env AgendaAttrs
   where
-  runMessage msg a@Attrs {..} = case msg of
+  runMessage msg a@AgendaAttrs {..} = case msg of
     PlaceUnderneath target cards | isTarget a target ->
       pure $ a & cardsUnderneathL %~ (<> cards)
     PlaceDoom (AgendaTarget aid) n | aid == agendaId -> pure $ a & doomL +~ n

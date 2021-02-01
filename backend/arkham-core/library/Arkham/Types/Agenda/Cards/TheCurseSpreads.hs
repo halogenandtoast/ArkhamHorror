@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 
-newtype TheCurseSpreads = TheCurseSpreads Attrs
+newtype TheCurseSpreads = TheCurseSpreads AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theCurseSpreads :: TheCurseSpreads
@@ -28,7 +28,7 @@ getRougarou
 getRougarou = fmap unStoryEnemyId <$> getId (CardCode "81028")
 
 instance AgendaRunner env => RunMessage env TheCurseSpreads where
-  runMessage msg a@(TheCurseSpreads attrs@Attrs {..}) = case msg of
+  runMessage msg a@(TheCurseSpreads attrs@AgendaAttrs {..}) = case msg of
     EndInvestigation -> do
       mrougarou <- getRougarou
       case mrougarou of

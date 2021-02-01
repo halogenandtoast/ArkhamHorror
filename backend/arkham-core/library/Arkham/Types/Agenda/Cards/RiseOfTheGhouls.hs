@@ -8,7 +8,7 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Trait
 
-newtype RiseOfTheGhouls = RiseOfTheGhouls Attrs
+newtype RiseOfTheGhouls = RiseOfTheGhouls AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 riseOfTheGhouls :: RiseOfTheGhouls
@@ -22,7 +22,7 @@ instance HasActions env RiseOfTheGhouls where
   getActions i window (RiseOfTheGhouls x) = getActions i window x
 
 instance AgendaRunner env => RunMessage env RiseOfTheGhouls where
-  runMessage msg a@(RiseOfTheGhouls attrs@Attrs {..}) = case msg of
+  runMessage msg a@(RiseOfTheGhouls attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B ->
       a <$ unshiftMessage
         (Run

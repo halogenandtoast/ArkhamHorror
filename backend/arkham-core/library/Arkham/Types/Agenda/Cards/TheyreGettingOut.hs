@@ -6,7 +6,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Trait
 
-newtype TheyreGettingOut = TheyreGettingOut Attrs
+newtype TheyreGettingOut = TheyreGettingOut AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theyreGettingOut :: TheyreGettingOut
@@ -20,7 +20,7 @@ instance HasModifiersFor env TheyreGettingOut where
   getModifiersFor = noModifiersFor
 
 instance AgendaRunner env => RunMessage env TheyreGettingOut where
-  runMessage msg a@(TheyreGettingOut attrs@Attrs {..}) = case msg of
+  runMessage msg a@(TheyreGettingOut attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       actIds <- getSet @ActId ()
       let

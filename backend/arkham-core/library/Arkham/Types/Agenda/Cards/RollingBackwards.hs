@@ -10,7 +10,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 
-newtype RollingBackwards = RollingBackwards Attrs
+newtype RollingBackwards = RollingBackwards AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 rollingBackwards :: RollingBackwards
@@ -32,7 +32,7 @@ leftmostLocation lid = do
   maybe (pure lid) leftmostLocation mlid'
 
 instance AgendaRunner env => RunMessage env RollingBackwards where
-  runMessage msg a@(RollingBackwards attrs@Attrs {..}) = case msg of
+  runMessage msg a@(RollingBackwards attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       investigatorIds <- getInvestigatorIds

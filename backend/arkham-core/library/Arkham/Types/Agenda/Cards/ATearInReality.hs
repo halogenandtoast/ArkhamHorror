@@ -10,7 +10,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 
-newtype ATearInReality = ATearInReality Attrs
+newtype ATearInReality = ATearInReality AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 aTearInReality :: ATearInReality
@@ -32,7 +32,7 @@ leftmostLocation lid = do
   maybe (pure lid) leftmostLocation mlid'
 
 instance AgendaRunner env => RunMessage env ATearInReality where
-  runMessage msg a@(ATearInReality attrs@Attrs {..}) = case msg of
+  runMessage msg a@(ATearInReality attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       leadInvestigatorId <- unLeadInvestigatorId <$> getId ()
       investigatorIds <- getInvestigatorIds

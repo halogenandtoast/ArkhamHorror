@@ -1,6 +1,7 @@
 module Arkham.Types.Treachery
   ( module Arkham.Types.Treachery
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -68,6 +69,7 @@ data Treachery
   | AcrossTimeAndSpace' AcrossTimeAndSpace
   | ClawsOfSteam' ClawsOfSteam
   | BrokenRails' BrokenRails
+  | RottingRemainsBloodOnTheAltar' RottingRemainsBloodOnTheAltar
   | TheZealotsSeal' TheZealotsSeal
   | MaskedHorrors' MaskedHorrors
   | VaultOfEarthlyDemise' VaultOfEarthlyDemise
@@ -194,6 +196,9 @@ allTreacheries = mapFromList
   , ("02178", (AcrossTimeAndSpace' .) . acrossTimeAndSpace)
   , ("02180", (ClawsOfSteam' .) . clawsOfSteam)
   , ("02181", (BrokenRails' .) . brokenRails)
+  , ( "02223"
+    , (RottingRemainsBloodOnTheAltar' .) . rottingRemainsBloodOnTheAltar
+    )
   , ("50024", (TheZealotsSeal' .) . theZealotsSeal)
   , ("50031", (MaskedHorrors' .) . maskedHorrors)
   , ("50032b", (VaultOfEarthlyDemise' .) . vaultOfEarthlyDemise)

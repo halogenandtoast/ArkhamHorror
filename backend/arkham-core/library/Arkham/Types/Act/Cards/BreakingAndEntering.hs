@@ -10,7 +10,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card.EncounterCardMatcher
 
-newtype BreakingAndEntering = BreakingAndEntering Attrs
+newtype BreakingAndEntering = BreakingAndEntering ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 breakingAndEntering :: BreakingAndEntering
@@ -21,7 +21,7 @@ instance ActionRunner env => HasActions env BreakingAndEntering where
   getActions i window (BreakingAndEntering x) = getActions i window x
 
 instance ActRunner env => RunMessage env BreakingAndEntering where
-  runMessage msg a@(BreakingAndEntering attrs@Attrs {..}) = case msg of
+  runMessage msg a@(BreakingAndEntering attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage

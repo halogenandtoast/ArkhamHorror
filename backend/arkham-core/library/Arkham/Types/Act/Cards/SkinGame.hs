@@ -11,7 +11,7 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Trait
 
-newtype SkinGame = SkinGame Attrs
+newtype SkinGame = SkinGame ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 skinGame :: SkinGame
@@ -25,7 +25,7 @@ instance ActionRunner env => HasActions env SkinGame where
   getActions i window (SkinGame x) = getActions i window x
 
 instance ActRunner env => RunMessage env SkinGame where
-  runMessage msg a@(SkinGame attrs@Attrs {..}) = case msg of
+  runMessage msg a@(SkinGame attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       vipAreaId <- fromJustNote "must exist"
         <$> getLocationIdWithTitle "VIP Area"

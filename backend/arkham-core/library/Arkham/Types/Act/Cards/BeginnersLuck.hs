@@ -11,14 +11,14 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
-newtype BeginnersLuck = BeginnersLuck Attrs
+newtype BeginnersLuck = BeginnersLuck ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 beginnersLuck :: BeginnersLuck
 beginnersLuck =
   BeginnersLuck $ baseAttrs "02066" "Beginner's Luck" (Act 1 A) Nothing
 
-ability :: Attrs -> Ability
+ability :: ActAttrs -> Ability
 ability attrs = (mkAbility (toSource attrs) 1 (ReactionAbility Free))
   { abilityLimit = GroupLimit PerRound 1
   }
@@ -38,7 +38,7 @@ instance
   , HasSet InScenarioInvestigatorId env ()
   )
   => RunMessage env BeginnersLuck where
-  runMessage msg a@(BeginnersLuck attrs@Attrs {..}) = case msg of
+  runMessage msg a@(BeginnersLuck attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds

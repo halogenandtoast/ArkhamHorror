@@ -8,14 +8,14 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
-newtype HuntingTheRougarou = HuntingTheRougarou Attrs
+newtype HuntingTheRougarou = HuntingTheRougarou ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 huntingTheRougarou :: HuntingTheRougarou
 huntingTheRougarou = HuntingTheRougarou
   $ baseAttrs "81006" "Hunting the Rougarou" (Act 2 A) Nothing
 
-ability :: Attrs -> Ability
+ability :: ActAttrs -> Ability
 ability attrs = (mkAbility (toSource attrs) 1 (FastAbility Free))
   { abilityLimit = PlayerLimit PerPhase 1
   }
@@ -33,7 +33,7 @@ instance ActionRunner env => HasActions env HuntingTheRougarou where
   getActions i window (HuntingTheRougarou x) = getActions i window x
 
 instance ActRunner env => RunMessage env HuntingTheRougarou where
-  runMessage msg a@(HuntingTheRougarou attrs@Attrs {..}) = case msg of
+  runMessage msg a@(HuntingTheRougarou attrs@ActAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       runMessage (AdvanceAct actId (toSource attrs)) a
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do

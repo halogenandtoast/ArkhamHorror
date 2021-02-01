@@ -1,14 +1,15 @@
 module Arkham.Types.Act.Cards.Run
   ( Run(..)
   , run
-  ) where
+  )
+where
 
 import Arkham.Import hiding (Run)
 
 import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 
-newtype Run= Run Attrs
+newtype Run = Run ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 run :: Run
@@ -18,7 +19,7 @@ instance ActionRunner env => HasActions env Run where
   getActions iid window (Run attrs) = getActions iid window attrs
 
 instance ActRunner env => RunMessage env Run where
-  runMessage msg a@(Run attrs@Attrs {..}) = case msg of
+  runMessage msg a@(Run attrs@ActAttrs {..}) = case msg of
     WhenEnterLocation iid lid -> do
       isEngineCar <- elem lid <$> getLocationIdWithTitle "Engine Car"
       if isEngineCar

@@ -6,7 +6,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
-newtype DisruptingTheRitual = DisruptingTheRitual Attrs
+newtype DisruptingTheRitual = DisruptingTheRitual ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 disruptingTheRitual :: DisruptingTheRitual
@@ -17,7 +17,7 @@ disruptingTheRitual =
         }
 
 instance ActionRunner env => HasActions env DisruptingTheRitual where
-  getActions iid NonFast (DisruptingTheRitual a@Attrs {..}) = pure
+  getActions iid NonFast (DisruptingTheRitual a@ActAttrs {..}) = pure
     [ ActivateCardAbilityAction
         iid
         (mkAbility
@@ -29,7 +29,7 @@ instance ActionRunner env => HasActions env DisruptingTheRitual where
   getActions i window (DisruptingTheRitual x) = getActions i window x
 
 instance ActRunner env => RunMessage env DisruptingTheRitual where
-  runMessage msg a@(DisruptingTheRitual attrs@Attrs {..}) = case msg of
+  runMessage msg a@(DisruptingTheRitual attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage

@@ -3,7 +3,8 @@
 module Arkham.Types.Act.Attrs
   ( module Arkham.Types.Act.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -11,7 +12,7 @@ import Arkham.Types.Act.Sequence as X
 import Arkham.Types.Game.Helpers
 import Arkham.Types.RequiredClues as X
 
-data Attrs = Attrs
+data ActAttrs = ActAttrs
   { actId :: ActId
   , actName :: Text
   , actSequence :: ActSequence
@@ -21,42 +22,42 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
-makeLensesWith suffixedFields ''Attrs
+makeLensesWith suffixedFields ''ActAttrs
 
-instance ToJSON Attrs where
+instance ToJSON ActAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "act"
   toEncoding = genericToEncoding $ aesonOptions $ Just "act"
 
-instance FromJSON Attrs where
+instance FromJSON ActAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "act"
 
-instance HasStep ActStep Attrs where
+instance HasStep ActStep ActAttrs where
   getStep = actStep . actSequence
 
-instance Entity Attrs where
-  type EntityId Attrs = ActId
-  type EntityAttrs Attrs = Attrs
+instance Entity ActAttrs where
+  type EntityId ActAttrs = ActId
+  type EntityAttrs ActAttrs = ActAttrs
   toId = actId
   toAttrs = id
 
-instance NamedEntity Attrs where
+instance NamedEntity ActAttrs where
   toName = mkName . actName
 
-instance TargetEntity Attrs where
+instance TargetEntity ActAttrs where
   toTarget = ActTarget . toId
-  isTarget Attrs { actId } (ActTarget aid) = actId == aid
+  isTarget ActAttrs { actId } (ActTarget aid) = actId == aid
   isTarget _ _ = False
 
-instance SourceEntity Attrs where
+instance SourceEntity ActAttrs where
   toSource = ActSource . toId
-  isSource Attrs { actId } (ActSource aid) = actId == aid
+  isSource ActAttrs { actId } (ActSource aid) = actId == aid
   isSource _ _ = False
 
-onSide :: ActSide -> Attrs -> Bool
-onSide side Attrs {..} = actSide actSequence == side
+onSide :: ActSide -> ActAttrs -> Bool
+onSide side ActAttrs {..} = actSide actSequence == side
 
-baseAttrs :: ActId -> Text -> ActSequence -> Maybe RequiredClues -> Attrs
-baseAttrs aid name seq' mRequiredClues = Attrs
+baseAttrs :: ActId -> Text -> ActSequence -> Maybe RequiredClues -> ActAttrs
+baseAttrs aid name seq' mRequiredClues = ActAttrs
   { actId = aid
   , actName = name
   , actSequence = seq'
@@ -65,8 +66,8 @@ baseAttrs aid name seq' mRequiredClues = Attrs
   , actTreacheries = mempty
   }
 
-instance ActionRunner env => HasActions env Attrs where
-  getActions _ FastPlayerWindow attrs@Attrs {..} = case actRequiredClues of
+instance ActionRunner env => HasActions env ActAttrs where
+  getActions _ FastPlayerWindow attrs@ActAttrs {..} = case actRequiredClues of
     Just (RequiredClues requiredClues Nothing) -> do
       totalSpendableClues <- unSpendableClueCount <$> getCount ()
       totalRequiredClues <- getPlayerCountValue requiredClues
@@ -90,8 +91,8 @@ instance ActionRunner env => HasActions env Attrs where
     Nothing -> pure []
   getActions _ _ _ = pure []
 
-instance (HasQueue env, HasSet InScenarioInvestigatorId env ()) => RunMessage env Attrs where
-  runMessage msg a@Attrs {..} = case msg of
+instance (HasQueue env, HasSet InScenarioInvestigatorId env ()) => RunMessage env ActAttrs where
+  runMessage msg a@ActAttrs {..} = case msg of
     AttachTreachery tid (ActTarget aid) | aid == actId ->
       pure $ a & treacheriesL %~ insertSet tid
     InvestigatorResigned _ -> do

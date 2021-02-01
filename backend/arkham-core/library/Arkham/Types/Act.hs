@@ -1,7 +1,8 @@
 module Arkham.Types.Act
   ( Act(..)
   , lookupAct
-  ) where
+  )
+where
 
 import Arkham.Import hiding (fold)
 
@@ -44,7 +45,7 @@ instance HasStep ActStep Act where
 
 instance Entity Act where
   type EntityId Act = ActId
-  type EntityAttrs Act = Attrs
+  type EntityAttrs Act = ActAttrs
 
 instance NamedEntity Act where
   toName = toName . toAttrs

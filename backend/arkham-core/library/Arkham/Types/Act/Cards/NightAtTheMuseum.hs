@@ -10,7 +10,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card.EncounterCardMatcher
 
-newtype NightAtTheMuseum = NightAtTheMuseum Attrs
+newtype NightAtTheMuseum = NightAtTheMuseum ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 nightAtTheMuseum :: NightAtTheMuseum
@@ -21,7 +21,7 @@ instance ActionRunner env => HasActions env NightAtTheMuseum where
   getActions i window (NightAtTheMuseum x) = getActions i window x
 
 instance ActRunner env => RunMessage env NightAtTheMuseum where
-  runMessage msg a@(NightAtTheMuseum attrs@Attrs {..}) = case msg of
+  runMessage msg a@(NightAtTheMuseum attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage

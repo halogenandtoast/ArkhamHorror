@@ -7,7 +7,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Card.EncounterCardMatcher
 
-newtype IntoTheDarkness = IntoTheDarkness Attrs
+newtype IntoTheDarkness = IntoTheDarkness ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 intoTheDarkness :: IntoTheDarkness
@@ -18,7 +18,7 @@ instance ActionRunner env => HasActions env IntoTheDarkness where
   getActions i window (IntoTheDarkness x) = getActions i window x
 
 instance ActRunner env => RunMessage env IntoTheDarkness where
-  runMessage msg a@(IntoTheDarkness attrs@Attrs {..}) = case msg of
+  runMessage msg a@(IntoTheDarkness attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage

@@ -6,7 +6,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
-newtype AfterHours = AfterHours Attrs
+newtype AfterHours = AfterHours ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 afterHours :: AfterHours
@@ -20,7 +20,7 @@ instance ActionRunner env => HasActions env AfterHours where
   getActions i window (AfterHours x) = getActions i window x
 
 instance ActRunner env => RunMessage env AfterHours where
-  runMessage msg a@(AfterHours attrs@Attrs {..}) = case msg of
+  runMessage msg a@(AfterHours attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds

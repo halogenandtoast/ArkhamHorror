@@ -6,7 +6,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
-newtype Trapped = Trapped Attrs
+newtype Trapped = Trapped ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 trapped :: Trapped
@@ -20,7 +20,7 @@ instance ActionRunner env => HasActions env Trapped where
   getActions i window (Trapped x) = getActions i window x
 
 instance ActRunner env => RunMessage env Trapped where
-  runMessage msg a@(Trapped attrs@Attrs {..}) = case msg of
+  runMessage msg a@(Trapped attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds

@@ -11,7 +11,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Action
 
-newtype AllIn = AllIn Attrs
+newtype AllIn = AllIn ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 allIn :: AllIn
@@ -39,7 +39,7 @@ instance ActionRunner env => HasActions env AllIn where
   getActions i window (AllIn x) = getActions i window x
 
 instance ActRunner env => RunMessage env AllIn where
-  runMessage msg a@(AllIn attrs@Attrs {..}) = case msg of
+  runMessage msg a@(AllIn attrs@ActAttrs {..}) = case msg of
     InvestigatorResigned _ -> do
       investigatorIds <- getSet @InScenarioInvestigatorId ()
       a <$ when

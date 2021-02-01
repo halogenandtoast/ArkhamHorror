@@ -6,7 +6,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
-newtype MysteriousGateway = MysteriousGateway Attrs
+newtype MysteriousGateway = MysteriousGateway ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 mysteriousGateway :: MysteriousGateway
@@ -20,7 +20,7 @@ instance ActionRunner env => HasActions env MysteriousGateway where
   getActions i window (MysteriousGateway x) = getActions i window x
 
 instance ActRunner env => RunMessage env MysteriousGateway where
-  runMessage msg a@(MysteriousGateway attrs@Attrs {..}) = case msg of
+  runMessage msg a@(MysteriousGateway attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getSetList @InvestigatorId (LocationId "50014")

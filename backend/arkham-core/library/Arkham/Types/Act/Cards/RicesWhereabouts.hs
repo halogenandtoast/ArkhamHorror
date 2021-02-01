@@ -9,14 +9,14 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
-newtype RicesWhereabouts = RicesWhereabouts Attrs
+newtype RicesWhereabouts = RicesWhereabouts ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ricesWhereabouts :: RicesWhereabouts
 ricesWhereabouts =
   RicesWhereabouts $ baseAttrs "02046" "Rice's Whereabouts" (Act 2 A) Nothing
 
-ability :: Attrs -> Ability
+ability :: ActAttrs -> Ability
 ability attrs = mkAbility
   (toSource attrs)
   1
@@ -28,7 +28,7 @@ instance ActionRunner env => HasActions env RicesWhereabouts where
   getActions iid window (RicesWhereabouts x) = getActions iid window x
 
 instance ActRunner env => RunMessage env RicesWhereabouts where
-  runMessage msg a@(RicesWhereabouts attrs@Attrs {..}) = case msg of
+  runMessage msg a@(RicesWhereabouts attrs@ActAttrs {..}) = case msg of
     TakeControlOfAsset _ assetId -> do
       cardCode <- getId assetId
       a <$ when

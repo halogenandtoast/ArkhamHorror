@@ -6,7 +6,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
-newtype WhatHaveYouDone = WhatHaveYouDone Attrs
+newtype WhatHaveYouDone = WhatHaveYouDone ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 whatHaveYouDone :: WhatHaveYouDone
@@ -17,7 +17,7 @@ instance ActionRunner env => HasActions env WhatHaveYouDone where
   getActions i window (WhatHaveYouDone x) = getActions i window x
 
 instance ActRunner env => RunMessage env WhatHaveYouDone where
-  runMessage msg a@(WhatHaveYouDone attrs@Attrs {..}) = case msg of
+  runMessage msg a@(WhatHaveYouDone attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       unshiftMessage (AdvanceAct aid $ toSource attrs)
       pure . WhatHaveYouDone $ attrs & sequenceL .~ Act 3 B

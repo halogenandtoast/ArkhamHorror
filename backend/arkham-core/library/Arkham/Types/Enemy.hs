@@ -1,6 +1,7 @@
 module Arkham.Types.Enemy
   ( module Arkham.Types.Enemy
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -10,10 +11,8 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Cards
 import Arkham.Types.Enemy.Runner
 
-createEnemy :: MonadRandom m => CardCode -> m (EnemyId, Enemy)
-createEnemy cardCode = do
-  eid <- getRandom
-  pure (eid, lookupEnemy cardCode eid)
+createEnemy :: IsCard a => a -> Enemy
+createEnemy a = lookupEnemy (getCardCode a) (EnemyId $ getCardId a)
 
 data Enemy
   = MobEnforcer' MobEnforcer

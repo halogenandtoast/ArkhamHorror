@@ -1,8 +1,7 @@
 module Arkham.Types.Agenda.Cards.PredatorOrPrey
   ( PredatorOrPrey(..)
   , predatorOrPrey
-  )
-where
+  ) where
 
 import Arkham.Import
 import qualified Arkham.Types.Action as Action
@@ -33,9 +32,10 @@ instance HasActions env PredatorOrPrey where
 
 instance (AgendaRunner env) => RunMessage env PredatorOrPrey where
   runMessage msg a@(PredatorOrPrey attrs@AgendaAttrs {..}) = case msg of
-    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->
+    AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
+      theMaskedHunter <- EncounterCard <$> genEncounterCard "01121b"
       a <$ unshiftMessages
-        [CreateEnemyEngagedWithPrey "01121b", NextAgenda aid "01122"]
+        [CreateEnemyEngagedWithPrey theMaskedHunter, NextAgenda aid "01122"]
     UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do
       unshiftMessage (Resign iid)
       PredatorOrPrey <$> runMessage msg attrs

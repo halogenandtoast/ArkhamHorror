@@ -4,6 +4,8 @@ module Arkham.Types.Card.EncounterCard
   , module Arkham.Types.Card.EncounterCardType
   ) where
 
+import Arkham.Prelude
+
 import Arkham.Json
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.EncounterCardMatcher
@@ -12,9 +14,6 @@ import Arkham.Types.Card.Id
 import Arkham.Types.Keyword (Keyword)
 import qualified Arkham.Types.Keyword as Keyword
 import Arkham.Types.Trait
-import ClassyPrelude
-import qualified Data.HashMap.Strict as HashMap
-import Safe (fromJustNote)
 
 data EncounterCard = MkEncounterCard
   { ecCardCode :: CardCode
@@ -28,10 +27,13 @@ data EncounterCard = MkEncounterCard
   deriving stock (Show, Eq, Generic)
   deriving anyclass Hashable
 
+genEncounterCard :: MonadRandom m => CardCode -> m EncounterCard
+genEncounterCard cardCode = lookupEncounterCard cardCode <$> getRandom
+
 lookupEncounterCard :: CardCode -> (CardId -> EncounterCard)
 lookupEncounterCard cardCode =
   fromJustNote ("Unknown card: " <> show cardCode)
-    $ HashMap.lookup cardCode allEncounterCards
+    $ lookup cardCode allEncounterCards
 
 baseEncounterCard
   :: EncounterCardType -> CardId -> CardCode -> Text -> EncounterCard
@@ -71,7 +73,7 @@ encounterCardMatch (EncounterCardMatchByCardCode cardCode) card =
   ecCardCode card == cardCode
 
 allEncounterCards :: HashMap CardCode (CardId -> EncounterCard)
-allEncounterCards = HashMap.fromList
+allEncounterCards = mapFromList
   [ ("enemy", placeholderEnemy)
   , ("treachery", placeholderTreachery)
   , ("01116", ghoulPriest)

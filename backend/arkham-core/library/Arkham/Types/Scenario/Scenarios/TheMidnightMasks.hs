@@ -119,7 +119,7 @@ instance ScenarioRunner env => RunMessage env TheMidnightMasks where
         ghoulPriestMessages =
           [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
         spawnAcolyteMessages =
-          [ CreateEnemyAt (getCardCode c) l
+          [ CreateEnemyAt (EncounterCard c) l
           | (c, l) <- zip acolytes [southside, downtown, "01133"]
           ]
       encounterDeck <- buildEncounterDeckWith

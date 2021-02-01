@@ -32,10 +32,11 @@ instance ActRunner env => RunMessage env TheBarrier where
     AdvanceAct aid _ | aid == actId && onSide B attrs -> do
       hallwayId <- fromJustNote "must exist"
         <$> getLocationIdWithTitle "Hallway"
+      ghoulPriest <- EncounterCard <$> genEncounterCard "01116"
       a <$ unshiftMessages
         [ RevealLocation Nothing "01115"
         , CreateStoryAssetAt "01117" "01115"
-        , CreateEnemyAt "01116" hallwayId
+        , CreateEnemyAt ghoulPriest hallwayId
         , NextAct aid "01110"
         ]
     EndRoundWindow -> do

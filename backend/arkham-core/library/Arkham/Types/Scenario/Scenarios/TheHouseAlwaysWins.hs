@@ -1,7 +1,8 @@
 module Arkham.Types.Scenario.Scenarios.TheHouseAlwaysWins
   ( TheHouseAlwaysWins(..)
   , theHouseAlwaysWins
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -65,6 +66,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
         , EncounterSet.NaomisCrew
         , EncounterSet.Rats
         ]
+      cloverClubPitBoss <- buildCard "02078"
       pushMessages
         [ SetEncounterDeck encounterDeck
         , AddAgenda "02063"
@@ -75,7 +77,7 @@ instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
         , PlaceLocation "02073"
         , RevealLocation Nothing "02070"
         , MoveAllTo "02070"
-        , CreateEnemyAt "02078" "02071"
+        , CreateEnemyAt cloverClubPitBoss "02071"
         , AskMap
         . mapFromList
         $ [ ( iid

@@ -7,7 +7,6 @@ import Arkham.Types.AgendaId
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.AssetId
 import Arkham.Types.Card
-import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Id
 import Arkham.Types.Classes
 import Arkham.Types.Enemy

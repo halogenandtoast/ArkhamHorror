@@ -9,7 +9,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
-newtype GetTheEngineRunning = GetTheEngineRunning Attrs
+newtype GetTheEngineRunning = GetTheEngineRunning ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 getTheEngineRunning :: GetTheEngineRunning
@@ -28,7 +28,7 @@ instance ActionRunner env => HasActions env GetTheEngineRunning where
       Nothing -> getActions i window x
 
 instance ActRunner env => RunMessage env GetTheEngineRunning where
-  runMessage msg a@(GetTheEngineRunning attrs@Attrs {..}) = case msg of
+  runMessage msg a@(GetTheEngineRunning attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage

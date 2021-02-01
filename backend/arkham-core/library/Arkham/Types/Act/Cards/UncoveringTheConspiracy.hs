@@ -11,7 +11,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import qualified Data.HashSet as HashSet
 
-newtype UncoveringTheConspiracy = UncoveringTheConspiracy Attrs
+newtype UncoveringTheConspiracy = UncoveringTheConspiracy ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 uncoveringTheConspiracy :: UncoveringTheConspiracy
@@ -19,7 +19,7 @@ uncoveringTheConspiracy = UncoveringTheConspiracy
   $ baseAttrs "01123" "Uncovering the Conspiracy" (Act 1 A) Nothing
 
 instance ActionRunner env => HasActions env UncoveringTheConspiracy where
-  getActions iid NonFast (UncoveringTheConspiracy x@Attrs {..}) = do
+  getActions iid NonFast (UncoveringTheConspiracy x@ActAttrs {..}) = do
     requiredClues <- getPlayerCountValue (PerPlayer 2)
     totalSpendableClues <- getSpendableClueCount =<< getInvestigatorIds
     if totalSpendableClues >= requiredClues
@@ -37,7 +37,7 @@ instance ActionRunner env => HasActions env UncoveringTheConspiracy where
     getActions iid window attrs
 
 instance ActRunner env => RunMessage env UncoveringTheConspiracy where
-  runMessage msg a@(UncoveringTheConspiracy attrs@Attrs {..}) = case msg of
+  runMessage msg a@(UncoveringTheConspiracy attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       unshiftMessage

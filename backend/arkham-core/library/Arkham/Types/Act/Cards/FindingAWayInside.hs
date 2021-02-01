@@ -9,7 +9,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
-newtype FindingAWayInside = FindingAWayInside Attrs
+newtype FindingAWayInside = FindingAWayInside ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 findingAWayInside :: FindingAWayInside
@@ -23,7 +23,7 @@ instance ActionRunner env => HasActions env FindingAWayInside where
   getActions i window (FindingAWayInside x) = getActions i window x
 
 instance ActRunner env => RunMessage env FindingAWayInside where
-  runMessage msg a@(FindingAWayInside attrs@Attrs {..}) = case msg of
+  runMessage msg a@(FindingAWayInside attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       leadInvestigatorId <- getLeadInvestigatorId
       investigatorIds <- getInvestigatorIds

@@ -13,7 +13,7 @@ import Arkham.Types.EncounterSet (gatherEncounterSet)
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Trait
 
-newtype FindingLadyEsprit = FindingLadyEsprit Attrs
+newtype FindingLadyEsprit = FindingLadyEsprit ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 findingLadyEsprit :: FindingLadyEsprit
@@ -21,7 +21,7 @@ findingLadyEsprit =
   FindingLadyEsprit $ baseAttrs "81005" "Finding Lady Esprit" (Act 1 A) Nothing
 
 instance ActionRunner env => HasActions env FindingLadyEsprit where
-  getActions _ FastPlayerWindow (FindingLadyEsprit attrs@Attrs {..}) = do
+  getActions _ FastPlayerWindow (FindingLadyEsprit attrs@ActAttrs {..}) = do
     investigatorIds <- investigatorsInABayouLocation
     requiredClueCount <- getPlayerCountValue (PerPlayer 1)
     canAdvance' <- (>= requiredClueCount)
@@ -51,7 +51,7 @@ nonBayouLocations
 nonBayouLocations = difference <$> getLocationSet <*> bayouLocations
 
 instance ActRunner env => RunMessage env FindingLadyEsprit where
-  runMessage msg a@(FindingLadyEsprit attrs@Attrs {..}) = case msg of
+  runMessage msg a@(FindingLadyEsprit attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       investigatorIds <- investigatorsInABayouLocation
       requiredClueCount <- getPlayerCountValue (PerPlayer 1)

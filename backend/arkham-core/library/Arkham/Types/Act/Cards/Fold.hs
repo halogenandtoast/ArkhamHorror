@@ -11,7 +11,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.Action
 
-newtype Fold = Fold Attrs
+newtype Fold = Fold ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 fold :: Fold
@@ -39,7 +39,7 @@ instance ActionRunner env => HasActions env Fold where
   getActions i window (Fold x) = getActions i window x
 
 instance ActRunner env => RunMessage env Fold where
-  runMessage msg a@(Fold attrs@Attrs {..}) = case msg of
+  runMessage msg a@(Fold attrs@ActAttrs {..}) = case msg of
     InvestigatorResigned _ -> do
       investigatorIds <- getSet @InScenarioInvestigatorId ()
       a <$ when

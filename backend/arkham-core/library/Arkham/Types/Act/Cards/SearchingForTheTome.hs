@@ -10,7 +10,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
-newtype SearchingForTheTome = SearchingForTheTome Attrs
+newtype SearchingForTheTome = SearchingForTheTome ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 searchingForTheTome :: SearchingForTheTome
@@ -30,7 +30,7 @@ instance ActionRunner env => HasActions env SearchingForTheTome where
       Nothing -> getActions i window x
 
 instance ActRunner env => RunMessage env SearchingForTheTome where
-  runMessage msg a@(SearchingForTheTome attrs@Attrs {..}) = case msg of
+  runMessage msg a@(SearchingForTheTome attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       unshiftMessage (AdvanceAct aid $ toSource attrs)
       pure . SearchingForTheTome $ attrs & sequenceL .~ Act 3 B

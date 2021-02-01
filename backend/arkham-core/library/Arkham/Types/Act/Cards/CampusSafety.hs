@@ -6,7 +6,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
-newtype CampusSafety = CampusSafety Attrs
+newtype CampusSafety = CampusSafety ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 campusSafety :: CampusSafety
@@ -17,7 +17,7 @@ instance ActionRunner env => HasActions env CampusSafety where
   getActions i window (CampusSafety x) = getActions i window x
 
 instance ActRunner env => RunMessage env CampusSafety where
-  runMessage msg (CampusSafety attrs@Attrs {..}) = case msg of
+  runMessage msg (CampusSafety attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       unshiftMessage (AdvanceAct aid $ toSource attrs)
       pure $ CampusSafety $ attrs & sequenceL .~ Act 3 B

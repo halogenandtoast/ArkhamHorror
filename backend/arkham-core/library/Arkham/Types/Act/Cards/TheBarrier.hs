@@ -6,7 +6,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
-newtype TheBarrier = TheBarrier Attrs
+newtype TheBarrier = TheBarrier ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theBarrier :: TheBarrier
@@ -16,7 +16,7 @@ instance ActionRunner env => HasActions env TheBarrier where
   getActions i window (TheBarrier x) = getActions i window x
 
 instance ActRunner env => RunMessage env TheBarrier where
-  runMessage msg a@(TheBarrier attrs@Attrs {..}) = case msg of
+  runMessage msg a@(TheBarrier attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       hallwayId <- fromJustNote "must exist"
         <$> getLocationIdWithTitle "Hallway"

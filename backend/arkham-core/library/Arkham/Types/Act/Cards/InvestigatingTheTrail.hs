@@ -7,7 +7,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 import Arkham.Types.CampaignLogKey
 
-newtype InvestigatingTheTrail = InvestigatingTheTrail Attrs
+newtype InvestigatingTheTrail = InvestigatingTheTrail ActAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 investigatingTheTrail :: InvestigatingTheTrail
@@ -21,7 +21,7 @@ instance ActionRunner env => HasActions env InvestigatingTheTrail where
   getActions i window (InvestigatingTheTrail x) = getActions i window x
 
 instance ActRunner env => RunMessage env InvestigatingTheTrail where
-  runMessage msg a@(InvestigatingTheTrail attrs@Attrs {..}) = case msg of
+  runMessage msg a@(InvestigatingTheTrail attrs@ActAttrs {..}) = case msg of
     AdvanceAct aid _ | aid == actId && onSide A attrs -> do
       investigatorIds <- getInvestigatorIds
       requiredClues <- getPlayerCountValue (PerPlayer 3)

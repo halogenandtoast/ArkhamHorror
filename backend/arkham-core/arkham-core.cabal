@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 16d9cae8ebc3f7f610bb11289b47cf9d16c94e0525e9399478070d1736c6cbbd
+-- hash: 0cbbb5525232d248211d8edac1e432e8eb65e63330ddbaff57bbe2d49f4a4078
 
 name:           arkham-core
 version:        0.0.0
@@ -677,6 +677,7 @@ library
       Arkham.Types.Treachery.Cards.SordidAndSilent
       Arkham.Types.Treachery.Cards.SpectralMist
       Arkham.Types.Treachery.Cards.StalkedInTheDark
+      Arkham.Types.Treachery.Cards.StrangeSigns
       Arkham.Types.Treachery.Cards.TerrorFromBeyond
       Arkham.Types.Treachery.Cards.TheYellowSign
       Arkham.Types.Treachery.Cards.TheZealotsSeal

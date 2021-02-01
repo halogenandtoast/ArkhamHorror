@@ -1,12 +1,15 @@
 module Arkham.Types.Location.Cards.HouseInTheReeds_210
   ( houseInTheReeds_210
   , HouseInTheReeds_210(..)
-  ) where
+  )
+where
 
 import Arkham.Import
 
+import Arkham.Types.Card.EncounterCardMatcher
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
@@ -25,12 +28,24 @@ houseInTheReeds_210 = HouseInTheReeds_210 $ baseAttrs
   [Dunwich]
 
 instance HasModifiersFor env HouseInTheReeds_210 where
-  getModifiersFor = noModifiersFor
+  getModifiersFor _ (InvestigatorTarget iid) (HouseInTheReeds_210 attrs) =
+    pure $ toModifiers
+      attrs
+      [ CannotPlay [EventType] | iid `elem` locationInvestigators attrs ]
+  getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env HouseInTheReeds_210 where
-  getActions iid window (HouseInTheReeds_210 attrs) =
-    getActions iid window attrs
+  getActions = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env HouseInTheReeds_210 where
-  runMessage msg (HouseInTheReeds_210 attrs) =
-    HouseInTheReeds_210 <$> runMessage msg attrs
+  runMessage msg l@(HouseInTheReeds_210 attrs) = case msg of
+    RevealLocation miid lid | lid == locationId attrs -> do
+      iid <- maybe getLeadInvestigatorId pure miid
+      unshiftMessage $ FindEncounterCard
+        iid
+        (toTarget attrs)
+        (EncounterCardMatchByType (EnemyType, Just Nightgaunt))
+      HouseInTheReeds_210 <$> runMessage msg attrs
+    FoundEncounterCard _iid target card | isTarget attrs target ->
+      l <$ unshiftMessage (SpawnEnemyAt (EncounterCard card) (toId attrs))
+    _ -> HouseInTheReeds_210 <$> runMessage msg attrs

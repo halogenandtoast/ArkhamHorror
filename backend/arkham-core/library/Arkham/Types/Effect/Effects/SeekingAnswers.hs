@@ -6,6 +6,7 @@ where
 
 import Arkham.Import
 
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
@@ -16,8 +17,8 @@ seekingAnswers :: EffectArgs -> SeekingAnswers
 seekingAnswers = SeekingAnswers . uncurry4 (baseAttrs "02023")
 
 instance HasModifiersFor env SeekingAnswers where
-  getModifiersFor _ (LocationTarget lid) (SeekingAnswers attrs@EffectAttrs {..}) =
-    case effectTarget of
+  getModifiersFor _ (LocationTarget lid) (SeekingAnswers attrs@EffectAttrs {..})
+    = case effectTarget of
       InvestigationTarget _ lid' | lid == lid' ->
         pure [toModifier attrs AlternateSuccessfullInvestigation]
       _ -> pure []
@@ -35,7 +36,7 @@ instance (HasQueue env, HasSet ConnectedLocationId env LocationId) => RunMessage
           iid
           [ TargetLabel
               (LocationTarget lid')
-              [InvestigatorDiscoverClues iid lid' 1]
+              [InvestigatorDiscoverClues iid lid' 1 (Just Action.Investigate)]
           | lid' <- lids
           ]
         , DisableEffect effectId

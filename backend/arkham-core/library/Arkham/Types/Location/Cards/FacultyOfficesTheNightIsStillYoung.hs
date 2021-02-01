@@ -60,15 +60,15 @@ instance ActionRunner env => HasActions env FacultyOfficesTheNightIsStillYoung w
 
 instance LocationRunner env => RunMessage env FacultyOfficesTheNightIsStillYoung where
   runMessage msg l@(FacultyOfficesTheNightIsStillYoung attrs) = case msg of
-    RevealLocation _ lid | lid == locationId attrs -> do
-      leadInvestigatorId <- getLeadInvestigatorId
+    RevealLocation miid lid | lid == locationId attrs -> do
+      iid <- maybe getLeadInvestigatorId pure miid
       unshiftMessage $ FindEncounterCard
-        leadInvestigatorId
+        iid
         (toTarget attrs)
         (EncounterCardMatchByType (EnemyType, Just Humanoid))
       FacultyOfficesTheNightIsStillYoung <$> runMessage msg attrs
     FoundEncounterCard _iid target card | isTarget attrs target ->
-      l <$ unshiftMessage (SpawnEnemyAt (EncounterCard card) (locationId attrs))
+      l <$ unshiftMessage (SpawnEnemyAt (EncounterCard card) (toId attrs))
     UseCardAbility _iid source _ 1 _
       | isSource attrs source && locationRevealed attrs -> l
       <$ unshiftMessage (ScenarioResolution $ Resolution 1)

@@ -21,8 +21,12 @@ instance HasModifiersFor env TrueUnderstanding where
 instance HasActions env TrueUnderstanding where
   getActions iid window (TrueUnderstanding attrs) = getActions iid window attrs
 
+-- Investigation is not an ability on the card so we need to pass
+-- Nothing for the action type
+
 instance SkillRunner env => RunMessage env TrueUnderstanding where
   runMessage msg s@(TrueUnderstanding attrs@SkillAttrs {..}) = case msg of
-    PassedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == skillId ->
-      s <$ unshiftMessage (InvestigatorDiscoverCluesAtTheirLocation iid 1)
+    PassedSkillTest iid _ _ (SkillTarget sid) _ _ | sid == skillId -> do
+      lid <- getId iid
+      s <$ unshiftMessage (InvestigatorDiscoverClues iid lid 1 Nothing)
     _ -> TrueUnderstanding <$> runMessage msg attrs

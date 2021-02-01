@@ -1,6 +1,7 @@
 module Arkham.Types.Event.Cards.DrawnToTheFlameSpec
   ( spec
-  ) where
+  )
+where
 
 import TestImport
 

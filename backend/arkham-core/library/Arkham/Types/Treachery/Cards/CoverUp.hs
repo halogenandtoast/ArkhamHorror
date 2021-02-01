@@ -1,7 +1,8 @@
 module Arkham.Types.Treachery.Cards.CoverUp
   ( CoverUp(..)
   , coverUp
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -23,8 +24,8 @@ instance HasModifiersFor env CoverUp where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env CoverUp where
-  getActions iid (WhenDiscoverClues You YourLocation) (CoverUp a@TreacheryAttrs {..}) =
-    withTreacheryInvestigator a $ \tormented -> do
+  getActions iid (WhenDiscoverClues You YourLocation) (CoverUp a@TreacheryAttrs {..})
+    = withTreacheryInvestigator a $ \tormented -> do
       treacheryLocationId <- getId @LocationId tormented
       investigatorLocationId <- getId @LocationId iid
       cluesToDiscover <- fromQueue $ \queue -> do
@@ -33,7 +34,7 @@ instance ActionRunner env => HasActions env CoverUp where
             DiscoverClues{} -> True
             _ -> False
         case mDiscoverClues of
-          Just (DiscoverClues _ _ m) -> m
+          Just (DiscoverClues _ _ m _) -> m
           _ -> 0
       pure
         [ ActivateCardAbilityAction
@@ -62,7 +63,7 @@ instance (TreacheryRunner env) => RunMessage env CoverUp where
           (before, after) = flip break queue $ \case
             DiscoverClues{} -> True
             _ -> False
-          (DiscoverClues _ _ m, remaining) = case after of
+          (DiscoverClues _ _ m _, remaining) = case after of
             [] -> error "DiscoverClues has to be present"
             (x : xs) -> (x, xs)
         (before <> remaining, m)

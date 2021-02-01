@@ -1,7 +1,8 @@
 module Arkham.Types.Investigator.Cards.RolandBanks
   ( RolandBanks(..)
   , rolandBanks
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -50,5 +51,5 @@ instance InvestigatorRunner env => RunMessage env RolandBanks where
   runMessage msg rb@(RolandBanks attrs@InvestigatorAttrs {..}) = case msg of
     UseCardAbility _ source _ 1 _ | isSource attrs source ->
       rb <$ unshiftMessage
-        (DiscoverCluesAtLocation (toId attrs) investigatorLocation 1)
+        (DiscoverCluesAtLocation (toId attrs) investigatorLocation 1 Nothing)
     _ -> RolandBanks <$> runMessage msg attrs

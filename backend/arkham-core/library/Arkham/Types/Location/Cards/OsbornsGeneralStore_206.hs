@@ -1,11 +1,13 @@
 module Arkham.Types.Location.Cards.OsbornsGeneralStore_206
   ( osbornsGeneralStore_206
   , OsbornsGeneralStore_206(..)
-  ) where
+  )
+where
 
 import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
@@ -25,11 +27,14 @@ osbornsGeneralStore_206 = OsbornsGeneralStore_206 $ baseAttrs
   [Dunwich]
 
 instance HasModifiersFor env OsbornsGeneralStore_206 where
-  getModifiersFor = noModifiersFor
+  getModifiersFor _ (InvestigatorTarget iid) (OsbornsGeneralStore_206 attrs) =
+    pure $ toModifiers
+      attrs
+      [ CannotGainResources | iid `member` locationInvestigators attrs ]
+  getModifiersFor _ _ _ = pure []
 
 instance ActionRunner env => HasActions env OsbornsGeneralStore_206 where
-  getActions iid window (OsbornsGeneralStore_206 attrs) =
-    getActions iid window attrs
+  getActions = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env OsbornsGeneralStore_206 where
   runMessage msg (OsbornsGeneralStore_206 attrs) =

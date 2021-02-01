@@ -74,7 +74,7 @@ testPlayerCards count' = replicateM count' (testPlayerCard id)
 testPlayerCard :: MonadIO m => (PlayerCard -> PlayerCard) -> m PlayerCard
 testPlayerCard f = do
   cardId <- CardId <$> liftIO nextRandom
-  pure . f $ basePlayerCard cardId "asset" "Test" 0 AssetType Guardian
+  pure . f $ basePlayerCard cardId "00000" "Test" 0 AssetType Guardian
 
 buildPlayerCard :: MonadIO m => CardCode -> m PlayerCard
 buildPlayerCard cardCode = do

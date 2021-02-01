@@ -1,6 +1,7 @@
 module Arkham.Types.Message
   ( module Arkham.Types.Message
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -204,8 +205,8 @@ data Message
   | DiscardTopOfEncounterDeck InvestigatorId Int (Maybe Target)
   | Discarded Target Card
   | DiscardedTopOfDeck InvestigatorId [PlayerCard] Target
-  | DiscoverClues InvestigatorId LocationId Int
-  | DiscoverCluesAtLocation InvestigatorId LocationId Int
+  | DiscoverClues InvestigatorId LocationId Int (Maybe Action)
+  | DiscoverCluesAtLocation InvestigatorId LocationId Int (Maybe Action)
   | DisengageEnemy InvestigatorId EnemyId
   | Done
   | DrawAnotherToken InvestigatorId
@@ -290,8 +291,8 @@ data Message
   | InvestigatorDefeated InvestigatorId
   | InvestigatorDirectDamage InvestigatorId Source Int Int
   | InvestigatorDiscardAllClues InvestigatorId
-  | InvestigatorDiscoverClues InvestigatorId LocationId Int
-  | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int
+  | InvestigatorDiscoverClues InvestigatorId LocationId Int (Maybe Action)
+  | InvestigatorDiscoverCluesAtTheirLocation InvestigatorId Int (Maybe Action)
   | InvestigatorDoAssignDamage InvestigatorId Source DamageStrategy Int Int [Target] [Target] -- ^ meant to be used internally by investigators                  ^ damage ^ horror
   | InvestigatorDrawEncounterCard InvestigatorId
   | InvestigatorDrawEnemy InvestigatorId LocationId EnemyId

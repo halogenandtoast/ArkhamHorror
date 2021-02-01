@@ -80,7 +80,7 @@ instance (ScenarioRunner env) => RunMessage env ReturnToTheMidnightMasks where
           ghoulPriestMessages =
             [ AddToEncounterDeck ghoulPriestCard | ghoulPriestAlive ]
           spawnAcolyteMessages =
-            [ CreateEnemyAt (getCardCode c) l
+            [ CreateEnemyAt (EncounterCard c) l
             | (c, l) <- zip acolytes [southside, downtown, "01133"]
             ]
           intro1or2 = if litaForcedToFindOthersToHelpHerCause

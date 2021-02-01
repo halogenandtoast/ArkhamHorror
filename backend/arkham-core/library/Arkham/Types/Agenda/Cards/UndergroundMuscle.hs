@@ -41,7 +41,7 @@ instance AgendaRunner env => RunMessage env UndergroundMuscle where
           [ Label
               "Continue"
               ([ CreateEnemyAtLocationMatching
-                 (getCardCode enemy)
+                 (EncounterCard enemy)
                  (LocationWithTitle "Clover Club Lounge")
                , ShuffleEncounterDiscardBackIn
                , ShuffleIntoEncounterDeck $ rest <> strikingFear

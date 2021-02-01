@@ -12,7 +12,6 @@ import Arkham.Types.AgendaId as X
 import Arkham.Types.AssetId as X
 import Arkham.Types.CampaignId as X
 import Arkham.Types.Card as X
-import Arkham.Types.Card.CardCode as X
 import Arkham.Types.Card.Cost as X
 import Arkham.Types.Card.Id as X
 import Arkham.Types.Classes as X

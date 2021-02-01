@@ -5,7 +5,6 @@ import Arkham.Prelude
 import Arkham.Types.AgendaId
 import Arkham.Types.CampaignId
 import Arkham.Types.Card
-import Arkham.Types.Card.CardCode
 import Arkham.Types.Classes
 import Arkham.Types.EnemyId
 import Arkham.Types.InvestigatorId

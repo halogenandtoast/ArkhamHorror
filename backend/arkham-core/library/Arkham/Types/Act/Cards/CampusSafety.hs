@@ -26,13 +26,14 @@ instance ActRunner env => RunMessage env CampusSafety where
       agendaStep <- asks $ unAgendaStep . getStep
       completedTheHouseAlwaysWins <-
         elem "02062" . map unCompletedScenarioId <$> getSetList ()
+      theExperiment <- EncounterCard <$> genEncounterCard "02058"
 
       unshiftMessages
         $ [ PlaceLocationMatching (LocationWithTitle "Alchemy Labs")
           | not alchemyLabsInPlay
           ]
         <> [ CreateEnemyAtLocationMatching
-               "02058"
+               theExperiment
                (LocationWithTitle "Alchemy Labs")
            | agendaStep <= 2
            ]

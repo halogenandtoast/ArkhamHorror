@@ -1,6 +1,7 @@
 module Arkham.Types.Message
   ( module Arkham.Types.Message
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -182,10 +183,10 @@ data Message
   | CompleteObjective
   | Continue Text
   | CreateEffect CardCode (Maybe (EffectMetadata Message)) Source Target
-  | CreateEnemyAt CardCode LocationId
-  | CreateEnemyAtLocationMatching CardCode LocationMatcher
-  | CreateEnemyEngagedWithPrey CardCode
-  | CreateEnemyRequest Source CardCode
+  | CreateEnemyAt Card LocationId
+  | CreateEnemyAtLocationMatching Card LocationMatcher
+  | CreateEnemyEngagedWithPrey Card
+  | CreateEnemyRequest Source Card
   | CreatePayAbilityCostEffect (Maybe Ability) Source Target
   | CreateWindowModifierEffect EffectWindow (EffectMetadata Message) Source Target
   | CreateStoryAssetAt CardCode LocationId

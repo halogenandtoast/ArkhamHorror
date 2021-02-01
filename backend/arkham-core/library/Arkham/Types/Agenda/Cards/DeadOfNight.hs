@@ -26,6 +26,7 @@ instance AgendaRunner env => RunMessage env DeadOfNight where
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       dormitoriesInPlay <- isJust <$> getLocationIdWithTitle "Dormitories"
       mExperimentId <- fmap unStoryEnemyId <$> getId (CardCode "02058")
+      theExperiment <- EncounterCard <$> genEncounterCard "02058"
       scienceBuildingId <- fromJustNote "missing science building"
         <$> getLocationIdWithTitle "Science Building"
       a <$ unshiftMessages
@@ -35,7 +36,7 @@ instance AgendaRunner env => RunMessage env DeadOfNight where
         <> [ MoveToward (EnemyTarget eid) (LocationWithTitle "Dormitories")
            | eid <- maybeToList mExperimentId
            ]
-        <> [ CreateEnemyAt "02058" scienceBuildingId
+        <> [ CreateEnemyAt theExperiment scienceBuildingId
            | isNothing mExperimentId
            ]
         <> [NextAgenda agendaId "02044"]

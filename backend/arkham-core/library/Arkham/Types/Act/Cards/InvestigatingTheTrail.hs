@@ -36,9 +36,12 @@ instance ActRunner env => RunMessage env InvestigatingTheTrail where
       locationIds <- setToList <$> getLocationSet
       when ("01156" `notElem` locationIds)
         $ unshiftMessage (PlaceLocation "01156")
-      cultistsWhoGotAway <- asks (hasRecordSet CultistsWhoGotAway)
+      cultistsWhoGotAwayCardCodes <- asks (hasRecordSet CultistsWhoGotAway)
+      cultistsWhoGotAway <- for cultistsWhoGotAwayCardCodes genEncounterCard
       a <$ unshiftMessages
-        ([ CreateEnemyAt cardCode "01149" | cardCode <- cultistsWhoGotAway ]
+        ([ CreateEnemyAt (EncounterCard card) "01149"
+         | card <- cultistsWhoGotAway
+         ]
         <> [NextAct aid "01147"]
         )
     _ -> InvestigatingTheTrail <$> runMessage msg attrs

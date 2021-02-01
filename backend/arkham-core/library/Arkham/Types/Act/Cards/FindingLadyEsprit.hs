@@ -1,8 +1,7 @@
 module Arkham.Types.Act.Cards.FindingLadyEsprit
   ( FindingLadyEsprit(..)
   , findingLadyEsprit
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -74,10 +73,11 @@ instance ActRunner env => RunMessage env FindingLadyEsprit where
       curseOfTheRougarouSet <- gatherEncounterSet
         EncounterSet.CurseOfTheRougarou
       rougarouSpawnLocations <- setToList <$> nonBayouLocations
+      theRougarou <- EncounterCard <$> genEncounterCard "81028"
       a <$ unshiftMessages
         ([ chooseOne
              leadInvestigatorId
-             [ CreateEnemyAt "81028" lid | lid <- rougarouSpawnLocations ]
+             [ CreateEnemyAt theRougarou lid | lid <- rougarouSpawnLocations ]
          ]
         <> [ ShuffleEncounterDiscardBackIn
            , ShuffleIntoEncounterDeck curseOfTheRougarouSet

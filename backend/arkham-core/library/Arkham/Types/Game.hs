@@ -1757,7 +1757,8 @@ runGameMessage msg g = case msg of
     let
       card = fromJustNote "could not find card in hand"
         $ find ((== cardId) . getCardId) (handOf investigator)
-    (eid, enemy) <- createEnemy cardCode
+      eid = EnemyId $ getCardId card
+      enemy = lookupEnemy cardCode eid
     let
       bearerMessage = case card of
         PlayerCard MkPlayerCard {..} -> case pcBearer of
@@ -2116,23 +2117,29 @@ runGameMessage msg g = case msg of
       , EnemySpawn (Just iid) lid eid
       ]
     pure $ g & enemiesL . at eid ?~ enemy
-  CreateEnemyRequest source cardCode -> do
-    (enemyId, enemy) <- createEnemy cardCode
+  CreateEnemyRequest source card -> do
+    let
+      enemyId = EnemyId (getCardId card)
+      enemy = lookupEnemy (getCardCode card) enemyId
     unshiftMessage (RequestedEnemy source enemyId)
     pure $ g & enemiesL . at enemyId ?~ enemy
   CreateEnemyAtLocationMatching cardCode locationMatcher -> do
     lid <- fromJustNote "missing location" <$> getId locationMatcher
     g <$ unshiftMessage (CreateEnemyAt cardCode lid)
-  CreateEnemyAt cardCode lid -> do
-    (enemyId, enemy) <- createEnemy cardCode
+  CreateEnemyAt card lid -> do
+    let
+      enemy = createEnemy card
+      enemyId = toId enemy
     unshiftMessages
       [ Will (EnemySpawn Nothing lid enemyId)
       , When (EnemySpawn Nothing lid enemyId)
       , EnemySpawn Nothing lid enemyId
       ]
     pure $ g & enemiesL . at enemyId ?~ enemy
-  CreateEnemyEngagedWithPrey cardCode -> do
-    (enemyId, enemy) <- createEnemy cardCode
+  CreateEnemyEngagedWithPrey card -> do
+    let
+      enemy = createEnemy card
+      enemyId = toId enemy
     unshiftMessages
       [ Will (EnemySpawnEngagedWithPrey enemyId)
       , EnemySpawnEngagedWithPrey enemyId
@@ -2310,12 +2317,12 @@ runGameMessage msg g = case msg of
   RemoveFromEncounterDiscard ec -> pure $ g & discardL %~ filter (/= ec)
   InvestigatorDrewEncounterCard iid card -> case ecCardType card of
     EnemyType -> do
-      (enemyId, enemy) <- createEnemy (ecCardCode card)
+      let enemy = createEnemy card
       lid <- locationFor iid
-      unshiftMessage (InvestigatorDrawEnemy iid lid enemyId)
+      unshiftMessage (InvestigatorDrawEnemy iid lid $ toId enemy)
       pure
         $ g
-        & (enemiesL . at enemyId ?~ enemy)
+        & (enemiesL . at (toId enemy) ?~ enemy)
         & (activeCardL ?~ EncounterCard card)
     TreacheryType -> g <$ unshiftMessage (DrewTreachery iid (ecCardCode card))
     EncounterAssetType -> do

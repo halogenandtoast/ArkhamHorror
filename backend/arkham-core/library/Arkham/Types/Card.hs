@@ -1,46 +1,35 @@
 module Arkham.Types.Card
-  ( CardCode(..)
-  , Card(..)
-  , _PlayerCard
-  , DiscardedPlayerCard(..)
-  , CampaignStoryCard(..)
-  , DeckCard(..)
-  , HandCard(..)
-  , UnderneathCard(..)
-  , DiscardableHandCard(..)
-  , InPlayCard(..)
-  , PlayerCard(..)
-  , EncounterCard(..)
-  , PlayerCardType(..)
-  , EncounterCardType(..)
-  , HasCost(..)
-  , HasSkillIcons(..)
-  , HasCard(..)
-  , BearerId(..)
-  , AttackOfOpportunityModifier(..)
-  , allPlayerCards
-  , lookupCard
-  , lookupPlayerCard
-  , genPlayerCard
-  , lookupEncounterCard
-  , allEncounterCards
-  , encounterCardMatch
-  , playerCardMatch
-  , toPlayerCard
-  , toEncounterCard
-  , cardIsWeakness
-  , isDynamic
-  )
-where
+  ( module Arkham.Types.Card
+  , module X
+  ) where
 
 import Arkham.Prelude
 
-import Arkham.Types.Card.CardCode
-import Arkham.Types.Card.Class
+import Arkham.Types.Card.CardCode as X
+import Arkham.Types.Card.Class as X
 import Arkham.Types.Card.Cost
 import Arkham.Types.Card.EncounterCard
+import Arkham.Types.Card.EncounterCard as X
+  ( EncounterCard(..)
+  , EncounterCardType(..)
+  , allEncounterCards
+  , encounterCardMatch
+  , genEncounterCard
+  , lookupEncounterCard
+  )
 import Arkham.Types.Card.Id
 import Arkham.Types.Card.PlayerCard
+import Arkham.Types.Card.PlayerCard as X
+  ( AttackOfOpportunityModifier(..)
+  , BearerId(..)
+  , DiscardedPlayerCard(..)
+  , PlayerCard(..)
+  , PlayerCardType(..)
+  , allPlayerCards
+  , genPlayerCard
+  , lookupPlayerCard
+  , playerCardMatch
+  )
 import Arkham.Types.InvestigatorId
 
 data Card
@@ -106,6 +95,9 @@ toEncounterCard (PlayerCard _) = Nothing
 cardIsWeakness :: Card -> Bool
 cardIsWeakness (EncounterCard _) = False
 cardIsWeakness (PlayerCard pc) = pcWeakness pc
+
+buildCard :: MonadRandom m => CardCode -> m Card
+buildCard cardCode = lookupCard cardCode <$> getRandom
 
 lookupCard :: CardCode -> (CardId -> Card)
 lookupCard cardCode =

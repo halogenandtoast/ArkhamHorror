@@ -24,15 +24,16 @@ instance AgendaRunner env => RunMessage env VengeanceAwaits where
       a <$ unshiftMessage (ScenarioResolution $ Resolution 2)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do
       actIds <- getSetList ()
+      umordhoth <- EncounterCard <$> genEncounterCard "01157"
       a <$ if "01146" `elem` actIds
         then
           unshiftMessages
-          $ [PlaceLocation "01156", CreateEnemyAt "01157" "01156"]
+          $ [PlaceLocation "01156", CreateEnemyAt umordhoth "01156"]
           <> [ Discard (ActTarget actId) | actId <- actIds ]
         else do
           enemyIds <- getSetList (LocationId "01156")
           unshiftMessages
             $ [ Discard (EnemyTarget eid) | eid <- enemyIds ]
-            <> [CreateEnemyAt "01157" "01156"]
+            <> [CreateEnemyAt umordhoth "01156"]
             <> [ Discard (ActTarget actId) | actId <- actIds ]
     _ -> VengeanceAwaits <$> runMessage msg attrs

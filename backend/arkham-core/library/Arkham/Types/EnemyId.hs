@@ -2,7 +2,9 @@ module Arkham.Types.EnemyId where
 
 import Arkham.Prelude
 
-newtype EnemyId = EnemyId { unEnemyId :: UUID }
+import Arkham.Types.Card.Id
+
+newtype EnemyId = EnemyId { unEnemyId :: CardId }
   deriving newtype (Show, Eq, ToJSON, FromJSON, ToJSONKey, FromJSONKey, Hashable, Random)
 
 newtype StoryEnemyId = StoryEnemyId { unStoryEnemyId :: EnemyId }

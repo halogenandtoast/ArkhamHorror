@@ -50,7 +50,7 @@ instance FromJSON EnemyAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "enemy"
 
 instance IsCard EnemyAttrs where
-  getCardId = CardId . unEnemyId . enemyId
+  getCardId = unEnemyId . enemyId
   getCardCode = enemyCardCode
   getTraits = enemyTraits
   getKeywords = enemyKeywords
@@ -62,7 +62,7 @@ baseAttrs eid cardCode f =
       fromJustNote
           ("missing enemy encounter card: " <> show cardCode)
           (lookup cardCode allEncounterCards)
-        $ CardId (unEnemyId eid)
+        $ unEnemyId eid
   in
     f $ EnemyAttrs
       { enemyName = ecName
@@ -96,7 +96,7 @@ weaknessBaseAttrs eid cardCode =
       fromJustNote
           ("missing player enemy weakness card: " <> show cardCode)
           (lookup cardCode allPlayerCards)
-        $ CardId (unEnemyId eid)
+        $ unEnemyId eid
   in
     EnemyAttrs
       { enemyName = pcName
@@ -632,7 +632,7 @@ instance EnemyRunner env => RunMessage env EnemyAttrs where
       pure $ a & engagedInvestigatorsL %~ deleteSet iid
     EnemySetBearer eid bid | eid == enemyId -> pure $ a & preyL .~ Bearer bid
     AdvanceAgenda{} -> pure $ a & doomL .~ 0
-    PlaceDoom (CardIdTarget cid) amount | unCardId cid == unEnemyId enemyId ->
+    PlaceDoom (CardIdTarget cid) amount | cid == unEnemyId enemyId ->
       pure $ a & doomL +~ amount
     PlaceDoom (EnemyTarget eid) amount | eid == enemyId ->
       pure $ a & doomL +~ amount

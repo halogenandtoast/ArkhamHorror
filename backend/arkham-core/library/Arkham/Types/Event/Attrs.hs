@@ -29,7 +29,7 @@ instance FromJSON EventAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "event"
 
 instance IsCard EventAttrs where
-  getCardId = CardId . unEventId . eventId
+  getCardId = unEventId . eventId
   getCardCode = eventCardCode
   getTraits = eventTraits
   getKeywords = mempty
@@ -51,7 +51,7 @@ baseAttrs iid eid cardCode =
       fromJustNote
           ("missing player card: " <> unpack (unCardCode cardCode))
           (HashMap.lookup cardCode allPlayerCards)
-        $ CardId (unEventId eid)
+        $ unEventId eid
   in
     EventAttrs
       { eventName = pcName
@@ -71,7 +71,7 @@ weaknessAttrs iid eid cardCode =
       fromJustNote
           "missing weakness card"
           (HashMap.lookup cardCode allPlayerCards)
-        $ CardId (unEventId eid)
+        $ unEventId eid
   in
     EventAttrs
       { eventName = pcName

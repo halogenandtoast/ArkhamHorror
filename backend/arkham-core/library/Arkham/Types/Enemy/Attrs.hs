@@ -256,6 +256,7 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = enemyId
   toAttrs = id
+  toName = mkName . enemyName
   toSource = EnemySource . toId
   toTarget = EnemyTarget . toId
   isTarget Attrs { enemyId } (EnemyTarget eid) = enemyId == eid

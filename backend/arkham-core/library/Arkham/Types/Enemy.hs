@@ -138,6 +138,7 @@ deriving anyclass instance
 instance Entity Enemy where
   type EntityId Enemy = EnemyId
   type EntityAttrs Enemy = Attrs
+  toName = toName . toAttrs
   toSource = toSource . toAttrs
   toTarget = toTarget . toAttrs
   isSource = isSource . toAttrs

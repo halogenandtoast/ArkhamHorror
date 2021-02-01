@@ -159,6 +159,7 @@ instance AssetRunner env => RunMessage env Asset where
 instance Entity Asset where
   type EntityId Asset = AssetId
   type EntityAttrs Asset = Attrs
+  toName = toName . toAttrs
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
   toSource = toSource . toAttrs

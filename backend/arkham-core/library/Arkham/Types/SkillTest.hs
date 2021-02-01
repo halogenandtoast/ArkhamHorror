@@ -2,7 +2,8 @@
 
 module Arkham.Types.SkillTest
   ( module Arkham.Types.SkillTest
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -37,6 +38,7 @@ instance Entity SkillTest where
   type EntityAttrs SkillTest = ()
   toId _ = ()
   toAttrs _ = ()
+  toName _ = mkName "Skill test"
   toSource SkillTest {..} = SkillTestSource
     skillTestInvestigator
     skillTestSkillType

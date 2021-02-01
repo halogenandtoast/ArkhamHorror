@@ -32,6 +32,7 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = skillId
   toAttrs = id
+  toName = mkName . skillName
   toSource = SkillSource . skillId
   toTarget = SkillTarget . skillId
   isSource Attrs { skillId } (SkillSource sid) = skillId == sid

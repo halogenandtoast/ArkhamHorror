@@ -4,6 +4,7 @@ module Arkham.Types.Classes.Entity where
 import Arkham.Prelude
 
 import Arkham.Types.Helpers
+import Arkham.Types.Name
 import Arkham.Types.Source
 import Arkham.Types.Target
 import GHC.Generics
@@ -11,6 +12,7 @@ import GHC.Generics
 class Entity a where
   type EntityId a
   type EntityAttrs a
+  toName :: a -> Name
   toId :: a -> EntityId a
   default toId :: (EntityId a ~ EntityId (EntityAttrs a), Entity (EntityAttrs a)) => a -> EntityId a
   toId = defaultToId
@@ -52,6 +54,7 @@ instance (Entity (EntityAttrs a), Entity a) => Entity (a `With` b) where
   type EntityAttrs (a `With` b) = EntityAttrs a
   toId (a `With` _) = toId a
   toAttrs (a `With` _) = toAttrs a
+  toName (a `With` _) = toName a
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
   toSource = toSource . toAttrs

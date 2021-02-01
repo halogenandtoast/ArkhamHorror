@@ -29,6 +29,7 @@ instance HasList CampaignStoryCard env Campaign where
 instance Entity Campaign where
   type EntityId Campaign = CampaignId
   type EntityAttrs Campaign = Attrs
+  toName = toName . toAttrs
   toTarget = CampaignTarget . toId
   toSource = CampaignSource . toId
 

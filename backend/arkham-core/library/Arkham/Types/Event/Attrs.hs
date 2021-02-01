@@ -86,6 +86,7 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = eventId
   toAttrs = id
+  toName = mkName . eventName
   toSource = EventSource . toId
   toTarget = EventTarget . toId
   isSource Attrs { eventId } (EventSource eid) = eventId == eid

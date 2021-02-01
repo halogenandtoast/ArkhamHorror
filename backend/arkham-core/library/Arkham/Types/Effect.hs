@@ -56,6 +56,7 @@ deriving anyclass instance
 instance Entity Effect where
   type EntityId Effect = EffectId
   type EntityAttrs Effect = Attrs
+  toName = toName . toAttrs
   toSource = toSource . toAttrs
   toTarget = toTarget . toAttrs
   isSource = isSource . toAttrs

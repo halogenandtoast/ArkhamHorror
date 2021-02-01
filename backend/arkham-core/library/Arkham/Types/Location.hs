@@ -148,6 +148,7 @@ instance LocationRunner env => RunMessage env Location where
 instance Entity Location where
   type EntityId Location = LocationId
   type EntityAttrs Location = Attrs
+  toName = toName . toAttrs
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
   toSource = toSource . toAttrs
@@ -230,13 +231,10 @@ instance HasSet ConnectedLocationId env Location where
     pure . mapSet ConnectedLocationId . locationConnectedLocations . toAttrs
 
 instance HasId LocationId env Location where
-  getId = pure . getLocationId
+  getId = pure . toId
 
 instance HasId (Maybe LocationId) env (Direction, Location) where
   getId (dir, location) = getId (dir, toAttrs location)
-
-getLocationId :: Location -> LocationId
-getLocationId = locationId . toAttrs
 
 getLocationName :: Location -> LocationName
 getLocationName = locationName . toAttrs

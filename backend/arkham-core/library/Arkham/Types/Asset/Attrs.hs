@@ -87,6 +87,7 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = assetId
   toAttrs = id
+  toName = mkName . assetName
   toSource = AssetSource . toId
   toTarget = AssetTarget . toId
   isSource Attrs { assetId } (AssetSource aid) = assetId == aid
@@ -101,8 +102,7 @@ instance Entity Attrs where
 ownedBy :: Attrs -> InvestigatorId -> Bool
 ownedBy Attrs {..} = (== assetInvestigator) . Just
 
-assetAction
-  :: InvestigatorId -> Attrs -> Int -> Maybe Action -> Cost -> Message
+assetAction :: InvestigatorId -> Attrs -> Int -> Maybe Action -> Cost -> Message
 assetAction iid attrs idx mAction cost =
   ActivateCardAbilityAction iid
     $ mkAbility (toSource attrs) idx (ActionAbility mAction cost)

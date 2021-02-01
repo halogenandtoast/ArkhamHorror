@@ -21,7 +21,7 @@ instance (EventRunner env) => RunMessage env DrawnToTheFlame where
   runMessage msg e@(DrawnToTheFlame attrs@EventAttrs {..}) = case msg of
     InvestigatorPlayEvent iid eid _ | eid == eventId -> e <$ unshiftMessages
       [ InvestigatorDrawEncounterCard iid
-      , InvestigatorDiscoverCluesAtTheirLocation iid 2
+      , InvestigatorDiscoverCluesAtTheirLocation iid 2 Nothing
       , Discard (EventTarget eid)
       ]
     _ -> DrawnToTheFlame <$> runMessage msg attrs

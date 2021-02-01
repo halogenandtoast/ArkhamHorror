@@ -6,6 +6,7 @@ where
 
 import Arkham.Import
 
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Effect.Attrs
 
 newtype RiteOfSeeking = RiteOfSeeking EffectAttrs
@@ -35,7 +36,7 @@ instance (HasQueue env) => RunMessage env RiteOfSeeking where
       _ -> unshiftMessage (DisableEffect effectId)
     SuccessfulInvestigation iid _ source | isSource attrs source ->
       case effectTarget of
-        InvestigationTarget _ lid' ->
-          e <$ unshiftMessage (InvestigatorDiscoverClues iid lid' 1)
+        InvestigationTarget _ lid' -> e <$ unshiftMessage
+          (InvestigatorDiscoverClues iid lid' 1 (Just Action.Investigate))
         _ -> pure e
     _ -> RiteOfSeeking <$> runMessage msg attrs

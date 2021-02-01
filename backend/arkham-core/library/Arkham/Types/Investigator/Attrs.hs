@@ -239,8 +239,7 @@ getModifiedSanity attrs@InvestigatorAttrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-removeFromSlots
-  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = fmap (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> InvestigatorAttrs -> Bool
@@ -1020,20 +1019,22 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
       , CheckAttackOfOpportunity iid False
       , Investigate iid lid source skillType False
       ]
-  InvestigatorDiscoverCluesAtTheirLocation iid n | iid == investigatorId ->
-    runMessage (InvestigatorDiscoverClues iid investigatorLocation n) a
-  InvestigatorDiscoverClues iid lid n | iid == investigatorId -> do
+  InvestigatorDiscoverCluesAtTheirLocation iid n maction
+    | iid == investigatorId -> runMessage
+      (InvestigatorDiscoverClues iid investigatorLocation n maction)
+      a
+  InvestigatorDiscoverClues iid lid n maction | iid == investigatorId -> do
     canDiscoverClues <- getCanDiscoverClues a
     if canDiscoverClues
       then do
         modifiedCluesToDiscover <- cluesToDiscover a n
         a <$ unshiftMessage
-          (DiscoverCluesAtLocation iid lid modifiedCluesToDiscover)
+          (DiscoverCluesAtLocation iid lid modifiedCluesToDiscover maction)
       else pure a
   GainClues iid n | iid == investigatorId -> do
     unshiftMessage (After (GainClues iid n))
     pure $ a & cluesL +~ n
-  DiscoverClues iid lid n | iid == investigatorId ->
+  DiscoverClues iid lid n _ | iid == investigatorId ->
     a <$ unshiftMessage (AfterDiscoverClues iid lid n)
   AfterDiscoverClues iid _ n | iid == investigatorId -> do
     unshiftMessage (After (GainClues iid n))
@@ -1567,9 +1568,8 @@ runInvestigatorMessage msg a@InvestigatorAttrs {..} = case msg of
                 ]
               else choices
             )
-      actions <-
-        fmap concat <$> for cards $ \card' ->
-          getActions iid (WhenAmongSearchedCards You) (toCardInstance iid card')
+      actions <- fmap concat <$> for cards $ \card' ->
+        getActions iid (WhenAmongSearchedCards You) (toCardInstance iid card')
       -- TODO: This is for astounding revelation and only one research action is possible
       -- so we are able to short circuit here, but we may have additional cards in the
       -- future so we may want to make this more versatile

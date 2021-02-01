@@ -1,11 +1,14 @@
 module Arkham.Types.Location.Cards.CongregationalChurch_208
   ( congregationalChurch_208
   , CongregationalChurch_208(..)
-  ) where
+  )
+where
 
 import Arkham.Import
 
+import Arkham.Types.Card.EncounterCardMatcher
 import qualified Arkham.Types.EncounterSet as EncounterSet
+import Arkham.Types.Game.Helpers
 import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
@@ -28,9 +31,17 @@ instance HasModifiersFor env CongregationalChurch_208 where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env CongregationalChurch_208 where
-  getActions iid window (CongregationalChurch_208 attrs) =
-    getActions iid window attrs
+  getActions = withDrawCardUnderneathAction
 
 instance LocationRunner env => RunMessage env CongregationalChurch_208 where
-  runMessage msg (CongregationalChurch_208 attrs) =
-    CongregationalChurch_208 <$> runMessage msg attrs
+  runMessage msg l@(CongregationalChurch_208 attrs) = case msg of
+    RevealLocation miid lid | lid == locationId attrs -> do
+      iid <- maybe getLeadInvestigatorId pure miid
+      unshiftMessage $ FindEncounterCard
+        iid
+        (toTarget attrs)
+        (EncounterCardMatchByType (EnemyType, Just Humanoid))
+      CongregationalChurch_208 <$> runMessage msg attrs
+    FoundEncounterCard _iid target card | isTarget attrs target ->
+      l <$ unshiftMessage (SpawnEnemyAt (EncounterCard card) (toId attrs))
+    _ -> CongregationalChurch_208 <$> runMessage msg attrs

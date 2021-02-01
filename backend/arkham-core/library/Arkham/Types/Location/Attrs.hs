@@ -270,7 +270,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         (AlternateSuccessfullInvestigation `elem` modifiers')
         (unshiftMessages
           [ CheckWindow iid [WhenSuccessfulInvestigation You YourLocation]
-          , InvestigatorDiscoverClues iid lid 1
+          , InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate)
           , CheckWindow iid [AfterSuccessfulInvestigation You YourLocation]
           ]
         )
@@ -360,7 +360,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
           unshiftMessage (AddedConnection locationId lid)
           pure $ a & connectedLocationsL %~ insertSet lid
         else pure a
-    DiscoverCluesAtLocation iid lid n | lid == locationId -> do
+    DiscoverCluesAtLocation iid lid n maction | lid == locationId -> do
       let discoveredClues = min n locationClues
       checkWindowMsgs <- checkWindows
         iid
@@ -373,7 +373,7 @@ instance LocationRunner env => RunMessage env LocationAttrs where
         )
 
       a <$ unshiftMessages
-        (checkWindowMsgs <> [DiscoverClues iid lid discoveredClues])
+        (checkWindowMsgs <> [DiscoverClues iid lid discoveredClues maction])
     AfterDiscoverClues iid lid n | lid == locationId -> do
       checkWindowMsgs <- checkWindows
         iid

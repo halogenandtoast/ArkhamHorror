@@ -6,6 +6,7 @@ where
 
 import Arkham.Import
 
+import qualified Arkham.Types.Action as Action
 import Arkham.Types.Effect.Attrs
 
 newtype Deduction = Deduction EffectAttrs
@@ -21,7 +22,8 @@ instance HasQueue env => RunMessage env Deduction where
   runMessage msg e@(Deduction attrs@EffectAttrs {..}) = case msg of
     SuccessfulInvestigation iid lid _ -> case effectMetadata of
       Just (EffectMetaTarget (LocationTarget lid')) | lid == lid' ->
-        e <$ unshiftMessage (InvestigatorDiscoverClues iid lid 1)
+        e <$ unshiftMessage
+          (InvestigatorDiscoverClues iid lid 1 (Just Action.Investigate))
       _ -> pure e
     SkillTestEnds _ -> e <$ unshiftMessage (DisableEffect effectId)
     _ -> Deduction <$> runMessage msg attrs

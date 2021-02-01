@@ -1,12 +1,14 @@
 module Arkham.Types.Location.Cards.CongregationalChurch_209
   ( congregationalChurch_209
   , CongregationalChurch_209(..)
-  ) where
+  )
+where
 
 import Arkham.Import
 
 import qualified Arkham.Types.EncounterSet as EncounterSet
 import Arkham.Types.Location.Attrs
+import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
@@ -27,10 +29,28 @@ congregationalChurch_209 = CongregationalChurch_209 $ baseAttrs
 instance HasModifiersFor env CongregationalChurch_209 where
   getModifiersFor = noModifiersFor
 
+ability :: LocationAttrs -> Ability
+ability attrs = mkAbility
+  (toSource attrs)
+  1
+  (ActionAbility Nothing
+  $ Costs [ActionCost 1, HandDiscardCost 1 Nothing mempty mempty]
+  )
+
 instance ActionRunner env => HasActions env CongregationalChurch_209 where
+  getActions iid NonFast (CongregationalChurch_209 attrs)
+    | locationRevealed attrs = withBaseActions iid NonFast attrs
+    $ pure [ActivateCardAbilityAction iid (ability attrs)]
+  getActions iid FastPlayerWindow (CongregationalChurch_209 attrs)
+    | locationRevealed attrs = withBaseActions iid FastPlayerWindow attrs $ pure
+      [ drawCardUnderneathAction iid attrs
+      | iid `on` attrs && locationClues attrs == 0
+      ]
   getActions iid window (CongregationalChurch_209 attrs) =
     getActions iid window attrs
 
 instance LocationRunner env => RunMessage env CongregationalChurch_209 where
-  runMessage msg (CongregationalChurch_209 attrs) =
-    CongregationalChurch_209 <$> runMessage msg attrs
+  runMessage msg l@(CongregationalChurch_209 attrs) = case msg of
+    UseCardAbility iid source _ 1 _ | isSource attrs source ->
+      l <$ unshiftMessage (TakeResources iid 2 False)
+    _ -> CongregationalChurch_209 <$> runMessage msg attrs

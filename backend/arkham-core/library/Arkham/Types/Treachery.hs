@@ -69,6 +69,7 @@ data Treachery
   | AcrossTimeAndSpace' AcrossTimeAndSpace
   | ClawsOfSteam' ClawsOfSteam
   | BrokenRails' BrokenRails
+  | StrangeSigns' StrangeSigns
   | RottingRemainsBloodOnTheAltar' RottingRemainsBloodOnTheAltar
   | TheZealotsSeal' TheZealotsSeal
   | MaskedHorrors' MaskedHorrors
@@ -196,6 +197,7 @@ allTreacheries = mapFromList
   , ("02178", (AcrossTimeAndSpace' .) . acrossTimeAndSpace)
   , ("02180", (ClawsOfSteam' .) . clawsOfSteam)
   , ("02181", (BrokenRails' .) . brokenRails)
+  , ("02222", (StrangeSigns' .) . strangeSigns)
   , ( "02223"
     , (RottingRemainsBloodOnTheAltar' .) . rottingRemainsBloodOnTheAltar
     )

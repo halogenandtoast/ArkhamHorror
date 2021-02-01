@@ -11,7 +11,7 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Trait
 
-newtype ACreatureOfTheBayou = ACreatureOfTheBayou Attrs
+newtype ACreatureOfTheBayou = ACreatureOfTheBayou AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 aCreatureOfTheBayou :: ACreatureOfTheBayou
@@ -30,7 +30,7 @@ getRougarou
 getRougarou = fmap unStoryEnemyId <$> getId (CardCode "81028")
 
 instance AgendaRunner env => RunMessage env ACreatureOfTheBayou where
-  runMessage msg a@(ACreatureOfTheBayou attrs@Attrs {..}) = case msg of
+  runMessage msg a@(ACreatureOfTheBayou attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       mrougarou <- getRougarou
       case mrougarou of

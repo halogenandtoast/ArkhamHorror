@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 
-newtype OutOfTime = OutOfTime Attrs
+newtype OutOfTime = OutOfTime AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 outOfTime :: OutOfTime
@@ -22,7 +22,7 @@ instance HasActions env OutOfTime where
   getActions i window (OutOfTime x) = getActions i window x
 
 instance AgendaRunner env => RunMessage env OutOfTime where
-  runMessage msg (OutOfTime attrs@Attrs {..}) = case msg of
+  runMessage msg (OutOfTime attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 5 B -> do
       investigatorIds <- map unInScenarioInvestigatorId <$> getSetList ()
       unshiftMessages

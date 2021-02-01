@@ -7,7 +7,7 @@ import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Trait
 
-newtype TheRitualBegins = TheRitualBegins Attrs
+newtype TheRitualBegins = TheRitualBegins AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theRitualBegins :: TheRitualBegins
@@ -24,7 +24,7 @@ instance HasActions env TheRitualBegins where
   getActions i window (TheRitualBegins x) = getActions i window x
 
 instance (AgendaRunner env) => RunMessage env TheRitualBegins where
-  runMessage msg a@(TheRitualBegins attrs@Attrs {..}) = case msg of
+  runMessage msg a@(TheRitualBegins attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       investigatorIds <- getSetList ()
       a <$ unshiftMessages

@@ -9,7 +9,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card.EncounterCardMatcher
 
-newtype ShadowsDeepen = ShadowsDeepen Attrs
+newtype ShadowsDeepen = ShadowsDeepen AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 shadowsDeepen :: ShadowsDeepen
@@ -23,7 +23,7 @@ instance HasModifiersFor env ShadowsDeepen where
   getModifiersFor = noModifiersFor
 
 instance AgendaRunner env => RunMessage env ShadowsDeepen where
-  runMessage msg a@(ShadowsDeepen attrs@Attrs {..}) = case msg of
+  runMessage msg a@(ShadowsDeepen attrs@AgendaAttrs {..}) = case msg of
     EnemySpawn _ _ eid -> do
       cardCode <- getId @CardCode eid
       when (cardCode == CardCode "02141") $ do

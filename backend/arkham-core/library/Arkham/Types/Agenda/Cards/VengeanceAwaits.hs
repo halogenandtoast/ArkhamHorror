@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 
-newtype VengeanceAwaits = VengeanceAwaits Attrs
+newtype VengeanceAwaits = VengeanceAwaits AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 vengeanceAwaits :: VengeanceAwaits
@@ -19,7 +19,7 @@ instance HasActions env VengeanceAwaits where
   getActions i window (VengeanceAwaits x) = getActions i window x
 
 instance AgendaRunner env => RunMessage env VengeanceAwaits where
-  runMessage msg a@(VengeanceAwaits attrs@Attrs {..}) = case msg of
+  runMessage msg a@(VengeanceAwaits attrs@AgendaAttrs {..}) = case msg of
     EnemyDefeated _ _ _ "01156" _ _ ->
       a <$ unshiftMessage (ScenarioResolution $ Resolution 2)
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 3 B -> do

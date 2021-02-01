@@ -6,7 +6,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 
-newtype DeadOfNight = DeadOfNight Attrs
+newtype DeadOfNight = DeadOfNight AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 deadOfNight :: DeadOfNight
@@ -22,7 +22,7 @@ instance HasModifiersFor env DeadOfNight where
   getModifiersFor _ _ _ = pure []
 
 instance AgendaRunner env => RunMessage env DeadOfNight where
-  runMessage msg a@(DeadOfNight attrs@Attrs {..}) = case msg of
+  runMessage msg a@(DeadOfNight attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       dormitoriesInPlay <- isJust <$> getLocationIdWithTitle "Dormitories"
       mExperimentId <- fmap unStoryEnemyId <$> getId (CardCode "02058")

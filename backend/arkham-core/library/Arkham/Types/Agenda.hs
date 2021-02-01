@@ -1,6 +1,7 @@
 module Arkham.Types.Agenda
   ( module Arkham.Types.Agenda
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -91,7 +92,7 @@ deriving anyclass instance HasSet Trait env EnemyId => HasModifiersFor env Agend
 
 instance Entity Agenda where
   type EntityId Agenda = AgendaId
-  type EntityAttrs Agenda = Attrs
+  type EntityAttrs Agenda = AgendaAttrs
 
 instance NamedEntity Agenda where
   toName = toName . toAttrs
@@ -104,7 +105,7 @@ instance SourceEntity Agenda where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 
-newtype BaseAgenda = BaseAgenda Attrs
+newtype BaseAgenda = BaseAgenda AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 baseAgenda
@@ -112,7 +113,7 @@ baseAgenda
   -> Text
   -> AgendaSequence
   -> GameValue Int
-  -> (Attrs -> Attrs)
+  -> (AgendaAttrs -> AgendaAttrs)
   -> Agenda
 baseAgenda a b c d f = BaseAgenda' . BaseAgenda . f $ baseAttrs a b c d
 

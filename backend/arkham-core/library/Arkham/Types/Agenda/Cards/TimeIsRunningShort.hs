@@ -10,7 +10,7 @@ import qualified Arkham.Types.Action as Action
 import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 
-newtype TimeIsRunningShort = TimeIsRunningShort Attrs
+newtype TimeIsRunningShort = TimeIsRunningShort AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 timeIsRunningShort :: TimeIsRunningShort
@@ -33,7 +33,7 @@ instance HasActions env TimeIsRunningShort where
   getActions _ _ _ = pure []
 
 instance (AgendaRunner env) => RunMessage env TimeIsRunningShort where
-  runMessage msg a@(TimeIsRunningShort attrs@Attrs {..}) = case msg of
+  runMessage msg a@(TimeIsRunningShort attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B ->
       a <$ unshiftMessage (ScenarioResolution $ Resolution 2)
     UseCardAbility iid (AgendaSource aid) _ 1 _ | aid == agendaId -> do

@@ -7,7 +7,7 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Game.Helpers
 import Control.Monad.Extra (mapMaybeM)
 
-newtype QuietHalls = QuietHalls Attrs
+newtype QuietHalls = QuietHalls AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 quietHalls :: QuietHalls
@@ -21,7 +21,7 @@ instance HasActions env QuietHalls where
   getActions i window (QuietHalls x) = getActions i window x
 
 instance AgendaRunner env => RunMessage env QuietHalls where
-  runMessage msg a@(QuietHalls attrs@Attrs {..}) = case msg of
+  runMessage msg a@(QuietHalls attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B -> do
       investigatorIds <- getInvestigatorIds
       messages <- flip mapMaybeM investigatorIds $ \iid -> do

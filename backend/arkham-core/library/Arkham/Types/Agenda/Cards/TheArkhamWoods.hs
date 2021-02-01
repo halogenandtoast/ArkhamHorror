@@ -7,7 +7,7 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Trait
 
-newtype TheArkhamWoods = TheArkhamWoods Attrs
+newtype TheArkhamWoods = TheArkhamWoods AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theArkhamWoods :: TheArkhamWoods
@@ -21,7 +21,7 @@ instance HasActions env TheArkhamWoods where
   getActions i window (TheArkhamWoods x) = getActions i window x
 
 instance AgendaRunner env => RunMessage env TheArkhamWoods where
-  runMessage msg a@(TheArkhamWoods attrs@Attrs {..}) = case msg of
+  runMessage msg a@(TheArkhamWoods attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 1 B ->
       a <$ unshiftMessage
         (Run

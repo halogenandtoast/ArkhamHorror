@@ -9,7 +9,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 import Arkham.Types.EncounterSet
 
-newtype UndergroundMuscle = UndergroundMuscle Attrs
+newtype UndergroundMuscle = UndergroundMuscle AgendaAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 undergroundMuscle :: UndergroundMuscle
@@ -23,7 +23,7 @@ instance HasModifiersFor env UndergroundMuscle where
   getModifiersFor = noModifiersFor
 
 instance AgendaRunner env => RunMessage env UndergroundMuscle where
-  runMessage msg (UndergroundMuscle attrs@Attrs {..}) = case msg of
+  runMessage msg (UndergroundMuscle attrs@AgendaAttrs {..}) = case msg of
     AdvanceAgenda aid | aid == agendaId && agendaSequence == Agenda 2 B -> do
       laBellaLunaId <- fromJustNote "La Bella Luna is missing"
         <$> getLocationIdWithTitle "La Bella Luna"

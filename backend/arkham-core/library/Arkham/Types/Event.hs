@@ -76,6 +76,7 @@ deriving anyclass instance EventRunner env => RunMessage env Event
 instance Entity Event where
   type EntityId Event = EventId
   type EntityAttrs Event = Attrs
+  toName = toName . toAttrs
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
   toSource = toSource . toAttrs

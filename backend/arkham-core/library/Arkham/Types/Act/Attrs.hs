@@ -3,7 +3,8 @@
 module Arkham.Types.Act.Attrs
   ( module Arkham.Types.Act.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -38,6 +39,7 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = actId
   toAttrs = id
+  toName = mkName . actName
   toSource = ActSource . toId
   toTarget = ActTarget . toId
   isSource Attrs { actId } (ActSource aid) = actId == aid

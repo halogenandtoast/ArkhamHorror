@@ -37,6 +37,7 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = campaignId
   toAttrs = id
+  toName = mkName . campaignName
   toTarget = CampaignTarget . toId
   toSource = CampaignSource . toId
 

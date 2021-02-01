@@ -41,6 +41,7 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = treacheryId
   toAttrs = id
+  toName = mkName . treacheryName
   toTarget = TreacheryTarget . toId
   toSource = TreacherySource . toId
   isSource Attrs { treacheryId } (TreacherySource tid) = treacheryId == tid

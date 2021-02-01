@@ -45,6 +45,7 @@ instance HasStep ActStep Act where
 instance Entity Act where
   type EntityId Act = ActId
   type EntityAttrs Act = Attrs
+  toName = toName . toAttrs
   toSource = toSource . toAttrs
   toTarget = toTarget . toAttrs
   isSource = isSource . toAttrs

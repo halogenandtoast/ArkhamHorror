@@ -72,6 +72,7 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = scenarioId
   toAttrs = id
+  toName = mkName . scenarioName
   toSource = ScenarioSource . toId
   toTarget = ScenarioTarget . toId
   isSource Attrs { scenarioId } (ScenarioSource sid) = scenarioId == sid

@@ -51,6 +51,7 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = locationId
   toAttrs = id
+  toName = unLocationName . locationName
   toSource = LocationSource . toId
   toTarget = LocationTarget . toId
   isSource Attrs { locationId } (LocationSource lid) = locationId == lid

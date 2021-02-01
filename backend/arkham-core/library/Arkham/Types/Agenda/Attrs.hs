@@ -3,7 +3,8 @@
 module Arkham.Types.Agenda.Attrs
   ( module Arkham.Types.Agenda.Attrs
   , module X
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -36,6 +37,7 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = agendaId
   toAttrs = id
+  toName = mkName . agendaName
   toSource = AgendaSource . toId
   toTarget = AgendaTarget . toId
   isSource Attrs { agendaId } (AgendaSource aid) = agendaId == aid

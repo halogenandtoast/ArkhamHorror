@@ -1,6 +1,7 @@
 module Arkham.Types.Name
   ( module Arkham.Types.Name
-  ) where
+  )
+where
 
 import Arkham.Prelude
 
@@ -13,6 +14,12 @@ data Name = Name
   }
   deriving stock (Show, Eq, Generic)
   deriving anyclass (ToJSONKey, FromJSONKey, Hashable)
+
+mkName :: Text -> Name
+mkName = flip Name Nothing
+
+mkFullName :: Text -> Text -> Name
+mkFullName = (. Just) . Name
 
 instance ToJSON Name where
   toJSON = genericToJSON $ aesonOptions $ Just "name"

@@ -1,7 +1,8 @@
 module Arkham.Types.Location.Cards.Schoolhouse_213
   ( schoolhouse_213
   , Schoolhouse_213(..)
-  ) where
+  )
+where
 
 import Arkham.Import
 
@@ -27,9 +28,13 @@ schoolhouse_213 = Schoolhouse_213 $ baseAttrs
 instance HasModifiersFor env Schoolhouse_213 where
   getModifiersFor = noModifiersFor
 
+
 instance ActionRunner env => HasActions env Schoolhouse_213 where
   getActions iid window (Schoolhouse_213 attrs) = getActions iid window attrs
 
+
 instance LocationRunner env => RunMessage env Schoolhouse_213 where
-  runMessage msg (Schoolhouse_213 attrs) =
-    Schoolhouse_213 <$> runMessage msg attrs
+  runMessage msg l@(Schoolhouse_213 attrs) = case msg of
+    -- Cannot discover clues except by investigating so we just noop
+    DiscoverCluesAtLocation _ lid _ Nothing | lid == locationId attrs -> pure l
+    _ -> Schoolhouse_213 <$> runMessage msg attrs

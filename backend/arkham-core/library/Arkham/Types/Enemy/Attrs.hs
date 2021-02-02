@@ -256,6 +256,8 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = enemyId
   toAttrs = id
+
+instance NamedEntity Attrs where
   toName = mkName . enemyName
 
 instance TargetEntity Attrs where

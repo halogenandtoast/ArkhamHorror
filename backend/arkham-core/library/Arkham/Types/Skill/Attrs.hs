@@ -32,6 +32,8 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = skillId
   toAttrs = id
+
+instance NamedEntity Attrs where
   toName = mkName . skillName
 
 instance TargetEntity Attrs where

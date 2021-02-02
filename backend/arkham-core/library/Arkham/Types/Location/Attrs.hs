@@ -51,6 +51,8 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = locationId
   toAttrs = id
+
+instance NamedEntity Attrs where
   toName = unLocationName . locationName
 
 instance TargetEntity Attrs where

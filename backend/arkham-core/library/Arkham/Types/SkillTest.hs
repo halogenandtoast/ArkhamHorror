@@ -32,13 +32,6 @@ data SkillTest = SkillTest
 
 makeLensesWith (suffixedWithFields "skillTest") ''SkillTest
 
-instance Entity SkillTest where
-  type EntityId SkillTest = ()
-  type EntityAttrs SkillTest = ()
-  toId _ = ()
-  toAttrs _ = ()
-  toName _ = mkName "Skill test"
-
 instance TargetEntity SkillTest where
   toTarget _ = SkillTestTarget
   isTarget _ SkillTestTarget = True

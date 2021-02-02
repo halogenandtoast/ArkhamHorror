@@ -56,7 +56,6 @@ deriving anyclass instance
 instance Entity Effect where
   type EntityId Effect = EffectId
   type EntityAttrs Effect = Attrs
-  toName = toName . toAttrs
 
 instance TargetEntity Effect where
   toTarget = toTarget . toAttrs

@@ -148,6 +148,8 @@ instance LocationRunner env => RunMessage env Location where
 instance Entity Location where
   type EntityId Location = LocationId
   type EntityAttrs Location = Attrs
+
+instance NamedEntity Location where
   toName = toName . toAttrs
 
 instance TargetEntity Location where

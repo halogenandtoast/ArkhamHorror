@@ -12,13 +12,15 @@ import GHC.Generics
 class Entity a where
   type EntityId a
   type EntityAttrs a
-  toName :: a -> Name
   toId :: a -> EntityId a
   default toId :: (EntityId a ~ EntityId (EntityAttrs a), Entity (EntityAttrs a)) => a -> EntityId a
   toId = defaultToId
   toAttrs :: a -> EntityAttrs a
   default toAttrs :: (HasAttrs1 (EntityAttrs a) (Rep a), Generic a) => a -> EntityAttrs a
   toAttrs = defaultToAttrs
+
+class NamedEntity a where
+  toName :: a -> Name
 
 class TargetEntity a where
   toTarget :: a -> Target
@@ -58,7 +60,6 @@ instance Entity a => Entity (a `With` b) where
   type EntityAttrs (a `With` b) = EntityAttrs a
   toId (a `With` _) = toId a
   toAttrs (a `With` _) = toAttrs a
-  toName (a `With` _) = toName a
 
 instance TargetEntity a => TargetEntity (a `With` b) where
   toTarget (a `With` _) = toTarget a
@@ -67,3 +68,6 @@ instance TargetEntity a => TargetEntity (a `With` b) where
 instance SourceEntity a => SourceEntity (a `With` b) where
   toSource (a `With` _) = toSource a
   isSource (a `With` _) = isSource a
+
+instance NamedEntity a => NamedEntity (a `With` b) where
+  toName (a `With` _) = toName a

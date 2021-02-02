@@ -86,6 +86,8 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = eventId
   toAttrs = id
+
+instance NamedEntity Attrs where
   toName = mkName . eventName
 
 instance TargetEntity Attrs where

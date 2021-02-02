@@ -11,7 +11,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype RexMurphy = RexMurphy Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env RexMurphy where
   getModifiersFor source target (RexMurphy attrs) =

@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype PoliceBadge2 = PoliceBadge2 Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 policeBadge2 :: AssetId -> PoliceBadge2
 policeBadge2 uuid =

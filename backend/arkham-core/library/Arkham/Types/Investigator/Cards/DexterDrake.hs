@@ -8,7 +8,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype DexterDrake = DexterDrake Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env DexterDrake where
   getModifiersFor source target (DexterDrake attrs) =

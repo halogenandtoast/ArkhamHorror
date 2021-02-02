@@ -12,7 +12,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype RipplesOnTheSurface = RipplesOnTheSurface Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ripplesOnTheSurface :: TreacheryId -> a -> RipplesOnTheSurface
 ripplesOnTheSurface uuid _ = RipplesOnTheSurface $ baseAttrs uuid "81027"

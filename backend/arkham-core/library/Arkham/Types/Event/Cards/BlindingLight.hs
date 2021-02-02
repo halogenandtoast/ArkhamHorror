@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype BlindingLight = BlindingLight Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 blindingLight :: InvestigatorId -> EventId -> BlindingLight
 blindingLight iid uuid = BlindingLight $ baseAttrs iid uuid "01066"

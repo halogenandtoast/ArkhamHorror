@@ -8,7 +8,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
 newtype MarshGug = MarshGug Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 marshGug :: EnemyId -> MarshGug
 marshGug uuid =

@@ -7,7 +7,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype ObscuringFog = ObscuringFog Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 obscuringFog :: TreacheryId -> a -> ObscuringFog
 obscuringFog uuid _ = ObscuringFog $ baseAttrs uuid "01168"

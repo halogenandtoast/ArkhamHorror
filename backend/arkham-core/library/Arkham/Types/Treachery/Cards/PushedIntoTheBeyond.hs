@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype PushedIntoTheBeyond = PushedIntoTheBeyond Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 pushedIntoTheBeyond :: TreacheryId -> a -> PushedIntoTheBeyond
 pushedIntoTheBeyond uuid _ = PushedIntoTheBeyond $ baseAttrs uuid "02100"

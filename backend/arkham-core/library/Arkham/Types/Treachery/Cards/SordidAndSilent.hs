@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype SordidAndSilent = SordidAndSilent Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 sordidAndSilent :: TreacheryId -> a -> SordidAndSilent
 sordidAndSilent uuid _ = SordidAndSilent $ baseAttrs uuid "02089"

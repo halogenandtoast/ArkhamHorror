@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 
 newtype Shortcut = Shortcut Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 shortcut :: InvestigatorId -> EventId -> Shortcut
 shortcut iid uuid = Shortcut $ baseAttrs iid uuid "02022"

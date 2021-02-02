@@ -48,7 +48,9 @@ instance FromJSON Attrs where
 
 instance Entity Attrs where
   type EntityId Attrs = LocationId
+  type EntityAttrs Attrs = Attrs
   toId = locationId
+  toAttrs = id
   toSource = LocationSource . toId
   toTarget = LocationTarget . toId
   isSource Attrs { locationId } (LocationSource lid) = locationId == lid

@@ -12,7 +12,7 @@ import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Trait
 
 newtype ACreatureOfTheBayou = ACreatureOfTheBayou Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 aCreatureOfTheBayou :: ACreatureOfTheBayou
 aCreatureOfTheBayou = ACreatureOfTheBayou

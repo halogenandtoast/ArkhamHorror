@@ -12,7 +12,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 
 newtype Flashlight = Flashlight Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 flashlight :: AssetId -> Flashlight
 flashlight uuid =

@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
 newtype MedicalTexts = MedicalTexts Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 medicalTexts :: AssetId -> MedicalTexts
 medicalTexts uuid =

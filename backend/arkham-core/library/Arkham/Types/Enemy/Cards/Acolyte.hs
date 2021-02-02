@@ -10,7 +10,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
 newtype Acolyte = Acolyte Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 acolyte :: EnemyId -> Acolyte
 acolyte uuid =

@@ -12,7 +12,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Trait
 
 newtype JazzMulligan = JazzMulligan Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 jazzMulligan :: AssetId -> JazzMulligan
 jazzMulligan uuid = JazzMulligan $ (baseAttrs uuid "02060")

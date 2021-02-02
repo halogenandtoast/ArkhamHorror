@@ -8,7 +8,7 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.CampaignLogKey
 
 newtype InvestigatingTheTrail = InvestigatingTheTrail Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 investigatingTheTrail :: InvestigatingTheTrail
 investigatingTheTrail = InvestigatingTheTrail $ baseAttrs

@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Asset.Attrs
 
 newtype Pathfinder1 = Pathfinder1 Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 pathfinder1 :: AssetId -> Pathfinder1
 pathfinder1 uuid = Pathfinder1 $ baseAttrs uuid "02108"

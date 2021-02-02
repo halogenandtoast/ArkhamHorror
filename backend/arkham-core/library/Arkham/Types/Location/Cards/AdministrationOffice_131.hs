@@ -12,7 +12,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype AdministrationOffice_131 = AdministrationOffice_131 Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 administrationOffice_131 :: AdministrationOffice_131
 administrationOffice_131 = AdministrationOffice_131 $ baseAttrs

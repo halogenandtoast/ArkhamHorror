@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Helpers
 
 newtype Kukri = Kukri Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 kukri :: AssetId -> Kukri
 kukri uuid = Kukri $ (baseAttrs uuid "02036") { assetSlots = [HandSlot] }

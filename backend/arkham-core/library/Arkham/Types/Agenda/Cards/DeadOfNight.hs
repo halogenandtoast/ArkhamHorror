@@ -7,7 +7,7 @@ import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 
 newtype DeadOfNight = DeadOfNight Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 deadOfNight :: DeadOfNight
 deadOfNight =

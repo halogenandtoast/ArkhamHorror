@@ -12,7 +12,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Uses
 
 newtype RiteOfSeeking = RiteOfSeeking Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 riteOfSeeking :: AssetId -> RiteOfSeeking
 riteOfSeeking uuid =

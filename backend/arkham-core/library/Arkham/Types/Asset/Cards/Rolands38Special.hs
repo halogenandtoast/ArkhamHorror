@@ -12,7 +12,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 
 newtype Rolands38Special = Rolands38Special Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 rolands38Special :: AssetId -> Rolands38Special
 rolands38Special uuid =

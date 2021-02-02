@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
 newtype ZoeysCross = ZoeysCross Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 zoeysCross :: AssetId -> ZoeysCross
 zoeysCross uuid =

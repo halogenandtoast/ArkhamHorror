@@ -9,7 +9,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype ZoeySamaras = ZoeySamaras Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env ZoeySamaras where
   getModifiersFor source target (ZoeySamaras attrs) =

@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype BloodRite = BloodRite Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 bloodRite :: InvestigatorId -> EventId -> BloodRite
 bloodRite iid uuid = BloodRite $ baseAttrs iid uuid "05317"

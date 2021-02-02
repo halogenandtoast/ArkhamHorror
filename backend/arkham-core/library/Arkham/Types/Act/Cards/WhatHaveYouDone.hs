@@ -7,7 +7,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
 newtype WhatHaveYouDone = WhatHaveYouDone Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 whatHaveYouDone :: WhatHaveYouDone
 whatHaveYouDone =

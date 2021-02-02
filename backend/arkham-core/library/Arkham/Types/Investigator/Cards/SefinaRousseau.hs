@@ -8,7 +8,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype SefinaRousseau = SefinaRousseau Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env SefinaRousseau where
   getModifiersFor source target (SefinaRousseau attrs) =

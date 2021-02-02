@@ -6,8 +6,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
 newtype LeatherCoat = LeatherCoat Attrs
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 leatherCoat :: AssetId -> LeatherCoat
 leatherCoat uuid = LeatherCoat

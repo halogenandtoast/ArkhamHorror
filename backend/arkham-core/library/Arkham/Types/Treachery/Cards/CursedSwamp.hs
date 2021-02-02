@@ -12,7 +12,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype CursedSwamp = CursedSwamp Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 cursedSwamp :: TreacheryId -> a -> CursedSwamp
 cursedSwamp uuid _ = CursedSwamp $ baseAttrs uuid "81024"

@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.BaseballBat
   ( BaseballBat(..)
   , baseballBat
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -12,8 +11,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype BaseballBat = BaseballBat Attrs
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 baseballBat :: AssetId -> BaseballBat
 baseballBat uuid =
@@ -42,7 +40,8 @@ instance (AssetRunner env) => RunMessage env BaseballBat where
   runMessage msg a@(BaseballBat attrs) = case msg of
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
-        [ CreateWindowModifierEffect EffectSkillTestWindow
+        [ CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [SkillModifier SkillCombat 2])
           source
           (InvestigatorTarget iid)

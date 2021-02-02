@@ -12,7 +12,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Helpers
 
 newtype IveGotAPlan = IveGotAPlan Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 iveGotAPlan :: InvestigatorId -> EventId -> IveGotAPlan
 iveGotAPlan iid uuid = IveGotAPlan $ baseAttrs iid uuid "02107"

@@ -7,7 +7,7 @@ import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 
 newtype Deduction = Deduction Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 deduction :: InvestigatorId -> SkillId -> Deduction
 deduction iid uuid = Deduction $ baseAttrs iid uuid "01039"

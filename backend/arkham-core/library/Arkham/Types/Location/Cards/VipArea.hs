@@ -14,7 +14,7 @@ import Arkham.Types.Phase
 import Arkham.Types.Trait hiding (Cultist)
 
 newtype VipArea = VipArea Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 vipArea :: VipArea
 vipArea = VipArea

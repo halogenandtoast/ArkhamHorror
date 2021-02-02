@@ -2,8 +2,7 @@ module Arkham.Types.Skill
   ( lookupSkill
   , Skill(..)
   , ownerOfSkill
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -37,17 +36,17 @@ deriving anyclass instance HasModifiersFor env Skill
 
 instance Entity Skill where
   type EntityId Skill = SkillId
-  toId = toId . skillAttrs
-  toSource = toSource . skillAttrs
-  toTarget = toTarget . skillAttrs
-  isSource = isSource . skillAttrs
-  isTarget = isTarget . skillAttrs
+  type EntityAttrs Skill = Attrs
+  toSource = toSource . toAttrs
+  toTarget = toTarget . toAttrs
+  isSource = isSource . toAttrs
+  isTarget = isTarget . toAttrs
 
 instance IsCard Skill where
-  getCardId = getCardId . skillAttrs
-  getCardCode = getCardCode . skillAttrs
-  getTraits = getTraits . skillAttrs
-  getKeywords = getKeywords . skillAttrs
+  getCardId = getCardId . toAttrs
+  getCardCode = getCardCode . toAttrs
+  getTraits = getTraits . toAttrs
+  getKeywords = getKeywords . toAttrs
 
 lookupSkill :: CardCode -> (InvestigatorId -> SkillId -> Skill)
 lookupSkill cardCode =
@@ -70,19 +69,4 @@ allSkills = mapFromList
   ]
 
 ownerOfSkill :: Skill -> InvestigatorId
-ownerOfSkill = skillOwner . skillAttrs
-
-skillAttrs :: Skill -> Attrs
-skillAttrs = \case
-  ViciousBlow' attrs -> coerce attrs
-  Deduction' attrs -> coerce attrs
-  Opportunist' attrs -> coerce attrs
-  Fearless' attrs -> coerce attrs
-  SurvivalInstinct' attrs -> coerce attrs
-  Guts' attrs -> coerce attrs
-  Perception' attrs -> coerce attrs
-  Overpower' attrs -> coerce attrs
-  ManualDexterity' attrs -> coerce attrs
-  UnexpectedCourage' attrs -> coerce attrs
-  DoubleOrNothing' attrs -> coerce attrs
-  TrueUnderstanding' attrs -> coerce attrs
+ownerOfSkill = skillOwner . toAttrs

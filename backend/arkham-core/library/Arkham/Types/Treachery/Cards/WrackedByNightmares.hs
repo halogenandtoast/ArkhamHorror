@@ -11,7 +11,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype WrackedByNightmares = WrackedByNightmares Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 wrackedByNightmares
   :: TreacheryId -> Maybe InvestigatorId -> WrackedByNightmares

@@ -12,7 +12,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ShadowSpawned = ShadowSpawned Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 shadowSpawned :: TreacheryId -> a -> ShadowSpawned
 shadowSpawned uuid _ = ShadowSpawned $ baseAttrs uuid "02142"

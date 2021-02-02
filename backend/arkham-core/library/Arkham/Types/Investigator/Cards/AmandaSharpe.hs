@@ -8,7 +8,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype AmandaSharpe = AmandaSharpe Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env AmandaSharpe where
   getModifiersFor source target (AmandaSharpe attrs) =

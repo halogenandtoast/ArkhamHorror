@@ -3,8 +3,7 @@
 module Arkham.Types.Scenario.Attrs
   ( module Arkham.Types.Scenario.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Import hiding (log)
 
@@ -70,7 +69,9 @@ baseAttrs cardCode name agendaStack actStack' difficulty = Attrs
 
 instance Entity Attrs where
   type EntityId Attrs = ScenarioId
+  type EntityAttrs Attrs = Attrs
   toId = scenarioId
+  toAttrs = id
   toSource = ScenarioSource . toId
   toTarget = ScenarioTarget . toId
   isSource Attrs { scenarioId } (ScenarioSource sid) = scenarioId == sid

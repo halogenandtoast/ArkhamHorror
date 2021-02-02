@@ -11,7 +11,7 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Trait
 
 newtype BindMonster2 = BindMonster2 Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 bindMonster2 :: EffectArgs -> BindMonster2
 bindMonster2 = BindMonster2 . uncurry4 (baseAttrs "02031")

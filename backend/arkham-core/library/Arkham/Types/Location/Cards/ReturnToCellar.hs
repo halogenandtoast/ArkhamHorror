@@ -7,7 +7,7 @@ import Arkham.Types.Location.Attrs
 import Arkham.Types.Location.Runner
 
 newtype ReturnToCellar = ReturnToCellar Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 returnToCellar :: ReturnToCellar
 returnToCellar = ReturnToCellar $ baseAttrs

@@ -99,29 +99,29 @@ deriving anyclass instance
 
 instance Entity Treachery where
   type EntityId Treachery = TreacheryId
-  toId = toId . treacheryAttrs
-  toTarget = toTarget . treacheryAttrs
-  isTarget = isTarget . treacheryAttrs
-  toSource = toSource . treacheryAttrs
-  isSource = isSource . treacheryAttrs
+  type EntityAttrs Treachery = Attrs
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
 
 instance IsCard Treachery where
-  getCardId = getCardId . treacheryAttrs
-  getCardCode = getCardCode . treacheryAttrs
-  getTraits = getTraits . treacheryAttrs
-  getKeywords = getKeywords . treacheryAttrs
+  getCardId = getCardId . toAttrs
+  getCardCode = getCardCode . toAttrs
+  getTraits = getTraits . toAttrs
+  getKeywords = getKeywords . toAttrs
 
 instance HasCount DoomCount env Treachery where
-  getCount = pure . DoomCount . treacheryDoom . treacheryAttrs
+  getCount = pure . DoomCount . treacheryDoom . toAttrs
 
 instance HasCount ResourceCount env Treachery where
-  getCount = getCount . treacheryAttrs
+  getCount = getCount . toAttrs
 
 instance HasCount (Maybe ClueCount) env Treachery where
-  getCount = pure . (ClueCount <$>) . treacheryClues . treacheryAttrs
+  getCount = pure . (ClueCount <$>) . treacheryClues . toAttrs
 
 instance HasId (Maybe OwnerId) env Treachery where
-  getId = pure . (OwnerId <$>) . treacheryOwner . treacheryAttrs
+  getId = pure . (OwnerId <$>) . treacheryOwner . toAttrs
 
 lookupTreachery
   :: CardCode -> (TreacheryId -> Maybe InvestigatorId -> Treachery)
@@ -204,82 +204,10 @@ allTreacheries = mapFromList
   ]
 
 isWeakness :: Treachery -> Bool
-isWeakness = treacheryWeakness . treacheryAttrs
+isWeakness = treacheryWeakness . toAttrs
 
 instance CanBeWeakness env Treachery where
   getIsWeakness = pure . isWeakness
 
 treacheryTarget :: Treachery -> Maybe Target
-treacheryTarget = treacheryAttachedTarget . treacheryAttrs
-
-treacheryAttrs :: Treachery -> Attrs
-treacheryAttrs = \case
-  CoverUp' attrs -> coerce attrs
-  HospitalDebts' attrs -> coerce attrs
-  AbandonedAndAlone' attrs -> coerce attrs
-  Amnesia' attrs -> coerce attrs
-  Paranoia' attrs -> coerce attrs
-  Haunted' attrs -> coerce attrs
-  Psychosis' attrs -> coerce attrs
-  Hypochondria' attrs -> coerce attrs
-  HuntingShadow' attrs -> coerce attrs
-  FalseLead' attrs -> coerce attrs
-  UmordhothsWrath' attrs -> coerce attrs
-  GraspingHands' attrs -> coerce attrs
-  AncientEvils' attrs -> coerce attrs
-  RottingRemains' attrs -> coerce attrs
-  FrozenInFear' attrs -> coerce attrs
-  DissonantVoices' attrs -> coerce attrs
-  CryptChill' attrs -> coerce attrs
-  ObscuringFog' attrs -> coerce attrs
-  MysteriousChanting' attrs -> coerce attrs
-  OnWingsOfDarkness' attrs -> coerce attrs
-  LockedDoor' attrs -> coerce attrs
-  TheYellowSign' attrs -> coerce attrs
-  OfferOfPower' attrs -> coerce attrs
-  DreamsOfRlyeh' attrs -> coerce attrs
-  SmiteTheWicked' attrs -> coerce attrs
-  RexsCurse' attrs -> coerce attrs
-  SearchingForIzzie' attrs -> coerce attrs
-  FinalRhapsody' attrs -> coerce attrs
-  WrackedByNightmares' attrs -> coerce attrs
-  Indebted' attrs -> coerce attrs
-  InternalInjury' attrs -> coerce attrs
-  Chronophobia' attrs -> coerce attrs
-  SomethingInTheDrinks' attrs -> coerce attrs
-  ArousingSuspicions' attrs -> coerce attrs
-  VisionsOfFuturesPast' attrs -> coerce attrs
-  BeyondTheVeil' attrs -> coerce attrs
-  LightOfAforgomon' attrs -> coerce attrs
-  UnhallowedCountry' attrs -> coerce attrs
-  EagerForDeath' attrs -> coerce attrs
-  CursedLuck' attrs -> coerce attrs
-  TwistOfFate' attrs -> coerce attrs
-  AlteredBeast' attrs -> coerce attrs
-  HuntedDown' attrs -> coerce attrs
-  PushedIntoTheBeyond' attrs -> coerce attrs
-  TerrorFromBeyond' attrs -> coerce attrs
-  ArcaneBarrier' attrs -> coerce attrs
-  ShadowSpawned' attrs -> coerce attrs
-  StalkedInTheDark' attrs -> coerce attrs
-  PassageIntoTheVeil' attrs -> coerce attrs
-  EphemeralExhibits' attrs -> coerce attrs
-  SlitheringBehindYou' attrs -> coerce attrs
-  AcrossTimeAndSpace' attrs -> coerce attrs
-  ClawsOfSteam' attrs -> coerce attrs
-  BrokenRails' attrs -> coerce attrs
-  TheZealotsSeal' attrs -> coerce attrs
-  MaskedHorrors' attrs -> coerce attrs
-  VaultOfEarthlyDemise' attrs -> coerce attrs
-  UmordhothsHunger' attrs -> coerce attrs
-  ChillFromBelow' attrs -> coerce attrs
-  MaskOfUmordhoth' attrs -> coerce attrs
-  Atychiphobia' attrs -> coerce attrs
-  CursedSwamp' attrs -> coerce attrs
-  SpectralMist' attrs -> coerce attrs
-  DraggedUnder' attrs -> coerce attrs
-  RipplesOnTheSurface' attrs -> coerce attrs
-  CurseOfTheRougarou' (CurseOfTheRougarou (attrs `With` _)) -> attrs
-  OnTheProwl' attrs -> coerce attrs
-  BeastOfTheBayou' attrs -> coerce attrs
-  InsatiableBloodlust' attrs -> coerce attrs
+treacheryTarget = treacheryAttachedTarget . toAttrs

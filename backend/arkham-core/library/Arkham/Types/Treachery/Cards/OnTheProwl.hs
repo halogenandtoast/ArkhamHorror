@@ -12,7 +12,7 @@ import Arkham.Types.Treachery.Runner
 import Arkham.Types.Trait
 
 newtype OnTheProwl = OnTheProwl Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 onTheProwl :: TreacheryId -> a -> OnTheProwl
 onTheProwl uuid _ = OnTheProwl $ baseAttrs uuid "81034"

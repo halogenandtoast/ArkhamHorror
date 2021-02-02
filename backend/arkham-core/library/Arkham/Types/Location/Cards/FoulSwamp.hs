@@ -14,7 +14,7 @@ import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
 newtype FoulSwamp = FoulSwamp Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 foulSwamp :: FoulSwamp
 foulSwamp = FoulSwamp $ baseAttrs

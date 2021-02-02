@@ -10,7 +10,7 @@ import Arkham.Types.Skill.Runner
 import Arkham.Types.SkillId
 
 newtype UnexpectedCourage = UnexpectedCourage Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 unexpectedCourage :: InvestigatorId -> SkillId -> UnexpectedCourage
 unexpectedCourage iid uuid = UnexpectedCourage $ baseAttrs iid uuid "01093"

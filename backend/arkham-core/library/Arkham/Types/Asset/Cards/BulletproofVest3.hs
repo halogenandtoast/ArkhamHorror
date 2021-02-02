@@ -6,8 +6,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
 newtype BulletproofVest3 = BulletproofVest3 Attrs
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 bulletproofVest3 :: AssetId -> BulletproofVest3
 bulletproofVest3 uuid = BulletproofVest3

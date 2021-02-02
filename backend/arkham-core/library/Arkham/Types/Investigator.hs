@@ -45,17 +45,17 @@ baseInvestigator a b c d e f =
   BaseInvestigator' . BaseInvestigator . f $ baseAttrs a b c d e
 
 instance IsInvestigator Investigator where
-  isDefeated = view defeatedL . investigatorAttrs
-  isResigned = view resignedL . investigatorAttrs
-  hasEndedTurn = view endedTurnL . investigatorAttrs
-  hasResigned = view resignedL . investigatorAttrs
+  isDefeated = view defeatedL . toAttrs
+  isResigned = view resignedL . toAttrs
+  hasEndedTurn = view endedTurnL . toAttrs
+  hasResigned = view resignedL . toAttrs
 
 instance HasTokenValue env BaseInvestigator where
   getTokenValue (BaseInvestigator attrs) iid token =
     getTokenValue attrs iid token
 
 newtype BaseInvestigator = BaseInvestigator Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env BaseInvestigator where
   getModifiersFor source target (BaseInvestigator attrs) =
@@ -75,7 +75,7 @@ instance ActionRunner env => HasActions env Investigator where
       (toTarget investigator)
       ()
     if any isBlank modifiers'
-      then getActions iid window (investigatorAttrs investigator)
+      then getActions iid window (toAttrs investigator)
       else defaultGetActions iid window investigator
 
 instance InvestigatorRunner env => RunMessage env Investigator where
@@ -88,44 +88,43 @@ instance HasId InvestigatorId () Investigator where
   getId = pure . toId
 
 instance HasList TakenAction env Investigator where
-  getList = getList . investigatorAttrs
+  getList = getList . toAttrs
 
 instance HasList DiscardedPlayerCard env Investigator where
-  getList =
-    pure . map DiscardedPlayerCard . investigatorDiscard . investigatorAttrs
+  getList = pure . map DiscardedPlayerCard . investigatorDiscard . toAttrs
 
 instance HasList HandCard env Investigator where
-  getList = pure . map HandCard . investigatorHand . investigatorAttrs
+  getList = pure . map HandCard . investigatorHand . toAttrs
 
 instance HasList DeckCard env Investigator where
-  getList = pure . map DeckCard . unDeck . investigatorDeck . investigatorAttrs
+  getList = pure . map DeckCard . unDeck . investigatorDeck . toAttrs
 
 instance HasCard () Investigator where
   getCard _ cardId =
     fromJustNote "player does not have this card"
       . find ((== cardId) . getCardId)
       . investigatorHand
-      . investigatorAttrs
+      . toAttrs
 
 instance IsCard Investigator where
-  getCardId = getCardId . investigatorAttrs
-  getCardCode = getCardCode . investigatorAttrs
-  getTraits = getTraits . investigatorAttrs
-  getKeywords = getKeywords . investigatorAttrs
+  getCardId = getCardId . toAttrs
+  getCardCode = getCardCode . toAttrs
+  getTraits = getTraits . toAttrs
+  getKeywords = getKeywords . toAttrs
 
 instance HasDamage Investigator where
   getDamage i = (investigatorHealthDamage, investigatorSanityDamage)
-    where Attrs {..} = investigatorAttrs i
+    where Attrs {..} = toAttrs i
 
 instance HasTrauma Investigator where
   getTrauma i = (investigatorPhysicalTrauma, investigatorMentalTrauma)
-    where Attrs {..} = investigatorAttrs i
+    where Attrs {..} = toAttrs i
 
 instance HasSet EnemyId env Investigator where
-  getSet = pure . investigatorEngagedEnemies . investigatorAttrs
+  getSet = pure . investigatorEngagedEnemies . toAttrs
 
 instance HasSet TreacheryId env Investigator where
-  getSet = pure . investigatorTreacheries . investigatorAttrs
+  getSet = pure . investigatorTreacheries . toAttrs
 
 instance HasList DiscardableHandCard env Investigator where
   getList =
@@ -133,23 +132,18 @@ instance HasList DiscardableHandCard env Investigator where
       . map DiscardableHandCard
       . filter (not . isWeakness)
       . investigatorHand
-      . investigatorAttrs
+      . toAttrs
    where
     isWeakness = \case
       PlayerCard pc -> pcWeakness pc
       EncounterCard _ -> True -- maybe?
 
 instance HasCount MentalTraumaCount env Investigator where
-  getCount =
-    pure . MentalTraumaCount . investigatorMentalTrauma . investigatorAttrs
+  getCount = pure . MentalTraumaCount . investigatorMentalTrauma . toAttrs
 
 instance HasCount ActionTakenCount env Investigator where
   getCount =
-    pure
-      . ActionTakenCount
-      . length
-      . investigatorActionsTaken
-      . investigatorAttrs
+    pure . ActionTakenCount . length . investigatorActionsTaken . toAttrs
 
 instance HasCount ActionRemainingCount env (Maybe Action, [Trait], Investigator) where
   getCount (_maction, traits, i) =
@@ -162,46 +156,45 @@ instance HasCount ActionRemainingCount env (Maybe Action, [Trait], Investigator)
       . ActionRemainingCount
       $ investigatorRemainingActions a
       + tomeActionCount
-    where a = investigatorAttrs i
+    where a = toAttrs i
 
 instance HasCount ActionRemainingCount env Investigator where
-  getCount = getCount . investigatorAttrs
+  getCount = getCount . toAttrs
 
 instance HasSet EnemyId env Investigator => HasCount EnemyCount env Investigator where
   getCount = (EnemyCount . length <$>) . getSet @EnemyId
 
 instance HasCount ResourceCount env Investigator where
-  getCount = pure . ResourceCount . investigatorResources . investigatorAttrs
+  getCount = pure . ResourceCount . investigatorResources . toAttrs
 
 instance HasCount DiscardCount env Investigator where
-  getCount =
-    pure . DiscardCount . length . investigatorDiscard . investigatorAttrs
+  getCount = pure . DiscardCount . length . investigatorDiscard . toAttrs
 
 instance HasCount CardCount env Investigator where
-  getCount = pure . CardCount . length . investigatorHand . investigatorAttrs
+  getCount = pure . CardCount . length . investigatorHand . toAttrs
 
 instance HasCount ClueCount env Investigator where
-  getCount = pure . ClueCount . investigatorClues . investigatorAttrs
+  getCount = pure . ClueCount . investigatorClues . toAttrs
 
 instance HasCount DamageCount env Investigator where
-  getCount = pure . DamageCount . investigatorHealthDamage . investigatorAttrs
+  getCount = pure . DamageCount . investigatorHealthDamage . toAttrs
 
 getInvestigatorSpendableClueCount
   :: (MonadReader env m, HasModifiersFor env ())
   => Investigator
   -> m SpendableClueCount
 getInvestigatorSpendableClueCount =
-  (SpendableClueCount <$>) . getSpendableClueCount . investigatorAttrs
+  (SpendableClueCount <$>) . getSpendableClueCount . toAttrs
 
 instance HasSet AssetId env Investigator where
-  getSet = pure . investigatorAssets . investigatorAttrs
+  getSet = pure . investigatorAssets . toAttrs
 
 instance HasSkill Investigator where
-  getSkill skillType = skillValueFor skillType Nothing [] . investigatorAttrs
+  getSkill skillType = skillValueFor skillType Nothing [] . toAttrs
 
 allInvestigators :: HashMap InvestigatorId Investigator
 allInvestigators = mapFromList $ map
-  (toFst $ investigatorId . investigatorAttrs)
+  (toFst $ investigatorId . toAttrs)
   [ AgnesBaker' agnesBaker
   , AshcanPete' ashcanPete
   , DaisyWalker' daisyWalker
@@ -234,7 +227,7 @@ lookupPromoInvestigator "98004" = lookupInvestigator "01001" -- Roland Banks
 lookupPromoInvestigator iid = error $ "Unknown investigator: " <> show iid
 
 getEngagedEnemies :: Investigator -> HashSet EnemyId
-getEngagedEnemies = investigatorEngagedEnemies . investigatorAttrs
+getEngagedEnemies = investigatorEngagedEnemies . toAttrs
 
 -- TODO: This does not work for more than 2 players
 getIsPrey
@@ -254,18 +247,10 @@ getIsPrey (OnlyPrey prey) i = getIsPrey prey i
 getIsPrey AnyPrey _ = pure True
 getIsPrey (HighestSkill skillType) i = do
   highestSkill <- fromMaybe 0 . maximumMay <$> getSetList skillType
-  pure $ highestSkill == skillValueFor
-    skillType
-    Nothing
-    []
-    (investigatorAttrs i)
+  pure $ highestSkill == skillValueFor skillType Nothing [] (toAttrs i)
 getIsPrey (LowestSkill skillType) i = do
   lowestSkillValue <- fromMaybe 100 . minimumMay <$> getSetList skillType
-  pure $ lowestSkillValue == skillValueFor
-    skillType
-    Nothing
-    []
-    (investigatorAttrs i)
+  pure $ lowestSkillValue == skillValueFor skillType Nothing [] (toAttrs i)
 getIsPrey LowestRemainingHealth i = do
   remainingHealth <- getRemainingHealth i
   lowestRemainingHealth <-
@@ -282,8 +267,8 @@ getIsPrey LowestRemainingSanity i = do
     . map unRemainingSanity
     <$> getSetList ()
   pure $ lowestRemainingSanity == remainingSanity
-getIsPrey (Bearer bid) i = pure $ unBearerId bid == unInvestigatorId
-  (investigatorId $ investigatorAttrs i)
+getIsPrey (Bearer bid) i =
+  pure $ unBearerId bid == unInvestigatorId (investigatorId $ toAttrs i)
 getIsPrey MostClues i = do
   clueCount <- unClueCount <$> getCount i
   mostClueCount <- fromMaybe 0 . maximumMay . map unClueCount <$> getSetList ()
@@ -300,7 +285,7 @@ getIsPrey (NearestToEnemyWithTrait trait) i = do
       fromJustNote "error" . minimumMay $ map (unDistance . snd) mappings
     investigatorDistance :: Int = unDistance $ findWithDefault
       (error "investigator not found")
-      (investigatorId $ investigatorAttrs i)
+      (investigatorId $ toAttrs i)
       mappingsMap
   pure $ investigatorDistance == minDistance
 getIsPrey SetToBearer _ = error "The bearer was not correctly set"
@@ -310,7 +295,7 @@ getAvailableSkillsFor
   => Investigator
   -> SkillType
   -> m [SkillType]
-getAvailableSkillsFor i s = getPossibleSkillTypeChoices s (investigatorAttrs i)
+getAvailableSkillsFor i s = getPossibleSkillTypeChoices s (toAttrs i)
 
 getSkillValueOf
   :: (MonadReader env m, HasModifiersFor env ())
@@ -331,45 +316,45 @@ getSkillValueOf skillType i = do
   pure $ fromMaybe (skillValueOf skillType i) mBaseValue
 
 skillValueOf :: SkillType -> Investigator -> Int
-skillValueOf SkillWillpower = investigatorWillpower . investigatorAttrs
-skillValueOf SkillIntellect = investigatorIntellect . investigatorAttrs
-skillValueOf SkillCombat = investigatorCombat . investigatorAttrs
-skillValueOf SkillAgility = investigatorAgility . investigatorAttrs
+skillValueOf SkillWillpower = investigatorWillpower . toAttrs
+skillValueOf SkillIntellect = investigatorIntellect . toAttrs
+skillValueOf SkillCombat = investigatorCombat . toAttrs
+skillValueOf SkillAgility = investigatorAgility . toAttrs
 skillValueOf SkillWild = error "should not look this up"
 
 handOf :: Investigator -> [Card]
-handOf = investigatorHand . investigatorAttrs
+handOf = investigatorHand . toAttrs
 
 discardOf :: Investigator -> [PlayerCard]
-discardOf = investigatorDiscard . investigatorAttrs
+discardOf = investigatorDiscard . toAttrs
 
 deckOf :: Investigator -> [PlayerCard]
-deckOf = unDeck . investigatorDeck . investigatorAttrs
+deckOf = unDeck . investigatorDeck . toAttrs
 
 locationOf :: Investigator -> LocationId
-locationOf = investigatorLocation . investigatorAttrs
+locationOf = investigatorLocation . toAttrs
 
 getRemainingSanity
   :: (MonadReader env m, HasModifiersFor env ()) => Investigator -> m Int
 getRemainingSanity i = do
   modifiedSanity <- getModifiedSanity a
   pure $ modifiedSanity - investigatorSanityDamage a
-  where a = investigatorAttrs i
+  where a = toAttrs i
 
 getRemainingHealth
   :: (MonadReader env m, HasModifiersFor env ()) => Investigator -> m Int
 getRemainingHealth i = do
   modifiedHealth <- getModifiedHealth a
   pure $ modifiedHealth - investigatorHealthDamage a
-  where a = investigatorAttrs i
+  where a = toAttrs i
 
 instance Entity Investigator where
   type EntityId Investigator = InvestigatorId
-  toId = toId . investigatorAttrs
-  toSource = toSource . investigatorAttrs
-  toTarget = toTarget . investigatorAttrs
-  isSource = isSource . investigatorAttrs
-  isTarget = isTarget . investigatorAttrs
+  type EntityAttrs Investigator = Attrs
+  toSource = toSource . toAttrs
+  toTarget = toTarget . toAttrs
+  isSource = isSource . toAttrs
+  isTarget = isTarget . toAttrs
 
 modifiedStatsOf
   :: (MonadReader env m, HasModifiersFor env ())
@@ -382,7 +367,7 @@ modifiedStatsOf source maction i = do
   remainingHealth <- getRemainingHealth i
   remainingSanity <- getRemainingSanity i
   let
-    a = investigatorAttrs i
+    a = toAttrs i
     willpower' = skillValueFor SkillWillpower maction modifiers' a
     intellect' = skillValueFor SkillIntellect maction modifiers' a
     combat' = skillValueFor SkillCombat maction modifiers' a
@@ -398,22 +383,7 @@ modifiedStatsOf source maction i = do
 
 getHasSpendableClues
   :: (MonadReader env m, HasModifiersFor env ()) => Investigator -> m Bool
-getHasSpendableClues i = (> 0) <$> getSpendableClueCount (investigatorAttrs i)
+getHasSpendableClues i = (> 0) <$> getSpendableClueCount (toAttrs i)
 
 actionsRemaining :: Investigator -> Int
-actionsRemaining = investigatorRemainingActions . investigatorAttrs
-
-investigatorAttrs :: Investigator -> Attrs
-investigatorAttrs = \case
-  AgnesBaker' attrs -> coerce attrs
-  AshcanPete' attrs -> coerce attrs
-  DaisyWalker' attrs -> coerce attrs
-  DaisyWalkerParallel' attrs -> coerce attrs
-  JennyBarnes' attrs -> coerce attrs
-  JimCulver' attrs -> coerce attrs
-  RexMurphy' attrs -> coerce attrs
-  RolandBanks' attrs -> coerce attrs
-  SkidsOToole' attrs -> coerce attrs
-  WendyAdams' attrs -> coerce attrs
-  ZoeySamaras' attrs -> coerce attrs
-  BaseInvestigator' attrs -> coerce attrs
+actionsRemaining = investigatorRemainingActions . toAttrs

@@ -8,7 +8,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype FinnEdwards = FinnEdwards Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env FinnEdwards where
   getModifiersFor source target (FinnEdwards attrs) =

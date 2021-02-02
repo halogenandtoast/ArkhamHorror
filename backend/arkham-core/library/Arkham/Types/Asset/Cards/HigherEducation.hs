@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype HigherEducation = HigherEducation Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 higherEducation :: AssetId -> HigherEducation
 higherEducation uuid = HigherEducation $ baseAttrs uuid "60211"

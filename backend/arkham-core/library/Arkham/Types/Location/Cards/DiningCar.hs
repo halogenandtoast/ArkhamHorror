@@ -14,7 +14,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype DiningCar = DiningCar Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 diningCar :: DiningCar
 diningCar = DiningCar

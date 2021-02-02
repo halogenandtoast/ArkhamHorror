@@ -10,7 +10,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
 newtype RicesWhereabouts = RicesWhereabouts Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ricesWhereabouts :: RicesWhereabouts
 ricesWhereabouts =

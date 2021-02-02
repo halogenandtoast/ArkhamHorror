@@ -12,7 +12,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait hiding (Cultist)
 
 newtype DarkenedHall = DarkenedHall Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 darkenedHall :: DarkenedHall
 darkenedHall = DarkenedHall $ base

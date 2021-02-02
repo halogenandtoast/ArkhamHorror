@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype VisionsOfFuturesPast = VisionsOfFuturesPast Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 visionsOfFuturesPast :: TreacheryId -> a -> VisionsOfFuturesPast
 visionsOfFuturesPast uuid _ = VisionsOfFuturesPast $ baseAttrs uuid "02083"

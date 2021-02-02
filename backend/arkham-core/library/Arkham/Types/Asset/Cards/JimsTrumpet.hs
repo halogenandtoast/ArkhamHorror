@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.JimsTrumpet
   ( JimsTrumpet(..)
   , jimsTrumpet
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -10,8 +9,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
 newtype JimsTrumpet = JimsTrumpet Attrs
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 jimsTrumpet :: AssetId -> JimsTrumpet
 jimsTrumpet uuid =

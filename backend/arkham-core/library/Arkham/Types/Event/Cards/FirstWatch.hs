@@ -12,7 +12,7 @@ newtype FirstWatchMetadata = FirstWatchMetadata { firstWatchPairings :: [(Invest
   deriving newtype (Show, ToJSON, FromJSON)
 
 newtype FirstWatch = FirstWatch (Attrs `With` FirstWatchMetadata)
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 firstWatch :: InvestigatorId -> EventId -> FirstWatch
 firstWatch iid uuid =

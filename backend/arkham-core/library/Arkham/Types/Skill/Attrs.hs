@@ -29,7 +29,9 @@ instance FromJSON Attrs where
 
 instance Entity Attrs where
   type EntityId Attrs = SkillId
+  type EntityAttrs Attrs = Attrs
   toId = skillId
+  toAttrs = id
   toSource = SkillSource . skillId
   toTarget = SkillTarget . skillId
   isSource Attrs { skillId } (SkillSource sid) = skillId == sid

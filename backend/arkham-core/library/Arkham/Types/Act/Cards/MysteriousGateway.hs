@@ -7,7 +7,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
 newtype MysteriousGateway = MysteriousGateway Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 mysteriousGateway :: MysteriousGateway
 mysteriousGateway = MysteriousGateway $ baseAttrs

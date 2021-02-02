@@ -1,7 +1,6 @@
 module Arkham.Types.Location
   ( module Arkham.Types.Location
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -148,20 +147,20 @@ instance LocationRunner env => RunMessage env Location where
 
 instance Entity Location where
   type EntityId Location = LocationId
-  toId = toId . locationAttrs
-  toTarget = toTarget . locationAttrs
-  isTarget = isTarget . locationAttrs
-  toSource = toSource . locationAttrs
-  isSource = isSource . locationAttrs
+  type EntityAttrs Location = Attrs
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
 
 newtype BaseLocation = BaseLocation Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env BaseLocation where
   getModifiersFor = noModifiersFor
 
 instance HasName env Location where
-  getName = getName . locationAttrs
+  getName = getName . toAttrs
 
 instance ActionRunner env => HasActions env BaseLocation where
   getActions iid window (BaseLocation attrs) = getActions iid window attrs
@@ -189,69 +188,66 @@ baseLocation a b c d e f func = BaseLocation' . BaseLocation . func $ baseAttrs
   []
 
 instance IsCard Location where
-  getCardId = getCardId . locationAttrs
-  getCardCode = getCardCode . locationAttrs
-  getTraits = getTraits . locationAttrs
-  getKeywords = getKeywords . locationAttrs
+  getCardId = getCardId . toAttrs
+  getCardCode = getCardCode . toAttrs
+  getTraits = getTraits . toAttrs
+  getKeywords = getKeywords . toAttrs
 
 instance HasVictoryPoints Location where
   getVictoryPoints l =
-    let Attrs { locationClues, locationVictory } = locationAttrs l
+    let Attrs { locationClues, locationVictory } = toAttrs l
     in if locationClues == 0 then locationVictory else Nothing
 
 instance HasCount ClueCount env Location where
-  getCount = pure . ClueCount . locationClues . locationAttrs
+  getCount = pure . ClueCount . locationClues . toAttrs
 
 instance HasCount Shroud env Location where
-  getCount = pure . Shroud . locationShroud . locationAttrs
+  getCount = pure . Shroud . locationShroud . toAttrs
 
 instance HasCount DoomCount env Location where
-  getCount = pure . DoomCount . locationDoom . locationAttrs
+  getCount = pure . DoomCount . locationDoom . toAttrs
 
 instance HasList UnderneathCard env Location where
-  getList = getList . locationAttrs
+  getList = getList . toAttrs
 
 instance HasSet EnemyId env Location where
-  getSet = pure . locationEnemies . locationAttrs
+  getSet = pure . locationEnemies . toAttrs
 
 instance HasSet TreacheryId env Location where
-  getSet = pure . locationTreacheries . locationAttrs
+  getSet = pure . locationTreacheries . toAttrs
 
 instance HasSet EventId env Location where
-  getSet = pure . locationEvents . locationAttrs
+  getSet = pure . locationEvents . toAttrs
 
 instance HasSet AssetId env Location where
-  getSet = pure . locationAssets . locationAttrs
+  getSet = pure . locationAssets . toAttrs
 
 instance HasSet InvestigatorId env Location where
-  getSet = pure . locationInvestigators . locationAttrs
+  getSet = pure . locationInvestigators . toAttrs
 
 instance HasSet ConnectedLocationId env Location where
   getSet =
-    pure
-      . mapSet ConnectedLocationId
-      . locationConnectedLocations
-      . locationAttrs
+    pure . mapSet ConnectedLocationId . locationConnectedLocations . toAttrs
 
 instance HasId LocationId env Location where
   getId = pure . getLocationId
 
 instance HasId (Maybe LocationId) env (Direction, Location) where
-  getId (dir, location) = getId (dir, locationAttrs location)
+  getId (dir, location) = getId (dir, toAttrs location)
 
 getLocationId :: Location -> LocationId
-getLocationId = locationId . locationAttrs
+getLocationId = locationId . toAttrs
 
 getLocationName :: Location -> LocationName
-getLocationName = locationName . locationAttrs
+getLocationName = locationName . toAttrs
 
 lookupLocation :: LocationId -> Location
 lookupLocation lid =
   fromJustNote ("Unknown location: " <> show lid) $ lookup lid allLocations
 
 allLocations :: HashMap LocationId Location
-allLocations = mapFromList $ map
-  (toFst $ locationId . locationAttrs)
+allLocations = mapFrom
+  toId
   [ Study' study
   , Hallway' hallway
   , Attic' attic
@@ -351,106 +347,8 @@ allLocations = mapFromList $ map
 isEmptyLocation :: Location -> Bool
 isEmptyLocation l = null enemies' && null investigators'
  where
-  enemies' = locationEnemies $ locationAttrs l
-  investigators' = locationInvestigators $ locationAttrs l
+  enemies' = locationEnemies $ toAttrs l
+  investigators' = locationInvestigators $ toAttrs l
 
 isRevealed :: Location -> Bool
-isRevealed = locationRevealed . locationAttrs
-
-locationAttrs :: Location -> Attrs
-locationAttrs = \case
-  Study' attrs -> coerce attrs
-  Hallway' attrs -> coerce attrs
-  Attic' attrs -> coerce attrs
-  Cellar' attrs -> coerce attrs
-  Parlor' attrs -> coerce attrs
-  YourHouse' attrs -> coerce attrs
-  Rivertown' attrs -> coerce attrs
-  SouthsideHistoricalSociety' attrs -> coerce attrs
-  SouthsideMasBoardingHouse' attrs -> coerce attrs
-  StMarysHospital' attrs -> coerce attrs
-  MiskatonicUniversity' attrs -> coerce attrs
-  DowntownFirstBankOfArkham' attrs -> coerce attrs
-  DowntownArkhamAsylum' attrs -> coerce attrs
-  Easttown' attrs -> coerce attrs
-  Graveyard' attrs -> coerce attrs
-  Northside' attrs -> coerce attrs
-  MainPath' attrs -> coerce attrs
-  ArkhamWoodsUnhallowedGround' attrs -> coerce attrs
-  ArkhamWoodsTwistingPaths' attrs -> coerce attrs
-  ArkhamWoodsOldHouse' attrs -> coerce attrs
-  ArkhamWoodsCliffside' attrs -> coerce attrs
-  ArkhamWoodsTangledThicket' attrs -> coerce attrs
-  ArkhamWoodsQuietGlade' attrs -> coerce attrs
-  MiskatonicQuad' attrs -> coerce attrs
-  HumanitiesBuilding' attrs -> coerce attrs
-  OrneLibrary' attrs -> coerce attrs
-  StudentUnion' attrs -> coerce attrs
-  Dormitories' attrs -> coerce attrs
-  AdministrationBuilding' attrs -> coerce attrs
-  FacultyOfficesTheNightIsStillYoung' attrs -> coerce attrs
-  FacultyOfficesTheHourIsLate' attrs -> coerce attrs
-  ScienceBuilding' attrs -> coerce attrs
-  AlchemyLabs' attrs -> coerce attrs
-  LaBellaLuna' attrs -> coerce attrs
-  CloverClubLounge' attrs -> coerce attrs
-  CloverClubBar' attrs -> coerce attrs
-  CloverClubCardroom' attrs -> coerce attrs
-  DarkenedHall' attrs -> coerce attrs
-  ArtGallery' attrs -> coerce attrs
-  VipArea' attrs -> coerce attrs
-  BackAlley' attrs -> coerce attrs
-  MuseumEntrance' attrs -> coerce attrs
-  MuseumHalls' attrs -> coerce attrs
-  SecurityOffice_128' attrs -> coerce attrs
-  SecurityOffice_129' attrs -> coerce attrs
-  AdministrationOffice_130' attrs -> coerce attrs
-  AdministrationOffice_131' attrs -> coerce attrs
-  ExhibitHallAthabaskanExhibit' attrs -> coerce attrs
-  ExhibitHallMedusaExhibit' attrs -> coerce attrs
-  ExhibitHallNatureExhibit' attrs -> coerce attrs
-  ExhibitHallEgyptianExhibit' attrs -> coerce attrs
-  ExhibitHallHallOfTheDead' attrs -> coerce attrs
-  ExhibitHallRestrictedHall' attrs -> coerce attrs
-  PassengerCar_167' attrs -> coerce attrs
-  PassengerCar_168' attrs -> coerce attrs
-  PassengerCar_169' attrs -> coerce attrs
-  PassengerCar_170' attrs -> coerce attrs
-  PassengerCar_171' attrs -> coerce attrs
-  SleepingCar' attrs -> coerce attrs
-  DiningCar' attrs -> coerce attrs
-  ParlorCar' attrs -> coerce attrs
-  EngineCar_175' attrs -> coerce attrs
-  EngineCar_176' attrs -> coerce attrs
-  EngineCar_177' attrs -> coerce attrs
-  StudyAberrantGateway' attrs -> coerce attrs
-  GuestHall' attrs -> coerce attrs
-  Bedroom' attrs -> coerce attrs
-  Bathroom' attrs -> coerce attrs
-  HoleInTheWall' attrs -> coerce attrs
-  ReturnToAttic' attrs -> coerce attrs
-  FarAboveYourHouse' attrs -> coerce attrs
-  ReturnToCellar' attrs -> coerce attrs
-  DeepBelowYourHouse' attrs -> coerce attrs
-  EasttownArkhamPoliceStation' attrs -> coerce attrs
-  NorthsideTrainStation' attrs -> coerce attrs
-  MiskatonicUniversityMiskatonicMuseum' attrs -> coerce attrs
-  RivertownAbandonedWarehouse' attrs -> coerce attrs
-  ArkhamWoodsGreatWillow' attrs -> coerce attrs
-  ArkhamWoodsLakeside' attrs -> coerce attrs
-  ArkhamWoodsCorpseRiddenClearing' attrs -> coerce attrs
-  ArkhamWoodsWoodenBridge' attrs -> coerce attrs
-  RitualSite' attrs -> coerce attrs
-  CursedShores' attrs -> coerce attrs
-  GardenDistrict' attrs -> coerce attrs
-  Broadmoor' attrs -> coerce attrs
-  BrackishWaters' attrs -> coerce attrs
-  AudubonPark' attrs -> coerce attrs
-  FauborgMarigny' attrs -> coerce attrs
-  ForgottenMarsh' attrs -> coerce attrs
-  TrappersCabin' attrs -> coerce attrs
-  TwistedUnderbrush' attrs -> coerce attrs
-  FoulSwamp' attrs -> coerce attrs
-  RitualGrounds' attrs -> coerce attrs
-  OvergrownCairns' attrs -> coerce attrs
-  BaseLocation' attrs -> coerce attrs
+isRevealed = locationRevealed . toAttrs

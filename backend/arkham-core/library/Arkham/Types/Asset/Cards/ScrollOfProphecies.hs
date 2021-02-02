@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Uses (Uses(..), useCount)
 import qualified Arkham.Types.Asset.Uses as Resource
 
 newtype ScrollOfProphecies = ScrollOfProphecies Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 scrollOfProphecies :: AssetId -> ScrollOfProphecies
 scrollOfProphecies uuid =

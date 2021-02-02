@@ -9,7 +9,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
 newtype GhoulFromTheDepths = GhoulFromTheDepths Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ghoulFromTheDepths :: EnemyId -> GhoulFromTheDepths
 ghoulFromTheDepths uuid =

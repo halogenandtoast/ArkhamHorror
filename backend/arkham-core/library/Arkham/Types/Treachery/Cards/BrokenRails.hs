@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype BrokenRails = BrokenRails Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 brokenRails :: TreacheryId -> a -> BrokenRails
 brokenRails uuid _ = BrokenRails $ baseAttrs uuid "02181"

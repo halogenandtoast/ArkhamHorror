@@ -8,7 +8,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype ArkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arkhamWoodsTwistingPaths :: ArkhamWoodsTwistingPaths
 arkhamWoodsTwistingPaths = ArkhamWoodsTwistingPaths $ base

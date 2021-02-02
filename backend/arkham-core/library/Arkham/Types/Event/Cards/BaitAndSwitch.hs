@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype BaitAndSwitch = BaitAndSwitch Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 baitAndSwitch :: InvestigatorId -> EventId -> BaitAndSwitch
 baitAndSwitch iid uuid = BaitAndSwitch $ baseAttrs iid uuid "02034"

@@ -10,7 +10,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 
 newtype PredatorOrPrey = PredatorOrPrey Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 predatorOrPrey :: PredatorOrPrey
 predatorOrPrey =

@@ -10,7 +10,7 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
 newtype Lucky = Lucky Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 lucky :: EffectArgs -> Lucky
 lucky = Lucky . uncurry4 (baseAttrs "01080")

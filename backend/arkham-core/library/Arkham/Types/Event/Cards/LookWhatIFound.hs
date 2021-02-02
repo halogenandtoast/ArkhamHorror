@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype LookWhatIFound = LookWhatIFound Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 lookWhatIFound :: InvestigatorId -> EventId -> LookWhatIFound
 lookWhatIFound iid uuid = LookWhatIFound $ baseAttrs iid uuid "01079"

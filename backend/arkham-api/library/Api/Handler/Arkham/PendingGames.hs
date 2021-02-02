@@ -30,14 +30,17 @@ putApiV1ArkhamPendingGameR gameId = do
   (iid, decklist) <- liftIO $ loadDecklist deck
   when (iid `HashMap.member` gameInvestigators arkhamGameCurrentData)
     $ invalidArgs ["Investigator already taken"]
+
   ge <-
     liftIO
     $ addInvestigator userId' (lookupInvestigator iid) decklist
     =<< toInternalGame arkhamGameCurrentData
   runDB $ insert_ $ ArkhamPlayer userId gameId
+
   writeChannel <- getChannel gameId
   liftIO $ atomically $ writeTChan
     writeChannel
     (encode (Entity gameId (ArkhamGame arkhamGameName ge)))
+
   Entity gameId (ArkhamGame arkhamGameName ge)
     <$ runDB (replace gameId (ArkhamGame arkhamGameName ge))

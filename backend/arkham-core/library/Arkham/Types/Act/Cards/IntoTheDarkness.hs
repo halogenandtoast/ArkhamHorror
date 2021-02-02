@@ -8,7 +8,7 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Card.EncounterCardMatcher
 
 newtype IntoTheDarkness = IntoTheDarkness Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 intoTheDarkness :: IntoTheDarkness
 intoTheDarkness =

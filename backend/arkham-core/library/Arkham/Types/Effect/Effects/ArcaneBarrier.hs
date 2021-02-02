@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 
 newtype ArcaneBarrier = ArcaneBarrier Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arcaneBarrier :: EffectArgs -> ArcaneBarrier
 arcaneBarrier = ArcaneBarrier . uncurry4 (baseAttrs "02102")

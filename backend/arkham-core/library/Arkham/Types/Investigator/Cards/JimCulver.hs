@@ -9,7 +9,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype JimCulver = JimCulver Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env JimCulver where
   getModifiersFor (SkillTestSource iid _ _ _) (DrawnTokenTarget token) (JimCulver attrs)

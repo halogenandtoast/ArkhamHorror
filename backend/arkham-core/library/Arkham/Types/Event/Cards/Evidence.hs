@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype Evidence = Evidence Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 evidence :: InvestigatorId -> EventId -> Evidence
 evidence iid uuid = Evidence $ baseAttrs iid uuid "01022"

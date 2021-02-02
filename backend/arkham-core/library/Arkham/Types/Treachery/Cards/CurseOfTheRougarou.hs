@@ -13,7 +13,7 @@ newtype Metadata = Metadata { dealtDamageThisTurn :: Bool }
   deriving anyclass (ToJSON, FromJSON)
 
 newtype CurseOfTheRougarou = CurseOfTheRougarou (Attrs `With` Metadata)
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 curseOfTheRougarou :: TreacheryId -> Maybe InvestigatorId -> CurseOfTheRougarou
 curseOfTheRougarou uuid iid =

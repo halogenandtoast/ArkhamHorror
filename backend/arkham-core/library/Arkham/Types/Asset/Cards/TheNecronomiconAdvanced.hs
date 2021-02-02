@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.TheNecronomiconAdvanced
   ( TheNecronomiconAdvanced(..)
   , theNecronomiconAdvanced
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -12,8 +11,7 @@ import Arkham.Types.Asset.Runner
 import qualified Arkham.Types.Token as Token
 
 newtype TheNecronomiconAdvanced = TheNecronomiconAdvanced Attrs
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 theNecronomiconAdvanced :: AssetId -> TheNecronomiconAdvanced
 theNecronomiconAdvanced uuid =

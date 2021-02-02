@@ -11,7 +11,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 
 newtype ReturnToPredatorOrPrey = ReturnToPredatorOrPrey Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 returnToPredatorOrPrey :: ReturnToPredatorOrPrey
 returnToPredatorOrPrey = ReturnToPredatorOrPrey

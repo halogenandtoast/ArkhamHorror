@@ -7,7 +7,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
 
 newtype TheExperiment = TheExperiment Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theExperiment :: EnemyId -> TheExperiment
 theExperiment uuid =

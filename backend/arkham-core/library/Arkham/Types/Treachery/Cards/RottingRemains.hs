@@ -6,7 +6,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype RottingRemains = RottingRemains Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 rottingRemains :: TreacheryId -> a -> RottingRemains
 rottingRemains uuid _ = RottingRemains $ baseAttrs uuid "01163"

@@ -8,7 +8,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype ScienceBuilding = ScienceBuilding Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 scienceBuilding :: ScienceBuilding
 scienceBuilding = ScienceBuilding $ baseAttrs

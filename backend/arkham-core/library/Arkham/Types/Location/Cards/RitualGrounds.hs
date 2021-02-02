@@ -8,7 +8,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype RitualGrounds = RitualGrounds Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ritualGrounds :: RitualGrounds
 ritualGrounds = RitualGrounds $ base { locationVictory = Just 1 }

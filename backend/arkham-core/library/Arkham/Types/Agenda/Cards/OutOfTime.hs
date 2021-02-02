@@ -10,7 +10,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 
 newtype OutOfTime = OutOfTime Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 outOfTime :: OutOfTime
 outOfTime = OutOfTime $ baseAttrs "02164" "Out of Time" (Agenda 5 A) (Static 3)

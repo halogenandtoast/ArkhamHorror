@@ -10,7 +10,7 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
 newtype CursedShores = CursedShores Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 cursedShores :: EffectArgs -> CursedShores
 cursedShores = CursedShores . uncurry4 (baseAttrs "81007")

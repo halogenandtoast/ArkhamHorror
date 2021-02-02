@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.GrotesqueStatue4
   ( GrotesqueStatue4(..)
   , grotesqueStatue4
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -12,8 +11,7 @@ import Arkham.Types.Asset.Uses
 import Arkham.Types.ChaosBagStepState
 
 newtype GrotesqueStatue4 = GrotesqueStatue4 Attrs
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 grotesqueStatue4 :: AssetId -> GrotesqueStatue4
 grotesqueStatue4 uuid =

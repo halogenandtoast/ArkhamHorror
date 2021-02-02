@@ -10,7 +10,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Trait
 
 newtype Teamwork = Teamwork Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 teamwork :: InvestigatorId -> EventId -> Teamwork
 teamwork iid uuid = Teamwork $ baseAttrs iid uuid "02018"

@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
 newtype OldBookOfLore = OldBookOfLore Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 oldBookOfLore :: AssetId -> OldBookOfLore
 oldBookOfLore uuid =

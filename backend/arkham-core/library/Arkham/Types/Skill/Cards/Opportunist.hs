@@ -12,7 +12,7 @@ import Arkham.Types.SkillId
 import Arkham.Types.Target
 
 newtype Opportunist = Opportunist Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 opportunist :: InvestigatorId -> SkillId -> Opportunist
 opportunist iid uuid = Opportunist $ baseAttrs iid uuid "01053"

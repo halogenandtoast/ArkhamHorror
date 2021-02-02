@@ -6,7 +6,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype Amnesia = Amnesia Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 amnesia :: TreacheryId -> Maybe InvestigatorId -> Amnesia
 amnesia uuid iid = Amnesia $ weaknessAttrs uuid iid "01096"

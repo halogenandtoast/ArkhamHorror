@@ -8,7 +8,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype ArkhamWoodsOldHouse = ArkhamWoodsOldHouse Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arkhamWoodsOldHouse :: ArkhamWoodsOldHouse
 arkhamWoodsOldHouse = ArkhamWoodsOldHouse $ base

@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype DigDeep2 = DigDeep2 Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 digDeep2 :: AssetId -> DigDeep2
 digDeep2 uuid = DigDeep2 $ baseAttrs uuid "50009"

@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype MiskatonicQuad = MiskatonicQuad Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 miskatonicQuad :: MiskatonicQuad
 miskatonicQuad = MiskatonicQuad $ baseAttrs

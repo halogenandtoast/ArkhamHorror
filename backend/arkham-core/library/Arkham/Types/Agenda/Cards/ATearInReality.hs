@@ -11,7 +11,7 @@ import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 
 newtype ATearInReality = ATearInReality Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 aTearInReality :: ATearInReality
 aTearInReality =

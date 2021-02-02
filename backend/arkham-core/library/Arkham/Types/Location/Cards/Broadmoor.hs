@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype Broadmoor = Broadmoor Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 broadmoor :: Broadmoor
 broadmoor = Broadmoor $ base { locationVictory = Just 1 }

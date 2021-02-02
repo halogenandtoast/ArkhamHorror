@@ -7,7 +7,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype VaultOfEarthlyDemise = VaultOfEarthlyDemise Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 vaultOfEarthlyDemise :: TreacheryId -> a -> VaultOfEarthlyDemise
 vaultOfEarthlyDemise uuid _ = VaultOfEarthlyDemise $ baseAttrs uuid "50032b"

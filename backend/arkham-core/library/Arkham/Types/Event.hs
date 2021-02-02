@@ -1,7 +1,6 @@
 module Arkham.Types.Event
   ( module Arkham.Types.Event
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -11,7 +10,6 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Cards
 import Arkham.Types.Event.Runner
 import Arkham.Types.EventId
-import Arkham.Types.Helpers
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Query
 
@@ -77,20 +75,20 @@ deriving anyclass instance EventRunner env => RunMessage env Event
 
 instance Entity Event where
   type EntityId Event = EventId
-  toId = eventId . eventAttrs
-  toTarget = toTarget . eventAttrs
-  isTarget = isTarget . eventAttrs
-  toSource = toSource . eventAttrs
-  isSource = isSource . eventAttrs
+  type EntityAttrs Event = Attrs
+  toTarget = toTarget . toAttrs
+  isTarget = isTarget . toAttrs
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
 
 instance IsCard Event where
-  getCardId = getCardId . eventAttrs
-  getCardCode = getCardCode . eventAttrs
-  getTraits = getTraits . eventAttrs
-  getKeywords = getKeywords . eventAttrs
+  getCardId = getCardId . toAttrs
+  getCardCode = getCardCode . toAttrs
+  getTraits = getTraits . toAttrs
+  getKeywords = getKeywords . toAttrs
 
 getEventId :: Event -> EventId
-getEventId = eventId . eventAttrs
+getEventId = eventId . toAttrs
 
 lookupEvent :: CardCode -> (InvestigatorId -> EventId -> Event)
 lookupEvent cardCode =
@@ -153,59 +151,4 @@ allEvents = mapFromList
   ]
 
 ownerOfEvent :: Event -> InvestigatorId
-ownerOfEvent = eventOwner . eventAttrs
-
-eventAttrs :: Event -> Attrs
-eventAttrs = \case
-  OnTheLam' attrs -> coerce attrs
-  DarkMemory' attrs -> coerce attrs
-  Evidence' attrs -> coerce attrs
-  Dodge' attrs -> coerce attrs
-  DynamiteBlast' attrs -> coerce attrs
-  ExtraAmmunition1' attrs -> coerce attrs
-  MindOverMatter' attrs -> coerce attrs
-  WorkingAHunch' attrs -> coerce attrs
-  Barricade' attrs -> coerce attrs
-  CrypticResearch4' attrs -> coerce attrs
-  Elusive' attrs -> coerce attrs
-  Backstab' attrs -> coerce attrs
-  SneakAttack' attrs -> coerce attrs
-  SureGamble3' attrs -> coerce attrs
-  HotStreak4' attrs -> coerce attrs
-  DrawnToTheFlame' attrs -> coerce attrs
-  WardOfProtection' attrs -> coerce attrs
-  BlindingLight' attrs -> coerce attrs
-  MindWipe1' attrs -> coerce attrs
-  BlindingLight2' attrs -> coerce attrs
-  CunningDistraction' attrs -> coerce attrs
-  LookWhatIFound' attrs -> coerce attrs
-  Lucky' attrs -> coerce attrs
-  CloseCall2' attrs -> coerce attrs
-  Lucky2' attrs -> coerce attrs
-  WillToSurvive4' attrs -> coerce attrs
-  EmergencyCache' attrs -> coerce attrs
-  SearchForTheTruth' attrs -> coerce attrs
-  Taunt' attrs -> coerce attrs
-  Teamwork' attrs -> coerce attrs
-  Taunt2' attrs -> coerce attrs
-  Shortcut' attrs -> coerce attrs
-  SeekingAnswers' attrs -> coerce attrs
-  ThinkOnYourFeet' attrs -> coerce attrs
-  BindMonster2' attrs -> coerce attrs
-  BaitAndSwitch' attrs -> coerce attrs
-  EmergencyAid' attrs -> coerce attrs
-  IveGotAPlan' attrs -> coerce attrs
-  Contraband' attrs -> coerce attrs
-  DelveTooDeep' attrs -> coerce attrs
-  LetMeHandleThis' attrs -> coerce attrs
-  SecondWind' attrs -> coerce attrs
-  BloodRite' attrs -> coerce attrs
-  AstoundingRevelation' attrs -> coerce attrs
-  FirstWatch' (FirstWatch (attrs `With` _)) -> attrs
-  DynamiteBlast2' attrs -> coerce attrs
-  Barricade3' attrs -> coerce attrs
-  HotStreak2' attrs -> coerce attrs
-  MindWipe3' attrs -> coerce attrs
-  Contraband2' attrs -> coerce attrs
-  Taunt3' attrs -> coerce attrs
-  IveGotAPlan2' attrs -> coerce attrs
+ownerOfEvent = eventOwner . toAttrs

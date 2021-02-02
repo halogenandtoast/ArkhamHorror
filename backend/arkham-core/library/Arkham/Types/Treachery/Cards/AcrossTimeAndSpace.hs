@@ -9,7 +9,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype AcrossTimeAndSpace = AcrossTimeAndSpace Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 acrossTimeAndSpace :: TreacheryId -> a -> AcrossTimeAndSpace
 acrossTimeAndSpace uuid _ = AcrossTimeAndSpace $ baseAttrs uuid "02178"

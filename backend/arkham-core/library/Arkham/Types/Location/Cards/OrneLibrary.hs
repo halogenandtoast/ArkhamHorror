@@ -10,7 +10,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype OrneLibrary = OrneLibrary Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 orneLibrary :: OrneLibrary
 orneLibrary = OrneLibrary $ base { locationVictory = Just 1 }

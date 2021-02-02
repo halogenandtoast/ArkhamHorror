@@ -8,7 +8,7 @@ import Arkham.Types.Skill.Attrs
 import Arkham.Types.Skill.Runner
 
 newtype ViciousBlow = ViciousBlow Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 viciousBlow :: InvestigatorId -> SkillId -> ViciousBlow
 viciousBlow iid uuid = ViciousBlow $ baseAttrs iid uuid "01025"

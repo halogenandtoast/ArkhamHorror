@@ -75,7 +75,9 @@ instance HasList Action.TakenAction env Attrs where
 
 instance Entity Attrs where
   type EntityId Attrs = InvestigatorId
+  type EntityAttrs Attrs = Attrs
   toId = investigatorId
+  toAttrs = id
   toSource = InvestigatorSource . toId
   toTarget = InvestigatorTarget . toId
   isSource Attrs { investigatorId } (InvestigatorSource iid) =

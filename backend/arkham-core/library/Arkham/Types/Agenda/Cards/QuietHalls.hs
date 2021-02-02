@@ -8,7 +8,7 @@ import Arkham.Types.Game.Helpers
 import Control.Monad.Extra (mapMaybeM)
 
 newtype QuietHalls = QuietHalls Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 quietHalls :: QuietHalls
 quietHalls =

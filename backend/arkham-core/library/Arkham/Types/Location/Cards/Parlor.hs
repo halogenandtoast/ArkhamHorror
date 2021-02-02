@@ -9,7 +9,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 
 newtype Parlor = Parlor Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 parlor :: Parlor
 parlor = Parlor $ baseAttrs

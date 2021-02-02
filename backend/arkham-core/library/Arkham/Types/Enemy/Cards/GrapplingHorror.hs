@@ -10,7 +10,7 @@ import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
 newtype GrapplingHorror = GrapplingHorror Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 grapplingHorror :: EnemyId -> GrapplingHorror
 grapplingHorror uuid =

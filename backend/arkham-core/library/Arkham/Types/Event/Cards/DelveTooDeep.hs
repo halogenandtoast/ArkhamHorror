@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 
 newtype DelveTooDeep = DelveTooDeep Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 delveTooDeep :: InvestigatorId -> EventId -> DelveTooDeep
 delveTooDeep iid uuid = DelveTooDeep $ baseAttrs iid uuid "02111"

@@ -11,7 +11,7 @@ import Arkham.Types.Agenda.Helpers
 import Arkham.Types.Agenda.Runner
 
 newtype TheMawWidens = TheMawWidens Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theMawWidens :: TheMawWidens
 theMawWidens =

@@ -14,7 +14,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype MainPath = MainPath Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 mainPath :: MainPath
 mainPath = MainPath $ baseAttrs

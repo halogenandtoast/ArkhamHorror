@@ -39,6 +39,10 @@ uncurry4 f ~(a, b, c, d) = f a b c d
 toFst :: (a -> b) -> a -> (b, a)
 toFst f a = (f a, a)
 
+mapFrom
+  :: IsMap map => (MapValue map -> ContainerKey map) -> [MapValue map] -> map
+mapFrom f = mapFromList . map (toFst f)
+
 toSnd :: (a -> b) -> a -> (a, b)
 toSnd f a = (a, f a)
 
@@ -98,6 +102,7 @@ instance Show (Bag a) where
   show _ = "<Bag>"
 
 data With a b = With a b
+
 
 instance (ToJSON a, ToJSON b) => ToJSON (a `With` b) where
   toJSON (a `With` b) = case (toJSON a, toJSON b) of

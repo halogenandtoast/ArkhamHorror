@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype DowntownFirstBankOfArkham = DowntownFirstBankOfArkham Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 downtownFirstBankOfArkham :: DowntownFirstBankOfArkham
 downtownFirstBankOfArkham = DowntownFirstBankOfArkham $ baseAttrs

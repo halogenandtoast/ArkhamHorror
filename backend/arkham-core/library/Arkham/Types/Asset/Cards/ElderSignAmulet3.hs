@@ -6,8 +6,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
 newtype ElderSignAmulet3 = ElderSignAmulet3 Attrs
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 elderSignAmulet3 :: AssetId -> ElderSignAmulet3
 elderSignAmulet3 uuid = ElderSignAmulet3 $ (baseAttrs uuid "01095")

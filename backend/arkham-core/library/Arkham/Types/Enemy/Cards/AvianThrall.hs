@@ -12,7 +12,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Trait
 
 newtype AvianThrall = AvianThrall Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 avianThrall :: EnemyId -> AvianThrall
 avianThrall uuid =

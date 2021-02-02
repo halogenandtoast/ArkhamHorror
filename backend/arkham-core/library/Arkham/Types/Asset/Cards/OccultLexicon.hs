@@ -6,7 +6,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
 newtype OccultLexicon = OccultLexicon Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 occultLexicon :: AssetId -> OccultLexicon
 occultLexicon uuid =

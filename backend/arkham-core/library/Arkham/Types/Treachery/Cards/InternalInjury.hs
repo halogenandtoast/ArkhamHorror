@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype InternalInjury = InternalInjury Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 internalInjury :: TreacheryId -> Maybe InvestigatorId -> InternalInjury
 internalInjury uuid iid = InternalInjury $ weaknessAttrs uuid iid "02038"

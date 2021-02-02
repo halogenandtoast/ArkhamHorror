@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 
 newtype Shrivelling = Shrivelling Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 shrivelling :: EffectArgs -> Shrivelling
 shrivelling = Shrivelling . uncurry4 (baseAttrs "01060")

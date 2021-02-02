@@ -7,7 +7,7 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Game.Helpers
 
 newtype TheBeastUnleashed = TheBeastUnleashed Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theBeastUnleashed :: TheBeastUnleashed
 theBeastUnleashed = TheBeastUnleashed

@@ -11,7 +11,7 @@ import Arkham.Types.Game.Helpers
 import qualified Arkham.Types.Token as Token
 
 newtype TheDunwichLegacy = TheDunwichLegacy Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theDunwichLegacy :: Difficulty -> TheDunwichLegacy
 theDunwichLegacy difficulty = TheDunwichLegacy

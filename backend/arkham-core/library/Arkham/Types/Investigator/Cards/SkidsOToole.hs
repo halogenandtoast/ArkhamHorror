@@ -12,7 +12,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype SkidsOToole = SkidsOToole Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env SkidsOToole where
   getModifiersFor source target (SkidsOToole attrs) =

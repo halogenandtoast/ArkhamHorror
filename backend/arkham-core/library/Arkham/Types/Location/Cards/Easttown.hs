@@ -9,7 +9,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype Easttown = Easttown Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 easttown :: Easttown
 easttown = Easttown $ baseAttrs

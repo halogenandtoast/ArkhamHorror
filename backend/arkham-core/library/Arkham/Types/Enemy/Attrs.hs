@@ -253,7 +253,9 @@ instance ActionRunner env => HasActions env Attrs where
 
 instance Entity Attrs where
   type EntityId Attrs = EnemyId
+  type EntityAttrs Attrs = Attrs
   toId = enemyId
+  toAttrs = id
   toSource = EnemySource . toId
   toTarget = EnemyTarget . toId
   isTarget Attrs { enemyId } (EnemyTarget eid) = enemyId == eid

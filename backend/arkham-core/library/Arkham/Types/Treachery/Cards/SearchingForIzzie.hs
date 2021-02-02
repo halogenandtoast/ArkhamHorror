@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype SearchingForIzzie = SearchingForIzzie Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 searchingForIzzie :: TreacheryId -> Maybe InvestigatorId -> SearchingForIzzie
 searchingForIzzie uuid iid = SearchingForIzzie $ weaknessAttrs uuid iid "02011"

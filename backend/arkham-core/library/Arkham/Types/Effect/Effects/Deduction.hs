@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 
 newtype Deduction = Deduction Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 deduction :: EffectArgs -> Deduction
 deduction = Deduction . uncurry4 (baseAttrs "01039")

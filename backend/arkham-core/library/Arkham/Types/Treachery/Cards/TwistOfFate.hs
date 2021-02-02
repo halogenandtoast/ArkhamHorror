@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype TwistOfFate = TwistOfFate Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 twistOfFate :: TreacheryId -> a -> TwistOfFate
 twistOfFate uuid _ = TwistOfFate $ baseAttrs uuid "02093"

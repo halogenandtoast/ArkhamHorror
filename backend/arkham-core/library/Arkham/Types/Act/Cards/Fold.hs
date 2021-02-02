@@ -12,7 +12,7 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Action
 
 newtype Fold = Fold Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 fold :: Fold
 fold = Fold $ baseAttrs "02069" "Fold" (Act 3 A) Nothing

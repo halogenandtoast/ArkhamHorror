@@ -14,7 +14,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype LaBellaLuna = LaBellaLuna Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 laBellaLuna :: LaBellaLuna
 laBellaLuna = LaBellaLuna $ baseAttrs

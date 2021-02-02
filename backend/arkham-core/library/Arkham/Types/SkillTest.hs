@@ -34,7 +34,9 @@ makeLensesWith (suffixedWithFields "skillTest") ''SkillTest
 
 instance Entity SkillTest where
   type EntityId SkillTest = ()
+  type EntityAttrs SkillTest = ()
   toId _ = ()
+  toAttrs _ = ()
   toSource SkillTest {..} = SkillTestSource
     skillTestInvestigator
     skillTestSkillType

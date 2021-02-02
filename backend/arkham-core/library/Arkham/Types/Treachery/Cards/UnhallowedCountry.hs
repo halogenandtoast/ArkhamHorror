@@ -11,7 +11,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype UnhallowedCountry = UnhallowedCountry Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 unhallowedCountry :: TreacheryId -> a -> UnhallowedCountry
 unhallowedCountry uuid _ = UnhallowedCountry $ baseAttrs uuid "02088"

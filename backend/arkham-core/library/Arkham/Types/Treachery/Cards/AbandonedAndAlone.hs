@@ -6,7 +6,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype AbandonedAndAlone = AbandonedAndAlone Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 abandonedAndAlone :: TreacheryId -> Maybe InvestigatorId -> AbandonedAndAlone
 abandonedAndAlone uuid iid = AbandonedAndAlone $ weaknessAttrs uuid iid "01015"

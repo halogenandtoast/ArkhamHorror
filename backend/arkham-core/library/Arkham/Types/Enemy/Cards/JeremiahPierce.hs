@@ -11,7 +11,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
 
 newtype JeremiahPierce = JeremiahPierce Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 jeremiahPierce :: EnemyId -> JeremiahPierce
 jeremiahPierce uuid =

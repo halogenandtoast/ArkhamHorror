@@ -10,7 +10,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
 newtype CloverClubPitBoss = CloverClubPitBoss Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 cloverClubPitBoss :: EnemyId -> CloverClubPitBoss
 cloverClubPitBoss uuid =

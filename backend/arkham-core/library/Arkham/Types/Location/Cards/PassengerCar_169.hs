@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype PassengerCar_169 = PassengerCar_169 Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 passengerCar_169 :: PassengerCar_169
 passengerCar_169 = PassengerCar_169

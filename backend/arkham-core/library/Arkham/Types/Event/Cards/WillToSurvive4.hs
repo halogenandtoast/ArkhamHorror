@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Event.Attrs
 
 newtype WillToSurvive4 = WillToSurvive4 Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 willToSurvive4 :: InvestigatorId -> EventId -> WillToSurvive4
 willToSurvive4 iid uuid = WillToSurvive4 $ baseAttrs iid uuid "01085"

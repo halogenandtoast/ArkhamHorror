@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype MindOverMatter = MindOverMatter Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 mindOverMatter :: InvestigatorId -> EventId -> MindOverMatter
 mindOverMatter iid uuid = MindOverMatter $ baseAttrs iid uuid "01036"

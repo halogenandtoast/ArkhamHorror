@@ -3,8 +3,7 @@
 module Arkham.Types.Effect.Attrs
   ( module Arkham.Types.Effect.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -67,7 +66,9 @@ instance HasQueue env => RunMessage env Attrs where
 
 instance Entity Attrs where
   type EntityId Attrs = EffectId
+  type EntityAttrs Attrs = Attrs
   toId = effectId
+  toAttrs = id
   toSource = EffectSource . toId
   toTarget = EffectTarget . toId
   isSource Attrs { effectId } (EffectSource eid) = effectId == eid

@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype FauborgMarigny = FauborgMarigny Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 fauborgMarigny :: FauborgMarigny
 fauborgMarigny = FauborgMarigny $ baseAttrs

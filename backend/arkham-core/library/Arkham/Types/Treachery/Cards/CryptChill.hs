@@ -6,7 +6,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype CryptChill = CryptChill Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 cryptChill :: TreacheryId -> a -> CryptChill
 cryptChill uuid _ = CryptChill $ baseAttrs uuid "01167"

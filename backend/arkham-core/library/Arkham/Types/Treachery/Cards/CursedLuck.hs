@@ -11,7 +11,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype CursedLuck = CursedLuck Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 cursedLuck :: TreacheryId -> Maybe InvestigatorId -> CursedLuck
 cursedLuck uuid _ = CursedLuck $ baseAttrs uuid "02092"

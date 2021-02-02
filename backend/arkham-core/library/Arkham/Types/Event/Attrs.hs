@@ -83,7 +83,9 @@ weaknessAttrs iid eid cardCode =
 
 instance Entity Attrs where
   type EntityId Attrs = EventId
+  type EntityAttrs Attrs = Attrs
   toId = eventId
+  toAttrs = id
   toSource = EventSource . toId
   toTarget = EventTarget . toId
   isSource Attrs { eventId } (EventSource eid) = eventId == eid

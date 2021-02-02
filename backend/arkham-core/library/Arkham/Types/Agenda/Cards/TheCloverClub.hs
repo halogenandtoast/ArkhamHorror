@@ -13,7 +13,7 @@ import Arkham.Types.Keyword
 import Arkham.Types.Trait
 
 newtype TheCloverClub = TheCloverClub Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theCloverClub :: TheCloverClub
 theCloverClub =

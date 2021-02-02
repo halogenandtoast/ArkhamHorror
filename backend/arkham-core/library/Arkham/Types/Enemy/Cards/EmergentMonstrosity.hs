@@ -9,7 +9,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
 newtype EmergentMonstrosity = EmergentMonstrosity Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 emergentMonstrosity :: EnemyId -> EmergentMonstrosity
 emergentMonstrosity uuid =

@@ -9,7 +9,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype ArkhamWoodsGreatWillow = ArkhamWoodsGreatWillow Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arkhamWoodsGreatWillow :: ArkhamWoodsGreatWillow
 arkhamWoodsGreatWillow = ArkhamWoodsGreatWillow $ base

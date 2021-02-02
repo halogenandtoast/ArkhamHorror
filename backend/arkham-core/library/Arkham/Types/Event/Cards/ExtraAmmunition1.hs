@@ -9,7 +9,7 @@ import Arkham.Types.Trait
 import Control.Monad.Extra hiding (filterM)
 
 newtype ExtraAmmunition1 = ExtraAmmunition1 Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 extraAmmunition1 :: InvestigatorId -> EventId -> ExtraAmmunition1
 extraAmmunition1 iid uuid = ExtraAmmunition1 $ baseAttrs iid uuid "01026"

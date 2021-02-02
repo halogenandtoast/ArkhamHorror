@@ -8,7 +8,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype Graveyard = Graveyard Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 graveyard :: Graveyard
 graveyard = Graveyard $ base { locationVictory = Just 1 }

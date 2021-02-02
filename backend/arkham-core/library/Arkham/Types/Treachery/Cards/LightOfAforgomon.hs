@@ -11,7 +11,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype LightOfAforgomon = LightOfAforgomon Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 lightOfAforgomon :: TreacheryId -> a -> LightOfAforgomon
 lightOfAforgomon uuid _ = LightOfAforgomon $ baseAttrs uuid "02085"

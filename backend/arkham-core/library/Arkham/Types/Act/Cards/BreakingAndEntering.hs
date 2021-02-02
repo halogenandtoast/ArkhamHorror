@@ -11,7 +11,7 @@ import Arkham.Types.Act.Runner
 import Arkham.Types.Card.EncounterCardMatcher
 
 newtype BreakingAndEntering = BreakingAndEntering Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 breakingAndEntering :: BreakingAndEntering
 breakingAndEntering = BreakingAndEntering

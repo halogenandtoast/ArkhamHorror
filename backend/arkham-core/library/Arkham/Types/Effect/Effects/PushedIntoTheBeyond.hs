@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Effect.Attrs
 
 newtype PushedIntoTheBeyond = PushedIntoTheBeyond Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 pushedIntoTheBeyond :: EffectArgs -> PushedIntoTheBeyond
 pushedIntoTheBeyond = PushedIntoTheBeyond . uncurry4 (baseAttrs "02100")

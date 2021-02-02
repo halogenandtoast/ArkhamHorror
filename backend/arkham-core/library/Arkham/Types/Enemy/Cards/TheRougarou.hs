@@ -1,8 +1,7 @@
 module Arkham.Types.Enemy.Cards.TheRougarou
   ( TheRougarou(..)
   , theRougarou
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -15,7 +14,7 @@ newtype TheRougarouMetadata = TheRougarouMetadata { damagePerPhase :: Int }
   deriving anyclass (ToJSON, FromJSON)
 
 newtype TheRougarou = TheRougarou (Attrs `With` TheRougarouMetadata)
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theRougarou :: EnemyId -> TheRougarou
 theRougarou uuid =

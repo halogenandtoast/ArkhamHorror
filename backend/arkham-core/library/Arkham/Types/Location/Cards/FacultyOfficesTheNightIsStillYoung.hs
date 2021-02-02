@@ -14,7 +14,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype FacultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 facultyOfficesTheNightIsStillYoung :: FacultyOfficesTheNightIsStillYoung
 facultyOfficesTheNightIsStillYoung = FacultyOfficesTheNightIsStillYoung

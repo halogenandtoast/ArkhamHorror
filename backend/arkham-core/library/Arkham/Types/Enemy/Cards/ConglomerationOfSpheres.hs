@@ -8,7 +8,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Trait
 
 newtype ConglomerationOfSpheres = ConglomerationOfSpheres Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 conglomerationOfSpheres :: EnemyId -> ConglomerationOfSpheres
 conglomerationOfSpheres uuid =

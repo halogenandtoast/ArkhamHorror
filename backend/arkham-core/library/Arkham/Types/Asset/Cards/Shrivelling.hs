@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.Shrivelling
   ( Shrivelling(..)
   , shrivelling
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -13,8 +12,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Asset.Uses
 
 newtype Shrivelling = Shrivelling Attrs
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 shrivelling :: AssetId -> Shrivelling
 shrivelling uuid =
@@ -47,7 +45,8 @@ instance AssetRunner env => RunMessage env Shrivelling where
       Shrivelling <$> runMessage msg (attrs & usesL .~ Uses Charge 4)
     UseCardAbility iid source _ 1 _ | isSource attrs source ->
       a <$ unshiftMessages
-        [ CreateWindowModifierEffect EffectSkillTestWindow
+        [ CreateWindowModifierEffect
+          EffectSkillTestWindow
           (EffectModifiers $ toModifiers attrs [DamageDealt 1])
           source
           (InvestigatorTarget iid)

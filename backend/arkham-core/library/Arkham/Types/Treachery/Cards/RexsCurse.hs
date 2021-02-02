@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.RexsCurse
   ( RexsCurse(..)
   , rexsCurse
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -10,8 +9,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype RexsCurse = RexsCurse Attrs
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 rexsCurse :: TreacheryId -> Maybe InvestigatorId -> RexsCurse
 rexsCurse uuid iid = RexsCurse $ weaknessAttrs uuid iid "02009"

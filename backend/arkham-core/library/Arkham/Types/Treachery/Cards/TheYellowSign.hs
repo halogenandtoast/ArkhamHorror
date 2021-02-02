@@ -7,7 +7,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype TheYellowSign = TheYellowSign Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theYellowSign :: TreacheryId -> a -> TheYellowSign
 theYellowSign uuid _ = TheYellowSign $ baseAttrs uuid "01176"

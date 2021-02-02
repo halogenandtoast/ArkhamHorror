@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype WorkingAHunch = WorkingAHunch Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 workingAHunch :: InvestigatorId -> EventId -> WorkingAHunch
 workingAHunch iid uuid = WorkingAHunch $ baseAttrs iid uuid "01037"

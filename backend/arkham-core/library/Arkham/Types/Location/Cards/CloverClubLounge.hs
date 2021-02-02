@@ -12,7 +12,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype CloverClubLounge = CloverClubLounge Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 cloverClubLounge :: CloverClubLounge
 cloverClubLounge = CloverClubLounge $ baseAttrs

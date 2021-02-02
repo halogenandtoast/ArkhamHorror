@@ -6,7 +6,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
 newtype YoungDeepOne = YoungDeepOne Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 youngDeepOne :: EnemyId -> YoungDeepOne
 youngDeepOne uuid =

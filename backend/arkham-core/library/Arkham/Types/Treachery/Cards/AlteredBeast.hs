@@ -11,7 +11,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype AlteredBeast = AlteredBeast Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 alteredBeast :: TreacheryId -> a -> AlteredBeast
 alteredBeast uuid _ = AlteredBeast $ baseAttrs uuid "02096"

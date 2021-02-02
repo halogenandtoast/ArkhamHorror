@@ -11,7 +11,7 @@ import Arkham.Types.Asset.Helpers
 import Arkham.Types.Asset.Runner
 
 newtype ToothOfEztli = ToothOfEztli Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 toothOfEztli :: AssetId -> ToothOfEztli
 toothOfEztli uuid =

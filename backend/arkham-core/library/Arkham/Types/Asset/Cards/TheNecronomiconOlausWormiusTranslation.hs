@@ -10,7 +10,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Game.Helpers
 
 newtype TheNecronomiconOlausWormiusTranslation = TheNecronomiconOlausWormiusTranslation Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theNecronomiconOlausWormiusTranslation
   :: AssetId -> TheNecronomiconOlausWormiusTranslation

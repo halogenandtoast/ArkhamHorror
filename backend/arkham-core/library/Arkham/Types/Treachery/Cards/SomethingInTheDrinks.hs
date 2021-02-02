@@ -12,7 +12,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype SomethingInTheDrinks = SomethingInTheDrinks Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 somethingInTheDrinks :: TreacheryId -> a -> SomethingInTheDrinks
 somethingInTheDrinks uuid _ = SomethingInTheDrinks $ baseAttrs uuid "02081"

@@ -10,7 +10,7 @@ import Arkham.Types.Act.Helpers
 import Arkham.Types.Act.Runner
 
 newtype FindingAWayInside = FindingAWayInside Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 findingAWayInside :: FindingAWayInside
 findingAWayInside = FindingAWayInside $ baseAttrs

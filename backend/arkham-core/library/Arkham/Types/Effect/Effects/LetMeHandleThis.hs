@@ -10,7 +10,7 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
 newtype LetMeHandleThis = LetMeHandleThis Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 letMeHandleThis :: EffectArgs -> LetMeHandleThis
 letMeHandleThis = LetMeHandleThis . uncurry4 (baseAttrs "03022")

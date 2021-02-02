@@ -11,7 +11,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype RolandBanks = RolandBanks Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env RolandBanks where
   getModifiersFor source target (RolandBanks attrs) =

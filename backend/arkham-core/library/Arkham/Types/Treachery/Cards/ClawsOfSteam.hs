@@ -11,7 +11,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ClawsOfSteam = ClawsOfSteam Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 clawsOfSteam :: TreacheryId -> a -> ClawsOfSteam
 clawsOfSteam uuid _ = ClawsOfSteam $ baseAttrs uuid "02180"

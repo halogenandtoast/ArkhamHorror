@@ -38,7 +38,9 @@ instance HasCount ResourceCount env Attrs where
 
 instance Entity Attrs where
   type EntityId Attrs = TreacheryId
+  type EntityAttrs Attrs = Attrs
   toId = treacheryId
+  toAttrs = id
   toTarget = TreacheryTarget . toId
   toSource = TreacherySource . toId
   isSource Attrs { treacheryId } (TreacherySource tid) = treacheryId == tid

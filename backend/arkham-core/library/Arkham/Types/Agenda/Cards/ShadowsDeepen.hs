@@ -10,7 +10,7 @@ import Arkham.Types.Agenda.Runner
 import Arkham.Types.Card.EncounterCardMatcher
 
 newtype ShadowsDeepen = ShadowsDeepen Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 shadowsDeepen :: ShadowsDeepen
 shadowsDeepen =

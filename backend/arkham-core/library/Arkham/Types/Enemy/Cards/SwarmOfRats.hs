@@ -6,7 +6,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
 newtype SwarmOfRats = SwarmOfRats Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 swarmOfRats :: EnemyId -> SwarmOfRats
 swarmOfRats uuid =

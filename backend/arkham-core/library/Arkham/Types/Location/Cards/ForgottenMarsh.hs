@@ -8,7 +8,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype ForgottenMarsh = ForgottenMarsh Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 forgottenMarsh :: ForgottenMarsh
 forgottenMarsh = ForgottenMarsh $ baseAttrs

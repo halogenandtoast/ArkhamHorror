@@ -9,7 +9,7 @@ import Arkham.Types.Location.Helpers
 import Arkham.Types.Location.Runner
 
 newtype GuestHall = GuestHall Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 guestHall :: GuestHall
 guestHall = GuestHall $ baseAttrs

@@ -14,7 +14,7 @@ import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
 newtype GardenDistrict = GardenDistrict Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 gardenDistrict :: GardenDistrict
 gardenDistrict = GardenDistrict $ baseAttrs

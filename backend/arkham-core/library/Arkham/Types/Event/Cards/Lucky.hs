@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype Lucky = Lucky Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 lucky :: InvestigatorId -> EventId -> Lucky
 lucky iid uuid = Lucky $ baseAttrs iid uuid "01080"

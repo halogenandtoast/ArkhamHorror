@@ -6,7 +6,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype OfferOfPower = OfferOfPower Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 offerOfPower :: TreacheryId -> a -> OfferOfPower
 offerOfPower uuid _ = OfferOfPower $ baseAttrs uuid "01178"

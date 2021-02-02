@@ -9,8 +9,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype CoverUp = CoverUp Attrs
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 coverUp :: TreacheryId -> Maybe InvestigatorId -> CoverUp
 coverUp uuid iid =

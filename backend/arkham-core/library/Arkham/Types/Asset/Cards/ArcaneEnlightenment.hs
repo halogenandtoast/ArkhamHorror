@@ -1,8 +1,7 @@
 module Arkham.Types.Asset.Cards.ArcaneEnlightenment
   ( ArcaneEnlightenment(..)
   , arcaneEnlightenment
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -12,8 +11,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
 newtype ArcaneEnlightenment = ArcaneEnlightenment Attrs
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 arcaneEnlightenment :: AssetId -> ArcaneEnlightenment
 arcaneEnlightenment uuid =

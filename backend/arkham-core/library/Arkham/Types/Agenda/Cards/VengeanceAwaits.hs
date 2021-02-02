@@ -6,7 +6,7 @@ import Arkham.Types.Agenda.Attrs
 import Arkham.Types.Agenda.Runner
 
 newtype VengeanceAwaits = VengeanceAwaits Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 vengeanceAwaits :: VengeanceAwaits
 vengeanceAwaits =

@@ -12,7 +12,7 @@ import Arkham.Types.Asset.Runner
 import Arkham.Types.Trait
 
 newtype WhittonGreene = WhittonGreene Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 whittonGreene :: AssetId -> WhittonGreene
 whittonGreene uuid = WhittonGreene $ (baseAttrs uuid "60213")

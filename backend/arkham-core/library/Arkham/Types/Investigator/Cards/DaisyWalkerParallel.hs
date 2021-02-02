@@ -12,7 +12,7 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.Trait
 
 newtype DaisyWalkerParallel = DaisyWalkerParallel Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 daisyWalkerParallel :: DaisyWalkerParallel
 daisyWalkerParallel = DaisyWalkerParallel

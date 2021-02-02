@@ -1,8 +1,7 @@
 module Arkham.Types.Act
   ( Act(..)
   , lookupAct
-  )
-where
+  ) where
 
 import Arkham.Import hiding (fold)
 
@@ -41,23 +40,23 @@ deriving anyclass instance ActionRunner env => HasActions env Act
 deriving anyclass instance ActRunner env => RunMessage env Act
 
 instance HasStep ActStep Act where
-  getStep = getStep . actAttrs
+  getStep = getStep . toAttrs
 
 instance Entity Act where
   type EntityId Act = ActId
-  toId = toId . actAttrs
-  toSource = toSource . actAttrs
-  toTarget = toTarget . actAttrs
-  isSource = isSource . actAttrs
-  isTarget = isTarget . actAttrs
+  type EntityAttrs Act = Attrs
+  toSource = toSource . toAttrs
+  toTarget = toTarget . toAttrs
+  isSource = isSource . toAttrs
+  isTarget = isTarget . toAttrs
 
 lookupAct :: ActId -> Act
 lookupAct actId =
   fromJustNote ("Unknown act: " <> show actId) $ lookup actId allActs
 
 allActs :: HashMap ActId Act
-allActs = mapFromList $ map
-  (toFst $ actId . actAttrs)
+allActs = mapFrom
+  toId
   [ Trapped' trapped
   , TheBarrier' theBarrier
   , WhatHaveYouDone' whatHaveYouDone
@@ -82,29 +81,3 @@ allActs = mapFromList $ map
   , FindingLadyEsprit' findingLadyEsprit
   , HuntingTheRougarou' huntingTheRougarou
   ]
-
-actAttrs :: Act -> Attrs
-actAttrs = \case
-  Trapped' attrs -> coerce attrs
-  TheBarrier' attrs -> coerce attrs
-  WhatHaveYouDone' attrs -> coerce attrs
-  UncoveringTheConspiracy' attrs -> coerce attrs
-  InvestigatingTheTrail' attrs -> coerce attrs
-  IntoTheDarkness' attrs -> coerce attrs
-  DisruptingTheRitual' attrs -> coerce attrs
-  AfterHours' attrs -> coerce attrs
-  RicesWhereabouts' attrs -> coerce attrs
-  CampusSafety' attrs -> coerce attrs
-  BeginnersLuck' attrs -> coerce attrs
-  SkinGame' attrs -> coerce attrs
-  AllIn' attrs -> coerce attrs
-  Fold' attrs -> coerce attrs
-  FindingAWayInside' attrs -> coerce attrs
-  NightAtTheMuseum' attrs -> coerce attrs
-  BreakingAndEntering' attrs -> coerce attrs
-  SearchingForTheTome' attrs -> coerce attrs
-  Run' attrs -> coerce attrs
-  GetTheEngineRunning' attrs -> coerce attrs
-  MysteriousGateway' attrs -> coerce attrs
-  FindingLadyEsprit' attrs -> coerce attrs
-  HuntingTheRougarou' attrs -> coerce attrs

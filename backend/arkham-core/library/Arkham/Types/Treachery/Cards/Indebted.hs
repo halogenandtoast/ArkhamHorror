@@ -11,7 +11,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype Indebted = Indebted Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 indebted :: TreacheryId -> Maybe InvestigatorId -> Indebted
 indebted uuid iid = Indebted $ weaknessAttrs uuid iid "02037"

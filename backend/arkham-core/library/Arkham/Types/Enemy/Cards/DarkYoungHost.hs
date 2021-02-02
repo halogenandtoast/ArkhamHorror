@@ -8,7 +8,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
 newtype DarkYoungHost = DarkYoungHost Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 darkYoungHost :: EnemyId -> DarkYoungHost
 darkYoungHost uuid =

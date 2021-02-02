@@ -12,7 +12,7 @@ import Arkham.Types.ScenarioLogKey
 import Arkham.Types.Trait
 
 newtype BeginnersLuck = BeginnersLuck Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 beginnersLuck :: BeginnersLuck
 beginnersLuck =

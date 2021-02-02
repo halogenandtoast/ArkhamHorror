@@ -11,7 +11,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype ArousingSuspicions = ArousingSuspicions Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 arousingSuspicions :: TreacheryId -> a -> ArousingSuspicions
 arousingSuspicions uuid _ = ArousingSuspicions $ baseAttrs uuid "02082"

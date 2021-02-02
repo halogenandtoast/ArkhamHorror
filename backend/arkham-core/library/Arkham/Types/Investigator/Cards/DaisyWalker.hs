@@ -12,7 +12,7 @@ import Arkham.Types.Stats
 import Arkham.Types.Trait
 
 newtype DaisyWalker = DaisyWalker Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasModifiersFor env DaisyWalker where
   getModifiersFor source target (DaisyWalker attrs) =

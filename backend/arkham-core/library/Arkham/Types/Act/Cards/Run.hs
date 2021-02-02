@@ -9,7 +9,7 @@ import Arkham.Types.Act.Attrs
 import Arkham.Types.Act.Runner
 
 newtype Run= Run Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 run :: Run
 run = Run $ baseAttrs "02165" "Run!" (Act 1 A) Nothing

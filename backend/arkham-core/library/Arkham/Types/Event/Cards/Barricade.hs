@@ -7,7 +7,7 @@ import Arkham.Types.Event.Helpers
 import Arkham.Types.Event.Runner
 
 newtype Barricade = Barricade Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 barricade :: InvestigatorId -> EventId -> Barricade
 barricade iid uuid = Barricade $ baseAttrs iid uuid "01038"

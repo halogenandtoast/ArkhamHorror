@@ -3,8 +3,7 @@
 module Arkham.Types.Act.Attrs
   ( module Arkham.Types.Act.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -13,9 +12,9 @@ import Arkham.Types.Game.Helpers
 import Arkham.Types.RequiredClues as X
 
 data Attrs = Attrs
-  { actId         :: ActId
-  , actName       :: Text
-  , actSequence   :: ActSequence
+  { actId :: ActId
+  , actName :: Text
+  , actSequence :: ActSequence
   , actRequiredClues :: Maybe RequiredClues
   , actClues :: Maybe Int
   , actTreacheries :: HashSet TreacheryId
@@ -36,7 +35,9 @@ instance HasStep ActStep Attrs where
 
 instance Entity Attrs where
   type EntityId Attrs = ActId
+  type EntityAttrs Attrs = Attrs
   toId = actId
+  toAttrs = id
   toSource = ActSource . toId
   toTarget = ActTarget . toId
   isSource Attrs { actId } (ActSource aid) = actId == aid

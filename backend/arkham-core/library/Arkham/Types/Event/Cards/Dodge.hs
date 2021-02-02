@@ -6,7 +6,7 @@ import Arkham.Types.Event.Attrs
 import Arkham.Types.Event.Runner
 
 newtype Dodge = Dodge Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 dodge :: InvestigatorId -> EventId -> Dodge
 dodge iid uuid = Dodge $ baseAttrs iid uuid "01023"

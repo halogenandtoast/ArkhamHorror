@@ -3,8 +3,7 @@
 module Arkham.Types.Agenda.Attrs
   ( module Arkham.Types.Agenda.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -12,11 +11,11 @@ import Arkham.Types.Agenda.Sequence as X
 import Arkham.Types.Game.Helpers
 
 data Attrs = Attrs
-  { agendaDoom          :: Int
+  { agendaDoom :: Int
   , agendaDoomThreshold :: GameValue Int
-  , agendaId            :: AgendaId
-  , agendaName          :: Text
-  , agendaSequence      :: AgendaSequence
+  , agendaId :: AgendaId
+  , agendaName :: Text
+  , agendaSequence :: AgendaSequence
   , agendaFlipped :: Bool
   , agendaTreacheries :: HashSet TreacheryId
   , agendaCardsUnderneath :: [Card]
@@ -34,7 +33,9 @@ instance FromJSON Attrs where
 
 instance Entity Attrs where
   type EntityId Attrs = AgendaId
+  type EntityAttrs Attrs = Attrs
   toId = agendaId
+  toAttrs = id
   toSource = AgendaSource . toId
   toTarget = AgendaTarget . toId
   isSource Attrs { agendaId } (AgendaSource aid) = agendaId == aid

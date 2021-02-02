@@ -13,7 +13,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype SouthsideHistoricalSociety = SouthsideHistoricalSociety Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 southsideHistoricalSociety :: SouthsideHistoricalSociety
 southsideHistoricalSociety = SouthsideHistoricalSociety $ baseAttrs

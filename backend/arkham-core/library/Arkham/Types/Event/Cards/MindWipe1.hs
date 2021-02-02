@@ -7,7 +7,7 @@ import Arkham.Types.Event.Runner
 import Arkham.Types.Trait
 
 newtype MindWipe1 = MindWipe1 Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 mindWipe1 :: InvestigatorId -> EventId -> MindWipe1
 mindWipe1 iid uuid = MindWipe1 $ baseAttrs iid uuid "01068"

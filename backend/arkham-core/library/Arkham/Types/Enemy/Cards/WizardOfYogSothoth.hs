@@ -11,7 +11,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
 newtype WizardOfYogSothoth = WizardOfYogSothoth Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 wizardOfYogSothoth :: EnemyId -> WizardOfYogSothoth
 wizardOfYogSothoth uuid =

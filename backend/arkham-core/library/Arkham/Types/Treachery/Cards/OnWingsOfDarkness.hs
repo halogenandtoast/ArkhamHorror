@@ -7,7 +7,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype OnWingsOfDarkness = OnWingsOfDarkness Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 onWingsOfDarkness :: TreacheryId -> a -> OnWingsOfDarkness
 onWingsOfDarkness uuid _ = OnWingsOfDarkness $ baseAttrs uuid "01173"

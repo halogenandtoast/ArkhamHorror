@@ -13,7 +13,7 @@ import Arkham.Types.RequestedTokenStrategy
 import Arkham.Types.Trait hiding (Cultist)
 
 newtype CloverClubCardroom = CloverClubCardroom Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 cloverClubCardroom :: CloverClubCardroom
 cloverClubCardroom = CloverClubCardroom $ baseAttrs

@@ -12,7 +12,7 @@ import Arkham.Types.SkillId
 import Arkham.Types.Target
 
 newtype Overpower = Overpower Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 overpower :: InvestigatorId -> SkillId -> Overpower
 overpower iid uuid = Overpower $ baseAttrs iid uuid "01091"

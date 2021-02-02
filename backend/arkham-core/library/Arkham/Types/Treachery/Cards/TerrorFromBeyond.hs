@@ -10,7 +10,7 @@ import Arkham.Types.Treachery.Attrs
 import Arkham.Types.Treachery.Runner
 
 newtype TerrorFromBeyond = TerrorFromBeyond Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 terrorFromBeyond :: TreacheryId -> a -> TerrorFromBeyond
 terrorFromBeyond uuid _ = TerrorFromBeyond $ baseAttrs uuid "02101"

@@ -10,7 +10,7 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Helpers
 
 newtype SureGamble3 = SureGamble3 Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 sureGamble3 :: EffectArgs -> SureGamble3
 sureGamble3 = SureGamble3 . uncurry4 (baseAttrs "01088")

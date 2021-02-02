@@ -7,7 +7,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
 newtype BillyCooper = BillyCooper Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 billyCooper :: EnemyId -> BillyCooper
 billyCooper uuid =

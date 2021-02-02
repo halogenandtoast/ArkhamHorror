@@ -12,7 +12,7 @@ import Arkham.Types.Location.Runner
 import Arkham.Types.Trait
 
 newtype ExhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 exhibitHallAthabaskanExhibit :: ExhibitHallAthabaskanExhibit
 exhibitHallAthabaskanExhibit = ExhibitHallAthabaskanExhibit $ baseAttrs

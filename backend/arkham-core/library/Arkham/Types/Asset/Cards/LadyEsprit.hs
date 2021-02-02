@@ -9,7 +9,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Asset.Runner
 
 newtype LadyEsprit = LadyEsprit Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ladyEsprit :: AssetId -> LadyEsprit
 ladyEsprit uuid = LadyEsprit $ (baseAttrs uuid "81019")

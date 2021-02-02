@@ -1,8 +1,7 @@
 module Arkham.Types.Treachery.Cards.HospitalDebts
   ( HospitalDebts(..)
   , hospitalDebts
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -11,8 +10,7 @@ import Arkham.Types.Treachery.Helpers
 import Arkham.Types.Treachery.Runner
 
 newtype HospitalDebts = HospitalDebts Attrs
-  deriving stock (Show, Generic)
-  deriving anyclass (ToJSON, FromJSON)
+  deriving newtype (Show, Generic, ToJSON, FromJSON, Entity)
 
 hospitalDebts :: TreacheryId -> Maybe InvestigatorId -> HospitalDebts
 hospitalDebts uuid iid = HospitalDebts

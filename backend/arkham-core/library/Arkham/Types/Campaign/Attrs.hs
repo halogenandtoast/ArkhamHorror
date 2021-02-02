@@ -37,6 +37,8 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = campaignId
   toAttrs = id
+
+instance NamedEntity Attrs where
   toName = mkName . campaignName
 
 instance ToJSON Attrs where

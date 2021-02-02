@@ -36,6 +36,8 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = agendaId
   toAttrs = id
+
+instance NamedEntity Attrs where
   toName = mkName . agendaName
 
 instance TargetEntity Attrs where

@@ -38,6 +38,8 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = actId
   toAttrs = id
+
+instance NamedEntity Attrs where
   toName = mkName . actName
 
 instance TargetEntity Attrs where

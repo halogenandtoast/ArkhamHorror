@@ -92,6 +92,8 @@ deriving anyclass instance HasSet Trait env EnemyId => HasModifiersFor env Agend
 instance Entity Agenda where
   type EntityId Agenda = AgendaId
   type EntityAttrs Agenda = Attrs
+
+instance NamedEntity Agenda where
   toName = toName . toAttrs
 
 instance TargetEntity Agenda where

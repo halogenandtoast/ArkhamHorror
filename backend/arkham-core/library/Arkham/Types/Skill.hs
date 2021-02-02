@@ -37,6 +37,8 @@ deriving anyclass instance HasModifiersFor env Skill
 instance Entity Skill where
   type EntityId Skill = SkillId
   type EntityAttrs Skill = Attrs
+
+instance NamedEntity Skill where
   toName = toName . toAttrs
 
 instance TargetEntity Skill where

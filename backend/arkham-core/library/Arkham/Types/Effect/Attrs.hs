@@ -69,7 +69,6 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = effectId
   toAttrs = id
-  toName _ = mkName "Effect"
 
 instance TargetEntity Attrs where
   toTarget = EffectTarget . toId

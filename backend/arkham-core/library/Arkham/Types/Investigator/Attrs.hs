@@ -78,6 +78,8 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = investigatorId
   toAttrs = id
+
+instance NamedEntity Attrs where
   toName = mkName . investigatorName
 
 instance TargetEntity Attrs where

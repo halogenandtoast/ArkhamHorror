@@ -41,6 +41,8 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = treacheryId
   toAttrs = id
+
+instance NamedEntity Attrs where
   toName = mkName . treacheryName
 
 instance TargetEntity Attrs where

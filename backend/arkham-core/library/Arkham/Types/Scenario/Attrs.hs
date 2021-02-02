@@ -72,6 +72,8 @@ instance Entity Attrs where
   type EntityAttrs Attrs = Attrs
   toId = scenarioId
   toAttrs = id
+
+instance NamedEntity Attrs where
   toName = mkName . scenarioName
 
 instance TargetEntity Attrs where

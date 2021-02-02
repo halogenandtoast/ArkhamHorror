@@ -351,6 +351,8 @@ getRemainingHealth i = do
 instance Entity Investigator where
   type EntityId Investigator = InvestigatorId
   type EntityAttrs Investigator = Attrs
+
+instance NamedEntity Investigator where
   toName = toName . toAttrs
 
 instance TargetEntity Investigator where

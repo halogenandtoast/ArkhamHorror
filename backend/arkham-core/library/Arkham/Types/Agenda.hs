@@ -93,8 +93,12 @@ instance Entity Agenda where
   type EntityId Agenda = AgendaId
   type EntityAttrs Agenda = Attrs
   toName = toName . toAttrs
+
+instance TargetEntity Agenda where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
+
+instance SourceEntity Agenda where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 

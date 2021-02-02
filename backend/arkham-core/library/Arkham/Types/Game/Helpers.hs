@@ -461,17 +461,16 @@ getCardCount
   -> m Int
 getCardCount iid = unCardCount <$> getCount iid
 
-toModifier :: Entity a => a -> ModifierType -> Modifier
+toModifier :: SourceEntity a => a -> ModifierType -> Modifier
 toModifier = Modifier . toSource
 
-toModifiers :: Entity a => a -> [ModifierType] -> [Modifier]
+toModifiers :: SourceEntity a => a -> [ModifierType] -> [Modifier]
 toModifiers = map . toModifier
 
 targetToSource :: Target -> Source
 targetToSource = \case
   InvestigatorTarget iid -> InvestigatorSource iid
   AssetTarget aid -> AssetSource aid
-  CampaignTarget cid -> CampaignSource cid
   EnemyTarget eid -> EnemySource eid
   ScenarioTarget sid -> ScenarioSource sid
   EffectTarget eid -> EffectSource eid
@@ -501,7 +500,6 @@ targetToSource = \case
 sourceToTarget :: Source -> Target
 sourceToTarget = \case
   AssetSource aid -> AssetTarget aid
-  CampaignSource cid -> CampaignTarget cid
   EnemySource eid -> EnemyTarget eid
   ScenarioSource sid -> ScenarioTarget sid
   InvestigatorSource iid -> InvestigatorTarget iid

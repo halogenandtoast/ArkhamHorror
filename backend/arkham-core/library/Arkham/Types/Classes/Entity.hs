@@ -19,9 +19,13 @@ class Entity a where
   toAttrs :: a -> EntityAttrs a
   default toAttrs :: (HasAttrs1 (EntityAttrs a) (Rep a), Generic a) => a -> EntityAttrs a
   toAttrs = defaultToAttrs
+
+class TargetEntity a where
   toTarget :: a -> Target
   isTarget :: a -> Target -> Bool
   isTarget = (==) . toTarget
+
+class SourceEntity a where
   toSource :: a -> Source
   isSource :: a -> Source -> Bool
   isSource = (==) . toSource
@@ -36,26 +40,30 @@ defaultToAttrs
   :: (HasAttrs1 (EntityAttrs a) (Rep a), Generic a) => a -> EntityAttrs a
 defaultToAttrs = toAttrs1 . from
 
-class HasAttrs1 root f where
-  toAttrs1 :: f p -> root
+class HasAttrs1 attrs f where
+  toAttrs1 :: f p -> attrs
 
-instance HasAttrs1 root f => HasAttrs1 root (M1 i c f) where
+instance HasAttrs1 attrs f => HasAttrs1 attrs (M1 i c f) where
   toAttrs1 (M1 x) = toAttrs1 x
 
-instance (HasAttrs1 root l, HasAttrs1 root r) => HasAttrs1 root (l :+: r) where
+instance (HasAttrs1 attrs l, HasAttrs1 attrs r) => HasAttrs1 attrs (l :+: r) where
   toAttrs1 (L1 x) = toAttrs1 x
   toAttrs1 (R1 x) = toAttrs1 x
 
-instance (EntityAttrs f ~ root, Entity f) => HasAttrs1 root (K1 R f) where
+instance (EntityAttrs f ~ attrs, Entity f) => HasAttrs1 attrs (K1 R f) where
   toAttrs1 (K1 x) = toAttrs x
 
-instance (Entity (EntityAttrs a), Entity a) => Entity (a `With` b) where
+instance Entity a => Entity (a `With` b) where
   type EntityId (a `With` b) = EntityId a
   type EntityAttrs (a `With` b) = EntityAttrs a
   toId (a `With` _) = toId a
   toAttrs (a `With` _) = toAttrs a
   toName (a `With` _) = toName a
-  toTarget = toTarget . toAttrs
-  isTarget = isTarget . toAttrs
-  toSource = toSource . toAttrs
-  isSource = isSource . toAttrs
+
+instance TargetEntity a => TargetEntity (a `With` b) where
+  toTarget (a `With` _) = toTarget a
+  isTarget (a `With` _) = isTarget a
+
+instance SourceEntity a => SourceEntity (a `With` b) where
+  toSource (a `With` _) = toSource a
+  isSource (a `With` _) = isSource a

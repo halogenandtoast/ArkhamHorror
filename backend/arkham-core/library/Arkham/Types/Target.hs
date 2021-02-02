@@ -8,7 +8,6 @@ import ClassyPrelude
 import Arkham.Types.ActId
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
-import Arkham.Types.CampaignId
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.EncounterCard
 import Arkham.Types.Card.Id
@@ -28,7 +27,6 @@ data ForSkillTest = ForSkillTest
 
 data Target
   = AssetTarget AssetId
-  | CampaignTarget CampaignId
   | EnemyTarget EnemyId
   | ScenarioTarget ScenarioId
   | EffectTarget EffectId

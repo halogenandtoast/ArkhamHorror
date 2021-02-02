@@ -33,12 +33,16 @@ instance Entity Attrs where
   toId = skillId
   toAttrs = id
   toName = mkName . skillName
-  toSource = SkillSource . skillId
+
+instance TargetEntity Attrs where
   toTarget = SkillTarget . skillId
-  isSource Attrs { skillId } (SkillSource sid) = skillId == sid
-  isSource _ _ = False
   isTarget Attrs { skillId } (SkillTarget sid) = skillId == sid
   isTarget _ _ = False
+
+instance SourceEntity Attrs where
+  toSource = SkillSource . skillId
+  isSource Attrs { skillId } (SkillSource sid) = skillId == sid
+  isSource _ _ = False
 
 instance IsCard Attrs where
   getCardId = CardId . unSkillId . skillId

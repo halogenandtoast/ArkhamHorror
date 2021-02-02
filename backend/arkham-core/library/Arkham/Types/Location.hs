@@ -149,8 +149,12 @@ instance Entity Location where
   type EntityId Location = LocationId
   type EntityAttrs Location = Attrs
   toName = toName . toAttrs
+
+instance TargetEntity Location where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
+
+instance SourceEntity Location where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 

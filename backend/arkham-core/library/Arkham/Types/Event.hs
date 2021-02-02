@@ -77,8 +77,12 @@ instance Entity Event where
   type EntityId Event = EventId
   type EntityAttrs Event = Attrs
   toName = toName . toAttrs
+
+instance TargetEntity Event where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
+
+instance SourceEntity Event where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 

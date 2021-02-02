@@ -79,15 +79,19 @@ instance Entity Attrs where
   toId = investigatorId
   toAttrs = id
   toName = mkName . investigatorName
-  toSource = InvestigatorSource . toId
+
+instance TargetEntity Attrs where
   toTarget = InvestigatorTarget . toId
-  isSource Attrs { investigatorId } (InvestigatorSource iid) =
-    iid == investigatorId
-  isSource _ _ = False
   isTarget Attrs { investigatorId } (InvestigatorTarget iid) =
     iid == investigatorId
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
+
+instance SourceEntity Attrs where
+  toSource = InvestigatorSource . toId
+  isSource Attrs { investigatorId } (InvestigatorSource iid) =
+    iid == investigatorId
+  isSource _ _ = False
 
 getFacingDefeat
   :: (MonadReader env m, HasModifiersFor env ()) => Attrs -> m Bool
@@ -227,7 +231,8 @@ getModifiedSanity attrs@Attrs {..} = do
   applyModifier (SanityModifier m) n = max 0 (n + m)
   applyModifier _ n = n
 
-removeFromSlots :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
+removeFromSlots
+  :: AssetId -> HashMap SlotType [Slot] -> HashMap SlotType [Slot]
 removeFromSlots aid = HashMap.map (map (removeIfMatches aid))
 
 fitsAvailableSlots :: [SlotType] -> [Trait] -> Attrs -> Bool

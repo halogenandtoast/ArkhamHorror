@@ -87,13 +87,17 @@ instance Entity Attrs where
   toId = eventId
   toAttrs = id
   toName = mkName . eventName
-  toSource = EventSource . toId
+
+instance TargetEntity Attrs where
   toTarget = EventTarget . toId
-  isSource Attrs { eventId } (EventSource eid) = eventId == eid
-  isSource _ _ = False
   isTarget Attrs { eventId } (EventTarget eid) = eventId == eid
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
+
+instance SourceEntity Attrs where
+  toSource = EventSource . toId
+  isSource Attrs { eventId } (EventSource eid) = eventId == eid
+  isSource _ _ = False
 
 instance HasActions env Attrs where
   getActions _ _ _ = pure []

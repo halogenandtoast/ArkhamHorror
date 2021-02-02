@@ -46,10 +46,14 @@ instance Entity Act where
   type EntityId Act = ActId
   type EntityAttrs Act = Attrs
   toName = toName . toAttrs
-  toSource = toSource . toAttrs
+
+instance TargetEntity Act where
   toTarget = toTarget . toAttrs
-  isSource = isSource . toAttrs
   isTarget = isTarget . toAttrs
+
+instance SourceEntity Act where
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
 
 lookupAct :: ActId -> Act
 lookupAct actId =

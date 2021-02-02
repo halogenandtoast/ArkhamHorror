@@ -101,8 +101,12 @@ instance Entity Treachery where
   type EntityId Treachery = TreacheryId
   type EntityAttrs Treachery = Attrs
   toName = toName . toAttrs
+
+instance TargetEntity Treachery where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
+
+instance SourceEntity Treachery where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 

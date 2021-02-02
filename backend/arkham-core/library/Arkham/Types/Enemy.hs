@@ -139,10 +139,14 @@ instance Entity Enemy where
   type EntityId Enemy = EnemyId
   type EntityAttrs Enemy = Attrs
   toName = toName . toAttrs
-  toSource = toSource . toAttrs
+
+instance TargetEntity Enemy where
   toTarget = toTarget . toAttrs
-  isSource = isSource . toAttrs
   isTarget = isTarget . toAttrs
+
+instance SourceEntity Enemy where
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
 
 instance (EnemyRunner env) => RunMessage env Enemy where
   runMessage msg e = do

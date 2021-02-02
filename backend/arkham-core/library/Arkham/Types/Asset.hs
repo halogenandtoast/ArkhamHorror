@@ -160,8 +160,12 @@ instance Entity Asset where
   type EntityId Asset = AssetId
   type EntityAttrs Asset = Attrs
   toName = toName . toAttrs
+
+instance TargetEntity Asset where
   toTarget = toTarget . toAttrs
   isTarget = isTarget . toAttrs
+
+instance SourceEntity Asset where
   toSource = toSource . toAttrs
   isSource = isSource . toAttrs
 

@@ -3,8 +3,7 @@
 module Arkham.Types.Effect.Attrs
   ( module Arkham.Types.Effect.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -71,9 +70,13 @@ instance Entity Attrs where
   toId = effectId
   toAttrs = id
   toName _ = mkName "Effect"
-  toSource = EffectSource . toId
+
+instance TargetEntity Attrs where
   toTarget = EffectTarget . toId
-  isSource Attrs { effectId } (EffectSource eid) = effectId == eid
-  isSource _ _ = False
   isTarget Attrs { effectId } (EffectTarget eid) = effectId == eid
   isTarget _ _ = False
+
+instance SourceEntity Attrs where
+  toSource = EffectSource . toId
+  isSource Attrs { effectId } (EffectSource eid) = effectId == eid
+  isSource _ _ = False

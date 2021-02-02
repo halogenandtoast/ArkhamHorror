@@ -88,10 +88,9 @@ instance Entity Attrs where
   toId = assetId
   toAttrs = id
   toName = mkName . assetName
-  toSource = AssetSource . toId
+
+instance TargetEntity Attrs where
   toTarget = AssetTarget . toId
-  isSource Attrs { assetId } (AssetSource aid) = assetId == aid
-  isSource _ _ = False
   isTarget attrs@Attrs {..} = \case
     AssetTarget aid -> aid == assetId
     CardCodeTarget cardCode -> assetCardCode == cardCode
@@ -99,10 +98,16 @@ instance Entity Attrs where
     SkillTestInitiatorTarget target -> isTarget attrs target
     _ -> False
 
+instance SourceEntity Attrs where
+  toSource = AssetSource . toId
+  isSource Attrs { assetId } (AssetSource aid) = assetId == aid
+  isSource _ _ = False
+
 ownedBy :: Attrs -> InvestigatorId -> Bool
 ownedBy Attrs {..} = (== assetInvestigator) . Just
 
-assetAction :: InvestigatorId -> Attrs -> Int -> Maybe Action -> Cost -> Message
+assetAction
+  :: InvestigatorId -> Attrs -> Int -> Maybe Action -> Cost -> Message
 assetAction iid attrs idx mAction cost =
   ActivateCardAbilityAction iid
     $ mkAbility (toSource attrs) idx (ActionAbility mAction cost)

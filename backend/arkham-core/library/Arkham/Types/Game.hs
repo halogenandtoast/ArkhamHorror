@@ -2,8 +2,7 @@
 
 module Arkham.Types.Game
   ( module Arkham.Types.Game
-  )
-where
+  ) where
 
 import Arkham.Import hiding (first)
 
@@ -119,7 +118,11 @@ instance ToJSON ModifierData where
   toEncoding = genericToEncoding $ aesonOptions $ Just "md"
 
 withModifiers
-  :: (MonadReader env m, Entity a, HasModifiersFor env (), env ~ Game queue)
+  :: ( MonadReader env m
+     , TargetEntity a
+     , HasModifiersFor env ()
+     , env ~ Game queue
+     )
   => a
   -> m (With a ModifierData)
 withModifiers a = do
@@ -835,7 +838,6 @@ instance HasSet Trait (Game queue) Source where
     EffectSource eid -> getSet =<< getEffect eid
     EnemySource eid -> getTraits <$> getEnemy eid
     ScenarioSource _ -> pure mempty
-    CampaignSource _ -> pure mempty
     InvestigatorSource iid -> getTraits <$> getInvestigator iid
     CardCodeSource _ -> pure mempty
     TokenSource _ -> pure mempty

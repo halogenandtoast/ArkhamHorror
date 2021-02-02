@@ -42,12 +42,16 @@ instance Entity Attrs where
   toId = treacheryId
   toAttrs = id
   toName = mkName . treacheryName
+
+instance TargetEntity Attrs where
   toTarget = TreacheryTarget . toId
+  isTarget Attrs { treacheryId } (TreacheryTarget tid) = treacheryId == tid
+  isTarget _ _ = False
+
+instance SourceEntity Attrs where
   toSource = TreacherySource . toId
   isSource Attrs { treacheryId } (TreacherySource tid) = treacheryId == tid
   isSource _ _ = False
-  isTarget Attrs { treacheryId } (TreacheryTarget tid) = treacheryId == tid
-  isTarget _ _ = False
 
 instance IsCard Attrs where
   getCardId = CardId . unTreacheryId . treacheryId

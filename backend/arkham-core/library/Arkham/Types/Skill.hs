@@ -38,10 +38,14 @@ instance Entity Skill where
   type EntityId Skill = SkillId
   type EntityAttrs Skill = Attrs
   toName = toName . toAttrs
-  toSource = toSource . toAttrs
+
+instance TargetEntity Skill where
   toTarget = toTarget . toAttrs
-  isSource = isSource . toAttrs
   isTarget = isTarget . toAttrs
+
+instance SourceEntity Skill where
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
 
 instance IsCard Skill where
   getCardId = getCardId . toAttrs

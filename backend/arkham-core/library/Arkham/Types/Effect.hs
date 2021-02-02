@@ -57,10 +57,14 @@ instance Entity Effect where
   type EntityId Effect = EffectId
   type EntityAttrs Effect = Attrs
   toName = toName . toAttrs
-  toSource = toSource . toAttrs
+
+instance TargetEntity Effect where
   toTarget = toTarget . toAttrs
-  isSource = isSource . toAttrs
   isTarget = isTarget . toAttrs
+
+instance SourceEntity Effect where
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
 
 instance HasSet Trait env Effect where
   getSet = const (pure mempty)

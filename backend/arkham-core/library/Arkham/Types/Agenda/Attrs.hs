@@ -3,8 +3,7 @@
 module Arkham.Types.Agenda.Attrs
   ( module Arkham.Types.Agenda.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -38,12 +37,16 @@ instance Entity Attrs where
   toId = agendaId
   toAttrs = id
   toName = mkName . agendaName
-  toSource = AgendaSource . toId
+
+instance TargetEntity Attrs where
   toTarget = AgendaTarget . toId
-  isSource Attrs { agendaId } (AgendaSource aid) = agendaId == aid
-  isSource _ _ = False
   isTarget Attrs { agendaId } (AgendaTarget aid) = agendaId == aid
   isTarget _ _ = False
+
+instance SourceEntity Attrs where
+  toSource = AgendaSource . toId
+  isSource Attrs { agendaId } (AgendaSource aid) = agendaId == aid
+  isSource _ _ = False
 
 onSide :: AgendaSide -> Attrs -> Bool
 onSide side Attrs {..} = agendaSide agendaSequence == side

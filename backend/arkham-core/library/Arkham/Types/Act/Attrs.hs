@@ -3,8 +3,7 @@
 module Arkham.Types.Act.Attrs
   ( module Arkham.Types.Act.Attrs
   , module X
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -40,12 +39,16 @@ instance Entity Attrs where
   toId = actId
   toAttrs = id
   toName = mkName . actName
-  toSource = ActSource . toId
+
+instance TargetEntity Attrs where
   toTarget = ActTarget . toId
-  isSource Attrs { actId } (ActSource aid) = actId == aid
-  isSource _ _ = False
   isTarget Attrs { actId } (ActTarget aid) = actId == aid
   isTarget _ _ = False
+
+instance SourceEntity Attrs where
+  toSource = ActSource . toId
+  isSource Attrs { actId } (ActSource aid) = actId == aid
+  isSource _ _ = False
 
 onSide :: ActSide -> Attrs -> Bool
 onSide side Attrs {..} = actSide actSequence == side

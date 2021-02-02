@@ -52,13 +52,17 @@ instance Entity Attrs where
   toId = locationId
   toAttrs = id
   toName = unLocationName . locationName
-  toSource = LocationSource . toId
+
+instance TargetEntity Attrs where
   toTarget = LocationTarget . toId
-  isSource Attrs { locationId } (LocationSource lid) = locationId == lid
-  isSource _ _ = False
   isTarget Attrs { locationId } (LocationTarget lid) = locationId == lid
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
+
+instance SourceEntity Attrs where
+  toSource = LocationSource . toId
+  isSource Attrs { locationId } (LocationSource lid) = locationId == lid
+  isSource _ _ = False
 
 instance IsCard Attrs where
   getCardId = error "locations are not treated like cards"

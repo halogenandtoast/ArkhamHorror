@@ -352,10 +352,14 @@ instance Entity Investigator where
   type EntityId Investigator = InvestigatorId
   type EntityAttrs Investigator = Attrs
   toName = toName . toAttrs
-  toSource = toSource . toAttrs
+
+instance TargetEntity Investigator where
   toTarget = toTarget . toAttrs
-  isSource = isSource . toAttrs
   isTarget = isTarget . toAttrs
+
+instance SourceEntity Investigator where
+  toSource = toSource . toAttrs
+  isSource = isSource . toAttrs
 
 modifiedStatsOf
   :: (MonadReader env m, HasModifiersFor env ())

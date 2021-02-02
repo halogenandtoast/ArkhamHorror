@@ -38,8 +38,6 @@ instance Entity Attrs where
   toId = campaignId
   toAttrs = id
   toName = mkName . campaignName
-  toTarget = CampaignTarget . toId
-  toSource = CampaignSource . toId
 
 instance ToJSON Attrs where
   toJSON = genericToJSON $ aesonOptions $ Just "campaign"

@@ -1,8 +1,7 @@
 module Arkham.Types.Location.Helpers
   ( module X
   , module Arkham.Types.Location.Helpers
-  )
-where
+  ) where
 
 import Arkham.Prelude
 
@@ -14,7 +13,7 @@ import Arkham.Types.Game.Helpers as X
 import Arkham.Types.InvestigatorId
 import Arkham.Types.Message
 
-resignAction :: Entity a => InvestigatorId -> a -> Message
+resignAction :: SourceEntity a => InvestigatorId -> a -> Message
 resignAction iid a = ActivateCardAbilityAction
   iid
   (mkAbility (toSource a) 99 (ActionAbility (Just Action.Resign) (ActionCost 1))

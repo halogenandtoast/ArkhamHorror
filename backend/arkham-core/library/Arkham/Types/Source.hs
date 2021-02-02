@@ -9,7 +9,6 @@ import Arkham.Types.ActId
 import Arkham.Types.Action (Action)
 import Arkham.Types.AgendaId
 import Arkham.Types.AssetId
-import Arkham.Types.CampaignId
 import Arkham.Types.Card.CardCode
 import Arkham.Types.Card.Id
 import Arkham.Types.EffectId
@@ -26,7 +25,6 @@ import Arkham.Types.TreacheryId
 
 data Source
   = AssetSource AssetId
-  | CampaignSource CampaignId
   | EnemySource EnemyId
   | ScenarioSource ScenarioId
   | InvestigatorSource InvestigatorId

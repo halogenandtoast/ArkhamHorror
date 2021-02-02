@@ -257,13 +257,17 @@ instance Entity Attrs where
   toId = enemyId
   toAttrs = id
   toName = mkName . enemyName
-  toSource = EnemySource . toId
+
+instance TargetEntity Attrs where
   toTarget = EnemyTarget . toId
   isTarget Attrs { enemyId } (EnemyTarget eid) = enemyId == eid
   isTarget Attrs { enemyCardCode } (CardCodeTarget cardCode) =
     enemyCardCode == cardCode
   isTarget attrs (SkillTestInitiatorTarget target) = isTarget attrs target
   isTarget _ _ = False
+
+instance SourceEntity Attrs where
+  toSource = EnemySource . toId
   isSource Attrs { enemyId } (EnemySource eid) = enemyId == eid
   isSource Attrs { enemyCardCode } (CardCodeSource cardCode) =
     enemyCardCode == cardCode

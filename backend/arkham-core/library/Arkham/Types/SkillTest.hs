@@ -2,8 +2,7 @@
 
 module Arkham.Types.SkillTest
   ( module Arkham.Types.SkillTest
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -39,16 +38,20 @@ instance Entity SkillTest where
   toId _ = ()
   toAttrs _ = ()
   toName _ = mkName "Skill test"
+
+instance TargetEntity SkillTest where
+  toTarget _ = SkillTestTarget
+  isTarget _ SkillTestTarget = True
+  isTarget _ _ = False
+
+instance SourceEntity SkillTest where
   toSource SkillTest {..} = SkillTestSource
     skillTestInvestigator
     skillTestSkillType
     skillTestSource
     skillTestAction
-  toTarget _ = SkillTestTarget
   isSource _ SkillTestSource{} = True
   isSource _ _ = False
-  isTarget _ SkillTestTarget = True
-  isTarget _ _ = False
 
 instance ToJSON SkillTest where
   toJSON = genericToJSON $ aesonOptions $ Just "skillTest"

@@ -73,12 +73,16 @@ instance Entity Attrs where
   toId = scenarioId
   toAttrs = id
   toName = mkName . scenarioName
-  toSource = ScenarioSource . toId
+
+instance TargetEntity Attrs where
   toTarget = ScenarioTarget . toId
-  isSource Attrs { scenarioId } (ScenarioSource sid) = scenarioId == sid
-  isSource _ _ = False
   isTarget Attrs { scenarioId } (ScenarioTarget sid) = scenarioId == sid
   isTarget _ _ = False
+
+instance SourceEntity Attrs where
+  toSource = ScenarioSource . toId
+  isSource Attrs { scenarioId } (ScenarioSource sid) = scenarioId == sid
+  isSource _ _ = False
 
 instance HasTokenValue env InvestigatorId => HasTokenValue env Attrs where
   getTokenValue _ iid = \case

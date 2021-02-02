@@ -17,17 +17,20 @@ data Campaign
 deriving anyclass instance CampaignRunner env => RunMessage env Campaign
 
 instance HasRecord Campaign where
-  hasRecord key = hasRecord key . campaignLog . campaignAttrs
-  hasRecordSet key = hasRecordSet key . campaignLog . campaignAttrs
+  hasRecord key = hasRecord key . campaignLog . toAttrs
+  hasRecordSet key = hasRecordSet key . campaignLog . toAttrs
 
 instance HasSet CompletedScenarioId env Campaign where
-  getSet = getSet . campaignAttrs
+  getSet = getSet . toAttrs
 
 instance HasList CampaignStoryCard env Campaign where
-  getList = getList . campaignAttrs
+  getList = getList . toAttrs
 
-toCampaignId :: Campaign -> CampaignId
-toCampaignId = campaignId . campaignAttrs
+instance Entity Campaign where
+  type EntityId Campaign = CampaignId
+  type EntityAttrs Campaign = Attrs
+  toTarget = CampaignTarget . toId
+  toSource = CampaignSource . toId
 
 allCampaigns :: HashMap CampaignId (Difficulty -> Campaign)
 allCampaigns = mapFromList
@@ -41,13 +44,7 @@ lookupCampaign cid =
   fromJustNote ("Unknown campaign: " <> show cid) $ lookup cid allCampaigns
 
 difficultyOf :: Campaign -> Difficulty
-difficultyOf = campaignDifficulty . campaignAttrs
+difficultyOf = campaignDifficulty . toAttrs
 
 chaosBagOf :: Campaign -> [Token]
-chaosBagOf = campaignChaosBag . campaignAttrs
-
-campaignAttrs :: Campaign -> Attrs
-campaignAttrs = \case
-  NightOfTheZealot' attrs -> coerce attrs
-  TheDunwichLegacy' attrs -> coerce attrs
-  ReturnToNightOfTheZealot' attrs -> coerce attrs
+chaosBagOf = campaignChaosBag . toAttrs

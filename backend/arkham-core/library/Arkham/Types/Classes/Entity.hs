@@ -19,8 +19,10 @@ class Entity a where
   toAttrs = defaultToAttrs
   toTarget :: a -> Target
   isTarget :: a -> Target -> Bool
+  isTarget = (==) . toTarget
   toSource :: a -> Source
   isSource :: a -> Source -> Bool
+  isSource = (==) . toSource
 
 defaultToId
   :: (EntityId a ~ EntityId (EntityAttrs a), Entity a, Entity (EntityAttrs a))

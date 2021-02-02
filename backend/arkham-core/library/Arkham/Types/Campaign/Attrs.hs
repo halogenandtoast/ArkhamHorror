@@ -32,6 +32,14 @@ completeStep :: Maybe CampaignStep -> [CampaignStep] -> [CampaignStep]
 completeStep (Just step') steps = step' : steps
 completeStep Nothing steps = steps
 
+instance Entity Attrs where
+  type EntityId Attrs = CampaignId
+  type EntityAttrs Attrs = Attrs
+  toId = campaignId
+  toAttrs = id
+  toTarget = CampaignTarget . toId
+  toSource = CampaignSource . toId
+
 instance ToJSON Attrs where
   toJSON = genericToJSON $ aesonOptions $ Just "campaign"
   toEncoding = genericToEncoding $ aesonOptions $ Just "campaign"

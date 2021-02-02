@@ -383,8 +383,8 @@ instance HasId (Maybe CampaignId) (Game queue) () where
   getId _ = do
     mode <- view modeL
     pure $ case mode of
-      This campaign -> Just $ toCampaignId campaign
-      These campaign _ -> Just $ toCampaignId campaign
+      This campaign -> Just $ toId campaign
+      These campaign _ -> Just $ toId campaign
       That _ -> Nothing
 
 instance HasId CardCode (Game queue) EnemyId where
@@ -835,6 +835,7 @@ instance HasSet Trait (Game queue) Source where
     EffectSource eid -> getSet =<< getEffect eid
     EnemySource eid -> getTraits <$> getEnemy eid
     ScenarioSource _ -> pure mempty
+    CampaignSource _ -> pure mempty
     InvestigatorSource iid -> getTraits <$> getInvestigator iid
     CardCodeSource _ -> pure mempty
     TokenSource _ -> pure mempty

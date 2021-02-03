@@ -6,7 +6,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
-newtype AcolyteOfUmordhoth = AcolyteOfUmordhoth Attrs
+newtype AcolyteOfUmordhoth = AcolyteOfUmordhoth EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 acolyteOfUmordhoth :: EnemyId -> AcolyteOfUmordhoth
@@ -21,7 +21,7 @@ acolyteOfUmordhoth uuid =
     . (preyL .~ FewestCards)
 
 instance HasCount CardCount env InvestigatorId => HasModifiersFor env AcolyteOfUmordhoth where
-  getModifiersFor _ (EnemyTarget eid) (AcolyteOfUmordhoth a@Attrs {..})
+  getModifiersFor _ (EnemyTarget eid) (AcolyteOfUmordhoth a@EnemyAttrs {..})
     | eid == enemyId = do
       anyWithoutCards <- or <$> for
         (setToList enemyEngagedInvestigators)

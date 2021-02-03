@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype SilverTwilightAcolyte = SilverTwilightAcolyte Attrs
+newtype SilverTwilightAcolyte = SilverTwilightAcolyte EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 silverTwilightAcolyte :: EnemyId -> SilverTwilightAcolyte
@@ -26,7 +26,7 @@ instance ActionRunner env => HasActions env SilverTwilightAcolyte where
   getActions i window (SilverTwilightAcolyte attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env SilverTwilightAcolyte where
-  runMessage msg (SilverTwilightAcolyte attrs@Attrs {..}) = case msg of
+  runMessage msg (SilverTwilightAcolyte attrs@EnemyAttrs {..}) = case msg of
     EnemyAttack _ eid | eid == enemyId -> do
       unshiftMessage PlaceDoomOnAgenda
       SilverTwilightAcolyte <$> runMessage msg attrs

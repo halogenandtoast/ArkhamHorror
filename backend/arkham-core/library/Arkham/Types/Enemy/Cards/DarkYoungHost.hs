@@ -7,7 +7,7 @@ import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
-newtype DarkYoungHost = DarkYoungHost Attrs
+newtype DarkYoungHost = DarkYoungHost EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 darkYoungHost :: EnemyId -> DarkYoungHost
@@ -27,7 +27,7 @@ instance ActionRunner env => HasActions env DarkYoungHost where
   getActions i window (DarkYoungHost attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env DarkYoungHost where
-  runMessage msg e@(DarkYoungHost attrs@Attrs {..}) = case msg of
+  runMessage msg e@(DarkYoungHost attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy _ _ eid | eid == enemyId -> do
       leadInvestigatorId <- getLeadInvestigatorId
       bayouLocations <- getSetList [Bayou]

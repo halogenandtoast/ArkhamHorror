@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype ServantOfTheLurker = ServantOfTheLurker Attrs
+newtype ServantOfTheLurker = ServantOfTheLurker EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 servantOfTheLurker :: EnemyId -> ServantOfTheLurker
@@ -26,7 +26,7 @@ instance ActionRunner env => HasActions env ServantOfTheLurker where
   getActions i window (ServantOfTheLurker attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env ServantOfTheLurker where
-  runMessage msg (ServantOfTheLurker attrs@Attrs {..}) = case msg of
+  runMessage msg (ServantOfTheLurker attrs@EnemyAttrs {..}) = case msg of
     PerformEnemyAttack iid eid | eid == enemyId -> do
       unshiftMessage $ DiscardTopOfDeck iid 2 Nothing
       ServantOfTheLurker <$> runMessage msg attrs

@@ -10,7 +10,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
-newtype Whippoorwill = Whippoorwill Attrs
+newtype Whippoorwill = Whippoorwill EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 whippoorwill :: EnemyId -> Whippoorwill

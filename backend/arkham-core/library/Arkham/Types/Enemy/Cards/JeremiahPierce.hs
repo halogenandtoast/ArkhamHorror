@@ -10,7 +10,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
 
-newtype JeremiahPierce = JeremiahPierce Attrs
+newtype JeremiahPierce = JeremiahPierce EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 jeremiahPierce :: EnemyId -> JeremiahPierce
@@ -28,7 +28,7 @@ instance HasModifiersFor env JeremiahPierce where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env JeremiahPierce where
-  getActions iid NonFast (JeremiahPierce attrs@Attrs {..}) =
+  getActions iid NonFast (JeremiahPierce attrs@EnemyAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
       locationId <- getId @LocationId iid
       pure
@@ -44,7 +44,7 @@ instance ActionRunner env => HasActions env JeremiahPierce where
   getActions _ _ _ = pure []
 
 instance (EnemyRunner env) => RunMessage env JeremiahPierce where
-  runMessage msg e@(JeremiahPierce attrs@Attrs {..}) = case msg of
+  runMessage msg e@(JeremiahPierce attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
       mYourHouse <- getLocationIdWithTitle "Your House"
       let

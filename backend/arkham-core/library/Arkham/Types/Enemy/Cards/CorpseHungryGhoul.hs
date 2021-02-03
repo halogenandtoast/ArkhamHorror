@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype CorpseHungryGhoul = CorpseHungryGhoul Attrs
+newtype CorpseHungryGhoul = CorpseHungryGhoul EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 corpseHungryGhoul :: EnemyId -> CorpseHungryGhoul
@@ -25,7 +25,7 @@ instance ActionRunner env => HasActions env CorpseHungryGhoul where
   getActions i window (CorpseHungryGhoul attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env CorpseHungryGhoul where
-  runMessage msg e@(CorpseHungryGhoul attrs@Attrs {..}) = case msg of
+  runMessage msg e@(CorpseHungryGhoul attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) enemyId (LocationWithTitle "Bedroom")
     _ -> CorpseHungryGhoul <$> runMessage msg attrs

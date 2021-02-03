@@ -33,7 +33,7 @@ import Arkham.Types.Asset.Attrs
 import Arkham.Types.Card.PlayerCard (basePlayerCard)
 import qualified Arkham.Types.ChaosBag as ChaosBag
 import Arkham.Types.Difficulty
-import qualified Arkham.Types.Enemy.Attrs as Enemy
+import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Investigator.Attrs
 import qualified Arkham.Types.Location.Attrs as Location
 import qualified Arkham.Types.Location.Attrs as LocationAttrs
@@ -100,7 +100,7 @@ buildTestTreacheryEncounterCard = do
   cardId <- CardId <$> liftIO nextRandom
   pure $ lookupEncounterCard "treachery" cardId
 
-testEnemy :: MonadIO m => (Enemy.Attrs -> Enemy.Attrs) -> m Enemy
+testEnemy :: MonadIO m => (EnemyAttrs -> EnemyAttrs) -> m Enemy
 testEnemy f = do
   enemyId <- liftIO $ EnemyId <$> nextRandom
   pure $ baseEnemy enemyId "enemy" f

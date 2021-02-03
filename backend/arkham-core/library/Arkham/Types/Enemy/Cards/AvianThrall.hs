@@ -11,7 +11,7 @@ import Arkham.Types.Enemy.Runner
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Trait
 
-newtype AvianThrall = AvianThrall Attrs
+newtype AvianThrall = AvianThrall EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 avianThrall :: EnemyId -> AvianThrall
@@ -38,5 +38,5 @@ instance ActionRunner env => HasActions env AvianThrall where
   getActions i window (AvianThrall attrs) = getActions i window attrs
 
 instance EnemyRunner env => RunMessage env AvianThrall where
-  runMessage msg (AvianThrall attrs@Attrs {..}) =
+  runMessage msg (AvianThrall attrs@EnemyAttrs {..}) =
     AvianThrall <$> runMessage msg attrs

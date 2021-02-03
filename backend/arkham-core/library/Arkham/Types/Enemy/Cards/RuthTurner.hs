@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype RuthTurner = RuthTurner Attrs
+newtype RuthTurner = RuthTurner EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ruthTurner :: EnemyId -> RuthTurner
@@ -25,7 +25,7 @@ instance ActionRunner env => HasActions env RuthTurner where
   getActions i window (RuthTurner attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env RuthTurner where
-  runMessage msg e@(RuthTurner attrs@Attrs {..}) = case msg of
+  runMessage msg e@(RuthTurner attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) eid (LocationWithTitle "St. Mary's Hospital")
     EnemyEvaded _ eid | eid == enemyId ->

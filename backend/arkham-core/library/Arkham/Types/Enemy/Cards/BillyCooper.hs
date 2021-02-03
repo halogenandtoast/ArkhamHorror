@@ -6,7 +6,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
-newtype BillyCooper = BillyCooper Attrs
+newtype BillyCooper = BillyCooper EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 billyCooper :: EnemyId -> BillyCooper
@@ -26,7 +26,7 @@ instance ActionRunner env => HasActions env BillyCooper where
   getActions iid window (BillyCooper attrs) = getActions iid window attrs
 
 instance (EnemyRunner env) => RunMessage env BillyCooper where
-  runMessage msg e@(BillyCooper attrs@Attrs {..}) = case msg of
+  runMessage msg e@(BillyCooper attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) eid (LocationWithTitle "Easttown")
     After (EnemyDefeated _ _ lid _ _ traits)

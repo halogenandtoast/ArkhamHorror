@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype DiscipleOfTheDevourer = DiscipleOfTheDevourer Attrs
+newtype DiscipleOfTheDevourer = DiscipleOfTheDevourer EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 discipleOfTheDevourer :: EnemyId -> DiscipleOfTheDevourer
@@ -24,7 +24,7 @@ instance ActionRunner env => HasActions env DiscipleOfTheDevourer where
   getActions i window (DiscipleOfTheDevourer attrs) = getActions i window attrs
 
 instance EnemyRunner env => RunMessage env DiscipleOfTheDevourer where
-  runMessage msg e@(DiscipleOfTheDevourer attrs@Attrs {..}) = case msg of
+  runMessage msg e@(DiscipleOfTheDevourer attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
       farthestEmptyLocationIds <- map unFarthestLocationId
         <$> getSetList (iid, EmptyLocation)

@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype Thrall = Thrall Attrs
+newtype Thrall = Thrall EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 thrall :: EnemyId -> Thrall
@@ -29,7 +29,7 @@ instance ActionRunner env => HasActions env Thrall where
   getActions i window (Thrall attrs) = getActions i window attrs
 
 instance EnemyRunner env => RunMessage env Thrall where
-  runMessage msg e@(Thrall attrs@Attrs {..}) = case msg of
+  runMessage msg e@(Thrall attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
       locations <- getSetList ()
         >>= traverse (traverseToSnd $ (unClueCount <$>) . getCount)

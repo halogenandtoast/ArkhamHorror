@@ -11,7 +11,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
-newtype PeterWarren = PeterWarren Attrs
+newtype PeterWarren = PeterWarren EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 peterWarren :: EnemyId -> PeterWarren
@@ -28,7 +28,7 @@ instance HasModifiersFor env PeterWarren where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env PeterWarren where
-  getActions iid NonFast (PeterWarren attrs@Attrs {..}) =
+  getActions iid NonFast (PeterWarren attrs@EnemyAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
       locationId <- getId @LocationId iid
       pure
@@ -44,7 +44,7 @@ instance ActionRunner env => HasActions env PeterWarren where
   getActions _ _ _ = pure []
 
 instance (EnemyRunner env) => RunMessage env PeterWarren where
-  runMessage msg e@(PeterWarren attrs@Attrs {..}) = case msg of
+  runMessage msg e@(PeterWarren attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) eid (LocationWithTitle "Miskatonic University")
     UseCardAbility _ (EnemySource eid) _ 1 _ | eid == enemyId ->

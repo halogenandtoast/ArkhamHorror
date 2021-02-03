@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype HuntingNightgaunt = HuntingNightgaunt Attrs
+newtype HuntingNightgaunt = HuntingNightgaunt EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 huntingNightgaunt :: EnemyId -> HuntingNightgaunt
@@ -25,7 +25,7 @@ instance ActionRunner env => HasActions env HuntingNightgaunt where
   getActions i window (HuntingNightgaunt attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env HuntingNightgaunt where
-  runMessage msg (HuntingNightgaunt attrs@Attrs {..}) = case msg of
+  runMessage msg (HuntingNightgaunt attrs@EnemyAttrs {..}) = case msg of
     TryEvadeEnemy _ eid _ _ | eid == enemyId -> do
       unshiftMessage
         (CreateEffect "01172" Nothing (toSource attrs) SkillTestTarget)

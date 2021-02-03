@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype FleshEater = FleshEater Attrs
+newtype FleshEater = FleshEater EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 fleshEater :: EnemyId -> FleshEater
@@ -25,7 +25,7 @@ instance ActionRunner env => HasActions env FleshEater where
   getActions i window (FleshEater attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env FleshEater where
-  runMessage msg e@(FleshEater attrs@Attrs {..}) = case msg of
+  runMessage msg e@(FleshEater attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) enemyId (LocationWithTitle "Attic")
     _ -> FleshEater <$> runMessage msg attrs

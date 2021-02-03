@@ -9,7 +9,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype LupineThrall = LupineThrall Attrs
+newtype LupineThrall = LupineThrall EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 lupineThrall :: EnemyId -> LupineThrall
@@ -30,7 +30,7 @@ instance HasModifiersFor env LupineThrall where
   getModifiersFor = noModifiersFor
 
 instance EnemyRunner env => RunMessage env LupineThrall where
-  runMessage msg e@(LupineThrall attrs@Attrs {..}) = case msg of
+  runMessage msg e@(LupineThrall attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
       farthestLocations <- map unFarthestLocationId <$> getSetList iid
       e <$ spawnAtOneOf iid eid farthestLocations

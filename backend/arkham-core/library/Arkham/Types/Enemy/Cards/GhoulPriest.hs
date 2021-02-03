@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype GhoulPriest = GhoulPriest Attrs
+newtype GhoulPriest = GhoulPriest EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 ghoulPriest :: EnemyId -> GhoulPriest

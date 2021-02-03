@@ -11,7 +11,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
-newtype VictoriaDevereux = VictoriaDevereux Attrs
+newtype VictoriaDevereux = VictoriaDevereux EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 victoriaDevereux :: EnemyId -> VictoriaDevereux
@@ -28,7 +28,7 @@ instance HasModifiersFor env VictoriaDevereux where
   getModifiersFor = noModifiersFor
 
 instance ActionRunner env => HasActions env VictoriaDevereux where
-  getActions iid NonFast (VictoriaDevereux attrs@Attrs {..}) =
+  getActions iid NonFast (VictoriaDevereux attrs@EnemyAttrs {..}) =
     withBaseActions iid NonFast attrs $ do
       locationId <- getId @LocationId iid
       pure
@@ -47,7 +47,7 @@ instance ActionRunner env => HasActions env VictoriaDevereux where
   getActions _ _ _ = pure []
 
 instance (EnemyRunner env) => RunMessage env VictoriaDevereux where
-  runMessage msg e@(VictoriaDevereux attrs@Attrs {..}) = case msg of
+  runMessage msg e@(VictoriaDevereux attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) eid (LocationWithTitle "Northside")
     UseCardAbility _ (EnemySource eid) _ 1 _ | eid == enemyId ->

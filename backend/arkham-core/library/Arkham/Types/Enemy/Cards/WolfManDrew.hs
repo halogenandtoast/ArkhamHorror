@@ -5,7 +5,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype WolfManDrew = WolfManDrew Attrs
+newtype WolfManDrew = WolfManDrew EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 wolfManDrew :: EnemyId -> WolfManDrew
@@ -25,7 +25,7 @@ instance ActionRunner env => HasActions env WolfManDrew where
   getActions i window (WolfManDrew attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env WolfManDrew where
-  runMessage msg e@(WolfManDrew attrs@Attrs {..}) = case msg of
+  runMessage msg e@(WolfManDrew attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrawEnemy iid _ eid | eid == enemyId ->
       e <$ spawnAt (Just iid) eid (LocationWithTitle "Downtown")
     PerformEnemyAttack _ eid | eid == enemyId ->

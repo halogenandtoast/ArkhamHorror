@@ -6,7 +6,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Helpers
 import Arkham.Types.Enemy.Runner
 
-newtype OBannionsThug = OBannionsThug Attrs
+newtype OBannionsThug = OBannionsThug EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 oBannionsThug :: EnemyId -> OBannionsThug
@@ -19,7 +19,7 @@ oBannionsThug uuid =
     . (evadeL .~ 2)
 
 instance HasModifiersFor env OBannionsThug where
-  getModifiersFor _ (InvestigatorTarget iid) (OBannionsThug a@Attrs {..})
+  getModifiersFor _ (InvestigatorTarget iid) (OBannionsThug a@EnemyAttrs {..})
     | iid `elem` enemyEngagedInvestigators = pure
     $ toModifiers a [CannotGainResources]
   getModifiersFor _ _ _ = pure []

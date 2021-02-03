@@ -10,7 +10,7 @@ import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 import Arkham.Types.Trait
 
-newtype WizardOfYogSothoth = WizardOfYogSothoth Attrs
+newtype WizardOfYogSothoth = WizardOfYogSothoth EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 wizardOfYogSothoth :: EnemyId -> WizardOfYogSothoth
@@ -31,7 +31,7 @@ instance ActionRunner env => HasActions env WizardOfYogSothoth where
   getActions i window (WizardOfYogSothoth attrs) = getActions i window attrs
 
 instance (EnemyRunner env) => RunMessage env WizardOfYogSothoth where
-  runMessage msg e@(WizardOfYogSothoth attrs@Attrs {..}) = case msg of
+  runMessage msg e@(WizardOfYogSothoth attrs@EnemyAttrs {..}) = case msg of
     InvestigatorDrewEncounterCard iid card
       | iid `elem` enemyEngagedInvestigators -> e <$ when
         (any (`member` ecTraits card) [Hex, Pact])

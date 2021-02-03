@@ -1,11 +1,10 @@
 module Arkham.Types.Event.Cards.CloseCall2Spec
   ( spec
-  )
-where
+  ) where
 
 import TestImport
 
-import Arkham.Types.Enemy.Attrs (Attrs(..))
+import Arkham.Types.Enemy.Attrs (EnemyAttrs(..))
 import Arkham.Types.Trait
 
 spec :: Spec

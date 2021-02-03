@@ -8,7 +8,7 @@ import Arkham.Import
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Runner
 
-newtype EmergentMonstrosity = EmergentMonstrosity Attrs
+newtype EmergentMonstrosity = EmergentMonstrosity EnemyAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 emergentMonstrosity :: EnemyId -> EmergentMonstrosity
@@ -28,7 +28,7 @@ instance ActionRunner env => HasActions env EmergentMonstrosity where
   getActions i window (EmergentMonstrosity attrs) = getActions i window attrs
 
 instance EnemyRunner env => RunMessage env EmergentMonstrosity where
-  runMessage msg (EmergentMonstrosity attrs@Attrs {..}) = case msg of
+  runMessage msg (EmergentMonstrosity attrs@EnemyAttrs {..}) = case msg of
 
     InvestigatorDrawEnemy iid _ eid | eid == enemyId -> do
       lid <- getId @LocationId iid

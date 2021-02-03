@@ -11,7 +11,7 @@ import Arkham.Types.Difficulty
 import Arkham.Types.Game.Helpers
 import Arkham.Types.Investigator
 
-data Attrs = Attrs
+data CampaignAttrs = CampaignAttrs
   { campaignId :: CampaignId
   , campaignName :: Text
   , campaignInvestigators :: HashMap Int Investigator
@@ -26,41 +26,41 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
-makeLensesWith suffixedFields ''Attrs
+makeLensesWith suffixedFields ''CampaignAttrs
 
 completeStep :: Maybe CampaignStep -> [CampaignStep] -> [CampaignStep]
 completeStep (Just step') steps = step' : steps
 completeStep Nothing steps = steps
 
-instance Entity Attrs where
-  type EntityId Attrs = CampaignId
-  type EntityAttrs Attrs = Attrs
+instance Entity CampaignAttrs where
+  type EntityId CampaignAttrs = CampaignId
+  type EntityAttrs CampaignAttrs = CampaignAttrs
   toId = campaignId
   toAttrs = id
 
-instance NamedEntity Attrs where
+instance NamedEntity CampaignAttrs where
   toName = mkName . campaignName
 
-instance ToJSON Attrs where
+instance ToJSON CampaignAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "campaign"
   toEncoding = genericToEncoding $ aesonOptions $ Just "campaign"
 
-instance FromJSON Attrs where
+instance FromJSON CampaignAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "campaign"
 
-instance HasSet CompletedScenarioId env Attrs where
-  getSet Attrs {..} =
+instance HasSet CompletedScenarioId env CampaignAttrs where
+  getSet CampaignAttrs {..} =
     pure . setFromList $ flip mapMaybe campaignCompletedSteps $ \case
       ScenarioStep scenarioId -> Just $ CompletedScenarioId scenarioId
       _ -> Nothing
 
-instance HasList CampaignStoryCard env Attrs where
-  getList Attrs {..} =
+instance HasList CampaignStoryCard env CampaignAttrs where
+  getList CampaignAttrs {..} =
     pure $ concatMap (uncurry (map . CampaignStoryCard)) $ mapToList
       campaignStoryCards
 
-instance CampaignRunner env => RunMessage env Attrs where
-  runMessage msg a@Attrs {..} = case msg of
+instance CampaignRunner env => RunMessage env CampaignAttrs where
+  runMessage msg a@CampaignAttrs {..} = case msg of
     StartCampaign -> a <$ unshiftMessage (CampaignStep campaignStep)
     CampaignStep Nothing -> a <$ unshiftMessage GameOver -- TODO: move to generic
     CampaignStep (Just (ScenarioStep sid)) ->
@@ -113,8 +113,8 @@ instance CampaignRunner env => RunMessage env Attrs where
       _ -> error "must be called in a scenario"
     _ -> pure a
 
-baseAttrs :: CampaignId -> Text -> Difficulty -> [Token] -> Attrs
-baseAttrs campaignId' name difficulty chaosBagContents = Attrs
+baseAttrs :: CampaignId -> Text -> Difficulty -> [Token] -> CampaignAttrs
+baseAttrs campaignId' name difficulty chaosBagContents = CampaignAttrs
   { campaignId = campaignId'
   , campaignName = name
   , campaignInvestigators = mempty

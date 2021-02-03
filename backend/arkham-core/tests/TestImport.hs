@@ -29,7 +29,7 @@ import qualified Arkham.Types.Location.Attrs as Location
 import qualified Arkham.Types.Location.Attrs as LocationAttrs
 import Arkham.Types.Phase
 import Arkham.Types.Scenario as X
-import qualified Arkham.Types.Scenario.Attrs as ScenarioAttrs
+import Arkham.Types.Scenario.Attrs
 import Arkham.Types.Stats as X
 import Control.Lens as X (set, (^?!))
 import Control.Monad.Fail as X
@@ -44,10 +44,7 @@ import Helpers.Message as X
 import Test.Hspec as X
 
 testScenario
-  :: MonadIO m
-  => CardCode
-  -> (ScenarioAttrs.Attrs -> ScenarioAttrs.Attrs)
-  -> m Scenario
+  :: MonadIO m => CardCode -> (ScenarioAttrs -> ScenarioAttrs) -> m Scenario
 testScenario cardCode f =
   let name = unCardCode cardCode
   in pure $ baseScenario cardCode name [] [] Easy f

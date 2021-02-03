@@ -10,7 +10,7 @@ import Arkham.Types.Difficulty
 import Arkham.Types.Game.Helpers
 import qualified Arkham.Types.Token as Token
 
-newtype TheDunwichLegacy = TheDunwichLegacy Attrs
+newtype TheDunwichLegacy = TheDunwichLegacy CampaignAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theDunwichLegacy :: Difficulty -> TheDunwichLegacy
@@ -91,7 +91,7 @@ theDunwichLegacy difficulty = TheDunwichLegacy
       ]
 
 instance CampaignRunner env => RunMessage env TheDunwichLegacy where
-  runMessage msg c@(TheDunwichLegacy attrs@Attrs {..}) = case msg of
+  runMessage msg c@(TheDunwichLegacy attrs@CampaignAttrs {..}) = case msg of
     CampaignStep (Just PrologueStep) -> do
       investigatorIds <- getSetList ()
       leadInvestigatorId <- getLeadInvestigatorId

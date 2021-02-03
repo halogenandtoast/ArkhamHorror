@@ -16,8 +16,8 @@ import Arkham.Types.Token
 import qualified Arkham.Types.Trait as Trait
 import Data.List.NonEmpty (NonEmpty(..))
 
-newtype TheEssexCountyExpress = TheEssexCountyExpress Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+newtype TheEssexCountyExpress = TheEssexCountyExpress ScenarioAttrs
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theEssexCountyExpress :: Difficulty -> TheEssexCountyExpress
 theEssexCountyExpress difficulty = TheEssexCountyExpress $ base
@@ -112,9 +112,9 @@ investigatorDefeat
      , HasId LeadInvestigatorId env ()
      , HasList CampaignStoryCard env ()
      )
-  => Attrs
+  => ScenarioAttrs
   -> m [Message]
-investigatorDefeat Attrs {..} = do
+investigatorDefeat ScenarioAttrs {..} = do
   campaignStoryCards <- getList ()
   leadInvestigatorId <- getLeadInvestigatorId
   defeatedInvestigatorIds <- map unDefeatedInvestigatorId <$> getSetList ()
@@ -174,7 +174,7 @@ investigatorDefeat Attrs {..} = do
       <> [ AddCampaignCardToDeck iid "02178" | iid <- defeatedInvestigatorIds ]
 
 instance ScenarioRunner env => RunMessage env TheEssexCountyExpress where
-  runMessage msg s@(TheEssexCountyExpress attrs@Attrs {..}) = case msg of
+  runMessage msg s@(TheEssexCountyExpress attrs@ScenarioAttrs {..}) = case msg of
     SetTokensForScenario -> do
       standalone <- isNothing <$> getId @(Maybe CampaignId) ()
       s <$ if standalone

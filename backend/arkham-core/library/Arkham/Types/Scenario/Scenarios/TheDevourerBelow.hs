@@ -13,8 +13,8 @@ import Arkham.Types.Token
 import Arkham.Types.Trait hiding (Cultist)
 import Data.List.NonEmpty (NonEmpty(..))
 
-newtype TheDevourerBelow = TheDevourerBelow Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+newtype TheDevourerBelow = TheDevourerBelow ScenarioAttrs
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theDevourerBelow :: Difficulty -> TheDevourerBelow
 theDevourerBelow difficulty =
@@ -39,7 +39,7 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env [Trait]) => 
     otherFace -> getTokenValue attrs iid otherFace
 
 instance (ScenarioRunner env) => RunMessage env TheDevourerBelow where
-  runMessage msg s@(TheDevourerBelow attrs@Attrs {..}) = case msg of
+  runMessage msg s@(TheDevourerBelow attrs@ScenarioAttrs {..}) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
       pastMidnight <- getHasRecord ItIsPastMidnight

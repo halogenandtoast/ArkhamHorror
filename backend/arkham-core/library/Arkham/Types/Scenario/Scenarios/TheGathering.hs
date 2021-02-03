@@ -13,8 +13,8 @@ import Arkham.Types.Token
 import Arkham.Types.Trait (Trait)
 import qualified Arkham.Types.Trait as Trait
 
-newtype TheGathering = TheGathering Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+newtype TheGathering = TheGathering ScenarioAttrs
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theGathering :: Difficulty -> TheGathering
 theGathering difficulty = TheGathering $ base
@@ -54,7 +54,7 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env (Investigato
     otherFace -> getTokenValue attrs iid otherFace
 
 instance ScenarioRunner env => RunMessage env TheGathering where
-  runMessage msg s@(TheGathering attrs@Attrs {..}) = case msg of
+  runMessage msg s@(TheGathering attrs@ScenarioAttrs {..}) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
       encounterDeck <- buildEncounterDeck

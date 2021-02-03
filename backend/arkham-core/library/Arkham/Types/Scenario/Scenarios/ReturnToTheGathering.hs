@@ -12,7 +12,7 @@ import Arkham.Types.Trait (Trait)
 import Data.List.NonEmpty (NonEmpty(..))
 
 newtype ReturnToTheGathering = ReturnToTheGathering TheGathering
-  deriving newtype (Show, ToJSON, FromJSON)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 returnToTheGathering :: Difficulty -> ReturnToTheGathering
 returnToTheGathering difficulty = ReturnToTheGathering . TheGathering $ base
@@ -37,7 +37,7 @@ instance (HasTokenValue env InvestigatorId, HasCount EnemyCount env (Investigato
     getTokenValue theGathering' iid
 
 instance ScenarioRunner env => RunMessage env ReturnToTheGathering where
-  runMessage msg (ReturnToTheGathering theGathering'@(TheGathering attrs@Attrs {..}))
+  runMessage msg (ReturnToTheGathering theGathering'@(TheGathering attrs@ScenarioAttrs {..}))
     = case msg of
       Setup -> do
         investigatorIds <- getInvestigatorIds

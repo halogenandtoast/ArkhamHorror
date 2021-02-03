@@ -12,8 +12,8 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.Token
 import Data.List.NonEmpty (NonEmpty(..))
 
-newtype TheMiskatonicMuseum = TheMiskatonicMuseum Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+newtype TheMiskatonicMuseum = TheMiskatonicMuseum ScenarioAttrs
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theMiskatonicMuseum :: Difficulty -> TheMiskatonicMuseum
 theMiskatonicMuseum difficulty = TheMiskatonicMuseum $ base
@@ -125,7 +125,7 @@ standaloneTokens =
   ]
 
 instance ScenarioRunner env => RunMessage env TheMiskatonicMuseum where
-  runMessage msg s@(TheMiskatonicMuseum attrs@Attrs {..}) = case msg of
+  runMessage msg s@(TheMiskatonicMuseum attrs@ScenarioAttrs {..}) = case msg of
     SetTokensForScenario -> do
       standalone <- isNothing <$> getId @(Maybe CampaignId) ()
       s <$ if standalone

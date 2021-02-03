@@ -19,8 +19,8 @@ newtype CurseOfTheRougarouMetadata = CurseOfTheRougarouMetadata { setAsideLocati
   deriving stock (Show, Generic)
   deriving anyclass (ToJSON, FromJSON)
 
-newtype CurseOfTheRougarou = CurseOfTheRougarou (Attrs `With` CurseOfTheRougarouMetadata)
-  deriving newtype (Show, ToJSON, FromJSON)
+newtype CurseOfTheRougarou = CurseOfTheRougarou (ScenarioAttrs `With` CurseOfTheRougarouMetadata)
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 curseOfTheRougarou :: Difficulty -> CurseOfTheRougarou
 curseOfTheRougarou difficulty =
@@ -77,8 +77,8 @@ instance (HasTokenValue env InvestigatorId, HasSet Trait env LocationId, HasId L
     otherFace -> getTokenValue attrs iid otherFace
 
 instance ScenarioRunner env => RunMessage env CurseOfTheRougarou where
-  runMessage msg s@(CurseOfTheRougarou (attrs@Attrs {..} `With` metadata)) =
-    case msg of
+  runMessage msg s@(CurseOfTheRougarou (attrs@ScenarioAttrs {..} `With` metadata))
+    = case msg of
       Setup -> do
         investigatorIds <- getInvestigatorIds
         encounterDeck <- buildEncounterDeck [EncounterSet.TheBayou]

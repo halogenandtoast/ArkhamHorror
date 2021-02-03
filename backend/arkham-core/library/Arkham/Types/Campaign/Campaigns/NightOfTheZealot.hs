@@ -8,7 +8,7 @@ import Arkham.Types.CampaignStep
 import Arkham.Types.Difficulty
 import qualified Arkham.Types.Token as Token
 
-newtype NightOfTheZealot = NightOfTheZealot Attrs
+newtype NightOfTheZealot = NightOfTheZealot CampaignAttrs
   deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 nightOfTheZealot :: Difficulty -> NightOfTheZealot
@@ -62,7 +62,7 @@ nightOfTheZealotChaosBagContents difficulty =
       ]
 
 instance CampaignRunner env => RunMessage env NightOfTheZealot where
-  runMessage msg c@(NightOfTheZealot attrs@Attrs {..}) = case msg of
+  runMessage msg c@(NightOfTheZealot attrs@CampaignAttrs {..}) = case msg of
     CampaignStep (Just PrologueStep) -> do
       investigatorIds <- getSetList ()
       c <$ unshiftMessages

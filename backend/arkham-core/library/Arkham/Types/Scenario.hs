@@ -1,7 +1,6 @@
 module Arkham.Types.Scenario
   ( module Arkham.Types.Scenario
-  )
-where
+  ) where
 
 import Arkham.Import
 
@@ -48,11 +47,15 @@ deriving anyclass instance
   )
   => HasTokenValue env Scenario
 
-instance HasSet ScenarioLogKey env Scenario where
-  getSet = pure . scenarioLog . scenarioAttrs
+instance Entity Scenario where
+  type EntityId Scenario = ScenarioId
+  type EntityAttrs Scenario = ScenarioAttrs
 
-newtype BaseScenario = BaseScenario Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+instance HasSet ScenarioLogKey env Scenario where
+  getSet = pure . scenarioLog . toAttrs
+
+newtype BaseScenario = BaseScenario ScenarioAttrs
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 instance HasTokenValue env InvestigatorId => HasTokenValue env BaseScenario where
   getTokenValue (BaseScenario attrs) iid = \case
@@ -73,7 +76,7 @@ baseScenario
   -> [AgendaId]
   -> [ActId]
   -> Difficulty
-  -> (Attrs -> Attrs)
+  -> (ScenarioAttrs -> ScenarioAttrs)
   -> Scenario
 baseScenario a b c d e f =
   BaseScenario' . BaseScenario . f $ baseAttrs a b c d e
@@ -82,10 +85,10 @@ lookupScenario :: ScenarioId -> Difficulty -> Scenario
 lookupScenario = fromJustNote "Unknown scenario" . flip lookup allScenarios
 
 difficultyOfScenario :: Scenario -> Difficulty
-difficultyOfScenario = scenarioDifficulty . scenarioAttrs
+difficultyOfScenario = scenarioDifficulty . toAttrs
 
 scenarioActs :: Scenario -> [ActId]
-scenarioActs s = case scenarioActStack (scenarioAttrs s) of
+scenarioActs s = case scenarioActStack (toAttrs s) of
   [(_, actIds)] -> actIds
   _ -> error "Not able to handle multiple act stacks yet"
 
@@ -104,19 +107,3 @@ allScenarios = mapFromList
   , ("50032", ReturnToTheDevourerBelow' . returnToTheDevourerBelow)
   , ("81001", CurseOfTheRougarou' . curseOfTheRougarou)
   ]
-
-scenarioAttrs :: Scenario -> Attrs
-scenarioAttrs = \case
-  BaseScenario' attrs -> coerce attrs
-  TheGathering' attrs -> coerce attrs
-  TheMidnightMasks' attrs -> coerce attrs
-  TheDevourerBelow' attrs -> coerce attrs
-  ExtracurricularActivity' attrs -> coerce attrs
-  TheHouseAlwaysWins' attrs -> coerce attrs
-  TheMiskatonicMuseum' attrs -> coerce attrs
-  TheEssexCountyExpress' attrs -> coerce attrs
-  BloodOnTheAltar' attrs -> coerce attrs
-  ReturnToTheGathering' attrs -> coerce attrs
-  ReturnToTheMidnightMasks' attrs -> coerce attrs
-  ReturnToTheDevourerBelow' attrs -> coerce attrs
-  CurseOfTheRougarou' (CurseOfTheRougarou (attrs `With` _)) -> attrs

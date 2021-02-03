@@ -10,8 +10,8 @@ import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.Token
 
-newtype ExtracurricularActivity = ExtracurricularActivity Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+newtype ExtracurricularActivity = ExtracurricularActivity ScenarioAttrs
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 extracurricularActivity :: Difficulty -> ExtracurricularActivity
 extracurricularActivity difficulty =
@@ -53,7 +53,7 @@ instance (HasTokenValue env InvestigatorId, HasCount DiscardCount env Investigat
     otherFace -> getTokenValue attrs iid otherFace
 
 instance ScenarioRunner env => RunMessage env ExtracurricularActivity where
-  runMessage msg s@(ExtracurricularActivity attrs@Attrs {..}) = case msg of
+  runMessage msg s@(ExtracurricularActivity attrs@ScenarioAttrs {..}) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
       completedTheHouseAlwaysWins <-

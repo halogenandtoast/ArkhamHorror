@@ -16,7 +16,7 @@ import Arkham.Types.Location as X
 newtype GridTemplateRow = GridTemplateRow { unGridTemplateRow :: Text }
   deriving newtype (Show, IsString, ToJSON, FromJSON)
 
-data Attrs = Attrs
+data ScenarioAttrs = ScenarioAttrs
   { scenarioName :: Text
   , scenarioId :: ScenarioId
   , scenarioDifficulty :: Difficulty
@@ -31,30 +31,31 @@ data Attrs = Attrs
   }
   deriving stock (Show, Generic)
 
-makeLensesWith suffixedFields ''Attrs
+makeLensesWith suffixedFields ''ScenarioAttrs
 
-instance ToJSON Attrs where
+instance ToJSON ScenarioAttrs where
   toJSON = genericToJSON $ aesonOptions $ Just "scenario"
   toEncoding = genericToEncoding $ aesonOptions $ Just "scenario"
 
-instance FromJSON Attrs where
+instance FromJSON ScenarioAttrs where
   parseJSON = genericParseJSON $ aesonOptions $ Just "scenario"
 
-toTokenValue :: Attrs -> Token -> Int -> Int -> TokenValue
+toTokenValue :: ScenarioAttrs -> Token -> Int -> Int -> TokenValue
 toTokenValue attrs t esVal heVal = TokenValue
   t
   (NegativeModifier $ if isEasyStandard attrs then esVal else heVal)
 
-isEasyStandard :: Attrs -> Bool
-isEasyStandard Attrs { scenarioDifficulty } =
+isEasyStandard :: ScenarioAttrs -> Bool
+isEasyStandard ScenarioAttrs { scenarioDifficulty } =
   scenarioDifficulty `elem` [Easy, Standard]
 
-isHardExpert :: Attrs -> Bool
-isHardExpert Attrs { scenarioDifficulty } =
+isHardExpert :: ScenarioAttrs -> Bool
+isHardExpert ScenarioAttrs { scenarioDifficulty } =
   scenarioDifficulty `elem` [Hard, Expert]
 
-baseAttrs :: CardCode -> Text -> [AgendaId] -> [ActId] -> Difficulty -> Attrs
-baseAttrs cardCode name agendaStack actStack' difficulty = Attrs
+baseAttrs
+  :: CardCode -> Text -> [AgendaId] -> [ActId] -> Difficulty -> ScenarioAttrs
+baseAttrs cardCode name agendaStack actStack' difficulty = ScenarioAttrs
   { scenarioId = ScenarioId cardCode
   , scenarioName = name
   , scenarioDifficulty = difficulty
@@ -67,26 +68,28 @@ baseAttrs cardCode name agendaStack actStack' difficulty = Attrs
   , scenarioSetAsideCards = mempty
   }
 
-instance Entity Attrs where
-  type EntityId Attrs = ScenarioId
-  type EntityAttrs Attrs = Attrs
+instance Entity ScenarioAttrs where
+  type EntityId ScenarioAttrs = ScenarioId
+  type EntityAttrs ScenarioAttrs = ScenarioAttrs
   toId = scenarioId
   toAttrs = id
 
-instance NamedEntity Attrs where
+instance NamedEntity ScenarioAttrs where
   toName = mkName . scenarioName
 
-instance TargetEntity Attrs where
+instance TargetEntity ScenarioAttrs where
   toTarget = ScenarioTarget . toId
-  isTarget Attrs { scenarioId } (ScenarioTarget sid) = scenarioId == sid
+  isTarget ScenarioAttrs { scenarioId } (ScenarioTarget sid) =
+    scenarioId == sid
   isTarget _ _ = False
 
-instance SourceEntity Attrs where
+instance SourceEntity ScenarioAttrs where
   toSource = ScenarioSource . toId
-  isSource Attrs { scenarioId } (ScenarioSource sid) = scenarioId == sid
+  isSource ScenarioAttrs { scenarioId } (ScenarioSource sid) =
+    scenarioId == sid
   isSource _ _ = False
 
-instance HasTokenValue env InvestigatorId => HasTokenValue env Attrs where
+instance HasTokenValue env InvestigatorId => HasTokenValue env ScenarioAttrs where
   getTokenValue _ iid = \case
     ElderSign -> getTokenValue iid iid ElderSign
     AutoFail -> pure $ TokenValue AutoFail AutoFailModifier
@@ -112,8 +115,8 @@ findLocationKey locationMatcher locations = find matchKey $ keys locations
       title == title' && Just subtitle' == msubtitle
 
 
-instance ScenarioRunner env => RunMessage env Attrs where
-  runMessage msg a@Attrs {..} = case msg of
+instance ScenarioRunner env => RunMessage env ScenarioAttrs where
+  runMessage msg a@ScenarioAttrs {..} = case msg of
     Setup -> a <$ pushMessage BeginInvestigation
     StartCampaign -> do
       standalone <- isNothing <$> getId @(Maybe CampaignId) ()

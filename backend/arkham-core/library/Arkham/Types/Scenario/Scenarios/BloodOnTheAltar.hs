@@ -15,8 +15,8 @@ import Arkham.Types.Scenario.Runner
 import Arkham.Types.Token
 import Data.List.NonEmpty (NonEmpty(..))
 
-newtype BloodOnTheAltar = BloodOnTheAltar Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+newtype BloodOnTheAltar = BloodOnTheAltar ScenarioAttrs
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 bloodOnTheAltar :: Difficulty -> BloodOnTheAltar
 bloodOnTheAltar difficulty = BloodOnTheAltar $ base
@@ -143,7 +143,7 @@ getRemoveNecronomicon = do
     ]
 
 instance ScenarioRunner env => RunMessage env BloodOnTheAltar where
-  runMessage msg s@(BloodOnTheAltar attrs@Attrs {..}) = case msg of
+  runMessage msg s@(BloodOnTheAltar attrs@ScenarioAttrs {..}) = case msg of
     SetTokensForScenario -> do
       standalone <- isNothing <$> getId @(Maybe CampaignId) ()
       s <$ if standalone

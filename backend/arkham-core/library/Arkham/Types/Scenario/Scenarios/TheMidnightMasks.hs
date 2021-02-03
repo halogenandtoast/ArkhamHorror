@@ -14,8 +14,8 @@ import Arkham.Types.Trait (Trait)
 import qualified Arkham.Types.Trait as Trait
 import Data.List.NonEmpty (NonEmpty(..))
 
-newtype TheMidnightMasks = TheMidnightMasks Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+newtype TheMidnightMasks = TheMidnightMasks ScenarioAttrs
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theMidnightMasks :: Difficulty -> TheMidnightMasks
 theMidnightMasks difficulty =
@@ -91,7 +91,7 @@ introPart2 = FlavorText
   ]
 
 instance ScenarioRunner env => RunMessage env TheMidnightMasks where
-  runMessage msg s@(TheMidnightMasks attrs@Attrs {..}) = case msg of
+  runMessage msg s@(TheMidnightMasks attrs@ScenarioAttrs {..}) = case msg of
     Setup -> do
       count' <- getPlayerCount
       investigatorIds <- getInvestigatorIds

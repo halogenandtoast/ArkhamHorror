@@ -14,8 +14,8 @@ import Arkham.Types.Scenario.Helpers
 import Arkham.Types.Scenario.Runner
 import Arkham.Types.ScenarioLogKey
 
-newtype TheHouseAlwaysWins = TheHouseAlwaysWins Attrs
-  deriving newtype (Show, ToJSON, FromJSON)
+newtype TheHouseAlwaysWins = TheHouseAlwaysWins ScenarioAttrs
+  deriving newtype (Show, ToJSON, FromJSON, Entity)
 
 theHouseAlwaysWins :: Difficulty -> TheHouseAlwaysWins
 theHouseAlwaysWins difficulty =
@@ -57,7 +57,7 @@ instance HasTokenValue env InvestigatorId => HasTokenValue env TheHouseAlwaysWin
     otherFace -> getTokenValue attrs iid otherFace
 
 instance ScenarioRunner env => RunMessage env TheHouseAlwaysWins where
-  runMessage msg s@(TheHouseAlwaysWins attrs@Attrs {..}) = case msg of
+  runMessage msg s@(TheHouseAlwaysWins attrs@ScenarioAttrs {..}) = case msg of
     Setup -> do
       investigatorIds <- getInvestigatorIds
       encounterDeck <- buildEncounterDeck

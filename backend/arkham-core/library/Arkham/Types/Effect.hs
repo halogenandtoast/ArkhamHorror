@@ -9,6 +9,43 @@ import Arkham.Types.Effect.Attrs
 import Arkham.Types.Effect.Effects
 import Arkham.Types.Trait
 
+createEffect
+  :: MonadRandom m
+  => CardCode
+  -> Maybe (EffectMetadata Message)
+  -> Source
+  -> Target
+  -> m (EffectId, Effect)
+createEffect cardCode meffectMetadata source target = do
+  eid <- getRandom
+  pure (eid, lookupEffect cardCode eid meffectMetadata source target)
+
+createTokenValueEffect
+  :: MonadRandom m => Int -> Source -> Target -> m (EffectId, Effect)
+createTokenValueEffect n source target = do
+  eid <- getRandom
+  pure (eid, buildTokenValueEffect eid n source target)
+
+createWindowModifierEffect
+  :: MonadRandom m
+  => EffectWindow
+  -> EffectMetadata Message
+  -> Source
+  -> Target
+  -> m (EffectId, Effect)
+createWindowModifierEffect effectWindow effectMetadata source target = do
+  eid <- getRandom
+  pure
+    ( eid
+    , buildWindowModifierEffect eid effectMetadata effectWindow source target
+    )
+
+createPayForAbilityEffect
+  :: MonadRandom m => Maybe Ability -> Source -> Target -> m (EffectId, Effect)
+createPayForAbilityEffect mAbility source target = do
+  eid <- getRandom
+  pure (eid, buildPayForAbilityEffect eid mAbility source target)
+
 data Effect
   = OnTheLam' OnTheLam
   | MindOverMatter' MindOverMatter

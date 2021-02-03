@@ -1,12 +1,5 @@
 module Arkham.Types.Enemy
-  ( lookupEnemy
-  , baseEnemy
-  , isEngaged
-  , isUnique
-  , getEngagedInvestigators
-  , getBearer
-  , getEnemyVictory
-  , Enemy
+  ( module Arkham.Types.Enemy
   ) where
 
 import Arkham.Import
@@ -16,6 +9,11 @@ import Arkham.Types.Trait (Trait)
 import Arkham.Types.Enemy.Attrs
 import Arkham.Types.Enemy.Cards
 import Arkham.Types.Enemy.Runner
+
+createEnemy :: MonadRandom m => CardCode -> m (EnemyId, Enemy)
+createEnemy cardCode = do
+  eid <- getRandom
+  pure (eid, lookupEnemy cardCode eid)
 
 data Enemy
   = MobEnforcer' MobEnforcer
@@ -270,7 +268,3 @@ getBearer :: Enemy -> Maybe InvestigatorId
 getBearer enemy = case enemyPrey (toAttrs enemy) of
   Bearer iid -> Just (InvestigatorId $ unBearerId iid)
   _ -> Nothing
-
-isBlanked :: Message -> Bool
-isBlanked Blanked{} = True
-isBlanked _ = False

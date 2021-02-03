@@ -470,16 +470,13 @@ instance SkillTestRunner env => RunMessage env SkillTest where
     RerunSkillTest -> case skillTestResult of
       FailedBy True _ -> pure s
       _ -> do
-        withQueue $ \queue ->
-          let
-            queue' = flip filter queue $ \case
-              Will FailedSkillTest{} -> False
-              Will PassedSkillTest{} -> False
-              CheckWindow _ [WhenWouldFailSkillTest _] -> False
-              Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
-                | skillTestInvestigator == skillTestInvestigator' -> False
-              _ -> True
-          in (queue', ())
+        withQueue_ $ filter $ \case
+          Will FailedSkillTest{} -> False
+          Will PassedSkillTest{} -> False
+          CheckWindow _ [WhenWouldFailSkillTest _] -> False
+          Ask skillTestInvestigator' (ChooseOne [SkillTestApplyResults])
+            | skillTestInvestigator == skillTestInvestigator' -> False
+          _ -> True
         unshiftMessage (RunSkillTest skillTestInvestigator)
         -- We need to subtract the current token values to prevent them from
         -- doubling. However, we need to keep any existing value modifier on

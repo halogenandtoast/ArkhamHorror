@@ -8,6 +8,7 @@ module Api.Handler.Arkham.Decks
 import Import hiding (delete, on, (==.))
 
 import Api.Arkham.Helpers
+import Arkham.Game
 import Arkham.Types.Game
 import Arkham.Types.Message
 import Database.Esqueleto

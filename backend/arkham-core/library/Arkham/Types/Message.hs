@@ -1,20 +1,5 @@
 module Arkham.Types.Message
-  ( Message(..)
-  , Question(..)
-  , DamageStrategy(..)
-  , EncounterCardSource(..)
-  , LeftoverCardStrategy(..)
-  , ChoosePlayerChoice(..)
-  , MessageType(..)
-  , ActionType(..)
-  , messageType
-  , chooseOne
-  , chooseOneAtATime
-  , chooseSome
-  , chooseN
-  , chooseUpgradeDeck
-  , resolve
-  , story
+  ( module Arkham.Types.Message
   ) where
 
 import Arkham.Prelude
@@ -76,6 +61,10 @@ messageType ResolveToken{} = Just ResolveTokenMessage
 messageType EnemySpawn{} = Just EnemySpawnMessage
 messageType RevealToken{} = Just RevealTokenMessage
 messageType _ = Nothing
+
+isBlanked :: Message -> Bool
+isBlanked Blanked{} = True
+isBlanked _ = False
 
 resolve :: Message -> [Message]
 resolve msg = [When msg, msg, After msg]

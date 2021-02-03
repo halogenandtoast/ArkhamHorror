@@ -29,11 +29,9 @@ instance (HasQueue env, HasSet InvestigatorId env (), HasCount PlayerCount env (
   runMessage msg e@(FirstWatch (attrs@EventAttrs {..} `With` metadata@FirstWatchMetadata {..}))
     = case msg of
       InvestigatorPlayEvent _ eid _ | eid == eventId -> do
-        withQueue $ \queue -> do
-          let (dropped : rest) = queue
-          case dropped of
-            AllDrawEncounterCard -> (rest, ())
-            _ -> error "AllDrawEncounterCard expected"
+        withQueue_ $ \(dropped : rest) -> case dropped of
+          AllDrawEncounterCard -> rest
+          _ -> error "AllDrawEncounterCard expected"
         playerCount <- getPlayerCount
         e <$ unshiftMessages
           [ DrawEncounterCards (EventTarget eventId) playerCount

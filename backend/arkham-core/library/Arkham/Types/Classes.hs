@@ -107,6 +107,12 @@ withQueue body = do
   ref <- asks $ view messageQueue
   liftIO $ atomicModifyIORef' ref body
 
+withQueue_
+  :: (MonadIO m, MonadReader env m, HasQueue env)
+  => ([Message] -> [Message])
+  -> m ()
+withQueue_ body = withQueue ((, ()) . body)
+
 fromQueue
   :: (MonadIO m, MonadReader env m, HasQueue env) => ([Message] -> r) -> m r
 fromQueue f = f <$> (readIORef =<< asks (view messageQueue))

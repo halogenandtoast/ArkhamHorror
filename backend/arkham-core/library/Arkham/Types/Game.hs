@@ -8,13 +8,13 @@ import Arkham.Import hiding (first)
 
 import Arkham.Types.Card.EncounterCardMatcher
 import Arkham.Types.Act
+import Arkham.Types.ModifierData
 import Arkham.Types.Action (Action, TakenAction)
 import Arkham.Types.Agenda
 import Arkham.Types.Asset
 import Arkham.Types.Asset.Uses (UseType)
 import Arkham.Types.Campaign
 import Arkham.Types.ChaosBag
-import Arkham.Types.Difficulty
 import Arkham.Types.Effect
 import Arkham.Types.Enemy
 import Arkham.Types.Event
@@ -34,19 +34,12 @@ import Arkham.Types.Game.Helpers
 import qualified Arkham.Types.Window as Fast
 import Control.Monad.Reader (runReader)
 import Control.Monad.State.Strict hiding (filterM)
-import Data.Align
 import Data.These
 import Data.These.Lens
 import Data.List.Extra (groupOn, cycle)
 import qualified Data.HashMap.Strict as HashMap
 import Data.List.NonEmpty (NonEmpty(..))
 import qualified Data.Sequence as Seq
-import Data.UUID.V4
-import Safe (headNote)
-import System.Environment
-import System.Random
-import Text.Pretty.Simple
-import Text.Read hiding (get, lift)
 
 type GameInternal = Game (IORef [Message])
 type GameExternal = Game [Message]
@@ -109,26 +102,6 @@ data Game queue = Game
   deriving stock (Eq, Generic)
 
 makeLensesWith suffixedFields ''Game
-
-newtype ModifierData = ModifierData { mdModifiers :: [Modifier] }
-  deriving stock (Show, Eq, Generic)
-
-instance ToJSON ModifierData where
-  toJSON = genericToJSON $ aesonOptions $ Just "md"
-  toEncoding = genericToEncoding $ aesonOptions $ Just "md"
-
-withModifiers
-  :: ( MonadReader env m
-     , TargetEntity a
-     , HasModifiersFor env ()
-     , env ~ Game queue
-     )
-  => a
-  -> m (With a ModifierData)
-withModifiers a = do
-  source <- InvestigatorSource <$> view activeInvestigatorIdL
-  modifiers' <- getModifiersFor source (toTarget a) ()
-  pure $ a `with` ModifierData modifiers'
 
 instance ToJSON queue => ToJSON (Game queue) where
   toJSON g@Game {..} = object
@@ -237,130 +210,6 @@ getEffect eid = fromJustNote missingEffect <$> preview (effectsL . ix eid)
 
 activeInvestigator :: Game queue -> Investigator
 activeInvestigator g = getInvestigator (g ^. activeInvestigatorIdL) g
-
-startGame :: MonadIO m => Game queue -> m (Game queue)
-startGame g =
-  pure
-    $ g
-    & (gameStateL .~ IsActive)
-    & (playerCountL .~ length (g ^. investigatorsL))
-
-addInvestigator
-  :: (MonadIO m, MonadFail m, MonadRandom m)
-  => Int
-  -> Investigator
-  -> [PlayerCard]
-  -> GameInternal
-  -> m GameExternal
-addInvestigator uid i d g = do
-  atomicModifyIORef'
-    (g ^. messageQueue)
-    (\queue -> (InitDeck (toId i) d : queue, ()))
-  let
-    iid = toId i
-    g' =
-      g
-        & (investigatorsL %~ insertMap iid i)
-        & (playersL %~ insertMap uid iid)
-        & (playerOrderL %~ (<> [iid]))
-        & (playerTurnOrderL %~ (<> [iid]))
-    gameState = if length (g' ^. playersL) < g' ^. playerCountL
-      then IsPending
-      else IsActive
-  runMessages (const $ pure ()) $ g' & gameStateL .~ gameState
-
-newCampaign
-  :: (MonadIO m, MonadRandom m)
-  => CampaignId
-  -> Int
-  -> HashMap Int (Investigator, [PlayerCard])
-  -> Difficulty
-  -> m GameInternal
-newCampaign = newGame . Right
-
-newScenario
-  :: (MonadIO m, MonadRandom m)
-  => ScenarioId
-  -> Int
-  -> HashMap Int (Investigator, [PlayerCard])
-  -> Difficulty
-  -> m GameInternal
-newScenario = newGame . Left
-
-newGame
-  :: (MonadIO m, MonadRandom m)
-  => Either ScenarioId CampaignId
-  -> Int
-  -> HashMap Int (Investigator, [PlayerCard])
-  -> Difficulty
-  -> m GameInternal
-newGame scenarioOrCampaignId playerCount investigatorsList difficulty = do
-  hash' <- getRandom
-  mseed <- liftIO $ fmap readMaybe <$> lookupEnv "SEED"
-  seed <- maybe getRandom (pure . fromJustNote "invalid seed") mseed
-  liftIO $ setStdGen (mkStdGen seed)
-  ref <-
-    newIORef
-    $ map (uncurry (InitDeck . toId)) (toList investigatorsList)
-    <> [StartCampaign]
-
-  roundHistory <- newIORef []
-  phaseHistory <- newIORef []
-  pure $ Game
-    { gameMessages = ref
-    , gameRoundMessageHistory = roundHistory
-    , gamePhaseMessageHistory = phaseHistory
-    , gameSeed = seed
-    , gameMode = mode
-    , gamePlayerCount = playerCount
-    , gameLocations = mempty
-    , gameEnemies = mempty
-    , gameEnemiesInVoid = mempty
-    , gameAssets = mempty
-    , gameInvestigators = investigatorsMap
-    , gamePlayers = playersMap
-    , gameActiveInvestigatorId = initialInvestigatorId
-    , gameLeadInvestigatorId = initialInvestigatorId
-    , gamePhase = CampaignPhase
-    , gameEncounterDeck = mempty
-    , gameDiscard = mempty
-    , gameSkillTest = Nothing
-    , gameAgendas = mempty
-    , gameTreacheries = mempty
-    , gameEvents = mempty
-    , gameEffects = mempty
-    , gameSkills = mempty
-    , gameActs = mempty
-    , gameChaosBag = emptyChaosBag
-    , gameGameState = if length investigatorsMap /= playerCount
-      then IsPending
-      else IsActive
-    , gameUsedAbilities = mempty
-    , gameResignedCardCodes = mempty
-    , gameFocusedCards = mempty
-    , gameFocusedTargets = mempty
-    , gameFocusedTokens = mempty
-    , gameActiveCard = Nothing
-    , gamePlayerOrder = toList playersMap
-    , gamePlayerTurnOrder = toList playersMap
-    , gameVictoryDisplay = mempty
-    , gameQuestion = mempty
-    , gameHash = hash'
-    }
- where
-  initialInvestigatorId = headNote "No investigators" $ keys investigatorsMap
-  playersMap = map (toId . fst) investigatorsList
-  investigatorsMap =
-    mapFromList $ map (toFst toId . fst) (toList investigatorsList)
-  campaign = either
-    (const Nothing)
-    (Just . (`lookupCampaign` difficulty))
-    scenarioOrCampaignId
-  scenario = either
-    (Just . (`lookupScenario` difficulty))
-    (const Nothing)
-    scenarioOrCampaignId
-  mode = fromJustNote "Need campaign or scenario" $ align campaign scenario
 
 instance CanBeWeakness (Game queue) TreacheryId where
   getIsWeakness = getIsWeakness <=< getTreachery
@@ -1473,62 +1322,6 @@ instance HasSet InvestigatorId (Game queue) (HashSet LocationId) where
 instance HasQueue GameInternal where
   messageQueue = lens gameMessages $ \m x -> m { gameMessages = x }
 
-createEnemy :: MonadRandom m => CardCode -> m (EnemyId, Enemy)
-createEnemy cardCode = do
-  eid <- getRandom
-  pure (eid, lookupEnemy cardCode eid)
-
-createEffect
-  :: MonadRandom m
-  => CardCode
-  -> Maybe (EffectMetadata Message)
-  -> Source
-  -> Target
-  -> m (EffectId, Effect)
-createEffect cardCode meffectMetadata source target = do
-  eid <- getRandom
-  pure (eid, lookupEffect cardCode eid meffectMetadata source target)
-
-createTokenValueEffect
-  :: MonadRandom m => Int -> Source -> Target -> m (EffectId, Effect)
-createTokenValueEffect n source target = do
-  eid <- getRandom
-  pure (eid, buildTokenValueEffect eid n source target)
-
-createWindowModifierEffect
-  :: MonadRandom m
-  => EffectWindow
-  -> EffectMetadata Message
-  -> Source
-  -> Target
-  -> m (EffectId, Effect)
-createWindowModifierEffect effectWindow effectMetadata source target = do
-  eid <- getRandom
-  pure
-    ( eid
-    , buildWindowModifierEffect eid effectMetadata effectWindow source target
-    )
-
-createPayForAbilityEffect
-  :: MonadRandom m => Maybe Ability -> Source -> Target -> m (EffectId, Effect)
-createPayForAbilityEffect mAbility source target = do
-  eid <- getRandom
-  pure (eid, buildPayForAbilityEffect eid mAbility source target)
-
-createAsset :: MonadRandom m => CardCode -> m (AssetId, Asset)
-createAsset cardCode = do
-  aid <- getRandom
-  pure (aid, lookupAsset cardCode aid)
-
-createTreachery
-  :: MonadRandom m
-  => CardCode
-  -> Maybe InvestigatorId
-  -> m (TreacheryId, Treachery)
-createTreachery cardCode miid = do
-  tid <- getRandom
-  pure (tid, lookupTreachery cardCode tid miid)
-
 locationFor :: MonadReader (Game queue) m => InvestigatorId -> m LocationId
 locationFor iid = locationOf <$> getInvestigator iid
 
@@ -1977,13 +1770,13 @@ runGameMessage msg g = case msg of
       )
     pure $ g & enemiesL %~ insertMap eid enemy
   CancelNext msgType -> do
-    void $ withQueue $ \queue -> do
+    withQueue_ $ \queue -> do
       let
         (before, after) = break ((== Just msgType) . messageType) queue
         remaining = case after of
           [] -> []
           (_ : xs) -> xs
-      (before <> remaining, ())
+       in before <> remaining
     pure g
   EnemyAttack iid eid -> do
     unshiftMessages
@@ -2575,7 +2368,7 @@ runGameMessage msg g = case msg of
         unshiftMessage (AddToDiscard (ownerOfEvent event) pc)
         pure $ g & eventsL %~ deleteMap eid
   Discard (TreacheryTarget tid) -> do
-    withQueue $ \queue -> (filter (/= msg) queue, ())
+    withQueue_ $ filter (/= msg)
     let
       treachery = getTreachery tid g
       encounterCard = do
@@ -2618,82 +2411,3 @@ instance RunMessage GameInternal GameInternal where
       >>= traverseOf (skillsL . traverse) (runMessage msg)
       >>= traverseOf (investigatorsL . traverse) (runMessage msg)
       >>= runGameMessage msg
-
-toExternalGame
-  :: MonadIO m
-  => GameInternal
-  -> HashMap InvestigatorId Question
-  -> m GameExternal
-toExternalGame g@Game {..} mq = do
-  queue <- readIORef gameMessages
-  roundHistory <- readIORef gameRoundMessageHistory
-  phaseHistory <- readIORef gamePhaseMessageHistory
-  hash' <- liftIO nextRandom
-  pure $ g
-    { gameMessages = queue
-    , gameRoundMessageHistory = roundHistory
-    , gamePhaseMessageHistory = phaseHistory
-    , gameHash = hash'
-    , gameQuestion = mq
-    }
-
-toInternalGame :: MonadIO m => GameExternal -> m GameInternal
-toInternalGame g@Game {..} = do
-  ref <- newIORef gameMessages
-  roundHistory <- newIORef gameRoundMessageHistory
-  phaseHistory <- newIORef gamePhaseMessageHistory
-  pure $ g
-    { gameMessages = ref
-    , gameRoundMessageHistory = roundHistory
-    , gamePhaseMessageHistory = phaseHistory
-    }
-
-runMessages
-  :: (MonadIO m, MonadFail m, MonadRandom m)
-  => (Message -> m ())
-  -> GameInternal
-  -> m GameExternal
-runMessages logger g = if g ^. gameStateL /= IsActive
-  then toExternalGame g mempty
-  else flip runReaderT g $ do
-    liftIO $ whenM
-      (isJust <$> lookupEnv "DEBUG")
-      (readIORef (gameMessages g) >>= pPrint >> putStrLn "\n")
-    mmsg <- popMessage
-    for_ mmsg $ \msg -> do
-      atomicModifyIORef'
-        (gameRoundMessageHistory g)
-        (\queue -> (msg : queue, ()))
-      atomicModifyIORef'
-        (gamePhaseMessageHistory g)
-        (\queue -> (msg : queue, ()))
-    case mmsg of
-      Nothing -> case gamePhase g of
-        CampaignPhase -> toExternalGame g mempty
-        ResolutionPhase -> toExternalGame g mempty
-        MythosPhase -> toExternalGame g mempty
-        EnemyPhase -> toExternalGame g mempty
-        UpkeepPhase -> toExternalGame g mempty
-        InvestigationPhase -> if hasEndedTurn (activeInvestigator g)
-          then
-            case
-              filter
-                (not
-                . (\i -> hasEndedTurn i || hasResigned i || isDefeated i)
-                . flip getInvestigator g
-                )
-                (gamePlayerOrder g)
-            of
-              [] -> do
-                pushMessage EndInvestigation
-                runMessages (lift . logger) g
-              (x : _) ->
-                runMessages (lift . logger) $ g & activeInvestigatorIdL .~ x
-          else
-            pushMessages [PlayerWindow (g ^. activeInvestigatorIdL) []]
-              >> runMessages (lift . logger) g
-      Just msg -> case msg of
-        Ask iid q -> toExternalGame g (singletonMap iid q)
-        AskMap askMap -> toExternalGame g askMap
-        _ ->
-          lift (logger msg) >> runMessage msg g >>= runMessages (lift . logger)
